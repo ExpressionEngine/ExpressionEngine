@@ -25,6 +25,7 @@ namespace EllisLab\ExpressionEngine\Model\Site\Preferences;
  * @link		http://ellislab.com
  */
 class TemplatePreferences extends ConcretePreferences {
+
 	protected $enable_template_routes;
 	protected $strict_urls;
 	protected $site_404;

@@ -25,6 +25,7 @@ namespace EllisLab\ExpressionEngine\Model\Site\Preferences;
  * @link		http://ellislab.com
  */
 class FlexiblePreferences {
+
 	protected $preferences = array();
 
 	public function __construct($preferences = NULL)

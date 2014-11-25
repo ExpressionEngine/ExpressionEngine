@@ -25,6 +25,7 @@ namespace EllisLab\ExpressionEngine\Model\Site\Preferences;
  * @link		http://ellislab.com
  */
 class ChannelPreferences extends ConcretePreferences {
+
 	protected $image_resize_protocol;
 	protected $image_library_path;
 	protected $thumbnail_prefix;

@@ -25,6 +25,7 @@ namespace EllisLab\ExpressionEngine\Model\Site\Preferences;
  * @link		http://ellislab.com
  */
 class MemberPreferences extends ConcretePreferences {
+
 	protected $un_min_len;
 	protected $pw_min_len;
 	protected $allow_member_registration;

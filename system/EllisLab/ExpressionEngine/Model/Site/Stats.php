@@ -33,16 +33,15 @@ class Stats extends Model {
 
 	protected static $_relationships = array(
 		'Site' => array(
-			'type' => 'one-to-one'
+			'type' => 'BelongsTo'
 		),
 		'RecentMember' => array(
-			'type' => 'many-to-one',
-			'model' => 'Member',
-			'key' => 'recent_member_id'
+			'type'     => 'BelongsTo',
+			'model'    => 'Member',
+			'from_key' => 'recent_member_id'
 		)
 	);
 
-	// Properties
 	protected $stat_id;
 	protected $site_id;
 	protected $total_members;

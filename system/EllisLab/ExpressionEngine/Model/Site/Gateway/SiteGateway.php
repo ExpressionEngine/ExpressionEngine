@@ -31,7 +31,6 @@ class SiteGateway extends Gateway {
 	protected static $_table_name = 'sites';
 	protected static $_primary_key = 'site_id';
 
-	// Properties
 	protected $site_id;
 	protected $site_label;
 	protected $site_name;

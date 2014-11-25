@@ -34,6 +34,7 @@ class Site extends Model {
 
 	protected static $_primary_key = 'site_id';
 	protected static $_gateway_names = array('SiteGateway');
+
 	protected static $_preferences = array(
 		'SystemPreferences' => 'site_system_preferences',
 		'MailingListPreferences' => 'site_mailinglist_preferences',
@@ -43,14 +44,17 @@ class Site extends Model {
 	);
 
 	protected static $_relationships = array(
+		'GlobalVariables' => array(
+			'model' => 'GlobalVariable',
+			'type' => 'hasMany'
+		),
+		'Stats' => array(
+			'type' => 'HasOne'
+		),
 		'TemplateGroups' => array(
 			'model' => 'TemplateGroup',
 			'type' => 'hasMany'
 		),
-		'GlobalVariables' => array(
-			'model' => 'GlobalVariable',
-			'type' => 'hasMany'
-		)
 	);
 
 	// Properties
