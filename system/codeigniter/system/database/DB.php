@@ -101,7 +101,6 @@ function &DB($params = '', $active_record_override = NULL)
 	// Load the DB classes.  Note: Since the active record class is optional
 	// we need to dynamically create a class that extends proper parent class
 	// based on whether we're using the active record class or not.
-	// Kudos to Paul for discovering this clever use of eval()
 
 	if ($active_record_override !== NULL)
 	{
