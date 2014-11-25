@@ -85,6 +85,21 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals(1, count($result->getErrors('a')));
 	}
 
+	public function testSkipIfBlankAndNotRequired()
+	{
+		$rules = array(
+			'a' => 'enum[yes, exists]|alpha|min_length[2]|max_length[6]'
+		);
+		$this->validator->setRules($rules);
+
+		$result = $this->validator->validate(array('a' => 'not blank'));
+		$this->assertFalse($result->isValid());
+
+
+		$result = $this->validator->validate(array('a' => ''));
+		$this->assertTrue($result->isValid());
+	}
+
 	public function testWhenPresent()
 	{
 		$rules = array(

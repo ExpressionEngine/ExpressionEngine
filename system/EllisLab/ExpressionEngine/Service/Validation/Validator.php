@@ -106,6 +106,7 @@ class Validator {
 		foreach ($this->rules as $key => $rules)
 		{
 			$value = NULL;
+			$allow_blank = TRUE;
 
 			if (array_key_exists($key, $values))
 			{
@@ -118,11 +119,22 @@ class Validator {
 			{
 				$rule->setAllValues($values);
 
+				// don't allow blank if rule is strict (e.g. required)
+				if ($rule->stopsOnFailure())
+				{
+					$allow_blank = FALSE;
+				}
+
 				if ($rule->validate($value) === FALSE)
 				{
 					if ($rule->skipsOnFailure())
 					{
 						break;
+					}
+
+					if ($allow_blank && trim($value) === '')
+					{
+						continue;
 					}
 
 					$result->addFailed($key, $rule);
