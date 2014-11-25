@@ -16,12 +16,13 @@ class ValidEmails extends ValidationRule {
 	public function validate($value)
 	{
 		$email_rule = new ValidEmail();
+
 		if (strpos($value, ',') === FALSE)
 		{
 			return $email_rule->validate(trim($value));
 		}
 
-		foreach(explode(',', $value) as $email)
+		foreach (explode(',', $value) as $email)
 		{
 			if (trim($email) != '' && $email_rule->validate(trim($email)) === FALSE)
 			{
