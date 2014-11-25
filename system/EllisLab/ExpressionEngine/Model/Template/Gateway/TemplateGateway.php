@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Template\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -26,38 +26,10 @@ use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class TemplateGateway extends RowDataGateway {
+class TemplateGateway extends Gateway {
 
 	protected static $_table_name 		= 'templates';
 	protected static $_primary_key 		= 'template_id';
-	protected static $_related_gateways	= array(
-		'site_id' => array(
-			'gateway' => 'SiteGateway',
-			'key'	 => 'site_id'
-		),
-		'group_id' => array(
-			'gateway' => 'TemplateGroupGateway',
-			'key'    => 'group_id'
-		),
-		'last_author_id' => array(
-			'gateway' => 'MemberGateway',
-			'key'	 => 'member_id'
-		),
-		'template_id' => array(
-			'gateway' => 'MemberGroupGateway',
-			'key' => 'group_id',
-			'pivot_table' => 'template_no_access',
-			'pivot_key' => 'template_id',
-			'pivot_foreign_key' => 'group_id'
-		)
-	);
-	protected static $_validation_rules = array(
-		'template_id' => 'required|isNatural',
-		'site_id' => 'required|isNatural',
-		'group_id' => 'required|isNatural',
-		'template_name' => 'required|alphaDash'
-	);
-
 
 	// Properties
 	protected $template_id;

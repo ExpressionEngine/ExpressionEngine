@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Service\Validation\Rule;
 
-use EllisLab\ExpressionEngine\Service\Validation\ValidationRule as ValidationRule;
+use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -20,7 +20,6 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule as ValidationRul
 /**
  * ExpressionEngine Maximum Length Validation Rule
  *
- *
  * @package		ExpressionEngine
  * @subpackage	Validation\Rule
  * @category	Service
@@ -28,12 +27,8 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule as ValidationRul
  * @link		http://ellislab.com
  */
 class MaxLength extends ValidationRule {
-	protected $length=0;
 
-	public function __construct(array $parameters)
-	{
-		$this->length = $parameters[0];
-	}
+	protected $length = 0;
 
 	public function validate($value)
 	{
@@ -50,4 +45,8 @@ class MaxLength extends ValidationRule {
 		return (strlen($value) > $this->length) ? FALSE : TRUE;
 	}
 
+	public function setParameters(array $parameters)
+	{
+		$this->length = $parameters[0];
+	}
 }

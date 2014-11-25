@@ -49,11 +49,11 @@ class AliasService implements AliasServiceInterface {
 	 * @param String $fully_qualified_name  Fully qualified class name of the aliased class
 	 * @return void
 	 */
-	public function registerClass($class_name, $fully_qualified_name)
+	public function registerClass($alias, $fully_qualified_name)
 	{
 		if (array_key_exists($alias, $this->aliases))
 		{
-			throw new \OverflowException($this->identifier.' name has already been registered: '. $class_name);
+			throw new \OverflowException($this->identifier.' name has already been registered: '. $alias);
 		}
 
 		$this->aliases[$alias] = $fully_qualified_name;
@@ -62,16 +62,26 @@ class AliasService implements AliasServiceInterface {
 	/**
 	 * Get an alias's full qualified name.
 	 *
-	 * @param String $name Name of the class
+	 * @param String $alias Name of the alias
 	 * @return String Fully qualified name of the class
 	 */
-	public function getRegisteredClass($class_name)
+	public function getRegisteredClass($alias)
 	{
-		if ( ! array_key_exists($class_name, $this->aliases))
+		if ( ! array_key_exists($alias, $this->aliases))
 		{
-			throw new \UnderflowException($this->identifier.' "' . $class_name . '" has not been registered yet!');
+			throw new \UnderflowException($this->identifier.' "' . $alias . '" has not been registered yet!');
 		}
-		return $this->aliases[$class_name];
+
+		return $this->aliases[$alias];
+	}
+
+	/**
+	 * Reverse alias lookup
+	 */
+	public function getAlias($class_name)
+	{
+		$found = array_search($class_name, $this->aliases);
+		return ($found == FALSE) ? NULL : $found;
 	}
 
 	/**

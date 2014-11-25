@@ -2,7 +2,7 @@
 namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
 use EllisLab\ExpressionEngine\Service\Model\Model as Model;
-use EllisLab\ExpressionEngine\Service\Model\Content\ContentStructure
+use EllisLab\ExpressionEngine\Service\Model\Interfaces\Content\ContentStructure
 	as ContentStructure;
 
 

@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Service\Validation\Rule;
 
-use EllisLab\ExpressionEngine\Service\Validation\ValidationRule as ValidationRule;
+use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -20,7 +20,6 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule as ValidationRul
 /**
  * ExpressionEngine Required Validation Rule
  *
- *
  * @package		ExpressionEngine
  * @subpackage	Validation\Rule
  * @category	Service
@@ -35,9 +34,12 @@ class Required extends ValidationRule {
 		{
 			return (trim($value) == '') ? FALSE : TRUE;
 		}
-		else
-		{
-			return ( ! empty($value));
-		}
+
+		return ( ! empty($value));
+	}
+
+	public function stopsOnFailure()
+	{
+		return TRUE;
 	}
 }

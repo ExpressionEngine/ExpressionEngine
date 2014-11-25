@@ -2,7 +2,7 @@
 namespace EllisLab\ExpressionEngine\Model\Category;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Service\Model\Content\ContentStructure;
+use EllisLab\ExpressionEngine\Service\Model\Interfaces\Content\ContentStructure;
 
 /**
  * ExpressionEngine - by EllisLab

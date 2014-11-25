@@ -1,6 +1,8 @@
 <?php
 namespace EllisLab\ExpressionEngine\Service\Validation;
 
+use InvalidArgumentException;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -18,22 +20,17 @@ namespace EllisLab\ExpressionEngine\Service\Validation;
 /**
  * ExpressionEngine Validator
  *
- * Performs validation on one or more passed value/rule string sets. Parses the
- * passed rule strings, loading the rules as it finds them.  It then tests the
- * value against each rule and stores any failed rules.  Must be initialized
- * with available rule namespaces in order to successfully find the needed
- * rules.
- *
  * @example
- * 	$validator = new Validator($namespaces);
- * 	if ( ! $validator->validate($value))
- * 	{
- * 		$errors = new Errors();
- * 		foreach($validator->getFailedRules() as $failed_rule)
- * 		{
- * 			$errors->addError(new ValidationError($failed_rule));
- * 		}
- *	}
+ *  $rules = array(
+ *  	'name' => 'required|min_length[4]'
+ *  );
+ *
+ * 	$validator = new Validator($rules);
+ *  $result = $validator->validate($_POST);
+ *
+ *  // Or shorter using chaing. Given here with the DI notation:
+ *
+ *  $result = ('Validation', $rules)->validate($_POST);
  *
  * @package		ExpressionEngine
  * @subpackage	Validation
@@ -42,130 +39,191 @@ namespace EllisLab\ExpressionEngine\Service\Validation;
  * @link		http://ellislab.com
  */
 class Validator {
-	protected $failed_rules = array();
-	protected $namespaces = array();
+
+	protected $rules = array();
+	protected $custom = array();
+	protected $failed = array();
 
 	/**
-	 * Construct the Validator and Inject Namespaces
 	 *
-	 * Takes and stores the injected Validation Rule namespaces.
-	 *
-	 * @param	string[]	$namespaces	The fully qualified namespaces in which
-	 * 		ValidationRules may reside.  In the order in which they were
-	 * 		registered, EllisLab namespaces first.
 	 */
-	public function __construct($namespaces)
+	public function __construct(array $rules = array())
 	{
-		$this->namespaces = $namespaces;
+		$this->setRules($rules);
 	}
 
-
-	// --------------------------------------------------------------------
-
 	/**
-	 * Get an array of Failed Validation Rules
 	 *
-	 * Returns an array of failed validation rules that can be used to generate
- 	 * error messages.
-	 *
- 	 * @return	mixed[]	An array rules that failed to validate.
-	 *				Example: array('max_length', 'password')
 	 */
-	public function getFailedRules()
+	public function setRules($rules)
 	{
-		return $this->failed_rules;
+		$this->rules = $rules;
 	}
 
-	// --------------------------------------------------------------------
+	/**
+	 *
+	 */
+	public function setRule($key, $rule_string)
+	{
+		$this->rules[$key] = $rule_string;
+	}
 
 	/**
-	 * Apply a set of Validation Rules to a Value
+	 * Define a custom rule for this particular validator. These
+	 * are *not* global definitions. They are one offs for this
+	 * instance.
 	 *
-	 * Apply a set of validation rules, given in piped string format, to a
-	 * passed value.  Will return true if the value validates based on
-	 * the given rules.  Will return false, and set the errors array
-	 * if it doesn't.
+	 * @example
+	 *  $validator->defineRule('instanceOf', function($value, $params)
+	 *  {
+	 * 		return is_a($value, $params[0]);
+	 *  });
 	 *
-	 * @param	string	$rule_definitions	The rules to validate based
-	 *				on in piped string format.  For example:
-     *					"min_length[6]|password"
-	 * @param	mixed	$value	The value to validate.
+	 *  $validator->setRule('child', 'required|instanceOf[Name\Space\Class]');
 	 *
-	 * @return	boolean	True on success, FALSE otherwise.  On a FALSE return
-	 * 				any rules that failed will be set in the errors array and
-	 * 				may be retrieved with getFailedRules().
+	 * Callable type hint not available until PHP 5.4
+	 *
+	 * @param String   $name      The rule identifier as used in the rule string
+	 * @param Callable $callback  Rule definition handler. Not limited to closures.
 	 */
-	public function validate($rule_definitions, $value)
+	public function defineRule($name,/* Callable*/ $callback)
 	{
-		$rule_definitions = explode('|', $rule_definitions);
-		foreach($rule_definitions as $rule_definition)
+		if ( ! is_callable($callback))
 		{
-			$rule = ValidationService::parseRule($rule_definition);
-			if ( ! $rule->validate($value))
+			throw new InvalidArgumentException('Rule callback must be callable');
+		}
+
+		$this->custom[$name] = new Rule\Callback($callback);
+	}
+
+	/**
+	 *
+	 */
+	public function validate($values)
+	{
+		$result = new Result;
+
+		foreach ($this->rules as $key => $rules)
+		{
+			$value = NULL;
+
+			if (array_key_exists($key, $values))
 			{
-				$this->failed_rules[] = $rule;
+				$value = $values[$key];
+			}
+
+			$rules = $this->setupRules($rules);
+
+			foreach ($rules as $rule)
+			{
+				$rule->setAllValues($values);
+
+				if ($rule->validate($value) === FALSE)
+				{
+					if ($rule->skipsOnFailure())
+					{
+						break;
+					}
+
+					$result->addFailed($key, $rule);
+
+					if ($rule->stopsOnFailure())
+					{
+						break;
+					}
+				}
 			}
 		}
-		if ( ! empty($this->failed_rules))
-		{
-			return FALSE;
-		}
+
+		return $result;
 	}
 
-	// --------------------------------------------------------------------
+	/**
+	 * Take the full piped rule string and create an array of
+	 * validation rule objects.
+	 */
+	protected function setupRules($rules)
+	{
+		$rules = explode('|', $rules);
+		$objects = array();
+
+		foreach ($rules as $rule_string)
+		{
+			$objects[] = $this->setupRule($rule_string);
+		}
+
+		return $objects;
+	}
 
 	/**
-	 * Parse a Rule Definition and Load the Rule Object
+	 * Parse a single rule string including any parameters passed
+	 * and create the matching rule object.
 	 *
-	 * Parses a rule string, including any parameters, and loads the necessary
-	 * rule object.  Checks each injected namespace for the rule, in the order
-	 * in which they were registered (EL namespaces first).  If a matching Rule
-	 * is not found, throws an exception.  Once the rule is found, it
-	 * instantiates it and passes the parsed parameters in the constructor.
-	 *
-	 * @param	string	$rule_definition	The definition of the rule to be
-	 * 		loaded. Only a single rule allowed, not a full multiple rule
-	 * 		string.
-	 *
-	 * @return	ValidationRule	The instantiated ValidationRule object,
-	 * 		initialized with the rules parameters.
-	 *
-	 * @throws	InvalidArgumentException	If the rule fails to load for any
-	 * 		reason, an InvalidArgumentException is thrown.
+	 * @param  string $rule_definition  The user specified rule string
+	 * @return ValidationRule  The ValidationRule object
+	 * @throws Exception  If the rule fails to load
 	 */
-	protected function parseRule($rule_definition)
+	protected function setupRule($rule_definition)
 	{
-		if (preg_match("/(.*?)\[(.*?)\]/", $rule_definition, $match))
+		list($name, $params) = $this->parseRuleString($rule_definition);
+
+		if (isset($this->custom[$name]))
+		{
+			$object = $this->custom[$name];
+		}
+		else
+		{
+			$object = $this->newValidationRule($name);
+		}
+
+
+		if (isset($params))
+		{
+			if ( ! is_callable(array($object, 'setParameters')))
+			{
+				throw new \Exception("Validation rule `{$name}` does not accept parameters.");
+			}
+
+			$object->setParameters($params);
+		}
+
+		return $object;
+	}
+
+	/**
+	 *
+	 */
+	protected function parseRuleString($string)
+	{
+		if (preg_match("/(.*?)\[(.*?)\]/", $string, $match))
 		{
 			$rule_name	= $match[1];
 			$parameters	= $match[2];
 
-			if (strpos(',', $parameters) !== FALSE)
-			{
-				$parameters = explode(',', $parameters);
-			}
-			else
-			{
-				$parameters = array($parameters);
-			}
-		}
-		else
-		{
-			$rule_name = $rule_definition;
-			$parameters = array();
+			$parameters = explode(',', $parameters);
+			$parameters = array_map('trim', $parameters);
+
+			return array($rule_name, $parameters);
 		}
 
-		foreach($this->namespaces as $namespace)
+		return array($string, NULL);
+	}
+
+	/**
+	 *
+	 */
+	protected function newValidationRule($rule_name)
+	{
+		$rule_class = implode('', array_map('ucfirst', explode('_', $rule_name)));
+
+		$class = __NAMESPACE__."\\Rule\\{$rule_class}";
+
+		if (class_exists($class))
 		{
-			$fully_qualified_class = $namespace . ucfirst($rule_name);
-			if (class_exists($fully_qualified_class))
-			{
-				$rule = new $fully_qualified_class($parameters);
-				return $rule;
-			}
+			return new $class;
 		}
 
-		throw new InvalidArgumentException('Non-existent ValidationRule, "' . $rule_definition . '", requested in validation!');
+		throw new \Exception("Unknown validation rule `{$rule_name}`.");
 	}
 
 }

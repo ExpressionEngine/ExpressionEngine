@@ -10,7 +10,7 @@ class MemberGroup extends Model {
 
 	protected static $_relationships = array(
 		'Members' => array(
-			'type' => 'one_to_many',
+			'type' => 'hasMany',
 			'model' => 'Member'
 		)
 	);

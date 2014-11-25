@@ -5,7 +5,7 @@ use EllisLab\ExpressionEngine\Core\Validation\ValidationRule as ValidationRule;
 use EllisLab\ExpressionEngine\Library\IpLibrary as IpLibrary;
 
 /**
- * Valid Ip 
+ * Valid Ip
  *
  * @param	string
  * @param	value

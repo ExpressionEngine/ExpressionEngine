@@ -12,7 +12,7 @@
 >
 	<textsuites>
 		<testsuites>
-			<testsuite name="ExpressioEngine Test Suite">
+			<testsuite name="ExpressionEngine Test Suite">
 				<directory suffix=".php">./ExpressionEngine/</directory>
 			</testsuite>
 		</testsuites>
