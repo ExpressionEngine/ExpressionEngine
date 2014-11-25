@@ -235,6 +235,21 @@ and email %s to report the link that generated this message.',
 // Date
 //----------------------------
 
+'singular' =>
+'one',
+
+'less_than' =>
+'less than',
+
+'about' =>
+'about',
+
+'past' =>
+'%s ago',
+
+'future' =>
+'in %s',
+
 'ago' =>
 '%x ago',
 
