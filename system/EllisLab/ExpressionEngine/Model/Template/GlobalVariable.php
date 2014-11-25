@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class GlobalVariable extends Model {
 
 	protected static $_primary_key = 'variable_id';
-	protected static $_gateway_names = array('GlobalVariableGateway');
+	protected static $_table_name  = 'global_variables';
 
 	protected static $_relationships = array(
 		'Site' => array(

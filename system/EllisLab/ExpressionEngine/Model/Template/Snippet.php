@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class Snippet extends Model {
 
 	protected static $_primary_key = 'snippet_id';
-	protected static $_gateway_names = array('SnippetGateway');
+	protected static $_table_name = 'snippets';
 
 	protected static $_relationships = array(
 		'Site' => array(

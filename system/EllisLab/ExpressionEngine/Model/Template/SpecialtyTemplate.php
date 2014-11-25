@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class SpecialtyTemplate extends Model {
 
 	protected static $_primary_key = 'template_id';
-	protected static $_gateway_names = array('SpecialtyTemplateGateway');
+	protected static $_table_name = 'specialty_templates';
 
 	protected static $_relationships = array(
 		'Site' => array(
