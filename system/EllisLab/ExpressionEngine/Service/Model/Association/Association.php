@@ -159,7 +159,7 @@ abstract class Association {
 
 		$this->tracker->reset();
 
-		if ($this->hasRelated() && $this->canSaveAcross())
+		if ($this->canSaveAcross())
 		{
 			$this->saveAllRelated();
 		}

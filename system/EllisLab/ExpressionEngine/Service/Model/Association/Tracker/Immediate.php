@@ -25,4 +25,9 @@ class Immediate implements Tracker {
 		return array();
 	}
 
+	public function reset()
+	{
+		// nada
+	}
+
 }

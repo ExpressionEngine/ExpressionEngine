@@ -16,7 +16,12 @@ class Update extends Query {
 			$object->$field = $value;
 		}
 
-		$object->validate();
+		$result = $object->validate();
+
+		if ($result->isNotValid())
+		{
+			throw new \Exception('Validation failed');
+		}
 
 		// todo this is yucky
 		$gateways = $this->store->getMetaDataReader($object->getName())->getGateways();

@@ -53,6 +53,15 @@ class Staged implements Tracker {
 	/**
 	 *
 	 */
+	public function reset()
+	{
+		$this->added = array();
+		$this->removed = array();
+	}
+
+	/**
+	 *
+	 */
 	protected function attemptFastUndoRemove($hash)
 	{
 		if (isset($this->removed[$hash]))
@@ -76,15 +85,6 @@ class Staged implements Tracker {
 		}
 
 		return FALSE;
-	}
-
-	/**
-	 *
-	 */
-	protected function reset()
-	{
-		$this->added = array();
-		$this->removed = array();
 	}
 
 }

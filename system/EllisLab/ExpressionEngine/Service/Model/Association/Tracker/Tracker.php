@@ -12,4 +12,5 @@ interface Tracker {
 	public function add(Model $model);
 	public function remove(Model $model);
 
+	public function reset();
 }
