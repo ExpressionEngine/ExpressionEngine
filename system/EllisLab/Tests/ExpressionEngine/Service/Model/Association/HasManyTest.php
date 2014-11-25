@@ -4,6 +4,7 @@ namespace EllisLab\Test\ExpressionEngine\Service\Model\Association;
 use Mockery as m;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 use EllisLab\ExpressionEngine\Service\Model\Association\HasMany;
 
 class HasManyTest extends \PHPUnit_Framework_TestCase {
@@ -82,7 +83,7 @@ class HasManyTest extends \PHPUnit_Framework_TestCase {
 		$retrieved = $has_many->get();
 
 		// post-conditions
-		$this->assertTrue(is_array($retrieved));
+		$this->assertTrue($retrieved instanceOf Collection);
 		$this->assertTrue(count($retrieved) == 1);
 		$this->assertSame($child, $retrieved[0]);
 	}
@@ -118,7 +119,7 @@ class HasManyTest extends \PHPUnit_Framework_TestCase {
 		$retrieved = $has_many->get();
 
 		// post-conditions
-		$this->assertTrue(is_array($retrieved));
+		$this->assertTrue($retrieved instanceOf Collection);
 		$this->assertTrue(count($retrieved) == 1);
 		$this->assertSame($child, $retrieved[0]);
 	}
@@ -157,7 +158,8 @@ class HasManyTest extends \PHPUnit_Framework_TestCase {
 
 		// pre-conditions
 		$retrieved = $has_many->get();
-		$this->assertTrue(is_array($retrieved));
+
+		$this->assertTrue($retrieved instanceOf Collection);
 		$this->assertTrue(count($retrieved) == 1);
 		$this->assertSame($child, $retrieved[0]);
 
