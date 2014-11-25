@@ -30,13 +30,6 @@ class DeveloperLogGateway extends Gateway {
 
 	protected static $_table_name = 'developer_log';
 	protected static $_primary_key = 'log_id';
-	protected static $_related_entites = array(
-		'template_id' => array(
-			'gateway' => 'TemplateGateway',
-			'key' => 'template_id'
-		),
-	);
-
 
 	protected $log_id;
 	protected $timestamp;

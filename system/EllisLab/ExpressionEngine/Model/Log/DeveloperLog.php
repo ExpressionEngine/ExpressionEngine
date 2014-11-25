@@ -33,10 +33,9 @@ class DeveloperLog extends Model {
 
 	protected static $_relationships = array(
 		'Template' => array(
-			'type' => 'many_to_one'
-		),
+			'type' => 'belongsTo'
+		)
 	);
-
 
 	protected $log_id;
 	protected $timestamp;

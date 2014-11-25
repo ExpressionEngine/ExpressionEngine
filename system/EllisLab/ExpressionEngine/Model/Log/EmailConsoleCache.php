@@ -27,12 +27,13 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @link		http://ellislab.com
  */
 class EmailConsoleCache extends Model {
+
 	protected static $_primary_key = 'cache_id';
 	protected static $_gateway_names = array('EmailConsoleCacheGateway');
 
 	protected static $_relationships = array(
 		'Member' => array(
-			'type' => 'many_to_one'
+			'type' => 'belongsTo'
 		),
 	);
 

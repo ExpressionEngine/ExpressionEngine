@@ -33,7 +33,6 @@ class EmailConsoleCacheGateway extends Gateway {
 	protected static $_table_name = 'email_console_cache';
 	protected static $_primary_key = 'cache_id';
 
-	// Properties
 	protected $cache_id;
 	protected $cache_date;
 	protected $member_id;
