@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Service\Validation\Rule;
 
-use EllisLab\ExpressionEngine\Service\Validation\ValidationRule as ValidationRule;
+use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -20,7 +20,6 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule as ValidationRul
 /**
  * ExpressionEngine Numeric Validation Rule
  *
- *
  * @package		ExpressionEngine
  * @subpackage	Validation\Rule
  * @category	Service
@@ -31,7 +30,7 @@ class Numeric extends ValidationRule {
 
 	public function validate($value)
 	{
-		return (bool)preg_match( '/^[\-+]?[0-9]*\.?[0-9]+$/', $value);
+		return (bool) preg_match( '/^[\-+]?[0-9]*\.?[0-9]+$/', $value);
 	}
 
 }

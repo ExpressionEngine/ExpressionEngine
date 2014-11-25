@@ -16,7 +16,7 @@ namespace EllisLab\ExpressionEngine\Service\Validation;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Base Validation Rule
+ * ExpressionEngine Validation Rule Interface
  *
  * Represents a Validation Rule that can be applied to a value during any
  * Validation stage.  This can be either form validation or validation of data
@@ -39,43 +39,48 @@ namespace EllisLab\ExpressionEngine\Service\Validation;
 abstract class ValidationRule {
 
 	/**
-	 * Construct a Validation Rule
-	 *
-	 * Validation rules must be able to take an array of parameters.
-	 *
-	 * @todo-DTB There's probably a better way to handle this. I'm not actually
-	 * wild about defining a stub method that takes a parameter, and having it
-	 * optionally take a parameter actually means this is meaningless.
-	 */
-	public function __construct(array $parameters = array())
-	{
-
-	}
-
-
-	/**
 	 * Validate a Value
 	 *
-	 * Validate a value against this rule.  If it is valid, return TRUE
-	 * otherwise, return FALSE.  May use parameters passed in the constructor
-	 * to perform the validation.
+	 * Validate a value against this rule. If it is valid, return TRUE
+	 * otherwise, return FALSE.
 	 *
-	 * @param	mixed	$value	The value to validate.
-	 *
-	 * @retun	boolean	On success, TRUE, on validation failure, FALSE.
+	 * @param  mixed   $value  The value to validate.
+	 * @return boolean Success?
 	 */
-	public abstract function validate($value);
-
+	abstract public function validate($value);
 
 	/**
- 	 * To String
- 	 *
- 	 * Convert this Validation rule to a string.  Conveinence so that
- 	 * the rule can be easily printed out.
- 	 */
-	public function __toString()
+	 * @return BOOL  Stop validating if this rule fails
+	 */
+	public function stopsOnFailure()
 	{
-		return lcfirst(__CLASS__);
+		return FALSE;
+	}
+
+	/**
+	 * @return BOOL  Rule is a presence indicator
+	 */
+	public function skipsOnFailure()
+	{
+		return FALSE;
+	}
+
+	/**
+	 * Optional if you wish to support parameters
+	 *
+	 * Not actually defined here so that we can error when
+	 * parameters are passed to a rule that does not take them.
+	 */
+	/*
+	public function setParameters(array $parameters)
+	*/
+
+	/**
+	 * Optional if you need access to other values
+	 */
+	public function setAllValues(array $values)
+	{
+		// nada, no need to store this information if it's not needed
 	}
 
 }

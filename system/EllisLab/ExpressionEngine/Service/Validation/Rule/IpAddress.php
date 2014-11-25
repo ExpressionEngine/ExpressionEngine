@@ -18,7 +18,8 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Maximum Length Validation Rule
+ * ExpressionEngine IP Address Validation Rule
+ *
  *
  * @package		ExpressionEngine
  * @subpackage	Validation\Rule
@@ -26,27 +27,37 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class MaxLength extends ValidationRule {
+class IpAddress extends ValidationRule {
 
-	protected $length = 0;
+	protected $flags = '';
 
 	public function validate($value)
 	{
-		if (preg_match("/[^0-9]/", $this->length))
-		{
-			return FALSE;
-		}
-
-		if (function_exists('mb_strlen'))
-		{
-			return (mb_strlen($value) > $this->length) ? FALSE : TRUE;
-		}
-
-		return (strlen($value) > $this->length) ? FALSE : TRUE;
+		return (bool) filter_var($value, FILTER_VALIDATE_IP, $this->flags);
 	}
 
-	public function setParameters(array $parameters)
+	public function setParameters(array $params)
 	{
-		$this->length = $parameters[0];
+		$flags = '';
+
+		foreach ($params as $flag)
+		{
+			switch ($flag)
+			{
+				case 'ipv4':
+					$flags |= FILTER_FLAG_IPV4;
+					break;
+				case 'ipv6':
+					$flags |= FILTER_FLAG_IPV6;
+					break;
+				case 'public':
+					$flags |= FILTER_FLAG_NO_PRIV_RANGE;
+					break;
+				default:
+					throw new \Exception("Unknown IP validation parameter: {$flag}");
+			}
+		}
+
+		$this->flags = $flags;
 	}
 }

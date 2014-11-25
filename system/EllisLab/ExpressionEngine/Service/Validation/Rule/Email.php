@@ -18,7 +18,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Maximum Length Validation Rule
+ * ExpressionEngine Email Validation Rule
  *
  * @package		ExpressionEngine
  * @subpackage	Validation\Rule
@@ -26,27 +26,11 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class MaxLength extends ValidationRule {
-
-	protected $length = 0;
+class Email extends ValidationRule {
 
 	public function validate($value)
 	{
-		if (preg_match("/[^0-9]/", $this->length))
-		{
-			return FALSE;
-		}
-
-		if (function_exists('mb_strlen'))
-		{
-			return (mb_strlen($value) > $this->length) ? FALSE : TRUE;
-		}
-
-		return (strlen($value) > $this->length) ? FALSE : TRUE;
+		return (bool) filter_var($value, FILTER_VALIDATE_EMAIL);
 	}
 
-	public function setParameters(array $parameters)
-	{
-		$this->length = $parameters[0];
-	}
 }

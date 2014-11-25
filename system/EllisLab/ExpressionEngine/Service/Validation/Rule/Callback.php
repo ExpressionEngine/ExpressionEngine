@@ -18,7 +18,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Maximum Length Validation Rule
+ * ExpressionEngine Callback Validation Rule
  *
  * @package		ExpressionEngine
  * @subpackage	Validation\Rule
@@ -26,27 +26,24 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class MaxLength extends ValidationRule {
+class Callback extends ValidationRule {
 
-	protected $length = 0;
+	protected $callback = NULL;
+	protected $parameters = array();
+
+	public function __construct($callback)
+	{
+		$this->callback = $callback;
+	}
 
 	public function validate($value)
 	{
-		if (preg_match("/[^0-9]/", $this->length))
-		{
-			return FALSE;
-		}
-
-		if (function_exists('mb_strlen'))
-		{
-			return (mb_strlen($value) > $this->length) ? FALSE : TRUE;
-		}
-
-		return (strlen($value) > $this->length) ? FALSE : TRUE;
+		return call_user_func($this->callback, $value, $this->parameters);
 	}
 
-	public function setParameters(array $parameters)
+	public function setParameters($parameters = array())
 	{
-		$this->length = $parameters[0];
+		$this->parameters = $parameters;
 	}
+
 }

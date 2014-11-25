@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Service\Validation\Rule;
 
-use EllisLab\ExpressionEngine\Service\Validation\ValidationRule as ValidationRule;
+use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -19,7 +19,6 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule as ValidationRul
 
 /**
  * ExpressionEngine Numeric Validation Rule
- *
  *
  * @package		ExpressionEngine
  * @subpackage	Validation\Rule

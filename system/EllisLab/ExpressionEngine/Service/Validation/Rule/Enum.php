@@ -18,7 +18,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Maximum Length Validation Rule
+ * ExpressionEngine Enum Validation Rule
  *
  * @package		ExpressionEngine
  * @subpackage	Validation\Rule
@@ -26,27 +26,18 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class MaxLength extends ValidationRule {
+class Enum extends ValidationRule {
 
-	protected $length = 0;
-
-	public function validate($value)
-	{
-		if (preg_match("/[^0-9]/", $this->length))
-		{
-			return FALSE;
-		}
-
-		if (function_exists('mb_strlen'))
-		{
-			return (mb_strlen($value) > $this->length) ? FALSE : TRUE;
-		}
-
-		return (strlen($value) > $this->length) ? FALSE : TRUE;
-	}
+	protected $options = array();
 
 	public function setParameters(array $parameters)
 	{
-		$this->length = $parameters[0];
+		$this->options = $parameters;
 	}
+
+	public function validate($value)
+	{
+		return in_array($value, $this->options);
+	}
+
 }

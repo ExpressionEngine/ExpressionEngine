@@ -18,7 +18,10 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Maximum Length Validation Rule
+ * ExpressionEngine Presence Dependency Validation Rule
+ *
+ * 'nickname' => 'whenPresent|min_length[5]'
+ * 'email' => 'whenPresent[newsletter]|email'
  *
  * @package		ExpressionEngine
  * @subpackage	Validation\Rule
@@ -26,27 +29,41 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class MaxLength extends ValidationRule {
+class WhenPresent extends ValidationRule {
 
-	protected $length = 0;
+	protected $all_values = array();
+	protected $field_names = array();
 
 	public function validate($value)
 	{
-		if (preg_match("/[^0-9]/", $this->length))
+		if (empty($this->field_names))
 		{
-			return FALSE;
+			return isset($value);
 		}
 
-		if (function_exists('mb_strlen'))
+		foreach ($this->field_names as $name)
 		{
-			return (mb_strlen($value) > $this->length) ? FALSE : TRUE;
+			if ( ! array_key_exists($name, $this->all_values))
+			{
+				return FALSE;
+			}
 		}
 
-		return (strlen($value) > $this->length) ? FALSE : TRUE;
+		return TRUE;
 	}
 
-	public function setParameters(array $parameters)
+	public function setParameters(array $field_names)
 	{
-		$this->length = $parameters[0];
+		$this->field_names = $field_names;
+	}
+
+	public function setAllValues(array $values)
+	{
+		$this->all_values = $values;
+	}
+
+	public function skipsOnFailure()
+	{
+		return TRUE;
 	}
 }
