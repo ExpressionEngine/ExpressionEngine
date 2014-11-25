@@ -33,12 +33,10 @@ class Snippet extends Model {
 
 	protected static $_relationships = array(
 		'Site' => array(
-			'type' => 'many_to_one'
+			'type' => 'BelongsTo'
 		)
 	);
 
-
-	// Properties
 	public $snippet_id;
 	public $site_id;
 	public $snippet_name;

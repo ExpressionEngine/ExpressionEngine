@@ -28,10 +28,9 @@ use EllisLab\ExpressionEngine\Service\Model\Gateway;
  */
 class TemplateGateway extends Gateway {
 
-	protected static $_table_name 		= 'templates';
-	protected static $_primary_key 		= 'template_id';
+	protected static $_table_name  = 'templates';
+	protected static $_primary_key = 'template_id';
 
-	// Properties
 	protected $template_id;
 	protected $site_id;
 	protected $group_id;
@@ -49,6 +48,5 @@ class TemplateGateway extends Gateway {
 	protected $allow_php;
 	protected $php_parse_location;
 	protected $hits;
-
 
 }

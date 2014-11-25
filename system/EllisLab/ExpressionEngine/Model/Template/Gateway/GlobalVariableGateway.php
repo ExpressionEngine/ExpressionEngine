@@ -26,19 +26,11 @@ use EllisLab\ExpressionEngine\Service\Model\Gateway;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class GlobalVariableGateway extends Gateway
-{
-	// Meta Data
-	protected static $_table_name 		= 'global_variables';
-	protected static $_primary_key 		= 'variable_id';
-	protected static $_related_gateways	= array(
-		'site_id' => array(
-			'gateway' => 'SiteGateway',
-			'key'	 => 'site_id'
-		)
-	);
+class GlobalVariableGateway extends Gateway {
 
-	// Properties
+	protected static $_table_name  = 'global_variables';
+	protected static $_primary_key = 'variable_id';
+
 	protected $variable_id;
 	protected $site_id;
 	protected $variable_name;

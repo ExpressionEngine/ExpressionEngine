@@ -33,11 +33,10 @@ class SpecialtyTemplate extends Model {
 
 	protected static $_relationships = array(
 		'Site' => array(
-			'type' => 'many_to_one'
+			'type' => 'BelongsTo'
 		)
 	);
 
-	// Properties
 	public $template_id;
 	public $site_id;
 	public $enable_template;
@@ -45,13 +44,4 @@ class SpecialtyTemplate extends Model {
 	public $data_title;
 	public $template_data;
 
-	public function getSite()
-	{
-		return $this->getRelated('Site');
-	}
-
-	public function setSite(Site $site)
-	{
-		return $this->setRelated('Site', $site);
-	}
 }

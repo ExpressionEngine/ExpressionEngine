@@ -37,7 +37,6 @@ class GlobalVariable extends Model {
 		)
 	);
 
-	// Properties
 	protected $variable_id;
 	protected $site_id;
 	protected $variable_name;

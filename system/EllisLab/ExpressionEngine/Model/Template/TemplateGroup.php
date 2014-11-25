@@ -30,9 +30,18 @@ class TemplateGroup extends Model {
 
 	protected static $_primary_key = 'group_id';
 	protected static $_gateway_names = array('TemplateGroupGateway');
-	protected static $_cascade = 'Templates';
 
 	protected static $_relationships = array(
+		'MemberGroups' => array(
+			'type'     => 'HasAndBelongsToMany',
+			'model'    => 'MemberGroup',
+			'from_key' => 'group_id',
+			'pivot' => array(
+				'table' => 'template_member_groups',
+				'left'  => 'template_gorup_id',
+				'right' => 'group_id'
+			)
+		),
 		'Templates' => array(
 			'type' => 'HasMany',
 			'model' => 'Template'
@@ -40,6 +49,10 @@ class TemplateGroup extends Model {
 		'Site' => array(
 			'type' => 'BelongsTo'
 		)
+	);
+
+	protected static $_validation_rules = array(
+		'is_site_default' => 'enum[y|n]',
 	);
 
 	protected $group_id;

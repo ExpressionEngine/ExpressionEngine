@@ -26,17 +26,10 @@ use EllisLab\ExpressionEngine\Service\Model\Gateway;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class SpecialtyTemplateGateway extends Gateway
-{
+class SpecialtyTemplateGateway extends Gateway {
+
 	protected static $_table_name = 'specialty_templates';
 	protected static $_primary_key = 'template_id';
-	protected static $_related_gateways = array(
-		'site_id' => array(
-			'gateway' => 'SiteGateway',
-			'key' => 'site_id'
-		)
-	);
-
 
 	protected $template_id;
 	protected $site_id;
