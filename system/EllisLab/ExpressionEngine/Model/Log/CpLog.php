@@ -40,6 +40,10 @@ class CpLog extends Model {
 		)
 	);
 
+	protected static $_validation_rules = array(
+		'ip_address'  => 'ip_address'
+	);
+
 	protected $id;
 	protected $site_id;
 	protected $member_id;

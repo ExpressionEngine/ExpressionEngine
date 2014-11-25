@@ -37,6 +37,10 @@ class EmailConsoleCache extends Model {
 		),
 	);
 
+	protected static $_validation_rules = array(
+		'ip_address' => 'ip_address'
+	);
+
 	// Properties
 	protected $cache_id;
 	protected $cache_date;
