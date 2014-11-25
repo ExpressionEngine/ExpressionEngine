@@ -31,6 +31,10 @@ class Captcha extends Model {
 	protected static $_primary_key = 'captcha_id';
 	protected static $_gateway_names = array('CaptchaGateway');
 
+	protected static $_validation_rules = array(
+		'ip_address' => 'ip_address'
+	);
+
 	protected $captcha_id;
 	protected $date;
 	protected $ip_address;

@@ -31,6 +31,10 @@ class Throttle extends Model {
 	protected static $_primary_key = 'throttle_id';
 	protected static $_gateway_names = array('ThrottleGateway');
 
+	protected static $_validation_rules = array(
+		'ip_address' => 'ip_address'
+	);
+
 	protected $throttle_id;
 	protected $ip_address;
 	protected $last_activity;

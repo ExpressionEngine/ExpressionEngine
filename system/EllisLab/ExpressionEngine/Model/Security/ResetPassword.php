@@ -33,7 +33,7 @@ class ResetPassword extends Model {
 
 	protected static $_relationships = array(
 		'Member'	=> array(
-			'type' => 'one_to_one'
+			'type' => 'belongsTo'
 		)
 	);
 

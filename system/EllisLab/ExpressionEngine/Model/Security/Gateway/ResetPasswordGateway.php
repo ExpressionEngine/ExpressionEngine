@@ -31,14 +31,6 @@ class ResetPasswordGateway extends Gateway {
 	protected static $_table_name = 'reset_password';
 	protected static $_primary_key = 'reset_id';
 
-	protected static $_related_gateways = array(
-		'member_id' => array(
-			'gateway' => 'MemberGateway',
-			'key' => 'member_id'
-		)
-	);
-
-	// Properties
 	protected $reset_id;
 	protected $member_id;
 	protected $resetcode;
