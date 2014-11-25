@@ -8,6 +8,7 @@ use OverflowException;
 
 use EllisLab\ExpressionEngine\Service\Model\DataStore;
 use EllisLab\ExpressionEngine\Service\Model\Association\Association;
+use EllisLab\ExpressionEngine\Service\Validation\Validator;
 
 
 class Model {
@@ -26,6 +27,11 @@ class Model {
 	 *
 	 */
 	protected $_frontend = NULL;
+
+	/**
+	 *
+	 */
+	protected $_validator = NULL;
 
 	/**
 	 *
@@ -311,14 +317,17 @@ class Model {
 	 */
 	public function validate()
 	{
-		return TRUE;
-
-		// check own validity
-		(new Validation($this->rules))->check($this->values);
-
-		foreach ($this->relationships as $name => $ship)
+		if ( ! isset($this->_validator))
 		{
-			$ship->validate();
+			return TRUE;
+		}
+
+		return $this->_validator->validate($this->getValues());
+
+		// TODO update relationships
+		foreach ($this->getAllAssociations() as $assoc)
+		{
+			$assoc->save();
 		}
 	}
 
@@ -443,6 +452,17 @@ class Model {
 		}
 
 		$this->_frontend = $frontend;
+	}
+
+	/**
+	 *
+	 */
+	public function setValidator(Validator $validator)
+	{
+		$this->_validator = $validator;
+
+		$rules = $this->getMetaData('validation_rules');
+		$validator->setRules($rules);
 	}
 
 	/**
