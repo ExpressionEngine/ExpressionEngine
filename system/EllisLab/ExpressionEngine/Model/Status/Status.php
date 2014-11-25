@@ -33,7 +33,10 @@ class Status extends Model {
 
 	protected static $_relationships = array(
 		'StatusGroup' => array(
-			'type' => 'many_to_one'
+			'type' => 'BelongsTo'
+		),
+		'Site' => array(
+			'type' => 'BelongsTo'
 		)
 	);
 

@@ -32,8 +32,11 @@ class StatusGroup extends Model {
 	protected static $_gateway_names = array('StatusGroupGateway');
 
 	protected static $_relationships = array(
+		'Site' => array(
+			'type'  => 'BelongsTo',
+		),
 		'Statuses' => array(
-			'type' => 'one_to_many',
+			'type'  => 'HasMany',
 			'model' => 'Status'
 		)
 	);
