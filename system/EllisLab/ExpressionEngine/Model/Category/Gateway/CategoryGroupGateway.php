@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Category\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -26,7 +26,8 @@ use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class CategoryGroupGateway extends RowDataGateway {
+class CategoryGroupGateway extends Gateway {
+
 	protected static $_table_name = 'category_groups';
 	protected static $_primary_key = 'group_id';
 	protected static $_related_gateways = array(

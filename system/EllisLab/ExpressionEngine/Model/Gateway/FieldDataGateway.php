@@ -1,9 +1,9 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
-class FieldDataGateway extends RowDataGateway {
+class FieldDataGateway extends Gateway {
 
 	protected $fields = array();
 

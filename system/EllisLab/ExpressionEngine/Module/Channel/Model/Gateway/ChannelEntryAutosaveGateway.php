@@ -1,9 +1,9 @@
 <?php
 namespace EllisLab\ExpressionEngine\Module\Channel\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
-class ChannelEntryAutosaveGateway extends RowDataGateway {
+class ChannelEntryAutosaveGateway extends Gateway {
 	protected static $meta = array(
 		'table_name' => 'channel_entries_autosave',
 		'primary_key' => 'entry_id',

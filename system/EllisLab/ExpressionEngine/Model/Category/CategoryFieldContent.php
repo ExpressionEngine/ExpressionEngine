@@ -27,10 +27,7 @@ use EllisLab\ExpressionEngine\Model\Field\FieldContent;
  * @link		http://ellislab.com
  */
 
-class CategoryFieldContent
-	extends DataTableFieldContent
-		 implements FieldContent {
-
+class CategoryFieldContent extends DataTableFieldContent implements FieldContent {
 
 	/**
 	 * Renders this field's content by replacing tags in a template.

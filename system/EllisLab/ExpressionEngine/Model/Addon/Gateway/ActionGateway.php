@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Addon\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -26,11 +26,11 @@ use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class ActionGateway extends RowDataGateway {
+class ActionGateway extends Gateway {
+
 	protected static $_table_name = 'actions';
 	protected static $_primary_key = 'action_id';
 
-	// Properties
 	protected $action_id;
 	protected $class;
 	protected $method;

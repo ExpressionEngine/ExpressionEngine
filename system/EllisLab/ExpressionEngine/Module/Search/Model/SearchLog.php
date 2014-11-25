@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Module\Search\Model;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 class SearchLog extends Model {
-	// Meta data
+
 	protected static $_primary_key = 'id';
 	protected static $_gateway_names = array('SearchLogGateway');
 

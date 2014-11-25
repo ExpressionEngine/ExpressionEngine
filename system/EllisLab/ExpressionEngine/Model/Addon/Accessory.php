@@ -27,10 +27,13 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @link		http://ellislab.com
  */
 class Accessory extends Model {
+
 	protected static $_primary_key = 'accessory_id';
 	protected static $_gateway_names = array('AccessoryGateway');
+	protected static $_validation_rules = array(
+		'accessory_id' => 'required'
+	);
 
-	// Propeties
 	protected $accessory_id;
 	protected $class;
 	protected $member_groups;

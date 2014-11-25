@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Log\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -28,16 +28,10 @@ use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class EmailConsoleCacheGateway extends RowDataGateway {
+class EmailConsoleCacheGateway extends Gateway {
 
 	protected static $_table_name = 'email_console_cache';
 	protected static $_primary_key = 'cache_id';
-	protected static $_related_entites = array(
-		'member_id' => array(
-			'gateway' => 'MemberGateway',
-			'key' => 'member_id'
-		)
-	);
 
 	// Properties
 	protected $cache_id;

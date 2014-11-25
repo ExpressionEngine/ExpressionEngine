@@ -28,13 +28,8 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  */
 class Snippet extends Model {
 
-	// Meta data
 	protected static $_primary_key = 'snippet_id';
 	protected static $_gateway_names = array('SnippetGateway');
-	protected static $_key_map = array(
-		'snippet_id' => 'SnippetGateway',
-		'site_id' => 'SnippetGateway'
-	);
 
 	protected static $_relationships = array(
 		'Site' => array(

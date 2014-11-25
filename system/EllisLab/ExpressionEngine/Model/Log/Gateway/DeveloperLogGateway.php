@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Log\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -26,7 +26,8 @@ use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class DeveloperLogGateway extends RowDataGateway {
+class DeveloperLogGateway extends Gateway {
+
 	protected static $_table_name = 'developer_log';
 	protected static $_primary_key = 'log_id';
 	protected static $_related_entites = array(

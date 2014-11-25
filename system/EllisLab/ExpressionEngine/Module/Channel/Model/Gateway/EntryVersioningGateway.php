@@ -1,9 +1,9 @@
 <?php
 namespace EllisLab\ExpressionEngine\Module\Channel\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
-class EntryVersioningGateway extends RowDataGateway {
+class EntryVersioningGateway extends Gateway {
 	protected static $meta = array(
 		'table_name' => 'entry_versioning',
 		'primary_key' => 'version_id',

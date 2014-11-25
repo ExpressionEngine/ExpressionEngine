@@ -27,6 +27,7 @@ use EllisLab\ExpressionEngine\Model\Gateway\FieldDataGateway;
  * @link		http://ellislab.com
  */
 class CategoryFieldDataGateway extends FieldDataGateway {
+
 	protected static $_table_name = 'category_field_data';
 	protected static $_primary_key = 'cat_id';
 	protected static $_field_table = 'category_fields';

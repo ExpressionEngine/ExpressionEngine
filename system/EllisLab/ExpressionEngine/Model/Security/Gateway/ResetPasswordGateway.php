@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Security\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -26,7 +26,8 @@ use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class ResetPasswordGateway extends RowDataGateway {
+class ResetPasswordGateway extends Gateway {
+
 	protected static $_table_name = 'reset_password';
 	protected static $_primary_key = 'reset_id';
 	protected static $_related_gateways = array(

@@ -6,6 +6,9 @@ class Gateway {
 
 	protected $_dirty = array();
 
+	/**
+	 *
+	 */
 	public static function getMetaData($item)
 	{
 		if ($item == 'field_list')
@@ -28,6 +31,9 @@ class Gateway {
 		return static::$$item;
 	}
 
+	/**
+	 *
+	 */
 	public function __set($key, $value)
 	{
 		if ($this->hasProperty($key))
@@ -44,28 +50,43 @@ class Gateway {
 		return (property_exists($this, $name) && $name[0] !== '_');
 	}
 
+	/**
+	 *
+	 */
 	public function setProperty($name, $value)
 	{
 		$this->$name = $value;
 		return $value;
 	}
 
+	/**
+	 *
+	 */
 	public function getTable()
 	{
 		return static::$_table_name;
 	}
 
+	/**
+	 *
+	 */
 	public function getPrimaryKey()
 	{
 		return static::$_primary_key;
 	}
 
+	/**
+	 *
+	 */
 	public function getId()
 	{
 		$pk = $this->getPrimaryKey();
 		return $this->$pk;
 	}
 
+	/**
+	 *
+	 */
 	public function fill($values)
 	{
 		foreach ($values as $key => $value)
@@ -77,6 +98,9 @@ class Gateway {
 		}
 	}
 
+	/**
+	 *
+	 */
 	public function getValues()
 	{
 		$values = get_object_vars($this);

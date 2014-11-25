@@ -27,6 +27,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @link		http://ellislab.com
  */
 class Status extends Model {
+
 	protected static $_primary_key = 'status_id';
 	protected static $_gateway_names = array('StatusGateway');
 	protected static $_key_map = array(

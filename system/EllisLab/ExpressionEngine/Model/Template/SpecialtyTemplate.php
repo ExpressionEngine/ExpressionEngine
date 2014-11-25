@@ -28,14 +28,8 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  */
 class SpecialtyTemplate extends Model {
 
-	// Meta data
 	protected static $_primary_key = 'template_id';
 	protected static $_gateway_names = array('SpecialtyTemplateGateway');
-
-	protected static $_key_map = array(
-		'template_id'	=> 'SpecialtyTemplateGateway',
-		'site_id'		=> 'SpecialtyTemplateGateway'
-	);
 
 	protected static $_relationships = array(
 		'Site' => array(

@@ -27,6 +27,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @link		http://ellislab.com
  */
 class StatusGroup extends Model {
+
 	protected static $_primary_key = 'group_id';
 	protected static $_gateway_names = array('StatusGroupGateway');
 	protected static $_key_map = array(

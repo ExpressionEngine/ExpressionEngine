@@ -27,6 +27,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @link		http://ellislab.com
  */
 class Stats extends Model {
+
 	protected static $_primary_key = 'stat_id';
 	protected static $_gateway_names = 'StatGateway';
 

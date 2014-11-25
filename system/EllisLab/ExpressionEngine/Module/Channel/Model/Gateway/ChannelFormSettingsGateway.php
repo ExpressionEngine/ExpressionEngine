@@ -1,9 +1,9 @@
 <?php
 namespace EllisLab\ExpressionEngine\Module\Channel\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
-class ChannelFormSettingsGateway extends RowDataGateway {
+class ChannelFormSettingsGateway extends Gateway {
 	protected static $meta = array(
 		'table_name' => 'channel_form_settings',
 		'primary_key' => 'channel_form_settings_id',

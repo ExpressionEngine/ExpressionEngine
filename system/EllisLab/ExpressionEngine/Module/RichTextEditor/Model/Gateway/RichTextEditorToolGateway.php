@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Module\RichTextEditor\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -28,7 +28,8 @@ use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class RichTextEditorToolGateway extends RowDataGateway {
+class RichTextEditorToolGateway extends Gateway {
+
 	protected static $_primary_key = 'tool_id';
 	protected static $_table_name = 'rte_tools';
 

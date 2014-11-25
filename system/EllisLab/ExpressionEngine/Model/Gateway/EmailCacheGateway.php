@@ -1,14 +1,14 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
 /**
  * Email Cache
  *
  * We store all email messages that are sent from the CP
  */
-class EmailCacheGateway extends RowDataGateway {
+class EmailCacheGateway extends Gateway {
 
 	protected static $_table_name = 'email_cache';
 	protected static $_primary_key = 'cache_id';

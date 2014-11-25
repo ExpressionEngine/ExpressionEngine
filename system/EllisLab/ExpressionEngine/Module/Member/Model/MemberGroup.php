@@ -89,14 +89,4 @@ class MemberGroup extends Model {
 	protected $include_in_memberlist;
 	protected $include_in_mailinglists;
 
-	public function getMembers()
-	{
-		return $this->getRelated('Members');
-	}
-
-	public function setMembers(array $members)
-	{
-		return $this->setRelated('Members', $members);
-	}
-
 }

@@ -1,9 +1,9 @@
 <?php
 namespace EllisLab\ExpressionEngine\Module\Channel\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
-class RelationshipGateway extends RowDataGateway {
+class RelationshipGateway extends Gateway {
 	protected static $meta = array(
 		'table_name' => 'relationships',
 		'primary_key' => 'relationship_id',

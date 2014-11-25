@@ -103,35 +103,4 @@ class Member extends Model {
 	protected $show_sidebar;
 	protected $pmember_id;
 
-	public function getMemberGroup()
-	{
-		return $this->getRelated('MemberGroup');
-	}
-
-	public function setMemberGroup(MemberGroup $group)
-	{
-		return $this->setRelated('MemberGroup', $group);
-	}
-
-	public function getResetPassword()
-	{
-		return $this->getRelated('ResetPassword');
-	}
-
-	public function setResetPassword(ResetPassword $reset_code)
-	{
-		return $this->setRelated('ResetPassword', $reset_code);
-	}
-
-
-	public function getChannelEntries()
-	{
-		return $this->getRelated('ChannelEntries');
-	}
-
-	public function setChannelEntries(array $entries)
-	{
-		return $this->setRelated('ChannelEntries', $entries);
-	}
-
 }

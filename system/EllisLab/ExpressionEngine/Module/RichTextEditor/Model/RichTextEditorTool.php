@@ -29,6 +29,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @link		http://ellislab.com
  */
 class RichTextEditorTool extends Model {
+
 	static protected $_primary_key = 'tool_id';
 	static protected $_gateway_names = array('RichTextEditorToolGateway');
 

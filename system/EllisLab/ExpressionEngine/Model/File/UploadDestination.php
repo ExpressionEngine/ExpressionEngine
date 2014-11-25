@@ -33,6 +33,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @link		http://ellislab.com
  */
 class UploadDestination extends Model {
+
 	protected static $_primary_key = 'id';
 	protected static $_gateway_names = array('UploadPrefGateway');
 

@@ -41,21 +41,7 @@ class TemplateGroup extends Model {
 			'type' => 'BelongsTo'
 		)
 	);
-/*
-	protected static $_relationships = array(
-		'Site' => array(
-			'type' => 'many_to_one'
-		),
-		'Templates' => array(
-			'type' => 'one_to_many',
-			'model' => 'Template'
-		),
-		'MemberGroups' => array(
-			'type' => 'many_to_many',
-			'model' => 'MemberGroup',
-		)
-	);
-*/
+
 	protected $group_id;
 	protected $site_id;
 	protected $group_name;

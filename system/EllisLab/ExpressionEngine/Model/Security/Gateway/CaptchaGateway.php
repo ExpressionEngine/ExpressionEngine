@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Model\Security\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -26,12 +26,11 @@ use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class CaptchaGateway extends RowDataGateway {
+class CaptchaGateway extends Gateway {
+
 	protected static $_table_name = 'captcha';
 	protected static $_primary_key = 'captcha_id';
 
-
-	// Properties
 	protected $captcha_id;
 	protected $date;
 	protected $ip_address;

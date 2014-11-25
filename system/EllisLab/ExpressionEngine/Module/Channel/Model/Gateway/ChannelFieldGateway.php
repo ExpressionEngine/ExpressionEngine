@@ -1,9 +1,9 @@
 <?php
 namespace EllisLab\ExpressionEngine\Module\Channel\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
-class ChannelFieldGateway extends RowDataGateway {
+class ChannelFieldGateway extends Gateway {
 
 	protected static $_table_name		= 'channel_fields';
 	protected static $_primary_key		= 'field_id';
