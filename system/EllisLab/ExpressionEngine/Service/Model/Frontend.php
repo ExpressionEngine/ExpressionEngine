@@ -15,10 +15,9 @@ class Frontend {
 
 	protected $store;
 
-	//todo hook up to di and remove "new".
-	public function __construct($store = NULL)
+	public function __construct($store)
 	{
-		$this->store = $store ?: new DataStore(ee()->db,  APPPATH.'config/model_aliases.php');
+		$this->store = $store;
 	}
 
 	/**
