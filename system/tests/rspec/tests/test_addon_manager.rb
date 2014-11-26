@@ -203,6 +203,51 @@ feature 'Add-On Manager' do
 		sorted_versions[-1].should == '1.0'
 	end
 
+	it 'retains filters on searching' do
+		# First by installed
+		@page.status_filter.click
+		@page.wait_until_status_filter_menu_visible
+		@page.status_filter_menu.click_link "installed"
+		no_php_js_errors
+
+		addon_name = @page.addon_names[0].text
+		@page.phrase_search.set addon_name
+		@page.search_submit_button.click
+		no_php_js_errors
+
+		# The filter should not change
+		@page.status_filter.text.should eq "status (installed)"
+		@page.heading.text.should eq 'Search Results we found 1 results for "' + addon_name + '"'
+		@page.phrase_search.value.should eq addon_name
+		@page.should have_text addon_name
+		@page.should have(2).addons
+	end
+
+	it 'retains sort on searching' do
+		# Sort by Version
+		@page.perpage_filter.click
+		@page.wait_until_perpage_filter_menu_visible
+		@page.perpage_filter_menu.click_link "50 results"
+		no_php_js_errors
+
+		versions = @page.versions.map {|version| version.text}
+
+		@page.version_header.find('a.sort').click
+		no_php_js_errors
+
+		addon_name = @page.addon_names[0].text
+		@page.phrase_search.set addon_name
+		@page.search_submit_button.click
+		no_php_js_errors
+
+		# The filter should not change
+		@page.version_header[:class].should eq 'highlight'
+		@page.heading.text.should eq 'Search Results we found 1 results for "' + addon_name + '"'
+		@page.phrase_search.value.should eq addon_name
+		@page.should have_text addon_name
+		@page.should have(2).addons
+	end
+
 	it 'can combine filters' do
 		# First by installed
 		@page.status_filter.click
