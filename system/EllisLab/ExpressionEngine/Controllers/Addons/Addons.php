@@ -405,7 +405,8 @@ class Addons extends CP_Controller {
 
 		if ($updated)
 		{
-			ee()->view->set_message('success', lang('addon_updated'), $updated);
+			$flashdata = (ee()->input->get('return')) ? TRUE : FALSE;
+			ee()->view->set_message('success', lang('addon_updated'), $updated, $flashdata);
 		}
 
 		if (ee()->input->get('return'))
@@ -472,7 +473,8 @@ class Addons extends CP_Controller {
 
 		if ( ! empty($installed))
 		{
-			ee()->view->set_message('success', lang('addons_installed'), lang('addons_installed_desc') . implode(', ', $installed));
+			$flashdata = (ee()->input->get('return')) ? TRUE : FALSE;
+			ee()->view->set_message('success', lang('addons_installed'), lang('addons_installed_desc') . implode(', ', $installed), $flashdata);
 		}
 
 		if (ee()->input->get('return'))
