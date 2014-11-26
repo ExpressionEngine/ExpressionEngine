@@ -129,7 +129,29 @@ class Addons extends CP_Controller {
 
 		$addons = $this->getAllAddons();
 
+		// Setup the Table
+		$table = Table::create(array('autosort' => TRUE, 'autosearch' => TRUE));
+		$table->setColumns(
+			array(
+				'addon',
+				'version',
+				'manage' => array(
+					'type'	=> Table::COL_TOOLBAR
+				),
+				array(
+					'type'	=> Table::COL_CHECKBOX
+				)
+			)
+		);
+
+		// Optionally set columns here too if you want
+		$this->base_url->setQueryStringVariable('sort_col', $table->sort_col);
+		$this->base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
+
 		$this->filters(count($addons));
+
+		// [Re]set the table's limit
+		$table->config['limit'] = $this->params['perpage'];
 
 		foreach($addons as $addon => $info)
 		{
@@ -214,19 +236,6 @@ class Addons extends CP_Controller {
 			);
 		}
 
-		$table = Table::create(array('autosort' => TRUE, 'autosearch' => TRUE, 'limit' => $this->params['perpage']));
-		$table->setColumns(
-			array(
-				'addon',
-				'version',
-				'manage' => array(
-					'type'	=> Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=> Table::COL_CHECKBOX
-				)
-			)
-		);
 		$table->setNoResultsText('no_addon_search_results');
 		$table->setData($data);
 
