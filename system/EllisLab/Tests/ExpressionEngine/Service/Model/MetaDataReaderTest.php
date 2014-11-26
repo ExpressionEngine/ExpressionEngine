@@ -41,12 +41,13 @@ namespace EllisLab\Tests\ExpressionEngine\Service\Model {
 
 		public function testGetGateways()
 		{
-			$actual = $this->reader->getGateways();
-			$expected = array(
-				'MetaDataTestStubGateway' => __NAMESPACE__.'\\Gateway\\MetaDataTestStubGateway'
-			);
+			$gates = $this->reader->getGateways();
 
-			$this->assertEquals($expected, $actual);
+			$name = 'MetaDataTestStubGateway';
+			$class = __NAMESPACE__.'\\Gateway\\'.$name;
+
+			$this->assertTrue(array_key_exists($name, $gates));
+			$this->assertInstanceOf($class, $gates[$name]);
 		}
 
 		public function testGetTables()

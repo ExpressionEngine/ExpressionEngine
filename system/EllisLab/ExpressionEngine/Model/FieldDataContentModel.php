@@ -12,6 +12,7 @@ abstract class FieldDataContentModel extends Model implements Content {
 	/**
 	 *
 	 */
+	/*
 	public function getFields()
 	{
 		if ( empty($this->fields) && $this->getId() !== NULL)
@@ -33,6 +34,6 @@ abstract class FieldDataContentModel extends Model implements Content {
 		}
 
 		return $this->fields;
-	}
+	}*/
 
 }
