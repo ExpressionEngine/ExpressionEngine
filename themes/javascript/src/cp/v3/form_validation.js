@@ -23,6 +23,8 @@ EE.cp.formValidation = {
 
 		this._bindButtonStateChange();
 		this._bindForms();
+		this._focusFirstError();
+		this._scrollGrid();
 	},
 
 	/**
@@ -44,6 +46,52 @@ EE.cp.formValidation = {
 
 			that._sendAjaxRequest($(this));
 		});
+	},
+
+	/**
+	 * Upon form validation error, set the focus on the first text field that
+	 * has a validation error; specifically set the cursor at the end, as
+	 * focus() will select the entire contents of the text box
+	 */
+	_focusFirstError: function() {
+
+		// Get the first container that has a text input inside it, then get
+		// the first text input
+		var textInput = $('.invalid')
+			.has('input[type=text], textarea')
+			.first()
+			.find('input[type=text], textarea')
+			.first();
+
+		// Bail if no field to focus
+		if (textInput.size() == 0)
+		{
+			return;
+		}
+
+		// Multiply by 2 to ensure the cursor always ends up at the end;
+		// Opera sometimes sees a carriage return as 2 characters
+		var strLength = textInput.val().length * 2;
+
+		// Focus and set cursor to the end of the string
+		textInput.focus();
+		textInput[0].setSelectionRange(strLength, strLength);
+	},
+
+	/**
+	 * If a field inside a Grid input has an error, the error could be off
+	 * screen on smaller screens, so we'll scroll the Grid to the first field
+	 * that has a problem
+	 */
+	_scrollGrid: function() {
+
+		var inputContainer = $('.invalid').has('input, select, textarea').first();
+
+		if (inputContainer.parents('.grid-publish').size() > 0)
+		{
+			var position = inputContainer.position();console.log(position);
+			inputContainer.parents('.tbl-wrap').scrollLeft(position.left);
+		}
 	},
 
 	/**
