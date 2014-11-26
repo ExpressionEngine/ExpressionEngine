@@ -21,10 +21,14 @@ class AddonManager < ControlPanelPage
 	element :no_results, 'tr.no-results'
 
 	elements :addons, 'div.box.snap form div.tbl-wrap table tr'
-	element :addon_name_header, 'th:first-child'
-	element :version_header, 'th:nth-child(2)'
-	element :manage_header, 'th:nth-child(3)'
-	element :checkbox_header, 'th:nth-child(4)'
+
+	element :addon_name_header, 'div.box.snap form div.tbl-wrap table tr th:first-child'
+	element :version_header, 'div.box.snap form div.tbl-wrap table tr th:nth-child(2)'
+	element :manage_header, 'div.box.snap form div.tbl-wrap table tr th:nth-child(3)'
+	element :checkbox_header, 'div.box.snap form div.tbl-wrap table tr th:nth-child(4)'
+
+	elements :addon_names, 'div.box.snap form div.tbl-wrap table tr td:first-child'
+	elements :versions, 'div.box.snap form div.tbl-wrap table tr td:nth-child(2)'
 
 	element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]'
 	element :action_submit_button, 'form fieldset.tbl-bulk-act button.submit'
