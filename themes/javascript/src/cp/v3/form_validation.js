@@ -23,6 +23,7 @@ EE.cp.formValidation = {
 
 		this._bindButtonStateChange();
 		this._bindForms();
+		this._focusFirstError();
 	},
 
 	/**
@@ -44,6 +45,36 @@ EE.cp.formValidation = {
 
 			that._sendAjaxRequest($(this));
 		});
+	},
+
+	/**
+	 * Upon form validation error, set the focus on the first text field that
+	 * has a validation error; specifically set the cursor at the end, as
+	 * focus() will select the entire contents of the text box
+	 */
+	_focusFirstError: function() {
+
+		// Get the first container that has a text input inside it, then get
+		// the first text input
+		var searchInput = $('.invalid')
+			.has('input[type=text], texarea')
+			.first()
+			.find('input[type=text], textarea')
+			.first();
+
+		// Bail if no field to focus
+		if (searchInput.size() == 0)
+		{
+			return;
+		}
+
+		// Multiply by 2 to ensure the cursor always ends up at the end;
+		// Opera sometimes sees a carriage return as 2 characters
+		var strLength = searchInput.val().length * 2;
+
+		// Focus and set cursor to the end of the string
+		searchInput.focus();
+		searchInput[0].setSelectionRange(strLength, strLength);
 	},
 
 	/**
