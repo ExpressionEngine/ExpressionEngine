@@ -100,7 +100,7 @@ feature 'Add-On Manager' do
 	end
 
 	it 'can filter by status' do
-		# First by installed
+		# By installed
 		@page.status_filter.click
 		@page.wait_until_status_filter_menu_visible
 		@page.status_filter_menu.click_link "installed"
@@ -112,7 +112,7 @@ feature 'Add-On Manager' do
 		@page.should have(5).pages
 		@page.pages.map {|name| name.text}.should == ["First", "1", "2", "Next", "Last"]
 
-		# Now by uninstalled
+		# By uninstalled
 		@page.status_filter.click
 		@page.wait_until_status_filter_menu_visible
 		@page.status_filter_menu.click_link "uninstalled"
@@ -123,6 +123,17 @@ feature 'Add-On Manager' do
 		@page.all('tr.not-installed').count().should == 20
 		@page.should_not have_pagination
 		@page.should have(21).addons
+
+		# By 'needs updates'
+		@page.status_filter.click
+		@page.wait_until_status_filter_menu_visible
+		@page.status_filter_menu.click_link "needs updates"
+		no_php_js_errors
+
+		@page.status_filter.text.should eq "status (needs updates)"
+		@page.should_not have_css 'tr.not-installed'
+		@page.should_not have_pagination
+		@page.should have(2).addons # Email + Header
 	end
 
 	it 'can filter by developer' do
@@ -427,5 +438,8 @@ feature 'Add-On Manager' do
 		@page.find('ul.toolbar li.manual a').click
 		no_php_js_errors
 	end
+
+	# @TODO - Test updating a single add-on
+	# @TODO - Test bulk updating add-ons
 
 end
