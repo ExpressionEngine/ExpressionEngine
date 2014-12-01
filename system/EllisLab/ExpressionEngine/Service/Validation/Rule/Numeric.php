@@ -28,10 +28,9 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  */
 class Numeric extends ValidationRule {
 
-	// TODO Having this and is_numeric is confusing
 	public function validate($value)
 	{
-		return (bool) preg_match( '/^[\-+]?[0-9]*\.?[0-9]+$/', $value);
+		return (bool) preg_match('/^[+-]?([0-9]*\.[0-9]+|[0-9]+\.[0-9]*|[0-9]+)$/', $value);
 	}
 
 }

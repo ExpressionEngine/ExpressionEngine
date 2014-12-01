@@ -125,4 +125,46 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase {
 		));
 		$this->assertFalse($result->isValid());
 	}
+
+	/**
+	 * @dataProvider numericDataProvider
+	 */
+	public function testNumeric($value, $expected)
+	{
+		$this->validator->setRules(array(
+			'number' => 'numeric'
+		));
+
+		$result = $this->validator->validate(array('number' => $value));
+		$this->assertEquals($expected, $result->isValid());
+	}
+
+	public function numericDataProvider()
+	{
+		return array(
+			// good!
+			array('5', TRUE),
+			array('-6', TRUE),
+			array('+6', TRUE),
+			array('0', TRUE),
+			array('-0', TRUE),
+			array('+0', TRUE),
+			array('.6', TRUE),
+			array('-.6', TRUE),
+			array('+.6', TRUE),
+			array('8.', TRUE),
+			array('-8.', TRUE),
+			array('+8.', TRUE),
+			array('8.23', TRUE),
+			array('-8.23', TRUE),
+			array('+8.23', TRUE),
+
+			// bad!
+			array('fortran', FALSE),
+			array('2.8.4', FALSE),
+			array('2-4', FALSE),
+			array('2e4', FALSE),
+			array('0x24', FALSE)
+		);
+	}
 }
