@@ -77,12 +77,7 @@ class Addons_model extends CI_Model {
 	{
 		$this->load->helper('directory');
 
-		static $info = array();
-
-		if ( ! empty($info))
-		{
-			return $info;
-		}
+		$info = array();
 
 		$ext_len = strlen('.php');
 		$plugins = array();
