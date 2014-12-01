@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class Module extends Model {
 
 	protected static $_primary_key = 'module_id';
-	protected static $_gateway_names = array('ModuleGateway');
+	protected static $_table_name = 'modules';
 
 	protected static $_validation_rules = array(
 		'has_cp_backend'     => 'enum[y,n]',

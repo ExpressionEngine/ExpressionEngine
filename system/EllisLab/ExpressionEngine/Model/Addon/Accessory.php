@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class Accessory extends Model {
 
 	protected static $_primary_key = 'accessory_id';
-	protected static $_gateway_names = array('AccessoryGateway');
+	protected static $_table_name = 'accessories';
 
 	protected $accessory_id;
 	protected $class;

@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class CpLog extends Model {
 
 	protected static $_primary_key = 'id';
-	protected static $_gateway_names = array('CpLogGateway');
+	protected static $_table_name = 'cp_log';
 
 	protected static $_relationships = array(
 		'Site' => array(

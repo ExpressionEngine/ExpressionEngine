@@ -28,8 +28,8 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  */
 class RememberMe extends Model {
 
-	public static $_primary_key = 'remember_me_id';
-	public static $_gateway_names = array('RememberMeGateway');
+	protected static $_primary_key = 'remember_me_id';
+	protected static $_table_name = 'remember_me';
 
 	protected static $relationships = array(
 		'Member' => array(
@@ -40,12 +40,12 @@ class RememberMe extends Model {
 		)
 	);
 
-	public $remember_me_id;
-	public $member_id;
-	public $ip_address;
-	public $user_agent;
-	public $admin_sess;
-	public $site_id;
-	public $expiration;
-	public $last_refresh;
+	protected $remember_me_id;
+	protected $member_id;
+	protected $ip_address;
+	protected $user_agent;
+	protected $admin_sess;
+	protected $site_id;
+	protected $expiration;
+	protected $last_refresh;
 }

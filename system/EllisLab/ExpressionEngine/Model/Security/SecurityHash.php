@@ -1,7 +1,7 @@
 <?php
-namespace EllisLab\ExpressionEngine\Model\Session\Gateway;
+namespace EllisLab\ExpressionEngine\Model\Security;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway;
+use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -18,25 +18,28 @@ use EllisLab\ExpressionEngine\Service\Model\Gateway;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Remember Me Table
+ * ExpressionEngine Throttle Model
  *
  * @package		ExpressionEngine
- * @subpackage	Session\Gateway
+ * @subpackage	Security
  * @category	Model
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class RememberMeGateway extends Gateway {
+class SecurityHash extends Model {
 
-	protected static $_table_name = 'remember_me';
-	protected static $_primary_key = 'remember_me_id';
+	protected static $_primary_key = 'hash_id';
+	protected static $_table_name = 'security_hashes';
 
-	public $remember_me_id;
-	public $member_id;
-	public $ip_address;
-	public $user_agent;
-	public $admin_sess;
-	public $site_id;
-	public $expiration;
-	public $last_refresh;
+	protected static $_relationships = array(
+		'Session' => array(
+			'type' => 'belongsTo'
+		)
+	);
+
+	protected $hash_id;
+	protected $date;
+	protected $session_id;
+	protected $hash;
+	protected $used;
 }

@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class Session extends Model {
 
 	protected static $_primary_key = 'session_id';
-	protected static $_gateway_names = array('SessionGateway');
+	protected static $_table_name = 'sessions';
 
 	protected static $relationships = array(
 		'Member' => array(

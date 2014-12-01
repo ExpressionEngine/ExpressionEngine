@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class Throttle extends Model {
 
 	protected static $_primary_key = 'throttle_id';
-	protected static $_gateway_names = array('ThrottleGateway');
+	protected static $_table_name = 'throttle';
 
 	protected static $_validation_rules = array(
 		'ip_address' => 'ip_address'

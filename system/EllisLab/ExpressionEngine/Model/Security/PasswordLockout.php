@@ -28,8 +28,8 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  */
 class PasswordLockout extends Model {
 
-	protected static $_primary_key = 'throttle_id';
-	protected static $_gateway_names = array('PasswordLockoutGateway');
+	protected static $_primary_key = 'lockout_id';
+	protected static $_table_name = 'password_lockout';
 
 	protected static $_validation_rules = array(
 		'ip_address' => 'ip_address'

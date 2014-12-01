@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class ResetPassword extends Model {
 
 	protected static $_primary_key = 'reset_id';
-	protected static $_gateway_names = array('ResetPasswordGateway');
+	protected static $_table_name = 'reset_password';
 
 	protected static $_relationships = array(
 		'Member'	=> array(

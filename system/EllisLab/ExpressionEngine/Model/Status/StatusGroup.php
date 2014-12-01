@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class StatusGroup extends Model {
 
 	protected static $_primary_key = 'group_id';
-	protected static $_gateway_names = array('StatusGroupGateway');
+	protected static $_table_name = 'status_groups';
 
 	protected static $_relationships = array(
 		'Site' => array(

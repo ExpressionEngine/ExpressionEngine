@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class EmailConsoleCache extends Model {
 
 	protected static $_primary_key = 'cache_id';
-	protected static $_gateway_names = array('EmailConsoleCacheGateway');
+	protected static $_table_name = 'email_console_cache';
 
 	protected static $_relationships = array(
 		'Member' => array(

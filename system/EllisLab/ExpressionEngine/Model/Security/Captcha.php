@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class Captcha extends Model {
 
 	protected static $_primary_key = 'captcha_id';
-	protected static $_gateway_names = array('CaptchaGateway');
+	protected static $_table_name = 'captcha';
 
 	protected static $_validation_rules = array(
 		'ip_address' => 'ip_address'
