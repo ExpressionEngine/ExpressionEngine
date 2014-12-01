@@ -402,7 +402,11 @@ class Addons extends CP_Controller {
 					{
 						// @TODO replace this with an ee('Model') implementation
 						ee()->db->update('fieldtypes', array('version' => $FT->info['version']), array('name' => $addon));
-						$updated[$addon] = $fieldtype['name'];
+
+						if ( ! isset($updated[$addon]))
+						{
+							$updated[$addon] = $fieldtype['name'];
+						}
 					}
 				}
 			}
@@ -416,7 +420,40 @@ class Addons extends CP_Controller {
 				$Extension = new $class_name();
 				$Extension->update_extension($extension['version']);
 				ee()->extensions->version_numbers[$class_name] = $Extension->version;
-				$updated[$addon] = $extension['name'];
+
+				if ( ! isset($updated[$addon]))
+				{
+					$updated[$addon] = $extension['name'];
+				}
+			}
+
+			$plugin = $this->getPlugins($addon);
+			if ( ! empty($plugin)
+				&& $plugin['installed'] === TRUE
+				&& array_key_exists('update', $plugin))
+			{
+
+				$info = $plugin['info'];
+
+				$typography = 'n';
+				if (array_key_exists('pi_typography', $info) && $info['pi_typography'] == TRUE)
+				{
+					$typography = 'y';
+				}
+
+				$model = ee('Model')->get('Plugin')
+					->filter('plugin_package', $plugin['package'])
+					->first();
+				$model->plugin_name = $plugin['name'];
+				$model->plugin_package = $plugin['package'];
+				$model->plugin_version = $info['pi_version'];
+				$model->is_typography_related = $typography;
+				$model->save();
+
+				if ( ! isset($updated[$addon]))
+				{
+					$updated[$addon] = $plugin['name'];
+				}
 			}
 		}
 
@@ -501,7 +538,7 @@ class Addons extends CP_Controller {
 				$model = ee('Model')->make('Plugin');
 				$model->plugin_name = $plugin['name'];
 				$model->plugin_package = $plugin['package'];
-				$model->plugin_version = $plugin['version'];
+				$model->plugin_version = $info['pi_version'];
 				$model->is_typography_related = $typography;
 				$model->save();
 
@@ -807,9 +844,17 @@ class Addons extends CP_Controller {
 				'info'			=> $info // Cache this
 			);
 
-			if (ee('Model')->get('Plugin')->filter('plugin_package', $plugin)->count() > 0)
+			$model = ee('Model')->get('Plugin')
+				->filter('plugin_package', $plugin)
+				->first();
+			if ( ! is_null($model))
 			{
 				$data['installed'] = TRUE;
+				if (version_compare($info['pi_version'], $model->plugin_version, '>'))
+				{
+					$data['update'] = $info['pi_version'];
+					$data['version'] = $model->plugin_version;
+				}
 			}
 
 			if (is_null($name))
