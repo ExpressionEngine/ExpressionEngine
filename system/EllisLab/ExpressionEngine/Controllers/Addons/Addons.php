@@ -555,7 +555,7 @@ class Addons extends CP_Controller {
 				$name = $this->uninstallModule($addon);
 				if ($name)
 				{
-					$installed[$addon] = $name;
+					$uninstalled[$addon] = $name;
 				}
 			}
 
