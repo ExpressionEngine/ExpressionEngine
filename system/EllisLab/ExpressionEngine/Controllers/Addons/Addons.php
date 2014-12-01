@@ -801,7 +801,7 @@ class Addons extends CP_Controller {
 				'info'			=> $info // Cache this
 			);
 
-			if (ee('Model')->get('Plugin')->filter('plugin_package', $plugin)->count())
+			if (ee('Model')->get('Plugin')->filter('plugin_package', $plugin)->count() > 0)
 			{
 				$data['installed'] = TRUE;
 			}
