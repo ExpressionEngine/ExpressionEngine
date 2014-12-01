@@ -505,7 +505,10 @@ class Addons extends CP_Controller {
 				$model->is_typography_related = $typography;
 				$model->save();
 
-				$installed[$addon] = $plugin['name'];
+				if ( ! isset($installed[$addon]))
+				{
+					$installed[$addon] = $plugin['name'];
+				}
 			}
 		}
 
@@ -583,7 +586,10 @@ class Addons extends CP_Controller {
 					->filter('plugin_package', $addon)
 					->delete();
 
-				$uninstalled[$addon] = $plugin['name'];
+				if ( ! isset($installed[$addon]))
+				{
+					$uninstalled[$addon] = $plugin['name'];
+				}
 			}
 		}
 
