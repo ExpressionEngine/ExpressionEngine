@@ -24,18 +24,14 @@
  * @link			http://ellislab.com
  */
 
-$plugin_info = array(
-	'pi_name'		=> 'Markdown',
-	'pi_version'	=> '1.0',
-	'pi_author'		=> 'EllisLab',
-	'pi_author_url'	=> 'http://ellislab.com/',
-	'pi_description'=> 'Parse text using Markdown and Smartypants',
-	'pi_usage'		=> Markdown::usage(),
-	'pi_typography' => TRUE
-);
-
-
 class Markdown {
+
+	public static $name        = 'Markdown';
+	public static $version     = '1.0';
+	public static $author      = 'EllisLab';
+	public static $author_url  = 'http://ellislab.com/';
+	public static $description = 'Parse text using Markdown and Smartypants';
+	public static $typography  = TRUE;
 
 	public $return_data;
 
