@@ -146,35 +146,55 @@ class Addons_model extends CI_Model {
 
 		foreach ($plugins as $plugin)
 		{
-			// A plugin might already be in use for an accessory or
-			// other function. If so, we still need the $plugin_info,
-			// so we'll open it up and harvest what we need.
-			if (in_array($plugin['path'], get_included_files()))
+			$class_name = ucfirst($plugin['name']);
+
+			if ( ! class_exists($class_name))
 			{
-				$contents = file_get_contents($plugin['path']);
-				$start = strpos($contents, '$plugin_info');
-				$length = strpos($contents, ');', $start) - $start + 2;
-				eval(substr($contents, $start, $length));
-			}
-			else
-			{
-				// From php.net: "Because include is a special language
-				// construct, parentheses are not needed around its
-				// argument. Take care when comparing return value."
-				$included = @include_once $plugin['path'];
-				if ($included === FALSE)
+				if (ee()->config->item('debug') == 2
+					OR (ee()->config->item('debug') == 1
+						AND ee()->session->userdata('group_id') == 1))
 				{
+					include($plugin['path']);
+				}
+				else
+				{
+					@include($plugin['path']);
+				}
+
+				if ( ! class_exists($class_name))
+				{
+					trigger_error(str_replace(array('%c', '%f'), array(htmlentities($class_name), htmlentities($plugin['path'])), lang('plugin_class_does_not_exist')));
 					continue;
 				}
 			}
 
-			if ( ! isset($plugin_info))
+			$properties = array('name', 'version', 'author', 'author_url', 'description', 'typography');
+
+			foreach ($properties as $property)
 			{
-				ee()->logger->developer('The plugin at '.$plugin['path'].' is missing the $plugin_info array.', TRUE);
+				if ( ! property_exists($class_name, $property))
+				{
+					ee()->logger->developer('Error: the plugin "' . $plugin["name"] . '" is missing a static property "' . $property . '".');
+					continue 2;
+				}
+			}
+
+			if ( ! method_exists($class_name, 'usage'))
+			{
+				ee()->logger->developer('Error: the plugin "' . $plugin["name"] . '" is missing the usage() static method.');
 				continue;
 			}
 
-			$plugin_info['installed_path'] = $plugin['path'];
+			$plugin_info = array(
+				'installed_path' => $plugin['path'],
+				'pi_name'        => $class_name::$name,
+				'pi_version'     => $class_name::$version,
+				'pi_author'      => $class_name::$author,
+				'pi_author_url'  => $class_name::$author_url,
+				'pi_description' => $class_name::$description,
+				'pi_usage'       => $class_name::usage(),
+				'pi_typography'  => $class_name::$typography
+			);
 
 			$info[$plugin['name']] = $plugin_info;
 		}
