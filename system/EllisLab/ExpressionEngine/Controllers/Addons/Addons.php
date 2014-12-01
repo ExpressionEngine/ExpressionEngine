@@ -563,7 +563,7 @@ class Addons extends CP_Controller {
 			if ( ! empty($fieldtype) && $fieldtype['installed'] === TRUE)
 			{
 				$name = $this->uninstallFieldtype($addon);
-				if ($name && ! isset($installed[$addon]))
+				if ($name && ! isset($uninstalled[$addon]))
 				{
 					$uninstalled[$addon] = $name;
 				}
@@ -573,7 +573,7 @@ class Addons extends CP_Controller {
 			if ( ! empty($extension) && $extension['installed'] === TRUE)
 			{
 				$name = $this->uninstallExtension($addon);
-				if ($name && ! isset($installed[$addon]))
+				if ($name && ! isset($uninstalled[$addon]))
 				{
 					$uninstalled[$addon] = $name;
 				}
@@ -586,7 +586,7 @@ class Addons extends CP_Controller {
 					->filter('plugin_package', $addon)
 					->delete();
 
-				if ( ! isset($installed[$addon]))
+				if ( ! isset($uninstalled[$addon]))
 				{
 					$uninstalled[$addon] = $plugin['name'];
 				}
