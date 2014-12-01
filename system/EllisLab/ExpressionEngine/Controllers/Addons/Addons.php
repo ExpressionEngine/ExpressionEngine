@@ -75,8 +75,9 @@ class Addons extends CP_Controller {
 	{
 		// Status
 		$status = ee('Filter')->make('filter_by_status', 'filter_by_status', array(
-			'installed'		=> strtolower(lang('installed')),
-			'uninstalled'	=> strtolower(lang('uninstalled'))
+			'installed'   => strtolower(lang('installed')),
+			'uninstalled' => strtolower(lang('uninstalled')),
+			'updates'     => strtolower(lang('needs_updates'))
 		));
 		$status->disableCustomValue();
 
@@ -113,6 +114,10 @@ class Addons extends CP_Controller {
 		elseif (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
+		}
+		elseif (ee()->input->post('bulk_action') == 'update')
+		{
+			$this->update(ee()->input->post('selection'));
 		}
 
 		ee()->view->cp_page_title = lang('addon_manager');
@@ -158,10 +163,12 @@ class Addons extends CP_Controller {
 			// Filter based on status
 			if (isset($this->params['filter_by_status']))
 			{
-				if ((strtolower($this->params['filter_by_status']) == 'installed' &&
-					$info['installed'] == FALSE) ||
-					(strtolower($this->params['filter_by_status']) == 'uninstalled' &&
-					$info['installed'] == TRUE))
+				if ((strtolower($this->params['filter_by_status']) == 'installed'
+					 && $info['installed'] == FALSE)
+				     ||	(strtolower($this->params['filter_by_status']) == 'uninstalled'
+						 && $info['installed'] == TRUE)
+				     ||	(strtolower($this->params['filter_by_status']) == 'updates'
+						 && ! isset($info['update'])))
 				{
 					continue;
 				}
@@ -210,7 +217,7 @@ class Addons extends CP_Controller {
 				{
 					$toolbar['txt-only'] = array(
 						'href' => cp_url('addons/update/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
-						'title' => lang('update'),
+						'title' => strtolower(lang('update')),
 						'class' => 'add',
 						'content' => sprintf(lang('update_to_version'), $this->formatVersionNumber($info['update']))
 					);
@@ -342,71 +349,81 @@ class Addons extends CP_Controller {
 	 * @param str $addon The name of the add-on to update
 	 * @return void
 	 */
-	public function update($addon)
+	public function update($addons)
 	{
-		$updated = '';
-
-		$module = $this->getModules($addon);
-		if ( ! empty($module)
-			&& $module['installed'] === TRUE
-			&& array_key_exists('update', $module))
+		if ( ! is_array($addons))
 		{
-			$installed = ee()->addons->get_installed('modules', TRUE);
-
-			require_once $installed[$addon]['path'].'upd.'.$addon.'.php';
-
-			$class = ucfirst($addon).'_upd';
-			$version = $installed[$addon]['module_version'];
-
-			$this->load->add_package_path($installed[$addon]['path']);
-
-			$UPD = new $class;
-			$UPD->_ee_path = APPPATH;
-
-			if ($UPD->update($version) !== FALSE)
-			{
-				$module = ee('Model')->get('Module', $installed[$addon]['module_id'])
-					->first();
-				$module->module_version = $UPD->version;
-				$module->save();
-
-				$updated = '<b>' . $module['name'] . '</b> ' . lang('updated_to_version') . ' ' . $UPD->version;
-			}
+			$addons = array($addons);
 		}
 
-		$fieldtype = $this->getFieldtypes($addon);
-		if ( ! empty($fieldtype)
-			&& $fieldtype['installed'] === TRUE
-			&& array_key_exists('update', $fieldtype))
+		$updated = array();
+
+		foreach ($addons as $addon)
 		{
-			$FT = ee()->api_channel_fields->setup_handler($addon, TRUE);
-			if ($FT->update($fieldtype['version']) !== FALSE)
+			$module = $this->getModules($addon);
+			if ( ! empty($module)
+				&& $module['installed'] === TRUE
+				&& array_key_exists('update', $module))
 			{
-				if (ee()->api_channel_fields->apply('update', array($fieldtype['version'])) !== FALSE)
+				$installed = ee()->addons->get_installed('modules', TRUE);
+
+				require_once $installed[$addon]['path'].'upd.'.$addon.'.php';
+
+				$class = ucfirst($addon).'_upd';
+				$version = $installed[$addon]['module_version'];
+
+				$this->load->add_package_path($installed[$addon]['path']);
+
+				$UPD = new $class;
+				$UPD->_ee_path = APPPATH;
+
+				if ($UPD->update($version) !== FALSE)
 				{
-					// @TODO replace this with an ee('Model') implementation
-					ee()->db->update('fieldtypes', array('version' => $FT->info['version']), array('name' => $addon));
-					$updated = '<b>' . $fieldtype['name'] . '</b> ' . lang('updated_to_version') . ' ' . $FT->info['version'];
+					$module = ee('Model')->get('Module', $installed[$addon]['module_id'])
+						->first();
+					$module->module_version = $UPD->version;
+					$module->save();
+
+					$name = (lang($addon.'_module_name') == FALSE) ? ucfirst($module->module_name) : lang($addon.'_module_name');
+
+					$updated[$addon] = $name;
 				}
 			}
+
+			$fieldtype = $this->getFieldtypes($addon);
+			if ( ! empty($fieldtype)
+				&& $fieldtype['installed'] === TRUE
+				&& array_key_exists('update', $fieldtype))
+			{
+				$FT = ee()->api_channel_fields->setup_handler($addon, TRUE);
+				if ($FT->update($fieldtype['version']) !== FALSE)
+				{
+					if (ee()->api_channel_fields->apply('update', array($fieldtype['version'])) !== FALSE)
+					{
+						// @TODO replace this with an ee('Model') implementation
+						ee()->db->update('fieldtypes', array('version' => $FT->info['version']), array('name' => $addon));
+						$updated[$addon] = $fieldtype['name'];
+					}
+				}
+			}
+
+			$extension = $this->getExtensions($addon);
+			if ( ! empty($extension)
+				&& $extension['installed'] === TRUE
+				&& array_key_exists('update', $extension))
+			{
+				$class_name = $extension['class'];
+				$Extension = new $class_name();
+				$Extension->update_extension($extension['version']);
+				ee()->extensions->version_numbers[$class_name] = $Extension->version;
+				$updated[$addon] = $extension['name'];
+			}
 		}
 
-		$extension = $this->getExtensions($addon);
-		if ( ! empty($extension)
-			&& $extension['installed'] === TRUE
-			&& array_key_exists('update', $extension))
-		{
-			$class_name = $extension['class'];
-			$Extension = new $class_name();
-			$Extension->update_extension($extension['version']);
-			ee()->extensions->version_numbers[$class_name] = $Extension->version;
-			$updated = '<b>' . $extension['name'] . '</b> ' . lang('updated_to_version') . ' ' . $Extension->version;
-		}
-
-		if ($updated)
+		if ( ! empty($updated))
 		{
 			$flashdata = (ee()->input->get('return')) ? TRUE : FALSE;
-			ee()->view->set_message('success', lang('addon_updated'), $updated, $flashdata);
+			ee()->view->set_message('success', lang('addons_updated'), lang('addons_updated_desc') . implode(', ', $updated), $flashdata);
 		}
 
 		if (ee()->input->get('return'))

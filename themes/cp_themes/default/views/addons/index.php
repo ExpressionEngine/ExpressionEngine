@@ -47,6 +47,7 @@
 								<option value="">-- <?=lang('with_selected')?> --</option>
 								<option value="install"><?=lang('install')?></option>
 								<option value="remove"><?=lang('remove')?></option>
+								<option value="update"><?=lang('update')?></option>
 							</select>
 							<button class="btn submit" rel="modal-confirm-all"><?=lang('submit')?></button>
 						</fieldset>
