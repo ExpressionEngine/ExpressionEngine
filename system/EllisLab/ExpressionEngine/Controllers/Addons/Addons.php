@@ -784,9 +784,9 @@ class Addons extends CP_Controller {
 	private function getPlugins($name = NULL)
 	{
 		ee()->load->model('addons_model');
-		$plugins = ee()->addons_model->get_plugins($name);
+		$plugins = array();
 
-		foreach ($plugins as $plugin => $info)
+		foreach (ee()->addons_model->get_plugins($name) as $plugin => $info)
 		{
 			$developer = (strpos($info['installed_path'], 'third_party') === FALSE) ? 'native' : 'third_party';
 
