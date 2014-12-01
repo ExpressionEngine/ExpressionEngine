@@ -32,7 +32,7 @@ feature 'Content & Design Settings' do
     @page.auto_assign_cat_parents_n.click
     @page.submit
 
-    @page.should have_text 'Preferences Updated'
+    @page.should have_text 'Preferences updated'
     @page.new_posts_clear_caches_n.checked?.should == true
     @page.enable_sql_caching_y.checked?.should == true
     @page.auto_assign_cat_parents_n.checked?.should == true

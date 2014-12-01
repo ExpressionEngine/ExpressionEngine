@@ -136,7 +136,7 @@ feature 'Security & Privacy Settings' do
     cp_session
     @page.load
 
-    @page.should have_text 'Preferences Updated'
+    @page.should have_text 'Preferences updated'
     @page.cp_session_type.value.should == 's'
     @page.website_session_type.value.should == 's'
     @page.cookie_domain.value.should == '.yourdomain.com'

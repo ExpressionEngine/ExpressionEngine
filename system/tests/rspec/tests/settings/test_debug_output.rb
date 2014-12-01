@@ -74,7 +74,7 @@ feature 'Debugging & Output Settings' do
     @page.max_caches.set '300'
     @page.submit
 
-    @page.should have_text 'Preferences Updated'
+    @page.should have_text 'Preferences updated'
     @page.debug_n.checked?.should == true
     @page.show_profiler_y.checked?.should == true
     @page.template_debugging_y.checked?.should == true

@@ -100,7 +100,7 @@ feature 'Outgoing Email Settings' do
     @page.word_wrap_n.click
     @page.submit
 
-    @page.should have_text 'Preferences Updated'
+    @page.should have_text 'Preferences updated'
     @page.webmaster_email.value.should == 'test@test.com'
     @page.webmaster_name.value.should == 'Trey Anastasio'
     @page.email_charset.value.should == 'somecharset'

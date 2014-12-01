@@ -41,14 +41,17 @@
 						<?php if (isset($filters)) echo $filters; ?>
 						<?php $this->view('_shared/table', $table); ?>
 						<?php $this->view('_shared/pagination'); ?>
+						<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
 						<fieldset class="tbl-bulk-act">
 							<select name="bulk_action">
 								<option value="">-- <?=lang('with_selected')?> --</option>
 								<option value="install"><?=lang('install')?></option>
 								<option value="remove"><?=lang('remove')?></option>
+								<option value="update"><?=lang('update')?></option>
 							</select>
 							<button class="btn submit" rel="modal-confirm-all"><?=lang('submit')?></button>
 						</fieldset>
+						<?php endif; ?>
 					<?=form_close()?>
 				</div>
 			</div>
