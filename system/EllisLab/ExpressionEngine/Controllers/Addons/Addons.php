@@ -726,7 +726,7 @@ class Addons extends CP_Controller {
 			$vars['parameters'] = $plugin['info']['pi_usage']['parameters'];
 		}
 
-		ee()->view->cp_heading = $vars['name'] . ' ' . lang('usage');
+		ee()->view->cp_heading = $vars['name'] . ' ' . lang('manual');
 
 		ee()->view->cp_breadcrumbs = array(
 			cp_url('addons') => lang('addon_manager')
