@@ -169,19 +169,31 @@ class Addons_model extends CI_Model {
 			}
 
 			$properties = array('name', 'version', 'author', 'author_url', 'description', 'typography');
+			$error = FALSE;
+			$missing_properties = array();
 
 			foreach ($properties as $property)
 			{
 				if ( ! property_exists($class_name, $property))
 				{
-					ee()->logger->developer('Error: the plugin "' . $plugin["name"] . '" is missing a static property "' . $property . '".');
-					continue 2;
+					$missing_properties[] = $property;
 				}
+			}
+
+			if ( ! empty($missing_properties))
+			{
+				ee()->logger->developer('Error: the plugin "' . $plugin["name"] . '" is missing the following static properties: ' . implode(', ', $missing_properties) . '.');
+				$error = TRUE;
 			}
 
 			if ( ! method_exists($class_name, 'usage'))
 			{
 				ee()->logger->developer('Error: the plugin "' . $plugin["name"] . '" is missing the usage() static method.');
+				$error = TRUE;
+			}
+
+			if ($error)
+			{
 				continue;
 			}
 
