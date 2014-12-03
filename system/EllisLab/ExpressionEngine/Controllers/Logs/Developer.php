@@ -58,7 +58,7 @@ class Developer extends Logs {
 		$this->base_url->path = 'logs/developer';
 		ee()->view->cp_page_title = lang('view_developer_log');
 
-		$logs = ee()->api->get('DeveloperLog');
+		$logs = ee('Model')->get('DeveloperLog');
 
 		if ( ! empty(ee()->view->search_value))
 		{

@@ -84,7 +84,7 @@ feature 'CAPTCHA Settings' do
     @page.captcha_path.set @upload_path
     @page.submit
 
-    @page.should have_text 'Preferences Updated'
+    @page.should have_text 'Preferences updated'
     @page.captcha_font_n.checked?.should == true
     @page.captcha_rand_n.checked?.should == true
     @page.captcha_require_members_y.checked?.should == true

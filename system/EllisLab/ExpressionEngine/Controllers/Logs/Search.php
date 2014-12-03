@@ -60,7 +60,7 @@ class Search extends Logs {
 		$this->base_url->path = 'logs/search';
 		ee()->view->cp_page_title = lang('view_search_log');
 
-		$logs = ee()->api->get('SearchLog')->with('Site');
+		$logs = ee('Model')->get('SearchLog')->with('Site');
 
 		if ( ! empty(ee()->view->search_value))
 		{
@@ -90,7 +90,7 @@ class Search extends Logs {
 
 		if ( ! empty($this->params['filter_by_username']))
 		{
-			$logs = $logs->filter('member_id', $this->params['filter_by_username']);
+			$logs = $logs->filter('member_id', 'IN', $this->params['filter_by_username']);
 		}
 
 		if ( ! empty($this->params['filter_by_site']))

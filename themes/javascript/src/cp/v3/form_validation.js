@@ -23,6 +23,75 @@ EE.cp.formValidation = {
 
 		this._bindButtonStateChange();
 		this._bindForms();
+		this._focusFirstError();
+		this._scrollGrid();
+	},
+
+	/**
+	 * Bind inputs to the validation routine. Text inputs will trigger a
+	 * validation request on blur, while others will trigger on change.
+	 *
+	 * @param	{jQuery object}	container	jQuery object of container of elements
+	 */
+	bindInputs: function(container) {
+
+		var that = this;
+
+		$('input[type=text], input[type=password], textarea', container).blur(function() {
+
+			that._sendAjaxRequest($(this));
+		});
+
+		$('input[type=checkbox], input[type=radio], select', container).change(function() {
+
+			that._sendAjaxRequest($(this));
+		});
+	},
+
+	/**
+	 * Upon form validation error, set the focus on the first text field that
+	 * has a validation error; specifically set the cursor at the end, as
+	 * focus() will select the entire contents of the text box
+	 */
+	_focusFirstError: function() {
+
+		// Get the first container that has a text input inside it, then get
+		// the first text input
+		var textInput = $('.invalid')
+			.has('input[type=text], textarea')
+			.first()
+			.find('input[type=text], textarea')
+			.first();
+
+		// Bail if no field to focus
+		if (textInput.size() == 0)
+		{
+			return;
+		}
+
+		// Multiply by 2 to ensure the cursor always ends up at the end;
+		// Opera sometimes sees a carriage return as 2 characters
+		var strLength = textInput.val().length * 2;
+
+		// Focus and set cursor to the end of the string
+		textInput.focus();
+		textInput[0].setSelectionRange(strLength, strLength);
+	},
+
+	/**
+	 * If a field inside a Grid input has an error, the error could be off
+	 * screen on smaller screens, so we'll scroll the Grid to the first field
+	 * that has a problem
+	 */
+	_scrollGrid: function() {
+
+		var inputContainer = $('.invalid').has('input, select, textarea').first();
+
+		if (inputContainer.parents('.grid-publish').size() > 0)
+		{
+			var position = inputContainer.position();console.log(position);
+			inputContainer.parents('.tbl-wrap').scrollLeft(position.left);
+		}
 	},
 
 	/**
@@ -64,8 +133,7 @@ EE.cp.formValidation = {
 			var form = $(this),
 				button = form.find('.form-ctrls input.btn');
 
-			that._registerTextInputs(form);
-			that._registerNonTextInputs(form);
+			that.bindInputs(form);
 			that._dismissSuccessAlert(form);
 		});
 	},
@@ -93,37 +161,7 @@ EE.cp.formValidation = {
 	 */
 	_errorsExist: function(form) {
 
-		return ($('fieldset.invalid', form).size() != 0);
-	},
-
-	/**
-	 * Text inputs will trigger a validation request on blur
-	 *
-	 * @param	{jQuery object}	form	jQuery object of form
-	 */
-	_registerTextInputs: function(form) {
-
-		var that = this;
-
-		$('input[type=text], input[type=password], textarea', form).blur(function() {
-
-			that._sendAjaxRequest(form, $(this));
-		});
-	},
-
-	/**
-	 * Non-text inputs will trigger a validation request on change
-	 *
-	 * @param	{jQuery object}	form	jQuery object of form
-	 */
-	_registerNonTextInputs: function(form) {
-
-		var that = this;
-
-		$('input[type=checkbox], input[type=radio], select', form).change(function() {
-
-			that._sendAjaxRequest(form, $(this));
-		});
+		return ($('fieldset.invalid, td.invalid', form).size() != 0);
 	},
 
 	/**
@@ -131,11 +169,12 @@ EE.cp.formValidation = {
 	 * handler to detect that it's an AJAX request and handle the
 	 * request differently
 	 *
-	 * @param	{jQuery object}	form	jQuery object of form
 	 * @param	{jQuery object}	field	jQuery object of field validating
 	 */
-	_sendAjaxRequest: function(form, field) {
+	_sendAjaxRequest: function(field) {
 
+		var form = field.parents('form');
+		
 		// Just reset the button for forms that don't validate over AJAX
 		if ( ! form.hasClass('ajax-validate')) {
 			this._toggleErrorForFields(form, field, 'success');
@@ -143,7 +182,7 @@ EE.cp.formValidation = {
 		}
 
 		var that = this,
-			action = form.attr('action');
+			action = form.attr('action'),
 			data = form.serialize();
 
 		$.ajax({
@@ -166,8 +205,8 @@ EE.cp.formValidation = {
 	 */
 	_toggleErrorForFields: function(form, field, message) {
 
-		var fieldset = field.parents('fieldset'),
-			container = field.parents('div[class*=setting]'),
+		var container = field.parents('div[class*=setting]'),
+			fieldset = (container.parents('fieldset').size() > 0) ? container.parents('fieldset') : container.parent(),
 			button = form.find('.form-ctrls input.btn'), // Submit button of form
 			errorClass = 'em.ee-form-error-message',
 			grid = false;

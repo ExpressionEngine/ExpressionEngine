@@ -24,8 +24,7 @@
 </div>
 
 <div class="col-group">
-	<?=$left_nav?>
-	<div class="col w-12 last">
+	<div class="col w-16 last">
 		<?php if (count($cp_breadcrumbs)): ?>
 			<ul class="breadcrumb">
 				<?php foreach ($cp_breadcrumbs as $link => $title): ?>

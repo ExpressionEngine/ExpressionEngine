@@ -86,7 +86,7 @@ feature 'Template Settings' do
     @page.tmpl_file_basepath.set '/var'
     @page.submit
 
-    @page.should have_text 'Preferences Updated'
+    @page.should have_text 'Preferences updated'
     @page.strict_urls_n.checked?.should == true
     @page.site_404.value.should == 'search/index'
     @page.save_tmpl_revisions_y.checked?.should == true

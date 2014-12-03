@@ -1,3 +1,11 @@
+# Common error language
+$required_error = 'This field is required.'
+$integer_error = 'This field must contain an integer.'
+$natural_number = 'This field must contain only positive numbers.'
+$invalid_path = 'The path you submitted is not valid.'
+$not_writable = 'The path you submitted is not writable.'
+$alpha_dash = 'This field may only contain alpha-numeric characters, underscores, and dashes.'
+
 $xss_error = 'The data you submitted did not pass our security check.'
 $xss_vector = '"><script>alert(\'stored xss\')<%2fscript>'
 
@@ -44,6 +52,26 @@ end
 
 def should_have_no_error_text(node)
   node.first(:xpath, ".//ancestor::fieldset[1]")[:class].should_not include 'invalid'
+  node.first(:xpath, ".//..").should have_no_css 'em.ee-form-error-message'
+end
+
+# Grabs div.setting-txt to check for invalid class, as opposed to the parent fieldset
+def grid_should_have_error(node)
+  node.first(:xpath, ".//ancestor::div[3]/div[1]")[:class].should include 'invalid'
+end
+
+def grid_should_have_no_error(node)
+  node.first(:xpath, ".//ancestor::div[3]/div[1]")[:class].should_not include 'invalid'
+end
+
+def grid_cell_should_have_error_text(node, text)
+  node.first(:xpath, ".//ancestor::td[1]")[:class].should include 'invalid'
+  node.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
+  node.first(:xpath, ".//..").should have_text text
+end
+
+def grid_cell_should_have_no_error_text(node)
+  node.first(:xpath, ".//ancestor::td[1]")[:class].should_not include 'invalid'
   node.first(:xpath, ".//..").should have_no_css 'em.ee-form-error-message'
 end
 

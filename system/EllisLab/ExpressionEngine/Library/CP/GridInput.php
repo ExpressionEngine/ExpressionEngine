@@ -2,8 +2,6 @@
 
 namespace EllisLab\ExpressionEngine\Library\CP;
 
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -33,8 +31,11 @@ class GridInput extends Table {
 	/**
 	 * GridInput currently provides these options for configuration:
 	 *
-	 * 'field_name' - Name of the field the child fields will live under in POST
+	 * 'field_name' - Name of the field the child fields will live under in POST,
+	 *     also is set as the table's HTML ID
 	 * 'reorder' - Whether or not to allow users to reorder the rows in this Grid
+	 * 'grid_min_rows' - Minimum number of rows this Grid should accept
+	 * 'grid_max_rows' - Maximum number of rows this Grid should accept
 	 *
 	 * The rest of the config items have good defaults for use in Grid, it's
 	 * probably best not to set any other config items.
@@ -46,11 +47,13 @@ class GridInput extends Table {
 		// These should be our default to properly initialize a Table class
 		// for use as a Grid input
 		$defaults = array(
-			'limit'		 => 0,
-			'sortable'	 => FALSE,
-			'grid_input' => TRUE,
-			'reorder'	 => TRUE,
-			'field_name' => 'grid'
+			'limit'		    => 0,
+			'sortable'	    => FALSE,
+			'grid_input'    => TRUE,
+			'reorder'	    => TRUE,
+			'field_name'    => 'grid',
+			'grid_min_rows' => 0,
+			'grid_max_rows' => '',
 		);
 
 		parent::__construct(array_merge($defaults, $config));
@@ -102,10 +105,12 @@ class GridInput extends Table {
 	{
 		if (isset($this->config['grid_blank_row']))
 		{
-			$data[] = array(
+			// Prepend blank row to array instead of prepend so that the DOM
+			// is consistent when loading new data vs loading new data
+			array_unshift($data, array(
 				'attrs'   => array('class' => 'grid-blank-row'),
 				'columns' => $this->config['grid_blank_row']
-			);
+			));
 		}
 
 		parent::setData($data);
@@ -136,13 +141,29 @@ class GridInput extends Table {
 		{
 			$row['columns'] = array_map(function($field) use ($grid, $row)
 			{
-				$row_id = (isset($row['attrs']['row_id'])) ? 'row_id_'.$row['attrs']['row_id'] : 'new_row_0';
+				if (isset($row['attrs']['row_id']) && is_numeric(isset($row['attrs']['row_id'])))
+				{
+					$row_id = 'row_id_'.$row['attrs']['row_id'];
+				}
+				elseif ( ! isset($row['attrs']['row_id']))
+				{
+					$row_id = 'new_row_0';
+				}
+				else
+				{
+					$row_id = $row['attrs']['row_id'];
+				}
+				
 				return $grid->namespaceForGrid($field, $row_id);
+
 			}, $row['columns']);
 
 			// This no longer needs to be here
 			unset($row['attrs']['row_id']);
 		}
+
+		// Make the field name available so we can set as table's ID
+		$view_data['grid_field_name'] = $this->config['field_name'];
 
 		$view_data['validation_errors'] = (isset($this->config['validation_errors'])) ? $this->config['validation_errors'] : array();
 
@@ -173,7 +194,7 @@ class GridInput extends Table {
 	 * @param	string	$row_id	Unique identifier for row
 	 * @return	string	String with namespaced inputs
 	 */
-	private function namespaceForGrid($search, $row_id = 'new_row_0')
+	public function namespaceForGrid($search, $row_id = 'new_row_0')
 	{
 		return $this->namespaceInputs(
 			$search,
@@ -182,7 +203,4 @@ class GridInput extends Table {
 	}
 }
 
-// END CLASS
-
-/* End of file URL.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Library/CP/GridInput.php */
+// EOF

@@ -60,7 +60,7 @@ feature 'Comment Settings' do
     @page.comment_edit_time_limit.set '300'
     @page.submit
 
-    @page.should have_text 'Preferences Updated'
+    @page.should have_text 'Preferences updated'
     @page.enable_comments_n.checked?.should == true
     @page.comment_word_censoring_y.checked?.should == true
     @page.comment_moderation_override_y.checked?.should == true

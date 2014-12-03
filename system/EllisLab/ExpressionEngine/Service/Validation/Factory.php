@@ -37,8 +37,6 @@ class Factory {
 	 */
 	protected $namespaces = array(
 		'EllisLab\\ExpressionEngine\\Core\\Validation\\Rule\\',
-		'EllisLab\\ExpressionEngine\\Library\\Email\\Validation\\Rule',
-		'EllisLab\\ExpressionEngine\\Library\\IpAddress\\Validation\\Rule'
 	);
 
 	/**

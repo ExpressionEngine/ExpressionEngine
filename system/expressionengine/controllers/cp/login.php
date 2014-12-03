@@ -771,7 +771,20 @@ class Login extends CP_Controller {
 		}
 
 		$this->session->set_flashdata('message', lang($lang_key));
-		$this->functions->redirect(BASE.AMP.'C=login');
+
+		$redirect = 'C=login';
+
+		// If we have a return argument, keep it
+		if (ee()->input->post('return_path'))
+		{
+			$redirect .= AMP . 'return=' . ee()->input->post('return_path');
+		}
+		elseif (ee()->input->get('return'))
+		{
+			$redirect .= AMP . 'return=' . ee()->input->get('return');
+		}
+
+		$this->functions->redirect(BASE.AMP.$redirect);
 	}
 }
 // END CLASS

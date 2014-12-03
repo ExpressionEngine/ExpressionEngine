@@ -130,7 +130,7 @@ feature 'Avatar Settings' do
     @page.avatar_max_kb.set '102'
     @page.submit
 
-    @page.should have_text 'Preferences Updated'
+    @page.should have_text 'Preferences updated'
     @page.enable_avatars_n.checked?.should == true
     @page.allow_avatar_uploads_y.checked?.should == true
     @page.avatar_url.value.should == 'http://hello'

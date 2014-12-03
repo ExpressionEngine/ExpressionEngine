@@ -1606,7 +1606,7 @@ DOH;
 		}
 		else
 		{
-			$redirect_url = $this->_create_path('member_search').$which_field.'/';
+			$redirect_url = $this->_create_path('member_search').'/'.$which_field.'/';
 		}
 
 		$this->single_parts['path']['new_search_url'] = $redirect_url;
@@ -1748,7 +1748,7 @@ DOH;
 		}
 		else
 		{
-			$redirect_url = $this->_create_path('buddy_search').$which.'/';
+			$redirect_url = $this->_create_path('buddy_search').'/'.$which.'/';
 		}
 
 		$this->single_parts['path']['new_search_url'] = $redirect_url;
@@ -1816,7 +1816,7 @@ DOH;
 		{
 			$link =  ($which == 'blocked') ? $this->_create_path('add_block') : $this->_create_path('add_buddy');
 
-			$link .= ($this->allegiance == 'cp') ? '&mid='.$row['member_id'] : $row['member_id'].'/';
+			$link .= ($this->allegiance == 'cp') ? '&mid='.$row['member_id'] : '/'.$row['member_id'].'/';
 
 			$r .= $this->_process_template($this->retrieve_template('member_results_row'), array('item' => '<a href="#" onclick="window.opener.location.href=\''.$link.'\';return false;">'.$row['screen_name'].'</a>'));
 		}

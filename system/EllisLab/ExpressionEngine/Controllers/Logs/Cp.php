@@ -53,7 +53,7 @@ class Cp extends Logs {
 		$this->base_url->path = 'logs/cp';
 		ee()->view->cp_page_title = lang('view_cp_log');
 
-		$logs = ee()->api->get('CpLog')->with('Site');
+		$logs = ee('Model')->get('CpLog')->with('Site');
 
 		if ( ! empty(ee()->view->search_value))
 		{
@@ -82,7 +82,7 @@ class Cp extends Logs {
 
 		if ( ! empty($this->params['filter_by_username']))
 		{
-			$logs = $logs->filter('member_id', $this->params['filter_by_username']);
+			$logs = $logs->filter('member_id', 'IN', $this->params['filter_by_username']);
 		}
 
 		if ( ! empty($this->params['filter_by_site']))

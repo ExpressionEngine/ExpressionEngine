@@ -144,7 +144,7 @@ Grid.Publish.prototype = {
 	_toggleRowManipulationButtons: function()
 	{
 		var rowCount = this._getRows().size(),
-			addButton = this.root.parents('fieldset').find('.toolbar .add a');
+			addButton = this.root.parents('.grid-publish').find('.toolbar .add a');
 
 		// Show add button below field when there are more than zero rows
 		addButton.toggle(rowCount > 0);
@@ -188,7 +188,7 @@ Grid.Publish.prototype = {
 	{
 		var that = this;
 
-		this.root.parents('fieldset').find('.toolbar .add a')
+		this.root.parents('.grid-publish').find('.toolbar .add a')
 			.add('.no-results .btn', this.root).on('click', function(event)
 		{
 			event.preventDefault();
@@ -230,6 +230,12 @@ Grid.Publish.prototype = {
 
 		// Fire 'display' event for the new row
 		this._fireEvent('display', el);
+
+		// Bind the new row's inputs to AJAX form validation
+		if (EE.cp.formValidation !== undefined)
+		{
+			EE.cp.formValidation.bindInputs(el);
+		}
 	},
 
 	/**

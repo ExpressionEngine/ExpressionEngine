@@ -41,7 +41,7 @@ class MemberImport extends Utilities {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
+		$groups = ee('Model')->get('MemberGroup')->order('group_title', 'asc')->all();
 
 		$member_groups = array();
 		foreach ($groups as $group)

@@ -1,7 +1,9 @@
 <?php
 namespace EllisLab\ExpressionEngine\Service\Filter;
 
+use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Service\Model\Query\Query;
+use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -65,8 +67,9 @@ class Username extends Filter {
 	{
 		$this->builder = $builder;
 
-		// We will only display members if there are 25 or less
-		if ( ! empty($this->usernames) || $builder->count() > 25)
+		// Do not overwrite any provided/set usernames and only fetch and
+		// display members if there are 25 or less
+		if ( ! empty($this->options) || $builder->count() > 25)
 		{
 			return;
 		}
@@ -92,7 +95,7 @@ class Username extends Filter {
 	 * username, in which case we will use a $builder object (if provided)
 	 * to resolve that username to an ID.
 	 *
-	 * @return mixed The value of the filter
+	 * @return int[]|NULL The value of the filter (NULL if it has no value)
 	 */
 	public function value()
 	{
@@ -103,41 +106,121 @@ class Username extends Filter {
 			{
 				if ( ! is_numeric($value))
 				{
-					$member = $this->builder->filter('username', $value)->first();
-					if ($member)
+					$this->display_value = $value;
+					$members = $this->builder->filter('username', 'LIKE', '%' . $value . '%')->all();
+					if ($members->count() > 0)
 					{
-						$this->selected_value = $member->member_id;
+						$this->selected_value = $members->pluck('member_id');
+					}
+					else
+					{
+						$this->selected_value = array(-1);
 					}
 				}
 			}
 		}
 
-		return parent::value();
+		$value = parent::value();
+		if ( ! is_array($value))
+		{
+			// Return NULL if it has no value
+			if (is_null($value))
+			{
+				return NULL;
+			}
+
+			$value = array($value);
+		}
+		return $value;
 	}
 
 	/**
-	 * Validation: we should have a number representing the user id. If not,
-	 * this is invalid. If we have a builder object then we will query for
-	 * the user, and if not found it is invalid. Otherwise, this is valid.
+	 * Validation
+	 *   Without a Query/Builder object:
+	 *     - all ids in $this->value() must be in $this->options to be valid
+	 *   With a Query/Builder object:
+	 *     - the ids in $this->value() must return something from the builder
 	 */
 	public function isValid()
 	{
-		$value = $this->value();
-
-		if (is_numeric($value) && $value > 0)
+		// A no value filter is still valid
+		if (is_null($this->value()))
 		{
-			if (isset($this->builder))
+			return TRUE;
+		}
+
+		// No Query Builder
+		if (is_null($this->builder))
+		{
+			foreach ($this->value() as $value)
 			{
-				$member = $this->builder->filter('Member', $value)->first();
-				if ( ! $member)
+				if ( ! array_key_exists($value, $this->options))
 				{
 					return FALSE;
 				}
 			}
+
 			return TRUE;
+		}
+		else
+		{
+			// If we have a query builder and have less than 26 members, don't
+			// bother hitting the DB for validity
+			if ( ! empty($this->options))
+			{
+				foreach ($this->value() as $value)
+				{
+					if ( ! array_key_exists($value, $this->options))
+					{
+						return FALSE;
+					}
+				}
+
+				return TRUE;
+			}
+
+			$members = $this->builder->filter('member_id', 'IN', $this->value())->all();
+
+			return ($members->count() > 0);
 		}
 
 		return FALSE;
+	}
+
+	/**
+	 * This renders the filter into HTML.
+	 *
+	 * @uses ViewFactory::make to create a View instance
+	 * @uses \EllisLab\ExpressionEngine\Service\View\View::render to generate HTML
+	 *
+	 * @param ViewFactory $view A view factory responsible for making a view
+	 * @param URL $url A URL object for use in generating URLs for the filter
+	 *   options
+	 * @return string Returns HTML
+	 */
+	public function render(ViewFactory $view, URL $url)
+	{
+		$value = $this->display_value;
+		if (is_null($value))
+		{
+			$value = $this->value();
+			$value = $value[0];
+
+			$value = (array_key_exists($value, $this->options)) ?
+				$this->options[$value] :
+				$value;
+		}
+
+		$filter = array(
+			'label'            => $this->label,
+			'name'             => $this->name,
+			'value'            => $value,
+			'has_custom_value' => $this->has_custom_value,
+			'custom_value'     => (array_key_exists($this->name, $_POST)) ? $_POST[$this->name] : FALSE,
+			'placeholder'      => $this->placeholder,
+			'options'          => $this->prepareOptions($url),
+		);
+		return $view->make('filter')->render($filter);
 	}
 
 }

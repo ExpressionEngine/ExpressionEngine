@@ -42,8 +42,9 @@ class Date extends Filter {
 	private $timestamp;
 
 	/**
-	 * @todo inject ee()->session
-	 * @todo inject ee()->javascript
+	 * @todo inject $date_format (removes session & config dedpencies)
+	 * @todo inject ee()->localize (for string_to_timestamp and format_date)
+	 * @todo inject ee()->javascript (for set_global)
 	 * @todo inject ee()->cp (for ee()->cp->add_js_script)
 	 */
 	public function __construct()
@@ -155,7 +156,7 @@ class Date extends Filter {
 			'label'			=> $this->label,
 			'name'			=> $this->name,
 			'value'			=> $value,
-			'custom_value'	=> ee()->input->post($this->name),
+			'custom_value'  => (array_key_exists($this->name, $_POST)) ? $_POST[$this->name] : FALSE,
 			'placeholder'	=> $this->placeholder,
 			'options'		=> $this->prepareOptions($url),
 			'timestamp'		=> $this->timestamp

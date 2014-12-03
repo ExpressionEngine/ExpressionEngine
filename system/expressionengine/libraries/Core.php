@@ -137,6 +137,11 @@ class EE_Core {
 			return $filters;
 		});
 
+		ee()->di->registerSingleton('Grid', function($di)
+		{
+			return new \EllisLab\ExpressionEngine\Service\Grid\Grid();
+		});
+
 		// Setup API model factory
 		ee()->api = ee()->di->make('Model');
 

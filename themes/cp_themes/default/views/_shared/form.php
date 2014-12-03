@@ -30,9 +30,14 @@ if (isset($ajax_validate) && $ajax_validate == TRUE)
 		<?php endif ?>
 		<?php foreach ($settings as $setting): ?>
 			<?php
-			$last_class = ($setting == end($settings)) ? ' last' : ''; ?>
-			<fieldset class="col-group<?=$last_class?> <?=form_error_class(array_keys($setting['fields']))?> <?=(isset($setting['grid']) && $setting['grid'] == TRUE) ? 'grid-publish' : ''?>">
-				<div class="setting-txt col <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?>">
+			
+			$last_class = ($setting == end($settings)) ? ' last' : '';
+			$grid = (isset($setting['grid']) && $setting['grid'] == TRUE);
+
+			// Grids have to be in a div for an overflow bug in Firefox
+			$element = ($grid) ? 'div' : 'fieldset'; ?>
+			<<?=$element?> class="col-group<?=$last_class?> <?=( ! $grid) ? form_error_class(array_keys($setting['fields'])) : '' ?> <?=($grid) ? 'grid-publish' : '' ?>">
+				<div class="setting-txt col <?=($grid) ? form_error_class(array_keys($setting['fields'])) : '' ?> <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?>">
 					<?php foreach ($setting['fields'] as $field_name => $field)
 					{
 						if ($required = (isset($field['required']) && $field['required'] == TRUE))
@@ -119,9 +124,11 @@ if (isset($ajax_validate) && $ajax_validate == TRUE)
 					<?php if (isset($setting['action_button'])): ?>
 						<a class="btn tn action <?=$setting['action_button']['class']?>" href="<?=$setting['action_button']['link']?>"><?=lang($setting['action_button']['text'])?></a>
 					<?php endif ?>
-					<?=form_error($field_name)?>
+					<?php if ( ! $grid): ?>
+						<?=form_error($field_name)?>
+					<?php endif ?>
 				</div>
-			</fieldset>
+			</<?=$element?>>
 		<?php endforeach ?>
 	<?php endforeach ?>
 	<fieldset class="form-ctrls">

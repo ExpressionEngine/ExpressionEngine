@@ -117,7 +117,14 @@ abstract class Filter {
 	 */
 	public function isValid()
 	{
-		return TRUE;
+		$value = $this->value();
+
+		if (is_null($value))
+		{
+			return TRUE;
+		}
+
+		return (array_key_exists($this->value(), $this->options));
 	}
 
 	/**
@@ -146,7 +153,7 @@ abstract class Filter {
 			'name'             => $this->name,
 			'value'            => $value,
 			'has_custom_value' => $this->has_custom_value,
-			'custom_value'     => ee()->input->post($this->name),
+			'custom_value'     => (array_key_exists($this->name, $_POST)) ? $_POST[$this->name] : FALSE,
 			'placeholder'      => $this->placeholder,
 			'options'          => $this->prepareOptions($url),
 		);
@@ -174,6 +181,16 @@ abstract class Filter {
 			$options[$url->compile()] = $label;
 		}
 		return $options;
+	}
+
+	/**
+	 * Returns the options array
+	 *
+	 * @return array An associtive array
+	 */
+	public function getOptions()
+	{
+		return $this->options;
 	}
 
 }

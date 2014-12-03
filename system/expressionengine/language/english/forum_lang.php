@@ -1088,6 +1088,9 @@ $lang = array(
 'ascending' => 
 'Ascending',
 
+'bulletin_board' =>
+'Bulletin Board',
+
 ''=>''
 );
 

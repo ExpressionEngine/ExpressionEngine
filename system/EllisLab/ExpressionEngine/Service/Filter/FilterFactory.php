@@ -205,11 +205,28 @@ class FilterFactory {
 	/**
 	 * This will instantiate and return a default Site filter
 	 *
+	 * @todo Use the $container to make Config->item
+	 * @todo Use the $container to make Session->userdata
+	 *
 	 * @return Filter\Site a Site Filter object
 	 */
 	protected function createDefaultSite()
 	{
-		return new Filter\Site();
+		$msmEnabled = (ee()->config->item('multiple_sites_enabled') == 'y') ? TRUE : FALSE;
+		$sites = array();
+		if ($msmEnabled)
+		{
+			$sites = ee()->session->userdata('assigned_sites');
+		}
+
+		$filter = new Filter\Site($sites);
+
+		if ($msmEnabled)
+		{
+			$filter->enableMSM();
+		}
+
+		return $filter;
 	}
 
 	/**

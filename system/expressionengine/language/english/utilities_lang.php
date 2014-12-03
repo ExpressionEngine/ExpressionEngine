@@ -15,6 +15,9 @@ $lang = array(
 'cp_translation' =>
 '<abbr title="Control Panel">CP</abbr> Translation',
 
+'debug_extensions' =>
+'Debug Extensions',
+
 'php_info' =>
 '<abbr title="PHP: Hypertext Processor">PHP</abbr> Info',
 

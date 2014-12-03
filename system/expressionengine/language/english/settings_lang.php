@@ -137,7 +137,7 @@ $lang = array(
 'Saving...',
 
 'preferences_updated' =>
-'Preferences Updated',
+'Preferences updated',
 
 'preferences_updated_desc' =>
 'Your preferences have been saved successfully.',
@@ -1171,8 +1171,23 @@ $lang = array(
 'upload_category_groups_desc' =>
 'The following category groups are allowed to upload to this directory.',
 
+'directory_saved' =>
+'Upload directory saved',
+
+'directory_saved_desc' =>
+'Your upload directory has been saved successfully.',
+
+'directory_not_saved' =>
+'Attention: Upload directory not saved',
+
+'directory_not_saved_desc' =>
+'We were unable to save your upload directory, please review and fix errors below.',
+
+'duplicate_dir_name' =>
+'The name of your directory is already taken.',
+
 'no_upload_dir_url' =>
-'You must submit the URL to your upload directory',
+'You must submit the URL to your upload directory.',
 
 'duplicate_image_size_name' =>
 'You must enter a unique name for this image manipulation.',
@@ -1188,6 +1203,55 @@ $lang = array(
 
 'btn_edit_directory_working' =>
 'Saving...',
+
+/**
+ * Uploads
+ */
+
+'sync_title' =>
+'Directory Sync',
+
+'sync_alt_title' =>
+'Sync %s',
+
+'file_sync' =>
+'File sync',
+
+'file_sync_desc' =>
+'<b>%d</b> files',
+
+'file_sync_desc_images' =>
+'<b>%d</b> <mark>image</mark> files',
+
+'apply_manipulations' =>
+'Apply manipulations',
+
+'apply_manipulations_desc' =>
+'Applies chosen image manipulations to the files in this directory during sync operation. Increases sync time.',
+
+'crop' =>
+'crop',
+
+'constrain' =>
+'constrain',
+
+'by' =>
+'by',
+
+'btn_sync_directory' =>
+'Sync Directory',
+
+'btn_sync_directory_working' =>
+'Syncing...',
+
+'directory_synced' =>
+'Upload directory synchronized',
+
+'directory_synced_desc' =>
+'The contents of the upload directory have been successfully synchronized.',
+
+'directory_sync_warning' =>
+'Some files could not be synchronized',
 
 ''=>''
 );

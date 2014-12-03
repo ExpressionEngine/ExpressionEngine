@@ -50,16 +50,30 @@ class Perpage extends Filter {
 			'75'  => '75 '.lang('results'),
 			'100' => '100 '.lang('results'),
 			'150' => '150 '.lang('results'),
-			'all' => sprintf(lang($all_lang_key), $total)
+			$total => sprintf(lang($all_lang_key), $total)
 		);
 		$this->default_value = 20;
 
-		if (strtolower($this->value()) == 'all')
+		$this->display_value = $this->value();
+	}
+
+	/**
+	 * @see Filter::render() for the logic/behavior
+	 * Overriding the parent value to coerce the value into an int
+	 * and if we did not get one we will fall back and use the default value.
+	 *
+	 * @return int The number of items per page
+	 */
+	public function value()
+	{
+		$value = parent::value();
+
+		if ( ! (int) $value)
 		{
-			$this->selected_value = $total;
+			$value = $this->default_value;
 		}
 
-		$this->display_value = $this->value();
+		return (int) $value;
 	}
 
 	/**
@@ -71,7 +85,7 @@ class Perpage extends Filter {
 	{
 		$value = $this->value();
 
-		if (is_numeric($value) && $value > 0)
+		if (is_int($value) && $value > 0)
 		{
 			return TRUE;
 		}

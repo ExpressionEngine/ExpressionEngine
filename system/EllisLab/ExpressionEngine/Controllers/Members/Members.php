@@ -272,7 +272,7 @@ class Members extends CP_Controller {
 	 */
 	private function filter()
 	{
-		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
+		$groups = ee('Model')->get('MemberGroup')->order('group_title', 'asc')->all();
 		$group_ids = array();
 
 		foreach ($groups as $group)

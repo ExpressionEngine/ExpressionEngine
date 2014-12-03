@@ -23,9 +23,12 @@ $lang = array(
 'example_usage'					=>		'Example Usage',
 'available_parameters'			=>		'Available Parameters',
 
+'update'						=>		'Update',
+'update_to_version'				=>		'Update to %s',
+
 /* Filters */
 'filters'						=>		'Filters',
-'status'						=>		'status',
+'filter_by_status'				=>		'status',
 'developer'						=>		'developer',
 'show'							=>		'show',
 'custom_limit'					=>		'custom limit',
@@ -35,10 +38,13 @@ $lang = array(
 'installed'						=>		'Installed',
 'uninstall'						=>		'Uninstall',
 'uninstalled'					=>		'Uninstalled',
+'needs_updates'					=>		'Needs Updates',
 'addons_installed'				=>		'Add-Ons Installed',
 'addons_installed_desc'			=>		'The following add-on(s) have been installed: ',
 'addons_uninstalled'			=>		'Add-Ons Removed',
 'addons_uninstalled_desc'		=>		'The following add-on(s) have been removed: ',
+'addons_updated'				=>		'Add-Ons Updated',
+'addons_updated_desc'			=>		'The following add-on(s) have been updated: ',
 
 // 2.x
 

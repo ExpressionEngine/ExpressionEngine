@@ -15,7 +15,7 @@ if ($wrap): ?>
 		</tr>
 	</table>
 <?php else: ?>
-	<table cellspacing="0"<?php if ($grid_input): ?> class="grid-input-form"<?php endif?>>
+	<table cellspacing="0"<?php if ($grid_input): ?> id="<?=$grid_field_name?>" class="grid-input-form"<?php endif?>>
 		<tr>
 			<?php if ($reorder): ?>
 				<th class="first reorder-col"></th>
@@ -84,11 +84,17 @@ if ($wrap): ?>
 							<ul class="toolbar">
 								<?php foreach ($column['toolbar_items'] as $type => $attributes):
 									$attr = '';
+									$content = '';
 									foreach ($attributes as $key => $val)
 									{
+										if ($key == 'content')
+										{
+											$content = $val;
+											continue;
+										}
 										$attr .= ' ' . $key . '="' . $val . '"';
 									} ?>
-									<li class="<?=$type?>"><a <?=$attr?>></a></li>
+									<li class="<?=$type?>"><a <?=$attr?>><?=$content?></a></li>
 								<?php endforeach ?>
 							</ul>
 						</td>
@@ -106,7 +112,15 @@ if ($wrap): ?>
 							>
 						</td>
 					<?php elseif ($column['type'] == Table::COL_STATUS): ?>
-						<td><span class="st-<?=$column['content']?>"><?=$column['content']?></span></td>
+						<?php $class = isset($column['class']) ? $column['class'] : $column['content']; ?>
+						<td><span class="st-<?=$class?>"><?=$column['content']?></span></td>
+					<?php elseif (isset($column['html'])): ?>
+						<td<?php if (isset($column['error']) && ! empty($column['error'])): ?> class="invalid"<?php endif ?>>
+							<?=$column['html']?>
+							<?php if (isset($column['error']) && ! empty($column['error'])): ?>
+								<em class="ee-form-error-message"><?=$column['error']?></em>
+							<?php endif ?>
+						</td>
 					<?php else: ?>
 						<td><?=$column['content']?></td>
 					<?php endif ?>

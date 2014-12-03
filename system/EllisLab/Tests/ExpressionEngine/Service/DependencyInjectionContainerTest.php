@@ -1,6 +1,7 @@
 <?php
 namespace EllisLab\Tests\ExpressionEngine\Service;
 
+use \stdClass;
 use EllisLab\ExpressionEngine\Service\DependencyInjectionContainer;
 
 class DependencyInjectionContainerTest extends \PHPUnit_Framework_TestCase {
@@ -45,26 +46,24 @@ class DependencyInjectionContainerTest extends \PHPUnit_Framework_TestCase {
 	{
 		$this->di->registerSingleton('Dummy', function($di)
 		{
-			$dummy = new DummyObject;
-			return $dummy->getCount();
+		    return new stdClass();
 		});
 
-		$this->assertEquals('1', $this->di->make('Dummy'), 'Singleton was made');
+		$object1 = $this->di->make('Dummy');
+		$object2 = $this->di->make('Dummy');
 
-		$dummy = new DummyObject;
-		$this->assertEquals('2', $dummy->getCount(), 'Static property changed');
-		$this->assertEquals('1', $this->di->make('Dummy'), 'Singleton was not re-made');
+		$this->assertSame($object1, $object2);
 	}
 
 	public function testChaining()
 	{
 		$di = $this->di->register('Foo', 'Bar');
 		$this->assertInstanceOf('EllisLab\ExpressionEngine\Service\DependencyInjectionContainer', $di);
-		$this->assertTrue($this->di === $di);
+		$this->assertSame($this->di, $di);
 
 		$di = $this->di->registerSingleton('Bar', 'Baz');
 		$this->assertInstanceOf('EllisLab\ExpressionEngine\Service\DependencyInjectionContainer', $di);
-		$this->assertTrue($this->di === $di);
+		$this->assertSame($this->di, $di);
 
 		$di = $this->di->bind('Foo', 'Bar');
 		$this->assertInstanceOf('EllisLab\ExpressionEngine\Service\DependencyInjectionBindingDecorator', $di);
@@ -103,18 +102,4 @@ class DependencyInjectionContainerTest extends \PHPUnit_Framework_TestCase {
 		$this->di->registerSingleton('One', 'Uno')->register('One', 'Ichi');
 	}
 
-}
-
-class DummyObject {
-	protected static $count = 0;
-
-	public function __construct ()
-	{
-		self::$count++;
-	}
-
-	public function getCount()
-	{
-		return self::$count;
-	}
 }
