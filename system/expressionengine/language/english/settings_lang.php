@@ -1204,6 +1204,55 @@ $lang = array(
 'btn_edit_directory_working' =>
 'Saving...',
 
+/**
+ * Uploads
+ */
+
+'sync_title' =>
+'Directory Sync',
+
+'sync_alt_title' =>
+'Sync %s',
+
+'file_sync' =>
+'File sync',
+
+'file_sync_desc' =>
+'<b>%d</b> files',
+
+'file_sync_desc_images' =>
+'<b>%d</b> <mark>image</mark> files',
+
+'apply_manipulations' =>
+'Apply manipulations',
+
+'apply_manipulations_desc' =>
+'Applies chosen image manipulations to the files in this directory during sync operation. Increases sync time.',
+
+'crop' =>
+'crop',
+
+'constrain' =>
+'constrain',
+
+'by' =>
+'by',
+
+'btn_sync_directory' =>
+'Sync Directory',
+
+'btn_sync_directory_working' =>
+'Syncing...',
+
+'directory_synced' =>
+'Upload directory synchronized',
+
+'directory_synced_desc' =>
+'The contents of the upload directory have been successfully synchronized.',
+
+'directory_sync_warning' =>
+'Some files could not be synchronized',
+
 ''=>''
 );
 
