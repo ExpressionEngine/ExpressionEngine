@@ -287,7 +287,7 @@ class Addons extends CP_Controller {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('addon') . ': <b>### ' . lang('addons') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/addons/index'),
+			'file' => array('cp/v3/confirm_remove'),
 		));
 
 		ee()->cp->render('addons/index', $vars);
