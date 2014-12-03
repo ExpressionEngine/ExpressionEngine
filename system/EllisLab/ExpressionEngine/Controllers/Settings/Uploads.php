@@ -1037,7 +1037,8 @@ class Uploads extends Settings {
 
 			if (AJAX_REQUEST)
 			{
-				if (empty(ee()->input->post('errors')))
+				$errors = ee()->input->post('errors');
+				if (empty($errors))
 				{
 					ee()->view->set_message('success', lang('directory_synced'), lang('directory_synced_desc'), TRUE);
 				}
