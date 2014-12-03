@@ -17,7 +17,7 @@
 					<option value="disable"><?=lang('disable')?></option>
 					<option value="remove"><?=lang('remove')?></option>
 				</select>
-				<input class="btn submit" type="submit" value="<?=lang('submit')?>">
+				<input class="btn submit" rel="modal-confirm-all" type="submit" value="<?=lang('submit')?>">
 			</fieldset>
 		<?=form_close();?>
 	</div>
