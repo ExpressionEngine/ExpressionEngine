@@ -986,9 +986,10 @@ class Uploads extends Settings {
 		ee()->cp->set_breadcrumb(cp_url('files'), lang('file_manager'));
 
 		// Errors are given through a POST to this same page
-		if ( ! empty(ee()->input->post('errors')))
+		$errors = ee()->input->post('errors');
+		if ( ! empty($errors))
 		{
-			ee()->view->set_message('warn', lang('directory_sync_warning'), json_decode(ee()->input->post('errors')));
+			ee()->view->set_message('warn', lang('directory_sync_warning'), json_decode($errors));
 		}
 
 		ee()->cp->render('settings/form', $vars);
