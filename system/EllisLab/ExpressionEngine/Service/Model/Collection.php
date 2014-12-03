@@ -28,8 +28,8 @@ use IteratorAggregate;
  * benefit of being able to call save and delete on it.
  *
  * @package		ExpressionEngine
- * @subpackage	Template
- * @category	Model
+ * @subpackage	Model
+ * @category	Service
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */

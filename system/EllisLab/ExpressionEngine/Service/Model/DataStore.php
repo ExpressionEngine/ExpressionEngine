@@ -3,6 +3,33 @@ namespace EllisLab\ExpressionEngine\Service\Model;
 
 use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine DataStore
+ *
+ * This is the backend for all model interactions. It should never be exposed
+ * directly to any code outside of this namespace, including userspace models.
+ * The only way to interact with it should be through the model frontend.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Model
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 class DataStore {
 
 	protected $db;
@@ -137,6 +164,7 @@ class DataStore {
 
 		$from_reader = $this->getMetaDataReader($model_name);
 		$relationships = $from_reader->getRelationships();
+
 		if ( ! isset($relationships[$name]))
 		{
 			// TODO use name as the model name and attempt to
@@ -192,8 +220,6 @@ class DataStore {
 
 		return $relation;
 	}
-
-	// query strategies
 
 	/**
 	 *
@@ -254,6 +280,16 @@ class DataStore {
 	 */
 	protected function expandModelAlias($name)
 	{
+		if ( ! isset($this->aliases[$name]))
+		{
+			if ( ! class_exists($name))
+			{
+				throw new \Exception("Unknown model: {$name}");
+			}
+
+			return $name;
+		}
+
 		return $this->aliases[$name];
 	}
 }

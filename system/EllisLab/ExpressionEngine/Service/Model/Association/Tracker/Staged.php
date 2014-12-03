@@ -3,6 +3,32 @@ namespace EllisLab\ExpressionEngine\Service\Model\Association\Tracker;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Staged Association Tracker
+ *
+ * Adding something to this tracker stages it to be saved at a later
+ * time.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Model
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 class Staged implements Tracker {
 
 	protected $added = array();
