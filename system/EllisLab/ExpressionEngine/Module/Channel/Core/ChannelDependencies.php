@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Module\Channel\Core;
 
 use EllisLab\ExpressionEngine\Core\Dependencies as Dependencies;
@@ -20,8 +21,8 @@ class ChannelDependencies extends Dependencies {
 		{
 			$this->validation = new ChannelValidation();
 		}
-	
+
 		return $this->validation;
 	}
-	
+
 }

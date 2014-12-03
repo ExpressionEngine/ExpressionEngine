@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
 use EllisLab\ExpressionEngine\Model\FieldDataContentModel;

@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Service\Model\Association\Tracker;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;

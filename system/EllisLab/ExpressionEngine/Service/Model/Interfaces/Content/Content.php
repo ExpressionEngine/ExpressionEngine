@@ -1,4 +1,5 @@
-<?PHP
+<?php
+
 namespace EllisLab\ExpressionEngine\Service\Model\Interfaces\Content;
 
 /**

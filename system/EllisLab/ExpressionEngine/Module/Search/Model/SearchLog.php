@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Module\Search\Model;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;

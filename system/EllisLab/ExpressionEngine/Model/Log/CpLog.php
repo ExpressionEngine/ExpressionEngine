@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model\Log;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;

@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\Test\ExpressionEngine\Service\Model\Relation;
 
 use Mockery as m;

@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Service\Model\Query;
 
 use EllisLab\ExpressionEngine\Service\Model\Collection;

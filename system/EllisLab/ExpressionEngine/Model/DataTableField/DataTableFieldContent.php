@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model\DataTableField;
 
 use EllisLab\ExpressionEngine\Service\Model\Interfaces\Field\FieldContent;

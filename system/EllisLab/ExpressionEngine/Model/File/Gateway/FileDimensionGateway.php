@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model\File\Gateway;
 
 use EllisLab\ExpressionEngine\Service\Model\Gateway;

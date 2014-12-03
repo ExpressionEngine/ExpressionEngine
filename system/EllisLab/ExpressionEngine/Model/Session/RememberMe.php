@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model\Session;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;

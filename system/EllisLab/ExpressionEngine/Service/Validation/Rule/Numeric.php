@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Service\Validation\Rule;
 
 use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;

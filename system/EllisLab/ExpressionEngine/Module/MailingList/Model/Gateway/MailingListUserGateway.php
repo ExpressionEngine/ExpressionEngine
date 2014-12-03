@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Module\MailingList\Model\Gateway;
 
 use EllisLab\ExpressionEngine\Service\Model\Gateway;

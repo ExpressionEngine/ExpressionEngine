@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model\Security;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;

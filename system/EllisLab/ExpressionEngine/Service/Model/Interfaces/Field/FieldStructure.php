@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Service\Model\Interfaces\Field;
 
 use EllisLab\ExpressionEngine\Service\Model\Interfaces\Field\FieldContent;

@@ -1,4 +1,5 @@
 <?php
+
 namespace Ellislab\ExpressionEngine\Model\Site\Preferences;
 
 /**

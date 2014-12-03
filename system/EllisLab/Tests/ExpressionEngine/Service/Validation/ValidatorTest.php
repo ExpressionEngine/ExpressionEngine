@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\Tests\ExpressionEngine\Service\Validation;
 
 use EllisLab\ExpressionEngine\Service\Validation\Validator;
