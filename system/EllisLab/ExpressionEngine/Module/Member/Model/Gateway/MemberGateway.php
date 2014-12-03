@@ -85,6 +85,8 @@ class MemberGateway extends RowDataGateway {
 	public $language;
 	public $timezone;
 	public $time_format;
+	public $date_format;
+	public $include_seconds;
 	public $cp_theme;
 	public $profile_theme;
 	public $forum_theme;
@@ -96,4 +98,6 @@ class MemberGateway extends RowDataGateway {
 	public $quick_tabs;
 	public $show_sidebar;
 	public $pmember_id;
+	public $rte_enabled;
+	public $rte_toolset_id;
 }

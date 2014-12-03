@@ -91,6 +91,8 @@ class Member extends Model {
 	protected $language;
 	protected $timezone;
 	protected $time_format;
+	protected $date_format;
+	protected $include_seconds;
 	protected $cp_theme;
 	protected $profile_theme;
 	protected $forum_theme;
@@ -102,6 +104,8 @@ class Member extends Model {
 	protected $quick_tabs;
 	protected $show_sidebar;
 	protected $pmember_id;
+	protected $rte_enabled;
+	protected $rte_toolset_id;
 
 	public function getMemberGroup()
 	{
