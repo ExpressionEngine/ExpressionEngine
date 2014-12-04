@@ -37,12 +37,13 @@ class DataStore {
 	protected $aliases;
 
 	/**
-	 *
+	 * @param $db \CI_DB
+	 * @param $alias_config_path Path to the config file
+	 * @todo move this to use the config service
 	 */
 	public function __construct($db, $alias_config_path)
 	{
 		$this->db = $db;
-		// todo move to config service
 		$this->aliases = include $alias_config_path;
 	}
 
@@ -80,7 +81,9 @@ class DataStore {
 	}
 
 	/**
+	 * Create a query
 	 *
+	 * @param String $name  Name of the model to query on
 	 */
 	public function get($name)
 	{
@@ -101,7 +104,9 @@ class DataStore {
 	}
 
 	/**
+	 * Create a raw query
 	 *
+	 * @return Object \CI_DB
 	 */
 	public function rawQuery()
 	{
@@ -109,7 +114,10 @@ class DataStore {
 	}
 
 	/**
+	 * Create a metaDataReader
 	 *
+	 * @param String $name  Model to read metadata from
+	 * @return Object MetaDataReader
 	 */
 	public function getMetaDataReader($name)
 	{
@@ -119,7 +127,9 @@ class DataStore {
 	}
 
 	/**
+	 * Prep the model associations
 	 *
+	 * @param Model $model  Model to initialize
 	 */
 	protected function initializeAssociationsOn(Model $model)
 	{
@@ -137,7 +147,10 @@ class DataStore {
 	}
 
 	/**
+	 * Get all relations for a model
 	 *
+	 * @param String $model_name  Name of the model
+	 * @return Array of relations
 	 */
 	public function getAllRelations($model_name)
 	{
@@ -223,15 +236,19 @@ class DataStore {
 	}
 
 	/**
+	 * Run a select query
 	 *
+	 * @param Builder $qb The query builder describing the query
 	 */
-	public function fetchQuery(Builder $qb)
+	public function selectQuery(Builder $qb)
 	{
 		return $this->runQuery('Select', $qb);
 	}
 
 	/**
+	 * Run an insert query
 	 *
+	 * @param Builder $qb The query builder describing the query
 	 */
 	public function insertQuery(Builder $qb)
 	{
@@ -239,7 +256,9 @@ class DataStore {
 	}
 
 	/**
+	 * Run an update query
 	 *
+	 * @param Builder $qb The query builder describing the query
 	 */
 	public function updateQuery(Builder $qb)
 	{
@@ -247,17 +266,20 @@ class DataStore {
 	}
 
 	/**
+	 * Run a delete query
 	 *
+	 * @param Builder $qb The query builder describing the query
 	 */
 	public function deleteQuery(Builder $qb)
 	{
 		return $this->runQuery('Delete', $qb);
 	}
 
-	// helpers
-
 	/**
+	 * Run a given query strategy
 	 *
+	 * @param String $name The name of the strategy
+	 * @param Builder $qb  The query builder describing the query
 	 */
 	protected function runQuery($name, Builder $qb)
 	{
@@ -268,7 +290,10 @@ class DataStore {
 	}
 
 	/**
+	 * Given a class name, get the model alias if one exists
 	 *
+	 * @param String $class The class name to look up
+	 * @return String The alias name
 	 */
 	protected function getModelAlias($class)
 	{
@@ -277,7 +302,11 @@ class DataStore {
 	}
 
 	/**
+	 * Given a model alias, get the class name. If a class name
+	 * is passed and no alias is found, return that class name.
 	 *
+	 * @param String $name The alias name to look up
+	 * @return String The class name
 	 */
 	protected function expandModelAlias($name)
 	{

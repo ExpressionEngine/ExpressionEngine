@@ -37,6 +37,9 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 
 	protected $elements = array();
 
+	/**
+	 * @param Array $elements Contents of the collection
+	 */
 	public function __construct(array $elements = array())
 	{
 		$this->elements = $elements;
@@ -44,6 +47,9 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 
 	/**
 	 * Allow for setting in batches. Be careful, folks!
+	 *
+	 * @param String $key  Property name
+	 * @param Mixed $value Property value
 	 */
 	public function __set($key, $value)
 	{
@@ -57,6 +63,10 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	 * Allow the calling of model methods by the collection.
 	 * First argument is assumed to be a callback to handle
 	 * the return of the methods.
+	 *
+	 * @param String $method   Method name
+	 * @param Array $arguments List of arguments
+	 * @return Array of esults
 	 */
 	public function __call($method, $arguments)
 	{

@@ -138,7 +138,7 @@ class Builder {
 		}
 
 		return $this->datastore
-			->fetchQuery($this)
+			->selectQuery($this)
 			->setFrontend($this->frontend);
 	}
 

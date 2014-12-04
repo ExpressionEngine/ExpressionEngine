@@ -138,6 +138,11 @@ class Model {
 	 * to use the datastore's lazy caches, which will make for much
 	 * more testable code and avoid iterating over gateways and creating
 	 * relations repeatedly.
+	 *
+	 * @param String $key Name of the static property
+	 * @return mixed The metadata value Set the short name of this model
+	 *
+	 * @param String $name The short name
 	 */
 	public static function getMetaData($key)
 	{
@@ -152,15 +157,9 @@ class Model {
 	}
 
 	/**
+	 * Set the short name of this model
 	 *
-	 */
-	public function getPrimaryKey()
-	{
-		return $this->getMetaData('primary_key');
-	}
-
-	/**
-	 *
+	 * @param String $name The short name
 	 */
 	public function setName($name)
 	{
@@ -174,7 +173,9 @@ class Model {
 	}
 
 	/**
+	 * Get the short name
 	 *
+	 * @return String short name
 	 */
 	public function getName()
 	{
@@ -182,7 +183,19 @@ class Model {
 	}
 
 	/**
+	 * Access the primary key name
 	 *
+	 * @return string primary key name
+	 */
+	public function getPrimaryKey()
+	{
+		return $this->getMetaData('primary_key');
+	}
+
+	/**
+	 * Get the primary key value
+	 *
+	 * @return int Primary key
 	 */
 	public function getId()
 	{
@@ -191,7 +204,9 @@ class Model {
 	}
 
 	/**
+	 * Set the primary key value
 	 *
+	 * @return $this
 	 */
 	protected function setId($id)
 	{
@@ -202,7 +217,10 @@ class Model {
 	}
 
 	/**
+	 * Fill model data without marking as dirty.
 	 *
+	 * @param array $data Data to fill
+	 * @return $this
 	 */
 	public function fill(array $data = array())
 	{
@@ -218,7 +236,10 @@ class Model {
 	}
 
 	/**
+	 * Check if the model has a given property
 	 *
+	 * @param String $name Property name
+	 * @return bool has property?
 	 */
 	public function hasProperty($name)
 	{
@@ -226,7 +247,10 @@ class Model {
 	}
 
 	/**
-	 * Normal usage will be through __get, but the tests need to mock this.
+	 * Attempt to get a property. Called by __get.
+	 *
+	 * @param String $name Name of the property
+	 * @return Mixed Value of the property
 	 */
 	public function getProperty($name)
 	{
@@ -244,7 +268,10 @@ class Model {
 	}
 
 	/**
-	 * Normal usage will be through __set, but the tests need to mock this.
+	 * Attempt to set a property. Called by __set.
+	 *
+	 * @param String $name Name of the property
+	 * @param Mixed  $value Value of the property
 	 */
 	public function setProperty($name, $value)
 	{
@@ -262,11 +289,14 @@ class Model {
 		}
 
 		$this->markAsDirty($name);
+
 		return $this;
 	}
 
 	/**
+	 * Check if model has dirty values
 	 *
+	 * @return bool is dirty?
 	 */
 	public function isDirty()
 	{
@@ -274,16 +304,23 @@ class Model {
 	}
 
 	/**
+	 * Mark a property as dirty
 	 *
+	 * @param String $name property name
+	 * @return $this
 	 */
 	protected function markAsDirty($name)
 	{
 		$this->_dirty[$name] = TRUE;
+
 		return $this;
 	}
 
 	/**
 	 * Clear out our dirty marker. Happens after saving.
+	 *
+	 * @param String $name property name [optional]
+	 * @return $this
 	 */
 	public function markAsClean($name = NULL)
 	{
@@ -300,7 +337,9 @@ class Model {
 	}
 
 	/**
+	 * Get all dirty keys and values
 	 *
+	 * @return array Dirty properties and their values
 	 */
 	public function getDirty()
 	{
@@ -315,7 +354,9 @@ class Model {
 	}
 
 	/**
+	 * Get a list of fields
 	 *
+	 * @return array field names
 	 */
 	public static function getFields()
 	{
@@ -334,7 +375,9 @@ class Model {
 	}
 
 	/**
+	 * Get all current values
 	 *
+	 * @return array Current values. Including null values - Beware.
 	 */
 	public function getValues()
 	{
@@ -352,7 +395,9 @@ class Model {
 	}
 
 	/**
+	 * Check if the model has been saved
 	 *
+	 * @return bool is new?
 	 */
 	public function isNew()
 	{
@@ -360,7 +405,9 @@ class Model {
 	}
 
 	/**
+	 * Validate the model
 	 *
+	 * @return validation result
 	 */
 	public function validate()
 	{
@@ -371,23 +418,25 @@ class Model {
 
 		return $this->_validator->validate($this->getValues());
 
-		// TODO update relationships
+		// TODO validate relationships?
 		foreach ($this->getAllAssociations() as $assoc)
 		{
-			$assoc->save();
+			$assoc->validate();
 		}
 	}
 
 	/**
+	 * Save the model
 	 *
+	 * @return $this
 	 */
 	public function save()
 	{
-		// insert / save
 		$qb = $this->newQuery();
 
 		if ($this->isNew())
 		{
+			// insert
 			$qb->set($this->getValues());
 
 			$new_id = $qb->insert();
@@ -395,6 +444,7 @@ class Model {
 		}
 		else
 		{
+			// update
 			// TODO someone might try to change the id
 			$qb->set($this->getDirty());
 
@@ -414,7 +464,9 @@ class Model {
 	}
 
 	/**
+	 * Delete the model
 	 *
+	 * @return $this
 	 */
 	public function delete()
 	{
@@ -443,6 +495,8 @@ class Model {
 
 	/**
 	 * Limit a query to the primary id of this model
+	 *
+	 * @param QueryBuilder $query The query that will be sent
 	 */
 	protected function constrainQueryToSelf($query)
 	{
@@ -453,7 +507,9 @@ class Model {
 	}
 
 	/**
+	 * Get all associations
 	 *
+	 * @return array associations
 	 */
 	public function getAllAssociations()
 	{
@@ -461,35 +517,48 @@ class Model {
 	}
 
 	/**
+	 * Check if an association of a given name exists
 	 *
+	 * @param String $name Name of the association
+	 * @return bool has association?
 	 */
 	public function hasAssociation($name)
 	{
 		return array_key_exists($name, $this->_associations);
 	}
 
-
 	/**
+	 * Get an association of a given name
 	 *
+	 * @param String $name Name of the association
+	 * @return Mixed the association
 	 */
 	public function getAssociation($name)
 	{
 		return $this->_associations[$name];
 	}
 
-
 	/**
+	 * Set a given association
 	 *
+	 * @param String $name Name of the association
+	 * @param Association $association Association to set
+	 * @return $this;
 	 */
 	public function setAssociation($name, Association $association)
 	{
 		$association->setFrontend($this->_frontend);
 
 		$this->_associations[$name] = $association;
+
+		return $this;
 	}
 
 	/**
+	 * Set the frontend
 	 *
+	 * @param Frontend $frontend The frontend to use
+	 * @return $this
 	 */
 	public function setFrontend(Frontend $frontend)
 	{
@@ -499,10 +568,15 @@ class Model {
 		}
 
 		$this->_frontend = $frontend;
+
+		return $this;
 	}
 
 	/**
+	 * Set the validatior
 	 *
+	 * @param Validator $validator The validator to use
+	 * @return $this;
 	 */
 	public function setValidator(Validator $validator)
 	{
@@ -510,10 +584,14 @@ class Model {
 
 		$rules = $this->getMetaData('validation_rules');
 		$validator->setRules($rules);
+
+		return $this;
 	}
 
 	/**
+	 * Create a new query
 	 *
+	 * @return QueryBuilder new query
 	 */
 	protected function newQuery()
 	{

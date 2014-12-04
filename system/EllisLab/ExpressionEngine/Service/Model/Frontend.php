@@ -3,9 +3,6 @@
 namespace EllisLab\ExpressionEngine\Service\Model;
 
 /**
-
- */
-/**
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
@@ -39,13 +36,18 @@ class Frontend {
 
 	protected $store;
 
-	public function __construct($store)
+	/**
+	 * @param $store EllisLab\ExpressionEngine\Service\Model\DataStore
+	 */
+	public function __construct(DataStore $store)
 	{
 		$this->store = $store;
 	}
 
 	/**
+	 * Run a query
 	 *
+	 * @param String $name Model to run the query on
 	 */
 	public function get($name)
 	{
@@ -56,7 +58,10 @@ class Frontend {
 	}
 
 	/**
+	 * Create a model instance
 	 *
+	 * @param String $name Model to create
+	 * @param Array  $data Initial data
 	 */
 	public function make($name, array $data = array())
 	{
