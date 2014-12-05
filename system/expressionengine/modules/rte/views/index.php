@@ -22,3 +22,24 @@
 		<?=form_close();?>
 	</div>
 </div>
+
+<div class="modal-confirm-remove" style="display:none">
+	<?php // Modal for removal confirmation
+	$modal_vars = array(
+		'form_url'	=> cp_url('addons/settings/rte/update_toolsets'),
+		'hidden'	=> array(
+			'bulk_action'	=> 'remove'
+		),
+		'checklist'	=> array(
+			array(
+				'kind' => '',
+				'desc' => ''
+			)
+		)
+	);
+
+	// $modals['modal-confirm-all'] = $this->ee_view('_shared/modal_confirm_remove', $modal_vars, TRUE);
+	// $this->vars(array('modals' => $modals));
+	$this->ee_view('_shared/modal_confirm_remove', $modal_vars);
+	?>
+</div>
