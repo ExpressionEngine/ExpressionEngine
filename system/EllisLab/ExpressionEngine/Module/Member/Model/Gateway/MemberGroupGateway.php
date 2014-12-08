@@ -1,12 +1,14 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Module\Member\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
 /**
  * Member Groups table
  */
-class MemberGroupGateway extends RowDataGateway {
+class MemberGroupGateway extends Gateway {
+
 	protected static $_table_name = 'member_groups';
 	protected static $_primary_key = 'group_id';
 	protected static $_related_gateways = array(

@@ -1,15 +1,14 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Service\Model;
 
+use BadMethodCallException;
 use InvalidArgumentException;
+use OverflowException;
 
-use EllisLab\ExpressionEngine\Service\AliasServiceInterface;
-use EllisLab\ExpressionEngine\Service\Error\Errors;
-use EllisLab\ExpressionEngine\Service\Model\Relationship\Cascade;
-use EllisLab\ExpressionEngine\Service\Model\Relationship\RelationshipBag;
-use EllisLab\ExpressionEngine\Service\Model\Relationship\RelationshipQuery;
-use EllisLab\ExpressionEngine\Service\Validation\Factory as ValidationFactory;
-
+use EllisLab\ExpressionEngine\Service\Model\DataStore;
+use EllisLab\ExpressionEngine\Service\Model\Association\Association;
+use EllisLab\ExpressionEngine\Service\Validation\Validator;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -26,9 +25,7 @@ use EllisLab\ExpressionEngine\Service\Validation\Factory as ValidationFactory;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Base Model
- *
- * The base Model class
+ * ExpressionEngine Model
  *
  * @package		ExpressionEngine
  * @subpackage	Model
@@ -36,764 +33,576 @@ use EllisLab\ExpressionEngine\Service\Validation\Factory as ValidationFactory;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-abstract class Model {
+class Model {
 
 	/**
 	 *
 	 */
-	protected static $_primary_key = '';
-
-	/**
-	 *
-	 */
-	protected static $_gateway_names = array();
-
-	/**
-	 * Optional keys
-	 */
-	protected static $_polymorph = NULL;
-	protected static $_key_map = array();
-	protected static $_cascade = array();
-	protected static $_validation_rules = array();
-	protected static $_relationships = array();
-
-	/**
-	 *
-	 */
-	protected $_factory = NULL;
-
-	/**
-	 *
-	 */
-	protected $_alias_service = NULL;
-
-	/**
-	 *
-	 */
-	protected $_validation_factory = NULL;
-
-	/**
-	 * The database gateway object for the related database table.
-	 */
-	protected $_gateways = array();
-
-	/**
-	 *
-	 */
-	protected $_related_models = array();
+	protected $_name;
 
 	/**
 	 *
 	 */
 	protected $_dirty = array();
 
-	protected $_deleted = FALSE;
-
+	/**
+	 *
+	 */
+	protected $_frontend = NULL;
 
 	/**
-	 * Initialize this model with a set of data to set on the gateway.
 	 *
-	 * @param \EllisLab\ExpressionEngine\Model\ModelFactory
-	 * @param \Ellislab\ExpressionEngine\Core\AliasServiceInterface
-	 * @param	mixed[]	$data	An array of initial property values to set on
-	 * 		this model.  The array indexes must be valid properties on this
-	 * 		model's gateway.
-	 * @param	boolean	$dirty	(Optional) Should we mark the initial data as
-	 * 		dirty?  If TRUE, all initial data that the model is sent will be
-	 * 		marked as dirty data that will be validated and saved on the next
-	 * 		save call.  Otherwise, it will be treated as clean and assumed
-	 * 		to have come from the database.
 	 */
-	public function __construct(Factory $factory, AliasServiceInterface $alias_service, array $data = array(), $dirty = TRUE)
+	protected $_validator = NULL;
+
+	/**
+	 *
+	 */
+	protected $_associations = array();
+
+	/**
+	 *
+	 */
+	protected $_relations = array();
+
+	/**
+	 * Constructor
+	 */
+	public function __construct(array $data = array())
 	{
-		$this->_factory = $factory;
-		$this->_alias_service = $alias_service;
-
-		foreach($data as $property => $value)
+		foreach ($data as $key => $value)
 		{
-			if (property_exists($this, $property))
-			{
-				$this->{$property} = $value;
-
-				if ($dirty)
-				{
-					$this->setDirty($property);
-				}
-			}
+			$this->setProperty($key, $value);
 		}
-
-		$this->_related_models = new RelationshipBag();
 	}
 
 	/**
-	 * Pass through getter that allows properties to be gotten from this model
-	 * but stored in the wrapped gateway.
 	 *
-	 * @param	string	$name	The name of the property to be retrieved.
-	 *
-	 * @return	mixed	The property being retrieved.
-	 *
-	 * @throws	NonExistentPropertyException	If the property doesn't exist,
-	 * 					an appropriate exception is thrown.
 	 */
 	public function __get($name)
 	{
-		$method = 'get' . ucfirst($name);
-		if (method_exists($this, $method))
-		{
-			return $this->$method();
-		}
-
-		if (property_exists($this, $name) && strpos($name, '_') !== 0)
-		{
-			return $this->{$name};
-		}
-
-		throw new InvalidArgumentException('Attempt to access a non-existent property, "' . $name . '", on ' . get_called_class());
+		return $this->getProperty($name);
 	}
 
 	/**
-	 * Pass through setter that allows properties to be set on this model,
-	 * but stored in the wrapped gateway.
 	 *
-	 * @param	string	$name	The name of the property being set. Must be
-	 * 						a valid property on the wrapped gateway.
-	 * @param	mixed	$value	The value to set the property to.
-	 *
-	 * @return	void
-	 *
-	 * @throws	NonExistentPropertyException	If the property doesn't exist,
-	 * 					and appropriate exception is thrown.
 	 */
 	public function __set($name, $value)
 	{
-		$method = 'set' . ucfirst($name);
-		if (method_exists($this, $method))
-		{
-			return $this->$method($value);
-		}
-
-		if (property_exists($this, $name) && strpos($name, '_') !== 0)
-		{
-			$this->{$name} = $value;
-			$this->setDirty($name);
-			return;
-		}
-
-		throw new InvalidArgumentException('Attempt to access a non-existent property "' . $name . '" on ' . get_called_class());
+		$this->setProperty($name, $value);
+		return $value;
 	}
 
-	public function populateFromDatabase(array $data, $dirty = FALSE)
+	/**
+	 *
+	 */
+	public function __call($method, $args)
 	{
-		// Map them coming out of the database by passing them through the
-		// gateways.  We'll grab them from the first gateway that has them,
-		// so that will be the gateway that does the mapping.
-		foreach (static::getMetaData('gateway_names') as $gateway_name)
-		{
-			$gateways[$gateway_name] = $this->_factory->makeGateway($gateway_name, $data);
-		}
+		$actions = 'has|get|set|add|remove|create|delete|fill';
 
-		foreach ($data as $property => $value)
+		if (preg_match("/^({$actions})(.+)/", $method, $matches))
 		{
-			if (property_exists($this, $property))
+			list($_, $action, $assoc_name) = $matches;
+
+			if ($this->hasAssociation($assoc_name))
 			{
-				foreach($gateways as $name => $gateway)
-				{
-					if (property_exists($gateway, $property))
-					{
-						$this->{$property} = $gateway->{$property};
-						if ($dirty)
-						{
-							$this->setDirty($property);
-						}
-						break;
-					}
-				}
+				return $this->runAssociationAction($assoc_name, $action, $args);
 			}
 		}
 
+		throw new BadMethodCallException("Method not found: {$method}.");
+	}
+
+	/**
+	 *
+	 */
+	protected function runAssociationAction($assoc_name, $action, $args)
+	{
+		$assoc = $this->getAssociation($assoc_name);
+		$result = call_user_func_array(array($assoc, $action), $args);
+
+		if ($action == 'has' || $action == 'get')
+		{
+			return $result;
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Clean up var_dump output for developers on PHP 5.6+
+	 */
+	public function __debugInfo()
+	{
+		$name = $this->_name;
+		$values = $this->getValues();
+		$related_to = array_keys($this->_associations);
+
+		return compact('name', 'values', 'related_to');
+	}
+
+	/**
+	 * Metadata is static. If you need to access it, it's recommended
+	 * to use the datastore's lazy caches, which will make for much
+	 * more testable code and avoid iterating over gateways and creating
+	 * relations repeatedly.
+	 *
+	 * @param String $key Name of the static property
+	 * @return mixed The metadata value Set the short name of this model
+	 *
+	 * @param String $name The short name
+	 */
+	public static function getMetaData($key)
+	{
+		$key = '_'.$key;
+
+		if ( ! property_exists(get_called_class(), $key))
+		{
+			return NULL;
+		}
+
+		return static::$$key;
+	}
+
+	/**
+	 * Set the short name of this model
+	 *
+	 * @param String $name The short name
+	 */
+	public function setName($name)
+	{
+		if (isset($this->_name))
+		{
+			throw new OverflowException('Cannot modify name after it has been set.');
+		}
+
+		$this->_name = $name;
+		return $this;
+	}
+
+	/**
+	 * Get the short name
+	 *
+	 * @return String short name
+	 */
+	public function getName()
+	{
+		return $this->_name;
+	}
+
+	/**
+	 * Access the primary key name
+	 *
+	 * @return string primary key name
+	 */
+	public function getPrimaryKey()
+	{
+		return $this->getMetaData('primary_key');
+	}
+
+	/**
+	 * Get the primary key value
+	 *
+	 * @return int Primary key
+	 */
+	public function getId()
+	{
+		$pk = $this->getPrimaryKey();
+		return $this->$pk;
+	}
+
+	/**
+	 * Set the primary key value
+	 *
+	 * @return $this
+	 */
+	protected function setId($id)
+	{
+		$pk = $this->getPrimaryKey();
+		$this->$pk = $id;
+
+		return $this;
+	}
+
+	/**
+	 * Fill model data without marking as dirty.
+	 *
+	 * @param array $data Data to fill
+	 * @return $this
+	 */
+	public function fill(array $data = array())
+	{
+		foreach ($data as $k => $v)
+		{
+			if ($this->hasProperty($k))
+			{
+				$this->$k = $v;
+			}
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Check if the model has a given property
+	 *
+	 * @param String $name Property name
+	 * @return bool has property?
+	 */
+	public function hasProperty($name)
+	{
+		return (property_exists($this, $name) && $name[0] !== '_');
+	}
+
+	/**
+	 * Attempt to get a property. Called by __get.
+	 *
+	 * @param String $name Name of the property
+	 * @return Mixed Value of the property
+	 */
+	public function getProperty($name)
+	{
+		if (method_exists($this, 'get__'.$name))
+		{
+			return $this->{'get__'.$name}();
+		}
+
+		if ($this->hasProperty($name))
+		{
+			return $this->$name;
+		}
+
+		throw new InvalidArgumentException("No such property: '{$name}' on ".get_called_class());
+	}
+
+	/**
+	 * Attempt to set a property. Called by __set.
+	 *
+	 * @param String $name Name of the property
+	 * @param Mixed  $value Value of the property
+	 */
+	public function setProperty($name, $value)
+	{
+		if (method_exists($this, 'set__'.$name))
+		{
+			$this->{'set__'.$name}($value);
+		}
+		elseif ($this->hasProperty($name))
+		{
+			$this->$name = $value;
+		}
+		else
+		{
+			throw new InvalidArgumentException("No such property: '{$name}' on ".get_called_class());
+		}
+
+		$this->markAsDirty($name);
+
+		return $this;
+	}
+
+	/**
+	 * Check if model has dirty values
+	 *
+	 * @return bool is dirty?
+	 */
+	public function isDirty()
+	{
+		return ! empty($this->_dirty);
 	}
 
 	/**
 	 * Mark a property as dirty
 	 *
-	 * @param String $property Name of the property to mark
+	 * @param String $name property name
 	 * @return $this
 	 */
-	protected function setDirty($property)
+	protected function markAsDirty($name)
 	{
-		$this->_dirty[$property] = TRUE;
+		$this->_dirty[$name] = TRUE;
+
 		return $this;
 	}
 
 	/**
-	 * Check if a property is marked as dirty
+	 * Clear out our dirty marker. Happens after saving.
 	 *
-	 * @param String $property Name of the property to mark
-	 * @return Bool  dirty?
+	 * @param String $name property name [optional]
+	 * @return $this
 	 */
-	protected function isDirty($property)
+	public function markAsClean($name = NULL)
 	{
-		return (isset($this->_dirty[$property]) && $this->_dirty[$property]);
+		if (isset($name))
+		{
+			unset($this->_dirty[$name]);
+		}
+		else
+		{
+			$this->_dirty = array();
+		}
+
+		return $this;
 	}
 
 	/**
-	 * Get the model metadata
+	 * Get all dirty keys and values
 	 *
-	 * @param String $key Metadata key name
-	 * @return Mixed Value for $key or full metadata array
+	 * @return array Dirty properties and their values
 	 */
-	public static function getMetaData($key)
+	public function getDirty()
 	{
-		$property = '_' . $key;
+		$dirty = array();
 
-		if ( ! property_exists(get_called_class(), $property))
+		foreach (array_keys($this->_dirty) as $key)
 		{
-			 $parent = get_parent_class(get_called_class());
-			 if ( $parent )
-			 {
-				 return $parent::getMetaData($key);
-			 }
-			 else
-			 {
-				 return NULL;
-			 }
+			$dirty[$key] = $this->$key;
 		}
 
-		$value = static::$$property;
-
-		$should_be_array = is_array(static::$$property);
-
-		$parent = get_parent_class(get_called_class());
-
-		if ( $parent )
-		{
-			$parent_value = $parent::getMetaData($key);
-
-			if ($should_be_array && ! empty($value) && ! empty($parent_value))
-			{
-				$value = array_merge($value, $parent_value);
-			}
-			else if ( empty($value) && ! empty($parent_value))
-			{
-				$value = $parent_value;
-			}
-		}
-
-		// empty but not optional? If at top, throw error
-//		if (empty($value) && ! in_array($key, array('validation_rules', 'cascade', 'polymorph')))
-//		{
-//			throw new \DomainException('Missing meta data, "' . $key . '", in ' . get_called_class());
-//		}
-
-		return $value;
+		return $dirty;
 	}
 
+	/**
+	 * Get a list of fields
+	 *
+	 * @return array field names
+	 */
+	public static function getFields()
+	{
+		$vars = get_class_vars(get_called_class());
+		$fields = array();
+
+		foreach ($vars as $key => $value)
+		{
+			if ($key[0] != '_')
+			{
+				$fields[] = $key;
+			}
+		}
+
+		return $fields;
+	}
+
+	/**
+	 * Get all current values
+	 *
+	 * @return array Current values. Including null values - Beware.
+	 */
+	public function getValues()
+	{
+		$values = get_object_vars($this);
+
+		foreach ($values as $key => $value)
+		{
+			if ( ! isset($value) || $key[0] == '_')
+			{
+				unset($values[$key]);
+			}
+		}
+
+		return $values;
+	}
+
+	/**
+	 * Check if the model has been saved
+	 *
+	 * @return bool is new?
+	 */
 	public function isNew()
 	{
 		return ($this->getId() === NULL);
 	}
 
 	/**
-	 * Get the primary id for this model
+	 * Validate the model
 	 *
-	 * @return int	Primary key value of the model
-	 */
-	public function getId()
-	{
-		$primary_key = $this->getMetaData('primary_key');
-		return $this->{$primary_key};
-	}
-
-	public function getGateways()
-	{
-		$gateways = array();
-
-		$gateway_names = $this->getMetaData('gateway_names');
-
-		foreach ($gateway_names as $name)
-		{
-			$gateways[$name] = $this->_alias_service->getRegisteredClass($name);
-		}
-
-		return $gateways;
-	}
-
-	/**
-	 * Validate this model's data for saving.  May cascade the validation
-	 * through any set of related models using the same grouping language
- 	 * that is used in the query builder.  For example:
-	 *
-	 * $entry = $qb->get('ChannelEntry')
-	 *		->with(
-	 * 			'Channel',
-	 * 			array('Member'=>'MemberGroup'),
-	 * 			array('Categories' => 'CategoryGroup')
-	 *		)
- 	 * 		->filter('MemberGroup.member_group_id', 5)
-	 *		->first();
-	 *
-	 * $entry->title = 'New Title';
-	 * $channel = $entry->getChannel();
-	 * $channel->short_name = 'new_short_name';
-	 *
-	 * $validation = $entry->validate(
-	 * 		'Channel',
-	 *		array('Member' => 'MemberGroup'),
-	 * 		array('Category' => 'CategoryGroup')
-	 * 	);
-	 *
- 	 * This will cascade the validation through all related models and return
- 	 * any errors found in any of the related models.
-	 *
-	 * @return	Errors	A class containing the errors resulting from validation.
+	 * @return validation result
 	 */
 	public function validate()
 	{
-		$this->map();
-
-		$cascade = func_get_args();
-
-		$errors = new Errors();
-
-		foreach ($this->_gateways as $gateway)
+		if ( ! isset($this->_validator))
 		{
-			$errors->addErrors($gateway->validate());
+			return TRUE;
 		}
 
-		$this->cascade($cascade, 'validate',
-			function($relationship_name, $cascade_errors) use ($errors)
-			{
-				$errors->addErrors($cascade_errors);
-			}
-		);
+		return $this->_validator->validate($this->getValues());
 
-		return $errors;
+		// TODO validate relationships?
+		foreach ($this->getAllAssociations() as $assoc)
+		{
+			$assoc->validate();
+		}
 	}
 
 	/**
-	 * Save this model. Calls validation before saving to ensure that invalid
-	 * data doesn't get saved, however, expects validation to have been called
-	 * already and the errors handled.  Thus, if validation returns errors,
-	 * save will throw an exception.  Accepts a related model cascade.
+	 * Save the model
 	 *
-	 * @return 	void
-	 *
-	 * @throws	Exception	If the model fails to validate, an
-	 * 						exception is thrown.  Validation should be called
-	 * 						and any errors handled before attempting to save.
+	 * @return $this
 	 */
 	public function save()
 	{
-		// TODO validate
-		// Two options, call it here and have it cascade, or call it
-		// in the callback and use that cascade. Should probably do it
-		// here so that nothing happens if something doesn't validate.
+		$qb = $this->newQuery();
 
-		$this->map();
-		$gateways = $this->_gateways;
-
-		$c = $this->getCascade('save', func_get_args());
-
-		/* for delete:
-		$c->stopIf('keysNotEqual'); // require identical keys to traverse
-		*/
-
-		$c->walk(function($self) use ($gateways)
+		if ($this->isNew())
 		{
-			foreach ($gateways as $gateway)
-			{
-				$gateway->save();
-			}
-		});
+			// insert
+			$qb->set($this->getValues());
 
-		$key = static::getMetaData('primary_key');
-		$gateway_names = static::getMetaData('gateway_names');
-		$this->{$key} = $gateways[$gateway_names[0]]->{$key};
-		return $this;
-	}
-
-	protected function getCascade($method, $user_cascade)
-	{
-		return new Cascade($this, $method, $user_cascade);
-	}
-
-	/**
-	 *  Save but always insert so that we can restore from a database backup.
-	 */
-	public function restore()
-	{
-		$this->map();
-		$cascade = func_get_args();
-
-		$errors = call_user_func_array(array($this, 'validate'), $cascade);
-		if ($errors->exist())
+			$new_id = $qb->insert();
+			$this->setId($new_id);
+		}
+		else
 		{
-			throw new \Exception('Model failed to validate on restore call!');
+			// update
+			// TODO someone might try to change the id
+			$qb->set($this->getDirty());
+
+			$this->constrainQueryToSelf($qb);
+			$qb->update();
 		}
 
-		foreach($this->_gateways as $gateway)
+		$this->markAsClean();
+
+		// update relationships
+		foreach ($this->getAllAssociations() as $assoc)
 		{
-			$gateway->restore();
+			$assoc->save();
 		}
 
-		$this->cascade($cascade, 'restore');
 		return $this;
 	}
 
 	/**
-	 * Delete this model.
+	 * Delete the model
 	 *
-	 * @return	void
+	 * @return $this
 	 */
 	public function delete()
 	{
-		$this->map();
-
-		$cascade = func_get_args();
-
-		foreach($this->_gateways as $gateway)
-		{
-			$gateway->delete();
-		}
-
-		$this->cascade($cascade, 'delete');
-	}
-
-	protected function map()
-	{
-		if (empty($this->_gateways))
-		{
-			foreach ($this->getMetaData('gateway_names') as $gateway_name)
-			{
-				$gateway = $this->_factory->makeGateway($gateway_name);
-
-				if ( ! is_null($this->_validation_factory))
-				{
-					$gateway->setValidationFactory($this->_validation_factory);
-				}
-
-				$this->_gateways[$gateway_name] = $gateway;
-			}
-		}
-
-		foreach (get_object_vars($this) as $property => $value)
-		{
-			// Ignore the ones we've hidden.
-			if (strpos($property, '_') === 0)
-			{
-				continue;
-			}
-
-			foreach ($this->_gateways as $gateway)
-			{
-				if (property_exists($gateway, $property))
-				{
-					$gateway->{$property} = $value;
-					if ($this->isDirty($property))
-					{
-						$gateway->setDirty($property);
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 *
-	 * 		'Channel',
-	 *		array('Member' => array('MemberGroup'=>'Members')),
-	 * 		array('Category' => 'CategoryGroup')
-	 */
-	protected function cascade($cascade, $method, $callback = NULL)
-	{
-		foreach($cascade as $relationship_name)
-		{
-			if (is_array($relationship_name))
-			{
-				$this->cascadeRecursive($relationship_name, $method, $callback);
-			}
-			else
-			{
-				$relationship_method = 'get' . $relationship_name;
-				$models = $this->$relationship_method();
-
-				foreach ($models as $model)
-				{
-					if ($callback !== NULL)
-					{
-						$callback($relationship_name, $model->$method());
-					}
-					else
-					{
-						$model->$method();
-					}
-				}
-			}
-		}
-	}
-
-	protected function cascadeRecursive($cascade, $method, $callback = NULL)
-	{
-		foreach ($cascade as $from_relationship => $to_relationship)
-		{
-			$method = 'get' . $from_relationship;
-			$models = $this->$method();
-
-			foreach ($models as $model)
-			{
-				if (is_array($to_relationship))
-				{
-					$model->cascadeRecursive($to_relationship, $method, $callback);
-				}
-				else
-				{
-					$relationship_method = 'get' . $to_relationship;
-					$to_models = $model->$relationship_method();
-
-					foreach ($to_models as $to_model)
-					{
-						if ($callback !== NULL)
-						{
-							$callback($to_relationship, $to_model->$method());
-						}
-						else
-						{
-							$to_model->$method();
-						}
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * Get a relationship
-	 *
-	 * @param String $name		Name of the relationship
-	 * @param Object $model		Object to relate to
-	 *
-	 * @return Object $this
-	 */
-	protected function getRelated($to_name)
-	{
-		$info = $this->getRelationshipInfo($to_name);
-
-		// if we already have data, we return it.
-		if ($this->_related_models->has($to_name))
-		{
-			return $this->_related_models->get($to_name, $info->is_collection);
-		}
-
-		$query = new RelationshipQuery($this, $info);
-
-		// Object not in the db? That means we're in a query
-		// or importing (@see `fromArray()`). Just return metadata.
 		if ($this->isNew())
 		{
-			return $query->eager($this->_alias_service);
+			return $this;
 		}
 
-		// var_dump('Lazy Query '.$to_name);
+		$qb = $this->newQuery();
 
+		$this->constrainQueryToSelf($qb);
+		$qb->delete();
 
-		return $query->lazy($this->_factory);
-	}
+		$this->setId(NULL);
+		$this->markAsClean();
 
-	/**
-	 * Check for a relationship
-	 *
-	 * @param String  $name			Name of the relationship
-	 * @param Integer $primary_key	Optional primary key of the related model
-	 *
-	 * @return Boolean
-	 */
-	public function hasRelated($name, $primary_key = NULL)
-	{
-		return $this->_related_models->has($name, $primary_key);
-	}
-
-	/**
-	 * Add a related model
-	 *
-	 * @param String  $name		Name of the relationship
-	 * @param Object $model		Object to relate to
-	 *
-	 * @return Boolean
-	 */
-	public function addRelated($name, $model)
-	{
-		$this->_related_models->add($name, $model);
+		// clear relationships
+		foreach ($this->getAllAssociations() as $name => $assoc)
+		{
+			$assoc->clear();
+			$assoc->save();
+		}
 
 		return $this;
 	}
 
 	/**
-	 * Set related data for a given relationship.
+	 * Limit a query to the primary id of this model
 	 *
-	 * @param String $name The name by which this relationship is
-	 * 		identified.  In most cases this will be the name of the Model, but
-	 * 		sometimes it will be specific to the relationship.  For example,
-	 * 		ChannelEntry has an Author relationship (getAuthor(), setAuthor()).
-	 * @param Mixed  $value      Collection or single Model
-	 *
-	 * @return void
+	 * @param QueryBuilder $query The query that will be sent
 	 */
-	public function setRelated($name, $value)
+	protected function constrainQueryToSelf($query)
 	{
-		$this->_related_models->set($name, $value);
+		$pk = $this->getPrimaryKey();
+		$id = $this->getId();
 
-		$this->getRelationshipInfo($name)->connect($this, $value);
+		$query->filter($pk, $id);
+	}
+
+	/**
+	 * Get all associations
+	 *
+	 * @return array associations
+	 */
+	public function getAllAssociations()
+	{
+		return $this->_associations;
+	}
+
+	/**
+	 * Check if an association of a given name exists
+	 *
+	 * @param String $name Name of the association
+	 * @return bool has association?
+	 */
+	public function hasAssociation($name)
+	{
+		return array_key_exists($name, $this->_associations);
+	}
+
+	/**
+	 * Get an association of a given name
+	 *
+	 * @param String $name Name of the association
+	 * @return Mixed the association
+	 */
+	public function getAssociation($name)
+	{
+		return $this->_associations[$name];
+	}
+
+	/**
+	 * Set a given association
+	 *
+	 * @param String $name Name of the association
+	 * @param Association $association Association to set
+	 * @return $this;
+	 */
+	public function setAssociation($name, Association $association)
+	{
+		$association->setFrontend($this->_frontend);
+
+		$this->_associations[$name] = $association;
 
 		return $this;
 	}
 
-	public function getRelationshipInfo($name)
-	{
-		return $this->getGraphNode()->getEdgeByName($name);
-	}
-
-	public function getGraphNode()
-	{
-		$graph = $this->_factory->getRelationshipGraph();
-		return $graph->getNode(get_called_class());
-	}
-
 	/**
-	 * Retrieve the model as an array
+	 * Set the frontend
 	 *
-	 * @return Array Merged values of all gateways.
+	 * @param Frontend $frontend The frontend to use
+	 * @return $this
 	 */
-	public function toArray()
+	public function setFrontend(Frontend $frontend)
 	{
-		// extract all public vars from our gateways and flatten them
-		$export = array();
-
-		foreach (get_object_vars($this) as $key => $value)
+		if (isset($this->_frontend))
 		{
-			if ($key[0] != '_')
-			{
-				// Call get to export the data as it is accessed, not as
-				// it is stored in the database.
-				$export[$key] = $this->__get($key);
-			}
+			throw new OverflowException('Cannot override existing frontend.');
 		}
 
-		$export['related_models'] = array();
-
-		// Allow for cascading export
-		$cascade = func_get_args();
-
-		foreach ($cascade as $relationship)
-		{
-			if ( ! is_array($relationship))
-			{
-				$relationship = array($relationship => array());
-			}
-
-			foreach ($relationship as $related_name => $related_cascade)
-			{
-				$relationship_getter = 'get' . $related_name;
-				$related_data = $this->$relationship_getter();
-
-				$export['related_models'][$related_name] = $related_data->toArray($related_cascade);
-			}
-		}
-
-		return $export;
-	}
-
-	public function fromArray($data)
-	{
-		$data[$this->getMetaData('primary_key')] = NULL;
-
-		if (isset($data['related_models']))
-		{
-			foreach ($data['related_models'] as $relationship_name => $values)
-			{
-				$models = new Collection();
-
-				$relationship_getter = 'get' . $relationship_name;
-				$relationship_meta = $this->$relationship_getter();
-
-				foreach ($values as $related_data)
-				{
-					$models[] = $this->_factory
-						->make($relationship_meta->to_model_name)
-						->fromArray($related_data);
-				}
-
-				$relationship_setter = 'set' . $relationship_name;
-				$this->$relationship_setter($models);
-			}
-
-			unset($data['related_models']);
-		}
-
-		foreach ($data as $key => $value)
-		{
-			// we export with __get, so import with __set
-			$this->__set($key, $value);
-		}
+		$this->_frontend = $frontend;
 
 		return $this;
 	}
 
-	public function toJson()
+	/**
+	 * Set the validatior
+	 *
+	 * @param Validator $validator The validator to use
+	 * @return $this;
+	 */
+	public function setValidator(Validator $validator)
 	{
-		$data = call_user_func_array(array($this, 'toArray'), func_get_args());
+		$this->_validator = $validator;
 
-		$dumper = new namespace\Serializers\JsonSerializer();
-		return $dumper->serialize($model, $data); // idea: make toArray cascade compatible?
-	}
+		$rules = $this->getMetaData('validation_rules');
+		$validator->setRules($rules);
 
-	public function fromJson($model_json)
-	{
-		$dumper = new namespace\Serializers\JsonSerializer();
-		$dumper->unserialize($this, $model_json);
-	}
-
-	public function toXml()
-	{
-		$dumper = new namespace\Serializers\XmlSerializer();
-		return $dumper->serialize($this, func_get_args()); // idea: make toArray cascade compatible?
-	}
-
-	public function fromXml($model_xml)
-	{
-		$dumper = new namespace\Serializers\XmlSerializer();
-		return $dumper->unserialize($this, $model_xml);
+		return $this;
 	}
 
 	/**
-	 * Using setter injection allows third parties and tests to flip out the
-	 * validation. This is automatically passed on to the gateways.
+	 * Create a new query
+	 *
+	 * @return QueryBuilder new query
 	 */
-	public function setValidationFactory(ValidationFactory $validation_factory = NULL)
+	protected function newQuery()
 	{
-		$this->_validation_factory = $validation_factory;
+		return $this->_frontend->get($this);
 	}
-
-/*
-	public function testPrint($depth='')
-	{
-		if ($depth == "\t\t\t")
-		{
-			return;
-		}
-		$primary_key = static::getMetaData('primary_key');
-		$model_name = substr(get_class($this), strrpos(get_class($this), '\\')+1);
-		echo $depth . '=====' . $model_name . ': ' . $this->{$primary_key} . ' Obj(' . spl_object_hash($this) . ')'. "=====\n";
-		foreach($this->_related_models as $relationship_name=>$models)
-		{
-			echo $depth . '----Relationship: ' . $relationship_name . "----\n";
-			foreach($models as $model)
-			{
-				$model->testPrint($depth . "\t");
-			}
-			echo $depth . '---- END Relationship: ' . $relationship_name . "----\n";
-		}
-		echo $depth . '===== END ' . $model_name . ': ' . $this->{$primary_key} . "=====\n";
-	}
-*/
 }

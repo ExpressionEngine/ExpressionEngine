@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model\File;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
@@ -30,8 +31,11 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @link		http://ellislab.com
  */
 class FileDimension extends Model {
+
 	protected static $_primary_key = 'id';
 	protected static $_gateway_names = array('FileDimensionGateway');
+
+
 
 	protected $id;
 	protected $site_id;

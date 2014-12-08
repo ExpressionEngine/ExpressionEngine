@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model\File;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
@@ -33,6 +34,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @link		http://ellislab.com
  */
 class UploadDestination extends Model {
+
 	protected static $_primary_key = 'id';
 	protected static $_gateway_names = array('UploadPrefGateway');
 
@@ -67,34 +69,4 @@ class UploadDestination extends Model {
 	protected $cat_group;
 	protected $batch_location;
 
-
-	public function getSite()
-	{
-		return $this->getRelated('Site');
-	}
-
-	public function setSite(Site $site)
-	{
-		return $this->setRelated('Site', $site);
-	}
-
-	public function getNoAccess()
-	{
-		return $this->getRelated('NoAccess');
-	}
-
-	public function setNoAccess($no_access)
-	{
-		return $this->setRelated('NoAccess', $no_access);
-	}
-
-	public function getFileDimension()
-	{
-		return $this->getRelated('FileDimension');
-	}
-
-	public function setFileDimension($file_dimension)
-	{
-		return $this->setRelated('FileDimension', $file_dimension);
-	}
 }

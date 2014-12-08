@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model\Log;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
@@ -27,13 +28,18 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @link		http://ellislab.com
  */
 class EmailConsoleCache extends Model {
+
 	protected static $_primary_key = 'cache_id';
-	protected static $_gateway_names = array('EmailConsoleCacheGateway');
+	protected static $_table_name = 'email_console_cache';
 
 	protected static $_relationships = array(
 		'Member' => array(
-			'type' => 'many_to_one'
+			'type' => 'belongsTo'
 		),
+	);
+
+	protected static $_validation_rules = array(
+		'ip_address' => 'ip_address'
 	);
 
 	// Properties

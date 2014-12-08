@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Service;
 
 use Closure;
@@ -35,4 +36,3 @@ interface ServiceProvider {
 	public function make();
 
 }
-// EOF

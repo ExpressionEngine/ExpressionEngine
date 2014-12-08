@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\Tests\ExpressionEngine\Library\DataStructure\Tree;
 
 use EllisLab\ExpressionEngine\Library\DataStructure\Tree\TreeNode;

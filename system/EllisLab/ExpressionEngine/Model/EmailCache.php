@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
@@ -15,8 +16,6 @@ class EmailCache extends Model
 		)
 	);
 
-
-	// Properties
 	protected $cache_id;
 	protected $cache_date;
 	protected $total_sent;
@@ -33,15 +32,5 @@ class EmailCache extends Model
 	protected $text_fmt;
 	protected $wordwrap;
 	protected $attachments;
-
-	public function getMemberGroups()
-	{
-		return $this->getRelated('MemberGroups');
-	}
-
-	public function setMemberGroups($member_groups)
-	{
-		return $this->setRelated('MemberGroups', $member_groups);
-	}
 
 }

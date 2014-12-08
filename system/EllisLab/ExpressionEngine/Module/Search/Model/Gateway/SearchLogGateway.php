@@ -1,9 +1,11 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Module\Search\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
-class SearchLogGateway extends RowDataGateway {
+class SearchLogGateway extends Gateway {
+
 	protected static $_table_name 		= 'search_log';
 	protected static $_primary_key 		= 'id';
 	protected static $_related_gateways	= array(

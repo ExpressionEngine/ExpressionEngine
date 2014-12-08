@@ -1,7 +1,8 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model\DataTableField;
 
-use EllisLab\ExpressionEngine\Service\Model\Field\FieldContent;
+use EllisLab\ExpressionEngine\Service\Model\Interfaces\Field\FieldContent;
 
 abstract class DataTableFieldContent implements FieldContent {
 	protected $gateway = NULL;
