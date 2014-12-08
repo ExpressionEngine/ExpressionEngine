@@ -39,7 +39,7 @@ class TemplateGroup extends Model {
 			'from_key' => 'group_id',
 			'pivot' => array(
 				'table' => 'template_member_groups',
-				'left'  => 'template_gorup_id',
+				'left'  => 'template_group_id',
 				'right' => 'group_id'
 			)
 		),
@@ -54,6 +54,7 @@ class TemplateGroup extends Model {
 
 	protected static $_validation_rules = array(
 		'is_site_default' => 'enum[y,n]',
+		'group_name' => 'required|is_valid_group_name|unique',
 	);
 
 	protected $group_id;

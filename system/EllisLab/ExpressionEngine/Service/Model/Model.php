@@ -102,23 +102,31 @@ class Model {
 
 		if (preg_match("/^({$actions})(.+)/", $method, $matches))
 		{
-			list($_, $action, $relationship) = $matches;
+			list($_, $action, $assoc_name) = $matches;
 
-			if ($this->hasAssociation($relationship))
+			if ($this->hasAssociation($assoc_name))
 			{
-				$assoc = $this->getAssociation($relationship);
-				$result = call_user_func_array(array($assoc, $action), $args);
-
-				if ($action == 'has' || $action == 'get')
-				{
-					return $result;
-				}
-
-				return $this;
+				return $this->runAssociationAction($assoc_name, $action, $args);
 			}
 		}
 
 		throw new BadMethodCallException("Method not found: {$method}.");
+	}
+
+	/**
+	 *
+	 */
+	protected function runAssociationAction($assoc_name, $action, $args)
+	{
+		$assoc = $this->getAssociation($assoc_name);
+		$result = call_user_func_array(array($assoc, $action), $args);
+
+		if ($action == 'has' || $action == 'get')
+		{
+			return $result;
+		}
+
+		return $this;
 	}
 
 	/**
