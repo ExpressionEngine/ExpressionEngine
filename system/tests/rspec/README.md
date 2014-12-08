@@ -11,10 +11,11 @@ You need to install QT:
 - Follow the directions in config.rb to tell rspec where it is
 - Add a new database group 'rspec' in database.php that points to
   the test db
-- Conditionally flip the active group for capybara requests:
+- Conditionally flip the active group for fixture and capybara
+  requests:
 
 ```php
-if (strpos($_SERVER['HTTP_USER_AGENT'], 'capybara') !== FALSE)
+if (strpos($_SERVER['HTTP_USER_AGENT'], 'capybara') !== FALSE  || defined('FIXTURE'))
 {
 	$active_group = 'rspec';
 }

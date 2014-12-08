@@ -10,6 +10,7 @@ define('RD', '}');
 
 define('IS_CORE', FALSE);
 define('DEBUG', 1);
+define('FIXTURE', TRUE);
 
 // Minor CI annoyance
 function log_message() {}
