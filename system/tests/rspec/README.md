@@ -20,7 +20,7 @@ if (strpos($_SERVER['HTTP_USER_AGENT'], 'capybara') !== FALSE)
 }
 ```
 
-- If you install is not at "http://ee2/", then override all paths by
+- If your install is not at "http://ee2/", then override all paths by
   updating the first two lines here and copying it to config.php:
 
 ```php
