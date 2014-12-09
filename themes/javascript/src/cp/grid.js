@@ -108,6 +108,9 @@ Grid.Publish.prototype = {
 			stop: function(event, row)
 			{
 				that._fireEvent('afterSort', row.item);
+				
+				// Re-zebra-stripe the table
+				EE.cp.zebra_tables(that.root);
 			}
 		});
 	},
@@ -236,6 +239,9 @@ Grid.Publish.prototype = {
 		{
 			EE.cp.formValidation.bindInputs(el);
 		}
+
+		// Re-zebra-stripe the table
+		EE.cp.zebra_tables(this.root);
 	},
 
 	/**
@@ -264,6 +270,9 @@ Grid.Publish.prototype = {
 			{
 				that.emptyField.show();
 			}
+
+			// Re-zebra-stripe the table
+			EE.cp.zebra_tables(that.root);
 		});
 	},
 
