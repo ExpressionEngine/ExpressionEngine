@@ -18,7 +18,7 @@ class UploadSync < ControlPanelPage
 	# so we can make sure it is progressing properly
 	def log_progress_bar_moves
 		i = 0;
-		sizes = [];
+		sizes = [0];
 		
 		while self.progress_bar['style'] != 'width: 100%; ' && i < 500
 
