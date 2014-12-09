@@ -33,24 +33,10 @@ $(document).ready(function () {
 			});
 			$(modalIs + " .checklist li:last").addClass('last');
 
-			// Second build and show the modal
-			var contents = $('.' + $(conditional_element).attr('rel')).html();
-			modalIs = '.modal-wrap' + modalIs;
-
-			$('section.wrap').after('<div class="modal-wrap ' + $(conditional_element).attr('rel') + '"> <div class="modal"> <div class="col-group"> <div class="col w-16"> <a class="m-close" href="#"></a> <div class="box"> </div> </div> </div> </div> </div>');
-
-			$(modalIs + ' div.box').append(contents);
-			$(modalIs + ' .m-close').click(function (e) {
-				$(modalIs).detach();
-				$('.overlay').fadeOut('slow');
-				$('.modal-wrap').fadeOut('slow');
-				e.preventDefault();
-			});
-
 			var heightIs = $(document).height();
 
 			$('.overlay').fadeIn('slow').css('height',heightIs);
-			$(modalIs).fadeIn('slow');
+			$('.modal-wrap' + modalIs).fadeIn('slow');
 			e.preventDefault();
 			$('#top').animate({ scrollTop: 0 }, 100);
 		}
