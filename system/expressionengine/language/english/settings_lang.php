@@ -1047,9 +1047,6 @@ $lang = array(
 'upload_remove' =>
 'Remove',
 
-'upload_sync' =>
-'Sync',
-
 'upload_create' =>
 'Create New',
 
