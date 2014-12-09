@@ -64,9 +64,4 @@
 	</div>
 </div>
 
-<?php
-if (isset($modals))
-{
-	$this->view('_shared/modals', $modals);
-}
-?>
+<?php if (isset($blocks['modals'])) echo $blocks['modals']; ?>
