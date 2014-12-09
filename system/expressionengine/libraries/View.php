@@ -25,6 +25,7 @@
 class View {
 
 	public $alerts = array();
+	public $blocks = array();
 
 	protected $_theme = 'default';
 	protected $_extend = '';
@@ -63,6 +64,7 @@ class View {
 		ee()->javascript->compile();
 
 		$data = array_merge($this->_data, $data);
+		$data['blocks'] = $this->blocks;
 
 		// load up the inner
 		$rendered_view = ee()->load->view($view, $data, TRUE);
