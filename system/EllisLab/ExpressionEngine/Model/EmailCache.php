@@ -36,12 +36,8 @@ class EmailCache extends Model
 	protected $wordwrap;
 	protected $attachments;
 
-	public function set__recipient_array( $recipients)
+	public function set__recipient_array($recipients)
 	{
-		if ( ! is_array($recipients))
-		{
-			var_dump($recipients);
-		}
 		$this->recipient_array = serialize($recipients);
 		return $this;
 	}
