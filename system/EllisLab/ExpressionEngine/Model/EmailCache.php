@@ -7,12 +7,15 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class EmailCache extends Model
 {
 	protected static $_primary_key = 'cache_id';
-	protected static $_gateway_names = array('EmailCacheGateway');
+	protected static $_table_name = 'email_cache';
 
 	protected static $_relationships = array(
 		'MemberGroups' => array(
-			'type' => 'many_to_many',
-			'model' => 'MemberGroup'
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'MemberGroup',
+			'pivot' => array(
+				'table' => 'email_cache_mg'
+			)
 		)
 	);
 
@@ -33,4 +36,29 @@ class EmailCache extends Model
 	protected $wordwrap;
 	protected $attachments;
 
+	public function set__recipient_array( $recipients)
+	{
+		if ( ! is_array($recipients))
+		{
+			var_dump($recipients);
+		}
+		$this->recipient_array = serialize($recipients);
+		return $this;
+	}
+
+	public function get__recipient_array()
+	{
+		return unserialize($this->recipient_array);
+	}
+
+	public function set__attachments(array $attachments)
+	{
+		$this->attachments = serialize($attachments);
+		return $this;
+	}
+
+	public function get__attachments()
+	{
+		return unserialize($this->attachments);
+	}
 }

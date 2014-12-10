@@ -18,7 +18,7 @@ class Member extends Model {
 
 	protected static $_relationships = array(
 		'MemberGroup' => array(
-			'type' => 'many_to_one'
+			'type' => 'belongsTo'
 		),
 	//	'ResetPassword'	=> array(
 	//		'type' => 'one_to_one'

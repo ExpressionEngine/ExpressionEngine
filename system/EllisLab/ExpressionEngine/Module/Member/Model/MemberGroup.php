@@ -7,9 +7,12 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class MemberGroup extends Model {
 
 	protected static $_primary_key = 'group_id';
-	protected static $_gateway_names = array('MemberGroupGateway');
+	protected static $_table_name = 'member_groups';
 
 	protected static $_relationships = array(
+		'Site' => array(
+			'type' => 'belongsTo'
+		),
 		'Members' => array(
 			'type' => 'hasMany',
 			'model' => 'Member'
