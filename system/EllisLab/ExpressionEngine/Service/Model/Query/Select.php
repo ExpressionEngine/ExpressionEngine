@@ -155,7 +155,7 @@ class Select extends Query {
 
 			$property = $this->translateProperty($property);
 
-			$query->order($property, $direction);
+			$query->order_by($property, $direction);
 		}
 	}
 
@@ -231,6 +231,14 @@ class Select extends Query {
 		if (strpos($property, '.') === FALSE)
 		{
 			$alias = $this->root_alias;
+
+			if ($property == $alias)
+			{
+				$model = $this->expandAlias($alias);
+				$meta = $this->store->getMetaDataReader($model);
+
+				$property = $meta->getPrimaryKey();
+			}
 		}
 		else
 		{
@@ -315,5 +323,13 @@ class Select extends Query {
 	protected function storeAlias($alias, $model)
 	{
 		$this->aliases[$alias] = $model;
+	}
+
+	/**
+	 *
+	 */
+	protected function expandAlias($alias)
+	{
+		return $this->aliases[$alias];
 	}
 }

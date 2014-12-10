@@ -38,23 +38,25 @@ class Update extends Query {
 		{
 			$object->$field = $value;
 		}
-
+/*
 		$result = $object->validate();
 
-		if ($result->isNotValid())
+		if ( ! $result->isValid())
 		{
 			throw new \Exception('Validation failed');
 		}
-
+*/
 		// todo this is yucky
 		$gateways = $this->store->getMetaDataReader($object->getName())->getGateways();
 
 		$dirty = $object->getDirty();
 
+		$results[] = array();
+
 		foreach ($gateways as $gateway)
 		{
 			$gateway->fill($dirty);
-			$this->actOnGateway($gateway);
+			$results[] = $this->actOnGateway($gateway);
 		}
 	}
 

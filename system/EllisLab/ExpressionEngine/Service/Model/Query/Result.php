@@ -51,19 +51,21 @@ class Result {
 
 	public function first()
 	{
-		$this->collectColumnsByAliasPrefix($this->db_result[0]);
-		$this->initializeResultArray();
-		$this->parseRow($row);
+		$all = $this->all();
 
-		$root = $this->builder->getFrom();
-		return $this->objects[$root][0];
+		if ( ! count($all))
+		{
+			return NULL;
+		}
+
+		return $all->first();
 	}
 
 	public function all()
 	{
 		if ( ! count($this->db_result))
 		{
-			return NULL;
+			return new Collection;
 		}
 
 		$this->collectColumnsByAliasPrefix($this->db_result[0]);
