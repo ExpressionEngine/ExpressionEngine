@@ -197,7 +197,7 @@ class Uploads extends Settings {
 				'rules' => 'callback_validateImageSizes'
 			)
 		));
-		
+
 		$base_url = 'settings/uploads/';
 		$base_url .= ($upload_id) ? 'edit/' . $upload_id : 'new-upload';
 		$base_url = cp_url($base_url);
@@ -327,7 +327,7 @@ class Uploads extends Settings {
 			->with('FileDimension')
 			->filter('id', $upload_id)
 			->first();
-	
+
 		// Image manipulations Grid
 		$grid = $this->getImageSizesGrid($upload_destination);
 
@@ -470,7 +470,7 @@ class Uploads extends Settings {
 			{
 				$this->image_sizes_errors[$row_id]['resize_type'] = lang('required');
 			}
-			
+
 			foreach (array('width', 'height') as $dimension)
 			{
 				// Height and width are required
@@ -721,7 +721,7 @@ class Uploads extends Settings {
 		{
 			// Relationships aren't working
 			//$no_access = $upload_destination->getNoAccess()->pluck('group_id');
-			
+
 			$no_access_query = ee()->db->get_where('upload_no_access', array('upload_id' => $upload_destination->id));
 
 			foreach ($no_access_query->result() as $row)
@@ -814,13 +814,13 @@ class Uploads extends Settings {
 				$no_access[] = $group->group_id;
 			}
 		}
-		
+
 		if ( ! empty($no_access))
 		{
 			$groups = ee('Model')->get('MemberGroup')->filter('group_id', 'IN', $no_access)->all();
 			//$upload_destination->setNoAccess($groups);
 		}
-		
+
 		$upload_destination->save();
 
 		// TODO: Delete when relationships (setNoAccess) works
