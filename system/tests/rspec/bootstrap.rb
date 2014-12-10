@@ -3,6 +3,7 @@ require 'capybara/rspec'
 require 'capybara/webkit'
 require 'mysql2'
 require 'site_prism'
+require 'image_size'
 require './config.rb'
 
 if File.exists?('./config.local.rb') then

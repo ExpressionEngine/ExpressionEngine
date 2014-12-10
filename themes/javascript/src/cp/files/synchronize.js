@@ -98,15 +98,16 @@ EE.file_manager.sync = function(upload_directory_id) {
 			// Decrement the running count
 			EE.file_manager.sync_running -= 1;
 
-			// Fire off another Ajax request
-			EE.file_manager.sync(upload_directory_id);
-
 			// Update the progress bar
 			var total_count       = EE.file_manager.sync_file_count,
 				current_count     = EE.file_manager.sync_files.length,
 				already_processed = total_count - current_count;
-
+			
 			EE.file_manager.update_progress(Math.round(already_processed / total_count * 100));
+
+			// Fire off another Ajax request
+			EE.file_manager.sync(upload_directory_id);
+
 			EE.file_manager.finish_sync(upload_directory_id);
 		},
 		success: function(data, textStatus, xhr) {
