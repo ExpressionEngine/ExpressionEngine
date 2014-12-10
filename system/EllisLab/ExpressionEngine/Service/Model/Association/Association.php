@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Service\Model\Association;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -69,6 +70,14 @@ abstract class Association {
 	/**
 	 *
 	 */
+	public function clear()
+	{
+		$this->loaded = FALSE;
+	}
+
+	/**
+	 *
+	 */
 	public function isLoaded()
 	{
 		return $this->loaded;
@@ -124,6 +133,8 @@ abstract class Association {
 			{
 				$this->add($model);
 			}
+
+			return;
 		}
 
 		$this->addToRelated($item);
@@ -140,6 +151,8 @@ abstract class Association {
 			{
 				$this->remove($model);
 			}
+
+			return;
 		}
 
 		$this->removeFromRelated($item);
