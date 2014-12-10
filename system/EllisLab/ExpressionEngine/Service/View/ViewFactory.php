@@ -3,6 +3,8 @@ namespace EllisLab\ExpressionEngine\Service\View;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+use \EE_Loader;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -28,15 +30,17 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class ViewFactory {
 
 	protected $basepath;
+	protected $loader;
 
-	public function __construct($basepath)
+	public function __construct($basepath, EE_Loader $loader)
 	{
 		$this->basepath = $basepath;
+		$this->loader = $loader;
 	}
 
 	public function make($path)
 	{
-		return new View($this->basepath.'/'.$path);
+		return new View($this->basepath.'/'.$path, $this->loader);
 	}
 
 }

@@ -3,6 +3,8 @@ namespace EllisLab\ExpressionEngine\Service\View;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+use \EE_Loader;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -27,10 +29,13 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  */
 class View {
 
-	public function __construct($path)
+	protected $path;
+	protected $loader;
+
+	public function __construct($path, EE_Loader $loader)
 	{
 		$this->path = $path;
-		$this->cp = ee()->cp;
+		$this->loader = $loader;
 	}
 
 	public function parse($path, $vars)
@@ -41,17 +46,17 @@ class View {
 
 	public function render(array $vars)
 	{
-		return ee()->load->view($this->path, $vars, TRUE);
+		return $this->loader->view($this->path, $vars, TRUE);
 	}
 
 	public function ee_view($view, $vars = array(), $return = FALSE)
 	{
-		return ee()->load->ee_view($view, $vars, $return);
+		return $this->loader->ee_view($view, $vars, $return);
 	}
 
 	public function view($view, $vars = array(), $return = FALSE)
 	{
-		return ee()->load->view($view, $vars, $return);
+		return $this->loader->view($view, $vars, $return);
 	}
 
 	/**
