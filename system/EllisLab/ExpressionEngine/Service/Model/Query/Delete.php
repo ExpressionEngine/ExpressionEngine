@@ -39,8 +39,14 @@ class Delete extends Query {
 
 		$from_pk = $this->store->getMetaDataReader($from)->getPrimaryKey();
 
-		$delete_list = $this->getDeleteList($from);
 		$parent_ids = $this->getParentIds($from, $from_pk);
+
+		if ( ! count($parent_ids))
+		{
+			return;
+		}
+
+		$delete_list = $this->getDeleteList($from);
 
 		foreach ($delete_list as $model => $withs)
 		{
