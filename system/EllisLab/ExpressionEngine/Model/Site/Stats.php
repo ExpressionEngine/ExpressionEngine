@@ -30,7 +30,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class Stats extends Model {
 
 	protected static $_primary_key = 'stat_id';
-	protected static $_gateway_names = 'StatGateway';
+	protected static $_table_name = 'stats';
 
 	protected static $_relationships = array(
 		'Site' => array(

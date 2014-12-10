@@ -7,14 +7,14 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class SearchLog extends Model {
 
 	protected static $_primary_key = 'id';
-	protected static $_gateway_names = array('SearchLogGateway');
+	protected static $_table_name = 'search_log';
 
 	protected static $_relationships = array(
 		'Site' => array(
 			'type' => 'BelongsTo'
 		),
 		'Member'	=> array(
-			'type' => 'many_to_many'
+			'type' => 'BelongsTo'
 		)
 	);
 

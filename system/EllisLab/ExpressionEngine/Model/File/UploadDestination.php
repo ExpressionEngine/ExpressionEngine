@@ -36,18 +36,23 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class UploadDestination extends Model {
 
 	protected static $_primary_key = 'id';
-	protected static $_gateway_names = array('UploadPrefGateway');
+	protected static $_table_name = 'upload_prefs';
 
 	protected static $_relationships = array(
 		'Site' => array(
-			'type' => 'many_to_one'
+			'type' => 'belongsTo'
 		),
 		'NoAccess' => array(
-			'type' => 'many_to_many',
-			'model' => 'MemberGroup'
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'MemberGroup',
+			'pivot' => array(
+				'table' => 'upload_no_access',
+				'left' => 'upload_id',
+				'right' => 'member_group'
+			)
 		),
 		'FileDimension' => array(
-			'type' => 'one_to_many'
+			'type' => 'hasMany'
 		)
 	);
 
