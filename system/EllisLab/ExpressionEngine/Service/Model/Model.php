@@ -593,6 +593,11 @@ class Model {
 		return $this;
 	}
 
+	public function toArray()
+	{
+		return $this->getValues();
+	}
+
 	/**
 	 * Create a new query
 	 *
