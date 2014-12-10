@@ -113,7 +113,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 
 		$fe->shouldReceive('get')->andReturn($qb);
 
-		$qb->shouldReceive('set')->with(array('name' => 'Robert'));
+		$qb->shouldReceive('set')->with(array('id' => NULL, 'name' => 'Robert', 'surname' => NULL, 'full_name' => 'Robert '));
 		$qb->shouldReceive('insert')->andReturn(8);
 
 		$m = new ModelStub();
