@@ -65,6 +65,7 @@ class View {
 
 		$data = array_merge($this->_data, $data);
 		$data['blocks'] = $this->blocks;
+		$data['localize'] = ee()->localize;
 
 		// load up the inner
 		$rendered_view = ee()->load->view($view, $data, TRUE);
