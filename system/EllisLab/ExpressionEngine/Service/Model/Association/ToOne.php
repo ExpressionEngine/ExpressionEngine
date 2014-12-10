@@ -34,6 +34,14 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 abstract class ToOne extends Association {
 
 	/**
+	 *
+	 */
+	public function fill($models)
+	{
+		$this->set($models[0]);
+	}
+
+	/**
 	 * Overriden to enforce type. The parent accepts
 	 * arrays/collections. We don't allow that here.
 	 */
@@ -62,12 +70,21 @@ abstract class ToOne extends Association {
 			throw new \InvalidArgumentException('Cannot set(), must be a Model');
 		}
 
-		if (isset($this->relation))
+		if (isset($this->related))
 		{
 			throw new LogicException('Cannot add(), did you mean set()?');
 		}
 
 		parent::add($model);
+	}
+
+	/**
+	 *
+	 */
+	public function clear()
+	{
+		parent::clear();
+		$this->related = NULL;
 	}
 
 	/**
@@ -93,7 +110,7 @@ abstract class ToOne extends Association {
 	 */
 	protected function removeFromRelated(Model $model)
 	{
-		parent::addToRelated($model);
+		parent::removeFromRelated($model);
 
 		$this->related = NULL;
 	}

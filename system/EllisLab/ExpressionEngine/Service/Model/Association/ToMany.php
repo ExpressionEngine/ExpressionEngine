@@ -77,6 +77,16 @@ abstract class ToMany extends Association {
 	/**
 	 *
 	 */
+	public function clear()
+	{
+		parent::clear();
+		$this->related = array();
+		$this->collection = NULL;
+	}
+
+	/**
+	 *
+	 */
 	protected function hasRelated(Model $model)
 	{
 		$hash = spl_object_hash($model);
