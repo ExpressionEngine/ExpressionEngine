@@ -53,7 +53,7 @@ $message = isset($options['message']) ? $options['message'] : FALSE;
 
 $recipients = array(
 	"wes"    => "Wes Baker",
-	"pascal" => "Pascal Kreite",
+	"pascal" => "Pascal Kriete",
 	"kevin"  => "Kevin Cupp",
 	"daniel" => "Daniel Bingham",
 	"quinn"  => "Quinn Chrzan",
