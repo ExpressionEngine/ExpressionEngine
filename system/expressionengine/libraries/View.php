@@ -76,7 +76,11 @@ class View {
 			$view = $this->_extend;
 			$this->_extend = '';
 			$this->disable($this->_disable_up);
-			$rendered_view = ee()->load->view($view, array('EE_rendered_view' => $rendered_view), TRUE);
+			$data = array(
+				'EE_rendered_view' => $rendered_view,
+				'blocks'           => $this->blocks
+			);
+			$rendered_view = ee()->load->view($view, $data, TRUE);
 		}
 
 		// clear for future calls
