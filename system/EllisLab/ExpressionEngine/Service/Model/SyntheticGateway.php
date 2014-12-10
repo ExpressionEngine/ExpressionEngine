@@ -68,7 +68,7 @@ class SyntheticGateway extends Gateway {
 	public function getPrimaryKey()
 	{
 		$class = $this->model;
-		return $model::getMetaData('primary_key');
+		return $class::getMetaData('primary_key');
 	}
 
 	public function getId()
