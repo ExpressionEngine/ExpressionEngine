@@ -56,16 +56,17 @@ class Update extends Query {
 		foreach ($gateways as $gateway)
 		{
 			$gateway->fill($dirty);
-			$results[] = $this->actOnGateway($gateway);
+
+			$results[] = $this->actOnGateway($gateway, $object);
 		}
 	}
 
-	protected function actOnGateway($gateway)
+	protected function actOnGateway($gateway, $object)
 	{
 		$query = $this->store
 			->rawQuery()
 			->set($gateway->getValues())
-			->where($gateway->getPrimaryKey(), $gateway->getId())
+			->where($gateway->getPrimaryKey(), $object->getId())
 			->update($gateway->getTableName());
 	}
 }

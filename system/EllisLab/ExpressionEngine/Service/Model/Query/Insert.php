@@ -40,7 +40,7 @@ class Insert extends Update {
 		return current($this->insert_ids);
 	}
 
-	protected function actOnGateway($gateway)
+	protected function actOnGateway($gateway, $object)
 	{
 		$values = $gateway->getValues();
 		unset($values[$gateway->getPrimaryKey()]);
