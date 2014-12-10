@@ -229,6 +229,11 @@ class DataStore {
 		$type = $options['type'];
 		$class = __NAMESPACE__."\\Relation\\{$type}";
 
+		if ( ! class_exists($class))
+		{
+			throw new \Exception("Unknown relationship type {$type} in {$model_name}");
+		}
+
 		$relation = new $class($from_reader, $to_reader, $name, $options);
 		$relation->setDataStore($this);
 
@@ -273,6 +278,16 @@ class DataStore {
 	public function deleteQuery(Builder $qb)
 	{
 		return $this->runQuery('Delete', $qb);
+	}
+
+	/**
+	 * Run a count query
+	 *
+	 * @param Builder $qb The query builder describing the query
+	 */
+	public function countQuery(Builder $qb)
+	{
+		return $this->runQuery('Count', $qb);
 	}
 
 	/**
