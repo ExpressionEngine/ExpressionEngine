@@ -48,7 +48,7 @@ class Directory {
 	 *
 	 * @return File             Config\File object
 	 */
-	public function file($filename)
+	public function file($filename = 'config')
 	{
 		// Get the proper filename
 		$fullpath = realpath($this->dirname.'/'.$filename.'.php');
