@@ -10,7 +10,7 @@
 	<?php $this->view('_shared/alerts')?>
 	<?php if (isset($filters)) echo $filters; ?>
 	<section class="item-wrap log">
-		<?php if ($logs->count() == 0): ?>
+		<?php if (count($logs) == 0): ?>
 			<p class="no-results"><?=lang('no_control_panel_logs_found')?></p>
 		<?php else: ?>
 			<?php foreach($logs as $log): ?>
