@@ -47,6 +47,6 @@ class Database
 	 */
 	public function getConfig()
 	{
-		return $this->config->getGroup();
+		return $this->config;
 	}
 }
