@@ -124,69 +124,13 @@ class Search extends Logs {
 			->offset($offset)
 			->all();
 
-		$rows   = array();
-		$modals = array();
-
-		foreach ($logs as $log)
-		{
-			if ($log->member_id == 0)
-			{
-				$username = '--';
-			}
-			else
-			{
-				$username = "<a href='" . cp_url('myaccount', array('id' => $log->member_id)) . "'>{$log->screen_name}</a>";
-			}
-
-			$rows[] = array(
-				'id'				=> $log->id,
-				'username'			=> $username,
-				'ip_address'		=> $log->ip_address,
-				'site_label' 		=> $log->getSite()->site_label,
-				'search_date'		=> ee()->localize->human_time($log->search_date),
-				'search_type' 		=> $log->search_type,
-				'search_terms'		=> $log->search_terms
-			);
-
-			$modal_vars = array(
-				'form_url'	=> $this->base_url,
-				'hidden'	=> array(
-					'delete'	=> $log->id
-				),
-				'checklist'	=> array(
-					array(
-						'kind' => lang('view_search_log'),
-						'desc' => lang('searched_for') . ' "' . $log->search_terms . '" ' . lang('in') . ' ' . $log->search_type
-					)
-				)
-			);
-
-			$modals['modal-confirm-' . $log->id] = ee()->view->render('_shared/modal_confirm_remove', $modal_vars, TRUE);
-		}
-
 		$pagination = new Pagination($this->params['perpage'], $count, $page);
 		$links = $pagination->cp_links($this->base_url);
 
-		$modal_vars = array(
-			'form_url'	=> $this->base_url,
-			'hidden'	=> array(
-				'delete'	=> 'all'
-			),
-			'checklist'	=> array(
-				array(
-					'kind' => lang('view_search_log'),
-					'desc' => lang('all')
-				)
-			)
-		);
-
-		$modals['modal-confirm-all'] = ee()->view->render('_shared/modal_confirm_remove', $modal_vars, TRUE);
-
 		$vars = array(
-			'rows' => $rows,
+			'logs' => $logs,
 			'pagination' => $links,
 			'form_url' => $this->base_url->compile(),
-			'modals' => $modals
 		);
 
 		ee()->cp->render('logs/search', $vars);
