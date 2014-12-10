@@ -31,11 +31,15 @@ class View {
 
 	protected $path;
 	protected $loader;
+	protected $view;
 
-	public function __construct($path, EE_Loader $loader)
+	private $blockStack;
+
+	public function __construct($path, EE_Loader $loader, \View $view)
 	{
 		$this->path = $path;
 		$this->loader = $loader;
+		$this->view = $view;
 	}
 
 	public function parse($path, $vars)
@@ -99,7 +103,7 @@ class View {
 		$buffer .= ob_get_contents();
 		ob_end_clean();
 
-		ee()->view->blocks[$name] = $buffer;
+		$this->view->blocks[$name] = $buffer;
 	}
 }
 // END CLASS

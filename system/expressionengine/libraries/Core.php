@@ -127,7 +127,7 @@ class EE_Core {
 
 		ee()->di->register('View', function($di, $basepath = '')
 		{
-            return new \EllisLab\ExpressionEngine\Service\View\ViewFactory($basepath, ee()->load);
+            return new \EllisLab\ExpressionEngine\Service\View\ViewFactory($basepath, ee()->load, ee()->view);
 		});
 
 		ee()->di->register('Filter', function($di)

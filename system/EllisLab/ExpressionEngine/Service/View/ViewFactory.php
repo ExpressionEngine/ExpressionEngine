@@ -31,16 +31,18 @@ class ViewFactory {
 
 	protected $basepath;
 	protected $loader;
+	protected $view;
 
-	public function __construct($basepath, EE_Loader $loader)
+	public function __construct($basepath, EE_Loader $loader, \View $view)
 	{
 		$this->basepath = $basepath;
 		$this->loader = $loader;
+		$this->view = $view;
 	}
 
 	public function make($path)
 	{
-		return new View($this->basepath.'/'.$path, $this->loader);
+		return new View($this->basepath.'/'.$path, $this->loader, $this->view);
 	}
 
 }
