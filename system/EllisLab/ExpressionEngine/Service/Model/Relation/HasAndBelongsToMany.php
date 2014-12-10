@@ -121,6 +121,11 @@ class HasAndBelongsToMany extends Relation {
 	{
 		parent::processOptions($options);
 
-		$this->pivot = $options['pivot'];
+		$pivot = array(
+			'left' => $this->from_primary_key,
+			'right' => $this->to_primary_key
+		);
+
+		$this->pivot = array_merge($pivot, $options['pivot']);
 	}
 }
