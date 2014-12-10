@@ -450,9 +450,6 @@ class Model {
 		else
 		{
 			// update
-			// TODO someone might try to change the id
-			$qb->set($this->getDirty());
-
 			$this->constrainQueryToSelf($qb);
 			$qb->update();
 		}
