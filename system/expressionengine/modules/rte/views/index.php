@@ -41,7 +41,6 @@ $modal_vars = array(
 );
 
 $this->ee_view('_shared/modal_confirm_remove', $modal_vars);
-// $this->ee_view('_shared/modal', array('name' => 'modal-confirm-remove', 'contents' => $contents));
 ?>
 
 <?php $this->endBlock(); ?>
