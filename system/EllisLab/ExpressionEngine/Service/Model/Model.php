@@ -135,7 +135,7 @@ class Model {
 	public function __debugInfo()
 	{
 		$name = $this->_name;
-		$values = $this->getValues();
+		$values = $this->getRawValues();
 		$related_to = array_keys($this->_associations);
 
 		return compact('name', 'values', 'related_to');
@@ -389,17 +389,14 @@ class Model {
 	 */
 	public function getValues()
 	{
-		$values = get_object_vars($this);
+		$result = array();
 
-		foreach ($values as $key => $value)
+		foreach ($this->getFields() as $field)
 		{
-			if ( ! isset($value) || $key[0] == '_')
-			{
-				unset($values[$key]);
-			}
+			$result[$field] = $this->getProperty($field);
 		}
 
-		return $values;
+		return $result;
 	}
 
 	/**
