@@ -168,18 +168,17 @@ $autoloader->register();
 // Setup Dependency Injection Container
 ee()->di = new \EllisLab\ExpressionEngine\Service\DependencyInjectionContainer();
 
-ee()->di->register('Model', function($di)
+ee()->di->registerSingleton('Model', function($di)
 {
 	$model_alias_path = APPPATH . 'config/model_aliases.php';
-	$model_alias_service = new \EllisLab\ExpressionEngine\Service\AliasService('Model', $model_alias_path);
+	$datastore = new \EllisLab\ExpressionEngine\Service\Model\DataStore(
+		ee()->db,
+		$model_alias_path
+	);
 
-	return $di->singleton(function($di) use ($model_alias_service)
-	{
-        return new \EllisLab\ExpressionEngine\Service\Model\Factory(
-            $model_alias_service,
-            $di->make('Validation')
-        );
-	});
+    return new \EllisLab\ExpressionEngine\Service\Model\Frontend(
+        $datastore
+    );
 });
 
 ee()->di->register('Validation', function($di)
