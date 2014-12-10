@@ -79,7 +79,9 @@ class SyntheticGateway extends Gateway {
 
 	public function getValues()
 	{
-		return array_filter($this->values);
+		return array_filter($this->values, function($value) {
+			return isset($value);
+		});
 	}
 
 }
