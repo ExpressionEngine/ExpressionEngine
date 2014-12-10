@@ -71,29 +71,56 @@ class File
 	 */
 	public function get($name, $default = NULL)
 	{
-		// If passed a key with dots in it, we need to drill down
-		if (stripos($name, '.') !== FALSE)
+		return $this->findConfig($name) ?: $default;
+	}
+
+	/**
+	 * Set an item in the config. You can use 'item.subitem.subsubitem' to drill
+	 * down in the config.
+	 * @param  string $item    The config item to set
+	 * @param  mixed  $value   The value to set
+	 * @return void
+	 */
+	public function set($name, $value)
+	{
+		$config = &$this->findConfig($name, function($key, $config) {
+			$config[$key] = '';
+		});
+		$config = $value;
+	}
+
+	/**
+	 * Find the config item in the config array
+	 * @param  string $name     The config item to find
+	 * @param  callable $callback What to call if we don't find an item in the
+	 *                            config array, defaults to returning null
+	 * @return mixed            Will return a reference to the item in the
+	 *                          config array if it exists, otherwise the
+	 *                          callback() will be called
+	 */
+	private function &findConfig($name, $callback = '')
+	{
+		// Set a default callback
+		if ( ! is_callable($callback))
 		{
-			$config = $this->config;
+			$callback = function() {
+				return NULL;
+			};
+		}
 
-			foreach (explode('.', $name) as $key)
+		$config = $this->config;
+
+		foreach (explode('.', $name) as $key)
+		{
+			// If what we're looking for doesn't exist, return the default
+			if ( ! array_key_exists($key, $config))
 			{
-				// If what we're looking for doesn't exist, return the default
-				if ( ! array_key_exists($key, $config))
-				{
-					return $default;
-				}
-
-				$config = $config[$key];
+				return $callback($key, $config);
 			}
 
-			return $config ?: $default;
-		}
-		else if (array_key_exists($name, $this->config))
-		{
-			return $this->config[$name];
+			$config = $config[$key];
 		}
 
-		return $default;
+		return $config;
 	}
 }

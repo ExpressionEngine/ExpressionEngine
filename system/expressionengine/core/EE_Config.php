@@ -24,16 +24,16 @@
  */
 class EE_Config Extends CI_Config {
 
-	var $config_path 		= ''; // Set in the constructor below
-	var $database_path		= ''; // Set in the constructor below
-	var $default_ini 		= array();
-	var $exceptions	 		= array();	 // path.php exceptions
-	var $cp_cookie_domain	= '';  // These are set in Core before any MSM site switching
-	var $cp_cookie_prefix	= '';
-	var $cp_cookie_path		= '';
-	var $cp_cookie_httponly = '';
-	var $_global_vars 		= array();	// The global vars from path.php (deprecated but usable for other purposes now)
-	var $_config_path_errors = array();
+	public $config_path         = ''; // Set in the constructor below
+	public $database_path       = ''; // Set in the constructor below
+	public $default_ini         = array();
+	public $exceptions          = array(); // path.php exceptions
+	public $cp_cookie_domain    = ''; // These are set in Core before any MSM site switching
+	public $cp_cookie_prefix    = '';
+	public $cp_cookie_path      = '';
+	public $cp_cookie_httponly  = '';
+	public $_global_vars        = array(); // The global vars from path.php (deprecated but usable for other purposes now)
+	public $_config_path_errors = array();
 
 	/**
 	 * Constructor
@@ -45,7 +45,7 @@ class EE_Config Extends CI_Config {
 		// Change this path before release.
 		$this->config_path   = SYSPATH.'config/config.php';
 
-		// TODO-WB: Remove me
+// TODO-WB: Remove me
 		$this->database_path = APPPATH.'config/database.php';
 
 		$this->_initialize();
@@ -1083,8 +1083,10 @@ class EE_Config Extends CI_Config {
 	 */
 	function _update_dbconfig($dbconfig = array(), $remove_values = array())
 	{
-		// TODO-WB: Remove or replace this...
-
+// TODO-WB: Remove this, _update_config should handle this.
+// $database = ee('Database');
+// var_dump($database);
+// die(var_dump($dbconfig, $remove_values));
 		// Is the database file writable?
 		if ( ! is_really_writable($this->database_path))
 		{
@@ -1442,17 +1444,20 @@ class EE_Config Extends CI_Config {
 	 */
 	public function prep_view_vars($type, $values = array())
 	{
-		// TODO-WB: Remove or replace the need for database_path loading
-
 		ee()->load->library('form_validation');
 		$f_data = $this->get_config_fields($type);
 		$subtext = $this->get_config_field_subtext();
 
 		// Blast through the array
-		// If we're dealing with a database configuration we need to pull the data out of the DB
-		// config file. To make thigs simple we will set the DB config items as general config values
+		// If we're dealing with a database configuration we need to pull the
+		// data out of the DB config file. To make thigs simple we will set the
+		// DB config items as general config values
 		if ($type == 'db_cfg')
 		{
+// TODO-WB: Remove this entire conditional if possible
+// We only really deal with two things from the db_config:
+// - pconnect
+// - db_debug
 			require $this->database_path;
 
 			if ( ! isset($active_group))

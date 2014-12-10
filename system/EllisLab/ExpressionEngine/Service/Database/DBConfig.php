@@ -52,6 +52,11 @@ class DBConfig
 		return $this->delegate->get('database.'.$item) ?: $default;
 	}
 
+	public function set($item, $value)
+	{
+		return $this->delegate->set('database.'.$item, $value);
+	}
+
 	/**
 	 * Get the active group's database configuration information for
 	 * CI_DB_driver
