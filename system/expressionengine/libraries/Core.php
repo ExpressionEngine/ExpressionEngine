@@ -105,7 +105,7 @@ class EE_Core {
 		ee()->load->driver('cache');
 
 		// Load DB and set DB preferences
-		ee()->di->register('Database', function($di) {
+		ee()->di->registerSingleton('Database', function($di) {
 			$directory = new \EllisLab\ExpressionEngine\Service\Config\Directory(SYSPATH.'config/');
 			$database_config = new \EllisLab\ExpressionEngine\Service\Database\DBConfig($directory->file('config'));
 			return new \EllisLab\ExpressionEngine\Service\Database\Database($database_config);
