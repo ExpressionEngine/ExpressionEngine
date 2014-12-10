@@ -49,9 +49,17 @@ class Frontend {
 	 *
 	 * @param String $name Model to run the query on
 	 */
-	public function get($name)
+	public function get($name, $default_ids = NULL)
 	{
 		$builder = $this->store->get($name);
+
+		if ( ! empty($default_ids))
+		{
+			$operator = is_array($default_ids) ? 'IN' : '==';
+			$shortname = $this->removeAlias($name);
+			$builder->filter($name, $operator, $default_ids);
+		}
+
 		$builder->setFrontend($this);
 
 		return $builder;
@@ -66,5 +74,21 @@ class Frontend {
 	public function make($name, array $data = array())
 	{
 		return $this->store->make($name, $this, $data);
+	}
+
+	/**
+	 *
+	 */
+	private function removeAlias($str)
+	{
+		$str = trim($str);
+		$pos = strrpos($str, ' ');
+
+		if ($pos === FALSE)
+		{
+			return $str;
+		}
+
+		return trim(substr($str, $pos));
 	}
 }
