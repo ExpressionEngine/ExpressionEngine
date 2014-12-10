@@ -716,6 +716,7 @@ class Communicate extends Utilities {
 			->offset($offset)
 			->all();
 
+		$vars['emails'] = array();
 		$data = array();
 		foreach ($emails as $email)
 		{
@@ -749,12 +750,7 @@ class Communicate extends Utilities {
 			$email->subject = $this->censorSubject($email);
 			$email->message = $this->formatMessage($email);
 
-			if ($email->text_fmt == 'br')
-			{
-				$email->message = '<p>' . $email->message . '</p>';
-			}
-
-			$modals['modal-email-' . $email->cache_id] = ee()->view->render('utilities/communicate/email-modal', array('email' => $email), TRUE);
+			$vars['emails'][] = $email;
 		}
 
 		$table->setData($data);
@@ -781,21 +777,6 @@ class Communicate extends Utilities {
 				$vars['table']['search']
 			);
 		}
-
-		$modal_vars = array(
-			'form_url'	=> $base_url,
-			'hidden'	=> array(
-				'bulk_action'	=> 'remove'
-			),
-			'checklist'	=> array(
-				array(
-					'kind' => '',
-					'desc' => ''
-				)
-			)
-		);
-
-		$vars['modals']['modal-confirm-all'] = ee()->view->render('_shared/modal_confirm_remove', $modal_vars, TRUE);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('view_email_cache') . ': <b>### ' . lang('emails') . '</b>');
 		ee()->cp->add_js_script(array(
