@@ -31,6 +31,7 @@ return array(
 
 		// ..\Site
 		'Site' => 'EllisLab\ExpressionEngine\Model\Site\Site',
+		'Stats' => 'EllisLab\ExpressionEngine\Model\Site\Stats',
 
 		// ..\Status
 		'Status' => 'EllisLab\ExpressionEngine\Model\Status\Status',
