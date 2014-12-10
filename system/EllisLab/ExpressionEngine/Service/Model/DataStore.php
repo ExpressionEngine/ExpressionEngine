@@ -226,7 +226,7 @@ class DataStore {
 			}
 		}
 
-		$type = $options['type'];
+		$type = ucfirst($options['type']);
 		$class = __NAMESPACE__."\\Relation\\{$type}";
 
 		if ( ! class_exists($class))
