@@ -27,11 +27,29 @@ namespace EllisLab\ExpressionEngine\Service\Model\Query;
  */
 class Insert extends Update {
 
+	protected $insert_ids;
+
+	public function run()
+	{
+		$this->insert_ids = array();
+
+		parent::run();
+
+		$object = $this->builder->getExisting();
+
+		return current($this->insert_ids);
+	}
+
 	protected function actOnGateway($gateway)
 	{
+		$values = $gateway->getValues();
+		unset($values[$gateway->getPrimaryKey()]);
+
 		$query = $this->store
 			->rawQuery()
 			->set($gateway->getValues())
 			->insert($gateway->getTableName());
+
+		$this->insert_ids[] = $this->store->rawQuery()->insert_id();
 	}
 }
