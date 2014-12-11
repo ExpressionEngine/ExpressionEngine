@@ -117,6 +117,16 @@ if (isset($ajax_validate) && $ajax_validate == TRUE)
 </textarea>
 						<?php break;
 
+						case 'multi_dropdown': ?>
+							<div class="scroll-wrap">
+								<?php foreach ($field['choices'] as $field_name => $options): ?>
+									<label class="choice block chosen"><?=$options['label']?>
+										<?=form_dropdown($field_name, $options['choices'], $options['value'])?>
+									</label>
+								<?php endforeach ?>
+							</div>
+						<?php break;
+
 						case 'html': ?>
 							<?=$field['content']?>
 						<?php endswitch ?>

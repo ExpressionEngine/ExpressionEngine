@@ -30,6 +30,9 @@ $lang = array(
 'template_settings' =>
 'Template Settings',
 
+'pages_settings' =>
+'Pages Settings',
+
 'upload_directories' =>
 'Upload Directories',
 
@@ -1249,6 +1252,37 @@ $lang = array(
 
 'directory_sync_warning' =>
 'Some files could not be synchronized',
+
+/**
+ * Pages Settings
+ */
+
+'pages_display_urls' =>
+'Display of <abbr title="Unified Resource Locator">URL</abbr>s?',
+
+'pages_display_urls_desc' =>
+'When set to <b>Nested</b>, <abbr title="Unified Resource Locator">URL</abbr>s will be displayed in a nested hierarchy.',
+
+'pages_url_nested' =>
+'Nested',
+
+'pages_url_not_nested' =>
+'Not Nested',
+
+'pages_channel' =>
+'Channel',
+
+'pages_channel_desc' =>
+'Default channel for creating new pages.',
+
+'pages_no_default' =>
+'No default',
+
+'pages_templates' =>
+'Templates',
+
+'pages_templates_desc' =>
+'Default templates for each channel.',
 
 ''=>''
 );
