@@ -182,6 +182,9 @@ abstract class Relation {
 		$this->key_tuple = $this->deriveKeys();
 		list($from, $to) = $this->key_tuple;
 
+		$this->from_key = $from;
+		$this->to_key = $to;
+
 		$this->from_table = $this->from->getTableForField($from);
 		$this->to_table = $this->to->getTableForField($to);
 	}
