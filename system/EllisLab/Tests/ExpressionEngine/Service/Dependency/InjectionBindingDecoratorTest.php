@@ -1,16 +1,16 @@
 <?php
-namespace EllisLab\Tests\ExpressionEngine\Service;
+namespace EllisLab\Tests\ExpressionEngine\Service\Dependency;
 
-use EllisLab\ExpressionEngine\Service\DependencyInjectionContainer;
-use EllisLab\ExpressionEngine\Service\DependencyInjectionBindingDecorator;
+use EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer;
+use EllisLab\ExpressionEngine\Service\Dependency\InjectionBindingDecorator;
 
-class DependencyInjectionBindingDecoratorTest extends \PHPUnit_Framework_TestCase {
+class InjectionBindingDecoratorTest extends \PHPUnit_Framework_TestCase {
 
 	protected $di;
 
 	protected function setUp()
 	{
-		$this->di = new DependencyInjectionContainer;
+		$this->di = new InjectionContainer;
 		$this->di->register('Bird', function($di) { return 'Crow'; });
 		$this->di->register('Flock', function($di)
 		{
@@ -32,7 +32,7 @@ class DependencyInjectionBindingDecoratorTest extends \PHPUnit_Framework_TestCas
 	public function testBindReturnsADecoratorInstance()
 	{
 		$di = $this->di->bind('Bird', 'Raven');
-		$this->assertInstanceOf('EllisLab\ExpressionEngine\Service\DependencyInjectionBindingDecorator', $di);
+		$this->assertInstanceOf('EllisLab\ExpressionEngine\Service\Dependency\InjectionBindingDecorator', $di);
 	}
 
 	public function testBindingAClosure()

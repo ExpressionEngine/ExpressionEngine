@@ -1,11 +1,9 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Service;
+namespace EllisLab\ExpressionEngine\Service\Dependency;
 
 use Closure;
 use Exception;
-use EllisLab\ExpressionEngine\Service\ServiceProvider;
-use EllisLab\ExpressionEngine\Service\DependencyInjectionBindingDecorator;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -33,7 +31,7 @@ use EllisLab\ExpressionEngine\Service\DependencyInjectionBindingDecorator;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class DependencyInjectionContainer implements ServiceProvider {
+class InjectionContainer implements ServiceProvider {
 
 	/**
 	 * @var array An associative array of registered dependencies
@@ -75,7 +73,7 @@ class DependencyInjectionContainer implements ServiceProvider {
 	 * @param string      $name   The name of the dependency in the form
 	 *                            Vendor:Namespace
 	 * @param Closure|obj $object The object to use
-	 * @return self Returns this DependencyInjectionContainer object
+	 * @return self Returns this InjectionContainer object
 	 */
 	public function register($name, $object)
 	{
@@ -89,11 +87,11 @@ class DependencyInjectionContainer implements ServiceProvider {
 	 * @param string      $name   The name of the dependency in the form
 	 *                            Vendor:Namespace
 	 * @param Closure|obj $object The object to use
-	 * @return self Returns this DependencyInjectionContainer object
+	 * @return self Returns this InjectionContainer object
 	 */
 	public function bind($name, $object)
 	{
-		$binding_isolation = new DependencyInjectionBindingDecorator($this);
+		$binding_isolation = new InjectionBindingDecorator($this);
 		$binding_isolation->bind($name, $object);
 
 		return $binding_isolation;
@@ -105,7 +103,7 @@ class DependencyInjectionContainer implements ServiceProvider {
 	 * @param string      $name   The name of the dependency in the form
 	 *                            Vendor:Namespace
 	 * @param Closure|obj $object The object to use
-	 * @return self Returns this DependencyInjectionContainer object
+	 * @return self Returns this InjectionContainer object
 	 */
 	public function registerSingleton($name, $object)
 	{
@@ -163,7 +161,7 @@ class DependencyInjectionContainer implements ServiceProvider {
 		$di = $this;
 		$name = array_shift($arguments);
 
-		if ($name instanceof DependencyInjectionBindingDecorator)
+		if ($name instanceof InjectionBindingDecorator)
 		{
 			$di = $name;
 			$name = array_shift($arguments);

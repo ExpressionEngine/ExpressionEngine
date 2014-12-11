@@ -1,16 +1,16 @@
 <?php
-namespace EllisLab\Tests\ExpressionEngine\Service;
+namespace EllisLab\Tests\ExpressionEngine\Service\Dependency;
 
-use \stdClass;
-use EllisLab\ExpressionEngine\Service\DependencyInjectionContainer;
+use stdClass;
+use EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer;
 
-class DependencyInjectionContainerTest extends \PHPUnit_Framework_TestCase {
+class InjectionContainerTest extends \PHPUnit_Framework_TestCase {
 
 	protected $di;
 
 	protected function setUp()
 	{
-		$this->di = new DependencyInjectionContainer;
+		$this->di = new InjectionContainer;
 	}
 
 	protected function tearDown()
@@ -58,15 +58,15 @@ class DependencyInjectionContainerTest extends \PHPUnit_Framework_TestCase {
 	public function testChaining()
 	{
 		$di = $this->di->register('Foo', 'Bar');
-		$this->assertInstanceOf('EllisLab\ExpressionEngine\Service\DependencyInjectionContainer', $di);
+		$this->assertInstanceOf('EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer', $di);
 		$this->assertSame($this->di, $di);
 
 		$di = $this->di->registerSingleton('Bar', 'Baz');
-		$this->assertInstanceOf('EllisLab\ExpressionEngine\Service\DependencyInjectionContainer', $di);
+		$this->assertInstanceOf('EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer', $di);
 		$this->assertSame($this->di, $di);
 
 		$di = $this->di->bind('Foo', 'Bar');
-		$this->assertInstanceOf('EllisLab\ExpressionEngine\Service\DependencyInjectionBindingDecorator', $di);
+		$this->assertInstanceOf('EllisLab\ExpressionEngine\Service\Dependency\InjectionBindingDecorator', $di);
 		$this->assertFalse($this->di === $di);
 	}
 

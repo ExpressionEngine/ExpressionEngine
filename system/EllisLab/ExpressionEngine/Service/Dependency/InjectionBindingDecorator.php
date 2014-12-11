@@ -1,9 +1,8 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Service;
+namespace EllisLab\ExpressionEngine\Service\Dependency;
 
 use Closure;
-use EllisLab\ExpressionEngine\Service\ServiceProvider;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -28,7 +27,7 @@ use EllisLab\ExpressionEngine\Service\ServiceProvider;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class DependencyInjectionBindingDecorator implements ServiceProvider {
+class InjectionBindingDecorator implements ServiceProvider {
 
 	/**
 	 * @var ServiceProvider An object which implments ServiceProvider to be
