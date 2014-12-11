@@ -121,7 +121,7 @@ abstract class Association {
 	 */
 	public function set($item)
 	{
-		$this->remove($this->related);
+		$this->remove();
 		$this->add($item);
 	}
 
@@ -150,7 +150,12 @@ abstract class Association {
 	{
 		if ( ! isset($item))
 		{
-			return $this->clear();
+			if ( ! $this->loaded)
+			{
+				return $this->clear();
+			}
+
+			$item = $this->related;
 		}
 
 		if ($item instanceOf Collection || is_array($item))
@@ -194,12 +199,12 @@ abstract class Association {
 	{
 		foreach ($this->tracker->getRemoved() as $model)
 		{
-			$this->dropRelation($this->source, $model);
+			$this->dropRelationship($this->source, $model);
 		}
 
 		foreach ($this->tracker->getAdded() as $model)
 		{
-			$this->insertRelation($this->source, $model);
+			$this->insertRelationship($this->source, $model);
 		}
 
 		$this->tracker->reset();
@@ -243,7 +248,7 @@ abstract class Association {
 	 * Persist the relation. Only many-to-many implements this
 	 * all others are stored directly on one of the models.
 	 */
-	protected function insertRelation($source, $model)
+	protected function insertRelationship($source, $model)
 	{
 		// only exists on many-to-many
 	}
@@ -252,7 +257,7 @@ abstract class Association {
 	 * Drop the relation. Only many-to-many implements this
 	 * all others are stored directly on one of the models.
 	 */
-	protected function dropRelation($source, $model)
+	protected function dropRelationship($source, $model)
 	{
 		// only exists on many-to-many
 		// todo if not many to many, but still weak, then this
