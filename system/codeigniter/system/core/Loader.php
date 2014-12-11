@@ -741,9 +741,16 @@ class CI_Loader {
 		 */
 		ob_start();
 
+		$rewrite = FALSE;
+		if ((bool) @ini_get('short_open_tag') === FALSE AND config_item('rewrite_short_tags') == TRUE)
+		{
+			$rewrite = TRUE;
+		}
+
+
 		if (isset($_ci_view))
 		{
-			ee('View')->make($_ci_view)->parse($_ci_path, $this->_ci_cached_vars);
+			ee('View')->make($_ci_view)->parse($_ci_path, $this->_ci_cached_vars, $rewrite);
 		}
 		else
 		{
@@ -751,7 +758,7 @@ class CI_Loader {
 			// do a little string replacement, changing the short tags
 			// to standard PHP echo statements.
 
-			if ((bool) @ini_get('short_open_tag') === FALSE AND config_item('rewrite_short_tags') == TRUE)
+			if ($rewrite)
 			{
 				echo eval('?>'.preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', file_get_contents($_ci_path))));
 			}

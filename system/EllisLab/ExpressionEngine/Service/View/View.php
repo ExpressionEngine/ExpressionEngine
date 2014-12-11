@@ -42,10 +42,18 @@ class View {
 		$this->view = $view;
 	}
 
-	public function parse($path, $vars)
+	public function parse($path, $vars, $rewrite = FALSE)
 	{
 		extract($vars);
-		include($path);
+
+		if ($rewrite)
+		{
+			echo eval('?>'.preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', file_get_contents($path))));
+		}
+		else
+		{
+			include($path);
+		}
 	}
 
 	public function render(array $vars)
