@@ -28,8 +28,8 @@ use IteratorAggregate;
  * benefit of being able to call save and delete on it.
  *
  * @package		ExpressionEngine
- * @subpackage	Template
- * @category	Model
+ * @subpackage	Model
+ * @category	Service
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
@@ -37,15 +37,36 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 
 	protected $elements = array();
 
+	/**
+	 * @param Array $elements Contents of the collection
+	 */
 	public function __construct(array $elements = array())
 	{
-		$this->elements = $elements;
+		$this->elements = array_values($elements);
+	}
+
+	/**
+	 * Allow for setting in batches. Be careful, folks!
+	 *
+	 * @param String $key  Property name
+	 * @param Mixed $value Property value
+	 */
+	public function __set($key, $value)
+	{
+		foreach ($this->elements as $element)
+		{
+			$element->$key = $value;
+		}
 	}
 
 	/**
 	 * Allow the calling of model methods by the collection.
 	 * First argument is assumed to be a callback to handle
 	 * the return of the methods.
+	 *
+	 * @param String $method   Method name
+	 * @param Array $arguments List of arguments
+	 * @return Array of esults
 	 */
 	public function __call($method, $arguments)
 	{
@@ -88,6 +109,14 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	}
 
 	/**
+	 * Compare to toArray() which also converts models.
+	 */
+	public function asArray()
+	{
+		return $this->elements;
+	}
+
+	/**
 	 * Retrieve the first model
 	 *
 	 * @return Mixed First model object
@@ -121,6 +150,18 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	public function map(Closure $callback)
 	{
 		return array_map($callback, $this->elements);
+	}
+
+	/**
+	 * Applies the given callback to the collection and returns an array
+	 * of the results.
+	 *
+	 * @param Closure $callback Function to apply
+	 * @return array  results
+	 */
+	public function filter(Closure $callback)
+	{
+		return array_values(array_filter($this->elements, $callback));
 	}
 
 	/**

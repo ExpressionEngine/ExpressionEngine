@@ -108,6 +108,9 @@ Grid.Publish.prototype = {
 			stop: function(event, row)
 			{
 				that._fireEvent('afterSort', row.item);
+				
+				// Re-zebra-stripe the table
+				that._zebraStripe();
 			}
 		});
 	},
@@ -236,6 +239,9 @@ Grid.Publish.prototype = {
 		{
 			EE.cp.formValidation.bindInputs(el);
 		}
+
+		// Re-zebra-stripe the table
+		this._zebraStripe();
 	},
 
 	/**
@@ -264,6 +270,9 @@ Grid.Publish.prototype = {
 			{
 				that.emptyField.show();
 			}
+
+			// Re-zebra-stripe the table
+			that._zebraStripe();
 		});
 	},
 
@@ -308,6 +317,18 @@ Grid.Publish.prototype = {
 			{
 				Grid._eventHandlers[action][fieldtype]($(this));
 			});
+		}
+	},
+
+	/**
+	 * When we manipulate the table, we need to re-zebra-stripe it to
+	 * conform to CP styles
+	 */
+	_zebraStripe: function()
+	{
+		if (EE.cp !== undefined)
+		{
+			EE.cp.zebra_tables(this.root);
 		}
 	}
 };

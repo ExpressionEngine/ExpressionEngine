@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Module\Channel\Model\Gateway;
 
 use EllisLab\ExpressionEngine\Model\Gateway\FieldDataGateway;

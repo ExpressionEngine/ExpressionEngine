@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Module\Member\Model;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
@@ -6,11 +7,14 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class MemberGroup extends Model {
 
 	protected static $_primary_key = 'group_id';
-	protected static $_gateway_names = array('MemberGroupGateway');
+	protected static $_table_name = 'member_groups';
 
 	protected static $_relationships = array(
+		'Site' => array(
+			'type' => 'belongsTo'
+		),
 		'Members' => array(
-			'type' => 'one_to_many',
+			'type' => 'hasMany',
 			'model' => 'Member'
 		)
 	);
@@ -88,15 +92,5 @@ class MemberGroup extends Model {
 	protected $include_in_authorlist;
 	protected $include_in_memberlist;
 	protected $include_in_mailinglists;
-
-	public function getMembers()
-	{
-		return $this->getRelated('Members');
-	}
-
-	public function setMembers(array $members)
-	{
-		return $this->setRelated('Members', $members);
-	}
 
 }

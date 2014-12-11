@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model\Addon;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
@@ -27,14 +28,13 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @link		http://ellislab.com
  */
 class Accessory extends Model {
-	protected static $_primary_key = 'accessory_id';
-	protected static $_gateway_names = array('AccessoryGateway');
 
-	// Propeties
+	protected static $_primary_key = 'accessory_id';
+	protected static $_table_name = 'accessories';
+
 	protected $accessory_id;
 	protected $class;
 	protected $member_groups;
 	protected $controllers;
 	protected $accessory_version;
-
 }

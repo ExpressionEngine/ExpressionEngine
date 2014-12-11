@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\Tests\PHPUnit\Extensions\NoopDatabase;
 
 use Mockery as m;

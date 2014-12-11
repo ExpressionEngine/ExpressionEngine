@@ -400,6 +400,7 @@ feature 'Upload Destination Create/Edit' do
 
     @page.grid_add.click
     @page.name_for_row(2).set 'some_other_name'
+    @page.resize_type_for_row(2).select 'Crop (part of image)'
     @page.width_for_row(2).set '50'
     @page.height_for_row(2).set '40'
 
@@ -422,10 +423,12 @@ feature 'Upload Destination Create/Edit' do
     @page.max_height.value.should == '200'
 
     @page.name_for_row(1).value.should == 'some_name'
+    @page.resize_type_for_row(1).value.should == 'constrain'
     @page.width_for_row(1).value.should == '20'
     @page.height_for_row(1).value.should == '30'
 
     @page.name_for_row(2).value.should == 'some_other_name'
+    @page.resize_type_for_row(2).value.should == 'crop'
     @page.width_for_row(2).value.should == '50'
     @page.height_for_row(2).value.should == '40'
 

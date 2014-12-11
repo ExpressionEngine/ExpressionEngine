@@ -1,21 +1,16 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Service\Model\Field\FieldStructure;
+use EllisLab\ExpressionEngine\Service\Model\Interfaces\Field\FieldStructure;
 use EllisLab\ExpressoinEngine\Model\Interfaces\Field\FieldContent;
 
 class ChannelFieldStructure extends Model implements FieldStructure {
 
 	protected static $_primary_key = 'field_id';
 	protected static $_gateway_names = array('ChannelFieldGateway');
-	protected static $_key_map = array(
-		'field_id' => 'ChannelFieldGateway',
-		'site_id' => 'ChannelFieldGateway',
-		'group_id' => 'ChannelFieldGateway'
-	);
 
-	// Properties
 	protected $field_id;
 	protected $site_id;
 	protected $group_id;

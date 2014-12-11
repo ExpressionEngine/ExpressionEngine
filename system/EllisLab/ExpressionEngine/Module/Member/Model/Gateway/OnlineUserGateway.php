@@ -1,10 +1,11 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Module\Member\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
+class OnlineUserGateway extends Gateway {
 
-class OnlineUserGateway extends RowDataGateway {
 	protected static $_primary_key = 'online_id';
 	protected static $_table_name = 'online_users';
 

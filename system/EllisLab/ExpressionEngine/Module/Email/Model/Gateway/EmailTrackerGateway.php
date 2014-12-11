@@ -1,9 +1,10 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Module\Email\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
-class EmailTrackerGateway extends RowDataGateway
+class EmailTrackerGateway extends Gateway
 {
 	protected static $_primary_key = 'email_id';
 	protected static $_table_name = 'email_tracker';

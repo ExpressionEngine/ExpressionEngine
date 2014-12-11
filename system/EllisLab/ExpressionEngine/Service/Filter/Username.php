@@ -2,7 +2,7 @@
 namespace EllisLab\ExpressionEngine\Service\Filter;
 
 use EllisLab\ExpressionEngine\Library\CP\URL;
-use EllisLab\ExpressionEngine\Service\Model\Query\Query;
+use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
 use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 
 /**
@@ -34,7 +34,7 @@ use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 class Username extends Filter {
 
 	/**
-	 * @var Query A Query Builder object for use in fetching usernames
+	 * @var Builder A Query Builder object for use in fetching usernames
 	 */
 	protected $builder;
 
@@ -63,7 +63,7 @@ class Username extends Filter {
 	 * @param Query $builder A Query Builder object
 	 * @return void
 	 */
-	public function setQuery(Query $builder)
+	public function setQuery(Builder $builder)
 	{
 		$this->builder = $builder;
 

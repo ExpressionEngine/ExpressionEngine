@@ -249,7 +249,7 @@ class Developer extends Logs {
 				)
 			);
 
-			$modals['modal-confirm-' . $log->id] = ee()->view->render('_shared/modal_confirm_remove', $modal_vars, TRUE);
+			$modals['modal-confirm-' . $log->log_id] = ee()->view->render('_shared/modal_confirm_remove', $modal_vars, TRUE);
 		}
 
 		$pagination = new Pagination($this->params['perpage'], $count, $page);

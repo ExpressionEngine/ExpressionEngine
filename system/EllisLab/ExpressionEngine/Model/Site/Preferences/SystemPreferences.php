@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model\Site\Preferences;
 
 /**
@@ -24,8 +25,8 @@ namespace EllisLab\ExpressionEngine\Model\Site\Preferences;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class SystemPreferences extends ConcretePreferences
-{
+class SystemPreferences extends ConcretePreferences {
+
 	/**
 	 * The location of the index.php file for this site.
 	 *

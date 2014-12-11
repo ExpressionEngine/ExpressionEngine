@@ -1,14 +1,16 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Module\Member\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
 /**
  * Member table
  *
  * Contains the member info
  */
-class MemberGateway extends RowDataGateway {
+class MemberGateway extends Gateway {
+
 	protected static $_table_name = 'members';
 	protected static $_primary_key = 'member_id';
 	protected static $_related_gateways = array(
@@ -85,6 +87,8 @@ class MemberGateway extends RowDataGateway {
 	public $language;
 	public $timezone;
 	public $time_format;
+	public $date_format;
+	public $include_seconds;
 	public $cp_theme;
 	public $profile_theme;
 	public $forum_theme;
@@ -96,4 +100,6 @@ class MemberGateway extends RowDataGateway {
 	public $quick_tabs;
 	public $show_sidebar;
 	public $pmember_id;
+	public $rte_enabled;
+	public $rte_toolset_id;
 }

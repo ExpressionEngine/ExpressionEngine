@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model\Log;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
@@ -29,14 +30,13 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class DeveloperLog extends Model {
 
 	protected static $_primary_key = 'log_id';
-	protected static $_gateway_names = array('DeveloperLogGateway');
+	protected static $_table_name = 'developer_log';
 
 	protected static $_relationships = array(
 		'Template' => array(
-			'type' => 'many_to_one'
-		),
+			'type' => 'belongsTo'
+		)
 	);
-
 
 	protected $log_id;
 	protected $timestamp;

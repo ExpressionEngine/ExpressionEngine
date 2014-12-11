@@ -1,7 +1,8 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model\File\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -26,7 +27,8 @@ use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class UploadPrefGateway extends RowDataGateway {
+class UploadPrefGateway extends Gateway {
+
 	protected static $_primary_key = 'id';
 	protected static $_table_name = 'upload_prefs';
 

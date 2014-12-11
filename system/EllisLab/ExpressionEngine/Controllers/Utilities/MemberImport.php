@@ -4,8 +4,6 @@ namespace EllisLab\ExpressionEngine\Controllers\Utilities;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-use EllisLab\ExpressionEngine\Module\Member\Model\Gateway\MemberGateway;
-
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -386,7 +384,7 @@ class MemberImport extends Utilities {
 
 		$i = 0;
 
-		$fields = MemberGateway::getMetaData('field_list');
+		$fields = ee('Model')->make('Member')->getFields();
 
 		foreach ($fields as $field)
 		{

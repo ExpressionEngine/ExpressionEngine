@@ -1,9 +1,11 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Module\Member\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
-class MemberSearchGateway extends RowDataGateway {
+class MemberSearchGateway extends Gateway {
+
 	protected static $_table_name = 'member_search';
 	protected static $_primary_key = 'search_id';
 

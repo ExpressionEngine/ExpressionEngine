@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\Tests\ExpressionEngine\Core;
 
 use EllisLab\AutoloaderTest as TestAlias;

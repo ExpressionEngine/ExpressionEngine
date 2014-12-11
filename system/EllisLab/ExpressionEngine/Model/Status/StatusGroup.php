@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model\Status;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
@@ -27,29 +28,19 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @link		http://ellislab.com
  */
 class StatusGroup extends Model {
+
 	protected static $_primary_key = 'group_id';
-	protected static $_gateway_names = array('StatusGroupGateway');
-	protected static $_key_map = array(
-		'group_id' => 'StatusGroupGateway',
-		'site_id' => 'StatusGroupGateway'
-	);
+	protected static $_table_name = 'status_groups';
 
 	protected static $_relationships = array(
+		'Site' => array(
+			'type'  => 'BelongsTo',
+		),
 		'Statuses' => array(
-			'type' => 'one_to_many',
+			'type'  => 'HasMany',
 			'model' => 'Status'
 		)
 	);
-
-	public function getStatuses()
-	{
-		return $this->getRelated('Statuses');
-	}
-
-	public function setStatuses(array $statuses)
-	{
-		return $this->setRelated('Statuses', $statuses);
-	}
 
 	protected $group_id;
 	protected $site_id;
