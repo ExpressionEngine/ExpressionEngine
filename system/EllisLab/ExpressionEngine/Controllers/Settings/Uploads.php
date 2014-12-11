@@ -386,7 +386,7 @@ class Uploads extends Settings {
 				'cat_group' => array(
 					'type' => 'checkbox',
 					'choices' => $cat_group_options,
-					'value' => ($upload_destination) ? explode('|', $upload_destination->cat_group) : array()
+					'value' => ($upload_destination) ? explode('|', $upload_dir['cat_group']) : array()
 				)
 			)
 		);
@@ -394,7 +394,7 @@ class Uploads extends Settings {
 		// Set current name hidden input for duplicate-name-checking in validation later
 		if ($upload_destination !== NULL)
 		{
-			ee()->view->form_hidden = array('cur_name' => $upload_destination->name);
+			ee()->view->form_hidden = array('cur_name' => $upload_dir['name']);
 		}
 
 		ee()->view->ajax_validate = TRUE;
@@ -871,24 +871,25 @@ class Uploads extends Settings {
 			ee()->functions->redirect(cp_url('settings/uploads'));
 		}
 
-		$upload_destination = ee('Model')->get('UploadDestination')
-			->with('FileDimension')
-			->filter('id', $upload_id)
-			->first();
+		// Get upload destination with config.php overrides in place
+		$upload_destination = ee()->file_upload_preferences_model->get_file_upload_preferences(
+			ee()->session->userdata('group_id'),
+			$upload_id
+		);
 
 		// Get a listing of raw files in the directory
 		ee()->load->library('filemanager');
 		$files = ee()->filemanager->directory_files_map(
-			$upload_destination->server_path,
+			$upload_destination['server_path'],
 			1,
 			FALSE,
-			$upload_destination->allowed_types
+			$upload_destination['allowed_types']
 		);
 		$files_count = count($files);
 
 		// Change the decription of this first field depending on the
 		// type of files allowed
-		$file_sync_desc = ($upload_destination->allowed_types == 'all')
+		$file_sync_desc = ($upload_destination['allowed_types'] == 'all')
 			? lang('file_sync_desc') : lang('file_sync_desc_images');
 
 		$vars['sections'] = array(
@@ -948,13 +949,13 @@ class Uploads extends Settings {
 				'sync_sizes'      => $js_size,
 				'sync_baseurl'    => $base_url,
 				'sync_endpoint'   => cp_url('settings/uploads/do_sync_files'),
-				'sync_dir_name'   => $upload_destination->name,
+				'sync_dir_name'   => $upload_destination['name'],
 			)
 		));
 
 		ee()->view->base_url = $base_url;
 		ee()->view->cp_page_title = lang('sync_title');
-		ee()->view->cp_page_title_alt = sprintf(lang('sync_alt_title'), $upload_destination->name);
+		ee()->view->cp_page_title_alt = sprintf(lang('sync_alt_title'), $upload_destination['name']);
 		ee()->view->save_btn_text = 'btn_sync_directory';
 		ee()->view->save_btn_text_working = 'btn_sync_directory_working';
 
