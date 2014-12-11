@@ -121,7 +121,7 @@ abstract class Association {
 	 */
 	public function set($item)
 	{
-		$this->remove($item);
+		$this->remove($this->related);
 		$this->add($item);
 	}
 
