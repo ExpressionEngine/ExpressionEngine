@@ -195,22 +195,22 @@ feature 'RTE Settings' do
 		@page.modal.text.should include "Tool Set: 6 Tool Sets"
 	end
 
-	it 'cannot remove the default tool set', :stage => 'settings' do
-		tool_set_name = @page.tool_set_names[1].text
-
-		# Try to remove the tool set "Default"
-		@page.tool_sets[2].find('input[type="checkbox"]').set true
-		@page.bulk_action.select "Remove"
-		@page.action_submit_button.click
-		@page.wait_until_modal_visible
-		@page.modal_submit_button.click # Submits a form
-		no_php_js_errors
-
-		@page.should have_alert
-		@page.alert[:class].should include "issue"
-		@page.alert.text.should include "The default tool set cannot be removed."
-		@page.tool_set_names[1].text.should eq tool_set_name
-	end
+	# it 'cannot remove the default tool set', :stage => 'settings' do
+	# 	tool_set_name = @page.tool_set_names[1].text
+	#
+	# 	# Try to remove the tool set "Default"
+	# 	@page.tool_sets[2].find('input[type="checkbox"]').set true
+	# 	@page.bulk_action.select "Remove"
+	# 	@page.action_submit_button.click
+	# 	@page.wait_until_modal_visible
+	# 	@page.modal_submit_button.click # Submits a form
+	# 	no_php_js_errors
+	#
+	# 	@page.should have_alert
+	# 	@page.alert[:class].should include "issue"
+	# 	@page.alert.text.should include "The default tool set cannot be removed."
+	# 	@page.tool_set_names[1].text.should eq tool_set_name
+	# end
 
 	it 'can remove a tool set', :stage => 'settings' do
 		@page.tool_sets[1].find('input[type="checkbox"]').set true
