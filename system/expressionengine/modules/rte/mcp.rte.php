@@ -64,6 +64,11 @@ class Rte_mcp {
 	 */
 	public function index()
 	{
+		if ( ! empty($_POST))
+		{
+			$this->prefs_update();
+		}
+
 		ee()->load->model('rte_toolset_model');
 
 		$toolsets = ee()->rte_toolset_model->get_toolset_list();
@@ -168,7 +173,7 @@ class Rte_mcp {
 
 		$vars['table'] = $table->viewData($this->_base_url);
 		$vars['base_url'] = clone $vars['table']['base_url'];
-		$vars['base_url']->path = 'addons/settings/rte/prefs_update';
+		// $vars['base_url']->path = 'addons/settings/rte/prefs_update';
 
 		if ( ! empty($vars['table']['data']))
 		{
@@ -196,7 +201,6 @@ class Rte_mcp {
 	/**
 	 * Update prefs form action
 	 *
-	 * @access	public
 	 * @return	void
 	 */
 	public function prefs_update()
@@ -209,24 +213,29 @@ class Rte_mcp {
 			'required|enum[y,n]'
 		);
 
+		$toolids = array();
+		ee()->load->model('rte_toolset_model');
+		foreach (ee()->rte_toolset_model->get_toolset_list() as $toolset)
+		{
+			$toolids[] = $toolset['toolset_id'];
+		}
+
 		ee()->form_validation->set_rules(
 			'rte_default_toolset_id',
 			lang('default_toolset'),
-			'required|is_numeric'
+			'required|is_numeric|enum[' . implode($toolids, ',') . ']'
 		);
 
 		if (ee()->form_validation->run())
 		{
 			// update the prefs
 			$this->_do_update_prefs();
-			ee()->view->set_message('success', lang('settings_saved'), lang('settings_saved_desc'), TRUE);
+			ee()->view->set_message('success', lang('settings_saved'), lang('settings_saved_desc'), FALSE);
 		}
 		else
 		{
-			ee()->view->set_message('issue', lang('settings_error'), lang('settings_error_desc'), TRUE);
+			ee()->view->set_message('issue', lang('settings_error'), lang('settings_error_desc'), FALSE);
 		}
-
-		ee()->functions->redirect($this->_base_url);
 	}
 
 	// --------------------------------------------------------------------
