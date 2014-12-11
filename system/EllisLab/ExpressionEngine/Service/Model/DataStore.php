@@ -172,10 +172,6 @@ class DataStore {
 	 */
 	public function getRelation($model_name, $name)
 	{
-		// TODO cache the options array.
-		// we can recreate the readers easily and cheaply, but
-		// there can be a lot involved in the options.
-
 		$from_reader = $this->getMetaDataReader($model_name);
 		$relationships = $from_reader->getRelationships();
 
@@ -185,8 +181,6 @@ class DataStore {
 			// look it up in the other direction
 			throw new \Exception("Relationship {$name} not found in model definition.");
 		}
-
-		$options = $relationships[$name];
 
 		$options = array_merge(
 			array(
@@ -198,7 +192,7 @@ class DataStore {
 				'to_key' => NULL,
 				'to_table' => NULL
 			),
-			$options
+			$relationships[$name]
 		);
 
 		$to_reader = $this->getMetaDataReader($options['model']);
@@ -206,8 +200,8 @@ class DataStore {
 		$options['from_primary_key'] = $from_reader->getPrimaryKey();
 		$options['to_primary_key'] = $to_reader->getPrimaryKey();
 
-		// pivot can either be an array or a gateway name.
-		// if it is a gateway, then the lhs and rhs keys must
+		// pivot can either be an array or a table name.
+		// if it is a table name, then the lhs and rhs keys must
 		// equal the pk's of the two models
 		if (isset($options['pivot']))
 		{
@@ -219,9 +213,7 @@ class DataStore {
 				$table = $gateway_tables[$pivot];
 
 				$options['pivot'] = array(
-					'table' => $table,
-					'left'  => $options['from_primary_key'],
-					'right' => $options['to_primary_key']
+					'table' => $table
 				);
 			}
 		}
