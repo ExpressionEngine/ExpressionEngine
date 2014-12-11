@@ -46,6 +46,15 @@ class HasAndBelongsToMany extends ToMany {
 	/**
 	 *
 	 */
+	public function clear()
+	{
+		parent::clear();
+		$this->relation->dropRelationship();
+	}
+
+	/**
+	 *
+	 */
 	protected function insertRelationship($target)
 	{
 		$this->relation->insertAssociation($this->source, $target);
@@ -54,7 +63,7 @@ class HasAndBelongsToMany extends ToMany {
 	/**
 	 *
 	 */
-	protected function dropRelationship($target)
+	protected function dropRelationship($target = NULL)
 	{
 		$this->relation->dropAssociation($this->source, $target);
 	}
