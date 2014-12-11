@@ -119,7 +119,8 @@ feature 'RTE Settings' do
 	end
 
 	it 'cannot set a default tool set to an non-existant tool set', :stage => 'settings' do
-		@page.default_tool_set.set '101'
+		@page.selected_default_tool_set.set 101
+
 		@page.save_settings_button.click
 		no_php_js_errors
 
