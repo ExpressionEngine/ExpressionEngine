@@ -812,7 +812,7 @@ class Uploads extends Settings {
 
 		if ( ! empty($no_access))
 		{
-			$groups = ee('Model')->get('MemberGroup')->filter('group_id', 'IN', $no_access)->all();var_dump($groups);exit;
+			$groups = ee('Model')->get('MemberGroup')->filter('group_id', 'IN', $no_access)->all();
 			$upload_destination->setNoAccess($groups);
 		}
 		else
