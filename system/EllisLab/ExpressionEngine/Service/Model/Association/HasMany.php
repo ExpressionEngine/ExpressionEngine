@@ -64,7 +64,7 @@ class HasMany extends ToMany {
 	/**
 	 * Disable remove
 	 */
-	public function remove($item)
+	public function remove($item = NULL)
 	{
 		throw new LogicException('Cannot remove(), did you mean delete()?');
 	}
