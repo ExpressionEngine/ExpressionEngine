@@ -871,6 +871,8 @@ class Uploads extends Settings {
 			ee()->functions->redirect(cp_url('settings/uploads'));
 		}
 
+		ee()->load->model('file_upload_preferences_model');
+
 		// Get upload destination with config.php overrides in place
 		$upload_destination = ee()->file_upload_preferences_model->get_file_upload_preferences(
 			ee()->session->userdata('group_id'),
