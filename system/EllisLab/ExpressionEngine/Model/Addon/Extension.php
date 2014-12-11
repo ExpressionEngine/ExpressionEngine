@@ -2,7 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Model\Addon;
 
-use \InvalidArgumentException;
+use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**

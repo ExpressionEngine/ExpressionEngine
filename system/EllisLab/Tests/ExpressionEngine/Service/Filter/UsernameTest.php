@@ -3,7 +3,7 @@ namespace EllisLab\Tests\ExpressionEngine\Service;
 
 use EllisLab\ExpressionEngine\Service\Filter\Username;
 use Mockery as m;
-use \stdClass;
+use stdClass;
 
 class UsernameTest extends \PHPUnit_Framework_TestCase {
 

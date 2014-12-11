@@ -3,7 +3,7 @@ namespace EllisLab\Tests\ExpressionEngine\Service;
 
 use EllisLab\ExpressionEngine\Service\Filter\Site;
 use Mockery as m;
-use \stdClass;
+use stdClass;
 
 class SiteTest extends \PHPUnit_Framework_TestCase {
 

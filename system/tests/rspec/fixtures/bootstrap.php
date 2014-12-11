@@ -166,7 +166,7 @@ $autoloader = new \EllisLab\ExpressionEngine\Service\Autoloader();
 $autoloader->register();
 
 // Setup Dependency Injection Container
-ee()->di = new \EllisLab\ExpressionEngine\Service\DependencyInjectionContainer();
+ee()->di = new \EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer();
 
 ee()->di->registerSingleton('Model', function($di)
 {
