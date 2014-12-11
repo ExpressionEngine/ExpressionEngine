@@ -421,7 +421,7 @@ class Model {
 			return TRUE;
 		}
 
-		return $this->_validator->validate($this->getValues());
+		return $this->_validator->validate($this->getDirty());
 
 		// TODO validate relationships?
 		foreach ($this->getAllAssociations() as $assoc)
