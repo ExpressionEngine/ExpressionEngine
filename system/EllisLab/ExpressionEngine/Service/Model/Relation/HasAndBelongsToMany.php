@@ -68,6 +68,27 @@ class HasAndBelongsToMany extends Relation {
 	/**
 	 *
 	 */
+	public function modifyLazyQuery($query, $source, $to_alias)
+	{
+		list($from, $to) = $this->getKeys();
+
+		$from_alias = $source->getName();
+		$pivot_table = $this->pivot['table'];
+		$pivot_as = "{$from_alias}_{$to_alias}_{$pivot_table}";
+
+		// pivot -> to_alias
+		$query->join(
+			"{$pivot_table} as {$pivot_as}",
+			"{$pivot_as}.{$this->pivot['right']} = {$to_alias}_{$this->to_table}.{$to}",
+			'LEFT'
+		);
+
+		$query->where("{$pivot_as}.{$this->pivot['left']}", $source->$from);
+	}
+
+	/**
+	 *
+	 */
 	public function insertRelation($source, $target)
 	{
 		$this->datastore->rawQuery()
