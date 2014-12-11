@@ -34,7 +34,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class Site extends Model {
 
 	protected static $_primary_key = 'site_id';
-	protected static $_gateway_names = array('SiteGateway');
+	protected static $_table_name = 'Sites';
 
 	protected static $_preferences = array(
 		'SystemPreferences' => 'site_system_preferences',
