@@ -496,6 +496,16 @@ class Model {
 	}
 
 	/**
+	 * Retrieve data as an array. All getters will be hit.
+	 *
+	 * @return array Data including NULl values
+	 */
+	public function toArray()
+	{
+		return $this->getValues();
+	}
+
+	/**
 	 * Limit a query to the primary id of this model
 	 *
 	 * @param QueryBuilder $query The query that will be sent
@@ -588,11 +598,6 @@ class Model {
 		$validator->setRules($rules);
 
 		return $this;
-	}
-
-	public function toArray()
-	{
-		return $this->getValues();
 	}
 
 	/**
