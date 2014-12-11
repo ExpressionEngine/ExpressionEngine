@@ -79,12 +79,18 @@ class HasAndBelongsToMany extends Relation {
 	/**
 	 *
 	 */
-	public function dropRelation($source, $target)
+	public function dropRelation($source, $target = NULL)
 	{
-		$this->datastore->rawQuery()
-			->where($this->pivot['left'], $source->{$this->from_key})
-			->where($this->pivot['right'], $target->{$this->to_key})
-			->delete($this->pivot['table']);
+		$query = $this->datastore
+			->rawQuery()
+			->where($this->pivot['left'], $source->{$this->from_key});
+
+		if (isset($target))
+		{
+			$query->where($this->pivot['right'], $target->{$this->to_key});
+		}
+
+		$query->delete($this->pivot['table']);
 	}
 
 	/**
