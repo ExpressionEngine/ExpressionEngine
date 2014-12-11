@@ -49,22 +49,22 @@ class HasAndBelongsToMany extends ToMany {
 	public function clear()
 	{
 		parent::clear();
-		$this->relation->dropRelationship();
+		$this->dropRelationship($this->source);
 	}
 
 	/**
 	 *
 	 */
-	protected function insertRelationship($target)
+	protected function insertRelationship($source, $target)
 	{
-		$this->relation->insertAssociation($this->source, $target);
+		$this->relation->insertRelation($source, $target);
 	}
 
 	/**
 	 *
 	 */
-	protected function dropRelationship($target = NULL)
+	protected function dropRelationship($source, $target = NULL)
 	{
-		$this->relation->dropAssociation($this->source, $target);
+		$this->relation->dropRelation($source, $target);
 	}
 }
