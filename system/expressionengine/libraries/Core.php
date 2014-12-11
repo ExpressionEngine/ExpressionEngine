@@ -107,7 +107,7 @@ class EE_Core {
 		ee()->db->db_debug = FALSE;
 
 		// Setup Dependency Injection Container
-		ee()->di = new \EllisLab\ExpressionEngine\Service\DependencyInjectionContainer();
+		ee()->di = new \EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer();
 
 		ee()->di->registerSingleton('Model', function($di)
 		{
