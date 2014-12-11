@@ -52,7 +52,8 @@ class UploadDestination extends Model {
 			)
 		),
 		'FileDimension' => array(
-			'type' => 'hasMany'
+			'type' => 'hasMany',
+			'to_key' => 'upload_location_id'
 		)
 	);
 

@@ -322,9 +322,10 @@ class Uploads extends Settings {
 				)
 			)
 		);
-
+	
+		// Do not use to access attributes of directory, use $upload_dir
+		// so that config.php overrides take place
 		$upload_destination = ee('Model')->get('UploadDestination')
-			->with('FileDimension')
 			->filter('id', $upload_id)
 			->first();
 
@@ -602,8 +603,7 @@ class Uploads extends Settings {
 		// Otherwise, pull from the database if we're editing
 		elseif ($upload_destination !== NULL)
 		{
-			$sizes = ee('Model')->get('FileDimension')
-				->filter('upload_location_id', $upload_destination->id)->all();
+			$sizes = $upload_destination->getFileDimension();
 
 			if ($sizes->count() != 0)
 			{
@@ -719,15 +719,7 @@ class Uploads extends Settings {
 		$no_access = array();
 		if ($upload_destination !== NULL)
 		{
-			// Relationships aren't working
-			//$no_access = $upload_destination->getNoAccess()->pluck('group_id');
-
-			$no_access_query = ee()->db->get_where('upload_no_access', array('upload_id' => $upload_destination->id));
-
-			foreach ($no_access_query->result() as $row)
-			{
-				$no_access[] = $row->member_group;
-			}
+			$no_access = $upload_destination->getNoAccess()->pluck('group_id');
 		}
 
 		$allowed_groups = array_diff(array_keys($member_groups), $no_access);
@@ -914,7 +906,6 @@ class Uploads extends Settings {
 			)
 		);
 
-		// TODO: Get rid of this when relationships work
 		$sizes = ee('Model')->get('FileDimension')
 			->filter('upload_location_id', $upload_id)->all();
 
