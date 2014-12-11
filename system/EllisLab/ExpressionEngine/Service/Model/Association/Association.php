@@ -22,6 +22,9 @@ use EllisLab\ExpressionEngine\Service\Model\Collection;
 /**
  * ExpressionEngine Association
  *
+ * Associations describe how two model instances are connected. For general
+ * relationships between models, @see Relations.
+ *
  * @package		ExpressionEngine
  * @subpackage	Model
  * @category	Service
