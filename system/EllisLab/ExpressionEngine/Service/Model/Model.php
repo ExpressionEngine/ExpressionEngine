@@ -135,7 +135,7 @@ class Model {
 	public function __debugInfo()
 	{
 		$name = $this->_name;
-		$values = $this->getRawValues();
+		$values = $this->getValues();
 		$related_to = array_keys($this->_associations);
 
 		return compact('name', 'values', 'related_to');
