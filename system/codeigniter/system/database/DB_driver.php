@@ -1045,7 +1045,7 @@ class CI_DB_driver {
 	 * @param	array	the update data
 	 * @return	string
 	 */
-	protected function _update($table, $values)
+	protected function _update($table, $values, $where, $orderby = array(), $limit = FALSE)
 	{
 		foreach ($values as $key => $val)
 		{
