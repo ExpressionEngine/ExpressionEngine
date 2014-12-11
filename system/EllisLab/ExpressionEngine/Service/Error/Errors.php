@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Service\Error;
 
 Use EllisLab\ExpressionEngine\Service\Error\Error;

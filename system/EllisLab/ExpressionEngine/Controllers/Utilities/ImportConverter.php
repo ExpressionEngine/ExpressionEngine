@@ -4,8 +4,6 @@ namespace EllisLab\ExpressionEngine\Controllers\Utilities;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-use EllisLab\ExpressionEngine\Module\Member\Model\Gateway\MemberGateway;
-
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -179,7 +177,7 @@ class ImportConverter extends Utilities {
 		}
 
 		// Get member table fields
-		$this->default_fields = array_values(MemberGateway::getMetaData('field_list'));
+		$this->default_fields = ee('Model')->make('Member')->getFields();
 
 		ksort($this->default_fields);
 		$vars['select_options'][''] = lang('select');

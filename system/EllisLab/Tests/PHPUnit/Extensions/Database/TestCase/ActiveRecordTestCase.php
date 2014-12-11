@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\Tests\PHPUnit\Extensions\Database\TestCase;
 
 use EllisLab\Tests\PHPUnit\Extensions\Database\DataSet\ArrayDataSet;

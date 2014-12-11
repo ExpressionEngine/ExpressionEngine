@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Library;
 
 class IpLibrary {
@@ -6,8 +7,8 @@ class IpLibrary {
 
 	/**
 	 *
-	 */	
-	public static getInstance()
+	 */
+	public static function getInstance()
 	{
 		if ( ! isset (self::$instance))
 		{
@@ -15,8 +16,8 @@ class IpLibrary {
 		}
 		return self::$instance;
 	}
-	
-	
+
+
 	/**
 	* Validate IP Address
 	*
@@ -47,7 +48,7 @@ class IpLibrary {
 
 		// If it's not we'll do it manually
 		$which = ucfirst(strtolower($which));
-		
+
 		if ($which != 'Ipv6' OR $which != 'Ipv4')
 		{
 			if (strpos($ip, ':') !== FALSE)
@@ -63,13 +64,13 @@ class IpLibrary {
 				return FALSE;
 			}
 		}
-		
+
 		$func = 'valid'.$which;
 		return $this->$func($ip);
 	}
-	
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	* Validate IPv4 Address
 	*
@@ -93,7 +94,7 @@ class IpLibrary {
 		{
 			return FALSE;
 		}
-		
+
 		// Check each segment
 		foreach ($ip_segments as $segment)
 		{
@@ -107,9 +108,9 @@ class IpLibrary {
 
 		return TRUE;
 	}
-		
+
 	// --------------------------------------------------------------------
-	
+
 	/**
 	* Validate IPv6 Address
 	*
@@ -122,33 +123,33 @@ class IpLibrary {
 		// 8 groups, separated by :
 		// 0-ffff per group
 		// one set of consecutive 0 groups can be collapsed to ::
-		
+
 		$groups = 8;
 		$collapsed = FALSE;
-		
+
 		$chunks = array_filter(
 			preg_split('/(:{1,2})/', $str, NULL, PREG_SPLIT_DELIM_CAPTURE)
 		);
-		
+
 		// Rule out easy nonsense
 		if (current($chunks) == ':' OR end($chunks) == ':')
 		{
 			return FALSE;
 		}
-		
+
 		// PHP supports IPv4-mapped IPv6 addresses, so we'll expect those as well
 		if (strpos(end($chunks), '.') !== FALSE)
 		{
 			$ipv4 = array_pop($chunks);
-			
+
 			if ( ! $this->_valid_ipv4($ipv4))
 			{
 				return FALSE;
 			}
-			
+
 			$groups--;
 		}
-		
+
 		while ($seg = array_pop($chunks))
 		{
 			if ($seg[0] == ':')
@@ -157,19 +158,19 @@ class IpLibrary {
 				{
 					return FALSE;	// too many groups
 				}
-				
+
 				if (strlen($seg) > 2)
 				{
 					return FALSE;	// long separator
 				}
-				
+
 				if ($seg == '::')
 				{
 					if ($collapsed)
 					{
 						return FALSE;	// multiple collapsed
 					}
-					
+
 					$collapsed = TRUE;
 				}
 			}
@@ -181,5 +182,5 @@ class IpLibrary {
 
 		return $collapsed OR $groups == 1;
 	}
-	
+
 }

@@ -22,7 +22,7 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/database/
  */
-function &DB($params = '', $active_record_override = NULL)
+function DB($params = '', $active_record_override = NULL)
 {
 	// Load the DB config file if a DSN string wasn't passed
 	if (is_string($params) AND strpos($params, '://') === FALSE)
@@ -101,7 +101,6 @@ function &DB($params = '', $active_record_override = NULL)
 	// Load the DB classes.  Note: Since the active record class is optional
 	// we need to dynamically create a class that extends proper parent class
 	// based on whether we're using the active record class or not.
-	// Kudos to Paul for discovering this clever use of eval()
 
 	if ($active_record_override !== NULL)
 	{
@@ -116,14 +115,14 @@ function &DB($params = '', $active_record_override = NULL)
 
 		if ( ! class_exists('CI_DB'))
 		{
-			eval('class CI_DB extends CI_DB_active_record { }');
+			class_alias('CI_DB_active_record', 'CI_DB');
 		}
 	}
 	else
 	{
 		if ( ! class_exists('CI_DB'))
 		{
-			eval('class CI_DB extends CI_DB_driver { }');
+			class_alias('CI_DB_driver', 'CI_DB');
 		}
 	}
 

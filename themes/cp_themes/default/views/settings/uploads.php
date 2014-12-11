@@ -14,7 +14,6 @@
 				<select name="table_action">
 					<option value="none">-- <?=lang('with_selected')?> --</option>
 					<option value="remove"><?=lang('upload_remove')?></option>
-					<option value="sync"><?=lang('upload_sync')?></option>
 				</select>
 				<input class="btn submit" type="submit" value="<?=lang('submit')?>">
 			</fieldset>

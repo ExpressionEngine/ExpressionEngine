@@ -20,6 +20,15 @@ class UploadEdit < ControlPanelPage
 		click_link 'Create New'
 	end
 
+	def load_edit_for_dir(number)
+		settings_btn.click
+		within 'div.sidebar' do
+			click_link 'Upload Directories'
+		end
+
+		find('tr:nth-child('+(number+1).to_s+') li.edit a').click
+	end
+
 	# Dynamic getter for a specific Grid row
 	def grid_row(row)
 		# Plus three to skip over header, blank row and no results row

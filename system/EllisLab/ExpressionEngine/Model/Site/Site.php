@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model\Site;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
@@ -31,14 +32,30 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @link		http://ellislab.com
  */
 class Site extends Model {
+
 	protected static $_primary_key = 'site_id';
-	protected static $_gateway_names = array('SiteGateway');
+	protected static $_table_name = 'sites';
+
 	protected static $_preferences = array(
 		'SystemPreferences' => 'site_system_preferences',
 		'MailingListPreferences' => 'site_mailinglist_preferences',
 		'MemberPreferences' => 'site_member_preferences',
 		'TemplatePreferences' => 'site_template_preferences',
 		'ChannelPreferences' => 'site_channel_preferences'
+	);
+
+	protected static $_relationships = array(
+		'GlobalVariables' => array(
+			'model' => 'GlobalVariable',
+			'type' => 'hasMany'
+		),
+		'Stats' => array(
+			'type' => 'HasOne'
+		),
+		'TemplateGroups' => array(
+			'model' => 'TemplateGroup',
+			'type' => 'hasMany'
+		),
 	);
 
 	// Properties

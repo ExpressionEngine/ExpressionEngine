@@ -14,6 +14,11 @@ $lang = array(
 
 //----------------------------------------
 
+'pages_manager' =>
+'Pages Manager',
+
+// 2.x:
+
 'pages_homepage' =>
 'Pages Homepage',
 

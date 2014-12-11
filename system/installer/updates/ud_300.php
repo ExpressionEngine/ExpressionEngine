@@ -39,6 +39,7 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'_update_email_cache_table',
+				'_update_upload_no_access_table',
 				'_insert_comment_settings_into_db',
 				'_insert_cookie_settings_into_db',
 			)
@@ -79,6 +80,18 @@ class Updater {
 	// -------------------------------------------------------------------------
 
 	/**
+	 * Removes the upload_loc column from the upload_no_access table.
+	 *
+	 * @return void
+	 */
+	private function _update_upload_no_access_table()
+	{
+		ee()->smartforge->drop_column('upload_no_access', 'upload_loc');
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
 	 * Previously, Comment module settings were stored in config.php. Since the
 	 * Comment module is more integrated like Channel, let's take the settings
 	 * out of there and put them in the sites table because it's a better place
@@ -90,7 +103,7 @@ class Updater {
 	private function _insert_comment_settings_into_db()
 	{
 		$comment_edit_time_limit = ee()->config->item('comment_edit_time_limit');
-		
+
 		$settings = array(
 			// This is a new config, default it to y if not set
 			'enable_comments' => ee()->config->item('enable_comments') ?: 'y',

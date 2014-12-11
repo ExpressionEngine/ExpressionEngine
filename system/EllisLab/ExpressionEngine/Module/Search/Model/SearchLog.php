@@ -1,19 +1,20 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Module\Search\Model;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 class SearchLog extends Model {
-	// Meta data
+
 	protected static $_primary_key = 'id';
-	protected static $_gateway_names = array('SearchLogGateway');
+	protected static $_table_name = 'search_log';
 
 	protected static $_relationships = array(
 		'Site' => array(
-			'type' => 'many_to_one'
+			'type' => 'BelongsTo'
 		),
 		'Member'	=> array(
-			'type' => 'many_to_many'
+			'type' => 'BelongsTo'
 		)
 	);
 
@@ -26,8 +27,4 @@ class SearchLog extends Model {
 	protected $search_type;
 	protected $search_terms;
 
-	public function getSite()
-	{
-		return $this->getRelated('Site');
-	}
 }

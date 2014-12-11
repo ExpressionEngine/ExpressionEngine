@@ -46,6 +46,25 @@ class Settings extends CP_Controller {
 
 		ee()->lang->loadfile('settings');
 		ee()->load->library('form_validation');
+		ee()->load->model('addons_model');
+
+		// Build Content & Design here so we can conditionally insert
+		// Pages Settings link
+		$content_design = array(
+			'comment_settings' => cp_url('settings/comments'),
+			'template_settings' => cp_url('settings/template')
+		);
+
+		// Insert the Pages Settings here if Pages module is installed
+		if (ee()->addons_model->module_installed('pages'))
+		{
+			$content_design['pages_settings'] = cp_url('settings/pages');
+		}
+
+		$content_design += array(
+			'upload_directories' => cp_url('settings/uploads'),
+			'word_censoring' => cp_url('settings/word-censor')
+		);
 
 		// Register our menu
 		ee()->menu->register_left_nav(array(
@@ -57,12 +76,7 @@ class Settings extends CP_Controller {
 				'debugging_output' => cp_url('settings/debug-output')
 			),
 			'content_and_design' => cp_url('settings/content-design'),
-			array(
-				'comment_settings' => cp_url('settings/comments'),
-				'template_settings' => cp_url('settings/template'),
-				'upload_directories' => cp_url('settings/uploads'),
-				'word_censoring' => cp_url('settings/word-censor')
-			),
+			$content_design,
 			'members' => cp_url('settings/members'),
 			array(
 				'messages' => cp_url('settings/messages'),

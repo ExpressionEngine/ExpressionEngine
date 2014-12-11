@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\View\ViewFactory;
-use EllisLab\ExpressionEngine\Service\DependencyInjectionContainer;
+use EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -31,7 +31,7 @@ use EllisLab\ExpressionEngine\Service\DependencyInjectionContainer;
 class FilterFactory {
 
 	/**
-	 * @var DependencyInjectionContainer A referrence to a DependencyInjectionContainer
+	 * @var InjectionContainer A referrence to a InjectionContainer
 	 */
 	protected $container;
 
@@ -53,12 +53,12 @@ class FilterFactory {
 	}
 
 	/**
-	 * Sets the DependencyInjectionContainer for the Factory
+	 * Sets the InjectionContainer for the Factory
 	 *
-	 * @param DependencyInjectionContainer $container The container to use
+	 * @param InjectionContainer $container The container to use
 	 * @return self This returns a reference to itself
 	 */
-	public function setDIContainer(DependencyInjectionContainer $container)
+	public function setDIContainer(InjectionContainer $container)
 	{
 		$this->container = $container;
 		return $this;
@@ -84,7 +84,7 @@ class FilterFactory {
 	/**
 	 * This will add a filter to the $filters array. It will also instantiate
 	 * a new named filter either via a local `createDefault{$name}()` method
-	 * or a bound method on the DependencyInjectionContainer.
+	 * or a bound method on the InjectionContainer.
 	 *
 	 * @param Filter\Filter|string $filter If a Filter object is passed in it
 	 *   will be added directly. Otherwise the first argument passed in will be
@@ -253,7 +253,7 @@ class FilterFactory {
 	 * @todo Figure out what to do when container is set and $usernames are
 	 *   passed in.
 	 *
-	 * @uses DependencyInjectionContainer::make to create a Model/Query object
+	 * @uses InjectionContainer::make to create a Model/Query object
 	 * @uses Filter\Username::setQuery to set a Model/Query object in order to
 	 *   fetch a list of usernames
 	 *

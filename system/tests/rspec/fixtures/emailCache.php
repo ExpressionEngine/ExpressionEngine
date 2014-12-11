@@ -59,7 +59,7 @@ $total_sent = isset($options['total-sent']) && is_numeric($options['total-sent']
 
 $emails = array(
 	"wes.baker@ellislab.com"      => "Wes Baker",
-	"pascal.kreite@ellislab.com"  => "Pascal Kreite",
+	"pascal.kriete@ellislab.com"  => "Pascal Kriete",
 	"kevin.cupp@ellislab.com"     => "Kevin Cupp",
 	"daniel.bingham@ellislab.com" => "Daniel Bingham",
 	"quinn.chrzan@ellislab.com"   => "Quinn Chrzan",

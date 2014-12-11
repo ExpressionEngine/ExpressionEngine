@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model\Addon;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
@@ -27,13 +28,18 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @link		http://ellislab.com
  */
 class Module extends Model {
+
 	protected static $_primary_key = 'module_id';
-	protected static $_gateway_names = array('ModuleGateway');
+	protected static $_table_name = 'modules';
+
+	protected static $_validation_rules = array(
+		'has_cp_backend'     => 'enum[y,n]',
+		'has_publish_fields' => 'enum[y,n]'
+	);
 
 	protected $module_id;
 	protected $module_name;
 	protected $module_version;
 	protected $has_cp_backend;
 	protected $has_publish_fields;
-
 }

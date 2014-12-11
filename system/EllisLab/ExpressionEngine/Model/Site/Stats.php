@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model\Site;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
@@ -27,21 +28,21 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @link		http://ellislab.com
  */
 class Stats extends Model {
+
 	protected static $_primary_key = 'stat_id';
-	protected static $_gateway_names = 'StatGateway';
+	protected static $_table_name = 'stats';
 
 	protected static $_relationships = array(
 		'Site' => array(
-			'type' => 'one-to-one'
+			'type' => 'BelongsTo'
 		),
 		'RecentMember' => array(
-			'type' => 'many-to-one',
-			'model' => 'Member',
-			'key' => 'recent_member_id'
+			'type'     => 'BelongsTo',
+			'model'    => 'Member',
+			'from_key' => 'recent_member_id'
 		)
 	);
 
-	// Properties
 	protected $stat_id;
 	protected $site_id;
 	protected $total_members;
@@ -58,25 +59,5 @@ class Stats extends Model {
 	protected $most_visitors;
 	protected $most_visitor_date;
 	protected $last_cache_clear;
-
-	public function getSite()
-	{
-		return $this->getRelated('Site');
-	}
-
-	public function setSite(Site $site)
-	{
-		return $this->setRelated('Site', $site);
-	}
-
-	public function getRecentMember()
-	{
-		return $this->getRelated('RecentMember');
-	}
-
-	public function setRecentMember(Member $member)
-	{
-		return $this->setRelated('RecentMember', $member);
-	}
 
 }

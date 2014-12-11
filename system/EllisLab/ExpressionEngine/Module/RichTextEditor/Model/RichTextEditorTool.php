@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Module\RichTextEditor\Model;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
@@ -29,6 +30,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @link		http://ellislab.com
  */
 class RichTextEditorTool extends Model {
+
 	static protected $_primary_key = 'tool_id';
 	static protected $_gateway_names = array('RichTextEditorToolGateway');
 

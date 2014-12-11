@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Module\Member\Model;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
@@ -17,16 +18,16 @@ class Member extends Model {
 
 	protected static $_relationships = array(
 		'MemberGroup' => array(
-			'type' => 'many_to_one'
+			'type' => 'belongsTo'
 		),
-		'ResetPassword'	=> array(
-			'type' => 'one_to_one'
-		),
-		'ChannelEntries' => array(
-			'type' => 'one_to_many',
-			'model' => 'ChannelEntry',
-			'to_key' => 'author_id'
-		)
+	//	'ResetPassword'	=> array(
+	//		'type' => 'one_to_one'
+	//	),
+	//	'ChannelEntries' => array(
+	//		'type' => 'one_to_many',
+	//		'model' => 'ChannelEntry',
+	//		'to_key' => 'author_id'
+	//	)
 	);
 
 	// Properties
@@ -91,6 +92,8 @@ class Member extends Model {
 	protected $language;
 	protected $timezone;
 	protected $time_format;
+	protected $date_format;
+	protected $include_seconds;
 	protected $cp_theme;
 	protected $profile_theme;
 	protected $forum_theme;
@@ -102,36 +105,7 @@ class Member extends Model {
 	protected $quick_tabs;
 	protected $show_sidebar;
 	protected $pmember_id;
-
-	public function getMemberGroup()
-	{
-		return $this->getRelated('MemberGroup');
-	}
-
-	public function setMemberGroup(MemberGroup $group)
-	{
-		return $this->setRelated('MemberGroup', $group);
-	}
-
-	public function getResetPassword()
-	{
-		return $this->getRelated('ResetPassword');
-	}
-
-	public function setResetPassword(ResetPassword $reset_code)
-	{
-		return $this->setRelated('ResetPassword', $reset_code);
-	}
-
-
-	public function getChannelEntries()
-	{
-		return $this->getRelated('ChannelEntries');
-	}
-
-	public function setChannelEntries(array $entries)
-	{
-		return $this->setRelated('ChannelEntries', $entries);
-	}
+	protected $rte_enabled;
+	protected $rte_toolset_id;
 
 }

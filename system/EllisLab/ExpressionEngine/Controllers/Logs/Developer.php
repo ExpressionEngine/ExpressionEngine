@@ -234,7 +234,6 @@ class Developer extends Logs {
 				'timestamp'			=> ee()->localize->human_time($log->timestamp),
 				'description' 		=> $description
 			);
-
 		}
 
 		$pagination = new Pagination($this->params['perpage'], $count, $page);
