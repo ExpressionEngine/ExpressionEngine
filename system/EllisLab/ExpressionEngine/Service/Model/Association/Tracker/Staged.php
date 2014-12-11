@@ -103,7 +103,7 @@ class Staged implements Tracker {
 	/**
 	 *
 	 */
-	protected function attemptFastUndoAdd($model)
+	protected function attemptFastUndoAdd($hash)
 	{
 		if (isset($this->added[$hash]))
 		{
