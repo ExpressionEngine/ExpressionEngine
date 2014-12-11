@@ -14,11 +14,11 @@ class Channel extends Model implements ContentStructure {
 
 	protected static $_relationships = array(
 		'ChannelFieldGroup' => array(
-			'type' => 'many_to_one',
+			'type' => 'belongsTo',
 			'key' => 'field_group'
 		),
 		'ChannelEntries'	=> array(
-			'type' => 'one_to_many',
+			'type' => 'hasMany',
 			'model' => 'ChannelEntry'
 		)
 	);
