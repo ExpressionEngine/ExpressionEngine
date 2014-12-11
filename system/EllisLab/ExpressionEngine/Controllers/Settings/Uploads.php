@@ -754,11 +754,6 @@ class Uploads extends Settings {
 				->with('FileDimension')
 				->filter('id', $id)
 				->first();
-
-			// Reset upload destination access, we'll add it back later
-			// TODO: Switch to models when we are able to delete relationships
-			// based on pivot table
-			ee()->db->delete('upload_no_access', array('upload_id' => $id));
 		}
 		else
 		{
@@ -817,27 +812,16 @@ class Uploads extends Settings {
 
 		if ( ! empty($no_access))
 		{
-			$groups = ee('Model')->get('MemberGroup')->filter('group_id', 'IN', $no_access)->all();
-			//$upload_destination->setNoAccess($groups);
+			$groups = ee('Model')->get('MemberGroup')->filter('group_id', 'IN', $no_access)->all();var_dump($groups);exit;
+			$upload_destination->setNoAccess($groups);
+		}
+		else
+		{
+			// Remove all member groups from this upload destination
+			$upload_destination->removeNoAccess();
 		}
 
 		$upload_destination->save();
-
-		// TODO: Delete when relationships (setNoAccess) works
-		if (count($no_access) > 0)
-		{
-			foreach($no_access as $member_group)
-			{
-				ee()->db->insert(
-					'upload_no_access',
-					array(
-						'upload_id'		=> $upload_destination->id,
-						'upload_loc'	=> 'cp',
-						'member_group'	=> $member_group
-					)
-				);
-			}
-		}
 
 		$image_sizes = ee()->input->post('image_manipulations');
 		$row_ids = array();
