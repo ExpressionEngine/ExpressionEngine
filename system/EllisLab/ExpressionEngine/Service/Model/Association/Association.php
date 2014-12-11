@@ -146,8 +146,13 @@ abstract class Association {
 	/**
 	 *
 	 */
-	public function remove($item)
+	public function remove($item = NULL)
 	{
+		if ( ! isset($item))
+		{
+			return $this->clear();
+		}
+
 		if ($item instanceOf Collection || is_array($item))
 		{
 			foreach ($item as $model)
