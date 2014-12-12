@@ -150,16 +150,7 @@ class Addons_model extends CI_Model {
 
 			if ( ! class_exists($class_name))
 			{
-				if (ee()->config->item('debug') == 2
-					OR (ee()->config->item('debug') == 1
-						AND ee()->session->userdata('group_id') == 1))
-				{
-					include($plugin['path']);
-				}
-				else
-				{
-					@include($plugin['path']);
-				}
+				include($plugin['path']);
 
 				if ( ! class_exists($class_name))
 				{
