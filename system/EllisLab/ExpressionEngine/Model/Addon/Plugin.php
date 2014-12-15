@@ -28,7 +28,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  */
 class Plugin extends Model {
 	protected static $_primary_key = 'plugin_id';
-	protected static $_gateway_names = array('PluginGateway');
+	protected static $_table_name = 'plugins';
 
 	protected $plugin_id;
 	protected $plugin_name;
