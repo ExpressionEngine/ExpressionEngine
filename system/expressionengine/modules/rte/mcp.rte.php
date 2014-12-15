@@ -173,7 +173,6 @@ class Rte_mcp {
 
 		$vars['table'] = $table->viewData($this->_base_url);
 		$vars['base_url'] = clone $vars['table']['base_url'];
-		// $vars['base_url']->path = 'addons/settings/rte/prefs_update';
 
 		if ( ! empty($vars['table']['data']))
 		{
