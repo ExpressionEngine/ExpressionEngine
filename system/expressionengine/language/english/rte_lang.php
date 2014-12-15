@@ -21,6 +21,8 @@ $lang = array(
 'create_tool_set' => 'Create Tool Set',
 'edit_tool_set' => 'Edit Tool Set',
 
+'no_tool_sets' => 'No Tool Sets Found',
+
 // Headings
 'nav_rte_settings' => 'Rich Text Editor Settings',
 'nav_rte_settings_short_desc' => 'Manage Rich Text Editor Tools and Tool Sets',
@@ -42,6 +44,7 @@ $lang = array(
 'disable_button' => 'Disable',
 'delete' => 'Delete',
 'toolset' => 'Tool Set',
+'toolsets' => 'Tool Sets',
 'tool' => 'Tool',
 'cancel' => 'Cancel',
 'enable_rte' => 'Enable the rich text editor?',

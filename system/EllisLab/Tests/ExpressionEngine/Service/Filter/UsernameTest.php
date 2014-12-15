@@ -3,13 +3,13 @@ namespace EllisLab\Tests\ExpressionEngine\Service;
 
 use EllisLab\ExpressionEngine\Service\Filter\Username;
 use Mockery as m;
-use \stdClass;
+use stdClass;
 
 class UsernameTest extends \PHPUnit_Framework_TestCase {
 
 	public function setUp()
 	{
-		$this->query = m::mock('EllisLab\ExpressionEngine\Service\Model\Query\Query');
+		$this->query = m::mock('EllisLab\ExpressionEngine\Service\Model\Query\Builder');
 
 		$this->usernames = array(
 			'1' => 'admin',

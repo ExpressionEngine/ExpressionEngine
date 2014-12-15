@@ -76,7 +76,7 @@ class Uploads extends Settings {
 						'title' => lang('upload_btn_edit')
 					),
 					'sync' => array(
-						'href' => cp_url(''),
+						'href' => cp_url('settings/uploads/sync/'.$dir['id']),
 						'title' => lang('upload_btn_sync')
 					)
 				)),
@@ -197,7 +197,7 @@ class Uploads extends Settings {
 				'rules' => 'callback_validateImageSizes'
 			)
 		));
-		
+
 		$base_url = 'settings/uploads/';
 		$base_url .= ($upload_id) ? 'edit/' . $upload_id : 'new-upload';
 		$base_url = cp_url($base_url);
@@ -322,12 +322,13 @@ class Uploads extends Settings {
 				)
 			)
 		);
-
+	
+		// Do not use to access attributes of directory, use $upload_dir
+		// so that config.php overrides take place
 		$upload_destination = ee('Model')->get('UploadDestination')
-			->with('FileDimension')
 			->filter('id', $upload_id)
 			->first();
-	
+
 		// Image manipulations Grid
 		$grid = $this->getImageSizesGrid($upload_destination);
 
@@ -385,7 +386,7 @@ class Uploads extends Settings {
 				'cat_group' => array(
 					'type' => 'checkbox',
 					'choices' => $cat_group_options,
-					'value' => ($upload_destination) ? explode('|', $upload_destination->cat_group) : array()
+					'value' => ($upload_destination) ? explode('|', $upload_dir['cat_group']) : array()
 				)
 			)
 		);
@@ -393,7 +394,7 @@ class Uploads extends Settings {
 		// Set current name hidden input for duplicate-name-checking in validation later
 		if ($upload_destination !== NULL)
 		{
-			ee()->view->form_hidden = array('cur_name' => $upload_destination->name);
+			ee()->view->form_hidden = array('cur_name' => $upload_dir['name']);
 		}
 
 		ee()->view->ajax_validate = TRUE;
@@ -470,7 +471,7 @@ class Uploads extends Settings {
 			{
 				$this->image_sizes_errors[$row_id]['resize_type'] = lang('required');
 			}
-			
+
 			foreach (array('width', 'height') as $dimension)
 			{
 				// Height and width are required
@@ -602,8 +603,7 @@ class Uploads extends Settings {
 		// Otherwise, pull from the database if we're editing
 		elseif ($upload_destination !== NULL)
 		{
-			$sizes = ee('Model')->get('FileDimension')
-				->filter('upload_location_id', $upload_destination->id)->all();
+			$sizes = $upload_destination->getFileDimension();
 
 			if ($sizes->count() != 0)
 			{
@@ -719,15 +719,7 @@ class Uploads extends Settings {
 		$no_access = array();
 		if ($upload_destination !== NULL)
 		{
-			// Relationships aren't working
-			//$no_access = $upload_destination->getNoAccess()->pluck('group_id');
-			
-			$no_access_query = ee()->db->get_where('upload_no_access', array('upload_id' => $upload_destination->id));
-
-			foreach ($no_access_query->result() as $row)
-			{
-				$no_access[] = $row->member_group;
-			}
+			$no_access = $upload_destination->getNoAccess()->pluck('group_id');
 		}
 
 		$allowed_groups = array_diff(array_keys($member_groups), $no_access);
@@ -754,11 +746,6 @@ class Uploads extends Settings {
 				->with('FileDimension')
 				->filter('id', $id)
 				->first();
-
-			// Reset upload destination access, we'll add it back later
-			// TODO: Switch to models when we are able to delete relationships
-			// based on pivot table
-			ee()->db->delete('upload_no_access', array('upload_id' => $id));
 		}
 		else
 		{
@@ -814,30 +801,19 @@ class Uploads extends Settings {
 				$no_access[] = $group->group_id;
 			}
 		}
-		
+
 		if ( ! empty($no_access))
 		{
 			$groups = ee('Model')->get('MemberGroup')->filter('group_id', 'IN', $no_access)->all();
-			//$upload_destination->setNoAccess($groups);
+			$upload_destination->setNoAccess($groups);
 		}
-		
-		$upload_destination->save();
-
-		// TODO: Delete when relationships (setNoAccess) works
-		if (count($no_access) > 0)
+		else
 		{
-			foreach($no_access as $member_group)
-			{
-				ee()->db->insert(
-					'upload_no_access',
-					array(
-						'upload_id'		=> $upload_destination->id,
-						'upload_loc'	=> 'cp',
-						'member_group'	=> $member_group
-					)
-				);
-			}
+			// Remove all member groups from this upload destination
+			$upload_destination->removeNoAccess();
 		}
+
+		$upload_destination->save();
 
 		$image_sizes = ee()->input->post('image_manipulations');
 		$row_ids = array();
@@ -881,6 +857,363 @@ class Uploads extends Settings {
 		$image_sizes->filter('upload_location_id', $upload_destination->id)->delete();
 
 		return $upload_destination->id;
+	}
+
+	/**
+	 * Sync upload directory
+	 *
+	 * @param	int		$id	ID of upload destination to sync
+	 */
+	public function sync($upload_id = NULL)
+	{
+		if (empty($upload_id))
+		{
+			ee()->functions->redirect(cp_url('settings/uploads'));
+		}
+
+		ee()->load->model('file_upload_preferences_model');
+
+		// Get upload destination with config.php overrides in place
+		$upload_destination = ee()->file_upload_preferences_model->get_file_upload_preferences(
+			ee()->session->userdata('group_id'),
+			$upload_id
+		);
+
+		// Get a listing of raw files in the directory
+		ee()->load->library('filemanager');
+		$files = ee()->filemanager->directory_files_map(
+			$upload_destination['server_path'],
+			1,
+			FALSE,
+			$upload_destination['allowed_types']
+		);
+		$files_count = count($files);
+
+		// Change the decription of this first field depending on the
+		// type of files allowed
+		$file_sync_desc = ($upload_destination['allowed_types'] == 'all')
+			? lang('file_sync_desc') : lang('file_sync_desc_images');
+
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'file_sync',
+					'desc' => sprintf($file_sync_desc, $files_count),
+					'fields' => array(
+						'progress' => array(
+							'type' => 'html',
+							'content' => ee()->load->view('_shared/progress_bar', array('percent' => 0), TRUE)
+						)
+					)
+				)
+			)
+		);
+
+		$sizes = ee('Model')->get('FileDimension')
+			->filter('upload_location_id', $upload_id)->all();
+
+		$size_choices = array();
+		$js_size = array($upload_id => '');
+		foreach ($sizes as $size)
+		{
+			// For checkboxes
+			$size_choices[$size->id] = $size->short_name .
+				' <i>' . lang($size->resize_type) . ', ' . $size->width . 'px ' . lang('by') . ' ' . $size->height . 'px</i>';
+
+			// For JS sync script
+			$js_size[$size->upload_location_id][$size->id] = array('short_name' => $size->short_name, 'resize_type' => $size->resize_type, 'width' => $size->width, 'height' => $size->height, 'watermark_id' => $size->watermark_id);
+		}
+
+		// Only show the manipulations section if there are manipulations
+		if ( ! empty($size_choices))
+		{
+			$vars['sections'][0][] = array(
+				'title' => 'apply_manipulations',
+				'desc' => 'apply_manipulations_desc',
+				'fields' => array(
+					'sizes' => array(
+						'type' => 'checkbox',
+						'choices' => $size_choices
+					)
+				)
+			);
+		}
+
+		$base_url = cp_url('settings/uploads/sync/'.$upload_id);
+
+		ee()->cp->add_js_script('file', 'cp/files/synchronize');
+
+		// Globals needed for JS script
+		ee()->javascript->set_global(array(
+			'file_manager' => array(
+				'sync_files'      => $files,
+				'sync_file_count' => $files_count,
+				'sync_sizes'      => $js_size,
+				'sync_baseurl'    => $base_url,
+				'sync_endpoint'   => cp_url('settings/uploads/do_sync_files'),
+				'sync_dir_name'   => $upload_destination['name'],
+			)
+		));
+
+		ee()->view->base_url = $base_url;
+		ee()->view->cp_page_title = lang('sync_title');
+		ee()->view->cp_page_title_alt = sprintf(lang('sync_alt_title'), $upload_destination['name']);
+		ee()->view->save_btn_text = 'btn_sync_directory';
+		ee()->view->save_btn_text_working = 'btn_sync_directory_working';
+
+		ee()->cp->set_breadcrumb(cp_url('files'), lang('file_manager'));
+
+		// Errors are given through a POST to this same page
+		$errors = ee()->input->post('errors');
+		if ( ! empty($errors))
+		{
+			ee()->view->set_message('warn', lang('directory_sync_warning'), json_decode($errors));
+		}
+
+		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * Sync process, largely copied from old content_files controller
+	 */
+	public function doSyncFiles()
+	{
+		$type = 'insert';
+		$errors = array();
+		$file_data = array();
+		$replace_sizes = array();
+		$db_sync = (ee()->input->post('db_sync') == 'y') ? 'y' : 'n';
+
+		// If file exists- make sure it exists in db - otherwise add it to db and generate all child sizes
+		// If db record exists- make sure file exists -  otherwise delete from db - ?? check for child sizes??
+
+		if (
+			(($sizes = ee()->input->post('sizes')) === FALSE OR
+			($current_files = ee()->input->post('files')) === FALSE) AND
+			$db_sync != 'y'
+		)
+		{
+			return FALSE;
+		}
+
+		ee()->load->library('filemanager');
+		ee()->load->model('file_model');
+
+		$upload_dirs = ee()->filemanager->fetch_upload_dirs(array('ignore_site_id' => FALSE));
+
+		foreach ($upload_dirs as $row)
+		{
+			$this->_upload_dirs[$row['id']] = $row;
+		}
+
+		$id = key($sizes);
+
+		// Final run through, it syncs the db, removing stray records and thumbs
+		if ($db_sync == 'y')
+		{
+			ee()->filemanager->sync_database($id);
+
+			if (AJAX_REQUEST)
+			{
+				$errors = ee()->input->post('errors');
+				if (empty($errors))
+				{
+					ee()->view->set_message('success', lang('directory_synced'), lang('directory_synced_desc'), TRUE);
+				}
+
+				return ee()->output->send_ajax_response(array(
+					'message_type'	=> 'success'
+				));
+			}
+
+			return;
+		}
+
+		$dir_data = $this->_upload_dirs[$id];
+
+		ee()->filemanager->xss_clean_off();
+		$dir_data['dimensions'] = (is_array($sizes[$id])) ? $sizes[$id] : array();
+		ee()->filemanager->set_upload_dir_prefs($id, $dir_data);
+
+		// Now for everything NOT forcably replaced
+
+		$missing_only_sizes = (is_array($sizes[$id])) ? $sizes[$id] : array();
+
+		// Check for resize_ids
+		$resize_ids = ee()->input->post('resize_ids');
+
+		if (is_array($resize_ids))
+		{
+			foreach ($resize_ids as $resize_id)
+			{
+				$replace_sizes[$resize_id] = $sizes[$id][$resize_id];
+				unset($missing_only_sizes[$resize_id]);
+			}
+		}
+
+		// @todo, bail if there are no files in the directory!  :D
+
+		$files = ee()->filemanager->fetch_files($id, $current_files, TRUE);
+
+		// Setup data for batch insert
+		foreach ($files->files[$id] as $file)
+		{
+			if ( ! $file['mime'])
+			{
+				$errors[$file['name']] = lang('invalid_mime');
+				continue;
+			}
+
+			// Clean filename
+			$clean_filename = basename(ee()->filemanager->clean_filename(
+				$file['name'],
+				$id,
+				array('convert_spaces' => FALSE)
+			));
+
+			if ($file['name'] != $clean_filename)
+			{
+				// It is just remotely possible the new clean filename already exists
+				// So we check for that and increment if such is the case
+				if (file_exists($this->_upload_dirs[$id]['server_path'].$clean_filename))
+				{
+					$clean_filename = basename(ee()->filemanager->clean_filename(
+						$clean_filename,
+						$id,
+						array(
+							'convert_spaces' => FALSE,
+							'ignore_dupes' => FALSE
+						)
+					));
+				}
+
+				// Rename the file
+				if ( ! @copy(ee()->_upload_dirs[$id]['server_path'].$file['name'],
+							ee()->_upload_dirs[$id]['server_path'].$clean_filename))
+				{
+					$errors[$file['name']] = lang('invalid_filename');
+					continue;
+				}
+
+				unlink($this->_upload_dirs[$id]['server_path'].$file['name']);
+				$file['name'] = $clean_filename;
+			}
+
+			// Does it exist in DB?
+			$query = ee()->file_model->get_files_by_name($file['name'], $id);
+
+			if ($query->num_rows() > 0)
+			{
+				// It exists, but do we need to change sizes or add a missing thumb?
+
+				if ( ! ee()->filemanager->is_editable_image($this->_upload_dirs[$id]['server_path'].$file['name'], $file['mime']))
+				{
+					continue;
+				}
+
+				// Note 'Regular' batch needs to check if file exists- and then do something if so
+				if ( ! empty($replace_sizes))
+				{
+					$thumb_created = ee()->filemanager->create_thumb(
+						$this->_upload_dirs[$id]['server_path'].$file['name'],
+						array(
+							'server_path'	=> $this->_upload_dirs[$id]['server_path'],
+							'file_name'		=> $file['name'],
+							'dimensions'	=> $replace_sizes,
+							'mime_type'		=> $file['mime']
+						),
+						TRUE,	// Create thumb
+						FALSE	// Overwrite existing thumbs
+					);
+
+					if ( ! $thumb_created)
+					{
+						$errors[$file['name']] = lang('thumb_not_created');
+					}
+				}
+
+				// Now for anything that wasn't forcably replaced- we make sure an image exists
+				$thumb_created = ee()->filemanager->create_thumb(
+					$this->_upload_dirs[$id]['server_path'].$file['name'],
+					array(
+						'server_path'	=> $this->_upload_dirs[$id]['server_path'],
+						'file_name'		=> $file['name'],
+						'dimensions'	=> $missing_only_sizes,
+						'mime_type'		=> $file['mime']
+					),
+					TRUE, 	// Create thumb
+					TRUE 	// Don't overwrite existing thumbs
+				);
+
+				$file_path_name = ee()->_upload_dirs[$id]['server_path'].$file['name'];
+
+				// Update dimensions
+				$image_dimensions = ee()->filemanager->get_image_dimensions($file_path_name);
+
+				$file_data = array(
+					'file_id'				=> $query->row('file_id'),
+					'file_size'				=> filesize($file_path_name),
+					'file_hw_original'		=> $image_dimensions['height'] . ' ' . $image_dimensions['width']
+				);
+				ee()->file_model->save_file($file_data);
+
+				continue;
+			}
+
+			$file_location = reduce_double_slashes(
+				$dir_data['url'].'/'.$file['name']
+			);
+
+			$file_path = reduce_double_slashes(
+				$dir_data['server_path'].'/'.$file['name']
+			);
+
+			$file_dim = (isset($file['dimensions']) && $file['dimensions'] != '') ? str_replace(array('width="', 'height="', '"'), '', $file['dimensions']) : '';
+
+			$image_dimensions = ee()->filemanager->get_image_dimensions($file_path);
+
+			$file_data = array(
+				'upload_location_id'	=> $id,
+				'site_id'				=> $this->config->item('site_id'),
+				'rel_path'				=> $file_path, // this will vary at some point
+				'mime_type'				=> $file['mime'],
+				'file_name'				=> $file['name'],
+				'file_size'				=> $file['size'],
+				'uploaded_by_member_id'	=> ee()->session->userdata('member_id'),
+				'modified_by_member_id' => ee()->session->userdata('member_id'),
+				'file_hw_original'		=> $image_dimensions['height'] . ' ' . $image_dimensions['width'],
+				'upload_date'			=> $file['date'],
+				'modified_date'			=> $file['date']
+			);
+
+
+			$saved = ee()->filemanager->save_file($this->_upload_dirs[$id]['server_path'].$file['name'], $id, $file_data, FALSE);
+
+			if ( ! $saved['status'])
+			{
+				$errors[$file['name']] = $saved['message'];
+			}
+		}
+
+		if ($db_sync == 'y')
+		{
+			ee()->filemanager->sync_database($id);
+		}
+
+		if (AJAX_REQUEST)
+		{
+			if (count($errors))
+			{
+				return ee()->output->send_ajax_response(array(
+					'message_type'	=> 'failure',
+					'errors'		=> $errors
+				));
+			}
+
+			return ee()->output->send_ajax_response(array(
+				'message_type'	=> 'success'
+			));
+		}
 	}
 }
 // END CLASS

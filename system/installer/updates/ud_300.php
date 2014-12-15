@@ -39,6 +39,7 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'_update_email_cache_table',
+				'_update_upload_no_access_table',
 				'_insert_comment_settings_into_db',
 				'_insert_cookie_settings_into_db',
 				'_create_plugins_table',
@@ -75,6 +76,18 @@ class Updater {
 				)
 			)
 		);
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Removes the upload_loc column from the upload_no_access table.
+	 *
+	 * @return void
+	 */
+	private function _update_upload_no_access_table()
+	{
+		ee()->smartforge->drop_column('upload_no_access', 'upload_loc');
 	}
 
 	// -------------------------------------------------------------------------

@@ -69,6 +69,12 @@ if (isset($ajax_validate) && $ajax_validate == TRUE)
 						case 'text': ?>
 							<input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$required?>>
 						<?php break;
+						case 'password': ?>
+							<input type="password" name="<?=$field_name?>"<?=$required?>>
+						<?php break;
+						case 'hidden': ?>
+							<input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
+						<?php break;
 
 						case 'inline_radio': ?>
 							<?php foreach ($field['choices'] as $key => $label):
@@ -109,6 +115,16 @@ if (isset($ajax_validate) && $ajax_validate == TRUE)
 							<textarea name="<?=$field_name?>" cols="" rows=""<?=$required?>>
 <?=(isset($field['kill_pipes']) && $field['kill_pipes'] === TRUE) ? str_replace('|', NL, $value) : $value?>
 </textarea>
+						<?php break;
+
+						case 'multi_dropdown': ?>
+							<div class="scroll-wrap">
+								<?php foreach ($field['choices'] as $field_name => $options): ?>
+									<label class="choice block chosen"><?=$options['label']?>
+										<?=form_dropdown($field_name, $options['choices'], $options['value'])?>
+									</label>
+								<?php endforeach ?>
+							</div>
 						<?php break;
 
 						case 'html': ?>

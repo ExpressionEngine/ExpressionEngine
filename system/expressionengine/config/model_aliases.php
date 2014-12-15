@@ -2,108 +2,75 @@
 
 return array(
 
-	# \EllisLab\ExpressionEngine\Model..
+	# EllisLab\ExpressionEngine\Model..
 
 		// ..\Addon
-		'Accessory' => '\EllisLab\ExpressionEngine\Model\Addon\Accessory',
-		'AccessoryGateway' => '\EllisLab\ExpressionEngine\Model\Addon\Gateway\AccessoryGateway',
-		'Extension' => '\EllisLab\ExpressionEngine\Model\Addon\Extension',
-		'ExtensionGateway' => '\EllisLab\ExpressionEngine\Model\Addon\Gateway\ExtensionGateway',
-		'Module' => '\EllisLab\ExpressionEngine\Model\Addon\Module',
-		'ModuleGateway' => '\EllisLab\ExpressionEngine\Model\Addon\Gateway\ModuleGateway',
+		'Accessory' => 'EllisLab\ExpressionEngine\Model\Addon\Accessory',
+		'Extension' => 'EllisLab\ExpressionEngine\Model\Addon\Extension',
+		'Module' => 'EllisLab\ExpressionEngine\Model\Addon\Module',
 		'Plugin' => '\EllisLab\ExpressionEngine\Model\Addon\Plugin',
-		'PluginGateway' => '\EllisLab\ExpressionEngine\Model\Addon\Gateway\PluginGateway',
 
 		// ..\Category
-		'Category' => '\EllisLab\ExpressionEngine\Model\Category\Category',
-		'CategoryFieldDataGateway' => '\EllisLab\ExpressionEngine\Model\Category\Gateway\CategoryFieldDataGateway',
-		'CategoryGateway' => '\EllisLab\ExpressionEngine\Model\Category\Gateway\CategoryGateway',
-		'CategoryGroup' => '\EllisLab\ExpressionEngine\Model\Category\CategoryGroup',
-		'CategoryGroupGateway'=> '\EllisLab\ExpressionEngine\Model\Category\Gateway\CategoryGroupGateway',
+		'Category' => 'EllisLab\ExpressionEngine\Model\Category\Category',
+		'CategoryGroup' => 'EllisLab\ExpressionEngine\Model\Category\CategoryGroup',
 
 		// ..\File
-		'UploadDestination' => '\EllisLab\ExpressionEngine\Model\File\UploadDestination',
-		'UploadPrefGateway' => '\EllisLab\ExpressionEngine\Model\File\Gateway\UploadPrefGateway',
-		'FileDimension' => '\EllisLab\ExpressionEngine\Model\File\FileDimension',
-		'FileDimensionGateway' => '\EllisLab\ExpressionEngine\Model\File\Gateway\FileDimensionGateway',
+		'UploadDestination' => 'EllisLab\ExpressionEngine\Model\File\UploadDestination',
+		'FileDimension' => 'EllisLab\ExpressionEngine\Model\File\FileDimension',
 
 		// ..\Log
-		'CpLog' => '\EllisLab\ExpressionEngine\Model\Log\CpLog',
-		'CpLogGateway' => '\EllisLab\ExpressionEngine\Model\Log\Gateway\CpLogGateway',
-		'DeveloperLog' => '\EllisLab\ExpressionEngine\Model\Log\DeveloperLog',
-		'DeveloperLogGateway' => '\EllisLab\ExpressionEngine\Model\Log\Gateway\DeveloperLogGateway',
-		'EmailConsoleCache' => '\EllisLab\ExpressionEngine\Model\Log\EmailConsoleCache',
-		'EmailConsoleCacheGateway' => '\EllisLab\ExpressionEngine\Model\Log\Gateway\EmailConsoleCacheGateway',
+		'CpLog' => 'EllisLab\ExpressionEngine\Model\Log\CpLog',
+		'DeveloperLog' => 'EllisLab\ExpressionEngine\Model\Log\DeveloperLog',
+		'EmailConsoleCache' => 'EllisLab\ExpressionEngine\Model\Log\EmailConsoleCache',
 
 		// ..\Security
-		'Throttle' => '\EllisLab\ExpressionEngine\Model\Security\Throttle',
-		'ThrottleGateway' => '\EllisLab\ExpressionEngine\Model\Security\Gateway\ThrottleGateway',
-		'ResetPassword' => '\EllisLab\ExpressionEngine\Model\Security\ResetPassword',
-		'ResetPasswordGateway' => '\EllisLab\ExpressionEngine\Model\Security\Gateway\ResetPasswordGateway',
+		'Throttle' => 'EllisLab\ExpressionEngine\Model\Security\Throttle',
+		'ResetPassword' => 'EllisLab\ExpressionEngine\Model\Security\ResetPassword',
 
 		// ..\Session
 		// empty
 
 		// ..\Site
-		'Site' => '\EllisLab\ExpressionEngine\Model\Site\Site',
-		'SiteGateway' => '\EllisLab\ExpressionEngine\Model\Site\Gateway\SiteGateway',
+		'Site' => 'EllisLab\ExpressionEngine\Model\Site\Site',
+		'Stats' => 'EllisLab\ExpressionEngine\Model\Site\Stats',
 
 		// ..\Status
-		'Status' => '\EllisLab\ExpressionEngine\Model\Status\Status',
-		'StatusGateway' => '\EllisLab\ExpressionEngine\Model\Status\Gateway\StatusGateway',
-		'StatusGroup' => '\EllisLab\ExpressionEngine\Model\Status\StatusGroup',
-		'StatusGroupGateway' => '\EllisLab\ExpressionEngine\Model\Status\Gateway\StatusGroupGateway',
+		'Status' => 'EllisLab\ExpressionEngine\Model\Status\Status',
+		'StatusGroup' => 'EllisLab\ExpressionEngine\Model\Status\StatusGroup',
 
 		// ..\Template
-		'Template' => '\EllisLab\ExpressionEngine\Model\Template\Template',
-		'TemplateGroup'  => '\EllisLab\ExpressionEngine\Model\Template\TemplateGroup',
-		'TemplateGateway' => '\EllisLab\ExpressionEngine\Model\Template\Gateway\TemplateGateway',
-		'TemplateGroupGateway' => '\EllisLab\ExpressionEngine\Model\Template\Gateway\TemplateGroupGateway',
+		'Template' => 'EllisLab\ExpressionEngine\Model\Template\Template',
+		'TemplateGroup'  => 'EllisLab\ExpressionEngine\Model\Template\TemplateGroup',
+		'GlobalVariable'  => 'EllisLab\ExpressionEngine\Model\Template\GlobalVariable',
 
-	# \EllisLab\ExpressionEngine\Module..
+	# EllisLab\ExpressionEngine\Module..
 
 		// ..\Channel
-		'Channel' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Channel',
-		'ChannelFieldGroup'=> '\EllisLab\ExpressionEngine\Module\Channel\Model\ChannelFieldGroup',
-		'ChannelFieldGroupGateway' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Gateway\ChannelFieldGroupGateway',
-		'ChannelFieldStructure' => '\EllisLab\ExpressionEngine\Module\Channel\Model\ChannelFieldStructure',
-		'ChannelFieldGateway' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Gateway\ChannelFieldGateway',
-		'ChannelEntry' => '\EllisLab\ExpressionEngine\Module\Channel\Model\ChannelEntry',
-		'ChannelGateway' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Gateway\ChannelGateway',
-		'ChannelTitleGateway' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Gateway\ChannelTitleGateway',
-		'ChannelDataGateway' => '\EllisLab\ExpressionEngine\Module\Channel\Model\Gateway\ChannelDataGateway',
+		'Channel' => 'EllisLab\ExpressionEngine\Module\Channel\Model\Channel',
+		'ChannelFieldGroup'=> 'EllisLab\ExpressionEngine\Module\Channel\Model\ChannelFieldGroup',
+		'ChannelFieldStructure' => 'EllisLab\ExpressionEngine\Module\Channel\Model\ChannelFieldStructure',
+		'ChannelEntry' => 'EllisLab\ExpressionEngine\Module\Channel\Model\ChannelEntry',
 
 		// ..\Comment
-		'Comment' => '\EllisLab\ExpressionEngine\Module\Comment\Model\Comment',
-		'CommentGateway' => '\EllisLab\ExpressionEngine\Module\Comment\Model\Gateway\CommentGateway',
-		'CommentSubscription' => '\EllisLab\ExpressionEngine\Module\Comment\Model\CommentSubscription',
-		'CommentSubscriptionGateway' => '\EllisLab\ExpressionEngine\Module\Comment\Model\Gateway\CommentSubscriptionGateway',
+		'Comment' => 'EllisLab\ExpressionEngine\Module\Comment\Model\Comment',
+		'CommentSubscription' => 'EllisLab\ExpressionEngine\Module\Comment\Model\CommentSubscription',
 
 		// ..\MailingList
-		'MailingList' => '\EllisLab\ExpressionEngine\Module\MailingList\Model\MailingList',
-		'MailingListGateway' => '\EllisLab\ExpressionEngine\Module\MailingList\Model\Gateway\MailingListGateway',
-		'MailingListQueue' => '\EllisLab\ExpressionEngine\Module\MailingList\Model\MailingListQueue',
-		'MailingListQueueGateway' => '\EllisLab\ExpressionEngine\Module\MailingList\Model\Gateway\MailingListQueueGateway',
-		'MailingListUser' => '\EllisLab\ExpressionEngine\Module\MailingList\Model\MailingListUser',
-		'MailingListUserGateway' => '\EllisLab\ExpressionEngine\Module\MailingList\Model\Gateway\MailingListUserGateway',
+		'MailingList' => 'EllisLab\ExpressionEngine\Module\MailingList\Model\MailingList',
+		'MailingListQueue' => 'EllisLab\ExpressionEngine\Module\MailingList\Model\MailingListQueue',
+		'MailingListUser' => 'EllisLab\ExpressionEngine\Module\MailingList\Model\MailingListUser',
 
 		// ..\Member
-		'Member' => '\EllisLab\ExpressionEngine\Module\Member\Model\Member',
-		'MemberGroup' => '\EllisLab\ExpressionEngine\Module\Member\Model\MemberGroup',
-		'MemberGateway' => '\EllisLab\ExpressionEngine\Module\Member\Model\Gateway\MemberGateway',
-		'MemberGroupGateway' => '\EllisLab\ExpressionEngine\Module\Member\Model\Gateway\MemberGroupGateway',
+		'Member' => 'EllisLab\ExpressionEngine\Module\Member\Model\Member',
+		'MemberGroup' => 'EllisLab\ExpressionEngine\Module\Member\Model\MemberGroup',
 
 		// ..\RichTextEditor
-		'RichTextEditorTool' => '\EllisLab\ExpressionEngine\Module\RichTextEditor\Model\RichTextEditorTool',
-		'RichTextEditorToolGateway' => '\EllisLab\ExpressionEngine\Module\RichTextEditor\Model\Gateway\RichTextEditorToolGateway',
-		'RichTextEditorToolset' => '\EllisLab\ExpressionEngine\Module\RichTextEditor\Model\RichTextEditorToolset',
-		'RichTextEditorToolsetGateway' => '\EllisLab\ExpressionEngine\Module\RichTextEditor\Model\Gateway\RichTextEditorToolsetGateway',
+		'RichTextEditorTool' => 'EllisLab\ExpressionEngine\Module\RichTextEditor\Model\RichTextEditorTool',
+		'RichTextEditorToolset' => 'EllisLab\ExpressionEngine\Module\RichTextEditor\Model\RichTextEditorToolset',
 
 		// ..\Search
-		'SearchLog' => '\EllisLab\ExpressionEngine\Module\Search\Model\SearchLog',
-		'SearchLogGateway' => '\EllisLab\ExpressionEngine\Module\Search\Model\Gateway\SearchLogGateway',
+		'SearchLog' => 'EllisLab\ExpressionEngine\Module\Search\Model\SearchLog',
 
 		// TODO: FIND A NEW HOME FOR THESE
-		'EmailCache' => '\EllisLab\ExpressionEngine\Model\EmailCache',
-		'EmailCacheGateway' => '\EllisLab\ExpressionEngine\Model\Gateway\EmailCacheGateway',
+		'EmailCache' => 'EllisLab\ExpressionEngine\Model\EmailCache',
 );

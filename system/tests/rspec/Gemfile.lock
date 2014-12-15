@@ -12,6 +12,7 @@ GEM
       capybara (>= 2.0.2, < 2.5.0)
       json
     diff-lcs (1.2.5)
+    image_size (1.4.1)
     json (1.8.1)
     mail (2.6.1)
       mime-types (>= 1.16, < 3)
@@ -50,6 +51,7 @@ PLATFORMS
 DEPENDENCIES
   capybara
   capybara-webkit
+  image_size
   mail
   mysql2
   rspec

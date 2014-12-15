@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model\Log;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
@@ -27,20 +28,21 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @link		http://ellislab.com
  */
 class CpLog extends Model {
-	// Meta data
+
 	protected static $_primary_key = 'id';
-	protected static $_gateway_names = array('CpLogGateway');
-	protected static $_key_map = array(
-		'site_id' => 'CpLogGateway'
-	);
+	protected static $_table_name = 'cp_log';
 
 	protected static $_relationships = array(
 		'Site' => array(
-			'type' => 'many_to_one'
+			'type' => 'belongsTo'
 		),
 		'Member'	=> array(
-			'type' => 'many_to_many'
+			'type' => 'belongsTo'
 		)
+	);
+
+	protected static $_validation_rules = array(
+		'ip_address'  => 'ip_address'
 	);
 
 	protected $id;
@@ -51,8 +53,4 @@ class CpLog extends Model {
 	protected $act_date;
 	protected $action;
 
-	public function getSite()
-	{
-		return $this->getRelated('Site');
-	}
 }

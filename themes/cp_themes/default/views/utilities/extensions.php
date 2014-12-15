@@ -6,7 +6,7 @@
 		<?php $this->view('_shared/alerts')?>
 		<?php $this->view('_shared/table', $table); ?>
 		<?php $this->view('_shared/pagination'); ?>
-		<?php if ($table['total_rows'] > 1): ?>
+		<?php if ($table['total_rows'] > 0): ?>
 		<fieldset class="tbl-bulk-act">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>

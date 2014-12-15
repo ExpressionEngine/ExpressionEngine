@@ -90,7 +90,10 @@ class Rte_mcp {
 				),
 				array(
 					'name' => 'selection[]',
-					'value' => $t['toolset_id']
+					'value' => $t['toolset_id'],
+					'data'	=> array(
+						'confirm' => lang('toolset') . ': <b>' . htmlentities($t['name'], ENT_QUOTES) . '</b>'
+					)
 				)
 			);
 
@@ -159,6 +162,8 @@ class Rte_mcp {
 				)
 			)
 		);
+
+		$table->setNoResultsText('no_tool_sets');
 		$table->setData($data);
 
 		$vars['table'] = $table->viewData($this->_base_url);
@@ -175,6 +180,26 @@ class Rte_mcp {
 			);
 			$vars['pagination'] = $pagination->cp_links($this->_base_url);
 		}
+
+		$modal_vars = array(
+			'form_url'	=> cp_url('addons/settings/rte/update_toolsets'),
+			'hidden'	=> array(
+				'bulk_action'	=> 'remove'
+			),
+			'checklist'	=> array(
+				array(
+					'kind' => '',
+					'desc' => ''
+				)
+			)
+		);
+
+		$vars['modals']['modal-confirm-all'] = ee()->load->ee_view('_shared/modal_confirm_remove', $modal_vars, TRUE);
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('toolset') . ': <b>### ' . lang('toolsets') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/confirm_remove'),
+		));
 
 		// return the page
 		return ee()->load->view('index', $vars, TRUE);

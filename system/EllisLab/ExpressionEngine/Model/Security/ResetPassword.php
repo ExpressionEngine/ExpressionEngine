@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model\Security;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
@@ -26,10 +27,16 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class ResetPassword extends Model
-{
+class ResetPassword extends Model {
+
 	protected static $_primary_key = 'reset_id';
-	protected static $_gateway_names = array('ResetPasswordGateway');
+	protected static $_table_name = 'reset_password';
+
+	protected static $_relationships = array(
+		'Member'	=> array(
+			'type' => 'belongsTo'
+		)
+	);
 
 	protected $reset_id;
 	protected $member_id;

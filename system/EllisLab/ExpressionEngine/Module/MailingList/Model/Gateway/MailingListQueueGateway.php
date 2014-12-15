@@ -1,11 +1,11 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Module\MailingList\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
+class MailingListQueueGateway extends Gateway {
 
-class MailingListQueueGateway extends RowDataGateway
-{
 	protected static $_primary_key = 'queue_id';
 	protected static $_table_name = 'mailing_list_queue';
 
