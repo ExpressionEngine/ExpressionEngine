@@ -1,8 +1,6 @@
 <?php
 namespace EllisLab\ExpressionEngine\Service\View;
 
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
 use \EE_Loader;
 
 /**
@@ -29,12 +27,35 @@ use \EE_Loader;
  */
 class View {
 
+	/**
+	 * @var str The path to the view template file ex. '_shared/form'
+	 */
 	protected $path;
+
+	/**
+	 * @var obj An instance of EE_Loader
+	 */
 	protected $loader;
+
+	/**
+	 * @var obj An instance of View
+	 */
 	protected $view;
 
+	/**
+	 * @var array An indexed array for storing the names of blocks consumed via
+	 * startBlock() and endBlock()
+	 */
 	private $blockStack;
 
+	/**
+	 * Constructor: sets depdencies
+	 *
+	 * @param str $path The path to the view template file
+	 * @param obj $loader An instance of EE_Loader
+	 * @param obj $view An instnace of View
+	 * @return void
+	 */
 	public function __construct($path, EE_Loader $loader, \View $view)
 	{
 		$this->path = $path;
@@ -42,6 +63,16 @@ class View {
 		$this->view = $view;
 	}
 
+	/**
+	 * Loads a template file from disk using the supplied variables
+	 *
+	 * @param str   $path The absolute path to the view template file to load
+	 * @param array $vars An associative array of variables to use inside the
+	 *   template. ex: "title" => "Hello World!"
+	 * @param bool  $rewrite Do we need to rewrite the template file to replace
+	 *   PHP's short tags "<?=" with "<?php echo "?
+	 * @return str The rendered HTML
+	 */
 	public function parse($path, $vars, $rewrite = FALSE)
 	{
 		extract($vars);
@@ -56,23 +87,54 @@ class View {
 		}
 	}
 
+	/**
+	 * Renders a view template file
+	 * @see Loader::view()
+	 *
+	 * @param array $vars An associative array of variables to use inside the
+	 *   template. ex: "title" => "Hello World!"
+	 * @return str The rendered HTML
+	 */
 	public function render(array $vars)
 	{
 		return $this->loader->view($this->path, $vars, TRUE);
 	}
 
+	/**
+	 * Loads, renders, and returns a view relative to EE's view path
+	 * @see EE_Loader::ee_view()
+	 *
+	 * @param $view The relative path/name of the view ex: '_shared/form'
+	 * @param array $vars An associative array of variables to use inside the
+	 *   template. ex: "title" => "Hello World!"
+	 * @param bool  $return Whether to return or output the results
+	 * @return str|null Either HTML or nothing depending on $return
+	 */
 	public function ee_view($view, $vars = array(), $return = FALSE)
 	{
 		return $this->loader->ee_view($view, $vars, $return);
 	}
 
+	/**
+	 * Loads, renders, and returns a view. The view in question may be relative
+	 * to an add-on rather than to EE itself.
+	 * @see Loader::view()
+	 *
+	 * @param $view The relative path/name of the view ex: '_shared/form'
+	 * @param array $vars An associative array of variables to use inside the
+	 *   template. ex: "title" => "Hello World!"
+	 * @param bool  $return Whether to return or output the results
+	 * @return str|null Either HTML or nothing depending on $return
+	 */
 	public function view($view, $vars = array(), $return = FALSE)
 	{
 		return $this->loader->view($view, $vars, $return);
 	}
 
 	/**
-	 * Allows our Views to define blocks to be used in a template/layout context
+	 * Allows our Views to define blocks to be used in a template/layout context.
+	 * This will start a new block overwriting any previously defined block of
+	 * the same name.
 	 *
 	 * @param str $name The name of the block
 	 */
@@ -82,6 +144,13 @@ class View {
 		ob_start();
 	}
 
+	/**
+	 * Allows our Views to define blocks to be used in a template/layout context
+	 * This will start a new block or append to a previously defined block of
+	 * the same name.
+	 *
+	 * @param str $name The name of the block
+	 */
 	public function startOrAppendBlock($name)
 	{
 		$this->blockStack[] = array($name, TRUE);
@@ -114,7 +183,4 @@ class View {
 		$this->view->blocks[$name] = $buffer;
 	}
 }
-// END CLASS
-
-/* End of file View.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Service/View/View.php */
+// EOF
