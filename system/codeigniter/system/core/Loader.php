@@ -750,7 +750,7 @@ class CI_Loader {
 
 		if (isset($_ci_view))
 		{
-			ee('View')->make($_ci_view)->parse($_ci_path, $this->_ci_cached_vars, $rewrite);
+			echo ee('View')->make($_ci_view)->parse($_ci_path, $this->_ci_cached_vars, $rewrite);
 		}
 		else
 		{

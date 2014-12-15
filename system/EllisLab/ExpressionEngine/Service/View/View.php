@@ -64,7 +64,8 @@ class View {
 	}
 
 	/**
-	 * Loads a template file from disk using the supplied variables
+	 * Loads a template file from disk using the supplied variables and returns
+	 * the rendered HTML
 	 *
 	 * @param str   $path The absolute path to the view template file to load
 	 * @param array $vars An associative array of variables to use inside the
@@ -77,6 +78,8 @@ class View {
 	{
 		extract($vars);
 
+		ob_start();
+
 		if ($rewrite)
 		{
 			echo eval('?>'.preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', file_get_contents($path))));
@@ -85,6 +88,10 @@ class View {
 		{
 			include($path);
 		}
+
+		$buffer = ob_get_contents();
+		ob_end_clean();
+		return $buffer;
 	}
 
 	/**
