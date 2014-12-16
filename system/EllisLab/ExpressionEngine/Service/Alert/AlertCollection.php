@@ -49,7 +49,7 @@ class AlertCollection {
 	{
 		foreach ($this->session->flashdata as $key => $value)
 		{
-			if (strpos($key, 'alert:') == 0)
+			if (strpos($key, 'alert:') === 0)
 			{
 				list($keyword, $type, $name) = explode(':', $key, 3);
 
