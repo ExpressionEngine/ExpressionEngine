@@ -720,7 +720,7 @@ class Communicate extends Utilities {
 		foreach ($emails as $email)
 		{
 			$data[] = array(
-				$email->subject,
+				htmlentities($email->subject, ENT_QUOTES, 'UTF-8'),
 				ee()->localize->human_time($email->cache_date),
 				$email->total_sent,
 				array('toolbar_items' => array(
@@ -746,7 +746,7 @@ class Communicate extends Utilities {
 
 			// Prepare the $email object for use in the modal
 			$email->text_fmt = ($email->text_fmt != 'none') ?: 'br'; // Some HTML formatting for plain text
-			$email->subject = $this->censorSubject($email);
+			$email->subject = htmlentities($this->censorSubject($email), ENT_QUOTES, 'UTF-8');
 			$email->message = $this->formatMessage($email);
 
 			if ($email->text_fmt == 'br')
