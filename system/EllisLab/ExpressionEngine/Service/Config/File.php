@@ -46,7 +46,7 @@ class File
 				'autoinit' => FALSE,
 				'char_set' => 'utf8',
 				'dbcollat' => 'utf8_general_ci',
-				'cachedir' => "{APPPATH}/cache/db_cache/",
+				'cachedir' => '', // Set in constructor
 				'stricton' => TRUE,
 			)
 		)
@@ -58,6 +58,8 @@ class File
 	 */
 	function __construct($path)
 	{
+		$this->defaults['database']['expressionengine']['cachedir'] = rtrim(APPPATH, '/').'/cache/db_cache/';
+
 		require($path);
 		$this->config = array_replace_recursive($this->defaults, $config);
 	}
