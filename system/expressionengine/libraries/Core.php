@@ -144,6 +144,12 @@ class EE_Core {
 			return new \EllisLab\ExpressionEngine\Service\Grid\Grid();
 		});
 
+		ee()->di->registerSingleton('Alert', function($di)
+		{
+			$view = $di->make('View')->make('_shared/alert');
+			return new \EllisLab\ExpressionEngine\Service\Alert\AlertCollection(ee()->session, $view);
+		});
+
 		// Setup API model factory
 		ee()->api = ee()->di->make('Model');
 
