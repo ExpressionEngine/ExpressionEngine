@@ -288,16 +288,16 @@ class View {
 		{
 			if ($type == 'inline')
 			{
-				if ( ! array_key_exists('inline', ee()->view->alerts))
+				if ( ! array_key_exists('inline', $this->alerts))
 				{
-					ee()->view->alerts['inline'] = array();
+					$this->alerts['inline'] = array();
 				}
 
-				ee()->view->alerts['inline'][] = $alert_data;
+				$this->alerts['inline'][] = $alert_data;
 			}
 			else
 			{
-				ee()->view->alerts[$type] = $alert_data;
+				$this->alerts[$type] = $alert_data;
 			}
 		}
 	}
