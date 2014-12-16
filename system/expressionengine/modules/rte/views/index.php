@@ -8,6 +8,9 @@
 				<a class="btn tn action" href="<?=cp_url('addons/settings/rte/new_toolset')?>"><?=lang('create_new')?></a>
 			</fieldset>
 			<h1><?=lang('available_tool_sets')?></h1>
+
+			<?=ee('Alert')->get('toolsets-form')?>
+
 			<?php $this->ee_view('_shared/table', $table); ?>
 			<?php $this->ee_view('_shared/pagination'); ?>
 			<fieldset class="tbl-bulk-act">
