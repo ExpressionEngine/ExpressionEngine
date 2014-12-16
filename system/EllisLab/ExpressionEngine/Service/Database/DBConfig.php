@@ -30,6 +30,7 @@ use \EllisLab\ExpressionEngine\Service\Config\File as ConfigFile;
 class DBConfig
 {
 	protected $delegate;
+	protected $active_group;
 
 	/**
 	 * Create new Database Config object
@@ -38,6 +39,10 @@ class DBConfig
 	public function __construct(ConfigFile $config)
 	{
 		$this->delegate = $config;
+		$this->active_group = $this->delegate->get(
+			'database.active_group',
+			'expressionengine'
+		);
 	}
 
 	/**
@@ -47,14 +52,29 @@ class DBConfig
 	 * @param  mixed  $default The value to return if $item can not be found
 	 * @return mixed           The value found for $item, otherwise $default
 	 */
-	public function get($item, $default = NULL)
+	public function get($item = '', $default = NULL)
 	{
-		return $this->delegate->get('database.'.$item) ?: $default;
+		// Allow for the retrieval of the whole group
+		$item = ($item) ? '.'.$item : '';
+
+		return $this->delegate->get(
+			"database.{$this->active_group}{$item}",
+			$default
+		);
 	}
 
+	/**
+	 * Set the value of a database configuration item
+	 * @param  string $item  The config item to set
+	 * @param  mixed  $value The new value of the config item
+	 * @return void
+	 */
 	public function set($item, $value)
 	{
-		return $this->delegate->set('database.'.$item, $value);
+		$this->delegate->set(
+			"database.{$this->active_group}.".$item,
+			$value
+		);
 	}
 
 	/**
