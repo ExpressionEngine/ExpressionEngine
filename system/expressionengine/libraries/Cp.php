@@ -253,6 +253,10 @@ class Cp {
 		$this->_seal_combo_loader();
 		$this->add_js_script('file', 'cp/global_end');
 
+		ee()->view->cp_footer_js = $this->render_footer_js();
+		ee()->view->cp_footer_items = $this->footer_item;
+		ee()->view->cp_its_all_in_your_head = $this->its_all_in_your_head;
+
 		return ee()->view->render($view, $data, $return);
 	}
 

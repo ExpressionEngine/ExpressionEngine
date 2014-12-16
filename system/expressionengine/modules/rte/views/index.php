@@ -18,10 +18,32 @@
 					<option value="">-- <?=lang('with_selected')?> --</option>
 					<option value="enable"><?=lang('enable')?></option>
 					<option value="disable"><?=lang('disable')?></option>
-					<option value="remove"><?=lang('remove')?></option>
+					<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
 				</select>
-				<input class="btn submit" rel="modal-confirm-all" type="submit" value="<?=lang('submit')?>">
+				<input class="btn submit" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
 			</fieldset>
 		<?=form_close();?>
 	</div>
 </div>
+
+<?php $this->startOrAppendBlock('modals'); ?>
+
+<?php
+$modal_vars = array(
+	'name'      => 'modal-confirm-remove',
+	'form_url'	=> cp_url('addons/settings/rte/update_toolsets'),
+	'hidden'	=> array(
+		'bulk_action'	=> 'remove'
+	),
+	'checklist'	=> array(
+		array(
+			'kind' => '',
+			'desc' => ''
+		)
+	)
+);
+
+$this->ee_view('_shared/modal_confirm_remove', $modal_vars);
+?>
+
+<?php $this->endBlock(); ?>

@@ -12,14 +12,57 @@
 
 	<?php $this->view('_shared/pagination'); ?>
 
-<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
-	<fieldset class="tbl-bulk-act">
-		<select name="bulk_action">
-			<option value="">-- <?=lang('with_selected')?> --</option>
-			<option value="remove"><?=lang('remove')?></option>
-		</select>
-		<button class="btn submit" rel="modal-confirm-all"><?=lang('submit')?></button>
-	</fieldset>
-<?php endif; ?>
+	<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
+		<fieldset class="tbl-bulk-act">
+			<select name="bulk_action">
+				<option value="">-- <?=lang('with_selected')?> --</option>
+				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
+			</select>
+			<button class="btn submit" data-conditional-modal="confirm-trigger" ><?=lang('submit')?></button>
+		</fieldset>
+	<?php endif; ?>
 <?=form_close()?>
 </div>
+
+<?php $this->startOrAppendBlock('modals'); ?>
+
+<?php foreach($emails as $email): ?>
+<div class="modal-wrap modal-email-<?=$email->cache_id?>">
+	<div class="modal">
+		<div class="col-group">
+			<div class="col w-16">
+				<a class="m-close" href="#"></a>
+				<div class="box">
+					<h1><?=$email->subject?></h1>
+					<div class="txt-wrap">
+						<ul class="checklist mb">
+							<li><b><?=lang('sent')?>:</b> <?=$localize->human_time($email->cache_date)?> <?=lang('to')?> <?=$email->total_sent?> <?=lang('recipients')?></li>
+						</ul>
+						<?=$email->message?>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<?php endforeach; ?>
+
+<?php
+$modal_vars = array(
+	'name'      => 'modal-confirm-remove',
+	'form_url'	=> $table['base_url'],
+	'hidden'	=> array(
+		'bulk_action'	=> 'remove'
+	),
+	'checklist'	=> array(
+		array(
+			'kind' => '',
+			'desc' => ''
+		)
+	)
+);
+
+$this->ee_view('_shared/modal_confirm_remove', $modal_vars);
+?>
+
+<?php $this->endBlock(); ?>

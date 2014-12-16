@@ -15,7 +15,7 @@
 			<?=form_password(array('dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => 40, 'autocomplete' => 'off'))?>
 			<em><a href="<?=cp_url('/login/forgotten_password_form')?>"><?=lang('forgotten_password')?></a></em>
 		</fieldset>
-		<?php if ($this->config->item('cp_session_type') == 'c'):?>
+		<?php if ($cp_session_type == 'c'):?>
 		<fieldset class="options">
 			<label for="remember_me"><input type="checkbox" name="remember_me" value="1" id="remember_me"> <?=lang('remember_me')?></label>
 		</fieldset>

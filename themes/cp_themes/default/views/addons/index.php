@@ -46,10 +46,10 @@
 							<select name="bulk_action">
 								<option value="">-- <?=lang('with_selected')?> --</option>
 								<option value="install"><?=lang('install')?></option>
-								<option value="remove"><?=lang('remove')?></option>
+								<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
 								<option value="update"><?=lang('update')?></option>
 							</select>
-							<button class="btn submit" rel="modal-confirm-all"><?=lang('submit')?></button>
+							<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
 						</fieldset>
 						<?php endif; ?>
 					<?=form_close()?>
@@ -59,9 +59,21 @@
 	</div>
 </div>
 
+<?php if (isset($blocks['modals'])) echo $blocks['modals']; ?>
 <?php
-if (isset($modals))
-{
-	$this->view('_shared/modals', $modals);
-}
+$modal_vars = array(
+	'name'      => 'modal-confirm-remove',
+	'form_url'	=> $form_url,
+	'hidden'	=> array(
+		'bulk_action'	=> 'remove'
+	),
+	'checklist'	=> array(
+		array(
+			'kind' => '',
+			'desc' => ''
+		)
+	)
+);
+
+$this->ee_view('_shared/modal_confirm_remove', $modal_vars);
 ?>

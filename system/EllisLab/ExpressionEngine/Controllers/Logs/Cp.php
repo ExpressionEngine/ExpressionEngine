@@ -116,60 +116,13 @@ class Cp extends Logs {
 			->offset($offset)
 			->all();
 
-		$rows   = array();
-		$modals = array();
-
-		foreach ($logs as $log)
-		{
-			$rows[] = array(
-				'id'		 => $log->id,
-				'member_id'	 => $log->member_id,
-				'username'	 => "<a href='" . cp_url('myaccount', array('id' => $log->member_id)) . "'>{$log->username}</a>",
-				'ip_address' => $log->ip_address,
-				'act_date'	 => ee()->localize->human_time($log->act_date),
-				'site_label' => $log->getSite()->site_label,
-				'action'	 => $log->action
-			);
-
-			$modal_vars = array(
-				'form_url'	=> $this->base_url,
-				'hidden'	=> array(
-					'delete'	=> $log->id
-				),
-				'checklist'	=> array(
-					array(
-						'kind' => lang('view_cp_log'),
-						'desc' => $log->username . ' ' . $log->action
-					)
-				)
-			);
-
-			$modals['modal-confirm-' . $log->id] = ee()->view->render('_shared/modal_confirm_remove', $modal_vars, TRUE);
-		}
-
 		$pagination = new Pagination($this->params['perpage'], $count, $page);
 		$links = $pagination->cp_links($this->base_url);
 
-		$modal_vars = array(
-			'form_url'	=> $this->base_url,
-			'hidden'	=> array(
-				'delete'	=> 'all'
-			),
-			'checklist'	=> array(
-				array(
-					'kind' => lang('view_cp_log'),
-					'desc' => lang('all')
-				)
-			)
-		);
-
-		$modals['modal-confirm-all'] = ee()->view->render('_shared/modal_confirm_remove', $modal_vars, TRUE);
-
 		$vars = array(
-			'rows' => $rows,
+			'logs' => $logs,
 			'pagination' => $links,
 			'form_url' => $this->base_url->compile(),
-			'modals' => $modals
 		);
 
 		ee()->cp->render('logs/cp', $vars);

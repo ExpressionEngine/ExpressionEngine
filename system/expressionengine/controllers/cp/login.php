@@ -114,6 +114,8 @@ class Login extends CP_Controller {
 
 		$this->view->cp_page_title = lang('login');
 
+		$this->view->cp_session_type = ee()->config->item('cp_session_type');
+
 		$this->view->render('account/login');
 	}
 
