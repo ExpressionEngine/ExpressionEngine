@@ -25,7 +25,6 @@
 class EE_Config Extends CI_Config {
 
 	public $config_path         = ''; // Set in the constructor below
-	public $database_path       = ''; // Set in the constructor below
 	public $default_ini         = array();
 	public $exceptions          = array(); // path.php exceptions
 	public $cp_cookie_domain    = ''; // These are set in Core before any MSM site switching
@@ -1465,28 +1464,15 @@ class EE_Config Extends CI_Config {
 		// DB config items as general config values
 		if ($type == 'db_cfg')
 		{
-// TODO-WB: Remove this entire conditional if possible
-// We only really deal with two things from the db_config:
-// - pconnect
-// - db_debug
-			require $this->database_path;
-
-			if ( ! isset($active_group))
-			{
-				$active_group = 'expressionengine';
-			}
-
-			if (isset($db[$active_group]))
-			{
-				$db[$active_group]['pconnect'] = ($db[$active_group]['pconnect'] === TRUE) ? 'y' : 'n';
-				$db[$active_group]['cache_on'] = ($db[$active_group]['cache_on'] === TRUE) ? 'y' : 'n';
-				$db[$active_group]['db_debug'] = ($db[$active_group]['db_debug'] === TRUE) ? 'y' : 'n';
-
-				$this->set_item('pconnect', $db[$active_group]['pconnect']);
-				$this->set_item('cache_on', $db[$active_group]['cache_on']);
-				$this->set_item('cachedir', $db[$active_group]['cachedir']);
-				$this->set_item('db_debug', $db[$active_group]['db_debug']);
-			}
+			$databaseConfig = ee('Database')->getConfig();
+			$this->set_item(
+				'pconnect',
+				$databaseConfig->get('pconnect') ? 'y' : 'n'
+			);
+			$this->set_item(
+				'db_debug',
+				$databaseConfig->get('db_debug') ? 'y' : 'n'
+			);
 		}
 
 		ee()->load->helper('date');
