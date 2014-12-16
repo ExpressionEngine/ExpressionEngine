@@ -111,7 +111,7 @@ class File
 			};
 		}
 
-		$config = $this->config;
+		$config = &$this->config;
 
 		foreach (explode('.', $name) as $key)
 		{
@@ -121,7 +121,7 @@ class File
 				return $callback($key, $config);
 			}
 
-			$config = $config[$key];
+			$config = &$config[$key];
 		}
 
 		return $config;
