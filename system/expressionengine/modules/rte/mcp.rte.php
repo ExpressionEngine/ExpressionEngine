@@ -90,7 +90,10 @@ class Rte_mcp {
 				),
 				array(
 					'name' => 'selection[]',
-					'value' => $t['toolset_id']
+					'value' => $t['toolset_id'],
+					'data'	=> array(
+						'confirm' => lang('toolset') . ': <b>' . htmlentities($t['name'], ENT_QUOTES) . '</b>'
+					)
 				)
 			);
 
@@ -159,6 +162,8 @@ class Rte_mcp {
 				)
 			)
 		);
+
+		$table->setNoResultsText('no_tool_sets');
 		$table->setData($data);
 
 		$vars['table'] = $table->viewData($this->_base_url);
@@ -175,6 +180,26 @@ class Rte_mcp {
 			);
 			$vars['pagination'] = $pagination->cp_links($this->_base_url);
 		}
+
+		$modal_vars = array(
+			'form_url'	=> cp_url('addons/settings/rte/update_toolsets'),
+			'hidden'	=> array(
+				'bulk_action'	=> 'remove'
+			),
+			'checklist'	=> array(
+				array(
+					'kind' => '',
+					'desc' => ''
+				)
+			)
+		);
+
+		$vars['modals']['modal-confirm-all'] = ee()->load->ee_view('_shared/modal_confirm_remove', $modal_vars, TRUE);
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('toolset') . ': <b>### ' . lang('toolsets') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/confirm_remove'),
+		));
 
 		// return the page
 		return ee()->load->view('index', $vars, TRUE);
@@ -272,7 +297,16 @@ class Rte_mcp {
 
 		$action = ee()->input->post('bulk_action');
 		$selection = ee()->input->post('selection');
+
+		$toolsets = array();
+
+		foreach (ee()->rte_toolset_model->get_toolset_list() as $toolset)
+		{
+			$toolsets[$toolset['toolset_id']] = $toolset['name'];
+		}
+
 		$errors = array();
+		$successes = array();
 
 		switch ($action)
 		{
@@ -284,7 +318,11 @@ class Rte_mcp {
 					$saved = ee()->rte_toolset_model->save_toolset(array('enabled' => 'y'), $toolset_id);
 					if ( ! $saved)
 					{
-						$errors[] = $toolset_id;
+						$errors[] = $toolsets[$toolset_id];
+					}
+					else
+					{
+						$successes[] = $toolsets[$toolset_id];
 					}
 				}
 				break;
@@ -294,10 +332,21 @@ class Rte_mcp {
 				$message_desc = 'toolsets_disabled';
 				foreach ($selection as $toolset_id)
 				{
-					$saved = ee()->rte_toolset_model->save_toolset(array('enabled' => 'n'), $toolset_id);
-					if ( ! $saved)
+					if ($toolset_id == ee()->config->item('rte_default_toolset_id'))
 					{
-						$errors[] = $toolset_id;
+						$errors[] = $toolsets[$toolset_id] . ' &mdash; ' . lang('cannot_disable_default_toolset');
+					}
+					else
+					{
+						$saved = ee()->rte_toolset_model->save_toolset(array('enabled' => 'n'), $toolset_id);
+						if ( ! $saved)
+						{
+							$errors[] = $toolsets[$toolset_id];
+						}
+						else
+						{
+							$successes[] = $toolsets[$toolset_id];
+						}
 					}
 				}
 				break;
@@ -307,47 +356,51 @@ class Rte_mcp {
 				$message_desc = 'toolsets_removed_desc';
 				foreach ($selection as $toolset_id)
 				{
-					$removed = ee()->rte_toolset_model->delete($toolset_id);
-					if ( ! $removed)
+					if ($toolset_id == ee()->config->item('rte_default_toolset_id'))
 					{
-						$errors[] = $toolset_id;
+						$errors[] = $toolsets[$toolset_id] . ' &mdash; ' . lang('cannot_remove_default_toolset');
 					}
 					else
 					{
-						// If the default toolset was deleted
-						if ($toolset_id == ee()->config->item('rte_default_toolset_id'))
+						$removed = ee()->rte_toolset_model->delete($toolset_id);
+						if ( ! $removed)
 						{
-							$toolsets = ee()->rte_toolset_model->get_toolset_list();
-
-							// Make the new default toolset the first available
-							if ( ! empty($toolsets))
-							{
-								$default_toolset_pref = array(
-									'rte_default_toolset_id' => $toolsets[0]['toolset_id']
-								);
-							}
-							// Or set it to zero if there are no toolsets left
-							else
-							{
-								$default_toolset_pref = array(
-									'rte_default_toolset_id' => 0
-								);
-							}
-
-							ee()->config->update_site_prefs($default_toolset_pref);
+							$errors[] = $toolsets[$toolset_id];
+						}
+						else
+						{
+							$successes[] = $toolsets[$toolset_id];
 						}
 					}
 				}
 				break;
 		}
 
-		if (empty($errors))
+		if ( ! empty($errors))
 		{
-			ee()->view->set_message('success', lang($message_title), sprintf(lang($message_desc), count($selection)), TRUE);
+			$errorAlert = ee('Alert')->makeInline('toolsets-form')->asIssue();
+			$errorAlert->title = lang('toolset_error');
+			$errorAlert->description = lang($action . '_fail_desc');
+			$errorAlert->list = $errors;
+		}
+
+		if (empty($successes) && ! empty($errors))
+		{
+			$errorAlert->defer();
 		}
 		else
 		{
-			ee()->view->set_message('issue', lang('toolset_error'), lang($message_desc), TRUE);
+			$successAlert = ee('Alert')->makeInline('toolsets-form')->asSuccess();
+			$successAlert->title = lang($message_title);
+			$successAlert->description = lang($action . '_success_desc');
+			$successAlert->list = $successes;
+
+			if (isset($errorAlert))
+			{
+				$successAlert->sub_alert = $errorAlert;
+			}
+
+			$successAlert->defer();
 		}
 
 		ee()->functions->redirect($this->_base_url);
