@@ -73,7 +73,8 @@ class File
 	 */
 	public function get($name, $default = NULL)
 	{
-		return $this->findConfig($name) ?: $default;
+		$config = $this->findConfig($name);
+		return ($config !== NULL) ? $config : $default;
 	}
 
 	/**
