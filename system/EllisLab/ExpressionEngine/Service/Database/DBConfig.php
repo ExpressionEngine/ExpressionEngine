@@ -71,10 +71,9 @@ class DBConfig
 	 * @return array         The database configuration information consumable
 	 *                       directly by CI_DB_driver
 	 */
-	public function getGroup($group = '')
+	public function getGroupConfig($group = '')
 	{
-		$active_group = $group ?: $this->get('active_group');
-		$database_config = $this->get($active_group);
+		$database_config = $this->get();
 
 		if (empty($database_config))
 		{

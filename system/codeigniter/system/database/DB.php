@@ -28,7 +28,7 @@ function &DB($params = '', $active_record_override = NULL)
 	// Load the DB config file if a DSN string wasn't passed
 	if (is_string($params) AND strpos($params, '://') === FALSE)
 	{
-		$params = ee('Database')->getConfig()->getGroup();
+		$params = ee('Database')->getConfig()->getGroupConfig();
 	}
 	elseif (is_string($params))
 	{
