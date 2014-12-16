@@ -1083,10 +1083,21 @@ class EE_Config Extends CI_Config {
 	 */
 	function _update_dbconfig($dbconfig = array(), $remove_values = array())
 	{
-// TODO-WB: Remove this, _update_config should handle this.
-// $database = ee('Database');
-// var_dump($database);
-// die(var_dump($dbconfig, $remove_values));
+		$databaseConfig = ee('Database')->getConfig();
+
+		$databaseConfig->set(
+			'pconnect',
+			get_bool_from_string($dbconfig['pconnect'])
+		);
+		$databaseConfig->set(
+			'db_debug',
+			get_bool_from_string($dbconfig['db_debug'])
+		);
+
+		// return $databaseConfig->saveFile()...
+		return TRUE;
+
+// TODO-WB: Replace this, DBConfig object should handle this
 		// Is the database file writable?
 		if ( ! is_really_writable($this->database_path))
 		{
