@@ -39,6 +39,9 @@ EE.cp.formValidation = {
 
 		$('input[type=text], input[type=password], textarea', container).blur(function() {
 
+			// Unbind keydown validation when the invalid field loses focus
+			$(this).unbind('keydown');
+
 			that._sendAjaxRequest($(this));
 		});
 
@@ -250,6 +253,9 @@ EE.cp.formValidation = {
 		// Validation error
 		} else {
 
+			// Bind timer for text fields to validate field while typing
+			this._bindTextFieldTimer(container);
+
 			fieldset.addClass('invalid');
 
 			// Specify the Grid cell the error is in
@@ -274,6 +280,40 @@ EE.cp.formValidation = {
 				disabled: 'disabled'
 			});
 		}
+	},
+
+	/**
+	 * When a text field comes back as invalid, we'll bind a timer to it to
+	 * check it's validity every half second after a key press, that way the
+	 * user knows a field is fixed without having to remove focus from the field.
+	 * Each key press resets the timer, so it's only when the keyboard has been
+	 * inactive for a half second while the field is still in focus that the
+	 * AJAX request to validate the form fires.
+	 *
+	 * @param	{jQuery object}	container	jQuery object of field's container
+	 */
+	_bindTextFieldTimer: function(container) {
+
+		var that = this,
+			timer;
+
+		// Only bind to text fields
+		$('input[type=text], input[type=password], textarea', container).unbind('keydown').keydown(function() {
+			
+			// Reset the timer, no need to validate if user is still typing
+			if (timer !== undefined)
+			{
+				clearTimeout(timer);
+			}
+
+			var field = $(this);
+
+			// Wait half a second, then clear the timer and send the AJAX request
+			timer = setTimeout(function() {
+				clearTimeout(timer);
+				that._sendAjaxRequest(field);
+			}, 500);
+		});
 	}
 }
 

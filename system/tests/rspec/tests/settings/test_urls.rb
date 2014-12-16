@@ -91,8 +91,16 @@ feature 'URL and Path Settings' do
     should_have_error_text(@page.profile_trigger, field_required)
 
     @page.theme_folder_path.set '/'
-    @page.theme_folder_path.trigger 'blur'
+    # When a text field is invalid, shouldn't need to blur
+    # @page.theme_folder_path.trigger 'blur'
     @page.wait_for_error_message_count(4)
+    # Make sure validation timer is still bound to field
+    @page.theme_folder_path.set ''
+    @page.wait_for_error_message_count(5)
+    @page.theme_folder_path.set '/'
+    @page.wait_for_error_message_count(4)
+    # Timer should be unbound on blur
+    @page.theme_folder_path.trigger 'blur'
 
     # Invalid theme path
     @page.theme_folder_path.set '/dfsdfsdfd'
