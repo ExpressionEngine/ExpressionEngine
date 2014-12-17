@@ -104,10 +104,15 @@ class EE_Core {
 		// Load the default caching driver
 		ee()->load->driver('cache');
 
+		// Register Config
+		ee()->di->registerSingleton('Config', function($di, $config_file = 'config') {
+			$directory = new \EllisLab\ExpressionEngine\Service\Config\Directory(SYSPATH.'config/');
+			return $directory->file($config_file);
+		});
+
 		// Load DB and set DB preferences
 		ee()->di->registerSingleton('Database', function($di) {
-			$directory = new \EllisLab\ExpressionEngine\Service\Config\Directory(SYSPATH.'config/');
-			$database_config = new \EllisLab\ExpressionEngine\Service\Database\DBConfig($directory->file('config'));
+			$database_config = new \EllisLab\ExpressionEngine\Service\Database\DBConfig(ee('Config'));
 			return new \EllisLab\ExpressionEngine\Service\Database\Database($database_config);
 		});
 		ee()->load->database();
