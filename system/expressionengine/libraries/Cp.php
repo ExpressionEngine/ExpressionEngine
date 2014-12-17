@@ -101,16 +101,6 @@ class Cp {
 
 		ee()->lang->loadfile($langfile, '', FALSE);
 
-
-		// Success/failure messages
-		foreach (array('alert-standard', 'alert-inline', 'alert-banner') as $flash_key)
-		{
-			if ($message = ee()->session->flashdata($flash_key))
-			{
-				ee()->view->set_alert(str_replace('alert-', '', $flash_key), $message);
-			}
-		}
-
 		// Meta-refresh tag
 		if ($refresh = ee()->session->flashdata('meta-refresh'))
 		{
