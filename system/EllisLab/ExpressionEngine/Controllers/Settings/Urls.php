@@ -161,6 +161,8 @@ class Urls extends Settings {
 			),
 		));
 
+		$this->validateNonTextInputs($vars['sections']);
+
 		$base_url = cp_url('settings/urls');
 
 		if (AJAX_REQUEST)

@@ -88,6 +88,8 @@ class Captcha extends Settings {
 			)
 		));
 
+		$this->validateNonTextInputs($vars['sections']);
+
 		$base_url = cp_url('settings/captcha');
 
 		if (AJAX_REQUEST)

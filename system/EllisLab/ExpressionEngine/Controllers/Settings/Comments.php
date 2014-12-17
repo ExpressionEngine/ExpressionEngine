@@ -91,6 +91,8 @@ class Comments extends Settings {
 			)
 		));
 
+		$this->validateNonTextInputs($vars['sections']);
+
 		$base_url = cp_url('settings/comments');
 
 		if (AJAX_REQUEST)

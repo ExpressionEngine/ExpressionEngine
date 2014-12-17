@@ -127,6 +127,8 @@ class Messages extends Settings {
 			)
 		));
 
+		$this->validateNonTextInputs($vars['sections']);
+
 		$base_url = cp_url('settings/messages');
 
 		if (AJAX_REQUEST)

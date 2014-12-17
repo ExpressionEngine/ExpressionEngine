@@ -119,6 +119,8 @@ class DebugOutput extends Settings {
 			)
 		));
 
+		$this->validateNonTextInputs($vars['sections']);
+
 		$base_url = cp_url('settings/debug-output');
 
 		if (AJAX_REQUEST)

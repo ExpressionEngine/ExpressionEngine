@@ -183,74 +183,6 @@ class Uploads extends Settings {
 	 */
 	private function form($upload_id = NULL)
 	{
-		ee()->form_validation->set_rules(array(
-			array(
-				'field' => 'name',
-				'label' => 'lang:upload_name',
-				'rules' => 'required|strip_tags|valid_xss_check|callback_validateName'
-			),
-			array(
-				'field' => 'server_path',
-				'label' => 'lang:upload_path',
-				'rules' => 'required|strip_tags|valid_xss_check|file_exists|writable'
-			),
-			array(
-				'field' => 'url',
-				'label' => 'lang:upload_url',
-				'rules' => 'required|strip_tags|valid_xss_check|callback_notHttp'
-			),
-			array(
-				'field' => 'allowed_types',
-				'label' => 'lang:upload_allowed_types',
-				'rules' => 'required|strip_tags|valid_xss_check'
-			),
-			array(
-				'field' => 'max_size',
-				'label' => 'lang:upload_file_size',
-				'rules' => 'integer'
-			),
-			array(
-				'field' => 'max_width',
-				'label' => 'lang:upload_image_width',
-				'rules' => 'integer'
-			),
-			array(
-				'field' => 'max_height',
-				'label' => 'lang:upload_image_height',
-				'rules' => 'integer'
-			),
-			array(
-				'field' => 'image_manipulations',
-				'label' => 'lang:constrain_or_crop',
-				'rules' => 'callback_validateImageSizes'
-			)
-		));
-
-		$base_url = 'settings/uploads/';
-		$base_url .= ($upload_id) ? 'edit/' . $upload_id : 'new-upload';
-		$base_url = cp_url($base_url);
-
-		if (AJAX_REQUEST)
-		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			if ($new_upload_id = $this->saveUploadPreferences($upload_id))
-			{
-				ee()->view->set_message('success', lang('directory_saved'), lang('directory_saved_desc'), TRUE);
-
-				ee()->functions->redirect(cp_url('settings/uploads/edit/' . $new_upload_id));
-			}
-
-			ee()->view->set_message('issue', lang('directory_not_saved'), lang('directory_not_saved_desc'));
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee()->view->set_message('issue', lang('directory_not_saved'), lang('directory_not_saved_desc'));
-		}
-
 		// Get the upload directory
 		$upload_dir = array();
 		if ( ! empty($upload_id))
@@ -350,6 +282,71 @@ class Uploads extends Settings {
 				)
 			)
 		);
+
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'name',
+				'label' => 'lang:upload_name',
+				'rules' => 'required|strip_tags|valid_xss_check|callback_validateName'
+			),
+			array(
+				'field' => 'server_path',
+				'label' => 'lang:upload_path',
+				'rules' => 'required|strip_tags|valid_xss_check|file_exists|writable'
+			),
+			array(
+				'field' => 'url',
+				'label' => 'lang:upload_url',
+				'rules' => 'required|strip_tags|valid_xss_check|callback_notHttp'
+			),
+			array(
+				'field' => 'max_size',
+				'label' => 'lang:upload_file_size',
+				'rules' => 'integer'
+			),
+			array(
+				'field' => 'max_width',
+				'label' => 'lang:upload_image_width',
+				'rules' => 'integer'
+			),
+			array(
+				'field' => 'max_height',
+				'label' => 'lang:upload_image_height',
+				'rules' => 'integer'
+			),
+			array(
+				'field' => 'image_manipulations',
+				'label' => 'lang:constrain_or_crop',
+				'rules' => 'callback_validateImageSizes'
+			)
+		));
+
+		$this->validateNonTextInputs($vars['sections']);
+
+		$base_url = 'settings/uploads/';
+		$base_url .= ($upload_id) ? 'edit/' . $upload_id : 'new-upload';
+		$base_url = cp_url($base_url);
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			if ($new_upload_id = $this->saveUploadPreferences($upload_id))
+			{
+				ee()->view->set_message('success', lang('directory_saved'), lang('directory_saved_desc'), TRUE);
+
+				ee()->functions->redirect(cp_url('settings/uploads/edit/' . $new_upload_id));
+			}
+
+			ee()->view->set_message('issue', lang('directory_not_saved'), lang('directory_not_saved_desc'));
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee()->view->set_message('issue', lang('directory_not_saved'), lang('directory_not_saved_desc'));
+		}
 	
 		// Do not use to access attributes of directory, use $upload_dir
 		// so that config.php overrides take place

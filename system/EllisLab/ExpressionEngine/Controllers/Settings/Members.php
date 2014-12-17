@@ -201,6 +201,8 @@ class Members extends Settings {
 			)
 		));
 
+		$this->validateNonTextInputs($vars['sections']);
+
 		if (AJAX_REQUEST)
 		{
 			ee()->form_validation->run_ajax();

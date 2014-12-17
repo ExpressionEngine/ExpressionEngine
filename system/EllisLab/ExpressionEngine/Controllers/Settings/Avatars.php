@@ -119,6 +119,8 @@ class Avatars extends Settings {
 			)
 		));
 
+		$this->validateNonTextInputs($vars['sections']);
+
 		$base_url = cp_url('settings/avatars');
 
 		if (AJAX_REQUEST)

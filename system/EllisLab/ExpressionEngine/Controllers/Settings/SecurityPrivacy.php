@@ -224,6 +224,8 @@ class SecurityPrivacy extends Settings {
 			)
 		));
 
+		$this->validateNonTextInputs($vars['sections']);
+
 		$base_url = cp_url('settings/security-privacy');
 
 		ee('Alert')->makeInline('security-tip')

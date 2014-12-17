@@ -64,9 +64,11 @@ class ContentDesign extends Settings {
 			)
 		);
 
+		$this->validateNonTextInputs($vars['sections']);
+
 		$base_url = cp_url('settings/content-design');
 
-		if ( ! empty($_POST))
+		if (ee()->form_validation->run() !== FALSE)
 		{
 			if ($this->saveSettings($vars['sections']))
 			{
@@ -74,6 +76,10 @@ class ContentDesign extends Settings {
 			}
 
 			ee()->functions->redirect($base_url);
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
 		}
 
 		ee()->view->base_url = $base_url;

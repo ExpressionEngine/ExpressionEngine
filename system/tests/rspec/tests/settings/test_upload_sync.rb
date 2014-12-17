@@ -36,6 +36,16 @@ feature 'Upload Directory Sync' do
     no_php_js_errors
   end
 
+  def get_files
+    files = []
+    $db.query('SELECT file_name FROM exp_files').each(:as => :array) do |row|
+      files << row[0]
+    end
+    clear_db_result
+
+    return files
+  end
+
   it 'shows the Upload Directory Sync page' do
     @page.should have_progress_bar
     @page.should have_no_sizes # No image manipulations yet
@@ -57,6 +67,16 @@ feature 'Upload Directory Sync' do
     # Make sure thumbnails were created for each file
     thumb_count = Dir.glob(@thumbs_path + '*').count - 1 # - 1 for index.html
     thumb_count.should == $images_count
+
+    # Get a list of files from the database AND the filesystem
+    pwd = Dir.getwd
+    Dir.chdir(@images_path)
+    db_files = get_files
+    files = Dir.glob('*')
+    Dir.chdir(pwd)
+
+    # Make sure files made it into the database
+    db_files.should include *files
 
     @page.alert.should have_text 'Upload directory synchronized'
   end

@@ -133,19 +133,7 @@ class Pages extends Settings {
 			)
 		);
 
-		// Keep form tinkerers out
-		ee()->form_validation->set_rules(array(
-			array(
-				'field' => 'homepage_display',
-				'label' => 'lang:pages_display_urls',
-				'rules' => 'enum[nested,not_nested]'
-			),
-			array(
-				'field' => 'default_channel',
-				'label' => 'lang:pages_channel',
-				'rules' => 'integer'
-			)
-		));
+		$this->validateNonTextInputs($vars['sections']);
 
 		$base_url = cp_url('settings/pages');
 

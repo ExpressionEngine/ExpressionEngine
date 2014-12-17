@@ -145,6 +145,8 @@ class Email extends Settings {
 			)
 		));
 
+		$this->validateNonTextInputs($vars['sections']);
+
 		$base_url = cp_url('settings/email');
 
 		if (AJAX_REQUEST)
