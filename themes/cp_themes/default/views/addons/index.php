@@ -37,7 +37,7 @@
 				<div class="tbl-ctrls">
 					<?=form_open($form_url)?>
 						<h1><?=$cp_heading?></h1>
-						<?php $this->view('_shared/alerts')?>
+						<?=ee('Alert')->getAllInlines()?>
 						<?php if (isset($filters)) echo $filters; ?>
 						<?php $this->view('_shared/table', $table); ?>
 						<?php $this->view('_shared/pagination'); ?>

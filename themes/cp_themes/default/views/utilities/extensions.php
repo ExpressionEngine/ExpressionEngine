@@ -3,7 +3,7 @@
 <div class="tbl-ctrls">
 	<?=form_open($form_url)?>
 		<h1><?=$cp_heading?></h1>
-		<?php $this->view('_shared/alerts')?>
+		<?=ee('Alert')->getAllInlines()?>
 		<?php $this->view('_shared/table', $table); ?>
 		<?php $this->view('_shared/pagination'); ?>
 		<?php if ($table['total_rows'] > 0): ?>

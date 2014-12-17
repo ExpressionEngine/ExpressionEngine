@@ -3,7 +3,7 @@
 <div class="box snap">
 	<div class="tbl-ctrls">
 		<?=form_open($table['base_url'])?>
-			<?php $this->view('_shared/alerts')?>
+			<?=ee('Alert')->getAllInlines()?>
 			<fieldset class="tbl-search right">
 				<a class="btn tn action" href="<?=cp_url('settings/uploads/new-upload')?>"><?=lang('upload_create')?></a>
 			</fieldset>

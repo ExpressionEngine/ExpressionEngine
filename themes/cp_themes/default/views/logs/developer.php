@@ -7,7 +7,7 @@
 		<input class="btn submit" type="submit" value="<?=lang('search_logs_button')?>">
 	</fieldset>
 	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
-	<?php $this->view('_shared/alerts')?>
+	<?=ee('Alert')->getAllInlines()?>
 	<?php if (isset($filters)) echo $filters; ?>
 	<section class="item-wrap log">
 		<?php if (empty($rows)): ?>

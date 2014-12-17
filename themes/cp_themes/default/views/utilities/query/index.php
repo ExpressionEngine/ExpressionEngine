@@ -17,7 +17,7 @@
 			</ul>
 		</div>
 	<?php endif ?>
-	<?php $this->view('_shared/alerts')?>
+	<?=ee('Alert')->getAllInlines()?>
 	<fieldset class="col-group">
 		<div class="setting-txt col w-16">
 			<h3><?=lang('common_queries')?></h3>

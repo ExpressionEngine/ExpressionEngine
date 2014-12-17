@@ -2,7 +2,7 @@
 
 <h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
 <?=form_open(cp_url('utilities/translate/' . $language . '/save/' . $file), 'class="settings"')?>
-<?php $this->view('_shared/alerts')?>
+<?=ee('Alert')->getAllInlines()?>
 <?php foreach ($keys as $key => $value):?>
 	<fieldset class="col-group <?=form_error_class($key)?>">
 		<div class="setting-txt col w-8">
