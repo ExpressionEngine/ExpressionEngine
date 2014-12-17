@@ -60,8 +60,9 @@ class File
 	{
 		$this->defaults['database']['expressionengine']['cachedir'] = rtrim(APPPATH, '/').'/cache/db_cache/';
 
+		// Load in config
 		require($path);
-		$this->config = array_replace_recursive($this->defaults, $config);
+		$this->config = $config;
 	}
 
 	/**
@@ -111,17 +112,27 @@ class File
 			};
 		}
 
-		$config = &$this->config;
+		$config  = &$this->config;
+		$default = $this->defaults;
 
 		foreach (explode('.', $name) as $key)
 		{
-			// If what we're looking for doesn't exist, return the default
-			if ( ! array_key_exists($key, $config))
+			// If what we're looking for doesn't exist anywhere, call the
+			// callback
+			if ( ! array_key_exists($key, $config)
+				&& ! array_key_exists($key, $default))
 			{
 				return $callback($key, $config);
 			}
 
-			$config = &$config[$key];
+			$config  = &$config[$key];
+			$default = $default[$key];
+		}
+
+		// If the default or the current is an array, merge it
+		if (is_array($default) OR is_array($config))
+		{
+			$config = array_replace_recursive($default, $config);
 		}
 
 		return $config;
