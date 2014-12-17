@@ -11,12 +11,28 @@
 			<?php $this->view('_shared/table', $table); ?>
 			<?php $this->view('_shared/pagination'); ?>
 			<fieldset class="tbl-bulk-act">
-				<select name="table_action">
-					<option value="none">-- <?=lang('with_selected')?> --</option>
-					<option value="remove"><?=lang('upload_remove')?></option>
+				<select name="bulk_action">
+					<option value="">-- <?=lang('with_selected')?> --</option>
+					<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('upload_remove')?></option>
 				</select>
-				<input class="btn submit" type="submit" value="<?=lang('submit')?>">
+				<input class="btn submit" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
 			</fieldset>
 		</form>
 	</div>
 </div>
+
+<?php $this->startOrAppendBlock('modals'); ?>
+
+<?php
+$modal_vars = array(
+	'name'		=> 'modal-confirm-remove',
+	'form_url'	=> cp_url('settings/uploads/remove_directory'),
+	'hidden'	=> array(
+		'bulk_action'	=> 'remove'
+	)
+);
+
+$this->ee_view('_shared/modal_confirm_remove', $modal_vars);
+?>
+
+<?php $this->endBlock(); ?>

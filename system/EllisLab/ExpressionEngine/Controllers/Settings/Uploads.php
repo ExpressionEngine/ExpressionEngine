@@ -82,7 +82,10 @@ class Uploads extends Settings {
 				)),
 				array(
 					'name' => 'uploads[]',
-					'value' => $dir['id']
+					'value' => $dir['id'],
+					'data'	=> array(
+						'confirm' => lang('upload_remove_modal_upload_directory') . ': <b>' . htmlentities($dir['name'], ENT_QUOTES) . '</b>'
+					)
 				)
 			);
 		}
@@ -93,7 +96,7 @@ class Uploads extends Settings {
 				'upload_id' => array(
 					'type'	=> CP\Table::COL_ID
 				),
-				'upload_name',
+				'upload_directory',
 				'upload_manage' => array(
 					'type'	=> CP\Table::COL_TOOLBAR
 				),
@@ -120,10 +123,39 @@ class Uploads extends Settings {
 
 		ee()->cp->set_breadcrumb(cp_url('files'), lang('file_manager'));
 
+		ee()->javascript->set_global('lang.remove_confirm', lang('upload_directories') . ': <b>### ' . lang('upload_remove_modal_directories') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/confirm_remove'),
+		));
+
 		ee()->cp->render('settings/uploads', $vars);
 	}
 
-	// --------------------------------------------------------------------
+	/**
+	 * POST action to remove an upload directory
+	 */
+	public function removeDirectory()
+	{
+		$upload_ids = ee()->input->post('uploads');
+
+		if ( ! empty($upload_ids) && ee()->input->post('bulk_action') == 'remove')
+		{
+			if ( ! is_array($upload_ids))
+			{
+				$upload_ids = array($upload_ids);
+			}
+
+			// Filter out junk
+			$upload_ids = array_filter($upload_ids, 'is_numeric');
+
+			ee()->load->model('file_upload_preferences_model');
+			ee()->file_upload_preferences_model->delete_upload_preferences($upload_ids);
+
+			ee()->view->set_message('success', lang('upload_directories_removed'), sprintf(lang('upload_directories_removed_desc'), count($upload_ids)), TRUE);
+		}
+
+		ee()->functions->redirect(cp_url('settings/uploads'));
+	}
 
 	/**
 	 * New upload destination
@@ -132,8 +164,6 @@ class Uploads extends Settings {
 	{
 		return $this->form();
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Edit upload destination
@@ -145,8 +175,6 @@ class Uploads extends Settings {
 	{
 		return $this->form($upload_id);
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Edit upload destination
@@ -1216,7 +1244,4 @@ class Uploads extends Settings {
 		}
 	}
 }
-// END CLASS
-
-/* End of file Uploads.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Settings/Uploads.php */
+// EOF

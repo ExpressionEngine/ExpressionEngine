@@ -1032,7 +1032,7 @@ $lang = array(
 'upload_id' =>
 'ID#',
 
-'upload_name' =>
+'upload_directory' =>
 'Directory',
 
 'upload_manage' =>
@@ -1049,6 +1049,18 @@ $lang = array(
 
 'upload_remove' =>
 'Remove',
+
+'upload_remove_modal_upload_directory' =>
+'Upload directory',
+
+'upload_remove_modal_directories' =>
+'directories',
+
+'upload_directories_removed' =>
+'Upload directories removed',
+
+'upload_directories_removed_desc' =>
+'%d upload directories were removed.',
 
 'upload_create' =>
 'Create New',
