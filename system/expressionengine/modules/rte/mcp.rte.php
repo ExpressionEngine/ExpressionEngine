@@ -229,11 +229,17 @@ class Rte_mcp {
 		{
 			// update the prefs
 			$this->_do_update_prefs();
-			ee()->view->set_message('success', lang('settings_saved'), lang('settings_saved_desc'), FALSE);
+			ee('Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('settings_saved'))
+				->addToBody(lang('settings_saved_desc'));
 		}
 		else
 		{
-			ee()->view->set_message('issue', lang('settings_error'), lang('settings_error_desc'), FALSE);
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('settings_error'))
+				->addToBody(lang('settings_error_desc'));
 		}
 	}
 
@@ -371,10 +377,11 @@ class Rte_mcp {
 
 		if ( ! empty($errors))
 		{
-			$errorAlert = ee('Alert')->makeInline('toolsets-form')->asIssue();
-			$errorAlert->title = lang('toolset_error');
-			$errorAlert->description = lang($action . '_fail_desc');
-			$errorAlert->list = $errors;
+			$errorAlert = ee('Alert')->makeInline('toolsets-form')
+				->asIssue()
+				->withTitle(lang('toolset_error'))
+				->addToBody(lang($action . '_fail_desc'))
+				->addToBody($errors);
 		}
 
 		if (empty($successes) && ! empty($errors))
@@ -383,14 +390,15 @@ class Rte_mcp {
 		}
 		else
 		{
-			$successAlert = ee('Alert')->makeInline('toolsets-form')->asSuccess();
-			$successAlert->title = lang($message_title);
-			$successAlert->description = lang($action . '_success_desc');
-			$successAlert->list = $successes;
+			$successAlert = ee('Alert')->makeInline('toolsets-form')
+				->asSuccess()
+				->withTitle(lang($message_title))
+				->addToBody(lang($action . '_success_desc'))
+				->addToBody($successes);
 
 			if (isset($errorAlert))
 			{
-				$successAlert->sub_alert = $errorAlert;
+				$successAlert->setSubAlert($errorAlert);
 			}
 
 			$successAlert->defer();
