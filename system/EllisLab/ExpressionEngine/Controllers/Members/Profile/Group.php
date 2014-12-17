@@ -70,14 +70,11 @@ class Group extends Profile {
 			)
 		);
 
-		$message = array(
-			'warning' => lang('warning'),
-			'warning_desc' => lang('access_privilege_warning'),
-			'caution' => lang('access_privilege_caution'),
-		);
-
-		$html = ee()->load->view('account/access_warning', $message, TRUE);
-		$alert = array('type' => 'warn', 'custom' => $html);
+		ee('Alert')->makeInline('shared-form')
+			->asWarning()
+			->cannotClose()
+			->withTitle(lang('access_privilege_warning'))
+			->addToBody(lang('access_privilege_caution'), 'caution');
 
 		ee()->form_validation->set_rules(array(
 			array(
@@ -111,7 +108,6 @@ class Group extends Profile {
 			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
 		}
 
-		ee()->view->set_alert('inline', $alert, FALSE);
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('member_group_assignment');
