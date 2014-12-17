@@ -114,21 +114,20 @@ class EE_Core {
 		ee()->db->swap_pre = 'exp_';
 		ee()->db->db_debug = FALSE;
 
-
 		ee()->di->registerSingleton('Model', function($di)
 		{
 			$model_alias_path = APPPATH . 'config/model_aliases.php';
 			$model_alias_service = new \EllisLab\ExpressionEngine\Service\AliasService('Model', $model_alias_path);
 
-            return new \EllisLab\ExpressionEngine\Service\Model\Factory(
-                $model_alias_service,
-                $di->make('Validation')
-            );
+			return new \EllisLab\ExpressionEngine\Service\Model\Factory(
+				$model_alias_service,
+				$di->make('Validation')
+			);
 		});
 
 		ee()->di->registerSingleton('Validation', function($di)
 		{
-            return new \EllisLab\ExpressionEngine\Service\Validation\Factory();
+			return new \EllisLab\ExpressionEngine\Service\Validation\Factory();
 		});
 
 
