@@ -84,17 +84,17 @@ class Alert {
 		return $this;
 	}
 
-	public function asSuccess()
-	{
-		$this->severity = 'success';
-		$this->canClose();
-		return $this;
-	}
-
 	public function asIssue()
 	{
 		$this->severity = 'issue';
 		$this->cannotClose();
+		return $this;
+	}
+
+	public function asSuccess()
+	{
+		$this->severity = 'success';
+		$this->canClose();
 		return $this;
 	}
 
