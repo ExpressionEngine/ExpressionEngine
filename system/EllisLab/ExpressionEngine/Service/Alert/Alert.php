@@ -31,9 +31,9 @@ use EllisLab\ExpressionEngine\Service\View\View;
 class Alert {
 
 	public $title;
-	public $description;
+	public $body = '';
 
-	protected $list = array();
+	protected $has_close_button = FALSE;
 	protected $name;
 	protected $severity;
 	protected $sub_alert;
@@ -51,27 +51,8 @@ class Alert {
 		return $this;
 	}
 
-	public function __set($name, $value)
-	{
-		$method = 'set__' . $name;
-		if (method_exists($this, $method))
-		{
-			$this->$method($value);
-		}
-		else
-		{
-			throw new InvalidArgumentException("No such property: '{$name}' on ".get_called_class());
-		}
-	}
-
 	public function __get($name)
 	{
-		$method = 'get__' . $name;
-		if (method_exists($this, $method))
-		{
-			return $this->$method();
-		}
-
 		if (property_exists($this, $name))
 		{
 			return $this->$name;
@@ -80,43 +61,66 @@ class Alert {
 		throw new InvalidArgumentException("No such property: '{$name}' on ".get_called_class());
 	}
 
-	public function set__list(array $list)
+	public function addToBody($item, $class = NULL)
 	{
-		$this->list = $list;
-	}
-
-	public function set__severity($severity)
-	{
-		$severity = strtolower($severity);
-		if ( ! in_array($severity, array('warn', 'issue', 'success')))
+		if ($class)
 		{
-			throw new InvalidArgumentException("severity must be one of, 'warn', 'issue', or 'success', got '{$severity}' instead");
+			$class = ' class="' . $class . '"';
 		}
 
-		$this->severity = $severity;
+		if (is_array($item))
+		{
+			$this->body .= '<ul>';
+			foreach ($item as $i)
+			{
+				$this->body .= '<li>' . $i . '</li>';
+			}
+			$this->body .= '</ul>';
+		}
+		else
+		{
+			$this->body .= '<p' . $class . '>' . $item . '</p>';
+		}
+		return $this;
 	}
 
 	public function asSuccess()
 	{
 		$this->severity = 'success';
+		$this->canClose();
 		return $this;
 	}
 
 	public function asIssue()
 	{
 		$this->severity = 'issue';
+		$this->cannotClose();
 		return $this;
 	}
 
 	public function asWarning()
 	{
 		$this->severity = 'warn';
+		$this->canClose();
 		return $this;
 	}
 
-	public function set__sub_alert(Alert $alert)
+	public function canClose()
+	{
+		$this->has_close_button = TRUE;
+		return $this;
+	}
+
+	public function cannotClose()
+	{
+		$this->has_close_button = FALSE;
+		return $this;
+	}
+
+	public function setSubAlert(Alert $alert)
 	{
 		$this->sub_alert = $alert;
+		return $this;
 	}
 
 	public function render()
