@@ -294,7 +294,7 @@ class View {
 				break;
 
 			case 'warn':
-				$alert->asWarn();
+				$alert->asWarning();
 				break;
 		}
 
