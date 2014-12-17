@@ -55,18 +55,16 @@ class AlertCollection {
 
 				$alert = $this->make($name, $type);
 				$alert->title = $value['title'];
-				$alert->description = $value['description'];
-				$alert->list = $value['list'];
+				$alert->body = $value['body'];
 				$alert->severity = $value['severity'];
 
 				if (isset($value['sub_alert']))
 				{
 					$sub_alert = $this->make($name, $value['sub_alert']['type']);
 					$sub_alert->title = $value['sub_alert']['title'];
-					$sub_alert->description = $value['sub_alert']['description'];
-					$sub_alert->list = $value['sub_alert']['list'];
+					$sub_alert->body = $value['sub_alert']['body'];
 					$sub_alert->severity = $value['sub_alert']['severity'];
-					$alert->sub_alert = $sub_alert;
+					$alert->setSubAlert($sub_alert);
 				}
 
 				$this->alerts[$type][$name] = $alert;
@@ -78,8 +76,7 @@ class AlertCollection {
 	{
 		$data = array(
 			'title' => $alert->title,
-			'description' => $alert->description,
-			'list' => $alert->list,
+			'body' => $alert->body,
 			'severity' => $alert->severity
 		);
 
@@ -88,8 +85,7 @@ class AlertCollection {
 			$data['sub_alert'] = array(
 				'type' => $alert->sub_alert->type,
 				'title' => $alert->sub_alert->title,
-				'description' => $alert->sub_alert->description,
-				'list' => $alert->sub_alert->list,
+				'body' => $alert->sub_alert->body,
 				'severity' => $alert->sub_alert->severity
 			);
 		}
