@@ -53,7 +53,7 @@
 							</ul>
 						</li>
 					</ul>
-					<?php if ($this->session->userdata('group_id') == 1): ?>
+					<?php if (ee()->session->userdata('group_id') == 1): ?>
 						<a class="submit" href="<?=BASE.AMP.'C=homepage'.AMP.'M=accept_checksums'?>"><?=lang('checksum_changed_accept')?></a>
 					<?php endif; ?>
 				<?php endif; ?>
@@ -68,7 +68,8 @@
 		{
 			echo $cp_global_js;
 		}
-		echo $this->cp->render_footer_js();
+
+		echo $cp_footer_js;
 
 		if (isset($library_src))
 		{
@@ -80,7 +81,7 @@
 			echo $script_foot;
 		}
 
-		foreach ($this->cp->footer_item as $item)
+		foreach ($cp_footer_items as $item)
 		{
 			echo $item."\n";
 		}
@@ -103,7 +104,7 @@
 										<em></em>
 									</div>
 									<div class="setting-field col w-8 last">
-										<input class="required" type="text" value="<?=form_prep($this->session->userdata('username'))?>">
+										<input class="required" type="text" value="<?=form_prep(ee()->session->userdata('username'))?>">
 									</div>
 								</fieldset>
 								<fieldset class="col-group last">
@@ -124,15 +125,6 @@
 				</div>
 			</div>
 		</div>-->
-		<?php if (isset(ee()->view->alerts['standard'])): ?>
-			<div class="alert <?=ee()->view->alerts['standard']['type']?>">
-				<?php if (isset(ee()->view->alerts['standard']['title'])): ?>
-				<h3><?=ee()->view->alerts['standard']['title']?></h3>
-				<?php endif; ?>
-				<?php if (isset(ee()->view->alerts['standard']['description'])): ?>
-				<p><?=ee()->view->alerts['standard']['description']?></p>
-				<?php endif; ?>
-			</div>
-		<?php endif; ?>
+		<?=ee('Alert')->getStandard()?>
 	</body>
 </html>

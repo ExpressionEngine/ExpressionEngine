@@ -7,7 +7,7 @@
 		<input class="btn submit" type="submit" value="<?=lang('search_logs_button')?>">
 	</fieldset>
 	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
-	<?php $this->view('_shared/alerts')?>
+	<?=ee('Alert')->getAllInlines()?>
 	<?php if (isset($filters)) echo $filters; ?>
 	<section class="item-wrap log">
 		<?php if (empty($rows)): ?>
@@ -34,3 +34,46 @@
 	</section>
 <?=form_close()?>
 </div>
+
+<?php $this->startOrAppendBlock('modals'); ?>
+
+<?php
+// Individual confirm delete modals
+foreach($rows as $row)
+{
+	$modal_vars = array(
+		'name'      => 'modal-confirm-' . $row['log_id'],
+		'form_url'	=> $form_url,
+		'hidden'	=> array(
+			'delete'	=> $row['log_id']
+		),
+		'checklist'	=> array(
+			array(
+				'kind' => lang('view_developer_log'),
+				'desc' => $row['description']
+			)
+		)
+	);
+
+	$this->view('_shared/modal_confirm_remove', $modal_vars);
+}
+
+// Confirm delete all modal
+$modal_vars = array(
+	'name'      => 'modal-confirm-all',
+	'form_url'	=> $form_url,
+	'hidden'	=> array(
+		'delete'	=> 'all'
+	),
+	'checklist'	=> array(
+		array(
+			'kind' => lang('view_developer_log'),
+			'desc' => lang('all')
+		)
+	)
+);
+
+$this->view('_shared/modal_confirm_remove', $modal_vars);
+?>
+
+<?php $this->endBlock(); ?>

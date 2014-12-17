@@ -119,59 +119,13 @@ class Email extends Logs {
 			->offset($offset)
 			->all();
 
-		$rows   = array();
-		$modals = array();
-
-		foreach ($logs as $log)
-		{
-			$rows[] = array(
-				'cache_id'			=> $log->cache_id,
-				'username'			=> "<a href='" . cp_url('myaccount', array('id' => $log->member_id)) . "'>{$log->member_name}</a>",
-				'ip_address'		=> $log->ip_address,
-				'cache_date'		=> ee()->localize->human_time($log->cache_date),
-				'subject' 			=> $log->subject,
-				'recipient_name'	=> $log->recipient_name
-			);
-
-			$modal_vars = array(
-				'form_url'	=> $this->base_url,
-				'hidden'	=> array(
-					'delete'	=> $log->cache_id
-				),
-				'checklist'	=> array(
-					array(
-						'kind' => lang('view_email_logs'),
-						'desc' => lang('sent_to') . ' ' . $log->recipient_name . ', ' . lang('subject') . ': ' . $log->subject
-					)
-				)
-			);
-
-			$modals['modal-confirm-' . $log->getId()] = ee()->view->render('_shared/modal_confirm_remove', $modal_vars, TRUE);
-		}
-
 		$pagination = new Pagination($this->params['perpage'], $count, $page);
 		$links = $pagination->cp_links($this->base_url);
 
-		$modal_vars = array(
-			'form_url'	=> $this->base_url,
-			'hidden'	=> array(
-				'delete'	=> 'all'
-			),
-			'checklist'	=> array(
-				array(
-					'kind' => lang('view_email_logs'),
-					'desc' => lang('all')
-				)
-			)
-		);
-
-		$modals['modal-confirm-all'] = ee()->view->render('_shared/modal_confirm_remove', $modal_vars, TRUE);
-
 		$vars = array(
-			'rows' => $rows,
+			'logs' => $logs,
 			'pagination' => $links,
 			'form_url' => $this->base_url->compile(),
-			'modals' => $modals
 		);
 
 		ee()->cp->render('logs/email/list.php', $vars);

@@ -11,6 +11,7 @@ class RTESettings < ControlPanelPage
 	element :enable_switch, 'input[name="rte_enabled"][value="y"]'
 	element :disable_switch, 'input[name="rte_enabled"][value="n"]'
 	element :default_tool_set, 'select[name="rte_default_toolset_id"]'
+	element :selected_default_tool_set, 'select[name="rte_default_toolset_id"] option[selected="selected"]'
 	element :save_settings_button, 'form.settings fieldset.form-ctrls input.btn[type="submit"]'
 
 	element :create_new_button, 'div.tbl-ctrls form fieldset.tbl-search a.btn.action'

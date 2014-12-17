@@ -274,12 +274,6 @@ class Addons extends CP_Controller {
 			'form_url'	=> $vars['form_url'],
 			'hidden'	=> array(
 				'bulk_action'	=> 'remove'
-			),
-			'checklist'	=> array(
-				array(
-					'kind' => '',
-					'desc' => ''
-				)
 			)
 		);
 

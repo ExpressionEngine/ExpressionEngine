@@ -161,7 +161,6 @@ class Developer extends Logs {
 			->all();
 
 		$rows   = array();
-		$modals = array();
 
 		foreach ($logs as $log)
 		{
@@ -235,46 +234,15 @@ class Developer extends Logs {
 				'timestamp'			=> ee()->localize->human_time($log->timestamp),
 				'description' 		=> $description
 			);
-
-			$modal_vars = array(
-				'form_url'	=> $this->base_url,
-				'hidden'	=> array(
-					'delete'	=> $log->log_id
-				),
-				'checklist'	=> array(
-					array(
-						'kind' => lang('view_developer_log'),
-						'desc' => $description
-					)
-				)
-			);
-
-			$modals['modal-confirm-' . $log->log_id] = ee()->view->render('_shared/modal_confirm_remove', $modal_vars, TRUE);
 		}
 
 		$pagination = new Pagination($this->params['perpage'], $count, $page);
 		$links = $pagination->cp_links($this->base_url);
 
-		$modal_vars = array(
-			'form_url'	=> $this->base_url,
-			'hidden'	=> array(
-				'delete'	=> 'all'
-			),
-			'checklist'	=> array(
-				array(
-					'kind' => lang('view_developer_log'),
-					'desc' => lang('all')
-				)
-			)
-		);
-
-		$modals['modal-confirm-all'] = ee()->view->render('_shared/modal_confirm_remove', $modal_vars, TRUE);
-
 		$vars = array(
 			'rows' => $rows,
 			'pagination' => $links,
 			'form_url' => $this->base_url->compile(),
-			'modals' => $modals
 		);
 
 		ee()->cp->render('logs/developer', $vars);

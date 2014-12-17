@@ -17,23 +17,14 @@
 		<link href="touch-icon-ipad.png" rel="apple-touch-icon-precomposed" sizes="144x144"> -->
 
 		<?php
-		foreach ($this->cp->its_all_in_your_head as $item)
+		foreach ($cp_its_all_in_your_head as $item)
 		{
 			echo $item."\n";
 		}
 		?>
 	</head>
 	<body id="top">
-		<?php if (isset(ee()->view->alerts['banner'])): ?>
-			<div class="alert banner <?=ee()->view->alerts['banner']['type']?>">
-				<?php if (isset(ee()->view->alerts['banner']['title'])): ?>
-				<h3><?=ee()->view->alerts['banner']['title']?></h3>
-				<?php endif; ?>
-				<?php if (isset(ee()->view->alerts['banner']['description'])): ?>
-				<p><?=ee()->view->alerts['banner']['description']?></p>
-				<?php endif; ?>
-			</div>
-		<?php endif; ?>
+		<?=ee('Alert')->getAllBanners()?>
 		<section class="bar info-wrap">
 			<nav class="snap">
 				<div class="site">

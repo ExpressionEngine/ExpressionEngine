@@ -2,7 +2,7 @@
 
 <h1><?=$cp_page_title?> <span class="required intitle">&#10033; <?=lang('required_fields')?></span></h1>
 <?=form_open(cp_url('utilities/cache'), 'class="settings ajax-validate"')?>
-	<?php $this->view('_shared/alerts')?>
+	<?=ee('Alert')->getAllInlines()?>
 	<fieldset class="col-group last">
 		<div class="setting-txt col w-8">
 			<h3><?=lang('caches_to_clear')?> <span class="required" title="required field">&#10033;</span></h3>

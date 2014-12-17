@@ -2,7 +2,7 @@
 
 <h1><?=$cp_page_title?></h1>
 <?=form_open(cp_url('utilities/import-converter/import-fieldmap-confirm'), 'class="settings"', $form_hidden)?>
-	<?php $this->view('_shared/alerts')?>
+	<?=ee('Alert')->getAllInlines()?>
 	<?php if (form_error('unique_check')): ?>
 		<div class="alert inline issue">
 			<h3><?=lang('file_not_converted')?></h3>

@@ -60,16 +60,12 @@ class Delete extends Profile {
 			)
 		);
 
-		$message = array(
-			'warning' => lang('warning'),
-			'warning_desc' => lang('delete_member_warning'),
-			'caution' => lang('delete_member_caution'),
-		);
+		ee('Alert')->makeInline('shared-form')
+			->asWarning()
+			->cannotClose()
+			->withTitle(lang('delete_member_warning'))
+			->addToBody(lang('delete_member_caution'), 'caution');
 
-		$html = ee()->load->view('account/delete_warning', $message, TRUE);
-		$alert = array('type' => 'warn', 'custom' => $html);
-
-		ee()->view->set_alert('inline', $alert, FALSE);
 		ee()->view->base_url = $this->base_url;
 		ee()->view->cp_page_title = lang('member_delete');
 		ee()->view->save_btn_text = 'btn_save_settings';

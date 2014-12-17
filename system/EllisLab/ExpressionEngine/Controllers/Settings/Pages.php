@@ -84,6 +84,13 @@ class Pages extends Settings {
 				'value' => (isset($config['template_channel_'.$channel->channel_id]))
 					? (int) $config['template_channel_'.$channel->channel_id] : 0
 			);
+
+			// Only accept integers from these fields
+			ee()->form_validation->set_rules(
+				'template_channel_'.$channel->channel_id,
+				$channel->channel_title,
+				'integer'
+			);
 		}
 
 		$vars['sections'] = array(
@@ -117,7 +124,7 @@ class Pages extends Settings {
 					'title' => 'pages_templates',
 					'desc' => 'pages_templates_desc',
 					'fields' => array(
-						'enable_sql_caching' => array(
+						'pages_templates' => array(
 							'type' => 'multi_dropdown',
 							'choices' => $template_for_channel
 						)
@@ -126,9 +133,23 @@ class Pages extends Settings {
 			)
 		);
 
+		// Keep form tinkerers out
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'homepage_display',
+				'label' => 'lang:pages_display_urls',
+				'rules' => 'enum[nested,not_nested]'
+			),
+			array(
+				'field' => 'default_channel',
+				'label' => 'lang:pages_channel',
+				'rules' => 'integer'
+			)
+		));
+
 		$base_url = cp_url('settings/pages');
 
-		if ( ! empty($_POST))
+		if (ee()->form_validation->run() !== FALSE)
 		{
 			if ($this->saveSettings($vars['sections']))
 			{
@@ -136,6 +157,10 @@ class Pages extends Settings {
 			}
 
 			ee()->functions->redirect($base_url);
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
 		}
 
 		ee()->view->base_url = $base_url;

@@ -347,12 +347,11 @@ class Communicate extends Utilities {
 
 		ee()->view->set_refresh(cp_url('utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
 
-		$alert = array(
-			'type' => 'warn',
-			'title' => lang('batchmode_ready_to_begin'),
-			'description' => lang('batchmode_warning')
-		);
-		ee()->view->set_alert('standard', $alert, TRUE);
+		ee('Alert')->makeStandard('batchmode')
+			->asWarning()
+			->withTitle(lang('batchmode_ready_to_begin'))
+			->addToBody(lang('batchmode_warning'))
+			->defer();
 
 		ee()->functions->redirect(cp_url('utilities/communicate'));
 	}
@@ -409,12 +408,11 @@ class Communicate extends Utilities {
 
 			ee()->view->set_refresh(cp_url('utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
 
-			$alert = array(
-				'type' => 'warn',
-				'title' => $message,
-				'description' => lang('batchmode_warning')
-			);
-			ee()->view->set_alert('standard', $alert, TRUE);
+			ee('Alert')->makeStandard('batchmode')
+				->asWarning()
+				->withTitle($message)
+				->addToBody(lang('batchmode_warning'))
+				->defer();
 
 			ee()->functions->redirect(cp_url('utilities/communicate'));
 		}
@@ -716,11 +714,12 @@ class Communicate extends Utilities {
 			->offset($offset)
 			->all();
 
+		$vars['emails'] = array();
 		$data = array();
 		foreach ($emails as $email)
 		{
 			$data[] = array(
-				$email->subject,
+				htmlentities($email->subject, ENT_QUOTES, 'UTF-8'),
 				ee()->localize->human_time($email->cache_date),
 				$email->total_sent,
 				array('toolbar_items' => array(
@@ -746,15 +745,10 @@ class Communicate extends Utilities {
 
 			// Prepare the $email object for use in the modal
 			$email->text_fmt = ($email->text_fmt != 'none') ?: 'br'; // Some HTML formatting for plain text
-			$email->subject = $this->censorSubject($email);
+			$email->subject = htmlentities($this->censorSubject($email), ENT_QUOTES, 'UTF-8');
 			$email->message = $this->formatMessage($email);
 
-			if ($email->text_fmt == 'br')
-			{
-				$email->message = '<p>' . $email->message . '</p>';
-			}
-
-			$modals['modal-email-' . $email->cache_id] = ee()->view->render('utilities/communicate/email-modal', array('email' => $email), TRUE);
+			$vars['emails'][] = $email;
 		}
 
 		$table->setData($data);
@@ -781,21 +775,6 @@ class Communicate extends Utilities {
 				$vars['table']['search']
 			);
 		}
-
-		$modal_vars = array(
-			'form_url'	=> $base_url,
-			'hidden'	=> array(
-				'bulk_action'	=> 'remove'
-			),
-			'checklist'	=> array(
-				array(
-					'kind' => '',
-					'desc' => ''
-				)
-			)
-		);
-
-		$vars['modals']['modal-confirm-all'] = ee()->view->render('_shared/modal_confirm_remove', $modal_vars, TRUE);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('view_email_cache') . ': <b>### ' . lang('emails') . '</b>');
 		ee()->cp->add_js_script(array(

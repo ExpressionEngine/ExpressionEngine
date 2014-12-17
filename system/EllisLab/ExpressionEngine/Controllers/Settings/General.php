@@ -207,11 +207,11 @@ class General extends Settings {
 		// Error getting version
 		if ( ! $details)
 		{
-			ee()->view->set_alert('banner', array(
-				'type' => 'issue',
-				'title' => lang('cp_message_issue'),
-				'description' => sprintf(lang('error_getting_version'), APP_VER)
-			), TRUE);
+			ee('Alert')->makeBanner('error-getting-version')
+				->asIssue()
+				->withTitle(lang('cp_message_issue'))
+				->addToBody(sprintf(lang('error_getting_version'), APP_VER))
+				->defer();
 		}
 		else
 		{
@@ -226,20 +226,20 @@ class General extends Settings {
 
 				$desc = sprintf(lang('version_update_inst'), $latest_version[0], $download_url, $instruct_url);
 
-				ee()->view->set_alert('banner', array(
-					'type' => 'warn',
-					'title' => lang('version_update_available'),
-					'description' => $desc
-				), TRUE);
+				ee('Alert')->makeBanner('version-update-available')
+					->asWarning()
+					->withTitle(lang('version_update_available'))
+					->addToBody($desc)
+					->defer();
 			}
 			// Running latest version already
 			else
 			{
-				ee()->view->set_alert('banner', array(
-					'type' => 'success',
-					'title' => lang('running_current'),
-					'description' => sprintf(lang('running_current_desc'), APP_VER)
-				), TRUE);
+				ee('Alert')->makeBanner('running-current')
+					->asSuccess()
+					->withTitle(lang('running_current'))
+					->addToBody(sprintf(lang('running_current_desc'), APP_VER))
+					->defer();
 			}
 		}
 

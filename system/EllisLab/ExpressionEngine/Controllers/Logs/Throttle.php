@@ -60,8 +60,7 @@ class Throttle extends Logs {
 		$this->base_url->path = 'logs/throttle';
 		ee()->view->cp_page_title = lang('view_throttle_log');
 
-		$rows   = array();
-		$modals = array();
+		$logs   = array();
 		$links  = array();
 		$throttling_disabled = TRUE;
 
@@ -123,57 +122,15 @@ class Throttle extends Logs {
 				->offset($offset)
 				->all();
 
-			foreach ($logs as $log)
-			{
-				$rows[] = array(
-					'throttle_id'		=> $log->throttle_id,
-					'ip_address'		=> $log->ip_address,
-					'last_activity'		=> ee()->localize->human_time($log->last_activity),
-					'hits'				=> $log->hits,
-					'locked_out'		=> $log->locked_out
-				);
-
-				$modal_vars = array(
-					'form_url'	=> $this->base_url,
-					'hidden'	=> array(
-						'delete'	=> $log->throttle_id
-					),
-					'checklist'	=> array(
-						array(
-							'kind' => lang('view_throttle_log'),
-							'desc' => $log->ip_address . ' ' . lang('hits') . ': ' . $log->hits
-						)
-					)
-				);
-
-				$modals['modal-confirm-' . $log->getId()] = ee()->view->render('_shared/modal_confirm_remove', $modal_vars, TRUE);
-			}
-
 			$pagination = new Pagination($this->params['perpage'], $count, $page);
 			$links = $pagination->cp_links($this->base_url);
 		}
 
-		$modal_vars = array(
-			'form_url'	=> $this->base_url,
-			'hidden'	=> array(
-				'delete'	=> 'all'
-			),
-			'checklist'	=> array(
-				array(
-					'kind' => lang('view_throttle_log'),
-					'desc' => lang('all')
-				)
-			)
-		);
-
-		$modals['modal-confirm-all'] = ee()->view->render('_shared/modal_confirm_remove', $modal_vars, TRUE);
-
 		$vars = array(
-			'rows' => $rows,
+			'logs' => $logs,
 			'pagination' => $links,
 			'disabled' => $throttling_disabled,
 			'form_url' => $this->base_url->compile(),
-			'modals' => $modals
 		);
 
 		ee()->cp->render('logs/throttle', $vars);

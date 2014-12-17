@@ -250,7 +250,7 @@ feature 'Email Log' do
 		log.find('div.message p a').click
 
 		@page.should have_selector('ul.breadcrumb')
-		@page.heading.text.should eq 'e-mail: ' + our_subject
+		@page.find('div.box h1').text.should eq 'e-mail: ' + our_subject
 	end
 
 	# Confirming Pagination behavior

@@ -11,27 +11,34 @@
  */
 
 $(document).ready(function () {
-	// Only confirm removals
-	$('select[name="bulk_action"]').change(function () {
-		$('.tbl-bulk-act .submit').toggleClass('m-link', $(this).val() == 'remove');
-	});
+	$('*[data-conditional-modal]').click(function (e) {
+		var data_element = $(this).data('conditional-modal');
+		var conditional_element = $('*[data-' + data_element + ']').eq(0);
 
-	$('.tbl-bulk-act .submit').click(function (e) {
-		if ($('select[name="bulk_action"]').val() == 'remove')
-		{
-			$(".modal-confirm-all .checklist").html(''); // Reset it
+		if ($(conditional_element).prop($(conditional_element).data(data_element))) {
+			// First adjust the checklist
+			var modalIs = '.' + $(conditional_element).attr('rel');
+
+			$(modalIs + " .checklist").html(''); // Reset it
 			if ($('td input:checked').length < 6) {
 				$('td input:checked').each(function() {
-					$(".modal-confirm-all .checklist").append('<li>' + $(this).attr('data-confirm') + '</li>');
+					$(modalIs + " .checklist").append('<li>' + $(this).attr('data-confirm') + '</li>');
 				});
 			} else {
-				$(".modal-confirm-all .checklist").append('<li>' + EE.lang.remove_confirm.replace('###', $('td input:checked').length) + '</li>');
+				$(modalIs + " .checklist").append('<li>' + EE.lang.remove_confirm.replace('###', $('td input:checked').length) + '</li>');
 			}
 			// Add hidden <input> elements
 			$('td input:checked').each(function() {
-				$(".modal-confirm-all .checklist li:last").append('<input type="hidden" name="' + $(this).attr('name') + '" value="' + $(this).val() + '">');
+				$(modalIs + " .checklist li:last").append('<input type="hidden" name="' + $(this).attr('name') + '" value="' + $(this).val() + '">');
 			});
-			$(".modal-confirm-all .checklist li:last").addClass('last');
+			$(modalIs + " .checklist li:last").addClass('last');
+
+			var heightIs = $(document).height();
+
+			$('.overlay').fadeIn('slow').css('height',heightIs);
+			$('.modal-wrap' + modalIs).fadeIn('slow');
+			e.preventDefault();
+			$('#top').animate({ scrollTop: 0 }, 100);
 		}
-	});
+	})
 });

@@ -7,21 +7,26 @@
 		<input class="btn submit" type="submit" value="<?=lang('search_logs_button')?>">
 	</fieldset>
 	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
-	<?php $this->view('_shared/alerts')?>
+	<?=ee('Alert')->getAllInlines()?>
 	<?php if (isset($filters)) echo $filters; ?>
 	<section class="item-wrap log">
-		<?php if (empty($rows)): ?>
+		<?php if (count($logs) == 0): ?>
 			<p class="no-results"><?=lang('no_control_panel_logs_found')?></p>
 		<?php else: ?>
-			<?php foreach($rows as $row): ?>
+			<?php foreach($logs as $log): ?>
 
 			<div class="item">
 				<ul class="toolbar">
-					<li class="remove"><a href="" class="m-link" rel="modal-confirm-<?=$row['id']?>" title="remove"></a></li>
+					<li class="remove"><a href="" class="m-link" rel="modal-confirm-<?=$log->id?>" title="remove"></a></li>
 				</ul>
-				<h3><b><?=lang('date_logged')?>:</b> <?=$row['act_date']?>, <b><?=lang('site')?>:</b> <?=$row['site_label']?><br><b><?=lang('username')?>:</b> <?=$row['username']?>, <b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$row['ip_address']?></h3>
+				<h3>
+					<b><?=lang('date_logged')?>:</b> <?=$localize->human_time($log->act_date)?>,
+					<b><?=lang('site')?>:</b> <?=$log->getSite()->site_label?><br>
+					<b><?=lang('username')?>:</b> <a href="<?=cp_url('myaccount', array('id' => $log->member_id))?>"><?=$log->username?></a>,
+					<b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$log->ip_address?>
+				</h3>
 				<div class="message">
-					<p><?=$row['action']?></p>
+					<p><?=$log->action?></p>
 				</div>
 			</div>
 
@@ -36,3 +41,46 @@
 	</section>
 <?=form_close()?>
 </div>
+
+<?php $this->startOrAppendBlock('modals'); ?>
+
+<?php
+// Individual confirm delete modals
+foreach($logs as $log)
+{
+	$modal_vars = array(
+		'name'      => 'modal-confirm-' . $log->id,
+		'form_url'	=> $form_url,
+		'hidden'	=> array(
+			'delete'	=> $log->id
+		),
+		'checklist'	=> array(
+			array(
+				'kind' => lang('view_cp_log'),
+				'desc' => $log->username. ' ' . $log->action
+			)
+		)
+	);
+
+	$this->view('_shared/modal_confirm_remove', $modal_vars);
+}
+
+// Confirm delete all modal
+$modal_vars = array(
+	'name'      => 'modal-confirm-all',
+	'form_url'	=> $form_url,
+	'hidden'	=> array(
+		'delete'	=> 'all'
+	),
+	'checklist'	=> array(
+		array(
+			'kind' => lang('view_cp_log'),
+			'desc' => lang('all')
+		)
+	)
+);
+
+$this->view('_shared/modal_confirm_remove', $modal_vars);
+?>
+
+<?php $this->endBlock(); ?>

@@ -78,6 +78,18 @@ $lang = array(
 'unique_name_required' => 'The tool set name must be unique.',
 'valid_name_required' => 'The tool set name must not include special characters.',
 
+'enable_success_desc' => 'The following items were enabled',
+'enable_fail_desc' => 'The following items were <b>not</b> enabled',
+
+'disable_success_desc' => 'The following items were disabled',
+'disable_fail_desc' => 'The following items were <b>not</b> disabled',
+
+'remove_success_desc' => 'The following items were removed',
+'remove_fail_desc' => 'The following items were <b>not</b> removed',
+
+'cannot_remove_default_toolset' => 'The default RTE tool set cannot be removed',
+'cannot_disable_default_toolset' => 'The default RTE tool set cannot be disabled',
+
 // Labels
 'enable_rte_globally' => 'Enable Rich Text Editor',
 'enable_rte_in_forum' => 'Enable the Rich Text Editor for use in the Forums?',

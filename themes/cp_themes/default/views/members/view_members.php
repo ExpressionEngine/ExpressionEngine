@@ -17,7 +17,7 @@
 
 	<?php if (isset($filters)) echo $filters; ?>
 
-	<?php $this->view('_shared/alerts')?>
+	<?=ee('Alert')->getAllInlines()?>
 
 	<?php $this->view('_shared/table', $table); ?>
 

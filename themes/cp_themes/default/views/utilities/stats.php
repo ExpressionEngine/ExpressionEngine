@@ -3,7 +3,7 @@
 <div class="tbl-ctrls">
 	<?=form_open(cp_url('utilities/stats/sync'))?>
 		<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
-		<?php $this->view('_shared/alerts')?>
+		<?=ee('Alert')->getAllInlines()?>
 		<table cellspacing="0">
 			<tr>
 				<th<?php if($highlight == 'source'): ?> class="highlight"<?php endif; ?>><?=lang('source')?> <a href="<?=$source_sort_url?>" class="ico sort <?=$source_direction?> right"></a></th>

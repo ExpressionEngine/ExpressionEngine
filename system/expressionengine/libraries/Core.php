@@ -129,7 +129,7 @@ class EE_Core {
 
 		ee()->di->register('View', function($di, $basepath = '')
 		{
-            return new \EllisLab\ExpressionEngine\Service\View\ViewFactory($basepath);
+            return new \EllisLab\ExpressionEngine\Service\View\ViewFactory($basepath, ee()->load, ee()->view);
 		});
 
 		ee()->di->register('Filter', function($di)
@@ -142,6 +142,12 @@ class EE_Core {
 		ee()->di->registerSingleton('Grid', function($di)
 		{
 			return new \EllisLab\ExpressionEngine\Service\Grid\Grid();
+		});
+
+		ee()->di->registerSingleton('Alert', function($di)
+		{
+			$view = $di->make('View')->make('_shared/alert');
+			return new \EllisLab\ExpressionEngine\Service\Alert\AlertCollection(ee()->session, $view);
 		});
 
 		// Setup API model factory

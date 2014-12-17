@@ -25,6 +25,7 @@
 class View {
 
 	public $alerts = array();
+	public $blocks = array();
 
 	protected $_theme = 'default';
 	protected $_extend = '';
@@ -63,6 +64,8 @@ class View {
 		ee()->javascript->compile();
 
 		$data = array_merge($this->_data, $data);
+		$data['blocks'] = $this->blocks;
+		$data['localize'] = ee()->localize;
 
 		// load up the inner
 		$rendered_view = ee()->load->view($view, $data, TRUE);
@@ -74,7 +77,11 @@ class View {
 			$view = $this->_extend;
 			$this->_extend = '';
 			$this->disable($this->_disable_up);
-			$rendered_view = ee()->load->view($view, array('EE_rendered_view' => $rendered_view), TRUE);
+			$data = array(
+				'EE_rendered_view' => $rendered_view,
+				'blocks'           => $this->blocks
+			);
+			$rendered_view = ee()->load->view($view, $data, TRUE);
 		}
 
 		// clear for future calls
@@ -245,12 +252,9 @@ class View {
 	 * @param 	string	$description	More detailed message
 	 * @param 	bool	$flashdata		Whether or not to persist this message
 	 * 		                      		in flashdata for the next page load
-	 * @param 	bool	$custom_html	If message already contains formatting,
-	 *                           		in which case $title will be used for
-	 *                           		the entire message
 	 * @return 	void
 	 */
-	public function set_message($type, $title, $description = '', $flashdata = FALSE, $custom_html = FALSE)
+	public function set_message($type, $title, $description = '', $flashdata = FALSE)
 	{
 		if (is_array($description))
 		{
@@ -280,25 +284,28 @@ class View {
 	 */
 	public function set_alert($type, array $alert_data, $flashdata = FALSE)
 	{
+		$alert = ee('Alert')->make('shared-form', strtolower($type))
+			->withTitle($alert_data['title'])
+			->addToBody($alert_data['description']);
+
+		switch ($alert_data['type'])
+		{
+			case 'issue':
+				$alert->asIssue();
+				break;
+
+			case 'success':
+				$alert->asSuccess();
+				break;
+
+			case 'warn':
+				$alert->asWarn();
+				break;
+		}
+
 		if ($flashdata)
 		{
-			ee()->session->set_flashdata('alert-' . $type, $alert_data);
-		}
-		else
-		{
-			if ($type == 'inline')
-			{
-				if ( ! array_key_exists('inline', ee()->view->alerts))
-				{
-					ee()->view->alerts['inline'] = array();
-				}
-
-				ee()->view->alerts['inline'][] = $alert_data;
-			}
-			else
-			{
-				ee()->view->alerts[$type] = $alert_data;
-			}
+			$alert->defer();
 		}
 	}
 

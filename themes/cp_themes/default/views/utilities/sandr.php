@@ -5,7 +5,7 @@
 	<div class="alert inline warn">
 		<?=lang('sandr_warning')?>
 	</div>
-	<?php $this->view('_shared/alerts')?>
+	<?=ee('Alert')->getAllInlines()?>
 	<fieldset class="col-group <?=form_error_class('search_term')?>">
 		<div class="setting-txt col w-16">
 			<h3><?=lang('sandr_search_text')?> <span class="required" title="required field">&#10033;</span></h3>
