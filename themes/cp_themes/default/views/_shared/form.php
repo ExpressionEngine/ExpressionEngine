@@ -23,14 +23,14 @@ if (isset($ajax_validate) && $ajax_validate == TRUE)
 	$form_class .= ' ajax-validate';
 }?>
 <?=form_open($base_url, 'class="'.$form_class.'"', (isset($form_hidden)) ? $form_hidden : array())?>
-	<?php $this->view('_shared/alerts')?>
+	<?=ee('Alert')->get('shared-form')?>
 	<?php foreach ($sections as $name => $settings): ?>
 		<?php if (is_string($name)): ?>
 			<h2><?=lang($name)?></h2>
 		<?php endif ?>
 		<?php foreach ($settings as $setting): ?>
 			<?php
-			
+
 			$last_class = ($setting == end($settings)) ? ' last' : '';
 			$grid = (isset($setting['grid']) && $setting['grid'] == TRUE);
 
@@ -94,7 +94,7 @@ if (isset($ajax_validate) && $ajax_validate == TRUE)
 
 						case 'checkbox': ?>
 							<div class="scroll-wrap">
-								<?php foreach ($field['choices'] as $key => $label): 
+								<?php foreach ($field['choices'] as $key => $label):
 									if (is_array($value))
 									{
 										$selected = in_array($key, $value);
