@@ -94,7 +94,7 @@ feature 'RTE Settings' do
 		@page.disable_switch.should_not be_checked
 	end
 
-	it 'only accpets "y" or "n" for enabled setting', :stage => 'settings' do
+	it 'only accepts "y" or "n" for enabled setting', :stage => 'settings' do
 		@page.enable_switch.set '1'
 		@page.save_settings_button.click
 		no_php_js_errors
@@ -118,7 +118,7 @@ feature 'RTE Settings' do
 		@page.default_tool_set.value.should eq "3"
 	end
 
-	it 'cannot set a default tool set to an non-existant tool set', :stage => 'settings' do
+	it 'cannot set a default tool set to an nonexistent tool set', :stage => 'settings' do
 		@page.selected_default_tool_set.set 101
 
 		@page.save_settings_button.click
@@ -169,7 +169,7 @@ feature 'RTE Settings' do
 		@page.text.should_not include 'Disabled'
 	end
 
-	it 'displays an itemzied modal when trying to remove 5 or less tool sets', :stage => 'settings' do
+	it 'displays an itemized modal when trying to remove 5 or less tool sets', :stage => 'settings' do
 		tool_set_name = @page.tool_set_names[0].text
 
 		# Header at 0, first "real" row is 1
