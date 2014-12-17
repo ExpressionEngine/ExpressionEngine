@@ -347,12 +347,11 @@ class Communicate extends Utilities {
 
 		ee()->view->set_refresh(cp_url('utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
 
-		$alert = array(
-			'type' => 'warn',
-			'title' => lang('batchmode_ready_to_begin'),
-			'description' => lang('batchmode_warning')
-		);
-		ee()->view->set_alert('standard', $alert, TRUE);
+		ee('Alert')->makeStandard('batchmode')
+			->asWarning()
+			->withTitle(lang('batchmode_ready_to_begin'))
+			->addToBody(lang('batchmode_warning'))
+			->defer();
 
 		ee()->functions->redirect(cp_url('utilities/communicate'));
 	}
@@ -409,12 +408,11 @@ class Communicate extends Utilities {
 
 			ee()->view->set_refresh(cp_url('utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
 
-			$alert = array(
-				'type' => 'warn',
-				'title' => $message,
-				'description' => lang('batchmode_warning')
-			);
-			ee()->view->set_alert('standard', $alert, TRUE);
+			ee('Alert')->makeStandard('batchmode')
+				->asWarning()
+				->withTitle($message)
+				->addToBody(lang('batchmode_warning'))
+				->defer();
 
 			ee()->functions->redirect(cp_url('utilities/communicate'));
 		}
