@@ -143,7 +143,7 @@ class AlertCollection {
 	public function getAllInlines()
 	{
 		$return = '';
-		foreach ($this->alerts['banner'] as $alert)
+		foreach ($this->alerts['inline'] as $alert)
 		{
 			$return .= $alert->render();
 		}
