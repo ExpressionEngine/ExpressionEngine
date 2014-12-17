@@ -53,12 +53,6 @@ $modal_vars = array(
 	'form_url'	=> $table['base_url'],
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
-	),
-	'checklist'	=> array(
-		array(
-			'kind' => '',
-			'desc' => ''
-		)
 	)
 );
 

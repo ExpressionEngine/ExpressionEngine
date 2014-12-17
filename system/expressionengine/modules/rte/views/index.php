@@ -34,12 +34,6 @@ $modal_vars = array(
 	'form_url'	=> cp_url('addons/settings/rte/update_toolsets'),
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
-	),
-	'checklist'	=> array(
-		array(
-			'kind' => '',
-			'desc' => ''
-		)
 	)
 );
 
