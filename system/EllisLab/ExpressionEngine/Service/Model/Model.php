@@ -498,11 +498,21 @@ class Model {
 	/**
 	 * Retrieve data as an array. All getters will be hit.
 	 *
-	 * @return array Data including NULl values
+	 * @return array Data including NULL values
 	 */
 	public function toArray()
 	{
 		return $this->getValues();
+	}
+
+	/**
+	 * Retrieve data as json
+	 *
+	 * @return string json formatted model data
+	 */
+	public function toJson()
+	{
+		return json_encode($this->toArray());
 	}
 
 	/**
