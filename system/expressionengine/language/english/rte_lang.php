@@ -78,14 +78,14 @@ $lang = array(
 'unique_name_required' => 'The tool set name must be unique.',
 'valid_name_required' => 'The tool set name must not include special characters.',
 
-'enable_success_desc' => 'The following items were enabled',
-'enable_fail_desc' => 'The following items were <b>not</b> enabled',
+'enable_success_desc' => 'The following tool sets were enabled',
+'enable_fail_desc' => 'The following tool sets were <b>not</b> enabled',
 
-'disable_success_desc' => 'The following items were disabled',
-'disable_fail_desc' => 'The following items were <b>not</b> disabled',
+'disable_success_desc' => 'The following tool sets were disabled',
+'disable_fail_desc' => 'The following tool sets were <b>not</b> disabled',
 
-'remove_success_desc' => 'The following items were removed',
-'remove_fail_desc' => 'The following items were <b>not</b> removed',
+'remove_success_desc' => 'The following tool sets were removed',
+'remove_fail_desc' => 'The following tool sets were <b>not</b> removed',
 
 'cannot_remove_default_toolset' => 'The default RTE tool set cannot be removed',
 'cannot_disable_default_toolset' => 'The default RTE tool set cannot be disabled',

@@ -94,7 +94,7 @@ feature 'RTE Settings' do
 		@page.disable_switch.should_not be_checked
 	end
 
-	it 'only accpets "y" or "n" for enabled setting', :stage => 'settings' do
+	it 'only accepts "y" or "n" for enabled setting', :stage => 'settings' do
 		@page.enable_switch.set '1'
 		@page.save_settings_button.click
 		no_php_js_errors
@@ -118,7 +118,7 @@ feature 'RTE Settings' do
 		@page.default_tool_set.value.should eq "3"
 	end
 
-	it 'cannot set a default tool set to an non-existant tool set', :stage => 'settings' do
+	it 'cannot set a default tool set to an nonexistent tool set', :stage => 'settings' do
 		@page.selected_default_tool_set.set 101
 
 		@page.save_settings_button.click
@@ -151,6 +151,7 @@ feature 'RTE Settings' do
 
 	it 'can disable & enable multiple tool set', :stage => 'settings' do
 		@page.text.should include 'Enabled'
+		@page.text.should_not include 'Disabled'
 
 		@page.checkbox_header.find('input[type="checkbox"]').set true
 		@page.bulk_action.select "Disable"
@@ -158,7 +159,6 @@ feature 'RTE Settings' do
 		no_php_js_errors
 
 		@page.text.should include 'Disabled'
-		@page.text.should_not include 'Enabled'
 
 		@page.checkbox_header.find('input[type="checkbox"]').set true
 		@page.bulk_action.select "Enable"
@@ -169,7 +169,7 @@ feature 'RTE Settings' do
 		@page.text.should_not include 'Disabled'
 	end
 
-	it 'displays an itemzied modal when trying to remove 5 or less tool sets', :stage => 'settings' do
+	it 'displays an itemized modal when trying to remove 5 or less tool sets', :stage => 'settings' do
 		tool_set_name = @page.tool_set_names[0].text
 
 		# Header at 0, first "real" row is 1
@@ -223,7 +223,8 @@ feature 'RTE Settings' do
 		@page.should have_alert
 		@page.alert[:class].should include "success"
 		@page.alert.text.should include "Tool sets removed"
-		@page.alert.text.should include "1 tool sets were removed."
+		@page.alert.text.should include "The following tool sets were removed"
+		@page.alert.text.should include "Advanced"
 	end
 
 	it 'can bulk remove tool sets', :stage => 'settings' do
@@ -240,7 +241,12 @@ feature 'RTE Settings' do
 		@page.should have_alert
 		@page.alert[:class].should include "success"
 		@page.alert.text.should include "Tool sets removed"
-		@page.alert.text.should include "5 tool sets were removed."
+		@page.alert.text.should include "The following tool sets were removed"
+		@page.alert.text.should include "Advanced"
+		@page.alert.text.should include "Even"
+		@page.alert.text.should include "Lists Only"
+		@page.alert.text.should include "Odd"
+		@page.alert.text.should include "Simple"
 	end
 
 	it 'can reverse sort tool sets by name', :stage => 'settings' do
@@ -254,9 +260,9 @@ feature 'RTE Settings' do
 	end
 
 	it 'can sort tool sets by status', :stage => 'settings' do
-		before_sorting = ['Enabled', 'Disabled', 'Enabled', 'Disabled', 'Enabled', 'Enabled']
-		a_to_z = ['Disabled', 'Disabled', 'Enabled', 'Enabled', 'Enabled', 'Enabled']
-		z_to_a = ['Enabled', 'Enabled', 'Enabled', 'Enabled', 'Disabled', 'Disabled']
+		before_sorting = ['Enabled', 'Enabled', 'Enabled', 'Disabled', 'Enabled', 'Enabled']
+		a_to_z = ['Disabled', 'Enabled', 'Enabled', 'Enabled', 'Enabled', 'Enabled']
+		z_to_a = ['Enabled', 'Enabled', 'Enabled', 'Enabled', 'Enabled', 'Disabled']
 
 		@page.tool_sets[2].find('input[type="checkbox"]').set true
 		@page.tool_sets[4].find('input[type="checkbox"]').set true

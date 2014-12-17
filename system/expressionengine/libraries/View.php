@@ -263,11 +263,6 @@ class View {
 
 		$message_array = array('type' => $type, 'title' => $title, 'description' => $description);
 
-		if ($custom_html)
-		{
-			$message_array['custom'] = $title;
-		}
-
 		$this->set_alert('inline', $message_array, $flashdata);
 	}
 
@@ -299,7 +294,7 @@ class View {
 				break;
 
 			case 'warn':
-				$alert->asWarn();
+				$alert->asWarning();
 				break;
 		}
 

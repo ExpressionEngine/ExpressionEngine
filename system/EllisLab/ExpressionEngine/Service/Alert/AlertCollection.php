@@ -67,7 +67,7 @@ class AlertCollection {
 						break;
 
 					case 'warn':
-						$alert->asWarn();
+						$alert->asWarning();
 						break;
 				}
 
@@ -87,7 +87,7 @@ class AlertCollection {
 							break;
 
 						case 'warn':
-							$sub_alert->asWarn();
+							$sub_alert->asWarning();
 							break;
 					}
 					$alert->setSubAlert($sub_alert);
@@ -143,7 +143,7 @@ class AlertCollection {
 	public function getAllInlines()
 	{
 		$return = '';
-		foreach ($this->alerts['banner'] as $alert)
+		foreach ($this->alerts['inline'] as $alert)
 		{
 			$return .= $alert->render();
 		}
