@@ -226,10 +226,11 @@ class SecurityPrivacy extends Settings {
 
 		$base_url = cp_url('settings/security-privacy');
 
-		ee()->view->set_message(
-			'warn',
-			'<p>'.lang('security_tip').'</p><p class="enhance">'.lang('security_tip_desc').'</p>',
-		'', FALSE, TRUE);
+		ee('Alert')->makeInline('shared-form')
+			->asWarning()
+			->cannotClose()
+			->addToBody(lang('security_tip'))
+			->addToBody(lang('security_tip_desc'), 'enhance');
 
 		if (AJAX_REQUEST)
 		{
