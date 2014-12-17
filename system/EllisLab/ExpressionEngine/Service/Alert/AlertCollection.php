@@ -104,7 +104,17 @@ class AlertCollection {
 		return '';
 	}
 
-	public function getBanner()
+	public function getAllBanners()
+	{
+		$return = '';
+		foreach ($this->alerts['banner'] as $alert)
+		{
+			$return .= $alert->render();
+		}
+		return $return;
+	}
+
+	public function getAllInlines()
 	{
 		$return = '';
 		foreach ($this->alerts['banner'] as $alert)
