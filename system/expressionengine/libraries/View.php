@@ -252,12 +252,9 @@ class View {
 	 * @param 	string	$description	More detailed message
 	 * @param 	bool	$flashdata		Whether or not to persist this message
 	 * 		                      		in flashdata for the next page load
-	 * @param 	bool	$custom_html	If message already contains formatting,
-	 *                           		in which case $title will be used for
-	 *                           		the entire message
 	 * @return 	void
 	 */
-	public function set_message($type, $title, $description = '', $flashdata = FALSE, $custom_html = FALSE)
+	public function set_message($type, $title, $description = '', $flashdata = FALSE)
 	{
 		if (is_array($description))
 		{
@@ -287,25 +284,28 @@ class View {
 	 */
 	public function set_alert($type, array $alert_data, $flashdata = FALSE)
 	{
+		$alert = ee('Alert')->make('shared-form', strtolower($type))
+			->withTitle($alert_data['title'])
+			->addToBody($alert_data['description']);
+
+		switch ($alert_data['type'])
+		{
+			case 'issue':
+				$alert->asIssue();
+				break;
+
+			case 'success':
+				$alert->asSuccess();
+				break;
+
+			case 'warn':
+				$alert->asWarn();
+				break;
+		}
+
 		if ($flashdata)
 		{
-			ee()->session->set_flashdata('alert-' . $type, $alert_data);
-		}
-		else
-		{
-			if ($type == 'inline')
-			{
-				if ( ! array_key_exists('inline', $this->alerts))
-				{
-					$this->alerts['inline'] = array();
-				}
-
-				$this->alerts['inline'][] = $alert_data;
-			}
-			else
-			{
-				$this->alerts[$type] = $alert_data;
-			}
+			$alert->defer();
 		}
 	}
 
