@@ -56,14 +56,40 @@ class AlertCollection {
 				$alert = $this->make($name, $type);
 				$alert->title = $value['title'];
 				$alert->body = $value['body'];
-				$alert->severity = $value['severity'];
+				switch ($value['severity'])
+				{
+					case 'issue':
+						$alert->asIssue();
+						break;
+
+					case 'success':
+						$alert->asSuccess();
+						break;
+
+					case 'warn':
+						$alert->asWarn();
+						break;
+				}
 
 				if (isset($value['sub_alert']))
 				{
 					$sub_alert = $this->make($name, $value['sub_alert']['type']);
 					$sub_alert->title = $value['sub_alert']['title'];
 					$sub_alert->body = $value['sub_alert']['body'];
-					$sub_alert->severity = $value['sub_alert']['severity'];
+					switch ($value['sub_alert']['severity'])
+					{
+						case 'issue':
+							$sub_alert->asIssue();
+							break;
+
+						case 'success':
+							$sub_alert->asSuccess();
+							break;
+
+						case 'warn':
+							$sub_alert->asWarn();
+							break;
+					}
 					$alert->setSubAlert($sub_alert);
 				}
 
