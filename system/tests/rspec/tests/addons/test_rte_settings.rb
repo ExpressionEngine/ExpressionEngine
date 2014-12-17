@@ -151,6 +151,7 @@ feature 'RTE Settings' do
 
 	it 'can disable & enable multiple tool set', :stage => 'settings' do
 		@page.text.should include 'Enabled'
+		@page.text.should_not include 'Disabled'
 
 		@page.checkbox_header.find('input[type="checkbox"]').set true
 		@page.bulk_action.select "Disable"
@@ -158,7 +159,6 @@ feature 'RTE Settings' do
 		no_php_js_errors
 
 		@page.text.should include 'Disabled'
-		@page.text.should_not include 'Enabled'
 
 		@page.checkbox_header.find('input[type="checkbox"]').set true
 		@page.bulk_action.select "Enable"
@@ -223,7 +223,8 @@ feature 'RTE Settings' do
 		@page.should have_alert
 		@page.alert[:class].should include "success"
 		@page.alert.text.should include "Tool sets removed"
-		@page.alert.text.should include "1 tool sets were removed."
+		@page.alert.text.should include "The following tool sets were removed"
+		@page.alert.text.should include "Advanced"
 	end
 
 	it 'can bulk remove tool sets', :stage => 'settings' do
@@ -240,7 +241,12 @@ feature 'RTE Settings' do
 		@page.should have_alert
 		@page.alert[:class].should include "success"
 		@page.alert.text.should include "Tool sets removed"
-		@page.alert.text.should include "5 tool sets were removed."
+		@page.alert.text.should include "The following tool sets were removed"
+		@page.alert.text.should include "Advanced"
+		@page.alert.text.should include "Even"
+		@page.alert.text.should include "Lists Only"
+		@page.alert.text.should include "Odd"
+		@page.alert.text.should include "Simple"
 	end
 
 	it 'can reverse sort tool sets by name', :stage => 'settings' do
@@ -254,9 +260,9 @@ feature 'RTE Settings' do
 	end
 
 	it 'can sort tool sets by status', :stage => 'settings' do
-		before_sorting = ['Enabled', 'Disabled', 'Enabled', 'Disabled', 'Enabled', 'Enabled']
-		a_to_z = ['Disabled', 'Disabled', 'Enabled', 'Enabled', 'Enabled', 'Enabled']
-		z_to_a = ['Enabled', 'Enabled', 'Enabled', 'Enabled', 'Disabled', 'Disabled']
+		before_sorting = ['Enabled', 'Enabled', 'Enabled', 'Disabled', 'Enabled', 'Enabled']
+		a_to_z = ['Disabled', 'Enabled', 'Enabled', 'Enabled', 'Enabled', 'Enabled']
+		z_to_a = ['Enabled', 'Enabled', 'Enabled', 'Enabled', 'Enabled', 'Disabled']
 
 		@page.tool_sets[2].find('input[type="checkbox"]').set true
 		@page.tool_sets[4].find('input[type="checkbox"]').set true
