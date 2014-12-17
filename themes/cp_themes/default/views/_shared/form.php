@@ -24,6 +24,9 @@ if (isset($ajax_validate) && $ajax_validate == TRUE)
 }?>
 <?=form_open($base_url, 'class="'.$form_class.'"', (isset($form_hidden)) ? $form_hidden : array())?>
 	<?=ee('Alert')->get('shared-form')?>
+	<?php if (isset($extra_alerts)): ?>
+		<?php foreach ($extra_alerts as $alert) echo ee('Alert')->get($alert) ?>
+	<?php endif; ?>
 	<?php foreach ($sections as $name => $settings): ?>
 		<?php if (is_string($name)): ?>
 			<h2><?=lang($name)?></h2>
