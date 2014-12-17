@@ -105,6 +105,12 @@ class Alert {
 		return $this;
 	}
 
+	public function withTitle($title)
+	{
+		$this->title = $title;
+		return $this;
+	}
+
 	public function canClose()
 	{
 		$this->has_close_button = TRUE;
