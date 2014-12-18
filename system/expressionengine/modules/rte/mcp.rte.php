@@ -79,12 +79,28 @@ class Rte_mcp {
 		$data = array();
 		$toolset_id = ee()->session->flashdata('toolset_id');
 
+		$default_toolset_id = ee()->config->item('rte_default_toolset_id');
+
 		foreach ($toolsets as $t)
 		{
 			$url = cp_url('addons/settings/rte/edit_toolset', array('toolset_id' => $t['toolset_id']));
+			$toolset_name = htmlentities($t['name'], ENT_QUOTES);
+			$checkbox = array(
+				'name' => 'selection[]',
+				'value' => $t['toolset_id'],
+				'data'	=> array(
+					'confirm' => lang('toolset') . ': <b>' . htmlentities($t['name'], ENT_QUOTES) . '</b>'
+				)
+			);
+
+			if ($default_toolset_id == $t['toolset_id'])
+			{
+				$toolset_name = '<span class="default">' . $toolset_name . ' ✱</span>';
+				$checkbox['disabled'] = 'disabled';
+			}
 
 			$toolset = array(
-				'tool_set' => htmlentities($t['name'], ENT_QUOTES),
+				'tool_set' => $toolset_name,
 				'status' => lang('disabled'),
 				array('toolbar_items' => array(
 						'edit' => array(
@@ -93,13 +109,7 @@ class Rte_mcp {
 						)
 					)
 				),
-				array(
-					'name' => 'selection[]',
-					'value' => $t['toolset_id'],
-					'data'	=> array(
-						'confirm' => lang('toolset') . ': <b>' . htmlentities($t['name'], ENT_QUOTES) . '</b>'
-					)
-				)
+				$checkbox
 			);
 
 			if ($t['enabled'] == 'y')
@@ -296,6 +306,7 @@ class Rte_mcp {
 
 		$action = ee()->input->post('bulk_action');
 		$selection = ee()->input->post('selection');
+		$default_toolset_id = ee()->config->item('rte_default_toolset_id');
 
 		$toolsets = array();
 
@@ -331,7 +342,7 @@ class Rte_mcp {
 				$message_desc = 'toolsets_disabled';
 				foreach ($selection as $toolset_id)
 				{
-					if ($toolset_id == ee()->config->item('rte_default_toolset_id'))
+					if ($toolset_id == $default_toolset_id)
 					{
 						$errors[] = $toolsets[$toolset_id] . ' &mdash; ' . lang('cannot_disable_default_toolset');
 					}
@@ -355,7 +366,7 @@ class Rte_mcp {
 				$message_desc = 'toolsets_removed_desc';
 				foreach ($selection as $toolset_id)
 				{
-					if ($toolset_id == ee()->config->item('rte_default_toolset_id'))
+					if ($toolset_id == $default_toolset_id)
 					{
 						$errors[] = $toolsets[$toolset_id] . ' &mdash; ' . lang('cannot_remove_default_toolset');
 					}
