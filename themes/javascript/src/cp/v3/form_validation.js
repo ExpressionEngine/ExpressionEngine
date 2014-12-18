@@ -51,8 +51,9 @@ EE.cp.formValidation = {
 		});
 
 		// Upon loading the page with invalid fields, bind the text field
-		// timer to correct the validation as the user types
-		$('fieldset.invalid').each(function() {
+		// timer to correct the validation as the user types (for AJAX
+		// validation only)
+		$('form.ajax-validate fieldset.invalid').each(function() {
 			that._bindTextFieldTimer($(this));
 		});
 	},
