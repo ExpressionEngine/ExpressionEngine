@@ -33,6 +33,12 @@ class Commerce extends Settings {
 
 	public function index()
 	{
+		// Make sure this page can't load without Simple Commerce installed
+		if ( ! ee()->addons_model->module_installed('simple_commerce'))
+		{
+			ee()->functions->redirect(cp_url('settings'));
+		}
+
 		$base = reduce_double_slashes(str_replace('/public_html', '', substr(BASEPATH, 0, - strlen(SYSDIR.'/'))).'/encryption/');
 
 		$vars['sections'] = array(

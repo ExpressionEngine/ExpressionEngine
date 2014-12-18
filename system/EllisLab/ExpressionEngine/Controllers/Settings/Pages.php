@@ -36,6 +36,12 @@ class Pages extends Settings {
 	 */
 	public function index()
 	{
+		// Make sure this page can't load without Pages installed
+		if ( ! ee()->addons_model->module_installed('pages'))
+		{
+			ee()->functions->redirect(cp_url('settings'));
+		}
+
 		// Create channels dropdown
 		$channels = ee('Model')->get('Channel')
 			->filter('site_id', ee()->config->item('site_id'))
