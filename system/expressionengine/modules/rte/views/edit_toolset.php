@@ -1,6 +1,6 @@
 <div class="box">
 	<h1><?=lang($header)?> <span class="required intitle">&#10033; Required Fields</span></h1>
-	<?=form_open($form_action, 'class="settings"')?>
+	<?=form_open($form_action, 'class="settings ajax-validate"')?>
 		<?=ee('Alert')->getAllInlines()?>
 		<fieldset class="col-group <?=form_error_class('toolset_name')?>">
 			<div class="setting-txt col w-8">

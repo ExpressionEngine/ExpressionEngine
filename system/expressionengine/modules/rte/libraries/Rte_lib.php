@@ -74,13 +74,17 @@ class Rte_lib {
 			ee()->form_validation->setCallbackObject($this);
 			ee()->form_validation->set_rules('toolset_name', 'lang:tool_set_name', 'required|callback__valid_name|callback__unique_name');
 
-			if (ee()->form_validation->run() === FALSE)
+			if (AJAX_REQUEST)
+			{
+				ee()->form_validation->run_ajax();
+				exit;
+			}
+			elseif (ee()->form_validation->run() === FALSE)
 			{
 				ee('Alert')->makeInline('toolsets-form')
 					->asIssue()
 					->withTitle(lang('toolset_error'))
-					->addToBody(lang('toolset_error_desc'))
-					->defer();
+					->addToBody(lang('toolset_error_desc'));
 			}
 			else
 			{
