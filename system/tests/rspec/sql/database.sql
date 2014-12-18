@@ -28,6 +28,7 @@ DROP TABLE IF EXISTS `exp_revision_tracker`;
 DROP TABLE IF EXISTS `exp_reset_password`;
 DROP TABLE IF EXISTS `exp_remember_me`;
 DROP TABLE IF EXISTS `exp_relationships`;
+DROP TABLE IF EXISTS `exp_plugins`;
 DROP TABLE IF EXISTS `exp_password_lockout`;
 DROP TABLE IF EXISTS `exp_online_users`;
 DROP TABLE IF EXISTS `exp_modules`;
@@ -1094,6 +1095,14 @@ CREATE TABLE `exp_password_lockout` (
   KEY `user_agent` (`user_agent`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+CREATE TABLE exp_plugins (
+	plugin_id int(10) unsigned NOT NULL auto_increment,
+	plugin_name varchar(50) NOT NULL,
+	plugin_package varchar(50) NOT NULL,
+	plugin_version varchar(12) NOT NULL,
+	is_typography_related char(1) NOT NULL default 'n',
+	PRIMARY KEY `plugin_id` (`plugin_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE `exp_relationships` (
   `relationship_id` int(6) unsigned NOT NULL AUTO_INCREMENT,

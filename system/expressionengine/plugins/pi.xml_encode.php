@@ -1,15 +1,5 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-$plugin_info = array(
-						'pi_name'			=> 'XML Encode',
-						'pi_version'		=> '1.3',
-						'pi_author'			=> 'Rick Ellis',
-						'pi_author_url'		=> 'http://ellislab.com/',
-						'pi_description'	=> 'XML Encoding plugin.',
-						'pi_usage'			=> Xml_encode::usage()
-					);
-
-
 /**
  * Xml_encode Class
  *
@@ -22,6 +12,13 @@ $plugin_info = array(
 
 
 class Xml_encode {
+
+	public static $name        = 'XML Encode';
+	public static $version     = '1.3';
+	public static $author      = 'Rick Ellis';
+	public static $author_url  = 'http://ellislab.com/';
+	public static $description = 'XML Encoding plugin';
+	public static $typography  = FALSE;
 
 	var $return_data;
 

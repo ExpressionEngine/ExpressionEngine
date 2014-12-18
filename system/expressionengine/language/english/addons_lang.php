@@ -19,6 +19,7 @@ $lang = array(
 'requested_module_not_installed' =>
 'The requested module is not installed:',
 
+'manual'						=>		'Manual',
 'author'						=> 		'Author',
 'example_usage'					=>		'Example Usage',
 'available_parameters'			=>		'Available Parameters',

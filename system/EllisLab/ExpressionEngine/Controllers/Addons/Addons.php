@@ -396,7 +396,11 @@ class Addons extends CP_Controller {
 					{
 						// @TODO replace this with an ee('Model') implementation
 						ee()->db->update('fieldtypes', array('version' => $FT->info['version']), array('name' => $addon));
-						$updated[$addon] = $fieldtype['name'];
+
+						if ( ! isset($updated[$addon]))
+						{
+							$updated[$addon] = $fieldtype['name'];
+						}
 					}
 				}
 			}
@@ -410,7 +414,40 @@ class Addons extends CP_Controller {
 				$Extension = new $class_name();
 				$Extension->update_extension($extension['version']);
 				ee()->extensions->version_numbers[$class_name] = $Extension->version;
-				$updated[$addon] = $extension['name'];
+
+				if ( ! isset($updated[$addon]))
+				{
+					$updated[$addon] = $extension['name'];
+				}
+			}
+
+			$plugin = $this->getPlugins($addon);
+			if ( ! empty($plugin)
+				&& $plugin['installed'] === TRUE
+				&& array_key_exists('update', $plugin))
+			{
+
+				$info = $plugin['info'];
+
+				$typography = 'n';
+				if (array_key_exists('pi_typography', $info) && $info['pi_typography'] == TRUE)
+				{
+					$typography = 'y';
+				}
+
+				$model = ee('Model')->get('Plugin')
+					->filter('plugin_package', $plugin['package'])
+					->first();
+				$model->plugin_name = $plugin['name'];
+				$model->plugin_package = $plugin['package'];
+				$model->plugin_version = $info['pi_version'];
+				$model->is_typography_related = $typography;
+				$model->save();
+
+				if ( ! isset($updated[$addon]))
+				{
+					$updated[$addon] = $plugin['name'];
+				}
 			}
 		}
 
@@ -480,6 +517,30 @@ class Addons extends CP_Controller {
 					$installed[$addon] = $name;
 				}
 			}
+
+			$plugin = $this->getPlugins($addon);
+			if ( ! empty($plugin) && $plugin['installed'] === FALSE)
+			{
+				$info = $plugin['info'];
+
+				$typography = 'n';
+				if (array_key_exists('pi_typography', $info) && $info['pi_typography'] == TRUE)
+				{
+					$typography = 'y';
+				}
+
+				$model = ee('Model')->make('Plugin');
+				$model->plugin_name = $plugin['name'];
+				$model->plugin_package = $plugin['package'];
+				$model->plugin_version = $info['pi_version'];
+				$model->is_typography_related = $typography;
+				$model->save();
+
+				if ( ! isset($installed[$addon]))
+				{
+					$installed[$addon] = $plugin['name'];
+				}
+			}
 		}
 
 		if ( ! empty($installed))
@@ -533,7 +594,7 @@ class Addons extends CP_Controller {
 			if ( ! empty($fieldtype) && $fieldtype['installed'] === TRUE)
 			{
 				$name = $this->uninstallFieldtype($addon);
-				if ($name && ! isset($installed[$addon]))
+				if ($name && ! isset($uninstalled[$addon]))
 				{
 					$uninstalled[$addon] = $name;
 				}
@@ -543,9 +604,22 @@ class Addons extends CP_Controller {
 			if ( ! empty($extension) && $extension['installed'] === TRUE)
 			{
 				$name = $this->uninstallExtension($addon);
-				if ($name && ! isset($installed[$addon]))
+				if ($name && ! isset($uninstalled[$addon]))
 				{
 					$uninstalled[$addon] = $name;
+				}
+			}
+
+			$plugin = $this->getPlugins($addon);
+			if ( ! empty($plugin) && $plugin['installed'] === TRUE)
+			{
+				ee('Model')->get('Plugin')
+					->filter('plugin_package', $addon)
+					->delete();
+
+				if ( ! isset($uninstalled[$addon]))
+				{
+					$uninstalled[$addon] = $plugin['name'];
 				}
 			}
 		}
@@ -620,33 +694,33 @@ class Addons extends CP_Controller {
 
 		$vars = array();
 
-		$plugin = $this->getPluginInfo($addon);
-		if ($plugin === FALSE)
+		$plugin = $this->getPlugins($addon);
+		if (empty($plugin))
 		{
 			show_error(lang('requested_module_not_installed').NBS.$addon);
 		}
 
 		$vars = array(
-			'name'			=> $plugin['pi_name'],
-			'version'		=> $this->formatVersionNumber($plugin['pi_version']),
-			'author'		=> $plugin['pi_author'],
-			'author_url'	=> $plugin['pi_author_url'],
-			'description'	=> $plugin['pi_description'],
+			'name'			=> $plugin['info']['pi_name'],
+			'version'		=> $this->formatVersionNumber($plugin['info']['pi_version']),
+			'author'		=> $plugin['info']['pi_author'],
+			'author_url'	=> $plugin['info']['pi_author_url'],
+			'description'	=> $plugin['info']['pi_description'],
 		);
 
 		$vars['usage'] = array(
 			'description' => '',
-			'example' => $plugin['pi_usage']
+			'example' => $plugin['info']['pi_usage']
 		);
 
-		if (is_array($plugin['pi_usage']))
+		if (is_array($plugin['info']['pi_usage']))
 		{
-			$vars['usage']['description'] = $plugin['pi_usage']['description'];
-			$vars['usage']['example'] = $plugin['pi_usage']['example'];
-			$vars['parameters'] = $plugin['pi_usage']['parameters'];
+			$vars['usage']['description'] = $plugin['info']['pi_usage']['description'];
+			$vars['usage']['example'] = $plugin['info']['pi_usage']['example'];
+			$vars['parameters'] = $plugin['info']['pi_usage']['parameters'];
 		}
 
-		ee()->view->cp_heading = $vars['name'] . ' ' . lang('usage');
+		ee()->view->cp_heading = $vars['name'] . ' ' . lang('manual');
 
 		ee()->view->cp_breadcrumbs = array(
 			cp_url('addons') => lang('addon_manager')
@@ -746,181 +820,50 @@ class Addons extends CP_Controller {
 	 */
 	private function getPlugins($name = NULL)
 	{
-		$ext_len = strlen('.php');
-
-		$plugin_files = array();
+		ee()->load->model('addons_model');
 		$plugins = array();
 
-		// Get a list of all plugins
-		// first party first!
-		if (($list = get_filenames(PATH_PI)) !== FALSE)
+		foreach (ee()->addons_model->get_plugins($name) as $plugin => $info)
 		{
-			foreach ($list as $file)
+			$developer = (strpos($info['installed_path'], 'third_party') === FALSE) ? 'native' : 'third_party';
+
+			$data = array(
+				'developer'		=> $developer,
+				'version'		=> $info['pi_version'],
+				'installed'		=> FALSE,
+				'name'			=> $info['pi_name'],
+				'package'		=> $plugin,
+				'type'			=> 'plugin',
+				'manual_url'	=> cp_url('addons/manual/' . $plugin),
+				'info'			=> $info // Cache this
+			);
+
+			$model = ee('Model')->get('Plugin')
+				->filter('plugin_package', $plugin)
+				->first();
+			if ( ! is_null($model))
 			{
-				if (strncasecmp($file, 'pi.', 3) == 0 &&
-					substr($file, -$ext_len) == '.php' &&
-					strlen($file) > 7 &&
-					in_array(substr($file, 3, -$ext_len), ee()->core->native_plugins))
+				$data['installed'] = TRUE;
+				if (version_compare($info['pi_version'], $model->plugin_version, '>'))
 				{
-					$plugin_files[$file] = PATH_PI.$file;
+					$data['update'] = $info['pi_version'];
+					$data['version'] = $model->plugin_version;
 				}
 			}
-		}
 
-		// third party, in packages
-		if (($map = directory_map(PATH_THIRD, 2)) !== FALSE)
-		{
-			foreach ($map as $pkg_name => $files)
+			if (is_null($name))
 			{
-				if ( ! is_array($files))
-				{
-					$files = array($files);
-				}
-
-				foreach ($files as $file)
-				{
-					if (is_array($file))
-					{
-						// we're only interested in the top level files for the addon
-						continue;
-					}
-
-					// we gots a plugin?
-					if (strncasecmp($file, 'pi.', 3) == 0 &&
-						substr($file, -$ext_len) == '.php' &&
-						strlen($file) > strlen('pi.'.'.php'))
-					{
-						if (substr($file, 3, -$ext_len) == $pkg_name)
-						{
-							$plugin_files[$file] = PATH_THIRD.$pkg_name.'/'.$file;
-						}
-					}
-				}
+				$plugins[$plugin] = $data;
 			}
-		}
-
-		ksort($plugin_files);
-
-		// Grab the plugin data
-		foreach ($plugin_files as $file => $path)
-		{
-			// Used as a fallback name and url identifier
-			$filename = substr($file, 3, -$ext_len);
-
-			if ($temp = $this->magpieCheck($filename, $path))
+			elseif ($name == $plugin)
 			{
-				$plugin_info = $temp;
-			};
-
-			@include_once($path);
-
-			if (isset($plugin_info) && is_array($plugin_info))
-			{
-				// Third party?
-				$plugin_info['installed_path'] = $path;
-
-				// fallback on the filename if no name is given
-				if ( ! isset($plugin_info['pi_name']) OR $plugin_info['pi_name'] == '')
-				{
-					$plugin_info['pi_name'] = $filename;
-				}
-
-				if ( ! isset($plugin_info['pi_version']))
-				{
-					$plugin_info['pi_version'] = '--';
-				}
-
-				$developer = (strpos($plugin_info['installed_path'], 'third_party') === FALSE) ? 'native' : 'third_party';
-
-				$data = array(
-					'developer'		=> $developer,
-					'version'		=> $plugin_info['pi_version'],
-					'installed'		=> TRUE,
-					'name'			=> $plugin_info['pi_name'],
-					'package'		=> $filename,
-					'type'			=> 'plugin',
-					'manual_url'	=> cp_url('addons/manual/' . $filename)
-				);
-
-				if (is_null($name))
-				{
-					$plugins[$filename] = $data;
-				}
-				elseif ($name == $filename)
-				{
-					return $data;
-				}
+				return $data;
 			}
-			else
-			{
-				log_message('error', "Invalid Plugin Data: {$filename}");
-			}
-
-			unset($plugin_info);
 		}
 
 		return $plugins;
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get plugin info
-	 *
-	 * Check for a plugin and get it's information
-	 *
-	 * @param	string	plugin filename
-	 * @return	mixed	array of plugin data
-	 */
-	private function getPluginInfo($filename = '')
-	{
-		if ( ! $filename)
-		{
-			return FALSE;
-		}
-
-		$path = PATH_PI.'pi.'.$filename.'.php';
-
-		if ( ! file_exists($path))
-		{
-			$path = PATH_THIRD.$filename.'/pi.'.$filename.'.php';
-
-			if ( ! file_exists($path))
-			{
-				return FALSE;
-			}
-		}
-
-		if ($temp = $this->magpieCheck($filename, $path))
-		{
-			$plugin_info = $temp;
-		};
-
-		include_once($path);
-
-		if ( ! isset($plugin_info) OR ! is_array($plugin_info))
-		{
-			return FALSE;
-		}
-
-		// We need to clean up for display, might as
-		// well do it here and keep the view tidy
-
-		foreach ($plugin_info as $key => $val)
-		{
-			if ($key == 'pi_author_url')
-			{
-				$qm = (ee()->config->item('force_query_string') == 'y') ? '' : '?';
-
-				$val = prep_url($val);
-				$val = ee()->functions->fetch_site_index().$qm.'URL='.$val;
-			}
-
-			$plugin_info[$key] = $val;
-		}
-
-		return $plugin_info;
-	}
 	// --------------------------------------------------------------------
 
 	/**

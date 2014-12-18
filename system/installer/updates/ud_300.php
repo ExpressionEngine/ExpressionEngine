@@ -42,6 +42,7 @@ class Updater {
 				'_update_upload_no_access_table',
 				'_insert_comment_settings_into_db',
 				'_insert_cookie_settings_into_db',
+				'_create_plugins_table',
 			)
 		);
 
@@ -139,6 +140,70 @@ class Updater {
 
 		ee()->config->update_site_prefs($settings, 'all');
 		ee()->config->_update_config(array(), $settings);
+	}
+
+	/**
+	 * Creates the new plugins table and adds all the current plugins to the table
+	 *
+	 * @return void
+	 */
+	private function _create_plugins_table()
+	{
+		ee()->dbforge->add_field(
+			array(
+				'plugin_id' => array(
+					'type'			 => 'int',
+					'constraint'     => 10,
+					'null'			 => FALSE,
+					'unsigned'		 => TRUE,
+					'auto_increment' => TRUE
+				),
+				'plugin_name' => array(
+					'type'			=> 'varchar',
+					'constraint'    => 50,
+					'null'			=> FALSE
+				),
+				'plugin_package' => array(
+					'type'			=> 'varchar',
+					'constraint'    => 50,
+					'null'			=> FALSE
+				),
+				'plugin_version' => array(
+					'type'			=> 'varchar',
+					'constraint'    => 12,
+					'null'			=> FALSE
+				),
+				'is_typography_related' => array(
+					'type'			=> 'char',
+					'constraint'    => 1,
+					'default'		=> 'n',
+					'null'		    => FALSE
+				)
+			)
+		);
+		ee()->dbforge->add_key('plugin_id', TRUE);
+		ee()->smartforge->create_table('plugins');
+
+		define('PATH_PI', EE_APPPATH.'plugins/');
+
+		ee()->load->model('addons_model');
+		$plugins = ee()->addons_model->get_plugins();
+
+		foreach ($plugins as $plugin => $info)
+		{
+			$typography = 'n';
+			if (array_key_exists('pi_typography', $info) && $info['pi_typography'] == TRUE)
+			{
+				$typography = 'y';
+			}
+
+			ee()->db->insert('plugins', array(
+				'plugin_name' => $info['pi_name'],
+				'plugin_package' => $plugin,
+				'plugin_version' => $info['pi_version'],
+				'is_typography_related' => $typography
+			));
+		}
 	}
 
 }
