@@ -408,7 +408,7 @@ class Table {
 			// String sorting
 			else
 			{
-				$cmp = strcmp($a, $b);
+				$cmp = strcmp(strip_tags($a), strip_tags($b));
 			}
 
 			return ($sort_dir == 'asc') ? $cmp : -$cmp;
