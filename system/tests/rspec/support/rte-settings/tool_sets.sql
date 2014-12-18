@@ -21,7 +21,8 @@ VALUES
 	(3,0,'Advanced','2|9|3|4|5|6|7|1|8|10','y'),
 	(4,0,'Lists Only','9|7','y'),
 	(5,0,'Odd','2|3|5|7|8','y'),
-	(6,0,'Even','9|4|6|1|10','y');
+	(6,0,'Even','9|4|6|1|10','y'),
+	(7,0,'Everything','2|9|3|4|5|6|7|1|8|10','y');
 
 /*!40000 ALTER TABLE `exp_rte_toolsets` ENABLE KEYS */;
 UNLOCK TABLES;

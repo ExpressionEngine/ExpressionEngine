@@ -198,11 +198,15 @@ feature 'RTE Settings' do
 	it 'cannot remove the default tool set', :stage => 'settings' do
 		tool_set_name = @page.tool_set_names[1].text
 
-		# Try to remove the tool set "Default"
-		@page.tool_sets[2].find('input[type="checkbox"]').set true
+		# This populates the modal with a hidden input so we can modify it later
+		@page.tool_sets[1].find('input[type="checkbox"]').set true
 		@page.bulk_action.select "Remove"
 		@page.action_submit_button.click
 		@page.wait_until_modal_visible
+
+		tool_set_id = @page.tool_sets[2].find('input[type="checkbox"]').value
+		@page.modal.find('input[name="selection[]"]', :visible => :hidden).set tool_set_id
+
 		@page.modal_submit_button.click # Submits a form
 		no_php_js_errors
 
@@ -231,7 +235,6 @@ feature 'RTE Settings' do
 		@page.checkbox_header.find('input[type="checkbox"]').set true
 
 		# Uncheck the Default tool set
-		@page.tool_sets[2].find('input[type="checkbox"]').set false
 		@page.bulk_action.select "Remove"
 		@page.action_submit_button.click
 		@page.wait_until_modal_visible
@@ -244,6 +247,7 @@ feature 'RTE Settings' do
 		@page.alert.text.should include "The following tool sets were removed"
 		@page.alert.text.should include "Advanced"
 		@page.alert.text.should include "Even"
+		@page.alert.text.should include "Everything"
 		@page.alert.text.should include "Lists Only"
 		@page.alert.text.should include "Odd"
 		@page.alert.text.should include "Simple"
@@ -260,9 +264,9 @@ feature 'RTE Settings' do
 	end
 
 	it 'can sort tool sets by status', :stage => 'settings' do
-		before_sorting = ['Enabled', 'Enabled', 'Enabled', 'Disabled', 'Enabled', 'Enabled']
-		a_to_z = ['Disabled', 'Enabled', 'Enabled', 'Enabled', 'Enabled', 'Enabled']
-		z_to_a = ['Enabled', 'Enabled', 'Enabled', 'Enabled', 'Enabled', 'Disabled']
+		before_sorting = ['Enabled', 'Enabled', 'Enabled', 'Disabled', 'Enabled', 'Enabled', 'Enabled']
+		a_to_z = ['Disabled', 'Enabled', 'Enabled', 'Enabled', 'Enabled', 'Enabled', 'Enabled']
+		z_to_a = ['Enabled', 'Enabled', 'Enabled', 'Enabled', 'Enabled', 'Enabled', 'Disabled']
 
 		@page.tool_sets[2].find('input[type="checkbox"]').set true
 		@page.tool_sets[4].find('input[type="checkbox"]').set true
