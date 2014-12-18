@@ -76,7 +76,11 @@ class Rte_lib {
 
 			if (ee()->form_validation->run() === FALSE)
 			{
-				ee()->view->set_message('issue', lang('toolset_error'), lang('toolset_error_desc'), TRUE);
+				ee('Alert')->makeInline('toolsets-form')
+					->asIssue()
+					->withTitle(lang('toolset_error'))
+					->addToBody(lang('toolset_error_desc'))
+					->defer();
 			}
 			else
 			{
@@ -182,7 +186,11 @@ class Rte_lib {
 
 			if ( ! $orig || $is_members && $orig['member_id'] != ee()->session->userdata('member_id'))
 			{
-				ee()->view->set_message('issue', lang('toolset_error'), lang('toolset_update_failed'), TRUE);
+				ee('Alert')->makeInline('toolsets-form')
+					->asIssue()
+					->withTitle(lang('toolset_error'))
+					->addToBody(lang('toolset_update_failed'))
+					->defer();
 				ee()->functions->redirect($error_url);
 			}
 		}
@@ -190,17 +198,29 @@ class Rte_lib {
 		// save it
 		if (ee()->rte_toolset_model->save_toolset($toolset, $toolset_id) === FALSE)
 		{
-			ee()->view->set_message('issue', lang('toolset_error'), lang('toolset_update_failed'), TRUE);
+			ee('Alert')->makeInline('toolsets-form')
+				->asIssue()
+				->withTitle(lang('toolset_error'))
+				->addToBody(lang('toolset_update_failed'))
+				->defer();
 			ee()->functions->redirect($error_url);
 		}
 
 		if ($toolset_id)
 		{
-			ee()->view->set_message('success', lang('toolset_updated'), lang('toolset_updated_desc'), TRUE);
+			ee('Alert')->makeInline('toolsets-form')
+				->asSuccess()
+				->withTitle(lang('toolset_updated'))
+				->addToBody(lang('toolset_updated_desc'))
+				->defer();
 		}
 		else
 		{
-			ee()->view->set_message('success', lang('toolset_created'), sprintf(lang('toolset_created_desc'), $toolset['name']), TRUE);
+			ee('Alert')->makeInline('toolsets-form')
+				->asSuccess()
+				->withTitle(lang('toolset_created'))
+				->addToBody(sprintf(lang('toolset_created_desc'), $toolset['name']))
+				->defer();
 		}
 
 		// if it’s new, get the ID
