@@ -1,5 +1,44 @@
 require './bootstrap.rb'
 
+def confirm_settings_page (page)
+	page.breadcrumb.text.should include 'Add-On Manager'
+	page.breadcrumb.text.should include 'Rich Text Editor Configuration'
+
+	page.headings[1].text.should eq 'Rich Text Editor Configuration'
+	page.headings[2].text.should eq 'Available Tool Sets'
+
+	page.should have_enable_switch
+	page.should have_disable_switch
+	page.should have_default_tool_set
+	page.should have_save_settings_button
+	page.should have_create_new_button
+	page.should have_tool_sets
+	page.should have_bulk_action
+	page.should have_action_submit_button
+
+	page.should_not have_tool_set_name
+	page.should_not have_choose_tools
+end
+
+def confirm_toolset_page (page)
+	@page.breadcrumb.text.should include 'Rich Text Editor Configuration'
+	@page.breadcrumb.text.should include 'RTE Tool Set'
+
+	@page.headings[1].text.should include 'RTE Tool Set'
+
+	@page.should_not have_enable_switch
+	@page.should_not have_disable_switch
+	@page.should_not have_default_tool_set
+	@page.should_not have_create_new_button
+	@page.should_not have_tool_sets
+	@page.should_not have_bulk_action
+	@page.should_not have_action_submit_button
+
+	@page.should have_tool_set_name
+	@page.should have_choose_tools
+	@page.should have_tool_set_submit_button
+end
+
 feature 'RTE Settings' do
 
 	before(:each) do
@@ -17,42 +56,15 @@ feature 'RTE Settings' do
 	end
 
 	before(:each, :stage => 'settings') do
-		@page.breadcrumb.text.should include 'Add-On Manager'
-		@page.breadcrumb.text.should include 'Rich Text Editor Configuration'
-
-		@page.headings[1].text.should eq 'Rich Text Editor Configuration'
-		@page.headings[2].text.should eq 'Available Tool Sets'
-
-		@page.should have_enable_switch
-		@page.should have_disable_switch
-		@page.should have_default_tool_set
-		@page.should have_save_settings_button
-		@page.should have_create_new_button
-		@page.should have_tool_sets
-		@page.should have_bulk_action
-		@page.should have_action_submit_button
-
-		@page.should_not have_tool_set_name
-		@page.should_not have_choose_tools
+		confirm_settings_page @page
 	end
 
 	before(:each, :stage => 'toolset') do
-		@page.breadcrumb.text.should include 'Rich Text Editor Configuration'
-		@page.breadcrumb.text.should include 'RTE Tool Set'
+		@page.create_new_button.click
+		no_php_js_errors
+		@page.displayed?
 
-		@page.headings[1].text.should include 'RTE Tool Set'
-
-		@page.should_not have_enable_switch
-		@page.should_not have_disable_switch
-		@page.should_not have_default_tool_set
-		@page.should_not have_create_new_button
-		@page.should_not have_tool_sets
-		@page.should_not have_bulk_action
-		@page.should_not have_action_submit_button
-
-		@page.should have_tool_set_name
-		@page.should have_choose_tools
-		@page.should have_tool_set_submit_button
+		confirm_toolset_page @page
 	end
 
 	it 'shows the RTE Settings page', :stage => 'settings' do
@@ -290,12 +302,124 @@ feature 'RTE Settings' do
 		@page.statuses.map {|status| status.text}.should == z_to_a
 	end
 
-	# it 'can navigate back to settings from tool set', :stage => 'toolset'
-	# it 'can create a new tool set', :stage => 'toolset'
-	# it 'can edit a tool set', :stage => 'toolset'
-	# it 'ensures tool set names are unique', :stage => 'toolset'
-	# it 'requires a tool set name', :stage => 'toolset'
-	# it 'disallows XSS strings as a tool set name', :stage => 'toolset'
-	# it 'persists tool checkboxes on validation erorrs', :stage => 'toolset'
+	it 'can navigate back to settings from tool set', :stage => 'toolset' do
+		@page.breadcrumb.find('a').click
+		no_php_js_errors
+		@page.displayed?
+
+		confirm_settings_page @page
+	end
+
+	it 'can create a new tool set', :stage => 'toolset' do
+		@page.tool_set_name.set 'Empty'
+		@page.tool_set_submit_button.click
+
+		no_php_js_errors
+		@page.displayed?
+		confirm_settings_page @page
+
+		@page.should have_alert
+		@page.alert[:class].should include "success"
+		@page.alert.text.should include "Tool set created"
+		@page.alert.text.should include "Empty has been successfully created."
+
+		@page.should have_css 'tr.selected'
+		@page.find('tr.selected').text.should include "Empty"
+	end
+
+	it 'can edit a tool set', :stage => 'settings' do
+		@page.tool_sets[1].find('li.edit a').click
+		no_php_js_errors
+		@page.displayed?
+		confirm_toolset_page @page
+
+		@page.tool_set_name.set 'Rspec Edited'
+		@page.tool_set_submit_button.click
+
+		no_php_js_errors
+		@page.displayed?
+		confirm_toolset_page @page
+
+		@page.tool_set_name.value.should eq "Rspec Edited"
+
+		@page.should have_alert
+		@page.alert[:class].should include "success"
+		@page.alert.text.should include "Tool set updated"
+	end
+
+	it 'ensures tool set names are unique', :stage => 'toolset' do
+		@page.tool_set_name.set 'Default'
+		@page.tool_set_submit_button.click
+
+		no_php_js_errors
+		@page.displayed?
+		confirm_toolset_page @page
+
+		@page.tool_set_name.value.should eq "Default"
+
+		@page.should have_alert
+		@page.alert[:class].should include "issue"
+		@page.alert.text.should include "Tool set error"
+		@page.alert.text.should include "We were unable to save the tool set, pelase review and fix errors below."
+
+	    should_have_form_errors(@page)
+
+ 		@page.should have_text 'The tool set name must be unique'
+	end
+
+	it 'requires a tool set name', :stage => 'toolset' do
+		@page.tool_set_submit_button.click
+
+		no_php_js_errors
+		@page.displayed?
+		confirm_toolset_page @page
+
+		@page.tool_set_name.value.should eq ""
+
+		@page.should have_alert
+		@page.alert[:class].should include "issue"
+		@page.alert.text.should include "Tool set error"
+		@page.alert.text.should include "We were unable to save the tool set, pelase review and fix errors below."
+
+	    should_have_form_errors(@page)
+
+ 		@page.should have_text 'This field is required'
+	end
+
+	it 'disallows XSS strings as a tool set name', :stage => 'toolset' do
+		@page.tool_set_name.set '<script>Haha'
+		@page.tool_set_submit_button.click
+
+		no_php_js_errors
+		@page.displayed?
+		confirm_toolset_page @page
+
+		@page.tool_set_name.value.should eq "<script>Haha"
+
+		@page.should have_alert
+		@page.alert[:class].should include "issue"
+		@page.alert.text.should include "Tool set error"
+		@page.alert.text.should include "We were unable to save the tool set, pelase review and fix errors below."
+
+	    should_have_form_errors(@page)
+
+ 		@page.should have_text 'The tool set name must not include special characters'
+	end
+
+	it 'persists tool checkboxes on validation erorrs', :stage => 'toolset' do
+		@page.choose_tools[0].click
+		@page.choose_tools[1].click
+		@page.choose_tools[2].click
+
+		@page.tool_set_submit_button.click
+
+		no_php_js_errors
+		@page.displayed?
+		confirm_toolset_page @page
+
+		@page.choose_tools[0].should be_checked
+		@page.choose_tools[1].should be_checked
+		@page.choose_tools[2].should be_checked
+	end
 
 end
