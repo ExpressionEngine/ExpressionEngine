@@ -158,7 +158,7 @@
 					}
 
 					var cells = row_cache.getColumn(column);
-					$(cells).find(':checkbox').prop('checked', checked);
+					$(cells).find(':checkbox:enabled').prop('checked', checked);
 				});
 
 				// remember the headers
