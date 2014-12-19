@@ -94,47 +94,56 @@ class File
 	}
 
 	/**
-	 * Find the config item in the config array
-	 * @param  string $name     The config item to find
-	 * @param  callable $callback What to call if we don't find an item in the
-	 *                            config array, defaults to returning null
-	 * @return mixed            Will return a reference to the item in the
-	 *                          config array if it exists, otherwise the
-	 *                          callback() will be called
+	 * Get a nested array value given a dot-separated path
+	 * @param  array  $array Array to traverse
+	 * @param  string $path  Dot-separated path
+	 * @return mixed         Array value
 	 */
-	private function &findConfig($name, $callback = '')
+	private function getArrayValue($array, $path)
 	{
-		// Set a default callback
-		if ( ! is_callable($callback))
+		$path = explode('.', $path);
+
+		for ($i = $array; $key = array_shift($path); $i = $i[$key])
 		{
-			$callback = function() {
+			if ( ! isset($i[$key]))
+			{
 				return NULL;
-			};
+			}
 		}
 
-		$config  = &$this->config;
-		$default = $this->defaults;
+		return $i;
+	}
 
-		foreach (explode('.', $name) as $key)
+	/**
+	 * Set a nested array value given a dot-separated path
+	 * @param array &$array  Array to traverse and set value in
+	 * @param string $path   Dot-separated path
+	 * @param mixed  $value  Value to set, pass in NULL to unset
+	 */
+	private function setArrayValue(&$array, $path, $value)
+	{
+		$path = explode('.', $path);
+
+		for ($i = &$array; $key = array_shift($path); $i = &$i[$key])
 		{
-			// If what we're looking for doesn't exist anywhere, call the
-			// callback
-			if ( ! array_key_exists($key, $config)
-				&& ! array_key_exists($key, $default))
+			if ( ! isset($i[$key]))
 			{
-				return $callback($key, $config);
+				$i[$key] = array();
 			}
 
-			$config  = &$config[$key];
-			$default = $default[$key];
+			// Maintain a list of the last array and key for unsetting
+			$last_array = &$i;
+			$last_key = $key;
 		}
 
-		// If the default or the current is an array, merge it
-		if (is_array($default) OR is_array($config))
+		// Unset it if value is NULL
+		if ($value === NULL)
 		{
-			$config = array_replace_recursive($default, $config);
+			unset($last_array[$last_key]);
 		}
-
-		return $config;
+		else
+		{
+			$i = $value;
+		}
 	}
 }
