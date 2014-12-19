@@ -38,7 +38,14 @@ abstract class ToOne extends Association {
 	 */
 	public function fill($models)
 	{
-		$this->set($models[0]);
+		if (is_array($models))
+		{
+			parent::fill($models[0]);
+		}
+		else
+		{
+			parent::fill($models);
+		}
 	}
 
 	/**
