@@ -2,6 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Service\Model\Association;
 
+use LogicException;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -41,5 +43,21 @@ class BelongsTo extends ToOne {
 	public function isStrongAssociation()
 	{
 		return FALSE;
+	}
+
+	/**
+	 * Disable save
+	 */
+	public function create($item)
+	{
+		throw new LogicException('Cannot create(), did you mean set()?');
+	}
+
+	/**
+	 * Disable delete
+	 */
+	public function delete($item)
+	{
+		throw new LogicException('Cannot delete(), did you mean remove()?');
 	}
 }
