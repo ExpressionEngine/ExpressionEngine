@@ -1082,13 +1082,13 @@ class EE_Config Extends CI_Config {
 	 */
 	function _update_dbconfig($dbconfig = array(), $remove_values = array())
 	{
-		$databaseConfig = ee('Database')->getConfig();
+		$database_config = ee('Database')->getConfig();
 
-		$databaseConfig->set(
+		$database_config->set(
 			'pconnect',
 			get_bool_from_string($dbconfig['pconnect'])
 		);
-		$databaseConfig->set(
+		$database_config->set(
 			'db_debug',
 			get_bool_from_string($dbconfig['db_debug'])
 		);
@@ -1464,14 +1464,14 @@ class EE_Config Extends CI_Config {
 		// DB config items as general config values
 		if ($type == 'db_cfg')
 		{
-			$databaseConfig = ee('Database')->getConfig();
+			$database_config = ee('Database')->getConfig();
 			$this->set_item(
 				'pconnect',
-				$databaseConfig->get('pconnect') ? 'y' : 'n'
+				$database_config->get('pconnect') ? 'y' : 'n'
 			);
 			$this->set_item(
 				'db_debug',
-				$databaseConfig->get('db_debug') ? 'y' : 'n'
+				$database_config->get('db_debug') ? 'y' : 'n'
 			);
 		}
 
