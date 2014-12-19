@@ -54,12 +54,10 @@ class DBConfig
 	 */
 	public function get($item = '', $default = NULL)
 	{
-		// Allow for the retrieval of the whole group
-		$item = ($item) ? '.'.$item : '';
-
 		return $this->delegate->get(
-			"database.{$this->active_group}{$item}",
-			$default
+			rtrim("database.{$this->active_group}.{$item}", '.'),
+			$default,
+			TRUE
 		);
 	}
 

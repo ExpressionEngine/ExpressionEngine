@@ -68,29 +68,41 @@ class File
 	/**
 	 * Get an item from the config, you can use
 	 * "item.subitem.subsubitem" to drill down in the config
-	 * @param  string $item    The config item to get
-	 * @param  mixed  $default The value to return if $item can not be found
-	 * @return mixed           The value found for $item, otherwise $default
+	 * @param  string $path    The config item to get
+	 * @param  mixed  $default The value to return if $path can not be found
+	 * @param  boolean $merge  Whether to merge with defaults if value is an
+	 *                         array
+	 * @return mixed           The value found for $path, otherwise $default
 	 */
-	public function get($name, $default = NULL)
+	public function get($path, $default = NULL, $merge = FALSE)
 	{
-		$config = $this->findConfig($name);
+		$config  = $this->getArrayValue($this->config, $path);
+		$default = $default ?: $this->getArrayValue($this->defaults, $path);
+
+		if ($merge && is_array($config) && is_array($default))
+		{
+			$config = array_replace_recursive($default, $config);
+		}
+
 		return ($config !== NULL) ? $config : $default;
 	}
 
 	/**
 	 * Set an item in the config. You can use 'item.subitem.subsubitem' to drill
 	 * down in the config.
-	 * @param  string $item    The config item to set
+	 * @param  string $path    The config item to set
 	 * @param  mixed  $value   The value to set
 	 * @return void
 	 */
-	public function set($name, $value)
+	public function set($path, $value)
 	{
-		$config = &$this->findConfig($name, function($key, $config) {
-			$config[$key] = '';
-		});
-		$config = $value;
+		// If the value is equal to the default, don't save it
+		if ($value == $this->getArrayValue($this->defaults, $path))
+		{
+			$value = NULL;
+		}
+
+		$this->setArrayValue($this->config, $path, $value);
 	}
 
 	/**
