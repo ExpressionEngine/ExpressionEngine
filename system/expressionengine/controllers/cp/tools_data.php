@@ -862,7 +862,7 @@ class Tools_data extends CP_Controller {
 				}
 			}
 
-			if ($this->cp->installed_modules['comment'])
+			if (isset($this->cp->installed_modules['comment']))
 			{
 				if ($member_comments_count->num_rows() > 0)
 				{
