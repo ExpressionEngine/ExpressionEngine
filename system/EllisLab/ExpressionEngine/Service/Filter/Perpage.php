@@ -1,6 +1,9 @@
 <?php
 namespace EllisLab\ExpressionEngine\Service\Filter;
 
+use EllisLab\ExpressionEngine\Library\CP\URL;
+use EllisLab\ExpressionEngine\Service\View\ViewFactory;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -29,8 +32,13 @@ namespace EllisLab\ExpressionEngine\Service\Filter;
  */
 class Perpage extends Filter {
 
+	protected $total_threshold = 1000;
+	protected $confirm_show_all = FALSE;
+
 	/**
 	 * Initializes our Perpage filter
+	 *
+	 * @todo inject ee()->cp (for ee()->cp->add_js_script)
 	 *
 	 * @param  int $total The total number of items available
 	 * @param  string $lang_key The optional lang key to use for the "All
@@ -40,6 +48,14 @@ class Perpage extends Filter {
 	public function __construct($total, $all_lang_key = 'all_items')
 	{
 		$total = (int) $total;
+
+		if ($total >= $this->total_threshold)
+		{
+			$this->confirm_show_all = TRUE;
+			ee()->cp->add_js_script(array(
+				'file' => array('cp/v3/perpage'),
+			));
+		}
 
 		$this->name = 'perpage';
 		$this->label = 'show';
@@ -91,6 +107,40 @@ class Perpage extends Filter {
 		}
 
 		return FALSE;
+	}
+
+	/**
+	 * @see Filter::render
+	 *
+	 * Overriding the abstract class's render method in order to render a custom
+	 * perpage view which includes a modal for show-all
+	 */
+	public function render(ViewFactory $view, URL $url)
+	{
+		$value = $this->display_value;
+		if (is_null($value))
+		{
+			$value = (array_key_exists($this->value(), $this->options)) ?
+				$this->options[$this->value()] :
+				$this->value();
+		}
+
+		$options = $this->prepareOptions($url);
+		$show_all_url = end(array_keys($options));
+
+		$filter = array(
+			'label'            => $this->label,
+			'name'             => $this->name,
+			'value'            => $value,
+			'has_custom_value' => $this->has_custom_value,
+			'custom_value'     => (array_key_exists($this->name, $_POST)) ? $_POST[$this->name] : FALSE,
+			'placeholder'      => $this->placeholder,
+			'options'          => $options,
+			'show_all_url'     => $show_all_url,
+			'confirm_show_all' => $this->confirm_show_all,
+			'threshold'        => $this->total_threshold
+		);
+		return $view->make('perpage')->render($filter);
 	}
 
 }
