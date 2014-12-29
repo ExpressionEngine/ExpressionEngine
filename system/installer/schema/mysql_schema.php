@@ -407,7 +407,6 @@ class EE_Schema {
 			can_access_addons char(1) NOT NULL default 'n',
 			can_access_modules char(1) NOT NULL default 'n',
 			can_access_extensions char(1) NOT NULL default 'n',
-			can_access_accessories char(1) NOT NULL default 'n',
 			can_access_plugins char(1) NOT NULL default 'n',
 			can_access_members char(1) NOT NULL default 'n',
 			can_access_admin char(1) NOT NULL default 'n',

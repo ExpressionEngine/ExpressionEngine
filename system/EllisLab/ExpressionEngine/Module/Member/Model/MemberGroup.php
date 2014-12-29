@@ -37,7 +37,6 @@ class MemberGroup extends Model {
 	protected $can_access_addons;
 	protected $can_access_modules;
 	protected $can_access_extensions;
-	protected $can_access_accessories;
 	protected $can_access_plugins;
 	protected $can_access_members;
 	protected $can_access_admin;

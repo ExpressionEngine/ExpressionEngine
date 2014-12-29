@@ -1327,7 +1327,6 @@ class Members extends CP_Controller {
 				'can_access_addons'			=> 'n',
 				'can_access_modules'		=> 'n',
 				'can_access_extensions'		=> 'n',
-				'can_access_accessories'	=> 'n',
 				'can_access_plugins'		=> 'n',
 				'can_access_fieldtypes'		=> 'n',
 				'can_access_members'		=> 'n',
