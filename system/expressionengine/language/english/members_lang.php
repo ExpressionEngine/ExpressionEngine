@@ -655,9 +655,6 @@ $lang = array(
 'can_access_extensions' =>
 'Can access ADD-ONS: Extensions',
 
-'can_access_accessories' =>
-'Can access ADD-ONS: Accessories',
-
 'can_access_plugins' =>
 'Can access ADD-ONS: Plugins',
 

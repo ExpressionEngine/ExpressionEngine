@@ -60,8 +60,6 @@ $lang = array(
 	'nav_member_profile_templates_short_desc'	=> 'Edit Member Profile Templates',
 
 'nav_addons'					=> 'Add-Ons',
-'nav_accessories'				=> 'Accessories',
-'nav_accessories_short_desc'	=> 'Manage Accessories and Accessory Permissions',
 'nav_extensions'				=> 'Extensions',
 'nav_extensions_short_desc'	=> 'Manage Extensions',
 'nav_plugins'					=> 'Plugins',

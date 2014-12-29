@@ -49,23 +49,19 @@ $lang = array(
 
 // 2.x
 
-'accessories'					=> 		'Accessories',
 'modules'						=>		'Modules',
 'extensions'					=>		'Extensions',
 'plugins'						=>		'Plugins',
 
-'accessory'						=>		'Accessory',
 'module'						=>		'Module',
 'extension'						=>		'Extension',
 'rte_tool'						=>		'Rich Text Editor Tool',
 
-'addons_accessories'			=> 		'Accessories',
 'addons_modules'				=>		'Modules',
 'addons_plugins'				=>		'Plugins',
 'addons_extensions'				=>		'Extensions',
 'addons_fieldtypes'				=>		'Fieldtypes',
 
-'accessory_name' 				=> 		'Accessory Name',
 'fieldtype_name'				=>		'Fieldtype Name',
 'not_installed'					=>		'Not Installed',
 'remove'						=>		'Remove',
@@ -95,7 +91,6 @@ $lang = array(
 // 'status'						=>		'Status',
 'fieldtype'						=>		'Fieldtype',
 
-'edit_accessory_preferences'	=>		'Edit Accessory Preferences',
 'member_group_assignment'		=>		'Assigned Member Groups',
 'page_assignment'				=>		'Assigned Pages',
 
