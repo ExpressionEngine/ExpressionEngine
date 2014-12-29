@@ -126,7 +126,8 @@ class Perpage extends Filter {
 		}
 
 		$options = $this->prepareOptions($url);
-		$show_all_url = end(array_keys($options));
+		$urls = array_keys($options);
+		$show_all_url = end($urls);
 
 		$filter = array(
 			'label'            => $this->label,
