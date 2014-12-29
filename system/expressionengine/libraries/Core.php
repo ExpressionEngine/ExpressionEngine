@@ -68,7 +68,6 @@ class EE_Core {
 		define('PATH_MOD',		APPPATH.'modules/');
 		define('PATH_PI',		APPPATH.'plugins/');
 		define('PATH_EXT',		APPPATH.'extensions/');
-		define('PATH_ACC',		APPPATH.'accessories/');
 		define('PATH_FT',		APPPATH.'fieldtypes/');
 		define('PATH_RTE',		APPPATH.'rte_tools/');
 		if (ee()->config->item('third_party_path'))
