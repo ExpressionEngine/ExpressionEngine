@@ -179,9 +179,9 @@ class View {
 
 		$buffer = '';
 
-		if ($append && isset(ee()->view->blocks[$name]))
+		if ($append && isset($this->view->blocks[$name]))
 		{
-			$buffer .= ee()->view->blocks[$name];
+			$buffer .= $this->view->blocks[$name];
 		}
 
 		$buffer .= ob_get_contents();
