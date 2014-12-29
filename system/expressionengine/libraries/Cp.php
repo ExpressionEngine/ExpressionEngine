@@ -223,7 +223,6 @@ class Cp {
 	public function render($view, $data = array(), $return = FALSE)
 	{
 		$this->_menu();
-		//$this->_accessories();
 		//$this->_sidebar();
 
 		ee()->view->formatted_version = $this->formatted_version(APP_VER);
@@ -272,25 +271,6 @@ class Cp {
 		}
 
 		return preg_replace('/^(\d)\./', '<b>$1</b>.', implode('.', $version));
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Load up accessories for our view
-	 *
-	 * @access public
-	 * @return void
-	 */
-	protected function _accessories()
-	{
-		if (ee()->view->disabled('ee_accessories'))
-		{
-			return;
-		}
-
-		ee()->load->library('accessories');
-		ee()->view->cp_accessories = ee()->accessories->generate_accessories();
 	}
 
 	// --------------------------------------------------------------------
