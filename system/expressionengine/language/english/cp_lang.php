@@ -592,6 +592,19 @@ $lang = array(
 'btn_confirm_and_remove_working' =>
 'Removing...',
 
+//----------------------------
+// confirm show all modal
+//----------------------------
+
+'confirm_show_all' =>
+'Danger, Will Robinson!',
+
+'confirm_show_all_desc' =>
+'Viewing more than %d items at a time may result in reduced performance.',
+
+'confirm_show_all_btn' =>
+'Damn the torpedoes, full speed ahead!',
+
 ''=>''
 );
 
