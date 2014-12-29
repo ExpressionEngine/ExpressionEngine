@@ -5,7 +5,6 @@ return array(
 	# EllisLab\ExpressionEngine\Model..
 
 		// ..\Addon
-		'Accessory' => 'EllisLab\ExpressionEngine\Model\Addon\Accessory',
 		'Extension' => 'EllisLab\ExpressionEngine\Model\Addon\Extension',
 		'Module' => 'EllisLab\ExpressionEngine\Model\Addon\Module',
 		'Plugin' => '\EllisLab\ExpressionEngine\Model\Addon\Plugin',
