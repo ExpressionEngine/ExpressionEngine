@@ -301,7 +301,6 @@ class EE_Menu {
 
 		$menu['addons'] = array(
 			'modules'							=> cp_url('addons_modules'),
-			'accessories'						=> cp_url('addons_accessories'),
 			'extensions'						=> cp_url('addons_extensions'),
 			'fieldtypes'						=> cp_url('addons_fieldtypes'),
 			'plugins'							=> cp_url('addons_plugins')
@@ -779,11 +778,6 @@ class EE_Menu {
 				unset($menu['addons']['modules']);
 			}
 
-			if ( ! ee()->cp->allowed_group('can_access_accessories'))
-			{
-				unset($menu['addons']['accessories']);
-			}
-
 			if ( ! ee()->cp->allowed_group('can_access_extensions'))
 			{
 				unset($menu['addons']['extensions']);
@@ -1000,7 +994,6 @@ class EE_Menu {
 			'addons'				=> array(
 				'index'								=> 'cp/add-ons/index.html',
 				'modules'							=> 'cp/add-ons/module_manager.html',
-				'accessories'						=> 'cp/add-ons/accessory_manager.html',
 				'extensions'						=> 'cp/add-ons/extension_manager.html',
 				'fieldtypes'						=> 'cp/add-ons/fieldtype_manager.html',
 				'plugins'							=> 'cp/add-ons/plugin_manager.html'
