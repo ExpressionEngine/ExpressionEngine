@@ -58,7 +58,6 @@ class EE_Addons {
 		$type_ident = array(
 			'modules'		=> 'mcp',
 			'extensions'	=> 'ext',
-			'accessories'	=> 'acc',
 			'plugins'		=> 'pi',
 			'fieldtypes'	=> 'ft',
 			'rte_tools'		=> 'rte'
@@ -74,7 +73,6 @@ class EE_Addons {
 			$this->_map = array(
 				'modules'		=> array(),
 				'extensions'	=> array(),
-				'accessories'	=> array(),
 				'plugins'		=> array(),
 				'fieldtypes'	=> array(),
 				'rte_tools'		=> array()
@@ -175,7 +173,6 @@ class EE_Addons {
 		$type_ident = array(
 			'modules'		=> 'mcp',
 			'extensions'	=> 'ext',
-			'accessories'	=> 'acc',
 			'plugins'		=> 'pi',
 			'fieldtypes'	=> 'ft',
 			'rte_tools'		=> 'rte'
@@ -188,7 +185,6 @@ class EE_Addons {
 			'modules'		=> 'module',
 			'extensions'	=> 'extension',
 			'plugins'		=> 'plugin',
-			'accessories'	=> 'accessory',
 			'fieldtypes'	=> 'fieldtype',
 			'rte_tools'		=> 'rte_tool'
 		);
@@ -303,25 +299,6 @@ class EE_Addons {
 					if (isset($files[$row['module_name']]))
 					{
 						$_installed[$type][$row['module_name']] = array_merge($files[$row['module_name']], $row);
-					}
-				}
-			}
-		}
-		elseif ($type == 'accessories')
-		{
-			$query = ee()->db->get('accessories');
-
-			if ($query->num_rows() > 0)
-			{
-				$files = $this->get_files('accessories');
-
-				foreach ($query->result_array() as $row)
-				{
-					$name = strtolower(substr($row['class'], 0, -4));
-
-					if (isset($files[$name]))
-					{
-						$_installed[$type][$name] = array_merge($files[$name], $row);
 					}
 				}
 			}
