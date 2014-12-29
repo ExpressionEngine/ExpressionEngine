@@ -42,10 +42,7 @@ class EE_Config Extends CI_Config {
 		parent::__construct();
 
 		// Change this path before release.
-		$this->config_path   = SYSPATH.'config/config.php';
-
-// TODO-WB: Remove me
-		$this->database_path = APPPATH.'config/database.php';
+		$this->config_path = SYSPATH.'config/config.php';
 
 		$this->_initialize();
 	}
