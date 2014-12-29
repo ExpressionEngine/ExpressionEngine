@@ -282,31 +282,6 @@ class Addons_model extends CI_Model {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Accessory installed
-	 *
-	 * Returns true if an accessory is installed, false if not
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	boolean
-	 */
-	function accessory_installed($acc_name)
-	{
-		static $_installed = array();
-
-		if ( ! isset($_installed[$acc_name]))
-		{
-			$this->db->from("accessories");
-			$this->db->where("class", ucfirst(strtolower($acc_name.'_acc')));
-			$_installed[$acc_name] = ($this->db->count_all_results() > 0) ? TRUE : FALSE;
-		}
-
-		return $_installed[$acc_name];
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Extension installed
 	 *
 	 * Returns true if an extension is installed, false if not
@@ -398,26 +373,6 @@ class Addons_model extends CI_Model {
 		$this->db->set($data);
 		$this->db->where('class', $class);
 		$this->db->update('extensions');
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Update Accessory Information
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function update_accessory($class, $data)
-	{
-		// allow either "class", or "class_acc" to be passed
-		if (substr($class, -4) != '_acc')
-		{
-			$class = $class.'_acc';
-		}
-
-		$this->db->where('class', $class);
-		$this->db->update('accessories', $data);
 	}
 }
 
