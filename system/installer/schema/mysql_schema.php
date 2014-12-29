@@ -141,18 +141,6 @@ class EE_Schema {
 			PRIMARY KEY `action_id` (`action_id`)
 		)";
 
-		// Accessories table
-		// Contains a list and permissions for all installed accessories
-
-		$Q[] = "CREATE TABLE `exp_accessories` (
-			`accessory_id` int(10) unsigned NOT NULL auto_increment,
-			`class` varchar(75) NOT NULL default '',
-			`member_groups` varchar(255) NOT NULL default 'all',
-			`controllers` text NULL,
-			`accessory_version` VARCHAR(12) NOT NULL,
-			PRIMARY KEY `accessory_id` (`accessory_id`)
-		)";
-
 		// Modules table
 		// Contains a list of all installed modules
 

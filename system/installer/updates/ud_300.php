@@ -43,6 +43,7 @@ class Updater {
 				'_insert_comment_settings_into_db',
 				'_insert_cookie_settings_into_db',
 				'_create_plugins_table',
+				'_remove_accessories_table',
 			)
 		);
 
@@ -204,6 +205,16 @@ class Updater {
 				'is_typography_related' => $typography
 			));
 		}
+	}
+
+	/**
+	 * Accessories are going away in 3.0. This removes their table.
+	 *
+	 * @return void
+	 */
+	private function _remove_accessories_table()
+	{
+		ee()->dbforge->drop_table('exp_accessories');
 	}
 
 }
