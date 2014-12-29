@@ -22,7 +22,8 @@ class PerpageTest extends \PHPUnit_Framework_TestCase {
 		$url = m::mock('EllisLab\ExpressionEngine\Library\CP\URL');
 
 		$vf->shouldReceive('make->render');
-		$url->shouldReceive('setQueryStringVariable', 'compile');
+		$url->shouldReceive('setQueryStringVariable');
+		$url->shouldReceive('compile')->andReturn('foo', 'bar', 'baz', 'whatthefox', 'gibberish', 'everything');
 		$filter->render($vf, $url);
 	}
 
