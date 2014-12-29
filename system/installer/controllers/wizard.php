@@ -1119,12 +1119,6 @@ PAPAYA;
 			return FALSE;
 		}
 
-		// Install Accessories! (so exciting an exclaimation mark is needed!)
-		if ( ! $this->_install_accessories())
-		{
-			// This happens if they don't have any accessories - can't scold them for that
-		}
-
 		// Add any modules required by the theme to the required modules array
 		if ($this->userdata['theme'] != '' && isset($this->theme_required_modules[$this->userdata['theme']]))
 		{
@@ -2298,88 +2292,6 @@ PAPAYA;
 					}
 				}
 			}
-		}
-
-		return TRUE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Install default Accessories
-	 *
-	 * @access	private
-	 * @return	bool
-	 */
-	function _install_accessories()
-	{
-		// Make sure we have something to install
-		$accessories = array('Expressionengine_info' => '1.0');
-
-		foreach($accessories as $acc => $version)
-		{
-			if ( ! file_exists(EE_APPPATH.'accessories/acc.'.strtolower($acc).EXT))
-			{
-				unset($accessories[$acc]);
-			}
-			else
-			{
-				include EE_APPPATH.'accessories/acc.'.strtolower($acc).EXT;
-				$_static_vars = get_class_vars($acc.'_acc');
-				// this seems silly since this is a first party accessory, but the Zend Optimizer
-				// apparently has problem with get_class_vars() on PHP 5.2.1x, so, safety net
-				$accessories[$acc] = (isset($_static_vars['version'])) ? $_static_vars['version'] : $version;
-			}
-		}
-
-		if ( ! count($accessories) > 0)
-		{
-			return FALSE;
-		}
-
-		// The Accessories library has a list of ignored controllers
-		$c_path = EE_APPPATH.'libraries/Accessories'.EXT;
-
-		if ( ! file_exists($c_path) OR ! (include $c_path) OR ! class_exists('EE_Accessories'))
-		{
-			return FALSE;
-		}
-
-		// PHP 4 strikes again...
-		// $ignored_controllers = EE_Accessories::$ignored_controllers;
-
-		$_static_vars = get_class_vars('EE_Accessories');
-		// again, silly, but the Zend Optimizer apparently has problem with get_class_vars() on PHP 5.2.1x, so, safety net
-		$ignored_controllers = (isset ($_static_vars['ignored_controllers'])) ?
-								$_static_vars['ignored_controllers'] :
-								array('css.php', 'javascript.php', 'login.php', 'search.php', 'index.html');
-
-		$this->load->helper('directory');
-
-		// all controllers by default
-		$controllers = array();
-
-		foreach(directory_map(EE_APPPATH.'controllers/cp') as $file)
-		{
-			if (in_array($file, $ignored_controllers))
-			{
-				continue;
-			}
-
-			$file = str_replace(EXT, '', $file);
-			$controllers[] = str_replace(EXT, '', $file);
-		}
-
-		// concat and insert
-		$data = array();
-		$data['member_groups'] = '1|5';
-		$data['controllers'] = implode('|', $controllers);
-
-		foreach($accessories as $acc => $version)
-		{
-			$data['class'] = $acc.'_acc';
-			$data['accessory_version'] = $version;
-			$this->db->insert('accessories', $data);
 		}
 
 		return TRUE;

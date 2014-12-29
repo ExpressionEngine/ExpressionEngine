@@ -1499,9 +1499,6 @@ BSH;
 			}
 		}
 
-		ee()->progress->update_state("Installing default Accessories");
-		ee()->_install_accessories();
-
 		if ( ! empty($has_duplicates))
 		{
 			ee()->config->_update_config(array(), array('table_duplicates' => ''));
