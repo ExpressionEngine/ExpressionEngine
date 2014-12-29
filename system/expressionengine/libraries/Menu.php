@@ -986,7 +986,6 @@ class EE_Menu {
 		}
 
 		$help_map = array(
-			'addons_accessories'	=> 'cp/add-ons/accessory_manager.html',
 			'addons_extensions'		=> 'cp/add-ons/extension_manager.html',
 			'addons_modules'		=> 'cp/add-ons/module_manager.html',
 			'addons_plugins'		=> 'cp/add-ons/plugin_manager.html',
