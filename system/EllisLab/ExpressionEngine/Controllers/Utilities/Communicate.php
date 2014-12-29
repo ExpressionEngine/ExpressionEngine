@@ -682,7 +682,6 @@ class Communicate extends Utilities {
 		$offset = ($page - 1) * 50; // Offset is 0 indexed
 
 		$count = 0;
-		$modals = array();
 
 		$emails = ee('Model')->get('EmailCache');
 
@@ -755,11 +754,6 @@ class Communicate extends Utilities {
 
 		$base_url = new URL('utilities/communicate/sent', ee()->session->session_id());
 		$vars['table'] = $table->viewData($base_url);
-
-		if ( ! empty($modals))
-		{
-			$vars['modals'] = $modals;
-		}
 
 		$pagination = new Pagination(20, $count, $page);
 		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);

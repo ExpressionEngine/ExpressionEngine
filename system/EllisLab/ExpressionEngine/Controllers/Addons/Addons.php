@@ -270,15 +270,6 @@ class Addons extends CP_Controller {
 			);
 		}
 
-		$modal_vars = array(
-			'form_url'	=> $vars['form_url'],
-			'hidden'	=> array(
-				'bulk_action'	=> 'remove'
-			)
-		);
-
-		$vars['modals']['modal-confirm-all'] = ee()->view->render('_shared/modal_confirm_remove', $modal_vars, TRUE);
-
 		ee()->javascript->set_global('lang.remove_confirm', lang('addon') . ': <b>### ' . lang('addons') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/v3/confirm_remove'),
