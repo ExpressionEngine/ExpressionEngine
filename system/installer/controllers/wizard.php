@@ -3035,10 +3035,13 @@ PAPAYA;
 		{
 			$module = strtolower($row->module_name);
 
-			/*
-			 * - Send version to update class and let it do any required work
-			 */
+			// Only update first-party modules
+			if ( ! in_array($module, $this->native_modules))
+			{
+				continue;
+			}
 
+			// Send version to update class and let it do any required work
 			if (in_array($module, $this->native_modules))
 			{
 				$path = EE_APPPATH.'/modules/'.$module.'/';
