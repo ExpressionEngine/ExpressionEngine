@@ -9,10 +9,7 @@ system/expressionengine/config/config_1x.php
 members_1k.xml
 media/*
 
-themes/addons/cp_themes/brilliant_retail/
-themes/addons/site_themes/brilliant_retail/
-themes/addons/solspace_themes/
-themes/addons/cp_themes/*
+themes/addons/*
 *.swp
 code_coverage/
 system/tests/phpunit/vendor/
