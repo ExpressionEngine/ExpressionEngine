@@ -940,6 +940,7 @@ class EE_Config Extends CI_Config {
 			foreach ($remove_values as $key => $val)
 			{
 				$config_file = preg_replace('#\$'."config\[(\042|\047)".$key."\\1\].*#", "", $config_file);
+				unset($this->config[$key]);
 			}
 		}
 
@@ -998,6 +999,8 @@ class EE_Config Extends CI_Config {
 						);
 					}
 				}
+
+				$this->config[$key] = $val;
 			}
 		}
 
