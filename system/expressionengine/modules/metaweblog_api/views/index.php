@@ -1,36 +1,36 @@
-<div class="cp_button"><a href="<?=BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=metaweblog_api'.AMP.'method=create'?>"><?=lang('metaweblog_create_new')?></a></div>
+<div class="box">
+	<?=form_open($base_url, 'class="tbl-ctrls"')?>
+		<fieldset class="tbl-search right">
+			<a class="btn tn action" href="<?=cp_url('addons/settings/metaweblog_api/create')?>"><?=lang('create_new')?></a>
+		</fieldset>
+		<h1><?=lang('metaweblog_settings')?></h1>
 
-<h3><?=lang('metaweblog_configurations')?></h3>
+		<?=ee('Alert')->get('metaweblog-form')?>
 
-<div class="clear_left shun"></div>
+		<?php $this->ee_view('_shared/table', $table); ?>
+		<?php $this->ee_view('_shared/pagination'); ?>
+		<fieldset class="tbl-bulk-act">
+			<select name="bulk_action">
+				<option value="">-- <?=lang('with_selected')?> --</option>
+				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
+			</select>
+			<input class="btn submit" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
+		</fieldset>
+	<?=form_close();?>
+</div>
 
-<?php if(count($metaweblogs) > 0):?>
-<?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=metaweblog_api'.AMP.'method=delete_confirm')?>
+<?php $this->startOrAppendBlock('modals'); ?>
 
 <?php
-	$this->table->set_heading(
-		lang('metaweblog_config_name').'/'.lang('edit'),
-		lang('metaweblog_config_url'),
-		(count($metaweblogs) == 1) ? lang('delete') : form_checkbox('select_all', 'true', FALSE, 'class="toggle_all" id="select_all"').NBS.lang('delete', 'select_all')
-	);
+$modal_vars = array(
+	'name'      => 'modal-confirm-remove',
+	'form_url'	=> cp_url('addons/settings/metaweblog_api'),
+	'hidden'	=> array(
+		'bulk_action'	=> 'remove'
+	)
+);
 
-	foreach($metaweblogs as $metaweblog)
-	{
-		$this->table->add_row(
-								'<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=metaweblog_api'.AMP.'method=modify'.AMP.'id='.$metaweblog['id'].'">'.$metaweblog['name'].'</a>',
-								$metaweblog['url'],
-								form_checkbox($metaweblog['toggle'])
-								);
-	}
-
+$this->ee_view('_shared/modal_confirm_remove', $modal_vars);
 ?>
-		<?=$this->table->generate()?>
 
-<p>
-	<?=form_submit(array('name' => 'submit', 'value' => lang('delete'), 'class' => 'submit'))?>
-</p>
-
-<?=form_close()?>
-<?php else:?>
-	<p class="notice"><?=lang('no_metaweblog_configs')?></p>
-<?php endif;?>
+<?php $this->endBlock(); ?>

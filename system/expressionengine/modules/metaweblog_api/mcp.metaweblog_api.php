@@ -1,4 +1,9 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+use EllisLab\ExpressionEngine\Library\CP\Pagination;
+use EllisLab\ExpressionEngine\Library\CP\Table;
+use EllisLab\ExpressionEngine\Library\CP\URL;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -49,59 +54,76 @@ class Metaweblog_api_mcp {
 	 */
 	function index()
 	{
-		$vars['cp_page_title'] = ee()->lang->line('metaweblog_api_module_name');
-
-		ee()->load->library('table');
-		ee()->load->library('javascript');
-		ee()->load->helper('form');
-
-		ee()->jquery->tablesorter('.mainTable', '{
-			headers: {2: {sorter: false}, 3: {sorter: false}, 4: {sorter: false}, 6: {sorter: false}},
-			widgets: ["zebra"]
-		}');
-
-		ee()->javascript->output(array(
-				'$(".toggle_all").toggle(
-					function(){
-						$("input.toggle").each(function() {
-							this.checked = true;
-						});
-					}, function (){
-						var checked_status = this.checked;
-						$("input.toggle").each(function() {
-							this.checked = false;
-						});
-					}
-				);'
-			)
-		);
+		$base_url = new URL('addons/settings/metaweblog_api', ee()->session->session_id());
 
 		$api_url = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->cp->fetch_action_id('Metaweblog_api', 'incoming');
 
 		ee()->db->select('metaweblog_pref_name, metaweblog_id');
 		$metaweblogs = ee()->db->get('metaweblog_api');
 
-		ee()->javascript->compile();
-
-		$vars['metaweblogs'] = array();
+		$table = Table::create(array('autosort' => TRUE, 'autosearch' => FALSE, 'limit' => 20));
+		$table->setColumns(
+			array(
+				'name',
+				'url',
+				'manage' => array(
+					'type'	=> Table::COL_TOOLBAR
+				),
+				array(
+					'type'	=> Table::COL_CHECKBOX
+				)
+			)
+		);
+		$table->setNoResultsText('no_something_or_other');
 
 		if ($metaweblogs->num_rows() == 0)
 		{
+			$vars['table'] = $table->viewData($this->_base_url);
+			$vars['base_url'] = clone $vars['table']['base_url'];
 			return ee()->load->view('index', $vars, TRUE);
-			exit;
 		}
+
+		$data = array();
 
 		foreach ($metaweblogs->result() as $metaweblog)
 		{
-			$vars['metaweblogs'][$metaweblog->metaweblog_id]['id'] = $metaweblog->metaweblog_id;
-			$vars['metaweblogs'][$metaweblog->metaweblog_id]['name'] = $metaweblog->metaweblog_pref_name;
-			$vars['metaweblogs'][$metaweblog->metaweblog_id]['url'] = $api_url.'&id='.$metaweblog->metaweblog_id;
-			$vars['metaweblogs'][$metaweblog->metaweblog_id]['toggle'] = array(
-																			'name'		=> 'toggle[]',
-																			'id'		=> 'delete_box_'.$metaweblog->metaweblog_id,
-																			'value'		=> $metaweblog->metaweblog_id,
-																			'class'		=>'toggle'
-			    														);
+			$checkbox = array(
+				'name' => 'selection[]',
+				'value' => $metaweblog->metaweblog_id,
+				'data'	=> array(
+					'confirm' => lang('metaweblog') . ': <b>' . htmlentities($metaweblog->metaweblog_pref_name, ENT_QUOTES) . '</b>'
+				)
+			);
+
+			$data[] = array(
+				'name' => $metaweblog->metaweblog_pref_name,
+				'url' => $api_url . '&id=' . $metaweblog->metaweblog_id,
+				array(
+					'toolbar_items' => array(
+						'edit' => array(
+							'href' => '',
+							'title' => lang('edit')
+						)
+					)
+				),
+				$checkbox
+			);
+		}
+
+		$table->setData($data);
+
+		$vars['table'] = $table->viewData($base_url);
+		$vars['base_url'] = clone $vars['table']['base_url'];
+
+		if ( ! empty($vars['table']['data']))
+		{
+			// Paginate!
+			$pagination = new Pagination(
+				$vars['table']['limit'],
+				$vars['table']['total_rows'],
+				$vars['table']['page']
+			);
+			$vars['pagination'] = $pagination->cp_links($base_url);
 		}
 
 		return ee()->load->view('index', $vars, TRUE);
