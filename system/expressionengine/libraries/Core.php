@@ -245,23 +245,16 @@ class EE_Core {
 			}
 		}
 
-		define('PATH_THEMES', $theme_path);
-		define('URL_THEMES', ee()->config->slash_item('theme_folder_url'));
+		$theme_url = ee()->config->slash_item('theme_folder_url');
+
+		define('PATH_THEMES', $theme_path.'ee/');
+		define('URL_THEMES', $theme_url.'ee/');
+		define('PATH_ADDONS_THEMES', $theme_path.'addons/');
+		define('URL_ADDONS_THEMES', $theme_url.'addons/');
 
 		define('PATH_MBR_THEMES', PATH_THEMES.'profile_themes/');
 		define('PATH_CP_GBL_IMG', ee()->config->slash_item('theme_folder_url').'ee/cp_global_images/');
 		unset($theme_path);
-
-		// Define Third Party Theme Path and URL
-		$path_addons_themes = (ee()->config->item('path_addons_themes'))
-			? rtrim(realpath(ee()->config->item('path_addons_themes')), '/').'/'
-			: PATH_THEMES.'third_party/';
-		$url_addons_themes = (ee()->config->item('URL_ADDONS_THEMES'))
-			? rtrim(ee()->config->item('URL_ADDONS_THEMES'), '/').'/'
-			: URL_THEMES.'third_party/';
-
-		define('PATH_ADDONS_THEMES', $path_addons_themes);
-		define('URL_ADDONS_THEMES', $url_addons_themes);
 
 		// Load the very, very base classes
 		ee()->load->library('functions');
