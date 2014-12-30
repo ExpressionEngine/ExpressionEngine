@@ -58,10 +58,10 @@ class View {
 		}
 
 		$this->_theme = $cp_theme;
-
 		ee()->session->userdata['cp_theme'] = $cp_theme;
 
-		// root overrides deprecated in 2.9.1, view overrides should be in /views/ henceforth
+		// root overrides deprecated in 2.9.1, view overrides should be in
+		// /views/ henceforth
 		ee()->load->add_theme_cascade(PATH_CP_THEME.$cp_theme.'/');
 		ee()->load->add_theme_cascade(PATH_CP_THEME.$cp_theme.'/views/');
 	}
@@ -221,8 +221,8 @@ class View {
 		$file_url  = NULL;
 
 		$css_paths = array(
-			PATH_CP_THEME.$this->_theme.'/',
-			PATH_CP_THEME.'default/'
+			$this->_theme => PATH_CP_THEME.$this->_theme.'/',
+			'default'     => PATH_THEMES.'cp_themes/default/'
 		);
 
 		if ($this->_theme == 'default')
@@ -230,12 +230,13 @@ class View {
 			array_shift($css_paths);
 		}
 
-		foreach($css_paths as $path)
+		foreach($css_paths as $theme => $path)
 		{
 			if (file_exists($path.$file))
 			{
 				$filemtime = filemtime($path.$file);
-				$file_url = $this->_get_theme_from_path($path) . $file;
+				$base_url  = ($theme == 'default') ? URL_THEMES : URL_ADDONS_THEMES;
+				$file_url  = $base_url.'cp_themes/'.$theme.'/'.$file;
 				break;
 			}
 		}
@@ -246,26 +247,6 @@ class View {
 		}
 
 		return '<link rel="stylesheet" href="'.$file_url.'?v='.$filemtime.'" type="text/css" media="'.$media.'" />'.PHP_EOL;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get themes URL from supplied system path
-	 *
-	 * this function will extract which theme we will be loading the file from.
-	 *
-	 * @access protected
-	 * @param 	string	system path of the file.
-	 * @return 	string	the URL
-	 */
-	protected function _get_theme_from_path($path)
-	{
-		$path = '/'.trim($path, '/');
-
-		$theme_name = ltrim(strrchr($path, '/'), '/');
-
-		return URL_THEMES . 'cp_themes/' . $theme_name . '/';
 	}
 
 	// --------------------------------------------------------------------
