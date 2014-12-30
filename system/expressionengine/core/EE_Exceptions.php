@@ -48,18 +48,16 @@ class EE_Exceptions extends CI_Exceptions {
 			exit($message);
 		}
 
-		$EE =& get_instance();
-
 		// let's be kind if it's a submission error, and offer a back link
 		if ( ! empty($_POST) && ! AJAX_REQUEST)
 		{
-			$message .= '<p><a href="javascript:history.go(-1);">&#171; '.$EE->lang->line('back').'</a></p>';
+			$message .= '<p><a href="javascript:history.go(-1);">&#171; '.ee()->lang->line('back').'</a></p>';
 		}
 
 		// Ajax Requests get a reasonable response
 		if (defined('AJAX_REQUEST') && AJAX_REQUEST)
 		{
-			$EE->output->send_ajax_response(array(
+			ee()->output->send_ajax_response(array(
 				'error'	=> $message
 			));
 		}
@@ -67,7 +65,7 @@ class EE_Exceptions extends CI_Exceptions {
 		// CP requests get no change in treatment
 		// nor do errors that occur in code prior to template parsing
 		// since the db, typography, etc. aren't available yet
-		if ( ! defined('REQ') OR REQ == 'CP' OR ( ! isset($EE->TMPL)))
+		if ( ! defined('REQ') OR REQ == 'CP' OR ( ! isset(ee()->TMPL)))
 		{
 			if (ob_get_level() > $this->ob_level + 1)
 			{
@@ -76,15 +74,15 @@ class EE_Exceptions extends CI_Exceptions {
 
 			ob_start();
 
-			if (isset($EE->session->userdata))
+			if (isset(ee()->session->userdata))
 			{
-				$cp_theme = ( ! $EE->session->userdata('cp_theme')) ? $EE->config->item('cp_theme') : $EE->session->userdata('cp_theme');
+				$path = PATH_CP_THEME.'/errors/'.$template.'.php';
 
-				if (defined('PATH_THEMES') && (file_exists(PATH_THEMES.'cp_themes/'.$cp_theme.'/errors/'.$template.'.php')))
+				if (defined('PATH_THEMES') && (file_exists($path)))
 				{
-					include(PATH_THEMES.'cp_themes/'.$cp_theme.'/errors/'.$template.'.php');
+					include($path);
 				}
-				else
+					else
 				{
 					include(APPPATH.'errors/'.$template.'.php');
 				}
@@ -110,7 +108,7 @@ class EE_Exceptions extends CI_Exceptions {
 
 		// everything is in place to show the
 		// custom error template
-		$EE->output->fatal_error($message);
+		ee()->output->fatal_error($message);
 	}
 
 	// --------------------------------------------------------------------

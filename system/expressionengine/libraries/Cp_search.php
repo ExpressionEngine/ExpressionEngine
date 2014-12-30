@@ -408,7 +408,7 @@ class Cp_search {
 		$nonsense = array('unauthorized_access', 'none', 'all', 'open', 'closed', 'and_more', 'install', 'uninstall', 'add', 'edit', 'delete');
 
 		$langs = array();
-		$path = PATH_CP_THEME.ee()->config->item('cp_theme').'/'.$view.'.php';
+		$path = PATH_CP_THEME.$view.'.php';
 
 		if ( ! file_exists($path))
 		{

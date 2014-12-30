@@ -260,13 +260,6 @@ class EE_Core {
 		ee()->load->library('functions');
 		ee()->load->library('extensions');
 
-		// Our design is a little dirty. The asset controllers need
-		// path_cp_theme. Fix it without loading all the other junk!
-		if (REQ == 'CP')
-		{
-			define('PATH_CP_THEME', PATH_THEMES.'cp_themes/');	// theme path
-		}
-
 		if (extension_loaded('newrelic'))
 		{
 			ee()->load->library('newrelic');
@@ -445,6 +438,23 @@ class EE_Core {
 	{
 		$this->_somebody_set_us_up_the_base();
 
+		// Define PATH_CP_THEME
+		$cp_theme = ee()->session->userdata('cp_theme')
+			?: ee()->config->item('cp_theme');
+
+		// Make sure directory actually exists
+		if ($cp_theme !== 'default'
+			&& ! is_dir(PATH_ADDONS_THEMES.'cp_themes/'.$cp_theme.'/'))
+		{
+			$cp_theme = 'default';
+		}
+
+		$path_cp_theme = ($cp_theme === 'default')
+			? PATH_THEMES.'cp_themes/default/'
+			: PATH_ADDONS_THEMES.'cp_themes/'.$cp_theme.'/';
+
+		define('PATH_CP_THEME', $path_cp_theme);
+
 		// Show the control panel home page in the event that a
 		// controller class isn't found in the URL
 		if (ee()->router->fetch_class() == ''/* OR
@@ -463,34 +473,6 @@ class EE_Core {
 			));
 
 			$_GET = array_merge($get, $_GET);
-		}
-
-
-		// Check user theme preference, then site theme preference, and fallback
-		// to default if none are found.
-		$cp_theme		= 'default';
-
-		$theme_options = array(
-			ee()->session->userdata('cp_theme'),
-			ee()->config->item('cp_theme')
-		);
-
-		if (count($theme_options) >= 2)
-		{
-			if ( ! $theme_options[0])
-			{
-				unset($theme_options[0]);
-			}
-		}
-
-		// Try them all, if none work it'll use default
-		foreach ($theme_options as $_theme_name)
-		{
-			if (is_dir(PATH_CP_THEME.$_theme_name))
-			{
-				$cp_theme = $_theme_name;
-				break;
-			}
 		}
 
 		// Load our view library
