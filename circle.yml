@@ -23,7 +23,6 @@ dependencies:
 
 checkout:
   post:
-    - mkdir system/config
     - cp system/tests/circleci/config.php system/config/
     - chmod 666 system/config/config.php
     - chmod -R 777 system/cache
