@@ -245,22 +245,22 @@ class EE_Core {
 			}
 		}
 
-		define('PATH_THEMES', 		$theme_path);
-		define('PATH_MBR_THEMES',	PATH_THEMES.'profile_themes/');
-		define('PATH_CP_GBL_IMG', 	ee()->config->slash_item('theme_folder_url').'cp_global_images/');
+		define('PATH_THEMES',     $theme_path);
+		define('PATH_MBR_THEMES', PATH_THEMES.'profile_themes/');
+		define('PATH_CP_GBL_IMG', ee()->config->slash_item('theme_folder_url').'ee/cp_global_images/');
 		unset($theme_path);
 
 		// Define Third Party Theme Path and URL
-		if (ee()->config->item('PATH_ADDONS_themes'))
+		if (ee()->config->item('path_addons_themes'))
 		{
 			define(
 				'PATH_ADDONS_THEMES',
-				rtrim(realpath(ee()->config->item('PATH_ADDONS_themes')), '/').'/'
+				rtrim(realpath(ee()->config->item('path_addons_themes')), '/').'/'
 			);
 		}
 		else
 		{
-			define('PATH_ADDONS_THEMES',	PATH_THEMES.'third_party/');
+			define('PATH_ADDONS_THEMES', PATH_THEMES.'third_party/');
 		}
 
 		if (ee()->config->item('url_third_themes'))
@@ -272,7 +272,7 @@ class EE_Core {
 		}
 		else
 		{
-			define('URL_THIRD_THEMES',	ee()->config->slash_item('theme_folder_url').'third_party/');
+			define('URL_THIRD_THEMES', ee()->config->slash_item('theme_folder_url').'third_party/');
 		}
 
 		// Load the very, very base classes
