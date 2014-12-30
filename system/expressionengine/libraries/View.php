@@ -198,7 +198,7 @@ class View {
 
 		$filemtime = filemtime($path);
 
-		$url = ee()->config->item('theme_folder_url') . 'javascript/' . $src_dir . $file . '?v=' . $filemtime;
+		$url = URL_THEMES . 'javascript/' . $src_dir . $file . '?v=' . $filemtime;
 
 		return '<script type="text/javascript" src="' . $url . '"></script>'.PHP_EOL;
 	}
@@ -265,7 +265,7 @@ class View {
 
 		$theme_name = ltrim(strrchr($path, '/'), '/');
 
-		return ee()->config->item('theme_folder_url') . 'cp_themes/' . $theme_name . '/';
+		return URL_THEMES . 'cp_themes/' . $theme_name . '/';
 	}
 
 	// --------------------------------------------------------------------

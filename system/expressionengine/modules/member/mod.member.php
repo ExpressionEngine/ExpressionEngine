@@ -2284,7 +2284,7 @@ class Member {
 		// -------
 
 		// Set some paths
-		$theme_images = ee()->config->slash_item('theme_folder_url', 1).'profile_themes/'.ee()->config->item('member_theme').'/images/';
+		$theme_images = URL_THEMES.'profile_themes/'.ee()->config->item('member_theme').'/images/';
 
 		if (ee()->session->userdata('profile_theme') != '')
 		{
@@ -2292,14 +2292,14 @@ class Member {
 		}
 		else
 		{
-			$img_path = ee()->config->slash_item('theme_folder_url', 1).'profile_themes/'.ee()->config->item('member_theme').'/images/';
+			$img_path = URL_THEMES.'profile_themes/'.ee()->config->item('member_theme').'/images/';
 		}
 
 		$simple = ($this->show_headings == FALSE) ? '/simple' : '';
 
 		if ($this->css_file_path == '')
 		{
-			$this->css_file_path = ee()->config->slash_item('theme_folder_url', 1).'profile_themes/'.ee()->config->item('member_theme').'profile.css';
+			$this->css_file_path = URL_THEMES.'profile_themes/'.ee()->config->item('member_theme').'profile.css';
 		}
 
 		// Parse {switch="foo|bar"} variables

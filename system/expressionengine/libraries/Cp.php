@@ -62,7 +62,7 @@ class Cp {
 			$this->cp_theme	= ( ! ee()->session->userdata('cp_theme'))
 				? ee()->config->item('cp_theme')
 				: ee()->session->userdata('cp_theme');
-			$this->cp_theme_url = ee()->config->slash_item('theme_folder_url').'ee/cp_themes/'.$this->cp_theme.'/';
+			$this->cp_theme_url = URL_THEMES.'ee/cp_themes/'.$this->cp_theme.'/';
 
 			ee()->load->vars(array(
 				'cp_theme_url' => $this->cp_theme_url

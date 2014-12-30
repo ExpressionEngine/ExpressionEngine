@@ -246,6 +246,8 @@ class EE_Core {
 		}
 
 		define('PATH_THEMES',     $theme_path);
+		define('URL_THEMES',      ee()->config->slash_item('theme_folder_url'));
+
 		define('PATH_MBR_THEMES', PATH_THEMES.'profile_themes/');
 		define('PATH_CP_GBL_IMG', ee()->config->slash_item('theme_folder_url').'ee/cp_global_images/');
 		unset($theme_path);
@@ -272,7 +274,7 @@ class EE_Core {
 		}
 		else
 		{
-			define('URL_THIRD_THEMES', ee()->config->slash_item('theme_folder_url').'third_party/');
+			define('URL_THIRD_THEMES', URL_THEMES.'third_party/');
 		}
 
 		// Load the very, very base classes

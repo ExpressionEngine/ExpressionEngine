@@ -147,7 +147,7 @@ class EE_Messages {
 		$this->title = ee()->lang->line('private_messages');
 		$this->crumb = ee()->lang->line('private_messages');
 
-		$this->images_folder = ee()->config->slash_item('theme_folder_url').'cp_global_images/';
+		$this->images_folder = URL_THEMES.'cp_global_images/';
 
 		$this->single_parts['path']['image_url'] = $this->images_folder;
 

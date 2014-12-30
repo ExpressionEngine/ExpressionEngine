@@ -90,8 +90,8 @@ class Forum_mcp {
 			}
 		}
 
-		$this->prefs['board_theme_path'] 	= PATH_THEMES.'forum_themes/';
-		$this->prefs['board_theme_url'] 	= ee()->config->slash_item('theme_folder_url').'forum_themes/';
+		$this->prefs['board_theme_path'] = PATH_THEMES.'forum_themes/';
+		$this->prefs['board_theme_url']  = URL_THEMES.'forum_themes/';
 
 		ee()->load->model('addons_model');
 		$this->fmt_options = ee()->addons_model->get_plugin_formatting();

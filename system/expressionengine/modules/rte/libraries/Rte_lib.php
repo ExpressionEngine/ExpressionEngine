@@ -333,10 +333,10 @@ class Rte_lib {
 		}
 
 		// potentially required assets
-		$jquery = ee()->config->item('theme_folder_url') . 'javascript/' .
+		$jquery = URL_THEMES . 'javascript/' .
 				  (ee()->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed') .
 				  '/jquery/jquery.js';
-		$rtecss	= ee()->config->item('theme_folder_url') . 'cp_themes/default/css/rte.css';
+		$rtecss	= URL_THEMES . 'cp_themes/default/css/rte.css';
 
 		ee()->load->library('javascript');
 

@@ -3185,8 +3185,7 @@ class EE_Template {
 		$str = str_replace(LD.'doc_url'.RD, ee()->config->item('doc_url'), $str);
 
 		// {theme_folder_url}
-		$str = str_replace(LD.'theme_folder_url'.RD,
-			ee()->config->item('theme_folder_url'), $str);
+		$str = str_replace(LD.'theme_folder_url'.RD, URL_THEMES, $str);
 
 		// {member_profile_link}
 		if (ee()->session->userdata('member_id') != 0)
