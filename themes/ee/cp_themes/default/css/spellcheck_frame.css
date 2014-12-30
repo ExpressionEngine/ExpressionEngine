@@ -1,0 +1,29 @@
+/*
+ * This CSS is for the iframe used to load spell check results.
+ * Styling of the div that holds this frame, and the "popup" word
+ * suggestions are in global.css (.spellcheck_frame, .wordSuggestion)
+ */
+body
+{
+margin:			0;
+padding:			5px;
+font-family:		Verdana, Geneva, Tahoma, Trebuchet MS, Arial, Sans-serif;
+font-size:		 11px;
+color:			 #333;
+background-color:  #fff;
+line-height: 18px;
+}
+
+.spellchecked_word
+{
+	cursor: pointer;
+	background-color: #fff;
+	border-bottom: 1px dashed #ff0000;
+}
+
+.spellchecked_word_selected
+{
+	cursor: pointer;
+	background-color: #F72A58;
+	color: #FFF;
+}
