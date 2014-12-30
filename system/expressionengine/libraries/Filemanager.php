@@ -650,7 +650,7 @@ class Filemanager {
 		$ret['json'] = array(
 			'BASE'			=> ee()->functions->fetch_site_index(0,0).QUERY_MARKER,
 			'THEME_URL'		=> $this->theme_url,
-			'PATH_CP_GBL_IMG'	=> ULR_THEMES.'cp_global_images/',
+			'PATH_CP_GBL_IMG'	=> URL_THEMES.'cp_global_images/',
 			'filebrowser' => array(
 				'endpoint_url'	=> $endpoint_url,
 				'window_title'	=> lang('file_manager'),
