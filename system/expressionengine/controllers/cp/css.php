@@ -72,7 +72,7 @@ class Css extends CI_Controller {
 
 		$css_paths = array(
 			PATH_CP_THEME.$cp_theme.'/',
-			PATH_CP_THEME.'default/'
+			PATH_THEMES.'cp_themes/default/'
 		);
 
 		if ($cp_theme == 'default')
