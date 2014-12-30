@@ -53,7 +53,7 @@ class Filemanager {
 		ee()->load->library('javascript');
 		ee()->lang->loadfile('filemanager');
 
-		$this->theme_url = ULR_THEMES.'cp_themes/'.ee()->config->item('cp_theme').'/';
+		$this->theme_url = ee()->cp->cp_theme_url;
 	}
 
 	// ---------------------------------------------------------------------
