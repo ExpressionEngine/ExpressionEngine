@@ -5,12 +5,12 @@ class EditMultipleEntriesTransaction extends Transaction {
 
 	public function step()
 	{
-		if (($entry_ids = ee()->input->post('toggle'))) 
+		if (($entry_ids = ee()->input->post('toggle')))
 		{
 			return $this->form(
 				ee()->query_builder->get('ChannelEntries', $entry_ids)
 			);
-				
+
 		}
 		elseif (($entry_data = ee()->input->post('entries')))
 		{
@@ -20,7 +20,7 @@ class EditMultipleEntriesTransaction extends Transaction {
 		{
 			return $this->form(
 				ee()->query_builder->get('ChannelEntries', $this->entry_ids)
-			);	
+			);
 		}
 		throw new TransactionException('Unknown state!');
 	}
@@ -31,9 +31,9 @@ class EditMultipleEntriesTransaction extends Transaction {
 		foreach ($this->entries as $entry)
 		{
 			$entry_views[] = ee()->view->make(
-				'Edit/Multiple/Entry', 
+				'Edit/Multiple/Entry',
 				array(
-					'entry'  => $entry, 
+					'entry'  => $entry,
 					'errors' => (isset($errors[$entry->entry_id]) ? $errors[$entry->entry_id] : NULL)
 				)
 			);
@@ -44,9 +44,9 @@ class EditMultipleEntriesTransaction extends Transaction {
 	protected function process($entry_data)
 	{
 		$ids = array_keys($entry_data);
-		
+
 		$query = ee()->query_builder->get('ChannelEntry')
-			->with('Channel', array('Member'=>'MemberGroup'), array('Category'='CategoryGroup'))
+			->with('Channel', array('Member'=>'MemberGroup'), array('Category' => 'CategoryGroup'))
 			->where('ChannelEntry.entry_id IN :entry_ids', array('entry_ids'=>$ids))
 			->orderBy('entry_id');
 		$entries = $query->run();
@@ -55,7 +55,7 @@ class EditMultipleEntriesTransaction extends Transaction {
 		{
 			foreach($entry as $property=>$value)
 			{
-				$entries[$id]->{$property} = $value;					
+				$entries[$id]->{$property} = $value;
 			}
 		}
 
@@ -65,7 +65,7 @@ class EditMultipleEntriesTransaction extends Transaction {
 			$errors = $entry->validate();
 			if ($errors->hasErrors())
 			{
-				$validation_errors[$entry->entry_id] = $errors;	
+				$validation_errors[$entry->entry_id] = $errors;
 			}
 		}
 
