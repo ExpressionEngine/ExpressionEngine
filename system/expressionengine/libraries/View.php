@@ -225,11 +225,6 @@ class View {
 			'default'     => PATH_THEMES.'cp_themes/default/'
 		);
 
-		if ($this->_theme == 'default')
-		{
-			array_shift($css_paths);
-		}
-
 		foreach($css_paths as $theme => $path)
 		{
 			if (file_exists($path.$file))
