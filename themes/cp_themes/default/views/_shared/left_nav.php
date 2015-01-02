@@ -35,6 +35,12 @@
 						<?php
 						if (is_array($value))
 						{
+							if (isset($value['button']))
+							{
+								$button = $value['button'];
+								unset($value['button']);
+							}
+
 							$attr = '';
 							foreach ($value as $name => $val)
 							{
@@ -46,6 +52,9 @@
 							$attr = 'href="'.$value.'"';
 						} ?>
 						<a <?=$attr?>><?=lang($key)?></a>
+						<?php if (isset($button)): ?>
+							<a class="btn action" href="<?=$button['href']?>"><?=lang($button['text'])?></a>
+						<?php endif ?>
 					<?php endif; ?>
 				</h2>
 			<?php else: ?>

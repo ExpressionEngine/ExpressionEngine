@@ -26,6 +26,42 @@ $lang = array(
 'channel_no_action_found' =>
 'Unable to load the resources needed to create the entry form',
 
+/**
+ * 3.0
+ */
+
+'manage_channels' =>
+'Manage Channels',
+
+'channel' =>
+'Channel',
+
+'channels' =>
+'Channels',
+
+'channel_short_name' =>
+'Short name',
+
+'channel_manage' =>
+'Manage',
+
+'custom_fields',
+'Custom Fields',
+
+'field_groups' =>
+'Field Groups',
+
+'category_groups' =>
+'Category Groups',
+
+'status_groups' =>
+'Status Groups',
+
+'no_channels' =>
+'No Channels',
+
+'create_channel' =>
+'Create New Channel',
 
 ''=>''
 );
