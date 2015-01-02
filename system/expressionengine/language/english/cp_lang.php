@@ -574,6 +574,15 @@ $lang = array(
 'with_selected' =>
 'with selected',
 
+'remove' =>
+'Remove',
+
+'create_new' =>
+'Create New',
+
+'new' =>
+'New',
+
 //----------------------------
 // confirm removal modal
 //----------------------------

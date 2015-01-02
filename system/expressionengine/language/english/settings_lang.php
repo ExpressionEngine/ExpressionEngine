@@ -1047,9 +1047,6 @@ $lang = array(
 'upload_btn_sync' =>
 'sync',
 
-'upload_remove' =>
-'Remove',
-
 'upload_remove_modal_upload_directory' =>
 'Upload directory',
 
@@ -1061,9 +1058,6 @@ $lang = array(
 
 'upload_directories_removed_desc' =>
 '%d upload directories were removed.',
-
-'upload_create' =>
-'Create New',
 
 'no_upload_directories' =>
 'No Upload Directories',

@@ -5,7 +5,7 @@
 		<?=form_open($table['base_url'])?>
 			<?=ee('Alert')->getAllInlines()?>
 			<fieldset class="tbl-search right">
-				<a class="btn tn action" href="<?=cp_url('settings/uploads/new-upload')?>"><?=lang('upload_create')?></a>
+				<a class="btn tn action" href="<?=cp_url('settings/uploads/new-upload')?>"><?=lang('create_new')?></a>
 			</fieldset>
 			<h1><?=$table_heading?></h1>
 			<?php $this->view('_shared/table', $table); ?>
@@ -13,7 +13,7 @@
 			<fieldset class="tbl-bulk-act">
 				<select name="bulk_action">
 					<option value="">-- <?=lang('with_selected')?> --</option>
-					<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('upload_remove')?></option>
+					<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
 				</select>
 				<input class="btn submit" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
 			</fieldset>
