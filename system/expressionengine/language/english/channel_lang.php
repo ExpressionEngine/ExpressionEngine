@@ -45,7 +45,7 @@ $lang = array(
 'channel_manage' =>
 'Manage',
 
-'custom_fields',
+'custom_fields' =>
 'Custom Fields',
 
 'field_groups' =>
