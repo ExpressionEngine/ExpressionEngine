@@ -22,20 +22,22 @@ class ChannelEntry extends FieldDataContentModel {
 	protected static $_field_content_class = 'ChannelFieldContent';
 	protected static $_field_content_gateway = 'ChannelDataGateway';
 
-
 	protected static $_relationships = array(
 		'Channel' => array(
-			'type' => 'many_to_one',
+			'type' => 'hasMany',
 			'key' => 'channel_id'
 		),
 		'Author'	=> array(
-			'type' => 'many_to_one',
+			'type' => 'hasMany',
 			'model' => 'Member',
 			'key' 	=> 'author_id'
 		),
 		'Categories' => array(
-			'type' => 'many_to_many',
-			'model' => 'Category'
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'Category',
+			'pivot' => array(
+				'table' => 'category'
+			)
 		)
 	);
 
