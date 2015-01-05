@@ -6,19 +6,19 @@ use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
 class FieldDataGateway extends Gateway {
 
-	protected $fields = array();
+	protected $_fields = array();
 
 	public function __get($name)
 	{
 		if (strpos($name, 'field_id_') === 0)
 		{
 			list($id) = sscanf($name, 'field_id_%d');
-			return $this->fields[$id]->data;
+			return $this->_fields[$id]->data;
 		}
 		elseif (strpos($name, 'field_fmt_') === 0)
 		{
 			list($id) = sscanf($name, 'field_fmt_%d');
-			return $this->fields[$id]->format;
+			return $this->_fields[$id]->format;
 		}
 	}
 
@@ -27,21 +27,21 @@ class FieldDataGateway extends Gateway {
 		if (strpos($name, 'field_id_') === 0)
 		{
 			list($id) = sscanf($name, 'field_id_%d');
-			if ( ! isset($this->fields[$id]))
+			if ( ! isset($this->_fields[$id]))
 			{
-				$this->fields[$id] = new FieldData($id);
+				$this->_fields[$id] = new FieldData($id);
 			}
-			$this->fields[$id]->data = $value;
+			$this->_fields[$id]->data = $value;
 			$this->dirty[$name] = TRUE;
 		}
 		elseif (strpos($name, 'field_fmt_') === 0)
 		{
 			list($id) = sscanf($name, 'field_fmt_%d');
-			if ( ! isset($this->fields[$id]))
+			if ( ! isset($this->_fields[$id]))
 			{
-				$this->fields[$id] = new FieldData($id);
+				$this->_fields[$id] = new FieldData($id);
 			}
-			$this->fields[$id]->format = $value;
+			$this->_fields[$id]->format = $value;
 			$this->dirty[$name] = TRUE;
 		}
 
