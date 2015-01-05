@@ -214,8 +214,8 @@ class Updater {
 	 */
 	private function _remove_accessories_table()
 	{
-		ee()->dbforge->drop_table('exp_accessories');
-		ee()->dbforge->drop_column('exp_member_groups', 'can_access_accessories');
+		ee()->dbforge->drop_table('accessories');
+		ee()->dbforge->drop_column('member_groups', 'can_access_accessories');
 	}
 
 }
