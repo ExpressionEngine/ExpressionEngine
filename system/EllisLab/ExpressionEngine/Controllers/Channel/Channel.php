@@ -174,5 +174,48 @@ class Channel extends CP_Controller {
 
 		ee()->cp->render('channel/index', $vars);
 	}
+
+	/**
+	 * Remove channels handler
+	 */
+	public function remove()
+	{
+		$channel_ids = ee()->input->post('channels');
+
+		if ( ! empty($channel_ids) && ee()->input->post('bulk_action') == 'remove')
+		{
+			// Filter out junk
+			$channel_ids = array_filter($channel_ids, 'is_numeric');
+
+			if ( ! empty($channel_ids))
+			{
+				// Do each channel individually because the old channel_model only
+				// accepts one channel at a time to delete
+				foreach ($channel_ids as $channel_id)
+				{
+					// Need to get arrays of entry IDs and author IDs to pass
+					// to channel_model
+					$entries = ee('Model')->get('ChannelEntry')
+						->filter('channel_id', $channel_id)
+						->all();
+
+					ee()->load->model('channel_model');
+					ee()->channel_model->delete_channel(
+						$channel_id,
+						$entries->pluck('entry_id'),
+						$entries->pluck('author_id')
+					);
+				}
+
+				ee()->view->set_message('success', lang('channels_removed'), sprintf(lang('channels_removed_desc'), count($channel_ids)), TRUE);
+			}
+		}
+		else
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		ee()->functions->redirect(cp_url('channel'));
+	}
 }
 // EOF

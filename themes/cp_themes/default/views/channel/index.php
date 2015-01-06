@@ -6,6 +6,7 @@
 			<a class="btn tn action" href="<?=cp_url('channel/new-channel')?>"><?=lang('create_new')?></a>
 		</fieldset>
 		<h1><?=$cp_page_title?></h1>
+		<?=ee('Alert')->getAllInlines()?>
 		<?php $this->view('_shared/table', $table); ?>
 		<?php $this->view('_shared/pagination'); ?>
 		<fieldset class="tbl-bulk-act">
