@@ -31,6 +31,15 @@ $lang = array(
 'filter_channels' =>
 'filter channels',
 
+'page_deleted' =>
+'Page Deleted',
+
+'pages_deleted' =>
+'Pages Deleted',
+
+'pages_deleted_desc' =>
+'The selected pages were successfully removed',
+
 //----------------------------------------
 
 'pages_manager' =>
@@ -76,18 +85,6 @@ $lang = array(
 
 'choose_entry' =>
 'Choose Entry',
-
-'pages_delete_confirm' =>
-'Delete Pages',
-
-'pages_delete_question' =>
-'Are you sure you want to delete the selected Page URI(s)?<br /><em>Note: Deleting a Page only deletes the URL. It does not delete the entry.</em>',
-
-'page_deleted' =>
-'Page Deleted',
-
-'pages_deleted' =>
-'Pages Deleted',
 
 'create_entry' =>
 'Create Entry',

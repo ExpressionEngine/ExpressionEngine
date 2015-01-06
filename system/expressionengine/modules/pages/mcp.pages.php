@@ -67,6 +67,11 @@ class Pages_mcp {
 	  */
 	function index()
 	{
+		if ( ! empty($_POST))
+		{
+			$this->delete();
+		}
+
 		$base_url = new URL('addons/settings/pages', ee()->session->session_id());
 
 		$table = Table::create(array('autosort' => TRUE, 'autosearch' => FALSE, 'limit' => 20));
@@ -139,56 +144,24 @@ class Pages_mcp {
 			$vars['pagination'] = $pagination->cp_links($base_url);
 		}
 
+		ee()->javascript->set_global('lang.remove_confirm', lang('page') . ': <b>### ' . lang('pages') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/confirm_remove'),
+		));
+
 		return ee()->load->view('index', $vars, TRUE);
 	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	  *  Delete Confirmation
-	  */
-	function delete_confirm()
-	{
-	    ee()->load->model('pages_model');
-
-		if ( ! ee()->input->post('toggle'))
-		{
-			return $this->index();
-		}
-
-		ee()->load->helper('form');
-
-		ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=pages', ee()->lang->line('pages_module_name'));
-
-		$vars['cp_page_title'] = ee()->lang->line('pages_delete_confirm');
-
-		foreach ($_POST['toggle'] as $key => $val)
-		{
-			$vars['damned'][] = $val;
-		}
-
-		$vars['form_hidden']['groups'] = 'n';
-
-		return ee()->load->view('delete_confirm', $vars, TRUE);
-	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	  *  Delete Pages
 	  */
-	function delete()
+	private function delete()
 	{
 	    ee()->load->model('pages_model');
 
-		if ( ! ee()->input->post('delete'))
-		{
-			return $this->index();
-		}
-
 		$ids = array();
 
-		foreach ($_POST['delete'] as $key => $val)
+		foreach ($_POST['selection'] as $key => $val)
 		{
 			$ids[$val] = $val;
 		}
@@ -196,17 +169,15 @@ class Pages_mcp {
         // Delete Pages & give us the number deleted.
         $delete_pages = ee()->pages_model->delete_site_pages($ids);
 
-		if ($delete_pages === FALSE)
-		{
-			return $this->index();
-		}
-		else
+		if ($delete_pages !== FALSE)
 		{
     		$message = ($delete_pages > 1) ?
-    		                ee()->lang->line('pages_deleted') : ee()->lang->line('page_deleted');
+    		                lang('pages_deleted') : lang('page_deleted');
 
-    		ee()->session->set_flashdata('message_success', $message);
-    	    ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=pages');
+			ee('Alert')->makeInline('pages-form')
+				->asSuccess()
+				->withTitle($message)
+				->addToBody(lang('pages_deleted_desc'));
 		}
 	}
 }
