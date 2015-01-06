@@ -81,22 +81,7 @@ if ($wrap): ?>
 						<td><?=htmlspecialchars($column['content'])?></td>
 					<?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
 						<td>
-							<ul class="toolbar">
-								<?php foreach ($column['toolbar_items'] as $type => $attributes):
-									$attr = '';
-									$content = '';
-									foreach ($attributes as $key => $val)
-									{
-										if ($key == 'content')
-										{
-											$content = $val;
-											continue;
-										}
-										$attr .= ' ' . $key . '="' . $val . '"';
-									} ?>
-									<li class="<?=$type?>"><a <?=$attr?>><?=$content?></a></li>
-								<?php endforeach ?>
-							</ul>
+							<?=ee()->load->view('_shared/toolbar', $column, TRUE)?>
 						</td>
 					<?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
 						<td>
