@@ -14,6 +14,25 @@ $lang = array(
 
 //----------------------------------------
 
+// 3.x:
+
+'all_pages' =>
+'All Pages',
+
+'page_url' =>
+'Page URL',
+
+'create_new' =>
+'Create New',
+
+'no_pages' =>
+'No Pages Currently Exist',
+
+'filter_channels' =>
+'filter channels',
+
+//----------------------------------------
+
 'pages_manager' =>
 'Pages Manager',
 
@@ -27,9 +46,6 @@ $lang = array(
 
 'pages_uri' =>
 'Pages URI',
-
-'no_pages' =>
-'No Pages Currently Exist',
 
 'create_page' =>
 'Create New Page',

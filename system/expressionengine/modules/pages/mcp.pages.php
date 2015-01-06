@@ -1,4 +1,9 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+use EllisLab\ExpressionEngine\Library\CP\Pagination;
+use EllisLab\ExpressionEngine\Library\CP\Table;
+use EllisLab\ExpressionEngine\Library\CP\URL;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -40,7 +45,6 @@ class Pages_mcp {
 
 		$query = ee()->pages_model->fetch_configuration();
 
-
 		$default_channel = 0;
 
 		$this->homepage_display = 'not_nested';
@@ -54,18 +58,6 @@ class Pages_mcp {
 
 			$this->homepage_display = $homepage_display;
 		}
-
-        $new_page_location = '';
-
-		if ($default_channel != 0)
-		{
-			$new_page_location = AMP.'M=entry_form'.AMP.'channel_id='.$default_channel;
-		}
-
-		ee()->cp->set_right_nav(array(
-				'create_page'			=> BASE.AMP.'C=content_publish'.$new_page_location,
-				'pages_configuration'	=> BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=pages'.AMP.'method=configuration'
-			));
 	}
 
 	// --------------------------------------------------------------------
@@ -75,85 +67,76 @@ class Pages_mcp {
 	  */
 	function index()
 	{
-	    ee()->load->model('pages_model');
+		$base_url = new URL('addons/settings/pages', ee()->session->session_id());
 
-		$vars['cp_page_title'] = ee()->lang->line('pages_module_name');
-		$vars['new_page_location'] = '';
-
-		ee()->load->library('table');
-		ee()->load->library('javascript');
-		ee()->load->helper('form');
-
-		ee()->javascript->output(array(
-				'$(".toggle_all").toggle(
-					function(){
-						$("input.toggle").each(function() {
-							this.checked = true;
-						});
-					}, function (){
-						var checked_status = this.checked;
-						$("input.toggle").each(function() {
-							this.checked = false;
-						});
-					}
-				);'
+		$table = Table::create(array('autosort' => TRUE, 'autosearch' => FALSE, 'limit' => 20));
+		$table->setColumns(
+			array(
+				'page_name',
+				'page_url',
+				'manage' => array(
+					'type'	=> Table::COL_TOOLBAR
+				),
+				array(
+					'type'	=> Table::COL_CHECKBOX
+				)
 			)
 		);
+		$table->setNoResultsText('no_pages');
 
-		ee()->javascript->compile();
+		$data = array();
 
 		$pages = ee()->config->item('site_pages');
-
-		if ($pages === FALSE OR count($pages[ee()->config->item('site_id')]['uris']) == 0)
+		if ($pages !== FALSE && count($pages[ee()->config->item('site_id')]['uris']) > 0)
 		{
-			return ee()->load->view('index', $vars, TRUE);
+			$entry_ids = array_keys($pages[ee()->config->item('site_id')]['uris']);
+			$entries = ee('Model')->get('ChannelEntry', $entry_ids)->fields('entry_id', 'title')->all();
+
+			$titles = array();
+			$entries->each(function($entry) use (&$titles) {
+				$titles[$entry->entry_id] = $entry->title;
+			});
+
+			foreach($pages[ee()->config->item('site_id')]['uris'] as $entry_id => $url)
+			{
+				$checkbox = array(
+					'name' => 'selection[]',
+					'value' => $entry_id,
+					'data'	=> array(
+						'confirm' => lang('page') . ': <b>' . htmlentities($titles[$entry_id], ENT_QUOTES) . '</b>'
+					)
+				);
+
+				$data[] = array(
+					'name' => $titles[$entry_id],
+					'url' => $url,
+					array(
+						'toolbar_items' => array(
+							'edit' => array(
+								'href' => cp_url('publish/edit/' . $entry_id),
+								'title' => lang('edit')
+							)
+						)
+					),
+					$checkbox
+				);
+			}
 		}
 
-		natcasesort($pages[ee()->config->item('site_id')]['uris']);
-		$vars['pages'] = array();
+		$table->setData($data);
 
-		//  Our Pages
+		$vars['table'] = $table->viewData($base_url);
+		$vars['base_url'] = clone $vars['table']['base_url'];
 
-		$i = 0;
-		$previous = array();
-		$spcr = '<img src="'.PATH_CP_GBL_IMG.'clear.gif" border="0"  width="24" height="14" alt="" title="" />';
-		$indent = $spcr.'<img src="'.PATH_CP_GBL_IMG.'cat_marker.gif" border="0"  width="18" height="14" alt="" title="" />';
-
-		foreach($pages[ee()->config->item('site_id')]['uris'] as $entry_id => $url)
+		if ( ! empty($vars['table']['data']))
 		{
-			$url = ($url == '/') ? '/' : '/'.trim($url, '/');
-
-			$vars['pages'][$entry_id]['entry_id'] = $entry_id;
-			$vars['pages'][$entry_id]['entry_id'] = $entry_id;
-			$vars['pages'][$entry_id]['view_url'] = ee()->functions->fetch_site_index().QUERY_MARKER.'URL='.urlencode(ee()->functions->create_url($url));
-			$vars['pages'][$entry_id]['page'] = $url;
-			$vars['pages'][$entry_id]['indent'] = '';
-
-			if ($this->homepage_display == 'nested' && $url != '/')
-            {
-            	$x = explode('/', trim($url, '/'));
-
-            	for($i=0, $s=count($x); $i < $s; ++$i)
-            	{
-            		if (isset($previous[$i]) && $previous[$i] == $x[$i])
-            		{
-            			continue;
-            		}
-
-					$this_indent = ($i == 0) ? '' : str_repeat($spcr, $i-1).$indent;
-					$vars['pages'][$entry_id]['indent'] = $this_indent;
-            	}
-
-            	$previous = $x;
-            }
-
-			$vars['pages'][$entry_id]['toggle'] = array(
-														'name'		=> 'toggle[]',
-														'id'		=> 'delete_box_'.$entry_id,
-														'value'		=> $entry_id,
-														'class'		=>'toggle'
-														);
-
+			// Paginate!
+			$pagination = new Pagination(
+				$vars['table']['limit'],
+				$vars['table']['total_rows'],
+				$vars['table']['page']
+			);
+			$vars['pagination'] = $pagination->cp_links($base_url);
 		}
 
 		return ee()->load->view('index', $vars, TRUE);
