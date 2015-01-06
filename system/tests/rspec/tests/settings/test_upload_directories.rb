@@ -52,11 +52,12 @@ feature 'Upload Directories' do
   end
 
   it 'should delete an upload directory' do
+    directories = get_directories
     @page.directories[2].find('input[type="checkbox"]').set true
     @page.bulk_action.select 'Remove'
     @page.action_submit_button.click
     @page.wait_until_modal_visible
-    @page.modal.should have_text 'Upload directory: About'
+    @page.modal.should have_text 'Upload directory: ' + directories[1]
     @page.modal_submit_button.click
     no_php_js_errors
 
@@ -64,24 +65,32 @@ feature 'Upload Directories' do
     @page.alert[:class].should include 'success'
     @page.alert.text.should include 'Upload directories removed'
     @page.alert.text.should include '1 upload directories were removed.'
-    @page.directory_names.count.should == 1
+    @page.directory_names.count.should == directories.count - 1
   end
 
   it 'should bulk delete upload directories' do
-    @page.directories[1].find('input[type="checkbox"]').set true
-    @page.directories[2].find('input[type="checkbox"]').set true
+    directories = get_directories
+    @page.select_all.click
     @page.bulk_action.select 'Remove'
     @page.action_submit_button.click
     @page.wait_until_modal_visible
-    @page.modal.should have_text 'Upload directory: Main Upload Directory'
-    @page.modal.should have_text 'Upload directory: About'
+
+    if directories.count <= 5
+      for directory_name in directories
+        @page.modal.should have_text 'Upload directory: ' + directory_name
+      end
+    end
+
     @page.modal_submit_button.click
     no_php_js_errors
 
     @page.should have_alert
     @page.alert[:class].should include 'success'
     @page.alert.text.should include 'Upload directories removed'
-    @page.alert.text.should include '2 upload directories were removed.'
+    @page.alert.text.should include directories.count.to_s + ' upload directories were removed.'
     @page.directory_names.count.should == 0
+
+    @page.table.should have_text 'No Upload Directories'
+    @page.table.should have_text 'CREATE UPLOAD DIRECTORY'
   end
 end
