@@ -9,14 +9,7 @@
 						<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="">
 						<input class="btn submit" type="submit" value="<?=lang('search_addons_button')?>">
 					</fieldset>
-					<h1>
-						<?=$cp_page_title?>
-						<?php /*
-						<ul class="toolbar">
-							<li class="store"><a href="http://localhost/el-projects/ee-cp/views/addon-store.php" title="Add on store"></a></li>
-						</ul>
-						*/ ?>
-					</h1>
+					<h1><?=$cp_page_title?></h1>
 				<?=form_close()?>
 			</div>
 		</div>
