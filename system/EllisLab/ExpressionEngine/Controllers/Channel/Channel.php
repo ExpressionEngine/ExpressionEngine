@@ -156,6 +156,16 @@ class Channel extends CP_Controller {
 		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
 
 		ee()->view->cp_page_title = lang('manage_channels');
+		ee()->view->header = array(
+			'title' => lang('channel_manager'),
+			'form_url' => cp_url('channel/search'),
+			'toolbar_items' => array(
+				'settings' => array(
+					'href' => cp_url('settings/content-design'),
+					'title' => lang('settings')
+				)
+			)
+		);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('channels') . ': <b>### ' . lang('channels') . '</b>');
 		ee()->cp->add_js_script(array(

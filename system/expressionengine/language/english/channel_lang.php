@@ -30,6 +30,9 @@ $lang = array(
  * 3.0
  */
 
+'channel_manager' =>
+'Channel Manager',
+
 'manage_channels' =>
 'Manage Channels',
 
