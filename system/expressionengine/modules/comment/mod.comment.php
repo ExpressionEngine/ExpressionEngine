@@ -664,6 +664,8 @@ class Comment {
 			$absolute_count = 0;
 		}
 
+		$comment_moderation_override = ee()->config->item('comment_moderation_override');
+
 		foreach ($results as $id => $row)
 		{
 			if ( ! is_array($row))
@@ -682,7 +684,15 @@ class Comment {
 			// on the page
 			$row['total_comments']	= ($enabled['pagination']) ? $pagination->total_items : $total_results;
 
-			$row['comments_expired'] = ($row['comment_expiration_date'] != 0 && $row['comment_expiration_date']< ee()->localize->now);
+			if ($comment_moderation_override !== y)
+			{
+				$row['comments_expired'] = ($row['comment_expiration_date'] != 0 && $row['comment_expiration_date']< ee()->localize->now);
+			}
+			else
+			{
+				$row['comments_expired'] = FALSE;
+			}
+
 			$row['comments_disabled'] = ($row['allow_comments'] == 'n' OR $row['comment_system_enabled'] == 'n');
 
 			// This lets the {if location} variable work
