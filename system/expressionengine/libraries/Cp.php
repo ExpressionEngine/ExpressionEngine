@@ -568,7 +568,8 @@ class Cp {
 						continue;
 					}
 
-					$args[$key] = $val;
+					// If a GET argument was POSTed, use that instead
+					$args[$key] = (isset($_POST[$key])) ? $_POST[$key] : $val;
 				}
 
 				$url = json_encode(array('path' => $uri, 'arguments' => $args));
