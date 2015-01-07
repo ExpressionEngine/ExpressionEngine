@@ -9,7 +9,11 @@
 						<?=form_open($header['form_url'])?>
 							<fieldset class="tbl-search right">
 								<input placeholder="<?=lang('type_phrase')?>" type="text" value="">
+								<?php if (isset($header['search_button_value'])): ?>
+								<input class="btn submit" type="submit" value="<?=$header['search_button_value']?>">
+								<?php else: ?>
 								<input class="btn submit" type="submit" value="<?=lang('search')?>">
+								<?php endif; ?>
 							</fieldset>
 					<?php endif ?>
 						<h1>
