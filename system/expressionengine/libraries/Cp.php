@@ -612,9 +612,11 @@ class Cp {
 	 */
 	public function get_url_state()
 	{
-		return array_filter($_GET, function($k) {
-		    return ! in_array($k, array('D', 'C', 'S', 'M'));
-		}, ARRAY_FILTER_USE_KEY);
+		$filtered_get = array_filter(array_keys($_GET), function ($key) {
+			return ! in_array($key, array('D', 'C', 'S', 'M'));
+		}); 
+
+		return array_intersect_key($_GET, array_flip($filtered_get));
 	}
 
 	// --------------------------------------------------------------------
