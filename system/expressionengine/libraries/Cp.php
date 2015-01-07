@@ -604,6 +604,22 @@ class Cp {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Returns GET variables from the current CP URL. Useful for replicating
+	 * the state of a view if you need to go away from it, POST requests for
+	 * example.
+	 *
+	 * @return	array	GET array filtered of proprietary CP keys
+	 */
+	public function get_url_state()
+	{
+		return array_filter($_GET, function($k) {
+		    return ! in_array($k, array('D', 'C', 'S', 'M'));
+		}, ARRAY_FILTER_USE_KEY);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * 	Get Quicklinks
 	 *
 	 * 	Does a lookup for quick links.  Based on the URL we determine if it is external or not

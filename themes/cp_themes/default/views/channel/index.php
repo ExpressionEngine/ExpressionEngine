@@ -22,9 +22,10 @@
 <?php $this->startOrAppendBlock('modals'); ?>
 
 <?php
+
 $modal_vars = array(
 	'name'		=> 'modal-confirm-remove',
-	'form_url'	=> cp_url('channel/remove'),
+	'form_url'	=> cp_url('channel/remove', ee()->cp->get_url_state()),
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
 	)

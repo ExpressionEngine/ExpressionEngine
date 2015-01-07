@@ -215,7 +215,7 @@ class Channel extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		ee()->functions->redirect(cp_url('channel'));
+		ee()->functions->redirect(cp_url('channel', ee()->cp->get_url_state()));
 	}
 }
 // EOF
