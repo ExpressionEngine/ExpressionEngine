@@ -311,7 +311,7 @@ feature 'Add-On Manager' do
 	end
 
 	it 'can install a single add-on' do
-		# First by installed
+		# First by uninstalled
 		@page.status_filter.click
 		@page.wait_until_status_filter_menu_visible
 		@page.status_filter_menu.click_link "uninstalled"
@@ -329,6 +329,27 @@ feature 'Add-On Manager' do
 		@page.alert.text.should include "Add-Ons Installed"
 		@page.alert.text.should include addon_name
 		@page.addons.should_not have_text addon_name
+	end
+
+	it 'retains search results after installing' do
+		addon_name = @page.addon_names[0].text
+
+		# Search
+		@page.phrase_search.set addon_name
+		@page.search_submit_button.click
+		no_php_js_errors
+
+		@page.heading.text.should eq 'Search Results we found 1 results for "' + addon_name + '"'
+		@page.phrase_search.value.should eq addon_name
+		@page.should have_text addon_name
+
+		# Install
+		@page.addons[1].find('ul.toolbar li.install a.add').click
+		no_php_js_errors
+
+		@page.heading.text.should eq 'Search Results we found 1 results for "' + addon_name + '"'
+		@page.phrase_search.value.should eq addon_name
+		@page.should have_text addon_name
 	end
 
 	it 'can bulk-install add-ons' do
