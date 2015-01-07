@@ -154,7 +154,7 @@ class Uploads extends Settings {
 			ee()->view->set_message('success', lang('upload_directories_removed'), sprintf(lang('upload_directories_removed_desc'), count($upload_ids)), TRUE);
 		}
 
-		ee()->functions->redirect(cp_url('settings/uploads'));
+		ee()->functions->redirect(cp_url('settings/uploads', ee()->cp->get_url_state()));
 	}
 
 	/**

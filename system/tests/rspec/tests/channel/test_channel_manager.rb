@@ -71,6 +71,13 @@ feature 'Channel Manager' do
 
   it 'should delete a channel' do
     channels = get_channel_titles
+    channel_short_names = get_channel_names
+
+    # Also set a sort state to make sure it's maintained
+    @page.sort_links[1].click
+    no_php_js_errors
+    @page.sort_col.text.should eq 'Short name'
+
     @page.channels[2].find('input[type="checkbox"]').set true
     @page.bulk_action.select 'Remove'
     @page.action_submit_button.click
@@ -84,6 +91,9 @@ feature 'Channel Manager' do
     @page.alert.text.should include 'Channels removed'
     @page.alert.text.should include '1 channels were removed.'
     @page.channel_names.count.should == channels.count - 1
+
+    # Check that it maintained sort state
+    @page.sort_col.text.should eq 'Short name'
   end
 
   it 'should bulk delete channels' do
@@ -109,6 +119,6 @@ feature 'Channel Manager' do
     @page.channel_names.count.should == 0
 
     @page.table.should have_text 'No Channels'
-    @page.table.should have_text 'CREATE NEW CHANNEL'
+    @page.table.should have_text 'CREATE CHANNEL'
   end
 end

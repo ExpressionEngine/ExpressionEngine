@@ -26,7 +26,7 @@
 <?php
 $modal_vars = array(
 	'name'		=> 'modal-confirm-remove',
-	'form_url'	=> cp_url('settings/uploads/remove_directory'),
+	'form_url'	=> cp_url('settings/uploads/remove_directory', ee()->cp->get_url_state()),
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
 	)

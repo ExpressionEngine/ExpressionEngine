@@ -53,11 +53,17 @@ feature 'Upload Directories' do
 
   it 'should delete an upload directory' do
     directories = get_directories
+
+    # Also set a sort state to make sure it's maintained
+    @page.sort_links[1].click
+    no_php_js_errors
+    @page.sort_col.text.should eq 'Directory'
+
     @page.directories[2].find('input[type="checkbox"]').set true
     @page.bulk_action.select 'Remove'
     @page.action_submit_button.click
     @page.wait_until_modal_visible
-    @page.modal.should have_text 'Upload directory: ' + directories[1]
+    @page.modal.should have_text 'Upload directory: ' + directories.sort[1]
     @page.modal_submit_button.click
     no_php_js_errors
 
@@ -66,6 +72,9 @@ feature 'Upload Directories' do
     @page.alert.text.should include 'Upload directories removed'
     @page.alert.text.should include '1 upload directories were removed.'
     @page.directory_names.count.should == directories.count - 1
+
+    # Check that it maintained sort state
+    @page.sort_col.text.should eq 'Directory'
   end
 
   it 'should bulk delete upload directories' do
