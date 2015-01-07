@@ -159,11 +159,14 @@ class Pages_mcp {
 	{
 	    ee()->load->model('pages_model');
 
+		$pages = ee()->config->item('site_pages');
+		$urls = array();
 		$ids = array();
 
-		foreach ($_POST['selection'] as $key => $val)
+		foreach ($_POST['selection'] as $id)
 		{
-			$ids[$val] = $val;
+			$ids[$id] = $id;
+			$urls[] = $pages[ee()->config->item('site_id')]['uris'][$id];
 		}
 
         // Delete Pages & give us the number deleted.
@@ -171,13 +174,11 @@ class Pages_mcp {
 
 		if ($delete_pages !== FALSE)
 		{
-    		$message = ($delete_pages > 1) ?
-    		                lang('pages_deleted') : lang('page_deleted');
-
 			ee('Alert')->makeInline('pages-form')
 				->asSuccess()
-				->withTitle($message)
-				->addToBody(lang('pages_deleted_desc'));
+				->withTitle(lang('success'))
+				->addToBody(lang('pages_deleted_desc'))
+				->addToBody($urls);
 		}
 	}
 }

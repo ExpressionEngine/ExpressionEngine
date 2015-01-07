@@ -31,14 +31,11 @@ $lang = array(
 'filter_channels' =>
 'filter channels',
 
-'page_deleted' =>
-'Page Deleted',
-
-'pages_deleted' =>
-'Pages Deleted',
+'success' =>
+'Success',
 
 'pages_deleted_desc' =>
-'The selected pages were successfully removed',
+'The following Page URLs were deleted',
 
 //----------------------------------------
 
