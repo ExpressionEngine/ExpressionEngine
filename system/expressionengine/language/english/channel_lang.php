@@ -64,7 +64,7 @@ $lang = array(
 'No Channels',
 
 'create_channel' =>
-'Create New Channel',
+'Create Channel',
 
 'channels_removed' =>
 'Channels removed',
