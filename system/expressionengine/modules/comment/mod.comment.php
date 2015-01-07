@@ -576,8 +576,8 @@ class Comment {
 		ee()->db->select('comments.comment_id, comments.entry_id, comments.channel_id, comments.author_id, comments.name, comments.email, comments.url, comments.location AS c_location, comments.ip_address, comments.comment_date, comments.edit_date, comments.comment, comments.site_id AS comment_site_id,
 			members.username, members.group_id, members.location, members.occupation, members.interests, members.aol_im, members.yahoo_im, members.msn_im, members.icq, members.group_id, members.member_id, members.signature, members.sig_img_filename, members.sig_img_width, members.sig_img_height, members.avatar_filename, members.avatar_width, members.avatar_height, members.photo_filename, members.photo_width, members.photo_height,
 			member_data.*,
-			channel_titles.title, channel_titles.url_title, channel_titles.author_id AS entry_author_id,
-			channels.comment_text_formatting, channels.comment_html_formatting, channels.comment_allow_img_urls, channels.comment_auto_link_urls, channels.channel_url, channels.comment_url, channels.channel_title, channels.channel_name AS channel_short_name'
+			channel_titles.title, channel_titles.url_title, channel_titles.author_id AS entry_author_id, channel_titles.allow_comments, channel_titles.comment_expiration_date,
+			channels.comment_text_formatting, channels.comment_html_formatting, channels.comment_allow_img_urls, channels.comment_auto_link_urls, channels.channel_url, channels.comment_url, channels.channel_title, channels.channel_name AS channel_short_name, channels.comment_system_enabled'
 		);
 
 		ee()->db->join('channels',			'comments.channel_id = channels.channel_id',	'left');
@@ -599,7 +599,6 @@ class Comment {
 			// Potentially a lot of information
 			$query->free_result();
 		}
-
 
 		/** ----------------------------------------
 		/**  Fetch custom member field IDs
@@ -682,6 +681,9 @@ class Comment {
 			// If we do not paginate, then the total comments ARE the comments
 			// on the page
 			$row['total_comments']	= ($enabled['pagination']) ? $pagination->total_items : $total_results;
+
+			$row['comments_expired'] = ($row['comment_expiration_date'] != 0 && $row['comment_expiration_date']< ee()->localize->now);
+			$row['comments_disabled'] = ($row['allow_comments'] == 'n' OR $row['comment_system_enabled'] == 'n');
 
 			// This lets the {if location} variable work
 
