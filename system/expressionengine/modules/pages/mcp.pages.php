@@ -131,7 +131,7 @@ class Pages_mcp {
 		$table->setData($data);
 
 		$vars['table'] = $table->viewData($base_url);
-		$vars['base_url'] = clone $vars['table']['base_url'];
+		$vars['base_url'] = $vars['table']['base_url'];
 
 		if ( ! empty($vars['table']['data']))
 		{
