@@ -9,6 +9,7 @@
 		$i = 1;
 		foreach ($nav as $key => $value):
 
+			$button = NULL;
 			$class = '';
 			$next = array_values(array_slice($nav, $i, 1));
 			$i++;
