@@ -48,6 +48,36 @@ $lang = array(
 'forums' =>
 'forums',
 
+'default' =>
+'default',
+
+'btn_create_template_group' =>
+'Create Template Group',
+
+'btn_create_template_group_working' =>
+'Saving...',
+
+'name' =>
+'Name',
+
+'name_desc' =>
+'Short name for this group.<br><i>No spaces. Underscores and dashes are allowed.',
+
+'duplicate_group' =>
+'Duplicate existing group?',
+
+'duplicate_group_desc' =>
+'Will be created with all templates found in copied group.',
+
+'make_default_group' =>
+'Make default group?',
+
+'make_default_group_desc' =>
+'When set to <b>yes</b>, this group will become the default group for this website.',
+
+'edit_template_group' =>
+'Edit Template Group',
+
 
 //----------------------------
 // Menu
@@ -321,9 +351,6 @@ $lang = array(
 
 'choose_delete_template_group' =>
 'Please choose the template group to delete',
-
-'edit_template_group' =>
-'Edit Group',
 
 'group_order' =>
 'Group order',
