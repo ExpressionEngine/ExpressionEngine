@@ -124,14 +124,15 @@ class EE_Extensions {
 	/**
 	 * The Universal Caller (Added in EE 1.6)
 	 *
-	 *  Originally, using call(), objects could not be called by reference in PHP 4
-	 *  and thus could not be directly modified.  I found a clever way around that restriction
-	 *  by always having the second argument gotten by reference.  The problem (and the reason
-	 *  there is a call() hook above) is that not all extension hooks have a second argument
-	 *  and the PHP developers in their infinite wisdom decided that only variables could be passed
-	 *  by reference.  So, call() does a little magic to make sure there is always a second
-	 *  argument and universal_call() handles all of the object and reference handling
-	 *  when needed.  -Paul
+	 * Originally, using call(), objects could not be called by reference in PHP
+	 * 4 and thus could not be directly modified. I found a clever way around
+	 * that restriction by always having the second argument gotten by
+	 * reference. The problem (and the reason there is a call() hook above) is
+	 * that not all extension hooks have a second argument and the PHP
+	 * developers in their infinite wisdom decided that only variables could be
+	 * passed by reference. So, call() does a little magic to make sure there is
+	 * always a second argument and universal_call() handles all of the object
+	 * and reference handling when needed. -Paul
 	 *
 	 * @access	public
 	 * @param	string	Name of the  extension hook
@@ -141,9 +142,9 @@ class EE_Extensions {
 	function universal_call($which, &$parameter_one)
 	{
 		// Reset Our Variables
-		$this->end_script	= FALSE;
-		$this->last_call	= FALSE;
-		$php5_args			= array();
+		$this->end_script = FALSE;
+		$this->last_call  = FALSE;
+		$php5_args        = array();
 
 		// Anything to Do Here?
 		if ( ! isset($this->extensions[$which])) return;
@@ -271,13 +272,13 @@ class EE_Extensions {
 
 				ee()->load->remove_package_path($path);
 
-				//  A ee()->extensions->end_script value of TRUE means that the called
-				//	method wishes us to stop the calling of the main script.
-				//  In this case, even if there are methods after this one for
-				//  the hook we still stop the script now because extensions with
-				//  a higher priority call the shots and thus override any
-				//  extensions with a lower priority.
 				if ($this->end_script === TRUE) return $this->last_call;
+				// A ee()->extensions->end_script value of TRUE means that the
+				// called method wishes us to stop the calling of the main
+				// script. In this case, even if there are methods after this
+				// one for the hook we still stop the script now because
+				// extensions with a higher priority call the shots and thus
+				// override any extensions with a lower priority.
 			}
 		}
 
