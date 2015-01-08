@@ -8,7 +8,7 @@
 					<a href="<?=$group['url']?>"><?=$group['name']?></a>
 					<ul class="toolbar">
 						<li class="edit"><a href="<?=$group['edit_url']?>" title="<?=lang('edit')?>"></a></li>
-						<li class="remove"><a class="m-link" rel="modal-confirm" href="" title="<?=lang('remove')?>"></a></li>
+						<li class="remove"><a class="m-link" rel="modal-confirm-remove-template-group" href="" title="<?=lang('remove')?>" data-confirm="<?=lang('template_group')?>: <b><?=$group['name']?></b>" data-group-name="<?=$group['name']?>"></a></li>
 					</ul>
 				</li>
 				<?php endforeach; ?>
@@ -32,3 +32,20 @@
 		<h2><a href="<?=cp_url('design/routes')?>"><?=lang('template_routes')?></a></h2>
 	</div>
 </div>
+
+<?php $this->startOrAppendBlock('modals'); ?>
+
+<?php
+
+$modal_vars = array(
+	'name'		=> 'modal-confirm-remove-template-group',
+	'form_url'	=> cp_url('design/group/remove'),
+	'hidden'	=> array(
+		'group_name'	=> ''
+	)
+);
+
+$this->ee_view('_shared/modal_confirm_remove', $modal_vars);
+?>
+
+<?php $this->endBlock(); ?>

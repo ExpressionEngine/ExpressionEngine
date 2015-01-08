@@ -125,6 +125,9 @@ class Design extends CP_Controller {
 		}
 
 		ee()->view->left_nav = ee('View')->make('design/menu')->render($vars);
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/design/menu'),
+		));
 	}
 
 	protected function stdHeader()
@@ -276,7 +279,7 @@ class Design extends CP_Controller {
 
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('template_manager');
-		ee()->view->cp_heading = $group->group_name . ' ' . lang('templates');
+		ee()->view->cp_heading = sprintf(lang('templates_in_group'), $group->group_name);
 
 		ee()->cp->render('design/index', $vars);
 	}
