@@ -87,8 +87,8 @@ if (isset($ajax_validate) && $ajax_validate == TRUE)
 						<?php break;
 
 						case 'yes_no': ?>
-							<label class="choice mr<?php if ($value == 'y'):?> chosen<?php endif ?> yes"><input type="radio" name="<?=$field_name?>" value="y"<?php if ($value == 'y'):?> checked="checked"<?php endif ?><?=$required?>> yes</label>
-							<label class="choice <?php if ($value == 'n'):?> chosen<?php endif ?> no"><input type="radio" name="<?=$field_name?>" value="n"<?php if ($value == 'n'):?> checked="checked"<?php endif ?><?=$required?>> no</label>
+							<label class="choice mr<?php if ($value == 'y' || $value === TRUE):?> chosen<?php endif ?> yes"><input type="radio" name="<?=$field_name?>" value="y"<?php if ($value == 'y' || $value === TRUE):?> checked="checked"<?php endif ?><?=$required?>> yes</label>
+							<label class="choice <?php if ($value == 'n' || $value === FALSE):?> chosen<?php endif ?> no"><input type="radio" name="<?=$field_name?>" value="n"<?php if ($value == 'n' || $value === FALSE):?> checked="checked"<?php endif ?><?=$required?>> no</label>
 						<?php break;
 
 						case 'dropdown': ?>
