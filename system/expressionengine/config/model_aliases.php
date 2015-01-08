@@ -41,6 +41,7 @@ return array(
 		'Template' => 'EllisLab\ExpressionEngine\Model\Template\Template',
 		'TemplateGroup'  => 'EllisLab\ExpressionEngine\Model\Template\TemplateGroup',
 		'GlobalVariable'  => 'EllisLab\ExpressionEngine\Model\Template\GlobalVariable',
+		'Snippet' => 'EllisLab\ExpressionEngine\Model\Template\Snippet',
 
 	# EllisLab\ExpressionEngine\Module..
 
