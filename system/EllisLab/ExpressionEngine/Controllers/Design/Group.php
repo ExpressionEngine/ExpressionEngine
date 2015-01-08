@@ -29,13 +29,23 @@ use EllisLab\ExpressionEngine\Controllers\Design\Design;
  */
 class Group extends Design {
 
-	public function create()
+	/**
+	 * Constructor
+	 */
+	function __construct()
 	{
+		parent::__construct();
+
 		if ( ! ee()->cp->allowed_group('can_access_design', 'can_admin_templates'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
+		$this->stdHeader();
+	}
+
+	public function create()
+	{
 		$groups = array(
 			'false' => '-- ' . strtolower(lang('none')) . ' --'
 		);
@@ -94,7 +104,7 @@ class Group extends Design {
 		ee()->form_validation->set_rules(array(
 			array(
 				'field' => 'group_name',
-				'label' => 'lang:group_name',
+				'label' => 'lang:name',
 				'rules' => 'required|callback__group_name_checks'
 			),
 			array(
@@ -169,7 +179,7 @@ class Group extends Design {
 			ee('Alert')->makeInline('settings-form')
 				->asSuccess()
 				->withTitle(lang('create_template_group_success'))
-				->addToBody(lang('create_template_group_success_desc'))
+				->addToBody(sprintf(lang('create_template_group_success_desc'), $group->group_name))
 				->defer();
 
 			ee()->functions->redirect(cp_url('design/manager/' . $group->group_name));
@@ -182,8 +192,6 @@ class Group extends Design {
 				->addToBody(lang('create_template_group_error_desc'));
 		}
 
-
-		$this->stdHeader();
 		ee()->view->cp_page_title = lang('create_template_group');
 
 		ee()->cp->render('settings/form', $vars);
@@ -191,14 +199,14 @@ class Group extends Design {
 
 	public function edit($group)
 	{
-		if ( ! ee()->cp->allowed_group('can_access_design', 'can_admin_templates'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
 		$group = ee('Model')->get('TemplateGroup')
 			->filter('group_name', $group)
 			->first();
+
+		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
+		{
+			show_error(lang('unauthorized_access'));
+		}
 
 		$vars = array(
 			'ajax_validate' => TRUE,
@@ -274,7 +282,7 @@ class Group extends Design {
 			ee('Alert')->makeInline('settings-form')
 				->asSuccess()
 				->withTitle(lang('edit_template_group_success'))
-				->addToBody(lang('edit_template_group_success_desc'))
+				->addToBody(sprintf(lang('edit_template_group_success_desc'), $group->group_name))
 				->defer();
 
 			ee()->functions->redirect(cp_url('design/manager/' . $group->group_name));
@@ -287,11 +295,48 @@ class Group extends Design {
 				->addToBody(lang('edit_template_group_error_desc'));
 		}
 
-
-		$this->stdHeader();
 		ee()->view->cp_page_title = lang('edit_template_group');
 
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	public function remove()
+	{
+		$group = ee('Model')->get('TemplateGroup')
+			->filter('group_name', ee()->input->post('group_name'))
+			->first();
+
+		if ( ! $group)
+		{
+			show_error('id_not_found');
+		}
+		else
+		{
+			if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
+			{
+				show_error(lang('unauthorized_access'));
+			}
+
+			// Delete the group folder if it exists
+			if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '')
+			{
+				$basepath = ee()->config->slash_item('tmpl_file_basepath');
+				$basepath .= ee()->config->item('site_short_name') . '/' . $group->group_name . '.group/';
+
+				ee()->load->helper('file');
+				delete_files($basepath, TRUE);
+				@rmdir($basepath);
+			}
+
+			$group->delete();
+			ee('Alert')->makeInline('template-group')
+				->asSuccess()
+				->withTitle(lang('template_group_removed'))
+				->addToBody(sprintf(lang('template_group_removed_desc'), ee()->input->post('group_name')))
+				->defer();
+		}
+
+		ee()->functions->redirect(cp_url('design'));
 	}
 
 	/**
