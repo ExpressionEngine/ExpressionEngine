@@ -127,7 +127,7 @@ class Design extends CP_Controller {
 		ee()->view->left_nav = ee('View')->make('design/menu')->render($vars);
 	}
 
-	private function stdHeader()
+	protected function stdHeader()
 	{
 		ee()->view->header = array(
 			'title' => lang('template_manager'),
