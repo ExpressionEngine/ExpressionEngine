@@ -153,6 +153,59 @@ class Design extends CP_Controller {
 		);
 	}
 
+	/**
+	 * Determines if the logged in user has edit privileges for a given template
+	 * group. We need either a group's unique id or a template's unique id to
+	 * determine access.
+	 *
+	 * @param int $group_id    The id of the template group in question (optional)
+	 * @param int $template_id The id of the tempalte in question (optional)
+	 * @return bool TRUE if the user has edit privileges, FALSE if not
+	 */
+	protected function hasEditTemplatePrivileges($group_id = NULL, $template_id = NULL)
+	{
+		// If the user is a Super Admin, return true
+		if (ee()->session->userdata['group_id'] == 1)
+		{
+			return TRUE;
+		}
+
+		if ( ! $group_id)
+		{
+			if ( ! $template_id)
+			{
+				return FALSE;
+			}
+			else
+			{
+				$group_id = ee('Model')->get('Template', $template_id)
+					->fields('group_id')
+					->first()
+					->group_id;
+			}
+		}
+
+
+		$access = FALSE;
+
+		foreach (ee()->session->userdata['assigned_template_groups'] as $key => $val)
+		{
+			if ($group_id == $key)
+			{
+				$access = TRUE;
+				break;
+			}
+		}
+
+		if ($access == FALSE)
+		{
+			return FALSE;
+		}
+
+		return TRUE;
+
+	}
+
 	public function index()
 	{
 		$this->manager();
