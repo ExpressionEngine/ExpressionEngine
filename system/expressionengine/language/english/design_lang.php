@@ -123,6 +123,15 @@ $lang = array(
 'template_group_taken' =>
 'The template group name you submitted is already taken',
 
+'template_partials_header' =>
+'Template Partials<br><i>Reusable dynamic content, tags &amp; templates.</i>',
+
+'partial' =>
+'Partial',
+
+'all_sites' =>
+'All Sites',
+
 //----------------------------
 // Menu
 //----------------------------
