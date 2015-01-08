@@ -51,6 +51,9 @@ $lang = array(
 'default' =>
 'default',
 
+'templates_in_group' =>
+'Templates in <b>%s</b>',
+
 'btn_create_template_group' =>
 'Create Template Group',
 
@@ -78,6 +81,47 @@ $lang = array(
 'edit_template_group' =>
 'Edit Template Group',
 
+'create_template_group' =>
+'Create Template Group',
+
+'create_template_group_success' =>
+'Template Group Created',
+
+'create_template_group_success_desc' =>
+'The template group <b>%s</b> has been created.',
+
+'create_template_group_error' =>
+'Cannot Create Template Group',
+
+'create_template_group_error_desc' =>
+'We were unable to create this group, please review and fix errors below.',
+
+'edit_template_group_success' =>
+'Template Group Updated',
+
+'edit_template_group_success_desc' =>
+'The template group <b>%s</b> has been updated.',
+
+'edit_template_group_error' =>
+'Cannot Update Template Group',
+
+'edit_template_group_error_desc' =>
+'We were unable to update this group, please review and fix errors below.',
+
+'template_group_removed' =>
+'Template Group Removed',
+
+'template_group_removed_desc' =>
+'The template group <b>%s</b> has been removed.',
+
+'illegal_characters' =>
+'The name you submitted may only contain alpha-numeric characters, underscores, and dashes',
+
+'reserved_name' =>
+'The name you have chosen is a reserved word that cannot be used.',
+
+'template_group_taken' =>
+'The template group name you submitted is already taken',
 
 //----------------------------
 // Menu
@@ -217,9 +261,6 @@ $lang = array(
 'template_file_not_renamed' =>
 'Unable to rename the associated template file',
 
-'template_group_taken' =>
-'The template group name you submitted is already taken',
-
 'template_type' =>
 'Template Type',
 
@@ -315,9 +356,6 @@ $lang = array(
 
 'order' =>
 'Order',
-
-'reserved_name' =>
-'The name you have chosen is a reserved word that cannot be used.',
 
 'webpage' =>
 'Web Page',
@@ -423,9 +461,6 @@ $lang = array(
 
 'all_fields_required' =>
 'You must submit all form fields',
-
-'illegal_characters' =>
-'The name you submitted may only contain alpha-numeric characters, underscores, and dashes',
 
 'edit_template_group_order' =>
 'Edit Group Order',
