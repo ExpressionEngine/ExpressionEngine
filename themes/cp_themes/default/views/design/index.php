@@ -13,7 +13,7 @@
 		<fieldset class="tbl-bulk-act">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
-				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
+				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove-template"><?=lang('remove')?></option>
 				<option value="export"><?=lang('export_templates')?></option>
 				<option value="sync"><?=lang('sync_templates')?></option>
 			</select>
@@ -28,7 +28,7 @@
 <?php
 
 $modal_vars = array(
-	'name'		=> 'modal-confirm-remove',
+	'name'		=> 'modal-confirm-remove-template',
 	'form_url'	=> $form_url,
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
