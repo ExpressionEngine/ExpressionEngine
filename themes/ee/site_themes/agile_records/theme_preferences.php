@@ -51,8 +51,8 @@ $no_access = array(
 $template_access['global_embeds']['index'] = $no_access;
 $template_access['news_embeds']['index'] = $no_access;
 $template_access['search']['index'] = $no_access;
-				
+
 
 /* End of file theme_preferences.php */
-/* Location: ./themes/site_themes/agile_records
+/* Location: ./themes/ee/site_themes/agile_records
 * /theme_preferences.php */

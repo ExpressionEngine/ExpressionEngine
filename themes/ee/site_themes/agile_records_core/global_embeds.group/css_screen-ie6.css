@@ -3,13 +3,13 @@
 	AGILE RECORDS, EE2.0 EXAMPLE SITE by ERSKINE DESIGN
 	VERSION 1.0
 	IE6 OVERRIDE STYLES
-	
+
 	CONTENTS ----------
-	
-	
-	
+
+
+
 	-------------------
-	
+
 */
 
 
@@ -30,13 +30,13 @@ th { background-image:none; background-color:#ddd; }
 
 /* LAYOUT */
 
-div#feature { width:950px; overflow:hidden; float:none; padding:30px 0; position:static; margin:0; background:url({site_url}themes/site_themes/agile_records/images/feature_bg.jpg); margin-bottom:30px; }
+div#feature { width:950px; overflow:hidden; float:none; padding:30px 0; position:static; margin:0; background:url({site_url}themes/ee/site_themes/agile_records/images/feature_bg.jpg); margin-bottom:30px; }
 div#page_header { background-image:none; background-color:#6b5f57; height:40px; z-index:3; position:static; top:0px; margin-bottom:0; padding-bottom:10px; }
 
-div#branding { height:290px; background:url({site_url}themes/site_themes/agile_records/images/ie_branding_bg.gif) repeat-x center top; position:relative; z-index:2; }
+div#branding { height:290px; background:url({site_url}themes/ee/site_themes/agile_records/images/ie_branding_bg.gif) repeat-x center top; position:relative; z-index:2; }
 div#branding_sub { width:930px; margin:0 auto; position:relative; }
 
-div#page { background:url({site_url}themes/site_themes/agile_records/images/page_bg.jpg); }
+div#page { background:url({site_url}themes/ee/site_themes/agile_records/images/page_bg.jpg); }
 
 div#content_pri { display:inline; }
 div#content_sec { }
@@ -45,10 +45,10 @@ div#content_sec { }
 
 /* BRANDING/MASTHEAD */
 
-div#branding_logo { background:url({site_url}themes/site_themes/agile_records/images/ie_branding_sub_bg.gif) no-repeat left top; }
-div#branding_sub h1 a { position:static; background:url({site_url}themes/site_themes/agile_records/images/logo_bg.jpg) no-repeat bottom left; }
+div#branding_logo { background:url({site_url}themes/ee/site_themes/agile_records/images/ie_branding_sub_bg.gif) no-repeat left top; }
+div#branding_sub h1 a { position:static; background:url({site_url}themes/ee/site_themes/agile_records/images/logo_bg.jpg) no-repeat bottom left; }
 div#branding_sub div#member { background:none; }
-div#branding_sub form { background:url({site_url}themes/site_themes/agile_records/images/ie_search_bg.jpg) no-repeat; }
+div#branding_sub form { background:url({site_url}themes/ee/site_themes/agile_records/images/ie_search_bg.jpg) no-repeat; }
 
 
 
@@ -112,7 +112,7 @@ h2,h3 { text-indent:0 !important; background:none !important; width:auto !import
 
 .bands ul#bands1 li.one { width:450px; height:300px; left:-480px; top:0; margin-right:-450px; margin-bottom:30px; }
 .bands ul#bands1 li.one img { top:0; left:0; }
- 
+
 .bands ul#bands1 li.two img,
 .bands ul#bands1 li.three img { padding:0; background:none; position:static; margin:0; margin:0 10px; }
 
@@ -147,7 +147,7 @@ div#band_latestrelease h3 { padding-top:20px; }
 
 .release div#release_details { border-bottom:1px solid blue; }
 .release div#release_details span { font-family:Georgia,serif; font-style:italic; }
-.release div#release_details ul { list-style:url({site_url}themes/site_themes/agile_records/images/pixel.gif); }
+.release div#release_details ul { list-style:url({site_url}themes/ee/site_themes/agile_records/images/pixel.gif); }
 
 .release div#release_tracks div.release_format { float:left; padding-bottom:20px; margin-bottom:20px; }
 
@@ -217,7 +217,7 @@ div.forum_posts table td.forum_newpostindicator img { position:static; }
 /* WIKI */
 
 .wiki div#navigation_sec { padding-top:57px; display:inline;  behavior: url(css/iepngfix/iepngfix.htc); }
-.wiki div#navigation_sec ul { background:url({site_url}themes/site_themes/agile_records/images/ie_wiki_menubg.jpg) repeat-y 5px top ; }
+.wiki div#navigation_sec ul { background:url({site_url}themes/ee/site_themes/agile_records/images/ie_wiki_menubg.jpg) repeat-y 5px top ; }
 .wiki div#navigation_sec div.bottom { behavior: url(css/iepngfix/iepngfix.htc); }
 
 
@@ -242,7 +242,7 @@ div.forum_posts table td.forum_newpostindicator img { position:static; }
 .member_profile div#feature div#memberprofile_photo { float:left; width:210px; height:180px; background:none; position:relative; left:-20px; }
 .member_profile div#feature div#memberprofile_photo img { width:206px; height:176px; border:3px solid #6b5f57; position:static; }
 
-.member_profile div#feature div#memberprofile_communicate { background-image:none; background-color:#adada3; margin-top:5px; } 
+.member_profile div#feature div#memberprofile_communicate { background-image:none; background-color:#adada3; margin-top:5px; }
 .member_profile div#feature div#memberprofile_communicate table tr { background-image:none; background-color:#cdcdc7; }
 .member_profile div#feature div#memberprofile_communicate table tr.alt { background-image:none; background-color:#bebeb7; }
 

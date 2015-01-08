@@ -100,7 +100,7 @@ $agile_upload_path = addslashes(realpath($this->theme_path."agile_records/images
 // Add upload locations
 $Q[] = "INSERT INTO `exp_upload_prefs` (`id`, `site_id`, `name`, `server_path`, `url`, `allowed_types`, `max_size`, `max_height`, `max_width`, `properties`, `pre_format`, `post_format`, `file_properties`, `file_pre_format`, `file_post_format`) VALUES
 (1, 1, 'Main Upload Directory', '".$upload_path."', '".$this->userdata['site_url'].'images/'.$this->userdata['upload_folder']."', 'all', '', '', '', 'style=\"border: 0;\" alt=\"image\"', '', '', '', '', ''),
-(2, 1, 'About', '{$agile_upload_path}', '".$this->userdata['site_url']."themes/site_themes/agile_records/images/uploads/', 'img', '', '', '', '', '', '', '', '', '')";
+(2, 1, 'About', '{$agile_upload_path}', '".$this->userdata['site_url']."themes/ee/site_themes/agile_records/images/uploads/', 'img', '', '', '', '', '', '', '', '', '')";
 
 @chmod($agile_upload_path, DIR_WRITE_MODE);
 
@@ -136,4 +136,4 @@ $this->config->update_site_prefs(array(
 );
 
 /* End of file default_content.php */
-/* Location: ./themes/site_themes/agile_records/default_content.php */
+/* Location: ./themes/ee/site_themes/agile_records/default_content.php */
