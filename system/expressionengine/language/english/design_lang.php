@@ -4,6 +4,51 @@ $lang = array(
 
 'design'						=> 'Design',
 
+// 3.0
+
+'template_manager' =>
+'Template Manager',
+
+'sync_all_templates' =>
+'Sync All Templates',
+
+'export_all' =>
+'Export All Templates',
+
+'search_templates' =>
+'Search Templates',
+
+'template_groups' =>
+'Template Groups',
+
+'system_templates' =>
+'System Templates',
+
+'template_partials' =>
+'Template Partials',
+
+'template_variables' =>
+'Template Variables',
+
+'template_routes' =>
+'Template Routes',
+
+'create_new_template' =>
+'Create New Template',
+
+'messages' =>
+'messages',
+
+'email' =>
+'e-mail',
+
+'members' =>
+'members',
+
+'forums' =>
+'forums',
+
+
 //----------------------------
 // Menu
 //----------------------------
@@ -190,9 +235,6 @@ $lang = array(
 'access' =>
 'Access',
 
-'create_new_template' =>
-'Create a New Template',
-
 'security_warning' =>
 'Note: Allowing PHP in templates has security implications. Please consult the <a href=\'%s\' title=\'Documentation\'>documentation</a>.',
 
@@ -222,9 +264,6 @@ $lang = array(
 
 'name_of_template_group' =>
 'Template Group Name',
-
-'template_groups' =>
-'Template Groups',
 
 'template_group_instructions' =>
 'The name must be a single word with no spaces',
@@ -291,9 +330,6 @@ $lang = array(
 
 'export_templates' =>
 'Export Templates',
-
-'export_all' =>
-'Export All',
 
 'export_group' =>
 'Export Group',
@@ -682,9 +718,6 @@ and templates will only be accesible from the default group/template URL.',
 
 'no_templates_available' =>
 'No Templates Available',
-
-'template_manager' =>
-'Template Manager',
 
 'url_manager' =>
 'Template Route Manager',
