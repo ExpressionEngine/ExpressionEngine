@@ -132,6 +132,12 @@ $lang = array(
 'all_sites' =>
 'All Sites',
 
+'template_partial' =>
+'Template Partial',
+
+'export_partials' =>
+'Export Partials',
+
 //----------------------------
 // Menu
 //----------------------------
