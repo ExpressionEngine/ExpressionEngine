@@ -32,7 +32,7 @@ class Update extends Query {
 		$builder = $this->builder;
 
 		$object = $builder->getExisting();
-		$object = $object ?: $this->datastore->make($builder->getFrom());
+		$object = $object ?: $this->store->make($builder->getFrom(), $builder->getFrontend());
 
 		foreach ($builder->getSet() as $field => $value)
 		{
@@ -65,8 +65,13 @@ class Update extends Query {
 	{
 		$query = $this->store
 			->rawQuery()
-			->set($gateway->getValues())
-			->where($gateway->getPrimaryKey(), $object->getId())
-			->update($gateway->getTableName());
+			->set($gateway->getValues());
+
+		if ( ! $object->isNew())
+		{
+			$query->where($gateway->getPrimaryKey(), $object->getId());
+		}
+
+		$query->update($gateway->getTableName());
 	}
 }
