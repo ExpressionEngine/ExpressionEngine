@@ -141,12 +141,12 @@ class Template extends Model {
 
 	private function set_y_n($property, $new_value)
 	{
-		if ($new_value == TRUE || $new_value == 'y')
+		if ($new_value === TRUE || $new_value == 'y')
 		{
 			$this->$property = 'y';
 		}
 
-		if ($new_value == FALSE || $new_value == 'n')
+		if ($new_value === FALSE || $new_value == 'n')
 		{
 			$this->$property = 'n';
 		}

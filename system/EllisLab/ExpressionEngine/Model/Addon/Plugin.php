@@ -47,12 +47,12 @@ class Plugin extends Model {
 	 */
 	protected function set__is_typography_related($new_value)
 	{
-		if ($new_value == TRUE || $new_value == 'y')
+		if ($new_value === TRUE || $new_value == 'y')
 		{
 			$this->is_typography_related = 'y';
 		}
 
-		elseif ($new_value == FALSE || $new_value == 'n')
+		elseif ($new_value === FALSE || $new_value == 'n')
 		{
 			$this->is_typography_related = 'n';
 		}

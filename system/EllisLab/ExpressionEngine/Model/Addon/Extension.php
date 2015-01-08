@@ -83,12 +83,12 @@ class Extension extends Model {
 	 */
 	protected function set__enabled($new_value)
 	{
-		if ($new_value == TRUE || $new_value == 'y')
+		if ($new_value === TRUE || $new_value == 'y')
 		{
 			return $this->enable();
 		}
 
-		if ($new_value == FALSE || $new_value == 'n')
+		if ($new_value === FALSE || $new_value == 'n')
 		{
 			return $this->disable();
 		}

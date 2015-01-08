@@ -74,12 +74,12 @@ class TemplateGroup extends Model {
 	 */
 	protected function set__is_site_default($new_value)
 	{
-		if ($new_value == TRUE || $new_value == 'y')
+		if ($new_value === TRUE || $new_value == 'y')
 		{
 			$this->is_site_default = 'y';
 		}
 
-		elseif ($new_value == FALSE || $new_value == 'n')
+		elseif ($new_value === FALSE || $new_value == 'n')
 		{
 			$this->is_site_default = 'n';
 		}
