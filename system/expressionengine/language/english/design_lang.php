@@ -138,6 +138,63 @@ $lang = array(
 'export_partials' =>
 'Export Partials',
 
+'yes' =>
+'yes',
+
+'no' =>
+'no',
+
+'create_partial' =>
+'Create Partial',
+
+'btn_create_partial' =>
+'Create partial',
+
+'btn_create_partial_working' =>
+'Saving...',
+
+'snippet_name' =>
+'Name',
+
+'snippet_name_desc' =>
+'Short name for this partial.',
+
+'snippet_contents' =>
+'Content',
+
+'snippet_contents_desc' =>
+'Content of this partial.',
+
+'enable_on_all_sites' =>
+'Enable on all sites?',
+
+'enable_on_all_sites_desc' =>
+'When set to <b>enable</b>, this partial will be available for use in all <abbr title="Multi-Site Manager">MSM</abbr> sites.',
+
+'create_template_partial_success' =>
+'Template Partial Created',
+
+'create_template_partial_success_desc' =>
+'The template partial <b>%s</b> has been created.',
+
+'create_template_partial_error' =>
+'Cannot Create Template Partial',
+
+'create_template_partial_error_desc' =>
+'We were unable to create this partial, please review and fix errors below.',
+
+'edit_template_partial_success' =>
+'Template Partial Updated',
+
+'edit_template_partial_success_desc' =>
+'The template partial <b>%s</b> has been updated.',
+
+'edit_template_partial_error' =>
+'Cannot Update Template Partial',
+
+'edit_template_partial_error_desc' =>
+'We were unable to update this partial, please review and fix errors below.',
+
 //----------------------------
 // Menu
 //----------------------------
@@ -681,9 +738,6 @@ ExpressionEngine tags, variables, or PHP, consider <a href =\'%s\'>Global Variab
 
 'snippet_syntax' =>
 'Snippet Syntax',
-
-'snippet_name' =>
-'Snippet Name',
 
 'snippet_edit' =>
 'Edit Snippet: %s',
