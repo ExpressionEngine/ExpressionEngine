@@ -164,7 +164,10 @@ class Group extends Design {
 			{
 				foreach ($master_group_templates as $master_template)
 				{
-					$new_template = ee('Model')->make('Template', $master_template->getValues());
+					$values = $master_template->getValues();
+					unset($values['template_id']);
+					$new_template = ee('Model')->make('Template', $values);
+					$new_tempalte->template_id = NULL;
 					$new_template->group_id = $group->group_id;
 					$new_template->edit_date = ee()->localize->now;
 					$new_template->site_id = ee()->config->item('site_id');
@@ -210,7 +213,7 @@ class Group extends Design {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => cp_url('design/group/create'),
+			'base_url' => cp_url('design/group/edit/' . $group->group_name),
 			'form_hidden' => array(
 				'old_name' => $group->group_name
 			),
@@ -264,7 +267,6 @@ class Group extends Design {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			$group = ee('Model')->make('TemplateGroup');
 			$group->group_name = $_POST['group_name'];
 			$group->is_site_default = $_POST['make_default_group'];
 
