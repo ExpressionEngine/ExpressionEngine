@@ -128,11 +128,9 @@ class Group extends Design {
 
 			if ($group->is_site_default)
 			{
-				$old_default_group = ee('Model')->get('TemplateGroup')
-					->filter('is_site_default', 'y')
-					->first();
-				$old_default_group->is_site_default = FALSE;
-				$old_default_group->save();
+				ee('Model')->get('TemplateGroup')
+					->set('is_site_default', 'n')
+					->update();
 			}
 
 			$group->save();
@@ -272,11 +270,9 @@ class Group extends Design {
 
 			if ($group->is_site_default)
 			{
-				$old_default_group = ee('Model')->get('TemplateGroup')
-					->filter('is_site_default', 'y')
-					->first();
-				$old_default_group->is_site_default = FALSE;
-				$old_default_group->save();
+				ee('Model')->get('TemplateGroup')
+					->set('is_site_default', 'n')
+					->update();
 			}
 
 			$group->save();
