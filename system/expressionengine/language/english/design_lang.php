@@ -312,6 +312,36 @@ $lang = array(
 'template_variables_removed_desc' =>
 'The following template variables were removed',
 
+'template_name_desc' =>
+'Short name for this template.<br><i>No spaces. Underscores and dashes are allowed.</i>',
+
+'template_type' =>
+'Type',
+
+'template_type_desc' =>
+'Choose a template type.',
+
+'duplicate_existing_template' =>
+'Duplicate existing template?',
+
+'duplicate_existing_template_desc' =>
+'Will be created with all code found in copied template.',
+
+'btn_create_template' =>
+'Create Template',
+
+'btn_create_and_edit_template' =>
+'Create &amp; Edit Template',
+
+'btn_create_template_working' =>
+'Saving...',
+
+'create_template_success' =>
+'Template Created',
+
+'create_template_success_desc' =>
+'The template <b>%s/%s</b> has been created.',
+
 
 //----------------------------
 // Menu
@@ -450,9 +480,6 @@ $lang = array(
 
 'template_file_not_renamed' =>
 'Unable to rename the associated template file',
-
-'template_type' =>
-'Template Type',
 
 'do_not_duplicate_group' =>
 'Do not duplicate a group',
@@ -750,9 +777,6 @@ $lang = array(
 
 'do_not_duplicate_template' =>
 'Do not duplicate a template',
-
-'duplicate_existing_template' =>
-'Duplicate an Existing Template?',
 
 'template_from_library' =>
 'Use a template from your library',
