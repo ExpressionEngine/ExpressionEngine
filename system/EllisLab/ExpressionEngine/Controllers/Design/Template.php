@@ -32,6 +32,8 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  */
 class Template extends Design {
 
+	protected $template_group;
+
 	/**
 	 * Constructor
 	 */
@@ -57,6 +59,8 @@ class Template extends Design {
 		{
 			show_error(sprintf(lang('error_no_template_group'), $group_name));
 		}
+
+		$this->template_group = $group;
 
 		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
 		{
@@ -170,7 +174,7 @@ class Template extends Design {
 				->addToBody(lang('create_template_error_desc'));
 		}
 
-		ee()->view->cp_page_title = lang('create_template');
+		ee()->view->cp_page_title = sprintf(lang('create_template'), $group->group_name);
 
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -267,6 +271,45 @@ class Template extends Design {
 		}
 
 		return $template_types;
+	}
+
+	/**
+	  *	 Check Template Name
+	  */
+	public function _template_name_checks($str)
+	{
+		if ( ! preg_match("#^[a-zA-Z0-9_\-/]+$#i", $str))
+		{
+			ee()->lang->loadfile('admin');
+			ee()->form_validation->set_message('_template_name_checks', lang('illegal_characters'));
+			return FALSE;
+		}
+
+		$reserved_names = array('act', 'css');
+
+		if (in_array($str, $reserved_names))
+		{
+			ee()->form_validation->set_message('_template_name_checks', lang('reserved_name'));
+			return FALSE;
+		}
+
+		$count = ee('Model')->get('Template')
+			->filter('group_id', $this->template_group->group_id)
+			->filter('template_name', $str)
+			->count();
+
+		if ((strtolower($this->input->post('old_name')) != strtolower($str)) AND $count > 0)
+		{
+			$this->form_validation->set_message('_template_name_checks', lang('template_name_taken'));
+			return FALSE;
+		}
+		elseif ($count > 1)
+		{
+			$this->form_validation->set_message('_template_name_checks', lang('template_name_taken'));
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 }
 // EOF
