@@ -198,10 +198,10 @@ class Group extends Design {
 		ee()->cp->render('settings/form', $vars);
 	}
 
-	public function edit($group)
+	public function edit($group_name)
 	{
 		$group = ee('Model')->get('TemplateGroup')
-			->filter('group_name', $group)
+			->filter('group_name', $group_name)
 			->first();
 
 		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)

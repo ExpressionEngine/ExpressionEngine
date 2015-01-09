@@ -193,7 +193,7 @@ class Design extends CP_Controller {
 		$this->manager();
 	}
 
-	public function manager($group = NULL)
+	public function manager($group_name = NULL)
 	{
 		$vars = array();
 
@@ -212,7 +212,7 @@ class Design extends CP_Controller {
 		);
 
 		$data = array();
-		if (is_null($group))
+		if (is_null($group_name))
 		{
 			$group = ee('Model')->get('TemplateGroup')
 				->filter('is_site_default', 'y')
@@ -221,7 +221,7 @@ class Design extends CP_Controller {
 		else
 		{
 			$group = ee('Model')->get('TemplateGroup')
-				->filter('group_name', $group)
+				->filter('group_name', $group_name)
 				->first();
 		}
 
