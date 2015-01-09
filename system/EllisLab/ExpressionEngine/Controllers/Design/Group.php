@@ -204,6 +204,11 @@ class Group extends Design {
 			->filter('group_name', $group_name)
 			->first();
 
+		if ( ! $group)
+		{
+			show_error(sprintf(lang('error_no_template_group'), $group_name));
+		}
+
 		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
 		{
 			show_error(lang('unauthorized_access'));

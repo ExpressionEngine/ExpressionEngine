@@ -223,6 +223,11 @@ class Design extends CP_Controller {
 			$group = ee('Model')->get('TemplateGroup')
 				->filter('group_name', $group_name)
 				->first();
+
+			if ( ! $group)
+			{
+				show_error(sprintf(lang('error_no_template_group'), $group_name));
+			}
 		}
 
 		$base_url = new URL('design/manager/' . $group->group_name, ee()->session->session_id());
