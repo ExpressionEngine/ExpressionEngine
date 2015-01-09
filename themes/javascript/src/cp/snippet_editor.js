@@ -20,6 +20,6 @@ $(document).ready(function () {
 	"use strict";
 
 	// Hook up codemirror
-	$('#snippet_contents').toggleCodeMirror();
+	$('textarea[name="snippet_contents"]').toggleCodeMirror();
 
 });
