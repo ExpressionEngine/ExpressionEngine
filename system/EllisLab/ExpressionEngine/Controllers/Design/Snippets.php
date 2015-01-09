@@ -71,6 +71,8 @@ class Snippets extends Design {
 			unset($columns[1]);
 		}
 
+		$snippet_id = ee()->session->flashdata('snippet_id');
+
 		$table->setColumns($columns);
 
 		$data = array();
@@ -88,7 +90,7 @@ class Snippets extends Design {
 			{
 				$all_sites = '<b class="no">' . lang('no') . '</b>';
 			}
-			$datum = array(
+			$column = array(
 				$snippet->snippet_name,
 				$all_sites,
 				array('toolbar_items' => array(
@@ -111,11 +113,21 @@ class Snippets extends Design {
 
 			);
 
+			$attrs = array();
+
+			if ($snippet_id && $snippet->snippet_id == $snippet_id)
+			{
+				$attrs = array('class' => 'selected');
+			}
+
 			if ( ! $this->msm)
 			{
-				unset($datum[1]);
+				unset($column[1]);
 			}
-			$data[] = $datum;
+			$data[] = array(
+				'attrs'		=> $attrs,
+				'columns'	=> $column
+			);
 		}
 
 		$table->setData($data);
@@ -228,6 +240,8 @@ class Snippets extends Design {
 			$snippet->snippet_name = ee()->input->post('snippet_name');
 			$snippet->snippet_contents = ee()->input->post('snippet_contents');
 			$snippet->save();
+
+			ee()->session->set_flashdata('snippet_id', $snippet->snippet_id);
 
 			ee('Alert')->makeInline('settings-form')
 				->asSuccess()
