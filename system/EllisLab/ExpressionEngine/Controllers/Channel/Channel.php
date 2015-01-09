@@ -55,14 +55,14 @@ class Channel extends CP_Controller {
 			'channels' => array(
 				'href' => cp_url('channel'),
 				'button' => array(
-					'href' => cp_url('channel/new-channel'),
+					'href' => cp_url('channel/create'),
 					'text' => 'new'
 				)
 			),
 			'custom_fields' => array(
 				'href' => cp_url('channel/field'),
 				'button' => array(
-					'href' => cp_url('channel/field/new-field'),
+					'href' => cp_url('channel/field/create'),
 					'text' => 'new'
 				)
 			),
@@ -72,14 +72,14 @@ class Channel extends CP_Controller {
 			'category_groups' => array(
 				'href' => cp_url('channel/cat'),
 				'button' => array(
-					'href' => cp_url('channel/cat/new-cat'),
+					'href' => cp_url('channel/cat/create'),
 					'text' => 'new'
 				)
 			),
 			'status_groups' => array(
 				'href' => cp_url('channel/status'),
 				'button' => array(
-					'href' => cp_url('channel/status/new-status'),
+					'href' => cp_url('channel/status/create'),
 					'text' => 'new'
 				)
 			)
@@ -104,7 +104,7 @@ class Channel extends CP_Controller {
 				)
 			)
 		);
-		$table->setNoResultsText('no_channels', 'create_channel', cp_url('channel/new-channel'));
+		$table->setNoResultsText('no_channels', 'create_channel', cp_url('channel/create'));
 
 		$sort_map = array(
 			'channel' => 'channel_title',
@@ -216,6 +216,101 @@ class Channel extends CP_Controller {
 		}
 
 		ee()->functions->redirect(cp_url('channel', ee()->cp->get_url_state()));
+	}
+
+	/**
+	 * New channel form
+	 */
+	public function create()
+	{
+		$this->form();
+	}
+
+	/**
+	 * Channel creation/edit form
+	 */
+	private function form()
+	{
+		ee()->load->helper('snippets');
+		ee()->cp->add_js_script('plugin', 'ee_url_title');
+		ee()->javascript->output('
+			$("input[name=channel_title]").bind("keyup keydown", function() {
+				$(this).ee_url_title("input[name=channel_name]");
+			});
+		');
+
+		ee()->view->cp_page_title = lang('create_new_channel');
+
+		$vars = array();
+		
+		$channels = ee()->api
+			->get('Channel')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('channel_title')
+			->all();
+		$vars['duplicate_channel_prefs_options'][''] = lang('channel_do_not_duplicate');
+		if ( ! empty($channels))
+		{
+			foreach($channels as $channel)
+			{
+				$vars['duplicate_channel_prefs_options'][$channel->channel_id] = $channel->channel_title;
+			}
+		}
+
+		$vars['cat_group_options'][''] = lang('none');
+		$category_groups = ee('Model')->get('CategoryGroup')
+			->filter('site_id', $this->config->item('site_id'))
+			->order('group_name')
+			->all();
+		if ( ! empty($category_groups))
+		{
+			foreach ($category_groups as $group)
+			{
+				$vars['cat_group_options'][$group->group_id] = $group->group_name;
+			}
+		}
+
+		$vars['status_group_options'][''] = lang('none');
+		$status_groups = ee('Model')->get('StatusGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('group_name')
+			->all();
+		if ( ! empty($status_groups))
+		{
+			foreach ($status_groups as $group)
+			{
+				$vars['status_group_options'][$group->group_id] = $group->group_name;
+			}
+		}
+
+		$vars['field_group_options'][''] = lang('none');
+		$field_groups = ee('Model')->get('ChannelFieldGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('group_name')
+			->all();
+		if ( ! empty($field_groups))
+		{
+			foreach ($field_groups as $group)
+			{
+				$vars['field_group_options'][$group->group_id] = $group->group_name;
+			}
+		}
+
+		ee()->view->header = array(
+			'title' => lang('channel_manager'),
+			'form_url' => cp_url('channel/search'),
+			'toolbar_items' => array(
+				'settings' => array(
+					'href' => cp_url('settings/content-design'),
+					'title' => lang('settings')
+				)
+			)
+		);
+
+		ee()->view->cp_page_title = lang('create_channel');
+		ee()->cp->set_breadcrumb(cp_url('channel'), lang('channels'));
+
+		ee()->cp->render('channel/edit', $vars);
 	}
 }
 // EOF

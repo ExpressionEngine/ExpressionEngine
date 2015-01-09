@@ -28,6 +28,8 @@ $lang = array(
 
 /**
  * 3.0
+ *
+ * Channel Manager
  */
 
 'channel_manager' =>
@@ -48,7 +50,7 @@ $lang = array(
 'channel_manage' =>
 'Manage',
 
-'custom_fields' =>
+'custom_fields' => 
 'Custom Fields',
 
 'field_groups' =>
@@ -71,6 +73,74 @@ $lang = array(
 
 'channels_removed_desc' =>
 '%d channels were removed.',
+
+/**
+ * Channel Create/Edit
+ */
+
+'channel_title' =>
+'Name',
+
+'channel_title_desc' =>
+'Full descriptive name of this channel.',
+
+'channel_short_name_desc' =>
+'Short name for this channel.<br><i>No spaces. Underscores and dashes are allowed.</i>',
+
+'channel_duplicate' =>
+'Duplicate existing channel?',
+
+'channel_duplicate_desc' =>
+'On creation, this channel will copy all settings from the selected channel.',
+
+'channel_do_not_duplicate' =>
+'Do not duplicate',
+
+'channel_publishing_options' =>
+'Publishing Options',
+
+'channel_publishing_options_warning' =>
+'<p><b>Warning</b>: Channels require custom fields to collect any data other than title, and date.</p>
+<p>If you need to collect additional data for this channel, it\'s best practice to create any <a href="%s">custom fields</a>, first.</p>',
+
+'status_groups' =>
+'Status groups',
+
+'status_groups_desc' =>
+'Choose the status group you want for this channel.',
+
+'default_status_group' =>
+'Default Statuses',
+
+'status_groups_not_found' =>
+'Zero <b>status groups</b> found',
+
+'create_new_status_group' =>
+'Create New Status Group',
+
+'custom_field_group' =>
+'Custom field group',
+
+'custom_field_group_desc' =>
+'Choose the field group you would like to use in the publishing forms for this channel.',
+
+'custom_field_groups_not_found' =>
+'Zero <b>custom field groups</b> found',
+
+'create_new_field_group' =>
+'Create New Field Group',
+
+'category_groups' =>
+'Category groups',
+
+'category_groups_desc' =>
+'Choose the category groups you want available for this channel.',
+
+'category_groups_not_found' =>
+'Zero <b>category groups</b> found',
+
+'create_new_category_group' =>
+'Create New Category Group',
 
 ''=>''
 );

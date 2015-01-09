@@ -529,6 +529,9 @@ $lang = array(
 'btn_fix_errors' =>
 'Fix Errors, Please',
 
+'btn_saving' =>
+'Saving...',
+
 'cp_message_success' =>
 'Action was a success',
 
@@ -582,6 +585,9 @@ $lang = array(
 
 'new' =>
 'New',
+
+'none' =>
+'None',
 
 //----------------------------
 // confirm removal modal
