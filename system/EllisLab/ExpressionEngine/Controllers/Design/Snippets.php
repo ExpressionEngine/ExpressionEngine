@@ -95,11 +95,11 @@ class Snippets extends Design {
 				$all_sites,
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => cp_url('design/snippets/edit/' . $snippet->snippet_id),
+						'href' => cp_url('design/snippets/edit/' . $snippet->snippet_name),
 						'title' => lang('edit')
 					),
 					'find' => array(
-						'href' => cp_url('design/snippets/find/' . $snippet->snippet_id),
+						'href' => cp_url('design/snippets/find/' . $snippet->snippet_name),
 						'title' => lang('find')
 					),
 				)),
@@ -260,6 +260,9 @@ class Snippets extends Design {
 		}
 
 		ee()->view->cp_page_title = lang('create_partial');
+		ee()->view->cp_breadcrumbs = array(
+			cp_url('design/snippets') => lang('template_partials'),
+		);
 
 		// ee()->cp->add_js_script(array(
 		// 		'plugin'	=> 'ee_codemirror',
@@ -286,7 +289,143 @@ class Snippets extends Design {
 
 	public function edit($snippet_name)
 	{
+		$snippet = ee('Model')->get('Snippet')
+			->filter('snippet_name', $snippet_name)
+			->first();
 
+		if ( ! $snippet)
+		{
+			show_error(sprintf(lang('error_no_snippet'), $snippet_name));
+		}
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'base_url' => cp_url('design/snippets/edit/' . $snippet_name),
+			'form_hidden' => array(
+				'old_name' => $snippet->snippet_name
+			),
+			'save_btn_text' => 'btn_edit_partial',
+			'save_btn_text_working' => 'btn_edit_partial_working',
+			'sections' => array(
+				array(
+					array(
+						'title' => 'snippet_name',
+						'desc' => 'snippet_name_desc',
+						'fields' => array(
+							'snippet_name' => array(
+								'type' => 'text',
+								'required' => TRUE,
+								'value' => $snippet->snippet_name
+							)
+						)
+					),
+					array(
+						'title' => 'snippet_contents',
+						'desc' => 'snippet_contents_desc',
+						'wide' => TRUE,
+						'fields' => array(
+							'snippet_contents' => array(
+								'type' => 'textarea',
+								'required' => TRUE,
+								'value' => $snippet->snippet_contents
+							)
+						)
+					),
+				)
+			)
+		);
+
+		if ($this->msm)
+		{
+			$vars['sections'][0][] = array(
+				'title' => 'enable_on_all_sites',
+				'desc' => 'enable_on_all_sites_desc',
+				'fields' => array(
+					'site_id' => array(
+						'type' => 'inline_radio',
+						'choices' => array(
+							'0' => 'enable',
+							ee()->config->item('site_id') => 'disable'
+						),
+						'value' => $snippet->site_id
+					)
+				)
+			);
+		}
+
+		ee()->load->library('form_validation');
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'snippet_name',
+				'label' => 'lang:snippet_name',
+				'rules' => 'required|callback__snippet_name_checks'
+			),
+			array(
+				'field' => 'snippet_contents',
+				'label' => 'lang:snippet_contents',
+				'rules' => 'required'
+			)
+		));
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			if ($this->msm)
+			{
+				$snippet->site_id = ee()->input->post('site_id');
+			}
+			$snippet->snippet_name = ee()->input->post('snippet_name');
+			$snippet->snippet_contents = ee()->input->post('snippet_contents');
+			$snippet->save();
+
+			ee()->session->set_flashdata('snippet_id', $snippet->snippet_id);
+
+			ee('Alert')->makeInline('settings-form')
+				->asSuccess()
+				->withTitle(lang('edit_template_partial_success'))
+				->addToBody(sprintf(lang('edit_template_partial_success_desc'), $snippet->snippet_name))
+				->defer();
+
+			ee()->functions->redirect(cp_url('design/snippets'));
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee('Alert')->makeInline('settings-form')
+				->asIssue()
+				->withTitle(lang('edit_template_partial_error'))
+				->addToBody(lang('edit_template_partial_error_desc'));
+		}
+
+		ee()->view->cp_page_title = lang('edit_partial');
+		ee()->view->cp_breadcrumbs = array(
+			cp_url('design/snippets') => lang('template_partials'),
+		);
+
+		// ee()->cp->add_js_script(array(
+		// 		'plugin'	=> 'ee_codemirror',
+		// 		'file'		=> array(
+		// 			'codemirror/codemirror',
+		// 			'codemirror/closebrackets',
+		// 			'codemirror/overlay',
+		// 			'codemirror/xml',
+		// 			'codemirror/css',
+		// 			'codemirror/javascript',
+		// 			'codemirror/htmlmixed',
+		// 			'codemirror/ee-mode',
+		// 			'codemirror/dialog',
+		// 			'codemirror/searchcursor',
+		// 			'codemirror/search',
+		//
+		// 			'cp/snippet_editor',
+		// 		)
+		// 	)
+		// );
+
+		ee()->cp->render('settings/form', $vars);
 	}
 
 	/**
