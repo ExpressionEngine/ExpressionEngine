@@ -147,10 +147,19 @@ $lang = array(
 'create_partial' =>
 'Create Partial',
 
+'edit_partial' =>
+'Edit Partial',
+
 'btn_create_partial' =>
-'Create partial',
+'Create Partial',
 
 'btn_create_partial_working' =>
+'Saving...',
+
+'btn_edit_partial' =>
+'Edit Partial',
+
+'btn_edit_partial_working' =>
 'Saving...',
 
 'snippet_name' =>
@@ -194,6 +203,24 @@ $lang = array(
 
 'edit_template_partial_error_desc' =>
 'We were unable to update this partial, please review and fix errors below.',
+
+'error_no_template_group' =>
+'The Template Group <b>%s</b> does not exist.',
+
+'error_no_template' =>
+'The Template <b>%s</b> does not exist.',
+
+'error_no_snippet' =>
+'The Template Partial <b>%s</b> does not exist.',
+
+'error_no_global_variable' =>
+'The Template Variable <b>%s</b> does not exist.',
+
+'template_name_taken' =>
+'The template name you submitted is already taken',
+
+'snippet_name_taken' =>
+'The template partial name you submitted is already taken',
 
 //----------------------------
 // Menu
@@ -443,9 +470,6 @@ $lang = array(
 
 'id_not_found' =>
 'Template does not exist - invalid id',
-
-'template_name_taken' =>
-'The template name you submitted is already taken',
 
 'template_group_del_conf' =>
 'Template group delete confirm',
