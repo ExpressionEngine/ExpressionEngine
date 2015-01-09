@@ -296,10 +296,7 @@ class Snippets extends Design {
 		$snippets = ee('Model')->get('Snippet');
 		if ($this->msm)
 		{
-				$snippets->orFilterGroup()
-					->filter('site_id', ee()->config->item('site_id'))
-					->filter('site_id', 0)
-					->endFilterGroup();
+			$snippets->filter('site_id', 'IN', array(0, ee()->config->item('site_id')));
 		}
 		else
 		{
