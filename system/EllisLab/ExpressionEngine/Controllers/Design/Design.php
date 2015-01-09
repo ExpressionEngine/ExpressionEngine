@@ -230,10 +230,11 @@ class Design extends CP_Controller {
 			}
 		}
 
+		$vars['group_id'] = $group->group_name;
+
 		$base_url = new URL('design/manager/' . $group->group_name, ee()->session->session_id());
 
 		$templates = $group->getTemplates();
-		$var['templates'] = $templates;
 
 		$hidden_indicator = ($this->config->item('hidden_template_indicator') != '') ? $this->config->item('hidden_template_indicator') : '_';
 		$hidden_indicator_length = strlen($hidden_indicator);
