@@ -34,15 +34,15 @@ class CategoryGroup extends Model implements ContentStructure {
 	protected static $_gateway_names = array('CategoryGroupGateway');
 
 	protected static $_relationships = array(
-		'CategoryFieldStructures' => array(
+		/*'CategoryFieldStructures' => array(
 			'type' => 'many_to_one'
-		),
+		),*/
 		'Categories' => array(
-			'type' => 'one_to_many',
+			'type' => 'hasMany',
 			'model' => 'Category'
 		),
 		'Parent' => array(
-			'type' => 'many_to_one',
+			'type' => 'belongsTo',
 			'model' => 'Category',
 			'key' => 'parent_id'
 		),
