@@ -53,6 +53,15 @@ class Snippets extends Design {
 
 	public function index()
 	{
+		if (ee()->input->post('bulk_action') == 'remove')
+		{
+			$this->remove(ee()->input->post('selection'));
+		}
+		elseif (ee()->input->post('bulk_action') == 'export')
+		{
+			$this->export(ee()->input->post('selection'));
+		}
+
 		$vars = array();
 		$table = Table::create();
 		$columns = array(
@@ -390,6 +399,31 @@ class Snippets extends Design {
 		$this->loadCodeMirrorAssets();
 
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * Removes snippets
+	 *
+	 * @param  str|array $snippet_ids The ids of snippets to remove
+	 * @return void
+	 */
+	private function remove($snippet_ids)
+	{
+		if ( ! is_array($snippet_ids))
+		{
+			$snippet_ids = array($snippet_ids);
+		}
+
+		$snippets = ee('Model')->get('Snippet', $snippet_ids)->all();
+		$names = $snippets->pluck('snippet_name');
+
+		$snippets->delete();
+
+		ee('Alert')->makeInline('snippet-form')
+			->asSuccess()
+			->withTitle(lang('success'))
+			->addToBody(lang('snippets_removed_desc'))
+			->addToBody($names);
 	}
 
 	/**

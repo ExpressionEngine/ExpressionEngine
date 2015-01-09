@@ -222,6 +222,12 @@ $lang = array(
 'snippet_name_taken' =>
 'The template partial name you submitted is already taken',
 
+'success' =>
+'Success',
+
+'snippets_removed_desc' =>
+'The following snippets were removed',
+
 //----------------------------
 // Menu
 //----------------------------
@@ -995,9 +1001,6 @@ You can drag and drop to rearrange the order.',
 
 'stylesheet' =>
 'CSS Stylesheet',
-
-'success' =>
-'Profile Update Message',
 
 'username_change_disallowed' =>
 'Username Change Disallowed Message',
