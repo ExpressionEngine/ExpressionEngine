@@ -138,6 +138,9 @@ $lang = array(
 'export_partials' =>
 'Export Partials',
 
+'export_variables' =>
+'Export Variables',
+
 'yes' =>
 'yes',
 
@@ -174,10 +177,10 @@ $lang = array(
 'snippet_contents_desc' =>
 'Content of this partial.',
 
-'enable_on_all_sites' =>
+'enable_partial_on_all_sites' =>
 'Enable on all sites?',
 
-'enable_on_all_sites_desc' =>
+'enable_partial_on_all_sites_desc' =>
 'When set to <b>enable</b>, this partial will be available for use in all <abbr title="Multi-Site Manager">MSM</abbr> sites.',
 
 'create_template_partial_success' =>
@@ -227,6 +230,88 @@ $lang = array(
 
 'snippets_removed_desc' =>
 'The following snippets were removed',
+
+'template_variables_header' =>
+'Template Variables<br><i>Reusable static content replacements.</i>',
+
+'template_variable' =>
+'Template Variable',
+
+'template_variables' =>
+'Template Variables',
+
+'variable' =>
+'Variable',
+
+'no_global_variables' =>
+'There are currently no Template Variables',
+
+'no_snippets' =>
+'There are currently no Template Partials',
+
+'btn_create_template_variable' =>
+'Create Template Variable',
+
+'btn_create_template_variable_working' =>
+'Saving...',
+
+'btn_edit_template_variable' =>
+'Edit Template Variable',
+
+'btn_edit_template_variable_working' =>
+'Saving...',
+
+'create_template_variable_success' =>
+'Template Partial Created',
+
+'create_template_variable_success_desc' =>
+'The template variable <b>%s</b> has been created.',
+
+'create_template_variable_error' =>
+'Cannot Create Template Partial',
+
+'create_template_variable_error_desc' =>
+'We were unable to create this variable, please review and fix errors below.',
+
+'edit_template_variable_success' =>
+'Template Partial Updated',
+
+'edit_template_variable_success_desc' =>
+'The template variable <b>%s</b> has been updated.',
+
+'edit_template_variable_error' =>
+'Cannot Update Template Partial',
+
+'edit_template_variable_error_desc' =>
+'We were unable to update this variable, please review and fix errors below.',
+
+'create_template_variable' =>
+'Create Template Variable',
+
+'edit_template_variable' =>
+'Edit Template Variable',
+
+'variable_name' =>
+'Name',
+
+'variable_name_desc' =>
+'Short name for this variable.',
+
+'variable_data' =>
+'Content',
+
+'variable_data_desc' =>
+'Content of this variable.',
+
+'enable_template_variable_on_all_sites' =>
+'Enable on all sites?',
+
+'enable_template_variable_on_all_sites_desc' =>
+'When set to <b>enable</b>, this variable will be available for use in all <abbr title="Multi-Site Manager">MSM</abbr> sites.',
+
+'template_variables_removed_desc' =>
+'The following template variables were removed',
+
 
 //----------------------------
 // Menu
@@ -702,29 +787,14 @@ $lang = array(
 'template_notes_desc' =>
 'Use this form field to store notes and information about this template',
 
-'global_variables' =>
-'Global Variables',
-
 'global_variables_explanation' =>
 'You can define your own variables and add them to any of your templates.',
-
-'no_global_variables' =>
-'There are currently no global variables',
-
-'global_variable_name' =>
-'Variable Name',
 
 'create_new_global_variable' =>
 'Create a New Global Variable',
 
-'variable_name' =>
-'Variable Name',
-
 'global_variable_syntax' =>
 'Variable Syntax',
-
-'variable_data' =>
-'Variable Content',
 
 'global_var_created' =>
 'Global Variable Created',
@@ -762,9 +832,6 @@ ExpressionEngine tags, variables, or PHP, consider <a href =\'%s\'>Global Variab
 
 'create_new_snippet' =>
 'Create a New Snippet',
-
-'no_snippets' =>
-'There are currently no Snippets',
 
 'snippet_syntax' =>
 'Snippet Syntax',
