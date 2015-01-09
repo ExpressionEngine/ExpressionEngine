@@ -139,6 +139,7 @@ class Snippets extends Design {
 			);
 		}
 
+		$table->setNoResultsText('no_snippets');
 		$table->setData($data);
 
 		$vars['table'] = $table->viewData($base_url);
@@ -203,8 +204,8 @@ class Snippets extends Design {
 		if ($this->msm)
 		{
 			$vars['sections'][0][] = array(
-				'title' => 'enable_on_all_sites',
-				'desc' => 'enable_on_all_sites_desc',
+				'title' => 'enable_partial_on_all_sites',
+				'desc' => 'enable_partial_on_all_sites_desc',
 				'fields' => array(
 					'site_id' => array(
 						'type' => 'inline_radio',
@@ -329,8 +330,8 @@ class Snippets extends Design {
 		if ($this->msm)
 		{
 			$vars['sections'][0][] = array(
-				'title' => 'enable_on_all_sites',
-				'desc' => 'enable_on_all_sites_desc',
+				'title' => 'enable_partial_on_all_sites',
+				'desc' => 'enable_partial_on_all_sites_desc',
 				'fields' => array(
 					'site_id' => array(
 						'type' => 'inline_radio',
