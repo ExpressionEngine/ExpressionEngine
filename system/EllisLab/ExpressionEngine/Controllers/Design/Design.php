@@ -158,8 +158,8 @@ class Design extends CP_Controller {
 	 * group. We need either a group's unique id or a template's unique id to
 	 * determine access.
 	 *
-	 * @param int $group_id    The id of the template group in question (optional)
-	 * @param int $template_id The id of the tempalte in question (optional)
+	 * @param  int  $group_id    The id of the template group in question (optional)
+	 * @param  int  $template_id The id of the tempalte in question (optional)
 	 * @return bool TRUE if the user has edit privileges, FALSE if not
 	 */
 	protected function hasEditTemplatePrivileges($group_id = NULL, $template_id = NULL)
@@ -185,25 +185,7 @@ class Design extends CP_Controller {
 			}
 		}
 
-
-		$access = FALSE;
-
-		foreach (ee()->session->userdata['assigned_template_groups'] as $key => $val)
-		{
-			if ($group_id == $key)
-			{
-				$access = TRUE;
-				break;
-			}
-		}
-
-		if ($access == FALSE)
-		{
-			return FALSE;
-		}
-
-		return TRUE;
-
+		return array_key_exists($group_id, ee()->session->userdata['assigned_template_groups']);
 	}
 
 	public function index()
