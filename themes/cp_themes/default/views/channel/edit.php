@@ -8,7 +8,7 @@
 			<em><?=lang('channel_title_desc')?></em>
 		</div>
 		<div class="setting-field col w-8 last">
-			<input class="required" type="text" name="channel_title" value="<?=set_value('channel_title')?>">
+			<input class="required" type="text" name="channel_title" value="<?=set_value('channel_title', $channel->channel_title)?>">
 			<?=form_error('channel_title')?>
 		</div>
 	</fieldset>
@@ -18,7 +18,7 @@
 			<em><?=lang('channel_short_name_desc')?></em>
 		</div>
 		<div class="setting-field col w-8 last">
-			<input class="required" type="text" name="channel_name" value="<?=set_value('channel_name')?>">
+			<input class="required" type="text" name="channel_name" value="<?=set_value('channel_name', $channel->channel_name)?>">
 			<?=form_error('channel_name')?>
 		</div>
 	</fieldset>
@@ -43,7 +43,7 @@
 		</div>
 		<div class="setting-field col w-8 last">
 			<?php if (count($status_group_options) > 1): ?>
-				<?=form_dropdown('status_group', $status_group_options, set_value('status_group'))?>
+				<?=form_dropdown('status_group', $status_group_options, set_value('status_group', $channel->status_group))?>
 				<?=form_error('status_group')?>
 			<?php else: ?>
 				<div class="no-results">
