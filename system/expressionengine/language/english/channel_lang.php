@@ -78,6 +78,9 @@ $lang = array(
  * Channel Create/Edit
  */
 
+'edit_channel' =>
+'Edit Channel',
+
 'channel_title' =>
 'Name',
 
