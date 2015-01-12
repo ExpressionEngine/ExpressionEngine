@@ -74,7 +74,7 @@ class Design extends CP_Controller {
 		{
 			if ($is_admin OR array_key_exists($group->group_id, $assigned_template_groups))
 			{
-				$class = ($active_group_id == $group->group_id) ? 'act ' : '';
+				$class = ($active_group_id == $group->group_id) ? 'act' : '';
 
 				$data = array(
 					'name' => $group->group_name,
@@ -84,13 +84,13 @@ class Design extends CP_Controller {
 
 				if ($group->is_site_default)
 				{
-					$class .= 'default';
+					$class .= ' default';
 					$data['name'] = '<b>' . $group->group_name . '</b>';
 				}
 
 				if ( ! empty($class))
 				{
-					$data['class'] = trim($class);
+					$data['class'] = $class;
 				}
 
 				$vars['template_groups'][] = $data;
