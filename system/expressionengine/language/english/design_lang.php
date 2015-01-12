@@ -313,7 +313,7 @@ $lang = array(
 'The following template variables were removed',
 
 'create_template' =>
-'Create Template in group <b>%s</b>',
+'Create Template',
 
 'template_name_desc' =>
 'Short name for this template.<br><i>No spaces. Underscores and dashes are allowed.</i>',

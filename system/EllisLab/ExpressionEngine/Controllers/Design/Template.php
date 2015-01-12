@@ -174,7 +174,8 @@ class Template extends Design {
 				->addToBody(lang('create_template_error_desc'));
 		}
 
-		ee()->view->cp_page_title = sprintf(lang('create_template'), $group->group_name);
+		$this->sidebarMenu($group->group_id);
+		ee()->view->cp_page_title = lang('create_template');
 
 		ee()->cp->render('settings/form', $vars);
 	}
