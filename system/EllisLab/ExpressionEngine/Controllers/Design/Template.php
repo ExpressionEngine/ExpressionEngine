@@ -67,14 +67,14 @@ class Template extends Design {
 			'0' => '-- ' . strtolower(lang('none')) . ' --'
 		);
 
-		foreach (ee('Model')->get('TemplateGroup')->all() as $group)
+		foreach (ee('Model')->get('TemplateGroup')->all() as $template_group)
 		{
 			$templates = array();
-			foreach ($group->getTemplates() as $template)
+			foreach ($template_group->getTemplates() as $template)
 			{
 				$templates[$template->template_id] = $template->template_name;
 			}
-			$existing_templates[$group->group_name] = $templates;
+			$existing_templates[$template_group->group_name] = $templates;
 		}
 
 		$vars = array(
