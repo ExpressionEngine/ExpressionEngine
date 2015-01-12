@@ -5,6 +5,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Association;
 use LogicException;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -38,7 +39,7 @@ abstract class ToOne extends Association {
 	 */
 	public function fill($models)
 	{
-		if (is_array($models))
+		if (is_array($models) || $models instanceOf Collection)
 		{
 			parent::fill($models[0]);
 		}
