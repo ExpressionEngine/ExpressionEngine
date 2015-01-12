@@ -40,7 +40,7 @@ class Staged implements Tracker {
 	 */
 	public function getAdded()
 	{
-		return $this->added;
+		return array_values($this->added);
 	}
 
 	/**
@@ -48,7 +48,7 @@ class Staged implements Tracker {
 	 */
 	public function getRemoved()
 	{
-		return $this->removed;
+		return array_values($this->removed);
 	}
 
 	/**

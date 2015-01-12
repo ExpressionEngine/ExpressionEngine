@@ -37,15 +37,15 @@ class HasManyTest extends \PHPUnit_Framework_TestCase {
 	public function testReloadInitiatesLazyQuery()
 	{
 		$builder = m::mock('EllisLab\ExpressionEngine\Service\Model\Query\Builder');
-		$relation = m::mock('EllisLab\ExpressionEngine\Service\Model\Relations\HasMany');
+		$relation = m::mock('EllisLab\ExpressionEngine\Service\Model\Relation\HasMany');
 		$frontend = m::mock('EllisLab\ExpressionEngine\Service\Model\Frontend');
 
 		$parent = $this->newModelMock();
 		$child = $this->newModelMock();
 
-		$relation->shouldReceive('getTargetModel')->andReturn('ModelStub');
-		$frontend->shouldReceive('get')->with('ModelStub')->andReturn($builder);
-		$builder->shouldReceive('setLazyConstraint')->with($relation, $parent)->andReturn($builder);
+		$relation->shouldReceive('getTargetModel')->once()->andReturn('ModelStub');
+		$frontend->shouldReceive('get')->with('ModelStub')->once()->andReturn($builder);
+		$builder->shouldReceive('setLazyConstraint')->once()->with($relation, $parent)->andReturn($builder);
 		$builder->shouldReceive('all')->andReturn(array($child));
 
 		$has_many = new HasMany($parent);
@@ -70,7 +70,7 @@ class HasManyTest extends \PHPUnit_Framework_TestCase {
 		$parent = $this->newModelMock();
 		$child = $this->newModelMock();
 
-		$child->shouldReceive('save');
+		$child->shouldReceive('save')->once();
 		$relation->shouldReceive('linkIds')->with($parent, $child);
 
 		$has_many = new HasMany($parent);
@@ -103,9 +103,9 @@ class HasManyTest extends \PHPUnit_Framework_TestCase {
 		$parent = $this->newModelMock();
 		$child = $this->newModelMock();
 
-		$child->shouldReceive('save');
-		$frontend->shouldReceive('make')->with($child_type, $child_data)->andReturn($child);
-		$relation->shouldReceive('linkIds')->with($parent, $child);
+		$child->shouldReceive('save')->once();
+		$frontend->shouldReceive('make')->once()->with($child_type, $child_data)->andReturn($child);
+		$relation->shouldReceive('linkIds')->once()->with($parent, $child);
 
 		$has_many = new HasMany($parent, $child_type);
 
@@ -149,8 +149,8 @@ class HasManyTest extends \PHPUnit_Framework_TestCase {
 		$parent = $this->newModelMock();
 		$child = $this->newModelMock();
 
-		$child->shouldReceive('delete');
-		$relation->shouldReceive('unlinkIds')->with($parent, $child);
+		$child->shouldReceive('delete')->once();
+		$relation->shouldReceive('unlinkIds')->once()->with($parent, $child);
 
 		$has_many = new HasMany($parent);
 		$has_many->markAsLoaded();

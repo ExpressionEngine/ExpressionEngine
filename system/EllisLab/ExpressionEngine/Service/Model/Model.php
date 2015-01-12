@@ -506,6 +506,16 @@ class Model {
 	}
 
 	/**
+	 * Retrieve data as json
+	 *
+	 * @return string json formatted model data
+	 */
+	public function toJson()
+	{
+		return json_encode($this->toArray());
+	}
+
+	/**
 	 * Limit a query to the primary id of this model
 	 *
 	 * @param QueryBuilder $query The query that will be sent
