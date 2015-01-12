@@ -211,7 +211,7 @@ $lang = array(
 'The Template Group <b>%s</b> does not exist.',
 
 'error_no_template' =>
-'The Template <b>%s</b> does not exist.',
+'No such Template exists.',
 
 'error_no_snippet' =>
 'The Template Partial <b>%s</b> does not exist.',

@@ -176,9 +176,21 @@ class Template extends Design {
 		ee()->cp->render('settings/form', $vars);
 	}
 
-	public function edit()
+	public function edit($template_id)
 	{
+		$template = ee('Model')->get('Template', $template_id)->first();
 
+		if ( ! $template)
+		{
+			show_error(lang('error_no_template'));
+		}
+
+		$group = $template->getTemplateGroup();
+
+		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
+		{
+			show_error(lang('unauthorized_access'));
+		}
 	}
 
 	public function remove()
@@ -198,7 +210,12 @@ class Template extends Design {
 
 	public function settings($template_id)
 	{
+		$template = ee('Model')->get('Template', $template_id)->first();
 
+		if ( ! $template)
+		{
+			show_error(lang('error_no_template'));
+		}
 	}
 
 	private function loadCodeMirrorAssets()
