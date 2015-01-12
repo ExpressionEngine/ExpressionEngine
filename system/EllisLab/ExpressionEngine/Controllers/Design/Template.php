@@ -32,8 +32,6 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  */
 class Template extends Design {
 
-	protected $template_group;
-
 	/**
 	 * Constructor
 	 */
@@ -59,8 +57,6 @@ class Template extends Design {
 		{
 			show_error(sprintf(lang('error_no_template_group'), $group_name));
 		}
-
-		$this->template_group = $group;
 
 		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
 		{
@@ -127,7 +123,7 @@ class Template extends Design {
 			array(
 				'field' => 'template_name',
 				'label' => 'lang:template_name',
-				'rules' => 'required|callback__template_name_checks'
+				'rules' => 'required|callback__template_name_checks[' . $group->group_id . ']'
 			),
 			array(
 				'field' => 'template_type',
@@ -277,7 +273,7 @@ class Template extends Design {
 	/**
 	  *	 Check Template Name
 	  */
-	public function _template_name_checks($str)
+	public function _template_name_checks($str, $group_id)
 	{
 		if ( ! preg_match("#^[a-zA-Z0-9_\-/]+$#i", $str))
 		{
@@ -295,7 +291,7 @@ class Template extends Design {
 		}
 
 		$count = ee('Model')->get('Template')
-			->filter('group_id', $this->template_group->group_id)
+			->filter('group_id', $group_id)
 			->filter('template_name', $str)
 			->count();
 
