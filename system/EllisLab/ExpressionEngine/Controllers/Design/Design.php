@@ -45,7 +45,10 @@ class Design extends CP_Controller {
 		}
 
 		ee()->lang->loadfile('design');
+	}
 
+	protected function sidebarMenu($active_group_id = NULL)
+	{
 		// Register our menu
 		$vars = array(
 			'template_groups' => array(),
@@ -64,7 +67,6 @@ class Design extends CP_Controller {
 		);
 
 		// Template Groups
-		$uri = ee()->uri->uri_string();
 		$is_admin = ee()->session->userdata['group_id'] == 1;
 		$assigned_template_groups = ee()->session->userdata['assigned_template_groups'];
 
@@ -72,7 +74,7 @@ class Design extends CP_Controller {
 		{
 			if ($is_admin OR array_key_exists($group->group_id, $assigned_template_groups))
 			{
-				$class = '';
+				$class = ($active_group_id == $group->group_id) ? 'act ' : '';
 
 				$data = array(
 					'name' => $group->group_name,
@@ -80,19 +82,9 @@ class Design extends CP_Controller {
 					'edit_url' => cp_url('design/group/edit/' . $group->group_name),
 				);
 
-				if ($uri == 'cp/design/manager/' . $group->group_name)
-				{
-					$class = 'act ';
-				}
-
 				if ($group->is_site_default)
 				{
-					if (empty($class) &&
-						($uri == 'cp/design' OR $uri == 'cp/design/manager'))
-					{
-						$class = 'act ';
-					}
-					$class .= 'default ';
+					$class .= 'default';
 					$data['name'] = '<b>' . $group->group_name . '</b>';
 				}
 
@@ -318,6 +310,7 @@ class Design extends CP_Controller {
 			'file' => array('cp/v3/confirm_remove'),
 		));
 
+		$this->sidebarMenu($group->group_id);
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('template_manager');
 		ee()->view->cp_heading = sprintf(lang('templates_in_group'), $group->group_name);

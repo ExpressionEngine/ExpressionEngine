@@ -46,6 +46,7 @@ class Variables extends Design {
 			show_error(lang('unauthorized_access'));
 		}
 
+		$this->sidebarMenu();
 		$this->stdHeader();
 
 		$this->msm = (ee()->config->item('multiple_sites_enabled') == 'y');
