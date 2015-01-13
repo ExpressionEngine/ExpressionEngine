@@ -1,42 +1,48 @@
-<?php extend_view('account/_wrapper') ?>
+<?php extend_template('default-nav'); ?>
 
-<div>
-	<h3><?=lang('subscriptions')?></h3>
+<div class="tbl-ctrls">
+<?=form_open($table['base_url'])?>
+	<fieldset class="tbl-search right">
+		<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=$table['search']?>">
+		<input class="btn submit" type="submit" value="<?=lang('search_subscriptions')?>">
+	</fieldset>
+	<h1>
+		<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?>
+	</h1>
 
-	<?=form_open('C=myaccount'.AMP.'M=unsubscribe', '', $form_hidden)?>
+	<?php if (isset($filters)) echo $filters; ?>
 
-	<?php
-		$this->table->set_heading(
-			lang('title'), 
-			lang('type'), 
-			array('style'=>'width:5%','data'=>form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"'))
-		);
+	<?=ee('Alert')->getAllInlines()?>
 
-		if (count($subscriptions) == 0) // No results?  Bah, how boring...
-		{
-			$this->table->add_row(array('colspan'=>4, 'data'=>lang('no_subscriptions')));
-		}
-		else
-		{
-			foreach ($subscriptions as $subscription)
-			{
-				$this->table->add_row(
-										'<a href="'.$subscription['path'].'">'.$subscription['title'].'</a>',
-//											anchor($subscription['path'] ,$subscription['title']),
-										$subscription['type'],
-										'<input class="toggle" type="checkbox" name="toggle[]" value="'.$subscription['id'].'" />'
-									);
-			}
-		}
-	?>
+	<?php $this->view('_shared/table', $table); ?>
 
-	<?=$this->table->generate()?>
+	<?php if ( ! empty($pagination)) $this->view('_shared/pagination', $pagination); ?>
 
-	<?=$pagination?>
-
-	<?php if (count($subscriptions) > 0):?>
-	<p class="submit"><?=form_submit('unsubscribe', lang('unsubscribe'), 'class="submit"')?></p>
-	<?php endif;?>
-
-	<?=form_close()?>
+	<?php if ( ! empty($table['data'])): ?>
+	<fieldset class="tbl-bulk-act">
+		<select name="bulk_action">
+			<option value="">-- <?=lang('with_selected')?> --</option>
+			<option value="unsubscribe" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('unsubscribe')?></option>
+		</select>
+	   	<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
+	</fieldset>
+	<?php endif; ?>
+<?=form_close()?>
 </div>
+
+<?php $this->startOrAppendBlock('modals'); ?>
+
+<?php
+
+$modal_vars = array(
+	'name'		=> 'modal-confirm-remove',
+	'form_url'	=> $table['base_url'],
+	'hidden'	=> array(
+		'bulk_action'	=> 'unsubscribe'
+	)
+);
+
+$this->ee_view('_shared/modal_confirm_remove', $modal_vars);
+?>
+
+<?php $this->endBlock(); ?>
