@@ -40,6 +40,7 @@ return array(
 		// ..\Template
 		'Template' => 'EllisLab\ExpressionEngine\Model\Template\Template',
 		'TemplateGroup'  => 'EllisLab\ExpressionEngine\Model\Template\TemplateGroup',
+		'TemplateRoute'  => 'EllisLab\ExpressionEngine\Model\Template\TemplateRoute',
 		'GlobalVariable'  => 'EllisLab\ExpressionEngine\Model\Template\GlobalVariable',
 		'Snippet' => 'EllisLab\ExpressionEngine\Model\Template\Snippet',
 

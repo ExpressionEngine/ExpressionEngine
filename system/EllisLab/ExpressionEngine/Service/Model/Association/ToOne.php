@@ -41,7 +41,14 @@ abstract class ToOne extends Association {
 	{
 		if (is_array($models) || $models instanceOf Collection)
 		{
-			parent::fill($models[0]);
+			if (count($models))
+			{
+				parent::fill($models[0]);
+			}
+			else
+			{
+				parent::fill(NULL);
+			}
 		}
 		else
 		{
