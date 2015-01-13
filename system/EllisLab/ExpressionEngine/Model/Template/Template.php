@@ -56,6 +56,9 @@ class Template extends Model {
 				'left'  => 'template_id',
 				'right' => 'member_group'
 			)
+		),
+		'TemplateRoute' => array(
+			'type' => 'HasOne'
 		)
 	);
 
