@@ -345,6 +345,95 @@ $lang = array(
 'create_template_success_desc' =>
 'The template <b>%s/%s</b> has been created.',
 
+'edit_template' =>
+'Edit Template: %s/%s',
+
+'breadcrumb_group' =>
+'Group: %s',
+
+'last_edit' =>
+'Last Edit: %s by %s',
+
+'view_rendered' =>
+'view rendered',
+
+'notes' =>
+'Notes',
+
+'settings' =>
+'Settings',
+
+'access' =>
+'Access',
+
+'template_notes' =>
+'Template Notes',
+
+'template_notes_desc' =>
+'Use this form field to store notes and information about this template',
+
+'enable_caching' =>
+'Enable Caching?',
+
+'enable_caching_desc' =>
+'When set to <b>enable</b>, ExpressionEngine will cache this template.',
+
+'refresh_interval' =>
+'Refresh Interval',
+
+'refresh_interval_desc' =>
+'Set how often should the cache refresh in minutes.',
+
+'enable_php' =>
+'Allow PHP?',
+
+'enable_php_desc' =>
+'Allows the use of standard PHP within this template.',
+
+'parse_stage' =>
+'PHP Parsing Stage',
+
+'parse_stage_desc' =>
+'When set to <b>output</b>, PHP will be parsed after the template.',
+
+'hit_counter' =>
+'Hit Counter',
+
+'hit_counter_desc' =>
+'Shows the number of times this template has been accessed from the website.',
+
+'allowed_member_groups' =>
+'Allowed member groups',
+
+'allowed_member_groups_desc' =>
+'The following user groups are allowed to access this template.',
+
+'allowed_member_groups_super_admin' =>
+'Super Administrators are <b>always</b> allowed.',
+
+'non_access_redirect' =>
+'Non-access redirect',
+
+'non_access_redirect_desc' =>
+'Page to redirect users without permissions to.',
+
+'enable_http_authentication' =>
+'Enable HTTP Authentication?',
+
+'enable_http_authentication_desc' =>
+'When set to <b>enable</b>, users with permissions will have to login to view this template.',
+
+'template_route_override' =>
+'Template route override',
+
+'template_route_override_desc' =>
+'Overrides the ExpressionEngine standard <mark>group/template</mark> routing.',
+
+'require_all_segments' =>
+'Require all segments?',
+
+'require_all_segments_desc' =>
+'When set to <b>yes</b>, all segments must be present in the request <abbr title="Unified Resource Identifier">URI</abbr>.',
 
 //----------------------------
 // Menu
@@ -508,29 +597,14 @@ $lang = array(
 'cache_enable' =>
 'Enable Caching?',
 
-'refresh_interval' =>
-'Refresh Interval',
-
 'refresh_in_minutes' =>
 'In minutes',
-
-'enable_php' =>
-'Allow PHP?',
-
-'parse_stage' =>
-'PHP Parsing Stage',
 
 'protect_javascript' =>
 'Protect Javascript',
 
-'access' =>
-'Access',
-
 'security_warning' =>
 'Note: Allowing PHP in templates has security implications. Please consult the <a href=\'%s\' title=\'Documentation\'>documentation</a>.',
-
-'hit_counter' =>
-'Hit Counter',
 
 'input' =>
 'Input',
@@ -578,7 +652,7 @@ $lang = array(
 'Order',
 
 'webpage' =>
-'Web Page',
+'Web Page (HTML)',
 
 'css_stylesheet' =>
 'CSS',
@@ -597,9 +671,6 @@ $lang = array(
 
 'template_del_conf' =>
 'Template delete confirm',
-
-'edit_template' =>
-'Edit Template',
 
 'delete_template_group' =>
 'Delete Group',
@@ -627,9 +698,6 @@ $lang = array(
 
 'from_db' =>
 'From Database',
-
-'last_edit' =>
-'Last Edit:',
 
 'template_edit_date' =>
 'Template Edit Date',
@@ -923,13 +991,6 @@ ExpressionEngine tags, variables, or PHP, consider <a href =\'%s\'>Global Variab
 
 'alphabetize_group_order' =>
 'Alphabetize Group Order',
-
-'enable_http_authentication' =>
-'Enable HTTP Authentication?',
-
-'enable_http_authentication_subtext' =>
-'If turned on, users from the allowed groups above will have to login via their
-username and password to view the template.',
 
 'template_route' =>
 'Template Route:',

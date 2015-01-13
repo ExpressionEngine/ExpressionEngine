@@ -6,6 +6,7 @@ use EllisLab\ExpressionEngine\Controllers\Design\Design;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
+use EllisLab\ExpressionEngine\Model\Template\Template as TemplateModel;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -152,6 +153,7 @@ class Template extends Design {
 			$template->group_id = $group->group_id;
 			$template->template_name = ee()->input->post('template_name');
 			$template->template_type = ee()->input->post('template_type');
+			$template->last_author_id = ee()->session->userdata('member_id');
 			$template->save();
 
 			ee('Alert')->makeInline('settings-form')
@@ -191,6 +193,26 @@ class Template extends Design {
 		{
 			show_error(lang('unauthorized_access'));
 		}
+
+		$vars = array(
+			'form_url' => cp_url('design/template/edit/' . $template_id),
+			'settings' => $this->renderSettingsPartial($template),
+			'access' => $this->renderAccessPartial($template),
+			'template' => $template,
+			'group' => $group,
+			'author' => $template->getLastAuthor(),
+		);
+
+		$this->stdHeader();
+		$this->loadCodeMirrorAssets();
+
+		ee()->view->cp_page_title = sprintf(lang('edit_template'), $group->group_name, $template->template_name);
+		ee()->view->cp_breadcrumbs = array(
+			cp_url('design') => lang('template_manager'),
+			cp_url('design/manager/' . $group->group_name) => sprintf(lang('breadcrumb_group'), $group->group_name)
+		);
+
+		ee()->cp->render('design/template/edit', $vars);
 	}
 
 	public function remove()
@@ -216,6 +238,12 @@ class Template extends Design {
 		{
 			show_error(lang('error_no_template'));
 		}
+
+		$vars = array(
+			'form_url' => cp_url('design/template/edit/' . $template_id),
+			'template' => $template
+		);
+		ee()->cp->render('design/template/settings', $vars);
 	}
 
 	private function loadCodeMirrorAssets()
@@ -285,6 +313,51 @@ class Template extends Design {
 		}
 
 		return $template_types;
+	}
+
+	private function renderSettingsPartial(TemplateModel $template)
+	{
+		$vars = array(
+			'template' => $template,
+			'template_types' => $this->getTemplateTypes(),
+		);
+		return ee('View')->make('design/template/partials/settings')->render($vars);
+	}
+
+	private function renderAccessPartial(TemplateModel $template)
+	{
+		$existing_templates = array();
+
+		foreach (ee('Model')->get('TemplateGroup')->all() as $template_group)
+		{
+			$templates = array();
+			foreach ($template_group->getTemplates() as $template)
+			{
+				$templates[$template->template_id] = $template->template_name;
+			}
+			$existing_templates[$template_group->group_name] = $templates;
+		}
+
+		$member_gropus = ee('Model')->get('MemberGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('group_id', '!=', 1)
+			->all();
+
+		$route = $template->getTemplateRoute();
+
+		if ( ! $route)
+		{
+			$route = ee('Model')->make('TemplateRoute');
+		}
+
+		$vars = array(
+			'template' => $template,
+			'route' => $route,
+			'denied_member_groups' => $template->getNoAccess()->getIds(),
+			'member_groups' => $member_gropus,
+			'existing_templates' => $existing_templates
+		);
+		return ee('View')->make('design/template/partials/access')->render($vars);
 	}
 
 	/**
