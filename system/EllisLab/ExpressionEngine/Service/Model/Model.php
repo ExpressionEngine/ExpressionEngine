@@ -496,6 +496,49 @@ class Model {
 	}
 
 	/**
+	 * Events
+	 */
+	public function onBeforeFetch()
+	{
+		return TRUE;
+	}
+
+	public function onAfterFetch()
+	{
+		return TRUE;
+	}
+
+	public function onBeforeSave()
+	{
+		return TRUE;
+	}
+
+	public function onAfterSave()
+	{
+		return TRUE;
+	}
+
+	public function onBeforeDelete()
+	{
+		return TRUE;
+	}
+
+	public function onAfterDelete()
+	{
+		return TRUE;
+	}
+
+	public function onBeforeValidate()
+	{
+		return TRUE;
+	}
+
+	public function onAfterValidate()
+	{
+		return TRUE;
+	}
+
+	/**
 	 * Retrieve data as an array. All getters will be hit.
 	 *
 	 * @return array Data including NULL values
