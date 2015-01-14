@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Model\Site;
+namespace EllisLab\ExpressionEngine\Service\Model\Column;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -17,29 +17,24 @@ namespace EllisLab\ExpressionEngine\Model\Site;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Site Preferences
+ * ExpressionEngine PHP Serialized & Base64 Encoded Composite Column
  *
  * @package		ExpressionEngine
- * @subpackage	Site
- * @category	Model
+ * @subpackage	Model
+ * @category	Service
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-abstract class Preferences {
+abstract class Base64SerializedComposite extends Composite {
 
-	public function compress($preferences)
+	protected function serialize($data)
 	{
-		return base64_encode(serialize($preferences));
+		return base64_encode(serialize($data));
 	}
 
-	public function decompress($preferences)
+	protected function unserialize($data)
 	{
-		return base64_decode(unserialize($preferences));
+		return unserialize(base64_decode($data));
 	}
-
-	public abstract function populateFromCompressed($preferences);
-
-	public abstract function getCompressed();
-
 
 }
