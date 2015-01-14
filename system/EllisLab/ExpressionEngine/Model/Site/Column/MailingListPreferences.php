@@ -1,6 +1,8 @@
 <?php
 
-namespace Ellislab\ExpressionEngine\Model\Site\Preferences;
+namespace EllisLab\ExpressionEngine\Model\Site\Column;
+
+use EllisLab\ExpressionEngine\Service\Model\Column\Base64SerializedComposite;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -25,7 +27,7 @@ namespace Ellislab\ExpressionEngine\Model\Site\Preferences;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class MailingListPreferences extends ConcretePreferences {
+class MailingListPreferences extends Base64SerializedComposite {
 
 	protected $mailinglist_enabled;
 	protected $mailinglist_notify;

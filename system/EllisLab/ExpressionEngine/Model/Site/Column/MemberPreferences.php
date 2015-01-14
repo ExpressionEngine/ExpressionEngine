@@ -1,6 +1,8 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Model\Site\Preferences;
+namespace EllisLab\ExpressionEngine\Model\Site\Column;
+
+use EllisLab\ExpressionEngine\Service\Model\Column\Base64SerializedComposite;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -25,7 +27,7 @@ namespace EllisLab\ExpressionEngine\Model\Site\Preferences;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class MemberPreferences extends ConcretePreferences {
+class MemberPreferences extends Base64SerializedComposite {
 
 	protected $un_min_len;
 	protected $pw_min_len;
