@@ -219,7 +219,7 @@ class Translate extends Utilities {
 			}
 		}
 
-		$tmpfilename = tempnam('', '');
+		$tmpfilename = tempnam(sys_get_temp_dir(), '');
 		$zip = new ZipArchive();
 		if ($zip->open($tmpfilename, ZipArchive::CREATE) !== TRUE)
 		{
