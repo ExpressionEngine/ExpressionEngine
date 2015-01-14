@@ -334,21 +334,6 @@ class Template extends Design {
 		ee()->cp->render('design/template/edit', $vars);
 	}
 
-	public function remove()
-	{
-
-	}
-
-	public function export()
-	{
-
-	}
-
-	public function sync()
-	{
-
-	}
-
 	public function settings($template_id)
 	{
 		$template = ee('Model')->get('Template', $template_id)->first();
@@ -445,6 +430,56 @@ class Template extends Design {
 			'access' => $this->renderAccessPartial($template),
 		);
 		ee()->cp->render('design/template/settings', $vars);
+	}
+
+	public function search()
+	{
+		$search_terms = ee()->input->get_post('search');
+
+		$templates = ee('Model')->get('Template')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('template_data', 'LIKE', '%' . $search_terms . '%')
+			->all();
+
+		$base_url = new URL('design/template/search', ee()->session->session_id());
+
+		$table = $this->buildTableFromTemplateCollection($templates, TRUE);
+
+		$vars['table'] = $table->viewData($base_url);
+		$vars['form_url'] = $vars['table']['base_url'];
+		$vars['show_new_template_button'] = FALSE;
+
+		if ( ! empty($vars['table']['data']))
+		{
+			// Paginate!
+			$pagination = new Pagination(
+				$vars['table']['limit'],
+				$vars['table']['total_rows'],
+				$vars['table']['page']
+			);
+			$vars['pagination'] = $pagination->cp_links($base_url);
+		}
+
+		ee()->view->cp_heading = sprintf(
+			lang('search_results_heading'),
+			$templates->count(),
+			$search_terms
+		);
+
+		ee()->javascript->set_global('template_settings_url', cp_url('design/template/settings'));
+		ee()->javascript->set_global('lang.remove_confirm', lang('template') . ': <b>### ' . lang('templates') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/v3/confirm_remove',
+				'cp/manager'
+			),
+		));
+
+		$this->sidebarMenu();
+		$this->stdHeader();
+		ee()->view->cp_page_title = lang('template_manager');
+
+		ee()->cp->render('design/index', $vars);
 	}
 
 	private function updateSettingsAndAccess(TemplateModel $template)

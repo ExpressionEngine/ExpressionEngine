@@ -6,7 +6,7 @@ use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
-
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -126,7 +126,7 @@ class Design extends CP_Controller {
 	{
 		ee()->view->header = array(
 			'title' => lang('template_manager'),
-			'form_url' => cp_url('design'),
+			'form_url' => cp_url('design/template/search'),
 			'toolbar_items' => array(
 				'settings' => array(
 					'href' => cp_url('settings/template'),
@@ -151,7 +151,7 @@ class Design extends CP_Controller {
 	 * determine access.
 	 *
 	 * @param  int  $group_id    The id of the template group in question (optional)
-	 * @param  int  $template_id The id of the tempalte in question (optional)
+	 * @param  int  $template_id The id of the templete in question (optional)
 	 * @return bool TRUE if the user has edit privileges, FALSE if not
 	 */
 	protected function hasEditTemplatePrivileges($group_id = NULL, $template_id = NULL)
@@ -180,49 +180,8 @@ class Design extends CP_Controller {
 		return array_key_exists($group_id, ee()->session->userdata['assigned_template_groups']);
 	}
 
-	public function index()
+	protected function buildTableFromTemplateCollection(Collection $templates, $include_group_name = FALSE)
 	{
-		$this->manager();
-	}
-
-	public function manager($group_name = NULL)
-	{
-		if (is_null($group_name))
-		{
-			$group = ee('Model')->get('TemplateGroup')
-				->filter('is_site_default', 'y')
-				->first();
-		}
-		else
-		{
-			$group = ee('Model')->get('TemplateGroup')
-				->filter('group_name', $group_name)
-				->first();
-
-			if ( ! $group)
-			{
-				show_error(sprintf(lang('error_no_template_group'), $group_name));
-			}
-		}
-
-		if (ee()->input->post('bulk_action') == 'remove')
-		{
-			if ($this->hasEditTemplatePrivileges($group->group_id))
-			{
-				$this->remove(ee()->input->post('selection'));
-			}
-			else
-			{
-				show_error(lang('unauthorized_access'));
-			}
-		}
-		elseif (ee()->input->post('bulk_action') == 'export')
-		{
-			$this->export(ee()->input->post('selection'));
-		}
-
-		$vars = array();
-
 		$table = Table::create();
 		$table->setColumns(
 			array(
@@ -238,20 +197,21 @@ class Design extends CP_Controller {
 		);
 
 		$data = array();
-		$vars['group_id'] = $group->group_name;
-
-		$base_url = new URL('design/manager/' . $group->group_name, ee()->session->session_id());
 
 		$template_id = ee()->session->flashdata('template_id');
-
-		$templates = $group->getTemplates();
 
 		$hidden_indicator = ($this->config->item('hidden_template_indicator') != '') ? $this->config->item('hidden_template_indicator') : '_';
 		$hidden_indicator_length = strlen($hidden_indicator);
 
 		foreach ($templates as $template)
 		{
+			$group = $template->getTemplateGroup();
 			$template_name = htmlentities($template->template_name, ENT_QUOTES);
+
+			if ($include_group_name)
+			{
+				$template_name = $group->group_name . '/' . $template_name;
+			}
 
 			if (strncmp($template->template_name, $hidden_indicator, $hidden_indicator_length) == 0)
 			{
@@ -322,6 +282,59 @@ class Design extends CP_Controller {
 		}
 
 		$table->setData($data);
+
+		return $table;
+	}
+
+	public function index()
+	{
+		$this->manager();
+	}
+
+	public function manager($group_name = NULL)
+	{
+		if (is_null($group_name))
+		{
+			$group = ee('Model')->get('TemplateGroup')
+				->filter('is_site_default', 'y')
+				->first();
+		}
+		else
+		{
+			$group = ee('Model')->get('TemplateGroup')
+				->filter('group_name', $group_name)
+				->first();
+
+			if ( ! $group)
+			{
+				show_error(sprintf(lang('error_no_template_group'), $group_name));
+			}
+		}
+
+		if (ee()->input->post('bulk_action') == 'remove')
+		{
+			if ($this->hasEditTemplatePrivileges($group->group_id))
+			{
+				$this->remove(ee()->input->post('selection'));
+			}
+			else
+			{
+				show_error(lang('unauthorized_access'));
+			}
+		}
+		elseif (ee()->input->post('bulk_action') == 'export')
+		{
+			$this->export(ee()->input->post('selection'));
+		}
+
+		$vars = array();
+
+		$vars['show_new_template_button'] = TRUE;
+		$vars['group_id'] = $group->group_name;
+
+		$base_url = new URL('design/manager/' . $group->group_name, ee()->session->session_id());
+
+		$table = $this->buildTableFromTemplateCollection($group->getTemplates());
 
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
