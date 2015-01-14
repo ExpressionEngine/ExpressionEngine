@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Controllers\Design;
 
+use ZipArchive;
 use EllisLab\ExpressionEngine\Controllers\Design\Design;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
@@ -402,7 +403,7 @@ class Variables extends Design {
 	/**
 	 * Removes variables
 	 *
-	 * @param  str|array $variable_ids The ids of variables to remove
+	 * @param  int|array $variable_ids The ids of variables to remove
 	 * @return void
 	 */
 	private function remove($variable_ids)
@@ -422,6 +423,48 @@ class Variables extends Design {
 			->withTitle(lang('success'))
 			->addToBody(lang('template_variables_removed_desc'))
 			->addToBody($names);
+	}
+
+	/**
+	 * Export variables
+	 *
+	 * @param  int|array $variable_ids The ids of variables to export
+	 * @return void
+	 */
+	private function export($variable_ids)
+	{
+		if ( ! is_array($variable_ids))
+		{
+			$variable_ids = array($variable_ids);
+		}
+
+		// Create the Zip Archive
+		$zipfilename = tempnam(sys_get_temp_dir(), '');
+		$zip = new ZipArchive();
+		if ($zip->open($zipfilename, ZipArchive::CREATE) !== TRUE)
+		{
+			ee('Alert')->makeInline('settings-form')
+				->asIssue()
+				->withTitle(lang('error_export'))
+				->addToBody(lang('error_cannot_create_zip'));
+			return;
+		}
+
+		// Loop through variables and add them to the zip
+		$variables = ee('Model')->get('GlobalVariable', $variable_ids)
+			->all()
+			->each(function($variable) use($zip) {
+				$zip->addFromString($variable->variable_name . '.html', $variable->variable_data);
+			});
+
+		$zip->close();
+
+		$data = file_get_contents($zipfilename);
+		unlink($zipfilename);
+
+		ee()->load->helper('download');
+		force_download('ExpressionEngine-template-variables.zip', $data);
+		exit;
 	}
 
 	/**
