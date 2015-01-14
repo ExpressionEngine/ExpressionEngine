@@ -135,6 +135,9 @@ abstract class ToOne extends Association {
 	 */
 	protected function saveAllRelated()
 	{
-		$this->related->save();
+		if ( ! is_null($this->related))
+		{
+			$this->related->save();
+		}
 	}
 }
