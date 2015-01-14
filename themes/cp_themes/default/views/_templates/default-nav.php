@@ -8,7 +8,7 @@
 					<?php if (isset($header['form_url'])): ?>
 						<?=form_open($header['form_url'])?>
 							<fieldset class="tbl-search right">
-								<input placeholder="<?=lang('type_phrase')?>" type="text" value="">
+								<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="">
 								<?php if (isset($header['search_button_value'])): ?>
 								<input class="btn submit" type="submit" value="<?=$header['search_button_value']?>">
 								<?php else: ?>
