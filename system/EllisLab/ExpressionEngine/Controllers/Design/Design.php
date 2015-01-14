@@ -247,12 +247,24 @@ class Design extends CP_Controller {
 				$template_name = '<span class="index">' . $template_name . '</span>';
 			}
 
+			$view_url = ee()->functions->fetch_site_index();
+			$view_url = rtrim($view_url, '/').'/';
+
+			if ($template->template_type == 'css')
+			{
+				$view_url .= QUERY_MARKER.'css='.$group->group_name.'/'.$template->template_name;
+			}
+			else
+			{
+				$view_url .= $group->group_name.(($template->template_name == 'index') ? '' : '/'.$template->template_name);
+			}
+
 			$column = array(
 				$template_name,
 				$template->hits,
 				array('toolbar_items' => array(
 					'view' => array(
-						'href' => cp_url('design/template/view/' . $template->template_id),
+						'href' => ee()->cp->masked_url($view_url),
 						'title' => lang('view')
 					),
 					'edit' => array(
