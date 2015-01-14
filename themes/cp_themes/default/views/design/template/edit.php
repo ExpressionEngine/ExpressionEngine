@@ -51,7 +51,8 @@
 					<li><a href="" rel="t-3"><?=lang('access')?></a></li>
 				</ul>
 			</div>
-			<?=form_open($form_url, 'class="settings"')?>
+			<?=form_open($form_url, 'class="settings ajax-validate"')?>
+			<?=ee('Alert')->get('template-form')?>
 				<div class="tab t-0 tab-open">
 					<fieldset class="col-group last">
 						<div class="setting-txt col w-16">
@@ -80,10 +81,13 @@
 					<?=$access?>
 				</div>
 				<fieldset class="form-ctrls">
-					<input class="btn" type="submit" value="Update Template">
-					<input class="btn" type="submit" value="Update &amp; Finish Editing">
-					<input class="btn disable" type="submit" value="Fix Errors, Please">
-					<input class="btn work" type="submit" value="Saving...">
+					<?php if ( ! empty(validation_errors())): ?>
+					<button class="btn disable" disabled="disabled" type="submit" value="update" data-submit-text="<?=lang('btn_update_template')?>" data-work-text="<?=lang('btn_update_template_working')?>"><?=lang('btn_fix_errors')?></button>
+					<button class="btn disable" disabled="disabled" type="submit" value="finish" data-submit-text="<?=lang('btn_update_and_finish_editing')?>" data-work-text="<?=lang('btn_update_template_working')?>"><?=lang('btn_fix_errors')?></button>
+					<?php else: ?>
+					<button class="btn" type="submit" value="update" data-submit-text="<?=lang('btn_update_template')?>" data-work-text="<?=lang('btn_update_template_working')?>"><?=lang('btn_update_template')?></button>
+					<button class="btn" type="submit" value="finish" data-submit-text="<?=lang('btn_update_and_finish_editing')?>" data-work-text="<?=lang('btn_update_template_working')?>"><?=lang('btn_update_and_finish_editing')?></button>
+					<?php endif;?>
 				</fieldset>
 			</form>
 		</div>

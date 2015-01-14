@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Controllers\Design;
 
+use \EE_Route;
 use EllisLab\ExpressionEngine\Controllers\Design\Design;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
@@ -194,6 +195,77 @@ class Template extends Design {
 			show_error(lang('unauthorized_access'));
 		}
 
+		ee()->load->library('form_validation');
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'template_name',
+				'label' => 'lang:template_name',
+				'rules' => 'required|callback__template_name_checks[' . $group->group_id . ']'
+			),
+			array(
+				'field' => 'template_type',
+				'label' => 'lang:template_type',
+				'rules' => 'required'
+			),
+			array(
+				'field' => 'cache',
+				'label' => 'lang:enable_caching',
+				'rules' => 'enum[y,n]'
+			),
+			array(
+				'field' => 'allow_php',
+				'label' => 'lang:enable_php',
+				'rules' => 'enum[y,n]'
+			),
+			array(
+				'field' => 'php_parse_location',
+				'label' => 'lang:parse_stage',
+				'rules' => 'enum[i,o]'
+			),
+			array(
+				'field' => 'enable_http_auth',
+				'label' => 'lang:enable_http_authentication',
+				'rules' => 'enum[y,n]'
+			),
+			array(
+				'field' => 'route',
+				'label' => 'lang:template_route_override',
+				'rules' => 'callback__template_route_checks'
+			),
+			array(
+				'field' => 'route_required',
+				'label' => 'lang:require_all_segments',
+				'rules' => 'enum[y,n]'
+			)
+		));
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			$template->template_data = ee()->input->post('template_data');
+			$template->template_notes = ee()->input->post('template_notes');
+
+			$template = $this->updateSettingsAndAccess($template);
+
+			$template->save();
+
+			$alert = ee('Alert')->makeInline('template-form')
+				->asSuccess()
+				->withTitle(lang('update_template_success'))
+				->addToBody(sprintf(lang('eupdate_template_success_desc'), $group->group_name, $template->template_name));
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee('Alert')->makeInline('template-form')
+				->asIssue()
+				->withTitle(lang('update_template_error'))
+				->addToBody(lang('update_template_error_desc'));
+		}
+
 		$vars = array(
 			'form_url' => cp_url('design/template/edit/' . $template_id),
 			'settings' => $this->renderSettingsPartial($template),
@@ -244,6 +316,52 @@ class Template extends Design {
 			'template' => $template
 		);
 		ee()->cp->render('design/template/settings', $vars);
+	}
+
+	private function updateSettingsAndAccess(TemplateModel $template)
+	{
+		// Settings
+		$template->template_name = ee()->input->post('template_name');
+		$template->template_type = ee()->input->post('template_type');
+		$template->cache = ee()->input->post('cache');
+		$template->refresh = ee()->input->post('refresh');
+		$template->allow_php = ee()->input->post('allow_php');
+		$template->php_parse_location = ee()->input->post('php_parse_location');
+		$template->hits = ee()->input->post('hits');
+
+		// Access
+		$template->no_auth_bounce = ee()->input->post('no_auth_bounce');
+		$template->enable_http_auth = ee()->input->post('enable_http_auth');
+
+		// Route
+		$route = $template->getTemplateRoute();
+
+		if ( ! $route)
+		{
+			$route = ee('Model')->make('TemplateRoute');
+			$route->template_id = $template->template_id;
+		}
+
+		$route->route = ee()->input->post('route');
+		$route->route_required = ee()->input->post('route_required');
+
+		if (empty($route->route))
+		{
+			if ($route->route_id)
+			{
+				$route->delete();
+			}
+		}
+		else
+		{
+			ee()->load->library('template_router');
+			$ee_route = new EE_Route($route->route, $route->route_required);
+			$route->route_parsed = $ee_route->compile();
+
+			$route->save();
+		}
+
+		return $template;
 	}
 
 	private function loadCodeMirrorAssets()
@@ -387,16 +505,46 @@ class Template extends Design {
 
 		if ((strtolower($this->input->post('old_name')) != strtolower($str)) AND $count > 0)
 		{
-			$this->form_validation->set_message('_template_name_checks', lang('template_name_taken'));
+			ee()->form_validation->set_message('_template_name_checks', lang('template_name_taken'));
 			return FALSE;
 		}
 		elseif ($count > 1)
 		{
-			$this->form_validation->set_message('_template_name_checks', lang('template_name_taken'));
+			ee()->form_validation->set_message('_template_name_checks', lang('template_name_taken'));
 			return FALSE;
 		}
 
 		return TRUE;
+	}
+
+	public function _template_route_checks($str)
+	{
+		if (empty($str))
+		{
+			return TRUE;
+		}
+
+		ee()->load->library('template_router');
+		$ee_route = new EE_Route($str, ee()->input->post('route_required'));
+
+		$template_ids = ee('Model')->get('Template')
+			->fields('template_id')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all()
+			->getIds();
+
+		$routes = ee('Model')->get('TemplateRoute')
+			->filter('template_id', 'IN', $template_ids)
+			->all();
+
+		foreach ($routes as $route)
+		{
+			if ($ee_route->equals($route))
+			{
+				ee()->form_validation->set_message('_template_route_checks', lang('duplicate_route'));
+				return FALSE;
+			}
+		}
 	}
 }
 // EOF

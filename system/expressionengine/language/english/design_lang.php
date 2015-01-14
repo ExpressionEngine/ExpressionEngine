@@ -435,6 +435,27 @@ $lang = array(
 'require_all_segments_desc' =>
 'When set to <b>yes</b>, all segments must be present in the request <abbr title="Unified Resource Identifier">URI</abbr>.',
 
+'btn_update_template' =>
+'Update Template',
+
+'btn_update_and_finish_editing' =>
+'Update &amp; Finish Editing',
+
+'btn_update_template_working' =>
+'Saving...',
+
+'update_template_error' =>
+'Cannot Update Template',
+
+'update_template_error_desc' =>
+'We were unable to update this template, please review and fix the errors.',
+
+'update_template_success' =>
+'Template Updated',
+
+'eupdate_template_success_desc' =>
+'The template <b>%s/%s</b> has been updated.',
+
 //----------------------------
 // Menu
 //----------------------------

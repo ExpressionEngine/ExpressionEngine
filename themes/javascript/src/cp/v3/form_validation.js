@@ -138,7 +138,7 @@ EE.cp.formValidation = {
 
 		var that = this;
 
-		$('form').has('.form-ctrls input.btn').each(function(index, el) {
+		$('form').has('.form-ctrls .btn').each(function(index, el) {
 
 			var form = $(this),
 				button = form.find('.form-ctrls input.btn');
@@ -156,7 +156,7 @@ EE.cp.formValidation = {
 
 		$('input, select, textarea', form).change(function(event) {
 			var success = $('div.alert.success');
-			
+
 			if (success.size() > 0)
 			{
 				success.remove();
@@ -184,7 +184,7 @@ EE.cp.formValidation = {
 	_sendAjaxRequest: function(field) {
 
 		var form = field.parents('form');
-		
+
 		// Just reset the button for forms that don't validate over AJAX
 		if ( ! form.hasClass('ajax-validate')) {
 			this._toggleErrorForFields(form, field, 'success');
@@ -306,7 +306,7 @@ EE.cp.formValidation = {
 
 		// Only bind to text fields
 		$('input[type=text], input[type=password], textarea', container).unbind('keydown').keydown(function() {
-			
+
 			// Reset the timer, no need to validate if user is still typing
 			if (timer !== undefined)
 			{
