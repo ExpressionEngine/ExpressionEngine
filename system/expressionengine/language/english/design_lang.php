@@ -456,6 +456,15 @@ $lang = array(
 'eupdate_template_success_desc' =>
 'The template <b>%s/%s</b> has been updated.',
 
+'template_settings_and_access' =>
+'Template Settings &amp; Access',
+
+'btn_save_settings' =>
+'Save Settings',
+
+'btn_save_settings_working' =>
+'Saving...',
+
 //----------------------------
 // Menu
 //----------------------------

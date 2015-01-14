@@ -261,9 +261,10 @@ class Design extends CP_Controller {
 					),
 					'settings' => array(
 						'href' => '',
-						'rel' => 'modal-template-' . $template->template_id,
+						'rel' => 'modal-template-settings',
 						'class' => 'm-link',
-						'title' => lang('settings')
+						'title' => lang('settings'),
+						'data-template-id' => $template->template_id
 					),
 					'sync' => array(
 						'href' => cp_url('design/template/sync/' . $template->template_id),
@@ -273,7 +274,7 @@ class Design extends CP_Controller {
 				array(
 					'name' => 'selection[]',
 					'value' => $template->template_id,
-					'data'	=> array(
+					'data' => array(
 						'confirm' => lang('temlate') . ': <b>' . htmlentities($template->template_name, ENT_QUOTES) . '</b>'
 					)
 				)
@@ -318,9 +319,13 @@ class Design extends CP_Controller {
 			);
 		}
 
+		ee()->javascript->set_global('template_settings_url', cp_url('design/template/settings'));
 		ee()->javascript->set_global('lang.remove_confirm', lang('template') . ': <b>### ' . lang('templates') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array(
+				'cp/v3/confirm_remove',
+				'cp/manager'
+			),
 		));
 
 		$this->sidebarMenu($group->group_id);

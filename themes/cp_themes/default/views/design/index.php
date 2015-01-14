@@ -25,8 +25,19 @@
 
 <?php $this->startOrAppendBlock('modals'); ?>
 
-<?php
+<div class="modal-wrap modal-template-settings">
+	<div class="modal">
+		<div class="col-group">
+			<div class="col w-16">
+				<a class="m-close" href="#"></a>
+				<div class="box">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 
+<?php
 $modal_vars = array(
 	'name'		=> 'modal-confirm-remove-template',
 	'form_url'	=> $form_url,

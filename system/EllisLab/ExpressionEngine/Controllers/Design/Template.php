@@ -358,9 +358,91 @@ class Template extends Design {
 			show_error(lang('error_no_template'));
 		}
 
+		$group = $template->getTemplateGroup();
+
+		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		ee()->load->library('form_validation');
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'template_name',
+				'label' => 'lang:template_name',
+				'rules' => 'required|callback__template_name_checks[' . $group->group_id . ']'
+			),
+			array(
+				'field' => 'template_type',
+				'label' => 'lang:template_type',
+				'rules' => 'required'
+			),
+			array(
+				'field' => 'cache',
+				'label' => 'lang:enable_caching',
+				'rules' => 'enum[y,n]'
+			),
+			array(
+				'field' => 'allow_php',
+				'label' => 'lang:enable_php',
+				'rules' => 'enum[y,n]'
+			),
+			array(
+				'field' => 'php_parse_location',
+				'label' => 'lang:parse_stage',
+				'rules' => 'enum[i,o]'
+			),
+			array(
+				'field' => 'enable_http_auth',
+				'label' => 'lang:enable_http_authentication',
+				'rules' => 'enum[y,n]'
+			),
+			array(
+				'field' => 'route',
+				'label' => 'lang:template_route_override',
+				'rules' => 'callback__template_route_checks'
+			),
+			array(
+				'field' => 'route_required',
+				'label' => 'lang:require_all_segments',
+				'rules' => 'enum[y,n]'
+			)
+		));
+
+		if (AJAX_REQUEST && ! empty($_POST))
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			$template = $this->updateSettingsAndAccess($template);
+
+			$template->save();
+
+			$alert = ee('Alert')->makeInline('settings-form')
+				->asSuccess()
+				->withTitle(lang('update_template_success'))
+				->addToBody(sprintf(lang('eupdate_template_success_desc'), $group->group_name, $template->template_name))
+				->defer();
+
+			ee()->session->set_flashdata('template_id', $template->template_id);
+			ee()->functions->redirect(cp_url('design/manager/' . $group->group_name));
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee('Alert')->makeInline('template-form')
+				->asIssue()
+				->withTitle(lang('update_template_error'))
+				->addToBody(lang('update_template_error_desc'))
+				->defer();
+			ee()->functions->redirect(cp_url('design/template/edit/' . $template->template_id));
+		}
+
 		$vars = array(
-			'form_url' => cp_url('design/template/edit/' . $template_id),
-			'template' => $template
+			'form_url' => cp_url('design/template/settings/' . $template_id),
+			'settings' => $this->renderSettingsPartial($template),
+			'access' => $this->renderAccessPartial($template),
 		);
 		ee()->cp->render('design/template/settings', $vars);
 	}
@@ -430,8 +512,7 @@ class Template extends Design {
 					'codemirror/searchcursor',
 					'codemirror/search',
 
-					'cp/template_editor',
-					'cp/manager'
+					'cp/template_editor'
 				)
 			)
 		);
