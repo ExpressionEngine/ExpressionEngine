@@ -157,6 +157,8 @@ class Template extends Design {
 			$template->last_author_id = ee()->session->userdata('member_id');
 			$template->save();
 
+			ee()->session->set_flashdata('template_id', $template->template_id);
+
 			ee('Alert')->makeInline('settings-form')
 				->asSuccess()
 				->withTitle(lang('create_template_success'))
@@ -257,6 +259,13 @@ class Template extends Design {
 				->asSuccess()
 				->withTitle(lang('update_template_success'))
 				->addToBody(sprintf(lang('eupdate_template_success_desc'), $group->group_name, $template->template_name));
+
+			if (ee()->input->post('submit') == 'finish')
+			{
+				$alert->defer();
+				ee()->session->set_flashdata('template_id', $template->template_id);
+				ee()->functions->redirect(cp_url('design/manager/' . $group->group_name));
+			}
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{

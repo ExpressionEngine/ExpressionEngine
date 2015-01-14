@@ -82,11 +82,11 @@
 				</div>
 				<fieldset class="form-ctrls">
 					<?php if ( ! empty(validation_errors())): ?>
-					<button class="btn disable" disabled="disabled" type="submit" value="update" data-submit-text="<?=lang('btn_update_template')?>" data-work-text="<?=lang('btn_update_template_working')?>"><?=lang('btn_fix_errors')?></button>
-					<button class="btn disable" disabled="disabled" type="submit" value="finish" data-submit-text="<?=lang('btn_update_and_finish_editing')?>" data-work-text="<?=lang('btn_update_template_working')?>"><?=lang('btn_fix_errors')?></button>
+					<button class="btn disable" disabled="disabled" name="submit" type="submit" value="update" data-submit-text="<?=lang('btn_update_template')?>" data-work-text="<?=lang('btn_update_template_working')?>"><?=lang('btn_fix_errors')?></button>
+					<button class="btn disable" disabled="disabled" name="submit" type="submit" value="finish" data-submit-text="<?=lang('btn_update_and_finish_editing')?>" data-work-text="<?=lang('btn_update_template_working')?>"><?=lang('btn_fix_errors')?></button>
 					<?php else: ?>
-					<button class="btn" type="submit" value="update" data-submit-text="<?=lang('btn_update_template')?>" data-work-text="<?=lang('btn_update_template_working')?>"><?=lang('btn_update_template')?></button>
-					<button class="btn" type="submit" value="finish" data-submit-text="<?=lang('btn_update_and_finish_editing')?>" data-work-text="<?=lang('btn_update_template_working')?>"><?=lang('btn_update_and_finish_editing')?></button>
+					<button class="btn" name="submit" type="submit" value="update" data-submit-text="<?=lang('btn_update_template')?>" data-work-text="<?=lang('btn_update_template_working')?>"><?=lang('btn_update_template')?></button>
+					<button class="btn" name="submit" type="submit" value="finish" data-submit-text="<?=lang('btn_update_and_finish_editing')?>" data-work-text="<?=lang('btn_update_template_working')?>"><?=lang('btn_update_and_finish_editing')?></button>
 					<?php endif;?>
 				</fieldset>
 			</form>

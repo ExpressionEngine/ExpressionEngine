@@ -226,6 +226,8 @@ class Design extends CP_Controller {
 
 		$base_url = new URL('design/manager/' . $group->group_name, ee()->session->session_id());
 
+		$template_id = ee()->session->flashdata('template_id');
+
 		$templates = $group->getTemplates();
 
 		$hidden_indicator = ($this->config->item('hidden_template_indicator') != '') ? $this->config->item('hidden_template_indicator') : '_';
@@ -245,7 +247,7 @@ class Design extends CP_Controller {
 				$template_name = '<span class="index">' . $template_name . '</span>';
 			}
 
-			$data[] = array(
+			$column = array(
 				$template_name,
 				$template->hits,
 				array('toolbar_items' => array(
@@ -275,7 +277,18 @@ class Design extends CP_Controller {
 						'confirm' => lang('temlate') . ': <b>' . htmlentities($template->template_name, ENT_QUOTES) . '</b>'
 					)
 				)
+			);
 
+			$attrs = array();
+
+			if ($template_id && $template->template_id == $template_id)
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs'		=> $attrs,
+				'columns'	=> $column
 			);
 		}
 
