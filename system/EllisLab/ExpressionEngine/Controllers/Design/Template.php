@@ -293,6 +293,9 @@ class Template extends Design {
 			cp_url('design/manager/' . $group->group_name) => sprintf(lang('breadcrumb_group'), $group->group_name)
 		);
 
+		// Supress browser XSS check that could cause obscure bug after saving
+		ee()->output->set_header("X-XSS-Protection: 0");
+
 		ee()->cp->render('design/template/edit', $vars);
 	}
 
