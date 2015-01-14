@@ -187,23 +187,6 @@ class Design extends CP_Controller {
 
 	public function manager($group_name = NULL)
 	{
-		$vars = array();
-
-		$table = Table::create();
-		$table->setColumns(
-			array(
-				'template',
-				'hits',
-				'manage' => array(
-					'type'	=> Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=> Table::COL_CHECKBOX
-				)
-			)
-		);
-
-		$data = array();
 		if (is_null($group_name))
 		{
 			$group = ee('Model')->get('TemplateGroup')
@@ -222,6 +205,39 @@ class Design extends CP_Controller {
 			}
 		}
 
+		if (ee()->input->post('bulk_action') == 'remove')
+		{
+			if ($this->hasEditTemplatePrivileges($group->group_id))
+			{
+				$this->remove(ee()->input->post('selection'));
+			}
+			else
+			{
+				show_error(lang('unauthorized_access'));
+			}
+		}
+		elseif (ee()->input->post('bulk_action') == 'export')
+		{
+			$this->export(ee()->input->post('selection'));
+		}
+
+		$vars = array();
+
+		$table = Table::create();
+		$table->setColumns(
+			array(
+				'template',
+				'hits',
+				'manage' => array(
+					'type'	=> Table::COL_TOOLBAR
+				),
+				array(
+					'type'	=> Table::COL_CHECKBOX
+				)
+			)
+		);
+
+		$data = array();
 		$vars['group_id'] = $group->group_name;
 
 		$base_url = new URL('design/manager/' . $group->group_name, ee()->session->session_id());
@@ -346,6 +362,30 @@ class Design extends CP_Controller {
 		ee()->view->cp_heading = sprintf(lang('templates_in_group'), $group->group_name);
 
 		ee()->cp->render('design/index', $vars);
+	}
+
+	private function remove($template_ids)
+	{
+		if ( ! is_array($template_ids))
+		{
+			$template_ids = array($template_ids);
+		}
+
+		$template_names = array();
+		$templates = ee('Model')->get('Template', $template_ids)->all();
+
+		foreach ($templates as $template)
+		{
+			$template_names[] = $template->getTemplateGroup()->group_name . '/' . $template->template_name;
+		}
+
+		$templates->delete();
+
+		ee('Alert')->makeInline('settings-form')
+			->asSuccess()
+			->withTitle(lang('success'))
+			->addToBody(lang('templates_removed_desc'))
+			->addToBody($template_names);
 	}
 }
 // EOF

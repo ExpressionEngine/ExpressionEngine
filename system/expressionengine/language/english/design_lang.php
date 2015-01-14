@@ -465,6 +465,9 @@ $lang = array(
 'btn_save_settings_working' =>
 'Saving...',
 
+'templates_removed_desc' =>
+'The following templates were removed',
+
 //----------------------------
 // Menu
 //----------------------------
