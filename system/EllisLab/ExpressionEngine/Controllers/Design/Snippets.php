@@ -109,7 +109,7 @@ class Snippets extends Design {
 						'title' => lang('edit')
 					),
 					'find' => array(
-						'href' => cp_url('design/snippets/find/' . $snippet->snippet_name),
+						'href' => cp_url('design/template/search', array('search' => '{' . $snippet->snippet_name . '}')),
 						'title' => lang('find')
 					),
 				)),
