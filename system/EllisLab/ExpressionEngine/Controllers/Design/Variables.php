@@ -109,7 +109,7 @@ class Variables extends Design {
 						'title' => lang('edit')
 					),
 					'find' => array(
-						'href' => cp_url('design/variables/find/' . $variable->variable_name),
+						'href' => cp_url('design/template/search', array('search' => '{' . $variable->variable_name . '}')),
 						'title' => lang('find')
 					),
 				)),
