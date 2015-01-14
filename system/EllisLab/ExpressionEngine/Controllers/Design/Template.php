@@ -305,6 +305,20 @@ class Template extends Design {
 			'author' => $template->getLastAuthor(),
 		);
 
+		$view_url = ee()->functions->fetch_site_index();
+		$view_url = rtrim($view_url, '/').'/';
+
+		if ($template->template_type == 'css')
+		{
+			$view_url .= QUERY_MARKER.'css='.$group->group_name.'/'.$template->template_name;
+		}
+		else
+		{
+			$view_url .= $group->group_name.(($template->template_name == 'index') ? '' : '/'.$template->template_name);
+		}
+
+		$vars['view_path'] = ee()->cp->masked_url($view_url);
+
 		$this->stdHeader();
 		$this->loadCodeMirrorAssets();
 
