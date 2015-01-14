@@ -145,6 +145,24 @@ if (isset($ajax_validate) && $ajax_validate == TRUE)
 		<?php endforeach ?>
 	<?php endforeach ?>
 	<fieldset class="form-ctrls">
+		<?php if (isset($buttons)): ?>
+			<?php foreach ($buttons as $button): ?>
+				<?php
+					$class = 'btn';
+					$disabled = '';
+					$button_text = lang($button['text']);
+
+					if ( ! empty(validation_errors()))
+					{
+						$class = 'btn disable';
+						$disabled = ' disabled="disabled"';
+						$button_text = lang('btn_fix_errors');
+					}
+				?>
+				<button class="<?=$class?>" name="<?=$button['name']?>" type="<?=$button['type']?>" value="<?=$button['value']?>" data-submit-text="<?=lang($button['text'])?>" data-work-text="<?=lang($button['working'])?>"><?=$button_text?></button>
+			<?php endforeach; ?>
+		<?php else: ?>
 		<?=cp_form_submit($save_btn_text, $save_btn_text_working)?>
+		<?php endif; ?>
 	</fieldset>
 </form>

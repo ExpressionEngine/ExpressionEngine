@@ -82,8 +82,22 @@ class Template extends Design {
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'base_url' => cp_url('design/template/create/' . $group_name),
-			'save_btn_text' => 'btn_create_template',
-			'save_btn_text_working' => 'btn_create_template_working',
+			'buttons' => array(
+				array(
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'create',
+					'text' => 'btn_create_template',
+					'working' => 'btn_create_template_working'
+				),
+				array(
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'edit',
+					'text' => 'btn_create_and_edit_template',
+					'working' => 'btn_create_template_working'
+				),
+			),
 			'sections' => array(
 				array(
 					array(
@@ -165,7 +179,14 @@ class Template extends Design {
 				->addToBody(sprintf(lang('create_template_success_desc'), $group_name, $template->template_name))
 				->defer();
 
-			ee()->functions->redirect(cp_url('design/manager/' . $group->group_name));
+			if (ee()->input->post('submit') == 'edit')
+			{
+				ee()->functions->redirect(cp_url('design/template/edit/' . $template->template_id));
+			}
+			else
+			{
+				ee()->functions->redirect(cp_url('design/manager/' . $group->group_name));
+			}
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
