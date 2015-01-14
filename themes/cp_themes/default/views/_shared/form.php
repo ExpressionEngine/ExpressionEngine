@@ -152,14 +152,14 @@ if (isset($ajax_validate) && $ajax_validate == TRUE)
 					$disabled = '';
 					$button_text = lang($button['text']);
 
-					if ( ! empty(validation_errors()))
+					if (ee()->form_validation->errors_exist())
 					{
 						$class = 'btn disable';
-						$disabled = ' disabled="disabled"';
+						$disabled = 'disabled="disabled"';
 						$button_text = lang('btn_fix_errors');
 					}
 				?>
-				<button class="<?=$class?>" name="<?=$button['name']?>" type="<?=$button['type']?>" value="<?=$button['value']?>" data-submit-text="<?=lang($button['text'])?>" data-work-text="<?=lang($button['working'])?>"><?=$button_text?></button>
+				<button class="<?=$class?>" <?=$disabled?> name="<?=$button['name']?>" type="<?=$button['type']?>" value="<?=$button['value']?>" data-submit-text="<?=lang($button['text'])?>" data-work-text="<?=lang($button['working'])?>"><?=$button_text?></button>
 			<?php endforeach; ?>
 		<?php else: ?>
 		<?=cp_form_submit($save_btn_text, $save_btn_text_working)?>
