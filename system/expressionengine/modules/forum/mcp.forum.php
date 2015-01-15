@@ -2765,6 +2765,9 @@ class Forum_mcp {
 			$d = array(
 					'site_id'			=> ee()->input->post('board_site_id'),
 					'template_name'		=> 'admin_notify_forum_post',
+					'template_type'		=> 'email',
+					'template_subtype'	=> 'forums',
+					'edit_date'			=> time(),
 					'data_title'		=> addslashes(trim(admin_notify_forum_post_title())),
 					'template_data'		=> addslashes(admin_notify_forum_post())
 				);
@@ -2774,6 +2777,9 @@ class Forum_mcp {
 			$d = array(
 					'site_id'			=> ee()->input->post('board_site_id'),
 					'template_name'		=> 'forum_post_notification',
+					'template_type'		=> 'email',
+					'template_subtype'	=> 'forums',
+					'edit_date'			=> time(),
 					'data_title'		=> addslashes(trim(forum_post_notification_title())),
 					'template_data'		=> addslashes(forum_post_notification())
 				);
@@ -2783,6 +2789,9 @@ class Forum_mcp {
 			$d = array(
 					'site_id'			=> ee()->input->post('board_site_id'),
 					'template_name'		=> 'forum_moderation_notification',
+					'template_type'		=> 'email',
+					'template_subtype'	=> 'forums',
+					'edit_date'			=> time(),
 					'data_title'		=> addslashes(trim(forum_moderation_notification_title())),
 					'template_data'		=> addslashes(forum_moderation_notification())
 				);
@@ -2792,6 +2801,9 @@ class Forum_mcp {
 			$d = array(
 					'site_id'			=> ee()->input->post('board_site_id'),
 					'template_name'		=> 'forum_report_notification',
+					'template_type'		=> 'email',
+					'template_subtype'	=> 'forums',
+					'edit_date'			=> time(),
 					'data_title'		=> addslashes(trim(forum_report_notification_title())),
 					'template_data'		=> addslashes(forum_report_notification())
 				);
