@@ -51,7 +51,7 @@ class System extends Design {
 	{
 		$templates = ee('Model')->get('SpecialtyTemplate')
 			->filter('site_id', ee()->config->item('site_id'))
-			->filter('template_name', 'IN', array('offline_template', 'message_template'))
+			->filter('template_type', 'system')
 			->all();
 
 		$vars = array();
@@ -109,7 +109,7 @@ class System extends Design {
 	{
 		$template = ee('Model')->get('SpecialtyTemplate', $template_id)
 			->filter('site_id', ee()->config->item('site_id'))
-			->filter('template_name', 'IN', array('offline_template', 'message_template'))
+				->filter('template_type', 'system')
 			->first();
 
 		if ( ! $template)
@@ -120,6 +120,8 @@ class System extends Design {
 		if ( ! empty($_POST))
 		{
 			$template->template_data = ee()->input->post('template_data');
+			$template->edit_date = ee()->localize->now;
+			$template->last_author_id = ee()->session->userdata('member_id');
 			$template->save();
 
 			$alert = ee('Alert')->makeInline('template-form')
