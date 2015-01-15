@@ -43,6 +43,7 @@ return array(
 		'TemplateRoute'  => 'EllisLab\ExpressionEngine\Model\Template\TemplateRoute',
 		'GlobalVariable'  => 'EllisLab\ExpressionEngine\Model\Template\GlobalVariable',
 		'Snippet' => 'EllisLab\ExpressionEngine\Model\Template\Snippet',
+		'SpecialtyTemplate' => 'EllisLab\ExpressionEngine\Model\Template\SpecialtyTemplate',
 
 	# EllisLab\ExpressionEngine\Module..
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ellislab\ExpressionEngine\Model\Site\Preferences;
+namespace EllisLab\ExpressionEngine\Service\Model\Column;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -17,19 +17,24 @@ namespace Ellislab\ExpressionEngine\Model\Site\Preferences;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Mailing List Preferences
+ * ExpressionEngine PHP Serialized & Base64 Encoded Composite Column
  *
  * @package		ExpressionEngine
- * @subpackage	Site\Preferences
- * @category	Model
+ * @subpackage	Model
+ * @category	Service
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class MailingListPreferences extends ConcretePreferences {
+abstract class Base64SerializedComposite extends Composite {
 
-	protected $mailinglist_enabled;
-	protected $mailinglist_notify;
-	protected $mailinglist_notify_emails;
+	protected function serialize($data)
+	{
+		return base64_encode(serialize($data));
+	}
 
+	protected function unserialize($data)
+	{
+		return unserialize(base64_decode($data));
+	}
 
 }

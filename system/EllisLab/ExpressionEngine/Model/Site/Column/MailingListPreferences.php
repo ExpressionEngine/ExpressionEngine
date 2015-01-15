@@ -1,6 +1,8 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Model\Site\Preferences;
+namespace EllisLab\ExpressionEngine\Model\Site\Column;
+
+use EllisLab\ExpressionEngine\Service\Model\Column\Base64SerializedComposite;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -17,7 +19,7 @@ namespace EllisLab\ExpressionEngine\Model\Site\Preferences;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Channel Preferences
+ * ExpressionEngine Mailing List Preferences
  *
  * @package		ExpressionEngine
  * @subpackage	Site\Preferences
@@ -25,15 +27,11 @@ namespace EllisLab\ExpressionEngine\Model\Site\Preferences;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class ChannelPreferences extends ConcretePreferences {
+class MailingListPreferences extends Base64SerializedComposite {
 
-	protected $image_resize_protocol;
-	protected $image_library_path;
-	protected $thumbnail_prefix;
-	protected $word_separator;
-	protected $use_category_name;
-	protected $reserved_category_word;
-	protected $auto_convert_high_ascii;
-	protected $new_posts_clear_caches;
-	protected $auto_assign_cat_parents;
+	protected $mailinglist_enabled;
+	protected $mailinglist_notify;
+	protected $mailinglist_notify_emails;
+
+
 }

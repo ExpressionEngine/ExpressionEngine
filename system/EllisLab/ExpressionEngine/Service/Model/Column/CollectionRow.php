@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Model\Site;
+namespace EllisLab\ExpressionEngine\Service\Model\Column;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -17,29 +17,25 @@ namespace EllisLab\ExpressionEngine\Model\Site;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Site Preferences
+ * ExpressionEngine Column Interface
  *
  * @package		ExpressionEngine
- * @subpackage	Site
- * @category	Model
+ * @subpackage	Model
+ * @category	Service
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-abstract class Preferences {
+abstract class CollectionRow {
 
-	public function compress($preferences)
+	protected $_parent;
+
+	public function setParentColumn($parent)
 	{
-		return base64_encode(serialize($preferences));
+		$this->_parent = $parent;
 	}
 
-	public function decompress($preferences)
+	public function delete()
 	{
-		return base64_decode(unserialize($preferences));
+		$this->_parent->deleteRow($this);
 	}
-
-	public abstract function populateFromCompressed($preferences);
-
-	public abstract function getCompressed();
-
-
 }

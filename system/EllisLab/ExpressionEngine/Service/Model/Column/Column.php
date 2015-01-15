@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Model\Site\Preferences;
+namespace EllisLab\ExpressionEngine\Service\Model\Column;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -17,22 +17,16 @@ namespace EllisLab\ExpressionEngine\Model\Site\Preferences;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Template Preferences
+ * ExpressionEngine Column Interface
  *
  * @package		ExpressionEngine
- * @subpackage	Site\Preferences
- * @category	Model
+ * @subpackage	Model
+ * @category	Service
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class TemplatePreferences extends ConcretePreferences {
+interface Column {
 
-	protected $enable_template_routes;
-	protected $strict_urls;
-	protected $site_404;
-	protected $save_tmpl_revisions;
-	protected $max_tmpl_revisions;
-	protected $save_tmpl_files;
-	protected $tmpl_file_basepath;
-
+	public function fill($db_data);
+	public function getValue();
 }
