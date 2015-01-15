@@ -44,6 +44,7 @@ class Updater {
 				'_insert_cookie_settings_into_db',
 				'_create_plugins_table',
 				'_remove_accessories_table',
+				'_update_specialty_templates_table',
 			)
 		);
 
@@ -218,6 +219,86 @@ class Updater {
 		ee()->dbforge->drop_column('member_groups', 'can_access_accessories');
 	}
 
+	/**
+	 * Adds 4 columns to the specialty_templates table
+	 */
+	private function _update_specialty_templates_table()
+	{
+		ee()->smartforge->add_column(
+			'specialty_templates',
+			array(
+				'template_type' => array(
+					'type'			=> 'varchar',
+					'constraint'    => 16,
+					'null'			=> TRUE
+				),
+				'template_subtype' => array(
+					'type'			=> 'varchar',
+					'constraint'    => 16,
+					'null'			=> TRUE
+				),
+				'edit_date' => array(
+					'type'			=> 'int',
+					'constraint'    => 10,
+					'null'			 => FALSE,
+					'default'        => 0
+				),
+				'last_author_id' => array(
+					'type'			=> 'int',
+					'constraint'    => 10,
+					'null'			 => FALSE,
+					'unsigned'		 => TRUE,
+					'default'        => 0
+				),
+			)
+		);
+
+		$system = array('offline_template', 'message_template');
+		$email = array(
+			'admin_notify_comment' => 'comments',
+			'admin_notify_entry' => 'content',
+			'admin_notify_mailinglist' => 'mailing_lists',
+			'admin_notify_reg' => 'members',
+			'comments_opened_notification' => 'comments',
+			'comment_notification' => 'comments',
+			'decline_member_validation' => 'members',
+			'forgot_password_instructions' => 'members',
+			'mailinglist_activation_instructions' => 'mailing_lists',
+			'mbr_activation_instructions' => 'members',
+			'pm_inbox_full' => 'private_messages',
+			'private_message_notification' => 'private_messages',
+			'validated_member_notify' => 'members',
+			'admin_notify_forum_post' => 'forums',
+			'forum_post_notification' => 'forums',
+			'forum_moderation_notification' => 'forums',
+			'forum_report_notification' => 'forums'
+		);
+
+		// Mark the email templates
+		$templates = ee()->db->select('template_id', 'template_nane', 'template_type', 'template_subtype', 'edit_date')
+			->get('specialty_templates')
+			->result_array();
+
+		if ( ! empty($templates))
+		{
+			foreach ($templates as $index => $template)
+			{
+				$templates[$index]['template_type'] = time();
+
+				if (in_array($template['template_nane'], $system))
+				{
+					$templates[$index]['template_type'] = 'system';
+				}
+				elseif (in_array($template['template_nane'], array_keys($email)))
+				{
+					$templates[$index]['template_type'] = 'email';
+					$templates[$index]['template_subtype'] = $email[$template['template_nane']];
+				}
+			}
+
+			ee()->db->update_batch('specialty_templates', $templates, 'template_id');
+		}
+	}
 }
 /* END CLASS */
 
