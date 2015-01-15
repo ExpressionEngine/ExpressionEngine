@@ -126,6 +126,12 @@ class Model {
 	protected function hasColumn($name)
 	{
 		$columns = $this->getMetaData('columns');
+
+		if ( ! isset($columns))
+		{
+			return FALSE;
+		}
+
 		return array_key_exists($name, $columns);
 	}
 
