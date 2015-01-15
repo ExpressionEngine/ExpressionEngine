@@ -45,4 +45,41 @@ class SpecialtyTemplate extends Model {
 	protected $data_title;
 	protected $template_data;
 
+	/**
+	 * A setter for the enable_template property
+	 *
+	 * @param str|bool $new_value Accept TRUE or 'y' for 'yes' or FALSE or 'n'
+	 *   for 'no'
+	 * @throws InvalidArgumentException if the provided argument is not a
+	 *   boolean or is not 'y' or 'n'.
+	 * @return void
+	 */
+	protected function set__enable_template($new_value)
+	{
+		if ($new_value === TRUE || $new_value == 'y')
+		{
+			$this->enable_template = 'y';
+		}
+
+		elseif ($new_value === FALSE || $new_value == 'n')
+		{
+			$this->enable_template = 'n';
+		}
+
+		else
+		{
+			throw new InvalidArgumentException('enable_template must be TRUE or "y", or FALSE or "n"');
+		}
+	}
+
+	/**
+	 * A getter for the enable_template property
+	 *
+	 * @return bool TRUE if this is the default; FALSE if not
+	 */
+	protected function get__enable_template()
+	{
+		return ($this->enable_template == 'y');
+	}
+
 }
