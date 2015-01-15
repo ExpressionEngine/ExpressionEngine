@@ -282,7 +282,7 @@ class Template extends Design {
 			$alert = ee('Alert')->makeInline('template-form')
 				->asSuccess()
 				->withTitle(lang('update_template_success'))
-				->addToBody(sprintf(lang('eupdate_template_success_desc'), $group->group_name, $template->template_name));
+				->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name . '/' . $template->template_name));
 
 			if (ee()->input->post('submit') == 'finish')
 			{
@@ -325,7 +325,7 @@ class Template extends Design {
 		$this->stdHeader();
 		$this->loadCodeMirrorAssets();
 
-		ee()->view->cp_page_title = sprintf(lang('edit_template'), $group->group_name, $template->template_name);
+		ee()->view->cp_page_title = sprintf(lang('edit_template'), $group->group_name . '/' . $template->template_name);
 		ee()->view->cp_breadcrumbs = array(
 			cp_url('design') => lang('template_manager'),
 			cp_url('design/manager/' . $group->group_name) => sprintf(lang('breadcrumb_group'), $group->group_name)

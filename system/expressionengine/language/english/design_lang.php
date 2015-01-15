@@ -346,7 +346,7 @@ $lang = array(
 'The template <b>%s/%s</b> has been created.',
 
 'edit_template' =>
-'Edit Template: %s/%s',
+'Edit Template: %s',
 
 'breadcrumb_group' =>
 'Group: %s',
@@ -453,8 +453,8 @@ $lang = array(
 'update_template_success' =>
 'Template Updated',
 
-'eupdate_template_success_desc' =>
-'The template <b>%s/%s</b> has been updated.',
+'update_template_success_desc' =>
+'The template <b>%s</b> has been updated.',
 
 'template_settings_and_access' =>
 'Template Settings &amp; Access',
@@ -467,6 +467,20 @@ $lang = array(
 
 'templates_removed_desc' =>
 'The following templates were removed',
+
+// System Templates -> Messages
+
+'system' =>
+'System',
+
+'system_message_templates' =>
+'System Message Templates',
+
+'offline_template' =>
+'Site Offline',
+
+'message_template' =>
+'User Messages',
 
 //----------------------------
 // Menu
@@ -575,9 +589,6 @@ $lang = array(
 
 'user_messages_template' =>
 'User Message Template',
-
-'offline_template' =>
-'System Offline Template',
 
 'offline_template_desc' =>
 'This template contains the page that is shown when your site is offline.',
