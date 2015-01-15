@@ -169,6 +169,7 @@ class Template extends Design {
 			$template->group_id = $group->group_id;
 			$template->template_name = ee()->input->post('template_name');
 			$template->template_type = ee()->input->post('template_type');
+			$template->edit_date = ee()->localize->now;
 			$template->last_author_id = ee()->session->userdata('member_id');
 			$template->save();
 
@@ -274,6 +275,8 @@ class Template extends Design {
 		{
 			$template->template_data = ee()->input->post('template_data');
 			$template->template_notes = ee()->input->post('template_notes');
+			$template->edit_date = ee()->localize->now;
+			$template->last_author_id = ee()->session->userdata('member_id');
 
 			$template = $this->updateSettingsAndAccess($template);
 
