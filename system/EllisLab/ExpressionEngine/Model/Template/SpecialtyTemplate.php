@@ -43,7 +43,11 @@ class SpecialtyTemplate extends Model {
 	protected $enable_template;
 	protected $template_name;
 	protected $data_title;
+	protected $template_type;
+	protected $template_subtype;
 	protected $template_data;
+	protected $edit_date;
+	protected $last_author_id;
 
 	/**
 	 * A setter for the enable_template property
