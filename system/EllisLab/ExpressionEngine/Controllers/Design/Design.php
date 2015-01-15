@@ -48,8 +48,14 @@ class Design extends CP_Controller {
 		ee()->lang->loadfile('design');
 	}
 
-	protected function sidebarMenu($active_group_id = NULL)
+	protected function sidebarMenu($active = NULL)
 	{
+		$active_group_id = NULL;
+		if (is_numeric($active))
+		{
+			$active_group_id = (int) $active;
+		}
+
 		// Register our menu
 		$vars = array(
 			'template_groups' => array(),
@@ -57,10 +63,12 @@ class Design extends CP_Controller {
 				array(
 					'name' => lang('messages'),
 					'url' => cp_url('design/system'),
+					'class' => ($active == 'messages') ? 'act' : ''
 				),
 				array(
 					'name' => lang('email'),
 					'url' => cp_url('design/email'),
+					'class' => ($active == 'email') ? 'act' : ''
 				)
 			)
 		);
@@ -102,6 +110,7 @@ class Design extends CP_Controller {
 			$vars['system_templates'][] = array(
 				'name' => lang('members'),
 				'url' => cp_url('design/members'),
+				'class' => ($active == 'members') ? 'act' : ''
 			);
 		}
 
@@ -110,6 +119,7 @@ class Design extends CP_Controller {
 			$vars['system_templates'][] = array(
 				'name' => lang('forums'),
 				'url' => cp_url('design/forums'),
+				'class' => ($active == 'forums') ? 'act' : ''
 			);
 		}
 
