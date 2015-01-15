@@ -152,7 +152,7 @@ class Design extends CP_Controller {
 	 * determine access.
 	 *
 	 * @param  int  $group_id    The id of the template group in question (optional)
-	 * @param  int  $template_id The id of the templete in question (optional)
+	 * @param  int  $template_id The id of the template in question (optional)
 	 * @return bool TRUE if the user has edit privileges, FALSE if not
 	 */
 	protected function hasEditTemplatePrivileges($group_id = NULL, $template_id = NULL)
