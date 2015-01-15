@@ -205,7 +205,9 @@ class Template extends Design {
 
 	public function edit($template_id)
 	{
-		$template = ee('Model')->get('Template', $template_id)->first();
+		$template = ee('Model')->get('Template', $template_id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
 
 		if ( ! $template)
 		{
@@ -337,7 +339,9 @@ class Template extends Design {
 
 	public function settings($template_id)
 	{
-		$template = ee('Model')->get('Template', $template_id)->first();
+		$template = ee('Model')->get('Template', $template_id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
 
 		if ( ! $template)
 		{

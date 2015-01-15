@@ -298,12 +298,14 @@ class Design extends CP_Controller {
 		{
 			$group = ee('Model')->get('TemplateGroup')
 				->filter('is_site_default', 'y')
+				->filter('site_id', ee()->config->item('site_id'))
 				->first();
 		}
 		else
 		{
 			$group = ee('Model')->get('TemplateGroup')
 				->filter('group_name', $group_name)
+				->filter('site_id', ee()->config->item('site_id'))
 				->first();
 
 			if ( ! $group)
@@ -386,7 +388,9 @@ class Design extends CP_Controller {
 		}
 
 		$template_names = array();
-		$templates = ee('Model')->get('Template', $template_ids)->all();
+		$templates = ee('Model')->get('Template', $template_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
 
 		foreach ($templates as $template)
 		{
@@ -429,6 +433,7 @@ class Design extends CP_Controller {
 
 		// Loop through templates and add them to the zip
 		$templates = ee('Model')->get('Template', $template_ids)
+			->filter('site_id', ee()->config->item('site_id'))
 			->all()
 			->each(function($template) use($zip) {
 				$filename = $template->getTemplateGroup()->group_name . '/' . $template->template_name . '.html';

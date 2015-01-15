@@ -87,7 +87,9 @@ class Snippets extends Design {
 		$table->setColumns($columns);
 
 		$data = array();
-		$snippets = ee('Model')->get('Snippet')->all();
+		$snippets = ee('Model')->get('Snippet')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
 
 		$base_url = new URL('design/snippets', ee()->session->session_id());
 
@@ -284,6 +286,7 @@ class Snippets extends Design {
 	{
 		$snippet = ee('Model')->get('Snippet')
 			->filter('snippet_name', $snippet_name)
+			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
 		if ( ! $snippet)
@@ -416,7 +419,10 @@ class Snippets extends Design {
 			$snippet_ids = array($snippet_ids);
 		}
 
-		$snippets = ee('Model')->get('Snippet', $snippet_ids)->all();
+		$snippets = ee('Model')->get('Snippet', $snippet_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
 		$names = $snippets->pluck('snippet_name');
 
 		$snippets->delete();
@@ -455,6 +461,7 @@ class Snippets extends Design {
 
 		// Loop through snippets and add them to the zip
 		$snippets = ee('Model')->get('Snippet', $snippet_ids)
+			->filter('site_id', ee()->config->item('site_id'))
 			->all()
 			->each(function($snippet) use($zip) {
 				$zip->addFromString($snippet->snippet_name . '.html', $snippet->snippet_contents);

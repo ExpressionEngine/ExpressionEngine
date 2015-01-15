@@ -87,7 +87,9 @@ class Variables extends Design {
 		$table->setColumns($columns);
 
 		$data = array();
-		$variables = ee('Model')->get('GlobalVariable')->all();
+		$variables = ee('Model')->get('GlobalVariable')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
 
 		$base_url = new URL('design/variables', ee()->session->session_id());
 
@@ -283,6 +285,7 @@ class Variables extends Design {
 	{
 		$variable = ee('Model')->get('GlobalVariable')
 			->filter('variable_name', $variable_name)
+			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
 		if ( ! $variable)
@@ -413,7 +416,10 @@ class Variables extends Design {
 			$variable_ids = array($variable_ids);
 		}
 
-		$variables = ee('Model')->get('GlobalVariable', $variable_ids)->all();
+		$variables = ee('Model')->get('GlobalVariable', $variable_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
 		$names = $variables->pluck('variable_name');
 
 		$variables->delete();
@@ -452,6 +458,7 @@ class Variables extends Design {
 
 		// Loop through variables and add them to the zip
 		$variables = ee('Model')->get('GlobalVariable', $variable_ids)
+			->filter('site_id', ee()->config->item('site_id'))
 			->all()
 			->each(function($variable) use($zip) {
 				$zip->addFromString($variable->variable_name . '.html', $variable->variable_data);

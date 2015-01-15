@@ -203,6 +203,7 @@ class Group extends Design {
 	{
 		$group = ee('Model')->get('TemplateGroup')
 			->filter('group_name', $group_name)
+			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
 		if ( ! $group)
@@ -309,6 +310,7 @@ class Group extends Design {
 	{
 		$group = ee('Model')->get('TemplateGroup')
 			->filter('group_name', ee()->input->post('group_name'))
+			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
 		if ( ! $group)
