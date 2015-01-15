@@ -482,6 +482,9 @@ $lang = array(
 'message_template' =>
 'User Messages',
 
+'message_template_warning' =>
+'<b>Warning</b>: Do not delete any of the five required variables: {title} {meta_refresh} {heading} {content} {link}',
+
 //----------------------------
 // Menu
 //----------------------------

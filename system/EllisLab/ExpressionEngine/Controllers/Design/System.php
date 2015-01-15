@@ -109,12 +109,20 @@ class System extends Design {
 	{
 		$template = ee('Model')->get('SpecialtyTemplate', $template_id)
 			->filter('site_id', ee()->config->item('site_id'))
-				->filter('template_type', 'system')
+			->filter('template_type', 'system')
 			->first();
 
 		if ( ! $template)
 		{
 			show_error(lang('error_no_template'));
+		}
+
+		if ($template->template_name == 'message_template')
+		{
+			ee('Alert')->makeInline('message-warning')
+				->asWarning()
+				->cannotClose()
+				->addToBody(lang('message_template_warning'));
 		}
 
 		if ( ! empty($_POST))
@@ -136,9 +144,12 @@ class System extends Design {
 			}
 		}
 
+		$author = $template->getLastAuthor();
+
 		$vars = array(
 			'form_url' => cp_url('design/system/edit/' . $template->template_id),
-			'template' => $template
+			'template' => $template,
+			'author' => (empty($author)) ? '-' : $author->screen_name,
 		);
 
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), lang($template->template_name));

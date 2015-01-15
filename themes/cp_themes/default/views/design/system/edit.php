@@ -44,8 +44,11 @@
 		<div class="box">
 			<h1><?=$cp_page_title?></h1>
 			<?=form_open($form_url, 'class="settings"')?>
-			<?=ee('Alert')->get('template-form')?>
+			<?=ee('Alert')->getAllInlines()?>
 				<fieldset class="col-group last">
+					<div class="setting-txt col w-16">
+						<em><?=sprintf(lang('last_edit'), ee()->localize->human_time($template->edit_date), $author)?></em>
+					</div>
 					<div class="setting-field col w-16 last">
 						<textarea class="template-edit" cols="" rows="" name="template_data"><?=set_value('template_data', $template->template_data)?></textarea>
 					</div>
