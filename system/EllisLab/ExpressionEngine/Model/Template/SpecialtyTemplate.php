@@ -35,7 +35,12 @@ class SpecialtyTemplate extends Model {
 	protected static $_relationships = array(
 		'Site' => array(
 			'type' => 'BelongsTo'
-		)
+		),
+		'LastAuthor' => array(
+			'type'     => 'BelongsTo',
+			'model'    => 'Member',
+			'from_key' => 'last_author_id'
+		),
 	);
 
 	protected $template_id;
