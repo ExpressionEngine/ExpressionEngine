@@ -56,13 +56,11 @@ class Design extends CP_Controller {
 			'system_templates' => array(
 				array(
 					'name' => lang('messages'),
-					'url' => cp_url(''),
-					'edit_url' => cp_url('')
+					'url' => cp_url('design/system'),
 				),
 				array(
 					'name' => lang('email'),
-					'url' => cp_url(''),
-					'edit_url' => cp_url('')
+					'url' => cp_url('design/email'),
 				)
 			)
 		);
@@ -103,8 +101,7 @@ class Design extends CP_Controller {
 		{
 			$vars['system_templates'][] = array(
 				'name' => lang('members'),
-				'url' => cp_url(''),
-				'edit_url' => cp_url('')
+				'url' => cp_url('design/members'),
 			);
 		}
 
@@ -112,8 +109,7 @@ class Design extends CP_Controller {
 		{
 			$vars['system_templates'][] = array(
 				'name' => lang('forums'),
-				'url' => cp_url(''),
-				'edit_url' => cp_url('')
+				'url' => cp_url('design/forums'),
 			);
 		}
 
