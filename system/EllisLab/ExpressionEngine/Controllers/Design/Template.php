@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Controllers\Design;
 
 use \EE_Route;
+use ZipArchive;
 use EllisLab\ExpressionEngine\Controllers\Design\Design;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
@@ -434,6 +435,11 @@ class Template extends Design {
 
 	public function search()
 	{
+		if (ee()->input->post('bulk_action') == 'export')
+		{
+			$this->export(ee()->input->post('selection'));
+		}
+
 		$search_terms = ee()->input->get_post('search');
 
 		$templates = ee('Model')->get('Template')

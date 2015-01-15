@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Controllers\Design;
 
+use ZipArchive;
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
@@ -400,5 +401,49 @@ class Design extends CP_Controller {
 			->addToBody(lang('templates_removed_desc'))
 			->addToBody($template_names);
 	}
+
+	/**
+	 * Export templates
+	 *
+	 * @param  int|array $template_ids The ids of templates to export
+	 * @return void
+	 */
+	protected function export($template_ids)
+	{
+		if ( ! is_array($template_ids))
+		{
+			$template_ids = array($template_ids);
+		}
+
+		// Create the Zip Archive
+		$zipfilename = tempnam(sys_get_temp_dir(), '');
+		$zip = new ZipArchive();
+		if ($zip->open($zipfilename, ZipArchive::CREATE) !== TRUE)
+		{
+			ee('Alert')->makeInline('settings-form')
+				->asIssue()
+				->withTitle(lang('error_export'))
+				->addToBody(lang('error_cannot_create_zip'));
+			return;
+		}
+
+		// Loop through templates and add them to the zip
+		$templates = ee('Model')->get('Template', $template_ids)
+			->all()
+			->each(function($template) use($zip) {
+				$filename = $template->getTemplateGroup()->group_name . '/' . $template->template_name . '.html';
+				$zip->addFromString($filename, $template->template_data);
+			});
+
+		$zip->close();
+
+		$data = file_get_contents($zipfilename);
+		unlink($zipfilename);
+
+		ee()->load->helper('download');
+		force_download('ExpressionEngine-templates.zip', $data);
+		exit;
+	}
+
 }
 // EOF
