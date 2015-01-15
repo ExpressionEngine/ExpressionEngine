@@ -275,7 +275,7 @@ class Updater {
 		);
 
 		// Mark the email templates
-		$templates = ee()->db->select('template_id', 'template_nane', 'template_type', 'template_subtype', 'edit_date')
+		$templates = ee()->db->select('template_id, template_name, template_type, template_subtype, edit_date')
 			->get('specialty_templates')
 			->result_array();
 
@@ -283,16 +283,16 @@ class Updater {
 		{
 			foreach ($templates as $index => $template)
 			{
-				$templates[$index]['template_type'] = time();
+				$templates[$index]['edit_date'] = time();
 
-				if (in_array($template['template_nane'], $system))
+				if (in_array($template['template_name'], $system))
 				{
 					$templates[$index]['template_type'] = 'system';
 				}
-				elseif (in_array($template['template_nane'], array_keys($email)))
+				elseif (in_array($template['template_name'], array_keys($email)))
 				{
 					$templates[$index]['template_type'] = 'email';
-					$templates[$index]['template_subtype'] = $email[$template['template_nane']];
+					$templates[$index]['template_subtype'] = $email[$template['template_name']];
 				}
 			}
 
