@@ -78,11 +78,42 @@ class Profile extends CP_Controller {
 			array(
 				'blocked_members' => cp_url('members/profile/ignore', $qs),
 				'member_group' => cp_url('members/profile/group', $qs),
-				'email_username' => cp_url('members/profile/communicate', $qs),
+				'email_username' => cp_url('utilities/communicate'),
 				'login_as' => cp_url('members/profile/login', $qs),
-				'delete_username' => cp_url('members/profile/delete', $qs)
+				'delete_username' => array(
+					'href' => cp_url('members/delete', $qs),
+					'class' => 'remove',
+					'attrs' => array(
+						'rel' => "modal-confirm-remove",
+						'data-confirm-trigger' => "nodeName",
+						'data-conditional-modal' => "confirm-trigger",
+						'data-confirm-ajax' => cp_url('/members/confirm'),
+						'data-confirm-input' => 'selection',
+						'data-confirm-text' =>  lang('member') . ': <b>' . htmlentities($this->member->screen_name, ENT_QUOTES) . '</b>'
+					)
+				)
 			)
 		));
+
+		$modal_vars = array(
+			'name'		=> 'modal-confirm-remove',
+			'form_url'	=> cp_url('members/delete'),
+			'hidden'	=> array(
+				'bulk_action'	=> 'remove'
+			)
+		);
+
+		$modal = ee()->load->view('_shared/modal_confirm_remove', $modal_vars, TRUE);
+		$modal .= "<input type='hidden' name='selection' value='{$this->member->member_id}' />";
+		ee()->view->blocks['modals'] = $modal;
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/confirm_remove'),
+		));
+
+		ee()->cp->set_breadcrumb(cp_url('members'), lang('members'));
+		ee()->cp->set_breadcrumb(cp_url('members/profile', $this->query_string), $this->member->screen_name);
 	}
 
 	// --------------------------------------------------------------------
@@ -131,12 +162,12 @@ class Profile extends CP_Controller {
 			}
 		}
 
-		$errors = $this->member->validate();
+		$validated = $this->member->validate();
 
-		if ($errors->exist())
+		if ($validated !== TRUE)
 		{
 			ee()->load->helper('html_helper');
-			ee()->view->set_message('issue', lang('cp_message_issue'), ul($errors->getErrors()), TRUE);
+			ee()->view->set_message('issue', lang('cp_message_issue'), ul($validated), TRUE);
 
 			return FALSE;
 		}
