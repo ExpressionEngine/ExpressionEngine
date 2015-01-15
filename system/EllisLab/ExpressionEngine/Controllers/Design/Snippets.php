@@ -440,7 +440,7 @@ class Snippets extends Design {
 	 * @param  int|array $snippet_ids The ids of snippets to export
 	 * @return void
 	 */
-	private function export($snippet_ids)
+	protected function export($snippet_ids)
 	{
 		if ( ! is_array($snippet_ids))
 		{

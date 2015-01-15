@@ -437,7 +437,7 @@ class Variables extends Design {
 	 * @param  int|array $variable_ids The ids of variables to export
 	 * @return void
 	 */
-	private function export($variable_ids)
+	protected function export($variable_ids)
 	{
 		if ( ! is_array($variable_ids))
 		{
