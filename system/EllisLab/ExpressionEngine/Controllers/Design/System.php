@@ -1,0 +1,154 @@
+<?php
+
+namespace EllisLab\ExpressionEngine\Controllers\Design;
+
+use EllisLab\ExpressionEngine\Controllers\Design\Design;
+use EllisLab\ExpressionEngine\Library\CP\Pagination;
+use EllisLab\ExpressionEngine\Library\CP\Table;
+use EllisLab\ExpressionEngine\Library\CP\URL;
+
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine CP Design\System Class
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Control Panel
+ * @category	Control Panel
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
+class System extends Design {
+
+	/**
+	 * Constructor
+	 */
+	function __construct()
+	{
+		parent::__construct();
+
+		if ( ! ee()->cp->allowed_group('can_access_design', 'can_admin_templates'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$this->stdHeader();
+	}
+
+	public function index()
+	{
+		$templates = ee('Model')->get('SpecialtyTemplate')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('template_name', 'IN', array('offline_template', 'message_template'))
+			->all();
+
+		$vars = array();
+
+		$base_url = new URL('design/system/', ee()->session->session_id());
+
+		$table = Table::create();
+		$table->setColumns(
+			array(
+				'template',
+				'manage' => array(
+					'type'	=> Table::COL_TOOLBAR
+				),
+			)
+		);
+
+		$data = array();
+		foreach ($templates as $template)
+		{
+			$data[] = array(
+				lang($template->template_name),
+				array('toolbar_items' => array(
+					'edit' => array(
+						'href' => cp_url('design/system/edit/' . $template->template_id),
+						'title' => lang('edit')
+					),
+				))
+			);
+		}
+
+		$table->setData($data);
+
+		$vars['table'] = $table->viewData($base_url);
+		$vars['form_url'] = $vars['table']['base_url'];
+
+		if ( ! empty($vars['table']['data']))
+		{
+			// Paginate!
+			$pagination = new Pagination(
+				$vars['table']['limit'],
+				$vars['table']['total_rows'],
+				$vars['table']['page']
+			);
+			$vars['pagination'] = $pagination->cp_links($base_url);
+		}
+
+		$this->sidebarMenu('messages');
+		ee()->view->cp_page_title = lang('template_manager');
+		ee()->view->cp_heading = lang('system_message_templates');
+
+		ee()->cp->render('design/system/index', $vars);
+	}
+
+	public function edit($template_id)
+	{
+		$template = ee('Model')->get('SpecialtyTemplate', $template_id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('template_name', 'IN', array('offline_template', 'message_template'))
+			->first();
+
+		if ( ! $template)
+		{
+			show_error(lang('error_no_template'));
+		}
+
+		if ( ! empty($_POST))
+		{
+			$template->template_data = ee()->input->post('template_data');
+			$template->save();
+
+			$alert = ee('Alert')->makeInline('template-form')
+				->asSuccess()
+				->withTitle(lang('update_template_success'))
+				->addToBody(sprintf(lang('update_template_success_desc'), lang($template->template_name)));
+
+			if (ee()->input->post('submit') == 'finish')
+			{
+				$alert->defer();
+				ee()->functions->redirect(cp_url('design/system'));
+			}
+		}
+
+		$vars = array(
+			'form_url' => cp_url('design/system/edit/' . $template->template_id),
+			'template' => $template
+		);
+
+		ee()->view->cp_page_title = sprintf(lang('edit_template'), lang($template->template_name));
+		ee()->view->cp_breadcrumbs = array(
+			cp_url('design') => lang('template_manager'),
+			cp_url('design/system/') => sprintf(lang('breadcrumb_group'), lang('system'))
+		);
+
+		// Supress browser XSS check that could cause obscure bug after saving
+		ee()->output->set_header("X-XSS-Protection: 0");
+
+		ee()->cp->render('design/system/edit', $vars);
+	}
+}
+// EOF
