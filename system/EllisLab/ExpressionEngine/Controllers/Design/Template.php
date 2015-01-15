@@ -302,13 +302,15 @@ class Template extends Design {
 				->addToBody(lang('update_template_error_desc'));
 		}
 
+		$author = $template->getLastAuthor();
+
 		$vars = array(
 			'form_url' => cp_url('design/template/edit/' . $template_id),
 			'settings' => $this->renderSettingsPartial($template),
 			'access' => $this->renderAccessPartial($template),
 			'template' => $template,
 			'group' => $group,
-			'author' => $template->getLastAuthor(),
+			'author' => (empty($author)) ? '-' : $author->screen_name,
 		);
 
 		$view_url = ee()->functions->fetch_site_index();

@@ -56,7 +56,7 @@
 				<div class="tab t-0 tab-open">
 					<fieldset class="col-group last">
 						<div class="setting-txt col w-16">
-							<em><?=sprintf(lang('last_edit'), ee()->localize->human_time($template->edit_date), $author->screen_name)?></em>
+							<em><?=sprintf(lang('last_edit'), ee()->localize->human_time($template->edit_date), $author)?></em>
 						</div>
 						<div class="setting-field col w-16 last">
 							<textarea class="template-edit" cols="" rows="" name="template_data"><?=set_value('template_data', $template->template_data)?></textarea>
