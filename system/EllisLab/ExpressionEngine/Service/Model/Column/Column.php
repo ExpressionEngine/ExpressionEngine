@@ -29,4 +29,5 @@ interface Column {
 
 	public function fill($db_data);
 	public function getValue();
+
 }
