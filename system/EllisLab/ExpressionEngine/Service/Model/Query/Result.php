@@ -2,7 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Service\Model\Query;
 
-use EllisLab\ExpressionEngine\Service\Model\Collection;
+use EllisLab\ExpressionEngine\Library\Data\Collection;
 
 /**
  * ExpressionEngine - by EllisLab

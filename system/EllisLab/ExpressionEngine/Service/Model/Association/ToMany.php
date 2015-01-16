@@ -6,7 +6,7 @@ use LogicException;
 use InvalidArgumentException;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Service\Model\Collection;
+use EllisLab\ExpressionEngine\Library\Data\Collection;
 
 /**
  * ExpressionEngine - by EllisLab

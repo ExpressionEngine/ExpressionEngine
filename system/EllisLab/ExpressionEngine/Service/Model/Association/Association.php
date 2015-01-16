@@ -2,8 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Service\Model\Association;
 
+use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Service\Model\Collection;
 
 /**
  * ExpressionEngine - by EllisLab

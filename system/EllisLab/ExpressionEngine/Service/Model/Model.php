@@ -58,11 +58,6 @@ class Model extends Entity {
 	 */
 	protected $_validator = NULL;
 
-	/**
-	 *
-	 */
-	protected $_relations = array();
-
 
 	/**
 	 * Set the short name of this model

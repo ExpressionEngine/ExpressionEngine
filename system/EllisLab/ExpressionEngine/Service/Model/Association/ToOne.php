@@ -5,7 +5,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Association;
 use LogicException;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Service\Model\Collection;
+use EllisLab\ExpressionEngine\Library\Data\Collection;
 
 /**
  * ExpressionEngine - by EllisLab

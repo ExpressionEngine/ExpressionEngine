@@ -1,4 +1,6 @@
-<?php namespace EllisLab\ExpressionEngine\Service\Model;
+<?php
+
+namespace EllisLab\ExpressionEngine\Library\Data;
 
 use Closure;
 use Countable;
@@ -23,13 +25,12 @@ use IteratorAggregate;
 /**
  * ExpressionEngine Collection
  *
- * If more than one element is returned for a result, we put them together
- * in a model collection. A collection acts like an array, with the additional
- * benefit of being able to call save and delete on it.
+ * A collection is essentially an array of objects. Any calls to the
+ * collection will be passed to each of the parent objects.
  *
  * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
+ * @subpackage	Data
+ * @category	Library
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
@@ -60,7 +61,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	}
 
 	/**
-	 * Allow the calling of model methods by the collection.
+	 * Allow the calling of element methods by the collection.
 	 * First argument is assumed to be a callback to handle
 	 * the return of the methods.
 	 *
@@ -82,9 +83,9 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 			$callback = array_shift($arguments);
 		}
 
-		return $this->map(function($model) use ($method, $arguments, $callback)
+		return $this->map(function($item) use ($method, $arguments, $callback)
 		{
-			$result = call_user_func_array(array($model, $method), $arguments);
+			$result = call_user_func_array(array($item, $method), $arguments);
 
 			if (isset($callback))
 			{
@@ -96,20 +97,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	}
 
 	/**
-	 * Retrieve a list of all ids in this collection
-	 *
-	 * @return Array Ids
-	 */
-	public function getIds()
-	{
-		return $this->map(function($model)
-		{
-			return $model->getId();
-		});
-	}
-
-	/**
-	 * Compare to toArray() which also converts models.
+	 * Compare to toArray() which exists on models and converts them.
 	 */
 	public function asArray()
 	{
@@ -117,9 +105,9 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	}
 
 	/**
-	 * Retrieve the first model
+	 * Retrieve the first item
 	 *
-	 * @return Mixed First model object
+	 * @return Mixed First child object
 	 */
 	public function first()
 	{
@@ -134,9 +122,9 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	 */
 	public function pluck($key)
 	{
-		return $this->map(function($model) use($key)
+		return $this->map(function($item) use($key)
 		{
-			return $model->$key;
+			return $item->$key;
 		});
 	}
 
