@@ -14,6 +14,7 @@ class Manager {
 	 */
 	public function __construct($scope, $mixins)
 	{
+		$this->scope = $scope;
 		$this->mixins = $mixins;
 	}
 
@@ -23,7 +24,7 @@ class Manager {
 	 * mixin whose objects are also mixable by nature of being
 	 * entities.
 	 *
-	 * @param Mixable $receiver Object to forward to. TODO pull out the manager and just call on that?
+	 * @param Mixable $receiver Object to forward to.
 	 */
 	public function forward(Mixable $receiver)
 	{
@@ -31,7 +32,8 @@ class Manager {
 	}
 
 	/**
-	 * Call a function on any mixin that might implement it.
+	 * Call a function on the aggregate of all mixins as well as
+	 * all other mixables.
 	 *
 	 * It's generally not a good idea to rely on return values, but
 	 * if you must the value will be the last mixin called that is
@@ -42,6 +44,18 @@ class Manager {
 	 * @return Mixed last non-null result, or null if no results
 	 */
 	public function call($fn, $args)
+	{
+		$result = $this->runMixins($fn, $args);
+
+		$this->runForwarded($fn, $args);
+
+		return $result;
+	}
+
+	/**
+	 * Run a function on all mixins
+	 */
+	protected function runMixins($fn, $args)
 	{
 		$return = NULL;
 
@@ -57,12 +71,23 @@ class Manager {
 			}
 		}
 
+		return $return;
+	}
+
+	/**
+	 * Run a function on all forwarded mixables
+	 */
+	protected function runForwarded($fn, $args)
+	{
 		foreach ($this->forwarded as $receiver)
 		{
-			call_user_func_array(array($receiver, $fn), $args);
-		}
+			$callable = array($receiver, $fn);
 
-		return $return;
+			if (is_callable($callable))
+			{
+				call_user_func_array($callable, $args);
+			}
+		}
 	}
 
 	/**
@@ -72,9 +97,12 @@ class Manager {
 	{
 		if ( ! isset($this->instances[$class]))
 		{
-			$this->instances[$name] = new $class($this->scope);
+			$mixin = new $class($this->scope);
+			$mixin->setMixinManager($this);
+
+			$this->instances[$class] = $mixin;
 		}
 
-		return $this->instances[$name];
+		return $this->instances[$class];
 	}
 }

@@ -37,6 +37,6 @@ abstract class MixableImpl implements Mixable {
 	 */
 	protected function newMixinManager()
 	{
-		return new MixinManager($this->getMixinClasses());
+		return new Manager($this, $this->getMixinClasses());
 	}
 }
