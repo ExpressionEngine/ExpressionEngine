@@ -40,7 +40,7 @@ class Auth extends Profile {
 	{
 		$this->base_url = cp_url($this->base_url, $this->query_string);
 
-		$saved = array(
+		$vars['sections'] = array(
 			array(
 				array(
 					'title' => 'username',
@@ -55,19 +55,16 @@ class Auth extends Profile {
 					'fields' => array(
 						'screen_name' => array('type' => 'text', 'value' => $this->member->screen_name)
 					)
-				),
+				)
+			),
+			'change_password' => array(
 				array(
 					'title' => 'new_password',
 					'desc' => 'new_password_desc',
 					'fields' => array(
 						'password' => array('type' => 'password')
 					)
-				)
-			)
-		);
-
-		$vars['sections'] = array_merge($saved, array(
-			array(
+				),
 				array(
 					'title' => 'confirm_password',
 					'desc' => 'confirm_password_desc',
@@ -83,7 +80,7 @@ class Auth extends Profile {
 					)
 				)
 			)
-		));
+		);
 
 		ee()->form_validation->set_rules(array(
 			array(
@@ -98,7 +95,7 @@ class Auth extends Profile {
 			),
 			array(
 				 'field'   => 'password',
-				 'label'   => 'lang:new_password'
+				 'label'   => 'lang:new_password',
 			),
 			array(
 				 'field'   => 'confirm_password',
@@ -119,7 +116,7 @@ class Auth extends Profile {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			if ($this->saveSettings($saved))
+			if ($this->update())
 			{
 				ee()->view->set_message('success', lang('member_updated'), lang('member_updated_desc'), TRUE);
 				ee()->functions->redirect($base_url);
@@ -132,10 +129,182 @@ class Auth extends Profile {
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
-		ee()->view->cp_page_title = lang('email_settings');
+		ee()->view->cp_page_title = lang('auth_settings');
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_save_settings_working';
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	  *	 Update username and password
+	  */
+	function update()
+	{
+		if ($this->config->item('allow_username_change') != 'y' &&
+			$this->session->userdata('group_id') != 1)
+		{
+			if ($_POST['current_password'] == '')
+			{
+				$this->functions->redirect(BASE.AMP.'C=myaccount'.AMP.'M=username_password'.AMP.'id='.$this->member->member_id);
+			}
+
+			$_POST['username'] = $_POST['current_username'];
+		}
+
+		// validate for unallowed blank values
+		if (empty($_POST))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		// If the screen name field is empty, we'll assign is from the username field.
+		if ($_POST['screen_name'] == '')
+		{
+			$_POST['screen_name'] = $_POST['username'];
+		}
+
+		// Fetch member data
+		$query = $this->member_model->get_member_data($this->member->member_id, array('username', 'screen_name'));
+
+		$this->VAL = $this->_validate_user(array(
+			'username'			=> $this->input->post('username'),
+			'cur_username'		=> $query->row('username'),
+			'screen_name'		=> $this->input->post('screen_name'),
+			'cur_screen_name'	=> $query->row('screen_name'),
+			'password'			=> $this->input->post('password'),
+			'password_confirm'	=> $this->input->post('confirm_password'),
+			'cur_password'		=> $this->input->post('current_password')
+		));
+
+		$this->VAL->validate_screen_name();
+
+		if ($this->config->item('allow_username_change') == 'y' OR
+			$this->session->userdata('group_id') == 1)
+		{
+			$this->VAL->validate_username();
+		}
+
+		if ($_POST['password'] != '')
+		{
+			$this->VAL->validate_password();
+		}
+
+		// Display errors if there are any
+		if (count($this->VAL->errors) > 0)
+		{
+			show_error($this->VAL->show_errors());
+		}
+
+		// Update "last post" forum info if needed
+		if ($query->row('screen_name') != $_POST['screen_name'] &&
+			$this->config->item('forum_is_installed') == "y")
+		{
+			$this->db->where('forum_last_post_author_id', $this->member->member_id);
+			$this->db->update(
+				'forums',
+				array('forum_last_post_author' => $this->input->post('screen_name'))
+			);
+
+			$this->db->where('mod_member_id', $this->member->member_id);
+			$this->db->update(
+				'forum_moderators',
+				array('mod_member_name' => $this->input->post('screen_name'))
+			);
+		}
+
+		// Assign the query data
+		$data['screen_name'] = $_POST['screen_name'];
+
+		if ($this->config->item('allow_username_change') == 'y' OR $this->session->userdata('group_id') == 1)
+		{
+			$data['username'] = $_POST['username'];
+		}
+
+		// Was a password submitted?
+		$pw_change = FALSE;
+
+		if ($_POST['password'] != '')
+		{
+			$this->load->library('auth');
+
+			$this->auth->update_password($this->member->member_id, $this->input->post('password'));
+
+			if ($this->self_edit)
+			{
+				$pw_change = TRUE;
+			}
+		}
+
+		$this->member_model->update_member($this->member->member_id, $data);
+
+		$this->cp->get_installed_modules();
+
+		if (isset($this->cp->installed_modules['comment']))
+		{
+			if ($query->row('screen_name') != $_POST['screen_name'])
+			{
+				$query = $this->member_model->get_member_data($this->member->member_id, array('screen_name'));
+
+				$screen_name = ($query->row('screen_name')	!= '') ? $query->row('screen_name')	 : '';
+
+				// Update comments with current member data
+				$data = array('name' => ($screen_name != '') ? $screen_name : $_POST['username']);
+
+				$this->db->where('author_id', $this->member->member_id);
+				$this->db->update('comments', $data);
+			}
+		}
+
+		// Write log file
+		$this->logger->log_action($this->VAL->log_msg);
+
+		ee()->view->set_message('success', lang('member_updated'), lang('member_updated_desc'), TRUE);
+		$this->functions->redirect($this->base_url);
+	}
+
+	/**
+	 * Validate either a user, or a Super Admin editing the user
+	 * @param  array $validation_data Validation data to be sent to EE_Validate
+	 * @return EE_Validate	Validation object returned from EE_Validate
+	 */
+	private function _validate_user($validation_data)
+	{
+		//	Validate submitted data
+		if ( ! class_exists('EE_Validate'))
+		{
+			require APPPATH.'libraries/Validate.php';
+		}
+
+		$defaults = array(
+			'member_id'		=> $this->member->member_id,
+			'val_type'		=> 'update', // new or update
+			'fetch_lang'	=> FALSE,
+			'require_cpw'	=> TRUE,
+			'enable_log'	=> TRUE,
+		);
+
+		$validation_data = array_merge($defaults, $validation_data);
+
+		// Are we dealing with a Super Admin editing someone else's account?
+		if ($this->session->userdata('group_id') == 1)
+		{
+			// Validate Super Admin's password
+			$this->load->library('auth');
+			$auth = $this->auth->authenticate_id(
+				$this->session->userdata('member_id'),
+				$this->input->post('current_password')
+			);
+
+			if ($auth === FALSE)
+			{
+				show_error(lang('invalid_password'));
+			}
+
+			// Make sure we don't verify the actual member's existing password
+			$validation_data['require_cpw'] = FALSE;
+		}
+
+		return new \EE_Validate($validation_data);
 	}
 }
 // END CLASS
