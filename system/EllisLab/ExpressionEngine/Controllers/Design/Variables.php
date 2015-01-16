@@ -65,7 +65,7 @@ class Variables extends Design {
 		}
 
 		$vars = array();
-		$table = Table::create();
+		$table = Table::create(array('autosort' => TRUE));
 		$columns = array(
 			'variable',
 			'all_sites',

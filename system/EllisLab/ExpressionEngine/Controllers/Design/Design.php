@@ -189,7 +189,7 @@ class Design extends CP_Controller {
 
 	protected function buildTableFromTemplateCollection(Collection $templates, $include_group_name = FALSE)
 	{
-		$table = Table::create();
+		$table = Table::create(array('autosort' => TRUE));
 		$table->setColumns(
 			array(
 				'template',

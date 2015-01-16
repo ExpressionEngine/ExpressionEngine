@@ -65,7 +65,7 @@ class Snippets extends Design {
 		}
 
 		$vars = array();
-		$table = Table::create();
+		$table = Table::create(array('autosort' => TRUE));
 		$columns = array(
 			'partial',
 			'all_sites',

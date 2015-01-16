@@ -60,7 +60,7 @@ class Email extends Design {
 
 		$base_url = new URL('design/email/', ee()->session->session_id());
 
-		$table = Table::create();
+		$table = Table::create(array('autosort' => TRUE));
 		$table->setColumns(
 			array(
 				'template',
