@@ -196,9 +196,17 @@ class EE_Extensions {
 
 				if (file_exists($extension_path))
 				{
-					ee()->load->add_package_path($path, FALSE);
+					// Check to see if paths are already loaded
+					if ( ! array_search($path, ee()->load->get_package_paths()))
+					{
+						$path_loaded = TRUE;
+						ee()->load->add_package_path($path, FALSE);
+					}
+					else
+					{
+						$path_loaded = FALSE;
+					}
 				}
-
 				else
 				{
 					$error = 'Unable to load the following extension file:<br /><br />'.'ext.'.$name.'.php';
@@ -267,7 +275,10 @@ class EE_Extensions {
 					$this->last_call = call_user_func_array(array(&$this->OBJ[$class_name], $method), $args);
 				}
 
-				ee()->load->remove_package_path($path);
+				if ($path_loaded === TRUE)
+				{
+					ee()->load->remove_package_path($path);
+				}
 
 				// A ee()->extensions->end_script value of TRUE means that the
 				// called method wishes us to stop the calling of the main
