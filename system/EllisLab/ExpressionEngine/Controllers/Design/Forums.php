@@ -109,9 +109,12 @@ class Forums extends Design {
 		ee()->load->model('member_model');
 
 		$themes = array();
-		foreach (ee()->member_model->get_profile_templates() as $dir => $name)
+		foreach (directory_map(PATH_THEMES . '/forum_themes/', TRUE) as $dir)
 		{
-			$themes[cp_url('design/forums/index/' . $dir)] = $name;
+			if (is_dir(PATH_THEMES . '/forum_themes/' . $dir))
+			{
+				$themes[cp_url('design/forums/index/' . $dir)] = ucfirst(str_replace("_", " ", $dir));
+			}
 		}
 
 		$vars['themes'] = form_dropdown('theme', $themes, cp_url('design/forums/index/' . $theme));
