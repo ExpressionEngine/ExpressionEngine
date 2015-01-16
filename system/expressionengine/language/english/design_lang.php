@@ -528,6 +528,20 @@ $lang = array(
 'file_writing_instructions' =>
 'You will not be able to save changes to this template until it is given write permissions for this server.',
 
+// System Templates -> Forums
+
+'forum_manager' =>
+'Forum Manager',
+
+'forum_templates' =>
+'Forum Templates',
+
+
+'unable_to_find_templates' =>
+'Unable to locate the templates.',
+
+'unable_to_find_template_file' =>
+'Unable to locate the template file.',
 
 //----------------------------
 // Menu
@@ -1160,12 +1174,6 @@ You can drag and drop to rearrange the order.',
 
 'template_set_names' =>
 'Available Template Sets',
-
-'unable_to_find_templates' =>
-'Unable to locate the member profile templates.',
-
-'unable_to_find_template_file' =>
-'Unable to locate the member template file.',
 
 'template_updated' =>
 'Template Has Been Updated',
