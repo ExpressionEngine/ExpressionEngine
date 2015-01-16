@@ -6,9 +6,12 @@ use BadMethodCallException;
 use InvalidArgumentException;
 use OverflowException;
 
+use EllisLab\ExpressionEngine\Library\Data\Entity;
+
 use EllisLab\ExpressionEngine\Service\Model\DataStore;
 use EllisLab\ExpressionEngine\Service\Model\Association\Association;
 use EllisLab\ExpressionEngine\Service\Validation\Validator;
+
 
 /**
  * ExpressionEngine - by EllisLab
@@ -33,7 +36,7 @@ use EllisLab\ExpressionEngine\Service\Validation\Validator;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Model {
+class Model extends Entity {
 
 	/**
 	 *
@@ -58,165 +61,8 @@ class Model {
 	/**
 	 *
 	 */
-	protected $_associations = array();
-
-	/**
-	 *
-	 */
-	protected $_column_objects = array();
-
-	/**
-	 *
-	 */
 	protected $_relations = array();
 
-	/**
-	 * Constructor
-	 */
-	public function __construct(array $data = array())
-	{
-		foreach ($data as $key => $value)
-		{
-			$this->setProperty($key, $value);
-		}
-	}
-
-	/**
-	 *
-	 */
-	public function __get($name)
-	{
-		return $this->getProperty($name);
-	}
-
-	/**
-	 *
-	 */
-	public function __set($name, $value)
-	{
-		$this->setProperty($name, $value);
-		return $value;
-	}
-
-	/**
-	 *
-	 */
-	public function __call($method, $args)
-	{
-		$actions = 'has|get|set|add|remove|create|delete|fill';
-
-		if (preg_match("/^({$actions})(.+)/", $method, $matches))
-		{
-			list($_, $action, $name) = $matches;
-
-			if ($action == 'get' && $this->hasColumn($name))
-			{
-				return $this->getColumn($name);
-			}
-
-			if ($this->hasAssociation($name))
-			{
-				return $this->runAssociationAction($name, $action, $args);
-			}
-		}
-
-		throw new BadMethodCallException("Method not found: {$method}.");
-	}
-
-	protected function hasColumn($name)
-	{
-		$columns = $this->getMetaData('columns');
-
-		if ( ! isset($columns))
-		{
-			return FALSE;
-		}
-
-		return array_key_exists($name, $columns);
-	}
-
-	protected function getColumn($name)
-	{
-		if ( ! isset($this->_column_objects[$name]))
-		{
-			$this->_column_objects[$name] = $this->newColumn($name);
-		}
-
-		return $this->_column_objects[$name];
-	}
-
-	protected function newColumn($name)
-	{
-		// todo error if column wasn't defined
-		$columns = $this->getMetaData('columns');
-		$property = $columns[$name];
-		$class = $this->getNamespacePrefix().'\\Column\\'.$name;
-
-		$obj = new $class();
-		$obj->fill($this->$property);
-
-		return $obj;
-	}
-
-	/**
-	 *
-	 */
-	protected function getNamespacePrefix()
-	{
-		$class = get_called_class();
-		return substr($class, 0, strrpos($class, '\\'));
-	}
-
-	/**
-	 *
-	 */
-	protected function runAssociationAction($assoc_name, $action, $args)
-	{
-		$assoc = $this->getAssociation($assoc_name);
-		$result = call_user_func_array(array($assoc, $action), $args);
-
-		if ($action == 'has' || $action == 'get')
-		{
-			return $result;
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Clean up var_dump output for developers on PHP 5.6+
-	 */
-	public function __debugInfo()
-	{
-		$name = $this->_name;
-		$values = $this->getValues();
-		$related_to = array_keys($this->_associations);
-
-		return compact('name', 'values', 'related_to');
-	}
-
-	/**
-	 * Metadata is static. If you need to access it, it's recommended
-	 * to use the datastore's lazy caches, which will make for much
-	 * more testable code and avoid iterating over gateways and creating
-	 * relations repeatedly.
-	 *
-	 * @param String $key Name of the static property
-	 * @return mixed The metadata value Set the short name of this model
-	 *
-	 * @param String $name The short name
-	 */
-	public static function getMetaData($key)
-	{
-		$key = '_'.$key;
-
-		if ( ! property_exists(get_called_class(), $key))
-		{
-			return NULL;
-		}
-
-		return static::$$key;
-	}
 
 	/**
 	 * Set the short name of this model
@@ -279,76 +125,46 @@ class Model {
 	}
 
 	/**
-	 * Fill model data without marking as dirty.
-	 *
-	 * @param array $data Data to fill
-	 * @return $this
+	* Provide the default mixins
+	*
+	 * TODO get rid of this and simply have a metadata key of the known
+	 * default mixins
 	 */
-	public function fill(array $data = array())
+	public function getMixinClasses()
 	{
-		foreach ($data as $k => $v)
-		{
-			if ($this->hasProperty($k))
-			{
-				$this->$k = $v;
-			}
-		}
+		$mixins = parent::getMixinClasses();
 
-		return $this;
+		return array_merge(
+			$mixins,
+			array(
+				__NAMESPACE__.'\Mixin\Column',
+				__NAMESPACE__.'\Mixin\Association'
+			)
+		);
 	}
 
 	/**
-	 * Check if the model has a given property
-	 *
-	 * @param String $name Property name
-	 * @return bool has property?
+	 * Clean up var_dump output for developers on PHP 5.6+
 	 */
-	public function hasProperty($name)
+	public function __debugInfo()
 	{
-		return (property_exists($this, $name) && $name[0] !== '_');
+		$name = $this->_name;
+		$values = $this->getValues();
+		$related_to = array_keys($this->getAllAssociations());
+
+		return compact('name', 'values', 'related_to');
 	}
 
-	/**
-	 * Attempt to get a property. Called by __get.
-	 *
-	 * @param String $name Name of the property
-	 * @return Mixed Value of the property
-	 */
-	public function getProperty($name)
-	{
-		if (method_exists($this, 'get__'.$name))
-		{
-			return $this->{'get__'.$name}();
-		}
-
-		if ($this->hasProperty($name))
-		{
-			return $this->$name;
-		}
-
-		throw new InvalidArgumentException("No such property: '{$name}' on ".get_called_class());
-	}
 
 	/**
-	 * Attempt to set a property. Called by __set.
+	 * Attempt to set a property. Overriden to support dirty values.
 	 *
 	 * @param String $name Name of the property
 	 * @param Mixed  $value Value of the property
 	 */
 	public function setProperty($name, $value)
 	{
-		if (method_exists($this, 'set__'.$name))
-		{
-			$this->{'set__'.$name}($value);
-		}
-		elseif ($this->hasProperty($name))
-		{
-			$this->$name = $value;
-		}
-		else
-		{
-			throw new InvalidArgumentException("No such property: '{$name}' on ".get_called_class());
-		}
+		parent::setProperty($name, $value);
 
 		$this->markAsDirty($name);
 
@@ -416,57 +232,15 @@ class Model {
 	}
 
 	/**
-	 * Get a list of fields
-	 *
-	 * @return array field names
-	 */
-	public static function getFields()
-	{
-		$vars = get_class_vars(get_called_class());
-		$fields = array();
-
-		foreach ($vars as $key => $value)
-		{
-			if ($key[0] != '_')
-			{
-				$fields[] = $key;
-			}
-		}
-
-		return $fields;
-	}
-
-	/**
 	 * Get all current values
 	 *
 	 * @return array Current values. Including null values - Beware.
 	 */
 	public function getValues()
 	{
-		$result = array();
-
 		$this->saveColumns();
 
-		foreach ($this->getFields() as $field)
-		{
-			$result[$field] = $this->getProperty($field);
-		}
-
-		return $result;
-	}
-
-	protected function saveColumns()
-	{
-		$columns = $this->getMetaData('columns');
-
-		foreach ($this->_column_objects as $name => $column)
-		{
-			$property = $columns[$name];
-			$value = $column->getValue();
-
-			$this->setProperty($property, $value);
-		}
-
+		return parent::getValues();
 	}
 
 	/**
@@ -610,26 +384,6 @@ class Model {
 	}
 
 	/**
-	 * Retrieve data as an array. All getters will be hit.
-	 *
-	 * @return array Data including NULL values
-	 */
-	public function toArray()
-	{
-		return $this->getValues();
-	}
-
-	/**
-	 * Retrieve data as json
-	 *
-	 * @return string json formatted model data
-	 */
-	public function toJson()
-	{
-		return json_encode($this->toArray());
-	}
-
-	/**
 	 * Limit a query to the primary id of this model
 	 *
 	 * @param QueryBuilder $query The query that will be sent
@@ -640,54 +394,6 @@ class Model {
 		$id = $this->getId();
 
 		$query->filter($pk, $id);
-	}
-
-	/**
-	 * Get all associations
-	 *
-	 * @return array associations
-	 */
-	public function getAllAssociations()
-	{
-		return $this->_associations;
-	}
-
-	/**
-	 * Check if an association of a given name exists
-	 *
-	 * @param String $name Name of the association
-	 * @return bool has association?
-	 */
-	public function hasAssociation($name)
-	{
-		return array_key_exists($name, $this->_associations);
-	}
-
-	/**
-	 * Get an association of a given name
-	 *
-	 * @param String $name Name of the association
-	 * @return Mixed the association
-	 */
-	public function getAssociation($name)
-	{
-		return $this->_associations[$name];
-	}
-
-	/**
-	 * Set a given association
-	 *
-	 * @param String $name Name of the association
-	 * @param Association $association Association to set
-	 * @return $this;
-	 */
-	public function setAssociation($name, Association $association)
-	{
-		$association->setFrontend($this->_frontend);
-
-		$this->_associations[$name] = $association;
-
-		return $this;
 	}
 
 	/**
@@ -708,6 +414,11 @@ class Model {
 		return $this;
 	}
 
+	public function getFrontend()
+	{
+		return $this->_frontend;
+	}
+
 	/**
 	 * Set the validatior
 	 *
@@ -722,6 +433,34 @@ class Model {
 		$validator->setRules($rules);
 
 		return $this;
+	}
+
+	/**
+	 * Support method for the column mixin
+	 */
+	public function getColumnDefinitions()
+	{
+		$definitions = array();
+
+		$columns = $this->getMetaData('columns') ?: array();
+
+		foreach ($columns as $name => $property)
+		{
+			$class = $this->getNamespacePrefix().'\\Column\\'.$name;
+
+			$definitions[$name] = compact('class', 'property');
+		}
+
+		return $definitions;
+	}
+
+	/**
+	 *
+	 */
+	protected function getNamespacePrefix()
+	{
+		$class = get_called_class();
+		return substr($class, 0, strrpos($class, '\\'));
 	}
 
 	/**
