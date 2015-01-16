@@ -68,7 +68,7 @@ class Email extends Profile {
 					'title' => 'email',
 					'desc' => 'email_desc',
 					'fields' => array(
-						'email' => array('type' => 'text', 'value' => $this->member->email)
+						'email' => array('type' => 'text', 'value' => $this->member->email, 'required' => TRUE)
 					)
 				),
 				array(
@@ -100,6 +100,13 @@ class Email extends Profile {
 							'value' => $settings
 						),
 					)
+				),
+				array(
+					'title' => 'current_password',
+					'desc' => 'current_password',
+					'fields' => array(
+						'current_password' => array('type' => 'password', 'required' => TRUE)
+					)
 				)
 			)
 		);
@@ -109,6 +116,11 @@ class Email extends Profile {
 				 'field'   => 'email',
 				 'label'   => 'lang:email',
 				 'rules'   => 'required|valid_email'
+			),
+			array(
+				 'field'   => 'current_password',
+				 'label'   => 'lang:current_password',
+				 'rules'   => 'required|auth_password'
 			)
 		));
 
