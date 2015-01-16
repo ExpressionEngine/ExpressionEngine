@@ -520,6 +520,15 @@ $lang = array(
 'forums' =>
 'Forums',
 
+// System Templates -> Members
+
+'file_not_writable' =>
+'<b>Warning</b>: This file is not writable',
+
+'file_writing_instructions' =>
+'You will not be able to save changes to this template until it is given write permissions for this server.',
+
+
 //----------------------------
 // Menu
 //----------------------------
@@ -1164,14 +1173,8 @@ You can drag and drop to rearrange the order.',
 'template_set' =>
 'Template Set:',
 
-'file_not_writable' =>
-'Note: This file is not writable',
-
 'error_opening_template' =>
 'Error: Unable to open the template file in order to write its contents.',
-
-'file_writing_instructions' =>
-'You will not be able to save changes to this template until it is given write permissions for this server.',
 
 'aim_console' =>
 'AOL Instant Messenger Console',
