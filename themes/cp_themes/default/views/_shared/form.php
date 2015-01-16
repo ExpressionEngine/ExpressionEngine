@@ -79,6 +79,13 @@ if (isset($ajax_validate) && $ajax_validate == TRUE)
 							<input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
 						<?php break;
 
+						case 'radio': ?>
+							<?php foreach ($field['choices'] as $key => $label):
+								$checked = ($key == $value); ?>
+								<label class="choice mr block <?=($checked) ? 'chosen' : ''?>"><input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=$required?>> <?=lang($label)?></label>
+							<?php endforeach ?>
+						<?php break;
+
 						case 'inline_radio': ?>
 							<?php foreach ($field['choices'] as $key => $label):
 								$checked = ($key == $value); ?>
