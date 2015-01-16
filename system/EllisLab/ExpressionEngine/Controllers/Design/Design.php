@@ -139,10 +139,6 @@ class Design extends CP_Controller {
 					'href' => cp_url('settings/template'),
 					'title' => lang('settings')
 				),
-				'sync' => array(
-					'href' => cp_url('design/sync'),
-					'title' => lang('sync_all_templates')
-				),
 				'download' => array(
 					'href' => cp_url('design/export'),
 					'title' => lang('export_all')
@@ -260,10 +256,6 @@ class Design extends CP_Controller {
 						'class' => 'm-link',
 						'title' => lang('settings'),
 						'data-template-id' => $template->template_id
-					),
-					'sync' => array(
-						'href' => cp_url('design/template/sync/' . $template->template_id),
-						'title' => lang('sync')
 					),
 				)),
 				array(

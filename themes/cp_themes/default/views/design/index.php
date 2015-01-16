@@ -17,7 +17,6 @@
 				<option value="">-- <?=lang('with_selected')?> --</option>
 				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove-template"><?=lang('remove')?></option>
 				<option value="export"><?=lang('export_templates')?></option>
-				<option value="sync"><?=lang('sync_templates')?></option>
 			</select>
 			<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
 		</fieldset>
