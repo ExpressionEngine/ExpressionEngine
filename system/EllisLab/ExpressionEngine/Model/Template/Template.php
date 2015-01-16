@@ -94,7 +94,7 @@ class Template extends Model {
 
 	public function set__save_template_file($new_value)
 	{
-		$this->set_y_n('save_template_file', $new_value);
+		$this->setStringBool('save_template_file', $new_value);
 	}
 
 	public function get__save_template_file()
@@ -104,7 +104,7 @@ class Template extends Model {
 
 	public function set__cache($new_value)
 	{
-		$this->set_y_n('cache', $new_value);
+		$this->setStringBool('cache', $new_value);
 	}
 
 	public function get__cache()
@@ -114,7 +114,7 @@ class Template extends Model {
 
 	public function set__enable_http_auth($new_value)
 	{
-		$this->set_y_n('enable_http_auth', $new_value);
+		$this->setStringBool('enable_http_auth', $new_value);
 	}
 
 	public function get__enable_http_auth()
@@ -124,7 +124,7 @@ class Template extends Model {
 
 	public function set__allow_php($new_value)
 	{
-		$this->set_y_n('allow_php', $new_value);
+		$this->setStringBool('allow_php', $new_value);
 	}
 
 	public function get__allow_php()
@@ -134,25 +134,11 @@ class Template extends Model {
 
 	public function set__protect_javascript($new_value)
 	{
-		$this->set_y_n('protect_javascript', $new_value);
+		$this->setStringBool('protect_javascript', $new_value);
 	}
 
 	public function get__protect_javascript()
 	{
 		return $this->protect_javascript == 'y';
 	}
-
-	private function set_y_n($property, $new_value)
-	{
-		if ($new_value == TRUE || $new_value == 'y')
-		{
-			$this->$property = 'y';
-		}
-
-		if ($new_value == FALSE || $new_value == 'n')
-		{
-			$this->$property = 'n';
-		}
-	}
-
 }

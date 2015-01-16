@@ -132,6 +132,7 @@ class Model extends Entity {
 		return array_merge(
 			$mixins,
 			array(
+				__NAMESPACE__.'\Mixin\Boolean',
 				__NAMESPACE__.'\Mixin\Column',
 				__NAMESPACE__.'\Mixin\Association'
 			)
