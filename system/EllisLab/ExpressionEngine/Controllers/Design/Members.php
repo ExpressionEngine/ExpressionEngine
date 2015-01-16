@@ -61,7 +61,7 @@ class Members extends Design {
 
 		$vars = array();
 
-		$base_url = new URL('design/members/' . $theme, ee()->session->session_id());
+		$base_url = new URL('design/members/index/' . $theme, ee()->session->session_id());
 
 		$table = Table::create();
 		$table->setColumns(
@@ -99,6 +99,16 @@ class Members extends Design {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 
+		ee()->load->model('member_model');
+
+		$themes = array();
+		foreach (ee()->member_model->get_profile_templates() as $dir => $name)
+		{
+			$themes[cp_url('design/members/index/' . $dir)] = $name;
+		}
+
+		$vars['themes'] = form_dropdown('theme', $themes, cp_url('design/members/index/' . $theme));
+
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
@@ -113,6 +123,8 @@ class Members extends Design {
 		$this->sidebarMenu('members');
 		ee()->view->cp_page_title = lang('template_manager');
 		ee()->view->cp_heading = lang('member_profile_templates');
+
+		ee()->javascript->change("select[name=\'theme\']", 'window.location.href = $(this).val()');
 
 		ee()->cp->render('design/members/index', $vars);
 	}
