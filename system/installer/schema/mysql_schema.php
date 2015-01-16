@@ -1016,6 +1016,7 @@ class EE_Schema {
 			template_type varchar(16) NULL,
 			template_subtype varchar(16) NULL,
 			template_data text NOT NULL,
+			template_notes text NULL,
 			edit_date int(10) NOT NULL DEFAULT 0,
 			last_author_id int(10) UNSIGNED NOT NULL default 0,
 			PRIMARY KEY `template_id` (`template_id`),

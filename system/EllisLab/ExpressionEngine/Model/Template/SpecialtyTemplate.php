@@ -51,6 +51,7 @@ class SpecialtyTemplate extends Model {
 	protected $template_type;
 	protected $template_subtype;
 	protected $template_data;
+	protected $template_notes;
 	protected $edit_date;
 	protected $last_author_id;
 

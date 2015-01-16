@@ -227,28 +227,32 @@ class Updater {
 		ee()->smartforge->add_column(
 			'specialty_templates',
 			array(
-				'template_type' => array(
-					'type'			=> 'varchar',
-					'constraint'    => 16,
-					'null'			=> TRUE
+				'template_notes'   => array(
+					'type'         => 'text',
+					'null'         => TRUE
+				),
+				'template_type'    => array(
+					'type'         => 'varchar',
+					'constraint'   => 16,
+					'null'         => TRUE
 				),
 				'template_subtype' => array(
-					'type'			=> 'varchar',
-					'constraint'    => 16,
-					'null'			=> TRUE
+					'type'         => 'varchar',
+					'constraint'   => 16,
+					'null'         => TRUE
 				),
-				'edit_date' => array(
-					'type'			=> 'int',
-					'constraint'    => 10,
-					'null'			 => FALSE,
-					'default'        => 0
+				'edit_date'        => array(
+					'type'         => 'int',
+					'constraint'   => 10,
+					'null'         => FALSE,
+					'default'      => 0
 				),
-				'last_author_id' => array(
-					'type'			=> 'int',
-					'constraint'    => 10,
-					'null'			 => FALSE,
-					'unsigned'		 => TRUE,
-					'default'        => 0
+				'last_author_id'   => array(
+					'type'         => 'int',
+					'constraint'   => 10,
+					'null'         => FALSE,
+					'unsigned'     => TRUE,
+					'default'      => 0
 				),
 			)
 		);
