@@ -100,7 +100,7 @@ class Email extends Design {
 			$vars['pagination'] = $pagination->cp_links($base_url);
 		}
 
-		$this->sidebarMenu('messages');
+		$this->sidebarMenu('email');
 		ee()->view->cp_page_title = lang('template_manager');
 		ee()->view->cp_heading = lang('email_message_templates');
 
