@@ -61,7 +61,7 @@ class Variables extends Design {
 		}
 		elseif (ee()->input->post('bulk_action') == 'export')
 		{
-			$this->export(ee()->input->post('selection'));
+			$this->exportVariables(ee()->input->post('selection'));
 		}
 
 		$vars = array();
@@ -437,7 +437,7 @@ class Variables extends Design {
 	 * @param  int|array $variable_ids The ids of variables to export
 	 * @return void
 	 */
-	protected function export($variable_ids)
+	private function exportVariables($variable_ids)
 	{
 		if ( ! is_array($variable_ids))
 		{

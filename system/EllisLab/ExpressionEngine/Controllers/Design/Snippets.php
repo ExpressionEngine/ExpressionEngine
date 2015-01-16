@@ -61,7 +61,7 @@ class Snippets extends Design {
 		}
 		elseif (ee()->input->post('bulk_action') == 'export')
 		{
-			$this->export(ee()->input->post('selection'));
+			$this->exportSnippets(ee()->input->post('selection'));
 		}
 
 		$vars = array();
@@ -440,7 +440,7 @@ class Snippets extends Design {
 	 * @param  int|array $snippet_ids The ids of snippets to export
 	 * @return void
 	 */
-	protected function export($snippet_ids)
+	private function exportSnippets($snippet_ids)
 	{
 		if ( ! is_array($snippet_ids))
 		{

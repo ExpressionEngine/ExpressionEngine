@@ -446,7 +446,7 @@ class Template extends Design {
 	{
 		if (ee()->input->post('bulk_action') == 'export')
 		{
-			$this->export(ee()->input->post('selection'));
+			$this->exportTemplates(ee()->input->post('selection'));
 		}
 
 		$search_terms = ee()->input->get_post('search');

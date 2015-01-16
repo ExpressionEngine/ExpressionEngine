@@ -290,6 +290,17 @@ class Design extends CP_Controller {
 		$this->manager();
 	}
 
+	public function export()
+	{
+		$template_ids = ee('Model')->get('Template')
+			->fields('template_id')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all()
+			->pluck('template_id');
+
+		$this->exportTemplates($template_ids);
+	}
+
 	public function manager($group_name = NULL)
 	{
 		if (is_null($group_name))
@@ -410,7 +421,7 @@ class Design extends CP_Controller {
 	 * @param  int|array $template_ids The ids of templates to export
 	 * @return void
 	 */
-	protected function export($template_ids)
+	protected function exportTemplates($template_ids)
 	{
 		if ( ! is_array($template_ids))
 		{
