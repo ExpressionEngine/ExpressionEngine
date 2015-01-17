@@ -3,25 +3,20 @@
 namespace EllisLab\ExpressionEngine\Service\Model\Mixin;
 
 use EllisLab\ExpressionEngine\Library\Mixin\Mixin;
-use EllisLab\ExpressionEngine\Service\Model\Association\Association as ModelAssociation;
+use EllisLab\ExpressionEngine\Service\Model\Association\Association;
 
-class Association implements Mixin {
+class Relationship implements Mixin {
 
 	protected $scope;
-	protected $_associations = array();
+	protected $associations = array();
 
-	public function __construct($scope)
+	public function __construct($scope, $manager)
 	{
 		$this->scope = $scope;
 	}
 
 	/**
-	 * Here to satisfy the interface,
-	 */
-	public function setMixinManager($manager) {}
-
-	/**
-	 * Intercept calls to getColumName()
+	 * Intercept calls to get<AssociationName>()
 	 */
 	public function __call($fn, $args)
 	{
@@ -63,7 +58,7 @@ class Association implements Mixin {
 	 */
 	public function getAllAssociations()
 	{
-		return $this->_associations;
+		return $this->associations;
 	}
 
 	/**
@@ -74,7 +69,7 @@ class Association implements Mixin {
 	 */
 	public function hasAssociation($name)
 	{
-		return array_key_exists($name, $this->_associations);
+		return array_key_exists($name, $this->associations);
 	}
 
 	/**
@@ -85,7 +80,7 @@ class Association implements Mixin {
 	 */
 	public function getAssociation($name)
 	{
-		return $this->_associations[$name];
+		return $this->associations[$name];
 	}
 
 	/**
@@ -95,12 +90,12 @@ class Association implements Mixin {
 	 * @param Association $association Association to set
 	 * @return $this;
 	 */
-	public function setAssociation($name, ModelAssociation $association)
+	public function setAssociation($name, Association $association)
 	{
 		$association->setFrontend($this->scope->getFrontend());
 
-		$this->_associations[$name] = $association;
+		$this->associations[$name] = $association;
 
-		return $this;
+		return $this->scope;
 	}
 }
