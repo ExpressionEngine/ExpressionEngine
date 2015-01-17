@@ -170,6 +170,7 @@ class Email extends Design {
 		);
 
 		$this->loadCodeMirrorAssets();
+		ee()->cp->add_js_script(array('file' => 'cp/design/email/edit'));
 
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), lang($template->template_name));
 		ee()->view->cp_breadcrumbs = array(
