@@ -285,6 +285,31 @@ class Design extends CP_Controller {
 		return $table;
 	}
 
+	protected function loadCodeMirrorAssets($selector = 'template_data')
+	{
+		ee()->cp->add_to_head(ee()->view->head_link('css/codemirror.css'));
+		ee()->cp->add_to_head(ee()->view->head_link('css/codemirror-additions.css'));
+		ee()->cp->add_js_script(array(
+				'plugin'	=> 'ee_codemirror',
+				'file'		=> array(
+					'codemirror/codemirror',
+					'codemirror/closebrackets',
+					'codemirror/overlay',
+					'codemirror/xml',
+					'codemirror/css',
+					'codemirror/javascript',
+					'codemirror/htmlmixed',
+					'codemirror/ee-mode',
+					'codemirror/dialog',
+					'codemirror/searchcursor',
+					'codemirror/search',
+				)
+			)
+		);
+		ee()->javascript->output("$('textarea[name=\"" . $selector . "\"]').toggleCodeMirror();");
+	}
+
+
 	public function index()
 	{
 		$this->manager();

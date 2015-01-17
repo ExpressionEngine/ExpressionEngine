@@ -273,6 +273,8 @@ class Variables extends Design {
 				->addToBody(lang('create_template_variable_error_desc'));
 		}
 
+		$this->loadCodeMirrorAssets('variable_data');
+
 		ee()->view->cp_page_title = lang('create_template_variable');
 		ee()->view->cp_breadcrumbs = array(
 			cp_url('design/variables') => lang('template_variables'),
@@ -394,6 +396,8 @@ class Variables extends Design {
 				->withTitle(lang('edit_template_variable_error'))
 				->addToBody(lang('edit_template_variable_error_desc'));
 		}
+
+		$this->loadCodeMirrorAssets('variable_data');
 
 		ee()->view->cp_page_title = lang('edit_template_variable');
 		ee()->view->cp_breadcrumbs = array(

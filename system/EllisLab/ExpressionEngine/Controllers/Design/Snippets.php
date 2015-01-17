@@ -277,7 +277,7 @@ class Snippets extends Design {
 			cp_url('design/snippets') => lang('template_partials'),
 		);
 
-		$this->loadCodeMirrorAssets();
+		$this->loadCodeMirrorAssets('snippet_contents');
 
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -401,7 +401,7 @@ class Snippets extends Design {
 			cp_url('design/snippets') => lang('template_partials'),
 		);
 
-		$this->loadCodeMirrorAssets();
+		$this->loadCodeMirrorAssets('snippet_contents');
 
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -518,31 +518,6 @@ class Snippets extends Design {
 		}
 
 		return TRUE;
-	}
-
-	private function loadCodeMirrorAssets()
-	{
-		$this->cp->add_to_head($this->view->head_link('css/codemirror.css'));
-		$this->cp->add_to_head($this->view->head_link('css/codemirror-additions.css'));
-		ee()->cp->add_js_script(array(
-				'plugin'	=> 'ee_codemirror',
-				'file'		=> array(
-					'codemirror/codemirror',
-					'codemirror/closebrackets',
-					'codemirror/overlay',
-					'codemirror/xml',
-					'codemirror/css',
-					'codemirror/javascript',
-					'codemirror/htmlmixed',
-					'codemirror/ee-mode',
-					'codemirror/dialog',
-					'codemirror/searchcursor',
-					'codemirror/search',
-
-					'cp/snippet_editor',
-				)
-			)
-		);
 	}
 }
 // EOF

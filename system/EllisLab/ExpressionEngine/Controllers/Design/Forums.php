@@ -201,6 +201,8 @@ class Forums extends Design {
 			'template_data' => file_get_contents($path),
 		);
 
+		$this->loadCodeMirrorAssets();
+
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), $template_name);
 		ee()->view->cp_breadcrumbs = array(
 			cp_url('design') => lang('template_manager'),
