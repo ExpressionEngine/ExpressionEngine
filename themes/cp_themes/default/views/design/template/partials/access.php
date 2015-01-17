@@ -20,7 +20,7 @@
 				}
 				?>
 				<label class="<?=$class?>">
-					<input type="checkbox" name="allowed_member_groups[]" value="$member_group->group_id"<?=$checked?>> <?=$member_group->group_title?>
+					<input type="checkbox" name="allowed_member_groups[]" value="<?=$member_group->group_id?>"<?=$checked?>> <?=$member_group->group_title?>
 				</label>
 			<?php endforeach; ?>
 		</div>
