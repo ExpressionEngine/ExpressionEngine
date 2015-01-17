@@ -10,12 +10,28 @@ class Manager {
 	protected $forwarded = array();
 
 	/**
-	 * @param array $mixins List of class names
+	 * @param Object $scope Object to mix into
 	 */
-	public function __construct($scope, $mixins)
+	public function __construct($scope)
 	{
 		$this->scope = $scope;
+	}
+
+	/**
+	 * @param array $mixins List of class names
+	 */
+	public function setMixins($mixins)
+	{
 		$this->mixins = $mixins;
+		$this->mountMixins();
+	}
+
+	public function mountMixins()
+	{
+		foreach ($this->mixins as $class)
+		{
+			$this->createMixinObject($class);
+		}
 	}
 
 	/**
@@ -59,10 +75,8 @@ class Manager {
 	{
 		$return = NULL;
 
-		foreach ($this->mixins as $class)
+		foreach ($this->instances as $obj)
 		{
-			$obj = $this->getMixinObject($class);
-
 			$callable = array($obj, $fn);
 
 			if (is_callable($callable))
@@ -93,16 +107,11 @@ class Manager {
 	/**
 	 * Helper function to create mixin objects
 	 */
-	protected function getMixinObject($class)
+	protected function createMixinObject($class)
 	{
 		if ( ! isset($this->instances[$class]))
 		{
-			$mixin = new $class($this->scope);
-			$mixin->setMixinManager($this);
-
-			$this->instances[$class] = $mixin;
+			$this->instances[$class] = new $class($this->scope, $this);
 		}
-
-		return $this->instances[$class];
 	}
 }
