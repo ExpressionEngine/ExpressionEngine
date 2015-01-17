@@ -30,6 +30,7 @@ abstract class MixableImpl implements Mixable {
 	public function setMixinManager($manager)
 	{
 		$this->_mixin_manager = $manager;
+		$manager->setMixins($this->getMixinClasses());
 	}
 
 	/**
@@ -37,6 +38,6 @@ abstract class MixableImpl implements Mixable {
 	 */
 	protected function newMixinManager()
 	{
-		return new Manager($this, $this->getMixinClasses());
+		return new Manager($this);
 	}
 }
