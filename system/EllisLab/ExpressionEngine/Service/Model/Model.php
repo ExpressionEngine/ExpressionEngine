@@ -7,11 +7,7 @@ use InvalidArgumentException;
 use OverflowException;
 
 use EllisLab\ExpressionEngine\Library\Data\Entity;
-
 use EllisLab\ExpressionEngine\Service\Model\DataStore;
-use EllisLab\ExpressionEngine\Service\Model\Association\Association;
-use EllisLab\ExpressionEngine\Service\Validation\Validator;
-
 
 /**
  * ExpressionEngine - by EllisLab
@@ -56,8 +52,37 @@ class Model extends Entity {
 	/**
 	 *
 	 */
-	protected $_validator = NULL;
+	protected $_default_events = array(
+		'beforeFetch',
+		'afterFetch',
+		'beforeSave', // willSave?
+		'afterSave', // didSave?
+		'beforeDelete',
+		'afterDelete',
+		'beforeSet',
+		'afterSet',
+		'beforeGet',
+		'afterGet'
+	);
 
+	/**
+	 *
+	 */
+	public function __construct($data = array())
+	{
+		parent::__construct($data);
+		$this->bootEvents();
+	}
+
+	/**
+	 * Get the short name
+	 *
+	 * @return String short name
+	 */
+	public function getName()
+	{
+		return $this->_name;
+	}
 
 	/**
 	 * Set the short name of this model
@@ -73,16 +98,6 @@ class Model extends Entity {
 
 		$this->_name = $name;
 		return $this;
-	}
-
-	/**
-	 * Get the short name
-	 *
-	 * @return String short name
-	 */
-	public function getName()
-	{
-		return $this->_name;
 	}
 
 	/**
@@ -120,10 +135,10 @@ class Model extends Entity {
 	}
 
 	/**
-	* Provide the default mixins
-	*
+	 * Provide the default mixins
+	 *
 	 * TODO get rid of this and simply have a metadata key of the known
-	 * default mixins
+	 * default mixins. Depends on proper metadata booting/inheritance
 	 */
 	public function getMixinClasses()
 	{
@@ -132,25 +147,25 @@ class Model extends Entity {
 		return array_merge(
 			$mixins,
 			array(
-				__NAMESPACE__.'\Mixin\Boolean',
-				__NAMESPACE__.'\Mixin\Column',
-				__NAMESPACE__.'\Mixin\Association'
+				__NAMESPACE__.'\Mixin\Event',
+				__NAMESPACE__.'\Mixin\Relationship',
+				__NAMESPACE__.'\Mixin\TypedColumn',
+				__NAMESPACE__.'\Mixin\CompositeColumn',
+				__NAMESPACE__.'\Mixin\Validation'
 			)
 		);
 	}
 
-	/**
-	 * Clean up var_dump output for developers on PHP 5.6+
-	 */
-	public function __debugInfo()
+	public function getProperty($name)
 	{
-		$name = $this->_name;
-		$values = $this->getValues();
-		$related_to = array_keys($this->getAllAssociations());
+		$this->trigger('beforeGet', $name);
 
-		return compact('name', 'values', 'related_to');
+		$result = parent::getProperty($name);
+
+		$this->trigger('afterGet', $name);
+
+		return $result;
 	}
-
 
 	/**
 	 * Attempt to set a property. Overriden to support dirty values.
@@ -160,9 +175,12 @@ class Model extends Entity {
 	 */
 	public function setProperty($name, $value)
 	{
-		parent::setProperty($name, $value);
+		$this->trigger('beforeSet', $name, $value);
 
+		parent::setProperty($name, $value);
 		$this->markAsDirty($name);
+
+		$this->trigger('afterSet', $name, $value);
 
 		return $this;
 	}
@@ -234,7 +252,7 @@ class Model extends Entity {
 	 */
 	public function getValues()
 	{
-		$this->saveColumns();
+		$this->saveCompositeColumns();
 
 		return parent::getValues();
 	}
@@ -247,27 +265,6 @@ class Model extends Entity {
 	public function isNew()
 	{
 		return ($this->getId() === NULL);
-	}
-
-	/**
-	 * Validate the model
-	 *
-	 * @return validation result
-	 */
-	public function validate()
-	{
-		if ( ! isset($this->_validator))
-		{
-			return TRUE;
-		}
-
-		return $this->_validator->validate($this->getDirty());
-
-		// TODO validate relationships?
-		foreach ($this->getAllAssociations() as $assoc)
-		{
-			$assoc->validate();
-		}
 	}
 
 	/**
@@ -290,7 +287,7 @@ class Model extends Entity {
 		else
 		{
 			// update
-			$this->saveColumns();
+			$this->saveCompositeColumns();
 			$this->constrainQueryToSelf($qb);
 			$qb->update();
 		}
@@ -337,49 +334,6 @@ class Model extends Entity {
 	}
 
 	/**
-	 * Events
-	 */
-	public function onBeforeFetch()
-	{
-		return TRUE;
-	}
-
-	public function onAfterFetch()
-	{
-		return TRUE;
-	}
-
-	public function onBeforeSave()
-	{
-		return TRUE;
-	}
-
-	public function onAfterSave()
-	{
-		return TRUE;
-	}
-
-	public function onBeforeDelete()
-	{
-		return TRUE;
-	}
-
-	public function onAfterDelete()
-	{
-		return TRUE;
-	}
-
-	public function onBeforeValidate()
-	{
-		return TRUE;
-	}
-
-	public function onAfterValidate()
-	{
-		return TRUE;
-	}
-
-	/**
 	 * Limit a query to the primary id of this model
 	 *
 	 * @param QueryBuilder $query The query that will be sent
@@ -415,30 +369,36 @@ class Model extends Entity {
 		return $this->_frontend;
 	}
 
+
 	/**
-	 * Set the validatior
-	 *
-	 * @param Validator $validator The validator to use
-	 * @return $this;
+	 * Support method for the event mixin
 	 */
-	public function setValidator(Validator $validator)
+	public function getEvents()
 	{
-		$this->_validator = $validator;
+		$events = $this->getMetaData('events') ?: array();
+		$events = array_merge($this->_default_events, $events); // todo remove when metadata extending
 
-		$rules = $this->getMetaData('validation_rules');
-		$validator->setRules($rules);
+		return $events;
+	}
 
-		return $this;
+
+	/**
+	 * Support method for the typed columns mixin
+	 */
+	public function getTypedColumns()
+	{
+		return $this->getMetaData('typed_columns') ?: array();
 	}
 
 	/**
-	 * Support method for the column mixin
+	 * Support method for the composite column mixin
 	 */
-	public function getColumnDefinitions()
+	public function getCompositeColumns()
 	{
 		$definitions = array();
 
 		$columns = $this->getMetaData('columns') ?: array();
+		$columns = array_reverse($columns);
 
 		foreach ($columns as $name => $property)
 		{
@@ -468,4 +428,17 @@ class Model extends Entity {
 	{
 		return $this->_frontend->get($this);
 	}
+
+	/**
+	 * Clean up var_dump output for developers on PHP 5.6+
+	 */
+	public function __debugInfo()
+	{
+		$name = $this->_name;
+		$values = $this->getValues();
+		$related_to = array_keys($this->getAllAssociations());
+
+		return compact('name', 'values', 'related_to');
+	}
+
 }
