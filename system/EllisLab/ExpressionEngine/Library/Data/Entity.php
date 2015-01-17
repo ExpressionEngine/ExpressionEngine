@@ -114,6 +114,40 @@ abstract class Entity extends MixableImpl {
 			return $this->{'get__'.$name}();
 		}
 
+		return $this->getRawProperty($name);
+	}
+
+	/**
+	 * Attempt to set a property. Called by __set.
+	 *
+	 * @param String $name Name of the property
+	 * @param Mixed  $value Value of the property
+	 * @return $this
+	 */
+	public function setProperty($name, $value)
+	{
+		if (method_exists($this, 'set__'.$name))
+		{
+			$this->{'set__'.$name}($value);
+		}
+		else
+		{
+			$this->setRawProperty($name, $value);
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Get a property directly, bypassing the getter. This method should
+	 * not be extended with additional logic, it should be treated as a
+	 * way to bypass __get() and all that comes with it.
+	 *
+	 * @param String $name Name of the property
+	 * @return Mixed $value Value of the property
+	 */
+	public function getRawProperty($name)
+	{
 		if ($this->hasProperty($name))
 		{
 			return $this->$name;
@@ -123,27 +157,23 @@ abstract class Entity extends MixableImpl {
 	}
 
 	/**
-	 * Attempt to set a property. Called by __set.
+	 * Get a property directly, bypassing the getter. This method should
+	 * not be extended with additional logic, it should be treated as a
+	 * way to bypass __get() and all that comes with it.
 	 *
 	 * @param String $name Name of the property
 	 * @param Mixed  $value Value of the property
+	 * @return $this
 	 */
-	public function setProperty($name, $value)
+	public function setRawProperty($name, $value)
 	{
-		if (method_exists($this, 'set__'.$name))
-		{
-			$this->{'set__'.$name}($value);
-		}
-		elseif ($this->hasProperty($name))
+		if ($this->hasProperty($name))
 		{
 			$this->$name = $value;
-		}
-		else
-		{
-			throw new InvalidArgumentException("No such property: '{$name}' on ".get_called_class());
+			return $this;
 		}
 
-		return $this;
+		throw new InvalidArgumentException("No such property: '{$name}' on ".get_called_class());
 	}
 
 	/**
