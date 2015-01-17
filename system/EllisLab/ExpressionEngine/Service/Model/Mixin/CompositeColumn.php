@@ -4,30 +4,22 @@ namespace EllisLab\ExpressionEngine\Service\Model\Mixin;
 
 use EllisLab\ExpressionEngine\Library\Mixin\Mixin;
 
-class Column implements Mixin {
+class CompositeColumn implements Mixin {
 
 	protected $scope;
+	protected $manager;
 	protected $columns;
 	protected $objects;
-	protected $manager;
 
-	public function __construct($scope)
+	public function __construct($scope, $manager)
 	{
 		$this->scope = $scope;
-		$this->columns = $scope->getColumnDefinitions();
-	}
-
-	/**
-	 * Satisfy the interface and allow for forwarding to our
-	 * column entities.
-	 */
-	public function setMixinManager($manager)
-	{
 		$this->manager = $manager;
+		$this->columns = $scope->getCompositeColumns();
 	}
 
 	/**
-	 * Intercept calls to getColumName()
+	 * Intercept calls to getCompositeColumName()
 	 */
 	public function __call($fn, $args)
 	{
@@ -35,9 +27,9 @@ class Column implements Mixin {
 		{
 			$column = substr($fn, 3);
 
-			if ($this->hasColumn($column))
+			if ($this->hasCompositeColumn($column))
 			{
-				return $this->getColumn($column);
+				return $this->getCompositeColumn($column);
 			}
 		}
 
@@ -45,17 +37,17 @@ class Column implements Mixin {
 	}
 
 	/**
-	 * Add hasColumn
+	 * Add hasCompositeColumn
 	 */
-	public function hasColumn($name)
+	public function hasCompositeColumn($name)
 	{
 		return array_key_exists($name, $this->columns);
 	}
 
 	/**
-	 * Add getColumn
+	 * Add getCompositeColumn
 	 */
-	public function getColumn($name)
+	public function getCompositeColumn($name)
 	{
 		if ( ! isset($this->objects[$name]))
 		{
@@ -70,7 +62,7 @@ class Column implements Mixin {
 	 *
 	 * TODO do this onBeforeSave/onBeforeValidate
 	 */
-	public function saveColumns()
+	public function saveCompositeColumns()
 	{
 		foreach ($this->objects as $name => $object)
 		{
@@ -79,6 +71,8 @@ class Column implements Mixin {
 
 			$this->scope->setProperty($property, $value);
 		}
+
+		return $this->scope;
 	}
 
 	/**
