@@ -512,6 +512,39 @@ class Template extends Design {
 		$template->no_auth_bounce = ee()->input->post('no_auth_bounce');
 		$template->enable_http_auth = ee()->input->post('enable_http_auth');
 
+		$member_groups = ee('Model')->get('MemberGroup')
+			->fields('group_id')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('group_id', '!=', 1)
+			->all();
+
+		$allowed_member_groups = ee()->input->post('allowed_member_groups');
+		$denied_member_groups = $template->getNoAccess()->pluck('member_group');
+
+		foreach ($member_groups as $member_group)
+		{
+			if (in_array($member_group->group_id, $allowed_member_groups))
+			{
+				if (in_array($member_group->group_id, $denied_member_groups))
+				{
+					// Remove association
+					$no_access = $template->getAssociation('NoAccess');
+					$no_access->remove($member_group);
+					$no_access->save();
+				}
+			}
+			else
+			{
+				if ( ! in_array($member_group->group_id, $denied_member_groups))
+				{
+					// Add association
+					$no_access = $template->getAssociation('NoAccess');
+					$no_access->add($member_group);
+					$no_access->save();
+				}
+			}
+		}
+
 		// Route
 		$route = $template->getTemplateRoute();
 
@@ -624,7 +657,7 @@ class Template extends Design {
 		$vars = array(
 			'template' => $template,
 			'route' => $route,
-			'denied_member_groups' => $template->getNoAccess()->getIds(),
+			'denied_member_groups' => $template->getNoAccess()->pluck('member_group'),
 			'member_groups' => $member_gropus,
 			'existing_templates' => $existing_templates
 		);
