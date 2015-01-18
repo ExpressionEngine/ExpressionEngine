@@ -26,11 +26,11 @@ class Validation implements Mixin {
 			return TRUE;
 		}
 
-		$this->scope->trigger('beforeValidate');
+		$this->scope->emit('beforeValidate');
 
 		$result = $this->validator->validate($this->scope->getDirty());
 
-		$this->scope->trigger('afterValidate');
+		$this->scope->emit('afterValidate');
 
 		return $result;
 		/*

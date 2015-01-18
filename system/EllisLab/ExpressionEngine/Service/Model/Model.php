@@ -158,11 +158,11 @@ class Model extends Entity {
 
 	public function getProperty($name)
 	{
-		$this->trigger('beforeGet', $name);
+		$this->emit('beforeGet', $name);
 
 		$result = parent::getProperty($name);
 
-		$this->trigger('afterGet', $name);
+		$this->emit('afterGet', $name);
 
 		return $result;
 	}
@@ -175,12 +175,12 @@ class Model extends Entity {
 	 */
 	public function setProperty($name, $value)
 	{
-		$this->trigger('beforeSet', $name, $value);
+		$this->emit('beforeSet', $name, $value);
 
 		parent::setProperty($name, $value);
 		$this->markAsDirty($name);
 
-		$this->trigger('afterSet', $name, $value);
+		$this->emit('afterSet', $name, $value);
 
 		return $this;
 	}
