@@ -71,7 +71,6 @@ class Model extends Entity {
 	public function __construct($data = array())
 	{
 		parent::__construct($data);
-		$this->bootEvents();
 	}
 
 	/**
