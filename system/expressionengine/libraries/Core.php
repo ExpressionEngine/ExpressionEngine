@@ -109,6 +109,11 @@ class EE_Core {
 		// Setup Dependency Injection Container
 		ee()->di = new \EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer();
 
+		ee()->di->register('Event', function($di)
+		{
+			return new \EllisLab\ExpressionEngine\Service\Event\Emitter();
+		});
+
 		ee()->di->registerSingleton('Model', function($di)
 		{
 			$model_alias_path = APPPATH . 'config/model_aliases.php';
