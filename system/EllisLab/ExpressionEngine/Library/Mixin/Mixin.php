@@ -9,4 +9,14 @@ interface Mixin {
 	 */
 	public function __construct($scope, $manager);
 
+	/**
+	 * Name the mixin. Make sure yours is unique!
+	 *
+	 * Preferably these are prefixed with the third party
+	 * name, so Event mixin owuld be MyAddon:Event and would
+	 * not clash with EE's native Event mixin.
+	 *
+	 * @return String Mixin name
+	 */
+	public function getName();
 }
