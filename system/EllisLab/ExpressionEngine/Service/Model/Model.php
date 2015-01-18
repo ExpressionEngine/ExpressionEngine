@@ -146,7 +146,7 @@ class Model extends Entity {
 		return array_merge(
 			$mixins,
 			array(
-				__NAMESPACE__.'\Mixin\Event',
+				$root.'\Event\Mixin',
 				__NAMESPACE__.'\Mixin\Relationship',
 				__NAMESPACE__.'\Mixin\TypedColumn',
 				__NAMESPACE__.'\Mixin\CompositeColumn',

@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Library\Event;
+namespace EllisLab\ExpressionEngine\Service\Event;
 
 use Closure;
 

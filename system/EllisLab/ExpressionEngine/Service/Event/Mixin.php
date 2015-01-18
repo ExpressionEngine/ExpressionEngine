@@ -1,11 +1,10 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Service\Model\Mixin;
+namespace EllisLab\ExpressionEngine\Service\Event;
 
-use EllisLab\ExpressionEngine\Library\Mixin\Mixin;
-use EllisLab\ExpressionEngine\Library\Event\Emitter as EventEmitter;
+use EllisLab\ExpressionEngine\Library\Mixin\Mixin as MixinInterface;
 
-class Event implements Mixin {
+class Mixin implements MixinInterface {
 
 	protected $scope;
 	protected $emitter;
@@ -13,13 +12,13 @@ class Event implements Mixin {
 	public function __construct($scope, $manager)
 	{
 		$this->scope = $scope;
-		$this->bootEvents();
+		$this->bootReflexiveEvents();
 	}
 
 	/**
-	 * Initialize the default events.
+	 * Initialize the reflexive event listeners if the class supports it.
 	 */
-	protected function bootEvents()
+	protected function bootReflexiveEvents()
 	{
 		foreach ($this->scope->getEvents() as $event)
 		{
@@ -44,9 +43,9 @@ class Event implements Mixin {
 	}
 
 	/**
-	 * Yuck
+	 * Emit an event
 	 */
-	public function trigger(/* $event, ...$args */)
+	public function emit(/* $event, ...$args */)
 	{
 		$args = func_get_args();
 		array_splice($args, 1, 0, array($this->scope));
@@ -73,7 +72,7 @@ class Event implements Mixin {
 	/**
 	 *
 	 */
-	public function setEventEmitter($emitter)
+	public function setEventEmitter(Emitter $emitter)
 	{
 		$this->emitter = $emitter;
 	}
@@ -83,7 +82,7 @@ class Event implements Mixin {
 	 */
 	protected function newEventEmitter()
 	{
-		return new EventEmitter();
+		return new Emitter();
 	}
 
 }
