@@ -149,10 +149,10 @@ class Model extends Entity implements ReflexiveEvent {
 			$mixins,
 			array(
 				$root.'\Event\Mixin',
-				__NAMESPACE__.'\Mixin\Relationship',
-				__NAMESPACE__.'\Mixin\TypedColumn',
-				__NAMESPACE__.'\Mixin\CompositeColumn',
-				__NAMESPACE__.'\Mixin\Validation'
+				$root.'\Model\Mixin\TypedColumn',
+				$root.'\Validation\Mixin',
+				$root.'\Model\Mixin\CompositeColumn',
+				$root.'\Model\Mixin\Relationship',
 			)
 		);
 	}
@@ -369,7 +369,6 @@ class Model extends Entity implements ReflexiveEvent {
 	{
 		return $this->_frontend;
 	}
-
 
 	/**
 	 * Interface method to implement Event\Reflexive, which adds reflexive
