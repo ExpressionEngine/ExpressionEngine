@@ -19,6 +19,14 @@ class CompositeColumn implements Mixin {
 	}
 
 	/**
+	 * Get the mixin name
+	 */
+	public function getName()
+	{
+		return 'Model:CompositeColumn';
+	}
+
+	/**
 	 * Intercept calls to getCompositeColumName()
 	 */
 	public function __call($fn, $args)

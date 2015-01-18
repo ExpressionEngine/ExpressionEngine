@@ -15,6 +15,16 @@ class Relationship implements Mixin {
 		$this->scope = $scope;
 	}
 
+
+	/**
+	 * Get the mixin name
+	 */
+	public function getName()
+	{
+		return 'Model:Relationship';
+	}
+
+
 	/**
 	 * Intercept calls to get<AssociationName>()
 	 */

@@ -20,6 +20,14 @@ class Mixin implements MixinInterface {
 	}
 
 	/**
+	 * Get the mixin name
+	 */
+	public function getName()
+	{
+		return 'Event';
+	}
+
+	/**
 	 * Initialize the reflexive event listeners if the class supports it.
 	 */
 	protected function bootReflexiveEvents()

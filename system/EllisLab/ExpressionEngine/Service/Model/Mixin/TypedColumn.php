@@ -22,6 +22,14 @@ class TypedColumn implements Mixin {
 	}
 
 	/**
+	 * Get the mixin name
+	 */
+	public function getName()
+	{
+		return 'Model:TypedColumn';
+	}
+
+	/**
 	 *
 	 */
 	protected function observePropertyEvents()

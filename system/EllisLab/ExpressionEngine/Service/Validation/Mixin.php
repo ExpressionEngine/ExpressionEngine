@@ -1,17 +1,25 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Service\Model\Mixin;
+namespace EllisLab\ExpressionEngine\Service\Validation;
 
-use EllisLab\ExpressionEngine\Library\Mixin\Mixin;
-use EllisLab\ExpressionEngine\Service\Validation\Validator;
+use EllisLab\ExpressionEngine\Library\Mixin\Mixin as MixinInterface;
+use EllisLab\ExpressionEngine\Service\Event\Evented;
 
-class Validation implements Mixin {
+class Mixin implements MixinInterface {
 
 	protected $scope;
 
 	public function __construct($scope, $manager)
 	{
 		$this->scope = $scope;
+	}
+
+	/**
+	 * Get the mixin name
+	 */
+	public function getName()
+	{
+		return 'Validation';
 	}
 
 	/**
@@ -23,16 +31,16 @@ class Validation implements Mixin {
 	{
 		if ( ! isset($this->validator))
 		{
-			return TRUE;
+	//		return TRUE;
 		}
 
-		$this->scope->emit('beforeValidate');
+		$this->emit('beforeValidate');
 
-		$result = $this->validator->validate($this->scope->getDirty());
+	//	$result = $this->validator->validate($this->scope->getDirty());
 
-		$this->scope->emit('afterValidate');
+		$this->emit('afterValidate');
 
-		return $result;
+//		return $result;
 		/*
 		// TODO validate relationships?
 		foreach ($this->getAllAssociations() as $assoc)
@@ -57,5 +65,16 @@ class Validation implements Mixin {
 		$validator->setRules($rules);
 
 		return $this->scope;
+	}
+
+	/**
+	 *
+	 */
+	protected function emit($event)
+	{
+		if ($this->scope->hasMixin('Event'))
+		{
+			$this->scope->emit($event);
+		}
 	}
 }
