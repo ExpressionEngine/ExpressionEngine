@@ -5,6 +5,11 @@ namespace EllisLab\ExpressionEngine\Library\Mixin;
 interface Mixable {
 
 	/**
+	 * Has a given mixin?
+	 */
+	public function hasMixin($name);
+
+	/**
 	 * Get the current mixin manager
 	 */
 	public function getMixinManager();

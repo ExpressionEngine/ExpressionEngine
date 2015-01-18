@@ -12,6 +12,14 @@ abstract class MixableImpl implements Mixable {
 	abstract protected function getMixinClasses();
 
 	/**
+	 * Check if the class has a given mixin
+	 */
+	public function hasMixin($name)
+	{
+		return $this->getMixinManager()->hasMixin($name);
+	}
+
+	/**
 	 * Get the current mixin manager
 	 */
 	public function getMixinManager()
