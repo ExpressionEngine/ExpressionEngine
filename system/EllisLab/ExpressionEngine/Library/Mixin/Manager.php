@@ -9,6 +9,8 @@ class Manager {
 	protected $instances = array();
 	protected $forwarded = array();
 
+	protected $mounted = FALSE;
+
 	/**
 	 * @param Object $scope Object to mix into
 	 */
@@ -26,13 +28,35 @@ class Manager {
 		$this->mountMixins();
 	}
 
+	/**
+	 * Boot the mixin objects and collect their names
+	 */
 	public function mountMixins()
 	{
 		foreach ($this->mixins as $class)
 		{
 			$this->createMixinObject($class);
 		}
+
+		$this->mounted = TRUE;
 	}
+
+	/**
+	 * Check if a given mixin was mounted on the current scope.
+	 *
+	 * @param String $name  Mixin name as exposed by getName()
+	 * @return Bool Mixin mounted
+	 */
+	public function hasMixin($name)
+	{
+		if ( ! $this->mounted)
+		{
+			throw new \Exception('Mixins not mounted. Cannot check if mixin exists.');
+		}
+
+		return array_key_exists($name, $this->instances);
+	}
+
 
 	/**
 	 * Add another receiver to the call. This lets us do more
@@ -70,6 +94,10 @@ class Manager {
 
 	/**
 	 * Run a function on all mixins
+	 *
+	 * @param String $fn Function name
+	 * @param Array $args Arguments to pass to the method
+	 * @return Last return value [or NULL].
 	 */
 	protected function runMixins($fn, $args)
 	{
@@ -90,6 +118,10 @@ class Manager {
 
 	/**
 	 * Run a function on all forwarded mixables
+	 *
+	 * @param String $fn Function name
+	 * @param Array $args Arguments to pass to the method
+	 * @return void
 	 */
 	protected function runForwarded($fn, $args)
 	{
@@ -106,12 +138,12 @@ class Manager {
 
 	/**
 	 * Helper function to create mixin objects
+	 *
+	 * @param String $class Class name
 	 */
 	protected function createMixinObject($class)
 	{
-		if ( ! isset($this->instances[$class]))
-		{
-			$this->instances[$class] = new $class($this->scope, $this);
-		}
+		$obj = new $class($this->scope, $this);
+		$this->instances[$obj->getName()] = $obj;
 	}
 }
