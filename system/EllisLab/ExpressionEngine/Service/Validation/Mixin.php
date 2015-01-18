@@ -31,16 +31,16 @@ class Mixin implements MixinInterface {
 	{
 		if ( ! isset($this->validator))
 		{
-	//		return TRUE;
+			return TRUE;
 		}
 
 		$this->emit('beforeValidate');
 
-	//	$result = $this->validator->validate($this->scope->getDirty());
+		$result = $this->validator->validate($this->scope->getDirty());
 
 		$this->emit('afterValidate');
 
-//		return $result;
+		return $result;
 		/*
 		// TODO validate relationships?
 		foreach ($this->getAllAssociations() as $assoc)
