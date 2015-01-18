@@ -12,7 +12,11 @@ class Mixin implements MixinInterface {
 	public function __construct($scope, $manager)
 	{
 		$this->scope = $scope;
-		$this->bootReflexiveEvents();
+
+		if ($scope instanceOf Reflexive)
+		{
+			$this->bootReflexiveEvents();
+		}
 	}
 
 	/**

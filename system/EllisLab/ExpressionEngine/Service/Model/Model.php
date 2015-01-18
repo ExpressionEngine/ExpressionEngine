@@ -8,6 +8,7 @@ use OverflowException;
 
 use EllisLab\ExpressionEngine\Library\Data\Entity;
 use EllisLab\ExpressionEngine\Service\Model\DataStore;
+use EllisLab\ExpressionEngine\Service\Event\Reflexive as ReflexiveEvent;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -32,7 +33,7 @@ use EllisLab\ExpressionEngine\Service\Model\DataStore;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Model extends Entity {
+class Model extends Entity implements ReflexiveEvent {
 
 	/**
 	 *
@@ -142,6 +143,7 @@ class Model extends Entity {
 	public function getMixinClasses()
 	{
 		$mixins = parent::getMixinClasses();
+		$root = 'EllisLab\ExpressionEngine\Service';
 
 		return array_merge(
 			$mixins,
@@ -370,7 +372,8 @@ class Model extends Entity {
 
 
 	/**
-	 * Support method for the event mixin
+	 * Interface method to implement Event\Reflexive, which adds reflexive
+	 * event support to the event mixin.
 	 */
 	public function getEvents()
 	{
@@ -379,7 +382,6 @@ class Model extends Entity {
 
 		return $events;
 	}
-
 
 	/**
 	 * Support method for the typed columns mixin
