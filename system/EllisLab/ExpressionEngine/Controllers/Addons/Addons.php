@@ -149,7 +149,6 @@ class Addons extends CP_Controller {
 			)
 		);
 
-		// Optionally set columns here too if you want
 		$this->base_url->setQueryStringVariable('sort_col', $table->sort_col);
 		$this->base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
 
