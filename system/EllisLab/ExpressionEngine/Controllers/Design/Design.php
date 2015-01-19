@@ -356,6 +356,11 @@ class Design extends CP_Controller {
 			}
 		}
 
+		if ( ! $this->hasEditTemplatePrivileges($group->group_id))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			if ($this->hasEditTemplatePrivileges($group->group_id))
