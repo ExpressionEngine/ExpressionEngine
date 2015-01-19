@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Controllers\Design;
 
+use ZipArchive;
 use EllisLab\ExpressionEngine\Controllers\Design\Design;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
@@ -46,6 +47,7 @@ class Variables extends Design {
 			show_error(lang('unauthorized_access'));
 		}
 
+		$this->sidebarMenu();
 		$this->stdHeader();
 
 		$this->msm = (ee()->config->item('multiple_sites_enabled') == 'y');
@@ -59,11 +61,11 @@ class Variables extends Design {
 		}
 		elseif (ee()->input->post('bulk_action') == 'export')
 		{
-			$this->export(ee()->input->post('selection'));
+			$this->exportVariables(ee()->input->post('selection'));
 		}
 
 		$vars = array();
-		$table = Table::create();
+		$table = Table::create(array('autosort' => TRUE));
 		$columns = array(
 			'variable',
 			'all_sites',
@@ -85,7 +87,9 @@ class Variables extends Design {
 		$table->setColumns($columns);
 
 		$data = array();
-		$variables = ee('Model')->get('GlobalVariable')->all();
+		$variables = ee('Model')->get('GlobalVariable')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
 
 		$base_url = new URL('design/variables', ee()->session->session_id());
 
@@ -108,7 +112,7 @@ class Variables extends Design {
 						'title' => lang('edit')
 					),
 					'find' => array(
-						'href' => cp_url('design/variables/find/' . $variable->variable_name),
+						'href' => cp_url('design/template/search', array('search' => '{' . $variable->variable_name . '}')),
 						'title' => lang('find')
 					),
 				)),
@@ -269,6 +273,8 @@ class Variables extends Design {
 				->addToBody(lang('create_template_variable_error_desc'));
 		}
 
+		$this->loadCodeMirrorAssets('variable_data');
+
 		ee()->view->cp_page_title = lang('create_template_variable');
 		ee()->view->cp_breadcrumbs = array(
 			cp_url('design/variables') => lang('template_variables'),
@@ -281,6 +287,7 @@ class Variables extends Design {
 	{
 		$variable = ee('Model')->get('GlobalVariable')
 			->filter('variable_name', $variable_name)
+			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
 		if ( ! $variable)
@@ -390,6 +397,8 @@ class Variables extends Design {
 				->addToBody(lang('edit_template_variable_error_desc'));
 		}
 
+		$this->loadCodeMirrorAssets('variable_data');
+
 		ee()->view->cp_page_title = lang('edit_template_variable');
 		ee()->view->cp_breadcrumbs = array(
 			cp_url('design/variables') => lang('template_variables'),
@@ -401,7 +410,7 @@ class Variables extends Design {
 	/**
 	 * Removes variables
 	 *
-	 * @param  str|array $variable_ids The ids of variables to remove
+	 * @param  int|array $variable_ids The ids of variables to remove
 	 * @return void
 	 */
 	private function remove($variable_ids)
@@ -411,7 +420,10 @@ class Variables extends Design {
 			$variable_ids = array($variable_ids);
 		}
 
-		$variables = ee('Model')->get('GlobalVariable', $variable_ids)->all();
+		$variables = ee('Model')->get('GlobalVariable', $variable_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
 		$names = $variables->pluck('variable_name');
 
 		$variables->delete();
@@ -421,6 +433,49 @@ class Variables extends Design {
 			->withTitle(lang('success'))
 			->addToBody(lang('template_variables_removed_desc'))
 			->addToBody($names);
+	}
+
+	/**
+	 * Export variables
+	 *
+	 * @param  int|array $variable_ids The ids of variables to export
+	 * @return void
+	 */
+	private function exportVariables($variable_ids)
+	{
+		if ( ! is_array($variable_ids))
+		{
+			$variable_ids = array($variable_ids);
+		}
+
+		// Create the Zip Archive
+		$zipfilename = tempnam(sys_get_temp_dir(), '');
+		$zip = new ZipArchive();
+		if ($zip->open($zipfilename, ZipArchive::CREATE) !== TRUE)
+		{
+			ee('Alert')->makeInline('settings-form')
+				->asIssue()
+				->withTitle(lang('error_export'))
+				->addToBody(lang('error_cannot_create_zip'));
+			return;
+		}
+
+		// Loop through variables and add them to the zip
+		$variables = ee('Model')->get('GlobalVariable', $variable_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->all()
+			->each(function($variable) use($zip) {
+				$zip->addFromString($variable->variable_name . '.html', $variable->variable_data);
+			});
+
+		$zip->close();
+
+		$data = file_get_contents($zipfilename);
+		unlink($zipfilename);
+
+		ee()->load->helper('download');
+		force_download('ExpressionEngine-template-variables.zip', $data);
+		exit;
 	}
 
 	/**

@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Service\Model\DataStore;
  */
 abstract class Query {
 
-	protected $db = NULL;
+	protected $store = NULL;
 	protected $builder = NULL;
 
 	public function __construct(DataStore $store, Builder $builder)

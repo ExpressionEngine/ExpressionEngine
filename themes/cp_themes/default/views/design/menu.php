@@ -18,10 +18,10 @@
 		<div class="scroll-wrap">
 			<ul class="folder-list">
 				<?php foreach ($system_templates as $template): ?>
-				<li>
+				<li<?php if ( ! empty($template['class'])): ?> class="<?=$template['class']?>"<?php endif; ?>>
 					<a href="<?=$template['url']?>"><?=$template['name']?></a>
 					<ul class="toolbar">
-						<li class="edit"><a href="<?=$template['edit_url']?>" title="<?=lang('edit')?>"></a></li>
+						<li class="edit"><a href="<?=$template['url']?>" title="<?=lang('edit')?>"></a></li>
 					</ul>
 				</li>
 				<?php endforeach; ?>

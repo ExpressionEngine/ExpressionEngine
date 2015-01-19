@@ -2,9 +2,11 @@
 
 <div class="tbl-ctrls">
 	<?=form_open($form_url)?>
+		<?php if($show_new_template_button): ?>
 		<fieldset class="tbl-search right">
 			<a class="btn tn action" href="<?=cp_url('design/template/create/' . $group_id)?>"><?=lang('create_new_template')?></a>
 		</fieldset>
+		<?php endif; ?>
 		<h1><?=$cp_heading?></h1>
 		<?=ee('Alert')->getAllInlines()?>
 		<?php $this->view('_shared/table', $table); ?>
@@ -15,7 +17,6 @@
 				<option value="">-- <?=lang('with_selected')?> --</option>
 				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove-template"><?=lang('remove')?></option>
 				<option value="export"><?=lang('export_templates')?></option>
-				<option value="sync"><?=lang('sync_templates')?></option>
 			</select>
 			<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
 		</fieldset>
@@ -25,8 +26,19 @@
 
 <?php $this->startOrAppendBlock('modals'); ?>
 
-<?php
+<div class="modal-wrap modal-template-settings">
+	<div class="modal">
+		<div class="col-group">
+			<div class="col w-16">
+				<a class="m-close" href="#"></a>
+				<div class="box">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 
+<?php
 $modal_vars = array(
 	'name'		=> 'modal-confirm-remove-template',
 	'form_url'	=> $form_url,

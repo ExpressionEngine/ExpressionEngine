@@ -5,6 +5,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Association;
 use LogicException;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -38,7 +39,21 @@ abstract class ToOne extends Association {
 	 */
 	public function fill($models)
 	{
-		$this->set($models[0]);
+		if (is_array($models) || $models instanceOf Collection)
+		{
+			if (count($models))
+			{
+				parent::fill($models[0]);
+			}
+			else
+			{
+				parent::fill(NULL);
+			}
+		}
+		else
+		{
+			parent::fill($models);
+		}
 	}
 
 	/**
@@ -120,6 +135,9 @@ abstract class ToOne extends Association {
 	 */
 	protected function saveAllRelated()
 	{
-		$this->related->save();
+		if ( ! is_null($this->related))
+		{
+			$this->related->save();
+		}
 	}
 }

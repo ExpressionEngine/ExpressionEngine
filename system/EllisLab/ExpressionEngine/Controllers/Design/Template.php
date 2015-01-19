@@ -2,10 +2,13 @@
 
 namespace EllisLab\ExpressionEngine\Controllers\Design;
 
+use \EE_Route;
+use ZipArchive;
 use EllisLab\ExpressionEngine\Controllers\Design\Design;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
+use EllisLab\ExpressionEngine\Model\Template\Template as TemplateModel;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -31,8 +34,6 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  * @link		http://ellislab.com
  */
 class Template extends Design {
-
-	protected $template_group;
 
 	/**
 	 * Constructor
@@ -60,8 +61,6 @@ class Template extends Design {
 			show_error(sprintf(lang('error_no_template_group'), $group_name));
 		}
 
-		$this->template_group = $group;
-
 		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
 		{
 			show_error(lang('unauthorized_access'));
@@ -71,21 +70,35 @@ class Template extends Design {
 			'0' => '-- ' . strtolower(lang('none')) . ' --'
 		);
 
-		foreach (ee('Model')->get('TemplateGroup')->all() as $group)
+		foreach (ee('Model')->get('TemplateGroup')->all() as $template_group)
 		{
 			$templates = array();
-			foreach ($group->getTemplates() as $template)
+			foreach ($template_group->getTemplates() as $template)
 			{
 				$templates[$template->template_id] = $template->template_name;
 			}
-			$existing_templates[$group->group_name] = $templates;
+			$existing_templates[$template_group->group_name] = $templates;
 		}
 
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'base_url' => cp_url('design/template/create/' . $group_name),
-			'save_btn_text' => 'btn_create_template',
-			'save_btn_text_working' => 'btn_create_template_working',
+			'buttons' => array(
+				array(
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'create',
+					'text' => 'btn_create_template',
+					'working' => 'btn_create_template_working'
+				),
+				array(
+					'name' => 'submit',
+					'type' => 'submit',
+					'value' => 'edit',
+					'text' => 'btn_create_and_edit_template',
+					'working' => 'btn_create_template_working'
+				),
+			),
 			'sections' => array(
 				array(
 					array(
@@ -127,7 +140,7 @@ class Template extends Design {
 			array(
 				'field' => 'template_name',
 				'label' => 'lang:template_name',
-				'rules' => 'required|callback__template_name_checks'
+				'rules' => 'required|callback__template_name_checks[' . $group->group_id . ']'
 			),
 			array(
 				'field' => 'template_type',
@@ -156,7 +169,11 @@ class Template extends Design {
 			$template->group_id = $group->group_id;
 			$template->template_name = ee()->input->post('template_name');
 			$template->template_type = ee()->input->post('template_type');
+			$template->edit_date = ee()->localize->now;
+			$template->last_author_id = ee()->session->userdata('member_id');
 			$template->save();
+
+			ee()->session->set_flashdata('template_id', $template->template_id);
 
 			ee('Alert')->makeInline('settings-form')
 				->asSuccess()
@@ -164,7 +181,14 @@ class Template extends Design {
 				->addToBody(sprintf(lang('create_template_success_desc'), $group_name, $template->template_name))
 				->defer();
 
-			ee()->functions->redirect(cp_url('design/manager/' . $group->group_name));
+			if (ee()->input->post('submit') == 'edit')
+			{
+				ee()->functions->redirect(cp_url('design/template/edit/' . $template->template_id));
+			}
+			else
+			{
+				ee()->functions->redirect(cp_url('design/manager/' . $group->group_name));
+			}
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -174,60 +198,382 @@ class Template extends Design {
 				->addToBody(lang('create_template_error_desc'));
 		}
 
-		ee()->view->cp_page_title = sprintf(lang('create_template'), $group->group_name);
+		$this->sidebarMenu($group->group_id);
+		ee()->view->cp_page_title = lang('create_template');
 
 		ee()->cp->render('settings/form', $vars);
 	}
 
-	public function edit()
+	public function edit($template_id)
 	{
+		$template = ee('Model')->get('Template', $template_id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
 
-	}
+		if ( ! $template)
+		{
+			show_error(lang('error_no_template'));
+		}
 
-	public function remove()
-	{
+		$group = $template->getTemplateGroup();
 
-	}
+		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
+		{
+			show_error(lang('unauthorized_access'));
+		}
 
-	public function export()
-	{
+		ee()->load->library('form_validation');
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'template_name',
+				'label' => 'lang:template_name',
+				'rules' => 'required|callback__template_name_checks[' . $group->group_id . ']'
+			),
+			array(
+				'field' => 'template_type',
+				'label' => 'lang:template_type',
+				'rules' => 'required'
+			),
+			array(
+				'field' => 'cache',
+				'label' => 'lang:enable_caching',
+				'rules' => 'enum[y,n]'
+			),
+			array(
+				'field' => 'allow_php',
+				'label' => 'lang:enable_php',
+				'rules' => 'enum[y,n]'
+			),
+			array(
+				'field' => 'php_parse_location',
+				'label' => 'lang:parse_stage',
+				'rules' => 'enum[i,o]'
+			),
+			array(
+				'field' => 'enable_http_auth',
+				'label' => 'lang:enable_http_authentication',
+				'rules' => 'enum[y,n]'
+			),
+			array(
+				'field' => 'route',
+				'label' => 'lang:template_route_override',
+				'rules' => 'callback__template_route_checks'
+			),
+			array(
+				'field' => 'route_required',
+				'label' => 'lang:require_all_segments',
+				'rules' => 'enum[y,n]'
+			)
+		));
 
-	}
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			$template->template_data = ee()->input->post('template_data');
+			$template->template_notes = ee()->input->post('template_notes');
+			$template->edit_date = ee()->localize->now;
+			$template->last_author_id = ee()->session->userdata('member_id');
 
-	public function sync()
-	{
+			$template = $this->updateSettingsAndAccess($template);
 
+			$template->save();
+
+			$alert = ee('Alert')->makeInline('template-form')
+				->asSuccess()
+				->withTitle(lang('update_template_success'))
+				->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name . '/' . $template->template_name));
+
+			if (ee()->input->post('submit') == 'finish')
+			{
+				$alert->defer();
+				ee()->session->set_flashdata('template_id', $template->template_id);
+				ee()->functions->redirect(cp_url('design/manager/' . $group->group_name));
+			}
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee('Alert')->makeInline('template-form')
+				->asIssue()
+				->withTitle(lang('update_template_error'))
+				->addToBody(lang('update_template_error_desc'));
+		}
+
+		$author = $template->getLastAuthor();
+
+		$vars = array(
+			'form_url' => cp_url('design/template/edit/' . $template_id),
+			'settings' => $this->renderSettingsPartial($template),
+			'access' => $this->renderAccessPartial($template),
+			'template' => $template,
+			'group' => $group,
+			'author' => (empty($author)) ? '-' : $author->screen_name,
+		);
+
+		$view_url = ee()->functions->fetch_site_index();
+		$view_url = rtrim($view_url, '/').'/';
+
+		if ($template->template_type == 'css')
+		{
+			$view_url .= QUERY_MARKER.'css='.$group->group_name.'/'.$template->template_name;
+		}
+		else
+		{
+			$view_url .= $group->group_name.(($template->template_name == 'index') ? '' : '/'.$template->template_name);
+		}
+
+		$vars['view_path'] = ee()->cp->masked_url($view_url);
+
+		$this->stdHeader();
+		$this->loadCodeMirrorAssets();
+
+		ee()->view->cp_page_title = sprintf(lang('edit_template'), $group->group_name . '/' . $template->template_name);
+		ee()->view->cp_breadcrumbs = array(
+			cp_url('design') => lang('template_manager'),
+			cp_url('design/manager/' . $group->group_name) => sprintf(lang('breadcrumb_group'), $group->group_name)
+		);
+
+		// Supress browser XSS check that could cause obscure bug after saving
+		ee()->output->set_header("X-XSS-Protection: 0");
+
+		ee()->cp->render('design/template/edit', $vars);
 	}
 
 	public function settings($template_id)
 	{
+		$template = ee('Model')->get('Template', $template_id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
 
+		if ( ! $template)
+		{
+			show_error(lang('error_no_template'));
+		}
+
+		$group = $template->getTemplateGroup();
+
+		if ($this->hasEditTemplatePrivileges($group->group_id) === FALSE)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		ee()->load->library('form_validation');
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'template_name',
+				'label' => 'lang:template_name',
+				'rules' => 'required|callback__template_name_checks[' . $group->group_id . ']'
+			),
+			array(
+				'field' => 'template_type',
+				'label' => 'lang:template_type',
+				'rules' => 'required'
+			),
+			array(
+				'field' => 'cache',
+				'label' => 'lang:enable_caching',
+				'rules' => 'enum[y,n]'
+			),
+			array(
+				'field' => 'allow_php',
+				'label' => 'lang:enable_php',
+				'rules' => 'enum[y,n]'
+			),
+			array(
+				'field' => 'php_parse_location',
+				'label' => 'lang:parse_stage',
+				'rules' => 'enum[i,o]'
+			),
+			array(
+				'field' => 'enable_http_auth',
+				'label' => 'lang:enable_http_authentication',
+				'rules' => 'enum[y,n]'
+			),
+			array(
+				'field' => 'route',
+				'label' => 'lang:template_route_override',
+				'rules' => 'callback__template_route_checks'
+			),
+			array(
+				'field' => 'route_required',
+				'label' => 'lang:require_all_segments',
+				'rules' => 'enum[y,n]'
+			)
+		));
+
+		if (AJAX_REQUEST && ! empty($_POST))
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			$template = $this->updateSettingsAndAccess($template);
+
+			$template->save();
+
+			$alert = ee('Alert')->makeInline('settings-form')
+				->asSuccess()
+				->withTitle(lang('update_template_success'))
+				->addToBody(sprintf(lang('eupdate_template_success_desc'), $group->group_name, $template->template_name))
+				->defer();
+
+			ee()->session->set_flashdata('template_id', $template->template_id);
+			ee()->functions->redirect(cp_url('design/manager/' . $group->group_name));
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee('Alert')->makeInline('template-form')
+				->asIssue()
+				->withTitle(lang('update_template_error'))
+				->addToBody(lang('update_template_error_desc'))
+				->defer();
+			ee()->functions->redirect(cp_url('design/template/edit/' . $template->template_id));
+		}
+
+		$vars = array(
+			'form_url' => cp_url('design/template/settings/' . $template_id),
+			'settings' => $this->renderSettingsPartial($template),
+			'access' => $this->renderAccessPartial($template),
+		);
+		ee()->cp->render('design/template/settings', $vars);
 	}
 
-	private function loadCodeMirrorAssets()
+	public function search()
 	{
-		$this->cp->add_to_head($this->view->head_link('css/codemirror.css'));
-		$this->cp->add_to_head($this->view->head_link('css/codemirror-additions.css'));
-		ee()->cp->add_js_script(array(
-				'plugin'	=> 'ee_codemirror',
-				'file'		=> array(
-					'codemirror/codemirror',
-					'codemirror/closebrackets',
-					'codemirror/overlay',
-					'codemirror/xml',
-					'codemirror/css',
-					'codemirror/javascript',
-					'codemirror/htmlmixed',
-					'codemirror/ee-mode',
-					'codemirror/dialog',
-					'codemirror/searchcursor',
-					'codemirror/search',
+		if (ee()->input->post('bulk_action') == 'export')
+		{
+			$this->exportTemplates(ee()->input->post('selection'));
+		}
 
-					'cp/template_editor',
-					'cp/manager'
-				)
-			)
+		$search_terms = ee()->input->get_post('search');
+
+		$templates = ee('Model')->get('Template')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('template_data', 'LIKE', '%' . $search_terms . '%')
+			->all();
+
+		$base_url = new URL('design/template/search', ee()->session->session_id());
+
+		$table = $this->buildTableFromTemplateCollection($templates, TRUE);
+
+		$vars['table'] = $table->viewData($base_url);
+		$vars['form_url'] = $vars['table']['base_url'];
+		$vars['show_new_template_button'] = FALSE;
+
+		if ( ! empty($vars['table']['data']))
+		{
+			// Paginate!
+			$pagination = new Pagination(
+				$vars['table']['limit'],
+				$vars['table']['total_rows'],
+				$vars['table']['page']
+			);
+			$vars['pagination'] = $pagination->cp_links($base_url);
+		}
+
+		ee()->view->cp_heading = sprintf(
+			lang('search_results_heading'),
+			$templates->count(),
+			$search_terms
 		);
+
+		ee()->javascript->set_global('template_settings_url', cp_url('design/template/settings'));
+		ee()->javascript->set_global('lang.remove_confirm', lang('template') . ': <b>### ' . lang('templates') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/v3/confirm_remove',
+				'cp/manager'
+			),
+		));
+
+		$this->sidebarMenu();
+		$this->stdHeader();
+		ee()->view->cp_page_title = lang('template_manager');
+
+		ee()->cp->render('design/index', $vars);
+	}
+
+	private function updateSettingsAndAccess(TemplateModel $template)
+	{
+		// Settings
+		$template->template_name = ee()->input->post('template_name');
+		$template->template_type = ee()->input->post('template_type');
+		$template->cache = ee()->input->post('cache');
+		$template->refresh = ee()->input->post('refresh');
+		$template->allow_php = ee()->input->post('allow_php');
+		$template->php_parse_location = ee()->input->post('php_parse_location');
+		$template->hits = ee()->input->post('hits');
+
+		// Access
+		$template->no_auth_bounce = ee()->input->post('no_auth_bounce');
+		$template->enable_http_auth = ee()->input->post('enable_http_auth');
+
+		$member_groups = ee('Model')->get('MemberGroup')
+			->fields('group_id')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('group_id', '!=', 1)
+			->all();
+
+		$allowed_member_groups = ee()->input->post('allowed_member_groups');
+		$denied_member_groups = $template->getNoAccess()->pluck('member_group');
+
+		foreach ($member_groups as $member_group)
+		{
+			if (in_array($member_group->group_id, $allowed_member_groups))
+			{
+				if (in_array($member_group->group_id, $denied_member_groups))
+				{
+					// Remove association
+					$no_access = $template->getAssociation('NoAccess');
+					$no_access->remove($member_group);
+					$no_access->save();
+				}
+			}
+			else
+			{
+				if ( ! in_array($member_group->group_id, $denied_member_groups))
+				{
+					// Add association
+					$no_access = $template->getAssociation('NoAccess');
+					$no_access->add($member_group);
+					$no_access->save();
+				}
+			}
+		}
+
+		// Route
+		$route = $template->getTemplateRoute();
+
+		if ( ! $route)
+		{
+			$route = ee('Model')->make('TemplateRoute');
+			$route->template_id = $template->template_id;
+		}
+
+		$route->route = ee()->input->post('route');
+		$route->route_required = ee()->input->post('route_required');
+
+		if (empty($route->route))
+		{
+			if ($route->route_id)
+			{
+				$route->delete();
+			}
+		}
+		else
+		{
+			ee()->load->library('template_router');
+			$ee_route = new EE_Route($route->route, $route->route_required);
+			$route->route_parsed = $ee_route->compile();
+
+			$route->save();
+		}
+
+		return $template;
 	}
 
 	/**
@@ -273,10 +619,55 @@ class Template extends Design {
 		return $template_types;
 	}
 
+	private function renderSettingsPartial(TemplateModel $template)
+	{
+		$vars = array(
+			'template' => $template,
+			'template_types' => $this->getTemplateTypes(),
+		);
+		return ee('View')->make('design/template/partials/settings')->render($vars);
+	}
+
+	private function renderAccessPartial(TemplateModel $template)
+	{
+		$existing_templates = array();
+
+		foreach (ee('Model')->get('TemplateGroup')->all() as $template_group)
+		{
+			$templates = array();
+			foreach ($template_group->getTemplates() as $template)
+			{
+				$templates[$template->template_id] = $template->template_name;
+			}
+			$existing_templates[$template_group->group_name] = $templates;
+		}
+
+		$member_gropus = ee('Model')->get('MemberGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('group_id', '!=', 1)
+			->all();
+
+		$route = $template->getTemplateRoute();
+
+		if ( ! $route)
+		{
+			$route = ee('Model')->make('TemplateRoute');
+		}
+
+		$vars = array(
+			'template' => $template,
+			'route' => $route,
+			'denied_member_groups' => $template->getNoAccess()->pluck('member_group'),
+			'member_groups' => $member_gropus,
+			'existing_templates' => $existing_templates
+		);
+		return ee('View')->make('design/template/partials/access')->render($vars);
+	}
+
 	/**
 	  *	 Check Template Name
 	  */
-	public function _template_name_checks($str)
+	public function _template_name_checks($str, $group_id)
 	{
 		if ( ! preg_match("#^[a-zA-Z0-9_\-/]+$#i", $str))
 		{
@@ -294,22 +685,52 @@ class Template extends Design {
 		}
 
 		$count = ee('Model')->get('Template')
-			->filter('group_id', $this->template_group->group_id)
+			->filter('group_id', $group_id)
 			->filter('template_name', $str)
 			->count();
 
 		if ((strtolower($this->input->post('old_name')) != strtolower($str)) AND $count > 0)
 		{
-			$this->form_validation->set_message('_template_name_checks', lang('template_name_taken'));
+			ee()->form_validation->set_message('_template_name_checks', lang('template_name_taken'));
 			return FALSE;
 		}
 		elseif ($count > 1)
 		{
-			$this->form_validation->set_message('_template_name_checks', lang('template_name_taken'));
+			ee()->form_validation->set_message('_template_name_checks', lang('template_name_taken'));
 			return FALSE;
 		}
 
 		return TRUE;
+	}
+
+	public function _template_route_checks($str)
+	{
+		if (empty($str))
+		{
+			return TRUE;
+		}
+
+		ee()->load->library('template_router');
+		$ee_route = new EE_Route($str, ee()->input->post('route_required'));
+
+		$template_ids = ee('Model')->get('Template')
+			->fields('template_id')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all()
+			->getIds();
+
+		$routes = ee('Model')->get('TemplateRoute')
+			->filter('template_id', 'IN', $template_ids)
+			->all();
+
+		foreach ($routes as $route)
+		{
+			if ($ee_route->equals($route))
+			{
+				ee()->form_validation->set_message('_template_route_checks', lang('duplicate_route'));
+				return FALSE;
+			}
+		}
 	}
 }
 // EOF

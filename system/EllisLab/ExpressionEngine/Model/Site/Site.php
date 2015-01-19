@@ -36,12 +36,12 @@ class Site extends Model {
 	protected static $_primary_key = 'site_id';
 	protected static $_table_name = 'sites';
 
-	protected static $_preferences = array(
-		'SystemPreferences' => 'site_system_preferences',
+	protected static $_columns = array(
+		'ChannelPreferences' => 'site_channel_preferences',
 		'MailingListPreferences' => 'site_mailinglist_preferences',
 		'MemberPreferences' => 'site_member_preferences',
-		'TemplatePreferences' => 'site_template_preferences',
-		'ChannelPreferences' => 'site_channel_preferences'
+		'SystemPreferences' => 'site_system_preferences',
+		'TemplatePreferences' => 'site_template_preferences'
 	);
 
 	protected static $_relationships = array(
@@ -69,76 +69,4 @@ class Site extends Model {
 	protected $site_template_preferences;
 	protected $site_channel_preferences;
 	protected $site_bootstrap_checksums;
-
-	protected $_preference_sets = array();
-
-	/**
-	 *
-	 */
-	public function getSystemPreferences()
-	{
-		return $this->getPreferences('SystemPreferences');
-	}
-
-	/**
-	 *
-	 */
-	public function getMailingListPreferences()
-	{
-		return $this->getPreferences('MailingListPreferences');
-	}
-
-	/**
-	 *
-	 */
-	public function getMemberPreferences()
-	{
-		return $this->getPreferences('MemberPreferences');
-	}
-
-	/**
-	 *
-	 */
-	public function getTemplatePreferences()
-	{
-		return $this->getPreferences('TemplatePreferences');
-	}
-
-	/**
-	 *
-	 */
-	public function getChannelPreferences()
-	{
-		return $this->getPreferences('ChannelPreferences');
-	}
-
-	/**
-	 *
-	 */
-	protected function getPreferences($name)
-	{
-		$preferences = static::getMetaData('preferences');
-		$class_name = '\\EllisLab\\ExpressionEngine\\Model\\Site\\Preferences\\' . $name;
-		$field = $preferences[$name];
-
-		if ( ! isset($this->_preference_sets[$name]))
-		{
-			$this->_preference_sets[$name] = new $class_name($this->$field);
-		}
-		return $this->_preference_sets[$name];
-	}
-
-	/**
-	 *
-	 */
-	protected function map()
-	{
-		$preferences = self::getMetaData('preferences');
-		foreach($preferences as $preference_set => $field)
-		{
-			$this->$field = $this->getPreference($preference_set)->toArray();
-		}
-
-		return parent::map();
-	}
 }

@@ -621,6 +621,10 @@ if ( ! function_exists('form_prep'))
 
 			return $str;
 		}
+		elseif (is_bool($str))
+		{
+			$str = ($str) ? 'y' : 'n';
+		}
 
 		if ($str === '')
 		{
@@ -861,7 +865,7 @@ if ( ! function_exists('form_error_class'))
 				return $class;
 			}
 		}
-		
+
 		return '';
 	}
 }

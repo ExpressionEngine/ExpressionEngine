@@ -193,6 +193,7 @@ class Group extends Design {
 				->addToBody(lang('create_template_group_error_desc'));
 		}
 
+		$this->sidebarMenu();
 		ee()->view->cp_page_title = lang('create_template_group');
 
 		ee()->cp->render('settings/form', $vars);
@@ -202,6 +203,7 @@ class Group extends Design {
 	{
 		$group = ee('Model')->get('TemplateGroup')
 			->filter('group_name', $group_name)
+			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
 		if ( ! $group)
@@ -298,6 +300,7 @@ class Group extends Design {
 				->addToBody(lang('edit_template_group_error_desc'));
 		}
 
+		$this->sidebarMenu($group->group_id);
 		ee()->view->cp_page_title = lang('edit_template_group');
 
 		ee()->cp->render('settings/form', $vars);
@@ -307,6 +310,7 @@ class Group extends Design {
 	{
 		$group = ee('Model')->get('TemplateGroup')
 			->filter('group_name', ee()->input->post('group_name'))
+			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
 		if ( ! $group)

@@ -211,7 +211,7 @@ $lang = array(
 'The Template Group <b>%s</b> does not exist.',
 
 'error_no_template' =>
-'The Template <b>%s</b> does not exist.',
+'No such Template exists.',
 
 'error_no_snippet' =>
 'The Template Partial <b>%s</b> does not exist.',
@@ -313,7 +313,7 @@ $lang = array(
 'The following template variables were removed',
 
 'create_template' =>
-'Create Template in group <b>%s</b>',
+'Create Template',
 
 'template_name_desc' =>
 'Short name for this template.<br><i>No spaces. Underscores and dashes are allowed.</i>',
@@ -345,6 +345,203 @@ $lang = array(
 'create_template_success_desc' =>
 'The template <b>%s/%s</b> has been created.',
 
+'edit_template' =>
+'Edit Template: %s',
+
+'breadcrumb_group' =>
+'Group: %s',
+
+'last_edit' =>
+'Last Edit: %s by %s',
+
+'view_rendered' =>
+'view rendered',
+
+'notes' =>
+'Notes',
+
+'settings' =>
+'Settings',
+
+'access' =>
+'Access',
+
+'template_notes' =>
+'Template Notes',
+
+'template_notes_desc' =>
+'Use this form field to store notes and information about this template',
+
+'enable_caching' =>
+'Enable Caching?',
+
+'enable_caching_desc' =>
+'When set to <b>enable</b>, ExpressionEngine will cache this template.',
+
+'refresh_interval' =>
+'Refresh Interval',
+
+'refresh_interval_desc' =>
+'Set how often should the cache refresh in minutes.',
+
+'enable_php' =>
+'Allow PHP?',
+
+'enable_php_desc' =>
+'Allows the use of standard PHP within this template.',
+
+'parse_stage' =>
+'PHP Parsing Stage',
+
+'parse_stage_desc' =>
+'When set to <b>output</b>, PHP will be parsed after the template.',
+
+'hit_counter' =>
+'Hit Counter',
+
+'hit_counter_desc' =>
+'Shows the number of times this template has been accessed from the website.',
+
+'allowed_member_groups' =>
+'Allowed member groups',
+
+'allowed_member_groups_desc' =>
+'The following user groups are allowed to access this template.',
+
+'allowed_member_groups_super_admin' =>
+'Super Administrators are <b>always</b> allowed.',
+
+'non_access_redirect' =>
+'Non-access redirect',
+
+'non_access_redirect_desc' =>
+'Page to redirect users without permissions to.',
+
+'enable_http_authentication' =>
+'Enable HTTP Authentication?',
+
+'enable_http_authentication_desc' =>
+'When set to <b>enable</b>, users with permissions will have to login to view this template.',
+
+'template_route_override' =>
+'Template route override',
+
+'template_route_override_desc' =>
+'Overrides the ExpressionEngine standard <mark>group/template</mark> routing.',
+
+'require_all_segments' =>
+'Require all segments?',
+
+'require_all_segments_desc' =>
+'When set to <b>yes</b>, all segments must be present in the request <abbr title="Unified Resource Identifier">URI</abbr>.',
+
+'btn_update_template' =>
+'Update Template',
+
+'btn_update_and_finish_editing' =>
+'Update &amp; Finish Editing',
+
+'btn_update_template_working' =>
+'Saving...',
+
+'update_template_error' =>
+'Cannot Update Template',
+
+'update_template_error_desc' =>
+'We were unable to update this template, please review and fix the errors.',
+
+'update_template_success' =>
+'Template Updated',
+
+'update_template_success_desc' =>
+'The template <b>%s</b> has been updated.',
+
+'template_settings_and_access' =>
+'Template Settings &amp; Access',
+
+'btn_save_settings' =>
+'Save Settings',
+
+'btn_save_settings_working' =>
+'Saving...',
+
+'templates_removed_desc' =>
+'The following templates were removed',
+
+// System Templates -> Messages
+
+'system' =>
+'System',
+
+'system_message_templates' =>
+'System Message Templates',
+
+'offline_template' =>
+'Site Offline',
+
+'message_template' =>
+'User Messages',
+
+'message_template_warning' =>
+'<b>Warning</b>: Do not delete any of the five required variables: {title} {meta_refresh} {heading} {content} {link}',
+
+// System Templates -> e-mail
+
+'email_message_templates' =>
+'e-mail Templates',
+
+'variables' =>
+'Variables',
+
+'variables_desc' =>
+'List of available variables for this e-mail template.',
+
+'enable_template' =>
+'Enable template?',
+
+'enable_template_desc' =>
+'When set to <b>enable</b>, this template will be used, in place of an auto generated e-mail in the users language.',
+
+'content' =>
+'Content',
+
+'comments' =>
+'Comments',
+
+'members' =>
+'Members',
+
+'private_messages' =>
+'Private Messages',
+
+'mailing_lists' =>
+'Mailing Lists',
+
+'forums' =>
+'Forums',
+
+// System Templates -> Members
+
+'file_not_writable' =>
+'<b>Warning</b>: This file is not writable',
+
+'file_writing_instructions' =>
+'You will not be able to save changes to this template until it is given write permissions for this server.',
+
+// System Templates -> Forums
+
+'forum_manager' =>
+'Forum Manager',
+
+'forum_templates' =>
+'Forum Templates',
+
+
+'unable_to_find_templates' =>
+'Unable to locate the templates.',
+
+'unable_to_find_template_file' =>
+'Unable to locate the template file.',
 
 //----------------------------
 // Menu
@@ -454,9 +651,6 @@ $lang = array(
 'user_messages_template' =>
 'User Message Template',
 
-'offline_template' =>
-'System Offline Template',
-
 'offline_template_desc' =>
 'This template contains the page that is shown when your site is offline.',
 
@@ -508,29 +702,14 @@ $lang = array(
 'cache_enable' =>
 'Enable Caching?',
 
-'refresh_interval' =>
-'Refresh Interval',
-
 'refresh_in_minutes' =>
 'In minutes',
-
-'enable_php' =>
-'Allow PHP?',
-
-'parse_stage' =>
-'PHP Parsing Stage',
 
 'protect_javascript' =>
 'Protect Javascript',
 
-'access' =>
-'Access',
-
 'security_warning' =>
 'Note: Allowing PHP in templates has security implications. Please consult the <a href=\'%s\' title=\'Documentation\'>documentation</a>.',
-
-'hit_counter' =>
-'Hit Counter',
 
 'input' =>
 'Input',
@@ -578,7 +757,7 @@ $lang = array(
 'Order',
 
 'webpage' =>
-'Web Page',
+'Web Page (HTML)',
 
 'css_stylesheet' =>
 'CSS',
@@ -597,9 +776,6 @@ $lang = array(
 
 'template_del_conf' =>
 'Template delete confirm',
-
-'edit_template' =>
-'Edit Template',
 
 'delete_template_group' =>
 'Delete Group',
@@ -627,9 +803,6 @@ $lang = array(
 
 'from_db' =>
 'From Database',
-
-'last_edit' =>
-'Last Edit:',
 
 'template_edit_date' =>
 'Template Edit Date',
@@ -924,13 +1097,6 @@ ExpressionEngine tags, variables, or PHP, consider <a href =\'%s\'>Global Variab
 'alphabetize_group_order' =>
 'Alphabetize Group Order',
 
-'enable_http_authentication' =>
-'Enable HTTP Authentication?',
-
-'enable_http_authentication_subtext' =>
-'If turned on, users from the allowed groups above will have to login via their
-username and password to view the template.',
-
 'template_route' =>
 'Template Route:',
 
@@ -1009,26 +1175,14 @@ You can drag and drop to rearrange the order.',
 'template_set_names' =>
 'Available Template Sets',
 
-'unable_to_find_templates' =>
-'Unable to locate the member profile templates.',
-
-'unable_to_find_template_file' =>
-'Unable to locate the member template file.',
-
 'template_updated' =>
 'Template Has Been Updated',
 
 'template_set' =>
 'Template Set:',
 
-'file_not_writable' =>
-'Note: This file is not writable',
-
 'error_opening_template' =>
 'Error: Unable to open the template file in order to write its contents.',
-
-'file_writing_instructions' =>
-'You will not be able to save changes to this template until it is given write permissions for this server.',
 
 'aim_console' =>
 'AOL Instant Messenger Console',

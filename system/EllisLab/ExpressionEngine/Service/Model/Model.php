@@ -63,6 +63,11 @@ class Model {
 	/**
 	 *
 	 */
+	protected $_column_objects = array();
+
+	/**
+	 *
+	 */
 	protected $_relations = array();
 
 	/**
@@ -102,15 +107,64 @@ class Model {
 
 		if (preg_match("/^({$actions})(.+)/", $method, $matches))
 		{
-			list($_, $action, $assoc_name) = $matches;
+			list($_, $action, $name) = $matches;
 
-			if ($this->hasAssociation($assoc_name))
+			if ($action == 'get' && $this->hasColumn($name))
 			{
-				return $this->runAssociationAction($assoc_name, $action, $args);
+				return $this->getColumn($name);
+			}
+
+			if ($this->hasAssociation($name))
+			{
+				return $this->runAssociationAction($name, $action, $args);
 			}
 		}
 
 		throw new BadMethodCallException("Method not found: {$method}.");
+	}
+
+	protected function hasColumn($name)
+	{
+		$columns = $this->getMetaData('columns');
+
+		if ( ! isset($columns))
+		{
+			return FALSE;
+		}
+
+		return array_key_exists($name, $columns);
+	}
+
+	protected function getColumn($name)
+	{
+		if ( ! isset($this->_column_objects[$name]))
+		{
+			$this->_column_objects[$name] = $this->newColumn($name);
+		}
+
+		return $this->_column_objects[$name];
+	}
+
+	protected function newColumn($name)
+	{
+		// todo error if column wasn't defined
+		$columns = $this->getMetaData('columns');
+		$property = $columns[$name];
+		$class = $this->getNamespacePrefix().'\\Column\\'.$name;
+
+		$obj = new $class();
+		$obj->fill($this->$property);
+
+		return $obj;
+	}
+
+	/**
+	 *
+	 */
+	protected function getNamespacePrefix()
+	{
+		$class = get_called_class();
+		return substr($class, 0, strrpos($class, '\\'));
 	}
 
 	/**
@@ -391,12 +445,28 @@ class Model {
 	{
 		$result = array();
 
+		$this->saveColumns();
+
 		foreach ($this->getFields() as $field)
 		{
 			$result[$field] = $this->getProperty($field);
 		}
 
 		return $result;
+	}
+
+	protected function saveColumns()
+	{
+		$columns = $this->getMetaData('columns');
+
+		foreach ($this->_column_objects as $name => $column)
+		{
+			$property = $columns[$name];
+			$value = $column->getValue();
+
+			$this->setProperty($property, $value);
+		}
+
 	}
 
 	/**
@@ -450,6 +520,7 @@ class Model {
 		else
 		{
 			// update
+			$this->saveColumns();
 			$this->constrainQueryToSelf($qb);
 			$qb->update();
 		}
@@ -496,6 +567,49 @@ class Model {
 	}
 
 	/**
+	 * Events
+	 */
+	public function onBeforeFetch()
+	{
+		return TRUE;
+	}
+
+	public function onAfterFetch()
+	{
+		return TRUE;
+	}
+
+	public function onBeforeSave()
+	{
+		return TRUE;
+	}
+
+	public function onAfterSave()
+	{
+		return TRUE;
+	}
+
+	public function onBeforeDelete()
+	{
+		return TRUE;
+	}
+
+	public function onAfterDelete()
+	{
+		return TRUE;
+	}
+
+	public function onBeforeValidate()
+	{
+		return TRUE;
+	}
+
+	public function onAfterValidate()
+	{
+		return TRUE;
+	}
+
+	/**
 	 * Retrieve data as an array. All getters will be hit.
 	 *
 	 * @return array Data including NULl values
@@ -503,6 +617,16 @@ class Model {
 	public function toArray()
 	{
 		return $this->getValues();
+	}
+
+	/**
+	 * Retrieve data as json
+	 *
+	 * @return string json formatted model data
+	 */
+	public function toJson()
+	{
+		return json_encode($this->toArray());
 	}
 
 	/**

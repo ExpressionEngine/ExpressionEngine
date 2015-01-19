@@ -2,11 +2,12 @@
 
 namespace EllisLab\ExpressionEngine\Controllers\Design;
 
+use ZipArchive;
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
-
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -45,6 +46,15 @@ class Design extends CP_Controller {
 		}
 
 		ee()->lang->loadfile('design');
+	}
+
+	protected function sidebarMenu($active = NULL)
+	{
+		$active_group_id = NULL;
+		if (is_numeric($active))
+		{
+			$active_group_id = (int) $active;
+		}
 
 		// Register our menu
 		$vars = array(
@@ -52,19 +62,18 @@ class Design extends CP_Controller {
 			'system_templates' => array(
 				array(
 					'name' => lang('messages'),
-					'url' => cp_url(''),
-					'edit_url' => cp_url('')
+					'url' => cp_url('design/system'),
+					'class' => ($active == 'messages') ? 'act' : ''
 				),
 				array(
 					'name' => lang('email'),
-					'url' => cp_url(''),
-					'edit_url' => cp_url('')
+					'url' => cp_url('design/email'),
+					'class' => ($active == 'email') ? 'act' : ''
 				)
 			)
 		);
 
 		// Template Groups
-		$uri = ee()->uri->uri_string();
 		$is_admin = ee()->session->userdata['group_id'] == 1;
 		$assigned_template_groups = ee()->session->userdata['assigned_template_groups'];
 
@@ -72,7 +81,7 @@ class Design extends CP_Controller {
 		{
 			if ($is_admin OR array_key_exists($group->group_id, $assigned_template_groups))
 			{
-				$class = '';
+				$class = ($active_group_id == $group->group_id) ? 'act' : '';
 
 				$data = array(
 					'name' => $group->group_name,
@@ -80,25 +89,15 @@ class Design extends CP_Controller {
 					'edit_url' => cp_url('design/group/edit/' . $group->group_name),
 				);
 
-				if ($uri == 'cp/design/manager/' . $group->group_name)
-				{
-					$class = 'act ';
-				}
-
 				if ($group->is_site_default)
 				{
-					if (empty($class) &&
-						($uri == 'cp/design' OR $uri == 'cp/design/manager'))
-					{
-						$class = 'act ';
-					}
-					$class .= 'default ';
+					$class .= ' default';
 					$data['name'] = '<b>' . $group->group_name . '</b>';
 				}
 
 				if ( ! empty($class))
 				{
-					$data['class'] = trim($class);
+					$data['class'] = $class;
 				}
 
 				$vars['template_groups'][] = $data;
@@ -110,8 +109,8 @@ class Design extends CP_Controller {
 		{
 			$vars['system_templates'][] = array(
 				'name' => lang('members'),
-				'url' => cp_url(''),
-				'edit_url' => cp_url('')
+				'url' => cp_url('design/members'),
+				'class' => ($active == 'members') ? 'act' : ''
 			);
 		}
 
@@ -119,8 +118,8 @@ class Design extends CP_Controller {
 		{
 			$vars['system_templates'][] = array(
 				'name' => lang('forums'),
-				'url' => cp_url(''),
-				'edit_url' => cp_url('')
+				'url' => cp_url('design/forums'),
+				'class' => ($active == 'forums') ? 'act' : ''
 			);
 		}
 
@@ -134,15 +133,11 @@ class Design extends CP_Controller {
 	{
 		ee()->view->header = array(
 			'title' => lang('template_manager'),
-			'form_url' => cp_url('design'),
+			'form_url' => cp_url('design/template/search'),
 			'toolbar_items' => array(
 				'settings' => array(
 					'href' => cp_url('settings/template'),
 					'title' => lang('settings')
-				),
-				'sync' => array(
-					'href' => cp_url('design/sync'),
-					'title' => lang('sync_all_templates')
 				),
 				'download' => array(
 					'href' => cp_url('design/export'),
@@ -159,7 +154,7 @@ class Design extends CP_Controller {
 	 * determine access.
 	 *
 	 * @param  int  $group_id    The id of the template group in question (optional)
-	 * @param  int  $template_id The id of the tempalte in question (optional)
+	 * @param  int  $template_id The id of the template in question (optional)
 	 * @return bool TRUE if the user has edit privileges, FALSE if not
 	 */
 	protected function hasEditTemplatePrivileges($group_id = NULL, $template_id = NULL)
@@ -188,16 +183,9 @@ class Design extends CP_Controller {
 		return array_key_exists($group_id, ee()->session->userdata['assigned_template_groups']);
 	}
 
-	public function index()
+	protected function buildTableFromTemplateCollection(Collection $templates, $include_group_name = FALSE)
 	{
-		$this->manager();
-	}
-
-	public function manager($group_name = NULL)
-	{
-		$vars = array();
-
-		$table = Table::create();
+		$table = Table::create(array('autosort' => TRUE));
 		$table->setColumns(
 			array(
 				'template',
@@ -212,36 +200,21 @@ class Design extends CP_Controller {
 		);
 
 		$data = array();
-		if (is_null($group_name))
-		{
-			$group = ee('Model')->get('TemplateGroup')
-				->filter('is_site_default', 'y')
-				->first();
-		}
-		else
-		{
-			$group = ee('Model')->get('TemplateGroup')
-				->filter('group_name', $group_name)
-				->first();
 
-			if ( ! $group)
-			{
-				show_error(sprintf(lang('error_no_template_group'), $group_name));
-			}
-		}
-
-		$vars['group_id'] = $group->group_name;
-
-		$base_url = new URL('design/manager/' . $group->group_name, ee()->session->session_id());
-
-		$templates = $group->getTemplates();
+		$template_id = ee()->session->flashdata('template_id');
 
 		$hidden_indicator = ($this->config->item('hidden_template_indicator') != '') ? $this->config->item('hidden_template_indicator') : '_';
 		$hidden_indicator_length = strlen($hidden_indicator);
 
 		foreach ($templates as $template)
 		{
+			$group = $template->getTemplateGroup();
 			$template_name = htmlentities($template->template_name, ENT_QUOTES);
+
+			if ($include_group_name)
+			{
+				$template_name = $group->group_name . '/' . $template_name;
+			}
 
 			if (strncmp($template->template_name, $hidden_indicator, $hidden_indicator_length) == 0)
 			{
@@ -253,12 +226,24 @@ class Design extends CP_Controller {
 				$template_name = '<span class="index">' . $template_name . '</span>';
 			}
 
-			$data[] = array(
+			$view_url = ee()->functions->fetch_site_index();
+			$view_url = rtrim($view_url, '/').'/';
+
+			if ($template->template_type == 'css')
+			{
+				$view_url .= QUERY_MARKER.'css='.$group->group_name.'/'.$template->template_name;
+			}
+			else
+			{
+				$view_url .= $group->group_name.(($template->template_name == 'index') ? '' : '/'.$template->template_name);
+			}
+
+			$column = array(
 				$template_name,
 				$template->hits,
 				array('toolbar_items' => array(
 					'view' => array(
-						'href' => cp_url('design/template/view/' . $template->template_id),
+						'href' => ee()->cp->masked_url($view_url),
 						'title' => lang('view')
 					),
 					'edit' => array(
@@ -267,27 +252,126 @@ class Design extends CP_Controller {
 					),
 					'settings' => array(
 						'href' => '',
-						'rel' => 'modal-template-' . $template->template_id,
+						'rel' => 'modal-template-settings',
 						'class' => 'm-link',
-						'title' => lang('settings')
-					),
-					'sync' => array(
-						'href' => cp_url('design/template/sync/' . $template->template_id),
-						'title' => lang('sync')
+						'title' => lang('settings'),
+						'data-template-id' => $template->template_id
 					),
 				)),
 				array(
 					'name' => 'selection[]',
 					'value' => $template->template_id,
-					'data'	=> array(
+					'data' => array(
 						'confirm' => lang('temlate') . ': <b>' . htmlentities($template->template_name, ENT_QUOTES) . '</b>'
 					)
 				)
+			);
 
+			$attrs = array();
+
+			if ($template_id && $template->template_id == $template_id)
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs'		=> $attrs,
+				'columns'	=> $column
 			);
 		}
 
 		$table->setData($data);
+
+		return $table;
+	}
+
+	protected function loadCodeMirrorAssets($selector = 'template_data')
+	{
+		ee()->cp->add_to_head(ee()->view->head_link('css/codemirror.css'));
+		ee()->cp->add_to_head(ee()->view->head_link('css/codemirror-additions.css'));
+		ee()->cp->add_js_script(array(
+				'plugin'	=> 'ee_codemirror',
+				'file'		=> array(
+					'codemirror/codemirror',
+					'codemirror/closebrackets',
+					'codemirror/overlay',
+					'codemirror/xml',
+					'codemirror/css',
+					'codemirror/javascript',
+					'codemirror/htmlmixed',
+					'codemirror/ee-mode',
+					'codemirror/dialog',
+					'codemirror/searchcursor',
+					'codemirror/search',
+				)
+			)
+		);
+		ee()->javascript->output("$('textarea[name=\"" . $selector . "\"]').toggleCodeMirror();");
+	}
+
+
+	public function index()
+	{
+		$this->manager();
+	}
+
+	public function export()
+	{
+		$template_ids = ee('Model')->get('Template')
+			->fields('template_id')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all()
+			->pluck('template_id');
+
+		$this->exportTemplates($template_ids);
+	}
+
+	public function manager($group_name = NULL)
+	{
+		if (is_null($group_name))
+		{
+			$group = ee('Model')->get('TemplateGroup')
+				->filter('is_site_default', 'y')
+				->filter('site_id', ee()->config->item('site_id'))
+				->first();
+		}
+		else
+		{
+			$group = ee('Model')->get('TemplateGroup')
+				->filter('group_name', $group_name)
+				->filter('site_id', ee()->config->item('site_id'))
+				->first();
+
+			if ( ! $group)
+			{
+				show_error(sprintf(lang('error_no_template_group'), $group_name));
+			}
+		}
+
+		if (ee()->input->post('bulk_action') == 'remove')
+		{
+			if ($this->hasEditTemplatePrivileges($group->group_id))
+			{
+				$this->remove(ee()->input->post('selection'));
+			}
+			else
+			{
+				show_error(lang('unauthorized_access'));
+			}
+		}
+		elseif (ee()->input->post('bulk_action') == 'export')
+		{
+			$this->export(ee()->input->post('selection'));
+		}
+
+		$vars = array();
+
+		$vars['show_new_template_button'] = TRUE;
+		$vars['group_id'] = $group->group_name;
+
+		$base_url = new URL('design/manager/' . $group->group_name, ee()->session->session_id());
+
+		$table = $this->buildTableFromTemplateCollection($group->getTemplates());
 
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
@@ -313,16 +397,92 @@ class Design extends CP_Controller {
 			);
 		}
 
+		ee()->javascript->set_global('template_settings_url', cp_url('design/template/settings'));
 		ee()->javascript->set_global('lang.remove_confirm', lang('template') . ': <b>### ' . lang('templates') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array(
+				'cp/v3/confirm_remove',
+				'cp/manager'
+			),
 		));
 
+		$this->sidebarMenu($group->group_id);
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('template_manager');
 		ee()->view->cp_heading = sprintf(lang('templates_in_group'), $group->group_name);
 
 		ee()->cp->render('design/index', $vars);
 	}
+
+	private function remove($template_ids)
+	{
+		if ( ! is_array($template_ids))
+		{
+			$template_ids = array($template_ids);
+		}
+
+		$template_names = array();
+		$templates = ee('Model')->get('Template', $template_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		foreach ($templates as $template)
+		{
+			$template_names[] = $template->getTemplateGroup()->group_name . '/' . $template->template_name;
+		}
+
+		$templates->delete();
+
+		ee('Alert')->makeInline('settings-form')
+			->asSuccess()
+			->withTitle(lang('success'))
+			->addToBody(lang('templates_removed_desc'))
+			->addToBody($template_names);
+	}
+
+	/**
+	 * Export templates
+	 *
+	 * @param  int|array $template_ids The ids of templates to export
+	 * @return void
+	 */
+	protected function exportTemplates($template_ids)
+	{
+		if ( ! is_array($template_ids))
+		{
+			$template_ids = array($template_ids);
+		}
+
+		// Create the Zip Archive
+		$zipfilename = tempnam(sys_get_temp_dir(), '');
+		$zip = new ZipArchive();
+		if ($zip->open($zipfilename, ZipArchive::CREATE) !== TRUE)
+		{
+			ee('Alert')->makeInline('settings-form')
+				->asIssue()
+				->withTitle(lang('error_export'))
+				->addToBody(lang('error_cannot_create_zip'));
+			return;
+		}
+
+		// Loop through templates and add them to the zip
+		$templates = ee('Model')->get('Template', $template_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->all()
+			->each(function($template) use($zip) {
+				$filename = $template->getTemplateGroup()->group_name . '/' . $template->template_name . '.html';
+				$zip->addFromString($filename, $template->template_data);
+			});
+
+		$zip->close();
+
+		$data = file_get_contents($zipfilename);
+		unlink($zipfilename);
+
+		ee()->load->helper('download');
+		force_download('ExpressionEngine-templates.zip', $data);
+		exit;
+	}
+
 }
 // EOF

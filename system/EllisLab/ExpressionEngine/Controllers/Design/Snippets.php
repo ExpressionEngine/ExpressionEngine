@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Controllers\Design;
 
+use ZipArchive;
 use EllisLab\ExpressionEngine\Controllers\Design\Design;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
@@ -46,6 +47,7 @@ class Snippets extends Design {
 			show_error(lang('unauthorized_access'));
 		}
 
+		$this->sidebarMenu();
 		$this->stdHeader();
 
 		$this->msm = (ee()->config->item('multiple_sites_enabled') == 'y');
@@ -59,11 +61,11 @@ class Snippets extends Design {
 		}
 		elseif (ee()->input->post('bulk_action') == 'export')
 		{
-			$this->export(ee()->input->post('selection'));
+			$this->exportSnippets(ee()->input->post('selection'));
 		}
 
 		$vars = array();
-		$table = Table::create();
+		$table = Table::create(array('autosort' => TRUE));
 		$columns = array(
 			'partial',
 			'all_sites',
@@ -85,7 +87,9 @@ class Snippets extends Design {
 		$table->setColumns($columns);
 
 		$data = array();
-		$snippets = ee('Model')->get('Snippet')->all();
+		$snippets = ee('Model')->get('Snippet')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
 
 		$base_url = new URL('design/snippets', ee()->session->session_id());
 
@@ -108,7 +112,7 @@ class Snippets extends Design {
 						'title' => lang('edit')
 					),
 					'find' => array(
-						'href' => cp_url('design/snippets/find/' . $snippet->snippet_name),
+						'href' => cp_url('design/template/search', array('search' => '{' . $snippet->snippet_name . '}')),
 						'title' => lang('find')
 					),
 				)),
@@ -119,7 +123,6 @@ class Snippets extends Design {
 						'confirm' => lang('template_partial') . ': <b>' . htmlentities($snippet->snippet_name, ENT_QUOTES) . '</b>'
 					)
 				)
-
 			);
 
 			$attrs = array();
@@ -274,7 +277,7 @@ class Snippets extends Design {
 			cp_url('design/snippets') => lang('template_partials'),
 		);
 
-		$this->loadCodeMirrorAssets();
+		$this->loadCodeMirrorAssets('snippet_contents');
 
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -283,6 +286,7 @@ class Snippets extends Design {
 	{
 		$snippet = ee('Model')->get('Snippet')
 			->filter('snippet_name', $snippet_name)
+			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
 		if ( ! $snippet)
@@ -397,7 +401,7 @@ class Snippets extends Design {
 			cp_url('design/snippets') => lang('template_partials'),
 		);
 
-		$this->loadCodeMirrorAssets();
+		$this->loadCodeMirrorAssets('snippet_contents');
 
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -405,7 +409,7 @@ class Snippets extends Design {
 	/**
 	 * Removes snippets
 	 *
-	 * @param  str|array $snippet_ids The ids of snippets to remove
+	 * @param  int|array $snippet_ids The ids of snippets to remove
 	 * @return void
 	 */
 	private function remove($snippet_ids)
@@ -415,7 +419,10 @@ class Snippets extends Design {
 			$snippet_ids = array($snippet_ids);
 		}
 
-		$snippets = ee('Model')->get('Snippet', $snippet_ids)->all();
+		$snippets = ee('Model')->get('Snippet', $snippet_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
 		$names = $snippets->pluck('snippet_name');
 
 		$snippets->delete();
@@ -425,6 +432,49 @@ class Snippets extends Design {
 			->withTitle(lang('success'))
 			->addToBody(lang('snippets_removed_desc'))
 			->addToBody($names);
+	}
+
+	/**
+	 * Export snippets
+	 *
+	 * @param  int|array $snippet_ids The ids of snippets to export
+	 * @return void
+	 */
+	private function exportSnippets($snippet_ids)
+	{
+		if ( ! is_array($snippet_ids))
+		{
+			$snippet_ids = array($snippet_ids);
+		}
+
+		// Create the Zip Archive
+		$zipfilename = tempnam(sys_get_temp_dir(), '');
+		$zip = new ZipArchive();
+		if ($zip->open($zipfilename, ZipArchive::CREATE) !== TRUE)
+		{
+			ee('Alert')->makeInline('settings-form')
+				->asIssue()
+				->withTitle(lang('error_export'))
+				->addToBody(lang('error_cannot_create_zip'));
+			return;
+		}
+
+		// Loop through snippets and add them to the zip
+		$snippets = ee('Model')->get('Snippet', $snippet_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->all()
+			->each(function($snippet) use($zip) {
+				$zip->addFromString($snippet->snippet_name . '.html', $snippet->snippet_contents);
+			});
+
+		$zip->close();
+
+		$data = file_get_contents($zipfilename);
+		unlink($zipfilename);
+
+		ee()->load->helper('download');
+		force_download('ExpressionEngine-template-partials.zip', $data);
+		exit;
 	}
 
 	/**
@@ -468,31 +518,6 @@ class Snippets extends Design {
 		}
 
 		return TRUE;
-	}
-
-	private function loadCodeMirrorAssets()
-	{
-		$this->cp->add_to_head($this->view->head_link('css/codemirror.css'));
-		$this->cp->add_to_head($this->view->head_link('css/codemirror-additions.css'));
-		ee()->cp->add_js_script(array(
-				'plugin'	=> 'ee_codemirror',
-				'file'		=> array(
-					'codemirror/codemirror',
-					'codemirror/closebrackets',
-					'codemirror/overlay',
-					'codemirror/xml',
-					'codemirror/css',
-					'codemirror/javascript',
-					'codemirror/htmlmixed',
-					'codemirror/ee-mode',
-					'codemirror/dialog',
-					'codemirror/searchcursor',
-					'codemirror/search',
-
-					'cp/snippet_editor',
-				)
-			)
-		);
 	}
 }
 // EOF

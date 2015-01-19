@@ -150,12 +150,17 @@ abstract class Association {
 	{
 		if ( ! isset($item))
 		{
-			if ( ! $this->loaded)
+			if ( ! $this->isLoaded())
 			{
 				return $this->clear();
 			}
 
 			$item = $this->related;
+
+			if ( ! isset($item))
+			{
+				return;
+			}
 		}
 
 		if ($item instanceOf Collection || is_array($item))
