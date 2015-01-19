@@ -109,7 +109,7 @@ class Wizard extends CI_Controller {
 		'redirect_method'       => 'redirect',
 		'upload_folder'         => 'uploads/',
 		'image_path'            => '',
-		'javascript_path'       => 'themes/javascript/compressed/',
+		'javascript_path'       => 'themes/ee/javascript/compressed/',
 		'cp_images'             => 'cp_images/',
 		'avatar_path'           => '../images/avatars/',
 		'avatar_url'            => 'images/avatars/',
@@ -157,14 +157,11 @@ class Wizard extends CI_Controller {
 		define('IS_CORE', FALSE);
 
 		// Third party constants
-		if ($this->config->item('third_party_path'))
-		{
-			define('PATH_ADDONS',    rtrim($this->config->item('third_party_path'), '/').'/');
-		}
-		else
-		{
-			define('PATH_ADDONS',	EE_APPPATH.'third_party/');
-		}
+		$addon_path = (ee()->config->item('addons_path'))
+			? rtrim(realpath(ee()->config->item('addons_path')), '/').'/'
+			: SYSPATH.'addons/';
+		define('PATH_ADDONS', $addon_path);
+		define('PATH_THIRD', $addon_path);
 
 		$req_source = $this->input->server('HTTP_X_REQUESTED_WITH');
 		define('AJAX_REQUEST',	($req_source == 'XMLHttpRequest') ? TRUE : FALSE);
@@ -210,25 +207,26 @@ class Wizard extends CI_Controller {
 		}
 		else
 		{
-			// Must be in a public system folder so try one level back from current folder.
-			// Replace only the LAST occurance of the system folder name with nil incase the
-			// system folder name appears more than once in the path.
+			// Must be in a public system folder so try one level back from
+			// current folder. Replace only the LAST occurance of the system
+			// folder name with nil incase the system folder name appears more
+			// than once in the path.
 			$this->theme_path = preg_replace('/\b'.preg_quote(SYSDIR).'(?!.*'.preg_quote(SYSDIR).')\b/', '', $this->theme_path).'themes/';
 		}
 
 		$this->root_theme_path = $this->theme_path;
-		define('PATH_THEMES', $this->root_theme_path);
-		$this->theme_path .= 'site_themes/';
+		define('PATH_THEMES', $this->root_theme_path.'ee/');
+		define('URL_THEMES', $this->root_theme_path.'ee/');
+		$this->theme_path .= 'ee/site_themes/';
 		$this->theme_path = str_replace('//', '/', $this->theme_path);
 		$this->root_theme_path = str_replace('//', '/', $this->root_theme_path);
 
 		// Set the time
 		$time = time();
-		$this->now		= gmmktime(gmdate("H", $time), gmdate("i", $time), gmdate("s", $time), gmdate("m", $time), gmdate("d", $time), gmdate("Y", $time));
-		$this->year		= gmdate('Y', $this->now);
-		$this->month	= gmdate('m', $this->now);
-		$this->day		= gmdate('d', $this->now);
-
+		$this->now   = gmmktime(gmdate("H", $time), gmdate("i", $time), gmdate("s", $time), gmdate("m", $time), gmdate("d", $time), gmdate("Y", $time));
+		$this->year  = gmdate('Y', $this->now);
+		$this->month = gmdate('m', $this->now);
+		$this->day   = gmdate('d', $this->now);
 	}
 
 	// --------------------------------------------------------------------
