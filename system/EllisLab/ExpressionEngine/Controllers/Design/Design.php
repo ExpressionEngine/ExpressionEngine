@@ -8,6 +8,7 @@ use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Service\Model\Collection;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -36,7 +37,7 @@ class Design extends CP_Controller {
 	/**
 	 * Constructor
 	 */
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 
@@ -73,35 +74,36 @@ class Design extends CP_Controller {
 			)
 		);
 
-		// Template Groups
-		$is_admin = ee()->session->userdata['group_id'] == 1;
-		$assigned_template_groups = ee()->session->userdata['assigned_template_groups'];
+		$template_groups = ee('Model')->get('TemplateGroup')
+			->filter('site_id', ee()->config->item('site_id'));
 
-		foreach (ee('Model')->get('TemplateGroup')->all() as $group)
+		if (ee()->session->userdata['group_id'] != 1)
 		{
-			if ($is_admin OR array_key_exists($group->group_id, $assigned_template_groups))
+			$template_groups->filter('group_id', 'IN', array_keys(ee()->session->userdata['assigned_template_groups']));
+		}
+
+		foreach ($template_groups->all() as $group)
+		{
+			$class = ($active_group_id == $group->group_id) ? 'act' : '';
+
+			$data = array(
+				'name' => $group->group_name,
+				'url' => cp_url('design/manager/' . $group->group_name),
+				'edit_url' => cp_url('design/group/edit/' . $group->group_name),
+			);
+
+			if ($group->is_site_default)
 			{
-				$class = ($active_group_id == $group->group_id) ? 'act' : '';
-
-				$data = array(
-					'name' => $group->group_name,
-					'url' => cp_url('design/manager/' . $group->group_name),
-					'edit_url' => cp_url('design/group/edit/' . $group->group_name),
-				);
-
-				if ($group->is_site_default)
-				{
-					$class .= ' default';
-					$data['name'] = '<b>' . $group->group_name . '</b>';
-				}
-
-				if ( ! empty($class))
-				{
-					$data['class'] = $class;
-				}
-
-				$vars['template_groups'][] = $data;
+				$class .= ' default';
+				$data['name'] = '<b>' . $group->group_name . '</b>';
 			}
+
+			if ( ! empty($class))
+			{
+				$data['class'] = $class;
+			}
+
+			$vars['template_groups'][] = $data;
 		}
 
 		// System Templates
