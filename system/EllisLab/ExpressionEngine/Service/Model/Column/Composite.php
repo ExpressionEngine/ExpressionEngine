@@ -40,9 +40,12 @@ abstract class Composite extends Entity implements Column {
 	{
 		$data = $this->unserialize($db_data);
 
-		foreach ($data as $key => $value)
+		if ( ! empty($data))
 		{
-			$this->setProperty($key, $value);
+			foreach ($data as $key => $value)
+			{
+				$this->setRawProperty($key, $value);
+			}
 		}
 	}
 
