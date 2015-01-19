@@ -9,7 +9,7 @@ class Mixin implements MixinInterface {
 	protected $scope;
 	protected $emitter;
 
-	public function __construct($scope, $manager)
+	public function __construct($scope)
 	{
 		$this->scope = $scope;
 

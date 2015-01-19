@@ -15,7 +15,7 @@ class TypedColumn implements Mixin {
 		'n' => FALSE,
 	);
 
-	public function __construct($scope, $manager)
+	public function __construct($scope)
 	{
 		$this->scope = $scope;
 		$this->columns = $this->scope->getTypedColumns();

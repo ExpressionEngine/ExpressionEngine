@@ -13,12 +13,21 @@ abstract class MixableImpl implements Mixable {
 
 	/**
 	 * Check if the class has a given mixin
+	 *
+	 * @param String $name Mixin name
+	 * @return bool Has mixin of name
 	 */
 	public function hasMixin($name)
 	{
 		return $this->getMixinManager()->hasMixin($name);
 	}
 
+	/**
+	 * Get a mixin by name
+	 *
+	 * @param String $name Mixin name
+	 * @return Mixin Mixin instance
+	 */
 	public function getMixin($name)
 	{
 		return $this->getMixinManager()->getMixin($name);

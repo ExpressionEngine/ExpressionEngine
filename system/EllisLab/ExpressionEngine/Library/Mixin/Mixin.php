@@ -7,7 +7,7 @@ interface Mixin {
 	/**
 	 * Setup a mixin with the parent scope
 	 */
-	public function __construct($scope, $manager);
+	public function __construct($scope);
 
 	/**
 	 * Name the mixin. Make sure yours is unique!

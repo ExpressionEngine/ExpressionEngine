@@ -10,6 +10,11 @@ interface Mixable {
 	public function hasMixin($name);
 
 	/**
+	 * Get a given mixin
+	 */
+	public function getMixin($name);
+
+	/**
 	 * Get the current mixin manager
 	 */
 	public function getMixinManager();

@@ -7,19 +7,22 @@ use EllisLab\ExpressionEngine\Library\Mixin\Mixin;
 class CompositeColumn implements Mixin {
 
 	protected $scope;
-	protected $manager;
 	protected $columns;
 	protected $objects;
 
-	public function __construct($scope, $manager)
+	/**
+	 *
+	 */
+	public function __construct($scope)
 	{
 		$this->scope = $scope;
-		$this->manager = $manager;
 		$this->columns = $scope->getCompositeColumns();
 	}
 
 	/**
 	 * Get the mixin name
+	 *
+	 * @return String mixin name
 	 */
 	public function getName()
 	{
@@ -27,7 +30,11 @@ class CompositeColumn implements Mixin {
 	}
 
 	/**
+	 * Helper for __call to extract the column name from the
+	 * get<ColumnName> method.
 	 *
+	 * @param String $method Called method
+	 * @return String column name, if it exists
 	 */
 	public function getCompositeColumnNameFromMethod($method)
 	{
@@ -41,11 +48,14 @@ class CompositeColumn implements Mixin {
 			}
 		}
 
-		return FALSE;
+		return NULL;
 	}
 
 	/**
-	 * Add hasCompositeColumn
+	 * Check if a column of a given name exists
+	 *
+	 * @param String $name Column name
+	 * @return bool Has column of $name?
 	 */
 	public function hasCompositeColumn($name)
 	{
@@ -53,7 +63,10 @@ class CompositeColumn implements Mixin {
 	}
 
 	/**
-	 * Add getCompositeColumn
+	 * Get a column by name
+	 *
+	 * @param String $name Column name
+	 * @return Column object
 	 */
 	public function getCompositeColumn($name)
 	{
@@ -66,9 +79,7 @@ class CompositeColumn implements Mixin {
 	}
 
 	/**
-	 * Save columns
-	 *
-	 * TODO do this onBeforeSave/onBeforeValidate
+	 * Save composite columns
 	 */
 	public function saveCompositeColumns()
 	{
@@ -85,6 +96,9 @@ class CompositeColumn implements Mixin {
 
 	/**
 	 * Helper to create the column object
+	 *
+	 * @param String $name column name
+	 * @return Column object
 	 */
 	protected function newColumn($name)
 	{
@@ -95,9 +109,6 @@ class CompositeColumn implements Mixin {
 
 		$obj = new $class();
 		$obj->fill($this->scope->$property);
-
-
-		$this->manager->forward($obj);
 
 		return $obj;
 	}

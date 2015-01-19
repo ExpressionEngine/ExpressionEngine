@@ -9,6 +9,9 @@ namespace EllisLab\ExpressionEngine\Service\Event;
  */
 interface Reflexive {
 
+	/**
+	 * @return Array of event names (e.g. ['beforeSave', 'afterSave'])
+	 */
 	public function getEvents();
 
 }
