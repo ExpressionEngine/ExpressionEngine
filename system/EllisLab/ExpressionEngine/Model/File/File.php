@@ -77,13 +77,35 @@ class File extends Model {
 	protected $file_hw_original;
 
 	/**
-	 * Usses the file's mime-type to determine if the file is an image or not.
+	 * Uses the file's mime-type to determine if the file is an image or not.
 	 *
 	 * @return bool TRUE if the file is an image, FALSE otherwise
 	 */
 	public function isImage()
 	{
 		return in_array($this->mime_type, array('image/png', 'image/jpeg', 'image/gif'));
+	}
+
+	/**
+	 * Uses the file's upload destination's server path to compute the absolute
+	 * path of the file
+	 *
+	 * @return string The absolute path to the file
+	 */
+	public function getAbsolutePath()
+	{
+		return rtrim($this->getUploadDestination()->server_path, '/') . '/' . $this->rel_path;
+	}
+
+	/**
+	 * Uses the file's upload destination's url to compute the absolute URL of
+	 * the file
+	 *
+	 * @return string The absolute URL to the file
+	 */
+	public function getAbsoluteURL()
+	{
+		return rtrim($this->getUploadDestination()->url, '/') . '/' . $this->rel_path;
 	}
 
 }
