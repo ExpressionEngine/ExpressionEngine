@@ -194,23 +194,20 @@ class EE_Extensions {
 				$path = ee()->addons->_packages[$name]['extension']['path'];
 				$extension_path = reduce_double_slashes($path.'/ext.'.$name.'.php');
 
-				if (file_exists($extension_path))
+				// Check to see if paths are already loaded
+				$path_loaded = (array_search($path, ee()->load->get_package_paths()));
+
+				if ( ! $path_loaded)
 				{
-					// Check to see if paths are already loaded
-					if ( ! array_search($path, ee()->load->get_package_paths()))
+					if (file_exists($extension_path))
 					{
-						$path_loaded = TRUE;
 						ee()->load->add_package_path($path, FALSE);
 					}
 					else
 					{
-						$path_loaded = FALSE;
+						$error = 'Unable to load the following extension file:<br /><br />'.'ext.'.$name.'.php';
+						return ee()->output->fatal_error($error);
 					}
-				}
-				else
-				{
-					$error = 'Unable to load the following extension file:<br /><br />'.'ext.'.$name.'.php';
-					return ee()->output->fatal_error($error);
 				}
 
 				// Include File
