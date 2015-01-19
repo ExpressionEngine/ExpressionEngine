@@ -4,10 +4,39 @@ namespace EllisLab\ExpressionEngine\Service\Model\Mixin;
 
 use EllisLab\ExpressionEngine\Library\Mixin\Mixin as MixinInterface;
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Model Validation Mixin
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Model
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 class Validation implements MixinInterface {
 
+	/**
+	 * @var Parent scope
+	 */
 	protected $scope;
 
+	/**
+	 * @param Object $scope Parent object
+	 */
 	public function __construct($scope)
 	{
 		$this->scope = $scope;
@@ -15,6 +44,8 @@ class Validation implements MixinInterface {
 
 	/**
 	 * Get the mixin name
+	 *
+	 * @return String mixin name
 	 */
 	public function getName()
 	{
@@ -42,20 +73,13 @@ class Validation implements MixinInterface {
 		$this->scope->emit('afterValidate');
 
 		return $result;
-		/*
-		// TODO validate relationships?
-		foreach ($this->getAllAssociations() as $assoc)
-		{
-			$assoc->validate();
-		}
-		*/
 	}
 
 	/**
 	 * Set the validator
 	 *
 	 * @param Validator $validator The validator to use
-	 * @return $this;
+	 * @return Current scope
 	 */
 	public function setValidator(Validator $validator)
 	{

@@ -5,7 +5,29 @@ namespace EllisLab\ExpressionEngine\Service\Event;
 use Closure;
 
 /**
- * Based loosely on the node.js class of the same name.
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Event Emitter
+ *
+ * Very basic event system ala node's emitter.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Event
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
  */
 class Emitter {
 

@@ -5,16 +5,52 @@ namespace EllisLab\ExpressionEngine\Service\Model\Mixin;
 use DateTime;
 use EllisLab\ExpressionEngine\Library\Mixin\Mixin;
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Model Typed Column Mixin
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Model
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 class TypedColumn implements Mixin {
 
+	/**
+	 * @var The parent scope
+	 */
 	protected $scope;
+
+	/**
+	 * @var Array of [columnname => type]
+	 */
 	protected $columns;
 
+	/**
+	 * @var Booleans that PHP won't cast
+	 */
 	protected $booleans = array(
 		'y' => TRUE,
 		'n' => FALSE,
 	);
 
+	/**
+	 * @param Object $scope Parent scope
+	 */
 	public function __construct($scope)
 	{
 		$this->scope = $scope;
@@ -30,7 +66,10 @@ class TypedColumn implements Mixin {
 	}
 
 	/**
+	 * Call the getter on a typed column if it exists.
 	 *
+	 * @param String $column Column name
+	 * @return Mixed The cast value [or the original if not typed]
 	 */
 	public function typedColumnGetter($column)
 	{
@@ -73,7 +112,11 @@ class TypedColumn implements Mixin {
 	}
 
 	/**
+	 * Call the setter on a typed column if it exists.
 	 *
+	 * @param String $column Column name
+	 * @param Mixed $value The value they're attempting to set
+	 * @return Mixed The cast value [or the original if not typed]
 	 */
 	public function typedColumnSetter($column, $value)
 	{
@@ -117,9 +160,10 @@ class TypedColumn implements Mixin {
 	/**
 	 * Mutate a timestamp on set.
 	 *
-	 * You can either pass a datetime object or a timestamp
-	 *
 	 * TODO could support string inputs here, ala entry_date
+	 *
+	 * @param Mixed $value A DateTime object or timestamp
+	 * @return int a timestamp
 	 */
 	protected function setTimestamp($value)
 	{
@@ -133,6 +177,11 @@ class TypedColumn implements Mixin {
 
 	/**
 	 * Mutate a boolean on set
+	 *
+	 * @param Mixed $value The input value
+	 * @param Mixed $truthy The value to set for truthy booleans
+	 * @param Mixed $falsey The value to set for falsey booleans
+	 * @return Mixed The new value
 	 */
 	protected function setBool($value, $truthy = TRUE, $falsey = FALSE)
 	{
@@ -158,6 +207,11 @@ class TypedColumn implements Mixin {
 
 	/**
 	 * Mutate a boolean on get
+	 *
+	 * @param Mixed $value The input value
+	 * @param Mixed $truthy The input value to treat as truthy
+	 * @param Mixed $falsey The input value to treat as falsey
+	 * @return bool The boolean equivalent
 	 */
 	protected function getBool($value, $truthy = TRUE, $falsey = FALSE)
 	{

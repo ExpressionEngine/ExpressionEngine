@@ -5,16 +5,48 @@ namespace EllisLab\ExpressionEngine\Service\Model\Mixin;
 use EllisLab\ExpressionEngine\Library\Mixin\Mixin;
 use EllisLab\ExpressionEngine\Service\Model\Association\Association;
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Model Relationship Mixin
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Model
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 class Relationship implements Mixin {
 
+	/**
+	 * @var Parent scope
+	 */
 	protected $scope;
+
+	/**
+	 * @var List of association objects
+	 */
 	protected $associations = array();
 
+	/**
+	 * @param Object $scope Current scope
+	 */
 	public function __construct($scope)
 	{
 		$this->scope = $scope;
 	}
-
 
 	/**
 	 * Get the mixin name
@@ -24,9 +56,12 @@ class Relationship implements Mixin {
 		return 'Model:Relationship';
 	}
 
-
 	/**
-	 * Intercept calls to get<AssociationName>()
+	 * Helper for __call to extract the association name and action
+	 * from the <action><AssociationName>() method.
+	 *
+	 * @param String $method Called method
+	 * @return Callable Association action, if it exists
 	 */
 	public function getAssociationActionFromMethod($method)
 	{
@@ -39,11 +74,15 @@ class Relationship implements Mixin {
 			return $this->getAssociationAction($name, $action);
 		}
 
-		return FALSE;
+		return NULL;
 	}
 
 	/**
+	 * Get an association action callback
 	 *
+	 * @param String $name Association name
+	 * @param String $action Action to run
+	 * @return Callable Association action
 	 */
 	public function getAssociationAction($name, $action)
 	{
@@ -55,9 +94,13 @@ class Relationship implements Mixin {
 	}
 
 	/**
+	 * Run an association action
 	 *
+	 * @param Callable $action Runable association action
+	 * @param Mixed $args Additional arguments to pass to the action
+	 * @return Action result or current scope
 	 */
-	protected function runAssociationAction($action, $args)
+	public function runAssociationAction($action, $args)
 	{
 		$result = call_user_func_array($action, $args);
 
@@ -66,7 +109,7 @@ class Relationship implements Mixin {
 			return $result;
 		}
 
-		return $this;
+		return $this->scope;
 	}
 
 	/**
@@ -106,7 +149,7 @@ class Relationship implements Mixin {
 	 *
 	 * @param String $name Name of the association
 	 * @param Association $association Association to set
-	 * @return $this;
+	 * @return Current scope
 	 */
 	public function setAssociation($name, Association $association)
 	{

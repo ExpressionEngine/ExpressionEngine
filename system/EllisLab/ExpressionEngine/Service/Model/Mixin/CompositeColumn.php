@@ -4,14 +4,48 @@ namespace EllisLab\ExpressionEngine\Service\Model\Mixin;
 
 use EllisLab\ExpressionEngine\Library\Mixin\Mixin;
 
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Composite Column Mixin
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Model
+ * @category	Service
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 class CompositeColumn implements Mixin {
 
+	/**
+	 * @var Parent scope
+	 */
 	protected $scope;
+
+	/**
+	 * @var List of column names with their class and property names
+	 */
 	protected $columns;
+
+	/**
+	 * @var Array of column instances
+	 */
 	protected $objects;
 
 	/**
-	 *
+	 * @param Object $scope Parent object
 	 */
 	public function __construct($scope)
 	{

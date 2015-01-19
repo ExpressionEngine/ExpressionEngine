@@ -6,6 +6,8 @@ interface Mixin {
 
 	/**
 	 * Setup a mixin with the parent scope
+	 *
+	 * @param Object $scope Parent object
 	 */
 	public function __construct($scope);
 
