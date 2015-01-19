@@ -78,7 +78,7 @@
 							</ul>
 						</div>
 					</li>
-					<li><a href="http://localhost/el-projects/ee-cp/views/files.php"><?=lang('menu_files')?></a></li>
+					<li><a href="<?=cp_url('files')?>"><?=lang('menu_files')?></a></li>
 					<li><a href="<?=cp_url('members')?>"><?=lang('menu_members')?></a></li>
 				</ul>
 				<ul class="dev-menu">
