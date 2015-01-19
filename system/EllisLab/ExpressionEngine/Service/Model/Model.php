@@ -52,20 +52,14 @@ class Model extends Entity implements ReflexiveEvent {
 	/**
 	 *
 	 */
-	/*
-	protected $_default_events = array(
-		'beforeFetch',
-		'afterFetch',
-		'beforeSave', // willSave?
-		'afterSave', // didSave?
-		'beforeDelete',
-		'afterDelete',
-		'beforeSet',
-		'afterSet',
-		'beforeGet',
-		'afterGet'
+	protected static $_mixins = array(
+		'EllisLab\ExpressionEngine\Service\Event\Mixin',
+		'EllisLab\ExpressionEngine\Service\Model\Mixin\TypedColumn',
+		'EllisLab\ExpressionEngine\Service\Model\Mixin\Validation',
+		'EllisLab\ExpressionEngine\Service\Model\Mixin\CompositeColumn',
+		'EllisLab\ExpressionEngine\Service\Model\Mixin\Relationship',
 	);
-*/
+
 	/**
 	 *
 	 */
@@ -142,29 +136,6 @@ class Model extends Entity implements ReflexiveEvent {
 		$this->$pk = $id;
 
 		return $this;
-	}
-
-	/**
-	 * Provide the default mixins
-	 *
-	 * TODO get rid of this and simply have a metadata key of the known
-	 * default mixins. Depends on proper metadata booting/inheritance
-	 */
-	public function getMixinClasses()
-	{
-		$mixins = parent::getMixinClasses();
-		$root = 'EllisLab\ExpressionEngine\Service';
-
-		return array_merge(
-			$mixins,
-			array(
-				$root.'\Event\Mixin',
-				$root.'\Model\Mixin\TypedColumn',
-				$root.'\Model\Mixin\Validation',
-				$root.'\Model\Mixin\CompositeColumn',
-				$root.'\Model\Mixin\Relationship',
-			)
-		);
 	}
 
 	/**
