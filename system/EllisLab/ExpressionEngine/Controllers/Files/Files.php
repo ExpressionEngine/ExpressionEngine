@@ -143,6 +143,17 @@ class Files extends CP_Controller {
 			// has been denied access
 		}
 
+		$base_url->setQueryStringVariable('sort_col', $table->sort_col);
+		$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
+
+		$filters = ee('Filter')
+			->add('Perpage', $files->count(), 'show_all_files');
+
+		ee()->view->filters = $filters->render($base_url);
+
+		// [Re]set the table's limit
+		$table->config['limit'] = $filters->values()['perpage'];
+
 		foreach ($files->all() as $file)
 		{
 			$toolbar = array(

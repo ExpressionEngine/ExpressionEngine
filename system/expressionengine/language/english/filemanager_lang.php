@@ -16,6 +16,15 @@ $lang = array(
 'all_files' =>
 'All Files',
 
+'show' =>
+'show',
+
+'custom_limit' =>
+'custom limit',
+
+'show_all_files' =>
+'All %d files',
+
 'upload_new_file' =>
 'Upload New File',
 

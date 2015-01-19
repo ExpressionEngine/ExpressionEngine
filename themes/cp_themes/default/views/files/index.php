@@ -7,8 +7,14 @@
 			<a class="btn tn action" href="<?=cp_url('files/upload/' . $dir_id)?>"><?=lang('upload_new_file')?></a>
 		</fieldset>
 	<?php */ ?>
-		<h1><?=$cp_heading?></h1>
+		<h1>
+			<?=$cp_heading?>
+			<ul class="toolbar">
+				<li class="sync"><a href="<?=cp_url('files/sync')?>" title="<?=lang('sync')?>"></a></li>
+			</ul>
+		</h1>
 		<?=ee('Alert')->getAllInlines()?>
+		<?php if (isset($filters)) echo $filters; ?>
 		<?php $this->view('_shared/table', $table); ?>
 		<?php $this->view('_shared/pagination'); ?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
