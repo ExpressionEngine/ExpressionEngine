@@ -43,23 +43,61 @@ abstract class Entity extends MixableImpl {
 	}
 
 	/**
-	 * Access any static metadata you might need.
+	 * Access any static metadata you might need. THis automatically
+	 * merges metadata for extended classes.
 	 *
 	 * @param String $key Name of the static property
-	 * @return mixed The metadata value Set the short name of this model
-	 *
-	 * @param String $name The short name
+	 * @return mixed The metadata value
 	 */
 	public static function getMetaData($key)
 	{
-		$key = '_'.$key;
+		$values = static::getMetaDataByClass($key);
 
-		if ( ! property_exists(get_called_class(), $key))
+		if ( ! count($values))
 		{
 			return NULL;
 		}
 
-		return static::$$key;
+		$result = array_shift($values);
+
+		foreach ($values as $class => $value)
+		{
+			if (is_array($result) && is_array($value))
+			{
+				$result = array_merge($result, $value);
+			}
+			else
+			{
+				$result = $value;
+			}
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Access all static metadata, grouped by class name.
+	 *
+	 * @param String $key Metadata name
+	 * @return Array [class => value] for all classes that define the metadata
+	 */
+	public static function getMetaDataByClass($key)
+	{
+		$key = '_'.$key;
+		$values = array();
+
+		$class = get_called_class();
+
+		do
+		{
+			if (property_exists($class, $key))
+			{
+				$values[$class] = $class::$$key;
+			}
+		}
+		while ($class = get_parent_class($class));
+
+		return array_reverse($values);
 	}
 
 	/**
