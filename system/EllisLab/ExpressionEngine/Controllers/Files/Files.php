@@ -80,8 +80,8 @@ class Files extends CP_Controller {
 			$data = array(
 				'name' => $destination->name,
 				'id' => $destination->id,
-				'url' => cp_url('files/directory/' . $destination->name),
-				'edit_url' => cp_url('files/directory/edit/' . $destination->name),
+				'url' => cp_url('files/directory/' . $destination->id),
+				'edit_url' => cp_url('files/directory/edit/' . $destination->id),
 			);
 
 			if ( ! empty($class))

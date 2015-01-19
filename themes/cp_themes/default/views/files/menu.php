@@ -23,9 +23,9 @@
 
 $modal_vars = array(
 	'name'		=> 'modal-confirm-remove-directory',
-	'form_url'	=> cp_url('design/group/remove'),
+	'form_url'	=> cp_url('files/directory/remove'),
 	'hidden'	=> array(
-		'group_name'	=> ''
+		''	=> ''
 	)
 );
 
