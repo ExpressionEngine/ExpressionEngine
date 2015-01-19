@@ -1,6 +1,6 @@
 <div class="col w-4">
 	<div class="box sidebar">
-		<h2><?=lang('upload_directories')?> <a class="btn action" href="<?=cp_url('files/directory/create')?>"><?=lang('new')?></a></h2>
+		<h2><a href="<?=cp_url('settings/uploads')?>"><?=lang('upload_directories')?> <a class="btn action" href="<?=cp_url('settings/uploads/new-upload')?>"><?=lang('new')?></a></h2>
 		<div class="scroll-wrap">
 			<ul class="folder-list">
 				<?php foreach ($upload_directories as $dir): ?>
