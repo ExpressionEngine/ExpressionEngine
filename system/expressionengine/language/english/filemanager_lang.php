@@ -2,6 +2,37 @@
 
 $lang = array(
 
+// 3.0
+
+'file_manager' =>
+'File Manager',
+
+'upload_directory' =>
+'Upload Directory',
+
+'upload_directories' =>
+'Upload Directories',
+
+'all_files' =>
+'All Files',
+
+'upload_new_file' =>
+'Upload New File',
+
+'title_or_name' =>
+'Title/Name',
+
+'file_type' =>
+'File Type',
+
+'date_added' =>
+'Date Added',
+
+'download' =>
+'Download',
+
+// 2.x
+
 'content_files' 		=> 'File Manager',
 
 'upload_dir_choose'		=> 'Choose an upload directory',
