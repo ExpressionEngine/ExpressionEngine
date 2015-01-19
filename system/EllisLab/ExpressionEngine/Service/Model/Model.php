@@ -34,22 +34,22 @@ use EllisLab\ExpressionEngine\Service\Event\Reflexive as ReflexiveEvent;
 class Model extends Entity implements ReflexiveEvent {
 
 	/**
-	 *
+	 * @var String model short name
 	 */
 	protected $_name;
 
 	/**
-	 *
+	 * @var List of dirty values
 	 */
 	protected $_dirty = array();
 
 	/**
-	 *
+	 * @var Query frontend object
 	 */
 	protected $_frontend = NULL;
 
 	/**
-	 *
+	 * @var Default mixins for models
 	 */
 	protected static $_mixins = array(
 		'EllisLab\ExpressionEngine\Service\Event\Mixin',
@@ -60,7 +60,11 @@ class Model extends Entity implements ReflexiveEvent {
 	);
 
 	/**
+	 * Forward methods to various mixins
 	 *
+	 * @param String $method Method name to call
+	 * @param Array $args Arguments to pass to the method
+	 * @return Mixed return value of the called method
 	 */
 	public function __call($method, $args)
 	{
@@ -100,6 +104,7 @@ class Model extends Entity implements ReflexiveEvent {
 		}
 
 		$this->_name = $name;
+
 		return $this;
 	}
 
@@ -121,6 +126,7 @@ class Model extends Entity implements ReflexiveEvent {
 	public function getId()
 	{
 		$pk = $this->getPrimaryKey();
+
 		return $this->$pk;
 	}
 

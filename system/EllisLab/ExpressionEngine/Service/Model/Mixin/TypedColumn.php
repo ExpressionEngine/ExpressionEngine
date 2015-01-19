@@ -71,10 +71,9 @@ class TypedColumn implements Mixin {
 	 * @param String $column Column name
 	 * @return Mixed The cast value [or the original if not typed]
 	 */
-	public function typedColumnGetter($column)
+	public function typedColumnGetter($column, $value)
 	{
 		$scope = $this->scope;
-		$value = $scope->getRawProperty($column);
 
 		if ( ! array_key_exists($column, $this->columns))
 		{
@@ -125,9 +124,7 @@ class TypedColumn implements Mixin {
 			return $value;
 		}
 
-		$type = $this->columns[$column];
-
-		switch ($type)
+		switch ($this->columns[$column])
 		{
 			case 'string':
 				$value = (string) $value;

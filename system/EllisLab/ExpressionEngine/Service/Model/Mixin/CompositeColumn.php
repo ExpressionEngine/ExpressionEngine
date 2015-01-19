@@ -42,7 +42,7 @@ class CompositeColumn implements Mixin {
 	/**
 	 * @var Array of column instances
 	 */
-	protected $objects;
+	protected $objects = array();
 
 	/**
 	 * @param Object $scope Parent object
