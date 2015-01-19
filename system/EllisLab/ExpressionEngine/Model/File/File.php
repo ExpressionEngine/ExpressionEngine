@@ -76,4 +76,14 @@ class File extends Model {
 	protected $modified_date;
 	protected $file_hw_original;
 
+	/**
+	 * Usses the file's mime-type to determine if the file is an image or not.
+	 *
+	 * @return bool TRUE if the file is an image, FALSE otherwise
+	 */
+	public function isImage()
+	{
+		return in_array($this->mime_type, array('image/png', 'image/jpeg', 'image/gif'));
+	}
+
 }
