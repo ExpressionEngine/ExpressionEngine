@@ -6,7 +6,6 @@ use BadMethodCallException;
 use OverflowException;
 
 use EllisLab\ExpressionEngine\Library\Data\Entity;
-use EllisLab\ExpressionEngine\Service\Model\DataStore;
 use EllisLab\ExpressionEngine\Service\Event\Reflexive as ReflexiveEvent;
 
 /**
@@ -139,9 +138,11 @@ class Model extends Entity implements ReflexiveEvent {
 	}
 
 	/**
-	 * Attempt to get a property. Overriden to support events and typed
-	 * columns.
+	 * Attempt to get a property. Overriden from Entity to support events
+	 * and typed columns.
 	 *
+	 * @param String $name Name of the property
+	 * @return Mixed  $value Value of the property
 	 */
 	public function getProperty($name)
 	{
@@ -156,8 +157,8 @@ class Model extends Entity implements ReflexiveEvent {
 	}
 
 	/**
-	 * Attempt to set a property. Overriden to support dirty values, events,
-	 * and typed columns.
+	 * Attempt to set a property. Overriden from Entity to support events,
+	 * dirty values, and typed columns.
 	 *
 	 * @param String $name Name of the property
 	 * @param Mixed  $value Value of the property
@@ -404,26 +405,21 @@ class Model extends Entity implements ReflexiveEvent {
 	{
 		$definitions = array();
 
-		$columns = $this->getMetaData('composite_columns') ?: array();
-		$columns = array_flip($columns);
+		$all = $this->getMetaDataByClass('composite_columns');
 
-		foreach ($columns as $name => $property)
+		foreach ($all as $class => $columns)
 		{
-			$class = $this->getNamespacePrefix().'\\Column\\'.$name;
+			$ns_prefix = substr($class, 0, strrpos($class, '\\'));
 
-			$definitions[$name] = compact('class', 'property');
+			foreach ($columns as $name => $property)
+			{
+				$class = $ns_prefix.'\\Column\\'.$name;
+
+				$definitions[$name] = compact('class', 'property');
+			}
 		}
 
 		return $definitions;
-	}
-
-	/**
-	 *
-	 */
-	protected function getNamespacePrefix()
-	{
-		$class = get_called_class();
-		return substr($class, 0, strrpos($class, '\\'));
 	}
 
 	/**
