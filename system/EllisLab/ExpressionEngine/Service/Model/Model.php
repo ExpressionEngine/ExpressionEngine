@@ -411,7 +411,7 @@ class Model extends Entity implements ReflexiveEvent {
 		{
 			$ns_prefix = substr($class, 0, strrpos($class, '\\'));
 
-			foreach ($columns as $name => $property)
+			foreach ($columns as $property => $name)
 			{
 				$class = $ns_prefix.'\\Column\\'.$name;
 
