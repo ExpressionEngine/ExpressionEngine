@@ -319,10 +319,16 @@ class Design extends CP_Controller {
 
 	public function export()
 	{
-		$template_ids = ee('Model')->get('Template')
+		$templates = ee('Model')->get('Template')
 			->fields('template_id')
-			->filter('site_id', ee()->config->item('site_id'))
-			->all()
+			->filter('site_id', ee()->config->item('site_id'));
+
+		if (ee()->session->userdata['group_id'] != 1)
+		{
+			$templates->filter('group_id', 'IN', array_keys(ee()->session->userdata['assigned_template_groups']));
+		}
+
+		$template_ids = $templates->all()
 			->pluck('template_id');
 
 		$this->exportTemplates($template_ids);
