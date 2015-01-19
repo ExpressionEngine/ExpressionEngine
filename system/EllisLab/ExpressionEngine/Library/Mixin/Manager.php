@@ -2,6 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Library\Mixin;
 
+use BadMethodCallException;
+
 class Manager {
 
 	protected $scope;
@@ -57,18 +59,15 @@ class Manager {
 		return array_key_exists($name, $this->instances);
 	}
 
-
 	/**
-	 * Add another receiver to the call. This lets us do more
-	 * advanced composition. For example model columns are a
-	 * mixin whose objects are also mixable by nature of being
-	 * entities.
+	 * Directly access a mixin object
 	 *
-	 * @param Mixable $receiver Object to forward to.
+	 * @param String $name
+	 * @return Mixin instance
 	 */
-	public function forward(Mixable $receiver)
+	public function getMixin($name)
 	{
-		$this->forwarded[] = $receiver;
+		return $this->instances[$name];
 	}
 
 	/**
@@ -85,16 +84,18 @@ class Manager {
 	 */
 	public function call($fn, $args)
 	{
-		$result = $this->runMixins($fn, $args);
+		if ($fn == 'getName')
+		{
+			throw new BadMethodCallException("No such method {$fn}.");
+		}
 
-		$this->runForwarded($fn, $args);
-
-		return $result;
+		return $this->runMixins($fn, $args);
 	}
 
 	/**
 	 * Run a function on all mixins
 	 *
+	 * @throws BadMethodClassException if none of the mixins implement it
 	 * @param String $fn Function name
 	 * @param Array $args Arguments to pass to the method
 	 * @return Last return value [or NULL].
@@ -102,6 +103,7 @@ class Manager {
 	protected function runMixins($fn, $args)
 	{
 		$return = NULL;
+		$method_exists = FALSE;
 
 		foreach ($this->instances as $obj)
 		{
@@ -109,31 +111,22 @@ class Manager {
 
 			if (is_callable($callable))
 			{
-				$return = call_user_func_array($callable, $args) ?: $return;
+				$method_exists = TRUE;
+				$new_return = call_user_func_array($callable, $args);
+
+				if ( ! is_null($new_return))
+				{
+					$return = $new_return;
+				}
 			}
+		}
+
+		if ( ! $method_exists)
+		{
+			throw new BadMethodCallException("No such method {$fn}.");
 		}
 
 		return $return;
-	}
-
-	/**
-	 * Run a function on all forwarded mixables
-	 *
-	 * @param String $fn Function name
-	 * @param Array $args Arguments to pass to the method
-	 * @return void
-	 */
-	protected function runForwarded($fn, $args)
-	{
-		foreach ($this->forwarded as $receiver)
-		{
-			$callable = array($receiver, $fn);
-
-			if (is_callable($callable))
-			{
-				call_user_func_array($callable, $args);
-			}
-		}
 	}
 
 	/**

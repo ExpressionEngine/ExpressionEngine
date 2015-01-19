@@ -28,32 +28,40 @@ class Relationship implements Mixin {
 	/**
 	 * Intercept calls to get<AssociationName>()
 	 */
-	public function __call($fn, $args)
+	public function getAssociationActionFromMethod($method)
 	{
 		$actions = 'has|get|set|add|remove|create|delete|fill';
 
-		if (preg_match("/^({$actions})(.+)/", $fn, $matches))
+		if (preg_match("/^({$actions})(.+)/", $method, $matches))
 		{
 			list($_, $action, $name) = $matches;
 
-			if ($this->hasAssociation($name))
-			{
-				return $this->runAssociationAction($name, $action, $args);
-			}
+			return $this->getAssociationAction($name, $action);
 		}
 
-		return NULL;
+		return FALSE;
 	}
 
 	/**
 	 *
 	 */
-	protected function runAssociationAction($assoc_name, $action, $args)
+	public function getAssociationAction($name, $action)
 	{
-		$assoc = $this->getAssociation($assoc_name);
-		$result = call_user_func_array(array($assoc, $action), $args);
+		if ($this->hasAssociation($name))
+		{
+			$assoc = $this->getAssociation($name);
+			return array($assoc, $action);
+		}
+	}
 
-		if ($action == 'has' || $action == 'get')
+	/**
+	 *
+	 */
+	protected function runAssociationAction($action, $args)
+	{
+		$result = call_user_func_array($action, $args);
+
+		if ($action[1] == 'has' || $action[1] == 'get')
 		{
 			return $result;
 		}

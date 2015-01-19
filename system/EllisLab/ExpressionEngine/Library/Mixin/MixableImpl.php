@@ -19,6 +19,11 @@ abstract class MixableImpl implements Mixable {
 		return $this->getMixinManager()->hasMixin($name);
 	}
 
+	public function getMixin($name)
+	{
+		return $this->getMixinManager()->getMixin($name);
+	}
+
 	/**
 	 * Get the current mixin manager
 	 */
@@ -37,8 +42,8 @@ abstract class MixableImpl implements Mixable {
 	 */
 	public function setMixinManager($manager)
 	{
-		$this->_mixin_manager = $manager;
 		$manager->setMixins($this->getMixinClasses());
+		$this->_mixin_manager = $manager;
 	}
 
 	/**

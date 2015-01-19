@@ -3,7 +3,6 @@
 namespace EllisLab\ExpressionEngine\Service\Model;
 
 use BadMethodCallException;
-use InvalidArgumentException;
 use OverflowException;
 
 use EllisLab\ExpressionEngine\Library\Data\Entity;
@@ -53,6 +52,7 @@ class Model extends Entity implements ReflexiveEvent {
 	/**
 	 *
 	 */
+	/*
 	protected $_default_events = array(
 		'beforeFetch',
 		'afterFetch',
@@ -65,13 +65,23 @@ class Model extends Entity implements ReflexiveEvent {
 		'beforeGet',
 		'afterGet'
 	);
-
+*/
 	/**
 	 *
 	 */
-	public function __construct($data = array())
+	public function __call($method, $args)
 	{
-		parent::__construct($data);
+		if ($column = $this->getMixin('Model:CompositeColumn')->getCompositeColumnNameFromMethod($method))
+		{
+			return $this->getMixin('Model:CompositeColumn')->getCompositeColumn($column);
+		}
+
+		if ($action = $this->getMixin('Model:Relationship')->getAssociationActionFromMethod($method))
+		{
+			return $this->getMixin('Model:Relationship')->runAssociationAction($action, $args);
+		}
+
+		return parent::__call($method, $args);
 	}
 
 	/**
@@ -150,26 +160,33 @@ class Model extends Entity implements ReflexiveEvent {
 			array(
 				$root.'\Event\Mixin',
 				$root.'\Model\Mixin\TypedColumn',
-				$root.'\Validation\Mixin',
+				$root.'\Model\Mixin\Validation',
 				$root.'\Model\Mixin\CompositeColumn',
 				$root.'\Model\Mixin\Relationship',
 			)
 		);
 	}
 
+	/**
+	 * Attempt to get a property. Overriden to support events and typed
+	 * columns.
+	 *
+	 */
 	public function getProperty($name)
 	{
 		$this->emit('beforeGet', $name);
 
-		$result = parent::getProperty($name);
+		$value = parent::getProperty($name);
+		$value = $this->typedColumnGetter($name, $value);
 
 		$this->emit('afterGet', $name);
 
-		return $result;
+		return $value;
 	}
 
 	/**
-	 * Attempt to set a property. Overriden to support dirty values.
+	 * Attempt to set a property. Overriden to support dirty values, events,
+	 * and typed columns.
 	 *
 	 * @param String $name Name of the property
 	 * @param Mixed  $value Value of the property
@@ -178,7 +195,10 @@ class Model extends Entity implements ReflexiveEvent {
 	{
 		$this->emit('beforeSet', $name, $value);
 
+		$value = $this->typedColumnSetter($name, $value);
+
 		parent::setProperty($name, $value);
+
 		$this->markAsDirty($name);
 
 		$this->emit('afterSet', $name, $value);
@@ -365,9 +385,28 @@ class Model extends Entity implements ReflexiveEvent {
 		return $this;
 	}
 
+	/**
+	 *
+	 */
 	public function getFrontend()
 	{
 		return $this->_frontend;
+	}
+
+	/**
+	 * Support method for the model validation mixin
+	 */
+	public function getValidationData()
+	{
+		return $this->getDirty();
+	}
+
+	/**
+	 * Support method for the model validation mixin
+	 */
+	public function getValidationRules()
+	{
+		return $this->getMetaData('validation_rules') ?: array();
 	}
 
 	/**
@@ -376,10 +415,7 @@ class Model extends Entity implements ReflexiveEvent {
 	 */
 	public function getEvents()
 	{
-		$events = $this->getMetaData('events') ?: array();
-		$events = array_merge($this->_default_events, $events); // todo remove when metadata extending
-
-		return $events;
+		return $this->getMetaData('events') ?: array();
 	}
 
 	/**
@@ -397,8 +433,8 @@ class Model extends Entity implements ReflexiveEvent {
 	{
 		$definitions = array();
 
-		$columns = $this->getMetaData('columns') ?: array();
-		$columns = array_reverse($columns);
+		$columns = $this->getMetaData('composite_columns') ?: array();
+		$columns = array_flip($columns);
 
 		foreach ($columns as $name => $property)
 		{

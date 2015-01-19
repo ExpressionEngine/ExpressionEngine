@@ -27,21 +27,21 @@ class CompositeColumn implements Mixin {
 	}
 
 	/**
-	 * Intercept calls to getCompositeColumName()
+	 *
 	 */
-	public function __call($fn, $args)
+	public function getCompositeColumnNameFromMethod($method)
 	{
-		if (substr($fn, 0, 3) == 'get')
+		if (substr($method, 0, 3) == 'get')
 		{
-			$column = substr($fn, 3);
+			$name = substr($method, 3);
 
-			if ($this->hasCompositeColumn($column))
+			if ($this->hasCompositeColumn($name))
 			{
-				return $this->getCompositeColumn($column);
+				return $name;
 			}
 		}
 
-		return NULL;
+		return FALSE;
 	}
 
 	/**
@@ -95,6 +95,7 @@ class CompositeColumn implements Mixin {
 
 		$obj = new $class();
 		$obj->fill($this->scope->$property);
+
 
 		$this->manager->forward($obj);
 

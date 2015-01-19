@@ -1,11 +1,10 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Service\Validation;
+namespace EllisLab\ExpressionEngine\Service\Model\Mixin;
 
 use EllisLab\ExpressionEngine\Library\Mixin\Mixin as MixinInterface;
-use EllisLab\ExpressionEngine\Service\Event\Evented;
 
-class Mixin implements MixinInterface {
+class Validation implements MixinInterface {
 
 	protected $scope;
 
@@ -19,7 +18,7 @@ class Mixin implements MixinInterface {
 	 */
 	public function getName()
 	{
-		return 'Validation';
+		return 'Model:Validation';
 	}
 
 	/**
@@ -34,11 +33,13 @@ class Mixin implements MixinInterface {
 			return TRUE;
 		}
 
-		$this->emit('beforeValidate');
+		$this->scope->emit('beforeValidate');
 
-		$result = $this->validator->validate($this->scope->getDirty());
+		$result = $this->validator->validate(
+			$this->scope->getValidationData()
+		);
 
-		$this->emit('afterValidate');
+		$this->scope->emit('afterValidate');
 
 		return $result;
 		/*
@@ -50,9 +51,8 @@ class Mixin implements MixinInterface {
 		*/
 	}
 
-
 	/**
-	 * Set the validatior
+	 * Set the validator
 	 *
 	 * @param Validator $validator The validator to use
 	 * @return $this;
@@ -61,20 +61,10 @@ class Mixin implements MixinInterface {
 	{
 		$this->validator = $validator;
 
-		$rules = $this->scope->getMetaData('validation_rules');
-		$validator->setRules($rules);
+		$validator->setRules(
+			$this->scope->getValidationRules()
+		);
 
 		return $this->scope;
-	}
-
-	/**
-	 *
-	 */
-	protected function emit($event)
-	{
-		if ($this->scope->hasMixin('Event'))
-		{
-			$this->scope->emit($event);
-		}
 	}
 }

@@ -10,15 +10,15 @@ class TypedColumn implements Mixin {
 	protected $scope;
 	protected $columns;
 
+	protected $booleans = array(
+		'y' => TRUE,
+		'n' => FALSE,
+	);
+
 	public function __construct($scope, $manager)
 	{
 		$this->scope = $scope;
 		$this->columns = $this->scope->getTypedColumns();
-
-		if (count($this->columns))
-		{
-			$this->observePropertyEvents();
-		}
 	}
 
 	/**
@@ -32,79 +32,54 @@ class TypedColumn implements Mixin {
 	/**
 	 *
 	 */
-	protected function observePropertyEvents()
+	public function typedColumnGetter($column)
 	{
-		$that = $this;
-
-		$this->scope->on('afterSet', function($model, $property, $value) use ($that)
-		{
-			$that->setTypedColumn($property, $value);
-		});
-
-		$this->scope->on('beforeGet', function($model, $property) use ($that)
-		{
-			$that->getTypedColumn($property);
-		});
-	}
-
-	public function getTypedColumn($column)
-	{
-		if ( ! array_key_exists($column, $this->columns))
-		{
-			return;
-		}
-
 		$scope = $this->scope;
-		$type = $this->columns[$column];
 		$value = $scope->getRawProperty($column);
 
-		switch ($type)
+		if ( ! array_key_exists($column, $this->columns))
+		{
+			return $value;
+		}
+
+		switch ($this->columns[$column])
 		{
 			case 'string':
-				$get_value = (string) $value;
+				$value = (string) $value;
 				break;
 			case 'int':
-				$get_value = (int) $value;
+				$value = (int) $value;
 				break;
 			case 'float':
-				$get_value = (float) $value;
+				$value = (float) $value;
 				break;
 			case 'bool':
-				$get_value = (bool) $value;
+				$value = $this->getBool((bool) $value);
 				break;
 			case 'boolString':
-				$get_value = $this->getBool($value, 'y', 'n');
+				$value = $this->getBool($value, 'y', 'n');
 				break;
 			case 'boolInt':
-				$get_value = $this->getBool($value, 1, 0);
+				$value = $this->getBool($value, 1, 0);
 				break;
 			case 'timestamp':
-				$get_value = new DateTime("@{$value}");
+				$value = new DateTime("@{$value}");
 				break;
 			default:
 				throw new \Exception("Invalid column type `{$type}`");
 		}
 
-		// fake the property set and then immediately undo it again
-		// in the after event
-
-		$scope->setRawProperty($column, $get_value);
-
-		$scope->getEventEmitter()->once('afterGet', function($model, $property) use ($scope, $column, $value)
-		{
-			var_dump('reset');
-			$scope->setRawProperty($column, $value);
-		});
+		return $value;
 	}
 
 	/**
 	 *
 	 */
-	public function setTypedColumn($column, $value)
+	public function typedColumnSetter($column, $value)
 	{
 		if ( ! array_key_exists($column, $this->columns))
 		{
-			return;
+			return $value;
 		}
 
 		$type = $this->columns[$column];
@@ -112,42 +87,41 @@ class TypedColumn implements Mixin {
 		switch ($type)
 		{
 			case 'string':
-				$new_value = (string) $value;
+				$value = (string) $value;
 				break;
 			case 'int':
-				$new_value = (int) $value;
+				$value = (int) $value;
 				break;
 			case 'float':
-				$new_value = (float) $value;
+				$value = (float) $value;
 				break;
 			case 'bool':
-				$new_value = (bool) $value;
+				$value = $this->setBool($value);
 				break;
 			case 'boolString':
-				$new_value = $this->setBool($value, 'y', 'n');
+				$value = $this->setBool($value, 'y', 'n');
 				break;
 			case 'boolInt':
-				$new_value = $this->setBool($value, 1, 0);
+				$value = $this->setBool($value, 1, 0);
 				break;
 			case 'timestamp':
-				$new_value = $this->setTimestamp($value);
+				$value = $this->setTimestamp($value);
 				break;
 			default:
 				throw new \Exception("Invalid column type `{$type}`");
 		}
 
-		if ($new_value !== $value)
-		{
-			$this->scope->setRawProperty($column, $new_value);
-		}
+		return $value;
 	}
 
 	/**
-	 * Set a timestamp, by passing a datetime object or a timestamp
+	 * Mutate a timestamp on set.
+	 *
+	 * You can either pass a datetime object or a timestamp
 	 *
 	 * TODO could support string inputs here, ala entry_date
 	 */
-	public function setTimestamp($value)
+	protected function setTimestamp($value)
 	{
 		if ($value instanceOf DateTime)
 		{
@@ -158,13 +132,18 @@ class TypedColumn implements Mixin {
 	}
 
 	/**
-	 * Set a boolean
+	 * Mutate a boolean on set
 	 */
-	protected function setBool($value, $truthy, $falsey)
+	protected function setBool($value, $truthy = TRUE, $falsey = FALSE)
 	{
 		if ($value === $truthy || $value === $falsey)
 		{
 			return $value;
+		}
+
+		if (array_key_exists($value, $this->booleans))
+		{
+			$value = $this->booleans[$value];
 		}
 
 		$value = (bool) $value;
@@ -178,9 +157,9 @@ class TypedColumn implements Mixin {
 	}
 
 	/**
-	 * Get a boolean
+	 * Mutate a boolean on get
 	 */
-	protected function getBool($value, $truthy, $falsey)
+	protected function getBool($value, $truthy = TRUE, $falsey = FALSE)
 	{
 		if ($value === $truthy)
 		{
