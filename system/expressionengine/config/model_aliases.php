@@ -16,6 +16,7 @@ return array(
 		// ..\File
 		'UploadDestination' => 'EllisLab\ExpressionEngine\Model\File\UploadDestination',
 		'FileDimension' => 'EllisLab\ExpressionEngine\Model\File\FileDimension',
+		'File' => 'EllisLab\ExpressionEngine\Model\File\File',
 
 		// ..\Log
 		'CpLog' => 'EllisLab\ExpressionEngine\Model\Log\CpLog',
