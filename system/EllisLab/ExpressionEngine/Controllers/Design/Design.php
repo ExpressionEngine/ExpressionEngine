@@ -400,16 +400,6 @@ class Design extends CP_Controller {
 			$vars['pagination'] = $pagination->cp_links($base_url);
 		}
 
-		// Set search results heading
-		if ( ! empty($vars['table']['search']))
-		{
-			ee()->view->cp_heading = sprintf(
-				lang('search_results_heading'),
-				$vars['table']['total_rows'],
-				$vars['table']['search']
-			);
-		}
-
 		ee()->javascript->set_global('template_settings_url', cp_url('design/template/settings'));
 		ee()->javascript->set_global('lang.remove_confirm', lang('template') . ': <b>### ' . lang('templates') . '</b>');
 		ee()->cp->add_js_script(array(
