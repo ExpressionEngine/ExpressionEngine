@@ -2,11 +2,25 @@
 
 <div class="tbl-ctrls">
 	<?=form_open($form_url)?>
-	<?php /* ?>
 		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=cp_url('files/upload/' . $dir_id)?>"><?=lang('upload_new_file')?></a>
+			<div class="filters">
+				<ul>
+					<li>
+						<a class="has-sub" href=""><?=lang('upload_new_file')?></a>
+						<div class="sub-menu">
+							<fieldset class="filter-search">
+								<input type="text" value="" placeholder="<?=lang('filter_upload_directories')?>">
+							</fieldset>
+							<ul>
+								<?php foreach ($directories as $dir): ?>
+									<li><a href="<?=cp_url('files/directory/' . $dir->id)?>"><?=$dir->name?></a></li>
+								<?php endforeach ?>
+							</ul>
+						</div>
+					</li>
+				</ul>
+			</div>
 		</fieldset>
-	<?php */ ?>
 		<h1>
 			<?=$cp_heading?>
 			<ul class="toolbar">

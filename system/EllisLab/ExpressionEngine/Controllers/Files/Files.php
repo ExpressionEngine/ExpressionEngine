@@ -211,6 +211,18 @@ class Files extends CP_Controller {
 			$vars['pagination'] = $pagination->cp_links($base_url);
 		}
 
+		$upload_destinations = ee('Model')->get('UploadDestination')
+			->fields('id', 'name')
+			->filter('site_id', ee()->config->item('site_id'));
+
+		if (ee()->session->userdata['group_id'] != 1)
+		{
+			// Add filter to exclude any directories the user's group
+			// has been denied access
+		}
+
+		$vars['directories'] = $upload_destinations->all();
+
 		$this->sidebarMenu(NULL);
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('file_manager');
