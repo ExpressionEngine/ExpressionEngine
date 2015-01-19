@@ -27,11 +27,19 @@ namespace EllisLab\ExpressionEngine\Service\Model\Column;
  */
 abstract class Base64SerializedComposite extends Composite {
 
+	/**
+	 * @param $data Unserialized column data
+	 * @return Serialized column data
+	 */
 	protected function serialize($data)
 	{
 		return base64_encode(serialize($data));
 	}
 
+	/**
+	 * @param $data Serialized column data
+	 * @return Unserialized data
+	 */
 	protected function unserialize($data)
 	{
 		return unserialize(base64_decode($data));
