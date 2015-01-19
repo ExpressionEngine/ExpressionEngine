@@ -1,43 +1,50 @@
-<?php extend_view('account/_wrapper') ?>
+<?php extend_template('default-nav'); ?>
 
-<div>
-	<h3><?=lang('quicklinks_manager')?></h3>
+<div class="tbl-ctrls">
+<?=form_open($form_url)?>
+       <fieldset class="tbl-search right">
+               <a class="btn tn action" href="<?=$new?>">create new</a>
+       </fieldset>
+       <h1>
+               <ul class="toolbar">
+                       <li class="settings">
+                               <a href="<?=cp_url('settings/members')?>" title="<?=lang('member_settings')?>"></a>
+                       </li>
+               </ul>
+               <?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?>
+       </h1>
 
-	<?=form_open('C=myaccount'.AMP.'M=quicklinks_update', '', $form_hidden)?>
+       <?php if (isset($filters)) echo $filters; ?>
 
-	<div class="shun">
-		<?=lang('quick_link_description')?> <?=lang('quick_link_description_more')?>
-	</div>
+       <?php $this->view('_shared/table', $table); ?>
 
-	<div class="notice del_instructions"><?=lang('quicklinks_delete_instructions')?></div>
+       <?php if ( ! empty($pagination)) $this->view('_shared/pagination', $pagination); ?>
 
-	<?php 
-	$this->table->set_heading(
-		lang('link_title'),
-		lang('link_url'),
-		array('data'=>lang('link_order'), 'style'=>'width: 10%;')
-	);
-
-	foreach($quicklinks as $i => $quicklink)
-	{
-		$this->table->add_row(
-			form_input(array('name'=>"title_$i", 'value'=>$quicklink['title'], 'size'=>40)),
-			form_input(array('name'=>"link_$i", 'value'=>$quicklink['link'], 'size'=>40)),
-			form_input(array('name'=>"order_$i", 'value'=>$quicklink['order'], 'size'=>3))
-		);
-	}
-
-	$this->table->add_row(
-		form_input(array('name'=>"title_$blank_count", 'value'=>'', 'size'=>40)),
-		form_input(array('name'=>"link_$blank_count", 'value'=>'http://', 'size'=>40)),
-		form_input(array('name'=>"order_$blank_count", 'value'=>$blank_count, 'size'=>3))
-	);
-
-	echo $this->table->generate();
-
-	?>
-
-	<p class="submit"><?=form_submit('quicklinks_update', lang('submit'), 'class="submit"')?></p>
-
-	<?=form_close()?>
+       <?php if ( ! empty($table['data'])): ?>
+       <fieldset class="tbl-bulk-act">
+			<select name="bulk_action">
+       		        <option value="">-- <?=lang('with_selected')?> --</option>
+       		        <option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
+       		</select>
+	   		<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
+       </fieldset>
+       <?php endif; ?>
+<?=form_close()?>
 </div>
+
+<?php $this->startOrAppendBlock('modals'); ?>
+
+<?php
+
+$modal_vars = array(
+	'name'		=> 'modal-confirm-remove',
+	'form_url'	=> $form_url,
+	'hidden'	=> array(
+		'bulk_action'	=> 'remove'
+	)
+);
+
+$this->ee_view('_shared/modal_confirm_remove', $modal_vars);
+?>
+
+<?php $this->endBlock(); ?>

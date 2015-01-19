@@ -61,7 +61,19 @@
 			<?php else: ?>
 				<ul<?php if ( ! empty($class)):?> class="<?=$class?>"<?php endif ?>>
 					<?php foreach ($value as $text => $link): ?>
+						<?php if(is_array($link)): ?>
+						<li class="<?=$link['class']?>">
+							<a
+								<?php if ( ! empty($link['attrs'])): ?>
+									<?php foreach ($link['attrs'] as $attr => $val): ?>
+									<?=$attr?>="<?=$val?>"
+									<?php endforeach ?>
+								<?php endif ?>
+								href="<?=$link['href']?>"><?=lang($text)?></a>
+						</li>
+						<?php else: ?>
 						<li><a href="<?=$link?>"><?=lang($text)?></a></li>
+						<?php endif ?>
 					<?php endforeach ?>
 				</ul>
 			<?php endif;

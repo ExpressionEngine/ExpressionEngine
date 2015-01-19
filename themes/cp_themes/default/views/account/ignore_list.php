@@ -1,52 +1,48 @@
-<?php extend_view('account/_wrapper') ?>
+<?php extend_template('default-nav'); ?>
 
-<div>
-	<h3><?=lang('ignore_list')?></h3>
+<div class="tbl-ctrls">
+<?=form_open($table['base_url'])?>
+	<fieldset class="tbl-search right">
+		<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=$table['search']?>">
+		<input class="btn submit" type="submit" value="<?=lang('search_members')?>">
+	</fieldset>
+	<h1>
+		<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?>
+	</h1>
 
-	<div class="cp_button" style="display:none;"><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=edit_profile_field'?>"><?=lang('add_member')?></a></div>
+	<?php if (isset($filters)) echo $filters; ?>
 
-	<?=form_open('C=myaccount'.AMP.'M=ignore_list', '', $form_hidden)?>
+	<?=ee('Alert')->getAllInlines()?>
 
-	<div id="add_member">
-	<p>
-		<?=lang('member_usernames', 'name')?>
-		<?=form_input(array('id'=>'name','name'=>'name','class'=>'field','value'=>'','maxlength'=>50))?>
-	</p>
-	<p class="submit">
-		<?=form_submit('daction', lang('add_member'), 'class="submit"')?>
-	</p>
-	</div>
+	<?php $this->view('_shared/table', $table); ?>
 
-	<br class="clear_left" />
+	<?php if ( ! empty($pagination)) $this->view('_shared/pagination', $pagination); ?>
 
-	<?php
-		$this->table->set_heading(
-			lang('mbr_screen_name'), 
-			array('style'=>'width:2%','data'=>form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"'))
-		);
-
-		if (count($ignored_members) == 0) // No results?  Bah, how boring...
-		{
-			$this->table->add_row(array('colspan'=>2, 'data'=>''));
-			echo "<p class='notice'>".lang('ignore_list_empty')."</p>";
-		}
-		else
-		{
-			foreach ($ignored_members as $member)
-			{
-				$this->table->add_row(
-										$member['member_name'],
-										'<input class="toggle" type="checkbox" name="toggle[]" value="'.$member['member_id'].'" />'
-									);
-			}
-
-			echo $this->table->generate();
-		}
-	?>
-
-	<?php if (count($ignored_members) > 0):?>
-	<p class="submit"><?=form_submit('unignore', lang('unignore'), 'class="submit"')?></p>
-	<?php endif;?>
-
-	<?=form_close()?>
+	<?php if ( ! empty($table['data'])): ?>
+	<fieldset class="tbl-bulk-act">
+		<select name="bulk_action">
+			<option value="">-- <?=lang('with_selected')?> --</option>
+			<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
+		</select>
+	   	<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
+	</fieldset>
+	<?php endif; ?>
+<?=form_close()?>
 </div>
+
+<?php $this->startOrAppendBlock('modals'); ?>
+
+<?php
+
+$modal_vars = array(
+	'name'		=> 'modal-confirm-remove',
+	'form_url'	=> $form_url,
+	'hidden'	=> array(
+		'bulk_action'	=> 'remove'
+	)
+);
+
+$this->ee_view('_shared/modal_confirm_remove', $modal_vars);
+?>
+
+<?php $this->endBlock(); ?>

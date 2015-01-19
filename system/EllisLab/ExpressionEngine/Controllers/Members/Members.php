@@ -60,14 +60,26 @@ class Members extends CP_Controller {
 
 		// Register our menu
 		ee()->menu->register_left_nav(array(
-			'all_members' => cp_url('members/members-list'),
-			array(
-				'pending_activation' => cp_url('members/pending-activation'),
-				'manage_bans' => cp_url('members/manage-bans')
+			'all_members' => array(
+				'href' => cp_url('members'),
+				'button' => array(
+					'href' => cp_url('members/create'),
+					'text' => 'new'
+				)
 			),
-			'member_groups' => cp_url('members/member-groups'),
 			array(
-				'custom_member_fields' => cp_url('members/member-fields')
+				'pending_activation' => cp_url('members', array('group' => 4)),
+				'manage_bans' => cp_url('members', array('group' => 2))
+			),
+			'member_groups' => array(
+				'href' => cp_url('members/groups'),
+				'button' => array(
+					'href' => cp_url('members/groups/create'),
+					'text' => 'new'
+				)
+			),
+			array(
+				'custom_member_fields' => cp_url('members/fields')
 			)
 		));
 
@@ -150,6 +162,7 @@ class Members extends CP_Controller {
 		$table->setNoResultsText('no_search_results');
 		$table->setData($data['rows']);
 		$data['table'] = $table->viewData($this->base_url);
+		$data['form_url'] = cp_url('members/delete');
 
 		$base_url = $data['table']['base_url'];
 
@@ -172,6 +185,11 @@ class Members extends CP_Controller {
 				$data['table']['search']
 			);
 		}
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/confirm_remove'),
+		));
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
@@ -238,15 +256,19 @@ class Members extends CP_Controller {
 					$group = $groups[$member['group_id']];
 			}
 
+			$email = "<a href = '" . cp_url('utilities/communicate') . "'>e-mail</a>";
 			$rows[] = array(
 				'columns' => array(
 					'id' => $member['member_id'],
-					'username' => $member['username'] . " (<a href='mailto:{$member['email']}'>e-mail</a>)",
+					'username' => "{$member['username']} ($email)",
 					'member_group' => $group,
 					$toolbar,
 					array(
 						'name' => 'selection[]',
-						'value' => $member['member_id']
+						'value' => $member['member_id'],
+						'data'	=> array(
+							'confirm' => lang('member') . ': <b>' . htmlentities($member['screen_name'], ENT_QUOTES) . '</b>'
+						)
 					)
 				),
 				'attrs' => $attributes
@@ -340,6 +362,206 @@ class Members extends CP_Controller {
 		return $search_string;
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Generate post re-assignment view if applicable
+	 * 
+	 * @access public
+	 * @return void
+	 */
+	public function confirm()
+	{
+		$vars = array();
+		$selected = ee()->input->post('selection');
+		$vars['selected'] = $selected;
+
+		// Do the users being deleted have entries assigned to them?
+		// If so, fetch the member names for reassigment
+		if (ee()->member_model->count_member_entries($selected) > 0)
+		{
+			$group_ids = ee()->member_model->get_members_group_ids($selected);
+
+			// Find Valid Member Replacements
+			ee()->db->select('member_id, username, screen_name')
+				->from('members')
+				->where_in('group_id', $group_ids)
+				->where_not_in('member_id', $selected)
+				->order_by('screen_name');
+			$heirs = ee()->db->get();
+
+			foreach ($heirs->result() as $heir)
+			{
+				$name_to_use = ($heir->screen_name != '') ? $heir->screen_name : $heir->username;
+				$vars['heirs'][$heir->member_id] = $name_to_use;
+			}
+		}
+
+		ee()->view->cp_page_title = lang('delete_member');
+		ee()->cp->render('members/delete_confirm', $vars);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Member Delete
+	 *
+	 * Delete Members
+	 *
+	 * @return	mixed
+	 */
+	public function delete()
+	{
+		// Verify the member is allowed to delete
+		if ( ! ee()->cp->allowed_group('can_access_members')
+			OR ! ee()->cp->allowed_group('can_delete_members'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		//  Fetch member ID numbers and build the query
+		$member_ids = ee()->input->post('selection', TRUE);
+
+		// Check to see if they're deleting super admins
+		$this->_super_admin_delete_check($member_ids);
+
+		// If we got this far we're clear to delete the members
+		ee()->load->model('member_model');
+		$heir = (ee()->input->post('heir_action') == 'assign') ?
+			ee()->input->post('heir') : NULL;
+		ee()->member_model->delete_member($member_ids, $heir);
+
+		// Send member deletion notifications
+		$this->_member_delete_notifications($member_ids);
+
+		/* -------------------------------------------
+		/* 'cp_members_member_delete_end' hook.
+		/*  - Additional processing when a member is deleted through the CP
+		*/
+			ee()->extensions->call('cp_members_member_delete_end', $member_ids);
+			if (ee()->extensions->end_script === TRUE) return;
+		/*
+		/* -------------------------------------------*/
+
+		// Update
+		ee()->stats->update_member_stats();
+
+		$cp_message = (count($member_ids) == 1) ?
+			lang('member_deleted') : lang('members_deleted');
+
+		ee()->view->set_message('success', lang('member_delete_success'), $cp_message, TRUE);
+		ee()->functions->redirect($this->base_url);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Check to see if the members being deleted are super admins. If they are
+	 * we need to make sure that the deleting user is a super admin and that
+	 * there is at least one more super admin remaining.
+	 *
+	 * @param  Array  $member_ids Array of member_ids being deleted
+	 * @return void
+	 */
+	private function _super_admin_delete_check($member_ids)
+	{
+		$super_admins = ee()->db->select('member_id')
+			->where(array(
+				'group_id' => 1
+			))
+			->where_in('member_id', $member_ids)
+			->count_all_results('members');
+
+		if ($super_admins > 0)
+		{
+			// You must be a Super Admin to delete a Super Admin
+
+			if (ee()->session->userdata['group_id'] != 1)
+			{
+				show_error(lang('must_be_superadmin_to_delete_one'));
+			}
+
+			// You can't delete the only Super Admin
+			ee()->load->model('member_model');
+			$query = ee()->member_model->count_members(1);
+
+			if ($super_admins >= $query)
+			{
+				show_error(lang('can_not_delete_super_admin'));
+			}
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Send email notifications to email addresses for the respective member
+	 * group of the users being deleted
+	 *
+	 * @param  Array  $member_ids Array of member_ids being deleted
+	 * @return void
+	 */
+	private function _member_delete_notifications($member_ids)
+	{
+		// Email notification recipients
+		$group_query = ee()->db->distinct('member_id')
+			->select('screen_name, email, mbr_delete_notify_emails')
+			->join('member_groups', 'members.group_id = member_groups.group_id', 'left')
+			->where('mbr_delete_notify_emails !=', '')
+			->where_in('member_id', $member_ids)
+			->get('members');
+
+		foreach ($group_query->result() as $member)
+		{
+			$notify_address = $member->mbr_delete_notify_emails;
+
+			$swap = array(
+				'name'		=> $member->screen_name,
+				'email'		=> $member->email,
+				'site_name'	=> stripslashes(ee()->config->item('site_name'))
+			);
+
+			ee()->lang->loadfile('member');
+			$email_title = ee()->functions->var_swap(
+				lang('mbr_delete_notify_title'),
+				$swap
+			);
+			$email_message = ee()->functions->var_swap(
+				lang('mbr_delete_notify_message'),
+				$swap
+			);
+
+			// No notification for the user themselves, if they're in the list
+			if (strpos($notify_address, $member->email) !== FALSE)
+			{
+				$notify_address = str_replace($member->email, "", $notify_address);
+			}
+
+			// Remove multiple commas
+			$notify_address = reduce_multiples($notify_address, ',', TRUE);
+
+			if ($notify_address != '')
+			{
+				ee()->load->library('email');
+				ee()->load->helper('text');
+
+				foreach (explode(',', $notify_address) as $addy)
+				{
+					ee()->email->EE_initialize();
+					ee()->email->wordwrap = FALSE;
+					ee()->email->from(
+						ee()->config->item('webmaster_email'),
+						ee()->config->item('webmaster_name')
+					);
+					ee()->email->to($addy);
+					ee()->email->reply_to(ee()->config->item('webmaster_email'));
+					ee()->email->subject($email_title);
+					ee()->email->message(entities_to_ascii($email_message));
+					ee()->email->send();
+				}
+			}
+		}
+	}
 }
 // END CLASS
 

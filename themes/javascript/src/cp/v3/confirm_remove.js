@@ -13,13 +13,20 @@
 $(document).ready(function () {
 	$('*[data-conditional-modal]').click(function (e) {
 		var data_element = $(this).data('conditional-modal');
+		var ajax_url = $(this).data('confirm-ajax');
+		var confirm_text = $(this).data('confirm-text');
+		var confirm_input = $(this).data('confirm-input');
 		var conditional_element = $('*[data-' + data_element + ']').eq(0);
 
 		if ($(conditional_element).prop($(conditional_element).data(data_element))) {
 			// First adjust the checklist
 			var modalIs = '.' + $(conditional_element).attr('rel');
-
 			$(modalIs + " .checklist").html(''); // Reset it
+
+			if (typeof confirm_text != 'undefined') {
+				$(modalIs + " .checklist").append('<li>' + confirm_text + '</li>');
+			}
+
 			if ($('td input:checked').length < 6) {
 				$('td input:checked').each(function() {
 					$(modalIs + " .checklist").append('<li>' + $(this).attr('data-confirm') + '</li>');
@@ -27,11 +34,25 @@ $(document).ready(function () {
 			} else {
 				$(modalIs + " .checklist").append('<li>' + EE.lang.remove_confirm.replace('###', $('td input:checked').length) + '</li>');
 			}
+
 			// Add hidden <input> elements
 			$('td input:checked').each(function() {
 				$(modalIs + " .checklist li:last").append('<input type="hidden" name="' + $(this).attr('name') + '" value="' + $(this).val() + '">');
 			});
+
+			if (typeof confirm_input != 'undefined') {
+				$("input[name='" + confirm_input + "']").each(function() {
+					$(modalIs + " .checklist li:last").append('<input type="hidden" name="' + $(this).attr('name') + '" value="' + $(this).val() + '">');
+				});
+			}
+
 			$(modalIs + " .checklist li:last").addClass('last');
+
+			if (typeof ajax_url != 'undefined') {
+				$.post(ajax_url, $(modalIs + " form").serialize(), function(data) {
+					$(modalIs + " .ajax").html(data);
+				});
+			}
 
 			var heightIs = $(document).height();
 

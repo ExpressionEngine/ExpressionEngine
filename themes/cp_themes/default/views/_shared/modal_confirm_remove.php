@@ -18,6 +18,7 @@
 									<?php endforeach;
 								endif ?>
 							</ul>
+							<div class="ajax"></div>
 						</div>
 						<fieldset class="form-ctrls">
 							<?=cp_form_submit('btn_confirm_and_remove', 'btn_confirm_and_remove_working')?>
