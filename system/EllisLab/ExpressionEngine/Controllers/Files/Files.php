@@ -159,7 +159,10 @@ class Files extends CP_Controller {
 			$toolbar = array(
 				'view' => array(
 					'href' => '',
-					'title' => lang('view')
+					'rel' => 'modal-view-file',
+					'class' => 'm-link',
+					'title' => lang('view'),
+					'data-file-id' => $file->file_id
 				),
 				'edit' => array(
 					'href' => '',
@@ -177,6 +180,7 @@ class Files extends CP_Controller {
 
 			if ( ! $file->isImage())
 			{
+				unset($toolbar['view']);
 				unset($toolbar['crop']);
 			}
 
