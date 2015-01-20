@@ -199,15 +199,13 @@ class EE_Extensions {
 
 				if ( ! $path_loaded)
 				{
-					if (file_exists($extension_path))
-					{
-						ee()->load->add_package_path($path, FALSE);
-					}
-					else
+					if ( ! file_exists($extension_path))
 					{
 						$error = 'Unable to load the following extension file:<br /><br />'.'ext.'.$name.'.php';
 						return ee()->output->fatal_error($error);
 					}
+
+					ee()->load->add_package_path($path, FALSE);
 				}
 
 				// Include File
