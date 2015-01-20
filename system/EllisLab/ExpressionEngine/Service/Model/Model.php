@@ -298,7 +298,10 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 		// update relationships
 		foreach ($this->getAllAssociations() as $assoc)
 		{
-			$assoc->save();
+			if (isset($assoc))
+			{
+				$assoc->save();
+			}
 		}
 
 		return $this;
