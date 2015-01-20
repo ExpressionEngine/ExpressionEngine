@@ -36,6 +36,14 @@ class Template extends Model {
 	protected static $_primary_key = 'template_id';
 	protected static $_table_name = 'templates';
 
+	protected static $_typed_columns = array(
+		'save_template_file' => 'boolString',
+		'cache'              => 'boolString',
+		'enable_http_auth'   => 'boolString',
+		'allow_php'          => 'boolString',
+		'protect_javascript' => 'boolString'
+	);
+
 	protected static $_relationships = array(
 		'Site' => array(
 			'type' => 'BelongsTo'
@@ -92,53 +100,4 @@ class Template extends Model {
 	protected $hits;
 	protected $protect_javascript;
 
-	public function set__save_template_file($new_value)
-	{
-		$this->setStringBool('save_template_file', $new_value);
-	}
-
-	public function get__save_template_file()
-	{
-		return $this->save_template_file == 'y';
-	}
-
-	public function set__cache($new_value)
-	{
-		$this->setStringBool('cache', $new_value);
-	}
-
-	public function get__cache()
-	{
-		return $this->cache == 'y';
-	}
-
-	public function set__enable_http_auth($new_value)
-	{
-		$this->setStringBool('enable_http_auth', $new_value);
-	}
-
-	public function get__enable_http_auth()
-	{
-		return $this->enable_http_auth == 'y';
-	}
-
-	public function set__allow_php($new_value)
-	{
-		$this->setStringBool('allow_php', $new_value);
-	}
-
-	public function get__allow_php()
-	{
-		return $this->allow_php == 'y';
-	}
-
-	public function set__protect_javascript($new_value)
-	{
-		$this->setStringBool('protect_javascript', $new_value);
-	}
-
-	public function get__protect_javascript()
-	{
-		return $this->protect_javascript == 'y';
-	}
 }
