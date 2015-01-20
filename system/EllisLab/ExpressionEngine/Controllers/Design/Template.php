@@ -635,9 +635,9 @@ class Template extends Design {
 		foreach (ee('Model')->get('TemplateGroup')->all() as $template_group)
 		{
 			$templates = array();
-			foreach ($template_group->getTemplates() as $template)
+			foreach ($template_group->getTemplates() as $t)
 			{
-				$templates[$template->template_id] = $template->template_name;
+				$templates[$template->template_id] = $t->template_name;
 			}
 			$existing_templates[$template_group->group_name] = $templates;
 		}
@@ -657,7 +657,7 @@ class Template extends Design {
 		$vars = array(
 			'template' => $template,
 			'route' => $route,
-			'denied_member_groups' => $template->getNoAccess()->pluck('member_group'),
+			'denied_member_groups' => $template->getNoAccess()->pluck('group_id'),
 			'member_groups' => $member_gropus,
 			'existing_templates' => $existing_templates
 		);

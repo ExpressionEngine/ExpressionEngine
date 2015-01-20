@@ -147,6 +147,8 @@ class File extends Files {
 			$file->description = ee()->input->post('description');
 			$file->credit = ee()->input->post('credit');
 			$file->location = ee()->input->post('location');
+			$file->modified_by_member_id = ee()->session->userdata('member_id');
+			$file->modified_date = ee()->localize->now;
 
 			$file->save();
 
@@ -207,7 +209,7 @@ class File extends Files {
 		}
 
 		ee()->load->helper('download');
-		force_download($file->rel_path, file_get_contents($file->getAbsolutePath()));
+		force_download($file->file_name, file_get_contents($file->getAbsolutePath()));
 	}
 }
 // EOF

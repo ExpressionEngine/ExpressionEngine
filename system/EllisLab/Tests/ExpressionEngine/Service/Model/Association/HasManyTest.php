@@ -5,7 +5,7 @@ namespace EllisLab\Test\ExpressionEngine\Service\Model\Association;
 use Mockery as m;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Service\Model\Collection;
+use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Service\Model\Association\HasMany;
 
 class HasManyTest extends \PHPUnit_Framework_TestCase {

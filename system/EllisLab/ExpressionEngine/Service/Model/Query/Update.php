@@ -39,7 +39,6 @@ class Update extends Query {
 			$object->$field = $value;
 		}
 
-		$object->onBeforeValidate();
 /*
 		$result = $object->validate();
 
@@ -48,9 +47,8 @@ class Update extends Query {
 			throw new \Exception('Validation failed');
 		}
 */
-		$object->onAfterValidate();
 
-		$object->onBeforeSave();
+		$object->emit('beforeSave');
 
 		// todo this is yucky
 		$gateways = $this->store->getMetaDataReader($object->getName())->getGateways();
@@ -66,7 +64,7 @@ class Update extends Query {
 			$results[] = $this->actOnGateway($gateway, $object);
 		}
 
-		$object->onAfterSave();
+		$object->emit('afterSave');
 	}
 
 	protected function actOnGateway($gateway, $object)

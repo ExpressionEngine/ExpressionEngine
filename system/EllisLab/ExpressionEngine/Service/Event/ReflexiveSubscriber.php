@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Service\Model\Column;
+namespace EllisLab\ExpressionEngine\Service\Event;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -17,17 +17,15 @@ namespace EllisLab\ExpressionEngine\Service\Model\Column;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Column Interface
+ * ExpressionEngine Reflexive Event Subscriber Interface
+ *
+ * Marker interface to implement if you're using the event mixin and want
+ * to automatically subscribe your class to itself.
  *
  * @package		ExpressionEngine
- * @subpackage	Model
+ * @subpackage	Event
  * @category	Service
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-interface Column {
-
-	public function fill($db_data);
-	public function getValue();
-
-}
+interface ReflexiveSubscriber extends Subscriber {}
