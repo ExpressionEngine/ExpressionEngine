@@ -194,15 +194,18 @@ class EE_Extensions {
 				$path = ee()->addons->_packages[$name]['extension']['path'];
 				$extension_path = reduce_double_slashes($path.'/ext.'.$name.'.php');
 
-				if (file_exists($extension_path))
-				{
-					ee()->load->add_package_path($path, FALSE);
-				}
+				// Check to see if we need to automatically load the path
+				$automatically_load_path = (array_search($path, ee()->load->get_package_paths()) === FALSE);
 
-				else
+				if ($automatically_load_path)
 				{
-					$error = 'Unable to load the following extension file:<br /><br />'.'ext.'.$name.'.php';
-					return ee()->output->fatal_error($error);
+					if ( ! file_exists($extension_path))
+					{
+						$error = 'Unable to load the following extension file:<br /><br />'.'ext.'.$name.'.php';
+						return ee()->output->fatal_error($error);
+					}
+
+					ee()->load->add_package_path($path, FALSE);
 				}
 
 				// Include File
@@ -267,7 +270,10 @@ class EE_Extensions {
 					$this->last_call = call_user_func_array(array(&$this->OBJ[$class_name], $method), $args);
 				}
 
-				ee()->load->remove_package_path($path);
+				if ($automatically_load_path)
+				{
+					ee()->load->remove_package_path($path);
+				}
 
 				// A ee()->extensions->end_script value of TRUE means that the
 				// called method wishes us to stop the calling of the main
