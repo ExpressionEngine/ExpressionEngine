@@ -32,6 +32,17 @@ $lang = array(
 'forum_topics' => 'Topics',
 'forum_user_banning' => 'User Banning',
 
+'profile_profile' => 'Profile',
+'profile_breadcrumb' => 'Breadcrumb',
+'profile_private_messages' => 'Private Messages',
+'profile_bulletin_board' => 'Bulletin Board',
+'profile_common' => 'Common',
+'profile_member' => 'Member',
+'profile_account' => 'Account',
+'profile_email' => 'e-mail',
+'profile_registration' => 'Registration',
+'profile_subscriptions' => 'Subscriptions',
+
 'admin_notify_mailinglist' =>
 'Admin &ndash; List subscription notification',
 

@@ -31,6 +31,8 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  */
 class Members extends Design {
 
+	protected $template_group_map = array();
+
 	/**
 	 * Constructor
 	 */
@@ -44,6 +46,89 @@ class Members extends Design {
 		}
 
 		$this->stdHeader();
+
+		ee()->lang->loadfile('specialty_tmp');
+
+		$this->template_group_map = array(
+			'aim_console.html' => 'profile',
+			'avatar_folder_list.html' => 'profile',
+			'basic_profile.html' => 'profile',
+			'breadcrumb.html' => 'breadcrumb',
+			'breadcrumb_current_page.html' => 'breadcrumb',
+			'breadcrumb_trail.html' => 'breadcrumb',
+			'browse_avatars.html' => 'profile',
+			'buddies_block_list.html' => 'private_messages',
+			'buddies_block_row.html' => 'private_messages',
+			'bulletin.html' => 'bulletin_board',
+			'bulletin_board.html' => 'bulletin_board',
+			'bulletin_form.html' => 'bulletin_board',
+			'copyright.html' => 'common',
+			'custom_profile_fields.html' => 'member',
+			'delete_confirmation_form.html' => 'account',
+			'edit_avatar.html' => 'profile',
+			'edit_ignore_list_form.html' => 'profile',
+			'edit_ignore_list_rows.html' => 'profile',
+			'edit_photo.html' => 'profile',
+			'edit_preferences.html' => 'profile',
+			'edit_profile_form.html' => 'profile',
+			'email_form.html' => 'email',
+			'email_prefs_form.html' => 'email',
+			'email_user_message.html' => 'email',
+			'emoticon_page.html' => 'profile',
+			'empty_list.html' => 'private_messages',
+			'error.html' => 'common',
+			'forgot_form.html' => 'account',
+			'full_profile.html' => 'profile',
+			'home_page.html' => 'profile',
+			'html_footer.html' => 'common',
+			'html_header.html' => 'common',
+			'icq_console.html' => 'profile',
+			'localization_form.html' => 'account',
+			'login_form.html' => 'registration',
+			'member_page.html' => 'member',
+			'member_results.html' => 'member',
+			'member_results_row.html' => 'member',
+			'memberlist.html' => 'member',
+			'memberlist_rows.html' => 'member',
+			'menu.html' => 'common',
+			'message_attachment_link.html' => 'private_messages',
+			'message_attachment_rows.html' => 'private_messages',
+			'message_attachments.html' => 'private_messages',
+			'message_compose.html' => 'private_messages',
+			'message_edit_folders.html' => 'private_messages',
+			'message_edit_folders_row.html' => 'private_messages',
+			'message_error.html' => 'private_messages',
+			'message_folder.html' => 'private_messages',
+			'message_folder_rows.html' => 'private_messages',
+			'message_menu.html' => 'private_messages',
+			'message_menu_rows.html' => 'private_messages',
+			'message_no_folder_rows.html' => 'private_messages',
+			'message_submission_error.html' => 'private_messages',
+			'message_success.html' => 'private_messages',
+			'no_subscriptions_message.html' => 'subscriptions',
+			'notepad_form.html' => 'profile',
+			'page_header.html' => 'common',
+			'page_subheader.html' => 'common',
+			'password_change_warning.html' => 'account',
+			'preview_message.html' => 'private_messages',
+			'public_custom_profile_fields.html' => 'profile',
+			'public_profile.html' => 'profile',
+			'registration_form.html' => 'registration',
+			'reset_password_form.html' => 'account',
+			'search_members.html' => 'private_messages',
+			'signature_form.html' => 'profile',
+			'stylesheet.html' => 'common',
+			'subscription_pagination.html' => 'subscriptions',
+			'subscription_result_heading.html' => 'subscriptions',
+			'subscription_result_rows.html' => 'subscriptions',
+			'subscriptions_form.html' => 'subscriptions',
+			'success.html' => 'common',
+			'update_un_pw_form.html' => 'account',
+			'username_change_disallowed.html' => 'account',
+			'username_password_form.html' => 'account',
+			'username_row.html' => 'account',
+			'view_message.html' => 'private_messages',
+		);
 	}
 
 	public function index($theme = 'default')
@@ -62,7 +147,7 @@ class Members extends Design {
 
 		$base_url = new URL('design/members/index/' . $theme, ee()->session->session_id());
 
-		$table = Table::create(array('autosort' => TRUE, 'limit' => 1024));
+		$table = Table::create(array('autosort' => TRUE, 'subheadings' => TRUE));
 		$table->setColumns(
 			array(
 				'template',
@@ -82,7 +167,7 @@ class Members extends Design {
 
 			$human = substr($file, 0, -strlen(strrchr($file, '.')));
 
-			$data[] = array(
+			$data['profile_' . $this->template_group_map[$file]][] = array(
 				(lang($human) == FALSE) ? $human : lang($human),
 				array('toolbar_items' => array(
 					'edit' => array(
