@@ -519,7 +519,7 @@ class Template extends Design {
 			->all();
 
 		$allowed_member_groups = ee()->input->post('allowed_member_groups');
-		$denied_member_groups = $template->getNoAccess()->pluck('member_group');
+		$denied_member_groups = $template->getNoAccess()->pluck('group_id');
 
 		foreach ($member_groups as $member_group)
 		{
