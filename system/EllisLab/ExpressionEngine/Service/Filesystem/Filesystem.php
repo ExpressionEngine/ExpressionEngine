@@ -281,13 +281,35 @@ class Filesystem {
 		return file_exists($path);
 	}
 
+	/**
+	 * Get the last modified time
+	 *
+	 * @param String $path Path to directory or file
+	 * @return int Last modified time
+	 */
 	public function mtime($path)
 	{
+		if ( ! $this->exists($path))
+		{
+			throw new FilesystemException("File does not exist: {$path}");
+		}
 
+		return filemtime($path);
 	}
 
+	/**
+	 * Touch a file or directory
+	 *
+	 * @param String $path File/directory to touch
+	 * @param int Set the last modified time [optional]
+	 */
 	public function touch($path, $time = NULL)
 	{
+		if ( ! $this->exists($path))
+		{
+			throw new FilesystemException("Touching non-existent files is not supported: {$path}");
+		}
+
 		if (isset($time))
 		{
 			touch($path, $time);
