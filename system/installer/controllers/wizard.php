@@ -342,20 +342,6 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
-		// Is the database.php file readable?
-		if ( ! include($this->config->database_path))
-		{
-			$this->_set_output('error', array('error' => $this->lang->line('unreadable_database')));
-			return FALSE;
-		}
-
-		// Is the database.php file writable?  NOTE: Depending on whether we decide to require the database file
-		// to always be writable will determine whether this code stays intact
-		if ( ! is_really_writable($this->config->database_path))
-		{
-			$this->_set_output('error', array('error' => $this->lang->line('unreadable_database')));
-			return FALSE;
-		}
 
 		$cache_path = EE_APPPATH.'cache';
 
@@ -457,40 +443,12 @@ class Wizard extends CI_Controller {
 			return TRUE;
 		}
 
-		if (isset($active_group))
-		{
-			$this->active_group = $active_group;
-		}
-
-		$move_db_data = FALSE;
 		// Before we assume this is an update, let's see if we can connect to
 		// the DB. If they are running EE prior to 2.0 the database settings are
 		// found in the main config file, if they are running 2.0 or newer, the
 		// settings are found in the db file
+		$db = ee('Database')->getConfig()->getGroupConfig();
 
-		if ( ! isset($db) AND isset($config['db_hostname']))
-		{
-			$db[$this->active_group] = array(
-				'hostname'	=> $config['db_hostname'],
-				'username'	=> $config['db_username'],
-				'password'	=> $config['db_password'],
-				'database'	=> $config['db_name'],
-				'dbdriver'	=> $config['db_type'],
-				'dbprefix'	=> ($config['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $config['db_prefix']),
-				'pconnect'	=> ($config['db_conntype'] == 1) ? TRUE : FALSE,
-				'swap_pre'	=> 'exp_',
-				'db_debug'	=> TRUE, // We show our own errors
-				'cache_on'	=> FALSE,
-				'autoinit'	=> FALSE, // We'll initialize the DB manually
-				'char_set'	=> 'utf8',
-				'dbcollat'	=> 'utf8_general_ci'
-			);
-			$move_db_data = TRUE;
-		}
-
-		// is correct db_prefix
-
-		// Still not $db array?  Hm... what's going on here?
 		if ( ! isset($db))
 		{
 			$this->_set_output('error', array('error' => $this->lang->line('database_no_data')));
@@ -579,13 +537,13 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
-		if ($move_db_data == TRUE)
 		// Check to see if the language pack they are using in 1.6.X is
 		// available for the 2.0 upgrade. This will only need to be done during
 		// the move from 1.6 to 2, and not for subsequent 2.0 updates, so we'll
 		// use the $move_db_data flag to determine if we should check for this,
 		// as it will only be TRUE during this specific transition.
 		// TODO-WB: Remove for 3.x
+		if (FALSE && $move_db_data == TRUE)
 		{
 			$default_language = $this->config->_get_config_1x('deft_lang');
 
@@ -604,22 +562,6 @@ class Wizard extends CI_Controller {
 				$this->_set_output('error', array('error' => str_replace('%x', ucfirst($default_language), $this->lang->line('unreadable_language'))));
 				return FALSE;
 			}
-		}
-
-		// Do we need to move the database connection info out of the config file and into the DB file?
-		// Prior to 2.0 the main config file contained the DB connection info so we'll move it if needed
-		if ($move_db_data == TRUE)
-		{
-			if ($this->_write_db_config($db) == FALSE)
-			{
-				$this->_set_output('error', array('error' => $this->lang->line('unwritable_database')));
-				return FALSE;
-			}
-
-			// Kill the DB connection data from the main config file
-			// We also kill "system_folder" as this isn't used anymore
-			$unset = array( 'db_hostname', 'db_username', 'db_password', 'db_name', 'db_type', 'db_prefix', 'db_conntype', 'system_folder');
-			$this->config->_append_config_1x(array(), $unset);
 		}
 
 		// Before moving on, let's load the update file to make sure it's readable
@@ -1633,13 +1575,7 @@ PAPAYA;
 			return FALSE;
 		}
 
-		// Does the DB connection data exist?
-		if ( ! isset($db[$this->active_group]))
-		{
-			return FALSE;
-		}
-
-		$this->load->database($db[$this->active_group], FALSE, TRUE);
+		$this->load->database($db, FALSE, TRUE);
 
 		// Force caching off
 		$this->db->cache_off();
