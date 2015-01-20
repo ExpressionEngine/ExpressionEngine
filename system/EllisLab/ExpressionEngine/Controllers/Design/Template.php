@@ -635,9 +635,9 @@ class Template extends Design {
 		foreach (ee('Model')->get('TemplateGroup')->all() as $template_group)
 		{
 			$templates = array();
-			foreach ($template_group->getTemplates() as $template)
+			foreach ($template_group->getTemplates() as $t)
 			{
-				$templates[$template->template_id] = $template->template_name;
+				$templates[$template->template_id] = $t->template_name;
 			}
 			$existing_templates[$template_group->group_name] = $templates;
 		}
