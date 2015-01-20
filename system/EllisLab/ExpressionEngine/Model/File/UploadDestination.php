@@ -51,6 +51,11 @@ class UploadDestination extends Model {
 				'right' => 'member_group'
 			)
 		),
+		'Files' => array(
+			'type' => 'hasMany',
+			'model' => 'File',
+			'to_key' => 'upload_location_id'
+		),
 		'FileDimension' => array(
 			'type' => 'hasMany',
 			'to_key' => 'upload_location_id'
