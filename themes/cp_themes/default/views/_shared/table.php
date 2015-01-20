@@ -76,7 +76,7 @@ if ($wrap): ?>
 			{
 				$rows = array($rows);
 			} 
-			if ( ! empty($heading)): ?>
+			if ($subheadings && ! empty($heading)): ?>
 				<tr class="sub-heading"><td colspan="<?=count($columns)?>"><?=lang($heading)?></td></tr>
 			<?php endif ?>
 			<?php foreach ($rows as $row): ?>
