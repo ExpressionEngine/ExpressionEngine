@@ -194,10 +194,10 @@ class EE_Extensions {
 				$path = ee()->addons->_packages[$name]['extension']['path'];
 				$extension_path = reduce_double_slashes($path.'/ext.'.$name.'.php');
 
-				// Check to see if paths are already loaded
-				$path_loaded = (array_search($path, ee()->load->get_package_paths()) !== FALSE);
+				// Check to see if we need to automatically load the path
+				$automatically_load_path = (array_search($path, ee()->load->get_package_paths()) === FALSE);
 
-				if ( ! $path_loaded)
+				if ($automatically_load_path)
 				{
 					if ( ! file_exists($extension_path))
 					{
@@ -270,7 +270,7 @@ class EE_Extensions {
 					$this->last_call = call_user_func_array(array(&$this->OBJ[$class_name], $method), $args);
 				}
 
-				if ($path_loaded === FALSE)
+				if ($automatically_load_path === TRUE)
 				{
 					ee()->load->remove_package_path($path);
 				}
