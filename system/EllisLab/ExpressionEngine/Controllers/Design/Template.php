@@ -527,20 +527,14 @@ class Template extends Design {
 			{
 				if (in_array($member_group->group_id, $denied_member_groups))
 				{
-					// Remove association
-					$no_access = $template->getAssociation('NoAccess');
-					$no_access->remove($member_group);
-					$no_access->save();
+					$template->removeNoAccess($member_group);
 				}
 			}
 			else
 			{
 				if ( ! in_array($member_group->group_id, $denied_member_groups))
 				{
-					// Add association
-					$no_access = $template->getAssociation('NoAccess');
-					$no_access->add($member_group);
-					$no_access->save();
+					$template->addNoAccess($member_group);
 				}
 			}
 		}
