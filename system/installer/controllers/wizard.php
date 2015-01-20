@@ -1597,7 +1597,7 @@ PAPAYA;
 	 * @access	public
 	 * @return	void
 	 */
-	function _set_image_path($path = 'themes/cp_global_images/', $n = NULL)
+	function _set_image_path($path = 'themes/ee/cp_global_images/', $n = NULL)
 	{
 		if ( ! is_dir($path) && $n < 10)
 		{
