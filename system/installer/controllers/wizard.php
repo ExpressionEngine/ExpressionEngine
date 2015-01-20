@@ -44,7 +44,7 @@ class Wizard extends CI_Controller {
 	public $content           = '';
 	public $title             = 'ExpressionEngine Installation and Update Wizard';
 	public $heading           = 'ExpressionEngine Installation and Update Wizard';
-	public $copyright         = 'Copyright 2003 - 2014 EllisLab, Inc. - All Rights Reserved';
+	public $copyright         = 'Copyright 2003 - %s EllisLab, Inc. - All Rights Reserved';
 
 	public $now;
 	public $year;
@@ -1652,7 +1652,7 @@ PAPAYA;
 			'refresh'			=> $this->refresh,
 			'refresh_url'		=> $this->refresh_url,
 			'image_path'		=> $this->image_path,
-			'copyright'			=> $this->copyright,
+			'copyright'			=> sprintf($this->copyright, date('Y')),
 			'version'			=> $this->version,
 			'next_version'		=> substr($this->next_update, 0, 1).'.'.substr($this->next_update, 1, 1).'.'.substr($this->next_update, 2, 1),
 			'installed_version'	=> $this->installed_version,
