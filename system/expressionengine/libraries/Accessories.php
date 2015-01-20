@@ -100,7 +100,7 @@ class EE_Accessories {
 						if (array_key_exists('package', $info))
 						{
 							$third_party = TRUE;
-							ee()->load->add_package_path(PATH_THIRD.strtolower($name).'/');
+							ee()->load->add_package_path(PATH_ADDONS.strtolower($name).'/');
 						}
 
 						$obj = new $info['class']();
@@ -122,7 +122,7 @@ class EE_Accessories {
 
 						if ($third_party === TRUE)
 						{
-							ee()->load->remove_package_path(PATH_THIRD.strtolower($name).'/');
+							ee()->load->remove_package_path(PATH_ADDONS.strtolower($name).'/');
 						}
 					}
 					else
@@ -251,9 +251,9 @@ class EE_Accessories {
 			return FALSE;
 		}
 
-		if (strncmp($path, PATH_THIRD, strlen(PATH_THIRD)) == 0)
+		if (strncmp($path, PATH_ADDONS, strlen(PATH_ADDONS)) == 0)
 		{
-			ee()->load->add_package_path(PATH_THIRD.strtolower($name).'/', FALSE);
+			ee()->load->add_package_path(PATH_ADDONS.strtolower($name).'/', FALSE);
 		}
 
 		return $class;

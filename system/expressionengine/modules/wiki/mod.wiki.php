@@ -300,8 +300,8 @@ class Wiki {
 
 		ee()->load->helper('file');
 		$this->theme_path = PATH_THEMES.'wiki_themes/default/';
-		$this->image_url = ee()->config->slash_item('theme_folder_url').'wiki_themes/default/images/';
-		$this->theme_url = ee()->config->slash_item('theme_folder_url').'wiki_themes/default/';
+		$this->image_url = URL_THEMES.'wiki_themes/default/images/';
+		$this->theme_url = URL_THEMES.'wiki_themes/default/';
 
 		if (ee()->TMPL->fetch_param('theme') !== FALSE && ee()->TMPL->fetch_param('theme') != '' && ee()->TMPL->fetch_param('theme') != 'default')
 		{
@@ -310,8 +310,8 @@ class Wiki {
 			if (is_dir(PATH_THEMES.'/wiki_themes/'.$theme))
 			{
 				$this->theme_path = PATH_THEMES.'wiki_themes/'.$theme.'/';
-				$this->image_url = ee()->config->slash_item('theme_folder_url').'wiki_themes/'.$theme.'/images/';
-				$this->theme_url = ee()->config->slash_item('theme_folder_url').'wiki_themes/'.$theme.'/';
+				$this->image_url = URL_THEMES.'wiki_themes/'.$theme.'/images/';
+				$this->theme_url = URL_THEMES.'wiki_themes/'.$theme.'/';
 			}
 			else
 			{

@@ -11,7 +11,7 @@
 |
 */
 
-$config['app_version'] = '280';
+$config['app_version'] = '292';
 $config['license_number'] = '';
 $config['debug'] = '1';
 $config['cp_url'] = 'http://ee2.test:8080/system/index.php';
@@ -22,6 +22,12 @@ $config['is_system_on'] = 'y';
 $config['allow_extensions'] = 'y';
 $config['cookie_prefix'] = '';
 $config['cookie_httponly'] = 'y';
+$config['database'] = array(
+	'expressionengine' => array(
+		'database' => 'circle_test',
+		'username' => 'ubuntu',
+	),
+);
 
 
 /*

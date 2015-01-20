@@ -70,7 +70,7 @@ class Addons_model extends CI_Model {
 
 			// now third party add-ons, which are arranged in "packages"
 			// only catch files that match the package name, as other files are merely assets
-			if (($map = directory_map(PATH_THIRD, 2)) !== FALSE)
+			if (($map = directory_map(PATH_ADDONS, 2)) !== FALSE)
 			{
 				foreach ($map as $pkg_name => $files)
 				{
@@ -149,7 +149,7 @@ class Addons_model extends CI_Model {
 
 		// now third party add-ons, which are arranged in "packages"
 		// only catch files that match the package name, as other files are merely assets
-		if (($map = directory_map(PATH_THIRD, 2)) !== FALSE)
+		if (($map = directory_map(PATH_ADDONS, 2)) !== FALSE)
 		{
 			foreach ($map as $pkg_name => $files)
 			{
@@ -172,7 +172,7 @@ class Addons_model extends CI_Model {
 					{
 						if ( ! class_exists(ucfirst($pkg_name)))
 						{
-							if ( ! @include_once(PATH_THIRD.$pkg_name.'/'.$file))
+							if ( ! @include_once(PATH_ADDONS.$pkg_name.'/'.$file))
 							{
 								continue;
 							}

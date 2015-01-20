@@ -209,15 +209,18 @@
 			return $_config[0];
 		}
 
+		// Check various paths for config files
+		$basepath = (defined('EE_APPPATH')) ? APPPATH : SYSPATH;
+
 		// Fetch the config file
-		if ( ! file_exists(APPPATH.'config/config.php'))
+		if (file_exists($basepath.'config/config.php'))
 		{
-			set_status_header(503);
-			exit('The configuration file does not exist.');
+			require($basepath.'config/config.php');
 		}
 		else
 		{
-			require(APPPATH.'config/config.php');
+			set_status_header(503);
+			exit('The configuration file does not exist.');
 		}
 
 		// Does the $config array exist in the file?

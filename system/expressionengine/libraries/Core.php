@@ -71,17 +71,12 @@ class EE_Core {
 		define('PATH_ACC',		APPPATH.'accessories/');
 		define('PATH_FT',		APPPATH.'fieldtypes/');
 		define('PATH_RTE',		APPPATH.'rte_tools/');
-		if (ee()->config->item('third_party_path'))
-		{
-			define(
-				'PATH_THIRD',
-				rtrim(realpath(ee()->config->item('third_party_path')), '/').'/'
-			);
-		}
-		else
-		{
-			define('PATH_THIRD',	APPPATH.'third_party/');
-		}
+
+		$addon_path = (ee()->config->item('addons_path'))
+			? rtrim(realpath(ee()->config->item('addons_path')), '/').'/'
+			: SYSPATH.'addons/';
+		define('PATH_ADDONS', $addon_path);
+		define('PATH_THIRD', $addon_path);
 
 		// application constants
 		define('IS_CORE',		FALSE);
@@ -98,16 +93,27 @@ class EE_Core {
 		define('PATH_DICT', 	APPPATH.'config/');
 		define('AJAX_REQUEST',	ee()->input->is_ajax_request());
 
+		// Setup Dependency Injection Container
+		// This must come very early in the process, nothing but constants above
+		ee()->di = new \EllisLab\ExpressionEngine\Service\DependencyInjectionContainer();
+
 		// Load the default caching driver
 		ee()->load->driver('cache');
 
+		// Register Config
+		ee()->di->registerSingleton('Config', function($di, $config_file = 'config') {
+			$directory = new \EllisLab\ExpressionEngine\Service\Config\Directory(SYSPATH.'config/');
+			return $directory->file($config_file);
+		});
+
 		// Load DB and set DB preferences
+		ee()->di->registerSingleton('Database', function($di) {
+			$database_config = new \EllisLab\ExpressionEngine\Service\Database\DBConfig(ee('Config'));
+			return new \EllisLab\ExpressionEngine\Service\Database\Database($database_config);
+		});
 		ee()->load->database();
 		ee()->db->swap_pre = 'exp_';
 		ee()->db->db_debug = FALSE;
-
-		// Setup Dependency Injection Container
-		ee()->di = new \EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer();
 
 		ee()->di->register('Event', function($di)
 		{
@@ -129,8 +135,9 @@ class EE_Core {
 
 		ee()->di->registerSingleton('Validation', function($di)
 		{
-            return new \EllisLab\ExpressionEngine\Service\Validation\Factory();
+			return new \EllisLab\ExpressionEngine\Service\Validation\Factory();
 		});
+
 
 		// Setup API model factory
 		ee()->api = ee()->di->make('Model');
@@ -241,46 +248,22 @@ class EE_Core {
 			}
 		}
 
-		define('PATH_THEMES', 		$theme_path);
-		define('PATH_MBR_THEMES',	PATH_THEMES.'profile_themes/');
-		define('PATH_CP_GBL_IMG', 	ee()->config->slash_item('theme_folder_url').'cp_global_images/');
+		$theme_url = ee()->config->slash_item('theme_folder_url');
+
+		define('PATH_THEMES', $theme_path.'ee/');
+		define('URL_THEMES', $theme_url.'ee/');
+		define('PATH_ADDONS_THEMES', $theme_path.'addons/');
+		define('PATH_THIRD_THEMES', $theme_path.'addons/');
+		define('URL_ADDONS_THEMES', $theme_url.'addons/');
+		define('URL_THIRD_THEMES', $theme_url.'addons/');
+
+		define('PATH_MBR_THEMES', PATH_THEMES.'profile_themes/');
+		define('PATH_CP_GBL_IMG', ee()->config->slash_item('theme_folder_url').'ee/cp_global_images/');
 		unset($theme_path);
-
-		// Define Third Party Theme Path and URL
-		if (ee()->config->item('path_third_themes'))
-		{
-			define(
-				'PATH_THIRD_THEMES',
-				rtrim(realpath(ee()->config->item('path_third_themes')), '/').'/'
-			);
-		}
-		else
-		{
-			define('PATH_THIRD_THEMES',	PATH_THEMES.'third_party/');
-		}
-
-		if (ee()->config->item('url_third_themes'))
-		{
-			define(
-				'URL_THIRD_THEMES',
-				rtrim(ee()->config->item('url_third_themes'), '/').'/'
-			);
-		}
-		else
-		{
-			define('URL_THIRD_THEMES',	ee()->config->slash_item('theme_folder_url').'third_party/');
-		}
 
 		// Load the very, very base classes
 		ee()->load->library('functions');
 		ee()->load->library('extensions');
-
-		// Our design is a little dirty. The asset controllers need
-		// path_cp_theme. Fix it without loading all the other junk!
-		if (REQ == 'CP')
-		{
-			define('PATH_CP_THEME', PATH_THEMES.'cp_themes/');	// theme path
-		}
 
 		if (extension_loaded('newrelic'))
 		{
@@ -460,6 +443,23 @@ class EE_Core {
 	{
 		$this->_somebody_set_us_up_the_base();
 
+		// Define PATH_CP_THEME
+		$cp_theme = ee()->session->userdata('cp_theme')
+			?: ee()->config->item('cp_theme');
+
+		// Make sure directory actually exists
+		if ($cp_theme !== 'default'
+			&& ! is_dir(PATH_ADDONS_THEMES.'cp_themes/'.$cp_theme.'/'))
+		{
+			$cp_theme = 'default';
+		}
+
+		$path_cp_theme = ($cp_theme === 'default')
+			? PATH_THEMES.'cp_themes/default/'
+			: PATH_ADDONS_THEMES.'cp_themes/'.$cp_theme.'/';
+
+		define('PATH_CP_THEME', $path_cp_theme);
+
 		// Show the control panel home page in the event that a
 		// controller class isn't found in the URL
 		if (ee()->router->fetch_class() == ''/* OR
@@ -478,34 +478,6 @@ class EE_Core {
 			));
 
 			$_GET = array_merge($get, $_GET);
-		}
-
-
-		// Check user theme preference, then site theme preference, and fallback
-		// to default if none are found.
-		$cp_theme		= 'default';
-
-		$theme_options = array(
-			ee()->session->userdata('cp_theme'),
-			ee()->config->item('cp_theme')
-		);
-
-		if (count($theme_options) >= 2)
-		{
-			if ( ! $theme_options[0])
-			{
-				unset($theme_options[0]);
-			}
-		}
-
-		// Try them all, if none work it'll use default
-		foreach ($theme_options as $_theme_name)
-		{
-			if (is_dir(PATH_CP_THEME.$_theme_name))
-			{
-				$cp_theme = $_theme_name;
-				break;
-			}
 		}
 
 		// Load our view library

@@ -569,8 +569,8 @@ class Pagination_object {
 	/**
 	 * Parse {if previous_page} and {if next_page}
 	 *
-	 * @param Pagination_object $pagination Pagination_object that has been
-	 * 		manipulated by the other pagination methods
+	 * @param string $template_data The template data to parse for
+	 * {if previous_page}
 	 * @param string $type Either 'next' or 'previous' depending on the
 	 * 		conditional you're looking for
 	 * @param string $replacement What to replace $type_page with
@@ -579,15 +579,18 @@ class Pagination_object {
 	{
 		if (stripos($template_data, "if {$type}_page") !== FALSE)
 		{
+			$template_data = preg_replace(
+				"/{if {$type}_page}(.*?){(?:auto_)?path.*?}(.*?){\/if}/is",
+				"{if {$type}_page}$1{$replacement}$2{/if}",
+				$template_data
+			);
+
 			$template_data = ee()->functions->prep_conditionals(
 				$template_data,
 				array(
 					"{$type}_page" => $this->{'_page_'.$type}
 				)
 			);
-
-			$template_data = preg_replace("/".LD.'path.*?'.RD."/", $replacement, $template_data);
-			$template_data = preg_replace("/".LD.'auto_path'.RD."/", $replacement, $template_data);
 		}
 
 		return $template_data;

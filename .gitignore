@@ -1,7 +1,8 @@
 .DS_Store
 Thumbs.db
 env_local.rb
-system/config/*
+system/config/config.php
+system/config/database.php
 system/expressionengine/config/config*.php
 system/expressionengine/config/database.php
 system/expressionengine/config/config1x.php
@@ -9,10 +10,7 @@ system/expressionengine/config/config_1x.php
 members_1k.xml
 media/*
 
-themes/cp_themes/brilliant_retail/
-themes/site_themes/brilliant_retail/
-themes/solspace_themes/
-themes/third_party/
+themes/addons/*
 *.swp
 code_coverage/
 system/tests/phpunit/vendor/
@@ -23,33 +21,30 @@ system/tests/rspec/screenshots/*
 images/test1/
 images/design/
 
-system/expressionengine/cache/*
-!system/expressionengine/cache/index.html
-!system/expressionengine/cache/.htaccess
+system/cache/*
+!system/cache/index.html
+!system/cache/.htaccess
 
-system/expressionengine/templates/*
-!system/expressionengine/templates/index.html
-!system/expressionengine/templates/.htaccess
+system/templates/*
+!system/templates/index.html
+!system/templates/.htaccess
 
-system/expressionengine/third_party/*
-!system/expressionengine/third_party/index.html
-!system/expressionengine/third_party/download
-!system/expressionengine/third_party/google_maps
-!system/expressionengine/third_party/js_tool
-!system/expressionengine/third_party/testage
-!system/expressionengine/third_party/debug
-!system/expressionengine/third_party/safecracker_file
-!system/expressionengine/third_party/cookie_check
-!system/expressionengine/third_party/cookie_consent
-!system/expressionengine/third_party/nannerbanner
-!system/expressionengine/third_party/unregisteredbanner
-!system/expressionengine/third_party/ellislab_high_ascii_decode
+system/addons/*
+!system/addons/index.html
+!system/addons/download
+!system/addons/google_maps
+!system/addons/js_tool
+!system/addons/testage
+!system/addons/debug
+!system/addons/safecracker_file
+!system/addons/cookie_check
+!system/addons/cookie_consent
+!system/addons/nannerbanner
+!system/addons/unregisteredbanner
+!system/addons/ellislab_high_ascii_decode
 
-system/codeigniter/system/language/*
-!system/codeigniter/system/language/english/*
-
-system/expressionengine/language/*
-!system/expressionengine/language/english/*
+system/language/*
+!system/language/index.html
 
 ^images/(captchas|avatars/uploads|forum_attachments|member_photos|signature_attachments|pm_attachments|uploads)/(?!index\.html)
 

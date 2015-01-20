@@ -148,11 +148,14 @@
 	// The PHP file extension
 	define('EXT', '.php');
 
- 	// Path to the system folder
+	// Path to the system folder
 	define('BASEPATH', str_replace("\\", "/", $system_path.'codeigniter/system/'));
 
 	// Path to the "application" folder
 	define('APPPATH', $system_path.'expressionengine/');
+
+	// Path to the "system" folder
+	define('SYSPATH', $system_path);
 
 	// Path to the front controller (this file)
 	define('FCPATH', str_replace(SELF, '', __FILE__));

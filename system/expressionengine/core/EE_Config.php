@@ -24,16 +24,15 @@
  */
 class EE_Config Extends CI_Config {
 
-	var $config_path 		= ''; // Set in the constructor below
-	var $database_path		= ''; // Set in the constructor below
-	var $default_ini 		= array();
-	var $exceptions	 		= array();	 // path.php exceptions
-	var $cp_cookie_domain	= '';  // These are set in Core before any MSM site switching
-	var $cp_cookie_prefix	= '';
-	var $cp_cookie_path		= '';
-	var $cp_cookie_httponly = '';
-	var $_global_vars 		= array();	// The global vars from path.php (deprecated but usable for other purposes now)
-	var $_config_path_errors = array();
+	public $config_path         = ''; // Set in the constructor below
+	public $default_ini         = array();
+	public $exceptions          = array(); // path.php exceptions
+	public $cp_cookie_domain    = ''; // These are set in Core before any MSM site switching
+	public $cp_cookie_prefix    = '';
+	public $cp_cookie_path      = '';
+	public $cp_cookie_httponly  = '';
+	public $_global_vars        = array(); // The global vars from path.php (deprecated but usable for other purposes now)
+	public $_config_path_errors = array();
 
 	/**
 	 * Constructor
@@ -43,8 +42,7 @@ class EE_Config Extends CI_Config {
 		parent::__construct();
 
 		// Change this path before release.
-		$this->config_path		= APPPATH.'config/config.php';
-		$this->database_path	= APPPATH.'config/database.php';
+		$this->config_path = SYSPATH.'config/config.php';
 
 		$this->_initialize();
 	}
@@ -1081,112 +1079,21 @@ class EE_Config Extends CI_Config {
 	 */
 	function _update_dbconfig($dbconfig = array(), $remove_values = array())
 	{
-		// Is the database file writable?
-		if ( ! is_really_writable($this->database_path))
-		{
-			show_error('Your database.php file does not appear to have the proper file permissions.  Please set the file permissions to 666 on the following file: expressionengine/config/database.php', 503);
-		}
+		$database_config = ee('Database')->getConfig();
 
-		$prototype = array(
-							'hostname'	=> 'localhost',
-							'username'	=> '',
-							'password'	=> '',
-							'database'	=> '',
-							'dbdriver'	=> 'mysql',
-							'dbprefix'	=> 'exp_',
-							'swap_pre'	=> 'exp_',
-							'pconnect'	=> FALSE,
-							'db_debug'	=> FALSE,
-							'cache_on'	=> FALSE,
-							'cachedir'	=> '',
-							'autoinit'	=> TRUE
-						);
+		$database_config->set(
+			'pconnect',
+			get_bool_from_string($dbconfig['pconnect'])
+		);
+		$database_config->set(
+			'db_debug',
+			get_bool_from_string($dbconfig['db_debug'])
+		);
 
-
-		// Just to be safe let's kill anything we don't want in the config file
-		foreach ($dbconfig as $key => $val)
-		{
-			if ( ! isset($prototype[$key]))
-			{
-				unset($dbconfig[$key]);
-			}
-		}
-
-		// Fetch the DB file
-		require $this->database_path;
-
-		$active_group = 'expressionengine';
-
-		// Is the active group available in the array?
-		if ( ! isset($db) OR ! isset($db[$active_group]))
-		{
-			show_error('Your database.php file seems to have a problem.  Unable to find the active group.', 503);
-		}
-
-		// Now we read the file data as a string
-		// No point in loading file_helper to do this one
-		$config_file = file_get_contents($this->database_path);
-
-		// Dollar signs seem to create a problem with our preg_replace
-		// so we'll temporarily swap them out
-		$config_file = str_replace('$', '@s@', $config_file);
-
-		// Remove values if needed
-		if (count($remove_values) > 0)
-		{
-			foreach ($remove_values as $key => $val)
-			{
-				$config_file = preg_replace("#\@s\@db\[(['\"])".$active_group."\\1\]\[(['\"])".$key."\\2\].*#", "", $config_file);
-			}
-		}
-
-		// Cycle through the newconfig array and swap out the data
-		if (count($dbconfig) > 0)
-		{
-			foreach ($dbconfig as $key => $val)
-			{
-				if ($val === 'y')
-				{
-					$val = TRUE;
-				}
-				elseif ($val == 'n')
-				{
-					$val = FALSE;
-				}
-
-				if (is_bool($val))
-				{
-					$val = ($val == TRUE) ? 'TRUE' : 'FALSE';
-				}
-				else
-				{
-					$val = '"'.$val.'"';
-				}
-
-				$val .= ';';
-
-				// Update the value
-
-				$config_file = preg_replace("#(\@s\@db\[(['\"])".$active_group."\\2\]\[(['\"])".$key."\\3\]\s*=\s*)((['\"]?)[^\\5]+?\\5);#", "\\1$val", $config_file);
-			}
-		}
-
-		// Put the dollar signs back
-		$config_file = str_replace('@s@', '$', $config_file);
-
-		// Just to make sure we don't have any unwanted whitespace
-		$config_file = trim($config_file);
-
-		// Write the file
-		if ( ! $fp = fopen($this->database_path, FOPEN_WRITE_CREATE_DESTRUCTIVE))
-		{
-			return FALSE;
-		}
-
-		flock($fp, LOCK_EX);
-		fwrite($fp, $config_file, strlen($config_file));
-		flock($fp, LOCK_UN);
-		fclose($fp);
+		// Update the database config
+		$this->_update_config(array(
+			'database' => ee('Config')->get('database')
+		));
 
 		return TRUE;
 	}
@@ -1443,28 +1350,20 @@ class EE_Config Extends CI_Config {
 		$subtext = $this->get_config_field_subtext();
 
 		// Blast through the array
-		// If we're dealing with a database configuration we need to pull the data out of the DB
-		// config file. To make thigs simple we will set the DB config items as general config values
+		// If we're dealing with a database configuration we need to pull the
+		// data out of the DB config file. To make thigs simple we will set the
+		// DB config items as general config values
 		if ($type == 'db_cfg')
 		{
-			require $this->database_path;
-
-			if ( ! isset($active_group))
-			{
-				$active_group = 'expressionengine';
-			}
-
-			if (isset($db[$active_group]))
-			{
-				$db[$active_group]['pconnect'] = ($db[$active_group]['pconnect'] === TRUE) ? 'y' : 'n';
-				$db[$active_group]['cache_on'] = ($db[$active_group]['cache_on'] === TRUE) ? 'y' : 'n';
-				$db[$active_group]['db_debug'] = ($db[$active_group]['db_debug'] === TRUE) ? 'y' : 'n';
-
-				$this->set_item('pconnect', $db[$active_group]['pconnect']);
-				$this->set_item('cache_on', $db[$active_group]['cache_on']);
-				$this->set_item('cachedir', $db[$active_group]['cachedir']);
-				$this->set_item('db_debug', $db[$active_group]['db_debug']);
-			}
+			$database_config = ee('Database')->getConfig();
+			$this->set_item(
+				'pconnect',
+				$database_config->get('pconnect') ? 'y' : 'n'
+			);
+			$this->set_item(
+				'db_debug',
+				$database_config->get('db_debug') ? 'y' : 'n'
+			);
 		}
 
 		ee()->load->helper('date');
@@ -1554,9 +1453,9 @@ class EE_Config Extends CI_Config {
 					ee()->load->model('admin_model');
 					switch ($options['1'])
 					{
-						case 'language_menu'	:
+						case 'language_menu':
 							$options[0] = 's';
-							$details = ee()->admin_model->get_installed_language_packs();
+							$details = ee()->lang->language_pack_names();
 							$selected = $value;
 							break;
 						case 'fetch_encoding'	:

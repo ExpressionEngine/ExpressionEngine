@@ -2657,7 +2657,7 @@ class Content_files extends CP_Controller {
 			}
 			else
 			{
-				$files[$k]['image'] = $this->config->item('theme_folder_url').'/cp_global_images/default.png"';
+				$files[$k]['image'] = URL_THEMES.'/cp_global_images/default.png"';
 			}
 		}
 

@@ -24,119 +24,121 @@
  */
 class Wizard extends CI_Controller {
 
-	var $version			= '2.9.3';	// The version being installed
-	var $installed_version	= ''; 		// The version the user is currently running (assuming they are running EE)
-	var $minimum_php		= '5.3.10';	// Minimum version required to run EE
-	var $schema				= NULL;		// This will contain the schema object with our queries
-	var $languages			= array(); 	// Available languages the installer supports (set dynamically based on what is in the "languages" folder)
-	var $mylang				= 'english';// Set dynamically by the user when they run the installer
-	var $image_path			= ''; 		// URL path to the cp_global_images folder.  This is set dynamically
-	var $is_installed		= FALSE;	// Does an EE installation already exist?  This is set dynamically.
-	var $next_update		= FALSE;	// The next update file that needs to be loaded, when an update is performed.
-	var $remaining_updates	= 0; 		// Number of updates remaining, in the event the user is updating from several back
-	var $refresh			= FALSE;	// Whether to refresh the page for the next update.  Set dynamically
-	var $refresh_url		= '';		// The URL where the refresh should go to.  Set dynamically
-	var $theme_path			= '';
-	var $root_theme_path	= '';
-	var $active_group		= 'expressionengine';
+	public $version           = '2.9.3';	// The version being installed
+	public $installed_version = ''; 		// The version the user is currently running (assuming they are running EE)
+	public $minimum_php       = '5.3.10';	// Minimum version required to run EE
+	public $schema            = NULL;		// This will contain the schema object with our queries
+	public $languages         = array(); 	// Available languages the installer supports (set dynamically based on what is in the "languages" folder)
+	public $mylang            = 'english';// Set dynamically by the user when they run the installer
+	public $image_path        = ''; 		// URL path to the cp_global_images folder.  This is set dynamically
+	public $is_installed      = FALSE;	// Does an EE installation already exist?  This is set dynamically.
+	public $next_update       = FALSE;	// The next update file that needs to be loaded, when an update is performed.
+	public $remaining_updates = 0; 		// Number of updates remaining, in the event the user is updating from several back
+	public $refresh           = FALSE;	// Whether to refresh the page for the next update.  Set dynamically
+	public $refresh_url       = '';		// The URL where the refresh should go to.  Set dynamically
+	public $theme_path        = '';
+	public $root_theme_path   = '';
+	public $active_group      = 'expressionengine';
 
 	// Default page content - these are in English since we don't know the user's language choice when we first load the installer
-	var $content			= '';
-	var $title				= 'ExpressionEngine Installation and Update Wizard';
-	var $heading			= 'ExpressionEngine Installation and Update Wizard';
-	var $copyright			= 'Copyright 2003 - 2014 EllisLab, Inc. - All Rights Reserved';
+	public $content           = '';
+	public $title             = 'ExpressionEngine Installation and Update Wizard';
+	public $heading           = 'ExpressionEngine Installation and Update Wizard';
+	public $copyright         = 'Copyright 2003 - 2014 EllisLab, Inc. - All Rights Reserved';
 
-	var $now;
-	var $year;
-	var $month;
-	var $day;
+	public $now;
+	public $year;
+	public $month;
+	public $day;
 
 	// These are the methods that are allowed to be called via $_GET['m']
 	// for either a new installation or an update. Note that the function names
 	// are prefixed but we don't include the prefix here.
-	var $allowed_methods = array('optionselect', 'license', 'install_form',
+	public $allowed_methods = array('optionselect', 'license', 'install_form',
 	 	'do_install', 'trackback_form', 'do_update');
 
 	// Absolutely, positively must always be installed
-	var $required_modules = array('channel', 'member', 'stats', 'rte');
+	public $required_modules = array('channel', 'member', 'stats', 'rte');
 
-	var $theme_required_modules = array();
+	public $theme_required_modules = array();
 
 	// Our default installed modules, if there is no "override"
-	var $default_installed_modules = array('comment', 'email', 'emoticon',
+	public $default_installed_modules = array('comment', 'email', 'emoticon',
 		'jquery', 'member', 'query', 'rss', 'search', 'stats', 'channel',
 		'mailinglist', 'rte');
 
 	// Native First Party ExpressionEngine Modules (everything else is in third party folder)
-	var $native_modules = array('blacklist', 'channel', 'comment', 'commerce',
+	public $native_modules = array('blacklist', 'channel', 'comment', 'commerce',
 		'email', 'emoticon', 'file', 'forum', 'gallery', 'ip_to_nation',
 		'jquery', 'mailinglist', 'member', 'metaweblog_api', 'moblog', 'pages',
 		'query', 'referrer', 'rss', 'rte', 'search',
 		'simple_commerce', 'stats', 'wiki');
 
 	// Third Party Modules may send error messages if something goes wrong.
-	var $module_install_errors = array(); // array that collects all error messages
+	public $module_install_errors = array(); // array that collects all error messages
 
 	// These are the values we need to set during a first time installation
-	var $userdata = array(
-		'app_version'			=> '',
-		'doc_url'				=> 'http://ellislab.com/expressionengine/user-guide/',
-		'ext'					=> '.php',
-		'ip'					=> '',
-		'database'				=> 'mysql',
-		'db_conntype'			=> '0',
-		'databases'				=> array(),
-		'dbdriver'				=> 'mysql',
-		'db_hostname'			=> 'localhost',
-		'db_username'			=> '',
-		'db_password'			=> '',
-		'db_name'				=> '',
-		'db_prefix'				=> 'exp',
-		'site_label'			=> '',
-		'site_name'				=> 'default_site',
-		'site_url'				=> '',
-		'site_index'			=> 'index.php',
-		'cp_url'				=> '',
-		'username'				=> '',
-		'password'				=> '',
-		'password_confirm'		=> '',
-		'screen_name'			=> '',
-		'email_address'			=> '',
-		'webmaster_email'		=> '',
-		'deft_lang'				=> 'english',
-		'theme'					=> '01',
-		'default_site_timezone'	=> 'UTC',
-		'redirect_method'		=> 'redirect',
-		'upload_folder'			=> 'uploads/',
-		'image_path'			=> '',
-		'javascript_path'		=> 'themes/javascript/compressed/',
-		'cp_images'				=> 'cp_images/',
-		'avatar_path'			=> '../images/avatars/',
-		'avatar_url'			=> 'images/avatars/',
-		'photo_path'			=> '../images/member_photos/',
-		'photo_url'				=> 'images/member_photos/',
-		'signature_img_path'	=> '../images/signature_attachments/',
-		'signature_img_url'		=> 'images/signature_attachments/',
-		'pm_path'				=> '../images/pm_attachments',
-		'captcha_path'			=> '../images/captchas/',
-		'theme_folder_path'		=> '../themes/',
-		'modules'				=> array()
+	public $userdata = array(
+		'app_version'           => '',
+		'doc_url'               => 'http://ellislab.com/expressionengine/user-guide/',
+		'ext'                   => '.php',
+		'ip'                    => '',
+		'database'              => 'mysql',
+		'db_conntype'           => '0',
+		'databases'             => array(),
+		'dbdriver'              => 'mysql',
+		'db_hostname'           => 'localhost',
+		'db_username'           => '',
+		'db_password'           => '',
+		'db_name'               => '',
+		'db_prefix'             => 'exp',
+		'site_label'            => '',
+		'site_name'             => 'default_site',
+		'site_url'              => '',
+		'site_index'            => 'index.php',
+		'cp_url'                => '',
+		'username'              => '',
+		'password'              => '',
+		'password_confirm'      => '',
+		'screen_name'           => '',
+		'email_address'         => '',
+		'webmaster_email'       => '',
+		'deft_lang'             => 'english',
+		'theme'                 => '01',
+		'default_site_timezone' => 'UTC',
+		'redirect_method'       => 'redirect',
+		'upload_folder'         => 'uploads/',
+		'image_path'            => '',
+		'javascript_path'       => 'themes/ee/javascript/compressed/',
+		'cp_images'             => 'cp_images/',
+		'avatar_path'           => '../images/avatars/',
+		'avatar_url'            => 'images/avatars/',
+		'photo_path'            => '../images/member_photos/',
+		'photo_url'             => 'images/member_photos/',
+		'signature_img_path'    => '../images/signature_attachments/',
+		'signature_img_url'     => 'images/signature_attachments/',
+		'pm_path'               => '../images/pm_attachments',
+		'captcha_path'          => '../images/captchas/',
+		'theme_folder_path'     => '../themes/',
+		'modules'               => array()
 	);
 
 
 	// These are the default values for the CodeIgniter config array.  Since the EE
 	// and CI config files are one in the same now we use this data when we write the
 	// initial config file using $this->_write_config_data()
-	var $ci_config = array(
-		'uri_protocol'			=> 'AUTO',
-		'charset' 				=> 'UTF-8',
-		'subclass_prefix' 		=> 'EE_',
-		'log_threshold' 		=> 0,
-		'log_path' 				=> '',
-		'log_date_format' 		=> 'Y-m-d H:i:s',
-		'cache_path' 			=> '',
-		'encryption_key' 		=> '',
-		'rewrite_short_tags' 	=> TRUE			// Enabled for cleaner view files and compatibility
+	public $ci_config = array(
+		'uri_protocol'       => 'AUTO',
+		'charset'            => 'UTF-8',
+		'subclass_prefix'    => 'EE_',
+		'log_threshold'      => 0,
+		'log_path'           => '',
+		'log_date_format'    => 'Y-m-d H:i:s',
+		'cache_path'         => '',
+		'encryption_key'     => '',
+
+		// Enabled for cleaner view files and compatibility
+		'rewrite_short_tags' => TRUE
 	);
 
 	// --------------------------------------------------------------------
@@ -155,14 +157,11 @@ class Wizard extends CI_Controller {
 		define('IS_CORE', FALSE);
 
 		// Third party constants
-		if ($this->config->item('third_party_path'))
-		{
-			define('PATH_THIRD',    rtrim($this->config->item('third_party_path'), '/').'/');
-		}
-		else
-		{
-			define('PATH_THIRD',	EE_APPPATH.'third_party/');
-		}
+		$addon_path = (ee()->config->item('addons_path'))
+			? rtrim(realpath(ee()->config->item('addons_path')), '/').'/'
+			: SYSPATH.'addons/';
+		define('PATH_ADDONS', $addon_path);
+		define('PATH_THIRD', $addon_path);
 
 		$req_source = $this->input->server('HTTP_X_REQUESTED_WITH');
 		define('AJAX_REQUEST',	($req_source == 'XMLHttpRequest') ? TRUE : FALSE);
@@ -208,25 +207,26 @@ class Wizard extends CI_Controller {
 		}
 		else
 		{
-			// Must be in a public system folder so try one level back from current folder.
-			// Replace only the LAST occurance of the system folder name with nil incase the
-			// system folder name appears more than once in the path.
+			// Must be in a public system folder so try one level back from
+			// current folder. Replace only the LAST occurance of the system
+			// folder name with nil incase the system folder name appears more
+			// than once in the path.
 			$this->theme_path = preg_replace('/\b'.preg_quote(SYSDIR).'(?!.*'.preg_quote(SYSDIR).')\b/', '', $this->theme_path).'themes/';
 		}
 
 		$this->root_theme_path = $this->theme_path;
-		define('PATH_THEMES', $this->root_theme_path);
-		$this->theme_path .= 'site_themes/';
+		define('PATH_THEMES', $this->root_theme_path.'ee/');
+		define('URL_THEMES', $this->root_theme_path.'ee/');
+		$this->theme_path .= 'ee/site_themes/';
 		$this->theme_path = str_replace('//', '/', $this->theme_path);
 		$this->root_theme_path = str_replace('//', '/', $this->root_theme_path);
 
 		// Set the time
 		$time = time();
-		$this->now		= gmmktime(gmdate("H", $time), gmdate("i", $time), gmdate("s", $time), gmdate("m", $time), gmdate("d", $time), gmdate("Y", $time));
-		$this->year		= gmdate('Y', $this->now);
-		$this->month	= gmdate('m', $this->now);
-		$this->day		= gmdate('d', $this->now);
-
+		$this->now   = gmmktime(gmdate("H", $time), gmdate("i", $time), gmdate("s", $time), gmdate("m", $time), gmdate("d", $time), gmdate("Y", $time));
+		$this->year  = gmdate('Y', $this->now);
+		$this->month = gmdate('m', $this->now);
+		$this->day   = gmdate('d', $this->now);
 	}
 
 	// --------------------------------------------------------------------
@@ -1804,7 +1804,7 @@ PAPAYA;
 		$this->load->helper('directory');
 		$ext_len = strlen(EXT);
 
-		if (($map = directory_map(PATH_THIRD)) !== FALSE)
+		if (($map = directory_map(PATH_ADDONS)) !== FALSE)
 		{
 			foreach ($map as $pkg_name => $files)
 			{
@@ -1828,7 +1828,7 @@ PAPAYA;
 
 						if ($file == $pkg_name)
 						{
-							$this->lang->load($file.'_lang', '', FALSE, FALSE, PATH_THIRD.$pkg_name.'/');
+							$this->lang->load($file.'_lang', '', FALSE, FALSE, PATH_ADDONS.$pkg_name.'/');
 							$name = ($this->lang->line(strtolower($file).'_module_name') != FALSE) ? $this->lang->line(strtolower($file).'_module_name') : $file;
 							$modules[$file] = array('name' => ucfirst($name), 'checked' => FALSE);
 						}
@@ -2276,7 +2276,7 @@ PAPAYA;
 
 		foreach($modules as $module)
 		{
-			$path = PATH_THIRD.$module.'/';
+			$path = PATH_ADDONS.$module.'/';
 
 			if (file_exists($path.'upd.'.$module.EXT))
 			{
@@ -2522,7 +2522,7 @@ PAPAYA;
 			'save_tmpl_revisions'			=>	'n',
 			'max_tmpl_revisions'			=>	'5',
 			'save_tmpl_files'				=>	'n',
-			'tmpl_file_basepath'			=>	realpath('./expressionengine/templates/').DIRECTORY_SEPARATOR,
+			'tmpl_file_basepath'			=>	realpath('./templates/').DIRECTORY_SEPARATOR,
 			'deny_duplicate_data'			=>	'y',
 			'redirect_submitted_links'		=>	'n',
 			'enable_censoring'				=>	'n',
@@ -3035,17 +3035,20 @@ PAPAYA;
 		{
 			$module = strtolower($row->module_name);
 
-			/*
-			 * - Send version to update class and let it do any required work
-			 */
+			// Only update first-party modules
+			if ( ! in_array($module, $this->native_modules))
+			{
+				continue;
+			}
 
+			// Send version to update class and let it do any required work
 			if (in_array($module, $this->native_modules))
 			{
 				$path = EE_APPPATH.'/modules/'.$module.'/';
 			}
 			else
 			{
-				$path = PATH_THIRD.$module.'/';
+				$path = PATH_ADDONS.$module.'/';
 			}
 
 			if (file_exists($path.'upd.'.$module.EXT))

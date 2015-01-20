@@ -112,8 +112,11 @@
 	// The name of THIS file
 	define('SELF', pathinfo(__FILE__, PATHINFO_BASENAME));
 
- 	// Path to the system folder
+	// Path to the system folder
 	define('BASEPATH', str_replace("\\", "/", $system_path.'codeigniter/system/'));
+
+	// Path to the "system" folder
+	define('SYSPATH', $system_path);
 
 	// Path to the front controller (this file)
 	define('FCPATH', str_replace(SELF, '', __FILE__));
@@ -133,7 +136,7 @@
  * wizard. Otherwise, we'll load the CP.
  *
  */
- 	// Is the installation folder present?
+	// Is the installation folder present?
 	if (is_dir($system_path.'installer/'))
 	{
 		// We need a different subclass prefix when we run the installer,
@@ -152,7 +155,7 @@
 		define('APPPATH', $system_path.'expressionengine/');
 	}
 
- 	// The control panel access constant ensures the CP will be invoked.
+	// The control panel access constant ensures the CP will be invoked.
 	define('REQ', 'CP');
 
 /*

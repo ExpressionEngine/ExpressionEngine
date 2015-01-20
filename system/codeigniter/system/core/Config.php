@@ -30,7 +30,7 @@ class CI_Config {
 
 	var $config = array();
 	var $is_loaded = array();
-	var $_config_paths = array(APPPATH);
+	var $_config_paths = array(SYSPATH, APPPATH);
 
 	/**
 	 * Constructor
