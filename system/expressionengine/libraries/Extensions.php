@@ -195,7 +195,7 @@ class EE_Extensions {
 				$extension_path = reduce_double_slashes($path.'/ext.'.$name.'.php');
 
 				// Check to see if paths are already loaded
-				$path_loaded = (array_search($path, ee()->load->get_package_paths()));
+				$path_loaded = (array_search($path, ee()->load->get_package_paths()) !== FALSE);
 
 				if ( ! $path_loaded)
 				{
