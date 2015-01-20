@@ -40,6 +40,50 @@ $lang = array(
 'download' =>
 'Download',
 
+'edit_file_metadata' =>
+'Edit "%s" Meta Data',
+
+'title' => 'Title',
+'title_desc' => 'Title of this file.',
+
+'description' => 'Description',
+'description_desc' => 'Description of this file.',
+
+'credit' => 'Credit',
+'credit_desc' => 'Who created this file?',
+
+'location' => 'Location',
+'location_desc' => 'Where is this file from?',
+
+'btn_edit_file_meta' =>
+'Edit File Meta',
+
+'btn_edit_file_meta_working' =>
+'Saving...',
+
+'edit_file_metadata_success' =>
+'File Meta Data Updated',
+
+'edit_file_metadata_success_desc' =>
+'The meta data for the file <b>%s</b> has been updated.',
+
+'edit_file_metadata_error' =>
+'Cannot Update File Meta Data',
+
+'edit_file_metadata_error_desc' =>
+'We were unable to update the meta data, please review and fix errors below.',
+
+'no_file' =>
+'No file selected',
+
+'no_upload_destination' =>
+'No upload destination found',
+
+'files_in_directory' =>
+'Files in <b>%s</b>',
+
+'no_uploaded_files'		=> 'No files have been uploaded to this directory.',
+
 // 2.x
 
 'content_files' 		=> 'File Manager',
@@ -58,7 +102,6 @@ $lang = array(
 'confirm_del_files'		=> 'Are you sure you wish to permanently delete these files?',
 'delete_success'		=> 'Delete Successful',
 'delete_fail'			=> 'There was a problem deleting one or more file(s). Please review the file list below.',
-'no_file'				=> 'No file selected',
 'file_name'				=> 'File Name',
 'file_size'				=> 'File Size',
 'file_size_unit'		=> 'KB',
@@ -71,7 +114,6 @@ $lang = array(
 'upload_rename'			=> 'File Already Exists',
 'upload_rename_message'	=> 'A file with that filename already exists. You can either choose a new name and the file will be renamed, or you can use the same name and the existing file will be overwritten.',
 'no_upload_dirs'		=> 'You have no upload directories defined',
-'no_uploaded_files'		=> 'You have no files uploaded to this directory. Please take a look at <a href="%s" rel="external" target="_blank">the documentation</a>, and then <a href="%s">sync your directories</a>.',
 'image_editor'			=> 'Image Editor',
 'download_selected'		=> 'Download Selected Files',
 'email_files'			=> 'Email Selected Files',
