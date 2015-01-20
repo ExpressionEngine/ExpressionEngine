@@ -37,15 +37,15 @@ class Filesystem {
 	{
 		if ( ! $this->exists($path))
 		{
-			throw new \Exception("File not found: {$path}");
+			throw new FilesystemException("File not found: {$path}");
 		}
 		elseif ( ! $this->isFile($path))
 		{
-			throw new \Exception("Not a file: {$path}");
+			throw new FilesystemException("Not a file: {$path}");
 		}
 		elseif ( ! $this->isReadable($path))
 		{
-			throw new \Exception("Cannot read file: {$path}");
+			throw new FilesystemException("Cannot read file: {$path}");
 		}
 
 		return file_get_contents($path);
@@ -62,11 +62,11 @@ class Filesystem {
 	{
 		if ($this->isDir($path))
 		{
-			throw new \Exception("Cannot write file, path is a directory: {$path}");
+			throw new FilesystemException("Cannot write file, path is a directory: {$path}");
 		}
 		elseif ($this->isFile($path) && $overwrite == FALSE)
 		{
-			throw new \Exception("File already exists: {$path}");
+			throw new FilesystemException("File already exists: {$path}");
 		}
 
 		file_put_contents($path, $data);
@@ -116,7 +116,7 @@ class Filesystem {
 	{
 		if ( ! $this->isFile($path))
 		{
-			throw new \Exception("File does not exist {$path}");
+			throw new FilesystemException("File does not exist {$path}");
 		}
 
 		return @unlink($path);
@@ -134,7 +134,7 @@ class Filesystem {
 
 		if ( ! $this->isDir($path))
 		{
-			throw new \Exception("Directory does not exist {$path}.");
+			throw new FilesystemException("Directory does not exist {$path}.");
 		}
 
 		if ($this->attemptFastDelete($path))
@@ -209,11 +209,11 @@ class Filesystem {
 	{
 		if ( ! $this->exists($source))
 		{
-			throw new \Exception("Cannot rename non-existent path: {$source}");
+			throw new FilesystemException("Cannot rename non-existent path: {$source}");
 		}
 		elseif ($this->exists($dest))
 		{
-			throw new \Exception("Cannot rename, destination already exists: {$dest}");
+			throw new FilesystemException("Cannot rename, destination already exists: {$dest}");
 		}
 
 		rename($source, $dest);
@@ -230,7 +230,7 @@ class Filesystem {
 	{
 		if ( ! $this->exists($source))
 		{
-			throw new \Exception("Cannot copy non-existent path: {$source}");
+			throw new FilesystemException("Cannot copy non-existent path: {$source}");
 		}
 
 		copy($source, $dest);
@@ -279,6 +279,23 @@ class Filesystem {
 	public function exists($path)
 	{
 		return file_exists($path);
+	}
+
+	public function mtime($path)
+	{
+
+	}
+
+	public function touch($path, $time = NULL)
+	{
+		if (isset($time))
+		{
+			touch($path, $time);
+		}
+		else
+		{
+			touch($path);
+		}
 	}
 
 	/**
@@ -364,7 +381,7 @@ class Filesystem {
 
 		if ( ! $this->isDir($dir))
 		{
-			throw new \Exception("Cannot add index file to non-existant directory: {$dir}");
+			throw new FilesystemException("Cannot add index file to non-existant directory: {$dir}");
 		}
 
 		if ( ! $this->isFile($dir.'/index.html'))
