@@ -71,56 +71,65 @@ if ($wrap): ?>
 				</td>
 			</tr>
 		<?php endif ?>
-		<?php foreach ($data as $row): ?>
-			<tr<?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
-				<?php if ($reorder): ?>
-					<td class="reorder-col"><span class="ico reorder"></span></td>
-				<?php endif ?>
-				<?php foreach ($row['columns'] as $column): ?>
-					<?php if ($column['encode'] == TRUE): ?>
-						<td><?=htmlspecialchars($column['content'])?></td>
-					<?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
-						<td>
-							<?=ee()->load->view('_shared/toolbar', $column, TRUE)?>
-						</td>
-					<?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
-						<td>
-							<input
-								name="<?=$column['name']?>"
-								value="<?=$column['value']?>"
-								<?php if (isset($column['data'])):?>
-									<?php foreach ($column['data'] as $key => $value): ?>
-										data-<?=$key?>="<?=$value?>"
-									<?php endforeach; ?>
-								<?php endif; ?>
-								<?php if (isset($column['disabled'])):?>
-									disabled="disabled"
-								<?php endif; ?>
-								type="checkbox"
-							>
-						</td>
-					<?php elseif ($column['type'] == Table::COL_STATUS): ?>
-						<?php $class = isset($column['class']) ? $column['class'] : $column['content']; ?>
-						<td><span class="st-<?=$class?>"><?=$column['content']?></span></td>
-					<?php elseif (isset($column['html'])): ?>
-						<td<?php if (isset($column['error']) && ! empty($column['error'])): ?> class="invalid"<?php endif ?>>
-							<?=$column['html']?>
-							<?php if (isset($column['error']) && ! empty($column['error'])): ?>
-								<em class="ee-form-error-message"><?=$column['error']?></em>
-							<?php endif ?>
-						</td>
-					<?php else: ?>
-						<td><?=$column['content']?></td>
+		<?php foreach ($data as $heading => $rows): ?>
+			<?php if ( ! $subheadings)
+			{
+				$rows = array($rows);
+			} 
+			if ( ! empty($heading)): ?>
+				<tr class="sub-heading"><td colspan="<?=count($columns)?>"><?=lang($heading)?></td></tr>
+			<?php endif ?>
+			<?php foreach ($rows as $row): ?>
+				<tr<?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
+					<?php if ($reorder): ?>
+						<td class="reorder-col"><span class="ico reorder"></span></td>
 					<?php endif ?>
-				<?php endforeach ?>
-				<?php if ($grid_input): ?>
-					<td>
-						<ul class="toolbar">
-							<li class="remove"><a href="#" title="remove row"></a></li>
-						</ul>
-					</td>
-				<?php endif ?>
-			</tr>
+					<?php foreach ($row['columns'] as $column): ?>
+						<?php if ($column['encode'] == TRUE): ?>
+							<td><?=htmlspecialchars($column['content'])?></td>
+						<?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
+							<td>
+								<?=ee()->load->view('_shared/toolbar', $column, TRUE)?>
+							</td>
+						<?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
+							<td>
+								<input
+									name="<?=$column['name']?>"
+									value="<?=$column['value']?>"
+									<?php if (isset($column['data'])):?>
+										<?php foreach ($column['data'] as $key => $value): ?>
+											data-<?=$key?>="<?=$value?>"
+										<?php endforeach; ?>
+									<?php endif; ?>
+									<?php if (isset($column['disabled'])):?>
+										disabled="disabled"
+									<?php endif; ?>
+									type="checkbox"
+								>
+							</td>
+						<?php elseif ($column['type'] == Table::COL_STATUS): ?>
+							<?php $class = isset($column['class']) ? $column['class'] : $column['content']; ?>
+							<td><span class="st-<?=$class?>"><?=$column['content']?></span></td>
+						<?php elseif (isset($column['html'])): ?>
+							<td<?php if (isset($column['error']) && ! empty($column['error'])): ?> class="invalid"<?php endif ?>>
+								<?=$column['html']?>
+								<?php if (isset($column['error']) && ! empty($column['error'])): ?>
+									<em class="ee-form-error-message"><?=$column['error']?></em>
+								<?php endif ?>
+							</td>
+						<?php else: ?>
+							<td><?=$column['content']?></td>
+						<?php endif ?>
+					<?php endforeach ?>
+					<?php if ($grid_input): ?>
+						<td>
+							<ul class="toolbar">
+								<li class="remove"><a href="#" title="remove row"></a></li>
+							</ul>
+						</td>
+					<?php endif ?>
+				</tr>
+			<?php endforeach ?>
 		<?php endforeach ?>
 	</table>
 <?php endif ?>

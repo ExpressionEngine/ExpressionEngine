@@ -123,6 +123,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'grid_input'	=> FALSE,
 			'reorder'		=> FALSE,
 			'sortable'		=> TRUE,
+			'subheadings'	=> FALSE,
 			'columns'		=> $expected_cols
 		);
 
@@ -372,6 +373,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'grid_input'	=> FALSE,
 			'reorder'		=> FALSE,
 			'sortable'		=> TRUE,
+			'subheadings'	=> FALSE,
 			'columns'		=> $expected_cols,
 			'data'		=> array(
 				array(
@@ -472,6 +474,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'grid_input'	=> FALSE,
 			'reorder'		=> FALSE,
 			'sortable'		=> TRUE,
+			'subheadings'	=> FALSE,
 			'columns'		=> $expected_cols,
 			'data'			=> array(
 				array(
@@ -619,6 +622,763 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 
 		$return[] = array($config, $data, $expected, $columns, 'Test pagination 2');
 
+		$config['limit'] = 20;
+		$config['page'] = 1;
+		$config['subheadings'] = TRUE;
+
+		$config = array('subheadings' => TRUE);
+
+		$data = array(
+			'heading3' => array(
+				array(
+					'col 1 data',
+					'col 2 data',
+					'col 3 data',
+					array('toolbar_items' =>
+						array('view' => 'http://test/')
+					),
+					'status',
+					array('name' => 'table[]', 'value' => 'test')
+				),
+				array(
+					'col 1 data 2',
+					'col 2 data 2',
+					NULL,
+					array('toolbar_items' =>
+						array('view' => 'http://test/2')
+					),
+					'status',
+					array('name' => 'table[]', 'value' => 'test2')
+				)
+			),
+			'heading1' => array(
+				array(
+					'col 2 data',
+					'col 3 data',
+					'col 1 data',
+					array('toolbar_items' =>
+						array('view' => 'http://test/')
+					),
+					'status',
+					array('name' => 'table[]', 'value' => 'test')
+				),
+				array(
+					'col 1 data 2',
+					'col 2 data 2',
+					NULL,
+					array('toolbar_items' =>
+						array('view' => 'http://test/2')
+					),
+					'status',
+					array('name' => 'table[]', 'value' => 'test2')
+				),
+				array(
+					'col 3 data 3',
+					'col 2 data 3',
+					NULL,
+					array('toolbar_items' =>
+						array('view' => 'http://test/2')
+					),
+					'status',
+					array('name' => 'table[]', 'value' => 'test2')
+				)
+			),
+			'heading2' => array(
+				array(
+					'col 3 data',
+					'col 2 data',
+					'col 1 data',
+					array('toolbar_items' =>
+						array('view' => 'http://test/')
+					),
+					'status',
+					array('name' => 'table[]', 'value' => 'test')
+				)
+			)
+		);
+
+		$expected = $expected_base_config;
+		$expected['total_rows'] = 6;
+		$expected['limit'] = 0;
+		$expected['subheadings'] = TRUE;
+		$expected['data'] = array(
+			'heading3' => array(
+				array(
+					'attrs' => array(),
+					'columns' => array(
+						array(
+							'content' 	=> 'col 1 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 2 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 3 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_TOOLBAR,
+							'encode'	=> FALSE,
+							'toolbar_items'	=> array('view' => 'http://test/'),
+						),
+						array(
+							'content' 	=> 'status',
+							'type'		=> Table::COL_STATUS,
+							'encode'	=> TRUE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_CHECKBOX,
+							'encode'	=> FALSE,
+							'name'		=> 'table[]',
+							'value'		=> 'test'
+						)
+					)
+				),
+				array(
+					'attrs' => array(),
+					'columns' => array(
+						array(
+							'content' 	=> 'col 1 data 2',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 2 data 2',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> NULL,
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_TOOLBAR,
+							'encode'	=> FALSE,
+							'toolbar_items'	=> array('view' => 'http://test/2'),
+						),
+						array(
+							'content' 	=> 'status',
+							'type'		=> Table::COL_STATUS,
+							'encode'	=> TRUE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_CHECKBOX,
+							'encode'	=> FALSE,
+							'name'		=> 'table[]',
+							'value'		=> 'test2'
+						)
+					)
+				)
+			),
+			'heading1' => array(
+				array(
+					'attrs' => array(),
+					'columns' => array(
+						array(
+							'content' 	=> 'col 2 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 3 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 1 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_TOOLBAR,
+							'encode'	=> FALSE,
+							'toolbar_items'	=> array('view' => 'http://test/'),
+						),
+						array(
+							'content' 	=> 'status',
+							'type'		=> Table::COL_STATUS,
+							'encode'	=> TRUE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_CHECKBOX,
+							'encode'	=> FALSE,
+							'name'		=> 'table[]',
+							'value'		=> 'test'
+						)
+					)
+				),
+				array(
+					'attrs' => array(),
+					'columns' => array(
+						array(
+							'content' 	=> 'col 1 data 2',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 2 data 2',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> NULL,
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_TOOLBAR,
+							'encode'	=> FALSE,
+							'toolbar_items'	=> array('view' => 'http://test/2'),
+						),
+						array(
+							'content' 	=> 'status',
+							'type'		=> Table::COL_STATUS,
+							'encode'	=> TRUE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_CHECKBOX,
+							'encode'	=> FALSE,
+							'name'		=> 'table[]',
+							'value'		=> 'test2'
+						)
+					)
+				),
+				array(
+					'attrs' => array(),
+					'columns' => array(
+						array(
+							'content' 	=> 'col 3 data 3',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 2 data 3',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> NULL,
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_TOOLBAR,
+							'encode'	=> FALSE,
+							'toolbar_items'	=> array('view' => 'http://test/2'),
+						),
+						array(
+							'content' 	=> 'status',
+							'type'		=> Table::COL_STATUS,
+							'encode'	=> TRUE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_CHECKBOX,
+							'encode'	=> FALSE,
+							'name'		=> 'table[]',
+							'value'		=> 'test2'
+						)
+					)
+				)
+			),
+			'heading2' => array(
+				array(
+					'attrs' => array(),
+					'columns' => array(
+						array(
+							'content' 	=> 'col 3 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 2 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 1 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_TOOLBAR,
+							'encode'	=> FALSE,
+							'toolbar_items'	=> array('view' => 'http://test/'),
+						),
+						array(
+							'content' 	=> 'status',
+							'type'		=> Table::COL_STATUS,
+							'encode'	=> TRUE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_CHECKBOX,
+							'encode'	=> FALSE,
+							'name'		=> 'table[]',
+							'value'		=> 'test'
+						)
+					)
+				)
+			)
+		);
+
+		$return[] = array($config, $data, $expected, $columns, 'Test subheadings');
+
+		$config['autosort'] = TRUE;
+		$expected['data'] = array(
+			'heading1' => array(
+				array(
+					'attrs' => array(),
+					'columns' => array(
+						array(
+							'content' 	=> 'col 1 data 2',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 2 data 2',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> NULL,
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_TOOLBAR,
+							'encode'	=> FALSE,
+							'toolbar_items'	=> array('view' => 'http://test/2'),
+						),
+						array(
+							'content' 	=> 'status',
+							'type'		=> Table::COL_STATUS,
+							'encode'	=> TRUE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_CHECKBOX,
+							'encode'	=> FALSE,
+							'name'		=> 'table[]',
+							'value'		=> 'test2'
+						)
+					)
+				),
+				array(
+					'attrs' => array(),
+					'columns' => array(
+						array(
+							'content' 	=> 'col 2 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 3 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 1 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_TOOLBAR,
+							'encode'	=> FALSE,
+							'toolbar_items'	=> array('view' => 'http://test/'),
+						),
+						array(
+							'content' 	=> 'status',
+							'type'		=> Table::COL_STATUS,
+							'encode'	=> TRUE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_CHECKBOX,
+							'encode'	=> FALSE,
+							'name'		=> 'table[]',
+							'value'		=> 'test'
+						)
+					)
+				),
+				array(
+					'attrs' => array(),
+					'columns' => array(
+						array(
+							'content' 	=> 'col 3 data 3',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 2 data 3',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> NULL,
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_TOOLBAR,
+							'encode'	=> FALSE,
+							'toolbar_items'	=> array('view' => 'http://test/2'),
+						),
+						array(
+							'content' 	=> 'status',
+							'type'		=> Table::COL_STATUS,
+							'encode'	=> TRUE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_CHECKBOX,
+							'encode'	=> FALSE,
+							'name'		=> 'table[]',
+							'value'		=> 'test2'
+						)
+					)
+				)
+			),
+			'heading2' => array(
+				array(
+					'attrs' => array(),
+					'columns' => array(
+						array(
+							'content' 	=> 'col 3 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 2 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 1 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_TOOLBAR,
+							'encode'	=> FALSE,
+							'toolbar_items'	=> array('view' => 'http://test/'),
+						),
+						array(
+							'content' 	=> 'status',
+							'type'		=> Table::COL_STATUS,
+							'encode'	=> TRUE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_CHECKBOX,
+							'encode'	=> FALSE,
+							'name'		=> 'table[]',
+							'value'		=> 'test'
+						)
+					)
+				)
+			),
+			'heading3' => array(
+				array(
+					'attrs' => array(),
+					'columns' => array(
+						array(
+							'content' 	=> 'col 1 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 2 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 3 data',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_TOOLBAR,
+							'encode'	=> FALSE,
+							'toolbar_items'	=> array('view' => 'http://test/'),
+						),
+						array(
+							'content' 	=> 'status',
+							'type'		=> Table::COL_STATUS,
+							'encode'	=> TRUE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_CHECKBOX,
+							'encode'	=> FALSE,
+							'name'		=> 'table[]',
+							'value'		=> 'test'
+						)
+					)
+				),
+				array(
+					'attrs' => array(),
+					'columns' => array(
+						array(
+							'content' 	=> 'col 1 data 2',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> 'col 2 data 2',
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> NULL,
+							'type'		=> Table::COL_TEXT,
+							'encode'	=> FALSE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_TOOLBAR,
+							'encode'	=> FALSE,
+							'toolbar_items'	=> array('view' => 'http://test/2'),
+						),
+						array(
+							'content' 	=> 'status',
+							'type'		=> Table::COL_STATUS,
+							'encode'	=> TRUE
+						),
+						array(
+							'content' 	=> '',
+							'type'		=> Table::COL_CHECKBOX,
+							'encode'	=> FALSE,
+							'name'		=> 'table[]',
+							'value'		=> 'test2'
+						)
+					)
+				)
+			)
+		);
+
+		$return[] = array($config, $data, $expected, $columns, 'Test subheadings with autosort');
+
+		$config['autosearch'] = TRUE;
+		$config['search'] = 'col 1';
+		$expected['search'] = 'col 1';
+		$expected['total_rows'] = 5;
+		$expected['subheadings'] = FALSE;
+		$expected['data'] = array(
+			array(
+				'attrs' => array(),
+				'columns' => array(
+					array(
+						'content' 	=> 'col 1 data',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					),
+					array(
+						'content' 	=> 'col 2 data',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					),
+					array(
+						'content' 	=> 'col 3 data',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					),
+					array(
+						'content' 	=> '',
+						'type'		=> Table::COL_TOOLBAR,
+						'encode'	=> FALSE,
+						'toolbar_items'	=> array('view' => 'http://test/'),
+					),
+					array(
+						'content' 	=> 'status',
+						'type'		=> Table::COL_STATUS,
+						'encode'	=> TRUE
+					),
+					array(
+						'content' 	=> '',
+						'type'		=> Table::COL_CHECKBOX,
+						'encode'	=> FALSE,
+						'name'		=> 'table[]',
+						'value'		=> 'test'
+					)
+				)
+			),
+			array(
+				'attrs' => array(),
+				'columns' => array(
+					array(
+						'content' 	=> 'col 1 data 2',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					),
+					array(
+						'content' 	=> 'col 2 data 2',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					),
+					array(
+						'content' 	=> NULL,
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					),
+					array(
+						'content' 	=> '',
+						'type'		=> Table::COL_TOOLBAR,
+						'encode'	=> FALSE,
+						'toolbar_items'	=> array('view' => 'http://test/2'),
+					),
+					array(
+						'content' 	=> 'status',
+						'type'		=> Table::COL_STATUS,
+						'encode'	=> TRUE
+					),
+					array(
+						'content' 	=> '',
+						'type'		=> Table::COL_CHECKBOX,
+						'encode'	=> FALSE,
+						'name'		=> 'table[]',
+						'value'		=> 'test2'
+					)
+				)
+			),
+			array(
+				'attrs' => array(),
+				'columns' => array(
+					array(
+						'content' 	=> 'col 1 data 2',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					),
+					array(
+						'content' 	=> 'col 2 data 2',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					),
+					array(
+						'content' 	=> NULL,
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					),
+					array(
+						'content' 	=> '',
+						'type'		=> Table::COL_TOOLBAR,
+						'encode'	=> FALSE,
+						'toolbar_items'	=> array('view' => 'http://test/2'),
+					),
+					array(
+						'content' 	=> 'status',
+						'type'		=> Table::COL_STATUS,
+						'encode'	=> TRUE
+					),
+					array(
+						'content' 	=> '',
+						'type'		=> Table::COL_CHECKBOX,
+						'encode'	=> FALSE,
+						'name'		=> 'table[]',
+						'value'		=> 'test2'
+					)
+				)
+			),
+			array(
+				'attrs' => array(),
+				'columns' => array(
+					array(
+						'content' 	=> 'col 2 data',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					),
+					array(
+						'content' 	=> 'col 3 data',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					),
+					array(
+						'content' 	=> 'col 1 data',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					),
+					array(
+						'content' 	=> '',
+						'type'		=> Table::COL_TOOLBAR,
+						'encode'	=> FALSE,
+						'toolbar_items'	=> array('view' => 'http://test/'),
+					),
+					array(
+						'content' 	=> 'status',
+						'type'		=> Table::COL_STATUS,
+						'encode'	=> TRUE
+					),
+					array(
+						'content' 	=> '',
+						'type'		=> Table::COL_CHECKBOX,
+						'encode'	=> FALSE,
+						'name'		=> 'table[]',
+						'value'		=> 'test'
+					)
+				)
+			),
+			array(
+				'attrs' => array(),
+				'columns' => array(
+					array(
+						'content' 	=> 'col 3 data',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					),
+					array(
+						'content' 	=> 'col 2 data',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					),
+					array(
+						'content' 	=> 'col 1 data',
+						'type'		=> Table::COL_TEXT,
+						'encode'	=> FALSE
+					),
+					array(
+						'content' 	=> '',
+						'type'		=> Table::COL_TOOLBAR,
+						'encode'	=> FALSE,
+						'toolbar_items'	=> array('view' => 'http://test/'),
+					),
+					array(
+						'content' 	=> 'status',
+						'type'		=> Table::COL_STATUS,
+						'encode'	=> TRUE
+					),
+					array(
+						'content' 	=> '',
+						'type'		=> Table::COL_CHECKBOX,
+						'encode'	=> FALSE,
+						'name'		=> 'table[]',
+						'value'		=> 'test'
+					)
+				)
+			)
+		);
+
+		$return[] = array($config, $data, $expected, $columns, 'Test subheadings with autosort and autosearch');
 
 		return $return;
 	}
