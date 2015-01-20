@@ -63,9 +63,6 @@ class Files extends CP_Controller {
 			'upload_directories' => array()
 		);
 
-		// Template Groups
-		$is_admin = ee()->session->userdata['group_id'] == 1;
-
 		$upload_destinations = ee('Model')->get('UploadDestination')
 			->filter('site_id', ee()->config->item('site_id'));
 
