@@ -9,7 +9,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
@@ -66,25 +66,33 @@ class Table {
 	public function __construct($config = array())
 	{
 		$defaults = array(
-			'wrap'		 => TRUE,
-			'sort_col'	 => NULL,
-			'sort_dir'	 => 'asc',
-			'limit'		 => 20,
-			'page'		 => 1,
-			'total_rows' => 0,
-			'search'	 => NULL,
-			'sortable'	 => TRUE,
-			'autosort'	 => FALSE,
-			'autosearch' => FALSE,
-			'lang_cols'	 => TRUE,
-			'grid_input' => FALSE,
-			'reorder'	 => FALSE,
-			'no_results' => array(
+			'wrap'		  => TRUE,
+			'sort_col'	  => NULL,
+			'sort_dir'	  => 'asc',
+			'limit'		  => 20,
+			'page'		  => 1,
+			'total_rows'  => 0,
+			'search'	  => NULL,
+			'sortable'	  => TRUE,
+			'autosort'	  => FALSE,
+			'autosearch'  => FALSE,
+			'lang_cols'	  => TRUE,
+			'subheadings' => FALSE,
+			'grid_input'  => FALSE,
+			'reorder'	  => FALSE,
+			'no_results'  => array(
 				'text'			=> 'no_rows_returned',
 				'action_text'	=> '',
 				'action_link'	=> ''
 			)
 		);
+
+		// By default, tables with subheadings should have no limit,
+		// but can be overridden in passed config
+		if (isset($config['subheadings']) && $config['subheadings'] === TRUE)
+		{
+			$defaults['limit'] = 0;
+		}
 
 		$this->config = array_merge($defaults, $config);
 	}
@@ -259,19 +267,6 @@ class Table {
 	{
 		if ( ! empty($data))
 		{
-			if (array_key_exists('columns', $data[0]))
-			{
-				$count = count($data[0]['columns']);
-			}
-			else
-			{
-				$count = count($data[0]);
-			}
-			if ($count != count($this->columns))
-			{
-				throw new \InvalidArgumentException('Data must have the same number of columns as the set columns.');
-			}
-
 			$this->data = array();
 
 			// Default settings for columns
@@ -280,74 +275,109 @@ class Table {
 				'encode'	=> FALSE
 			);
 
-			// Normalize the table data for plugging into table view
-			foreach ($data as $row)
-			{
-				$attrs = array();
+			$this->config['total_rows'] = 0;
 
-				if (count(array_diff(array_keys($row), array('attrs', 'columns'))) == 0)
+			// Normalize the table data for plugging into table view
+			foreach ($data as $heading => $rows)
+			{
+				if ($this->config['subheadings'] === FALSE)
 				{
-					$attrs = $row['attrs'];
-					$row = $row['columns'];
+					$rows = array($rows);
 				}
 
-				$i = 0;
-				$data_row = array();
-				foreach ($row as $item)
+				foreach ($rows as $row)
 				{
-					// Get the settings for this column, we'll set some on
-					// cell for easy access by the view
-					$col_settings = array_values(array_slice($this->columns, $i, 1));
-
-					// Normal cell content
-					if ( ! is_array($item))
+					// Make sure we have the same number of columns in the row
+					// as was set using setColumns
+					if (array_key_exists('columns', $row))
 					{
-						$settings = array(
-							'content' 	=> $item,
-							'type' 		=> $col_settings[0]['type'],
-							'encode' 	=> $col_settings[0]['encode']
-						);
-						$data_row[] = array_merge($defaults, $settings);
+						$count = count($row['columns']);
 					}
 					else
 					{
-						$settings = array_merge($defaults, $item);
-						$settings['type'] = $col_settings[0]['type'];
-
-						$data_row[] = array_merge(array('content' => ''), $settings);
+						$count = count($row);
 					}
-
-					// Validate the some of the types
-					switch ($settings['type'])
+					if ($count != count($this->columns))
 					{
-						case self::COL_CHECKBOX:
-							if ( ! isset($settings['name']) OR ! isset($settings['value']))
-							{
-								throw new \InvalidArgumentException('Checkboxes require a name and value.');
-							}
-							break;
-						case self::COL_TOOLBAR:
-							if ( ! isset($settings['toolbar_items']))
-							{
-								throw new \InvalidArgumentException('No toolbar items set for toolbar column type.');
-							}
-							break;
-						default:
-							break;
+						throw new \InvalidArgumentException('Data must have the same number of columns as the set columns.');
 					}
 
-					$i++;
+					$attrs = array();
+
+					if (count(array_diff(array_keys($row), array('attrs', 'columns'))) == 0)
+					{
+						$attrs = $row['attrs'];
+						$row = $row['columns'];
+					}
+
+					$i = 0;
+					$data_row = array();
+
+					foreach ($row as $item)
+					{
+						// Get the settings for this column, we'll set some on
+						// cell for easy access by the view
+						$col_settings = array_values(array_slice($this->columns, $i, 1));
+
+						// Normal cell content
+						if ( ! is_array($item))
+						{
+							$settings = array(
+								'content' 	=> $item,
+								'type' 		=> $col_settings[0]['type'],
+								'encode' 	=> $col_settings[0]['encode']
+							);
+							$data_row[] = array_merge($defaults, $settings);
+						}
+						else
+						{
+							$settings = array_merge($defaults, $item);
+							$settings['type'] = $col_settings[0]['type'];
+
+							$data_row[] = array_merge(array('content' => ''), $settings);
+						}
+
+						// Validate the some of the types
+						switch ($settings['type'])
+						{
+							case self::COL_CHECKBOX:
+								if ( ! isset($settings['name']) OR ! isset($settings['value']))
+								{
+									throw new \InvalidArgumentException('Checkboxes require a name and value.');
+								}
+								break;
+							case self::COL_TOOLBAR:
+								if ( ! isset($settings['toolbar_items']))
+								{
+									throw new \InvalidArgumentException('No toolbar items set for toolbar column type.');
+								}
+								break;
+							default:
+								break;
+						}
+
+						$i++;
+					}
+
+					$data_row = array(
+						'attrs'		=> $attrs,
+						'columns'	=> $data_row
+					);
+
+					// Group by subheading only if there is no search criteria,
+					// we drop the headings when showing search results
+					if ($this->config['subheadings'] && empty($this->config['search']))
+					{
+						$this->data[$heading][] = $data_row;
+					}
+					else
+					{
+						$this->data[] = $data_row;
+					}
+
+					$this->config['total_rows']++;
 				}
-
-				$data_row = array(
-					'attrs'		=> $attrs,
-					'columns'	=> $data_row
-				);
-
-				$this->data[] = $data_row;
 			}
-
-			$this->config['total_rows'] = count($this->data);
 
 			// If this table is not paginated, handle sorting automatically
 			if ($this->config['autosort'])
@@ -362,7 +392,7 @@ class Table {
 			}
 
 			// Apply pagination after search
-			if ($this->config['autosort'])
+			if ($this->config['autosort'] && $this->config['limit'] != 0)
 			{
 				$offset = ($this->config['page'] - 1) * $this->config['limit'];
 
@@ -383,11 +413,55 @@ class Table {
 	 */
 	private function sortData()
 	{
+		$subheadings = ($this->config['subheadings'] && empty($this->config['search']));
+
+		// If there's subheadings, sort by subheading in the direction of
+		// the sort first, then drill down into the heading's rows
+		if ($subheadings)
+		{
+			$sort_dir = $this->getSortDir();
+
+			uksort($this->data, function ($a, $b) use ($sort_dir)
+			{
+				// Sort numbers as numbers
+				if (is_numeric($a) && is_numeric($b))
+				{
+					$cmp = $a - $b;
+				}
+				// String sorting
+				else
+				{
+					$cmp = strcmp(strtolower(strip_tags($a)), strtolower(strip_tags($b)));
+				}
+
+				return ($sort_dir == 'asc') ? $cmp : -$cmp;
+			});
+
+			// For each section, sort its rows
+			foreach ($this->data as $heading => &$rows)
+			{
+				$this->sortRows($rows);
+			}
+		}
+		else
+		{
+			// No subheadings, sort normally
+			$this->sortRows($this->data);
+		}
+	}
+
+	/**
+	 * Sorts rows based on column and sort direction
+	 *
+	 * @return  void
+	 */
+	private function sortRows(&$rows)
+	{
 		$columns = $this->columns;
 		$sort_col = $this->getSortCol();
 		$sort_dir = $this->getSortDir();
 
-		usort($this->data, function ($a, $b) use ($columns, $sort_col, $sort_dir)
+		usort($rows, function ($a, $b) use ($columns, $sort_col, $sort_dir)
 		{
 			$search = array_keys($columns);
 			$index = array_search($sort_col, $search);
@@ -492,6 +566,7 @@ class Table {
 			'grid_input'	=> $this->config['grid_input'],
 			'reorder'		=> $this->config['reorder'],
 			'sortable'		=> $this->config['sortable'],
+			'subheadings'	=> ($this->config['subheadings'] && empty($this->config['search'])),
 			'sort_col'		=> $this->getSortCol(),
 			'sort_dir'		=> $this->getSortDir(),
 			'columns'		=> $this->columns,
@@ -549,7 +624,4 @@ class Table {
 	}
 }
 
-// END CLASS
-
-/* End of file URL.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Library/CP/Table.php */
+// EOF
