@@ -21,7 +21,8 @@ use Closure;
 /**
  * ExpressionEngine Event Emitter
  *
- * Very basic event system ala node's emitter.
+ * Very basic event system ala node's emitter, with the addition
+ * of a simple PubSub system.
  *
  * @package		ExpressionEngine
  * @subpackage	Event
@@ -29,7 +30,7 @@ use Closure;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Emitter {
+class Emitter implements Publisher {
 
 	/**
 	 * @var bound event listeners
@@ -146,7 +147,7 @@ class Emitter {
 
 		foreach ($this->subscribers as $subscriber)
 		{
-			if (in_array($event, $subscriber->getEvents()))
+			if (in_array($event, $subscriber->getSubscribedEvents()))
 			{
 				$method = 'on'.ucfirst($event);
 				call_user_func_array(array($subscriber, $method), $args);

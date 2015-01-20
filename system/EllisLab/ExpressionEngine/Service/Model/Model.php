@@ -393,7 +393,7 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	 * Interface method to implement Event\Subscriber, which automatically
 	 * subscribes this class to itself to call on<EventName>.
 	 */
-	public function getEvents()
+	public function getSubscribedEvents()
 	{
 		return $this->getMetaData('events') ?: array();
 	}

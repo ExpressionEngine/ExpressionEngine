@@ -32,10 +32,10 @@ namespace EllisLab\ExpressionEngine\Service\Event;
 interface Subscriber {
 
 	/**
-	 * Get a list of reflexive event names
+	 * Get a list of subscribed event names
 	 *
 	 * @return Array of event names (e.g. ['beforeSave', 'afterSave'])
 	 */
-	public function getEvents();
+	public function getSubscribedEvents();
 
 }

@@ -4,6 +4,9 @@ namespace EllisLab\Tests\ExpressionEngine\Service\Event;
 
 use Mockery as m;
 use EllisLab\ExpressionEngine\Service\Event\Emitter;
+use EllisLab\ExpressionEngine\Service\Event\Publisher;
+use EllisLab\ExpressionEngine\Service\Event\Subscriber;
+use EllisLab\ExpressionEngine\Service\Event\ReflexiveSubscriber;
 
 class EmitterTest extends \PHPUnit_Framework_TestCase {
 
@@ -104,16 +107,35 @@ class EmitterTest extends \PHPUnit_Framework_TestCase {
 		$event = new Emitter();
 		$receiver = m::mock(new EmitterTestReceiver());
 
+		$receiver->shouldReceive('triggered')->with('only', 'once')->once();
+
 		$listener = $this->newListener($receiver);
 
 		$event->once('emit.once', $listener);
 
-		$receiver->shouldReceive('triggered')->with('works', 'once')->once();
+		$event->emit('emit.once', 'only', 'once');
+		$event->emit('emit.once', 'only', 'once');
+		$event->emit('emit.once', 'only', 'once');
+		$event->emit('emit.once', 'only', 'once');
+	}
 
-		$event->emit('emit.once', 'works', 'once');
-		$event->emit('emit.once', 'works', 'once');
-		$event->emit('emit.once', 'works', 'once');
-		$event->emit('emit.once', 'works', 'once');
+	public function testSubscribeToEmitter()
+	{
+		$event = new Emitter();
+		$subscriber = m::mock(new EmitterTestSubscriber());
+
+		$subscriber->shouldReceive('onOne')->twice();
+		$subscriber->shouldReceive('onTwo')->with('arg')->once();
+
+		$event->subscribe($subscriber);
+		$event->emit('one');
+		$event->emit('two', 'arg');
+		$event->emit('one');
+
+		$event->unsubscribe($subscriber);
+		$event->emit('one');
+		$event->emit('two');
+		$event->emit('two');
 	}
 
 	protected function newListener($receiver)
@@ -131,5 +153,18 @@ class EmitterTestReceiver {
 	{
 		die('failed to mock EmitterTestReceiver');
 	}
+
+}
+
+class EmitterTestSubscriber implements Subscriber {
+
+	public function getSubscribedEvents()
+	{
+		return array('one', 'two');
+	}
+
+	public function onOne() {}
+
+	public function onTwo($arg1) {}
 
 }

@@ -31,7 +31,7 @@ use Closure;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Mixin implements MixinInterface, Subscriber {
+class Mixin implements MixinInterface, Publisher {
 
 	/**
 	 * @var The parent scope
