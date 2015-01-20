@@ -49,6 +49,8 @@ class Forums extends Design {
 		}
 
 		$this->stdHeader();
+
+		ee()->lang->loadfile('specialty_tmp');
 	}
 
 	public function index($theme = 'default')
@@ -66,7 +68,7 @@ class Forums extends Design {
 
 		$base_url = new URL('design/forums/index/' . $theme, ee()->session->session_id());
 
-		$table = Table::create(array('autosort' => TRUE, 'limit' => 1024));
+		$table = Table::create(array('autosort' => TRUE, 'subheadings' => TRUE));
 		$table->setColumns(
 			array(
 				'template',
@@ -86,7 +88,7 @@ class Forums extends Design {
 				if (strpos($file, '.') !== FALSE)
 				{
 					$human = ucwords(str_replace('_', ' ', substr($file, 0, -strlen(strrchr($file, '.')))));
-					$data[] = array(
+					$data[$dir][] = array(
 						(lang($human) == FALSE) ? $human : lang($human),
 						array('toolbar_items' => array(
 							'edit' => array(
