@@ -484,7 +484,6 @@ class Design extends CP_Controller {
 
 		ee()->load->helper('download');
 		force_download('ExpressionEngine-templates.zip', $data);
-		exit;
 	}
 
 }

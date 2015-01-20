@@ -475,7 +475,6 @@ class Variables extends Design {
 
 		ee()->load->helper('download');
 		force_download('ExpressionEngine-template-variables.zip', $data);
-		exit;
 	}
 
 	/**

@@ -474,7 +474,6 @@ class Snippets extends Design {
 
 		ee()->load->helper('download');
 		force_download('ExpressionEngine-template-partials.zip', $data);
-		exit;
 	}
 
 	/**
