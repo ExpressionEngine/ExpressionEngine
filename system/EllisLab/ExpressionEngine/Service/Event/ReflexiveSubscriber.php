@@ -20,7 +20,7 @@ namespace EllisLab\ExpressionEngine\Service\Event;
  * ExpressionEngine Reflexive Event Subscriber Interface
  *
  * Marker interface to implement if you're using the event mixin and want
- * to automatically subscribe your class itself.
+ * to automatically subscribe your class to itself.
  *
  * @package		ExpressionEngine
  * @subpackage	Event

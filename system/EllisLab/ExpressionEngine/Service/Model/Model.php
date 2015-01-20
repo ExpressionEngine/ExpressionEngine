@@ -412,6 +412,16 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	}
 
 	/**
+	 * Interface method to implement Event\Publisher
+	 *
+	 * @see Model::subscribe()
+	 */
+	public function unsubscribe(EventSubscriber $subscriber)
+	{
+		return $this->getMixin('event')->unsubscribe($subscriber);
+	}
+
+	/**
 	 * Support method for the typed columns mixin
 	 */
 	public function getTypedColumns()

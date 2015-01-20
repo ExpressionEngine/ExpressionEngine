@@ -31,7 +31,7 @@ use Closure;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Mixin implements MixinInterface {
+class Mixin implements MixinInterface, Subscriber {
 
 	/**
 	 * @var The parent scope
@@ -71,9 +71,17 @@ class Mixin implements MixinInterface {
 	/**
 	 * Subscribe to events on this class
 	 */
-	public function subscribe($subscriber)
+	public function subscribe(Subscriber $subscriber)
 	{
 		$this->getEventEmitter()->subscribe($subscriber);
+	}
+
+	/**
+	 * Unsubscribe from events on this class
+	 */
+	public function unsubscribe(Subscriber $subscriber)
+	{
+		$this->getEventEmitter()->unsubscribe($subscriber);
 	}
 
 	/**

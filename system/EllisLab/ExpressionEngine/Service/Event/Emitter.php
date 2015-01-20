@@ -72,17 +72,34 @@ class Emitter {
 		{
 			$self->off($event, $listener);
 		});
+
+		return $this;
 	}
 
 	/**
 	 * Subscribe an object to events on this emitter. Any public method
 	 * call `on<EventName>` will be considered a listener on that event.
 	 *
-	 * @param Subscriber $subscriber
+	 * @param Subscriber $subscriber Subscriber to add
 	 */
 	public function subscribe(Subscriber $subscriber)
 	{
-		$this->subscribers[] = $subscriber;
+		$this->subscribers[$this->hash($subscriber)] = $subscriber;
+
+		return $this;
+	}
+
+
+	/**
+	 * Remove a subscription. Less spam. Saves you money.
+	 *
+	 * @param Subscriber $subscriber Subscriber to remove
+	 */
+	public function unsubscribe(Subscriber $subscriber)
+	{
+		unset($this->subscribers[$this->hash($subscriber)]);
+
+		return $this;
 	}
 
 	/**
@@ -140,15 +157,16 @@ class Emitter {
 	}
 
 	/**
-	 * Support method to create a listener hash
+	 * Support method to create a hash for listeners and subscribers
 	 *
-	 * Down the line we might be able to support all callable's.
+	 * Down the line we might want to support all callable's being
+	 * usable for listeners.
 	 *
-	 * @param Closure $listener Listener element
-	 * @return String hash of the listener
+	 * @param Object $object Element to hash
+	 * @return String unique hash of the object
 	 */
-	protected function hash(Closure $listener)
+	protected function hash($object)
 	{
-		return spl_object_hash($listener);
+		return spl_object_hash($object);
 	}
 }

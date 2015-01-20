@@ -32,8 +32,15 @@ interface Publisher {
 	/**
 	 * Subscribe to this publisher
 	 *
-	 * @param Subscriber $subscriber
+	 * @param Subscriber $subscriber New subscriber
 	 */
 	public function subscribe(Subscriber $subscriber);
+
+	/**
+	 * Unsubscribe from this publisher
+	 *
+	 * @param Subscriber $subscriber Current subscriber
+	 */
+	public function unsubscribe(Subscriber $subscriber);
 
 }
