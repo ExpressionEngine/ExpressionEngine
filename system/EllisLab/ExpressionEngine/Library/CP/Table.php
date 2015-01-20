@@ -402,12 +402,11 @@ class Table {
 	}
 
 	/**
-	 * For data that is only ever contained to one table, likely
-	 * non-paginated data, we can automatically handle the sorting by
-	 * sorting the given array by the item corresponding to the current
-	 * sort column. But if data is paginated and changing the sort also
-	 * changes the data, it's best not to use this and instead handle
-	 * it manually with the sort_col and sort_dir magic properties
+	 * If the entire data set is passed to the table object, the table
+	 * object can handle sorting of it automatically without the controller
+	 * needing to modify its query. But if there is a large amount of data that
+	 * can be displayed, it's probably best to leave 'autosort' to FALSE and
+	 * manually do sorting and paging in the controller.
 	 *
 	 * @return  void
 	 */
@@ -484,12 +483,11 @@ class Table {
 	}
 
 	/**
-	 * For data that is only ever contained to one table, likely
-	 * non-paginated data, we can automatically handle table searching
-	 * by using a strpos() search on each row and column. But if data
-	 * is paginated and searching can add extra data to the table not
-	 * in the current table scope, it's best not to use this and
-	 * instead handle it manually with the magic search property
+	 * If the entire data set is passed to the table object, the table
+	 * object can handle searching of its contents automatically without the
+	 * controller needing to modify its query. But if there is a large amount
+	 * of data that can be displayed, it's probably best to leave 'autosearch'
+	 * to FALSE and manually do searching in the controller.
 	 *
 	 * @return  void
 	 */
