@@ -227,6 +227,37 @@ class Wizard extends CI_Controller {
 		$this->year  = gmdate('Y', $this->now);
 		$this->month = gmdate('m', $this->now);
 		$this->day   = gmdate('d', $this->now);
+
+		$this->setupModels();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Setup the Dependency Injection Container and setup the Config and
+	 * Database singletons.
+	 *
+	 * This is likely temporary
+	 *
+	 * @return void
+	 */
+	private function setupModels()
+	{
+		// Setup Dependency Injection Container
+		// This must come very early in the process, nothing but constants above
+		ee()->di = new \EllisLab\ExpressionEngine\Service\DependencyInjectionContainer();
+
+		// Register Config
+		ee()->di->registerSingleton('Config', function($di, $config_file = 'config') {
+			$directory = new \EllisLab\ExpressionEngine\Service\Config\Directory(SYSPATH.'config/');
+			return $directory->file($config_file);
+		});
+
+		// Load DB and set DB preferences
+		ee()->di->registerSingleton('Database', function($di) {
+			$database_config = new \EllisLab\ExpressionEngine\Service\Database\DBConfig(ee('Config'));
+			return new \EllisLab\ExpressionEngine\Service\Database\Database($database_config);
+		});
 	}
 
 	// --------------------------------------------------------------------
