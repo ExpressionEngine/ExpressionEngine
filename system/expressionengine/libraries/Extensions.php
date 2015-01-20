@@ -270,7 +270,7 @@ class EE_Extensions {
 					$this->last_call = call_user_func_array(array(&$this->OBJ[$class_name], $method), $args);
 				}
 
-				if ($automatically_load_path === TRUE)
+				if ($automatically_load_path)
 				{
 					ee()->load->remove_package_path($path);
 				}
