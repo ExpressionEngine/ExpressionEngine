@@ -518,26 +518,12 @@ class Template extends Design {
 			->all();
 
 		$allowed_member_groups = ee()->input->post('allowed_member_groups');
-		$denied_member_groups = $template->getNoAccess()->pluck('group_id');
-
-		foreach ($member_groups as $member_group)
+		$no_access = $member_groups->filter(function($group) use ($allowed_member_groups)
 		{
-			if (in_array($member_group->group_id, $allowed_member_groups))
-			{
-				if (in_array($member_group->group_id, $denied_member_groups))
-				{
-					$template->removeNoAccess($member_group);
-				}
-			}
-			else
-			{
-				if ( ! in_array($member_group->group_id, $denied_member_groups))
-				{
-					$template->addNoAccess($member_group);
-				}
-			}
-		}
+			return ! in_array($group->group_id, $allowed_member_groups);
+		});
 
+		$template->setNoAccess($no_access);
 		// Route
 		$route = $template->getTemplateRoute();
 
