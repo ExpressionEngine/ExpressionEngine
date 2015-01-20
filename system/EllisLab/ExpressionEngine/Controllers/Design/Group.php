@@ -123,8 +123,8 @@ class Group extends Design {
 		{
 			$group = ee('Model')->make('TemplateGroup');
 			$group->site_id = ee()->config->item('site_id');
-			$group->group_name = $_POST['group_name'];
-			$group->is_site_default = $_POST['make_default_group'];
+			$group->group_name = ee()->input->post('group_name');
+			$group->is_site_default = ee()->input->post('make_default_group');
 
 			if ($group->is_site_default)
 			{
@@ -137,9 +137,9 @@ class Group extends Design {
 
 			$duplicate = FALSE;
 
-			if (is_numeric($_POST['duplicate_group']))
+			if (is_numeric(ee()->input->post('duplicate_group')))
 			{
-				$master_group = ee('Model')->get('TemplateGroup', $_POST['duplicate_group'])->first();
+				$master_group = ee('Model')->get('TemplateGroup', ee()->input->post('duplicate_group'))->first();
 				$master_group_templates = $master_group->getTemplates();
 				if (count($master_group_templates) > 0)
 				{
@@ -272,8 +272,8 @@ class Group extends Design {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			$group->group_name = $_POST['group_name'];
-			$group->is_site_default = $_POST['make_default_group'];
+			$group->group_name = ee()->input->post('group_name');
+			$group->is_site_default = ee()->input->post('make_default_group');
 
 			if ($group->is_site_default)
 			{
