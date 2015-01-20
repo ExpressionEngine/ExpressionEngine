@@ -6,7 +6,9 @@ use BadMethodCallException;
 use OverflowException;
 
 use EllisLab\ExpressionEngine\Library\Data\Entity;
-use EllisLab\ExpressionEngine\Service\Event\Reflexive as ReflexiveEvent;
+use EllisLab\ExpressionEngine\Service\Event\Publisher as EventPublisher;
+use EllisLab\ExpressionEngine\Service\Event\Subscriber as EventSubscriber;
+use EllisLab\ExpressionEngine\Service\Event\ReflexiveSubscriber;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -31,7 +33,7 @@ use EllisLab\ExpressionEngine\Service\Event\Reflexive as ReflexiveEvent;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Model extends Entity implements ReflexiveEvent {
+class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 
 	/**
 	 * @var String model short name
@@ -388,12 +390,25 @@ class Model extends Entity implements ReflexiveEvent {
 	}
 
 	/**
-	 * Interface method to implement Event\Reflexive, which adds reflexive
-	 * event support to the event mixin.
+	 * Interface method to implement Event\Subscriber, which automatically
+	 * subscribes this class to itself to call on<EventName>.
 	 */
 	public function getEvents()
 	{
 		return $this->getMetaData('events') ?: array();
+	}
+
+	/**
+	 * Interface method to implement Event\Publisher so that others can
+	 * subscribe to events on this object.
+	 *
+	 * Technically this works automatically since the method exists on the
+	 * mixin, but doing this lets us enforce an interface, which will be
+	 * useful when hopefully replacing mixins with traits in future.
+	 */
+	public function subscribe(EventSubscriber $subscriber)
+	{
+		return $this->getMixin('event')->subscribe($subscriber);
 	}
 
 	/**

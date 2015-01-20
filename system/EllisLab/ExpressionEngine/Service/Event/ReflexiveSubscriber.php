@@ -17,11 +17,10 @@ namespace EllisLab\ExpressionEngine\Service\Event;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Reflexive Event Interface
+ * ExpressionEngine Reflexive Event Subscriber Interface
  *
- * Interface to implement if you want to support the mixin's reflexive
- * events, where an event fired is automatically forwarded to on<EventName>
- * on your object.
+ * Marker interface to implement if you're using the event mixin and want
+ * to automatically subscribe your class itself.
  *
  * @package		ExpressionEngine
  * @subpackage	Event
@@ -29,13 +28,4 @@ namespace EllisLab\ExpressionEngine\Service\Event;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-interface Reflexive {
-
-	/**
-	 * Get a list of reflexive event names
-	 *
-	 * @return Array of event names (e.g. ['beforeSave', 'afterSave'])
-	 */
-	public function getEvents();
-
-}
+interface ReflexiveSubscriber extends Subscriber {}

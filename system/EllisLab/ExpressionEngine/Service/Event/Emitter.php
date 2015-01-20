@@ -37,6 +37,11 @@ class Emitter {
 	protected $events = array();
 
 	/**
+	 * @var Subscribers
+	 */
+	protected $subscribers = array();
+
+	/**
 	 * Bind an event listener
 	 *
 	 * @param String $event Event name
@@ -67,6 +72,17 @@ class Emitter {
 		{
 			$self->off($event, $listener);
 		});
+	}
+
+	/**
+	 * Subscribe an object to events on this emitter. Any public method
+	 * call `on<EventName>` will be considered a listener on that event.
+	 *
+	 * @param Subscriber $subscriber
+	 */
+	public function subscribe(Subscriber $subscriber)
+	{
+		$this->subscribers[] = $subscriber;
 	}
 
 	/**
@@ -108,6 +124,15 @@ class Emitter {
 			foreach ($this->events[$event] as $listener)
 			{
 				call_user_func_array($listener, $args);
+			}
+		}
+
+		foreach ($this->subscribers as $subscriber)
+		{
+			if (in_array($event, $subscriber->getEvents()))
+			{
+				$method = 'on'.ucfirst($event);
+				call_user_func_array(array($subscriber, $method), $args);
 			}
 		}
 

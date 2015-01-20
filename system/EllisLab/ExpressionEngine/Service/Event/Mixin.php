@@ -50,9 +50,11 @@ class Mixin implements MixinInterface {
 	{
 		$this->scope = $scope;
 
-		if ($scope instanceOf Reflexive)
+		// Subscribe to events on self if the class is a reflexive
+		// subscriber.
+		if ($scope instanceOf ReflexiveSubscriber)
 		{
-			$this->bootReflexiveEvents();
+			$this->subscribe($scope);
 		}
 	}
 
@@ -67,20 +69,11 @@ class Mixin implements MixinInterface {
 	}
 
 	/**
-	 * Initialize the reflexive event listeners if the class supports it.
+	 * Subscribe to events on this class
 	 */
-	protected function bootReflexiveEvents()
+	public function subscribe($subscriber)
 	{
-		foreach ($this->scope->getEvents() as $event)
-		{
-			$this->on($event, function() use ($event) {
-				$args = func_get_args();
-				$model = array_shift($args);
-				$event = 'on'.ucfirst($event);
-
-				call_user_func_array(array($model, $event), $args);
-			});
-		}
+		$this->getEventEmitter()->subscribe($subscriber);
 	}
 
 	/**
@@ -106,12 +99,9 @@ class Mixin implements MixinInterface {
 	 */
 	public function emit(/* $event, ...$args */)
 	{
-		$args = func_get_args();
-		array_splice($args, 1, 0, array($this->scope));
-
 		call_user_func_array(
 			array($this->getEventEmitter(), 'emit'),
-			$args
+			func_get_args()
 		);
 
 		return $this->scope;
