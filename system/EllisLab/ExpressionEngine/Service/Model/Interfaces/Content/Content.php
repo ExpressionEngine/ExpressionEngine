@@ -62,16 +62,6 @@ interface Content {
 	public function save();
 
 	/**
-	 * Validates a piece of content for saving, called by save.
-	 *
-	 * @return	void
-	 *
-	 * @throws	ContentInvalidException If content fails to validate a
-	 * 						ContentInvalidException will be thrown with errors.
-	 */
-	public function validate();
-
-	/**
 	 * Deletes a piece of content, removing it from the db.
 	 *
 	 * @return	void
