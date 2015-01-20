@@ -3,7 +3,6 @@
 namespace EllisLab\ExpressionEngine\Controllers\Design;
 
 use EllisLab\ExpressionEngine\Controllers\Design\Design;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
 
@@ -58,7 +57,7 @@ class System extends Design {
 
 		$base_url = new URL('design/system/', ee()->session->session_id());
 
-		$table = Table::create(array('autosort' => TRUE));
+		$table = Table::create(array('autosort' => TRUE, 'limit' => 1024));
 		$table->setColumns(
 			array(
 				'template',
@@ -86,17 +85,6 @@ class System extends Design {
 
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
-
-		if ( ! empty($vars['table']['data']))
-		{
-			// Paginate!
-			$pagination = new Pagination(
-				$vars['table']['limit'],
-				$vars['table']['total_rows'],
-				$vars['table']['page']
-			);
-			$vars['pagination'] = $pagination->cp_links($base_url);
-		}
 
 		$this->sidebarMenu('messages');
 		ee()->view->cp_page_title = lang('template_manager');

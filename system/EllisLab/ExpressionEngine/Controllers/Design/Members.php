@@ -3,7 +3,6 @@
 namespace EllisLab\ExpressionEngine\Controllers\Design;
 
 use EllisLab\ExpressionEngine\Controllers\Design\Design;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
 
@@ -63,7 +62,7 @@ class Members extends Design {
 
 		$base_url = new URL('design/members/index/' . $theme, ee()->session->session_id());
 
-		$table = Table::create(array('autosort' => TRUE));
+		$table = Table::create(array('autosort' => TRUE, 'limit' => 1024));
 		$table->setColumns(
 			array(
 				'template',
@@ -108,17 +107,6 @@ class Members extends Design {
 		}
 
 		$vars['themes'] = form_dropdown('theme', $themes, cp_url('design/members/index/' . $theme));
-
-		if ( ! empty($vars['table']['data']))
-		{
-			// Paginate!
-			$pagination = new Pagination(
-				$vars['table']['limit'],
-				$vars['table']['total_rows'],
-				$vars['table']['page']
-			);
-			$vars['pagination'] = $pagination->cp_links($base_url);
-		}
 
 		$this->sidebarMenu('members');
 		ee()->view->cp_page_title = lang('template_manager');
