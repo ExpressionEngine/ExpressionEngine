@@ -108,4 +108,9 @@ class File extends Model {
 		return rtrim($this->getUploadDestination()->url, '/') . '/' . $this->rel_path;
 	}
 
+	protected function beforeRemove()
+	{
+		unlink($this->getAbsolutePath());
+	}
+
 }
