@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Service\Model\Column;
+namespace EllisLab\ExpressionEngine\Service\Event;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -17,17 +17,30 @@ namespace EllisLab\ExpressionEngine\Service\Model\Column;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Column Interface
+ * ExpressionEngine Event Publisher Interface
+ *
+ * Interface to implement if your class publishes events.
  *
  * @package		ExpressionEngine
- * @subpackage	Model
+ * @subpackage	Event
  * @category	Service
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-interface Column {
+interface Publisher {
 
-	public function fill($db_data);
-	public function getValue();
+	/**
+	 * Subscribe to this publisher
+	 *
+	 * @param Subscriber $subscriber New subscriber
+	 */
+	public function subscribe(Subscriber $subscriber);
+
+	/**
+	 * Unsubscribe from this publisher
+	 *
+	 * @param Subscriber $subscriber Current subscriber
+	 */
+	public function unsubscribe(Subscriber $subscriber);
 
 }

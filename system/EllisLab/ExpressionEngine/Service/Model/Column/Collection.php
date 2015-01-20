@@ -2,7 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Service\Model\Column;
 
-use EllisLab\ExpressionEngine\Service\Model\Collection as ModelCollection;
+use EllisLab\ExpressionEngine\Library\Data\Collection as CoreCollection;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -41,7 +41,7 @@ abstract class Collection implements Column {
 
 	public function fill($db_data)
 	{
-		$this->collection = new ModelCollection;
+		$this->collection = new CoreCollection;
 
 		$data = $this->unserialize($db_data);
 

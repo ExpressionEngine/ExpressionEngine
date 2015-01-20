@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Service\Model\Column;
+namespace EllisLab\ExpressionEngine\Service\Event;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -17,17 +17,25 @@ namespace EllisLab\ExpressionEngine\Service\Model\Column;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Column Interface
+ * ExpressionEngine Event Subscriber Interface
+ *
+ * Interface to implement if you want to subscribe your class to an event
+ * emitter, where an event fired is automatically forwarded to on<EventName>
+ * on your object.
  *
  * @package		ExpressionEngine
- * @subpackage	Model
+ * @subpackage	Event
  * @category	Service
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-interface Column {
+interface Subscriber {
 
-	public function fill($db_data);
-	public function getValue();
+	/**
+	 * Get a list of subscribed event names
+	 *
+	 * @return Array of event names (e.g. ['beforeSave', 'afterSave'])
+	 */
+	public function getSubscribedEvents();
 
 }

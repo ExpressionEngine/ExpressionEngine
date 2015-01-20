@@ -2,6 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Service\Model\Column;
 
+use EllisLab\ExpressionEngine\Library\Data\Entity;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -25,7 +27,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Column;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-abstract class CollectionRow {
+abstract class CollectionRow extends Entity {
 
 	protected $_parent;
 

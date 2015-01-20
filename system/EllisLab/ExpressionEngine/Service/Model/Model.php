@@ -3,12 +3,12 @@
 namespace EllisLab\ExpressionEngine\Service\Model;
 
 use BadMethodCallException;
-use InvalidArgumentException;
 use OverflowException;
 
-use EllisLab\ExpressionEngine\Service\Model\DataStore;
-use EllisLab\ExpressionEngine\Service\Model\Association\Association;
-use EllisLab\ExpressionEngine\Service\Validation\Validator;
+use EllisLab\ExpressionEngine\Library\Data\Entity;
+use EllisLab\ExpressionEngine\Service\Event\Publisher as EventPublisher;
+use EllisLab\ExpressionEngine\Service\Event\Subscriber as EventSubscriber;
+use EllisLab\ExpressionEngine\Service\Event\ReflexiveSubscriber;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -33,189 +33,64 @@ use EllisLab\ExpressionEngine\Service\Validation\Validator;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Model {
+class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 
 	/**
-	 *
+	 * @var String model short name
 	 */
 	protected $_name;
 
 	/**
-	 *
+	 * @var List of dirty values
 	 */
 	protected $_dirty = array();
 
 	/**
-	 *
+	 * @var Query frontend object
 	 */
 	protected $_frontend = NULL;
 
 	/**
-	 *
+	 * @var Default mixins for models
 	 */
-	protected $_validator = NULL;
+	protected static $_mixins = array(
+		'EllisLab\ExpressionEngine\Service\Event\Mixin',
+		'EllisLab\ExpressionEngine\Service\Model\Mixin\TypedColumn',
+		'EllisLab\ExpressionEngine\Service\Model\Mixin\Validation',
+		'EllisLab\ExpressionEngine\Service\Model\Mixin\CompositeColumn',
+		'EllisLab\ExpressionEngine\Service\Model\Mixin\Relationship',
+	);
 
 	/**
+	 * Forward methods to various mixins
 	 *
-	 */
-	protected $_associations = array();
-
-	/**
-	 *
-	 */
-	protected $_column_objects = array();
-
-	/**
-	 *
-	 */
-	protected $_relations = array();
-
-	/**
-	 * Constructor
-	 */
-	public function __construct(array $data = array())
-	{
-		foreach ($data as $key => $value)
-		{
-			$this->setProperty($key, $value);
-		}
-	}
-
-	/**
-	 *
-	 */
-	public function __get($name)
-	{
-		return $this->getProperty($name);
-	}
-
-	/**
-	 *
-	 */
-	public function __set($name, $value)
-	{
-		$this->setProperty($name, $value);
-		return $value;
-	}
-
-	/**
-	 *
+	 * @param String $method Method name to call
+	 * @param Array $args Arguments to pass to the method
+	 * @return Mixed return value of the called method
 	 */
 	public function __call($method, $args)
 	{
-		$actions = 'has|get|set|add|remove|create|delete|fill';
-
-		if (preg_match("/^({$actions})(.+)/", $method, $matches))
+		if ($column = $this->getMixin('Model:CompositeColumn')->getCompositeColumnNameFromMethod($method))
 		{
-			list($_, $action, $name) = $matches;
-
-			if ($action == 'get' && $this->hasColumn($name))
-			{
-				return $this->getColumn($name);
-			}
-
-			if ($this->hasAssociation($name))
-			{
-				return $this->runAssociationAction($name, $action, $args);
-			}
+			return $this->getMixin('Model:CompositeColumn')->getCompositeColumn($column);
 		}
 
-		throw new BadMethodCallException("Method not found: {$method}.");
-	}
-
-	protected function hasColumn($name)
-	{
-		$columns = $this->getMetaData('columns');
-
-		if ( ! isset($columns))
+		if ($action = $this->getMixin('Model:Relationship')->getAssociationActionFromMethod($method))
 		{
-			return FALSE;
+			return $this->getMixin('Model:Relationship')->runAssociationAction($action, $args);
 		}
 
-		return array_key_exists($name, $columns);
-	}
-
-	protected function getColumn($name)
-	{
-		if ( ! isset($this->_column_objects[$name]))
-		{
-			$this->_column_objects[$name] = $this->newColumn($name);
-		}
-
-		return $this->_column_objects[$name];
-	}
-
-	protected function newColumn($name)
-	{
-		// todo error if column wasn't defined
-		$columns = $this->getMetaData('columns');
-		$property = $columns[$name];
-		$class = $this->getNamespacePrefix().'\\Column\\'.$name;
-
-		$obj = new $class();
-		$obj->fill($this->$property);
-
-		return $obj;
+		return parent::__call($method, $args);
 	}
 
 	/**
+	 * Get the short name
 	 *
+	 * @return String short name
 	 */
-	protected function getNamespacePrefix()
+	public function getName()
 	{
-		$class = get_called_class();
-		return substr($class, 0, strrpos($class, '\\'));
-	}
-
-	/**
-	 *
-	 */
-	protected function runAssociationAction($assoc_name, $action, $args)
-	{
-		$assoc = $this->getAssociation($assoc_name);
-		$result = call_user_func_array(array($assoc, $action), $args);
-
-		if ($action == 'has' || $action == 'get')
-		{
-			return $result;
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Clean up var_dump output for developers on PHP 5.6+
-	 */
-	public function __debugInfo()
-	{
-		$name = $this->_name;
-		$values = $this->getValues();
-		$related_to = array_keys($this->_associations);
-
-		return compact('name', 'values', 'related_to');
-	}
-
-	/**
-	 * Metadata is static. If you need to access it, it's recommended
-	 * to use the datastore's lazy caches, which will make for much
-	 * more testable code and avoid iterating over gateways and creating
-	 * relations repeatedly.
-	 *
-	 * @param String $key Name of the static property
-	 * @return mixed The metadata value Set the short name of this model
-	 *
-	 * @param String $name The short name
-	 */
-	public static function getMetaData($key)
-	{
-		$key = '_'.$key;
-
-		if ( ! property_exists(get_called_class(), $key))
-		{
-			return NULL;
-		}
-
-		return static::$$key;
+		return $this->_name;
 	}
 
 	/**
@@ -231,17 +106,8 @@ class Model {
 		}
 
 		$this->_name = $name;
-		return $this;
-	}
 
-	/**
-	 * Get the short name
-	 *
-	 * @return String short name
-	 */
-	public function getName()
-	{
-		return $this->_name;
+		return $this;
 	}
 
 	/**
@@ -262,6 +128,7 @@ class Model {
 	public function getId()
 	{
 		$pk = $this->getPrimaryKey();
+
 		return $this->$pk;
 	}
 
@@ -279,78 +146,42 @@ class Model {
 	}
 
 	/**
-	 * Fill model data without marking as dirty.
-	 *
-	 * @param array $data Data to fill
-	 * @return $this
-	 */
-	public function fill(array $data = array())
-	{
-		foreach ($data as $k => $v)
-		{
-			if ($this->hasProperty($k))
-			{
-				$this->$k = $v;
-			}
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Check if the model has a given property
-	 *
-	 * @param String $name Property name
-	 * @return bool has property?
-	 */
-	public function hasProperty($name)
-	{
-		return (property_exists($this, $name) && $name[0] !== '_');
-	}
-
-	/**
-	 * Attempt to get a property. Called by __get.
+	 * Attempt to get a property. Overriden from Entity to support events
+	 * and typed columns.
 	 *
 	 * @param String $name Name of the property
-	 * @return Mixed Value of the property
+	 * @return Mixed  $value Value of the property
 	 */
 	public function getProperty($name)
 	{
-		if (method_exists($this, 'get__'.$name))
-		{
-			return $this->{'get__'.$name}();
-		}
+		$this->emit('beforeGet', $name);
 
-		if ($this->hasProperty($name))
-		{
-			return $this->$name;
-		}
+		$value = parent::getProperty($name);
+		$value = $this->typedColumnGetter($name, $value);
 
-		throw new InvalidArgumentException("No such property: '{$name}' on ".get_called_class());
+		$this->emit('afterGet', $name);
+
+		return $value;
 	}
 
 	/**
-	 * Attempt to set a property. Called by __set.
+	 * Attempt to set a property. Overriden from Entity to support events,
+	 * dirty values, and typed columns.
 	 *
 	 * @param String $name Name of the property
 	 * @param Mixed  $value Value of the property
 	 */
 	public function setProperty($name, $value)
 	{
-		if (method_exists($this, 'set__'.$name))
-		{
-			$this->{'set__'.$name}($value);
-		}
-		elseif ($this->hasProperty($name))
-		{
-			$this->$name = $value;
-		}
-		else
-		{
-			throw new InvalidArgumentException("No such property: '{$name}' on ".get_called_class());
-		}
+		$this->emit('beforeSet', $name, $value);
+
+		$value = $this->typedColumnSetter($name, $value);
+
+		parent::setProperty($name, $value);
 
 		$this->markAsDirty($name);
+
+		$this->emit('afterSet', $name, $value);
 
 		return $this;
 	}
@@ -416,57 +247,15 @@ class Model {
 	}
 
 	/**
-	 * Get a list of fields
-	 *
-	 * @return array field names
-	 */
-	public static function getFields()
-	{
-		$vars = get_class_vars(get_called_class());
-		$fields = array();
-
-		foreach ($vars as $key => $value)
-		{
-			if ($key[0] != '_')
-			{
-				$fields[] = $key;
-			}
-		}
-
-		return $fields;
-	}
-
-	/**
 	 * Get all current values
 	 *
 	 * @return array Current values. Including null values - Beware.
 	 */
 	public function getValues()
 	{
-		$result = array();
+		$this->saveCompositeColumns();
 
-		$this->saveColumns();
-
-		foreach ($this->getFields() as $field)
-		{
-			$result[$field] = $this->getProperty($field);
-		}
-
-		return $result;
-	}
-
-	protected function saveColumns()
-	{
-		$columns = $this->getMetaData('columns');
-
-		foreach ($this->_column_objects as $name => $column)
-		{
-			$property = $columns[$name];
-			$value = $column->getValue();
-
-			$this->setProperty($property, $value);
-		}
-
+		return parent::getValues();
 	}
 
 	/**
@@ -477,27 +266,6 @@ class Model {
 	public function isNew()
 	{
 		return ($this->getId() === NULL);
-	}
-
-	/**
-	 * Validate the model
-	 *
-	 * @return validation result
-	 */
-	public function validate()
-	{
-		if ( ! isset($this->_validator))
-		{
-			return TRUE;
-		}
-
-		return $this->_validator->validate($this->getDirty());
-
-		// TODO validate relationships?
-		foreach ($this->getAllAssociations() as $assoc)
-		{
-			$assoc->validate();
-		}
 	}
 
 	/**
@@ -520,7 +288,7 @@ class Model {
 		else
 		{
 			// update
-			$this->saveColumns();
+			$this->saveCompositeColumns();
 			$this->constrainQueryToSelf($qb);
 			$qb->update();
 		}
@@ -567,69 +335,6 @@ class Model {
 	}
 
 	/**
-	 * Events
-	 */
-	public function onBeforeFetch()
-	{
-		return TRUE;
-	}
-
-	public function onAfterFetch()
-	{
-		return TRUE;
-	}
-
-	public function onBeforeSave()
-	{
-		return TRUE;
-	}
-
-	public function onAfterSave()
-	{
-		return TRUE;
-	}
-
-	public function onBeforeDelete()
-	{
-		return TRUE;
-	}
-
-	public function onAfterDelete()
-	{
-		return TRUE;
-	}
-
-	public function onBeforeValidate()
-	{
-		return TRUE;
-	}
-
-	public function onAfterValidate()
-	{
-		return TRUE;
-	}
-
-	/**
-	 * Retrieve data as an array. All getters will be hit.
-	 *
-	 * @return array Data including NULl values
-	 */
-	public function toArray()
-	{
-		return $this->getValues();
-	}
-
-	/**
-	 * Retrieve data as json
-	 *
-	 * @return string json formatted model data
-	 */
-	public function toJson()
-	{
-		return json_encode($this->toArray());
-	}
-
-	/**
 	 * Limit a query to the primary id of this model
 	 *
 	 * @param QueryBuilder $query The query that will be sent
@@ -640,54 +345,6 @@ class Model {
 		$id = $this->getId();
 
 		$query->filter($pk, $id);
-	}
-
-	/**
-	 * Get all associations
-	 *
-	 * @return array associations
-	 */
-	public function getAllAssociations()
-	{
-		return $this->_associations;
-	}
-
-	/**
-	 * Check if an association of a given name exists
-	 *
-	 * @param String $name Name of the association
-	 * @return bool has association?
-	 */
-	public function hasAssociation($name)
-	{
-		return array_key_exists($name, $this->_associations);
-	}
-
-	/**
-	 * Get an association of a given name
-	 *
-	 * @param String $name Name of the association
-	 * @return Mixed the association
-	 */
-	public function getAssociation($name)
-	{
-		return $this->_associations[$name];
-	}
-
-	/**
-	 * Set a given association
-	 *
-	 * @param String $name Name of the association
-	 * @param Association $association Association to set
-	 * @return $this;
-	 */
-	public function setAssociation($name, Association $association)
-	{
-		$association->setFrontend($this->_frontend);
-
-		$this->_associations[$name] = $association;
-
-		return $this;
 	}
 
 	/**
@@ -709,19 +366,91 @@ class Model {
 	}
 
 	/**
-	 * Set the validatior
 	 *
-	 * @param Validator $validator The validator to use
-	 * @return $this;
 	 */
-	public function setValidator(Validator $validator)
+	public function getFrontend()
 	{
-		$this->_validator = $validator;
+		return $this->_frontend;
+	}
 
-		$rules = $this->getMetaData('validation_rules');
-		$validator->setRules($rules);
+	/**
+	 * Support method for the model validation mixin
+	 */
+	public function getValidationData()
+	{
+		return $this->getDirty();
+	}
 
-		return $this;
+	/**
+	 * Support method for the model validation mixin
+	 */
+	public function getValidationRules()
+	{
+		return $this->getMetaData('validation_rules') ?: array();
+	}
+
+	/**
+	 * Interface method to implement Event\Subscriber, which automatically
+	 * subscribes this class to itself to call on<EventName>.
+	 */
+	public function getSubscribedEvents()
+	{
+		return $this->getMetaData('events') ?: array();
+	}
+
+	/**
+	 * Interface method to implement Event\Publisher so that others can
+	 * subscribe to events on this object.
+	 *
+	 * Technically this works automatically since the method exists on the
+	 * mixin, but doing this lets us enforce an interface, which will be
+	 * useful when hopefully replacing mixins with traits in future.
+	 */
+	public function subscribe(EventSubscriber $subscriber)
+	{
+		return $this->getMixin('event')->subscribe($subscriber);
+	}
+
+	/**
+	 * Interface method to implement Event\Publisher
+	 *
+	 * @see Model::subscribe()
+	 */
+	public function unsubscribe(EventSubscriber $subscriber)
+	{
+		return $this->getMixin('event')->unsubscribe($subscriber);
+	}
+
+	/**
+	 * Support method for the typed columns mixin
+	 */
+	public function getTypedColumns()
+	{
+		return $this->getMetaData('typed_columns') ?: array();
+	}
+
+	/**
+	 * Support method for the composite column mixin
+	 */
+	public function getCompositeColumns()
+	{
+		$definitions = array();
+
+		$all = $this->getMetaDataByClass('composite_columns');
+
+		foreach ($all as $class => $columns)
+		{
+			$ns_prefix = substr($class, 0, strrpos($class, '\\'));
+
+			foreach ($columns as $property => $name)
+			{
+				$class = $ns_prefix.'\\Column\\'.$name;
+
+				$definitions[$name] = compact('class', 'property');
+			}
+		}
+
+		return $definitions;
 	}
 
 	/**
@@ -733,4 +462,17 @@ class Model {
 	{
 		return $this->_frontend->get($this);
 	}
+
+	/**
+	 * Clean up var_dump output for developers on PHP 5.6+
+	 */
+	public function __debugInfo()
+	{
+		$name = $this->_name;
+		$values = $this->getValues();
+		$related_to = array_keys($this->getAllAssociations());
+
+		return compact('name', 'values', 'related_to');
+	}
+
 }
