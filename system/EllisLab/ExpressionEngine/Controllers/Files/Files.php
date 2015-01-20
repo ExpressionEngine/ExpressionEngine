@@ -358,6 +358,140 @@ class Files extends CP_Controller {
 		$this->exportFiles($files->all()->pluck('file_id'));
 	}
 
+	public function upload($dir_id)
+	{
+		$dir = ee('Model')->get('UploadDestination', $dir_id)->first();
+
+		if ( ! $dir)
+		{
+			show_error(lang('no_upload_destination'));
+		}
+
+		if ( ! $this->hasFileGroupAccessPrivileges($dir))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'base_url' => cp_url('files/upload/' . $dir_id),
+			'save_btn_text' => 'btn_upload_file',
+			'save_btn_text_working' => 'btn_upload_file_working',
+			'sections' => array(
+				array(
+					array(
+						'title' => 'title',
+						'desc' => 'title_desc',
+						'fields' => array(
+							'title' => array(
+								'type' => 'text',
+							)
+						)
+					),
+					array(
+						'title' => 'description',
+						'desc' => 'description_desc',
+						'fields' => array(
+							'description' => array(
+								'type' => 'textarea',
+							)
+						)
+					),
+					array(
+						'title' => 'credit',
+						'desc' => 'credit_desc',
+						'fields' => array(
+							'credit' => array(
+								'type' => 'text',
+							)
+						)
+					),
+					array(
+						'title' => 'location',
+						'desc' => 'location_desc',
+						'fields' => array(
+							'location' => array(
+								'type' => 'text',
+							)
+						)
+					),
+				)
+			)
+		);
+
+		ee()->load->library('form_validation');
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'title',
+				'label' => 'lang:title',
+				'rules' => 'strip_tags|trim|valid_xss_check'
+			),
+			array(
+				'field' => 'description',
+				'label' => 'lang:description',
+				'rules' => 'strip_tags|trim|valid_xss_check'
+			),
+			array(
+				'field' => 'credit',
+				'label' => 'lang:credit',
+				'rules' => 'strip_tags|trim|valid_xss_check'
+			),
+			array(
+				'field' => 'location',
+				'label' => 'lang:location',
+				'rules' => 'strip_tags|trim|valid_xss_check'
+			),
+		));
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			$file = ee('Model')->make('File');
+			$file->upload_location_id = $dir_id;
+			$file->site_id = ee()->config->item('site_id');
+
+			$file->mime_type = '';
+			$file->rel_path = '';
+			$file->file_name = '';
+
+			$file->title = ee()->input->post('title');
+			$file->description = ee()->input->post('description');
+			$file->credit = ee()->input->post('credit');
+			$file->location = ee()->input->post('location');
+			$file->uploaded_by_member_id = ee()->session->userdata('member_id');
+			$file->upload_date = ee()->localize->now;
+			$file->modified_by_member_id = ee()->session->userdata('member_id');
+			$file->modified_date = ee()->localize->now;
+
+			$file->save();
+
+			ee('Alert')->makeInline('settings-form')
+				->asSuccess()
+				->withTitle(lang('upload_filedata_success'))
+				->addToBody(sprintf(lang('upload_filedata_success_desc'), $file->title))
+				->defer();
+
+			ee()->functions->redirect(cp_url('files/directory/' . $file->upload_location_id));
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee('Alert')->makeInline('settings-form')
+				->asIssue()
+				->withTitle(lang('upload_filedata_error'))
+				->addToBody(lang('upload_filedata_error_desc'));
+		}
+
+		$this->sidebarMenu($dir_id);
+		$this->stdHeader();
+		ee()->view->cp_page_title = lang('file_upload');
+
+		ee()->cp->render('settings/form', $vars);
+	}
+
 	private function exportFiles($file_ids)
 	{
 		if ( ! is_array($file_ids))
