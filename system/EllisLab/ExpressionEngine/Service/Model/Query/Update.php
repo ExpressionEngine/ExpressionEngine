@@ -55,6 +55,11 @@ class Update extends Query {
 
 		$dirty = $object->getDirty();
 
+		if (empty($dirty))
+		{
+			return;
+		}
+
 		$results[] = array();
 
 		foreach ($gateways as $gateway)
