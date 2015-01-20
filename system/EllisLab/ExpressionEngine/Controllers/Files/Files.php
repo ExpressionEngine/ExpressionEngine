@@ -7,6 +7,7 @@ use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Service\Model\Collection;
+use EllisLab\ExpressionEngine\Model\File\UploadDestination;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -113,11 +114,9 @@ class Files extends CP_Controller {
 		);
 	}
 
-	public function index()
+	protected function buildTableFromFileCollection(Collection $files, $limit = 20)
 	{
-		$base_url = new URL('files', ee()->session->session_id());
-
-		$table = Table::create(array('autosort' => TRUE));
+		$table = Table::create(array('autosort' => TRUE, 'limit' => $limit));
 		$table->setColumns(
 			array(
 				'title_or_name',
@@ -131,30 +130,13 @@ class Files extends CP_Controller {
 				)
 			)
 		);
+		$table->setNoResultsText(lang('no_uploaded_files'));
 
 		$data = array();
 
-		$files = ee('Model')->get('File')
-			->filter('site_id', ee()->config->item('site_id'));
+		$file_id = ee()->session->flashdata('file_id');
 
-		if (ee()->session->userdata['group_id'] != 1)
-		{
-			// Add filter to exclude any directories the user's group
-			// has been denied access
-		}
-
-		$base_url->setQueryStringVariable('sort_col', $table->sort_col);
-		$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
-
-		$filters = ee('Filter')
-			->add('Perpage', $files->count(), 'show_all_files');
-
-		ee()->view->filters = $filters->render($base_url);
-
-		// [Re]set the table's limit
-		$table->config['limit'] = $filters->values()['perpage'];
-
-		foreach ($files->all() as $file)
+		foreach ($files as $file)
 		{
 			$toolbar = array(
 				'view' => array(
@@ -165,15 +147,15 @@ class Files extends CP_Controller {
 					'data-file-id' => $file->file_id
 				),
 				'edit' => array(
-					'href' => '',
+					'href' => cp_url('files/file/edit/' . $file->file_id),
 					'title' => lang('edit')
 				),
 				'crop' => array(
-					'href' => '',
+					'href' => cp_url('files/file/crop/' . $file->file_id),
 					'title' => lang('crop'),
 				),
 				'download' => array(
-					'href' => '',
+					'href' => cp_url('files/file/download/' . $file->file_id),
 					'title' => lang('download'),
 				),
 			);
@@ -184,7 +166,7 @@ class Files extends CP_Controller {
 				unset($toolbar['crop']);
 			}
 
-			$data[] = array(
+			$column = array(
 				$file->title . '<br><em class="faded">' . $file->rel_path . '</em>',
 				$file->mime_type,
 				ee()->localize->human_time($file->upload_date),
@@ -197,9 +179,47 @@ class Files extends CP_Controller {
 					)
 				)
 			);
+
+			$attrs = array();
+
+			if ($file_id && $file->file_id == $file_id)
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs'		=> $attrs,
+				'columns'	=> $column
+			);
 		}
 
 		$table->setData($data);
+
+		return $table;
+	}
+
+	public function index()
+	{
+		$base_url = new URL('files', ee()->session->session_id());
+
+		$files = ee('Model')->get('File')
+			->filter('site_id', ee()->config->item('site_id'));
+
+		if (ee()->session->userdata['group_id'] != 1)
+		{
+			// Add filter to exclude any directories the user's group
+			// has been denied access
+		}
+
+		$filters = ee('Filter')
+			->add('Perpage', $files->count(), 'show_all_files');
+
+		$table = $this->buildTableFromFileCollection($files->all(), $filters->values()['perpage']);
+
+		$base_url->setQueryStringVariable('sort_col', $table->sort_col);
+		$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
+
+		ee()->view->filters = $filters->render($base_url);
 
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
@@ -233,6 +253,75 @@ class Files extends CP_Controller {
 		ee()->view->cp_heading = lang('all_files');
 
 		ee()->cp->render('files/index', $vars);
+	}
+
+	public function directory($id)
+	{
+		$dir = ee('Model')->get('UploadDestination', $id)->first();
+
+		if ( ! $dir)
+		{
+			show_error(lang('no_upload_destination'));
+		}
+
+		if ( ! $this->hasFileGroupAccessPrivileges($dir))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$base_url = new URL('files/directory/' . $id, ee()->session->session_id());
+
+		$filters = ee('Filter')
+			->add('Perpage', $dir->getFiles()->count(), 'show_all_files');
+
+		$table = $this->buildTableFromFileCollection($dir->getFiles(), $filters->values()['perpage']);
+
+		$base_url->setQueryStringVariable('sort_col', $table->sort_col);
+		$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
+
+		ee()->view->filters = $filters->render($base_url);
+
+		$vars['table'] = $table->viewData($base_url);
+		$vars['form_url'] = $vars['table']['base_url'];
+		$vars['dir_id'] = $id;
+
+		if ( ! empty($vars['table']['data']))
+		{
+			// Paginate!
+			$pagination = new Pagination(
+				$vars['table']['limit'],
+				$vars['table']['total_rows'],
+				$vars['table']['page']
+			);
+			$vars['pagination'] = $pagination->cp_links($base_url);
+		}
+
+		$this->sidebarMenu($id);
+		$this->stdHeader();
+		ee()->view->cp_page_title = lang('file_manager');
+		ee()->view->cp_heading = sprintf(lang('files_in_directory'), $dir->name);
+
+		ee()->cp->render('files/directory', $vars);
+	}
+
+	private function hasFileGroupAccessPrivileges(UploadDestination $dir)
+	{
+		$member_group_id = ee()->session->userdata['group_id'];
+		// If the user is a Super Admin, return true
+		if ($member_group_id == 1)
+		{
+			return TRUE;
+		}
+
+		if ( ! $file)
+		{
+			return FALSE;
+		}
+
+		// if $member_group_id not in $dir->getNoAccess()
+		// return TRUE;
+
+		return FALSE;
 	}
 }
 // EOF
