@@ -226,6 +226,8 @@ class File extends Files {
 			show_error(lang('unauthorized_access'));
 		}
 
+		ee()->load->helper('download');
+		force_download($file->rel_path, file_get_contents($file->getAbsolutePath()));
 	}
 }
 // EOF
