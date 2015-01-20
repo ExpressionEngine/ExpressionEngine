@@ -344,12 +344,6 @@ class Table {
 					'columns'	=> $data_row
 				);
 
-				// Grid validation errors
-				if (isset($row['errors']))
-				{
-					//$data_row['errors'] = $row['errors'];
-				}
-
 				$this->data[] = $data_row;
 			}
 
