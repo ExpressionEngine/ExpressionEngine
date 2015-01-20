@@ -356,6 +356,7 @@ class Wizard extends CI_Controller {
 
 		// Prior to 2.0 the config array was named $conf. This has changed to
 		// $config for 2.0
+		// TODO-WB: Remove for 3.x updater
 		if (isset($conf))
 		{
 			$config = $conf;
@@ -1631,10 +1632,11 @@ PAPAYA;
 	 *
 	 * Loads the "container" view file and sets the content
 	 *
-	 * @access	private
-	 * @return	void
+	 * @param string $view  The name of the view to load
+	 * @param array  $arary Associative array to pass to view
+	 * @return void
 	 */
-	function _set_output($content = '', $array = array())
+	private function _set_output($view = '', $array = array())
 	{
 		if (IS_CORE)
 		{
@@ -1661,9 +1663,9 @@ PAPAYA;
 
 		$this->load->helper('language');
 
-		if ($content != '')
+		if ($view != '')
 		{
-			$content = $this->load->view($content, $data, TRUE);
+			$content = $this->load->view($view, $data, TRUE);
 		}
 
 		$data['content'] = $content;
@@ -1676,10 +1678,9 @@ PAPAYA;
 	/**
 	 * Set the base URL and index values so our links work properly
 	 *
-	 * @access	private
 	 * @return	void
 	 */
-	function _set_base_url()
+	private function _set_base_url()
 	{
 		// We completely kill the site URL value.  It's now blank.
 		// This enables us to use only the "index.php" part of the URL.
