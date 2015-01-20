@@ -1771,7 +1771,7 @@ PAPAYA;
 			{
 				if (strncmp($file, '_', 1) != 0 && strpos($file, '.') === FALSE && ! in_array($file, $this->required_modules))
 				{
-					$this->lang->load($file, '', FALSE, TRUE, EE_APPPATH.'/');
+					$this->lang->load($file, $this->mylang, FALSE, TRUE, EE_APPPATH.'/');
 					$name = ($this->lang->line(strtolower($file).'_module_name') != FALSE) ? $this->lang->line(strtolower($file).'_module_name') : $file;
 					$modules[$file] = array('name' => ucfirst($name), 'checked' => FALSE);
 				}
@@ -1808,7 +1808,7 @@ PAPAYA;
 
 						if ($file == $pkg_name)
 						{
-							$this->lang->load($file.'_lang', '', FALSE, FALSE, PATH_ADDONS.$pkg_name.'/');
+							$this->lang->load($file.'_lang', $this->mylang, FALSE, FALSE, PATH_ADDONS.$pkg_name.'/');
 							$name = ($this->lang->line(strtolower($file).'_module_name') != FALSE) ? $this->lang->line(strtolower($file).'_module_name') : $file;
 							$modules[$file] = array('name' => ucfirst($name), 'checked' => FALSE);
 						}
