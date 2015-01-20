@@ -198,6 +198,26 @@ class Files extends CP_Controller {
 		return $table;
 	}
 
+	protected function hasFileGroupAccessPrivileges(UploadDestination $dir)
+	{
+		$member_group_id = ee()->session->userdata['group_id'];
+		// If the user is a Super Admin, return true
+		if ($member_group_id == 1)
+		{
+			return TRUE;
+		}
+
+		if ( ! $file)
+		{
+			return FALSE;
+		}
+
+		// if $member_group_id not in $dir->getNoAccess()
+		// return TRUE;
+
+		return FALSE;
+	}
+
 	public function index()
 	{
 		$base_url = new URL('files', ee()->session->session_id());
@@ -302,26 +322,6 @@ class Files extends CP_Controller {
 		ee()->view->cp_heading = sprintf(lang('files_in_directory'), $dir->name);
 
 		ee()->cp->render('files/directory', $vars);
-	}
-
-	private function hasFileGroupAccessPrivileges(UploadDestination $dir)
-	{
-		$member_group_id = ee()->session->userdata['group_id'];
-		// If the user is a Super Admin, return true
-		if ($member_group_id == 1)
-		{
-			return TRUE;
-		}
-
-		if ( ! $file)
-		{
-			return FALSE;
-		}
-
-		// if $member_group_id not in $dir->getNoAccess()
-		// return TRUE;
-
-		return FALSE;
 	}
 }
 // EOF

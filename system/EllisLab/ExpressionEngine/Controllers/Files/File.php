@@ -30,26 +30,6 @@ use EllisLab\ExpressionEngine\Model\File\File as FileModel;
  */
 class File extends Files {
 
-	private function hasFileGroupAccessPrivileges(FileModel $file)
-	{
-		$member_group_id = ee()->session->userdata['group_id'];
-		// If the user is a Super Admin, return true
-		if ($member_group_id == 1)
-		{
-			return TRUE;
-		}
-
-		if ( ! $file)
-		{
-			return FALSE;
-		}
-
-		// if $member_group_id not in $file->getUploadDestination()->getNoAccess()
-		// return TRUE;
-
-		return FALSE;
-	}
-
 	public function view($id)
 	{
 		$file = ee('Model')->get('File', $id)->first();
@@ -59,7 +39,7 @@ class File extends Files {
 			show_error(lang('no_file'));
 		}
 
-		if ( ! $this->hasFileGroupAccessPrivileges($file))
+		if ( ! $this->hasFileGroupAccessPrivileges($file->getUploadDestination()))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -76,7 +56,7 @@ class File extends Files {
 			show_error(lang('no_file'));
 		}
 
-		if ( ! $this->hasFileGroupAccessPrivileges($file))
+		if ( ! $this->hasFileGroupAccessPrivileges($file->getUploadDestination()))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -205,7 +185,7 @@ class File extends Files {
 			show_error(lang('no_file'));
 		}
 
-		if ( ! $this->hasFileGroupAccessPrivileges($file))
+		if ( ! $this->hasFileGroupAccessPrivileges($file->getUploadDestination()))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -221,7 +201,7 @@ class File extends Files {
 			show_error(lang('no_file'));
 		}
 
-		if ( ! $this->hasFileGroupAccessPrivileges($file))
+		if ( ! $this->hasFileGroupAccessPrivileges($file->getUploadDestination()))
 		{
 			show_error(lang('unauthorized_access'));
 		}
