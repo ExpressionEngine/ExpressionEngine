@@ -513,7 +513,6 @@ class Template extends Design {
 		$template->enable_http_auth = ee()->input->post('enable_http_auth');
 
 		$member_groups = ee('Model')->get('MemberGroup')
-			->fields('group_id')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('group_id', '!=', 1)
 			->all();
