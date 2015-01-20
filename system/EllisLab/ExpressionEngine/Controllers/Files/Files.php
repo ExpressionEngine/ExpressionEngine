@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Controllers\Files;
 
+use ZipArchive;
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
@@ -106,7 +107,7 @@ class Files extends CP_Controller {
 			'form_url' => cp_url('files/search'),
 			'toolbar_items' => array(
 				'download' => array(
-					'href' => cp_url('design/export'),
+					'href' => cp_url('files/export'),
 					'title' => lang('export_all')
 				)
 			),
@@ -220,6 +221,15 @@ class Files extends CP_Controller {
 
 	public function index()
 	{
+		if (ee()->input->post('bulk_action') == 'remove')
+		{
+			$this->remove(ee()->input->post('selection'));
+		}
+		elseif (ee()->input->post('bulk_action') == 'download')
+		{
+			$this->exportFiles(ee()->input->post('selection'));
+		}
+
 		$base_url = new URL('files', ee()->session->session_id());
 
 		$files = ee('Model')->get('File')
@@ -289,6 +299,15 @@ class Files extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		if (ee()->input->post('bulk_action') == 'remove')
+		{
+			$this->remove(ee()->input->post('selection'));
+		}
+		elseif (ee()->input->post('bulk_action') == 'download')
+		{
+			$this->exportFiles(ee()->input->post('selection'));
+		}
+
 		$base_url = new URL('files/directory/' . $id, ee()->session->session_id());
 
 		$filters = ee('Filter')
@@ -322,6 +341,74 @@ class Files extends CP_Controller {
 		ee()->view->cp_heading = sprintf(lang('files_in_directory'), $dir->name);
 
 		ee()->cp->render('files/directory', $vars);
+	}
+
+	public function export()
+	{
+		$files = ee('Model')->get('File')
+			->fields('file_id')
+			->filter('site_id', ee()->config->item('site_id'));
+
+		if (ee()->session->userdata['group_id'] != 1)
+		{
+			// Add filter to exclude any directories the user's group
+			// has been denied access
+		}
+
+		$this->exportFiles($files->all()->pluck('file_id'));
+	}
+
+	private function exportFiles($file_ids)
+	{
+		if ( ! is_array($file_ids))
+		{
+			$file_ids = array($file_ids);
+		}
+
+		// Create the Zip Archive
+		$zipfilename = tempnam(sys_get_temp_dir(), '');
+		$zip = new ZipArchive();
+		if ($zip->open($zipfilename, ZipArchive::CREATE) !== TRUE)
+		{
+			ee('Alert')->makeInline('settings-form')
+				->asIssue()
+				->withTitle(lang('error_export'))
+				->addToBody(lang('error_cannot_create_zip'));
+			return;
+		}
+
+		// Loop through the files and add them to the zip
+		$files = ee('Model')->get('File', $file_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		foreach ($files as $file)
+		{
+			if ($this->hasFileGroupAccessPrivileges($file->getUploadDestination()))
+			{
+				$res = $zip->addFile($file->getAbsolutePath());
+
+				if ($res === FALSE)
+				{
+					ee('Alert')->makeInline('settings-form')
+						->asIssue()
+						->withTitle(lang('error_export'))
+						->addToBody(sprintf(lang('error_cannot_add_file_to_zip'), $file->title));
+					return;
+
+					$zip->close();
+					unlink($zipfilename);
+				}
+			}
+		}
+
+		$zip->close();
+
+		$data = file_get_contents($zipfilename);
+		unlink($zipfilename);
+
+		ee()->load->helper('download');
+		force_download('ExpressionEngine-files-export.zip', $data);
 	}
 }
 // EOF

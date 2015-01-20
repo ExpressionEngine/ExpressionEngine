@@ -82,7 +82,20 @@ $lang = array(
 'files_in_directory' =>
 'Files in <b>%s</b>',
 
-'no_uploaded_files'		=> 'No files have been uploaded to this directory.',
+'no_uploaded_files' =>
+'No files have been uploaded to this directory.',
+
+'export_all' =>
+'Export All Files',
+
+'error_export' =>
+'Cannot Export',
+
+'error_cannot_create_zip' =>
+'Cannot create a .zip file',
+
+'error_cannot_add_file_to_zip' =>
+'We were unable to add <b>%s</b> to the zip archive.',
 
 // 2.x
 
