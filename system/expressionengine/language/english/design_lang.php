@@ -468,6 +468,12 @@ $lang = array(
 'templates_removed_desc' =>
 'The following templates were removed',
 
+'error_export' =>
+'Cannot Export',
+
+'error_cannot_create_zip' =>
+'Cannot create a .zip file',
+
 // System Templates -> Messages
 
 'system' =>
