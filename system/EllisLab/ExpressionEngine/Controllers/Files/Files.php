@@ -7,7 +7,7 @@ use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
-use EllisLab\ExpressionEngine\Service\Model\Collection;
+use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
 
 /**
