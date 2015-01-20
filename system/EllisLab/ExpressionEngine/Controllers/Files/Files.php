@@ -168,7 +168,7 @@ class Files extends CP_Controller {
 			}
 
 			$column = array(
-				$file->title . '<br><em class="faded">' . $file->rel_path . '</em>',
+				$file->title . '<br><em class="faded">' . $file->file_name . '</em>',
 				$file->mime_type,
 				ee()->localize->human_time($file->upload_date),
 				array('toolbar_items' => $toolbar),

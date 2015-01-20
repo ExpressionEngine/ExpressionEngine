@@ -209,7 +209,7 @@ class File extends Files {
 		}
 
 		ee()->load->helper('download');
-		force_download($file->rel_path, file_get_contents($file->getAbsolutePath()));
+		force_download($file->file_name, file_get_contents($file->getAbsolutePath()));
 	}
 }
 // EOF
