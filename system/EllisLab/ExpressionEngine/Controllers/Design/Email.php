@@ -59,7 +59,7 @@ class Email extends Design {
 
 		$base_url = new URL('design/email/', ee()->session->session_id());
 
-		$table = Table::create(array('autosort' => TRUE, 'limit' => 1024));
+		$table = Table::create(array('autosort' => TRUE, 'subheadings' => TRUE));
 		$table->setColumns(
 			array(
 				'template',
@@ -72,7 +72,7 @@ class Email extends Design {
 		$data = array();
 		foreach ($templates as $template)
 		{
-			$data[] = array(
+			$data[$template->template_subtype][] = array(
 				lang($template->template_name),
 				array('toolbar_items' => array(
 					'edit' => array(
