@@ -657,7 +657,7 @@ class Template extends Design {
 		$vars = array(
 			'template' => $template,
 			'route' => $route,
-			'denied_member_groups' => $template->getNoAccess()->pluck('member_group'),
+			'denied_member_groups' => $template->getNoAccess()->pluck('group_id'),
 			'member_groups' => $member_gropus,
 			'existing_templates' => $existing_templates
 		);
