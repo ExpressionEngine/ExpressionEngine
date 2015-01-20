@@ -246,18 +246,23 @@ class Wizard extends CI_Controller {
 		// Is $_GET['m'] set?  If not we show the welcome page
 		if ( ! $this->input->get('M'))
 		{
-			return $this->_set_output('welcome', array('action' => $this->set_qstr('optionselect')));
+			return $this->_set_output(
+				'welcome',
+				array('action' => $this->set_qstr('optionselect'))
+			);
 		}
 
 		// Run our pre-flight tests.
-		// This function generates its own error messages so if it returns FALSE we bail out.
+		// This function generates its own error messages so if it returns FALSE
+		// we bail out.
 		if ( ! $this->_preflight())
 		{
 			return FALSE;
 		}
 
-		// OK, at this point we have determined whether an existing EE installation exists
-		// and we've done all our error trapping and connected to the DB if needed
+		// OK, at this point we have determined whether an existing EE
+		// installation exists and we've done all our error trapping and
+		// connected to the DB if needed
 
 		// For safety all function names are prefixed with an underscore
 		$action = '_'.$this->input->get('M');
@@ -284,7 +289,8 @@ class Wizard extends CI_Controller {
 	 */
 	function _preflight()
 	{
-		// If the installed version of PHP is not supported we show the "unsupported" view file
+		// If the installed version of PHP is not supported we show the
+		// "unsupported" view file
 		if (is_php($this->minimum_php) == FALSE)
 		{
 			$this->_set_output('unsupported', array('required_ver' => $this->minimum_php));
@@ -335,18 +341,21 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
-		// Prior to 2.0 the config array was named $conf.  This has changed to $config for 2.0
+		// Prior to 2.0 the config array was named $conf. This has changed to
+		// $config for 2.0
 		if (isset($conf))
 		{
 			$config = $conf;
 		}
 
-		// No config AND db arrays?  This means it's a first time install...hopefully.
-		// There's always a chance that the user nuked their config files.  During installation
-		// later we'll double check the existence of EE tables once we know the DB connection values
-		if ( ! isset($config) AND ! isset($db))
+		// No config? This means it's a first time install...hopefully. There's
+		// always a chance that the user nuked their config files. During
+		// installation later we'll double check the existence of EE tables once
+		// we know the DB connection values
+		if ( ! isset($config))
 		{
-			// Is the email template file available?  We'll check since we need this later
+			// Is the email template file available? We'll check since we need
+			// this later
 			if ( ! file_exists(EE_APPPATH.'/language/'.$this->userdata['deft_lang'].'/email_data'.EXT))
 			{
 				$this->_set_output('error', array('error' => $this->lang->line('unreadable_email')));
@@ -367,7 +376,8 @@ class Wizard extends CI_Controller {
 			$this->userdata['image_path'] = $this->image_path;
 			$this->userdata['theme_folder_path'] = $this->root_theme_path;
 
-			// We'll assign any POST values that exist (this will be the case after the user submits the install form)
+			// We'll assign any POST values that exist (this will be the case
+			// after the user submits the install form)
 			if (count($_POST) > 0)
 			{
 				foreach ($_POST as $key => $val)
@@ -407,24 +417,25 @@ class Wizard extends CI_Controller {
 			// We'll switch the default if MySQLi is available
 			if (function_exists('mysqli_connect'))
 			{
-					$this->userdata['dbdriver'] = 'mysqli';
+				$this->userdata['dbdriver'] = 'mysqli';
 			}
 
-			// At this point we are reasonably sure that this is a first time installation.
-			// We will set the flag and bail out since we're done
+			// At this point we are reasonably sure that this is a first time
+			// installation. We will set the flag and bail out since we're done
 			$this->is_installed = FALSE;
 			return TRUE;
 		}
 
-		// Before we assume this is an update, let's see if we can connect to the DB.
-		// If they are running EE prior to 2.0 the database settings are found in the main
-		// config file, if they are running 2.0 or newer, the settings are found in the db file
 		if (isset($active_group))
 		{
 			$this->active_group = $active_group;
 		}
 
 		$move_db_data = FALSE;
+		// Before we assume this is an update, let's see if we can connect to
+		// the DB. If they are running EE prior to 2.0 the database settings are
+		// found in the main config file, if they are running 2.0 or newer, the
+		// settings are found in the db file
 
 		if ( ! isset($db) AND isset($config['db_hostname']))
 		{
@@ -466,16 +477,17 @@ class Wizard extends CI_Controller {
 		// We need to deal with a couple possible issues.
 
 		// If the 'app_version' index is not present in the config file we are
-		// dealing with EE public beta version released back in 2004.
-		// Crazy as it sounds there's a chance someone will surface still running it
-		// so we'll write the version to the config file
+		// dealing with EE public beta version released back in 2004. Crazy as
+		// it sounds there's a chance someone will surface still running it so
+		// we'll write the version to the config file
 		if ( ! isset($config['app_version']))
 		{
 			$this->config->_append_config_1x(array('app_version' => 0));
 			$config['app_version'] = 0;  // Update the $config array
 		}
 
-		// Fixes a bug in the installation script for 2.0.2, where periods were included
+		// Fixes a bug in the installation script for 2.0.2, where periods were
+		// included
 		$config['app_version'] = str_replace('.', '', $config['app_version']);
 
 		// This fixes a bug introduced in the installation script for v 1.3.1
@@ -500,8 +512,9 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
-		// If this is FALSE it means the user is running the most current version.
-		// We will show the "you are running the most current version" template
+		// If this is FALSE it means the user is running the most current
+		// version. We will show the "you are running the most current version"
+		// template
 		if ($this->next_update === FALSE)
 		{
 			$this->_assign_install_values();
@@ -517,8 +530,8 @@ class Wizard extends CI_Controller {
 
 			$self = ( ! isset($_SERVER['PHP_SELF']) OR $_SERVER['PHP_SELF'] == '') ? '' : substr($_SERVER['PHP_SELF'], 1);
 
-			// Since the CP access file can be inside or outside of the "system" folder
-			// we will do a little test to help us set the site_url item
+			// Since the CP access file can be inside or outside of the "system"
+			// folder we will do a little test to help us set the site_url item
 			$_selfloc = (is_dir('./installer/')) ? SELF.'/'.SYSDIR : SELF;
 
 			$this->userdata['site_url'] = $host.substr($self, 0, - strlen($_selfloc));
@@ -535,11 +548,13 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
-		// Check to see if the language pack they are using in 1.6.X is available for the 2.0 upgrade.
-		// This will only need to be done during the move from 1.6 to 2, and not for subsequent 2.0
-		// updates, so we'll use the $move_db_data flag to determine if we should check for this, as
-		// it will only be TRUE during this specific transition.
 		if ($move_db_data == TRUE)
+		// Check to see if the language pack they are using in 1.6.X is
+		// available for the 2.0 upgrade. This will only need to be done during
+		// the move from 1.6 to 2, and not for subsequent 2.0 updates, so we'll
+		// use the $move_db_data flag to determine if we should check for this,
+		// as it will only be TRUE during this specific transition.
+		// TODO-WB: Remove for 3.x
 		{
 			$default_language = $this->config->_get_config_1x('deft_lang');
 
@@ -585,7 +600,8 @@ class Wizard extends CI_Controller {
 
 		// If we got this far we know it's an update and all is well in the universe!
 
-		// Assign the config and DB arrays to class variables so we don't have to reload them.
+		// Assign the config and DB arrays to class variables so we don't have
+		// to reload them.
 		$this->_config = $config;
 		$this->_db = $db;
 
@@ -697,9 +713,10 @@ class Wizard extends CI_Controller {
 		// Assign the _POST array values
 		$this->_assign_install_values();
 
-		// Are there any errors to display?
-		// When the user submits the installation form, the $this->_do_install() function
-		// is called.  In the event of errors the form will be redisplayed with the error message
+		// Are there any errors to display? When the user submits the
+		// installation form, the $this->_do_install() function is called. In
+		// the event of errors the form will be redisplayed with the error
+		// message
 		$this->userdata['errors'] = $errors;
 
 		$template_module_vars = '';
