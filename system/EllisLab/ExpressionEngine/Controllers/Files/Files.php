@@ -237,6 +237,7 @@ class Files extends CP_Controller {
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
+			ee()->functions->redirect(cp_url('index', ee()->cp->get_url_state()));
 		}
 		elseif (ee()->input->post('bulk_action') == 'download')
 		{
@@ -318,6 +319,7 @@ class Files extends CP_Controller {
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
+			ee()->functions->redirect(cp_url('directory/' . $id, ee()->cp->get_url_state()));
 		}
 		elseif (ee()->input->post('bulk_action') == 'download')
 		{
