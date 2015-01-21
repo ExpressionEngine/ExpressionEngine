@@ -577,7 +577,6 @@ class Files extends CP_Controller {
 			$file_ids = array($file_ids);
 		}
 
-		// Loop through the files and add them to the zip
 		$files = ee('Model')->get('File', $file_ids)
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
