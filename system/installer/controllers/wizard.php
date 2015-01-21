@@ -301,7 +301,7 @@ class Wizard extends CI_Controller {
 		// Is the action allowed?
 		if ( ! in_array($this->input->get('M'), $this->allowed_methods) OR  ! method_exists($this, $action))
 		{
-			show_error($this->lang->line('invalid_action'));
+			show_error(lang('invalid_action'));
 		}
 
 		// Call the action
@@ -331,14 +331,14 @@ class Wizard extends CI_Controller {
 		// Is the config file readable?
 		if ( ! include($this->config->config_path))
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('unreadable_config')));
+			$this->_set_output('error', array('error' => lang('unreadable_config')));
 			return FALSE;
 		}
 
 		// Is the config file writable?
 		if ( ! is_really_writable($this->config->config_path))
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('unwritable_config')));
+			$this->_set_output('error', array('error' => lang('unwritable_config')));
 			return FALSE;
 		}
 
@@ -350,7 +350,7 @@ class Wizard extends CI_Controller {
 		// Is the cache folder writable?
 		if ( ! is_really_writable($cache_path))
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('unwritable_cache_folder')));
+			$this->_set_output('error', array('error' => lang('unwritable_cache_folder')));
 			return FALSE;
 		}
 
@@ -372,14 +372,14 @@ class Wizard extends CI_Controller {
 			// this later
 			if ( ! file_exists(EE_APPPATH.'/language/'.$this->userdata['deft_lang'].'/email_data'.EXT))
 			{
-				$this->_set_output('error', array('error' => $this->lang->line('unreadable_email')));
+				$this->_set_output('error', array('error' => lang('unreadable_email')));
 				return FALSE;
 			}
 
 			// Are the DB schemas available?
 			if ( ! is_dir(APPPATH.'schema/'))
 			{
-				$this->_set_output('error', array('error' => $this->lang->line('unreadable_schema')));
+				$this->_set_output('error', array('error' => lang('unreadable_schema')));
 				return FALSE;
 			}
 
@@ -448,14 +448,14 @@ class Wizard extends CI_Controller {
 
 		if ( ! isset($db))
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('database_no_data')));
+			$this->_set_output('error', array('error' => lang('database_no_data')));
 			return FALSE;
 		}
 
 		// Can we connect?
 		if ( ! $this->_db_connect($db))
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('database_no_config')));
+			$this->_set_output('error', array('error' => lang('database_no_config')));
 			return FALSE;
 		}
 
@@ -494,7 +494,7 @@ class Wizard extends CI_Controller {
 		// If this returns false it means the "updates" folder was not readable
 		if ( ! $this->_fetch_updates($config['app_version']))
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('unreadable_update')));
+			$this->_set_output('error', array('error' => lang('unreadable_update')));
 			return FALSE;
 		}
 
@@ -556,7 +556,7 @@ class Wizard extends CI_Controller {
 			// Check to see if they have the language files needed
 			if ( ! in_array($default_language, $languages))
 			{
-				$this->_set_output('error', array('error' => str_replace('%x', ucfirst($default_language), $this->lang->line('unreadable_language'))));
+				$this->_set_output('error', array('error' => str_replace('%x', ucfirst($default_language), lang('unreadable_language'))));
 				return FALSE;
 			}
 		}
@@ -564,7 +564,7 @@ class Wizard extends CI_Controller {
 		// Before moving on, let's load the update file to make sure it's readable
 		if ( ! include(APPPATH.'updates/ud_'.$this->next_update.EXT))
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('unreadable_files')));
+			$this->_set_output('error', array('error' => lang('unreadable_files')));
 			return FALSE;
 		}
 
@@ -605,11 +605,11 @@ class Wizard extends CI_Controller {
 		$data = array();
 		if ($this->is_installed == FALSE)
 		{
-			$data['link'] = $this->set_qstr('license', $this->lang->line('click_to_install'));
+			$data['link'] = $this->set_qstr('license', lang('click_to_install'));
 		}
 		else
 		{
-			$data['link'] = $this->set_qstr('license', str_replace('%s', $this->version, $this->lang->line('click_to_update')));
+			$data['link'] = $this->set_qstr('license', str_replace('%s', $this->version, lang('click_to_update')));
 		}
 
 		$data['is_installed'] = $this->is_installed;
@@ -859,7 +859,7 @@ PAPAYA;
 		{
 			if ($this->userdata[$val] == '')
 			{
-				$errors[] = $this->lang->line('empty_fields');
+				$errors[] = lang('empty_fields');
 				break;
 			}
 		}
@@ -867,24 +867,24 @@ PAPAYA;
 		// Usernames must be at least 4 chars in length
 		if ($this->userdata['username'] != '' AND strlen($this->userdata['username']) < 4)
 		{
-			$errors[] = $this->lang->line('username_short');
+			$errors[] = lang('username_short');
 		}
 
 		// Passwords must be at least 5 chars in length
 		if ($this->userdata['password'] != '' AND strlen($this->userdata['password']) < 5)
 		{
-			$errors[] = $this->lang->line('password_short');
+			$errors[] = lang('password_short');
 		}
 
 		// Passwords must match
 		if ($this->userdata['password'] != $this->userdata['password_confirm'])
 		{
-			$errors[] = $this->lang->line('password_no_match');
+			$errors[] = lang('password_no_match');
 		}
 
 		if ( ! valid_license_pattern($this->userdata['license_number']))
 		{
-			$errors[] = $this->lang->line('invalid_license_number');
+			$errors[] = lang('invalid_license_number');
 		}
 
 		//  Is password the same as username?
@@ -896,7 +896,7 @@ PAPAYA;
 		{
 			if ($lc_user == $lc_pass OR $lc_user == strrev($lc_pass) OR $lc_user == $nm_pass OR $lc_user == strrev($nm_pass))
 			{
-				$errors[] = $this->lang->line('password_not_unique');
+				$errors[] = lang('password_not_unique');
 			}
 		}
 
@@ -932,19 +932,19 @@ PAPAYA;
 		// DB Prefix has some character restrictions
 		if ( ! preg_match("/^[0-9a-zA-Z\$_]*$/", $this->userdata['db_prefix']))
 		{
-			$errors[] = $this->lang->line('database_prefix_invalid_characters');
+			$errors[] = lang('database_prefix_invalid_characters');
 		}
 
 		// The DB Prefix should not include "exp_"
 		if ( strpos($this->userdata['db_prefix'], 'exp_') !== FALSE)
 		{
-			$errors[] = $this->lang->line('database_prefix_contains_exp_');
+			$errors[] = lang('database_prefix_contains_exp_');
 		}
 
 		// Table names cannot be longer than 64 characters, our longest is 26
 		if ( strlen($this->userdata['db_prefix']) > 30)
 		{
-			$errors[] = $this->lang->line('database_prefix_too_long');
+			$errors[] = lang('database_prefix_too_long');
 		}
 
 		// Connect to the database.  We pass a multi-dimensional array since
@@ -968,13 +968,13 @@ PAPAYA;
 
 		if ( ! $this->_db_connect($db, TRUE))
 		{
-			$errors[] = $this->lang->line('database_no_connect');
+			$errors[] = lang('database_no_connect');
 		}
 
 		// Does the specified database schema type exist?
 		if ( ! file_exists(APPPATH.'schema/'.$this->userdata['dbdriver'].'_schema'.EXT))
 		{
-			$errors[] = $this->lang->line('unreadable_dbdriver');
+			$errors[] = lang('unreadable_dbdriver');
 		}
 
 		// Were there errors?
@@ -1087,7 +1087,7 @@ PAPAYA;
 		// Install Database Tables!
 		if ( ! $this->schema->install_tables_and_data())
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('improper_grants')));
+			$this->_set_output('error', array('error' => lang('improper_grants')));
 			return FALSE;
 		}
 
@@ -1096,13 +1096,13 @@ PAPAYA;
 		// visible for module and accessory installers
 		if ($this->_write_config_data() == FALSE)
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('unwritable_config')));
+			$this->_set_output('error', array('error' => lang('unwritable_config')));
 			return FALSE;
 		}
 
 		if ($this->_write_db_config($db) == FALSE)
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('unwritable_database')));
+			$this->_set_output('error', array('error' => lang('unwritable_database')));
 			return FALSE;
 		}
 
@@ -1121,7 +1121,7 @@ PAPAYA;
 		// Install Modules!
 		if ( ! $this->_install_modules())
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('improper_grants')));
+			$this->_set_output('error', array('error' => lang('improper_grants')));
 			return FALSE;
 		}
 
@@ -1130,7 +1130,7 @@ PAPAYA;
 		// which might affect the Template Access permissions.
 		if ($this->userdata['theme'] != '' && ! $this->_install_site_theme())
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('improper_grants')));
+			$this->_set_output('error', array('error' => lang('improper_grants')));
 			return FALSE;
 		}
 
@@ -1352,7 +1352,7 @@ PAPAYA;
 				'update_msg',
 				array(
 					'remaining_updates' => $this->remaining_updates,
-					'next_version'		=> $this->progress->prefix.$this->lang->line('version_update_text')
+					'next_version'		=> $this->progress->prefix.lang('version_update_text')
 				)
 			);
 		}
@@ -1378,7 +1378,7 @@ PAPAYA;
 
 			if ( ! method_exists($UD, $method))
 			{
-				$this->_set_output('error', array('error' => str_replace('%x', htmlentities($method), $this->lang->line('update_step_error'))));
+				$this->_set_output('error', array('error' => str_replace('%x', htmlentities($method), lang('update_step_error'))));
 				return FALSE;
 			}
 		}
@@ -1430,7 +1430,7 @@ PAPAYA;
 
 		if (($status = $UD->{$method}()) === FALSE)
 		{
-			$error_msg = $this->lang->line('update_error');
+			$error_msg = lang('update_error');
 
 			if ( ! empty($UD->errors))
 			{
@@ -1499,7 +1499,7 @@ PAPAYA;
 			array(
 				'remaining_updates' => $this->remaining_updates,
 				'extra_header'		=> $progress_head,
-				'next_version'		=> $this->progress->prefix.$this->lang->line('version_update_text')
+				'next_version'		=> $this->progress->prefix.lang('version_update_text')
 			)
 		);
 	}
@@ -1773,7 +1773,7 @@ PAPAYA;
 				if (strncmp($file, '_', 1) != 0 && strpos($file, '.') === FALSE && ! in_array($file, $this->required_modules))
 				{
 					$this->lang->load($file, $this->mylang, FALSE, TRUE, EE_APPPATH.'/');
-					$name = ($this->lang->line(strtolower($file).'_module_name') != FALSE) ? $this->lang->line(strtolower($file).'_module_name') : $file;
+					$name = (lang(strtolower($file).'_module_name') != FALSE) ? lang(strtolower($file).'_module_name') : $file;
 					$modules[$file] = array('name' => ucfirst($name), 'checked' => FALSE);
 				}
 			}
@@ -1810,7 +1810,7 @@ PAPAYA;
 						if ($file == $pkg_name)
 						{
 							$this->lang->load($file.'_lang', $this->mylang, FALSE, FALSE, PATH_ADDONS.$pkg_name.'/');
-							$name = ($this->lang->line(strtolower($file).'_module_name') != FALSE) ? $this->lang->line(strtolower($file).'_module_name') : $file;
+							$name = (lang(strtolower($file).'_module_name') != FALSE) ? lang(strtolower($file).'_module_name') : $file;
 							$modules[$file] = array('name' => ucfirst($name), 'checked' => FALSE);
 						}
 					}
