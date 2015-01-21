@@ -3,7 +3,6 @@
 namespace EllisLab\ExpressionEngine\Controllers\Files;
 
 use EllisLab\ExpressionEngine\Controllers\Files\Files;
-use EllisLab\ExpressionEngine\Model\File\File as FileModel;
 
 /**
  * ExpressionEngine - by EllisLab
