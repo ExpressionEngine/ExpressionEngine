@@ -49,14 +49,6 @@ interface FieldStructure {
     public function save();
 
     /**
-     * Validate the data for this field
-     *
-     * @throws FieldStructureInvalidException if missing / invalid data
-     * @return void
-     */
-    public function validate();
-
-    /**
 	 * Get the form that defines this field (usually required properties).
      *
      * @param FieldContent   $field_content   An object implementing the FieldContent interface
