@@ -23,11 +23,6 @@
 		</fieldset>
 		<h1>
 			<?=$cp_heading?>
-			<?php if ($can_admin_upload_prefs): ?>
-			<ul class="toolbar">
-				<li class="sync"><a href="<?=cp_url('files/sync')?>" title="<?=lang('sync')?>"></a></li>
-			</ul>
-			<?php endif; ?>
 		</h1>
 		<?=ee('Alert')->getAllInlines()?>
 		<?php if (isset($filters)) echo $filters; ?>

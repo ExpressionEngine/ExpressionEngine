@@ -375,28 +375,6 @@ class Files extends CP_Controller {
 		ee()->cp->render('files/directory', $vars);
 	}
 
-	public function sync($id = NULL)
-	{
-		if ( ! ee()->cp->allowed_group('can_admin_upload_prefs'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		$dir = ee('Model')->get('UploadDestination', $id)->first();
-
-		if ( ! $dir)
-		{
-			show_error(lang('no_upload_destination'));
-		}
-
-		if ( ! $this->hasFileGroupAccessPrivileges($dir))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		ee()->functions->redirect(cp_url('directory/' . $id, ee()->cp->get_url_state()));
-	}
-
 	public function export()
 	{
 		$files = ee('Model')->get('File')
