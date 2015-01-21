@@ -19,7 +19,7 @@
 		<fieldset class="tbl-bulk-act">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
-				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove-template"><?=lang('remove')?></option>
+				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove-file"><?=lang('remove')?></option>
 				<option value="download"><?=lang('download')?></option>
 			</select>
 			<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
@@ -44,7 +44,7 @@
 
 <?php
 $modal_vars = array(
-	'name'		=> 'modal-confirm-remove-template',
+	'name'		=> 'modal-confirm-remove-file',
 	'form_url'	=> $form_url,
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
