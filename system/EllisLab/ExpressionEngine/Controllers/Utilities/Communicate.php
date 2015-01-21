@@ -88,7 +88,7 @@ class Communicate extends Utilities {
 			$default['plaintext_alt'] = $email->plaintext_alt;
 			$default['mailtype'] = $email->mailtype;
 			$default['wordwrap'] = $email->wordwrap;
-			$member_groups = $email->getMemberGroups()->getIds();
+			$member_groups = $email->getMemberGroups()->pluck('group_id');
 		}
 
 		// Set up member group emailing options
