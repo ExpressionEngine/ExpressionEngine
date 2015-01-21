@@ -97,6 +97,12 @@ $lang = array(
 'error_cannot_add_file_to_zip' =>
 'We were unable to add <b>%s</b> to the zip archive.',
 
+'size_b'  => ' bytes',
+'size_kb' => '<abbr title="Kilobyte">kb</abbr>',
+'size_mb' => '<abbr title="Metgabyte">mb</abbr>',
+'size_gb' => '<abbr title="Gigabyte">gb</abbr>',
+'size_tb' => '<abbr title="Terabyte">tb</abbr>',
+
 // 2.x
 
 'content_files' 		=> 'File Manager',
