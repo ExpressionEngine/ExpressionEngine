@@ -138,7 +138,8 @@ class Files extends CP_Controller {
 
 		foreach ($files as $file)
 		{
-			if ($this->hasFileGroupAccessPrivileges($file->getUploadDestination()) === FALSE)
+			if ( ! $file->getUploadDestination()
+				|| $this->hasFileGroupAccessPrivileges($file->getUploadDestination()) === FALSE)
 			{
 				continue;
 			}
