@@ -40,8 +40,7 @@ class CI_Loader {
 	protected $_ci_loaded_files		= array();
 	protected $_ci_models			= array();
 	protected $_ci_helpers			= array();
-	protected $_ci_varmap			= array('unit_test' => 'unit',
-											'user_agent' => 'agent');
+	protected $_ci_varmap			= array('user_agent' => 'agent');
 
 	/**
 	 * Constructor
