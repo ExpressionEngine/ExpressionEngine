@@ -22,7 +22,12 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class EE_Config Extends CI_Config {
+class EE_Config {
+
+
+	public $config = array();
+	public $is_loaded = array();
+	public $_config_paths = array(SYSPATH, APPPATH);
 
 	public $config_path         = ''; // Set in the constructor below
 	public $default_ini         = array();
@@ -39,7 +44,7 @@ class EE_Config Extends CI_Config {
 	 */
 	public function __construct()
 	{
-		parent::__construct();
+		$this->config =& get_config();
 
 		// Change this path before release.
 		$this->config_path = SYSPATH.'config/config.php';
@@ -176,6 +181,80 @@ class EE_Config Extends CI_Config {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Load Config File
+	 *
+	 * @param	string	the config file name
+	 * @return	boolean	if the file was loaded correctly
+	 */
+	public function load($file = '', $use_sections = FALSE, $fail_gracefully = FALSE)
+	{
+		$file = ($file == '') ? 'config' : str_replace('.php', '', $file);
+		$loaded = FALSE;
+
+		foreach($this->_config_paths as $path)
+		{
+			$file_path = $path.'config/'.$file.'.php';
+
+			if (in_array($file_path, $this->is_loaded, TRUE))
+			{
+				$loaded = TRUE;
+				continue;
+			}
+
+			if ( ! file_exists($path.'config/'.$file.'.php'))
+			{
+				continue;
+			}
+
+			include($file_path);
+
+			if ( ! isset($config) OR ! is_array($config))
+			{
+				if ($fail_gracefully === TRUE)
+				{
+					return FALSE;
+				}
+				show_error('Your '.$file_path.' file does not appear to contain a valid configuration array.');
+			}
+
+			if ($use_sections === TRUE)
+			{
+				if (isset($this->config[$file]))
+				{
+					$this->config[$file] = array_merge($this->config[$file], $config);
+				}
+				else
+				{
+					$this->config[$file] = $config;
+				}
+			}
+			else
+			{
+				$this->config = array_merge($this->config, $config);
+			}
+
+			$this->is_loaded[] = $file_path;
+			unset($config);
+
+			$loaded = TRUE;
+			log_message('debug', 'Config file loaded: '.$file_path);
+		}
+
+		if ($loaded === FALSE)
+		{
+			if ($fail_gracefully === TRUE)
+			{
+				return FALSE;
+			}
+			show_error('The configuration file '.$file.'.php'.' does not exist.');
+		}
+
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Site Preferences
 	 *
 	 * This function lets us retrieve Multi-site Manager configuration
@@ -299,6 +378,48 @@ class EE_Config Extends CI_Config {
 			ee()->db->cache_off();
 		}
 	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Fetch a config file item
+	 *
+	 *
+	 * @access	public
+	 * @param	string	the config item name
+	 * @param	string	the index name
+	 * @param	bool
+	 * @return	string
+	 */
+	function item($item, $index = '')
+	{
+		if ($index == '')
+		{
+			if ( ! isset($this->config[$item]))
+			{
+				return FALSE;
+			}
+
+			$pref = $this->config[$item];
+		}
+		else
+		{
+			if ( ! isset($this->config[$index]))
+			{
+				return FALSE;
+			}
+
+			if ( ! isset($this->config[$index][$item]))
+			{
+				return FALSE;
+			}
+
+			$pref = $this->config[$index][$item];
+		}
+
+		return $pref;
+	}
+
 
 	// --------------------------------------------------------------------
 
@@ -1583,6 +1704,66 @@ class EE_Config Extends CI_Config {
 		);
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Site URL
+	 *
+	 * @access	public
+	 * @param	string	the URI string
+	 * @return	string
+	 */
+	function site_url($uri = '')
+	{
+		if ($uri == '')
+		{
+			if ($this->item('base_url') == '')
+			{
+				return $this->item('index_page');
+			}
+			else
+			{
+				return $this->slash_item('base_url').$this->item('index_page');
+			}
+		}
+
+		if ($this->item('enable_query_strings') == FALSE)
+		{
+			if (is_array($uri))
+			{
+				$uri = implode('/', $uri);
+			}
+
+			$suffix = ($this->item('url_suffix') == FALSE) ? '' : $this->item('url_suffix');
+			return $this->slash_item('base_url').$this->slash_item('index_page').trim($uri, '/').$suffix;
+		}
+		else
+		{
+			if (is_array($uri))
+			{
+				$i = 0;
+				$str = '';
+				foreach ($uri as $key => $val)
+				{
+					$prefix = ($i == 0) ? '' : '&';
+					$str .= $prefix.$key.'='.$val;
+					$i++;
+				}
+
+				$uri = $str;
+			}
+
+			if ($this->item('base_url') == '')
+			{
+				return $this->item('index_page').'?'.$uri;
+			}
+			else
+			{
+				return $this->slash_item('base_url').$this->item('index_page').'?'.$uri;
+			}
+		}
+	}
+
 	// -------------------------------------------------------------------------
 
 	/**
@@ -1596,7 +1777,17 @@ class EE_Config Extends CI_Config {
 	 */
 	public function slash_item($item)
 	{
-		$pref = parent::slash_item($item);
+		if ( ! isset($this->config[$item]))
+		{
+			return FALSE;
+		}
+
+		$pref = $this->config[$item];
+
+		if ($pref != '' && substr($pref, -1) != '/')
+		{
+			$pref .= '/';
+		}
 
 		if (defined('EE_APPPATH'))
 		{
@@ -1604,6 +1795,60 @@ class EE_Config Extends CI_Config {
 		}
 
 		return $pref;
+	}
+
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * System URL
+	 *
+	 * @access	public
+	 * @return	string
+	 */
+	function system_url()
+	{
+		$x = explode("/", preg_replace("|/*(.+?)/*$|", "\\1", BASEPATH));
+		return $this->slash_item('base_url').end($x).'/';
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Set a config file item
+	 *
+	 * @access	public
+	 * @param	string	the config item key
+	 * @param	string	the config item value
+	 * @return	void
+	 */
+	function set_item($item, $value)
+	{
+		$this->config[$item] = $value;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Assign to Config
+	 *
+	 * This function is called by the front controller (CodeIgniter.php)
+	 * after the Config class is instantiated.  It permits config items
+	 * to be assigned or overriden by variables contained in the index.php file
+	 *
+	 * @access	private
+	 * @param	array
+	 * @return	void
+	 */
+	function _assign_to_config($items = array())
+	{
+		if (is_array($items))
+		{
+			foreach ($items as $key => $val)
+			{
+				$this->set_item($key, $val);
+			}
+		}
 	}
 
 }

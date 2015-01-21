@@ -108,7 +108,7 @@ get_config(array('subclass_prefix' => 'EE_'));
  *  Instantiate the config class
  * ------------------------------------------------------
  */
-	$CFG =& load_class('Config', 'core');
+	$CFG =& load_class('Config', 'core', 'EE_');
 
 	// Do we have any manually set config items in the index.php file?
 	if (isset($assign_to_config))
