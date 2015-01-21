@@ -313,6 +313,7 @@ class Updater {
 	private function _remove_watermarks_table()
 	{
 		ee()->dbforge->drop_table('file_watermarks');
+		ee()->dbforge->drop_column('file_dimensions', 'watermark_id');
 	}
 
 }

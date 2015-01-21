@@ -45,5 +45,4 @@ class FileDimension extends Model {
 	protected $resize_type;
 	protected $width;
 	protected $height;
-	protected $watermark_id;
 }
