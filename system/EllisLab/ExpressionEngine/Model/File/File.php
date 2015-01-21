@@ -37,6 +37,7 @@ class File extends Model {
 
 	protected static $_primary_key = 'file_id';
 	protected static $_table_name = 'files';
+	protected static $_events = array('beforeDelete');
 
 	protected static $_relationships = array(
 		'Site' => array(
@@ -108,7 +109,7 @@ class File extends Model {
 		return rtrim($this->getUploadDestination()->url, '/') . '/' . $this->rel_path;
 	}
 
-	protected function beforeRemove()
+	protected function onBeforeDelete()
 	{
 		unlink($this->getAbsolutePath());
 	}
