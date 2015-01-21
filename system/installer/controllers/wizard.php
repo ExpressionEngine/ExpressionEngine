@@ -1614,7 +1614,7 @@ PAPAYA;
 	 *
 	 * Same functionality as above, but this is for the javascript directory
 	 */
-	protected function _set_javascript_path($path = 'themes/javascript/compressed/', $n = NULL)
+	protected function _set_javascript_path($path = 'themes/ee/javascript/compressed/', $n = NULL)
 	{
 		if ( ! is_dir($path) && $n < 10)
 		{
