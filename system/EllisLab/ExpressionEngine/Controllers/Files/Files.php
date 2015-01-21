@@ -274,6 +274,15 @@ class Files extends CP_Controller {
 
 		$vars['directories'] = $upload_destinations->all();
 
+		ee()->javascript->set_global('file_view_url', cp_url('files/file/view'));
+		ee()->javascript->set_global('lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/v3/confirm_remove',
+				'cp/files/manager'
+			),
+		));
+
 		$this->sidebarMenu(NULL);
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('file_manager');
@@ -331,6 +340,15 @@ class Files extends CP_Controller {
 			);
 			$vars['pagination'] = $pagination->cp_links($base_url);
 		}
+
+		ee()->javascript->set_global('file_view_url', cp_url('files/file/view'));
+		ee()->javascript->set_global('lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/v3/confirm_remove',
+				'cp/files/manager'
+			),
+		));
 
 		$this->sidebarMenu($id);
 		$this->stdHeader();

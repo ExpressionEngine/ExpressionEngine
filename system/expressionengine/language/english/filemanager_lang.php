@@ -4,6 +4,10 @@ $lang = array(
 
 // 3.0
 
+'file'  => 'File',
+'files' => 'Files',
+'pixels' => 'pixels',
+
 'file_manager' =>
 'File Manager',
 
