@@ -125,6 +125,9 @@ $lang = array(
 'upload_directory_removed_desc' =>
 'The upload directory <b>%s</b> has been removed.',
 
+'file_desc' =>
+'Choose a file to upload.',
+
 // 2.x
 
 'content_files' 		=> 'File Manager',

@@ -408,11 +408,22 @@ class Files extends CP_Controller {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
+			'has_file_input' => TRUE,
 			'base_url' => cp_url('files/upload/' . $dir_id),
 			'save_btn_text' => 'btn_upload_file',
 			'save_btn_text_working' => 'btn_upload_file_working',
 			'sections' => array(
 				array(
+					array(
+						'title' => 'file',
+						'desc' => 'file_desc',
+						'fields' => array(
+							'file' => array(
+								'type' => 'file',
+								'required' => TRUE
+							)
+						)
+					),
 					array(
 						'title' => 'title',
 						'desc' => 'title_desc',
@@ -455,6 +466,11 @@ class Files extends CP_Controller {
 
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'file',
+				'label' => 'lang:file',
+				'rules' => 'required'
+			),
 			array(
 				'field' => 'title',
 				'label' => 'lang:title',
