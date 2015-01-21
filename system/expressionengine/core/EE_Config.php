@@ -1061,7 +1061,6 @@ class EE_Config Extends CI_Config {
 		{
 			return TRUE;
 		}
-		 // <?php BBEdit bug fix
 	}
 
 	// --------------------------------------------------------------------
