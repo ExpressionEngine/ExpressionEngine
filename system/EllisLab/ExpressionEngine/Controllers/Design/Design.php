@@ -405,7 +405,7 @@ class Design extends CP_Controller {
 		ee()->cp->add_js_script(array(
 			'file' => array(
 				'cp/v3/confirm_remove',
-				'cp/manager'
+				'cp/design/manager'
 			),
 		));
 
