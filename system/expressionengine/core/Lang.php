@@ -22,7 +22,11 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class EE_Lang extends CI_Lang {
+class EE_Lang {
+
+	var $language	= array();
+	var $is_loaded	= array();
+
 
 	/**
 	 * Add a language file to the main language array
@@ -84,10 +88,12 @@ class EE_Lang extends CI_Lang {
 	{
 		// Clean up langfile
 		$langfile = str_replace('.php', '', $langfile);
+
 		if ($add_suffix == TRUE)
 		{
 			$langfile = str_replace('_lang.', '', $langfile).'_lang';
 		}
+
 		$langfile .= '.php';
 
 		// Check to see if it's already loaded
@@ -122,7 +128,7 @@ class EE_Lang extends CI_Lang {
 
 		$success = FALSE;
 
-		foreach($paths as $path)
+		foreach ($paths as $path)
 		{
 			if (file_exists($path) && include $path)
 			{

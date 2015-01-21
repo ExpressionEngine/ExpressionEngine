@@ -213,9 +213,9 @@ class CI_Loader {
 				$CI->load->database($db_conn, FALSE, TRUE);
 			}
 
-			if ( ! class_exists('CI_Model'))
+			if ( ! class_exists('EE_Model'))
 			{
-				load_class('Model', 'core');
+				load_class('Model', 'core', 'EE_');
 			}
 
 			require_once($mod_path.'models/'.$path.$model.'.php');

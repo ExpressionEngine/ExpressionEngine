@@ -177,7 +177,7 @@ get_config(array('subclass_prefix' => 'EE_'));
  *  Load the Language class
  * ------------------------------------------------------
  */
-	$LANG =& load_class('Lang', 'core');
+	$LANG =& load_class('Lang', 'core', 'EE_');
 
 /*
  * ------------------------------------------------------

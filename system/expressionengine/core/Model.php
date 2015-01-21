@@ -24,7 +24,7 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/libraries/config.html
  */
-class CI_Model {
+class EE_Model {
 
 	/**
 	 * Constructor
@@ -51,6 +51,8 @@ class CI_Model {
 	}
 }
 // END Model Class
+
+class_alias('EE_Model', 'CI_Model');
 
 /* End of file Model.php */
 /* Location: ./system/core/Model.php */
