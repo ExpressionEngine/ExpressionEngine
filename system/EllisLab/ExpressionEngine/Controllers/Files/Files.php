@@ -42,12 +42,14 @@ class Files extends CP_Controller {
 	{
 		parent::__construct();
 
-		if ( ! $this->cp->allowed_group('can_access_content', 'can_access_files'))
+		if ( ! ee()->cp->allowed_group('can_access_content', 'can_access_files'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
 		ee()->lang->loadfile('filemanager');
+
+		ee()->view->can_admin_upload_prefs = ee()->cp->allowed_group('can_admin_upload_prefs');
 	}
 
 	protected function sidebarMenu($active = NULL)
@@ -60,6 +62,7 @@ class Files extends CP_Controller {
 
 		// Register our menu
 		$vars = array(
+			'can_admin_upload_prefs' => ee()->cp->allowed_group('can_admin_upload_prefs'),
 			'upload_directories' => array()
 		);
 
@@ -368,6 +371,28 @@ class Files extends CP_Controller {
 		ee()->view->cp_heading = sprintf(lang('files_in_directory'), $dir->name);
 
 		ee()->cp->render('files/directory', $vars);
+	}
+
+	public function sync($id = NULL)
+	{
+		if ( ! ee()->cp->allowed_group('can_admin_upload_prefs'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$dir = ee('Model')->get('UploadDestination', $id)->first();
+
+		if ( ! $dir)
+		{
+			show_error(lang('no_upload_destination'));
+		}
+
+		if ( ! $this->hasFileGroupAccessPrivileges($dir))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		ee()->functions->redirect(cp_url('directory/' . $id, ee()->cp->get_url_state()));
 	}
 
 	public function export()
