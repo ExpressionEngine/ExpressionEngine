@@ -163,7 +163,7 @@ get_config(array('subclass_prefix' => 'EE_'));
  * Load the security class for xss and csrf support
  * -----------------------------------------------------
  */
-	$SEC =& load_class('Security', 'core');
+	$SEC =& load_class('Security', 'core', 'EE_');
 
 /*
  * ------------------------------------------------------
