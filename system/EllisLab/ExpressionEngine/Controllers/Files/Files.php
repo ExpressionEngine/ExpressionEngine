@@ -66,14 +66,13 @@ class Files extends CP_Controller {
 		$upload_destinations = ee('Model')->get('UploadDestination')
 			->filter('site_id', ee()->config->item('site_id'));
 
-		if (ee()->session->userdata['group_id'] != 1)
-		{
-			// Add filter to exclude any directories the user's group
-			// has been denied access
-		}
-
 		foreach ($upload_destinations->all() as $destination)
 		{
+			if ($this->hasFileGroupAccessPrivileges($destination) === FALSE)
+			{
+				continue;
+			}
+
 			$class = ($active_id == $destination->id) ? 'act' : '';
 
 			$data = array(
@@ -136,6 +135,11 @@ class Files extends CP_Controller {
 
 		foreach ($files as $file)
 		{
+			if ($this->hasFileGroupAccessPrivileges($file->getUploadDestination()) === FALSE)
+			{
+				continue;
+			}
+
 			$toolbar = array(
 				'view' => array(
 					'href' => '',
@@ -198,6 +202,11 @@ class Files extends CP_Controller {
 
 	protected function hasFileGroupAccessPrivileges(UploadDestination $dir)
 	{
+		// 2 = Banned
+		// 3 = Guests
+		// 4 = Pending
+		$hardcoded_disallowed_groups = array('2', '3', '4');
+
 		$member_group_id = ee()->session->userdata['group_id'];
 		// If the user is a Super Admin, return true
 		if ($member_group_id == 1)
@@ -205,15 +214,22 @@ class Files extends CP_Controller {
 			return TRUE;
 		}
 
-		if ( ! $file)
+		if (in_array($member_group_id, $hardcoded_disallowed_groups))
 		{
 			return FALSE;
 		}
 
-		// if $member_group_id not in $dir->getNoAccess()
-		// return TRUE;
+		if ( ! $dir)
+		{
+			return FALSE;
+		}
 
-		return FALSE;
+		if (in_array($member_group_id, $dir->getNoAccess()->pluck('group_id')))
+		{
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
 	public function index()
@@ -231,12 +247,6 @@ class Files extends CP_Controller {
 
 		$files = ee('Model')->get('File')
 			->filter('site_id', ee()->config->item('site_id'));
-
-		if (ee()->session->userdata['group_id'] != 1)
-		{
-			// Add filter to exclude any directories the user's group
-			// has been denied access
-		}
 
 		$filters = ee('Filter')
 			->add('Perpage', $files->count(), 'show_all_files');
