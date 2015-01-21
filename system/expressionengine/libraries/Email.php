@@ -1,43 +1,29 @@
-<?php
+<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /**
- * CodeIgniter
+ * ExpressionEngine - by EllisLab
  *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * NOTICE OF LICENSE
- *
- * Licensed under the Open Software License version 3.0
- *
- * This source file is subject to the Open Software License (OSL 3.0) that is
- * bundled with this package in the files license.txt / license.rst.  It is
- * also available through the world wide web at this URL:
- * http://opensource.org/licenses/OSL-3.0
- * If you did not receive a copy of the license and are unable to obtain it
- * through the world wide web, please send an email to
- * licensing@ellislab.com so we can send you a copy immediately.
- *
- * @package		CodeIgniter
+ * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @license		http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @link		http://codeigniter.com
- * @since		Version 1.0
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 2.0
  * @filesource
  */
-defined('BASEPATH') OR exit('No direct script access allowed');
+
+// ------------------------------------------------------------------------
 
 /**
- * CodeIgniter Email Class
+ * ExpressionEngine Core Email Class
  *
- * Permits email to be sent using Mail, Sendmail, or SMTP.
- *
- * @package		CodeIgniter
- * @subpackage	Libraries
- * @category	Libraries
+ * @package		ExpressionEngine
+ * @subpackage	Core
+ * @category	Core
  * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/libraries/email.html
+ * @link		http://ellislab.com
  */
-class CI_Email {
+class EE_Email {
+
 
 	/**
 	 * Used as the User-Agent and X-Mailer headers' value.
@@ -378,33 +364,28 @@ class CI_Email {
 	 */
 	protected $_priorities		= array('1 (Highest)', '2 (High)', '3 (Normal)', '4 (Low)', '5 (Lowest)');
 
-	// --------------------------------------------------------------------
 
 	/**
-	 * Constructor - Sets Email Preferences
-	 *
-	 * The constructor can be passed an array of config values
-	 *
-	 * @param	array	$config = array()
-	 * @return	void
+	 * Constructor
 	 */
-	public function __construct($config = array())
+	function __construct($init = TRUE)
 	{
 		$this->charset = config_item('charset');
 
-		if (count($config) > 0)
-		{
-			$this->initialize($config);
-		}
-		else
-		{
-			$this->_smtp_auth = ! ($this->smtp_user === '' && $this->smtp_pass === '');
-			$this->_safe_mode = (bool) @ini_get('safe_mode');
-		}
+		$this->_smtp_auth = ! ($this->smtp_user === '' && $this->smtp_pass === '');
+		$this->_safe_mode = (bool) @ini_get('safe_mode');
 
 		$this->charset = strtoupper($this->charset);
 
-		log_message('debug', 'Email Class Initialized');
+		if ($init != TRUE)
+		{
+			return;
+		}
+
+		// Make a local reference to the ExpressionEngine super object
+		$this->EE =& get_instance();
+
+		$this->EE_initialize();
 	}
 
 	// --------------------------------------------------------------------
@@ -454,6 +435,52 @@ class CI_Email {
 		$this->_safe_mode = (bool) @ini_get('safe_mode');
 
 		return $this;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Set config values
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	function EE_initialize()
+	{
+		$config = array(
+			'protocol'		=> ( ! in_array( ee()->config->item('mail_protocol'), $this->_protocols)) ? 'mail' : ee()->config->item('mail_protocol'),
+			'charset'		=> (ee()->config->item('email_charset') == '') ? 'utf-8' : ee()->config->item('email_charset'),
+			'smtp_host'		=> ee()->config->item('smtp_server'),
+			'smtp_port'		=> ee()->config->item('smtp_port'),
+			'smtp_user'		=> ee()->config->item('smtp_username'),
+			'smtp_pass'		=> ee()->config->item('smtp_password')
+		);
+
+		/* -------------------------------------------
+		/*	Hidden Configuration Variables
+		/*	- email_newline => Default newline.
+		/*  - email_crlf => CRLF used in quoted-printable encoding
+		/*  - email_smtp_crypto => Cryptographic protocol (Secure Sockets Layer or Transport Layer Security allowed)
+        /* -------------------------------------------*/
+
+		if (ee()->config->item('email_newline') !== FALSE)
+		{
+			$config['newline'] = ee()->config->item('email_newline');
+		}
+
+		if (ee()->config->item('email_crlf') !== FALSE)
+		{
+			$config['crlf'] = ee()->config->item('email_crlf');
+		}
+
+		if (ee()->config->item('email_smtp_crypto') == 'tls' OR ee()->config->item('email_smtp_crypto') == 'ssl')
+		{
+			$config['smtp_crypto'] = ee()->config->item('email_smtp_crypto');
+		}
+
+		$this->useragent = APP_NAME.' '.APP_VER;
+
+		$this->initialize($config);
 	}
 
 	// --------------------------------------------------------------------
@@ -684,31 +711,6 @@ class CI_Email {
 		return $this;
 	}
 
-	// --------------------------------------------------------------------
-
-	/**
-	 * Set Body
-	 *
-	 * @param	string
-	 * @return	CI_Email
-	 */
-	public function message($body)
-	{
-		$this->_body = rtrim(str_replace("\r", '', $body));
-
-		/* strip slashes only if magic quotes is ON
-		   if we do it with magic quotes OFF, it strips real, user-inputted chars.
-
-		   NOTE: In PHP 5.4 get_magic_quotes_gpc() will always return 0 and
-			 it will probably not exist in future versions at all.
-		*/
-		if ( ! is_php('5.4') && get_magic_quotes_gpc())
-		{
-			$this->_body = stripslashes($this->_body);
-		}
-
-		return $this;
-	}
 
 	// --------------------------------------------------------------------
 
@@ -1707,28 +1709,6 @@ class CI_Email {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Spool mail to the mail server
-	 *
-	 * @return	bool
-	 */
-	protected function _spool_email()
-	{
-		$this->_unwrap_specials();
-
-		$method = '_send_with_'.$this->_get_protocol();
-		if ( ! $this->$method())
-		{
-			$this->_set_error_message('lang:email_send_failure_'.($this->_get_protocol() === 'mail' ? 'phpmail' : $this->_get_protocol()));
-			return FALSE;
-		}
-
-		$this->_set_error_message('lang:email_sent', $this->_get_protocol());
-		return TRUE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Send using mail()
 	 *
 	 * @return	bool
@@ -2211,7 +2191,75 @@ class CI_Email {
 		return 'application/x-unknown-content-type';
 	}
 
-}
+	// --------------------------------------------------------------------
 
-/* End of file Email.php */
-/* Location: ./system/libraries/Email.php */
+	/**
+	 * Set the email message
+	 *
+	 * @return	this
+	 */
+	function message($body, $alt = '')
+	{
+		$body = ee()->functions->insert_action_ids($body);
+
+		if ($alt != '')
+		{
+			$this->set_alt_message(ee()->functions->insert_action_ids($alt));
+		}
+
+		$this->_body = stripslashes(rtrim(str_replace("\r", "", $body)));
+		return $this;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Spool mail to the mail server
+	 *
+	 * @return	bool
+	 */
+	function _spool_email()
+	{
+		// ------------------------------------------------------
+		// 'email_send' hook.
+		//  - Optionally modifies and overrides sending of email.
+		//
+		if (ee()->extensions->active_hook('email_send') === TRUE)
+		{
+			$ret = ee()->extensions->call(
+				'email_send',
+				array(
+					'headers'		=> &$this->_headers,
+					'header_str'	=> &$this->_header_str,
+					'recipients'	=> &$this->_recipients,
+					'cc_array'		=> &$this->_cc_array,
+					'bcc_array'		=> &$this->_bcc_array,
+					'subject'		=> &$this->_subject,
+					'finalbody'		=> &$this->_finalbody
+				)
+			);
+
+			if (ee()->extensions->end_script === TRUE)
+			{
+				ee()->extensions->end_script = FALSE;
+				return $ret;
+			}
+		}
+
+		$this->_unwrap_specials();
+
+		$method = '_send_with_'.$this->_get_protocol();
+		if ( ! $this->$method())
+		{
+			$this->_set_error_message('lang:email_send_failure_'.($this->_get_protocol() === 'mail' ? 'phpmail' : $this->_get_protocol()));
+			return FALSE;
+		}
+
+		$this->_set_error_message('lang:email_sent', $this->_get_protocol());
+		return TRUE;
+	}
+}
+// END CLASS
+
+/* End of file EE_Email.php */
+/* Location: ./system/expressionengine/libraries/EE_Email.php */
