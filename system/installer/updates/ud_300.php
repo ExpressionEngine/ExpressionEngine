@@ -45,6 +45,7 @@ class Updater {
 				'_create_plugins_table',
 				'_remove_accessories_table',
 				'_update_specialty_templates_table',
+				'_remove_watermarks_table',
 			)
 		);
 
@@ -303,6 +304,17 @@ class Updater {
 			ee()->db->update_batch('specialty_templates', $templates, 'template_id');
 		}
 	}
+
+	/**
+	 * File Watermarks are going away in 3.0. This removes their table.
+	 *
+	 * @return void
+	 */
+	private function _remove_watermarks_table()
+	{
+		ee()->dbforge->drop_table('file_watermarks');
+	}
+
 }
 /* END CLASS */
 
