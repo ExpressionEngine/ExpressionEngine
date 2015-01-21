@@ -77,26 +77,11 @@
 
 	EllisLab\ExpressionEngine\Service\Autoloader::getInstance()->register();
 
-/*
- * ------------------------------------------------------
- *  Set the subclass_prefix
- * ------------------------------------------------------
- *
- * Normally the "subclass_prefix" is set in the config file.
- * The subclass prefix allows CI to know if a core class is
- * being extended via a library in the local application
- * "libraries" folder. Since CI allows config items to be
- * overriden via data set in the main index. php file,
- * before proceeding we need to know if a subclass_prefix
- * override exists.  If so, we will set this value now,
- * before any classes are loaded
- * Note: Since the config file data is cached it doesn't
- * hurt to load it here.
- */
-	if (isset($assign_to_config['subclass_prefix']) AND $assign_to_config['subclass_prefix'] != '')
-	{
-		get_config(array('subclass_prefix' => $assign_to_config['subclass_prefix']));
-	}
+
+
+
+get_config(array('subclass_prefix' => 'EE_'));
+
 
 /*
  * ------------------------------------------------------
