@@ -128,6 +128,12 @@ $lang = array(
 'file_desc' =>
 'Choose a file to upload.',
 
+'upload_filedata_success' =>
+'File Upload Success',
+
+'upload_filedata_success_desc' =>
+'The file <b>%s</b> was uploaded successfully.',
+
 // 2.x
 
 'content_files' 		=> 'File Manager',
