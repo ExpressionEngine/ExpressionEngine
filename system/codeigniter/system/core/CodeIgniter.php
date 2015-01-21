@@ -135,14 +135,14 @@ get_config(array('subclass_prefix' => 'EE_'));
  *  Instantiate the URI class
  * ------------------------------------------------------
  */
-	$URI =& load_class('URI', 'core');
+	$URI =& load_class('URI', 'core', 'EE_');
 
 /*
  * ------------------------------------------------------
  *  Instantiate the routing class and set the routing
  * ------------------------------------------------------
  */
-	$RTR =& load_class('Router', 'core', 'EE');
+	$RTR =& load_class('Router', 'core', 'EE_');
 	$RTR->_set_routing();
 
 	// Set any routing overrides that may exist in the main index file
@@ -156,7 +156,7 @@ get_config(array('subclass_prefix' => 'EE_'));
  *  Instantiate the output class
  * ------------------------------------------------------
  */
-	$OUT =& load_class('Output', 'core');
+	$OUT =& load_class('Output', 'core', 'EE_');
 
 /*
  * -----------------------------------------------------
@@ -170,7 +170,7 @@ get_config(array('subclass_prefix' => 'EE_'));
  *  Load the Input class and sanitize globals
  * ------------------------------------------------------
  */
-	$IN	=& load_class('Input', 'core');
+	$IN	=& load_class('Input', 'core', 'EE_');
 
 /*
  * ------------------------------------------------------
