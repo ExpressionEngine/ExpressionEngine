@@ -307,7 +307,9 @@ class Files extends CP_Controller {
 
 	public function directory($id)
 	{
-		$dir = ee('Model')->get('UploadDestination', $id)->first();
+		$dir = ee('Model')->get('UploadDestination', $id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
 
 		if ( ! $dir)
 		{
@@ -412,7 +414,9 @@ class Files extends CP_Controller {
 
 	public function upload($dir_id)
 	{
-		$dir = ee('Model')->get('UploadDestination', $dir_id)->first();
+		$dir = ee('Model')->get('UploadDestination', $dir_id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
 
 		if ( ! $dir)
 		{

@@ -32,7 +32,9 @@ class File extends Files {
 
 	public function view($id)
 	{
-		$file = ee('Model')->get('File', $id)->first();
+		$file = ee('Model')->get('File', $id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
 
 		if ( ! $file)
 		{
@@ -68,7 +70,9 @@ class File extends Files {
 
 	public function edit($id)
 	{
-		$file = ee('Model')->get('File', $id)->first();
+		$file = ee('Model')->get('File', $id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
 
 		if ( ! $file)
 		{
@@ -199,7 +203,9 @@ class File extends Files {
 
 	public function crop($id)
 	{
-		$file = ee('Model')->get('File', $id)->first();
+		$file = ee('Model')->get('File', $id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
 
 		if ( ! $file)
 		{
@@ -215,7 +221,9 @@ class File extends Files {
 
 	public function download($id)
 	{
-		$file = ee('Model')->get('File', $id)->first();
+		$file = ee('Model')->get('File', $id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
 
 		if ( ! $file)
 		{
