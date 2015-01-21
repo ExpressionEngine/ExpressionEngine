@@ -628,7 +628,7 @@ class Uploads extends Settings {
 		// Otherwise, pull from the database if we're editing
 		elseif ($upload_destination !== NULL)
 		{
-			$sizes = $upload_destination->getFileDimension();
+			$sizes = $upload_destination->getFileDimensions();
 
 			if ($sizes->count() != 0)
 			{
