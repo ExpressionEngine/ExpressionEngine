@@ -142,7 +142,7 @@ get_config(array('subclass_prefix' => 'EE_'));
  *  Instantiate the routing class and set the routing
  * ------------------------------------------------------
  */
-	$RTR =& load_class('Router', 'core');
+	$RTR =& load_class('Router', 'core', 'EE');
 	$RTR->_set_routing();
 
 	// Set any routing overrides that may exist in the main index file

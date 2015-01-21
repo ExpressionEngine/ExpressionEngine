@@ -26,7 +26,7 @@
  * @category	Libraries
  * @link		http://codeigniter.com/user_guide/general/routing.html
  */
-class CI_Router {
+class EE_Router {
 
 	var $config;
 	var $routes			= array();
