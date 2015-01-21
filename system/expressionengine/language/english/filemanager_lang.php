@@ -113,6 +113,12 @@ $lang = array(
 'files_removed_desc' =>
 'The following files were removed',
 
+'btn_upload_file' =>
+'Upload File',
+
+'btn_upload_file_working' =>
+'Saving...',
+
 // 2.x
 
 'content_files' 		=> 'File Manager',
