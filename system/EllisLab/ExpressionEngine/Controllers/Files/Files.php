@@ -568,16 +568,20 @@ class Files extends CP_Controller {
 			->addToBody(sprintf(lang('upload_directory_removed_desc'), $dir->name))
 			->defer();
 
-		$return = cp_url('files');
+		$return_url = cp_url('files');
 
 		if (ee()->input->post('return'))
 		{
 			$return = base64_decode(ee()->input->post('return'));
 			$uri_elements = json_decode($return, TRUE);
-			$return = cp_url($uri_elements['path'], $uri_elements['arguments']);
+
+			if ($uri_elements['path'] != 'cp/files/directory/' . $id)
+			{
+				$return = cp_url($uri_elements['path'], $uri_elements['arguments']);
+			}
 		}
 
-		ee()->functions->redirect($return);
+		ee()->functions->redirect($return_url);
 	}
 
 	private function exportFiles($file_ids)
