@@ -27,7 +27,7 @@
 			var modal = $(this).attr('rel');
 			$.ajax({
 				type: "GET",
-				url: EE.template_settings_url + "/" + $(this).data('template-id'),
+				url: EE.template_settings_url.replace('###', $(this).data('template-id')),
 				dataType: 'html',
 				success: function (data) {
 					$("." + modal + " div.box").html(data);
