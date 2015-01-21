@@ -1,27 +1,28 @@
-<?php
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-/*
-=====================================================
- ExpressionEngine - by EllisLab
------------------------------------------------------
- http://ellislab.com/
------------------------------------------------------
- Copyright (c) 2003 - 2014, EllisLab, Inc.
-=====================================================
- THIS IS COPYRIGHTED SOFTWARE
- PLEASE READ THE LICENSE AGREEMENT
- http://ellislab.com/expressionengine/user-guide/license.html
-=====================================================
- File: mcp.search.php
------------------------------------------------------
- Purpose: Search class - CP
-=====================================================
-*/
-if ( ! defined('EXT'))
-{
-	exit('Invalid file request');
-}
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 1.0
+ * @filesource
+ */
 
+// --------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Search Module
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Modules
+ * @category	Modules
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
 
 class Search_upd {
 
