@@ -664,7 +664,7 @@ class Files extends CP_Controller {
 		{
 			if ($this->hasFileGroupAccessPrivileges($file->getUploadDestination()))
 			{
-				$names[] = $file->title . '<i>' . $file->file_name . '</i>';
+				$names[] = $file->title;
 				$file->delete();
 			}
 		}
