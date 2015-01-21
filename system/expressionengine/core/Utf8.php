@@ -26,7 +26,7 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/libraries/utf8.html
  */
-class CI_Utf8 {
+class EE_Utf8 {
 
 	/**
 	 * Constructor

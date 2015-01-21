@@ -27,7 +27,7 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/libraries/benchmark.html
  */
-class CI_Benchmark {
+class EE_Benchmark {
 
 	var $marker = array();
 

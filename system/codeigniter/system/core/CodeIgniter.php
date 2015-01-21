@@ -98,7 +98,7 @@ get_config(array('subclass_prefix' => 'EE_'));
  *  Start the timer... tick tock tick tock...
  * ------------------------------------------------------
  */
-	$BM =& load_class('Benchmark', 'core');
+	$BM =& load_class('Benchmark', 'core', 'EE_');
 	$BM->mark('total_execution_time_start');
 	$BM->mark('loading_time:_base_classes_start');
 
@@ -128,7 +128,7 @@ get_config(array('subclass_prefix' => 'EE_'));
  *
  */
 
-	$UNI =& load_class('Utf8', 'core');
+	$UNI =& load_class('Utf8', 'core', 'EE_');
 
 /*
  * ------------------------------------------------------
