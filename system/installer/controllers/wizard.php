@@ -275,6 +275,14 @@ class Wizard extends CI_Controller {
 	{
 		$this->_set_base_url();
 
+		// Run our pre-flight tests.
+		// This function generates its own error messages so if it returns FALSE
+		// we bail out.
+		if ( ! $this->_preflight())
+		{
+			return FALSE;
+		}
+
 		// Is $_GET['m'] set?  If not we show the welcome page
 		if ( ! $this->input->get('M'))
 		{
@@ -282,14 +290,6 @@ class Wizard extends CI_Controller {
 				'welcome',
 				array('action' => $this->set_qstr('optionselect'))
 			);
-		}
-
-		// Run our pre-flight tests.
-		// This function generates its own error messages so if it returns FALSE
-		// we bail out.
-		if ( ! $this->_preflight())
-		{
-			return FALSE;
 		}
 
 		// OK, at this point we have determined whether an existing EE
