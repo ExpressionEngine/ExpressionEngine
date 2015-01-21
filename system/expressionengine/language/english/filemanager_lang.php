@@ -119,6 +119,12 @@ $lang = array(
 'btn_upload_file_working' =>
 'Saving...',
 
+'upload_directory_removed' =>
+'Upload directory removed',
+
+'upload_directory_removed_desc' =>
+'The upload directory <b>%s</b> has been removed.',
+
 // 2.x
 
 'content_files' 		=> 'File Manager',
@@ -559,9 +565,6 @@ $lang = array(
 
 'credit' =>
 'Credit',
-
-'upload_directory' =>
-'Upload Directory:',
 
 ''=>''
 );

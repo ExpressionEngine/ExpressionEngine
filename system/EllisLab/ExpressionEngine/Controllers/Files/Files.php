@@ -526,6 +526,43 @@ class Files extends CP_Controller {
 		ee()->cp->render('settings/form', $vars);
 	}
 
+	public function rmdir()
+	{
+		$id = ee()->input->post('dir_id');
+		$dir = ee('Model')->get('UploadDestination', $id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
+
+		if ( ! $dir)
+		{
+			show_error(lang('no_upload_destination'));
+		}
+
+		if ( ! $this->hasFileGroupAccessPrivileges($dir))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$dir->delete();
+
+		ee('Alert')->makeInline('files-form')
+			->asSuccess()
+			->withTitle(lang('upload_directory_removed'))
+			->addToBody(sprintf(lang('upload_directory_removed_desc'), $dir->name))
+			->defer();
+
+		$return = cp_url('files');
+
+		if (ee()->input->post('return'))
+		{
+			$return = base64_decode(ee()->input->post('return'));
+			$uri_elements = json_decode($return, TRUE);
+			$return = cp_url($uri_elements['path'], $uri_elements['arguments']);
+		}
+
+		ee()->functions->redirect($return);
+	}
+
 	private function exportFiles($file_ids)
 	{
 		if ( ! is_array($file_ids))

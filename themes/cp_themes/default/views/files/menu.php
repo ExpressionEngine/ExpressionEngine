@@ -29,10 +29,11 @@
 <?php
 
 $modal_vars = array(
-	'name'		=> 'modal-confirm-remove-directory',
-	'form_url'	=> cp_url('files/directory/remove'),
-	'hidden'	=> array(
-		''	=> ''
+	'name'     => 'modal-confirm-remove-directory',
+	'form_url' => cp_url('files/rmdir'),
+	'hidden'   => array(
+		'return' => base64_encode(ee()->cp->get_safe_refresh()),
+		'dir_id' => '',
 	)
 );
 
