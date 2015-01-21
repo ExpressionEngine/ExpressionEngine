@@ -559,5 +559,34 @@ class Files extends CP_Controller {
 		ee()->load->helper('download');
 		force_download('ExpressionEngine-files-export.zip', $data);
 	}
+
+	private function remove($file_ids)
+	{
+		if ( ! is_array($file_ids))
+		{
+			$file_ids = array($file_ids);
+		}
+
+		// Loop through the files and add them to the zip
+		$files = ee('Model')->get('File', $file_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		$names = array();
+		foreach ($files as $file)
+		{
+			if ($this->hasFileGroupAccessPrivileges($file->getUploadDestination()))
+			{
+				$names[] = $file->title . '<i>' . $file->file_name . '</i>';
+				$file->delete();
+			}
+		}
+
+		ee('Alert')->makeInline('files-form')
+			->asSuccess()
+			->withTitle(lang('success'))
+			->addToBody(lang('files_removed_desc'))
+			->addToBody($names);
+	}
 }
 // EOF

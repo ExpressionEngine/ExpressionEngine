@@ -107,6 +107,12 @@ $lang = array(
 'size_gb' => '<abbr title="Gigabyte">gb</abbr>',
 'size_tb' => '<abbr title="Terabyte">tb</abbr>',
 
+'success' =>
+'Success',
+
+'files_removed_desc' =>
+'The following files were removed',
+
 // 2.x
 
 'content_files' 		=> 'File Manager',
