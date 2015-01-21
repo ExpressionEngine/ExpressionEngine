@@ -1100,12 +1100,6 @@ PAPAYA;
 			return FALSE;
 		}
 
-		if ($this->_write_db_config($db) == FALSE)
-		{
-			$this->_set_output('error', array('error' => lang('unwritable_database')));
-			return FALSE;
-		}
-
 		// Install Accessories! (so exciting an exclaimation mark is needed!)
 		if ( ! $this->_install_accessories())
 		{
@@ -2846,115 +2840,6 @@ PAPAYA;
 
 		flock($fp, LOCK_EX);
 		fwrite($fp, $data, strlen($data));
-		flock($fp, LOCK_UN);
-		fclose($fp);
-
-		return TRUE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Write database file
-	 *
-	 * @access	public
-	 * @return	null
-	 */
-	function _write_db_config($db = array(), $active_group = 'expressionengine')
-	{
-		$prototype = array(
-			'hostname'	=> 'localhost',
-			'username'	=> '',
-			'password'	=> '',
-			'database'	=> '',
-			'dbdriver'	=> 'mysql',
-			'dbprefix'	=> 'exp_',
-			'swap_pre'	=> 'exp_',
-			'pconnect'	=> FALSE,
-			'db_debug'	=> TRUE,
-			'cache_on'	=> FALSE,
-			'cachedir'	=> EE_APPPATH.'cache/db_cache/',
-			'autoinit'	=> TRUE,
-			'char_set'	=> 'utf8',
-			'dbcollat'	=> 'utf8_general_ci'
-		);
-
-		require $this->config->database_path;
-
-		if ( ! isset($active_group))
-		{
-			$active_group = 'expressionengine';
-		}
-
-		if ( ! isset($db[$active_group]))
-		{
-			return FALSE;
-		}
-
-		// Make sure we have all the required data
-		foreach ($prototype as $key => $val)
-		{
-			if ( ! isset($db[$active_group][$key]))
-			{
-				$db[$active_group][$key] = $val;
-			}
-		}
-
-		// Let's redefine swap_pre just in case
-		$db[$active_group]['swap_pre'] = 'exp_';
-
-	 	// Build the string
-		$str  = '<?php '." if ( ! defined('BASEPATH')) exit('No direct script access allowed');\n\n";
-
-		$str .= "\$active_group = '".$active_group."';\n\$active_record = TRUE;\n\n";
-
-		foreach ($db as $key => $val)
-		{
-			if (is_array($val))
-			{
-				foreach ($val as $k => $v)
-				{
-					if (is_bool($v))
-					{
-						$v = ($v == TRUE) ? 'TRUE' : 'FALSE';
-
-						$str .= "\$db['".$key."']['".$k."'] = ".$v.";\n";
-					}
-					else
-					{
-						$v = str_replace(array('\\', "'"), array('\\\\', "\\'"), $v);
-						$str .= "\$db['".$active_group."']['".$k."'] = '".$v."';\n";
-					}
-				}
-			}
-			else
-			{
-				if (is_bool($val))
-				{
-					$val = ($val == TRUE) ? 'TRUE' : 'FALSE';
-
-					$str .= "\$db['".$active_group."']['".$key."'] = ".$val.";\n";
-				}
-				else
-				{
-					$val = str_replace(array('\\', "'"), array('\\\\', "\\'"), $val);
-					$str .= "\$db['".$active_group."']['".$key."'] = '".$val."';\n";
-				}
-			}
-		}
-
-		$str .= "\n";
-		$str .= '/* End of file database.php */
-/* Location: ./system/expressionengine/config/database.php */';
-
-
-		if ( ! $fp = fopen($this->config->database_path, FOPEN_WRITE_CREATE_DESTRUCTIVE))
-		{
-			return FALSE;
-		}
-
-		flock($fp, LOCK_EX);
-		fwrite($fp, $str, strlen($str));
 		flock($fp, LOCK_UN);
 		fclose($fp);
 
