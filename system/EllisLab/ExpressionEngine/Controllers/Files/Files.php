@@ -597,7 +597,8 @@ class Files extends CP_Controller {
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('files_removed_desc'))
-			->addToBody($names);
+			->addToBody($names)
+			->defer();
 	}
 }
 // EOF
