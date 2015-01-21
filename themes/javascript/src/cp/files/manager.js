@@ -27,7 +27,7 @@
 			var modal = $(this).attr('rel');
 			$.ajax({
 				type: "GET",
-				url: EE.file_view_url + "/" + $(this).data('file-id'),
+				url: EE.file_view_url.replace('###', $(this).data('file-id')),
 				dataType: 'html',
 				success: function (data) {
 					$("." + modal + " div.box").html(data);
