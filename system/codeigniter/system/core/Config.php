@@ -226,7 +226,7 @@ class CI_Config {
 			}
 
 			$suffix = ($this->item('url_suffix') == FALSE) ? '' : $this->item('url_suffix');
-			return $this->slash_item('base_url').$this->item('index_page').'?'.trim($uri, '/').$suffix;
+			return $this->slash_item('base_url').$this->slash_item('index_page').trim($uri, '/').$suffix;
 		}
 		else
 		{
