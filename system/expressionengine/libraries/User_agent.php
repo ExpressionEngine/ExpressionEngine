@@ -26,7 +26,7 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/libraries/user_agent.html
  */
-class CI_User_agent {
+class EE_User_agent {
 
 	var $agent		= NULL;
 

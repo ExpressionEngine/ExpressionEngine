@@ -30,7 +30,7 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/general/profiling.html
  */
-class CI_Profiler {
+class EE_Profiler {
 
 	protected $_available_sections = array(
 										'benchmarks',

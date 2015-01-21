@@ -30,7 +30,7 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/libraries/zip.html
  */
-class CI_Zip  {
+class EE_Zip  {
 
 	var $zipdata	= '';
 	var $directory	= '';

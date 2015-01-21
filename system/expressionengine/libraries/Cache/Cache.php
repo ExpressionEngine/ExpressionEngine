@@ -23,7 +23,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Cache extends CI_Driver_Library {
+class Cache extends EE_Driver_Library {
 
 	/**
 	 * These constants specify the scope in which the cache item should

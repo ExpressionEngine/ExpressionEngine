@@ -26,7 +26,7 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/libraries/encryption.html
  */
-class CI_Encrypt {
+class EE_Encrypt {
 
 	var $CI;
 	var $encryption_key	= '';

@@ -24,7 +24,7 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/libraries/ftp.html
  */
-class CI_FTP {
+class EE_FTP {
 
 	var $hostname	= '';
 	var $username	= '';

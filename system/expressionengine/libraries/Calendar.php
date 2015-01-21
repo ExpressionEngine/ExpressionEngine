@@ -26,7 +26,7 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/libraries/calendar.html
  */
-class CI_Calendar {
+class EE_Calendar {
 
 	var $CI;
 	var $lang;

@@ -24,7 +24,7 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/general/errors.html
  */
-class CI_Log {
+class EE_Log {
 
 	protected $_log_path;
 	protected $_threshold	= 1;

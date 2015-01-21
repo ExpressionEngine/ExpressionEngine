@@ -23,7 +23,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class CI_Driver_Library {
+class EE_Driver_Library {
 
 	/**
 	 * Array of drivers that are available to use with the driver class
@@ -123,7 +123,7 @@ class CI_Driver_Library {
 		if ( ! $found)
 		{
 			// Use standard class name
-			$class_name = 'CI_'.$child_name;
+			$class_name = 'EE_'.$child_name;
 			if ( ! class_exists($class_name, FALSE))
 			{
 				// Check package paths
@@ -179,7 +179,7 @@ class CI_Driver_Library {
  * @author		EllisLab Dev Team
  * @link
  */
-class CI_Driver {
+class EE_Driver {
 
 	/**
 	 * Instance of the parent class
@@ -316,6 +316,9 @@ class CI_Driver {
 	}
 
 }
+
+class_alias('EE_Driver_Library', 'CI_Driver_Library');
+class_alias('EE_Driver', 'CI_Driver');
 
 /* End of file Driver.php */
 /* Location: ./system/libraries/Driver.php */

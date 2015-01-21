@@ -23,7 +23,7 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class CI_Cache_memcached extends CI_Driver {
+class EE_Cache_memcached extends CI_Driver {
 
 	/**
 	 * Holds the memcached object
