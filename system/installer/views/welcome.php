@@ -4,7 +4,13 @@
 
 <form method='post' action='<?=$action?>'>
 
-<?=form_hidden('language', key($languages))?>
+
+<?php if (count($languages) == 1):?>
+	<?=form_hidden('language', key($languages))?>
+<?php else:?>
+	<p>Please select your language:</p>
+	<p><?php echo form_dropdown('language', $languages); ?></p>
+<?php endif;?>
 
 <p class="pad"><?php echo form_submit('', ' Click here to begin! ', 'class="submit"'); ?></p>
 

@@ -181,11 +181,10 @@ class Wizard extends CI_Controller {
 		$this->load->library('logger');
 
 		$this->load->add_package_path(EE_APPPATH);
+		$this->_load_langauge();
 
 		$this->load->library('localize');
 		$this->load->library('cp');
-		$this->load->helper('language');
-		$this->lang->load('installer', $this->mylang);
 
 		$this->load->model('installer_template_model', 'template_model');
 
@@ -275,14 +274,6 @@ class Wizard extends CI_Controller {
 	{
 		$this->_set_base_url();
 
-		// Run our pre-flight tests.
-		// This function generates its own error messages so if it returns FALSE
-		// we bail out.
-		if ( ! $this->_preflight())
-		{
-			return FALSE;
-		}
-
 		// Is $_GET['m'] set?  If not we show the welcome page
 		if ( ! $this->input->get('M'))
 		{
@@ -290,6 +281,14 @@ class Wizard extends CI_Controller {
 				'welcome',
 				array('action' => $this->set_qstr('optionselect'))
 			);
+		}
+
+		// Run our pre-flight tests.
+		// This function generates its own error messages so if it returns FALSE
+		// we bail out.
+		if ( ! $this->_preflight())
+		{
+			return FALSE;
 		}
 
 		// OK, at this point we have determined whether an existing EE
@@ -616,6 +615,7 @@ class Wizard extends CI_Controller {
 		$data['is_installed'] = $this->is_installed;
 
 		return $this->_set_output('optionselect', $data);
+
 	}
 
 	// --------------------------------------------------------------------
@@ -1391,6 +1391,7 @@ PAPAYA;
 			// if we have data, send it on to the updater, otherwise, ask permission and show the survey
 			if ( ! $this->input->get_post('participate_in_survey'))
 			{
+				$this->load->helper('language');
 				$data = array(
 					'action_url'			=> $this->set_qstr('do_update&agree=yes'),
 					'participate_in_survey'	=> array(
@@ -1692,6 +1693,43 @@ PAPAYA;
 		// but it might have been renamed by the user
 		$this->config->set_item('index_page', SELF);
 		$this->config->set_item('site_index', SELF); // Same with the CI site_index
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Load the proper language file and set the language pref
+	 *
+	 * @access	private
+	 * @return	void
+	 */
+	function _load_langauge()
+	{
+		// Fetch the installed languages
+		$map = directory_map(APPPATH.'language', TRUE);
+
+		// If this GET or POST variable doesn't exist we know we're dealing with
+		// the welcome page where a user is presented the list of languages
+		if ($this->input->get_post('language') == FALSE)
+		{
+			// build an array containing the languages.
+			// This will be used to create the pull-down menu on the welcome page
+			foreach ($map as $val)
+			{
+				$this->languages[$val] = ucfirst($val);
+			}
+		}
+		else
+		{
+			// For security we only allow the user to chose from installed languages
+			if (in_array($this->input->get_post('language'), $map))
+			{
+				$this->mylang = $this->input->get_post('language');
+			}
+		}
+
+		// Load the installer language file based on the user preference
+		$this->lang->load('installer', $this->mylang);
 	}
 
 	// --------------------------------------------------------------------
