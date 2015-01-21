@@ -525,16 +525,7 @@ class CI_Encrypt {
 	{
 		if ( ! function_exists('sha1'))
 		{
-			if ( ! function_exists('mhash'))
-			{
-				require_once(BASEPATH.'libraries/Sha1.php');
-				$SH = new CI_SHA;
-				return $SH->generate($str);
-			}
-			else
-			{
-				return bin2hex(mhash(MHASH_SHA1, $str));
-			}
+			return bin2hex(mhash(MHASH_SHA1, $str));
 		}
 		else
 		{
