@@ -38,7 +38,6 @@ class Wizard extends CI_Controller {
 	public $refresh_url       = '';		// The URL where the refresh should go to.  Set dynamically
 	public $theme_path        = '';
 	public $root_theme_path   = '';
-	public $active_group      = 'expressionengine';
 
 	// Default page content - these are in English since we don't know the user's language choice when we first load the installer
 	public $content           = '';
@@ -950,7 +949,7 @@ PAPAYA;
 		// Connect to the database.  We pass a multi-dimensional array since
 		// that's what is normally found in the database config file
 
-		$db[$this->active_group] = array(
+		$db = array(
 			'hostname'	=> $this->userdata['db_hostname'],
 			'username'	=> $this->userdata['db_username'],
 			'password'	=> $this->userdata['db_password'],
