@@ -1433,14 +1433,7 @@ class EE_Email {
 		// which only works with "\n".
 		if ($this->crlf === "\r\n")
 		{
-			if (is_php('5.3'))
-			{
-				return quoted_printable_encode($str);
-			}
-			elseif (function_exists('imap_8bit'))
-			{
-				return imap_8bit($str);
-			}
+			return quoted_printable_encode($str);
 		}
 
 		// Reduce multiple spaces & remove nulls

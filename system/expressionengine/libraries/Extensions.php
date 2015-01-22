@@ -108,12 +108,9 @@ class EE_Extensions {
 			$args = array($which, '');
 		}
 
-		if (is_php('5.3'))
+		foreach ($args as $k => $v)
 		{
-			foreach ($args as $k => $v)
-			{
-				$args[$k] =& $args[$k];
-			}
+			$args[$k] =& $args[$k];
 		}
 
 		return call_user_func_array(array(&$this, 'universal_call'), $args);
@@ -143,7 +140,6 @@ class EE_Extensions {
 		// Reset Our Variables
 		$this->end_script	= FALSE;
 		$this->last_call	= FALSE;
-		$php5_args			= array();
 
 		// Anything to Do Here?
 		if ( ! isset($this->extensions[$which])) return;
@@ -155,27 +151,12 @@ class EE_Extensions {
 		ee()->addons->is_package('');
 
 		// Retrieve arguments for function
-		if (is_object($parameter_one) && is_php('5.0.0') == TRUE)
+		if (is_object($parameter_one))
 		{
-			$php4_object = FALSE;
-			$args = array_slice(func_get_args(), 1);
-		}
-		else
-		{
-			$php4_object = TRUE;
 			$args = array_slice(func_get_args(), 1);
 		}
 
-		if (is_php('5'))
-		{
-			foreach($args as $k => $v)
-			{
-				$php5_args[$k] =& $args[$k];
-			}
-		}
-
-
-		// Give arguments by reference
+		// Pass all arguments by reference
 		foreach($args as $k => $v)
 		{
 			$args[$k] =& $args[$k];
@@ -253,18 +234,8 @@ class EE_Extensions {
 					ee()->TMPL->log_item('Calling Extension Class/Method: '.$class_name.'/'.$method);
 				}
 
-				if ($php4_object === TRUE)
-				{
-					$this->last_call = call_user_func_array(array(&$this->OBJ[$class_name], $method), array(&$parameter_one) + $args);
-				}
-				elseif ( ! empty($php5_args))
-				{
-					$this->last_call = call_user_func_array(array(&$this->OBJ[$class_name], $method), $php5_args);
-				}
-				else
-				{
-					$this->last_call = call_user_func_array(array(&$this->OBJ[$class_name], $method), $args);
-				}
+
+				$this->last_call = call_user_func_array(array(&$this->OBJ[$class_name], $method), $args);
 
 				$this->in_progress = '';
 
