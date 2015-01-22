@@ -52,15 +52,7 @@ abstract class EE_Fieldtype {
 	protected $content_id = NULL;
 	protected $content_type = 'channel';
 
-	/**
-	 * Constructor
-	 */
-	public function __construct()
-	{
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
+	public function __construct() {}
 
 	/**
 	 * Re-initialize the class.

@@ -1,6 +1,7 @@
 .DS_Store
 Thumbs.db
 env_local.rb
+system/config/*
 system/config/config.php
 system/config/database.php
 system/expressionengine/config/config*.php
@@ -11,6 +12,10 @@ members_1k.xml
 media/*
 
 themes/addons/*
+themes/cp_themes/brilliant_retail/
+themes/site_themes/brilliant_retail/
+themes/solspace_themes/
+themes/third_party/
 *.swp
 code_coverage/
 system/tests/phpunit/vendor/

@@ -29,11 +29,8 @@ class Mailinglist_mcp {
 	/**
 	  *  Constructor
 	  */
-	function Mailinglist_mcp($switch = TRUE)
+	function __construct()
 	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
 		ee()->cp->set_right_nav(array(
 			'ml_create_new' => BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=mailinglist'.AMP.'method=edit_mailing_list',
 			'mailinglist_preferences' => BASE.AMP.'C=admin_system'.AMP.'M=mailing_list_preferences'

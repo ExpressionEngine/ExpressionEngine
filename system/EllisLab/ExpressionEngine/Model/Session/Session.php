@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model\Session;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
@@ -27,5 +28,23 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @link		http://ellislab.com
  */
 class Session extends Model {
+
+	protected static $_primary_key = 'session_id';
+	protected static $_table_name = 'sessions';
+
+	protected static $relationships = array(
+		'Member' => array(
+			'type' => 'BelongsTo'
+		)
+	);
+
+	protected $session_id;
+	protected $member_id;
+	protected $admin_sess;
+	protected $ip_address;
+	protected $user_agent;
+	protected $fingerprint;
+	protected $sess_start;
+	protected $last_activity;
 
 }

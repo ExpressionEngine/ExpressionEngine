@@ -27,13 +27,6 @@ class Rss_upd {
 
 	var $version = '2.0';
 
-	public function __construct()
-	{
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Installer
 	 *

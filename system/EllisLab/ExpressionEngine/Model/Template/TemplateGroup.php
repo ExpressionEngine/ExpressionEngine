@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model\Template;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
@@ -29,21 +30,31 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class TemplateGroup extends Model {
 
 	protected static $_primary_key = 'group_id';
-	protected static $_gateway_names = array('TemplateGroupGateway');
-	protected static $_cascade = 'Templates';
+	protected static $_table_name = 'template_groups';
 
 	protected static $_relationships = array(
-		'Site' => array(
-			'type' => 'many_to_one'
+		'MemberGroups' => array(
+			'type'     => 'HasAndBelongsToMany',
+			'model'    => 'MemberGroup',
+			'from_key' => 'group_id',
+			'pivot' => array(
+				'table' => 'template_member_groups',
+				'left'  => 'template_group_id',
+				'right' => 'group_id'
+			)
 		),
 		'Templates' => array(
-			'type' => 'one_to_many',
+			'type' => 'HasMany',
 			'model' => 'Template'
 		),
-		'MemberGroups' => array(
-			'type' => 'many_to_many',
-			'model' => 'MemberGroup',
+		'Site' => array(
+			'type' => 'BelongsTo'
 		)
+	);
+
+	protected static $_validation_rules = array(
+		'is_site_default' => 'enum[y,n]',
+		'group_name' => 'required|is_valid_group_name|unique',
 	);
 
 	protected $group_id;
@@ -51,38 +62,5 @@ class TemplateGroup extends Model {
 	protected $group_name;
 	protected $group_order;
 	protected $is_site_default;
-
-	/**
-	 *
-	 */
-	public function getTemplates()
-	{
-		return $this->getRelated('Templates');
-	}
-
-	public function setTemplates($templates)
-	{
-		return $this->setRelated('Templates', $templates);
-	}
-
-	public function getMemberGroups()
-	{
-		return $this->getRelated('MemberGroups');
-	}
-
-	public function setMemberGroups($member_groups)
-	{
-		return $this->setRelated('MemberGroups', $member_groups);
-	}
-
-	public function getSite()
-	{
-		return $this->getRelated('Site');
-	}
-
-	public function setSite(Site $site)
-	{
-		return $this->setRelated('Site', $site);
-	}
 
 }

@@ -24,14 +24,11 @@
  */
 class Addons_installer {
 
-	var $EE;
-
 	/**
 	 * Constructor
 	 */
 	function __construct()
 	{
-		$this->EE =& get_instance();
 		ee()->load->library('api');
 		ee()->load->library('addons');
 	}

@@ -27,15 +27,6 @@ class Referrer_upd {
 
 	var $version = '2.1.1';
 
-	function Referrer_upd()
-	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-	}
-
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Installer
 	 *

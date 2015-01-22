@@ -13,14 +13,6 @@ class EE_Schema {
 
 	private $default_engine = 'MyISAM';
 
-	function EE_Schema()
-	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns a platform-specific query that looks for EE tables
 	 *

@@ -1,9 +1,11 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Module\Member\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
-class MemberBuilletinBoardGateway extends RowDataGateway {
+class MemberBuilletinBoardGateway extends Gateway {
+
 	protected static $_primary_key = 'bulletin_id';
 	protected static $_table_name = 'member_bulletin_board';
 
@@ -13,7 +15,6 @@ class MemberBuilletinBoardGateway extends RowDataGateway {
 			'key' => 'member_id'
 		)
 	);
-
 
 	public $bulletin_id;
 	public $sender_id;

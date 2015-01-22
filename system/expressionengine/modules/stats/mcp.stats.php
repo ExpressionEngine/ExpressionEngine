@@ -24,10 +24,6 @@
 
 class Stats_mcp {
 
-	function Stats_mcp()
-	{
-		$this->EE =& get_instance();
-	}
 }
 // END CLASS
 

@@ -782,7 +782,6 @@ class Api_channel_fields extends Api {
 				// collission with other modules with similarly named fields. This namespacing
 				// gets stripped as needed when the module data is processed in get_module_methods()
 				// This function is called for insertion and editing of entries.
-				// @php4 would be nice to use a reference in this foreach...
 
 				foreach ($fields as $key => $field)
 				{

@@ -29,7 +29,6 @@ class Stats_upd {
 
 	function Stats_upd()
 	{
-		$this->EE =& get_instance();
 		ee()->load->dbforge();
 	}
 

@@ -28,18 +28,6 @@ class File_integrity {
 	var $checksums = array();
 
 	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function __construct()
-	{
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Check all bootstrap files
 	 *
 	 * @access	public

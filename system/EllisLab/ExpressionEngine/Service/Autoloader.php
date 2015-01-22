@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Service;
 
 /**
@@ -37,7 +38,7 @@ class Autoloader {
 
 	public function __construct()
 	{
-		$this->prefixes['EllisLab'] = APPPATH . '../EllisLab/';
+		$this->prefixes['EllisLab'] = SYSPATH.'EllisLab/';
 	}
 
 	/**

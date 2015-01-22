@@ -31,9 +31,6 @@ class Wiki_mcp {
 	  */
 	function Wiki_mcp()
 	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
         $this->base_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=wiki';
 
         ee()->cp->set_right_nav(array(

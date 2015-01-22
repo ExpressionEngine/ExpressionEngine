@@ -100,9 +100,6 @@ class Forum {
 	 */
 	public function __construct()
 	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
 		ee()->db->cache_off();
 
 		// Load Base Forum Variables

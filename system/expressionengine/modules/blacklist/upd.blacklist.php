@@ -27,14 +27,6 @@ class Blacklist_upd {
 
 	var $version	= '3.0.1';
 
-	function Blacklist_upd()
-	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Installer
 	 *

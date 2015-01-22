@@ -30,8 +30,6 @@ class Utf8_db_convert {
 	 */
 	public function __construct()
 	{
-		$this->EE =& get_instance();
-
 		@set_time_limit(0);
         ee()->db->save_queries = FALSE;
 

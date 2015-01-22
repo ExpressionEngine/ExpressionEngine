@@ -32,6 +32,7 @@ class Directory {
 
 	/**
 	 * Create a new Config\Directory object
+	 *
 	 * @param string $dirname Path to the directory, can be relative
 	 */
 	function __construct($dirname)
@@ -43,10 +44,8 @@ class Directory {
 	 * Returns a Config\File class representing the config file
 	 *
 	 * @param  string $filename name of the file
-	 *
-	 * @throws Exception If no config file is found
-	 *
 	 * @return File             Config\File object
+	 * @throws Exception If no config file is found
 	 */
 	public function file($filename = 'config')
 	{

@@ -38,7 +38,6 @@ class Rte_lib {
 
 	public function __construct()
 	{
-		$this->EE =& get_instance();
 		ee()->lang->loadfile('rte');
 	}
 

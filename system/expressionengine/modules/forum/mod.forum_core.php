@@ -31,7 +31,6 @@ class Forum_Core extends Forum {
 	 */
 	public function __construct()
 	{
-		$this->EE =& get_instance();
 		ee()->load->library('template', NULL, 'TMPL');
 	}
 

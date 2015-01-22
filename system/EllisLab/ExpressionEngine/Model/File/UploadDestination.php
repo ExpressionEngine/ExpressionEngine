@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model\File;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
@@ -33,19 +34,25 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @link		http://ellislab.com
  */
 class UploadDestination extends Model {
+
 	protected static $_primary_key = 'id';
-	protected static $_gateway_names = array('UploadPrefGateway');
+	protected static $_table_name = 'upload_prefs';
 
 	protected static $_relationships = array(
 		'Site' => array(
-			'type' => 'many_to_one'
+			'type' => 'belongsTo'
 		),
 		'NoAccess' => array(
-			'type' => 'many_to_many',
-			'model' => 'MemberGroup'
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'MemberGroup',
+			'pivot' => array(
+				'table' => 'upload_no_access',
+				'left' => 'upload_id',
+				'right' => 'member_group'
+			)
 		),
 		'FileDimension' => array(
-			'type' => 'one_to_many'
+			'type' => 'hasMany'
 		)
 	);
 
@@ -67,34 +74,4 @@ class UploadDestination extends Model {
 	protected $cat_group;
 	protected $batch_location;
 
-
-	public function getSite()
-	{
-		return $this->getRelated('Site');
-	}
-
-	public function setSite(Site $site)
-	{
-		return $this->setRelated('Site', $site);
-	}
-
-	public function getNoAccess()
-	{
-		return $this->getRelated('NoAccess');
-	}
-
-	public function setNoAccess($no_access)
-	{
-		return $this->setRelated('NoAccess', $no_access);
-	}
-
-	public function getFileDimension()
-	{
-		return $this->getRelated('FileDimension');
-	}
-
-	public function setFileDimension($file_dimension)
-	{
-		return $this->setRelated('FileDimension', $file_dimension);
-	}
 }

@@ -32,22 +32,8 @@ class Image_rte {
 		'cp_only'		=> 'y'
 	);
 
-	private $EE;
 	private $folders	= array();
 	private $filedirs	= array();
-
-	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function __construct()
-	{
-		// Make a local reference of the ExpressionEngine super object
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Globals we need

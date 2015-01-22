@@ -37,18 +37,6 @@ class EE_Functions {
 	public $catfields          = array();
 
 	/**
-	 * Constructor
-	 */
-	public function __construct()
-	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-	}
-
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Fetch base site index
 	 *
 	 * @access	public
@@ -824,15 +812,7 @@ class EE_Functions {
 			return $str;
 		}
 
-		// allows the split to work properly with multi-byte Unicode characters
-		if (is_php('4.3.2') === TRUE)
-		{
-			$word = preg_split('/\s/u', $str, -1, PREG_SPLIT_NO_EMPTY);
-		}
-		else
-		{
-			$word = preg_split('/\s/', $str, -1, PREG_SPLIT_NO_EMPTY);
-		}
+		$word = preg_split('/\s/u', $str, -1, PREG_SPLIT_NO_EMPTY);
 
 		if (count($word) <= $num)
 		{

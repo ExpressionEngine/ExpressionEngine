@@ -25,13 +25,6 @@
  */
 class Pages_tab {
 
-	public function __construct()
-	{
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
-
 	public function publish_tabs($channel_id, $entry_id = '')
 	{
 		ee()->lang->loadfile('pages');

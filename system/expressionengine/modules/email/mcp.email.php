@@ -24,10 +24,6 @@
  */
 class Email_mcp {
 
-	function Email_mcp( $switch = TRUE )
-	{
-		$this->EE =& get_instance();
-	}
 
 }
 // END CLASS

@@ -53,8 +53,6 @@ class Quick_tips_acc {
 	 */
 	function __construct()
 	{
-
-		$this->EE =& get_instance();
 		ee()->load->helper('array');
 	}
 

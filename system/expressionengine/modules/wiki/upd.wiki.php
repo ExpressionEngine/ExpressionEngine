@@ -26,13 +26,6 @@ class Wiki_upd {
 
 	var $version = '2.3';
 
-	function Wiki_upd()
-	{
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Installer
 	 *

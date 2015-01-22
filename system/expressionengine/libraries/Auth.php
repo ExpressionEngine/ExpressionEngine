@@ -62,7 +62,6 @@ should always be as long as the best available hash.
 */
 class Auth {
 
-	private $EE;
 	public $errors = array();
 
 	// Hashing algorithms to try with their respective
@@ -83,8 +82,6 @@ class Auth {
 	 */
 	function __construct()
 	{
-		$this->EE =& get_instance();
-
 		// Remove any hash algos that we don't have
 		// access to in this environment
 		$this->hash_algos = array_intersect($this->hash_algos, hash_algos());
@@ -600,7 +597,6 @@ class Auth_result {
 	private $session_id;
 	private $remember_me = FALSE;
 	private $anon = FALSE;
-	private $EE;
 
 	/**
 	 * Constructor
@@ -611,7 +607,6 @@ class Auth_result {
 	 */
 	function __construct(stdClass $member)
 	{
-		$this->EE =& get_instance();
 		$this->member = $member;
 	}
 
@@ -772,12 +767,12 @@ class Auth_result {
 
 			if ($this->anon)
 			{
-				ee()->input->set_cookie($this->EE->session->c_anon, 1, $expire);
+				ee()->input->set_cookie(ee()->session->c_anon, 1, $expire);
 			}
 			else
 			{
 				// Unset the anon cookie
-				ee()->input->delete_cookie($this->EE->session->c_anon);
+				ee()->input->delete_cookie(ee()->session->c_anon);
 			}
 
 			// (un)set remember me

@@ -1,4 +1,5 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model\Template;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
@@ -28,36 +29,57 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  */
 class SpecialtyTemplate extends Model {
 
-	// Meta data
 	protected static $_primary_key = 'template_id';
-	protected static $_gateway_names = array('SpecialtyTemplateGateway');
-
-	protected static $_key_map = array(
-		'template_id'	=> 'SpecialtyTemplateGateway',
-		'site_id'		=> 'SpecialtyTemplateGateway'
-	);
+	protected static $_table_name = 'specialty_templates';
 
 	protected static $_relationships = array(
 		'Site' => array(
-			'type' => 'many_to_one'
+			'type' => 'BelongsTo'
 		)
 	);
 
-	// Properties
-	public $template_id;
-	public $site_id;
-	public $enable_template;
-	public $template_name;
-	public $data_title;
-	public $template_data;
+	protected $template_id;
+	protected $site_id;
+	protected $enable_template;
+	protected $template_name;
+	protected $data_title;
+	protected $template_data;
 
-	public function getSite()
+	/**
+	 * A setter for the enable_template property
+	 *
+	 * @param str|bool $new_value Accept TRUE or 'y' for 'yes' or FALSE or 'n'
+	 *   for 'no'
+	 * @throws InvalidArgumentException if the provided argument is not a
+	 *   boolean or is not 'y' or 'n'.
+	 * @return void
+	 */
+	protected function set__enable_template($new_value)
 	{
-		return $this->getRelated('Site');
+		if ($new_value === TRUE || $new_value == 'y')
+		{
+			$this->enable_template = 'y';
+		}
+
+		elseif ($new_value === FALSE || $new_value == 'n')
+		{
+			$this->enable_template = 'n';
+		}
+
+		else
+		{
+			throw new InvalidArgumentException('enable_template must be TRUE or "y", or FALSE or "n"');
+		}
 	}
 
-	public function setSite(Site $site)
+	/**
+	 * A getter for the enable_template property
+	 *
+	 * @return bool TRUE if this is the default; FALSE if not
+	 */
+	protected function get__enable_template()
 	{
-		return $this->setRelated('Site', $site);
+		return ($this->enable_template == 'y');
 	}
+
 }

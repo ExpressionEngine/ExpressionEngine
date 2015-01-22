@@ -39,9 +39,6 @@ class Comment_mcp {
 	 */
 	public function __construct()
 	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
 		if (REQ == 'CP')
 		{
 			$this->base_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=comment';

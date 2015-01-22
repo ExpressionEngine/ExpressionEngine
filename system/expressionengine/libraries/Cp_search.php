@@ -34,7 +34,6 @@ class Cp_search {
 	 */
 	function __construct()
 	{
-		$this->EE =& get_instance();
 		$this->_search_map();
 
 		ee()->lang->loadfile('cp_search');
@@ -160,9 +159,6 @@ class Cp_search {
 	 */
 	function _build_index($language)
 	{
-		// PHP 4 redundancy dept. of redundancy
-		$this->EE =& get_instance();
-
 		ee()->load->model('admin_model');
 		ee()->lang->loadfile('admin');
 

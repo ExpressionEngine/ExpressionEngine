@@ -84,9 +84,6 @@ class Wiki {
 
 	function Wiki($return = FALSE)
 	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
 		if ($return === TRUE)
 		{
 			return;

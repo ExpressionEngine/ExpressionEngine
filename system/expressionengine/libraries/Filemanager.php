@@ -33,8 +33,6 @@ class Filemanager {
 	public $upload_data			= NULL;
 	public $upload_warnings		= FALSE;
 
-	private $EE;
-
 	private $_errors			= array();
 	private $_upload_dirs		= array();
 	private $_upload_dir_prefs	= array();
@@ -49,7 +47,6 @@ class Filemanager {
 	 */
 	function __construct()
 	{
-		$this->EE =& get_instance();
 		ee()->load->library('javascript');
 		ee()->lang->loadfile('filemanager');
 
@@ -869,7 +866,7 @@ class Filemanager {
 		$data = ee()->table->datasource('_file_datasource', $state, $params);
 
 		// End Argh
-		ee()->_mcp_reference = $this->EE;
+		ee()->_mcp_reference = ee();
 
 		return $data;
 	}

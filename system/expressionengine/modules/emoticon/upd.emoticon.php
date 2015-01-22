@@ -26,13 +26,6 @@ class Emoticon_upd {
 
 	var $version = '2.0';
 
-	function Emoticon_upd()
-	{
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Installer
 	 *

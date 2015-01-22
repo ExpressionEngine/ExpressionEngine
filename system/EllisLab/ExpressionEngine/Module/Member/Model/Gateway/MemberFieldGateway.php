@@ -1,14 +1,16 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Module\Member\Model\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
 /**
  * Member Custom Fields
  *
  * Stores the defenition of each field
  */
-class MemberFieldGateway extends RowDataGateway {
+class MemberFieldGateway extends Gateway {
+
 	protected static $meta = array(
 		'table_name' => 'member_fields',
 		'primary_key' => 'm_field_id'

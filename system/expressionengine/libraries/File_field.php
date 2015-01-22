@@ -35,13 +35,6 @@ class File_field {
 	var $_manipulations = array();
 	var $_upload_prefs = array();
 
-	public function __construct()
-	{
-		$this->EE =& get_instance();
-	}
-
-	// ------------------------------------------------------------------------
-
 	/**
 	 * Creates a file field
 	 *

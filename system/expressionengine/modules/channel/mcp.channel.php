@@ -28,14 +28,6 @@ class Channel_mcp {
 
 	var $stats_cache	= array(); // Used by mod.stats.php
 
-	/**
-	  * Constructor
-	  */
-	function Channel_mcp()
-	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-	}
 }
 // END CLASS
 

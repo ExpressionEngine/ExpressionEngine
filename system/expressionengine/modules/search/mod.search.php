@@ -41,15 +41,6 @@ class Search {
 	protected $_meta 	= array();
 
 	/**
-	 * Constructor
-	 */
-	public function __construct()
-	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-	}
-
-	/**
 	 * Do Search
 	 */
 	function do_search()

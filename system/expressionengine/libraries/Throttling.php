@@ -30,11 +30,6 @@ class EE_Throttling {
 	var $lockout_time	= 30;
 	var $current_data	= FALSE;
 
-	function __construct()
-	{
-		$this->EE =& get_instance();
-	}
-
 	/** ----------------------------------------------
 	/**  Runs the throttling funcitons
 	/** ----------------------------------------------*/

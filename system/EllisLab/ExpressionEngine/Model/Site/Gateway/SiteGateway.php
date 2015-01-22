@@ -1,7 +1,8 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Model\Site\Gateway;
 
-use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
+use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -26,12 +27,11 @@ use EllisLab\ExpressionEngine\Service\Model\Gateway\RowDataGateway;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class SiteGateway extends RowDataGateway {
+class SiteGateway extends Gateway {
 
 	protected static $_table_name = 'sites';
 	protected static $_primary_key = 'site_id';
 
-	// Properties
 	protected $site_id;
 	protected $site_label;
 	protected $site_name;

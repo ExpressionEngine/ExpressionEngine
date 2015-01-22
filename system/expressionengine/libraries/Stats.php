@@ -37,8 +37,6 @@ class EE_Stats {
 	 */
 	function __construct()
 	{
-		$this->EE =& get_instance();
-
 		if (ee()->db->cache_on === TRUE)
 		{
 			ee()->db->cache_off();

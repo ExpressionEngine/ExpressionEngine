@@ -27,11 +27,8 @@ class Referrer_mcp {
 	/**
 	  *  Constructor
 	  */
-	function Referrer_mcp( $switch = TRUE )
+	function __construct()
 	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
 		$base_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=referrer';
 
 		ee()->cp->set_right_nav(array(

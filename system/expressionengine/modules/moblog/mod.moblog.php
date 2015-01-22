@@ -77,11 +77,8 @@ class Moblog {
 	/**
 	 * 	Constructor
 	 */
-	function Moblog()
+	function __construct()
 	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
 		/** -----------------------------
 		/**  Default file formats
 		/** -----------------------------*/

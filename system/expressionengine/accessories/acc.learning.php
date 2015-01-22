@@ -31,16 +31,6 @@ class Learning_acc {
 	var $sections		= array();
 
 	/**
-	 * Constructor
-	 */
-	function __construct()
-	{
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Set Sections
 	 *
 	 * Set content for the accessory
