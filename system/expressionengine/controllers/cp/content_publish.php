@@ -221,7 +221,8 @@ class Content_publish extends CP_Controller {
 
 		$this->form_validation->set_error_delimiters('<div class="notice">', '</div>');
 
-		if ($this->form_validation->run() === TRUE)
+		$valid = $this->form_validation->run();
+		if ($valid === TRUE)
 		{
 			if ($this->_save($channel_id, $entry_id) === TRUE)
 			{
@@ -309,7 +310,7 @@ class Content_publish extends CP_Controller {
 			$this->cp->add_js_script(array('file' => 'cp/publish_admin'));
 		}
 
-		$this->_set_global_js($entry_id);
+		$this->_set_global_js($entry_id, $valid);
 
 		reset($tab_hierarchy);
 
@@ -1300,10 +1301,11 @@ class Content_publish extends CP_Controller {
 	/**
 	 * Set Global Javascript
 	 *
-	 * @param 	int
+	 * @param int  $entry_id The ID of the Entry (0 for new)
+	 * @param bool $valid    Result of runing form_validator
 	 * @return 	void
 	 */
-	private function _set_global_js($entry_id)
+	private function _set_global_js($entry_id, $valid)
 	{
 		$autosave_interval_seconds = ($this->config->item('autosave_interval_seconds') === FALSE) ?
 										60 : $this->config->item('autosave_interval_seconds');
@@ -1365,7 +1367,7 @@ class Content_publish extends CP_Controller {
 
 		$this->javascript->set_global('publish.title_focus', FALSE);
 
-		if ( ! $entry_id && $this->config->item('publish_page_title_focus') != 'n')
+		if ( ! $entry_id && $valid && $this->config->item('publish_page_title_focus') != 'n')
 		{
 			$this->javascript->set_global('publish.title_focus', TRUE);
 		}

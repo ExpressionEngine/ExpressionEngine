@@ -163,7 +163,7 @@ class Grid_parser {
 		// the Relationships tag pair; a better fix is having a separate parser
 		// instance for each instance of the Channel Entries parser but this
 		// will have to do for now
-		if (strpos($tagdata, $field_name) === FALSE)
+		if (strpos($tagdata, $field_name) === FALSE && strpos($field_name, ':') !== FALSE)
 		{
 			$field_name = substr($field_name, strrpos($field_name, ':') + 1);
 			$this->grid_field_names[$field_id] = $field_name;

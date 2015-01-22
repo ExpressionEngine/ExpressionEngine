@@ -31,7 +31,8 @@ class Member_field_model extends CI_Model {
 	 * Save (Create/Edit) a Member Field
 	 * @param  array  $data Associative array of data matching columns in
 	 *                      exp_member_fields
-	 * @return Void
+	 * @return array        Modified $data associative array, containing
+	 *                      defaults and sanitized values
 	 */
 	public function save_field($data = array())
 	{
@@ -103,6 +104,8 @@ class Member_field_model extends CI_Model {
 				array('m_field_id' => $data['m_field_id'])
 			);
 		}
+
+		return $data;
 	}
 
 	// -------------------------------------------------------------------------
