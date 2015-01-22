@@ -24,7 +24,7 @@
  * @link		http://www.codeigniter.com/user_guide/libraries/javascript.html
  */
 
-class CI_Jquery extends CI_Javascript {
+class CI_Jquery extends EE_Javascript {
 
 	var $_javascript_folder = 'js';
 	var $jquery_code_for_load = array();
