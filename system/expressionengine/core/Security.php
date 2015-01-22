@@ -350,14 +350,7 @@ class EE_Security {
 	{
 		if ($this->_xss_hash == '')
 		{
-			if (phpversion() >= 4.2)
-			{
-				mt_srand();
-			}
-			else
-			{
-				mt_srand(hexdec(substr(md5(microtime()), -8)) & 0x7fffffff);
-			}
+			mt_srand();
 
 			$this->_xss_hash = md5(time() + mt_rand(0, 1999999999));
 		}

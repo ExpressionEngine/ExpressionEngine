@@ -120,7 +120,6 @@ class Api {
 	 *
 	 * Adds an error to the API error array
 	 *
-	 * @php4	Protected Class
 	 * @access	protected
 	 * @param	string
 	 * @return	void

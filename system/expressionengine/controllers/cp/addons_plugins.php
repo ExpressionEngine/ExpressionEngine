@@ -373,7 +373,6 @@ class Addons_plugins extends CP_Controller {
 
 					if (empty($pi_files))
 					{
-						// check directories (GLOB_ONLYDIR not available on Windows < PHP 4.3.3, too bad...)
 						// stop at first plugin file found to keep things sane
 						foreach (glob($temp_dir.'/*', GLOB_ONLYDIR) as $dir)
 						{

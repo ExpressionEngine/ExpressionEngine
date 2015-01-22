@@ -169,34 +169,10 @@ class CI_DB_oci8_result extends CI_DB_result {
 	{
 		$result = array();
 
-		// If PHP 5 is being used we can fetch an result object
-		if (function_exists('oci_fetch_object'))
-		{
-			$id = ($this->curs_id) ? $this->curs_id : $this->stmt_id;
+		// fetch a result object
+		$id = ($this->curs_id) ? $this->curs_id : $this->stmt_id;
 
-			return @oci_fetch_object($id);
-		}
-
-		// If PHP 4 is being used we have to build our own result
-		foreach ($this->result_array() as $key => $val)
-		{
-			$obj = new stdClass();
-			if (is_array($val))
-			{
-				foreach ($val as $k => $v)
-				{
-					$obj->$k = $v;
-				}
-			}
-			else
-			{
-				$obj->$key = $val;
-			}
-
-			$result[] = $obj;
-		}
-
-		return $result;
+		return @oci_fetch_object($id);
 	}
 
 	// --------------------------------------------------------------------
