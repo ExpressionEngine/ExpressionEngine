@@ -24,10 +24,16 @@ images/design/
 system/cache/*
 !system/cache/index.html
 !system/cache/.htaccess
+system/expressionengine/cache/*
+!system/expressionengine/cache/index.html
+!system/expressionengine/cache/.htaccess
 
 system/templates/*
 !system/templates/index.html
 !system/templates/.htaccess
+system/expressionengine/templates/*
+!system/expressionengine/templates/index.html
+!system/expressionengine/templates/.htaccess
 
 system/addons/*
 !system/addons/index.html
@@ -42,9 +48,27 @@ system/addons/*
 !system/addons/nannerbanner
 !system/addons/unregisteredbanner
 !system/addons/ellislab_high_ascii_decode
+system/expressionengine/third_party/*
+!system/expressionengine/third_party/index.html
+!system/expressionengine/third_party/download
+!system/expressionengine/third_party/google_maps
+!system/expressionengine/third_party/js_tool
+!system/expressionengine/third_party/testage
+!system/expressionengine/third_party/debug
+!system/expressionengine/third_party/safecracker_file
+!system/expressionengine/third_party/cookie_check
+!system/expressionengine/third_party/cookie_consent
+!system/expressionengine/third_party/nannerbanner
+!system/expressionengine/third_party/unregisteredbanner
+!system/expressionengine/third_party/ellislab_high_ascii_decode
+
+system/codeigniter/system/language/*
+!system/codeigniter/system/language/english/*
 
 system/language/*
 !system/language/index.html
+system/expressionengine/language/*
+!system/expressionengine/language/english/*
 
 ^images/(captchas|avatars/uploads|forum_attachments|member_photos|signature_attachments|pm_attachments|uploads)/(?!index\.html)
 

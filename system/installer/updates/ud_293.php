@@ -38,7 +38,8 @@ class Updater {
 
 		$steps = new ProgressIterator(
 			array(
-				'_extract_cache_driver_config'
+				'_extract_cache_driver_config',
+				'_recompile_template_routes'
 			)
 		);
 
@@ -113,6 +114,31 @@ class Updater {
 			ee()->config->update_site_prefs(array(
 				'cache_driver' => $cache_driver
 			), 'all');
+		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Load all routes and resave to get rid of md5 hashes
+	 *
+	 * @access private
+	 * @return void
+	 */
+	private function _recompile_template_routes()
+	{
+		ee()->db->select('template_id, route_required, route');
+		ee()->db->from('templates');
+		ee()->db->join('template_routes', 'templates.template_id = template_routes.template_id');
+		ee()->db->where('route_parsed is not null');
+		$query = ee()->db->get();
+
+		foreach ($query->result() as $template)
+		{
+			$ee_route = new EE_Route($template->route, $template->route_required == 'y');
+			$compiled = $ee_route->compile();
+			$data = array('route_parsed' => $compiled);
+			$this->template_model->update_template_route($template->template_id, $data);
 		}
 	}
 }

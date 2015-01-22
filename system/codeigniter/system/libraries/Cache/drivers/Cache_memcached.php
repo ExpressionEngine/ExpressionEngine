@@ -146,7 +146,15 @@ class CI_Cache_memcached extends CI_Driver {
 	 */
 	public function cache_info()
 	{
-		return $this->_memcached->getStats();
+		if ($this->_memcached instanceOf Memcached)
+		{
+			return $this->_memcached->getStats();
+		}
+
+		if ($this->_memcached instanceOf Memcache)
+		{
+			return $this->_memcached->getExtendedStats();
+		}
 	}
 
 	// ------------------------------------------------------------------------

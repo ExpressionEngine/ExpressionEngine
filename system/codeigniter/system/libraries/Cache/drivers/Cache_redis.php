@@ -144,9 +144,14 @@ class CI_Cache_redis extends CI_Driver
 		if (is_array($data))
 		{
 			list($data, $time) = $data;
+			
+			$ttl = $this->_redis->ttl($key);
 
 			return array(
-				'expire' => ee()->localize->now + $this->_redis->ttl($key),
+				// Infinite TTLs have a TTL value of -1; if that's set, set the
+				// expiration time to be the same as mtime to be consistent
+				// with our other drivers
+				'expire' => ($ttl == -1) ? $time : ee()->localize->now + $ttl,
 				'mtime'	=> $time,
 				'data' => $data
 			);
