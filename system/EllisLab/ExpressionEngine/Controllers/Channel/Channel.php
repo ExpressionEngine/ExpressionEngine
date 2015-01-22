@@ -471,13 +471,22 @@ class Channel extends CP_Controller {
 			$_POST['cat_group'] = '';
 		}
 
+		$channel = ee('Model')->make('Channel', $_POST);
+		$channel->channel_id = $channel_id;
+		
+		// Make sure these are the correct NULL value if they are not set.
+		$channel->status_group = ($channel->status_group !== FALSE
+			&& $channel->status_group != '')
+			? $channel->status_group : NULL;
+		$channel->field_group = ($channel->field_group !== FALSE &&
+			$channel->field_group != '')
+			? $channel->field_group : NULL;
+
 		// Create Channel
 		if (empty($channel_id))
 		{
-			$_POST['default_entry_title'] = '';
-			$_POST['url_title_prefix'] = '';
-
-			$channel = ee('Model')->make('Channel', $_POST);
+			$channel->default_entry_title = '';
+			$channel->url_title_prefix = '';
 			$channel->channel_url = ee()->functions->fetch_site_index();
 			$channel->channel_lang = ee()->config->item('xml_lang');
 			$channel->site_id = ee()->config->item('site_id');
@@ -495,14 +504,6 @@ class Channel extends CP_Controller {
 					$channel->field_group = $field_groups[0]->group_id;
 				}
 			}
-
-			// Make sure these are the correct NULL value if they are not set.
-			$channel->status_group = ($channel->status_group !== FALSE
-				&& $channel->status_group != '')
-				? $channel->status_group : NULL;
-			$channel->field_group = ($channel->field_group !== FALSE &&
-				$channel->field_group != '')
-				? $channel->field_group : NULL;
 
 			// duplicating preferences?
 			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
@@ -553,7 +554,6 @@ class Channel extends CP_Controller {
 			ee()->layout->sync_layout($_POST, $channel_id);
 
 			$_POST['channel_id'] = $channel_id;
-			$channel = ee('Model')->make('Channel', $_POST);
 			$channel->save();
 		}
 
