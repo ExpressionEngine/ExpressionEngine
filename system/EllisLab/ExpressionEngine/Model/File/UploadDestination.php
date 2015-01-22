@@ -63,6 +63,8 @@ class UploadDestination extends Model {
 		)
 	);
 
+	protected $_property_overrides = array();
+
 	protected $id;
 	protected $site_id;
 	protected $name;
@@ -93,7 +95,6 @@ class UploadDestination extends Model {
 	public function __construct(array $data = array())
 	{
 		parent::__construct($data);
-		$this->_property_overrides = array();
 
 		// @TODO THOU SHALT INJECT ALL THY DEPENDENCIES
 		if (ee()->config->item('upload_preferences') !== FALSE)
@@ -111,7 +112,7 @@ class UploadDestination extends Model {
 	 */
 	public function __get($name)
 	{
-		$value = $this->getProperty($name);
+		$value = parent::__get($name);
 
 		// Check if have an override for this directory and that it's an
 		// array (as it should be)
