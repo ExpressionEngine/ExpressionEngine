@@ -81,4 +81,48 @@ class UploadDestination extends Model {
 	protected $cat_group;
 	protected $batch_location;
 
+	/**
+	 * Because of the 'upload_preferences' Config value, the data in the DB
+	 * is not always authoritative. So we will need to get any override data
+	 * from the Config object
+	 *
+	 * @see Entity::_construct()
+	 * @param array $data An associative array of property data
+	 * @return void
+	 */
+	public function __construct(array $data = array())
+	{
+		parent::__construct($data);
+		$this->_property_overrides = array();
+
+		// @TODO THOU SHALT INJECT ALL THY DEPENDENCIES
+		if (ee()->config->item('upload_preferences') !== FALSE)
+		{
+			$this->_property_overrides = ee()->config->item('upload_preferences');
+		}
+	}
+
+	/**
+	 * Returns the propety value using the overrides if present
+	 *
+	 * @param str $name The name of the property to fetch
+	 * @throws InvalidArgumentException if the property does not exist
+	 * @return mixed The value of the property
+	 */
+	public function __get($name)
+	{
+		$value = $this->getProperty($name);
+
+		// Check if have an override for this directory and that it's an
+		// array (as it should be)
+		if (isset($this->_property_overrides[$this->id])
+			&& is_array($this->_property_overrides[$this->id])
+			&& array_key_exists($name, $this->_property_overrides[$this->id]))
+		{
+			$value = $this->_property_overrides[$this->id][$name];
+		}
+
+		return $value;
+	}
+
 }
