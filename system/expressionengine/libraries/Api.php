@@ -36,6 +36,8 @@ class Api {
 		'members'
 	);
 
+	function __construct() {}
+
 	/**
 	 * Instantiate another API
 	 *

@@ -52,6 +52,8 @@ abstract class EE_Fieldtype {
 	protected $content_id = NULL;
 	protected $content_type = 'channel';
 
+	public function __construct() {}
+
 	/**
 	 * Re-initialize the class.
 	 *

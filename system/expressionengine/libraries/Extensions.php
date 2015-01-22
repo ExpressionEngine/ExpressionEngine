@@ -137,6 +137,7 @@ class EE_Extensions {
 		// Reset Our Variables
 		$this->end_script	= FALSE;
 		$this->last_call	= FALSE;
+		$args = array();
 
 		// Anything to Do Here?
 		if ( ! isset($this->extensions[$which])) return;
@@ -148,10 +149,7 @@ class EE_Extensions {
 		ee()->addons->is_package('');
 
 		// Retrieve arguments for function
-		if (is_object($parameter_one))
-		{
-			$args = array_slice(func_get_args(), 1);
-		}
+		$args = array_slice(func_get_args(), 1);
 
 		// Pass all arguments by reference
 		foreach($args as $k => $v)
