@@ -768,7 +768,7 @@ class Uploads extends Settings {
 		if ($edit)
 		{
 			$upload_destination = ee('Model')->get('UploadDestination')
-				->with('FileDimension')
+				->with('FileDimensions')
 				->filter('id', $id)
 				->first();
 		}
