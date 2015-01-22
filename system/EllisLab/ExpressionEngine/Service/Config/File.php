@@ -54,6 +54,7 @@ class File
 
 	/**
 	 * Create a new Config\File object, will merge with defaults
+	 *
 	 * @param string $path Full path to the config file
 	 */
 	function __construct($path)
@@ -68,6 +69,7 @@ class File
 	/**
 	 * Get an item from the config, you can use
 	 * "item.subitem.subsubitem" to drill down in the config
+	 *
 	 * @param  string $path    The config item to get
 	 * @param  mixed  $default The value to return if $path can not be found
 	 * @param  boolean $merge  Whether to merge with defaults if value is an
@@ -90,6 +92,7 @@ class File
 	/**
 	 * Set an item in the config. You can use 'item.subitem.subsubitem' to drill
 	 * down in the config.
+	 *
 	 * @param  string $path    The config item to set
 	 * @param  mixed  $value   The value to set
 	 * @return void
@@ -107,6 +110,7 @@ class File
 
 	/**
 	 * Get a nested array value given a dot-separated path
+	 *
 	 * @param  array  $array Array to traverse
 	 * @param  string $path  Dot-separated path
 	 * @return mixed         Array value
@@ -128,6 +132,7 @@ class File
 
 	/**
 	 * Set a nested array value given a dot-separated path
+	 *
 	 * @param array &$array  Array to traverse and set value in
 	 * @param string $path   Dot-separated path
 	 * @param mixed  $value  Value to set, pass in NULL to unset
