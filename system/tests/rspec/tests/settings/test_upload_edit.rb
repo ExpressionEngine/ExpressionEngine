@@ -441,11 +441,8 @@ feature 'Upload Destination Create/Edit' do
   end
 
   it 'should edit an existing upload directory' do
-    # TODO: use Upload Dirs class when tests are build for that
-    within 'div.sidebar' do
-      click_link 'Upload Directories'
-    end
-    @page.find('table tr:nth-child(2) li.edit a').click
+    @page.load_edit_for_dir(1)
+    no_php_js_errors
 
     @page.name.set 'New name upload dir'
     @page.server_path.set @upload_path # Set a path that works for the environment
