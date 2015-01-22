@@ -562,7 +562,7 @@ class Wizard extends CI_Controller {
 		}
 
 		// Before moving on, let's load the update file to make sure it's readable
-		if ( ! include(APPPATH.'updates/ud_'.$this->next_update.EXT))
+		if ( ! include(APPPATH.'updates/ud_'.$this->next_update.'.php'))
 		{
 			$this->_set_output('error', array('error' => lang('unreadable_files')));
 			return FALSE;
@@ -1518,7 +1518,7 @@ PAPAYA;
 		{
 			if (substr($file, 0, 3) == 'ud_')
 			{
-				$file = str_replace(EXT,  '', $file);
+				$file = str_replace('.php',  '', $file);
 				$file = str_replace('ud_', '', $file);
 				$file = substr($file, 0, 3);
 
@@ -1701,7 +1701,7 @@ PAPAYA;
 
 		if ($text !== FALSE)
 		{
-			return anchor($query_string, $text);
+			return anchor(site_url($query_string), $text);
 		}
 		else
 		{
@@ -1738,7 +1738,7 @@ PAPAYA;
 
 
 		$this->load->helper('directory');
-		$ext_len = strlen(EXT);
+		$ext_len = strlen('.php');
 
 		if (($map = directory_map(PATH_ADDONS)) !== FALSE)
 		{
@@ -1758,7 +1758,7 @@ PAPAYA;
 					}
 
 					// we gots a module?
-					if (strncasecmp($file, 'mod.', 4) == 0 && substr($file, -$ext_len) == EXT && strlen($file) > strlen('mod.'.EXT))
+					if (strncasecmp($file, 'mod.', 4) == 0 && substr($file, -$ext_len) == '.php' && strlen($file) > strlen('mod.'.'.php'))
 					{
 						$file = substr($file, 4, -$ext_len);
 
@@ -1831,7 +1831,7 @@ PAPAYA;
 		$dbs = array();
 		foreach (get_filenames(APPPATH.'schema/') as $val)
 		{
-			$val = str_replace(array('_schema', EXT), '', $val);
+			$val = str_replace(array('_schema', '.php'), '', $val);
 
 			if (isset($names[$val]))
 			{
@@ -1894,9 +1894,9 @@ PAPAYA;
 		 * Site Theme Overrides?
 		 */
 
-		if (file_exists($this->theme_path.$this->userdata['theme'].'/theme_preferences'.EXT))
+		if (file_exists($this->theme_path.$this->userdata['theme'].'/theme_preferences.php'))
 		{
-			require $this->theme_path.$this->userdata['theme'].'/theme_preferences'.EXT;
+			require $this->theme_path.$this->userdata['theme'].'/theme_preferences.php';
 		}
 
 		// --------------------------------------------------------------------
@@ -2142,9 +2142,9 @@ PAPAYA;
 			}
 
 			// Install any default structure and content that the theme may have
-			if (file_exists($this->theme_path.$this->userdata['theme'].'/default_content'.EXT))
+			if (file_exists($this->theme_path.$this->userdata['theme'].'/default_content.php'))
 			{
-				require $this->theme_path.$this->userdata['theme'].'/default_content'.EXT;
+				require $this->theme_path.$this->userdata['theme'].'/default_content.php';
 			}
 		}
 
@@ -2178,12 +2178,12 @@ PAPAYA;
 				$path = EE_APPPATH.'/modules/'.$module.'/';
 				unset($modules[$module]); // remove from modules array
 
-				if (file_exists($path.'upd.'.$module.EXT))
+				if (file_exists($path.'upd.'.$module.'.php'))
 				{
 					// Add the helper/library load path and temporarily
 					$this->load->add_package_path($path, FALSE);
 
-					require $path.'upd.'.$module.EXT;
+					require $path.'upd.'.$module.'.php';
 
 					$class = ucfirst($module).'_upd';
 
@@ -2214,9 +2214,9 @@ PAPAYA;
 		{
 			$path = PATH_ADDONS.$module.'/';
 
-			if (file_exists($path.'upd.'.$module.EXT))
+			if (file_exists($path.'upd.'.$module.'.php'))
 			{
-				require $path.'upd.'.$module.EXT;
+				require $path.'upd.'.$module.'.php';
 
 				$class = ucfirst($module).'_upd';
 
@@ -2254,13 +2254,13 @@ PAPAYA;
 
 		foreach($accessories as $acc => $version)
 		{
-			if ( ! file_exists(EE_APPPATH.'accessories/acc.'.strtolower($acc).EXT))
+			if ( ! file_exists(EE_APPPATH.'accessories/acc.'.strtolower($acc).'.php'))
 			{
 				unset($accessories[$acc]);
 			}
 			else
 			{
-				include EE_APPPATH.'accessories/acc.'.strtolower($acc).EXT;
+				include EE_APPPATH.'accessories/acc.'.strtolower($acc).'.php';
 				$_static_vars = get_class_vars($acc.'_acc');
 				// this seems silly since this is a first party accessory, but the Zend Optimizer
 				// apparently has problem with get_class_vars() on PHP 5.2.1x, so, safety net
@@ -2274,7 +2274,7 @@ PAPAYA;
 		}
 
 		// The Accessories library has a list of ignored controllers
-		$c_path = EE_APPPATH.'libraries/Accessories'.EXT;
+		$c_path = EE_APPPATH.'libraries/Accessories.php';
 
 		if ( ! file_exists($c_path) OR ! (include $c_path) OR ! class_exists('EE_Accessories'))
 		{
@@ -2302,8 +2302,8 @@ PAPAYA;
 				continue;
 			}
 
-			$file = str_replace(EXT, '', $file);
-			$controllers[] = str_replace(EXT, '', $file);
+			$file = str_replace('.php', '', $file);
+			$controllers[] = str_replace('.php', '', $file);
 		}
 
 		// concat and insert
@@ -2785,7 +2785,7 @@ PAPAYA;
 		$config['license_number'] = ( ! isset($config['license_number'])) ? '' : $config['license_number'];
 
 		// Fetch the config template
-		$data = read_file(APPPATH.'config/config_tmpl'.EXT);
+		$data = read_file(APPPATH.'config/config_tmpl.php');
 
 		// Swap out the values
 		foreach ($config as $key => $val)
@@ -2885,7 +2885,7 @@ PAPAYA;
 				$path = PATH_ADDONS.$module.'/';
 			}
 
-			if (file_exists($path.'upd.'.$module.EXT))
+			if (file_exists($path.'upd.'.$module.'.php'))
 			{
 				$this->load->add_package_path($path);
 
@@ -2893,7 +2893,7 @@ PAPAYA;
 
 				if ( ! class_exists($class))
 				{
-					require $path.'upd.'.$module.EXT;
+					require $path.'upd.'.$module.'.php';
 				}
 
 				$UPD = new $class;
@@ -2919,7 +2919,7 @@ PAPAYA;
 	 */
 	function _license_agreement()
 	{
-		return read_file(APPPATH.'language/'.$this->userdata['deft_lang'].'/license'.EXT);
+		return read_file(APPPATH.'language/'.$this->userdata['deft_lang'].'/license.php');
 	}
 
 	// --------------------------------------------------------------------
@@ -2932,7 +2932,7 @@ PAPAYA;
 	 */
 	function _default_channel_entry()
 	{
-		return read_file(APPPATH.'language/'.$this->userdata['deft_lang'].'/channel_entry_lang'.EXT);
+		return read_file(APPPATH.'language/'.$this->userdata['deft_lang'].'/channel_entry_lang.php');
 	}
 
 
