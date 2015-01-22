@@ -295,7 +295,8 @@ class CI_DB_driver {
 			// Log file the query came from
 			if (count($trace) >= 2)
 			{
-				require_once APPPATH.'helpers/array_helper.php';
+				$path = (defined('EE_APPPATH')) ? EE_APPPATH : APPPATH;
+				require_once $path.'helpers/array_helper.php';
 
 				// Get file and line in which query method was called
 				$file = element('file', $trace[1], '');
@@ -476,8 +477,9 @@ class CI_DB_driver {
 
 		if ( ! class_exists($driver))
 		{
-			include_once(APPPATH.'database/DB_result.php');
-			include_once(APPPATH.'database/drivers/'.$this->dbdriver.'/'.$this->dbdriver.'_result.php');
+			$path = (defined('EE_APPPATH')) ? EE_APPPATH : APPPATH;
+			include_once($path.'database/DB_result.php');
+			include_once($path.'database/drivers/'.$this->dbdriver.'/'.$this->dbdriver.'_result.php');
 		}
 
 		return $driver;
