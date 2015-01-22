@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Library\Data;
 
+use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Library\Mixin\MixableImpl;
 
 abstract class Entity extends MixableImpl {
