@@ -298,7 +298,20 @@ class Channel extends CP_Controller {
 				$vars['cat_group_options'][$group->group_id] = $group->group_name;
 			}
 		}
-		$vars['selected_cats'] = explode('|', $channel->cat_group);
+		
+		// Populate selected categories based on POST or database
+		if ( ! empty($_POST) && ! isset($_POST['cat_group']))
+		{
+			$vars['selected_cats'] = array();
+		}
+		elseif (isset($_POST['cat_group']))
+		{
+			$vars['selected_cats'] = $_POST['cat_group'];
+		}
+		else
+		{
+			$vars['selected_cats'] = explode('|', $channel->cat_group);
+		}
 
 		$vars['status_group_options'][''] = lang('none');
 		$status_groups = ee('Model')->get('StatusGroup')
@@ -335,7 +348,7 @@ class Channel extends CP_Controller {
 			array(
 				'field' => 'channel_name',
 				'label' => 'lang:channel_short_name',
-				'rules' => 'required|callback__valid_channel_name['.$channel_id.']'
+				'rules' => 'required|strip_tags|callback__valid_channel_name['.$channel_id.']'
 			)
 		));
 
