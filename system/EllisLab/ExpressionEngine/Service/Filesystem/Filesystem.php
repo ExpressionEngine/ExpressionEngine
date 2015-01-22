@@ -2,6 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Service\Filesystem;
 
+use FilesystemIterator;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -245,7 +247,7 @@ class Filesystem {
 	 */
 	public function basename($path)
 	{
-		return pathinfo($path, PATHINFO_BASENAME);
+		return basename($path);
 	}
 
 	/**
