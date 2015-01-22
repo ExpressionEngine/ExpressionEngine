@@ -113,6 +113,7 @@ class Channel extends CP_Controller {
 		);
 
 		$channels = ee('Model')->get('Channel')
+			->filter('site_id', ee()->config->item('site_id'))
 			->order($sort_map[$table->sort_col], $table->sort_dir)
 			->limit(20)
 			->offset(($table->config['page'] - 1) * 20)
@@ -244,6 +245,7 @@ class Channel extends CP_Controller {
 	{
 		if (is_null($channel_id))
 		{
+			// Only auto-complete channel short name for new channels
 			ee()->load->helper('snippets');
 			ee()->cp->add_js_script('plugin', 'ee_url_title');
 			ee()->javascript->output('
