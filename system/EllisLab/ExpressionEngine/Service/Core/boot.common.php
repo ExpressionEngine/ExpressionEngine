@@ -493,7 +493,7 @@ if ( ! function_exists('log_message'))
 * Exception Handler
 *
 * This is the custom exception handler that is declared at the top
-* of Codeigniter.php.  The main reason we use this is to permit
+* of boot.php.  The main reason we use this is to permit
 * PHP errors to be logged in our own log files since the user may
 * not have access to server logs. Since this function
 * effectively intercepts PHP errors, however, we also need

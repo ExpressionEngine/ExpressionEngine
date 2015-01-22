@@ -46,7 +46,7 @@
  *  Load the global functions
  * ------------------------------------------------------
  */
-	require(BASEPATH.'core/Common.php');
+	require(__DIR__.'/boot.common.php');
 
 /*
  * ------------------------------------------------------
@@ -77,11 +77,7 @@
 
 	EllisLab\ExpressionEngine\Service\Autoloader::getInstance()->register();
 
-
-
-
-get_config(array('subclass_prefix' => 'EE_'));
-
+	get_config(array('subclass_prefix' => 'EE_'));
 
 /*
  * ------------------------------------------------------
@@ -179,6 +175,32 @@ get_config(array('subclass_prefix' => 'EE_'));
  */
 	$LANG =& load_class('Lang', 'core', 'EE_');
 
+
+/*
+ * ------------------------------------------------------
+ *  Alias CI_ prefixed stuff we used to have in case
+ *  someone type hints. Definitely don't rely on this
+ *  staying here for terribly long.
+ *
+ *  These were consolidated with the old EE libraries to
+ *  reduce dead weight.
+ *  Done again in the loader, but we do it here for the
+ *  above core classes.
+ * ------------------------------------------------------
+ */
+	class_alias('EE_Benchmark', 'CI_Benchmark');
+	class_alias('EE_Config', 'CI_Config');
+	class_alias('EE_Input', 'CI_Input');
+	class_alias('EE_Lang', 'CI_Lang');
+	class_alias('EE_Output', 'CI_Output');
+	class_alias('EE_URI', 'CI_URI');
+	class_alias('EE_Utf8', 'CI_Utf8');
+	class_alias('EE_Router', 'CI_Router');
+	class_alias('EE_Security', 'CI_Security');
+	// do these at the bottom of their respective files?
+	//class_alias('EE_Exceptions', 'CI_Exceptions');
+
+
 /*
  * ------------------------------------------------------
  *  Load the app controller and local controller
@@ -186,7 +208,7 @@ get_config(array('subclass_prefix' => 'EE_'));
  *
  */
 	// Load the base controller class
-	require BASEPATH.'core/Controller.php';
+	require APPPATH.'core/Controller.php';
 
 	function &get_instance()
 	{
