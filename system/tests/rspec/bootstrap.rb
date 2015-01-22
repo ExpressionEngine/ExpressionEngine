@@ -47,6 +47,7 @@ RSpec.configure do |config|
 		# Whitelist URLs
 		page.driver.allow_url $test_config[:app_host]
 		page.driver.allow_url 'ellislab.com'
+		page.driver.allow_url 'google-analytics.com'
 
 		# Re-import clean database
 		reset_db
