@@ -117,7 +117,9 @@ class EE_Lang {
 			// Check custom languages first
 			SYSPATH.'language/'.$idiom.'/'.$langfile,
 			// Check english afterwards
-			APPPATH.'language/'.$deft_lang.'/'.$langfile
+			APPPATH.'language/'.$deft_lang.'/'.$langfile,
+			// Add full path in case we're in the installer
+			SYSPATH.'expressionengine/language/'.$deft_lang.'/'.$langfile
 		);
 
 		// if it's in an alternate location, such as a package, check there first
