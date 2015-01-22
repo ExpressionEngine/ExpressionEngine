@@ -245,7 +245,7 @@ class Wizard extends CI_Controller {
 	{
 		// Setup Dependency Injection Container
 		// This must come very early in the process, nothing but constants above
-		ee()->di = new \EllisLab\ExpressionEngine\Service\DependencyInjectionContainer();
+		ee()->di = new \EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer();
 
 		// Register Config
 		ee()->di->registerSingleton('Config', function($di, $config_file = 'config') {
