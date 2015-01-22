@@ -1832,7 +1832,7 @@ class EE_Config {
 	/**
 	 * Assign to Config
 	 *
-	 * This function is called by the front controller (CodeIgniter.php)
+	 * This function is called by the front controller (boot.php)
 	 * after the Config class is instantiated.  It permits config items
 	 * to be assigned or overriden by variables contained in the index.php file
 	 *

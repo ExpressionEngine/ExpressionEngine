@@ -131,10 +131,10 @@
 	// ensure there's a trailing slash
 	$system_path = rtrim($system_path, '/').'/';
 
-	// Is the sytsem path correct?
+	// Is the system path correct?
 	if ( ! is_dir($system_path))
 	{
-		exit("Your system folder path does not appear to be set correctly. Please open the following file and correct this: ".pathinfo(__FILE__, PATHINFO_BASENAME));
+		exit("Your system folder path does not appear to be set correctly. Please open the following file and correct this: ".basename(__FILE__));
 	}
 
 /*
@@ -143,7 +143,7 @@
  * --------------------------------------------------------------------
  */
 	// The name of THIS file
-	define('SELF', pathinfo(__FILE__, PATHINFO_BASENAME));
+	define('SELF', basename(__FILE__));
 
 	// The PHP file extension
 	define('EXT', '.php');
