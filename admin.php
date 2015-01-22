@@ -74,31 +74,16 @@
 
 /*
  * --------------------------------------------------------------------
- *  Mandatory config overrides
- * --------------------------------------------------------------------
- */
-
-	$assign_to_config['subclass_prefix'] = 'EE_';
-	$assign_to_config['directory_trigger'] = 'D';
-	$assign_to_config['controller_trigger'] = 'C';
-	$assign_to_config['function_trigger'] = 'M';
-
-/*
- * --------------------------------------------------------------------
  *  Resolve the system path for increased reliability
  * --------------------------------------------------------------------
  */
-	if ($system_path == '')
-	{
-		$system_path = pathinfo(__FILE__, PATHINFO_DIRNAME);
-	}
+	$system_path = $system_path ?: __DIR__;
 
 	if (realpath($system_path) !== FALSE)
 	{
-		$system_path = realpath($system_path).'/';
+		$system_path = realpath($system_path);
 	}
 
-	// ensure there's a trailing slash
 	$system_path = rtrim($system_path, '/').'/';
 
 /*
@@ -106,48 +91,24 @@
  *  Now that we know the path, set the main constants
  * --------------------------------------------------------------------
  */
-	// The PHP file extension
-	define('EXT', '.php');
 
-	// The name of THIS file
-	define('SELF', pathinfo(__FILE__, PATHINFO_BASENAME));
+	// The name of this file
+	define('SELF', basename(__FILE__));
 
-	// Path to the system folder
-	define('BASEPATH', str_replace("\\", "/", $system_path.'codeigniter/system/'));
+	// Path to this file
+	define('FCPATH', __DIR__.'/');
 
 	// Path to the "system" folder
 	define('SYSPATH', $system_path);
 
-	// Path to the front controller (this file)
-	define('FCPATH', str_replace(SELF, '', __FILE__));
-
 	// Name of the "system folder"
-	define('SYSDIR', trim(strrchr(trim(str_replace("\\", "/", $system_path), '/'), '/'), '/'));
+	define('SYSDIR', basename($system_path));
+
+	// Path to the legacy app folder
+	define('BASEPATH', $system_path.'/expressionengine/');
 
 	// The $debug value as a constant for global access
 	define('DEBUG', $debug);  unset($debug);
-
-/*
-* --------------------------------------------------------------------
- *  EE Control Panel Constants
- * -------------------------------------------------------------------
- *
- * If the "installer" folder exists we'll load the installation
- * wizard. Otherwise, we'll load the CP.
- *
- */
-	// Is the installation folder present?
-	if (is_dir($system_path.'installer/'))
-	{
-		// This allows the installer application to be inside our normal
-		// EE application directory.
-		define('APPPATH', $system_path.'installer/');
-		define('EE_APPPATH', $system_path.'expressionengine/');
-	}
-	else
-	{
-		define('APPPATH', $system_path.'expressionengine/');
-	}
 
 	// The control panel access constant ensures the CP will be invoked.
 	define('REQ', 'CP');
@@ -176,7 +137,6 @@
  * And away we go...
  *
  */
-	// Is the system path correct?
 	if ( ! file_exists(SYSPATH.'EllisLab/ExpressionEngine/Service/Core/boot.php'))
 	{
 		header('HTTP/1.1 503 Service Unavailable.', TRUE, '503');

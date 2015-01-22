@@ -112,56 +112,36 @@
 
 /*
  * --------------------------------------------------------------------
- *  Mandatory config overrides
- * --------------------------------------------------------------------
- */
-	$assign_to_config['subclass_prefix'] = 'EE_';
-
-/*
- * --------------------------------------------------------------------
  *  Resolve the system path for increased reliability
  * --------------------------------------------------------------------
  */
 
 	if (realpath($system_path) !== FALSE)
 	{
-		$system_path = realpath($system_path).'/';
+		$system_path = realpath($system_path);
 	}
 
-	// ensure there's a trailing slash
 	$system_path = rtrim($system_path, '/').'/';
-
-	// Is the system path correct?
-	if ( ! is_dir($system_path))
-	{
-		exit("Your system folder path does not appear to be set correctly. Please open the following file and correct this: ".basename(__FILE__));
-	}
 
 /*
  * --------------------------------------------------------------------
  *  Now that we know the path, set the main constants
  * --------------------------------------------------------------------
  */
-	// The name of THIS file
+	// The name of this file
 	define('SELF', basename(__FILE__));
 
-	// The PHP file extension
-	define('EXT', '.php');
-
-	// Path to the system folder
-	define('BASEPATH', str_replace("\\", "/", $system_path.'codeigniter/system/'));
-
-	// Path to the "application" folder
-	define('APPPATH', $system_path.'expressionengine/');
+	// Path to this file
+	define('FCPATH', __DIR__.'/');
 
 	// Path to the "system" folder
 	define('SYSPATH', $system_path);
 
-	// Path to the front controller (this file)
-	define('FCPATH', str_replace(SELF, '', __FILE__));
-
 	// Name of the "system folder"
-	define('SYSDIR', trim(strrchr(trim(str_replace("\\", "/", $system_path), '/'), '/'), '/'));
+	define('SYSDIR', basename($system_path));
+
+	// Path to the legacy app folder
+	define('BASEPATH', $system_path.'/expressionengine/');
 
 	// The $debug value as a constant for global access
 	define('DEBUG', $debug);  unset($debug);
@@ -189,6 +169,12 @@
  * And away we go...
  *
  */
+	if ( ! file_exists(SYSPATH.'EllisLab/ExpressionEngine/Service/Core/boot.php'))
+	{
+		header('HTTP/1.1 503 Service Unavailable.', TRUE, '503');
+		exit("Your system folder path does not appear to be set correctly. Please open the following file and correct this: ".pathinfo(__FILE__, PATHINFO_BASENAME));
+	}
+
 	require_once SYSPATH.'EllisLab/ExpressionEngine/Service/Core/boot.php';
 
 /* End of file index.php */

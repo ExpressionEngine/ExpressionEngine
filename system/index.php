@@ -12,20 +12,6 @@
 
 /*
  * --------------------------------------------------------------------
- *  MASKED CP ACCESS
- * --------------------------------------------------------------------
- *
- * This lets the system know whether or not the control panel is being
- * accessed from a location outside the system folder
- *
- * NOTE: If you set this, be sure that you set the $system_path and the
- * 'cp_url' item in the $assign_to_config array below!
- *
- */
-//	define('MASKED_CP', TRUE);
-
-/*
- * --------------------------------------------------------------------
  *  System Path
  * --------------------------------------------------------------------
  *
@@ -69,40 +55,40 @@
 //	$assign_to_config['cp_url'] = ''; // masked CP access only
 //	$assign_to_config['site_name']  = ''; // MSM only
 
+
+/*
+ * --------------------------------------------------------------------
+ *  MASKED CP ACCESS
+ * --------------------------------------------------------------------
+ *
+ * This lets the system know whether or not the control panel is being
+ * accessed from a location outside the system folder
+ *
+ * NOTE: If you set this, be sure that you set the $system_path and the
+ * 'cp_url' item in the $assign_to_config array above!
+ *
+ */
+//	define('MASKED_CP', TRUE);
+
 /*
  * --------------------------------------------------------------------
  *  END OF USER CONFIGURABLE SETTINGS.  DO NOT EDIT BELOW THIS LINE
  * --------------------------------------------------------------------
  */
 
-
-
-/*
- * --------------------------------------------------------------------
- *  Mandatory config overrides
- * --------------------------------------------------------------------
- */
-	$assign_to_config['subclass_prefix'] = 'EE_';
-	$assign_to_config['directory_trigger'] = 'D';
-	$assign_to_config['controller_trigger'] = 'C';
-	$assign_to_config['function_trigger'] = 'M';
-
 /*
  * --------------------------------------------------------------------
  *  Resolve the system path for increased reliability
  * --------------------------------------------------------------------
  */
-	if ($system_path == '')
-	{
-		$system_path = pathinfo(__FILE__, PATHINFO_DIRNAME);
-	}
+
+	$system_path = $system_path ?: __DIR__;
 
 	if (realpath($system_path) !== FALSE)
 	{
-		$system_path = realpath($system_path).'/';
+		$system_path = realpath($system_path);
 	}
 
-	// ensure there's a trailing slash
 	$system_path = rtrim($system_path, '/').'/';
 
 /*
@@ -110,54 +96,24 @@
  *  Now that we know the path, set the main constants
  * --------------------------------------------------------------------
  */
-	// The PHP file extension
-	define('EXT', '.php');
 
-	// The name of THIS file
+	// The name of this file
 	define('SELF', basename(__FILE__));
 
-	// Path to the system folder
-	define('BASEPATH', str_replace("\\", "/", $system_path.'codeigniter/system/'));
+	// Path to this file
+	define('FCPATH', __DIR__.'/');
 
 	// Path to the "system" folder
 	define('SYSPATH', $system_path);
 
-	// Path to the front controller (this file)
-	define('FCPATH', str_replace(SELF, '', __FILE__));
-
 	// Name of the "system folder"
-	define('SYSDIR', trim(strrchr(trim(str_replace("\\", "/", $system_path), '/'), '/'), '/'));
+	define('SYSDIR', basename($system_path));
+
+	// Path to the legacy app folder
+	define('BASEPATH', $system_path.'/expressionengine/');
 
 	// The $debug value as a constant for global access
 	define('DEBUG', $debug);  unset($debug);
-
-/*
-* --------------------------------------------------------------------
- *  EE Control Panel Constants
- * -------------------------------------------------------------------
- *
- * If the "installer" folder exists we'll load the installation
- * wizard. Otherwise, we'll load the CP.
- *
- */
-	// Is the installation folder present?
-	if (FALSE && is_dir($system_path.'installer/'))
-	{
-		// We need a different subclass prefix when we run the installer,
-		// because it has its own Config class extension with some
-		// specific functions. Setting a unique prefix lets us load the
-		// main Config class extension without a naming conflict.
-		$assign_to_config['subclass_prefix']	= 'Installer_';
-
-		// This allows the installer application to be inside our normal
-		// EE application directory.
-		define('APPPATH', $system_path.'installer/');
-		define('EE_APPPATH', $system_path.'expressionengine/');
-	}
-	else
-	{
-		define('APPPATH', $system_path.'expressionengine/');
-	}
 
  	// The control panel access constant ensures the CP will be invoked.
 	define('REQ', 'CP');
@@ -176,7 +132,6 @@
 	{
 		error_reporting(0);
 	}
-
 
 /*
  *---------------------------------------------------------------

@@ -1,45 +1,16 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /**
- * CodeIgniter
+ * ExpressionEngine - by EllisLab
  *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
+ * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0.0
  * @filesource
  */
 
-// ------------------------------------------------------------------------
-
-/**
- * System Initialization File
- *
- * Loads the base classes and executes the request.
- *
- * @package		CodeIgniter
- * @subpackage	codeigniter
- * @category	Front-controller
- * @author		EllisLab Dev Team
- * @link		http://codeigniter.com/user_guide/
- */
-
-/*
- * ------------------------------------------------------
- *  Define the CodeIgniter Version
- * ------------------------------------------------------
- */
-	define('CI_VERSION', '2.0.1');
-
-/*
- * ------------------------------------------------------
- *  Define the CodeIgniter Branch (Core = TRUE, Reactor = FALSE)
- * ------------------------------------------------------
- */
-	define('CI_CORE', TRUE);
 
 /*
  * ------------------------------------------------------
@@ -47,6 +18,27 @@
  * ------------------------------------------------------
  */
 	require(__DIR__.'/boot.common.php');
+
+/*
+ * ------------------------------------------------------
+ *  Check for the installer if we're booting the CP
+ * ------------------------------------------------------
+ */
+	if (FALSE && is_dir($system_path.'installer/'))
+	{
+		// This allows the installer application to be inside our normal
+		// EE application directory.
+		define('APPPATH', SYSPATH.'installer/');
+		define('EE_APPPATH', BASEPATH);
+
+		get_config(array('subclass_prefix' => 'Installer_'));
+	}
+	else
+	{
+		define('APPPATH', BASEPATH);
+
+		get_config(array('subclass_prefix' => 'EE_'));
+	}
 
 /*
  * ------------------------------------------------------
@@ -71,14 +63,17 @@
 
 	EllisLab\ExpressionEngine\Service\Autoloader::getInstance()->register();
 
-	if (defined('EE_APPPATH'))
-	{
-		get_config(array('subclass_prefix' => 'Installer_'));
-	}
-	else
-	{
-		get_config(array('subclass_prefix' => 'EE_'));
-	}
+/*
+ * ------------------------------------------------------
+ *  Set mandatory config overrides
+ * ------------------------------------------------------
+ */
+
+	get_config(array(
+		'directory_trigger'  => 'D',
+		'controller_trigger' => 'C',
+		'function_trigger'   => 'M'
+	));
 
 /*
  * ------------------------------------------------------
