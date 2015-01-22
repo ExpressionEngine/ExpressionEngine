@@ -370,7 +370,7 @@ class Wizard extends CI_Controller {
 		{
 			// Is the email template file available? We'll check since we need
 			// this later
-			if ( ! file_exists(EE_APPPATH.'/language/'.$this->userdata['deft_lang'].'/email_data'.EXT))
+			if ( ! file_exists(EE_APPPATH.'/language/'.$this->userdata['deft_lang'].'/email_data.php'))
 			{
 				$this->_set_output('error', array('error' => lang('unreadable_email')));
 				return FALSE;
@@ -971,7 +971,7 @@ PAPAYA;
 		}
 
 		// Does the specified database schema type exist?
-		if ( ! file_exists(APPPATH.'schema/'.$this->userdata['dbdriver'].'_schema'.EXT))
+		if ( ! file_exists(APPPATH.'schema/'.$this->userdata['dbdriver'].'_schema.php'))
 		{
 			$errors[] = lang('unreadable_dbdriver');
 		}
@@ -997,7 +997,7 @@ PAPAYA;
 		// --------------------------------------------------------------------
 
 		// Load the DB schema
-		require APPPATH.'schema/'.$this->userdata['dbdriver'].'_schema'.EXT;
+		require APPPATH.'schema/'.$this->userdata['dbdriver'].'_schema.php';
 		$this->schema = new EE_Schema();
 
 		// Assign the userdata array to the schema class
@@ -1075,13 +1075,13 @@ PAPAYA;
 		// --------------------------------------------------------------------
 
 		// This allows one to override the functions in Email Data below, thus allowing custom speciality templates
-		if (file_exists($this->theme_path.$this->userdata['theme'].'/speciality_templates'.EXT))
+		if (file_exists($this->theme_path.$this->userdata['theme'].'/speciality_templates.php'))
 		{
-			require $this->theme_path.$this->userdata['theme'].'/speciality_templates'.EXT;
+			require $this->theme_path.$this->userdata['theme'].'/speciality_templates.php';
 		}
 
 		// Load the email template
-		require_once EE_APPPATH.'/language/'.$this->userdata['deft_lang'].'/email_data'.EXT;
+		require_once EE_APPPATH.'/language/'.$this->userdata['deft_lang'].'/email_data.php';
 
 		// Install Database Tables!
 		if ( ! $this->schema->install_tables_and_data())
@@ -1188,9 +1188,9 @@ PAPAYA;
 		{
 			$required_modules = array();
 
-			if (file_exists($this->theme_path.$theme.'/theme_preferences'.EXT))
+			if (file_exists($this->theme_path.$theme.'/theme_preferences.php'))
 			{
-				require $this->theme_path.$theme.'/theme_preferences'.EXT;
+				require $this->theme_path.$theme.'/theme_preferences.php';
 				$this->theme_required_modules[$theme] = $required_modules;
 			}
 			else
@@ -1377,7 +1377,7 @@ PAPAYA;
 		}
 
 		// is there a survey for this version?
-		if (file_exists(APPPATH.'views/surveys/survey_'.$this->next_update.EXT))
+		if (file_exists(APPPATH.'views/surveys/survey_'.$this->next_update.'.php'))
 		{
 			$this->load->library('survey');
 
