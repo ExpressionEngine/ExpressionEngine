@@ -13,13 +13,6 @@
 
 /*
  * ------------------------------------------------------
- *  Load the global functions
- * ------------------------------------------------------
- */
-	require(__DIR__.'/boot.common.php');
-
-/*
- * ------------------------------------------------------
  *  Set and load the framework constants
  * ------------------------------------------------------
  */
@@ -29,6 +22,23 @@
 	define('BASEPATH', SYSPATH.'/expressionengine/');
 
 	require(BASEPATH.'config/constants.php');
+
+/*
+ * ------------------------------------------------------
+ *  Load the autoloader and register it
+ * ------------------------------------------------------
+ */
+	require(SYSPATH.'EllisLab/ExpressionEngine/Service/Autoloader.php');
+
+	EllisLab\ExpressionEngine\Service\Autoloader::getInstance()->register();
+
+
+/*
+ * ------------------------------------------------------
+ *  Load the global functions
+ * ------------------------------------------------------
+ */
+	require(__DIR__.'/boot.common.php');
 
 /*
  * ------------------------------------------------------
@@ -55,15 +65,6 @@
  * ------------------------------------------------------
  */
 	set_error_handler('_exception_handler');
-
-/*
- * ------------------------------------------------------
- *  Load the autoloader and register it
- * ------------------------------------------------------
- */
-	require(APPPATH.'../EllisLab/ExpressionEngine/Service/Autoloader.php');
-
-	EllisLab\ExpressionEngine\Service\Autoloader::getInstance()->register();
 
 /*
  * ------------------------------------------------------
