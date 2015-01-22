@@ -2341,6 +2341,13 @@ PAPAYA;
 		}
 
 		$config = array(
+			'db_hostname'               => $this->userdata['db_hostname'],
+			'db_username'               => $this->userdata['db_username'],
+			'db_password'               => $this->userdata['db_password'],
+			'db_database'               => $this->userdata['db_name'],
+			'db_dbdriver'               => $this->userdata['dbdriver'],
+			'db_pconnect'               => ($this->userdata['db_conntype'] == 1) ? TRUE : FALSE,
+			'db_dbprefix'               => ($this->userdata['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $this->userdata['db_prefix']),
 			'app_version'               => $this->userdata['app_version'],
 			'license_contact'           => $this->userdata['license_contact'],
 			'license_number'            => trim($this->userdata['license_number']),
