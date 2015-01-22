@@ -340,7 +340,8 @@ class EE_Loader {
 			return FALSE;
 		}
 
-		require_once(APPPATH.'database/DB.php');
+		$path = (defined('EE_APPPATH')) ? EE_APPPATH : APPPATH;
+		require_once($path.'database/DB.php');
 
 		if ($return === TRUE)
 		{

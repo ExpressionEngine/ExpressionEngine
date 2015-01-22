@@ -13,16 +13,6 @@
 
 // ------------------------------------------------------------------------
 
-
-// Some of the functions we need - such as updating
-// new config files are already in the main app.
-// Instead of reimplementing those methods, we'll
-// include that file and subclass it again.
-
-require_once(EE_APPPATH.'core/EE_Config'.EXT);
-
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Config Class
  *
@@ -33,9 +23,9 @@ require_once(EE_APPPATH.'core/EE_Config'.EXT);
  * @link		http://ellislab.com
  */
 class Installer_Config Extends EE_Config {
-	var $config_path 		= ''; // Set in the constructor below
-	var $database_path		= ''; // Set in the constructor below
-	var $exceptions	 		= array();	 // path.php exceptions
+
+	public $config_path = ''; // Set in the constructor below
+	public $exceptions  = array(); // path.php exceptions
 
 	/**
 	 * Constructor
@@ -43,10 +33,7 @@ class Installer_Config Extends EE_Config {
 	public function __construct()
 	{
 		parent::__construct();
-
-		$this->config_path		= EE_APPPATH.'/config/config'.EXT;
-		$this->database_path	= EE_APPPATH.'/config/database'.EXT;
-
+		$this->config_path = SYSPATH.'/config/config.php';
 		$this->_initialize();
 	}
 

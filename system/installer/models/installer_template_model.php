@@ -14,7 +14,7 @@
 // ------------------------------------------------------------------------
 
 
-require_once(EE_APPPATH.'models/template_model'.EXT);
+require_once(EE_APPPATH.'models/template_model.php');
 
 
 // ------------------------------------------------------------------------

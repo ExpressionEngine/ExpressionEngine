@@ -207,7 +207,7 @@
  *
  */
 	// Load the base controller class
-	require APPPATH.'core/Controller.php';
+	require SYSPATH.'expressionengine/core/Controller.php';
 
 	function &get_instance()
 	{

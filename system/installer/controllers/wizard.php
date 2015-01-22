@@ -38,13 +38,12 @@ class Wizard extends CI_Controller {
 	public $refresh_url       = '';		// The URL where the refresh should go to.  Set dynamically
 	public $theme_path        = '';
 	public $root_theme_path   = '';
-	public $active_group      = 'expressionengine';
 
 	// Default page content - these are in English since we don't know the user's language choice when we first load the installer
 	public $content           = '';
 	public $title             = 'ExpressionEngine Installation and Update Wizard';
 	public $heading           = 'ExpressionEngine Installation and Update Wizard';
-	public $copyright         = 'Copyright 2003 - 2014 EllisLab, Inc. - All Rights Reserved';
+	public $copyright         = 'Copyright 2003 - %s EllisLab, Inc. - All Rights Reserved';
 
 	public $now;
 	public $year;
@@ -181,10 +180,11 @@ class Wizard extends CI_Controller {
 		$this->load->library('logger');
 
 		$this->load->add_package_path(EE_APPPATH);
-		$this->_load_langauge();
 
 		$this->load->library('localize');
 		$this->load->library('cp');
+		$this->load->helper('language');
+		$this->lang->load('installer', $this->mylang);
 
 		$this->load->model('installer_template_model', 'template_model');
 
@@ -227,6 +227,37 @@ class Wizard extends CI_Controller {
 		$this->year  = gmdate('Y', $this->now);
 		$this->month = gmdate('m', $this->now);
 		$this->day   = gmdate('d', $this->now);
+
+		$this->setupModels();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Setup the Dependency Injection Container and setup the Config and
+	 * Database singletons.
+	 *
+	 * This is likely temporary
+	 *
+	 * @return void
+	 */
+	private function setupModels()
+	{
+		// Setup Dependency Injection Container
+		// This must come very early in the process, nothing but constants above
+		ee()->di = new \EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer();
+
+		// Register Config
+		ee()->di->registerSingleton('Config', function($di, $config_file = 'config') {
+			$directory = new \EllisLab\ExpressionEngine\Service\Config\Directory(SYSPATH.'config/');
+			return $directory->file($config_file);
+		});
+
+		// Load DB and set DB preferences
+		ee()->di->registerSingleton('Database', function($di) {
+			$database_config = new \EllisLab\ExpressionEngine\Service\Database\DBConfig(ee('Config'));
+			return new \EllisLab\ExpressionEngine\Service\Database\Database($database_config);
+		});
 	}
 
 	// --------------------------------------------------------------------
@@ -243,21 +274,26 @@ class Wizard extends CI_Controller {
 	{
 		$this->_set_base_url();
 
-		// Is $_GET['m'] set?  If not we show the welcome page
-		if ( ! $this->input->get('M'))
-		{
-			return $this->_set_output('welcome', array('action' => $this->set_qstr('optionselect')));
-		}
-
 		// Run our pre-flight tests.
-		// This function generates its own error messages so if it returns FALSE we bail out.
+		// This function generates its own error messages so if it returns FALSE
+		// we bail out.
 		if ( ! $this->_preflight())
 		{
 			return FALSE;
 		}
 
-		// OK, at this point we have determined whether an existing EE installation exists
-		// and we've done all our error trapping and connected to the DB if needed
+		// Is $_GET['m'] set?  If not we show the welcome page
+		if ( ! $this->input->get('M'))
+		{
+			return $this->_set_output(
+				'welcome',
+				array('action' => $this->set_qstr('optionselect'))
+			);
+		}
+
+		// OK, at this point we have determined whether an existing EE
+		// installation exists and we've done all our error trapping and
+		// connected to the DB if needed
 
 		// For safety all function names are prefixed with an underscore
 		$action = '_'.$this->input->get('M');
@@ -265,7 +301,7 @@ class Wizard extends CI_Controller {
 		// Is the action allowed?
 		if ( ! in_array($this->input->get('M'), $this->allowed_methods) OR  ! method_exists($this, $action))
 		{
-			show_error($this->lang->line('invalid_action'));
+			show_error(lang('invalid_action'));
 		}
 
 		// Call the action
@@ -284,7 +320,8 @@ class Wizard extends CI_Controller {
 	 */
 	function _preflight()
 	{
-		// If the installed version of PHP is not supported we show the "unsupported" view file
+		// If the installed version of PHP is not supported we show the
+		// "unsupported" view file
 		if (is_php($this->minimum_php) == FALSE)
 		{
 			$this->_set_output('unsupported', array('required_ver' => $this->minimum_php));
@@ -294,69 +331,55 @@ class Wizard extends CI_Controller {
 		// Is the config file readable?
 		if ( ! include($this->config->config_path))
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('unreadable_config')));
+			$this->_set_output('error', array('error' => lang('unreadable_config')));
 			return FALSE;
 		}
 
 		// Is the config file writable?
 		if ( ! is_really_writable($this->config->config_path))
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('unwritable_config')));
+			$this->_set_output('error', array('error' => lang('unwritable_config')));
 			return FALSE;
 		}
-
-		// Is the database.php file readable?
-		if ( ! include($this->config->database_path))
-		{
-			$this->_set_output('error', array('error' => $this->lang->line('unreadable_database')));
-			return FALSE;
-		}
-
-		// Is the database.php file writable?  NOTE: Depending on whether we decide to require the database file
-		// to always be writable will determine whether this code stays intact
-		if ( ! is_really_writable($this->config->database_path))
-		{
-			$this->_set_output('error', array('error' => $this->lang->line('unreadable_database')));
-			return FALSE;
-		}
-
-		$cache_path = EE_APPPATH.'cache';
 
 		// Attempt to grab cache_path config if it's set
-		if (ee()->config->item('cache_path'))
-		{
-			$cache_path = ee()->config->item('cache_path');
-		}
+		$cache_path = (ee()->config->item('cache_path'))
+			? ee()->config->item('cache_path')
+			: SYSPATH.'cache';
 
 		// Is the cache folder writable?
 		if ( ! is_really_writable($cache_path))
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('unwritable_cache_folder')));
+			$this->_set_output('error', array('error' => lang('unwritable_cache_folder')));
 			return FALSE;
 		}
 
-		// Prior to 2.0 the config array was named $conf.  This has changed to $config for 2.0
+		// Prior to 2.0 the config array was named $conf. This has changed to
+		// $config for 2.0
+		// TODO-WB: Remove for 3.x updater
 		if (isset($conf))
 		{
 			$config = $conf;
 		}
 
-		// No config AND db arrays?  This means it's a first time install...hopefully.
-		// There's always a chance that the user nuked their config files.  During installation
-		// later we'll double check the existence of EE tables once we know the DB connection values
-		if ( ! isset($config) AND ! isset($db))
+		// No config? This means it's a first time install...hopefully. There's
+		// always a chance that the user nuked their config files. During
+		// installation later we'll double check the existence of EE tables once
+		// we know the DB connection values
+		if ( ! isset($config))
 		{
-			// Is the email template file available?  We'll check since we need this later
-			if ( ! file_exists(EE_APPPATH.'/language/'.$this->userdata['deft_lang'].'/email_data'.EXT))
+			// Is the email template file available? We'll check since we need
+			// this later
+			if ( ! file_exists(EE_APPPATH.'/language/'.$this->userdata['deft_lang'].'/email_data.php'))
 			{
-				$this->_set_output('error', array('error' => $this->lang->line('unreadable_email')));
+				$this->_set_output('error', array('error' => lang('unreadable_email')));
 				return FALSE;
 			}
 
 			// Are the DB schemas available?
 			if ( ! is_dir(APPPATH.'schema/'))
 			{
-				$this->_set_output('error', array('error' => $this->lang->line('unreadable_schema')));
+				$this->_set_output('error', array('error' => lang('unreadable_schema')));
 				return FALSE;
 			}
 
@@ -367,7 +390,8 @@ class Wizard extends CI_Controller {
 			$this->userdata['image_path'] = $this->image_path;
 			$this->userdata['theme_folder_path'] = $this->root_theme_path;
 
-			// We'll assign any POST values that exist (this will be the case after the user submits the install form)
+			// We'll assign any POST values that exist (this will be the case
+			// after the user submits the install form)
 			if (count($_POST) > 0)
 			{
 				foreach ($_POST as $key => $val)
@@ -407,58 +431,31 @@ class Wizard extends CI_Controller {
 			// We'll switch the default if MySQLi is available
 			if (function_exists('mysqli_connect'))
 			{
-					$this->userdata['dbdriver'] = 'mysqli';
+				$this->userdata['dbdriver'] = 'mysqli';
 			}
 
-			// At this point we are reasonably sure that this is a first time installation.
-			// We will set the flag and bail out since we're done
+			// At this point we are reasonably sure that this is a first time
+			// installation. We will set the flag and bail out since we're done
 			$this->is_installed = FALSE;
 			return TRUE;
 		}
 
-		// Before we assume this is an update, let's see if we can connect to the DB.
-		// If they are running EE prior to 2.0 the database settings are found in the main
-		// config file, if they are running 2.0 or newer, the settings are found in the db file
-		if (isset($active_group))
-		{
-			$this->active_group = $active_group;
-		}
+		// Before we assume this is an update, let's see if we can connect to
+		// the DB. If they are running EE prior to 2.0 the database settings are
+		// found in the main config file, if they are running 2.0 or newer, the
+		// settings are found in the db file
+		$db = ee('Database')->getConfig()->getGroupConfig();
 
-		$move_db_data = FALSE;
-
-		if ( ! isset($db) AND isset($config['db_hostname']))
-		{
-			$db[$this->active_group] = array(
-				'hostname'	=> $config['db_hostname'],
-				'username'	=> $config['db_username'],
-				'password'	=> $config['db_password'],
-				'database'	=> $config['db_name'],
-				'dbdriver'	=> $config['db_type'],
-				'dbprefix'	=> ($config['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $config['db_prefix']),
-				'pconnect'	=> ($config['db_conntype'] == 1) ? TRUE : FALSE,
-				'swap_pre'	=> 'exp_',
-				'db_debug'	=> TRUE, // We show our own errors
-				'cache_on'	=> FALSE,
-				'autoinit'	=> FALSE, // We'll initialize the DB manually
-				'char_set'	=> 'utf8',
-				'dbcollat'	=> 'utf8_general_ci'
-			);
-			$move_db_data = TRUE;
-		}
-
-		// is correct db_prefix
-
-		// Still not $db array?  Hm... what's going on here?
 		if ( ! isset($db))
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('database_no_data')));
+			$this->_set_output('error', array('error' => lang('database_no_data')));
 			return FALSE;
 		}
 
 		// Can we connect?
 		if ( ! $this->_db_connect($db))
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('database_no_config')));
+			$this->_set_output('error', array('error' => lang('database_no_config')));
 			return FALSE;
 		}
 
@@ -466,16 +463,17 @@ class Wizard extends CI_Controller {
 		// We need to deal with a couple possible issues.
 
 		// If the 'app_version' index is not present in the config file we are
-		// dealing with EE public beta version released back in 2004.
-		// Crazy as it sounds there's a chance someone will surface still running it
-		// so we'll write the version to the config file
+		// dealing with EE public beta version released back in 2004. Crazy as
+		// it sounds there's a chance someone will surface still running it so
+		// we'll write the version to the config file
 		if ( ! isset($config['app_version']))
 		{
 			$this->config->_append_config_1x(array('app_version' => 0));
 			$config['app_version'] = 0;  // Update the $config array
 		}
 
-		// Fixes a bug in the installation script for 2.0.2, where periods were included
+		// Fixes a bug in the installation script for 2.0.2, where periods were
+		// included
 		$config['app_version'] = str_replace('.', '', $config['app_version']);
 
 		// This fixes a bug introduced in the installation script for v 1.3.1
@@ -496,12 +494,13 @@ class Wizard extends CI_Controller {
 		// If this returns false it means the "updates" folder was not readable
 		if ( ! $this->_fetch_updates($config['app_version']))
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('unreadable_update')));
+			$this->_set_output('error', array('error' => lang('unreadable_update')));
 			return FALSE;
 		}
 
-		// If this is FALSE it means the user is running the most current version.
-		// We will show the "you are running the most current version" template
+		// If this is FALSE it means the user is running the most current
+		// version. We will show the "you are running the most current version"
+		// template
 		if ($this->next_update === FALSE)
 		{
 			$this->_assign_install_values();
@@ -517,8 +516,8 @@ class Wizard extends CI_Controller {
 
 			$self = ( ! isset($_SERVER['PHP_SELF']) OR $_SERVER['PHP_SELF'] == '') ? '' : substr($_SERVER['PHP_SELF'], 1);
 
-			// Since the CP access file can be inside or outside of the "system" folder
-			// we will do a little test to help us set the site_url item
+			// Since the CP access file can be inside or outside of the "system"
+			// folder we will do a little test to help us set the site_url item
 			$_selfloc = (is_dir('./installer/')) ? SELF.'/'.SYSDIR : SELF;
 
 			$this->userdata['site_url'] = $host.substr($self, 0, - strlen($_selfloc));
@@ -535,11 +534,13 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
-		// Check to see if the language pack they are using in 1.6.X is available for the 2.0 upgrade.
-		// This will only need to be done during the move from 1.6 to 2, and not for subsequent 2.0
-		// updates, so we'll use the $move_db_data flag to determine if we should check for this, as
-		// it will only be TRUE during this specific transition.
-		if ($move_db_data == TRUE)
+		// Check to see if the language pack they are using in 1.6.X is
+		// available for the 2.0 upgrade. This will only need to be done during
+		// the move from 1.6 to 2, and not for subsequent 2.0 updates, so we'll
+		// use the $move_db_data flag to determine if we should check for this,
+		// as it will only be TRUE during this specific transition.
+		// TODO-WB: Remove for 3.x
+		if (FALSE && $move_db_data == TRUE)
 		{
 			$default_language = $this->config->_get_config_1x('deft_lang');
 
@@ -555,37 +556,22 @@ class Wizard extends CI_Controller {
 			// Check to see if they have the language files needed
 			if ( ! in_array($default_language, $languages))
 			{
-				$this->_set_output('error', array('error' => str_replace('%x', ucfirst($default_language), $this->lang->line('unreadable_language'))));
+				$this->_set_output('error', array('error' => str_replace('%x', ucfirst($default_language), lang('unreadable_language'))));
 				return FALSE;
 			}
-		}
-
-		// Do we need to move the database connection info out of the config file and into the DB file?
-		// Prior to 2.0 the main config file contained the DB connection info so we'll move it if needed
-		if ($move_db_data == TRUE)
-		{
-			if ($this->_write_db_config($db) == FALSE)
-			{
-				$this->_set_output('error', array('error' => $this->lang->line('unwritable_database')));
-				return FALSE;
-			}
-
-			// Kill the DB connection data from the main config file
-			// We also kill "system_folder" as this isn't used anymore
-			$unset = array( 'db_hostname', 'db_username', 'db_password', 'db_name', 'db_type', 'db_prefix', 'db_conntype', 'system_folder');
-			$this->config->_append_config_1x(array(), $unset);
 		}
 
 		// Before moving on, let's load the update file to make sure it's readable
-		if ( ! include(APPPATH.'updates/ud_'.$this->next_update.EXT))
+		if ( ! include(APPPATH.'updates/ud_'.$this->next_update.'.php'))
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('unreadable_files')));
+			$this->_set_output('error', array('error' => lang('unreadable_files')));
 			return FALSE;
 		}
 
 		// If we got this far we know it's an update and all is well in the universe!
 
-		// Assign the config and DB arrays to class variables so we don't have to reload them.
+		// Assign the config and DB arrays to class variables so we don't have
+		// to reload them.
 		$this->_config = $config;
 		$this->_db = $db;
 
@@ -619,17 +605,16 @@ class Wizard extends CI_Controller {
 		$data = array();
 		if ($this->is_installed == FALSE)
 		{
-			$data['link'] = $this->set_qstr('license', $this->lang->line('click_to_install'));
+			$data['link'] = $this->set_qstr('license', lang('click_to_install'));
 		}
 		else
 		{
-			$data['link'] = $this->set_qstr('license', str_replace('%s', $this->version, $this->lang->line('click_to_update')));
+			$data['link'] = $this->set_qstr('license', str_replace('%s', $this->version, lang('click_to_update')));
 		}
 
 		$data['is_installed'] = $this->is_installed;
 
 		return $this->_set_output('optionselect', $data);
-
 	}
 
 	// --------------------------------------------------------------------
@@ -697,9 +682,10 @@ class Wizard extends CI_Controller {
 		// Assign the _POST array values
 		$this->_assign_install_values();
 
-		// Are there any errors to display?
-		// When the user submits the installation form, the $this->_do_install() function
-		// is called.  In the event of errors the form will be redisplayed with the error message
+		// Are there any errors to display? When the user submits the
+		// installation form, the $this->_do_install() function is called. In
+		// the event of errors the form will be redisplayed with the error
+		// message
 		$this->userdata['errors'] = $errors;
 
 		$template_module_vars = '';
@@ -872,7 +858,7 @@ PAPAYA;
 		{
 			if ($this->userdata[$val] == '')
 			{
-				$errors[] = $this->lang->line('empty_fields');
+				$errors[] = lang('empty_fields');
 				break;
 			}
 		}
@@ -880,24 +866,24 @@ PAPAYA;
 		// Usernames must be at least 4 chars in length
 		if ($this->userdata['username'] != '' AND strlen($this->userdata['username']) < 4)
 		{
-			$errors[] = $this->lang->line('username_short');
+			$errors[] = lang('username_short');
 		}
 
 		// Passwords must be at least 5 chars in length
 		if ($this->userdata['password'] != '' AND strlen($this->userdata['password']) < 5)
 		{
-			$errors[] = $this->lang->line('password_short');
+			$errors[] = lang('password_short');
 		}
 
 		// Passwords must match
 		if ($this->userdata['password'] != $this->userdata['password_confirm'])
 		{
-			$errors[] = $this->lang->line('password_no_match');
+			$errors[] = lang('password_no_match');
 		}
 
 		if ( ! valid_license_pattern($this->userdata['license_number']))
 		{
-			$errors[] = $this->lang->line('invalid_license_number');
+			$errors[] = lang('invalid_license_number');
 		}
 
 		//  Is password the same as username?
@@ -909,7 +895,7 @@ PAPAYA;
 		{
 			if ($lc_user == $lc_pass OR $lc_user == strrev($lc_pass) OR $lc_user == $nm_pass OR $lc_user == strrev($nm_pass))
 			{
-				$errors[] = $this->lang->line('password_not_unique');
+				$errors[] = lang('password_not_unique');
 			}
 		}
 
@@ -945,25 +931,25 @@ PAPAYA;
 		// DB Prefix has some character restrictions
 		if ( ! preg_match("/^[0-9a-zA-Z\$_]*$/", $this->userdata['db_prefix']))
 		{
-			$errors[] = $this->lang->line('database_prefix_invalid_characters');
+			$errors[] = lang('database_prefix_invalid_characters');
 		}
 
 		// The DB Prefix should not include "exp_"
 		if ( strpos($this->userdata['db_prefix'], 'exp_') !== FALSE)
 		{
-			$errors[] = $this->lang->line('database_prefix_contains_exp_');
+			$errors[] = lang('database_prefix_contains_exp_');
 		}
 
 		// Table names cannot be longer than 64 characters, our longest is 26
 		if ( strlen($this->userdata['db_prefix']) > 30)
 		{
-			$errors[] = $this->lang->line('database_prefix_too_long');
+			$errors[] = lang('database_prefix_too_long');
 		}
 
 		// Connect to the database.  We pass a multi-dimensional array since
 		// that's what is normally found in the database config file
 
-		$db[$this->active_group] = array(
+		$db = array(
 			'hostname'	=> $this->userdata['db_hostname'],
 			'username'	=> $this->userdata['db_username'],
 			'password'	=> $this->userdata['db_password'],
@@ -981,13 +967,13 @@ PAPAYA;
 
 		if ( ! $this->_db_connect($db, TRUE))
 		{
-			$errors[] = $this->lang->line('database_no_connect');
+			$errors[] = lang('database_no_connect');
 		}
 
 		// Does the specified database schema type exist?
-		if ( ! file_exists(APPPATH.'schema/'.$this->userdata['dbdriver'].'_schema'.EXT))
+		if ( ! file_exists(APPPATH.'schema/'.$this->userdata['dbdriver'].'_schema.php'))
 		{
-			$errors[] = $this->lang->line('unreadable_dbdriver');
+			$errors[] = lang('unreadable_dbdriver');
 		}
 
 		// Were there errors?
@@ -1011,7 +997,7 @@ PAPAYA;
 		// --------------------------------------------------------------------
 
 		// Load the DB schema
-		require APPPATH.'schema/'.$this->userdata['dbdriver'].'_schema'.EXT;
+		require APPPATH.'schema/'.$this->userdata['dbdriver'].'_schema.php';
 		$this->schema = new EE_Schema();
 
 		// Assign the userdata array to the schema class
@@ -1089,18 +1075,18 @@ PAPAYA;
 		// --------------------------------------------------------------------
 
 		// This allows one to override the functions in Email Data below, thus allowing custom speciality templates
-		if (file_exists($this->theme_path.$this->userdata['theme'].'/speciality_templates'.EXT))
+		if (file_exists($this->theme_path.$this->userdata['theme'].'/speciality_templates.php'))
 		{
-			require $this->theme_path.$this->userdata['theme'].'/speciality_templates'.EXT;
+			require $this->theme_path.$this->userdata['theme'].'/speciality_templates.php';
 		}
 
 		// Load the email template
-		require_once EE_APPPATH.'/language/'.$this->userdata['deft_lang'].'/email_data'.EXT;
+		require_once EE_APPPATH.'/language/'.$this->userdata['deft_lang'].'/email_data.php';
 
 		// Install Database Tables!
 		if ( ! $this->schema->install_tables_and_data())
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('improper_grants')));
+			$this->_set_output('error', array('error' => lang('improper_grants')));
 			return FALSE;
 		}
 
@@ -1109,13 +1095,7 @@ PAPAYA;
 		// visible for module and accessory installers
 		if ($this->_write_config_data() == FALSE)
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('unwritable_config')));
-			return FALSE;
-		}
-
-		if ($this->_write_db_config($db) == FALSE)
-		{
-			$this->_set_output('error', array('error' => $this->lang->line('unwritable_database')));
+			$this->_set_output('error', array('error' => lang('unwritable_config')));
 			return FALSE;
 		}
 
@@ -1134,7 +1114,7 @@ PAPAYA;
 		// Install Modules!
 		if ( ! $this->_install_modules())
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('improper_grants')));
+			$this->_set_output('error', array('error' => lang('improper_grants')));
 			return FALSE;
 		}
 
@@ -1143,7 +1123,7 @@ PAPAYA;
 		// which might affect the Template Access permissions.
 		if ($this->userdata['theme'] != '' && ! $this->_install_site_theme())
 		{
-			$this->_set_output('error', array('error' => $this->lang->line('improper_grants')));
+			$this->_set_output('error', array('error' => lang('improper_grants')));
 			return FALSE;
 		}
 
@@ -1208,9 +1188,9 @@ PAPAYA;
 		{
 			$required_modules = array();
 
-			if (file_exists($this->theme_path.$theme.'/theme_preferences'.EXT))
+			if (file_exists($this->theme_path.$theme.'/theme_preferences.php'))
 			{
-				require $this->theme_path.$theme.'/theme_preferences'.EXT;
+				require $this->theme_path.$theme.'/theme_preferences.php';
 				$this->theme_required_modules[$theme] = $required_modules;
 			}
 			else
@@ -1365,7 +1345,7 @@ PAPAYA;
 				'update_msg',
 				array(
 					'remaining_updates' => $this->remaining_updates,
-					'next_version'		=> $this->progress->prefix.$this->lang->line('version_update_text')
+					'next_version'		=> $this->progress->prefix.lang('version_update_text')
 				)
 			);
 		}
@@ -1391,20 +1371,19 @@ PAPAYA;
 
 			if ( ! method_exists($UD, $method))
 			{
-				$this->_set_output('error', array('error' => str_replace('%x', htmlentities($method), $this->lang->line('update_step_error'))));
+				$this->_set_output('error', array('error' => str_replace('%x', htmlentities($method), lang('update_step_error'))));
 				return FALSE;
 			}
 		}
 
 		// is there a survey for this version?
-		if (file_exists(APPPATH.'views/surveys/survey_'.$this->next_update.EXT))
+		if (file_exists(APPPATH.'views/surveys/survey_'.$this->next_update.'.php'))
 		{
 			$this->load->library('survey');
 
 			// if we have data, send it on to the updater, otherwise, ask permission and show the survey
 			if ( ! $this->input->get_post('participate_in_survey'))
 			{
-				$this->load->helper('language');
 				$data = array(
 					'action_url'			=> $this->set_qstr('do_update&agree=yes'),
 					'participate_in_survey'	=> array(
@@ -1443,7 +1422,7 @@ PAPAYA;
 
 		if (($status = $UD->{$method}()) === FALSE)
 		{
-			$error_msg = $this->lang->line('update_error');
+			$error_msg = lang('update_error');
 
 			if ( ! empty($UD->errors))
 			{
@@ -1512,7 +1491,7 @@ PAPAYA;
 			array(
 				'remaining_updates' => $this->remaining_updates,
 				'extra_header'		=> $progress_head,
-				'next_version'		=> $this->progress->prefix.$this->lang->line('version_update_text')
+				'next_version'		=> $this->progress->prefix.lang('version_update_text')
 			)
 		);
 	}
@@ -1539,7 +1518,7 @@ PAPAYA;
 		{
 			if (substr($file, 0, 3) == 'ud_')
 			{
-				$file = str_replace(EXT,  '', $file);
+				$file = str_replace('.php',  '', $file);
 				$file = str_replace('ud_', '', $file);
 				$file = substr($file, 0, 3);
 
@@ -1585,13 +1564,7 @@ PAPAYA;
 			return FALSE;
 		}
 
-		// Does the DB connection data exist?
-		if ( ! isset($db[$this->active_group]))
-		{
-			return FALSE;
-		}
-
-		$this->load->database($db[$this->active_group], FALSE, TRUE);
+		$this->load->database($db, FALSE, TRUE);
 
 		// Force caching off
 		$this->db->cache_off();
@@ -1617,7 +1590,7 @@ PAPAYA;
 	 * @access	public
 	 * @return	void
 	 */
-	function _set_image_path($path = 'themes/cp_global_images/', $n = NULL)
+	function _set_image_path($path = 'themes/ee/cp_global_images/', $n = NULL)
 	{
 		if ( ! is_dir($path) && $n < 10)
 		{
@@ -1634,7 +1607,7 @@ PAPAYA;
 	 *
 	 * Same functionality as above, but this is for the javascript directory
 	 */
-	protected function _set_javascript_path($path = 'themes/javascript/compressed/', $n = NULL)
+	protected function _set_javascript_path($path = 'themes/ee/javascript/compressed/', $n = NULL)
 	{
 		if ( ! is_dir($path) && $n < 10)
 		{
@@ -1651,10 +1624,11 @@ PAPAYA;
 	 *
 	 * Loads the "container" view file and sets the content
 	 *
-	 * @access	private
-	 * @return	void
+	 * @param string $view  The name of the view to load
+	 * @param array  $arary Associative array to pass to view
+	 * @return void
 	 */
-	function _set_output($content = '', $array = array())
+	private function _set_output($view = '', $array = array())
 	{
 		if (IS_CORE)
 		{
@@ -1668,7 +1642,7 @@ PAPAYA;
 			'refresh'			=> $this->refresh,
 			'refresh_url'		=> $this->refresh_url,
 			'image_path'		=> $this->image_path,
-			'copyright'			=> $this->copyright,
+			'copyright'			=> sprintf($this->copyright, date('Y')),
 			'version'			=> $this->version,
 			'next_version'		=> substr($this->next_update, 0, 1).'.'.substr($this->next_update, 1, 1).'.'.substr($this->next_update, 2, 1),
 			'installed_version'	=> $this->installed_version,
@@ -1681,9 +1655,9 @@ PAPAYA;
 
 		$this->load->helper('language');
 
-		if ($content != '')
+		if ($view != '')
 		{
-			$content = $this->load->view($content, $data, TRUE);
+			$content = $this->load->view($view, $data, TRUE);
 		}
 
 		$data['content'] = $content;
@@ -1696,10 +1670,9 @@ PAPAYA;
 	/**
 	 * Set the base URL and index values so our links work properly
 	 *
-	 * @access	private
 	 * @return	void
 	 */
-	function _set_base_url()
+	private function _set_base_url()
 	{
 		// We completely kill the site URL value.  It's now blank.
 		// This enables us to use only the "index.php" part of the URL.
@@ -1717,43 +1690,6 @@ PAPAYA;
 	// --------------------------------------------------------------------
 
 	/**
-	 * Load the proper language file and set the language pref
-	 *
-	 * @access	private
-	 * @return	void
-	 */
-	function _load_langauge()
-	{
-		// Fetch the installed languages
-		$map = directory_map(APPPATH.'language', TRUE);
-
-		// If this GET or POST variable doesn't exist we know we're dealing with
-		// the welcome page where a user is presented the list of languages
-		if ($this->input->get_post('language') == FALSE)
-		{
-			// build an array containing the languages.
-			// This will be used to create the pull-down menu on the welcome page
-			foreach ($map as $val)
-			{
-				$this->languages[$val] = ucfirst($val);
-			}
-		}
-		else
-		{
-			// For security we only allow the user to chose from installed languages
-			if (in_array($this->input->get_post('language'), $map))
-			{
-				$this->mylang = $this->input->get_post('language');
-			}
-		}
-
-		// Load the installer language file based on the user preference
-		$this->lang->load('installer', $this->mylang);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Helper function that lets us create links
 	 *
 	 * @access	public
@@ -1765,7 +1701,7 @@ PAPAYA;
 
 		if ($text !== FALSE)
 		{
-			return anchor($query_string, $text);
+			return anchor(site_url($query_string), $text);
 		}
 		else
 		{
@@ -1791,8 +1727,8 @@ PAPAYA;
 			{
 				if (strncmp($file, '_', 1) != 0 && strpos($file, '.') === FALSE && ! in_array($file, $this->required_modules))
 				{
-					$this->lang->load($file, '', FALSE, TRUE, EE_APPPATH.'/');
-					$name = ($this->lang->line(strtolower($file).'_module_name') != FALSE) ? $this->lang->line(strtolower($file).'_module_name') : $file;
+					$this->lang->load($file, $this->mylang, FALSE, TRUE, EE_APPPATH.'/');
+					$name = (lang(strtolower($file).'_module_name') != FALSE) ? lang(strtolower($file).'_module_name') : $file;
 					$modules[$file] = array('name' => ucfirst($name), 'checked' => FALSE);
 				}
 			}
@@ -1802,7 +1738,7 @@ PAPAYA;
 
 
 		$this->load->helper('directory');
-		$ext_len = strlen(EXT);
+		$ext_len = strlen('.php');
 
 		if (($map = directory_map(PATH_ADDONS)) !== FALSE)
 		{
@@ -1822,14 +1758,14 @@ PAPAYA;
 					}
 
 					// we gots a module?
-					if (strncasecmp($file, 'mod.', 4) == 0 && substr($file, -$ext_len) == EXT && strlen($file) > strlen('mod.'.EXT))
+					if (strncasecmp($file, 'mod.', 4) == 0 && substr($file, -$ext_len) == '.php' && strlen($file) > strlen('mod.'.'.php'))
 					{
 						$file = substr($file, 4, -$ext_len);
 
 						if ($file == $pkg_name)
 						{
-							$this->lang->load($file.'_lang', '', FALSE, FALSE, PATH_ADDONS.$pkg_name.'/');
-							$name = ($this->lang->line(strtolower($file).'_module_name') != FALSE) ? $this->lang->line(strtolower($file).'_module_name') : $file;
+							$this->lang->load($file.'_lang', $this->mylang, FALSE, FALSE, PATH_ADDONS.$pkg_name.'/');
+							$name = (lang(strtolower($file).'_module_name') != FALSE) ? lang(strtolower($file).'_module_name') : $file;
 							$modules[$file] = array('name' => ucfirst($name), 'checked' => FALSE);
 						}
 					}
@@ -1895,7 +1831,7 @@ PAPAYA;
 		$dbs = array();
 		foreach (get_filenames(APPPATH.'schema/') as $val)
 		{
-			$val = str_replace(array('_schema', EXT), '', $val);
+			$val = str_replace(array('_schema', '.php'), '', $val);
 
 			if (isset($names[$val]))
 			{
@@ -1958,9 +1894,9 @@ PAPAYA;
 		 * Site Theme Overrides?
 		 */
 
-		if (file_exists($this->theme_path.$this->userdata['theme'].'/theme_preferences'.EXT))
+		if (file_exists($this->theme_path.$this->userdata['theme'].'/theme_preferences.php'))
 		{
-			require $this->theme_path.$this->userdata['theme'].'/theme_preferences'.EXT;
+			require $this->theme_path.$this->userdata['theme'].'/theme_preferences.php';
 		}
 
 		// --------------------------------------------------------------------
@@ -2206,9 +2142,9 @@ PAPAYA;
 			}
 
 			// Install any default structure and content that the theme may have
-			if (file_exists($this->theme_path.$this->userdata['theme'].'/default_content'.EXT))
+			if (file_exists($this->theme_path.$this->userdata['theme'].'/default_content.php'))
 			{
-				require $this->theme_path.$this->userdata['theme'].'/default_content'.EXT;
+				require $this->theme_path.$this->userdata['theme'].'/default_content.php';
 			}
 		}
 
@@ -2242,12 +2178,12 @@ PAPAYA;
 				$path = EE_APPPATH.'/modules/'.$module.'/';
 				unset($modules[$module]); // remove from modules array
 
-				if (file_exists($path.'upd.'.$module.EXT))
+				if (file_exists($path.'upd.'.$module.'.php'))
 				{
 					// Add the helper/library load path and temporarily
 					$this->load->add_package_path($path, FALSE);
 
-					require $path.'upd.'.$module.EXT;
+					require $path.'upd.'.$module.'.php';
 
 					$class = ucfirst($module).'_upd';
 
@@ -2278,9 +2214,9 @@ PAPAYA;
 		{
 			$path = PATH_ADDONS.$module.'/';
 
-			if (file_exists($path.'upd.'.$module.EXT))
+			if (file_exists($path.'upd.'.$module.'.php'))
 			{
-				require $path.'upd.'.$module.EXT;
+				require $path.'upd.'.$module.'.php';
 
 				$class = ucfirst($module).'_upd';
 
@@ -2318,13 +2254,13 @@ PAPAYA;
 
 		foreach($accessories as $acc => $version)
 		{
-			if ( ! file_exists(EE_APPPATH.'accessories/acc.'.strtolower($acc).EXT))
+			if ( ! file_exists(EE_APPPATH.'accessories/acc.'.strtolower($acc).'.php'))
 			{
 				unset($accessories[$acc]);
 			}
 			else
 			{
-				include EE_APPPATH.'accessories/acc.'.strtolower($acc).EXT;
+				include EE_APPPATH.'accessories/acc.'.strtolower($acc).'.php';
 				$_static_vars = get_class_vars($acc.'_acc');
 				// this seems silly since this is a first party accessory, but the Zend Optimizer
 				// apparently has problem with get_class_vars() on PHP 5.2.1x, so, safety net
@@ -2338,7 +2274,7 @@ PAPAYA;
 		}
 
 		// The Accessories library has a list of ignored controllers
-		$c_path = EE_APPPATH.'libraries/Accessories'.EXT;
+		$c_path = EE_APPPATH.'libraries/Accessories.php';
 
 		if ( ! file_exists($c_path) OR ! (include $c_path) OR ! class_exists('EE_Accessories'))
 		{
@@ -2366,8 +2302,8 @@ PAPAYA;
 				continue;
 			}
 
-			$file = str_replace(EXT, '', $file);
-			$controllers[] = str_replace(EXT, '', $file);
+			$file = str_replace('.php', '', $file);
+			$controllers[] = str_replace('.php', '', $file);
 		}
 
 		// concat and insert
@@ -2405,167 +2341,174 @@ PAPAYA;
 		}
 
 		$config = array(
-			'app_version'					=>	$this->userdata['app_version'],
-			'license_contact'				=>	$this->userdata['license_contact'],
-			'license_number'				=>	trim($this->userdata['license_number']),
-			'debug'							=>	'1',
-			'cp_url'						=>	$this->userdata['cp_url'],
-			'site_index'					=>	$this->userdata['site_index'],
-			'site_label'					=>	$this->userdata['site_label'],
-			'site_url'						=>	$this->userdata['site_url'],
-			'theme_folder_url'				=>	$this->userdata['site_url'].'themes/',
-			'doc_url'						=>	$this->userdata['doc_url'],
-			'webmaster_email'				=>	$this->userdata['webmaster_email'],
-			'webmaster_name'				=> '',
-			'channel_nomenclature'			=> 'channel',
-			'max_caches'					=> '150',
-			'captcha_url'					=>	$captcha_url,
-			'captcha_path'					=> $this->userdata['captcha_path'],
-			'captcha_font'					=>	'y',
-			'captcha_rand'					=> 'y',
-			'captcha_require_members'		=>	'n',
-			'enable_db_caching'				=>	'n',
-			'enable_sql_caching'			=>	'n',
-			'force_query_string'			=>	'n',
-			'show_profiler'					=>	'n',
-			'template_debugging'			=>	'n',
-			'include_seconds'				=>	'n',
-			'cookie_domain'					=>	'',
-			'cookie_path'					=>	'',
-			'cookie_prefix'					=>	'',
-			'website_session_type'			=>	'c',
-			'cp_session_type'				=>	'cs',
-			'cookie_httponly'				=>	'y',
-			'allow_username_change'			=>	'y',
-			'allow_multi_logins'			=>	'y',
-			'password_lockout'				=>	'y',
-			'password_lockout_interval'		=>	'1',
-			'require_ip_for_login'			=>	'y',
-			'require_ip_for_posting'		=>	'y',
-			'require_secure_passwords'		=>	'n',
-			'allow_dictionary_pw'			=>	'y',
-			'name_of_dictionary_file'		=>	'',
-			'xss_clean_uploads'				=>	'y',
-			'redirect_method'				=>	$this->userdata['redirect_method'],
-			'deft_lang'						=>	$this->userdata['deft_lang'],
-			'xml_lang'						=>	'en',
-			'send_headers'					=>	'y',
-			'gzip_output'					=>	'n',
-			'log_referrers'					=>	'n',
-			'max_referrers'					=>	'500',
-			'is_system_on'					=>	'y',
-			'allow_extensions'				=>	'y',
-			'date_format'					=>	'%n/%j/%y',
-			'time_format'					=>	'12',
-			'include_seconds'				=>	'n',
-			'server_offset'					=>	'',
-			'default_site_timezone'			=>	$this->userdata['default_site_timezone'],
-			'mail_protocol'					=>	'mail',
-			'smtp_server'					=>	'',
-			'smtp_username'					=>	'',
-			'smtp_password'					=>	'',
-			'email_debug'					=>	'n',
-			'email_charset'					=>	'utf-8',
-			'email_batchmode'				=>	'n',
-			'email_batch_size'				=>	'',
-			'mail_format'					=>	'plain',
-			'word_wrap'						=>	'y',
-			'email_console_timelock'		=>	'5',
-			'log_email_console_msgs'		=>	'y',
-			'cp_theme'						=>	'default',
-			'email_module_captchas'			=>	'n',
-			'log_search_terms'				=>	'y',
-			'un_min_len'					=>	'4',
-			'pw_min_len'					=>	'5',
-			'allow_member_registration'		=>	'n',
-			'allow_member_localization'		=>	'y',
-			'req_mbr_activation'			=>	'email',
-			'new_member_notification'		=>	'n',
-			'mbr_notification_emails'		=>	'',
-			'require_terms_of_service'		=>	'y',
-			'use_membership_captcha'		=>	'n',
-			'default_member_group'			=>	'5',
-			'profile_trigger'				=>	'member',
-			'member_theme'					=>	'default',
-			'enable_avatars'				=> 'y',
-			'allow_avatar_uploads'			=> 'n',
-			'avatar_url'					=> $this->userdata['site_url'].$this->userdata['avatar_url'],
-			'avatar_path'					=> $this->userdata['avatar_path'],
-			'avatar_max_width'				=> '100',
-			'avatar_max_height'				=> '100',
-			'avatar_max_kb'					=> '50',
-			'enable_photos'					=> 'n',
-			'photo_url'						=> $this->userdata['site_url'].$this->userdata['photo_url'],
-			'photo_path'					=> $this->userdata['photo_path'],
-			'photo_max_width'				=> '100',
-			'photo_max_height'				=> '100',
-			'photo_max_kb'					=> '50',
-			'allow_signatures'				=> 'y',
-			'sig_maxlength'					=> '500',
-			'sig_allow_img_hotlink'			=> 'n',
-			'sig_allow_img_upload'			=> 'n',
-			'sig_img_url'					=> $this->userdata['site_url'].$this->userdata['signature_img_url'],
-			'sig_img_path'					=> $this->userdata['signature_img_path'],
-			'sig_img_max_width'				=> '480',
-			'sig_img_max_height'			=> '80',
-			'sig_img_max_kb'				=> '30',
-			'prv_msg_upload_path'			=> $this->userdata['pm_path'],
-			'prv_msg_max_attachments'		=> '3',
-			'prv_msg_attach_maxsize'		=> '250',
-			'prv_msg_attach_total'			=> '100',
-			'prv_msg_html_format'			=> 'safe',
-			'prv_msg_auto_links'			=> 'y',
-			'prv_msg_max_chars'				=> '6000',
-			'enable_template_routes'		=>	'y',
-			'strict_urls'					=>	'y',
-			'site_404'						=>	'',
-			'save_tmpl_revisions'			=>	'n',
-			'max_tmpl_revisions'			=>	'5',
-			'save_tmpl_files'				=>	'n',
-			'tmpl_file_basepath'			=>	realpath('./templates/').DIRECTORY_SEPARATOR,
-			'deny_duplicate_data'			=>	'y',
-			'redirect_submitted_links'		=>	'n',
-			'enable_censoring'				=>	'n',
-			'censored_words'				=>	'',
-			'censor_replacement'			=>	'',
-			'banned_ips'					=>	'',
-			'banned_emails'					=>	'',
-			'banned_usernames'				=>	'',
-			'banned_screen_names'			=>	'',
-			'ban_action'					=>	'restrict',
-			'ban_message'					=>	'This site is currently unavailable',
-			'ban_destination'				=>	'http://www.yahoo.com/',
-			'enable_emoticons'				=>	'y',
-			'emoticon_url'					=>	$this->userdata['site_url'].'images/smileys/',
-			'recount_batch_total'			=>	'1000',
-			'image_resize_protocol'			=>	'gd2',
-			'image_library_path'			=>	'',
-			'thumbnail_prefix'				=>	'thumb',
-			'word_separator'				=>	'dash',
-			'use_category_name'				=>	'n',
-			'reserved_category_word'		=>	'category',
-			'auto_convert_high_ascii'		=>	'n',
-			'new_posts_clear_caches'		=>	'y',
-			'auto_assign_cat_parents'		=>	'y',
-			'new_version_check'				=> 'y',
-			'enable_throttling'				=> 'n',
-			'banish_masked_ips'				=> 'y',
-			'max_page_loads'				=> '10',
-			'time_interval'					=> '8',
-			'lockout_time'					=> '30',
-			'banishment_type'				=> 'message',
-			'banishment_url'				=> '',
-			'banishment_message'			=> 'You have exceeded the allowed page load frequency.',
-			'enable_search_log'				=> 'y',
-			'max_logged_searches'			=> '500',
-			'mailinglist_enabled'			=> 'y',
-			'mailinglist_notify'			=> 'n',
-			'mailinglist_notify_emails'		=> '',
-			'memberlist_order_by'			=> "total_posts",
-			'memberlist_sort_order'			=> "desc",
-			'memberlist_row_limit'			=> "20",
-			'is_site_on'					=> 'y',
-			'theme_folder_path'				=> $this->userdata['theme_folder_path'],
+			'db_hostname'               => $this->userdata['db_hostname'],
+			'db_username'               => $this->userdata['db_username'],
+			'db_password'               => $this->userdata['db_password'],
+			'db_database'               => $this->userdata['db_name'],
+			'db_dbdriver'               => $this->userdata['dbdriver'],
+			'db_pconnect'               => ($this->userdata['db_conntype'] == 1) ? TRUE : FALSE,
+			'db_dbprefix'               => ($this->userdata['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $this->userdata['db_prefix']),
+			'app_version'               => $this->userdata['app_version'],
+			'license_contact'           => $this->userdata['license_contact'],
+			'license_number'            => trim($this->userdata['license_number']),
+			'debug'                     => '1',
+			'cp_url'                    => $this->userdata['cp_url'],
+			'site_index'                => $this->userdata['site_index'],
+			'site_label'                => $this->userdata['site_label'],
+			'site_url'                  => $this->userdata['site_url'],
+			'theme_folder_url'          => $this->userdata['site_url'].'themes/',
+			'doc_url'                   => $this->userdata['doc_url'],
+			'webmaster_email'           => $this->userdata['webmaster_email'],
+			'webmaster_name'            => '',
+			'channel_nomenclature'      => 'channel',
+			'max_caches'                => '150',
+			'captcha_url'               => $captcha_url,
+			'captcha_path'              => $this->userdata['captcha_path'],
+			'captcha_font'              => 'y',
+			'captcha_rand'              => 'y',
+			'captcha_require_members'   => 'n',
+			'enable_db_caching'         => 'n',
+			'enable_sql_caching'        => 'n',
+			'force_query_string'        => 'n',
+			'show_profiler'             => 'n',
+			'template_debugging'        => 'n',
+			'include_seconds'           => 'n',
+			'cookie_domain'             => '',
+			'cookie_path'               => '',
+			'cookie_prefix'             => '',
+			'website_session_type'      => 'c',
+			'cp_session_type'           => 'cs',
+			'cookie_httponly'           => 'y',
+			'allow_username_change'     => 'y',
+			'allow_multi_logins'        => 'y',
+			'password_lockout'          => 'y',
+			'password_lockout_interval' => '1',
+			'require_ip_for_login'      => 'y',
+			'require_ip_for_posting'    => 'y',
+			'require_secure_passwords'  => 'n',
+			'allow_dictionary_pw'       => 'y',
+			'name_of_dictionary_file'   => '',
+			'xss_clean_uploads'         => 'y',
+			'redirect_method'           => $this->userdata['redirect_method'],
+			'deft_lang'                 => $this->userdata['deft_lang'],
+			'xml_lang'                  => 'en',
+			'send_headers'              => 'y',
+			'gzip_output'               => 'n',
+			'log_referrers'             => 'n',
+			'max_referrers'             => '500',
+			'is_system_on'              => 'y',
+			'allow_extensions'          => 'y',
+			'date_format'               => '%n/%j/%y',
+			'time_format'               => '12',
+			'include_seconds'           => 'n',
+			'server_offset'             => '',
+			'default_site_timezone'     => $this->userdata['default_site_timezone'],
+			'mail_protocol'             => 'mail',
+			'smtp_server'               => '',
+			'smtp_username'             => '',
+			'smtp_password'             => '',
+			'email_debug'               => 'n',
+			'email_charset'             => 'utf-8',
+			'email_batchmode'           => 'n',
+			'email_batch_size'          => '',
+			'mail_format'               => 'plain',
+			'word_wrap'                 => 'y',
+			'email_console_timelock'    => '5',
+			'log_email_console_msgs'    => 'y',
+			'cp_theme'                  => 'default',
+			'email_module_captchas'     => 'n',
+			'log_search_terms'          => 'y',
+			'un_min_len'                => '4',
+			'pw_min_len'                => '5',
+			'allow_member_registration' => 'n',
+			'allow_member_localization' => 'y',
+			'req_mbr_activation'        => 'email',
+			'new_member_notification'   => 'n',
+			'mbr_notification_emails'   => '',
+			'require_terms_of_service'  => 'y',
+			'use_membership_captcha'    => 'n',
+			'default_member_group'      => '5',
+			'profile_trigger'           => 'member',
+			'member_theme'              => 'default',
+			'enable_avatars'            => 'y',
+			'allow_avatar_uploads'      => 'n',
+			'avatar_url'                => $this->userdata['site_url'].$this->userdata['avatar_url'],
+			'avatar_path'               => $this->userdata['avatar_path'],
+			'avatar_max_width'          => '100',
+			'avatar_max_height'         => '100',
+			'avatar_max_kb'             => '50',
+			'enable_photos'             => 'n',
+			'photo_url'                 => $this->userdata['site_url'].$this->userdata['photo_url'],
+			'photo_path'                => $this->userdata['photo_path'],
+			'photo_max_width'           => '100',
+			'photo_max_height'          => '100',
+			'photo_max_kb'              => '50',
+			'allow_signatures'          => 'y',
+			'sig_maxlength'             => '500',
+			'sig_allow_img_hotlink'     => 'n',
+			'sig_allow_img_upload'      => 'n',
+			'sig_img_url'               => $this->userdata['site_url'].$this->userdata['signature_img_url'],
+			'sig_img_path'              => $this->userdata['signature_img_path'],
+			'sig_img_max_width'         => '480',
+			'sig_img_max_height'        => '80',
+			'sig_img_max_kb'            => '30',
+			'prv_msg_upload_path'       => $this->userdata['pm_path'],
+			'prv_msg_max_attachments'   => '3',
+			'prv_msg_attach_maxsize'    => '250',
+			'prv_msg_attach_total'      => '100',
+			'prv_msg_html_format'       => 'safe',
+			'prv_msg_auto_links'        => 'y',
+			'prv_msg_max_chars'         => '6000',
+			'enable_template_routes'    => 'y',
+			'strict_urls'               => 'y',
+			'site_404'                  => '',
+			'save_tmpl_revisions'       => 'n',
+			'max_tmpl_revisions'        => '5',
+			'save_tmpl_files'           => 'n',
+			'tmpl_file_basepath'        => realpath('./templates/').DIRECTORY_SEPARATOR,
+			'deny_duplicate_data'       => 'y',
+			'redirect_submitted_links'  => 'n',
+			'enable_censoring'          => 'n',
+			'censored_words'            => '',
+			'censor_replacement'        => '',
+			'banned_ips'                => '',
+			'banned_emails'             => '',
+			'banned_usernames'          => '',
+			'banned_screen_names'       => '',
+			'ban_action'                => 'restrict',
+			'ban_message'               => 'This site is currently unavailable',
+			'ban_destination'           => 'http://www.yahoo.com/',
+			'enable_emoticons'          => 'y',
+			'emoticon_url'              => $this->userdata['site_url'].'images/smileys/',
+			'recount_batch_total'       => '1000',
+			'image_resize_protocol'     => 'gd2',
+			'image_library_path'        => '',
+			'thumbnail_prefix'          => 'thumb',
+			'word_separator'            => 'dash',
+			'use_category_name'         => 'n',
+			'reserved_category_word'    => 'category',
+			'auto_convert_high_ascii'   => 'n',
+			'new_posts_clear_caches'    => 'y',
+			'auto_assign_cat_parents'   => 'y',
+			'new_version_check'         => 'y',
+			'enable_throttling'         => 'n',
+			'banish_masked_ips'         => 'y',
+			'max_page_loads'            => '10',
+			'time_interval'             => '8',
+			'lockout_time'              => '30',
+			'banishment_type'           => 'message',
+			'banishment_url'            => '',
+			'banishment_message'        => 'You have exceeded the allowed page load frequency.',
+			'enable_search_log'         => 'y',
+			'max_logged_searches'       => '500',
+			'mailinglist_enabled'       => 'y',
+			'mailinglist_notify'        => 'n',
+			'mailinglist_notify_emails' => '',
+			'memberlist_order_by'       => "total_posts",
+			'memberlist_sort_order'     => "desc",
+			'memberlist_row_limit'      => "20",
+			'is_site_on'                => 'y',
+			'theme_folder_path'         => $this->userdata['theme_folder_path'],
 		);
 
 		// Default Administration Prefs
@@ -2842,7 +2785,7 @@ PAPAYA;
 		$config['license_number'] = ( ! isset($config['license_number'])) ? '' : $config['license_number'];
 
 		// Fetch the config template
-		$data = read_file(APPPATH.'config/config_tmpl'.EXT);
+		$data = read_file(APPPATH.'config/config_tmpl.php');
 
 		// Swap out the values
 		foreach ($config as $key => $val)
@@ -2912,115 +2855,6 @@ PAPAYA;
 	// --------------------------------------------------------------------
 
 	/**
-	 * Write database file
-	 *
-	 * @access	public
-	 * @return	null
-	 */
-	function _write_db_config($db = array(), $active_group = 'expressionengine')
-	{
-		$prototype = array(
-			'hostname'	=> 'localhost',
-			'username'	=> '',
-			'password'	=> '',
-			'database'	=> '',
-			'dbdriver'	=> 'mysql',
-			'dbprefix'	=> 'exp_',
-			'swap_pre'	=> 'exp_',
-			'pconnect'	=> FALSE,
-			'db_debug'	=> TRUE,
-			'cache_on'	=> FALSE,
-			'cachedir'	=> EE_APPPATH.'cache/db_cache/',
-			'autoinit'	=> TRUE,
-			'char_set'	=> 'utf8',
-			'dbcollat'	=> 'utf8_general_ci'
-		);
-
-		require $this->config->database_path;
-
-		if ( ! isset($active_group))
-		{
-			$active_group = 'expressionengine';
-		}
-
-		if ( ! isset($db[$active_group]))
-		{
-			return FALSE;
-		}
-
-		// Make sure we have all the required data
-		foreach ($prototype as $key => $val)
-		{
-			if ( ! isset($db[$active_group][$key]))
-			{
-				$db[$active_group][$key] = $val;
-			}
-		}
-
-		// Let's redefine swap_pre just in case
-		$db[$active_group]['swap_pre'] = 'exp_';
-
-	 	// Build the string
-		$str  = '<?php '." if ( ! defined('BASEPATH')) exit('No direct script access allowed');\n\n";
-
-		$str .= "\$active_group = '".$active_group."';\n\$active_record = TRUE;\n\n";
-
-		foreach ($db as $key => $val)
-		{
-			if (is_array($val))
-			{
-				foreach ($val as $k => $v)
-				{
-					if (is_bool($v))
-					{
-						$v = ($v == TRUE) ? 'TRUE' : 'FALSE';
-
-						$str .= "\$db['".$key."']['".$k."'] = ".$v.";\n";
-					}
-					else
-					{
-						$v = str_replace(array('\\', "'"), array('\\\\', "\\'"), $v);
-						$str .= "\$db['".$active_group."']['".$k."'] = '".$v."';\n";
-					}
-				}
-			}
-			else
-			{
-				if (is_bool($val))
-				{
-					$val = ($val == TRUE) ? 'TRUE' : 'FALSE';
-
-					$str .= "\$db['".$active_group."']['".$key."'] = ".$val.";\n";
-				}
-				else
-				{
-					$val = str_replace(array('\\', "'"), array('\\\\', "\\'"), $val);
-					$str .= "\$db['".$active_group."']['".$key."'] = '".$val."';\n";
-				}
-			}
-		}
-
-		$str .= "\n";
-		$str .= '/* End of file database.php */
-/* Location: ./system/expressionengine/config/database.php */';
-
-
-		if ( ! $fp = fopen($this->config->database_path, FOPEN_WRITE_CREATE_DESTRUCTIVE))
-		{
-			return FALSE;
-		}
-
-		flock($fp, LOCK_EX);
-		fwrite($fp, $str, strlen($str));
-		flock($fp, LOCK_UN);
-		fclose($fp);
-
-		return TRUE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Update modules (first party only)
 	 *
 	 * @access	public
@@ -3051,7 +2885,7 @@ PAPAYA;
 				$path = PATH_ADDONS.$module.'/';
 			}
 
-			if (file_exists($path.'upd.'.$module.EXT))
+			if (file_exists($path.'upd.'.$module.'.php'))
 			{
 				$this->load->add_package_path($path);
 
@@ -3059,7 +2893,7 @@ PAPAYA;
 
 				if ( ! class_exists($class))
 				{
-					require $path.'upd.'.$module.EXT;
+					require $path.'upd.'.$module.'.php';
 				}
 
 				$UPD = new $class;
@@ -3085,7 +2919,7 @@ PAPAYA;
 	 */
 	function _license_agreement()
 	{
-		return read_file(APPPATH.'language/'.$this->userdata['deft_lang'].'/license'.EXT);
+		return read_file(APPPATH.'language/'.$this->userdata['deft_lang'].'/license.php');
 	}
 
 	// --------------------------------------------------------------------
@@ -3098,7 +2932,7 @@ PAPAYA;
 	 */
 	function _default_channel_entry()
 	{
-		return read_file(APPPATH.'language/'.$this->userdata['deft_lang'].'/channel_entry_lang'.EXT);
+		return read_file(APPPATH.'language/'.$this->userdata['deft_lang'].'/channel_entry_lang.php');
 	}
 
 

@@ -23,7 +23,7 @@
  * @link		http://ellislab.com
  */
 
-require_once(EE_APPPATH.'/libraries/Logger'.EXT);
+require_once(EE_APPPATH.'/libraries/Logger.php');
 
 class Installer_Logger extends EE_Logger {
 
