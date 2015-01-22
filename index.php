@@ -140,9 +140,6 @@
 	// Name of the "system folder"
 	define('SYSDIR', basename($system_path));
 
-	// Path to the legacy app folder
-	define('BASEPATH', $system_path.'/expressionengine/');
-
 	// The $debug value as a constant for global access
 	define('DEBUG', $debug);  unset($debug);
 
@@ -169,13 +166,13 @@
  * And away we go...
  *
  */
-	if ( ! file_exists(SYSPATH.'EllisLab/ExpressionEngine/Service/Core/boot.php'))
+	if ( ! file_exists(SYSPATH.'EllisLab/ExpressionEngine/Boot/boot.php'))
 	{
 		header('HTTP/1.1 503 Service Unavailable.', TRUE, '503');
 		exit("Your system folder path does not appear to be set correctly. Please open the following file and correct this: ".pathinfo(__FILE__, PATHINFO_BASENAME));
 	}
 
-	require_once SYSPATH.'EllisLab/ExpressionEngine/Service/Core/boot.php';
+	require_once SYSPATH.'EllisLab/ExpressionEngine/Boot/boot.php';
 
 /* End of file index.php */
 /* Location: ./index.php */

@@ -1,4 +1,4 @@
-<?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php  if ( ! defined('SYSPATH')) exit('No direct script access allowed');
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -11,7 +11,6 @@
  * @filesource
  */
 
-
 /*
  * ------------------------------------------------------
  *  Load the global functions
@@ -21,13 +20,23 @@
 
 /*
  * ------------------------------------------------------
+ *  Set and load the framework constants
+ * ------------------------------------------------------
+ */
+	// Path to the legacy app folder. Most legacy files
+	// check for this at the top, so it's hard to remove
+
+	define('BASEPATH', SYSPATH.'/expressionengine/');
+
+	require(BASEPATH.'config/constants.php');
+
+/*
+ * ------------------------------------------------------
  *  Check for the installer if we're booting the CP
  * ------------------------------------------------------
  */
 	if (FALSE && is_dir($system_path.'installer/'))
 	{
-		// This allows the installer application to be inside our normal
-		// EE application directory.
 		define('APPPATH', SYSPATH.'installer/');
 		define('EE_APPPATH', BASEPATH);
 
@@ -39,13 +48,6 @@
 
 		get_config(array('subclass_prefix' => 'EE_'));
 	}
-
-/*
- * ------------------------------------------------------
- *  Load the framework constants
- * ------------------------------------------------------
- */
-	require(APPPATH.'config/constants.php');
 
 /*
  * ------------------------------------------------------
