@@ -361,9 +361,9 @@ class Filesystem {
 	 * Does some extra checks for safe_mode windows servers. Yuck.
 	 *
 	 * @param String $path Path to check
-	 * @return bool Is writeable?
+	 * @return bool Is writable?
 	 */
-	public function isWriteable($path)
+	public function isWritable($path)
 	{
 		// If we're on a Unix server with safe_mode off we call is_writable
 		if (DIRECTORY_SEPARATOR == '/' AND @ini_get("safe_mode") == FALSE)
