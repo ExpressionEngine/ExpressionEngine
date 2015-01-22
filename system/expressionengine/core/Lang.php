@@ -103,7 +103,16 @@ class EE_Lang {
 		}
 
 		$deft_lang = ee()->config->item('deft_lang') ?: 'english';
-		$idiom     = $idiom ?: ee()->session->get_language();
+
+		if (isset(ee()->session) && $idiom == '')
+		{
+			$idiom = ee()->session->get_language();
+		}
+		else if ($idiom == '')
+		{
+			$idiom = 'english';
+		}
+
 		$paths     = array(
 			// Check custom languages first
 			SYSPATH.'language/'.$idiom.'/'.$langfile,
