@@ -42,12 +42,14 @@ class Files extends CP_Controller {
 	{
 		parent::__construct();
 
-		if ( ! $this->cp->allowed_group('can_access_content', 'can_access_files'))
+		if ( ! ee()->cp->allowed_group('can_access_content', 'can_access_files'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
 		ee()->lang->loadfile('filemanager');
+
+		ee()->view->can_admin_upload_prefs = ee()->cp->allowed_group('can_admin_upload_prefs');
 	}
 
 	protected function sidebarMenu($active = NULL)
@@ -60,27 +62,27 @@ class Files extends CP_Controller {
 
 		// Register our menu
 		$vars = array(
+			'can_admin_upload_prefs' => ee()->cp->allowed_group('can_admin_upload_prefs'),
 			'upload_directories' => array()
 		);
 
 		$upload_destinations = ee('Model')->get('UploadDestination')
 			->filter('site_id', ee()->config->item('site_id'));
 
-		if (ee()->session->userdata['group_id'] != 1)
-		{
-			// Add filter to exclude any directories the user's group
-			// has been denied access
-		}
-
 		foreach ($upload_destinations->all() as $destination)
 		{
+			if ($this->hasFileGroupAccessPrivileges($destination) === FALSE)
+			{
+				continue;
+			}
+
 			$class = ($active_id == $destination->id) ? 'act' : '';
 
 			$data = array(
 				'name' => $destination->name,
 				'id' => $destination->id,
 				'url' => cp_url('files/directory/' . $destination->id),
-				'edit_url' => cp_url('settings/upload/edit/' . $destination->id),
+				'edit_url' => cp_url('settings/uploads/edit/' . $destination->id),
 			);
 
 			if ( ! empty($class))
@@ -136,6 +138,12 @@ class Files extends CP_Controller {
 
 		foreach ($files as $file)
 		{
+			if ( ! $file->getUploadDestination()
+				|| $this->hasFileGroupAccessPrivileges($file->getUploadDestination()) === FALSE)
+			{
+				continue;
+			}
+
 			$toolbar = array(
 				'view' => array(
 					'href' => '',
@@ -198,6 +206,11 @@ class Files extends CP_Controller {
 
 	protected function hasFileGroupAccessPrivileges(UploadDestination $dir)
 	{
+		// 2 = Banned
+		// 3 = Guests
+		// 4 = Pending
+		$hardcoded_disallowed_groups = array('2', '3', '4');
+
 		$member_group_id = ee()->session->userdata['group_id'];
 		// If the user is a Super Admin, return true
 		if ($member_group_id == 1)
@@ -205,15 +218,22 @@ class Files extends CP_Controller {
 			return TRUE;
 		}
 
-		if ( ! $file)
+		if (in_array($member_group_id, $hardcoded_disallowed_groups))
 		{
 			return FALSE;
 		}
 
-		// if $member_group_id not in $dir->getNoAccess()
-		// return TRUE;
+		if ( ! $dir)
+		{
+			return FALSE;
+		}
 
-		return FALSE;
+		if (in_array($member_group_id, $dir->getNoAccess()->pluck('group_id')))
+		{
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
 	public function index()
@@ -221,6 +241,7 @@ class Files extends CP_Controller {
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
+			ee()->functions->redirect(cp_url('files', ee()->cp->get_url_state()));
 		}
 		elseif (ee()->input->post('bulk_action') == 'download')
 		{
@@ -231,12 +252,6 @@ class Files extends CP_Controller {
 
 		$files = ee('Model')->get('File')
 			->filter('site_id', ee()->config->item('site_id'));
-
-		if (ee()->session->userdata['group_id'] != 1)
-		{
-			// Add filter to exclude any directories the user's group
-			// has been denied access
-		}
 
 		$filters = ee('Filter')
 			->add('Perpage', $files->count(), 'show_all_files');
@@ -274,6 +289,15 @@ class Files extends CP_Controller {
 
 		$vars['directories'] = $upload_destinations->all();
 
+		ee()->javascript->set_global('file_view_url', cp_url('files/file/view/###'));
+		ee()->javascript->set_global('lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/v3/confirm_remove',
+				'cp/files/manager'
+			),
+		));
+
 		$this->sidebarMenu(NULL);
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('file_manager');
@@ -284,7 +308,9 @@ class Files extends CP_Controller {
 
 	public function directory($id)
 	{
-		$dir = ee('Model')->get('UploadDestination', $id)->first();
+		$dir = ee('Model')->get('UploadDestination', $id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
 
 		if ( ! $dir)
 		{
@@ -299,6 +325,7 @@ class Files extends CP_Controller {
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
+			ee()->functions->redirect(cp_url('files/directory/' . $id, ee()->cp->get_url_state()));
 		}
 		elseif (ee()->input->post('bulk_action') == 'download')
 		{
@@ -332,6 +359,15 @@ class Files extends CP_Controller {
 			$vars['pagination'] = $pagination->cp_links($base_url);
 		}
 
+		ee()->javascript->set_global('file_view_url', cp_url('files/file/view/###'));
+		ee()->javascript->set_global('lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/v3/confirm_remove',
+				'cp/files/manager'
+			),
+		));
+
 		$this->sidebarMenu($id);
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('file_manager');
@@ -357,7 +393,9 @@ class Files extends CP_Controller {
 
 	public function upload($dir_id)
 	{
-		$dir = ee('Model')->get('UploadDestination', $dir_id)->first();
+		$dir = ee('Model')->get('UploadDestination', $dir_id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
 
 		if ( ! $dir)
 		{
@@ -371,11 +409,22 @@ class Files extends CP_Controller {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
+			'has_file_input' => TRUE,
 			'base_url' => cp_url('files/upload/' . $dir_id),
 			'save_btn_text' => 'btn_upload_file',
 			'save_btn_text_working' => 'btn_upload_file_working',
 			'sections' => array(
 				array(
+					array(
+						'title' => 'file',
+						'desc' => 'file_desc',
+						'fields' => array(
+							'file' => array(
+								'type' => 'file',
+								'required' => TRUE
+							)
+						)
+					),
 					array(
 						'title' => 'title',
 						'desc' => 'title_desc',
@@ -447,24 +496,40 @@ class Files extends CP_Controller {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			$file = ee('Model')->make('File');
+			// PUNT! @TODO Break away from the old Filemanger Library
+			ee()->load->library('filemanager');
+			$upload_response = ee()->filemanager->upload_file($dir_id, 'file');
+			if (isset($upload_response['error']))
+			{
+				ee('Alert')->makeInline('settings-form')
+					->asIssue()
+					->withTitle(lang('upload_filedata_error'))
+					->addToBody($upload_response['error']);
+				break 2;
+			}
+
+			$file = ee('Model')->make('File', $upload_response['file_id']);
 			$file->upload_location_id = $dir_id;
 			$file->site_id = ee()->config->item('site_id');
 
-			$file->mime_type = '';
-			$file->rel_path = '';
-			$file->file_name = '';
+			$file->mime_type = $upload_response['mime_type'];
+			$file->rel_path = $upload_response['rel_path'];
+			$file->file_name = $upload_response['file_name'];
+			$file->file_size = $upload_response['file_size'];
 
 			$file->title = ee()->input->post('title');
 			$file->description = ee()->input->post('description');
 			$file->credit = ee()->input->post('credit');
 			$file->location = ee()->input->post('location');
+
 			$file->uploaded_by_member_id = ee()->session->userdata('member_id');
 			$file->upload_date = ee()->localize->now;
 			$file->modified_by_member_id = ee()->session->userdata('member_id');
 			$file->modified_date = ee()->localize->now;
 
 			$file->save();
+
+			ee()->session->set_flashdata('file_id', $file->file_id);
 
 			ee('Alert')->makeInline('settings-form')
 				->asSuccess()
@@ -487,6 +552,47 @@ class Files extends CP_Controller {
 		ee()->view->cp_page_title = lang('file_upload');
 
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	public function rmdir()
+	{
+		$id = ee()->input->post('dir_id');
+		$dir = ee('Model')->get('UploadDestination', $id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
+
+		if ( ! $dir)
+		{
+			show_error(lang('no_upload_destination'));
+		}
+
+		if ( ! $this->hasFileGroupAccessPrivileges($dir))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$dir->delete();
+
+		ee('Alert')->makeInline('files-form')
+			->asSuccess()
+			->withTitle(lang('upload_directory_removed'))
+			->addToBody(sprintf(lang('upload_directory_removed_desc'), $dir->name))
+			->defer();
+
+		$return_url = cp_url('files');
+
+		if (ee()->input->post('return'))
+		{
+			$return = base64_decode(ee()->input->post('return'));
+			$uri_elements = json_decode($return, TRUE);
+
+			if ($uri_elements['path'] != 'cp/files/directory/' . $id)
+			{
+				$return = cp_url($uri_elements['path'], $uri_elements['arguments']);
+			}
+		}
+
+		ee()->functions->redirect($return_url);
 	}
 
 	private function exportFiles($file_ids)
@@ -540,6 +646,35 @@ class Files extends CP_Controller {
 
 		ee()->load->helper('download');
 		force_download('ExpressionEngine-files-export.zip', $data);
+	}
+
+	private function remove($file_ids)
+	{
+		if ( ! is_array($file_ids))
+		{
+			$file_ids = array($file_ids);
+		}
+
+		$files = ee('Model')->get('File', $file_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		$names = array();
+		foreach ($files as $file)
+		{
+			if ($this->hasFileGroupAccessPrivileges($file->getUploadDestination()))
+			{
+				$names[] = $file->title;
+				$file->delete();
+			}
+		}
+
+		ee('Alert')->makeInline('files-form')
+			->asSuccess()
+			->withTitle(lang('success'))
+			->addToBody(lang('files_removed_desc'))
+			->addToBody($names)
+			->defer();
 	}
 }
 // EOF

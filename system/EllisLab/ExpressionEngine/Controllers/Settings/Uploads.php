@@ -347,7 +347,7 @@ class Uploads extends Settings {
 		{
 			ee()->view->set_message('issue', lang('directory_not_saved'), lang('directory_not_saved_desc'));
 		}
-	
+
 		// Do not use to access attributes of directory, use $upload_dir
 		// so that config.php overrides take place
 		$upload_destination = ee('Model')->get('UploadDestination')
@@ -628,7 +628,7 @@ class Uploads extends Settings {
 		// Otherwise, pull from the database if we're editing
 		elseif ($upload_destination !== NULL)
 		{
-			$sizes = $upload_destination->getFileDimension();
+			$sizes = $upload_destination->getFileDimensions();
 
 			if ($sizes->count() != 0)
 			{
@@ -946,7 +946,7 @@ class Uploads extends Settings {
 				' <i>' . lang($size->resize_type) . ', ' . $size->width . 'px ' . lang('by') . ' ' . $size->height . 'px</i>';
 
 			// For JS sync script
-			$js_size[$size->upload_location_id][$size->id] = array('short_name' => $size->short_name, 'resize_type' => $size->resize_type, 'width' => $size->width, 'height' => $size->height, 'watermark_id' => $size->watermark_id);
+			$js_size[$size->upload_location_id][$size->id] = array('short_name' => $size->short_name, 'resize_type' => $size->resize_type, 'width' => $size->width, 'height' => $size->height);
 		}
 
 		// Only show the manipulations section if there are manipulations

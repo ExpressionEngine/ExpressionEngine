@@ -3,7 +3,6 @@
 namespace EllisLab\ExpressionEngine\Controllers\Files;
 
 use EllisLab\ExpressionEngine\Controllers\Files\Files;
-use EllisLab\ExpressionEngine\Model\File\File as FileModel;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -32,7 +31,9 @@ class File extends Files {
 
 	public function view($id)
 	{
-		$file = ee('Model')->get('File', $id)->first();
+		$file = ee('Model')->get('File', $id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
 
 		if ( ! $file)
 		{
@@ -44,12 +45,33 @@ class File extends Files {
 			show_error(lang('unauthorized_access'));
 		}
 
-		ee()->cp->render('files/view', array('file' => $file));
+		if ( ! $file->isImage())
+		{
+			show_error(lang('not_an_image'));
+		}
+
+		ee()->load->library('image_lib');
+		$info = ee()->image_lib->get_image_properties($file->getAbsolutePath(), TRUE);
+
+		// Adapted from http://jeffreysambells.com/2012/10/25/human-readable-filesize-php
+		$size   = array('b', 'kb', 'mb', 'gb', 'tb', 'pb', 'eb', 'zb', 'yb');
+	    $factor = floor((strlen($file->file_size) - 1) / 3);
+
+		$vars = array(
+			'file' => $file,
+			'height' => $info['height'],
+			'width' => $info['width'],
+			'size' => sprintf("%d", $file->file_size / pow(1024, $factor)) . lang('size_' . @$size[$factor])
+		);
+
+		ee()->cp->render('files/view', $vars);
 	}
 
 	public function edit($id)
 	{
-		$file = ee('Model')->get('File', $id)->first();
+		$file = ee('Model')->get('File', $id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
 
 		if ( ! $file)
 		{
@@ -180,7 +202,9 @@ class File extends Files {
 
 	public function crop($id)
 	{
-		$file = ee('Model')->get('File', $id)->first();
+		$file = ee('Model')->get('File', $id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
 
 		if ( ! $file)
 		{
@@ -196,7 +220,9 @@ class File extends Files {
 
 	public function download($id)
 	{
-		$file = ee('Model')->get('File', $id)->first();
+		$file = ee('Model')->get('File', $id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
 
 		if ( ! $file)
 		{

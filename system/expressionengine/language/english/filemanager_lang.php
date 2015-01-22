@@ -4,6 +4,10 @@ $lang = array(
 
 // 3.0
 
+'file'  => 'File',
+'files' => 'Files',
+'pixels' => 'pixels',
+
 'file_manager' =>
 'File Manager',
 
@@ -96,6 +100,39 @@ $lang = array(
 
 'error_cannot_add_file_to_zip' =>
 'We were unable to add <b>%s</b> to the zip archive.',
+
+'size_b'  => ' bytes',
+'size_kb' => '<abbr title="Kilobyte">kb</abbr>',
+'size_mb' => '<abbr title="Metgabyte">mb</abbr>',
+'size_gb' => '<abbr title="Gigabyte">gb</abbr>',
+'size_tb' => '<abbr title="Terabyte">tb</abbr>',
+
+'success' =>
+'Success',
+
+'files_removed_desc' =>
+'The following files were removed',
+
+'btn_upload_file' =>
+'Upload File',
+
+'btn_upload_file_working' =>
+'Saving...',
+
+'upload_directory_removed' =>
+'Upload directory removed',
+
+'upload_directory_removed_desc' =>
+'The upload directory <b>%s</b> has been removed.',
+
+'file_desc' =>
+'Choose a file to upload.',
+
+'upload_filedata_success' =>
+'File Upload Success',
+
+'upload_filedata_success_desc' =>
+'The file <b>%s</b> was uploaded successfully.',
 
 // 2.x
 
@@ -537,9 +574,6 @@ $lang = array(
 
 'credit' =>
 'Credit',
-
-'upload_directory' =>
-'Upload Directory:',
 
 ''=>''
 );

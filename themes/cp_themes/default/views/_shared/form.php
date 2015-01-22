@@ -21,8 +21,14 @@ $form_class = 'settings';
 if (isset($ajax_validate) && $ajax_validate == TRUE)
 {
 	$form_class .= ' ajax-validate';
-}?>
-<?=form_open($base_url, 'class="'.$form_class.'"', (isset($form_hidden)) ? $form_hidden : array())?>
+}
+$attributes = 'class="'.$form_class.'"';
+if (isset($has_file_input) && $has_file_input == TRUE)
+{
+	$attributes .= ' enctype="multipart/form-data"';
+}
+?>
+<?=form_open($base_url, $attributes, (isset($form_hidden)) ? $form_hidden : array())?>
 	<?=ee('Alert')->get('shared-form')?>
 	<?php if (isset($extra_alerts)): ?>
 		<?php foreach ($extra_alerts as $alert) echo ee('Alert')->get($alert) ?>
@@ -71,6 +77,9 @@ if (isset($ajax_validate) && $ajax_validate == TRUE)
 						<?php switch ($field['type']):
 						case 'text': ?>
 							<input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$required?>>
+						<?php break;
+						case 'file': ?>
+							<input type="file" name="<?=$field_name?>"<?=$required?>>
 						<?php break;
 						case 'password': ?>
 							<input type="password" name="<?=$field_name?>"<?=$required?>>

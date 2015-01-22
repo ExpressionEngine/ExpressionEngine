@@ -7,9 +7,11 @@
 		</fieldset>
 		<h1>
 			<?=$cp_heading?>
+			<?php if ($can_admin_upload_prefs): ?>
 			<ul class="toolbar">
-				<li class="sync"><a href="<?=cp_url('files/sync/' . $dir_id)?>" title="<?=lang('sync')?>"></a></li>
+				<li class="sync"><a href="<?=cp_url('settings/upload/sync/' . $dir_id)?>" title="<?=lang('sync')?>"></a></li>
 			</ul>
+			<?php endif; ?>
 		</h1>
 		<?=ee('Alert')->getAllInlines()?>
 		<?php if (isset($filters)) echo $filters; ?>
@@ -19,7 +21,7 @@
 		<fieldset class="tbl-bulk-act">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
-				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove-template"><?=lang('remove')?></option>
+				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove-file"><?=lang('remove')?></option>
 				<option value="download"><?=lang('download')?></option>
 			</select>
 			<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
@@ -44,7 +46,7 @@
 
 <?php
 $modal_vars = array(
-	'name'		=> 'modal-confirm-remove-template',
+	'name'		=> 'modal-confirm-remove-file',
 	'form_url'	=> $form_url,
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'

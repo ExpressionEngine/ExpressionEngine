@@ -481,7 +481,7 @@ class Template extends Design {
 			$search_terms
 		);
 
-		ee()->javascript->set_global('template_settings_url', cp_url('design/template/settings'));
+		ee()->javascript->set_global('template_settings_url', cp_url('design/template/settings/###'));
 		ee()->javascript->set_global('lang.remove_confirm', lang('template') . ': <b>### ' . lang('templates') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(

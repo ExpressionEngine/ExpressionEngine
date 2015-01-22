@@ -400,12 +400,12 @@ class Design extends CP_Controller {
 			$vars['pagination'] = $pagination->cp_links($base_url);
 		}
 
-		ee()->javascript->set_global('template_settings_url', cp_url('design/template/settings'));
+		ee()->javascript->set_global('template_settings_url', cp_url('design/template/settings/###'));
 		ee()->javascript->set_global('lang.remove_confirm', lang('template') . ': <b>### ' . lang('templates') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
 				'cp/v3/confirm_remove',
-				'cp/manager'
+				'cp/design/manager'
 			),
 		));
 
