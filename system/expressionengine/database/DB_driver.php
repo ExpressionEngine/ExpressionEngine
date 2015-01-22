@@ -295,7 +295,7 @@ class CI_DB_driver {
 			// Log file the query came from
 			if (count($trace) >= 2)
 			{
-				require_once BASEPATH.'helpers/array_helper.php';
+				require_once APPPATH.'helpers/array_helper.php';
 
 				// Get file and line in which query method was called
 				$file = element('file', $trace[1], '');
@@ -476,8 +476,8 @@ class CI_DB_driver {
 
 		if ( ! class_exists($driver))
 		{
-			include_once(BASEPATH.'database/DB_result.php');
-			include_once(BASEPATH.'database/drivers/'.$this->dbdriver.'/'.$this->dbdriver.'_result.php');
+			include_once(APPPATH.'database/DB_result.php');
+			include_once(APPPATH.'database/drivers/'.$this->dbdriver.'/'.$this->dbdriver.'_result.php');
 		}
 
 		return $driver;
@@ -1212,7 +1212,7 @@ class CI_DB_driver {
 
 		if ( ! class_exists('CI_DB_Cache'))
 		{
-			if ( ! @include(BASEPATH.'database/DB_cache.php'))
+			if ( ! @include(APPPATH.'database/DB_cache.php'))
 			{
 				return $this->cache_off();
 			}
@@ -1274,7 +1274,7 @@ class CI_DB_driver {
 
 		foreach($trace as $call)
 		{
-			if (isset($call['file']) && strpos($call['file'], BASEPATH.'database') === FALSE)
+			if (isset($call['file']) && strpos($call['file'], APPPATH.'database') === FALSE)
 			{
 				// Found it - use a relative path for safety
 				$message[] = 'Filename: '.str_replace(array(BASEPATH, APPPATH), '', $call['file']);
