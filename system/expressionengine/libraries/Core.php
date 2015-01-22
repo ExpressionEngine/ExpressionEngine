@@ -95,7 +95,7 @@ class EE_Core {
 
 		// Setup Dependency Injection Container
 		// This must come very early in the process, nothing but constants above
-		ee()->di = new \EllisLab\ExpressionEngine\Service\DependencyInjectionContainer();
+		ee()->di = new \EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer();
 
 		// Load the default caching driver
 		ee()->load->driver('cache');
