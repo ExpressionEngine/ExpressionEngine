@@ -1030,9 +1030,9 @@ class EE_Loader {
 
 		if ($prefix == '')
 		{
-			if (class_exists('CI_'.$class))
+			if (class_exists('EE_'.$class))
 			{
-				$name = 'CI_'.$class;
+				$name = 'EE_'.$class;
 			}
 			elseif (class_exists(config_item('subclass_prefix').$class))
 			{
