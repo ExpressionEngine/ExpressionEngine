@@ -1,6 +1,6 @@
 <?php  if ( ! defined('SYSPATH')) exit('No direct script access allowed');
 
-use EllisLab\ExpressionEngine\Service\Filesystem\Filesystem;
+use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 
 /**
  * CodeIgniter

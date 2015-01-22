@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Service\Filesystem;
+namespace EllisLab\ExpressionEngine\Library\Filesystem;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -20,8 +20,8 @@ namespace EllisLab\ExpressionEngine\Service\Filesystem;
  * ExpressionEngine File System Exception
  *
  * @package		ExpressionEngine
- * @subpackage	Event
- * @category	Service
+ * @subpackage	Filesystem
+ * @category	Library
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */

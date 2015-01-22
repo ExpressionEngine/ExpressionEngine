@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Service\Filesystem;
+namespace EllisLab\ExpressionEngine\Library\Filesystem;
 
 use FilesystemIterator;
 
@@ -19,11 +19,11 @@ use FilesystemIterator;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine File Service
+ * ExpressionEngine Filesystem Library
  *
  * @package		ExpressionEngine
- * @subpackage	Event
- * @category	Service
+ * @subpackage	Filesystem
+ * @category	Library
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
