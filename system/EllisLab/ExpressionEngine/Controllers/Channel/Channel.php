@@ -364,6 +364,11 @@ class Channel extends CP_Controller {
 				'field' => 'field_group',
 				'label' => 'lang:custom_field_group',
 				'rules' => 'enum[' . implode(array_keys($vars['field_group_options']), ',') . ']'
+			),
+			array(
+				'field' => 'cat_group',
+				'label' => 'lang:category_groups',
+				'rules' => 'enum[' . implode(array_keys($vars['cat_group_options']), ',') . ']'
 			)
 		));
 

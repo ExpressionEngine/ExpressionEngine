@@ -713,6 +713,13 @@ class EE_Form_validation extends CI_Form_validation {
 		$this->set_message('enum', 'The option you selected is not valid.');
 
 		$opts = explode(',', $opts);
+
+		// For checkboxes, for example
+		if (is_array($str))
+		{
+			return count(array_intersect($str, $opts)) == count($str);
+		}
+
 		return in_array($str, $opts);
 	}
 
