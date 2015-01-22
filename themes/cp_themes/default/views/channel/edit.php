@@ -1,7 +1,8 @@
 <?php extend_template('default-nav'); ?>
 
 <h1><?=$cp_page_title?> <span class="required intitle">&#10033; <?=lang('required_fields')?></span></h1>
-<?=form_open(cp_url('channel/create'), 'class="settings ajax-validate"')?>
+<?=form_open($form_url, 'class="settings ajax-validate"')?>
+	<?=ee('Alert')->get('channel-form')?>
 	<fieldset class="col-group <?=form_error_class('channel_title')?>">
 		<div class="setting-txt col w-8">
 			<h3><?=lang('channel_title')?> <span class="required" title="required field">&#10033;</span></h3>
@@ -12,7 +13,7 @@
 			<?=form_error('channel_title')?>
 		</div>
 	</fieldset>
-	<fieldset class="col-group <?=form_error_class('channel_name')?>">
+	<fieldset class="col-group <?=form_error_class('channel_name')?> <?php if ($edit): ?>last<?php endif ?>">
 		<div class="setting-txt col w-8">
 			<h3><?=lang('channel_short_name')?> <span class="required" title="required field">&#10033;</span></h3>
 			<em><?=lang('channel_short_name_desc')?></em>
@@ -22,20 +23,24 @@
 			<?=form_error('channel_name')?>
 		</div>
 	</fieldset>
-	<fieldset class="col-group last <?=form_error_class('duplicate_channel_prefs')?>">
-		<div class="setting-txt col w-8">
-			<h3><?=lang('channel_duplicate')?></h3>
-			<em><?=lang('channel_duplicate_desc')?></em>
-		</div>
-		<div class="setting-field col w-8 last">
-			<?=form_dropdown('duplicate_channel_prefs', $duplicate_channel_prefs_options, set_value('duplicate_channel_prefs'))?>
-			<?=form_error('duplicate_channel_prefs')?>
-		</div>
-	</fieldset>
+	<?php if ( ! $edit): ?>
+		<fieldset class="col-group last <?=form_error_class('duplicate_channel_prefs')?>">
+			<div class="setting-txt col w-8">
+				<h3><?=lang('channel_duplicate')?></h3>
+				<em><?=lang('channel_duplicate_desc')?></em>
+			</div>
+			<div class="setting-field col w-8 last">
+				<?=form_dropdown('duplicate_channel_prefs', $duplicate_channel_prefs_options, set_value('duplicate_channel_prefs'))?>
+				<?=form_error('duplicate_channel_prefs')?>
+			</div>
+		</fieldset>
+	<?php endif ?>
 	<h2><?=lang('channel_publishing_options')?></h2>
-	<div class="alert inline warn">
-		<?=lang('channel_publishing_options_warning')?>
-	</div>
+	<?php if ( ! $edit): ?>
+		<div class="alert inline warn">
+			<?=lang('channel_publishing_options_warning')?>
+		</div>
+	<?php endif ?>
 	<fieldset class="col-group <?=form_error_class('status_group')?>">
 		<div class="setting-txt col w-8">
 			<h3><?=lang('status_groups')?></h3>
@@ -60,7 +65,7 @@
 		</div>
 		<div class="setting-field col w-8 last">
 			<?php if (count($field_group_options) > 1): ?>
-				<?=form_dropdown('field_group', $field_group_options, set_value('field_group'))?>
+				<?=form_dropdown('field_group', $field_group_options, set_value('field_group', $channel->field_group))?>
 				<?=form_error('field_group')?>
 			<?php else: ?>
 				<div class="no-results">
@@ -76,11 +81,11 @@
 			<em><?=lang('category_groups_desc')?></em>
 		</div>
 		<div class="setting-field col w-8 last">
-			<?php if (count($cat_group_options) > 1): ?>
+			<?php if (count($cat_group_options) > 0): ?>
 				<div class="scroll-wrap">
 					<?php foreach ($cat_group_options as $group_id => $group_name): ?>
-						<label class="choice block">
-							<input type="checkbox" name="cat_group" value="<?=$group_id?>"> <?=$group_name?>
+						<label class="choice block<?php if (in_array($group_id, $selected_cats)): ?> chosen<?php endif ?>">
+							<input type="checkbox" name="cat_group[]" value="<?=$group_id?>" <?=set_checkbox('cat_group')?> <?php if (in_array($group_id, $selected_cats)): ?> checked<?php endif ?>> <?=$group_name?>
 						</label>
 					<?php endforeach ?>
 					<?=form_error('cat_group')?>
@@ -95,6 +100,6 @@
 	</fieldset>
 
 	<fieldset class="form-ctrls">
-		<?=cp_form_submit(lang('create_channel'), lang('btn_saving'))?>
+		<?=cp_form_submit($edit ? lang('edit_channel') : lang('create_channel'), lang('btn_saving'))?>
 	</fieldset>
 </form>

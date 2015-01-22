@@ -145,6 +145,18 @@ $lang = array(
 'create_new_category_group' =>
 'Create New Category Group',
 
+'channel_saved' =>
+'Channel saved',
+
+'channel_saved_desc' =>
+'Your channel has been saved successfully.',
+
+'channel_not_saved' =>
+'Attention: Channel not saved',
+
+'channel_not_saved_desc' =>
+'We were unable to save your channel, please review and fix errors below.',
+
 ''=>''
 );
 

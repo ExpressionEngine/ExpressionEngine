@@ -131,15 +131,13 @@ class Channel extends Model implements ContentStructure {
 				continue;
 			}
 
-
-
 			switch ($property)
 			{
 				// category, field, and status fields should only be duped
 				// if both channels are assigned to the same group of each
 				case 'cat_group':
 					// allow to implicitly set category group to "None"
-					if ( ! isset($this->{$property}))
+					if (empty($this->{$property}))
 					{
 						$this->{$property} = $channel->{$property};
 					}

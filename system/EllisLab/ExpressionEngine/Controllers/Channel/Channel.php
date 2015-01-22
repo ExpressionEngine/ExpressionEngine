@@ -253,21 +253,23 @@ class Channel extends CP_Controller {
 			');
 
 			ee()->view->cp_page_title = lang('create_new_channel');
-			ee()->view->channel = ee('Model')->make('Channel');
+			ee()->view->form_url = cp_url('channel/create');
+			$channel = ee('Model')->make('Channel');
 		}
 		else
 		{
 			$channel = ee('Model')->get('Channel')->filter('channel_id', (int) $channel_id)->first();
-
+			
 			if ( ! $channel)
 			{
 				show_error(lang('unauthorized_access'));
 			}
 
 			ee()->view->cp_page_title = lang('edit_channel');
-			ee()->view->channel = $channel;
+			ee()->view->form_url = cp_url('channel/edit/'.$channel_id);
 		}
 
+		ee()->view->channel = $channel;
 		$vars = array();
 		
 		$channels = ee('Model')->get('Channel')
@@ -277,13 +279,12 @@ class Channel extends CP_Controller {
 		$vars['duplicate_channel_prefs_options'][''] = lang('channel_do_not_duplicate');
 		if ( ! empty($channels))
 		{
-			foreach($channels as $channel)
+			foreach($channels as $dupe_channel)
 			{
-				$vars['duplicate_channel_prefs_options'][$channel->channel_id] = $channel->channel_title;
+				$vars['duplicate_channel_prefs_options'][$dupe_channel->channel_id] = $dupe_channel->channel_title;
 			}
 		}
 
-		$vars['cat_group_options'][''] = lang('none');
 		$category_groups = ee('Model')->get('CategoryGroup')
 			->filter('site_id', ee()->config->item('site_id'))
 			->order('group_name')
@@ -295,6 +296,7 @@ class Channel extends CP_Controller {
 				$vars['cat_group_options'][$group->group_id] = $group->group_name;
 			}
 		}
+		$vars['selected_cats'] = explode('|', $channel->cat_group);
 
 		$vars['status_group_options'][''] = lang('none');
 		$status_groups = ee('Model')->get('StatusGroup')
@@ -331,7 +333,7 @@ class Channel extends CP_Controller {
 			array(
 				'field' => 'channel_name',
 				'label' => 'lang:channel_short_name',
-				'rules' => 'required|callback__valid_channel_name'
+				'rules' => 'required|callback__valid_channel_name['.$channel_id.']'
 			)
 		));
 
@@ -342,15 +344,24 @@ class Channel extends CP_Controller {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			$channel_id = $this->save_channel();
+			$channel_id = $this->save_channel($channel_id);
 
 			ee()->view->set_message('success', lang('directory_saved'), lang('directory_saved_desc'), TRUE);
+
+			ee('Alert')->makeInline('channel-form')
+				->asSuccess()
+				->withTitle(lang('channel_saved'))
+				->addToBody(lang('channel_saved_desc'))
+				->defer();
 
 			ee()->functions->redirect(cp_url('channel/edit/' . $channel_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee()->view->set_message('issue', lang('directory_not_saved'), lang('directory_not_saved_desc'));
+			ee('Alert')->makeInline('channel-form')
+				->asIssue()
+				->withTitle(lang('channel_not_saved'))
+				->addToBody(lang('channel_not_saved_desc'));
 		}
 
 		ee()->view->header = array(
@@ -364,7 +375,8 @@ class Channel extends CP_Controller {
 			)
 		);
 
-		ee()->view->cp_page_title = lang('create_channel');
+		ee()->view->cp_page_title = is_null($channel_id) ? lang('create_channel') : lang('edit_channel');
+		ee()->view->edit = ! is_null($channel_id);
 		ee()->cp->set_breadcrumb(cp_url('channel'), lang('channels'));
 
 		ee()->cp->render('channel/edit', $vars);
@@ -373,7 +385,7 @@ class Channel extends CP_Controller {
 	/**
 	 * Custom validator for channel short name
 	 */
-	function _valid_channel_name($str)
+	function _valid_channel_name($str, $channel_id = NULL)
 	{
 		// Check short name characters
 		if (preg_match('/[^a-z0-9\-\_]/i', $str))
@@ -386,9 +398,9 @@ class Channel extends CP_Controller {
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('channel_name', $str);
 
-		if (ee()->form_validation->old_value('channel_id'))
+		if ( ! empty($channel_id))
 		{
-			$channel->filter('channel_id', '!=', ee()->form_validation->old_value('channel_id'));
+			$channel->filter('channel_id', '!=', $channel_id);
 		}
 
 		if ($channel->all()->count() > 0)
@@ -407,71 +419,26 @@ class Channel extends CP_Controller {
 	 * This function receives the submitted channel preferences
 	 * and stores them in the database.
 	 */
-	function channel_update()
+	private function save_channel($channel_id = NULL)
 	{
-		// If the $channel_id variable is present we are editing an
-		// existing channel, otherwise we are creating a new one
-		$edit = (isset($_POST['channel_id'])) ? TRUE : FALSE;
-
 		// Load the layout Library & update the layouts
 		ee()->load->library('layout');
 
-		$return = (ee()->input->get_post('return')) ? TRUE : FALSE;
-		unset($_POST['return']);
-
 		$dupe_id = ee()->input->get_post('duplicate_channel_prefs');
 		unset($_POST['duplicate_channel_prefs']);
-
-		// Check for required fields
-		$error = array();
-
-		if (isset($_POST['comment_expiration']) && $_POST['comment_expiration'] == '')
-		{
-			$_POST['comment_expiration'] = 0;
-		}
-
-		if (ee()->input->post('apply_comment_enabled_to_existing'))
-		{
-			if (ee()->input->post('comment_system_enabled') == 'y')
-			{
-				ee()->channel_model->update_comments_allowed($_POST['channel_id'], 'y');
-			}
-			elseif (ee()->input->post('comment_system_enabled') == 'n')
-			{
-				ee()->channel_model->update_comments_allowed($_POST['channel_id'], 'n');
-			}
-		}
-
-		unset($_POST['apply_comment_enabled_to_existing']);
-
-
-
-		if (isset($_POST['apply_expiration_to_existing']))
-		{
-			if (ee()->input->post('comment_expiration') == 0)
-			{
-				ee()->channel_model->update_comment_expiration($_POST['channel_id'], $_POST['comment_expiration'], TRUE);
-			}
-			else
-			{
-				ee()->channel_model->update_comment_expiration($_POST['channel_id'], $_POST['comment_expiration'] * 86400);
-			}
-		}
-
-		unset($_POST['apply_expiration_to_existing']);
 
 		if (isset($_POST['cat_group']) && is_array($_POST['cat_group']))
 		{
 			$_POST['cat_group'] = implode('|', $_POST['cat_group']);
 		}
+		else
+		{
+			$_POST['cat_group'] = '';
+		}
 
 		// Create Channel
-		// Construct the query based on whether we are updating or inserting
-
-		if ($edit == FALSE)
+		if (empty($channel_id))
 		{
-			unset($_POST['channel_id']);
-			unset($_POST['clear_versioning_data']);
 			$_POST['default_entry_title'] = '';
 			$_POST['url_title_prefix'] = '';
 
@@ -479,7 +446,7 @@ class Channel extends CP_Controller {
 			$channel->channel_url = ee()->functions->fetch_site_index();
 			$channel->channel_lang = ee()->config->item('xml_lang');
 			$channel->site_id = ee()->config->item('site_id');
-
+			
 			// Assign field group if there is only one
 			if ($dupe_id != ''
 				&& ( $channel->field_group === NULL || ! is_numeric($channel->field_group)))
@@ -548,12 +515,14 @@ class Channel extends CP_Controller {
 
 			// Only one possible is revisions- enabled or disabled.
 			// We treat as installed/not and delete the whole tab.
+			ee()->layout->sync_layout($_POST, $channel_id);
 
-			ee()->layout->sync_layout($_POST, $_POST['channel_id']);
-
+			$_POST['channel_id'] = $channel_id;
 			$channel = ee('Model')->make('Channel', $_POST);
 			$channel->save();
 		}
+
+		return $channel->channel_id;
 	}
 }
 // EOF
