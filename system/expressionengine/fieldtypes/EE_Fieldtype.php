@@ -53,16 +53,6 @@ abstract class EE_Fieldtype {
 	protected $content_type = 'channel';
 
 	/**
-	 * Constructor
-	 */
-	public function __construct()
-	{
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Re-initialize the class.
 	 *
 	 * Friend <Api_channel_fields>

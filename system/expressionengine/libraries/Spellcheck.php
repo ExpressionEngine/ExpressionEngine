@@ -31,9 +31,6 @@ class EE_Spellcheck {
 	 */
 	public function __construct()
 	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
 		ee()->lang->loadfile('spellcheck');
 
 		if (function_exists('pspell_new') OR function_exists('curl_init') OR extension_loaded('openssl'))
@@ -1133,9 +1130,6 @@ EOT;
 	 */
 	public function iframe()
 	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
 		ee()->session->tracker = array_shift(ee()->session->tracker);
 
 		ee()->session->set_tracker_cookie();
@@ -1211,9 +1205,6 @@ EOH;
 	/** -----------------------------------------*/
 	function check($lang='en')
 	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
 		/* -------------------------------------------
 		/*	Hidden Configuration Variable
 		/*

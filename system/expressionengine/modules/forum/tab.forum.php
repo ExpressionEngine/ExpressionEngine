@@ -26,16 +26,6 @@
 class Forum_tab {
 
 	/**
-	 * Constructor
-	 */
-	public function __construct()
-	{
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Publish Tabs
 	 *
 	 * @param 	int

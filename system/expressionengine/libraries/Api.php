@@ -29,26 +29,12 @@ class Api {
 
 	public $errors	= array();  // holds any and all errors on failure
 
-	protected $EE;
-
 	private $apis	= array(	// apis available to initialize when loading the parent Api class
 		'channel_structure', 'channel_entries', 'channel_fields',
 		'channel_categories', 'channel_statuses', 'channel_uploads',
 		'template_structure',
 		'members'
 	);
-
-	/**
-	 * Constructor
-	 *
-	 */
-	function __construct()
-	{
-		// Set the EE super object to a class variable
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Instantiate another API

@@ -148,8 +148,6 @@ class Installer_Config Extends EE_Config {
 	 */
 	function _get_config_1x($preference = '')
 	{
-		$this->EE =& get_instance();
-
 		if (isset($this->config))
 		{
 			$table_name = $this->config['db_prefix'].'_sites';

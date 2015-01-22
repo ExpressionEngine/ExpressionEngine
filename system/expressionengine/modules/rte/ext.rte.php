@@ -32,7 +32,6 @@ class Rte_ext {
 	var $docs_url		= 'http://ellislab.com/expressionengine/user-guide/modules/rte/index.html';
 	var $required_by	= array('module', 'fieldtype');
 
-	private $EE;
 	private $module = 'rte';
 
 	/**
@@ -40,8 +39,6 @@ class Rte_ext {
 	 */
 	function __construct()
 	{
-		$this->EE =& get_instance();
-
 		ee()->load->library('rte_lib');
 	}
 

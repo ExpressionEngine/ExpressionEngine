@@ -40,12 +40,8 @@ class Moblog_mcp {
 	 *
 	 * @access	public
 	 */
-	function Moblog_mcp( $switch = TRUE )
+	function __construct()
 	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
-
 		$this->default_template = <<<EOT
 {text}
 

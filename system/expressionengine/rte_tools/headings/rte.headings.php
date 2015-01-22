@@ -32,21 +32,6 @@ class Headings_rte {
 		'cp_only'		=> 'n'
 	);
 
-	private $EE;
-
-	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function __construct()
-	{
-		// Make a local reference of the ExpressionEngine super object
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Globals we need
 	 *

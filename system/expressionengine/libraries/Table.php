@@ -54,8 +54,6 @@ class EE_Table {
 	 */
 	function __construct()
 	{
-		$this->EE =& get_instance();
-
 		if (REQ == 'CP')
 		{
 			// @todo We have a code order issue with accessories.

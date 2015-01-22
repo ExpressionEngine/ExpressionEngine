@@ -27,14 +27,6 @@ class Query_upd {
 
 	var $version = '2.0';
 
-	function Query_upd()
-	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Installer
 	 *

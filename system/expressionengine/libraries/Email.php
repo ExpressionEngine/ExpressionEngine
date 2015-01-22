@@ -205,8 +205,6 @@ class EE_Email {
 	 */
 	public $bcc_batch_size	= 200;
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Whether PHP is running in safe mode. Initialized by the class constructor.
 	 *
@@ -381,9 +379,6 @@ class EE_Email {
 		{
 			return;
 		}
-
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
 
 		$this->EE_initialize();
 	}

@@ -24,23 +24,11 @@
  */
 class View {
 
-	private $EE;
-
 	protected $_theme = 'default';
 	protected $_extend = '';
 	protected $_data = array();
 	protected $_disabled = array();
 	protected $_disable_up = array();
-
-	/**
-	 * Constructor
-	 *
-	 * @access public
-	 */
-	public function __construct()
-	{
-		$this->EE =& get_instance();
-	}
 
 	// --------------------------------------------------------------------
 

@@ -24,21 +24,8 @@
  */
 class EE_Addons {
 
-	var $EE;
 	var $_map;						// addons sorted by addon_type (plural)
 	var $_packages = array();		// contains references to _map by package name
-
-	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function __construct()
-	{
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Addon File Handler

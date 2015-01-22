@@ -63,9 +63,6 @@ class EE_Upload {
 			$this->initialize($props);
 		}
 
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
 		ee()->load->helper('xss');
 
 		$props['xss_clean'] = xss_check();

@@ -115,9 +115,6 @@ class EE_Template {
 	 */
 	public function __construct()
 	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
 		if (ee()->config->item('multiple_sites_enabled') != 'y')
 		{
 			$this->sites[ee()->config->item('site_id')] = ee()->config->item('site_short_name');

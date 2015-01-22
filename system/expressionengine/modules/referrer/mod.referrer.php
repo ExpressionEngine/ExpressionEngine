@@ -27,11 +27,8 @@ class Referrer {
 
 	var $return_data  = '';
 
-	function Referrer()
+	function __construct()
 	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
 		$this->referrer_rows();
 	}
 

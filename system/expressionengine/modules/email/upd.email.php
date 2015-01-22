@@ -27,14 +27,6 @@ class Email_upd {
 
 	var $version = '2.1';
 
-	function Email_upd()
-	{
-		$this->EE =& get_instance();
-	}
-
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Installer
 	 *

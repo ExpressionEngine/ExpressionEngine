@@ -712,10 +712,6 @@ class EE_Config {
 	 */
 	function update_site_prefs($new_values = array(), $site_ids = array(), $find = '', $replace = '')
 	{
-		// Establish EE super object as class level just for this method and the
-		// child methods called
-		$this->EE =& get_instance();
-
 		if (empty($site_ids))
 		{
 			$site_ids = array($this->item('site_id'));

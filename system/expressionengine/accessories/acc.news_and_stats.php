@@ -35,7 +35,6 @@ class News_and_stats_acc {
 	 */
 	function __construct()
 	{
-		$this->EE =& get_instance();
 		ee()->lang->loadfile('homepage');
 	}
 

@@ -30,15 +30,6 @@ class Expressionengine_info_acc {
 	var $description	= 'Links and Information about ExpressionEngine';
 	var $sections		= array();
 
-	/**
-	 * Constructor
-	 */
-	function __construct()
-	{
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Sections

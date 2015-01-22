@@ -32,7 +32,6 @@ class Ip_to_nation_upd {
 	  */
 	function __construct()
 	{
-		$this->EE =& get_instance();
 		ee()->load->dbforge();
 	}
 

@@ -28,14 +28,6 @@ class Channel_upd {
 
 	var $version		= '2.0.1';
 
-	function Channel_upd()
-	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Installer
 	 *

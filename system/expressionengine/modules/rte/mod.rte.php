@@ -27,22 +27,6 @@ class Rte {
 	public $return_data	= '';
 
 	/**
-	  * Constructor
-	  */
-	public function __construct()
-	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
-		if (ee()->config->item('rte_enabled') == 'n')
-		{
-			return;
-		}
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
 	 * Outputs the RTE's toolset JS. Called via an ACT.
 	 *
 	 * @access	public

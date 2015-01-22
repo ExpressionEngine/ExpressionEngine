@@ -38,8 +38,6 @@ class Channel_form_session extends EE_Session
 	 */
 	public function __construct($config)
 	{
-		$this->EE =& get_instance();
-
 		$this->session_object = (isset($config['session_object'])) ? $config['session_object'] : NULL;
 
 		$this->logged_out_member_id = (isset($config['logged_out_member_id'])) ? $config['logged_out_member_id'] : NULL;

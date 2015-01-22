@@ -103,15 +103,11 @@ class EE_Session {
 	// Use set_cache() and cache() methods.
 	public $cache				= array();
 
-	protected $EE;
-
 	/**
 	 * Session Class Constructor
 	 */
 	public function __construct()
 	{
-		$this->EE =& get_instance();
-
 		// If they load this library manually we need to make sure our
 		// dependencies are all here. This can happen in the cp_js_end hook.
 		ee()->load->library('remember');

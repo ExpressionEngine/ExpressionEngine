@@ -28,15 +28,6 @@ class Search_upd {
 
 	var $version = '2.2.2';
 
-	function Search_upd()
-	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-	}
-
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Module Installer
 	 *

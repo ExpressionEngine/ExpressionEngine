@@ -27,13 +27,6 @@ class Ip_to_nation {
 
 	var $return_data = '';
 
-	function __construct()
-	{
-		$this->EE =& get_instance();
-	}
-
-	// ----------------------------------------------------------------------
-
 	/**
 	 * World flags
 	 */

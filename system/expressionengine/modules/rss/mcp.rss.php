@@ -25,11 +25,6 @@
 
 class Rss_mcp {
 
-	function Rss_mcp()
-	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-	}
 }
 // END CLASS
 

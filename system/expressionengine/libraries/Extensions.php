@@ -38,9 +38,6 @@ class EE_Extensions {
 	 */
 	function __construct()
 	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
 		// We only execute this if extensions are allowed
 		if (ee()->config->item('allow_extensions') == 'y')
 		{

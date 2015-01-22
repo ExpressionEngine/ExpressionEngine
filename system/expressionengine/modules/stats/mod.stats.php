@@ -31,8 +31,6 @@ class Stats {
 	 */
 	public function Stats()
 	{
-		$this->EE =& get_instance();
-
 		ee()->stats->load_stats();
 
 		// Limit stats by channel

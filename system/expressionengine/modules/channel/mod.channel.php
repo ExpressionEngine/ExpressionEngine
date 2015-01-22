@@ -80,9 +80,6 @@ class Channel {
 	  */
 	public function Channel()
 	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
 		ee()->load->library('pagination');
 		$this->pagination = ee()->pagination->create();
 
@@ -131,14 +128,14 @@ class Channel {
 		{
 			foreach (explode('|', ee()->TMPL->fetch_param('dynamic_parameters')) as $var)
 			{
-				if ($this->EE->input->get_post($var) && in_array($var, $this->_dynamic_parameters))
+				if (ee()->input->get_post($var) && in_array($var, $this->_dynamic_parameters))
 				{
-					$tag .= $var.'="'.$this->EE->input->get_post($var).'"';
+					$tag .= $var.'="'.ee()->input->get_post($var).'"';
 				}
 
-				if (strncmp($var, 'search:', 7) == 0 && $this->EE->input->get_post($var))
+				if (strncmp($var, 'search:', 7) == 0 && ee()->input->get_post($var))
 				{
-					$tag .= $var.'="'.substr($this->EE->input->get_post($var), 7).'"';
+					$tag .= $var.'="'.substr(ee()->input->get_post($var), 7).'"';
 				}
 			}
 		}
@@ -662,14 +659,14 @@ class Channel {
 		{
 			foreach (explode('|', ee()->TMPL->fetch_param('dynamic_parameters')) as $var)
 			{
-				if ($this->EE->input->get_post($var) && in_array($var, $this->_dynamic_parameters))
+				if (ee()->input->get_post($var) && in_array($var, $this->_dynamic_parameters))
 				{
-					ee()->TMPL->tagparams[$var] = $this->EE->input->get_post($var);
+					ee()->TMPL->tagparams[$var] = ee()->input->get_post($var);
 				}
 
-				if (strncmp($var, 'search:', 7) == 0 && $this->EE->input->get_post($var))
+				if (strncmp($var, 'search:', 7) == 0 && ee()->input->get_post($var))
 				{
-					ee()->TMPL->search_fields[substr($var, 7)] = $this->EE->input->get_post($var);
+					ee()->TMPL->search_fields[substr($var, 7)] = ee()->input->get_post($var);
 				}
 			}
 		}

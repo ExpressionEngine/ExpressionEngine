@@ -26,19 +26,6 @@ class Layout {
 
 	var $custom_layout_fields = array();
 
-	/**
-	 * Constructor
-	 *
-	 * Get reference to EE SuperObject
-	 */
-	function __construct()
-	{
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
-
-
 	function duplicate_layout($dupe_id, $channel_id)
 	{
 		ee()->load->model('member_model');

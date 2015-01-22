@@ -42,9 +42,6 @@ class Simple_commerce_mcp {
 
 	function Simple_commerce_mcp($switch = TRUE)
 	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
 		$this->base_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce';
 
 		ee()->cp->set_right_nav(array(

@@ -49,9 +49,6 @@ Class Magpie {
 	 /** -------------------------------------*/
 	 function Magpie()
 	 {
-		// Make a local reference of the ExpressionEngine super object
-		$this->EE =& get_instance();
-
 		// Deprecate
 		ee()->load->library('logger');
 		ee()->logger->deprecated('2.8', 'pi.rss_parser.php or ee()->rss_parser->create()');
@@ -653,9 +650,6 @@ class MagpieRSS {
 	function MagpieRSS ($source, $output_encoding='ISO-8859-1',
 								$input_encoding=null, $detect_encoding=true)
 	{
-
-		// Make a local reference of the ExpressionEngine super object
-		$this->EE =& get_instance();
 
 		# if PHP xml isn't compiled in, die
 		#
@@ -1713,9 +1707,6 @@ class RSSCache {
 
 	function RSSCache ($base='', $age='')
 	{
-
-		// Make a local reference of the ExpressionEngine super object
-		$this->EE =& get_instance();
 
 		if ( $base )
 		{

@@ -26,8 +26,6 @@ class Smartforge {
 
 	function __construct()
 	{
-		$this->EE =& get_instance();
-
 		ee()->load->dbforge();
 		ee()->load->library('logger');
 		ee()->load->helper('array');

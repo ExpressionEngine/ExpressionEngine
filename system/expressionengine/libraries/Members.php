@@ -25,18 +25,6 @@
 class Members {
 
 
-	protected $EE;
-
-	/**
-	 * Constructor
-	 */
-	public function __construct()
-	{
-		$this->EE =& get_instance();
-	}
-
-	// ------------------------------------------------------------------------
-
 	/**
 	 *	Upload Member Images
 	 *

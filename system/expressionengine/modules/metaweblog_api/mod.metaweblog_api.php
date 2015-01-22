@@ -64,9 +64,6 @@ class Metaweblog_api {
 	 */
 	function Metaweblog_api()
 	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
 		ee()->lang->loadfile('metaweblog_api');
 
 		$id = ( isset($_GET['id']) && is_numeric($_GET['id'])) ? $_GET['id'] : '1';
@@ -1609,7 +1606,7 @@ class Metaweblog_api {
 		ee()->load->model('file_upload_preferences_model');
 
 		$upload_prefs = ee()->file_upload_preferences_model->get_file_upload_preferences(NULL, $this->upload_dir);
-		
+
 
 		if (empty($upload_prefs))
 		{

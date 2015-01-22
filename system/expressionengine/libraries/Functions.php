@@ -37,18 +37,6 @@ class EE_Functions {
 	public $catfields          = array();
 
 	/**
-	 * Constructor
-	 */
-	public function __construct()
-	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-	}
-
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Fetch base site index
 	 *
 	 * @access	public

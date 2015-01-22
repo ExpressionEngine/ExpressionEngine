@@ -24,13 +24,6 @@
  */
 class EE_Messages_send extends EE_Messages {
 
-	/**
-	 * Construct
-	 */
-	function __construct()
-	{
-		$this->EE =& get_instance();
-	}
 
 	/** -------------------------------------
 	/**  Uploading Attachments

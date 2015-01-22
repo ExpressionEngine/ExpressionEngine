@@ -154,8 +154,6 @@ class Member {
 	 */
 	function __construct()
 	{
-		$this->EE =& get_instance();
-
 		ee()->lang->loadfile('myaccount');
 		ee()->lang->loadfile('member');
 		ee()->functions->template_type = 'webpage';

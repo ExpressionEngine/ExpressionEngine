@@ -30,9 +30,6 @@ class Notifications {
 	 */
 	function __construct()
 	{
-		// Get EE superobject reference
-		$this->EE =& get_instance();
-
 		ee()->load->library('api');
 		ee()->load->library('email');
 	}
