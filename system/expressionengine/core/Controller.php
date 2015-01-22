@@ -45,7 +45,7 @@ class CI_Controller {
 			$this->$var =& load_class($class);
 		}
 
-		$this->load =& load_class('Loader', 'core', 'EE_');
+		$this->load =& load_class('Loader', 'core');
 
 		$this->load->set_base_classes()->ci_autoloader();
 

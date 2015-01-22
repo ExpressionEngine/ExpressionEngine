@@ -302,7 +302,7 @@ class EE_Loader {
 
 			if ( ! class_exists('EE_Model'))
 			{
-				load_class('Model', 'core', 'EE_');
+				load_class('Model', 'core');
 			}
 
 			require_once($mod_path.'models/'.$path.$model.'.php');

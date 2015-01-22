@@ -139,12 +139,6 @@
 	// Is the installation folder present?
 	if (is_dir($system_path.'installer/'))
 	{
-		// We need a different subclass prefix when we run the installer,
-		// because it has its own Config class extension with some
-		// specific functions. Setting a unique prefix lets us load the
-		// main Config class extension without a naming conflict.
-		$assign_to_config['subclass_prefix']	= 'Installer_';
-
 		// This allows the installer application to be inside our normal
 		// EE application directory.
 		define('APPPATH', $system_path.'installer/');

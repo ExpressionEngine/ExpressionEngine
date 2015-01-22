@@ -71,7 +71,14 @@
 
 	EllisLab\ExpressionEngine\Service\Autoloader::getInstance()->register();
 
-	get_config(array('subclass_prefix' => 'EE_'));
+	if (defined('EE_APPPATH'))
+	{
+		get_config(array('subclass_prefix' => 'Installer_'));
+	}
+	else
+	{
+		get_config(array('subclass_prefix' => 'EE_'));
+	}
 
 /*
  * ------------------------------------------------------
@@ -88,7 +95,7 @@
  *  Start the timer... tick tock tick tock...
  * ------------------------------------------------------
  */
-	$BM =& load_class('Benchmark', 'core', 'EE_');
+	$BM =& load_class('Benchmark', 'core');
 	$BM->mark('total_execution_time_start');
 	$BM->mark('loading_time:_base_classes_start');
 
@@ -98,7 +105,7 @@
  *  Instantiate the config class
  * ------------------------------------------------------
  */
-	$CFG =& load_class('Config', 'core', 'EE_');
+	$CFG =& load_class('Config', 'core');
 
 	// Do we have any manually set config items in the index.php file?
 	if (isset($assign_to_config))
@@ -118,21 +125,21 @@
  *
  */
 
-	$UNI =& load_class('Utf8', 'core', 'EE_');
+	$UNI =& load_class('Utf8', 'core');
 
 /*
  * ------------------------------------------------------
  *  Instantiate the URI class
  * ------------------------------------------------------
  */
-	$URI =& load_class('URI', 'core', 'EE_');
+	$URI =& load_class('URI', 'core');
 
 /*
  * ------------------------------------------------------
  *  Instantiate the routing class and set the routing
  * ------------------------------------------------------
  */
-	$RTR =& load_class('Router', 'core', 'EE_');
+	$RTR =& load_class('Router', 'core');
 	$RTR->_set_routing();
 
 	// Set any routing overrides that may exist in the main index file
@@ -146,28 +153,28 @@
  *  Instantiate the output class
  * ------------------------------------------------------
  */
-	$OUT =& load_class('Output', 'core', 'EE_');
+	$OUT =& load_class('Output', 'core');
 
 /*
  * -----------------------------------------------------
  * Load the security class for xss and csrf support
  * -----------------------------------------------------
  */
-	$SEC =& load_class('Security', 'core', 'EE_');
+	$SEC =& load_class('Security', 'core');
 
 /*
  * ------------------------------------------------------
  *  Load the Input class and sanitize globals
  * ------------------------------------------------------
  */
-	$IN	=& load_class('Input', 'core', 'EE_');
+	$IN	=& load_class('Input', 'core');
 
 /*
  * ------------------------------------------------------
  *  Load the Language class
  * ------------------------------------------------------
  */
-	$LANG =& load_class('Lang', 'core', 'EE_');
+	$LANG =& load_class('Lang', 'core');
 
 
 /*
