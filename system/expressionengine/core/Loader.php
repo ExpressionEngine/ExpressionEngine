@@ -1,15 +1,13 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 /**
- * CodeIgniter
+ * ExpressionEngine - by EllisLab
  *
- * An open source application development framework for PHP 5.2.4 or newer
- *
- * @package		CodeIgniter
+ * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
- * @license		http://codeigniter.com/user_guide/license.html
- * @link		http://codeigniter.com
- * @since		Version 1.0
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 2.0
  * @filesource
  */
 
@@ -21,14 +19,13 @@
  * Loads views and files
  *
  * @package		CodeIgniter
- * @subpackage	Libraries
+ * @subpackage	Core
+ * @category	Core
  * @author		EllisLab Dev Team
- * @category	Loader
- * @link		http://codeigniter.com/user_guide/libraries/loader.html
+ * @link		http://ellislab.com
  */
-class CI_Loader {
+class EE_Loader {
 
-	// All these are set automatically. Don't mess with them.
 	protected $_ci_ob_level;
 	protected $_ci_view_paths		= array();
 	protected $_ci_library_paths	= array();
@@ -57,6 +54,135 @@ class CI_Loader {
 
 		log_message('debug', "Loader Class Initialized");
 	}
+
+	/**
+	 * Load EE View
+	 *
+	 * This is for limited use inside packages. It loads from EE's main cp
+	 * theme folder and ignores the package's view folder. The main reason
+	 * for doing this are layout things, like the glossary. Most developers
+	 * will not need this. -pk
+	 *
+	 * @param	string
+	 * @param	array 	variables to be loaded into the view
+	 * @param	bool 	return or not
+	 * @return	void
+	 */
+	public function ee_view($view, $vars = array(), $return = FALSE)
+	{
+		$ee_only = array();
+		$orig_paths = $this->_ci_view_paths;
+
+		// Regular themes cascade down to the first
+		// path (APPPATH.'views'), so we copy them over
+		// until we hit a third party or non_cascading path.
+
+		foreach (array_reverse($orig_paths, TRUE) as $path => $cascade)
+		{
+			if (strpos($path, PATH_ADDONS) !== FALSE OR $cascade === FALSE)
+			{
+				break;
+			}
+
+			$ee_only[$path] = TRUE;
+		}
+
+		// Temporarily replace them, load the view, and back again
+		$this->_ci_view_paths = array_reverse($ee_only, TRUE);
+
+		$ret = $this->view($view, $vars, $return);
+
+		$this->_ci_view_paths = $orig_paths;
+
+		return $ret;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Class Loader
+	 *
+	 * This function lets users load and instantiate classes.
+	 * It is designed to be called from a user's app controllers.
+	 *
+	 * @param	string	the name of the class
+	 * @param	mixed	the optional parameters
+	 * @param	string	an optional object name
+	 * @return	void
+	 */
+	public function library($library = '', $params = NULL, $object_name = NULL)
+	{
+		if (is_array($library))
+		{
+			foreach($library as $read)
+			{
+				$this->library($read);
+			}
+
+			return;
+		}
+
+		if (strtolower($library) == 'api')
+		{
+			$object_name = 'legacy_api';
+		}
+
+		// Security is always loaded
+		if (strtolower($library) == 'security')
+		{
+			return NULL;
+		}
+
+		if (is_array($library))
+		{
+			foreach ($library as $class)
+			{
+				$this->library($class, $params);
+			}
+
+			return;
+		}
+
+		if ($library == '' OR isset($this->_base_classes[$library]))
+		{
+			return FALSE;
+		}
+
+		if ( ! is_null($params) && ! is_array($params))
+		{
+			$params = NULL;
+		}
+
+		$this->_ci_load_class($library, $params, $object_name);
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Add to the theme cascading
+	 *
+	 * Adds a theme to cascade down to. You probably don't
+	 * need to call this. No really, don't.
+	 */
+	public function add_theme_cascade($theme_path)
+	{
+		$this->_ci_view_paths = array($theme_path => TRUE) + $this->_ci_view_paths;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Get top of package path
+	 *
+	 * We use this to allow package js/css loading, where we need to figure out
+	 * a theme name. May be renamed in the future, don't use it.
+	 */
+	public function first_package_path()
+	{
+		reset($this->_ci_view_paths);
+		return key($this->_ci_view_paths);
+	}
+
 
 	// --------------------------------------------------------------------
 
@@ -97,44 +223,6 @@ class CI_Loader {
 		}
 
 		return FALSE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Class Loader
-	 *
-	 * This function lets users load and instantiate classes.
-	 * It is designed to be called from a user's app controllers.
-	 *
-	 * @param	string	the name of the class
-	 * @param	mixed	the optional parameters
-	 * @param	string	an optional object name
-	 * @return	void
-	 */
-	public function library($library = '', $params = NULL, $object_name = NULL)
-	{
-		if (is_array($library))
-		{
-			foreach ($library as $class)
-			{
-				$this->library($class, $params);
-			}
-
-			return;
-		}
-
-		if ($library == '' OR isset($this->_base_classes[$library]))
-		{
-			return FALSE;
-		}
-
-		if ( ! is_null($params) && ! is_array($params))
-		{
-			$params = NULL;
-		}
-
-		$this->_ci_load_class($library, $params, $object_name);
 	}
 
 	// --------------------------------------------------------------------
@@ -1133,5 +1221,5 @@ class CI_Loader {
 	}
 }
 
-/* End of file Loader.php */
-/* Location: ./system/core/Loader.php */
+/* End of file EE_Loader.php */
+/* Location: ./system/expressionengine/core/EE_Loader.php */
