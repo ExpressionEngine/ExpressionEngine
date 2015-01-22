@@ -368,26 +368,26 @@ class Filesystem {
 		// If we're on a Unix server with safe_mode off we call is_writable
 		if (DIRECTORY_SEPARATOR == '/' AND @ini_get("safe_mode") == FALSE)
 		{
-			return is_writable($file);
+			return is_writable($path);
 		}
 
 		// For windows servers and safe_mode "on" installations we'll actually
 		// write a file then read it.  Bah...
-		if ($this->isDir($file))
+		if ($this->isDir($path))
 		{
-			$file = rtrim($file, '/').'/'.md5(mt_rand(1,100).mt_rand(1,100));
+			$path = rtrim($path, '/').'/'.md5(mt_rand(1,100).mt_rand(1,100));
 
-			if (($fp = @fopen($file, FOPEN_WRITE_CREATE)) === FALSE)
+			if (($fp = @fopen($path, FOPEN_WRITE_CREATE)) === FALSE)
 			{
 				return FALSE;
 			}
 
 			fclose($fp);
-			@chmod($file, DIR_WRITE_MODE);
-			@unlink($file);
+			@chmod($path, DIR_WRITE_MODE);
+			@unlink($path);
 			return TRUE;
 		}
-		elseif (($fp = @fopen($file, FOPEN_WRITE_CREATE)) === FALSE)
+		elseif (($fp = @fopen($path, FOPEN_WRITE_CREATE)) === FALSE)
 		{
 			return FALSE;
 		}
