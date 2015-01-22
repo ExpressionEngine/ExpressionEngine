@@ -24,7 +24,7 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/libraries/image_lib.html
  */
-class CI_Image_lib {
+class EE_Image_lib {
 
 	var $image_library		= 'gd2';	// Can be:  imagemagick, netpbm, gd, gd2
 	var $library_path		= '';
