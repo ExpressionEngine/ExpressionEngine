@@ -189,7 +189,7 @@
  * And away we go...
  *
  */
-	require_once BASEPATH.'core/CodeIgniter'.EXT;
+	require_once SYSPATH.'EllisLab/ExpressionEngine/Service/Core/boot.php';
 
 /* End of file index.php */
 /* Location: ./index.php */
