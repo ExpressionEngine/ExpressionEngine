@@ -349,6 +349,21 @@ class Channel extends CP_Controller {
 				'field' => 'channel_name',
 				'label' => 'lang:channel_short_name',
 				'rules' => 'required|strip_tags|callback__valid_channel_name['.$channel_id.']'
+			),
+			array(
+				'field' => 'duplicate_channel_prefs',
+				'label' => 'lang:channel_duplicate',
+				'rules' => 'enum[' . implode(array_keys($vars['duplicate_channel_prefs_options']), ',') . ']'
+			),
+			array(
+				'field' => 'status_group',
+				'label' => 'lang:status_groups',
+				'rules' => 'enum[' . implode(array_keys($vars['status_group_options']), ',') . ']'
+			),
+			array(
+				'field' => 'field_group',
+				'label' => 'lang:custom_field_group',
+				'rules' => 'enum[' . implode(array_keys($vars['field_group_options']), ',') . ']'
 			)
 		));
 
