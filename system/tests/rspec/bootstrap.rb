@@ -44,6 +44,11 @@ RSpec.configure do |config|
 
 	# Before each example...
 	config.before(:each) do
+		# Whitelist URLs
+		page.driver.allow_url $test_config[:app_host]
+		page.driver.allow_url 'ellislab.com'
+
+		# Re-import clean database
 		reset_db
 	end
 
