@@ -157,6 +157,12 @@ $lang = array(
 'channel_not_saved_desc' =>
 'We were unable to save your channel, please review and fix errors below.',
 
+'invalid_short_name' =>
+'Your channel name must contain only alpha-numeric characters and no spaces.',
+
+'taken_channel_name' =>
+'This channel name is already taken.',
+
 ''=>''
 );
 
