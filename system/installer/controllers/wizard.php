@@ -192,11 +192,12 @@ class Wizard extends CI_Controller {
 		// the update
 		$this->load->library('update_notices');
 
-		// Set the image URL
-		$this->image_path = $this->_set_image_path();
+		// Set the theme URLs
+		$this->theme_url = $this->_set_path('themes');
+		$this->image_path = $this->_set_path('themes/ee/cp_global_images/');
 
 		// Set the Javascript URL
-		$this->javascript_path = $this->_set_javascript_path();
+		$this->javascript_path = $this->_set_path('themes/ee/javascript/compressed/');
 
 		// First try the current directory, if they are running the system with an admin.php file
 		$this->theme_path = substr($_SERVER['SCRIPT_FILENAME'], 0, -strlen(SELF));
@@ -1575,37 +1576,17 @@ PAPAYA;
 	// --------------------------------------------------------------------
 
 	/**
-	 * Set path to the images used by the installer
-	 *
-	 * Since we need a relative path for our images, and since we do not
-	 * know the location of the "admin" file we'll walk up the directory
-	 * tree looking for the proper directory
-	 *
-	 * @access	public
-	 * @return	void
+	 * Get an actual path to certain items, namely global images, themes, and
+	 * javascript.
+	 * @param string  $path  The path to determine
+	 * @param integer $depth How many levels up we are from the original
+	 *                       directory
 	 */
-	function _set_image_path($path = 'themes/ee/cp_global_images/', $n = NULL)
+	private function _set_path($path = '', $depth = 0)
 	{
-		if ( ! is_dir($path) && $n < 10)
+		if ( ! is_dir($path) && $depth < 10)
 		{
-			$path = $this->_set_image_path('../'.$path, ++$n);
-		}
-
-		return $path;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Set path to the javascript directory
-	 *
-	 * Same functionality as above, but this is for the javascript directory
-	 */
-	protected function _set_javascript_path($path = 'themes/ee/javascript/compressed/', $n = NULL)
-	{
-		if ( ! is_dir($path) && $n < 10)
-		{
-			$path = $this->_set_javascript_path('../'.$path, ++$n);
+			$path = $this->_set_path('../'.$path, ++$depth);
 		}
 
 		return $path;
