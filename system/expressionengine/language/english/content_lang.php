@@ -16,9 +16,10 @@ $lang = array(
 'custom_date' => 'custom date',
 'custom_limit' => 'custom limit',
 
-'id' => 'ID#',
+'entry_id' => 'ID#',
 'title' => 'Title',
-'comments' => 'Comments',
+'comment_total' => 'Comments',
+'entry_date' => 'Date',
 
 'btn_search_entries' => 'Search Entries',
 

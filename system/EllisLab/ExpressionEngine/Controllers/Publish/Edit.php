@@ -124,10 +124,10 @@ class Edit extends Publish {
 
 		$table->setColumns(
 			array(
-				'id',
+				'entry_id',
 				'title',
-				'comments',
-				'date',
+				'comment_total',
+				'entry_date',
 				'status' => array(
 					'type'	=> Table::COL_STATUS
 				),
@@ -144,9 +144,9 @@ class Edit extends Publish {
 		$page = ((int) ee()->input->get('page')) ?: 1;
 		$offset = ($page - 1) * $filter_values['perpage']; // Offset is 0 indexed
 
-		// $entries->order($table->sort_col, $table->sort_dir)
-		// 	->limit($filter_values['perpage'])
-		// 	->offset($offset);
+		$entries->order($table->sort_col, $table->sort_dir)
+			->limit($filter_values['perpage'])
+			->offset($offset);
 
 		$data = array();
 
