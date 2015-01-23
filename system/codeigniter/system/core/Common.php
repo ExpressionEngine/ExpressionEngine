@@ -126,7 +126,7 @@
 
 		// Look for the class first in the native system/libraries folder
 		// thenin the local application/libraries folder
-		foreach (array(BASEPATH, APPPATH) as $path)
+		foreach (array(APPPATH, BASEPATH) as $path)
 		{
 			if (file_exists($path.$directory.'/'.$class.'.php'))
 			{
