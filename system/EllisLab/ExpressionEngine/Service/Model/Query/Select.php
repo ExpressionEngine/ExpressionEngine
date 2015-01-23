@@ -100,6 +100,9 @@ class Select extends Query {
 			$this->model_fields[$alias] = array();
 		}
 
+		$main_table = key($tables);
+		$primary_key = $meta->getPrimaryKey();
+
 		foreach ($tables as $table => $table_fields)
 		{
 			$table_alias = "{$alias}_{$table}";
@@ -107,6 +110,11 @@ class Select extends Query {
 			if ( ! $will_join)
 			{
 				$query->from("{$table} as {$table_alias}");
+			}
+
+			if ($table != $main_table)
+			{
+				$query->where("{$table_alias}.{$primary_key} = {$alias}_{$main_table}.{$primary_key}", NULL, FALSE);
 			}
 
 			foreach ($table_fields as $column)
