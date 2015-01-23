@@ -36,7 +36,7 @@ class ChannelEntry extends FieldDataContentModel {
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'Category',
 			'pivot' => array(
-				'table' => 'category'
+				'table' => 'categories'
 			)
 		)
 	);
