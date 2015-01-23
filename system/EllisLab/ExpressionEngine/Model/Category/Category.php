@@ -37,16 +37,19 @@ class Category extends FieldDataContentModel {
 
 	protected static $_relationships = array(
 		'CategoryGroup' => array(
-			'type' => 'many_to_one'
+			'type' => 'belongsTo'
 		),
 		'ChannelEntries' => array(
-			'type' => 'many_to_many',
-			'model' => 'ChannelEntry'
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'ChannelEntry',
+			'pivot' => array(
+				'table' => 'category_posts'
+			)
 		),
 		'Parent' => array(
-			'type' => 'many_to_one',
+			'type' => 'belongsTo',
 			'model' => 'Category',
-			'key' => 'parent_id'
+			'from_key' => 'parent_id'
 		),
 	);
 
@@ -60,42 +63,6 @@ class Category extends FieldDataContentModel {
 	protected $cat_description;
 	protected $cat_image;
 	protected $cat_order;
-
-	/**
-	 *
-	 */
-	public function getCategoryGroup()
-	{
-		return $this->getRelated('CategoryGroup');
-	}
-
-	public function setCategoryGroup($group)
-	{
-		return $this->setRelated('CategoryGroup', $group);
-	}
-
-	public function getChannelEntries()
-	{
-		return $this->getRelated('ChannelEntries');
-	}
-
-	public function setChannelEntries(array $entries)
-	{
-		return $this->setRelated('ChannelEntries', $entries);
-	}
-
-	/**
-	 *
-	 */
-	public function getParent()
-	{
-		return $this->getRelated('Parent');
-	}
-
-	public function setParent($parent)
-	{
-		return $this->setRelated('Parent', $parent);
-	}
 
 	/**
 	 * A link back to the owning channel object.
