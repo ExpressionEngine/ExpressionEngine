@@ -140,6 +140,9 @@ $lang = array(
 'crop_file' =>
 'Crop, Rotate &amp; Resize "%s"',
 
+'btn_crop' =>
+'Crop, Rotate &amp; Resize',
+
 'constraints' =>
 'Constraints',
 

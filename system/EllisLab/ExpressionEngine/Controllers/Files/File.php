@@ -191,7 +191,9 @@ class File extends Files {
 		}
 
 		$this->sidebarMenu($file->upload_location_id);
+		$this->stdHeader();
 		ee()->view->cp_page_title = sprintf(lang('edit_file_metadata'), $file->title);
+		ee()->view->cp_page_title_alt = ee()->view->cp_page_title . '<a class="btn action ta" href="' . cp_url('files/file/crop/' . $id) . '">' . lang('btn_crop') . '</a>';
 
 		ee()->view->cp_breadcrumbs = array(
 			cp_url('files') => lang('file_manager'),
