@@ -139,7 +139,7 @@ class Edit extends Publish {
 				)
 			)
 		);
-		$table->setNoResultsText(lang('no_entries'));
+		$table->setNoResultsText(lang('no_entries_exist'));
 
 		$page = ((int) ee()->input->get('page')) ?: 1;
 		$offset = ($page - 1) * $filter_values['perpage']; // Offset is 0 indexed

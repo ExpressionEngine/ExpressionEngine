@@ -43,6 +43,8 @@ class Publish extends CP_Controller {
 		{
 			show_error(lang('unauthorized_access'));
 		}
+
+		ee()->lang->loadfile('content');
 	}
 
 }
