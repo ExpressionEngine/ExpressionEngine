@@ -1612,18 +1612,19 @@ PAPAYA;
 		}
 
 		$data = array(
-			'heading'			=> $this->heading,
-			'title'				=> $this->title,
-			'refresh'			=> $this->refresh,
-			'refresh_url'		=> $this->refresh_url,
-			'image_path'		=> $this->image_path,
-			'copyright'			=> sprintf($this->copyright, date('Y')),
-			'version'			=> $this->version,
-			'next_version'		=> substr($this->next_update, 0, 1).'.'.substr($this->next_update, 1, 1).'.'.substr($this->next_update, 2, 1),
-			'installed_version'	=> $this->installed_version,
-			'languages'			=> $this->languages,
-			'javascript_path'	=> $this->javascript_path,
-			'is_core'			=> (IS_CORE) ? 'Core ' : ''
+			'heading'           => $this->heading,
+			'title'             => $this->title,
+			'refresh'           => $this->refresh,
+			'refresh_url'       => $this->refresh_url,
+			'image_path'        => $this->image_path,
+			'copyright'         => sprintf($this->copyright, date('Y')),
+			'version'           => $this->version,
+			'next_version'      => substr($this->next_update, 0, 1).'.'.substr($this->next_update, 1, 1).'.'.substr($this->next_update, 2, 1),
+			'installed_version' => $this->installed_version,
+			'languages'         => $this->languages,
+			'javascript_path'   => $this->javascript_path,
+			'theme_url'         => $this->theme_url,
+			'is_core'           => (IS_CORE) ? 'Core ' : ''
 		);
 
 		$data = array_merge($array, $data);
