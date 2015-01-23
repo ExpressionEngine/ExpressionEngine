@@ -33,8 +33,12 @@
 <?php endif ?>
 
 <div class="col-group">
+	<?php if (isset($left_nav)): ?>
 	<?=$left_nav?>
 	<div class="col w-12 last">
+	<?php else: ?>
+	<div class="col w-16 last">
+	<?php endif; ?>
 		<?php if (count($cp_breadcrumbs)): ?>
 			<ul class="breadcrumb">
 				<?php foreach ($cp_breadcrumbs as $link => $title): ?>
