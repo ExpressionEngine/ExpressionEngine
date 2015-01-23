@@ -37,6 +37,10 @@ $lang = array(
 'btn_create_new' =>
 'Create New',
 
+'success' => 'Success',
+
+'entries_removed_desc' =>
+'The following entries were removed',
 
 //----------------------------
 // Publish page

@@ -50,6 +50,19 @@ class Edit extends Publish {
 	 */
 	public function index()
 	{
+		if (ee()->input->post('bulk_action') == 'edit')
+		{
+			$this->edit(ee()->input->post('selection'));
+		}
+		elseif (ee()->input->post('bulk_action') == 'remove')
+		{
+			$this->remove(ee()->input->post('selection'));
+		}
+		elseif (ee()->input->post('bulk_action') == 'categories')
+		{
+			$this->categories(ee()->input->post('selection'));
+		}
+
 		$vars = array();
 		$base_url = new URL('publish/edit', ee()->session->session_id());
 		$channel_name = '';
@@ -295,6 +308,40 @@ class Edit extends Publish {
 		$status = ee('Filter')->make('filter_by_status', 'filter_by_status', $status_options);
 		$status->disableCustomValue();
 		return $status;
+	}
+
+	private function remove($entry_ids)
+	{
+		if ( ! is_array($entry_ids))
+		{
+			$entry_ids = array($entry_ids);
+		}
+
+		$entries = ee('Model')->get('ChannelEntry', $entry_ids)
+			->filter('site_id', ee()->config->item('site_id'));
+
+		if ( ! $this->isAdmin)
+		{
+			if (empty($this->assignedChannelIds))
+			{
+				show_error(lang('no_channels'));
+			}
+
+			$entries->filter('channel_id', 'IN', $this->assignedChannelIds);
+		}
+
+		$entry_names = $entries->all()->pluck('title');
+
+		$entries->delete();
+
+		ee('Alert')->makeInline('entries-form')
+			->asSuccess()
+			->withTitle(lang('success'))
+			->addToBody(lang('entries_removed_desc'))
+			->addToBody($entry_names)
+			->defer();
+
+		ee()->functions->redirect(cp_url('publish/edit', ee()->cp->get_url_state()));
 	}
 
 }
