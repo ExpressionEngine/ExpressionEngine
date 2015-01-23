@@ -214,9 +214,10 @@ function form_preference($name, $details)
  *
  * @param	string	$value		Standard text for the button
  * @param	string	$work_text	Text to display when form is submitting
+ * @param   string  $name       The value of a name="" attribute
  * @return	string	Button HTML
  */
-function cp_form_submit($value, $work_text)
+function cp_form_submit($value, $work_text, $name = NULL)
 {
 	$class = 'btn';
 	$disable = '';
@@ -231,7 +232,12 @@ function cp_form_submit($value, $work_text)
 		$btn_text = lang('btn_fix_errors');
 	}
 
-	return '<input class="'.$class.'" type="submit" value="'.$btn_text.'" data-submit-text="'.lang($value).'" data-work-text="'.lang($work_text).'"'.$disable.'>';
+	if ($name)
+	{
+		$name = ' name="' . $name . '"';
+	}
+
+	return '<input class="'.$class.'" type="submit"' . $name . ' value="'.$btn_text.'" data-submit-text="'.lang($value).'" data-work-text="'.lang($work_text).'"'.$disable.'>';
 
 }
 
