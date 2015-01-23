@@ -251,7 +251,7 @@ class CI_Cache_memcached extends CI_Driver {
 		{
 			foreach ($this->cache_info() as $server)
 			{
-				if ($server['time'] != 0)
+				if ( ! empty($server['time']))
 				{
 					// Attempt to get previously-created namespaces and assign to class variable
 					$this->_namespaces = $this->get('namespaces', Cache::GLOBAL_SCOPE, FALSE);
