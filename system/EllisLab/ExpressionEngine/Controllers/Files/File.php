@@ -277,7 +277,52 @@ class File extends Files {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			// DO STUFF
+			// PUNT! (again) @TODO Break away from the old Filemanger Library
+			ee()->load->library('filemanager');
+
+			$response = NULL;
+			switch ($action)
+			{
+				case 'crop':
+					$response = ee()->filemanager->_do_crop($file->getAbsolutePath());
+					break;
+
+				case 'rotate':
+					$response = ee()->filemanager->_do_rotate($file->getAbsolutePath());
+					break;
+
+				case 'resize':
+					$response = ee()->filemanager->_do_resize($file->getAbsolutePath());
+					break;
+			}
+
+			if (isset($response['errors']))
+			{
+				ee('Alert')->makeInline('crop-form')
+					->asIssue()
+					->withTitle(sprintf(lang('crop_file_error'), lang($action)))
+					->addToBody($response['errors']);
+				break 2;
+			}
+
+			$file->file_hw_original = $response['dimensions']['height'] . ' ' . $response['dimensions']['width'];
+			$file->file_size = $response['file_info']['size'];
+			$file->save();
+
+			// Regenerate thumbnails
+			$dir = $file->getUploadDestination();
+			$dimensions = $dir->getFileDimensions();
+
+			ee()->filemanager->create_thumb(
+				$file->getAbsolutePath(),
+				array(
+					'server_path' => $dir->server_path,
+					'file_name' => $file->file_name,
+					'dimensions' => $dimensions->asArray()
+				),
+				TRUE, // Regenerate thumbnails
+				FALSE // Regenerate all images
+			);
 
 			ee('Alert')->makeInline('crop-form')
 				->asSuccess()
