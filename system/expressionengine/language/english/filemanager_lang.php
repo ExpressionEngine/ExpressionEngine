@@ -184,6 +184,25 @@ $lang = array(
 'btn_working' =>
 'Saving...',
 
+'crop' => 'Crop',
+'cropped' => 'cropped',
+'rotate' => 'Rotate',
+'rotated' => 'rotated',
+'resize' => 'Resize',
+'resized' => 'resized',
+
+'crop_file_success' =>
+'File %s Success',
+
+'crop_file_success_desc' =>
+'The file <b>%s</b> was %s successfully.',
+
+'crop_file_error' =>
+'Cannot %s File',
+
+'crop_file_error_desc' =>
+'We were unable to %s the file, please review and fix errors below.',
+
 // 2.x
 
 'content_files' 		=> 'File Manager',
