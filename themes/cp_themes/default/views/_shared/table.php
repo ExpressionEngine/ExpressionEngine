@@ -131,6 +131,16 @@ if ($wrap): ?>
 				</tr>
 			<?php endforeach ?>
 		<?php endforeach ?>
+		<?php if ( ! empty($action_buttons) || ! empty($action_content)): ?>
+			<tr class="tbl-action">
+				<td colspan="<?=count($columns)?>" class="solo">
+					<?php foreach ($action_buttons as $button): ?>
+						<a class="<?=$button['class']?>" href="<?=$button['url']?>"><?=$button['text']?></a></td>
+					<?php endforeach; ?>
+					<?=$action_content?>
+				</td>
+			</tr>
+		<?php endif; ?>
 	</table>
 <?php endif ?>
 
