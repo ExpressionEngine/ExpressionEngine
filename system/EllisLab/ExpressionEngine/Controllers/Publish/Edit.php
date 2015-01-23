@@ -94,6 +94,13 @@ class Edit extends Publish {
 			}
 		}
 
+		$category_filter = $this->createCategoryFilter();
+		if ($category_filter->value())
+		{
+			// $entries->with('Categories')
+			// 	->filter('Categories.cat_id', $category_filter->value());
+		}
+
 		$status_filter = $this->createStatusFilter();
 		if ($status_filter->value())
 		{
@@ -110,7 +117,7 @@ class Edit extends Publish {
 
 		$filters = ee('Filter')
 			->add($channel_filter)
-			// ->add($category_filter)
+			->add($category_filter)
 			->add($status_filter)
 			->add('Date')
 			->add('Perpage', $count, 'all_entries');
@@ -243,7 +250,23 @@ class Edit extends Publish {
 
 	private function createCategoryFilter()
 	{
+		$category_groups = ee('Model')->get('CategoryGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('exclude_group', '!=', 1)
+			->all();
 
+		$category_options = array();
+		foreach ($category_groups as $group)
+		{
+			foreach ($group->getCategories() as $category)
+			{
+				$category_options[$category->cat_id] = $category->cat_name;
+			}
+		}
+
+		$categories = ee('Filter')->make('filter_by_category', 'filter_by_category', $category_options);
+		$categories->disableCustomValue();
+		return $categories;
 	}
 
 	private function createStatusFilter()
