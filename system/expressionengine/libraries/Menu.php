@@ -122,13 +122,10 @@ class EE_Menu {
 			foreach($channels->result() as $channel)
 			{
 				// Create link
-				$menu['create'][$channel->channel_title] = cp_url(
-					'content_publish/entry_form',
-					array('channel_id' => $channel->channel_id)
-				);
+				$menu['create'][$channel->channel_title] = cp_url('publish/create/' . $channel->channel_id);
 
 				// Edit link
-				$menu['edit'][$channel->channel_title] = cp_url('content_edit', array('channel_id' => $channel->channel_id));
+				$menu['edit'][$channel->channel_title] = cp_url('publish/edit', array('filter_by_channel' => $channel->channel_id));
 			}
 		}
 

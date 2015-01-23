@@ -24,13 +24,13 @@ class ChannelEntry extends FieldDataContentModel {
 
 	protected static $_relationships = array(
 		'Channel' => array(
-			'type' => 'hasMany',
+			'type' => 'belongsTo',
 			'key' => 'channel_id'
 		),
 		'Author'	=> array(
-			'type' => 'hasMany',
+			'type' => 'belongsTo',
 			'model' => 'Member',
-			'key' 	=> 'author_id'
+			'from_key' 	=> 'author_id'
 		),
 		'Categories' => array(
 			'type' => 'hasAndBelongsToMany',
@@ -67,36 +67,6 @@ class ChannelEntry extends FieldDataContentModel {
 	protected $edit_date;
 	protected $recent_comment_date;
 	protected $comment_total;
-
-	public function getChannel()
-	{
-		return $this->getRelated('Channel');
-	}
-
-	public function setChannel(Channel $channel)
-	{
-		return $this->setRelated('Channel', $channel);
-	}
-
-	public function getAuthor()
-	{
-		return $this->getRelated('Author');
-	}
-
-	public function setAuthor(Member $author)
-	{
-		return $this->setRelated('Author', $author);
-	}
-
-	public function getCategories()
-	{
-		return $this->getRelated('getCategories');
-	}
-
-	public function setCategories(array $categories)
-	{
-		return $this->setRelated('Categories', $categories);
-	}
 
 	/**
 	 * A link back to the owning channel object.
