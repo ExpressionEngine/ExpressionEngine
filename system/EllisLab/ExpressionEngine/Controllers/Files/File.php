@@ -216,6 +216,24 @@ class File extends Files {
 			show_error(lang('unauthorized_access'));
 		}
 
+		if ( ! $file->isImage())
+		{
+			show_error(lang('not_an_image'));
+		}
+
+		$vars = array(
+			'file' => $file,
+			'form_url' => cp_url('files/file/crop/' . $id)
+		);
+
+		ee()->view->cp_page_title = sprintf(lang('crop_file'), $file->file_name);
+
+		ee()->view->cp_breadcrumbs = array(
+			cp_url('files') => lang('file_manager'),
+			cp_url('files/file/edit/' . $id) => sprintf(lang('edit_file_name'), $file->file_name)
+		);
+
+		ee()->cp->render('files/crop', $vars);
 	}
 
 	public function download($id)

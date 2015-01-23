@@ -134,6 +134,56 @@ $lang = array(
 'upload_filedata_success_desc' =>
 'The file <b>%s</b> was uploaded successfully.',
 
+'edit_file_name' =>
+'Edit "%s"',
+
+'crop_file' =>
+'Crop, Rotate &amp; Resize "%s"',
+
+'constraints' =>
+'Constraints',
+
+'crop_constraints_desc' =>
+'Maximum width and height to crop this image down to.',
+
+'resize_constraints_desc' =>
+'Maximum width and height to resize this image to.',
+
+'width' => 'width',
+'height' => 'height',
+
+'coordinates' =>
+'Coordinates',
+
+'coordiantes_desc' =>
+'x (horizontal) and y (vertical) axis coordinates to start the crop from.',
+
+'x_axis' => 'x-axis',
+'y_axis' => 'y-axis',
+
+'rotation' =>
+'Rotation',
+
+'rotation_desc' =>
+'Image will be rotated to match choice.',
+
+'90_degrees_right' => '90 degrees, right',
+'90_degrees_left' => '90 degrees, left',
+'flip_vertically' => 'Flip, vertically',
+'flip_horizontally' => 'Flip, horizontally',
+
+'btn_crop_and_save_image' =>
+'Crop &amp; Save Image',
+
+'btn_rotate_and_save_image' =>
+'Rotate &amp; Save Image',
+
+'btn_resize_and_save_image' =>
+'Resize &amp; Save Image',
+
+'btn_working' =>
+'Saving...',
+
 // 2.x
 
 'content_files' 		=> 'File Manager',
