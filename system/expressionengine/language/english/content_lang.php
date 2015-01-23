@@ -21,6 +21,8 @@ $lang = array(
 'comment_total' => 'Comments',
 'entry_date' => 'Date',
 
+'manage_categories' => 'Manage Categories',
+
 'btn_search_entries' => 'Search Entries',
 
 'by' => 'by',
@@ -28,6 +30,13 @@ $lang = array(
 
 'entry' => 'Entry',
 'entries' => 'entries',
+
+'btn_create_new_entry_in_channel' =>
+'Create New in %s',
+
+'btn_create_new' =>
+'Create New',
+
 
 //----------------------------
 // Publish page

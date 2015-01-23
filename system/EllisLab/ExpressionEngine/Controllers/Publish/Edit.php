@@ -148,6 +148,15 @@ class Edit extends Publish {
 		);
 		$table->setNoResultsText(lang('no_entries_exist'));
 
+		if ($channel_id)
+		{
+			$table->addActionButton(cp_url('publish/create/' . $channel_id), sprintf(lang('btn_create_new_entry_in_channel'), $channel_name));
+		}
+		else
+		{
+			$table->addActionContent(ee('View')->make('publish/partials/create_new_menu')->render(array('button_text' => lang('btn_create_new'))));
+		}
+
 		$page = ((int) ee()->input->get('page')) ?: 1;
 		$offset = ($page - 1) * $filter_values['perpage']; // Offset is 0 indexed
 
