@@ -13,6 +13,8 @@ $lang = array(
 'filter_by_channel' => 'channel',
 'filter_by_category' => 'category',
 'filter_by_status' => 'status',
+'custom_date' => 'custom date',
+'custom_limit' => 'custom limit',
 
 'id' => 'ID#',
 'title' => 'Title',
