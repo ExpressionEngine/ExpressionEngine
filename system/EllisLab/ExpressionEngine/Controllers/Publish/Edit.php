@@ -252,9 +252,7 @@ class Edit extends Publish {
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
-		$status_options = array(
-			'' => lang('all')
-		);
+		$status_options = array();
 
 		foreach ($statuses as $status)
 		{
