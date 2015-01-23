@@ -221,10 +221,76 @@ class File extends Files {
 			show_error(lang('not_an_image'));
 		}
 
+		ee()->load->library('image_lib');
+		$info = ee()->image_lib->get_image_properties($file->getAbsolutePath(), TRUE);
+
 		$vars = array(
 			'file' => $file,
-			'form_url' => cp_url('files/file/crop/' . $id)
+			'form_url' => cp_url('files/file/crop/' . $id),
+			'height' => $info['height'],
+			'width' => $info['width'],
+			'active_tab' => 0
 		);
+
+		ee()->load->library('form_validation');
+		if (isset($_POST['save_crop']))
+		{
+			ee()->form_validation->set_rules('crop_width', 'lang:width', 'trim|numeric|greater_than[0]|required');
+			ee()->form_validation->set_rules('crop_height', 'lang:height', 'trim|numeric|greater_than[0]|required');
+			ee()->form_validation->set_rules('crop_x', 'lang:x_axis', 'trim|numeric|required');
+			ee()->form_validation->set_rules('crop_y', 'lang:y_axis', 'trim|numeric|required');
+			$action = "crop";
+			$action_desc = "cropped";
+		}
+		else if (isset($_POST['save_rotate']))
+		{
+			ee()->form_validation->set_rules('rotate', 'lang:rotate', 'required');
+			$action = "rotate";
+			$action_desc = "rotated";
+			$vars['active_tab'] = 1;
+		}
+		else if (isset($_POST['save_resize']))
+		{
+			ee()->form_validation->set_rules('resize_width', 'lang:width', 'trim|numeric|greater_than[0]|required');
+			ee()->form_validation->set_rules('resize_height', 'lang:height', 'trim|numeric|greater_than[0]|required');
+			$action = "resize";
+			$action_desc = "resized";
+			$vars['active_tab'] = 2;
+		}
+
+		if (AJAX_REQUEST)
+		{
+			// If it is an AJAX request, then we did not have POST data to
+			// specify the rules, so we'll do it here. Note: run_ajax() removes
+			// rules for all fields but the one submitted.
+
+			ee()->form_validation->set_rules('crop_width', 'lang:width', 'trim|numeric|greater_than[0]|required');
+			ee()->form_validation->set_rules('crop_height', 'lang:height', 'trim|numeric|greater_than[0]|required');
+			ee()->form_validation->set_rules('crop_x', 'lang:x_axis', 'trim|numeric|required');
+			ee()->form_validation->set_rules('crop_y', 'lang:y_axis', 'trim|numeric|required');
+			ee()->form_validation->set_rules('rotate', 'lang:rotate', 'required');
+			ee()->form_validation->set_rules('resize_width', 'lang:width', 'trim|numeric|greater_than[0]|required');
+			ee()->form_validation->set_rules('resize_height', 'lang:height', 'trim|numeric|greater_than[0]|required');
+
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			// DO STUFF
+
+			ee('Alert')->makeInline('crop-form')
+				->asSuccess()
+				->withTitle(sprintf(lang('crop_file_success'), lang($action)))
+				->addToBody(sprintf(lang('crop_file_success_desc'), $file->title, lang($action_desc)));
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee('Alert')->makeInline('crop-form')
+				->asIssue()
+				->withTitle(sprintf(lang('crop_file_error'), lang($action)))
+				->addToBody(sprintf(lang('crop_file_error_desc'), strtolower(lang($action))));
+		}
 
 		ee()->view->cp_page_title = sprintf(lang('crop_file'), $file->file_name);
 
