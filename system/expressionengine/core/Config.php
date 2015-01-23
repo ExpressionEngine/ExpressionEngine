@@ -1049,6 +1049,7 @@ class EE_Config {
 			foreach ($remove_values as $key => $val)
 			{
 				$config_file = preg_replace('#\$'."config\[(\042|\047)".$key."\\1\].*#", "", $config_file);
+				unset($config[$val]);
 			}
 		}
 
@@ -1120,7 +1121,14 @@ class EE_Config {
 			$new_data = '';
 			foreach ($to_be_added as $key => $val)
 			{
-				$new_data .= "\$config['".$key."'] = '".$val."';".$newline;
+				if (is_array($new_values[$key]))
+				{
+					$new_data .= "\$config['".$key."'] = ".$val.";".$newline;
+				}
+				else
+				{
+					$new_data .= "\$config['".$key."'] = '".$val."';".$newline;
+				}
 			}
 
 			// First we look for our comment marker in the config file. If found, we'll swap
