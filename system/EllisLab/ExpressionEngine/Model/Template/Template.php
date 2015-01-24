@@ -97,4 +97,14 @@ class Template extends Model {
 	protected $hits;
 	protected $protect_javascript;
 
+	/**
+	 * Returns the path to this template i.e. "site/index"
+	 *
+	 * @return string The path to this template
+	 */
+	public function getPath()
+	{
+		return $this->getTemplateGroup()->group_name . '/' . $this->template_name;
+	}
+
 }
