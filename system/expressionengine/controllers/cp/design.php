@@ -1215,12 +1215,6 @@ class Design extends CP_Controller {
 			$headings[] = array('php_parse_location', lang('parse_stage'));
 		}
 
-
-		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '')
-		{
-			$headings[] = array('save_template_file', lang('save_template_file'));
-		}
-
 		$headings[] = array('hits', lang('hit_counter'));
 		$headings[] = array('protect_javascript', lang('protect_javascript'));
 
@@ -1258,11 +1252,6 @@ class Design extends CP_Controller {
 
 			$vars['template_prefs']['allow_php'] = form_dropdown('allow_php', $yes_no_options, 'null', 'id="allow_php"');
 			$vars['template_prefs']['php_parse_location'] = form_dropdown('php_parse_location', $php_i_o_options, 'null', 'id="php_parse_location"');
-		}
-
-		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '')
-		{
-			$vars['template_prefs']['save_template_file'] = form_dropdown('save_template_file', $yes_no_options, 'null', 'id="save_template_file"');
 		}
 
 		$vars['template_prefs']['hits'] = form_input(array('name'=>'hits', 'value'=>'', 'size'=>5));
@@ -1455,47 +1444,10 @@ class Design extends CP_Controller {
 			$data['no_auth_bounce'] = $no_auth_bounce;
 		}
 
-		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '')
-		{
-			$save_template_file = $this->input->post('save_template_file');
-
-			if ($save_template_file != FALSE && $save_template_file != 'null')
-			{
-				$data['save_template_file'] = $save_template_file;
-			}
-		}
-
 		if (count($data) > 0)
 		{
 			// If we switched 'save' to no, we need to delete files.
 			$short_name = $this->config->item('site_short_name');
-
-			if ($this->input->post('save_template_file') == 'n')
-			{
-				$this->db->from('templates');
-				$this->db->select('template_name, template_type, template_id');
-				$this->db->where('save_template_file', 'y');
-				$this->db->where_in('template_id', $templates);
-
-				$query = $this->db->get();
-
-
-				if ($query->num_rows() > 0)
-				{
-					foreach ($query->result_array() as $row)
-					{
-						$tdata = array(
-								'template_id'		=> $row['template_id'],
-								'site_short_name'	=> $short_name,
-								'template_group'	=> $delete[$row['template_id']],
-								'template_name'		=> $row['template_name'],
-								'template_type'		=> $row['template_type']
-								);
-
-						$this->_delete_template_file($tdata);
-					}
-				}
-			}
 
 			$this->db->query($this->db->update_string('exp_templates', $data, "template_id IN ('".implode("','", $templates)."')"));
 		}
@@ -1633,8 +1585,8 @@ class Design extends CP_Controller {
 			$qry = $this->db->select('tg.group_name, template_name,
 									template_data, template_type,
 									template_notes, cache, refresh,
-									no_auth_bounce, allow_php, protect_javascript,
-									php_parse_location, save_template_file')
+									no_auth_bounce, allow_php,
+									php_parse_location')
 							->from('templates t, template_groups tg')
 							->where('t.template_id',
 									$this->input->post('existing_template'))
@@ -1642,8 +1594,7 @@ class Design extends CP_Controller {
 							->get();
 
 			if ($this->config->item('save_tmpl_files') == 'y' &&
-				$this->config->item('tmpl_file_basepath') != '' &&
-				$qry->row('save_template_file')  == 'y')
+				$this->config->item('tmpl_file_basepath') != '')
 			{
 				$basepath = $this->config->item('tmpl_file_basepath');
 				$basepath .= (substr($basepath, -1) != '/') ? '/' : '';
@@ -1781,7 +1732,6 @@ class Design extends CP_Controller {
 		$vars['template_data']		= $query->row('template_data') ;
 		$vars['template_name']		= $query->row('template_name') ;
 		$vars['template_notes']		= $query->row('template_notes') ;
-		$vars['save_template_file'] = ($query->row('save_template_file') != 'y') ? FALSE : TRUE ;
 		$vars['no_auth_bounce']		= $query->row('no_auth_bounce');
 		$vars['enable_http_auth']	= $query->row('enable_http_auth');
 		$vars['protect_javascript']	= $query->row('protect_javascript');
@@ -1851,7 +1801,7 @@ class Design extends CP_Controller {
 			}
 		}
 
-		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '' AND $vars['save_template_file'] == TRUE)
+		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '')
 		{
 			$this->load->helper('file');
 			$basepath = $this->config->slash_item('tmpl_file_basepath');
@@ -1908,15 +1858,6 @@ class Design extends CP_Controller {
 		$vars['message'] = $message;
 
 		$vars['save_template_revision'] = ($this->config->item('save_tmpl_revisions') == 'y') ? 1 : '';
-
-		$vars['can_save_file'] = ($this->config->item('save_tmpl_files') == 'y' && $this->config->item('tmpl_file_basepath') != '') ? TRUE : FALSE;
-
-		$this->cp->add_to_head($this->view->head_link('css/codemirror.css'));
-		$this->cp->add_to_head($this->view->head_link('css/codemirror-additions.css'));
-
-		$this->javascript->set_global(
-			'editor.lint', $this->_get_installed_plugins_and_modules()
-		);
 
 		$this->cp->add_js_script(array(
 				'plugin'	=> 'ee_codemirror',
@@ -2024,8 +1965,7 @@ class Design extends CP_Controller {
 		}
 
 		$save_result = FALSE;
-		$delete_template_file = FALSE;
-		$save_template_file = ($this->input->post('save_template_file') == 'y') ? 'y' : 'n';
+		$save_template_file = FALSE;
 
 		/** -------------------------------
 		/**	 Save template as file
@@ -2035,47 +1975,24 @@ class Design extends CP_Controller {
 
 		if ($this->config->item('tmpl_file_basepath') != '' && $this->config->item('save_tmpl_files') == 'y')
 		{
-			$query = $this->db->query("SELECT exp_templates.template_name, exp_templates.template_type, exp_templates.save_template_file, exp_template_groups.group_name
+			$save_template_file = TRUE;
+			$query = $this->db->query("SELECT exp_templates.template_name, exp_templates.template_type, exp_template_groups.group_name
 								FROM exp_templates
 								LEFT JOIN exp_template_groups ON exp_templates.group_id = exp_template_groups.group_id
 								WHERE template_id = '".$this->db->escape_str($template_id)."'");
 
-			if ($save_template_file == 'y')
-			{
-				$tdata = array(
-								'site_short_name'	=> $this->config->item('site_short_name'),
-								'template_id'		=> $template_id,
-								'template_group'	=> $query->row('group_name') ,
-								'template_name'		=> $query->row('template_name'),
-								'template_type'		=> $query->row('template_type'),
-								'template_data'		=> $_POST['template_data'],
-								'edit_date'			=> $this->localize->now,
-								'last_author_id'	=> $this->session->userdata['member_id']
-								);
+			$tdata = array(
+							'site_short_name'	=> $this->config->item('site_short_name'),
+							'template_id'		=> $template_id,
+							'template_group'	=> $query->row('group_name') ,
+							'template_name'		=> $query->row('template_name'),
+							'template_type'		=> $query->row('template_type'),
+							'template_data'		=> $_POST['template_data'],
+							'edit_date'			=> $this->localize->now,
+							'last_author_id'	=> $this->session->userdata['member_id']
+							);
 
-				$save_result = $this->update_template_file($tdata);
-			}
-			else
-			{
-				// If the template was previously saved as a text file,
-				// but the checkbox was not selected this time we'll
-				// delete the file
-
-				if ($query->row('save_template_file')  == 'y')
-				{
-					$delete_template_file = TRUE;
-
-					$tdata = array(
-								'template_id'		=> $template_id,
-								'site_short_name'	=> $this->config->item('site_short_name'),
-								'template_group'	=> $query->row('group_name') ,
-								'template_name'		=> $query->row('template_name'),
-								'template_type'		=> $query->row('template_type')
-								);
-
-					$template_file_result = $this->_delete_template_file($tdata);
-				}
-			}
+			$save_result = $this->update_template_file($tdata);
 		}
 
 		/** -------------------------------
@@ -2100,7 +2017,7 @@ class Design extends CP_Controller {
 		/**	 Save Template
 		/** -------------------------------*/
 
-		$this->db->query($this->db->update_string('exp_templates', array('template_data' => $_POST['template_data'], 'edit_date' => $this->localize->now, 'last_author_id' => $this->session->userdata['member_id'], 'save_template_file' => $save_template_file, 'template_notes' => $_POST['template_notes']), "template_id = '$template_id'"));
+		$this->db->query($this->db->update_string('exp_templates', array('template_data' => $_POST['template_data'], 'edit_date' => $this->localize->now, 'last_author_id' => $this->session->userdata['member_id'], 'template_notes' => $_POST['template_notes']), "template_id = '$template_id'"));
 
 		// Clear cache files
 		$this->functions->clear_caching('all');
@@ -2108,15 +2025,10 @@ class Design extends CP_Controller {
 		$message = lang('template_updated');
 		$cp_message['message_success'] = lang('template_updated');
 
-		if ($save_template_file == 'y' AND $save_result == FALSE)
+		if ($save_template_file == TRUE AND $save_result == FALSE)
 		{
 			$cp_message['message_failure'] = lang('template_not_saved');
 			$message .= BR.lang('template_not_saved');
-		}
-		elseif ($delete_template_file == TRUE && $template_file_result == FALSE)
-		{
-			$cp_message['message_failure'] = lang('template_file_not_deleted');
-			$message .= BR.lang('template_file_not_deleted');
 		}
 
 		/* -------------------------------------
@@ -2258,9 +2170,14 @@ class Design extends CP_Controller {
 		return TRUE;
 	}
 
-
+	/**
+	 * @deprecated
+	 */
 	function _delete_template_file($data)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('3.0');
+
 		if ( ! isset($data['template_id']) OR ! $this->_template_access_privs(array('template_id' => $data['template_id'])))
 		{
 			return FALSE;
@@ -3787,13 +3704,19 @@ EOT;
 						'hits'					=> $this->input->get_post('hits')
 		);
 
-		$this->db->select('template_name, template_type, save_template_file, group_name, templates.group_id');
+		$this->db->select('template_name, template_type, group_name, templates.group_id');
 		$this->db->join('template_groups', 'template_groups.group_id = templates.group_id');
 		$this->db->where('template_id', $template_id);
 		$this->db->where('templates.site_id', $this->config->item('site_id'));
 		$query = $this->db->get('templates');
 
 		$template_info = $query->row_array();
+
+		$save_template_file = FALSE;
+		if ($this->config->item('tmpl_file_basepath') != '' && $this->config->item('save_tmpl_files') == 'y')
+		{
+			$save_template_file = TRUE;
+		}
 
 		// safety
 		if (count($template_info) == 0)
@@ -3825,7 +3748,7 @@ EOT;
 				$this->output->send_ajax_response(lang('reserved_name'), TRUE);
 			}
 
-			if ($template_info['save_template_file'] == 'y')
+			if ($save_template_file)
 			{
 				$rename_file = TRUE;
 			}
@@ -4145,7 +4068,7 @@ EOT;
 
 			if (is_numeric($_POST['duplicate_group']))
 			{
-				$query = $this->db->query("SELECT template_name, save_template_file, template_data, template_type, template_notes, cache, refresh, no_auth_bounce, allow_php, php_parse_location, protect_javascript FROM exp_templates WHERE group_id = '".$this->db->escape_str($_POST['duplicate_group'])."'");
+				$query = $this->db->query("SELECT template_name, template_data, template_type, template_notes, cache, refresh, no_auth_bounce, allow_php, php_parse_location FROM exp_templates WHERE group_id = '".$this->db->escape_str($_POST['duplicate_group'])."'");
 
 				if ($query->num_rows() > 0)
 				{
@@ -4173,7 +4096,6 @@ EOT;
 					$data = array(
 									'group_id'				=> $group_id,
 									'template_name'			=> $row['template_name'],
-									'save_template_file'	=> $row['save_template_file'],
 									'template_notes'		=> $row['template_notes'],
 									'cache'					=> $row['cache'],
 									'refresh'				=> $row['refresh'],
@@ -4389,7 +4311,6 @@ EOT;
 		$this->db->select(array('group_name', 'templates.group_id', 'template_name', 'template_type', 'template_id', 'edit_date'));
 		$this->db->join('template_groups', 'template_groups.group_id = templates.group_id');
 		$this->db->where('templates.site_id', $this->config->item('site_id'));
-		$this->db->where('save_template_file', 'y');
 		$this->db->order_by('group_name, template_name', 'ASC');
 		$query = $this->db->get('templates');
 
@@ -4545,7 +4466,6 @@ EOT;
 			$this->db->select(array('group_name', 'template_name', 'template_type', 'template_id', 'edit_date', 'template_data'));
 			$this->db->join('template_groups', 'template_groups.group_id = templates.group_id');
 			$this->db->where('templates.site_id', $this->config->item('site_id'));
-			$this->db->where('save_template_file', 'y');
 			$this->db->where_in('template_id', $create_files);
 			$this->db->order_by('group_name, template_name', 'ASC');
 			$query = $this->db->get('templates');
@@ -4585,7 +4505,6 @@ EOT;
 		$this->db->select(array('group_name', 'templates.group_id', 'template_name', 'template_type', 'template_id', 'edit_date'));
 		$this->db->join('template_groups', 'template_groups.group_id = templates.group_id');
 		$this->db->where('templates.site_id', $this->config->item('site_id'));
-		$this->db->where('save_template_file', 'y');
 		$this->db->where_in('template_id', $damned);
 		$this->db->order_by('group_name, template_name', 'ASC');
 		$query = $this->db->get('templates');
@@ -4660,7 +4579,6 @@ EOT;
 								'template_type'			=> $existing[$group][$template]['4'],
 								'template_data'			=> $contents,
 								'edit_date'				=> $this->localize->now,
-								'save_template_file'	=> 'y',
 								'last_author_id'		=> $this->session->userdata['member_id'],
 								'site_id'				=> $this->config->item('site_id')
 								);
@@ -4754,7 +4672,7 @@ EOT;
 		$this->load->library('api');
 		$this->legacy_api->instantiate('template_structure');
 
-		$this->db->select(array('group_name', 'template_name', 'template_type', 'save_template_file'));
+		$this->db->select(array('group_name', 'template_name', 'template_type'));
 		$this->db->join('template_groups', 'template_groups.group_id = templates.group_id');
 		$this->db->where('templates.site_id', $this->config->item('site_id'));
 		$this->db->order_by('group_name, template_name', 'ASC');
@@ -4765,7 +4683,7 @@ EOT;
 		{
 			foreach ($query->result() as $row)
 			{
-				$existing[$row->group_name.'.group'][$row->template_name] = $row->save_template_file;
+				$existing[$row->group_name.'.group'][$row->template_name] = 'y';
 			}
 		}
 
@@ -4880,14 +4798,12 @@ EOT;
 						continue;
 					}
 
-
 					$data = array(
 									'group_id'				=> $group_id,
 									'template_name'			=> $template_name,
 									'template_type'			=> $template_type,
 									'template_data'			=> file_get_contents($basepath.'/'.$group.'/'.$template),
 									'edit_date'				=> $this->localize->now,
-									'save_template_file'	=> 'y',
 									'last_author_id'		=> $this->session->userdata['member_id'],
 									'site_id'				=> $this->config->item('site_id')
 								 );
@@ -4908,7 +4824,6 @@ EOT;
 									'template_name'			=> 'index',
 									'template_data'			=> '',
 									'edit_date'				=> $this->localize->now,
-									'save_template_file'	=> 'y',
 									'last_author_id'		=> $this->session->userdata['member_id'],
 									'site_id'				=> $this->config->item('site_id')
 								 );
