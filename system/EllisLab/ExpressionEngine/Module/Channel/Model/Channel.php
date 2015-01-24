@@ -20,6 +20,9 @@ class Channel extends Model implements ContentStructure {
 		'ChannelEntries'	=> array(
 			'type' => 'hasMany',
 			'model' => 'ChannelEntry'
+		),
+		'ChannelFormSettings' => array(
+			'type' => 'hasOne'
 		)
 	);
 
