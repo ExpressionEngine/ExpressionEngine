@@ -32,17 +32,6 @@ use EllisLab\ExpressionEngine\Controllers\Publish\Publish;
  */
 class Edit extends Publish {
 
-	protected $isAdmin = FALSE;
-	protected $assignedChannelIds = array();
-
-	public function __construct()
-	{
-		parent::__construct();
-
-		$this->isAdmin = (ee()->session->userdata['group_id'] == 1);
-		$this->assignedChannelIds = array_keys(ee()->session->userdata['assigned_channels']);
-	}
-
 	/**
 	 * Displays all available entries
 	 *
@@ -278,23 +267,6 @@ class Edit extends Publish {
 		ee()->view->cp_heading = sprintf(lang('all_channel_entries'), $channel_name);
 
 		ee()->cp->render('publish/edit/index', $vars);
-	}
-
-	private function createChannelFilter()
-	{
-		$allowed_channel_ids = ($this->isAdmin) ? NULL : $this->assignedChannelIds;
-		$channels = ee('Model')->get('Channel', $allowed_channel_ids)
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
-
-		$channel_filter_options = array();
-		foreach ($channels as $channel)
-		{
-			$channel_filter_options[$channel->channel_id] = $channel->channel_title;
-		}
-		$channel_filter = ee('Filter')->make('filter_by_channel', 'filter_by_channel', $channel_filter_options);
-		$channel_filter->disableCustomValue(); // This may have to go
-		return $channel_filter;
 	}
 
 	private function createCategoryFilter($channel = NULL)
