@@ -205,7 +205,7 @@ class Edit extends Publish {
 
 			if ($entry->comment_total > 1)
 			{
-				$comments = '(<a href="' . cp_url('publish/comments/entry/' . $entry->entry_id) . '">' . $entry->comment_total . ')';
+				$comments = '(<a href="' . cp_url('publish/comments/entry/' . $entry->entry_id) . '">' . $entry->comment_total . '</a>)';
 			}
 			else
 			{
