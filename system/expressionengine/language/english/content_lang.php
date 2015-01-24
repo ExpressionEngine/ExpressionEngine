@@ -16,10 +16,11 @@ $lang = array(
 'custom_date' => 'custom date',
 'custom_limit' => 'custom limit',
 
-'entry_id' => 'ID#',
-'title' => 'Title',
-'comment_total' => 'Comments',
-'entry_date' => 'Date',
+'column_entry_id' => 'ID#',
+'column_title' => 'Title',
+'column_comment_total' => 'Comments',
+'column_entry_date' => 'Date',
+'column_status' => 'Status',
 
 'manage_categories' => 'Manage Categories',
 
