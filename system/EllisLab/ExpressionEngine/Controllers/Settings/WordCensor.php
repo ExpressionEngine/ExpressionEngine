@@ -83,7 +83,7 @@ class WordCensor extends Settings {
 			)
 		));
 
-		$this->validateNonTextInputs($vars['sections']);
+		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
 		if (AJAX_REQUEST)
 		{

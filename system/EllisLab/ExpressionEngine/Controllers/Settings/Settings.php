@@ -99,48 +99,6 @@ class Settings extends CP_Controller {
 	}
 
 	/**
-	 * Sets validation rules for fields that have defined options to make sure
-	 * only those defined options make it through POST, this is to keep out
-	 * form-tinkerers
-	 *
-	 * @param	array	$sections	Array of sections passed to form view
-	 */
-	public function validateNonTextInputs($sections)
-	{
-		foreach ($sections as $settings)
-		{
-			foreach ($settings as $setting)
-			{
-				foreach ($setting['fields'] as $field_name => $field)
-				{
-					$enum = NULL;
-
-					// If this field has 'choices', make sure only those
-					// choices are let through the submission
-					if (isset($field['choices']))
-					{
-						$enum = implode(',', array_keys($field['choices']));
-					}
-					// Only allow y/n through for yes_no fields
-					elseif ($field['type'] == 'yes_no')
-					{
-						$enum = 'y,n';
-					}
-
-					if (isset($enum))
-					{
-						ee()->form_validation->set_rules(
-							$field_name,
-							$setting['title'],
-							'enum['.$enum.']'
-						);
-					}
-				}
-			}
-		}
-	}
-
-	/**
 	 * Generic method to take an array of fields structured for the form
 	 * view, check POST for their values, and then save the values in site
 	 * preferences

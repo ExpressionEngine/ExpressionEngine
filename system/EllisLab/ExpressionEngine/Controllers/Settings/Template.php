@@ -109,7 +109,7 @@ class Template extends Settings {
 
 		$base_url = cp_url('settings/template');
 
-		$this->validateNonTextInputs($vars['sections']);
+		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
 		if (AJAX_REQUEST)
 		{

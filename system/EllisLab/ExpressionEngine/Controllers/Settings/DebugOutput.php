@@ -119,7 +119,7 @@ class DebugOutput extends Settings {
 			)
 		));
 
-		$this->validateNonTextInputs($vars['sections']);
+		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
 		$base_url = cp_url('settings/debug-output');
 
