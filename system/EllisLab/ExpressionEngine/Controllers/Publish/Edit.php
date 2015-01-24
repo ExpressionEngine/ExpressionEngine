@@ -65,6 +65,7 @@ class Edit extends Publish {
 
 		$vars = array();
 		$base_url = new URL('publish/edit', ee()->session->session_id());
+		$channel = NULL;
 		$channel_name = '';
 
 		$entries = ee('Model')->get('ChannelEntry')
@@ -83,9 +84,9 @@ class Edit extends Publish {
 			if ($this->isAdmin || in_array($channel_id, $this->assignedChannelIds))
 			{
 				$entries->filter('channel_id', $channel_id);
-				$channel_name = ee('Model')->get('Channel', $channel_id)
-					->first()
-					->channel_title;
+				$channel = ee('Model')->get('Channel', $channel_id)
+					->first();
+				$channel_name = $channel->channel_title;
 			}
 			else
 			{
@@ -107,7 +108,7 @@ class Edit extends Publish {
 			}
 		}
 
-		$category_filter = $this->createCategoryFilter();
+		$category_filter = $this->createCategoryFilter($channel);
 		if ($category_filter->value())
 		{
 			// $entries->with('Categories')
@@ -270,9 +271,11 @@ class Edit extends Publish {
 		return $channel_filter;
 	}
 
-	private function createCategoryFilter()
+	private function createCategoryFilter($channel = NULL)
 	{
-		$category_groups = ee('Model')->get('CategoryGroup')
+		$cat_id = ($channel) ? explode('|', $channel->cat_group) : NULL;
+
+		$category_groups = ee('Model')->get('CategoryGroup', $cat_id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('exclude_group', '!=', 1)
 			->all();
