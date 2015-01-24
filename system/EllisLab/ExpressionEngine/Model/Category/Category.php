@@ -49,14 +49,10 @@ class Category extends FieldDataContentModel {
 			)
 		),
 		'Parent' => array(
-			'type' => 'hasAndBelongsToMany',
+			'type' => 'belongsTo',
 			'model' => 'Category',
-			'pivot' => array(
-				'table' => 'categories',
-				'left' => 'cat_id',
-				'right' => 'parent_id'
-			)
-		),
+			'from_key' => 'parent_id'
+		)
 	);
 
 	// Properties

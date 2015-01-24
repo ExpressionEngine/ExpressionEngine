@@ -124,7 +124,9 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'reorder'		=> FALSE,
 			'sortable'		=> TRUE,
 			'subheadings'	=> FALSE,
-			'columns'		=> $expected_cols
+			'columns'		=> $expected_cols,
+			'action_buttons' => array(),
+			'action_content' => NULL
 		);
 
 		// We should get this entire array back when we ask for
@@ -375,6 +377,8 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'sortable'		=> TRUE,
 			'subheadings'	=> FALSE,
 			'columns'		=> $expected_cols,
+			'action_buttons' => array(),
+			'action_content' => NULL,
 			'data'		=> array(
 				array(
 					'attrs' => array(),
@@ -476,6 +480,8 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'sortable'		=> TRUE,
 			'subheadings'	=> FALSE,
 			'columns'		=> $expected_cols,
+			'action_buttons' => array(),
+			'action_content' => NULL,
 			'data'			=> array(
 				array(
 					'attrs' => array(),

@@ -75,7 +75,7 @@ if ($wrap): ?>
 			<?php if ( ! $subheadings)
 			{
 				$rows = array($rows);
-			} 
+			}
 			if ($subheadings && ! empty($heading)): ?>
 				<tr class="sub-heading"><td colspan="<?=count($columns)?>"><?=lang($heading)?></td></tr>
 			<?php endif ?>
@@ -109,7 +109,7 @@ if ($wrap): ?>
 							</td>
 						<?php elseif ($column['type'] == Table::COL_STATUS): ?>
 							<?php $class = isset($column['class']) ? $column['class'] : $column['content']; ?>
-							<td><span class="st-<?=$class?>"><?=$column['content']?></span></td>
+							<td><span class="st-status st-<?=strtolower($class)?>"><?=$column['content']?></span></td>
 						<?php elseif (isset($column['html'])): ?>
 							<td<?php if (isset($column['error']) && ! empty($column['error'])): ?> class="invalid"<?php endif ?>>
 								<?=$column['html']?>
@@ -131,6 +131,16 @@ if ($wrap): ?>
 				</tr>
 			<?php endforeach ?>
 		<?php endforeach ?>
+		<?php if ( ! empty($action_buttons) || ! empty($action_content)): ?>
+			<tr class="tbl-action">
+				<td colspan="<?=count($columns)?>" class="solo">
+					<?php foreach ($action_buttons as $button): ?>
+						<a class="<?=$button['class']?>" href="<?=$button['url']?>"><?=$button['text']?></a></td>
+					<?php endforeach; ?>
+					<?=$action_content?>
+				</td>
+			</tr>
+		<?php endif; ?>
 	</table>
 <?php endif ?>
 

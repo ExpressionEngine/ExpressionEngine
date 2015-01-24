@@ -39,6 +39,8 @@ class Table {
 	public $config = array();
 	protected $columns = array();
 	protected $data = array();
+	protected $action_buttons = array();
+	protected $action_content;
 
 	/**
 	 * Config can have these keys:
@@ -402,6 +404,41 @@ class Table {
 	}
 
 	/**
+	 * Some tables need a "tbl-action" row with <a> "buttons". This method will
+	 * allow for them to be added, and will render the row with the correct
+	 * colspan.
+	 *
+	 * @param string $url The url to use for the href="" attribute
+	 * @param string $text The text to use for the button
+	 * @param string $class An additional class string to add to the class
+	 *   attribute of the <a> tag.
+	 * @return void
+	 */
+	public function addActionButton($url, $text, $class = "submit")
+	{
+		$class = 'btn action ' . $class;
+
+		$this->action_buttons[] = array(
+			'url' => $url,
+			'text' => $text,
+			'class' => rtrim($class)
+		);
+	}
+
+	/**
+	 * Some tables need a "tbl-action" row non-button content. This method will
+	 * allow for them to be added, and will render the row with the correct
+	 * colspan.
+	 *
+	 * @param string $contetn The content to append
+	 * @return void
+	 */
+	public function addActionContent($content)
+	{
+		$this->action_content .= $content;
+	}
+
+	/**
 	 * If the entire data set is passed to the table object, the table
 	 * object can handle sorting of it automatically without the controller
 	 * needing to modify its query. But if there is a large amount of data that
@@ -568,7 +605,9 @@ class Table {
 			'sort_col'		=> $this->getSortCol(),
 			'sort_dir'		=> $this->getSortDir(),
 			'columns'		=> $this->columns,
-			'data'			=> $this->data
+			'data'			=> $this->data,
+			'action_buttons' => $this->action_buttons,
+			'action_content' => $this->action_content
 		);
 	}
 

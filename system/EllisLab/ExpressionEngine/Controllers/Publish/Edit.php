@@ -50,8 +50,22 @@ class Edit extends Publish {
 	 */
 	public function index()
 	{
+		if (ee()->input->post('bulk_action') == 'edit')
+		{
+			$this->edit(ee()->input->post('selection'));
+		}
+		elseif (ee()->input->post('bulk_action') == 'remove')
+		{
+			$this->remove(ee()->input->post('selection'));
+		}
+		elseif (ee()->input->post('bulk_action') == 'categories')
+		{
+			$this->manageCategories(ee()->input->post('selection'));
+		}
+
 		$vars = array();
 		$base_url = new URL('publish/edit', ee()->session->session_id());
+		$channel = NULL;
 		$channel_name = '';
 
 		$entries = ee('Model')->get('ChannelEntry')
@@ -70,9 +84,9 @@ class Edit extends Publish {
 			if ($this->isAdmin || in_array($channel_id, $this->assignedChannelIds))
 			{
 				$entries->filter('channel_id', $channel_id);
-				$channel_name = ee('Model')->get('Channel', $channel_id)
-					->first()
-					->channel_title;
+				$channel = ee('Model')->get('Channel', $channel_id)
+					->first();
+				$channel_name = $channel->channel_title;
 			}
 			else
 			{
@@ -94,7 +108,14 @@ class Edit extends Publish {
 			}
 		}
 
-		$status_filter = $this->createStatusFilter();
+		$category_filter = $this->createCategoryFilter($channel);
+		if ($category_filter->value())
+		{
+			// $entries->with('Categories')
+			// 	->filter('Categories.cat_id', $category_filter->value());
+		}
+
+		$status_filter = $this->createStatusFilter($channel);
 		if ($status_filter->value())
 		{
 			$entries->filter('status', $status_filter->value());
@@ -110,7 +131,7 @@ class Edit extends Publish {
 
 		$filters = ee('Filter')
 			->add($channel_filter)
-			// ->add($category_filter)
+			->add($category_filter)
 			->add($status_filter)
 			->add('Date')
 			->add('Perpage', $count, 'all_entries');
@@ -124,10 +145,10 @@ class Edit extends Publish {
 
 		$table->setColumns(
 			array(
-				'id',
+				'entry_id',
 				'title',
-				'comments',
-				'date',
+				'comment_total',
+				'entry_date',
 				'status' => array(
 					'type'	=> Table::COL_STATUS
 				),
@@ -139,14 +160,23 @@ class Edit extends Publish {
 				)
 			)
 		);
-		$table->setNoResultsText(lang('no_entries'));
+		$table->setNoResultsText(lang('no_entries_exist'));
+
+		if ($channel_id)
+		{
+			$table->addActionButton(cp_url('publish/create/' . $channel_id), sprintf(lang('btn_create_new_entry_in_channel'), $channel_name));
+		}
+		else
+		{
+			$table->addActionContent(ee('View')->make('publish/partials/create_new_menu')->render(array('button_text' => lang('btn_create_new'))));
+		}
 
 		$page = ((int) ee()->input->get('page')) ?: 1;
 		$offset = ($page - 1) * $filter_values['perpage']; // Offset is 0 indexed
 
-		// $entries->order($table->sort_col, $table->sort_dir)
-		// 	->limit($filter_values['perpage'])
-		// 	->offset($offset);
+		$entries->order($table->sort_col, $table->sort_dir)
+			->limit($filter_values['perpage'])
+			->offset($offset);
 
 		$data = array();
 
@@ -241,22 +271,42 @@ class Edit extends Publish {
 		return $channel_filter;
 	}
 
-	private function createCategoryFilter()
+	private function createCategoryFilter($channel = NULL)
 	{
+		$cat_id = ($channel) ? explode('|', $channel->cat_group) : NULL;
 
-	}
-
-	private function createStatusFilter()
-	{
-		$statuses = ee('Model')->get('Status')
+		$category_groups = ee('Model')->get('CategoryGroup', $cat_id)
 			->filter('site_id', ee()->config->item('site_id'))
+			->filter('exclude_group', '!=', 1)
 			->all();
 
-		$status_options = array(
-			'' => lang('all')
-		);
+		$category_options = array();
+		foreach ($category_groups as $group)
+		{
+			foreach ($group->getCategories() as $category)
+			{
+				$category_options[$category->cat_id] = $category->cat_name;
+			}
+		}
 
-		foreach ($statuses as $status)
+		$categories = ee('Filter')->make('filter_by_category', 'filter_by_category', $category_options);
+		$categories->disableCustomValue();
+		return $categories;
+	}
+
+	private function createStatusFilter($channel = NULL)
+	{
+		$statuses = ee('Model')->get('Status')
+			->filter('site_id', ee()->config->item('site_id'));
+
+		if ($channel)
+		{
+			$statuses->filter('group_id', $channel->status_group);
+		}
+
+		$status_options = array();
+
+		foreach ($statuses->all() as $status)
 		{
 			$status_name = ($status->status == 'closed' OR $status->status == 'open') ?  lang($status->status) : $status->status;
 			$status_options[$status->status] = $status_name;
@@ -265,6 +315,86 @@ class Edit extends Publish {
 		$status = ee('Filter')->make('filter_by_status', 'filter_by_status', $status_options);
 		$status->disableCustomValue();
 		return $status;
+	}
+
+	private function edit($entry_ids)
+	{
+		if ( ! is_array($entry_ids))
+		{
+			$entry_ids = array($entry_ids);
+		}
+
+		$entries = ee('Model')->get('ChannelEntry', $entry_ids)
+			->filter('site_id', ee()->config->item('site_id'));
+
+		if ( ! $this->isAdmin)
+		{
+			if (empty($this->assignedChannelIds))
+			{
+				show_error(lang('no_channels'));
+			}
+
+			$entries->filter('channel_id', 'IN', $this->assignedChannelIds);
+		}
+
+		ee()->functions->redirect(cp_url('publish/edit', ee()->cp->get_url_state()));
+	}
+
+	private function remove($entry_ids)
+	{
+		if ( ! is_array($entry_ids))
+		{
+			$entry_ids = array($entry_ids);
+		}
+
+		$entries = ee('Model')->get('ChannelEntry', $entry_ids)
+			->filter('site_id', ee()->config->item('site_id'));
+
+		if ( ! $this->isAdmin)
+		{
+			if (empty($this->assignedChannelIds))
+			{
+				show_error(lang('no_channels'));
+			}
+
+			$entries->filter('channel_id', 'IN', $this->assignedChannelIds);
+		}
+
+		$entry_names = $entries->all()->pluck('title');
+
+		$entries->delete();
+
+		ee('Alert')->makeInline('entries-form')
+			->asSuccess()
+			->withTitle(lang('success'))
+			->addToBody(lang('entries_removed_desc'))
+			->addToBody($entry_names)
+			->defer();
+
+		ee()->functions->redirect(cp_url('publish/edit', ee()->cp->get_url_state()));
+	}
+
+	private function manageCategories($entry_ids)
+	{
+		if ( ! is_array($entry_ids))
+		{
+			$entry_ids = array($entry_ids);
+		}
+
+		$entries = ee('Model')->get('ChannelEntry', $entry_ids)
+			->filter('site_id', ee()->config->item('site_id'));
+
+		if ( ! $this->isAdmin)
+		{
+			if (empty($this->assignedChannelIds))
+			{
+				show_error(lang('no_channels'));
+			}
+
+			$entries->filter('channel_id', 'IN', $this->assignedChannelIds);
+		}
+
+		ee()->functions->redirect(cp_url('publish/edit', ee()->cp->get_url_state()));
 	}
 
 }

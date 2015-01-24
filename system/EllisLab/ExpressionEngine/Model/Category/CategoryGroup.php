@@ -59,32 +59,6 @@ class CategoryGroup extends Model implements ContentStructure {
 	protected $can_delete_categories;
 
 	/**
-	 * Relationship to the field structure for this category.
-	 */
-	public function getCategoryFieldStructures()
-	{
-		return $this->getRelated('CategoryFieldStructures');
-	}
-
-	public function setCategoryFieldStructures(array $structures)
-	{
-		return $this->setRelated('CategoryFieldStructures', $structures);
-	}
-
-	/**
-	 * Relationship to ChannelEntries for this Channel.
-	 */
-	public function getCategories()
-	{
-		return $this->getRelated('Categories');
-	}
-
-	public function setCategories(array $categories)
-	{
-		return $this->setRelated('Categories', $categories);
-	}
-
-	/**
 	 * Display the CP entry form
 	 *
 	 * @param Content $content  An object implementing the Content interface
