@@ -115,7 +115,7 @@ class Edit extends Publish {
 			// 	->filter('Categories.cat_id', $category_filter->value());
 		}
 
-		$status_filter = $this->createStatusFilter();
+		$status_filter = $this->createStatusFilter($channel);
 		if ($status_filter->value())
 		{
 			$entries->filter('status', $status_filter->value());
@@ -294,15 +294,19 @@ class Edit extends Publish {
 		return $categories;
 	}
 
-	private function createStatusFilter()
+	private function createStatusFilter($channel = NULL)
 	{
 		$statuses = ee('Model')->get('Status')
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
+			->filter('site_id', ee()->config->item('site_id'));
+
+		if ($channel)
+		{
+			$statuses->filter('group_id', $channel->status_group);
+		}
 
 		$status_options = array();
 
-		foreach ($statuses as $status)
+		foreach ($statuses->all() as $status)
 		{
 			$status_name = ($status->status == 'closed' OR $status->status == 'open') ?  lang($status->status) : $status->status;
 			$status_options[$status->status] = $status_name;
