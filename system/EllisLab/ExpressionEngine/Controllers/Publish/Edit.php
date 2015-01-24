@@ -212,22 +212,31 @@ class Edit extends Publish {
 				$comments = '(0)';
 			}
 
+			$toolbar = array();
+
+			$live_look_template = $entry->getChannel()->getLiveLookTemplate();
+
+			if ($live_look_template)
+			{
+				$view_url = ee()->functions->create_url($live_look_template->getPath() . '/' . $entry->entry_id);
+				$toolbar['view'] = array(
+					'href' => ee()->cp->masked_url($view_url),
+					'title' => lang('view')
+				);
+			}
+
+			$toolbar['edit'] = array(
+				'href' => cp_url('publish/edit/entry/' . $entry->entry_id),
+				'title' => lang('edit')
+			);
+
 			$column = array(
 				$entry->entry_id,
 				$title,
 				$comments,
 				ee()->localize->human_time($entry->entry_date),
 				$entry->status,
-				array('toolbar_items' => array(
-					'view' => array(
-						'href' => '', //ee()->cp->masked_url($view_url),
-						'title' => lang('view')
-					),
-					'edit' => array(
-						'href' => cp_url('publish/edit/entry/' . $entry->entry_id),
-						'title' => lang('edit')
-					),
-				)),
+				array('toolbar_items' => $toolbar),
 				array(
 					'name' => 'selection[]',
 					'value' => $entry->entry_id,
