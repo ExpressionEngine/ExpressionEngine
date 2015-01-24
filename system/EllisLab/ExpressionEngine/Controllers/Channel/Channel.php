@@ -510,8 +510,7 @@ class Channel extends CP_Controller {
 			// duplicating preferences?
 			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
 			{
-				$dupe_channel = ee()->api
-					->get('Channel')
+				$dupe_channel = ee('Model')->get('Channel')
 					->filter('channel_id', $dupe_id)
 					->first();
 				$channel->duplicatePreferences($dupe_channel);
@@ -567,7 +566,7 @@ class Channel extends CP_Controller {
 	 */
 	public function settings($channel_id)
 	{
-		$channel = ee('Model')->get('Channel')->filter('channel_id', (int) $channel_id)->first();
+		$channel = ee('Model')->get('Channel', $channel_id)->first();
 		
 		if ( ! $channel)
 		{
@@ -1208,7 +1207,7 @@ class Channel extends CP_Controller {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			$this->saveChannelSettings($channel_id);
+			$this->saveChannelSettings($channel_id, $vars['sections']);
 			
 			ee()->view->set_message('success', lang('channel_saved'), lang('channel_saved_desc'), TRUE);
 
@@ -1250,9 +1249,47 @@ class Channel extends CP_Controller {
 	 * 
 	 * @param	int	$channel_id	ID of channel to save settings for
 	 */
-	private function saveChannelSettings($channel_id)
+	private function saveChannelSettings($channel_id, $sections)
 	{
+		if (isset($_POST['comment_expiration']) && $_POST['comment_expiration'] == '')
+		{
+			$_POST['comment_expiration'] = 0;
+		}
 
+		// Make sure we only got the fields we asked for
+		foreach ($sections as $settings)
+		{
+			foreach ($settings as $setting)
+			{
+				foreach ($setting['fields'] as $field_name => $field)
+				{
+					$fields[$field_name] = ee()->input->post($field_name);
+				}
+			}
+		}
+
+		$channel = ee('Model')->get('Channel', $channel_id)->first();
+
+		foreach ($fields as $key => $value)
+		{
+			if (property_exists($channel, $key))
+			{
+				$channel->$key = $value;
+			}
+		}
+
+		if ( ! $channel_form = $channel->getChannelFormSettings())
+		{
+			$channel_form = ee('Model')->make('ChannelFormSettings');
+			$channel_id->site_id = $channel->site_id;
+		}
+
+		$channel_form->default_status = $fields['default_status'];
+		$channel_form->require_captcha = $fields['require_captcha'];
+		$channel_form->allow_guest_posts = $fields['allow_guest_posts'];
+		$channel_form->default_author = $fields['default_author'];
+		$channel->setChannelFormSettings($channel_form);
+		$channel->save();
 	}
 }
 // EOF
