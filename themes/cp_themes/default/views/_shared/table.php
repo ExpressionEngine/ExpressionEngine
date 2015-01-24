@@ -109,7 +109,7 @@ if ($wrap): ?>
 							</td>
 						<?php elseif ($column['type'] == Table::COL_STATUS): ?>
 							<?php $class = isset($column['class']) ? $column['class'] : $column['content']; ?>
-							<td><span class="st-status st-<?=strtolower($class)?>"><?=$column['content']?></span></td>
+							<td><span class="status-tag st-<?=strtolower($class)?>"><?=$column['content']?></span></td>
 						<?php elseif (isset($column['html'])): ?>
 							<td<?php if (isset($column['error']) && ! empty($column['error'])): ?> class="invalid"<?php endif ?>>
 								<?=$column['html']?>
