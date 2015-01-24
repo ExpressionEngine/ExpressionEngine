@@ -97,7 +97,7 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 
 						case 'inline_radio': ?>
 							<?php foreach ($field['choices'] as $key => $label):
-								$checked = ($key === $value OR get_bool_from_string($key) == $value); ?>
+								$checked = ((is_bool($value) && get_bool_from_string($key) === $value) OR ( ! is_bool($value) && $key == $value)); ?>
 								<label class="choice mr <?=($checked) ? 'chosen' : ''?>"><input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=$required?>> <?=lang($label)?></label>
 							<?php endforeach ?>
 						<?php break;
