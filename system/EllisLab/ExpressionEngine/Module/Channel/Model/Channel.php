@@ -46,7 +46,8 @@ class Channel extends Model implements ContentStructure {
 		'LiveLookTemplate' => array(
 			'type' => 'hasOne',
 			'model' => 'Template',
-			'key' => 'live_look_template'
+			'from_key' => 'live_look_template',
+			'to_key' => 'template_id'
 		),
 	);
 
