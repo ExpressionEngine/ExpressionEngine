@@ -97,14 +97,14 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 
 						case 'inline_radio': ?>
 							<?php foreach ($field['choices'] as $key => $label):
-								$checked = ($key == $value); ?>
+								$checked = ((is_bool($value) && get_bool_from_string($key) === $value) OR ( ! is_bool($value) && $key == $value)); ?>
 								<label class="choice mr <?=($checked) ? 'chosen' : ''?>"><input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=$required?>> <?=lang($label)?></label>
 							<?php endforeach ?>
 						<?php break;
 
 						case 'yes_no': ?>
-							<label class="choice mr<?php if ($value == 'y' || $value === TRUE):?> chosen<?php endif ?> yes"><input type="radio" name="<?=$field_name?>" value="y"<?php if ($value == 'y' || $value === TRUE):?> checked="checked"<?php endif ?><?=$required?>> yes</label>
-							<label class="choice <?php if ($value == 'n' || $value === FALSE):?> chosen<?php endif ?> no"><input type="radio" name="<?=$field_name?>" value="n"<?php if ($value == 'n' || $value === FALSE):?> checked="checked"<?php endif ?><?=$required?>> no</label>
+							<label class="choice mr<?php if (get_bool_from_string($value)):?> chosen<?php endif ?> yes"><input type="radio" name="<?=$field_name?>" value="y"<?php if (get_bool_from_string($value)):?> checked="checked"<?php endif ?><?=$required?>> yes</label>
+							<label class="choice <?php if (get_bool_from_string($value) === FALSE):?> chosen<?php endif ?> no"><input type="radio" name="<?=$field_name?>" value="n"<?php if (get_bool_from_string($value) === FALSE):?> checked="checked"<?php endif ?><?=$required?>> no</label>
 						<?php break;
 
 						case 'dropdown': ?>

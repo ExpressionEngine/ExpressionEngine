@@ -182,6 +182,11 @@ class TypedColumn implements Mixin {
 	 */
 	protected function setBool($value, $truthy = TRUE, $falsey = FALSE)
 	{
+		if (is_bool($value))
+		{
+			return $value ? $truthy : $falsey;
+		}
+		
 		if ($value === $truthy || $value === $falsey)
 		{
 			return $value;
