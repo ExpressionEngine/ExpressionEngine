@@ -12,15 +12,59 @@ class Channel extends Model implements ContentStructure {
 	protected static $_primary_key = 'channel_id';
 	protected static $_gateway_names = array('ChannelGateway');
 
+	protected static $_typed_columns = array(
+		'deft_comments'              => 'boolString',
+		'channel_require_membership' => 'boolString',
+		'channel_allow_img_urls'     => 'boolString',
+		'channel_auto_link_urls'     => 'boolString',
+		'channel_notify'             => 'boolString',
+		'comment_system_enabled'     => 'boolString',
+		'comment_require_membership' => 'boolString',
+		'comment_use_captcha'        => 'boolString',
+		'comment_moderate'           => 'boolString',
+		'comment_require_email'      => 'boolString',
+		'comment_allow_img_urls'     => 'boolString',
+		'comment_auto_link_urls'     => 'boolString',
+		'comment_notify'             => 'boolString',
+		'comment_notify_authors'     => 'boolString',
+		'show_button_cluster'        => 'boolString',
+		'enable_versioning'          => 'boolString',
+	);
+
 	protected static $_relationships = array(
 		'ChannelFieldGroup' => array(
 			'type' => 'belongsTo',
 			'key' => 'field_group'
 		),
-		'ChannelEntries'	=> array(
+		'ChannelEntries' => array(
 			'type' => 'hasMany',
 			'model' => 'ChannelEntry'
-		)
+		),
+		'LiveLookTemplate' => array(
+			'type' => 'hasOne',
+			'model' => 'Template',
+			'key' => 'live_look_template'
+		),
+	);
+
+	protected static $_validation_rules = array(
+		'site_id'                    => 'required|isNatural',
+		'deft_comments'              => 'enum[y,n]',
+		'channel_require_membership' => 'enum[y,n]',
+		'channel_allow_img_urls'     => 'enum[y,n]',
+		'channel_auto_link_urls'     => 'enum[y,n]',
+		'channel_notify'             => 'enum[y,n]',
+		'comment_system_enabled'     => 'enum[y,n]',
+		'comment_require_membership' => 'enum[y,n]',
+		'comment_use_captcha'        => 'enum[y,n]',
+		'comment_moderate'           => 'enum[y,n]',
+		'comment_require_email'      => 'enum[y,n]',
+		'comment_allow_img_urls'     => 'enum[y,n]',
+		'comment_auto_link_urls'     => 'enum[y,n]',
+		'comment_notify'             => 'enum[y,n]',
+		'comment_notify_authors'     => 'enum[y,n]',
+		'show_button_cluster'        => 'enum[y,n]',
+		'enable_versioning'          => 'enum[y,n]',
 	);
 
 	// Properties
