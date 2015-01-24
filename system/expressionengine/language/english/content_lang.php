@@ -43,6 +43,23 @@ $lang = array(
 'entries_removed_desc' =>
 'The following entries were removed',
 
+'column_comment' => 'Comment',
+'column_comment_date' => 'Date',
+'column_ip_address' => 'IP',
+
+'no_comments' =>
+'No comments were found.',
+
+'all_comments' =>
+'All Comments',
+
+'all_comments_for_entry' =>
+'All Comments for %s',
+
+'set_to_open' => 'Set to open',
+'set_to_closed' => 'Set to closed',
+'set_to_pending' => 'Set to pending',
+
 //----------------------------
 // Publish page
 //----------------------------
@@ -728,9 +745,6 @@ $lang = array(
 
 'no_entry_fields' =>
 'There are no entry fields in this channel.',
-
-'no_comments' =>
-'There were no results returned for this entry',
 
 'posted_by' =>
 'Author:',
