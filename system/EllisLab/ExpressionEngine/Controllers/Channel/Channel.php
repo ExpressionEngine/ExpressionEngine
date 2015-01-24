@@ -1272,7 +1272,7 @@ class Channel extends CP_Controller {
 
 		foreach ($fields as $key => $value)
 		{
-			if (property_exists($channel, $key))
+			if ($channel->hasProperty($key))
 			{
 				$channel->$key = $value;
 			}
