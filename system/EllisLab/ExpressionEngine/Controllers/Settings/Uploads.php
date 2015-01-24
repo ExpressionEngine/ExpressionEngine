@@ -321,7 +321,7 @@ class Uploads extends Settings {
 			)
 		));
 
-		$this->validateNonTextInputs($vars['sections']);
+		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
 		$base_url = 'settings/uploads/';
 		$base_url .= ($upload_id) ? 'edit/' . $upload_id : 'new-upload';

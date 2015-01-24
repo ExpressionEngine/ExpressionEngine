@@ -135,6 +135,51 @@ class EE_Form_validation extends CI_Form_validation {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Given a "sections" array formatted for the shared form view, sets
+	 * validation rules for fields that have defined options to make sure
+	 * only those defined options make it through POST, this is to keep out
+	 * form-tinkerers
+	 *
+	 * @param	array	$sections	Array of sections passed to form view
+	 */
+	public function validateNonTextInputs($sections)
+	{
+		foreach ($sections as $settings)
+		{
+			foreach ($settings as $setting)
+			{
+				foreach ($setting['fields'] as $field_name => $field)
+				{
+					$enum = NULL;
+
+					// If this field has 'choices', make sure only those
+					// choices are let through the submission
+					if (isset($field['choices']))
+					{
+						$enum = implode(',', array_keys($field['choices']));
+					}
+					// Only allow y/n through for yes_no fields
+					elseif ($field['type'] == 'yes_no')
+					{
+						$enum = 'y,n';
+					}
+
+					if (isset($enum))
+					{
+						$this->set_rules(
+							$field_name,
+							$setting['title'],
+							'enum['.$enum.']'
+						);
+					}
+				}
+			}
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Validate Username
 	 *
 	 * Calls the custom field validation

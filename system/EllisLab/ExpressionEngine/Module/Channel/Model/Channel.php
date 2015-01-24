@@ -40,6 +40,9 @@ class Channel extends Model implements ContentStructure {
 			'type' => 'hasMany',
 			'model' => 'ChannelEntry'
 		),
+		'ChannelFormSettings' => array(
+			'type' => 'hasOne'
+		),
 		'LiveLookTemplate' => array(
 			'type' => 'hasOne',
 			'model' => 'Template',
@@ -123,27 +126,6 @@ class Channel extends Model implements ContentStructure {
 	protected $default_entry_title;
 	protected $url_title_prefix;
 	protected $live_look_template;
-
-
-	public function getChannelFieldGroup()
-	{
-		return $this->getRelated('ChannelFieldGroup');
-	}
-
-	public function setChannelFieldGroup($field_group)
-	{
-		return $this->setRelated('ChannelFieldGroup', $field_group);
-	}
-
-	public function getChannelEntries()
-	{
-		return $this->getRelated('ChannelEntries');
-	}
-
-	public function setChannelEntries(array $entries)
-	{
-		return $this->setRelated('ChannelEntries', $entries);
-	}
 
 	/**
 	 * Display the CP entry form

@@ -85,6 +85,18 @@ class Channel extends CP_Controller {
 				)
 			)
 		));
+
+		// This header is section-wide
+		ee()->view->header = array(
+			'title' => lang('channel_manager'),
+			'form_url' => cp_url('channel/search'),
+			'toolbar_items' => array(
+				'settings' => array(
+					'href' => cp_url('settings/content-design'),
+					'title' => lang('settings')
+				)
+			)
+		);
 	}
 
 	/**
@@ -158,16 +170,6 @@ class Channel extends CP_Controller {
 		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
 
 		ee()->view->cp_page_title = lang('manage_channels');
-		ee()->view->header = array(
-			'title' => lang('channel_manager'),
-			'form_url' => cp_url('channel/search'),
-			'toolbar_items' => array(
-				'settings' => array(
-					'href' => cp_url('settings/content-design'),
-					'title' => lang('settings')
-				)
-			)
-		);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('channels') . ': <b>### ' . lang('channels') . '</b>');
 		ee()->cp->add_js_script(array(
@@ -348,7 +350,7 @@ class Channel extends CP_Controller {
 			array(
 				'field' => 'channel_name',
 				'label' => 'lang:channel_short_name',
-				'rules' => 'required|strip_tags|callback__valid_channel_name['.$channel_id.']'
+				'rules' => 'required|strip_tags|callback__validChannelName['.$channel_id.']'
 			),
 			array(
 				'field' => 'duplicate_channel_prefs',
@@ -379,7 +381,7 @@ class Channel extends CP_Controller {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			$channel_id = $this->save_channel($channel_id);
+			$channel_id = $this->saveChannel($channel_id);
 
 			ee()->view->set_message('success', lang('directory_saved'), lang('directory_saved_desc'), TRUE);
 
@@ -420,7 +422,7 @@ class Channel extends CP_Controller {
 	/**
 	 * Custom validator for channel short name
 	 */
-	function _valid_channel_name($str, $channel_id = NULL)
+	function _validChannelName($str, $channel_id = NULL)
 	{
 		// Check short name characters
 		if (preg_match('/[^a-z0-9\-\_]/i', $str))
@@ -454,7 +456,7 @@ class Channel extends CP_Controller {
 	 * This function receives the submitted channel preferences
 	 * and stores them in the database.
 	 */
-	private function save_channel($channel_id = NULL)
+	private function saveChannel($channel_id = NULL)
 	{
 		// Load the layout Library & update the layouts
 		ee()->load->library('layout');
@@ -473,7 +475,7 @@ class Channel extends CP_Controller {
 
 		$channel = ee('Model')->make('Channel', $_POST);
 		$channel->channel_id = $channel_id;
-		
+
 		// Make sure these are the correct NULL value if they are not set.
 		$channel->status_group = ($channel->status_group !== FALSE
 			&& $channel->status_group != '')
@@ -558,6 +560,699 @@ class Channel extends CP_Controller {
 		}
 
 		return $channel->channel_id;
+	}
+
+	/**
+	 * Channel settings
+	 */
+	public function settings($channel_id)
+	{
+		$channel = ee('Model')->get('Channel')->filter('channel_id', (int) $channel_id)->first();
+		
+		if ( ! $channel)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		ee()->load->model('language_model');
+
+		$templates = ee('Model')->get('Template')
+			->with('TemplateGroup')
+			->all();
+
+		$live_look_template_options[0] = lang('no_live_look_template');
+
+		if ( count($templates) > 0)
+		{
+			foreach ($templates as $template)
+			{
+				$live_look_template_options[$template->template_id] = $template->getTemplateGroup()->group_name.'/'.$template->template_name;
+			}
+		}
+
+		// Default status menu
+		$statuses = ee('Model')->get('Status')
+			->with('StatusGroup')
+			->filter('Status.group_id', $channel->status_group)
+			->all();
+
+		// These will always be there, and also need extra processing.
+		$deft_status_options['open'] = lang('open');
+		$deft_status_options['closed'] = lang('closed');
+		if (count($statuses) > 0)
+		{
+			foreach ($statuses as $status)
+			{
+				// We already did these ones, so skip em.
+				if ($status->status == 'open' || $status->status == 'closed')
+				{
+					continue;
+				}
+
+				$deft_status_options[$status->status] = $status->status;
+			}
+		}
+
+		$deft_category_options[''] = lang('none');
+
+		$category_group_ids = $channel->cat_group ? explode('|', $channel->cat_group) : array();
+
+		if (count($category_group_ids))
+		{
+			$categories = ee('Model')->get('Category')
+				->with('CategoryGroup')
+				->filter('CategoryGroup.group_id', 'IN', $category_group_ids)
+				->order('CategoryGroup.group_name')
+				->order('Category.cat_name')
+				->all();
+
+			if (count($categories) > 0)
+			{
+				foreach ($categories as $category)
+				{
+					$deft_category_options[$category->cat_id] = $category->getCategoryGroup()->group_name . ': ' . $category->cat_name;
+				}
+			}
+		}
+		
+		$channel_fields = ee('Model')->get('ChannelFieldStructure')
+			->filter('ChannelFieldStructure.group_id', $channel->field_group)
+			->all();
+
+		$search_excerpt_options = array();
+
+		if (count($channel_fields) > 0)
+		{
+			foreach ($channel_fields as $channel_field)
+			{
+				$search_excerpt_options[$channel_field->field_id] = $channel_field->field_label;
+			}
+		}
+
+		// HTML formatting
+		$channel_html_formatting_options = array(
+			'none'	=> lang('convert_to_entities'),
+			'safe'	=> lang('allow_safe_html'),
+			'all'	=> lang('allow_all_html')
+		);
+
+		// Default comment text formatting
+		$comment_text_formatting_options = array(
+			'none'	=> lang('none'),
+			'xhtml'	=> lang('xhtml'),
+			'br'	=> lang('auto_br')
+		);
+
+		// Comment HTML formatting
+		$comment_html_formatting_options = array(
+			'none'	=> lang('convert_to_entities'),
+			'safe'	=> lang('allow_safe_html'),
+			'all'	=> lang('allow_all_html_not_recommended')
+		);
+
+		if ( ! $channel_form = $channel->getChannelFormSettings())
+		{
+			$channel_form = ee('Model')->make('ChannelFormSettings');
+		}
+
+		ee()->load->model('member_model');
+		$authors = ee()->member_model->get_authors()->result();
+
+		$all_authors = array();
+		foreach ($authors as $author)
+		{
+			$all_authors[$author->member_id] = $author->username;
+		}
+
+		if (empty($all_authors))
+		{
+			foreach ($this->member_model->get_members(1)->result_array() as $member)
+			{
+				$all_authors[$member['member_id']] = $member['username'];
+			}
+		}
+
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'channel_description',
+					'desc' => 'channel_description_desc',
+					'fields' => array(
+						'channel_description' => array(
+							'type' => 'textarea',
+							'value' => $channel->channel_description
+						)
+					)
+				),
+				array(
+					'title' => 'xml_language',
+					'desc' => 'xml_language_desc',
+					'fields' => array(
+						'channel_lang' => array(
+							'type' => 'dropdown',
+							'choices' => ee()->language_model->language_pack_names(),
+							'value' => $channel->channel_lang ?: 'english'
+						)
+					)
+				),
+			),
+			'url_path_settings' => array(
+				array(
+					'title' => 'channel',
+					'desc' => 'channel_url_desc',
+					'fields' => array(
+						'channel_url' => array(
+							'type' => 'text',
+							'value' => $channel->channel_url
+						)
+					)
+				),
+				array(
+					'title' => 'comment_form',
+					'desc' => 'comment_form_desc',
+					'fields' => array(
+						'comment_url' => array(
+							'type' => 'text',
+							'value' => $channel->comment_url
+						)
+					)
+				),
+				array(
+					'title' => 'search_results',
+					'desc' => 'search_results_desc',
+					'fields' => array(
+						'search_results_url' => array(
+							'type' => 'text',
+							'value' => $channel->search_results_url
+						)
+					)
+				),
+				array(
+					'title' => 'rss_feed',
+					'desc' => 'rss_feed_desc',
+					'fields' => array(
+						'rss_url' => array(
+							'type' => 'text',
+							'value' => $channel->rss_url
+						)
+					)
+				),
+				array(
+					'title' => 'live_look_template',
+					'desc' => 'live_look_template_desc',
+					'fields' => array(
+						'live_look_template' => array(
+							'type' => 'dropdown',
+							'choices' => $live_look_template_options,
+							'value' => $channel->live_look_template
+						)
+					)
+				)
+			),
+			'channel_defaults' => array(
+				array(
+					'title' => 'default_title',
+					'desc' => 'default_title_desc',
+					'fields' => array(
+						'default_entry_title' => array(
+							'type' => 'text',
+							'value' => $channel->default_entry_title
+						)
+					)
+				),
+				array(
+					'title' => 'url_title_prefix',
+					'desc' => 'url_title_prefix_desc',
+					'fields' => array(
+						'url_title_prefix' => array(
+							'type' => 'text',
+							'value' => $channel->url_title_prefix
+						)
+					)
+				),
+				array(
+					'title' => 'default_status',
+					'desc' => 'default_status_desc',
+					'fields' => array(
+						'deft_status' => array(
+							'type' => 'dropdown',
+							'choices' => $deft_status_options,
+							'value' => $channel->deft_status
+						)
+					)
+				),
+				array(
+					'title' => 'default_category',
+					'desc' => 'default_category_desc',
+					'fields' => array(
+						'deft_category' => array(
+							'type' => 'dropdown',
+							'choices' => $deft_category_options,
+							'value' => $channel->deft_category
+						)
+					)
+				),
+				array(
+					'title' => 'search_excerpt',
+					'desc' => 'search_excerpt_desc',
+					'fields' => array(
+						'search_excerpt' => array(
+							'type' => 'dropdown',
+							'choices' => $search_excerpt_options,
+							'value' => $channel->search_excerpt
+						)
+					)
+				)
+			),
+			'publishing' => array(
+				array(
+					'title' => 'html_formatting',
+					'desc' => 'html_formatting_desc',
+					'fields' => array(
+						'channel_html_formatting' => array(
+							'type' => 'dropdown',
+							'choices' => $channel_html_formatting_options,
+							'value' => $channel->channel_html_formatting
+						)
+					)
+				),
+				array(
+					'title' => 'convert_image_urls',
+					'desc' => 'convert_image_urls_desc',
+					'fields' => array(
+						'channel_allow_img_urls' => array(
+							'type' => 'yes_no',
+							'value' => $channel->channel_allow_img_urls
+						)
+					)
+				),
+				array(
+					'title' => 'convert_urls_emails_to_links',
+					'desc' => 'convert_urls_emails_to_links_desc',
+					'fields' => array(
+						'channel_auto_link_urls' => array(
+							'type' => 'yes_no',
+							'value' => $channel->channel_auto_link_urls
+						)
+					)
+				),
+				array(
+					'title' => 'allow_rich_text_editing',
+					'desc' => 'allow_rich_text_editing_desc',
+					'fields' => array(
+						'show_button_cluster' => array(
+							'type' => 'yes_no',
+							'value' => $channel->show_button_cluster
+						)
+					)
+				)
+			),
+			'channel_form' => array(
+				array(
+					'title' => 'default_status',
+					'desc' => 'channel_form_status_desc',
+					'fields' => array(
+						'default_status' => array(
+							'type' => 'dropdown',
+							'choices' => $deft_status_options,
+							'value' => $channel_form->default_status
+						)
+					)
+				),
+				array(
+					'title' => 'channel_form_default_author',
+					'desc' => 'channel_form_default_author_desc',
+					'fields' => array(
+						'default_author' => array(
+							'type' => 'dropdown',
+							'choices' => $all_authors,
+							'value' => $channel_form->default_author
+						)
+					)
+				),
+				array(
+					'title' => 'allow_guest_submission',
+					'desc' => 'allow_guest_submission_desc',
+					'fields' => array(
+						'allow_guest_posts' => array(
+							'type' => 'yes_no',
+							'value' => $channel_form->allow_guest_posts
+						)
+					)
+				),
+				array(
+					'title' => 'channel_form_require_captcha',
+					'desc' => 'channel_form_require_captcha_desc',
+					'fields' => array(
+						'require_captcha' => array(
+							'type' => 'yes_no',
+							'value' => $channel_form->require_captcha
+						)
+					)
+				)
+			),
+			'versioning' => array(
+				array(
+					'title' => 'enable_versioning',
+					'desc' => 'enable_versioning_desc',
+					'fields' => array(
+						'enable_versioning' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							),
+							'value' => $channel->enable_versioning
+						)
+					)
+				),
+				array(
+					'title' => 'max_versions',
+					'desc' => 'max_versions_desc',
+					'fields' => array(
+						'max_versions' => array(
+							'type' => 'text',
+							'value' => $channel->max_revisions
+						)
+					)
+				)
+			),
+			'notifications' => array(
+				array(
+					'title' => 'enable_author_notification',
+					'desc' => 'enable_author_notification_desc',
+					'fields' => array(
+						'comment_notify_authors' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							),
+							'value' => $channel->comment_notify_authors
+						)
+					)
+				),
+				array(
+					'title' => 'enable_channel_entry_notification',
+					'desc' => 'enable_channel_entry_notification_desc',
+					'fields' => array(
+						'channel_notify' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							),
+							'value' => $channel->channel_notify
+						),
+						'channel_notify_emails' => array(
+							'type' => 'text',
+							'value' => $channel->channel_notify_emails
+						)
+					)
+				),
+				array(
+					'title' => 'enable_comment_notification',
+					'desc' => 'enable_comment_notification_desc',
+					'fields' => array(
+						'comment_notify' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							),
+							'value' => $channel->comment_notify
+						),
+						'comment_notify_emails' => array(
+							'type' => 'text',
+							'value' => $channel->comment_notify_emails
+						)
+					)
+				)
+			),
+			'commenting' => array(
+				array(
+					'title' => 'allow_comments',
+					'desc' => 'allow_comments_desc',
+					'fields' => array(
+						'comment_system_enabled' => array(
+							'type' => 'yes_no',
+							'value' => $channel->comment_system_enabled
+						)
+					)
+				),
+				array(
+					'title' => 'allow_comments_checked',
+					'desc' => 'allow_comments_checked_desc',
+					'fields' => array(
+						'deft_comments' => array(
+							'type' => 'yes_no',
+							'value' => $channel->deft_comments
+						)
+					)
+				),
+				array(
+					'title' => 'require_membership',
+					'desc' => 'require_membership_desc',
+					'fields' => array(
+						'comment_require_membership' => array(
+							'type' => 'yes_no',
+							'value' => $channel->comment_require_membership
+						)
+					)
+				),
+				array(
+					'title' => 'require_email',
+					'desc' => 'require_email_desc',
+					'fields' => array(
+						'comment_require_email' => array(
+							'type' => 'yes_no',
+							'value' => $channel->comment_require_email
+						)
+					)
+				),
+				array(
+					'title' => 'enable_captcha',
+					'desc' => 'enable_captcha_desc',
+					'fields' => array(
+						'comment_use_captcha' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							),
+							'value' => $channel->comment_use_captcha
+						)
+					)
+				),
+				array(
+					'title' => 'moderate_comments',
+					'desc' => 'moderate_comments_desc',
+					'fields' => array(
+						'comment_moderate' => array(
+							'type' => 'yes_no',
+							'value' => $channel->comment_moderate
+						)
+					)
+				),
+				array(
+					'title' => 'max_characters',
+					'desc' => 'max_characters_desc',
+					'fields' => array(
+						'max_characters' => array(
+							'type' => 'text',
+							'value' => $channel->comment_max_chars
+						)
+					)
+				),
+				array(
+					'title' => 'comment_time_limit',
+					'desc' => 'comment_time_limit_desc',
+					'fields' => array(
+						'comment_timelock' => array(
+							'type' => 'text',
+							'value' => $channel->comment_timelock
+						)
+					)
+				),
+				array(
+					'title' => 'comment_expiration',
+					'desc' => 'comment_expiration_desc',
+					'fields' => array(
+						'comment_expiration' => array(
+							'type' => 'text',
+							'value' => $channel->comment_expiration
+						)
+					)
+				),
+				array(
+					'title' => 'text_formatting',
+					'desc' => 'text_formatting_desc',
+					'fields' => array(
+						'comment_text_formatting' => array(
+							'type' => 'dropdown',
+							'choices' => $comment_text_formatting_options,
+							'value' => $channel->comment_text_formatting
+						)
+					)
+				),
+				array(
+					'title' => 'html_formatting',
+					'desc' => 'html_formatting_desc',
+					'fields' => array(
+						'comment_html_formatting' => array(
+							'type' => 'dropdown',
+							'choices' => $comment_html_formatting_options,
+							'value' => $channel->comment_html_formatting
+						)
+					)
+				),
+				array(
+					'title' => 'convert_image_urls',
+					'desc' => 'comment_convert_image_urls_desc',
+					'fields' => array(
+						'comment_allow_img_urls' => array(
+							'type' => 'yes_no',
+							'value' => $channel->comment_allow_img_urls
+						)
+					)
+				),
+				array(
+					'title' => 'convert_urls_emails_to_links',
+					'desc' => 'comment_convert_urls_emails_to_links_desc',
+					'fields' => array(
+						'comment_auto_link_urls' => array(
+							'type' => 'yes_no',
+							'value' => $channel->comment_auto_link_urls
+						)
+					)
+				)
+			)
+		);
+
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'channel_description',
+				'label' => 'lang:channel_description',
+				'rules' => 'strip_tags|valid_xss_check'
+			),
+			array(
+				'field' => 'channel_url',
+				'label' => 'lang:channel',
+				'rules' => 'trim|strip_tags|valid_xss_check'
+			),
+			array(
+				'field' => 'comment_url',
+				'label' => 'lang:comment_form',
+				'rules' => 'trim|strip_tags|valid_xss_check'
+			),
+			array(
+				'field' => 'search_results_url',
+				'label' => 'lang:search_results',
+				'rules' => 'trim|strip_tags|valid_xss_check'
+			),
+			array(
+				'field' => 'rss_url',
+				'label' => 'lang:rss_feed',
+				'rules' => 'trim|strip_tags|valid_xss_check'
+			),
+			array(
+				'field' => 'default_entry_title',
+				'label' => 'lang:default_title',
+				'rules' => 'valid_xss_check'
+			),
+			array(
+				'field' => 'url_title_prefix',
+				'label' => 'lang:url_title_prefix',
+				'rules' => 'strtolower|trim|strip_tags|valid_xss_check|callback__validPrefix'
+			),
+			array(
+				'field' => 'max_versions',
+				'label' => 'lang:max_versions',
+				'rules' => 'trim|integer'
+			),
+			array(
+				'field' => 'channel_notify_emails',
+				'label' => 'lang:enable_channel_entry_notification',
+				'rules' => 'trim|valid_emails'
+			),
+			array(
+				'field' => 'comment_notify_emails',
+				'label' => 'lang:enable_comment_notification',
+				'rules' => 'trim|valid_emails'
+			),
+			array(
+				'field' => 'max_characters',
+				'label' => 'lang:max_characters',
+				'rules' => 'trim|integer'
+			),
+			array(
+				'field' => 'comment_timelock',
+				'label' => 'lang:comment_time_limit',
+				'rules' => 'trim|integer'
+			),
+			array(
+				'field' => 'comment_expiration',
+				'label' => 'lang:comment_expiration',
+				'rules' => 'trim|integer'
+			)
+		));
+
+		ee()->form_validation->validateNonTextInputs($vars['sections']);
+
+		$base_url = cp_url('channel/settings/'.$channel_id);
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			$this->saveChannelSettings($channel_id);
+			
+			ee()->view->set_message('success', lang('channel_saved'), lang('channel_saved_desc'), TRUE);
+
+			ee()->functions->redirect(cp_url('channel/settings/' . $channel_id));
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee()->view->set_message('issue', lang('channel_not_saved'), lang('channel_not_saved_desc'));
+		}
+
+		ee()->view->ajax_validate = TRUE;
+		ee()->view->base_url = $base_url;
+		ee()->view->cp_page_title = $channel->channel_title . ' &mdash; ' . lang('channel_settings');
+		ee()->view->save_btn_text = 'btn_save_settings';
+		ee()->view->save_btn_text_working = 'btn_saving';
+
+		ee()->cp->set_breadcrumb(cp_url('channel'), lang('channels'));
+
+		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * Custom validator for URL title prefix
+	 */
+	public function _validPrefix($str)
+	{
+		if ($str == '')
+		{
+			return TRUE;
+		}
+
+		ee()->form_validation->set_message('_valid_prefix', lang('invalid_url_title_prefix'));
+
+		return preg_match('/^[\w\-]+$/', $str) ? TRUE : FALSE;
+	}
+
+	/**
+	 * POST handler for saving channel settings
+	 * 
+	 * @param	int	$channel_id	ID of channel to save settings for
+	 */
+	private function saveChannelSettings($channel_id)
+	{
+
 	}
 }
 // EOF

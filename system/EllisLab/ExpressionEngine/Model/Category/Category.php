@@ -43,14 +43,16 @@ class Category extends FieldDataContentModel {
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'ChannelEntry',
 			'pivot' => array(
-				'table' => 'category_posts'
+				'table' => 'category_posts',
+				'left' => 'cat_id',
+				'right' => 'entry_id'
 			)
 		),
 		'Parent' => array(
 			'type' => 'belongsTo',
 			'model' => 'Category',
 			'from_key' => 'parent_id'
-		),
+		)
 	);
 
 	// Properties

@@ -149,7 +149,7 @@ class General extends Settings {
 
 		ee()->form_validation->set_rules('site_name', 'lang:site_name', 'required|strip_tags|valid_xss_check');
 
-		$this->validateNonTextInputs($vars['sections']);
+		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
 		// Handle AJAX validation
 		if (AJAX_REQUEST)
