@@ -83,27 +83,6 @@ class Channel extends Model implements ContentStructure {
 	protected $url_title_prefix;
 	protected $live_look_template;
 
-
-	public function getChannelFieldGroup()
-	{
-		return $this->getRelated('ChannelFieldGroup');
-	}
-
-	public function setChannelFieldGroup($field_group)
-	{
-		return $this->setRelated('ChannelFieldGroup', $field_group);
-	}
-
-	public function getChannelEntries()
-	{
-		return $this->getRelated('ChannelEntries');
-	}
-
-	public function setChannelEntries(array $entries)
-	{
-		return $this->setRelated('ChannelEntries', $entries);
-	}
-
 	/**
 	 * Display the CP entry form
 	 *
