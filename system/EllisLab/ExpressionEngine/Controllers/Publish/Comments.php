@@ -52,6 +52,12 @@ class Comments extends Publish {
 	 */
 	public function index()
 	{
+		if (ee()->input->post('bulk_action'))
+		{
+			$this->performBulkActions();
+			ee()->functions->redirect(cp_url('publish/comments', ee()->cp->get_url_state()));
+		}
+
 		$vars = array();
 		$channel = NULL;
 		$base_url = new URL('publish/comments', ee()->session->session_id());
@@ -156,6 +162,12 @@ class Comments extends Publish {
 	 */
 	public function entry($entry_id)
 	{
+		if (ee()->input->post('bulk_action'))
+		{
+			$this->performBulkActions();
+			ee()->functions->redirect(cp_url('publish/comments/entry/' . $entry_id, ee()->cp->get_url_state()));
+		}
+
 		$vars = array();
 		$base_url = new URL('publish/comments/entry/' . $entry_id, ee()->session->session_id());
 
@@ -339,6 +351,28 @@ class Comments extends Publish {
 		return $status;
 	}
 
+	private function performBulkActions()
+	{
+		switch(ee()->input->post('bulk_action'))
+		{
+			case 'remove':
+				$this->remove(ee()->input->post('selection'));
+				break;
+
+			case 'remove':
+				$this->setStatus(ee()->input->post('selection'), 'o');
+				break;
+
+			case 'closed':
+				$this->setStatus(ee()->input->post('selection'), 'c');
+				break;
+
+			case 'pending':
+				$this->setStatus(ee()->input->post('selection'), 'p');
+				break;
+		}
+	}
+
 	private function remove($comment_ids)
 	{
 		if ( ! is_array($comment_ids))
@@ -369,5 +403,49 @@ class Comments extends Publish {
 			->defer();
 	}
 
+	private function setStatus($comment_ids, $status)
+	{
+		if ( ! is_array($comment_ids))
+		{
+			$comment_ids = array($comment_ids);
+		}
+
+		$comments = ee('Model')->get('Comment', $comment_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->set('status', $status)
+			->update();
+
+		$comments = ee('Model')->get('Comment', $comment_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		$comment_names = array();
+
+		ee()->load->helper('text');
+
+		foreach ($comments as $comment)
+		{
+			$comment_names[] = ellipsize($comment->comment, 50);
+		}
+
+		switch ($status)
+		{
+			case 'o':
+				$status = lang('open');
+				break;
+			case 'c':
+				$status = lang('closed');
+				break;
+			default:
+				$status = lang("pending");
+		}
+
+		ee('Alert')->makeInline('comments-form')
+			->asSuccess()
+			->withTitle(lang('success'))
+			->addToBody(sprintf(lang('comments_status_updated_desc'), strtolower($status)))
+			->addToBody($comment_names)
+			->defer();
+	}
 }
 // EOF

@@ -43,6 +43,12 @@ $lang = array(
 'entries_removed_desc' =>
 'The following entries were removed',
 
+'comments_removed_desc' =>
+'The following comments were removed',
+
+'comments_status_updated_desc' =>
+'The following comments were set to %s',
+
 'column_comment' => 'Comment',
 'column_comment_date' => 'Date',
 'column_ip_address' => 'IP',
