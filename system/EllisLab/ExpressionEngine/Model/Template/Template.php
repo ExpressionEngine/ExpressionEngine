@@ -37,7 +37,6 @@ class Template extends Model {
 	protected static $_table_name = 'templates';
 
 	protected static $_typed_columns = array(
-		'save_template_file' => 'boolString',
 		'cache'              => 'boolString',
 		'enable_http_auth'   => 'boolString',
 		'allow_php'          => 'boolString',
@@ -74,7 +73,6 @@ class Template extends Model {
 		'site_id'            => 'required|isNatural',
 		'group_id'           => 'required|isNatural',
 		'template_name'      => 'required|alphaDash',
-		'save_template_file' => 'enum[y,n]',
 		'cache'              => 'enum[y,n]',
 		'enable_http_auth'   => 'enum[y,n]',
 		'allow_php'          => 'enum[y,n]',
@@ -85,7 +83,6 @@ class Template extends Model {
 	protected $site_id;
 	protected $group_id;
 	protected $template_name;
-	protected $save_template_file;
 	protected $template_type;
 	protected $template_data;
 	protected $template_notes;
