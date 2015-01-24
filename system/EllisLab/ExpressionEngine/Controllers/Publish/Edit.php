@@ -127,14 +127,31 @@ class Edit extends Publish {
 			$base_url->setQueryStringVariable('search', ee()->view->search_value);
 		}
 
-		$count = $entries->count();
-
 		$filters = ee('Filter')
 			->add($channel_filter)
 			->add($category_filter)
 			->add($status_filter)
-			->add('Date')
-			->add('Perpage', $count, 'all_entries');
+			->add('Date');
+
+		$filter_values = $filters->values();
+
+		if ( ! empty($filter_values['filter_by_date']))
+		{
+			if (is_array($filter_values['filter_by_date']))
+			{
+				$entries->filter('entry_date', '>=', $filter_values['filter_by_date'][0]);
+				$entries->filter('entry_date', '<', $filter_values['filter_by_date'][1]);
+			}
+			else
+			{
+				$entries->filter('entry_date', '>=', ee()->localize->now - $filter_values['filter_by_date']);
+			}
+		}
+
+		$count = $entries->count();
+
+		// Add this last to get the right $count
+		$filters->add('Perpage', $count, 'all_entries');
 
 		ee()->view->filters = $filters->render($base_url);
 
