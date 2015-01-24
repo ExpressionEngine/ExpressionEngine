@@ -672,9 +672,6 @@ $lang = array(
 'no_templates_assigned' =>
 'There are no templates currently assigned to you',
 
-'save_template_file' =>
-'Save Template as File',
-
 'template_not_saved' =>
 'Unable to save your template as a text file',
 
