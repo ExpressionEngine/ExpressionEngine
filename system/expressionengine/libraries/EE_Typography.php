@@ -845,7 +845,7 @@ class EE_Typography extends CI_Typography {
 			OR get_bool_from_string($options['smartypants']) == TRUE)
 		{
 			if ( ! class_exists('SmartyPants_Parser')){
-				require_once(APPPATH.'libraries/typography/SmartyPants/smartypants.php');
+			require_once(APPPATH.'libraries/typography/SmartyPants/smartypants.php');
 			}
 			// 2  ->  "---" for em-dashes; "--" for en-dashes
 			$str = SmartyPants($str, 2);
@@ -1004,14 +1004,14 @@ class EE_Typography extends CI_Typography {
 						$str = str_replace($tag_match[0], '', $str);
 					}
 					else
-					{
+			{
 						$str = str_replace(
 							$tag_match[0],
 							"<".$val['tag']." ".$val['property']."='".$tag_match[1]."''>".$tag_match[2]."</".$val['tag'].">",
-							$str
-						);
+					$str
+				);
 					}
-				}
+			}
 			}
 			else
 			{
