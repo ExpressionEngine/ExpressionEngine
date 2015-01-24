@@ -53,6 +53,7 @@ return array(
 		'ChannelFieldGroup'=> 'EllisLab\ExpressionEngine\Module\Channel\Model\ChannelFieldGroup',
 		'ChannelFieldStructure' => 'EllisLab\ExpressionEngine\Module\Channel\Model\ChannelFieldStructure',
 		'ChannelEntry' => 'EllisLab\ExpressionEngine\Module\Channel\Model\ChannelEntry',
+		'ChannelFormSettings' => 'EllisLab\ExpressionEngine\Module\Channel\Model\ChannelFormSettings',
 
 		// ..\Comment
 		'Comment' => 'EllisLab\ExpressionEngine\Module\Comment\Model\Comment',
