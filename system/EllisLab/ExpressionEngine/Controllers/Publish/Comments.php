@@ -76,6 +76,7 @@ class Comments extends Publish {
 		if ($status_filter->value())
 		{
 			$comments->filter('status', $status_filter->value());
+			$comments->filter('comment', 'LIKE', '%' . ee()->view->search_value . '%');
 		}
 
 		ee()->view->search_value = ee()->input->get_post('search');
@@ -149,7 +150,16 @@ class Comments extends Publish {
 		}
 
 		ee()->view->cp_page_title = lang('all_comments');
-		ee()->view->cp_heading = lang('all_comments');
+
+		// Set the page heading
+		if ( ! empty(ee()->view->search_value))
+		{
+			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+		}
+		else
+		{
+			ee()->view->cp_heading = lang('all_comments');
+		}
 
 		ee()->cp->render('publish/comments/index', $vars);
 	}
@@ -192,6 +202,7 @@ class Comments extends Publish {
 		if ( ! empty(ee()->view->search_value))
 		{
 			$base_url->setQueryStringVariable('search', ee()->view->search_value);
+			$comments->filter('comment', 'LIKE', '%' . ee()->view->search_value . '%');
 		}
 
 		$filters = ee('Filter')
@@ -249,7 +260,16 @@ class Comments extends Publish {
 		);
 
 		ee()->view->cp_page_title = sprintf(lang('all_comments_for_entry'), $entry->title);
-		ee()->view->cp_heading = sprintf(lang('all_comments_for_entry'), $entry->title);
+
+		// Set the page heading
+		if ( ! empty(ee()->view->search_value))
+		{
+			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+		}
+		else
+		{
+			ee()->view->cp_heading = sprintf(lang('all_comments_for_entry'), $entry->title);
+		}
 
 		ee()->cp->render('publish/comments/index', $vars);
 	}
