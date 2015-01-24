@@ -427,7 +427,7 @@ class Channel extends CP_Controller {
 		// Check short name characters
 		if (preg_match('/[^a-z0-9\-\_]/i', $str))
 		{
-			ee()->form_validation->set_message('_valid_channel_name', lang('invalid_short_name'));
+			ee()->form_validation->set_message('_validChannelName', lang('invalid_short_name'));
 			return FALSE;
 		}
 
@@ -442,7 +442,7 @@ class Channel extends CP_Controller {
 
 		if ($channel->all()->count() > 0)
 		{
-			ee()->form_validation->set_message('_valid_channel_name', lang('taken_channel_name'));
+			ee()->form_validation->set_message('_validChannelName', lang('taken_channel_name'));
 			return FALSE;
 		}
 
