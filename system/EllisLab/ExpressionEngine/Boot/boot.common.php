@@ -256,7 +256,7 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 */
 	function bool_config_item($item)
 	{
-		if (function_exists('get_instance') && get_instance() !== NULL)
+		if (function_exists('ee') && ee() !== NULL)
 		{
 			$value = ee()->config->item($item);
 		}
