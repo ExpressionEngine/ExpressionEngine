@@ -34,7 +34,7 @@ class Content_publish extends CP_Controller {
 	private $_channel_fields 	= array();
 	private $_publish_blocks 	= array();
 	private $_publish_layouts 	= array();
-	private $_errors			= array();
+	private $errors				= array();
 	private $_assigned_channels = array();
 	private $_smileys_enabled	= FALSE;
 
