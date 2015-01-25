@@ -29,23 +29,6 @@ class EE_Core {
 	var $native_plugins		= array();		// List of native plugins with EE
 
 	/**
-	 * Constructor
-	 */
-	public function __construct()
-	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
-		// Yes, this is silly. No it won't work without it.
-		// For some reason PHP won't bind the reference
-		// for core to the super object quickly enough.
-		// Breaks access to core in the menu lib.
-		ee()->core = $this;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Sets constants, sets paths contants to appropriate directories, loads
 	 * the database and generally prepares the system to run.
 	 */
@@ -93,54 +76,24 @@ class EE_Core {
 		define('PATH_DICT', 	APPPATH.'config/');
 		define('AJAX_REQUEST',	ee()->input->is_ajax_request());
 
-		// Setup Dependency Injection Container
-		// This must come very early in the process, nothing but constants above
-		ee()->di = new \EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer();
+		ee()->load->helper('language');
+		ee()->load->helper('string');
 
 		// Load the default caching driver
 		ee()->load->driver('cache');
 
-		// Register Config
-		ee()->di->registerSingleton('Config', function($di, $config_file = 'config') {
-			$directory = new \EllisLab\ExpressionEngine\Service\Config\Directory(SYSPATH.'config/');
-			return $directory->file($config_file);
-		});
-
-		// Load DB and set DB preferences
-		ee()->di->registerSingleton('Database', function($di) {
-			$database_config = new \EllisLab\ExpressionEngine\Service\Database\DBConfig(ee('Config'));
-			return new \EllisLab\ExpressionEngine\Service\Database\Database($database_config);
-		});
 		ee()->load->database();
 		ee()->db->swap_pre = 'exp_';
 		ee()->db->db_debug = FALSE;
 
-		ee()->di->register('Event', function($di)
-		{
-			return new \EllisLab\ExpressionEngine\Service\Event\Emitter();
-		});
+		// boot the addons
+		ee('App')->setupAddons(PATH_PI);
+		ee('App')->setupAddons(PATH_MOD);
+		ee('App')->setupAddons(PATH_EXT);
+		ee('App')->setupAddons(PATH_ADDONS);
 
-		ee()->di->registerSingleton('Model', function($di)
-		{
-			$model_alias_path = APPPATH . 'config/model_aliases.php';
-			$datastore = new \EllisLab\ExpressionEngine\Service\Model\DataStore(
-				ee()->db,
-				$model_alias_path
-			);
-
-            return new \EllisLab\ExpressionEngine\Service\Model\Frontend(
-                $datastore
-            );
-		});
-
-		ee()->di->registerSingleton('Validation', function($di)
-		{
-			return new \EllisLab\ExpressionEngine\Service\Validation\Factory();
-		});
-
-
-		// Setup API model factory
-		ee()->api = ee()->di->make('Model');
+		// Set ->api on the legacy facade to the model factory
+		ee()->set('api', ee()->di->make('Model'));
 
 		// Note enable_db_caching is a per site setting specified in EE_Config.php
 		// If debug is on we enable the profiler and DB debug
