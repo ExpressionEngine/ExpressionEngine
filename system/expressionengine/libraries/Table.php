@@ -163,7 +163,7 @@ class EE_Table {
 				per_page: 5
 			]
 		*/
-		$controller = isset(ee()->_mcp_reference) ? ee()->_mcp_reference : $this->EE;
+		$controller = isset(ee()->_mcp_reference) ? ee()->_mcp_reference : ee();
 		$data = $controller->$func($settings, $params);
 
 		$this->uniqid = uniqid('tbl_');
