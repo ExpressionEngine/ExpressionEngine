@@ -100,11 +100,59 @@ abstract class Core {
 	 */
 	protected function loadController($routing)
 	{
-		// TODO add seth's changes for the "new" way
 		$this->legacy->includeBaseController();
-		$this->legacy->loadController($routing);
+
+		$modern_routing = $this->loadNamespacedController($routing);
+
+		// TODO add seth's changes for the "new" way
+		if ($modern_routing)
+		{
+			$routing = $modern_routing;
+		}
+		else
+		{
+			$this->legacy->loadController($routing);
+		}
+
 
 		$this->legacy->markBenchmark('loading_time:_base_classes_end');
+
+		return $routing;
+	}
+
+	protected function loadNamespacedController($routing)
+	{
+		$RTR = $GLOBALS['RTR'];
+		$class  = $RTR->fetch_class(TRUE);
+		$method = $RTR->fetch_method();
+
+		// First try a fully namespaced class, with fallback
+		if ( ! class_exists($class))
+		{
+			// If that didn't work try a fallback class matching the directory name
+			$old_class = $RTR->fetch_class();
+			$old_method = $method;
+
+			$RTR->set_method($RTR->fetch_class());
+
+			$directories = explode('/', rtrim($RTR->fetch_directory(), '/'));
+			$RTR->set_class(array_pop($directories));
+
+			$class  = $RTR->fetch_class(TRUE);
+			$method = $RTR->fetch_method();
+		}
+
+
+		if ( ! class_exists($class))
+		{
+			$RTR->set_class($old_class);
+			$RTR->set_method($old_method);
+
+			return FALSE;
+		}
+
+		$routing['class'] = $class;
+		$routing['method'] = $method;
 
 		return $routing;
 	}
