@@ -1175,7 +1175,7 @@ if ( ! function_exists('_attributes_to_string'))
  */
 if ( ! function_exists('_get_validation_object'))
 {
-	function &_get_validation_object()
+	function _get_validation_object()
 	{
 		$CI =& get_instance();
 
