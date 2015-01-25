@@ -30,7 +30,7 @@ class EE_Output {
 
 	var $remove_unparsed_variables = FALSE; // whether to remove left-over variables that had bad syntax
 
-	var $final_output;
+	var $final_output		= '';
 	var $cache_expiration	= 0;
 	var $headers			= array();
 	var $enable_profiler	= FALSE;
@@ -92,14 +92,7 @@ class EE_Output {
 	 */
 	function append_output($output)
 	{
-		if ($this->final_output == '')
-		{
-			$this->final_output = $output;
-		}
-		else
-		{
-			$this->final_output .= $output;
-		}
+		$this->final_output .= $output;
 	}
 
 	// --------------------------------------------------------------------
