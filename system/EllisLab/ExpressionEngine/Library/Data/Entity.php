@@ -110,6 +110,28 @@ abstract class Entity extends MixableImpl {
 	}
 
 	/**
+	 * Batch update properties
+	 *
+	 * Safely updates any properties that might exist,
+	 * passing them through the getters along the way.
+	 *
+	 * @param array $data Data to update
+	 * @return $this
+	 */
+	public function update(array $data = array())
+	{
+		foreach ($data as $k => $v)
+		{
+			if ($this->hasProperty($k))
+			{
+				$this->setProperty($k, $v);
+			}
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Fill data without passing through a getter
 	 *
 	 * @param array $data Data to fill
