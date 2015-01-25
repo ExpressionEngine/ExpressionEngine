@@ -29,9 +29,27 @@ return array(
 			return new Filesystem\Filesystem();
 		},
 
+		'View' => function($di, $basepath = '')
+		{
+			return new \EllisLab\ExpressionEngine\Service\View\ViewFactory($basepath, ee()->load, ee()->view);
+		},
+
+		'Filter' => function($di)
+		{
+			$filters = new \EllisLab\ExpressionEngine\Service\Filter\FilterFactory($di->make('View', '_shared/filters'));
+			$filters->setDIContainer($di);
+			return $filters;
+		},
+
 	),
 
 	'services.singletons' => array(
+
+		'Alert' => function($di)
+		{
+			$view = $di->make('View')->make('_shared/alert');
+			return new \EllisLab\ExpressionEngine\Service\Alert\AlertCollection(ee()->session, $view);
+		},
 
 		'Config' => function($ee)
 		{
@@ -45,6 +63,11 @@ return array(
 			);
 
 			return new Database\Database($db_config);
+		},
+
+		'Grid' => function($di)
+		{
+			return new \EllisLab\ExpressionEngine\Service\Grid\Grid();
 		},
 
 		'Model' => function($ee)
