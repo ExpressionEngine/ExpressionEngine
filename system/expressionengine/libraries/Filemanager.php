@@ -829,7 +829,7 @@ class Filemanager {
 		ee()->load->model('file_model');
 
 		// Argh
-		ee()->_mcp_reference = $this;
+		ee()->set('_mcp_reference', $this);
 
 		ee()->load->library('table');
 		// @todo put .AMP. back ...
@@ -866,7 +866,7 @@ class Filemanager {
 		$data = ee()->table->datasource('_file_datasource', $state, $params);
 
 		// End Argh
-		ee()->_mcp_reference = ee();
+		ee()->remove('_mcp_reference');
 
 		return $data;
 	}
