@@ -189,7 +189,7 @@ class EE_Exceptions {
 
 			ob_start();
 
-			if (isset(ee()->session->userdata))
+			if (isset(ee()->session) && isset(ee()->session->userdata))
 			{
 				$path = PATH_CP_THEME.'/errors/'.$template.'.php';
 
