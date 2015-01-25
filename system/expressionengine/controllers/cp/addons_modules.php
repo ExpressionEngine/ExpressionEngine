@@ -26,6 +26,7 @@
 class Addons_modules extends CP_Controller {
 
 	var $_mcp_reference;
+	var $_lang_overrides;
 
 	/**
 	 * Constructor
@@ -347,7 +348,7 @@ class Addons_modules extends CP_Controller {
 
 
 		// add validation callback support to the mcp class (see EE_form_validation for more info)
-		$this->_mcp_reference =& $mod;
+		ee()->set('_mcp_reference', $mod);
 
 		$method = ($this->input->get('method') !== FALSE) ? $this->input->get('method') : 'index';
 
@@ -363,7 +364,7 @@ class Addons_modules extends CP_Controller {
 		}
 
 		// unset reference
-		unset($this->_mcp_reference);
+		ee()->remove('_mcp_reference');
 
 		// remove package paths
 		$this->load->remove_package_path($installed[$module]['path']);
