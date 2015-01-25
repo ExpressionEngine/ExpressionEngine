@@ -55,12 +55,12 @@ class Directory {
 		if (file_exists($fullpath))
 		{
 			// Cache the config File
-			if ( ! isset($cache[$fullpath]))
+			if ( ! isset($this->cache[$fullpath]))
 			{
-				$cache[$fullpath] = new File($fullpath);
+				$this->cache[$fullpath] = new File($fullpath);
 			}
 
-			return $cache[$fullpath];
+			return $this->cache[$fullpath];
 		}
 
 		throw new \Exception('No config file was found.');
