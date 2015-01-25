@@ -34,6 +34,7 @@ class Database
 
 	/**
 	 * Create new Database object
+	 *
 	 * @param DBConfig $db_config DBConfig object
 	 */
 	public function __construct(DBConfig $db_config)
@@ -43,6 +44,7 @@ class Database
 
 	/**
 	 * Get the config for the selected database group
+	 *
 	 * @return array Array suitable for loading up the database
 	 */
 	public function getConfig()
