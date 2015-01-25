@@ -72,7 +72,8 @@ class Addons_modules extends CP_Controller {
 
 		foreach($modules as $module => $info)
 		{
-			$this->lang->loadfile(( ! isset($this->lang_overrides[$module])) ? $module : $this->lang_overrides[$module]);
+	//		$this->lang->loadfile(( ! isset($this->lang_overrides[$module])) ? $module : $this->lang_overrides[$module]);
+			$this->lang->loadfile($module);
 		}
 
 		$this->installed_modules = $this->addons->get_installed();
