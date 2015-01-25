@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Service;
+namespace EllisLab\ExpressionEngine\Core;
 
 /**
  * ExpressionEngine - by EllisLab
