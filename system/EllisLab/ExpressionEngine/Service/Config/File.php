@@ -25,7 +25,7 @@ namespace EllisLab\ExpressionEngine\Service\Config;
  * @author     EllisLab Dev Team
  * @link       http://ellislab.com
  */
-class File
+class File implements Config
 {
 	protected $config;
 	protected $defaults = array(
