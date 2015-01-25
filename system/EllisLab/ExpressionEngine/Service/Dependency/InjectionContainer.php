@@ -34,6 +34,11 @@ use Exception;
 class InjectionContainer implements ServiceProvider {
 
 	/**
+	 * @var string Native prefix
+	 */
+	const NATIVE_PREFIX = 'ee:';
+
+	/**
 	 * @var array An associative array of registered dependencies
 	 */
 	protected $registry = array();
@@ -56,12 +61,12 @@ class InjectionContainer implements ServiceProvider {
 	{
 		if (strpos($name, ':') === FALSE)
 		{
-			$name = 'EllisLab:' . $name;
+			$name = static::NATIVE_PREFIX . $name;
 		}
 
 		if ( isset($registry[$name]))
 		{
-			throw new Exception('Attempt to reregister existing class' . $name);
+			throw new Exception('Attempt to reregister existing class ' . $name);
 		}
 
 		$registry[$name] = $object;
@@ -169,7 +174,7 @@ class InjectionContainer implements ServiceProvider {
 
 		if (strpos($name, ':') === FALSE)
 		{
-			$name = 'EllisLab:' . $name;
+			$name = static::NATIVE_PREFIX . $name;
 		}
 
 		if ( ! isset($this->registry[$name]))
