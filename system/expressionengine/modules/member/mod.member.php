@@ -154,8 +154,6 @@ class Member {
 	 */
 	function __construct()
 	{
-		$this->EE =& get_instance();
-
 		ee()->lang->loadfile('myaccount');
 		ee()->lang->loadfile('member');
 		ee()->functions->template_type = 'webpage';
@@ -2284,7 +2282,7 @@ class Member {
 		// -------
 
 		// Set some paths
-		$theme_images = ee()->config->slash_item('theme_folder_url', 1).'profile_themes/'.ee()->config->item('member_theme').'/images/';
+		$theme_images = URL_THEMES.'profile_themes/'.ee()->config->item('member_theme').'/images/';
 
 		if (ee()->session->userdata('profile_theme') != '')
 		{
@@ -2292,14 +2290,14 @@ class Member {
 		}
 		else
 		{
-			$img_path = ee()->config->slash_item('theme_folder_url', 1).'profile_themes/'.ee()->config->item('member_theme').'/images/';
+			$img_path = URL_THEMES.'profile_themes/'.ee()->config->item('member_theme').'/images/';
 		}
 
 		$simple = ($this->show_headings == FALSE) ? '/simple' : '';
 
 		if ($this->css_file_path == '')
 		{
-			$this->css_file_path = ee()->config->slash_item('theme_folder_url', 1).'profile_themes/'.ee()->config->item('member_theme').'profile.css';
+			$this->css_file_path = URL_THEMES.'profile_themes/'.ee()->config->item('member_theme').'profile.css';
 		}
 
 		// Parse {switch="foo|bar"} variables
@@ -2915,6 +2913,19 @@ class Member {
 		}
 
 		return ee()->TMPL->tagdata = $out;
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Create a language dropdown list
+	 * @param  string $default Default language
+	 * @return string          Code for a language dropdown
+	 */
+	protected function get_language_listing($default = 'english')
+	{
+		$dirs = ee()->lang->language_pack_names();
+		return form_dropdown('language', $dirs, $default);
 	}
 }
 // END CLASS

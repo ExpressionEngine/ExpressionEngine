@@ -103,15 +103,11 @@ class EE_Session {
 	// Use set_cache() and cache() methods.
 	public $cache				= array();
 
-	protected $EE;
-
 	/**
 	 * Session Class Constructor
 	 */
 	public function __construct()
 	{
-		$this->EE =& get_instance();
-
 		// If they load this library manually we need to make sure our
 		// dependencies are all here. This can happen in the cp_js_end hook.
 		ee()->load->library('remember');
@@ -1081,6 +1077,32 @@ class EE_Session {
 				break;
 		}
 		return ($s);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get the currently used language pack. Will return the user's language
+	 * pack if a session exists, otherwise will fall back to the default
+	 * language. If that's not set for some reason, we'll just use English.
+	 * @return string Language pack name to use
+	 */
+	public function get_language()
+	{
+		if ($this->userdata['language'] != '')
+		{
+			return $this->userdata['language'];
+		}
+		if (ee()->input->cookie('language'))
+		{
+			return ee()->input->cookie('language');
+		}
+		else if (ee()->config->item('deft_lang') != '')
+		{
+			return ee()->config->item('deft_lang');
+		}
+
+		return 'english';
 	}
 
 	// --------------------------------------------------------------------

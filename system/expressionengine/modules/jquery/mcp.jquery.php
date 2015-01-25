@@ -24,18 +24,6 @@
  */
 class Jquery_mcp {
 
-	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function Jquery_mcp()
-	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
 
 }
 // End Jquery CP Class

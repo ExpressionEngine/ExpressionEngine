@@ -38,8 +38,6 @@ class Remember {
 	protected $ip_address = '';
 	protected $user_agent = '';
 
-	protected $EE;
-
 	/**
 	 * Constructor
 	 *
@@ -47,8 +45,6 @@ class Remember {
 	 */
 	function __construct($params = array())
 	{
-		$this->EE =& get_instance();
-
 		$this->cookie_value = ee()->input->cookie($this->cookie);
 		$this->expiry = (isset($params['remember_me_ttl'])) ? $params['remember_me_ttl'] : $this->expiry;
 

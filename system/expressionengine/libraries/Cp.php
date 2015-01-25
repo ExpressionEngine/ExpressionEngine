@@ -24,25 +24,24 @@
  */
 class Cp {
 
-	private $EE;
 	private $view;
 
-	var $cp_theme				= '';
-	var $cp_theme_url			= '';	// base URL to the CP theme folder
+	public $cp_theme             = '';
+	public $cp_theme_url         = '';	// base URL to the CP theme folder
 
-	var $installed_modules		= FALSE;
+	public $installed_modules    = FALSE;
 
-	var $its_all_in_your_head	= array();
-	var $footer_item			= array();
-	var $requests				= array();
-	var $loaded					= array();
+	public $its_all_in_your_head = array();
+	public $footer_item          = array();
+	public $requests             = array();
+	public $loaded               = array();
 
-	var $js_files = array(
-			'ui'				=> array(),
-			'plugin'			=> array(),
-			'file'				=> array(),
-			'package'			=> array(),
-			'fp_module'			=> array()
+	public $js_files = array(
+		'ui'        => array(),
+		'plugin'    => array(),
+		'file'      => array(),
+		'package'   => array(),
+		'fp_module' => array()
 	);
 
 
@@ -52,8 +51,6 @@ class Cp {
 	 */
 	function __construct()
 	{
-		$this->EE =& get_instance();
-
 		if (ee()->router->fetch_class() == 'ee')
 		{
 			show_error("The CP library is only available on Control Panel requests.");
@@ -62,11 +59,15 @@ class Cp {
 		// Cannot set these in the installer
 		if ( ! defined('EE_APPPATH'))
 		{
-			$this->cp_theme	= ( ! ee()->session->userdata('cp_theme')) ? ee()->config->item('cp_theme') : ee()->session->userdata('cp_theme');
-			$this->cp_theme_url = ee()->config->slash_item('theme_folder_url').'cp_themes/'.$this->cp_theme.'/';
+			$this->cp_theme	= ( ! ee()->session->userdata('cp_theme'))
+				? ee()->config->item('cp_theme')
+				: ee()->session->userdata('cp_theme');
+			$this->cp_theme_url = ($this->cp_theme == 'default')
+				? URL_THEMES.'cp_themes/default/'
+				: URL_ADDONS_THEMES.'cp_themes/'.$this->cp_theme.'/';
 
 			ee()->load->vars(array(
-				'cp_theme_url'	=> $this->cp_theme_url
+				'cp_theme_url' => $this->cp_theme_url
 			));
 		}
 
@@ -85,8 +86,8 @@ class Cp {
 	 */
 	function set_default_view_variables()
 	{
-		$js_folder	= (ee()->config->item('use_compressed_js') == 'n') ? 'src' : 'compressed';
-		$langfile	= substr(ee()->router->class, 0, strcspn(ee()->router->class, '_'));
+		$js_folder = (ee()->config->item('use_compressed_js') == 'n') ? 'src' : 'compressed';
+		$langfile  = substr(ee()->router->class, 0, strcspn(ee()->router->class, '_'));
 
 		// Javascript Path Constants
 
@@ -157,8 +158,8 @@ class Cp {
 		// kind of hacky, but before it was accessing _ci_cache_vars, which is worse
 
 		ee()->session->set_cache('cp_sidebar', 'cp_avatar_path', $vars['cp_avatar_path'])
-						  ->set_cache('cp_sidebar', 'cp_avatar_width', $vars['cp_avatar_width'])
-						  ->set_cache('cp_sidebar', 'cp_avatar_height', $vars['cp_avatar_height']);
+			->set_cache('cp_sidebar', 'cp_avatar_width', $vars['cp_avatar_width'])
+			->set_cache('cp_sidebar', 'cp_avatar_height', $vars['cp_avatar_height']);
 
 		// The base javascript variables that will be available globally through EE.varname
 		// this really could be made easier - ideally it would show up right below the main
@@ -176,21 +177,21 @@ class Cp {
 			'btn_fix_errors'		=> lang('btn_fix_errors'),
 		);
 
-		require_once(APPPATH.'libraries/El_pings'.EXT);
+		require_once(APPPATH.'libraries/El_pings.php');
 		$pings = new El_pings();
 
 		ee()->javascript->set_global(array(
-			'BASE'				=> str_replace(AMP, '&', BASE),
-			'XID'				=> CSRF_TOKEN,
-			'CSRF_TOKEN'		=> CSRF_TOKEN,
-			'PATH_CP_GBL_IMG'	=> PATH_CP_GBL_IMG,
-			'CP_SIDEBAR_STATE'	=> ee()->session->userdata('show_sidebar'),
-			'username'			=> ee()->session->userdata('username'),
-			'registered'		=> $pings->is_registered(),
-			'router_class'		=> ee()->router->class, // advanced css
-			'lang'				=> $js_lang_keys,
-			'THEME_URL'			=> $this->cp_theme_url,
-			'hasRememberMe'		=> (bool) ee()->remember->exists()
+			'BASE'             => str_replace(AMP, '&', BASE),
+			'XID'              => CSRF_TOKEN,
+			'CSRF_TOKEN'       => CSRF_TOKEN,
+			'PATH_CP_GBL_IMG'  => PATH_CP_GBL_IMG,
+			'CP_SIDEBAR_STATE' => ee()->session->userdata('show_sidebar'),
+			'username'         => ee()->session->userdata('username'),
+			'registered'       => $pings->is_registered(),
+			'router_class'     => ee()->router->class, // advanced css
+			'lang'             => $js_lang_keys,
+			'THEME_URL'        => $this->cp_theme_url,
+			'hasRememberMe'    => (bool) ee()->remember->exists()
 		));
 
 		// Combo-load the javascript files we need for every request
@@ -308,9 +309,9 @@ class Cp {
 		{
 			ee()->view->sidebar_state = ' style="display:none"';
 			ee()->view->maincontent_state = ' style="width:100%; display:block"';
-        }
+		}
 
-        if (ee()->view->disabled('ee_sidebar'))
+		if (ee()->view->disabled('ee_sidebar'))
 		{
 			return;
 		}
@@ -492,7 +493,7 @@ class Cp {
 				break;
 			case 'file':		$file = PATH_THEMES.'javascript/'.$folder.'/'.$name.'.js';
 				break;
-			case 'package':		$file = PATH_THIRD.$name.'/javascript/'.$name.'.js';
+			case 'package':		$file = PATH_ADDONS.$name.'/javascript/'.$name.'.js';
 				break;
 			case 'fp_module':	$file = PATH_MOD.$name.'/javascript/'.$name.'.js';
 				break;
@@ -614,7 +615,7 @@ class Cp {
 	{
 		$filtered_get = array_filter(array_keys($_GET), function ($key) {
 			return ! in_array($key, array('D', 'C', 'S', 'M'));
-		}); 
+		});
 
 		return array_intersect_key($_GET, array_flip($filtered_get));
 	}
@@ -715,7 +716,7 @@ class Cp {
 	function load_package_js($file)
 	{
 		$current_top_path = ee()->load->first_package_path();
-		$package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
+		$package = trim(str_replace(array(PATH_ADDONS, 'views'), '', $current_top_path), '/');
 		ee()->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'package='.$package.AMP.'file='.$file, TRUE);
 	}
 
@@ -733,7 +734,7 @@ class Cp {
 	function load_package_css($file)
 	{
 		$current_top_path = ee()->load->first_package_path();
-		$package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
+		$package = trim(str_replace(array(PATH_ADDONS, 'views'), '', $current_top_path), '/');
 		$url = BASE.AMP.'C=css'.AMP.'M=third_party'.AMP.'package='.$package.AMP.'theme='.$this->cp_theme.AMP.'file='.$file;
 
 		$this->add_to_head('<link type="text/css" rel="stylesheet" href="'.$url.'" />');
@@ -830,24 +831,24 @@ class Cp {
 	 */
 	function get_installed_modules()
 	{
-	    if ( ! is_array($this->installed_modules))
-	    {
-	        $this->installed_modules = array();
+		if ( ! is_array($this->installed_modules))
+		{
+			$this->installed_modules = array();
 
-	        ee()->db->select('LOWER(module_name) AS name');
-	        ee()->db->order_by('module_name');
-	        $query = ee()->db->get('modules');
+			ee()->db->select('LOWER(module_name) AS name');
+			ee()->db->order_by('module_name');
+			$query = ee()->db->get('modules');
 
-	        if ($query->num_rows())
-	        {
+			if ($query->num_rows())
+			{
 				foreach($query->result_array() as $row)
 				{
 					$this->installed_modules[$row['name']] = $row['name'];
 				}
-	        }
-	    }
+			}
+		}
 
-	    return $this->installed_modules;
+		return $this->installed_modules;
 	}
 
 	// --------------------------------------------------------------------

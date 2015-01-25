@@ -24,13 +24,6 @@
  */
 class Publish
 {
-	/**
-	 * Constructor
-	 */
-	function __construct()
-	{
-		$this->EE =& get_instance();
-	}
 
 	public function build_categories_block($cat_group_ids, $entry_id, $selected_categories, $default_category = '', $file = FALSE)
 	{
@@ -153,7 +146,7 @@ class Publish
 				foreach ($link_info as $val)
 				{
 					$edit_links[] = array(
-						'url' =>  cp_url('admin_content/category_editor', array('group_id' => $val['group_id'])), 
+						'url' =>  cp_url('admin_content/category_editor', array('group_id' => $val['group_id'])),
 						'group_name' => $val['group_name']
 					);
 				}

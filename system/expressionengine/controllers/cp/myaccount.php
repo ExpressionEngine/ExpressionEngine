@@ -1267,7 +1267,7 @@ class MyAccount extends CP_Controller {
 		{
 			$vars['language'] = ($this->config->item('deft_lang') && $this->config->item('deft_lang') != '') ? $this->config->item('deft_lang') : 'english';
 		}
-		$vars['language_options'] = $this->language_model->language_pack_names();
+		$vars['language_options'] = $this->lang->language_pack_names();
 
 		$this->cp->render('account/localization', $vars);
 	}
@@ -2647,7 +2647,7 @@ class MyAccount extends CP_Controller {
 		if ( ! isset($this->extension_paths[$extension]))
 		{
 			// First or third party?
-			foreach (array(PATH_MOD, PATH_THIRD) as $tmp_path)
+			foreach (array(PATH_MOD, PATH_ADDONS) as $tmp_path)
 			{
 				if (file_exists($tmp_path.$extension.'/ext.'.$extension.'.php'))
 				{

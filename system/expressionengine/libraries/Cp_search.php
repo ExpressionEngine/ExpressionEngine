@@ -34,7 +34,6 @@ class Cp_search {
 	 */
 	function __construct()
 	{
-		$this->EE =& get_instance();
 		$this->_search_map();
 
 		ee()->lang->loadfile('cp_search');
@@ -160,9 +159,6 @@ class Cp_search {
 	 */
 	function _build_index($language)
 	{
-		// PHP 4 redundancy dept. of redundancy
-		$this->EE =& get_instance();
-
 		ee()->load->model('admin_model');
 		ee()->lang->loadfile('admin');
 
@@ -408,7 +404,7 @@ class Cp_search {
 		$nonsense = array('unauthorized_access', 'none', 'all', 'open', 'closed', 'and_more', 'install', 'uninstall', 'add', 'edit', 'delete');
 
 		$langs = array();
-		$path = PATH_CP_THEME.ee()->config->item('cp_theme').'/'.$view.'.php';
+		$path = PATH_CP_THEME.$view.'.php';
 
 		if ( ! file_exists($path))
 		{

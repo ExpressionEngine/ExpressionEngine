@@ -4,11 +4,6 @@ class EE_Html_buttons {
 
 	var $allow_img	= FALSE;
 	var $buttons 	= array();
-	
-	public function __construct()
-	{	
-		$this->EE =& get_instance();
-	}
 
 	/**
 	 * Resets the class vars.
@@ -36,7 +31,7 @@ class EE_Html_buttons {
 		ob_start();
 ?>
 
-<script type="text/javascript"> 
+<script type="text/javascript">
 //<![CDATA[
 
 var selField  = 'body';
@@ -66,7 +61,7 @@ function nullo()
 {
 	return;
 }
-		
+
 //  State change
 
 function styleswap(link)
@@ -84,7 +79,7 @@ function styleswap(link)
 //  Set button mode
 
 function setmode(which)
-{	
+{
 	if (which == 'guided')
 		selMode = 'guided';
 	else
@@ -100,12 +95,12 @@ function clear_state()
 		while (usedarray[0])
 		{
 			clearState = arraypop(usedarray);
-			
+
 			eval(clearState + " = 0");
-			
+
 			document.getElementById(clearState).className = 'htmlButtonOff';
 		}
-	}	
+	}
 }
 
 // Array size
@@ -119,9 +114,9 @@ function getarraysize(thearray)
 			return i;
 		}
 	}
-	
+
 	return thearray.length;
-}		
+}
 
 // Array push
 
@@ -143,12 +138,12 @@ function arraypop(thearray)
 // Insert single tag
 
 function singleinsert(tagOpen)
-{		
-	eval("document.getElementById('submit_post')." + selField + ".value += tagOpen");	
-	
+{
+	eval("document.getElementById('submit_post')." + selField + ".value += tagOpen");
+
 	curField = eval("document.getElementById('submit_post')." + selField);
 	curField.blur();
-	curField.focus();	
+	curField.focus();
 }
 
 
@@ -157,13 +152,13 @@ function singleinsert(tagOpen)
 function selectinsert(item, tag)
 {
 	var selval =  item.options[item.selectedIndex].value;
-		
+
 	if (selval == 0)
 		return;
 
 	var tagOpen		= '[' + tag + '=' + selval + ']';
 	var tagClose	= '[/' + tag + ']';
-		
+
 	taginsert('other', tagOpen, tagClose, 'menu');
 }
 
@@ -178,18 +173,18 @@ function taginsert(item, tagOpen, tagClose, type)
 	// Determine which tag we are dealing with
 
 	var which = eval('item.name');
-	
-	var theSelection = false;  
+
+	var theSelection = false;
 	var result		 = false;
 	eval("var theField = document.getElementById('submit_post')." + selField + ";");
-		
+
 	if (selMode == 'guided')
 	{
 		data = prompt(enter_text, "");
-		
+
 		if ((data != null) && (data != ""))
 		{
-			result = tagOpen + data + tagClose;		
+			result = tagOpen + data + tagClose;
 		}
 	}
 
@@ -209,21 +204,21 @@ function taginsert(item, tagOpen, tagClose, type)
 		var s3 = (theField.value).substring(selEnd, selLength);
 
 		s2 = (result == false) ? tagOpen + theSelection + tagClose : result;
-		
+
 		theSelection = '';
-	
+
 		theField.value = s1+s2+s3;
 		theField.blur();
 		theField.focus();
-		
+
 		return;
 	}
 	else if (document.selection)
 	{
 		theSelection = document.selection.createRange().text;
-		
+
 		theField.focus();
-	
+
 		if (theSelection)
 		{
 			document.selection.createRange().text = (result == false) ? tagOpen + theSelection + tagClose : result;
@@ -232,12 +227,12 @@ function taginsert(item, tagOpen, tagClose, type)
 		{
 			document.selection.createRange().text = (result == false) ? tagOpen + tagClose : result;
 		}
-		
+
 		theSelection = '';
-		
+
 		theField.blur();
 		theField.focus();
-		
+
 		return;
 	}
 	else if ( ! isNaN(theField.selectionEnd))
@@ -252,20 +247,20 @@ function taginsert(item, tagOpen, tagClose, type)
 		var s1 = (theField.value).substring(0,selStart);
 		var s2 = (theField.value).substring(selStart, selEnd)
 		var s3 = (theField.value).substring(selEnd, selLength);
-		
+
 		if (result == false)
 		{
 			var newStart = selStart + tagOpen.length + s2.length + tagClose.length;
-		
+
 			theField.value = (result == false) ? s1 + tagOpen + s2 + tagClose + s3 : result;
 		}
 		else
 		{
 			var newStart = selStart + result.length;
-		
+
 			theField.value = s1 + result + s3;
 		}
-		
+
 		theField.focus();
 		theField.selectionStart = newStart;
 		theField.selectionEnd = newStart;
@@ -274,17 +269,17 @@ function taginsert(item, tagOpen, tagClose, type)
 	}
 	else if (selMode == 'guided')
 	{
-		eval("document.getElementById('submit_post')." + selField + ".value += result");			
-		
+		eval("document.getElementById('submit_post')." + selField + ".value += result");
+
 		curField = eval("document.getElementById('submit_post')." + selField);
 		curField.blur();
-		curField.focus();	
-		return;		
+		curField.focus();
+		return;
 	}
-	
-		
+
+
 	// Add single open tags
-	
+
 	if (item == 'other')
 	{
 		if (tagClose)
@@ -299,47 +294,47 @@ function taginsert(item, tagOpen, tagClose, type)
 	else if (eval(which) == 0)
 	{
 		var result = tagOpen;
-		
-		eval("document.getElementById('submit_post')." + selField + ".value += result");			
+
+		eval("document.getElementById('submit_post')." + selField + ".value += result");
 		eval(which + " = 1");
-		
+
 		arraypush(tagarray, tagClose);
 		arraypush(usedarray, which);
-		
+
 		running++;
-						
+
 		styleswap(which);
 	}
 	else
 	{
 		// Close tags
-	
+
 		n = 0;
-		
+
 		for (i = 0 ; i < tagarray.length; i++ )
 		{
 			if (tagarray[i] == tagClose)
 			{
 				n = i;
-				
+
 				running--;
-				
+
 				while (tagarray[n])
 				{
 					closeTag = arraypop(tagarray);
-					eval("document.getElementById('submit_post')." + selField + ".value += closeTag");			
+					eval("document.getElementById('submit_post')." + selField + ".value += closeTag");
 				}
-				
+
 				while (usedarray[n])
 				{
 					clearState = arraypop(usedarray);
 					eval(clearState + " = 0");
 					document.getElementById(clearState).className = 'htmlButtonA';
-				}						
+				}
 			}
 		}
 	}
-	
+
 	curField = eval("document.getElementById('submit_post')." + selField);
 	curField.blur();
 	curField.focus();
@@ -352,16 +347,16 @@ function promptTag(which)
 
 	if ( ! which)
 		return;
-		
-	// Is this a Windows user?  
-		
-	var theSelection = "";	
+
+	// Is this a Windows user?
+
+	var theSelection = "";
 	eval("var theField = document.getElementById('submit_post')." + selField + ";");
-	
+
 	if ((navigator.appName == "Microsoft Internet Explorer") &&
 		(navigator.appVersion.indexOf("Win") != -1))
 	{
-		theSelection = document.selection.createRange().text; 
+		theSelection = document.selection.createRange().text;
 	}
 	else if (theField.selectionEnd && (theField.selectionEnd - theField.selectionStart > 0))
 	{
@@ -376,40 +371,40 @@ function promptTag(which)
 		var s3 = (theField.value).substring(selEnd, selLength);
 		theSelection = s2;
 	}
-	
+
 	// Create Link
 	if (which == "link")
 	{
 		var URL = prompt(url_text, "http://");
-				
+
 		if ( ! URL || URL == 'http://' || URL == null)
-			return; 
-		
+			return;
+
 		var Name = prompt(webpage_text, theSelection);
-		
+
 		if ( ! Name || Name == null)
-			return; 
-				
+			return;
+
 		var Link = '[url=' + URL + ']' + Name + '[/url]';
 	}
-	
-	
+
+
 	if (which == "email")
 	{
 		var Email = prompt(email_text,"");
-		
+
 		if ( ! Email || Email == null)
-			return; 
-			
+			return;
+
 		var Title = prompt(email_title, theSelection);
-		
+
 		if (Title == null)
-			return; 
-	
+			return;
+
 		if (Title == "")
 			Title = Email;
-	
-		var Link = '[' + 'email=' + Email + ']' + Title + '[' + '/email]';				
+
+		var Link = '[' + 'email=' + Email + ']' + Title + '[' + '/email]';
 	}
 
 	if ((navigator.appName == "Microsoft Internet Explorer") &&
@@ -421,7 +416,7 @@ function promptTag(which)
 		}
 		else
 		{
-			eval("document.getElementById('submit_post')." + selField + ".value += Link");			
+			eval("document.getElementById('submit_post')." + selField + ".value += Link");
 		}
 	}
 	else if (theField.selectionEnd && (theField.selectionEnd - theField.selectionStart > 0))
@@ -430,9 +425,9 @@ function promptTag(which)
 	}
 	else
 	{
-		eval("document.getElementById('submit_post')." + selField + ".value += Link");			
+		eval("document.getElementById('submit_post')." + selField + ".value += Link");
 	}
-	
+
 	curField = eval("document.getElementById('submit_post')." + selField);
 	curField.blur();
 	curField.focus();
@@ -441,18 +436,18 @@ function promptTag(which)
 // Close all tags
 
 function closeall()
-{	
+{
 	if (tagarray[0])
 	{
 		while (tagarray[0])
 		{
 			closeTag = arraypop(tagarray);
-						
-			eval("document.getElementById('submit_post')." + selField + ".value += closeTag");			
+
+			eval("document.getElementById('submit_post')." + selField + ".value += closeTag");
 		}
 	}
-	
-	clear_state();	
+
+	clear_state();
 	curField = eval("document.getElementById('submit_post')." + selField);
 	curField.focus();
 }
@@ -460,7 +455,7 @@ function closeall()
 
 //]]>
 </script>
-		
+
 <table border='0'  cellspacing='0' cellpadding='0'>
 <tr>
 <?php
@@ -498,13 +493,13 @@ if (ee()->config->item('remove_close_all_button') !== 'y')
 ?>
 
 </tr>
-</table> 
+</table>
 
 <?php
 	$out = ob_get_contents();
-	
-	ob_end_clean(); 
-	
+
+	ob_end_clean();
+
 	return $out;
 }
 

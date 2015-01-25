@@ -38,8 +38,6 @@ class Rss {
 	 */
 	function feed()
 	{
-		$this->EE =& get_instance();
-
 		ee()->TMPL->encode_email = FALSE;
 
 		if (ee()->TMPL->fetch_param('debug') == 'yes')

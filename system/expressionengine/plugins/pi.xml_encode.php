@@ -28,8 +28,6 @@ class Xml_encode {
 	 */
 	function Xml_encode($str = '')
 	{
-		$this->EE =& get_instance();
-
 		$protect_all = (ee()->TMPL->fetch_param('protect_entities') === 'yes') ? TRUE : FALSE;
 
 		$str = ($str == '') ? ee()->TMPL->tagdata : $str;

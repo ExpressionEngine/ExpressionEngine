@@ -45,9 +45,6 @@ class Simple_commerce {
 	/** ----------------------------------------*/
 	function Simple_commerce()
 	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
 		$this->possible_post = array('business', 'receiver_email', 'receiver_id', 'item_name',
 									 'item_number', 'quantity', 'invoice', 'custom', 'memo',
 									 'tax', 'option_name1', 'option_selection1', 'option_name2',

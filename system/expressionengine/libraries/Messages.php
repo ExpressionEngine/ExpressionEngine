@@ -96,9 +96,6 @@ class EE_Messages {
 	/** -----------------------------------*/
 	function __construct()
 	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
 		/** -----------------------------------
 		/**  A Few Things to Define, Batman
 		/** -----------------------------------*/
@@ -147,7 +144,7 @@ class EE_Messages {
 		$this->title = ee()->lang->line('private_messages');
 		$this->crumb = ee()->lang->line('private_messages');
 
-		$this->images_folder = ee()->config->slash_item('theme_folder_url').'cp_global_images/';
+		$this->images_folder = URL_THEMES.'cp_global_images/';
 
 		$this->single_parts['path']['image_url'] = $this->images_folder;
 

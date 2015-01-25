@@ -24,13 +24,7 @@
  */
 class Emoticon_mcp {
 
-	/**
-	  *  Constructor
-	  */
-	function Emoticon_mcp()
-	{
-		$this->EE =& get_instance();
-	}
+
 }
 
 // END CLASS

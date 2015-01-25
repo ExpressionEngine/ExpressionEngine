@@ -21,10 +21,10 @@ dependencies:
 
 checkout:
   post:
-    - "cp system/tests/circleci/{config.php,database.php} system/expressionengine/config/"
-    - "chmod 666 system/expressionengine/config/{config.php,database.php}"
-    - chmod -R 777 system/expressionengine/cache
-    - chmod -R 777 system/expressionengine/templates
+    - cp system/tests/circleci/config.php system/config/
+    - chmod 666 system/config/config.php
+    - chmod -R 777 system/cache
+    - chmod -R 777 system/templates
     - chmod -R 777 system/expressionengine/translations
     - chmod 777 system/tests/rspec/support/tmp
     - chmod -R 777 system/tests/rspec/support/file-sync/uploads

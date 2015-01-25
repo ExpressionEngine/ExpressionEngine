@@ -24,7 +24,6 @@
  */
 class EE_Addons {
 
-	var $EE;
 	var $_map;						// addons sorted by addon_type (plural)
 	var $_packages = array();		// contains references to _map by package name
 	var $_exclusions = array();
@@ -40,8 +39,6 @@ class EE_Addons {
 			'channel',
 			'comment',
 		);
-
-		$this->EE =& get_instance();
 	}
 
 	// --------------------------------------------------------------------
@@ -78,7 +75,7 @@ class EE_Addons {
 				'rte_tools'		=> array()
 			);
 
-			if (($map = directory_map(PATH_THIRD, 2)) !== FALSE)
+			if (($map = directory_map(PATH_ADDONS, 2)) !== FALSE)
 			{
 				$this->package_list($map);
 
@@ -222,7 +219,7 @@ class EE_Addons {
 
 						// Plugin classes don't have a suffix
 						$class = ($ident == 'pi') ? ucfirst($name) : ucfirst($name).'_'.$ident;
-						$path = ($native) ? APPPATH.$type.$pkg_name.'/' : PATH_THIRD.$pkg_name.'/';
+						$path = ($native) ? APPPATH.$type.$pkg_name.'/' : PATH_ADDONS.$pkg_name.'/';
 						$author = ($native) ? 'native' : 'third_party';
 
 						$this->_map[$addon_type][$name] = array(

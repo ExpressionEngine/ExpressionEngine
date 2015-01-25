@@ -32,22 +32,8 @@ class Image_rte {
 		'cp_only'		=> 'y'
 	);
 
-	private $EE;
 	private $folders	= array();
 	private $filedirs	= array();
-
-	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function __construct()
-	{
-		// Make a local reference of the ExpressionEngine super object
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Globals we need
@@ -103,7 +89,7 @@ class Image_rte {
 		# load the external file
 		$styles	= file_get_contents( 'rte.image.css', TRUE );
 		$theme	= ee()->session->userdata('cp_theme');
-		$theme	= ee()->config->item('theme_folder_url').'cp_themes/'.($theme ? $theme : 'default').'/';
+		$theme	= URL_THEMES.'cp_themes/'.($theme ? $theme : 'default').'/';
 		return str_replace('{theme_folder_url}', $theme, $styles);
 	}
 

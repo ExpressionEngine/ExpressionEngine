@@ -99,7 +99,6 @@ class ProgressIterator extends ArrayIterator {
 	public function __construct($arr)
 	{
 		parent::__construct($arr);
-		$this->EE =& get_instance();
 	}
 
 	public function current()

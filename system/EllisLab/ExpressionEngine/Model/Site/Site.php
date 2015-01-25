@@ -36,12 +36,12 @@ class Site extends Model {
 	protected static $_primary_key = 'site_id';
 	protected static $_table_name = 'sites';
 
-	protected static $_columns = array(
-		'ChannelPreferences' => 'site_channel_preferences',
-		'MailingListPreferences' => 'site_mailinglist_preferences',
-		'MemberPreferences' => 'site_member_preferences',
-		'SystemPreferences' => 'site_system_preferences',
-		'TemplatePreferences' => 'site_template_preferences'
+	protected static $_composite_columns = array(
+		'site_channel_preferences' => 'ChannelPreferences',
+		'site_mailinglist_preferences' => 'MailingListPreferences',
+		'site_member_preferences' => 'MemberPreferences',
+		'site_system_preferences' => 'SystemPreferences',
+		'site_template_preferences' => 'TemplatePreferences'
 	);
 
 	protected static $_relationships = array(

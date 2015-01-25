@@ -24,14 +24,11 @@
  */
 class Addons_installer {
 
-	var $EE;
-
 	/**
 	 * Constructor
 	 */
 	function __construct()
 	{
-		$this->EE =& get_instance();
 		ee()->load->library('api');
 		ee()->load->library('addons');
 	}
@@ -326,7 +323,7 @@ class Addons_installer {
 		}
 		else
 		{
-			$path = PATH_THIRD.$module.'/upd.'.$module.'.php';
+			$path = PATH_ADDONS.$module.'/upd.'.$module.'.php';
 		}
 
 		if ( ! is_file($path))

@@ -66,29 +66,9 @@ class Admin_model extends CI_Model {
 	 */
 	function get_installed_language_packs()
 	{
-		static $languages;
-
-		if ( ! isset($languages))
-		{
-			$this->load->helper('directory');
-
-			$source_dir = APPPATH.'language/';
-
-			if (($list = directory_map($source_dir, TRUE)) !== FALSE)
-			{
-				foreach ($list as $file)
-				{
-					if (is_dir($source_dir.$file) && $file[0] != '.')
-					{
-						$languages[$file] = ucfirst($file);
-					}
-				}
-
-				ksort($languages);
-			}
-		}
-
-		return $languages;
+		ee()->logger->deprecated('3.0', 'EE_lang::language_pack_names()');
+		ee()->load->model('language_model');
+		return ee()->lang->language_pack_names();
 	}
 
 	// --------------------------------------------------------------------
@@ -103,32 +83,32 @@ class Admin_model extends CI_Model {
 	 */
 	function get_cp_theme_list()
 	{
-		$this->load->library('user_agent');
-
 		static $themes;
 
 		if ( ! isset($themes))
 		{
 			$this->load->helper('directory');
 
-			if (($list = directory_map(PATH_CP_THEME, TRUE)) !== FALSE)
-			{
-				foreach ($list as $file)
-				{
-					if (is_dir(PATH_CP_THEME.$file) && $file[0] != '.')
-					{
-						if (substr($file, 0, 6) == 'mobile' && ! $this->agent->is_mobile())
-						{
-							continue;
-						}
-						else
-						{
-							$themes[$file] = ucfirst(str_replace('_', ' ', $file));
+			$theme_paths = array(
+				PATH_THEMES.'cp_themes/',
+				PATH_ADDONS_THEMES.'cp_themes/'
+			);
 
-						}
+			foreach ($theme_paths as $theme_path)
+			{
+				$map = directory_map($theme_path, TRUE);
+				$map = array_filter($map, function($item) {
+					return ! empty($item) && $item !== 'index.html' && $item !== '.';
+				});
+				ksort($map);
+
+				foreach ($map as $theme_name)
+				{
+					if (is_dir($theme_path.$theme_name))
+					{
+						$themes[$theme_name] = ucfirst(str_replace('_', ' ', $theme_name));
 					}
 				}
-				ksort($themes);
 			}
 		}
 

@@ -38,10 +38,8 @@ class Metaweblog_api_mcp {
 	 *
 	 * @access	public
 	 */
-	function Metaweblog_api_mcp ($switch = TRUE)
+	function __construct()
 	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
 		ee()->load->helper('form');
 	}
 

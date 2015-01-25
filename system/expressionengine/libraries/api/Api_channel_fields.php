@@ -239,7 +239,7 @@ class Api_channel_fields extends Api {
 
 			if (isset($fts[$field_type]))
 			{
-				$paths[] = PATH_THIRD.$fts[$field_type]['package'].'/';
+				$paths[] = PATH_ADDONS.$fts[$field_type]['package'].'/';
 			}
 
 			$paths[] = PATH_MOD.$field_type.'/';
@@ -782,7 +782,6 @@ class Api_channel_fields extends Api {
 				// collission with other modules with similarly named fields. This namespacing
 				// gets stripped as needed when the module data is processed in get_module_methods()
 				// This function is called for insertion and editing of entries.
-				// @php4 would be nice to use a reference in this foreach...
 
 				foreach ($fields as $key => $field)
 				{
@@ -904,7 +903,7 @@ class Api_channel_fields extends Api {
 			$class_name = ucfirst($name).'_tab';
 
 			// First or third party?
-			foreach(array(APPPATH.'modules/', PATH_THIRD) as $tmp_path)
+			foreach(array(APPPATH.'modules/', PATH_ADDONS) as $tmp_path)
 			{
 				if (file_exists($tmp_path.$name.'/tab.'.$name.'.php'))
 				{

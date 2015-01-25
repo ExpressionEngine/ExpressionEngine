@@ -19,6 +19,17 @@ $config['cp_url'] = '{cp_url}';
 $config['doc_url'] = '{doc_url}';
 $config['is_system_on'] = '{is_system_on}';
 $config['allow_extensions'] = '{allow_extensions}';
+$config['database'] = array (
+	'expressionengine' => array (
+		'hostname' => '{db_hostname}',
+		'username' => '{db_username}',
+		'password' => '{db_password}',
+		'database' => '{db_database}',
+		'dbdriver' => '{db_dbdriver}',
+		'dbprefix' => '{db_dbprefix}',
+		'pconnect' => {db_pconnect}
+	),
+);
 {extra_config}
 
 // END EE config items

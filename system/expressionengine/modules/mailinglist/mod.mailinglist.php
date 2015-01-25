@@ -29,16 +29,6 @@ class Mailinglist {
 	var $return_data	= '';
 
 	/**
-	 * Constructor
-	 */
-	function Mailinglist()
-	{
-		$this->EE =& get_instance();
-	}
-
-	// -------------------------------------------------------------------------
-
-	/**
 	 * Mailing List Submission Form
 	 */
 	function form()

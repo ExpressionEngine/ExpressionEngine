@@ -28,14 +28,6 @@ class EE_Blacklist {
 	var $blacklisted = 'n';		// Is this request blacklisted.
 
 
-	function __construct()
-	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Blacklist Checker
 	 *

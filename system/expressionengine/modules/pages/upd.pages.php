@@ -27,13 +27,6 @@ class Pages_upd {
 
 	var $version		= '2.2';
 
-	function Pages_upd($switch=TRUE)
-	{
-		$this->EE =& get_instance();
-	}
-
-	// ----------------------------------------------------------------------
-
 	function tabs()
 	{
 		$tabs['pages'] = array(

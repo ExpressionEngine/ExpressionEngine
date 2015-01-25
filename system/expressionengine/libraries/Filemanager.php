@@ -33,8 +33,6 @@ class Filemanager {
 	public $upload_data			= NULL;
 	public $upload_warnings		= FALSE;
 
-	private $EE;
-
 	private $_errors			= array();
 	private $_upload_dirs		= array();
 	private $_upload_dir_prefs	= array();
@@ -49,11 +47,10 @@ class Filemanager {
 	 */
 	function __construct()
 	{
-		$this->EE =& get_instance();
 		ee()->load->library('javascript');
 		ee()->lang->loadfile('filemanager');
 
-		$this->theme_url = ee()->config->item('theme_folder_url').'cp_themes/'.ee()->config->item('cp_theme').'/';
+		$this->theme_url = ee()->cp->cp_theme_url;
 	}
 
 	// ---------------------------------------------------------------------
@@ -650,7 +647,7 @@ class Filemanager {
 		$ret['json'] = array(
 			'BASE'			=> ee()->functions->fetch_site_index(0,0).QUERY_MARKER,
 			'THEME_URL'		=> $this->theme_url,
-			'PATH_CP_GBL_IMG'	=> ee()->config->item('theme_folder_url').'cp_global_images/',
+			'PATH_CP_GBL_IMG'	=> URL_THEMES.'cp_global_images/',
 			'filebrowser' => array(
 				'endpoint_url'	=> $endpoint_url,
 				'window_title'	=> lang('file_manager'),
@@ -832,7 +829,7 @@ class Filemanager {
 		ee()->load->model('file_model');
 
 		// Argh
-		ee()->_mcp_reference = $this;
+		ee()->set('_mcp_reference', $this);
 
 		ee()->load->library('table');
 		// @todo put .AMP. back ...
@@ -869,7 +866,7 @@ class Filemanager {
 		$data = ee()->table->datasource('_file_datasource', $state, $params);
 
 		// End Argh
-		ee()->_mcp_reference = $this->EE;
+		ee()->remove('_mcp_reference');
 
 		return $data;
 	}

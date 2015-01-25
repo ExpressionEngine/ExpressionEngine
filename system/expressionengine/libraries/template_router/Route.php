@@ -30,7 +30,7 @@ class EE_Route {
 
 	public $segment_regex = "
 		(?P<static>[^{]*)                         # static rule data
-		({	
+		({
 		(?P<variable>[^}:]*)                      # variable name
 		(?:
 			\:                                    # variable delimiter
@@ -221,7 +221,7 @@ class EE_Route {
 				if (empty($segment['rules']))
 				{
 					// Segment variable with no rules should be equivalent to alpha-dash
-					$rule = $this->rules->load('alpha_dash'); 
+					$rule = $this->rules->load('alpha_dash');
 					$segment = new EE_Route_segment($segment['variable'], array($rule));
 				}
 				else
@@ -282,7 +282,10 @@ class EE_Route {
 
 					if (preg_match("/^[a-zA-Z0-9_\-]*$/ix", $variable))
 					{
-						$hash = md5($variable);
+						// Subpattern names must be alpha numeric, start with a 
+						// non-digit and be less than 32 character long.
+						// SHA1 in base36 = 31 characters + 1 character prefix
+						$hash = 'e' . base_convert(sha1($variable), 16, 36);
 						$this->subpatterns[$hash] = $variable;
 						$segment['variable'] = $hash;
 					}
@@ -298,7 +301,7 @@ class EE_Route {
 
 					if (in_array($segment['variable'], $used_names))
 					{
-						throw new Exception(lang('variable_in_use') . $segment['variable']);
+						throw new Exception(lang('variable_in_use') . $variable);
 					}
 
 					$used_names[] = $segment['variable'];

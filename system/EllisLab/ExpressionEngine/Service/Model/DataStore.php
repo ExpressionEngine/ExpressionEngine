@@ -35,16 +35,17 @@ class DataStore {
 
 	protected $db;
 	protected $aliases;
+	protected $default_prefix;
 
 	/**
 	 * @param $db \CI_DB
-	 * @param $alias_config_path Path to the config file
-	 * @todo move this to use the config service
+	 * @param $aliases Array of model aliases
 	 */
-	public function __construct($db, $alias_config_path)
+	public function __construct($db, $aliases, $default_prefix)
 	{
 		$this->db = $db;
-		$this->aliases = include $alias_config_path;
+		$this->aliases = $aliases;
+		$this->default_prefix = $default_prefix;
 	}
 
 	/**
@@ -317,6 +318,11 @@ class DataStore {
 	 */
 	protected function expandModelAlias($name)
 	{
+		if ( ! strpos($name, ':'))
+		{
+			$name = $this->default_prefix.':'.$name;
+		}
+
 		if ( ! isset($this->aliases[$name]))
 		{
 			if ( ! class_exists($name))

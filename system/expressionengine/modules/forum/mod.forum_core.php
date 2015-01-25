@@ -31,7 +31,6 @@ class Forum_Core extends Forum {
 	 */
 	public function __construct()
 	{
-		$this->EE =& get_instance();
 		ee()->load->library('template', NULL, 'TMPL');
 	}
 
@@ -3596,7 +3595,8 @@ class Forum_Core extends Forum {
 			}
 
 			// Can they ignore users?
-			if (ee()->session->userdata('member_id') != $row['author_id'])
+			if (ee()->session->userdata('member_id')
+				&& ee()->session->userdata('member_id') != $row['author_id'])
 			{
 				$temp = $this->allow_if('can_ignore', $temp);
 			}

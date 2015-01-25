@@ -28,13 +28,6 @@ class Forum_upd {
 
 	var $version			= '3.1.17';
 
-	function Forum_upd()
-	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-	}
-
-
 	function tabs()
 	{
 		$tabs['forum'] = array(

@@ -52,9 +52,6 @@ class Comment {
 	 */
 	function Comment()
 	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
 		$fields = array('name', 'email', 'url', 'location', 'comment');
 
 		foreach ($fields as $val)

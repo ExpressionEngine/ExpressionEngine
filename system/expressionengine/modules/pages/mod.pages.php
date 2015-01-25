@@ -25,19 +25,6 @@
 class Pages {
 
 	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function Pages()
-	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Output Javascript
 	 *
 	 * Outputs Javascript files, triggered most commonly by an action request,

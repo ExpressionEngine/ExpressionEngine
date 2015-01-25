@@ -32,17 +32,6 @@ class EE_Subscription {
 
 	var $table;
 
-	/**
-	 * Constructor
-	 *
-	 * @access	public
-	 */
-	function __construct()
-	{
-		// Get EE superobject reference
-		$this->EE =& get_instance();
-	}
-
 	// --------------------------------------------------------------------
 
 	/**

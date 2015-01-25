@@ -8,18 +8,6 @@ class Wiki_ext {
 	var $docs_url = 'http://ellislab.com/expressionengine/user-guide/modules/wiki/index.html';
 	var $required_by = array('module');
 
-	private $EE;
-
-	/**
-	 * Constructor
-	 */
-	function __construct()
-	{
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Handle hook call
 	 */

@@ -26,15 +26,6 @@ class EE_Stylesheet {
 
 	var $style_cache = array();
 
-
-	function __construct()
-	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-	}
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Request CSS Template
 	 *
@@ -137,7 +128,7 @@ class EE_Stylesheet {
 
 				if ($file == PATH_THEMES.'cp_themes/default/css/jquery-ui-1.8.16.custom.css')
 				{
-					$theme_url = ee()->config->item('theme_folder_url').'cp_themes/'.ee()->config->item('cp_theme');
+					$theme_url = URL_THEMES.'cp_themes/'.ee()->config->item('cp_theme');
 
 					$out = str_replace('url(images/', 'url('.$theme_url.'/images/', $out);
 				}
@@ -145,7 +136,7 @@ class EE_Stylesheet {
 		}
 
 		$cp_theme  = ee()->config->item('cp_theme');
-		$cp_theme_url = ee()->config->slash_item('theme_folder_url').'cp_themes/'.$cp_theme.'/';
+		$cp_theme_url = URL_THEMES.'cp_themes/'.$cp_theme.'/';
 
 		$out = str_replace('../images', $cp_theme_url.'images', $out);
 		$out = str_replace('<?=$cp_theme_url?>', $cp_theme_url, $out);

@@ -36,11 +36,8 @@ class Pages_mcp {
 	/**
 	  *  Constructor
 	  */
-	function Pages_mcp($switch=TRUE)
+	function __construct()
 	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
 		ee()->load->model('pages_model');
 
 		$query = ee()->pages_model->fetch_configuration();

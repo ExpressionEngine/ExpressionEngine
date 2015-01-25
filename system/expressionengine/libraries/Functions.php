@@ -37,18 +37,6 @@ class EE_Functions {
 	public $catfields          = array();
 
 	/**
-	 * Constructor
-	 */
-	public function __construct()
-	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-	}
-
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Fetch base site index
 	 *
 	 * @access	public
@@ -292,8 +280,8 @@ class EE_Functions {
 	 * @access	public
 	 * @param string $str            String with EE Tags to encode
 	 * @param bool   $convert_curly  Set to TRUE to convert all curly brackets
-	 *                               to entities, otherwise only {exp:..., 
-	 *                               {embed..., {path.., {redirect..., and 
+	 *                               to entities, otherwise only {exp:...,
+	 *                               {embed..., {path.., {redirect..., and
 	 *                               {if... tags are encoded
 	 * @return string String with encoded EE tags
 	 */
@@ -824,15 +812,7 @@ class EE_Functions {
 			return $str;
 		}
 
-		// allows the split to work properly with multi-byte Unicode characters
-		if (is_php('4.3.2') === TRUE)
-		{
-			$word = preg_split('/\s/u', $str, -1, PREG_SPLIT_NO_EMPTY);
-		}
-		else
-		{
-			$word = preg_split('/\s/', $str, -1, PREG_SPLIT_NO_EMPTY);
-		}
+		$word = preg_split('/\s/u', $str, -1, PREG_SPLIT_NO_EMPTY);
 
 		if (count($word) <= $num)
 		{
@@ -976,37 +956,9 @@ class EE_Functions {
 	 */
 	public function language_pack_names($default)
 	{
-		$source_dir = APPPATH.'language/';
-
-		$dirs = array();
-
-		if ($fp = @opendir($source_dir))
-		{
-			while (FALSE !== ($file = readdir($fp)))
-			{
-				if (is_dir($source_dir.$file) && substr($file, 0, 1) != ".")
-				{
-					$dirs[] = $file;
-				}
-			}
-			closedir($fp);
-		}
-
-		sort($dirs);
-
-		$r  = "<div class='default'>";
-		$r .= "<select name='deft_lang' class='select'>\n";
-
-		foreach ($dirs as $dir)
-		{
-			$selected = ($dir == $default) ? " selected='selected'" : '';
-			$r .= "<option value='{$dir}'{$selected}>".ucfirst($dir)."</option>\n";
-		}
-
-		$r .= "</select>";
-		$r .= "</div>";
-
-		return $r;
+		ee()->logger->deprecated('3.0');
+		$dirs = ee()->lang->language_pack_names();
+		return form_dropdown('language', $dirs, $default);
 	}
 
 	// --------------------------------------------------------------------

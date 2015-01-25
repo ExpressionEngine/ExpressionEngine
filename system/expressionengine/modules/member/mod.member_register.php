@@ -214,32 +214,32 @@ class Member_register extends Member {
 		$config_fields = ee()->config->prep_view_vars('localization_cfg');
 
 		// Parse languge lines
-		$reg_form = $this->_var_swap($reg_form,
-									array(
-											'lang:username_length'	=> $un_min_len,
-											'lang:password_length'	=> $pw_min_len,
-											'form:localization'		=> ee()->localize->timezone_menu(),
-											'form:date_format'		=> form_preference('date_format', $config_fields['fields']['date_format']),
-											'form:time_format'		=> form_preference('time_format', $config_fields['fields']['time_format']),
-											'form:include_seconds'	=> form_preference('include_seconds', $config_fields['fields']['include_seconds']),
-											'form:language'			=> ee()->functions->language_pack_names('english')
-
-										)
-									);
+		$reg_form = $this->_var_swap(
+			$reg_form,
+			array(
+				'lang:username_length' => $un_min_len,
+				'lang:password_length' => $pw_min_len,
+				'form:localization'    => ee()->localize->timezone_menu(),
+				'form:date_format'     => form_preference('date_format', $config_fields['fields']['date_format']),
+				'form:time_format'     => form_preference('time_format', $config_fields['fields']['time_format']),
+				'form:include_seconds' => form_preference('include_seconds', $config_fields['fields']['include_seconds']),
+				'form:language'        => $this->get_language_listing()
+			)
+		);
 
 		// Generate Form declaration
 		$data['hidden_fields'] = array(
-										'ACT'	=> ee()->functions->fetch_action_id('Member', 'register_member'),
-										'RET'	=> ee()->functions->fetch_site_index(),
-										'FROM'	=> ($this->in_forum == TRUE) ? 'forum' : '',
-									  );
+			'ACT'  => ee()->functions->fetch_action_id('Member', 'register_member'),
+			'RET'  => ee()->functions->fetch_site_index(),
+			'FROM' => ($this->in_forum == TRUE) ? 'forum' : '',
+		);
 
 		if ($this->in_forum === TRUE)
 		{
 			$data['hidden_fields']['board_id'] = $this->board_id;
 		}
 
-		$data['id']	= 'register_member_form';
+		$data['id'] = 'register_member_form';
 
 		// Return the final rendered form
 		return ee()->functions->form_declaration($data).$reg_form."\n"."</form>";
@@ -476,7 +476,7 @@ class Member_register extends Member {
 
 		$optional = array(
 			'bio'				=> 'bio',
-			'language'			=> 'deft_lang',
+			'language'			=> 'language',
 			'timezone'			=> 'server_timezone',
 			'date_format'		=> 'date_format',
 			'time_format'		=> 'time_format',

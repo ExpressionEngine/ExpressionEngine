@@ -100,9 +100,6 @@ class Forum {
 	 */
 	public function __construct()
 	{
-		// Make a local reference to the ExpressionEngine super object
-		$this->EE =& get_instance();
-
 		ee()->db->cache_off();
 
 		// Load Base Forum Variables
@@ -775,8 +772,8 @@ class Forum {
 			$this->preferences['member_profile_path'] 	= $this->forum_path(ee()->config->item('profile_trigger').'/');
 		}
 
-		$this->preferences['board_theme_path'] 	= PATH_THEMES.'forum_themes/';
-		$this->preferences['board_theme_url']	= ee()->config->slash_item('theme_folder_url').'forum_themes/';
+		$this->preferences['board_theme_path'] = PATH_THEMES.'forum_themes/';
+		$this->preferences['board_theme_url']  = URL_THEMES.'forum_themes/';
 	}
 
 	// --------------------------------------------------------------------

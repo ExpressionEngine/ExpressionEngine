@@ -129,7 +129,7 @@ class Api_channel_entries extends Api {
 
 		if ( ! $this->autosave && count($this->errors) > 0)
 		{
-			return $this->errors;
+			return FALSE;
 		}
 
 		$this->_prepare_data($data, $mod_data, $autosave);
@@ -927,7 +927,7 @@ class Api_channel_entries extends Api {
 		if ( ! isset($data['title']) OR ! $data['title'] = strip_tags(trim($data['title'])))
 		{
 			$data['title'] = '';
-			$this->_set_error('missing_title', 'title');				
+			$this->_set_error('missing_title', 'title');
 		}
 
 		// Set entry_date and edit_date to "now" if empty
