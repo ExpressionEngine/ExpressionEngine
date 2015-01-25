@@ -1,4 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+use EllisLab\ExpressionEngine\Library\Core\LoaderFacade;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -39,6 +42,8 @@ class EE_Loader {
 	protected $_ci_helpers			= array();
 	protected $_ci_varmap			= array('user_agent' => 'agent');
 
+	protected $facade;
+
 	/**
 	 * Constructor
 	 *
@@ -52,7 +57,32 @@ class EE_Loader {
 		$this->_ci_model_paths = array(APPPATH);
 		$this->_ci_view_paths = array(APPPATH.'views/'	=> TRUE);
 
+		$this->set_base_classes();
+
 		log_message('debug', "Loader Class Initialized");
+	}
+
+	/**
+	 * Set the old superglobal facade, which we'll bind all
+	 * of the singletons on.
+	 */
+	public function setFacade($facade)
+	{
+		if (isset($this->facade))
+		{
+			throw new \Exception('Cannot override the loader facade.');
+		}
+
+		$this->facade = $facade;
+
+		// Assign all the class objects that were instantiated by the
+		// bootstrap file (boot.php) to local class variables
+		// so that CI can run as one big super object.
+		foreach (is_loaded() as $var => $class)
+		{
+			$var = ($var == 'loader') ? 'load' : $var;
+			$this->facade->set($var, load_class($class, 'core'));
+		}
 	}
 
 	/**
@@ -189,8 +219,6 @@ class EE_Loader {
 	/**
 	 * Set _base_classes variable
 	 *
-	 * This method is called once in CI_Controller.
-	 *
 	 * @param 	array
 	 * @return 	object
 	 */
@@ -275,8 +303,7 @@ class EE_Loader {
 			return;
 		}
 
-		$CI =& get_instance();
-		if (isset($CI->$name))
+		if ($this->facade->has($name))
 		{
 			show_error('The model name you are loading is the name of a resource that is already being used: '.$name);
 		}
@@ -297,7 +324,7 @@ class EE_Loader {
 					$db_conn = '';
 				}
 
-				$CI->load->database($db_conn, FALSE, TRUE);
+				$this->database($db_conn, FALSE, TRUE);
 			}
 
 			if ( ! class_exists('EE_Model'))
@@ -309,7 +336,7 @@ class EE_Loader {
 
 			$model = ucfirst($model);
 
-			$CI->$name = new $model();
+			$this->facade->set($name, new $model());
 
 			$this->_ci_models[] = $name;
 			return;
@@ -331,7 +358,6 @@ class EE_Loader {
 	 */
 	public function database($params = '', $return = FALSE, $active_record = NULL)
 	{
-		// Grab the super object
 		$CI =& get_instance();
 
 		// Do we even need to load the database class?
@@ -348,12 +374,8 @@ class EE_Loader {
 			return DB($params, $active_record);
 		}
 
-		// Initialize the db variable.  Needed to prevent
-		// reference errors with some configurations
-		$CI->db = '';
-
 		// Load the DB class
-		$CI->db =& DB($params, $active_record);
+		$this->facade->set('db', DB($params, $active_record));
 	}
 
 	// --------------------------------------------------------------------
@@ -365,22 +387,22 @@ class EE_Loader {
 	 */
 	public function dbutil()
 	{
+		$CI =& get_instance();
+
 		if ( ! class_exists('CI_DB'))
 		{
 			$this->database();
 		}
 
-		$CI =& get_instance();
-
 		// for backwards compatibility, load dbforge so we can extend dbutils off it
 		// this use is deprecated and strongly discouraged
-		$CI->load->dbforge();
+		$this->dbforge();
 
 		require_once(BASEPATH.'database/DB_utility.php');
 		require_once(BASEPATH.'database/drivers/'.$CI->db->dbdriver.'/'.$CI->db->dbdriver.'_utility.php');
 		$class = 'CI_DB_'.$CI->db->dbdriver.'_utility';
 
-		$CI->dbutil = new $class();
+		$this->facade->set('dbutil', new $class());
 	}
 
 	// --------------------------------------------------------------------
@@ -392,18 +414,18 @@ class EE_Loader {
 	 */
 	public function dbforge()
 	{
+		$CI =& get_instance();
+
 		if ( ! class_exists('CI_DB'))
 		{
 			$this->database();
 		}
 
-		$CI =& get_instance();
-
 		require_once(BASEPATH.'database/DB_forge.php');
 		require_once(BASEPATH.'database/drivers/'.$CI->db->dbdriver.'/'.$CI->db->dbdriver.'_forge.php');
 		$class = 'CI_DB_'.$CI->db->dbdriver.'_forge';
 
-		$CI->dbforge = new $class();
+		$this->facade->set('dbforge', new $class());
 	}
 
 	// --------------------------------------------------------------------
@@ -813,7 +835,8 @@ class EE_Loader {
 		{
 			$this->_ci_cached_vars = array_merge($this->_ci_cached_vars, $_ci_vars);
 		}
-		extract($this->_ci_cached_vars);
+
+		$use_eval = ((bool) @ini_get('short_open_tag') === FALSE AND config_item('rewrite_short_tags') == TRUE);
 
 		/*
 		 * Buffer the output
@@ -829,18 +852,7 @@ class EE_Loader {
 		 */
 		ob_start();
 
-		// If the PHP installation does not support short tags we'll
-		// do a little string replacement, changing the short tags
-		// to standard PHP echo statements.
-
-		if ((bool) @ini_get('short_open_tag') === FALSE AND config_item('rewrite_short_tags') == TRUE)
-		{
-			echo eval('?>'.preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', file_get_contents($_ci_path))));
-		}
-		else
-		{
-			include($_ci_path); // include() vs include_once() allows for multiple views with the same name
-		}
+		$this->facade->runFileInFacadeScope($_ci_path, $this->_ci_cached_vars, $use_eval);
 
 		log_message('debug', 'File loaded: '.$_ci_path);
 
@@ -1073,96 +1085,13 @@ class EE_Loader {
 		$this->_ci_classes[$class] = $classvar;
 
 		// Instantiate the class
-		$CI =& get_instance();
 		if ($config !== NULL)
 		{
-			$CI->$classvar = new $name($config);
+			$this->facade->set($classvar, new $name($config));
 		}
 		else
 		{
-			$CI->$classvar = new $name;
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Autoloader
-	 *
-	 * The config/autoload.php file contains an array that permits sub-systems,
-	 * libraries, and helpers to be loaded automatically.
-	 *
-	 * This function is public, as it's used in the CI_Controller class.
-	 * However, there is no reason you should ever needs to use it.
-	 *
-	 * @param	array
-	 * @return	void
-	 */
-	public function ci_autoloader()
-	{
-		include_once(APPPATH.'config/autoload.php');
-
-		if ( ! isset($autoload))
-		{
-			return FALSE;
-		}
-
-		// Autoload packages
-		if (isset($autoload['packages']))
-		{
-			foreach ($autoload['packages'] as $package_path)
-			{
-				$this->add_package_path($package_path);
-			}
-		}
-
-		// Load any custom config file
-		if (count($autoload['config']) > 0)
-		{
-			$CI =& get_instance();
-			foreach ($autoload['config'] as $key => $val)
-			{
-				$CI->config->load($val);
-			}
-		}
-
-		// Autoload helpers and languages
-		foreach (array('helper', 'language') as $type)
-		{
-			if (isset($autoload[$type]) AND count($autoload[$type]) > 0)
-			{
-				$this->$type($autoload[$type]);
-			}
-		}
-
-		// A little tweak to remain backward compatible
-		// The $autoload['core'] item was deprecated
-		if ( ! isset($autoload['libraries']) AND isset($autoload['core']))
-		{
-			$autoload['libraries'] = $autoload['core'];
-		}
-
-		// Load libraries
-		if (isset($autoload['libraries']) AND count($autoload['libraries']) > 0)
-		{
-			// Load the database driver.
-			if (in_array('database', $autoload['libraries']))
-			{
-				$this->database();
-				$autoload['libraries'] = array_diff($autoload['libraries'], array('database'));
-			}
-
-			// Load all other libraries
-			foreach ($autoload['libraries'] as $item)
-			{
-				$this->library($item);
-			}
-		}
-
-		// Autoload models
-		if (isset($autoload['model']))
-		{
-			$this->model($autoload['model']);
+			$this->facade->set($classvar, new $name);
 		}
 	}
 
@@ -1188,7 +1117,7 @@ class EE_Loader {
 	 *
 	 * @return	bool
 	 */
-	protected function &_ci_get_component($component)
+	protected function _ci_get_component($component)
 	{
 		$CI =& get_instance();
 		return $CI->$component;
