@@ -1,5 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+use EllisLab\ExpressionEngine\Library\Core\LoaderFacade;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -26,37 +28,42 @@
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/general/controllers.html
  */
-class CI_Controller {
+class Controller {
 
-	private static $instance;
+	private static $facade;
 
 	/**
 	 * Constructor
 	 */
 	public function __construct()
 	{
-		self::$instance =& $this;
-
-		// Assign all the class objects that were instantiated by the
-		// bootstrap file (boot.php) to local class variables
-		// so that CI can run as one big super object.
-		foreach (is_loaded() as $var => $class)
-		{
-			$this->$var =& load_class($class);
-		}
-
-		$this->load =& load_class('Loader', 'core');
-
-		$this->load->set_base_classes()->ci_autoloader();
-
 		log_message('debug', "Controller Class Initialized");
 	}
 
-	public static function &get_instance()
+	/**
+	 * Some controllers still use $this-> instead of ee()->
+	 */
+	public function __get($name)
 	{
-		return self::$instance;
+		$facade = self::$facade;
+		return $facade->get($name);
+	}
+
+	/**
+	 * Set the legacy facade
+	 */
+	public static function _setFacade($facade)
+	{
+		if (isset(self::$facade))
+		{
+			throw new \Exception('Cannot change the facade after boot');
+		}
+
+		self::$facade = $facade;
 	}
 }
+
+class_alias('Controller', 'CI_Controller');
 
 // ------------------------------------------------------------------------
 
@@ -74,10 +81,10 @@ class EE_Controller extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();
-		$this->load->library('core');
 
-		$this->core->bootstrap();
-		$this->core->run_ee();
+		ee()->load->library('core');
+		ee()->core->bootstrap();
+		ee()->core->run_ee();
 	}
 }
 
@@ -97,7 +104,7 @@ class CP_Controller extends EE_Controller {
 	function __construct()
 	{
 		parent::__construct();
-		$this->core->run_cp();
+		ee()->core->run_cp();
 	}
 }
 
