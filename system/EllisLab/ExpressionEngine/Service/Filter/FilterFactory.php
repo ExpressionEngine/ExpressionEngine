@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\View\ViewFactory;
-use EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer;
+use EllisLab\ExpressionEngine\Service\Dependency\ServiceProvider;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -58,7 +58,7 @@ class FilterFactory {
 	 * @param InjectionContainer $container The container to use
 	 * @return self This returns a reference to itself
 	 */
-	public function setDIContainer(InjectionContainer $container)
+	public function setDIContainer(ServiceProvider $container)
 	{
 		$this->container = $container;
 		return $this;
