@@ -815,7 +815,7 @@ class Addons extends CP_Controller {
 
 		foreach (ee()->addons_model->get_plugins($name) as $plugin => $info)
 		{
-			$developer = (strpos($info['installed_path'], 'third_party') === FALSE) ? 'native' : 'third_party';
+			$developer = (strpos($info['installed_path'], PATH_ADDONS) === FALSE) ? 'native' : 'third_party';
 
 			$data = array(
 				'developer'		=> $developer,
@@ -981,7 +981,7 @@ class Addons extends CP_Controller {
 			// Get some details on the extension
 			$Extension = new $class_name();
 
-			$developer = (strpos($ext['path'], 'third_party') === FALSE) ? 'native' : 'third_party';
+			$developer = (strpos($ext['path'], PATH_ADDONS) === FALSE) ? 'native' : 'third_party';
 
 			$data = array(
 				'developer'		=> $developer,
