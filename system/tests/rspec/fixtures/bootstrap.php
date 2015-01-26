@@ -2,7 +2,8 @@
 $project_base = realpath(dirname(__FILE__).'/../../../').'/';
 
 // Path constants
-define('BASEPATH', $project_base.'codeigniter/system/');
+define('SYSPATH', $project_base);
+define('BASEPATH', $project_base.'expressionengine/');
 define('APPPATH',  $project_base.'expressionengine/');
 
 define('LD', '{');
@@ -14,12 +15,6 @@ define('FIXTURE', TRUE);
 
 // Minor CI annoyance
 function log_message() {}
-function ee()
-{
-	static $EE;
-	if ( ! $EE)	$EE = new stdClass();
-	return $EE;
-}
 
 function &get_config($replace = array())
 {
@@ -149,25 +144,70 @@ function &load_class($class, $directory = 'libraries', $prefix = 'CI_')
 	return $_classes[$class];
 }
 
+function set_status_header($id) {}
+
+
+require SYSPATH."EllisLab/ExpressionEngine/Core/Autoloader.php";
+
+$autoloader = new \EllisLab\ExpressionEngine\Core\Autoloader();
+$autoloader->register();
+
+
+
+$di = new EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer();
+$reg = new EllisLab\ExpressionEngine\Core\ProviderRegistry($di);
+$app = new EllisLab\ExpressionEngine\Core\Application(
+	$autoloader,
+	$di,
+	$reg
+);
+
+$provider = $app->addProvider(
+	SYSPATH.'EllisLab/ExpressionEngine',
+	'app.setup.php',
+	'ee'
+);
+
+$provider->setConfigPath(SYSPATH.'config');
+
+$di->register('App', function($di, $prefix = NULL) use ($app)
+{
+	if (isset($prefix))
+	{
+		return $app->get($prefix);
+	}
+
+	return $app;
+});
+
+function ee($dep = NULL)
+{
+	if (isset($dep))
+	{
+		global $di;
+		return $di->make($dep);
+	}
+	static $EE;
+	if ( ! $EE)	$EE = new stdClass();
+	return $EE;
+}
+
+
 function get_instance()
 {
 	return ee();
 }
 
-function set_status_header($id) {}
+ee()->di = $di;
 
 // DB Stuff
 require_once(BASEPATH.'database/DB.php');
 ee()->db = DB('', NULL);
 
-require $project_base."EllisLab/ExpressionEngine/Service/Autoloader.php";
-
-$autoloader = new \EllisLab\ExpressionEngine\Service\Autoloader();
-$autoloader->register();
 
 // Setup Dependency Injection Container
-ee()->di = new \EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer();
-
+//ee()->di = new \EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer();
+/*
 ee()->di->registerSingleton('Model', function($di)
 {
 	$model_alias_path = APPPATH . 'config/model_aliases.php';
@@ -188,5 +228,5 @@ ee()->di->register('Validation', function($di)
         return new \EllisLab\ExpressionEngine\Service\Validation\Factory();
 	});
 });
-
+*/
 $api = ee()->di->make('Model');
