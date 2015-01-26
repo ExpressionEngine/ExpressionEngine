@@ -59,9 +59,7 @@ class Translate extends Utilities {
 	{
 		$name = strtolower($name);
 
-		ee()->load->model('language_model');
-		$languages =ee()->language_model->language_pack_names();
-		if ( ! array_key_exists($name, $languages))
+		if ( ! array_key_exists($name, ee()->lang->language_pack_names()))
 		{
 			show_404();
 		}

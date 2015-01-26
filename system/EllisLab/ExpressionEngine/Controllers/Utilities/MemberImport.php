@@ -53,7 +53,6 @@ class MemberImport extends Utilities {
 			$member_groups[$group->group_id] = $group->group_title;
 		}
 
-		ee()->load->model('language_model');
 		ee()->lang->loadfile('settings');
 
 		$vars['sections'] = array(
@@ -83,7 +82,7 @@ class MemberImport extends Utilities {
 					'fields' => array(
 						'language' => array(
 							'type' => 'dropdown',
-							'choices' => ee()->language_model->language_pack_names(),
+							'choices' => ee()->lang->language_pack_names(),
 							'value' => ee()->config->item('deft_lang') ?: 'english'
 						)
 					)

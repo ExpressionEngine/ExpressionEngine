@@ -39,7 +39,6 @@ class Settings extends Profile {
 	public function index()
 	{
 		$this->base_url = cp_url($this->base_url, $this->query_string);
-		ee()->load->model('language_model');
 
 		// Birthday Options
 		$birthday['days'] = array();
@@ -141,7 +140,7 @@ class Settings extends Profile {
 					'fields' => array(
 						'language' => array(
 							'type' => 'dropdown',
-							'choices' => ee()->language_model->language_pack_names(),
+							'choices' => ee()->lang->language_pack_names(),
 							'value' => $this->member->language ?: ee()->config->item('deft_lang')
 						)
 					)

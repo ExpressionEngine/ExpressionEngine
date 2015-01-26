@@ -573,8 +573,6 @@ class Channel extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		ee()->load->model('language_model');
-
 		$templates = ee('Model')->get('Template')
 			->with('TemplateGroup')
 			->all();
@@ -709,7 +707,7 @@ class Channel extends CP_Controller {
 					'fields' => array(
 						'channel_lang' => array(
 							'type' => 'dropdown',
-							'choices' => ee()->language_model->language_pack_names(),
+							'choices' => ee()->lang->language_pack_names(),
 							'value' => $channel->channel_lang ?: 'english'
 						)
 					)

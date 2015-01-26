@@ -41,11 +41,10 @@ class Utilities extends CP_Controller {
 
 		ee()->lang->loadfile('utilities');
 
-		ee()->load->model('language_model');
 		$default_language = ee()->config->item('deft_lang') ?: 'english';
 		$languages = array();
 
-		foreach (ee()->language_model->language_pack_names() as $key => $value)
+		foreach (ee()->lang->language_pack_names() as $key => $value)
 		{
 			$menu_title = $value;
 			$url = cp_url('utilities/translate/' . $key);
