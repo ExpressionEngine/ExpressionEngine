@@ -35,6 +35,7 @@ class Uploads extends Settings {
 
 	// We'll keep Grid validation errors in here
 	private $image_sizes_errors = array();
+	private $_upload_dirs = array();
 
 	/**
 	 * Constructor
