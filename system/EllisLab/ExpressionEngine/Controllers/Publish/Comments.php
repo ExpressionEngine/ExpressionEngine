@@ -76,13 +76,13 @@ class Comments extends Publish {
 		if ($status_filter->value())
 		{
 			$comments->filter('status', $status_filter->value());
-			$comments->filter('comment', 'LIKE', '%' . ee()->view->search_value . '%');
 		}
 
 		ee()->view->search_value = ee()->input->get_post('search');
 		if ( ! empty(ee()->view->search_value))
 		{
 			$base_url->setQueryStringVariable('search', ee()->view->search_value);
+			$comments->filter('comment', 'LIKE', '%' . ee()->view->search_value . '%');
 		}
 
 		$filters = ee('Filter')
