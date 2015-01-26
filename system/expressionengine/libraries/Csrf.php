@@ -104,6 +104,8 @@ class Csrf {
 			return TRUE;
 		}
 
+		$this->backend->refresh_token();
+
 		// Exempt safe html methods (@see RFC2616)
 		$safe = array('GET', 'HEAD', 'OPTIONS', 'TRACE');
 

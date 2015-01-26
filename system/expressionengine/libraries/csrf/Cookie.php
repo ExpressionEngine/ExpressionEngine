@@ -74,4 +74,16 @@ class Csrf_cookie implements Csrf_storage_backend {
 	{
 		return ee()->input->cookie(self::COOKIE_NAME);
 	}
+
+	/**
+	 * Refresh the current token
+	 * @return void
+	 */
+	public function refresh_token()
+	{
+		if ($token = $this->fetch_token())
+		{
+			$this->store_token($token);
+		}
+	}
 }
