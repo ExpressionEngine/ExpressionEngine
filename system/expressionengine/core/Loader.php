@@ -374,6 +374,11 @@ class EE_Loader {
 			return DB($params, $active_record);
 		}
 
+		if ($this->facade->has('db'))
+		{
+			return;
+		}
+
 		// Load the DB class
 		$this->facade->set('db', DB($params, $active_record));
 	}
@@ -388,6 +393,11 @@ class EE_Loader {
 	public function dbutil()
 	{
 		$CI =& get_instance();
+
+		if ($this->facade->has('dbutil'))
+		{
+			return;
+		}
 
 		if ( ! class_exists('CI_DB'))
 		{
@@ -415,6 +425,11 @@ class EE_Loader {
 	public function dbforge()
 	{
 		$CI =& get_instance();
+
+		if ($this->facade->has('dbforge'))
+		{
+			return;
+		}
 
 		if ( ! class_exists('CI_DB'))
 		{
