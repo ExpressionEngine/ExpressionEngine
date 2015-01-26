@@ -125,7 +125,7 @@ class EE_Form_validation {
 		// Validate the field
 		if ($result !== TRUE)
 		{
-			$result = parent::run();
+			$result = $this->run();
 		}
 
 		// Send appropriate AJAX response based on validation result
