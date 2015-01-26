@@ -105,9 +105,9 @@ return array(
 		# EllisLab\ExpressionEngine\Model..
 
 			// ..\Addon
-			'Accessory' => 'Model\Addon\Accessory',
 			'Extension' => 'Model\Addon\Extension',
 			'Module' => 'Model\Addon\Module',
+			'Plugin' => 'Model\Addon\Plugin',
 
 			// ..\Category
 			'Category' => 'Model\Category\Category',
