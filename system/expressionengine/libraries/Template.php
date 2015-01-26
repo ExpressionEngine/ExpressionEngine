@@ -1420,8 +1420,8 @@ class EE_Template {
 
 								while (is_int(strpos($TMPL2->tag_data[$i][$tag_data_key][$name], LD.'exp:')))
 								{
-									unset(ee()->TMPL);
-									ee()->TMPL = new EE_Template();
+									ee()->remove('TMPL');
+									ee()->set('TMPL', new EE_Template());
 									ee()->TMPL->start_microtime = $this->start_microtime;
 									ee()->TMPL->template = $TMPL2->tag_data[$i][$tag_data_key][$name];
 									ee()->TMPL->tag_data	= array();
@@ -1445,7 +1445,8 @@ class EE_Template {
 
 								unset($TMPL2);
 
-								ee()->TMPL = $this;
+								ee()->remove('TMPL');
+								ee()->set('TMPL', $this);
 							}
 						}
 					}
@@ -1462,8 +1463,8 @@ class EE_Template {
 
 						while (is_int(strpos($TMPL2->tag_data[$i]['block'], LD.'exp:')))
 						{
-							unset(ee()->TMPL);
-							ee()->TMPL = new EE_Template();
+							ee()->remove('TMPL');
+							ee()->set('TMPL', new EE_Template());
 							ee()->TMPL->start_microtime = $this->start_microtime;
 							ee()->TMPL->template = $TMPL2->tag_data[$i]['block'];
 							ee()->TMPL->tag_data	= array();
@@ -1487,7 +1488,8 @@ class EE_Template {
 
 						unset($TMPL2);
 
-						ee()->TMPL = $this;
+						ee()->remove('TMPL');
+						ee()->set('TMPL', $this);
 					}
 				}
 
