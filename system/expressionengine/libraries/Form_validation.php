@@ -29,8 +29,8 @@ class EE_Form_validation {
 	var $_config_rules			= array();
 	var $_error_array			= array();
 	var $_error_messages		= array();
-	var $_error_prefix			= '<p>';
-	var $_error_suffix			= '</p>';
+	var $_error_prefix			= '<em class="ee-form-error-message">';
+	var $_error_suffix			= '</em>';
 	var $error_string			= '';
 	var $_safe_form_data		= FALSE;
 	var $old_values				= array();
