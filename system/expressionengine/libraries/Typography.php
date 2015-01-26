@@ -92,7 +92,7 @@ class EE_Typography {
 	public function __construct()
 	{
 		$this->initialize();
-		\EllisLab\ExpressionEngine\Service\Autoloader::getInstance()->addPrefix('Michelf', APPPATH.'libraries/typography/Markdown/Michelf/');
+		Autoloader::getInstance()->addPrefix('Michelf', APPPATH.'libraries/typography/Markdown/Michelf/');
 	}
 
 	// --------------------------------------------------------------------
