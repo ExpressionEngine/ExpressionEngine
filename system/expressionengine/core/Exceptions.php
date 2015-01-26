@@ -191,9 +191,8 @@ class EE_Exceptions {
 
 			if (isset(ee()->session) && isset(ee()->session->userdata))
 			{
-				$path = PATH_CP_THEME.'/errors/'.$template.'.php';
-
-				if (defined('PATH_THEMES') && (file_exists($path)))
+				if (defined('PATH_CP_THEME') &&
+					(file_exists(PATH_CP_THEME.'/errors/'.$template.'.php')))
 				{
 					include($path);
 				}
