@@ -278,6 +278,13 @@ class Comments extends Publish {
 
 	public function edit($comment_id)
 	{
+		// Cannot remove if you cannot edit
+		if ( ! ee()->cp->allowed_group('can_edit_all_comments')
+		  && ! ee()->cp->allowed_group('can_edit_own_comments'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$comment = ee('Model')->get('Comment', $comment_id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
@@ -285,6 +292,14 @@ class Comments extends Publish {
 		if ( ! $comment)
 		{
 			show_error(lang('no_comments'));
+		}
+
+		// You get an edit button if you can edit all comments or you can
+		// edit your own comments and this comment is one of yours
+		if ( ! ee()->cp->allowed_group('can_edit_all_comments')
+			&& $comment->author_id = ee()->session->userdata('member_id'))
+		{
+			show_error(lang('unauthorized_access'));
 		}
 
 		$author_information = ee('View')->make('publish/comments/partials/author_information')
@@ -472,17 +487,28 @@ class Comments extends Publish {
 					$status = lang("pending");
 			}
 
+			$toolbar = array();
+
+			// You get an edit button if you can edit all comments or you can
+			// edit your own comments and this comment is one of yours
+			if (ee()->cp->allowed_group('can_edit_all_comments')
+				|| (ee()->cp->allowed_group('can_edit_own_comments')
+					&& $comment->author_id = ee()->session->userdata('member_id')))
+			{
+				$toolbar = array(
+					'edit' => array(
+						'href' => cp_url('publish/comments/edit/' . $comment->comment_id),
+						'title' => lang('edit')
+					)
+				);
+			}
+
 			$column = array(
 				ee('View')->make('publish/comments/partials/title')->render(array('comment' => $comment)),
 				ee()->localize->human_time($comment->comment_date),
 				$comment->ip_address,
 				$status,
-				array('toolbar_items' => array(
-					'edit' => array(
-						'href' => cp_url('publish/comments/edit/' . $comment->comment_id),
-						'title' => lang('edit')
-					)
-				)),
+				array('toolbar_items' => $toolbar),
 				array(
 					'name' => 'selection[]',
 					'value' => $comment->comment_id,
@@ -544,20 +570,32 @@ class Comments extends Publish {
 
 	private function remove($comment_ids)
 	{
+		// Cannot remove if you cannot edit
+		if ( ! ee()->cp->allowed_group('can_delete_all_comments')
+		  && ! ee()->cp->allowed_group('can_delete_own_comments'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		if ( ! is_array($comment_ids))
 		{
 			$comment_ids = array($comment_ids);
 		}
 
 		$comments = ee('Model')->get('Comment', $comment_ids)
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
+			->filter('site_id', ee()->config->item('site_id'));
+
+		if ( ! ee()->cp->allowed_group('can_delete_all_comments')
+		  && ee()->cp->allowed_group('can_delete_own_comments'))
+		{
+			$comments->filter('author_id', ee()->session->userdata('member_id'));
+		}
 
 		$comment_names = array();
 
 		ee()->load->helper('text');
 
-		foreach ($comments as $comment)
+		foreach ($comments->all() as $comment)
 		{
 			$comment_names[] = ellipsize($comment->comment, 50);
 		}
@@ -574,6 +612,11 @@ class Comments extends Publish {
 
 	private function setStatus($comment_ids, $status)
 	{
+		if ( ! ee()->cp->allowed_group('can_moderate_comments'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		if ( ! is_array($comment_ids))
 		{
 			$comment_ids = array($comment_ids);
