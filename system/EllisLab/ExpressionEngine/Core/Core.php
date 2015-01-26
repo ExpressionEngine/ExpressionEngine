@@ -114,7 +114,6 @@ abstract class Core {
 			$this->legacy->loadController($routing);
 		}
 
-
 		$this->legacy->markBenchmark('loading_time:_base_classes_end');
 
 		return $routing;
