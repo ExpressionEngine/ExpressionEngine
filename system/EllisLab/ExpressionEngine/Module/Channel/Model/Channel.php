@@ -34,7 +34,8 @@ class Channel extends Model implements ContentStructure {
 	protected static $_relationships = array(
 		'ChannelFieldGroup' => array(
 			'type' => 'belongsTo',
-			'key' => 'field_group'
+			'from_key' => 'field_group',
+			'to_key' => 'group_id'
 		),
 		'ChannelEntries' => array(
 			'type' => 'hasMany',
