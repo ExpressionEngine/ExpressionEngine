@@ -106,6 +106,7 @@ class Edit extends Publish {
 		if ( ! empty(ee()->view->search_value))
 		{
 			$base_url->setQueryStringVariable('search', ee()->view->search_value);
+			$entries->filter('title', 'LIKE', '%' . ee()->view->search_value . '%');
 		}
 
 		$filters = ee('Filter')
@@ -256,7 +257,14 @@ class Edit extends Publish {
 		));
 
 		ee()->view->cp_page_title = lang('edit_channel_entries');
-		ee()->view->cp_heading = sprintf(lang('all_channel_entries'), $channel_name);
+		if ( ! empty(ee()->view->search_value))
+		{
+			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
+		}
+		else
+		{
+			ee()->view->cp_heading = sprintf(lang('all_channel_entries'), $channel_name);
+		}
 
 		ee()->cp->render('publish/edit/index', $vars);
 	}
