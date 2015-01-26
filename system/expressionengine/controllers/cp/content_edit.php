@@ -190,6 +190,7 @@ class Content_edit extends CP_Controller {
 		));
 
 		$this->javascript->set_global('autosave_map', $vars['autosave_array']);
+		$this->javascript->set_global('lang.selection_required', lang('selection_required'));
 		$this->cp->render('content/edit', $vars);
 	}
 
