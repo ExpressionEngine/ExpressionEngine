@@ -276,6 +276,153 @@ class Comments extends Publish {
 		ee()->cp->render('publish/comments/index', $vars);
 	}
 
+	public function edit($comment_id)
+	{
+		$comment = ee('Model')->get('Comment', $comment_id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
+
+		if ( ! $comment)
+		{
+			show_error(lang('no_comments'));
+		}
+
+		$author_information = ee('View')->make('publish/comments/partials/author_information')
+			->render(array('comment' => $comment));
+
+		$title = $comment->getEntry()->title;
+
+		$live_look_template = $comment->getChannel()->getLiveLookTemplate();
+
+		if ($live_look_template)
+		{
+			$view_url = ee()->functions->create_url($live_look_template->getPath() . '/' . $comment->getEntry()->entry_id);
+			$title = '<a href="' . ee()->cp->masked_url($view_url) . '">' . $title . '</a>';
+		}
+
+		$move_desc = sprintf(lang('move_comment_desc'),
+			$title,
+			$comment->getChannel()->channel_title
+		);
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'base_url' => cp_url('publish/comments/edit/' . $comment_id),
+			'save_btn_text' => 'btn_edit_comment',
+			'save_btn_text_working' => 'btn_edit_comment_working',
+			'sections' => array(
+				array(
+					array(
+						'title' => 'author_information',
+						'desc' => 'author_information_desc',
+						'fields' => array(
+							'author' => array(
+								'type' => 'html',
+								'content' => $author_information,
+
+							)
+						)
+					),
+					array(
+						'title' => 'status',
+						'desc' => 'status_desc',
+						'fields' => array(
+							'status' => array(
+								'type' => 'dropdown',
+								'choices' => array(
+									'o' => lang('open'),
+									'c' => lang('closed'),
+									'p' => lang('pending')
+								),
+								'value' => $comment->status
+							)
+						)
+					),
+					array(
+						'title' => 'comment_content',
+						'desc' => 'comment_content_desc',
+						'fields' => array(
+							'comment' => array(
+								'type' => 'textarea',
+								'value' => $comment->comment,
+								'required' => TRUE
+							)
+						)
+					),
+					array(
+						'title' => 'move_comment',
+						'desc' => $move_desc,
+						'fields' => array(
+							'move' => array(
+								'type' => 'text'
+							)
+						)
+					),
+				)
+			)
+		);
+
+		ee()->load->library('form_validation');
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'comment',
+				'label' => 'lang:comment',
+				'rules' => 'required'
+			),
+			array(
+				'field' => 'status',
+				'label' => 'lang:status',
+				'rules' => 'enum[o,c,p]'
+			),
+			array(
+				'field' => 'move',
+				'label' => 'lang:move',
+				'rules' => 'is_natural'
+			),
+		));
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			$comment->comment = ee()->input->post('comment');
+			$comment->status = ee()->input->post('status');
+
+			if (ee()->input->post('move'))
+			{
+				$comment->entry_id = ee()->input->post('move');
+			}
+
+			$comment->save();
+
+			ee('Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('edit_comment_success'))
+				->addToBody(lang('edit_comment_success_desc'))
+				->defer();
+
+			ee()->functions->redirect(cp_url('publish/comments/edit/' . $comment_id));
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('edit_comment_error'))
+				->addToBody(lang('edit_comment_error_desc'));
+		}
+
+		ee()->view->cp_page_title = lang('edit_comment');
+
+		ee()->view->cp_breadcrumbs = array(
+			cp_url('publish/comments') => lang('all_comments'),
+		);
+
+		ee()->cp->render('settings/form', $vars);
+	}
+
 	/**
 	 * Builds a Table object from a Query of Comment model entitites
 	 *
@@ -332,7 +479,7 @@ class Comments extends Publish {
 				$status,
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => cp_url('publish/comment/edit/' . $comment->comment_id),
+						'href' => cp_url('publish/comments/edit/' . $comment->comment_id),
 						'title' => lang('edit')
 					)
 				)),

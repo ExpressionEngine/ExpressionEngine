@@ -66,6 +66,48 @@ $lang = array(
 'set_to_closed' => 'Set to closed',
 'set_to_pending' => 'Set to pending',
 
+'btn_edit_comment' =>
+'Edit Comment',
+
+'btn_edit_comment_working' =>
+'Saving...',
+
+'author_information' =>
+'Author information',
+
+'author_information_desc' =>
+'Information about the author of this comment, non-editable.',
+
+'status_desc' =>
+'Status of this comment.',
+
+'comment_content' =>
+'Comment content',
+
+'comment_content_desc' =>
+'Content of this comment.',
+
+'move_comment' =>
+'Move Comment?',
+
+'move_comment_desc' =>
+'Enter an Entry <abbr title="Identifier">ID</abbr> to move this comment to.<br>Currently on: %s (%s)',
+
+'ip_address' =>
+'<abbr title="Internet Protocol">IP</abbr>',
+
+'edit_comment_success' =>
+'Success',
+
+'edit_comment_success_desc' =>
+'The comment has been edited.',
+
+'edit_comment_error' =>
+'Cannot Edit Comment',
+
+'edit_comment_error_desc' =>
+'We were unable to edit the comment, please review and fix errors below.',
+
 //----------------------------
 // Publish page
 //----------------------------
