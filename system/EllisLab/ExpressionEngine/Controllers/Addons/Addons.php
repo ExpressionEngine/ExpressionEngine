@@ -742,7 +742,7 @@ class Addons extends CP_Controller {
 
 		foreach(ee()->addons->get_files() as $module => $info)
 		{
-			ee()->lang->loadfile(( ! isset(ee()->lang_overrides[$module])) ? $module : ee()->lang_overrides[$module]);
+			ee()->lang->loadfile($module);
 			$display_name = (lang(strtolower($module).'_module_name') != FALSE) ? lang(strtolower($module).'_module_name') : $info['name'];
 
 			$data = array(
