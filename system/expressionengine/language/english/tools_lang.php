@@ -1,4 +1,4 @@
-<a href="tools_lang.php" id="" title="tools_lang">tools_lang</a><?php
+<?php
 
 $lang = array(
 
