@@ -29,8 +29,8 @@ class EE_Form_validation {
 	var $_config_rules			= array();
 	var $_error_array			= array();
 	var $_error_messages		= array();
-	var $_error_prefix			= '<p>';
-	var $_error_suffix			= '</p>';
+	var $_error_prefix			= '<em class="ee-form-error-message">';
+	var $_error_suffix			= '</em>';
 	var $error_string			= '';
 	var $_safe_form_data		= FALSE;
 	var $old_values				= array();
@@ -43,7 +43,7 @@ class EE_Form_validation {
 	 */
 	function __construct($rules = array())
 	{
-		$this->CI =& get_instance();
+		$this->CI =& ee()->get('__legacy_controller');
 
 		// Validation rules can be stored in a config file.
 		$this->_config_rules = $rules;
@@ -125,7 +125,7 @@ class EE_Form_validation {
 		// Validate the field
 		if ($result !== TRUE)
 		{
-			$result = parent::run();
+			$result = $this->run();
 		}
 
 		// Send appropriate AJAX response based on validation result

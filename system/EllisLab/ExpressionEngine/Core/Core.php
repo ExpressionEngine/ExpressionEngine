@@ -175,7 +175,6 @@ abstract class Core {
 		try
 		{
 			$controller = new $class;
-			$this->legacy->getFacade()->set('__legacy_controller', $controller);
 
 			call_user_func_array(array($controller, $method), $params);
 		}
