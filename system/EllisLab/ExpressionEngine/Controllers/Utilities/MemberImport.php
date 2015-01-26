@@ -964,8 +964,6 @@ class MemberImport extends Utilities {
 	{
 		ee()->load->library('form_validation');
 
-		ee()->invalid_names = ee()->cp->invalid_custom_field_names();
-
 		// Gather existing field names
 		ee()->db->select('m_field_name');
 		$m_custom_fields = $this->db->get('member_fields');
