@@ -153,7 +153,7 @@ return array(
 			'ChannelFieldGroup'=> 'Module\Channel\Model\ChannelFieldGroup',
 			'ChannelFieldStructure' => 'Module\Channel\Model\ChannelFieldStructure',
 			'ChannelEntry' => 'Module\Channel\Model\ChannelEntry',
-			'ChannelFormSettings' => 'EllisLab\ExpressionEngine\Module\Channel\Model\ChannelFormSettings',
+			'ChannelFormSettings' => 'Module\Channel\Model\ChannelFormSettings',
 
 			// ..\Comment
 			'Comment' => 'Module\Comment\Model\Comment',
