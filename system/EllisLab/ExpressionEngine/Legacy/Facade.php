@@ -37,7 +37,7 @@ class Facade {
 	{
 		// here only for the duration of the dev preview:
 		$this->set($name, $value);
-		trigger_error('Setting values on ee()-> is no longer supported. Tried to set {$name}.', E_USER_DEPRECATED);
+		trigger_error("Setting values on ee()-> is no longer supported. Tried to set {$name}.", E_USER_DEPRECATED);
 
 		// TODO throw this exception for release.
 		//throw new RuntimeException("Cannot set variables on the super object. Tried to set {$name}.");
