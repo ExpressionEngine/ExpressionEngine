@@ -181,7 +181,9 @@ class Comments extends Publish {
 		$vars = array();
 		$base_url = new URL('publish/comments/entry/' . $entry_id, ee()->session->session_id());
 
-		$entry = ee('Model')->get('ChannelEntry', $entry_id)->first();
+		$entry = ee('Model')->get('ChannelEntry', $entry_id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
 
 		if ( ! $entry)
 		{
