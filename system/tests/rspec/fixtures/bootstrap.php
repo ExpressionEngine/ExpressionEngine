@@ -26,14 +26,13 @@ function &get_config($replace = array())
 	}
 
 	// Fetch the config file
-	if ( ! file_exists(APPPATH.'config/config.php'))
+	if (file_exists(SYSPATH.'config/config.php'))
 	{
-		set_status_header(503);
-		exit('The configuration file does not exist.');
+		require(SYSPATH.'config/config.php');
 	}
 	else
 	{
-		require(APPPATH.'config/config.php');
+		exit('The configuration file does not exist.');
 	}
 
 	// Does the $config array exist in the file?
