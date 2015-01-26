@@ -39,17 +39,9 @@ class Edit extends Publish {
 	 */
 	public function index()
 	{
-		if (ee()->input->post('bulk_action') == 'edit')
-		{
-			$this->edit(ee()->input->post('selection'));
-		}
-		elseif (ee()->input->post('bulk_action') == 'remove')
+		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
-		}
-		elseif (ee()->input->post('bulk_action') == 'categories')
-		{
-			$this->manageCategories(ee()->input->post('selection'));
 		}
 
 		$vars = array();
@@ -315,29 +307,6 @@ class Edit extends Publish {
 		return $status;
 	}
 
-	private function edit($entry_ids)
-	{
-		if ( ! is_array($entry_ids))
-		{
-			$entry_ids = array($entry_ids);
-		}
-
-		$entries = ee('Model')->get('ChannelEntry', $entry_ids)
-			->filter('site_id', ee()->config->item('site_id'));
-
-		if ( ! $this->isAdmin)
-		{
-			if (empty($this->assignedChannelIds))
-			{
-				show_error(lang('no_channels'));
-			}
-
-			$entries->filter('channel_id', 'IN', $this->assignedChannelIds);
-		}
-
-		ee()->functions->redirect(cp_url('publish/edit', ee()->cp->get_url_state()));
-	}
-
 	private function remove($entry_ids)
 	{
 		if ( ! is_array($entry_ids))
@@ -368,29 +337,6 @@ class Edit extends Publish {
 			->addToBody(lang('entries_removed_desc'))
 			->addToBody($entry_names)
 			->defer();
-
-		ee()->functions->redirect(cp_url('publish/edit', ee()->cp->get_url_state()));
-	}
-
-	private function manageCategories($entry_ids)
-	{
-		if ( ! is_array($entry_ids))
-		{
-			$entry_ids = array($entry_ids);
-		}
-
-		$entries = ee('Model')->get('ChannelEntry', $entry_ids)
-			->filter('site_id', ee()->config->item('site_id'));
-
-		if ( ! $this->isAdmin)
-		{
-			if (empty($this->assignedChannelIds))
-			{
-				show_error(lang('no_channels'));
-			}
-
-			$entries->filter('channel_id', 'IN', $this->assignedChannelIds);
-		}
 
 		ee()->functions->redirect(cp_url('publish/edit', ee()->cp->get_url_state()));
 	}
