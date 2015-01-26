@@ -36,7 +36,6 @@ class General extends Settings {
 	 */
 	public function index()
 	{
-		ee()->load->model('language_model');
 		ee()->load->model('admin_model');
 
 		$vars['sections'] = array(
@@ -97,7 +96,7 @@ class General extends Settings {
 					'fields' => array(
 						'deft_lang' => array(
 							'type' => 'dropdown',
-							'choices' => ee()->language_model->language_pack_names(),
+							'choices' => ee()->lang->language_pack_names(),
 							'value' => ee()->config->item('deft_lang') ?: 'english'
 						)
 					)
