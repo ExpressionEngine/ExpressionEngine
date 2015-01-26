@@ -29,6 +29,10 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  */
 class MemberImport extends Utilities {
 
+	protected $taken = array();
+	protected $members = array();
+	protected $members_custom = array();
+	protected $default_fields = array();
 	protected $default_custom_fields = array();
 
 	/**
