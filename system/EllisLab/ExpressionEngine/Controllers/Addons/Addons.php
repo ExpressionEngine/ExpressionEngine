@@ -1231,7 +1231,7 @@ class Addons extends CP_Controller {
 		$mod->_ee_path = APPPATH;
 
 		// add validation callback support to the mcp class (see EE_form_validation for more info)
-		ee()->_mcp_reference =& $mod;
+		ee()->set('_mcp_reference', $mod);
 
 		// its possible that a module will try to call a method that does not exist
 		// either by accident (ie: a missed function) or by deliberate user url hacking
@@ -1245,7 +1245,7 @@ class Addons extends CP_Controller {
 		}
 
 		// unset reference
-		unset(ee()->_mcp_reference);
+		ee()->remove('_mcp_reference');
 
 		// remove package paths
 		ee()->load->remove_package_path($installed[$addon]['path']);
