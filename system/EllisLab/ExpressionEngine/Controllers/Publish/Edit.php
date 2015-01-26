@@ -92,8 +92,8 @@ class Edit extends Publish {
 		$category_filter = $this->createCategoryFilter($channel);
 		if ($category_filter->value())
 		{
-			// $entries->with('Categories')
-			// 	->filter('Categories.cat_id', $category_filter->value());
+			$entries->with('Categories')
+				->filter('Categories.cat_id', $category_filter->value());
 		}
 
 		$status_filter = $this->createStatusFilter($channel);
