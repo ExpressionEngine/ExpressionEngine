@@ -29,6 +29,8 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  */
 class MemberImport extends Utilities {
 
+	protected $default_custom_fields = array();
+
 	/**
 	 * Member import
 	 */
