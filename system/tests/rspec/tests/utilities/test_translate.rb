@@ -1,12 +1,13 @@
 require './bootstrap.rb'
 
 feature 'Translate Tool' do
-	language_path = '../../expressionengine/language/'
+	english_path = '../../expressionengine/language/english/'
+	language_path = '../../language/'
 	translations_path = '../../expressionengine/translations/'
 
 	before(:all) do
 		FileUtils.mkdir(language_path + 'rspeclingo')
-		FileUtils.cp_r(Dir.glob(language_path + 'english/*'), language_path + 'rspeclingo/')
+		FileUtils.cp_r(Dir.glob(english_path + '*'), language_path + 'rspeclingo/')
 	end
 
 	before(:each, :edit => false) do
@@ -102,7 +103,7 @@ feature 'Translate Tool' do
 		@list_page.should have(7).pages
 		@list_page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
 
-		files = Dir.glob(language_path + 'english/*_lang.php')
+		files = Dir.glob(english_path + '*_lang.php')
 		files = files[20..39]
 		@list_page.should have(files.count + 1).rows # +1 for header row
 	end

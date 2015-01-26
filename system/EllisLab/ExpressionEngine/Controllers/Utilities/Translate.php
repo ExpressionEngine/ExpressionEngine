@@ -112,8 +112,7 @@ class Translate extends Utilities {
 
 		$this->load->helper('file');
 
-		$path = APPPATH.'language/'.$language;
-		$ext_len = strlen('.php');
+		$path = $this->getLanguageDirectory($language);
 
 		$filename_end = '_lang.php';
 		$filename_end_len = strlen($filename_end);
@@ -129,7 +128,7 @@ class Translate extends Utilities {
 				continue;
 			}
 
-			if (substr($file, -$filename_end_len) && substr($file, -$ext_len) == '.php')
+			if (substr($file, -$filename_end_len) && substr($file, -4) == '.php')
 			{
 				$name = str_replace('_lang.php', '', $file);
 				$data[] = array(
@@ -191,6 +190,25 @@ class Translate extends Utilities {
 	}
 
 	/**
+	 * Find the language in the potential language directories
+	 *
+	 * @param string $language	The language name (i.e. 'english')
+	 * @return string The full path to the language directory
+	 */
+	private function getLanguageDirectory($language)
+	{
+		foreach (array(SYSPATH, APPPATH) as $parent_directory)
+		{
+			if (is_dir($parent_directory.'language/'.$language))
+			{
+				return $parent_directory.'language/'.$language.'/';
+			}
+		}
+
+		ee()->view->set_message('issue', lang('cannot_access'));
+	}
+
+	/**
 	 * Zip and send the selected language files
 	 *
 	 * @param string $language	The language directory (i.e. 'english')
@@ -204,7 +222,7 @@ class Translate extends Utilities {
 			return;
 		}
 
-		$path = APPPATH . 'language/' . $language . '/';
+		$path = $this->getLanguageDirectory($language);
 
 		// Confirm the files exist
 		foreach($files as $file)
@@ -243,7 +261,7 @@ class Translate extends Utilities {
 	{
 		$file = ee()->security->sanitize_filename($file);
 
-		$path = APPPATH . 'language/' . $language . '/';
+		$path = $this->getLanguageDirectory($language);
 		$filename =  $file . '_lang.php';
 
 		if ( ! is_readable($path . $filename))
