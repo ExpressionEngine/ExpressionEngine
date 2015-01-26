@@ -7,9 +7,8 @@ function is_really_writable($file)
 
 require('bootstrap.php');
 require(APPPATH.'config/constants.php');
-require(BASEPATH.'core/Config.php');
 require(BASEPATH.'helpers/string_helper.php');
-require(APPPATH.'core/EE_Config.php');
+require(BASEPATH.'core/Config.php');
 
 ee()->config = new EE_Config();
 

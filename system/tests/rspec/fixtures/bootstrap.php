@@ -54,7 +54,9 @@ function &get_config($replace = array())
 		}
 	}
 
-	return $_config[0] =& $config;
+	$_config[0] =& $config;
+
+	return $_config[0];
 }
 
 function config_item($item)
@@ -87,7 +89,7 @@ function is_loaded($class = '')
 	return $_is_loaded;
 }
 
-function &load_class($class, $directory = 'libraries', $prefix = 'CI_')
+function load_class($class, $directory = 'libraries', $prefix = 'CI_')
 {
 	static $_classes = array();
 
