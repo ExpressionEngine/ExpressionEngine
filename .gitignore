@@ -23,6 +23,9 @@ system/tests/rspec/screenshots/*
 images/test1/
 images/design/
 
+system/cache/*
+!system/cache/index.html
+!system/cache/.htaccess
 system/expressionengine/cache/*
 !system/expressionengine/cache/index.html
 !system/expressionengine/cache/.htaccess
@@ -31,6 +34,19 @@ system/expressionengine/templates/*
 !system/expressionengine/templates/index.html
 !system/expressionengine/templates/.htaccess
 
+system/addons/*
+!system/addons/index.html
+!system/addons/download
+!system/addons/google_maps
+!system/addons/js_tool
+!system/addons/testage
+!system/addons/debug
+!system/addons/safecracker_file
+!system/addons/cookie_check
+!system/addons/cookie_consent
+!system/addons/nannerbanner
+!system/addons/unregisteredbanner
+!system/addons/ellislab_high_ascii_decode
 system/expressionengine/third_party/*
 !system/expressionengine/third_party/index.html
 !system/expressionengine/third_party/download
@@ -48,6 +64,7 @@ system/expressionengine/third_party/*
 system/codeigniter/system/language/*
 !system/codeigniter/system/language/english/*
 
+system/language/*
 system/expressionengine/language/*
 !system/expressionengine/language/english/*
 
