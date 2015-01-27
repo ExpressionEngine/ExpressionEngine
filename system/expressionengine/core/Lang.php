@@ -122,6 +122,15 @@ class EE_Lang {
 			BASEPATH.'language/english/'.$langfile
 		);
 
+		if (defined('EE_APPPATH'))
+		{
+			array_unshift(
+				$paths,
+				APPPATH.'language/'.$idiom.'/'.$langfile,
+				APPPATH.'language/'.$deft_lang.'/'.$langfile
+			);
+		}
+
 		// if it's in an alternate location, such as a package, check there first
 		if ($alt_path != '')
 		{
