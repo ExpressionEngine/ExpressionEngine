@@ -640,35 +640,30 @@ class Wizard extends CI_Controller {
 	 */
 	function _install_form($errors = FALSE)
 	{
-		// @confirm check if comment module is installed
-
-		// Did they agree to the license?
-		if ($this->input->post('agree') != 'yes')
-		{
-			return $this->_license(TRUE);
-		}
-
 		// Assign the _POST array values
 		$this->_assign_install_values();
+
+		$vars = array();
 
 		// Are there any errors to display? When the user submits the
 		// installation form, the $this->_do_install() function is called. In
 		// the event of errors the form will be redisplayed with the error
 		// message
-		$this->userdata['errors'] = $errors;
+		$vars['errors'] = $errors;
 
-		$template_module_vars = '';
-		$this->load->library('javascript');
-
-		$this->userdata['extra_header'] = $this->_install_form_extra_header(json_encode($this->theme_required_modules));
-
-		$this->load->library('localize');
+		$vars['extra_header'] = $this->_install_form_extra_header(
+			json_encode($this->theme_required_modules)
+		);
 
 		// Preload server timezone
+		ee()->load->library('localize');
 		$this->userdata['default_site_timezone'] = date_default_timezone_get();
+		$vars['timezone_menu'] = ee()->localize->timezone_menu(date_default_timezone_get(), 'default_site_timezone');
+
+		$vars['action'] = $this->set_qstr('do_install');
 
 		// Display the form and pass the userdata array to it
-		$this->_set_output('install_form', $this->userdata);
+		$this->_set_output('install_form', array_merge($vars, $this->userdata));
 	}
 
 	// --------------------------------------------------------------------
@@ -823,7 +818,7 @@ PAPAYA;
 		$errors = array();
 
 		// Blank fields?
-		foreach (array('license_number', 'db_hostname', 'db_username', 'db_name', 'site_label', 'webmaster_email', 'username', 'password', 'email_address') as $val)
+		foreach (array('db_hostname', 'db_username', 'db_name', 'username', 'password', 'email_address') as $val)
 		{
 			if ($this->userdata[$val] == '')
 			{
@@ -833,26 +828,17 @@ PAPAYA;
 		}
 
 		// Usernames must be at least 4 chars in length
-		if ($this->userdata['username'] != '' AND strlen($this->userdata['username']) < 4)
+		if ($this->userdata['username'] != ''
+			AND strlen($this->userdata['username']) < 4)
 		{
 			$errors[] = lang('username_short');
 		}
 
 		// Passwords must be at least 5 chars in length
-		if ($this->userdata['password'] != '' AND strlen($this->userdata['password']) < 5)
+		if ($this->userdata['password'] != ''
+			AND strlen($this->userdata['password']) < 5)
 		{
 			$errors[] = lang('password_short');
-		}
-
-		// Passwords must match
-		if ($this->userdata['password'] != $this->userdata['password_confirm'])
-		{
-			$errors[] = lang('password_no_match');
-		}
-
-		if ( ! valid_license_pattern($this->userdata['license_number']))
-		{
-			$errors[] = lang('invalid_license_number');
 		}
 
 		//  Is password the same as username?
@@ -860,42 +846,35 @@ PAPAYA;
 		$lc_pass = strtolower($this->userdata['password']);
 		$nm_pass = strtr($lc_pass, 'elos', '3105');
 
-		if ($this->userdata['username'] != '' AND $this->userdata['password'] != '')
+		if ($this->userdata['username'] != ''
+			AND $this->userdata['password'] != '')
 		{
-			if ($lc_user == $lc_pass OR $lc_user == strrev($lc_pass) OR $lc_user == $nm_pass OR $lc_user == strrev($nm_pass))
+			if ($lc_user == $lc_pass
+				OR $lc_user == strrev($lc_pass)
+				OR $lc_user == $nm_pass
+				OR $lc_user == strrev($nm_pass))
 			{
 				$errors[] = lang('password_not_unique');
 			}
 		}
 
 		// Is email valid?
-		if ($this->userdata['email_address'] != '' AND ! valid_email($this->userdata['email_address']))
+		if ($this->userdata['email_address'] != ''
+			AND ! valid_email($this->userdata['email_address']))
 		{
 			$errors[] = "The email address you submitted is not valid";
 		}
 
-		// And webmaster email?
-		if ($this->userdata['webmaster_email'] != '' AND ! valid_email($this->userdata['webmaster_email']))
-		{
-			$errors[] = "The webmaster email address you submitted is not valid";
-		}
-
-		// Set the screen name
-		if ($this->userdata['screen_name'] == '')
-		{
-			$this->userdata['screen_name'] = $this->userdata['username'];
-		}
-
 		// check screen name and username for valid format
-		if (strlen($this->userdata['username']) > 50 OR preg_match("/[\|'\"!<>\{\}]/", $this->userdata['username']))
+		if (strlen($this->userdata['username']) > 50
+			OR preg_match("/[\|'\"!<>\{\}]/", $this->userdata['username']))
 		{
+			// TODO-WB: Move to language key
 			$errors[] = "Username is invalid. Must be less than 50 characters and cannot include the following characters: ".htmlentities('|\'"!<>{}');
 		}
 
-		if (preg_match('/[\{\}<>]/', $this->userdata['screen_name']))
-		{
-			$errors[] = "Screen Name is invalid. Must not include the following characters: ".htmlentities('{}<>');
-		}
+		// Set the screen name
+		$this->userdata['screen_name'] = $this->userdata['username'];
 
 		// DB Prefix has some character restrictions
 		if ( ! preg_match("/^[0-9a-zA-Z\$_]*$/", $this->userdata['db_prefix']))
@@ -917,21 +896,20 @@ PAPAYA;
 
 		// Connect to the database.  We pass a multi-dimensional array since
 		// that's what is normally found in the database config file
-
 		$db = array(
-			'hostname'	=> $this->userdata['db_hostname'],
-			'username'	=> $this->userdata['db_username'],
-			'password'	=> $this->userdata['db_password'],
-			'database'	=> $this->userdata['db_name'],
-			'dbdriver'	=> $this->userdata['dbdriver'],
-			'pconnect'	=> ($this->userdata['db_conntype'] == 1) ? TRUE : FALSE,
-			'dbprefix'	=> ($this->userdata['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $this->userdata['db_prefix']),
-			'swap_pre'	=> 'exp_',
-			'db_debug'	=> TRUE, // We show our own errors
-			'cache_on'	=> FALSE,
-			'autoinit'	=> FALSE, // We'll initialize the DB manually
-			'char_set'	=> 'utf8',
-			'dbcollat'	=> 'utf8_general_ci'
+			'hostname' => $this->userdata['db_hostname'],
+			'username' => $this->userdata['db_username'],
+			'password' => $this->userdata['db_password'],
+			'database' => $this->userdata['db_name'],
+			'dbdriver' => $this->userdata['dbdriver'],
+			'pconnect' => ($this->userdata['db_conntype'] == 1) ? TRUE : FALSE,
+			'dbprefix' => ($this->userdata['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $this->userdata['db_prefix']),
+			'swap_pre' => 'exp_',
+			'db_debug' => TRUE, // We show our own errors
+			'cache_on' => FALSE,
+			'autoinit' => FALSE, // We'll initialize the DB manually
+			'char_set' => 'utf8',
+			'dbcollat' => 'utf8_general_ci'
 		);
 
 		if ( ! $this->_db_connect($db, TRUE))
@@ -949,16 +927,8 @@ PAPAYA;
 		// If so we display the form and pass the userdata array to it
 		if (count($errors) > 0)
 		{
-			$str = '';
-			foreach ($errors as $val)
-			{
-				$str .= '<p>'.$val.'</p>';
-			}
-
-			$this->userdata['errors'] = $str;
-
+			$this->userdata['errors'] = $errors;
 			$this->userdata['extra_header'] = $this->_install_form_extra_header(json_encode($this->theme_required_modules));
-
 			$this->_set_output('install_form', $this->userdata);
 			return FALSE;
 		}
@@ -970,14 +940,14 @@ PAPAYA;
 		$this->schema = new EE_Schema();
 
 		// Assign the userdata array to the schema class
-		$this->schema->userdata		=& $this->userdata;
-		$this->schema->theme_path	=& $this->theme_path;
+		$this->schema->userdata   =& $this->userdata;
+		$this->schema->theme_path =& $this->theme_path;
 
 		// Time
-		$this->schema->now			= $this->now;
-		$this->schema->year			= $this->year;
-		$this->schema->month		= $this->month;
-		$this->schema->day			= $this->day;
+		$this->schema->now   = $this->now;
+		$this->schema->year  = $this->year;
+		$this->schema->month = $this->month;
+		$this->schema->day   = $this->day;
 
 		// --------------------------------------------------------------------
 
@@ -989,41 +959,10 @@ PAPAYA;
 
 		if ($query->num_rows() > 0 AND ! isset($_POST['install_override']))
 		{
-			$fields = '';
-			foreach($_POST as $key => $value)
-			{
-				// special handling for optional modules array
-				if ($key == 'modules')
-				{
-					foreach ($value as $k => $v)
-					{
-						if (get_magic_quotes_gpc())
-						{
-							$v = stripslashes($v);
-						}
-
-						$fields .= '<input type="hidden" name="modules[]" value="'.str_replace("'", "&#39;", htmlspecialchars($v)).'" />'."\n";
-
-					}
-				}
-				else
-				{
-					if (get_magic_quotes_gpc())
-					{
-						$value = stripslashes($value);
-					}
-
-					$fields .= '<input type="hidden" name="'.str_replace("'", "&#39;", htmlspecialchars($key)).'" value="'.str_replace("'", "&#39;", htmlspecialchars($value)).'" />'."\n";
-				}
-			}
-
-			$stuff = array(
-				'hidden_fields' => $fields,
-				'action'		=> $this->set_qstr('do_install')
-			);
-
-			$this->_set_output('install_warning', $stuff);
-			return;
+			// TODO-WB: Test an install over an install
+			return $this->_install_form(array(
+				lang('install_detected_msg')
+			));
 		}
 
 		// --------------------------------------------------------------------
@@ -1038,8 +977,11 @@ PAPAYA;
 		$this->schema->default_entry = $this->_default_channel_entry();
 
 		// Encrypt the password and unique ID
+		ee()->load->library('auth');
+		$hashed_password = ee()->auth->hash_password($this->userdata['password']);
+		$this->userdata['password']  = $hashed_password['password'];
+		$this->userdata['salt']      = $hashed_password['salt'];
 		$this->userdata['unique_id'] = random_string('encrypt');
-		$this->userdata['password'] = sha1($this->userdata['password']);
 
 		// --------------------------------------------------------------------
 
@@ -1082,9 +1024,11 @@ PAPAYA;
 		}
 
 		// Install Site Theme!
-		// This goes last because a custom installer might create Member Groups besides the default five,
-		// which might affect the Template Access permissions.
-		if ($this->userdata['theme'] != '' && ! $this->_install_site_theme())
+		// This goes last because a custom installer might create Member Groups
+		// besides the default five, which might affect the Template Access
+		// permissions.
+		if ($this->userdata['install_default_theme'] == 'yes'
+			&& ! $this->_install_site_theme())
 		{
 			$this->_set_output('error', array('error' => lang('improper_grants')));
 			return FALSE;
@@ -1527,14 +1471,17 @@ PAPAYA;
 			return FALSE;
 		}
 
-		$this->load->database($db, FALSE, TRUE);
-
+		ee()->load->database($db, FALSE, TRUE);
 		// Force caching off
-		$this->db->cache_off();
-		$this->db->save_queries	= TRUE;
+		ee()->db->cache_off();
+		ee()->db->save_queries = TRUE;
 
-		if ( ! $this->db->initialize($create_db))
-		{
+		// Ask for exceptions so we can show proper errors in the form
+		ee()->db->db_exception = TRUE;
+
+		try {
+			ee()->db->initialize($create_db);
+		} catch (Exception $e) {
 			return FALSE;
 		}
 
@@ -1590,6 +1537,9 @@ PAPAYA;
 		}
 
 		$version = explode('.', $this->version, 2);
+
+		// TODO-WB: Figure out a way to pass the correct step and status of the
+		// installer to the container view.
 
 		$data = array(
 			'heading'           => $this->heading,
@@ -1801,41 +1751,32 @@ PAPAYA;
 	// --------------------------------------------------------------------
 
 	/**
-	 * Install the Site Theme!
+	 * Install the default site theme
 	 *
-	 * @access	private
 	 * @return	bool
 	 */
 	function _install_site_theme()
 	{
-		// @todo - redo in kind with how template file syncing works in Design
-		// not that these aren't good ideas, but - simplify, simplify, simplify
-		// always better to do simple and solid first so you don't paint a feature
-		// into a corner until after it's been used and tested by the masses - D'Jones
-
-		// Sanitized for your protection
-		$this->userdata['theme'] = $this->security->sanitize_filename($this->userdata['theme']);
-
-		// --------------------------------------------------------------------
-
-		/**
-		 * Default Preferences and Access Permissions for all Templates
-		 */
+		// TODO-WB: Rename themes
+		$this->userdata['theme'] = (IS_CORE)
+			? 'agile_records_core'
+			: 'agile_records';
 
 		$default_group = 'site';
 
 		$default_template_preferences = array(
-			'caching'			=> 'n',
-			'cache_refresh'		=> 0,
-			'php_parsing'		=> 'none', // none, input, output
+			'caching'       => 'n',
+			'cache_refresh' => 0,
+			'php_parsing'   => 'none', // none, input, output
 		);
 
-		// Uses the Labels of the default four groups, as it is easier than the Group IDs, let's be honest
+		// Uses the Labels of the default four groups, as it is easier than the
+		// Group IDs, let's be honest
 		$default_template_access = array(
-			'Banned' 	=> 'n',
-			'Guests'	=> 'y',
-			'Members'	=> 'y',
-			'Pending'	=> 'y'
+			'Banned'  => 'n',
+			'Guests'  => 'y',
+			'Members' => 'y',
+			'Pending' => 'y'
 		);
 
 		$template_access = array();
@@ -1859,14 +1800,14 @@ PAPAYA;
 		 */
 
 		$default_preferences = array(
-			'allow_php' 			=> (in_array($default_template_preferences['php_parsing'], array('input', 'output'))) ? 'y' : 'n',
-			'php_parse_location'	=> ($default_template_preferences['php_parsing'] == 'input') ? 'i' : 'o',
-			'cache'					=> ($default_template_preferences['caching'] == 'y') ? 'y' : 'n',
-			'refresh'				=> (round((int) $default_template_preferences['cache_refresh']) > 0) ? round( (int) $default_template_preferences['cache_refresh']) : 0
+			'allow_php'          => (in_array($default_template_preferences['php_parsing'], array('input', 'output'))) ? 'y' : 'n',
+			'php_parse_location' => ($default_template_preferences['php_parsing'] == 'input') ? 'i' : 'o',
+			'cache'              => ($default_template_preferences['caching'] == 'y') ? 'y' : 'n',
+			'refresh'            => (round((int) $default_template_preferences['cache_refresh']) > 0) ? round( (int) $default_template_preferences['cache_refresh']) : 0
 		);
 
-		$group_ids		= array();
-		$default_access	= array();
+		$group_ids      = array();
+		$default_access = array();
 
 		$this->db->select(array('group_title', 'group_id'));
 		$query = $this->db->get_where('member_groups', array('site_id' => 1));
@@ -1876,9 +1817,10 @@ PAPAYA;
 			// For use with Template Specific Access from Theme Preferences
 			$group_ids[$row['group_title']] = $row['group_id'];
 
-			// Like EE, a group is only denied access if they are specifically denied.  Groups
-			// not in the list are granted access by default.
-			if (isset($default_template_access[$row['group_title']]) && $default_template_access[$row['group_title']] == 'n')
+			// Like EE, a group is only denied access if they are specifically
+			// denied. Groups not in the list are granted access by default.
+			if (isset($default_template_access[$row['group_title']])
+				&& $default_template_access[$row['group_title']] == 'n')
 			{
 				$default_access[$row['group_id']] = $row['group_id'];
 			}
@@ -1903,21 +1845,24 @@ PAPAYA;
 			'php'  => 'webpage',
 		);
 
-		if ($this->userdata['theme'] != '' && $this->userdata['theme'] != 'none' && ($fp = opendir($this->theme_path.$this->userdata['theme'])))
+		if ($this->userdata['theme'] != ''
+			&& $this->userdata['theme'] != 'none'
+			&& ($fp = opendir($this->theme_path.$this->userdata['theme'])))
 		{
 			while (FALSE !== ($folder = readdir($fp)))
 			{
-				if (is_dir($this->theme_path.$this->userdata['theme'].'/'.$folder) && substr($folder, -6) == '.group')
+				if (is_dir($this->theme_path.$this->userdata['theme'].'/'.$folder)
+					&& substr($folder, -6) == '.group')
 				{
 					++$i;
 
 					$group = preg_replace("#[^a-zA-Z0-9_\-/\.]#i", '', substr($folder, 0, -6));
 
 					$data = array(
-						'group_id' 			=> $i,
-						'group_name'		=> $group,
-						'group_order'		=> $i,
-						'is_site_default'	=> ($default_group == $group) ? 'y' : 'n'
+						'group_id'        => $i,
+						'group_name'      => $group,
+						'group_order'     => $i,
+						'is_site_default' => ($default_group == $group) ? 'y' : 'n'
 					);
 
 					$this->db->insert('template_groups', $data);
@@ -1930,7 +1875,9 @@ PAPAYA;
 					{
 						while (FALSE !== ($file = readdir($tgfp)))
 						{
-							if (@is_file($this->theme_path.$this->userdata['theme'].'/'.$folder.'/'.$file) && $file != '.DS_Store' && $file != '.htaccess')
+							if (@is_file($this->theme_path.$this->userdata['theme'].'/'.$folder.'/'.$file)
+								&& $file != '.DS_Store'
+								&& $file != '.htaccess')
 							{
 								$templates[$file] = $file;
 							}
@@ -1945,13 +1892,13 @@ PAPAYA;
 					{
 						if (strpos($file, '.') === FALSE)
 						{
-							$name	= $file;
-							$type	= 'webpage';
+							$name = $file;
+							$type = 'webpage';
 						}
 						else
 						{
-							$type	= strtolower(ltrim(strrchr($file, '.'), '.'));
-							$name	= preg_replace("#[^a-zA-Z0-9_\-/\.]#i", '', substr($file, 0, -(strlen($type) + 1)));
+							$type = strtolower(ltrim(strrchr($file, '.'), '.'));
+							$name = preg_replace("#[^a-zA-Z0-9_\-/\.]#i", '', substr($file, 0, -(strlen($type) + 1)));
 
 							if ( ! in_array($type, $allowed_suffixes))
 							{
@@ -1972,20 +1919,17 @@ PAPAYA;
 						$done[] = $name;
 
 						$data = array(
-							'group_id'			=> $i,
-							'template_name'		=> $name,
-							'template_type'		=> $type,
-							'template_data'		=> file_get_contents($this->theme_path.$this->userdata['theme'].'/'.$folder.'/'.$file),
-							'edit_date'			=> $this->now,
-							'last_author_id'	=> 1
+							'group_id'       => $i,
+							'template_name'  => $name,
+							'template_type'  => $type,
+							'template_data'  => file_get_contents($this->theme_path.$this->userdata['theme'].'/'.$folder.'/'.$file),
+							'edit_date'      => $this->now,
+							'last_author_id' => 1
 						);
 
 						$data = array_merge($data, $default_preferences);
 
-						//
 						// Specific Template Preferences
-						//
-
 						if (isset($template_preferences[$group][$name]))
 						{
 							foreach($template_preferences[$group][$name] as $type => $value)
@@ -2023,10 +1967,7 @@ PAPAYA;
 
 						$template_id = $this->db->insert_id();
 
-						//
 						// Access.  Why, oh, why must this be so complicated?! Ugh...
-						//
-
 						$access = $default_access;
 
 						if (isset($template_access[$group][$name]))
@@ -2117,58 +2058,16 @@ PAPAYA;
 	{
 		$this->load->library('layout');
 
-		$modules = ($this->input->post('modules') !== FALSE) ? $this->input->post('modules') : array();
-
-		$modules = array_unique(array_merge($modules, $this->required_modules));
-
-		// First we deal with native modules, so if a module is native we'll
-		// run it, and unset it from the modules array, to run second
-
-		foreach($modules as $module)
+		// Install required modules
+		foreach($this->required_modules as $module)
 		{
-			if (in_array($module, $this->native_modules))
-			{
-				$path = EE_APPPATH.'/modules/'.$module.'/';
-				unset($modules[$module]); // remove from modules array
-
-				if (file_exists($path.'upd.'.$module.'.php'))
-				{
-					// Add the helper/library load path and temporarily
-					$this->load->add_package_path($path, FALSE);
-
-					require $path.'upd.'.$module.'.php';
-
-					$class = ucfirst($module).'_upd';
-
-					$UPD = new $class;
-					$UPD->_ee_path = EE_APPPATH;
-					$UPD->install_errors = array();
-
-					if (method_exists($UPD, 'install'))
-					{
-						$UPD->install();
-						if (count($UPD->install_errors) > 0)
-						{
-							// clean and combine
-							$this->module_install_errors[$module] = array_map('htmlentities', $UPD->install_errors);
-						}
-					}
-
-					// remove package path
-					$this->load->remove_package_path($path);
-				}
-			}
-		}
-
-		// Native modules will now have been removed from the array, so we'll
-		// run it again for third party modules going in at install time.
-
-		foreach($modules as $module)
-		{
-			$path = PATH_ADDONS.$module.'/';
+			$path = SYSPATH.'/expressionengine/modules/'.$module.'/';
 
 			if (file_exists($path.'upd.'.$module.'.php'))
 			{
+				// Add the helper/library load path and temporarily
+				$this->load->add_package_path($path, FALSE);
+
 				require $path.'upd.'.$module.'.php';
 
 				$class = ucfirst($module).'_upd';
@@ -2186,6 +2085,9 @@ PAPAYA;
 						$this->module_install_errors[$module] = array_map('htmlentities', $UPD->install_errors);
 					}
 				}
+
+				// remove package path
+				$this->load->remove_package_path($path);
 			}
 		}
 

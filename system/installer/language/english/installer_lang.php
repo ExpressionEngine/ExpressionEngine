@@ -6,98 +6,63 @@ $lang['your_version'] = 'We have detected that you are currently running Express
 $lang['ready_to_update'] = 'If you are ready to update ExpressionEngine to version %x click the link below:';
 $lang['ready_to_install'] = 'If you are ready to install ExpressionEngine version %x click the link below:';
 $lang['backup_confirmation'] = 'Did you perform a full backup of your existing ExpressionEngine files and database?';
-$lang['preflight_done'] = 'All pre-installation tests have been completed successfully and no errors were detected.';
-$lang['license_agreement'] = 'License Agreement';
-$lang['must_accept_license'] = 'You must accept the terms and conditions of the license agreement.';
-$lang['license_agree'] = 'I agree to abide by the license Terms and Conditions as stated above.';
-$lang['license_disagree'] = 'I do NOT agree to abide by the license Terms and Conditions as stated above';
-$lang['server_settings'] = 'Server Settings';
-$lang['software_registration'] = 'Software Registration';
-$lang['license_contact'] = 'License Holder Contact Email';
-$lang['license_contact_explanation'] = 'The contact email address for the owner of this software license.';
-$lang['license_number'] = 'ExpressionEngine License Number';
-$lang['locate_license_number'] = 'Available in the <a href="https://store.ellislab.com/manage">download area</a> of the EllisLab.com site.';
-$lang['invalid_license_number'] = 'The license number provided is not a valid license number.';
-$lang['name_of_index'] = 'Name of the index page of your ExpressionEngine site';
-$lang['normally_index'] = 'Unless you renamed the file it will be named <strong>index.php</strong>';
-$lang['url_of_index'] = 'URL to the directory where the above index page is located';
-$lang['normally_root'] = 'Typically this will be the root of your site (http://www.yourdomain.com/)';
-$lang['do_not_include_index'] = 'Do not include the index page in the URL';
-$lang['url_of_admin'] = 'URL to your Control Panel access file';
-$lang['url_of_admin_info'] = 'You are currently using this file to run this installer.';
-$lang['webmaster_email'] = 'Email address of webmaster';
-$lang['server_type'] = 'What type of server are your hosted on?';
-$lang['unix_if_confused'] = 'If you do not know, choose <strong>Unix</strong>';
-$lang['unix_variant'] = 'Unix (or Unix variant, like Linux, Mac OS X, BSD, Solaris, etc.)';
-$lang['windows_variant'] = 'Windows (NT or IIS)';
-$lang['database_settings'] = 'Database Settings';
-$lang['database_type'] = 'Database Type';
-$lang['sql_server_address'] = 'SQL Server Address';
-$lang['usually_localhost'] = 'Usually you will use <strong>localhost</strong>, but your hosting provider may require something else';
-$lang['sql_username'] = 'SQL Username';
-$lang['sql_username_info'] = 'The username you use to access your SQL database';
-$lang['sql_password'] = 'SQL Password';
-$lang['sql_password_info'] = 'The password you use to access your SQL database';
-$lang['sql_dbname'] = 'SQL Database Name';
-$lang['sql_dbname_info'] = 'The name of the database where you want ExpressionEngine installed.';
-$lang['sql_prefix'] = 'SQL Database Prefix';
-$lang['sql_prefix_info'] = 'Use <strong>exp</strong> unless you need to use a different prefix';
-// $lang['sql_dbname_note'] = 'Note: If the database does not exist the installer will attempt to create it.  However, depending on your server settings this may not be possible.';
-$lang['sql_dbname_note'] = 'Note: Please make sure that the database exists, ExpressionEngine will <strong>not</strong> create it for you.';
-$lang['sql_conntype'] = 'What type of database connection do you prefer?';
-$lang['persistent'] = 'Persistent';
-$lang['nonpersistent'] = 'Non-persistent (Recommended)';
-$lang['encrypt_settings'] = 'Encryption Settings';
-$lang['encrypt_type'] = 'What type of password encryption do you prefer?';
-$lang['sha1_recommended'] = '<strong>SHA1</strong> is recommended since it is more secure, but MD5 can be used for more broad compatibility with other PHP applications.';
-$lang['create_account'] = 'Create Your Admin Account';
-$lang['admin_info'] = 'You will use these settings to access  your ExpressionEngine control panel';
+
+// Database Server
+$lang['db_hostname'] = 'Database Server Address';
+$lang['db_hostname_note'] = 'Commonly <b>localhost</b>, but your host may require something else.';
+$lang['db_name'] = 'Database Name';
+$lang['db_name_note'] = 'Name of the database where you want ExpressionEngine installed.';
+$lang['db_name_warning'] = 'Make sure the database exists, the installer will <b>not</b> create it.';
+$lang['db_username'] = 'Database Server Username';
+$lang['db_username_note'] = 'Username used to access the above database.';
+$lang['db_password'] = 'Database Server Password';
+$lang['db_password_note'] = 'Password used to access the above database.';
+$lang['db_prefix'] = 'Database Table Prefix';
+$lang['db_prefix_note'] = 'Use <b>exp</b> unless you require/prefer a different prefix.';
+
+// Account Creation
+$lang['administrator_account'] = 'Administrator Account';
 $lang['username'] = 'Username';
-$lang['4_chars'] = 'Must be at least 4 characters in length';
+$lang['username_note'] = 'Username you want to use to login to the <abbr title="Control Panel">CP</abbr>.';
+$lang['e_mail'] = 'e-mail';
+$lang['e_mail_note'] = 'e-mail address you want to use for this account.';
 $lang['password'] = 'Password';
-$lang['5_chars'] = 'Must be at least 5 characters in length';
-$lang['password_confirm'] = 'Password confirmation';
-$lang['password_mismatch'] = 'Password confirmation does not match';
-$lang['password_confirmed'] = 'Password confirmed';
-$lang['pw_retype'] = 'Please retype your password';
-$lang['email'] = 'Your email address';
-$lang['screen_name'] = 'Screen Name';
-$lang['screen_name_info'] = 'This is the name that will appear on your channel entries and posts';
-$lang['site_label'] = 'Name of your site';
+$lang['password_note'] = 'Password you want to use to login to the <abbr title="Control Panel">CP</abbr>.';
+
+// Timezone Selection
+// TODO-WB: Remove before release.
 $lang['local_settings'] = 'Localization Settings';
 $lang['timezone'] = 'Your Timezone';
 $lang['select_timezone'] = 'Select Timezone';
 $lang['no_timezones'] = 'No Timezones';
-$lang['yes'] = 'Yes';
-$lang['no'] = 'No';
-$lang['optional_modules'] = 'Optional Modules';
-$lang['optional_modules_info'] = 'Modules that you would like automatically installed for you. You can always install these later.';
-$lang['template_required_modules'] = '* Modules required by the selected Site Theme';
-$lang['deft_template'] = 'Choose your Site Theme';
-$lang['site_theme_info'] = 'ExpressionEngine includes a Site Theme for a ficticious music label, Agile Records, that installs pre-made templates and data so that you can start with a fully working site. If you\'d rather start building from scratch, choose "None - Empty Installation".  Note that if you choose this option your site\'s homepage will appear blank since no templates or data will be created automatically.';
-$lang['browse_templates'] = 'Browse the templates';
-$lang['install_ee'] = 'Install ExpressionEngine!';
+
+// Default Theme
+$lang['default_theme'] = 'Default theme';
+$lang['install_default_theme'] = 'Install default theme?';
+$lang['install_default_theme_info'] = 'When set to <b>yes</b>, ExpressionEngine will install a default theme.';
+
+$lang['start_installation'] = 'Start Installation';
+
 $lang['back'] = 'Back';
 $lang['error'] = 'ERROR';
 $lang['submit'] = 'Submit';
-$lang['error_occurred'] = 'The following error occurred:';
+$lang['error_occurred'] = 'Oops, there was an error';
 $lang['module_errors_occurred'] = 'The following error(s) were reported during module installation:';
-$lang['support_resource_info'] = 'If you have questions regarding the above errors please visit our  <a href="http://ellislab.com/support/">Support Resources</a> page or contact ExpressionEngine technical support.';
 $lang['click_to_install'] = 'Click here to install a brand new copy of ExpressionEngine';
 $lang['click_to_update'] = 'Click here to update ExpressionEngine to Version %s';
 $lang['version_update_text'] = 'Running update ...';
 $lang['invalid_action'] = 'The action you have requested is not valid.';
 $lang['unreadable_config'] = 'Your config.php file is unreadable. Please make sure the file exists and that the file permissions to 666 (or the equivalent write permissions for your server) on the following file: expressionengine/config/config.php';
 $lang['unwritable_config'] = 'Your config.php file does not appear to have the proper file permissions.  Please set the file permissions to 666 (or the equivalent write permissions for your server) on the following file: expressionengine/config/config.php';
-$lang['unreadable_database'] = 'Your database.php file is unwriteable. Please make sure the file exists and that the file permissions to 666 (or the equivalent write permissions for your server) on the following file: expressionengine/config/database.php';
-$lang['unwritable_database'] = 'Your database.php file does not appear to have the proper file permissions.  Please set the file permissions to 666 (or the equivalent write permissions for your server) on the following file: expressionengine/config/database.php';
 $lang['unwritable_cache_folder'] = 'Your cache folder does not appear to have proper permissions.  Please set the folder permissions to 777 (or the equivalent write permissions for your server) on the following folder: expressionengine/cache';
-$lang['database_no_config'] = 'Unable to connect to your database using the configuration settings found in the following file: expressionengine/config/database.php file. Please correct the settings so that the update can proceed.';
+
+$lang['database_no_config'] = 'Unable to connect to your database using the configuration settings found in the following file: config/config.php file. Please correct the settings so that the update can proceed.';
 $lang['database_no_data'] = 'Unable to locate any database connection information.';
 $lang['database_no_connect'] = 'Unable to connect to your database using the configuration settings you submitted.';
 $lang['database_prefix_invalid_characters'] = 'There are invalid characters in the database prefix. Only 0-9, a-z, A-Z, $, and _ are allowed.';
 $lang['database_prefix_contains_exp_'] = 'The database prefix cannot contain the string "exp_".';
 $lang['database_prefix_too_long'] = 'The database prefix cannot be longer than 30 characters.';
+
 $lang['unreadable_update'] = 'Unable to read the contents of your /expressionengine/installer/updates directory.  Please check the file permissions and re-run this installation wizard.';
 $lang['unreadable_files'] = 'One of your update files is unreadable. Please make sure all of the files located in this folder are readable: expressionengine/installer/updates/';
 $lang['unreadable_language'] = 'The language files needed for your current language selection (%x) are unavailable. Please put the language pack in this folder: expressionengine/language/';
@@ -113,12 +78,9 @@ $lang['password_not_unique'] = 'Your password can not be based on the username';
 $lang['password_no_dollar'] = 'Your MySQL password can not contain a dollar sign';
 $lang['update_error'] = 'An unexpected error occurred while performing the update';
 $lang['update_step_error'] = 'An unexpected error occured while performing the update.  Could not find update step: %x';
-$lang['install_detected'] = 'Error:  Existing Installation Detected!';
-$lang['install_detected_msg'] = 'ExpressionEngine appears to already be installed on your database, even though your config and database files are blank.';
-$lang['continuing_will_destroy'] = 'Continuing with this installation will destroy ALL information currently in your database.';
-$lang['do_not_click_if_updating'] = 'If you are attempting to <strong>UPDATE</strong> ExpressionEngine from a previous version <strong>Do NOT click the button</strong>. Instead, restore your config file first, then run this installation wizard again starting from the first page.';
-$lang['click_if_sure'] = '<strong>If you are absolutely sure you wish to perform a NEW installation, click the button below:</strong>';
-$lang['yes_install_ee'] = 'Yes I am sure.  Install a brand new copy of ExpressionEngine';
+
+$lang['install_detected_msg'] = 'ExpressionEngine appears to already be installed on your database, even though your config and database files are blank. If you are attempting to <strong>UPDATE</strong> ExpressionEngine from a previous version <strong>Do NOT click the button</strong>. Instead, restore your config file first, then run this installation wizard again starting from the first page.';
+
 $lang['please_stand_by'] = 'Please Stand By...';
 $lang['currently_installing'] = 'We are currently updating your ExpressionEngine installation.';
 $lang['dont_close_browser'] = 'Do not close your browser until the update routine is finished.';
