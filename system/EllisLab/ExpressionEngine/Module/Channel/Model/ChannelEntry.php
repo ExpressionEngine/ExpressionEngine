@@ -78,7 +78,7 @@ class ChannelEntry extends FieldDataContentModel {
 		$db->_reset_select();
 		$db->from('channel_fields');
 
-		return new Collection($db->get()->result_array());
+		return new Collection($db->get()->result_object());
 	}
 
 	public function fill($data)
@@ -207,7 +207,7 @@ class Field {
 		$field_data = $this->data;
 		$field_name = $this->getName();
 
-		$info = $this->type_info;
+		$info = (array) $this->type_info;
 
 		$settings = array(
 			'field_instructions'	=> trim($info['field_instructions']),
