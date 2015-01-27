@@ -72,8 +72,11 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 						{
 							$required = ' class="required"';
 						}
+						$has_note = isset($field['note']);
 						?>
-
+						<?php if ($has_note): ?>
+							<div class="setting-note">
+						<?php endif ?>
 						<?php switch ($field['type']):
 						case 'text': ?>
 							<input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$required?>>
@@ -152,6 +155,10 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 					<?php endforeach ?>
 					<?php if (isset($setting['action_button'])): ?>
 						<a class="btn tn action <?=$setting['action_button']['class']?>" href="<?=$setting['action_button']['link']?>"><?=lang($setting['action_button']['text'])?></a>
+					<?php endif ?>
+					<?php if ($has_note): ?>
+						<em><?=$field['note']?></em>
+					</div>
 					<?php endif ?>
 					<?php if ( ! $grid): ?>
 						<?=form_error($field_name)?>
