@@ -458,9 +458,6 @@ class Channel extends CP_Controller {
 	 */
 	private function saveChannel($channel_id = NULL)
 	{
-		// Load the layout Library & update the layouts
-		ee()->load->library('layout');
-
 		$dupe_id = ee()->input->get_post('duplicate_channel_prefs');
 		unset($_POST['duplicate_channel_prefs']);
 
@@ -543,17 +540,6 @@ class Channel extends CP_Controller {
 		}
 		else
 		{
-			if (isset($_POST['clear_versioning_data']))
-			{
-				ee()->db->delete('entry_versioning', array('channel_id' => $_POST['channel_id']));
-
-				unset($_POST['clear_versioning_data']);
-			}
-
-			// Only one possible is revisions- enabled or disabled.
-			// We treat as installed/not and delete the whole tab.
-			ee()->layout->sync_layout($_POST, $channel_id);
-
 			$_POST['channel_id'] = $channel_id;
 			$channel->save();
 		}
@@ -929,7 +915,11 @@ class Channel extends CP_Controller {
 					'fields' => array(
 						'max_versions' => array(
 							'type' => 'text',
-							'value' => $channel->max_revisions
+							'value' => $channel->max_revisions,
+							'note' => form_label(
+								form_checkbox('clear_versioning_data', 'y')
+								.lang('clear_versioning_data')
+							)
 						)
 					)
 				)
@@ -993,7 +983,11 @@ class Channel extends CP_Controller {
 					'fields' => array(
 						'comment_system_enabled' => array(
 							'type' => 'yes_no',
-							'value' => $channel->comment_system_enabled
+							'value' => $channel->comment_system_enabled,
+							'note' => form_label(
+								form_checkbox('apply_comment_enabled_to_existing', 'y')
+								.lang('apply_comment_enabled_to_existing')
+							)
 						)
 					)
 				),
@@ -1077,7 +1071,11 @@ class Channel extends CP_Controller {
 					'fields' => array(
 						'comment_expiration' => array(
 							'type' => 'text',
-							'value' => $channel->comment_expiration
+							'value' => $channel->comment_expiration,
+							'note' => form_label(
+								form_checkbox('apply_expiration_to_existing', 'y')
+								.lang('apply_expiration_to_existing')
+							)
 						)
 					)
 				),
@@ -1253,6 +1251,45 @@ class Channel extends CP_Controller {
 		{
 			$_POST['comment_expiration'] = 0;
 		}
+
+		ee()->load->model('channel_model');
+
+		if (ee()->input->post('apply_comment_enabled_to_existing'))
+		{
+			if (ee()->input->post('comment_system_enabled') == 'y')
+			{
+				ee()->channel_model->update_comments_allowed($channel_id, 'y');
+			}
+			elseif ($this->input->post('comment_system_enabled') == 'n')
+			{
+				ee()->channel_model->update_comments_allowed($channel_id, 'n');
+			}
+		}
+
+		if (ee()->input->post('apply_expiration_to_existing'))
+		{
+			if (ee()->input->post('comment_expiration') == 0)
+			{
+				ee()->channel_model->update_comment_expiration($channel_id, 0, TRUE);
+			}
+			else
+			{
+				ee()->channel_model->update_comment_expiration(
+					$channel_id,
+					ee()->input->post('comment_expiration') * 86400
+				);
+			}
+		}
+
+		if (ee()->input->post('clear_versioning_data'))
+		{
+			ee()->channel_model->clear_versioning_data($channel_id);
+		}
+
+		// Only one possible is revisions- enabled or disabled.
+		// We treat as installed/not and delete the whole tab.
+		ee()->load->library('layout');
+		ee()->layout->sync_layout($_POST, $channel_id);
 
 		// Make sure we only got the fields we asked for
 		foreach ($sections as $settings)

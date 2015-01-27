@@ -447,6 +447,15 @@ $lang = array(
 'invalid_url_title_prefix' =>
 'This field cannot contain spaces.',
 
+'clear_versioning_data' =>
+'Delete all existing revision data in this channel?',
+
+'apply_comment_enabled_to_existing' =>
+'Update all existing entries with this setting?',
+
+'apply_expiration_to_existing' =>
+'Update all existing comments with this setting?',
+
 ''=>''
 );
 
