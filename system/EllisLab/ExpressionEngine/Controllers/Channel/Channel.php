@@ -518,6 +518,7 @@ class Channel extends CP_Controller {
 			if ($dupe_id !== FALSE AND is_numeric($dupe_id))
 			{
 				// Duplicate layouts
+				ee()->load->library('layout');
 				ee()->layout->duplicate_layout($dupe_id, $channel->channel_id);
 			}
 
