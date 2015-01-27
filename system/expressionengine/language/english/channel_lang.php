@@ -456,6 +456,9 @@ $lang = array(
 'apply_expiration_to_existing' =>
 'Update all existing comments with this setting?',
 
+'channel_form_default_status_empty' =>
+'-- Use Channel Default --',
+
 ''=>''
 );
 

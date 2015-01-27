@@ -675,6 +675,10 @@ class Channel extends CP_Controller {
 			}
 		}
 
+		// Add "Use Channel Default" option for channel form default status
+		$channel_form_statuses = array('' => lang('channel_form_default_status_empty'));
+		$channel_form_statuses = array_merge($channel_form_statuses, $deft_status_options);
+
 		$vars['sections'] = array(
 			array(
 				array(
@@ -857,7 +861,7 @@ class Channel extends CP_Controller {
 					'fields' => array(
 						'default_status' => array(
 							'type' => 'dropdown',
-							'choices' => $deft_status_options,
+							'choices' => $channel_form_statuses,
 							'value' => $channel_form->default_status
 						)
 					)
