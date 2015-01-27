@@ -252,24 +252,23 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
-		// Is $_GET['m'] set?  If not we show the welcome page
-		if ( ! $this->input->get('M'))
+		$action = (ee()->input->get('M'))
+			? '_'.ee()->input->get('M')
+			: FALSE;
+
+		// If we're not at a defined stage, go to the install form.
+		if ( ! $action)
 		{
-			return $this->_set_output(
-				'welcome',
-				array('action' => $this->set_qstr('optionselect'))
-			);
+			return $this->_install_form();
 		}
 
 		// OK, at this point we have determined whether an existing EE
 		// installation exists and we've done all our error trapping and
 		// connected to the DB if needed
 
-		// For safety all function names are prefixed with an underscore
-		$action = '_'.$this->input->get('M');
-
 		// Is the action allowed?
-		if ( ! in_array($this->input->get('M'), $this->allowed_methods) OR  ! method_exists($this, $action))
+		if ( ! in_array(ee()->input->get('M'), $this->allowed_methods)
+			OR ! method_exists($this, $action))
 		{
 			show_error(lang('invalid_action'));
 		}
