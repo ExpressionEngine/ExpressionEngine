@@ -1569,16 +1569,28 @@ PAPAYA;
 	 * Loads the "container" view file and sets the content
 	 *
 	 * @param string $view  The name of the view to load
-	 * @param array  $arary Associative array to pass to view
+	 * @param array  $template_variables Associative array to pass to view
 	 * @return void
 	 */
-	private function _set_output($view = '', $array = array())
+	private function _set_output($view, $template_variables = array())
 	{
+		ee()->load->library('view');
+
 		if (IS_CORE)
 		{
-			$this->heading = str_replace('ExpressionEngine', 'ExpressionEngine Core', $this->heading);
-			$this->title = str_replace('ExpressionEngine', 'ExpressionEngine Core', $this->title);
+			$this->heading = str_replace(
+				'ExpressionEngine',
+				'ExpressionEngine Core',
+				$this->heading
+			);
+			$this->title = str_replace(
+				'ExpressionEngine',
+				'ExpressionEngine Core',
+				$this->title
+			);
 		}
+
+		$version = explode('.', $this->version, 2);
 
 		$data = array(
 			'heading'           => $this->heading,
@@ -1587,27 +1599,24 @@ PAPAYA;
 			'refresh_url'       => $this->refresh_url,
 			'image_path'        => $this->image_path,
 			'copyright'         => sprintf($this->copyright, date('Y')),
+
 			'version'           => $this->version,
-			'next_version'      => substr($this->next_update, 0, 1).'.'.substr($this->next_update, 1, 1).'.'.substr($this->next_update, 2, 1),
+			'version_major'     => $version[0],
+			'version_minor'     => $version[1],
 			'installed_version' => $this->installed_version,
+
+			'next_version'      => substr($this->next_update, 0, 1).'.'.substr($this->next_update, 1, 1).'.'.substr($this->next_update, 2, 1),
 			'languages'         => $this->languages,
-			'javascript_path'   => $this->javascript_path,
 			'theme_url'         => $this->theme_url,
-			'is_core'           => (IS_CORE) ? 'Core ' : ''
+			'is_core'           => (IS_CORE) ? 'Core' : ''
 		);
 
-		$data = array_merge($array, $data);
+		$data = array_merge($template_variables, $data);
 
-		$this->load->helper('language');
-
-		if ($view != '')
-		{
-			$content = $this->load->view($view, $data, TRUE);
-		}
-
-		$data['content'] = $content;
-
-		$this->load->view('container', $data);
+		ee()->load->helper('language');
+		ee()->load->view('container', array(
+			'content' => ee()->load->view($view, $data, TRUE)
+		));
 	}
 
 	// --------------------------------------------------------------------
