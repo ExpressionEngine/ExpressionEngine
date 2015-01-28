@@ -651,10 +651,6 @@ class Wizard extends CI_Controller {
 		// message
 		$vars['errors'] = $errors;
 
-		$vars['extra_header'] = $this->_install_form_extra_header(
-			json_encode($this->theme_required_modules)
-		);
-
 		// Preload server timezone
 		ee()->load->library('localize');
 		$this->userdata['default_site_timezone'] = date_default_timezone_get();
@@ -664,76 +660,6 @@ class Wizard extends CI_Controller {
 
 		// Display the form and pass the userdata array to it
 		$this->_set_output('install_form', array_merge($vars, $this->userdata));
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Install form extra header
-	 *
-	 * The extra script header used by the install form
-	 *
-	 * @access	private
-	 * @return	string
-	 */
-	function _install_form_extra_header($theme_modules_jason)
-	{
-		return <<<PAPAYA
-			<script type="text/javascript">
-				$(document).ready(function(){
-					onSelectChange(); // initialize to correct values in case there was a form error
-					$("#theme_select").change(onSelectChange);
-
-					$("#webmaster_email").blur( function() {
-						if ($("#email_address").val() == "")
-						{
-							$("#email_address").val($(this).val());
-						}
-					});
-				});
-
-				$.fn.setChecks = function(v, r){
-					return setChecks(this, v, (!r) ? [""] : r);
-				};
-
-				var setChecks = function(jq, v, r){
-					jq.each(
-						function (lc){
-							if ($.inArray(this.value, v) > -1 || $.inArray(this.value, r) > -1)
-							{
-								this.checked = true;
-								if ($.inArray(this.value, r) > -1)
-								{
-									this.disabled = true;
-									$("label[for="+this.value+"] > span.req_module").show();
-								}
-								else
-								{
-									this.disabled = false;
-									$("label[for="+this.value+"] > span.req_module").hide();
-								}
-							}
-							else
-							{
-								this.checked = false;
-								this.disabled = false;
-								$("label[for="+this.value+"] > span.req_module").hide();
-							}
-						}
-					);
-
-					return jq;
-				}
-
-				function onSelectChange(){
-					var selected = $("#theme_select").val();
-					var theme_modules_jason = {$theme_modules_jason}
-					var base_modules = new Array("comment", "email", "emoticon", "jquery", "rss", "search", "safecracker");
-
-				   $("input[name='modules[]']").setChecks(base_modules, theme_modules_jason[selected]);
-				}
-			</script>
-PAPAYA;
 	}
 
 	// --------------------------------------------------------------------
@@ -928,7 +854,6 @@ PAPAYA;
 		if (count($errors) > 0)
 		{
 			$this->userdata['errors'] = $errors;
-			$this->userdata['extra_header'] = $this->_install_form_extra_header(json_encode($this->theme_required_modules));
 			$this->_set_output('install_form', $this->userdata);
 			return FALSE;
 		}
