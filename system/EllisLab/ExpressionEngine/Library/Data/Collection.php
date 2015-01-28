@@ -127,7 +127,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	{
 		return $this->map(function($item) use($key)
 		{
-			return $item->$key;
+			return is_array($item) ? $item[$key] : $item->$key;
 		});
 	}
 
