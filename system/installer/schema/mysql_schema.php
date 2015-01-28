@@ -1399,60 +1399,109 @@ class EE_Schema {
 
 		$Q[] = ee()->db->insert_string('sites', $site);
 
-		// Yes to all things, 0 flood control
-		$Q[] = "INSERT INTO exp_member_groups VALUES (
-			1, 1, 'Super Admins', '', 'y',
-			'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y',
-			'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y',
-			'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y',
-			'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y',
-			'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y',
-			'y', 'y', 'y', 'y', '', 'y', 'y', 'y', '0', 'y',
-			'20', '60', 'y', 'y', 'y', 'y', 'y')";
-		// No to everything but locked, 60 flood control
-		$Q[] = "INSERT INTO exp_member_groups VALUES (
-			2, 1, 'Banned', '', 'y',
-			'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',
-			'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',
-			'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',
-			'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',
-			'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',
-			'n', 'n', 'n', 'n', '', 'n', 'n', 'n', '60', 'n',
-			'20', '60', 'n', 'n', 'n', 'n', 'n')";
-		// Yes to can view online, can post comments, can search, 15 flood control
-		// Defaults work, change group id, and name
-		$Q[] = "INSERT INTO exp_member_groups VALUES (
-			3, 1, 'Guests', '', 'y',
-			'n', 'y', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',
-			'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',
-			'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',
-			'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',
-			'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'y',
-			'n', 'n', 'n', 'n', '', 'y', 'n', 'y', '15', 'n',
-			'20', '60', 'n', 'n', 'n', 'n', 'n')";
-		// Yes to can view online, can post comments, can search, 15 flood control
-		// Defaults work, change group id, and name
-		$Q[] = "INSERT INTO exp_member_groups VALUES (
-			4, 1, 'Pending', '', 'y',
-			'n', 'y', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',
-			'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',
-			'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',
-			'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',
-			'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'y',
-			'n', 'n', 'n', '', 'n', 'y', 'n', 'y', '15', 'n',
-			'20', '60', 'n', 'n', 'n', 'n', 'n')";
-		// Yes to can view online, can post comments, can search, 10 flood control
-		// Yes to include in member list, can email from profile, can view profiles,
-		// can edit html buttons, can delete self, can send private messages, can attatch in private messages
-		$Q[] = "INSERT INTO exp_member_groups VALUES (
-			5, 1, 'Members', '', 'y',
-			'n', 'y', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',
-			'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',
-			'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',
-			'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',
-			'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',
-			'y', 'y', 'y', 'n', '', 'y', 'n', 'y', '10', 'y',
-			'20', '60', 'y', 'n', 'n', 'y', 'y')";
+		// Member Groups
+		$member_groups = array(
+			array(
+				'group_title'                    => 'Super Admin',
+				'group_id'                       => 1,
+				'can_view_offline_system'        => 'y',
+				'can_access_cp'                  => 'y',
+				'can_access_content'             => 'y',
+				'can_access_publish'             => 'y',
+				'can_access_edit'                => 'y',
+				'can_access_files'               => 'y',
+				'can_access_fieldtypes'          => 'y',
+				'can_access_design'              => 'y',
+				'can_access_addons'              => 'y',
+				'can_access_modules'             => 'y',
+				'can_access_extensions'          => 'y',
+				'can_access_plugins'             => 'y',
+				'can_access_members'             => 'y',
+				'can_access_admin'               => 'y',
+				'can_access_sys_prefs'           => 'y',
+				'can_access_content_prefs'       => 'y',
+				'can_access_tools'               => 'y',
+				'can_access_comm'                => 'y',
+				'can_access_utilities'           => 'y',
+				'can_access_data'                => 'y',
+				'can_access_logs'                => 'y',
+				'can_admin_channels'             => 'y',
+				'can_admin_upload_prefs'         => 'y',
+				'can_admin_design'               => 'y',
+				'can_admin_members'              => 'y',
+				'can_delete_members'             => 'y',
+				'can_admin_mbr_groups'           => 'y',
+				'can_admin_mbr_templates'        => 'y',
+				'can_ban_users'                  => 'y',
+				'can_admin_modules'              => 'y',
+				'can_admin_templates'            => 'y',
+				'can_edit_categories'            => 'y',
+				'can_delete_categories'          => 'y',
+				'can_view_other_entries'         => 'y',
+				'can_edit_other_entries'         => 'y',
+				'can_assign_post_authors'        => 'y',
+				'can_delete_self_entries'        => 'y',
+				'can_delete_all_entries'         => 'y',
+				'can_view_other_comments'        => 'y',
+				'can_edit_own_comments'          => 'y',
+				'can_delete_own_comments'        => 'y',
+				'can_edit_all_comments'          => 'y',
+				'can_delete_all_comments'        => 'y',
+				'can_moderate_comments'          => 'y',
+				'can_send_email'                 => 'y',
+				'can_send_cached_email'          => 'y',
+				'can_email_member_groups'        => 'y',
+				'can_email_from_profile'         => 'y',
+				'can_view_profiles'              => 'y',
+				'can_edit_html_buttons'          => 'y',
+				'can_delete_self'                => 'y',
+				'exclude_from_moderation'        => 'y',
+				'can_send_private_messages'      => 'y',
+				'can_attach_in_private_messages' => 'y',
+				'can_send_bulletins'             => 'y',
+				'include_in_authorlist'          => 'y',
+				'search_flood_control'           => '0'
+			),
+			array(
+				'group_title'                    => 'Banned',
+				'group_id'                       => 2,
+				'can_view_online_system'         => 'n',
+				'can_search'                     => 'n',
+				'can_post_comments'              => 'n',
+				'include_in_memberlist'          => 'n',
+				'search_flood_control'           => '60'
+			),
+			array(
+				'group_title'                    => 'Guests',
+				'group_id'                       => 3
+			),
+			array(
+				'group_title'                    => 'Pending',
+				'group_id'                       => 4
+			),
+			array(
+				'group_title'                    => 'Members',
+				'group_id'                       => 5,
+				'can_email_from_profile'         => 'y',
+				'can_view_profiles'              => 'y',
+				'can_edit_html_buttons'          => 'y',
+				'can_delete_self'                => 'y',
+				'can_send_private_messages'      => 'y',
+				'can_attach_in_private_messages' => 'y',
+				'search_flood_control'           => '10'
+			)
+		);
+
+		$add_quotes = function($value) {
+				return (is_string($value)) ? "'{$value}'" : $value;
+			};
+
+		foreach ($member_groups as $group)
+		{
+			$Q[] = "INSERT INTO exp_member_groups
+				(".implode(', ', array_keys($group)).")
+				VALUES (".implode(', ' , array_map($add_quotes, $group)).")";
+		}
 
 		// default statuses - these are really always needed
 		$Q[] = "INSERT INTO `exp_status_groups` (`group_id`, `site_id`, `group_name`) VALUES (1, 1, 'Statuses')";
