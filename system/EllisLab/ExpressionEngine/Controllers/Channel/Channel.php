@@ -918,7 +918,7 @@ class Channel extends CP_Controller {
 					'title' => 'max_versions',
 					'desc' => 'max_versions_desc',
 					'fields' => array(
-						'max_versions' => array(
+						'max_revisions' => array(
 							'type' => 'text',
 							'value' => $channel->max_revisions,
 							'note' => form_label(
@@ -1054,7 +1054,7 @@ class Channel extends CP_Controller {
 					'title' => 'max_characters',
 					'desc' => 'max_characters_desc',
 					'fields' => array(
-						'max_characters' => array(
+						'comment_max_chars' => array(
 							'type' => 'text',
 							'value' => $channel->comment_max_chars
 						)
@@ -1166,7 +1166,7 @@ class Channel extends CP_Controller {
 				'rules' => 'strtolower|trim|strip_tags|valid_xss_check|callback__validPrefix'
 			),
 			array(
-				'field' => 'max_versions',
+				'field' => 'max_revisions',
 				'label' => 'lang:max_versions',
 				'rules' => 'trim|integer'
 			),
@@ -1181,7 +1181,7 @@ class Channel extends CP_Controller {
 				'rules' => 'trim|valid_emails'
 			),
 			array(
-				'field' => 'max_characters',
+				'field' => 'comment_max_chars',
 				'label' => 'lang:max_characters',
 				'rules' => 'trim|integer'
 			),
@@ -1240,7 +1240,7 @@ class Channel extends CP_Controller {
 			return TRUE;
 		}
 
-		ee()->form_validation->set_message('_valid_prefix', lang('invalid_url_title_prefix'));
+		ee()->form_validation->set_message('_validPrefix', lang('invalid_url_title_prefix'));
 
 		return preg_match('/^[\w\-]+$/', $str) ? TRUE : FALSE;
 	}
