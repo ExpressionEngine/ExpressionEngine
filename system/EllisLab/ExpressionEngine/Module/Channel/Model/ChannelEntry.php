@@ -84,6 +84,11 @@ class ChannelEntry extends FieldDataContentModel {
 			{
 				$id = $matches[1];
 
+				if ( ! array_key_exists($id, $field_types))
+				{
+					continue;
+				}
+
 				$field = new FieldtypeFacade($id, $field_types[$id]);
 				$field->setData($value);
 				$field->setContentId($this->getId());
@@ -175,12 +180,12 @@ class FieldDisplay {
 
 	public function getInstructions()
 	{
-		return $this->field->getInfo('instructions');
+		return $this->field->getInfo('field_instructions');
 	}
 
 	public function isRequired()
 	{
-		return $this->field->getInfo('is_required') == 'y';
+		return $this->field->getInfo('field_required') == 'y';
 	}
 }
 
