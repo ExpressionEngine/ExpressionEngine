@@ -1041,8 +1041,8 @@ class Wizard extends CI_Controller {
 			// reset in case they change their mind but we have
 			// already written the file. Unlikely? Yes.
 			$trackback_config = array(
-				'trackbacks_to_comments'	=> 'n',
-				'archive_trackbacks'		=> 'n'
+				'trackbacks_to_comments' => 'n',
+				'archive_trackbacks'     => 'n'
 			);
 
 			if ($this->input->get_post('convert_to_comments') == 'y')
@@ -1097,8 +1097,8 @@ class Wizard extends CI_Controller {
 		// Clear any latent status messages still present in the PHP session
 		$this->progress->clear_state();
 
-		// Set a liberal execution time limit, some of these
-		// updates are pretty big.
+		// Set a liberal execution time limit, some of these updates are pretty
+		// big.
 		@set_time_limit(0);
 
 		// Instantiate the updater class
@@ -1125,18 +1125,19 @@ class Wizard extends CI_Controller {
 		{
 			$this->load->library('survey');
 
-			// if we have data, send it on to the updater, otherwise, ask permission and show the survey
+			// if we have data, send it on to the updater, otherwise, ask
+			// permission and show the survey
 			if ( ! $this->input->get_post('participate_in_survey'))
 			{
 				$data = array(
-					'action_url'			=> $this->set_qstr('do_update&agree=yes'),
-					'participate_in_survey'	=> array(
-						'name'		=> 'participate_in_survey',
-						'id'		=> 'participate_in_survey',
-						'value'		=> 'y',
-						'checked'	=> TRUE
-					),
-					'ee_version'			=> $this->next_update
+					'action_url'            => $this->set_qstr('do_update&agree=yes'),
+					'ee_version'            => $this->next_update,
+					'participate_in_survey' => array(
+						'name'    => 'participate_in_survey',
+						'id'      => 'participate_in_survey',
+						'value'   => 'y',
+						'checked' => TRUE
+					)
 				);
 
 				foreach ($this->survey->fetch_anon_server_data() as $key => $val)
@@ -1154,7 +1155,8 @@ class Wizard extends CI_Controller {
 			}
 			elseif ($this->input->get_post('participate_in_survey') == 'y')
 			{
-				// if any preprocessing needs to be done on the POST data, we do it here
+				// if any preprocessing needs to be done on the POST data, we do
+				// it here
 				if (method_exists($UD, 'pre_process_survey'))
 				{
 					$UD->pre_process_survey();
@@ -1198,7 +1200,8 @@ class Wizard extends CI_Controller {
 		// If the cycle is version 2.0 we'll switch to the new style config file
 		else
 		{
-			// If we are dealing with 2.0 we need to switch the old style config file to the new version
+			// If we are dealing with 2.0 we need to switch the old style config
+			// file to the new version
 			if ($this->next_update == 200)
 			{
 				$this->_write_config_from_template();
@@ -1207,8 +1210,8 @@ class Wizard extends CI_Controller {
 			$this->config->_update_config(array('app_version' => $this->next_update.$UD->version_suffix), array('ud_next_step' => ''));
 		}
 
-		// EE's application settings are now in the config, so we need to make two on the fly
-		// switches for the rest of the wizard to work.
+		// EE's application settings are now in the config, so we need to make
+		// two on the fly switches for the rest of the wizard to work.
 		$this->_set_base_url();
 		$this->config->set_item('enable_query_strings', TRUE);
 
@@ -1224,18 +1227,18 @@ class Wizard extends CI_Controller {
 
 		// Prep the javascript
 		$progress_head = $this->progress->fetch_progress_header(array(
-			'process_url'			=> $this->refresh_url,
-			'progress_container'	=> '#js_progress',
-			'state_url'				=> $this->set_qstr('do_update&agree=yes&progress=yes'),
-			'end_url'				=> $this->set_qstr('do_update&agree=yes&progress=no&ajax_progress=yes')
+			'process_url'        => $this->refresh_url,
+			'progress_container' => '#js_progress',
+			'state_url'          => $this->set_qstr('do_update&agree=yes&progress=yes'),
+			'end_url'            => $this->set_qstr('do_update&agree=yes&progress=no&ajax_progress=yes')
 		));
 
 		$this->_set_output(
 			'update_msg',
 			array(
 				'remaining_updates' => $this->remaining_updates,
-				'extra_header'		=> $progress_head,
-				'next_version'		=> $this->progress->prefix.lang('version_update_text')
+				'extra_header'      => $progress_head,
+				'next_version'      => $this->progress->prefix.lang('version_update_text')
 			)
 		);
 	}
