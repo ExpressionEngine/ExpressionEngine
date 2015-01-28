@@ -1395,6 +1395,7 @@ class Wizard extends CI_Controller {
 			'title'             => $this->title,
 			'refresh'           => $this->refresh,
 			'refresh_url'       => $this->refresh_url,
+			'ajax_progress'     => (ee()->input->get('ajax_progress') == 'yes'),
 			'image_path'        => $this->image_path,
 			'copyright'         => sprintf($this->copyright, date('Y')),
 

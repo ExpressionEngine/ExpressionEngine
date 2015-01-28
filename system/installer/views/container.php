@@ -13,7 +13,7 @@
 
 		if (isset($refresh) && $refresh === TRUE)
 		{
-			if ($this->input->get('ajax_progress') == 'yes')
+			if ($ajax_progress)
 			{
 				$refresh_url .= '&ajax_progress=yes';
 			}
