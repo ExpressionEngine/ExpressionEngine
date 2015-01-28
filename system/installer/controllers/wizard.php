@@ -42,7 +42,6 @@ class Wizard extends CI_Controller {
 	// Default page content - these are in English since we don't know the user's language choice when we first load the installer
 	public $content           = '';
 	public $title             = 'ExpressionEngine Installation and Update Wizard';
-	public $copyright         = 'Copyright 2003 - %s EllisLab, Inc. - All Rights Reserved';
 
 	public $now;
 	public $year;
@@ -1228,7 +1227,6 @@ class Wizard extends CI_Controller {
 			'refresh_url'       => $this->refresh_url,
 			'ajax_progress'     => (ee()->input->get('ajax_progress') == 'yes'),
 			'image_path'        => $this->image_path,
-			'copyright'         => sprintf($this->copyright, date('Y')),
 
 			'version'           => $this->version,
 			'version_major'     => $version[0],
