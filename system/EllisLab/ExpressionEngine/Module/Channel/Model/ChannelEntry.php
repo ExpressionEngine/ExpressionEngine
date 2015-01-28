@@ -76,7 +76,7 @@ class ChannelEntry extends FieldDataContentModel {
 		parent::fill($data);
 
 		$fields = array();
-		$field_types = $this->getFieldTypeInfo()->indexBy('field_id');
+		$field_types = $this->getChannel()->getCustomFields()->indexBy('field_id');
 
 		foreach ($data as $key => $value)
 		{
@@ -103,18 +103,6 @@ class ChannelEntry extends FieldDataContentModel {
 		}
 
 		$this->_fields = new Collection($fields);
-	}
-
-
-	protected function getFieldTypeInfo()
-	{
-		// todo cache/move/ugly!
-		$db = clone ee()->db;
-		$db->_reset_select();
-		$db->from('channel_fields');
-		$db->where('group_id', $this->getChannel()->field_group);
-
-		return new Collection($db->get()->result_array());
 	}
 
 	public function getForm()
