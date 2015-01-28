@@ -1138,7 +1138,8 @@ PAPAYA;
 			}
 		}
 
-		// if 'modules' isn't in the POST data, pre-check the defaults and third party modules
+		// if 'modules' isn't in the POST data, pre-check the defaults and third
+		// party modules
 		if ($this->input->post('modules') === FALSE)
 		{
 			foreach ($this->userdata['modules'] as $name => $info)
@@ -2600,7 +2601,9 @@ PAPAYA;
 		// Remove site_label from $config since we don't want
 		// it showing up in the config file.
 		if ($config['site_label'])
-				unset($config['site_label']);
+		{
+			unset($config['site_label']);
+		}
 
 		foreach ($config as $key => $val)
 		{

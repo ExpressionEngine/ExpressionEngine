@@ -113,18 +113,18 @@ $lang['help_with_survey'] = "Please consider helping us make ExpressionEngine be
 $lang['participate_in_survey'] = 'Participate in Survey?';
 $lang['send_anonymous_server_data'] = 'Send Anonymous Server Data?';
 $lang['what_server_data_is_sent'] = '<p>What data is sent?  Answering yes to this survey question will transmit the following:</p>
-									<ul>
-										<li>A one-way hash of your site URL to prevent duplicate submissions (this cannot be used to identify you)</li>
-										<li>PHP version and available extensions</li>
-										<li>MySQL version, server operating system</li>
-										<li>Server software name</li>
-										<li>Whether or not you are using forced query strings on your server</li>
-										<li>A list of the add-ons in your third party directory</li>
-										<li>Whether or not you have Discussion Forums installed</li>
-										<li>Whether or not you have Multiple Site Manager installed</li>
-									</ul>
-									<p>All data is transmitted anonymously and cannot be associated with your local machine, ExpressionEngine user
-									account, your site, or your host.</p>';
+	<ul>
+		<li>A one-way hash of your site URL to prevent duplicate submissions (this cannot be used to identify you)</li>
+		<li>PHP version and available extensions</li>
+		<li>MySQL version, server operating system</li>
+		<li>Server software name</li>
+		<li>Whether or not you are using forced query strings on your server</li>
+		<li>A list of the add-ons in your third party directory</li>
+		<li>Whether or not you have Discussion Forums installed</li>
+		<li>Whether or not you have Multiple Site Manager installed</li>
+	</ul>
+	<p>All data is transmitted anonymously and cannot be associated with your local machine, ExpressionEngine user
+	account, your site, or your host.</p>';
 $lang['show_hide_to_see_server_data'] = 'Show/hide the server data that will be sent';
 $lang['would_you_recommend'] = 'How likely is it that you will recommend ExpressionEngine to a colleague or friend?';
 $lang['unlikely'] = 'Unlikely';
