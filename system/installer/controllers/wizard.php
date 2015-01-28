@@ -52,7 +52,7 @@ class Wizard extends CI_Controller {
 	// These are the methods that are allowed to be called via $_GET['m']
 	// for either a new installation or an update. Note that the function names
 	// are prefixed but we don't include the prefix here.
-	public $allowed_methods = array('optionselect', 'license', 'install_form',
+	public $allowed_methods = array('optionselect', 'install_form',
 	 	'do_install', 'trackback_form', 'do_update');
 
 	// Absolutely, positively must always be installed
@@ -589,50 +589,6 @@ class Wizard extends CI_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Displays the license agreement
-	 *
-	 * @access	private
-	 * @param	bool
-	 * @return	null
-	 */
-	function _license($show_error = FALSE)
-	{
-		$data['show_error'] = $show_error;
-
-		if ($this->is_installed == FALSE)
-		{
-			$data['action'] = $this->set_qstr('install_form');
-		}
-		else
-		{
-			// If they have installed the trackback module, we'll give them
-			// the option to backup or convert
-			$this->db->where('module_name', 'Trackback');
-			$count = $this->db->count_all_results('modules');
-
-			if ($count)
-			{
-				$data['action'] = $this->set_qstr('trackback_form');
-			}
-			else
-			{
-				$data['action'] = $this->set_qstr('do_update');
-			}
-
-			// clear the update notices if we have any from last time
-			$this->update_notices->clear();
-
-			$this->logger->updater("Preparing to update from {$this->installed_version} to {$this->version}. Awaiting acceptance of license terms.");
-		}
-
-		$data['license'] = $this->_license_agreement();
-
-		$this->_set_output('license', $data);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * New installation form
 	 *
 	 * @access	private
@@ -672,13 +628,6 @@ class Wizard extends CI_Controller {
 	 */
 	function _trackback_form($not_readable = FALSE)
 	{
-		// Did they agree to the license?
-
-		if ($this->input->get_post('agree') != 'yes')
-		{
-			return $this->_license(TRUE);
-		}
-
 		$convert_to_comments = ($this->input->get_post('convert_to_comments') == 'y') ? 'y' : 'n';
 		$archive_trackbacks = ($this->input->get_post('archive_trackbacks') == 'y') ? 'y' : 'n';
 
@@ -1109,12 +1058,6 @@ class Wizard extends CI_Controller {
 	 */
 	function _do_update()
 	{
-		// Did they agree to the license?
-		if ($this->input->get_post('agree') != 'yes')
-		{
-			return $this->_license(TRUE);
-		}
-
 		$this->load->library('javascript');
 
 		// Do we have to handle trackbacks?
@@ -2568,19 +2511,6 @@ class Wizard extends CI_Controller {
 				$this->load->remove_package_path($path);
 			}
 		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get the default channel entry data
-	 *
-	 * @access	private
-	 * @return	string
-	 */
-	function _license_agreement()
-	{
-		return read_file(APPPATH.'language/'.$this->userdata['deft_lang'].'/license.php');
 	}
 
 	// --------------------------------------------------------------------
