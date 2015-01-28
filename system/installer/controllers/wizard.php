@@ -689,9 +689,8 @@ class Wizard extends CI_Controller {
 
 		if ($query->num_rows() > 0 AND ! isset($_POST['install_override']))
 		{
-			// TODO-WB: Test an install over an install
-			return $this->_install_form(array(
-				lang('install_detected_msg')
+			return $this->_set_output('error', array(
+				'error' => lang('install_detected_msg')
 			));
 		}
 
