@@ -10,7 +10,6 @@ use EllisLab\ExpressionEngine\Library\Filesystem;
 // TODO should put the version in here at some point ...
 return array(
 
-
 	'vendor' => 'EllisLab',
 	'product' => 'ExpressionEngine',
 	'description' => 'The worlds most flexible content management system.',
@@ -29,15 +28,15 @@ return array(
 			return new Filesystem\Filesystem();
 		},
 
-		'View' => function($di, $basepath = '')
+		'View' => function($ee, $basepath = '')
 		{
 			return new \EllisLab\ExpressionEngine\Service\View\ViewFactory($basepath, ee()->load, ee()->view);
 		},
 
-		'Filter' => function($di)
+		'Filter' => function($ee)
 		{
-			$filters = new \EllisLab\ExpressionEngine\Service\Filter\FilterFactory($di->make('View', '_shared/filters'));
-			$filters->setDIContainer($di);
+			$filters = new \EllisLab\ExpressionEngine\Service\Filter\FilterFactory($ee->make('View', '_shared/filters'));
+			$filters->seteeContainer($ee);
 			return $filters;
 		},
 
@@ -45,9 +44,9 @@ return array(
 
 	'services.singletons' => array(
 
-		'Alert' => function($di)
+		'Alert' => function($ee)
 		{
-			$view = $di->make('View')->make('_shared/alert');
+			$view = $ee->make('View')->make('_shared/alert');
 			return new \EllisLab\ExpressionEngine\Service\Alert\AlertCollection(ee()->session, $view);
 		},
 
