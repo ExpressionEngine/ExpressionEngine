@@ -2376,7 +2376,10 @@ class Wizard extends CI_Controller {
 
 		foreach($channel_default as $value)
 		{
-			$site_prefs[$value] = $config[$value];
+			if (isset($config[$value]))
+			{
+				$site_prefs[$value] = $config[$value];
+			}
 		}
 
 		$this->db->where('site_id', 1);
