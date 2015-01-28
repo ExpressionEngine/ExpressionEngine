@@ -36,7 +36,7 @@ return array(
 		'Filter' => function($ee)
 		{
 			$filters = new \EllisLab\ExpressionEngine\Service\Filter\FilterFactory($ee->make('View', '_shared/filters'));
-			$filters->seteeContainer($ee);
+			$filters->setDIContainer($ee);
 			return $filters;
 		},
 
