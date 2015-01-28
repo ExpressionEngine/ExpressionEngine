@@ -143,9 +143,6 @@ class Wizard extends CI_Controller {
 
 	/**
 	 * Constructor
-	 *
-	 * Sets some base values
-	 *
 	 * @return	void
 	 */
 	function __construct()
@@ -232,12 +229,9 @@ class Wizard extends CI_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Remap
-	 *
-	 * Intercepts the request and dynamically determines what we should do
-	 *
-	 * @access	public
-	 * @return	void
+	 * Remap - Intercepts the request and dynamically determines what we should
+	 * do
+	 * @return void
 	 */
 	function _remap()
 	{
@@ -286,12 +280,8 @@ class Wizard extends CI_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Pre-flight Tests
-	 *
-	 * Does all of our error checks
-	 *
-	 * @access	public
-	 * @return	void
+	 * Pre-flight Tests - Does all of our error checks
+	 * @return void
 	 */
 	function _preflight()
 	{
@@ -500,9 +490,7 @@ class Wizard extends CI_Controller {
 
 	/**
 	 * New installation form
-	 *
-	 * @access	private
-	 * @return	null
+	 * @return void
 	 */
 	function _install_form($errors = FALSE)
 	{
@@ -525,7 +513,11 @@ class Wizard extends CI_Controller {
 
 	// --------------------------------------------------------------------
 
-	private function _update_form()
+	/**
+	 * Show the update form
+	 * @return void
+	 */
+	private function update_form()
 	{
 		$this->title = sprintf(lang('update_title'), $this->current_version, $this->version);
 		$vars['action'] = $this->set_qstr('do_update');
@@ -536,9 +528,7 @@ class Wizard extends CI_Controller {
 
 	/**
 	 * Perform the installation
-	 *
-	 * @access	private
-	 * @return	null
+	 * @return void
 	 */
 	function _do_install()
 	{
@@ -783,6 +773,12 @@ class Wizard extends CI_Controller {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Show installation or upgrade succes page
+	 * @param  string $type               'update' or 'install'
+	 * @param  array  $template_variables Anything to parse in the template
+	 * @return void
+	 */
 	private function show_success($type = 'update', $template_variables)
 	{
 		$this->title = sprintf(lang($type.'_success'), $this->version);
@@ -796,9 +792,7 @@ class Wizard extends CI_Controller {
 
 	/**
 	 * Assigns the values submitted in the settings form
-	 *
-	 * @access	private
-	 * @return	null
+	 * @return void
 	 */
 	function _assign_install_values()
 	{
@@ -907,9 +901,7 @@ class Wizard extends CI_Controller {
 
 	/**
 	 * Perform the update
-	 *
-	 * @access	private
-	 * @return	null
+	 * @return void
 	 */
 	function _do_update()
 	{
@@ -1094,12 +1086,11 @@ class Wizard extends CI_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Determine which update should be performed
-	 *
-	 * Reads though the "updates" directory and makes a list of all available updates
-	 *
-	 * @access	private
-	 * @return	null
+	 * Determine which update should be performed - Reads though the "updates"
+	 * directory and makes a list of all available updates
+	 * @param int $current_version The version we're currently running without
+	 *                             dots (e.g. 300 or 292)
+	 * @return boolean             TRUE if successful, FALSE if not
 	 */
 	function _fetch_updates($current_version = 0)
 	{
@@ -1149,8 +1140,8 @@ class Wizard extends CI_Controller {
 	/**
 	 * Connect to the database
 	 *
-	 * @access	private
-	 * @return	bool
+	 * @param array $db Associative array containing db connection data
+	 * @return boolean  TRUE if successful, FALSE if not
 	 */
 	function _db_connect($db, $create_db = FALSE)
 	{
@@ -1184,6 +1175,7 @@ class Wizard extends CI_Controller {
 	 * @param string  $path  The path to determine
 	 * @param integer $depth How many levels up we are from the original
 	 *                       directory
+	 * @return string The realized path
 	 */
 	private function _set_path($path = '', $depth = 0)
 	{
@@ -1199,9 +1191,7 @@ class Wizard extends CI_Controller {
 
 	/**
 	 * Set output
-	 *
 	 * Loads the "container" view file and sets the content
-	 *
 	 * @param string $view  The name of the view to load
 	 * @param array  $template_variables Associative array to pass to view
 	 * @return void
@@ -1267,8 +1257,7 @@ class Wizard extends CI_Controller {
 
 	/**
 	 * Set the base URL and index values so our links work properly
-	 *
-	 * @return	void
+	 * @return void
 	 */
 	private function _set_base_url()
 	{
@@ -1288,10 +1277,8 @@ class Wizard extends CI_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Helper function that lets us create links
-	 *
-	 * @access	public
-	 * @return	string
+	 * Create the query string needed for form actions
+	 * @param string  $method The method name for the action
 	 */
 	function set_qstr($method = '', $text = FALSE)
 	{
@@ -1380,9 +1367,7 @@ class Wizard extends CI_Controller {
 
 	/**
 	 * Get a list of supported database types
-	 *
-	 * @access	private
-	 * @return	array
+	 * @return array Array containing all supported database types
 	 */
 	function _get_supported_dbs()
 	{
@@ -1409,8 +1394,7 @@ class Wizard extends CI_Controller {
 
 	/**
 	 * Install the default site theme
-	 *
-	 * @return	bool
+	 * @return boolean  TRUE if successful, FALSE if not
 	 */
 	function _install_site_theme()
 	{
@@ -1707,9 +1691,7 @@ class Wizard extends CI_Controller {
 
 	/**
 	 * Install the Modules
-	 *
-	 * @access	private
-	 * @return	bool
+	 * @return boolean  TRUE if successful, FALSE if not
 	 */
 	function _install_modules()
 	{
@@ -1755,9 +1737,7 @@ class Wizard extends CI_Controller {
 
 	/**
 	 * Write the config file
-	 *
-	 * @access	private
-	 * @return	bool
+	 * @return boolean  TRUE if successful, FALSE if not
 	 */
 	function _write_config_data()
 	{
@@ -2179,12 +2159,8 @@ class Wizard extends CI_Controller {
 
 	/**
 	 * Write config file from the template file
-	 *
-	 * As of EE 2.0 we used a config file that has shared data with CodeIgniter.
-	 * This function lets us migrate to the new style
-	 *
-	 * @access	private
-	 * @return	null
+	 * @param array $config Config data to write to the config file
+	 * @return boolean  TRUE if successful, FALSE if not
 	 */
 	function _write_config_from_template($config = array())
 	{
@@ -2289,9 +2265,7 @@ class Wizard extends CI_Controller {
 
 	/**
 	 * Update modules (first party only)
-	 *
-	 * @access	public
-	 * @return	void
+	 * @return void
 	 */
 	function _update_modules()
 	{
@@ -2346,17 +2320,12 @@ class Wizard extends CI_Controller {
 
 	/**
 	 * Get the default channel entry data
-	 *
-	 * @access	private
-	 * @return	string
+	 * @return string
 	 */
 	function _default_channel_entry()
 	{
 		return read_file(APPPATH.'language/'.$this->userdata['deft_lang'].'/channel_entry_lang.php');
 	}
-
-
-
 }
 
 /* End of file wizard.php */
