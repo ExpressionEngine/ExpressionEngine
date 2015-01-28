@@ -77,6 +77,7 @@ class ChannelEntry extends FieldDataContentModel {
 		$db = clone ee()->db;
 		$db->_reset_select();
 		$db->from('channel_fields');
+		$db->where('group_id', $this->getChannel()->field_group);
 
 		return new Collection($db->get()->result_object());
 	}
@@ -94,20 +95,28 @@ class ChannelEntry extends FieldDataContentModel {
 			{
 				$id = $matches[1];
 
-				$field = new Field($id, $field_types[$id]);
-				$field->setData($value);
-				$field->setContentId($this->getId());
-
-				if (isset($data['field_ft_'.$id]))
+				if (array_key_exists($id, $field_types))
 				{
-					$field->setFormat($data['field_ft_'.$id]);
-				}
+					$field = new Field($id, $field_types[$id]);
+					$field->setData($value);
+					$field->setContentId($this->getId());
 
-				$fields[] = $field;
+					if (isset($data['field_ft_'.$id]))
+					{
+						$field->setFormat($data['field_ft_'.$id]);
+					}
+
+					$fields[] = $field;
+				}
 			}
 		}
 
 		$this->_fields = new Collection($fields);
+	}
+
+	public function getCustomFields()
+	{
+		return $this->_fields;
 	}
 
 	public function getForm()
@@ -146,7 +155,7 @@ class Field {
 	private $id;
 	private $data;
 	private $format;
-	private $type_info;
+	public $type_info;
 	private $field_name;
 	private $content_id;
 
