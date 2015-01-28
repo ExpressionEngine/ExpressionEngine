@@ -329,14 +329,6 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
-		// Prior to 2.0 the config array was named $conf. This has changed to
-		// $config for 2.0
-		// TODO-WB: Remove for 3.x updater
-		if (isset($conf))
-		{
-			$config = $conf;
-		}
-
 		// No config? This means it's a first time install...hopefully. There's
 		// always a chance that the user nuked their config files. During
 		// installation later we'll double check the existence of EE tables once
@@ -451,18 +443,6 @@ class Wizard extends CI_Controller {
 		// included
 		$config['app_version'] = str_replace('.', '', $config['app_version']);
 
-		// This fixes a bug introduced in the installation script for v 1.3.1
-		if ($config['app_version'] == 130)
-		{
-			if ($this->db->field_exists('accept_messages', 'exp_members') == TRUE)
-			{
-				$this->config->_append_config_1x(array('app_version' => 131));
-
-				// Update the $config array
-				$config['app_version'] = 131;
-			}
-		}
-
 		// OK, now let's determine if the update files are available and whether
 		// the currently installed version is older then the most recent update
 
@@ -507,33 +487,6 @@ class Wizard extends CI_Controller {
 
 			$this->show_success('update', $vars);
 			return FALSE;
-		}
-
-		// Check to see if the language pack they are using in 1.6.X is
-		// available for the 2.0 upgrade. This will only need to be done during
-		// the move from 1.6 to 2, and not for subsequent 2.0 updates, so we'll
-		// use the $move_db_data flag to determine if we should check for this,
-		// as it will only be TRUE during this specific transition.
-		// TODO-WB: Remove for 3.x
-		if (FALSE && $move_db_data == TRUE)
-		{
-			$default_language = $this->config->_get_config_1x('deft_lang');
-
-			if (is_null($default_language))
-			{
-				// Likely an unserialize error so we go with the default
-				$default_language = 'english';
-			}
-
-			// Fetch the installed languages
-			$languages = directory_map(EE_APPPATH.'/language', TRUE);
-
-			// Check to see if they have the language files needed
-			if ( ! in_array($default_language, $languages))
-			{
-				$this->_set_output('error', array('error' => str_replace('%x', ucfirst($default_language), lang('unreadable_language'))));
-				return FALSE;
-			}
 		}
 
 		// Before moving on, let's load the update file to make sure it's readable
@@ -2266,12 +2219,6 @@ class Wizard extends CI_Controller {
 		if (count($config) == 0)
 		{
 			require $this->config->config_path;
-		}
-
-		// Just in case the old variable naming is still present...
-		if (isset($conf))
-		{
-			$config = array_merge($config, $conf);
 		}
 
 		// Add the CI config items to the array
