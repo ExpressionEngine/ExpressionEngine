@@ -6,7 +6,7 @@ use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
-
+use EllisLab\ExpressionEngine\Module\Channel\Model\ChannelEntry;
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -68,6 +68,56 @@ class Publish extends CP_Controller {
 		$channel_filter = ee('Filter')->make('filter_by_channel', 'filter_by_channel', $channel_filter_options);
 		$channel_filter->disableCustomValue(); // This may have to go
 		return $channel_filter;
+	}
+
+	protected function getLayout(ChannelEntry $entry)
+	{
+		$layout = array();
+
+		// Default Layout
+		$layout[] = array(
+			'name' => 'publish',
+			'fields' => array('title', 'url_title')
+		);
+
+		foreach ($entry->getChannel()->getCustomFields() as $info)
+		{
+			$layout[0]['fields'][] = 'field_id_' . $info['field_id'];
+		}
+
+		$layout[] = array(
+			'name' => 'date',
+			'fields' => array('entry_date', 'expiration_date', 'comment_expiration_date')
+		);
+
+		$layout[] = array(
+			'name' => 'categories',
+			'fields' => array('category')
+		);
+
+		$layout[] = array(
+			'name' => 'options',
+			'fields' => array('channel', 'status', 'author', 'sticky', 'allow_comments')
+		);
+
+		foreach ($layout as &$section)
+		{
+			$fields = array();
+			foreach ($section['fields'] as $field_name)
+			{
+				try
+				{
+					$fields[] = $entry->getForm($field_name);
+				}
+				catch (\InvalidArgumentException $e)
+				{
+
+				}
+			}
+			$section['fields'] = $fields;
+		}
+
+		return $layout;
 	}
 
 }
