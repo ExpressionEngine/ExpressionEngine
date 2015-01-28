@@ -594,15 +594,14 @@ class Wizard extends CI_Controller {
 		if ($this->userdata['email_address'] != ''
 			AND ! valid_email($this->userdata['email_address']))
 		{
-			$errors[] = "The email address you submitted is not valid";
+			$errors[] = lang('email_invalid');
 		}
 
 		// check screen name and username for valid format
 		if (strlen($this->userdata['username']) > 50
 			OR preg_match("/[\|'\"!<>\{\}]/", $this->userdata['username']))
 		{
-			// TODO-WB: Move to language key
-			$errors[] = "Username is invalid. Must be less than 50 characters and cannot include the following characters: ".htmlentities('|\'"!<>{}');
+			$errors[] = sprintf(lang('username_invalid'), htmlentities('|\'"!<>{}'));
 		}
 
 		// Set the screen name

@@ -48,7 +48,6 @@ $lang['invalid_action'] = 'The action you have requested is not valid.';
 $lang['unreadable_config'] = 'Your config.php file is unreadable. Please make sure the file exists and that the file permissions to 666 (or the equivalent write permissions for your server) on the following file: expressionengine/config/config.php';
 $lang['unwritable_config'] = 'Your config.php file does not appear to have the proper file permissions.  Please set the file permissions to 666 (or the equivalent write permissions for your server) on the following file: expressionengine/config/config.php';
 $lang['unwritable_cache_folder'] = 'Your cache folder does not appear to have proper permissions.  Please set the folder permissions to 777 (or the equivalent write permissions for your server) on the following folder: expressionengine/cache';
-
 $lang['database_no_config'] = 'Unable to connect to your database using the configuration settings found in the following file: config/config.php file. Please correct the settings so that the update can proceed.';
 $lang['database_no_data'] = 'Unable to locate any database connection information.';
 $lang['database_no_connect'] = 'Unable to connect to your database using the configuration settings you submitted.';
@@ -63,7 +62,9 @@ $lang['unreadable_schema'] = 'Unable to locate the following folder:  expression
 $lang['unreadable_dbdriver'] = 'Unable to locate the databae schema file in the following folder:  expressionengine/installer/schema/  Please upload all components before proceeding.';
 $lang['improper_grants'] = 'Error: Unable to perform the SQL queries. Please make sure your SQL account has the proper GRANT privileges:  CREATE, DROP, ALTER, INSERT, and DELETE';
 $lang['empty_fields'] = 'You must fill out all form fields';
+$lang['email_invalid'] = 'The email address you submitted is not valid';
 $lang['username_short'] = 'Your username must be at least 4 characters in length';
+$lang['username_invalid'] = "Username is invalid. Must be less than 50 characters and cannot include the following characters: %s";
 $lang['password_short'] = 'Your password must be at least 5 characters in length';
 $lang['password_no_match'] = 'Your passwords and password confirmation do not match';
 $lang['password_not_unique'] = 'Your password can not be based on the username';
