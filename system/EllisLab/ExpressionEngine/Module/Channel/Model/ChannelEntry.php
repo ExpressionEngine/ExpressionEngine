@@ -78,6 +78,21 @@ class ChannelEntry extends FieldDataContentModel {
 		$fields = array();
 		$field_types = $this->getChannel()->getCustomFields()->indexBy('field_id');
 
+		foreach ($this->getDefaultFields() as $name => $info)
+		{
+			$field = new FieldtypeFacade($name, $info);
+			$field->setContentId($this->getId());
+			$field->setData($info['field_data']);
+			$field->setName($name);
+
+			if (isset($info['field_fmt']))
+			{
+				$field->setFormat('field_fmt');
+			}
+
+			$fields[] = $field;
+		}
+
 		foreach ($data as $key => $value)
 		{
 			if (preg_match('/^field_id_(\d+)$/', $key, $matches))
@@ -140,6 +155,76 @@ class ChannelEntry extends FieldDataContentModel {
 	public function render($template)
 	{
 	}
+
+
+	protected function getDefaultFields()
+	{
+		return array(
+			'title' 		=> array(
+				'field_id'				=> 'title',
+				'field_label'			=> lang('title'),
+				'field_required'		=> 'y',
+				'field_data'			=> $this->title,
+				'field_show_fmt'		=> 'n',
+				'field_instructions'	=> '',
+				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'text',
+				'field_maxl'			=> 100
+			),
+			'url_title'		=> array(
+				'field_id'				=> 'url_title',
+				'field_label'			=> lang('url_title'),
+				'field_required'		=> 'n',
+				'field_data'			=> $this->url_title,
+				'field_fmt'				=> 'xhtml',
+				'field_instructions'	=> '',
+				'field_show_fmt'		=> 'n',
+				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'text',
+				'field_maxl'			=> 75
+			),
+			'entry_date'	=> array(
+				'field_id'				=> 'entry_date',
+				'field_label'			=> lang('entry_date'),
+				'field_required'		=> 'y',
+				'field_type'			=> 'date',
+				'field_text_direction'	=> 'ltr',
+				'field_data'			=> $this->entry_date ?: '',
+				'field_fmt'				=> 'text',
+				'field_instructions'	=> '',
+				'field_show_fmt'		=> 'n',
+				'always_show_date'		=> 'y',
+				'default_offset'		=> 0,
+				'selected'				=> 'y',
+			),
+			'expiration_date' => array(
+				'field_id'				=> 'expiration_date',
+				'field_label'			=> lang('expiration_date'),
+				'field_required'		=> 'n',
+				'field_type'			=> 'date',
+				'field_text_direction'	=> 'ltr',
+				'field_data'			=> $this->expiration_date ?: '',
+				'field_fmt'				=> 'text',
+				'field_instructions'	=> '',
+				'field_show_fmt'		=> 'n',
+				'default_offset'		=> 0,
+				'selected'				=> 'y',
+			),
+			'comment_expiration_date' => array(
+				'field_id'				=> 'comment_expiration_date',
+				'field_label'			=> lang('comment_expiration_date'),
+				'field_required'		=> 'n',
+				'field_type'			=> 'date',
+				'field_text_direction'	=> 'ltr',
+				'field_data'			=> $this->comment_expiration_date ?: '',
+				'field_fmt'				=> 'text',
+				'field_instructions'	=> '',
+				'field_show_fmt'		=> 'n',
+				'default_offset'		=> $this->getChannel()->comment_expiration * 86400,
+				'selected'				=> 'y',
+			)
+		);
+	}
 }
 
 class FieldDisplay {
@@ -191,17 +276,13 @@ class FieldtypeFacade {
 	{
 		$this->id = $field_id;
 		$this->type_info = $type_info;
-		$this->field_name = 'field_id_'.$field_id;
+
+		$this->setName('field_id_'.$field_id);
 	}
 
-	public function getInfo($field)
+	public function setName($name)
 	{
-		return $this->type_info[$field];
-	}
-
-	public function getName()
-	{
-		return $this->field_name;
+		$this->field_name = $name;
 	}
 
 	public function setContentId($id)
@@ -222,6 +303,16 @@ class FieldtypeFacade {
 	public function setFormat($format)
 	{
 		$this->format = $format;
+	}
+
+	public function getInfo($field)
+	{
+		return $this->type_info[$field];
+	}
+
+	public function getName()
+	{
+		return $this->field_name;
 	}
 
 	public function getForm()
