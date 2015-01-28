@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
+use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Model\FieldDataContentModel;
 
 /**
@@ -68,6 +69,61 @@ class ChannelEntry extends FieldDataContentModel {
 	protected $recent_comment_date;
 	protected $comment_total;
 
+	protected $_fields;
+
+	protected function getFieldTypeInfo()
+	{
+		// todo cache/move/ugly!
+		$db = clone ee()->db;
+		$db->_reset_select();
+		$db->from('channel_fields');
+		$db->where('group_id', $this->getChannel()->field_group);
+
+		return new Collection($db->get()->result_object());
+	}
+
+	public function fill($data)
+	{
+		parent::fill($data);
+
+		$fields = array();
+		$field_types = $this->getFieldTypeInfo()->indexBy('field_id');
+
+		foreach ($data as $key => $value)
+		{
+			if (preg_match('/^field_id_(\d+)$/', $key, $matches))
+			{
+				$id = $matches[1];
+
+				if (array_key_exists($id, $field_types))
+				{
+					$field = new Field($id, $field_types[$id]);
+					$field->setData($value);
+					$field->setContentId($this->getId());
+
+					if (isset($data['field_ft_'.$id]))
+					{
+						$field->setFormat($data['field_ft_'.$id]);
+					}
+
+					$fields[] = $field;
+				}
+			}
+		}
+
+		$this->_fields = new Collection($fields);
+	}
+
+	public function getCustomFields()
+	{
+		return $this->_fields;
+	}
+
+	public function getForm()
+	{
+		return $this->_fields->getForm();
+	}
+
 	/**
 	 * A link back to the owning channel object.
 	 *
@@ -78,7 +134,6 @@ class ChannelEntry extends FieldDataContentModel {
 	{
 		return $this->getChannel();
 	}
-
 
 	/**
 	 * Renders the piece of content for the front end, parses the tag data
@@ -93,28 +148,132 @@ class ChannelEntry extends FieldDataContentModel {
 	public function render($template)
 	{
 	}
+}
 
-	public function testPrint($depth='')
+class Field {
+
+	private $id;
+	private $data;
+	private $format;
+	public $type_info;
+	private $field_name;
+	private $content_id;
+
+	public function __construct($field_id, $type_info)
 	{
-		if ($depth == "\t\t\t")
+		$this->id = $field_id;
+		$this->type_info = $type_info;
+		$this->field_name = 'field_id_'.$field_id;
+	}
+
+	public function getName()
+	{
+		return $this->field_name;
+	}
+
+	public function setContentId($id)
+	{
+		$this->content_id = $id;
+	}
+
+	public function setData($data)
+	{
+		$this->data = $data;
+	}
+
+	public function setFormat($format)
+	{
+		$this->format = $format;
+	}
+
+	public function getForm()
+	{
+		$this->setupField();
+
+		$field_output = array();
+
+		$data = $this->setupField();
+
+		if (isset($data['string_override']))
 		{
-			return;
+			return $data['string_override'];
 		}
-		$primary_key = static::getMetaData('primary_key');
-		$model_name = substr(get_class($this), strrpos(get_class($this), '\\')+1);
-		echo $depth . '=====' . $model_name . ': ' . '(' . $this->{$primary_key} . ') ' . $this->title . ' OBJ(' . spl_object_hash($this) .')' . "=====\n";
-		foreach($this->_related_models as $relationship_name=>$models)
+
+		ee()->api_channel_fields->setup_handler($data['field_id']);
+		ee()->api_channel_fields->apply('_init', array(array(
+			'content_id' => $this->content_id
+		)));
+
+		$field_value = set_value($this->getName(), $data['field_data']);
+
+		return ee()->api_channel_fields->apply('display_publish_field', array($field_value));
+	}
+
+	protected function setupField()
+	{
+		$field_dt = ''; // todo!
+		$field_fmt = $this->format;
+		$field_data = $this->data;
+		$field_name = $this->getName();
+
+		$info = (array) $this->type_info;
+
+		$settings = array(
+			'field_instructions'	=> trim($info['field_instructions']),
+			'field_text_direction'	=> ($info['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr',
+			'field_fmt'				=> $field_fmt,
+			'field_dt'				=> $field_dt,
+			'field_data'			=> $field_data,
+			'field_name'			=> $field_name
+		);
+
+		$ft_settings = array();
+
+		if (isset($info['field_settings']) && strlen($info['field_settings']))
 		{
-			echo $depth . '----Relationship: ' . $relationship_name . "----\n";
-			foreach($models as $model)
-			{
-				$model->testPrint($depth . "\t");
-			}
-			echo $depth . '---- END Relationship: ' . $relationship_name . "----\n";
+			$ft_settings = unserialize(base64_decode($info['field_settings']));
 		}
-		echo $depth . '===== END ' . $model_name . ': ' . '(' . $this->{$primary_key} . ') ' . $this->title . "=====\n";
+
+		$settings = array_merge($info, $settings, $ft_settings);
+
+		ee()->legacy_api->instantiate('channel_fields');
+		ee()->api_channel_fields->set_settings($info['field_id'], $settings);
+
+		return $settings;
+	}
+}
+
+
+class FieldsCollection {
+
+	protected $data = array();
+	protected $formats = array();
+
+	public function __construct()
+	{
 
 	}
 
+	public function format($id, $value)
+	{
+		$this->formats[$id] = $value;
+	}
 
+	public function data($id, $value)
+	{
+		$this->data[$id] = $value;
+	}
+
+	public function get($id)
+	{
+		return array(
+			$this->data[$id],
+			$this->formats[$id]
+		);
+	}
+
+	public function all()
+	{
+		return array_map(array($this, 'get'), array_keys($this->data));
+	}
 }

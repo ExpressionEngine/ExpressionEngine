@@ -311,7 +311,6 @@ class Design extends CP_Controller {
 		ee()->javascript->output("$('textarea[name=\"" . $selector . "\"]').toggleCodeMirror();");
 	}
 
-
 	public function index()
 	{
 		$this->manager();
