@@ -1024,24 +1024,6 @@ class Wizard extends CI_Controller {
 		// Set the URL for use in the form action
 		$this->userdata['action'] = $this->set_qstr('do_install');
 
-		// Fetch the themes
-		$this->userdata['themes'] = $this->_fetch_themes();
-
-		foreach ($this->userdata['themes'] as $theme => $name)
-		{
-			$required_modules = array();
-
-			if (file_exists($this->theme_path.$theme.'/theme_preferences.php'))
-			{
-				require $this->theme_path.$theme.'/theme_preferences.php';
-				$this->theme_required_modules[$theme] = $required_modules;
-			}
-			else
-			{
-				$this->theme_required_modules[$theme] = array();
-			}
-		}
-
 		// Fetch the modules
 		$this->userdata['modules'] = $this->_fetch_modules();
 
@@ -1614,44 +1596,6 @@ class Wizard extends CI_Controller {
 		asort($modules);
 
 		return $modules;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Fetch the available themes for installation
-	 *
-	 * @access	public
-	 * @return	array
-	 */
-	function _fetch_themes()
-	{
-		$themes = array();
-
-		// Check for directory
-		if (is_dir($this->theme_path) && ($fp = opendir($this->theme_path)))
-		{
-			while (false !== ($folder = readdir($fp)))
-			{
-				if (is_dir($this->theme_path.$folder) && substr($folder, 0, 1) != '.')
-				{
-					$themes[$folder] = $folder;
-				}
-			}
-			closedir($fp);
-			natcasesort($themes);
-		}
-
-
-		if (count($themes) > 0)
-		{
-			foreach ($themes as $key => $val)
-			{
-				$themes[$key] = ucwords(str_replace("_", " ", $val));
-			}
-		}
-
-		return $themes;
 	}
 
 	// --------------------------------------------------------------------
