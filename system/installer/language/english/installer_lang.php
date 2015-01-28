@@ -2,7 +2,15 @@
 
 $lang = array(
 
+// Statuses
+'paused'     => 'Paused',     // add-on updater
+'processing' => 'Processing', // working
+'completed'  => 'Completed',  // success
+'stopped'    => 'Stopped',    // error
+
 // Install Form
+'required' => '✱ Required Fields',
+
 	// Database Server
 	'db_hostname' => 'Database Server Address',
 	'db_hostname_note' => 'Commonly <b>localhost</b>, but your host may require something else.',

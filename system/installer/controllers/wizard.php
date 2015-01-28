@@ -42,6 +42,7 @@ class Wizard extends CI_Controller {
 	// Default page content - these are in English since we don't know the user's language choice when we first load the installer
 	public $content           = '';
 	public $title             = 'ExpressionEngine Installation and Update Wizard';
+	public $subtitle          = '';
 
 	public $now;
 	public $year;
@@ -481,6 +482,7 @@ class Wizard extends CI_Controller {
 		$vars['errors'] = $errors;
 
 		$vars['action'] = $this->set_qstr('do_install');
+		$this->subtitle = lang('required');
 
 		// Display the form and pass the userdata array to it
 		$this->set_output('install_form', array_merge($vars, $this->userdata));
@@ -757,6 +759,7 @@ class Wizard extends CI_Controller {
 	private function show_success($type = 'update', $template_variables)
 	{
 		$this->title = sprintf(lang($type.'_success'), $this->version);
+		$this->subtitle = lang('completed');
 		$template_variables['success_note'] = sprintf(lang($type.'_success_note'), $this->version);
 		$template_variables['action'] = $this->userdata['cp_url'];
 		$template_variables['method'] = 'get';
@@ -896,6 +899,7 @@ class Wizard extends CI_Controller {
 			$this->refresh = TRUE;
 			$this->refresh_url = $this->set_qstr('do_update&agree=yes');
 			$this->title = sprintf(lang('updating_title'), $this->installed_version, $this->version);
+			$this->subtitle = lang('processing');
 			return $this->set_output(
 				'update_msg',
 				array(
@@ -1045,6 +1049,7 @@ class Wizard extends CI_Controller {
 		));
 
 		$this->title = sprintf(lang('updating_title'), $this->installed_version, $this->version);
+		$this->subtitle = lang('processing');
 		$this->set_output(
 			'update_msg',
 			array(
@@ -1187,15 +1192,13 @@ class Wizard extends CI_Controller {
 			$this->title = ($this->is_installed)
 				? sprintf(lang('error_updating'), $this->installed_version, $this->version)
 				: sprintf(lang('error_installing'), $this->version);
+			$this->subtitle = lang('stopped');
 		}
 
 		$version = explode('.', $this->version, 2);
-
-		// TODO-WB: Figure out a way to pass the correct step and status of the
-		// installer to the container view.
-
 		$data = array(
 			'title'             => $this->title,
+			'subtitle'          => $this->subtitle,
 			'refresh'           => $this->refresh,
 			'refresh_url'       => $this->refresh_url,
 			'ajax_progress'     => (ee()->input->get('ajax_progress') == 'yes'),
