@@ -455,9 +455,9 @@ class EE_Schema {
 			include_in_memberlist char(1) NOT NULL default 'y',
 
 			mbr_delete_notify_emails varchar(255) NULL DEFAULT NULL,
-			search_flood_control mediumint(5) unsigned NOT NULL default '15', // 0, 60, 15, 10
-			prv_msg_send_limit smallint unsigned NOT NULL default '20', // all 20s
-			prv_msg_storage_limit smallint unsigned NOT NULL default '60', // all 60s
+			search_flood_control mediumint(5) unsigned NOT NULL default '15',
+			prv_msg_send_limit smallint unsigned NOT NULL default '20',
+			prv_msg_storage_limit smallint unsigned NOT NULL default '60',
 
 			PRIMARY KEY `group_id_site_id` (`group_id`, `site_id`)
 		)";
