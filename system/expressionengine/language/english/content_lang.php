@@ -147,6 +147,12 @@ $lang = array(
 'entry_status_desc' =>
 'Entry status.',
 
+'channel' =>
+'Channel',
+
+'channel_desc' =>
+'Channel this entry should be submitted to.',
+
 //----------------------------
 // Publish page
 //----------------------------
@@ -467,9 +473,6 @@ $lang = array(
 
 'unauthorized_to_delete_self' =>
 'You are not authorized to delete your own channel entries',
-
-'channel' =>
-'Channel',
 
 'channels' =>
 'Channels',

@@ -172,6 +172,21 @@ class ChannelEntry extends FieldDataContentModel {
 
 	protected function getDefaultFields()
 	{
+		// HACK!
+		// Channels
+		$allowed_channel_ids = (ee()->session->userdata['group_id'] == 1) ? NULL : array_keys(ee()->session->userdata['assigned_channels']);
+		$channels = ee('Model')->get('Channel', $allowed_channel_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('field_group', $this->getChannel()->field_group)
+			->all();
+
+		$channel_filter_options = array();
+		foreach ($channels as $channel)
+		{
+			$channel_filter_options[$channel->channel_id] = $channel->channel_title;
+		}
+
+		//Statuses
 		$statuses = ee('Model')->get('Status')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('group_id', $this->getChannel()->status_group);
@@ -247,6 +262,18 @@ class ChannelEntry extends FieldDataContentModel {
 				'field_show_fmt'		=> 'n',
 				'default_offset'		=> $this->getChannel()->comment_expiration * 86400,
 				'selected'				=> 'y',
+			),
+			'channel' 		=> array(
+				'field_id'				=> 'channel',
+				'field_label'			=> lang('channel'),
+				'field_required'		=> 'n',
+				'field_data'			=> $this->channel_id,
+				'field_show_fmt'		=> 'n',
+				'field_instructions'	=> lang('channel_desc'),
+				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'select',
+				'field_list_items'      => $channel_filter_options,
+				'field_maxl'			=> 100
 			),
 			'status' 		=> array(
 				'field_id'				=> 'status',
