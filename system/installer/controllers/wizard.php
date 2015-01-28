@@ -563,6 +563,10 @@ class Wizard extends CI_Controller {
 
 		// Set the flag
 		$this->is_installed = TRUE;
+		$this->current_version = implode(
+			'.',
+			str_split(ee()->config->item('app_version'))
+		);
 
 		// Onward!
 		return TRUE;
@@ -604,6 +608,7 @@ class Wizard extends CI_Controller {
 
 	private function _update_form()
 	{
+		$this->title = sprintf(lang('update_title'), $this->current_version, $this->version);
 		$vars['action'] = $this->set_qstr('do_update');
 		$this->_set_output('update_form', $vars);
 	}
@@ -1100,6 +1105,7 @@ class Wizard extends CI_Controller {
 			// End URL
 			$this->refresh = TRUE;
 			$this->refresh_url = $this->set_qstr('do_update&agree=yes');
+			$this->title = sprintf(lang('updating_title'), $this->current_version, $this->version);
 			return $this->_set_output(
 				'update_msg',
 				array(
@@ -1248,6 +1254,7 @@ class Wizard extends CI_Controller {
 			'end_url'            => $this->set_qstr('do_update&agree=yes&progress=no&ajax_progress=yes')
 		));
 
+		$this->title = sprintf(lang('updating_title'), $this->current_version, $this->version);
 		$this->_set_output(
 			'update_msg',
 			array(

@@ -45,9 +45,12 @@ $lang['backup_confirmation'] = 'Did you perform a full backup of your existing E
 	$lang['start_installation'] = 'Start Installation';
 
 // Update Form
+	$lang['update_title'] = "Update ExpressionEngine %s to %s";
 	$lang['start_update'] = 'Start Update';
 	$lang['update_note'] = '<b>Please</b> read <a href="https://ellislab.com/expressionengine/user-guide/installation/update.html">Updating ExpressionEngine</a> <strong>before</strong> starting.';
 	$lang['update_backup'] = 'Please <b>back up</b> your database before updating ExpressionEngine';
+	$lang['updating_title'] = "Updating ExpressionEngine %s to %s";
+	$lang['updating'] = 'Updating';
 
 $lang['back'] = 'Back';
 $lang['error'] = 'ERROR';
@@ -86,10 +89,6 @@ $lang['update_error'] = 'An unexpected error occurred while performing the updat
 $lang['update_step_error'] = 'An unexpected error occured while performing the update.  Could not find update step: %x';
 
 $lang['install_detected_msg'] = 'ExpressionEngine appears to already be installed on your database, even though your config and database files are blank. If you are attempting to <strong>UPDATE</strong> ExpressionEngine from a previous version <strong>Do NOT click the button</strong>. Instead, restore your config file first, then run this installation wizard again starting from the first page.';
-
-$lang['please_stand_by'] = 'Please Stand By...';
-$lang['currently_installing'] = 'We are currently updating your ExpressionEngine installation.';
-$lang['dont_close_browser'] = 'Do not close your browser until the update routine is finished.';
 
 // Install/Upgrade Success
 $lang['install_success'] = "ExpressionEngine %s Installed";
