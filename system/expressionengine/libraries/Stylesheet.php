@@ -63,9 +63,7 @@ class EE_Stylesheet {
 
 		if ($stylesheet == '' OR strpos($stylesheet, '/') === FALSE)
 		{
-			ee()->output->set_status_header(404);
-			ee()->output->set_header("Date: ".gmdate("D, d M Y H:i:s")." GMT");
-			exit;
+			show_404();
 		}
 
 		if ( ! isset($this->style_cache[$stylesheet]))
@@ -74,9 +72,7 @@ class EE_Stylesheet {
 
 			if (count($ex) != 2)
 			{
-				ee()->output->set_status_header(404);
-				ee()->output->set_header("Date: ".gmdate("D, d M Y H:i:s")." GMT");
-				exit;
+				show_404();
 			}
 
 			ee()->db->select('templates.template_data, templates.template_name,
@@ -93,9 +89,7 @@ class EE_Stylesheet {
 
 			if ($query->num_rows() == 0)
 			{
-				ee()->output->set_status_header(404);
-				ee()->output->set_header("Date: ".gmdate("D, d M Y H:i:s")." GMT");
-				exit;
+				show_404();
 			}
 
 			$row = $query->row_array();
