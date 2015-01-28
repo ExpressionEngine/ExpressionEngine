@@ -88,8 +88,8 @@ $lang['dont_close_browser'] = 'Do not close your browser until the update routin
 // Install/Upgrade Success
 $lang['install_success'] = "ExpressionEngine %s Installed";
 $lang['install_success_note'] = '<b>Yay!</b> ExpressionEngine %s is now installed.';
-$lang['upgrade_success'] = "ExpressionEngine Upgraded to %s";
-$lang['upgrade_success_note'] = '<b>Yay!</b> ExpressionEngine is now upgraded to %s.';
+$lang['update_success'] = "ExpressionEngine Updated to %s";
+$lang['update_success_note'] = '<b>Yay!</b> ExpressionEngine is now updated to %s.';
 $lang['success_delete'] = 'Please delete the installer folder/directory from your server before proceeding.';
 $lang['cp_login'] = 'Control Panel login';
 

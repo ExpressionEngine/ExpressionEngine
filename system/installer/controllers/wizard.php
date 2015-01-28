@@ -499,7 +499,7 @@ class Wizard extends CI_Controller {
 			// List any update notices we have
 			$vars['update_notices'] = $this->update_notices->get();
 
-			$this->show_success('upgrade', $vars);
+			$this->show_success('update', $vars);
 			return FALSE;
 		}
 
@@ -903,7 +903,7 @@ class Wizard extends CI_Controller {
 
 	// --------------------------------------------------------------------
 
-	private function show_success($type = 'upgrade', $template_variables)
+	private function show_success($type = 'update', $template_variables)
 	{
 		$this->title = sprintf(lang($type.'_success'), $this->version);
 		$template_variables['success_note'] = sprintf(lang($type.'_success_note'), $this->version);
