@@ -84,13 +84,15 @@ $lang['install_detected_msg'] = 'ExpressionEngine appears to already be installe
 $lang['please_stand_by'] = 'Please Stand By...';
 $lang['currently_installing'] = 'We are currently updating your ExpressionEngine installation.';
 $lang['dont_close_browser'] = 'Do not close your browser until the update routine is finished.';
-$lang['ee_has_been_installed'] = 'ExpressionEngine has been successfully installed!';
-$lang['delete_via_ftp'] = '<strong>Very Important:</strong>&nbsp; Using your FTP program, please find the folder named "installer" and delete it from your server.';
-$lang['folder_is_located_at'] = 'You will find this folder located at:';
-$lang['no_access_until_delete'] = 'You will NOT be permitted to log into your Control Panel until you do.';
-$lang['bookmark_links'] = 'Please bookmark these two links:';
-$lang['cp_located_here'] = 'Your Control Panel is located here';
-$lang['site_located_here'] = 'Your Website is located here';
+
+// Install/Upgrade Success
+$lang['install_success'] = "ExpressionEngine %s Installed";
+$lang['install_success_note'] = '<b>Yay!</b> ExpressionEngine %s is now installed.';
+$lang['upgrade_success'] = "ExpressionEngine Upgraded to %s";
+$lang['upgrade_success_note'] = '<b>Yay!</b> ExpressionEngine is now upgraded to %s.';
+$lang['success_delete'] = 'Please delete the installer folder/directory from your server before proceeding.';
+$lang['cp_login'] = 'Control Panel login';
+
 $lang['running_current'] = 'You are now running the most current version of ExpressionEngine!';
 $lang['version_warning'] = 'Error: In order to install ExpressionEngine, your server must be running PHP version %x or newer.';
 $lang['version_running'] = 'Your server is current running PHP version:';

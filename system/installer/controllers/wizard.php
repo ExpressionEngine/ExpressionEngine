@@ -42,7 +42,6 @@ class Wizard extends CI_Controller {
 	// Default page content - these are in English since we don't know the user's language choice when we first load the installer
 	public $content           = '';
 	public $title             = 'ExpressionEngine Installation and Update Wizard';
-	public $heading           = 'ExpressionEngine Installation and Update Wizard';
 	public $copyright         = 'Copyright 2003 - %s EllisLab, Inc. - All Rights Reserved';
 
 	public $now;
@@ -119,7 +118,7 @@ class Wizard extends CI_Controller {
 		'pm_path'               => '../images/pm_attachments',
 		'captcha_path'          => '../images/captchas/',
 		'theme_folder_path'     => '../themes/',
-		'modules'               => array()
+		'modules'               => array(),
 		'install_default_theme' => 'n'
 	);
 
@@ -500,7 +499,7 @@ class Wizard extends CI_Controller {
 			// List any update notices we have
 			$vars['update_notices'] = $this->update_notices->get();
 
-			$this->_set_output('uptodate', $vars);
+			$this->show_success('upgrade', $vars);
 			return FALSE;
 		}
 
@@ -1050,7 +1049,18 @@ PAPAYA;
 		$vars['error_messages'] = $this->module_install_errors;
 
 		// Woo hoo! Success!
-		$this->_set_output('install_success', $vars);
+		$this->show_success('install', $vars);
+	}
+
+	// --------------------------------------------------------------------
+
+	private function show_success($type = 'upgrade', $template_variables)
+	{
+		$this->title = sprintf(lang($type.'_success'), $this->version);
+		$template_variables['success_note'] = sprintf(lang($type.'_success_note'), $this->version);
+		$template_variables['action'] = $this->userdata['cp_url'];
+		$template_variables['method'] = 'get';
+		$this->_set_output('success', $template_variables);
 	}
 
 	// --------------------------------------------------------------------
@@ -1526,11 +1536,6 @@ PAPAYA;
 
 		if (IS_CORE)
 		{
-			$this->heading = str_replace(
-				'ExpressionEngine',
-				'ExpressionEngine Core',
-				$this->heading
-			);
 			$this->title = str_replace(
 				'ExpressionEngine',
 				'ExpressionEngine Core',
@@ -1544,7 +1549,6 @@ PAPAYA;
 		// installer to the container view.
 
 		$data = array(
-			'heading'           => $this->heading,
 			'title'             => $this->title,
 			'refresh'           => $this->refresh,
 			'refresh_url'       => $this->refresh_url,
@@ -1559,14 +1563,18 @@ PAPAYA;
 			'next_version'      => substr($this->next_update, 0, 1).'.'.substr($this->next_update, 1, 1).'.'.substr($this->next_update, 2, 1),
 			'languages'         => $this->languages,
 			'theme_url'         => $this->theme_url,
-			'is_core'           => (IS_CORE) ? 'Core' : ''
+			'is_core'           => (IS_CORE) ? 'Core' : '',
+
+			'action'            => '',
+			'method'            => 'post'
 		);
 
 		$data = array_merge($template_variables, $data);
 
 		ee()->load->helper('language');
-		ee()->load->view('container', array(
-			'content' => ee()->load->view($view, $data, TRUE)
+		ee()->load->view('container', array_merge(
+			array('content' => ee()->load->view($view, $data, TRUE)),
+			$data
 		));
 	}
 

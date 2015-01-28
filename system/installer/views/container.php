@@ -27,7 +27,7 @@
 				<div class="col w-16 last">
 					<div class="box">
 						<h1><?=$title?> <span class="required intitle">Completed Step 1 of 4</span></h1>
-						<form class="settings" action="<?=$action?>" method="post">
+						<form class="settings" action="<?=$action?>" method="<?=$method?>">
 							<?=$content?>
 						</form>
 					</div>
