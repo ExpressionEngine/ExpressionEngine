@@ -117,6 +117,30 @@ $lang = array(
 'edit_entry_with_title' =>
 'Edit Entry: %s',
 
+'url_title' =>
+'<abbr title="Unified Resource Locator">URL</abbr> title',
+
+'url_title_desc' =>
+'<abbr title="Unified Resource Locator">URL</abbr> location of this entry.',
+
+'entry_date' =>
+'Entry date',
+
+'entry_date_desc' =>
+'Date of publication for this entry.',
+
+'expiration_date' =>
+'Expiration date',
+
+'expiration_date_desc' =>
+'Date this entry should expire.',
+
+'comment_expiration_date' =>
+'Comment expiration date',
+
+'comment_expiration_date_desc' =>
+'Date comments for this entry should no longer be accepted.',
+
 //----------------------------
 // Publish page
 //----------------------------
@@ -357,9 +381,6 @@ $lang = array(
 'publish_form' =>
 'Publish Form',
 
-'entry_date' =>
-'Entry Date',
-
 'url_title_is_numeric' =>
 'Numbers cannot be used as URL Titles',
 
@@ -377,9 +398,6 @@ $lang = array(
 
 'date_calendar' =>
 'Date Calendar',
-
-'comment_expiration_date' =>
-'Comment Expiration Date',
 
 'invalid_comment_date_formatting' =>
 'The comment expiration date you submitted was not formatted correctly (year-month-day hour:minute).  Leave the field blank if you do not wish your comments to expire.',
@@ -557,9 +575,6 @@ $lang = array(
 'end_date' =>
 'End',
 
-'expiration_date' =>
-'Expiration Date',
-
 'invalid_date_formatting' =>
 'The date you submitted was not formatted correctly (year-month-day hour:minute)',
 
@@ -577,9 +592,6 @@ $lang = array(
 
 'title' =>
 'Title',
-
-'url_title' =>
-'URL Title',
 
 'author' =>
 'Author',
