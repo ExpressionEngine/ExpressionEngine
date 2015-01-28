@@ -160,6 +160,62 @@ feature 'Channel Create/Edit' do
   end
 
   it 'should duplicate an existing channel' do
+    # Set some arbitrary settings on the News channel
+    channel_settings = ChannelSettings.new
+    channel_settings.load_settings_for_channel(2)
+    channel_settings.channel_description.set 'Some description'
+    channel_settings.channel_url.set 'http://someurl/channel'
+    channel_settings.comment_url.set 'http://someurl/channel/comment'
+    channel_settings.search_results_url.set 'http://someurl/channel/search/results'
+    channel_settings.rss_url.set 'http://someurl/channel/rss'
+    channel_settings.live_look_template.select 'search/index'
+
+    channel_settings.default_entry_title.set 'Default title'
+    channel_settings.url_title_prefix.set 'default-title'
+    channel_settings.deft_status.select 'Closed'
+    channel_settings.deft_category.select 'News Categories: News'
+    channel_settings.search_excerpt.select 'Body'
+
+    channel_settings.channel_html_formatting.select 'Convert to HTML entities'
+    channel_settings.channel_allow_img_urls[1].click
+    channel_settings.channel_auto_link_urls[0].click
+    channel_settings.show_button_cluster[1].click
+
+    channel_settings.default_status.select 'Closed'
+    channel_settings.allow_guest_posts[0].click
+    channel_settings.require_captcha[0].click
+
+    channel_settings.enable_versioning[0].click
+    channel_settings.max_revisions.set '20'
+    channel_settings.clear_versioning_data.click
+
+    channel_settings.comment_notify_authors[0].click
+    channel_settings.channel_notify[0].click
+    channel_settings.channel_notify_emails.set 'trey@treyanastasio.com,mike@mikegordon.com'
+    channel_settings.comment_notify[0].click
+    channel_settings.comment_notify_emails.set 'page@pagemcconnell.com,jon@jonfishman.com'
+
+    channel_settings.comment_system_enabled[1].click
+    channel_settings.apply_comment_enabled_to_existing.click
+    channel_settings.deft_comments[1].click
+    channel_settings.comment_require_membership[0].click
+    channel_settings.comment_require_email[1].click
+    channel_settings.comment_use_captcha[1].click
+    channel_settings.comment_moderate[0].click
+    channel_settings.comment_max_chars.set '40'
+    channel_settings.comment_timelock.set '50'
+    channel_settings.comment_expiration.set '60'
+    channel_settings.apply_expiration_to_existing.click
+    channel_settings.comment_text_formatting.select 'None'
+    channel_settings.comment_html_formatting.select 'Allow all HTML (not recommended)'
+    channel_settings.comment_allow_img_urls[0].click
+    channel_settings.comment_auto_link_urls[1].click
+
+    channel_settings.submit
+    channel_settings.should have_text 'Channel saved'
+
+    # Create new channel, ensure field groups and things were duplicated
+    @page.load
     @page.channel_title.set 'Test'
     @page.duplicate_channel_prefs.select 'News'
     @page.submit
@@ -173,5 +229,58 @@ feature 'Channel Create/Edit' do
 
     @page.cat_group[0].checked?.should == false
     @page.cat_group[1].checked?.should == true
+
+    # Now make sure settings were duplicated
+    channel_settings.load_settings_for_channel(2)
+    channel_settings.channel_description.value.should == 'Some description'
+    channel_settings.channel_lang.value.should == 'english'
+
+    channel_settings.channel_url.value.should == 'http://someurl/channel'
+    channel_settings.comment_url.value.should == 'http://someurl/channel/comment'
+    channel_settings.search_results_url.value.should == 'http://someurl/channel/search/results'
+    channel_settings.rss_url.value.should == 'http://someurl/channel/rss'
+    channel_settings.live_look_template.value.should == '16'
+
+    channel_settings.default_entry_title.value.should == 'Default title'
+    channel_settings.url_title_prefix.value.should == 'default-title'
+    channel_settings.deft_status.value.should == 'closed'
+    channel_settings.deft_category.value.should == '1'
+    channel_settings.search_excerpt.value.should == '1'
+
+    channel_settings.channel_html_formatting.value.should == 'none'
+    channel_settings.channel_allow_img_urls[1].checked?.should == true
+    channel_settings.channel_auto_link_urls[0].checked?.should == true
+    channel_settings.show_button_cluster[1].checked?.should == true
+
+    channel_settings.default_status.value.should == 'closed'
+    channel_settings.default_author.value.should == '1'
+    channel_settings.allow_guest_posts[0].checked?.should == true
+    channel_settings.require_captcha[0].checked?.should == true
+
+    channel_settings.enable_versioning[0].checked?.should == true
+    channel_settings.max_revisions.value.should == '20'
+    channel_settings.clear_versioning_data.checked?.should == false
+
+    channel_settings.comment_notify_authors[0].checked?.should == true
+    channel_settings.channel_notify[0].checked?.should == true
+    channel_settings.channel_notify_emails.value.should == 'trey@treyanastasio.com,mike@mikegordon.com'
+    channel_settings.comment_notify[0].checked?.should == true
+    channel_settings.comment_notify_emails.value.should == 'page@pagemcconnell.com,jon@jonfishman.com'
+
+    channel_settings.comment_system_enabled[1].checked?.should == true
+    channel_settings.apply_comment_enabled_to_existing.checked?.should == false
+    channel_settings.deft_comments[1].checked?.should == true
+    channel_settings.comment_require_membership[0].checked?.should == true
+    channel_settings.comment_require_email[1].checked?.should == true
+    channel_settings.comment_use_captcha[1].checked?.should == true
+    channel_settings.comment_moderate[0].checked?.should == true
+    channel_settings.comment_max_chars.value.should ==  '40'
+    channel_settings.comment_timelock.value.should ==  '50'
+    channel_settings.comment_expiration.value.should ==  '60'
+    channel_settings.apply_expiration_to_existing.checked?.should == false
+    channel_settings.comment_text_formatting.value.should == 'none'
+    channel_settings.comment_html_formatting.value.should == 'all'
+    channel_settings.comment_allow_img_urls[0].checked?.should == true
+    channel_settings.comment_auto_link_urls[1].checked?.should == true
   end
 end
