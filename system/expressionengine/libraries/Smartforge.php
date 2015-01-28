@@ -167,6 +167,27 @@ class Smartforge {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Table Drop
+	 *
+	 * Drop a table from the database
+	 * @param  string $table The table name
+	 * @return bool          TRUE if successful, FALSE if not
+	 */
+	public function drop_table($table)
+	{
+		if ( ! ee()->db->table_exists($table))
+		{
+			ee()->logger->updater(__METHOD__." failed. Table '".ee()->db->dbprefix."$table' does not exist.", TRUE);
+
+			return FALSE;
+		}
+
+		return ee()->dbforge->drop_table($table);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Column Modify
 	 *
 	 * Modify a database column (if it exists) with the added check that
