@@ -187,8 +187,9 @@ class FieldDisplay {
 class FieldtypeFacade {
 
 	private $id;
-	private $data;
-	private $format;
+	private $data; // field_id_*
+	private $format;  // field_ft_*
+	private $timezone; // field_dt_*
 	private $type_info;
 	private $field_name;
 	private $content_id;
@@ -213,6 +214,11 @@ class FieldtypeFacade {
 	public function setContentId($id)
 	{
 		$this->content_id = $id;
+	}
+
+	public function setTimezone($tz)
+	{
+		$this->timezone = $timezone;
 	}
 
 	public function setData($data)
@@ -246,7 +252,7 @@ class FieldtypeFacade {
 
 	protected function setupField()
 	{
-		$field_dt = ''; // todo!
+		$field_dt = $this->timezone;
 		$field_fmt = $this->format;
 		$field_data = $this->data;
 		$field_name = $this->getName();
