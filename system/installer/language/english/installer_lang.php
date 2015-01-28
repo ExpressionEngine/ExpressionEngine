@@ -7,41 +7,47 @@ $lang['ready_to_update'] = 'If you are ready to update ExpressionEngine to versi
 $lang['ready_to_install'] = 'If you are ready to install ExpressionEngine version %x click the link below:';
 $lang['backup_confirmation'] = 'Did you perform a full backup of your existing ExpressionEngine files and database?';
 
-// Database Server
-$lang['db_hostname'] = 'Database Server Address';
-$lang['db_hostname_note'] = 'Commonly <b>localhost</b>, but your host may require something else.';
-$lang['db_name'] = 'Database Name';
-$lang['db_name_note'] = 'Name of the database where you want ExpressionEngine installed.';
-$lang['db_name_warning'] = 'Make sure the database exists, the installer will <b>not</b> create it.';
-$lang['db_username'] = 'Database Server Username';
-$lang['db_username_note'] = 'Username used to access the above database.';
-$lang['db_password'] = 'Database Server Password';
-$lang['db_password_note'] = 'Password used to access the above database.';
-$lang['db_prefix'] = 'Database Table Prefix';
-$lang['db_prefix_note'] = 'Use <b>exp</b> unless you require/prefer a different prefix.';
+// Install Form
+	// Database Server
+	$lang['db_hostname'] = 'Database Server Address';
+	$lang['db_hostname_note'] = 'Commonly <b>localhost</b>, but your host may require something else.';
+	$lang['db_name'] = 'Database Name';
+	$lang['db_name_note'] = 'Name of the database where you want ExpressionEngine installed.';
+	$lang['db_name_warning'] = 'Make sure the database exists, the installer will <b>not</b> create it.';
+	$lang['db_username'] = 'Database Server Username';
+	$lang['db_username_note'] = 'Username used to access the above database.';
+	$lang['db_password'] = 'Database Server Password';
+	$lang['db_password_note'] = 'Password used to access the above database.';
+	$lang['db_prefix'] = 'Database Table Prefix';
+	$lang['db_prefix_note'] = 'Use <b>exp</b> unless you require/prefer a different prefix.';
 
-// Account Creation
-$lang['administrator_account'] = 'Administrator Account';
-$lang['username'] = 'Username';
-$lang['username_note'] = 'Username you want to use to login to the <abbr title="Control Panel">CP</abbr>.';
-$lang['e_mail'] = 'e-mail';
-$lang['e_mail_note'] = 'e-mail address you want to use for this account.';
-$lang['password'] = 'Password';
-$lang['password_note'] = 'Password you want to use to login to the <abbr title="Control Panel">CP</abbr>.';
+	// Account Creation
+	$lang['administrator_account'] = 'Administrator Account';
+	$lang['username'] = 'Username';
+	$lang['username_note'] = 'Username you want to use to login to the <abbr title="Control Panel">CP</abbr>.';
+	$lang['e_mail'] = 'e-mail';
+	$lang['e_mail_note'] = 'e-mail address you want to use for this account.';
+	$lang['password'] = 'Password';
+	$lang['password_note'] = 'Password you want to use to login to the <abbr title="Control Panel">CP</abbr>.';
 
-// Timezone Selection
-// TODO-WB: Remove before release.
-$lang['local_settings'] = 'Localization Settings';
-$lang['timezone'] = 'Your Timezone';
-$lang['select_timezone'] = 'Select Timezone';
-$lang['no_timezones'] = 'No Timezones';
+	// Timezone Selection
+	// TODO-WB: Remove before release.
+	$lang['local_settings'] = 'Localization Settings';
+	$lang['timezone'] = 'Your Timezone';
+	$lang['select_timezone'] = 'Select Timezone';
+	$lang['no_timezones'] = 'No Timezones';
 
-// Default Theme
-$lang['default_theme'] = 'Default theme';
-$lang['install_default_theme'] = 'Install default theme?';
-$lang['install_default_theme_info'] = 'When set to <b>yes</b>, ExpressionEngine will install a default theme.';
+	// Default Theme
+	$lang['default_theme'] = 'Default theme';
+	$lang['install_default_theme'] = 'Install default theme?';
+	$lang['install_default_theme_info'] = 'When set to <b>yes</b>, ExpressionEngine will install a default theme.';
 
-$lang['start_installation'] = 'Start Installation';
+	$lang['start_installation'] = 'Start Installation';
+
+// Update Form
+	$lang['start_update'] = 'Start Update';
+	$lang['update_note'] = '<b>Please</b> read <a href="https://ellislab.com/expressionengine/user-guide/installation/update.html">Updating ExpressionEngine</a> <strong>before</strong> starting.';
+	$lang['update_backup'] = 'Please <b>back up</b> your database before updating ExpressionEngine';
 
 $lang['back'] = 'Back';
 $lang['error'] = 'ERROR';

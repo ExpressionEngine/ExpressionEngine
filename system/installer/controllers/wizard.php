@@ -256,10 +256,17 @@ class Wizard extends CI_Controller {
 			? '_'.ee()->input->get('M')
 			: FALSE;
 
-		// If we're not at a defined stage, go to the install form.
+		// If we're not at a defined stage, this is the first step.
 		if ( ! $action)
 		{
-			return $this->_install_form();
+			if ($this->is_installed)
+			{
+				return $this->_update_form();
+			}
+			else
+			{
+				return $this->_install_form();
+			}
 		}
 
 		// OK, at this point we have determined whether an existing EE
@@ -591,6 +598,14 @@ class Wizard extends CI_Controller {
 
 		// Display the form and pass the userdata array to it
 		$this->_set_output('install_form', array_merge($vars, $this->userdata));
+	}
+
+	// --------------------------------------------------------------------
+
+	private function _update_form()
+	{
+		$vars['action'] = $this->set_qstr('do_update');
+		$this->_set_output('update_form', $vars);
 	}
 
 	// --------------------------------------------------------------------
