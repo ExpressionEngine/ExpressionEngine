@@ -120,6 +120,7 @@ class Wizard extends CI_Controller {
 		'captcha_path'          => '../images/captchas/',
 		'theme_folder_path'     => '../themes/',
 		'modules'               => array()
+		'install_default_theme' => 'n'
 	);
 
 
@@ -2132,7 +2133,7 @@ PAPAYA;
 			'site_url'                  => $this->userdata['site_url'],
 			'theme_folder_url'          => $this->userdata['site_url'].'themes/',
 			'doc_url'                   => $this->userdata['doc_url'],
-			'webmaster_email'           => $this->userdata['webmaster_email'],
+			'webmaster_email'           => $this->userdata['email_address'],
 			'webmaster_name'            => '',
 			'channel_nomenclature'      => 'channel',
 			'max_caches'                => '150',
