@@ -292,7 +292,7 @@ class Wizard extends CI_Controller {
 		}
 
 		// Determine current version
-		$this->current_version = implode(
+		$this->installed_version = implode(
 			'.',
 			str_split(ee()->config->item('app_version'))
 		);
@@ -897,8 +897,8 @@ class Wizard extends CI_Controller {
 			// End URL
 			$this->refresh = TRUE;
 			$this->refresh_url = $this->set_qstr('do_update&agree=yes');
-			$this->title = sprintf(lang('updating_title'), $this->current_version, $this->version);
 			return $this->_set_output(
+			$this->title = sprintf(lang('updating_title'), $this->installed_version, $this->version);
 				'update_msg',
 				array(
 					'remaining_updates' => $this->remaining_updates,
@@ -1046,8 +1046,8 @@ class Wizard extends CI_Controller {
 			'end_url'            => $this->set_qstr('do_update&agree=yes&progress=no&ajax_progress=yes')
 		));
 
-		$this->title = sprintf(lang('updating_title'), $this->current_version, $this->version);
 		$this->_set_output(
+		$this->title = sprintf(lang('updating_title'), $this->installed_version, $this->version);
 			'update_msg',
 			array(
 				'remaining_updates' => $this->remaining_updates,
@@ -1187,7 +1187,7 @@ class Wizard extends CI_Controller {
 		if ($view == "error")
 		{
 			$this->title = ($this->is_installed)
-				? sprintf(lang('error_updating'), $this->current_version, $this->version)
+				? sprintf(lang('error_updating'), $this->installed_version, $this->version)
 				: sprintf(lang('error_installing'), $this->version);
 		}
 
