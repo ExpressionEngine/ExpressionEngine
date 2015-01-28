@@ -52,8 +52,7 @@ class Wizard extends CI_Controller {
 	// These are the methods that are allowed to be called via $_GET['m']
 	// for either a new installation or an update. Note that the function names
 	// are prefixed but we don't include the prefix here.
-	public $allowed_methods = array('install_form',
-	 	'do_install', 'trackback_form', 'do_update');
+	public $allowed_methods = array('install_form', 'do_install', 'do_update');
 
 	// Absolutely, positively must always be installed
 	var $required_modules = array('channel', 'comment', 'member', 'stats', 'rte');
@@ -616,63 +615,6 @@ class Wizard extends CI_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Trackback conversion form
-	 *
-	 * @access	private
-	 * @return	null
-	 */
-	function _trackback_form($not_readable = FALSE)
-	{
-		$convert_to_comments = ($this->input->get_post('convert_to_comments') == 'y') ? 'y' : 'n';
-		$archive_trackbacks = ($this->input->get_post('archive_trackbacks') == 'y') ? 'y' : 'n';
-
-		$trackback_zip_path = ($archive_trackbacks == 'n') ? BASEPATH : $this->input->get_post('trackback_zip_path');
-
-		if ($this->input->get('ajax_progress') == 'yes')
-		{
-			$action = $this->set_qstr('do_update&agree=yes&ajax_progress=yes');
-		}
-		else
-		{
-			$action = $this->set_qstr('do_update&agree=yes');
-		}
-
-
-		$vars = array(
-			'not_readable'			=> $not_readable,
-			'convert_to_comments'	=> $convert_to_comments,
-			'archive_trackbacks'	=> $archive_trackbacks,
-			'trackback_zip_path'	=> $trackback_zip_path,
-			'action'				=> $action
-		);
-
-		$vars['extra_header'] = '<script type="text/javascript">
-		window.onload = function () {
-
-			var zip_path = document.getElementById("zip_path_container"),
-				archive_y = document.getElementById("archive_trackbacks_y"),
-				archive_n = document.getElementById("archive_trackbacks_n");
-
-			if (archive_n.checked) {
-				zip_path.style.display = "none";
-			}
-
-			archive_n.onclick = function() {
-				zip_path.style.display = "none";
-			}
-			archive_y.onclick = function() {
-				zip_path.style.display = "block";
-			}
-		}
-		</script>';
-
-		// Display the form and pass the userdata array to it
-		$this->_set_output('trackback_form', $vars);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Perform the installation
 	 *
 	 * @access	private
@@ -1054,40 +996,6 @@ class Wizard extends CI_Controller {
 	function _do_update()
 	{
 		$this->load->library('javascript');
-
-		// Do we have to handle trackbacks?
-		if ($this->input->get_post('archive_trackbacks'))
-		{
-			// reset in case they change their mind but we have
-			// already written the file. Unlikely? Yes.
-			$trackback_config = array(
-				'trackbacks_to_comments' => 'n',
-				'archive_trackbacks'     => 'n'
-			);
-
-			if ($this->input->get_post('convert_to_comments') == 'y')
-			{
-				$trackback_config['trackbacks_to_comments'] = 'y';
-			}
-
-			if ($this->input->get_post('archive_trackbacks') == 'y')
-			{
-				$trackback_zip_path = rtrim($this->input->get_post('trackback_zip_path'), ' /');
-
-				if (! is_dir($trackback_zip_path) OR
-					! is_really_writable($trackback_zip_path) OR
-					file_exists($trackback_zip_path.'/trackback.zip'))
-				{
-					return $this->_trackback_form(TRUE);
-				}
-
-				$trackback_config['archive_trackbacks'] = 'y';
-				$trackback_config['trackback_zip_path'] = $trackback_zip_path.'/trackback.zip';
-			}
-
-
-			$this->config->_append_config_1x($trackback_config);
-		}
 
 		$this->load->library('progress');
 

@@ -103,17 +103,6 @@ $lang['version_warning'] = 'Error: In order to install ExpressionEngine, your se
 $lang['version_running'] = 'Your server is current running PHP version:';
 $lang['switch_hosts'] = 'Contact your hosting provider to see if newer software is available for your server.';
 
-$lang['trackback_removal_options'] = 'Trackback Conversion and Archiving Options';
-$lang['trackback_gone_in_200'] = 'The Trackback module has been removed in ExpressionEngine 2.  You can choose to convert existing trackbacks to comments and/or generate a zip archive containing all existing trackbacks.';
-$lang['trackbacks_not_recoverable'] = 'All trackbacks will be removed.';
-
-$lang['convert_to_comments'] = 'Convert Trackbacks to Comments';
-$lang['archive_trackbacks'] = 'Create XML Archive of Trackback Data';
-$lang['trackback_zip_path'] = 'Path to the directory where the archive will be saved.';
-$lang['path_must_be_writable'] = 'The path must be writable and must not contain a file called trackback.zip';
-$lang['trackback_not_writable'] = 'The trackback path is not writable or already contains a file called trackback.zip';
-$lang['update_ee'] = 'Update ExpressionEngine!';
-
 // surveys
 $lang['opt_in_survey'] = 'Opt-in Survey';
 $lang['help_with_survey'] = "Please consider helping us make ExpressionEngine better by completing the optional survey for this update.";
