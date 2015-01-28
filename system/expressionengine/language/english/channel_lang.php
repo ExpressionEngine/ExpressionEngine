@@ -47,9 +47,6 @@ $lang = array(
 'channel_short_name' =>
 'Short name',
 
-'channel_manage' =>
-'Manage',
-
 'custom_fields' => 
 'Custom Fields',
 
@@ -106,9 +103,6 @@ $lang = array(
 '<p><b>Warning</b>: Channels require custom fields to collect any data other than title, and date.</p>
 <p>If you need to collect additional data for this channel, it\'s best practice to create any <a href="%s">custom fields</a>, first.</p>',
 
-'status_groups' =>
-'Status groups',
-
 'status_groups_desc' =>
 'Choose the status group you want for this channel.',
 
@@ -132,9 +126,6 @@ $lang = array(
 
 'create_new_field_group' =>
 'Create New Field Group',
-
-'category_groups' =>
-'Category groups',
 
 'category_groups_desc' =>
 'Choose the category groups you want available for this channel.',
@@ -458,6 +449,28 @@ $lang = array(
 
 'channel_form_default_status_empty' =>
 '-- Use Channel Default --',
+
+/**
+ * Categories
+ */
+
+'category_group' =>
+'Category Group',
+
+'group_name' =>
+'Group Name',
+
+'no_category_groups' =>
+'No Category Groups',
+
+'create_category_group' =>
+'Create Category Group',
+
+'category_groups_removed' =>
+'Category groups removed',
+
+'category_groups_removed_desc' =>
+'%d category groups were removed.',
 
 ''=>''
 );
