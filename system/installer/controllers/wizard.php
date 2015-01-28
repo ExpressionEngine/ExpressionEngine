@@ -54,7 +54,7 @@ class Wizard extends CI_Controller {
 	public $allowed_methods = array('install_form', 'do_install', 'do_update');
 
 	// Absolutely, positively must always be installed
-	var $required_modules = array('channel', 'comment', 'member', 'stats', 'rte');
+	public $required_modules = array('channel', 'comment', 'member', 'stats', 'rte');
 
 	public $theme_required_modules = array();
 
@@ -123,7 +123,7 @@ class Wizard extends CI_Controller {
 
 	// These are the default values for the CodeIgniter config array.  Since the EE
 	// and CI config files are one in the same now we use this data when we write the
-	// initial config file using $this->_write_config_data()
+	// initial config file using $this->write_config_data()
 	public $ci_config = array(
 		'uri_protocol'       => 'AUTO',
 		'charset'            => 'UTF-8',
@@ -144,7 +144,7 @@ class Wizard extends CI_Controller {
 	 * Constructor
 	 * @return	void
 	 */
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 
@@ -188,11 +188,11 @@ class Wizard extends CI_Controller {
 		$this->load->library('update_notices');
 
 		// Set the theme URLs
-		$this->theme_url = $this->_set_path('themes');
-		$this->image_path = $this->_set_path('themes/ee/cp_global_images/');
+		$this->theme_url = $this->set_path('themes');
+		$this->image_path = $this->set_path('themes/ee/cp_global_images/');
 
 		// Set the Javascript URL
-		$this->javascript_path = $this->_set_path('themes/ee/javascript/compressed/');
+		$this->javascript_path = $this->set_path('themes/ee/javascript/compressed/');
 
 		// First try the current directory, if they are running the system with an admin.php file
 		$this->theme_path = substr($_SERVER['SCRIPT_FILENAME'], 0, -strlen(SELF));
@@ -232,32 +232,30 @@ class Wizard extends CI_Controller {
 	 * do
 	 * @return void
 	 */
-	function _remap()
+	public function _remap()
 	{
-		$this->_set_base_url();
+		$this->set_base_url();
 
 		// Run our pre-flight tests.
 		// This function generates its own error messages so if it returns FALSE
 		// we bail out.
-		if ( ! $this->_preflight())
+		if ( ! $this->preflight())
 		{
 			return FALSE;
 		}
 
-		$action = (ee()->input->get('M'))
-			? '_'.ee()->input->get('M')
-			: FALSE;
+		$action = ee()->input->get('M') ?: FALSE;
 
 		// If we're not at a defined stage, this is the first step.
 		if ( ! $action)
 		{
 			if ($this->is_installed)
 			{
-				return $this->_update_form();
+				return $this->update_form();
 			}
 			else
 			{
-				return $this->_install_form();
+				return $this->install_form();
 			}
 		}
 
@@ -266,7 +264,7 @@ class Wizard extends CI_Controller {
 		// connected to the DB if needed
 
 		// Is the action allowed?
-		if ( ! in_array(ee()->input->get('M'), $this->allowed_methods)
+		if ( ! in_array($action, $this->allowed_methods)
 			OR ! method_exists($this, $action))
 		{
 			show_error(lang('invalid_action'));
@@ -282,12 +280,12 @@ class Wizard extends CI_Controller {
 	 * Pre-flight Tests - Does all of our error checks
 	 * @return void
 	 */
-	function _preflight()
+	private function preflight()
 	{
 		// Is the config file readable?
 		if ( ! include($this->config->config_path))
 		{
-			$this->_set_output('error', array('error' => lang('unreadable_config')));
+			$this->set_output('error', array('error' => lang('unreadable_config')));
 			return FALSE;
 		}
 
@@ -303,7 +301,7 @@ class Wizard extends CI_Controller {
 		if (is_php($this->minimum_php) == FALSE)
 		{
 			$this->is_installed = isset($config);
-			$this->_set_output('error', array(
+			$this->set_output('error', array(
 				'error' => sprintf(
 					lang('version_warning'),
 					$this->minimum_php,
@@ -316,7 +314,7 @@ class Wizard extends CI_Controller {
 		// Is the config file writable?
 		if ( ! is_really_writable($this->config->config_path))
 		{
-			$this->_set_output('error', array('error' => lang('unwritable_config')));
+			$this->set_output('error', array('error' => lang('unwritable_config')));
 			return FALSE;
 		}
 
@@ -328,7 +326,7 @@ class Wizard extends CI_Controller {
 		// Is the cache folder writable?
 		if ( ! is_really_writable($cache_path))
 		{
-			$this->_set_output('error', array('error' => lang('unwritable_cache_folder')));
+			$this->set_output('error', array('error' => lang('unwritable_cache_folder')));
 			return FALSE;
 		}
 
@@ -342,19 +340,19 @@ class Wizard extends CI_Controller {
 			// this later
 			if ( ! file_exists(EE_APPPATH.'/language/'.$this->userdata['deft_lang'].'/email_data.php'))
 			{
-				$this->_set_output('error', array('error' => lang('unreadable_email')));
+				$this->set_output('error', array('error' => lang('unreadable_email')));
 				return FALSE;
 			}
 
 			// Are the DB schemas available?
 			if ( ! is_dir(APPPATH.'schema/'))
 			{
-				$this->_set_output('error', array('error' => lang('unreadable_schema')));
+				$this->set_output('error', array('error' => lang('unreadable_schema')));
 				return FALSE;
 			}
 
 			// Fetch the database schemas
-			$this->_get_supported_dbs();
+			$this->get_supported_dbs();
 
 			// set the image path and theme folder path
 			$this->userdata['image_path'] = $this->image_path;
@@ -380,14 +378,14 @@ class Wizard extends CI_Controller {
 
 		if ( ! isset($db))
 		{
-			$this->_set_output('error', array('error' => lang('database_no_data')));
+			$this->set_output('error', array('error' => lang('database_no_data')));
 			return FALSE;
 		}
 
 		// Can we connect?
-		if ( ! $this->_db_connect($db))
+		if ( ! $this->db_connect($db))
 		{
-			$this->_set_output('error', array('error' => lang('database_no_config')));
+			$this->set_output('error', array('error' => lang('database_no_config')));
 			return FALSE;
 		}
 
@@ -402,9 +400,9 @@ class Wizard extends CI_Controller {
 		// the currently installed version is older then the most recent update
 
 		// If this returns false it means the "updates" folder was not readable
-		if ( ! $this->_fetch_updates($config['app_version']))
+		if ( ! $this->fetch_updates($config['app_version']))
 		{
-			$this->_set_output('error', array('error' => lang('unreadable_update')));
+			$this->set_output('error', array('error' => lang('unreadable_update')));
 			return FALSE;
 		}
 
@@ -413,7 +411,7 @@ class Wizard extends CI_Controller {
 		// template
 		if ($this->next_update === FALSE)
 		{
-			$this->_assign_install_values();
+			$this->assign_install_values();
 
 			$vars['installer_path'] = '/'.SYSDIR.'/installer';
 
@@ -447,7 +445,7 @@ class Wizard extends CI_Controller {
 		// Before moving on, let's load the update file to make sure it's readable
 		if ( ! include(APPPATH.'updates/ud_'.$this->next_update.'.php'))
 		{
-			$this->_set_output('error', array('error' => lang('unreadable_files')));
+			$this->set_output('error', array('error' => lang('unreadable_files')));
 			return FALSE;
 		}
 
@@ -469,15 +467,15 @@ class Wizard extends CI_Controller {
 	 * New installation form
 	 * @return void
 	 */
-	function _install_form($errors = FALSE)
+	private function install_form($errors = FALSE)
 	{
 		// Assign the _POST array values
-		$this->_assign_install_values();
+		$this->assign_install_values();
 
 		$vars = array();
 
 		// Are there any errors to display? When the user submits the
-		// installation form, the $this->_do_install() function is called. In
+		// installation form, the $this->do_install() function is called. In
 		// the event of errors the form will be redisplayed with the error
 		// message
 		$vars['errors'] = $errors;
@@ -485,7 +483,7 @@ class Wizard extends CI_Controller {
 		$vars['action'] = $this->set_qstr('do_install');
 
 		// Display the form and pass the userdata array to it
-		$this->_set_output('install_form', array_merge($vars, $this->userdata));
+		$this->set_output('install_form', array_merge($vars, $this->userdata));
 	}
 
 	// --------------------------------------------------------------------
@@ -496,9 +494,9 @@ class Wizard extends CI_Controller {
 	 */
 	private function update_form()
 	{
-		$this->title = sprintf(lang('update_title'), $this->current_version, $this->version);
+		$this->title = sprintf(lang('update_title'), $this->installed_version, $this->version);
 		$vars['action'] = $this->set_qstr('do_update');
-		$this->_set_output('update_form', $vars);
+		$this->set_output('update_form', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -507,10 +505,10 @@ class Wizard extends CI_Controller {
 	 * Perform the installation
 	 * @return void
 	 */
-	function _do_install()
+	private function do_install()
 	{
 		// Assign the _POST array values
-		$this->_assign_install_values();
+		$this->assign_install_values();
 		$this->load->library('javascript');
 
 		// Start our error trapping
@@ -610,7 +608,7 @@ class Wizard extends CI_Controller {
 			'dbcollat' => 'utf8_general_ci'
 		);
 
-		if ( ! $this->_db_connect($db, TRUE))
+		if ( ! $this->db_connect($db))
 		{
 			$errors[] = lang('database_no_connect');
 		}
@@ -626,7 +624,7 @@ class Wizard extends CI_Controller {
 		if (count($errors) > 0)
 		{
 			$this->userdata['errors'] = $errors;
-			$this->_set_output('install_form', $this->userdata);
+			$this->set_output('install_form', $this->userdata);
 			return FALSE;
 		}
 
@@ -656,7 +654,7 @@ class Wizard extends CI_Controller {
 
 		if ($query->num_rows() > 0 AND ! isset($_POST['install_override']))
 		{
-			return $this->_set_output('error', array(
+			return $this->set_output('error', array(
 				'error' => lang('install_detected_msg')
 			));
 		}
@@ -670,7 +668,7 @@ class Wizard extends CI_Controller {
 		unset($_POST['password_confirm']);
 
 		// We assign some values to the Schema class
-		$this->schema->default_entry = $this->_default_channel_entry();
+		$this->schema->default_entry = $this->default_channel_entry();
 
 		// Encrypt the password and unique ID
 		ee()->load->library('auth');
@@ -693,16 +691,16 @@ class Wizard extends CI_Controller {
 		// Install Database Tables!
 		if ( ! $this->schema->install_tables_and_data())
 		{
-			$this->_set_output('error', array('error' => lang('improper_grants')));
+			$this->set_output('error', array('error' => lang('improper_grants')));
 			return FALSE;
 		}
 
 		// Write the config file
 		// it's important to do this first so that our site prefs and config file
 		// visible for module and accessory installers
-		if ($this->_write_config_data() == FALSE)
+		if ($this->write_config_data() == FALSE)
 		{
-			$this->_set_output('error', array('error' => lang('unwritable_config')));
+			$this->set_output('error', array('error' => lang('unwritable_config')));
 			return FALSE;
 		}
 
@@ -713,9 +711,9 @@ class Wizard extends CI_Controller {
 		}
 
 		// Install Modules!
-		if ( ! $this->_install_modules())
+		if ( ! $this->install_modules())
 		{
-			$this->_set_output('error', array('error' => lang('improper_grants')));
+			$this->set_output('error', array('error' => lang('improper_grants')));
 			return FALSE;
 		}
 
@@ -724,9 +722,9 @@ class Wizard extends CI_Controller {
 		// besides the default five, which might affect the Template Access
 		// permissions.
 		if ($this->userdata['install_default_theme'] == 'y'
-			&& ! $this->_install_site_theme())
+			&& ! $this->install_site_theme())
 		{
-			$this->_set_output('error', array('error' => lang('improper_grants')));
+			$this->set_output('error', array('error' => lang('improper_grants')));
 			return FALSE;
 		}
 
@@ -762,7 +760,7 @@ class Wizard extends CI_Controller {
 		$template_variables['success_note'] = sprintf(lang($type.'_success_note'), $this->version);
 		$template_variables['action'] = $this->userdata['cp_url'];
 		$template_variables['method'] = 'get';
-		$this->_set_output('success', $template_variables);
+		$this->set_output('success', $template_variables);
 	}
 
 	// --------------------------------------------------------------------
@@ -771,7 +769,7 @@ class Wizard extends CI_Controller {
 	 * Assigns the values submitted in the settings form
 	 * @return void
 	 */
-	function _assign_install_values()
+	private function assign_install_values()
 	{
 		// Set the path to the site and CP
 		$host = 'http://';
@@ -877,7 +875,7 @@ class Wizard extends CI_Controller {
 	 * Perform the update
 	 * @return void
 	 */
-	function _do_update()
+	private function do_update()
 	{
 		$this->load->library('javascript');
 
@@ -897,8 +895,8 @@ class Wizard extends CI_Controller {
 			// End URL
 			$this->refresh = TRUE;
 			$this->refresh_url = $this->set_qstr('do_update&agree=yes');
-			return $this->_set_output(
 			$this->title = sprintf(lang('updating_title'), $this->installed_version, $this->version);
+			return $this->set_output(
 				'update_msg',
 				array(
 					'remaining_updates' => $this->remaining_updates,
@@ -928,7 +926,7 @@ class Wizard extends CI_Controller {
 
 			if ( ! method_exists($UD, $method))
 			{
-				$this->_set_output('error', array('error' => str_replace('%x', htmlentities($method), lang('update_step_error'))));
+				$this->set_output('error', array('error' => str_replace('%x', htmlentities($method), lang('update_step_error'))));
 				return FALSE;
 			}
 		}
@@ -963,7 +961,7 @@ class Wizard extends CI_Controller {
 					$data['anonymous_server_data'][$key] = $val;
 				}
 
-				$this->_set_output('surveys/survey_'.$this->next_update, $data);
+				$this->set_output('surveys/survey_'.$this->next_update, $data);
 				return FALSE;
 			}
 			elseif ($this->input->get_post('participate_in_survey') == 'y')
@@ -988,7 +986,7 @@ class Wizard extends CI_Controller {
 				$error_msg .= "</p>\n\n<ul>\n\t<li>" . implode("</li>\n\t<li>", $UD->errors) . "</li>\n</ul>\n\n<p>";
 			}
 
-			$this->_set_output('error', array('error' => $error_msg));
+			$this->set_output('error', array('error' => $error_msg));
 			return FALSE;
 		}
 
@@ -1000,7 +998,7 @@ class Wizard extends CI_Controller {
 		elseif ($this->remaining_updates == 1)
 		{
 			// If this is the last application update, run the module updater
-			$this->_update_modules();
+			$this->update_modules();
 		}
 
 		// Update the config file
@@ -1017,7 +1015,7 @@ class Wizard extends CI_Controller {
 			// file to the new version
 			if ($this->next_update == 200)
 			{
-				$this->_write_config_from_template();
+				$this->write_config_from_template();
 			}
 
 			$this->config->_update_config(array('app_version' => $this->next_update.$UD->version_suffix), array('ud_next_step' => ''));
@@ -1025,7 +1023,7 @@ class Wizard extends CI_Controller {
 
 		// EE's application settings are now in the config, so we need to make
 		// two on the fly switches for the rest of the wizard to work.
-		$this->_set_base_url();
+		$this->set_base_url();
 		$this->config->set_item('enable_query_strings', TRUE);
 
 		// Set the refresh value
@@ -1046,8 +1044,8 @@ class Wizard extends CI_Controller {
 			'end_url'            => $this->set_qstr('do_update&agree=yes&progress=no&ajax_progress=yes')
 		));
 
-		$this->_set_output(
 		$this->title = sprintf(lang('updating_title'), $this->installed_version, $this->version);
+		$this->set_output(
 			'update_msg',
 			array(
 				'remaining_updates' => $this->remaining_updates,
@@ -1066,7 +1064,7 @@ class Wizard extends CI_Controller {
 	 *                             dots (e.g. 300 or 292)
 	 * @return boolean             TRUE if successful, FALSE if not
 	 */
-	function _fetch_updates($current_version = 0)
+	private function fetch_updates($current_version = 0)
 	{
 		if ( ! $fp = opendir(APPPATH.'updates/'))
 		{
@@ -1117,7 +1115,7 @@ class Wizard extends CI_Controller {
 	 * @param array $db Associative array containing db connection data
 	 * @return boolean  TRUE if successful, FALSE if not
 	 */
-	function _db_connect($db, $create_db = FALSE)
+	private function db_connect($db)
 	{
 		if (count($db) == 0)
 		{
@@ -1133,7 +1131,7 @@ class Wizard extends CI_Controller {
 		ee()->db->db_exception = TRUE;
 
 		try {
-			ee()->db->initialize($create_db);
+			ee()->db->initialize();
 		} catch (Exception $e) {
 			return FALSE;
 		}
@@ -1151,11 +1149,11 @@ class Wizard extends CI_Controller {
 	 *                       directory
 	 * @return string The realized path
 	 */
-	private function _set_path($path = '', $depth = 0)
+	private function set_path($path = '', $depth = 0)
 	{
 		if ( ! is_dir($path) && $depth < 10)
 		{
-			$path = $this->_set_path('../'.$path, ++$depth);
+			$path = $this->set_path('../'.$path, ++$depth);
 		}
 
 		return $path;
@@ -1170,7 +1168,7 @@ class Wizard extends CI_Controller {
 	 * @param array  $template_variables Associative array to pass to view
 	 * @return void
 	 */
-	private function _set_output($view, $template_variables = array())
+	private function set_output($view, $template_variables = array())
 	{
 		ee()->load->library('view');
 
@@ -1232,7 +1230,7 @@ class Wizard extends CI_Controller {
 	 * Set the base URL and index values so our links work properly
 	 * @return void
 	 */
-	private function _set_base_url()
+	private function set_base_url()
 	{
 		// We completely kill the site URL value.  It's now blank.
 		// This enables us to use only the "index.php" part of the URL.
@@ -1253,7 +1251,7 @@ class Wizard extends CI_Controller {
 	 * Create the query string needed for form actions
 	 * @param string  $method The method name for the action
 	 */
-	function set_qstr($method = '', $text = FALSE)
+	private function set_qstr($method = '')
 	{
 		$query_string = 'C=wizard&M='.$method.'&language='.$this->mylang;
 		return site_url($query_string);
@@ -1265,7 +1263,7 @@ class Wizard extends CI_Controller {
 	 * Get a list of supported database types
 	 * @return array Array containing all supported database types
 	 */
-	function _get_supported_dbs()
+	private function get_supported_dbs()
 	{
 		$names = array('mysqli' => 'MySQLi', 'mysql' => 'MySQL');
 
@@ -1292,7 +1290,7 @@ class Wizard extends CI_Controller {
 	 * Install the default site theme
 	 * @return boolean  TRUE if successful, FALSE if not
 	 */
-	function _install_site_theme()
+	function install_site_theme()
 	{
 		// TODO-WB: Rename themes
 		$this->userdata['theme'] = (IS_CORE)
@@ -1589,7 +1587,7 @@ class Wizard extends CI_Controller {
 	 * Install the Modules
 	 * @return boolean  TRUE if successful, FALSE if not
 	 */
-	function _install_modules()
+	private function install_modules()
 	{
 		$this->load->library('layout');
 
@@ -1635,7 +1633,7 @@ class Wizard extends CI_Controller {
 	 * Write the config file
 	 * @return boolean  TRUE if successful, FALSE if not
 	 */
-	function _write_config_data()
+	private function write_config_data()
 	{
 		$captcha_url = rtrim($this->userdata['site_url'], '/').'/';
 		$captcha_url .= 'images/captchas/';
@@ -2046,7 +2044,7 @@ class Wizard extends CI_Controller {
 		}
 
 		// Write the config file data
-		$this->_write_config_from_template($config);
+		$this->write_config_from_template($config);
 
 		return TRUE;
 	}
@@ -2058,7 +2056,7 @@ class Wizard extends CI_Controller {
 	 * @param array $config Config data to write to the config file
 	 * @return boolean  TRUE if successful, FALSE if not
 	 */
-	function _write_config_from_template($config = array())
+	private function write_config_from_template($config = array())
 	{
 		// Grab the existing config file
 		if (count($config) == 0)
@@ -2163,7 +2161,7 @@ class Wizard extends CI_Controller {
 	 * Update modules (first party only)
 	 * @return void
 	 */
-	function _update_modules()
+	private function update_modules()
 	{
 		$this->db->select('module_name, module_version');
 		$query = $this->db->get('modules');
@@ -2218,7 +2216,7 @@ class Wizard extends CI_Controller {
 	 * Get the default channel entry data
 	 * @return string
 	 */
-	function _default_channel_entry()
+	private function default_channel_entry()
 	{
 		return read_file(APPPATH.'language/'.$this->userdata['deft_lang'].'/channel_entry_lang.php');
 	}
