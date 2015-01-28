@@ -78,6 +78,9 @@ $lang['password_no_dollar'] = 'Your MySQL password can not contain a dollar sign
 $lang['update_error'] = 'An unexpected error occurred while performing the update';
 $lang['update_step_error'] = 'An unexpected error occured while performing the update.  Could not find update step: %x';
 $lang['install_detected_msg'] = 'ExpressionEngine appears to already be installed on your database, even though your config and database files are blank. If you are attempting to <strong>UPDATE</strong> ExpressionEngine from a previous version <strong>Do NOT click the button</strong>. Instead, restore your config file first, then run this installation wizard again starting from the first page.';
+$lang['version_warning'] = 'In order to install ExpressionEngine, your server must be running PHP version <mark><b>%s</b></mark> or newer. Your server is current running PHP version: <b>%s</b>. Contact your hosting provider to see if newer software is available for your server.';
+$lang['error_installing'] = 'Error While Installing %s';
+$lang['error_updating'] = 'Error While Updating %s to %s';
 
 // Install/Upgrade Success
 $lang['install_success'] = "ExpressionEngine %s Installed";
@@ -86,11 +89,6 @@ $lang['update_success'] = "ExpressionEngine Updated to %s";
 $lang['update_success_note'] = '<b>Yay!</b> ExpressionEngine is now updated to %s.';
 $lang['success_delete'] = 'Please delete the installer folder/directory from your server before proceeding.';
 $lang['cp_login'] = 'Control Panel login';
-
-// Unsupported Page
-$lang['version_warning'] = 'Error: In order to install ExpressionEngine, your server must be running PHP version %x or newer.';
-$lang['version_running'] = 'Your server is current running PHP version:';
-$lang['switch_hosts'] = 'Contact your hosting provider to see if newer software is available for your server.';
 
 // Surveys
 $lang['opt_in_survey'] = 'Opt-in Survey';

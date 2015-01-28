@@ -295,18 +295,32 @@ class Wizard extends CI_Controller {
 	 */
 	function _preflight()
 	{
-		// If the installed version of PHP is not supported we show the
-		// "unsupported" view file
-		if (is_php($this->minimum_php) == FALSE)
-		{
-			$this->_set_output('unsupported', array('required_ver' => $this->minimum_php));
-			return FALSE;
-		}
-
 		// Is the config file readable?
 		if ( ! include($this->config->config_path))
 		{
 			$this->_set_output('error', array('error' => lang('unreadable_config')));
+			return FALSE;
+		}
+
+		// Determine current version
+		$this->current_version = implode(
+			'.',
+			str_split(ee()->config->item('app_version'))
+		);
+
+		// Check for minimum version of PHP
+		// Comes after including the config because that gives us an idea if
+		// this is a new install or an update
+		if (is_php($this->minimum_php) == FALSE)
+		{
+			$this->is_installed = isset($config);
+			$this->_set_output('error', array(
+				'error' => sprintf(
+					lang('version_warning'),
+					$this->minimum_php,
+					phpversion()
+				)
+			));
 			return FALSE;
 		}
 
@@ -356,44 +370,6 @@ class Wizard extends CI_Controller {
 			// set the image path and theme folder path
 			$this->userdata['image_path'] = $this->image_path;
 			$this->userdata['theme_folder_path'] = $this->root_theme_path;
-
-			// We'll assign any POST values that exist (this will be the case
-			// after the user submits the install form)
-			if (count($_POST) > 0)
-			{
-				foreach ($_POST as $key => $val)
-				{
-					if (get_magic_quotes_gpc())
-					{
-						if (is_array($val))
-						{
-							foreach($val as $k => $v)
-							{
-								$val[$k] = stripslashes($v);
-							}
-						}
-						else
-						{
-							$val = stripslashes($val);
-						}
-					}
-
-					if (isset($this->userdata[$key]))
-					{
-						if (is_array($this->userdata[$key]))
-						{
-							foreach ($this->userdata[$key] as $k => $v)
-							{
-								$this->userdata[$key][$k] = trim($v);
-							}
-						}
-						else
-						{
-							$this->userdata[$key] = trim($val);
-						}
-					}
-				}
-			}
 
 			// We'll switch the default if MySQLi is available
 			if (function_exists('mysqli_connect'))
@@ -515,10 +491,6 @@ class Wizard extends CI_Controller {
 
 		// Set the flag
 		$this->is_installed = TRUE;
-		$this->current_version = implode(
-			'.',
-			str_split(ee()->config->item('app_version'))
-		);
 
 		// Onward!
 		return TRUE;
@@ -1252,6 +1224,14 @@ class Wizard extends CI_Controller {
 				'ExpressionEngine Core',
 				$this->title
 			);
+		}
+
+		// If we're dealing with an error, change the title to indicate that
+		if ($view == "error")
+		{
+			$this->title = ($this->is_installed)
+				? sprintf(lang('error_updating'), $this->current_version, $this->version)
+				: sprintf(lang('error_installing'), $this->version);
 		}
 
 		$version = explode('.', $this->version, 2);
