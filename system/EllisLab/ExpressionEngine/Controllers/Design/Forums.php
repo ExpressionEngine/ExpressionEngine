@@ -55,7 +55,7 @@ class Forums extends Design {
 
 	public function index($theme = 'default')
 	{
-		$base_path = PATH_THEMES . '/forum_themes/' . ee()->security->sanitize_filename($theme);
+		$base_path = PATH_ADDONS_THEMES . '/forum_themes/' . ee()->security->sanitize_filename($theme);
 
 		if ( ! is_dir($base_path))
 		{
@@ -110,9 +110,9 @@ class Forums extends Design {
 		ee()->load->model('member_model');
 
 		$themes = array();
-		foreach (directory_map(PATH_THEMES . '/forum_themes/', TRUE) as $dir)
+		foreach (directory_map(PATH_ADDONS_THEMES . '/forum_themes/', TRUE) as $dir)
 		{
-			if (is_dir(PATH_THEMES . '/forum_themes/' . $dir))
+			if (is_dir(PATH_ADDONS_THEMES . '/forum_themes/' . $dir))
 			{
 				$themes[cp_url('design/forums/index/' . $dir)] = ucfirst(str_replace("_", " ", $dir));
 			}
@@ -135,7 +135,7 @@ class Forums extends Design {
 
 	public function edit($theme, $dir, $file)
 	{
-		$path = PATH_THEMES . '/forum_themes/'
+		$path = PATH_ADDONS_THEMES . '/forum_themes/'
 			.ee()->security->sanitize_filename($theme)
 			.'/'
 			.ee()->security->sanitize_filename($dir)
