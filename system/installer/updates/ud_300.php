@@ -217,8 +217,8 @@ class Updater {
 	 */
 	private function _remove_accessories_table()
 	{
-		ee()->dbforge->drop_column('member_groups', 'can_access_accessories');
 		ee()->smartforge->drop_table('accessories');
+		ee()->smartforge->drop_column('member_groups', 'can_access_accessories');
 	}
 
 	/**
@@ -313,8 +313,8 @@ class Updater {
 	 */
 	private function _remove_watermarks_table()
 	{
-		ee()->dbforge->drop_column('file_dimensions', 'watermark_id');
 		ee()->smartforge->drop_table('file_watermarks');
+		ee()->smartforge->drop_column('file_dimensions', 'watermark_id');
 	}
 
 	// -------------------------------------------------------------------
