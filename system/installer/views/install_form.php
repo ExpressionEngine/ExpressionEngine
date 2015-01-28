@@ -63,8 +63,8 @@
 		<em><?=lang('install_default_theme_info')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
-		<label class="choice mr yes"><input name="install_default_theme" value="yes" type="radio"> <?=lang('yes')?></label>
-		<label class="choice chosen no"><input name="install_default_theme" value="no" type="radio" checked="checked"> <?=lang('no')?></label>
+		<label class="choice mr yes"><input name="install_default_theme" value="y" type="radio"> <?=lang('yes')?></label>
+		<label class="choice chosen no"><input name="install_default_theme" value="n" type="radio" checked="checked"> <?=lang('no')?></label>
 	</div>
 </fieldset>
 <h2><?=lang('administrator_account')?></h2>

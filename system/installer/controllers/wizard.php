@@ -1028,7 +1028,7 @@ PAPAYA;
 		// This goes last because a custom installer might create Member Groups
 		// besides the default five, which might affect the Template Access
 		// permissions.
-		if ($this->userdata['install_default_theme'] == 'yes'
+		if ($this->userdata['install_default_theme'] == 'y'
 			&& ! $this->_install_site_theme())
 		{
 			$this->_set_output('error', array('error' => lang('improper_grants')));
