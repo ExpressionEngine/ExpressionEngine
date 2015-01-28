@@ -108,6 +108,15 @@ $lang = array(
 'edit_comment_error_desc' =>
 'We were unable to edit the comment, please review and fix errors below.',
 
+'btn_edit_entry' =>
+'Edit Entry',
+
+'btn_edit_entry_working' =>
+'Saving...',
+
+'edit_entry_with_title' =>
+'Edit Entry: %s',
+
 //----------------------------
 // Publish page
 //----------------------------

@@ -269,6 +269,36 @@ class Edit extends Publish {
 		ee()->cp->render('publish/edit/index', $vars);
 	}
 
+	public function entry($id)
+	{
+		$entry = ee('Model')->get('ChannelEntry', $id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
+
+		if ( ! $entry)
+		{
+			show_error(lang('no_entries_matching_that_criteria'));
+		}
+
+		$form_attributes = array(
+			'class' => 'settings ajax-validate',
+		);
+
+		$vars = array(
+			'entry' => $entry,
+			'form_url' => cp_url('publish/edit/entry/' . $id),
+			'form_attributes' => $form_attributes,
+		);
+
+		ee()->view->cp_breadcrumbs = array(
+			cp_url('publish/edit', array('filter_by_channel' => $entry->channel_id)) => $entry->getChannel()->channel_title,
+		);
+
+		ee()->view->cp_page_title = sprintf(lang('edit_entry_with_title'), $entry->title);
+
+		ee()->cp->render('publish/edit/entry', $vars);
+	}
+
 	private function createCategoryFilter($channel = NULL)
 	{
 		$cat_id = ($channel) ? explode('|', $channel->cat_group) : NULL;
