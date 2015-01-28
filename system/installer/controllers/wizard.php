@@ -1476,7 +1476,7 @@ class Wizard extends CI_Controller {
 			'method'            => 'post'
 		);
 
-		$data = array_merge($template_variables, $data);
+		$data = array_merge($data, $template_variables);
 
 		ee()->load->helper('language');
 		ee()->load->view('container', array_merge(
