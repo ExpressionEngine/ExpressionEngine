@@ -1,0 +1,120 @@
+/**
+ * Override some code mirror styles to better fit ee
+ */
+.cm-s-default {
+	font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+	line-height: 1.5;
+	font-size: 11px;
+}
+
+/* remove brown comments */
+.cm-s-default .cm-comment {
+	color: #AAA;
+}
+
+/* remove purple highlighting */
+.CodeMirror-focused .CodeMirror-selected {
+	background: #c4daff;
+}
+
+.CodeMirror-gutters {
+	background: #F5F6F7;
+}
+
+/**
+ * codemirror/lint.css slightly modified for EE:
+ */
+
+
+ /* The lint marker gutter */
+ .CodeMirror-lint-markers {
+   width: 16px;
+ }
+
+ .CodeMirror-lint-tooltip {
+   background-color: #ffffdf;
+   border: 1px solid #bba;
+   border-radius: 4px;
+   color: #444;
+   font-size: 10pt;
+   overflow: hidden;
+   padding: 4px 4px;
+   position: fixed;
+   white-space: pre;
+   white-space: pre-wrap;
+   z-index: 100;
+   max-width: 600px;
+   opacity: 0;
+   transition: opacity .4s;
+   -moz-transition: opacity .4s;
+   -webkit-transition: opacity .4s;
+   -o-transition: opacity .4s;
+   -ms-transition: opacity .4s;
+ }
+
+ .CodeMirror-lint-mark-error {
+   background-position: left bottom;
+   background-repeat: repeat-x;
+ }
+
+ .CodeMirror-lint-mark-error {
+   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAADAQMAAACOOjyFAAAABlBMVEUAAAD/AAAb/40iAAAAAXRSTlMAQObYZgAAAA5JREFUCNdjYGAwYDAAAADGAGFPM1t+AAAAAElFTkSuQmCC");
+ }
+
+ .CodeMirror-lint-marker-error {
+   background-position: center center;
+   background-repeat: no-repeat;
+   cursor: pointer;
+   display: inline-block;
+   height: 16px;
+   width: 16px;
+   vertical-align: middle;
+   position: relative;
+ }
+
+ .CodeMirror-lint-message-error {
+   padding-left: 18px;
+   background-position: top left;
+   background-repeat: no-repeat;
+ }
+
+ .CodeMirror-lint-marker-error, .CodeMirror-lint-message-error {
+   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAHlBMVEW7AAC7AACxAAC7AAC7AAAAAAC4AAC5AAD///+7AAAUdclpAAAABnRSTlMXnORSiwCK0ZKSAAAATUlEQVR42mWPOQ7AQAgDuQLx/z8csYRmPRIFIwRGnosRrpamvkKi0FTIiMASR3hhKW+hAN6/tIWhu9PDWiTGNEkTtIOucA5Oyr9ckPgAWm0GPBog6v4AAAAASUVORK5CYII=");
+ }
+
+
+/**
+ * Codemirror/dialog.css
+ */
+ .CodeMirror-dialog {
+   position: absolute;
+   left: 0; right: 0;
+   background: white;
+   z-index: 15;
+   padding: .1em .8em;
+   overflow: hidden;
+   color: #333;
+ }
+
+ .CodeMirror-dialog-top {
+   border-bottom: 1px solid #eee;
+   top: 0;
+ }
+
+ .CodeMirror-dialog-bottom {
+   border-top: 1px solid #eee;
+   bottom: 0;
+ }
+
+ .CodeMirror-dialog input {
+   border: none;
+   outline: none;
+   background: transparent;
+   width: 20em;
+   color: inherit;
+   font-family: monospace;
+ }
+
+ .CodeMirror-dialog button {
+   font-size: 70%;
+ }
