@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
+use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Model\FieldDataContentModel;
 
@@ -120,15 +121,27 @@ class ChannelEntry extends FieldDataContentModel {
 		$this->_fields = new Collection($fields);
 	}
 
-	public function getForm()
+	public function getForm($name = NULL)
 	{
-		return array_combine(
+		$fields = array_combine(
 			$this->_fields->getName(),
 			$this->_fields->map(function($field)
 			{
 				return new FieldDisplay($field);
 			})
 		);
+
+		if ($name)
+		{
+			if ( ! isset($fields[$name]))
+			{
+				throw new InvalidArgumentException("No such field: '{$name}' on ".get_called_class());
+			}
+
+			return $fields[$name];
+		}
+
+		return $fields;
 	}
 
 	/**
