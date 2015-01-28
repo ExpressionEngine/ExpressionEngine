@@ -331,7 +331,7 @@ class Updater {
 		$installer_config = ee()->config;
 
 		require_once(APPPATH . 'libraries/Extensions.php');
-		ee()->extensions = new Installer_Extensions();
+		ee()->set('extensions', new Installer_Extensions());
 		ee()->load->model('template_model');
 
 		$sites = ee()->db->select('site_id')
@@ -342,7 +342,9 @@ class Updater {
 		// in the database
 		foreach ($sites as $site)
 		{
-			ee()->config = new MSM_Config();
+			ee()->remove('config');
+			ee()->set('config', new MSM_Config());
+
 			ee()->config->site_prefs('', $site['site_id']);
 
 			if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '') {
@@ -358,7 +360,9 @@ class Updater {
 			}
 
 		}
-		ee()->config = $installer_config;
+
+		ee()->remove('config');
+		ee()->set('config', $installer_config);
 	}
 
 }
