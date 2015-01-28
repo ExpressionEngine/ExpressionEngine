@@ -52,7 +52,7 @@ class Wizard extends CI_Controller {
 	// These are the methods that are allowed to be called via $_GET['m']
 	// for either a new installation or an update. Note that the function names
 	// are prefixed but we don't include the prefix here.
-	public $allowed_methods = array('optionselect', 'install_form',
+	public $allowed_methods = array('install_form',
 	 	'do_install', 'trackback_form', 'do_update');
 
 	// Absolutely, positively must always be installed
@@ -559,31 +559,6 @@ class Wizard extends CI_Controller {
 
 		// Onward!
 		return TRUE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Displays a page where the user is able to chose to install or update
-	 *
-	 * @access	private
-	 * @return	void
-	 */
-	function _optionselect()
-	{
-		$data = array();
-		if ($this->is_installed == FALSE)
-		{
-			$data['link'] = $this->set_qstr('license', lang('click_to_install'));
-		}
-		else
-		{
-			$data['link'] = $this->set_qstr('license', str_replace('%s', $this->version, lang('click_to_update')));
-		}
-
-		$data['is_installed'] = $this->is_installed;
-
-		return $this->_set_output('optionselect', $data);
 	}
 
 	// --------------------------------------------------------------------
