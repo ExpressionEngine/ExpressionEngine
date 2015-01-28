@@ -69,18 +69,7 @@ class ChannelEntry extends FieldDataContentModel {
 	protected $recent_comment_date;
 	protected $comment_total;
 
-	protected $_fields;
-
-	protected function getFieldTypeInfo()
-	{
-		// todo cache/move/ugly!
-		$db = clone ee()->db;
-		$db->_reset_select();
-		$db->from('channel_fields');
-		$db->where('group_id', $this->getChannel()->field_group);
-
-		return new Collection($db->get()->result_object());
-	}
+	protected $_fields = array();
 
 	public function fill($data)
 	{
@@ -95,33 +84,43 @@ class ChannelEntry extends FieldDataContentModel {
 			{
 				$id = $matches[1];
 
-				if (array_key_exists($id, $field_types))
+				$field = new FieldtypeFacade($id, $field_types[$id]);
+				$field->setData($value);
+				$field->setContentId($this->getId());
+
+				if (isset($data['field_ft_'.$id]))
 				{
-					$field = new Field($id, $field_types[$id]);
-					$field->setData($value);
-					$field->setContentId($this->getId());
-
-					if (isset($data['field_ft_'.$id]))
-					{
-						$field->setFormat($data['field_ft_'.$id]);
-					}
-
-					$fields[] = $field;
+					$field->setFormat($data['field_ft_'.$id]);
 				}
+
+				$fields[] = $field;
 			}
 		}
 
 		$this->_fields = new Collection($fields);
 	}
 
-	public function getCustomFields()
+
+	protected function getFieldTypeInfo()
 	{
-		return $this->_fields;
+		// todo cache/move/ugly!
+		$db = clone ee()->db;
+		$db->_reset_select();
+		$db->from('channel_fields');
+		$db->where('group_id', $this->getChannel()->field_group);
+
+		return new Collection($db->get()->result_array());
 	}
 
 	public function getForm()
 	{
-		return $this->_fields->getForm();
+		return array_combine(
+			$this->_fields->getName(),
+			$this->_fields->map(function($field)
+			{
+				return new FieldDisplay($field);
+			})
+		);
 	}
 
 	/**
@@ -150,12 +149,47 @@ class ChannelEntry extends FieldDataContentModel {
 	}
 }
 
-class Field {
+class FieldDisplay {
+
+	protected $field;
+
+	public function __construct($field)
+	{
+		$this->field = $field;
+	}
+
+	public function getName()
+	{
+		return $this->field->getInfo('field_name');
+	}
+
+	public function getLabel()
+	{
+		return $this->field->getInfo('field_label');
+	}
+
+	public function getForm()
+	{
+		return $this->field->getForm();
+	}
+
+	public function getInstructions()
+	{
+		return $this->field->getInfo('instructions');
+	}
+
+	public function isRequired()
+	{
+		return $this->field->getInfo('is_required') == 'y';
+	}
+}
+
+class FieldtypeFacade {
 
 	private $id;
 	private $data;
 	private $format;
-	public $type_info;
+	private $type_info;
 	private $field_name;
 	private $content_id;
 
@@ -164,6 +198,11 @@ class Field {
 		$this->id = $field_id;
 		$this->type_info = $type_info;
 		$this->field_name = 'field_id_'.$field_id;
+	}
+
+	public function getInfo($field)
+	{
+		return $this->type_info[$field];
 	}
 
 	public function getName()
@@ -188,10 +227,6 @@ class Field {
 
 	public function getForm()
 	{
-		$this->setupField();
-
-		$field_output = array();
-
 		$data = $this->setupField();
 
 		if (isset($data['string_override']))
@@ -216,7 +251,7 @@ class Field {
 		$field_data = $this->data;
 		$field_name = $this->getName();
 
-		$info = (array) $this->type_info;
+		$info = $this->type_info;
 
 		$settings = array(
 			'field_instructions'	=> trim($info['field_instructions']),
@@ -240,40 +275,5 @@ class Field {
 		ee()->api_channel_fields->set_settings($info['field_id'], $settings);
 
 		return $settings;
-	}
-}
-
-
-class FieldsCollection {
-
-	protected $data = array();
-	protected $formats = array();
-
-	public function __construct()
-	{
-
-	}
-
-	public function format($id, $value)
-	{
-		$this->formats[$id] = $value;
-	}
-
-	public function data($id, $value)
-	{
-		$this->data[$id] = $value;
-	}
-
-	public function get($id)
-	{
-		return array(
-			$this->data[$id],
-			$this->formats[$id]
-		);
-	}
-
-	public function all()
-	{
-		return array_map(array($this, 'get'), array_keys($this->data));
 	}
 }
