@@ -394,16 +394,6 @@ class Wizard extends CI_Controller {
 		// EXCEPTIONS
 		// We need to deal with a couple possible issues.
 
-		// If the 'app_version' index is not present in the config file we are
-		// dealing with EE public beta version released back in 2004. Crazy as
-		// it sounds there's a chance someone will surface still running it so
-		// we'll write the version to the config file
-		if ( ! isset($config['app_version']))
-		{
-			$this->config->_append_config_1x(array('app_version' => 0));
-			$config['app_version'] = 0;  // Update the $config array
-		}
-
 		// Fixes a bug in the installation script for 2.0.2, where periods were
 		// included
 		$config['app_version'] = str_replace('.', '', $config['app_version']);
@@ -461,22 +451,10 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
-		// If we got this far we know it's an update and all is well in the universe!
-
 		// Assign the config and DB arrays to class variables so we don't have
 		// to reload them.
 		$this->_config = $config;
 		$this->_db = $db;
-
-		// This is what the user is currently running
-		if ($config['app_version'] == 0)
-		{
-			$this->installed_version = 'Public Beta pb01';
-		}
-		else
-		{
-			$this->installed_version = substr($config['app_version'], 0, 1).'.'.substr($config['app_version'], 1, 1).'.'.substr($config['app_version'], 2, 1);
-		}
 
 		// Set the flag
 		$this->is_installed = TRUE;
@@ -820,9 +798,6 @@ class Wizard extends CI_Controller {
 
 		// Set the URL for use in the form action
 		$this->userdata['action'] = $this->set_qstr('do_install');
-
-		// Fetch the modules
-		$this->userdata['modules'] = $this->_fetch_modules();
 
 		$this->userdata['redirect_method']	= (DIRECTORY_SEPARATOR == '/') ? 'redirect' : 'refresh';
 
@@ -1281,84 +1256,7 @@ class Wizard extends CI_Controller {
 	function set_qstr($method = '', $text = FALSE)
 	{
 		$query_string = 'C=wizard&M='.$method.'&language='.$this->mylang;
-
-		if ($text !== FALSE)
-		{
-			return anchor(site_url($query_string), $text);
-		}
-		else
-		{
-			return site_url($query_string);
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Fetch the available optional modules for installation
-	 *
-	 * @access	public
-	 * @return	array
-	 */
-	function _fetch_modules()
-	{
-		$modules = array();
-
-		if ($fp = opendir(EE_APPPATH.'/modules/'))
-		{
-			while (FALSE !== ($file = readdir($fp)))
-			{
-				if (strncmp($file, '_', 1) != 0 && strpos($file, '.') === FALSE && ! in_array($file, $this->required_modules))
-				{
-					$this->lang->load($file, $this->mylang, FALSE, TRUE, EE_APPPATH.'/');
-					$name = (lang(strtolower($file).'_module_name') != FALSE) ? lang(strtolower($file).'_module_name') : $file;
-					$modules[$file] = array('name' => ucfirst($name), 'checked' => FALSE);
-				}
-			}
-
-			closedir($fp);
-		}
-
-
-		$this->load->helper('directory');
-		$ext_len = strlen('.php');
-
-		if (($map = directory_map(PATH_ADDONS)) !== FALSE)
-		{
-			foreach ($map as $pkg_name => $files)
-			{
-				if ( ! is_array($files))
-				{
-					$files = array($files);
-				}
-
-				foreach ($files as $file)
-				{
-					if (is_array($file))
-					{
-						// we're only interested in the top level files for the addon
-						continue;
-					}
-
-					// we gots a module?
-					if (strncasecmp($file, 'mod.', 4) == 0 && substr($file, -$ext_len) == '.php' && strlen($file) > strlen('mod.'.'.php'))
-					{
-						$file = substr($file, 4, -$ext_len);
-
-						if ($file == $pkg_name)
-						{
-							$this->lang->load($file.'_lang', $this->mylang, FALSE, FALSE, PATH_ADDONS.$pkg_name.'/');
-							$name = (lang(strtolower($file).'_module_name') != FALSE) ? lang(strtolower($file).'_module_name') : $file;
-							$modules[$file] = array('name' => ucfirst($name), 'checked' => FALSE);
-						}
-					}
-				}
-			}
-		}
-
-		asort($modules);
-
-		return $modules;
+		return site_url($query_string);
 	}
 
 	// --------------------------------------------------------------------
