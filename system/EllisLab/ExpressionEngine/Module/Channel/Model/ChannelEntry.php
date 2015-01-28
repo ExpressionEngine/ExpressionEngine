@@ -172,6 +172,18 @@ class ChannelEntry extends FieldDataContentModel {
 
 	protected function getDefaultFields()
 	{
+		$statuses = ee('Model')->get('Status')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('group_id', $this->getChannel()->status_group);
+
+		$status_options = array();
+
+		foreach ($statuses->all() as $status)
+		{
+			$status_name = ($status->status == 'closed' OR $status->status == 'open') ?  lang($status->status) : $status->status;
+			$status_options[$status->status] = $status_name;
+		}
+
 		return array(
 			'title' 		=> array(
 				'field_id'				=> 'title',
@@ -235,7 +247,19 @@ class ChannelEntry extends FieldDataContentModel {
 				'field_show_fmt'		=> 'n',
 				'default_offset'		=> $this->getChannel()->comment_expiration * 86400,
 				'selected'				=> 'y',
-			)
+			),
+			'status' 		=> array(
+				'field_id'				=> 'status',
+				'field_label'			=> lang('entry_status'),
+				'field_required'		=> 'n',
+				'field_data'			=> $this->status,
+				'field_show_fmt'		=> 'n',
+				'field_instructions'	=> lang('entry_status_desc'),
+				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'select',
+				'field_list_items'      => $status_options,
+				'field_maxl'			=> 100
+			),
 		);
 	}
 }

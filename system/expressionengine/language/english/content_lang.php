@@ -78,7 +78,7 @@ $lang = array(
 'author_information_desc' =>
 'Information about the author of this comment, non-editable.',
 
-'status_desc' =>
+'comment_status_desc' =>
 'Status of this comment.',
 
 'comment_content' =>
@@ -140,6 +140,12 @@ $lang = array(
 
 'comment_expiration_date_desc' =>
 'Date comments for this entry should no longer be accepted.',
+
+'entry_status' =>
+'Status',
+
+'entry_status_desc' =>
+'Entry status.',
 
 //----------------------------
 // Publish page
