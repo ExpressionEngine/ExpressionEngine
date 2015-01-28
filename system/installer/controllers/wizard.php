@@ -517,11 +517,6 @@ class Wizard extends CI_Controller {
 		// message
 		$vars['errors'] = $errors;
 
-		// Preload server timezone
-		ee()->load->library('localize');
-		$this->userdata['default_site_timezone'] = date_default_timezone_get();
-		$vars['timezone_menu'] = ee()->localize->timezone_menu(date_default_timezone_get(), 'default_site_timezone');
-
 		$vars['action'] = $this->set_qstr('do_install');
 
 		// Display the form and pass the userdata array to it
@@ -1839,7 +1834,7 @@ class Wizard extends CI_Controller {
 			'time_format'               => '12',
 			'include_seconds'           => 'n',
 			'server_offset'             => '',
-			'default_site_timezone'     => $this->userdata['default_site_timezone'],
+			'default_site_timezone'     => date_default_timezone_get(),
 			'mail_protocol'             => 'mail',
 			'smtp_server'               => '',
 			'smtp_username'             => '',

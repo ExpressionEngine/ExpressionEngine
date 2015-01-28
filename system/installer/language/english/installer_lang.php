@@ -23,13 +23,6 @@
 	$lang['password'] = 'Password';
 	$lang['password_note'] = 'Password you want to use to login to the <abbr title="Control Panel">CP</abbr>.';
 
-	// Timezone Selection
-	// TODO-WB: Remove before release.
-	$lang['local_settings'] = 'Localization Settings';
-	$lang['timezone'] = 'Your Timezone';
-	$lang['select_timezone'] = 'Select Timezone';
-	$lang['no_timezones'] = 'No Timezones';
-
 	// Default Theme
 	$lang['default_theme'] = 'Default theme';
 	$lang['install_default_theme'] = 'Install default theme?';
