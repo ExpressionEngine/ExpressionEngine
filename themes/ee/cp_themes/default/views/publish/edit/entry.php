@@ -14,17 +14,31 @@
 	<?=form_open($form_url, $form_attributes, (isset($form_hidden)) ? $form_hidden : array())?>
 		<?php foreach ($layout as $index => $tab): ?>
 		<div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">
-			<?php foreach ($tab['fields'] as $field): ?>
+		<?php
+		foreach ($tab['fields'] as $field):
+			switch ($field->getType())
+			{
+				case 'grid':
+				case 'rte':
+				case 'textarea':
+					$width = "w-16";
+					break;
+
+				default:
+					$width = "w-8";
+					break;
+			}
+		?>
 			<fieldset class="col-group">
-				<div class="setting-txt col w-16">
+				<div class="setting-txt col <?=$width?>">
 					<h3><span class="ico sub-arrow"></span><?=$field->getLabel()?><?php if ($field->isRequired()): ?> <span class="required" title="required field">&#10033;</span><?php endif; ?></h3>
 					<em><?=$field->getInstructions()?></em>
 				</div>
-				<div class="setting-field col w-16 last">
+				<div class="setting-field col <?=$width?> last">
 					<?=$field->getForm()?>
 				</div>
 			</fieldset>
-			<?php endforeach; ?>
+		<?php endforeach; ?>
 		</div>
 		<?php endforeach; ?>
 		<fieldset class="form-ctrls">

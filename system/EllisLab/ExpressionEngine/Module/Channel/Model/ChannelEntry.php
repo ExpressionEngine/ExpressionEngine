@@ -249,6 +249,11 @@ class FieldDisplay {
 		$this->field = $field;
 	}
 
+	public function getType()
+	{
+		return $this->field->getInfo('field_type');
+	}
+
 	public function getName()
 	{
 		return $this->field->getInfo('field_name');
