@@ -43,7 +43,7 @@
 	<?php endif ?>
 	<fieldset class="col-group <?=form_error_class('status_group')?>">
 		<div class="setting-txt col w-8">
-			<h3><?=lang('status_groups')?></h3>
+			<h3><?=ucfirst(strtolower(lang('status_groups')))?></h3>
 			<em><?=lang('status_groups_desc')?></em>
 		</div>
 		<div class="setting-field col w-8 last">
@@ -77,7 +77,7 @@
 	</fieldset>
 	<fieldset class="col-group last <?=form_error_class('cat_group')?>">
 		<div class="setting-txt col w-8">
-			<h3><?=lang('category_groups')?></h3>
+			<h3><?=ucfirst(strtolower(lang('category_groups')))?></h3>
 			<em><?=lang('category_groups_desc')?></em>
 		</div>
 		<div class="setting-field col w-8 last">

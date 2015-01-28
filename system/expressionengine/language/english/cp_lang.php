@@ -589,6 +589,12 @@ $lang = array(
 'none' =>
 'None',
 
+'col_id' =>
+'ID#',
+
+'manage' =>
+'Manage',
+
 //----------------------------
 // confirm removal modal
 //----------------------------

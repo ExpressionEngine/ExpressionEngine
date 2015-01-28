@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
+use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Service\Model\Model as Model;
 use EllisLab\ExpressionEngine\Service\Model\Interfaces\Content\ContentStructure
 	as ContentStructure;
@@ -129,18 +130,42 @@ class Channel extends Model implements ContentStructure {
 	protected $url_title_prefix;
 	protected $live_look_template;
 
+
 	/**
 	 * Display the CP entry form
 	 *
 	 * @param Content $content  An object implementing the Content interface
 	 * @return Array of HTML field elements for the entry / edit form
 	 */
-	public function getPublishForm($content)
+	public function getPublishForm($content = NULL)
 	{
-		$form_elements = array();
-		// populate from custom fields
+		if ( ! isset($content))
+		{
+			$content = $this->getFrontend()->make('ChannelEntry');
+			$content->setChannel($this);
+		}
+		elseif ($content->getChannel()->channel_id != $this->channel_id)
+		{
+			// todo
+			exit('Given channel entry does not belong to this channel.');
+		}
 
-		return $form_elements;
+		return $content->getForm();
+	}
+
+
+	/**
+	 *
+	 */
+	public function getCustomFields()
+	{
+		// todo cache/move/ugly!
+		$db = clone ee()->db;
+		$db->_reset_select();
+		$db->from('channel_fields');
+		$db->where('group_id', $this->field_group);
+
+		return new Collection($db->get()->result_array());
 	}
 
 	/**
@@ -206,28 +231,4 @@ class Channel extends Model implements ContentStructure {
 			}
 		}
 	}
-
-	public function testPrint($depth='')
-	{
-		if ($depth == "\t\t\t")
-		{
-			return;
-		}
-		$primary_key = static::getMetaData('primary_key');
-		$model_name = substr(get_class($this), strrpos(get_class($this), '\\')+1);
-		echo $depth . '=====' . $model_name . ': ' . '(' . $this->{$primary_key} . ') ' . $this->channel_title . ' OBJ(' . spl_object_hash($this) .')' . "=====\n";
-		foreach($this->_related_models as $relationship_name=>$models)
-		{
-			echo $depth . '----Relationship: ' . $relationship_name . "----\n";
-			foreach($models as $model)
-			{
-				$model->testPrint($depth . "\t");
-			}
-			echo $depth . '---- END Relationship: ' . $relationship_name . "----\n";
-		}
-		echo $depth . '===== END ' . $model_name . ': ' . '(' . $this->{$primary_key} . ') ' . $this->channel_title . "=====\n";
-		echo "\n";
-
-	}
-
 }

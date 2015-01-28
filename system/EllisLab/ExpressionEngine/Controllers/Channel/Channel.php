@@ -109,7 +109,7 @@ class Channel extends CP_Controller {
 			array(
 				'channel',
 				'channel_short_name',
-				'channel_manage' => array(
+				'manage' => array(
 					'type'	=> CP\Table::COL_TOOLBAR
 				),
 				array(
@@ -125,8 +125,10 @@ class Channel extends CP_Controller {
 		);
 
 		$channels = ee('Model')->get('Channel')
-			->filter('site_id', ee()->config->item('site_id'))
-			->order($sort_map[$table->sort_col], $table->sort_dir)
+			->filter('site_id', ee()->config->item('site_id'));
+		$total_rows = $channels->all()->count();
+
+		$channels = $channels->order($sort_map[$table->sort_col], $table->sort_dir)
 			->limit(20)
 			->offset(($table->config['page'] - 1) * 20)
 			->all();
@@ -164,7 +166,7 @@ class Channel extends CP_Controller {
 
 		$pagination = new CP\Pagination(
 			$vars['table']['limit'],
-			$vars['table']['total_rows'],
+			$total_rows,
 			$vars['table']['page']
 		);
 		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);

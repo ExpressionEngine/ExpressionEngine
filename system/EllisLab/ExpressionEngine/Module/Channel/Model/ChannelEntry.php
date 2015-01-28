@@ -76,13 +76,18 @@ class ChannelEntry extends FieldDataContentModel {
 		parent::fill($data);
 
 		$fields = array();
-		$field_types = $this->getFieldTypeInfo()->indexBy('field_id');
+		$field_types = $this->getChannel()->getCustomFields()->indexBy('field_id');
 
 		foreach ($data as $key => $value)
 		{
 			if (preg_match('/^field_id_(\d+)$/', $key, $matches))
 			{
 				$id = $matches[1];
+
+				if ( ! array_key_exists($id, $field_types))
+				{
+					continue;
+				}
 
 				$field = new FieldtypeFacade($id, $field_types[$id]);
 				$field->setData($value);
@@ -98,18 +103,6 @@ class ChannelEntry extends FieldDataContentModel {
 		}
 
 		$this->_fields = new Collection($fields);
-	}
-
-
-	protected function getFieldTypeInfo()
-	{
-		// todo cache/move/ugly!
-		$db = clone ee()->db;
-		$db->_reset_select();
-		$db->from('channel_fields');
-		$db->where('group_id', $this->getChannel()->field_group);
-
-		return new Collection($db->get()->result_array());
 	}
 
 	public function getForm()
@@ -175,20 +168,21 @@ class FieldDisplay {
 
 	public function getInstructions()
 	{
-		return $this->field->getInfo('instructions');
+		return $this->field->getInfo('field_instructions');
 	}
 
 	public function isRequired()
 	{
-		return $this->field->getInfo('is_required') == 'y';
+		return $this->field->getInfo('field_required') == 'y';
 	}
 }
 
 class FieldtypeFacade {
 
 	private $id;
-	private $data;
-	private $format;
+	private $data; // field_id_*
+	private $format;  // field_ft_*
+	private $timezone; // field_dt_*
 	private $type_info;
 	private $field_name;
 	private $content_id;
@@ -213,6 +207,11 @@ class FieldtypeFacade {
 	public function setContentId($id)
 	{
 		$this->content_id = $id;
+	}
+
+	public function setTimezone($tz)
+	{
+		$this->timezone = $timezone;
 	}
 
 	public function setData($data)
@@ -246,7 +245,7 @@ class FieldtypeFacade {
 
 	protected function setupField()
 	{
-		$field_dt = ''; // todo!
+		$field_dt = $this->timezone;
 		$field_fmt = $this->format;
 		$field_data = $this->data;
 		$field_name = $this->getName();
