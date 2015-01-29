@@ -35,7 +35,9 @@ class ChannelEntry extends Model {
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'Category',
 			'pivot' => array(
-				'table' => 'categories'
+				'table' => 'category_posts',
+				'left' => 'entry_id',
+				'right' => 'cat_id'
 			)
 		)
 	);
