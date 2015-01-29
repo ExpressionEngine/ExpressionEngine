@@ -214,10 +214,12 @@ class ChannelEntry extends Model {
 		}
 
 		// Get all members assigned to this channel
-		$authors = $this->getChannel()->getAssignedMemberGroups()->getMembers();
-		foreach ((array) $authors as $author)
+		foreach ($this->getChannel()->getAssignedMemberGroups() as $group)
 		{
-			$author_options[$author->member_id] = $author->getMemberName();
+			foreach ($group->getMembers() as $member)
+			{
+				$author_options[$member->member_id] = $member->getMemberName();
+			}
 		}
 
 		return array(
