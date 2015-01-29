@@ -153,6 +153,12 @@ $lang = array(
 'channel_desc' =>
 'Channel this entry should be submitted to.',
 
+'author' =>
+'Author',
+
+'author_desc' =>
+'Member that wrote this entry.',
+
 //----------------------------
 // Publish page
 //----------------------------
@@ -548,9 +554,6 @@ $lang = array(
 'continue_editing' =>
 'Continue Editing',
 
-'entry_status' =>
-'Entry Status',
-
 'status' =>
 'Status',
 
@@ -601,9 +604,6 @@ $lang = array(
 
 'title' =>
 'Title',
-
-'author' =>
-'Author',
 
 'newline_format' =>
 'Formatting:',

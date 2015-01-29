@@ -172,7 +172,7 @@ class ChannelEntry extends FieldDataContentModel {
 
 	protected function getDefaultFields()
 	{
-		// HACK!
+		/* HACK ALERT! @TODO */
 		// Channels
 		$allowed_channel_ids = (ee()->session->userdata['group_id'] == 1) ? NULL : array_keys(ee()->session->userdata['assigned_channels']);
 		$channels = ee('Model')->get('Channel', $allowed_channel_ids)
@@ -186,7 +186,7 @@ class ChannelEntry extends FieldDataContentModel {
 			$channel_filter_options[$channel->channel_id] = $channel->channel_title;
 		}
 
-		//Statuses
+		// Statuses
 		$statuses = ee('Model')->get('Status')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('group_id', $this->getChannel()->status_group);
@@ -197,6 +197,26 @@ class ChannelEntry extends FieldDataContentModel {
 		{
 			$status_name = ($status->status == 'closed' OR $status->status == 'open') ?  lang($status->status) : $status->status;
 			$status_options[$status->status] = $status_name;
+		}
+
+		// Authors
+		$author_options = array();
+
+		// Get all admins
+		$authors = ee('Model')->get('Member')
+			->filter('group_id', 1)
+			->all();
+
+		foreach ($authors as $author)
+		{
+			$author_options[$author->member_id] = $author->getMemberName();
+		}
+
+		// Get all members assigned to this channel
+		$authors = $this->getChannel()->getAssignedMemberGroups()->getMembers();
+		foreach ((array) $authors as $author)
+		{
+			$author_options[$author->member_id] = $author->getMemberName();
 		}
 
 		return array(
@@ -285,6 +305,18 @@ class ChannelEntry extends FieldDataContentModel {
 				'field_text_direction'	=> 'ltr',
 				'field_type'			=> 'select',
 				'field_list_items'      => $status_options,
+				'field_maxl'			=> 100
+			),
+			'author' 		=> array(
+				'field_id'				=> 'author',
+				'field_label'			=> lang('author'),
+				'field_required'		=> 'n',
+				'field_data'			=> $this->status,
+				'field_show_fmt'		=> 'n',
+				'field_instructions'	=> lang('author_desc'),
+				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'select',
+				'field_list_items'      => $author_options,
 				'field_maxl'			=> 100
 			),
 		);
