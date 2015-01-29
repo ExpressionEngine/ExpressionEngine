@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
 use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
-use EllisLab\ExpressionEngine\Model\FieldDataContentModel;
+use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
  * Channel Entry
@@ -16,13 +16,10 @@ use EllisLab\ExpressionEngine\Model\FieldDataContentModel;
  *
  * Related to Channel which defines the structure of this content.
  */
-class ChannelEntry extends FieldDataContentModel {
+class ChannelEntry extends Model {
 
 	protected static $_primary_key = 'entry_id';
 	protected static $_gateway_names = array('ChannelTitleGateway', 'ChannelDataGateway');
-
-	protected static $_field_content_class = 'ChannelFieldContent';
-	protected static $_field_content_gateway = 'ChannelDataGateway';
 
 	protected static $_relationships = array(
 		'Channel' => array(
