@@ -16,6 +16,13 @@ class MemberGroup extends Model {
 		'Members' => array(
 			'type' => 'hasMany',
 			'model' => 'Member'
+		),
+		'AssignedChannels' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'Channel',
+			'pivot' => array(
+				'table' => 'channel_member_groups'
+			)
 		)
 	);
 

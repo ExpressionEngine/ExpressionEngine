@@ -51,6 +51,13 @@ class Channel extends Model implements ContentStructure {
 			'from_key' => 'live_look_template',
 			'to_key' => 'template_id'
 		),
+		'AssignedMemberGroups' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'MemberGroup',
+			'pivot' => array(
+				'table' => 'channel_member_groups'
+			)
+		)
 	);
 
 	protected static $_validation_rules = array(
