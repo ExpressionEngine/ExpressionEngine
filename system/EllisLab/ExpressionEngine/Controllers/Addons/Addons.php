@@ -673,9 +673,9 @@ class Addons extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Display add-on settings
+	 * Display plugin manual/documentation
 	 *
-	 * @param	str	$addon	The name of add-on whose settings to display
+	 * @param	str	$addon	The name of plugin whose manual to display
 	 * @return	void
 	 */
 	public function manual($addon)
