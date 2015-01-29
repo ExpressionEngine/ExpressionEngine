@@ -29,7 +29,6 @@ class UploadSync < ControlPanelPage
 				sizes.push width
 			end
 
-			sleep 0.01
 			i += 1 # Prevent infinite loop
 		end
 
