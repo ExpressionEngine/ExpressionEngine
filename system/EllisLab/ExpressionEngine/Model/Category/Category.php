@@ -49,6 +49,11 @@ class Category extends Model {
 			'type' => 'belongsTo',
 			'model' => 'Category',
 			'from_key' => 'parent_id'
+		),
+		'Children' => array(
+			'type' => 'hasMany',
+			'model' => 'Category',
+			'to_key' => 'parent_id'
 		)
 	);
 
