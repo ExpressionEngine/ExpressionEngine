@@ -19,7 +19,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Interfaces\Content;
 /**
  * ExpressionEngine Content Interface
  *
- * Represents a piece of content in ExpressionEngine (IE a Channel Entry)
+ * Represents a piece of content in ExpressionEngine (e.g. a Channel Entry)
  *
  * @package		ExpressionEngine
  * @subpackage	Model\Content
