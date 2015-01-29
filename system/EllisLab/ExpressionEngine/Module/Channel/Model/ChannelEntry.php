@@ -83,7 +83,7 @@ class ChannelEntry extends FieldDataContentModel {
 		{
 			$field = new FieldtypeFacade($name, $info);
 			$field->setContentId($this->getId());
-			$field->setData($info['field_data']);
+			$field->setData($this->$name);
 			$field->setName($name);
 
 			if (isset($info['field_fmt']))
@@ -224,7 +224,6 @@ class ChannelEntry extends FieldDataContentModel {
 				'field_id'				=> 'title',
 				'field_label'			=> lang('title'),
 				'field_required'		=> 'y',
-				'field_data'			=> $this->title,
 				'field_show_fmt'		=> 'n',
 				'field_instructions'	=> '',
 				'field_text_direction'	=> 'ltr',
@@ -235,7 +234,6 @@ class ChannelEntry extends FieldDataContentModel {
 				'field_id'				=> 'url_title',
 				'field_label'			=> lang('url_title'),
 				'field_required'		=> 'n',
-				'field_data'			=> $this->url_title,
 				'field_fmt'				=> 'xhtml',
 				'field_instructions'	=> lang('url_title_desc'),
 				'field_show_fmt'		=> 'n',
@@ -249,7 +247,6 @@ class ChannelEntry extends FieldDataContentModel {
 				'field_required'		=> 'y',
 				'field_type'			=> 'date',
 				'field_text_direction'	=> 'ltr',
-				'field_data'			=> $this->entry_date ?: '',
 				'field_fmt'				=> 'text',
 				'field_instructions'	=> lang('entry_date_desc'),
 				'field_show_fmt'		=> 'n',
@@ -263,7 +260,6 @@ class ChannelEntry extends FieldDataContentModel {
 				'field_required'		=> 'n',
 				'field_type'			=> 'date',
 				'field_text_direction'	=> 'ltr',
-				'field_data'			=> $this->expiration_date ?: '',
 				'field_fmt'				=> 'text',
 				'field_instructions'	=> lang('expiration_date_desc'),
 				'field_show_fmt'		=> 'n',
@@ -276,7 +272,6 @@ class ChannelEntry extends FieldDataContentModel {
 				'field_required'		=> 'n',
 				'field_type'			=> 'date',
 				'field_text_direction'	=> 'ltr',
-				'field_data'			=> $this->comment_expiration_date ?: '',
 				'field_fmt'				=> 'text',
 				'field_instructions'	=> lang('comment_expiration_date_desc'),
 				'field_show_fmt'		=> 'n',
