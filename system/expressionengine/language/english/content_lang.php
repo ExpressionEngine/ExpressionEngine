@@ -177,6 +177,9 @@ $lang = array(
 'categories_desc' =>
 'Categorize this entry.',
 
+'btn_add_category' =>
+'Add Category',
+
 //----------------------------
 // Publish page
 //----------------------------
