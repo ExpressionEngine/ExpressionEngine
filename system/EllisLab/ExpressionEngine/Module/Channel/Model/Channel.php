@@ -11,7 +11,7 @@ use EllisLab\ExpressionEngine\Service\Model\Interfaces\Content\ContentStructure
 class Channel extends Model implements ContentStructure {
 
 	protected static $_primary_key = 'channel_id';
-	protected static $_gateway_names = array('ChannelGateway');
+	protected static $_table_name = 'channels';
 
 	protected static $_typed_columns = array(
 		'deft_comments'              => 'boolString',
@@ -33,13 +33,21 @@ class Channel extends Model implements ContentStructure {
 	);
 
 	protected static $_relationships = array(
-		'ChannelFieldGroup' => array(
+		'FieldGroup' => array(
 			'type' => 'belongsTo',
+			'model' => 'ChannelFieldGroup',
 			'from_key' => 'field_group',
 			'to_key' => 'group_id'
 		),
-		'ChannelEntries' => array(
+		'CustomFields' => array(
 			'type' => 'hasMany',
+			'model' => 'ChannelFieldStructure',
+			'from_key' => 'field_group',
+			'to_key' => 'group_id'
+		),
+		'Entries' => array(
+			'type' => 'hasMany',
+			'model' => 'ChannelEntries',
 			'model' => 'ChannelEntry'
 		),
 		'ChannelFormSettings' => array(
@@ -158,21 +166,6 @@ class Channel extends Model implements ContentStructure {
 		}
 
 		return $content->getForm();
-	}
-
-
-	/**
-	 *
-	 */
-	public function getCustomFields()
-	{
-		// todo cache/move/ugly!
-		$db = clone ee()->db;
-		$db->_reset_select();
-		$db->from('channel_fields');
-		$db->where('group_id', $this->field_group);
-
-		return new Collection($db->get()->result_array());
 	}
 
 	/**

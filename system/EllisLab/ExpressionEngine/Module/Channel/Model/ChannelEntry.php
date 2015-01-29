@@ -74,7 +74,6 @@ class ChannelEntry extends Model {
 		parent::fill($data);
 
 		$fields = array();
-		$field_types = $this->getChannel()->getCustomFields()->indexBy('field_id');
 
 		foreach ($this->getDefaultFields() as $name => $info)
 		{
@@ -91,6 +90,8 @@ class ChannelEntry extends Model {
 			$fields[] = $field;
 		}
 
+		$field_types = $this->getChannel()->getCustomFields()->indexBy('field_id');
+
 		foreach ($data as $key => $value)
 		{
 			if (preg_match('/^field_id_(\d+)$/', $key, $matches))
@@ -102,7 +103,10 @@ class ChannelEntry extends Model {
 					continue;
 				}
 
-				$field = new FieldtypeFacade($id, $field_types[$id]);
+				$field_info = $field_types[$id];
+				$field_info = $field_info->toArray();
+
+				$field = new FieldtypeFacade($id, $field_info);
 				$field->setData($value);
 				$field->setContentId($this->getId());
 
@@ -388,7 +392,6 @@ class FieldtypeFacade {
 	{
 		$this->id = $field_id;
 		$this->type_info = $type_info;
-
 		$this->setName('field_id_'.$field_id);
 	}
 
