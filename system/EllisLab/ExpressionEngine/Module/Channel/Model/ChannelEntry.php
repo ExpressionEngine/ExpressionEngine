@@ -220,7 +220,7 @@ class ChannelEntry extends FieldDataContentModel {
 		}
 
 		return array(
-			'title' 		=> array(
+			'title' => array(
 				'field_id'				=> 'title',
 				'field_label'			=> lang('title'),
 				'field_required'		=> 'y',
@@ -230,7 +230,7 @@ class ChannelEntry extends FieldDataContentModel {
 				'field_type'			=> 'text',
 				'field_maxl'			=> 100
 			),
-			'url_title'		=> array(
+			'url_title' => array(
 				'field_id'				=> 'url_title',
 				'field_label'			=> lang('url_title'),
 				'field_required'		=> 'n',
@@ -241,7 +241,7 @@ class ChannelEntry extends FieldDataContentModel {
 				'field_type'			=> 'text',
 				'field_maxl'			=> 75
 			),
-			'entry_date'	=> array(
+			'entry_date' => array(
 				'field_id'				=> 'entry_date',
 				'field_label'			=> lang('entry_date'),
 				'field_required'		=> 'y',
@@ -278,8 +278,8 @@ class ChannelEntry extends FieldDataContentModel {
 				'default_offset'		=> $this->getChannel()->comment_expiration * 86400,
 				'selected'				=> 'y',
 			),
-			'channel' 		=> array(
-				'field_id'				=> 'channel',
+			'channel_id' => array(
+				'field_id'				=> 'channel_id',
 				'field_label'			=> lang('channel'),
 				'field_required'		=> 'n',
 				'field_data'			=> $this->channel_id,
@@ -290,7 +290,7 @@ class ChannelEntry extends FieldDataContentModel {
 				'field_list_items'      => $channel_filter_options,
 				'field_maxl'			=> 100
 			),
-			'status' 		=> array(
+			'status' => array(
 				'field_id'				=> 'status',
 				'field_label'			=> lang('entry_status'),
 				'field_required'		=> 'n',
@@ -302,11 +302,10 @@ class ChannelEntry extends FieldDataContentModel {
 				'field_list_items'      => $status_options,
 				'field_maxl'			=> 100
 			),
-			'author' 		=> array(
-				'field_id'				=> 'author',
+			'author_id' => array(
+				'field_id'				=> 'author_id',
 				'field_label'			=> lang('author'),
 				'field_required'		=> 'n',
-				'field_data'			=> $this->status,
 				'field_show_fmt'		=> 'n',
 				'field_instructions'	=> lang('author_desc'),
 				'field_text_direction'	=> 'ltr',
