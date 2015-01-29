@@ -247,6 +247,8 @@ class ChannelEntry extends Model {
 		$category_string_override = '<div class="scroll-wrap pr">';
 		$set_categories = $this->getCategories()->pluck('cat_id');
 
+		// If this doesn't make Pascal angry I need to try harder!
+		// @TODO Make Pascal happy
 		foreach ($categories as $category)
 		{
 			$class = 'choice block';
