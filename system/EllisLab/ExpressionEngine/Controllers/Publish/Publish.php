@@ -93,7 +93,7 @@ class Publish extends CP_Controller {
 
 		$layout[] = array(
 			'name' => 'categories',
-			'fields' => array('category')
+			'fields' => array('categories')
 		);
 
 		$layout[] = array(
