@@ -171,6 +171,12 @@ $lang = array(
 'allow_comments_desc' =>
 'When set to <b>yes</b>, members with permissions will be able to post comments to this entry.',
 
+'categories' =>
+'Categories',
+
+'categories_desc' =>
+'Categorize this entry.',
+
 //----------------------------
 // Publish page
 //----------------------------
@@ -601,9 +607,6 @@ $lang = array(
 
 'category' =>
 'Category',
-
-'categories' =>
-'Categories',
 
 'no_categories' =>
 'No categories have been assigned to this channel.',
