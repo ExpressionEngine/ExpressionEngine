@@ -110,7 +110,7 @@ class Member extends Model {
 
 	public function getMemberName()
 	{
-		return ($this->screen_name == '') ? $this->username : $this->screen_name;
+		return $this->screen_name ?: $this->username;
 	}
 
 }
