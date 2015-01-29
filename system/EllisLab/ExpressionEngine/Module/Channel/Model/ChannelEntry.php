@@ -81,7 +81,14 @@ class ChannelEntry extends Model {
 		{
 			$field = new FieldtypeFacade($name, $info);
 			$field->setContentId($this->getId());
-			$field->setData($this->$name);
+			if (isset($info['field_data']))
+			{
+				$field->setData($info['field_data']);
+			}
+			else
+			{
+				$field->setData($this->$name);
+			}
 			$field->setName($name);
 
 			if (isset($info['field_fmt']))
@@ -224,6 +231,55 @@ class ChannelEntry extends Model {
 			}
 		}
 
+		// Categories
+		$category_group_ids = ee('Model')->get('CategoryGroup', explode('|', $this->getChannel()->cat_group))
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('exclude_group', '!=', 1)
+			->all()
+			->pluck('group_id');
+
+		$categories = ee('Model')->get('Category')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('group_id', 'IN', $category_group_ids)
+			->filter('parent_id', 0)
+			->all();
+
+		$category_string_override = '<div class="scroll-wrap pr">';
+		$set_categories = $this->getCategories()->pluck('cat_id');
+
+		foreach ($categories as $category)
+		{
+			$class = 'choice block';
+			$checked = '';
+			if (in_array($category->cat_id, $set_categories))
+			{
+				$class .= ' chosen';
+				$checked = ' checked="checked"';
+			}
+
+			$category_string_override .= '<label class="' . $class . '">';
+			$category_string_override .= '<input type="checkbox" name="categories[]" vlaue="' . $category->cat_id .'"' . $checked . '>' . $category->cat_name;
+			$category_string_override .= '</label>';
+
+			// Recursion would be much better
+			foreach ($category->getChildren() as $child_category)
+			{
+				$class = 'choice block child';
+				$checked = '';
+				if (in_array($child_category->cat_id, $set_categories))
+				{
+					$class .= ' chosen';
+					$checked = ' checked="checked"';
+				}
+
+				$category_string_override .= '<label class="' . $class . '">';
+				$category_string_override .= '<input type="checkbox" name="categories[]" vlaue="' . $child_category->cat_id .'"' . $checked . '>' . $child_category->cat_name;
+				$category_string_override .= '</label>';
+			}
+		}
+
+		$category_string_override .= '</div>';
+
 		return array(
 			'title' => array(
 				'field_id'				=> 'title',
@@ -338,6 +394,19 @@ class ChannelEntry extends Model {
 				'field_list_items'      => array('y' => lang('yes'), 'n' => lang('no')),
 				'field_maxl'			=> 100
 			),
+			'categories' => array(
+				'field_id'				=> 'categories',
+				'field_label'			=> lang('categories'),
+				'field_required'		=> 'n',
+				'field_show_fmt'		=> 'n',
+				'field_instructions'	=> lang('categories_desc'),
+				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'checkboxes',
+				'string_override' => $category_string_override,
+				'field_list_items'      => '',
+				'field_data'            => '',
+				'field_maxl'			=> 100
+			),
 		);
 	}
 }
@@ -402,6 +471,7 @@ class FieldtypeFacade {
 	public function setName($name)
 	{
 		$this->field_name = $name;
+		$this->type_info['field_name'] = $name;
 	}
 
 	public function setContentId($id)
