@@ -83,7 +83,7 @@ class Publish extends CP_Controller {
 
 		foreach ($entry->getChannel()->getCustomFields() as $info)
 		{
-			$layout[0]['fields'][] = 'field_id_' . $info['field_id'];
+			$layout[0]['fields'][] = 'field_id_' . $info->field_id;
 		}
 
 		$layout[] = array(
