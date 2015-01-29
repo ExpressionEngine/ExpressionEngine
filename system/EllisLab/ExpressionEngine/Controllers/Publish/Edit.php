@@ -62,7 +62,7 @@ class Edit extends Publish {
 		// is we will filter by that id. If not we throw an error.
 		if ($channel_id)
 		{
-			if ($this->isAdmin || in_array($channel_id, $this->assignedChannelIds))
+			if ($this->is_admin || in_array($channel_id, $this->assigned_channel_ids))
 			{
 				$entries->filter('channel_id', $channel_id);
 				$channel = ee('Model')->get('Channel', $channel_id)
@@ -78,14 +78,14 @@ class Edit extends Publish {
 		// need to filter via WHERE IN
 		else
 		{
-			if ( ! $this->isAdmin)
+			if ( ! $this->is_admin)
 			{
-				if (empty($this->assignedChannelIds))
+				if (empty($this->assigned_channel_ids))
 				{
 					show_error(lang('no_channels'));
 				}
 
-				$entries->filter('channel_id', 'IN', $this->assignedChannelIds);
+				$entries->filter('channel_id', 'IN', $this->assigned_channel_ids);
 			}
 		}
 
@@ -356,14 +356,14 @@ class Edit extends Publish {
 		$entries = ee('Model')->get('ChannelEntry', $entry_ids)
 			->filter('site_id', ee()->config->item('site_id'));
 
-		if ( ! $this->isAdmin)
+		if ( ! $this->is_admin)
 		{
-			if (empty($this->assignedChannelIds))
+			if (empty($this->assigned_channel_ids))
 			{
 				show_error(lang('no_channels'));
 			}
 
-			$entries->filter('channel_id', 'IN', $this->assignedChannelIds);
+			$entries->filter('channel_id', 'IN', $this->assigned_channel_ids);
 		}
 
 		$entry_names = $entries->all()->pluck('title');
