@@ -9,7 +9,7 @@ use EllisLab\ExpressoinEngine\Model\Interfaces\Field\FieldContent;
 class ChannelFieldStructure extends Model implements FieldStructure {
 
 	protected static $_primary_key = 'field_id';
-	protected static $_gateway_names = array('ChannelFieldGateway');
+	protected static $_table_name = 'channel_fields';
 
 	protected $field_id;
 	protected $site_id;
