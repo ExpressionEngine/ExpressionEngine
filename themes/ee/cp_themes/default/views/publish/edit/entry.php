@@ -14,25 +14,28 @@
 	<?=form_open($form_url, $form_attributes, (isset($form_hidden)) ? $form_hidden : array())?>
 		<?php foreach ($layout as $index => $tab): ?>
 		<div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">
-		<?php
-		foreach ($tab['fields'] as $field):
-			switch ($field->getType())
-			{
-				case 'grid':
-				case 'rte':
-				case 'textarea':
-					$width = "w-16";
-					break;
+		<?php foreach ($tab['fields'] as $field): ?>
+			<?php
+				switch ($field->getType())
+				{
+					case 'grid':
+					case 'rte':
+					case 'textarea':
+						$width = "w-16";
+						break;
 
-				default:
-					$width = "w-8";
-					break;
-			}
-		?>
-			<fieldset class="col-group">
+					default:
+						$width = "w-8";
+						break;
+				}
+			?>
+			<fieldset class="col-group<?php if (end($tab['fields']) == $field) echo' last'?>">
 				<div class="setting-txt col <?=$width?>">
 					<h3><span class="ico sub-arrow"></span><?=$field->getLabel()?><?php if ($field->isRequired()): ?> <span class="required" title="required field">&#10033;</span><?php endif; ?></h3>
 					<em><?=$field->getInstructions()?></em>
+					<?php if ($field->getName() == 'categories'): ?>
+					<p><a class="btn action submit m-link" rel="modal-cats" href="#"><?=lang('btn_add_category')?></a></p>
+					<?php endif; ?>
 				</div>
 				<div class="setting-field col <?=$width?> last">
 					<?=$field->getForm()?>
