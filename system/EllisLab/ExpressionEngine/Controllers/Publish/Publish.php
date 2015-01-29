@@ -97,7 +97,7 @@ class Publish extends CP_Controller {
 
 		$layout[] = array(
 			'name' => 'options',
-			'fields' => array('channel', 'status', 'author', 'sticky', 'allow_comments')
+			'fields' => array('channel_id', 'status', 'author_id', 'sticky', 'allow_comments')
 		);
 
 		foreach ($layout as &$section)
