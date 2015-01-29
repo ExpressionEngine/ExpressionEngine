@@ -313,6 +313,28 @@ class ChannelEntry extends FieldDataContentModel {
 				'field_list_items'      => $author_options,
 				'field_maxl'			=> 100
 			),
+			'sticky' => array(
+				'field_id'				=> 'sticky',
+				'field_label'			=> lang('sticky'),
+				'field_required'		=> 'n',
+				'field_show_fmt'		=> 'n',
+				'field_instructions'	=> lang('sticky_desc'),
+				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'radio',
+				'field_list_items'      => array('y' => lang('yes'), 'n' => lang('no')),
+				'field_maxl'			=> 100
+			),
+			'allow_comments' => array(
+				'field_id'				=> 'allow_comments',
+				'field_label'			=> lang('allow_comments'),
+				'field_required'		=> 'n',
+				'field_show_fmt'		=> 'n',
+				'field_instructions'	=> lang('allow_comments_desc'),
+				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'radio',
+				'field_list_items'      => array('y' => lang('yes'), 'n' => lang('no')),
+				'field_maxl'			=> 100
+			),
 		);
 	}
 }

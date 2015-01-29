@@ -159,6 +159,18 @@ $lang = array(
 'author_desc' =>
 'Member that wrote this entry.',
 
+'sticky' =>
+'Make entry sticky?',
+
+'sticky_desc' =>
+'When set to <b>yes</b>, this entry will be given preference in sorted listings.',
+
+'allow_comments' =>
+'Allow comments?',
+
+'allow_comments_desc' =>
+'When set to <b>yes</b>, members with permissions will be able to post comments to this entry.',
+
 //----------------------------
 // Publish page
 //----------------------------
@@ -571,12 +583,6 @@ $lang = array(
 
 'options' =>
 'Options',
-
-'sticky' =>
-'Make Entry Sticky',
-
-'allow_comments' =>
-'Allow Comments',
 
 'date' =>
 'Date',
