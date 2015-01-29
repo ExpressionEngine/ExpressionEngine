@@ -183,7 +183,7 @@ class Edit extends Publish {
 
 		foreach ($entries->all() as $entry)
 		{
-			$title = $entry->title . '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . $entry->getAuthor()->screen_name . ', ' . lang('in') . ': ' . $entry->getChannel()->channel_title . '</span>';
+			$title = $entry->title . '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . $entry->getAuthor()->getMemberName() . ', ' . lang('in') . ': ' . $entry->getChannel()->channel_title . '</span>';
 
 			if ($entry->comment_total > 1)
 			{
