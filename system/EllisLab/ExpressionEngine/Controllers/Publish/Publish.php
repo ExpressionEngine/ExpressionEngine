@@ -58,6 +58,7 @@ class Publish extends CP_Controller {
 		$allowed_channel_ids = ($this->is_admin) ? NULL : $this->assigned_channel_ids;
 		$channels = ee('Model')->get('Channel', $allowed_channel_ids)
 			->filter('site_id', ee()->config->item('site_id'))
+			->order('channel_title', 'asc')
 			->all();
 
 		$channel_filter_options = array();
