@@ -867,6 +867,7 @@ class Addons extends CP_Controller {
 	 *        'name'		 => 'FooBar',
 	 *        'package'		 => 'foobar',
 	 *        'type'		 => 'fieldtype',
+	 *        'settings_url' => '' (optional)
 	 */
 	private function getFieldtypes($name = NULL)
 	{
@@ -897,6 +898,12 @@ class Addons extends CP_Controller {
 				{
 					$data['update'] = $FT->info['version'];
 				}
+
+				if ($installed[$fieldtype]['has_global_settings'])
+				{
+					$data['settings_url'] = cp_url('addons/settings/' . $fieldtype);
+				}
+
 			}
 
 			if (is_null($name))
