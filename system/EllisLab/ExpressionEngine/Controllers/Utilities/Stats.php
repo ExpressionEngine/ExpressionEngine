@@ -118,6 +118,7 @@ class Stats extends Utilities {
 		ee()->cp->render('utilities/stats', $vars);
 	}
 
+	// @TODO This begs to be done via new Models (or a Service?)
 	public function sync($source = NULL)
 	{
 		$sources = ee()->input->post('selection') ?: array($source);
