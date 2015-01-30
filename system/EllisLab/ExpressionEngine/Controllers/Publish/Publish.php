@@ -106,15 +106,7 @@ class Publish extends CP_Controller {
 			$fields = array();
 			foreach ($section['fields'] as $field_name)
 			{
-				// HACK!
-				if (FALSE && $field_name == 'categories')
-				{
-					$fields[] = $field_name;
-				}
-				else
-				{
-					$fields[] = $entry->getForm($field_name);
-				}
+				$fields[] = $entry->getForm($field_name);
 			}
 			$section['fields'] = $fields;
 		}
