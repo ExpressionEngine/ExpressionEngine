@@ -1199,7 +1199,7 @@ class Addons extends CP_Controller {
 	 * @param	str	$name	The name of module whose settings to display
 	 * @return	str			The rendered settings (with HTML)
 	 */
-	public function getModuleSettings($name, $method = "index")
+	private function getModuleSettings($name, $method = "index")
 	{
 		$addon = ee()->security->sanitize_filename(strtolower($name));
 		$installed = $this->addons->get_installed('modules', TRUE);
