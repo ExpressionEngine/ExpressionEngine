@@ -1202,7 +1202,7 @@ class Addons extends CP_Controller {
 	private function getModuleSettings($name, $method = "index")
 	{
 		$addon = ee()->security->sanitize_filename(strtolower($name));
-		$installed = $this->addons->get_installed('modules', TRUE);
+		$installed = ee()->addons->get_installed('modules', TRUE);
 
 		if (ee()->session->userdata['group_id'] != 1)
 		{
