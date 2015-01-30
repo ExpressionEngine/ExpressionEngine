@@ -78,35 +78,53 @@ class Publish extends CP_Controller {
 		// Default Layout
 		$layout[] = array(
 			'name' => 'publish',
-			'fields' => array('title', 'url_title')
+			'fields' => array(
+				array('title', TRUE),
+				array('url_title', TRUE)
+			)
 		);
 
 		foreach ($entry->getChannel()->getCustomFields() as $info)
 		{
-			$layout[0]['fields'][] = 'field_id_' . $info->field_id;
+			$layout[0]['fields'][] = array('field_id_' . $info->field_id, TRUE);
 		}
 
 		$layout[] = array(
 			'name' => 'date',
-			'fields' => array('entry_date', 'expiration_date', 'comment_expiration_date')
+			'fields' => array(
+				array('entry_date', TRUE),
+				array('expiration_date', TRUE),
+				array('comment_expiration_date', TRUE)
+			)
 		);
 
 		$layout[] = array(
 			'name' => 'categories',
-			'fields' => array('categories')
+			'fields' => array(
+				array('categories', TRUE)
+			)
 		);
 
 		$layout[] = array(
 			'name' => 'options',
-			'fields' => array('channel_id', 'status', 'author_id', 'sticky', 'allow_comments')
+			'fields' => array(
+				array('channel_id', TRUE),
+				array('status', TRUE),
+				array('author_id', TRUE),
+				array('sticky', TRUE),
+				array('allow_comments', TRUE)
+			)
 		);
 
 		foreach ($layout as &$section)
 		{
 			$fields = array();
-			foreach ($section['fields'] as $field_name)
+			foreach ($section['fields'] as list($field_name, $visible))
 			{
-				$fields[] = $entry->getForm($field_name);
+				if ($visible)
+				{
+					$fields[] = $entry->getForm($field_name);
+				}
 			}
 			$section['fields'] = $fields;
 		}
