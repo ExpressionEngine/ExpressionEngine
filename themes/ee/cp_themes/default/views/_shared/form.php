@@ -114,6 +114,10 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 							<?=form_dropdown($field_name, $field['choices'], $value, $required)?>
 						<?php break;
 
+						case 'multi_select': ?>
+							<?=form_dropdown($field_name, $field['choices'], $value, $required . ' multiple="multiple"')?>
+						<?php break;
+
 						case 'checkbox': ?>
 							<div class="scroll-wrap">
 								<?php foreach ($field['choices'] as $key => $label):
