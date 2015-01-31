@@ -45,7 +45,7 @@ class BelongsTo extends Relation {
 	{
 		list($from, $to) = $this->getKeys();
 
-		$source->$from = $source->$to;
+		$source->$from = $target->$to;
 	}
 
 	/**
