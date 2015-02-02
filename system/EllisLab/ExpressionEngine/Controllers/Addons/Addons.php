@@ -948,7 +948,7 @@ class Addons extends CP_Controller {
 					$data['update'] = $FT->info['version'];
 				}
 
-				if ($installed[$fieldtype]['has_global_settings'])
+				if ($installed[$fieldtype]['has_global_settings'] == 'y')
 				{
 					$data['settings'] = unserialize(base64_decode($installed[$fieldtype]['settings']));
 					$data['settings_url'] = cp_url('addons/settings/' . $fieldtype);
