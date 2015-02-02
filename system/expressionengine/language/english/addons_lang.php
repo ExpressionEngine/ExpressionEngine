@@ -52,6 +52,13 @@ $lang = array(
 'settings_saved'			    =>		'Settings Saved',
 'settings_saved_desc'		    =>		'The settings for %s have been saved.',
 
+// Google Maps Keys
+'default_map'					=>		'Default Map',
+'manual_override'				=>		'Manual Override',
+'latitude'						=>		'Latitude',
+'longitude'						=>		'Longitude',
+'zoom'							=>		'Zoom',
+
 // 2.x
 
 'modules'						=>		'Modules',
