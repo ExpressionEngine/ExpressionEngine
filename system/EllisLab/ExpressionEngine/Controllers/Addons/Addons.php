@@ -1404,20 +1404,6 @@ class Addons extends CP_Controller {
 					);
 					break;
 
-				case 'ms':
-					// Select fields
-					foreach ($options[1] as $k => $v)
-					{
-						$choices[$k] = lang($v);
-					}
-
-					$element['fields'][$key] = array(
-						'type' => 'multi_select',
-						'value' => $value,
-						'choices' => $choices
-					);
-					break;
-
 				case 'r':
 					// Radio buttons
 					foreach ($options[1] as $k => $v)
@@ -1432,8 +1418,9 @@ class Addons extends CP_Controller {
 					);
 					break;
 
+				case 'ms':
 				case 'c':
-					// Checkboxes
+					// Multi-select & Checkboxes
 					foreach ($options[1] as $k => $v)
 					{
 						$choices[$k] = lang($v);
