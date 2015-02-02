@@ -47,7 +47,7 @@ $lang = array(
 'channel_short_name' =>
 'Short name',
 
-'custom_fields' => 
+'custom_fields' =>
 'Custom Fields',
 
 'field_groups' =>
@@ -70,6 +70,15 @@ $lang = array(
 
 'channels_removed_desc' =>
 '%d channels were removed.',
+
+'edit' =>
+'edit',
+
+'settings' =>
+'settings',
+
+'layout' =>
+'layout',
 
 /**
  * Channel Create/Edit
