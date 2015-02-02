@@ -1580,11 +1580,16 @@ class Addons extends CP_Controller {
 		}
 		else
 		{
-			$html = form_open(cp_url('addons/settings/' . $fieldtype['package'] . '/save'));
+			$html = '<div class="box">';
+			$html .= '<h1>' . $fieldtype['name'] . ' ' . lang('configuration') . '</h1>';
+			$html .= form_open(cp_url('addons/settings/' . $fieldtype['package'] . '/save'), 'class="settings"');
 			$html .= ee('Alert')->get('shared-form');
 			$html .= $fieldtype_settings;
+			$html .= '<fieldset class="form-ctrls">';
 			$html .= cp_form_submit('btn_save_settings', 'btn_save_settings_working');
+			$html .= '</fieldset>';
 			$html .= form_close();
+			$html .= '</div>';
 
 			return $html;
 		}
