@@ -34,7 +34,7 @@ class Tokenizer {
 	 * @access public
 	 * @return void
 	 */
-	public function __construct($ngram = 1, $pattern = NULL)
+	public function __construct($ngram = 1, $pattern = "\s")
 	{
 		$this->ngram = $ngram;
 		$this->pattern = $pattern;
@@ -44,7 +44,7 @@ class Tokenizer {
 	{
 		if ( ! empty($this->pattern))
 		{
-			$tokens = preg_split("/$pattern/i", $string);
+			$tokens = preg_split("/{$this->pattern}/i", $string);
 		}
 		else
 		{
@@ -69,12 +69,11 @@ class Tokenizer {
 		 
 		for ($i = 0; $i + $n <= $length; $i++)
 		{
-			$ngrams[$i] = implode('', array_slice($i, $n));
+			$ngrams[$i] = implode('', array_slice($tokens, $i, $n));
 		}
 
 		return $ngrams;
 	}
-
 
 }
 
