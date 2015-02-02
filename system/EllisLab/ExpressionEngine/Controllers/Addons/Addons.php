@@ -642,6 +642,7 @@ class Addons extends CP_Controller {
 			$method = (ee()->input->get_post('method') !== FALSE) ? ee()->input->get_post('method') : 'index';
 		}
 
+		// Module
 		$module = $this->getModules($addon);
 		if ( ! empty($module) && $module['installed'] === TRUE)
 		{
@@ -661,17 +662,34 @@ class Addons extends CP_Controller {
 		}
 		else
 		{
-			if ($method == 'save')
+			// Fieldtype
+			$fieldtype = $this->getFieldtypes($addon);
+			if ( ! empty($fieldtype) && $fieldtype['installed'] === TRUE)
 			{
-				$this->saveExtensionSettings($addon);
-				ee()->functions->redirect(cp_url('addons/settings/' . $addon));
-			}
+				if ($method == 'save')
+				{
+					$this->saveFieldtypeSettings($fieldtype);
+					ee()->functions->redirect(cp_url('addons/settings/' . $addon));
+				}
 
-			$extension = $this->getExtensions($addon, $method);
-			if ( ! empty($extension) && $extension['installed'] === TRUE)
+				$vars['_module_cp_body'] = $this->getFieldtypeSettings($fieldtype);
+				ee()->view->cp_heading = $fieldtype['name'] . ' ' . lang('configuration');
+			}
+			else
 			{
-				$vars['_module_cp_body'] = $this->getExtensionSettings($addon, $method);
-				ee()->view->cp_heading = $extension['name'] . ' ' . lang('configuration');
+				// Extension
+				$extension = $this->getExtensions($addon);
+				if ( ! empty($extension) && $extension['installed'] === TRUE)
+				{
+					if ($method == 'save')
+					{
+						$this->saveExtensionSettings($addon);
+						ee()->functions->redirect(cp_url('addons/settings/' . $addon));
+					}
+
+					$vars['_module_cp_body'] = $this->getExtensionSettings($addon);
+					ee()->view->cp_heading = $extension['name'] . ' ' . lang('configuration');
+				}
 			}
 		}
 
@@ -892,6 +910,7 @@ class Addons extends CP_Controller {
 	 *        'name'		 => 'FooBar',
 	 *        'package'		 => 'foobar',
 	 *        'type'		 => 'fieldtype',
+	 *        'settings'     => array(),
 	 *        'settings_url' => '' (optional)
 	 */
 	private function getFieldtypes($name = NULL)
@@ -931,6 +950,7 @@ class Addons extends CP_Controller {
 
 				if ($installed[$fieldtype]['has_global_settings'])
 				{
+					$data['settings'] = unserialize(base64_decode($installed[$fieldtype]['settings']));
 					$data['settings_url'] = cp_url('addons/settings/' . $fieldtype);
 				}
 
@@ -1295,7 +1315,7 @@ class Addons extends CP_Controller {
 		return $_module_cp_body;
 	}
 
-	private function getExtensionSettings($name, $method)
+	private function getExtensionSettings($name)
 	{
 		if (ee()->config->item('allow_extensions') != 'y')
 		{
@@ -1457,7 +1477,7 @@ class Addons extends CP_Controller {
 		return ee('View')->make('_shared/form')->render($vars);
 	}
 
-	private function saveExtensionSettings($name, $method)
+	private function saveExtensionSettings($name)
 	{
 		if (ee()->config->item('allow_extensions') != 'y')
 		{
@@ -1534,7 +1554,64 @@ class Addons extends CP_Controller {
 			->defer();
 	}
 
-	// --------------------------------------------------------------------
+	private function getFieldtypeSettings($fieldtype)
+	{
+		if ( ! ee()->cp->allowed_group('can_access_addons', 'can_access_fieldtypes'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$FT = ee()->api_channel_fields->setup_handler($fieldtype['package'], TRUE);
+
+		$FT->settings = $fieldtype['settings'];
+
+		$fieldtype_settings = ee()->api_channel_fields->apply('display_global_settings');
+
+		if (is_array($fieldtype_settings))
+		{
+			$vars = array(
+				'base_url' => cp_url('addons/settings/' . $fieldtype['package'] . '/save'),
+				'cp_page_title' => $fieldtype['name'] . ' ' . lang('configuration'),
+				'save_btn_text' => 'btn_save_settings',
+				'save_btn_text_working' => 'btn_save_settings_working',
+				'sections' => array(array($fieldtype_settings))
+			);
+			return ee('View')->make('_shared/form')->render($vars);
+		}
+		else
+		{
+			$html = form_open(cp_url('addons/settings/' . $fieldtype['package'] . '/save'));
+			$html .= ee('Alert')->get('shared-form');
+			$html .= $fieldtype_settings;
+			$html .= cp_form_submit('btn_save_settings', 'btn_save_settings_working');
+			$html .= form_close();
+
+			return $html;
+		}
+
+	}
+
+	private function saveFieldtypeSettings($fieldtype)
+	{
+		if ( ! ee()->cp->allowed_group('can_access_addons', 'can_access_fieldtypes'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$FT = ee()->api_channel_fields->setup_handler($fieldtype['package'], TRUE);
+
+		$FT->settings = $fieldtype['settings'];
+
+		$settings = ee()->api_channel_fields->apply('save_global_settings');
+		$settings = base64_encode(serialize($settings));
+		ee()->db->update('fieldtypes', array('settings' => $settings), array('name' => $fieldtype['package']));
+
+		ee('Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang('settings_saved'))
+			->addToBody(sprintf(lang('settings_saved_desc'), $fieldtype['name']))
+			->defer();
+	}
 
 	/**
 	 * Wraps the major version number in a <b> tag

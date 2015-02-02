@@ -47,6 +47,8 @@ $lang = array(
 'addons_updated'				=>		'Add-Ons Updated',
 'addons_updated_desc'			=>		'The following add-on(s) have been updated: ',
 
+'btn_save_settings'             =>      'Save Settings',
+'btn_save_settings_working'     =>      'Saving...',
 'settings_saved'			    =>		'Settings Saved',
 'settings_saved_desc'		    =>		'The settings for %s have been saved.',
 
