@@ -40,12 +40,11 @@ class Document implements Iterator {
 	 * 
 	 * @access public
 	 * @param mixed   $text The text of the Document we are getting the frequencies for
-	 * @param string  $tokenizer  Tokenize by words or characters
-	 * @param int     $ngram  The n-gram to calculate
+	 * @param string  $tokenizer  Tokenizer object
 	 * @param bool    $clean  Strip all non alpha-numeric characters
 	 * @return void
 	 */
-	public function __construct($text, $tokenizer = 'words', $ngram = 1, $clean = TRUE)
+	public function __construct($text, $tokenizer, $clean = TRUE)
 	{
 		if ($clean === TRUE)
 		{
@@ -54,7 +53,6 @@ class Document implements Iterator {
 
 		$text = trim($text);
 		$this->tokenizer = $tokenizer;
-		$this->ngram = $ngram;
 		$this->text = $text;
 		$this->frequency = $this->_frequency($text);
 		$this->words = array_keys($this->frequency);
@@ -103,23 +101,13 @@ class Document implements Iterator {
 	{
 		$count = array();
 
-		if ($this->tokenizer == 'words')
-		{
-			$words = preg_split('/\s+/', $text);
-		}
-		elseif ($this->tokenizer == 'charcters')
-		{
-			$words = str_split($text);
-		}
-
-		$words = $this->ngrams($words, $this->ngram);
+		$words = $this->tokenizer->tokenize($text);
 
 		$num = count($words);
 		$max = 0;
 
 		foreach ($words as $word)
 		{
-			$words = implode('', $word);
 			$word = strtolower($word);
 
 			if (isset($count[$word]))
