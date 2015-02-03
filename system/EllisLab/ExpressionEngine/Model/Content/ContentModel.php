@@ -2,7 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Model\Content;
 
-use EllisLab\Expressionengine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
  * create: new ChannelEntry()->getForm();
