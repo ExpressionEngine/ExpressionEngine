@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
 use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
-use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Model\Content\ContentModel;
 
 /**
  * Channel Entry
@@ -16,7 +16,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  *
  * Related to Channel which defines the structure of this content.
  */
-class ChannelEntry extends Model {
+class ChannelEntry extends ContentModel {
 
 	protected static $_primary_key = 'entry_id';
 	protected static $_gateway_names = array('ChannelTitleGateway', 'ChannelDataGateway');
@@ -69,100 +69,42 @@ class ChannelEntry extends Model {
 	protected $recent_comment_date;
 	protected $comment_total;
 
-	protected $_fields = array();
-
-	public function fill($data)
-	{
-		parent::fill($data);
-
-		$fields = array();
-
-		foreach ($this->getDefaultFields() as $name => $info)
-		{
-			$field = new FieldtypeFacade($name, $info);
-			$field->setContentId($this->getId());
-			if (isset($info['field_data']))
-			{
-				$field->setData($info['field_data']);
-			}
-			else
-			{
-				$field->setData($this->$name);
-			}
-			$field->setName($name);
-
-			if (isset($info['field_fmt']))
-			{
-				$field->setFormat('field_fmt');
-			}
-
-			$fields[] = $field;
-		}
-
-		$field_types = $this->getChannel()->getCustomFields()->indexBy('field_id');
-
-		foreach ($data as $key => $value)
-		{
-			if (preg_match('/^field_id_(\d+)$/', $key, $matches))
-			{
-				$id = $matches[1];
-
-				if ( ! array_key_exists($id, $field_types))
-				{
-					continue;
-				}
-
-				$field_info = $field_types[$id];
-				$field_info = $field_info->toArray();
-
-				$field = new FieldtypeFacade($id, $field_info);
-				$field->setData($value);
-				$field->setContentId($this->getId());
-
-				if (isset($data['field_ft_'.$id]))
-				{
-					$field->setFormat($data['field_ft_'.$id]);
-				}
-
-				$fields[] = $field;
-			}
-		}
-
-		$this->_fields = new Collection($fields);
-	}
-
-	public function getForm($name = NULL)
-	{
-		$fields = array_combine(
-			$this->_fields->getName(),
-			$this->_fields->map(function($field)
-			{
-				return new FieldDisplay($field);
-			})
-		);
-
-		if ($name)
-		{
-			if ( ! isset($fields[$name]))
-			{
-				throw new InvalidArgumentException("No such field: '{$name}' on ".get_called_class());
-			}
-
-			return $fields[$name];
-		}
-
-		return $fields;
-	}
-
 	/**
 	 * A link back to the owning channel object.
 	 *
 	 * @return	Structure	A link to the Structure objects that defines this
 	 * 						Content's structure.
 	 */
-	public function getContentStructure()
+	public function getStructure()
 	{
 		return $this->getChannel();
+	}
+
+	/**
+	 *
+	 */
+	public function getCustomFieldPrefix()
+	{
+		return 'field_id_';
+	}
+
+
+	protected function fillCustomFields($data)
+	{
+		parent::fillCustomFields($data);
+
+		foreach ($data as $name => $value)
+		{
+			if (strpos($name, 'field_ft_') === 0)
+			{
+				$name = str_replace('field_ft_', 'field_id_', $name);
+
+				if ($this->hasCustomField($name))
+				{
+					$this->getCustomField($name)->setFormat($value);
+				}
+			}
+		}
 	}
 
 	/**
@@ -179,10 +121,10 @@ class ChannelEntry extends Model {
 	{
 	}
 
+	/* HACK ALERT! @TODO */
 
-	protected function getDefaultFields()
+	protected function populateDefaultFields()
 	{
-		/* HACK ALERT! @TODO */
 		// Channels
 		$allowed_channel_ids = (ee()->session->userdata['group_id'] == 1) ? NULL : array_keys(ee()->session->userdata['assigned_channels']);
 		$channels = ee('Model')->get('Channel', $allowed_channel_ids)
@@ -196,6 +138,8 @@ class ChannelEntry extends Model {
 			$channel_filter_options[$channel->channel_id] = $channel->channel_title;
 		}
 
+		$this->getCustomField('channel_id')->setItem('field_list_items', $channel_filter_options);
+
 		// Statuses
 		$statuses = ee('Model')->get('Status')
 			->filter('site_id', ee()->config->item('site_id'))
@@ -208,6 +152,9 @@ class ChannelEntry extends Model {
 			$status_name = ($status->status == 'closed' OR $status->status == 'open') ?  lang($status->status) : $status->status;
 			$status_options[$status->status] = $status_name;
 		}
+
+		$this->getCustomField('status')->setItem('field_list_items', $status_options);
+
 
 		// Authors
 		$author_options = array();
@@ -230,6 +177,8 @@ class ChannelEntry extends Model {
 				$author_options[$member->member_id] = $member->getMemberName();
 			}
 		}
+
+		$this->getCustomField('author_id')->setItem('field_list_items', $author_options);
 
 		// Categories
 		$category_group_ids = ee('Model')->get('CategoryGroup', explode('|', $this->getChannel()->cat_group))
@@ -282,6 +231,18 @@ class ChannelEntry extends Model {
 
 		$category_string_override .= '</div>';
 
+		$this->getCustomField('categories')->setItem('string_override', $category_string_override);
+
+
+		// Comment expiration date
+		$this->getCustomField('comment_expiration_date')->setItem(
+			'default_offset',
+			$this->getChannel()->comment_expiration * 86400
+		);
+	}
+
+	protected function getDefaultFields()
+	{
 		return array(
 			'title' => array(
 				'field_id'				=> 'title',
@@ -338,7 +299,7 @@ class ChannelEntry extends Model {
 				'field_fmt'				=> 'text',
 				'field_instructions'	=> lang('comment_expiration_date_desc'),
 				'field_show_fmt'		=> 'n',
-				'default_offset'		=> $this->getChannel()->comment_expiration * 86400,
+				'default_offset'		=> 0, // @see populateDefaultFields
 				'selected'				=> 'y',
 			),
 			'channel_id' => array(
@@ -349,7 +310,7 @@ class ChannelEntry extends Model {
 				'field_instructions'	=> lang('channel_desc'),
 				'field_text_direction'	=> 'ltr',
 				'field_type'			=> 'select',
-				'field_list_items'      => $channel_filter_options,
+				'field_list_items'      => array(), // @see populateDefaultFields
 				'field_maxl'			=> 100
 			),
 			'status' => array(
@@ -360,7 +321,7 @@ class ChannelEntry extends Model {
 				'field_instructions'	=> lang('entry_status_desc'),
 				'field_text_direction'	=> 'ltr',
 				'field_type'			=> 'select',
-				'field_list_items'      => $status_options,
+				'field_list_items'      => array(), // @see populateDefaultFields
 				'field_maxl'			=> 100
 			),
 			'author_id' => array(
@@ -371,7 +332,7 @@ class ChannelEntry extends Model {
 				'field_instructions'	=> lang('author_desc'),
 				'field_text_direction'	=> 'ltr',
 				'field_type'			=> 'select',
-				'field_list_items'      => $author_options,
+				'field_list_items'      => array(), // @see populateDefaultFields
 				'field_maxl'			=> 100
 			),
 			'sticky' => array(
@@ -404,157 +365,10 @@ class ChannelEntry extends Model {
 				'field_instructions'	=> lang('categories_desc'),
 				'field_text_direction'	=> 'ltr',
 				'field_type'			=> 'checkboxes',
-				'string_override' => $category_string_override,
+				'string_override'		=> '', // @see populateDefaultFields
 				'field_list_items'      => '',
-				'field_data'            => '',
 				'field_maxl'			=> 100
 			),
 		);
-	}
-}
-
-class FieldDisplay {
-
-	protected $field;
-
-	public function __construct($field)
-	{
-		$this->field = $field;
-	}
-
-	public function getType()
-	{
-		return $this->field->getInfo('field_type');
-	}
-
-	public function getName()
-	{
-		return $this->field->getInfo('field_name');
-	}
-
-	public function getLabel()
-	{
-		return $this->field->getInfo('field_label');
-	}
-
-	public function getForm()
-	{
-		return $this->field->getForm();
-	}
-
-	public function getInstructions()
-	{
-		return $this->field->getInfo('field_instructions');
-	}
-
-	public function isRequired()
-	{
-		return $this->field->getInfo('field_required') == 'y';
-	}
-}
-
-class FieldtypeFacade {
-
-	private $id;
-	private $data; // field_id_*
-	private $format;  // field_ft_*
-	private $timezone; // field_dt_*
-	private $type_info;
-	private $field_name;
-	private $content_id;
-
-	public function __construct($field_id, $type_info)
-	{
-		$this->id = $field_id;
-		$this->type_info = $type_info;
-		$this->setName('field_id_'.$field_id);
-	}
-
-	public function setName($name)
-	{
-		$this->field_name = $name;
-		$this->type_info['field_name'] = $name;
-	}
-
-	public function setContentId($id)
-	{
-		$this->content_id = $id;
-	}
-
-	public function setTimezone($tz)
-	{
-		$this->timezone = $timezone;
-	}
-
-	public function setData($data)
-	{
-		$this->data = $data;
-	}
-
-	public function setFormat($format)
-	{
-		$this->format = $format;
-	}
-
-	public function getInfo($field)
-	{
-		return $this->type_info[$field];
-	}
-
-	public function getName()
-	{
-		return $this->field_name;
-	}
-
-	public function getForm()
-	{
-		$data = $this->setupField();
-
-		if (isset($data['string_override']))
-		{
-			return $data['string_override'];
-		}
-
-		ee()->api_channel_fields->setup_handler($data['field_id']);
-		ee()->api_channel_fields->apply('_init', array(array(
-			'content_id' => $this->content_id
-		)));
-
-		$field_value = set_value($this->getName(), $data['field_data']);
-
-		return ee()->api_channel_fields->apply('display_publish_field', array($field_value));
-	}
-
-	protected function setupField()
-	{
-		$field_dt = $this->timezone;
-		$field_fmt = $this->format;
-		$field_data = $this->data;
-		$field_name = $this->getName();
-
-		$info = $this->type_info;
-
-		$settings = array(
-			'field_instructions'	=> trim($info['field_instructions']),
-			'field_text_direction'	=> ($info['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr',
-			'field_fmt'				=> $field_fmt,
-			'field_dt'				=> $field_dt,
-			'field_data'			=> $field_data,
-			'field_name'			=> $field_name
-		);
-
-		$ft_settings = array();
-
-		if (isset($info['field_settings']) && strlen($info['field_settings']))
-		{
-			$ft_settings = unserialize(base64_decode($info['field_settings']));
-		}
-
-		$settings = array_merge($info, $settings, $ft_settings);
-
-		ee()->legacy_api->instantiate('channel_fields');
-		ee()->api_channel_fields->set_settings($info['field_id'], $settings);
-
-		return $settings;
 	}
 }
