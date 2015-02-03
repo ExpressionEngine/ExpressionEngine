@@ -29,7 +29,6 @@ class Tfidf implements Vectorizer {
 
 	public $documents = array();
 	public $vocabulary = array();
-	public $vectorizers = array();
 	public $idf_lookup = array();
 	public $corpus = "";
 	public $limit = 1000;
@@ -40,14 +39,13 @@ class Tfidf implements Vectorizer {
 	 * 
 	 * @access public
 	 * @param array   	 $source 
-	 * @param array   	 $stop_words
 	 * @param Tokenizer  $tokenizer  Tokenizer object used to split string
-	 * @param array 	 $transformations  The transformations to use when 
-	 * 					 				   calculating the vector
+	 * @param array   	 $stop_words
+	 * @param array   	 $limit  Maximum number of features to select
 	 * @param bool    	 $clean  Strip all non alpha-numeric characters
 	 * @return void
 	 */
-	public function __construct($source, $stop_words = array(), $limit = 1000, $tokenizer, $clean = TRUE)
+	public function __construct($source, $tokenizer, $stop_words = array(), $limit = 1000, $clean = TRUE)
 	{
 		$this->tokenizer = $tokenizer;
 		$this->clean = $clean;
@@ -57,6 +55,11 @@ class Tfidf implements Vectorizer {
 		foreach ($stop_words as $key => $word)
 		{
 			$stop_words[$key] = " " . trim($word) . " ";
+		}
+
+		if ( empty($source))
+		{
+			return;
 		}
 
 		foreach ($source as $text)
@@ -88,22 +91,7 @@ class Tfidf implements Vectorizer {
 
 		arsort($this->vocabulary);
 		$this->vocabulary = array_slice($this->vocabulary, 0, $this->limit);
-
-		// Create a lookup table of IDFs for our vocabulary
-		$tfidf_row = array();
-		$vocabulary_index = array();
-
-		$count = count($this->vocabulary);
-		$i = 0;
-		foreach ($this->vocabulary as $term => $freq)
-		{
-			$tfidf_row[$i] = .5 * $this->inverse_document_frequency($term);
-			$vocabulary_index[$term] = $i;
-			$i++;
-		}
-
-		$this->tfidf_row = $tfidf_row;
-		$this->vocabulary_index = $vocabulary_index;
+		$this->generate_lookups();
 	}
 
 	/**
@@ -117,7 +105,7 @@ class Tfidf implements Vectorizer {
 	{
 		$source = str_ireplace($this->stop_words, ' ', $source);
 		$source = new Document($source, $this->tokenizer, $this->clean);
-		return $this->tfidf($source);
+		return $this->_tfidf($source);
 	}
 
 	/**
@@ -198,6 +186,30 @@ class Tfidf implements Vectorizer {
 		return $vector;
 	}
 
+	/**
+	 * Generate lookup tables
+	 * 
+	 * @access public
+	 * @return void
+	 */
+	public function generate_lookups()
+	{
+		$tfidf_row = array();
+		$vocabulary_index = array();
+
+		$count = count($this->vocabulary);
+		$i = 0;
+
+		foreach ($this->vocabulary as $term => $freq)
+		{
+			$tfidf_row[$i] = .5 * $this->inverse_document_frequency($term);
+			$vocabulary_index[$term] = $i;
+			$i++;
+		}
+
+		$this->tfidf_row = $tfidf_row;
+		$this->vocabulary_index = $vocabulary_index;
+	}
 }
 
 /* End of file Tfidf.php */
