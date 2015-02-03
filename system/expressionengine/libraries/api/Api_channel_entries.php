@@ -303,10 +303,9 @@ class Api_channel_entries extends Api {
 	 *
 	 * @access	public
 	 * @param	mixed	An entry ID or array of entry IDs to delete
-	 * @param	string	The type of deletion being performed
 	 * @return	bool
 	 */
-	function delete_entry($entry_ids, $type = 'entry_delete')
+	function delete_entry($entry_ids)
 	{
 		ee()->load->library('api');
 		ee()->load->library('addons');
@@ -442,52 +441,24 @@ class Api_channel_entries extends Api {
 				$ft_to_ids[$field['field_id']][] = $val;
 			}
 
-			// If deleting the member?  No need for these stats
-			if ($type != 'member_delete')
+			// Correct member post count
+			ee()->db->select('total_entries');
+			$mquery = ee()->db->get_where('members', array('member_id' => $authors[$val]));
+			
+			$tot = 0;
+			
+			if ($mquery->num_rows() == 0)
 			{
-				// Correct member post count
-				ee()->db->select('total_entries');
-				$mquery = ee()->db->get_where('members', array('member_id' => $authors[$val]));
-
 				$tot = $mquery->row('total_entries');
+			}
 
-				if ($tot > 0)
-				{
-					$tot -= 1;
-				}
+			if ($tot > 0)
+			{
+				$tot -= 1;
+			}
 
-				ee()->db->where('member_id', $authors[$val]);
-				ee()->db->update('members', array('total_entries' => $tot));
-
-				if ($comments_installed)
-				{
-					ee()->db->where('status', 'o');
-					ee()->db->where('entry_id', $val);
-					ee()->db->where('author_id', $authors[$val]);
-					$count = ee()->db->count_all_results('comments');
-
-					if ($count > 0)
-					{
-						ee()->db->select('total_comments');
-						$mc_query = ee()->db->get_where('members', array('member_id' => $authors[$val]));
-
-						ee()->db->where('member_id', $authors[$val]);
-						ee()->db->update('members', array('total_comments' => ($mc_query->row('total_comments') - $count)));
-					}
-
-					ee()->db->delete('comments', array('entry_id' => $val));
-					ee()->db->delete('comment_subscriptions', array('entry_id' => $val));
-					}
-
-				} // end stats which we do not need if deleting member
-
-			// Delete entries in the channel_entries_autosave table
-			ee()->db->where('original_entry_id', $val)
-						 ->delete('channel_entries_autosave');
-
-			// Delete entries from the versions table
-			ee()->db->where('entry_id', $val)
-						 ->delete('entry_versioning');
+			ee()->db->where('member_id', $authors[$val]);
+			ee()->db->update('members', array('total_entries' => $tot));
 
 
 			// -------------------------------------------
@@ -502,10 +473,29 @@ class Api_channel_entries extends Api {
 
 			$entries[] = $val;
 		}
+		
+		if ($comments_installed)
+		{
+			// Remove comments for deleted entries
+			ee()->db->where_in('entry_id', $entries)
+					 ->delete('comments');
 
+			// Remove comment subscriptions for deleted entries
+			ee()->db->where_in('entry_id', $entries)
+					 ->delete('comment_subscriptions');
+		}
+
+		// Delete entries in the channel_entries_autosave table
+		ee()->db->where_in('original_entry_id', $entries)
+					 ->delete('channel_entries_autosave');
+
+		// Delete entries from the versions table
+		ee()->db->where_in('entry_id', $entries)
+					 ->delete('entry_versioning');
+
+		// Let's run through some stats updates
 		foreach ($channel_ids as $channel_id)
 		{
-			// Update statistics
 			ee()->stats->update_channel_stats($channel_id);
 
 			if ($comments_installed)
@@ -513,6 +503,12 @@ class Api_channel_entries extends Api {
 				ee()->stats->update_comment_stats($channel_id);
 			}
 		}
+		
+		if ($comments_installed)
+		{
+			ee()->stats->update_authors_comment_stats(array_unique($authors));
+		}
+		
 
 		$fts = ee()->api_channel_fields->fetch_custom_channel_fields();
 
