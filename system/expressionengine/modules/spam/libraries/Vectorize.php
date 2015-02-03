@@ -25,14 +25,6 @@
 
 require_once PATH_MOD . 'spam/libraries/Document.php';
 
-// Include our vectorizer rules
-require_once PATH_MOD . 'spam/libraries/vectorizers/ASCII_Printable.php';
-require_once PATH_MOD . 'spam/libraries/vectorizers/Entropy.php';
-require_once PATH_MOD . 'spam/libraries/vectorizers/Links.php';
-require_once PATH_MOD . 'spam/libraries/vectorizers/Punctuation.php';
-require_once PATH_MOD . 'spam/libraries/vectorizers/Spaces.php';
-require_once PATH_MOD . 'spam/libraries/vectorizers/Tfidf.php';
-
 class Collection {
 
 	public $documents = array();
@@ -43,13 +35,11 @@ class Collection {
 	public $limit = 1000;
 	
 	/**
-	 * Get our corpus ready. First we strip out all common words specified in our stop word list,
-	 * then loop through each document and generate a frequency table.
+	 * Register the rules we want to use for vectorizing
 	 * 
 	 * @access public
 	 * @param array 	 $transformations  The transformations to use when 
 	 * 					 				   calculating the vector
-	 * @param bool    	 $clean  Strip all non alpha-numeric characters
 	 * @return void
 	 */
 	public function __construct($transformations = array())
@@ -80,18 +70,6 @@ class Collection {
 		return $result;
 	}
 
-	public function transform($source)
-	{
-		$vector = array();
-
-		foreach ($this->transformations as $transform)
-		{
-			$vector = array_merge($vector, $this->vectorize($source));
-		}
-
-		return $vector;
-	}
-
 	/**
 	 * Computes a vector of feature values suitable for using with Naive Bayes
 	 * 
@@ -99,13 +77,28 @@ class Collection {
 	 * @access public
 	 * @return array An array of floats
 	 */
-	public function vectorize($source)
+	public function transform($source)
 	{
-		$source = str_ireplace($this->stop_words, ' ', $source);
-		$source = new Document($source, $this->tokenizer, $this->clean);
-		return $this->transform($source);
+		$vector = array();
+
+		if ( ! empty($this->vectorizers))
+		{
+			foreach ($this->vectorizers as $transform)
+			{
+				$vectorized = $transform->vectorize($source);
+
+				if ( ! is_array($vectorized))
+				{
+					$vectorized = array($vectorized);
+				}
+
+				$vector = array_merge($vector, $vectorized);
+			}
+		}
+
+		return $vector;
 	}
-	
+
 	/**
 	 * Register a vectorizer rule
 	 * 
