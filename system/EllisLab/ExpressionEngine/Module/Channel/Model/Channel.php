@@ -65,6 +65,9 @@ class Channel extends Model implements ContentStructure {
 			'pivot' => array(
 				'table' => 'channel_member_groups'
 			)
+		),
+		'ChannelLayout' => array(
+			'type' => 'hasMany'
 		)
 	);
 

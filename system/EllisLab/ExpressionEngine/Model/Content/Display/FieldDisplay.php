@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Model\Content;
+namespace EllisLab\ExpressionEngine\Model\Content\Display;
 
 class FieldDisplay {
 
