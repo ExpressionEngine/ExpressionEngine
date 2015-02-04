@@ -14,38 +14,42 @@
 			<?=lang(lang('confirm_import_warning'))?>
 		</div>
 		<table cellspacing="0">
-			<tr>
-				<th class="first"><?=lang('option')?></th>
-				<th class="last"><?=lang('value')?></th>
-			</tr>
-			<tr>
-				<td><?=lang('mbr_xml_file')?></td>
-				<td><?=$xml_file?></td>
-			</tr>
-			<tr class="alt">
-				<td><?=lang('member_group')?></td>
-				<td><?=$default_group_id?></td>
-			</tr>
-			<tr>
-				<td><?=lang('mbr_language')?></td>
-				<td><?=$language?></td>
-			</tr>
-			<tr class="alt">
-				<td><?=lang('mbr_timezone')?></td>
-				<td><?=$timezones?></td>
-			</tr>
-			<tr>
-				<td><?=lang('mbr_datetime_fmt')?></td>
-				<td><?=$date_format?>, <?=$time_format?></td>
-			</tr>
-			<tr>
-				<td><?=lang('include_seconds')?></td>
-				<td><?=$include_seconds?></td>
-			</tr>
-			<tr class="alt last">
-				<td class="first"><?=lang('mbr_create_custom_fields')?></td>
-				<td class="last"><?=$auto_custom_field?></td>
-			</tr>
+			<thead>
+				<tr>
+					<th class="first"><?=lang('option')?></th>
+					<th class="last"><?=lang('value')?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><?=lang('mbr_xml_file')?></td>
+					<td><?=$xml_file?></td>
+				</tr>
+				<tr class="alt">
+					<td><?=lang('member_group')?></td>
+					<td><?=$default_group_id?></td>
+				</tr>
+				<tr>
+					<td><?=lang('mbr_language')?></td>
+					<td><?=$language?></td>
+				</tr>
+				<tr class="alt">
+					<td><?=lang('mbr_timezone')?></td>
+					<td><?=$timezones?></td>
+				</tr>
+				<tr>
+					<td><?=lang('mbr_datetime_fmt')?></td>
+					<td><?=$date_format?>, <?=$time_format?></td>
+				</tr>
+				<tr>
+					<td><?=lang('include_seconds')?></td>
+					<td><?=$include_seconds?></td>
+				</tr>
+				<tr class="alt last">
+					<td class="first"><?=lang('mbr_create_custom_fields')?></td>
+					<td class="last"><?=$auto_custom_field?></td>
+				</tr>
+			</tbody>
 		</table>
 
 		<fieldset class="form-ctrls">
