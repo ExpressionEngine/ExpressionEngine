@@ -114,10 +114,12 @@ class InjectionContainer implements ServiceProvider {
 	{
 		if ($object instanceof Closure)
 		{
-			return $this->register($name, function($di) use ($object)
-				{
-					return $di->singleton($object);
-				});
+			$that = $this;
+
+			return $this->register($name, function($di) use ($object, $that)
+			{
+				return $that->singleton($object);
+			});
 		}
 
 		return $this->register($name, $object);
@@ -194,6 +196,5 @@ class InjectionContainer implements ServiceProvider {
 
 		return $object;
 	}
-
 }
 // EOF
