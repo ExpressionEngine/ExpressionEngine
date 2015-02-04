@@ -919,6 +919,7 @@ class EE_Schema {
 			site_id int(4) UNSIGNED NOT NULL default 1,
 			member_group int(4) UNSIGNED NOT NULL default 0,
 			channel_id int(4) UNSIGNED NOT NULL default 0,
+			layout_name varchar(50) NOT NULL,
 			field_layout text,
 			PRIMARY KEY(`layout_id`),
 			KEY `site_id` (`site_id`),
