@@ -66,8 +66,9 @@ class Channel extends Model implements ContentStructure {
 				'table' => 'channel_member_groups'
 			)
 		),
-		'ChannelLayout' => array(
-			'type' => 'hasMany'
+		'ChannelLayouts' => array(
+			'type' => 'hasMany',
+			'model' => 'ChannelLayout'
 		)
 	);
 
