@@ -15,6 +15,10 @@ EE.sortable_sort_helper = function(e, ui)
 		helperPos	= (axis == 'y') ? ui.position.top : ui.position.left,
 		helperEnd	= helperPos + helperSize;
 
+	// Ensure placeholder is the same height as helper for
+	// calculations to work
+	placeholder.height(ui.helper.outerHeight());
+
 	container.children(':visible').each(function ()
 	{
 		var item = $(this);
