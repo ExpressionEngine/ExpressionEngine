@@ -70,6 +70,7 @@ class Grid {
 
 			ee()->cp->add_js_script('ui', 'sortable');
 			ee()->cp->add_js_script('file', 'cp/sort_helper');
+			ee()->cp->add_js_script('plugin', 'ee_table_reorder');
 			ee()->cp->add_js_script('file', 'cp/grid');
 
 			$assets_loaded = TRUE;
