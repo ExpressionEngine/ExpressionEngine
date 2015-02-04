@@ -25,6 +25,16 @@
  */
 
 require_once PATH_MOD . 'spam/libraries/Spam_training.php';
+require_once PATH_MOD . 'spam/libraries/Source.php';
+
+// Include our vectorizer rules
+require_once PATH_MOD . 'spam/libraries/vectorizers/ASCII_Printable.php';
+require_once PATH_MOD . 'spam/libraries/vectorizers/Entropy.php';
+require_once PATH_MOD . 'spam/libraries/vectorizers/Links.php';
+require_once PATH_MOD . 'spam/libraries/vectorizers/Punctuation.php';
+require_once PATH_MOD . 'spam/libraries/vectorizers/Spaces.php';
+require_once PATH_MOD . 'spam/libraries/vectorizers/Tfidf.php';
+
 
 class Spam_core {
 
@@ -33,7 +43,7 @@ class Spam_core {
 	 */
 	public function __construct()
 	{
-		$this->classifier = $this->load_classifier();
+		$this->classifier = $this->load_default_classifier();
 		$this->member_classifier = $this->load_member_classifier();
 	}
 
@@ -51,6 +61,15 @@ class Spam_core {
 	 */
 	public function member_classify($username, $email, $url, $ip)
 	{
+		// Split IP address with spaces so TFIDF will calculate each octet as a 
+		// separate feature. We're definitely abusing TFIDF here but it should
+		// calculate the frequencies correctly barring any member names that 
+		// overlap with our octets.
+		$ip = str_replace('.', ' ', $ip);
+
+		$text = implode(' ', array($username, $email, $url, $ip));
+		$source = new Source($text);
+
 		return $this->member_classifier->classify($source, 'spam');
 	}
 
@@ -66,6 +85,7 @@ class Spam_core {
 	 */
 	public function classify($source)
 	{
+		$source = new Source($source);
 		return $this->classifier->classify($source, 'spam');
 	}
 
@@ -98,17 +118,58 @@ class Spam_core {
 		ee()->db->insert('spam_trap', $data);
 	}
 
-	public function load_classifier()
+	/**
+	 * load_default_classifier
+	 * 
+	 * @access public
+	 * @return void
+	 */
+	public function load_default_classifier()
 	{
-		// Construct the vectorizers for our default classifier
 		$training = new Spam_training('default');
-		$vocabulary = $training->get_vocabulary();
-		$tfidf = new Tfidf(array());
+		$stop_words = explode("\n", file_get_contents(PATH_MOD . $training->stop_words_path));
+		$tokenizer = new Tokenizer();
+
+		// Prep the the TFIDF vectorizer with the vocabulary we have stored
+		$tfidf = new Tfidf(array(), $tokenizer, $stop_words);
+		$tfidf->vocabulary = $training->get_vocabulary();
+		$tfidf->document_count = $training->get_document_count();
+		$tfidf->generate_lookups();
+
+		$vectorizers = array();
+		$vectorizers[] = $tfidf;
+		$vectorizers[] = new ASCII_Printable();
+		$vectorizers[] = new Entropy();
+		$vectorizers[] = new Links();
+		$vectorizers[] = new Punctuation();
+		$vectorizers[] = new Spaces();
+
+		return $training->load_classifier($vectorizers);
 	}
 
+	/**
+	 * load_member_classifier
+	 * 
+	 * @access public
+	 * @return void
+	 */
 	public function load_member_classifier()
 	{
+		$training = new Spam_training('member');
+		$stop_words = explode("\n", file_get_contents(PATH_MOD . $training->stop_words_path));
+		$tokenizer = new Tokenizer();
 
+		$tfidf = new Tfidf(array(), $tokenizer, $stop_words);
+		$tfidf->vocabulary = $training->get_vocabulary();
+		$tfidf->document_count = $training->get_document_count();
+		$tfidf->generate_lookups();
+
+		$vectorizers = array();
+		$vectorizers[] = $tfidf;
+		$vectorizers[] = new ASCII_Printable();
+		$vectorizers[] = new Punctuation();
+
+		return $training->load_classifier($vectorizers);
 	}
 
 }

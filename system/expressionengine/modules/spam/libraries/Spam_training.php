@@ -84,7 +84,7 @@ class Spam_training {
 	 */
 	public function load_classifier($vectorizers)
 	{
-		$vocabulary = new Collection($vectorizers);
+		$collection = new Collection($vectorizers);
 
 		if (function_exists('shmop_open'))
 		{
@@ -98,7 +98,7 @@ class Spam_training {
 			if ($this->shm_id === FALSE)
 			{
 				// No memory segment, serialize and write classifier from database
-				$classifier = $this->classifier($vocabulary);
+				$classifier = $this->classifier($collection);
 				$data = serialize($classifier);
 				$size = strlen($data);
 				$this->shm_id = shmop_open($id, 'c', 0644, $size);
@@ -115,7 +115,7 @@ class Spam_training {
 		}
 		else
 		{
-			return $this->classifier($vocabulary);
+			return $this->classifier($collection);
 		}
 	}
 
@@ -158,11 +158,11 @@ class Spam_training {
 	/**
 	 * Returns a new classifier based on our training data.
 	 * 
-	 * @param  Vectorizer $vocabulary 
+	 * @param  Vectorizer $collection
 	 * @access public
 	 * @return boolean
 	 */
-	public function classifier($vocabulary)
+	public function classifier($collection)
 	{
 		$stop_words = explode("\n", file_get_contents(PATH_MOD . $this->stop_words_path));
 
@@ -172,7 +172,7 @@ class Spam_training {
 			'ham' => $this->_get_parameters('ham'),
 		);
 
-		return new Classifier($training, $vocabulary, $stop_words);
+		return new Classifier($training, $collection, $stop_words);
 	}
 
 	// --------------------------------------------------------------------
@@ -228,6 +228,26 @@ class Spam_training {
 		}
 
 		return $result;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns the total document count for the current kernel
+	 * 
+	 * @access public
+	 * @return array
+	 */
+	public function get_document_count($kernel = "")
+	{
+		$kernel = $this->_get_kernel($kernel) ?: $this->kernel;
+		ee()->db->select("COUNT(training_id) AS cnt");
+		ee()->db->from("spam_training");
+		ee()->db->where('kernel_id', $kernel);
+		$query = ee()->db->get(); 
+		$row = $query->row();
+
+		return $row->cnt;
 	}
 
 	/**
