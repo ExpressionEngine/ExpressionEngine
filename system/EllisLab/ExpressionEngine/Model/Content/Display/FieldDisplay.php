@@ -18,7 +18,7 @@ class FieldDisplay {
 
 	public function getName()
 	{
-		return $this->field->getItem('field_name');
+		return $this->field->getName();
 	}
 
 	public function getLabel()
