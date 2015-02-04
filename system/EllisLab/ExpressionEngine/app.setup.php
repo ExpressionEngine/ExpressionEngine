@@ -43,6 +43,8 @@ return array(
 		'Model' => function($ee)
 		{
 			$frontend = new Model\Frontend($ee->make('Model.Datastore'));
+			$frontend->setValidationFactory($ee->make('Validation'));
+
 			return $frontend;
 		}
 
