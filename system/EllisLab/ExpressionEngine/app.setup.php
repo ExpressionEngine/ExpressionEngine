@@ -40,6 +40,12 @@ return array(
 			return $filters;
 		},
 
+		'Model' => function($ee)
+		{
+			$frontend = new Model\Frontend($ee->make('Model.Datastore'));
+			return $frontend;
+		}
+
 	),
 
 	'services.singletons' => array(
@@ -69,17 +75,15 @@ return array(
 			return new \EllisLab\ExpressionEngine\Service\Grid\Grid();
 		},
 
-		'Model' => function($ee)
+		'Model.Datastore' => function($ee)
 		{
 			$app = $ee->make('App');
 
-			$datastore = new Model\DataStore(
+			return new Model\DataStore(
 				ee()->db,
 				$app->getModels(),
 				$ee->getPrefix()
 			);
-
-			return new Model\Frontend($datastore);
 		},
 
 		'Request' => function($ee)
