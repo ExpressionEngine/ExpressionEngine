@@ -5,6 +5,7 @@ namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Model\Content\ContentModel;
+use EllisLab\ExpressionEngine\Model\Content\Display\DefaultLayout;
 
 /**
  * Channel Entry
@@ -119,6 +120,27 @@ class ChannelEntry extends ContentModel {
 	 */
 	public function render($template)
 	{
+	}
+
+	// @TODO This is only half-baked
+	public function getLayout($layout = NULL)
+	{
+		$prefix = $this->getCustomFieldPrefix();
+
+		$fields = array();
+
+		foreach ($this->getChannel()->getCustomFields()->pluck('field_id') as $field_id)
+		{
+			$fields[$prefix . $field_id] = $this->getForm($prefix . $field_id);
+		}
+
+		foreach ($this->getDefaultFields() as $field_id => $info)
+		{
+			$fields[$field_id] = $this->getForm($field_id);
+		}
+
+		$layout = $layout ?: new DefaultLayout();
+		return $layout->transform($fields);
 	}
 
 	/* HACK ALERT! @TODO */
