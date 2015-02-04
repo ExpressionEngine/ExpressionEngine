@@ -678,6 +678,10 @@ class Members extends CP_Controller {
 				$name_to_use = ($heir->screen_name != '') ? $heir->screen_name : $heir->username;
 				$vars['heirs'][$heir->member_id] = $name_to_use;
 			}
+			
+			$vars['heir_action_y'] = TRUE;
+			$vars['heir_action_n'] = FALSE;
+			$vars['selected'] = array($vars['heirs'][$heir->member_id][0]);
 		}
 
 		ee()->view->cp_page_title = lang('delete_member');

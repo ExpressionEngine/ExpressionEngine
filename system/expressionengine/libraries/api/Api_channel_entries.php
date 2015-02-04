@@ -447,7 +447,7 @@ class Api_channel_entries extends Api {
 			
 			$tot = 0;
 			
-			if ($mquery->num_rows() == 0)
+			if ($mquery->num_rows() > 0)
 			{
 				$tot = $mquery->row('total_entries');
 			}
