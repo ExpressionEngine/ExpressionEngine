@@ -190,8 +190,8 @@ feature 'Query Form' do
     no_php_js_errors
     results = QueryResults.new
     results.sort_links[0].click # Sort by channel_id descending
-    results.table.find('tr:nth-child(2) td:nth-child(1)').should have_text '2'
-    results.table.find('tr:nth-child(3) td:nth-child(1)').should have_text '1'
+    results.table.find('tbody tr:nth-child(1) td:nth-child(1)').should have_text '2'
+    results.table.find('tbody tr:nth-child(2) td:nth-child(1)').should have_text '1'
   end
 
   it 'should search query results' do
@@ -212,7 +212,7 @@ feature 'Query Form' do
     results.search_field.value.should eq 'the'
     results.should have(0).pages
     results.should have(3).rows # 2 results plus header
-    results.table.find('tr:nth-child(3) td:nth-child(7)').should have_text 'About the Label'
+    results.table.find('tbody tr:nth-child(2) td:nth-child(7)').should have_text 'About the Label'
 
     # Make sure we can still sort and maintain search results
     results.sort_links[0].click
@@ -222,7 +222,7 @@ feature 'Query Form' do
     results.should have(0).pages
     results.should have(3).rows # 2 results plus header
     # This should be in the next row down now
-    results.table.find('tr:nth-child(2) td:nth-child(7)').should have_text 'About the Label'
+    results.table.find('tbody tr:nth-child(1) td:nth-child(7)').should have_text 'About the Label'
   end
 
   it 'should paginate query results' do
@@ -256,12 +256,12 @@ feature 'Query Form' do
     no_php_js_errors
     results = QueryResults.new
     results.sort_links[0].click
-    results.table.find('tr:nth-child(2) td:nth-child(1)').should have_text '31'
+    results.table.find('tbody tr:nth-child(1) td:nth-child(1)').should have_text '31'
 
     no_php_js_errors
     click_link "Next"
 
-    results.table.find('tr:nth-child(2) td:nth-child(1)').should have_text '11'
+    results.table.find('tbody tr:nth-child(1) td:nth-child(1)').should have_text '11'
   end
 
   def show_status

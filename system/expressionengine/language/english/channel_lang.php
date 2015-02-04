@@ -472,6 +472,12 @@ $lang = array(
  * Categories
  */
 
+'categories' =>
+'Categories',
+
+'category' =>
+'Category',
+
 'category_group' =>
 'Category Group',
 

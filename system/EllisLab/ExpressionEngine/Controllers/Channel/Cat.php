@@ -64,7 +64,7 @@ class Cat extends Channel {
 		$cat_groups = ee('Model')->get('CategoryGroup')
 			->filter('site_id', ee()->config->item('site_id'));
 		$total_rows = $cat_groups->all()->count();
-		
+
 		$cat_groups = $cat_groups->order($sort_map[$table->sort_col], $table->sort_dir)
 			->limit(20)
 			->offset(($table->config['page'] - 1) * 20)
@@ -78,7 +78,7 @@ class Cat extends Channel {
 				htmlentities($group->group_name, ENT_QUOTES) . ' ('.count($group->getCategories()).')',
 				array('toolbar_items' => array(
 					'view' => array(
-						'href' => cp_url('channel/cat/list/'.$group->group_id),
+						'href' => cp_url('channel/cat/cat-list/'.$group->group_id),
 						'title' => lang('upload_btn_edit')
 					),
 					'edit' => array(
@@ -156,6 +156,91 @@ class Cat extends Channel {
 		}
 
 		ee()->functions->redirect(cp_url('channel/cat', ee()->cp->get_url_state()));
+	}
+
+	/**
+	 * Category listing
+	 */
+	public function catList($group_id)
+	{
+		$cat_group = ee('Model')->get('CategoryGroup')
+			->filter('group_id', $group_id)
+			->first();
+
+		if ( ! $cat_group)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$categories = $cat_group->getCategories();
+
+		$table = CP\Table::create(array(
+			'reorder' => TRUE,
+			'sortable' => FALSE
+		));
+		$table->setColumns(
+			array(
+				'col_id',
+				'name',
+				'url_title',
+				'manage' => array(
+					'type'	=> CP\Table::COL_TOOLBAR
+				),
+				array(
+					'type'	=> CP\Table::COL_CHECKBOX
+				)
+			)
+		);
+		$table->setNoResultsText(
+			'no_category_groups',
+			'create_category_group',
+			cp_url('channel/cat/new')
+		);
+
+		$data = array();
+		foreach ($categories as $category)
+		{
+			$data[] = array(
+				$category->cat_id,
+				htmlentities($category->cat_name, ENT_QUOTES),
+				htmlentities($category->cat_url_title, ENT_QUOTES),
+				array('toolbar_items' => array(
+					'edit' => array(
+						'href' => cp_url('channel/cat/cat-edit/'.$category->cat_id),
+						'title' => lang('edit')
+					)
+				)),
+				array(
+					'name' => 'categories[]',
+					'value' => $category->cat_id,
+					'data'	=> array(
+						'confirm' => lang('category') . ': <b>' . htmlentities($category->cat_name, ENT_QUOTES) . '</b>'
+					)
+				)
+			);
+		}
+
+		$table->setData($data);
+
+		// Only load reorder JS if there's more than one category
+		if (count($data) > 1)
+		{
+			ee()->cp->add_js_script('file', 'cp/sort_helper');
+			ee()->cp->add_js_script('plugin', 'ee_table_reorder');
+			ee()->cp->add_js_script('file', 'cp/v3/category_reorder');
+		}
+
+		$base_url = new CP\URL('channel/cat', ee()->session->session_id());
+		$vars['table'] = $table->viewData($base_url);
+
+		ee()->view->cp_page_title = $cat_group->group_name . ' &mdash; ' . lang('categories');
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('categories') . ': <b>### ' . lang('categories') . '</b>');
+		ee()->cp->add_js_script('file', 'cp/v3/confirm_remove');
+
+		ee()->cp->set_breadcrumb(cp_url('channel/cat'), lang('category_groups'));
+
+		ee()->cp->render('channel/cat-list', $vars);
 	}
 }
 // EOF

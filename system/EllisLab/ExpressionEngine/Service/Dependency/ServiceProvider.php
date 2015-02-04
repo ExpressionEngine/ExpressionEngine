@@ -32,7 +32,6 @@ interface ServiceProvider {
 	public function register($name, $object);
 	public function bind($name, $object);
 	public function registerSingleton($name, $object);
-	public function singleton(Closure $object);
 	public function make();
 
 }

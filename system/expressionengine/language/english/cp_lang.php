@@ -459,8 +459,6 @@ $lang = array(
 'status'						=> 'Status',
 'select_all'					=> 'Select All',
 
-'name'							=> 'Name',
-
 'by_username'					=> 'by username',
 'by_site'						=> 'by site',
 'by_date'						=> 'by date',
@@ -594,6 +592,12 @@ $lang = array(
 
 'manage' =>
 'Manage',
+
+'name' =>
+'Name',
+
+'url_title' =>
+'URL Title',
 
 //----------------------------
 // confirm removal modal

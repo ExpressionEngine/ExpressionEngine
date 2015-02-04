@@ -17,6 +17,6 @@ class ChannelCreate < ControlPanelPage
 		self.open_dev_menu
 		click_link 'Channel Manager'
 
-		find('tr:nth-child('+(number+1).to_s+') li.edit a').click
+		find('tbody tr:nth-child('+number.to_s+') li.edit a').click
 	end
 end

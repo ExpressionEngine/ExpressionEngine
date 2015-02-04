@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Service\Model\Mixin;
 
 use EllisLab\ExpressionEngine\Library\Mixin\Mixin as MixinInterface;
+use EllisLab\ExpressionEngine\Service\Validation\Validator;
 
 /**
  * ExpressionEngine - by EllisLab

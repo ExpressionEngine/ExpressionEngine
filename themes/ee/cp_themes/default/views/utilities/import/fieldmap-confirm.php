@@ -11,16 +11,20 @@
 			<?php endif ?>
 		</div>
 		<table cellspacing="0">
-			<tr>
-				<th class="first">Your Data</th>
-				<th class="last">New Fields</th>
-			</tr>
-			<?php foreach ($fields[0] as $key => $value): ?>
+			<thead>
 				<tr>
-					<td><?=$value?></td>
-					<td><?=$paired['field_'.$key]?></td>
+					<th class="first">Your Data</th>
+					<th class="last">New Fields</th>
 				</tr>
-			<?php endforeach ?>
+			</thead>
+			<tbody>
+				<?php foreach ($fields[0] as $key => $value): ?>
+					<tr>
+						<td><?=$value?></td>
+						<td><?=$paired['field_'.$key]?></td>
+					</tr>
+				<?php endforeach ?>
+			</tbody>
 		</table>
 
 		<fieldset class="form-ctrls">
