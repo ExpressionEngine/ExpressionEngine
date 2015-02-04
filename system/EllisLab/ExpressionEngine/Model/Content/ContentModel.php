@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Model\Content;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Model\Content\Display\FieldDisplay;
 
 /**
  * create: new ChannelEntry()->getForm();
