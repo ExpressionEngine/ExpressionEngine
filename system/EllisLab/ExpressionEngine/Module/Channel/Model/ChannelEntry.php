@@ -123,7 +123,7 @@ class ChannelEntry extends ContentModel {
 	}
 
 	// @TODO This is only half-baked
-	public function getLayout($layout = NULL)
+	public function getDisplay($layout = NULL)
 	{
 		$prefix = $this->getCustomFieldPrefix();
 

@@ -288,7 +288,7 @@ class Edit extends Publish {
 			'entry' => $entry,
 			'form_url' => cp_url('publish/edit/entry/' . $id),
 			'form_attributes' => $form_attributes,
-			'layout' => $entry->getLayout()
+			'layout' => $entry->getDisplay()
 		);
 
 		ee()->view->cp_breadcrumbs = array(
