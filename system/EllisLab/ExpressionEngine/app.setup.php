@@ -153,6 +153,7 @@ return array(
 			'ChannelFieldStructure' => 'Module\Channel\Model\ChannelFieldStructure',
 			'ChannelEntry' => 'Module\Channel\Model\ChannelEntry',
 			'ChannelFormSettings' => 'Module\Channel\Model\ChannelFormSettings',
+			'ChannelLayout' => 'Module\Channel\Model\ChannelLayout',
 
 			// ..\Comment
 			'Comment' => 'Module\Comment\Model\Comment',
