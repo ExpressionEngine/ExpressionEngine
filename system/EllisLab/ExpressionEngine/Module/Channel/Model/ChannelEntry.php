@@ -122,27 +122,6 @@ class ChannelEntry extends ContentModel {
 	{
 	}
 
-	// @TODO This is only half-baked
-	public function getDisplay($layout = NULL)
-	{
-		$prefix = $this->getCustomFieldPrefix();
-
-		$fields = array();
-
-		foreach ($this->getChannel()->getCustomFields()->pluck('field_id') as $field_id)
-		{
-			$fields[$prefix . $field_id] = $this->getForm($prefix . $field_id);
-		}
-
-		foreach ($this->getDefaultFields() as $field_id => $info)
-		{
-			$fields[$field_id] = $this->getForm($field_id);
-		}
-
-		$layout = $layout ?: new DefaultLayout();
-		return $layout->transform($fields);
-	}
-
 	/* HACK ALERT! @TODO */
 
 	protected function populateDefaultFields()

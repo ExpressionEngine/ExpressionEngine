@@ -39,24 +39,17 @@ abstract class ContentModel extends Model {
 	/**
 	 *
 	 */
-	public function getForm($field_name = NULL)
+	public function getDisplay($layout = NULL)
 	{
 		$this->usesCustomFields();
 
-		if (isset($field_name))
-		{
-			if ($this->hasCustomField($field_name))
-			{
-				return new FieldDisplay($this->getCustomField($field_name));
-			}
-
-			throw new InvalidArgumentException("No such field: '{$field_name}' on ".get_called_class());
-		}
-
-		return array_map(
+		$fields = array_map(
 			function($field) { return new FieldDisplay($field); },
 			$this->_field_facades
 		);
+
+		$layout = $layout ?: new DefaultLayout();
+		return $layout->transform($fields);
 	}
 
 	/**
