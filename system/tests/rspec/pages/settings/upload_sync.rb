@@ -11,7 +11,7 @@ class UploadSync < ControlPanelPage
 			click_link 'Upload Directories'
 		end
 
-		find('tr:nth-child('+(number+1).to_s+') li.sync a').click
+		find('tbody tr:nth-child('+number.to_s+') li.sync a').click
 	end
 
 	# Each time the progress bar changes, logs the percentage value

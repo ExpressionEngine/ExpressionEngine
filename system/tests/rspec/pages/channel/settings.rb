@@ -55,6 +55,6 @@ class ChannelSettings < ControlPanelPage
 		self.open_dev_menu
 		click_link 'Channel Manager'
 
-		find('tr:nth-child('+(number+1).to_s+') li.settings a').click
+		find('tbody tr:nth-child('+number.to_s+') li.settings a').click
 	end
 end
