@@ -6,15 +6,15 @@
 	</h1>
 	<div class="tab-bar">
 		<ul>
-			<?php foreach ($layout as $index => $tab): ?>
-			<li><a<?php if ($index == 0): ?> class="act"<?php endif; ?> href="" rel="t-<?=$index?>"><?=lang($tab['name'])?></a></li>
+			<?php foreach ($layout->getTabs() as $index => $tab): ?>
+			<li><a<?php if ($index == 0): ?> class="act"<?php endif; ?> href="" rel="t-<?=$index?>"><?=lang($tab->title)?></a></li>
 			<?php endforeach; ?>
 		</ul>
 	</div>
 	<?=form_open($form_url, $form_attributes, (isset($form_hidden)) ? $form_hidden : array())?>
-		<?php foreach ($layout as $index => $tab): ?>
+		<?php foreach ($layout->getTabs() as $index => $tab): ?>
 		<div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">
-		<?php foreach ($tab['fields'] as $field): ?>
+		<?php foreach ($tab->getFields() as $field): ?>
 			<?php
 				switch ($field->getType())
 				{
@@ -29,7 +29,7 @@
 						break;
 				}
 			?>
-			<fieldset class="col-group<?php if (end($tab['fields']) == $field) echo' last'?>">
+			<fieldset class="col-group<?php if (end($tab->getFields()) == $field) echo' last'?>">
 				<div class="setting-txt col <?=$width?>">
 					<h3><span class="ico sub-arrow"></span><?=$field->getLabel()?><?php if ($field->isRequired()): ?> <span class="required" title="required field">&#10033;</span><?php endif; ?></h3>
 					<em><?=$field->getInstructions()?></em>
