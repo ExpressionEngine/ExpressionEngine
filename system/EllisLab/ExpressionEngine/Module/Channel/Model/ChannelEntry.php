@@ -5,7 +5,6 @@ namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Model\Content\ContentModel;
-use EllisLab\ExpressionEngine\Model\Content\Display\DefaultLayout;
 
 /**
  * Channel Entry
