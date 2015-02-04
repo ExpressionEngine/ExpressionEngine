@@ -55,7 +55,7 @@ class DefaultLayout implements LayoutInterface {
 		return $this->layout;
 	}
 
-	public function transform($fields)
+	public function transform(array $fields)
 	{
 		$display = new LayoutDisplay();
 
