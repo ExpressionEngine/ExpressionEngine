@@ -80,6 +80,15 @@ $lang = array(
 'layout' =>
 'layout',
 
+'channel_form_layouts' =>
+'%s &ndash; Form Layouts',
+
+'member_group' =>
+'Member group',
+
+'no_layouts' =>
+'No Layouts',
+
 /**
  * Channel Create/Edit
  */
