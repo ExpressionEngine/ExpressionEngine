@@ -1,50 +1,75 @@
 /*!
  * jQuery UI Effects Drop @VERSION
+ * http://jqueryui.com
  *
- * Copyright 2012, AUTHORS.txt (http://jqueryui.com/about)
- * Dual licensed under the MIT or GPL Version 2 licenses.
+ * Copyright 2014 jQuery Foundation and other contributors
+ * Released under the MIT license.
  * http://jquery.org/license
  *
- * http://docs.jquery.com/UI/Effects/Drop
- *
- * Depends:
- *	jquery.effects.core.js
+ * http://api.jqueryui.com/drop-effect/
  */
-(function( $, undefined ) {
+(function( factory ) {
+	if ( typeof define === "function" && define.amd ) {
 
-$.effects.drop = function(o) {
+		// AMD. Register as an anonymous module.
+		define([
+			"jquery",
+			"./effect"
+		], factory );
+	} else {
 
-	return this.queue(function() {
+		// Browser globals
+		factory( jQuery );
+	}
+}(function( $ ) {
 
-		// Create element
-		var el = $(this), props = ['position','top','bottom','left','right','opacity'];
+return $.effects.effect.drop = function( o, done ) {
 
-		// Set options
-		var mode = $.effects.setMode(el, o.options.mode || 'hide'); // Set Mode
-		var direction = o.options.direction || 'left'; // Default Direction
+	var el = $( this ),
+		props = [ "position", "top", "bottom", "left", "right", "opacity", "height", "width" ],
+		mode = $.effects.setMode( el, o.mode || "hide" ),
+		show = mode === "show",
+		direction = o.direction || "left",
+		ref = ( direction === "up" || direction === "down" ) ? "top" : "left",
+		motion = ( direction === "up" || direction === "left" ) ? "pos" : "neg",
+		animation = {
+			opacity: show ? 1 : 0
+		},
+		distance;
 
-		// Adjust
-		$.effects.save(el, props); el.show(); // Save & Show
-		$.effects.createWrapper(el); // Create Wrapper
-		var ref = (direction == 'up' || direction == 'down') ? 'top' : 'left';
-		var motion = (direction == 'up' || direction == 'left') ? 'pos' : 'neg';
-		var distance = o.options.distance || (ref == 'top' ? el.outerHeight({margin:true}) / 2 : el.outerWidth({margin:true}) / 2);
-		if (mode == 'show') el.css('opacity', 0).css(ref, motion == 'pos' ? -distance : distance); // Shift
+	// Adjust
+	$.effects.save( el, props );
+	el.show();
+	$.effects.createWrapper( el );
 
-		// Animation
-		var animation = {opacity: mode == 'show' ? 1 : 0};
-		animation[ref] = (mode == 'show' ? (motion == 'pos' ? '+=' : '-=') : (motion == 'pos' ? '-=' : '+=')) + distance;
+	distance = o.distance || el[ ref === "top" ? "outerHeight" : "outerWidth" ]( true ) / 2;
 
-		// Animate
-		el.animate(animation, { queue: false, duration: o.duration, easing: o.options.easing, complete: function() {
-			if(mode == 'hide') el.hide(); // Hide
-			$.effects.restore(el, props); $.effects.removeWrapper(el); // Restore
-			if(o.callback) o.callback.apply(this, arguments); // Callback
-			el.dequeue();
-		}});
+	if ( show ) {
+		el
+			.css( "opacity", 0 )
+			.css( ref, motion === "pos" ? -distance : distance );
+	}
 
+	// Animation
+	animation[ ref ] = ( show ?
+		( motion === "pos" ? "+=" : "-=" ) :
+		( motion === "pos" ? "-=" : "+=" ) ) +
+		distance;
+
+	// Animate
+	el.animate( animation, {
+		queue: false,
+		duration: o.duration,
+		easing: o.easing,
+		complete: function() {
+			if ( mode === "hide" ) {
+				el.hide();
+			}
+			$.effects.restore( el, props );
+			$.effects.removeWrapper( el );
+			done();
+		}
 	});
-
 };
 
-})(jQuery);
+}));
