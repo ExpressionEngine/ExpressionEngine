@@ -3,7 +3,9 @@
 namespace EllisLab\ExpressionEngine\Model\Content;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Model\Content\Display\DefaultLayout;
 use EllisLab\ExpressionEngine\Model\Content\Display\FieldDisplay;
+use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
 
 /**
  * create: new ChannelEntry()->getForm();
@@ -39,7 +41,7 @@ abstract class ContentModel extends Model {
 	/**
 	 *
 	 */
-	public function getDisplay($layout = NULL)
+	public function getDisplay(LayoutInterface $layout = NULL)
 	{
 		$this->usesCustomFields();
 
