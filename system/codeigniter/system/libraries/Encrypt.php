@@ -551,10 +551,10 @@ class CI_Encrypt {
 	 * @param string $algo hashing algorithm, defaults to md5
 	 * @return 	mixed   NULL if there is no data
 	 * 					FALSE if the hashing algorithm is unknown
-	 * 	        		String consisting of the calculated message digest as lowercase hexits
+	 * 	        		String consisting of the calculated message digest as
+	 *                  lowercase hexits
 	 *
 	 */
-
 	public function sign($data, $key = NULL, $algo = 'md5')
 	{
 		if (empty($data))
@@ -562,7 +562,6 @@ class CI_Encrypt {
 			return NULL;
 		}
 
-		// do we want to start using encryption_key config if available?
 		$key = (empty($key)) ? ee()->db->username.ee()->db->password : $key;
 
     	$token = hash_hmac($algo, $data, $key);
@@ -584,7 +583,6 @@ class CI_Encrypt {
 	 * 	        		TRUE if the signed data is verified
 	 *
 	 */
-
 	public function verify_signature($data, $signed_data, $key = NULL, $algo = 'md5')
 	{
 		if (empty($data))
@@ -594,8 +592,6 @@ class CI_Encrypt {
 
 		 $new_sig = $this->sign($data, $key, $algo);
 
-		// See PHP documentation not re timing attacks
-		// http://php.net/manual/en/function.hash-hmac.php#111435
 		if ($new_sig === $signed_data)
 		{
 			return TRUE;
@@ -603,8 +599,6 @@ class CI_Encrypt {
 
 		return FALSE;
 	}
-
-
 
 }
 

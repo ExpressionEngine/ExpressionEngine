@@ -975,9 +975,6 @@ class EE_Session {
 			}
 		}
 
-		// Do we want to add the token into the returned tracker array?
-		// Can't really see why
-
 		if (REQ == 'PAGE')
 		{
 			$this->set_tracker_cookie($tracker);
