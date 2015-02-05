@@ -379,7 +379,7 @@ class Updater {
 			)
 		);
 
-		$layouts = ee()->db()->select('layout_id, layout_name, field_layout')
+		$layouts = ee()->db->select('layout_id, layout_name, field_layout')
 			->get('layout_publish')
 			->result_array();
 
