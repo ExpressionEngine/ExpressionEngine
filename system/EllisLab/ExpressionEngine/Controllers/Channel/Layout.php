@@ -5,6 +5,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Channel;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
+use EllisLab\ExpressionEngine\Controllers\Channel\AbstractChannel as AbstractChannelController;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -29,9 +30,9 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Layout extends Channel {
+class Layout extends AbstractChannelController {
 
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 		ee()->lang->loadfile('content');

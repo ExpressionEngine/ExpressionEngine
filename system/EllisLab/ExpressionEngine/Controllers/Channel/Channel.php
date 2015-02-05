@@ -6,6 +6,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
+use EllisLab\ExpressionEngine\Controllers\AbstractChannel as AbstractChannelController;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -30,74 +31,7 @@ use EllisLab\ExpressionEngine\Library\CP;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Channel extends CP_Controller {
-
-	/**
-	 * Constructor
-	 */
-	function __construct()
-	{
-		parent::__construct();
-
-		if ( ! ee()->cp->allowed_group(
-			'can_access_admin',
-			'can_admin_channels',
-			'can_access_content_prefs'
-		))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		ee()->lang->loadfile('channel');
-		ee()->load->library('form_validation');
-
-		// Register our menu
-		ee()->menu->register_left_nav(array(
-			'channels' => array(
-				'href' => cp_url('channel'),
-				'button' => array(
-					'href' => cp_url('channel/create'),
-					'text' => 'new'
-				)
-			),
-			'custom_fields' => array(
-				'href' => cp_url('channel/field'),
-				'button' => array(
-					'href' => cp_url('channel/field/create'),
-					'text' => 'new'
-				)
-			),
-			array(
-				'field_groups' => cp_url('channel/field-group')
-			),
-			'category_groups' => array(
-				'href' => cp_url('channel/cat'),
-				'button' => array(
-					'href' => cp_url('channel/cat/create'),
-					'text' => 'new'
-				)
-			),
-			'status_groups' => array(
-				'href' => cp_url('channel/status'),
-				'button' => array(
-					'href' => cp_url('channel/status/create'),
-					'text' => 'new'
-				)
-			)
-		));
-
-		// This header is section-wide
-		ee()->view->header = array(
-			'title' => lang('channel_manager'),
-			'form_url' => cp_url('channel/search'),
-			'toolbar_items' => array(
-				'settings' => array(
-					'href' => cp_url('settings/content-design'),
-					'title' => lang('settings')
-				)
-			)
-		);
-	}
+class Channel extends AbstractChannelController {
 
 	/**
 	 * Channel Manager
