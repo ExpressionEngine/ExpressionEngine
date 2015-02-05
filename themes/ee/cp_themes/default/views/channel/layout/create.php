@@ -13,6 +13,7 @@
 		<a class="btn action add-tab" href="#"><?=lang('add_tab')?></a>
 	</div>
 	<?=form_open($form_url, 'class="settings ajax-validate"')?>
+		<?=ee('Alert')->get('layout-form')?>
 		<?php foreach ($layout->getTabs() as $index => $tab): ?>
 		<div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">
 		<?php foreach ($tab->getFields() as $field): ?>
