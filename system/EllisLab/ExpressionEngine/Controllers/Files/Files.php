@@ -55,7 +55,8 @@ class Files extends AbstractFilesController {
 		$filters = ee('Filter')
 			->add('Perpage', $files->count(), 'show_all_files');
 
-		$table = $this->buildTableFromFileCollection($files->all(), $filters->values()['perpage']);
+		$filter_values = $filters->values();
+		$table = $this->buildTableFromFileCollection($files->all(), $$filter_values['perpage']);
 
 		$base_url->setQueryStringVariable('sort_col', $table->sort_col);
 		$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
