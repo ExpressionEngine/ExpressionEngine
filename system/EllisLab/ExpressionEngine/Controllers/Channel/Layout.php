@@ -136,11 +136,51 @@ class Layout extends AbstractChannelController {
 
 		$entry = ee('Model')->make('ChannelEntry')->setChannel($channel);
 
+		$member_gropus = ee('Model')->get('MemberGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
 		$vars = array(
 			'channel' => $channel,
 			'form_url' => cp_url('channel/layout/create/' . $channel_id),
-			'layout' => $entry->getDisplay()
+			'layout' => $entry->getDisplay(),
+			'channel_layout' => ee('Model')->make('ChannelLayout'),
+			'selected_member_groups' => array(),
+			'member_groups' => $member_gropus,
 		);
+
+		ee()->load->library('form_validation');
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'layout_name',
+				'label' => 'lang:layout_name',
+				'rules' => 'required'
+			),
+		));
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			if (ee()->input->post('submit') == 'create')
+			{
+				// Crate the layout!
+			}
+			else
+			{
+				// Preview it...somehow
+			}
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee('Alert')->makeInline('layout-form')
+				->asIssue()
+				->withTitle(lang('create_layout_error'))
+				->addToBody(lang('create_layout_error_desc'));
+		}
 
 		ee()->view->cp_breadcrumbs = array(
 			cp_url('channel') => lang('channels'),

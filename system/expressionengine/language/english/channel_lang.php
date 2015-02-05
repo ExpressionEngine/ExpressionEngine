@@ -89,6 +89,27 @@ $lang = array(
 'no_layouts' =>
 'No Layouts',
 
+'create_form_layout' =>
+'Create Form Layout',
+
+'layout_options' =>
+'Layout Options',
+
+'name_desc' =>
+'Full descriptive name of this form layout.',
+
+'member_group(s)' =>
+'Member group(s)?',
+
+'member_group(s)_desc' =>
+'Choose the member group(s) to apply this layout to.',
+
+'btn_create_layout' =>
+'Create Layout',
+
+'btn_preview_layout' =>
+'Preview Layout',
+
 /**
  * Channel Create/Edit
  */
