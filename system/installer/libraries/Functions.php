@@ -23,7 +23,7 @@
  * @link		http://ellislab.com
  */
 
-require_once(EE_APPPATH.'/libraries/Functions'.EXT);
+require_once(EE_APPPATH.'/libraries/Functions.php');
 
 class Installer_Functions extends EE_Functions {
 	// Nothing to see here.
