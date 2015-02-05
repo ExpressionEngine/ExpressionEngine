@@ -46,7 +46,8 @@ class Updater {
 				'_remove_accessories_table',
 				'_update_specialty_templates_table',
 				'_remove_watermarks_table',
-				'_update_templates_save_as_files'
+				'_update_templates_save_as_files',
+				'_update_layout_publish_table'
 			)
 		);
 
@@ -363,6 +364,39 @@ class Updater {
 
 		ee()->remove('config');
 		ee()->set('config', $installer_config);
+	}
+
+	/**
+	 * In 3.x Layouts now have names and the data structure for the field layout
+	 * has changed.
+	 */
+	private function _update_layout_publish_table()
+	{
+		ee()->smartforge->add_column(
+			'layout_publish',
+			array(
+				'layout_name'    => array(
+					'type'         => 'varchar',
+					'constraint'   => 50,
+					'null'         => FALSE
+				),
+			)
+		);
+
+		$layouts = ee()->db()->select('layout_id, layout_name, field_layout')
+			->get('layout_publish')
+			->result_array();
+
+		if ( ! empty($layotus))
+		{
+			foreach ($layouts as $index => $layout)
+			{
+				$layouts[$index]['layout_name'] = 'Layout ' . $layout['layout_id'];
+				// @TODO update the filed_layout column
+			}
+
+			ee()->db->update_batch('layout_publish', $layouts, 'layout_id');
+		}
 	}
 
 }

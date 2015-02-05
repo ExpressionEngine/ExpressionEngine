@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
+use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Service\Model\Model as Model;
 use EllisLab\ExpressionEngine\Service\Model\Interfaces\Content\ContentStructure
 	as ContentStructure;
@@ -10,7 +11,7 @@ use EllisLab\ExpressionEngine\Service\Model\Interfaces\Content\ContentStructure
 class Channel extends Model implements ContentStructure {
 
 	protected static $_primary_key = 'channel_id';
-	protected static $_gateway_names = array('ChannelGateway');
+	protected static $_table_name = 'channels';
 
 	protected static $_typed_columns = array(
 		'deft_comments'              => 'boolString',
@@ -32,13 +33,21 @@ class Channel extends Model implements ContentStructure {
 	);
 
 	protected static $_relationships = array(
-		'ChannelFieldGroup' => array(
+		'FieldGroup' => array(
 			'type' => 'belongsTo',
+			'model' => 'ChannelFieldGroup',
 			'from_key' => 'field_group',
 			'to_key' => 'group_id'
 		),
-		'ChannelEntries' => array(
+		'CustomFields' => array(
 			'type' => 'hasMany',
+			'model' => 'ChannelFieldStructure',
+			'from_key' => 'field_group',
+			'to_key' => 'group_id'
+		),
+		'Entries' => array(
+			'type' => 'hasMany',
+			'model' => 'ChannelEntries',
 			'model' => 'ChannelEntry'
 		),
 		'ChannelFormSettings' => array(
@@ -50,6 +59,17 @@ class Channel extends Model implements ContentStructure {
 			'from_key' => 'live_look_template',
 			'to_key' => 'template_id'
 		),
+		'AssignedMemberGroups' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'MemberGroup',
+			'pivot' => array(
+				'table' => 'channel_member_groups'
+			)
+		),
+		'ChannelLayouts' => array(
+			'type' => 'hasMany',
+			'model' => 'ChannelLayout'
+		)
 	);
 
 	protected static $_validation_rules = array(
@@ -129,18 +149,27 @@ class Channel extends Model implements ContentStructure {
 	protected $url_title_prefix;
 	protected $live_look_template;
 
+
 	/**
 	 * Display the CP entry form
 	 *
 	 * @param Content $content  An object implementing the Content interface
 	 * @return Array of HTML field elements for the entry / edit form
 	 */
-	public function getPublishForm($content)
+	public function getPublishForm($content = NULL)
 	{
-		$form_elements = array();
-		// populate from custom fields
+		if ( ! isset($content))
+		{
+			$content = $this->getFrontend()->make('ChannelEntry');
+			$content->setChannel($this);
+		}
+		elseif ($content->getChannel()->channel_id != $this->channel_id)
+		{
+			// todo
+			exit('Given channel entry does not belong to this channel.');
+		}
 
-		return $form_elements;
+		return $content->getForm();
 	}
 
 	/**
@@ -206,28 +235,4 @@ class Channel extends Model implements ContentStructure {
 			}
 		}
 	}
-
-	public function testPrint($depth='')
-	{
-		if ($depth == "\t\t\t")
-		{
-			return;
-		}
-		$primary_key = static::getMetaData('primary_key');
-		$model_name = substr(get_class($this), strrpos(get_class($this), '\\')+1);
-		echo $depth . '=====' . $model_name . ': ' . '(' . $this->{$primary_key} . ') ' . $this->channel_title . ' OBJ(' . spl_object_hash($this) .')' . "=====\n";
-		foreach($this->_related_models as $relationship_name=>$models)
-		{
-			echo $depth . '----Relationship: ' . $relationship_name . "----\n";
-			foreach($models as $model)
-			{
-				$model->testPrint($depth . "\t");
-			}
-			echo $depth . '---- END Relationship: ' . $relationship_name . "----\n";
-		}
-		echo $depth . '===== END ' . $model_name . ': ' . '(' . $this->{$primary_key} . ') ' . $this->channel_title . "=====\n";
-		echo "\n";
-
-	}
-
 }

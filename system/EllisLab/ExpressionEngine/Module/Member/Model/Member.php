@@ -108,4 +108,9 @@ class Member extends Model {
 	protected $rte_enabled;
 	protected $rte_toolset_id;
 
+	public function getMemberName()
+	{
+		return $this->screen_name ?: $this->username;
+	}
+
 }

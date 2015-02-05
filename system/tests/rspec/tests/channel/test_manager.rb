@@ -82,7 +82,7 @@ feature 'Channel Manager' do
     @page.bulk_action.select 'Remove'
     @page.action_submit_button.click
     @page.wait_until_modal_visible
-    @page.modal.should have_text 'Channel: ' + channels[1]
+    @page.modal.should have_text 'Channel: ' + channels.sort[1]
     @page.modal_submit_button.click
     no_php_js_errors
 

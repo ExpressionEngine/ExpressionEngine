@@ -79,38 +79,16 @@ Grid.Publish.prototype = {
 	{
 		var that = this;
 
-		this.rowContainer.sortable({
-			axis: 'y',						// Only allow vertical dragging
-			containment: 'parent',			// Contain to parent
-			handle: 'td.reorder-col',		// Set drag handle
-			cancel: 'td.grid_sort_cancel',	// Do not allow sort on this handle
-			items: 'table.gridtr',					// Only allow these to be sortable
-			sort: EE.sortable_sort_helper,	// Custom sort handler
-			helper: function(event, row)	// Fix issue where cell widths collapse on drag
-			{
-				var $originals = row.children();
-				var $helper = row.clone();
-
-				$helper.children().each(function(index)
-				{
-					// Set helper cell sizes to match the original sizes
-					$(this).width($originals.eq(index).width())
-				});
-
-				return $helper;
-			},
+		this.rowContainer.eeTableReorder({
 			// Fire 'beforeSort' event on sort start
-			start: function(event, row)
+			beforeSort: function(event, row)
 			{
 				that._fireEvent('beforeSort', row.item);
 			},
 			// Fire 'afterSort' event on sort stop
-			stop: function(event, row)
+			afterSort: function(event, row)
 			{
 				that._fireEvent('afterSort', row.item);
-				
-				// Re-zebra-stripe the table
-				that._zebraStripe();
 			}
 		});
 	},
@@ -169,7 +147,7 @@ Grid.Publish.prototype = {
 		// Do not allow sortable to run when there is only one row, otherwise
 		// the row becomes detached from the table and column headers change
 		// width in a fluid-column-width table
-		this.rowContainer.find('td.grid_handle').toggleClass('grid_sort_cancel', rowCount == 1);
+		this.rowContainer.find('td.grid_handle').toggleClass('sort-cancel', rowCount == 1);
 	},
 
 	/**

@@ -78,7 +78,7 @@ $lang = array(
 'author_information_desc' =>
 'Information about the author of this comment, non-editable.',
 
-'status_desc' =>
+'comment_status_desc' =>
 'Status of this comment.',
 
 'comment_content' =>
@@ -107,6 +107,78 @@ $lang = array(
 
 'edit_comment_error_desc' =>
 'We were unable to edit the comment, please review and fix errors below.',
+
+'btn_edit_entry' =>
+'Edit Entry',
+
+'btn_edit_entry_working' =>
+'Saving...',
+
+'edit_entry_with_title' =>
+'Edit Entry: %s',
+
+'url_title' =>
+'<abbr title="Unified Resource Locator">URL</abbr> title',
+
+'url_title_desc' =>
+'<abbr title="Unified Resource Locator">URL</abbr> location of this entry.',
+
+'entry_date' =>
+'Entry date',
+
+'entry_date_desc' =>
+'Date of publication for this entry.',
+
+'expiration_date' =>
+'Expiration date',
+
+'expiration_date_desc' =>
+'Date this entry should expire.',
+
+'comment_expiration_date' =>
+'Comment expiration date',
+
+'comment_expiration_date_desc' =>
+'Date comments for this entry should no longer be accepted.',
+
+'entry_status' =>
+'Status',
+
+'entry_status_desc' =>
+'Entry status.',
+
+'channel' =>
+'Channel',
+
+'channel_desc' =>
+'Channel this entry should be submitted to.',
+
+'author' =>
+'Author',
+
+'author_desc' =>
+'Member that wrote this entry.',
+
+'sticky' =>
+'Make entry sticky?',
+
+'sticky_desc' =>
+'When set to <b>yes</b>, this entry will be given preference in sorted listings.',
+
+'allow_comments' =>
+'Allow comments?',
+
+'allow_comments_desc' =>
+'When set to <b>yes</b>, members with permissions will be able to post comments to this entry.',
+
+'categories' =>
+'Categories',
+
+'categories_desc' =>
+'Categorize this entry.',
+
+'btn_add_category' =>
+'Add Category',
 
 //----------------------------
 // Publish page
@@ -348,9 +420,6 @@ $lang = array(
 'publish_form' =>
 'Publish Form',
 
-'entry_date' =>
-'Entry Date',
-
 'url_title_is_numeric' =>
 'Numbers cannot be used as URL Titles',
 
@@ -368,9 +437,6 @@ $lang = array(
 
 'date_calendar' =>
 'Date Calendar',
-
-'comment_expiration_date' =>
-'Comment Expiration Date',
 
 'invalid_comment_date_formatting' =>
 'The comment expiration date you submitted was not formatted correctly (year-month-day hour:minute).  Leave the field blank if you do not wish your comments to expire.',
@@ -434,9 +500,6 @@ $lang = array(
 
 'unauthorized_to_delete_self' =>
 'You are not authorized to delete your own channel entries',
-
-'channel' =>
-'Channel',
 
 'channels' =>
 'Channels',
@@ -512,9 +575,6 @@ $lang = array(
 'continue_editing' =>
 'Continue Editing',
 
-'entry_status' =>
-'Entry Status',
-
 'status' =>
 'Status',
 
@@ -533,12 +593,6 @@ $lang = array(
 'options' =>
 'Options',
 
-'sticky' =>
-'Make Entry Sticky',
-
-'allow_comments' =>
-'Allow Comments',
-
 'date' =>
 'Date',
 
@@ -547,9 +601,6 @@ $lang = array(
 
 'end_date' =>
 'End',
-
-'expiration_date' =>
-'Expiration Date',
 
 'invalid_date_formatting' =>
 'The date you submitted was not formatted correctly (year-month-day hour:minute)',
@@ -560,20 +611,11 @@ $lang = array(
 'category' =>
 'Category',
 
-'categories' =>
-'Categories',
-
 'no_categories' =>
 'No categories have been assigned to this channel.',
 
 'title' =>
 'Title',
-
-'url_title' =>
-'URL Title',
-
-'author' =>
-'Author',
 
 'newline_format' =>
 'Formatting:',

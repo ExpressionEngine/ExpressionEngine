@@ -197,7 +197,7 @@ class Cp {
 		// Combo-load the javascript files we need for every request
 
 		$js_scripts = array(
-			'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog'),
+			'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog', 'button'),
 			'plugin'	=> array('ee_interact.event', 'ee_broadcast.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all'),
 			'file'		=> array('json2', 'underscore', 'cp/global_start', 'cp/v3/form_validation')
 		);

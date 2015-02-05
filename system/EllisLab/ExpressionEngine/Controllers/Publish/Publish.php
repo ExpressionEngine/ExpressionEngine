@@ -6,7 +6,7 @@ use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
-
+use EllisLab\ExpressionEngine\Module\Channel\Model\ChannelEntry;
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -32,8 +32,8 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  */
 class Publish extends CP_Controller {
 
-	protected $isAdmin = FALSE;
-	protected $assignedChannelIds = array();
+	protected $is_admin = FALSE;
+	protected $assigned_channel_ids = array();
 
 	/**
 	 * Constructor
@@ -49,15 +49,16 @@ class Publish extends CP_Controller {
 
 		ee()->lang->loadfile('content');
 
-		$this->isAdmin = (ee()->session->userdata['group_id'] == 1);
-		$this->assignedChannelIds = array_keys(ee()->session->userdata['assigned_channels']);
+		$this->is_admin = (ee()->session->userdata['group_id'] == 1);
+		$this->assigned_channel_ids = array_keys(ee()->session->userdata['assigned_channels']);
 	}
 
 	protected function createChannelFilter()
 	{
-		$allowed_channel_ids = ($this->isAdmin) ? NULL : $this->assignedChannelIds;
+		$allowed_channel_ids = ($this->is_admin) ? NULL : $this->assigned_channel_ids;
 		$channels = ee('Model')->get('Channel', $allowed_channel_ids)
 			->filter('site_id', ee()->config->item('site_id'))
+			->order('channel_title', 'asc')
 			->all();
 
 		$channel_filter_options = array();

@@ -141,13 +141,25 @@ abstract class Core {
 			$method = $RTR->fetch_method();
 		}
 
-
 		if ( ! class_exists($class))
 		{
 			$RTR->set_class($old_class);
 			$RTR->set_method($old_method);
 
 			return FALSE;
+		}
+
+		$controller_methods = array_map(
+			'strtolower', get_class_methods($class)
+		);
+
+		// This allows for routes of 'cp/channel/layout/1' to end up calling
+		// \EllisLab\ExpressionEngine\Controllers\Channel\Layout::layout(1)
+		if ( ! in_array($method, $controller_methods)
+			&& in_array($RTR->fetch_class(), $controller_methods))
+		{
+			array_unshift($routing['segments'], $method);
+			$method = $RTR->fetch_class();
 		}
 
 		$routing['class'] = $class;

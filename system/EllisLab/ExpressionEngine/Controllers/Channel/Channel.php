@@ -109,7 +109,7 @@ class Channel extends CP_Controller {
 			array(
 				'channel',
 				'channel_short_name',
-				'channel_manage' => array(
+				'manage' => array(
 					'type'	=> CP\Table::COL_TOOLBAR
 				),
 				array(
@@ -125,8 +125,10 @@ class Channel extends CP_Controller {
 		);
 
 		$channels = ee('Model')->get('Channel')
-			->filter('site_id', ee()->config->item('site_id'))
-			->order($sort_map[$table->sort_col], $table->sort_dir)
+			->filter('site_id', ee()->config->item('site_id'));
+		$total_rows = $channels->all()->count();
+
+		$channels = $channels->order($sort_map[$table->sort_col], $table->sort_dir)
 			->limit(20)
 			->offset(($table->config['page'] - 1) * 20)
 			->all();
@@ -140,11 +142,15 @@ class Channel extends CP_Controller {
 				array('toolbar_items' => array(
 					'edit' => array(
 						'href' => cp_url('channel/edit/'.$channel->channel_id),
-						'title' => lang('upload_btn_edit')
+						'title' => lang('edit')
 					),
 					'settings' => array(
 						'href' => cp_url('channel/settings/'.$channel->channel_id),
-						'title' => lang('upload_btn_sync')
+						'title' => lang('settings')
+					),
+					'layout' => array(
+						'href' => cp_url('channel/layout/'.$channel->channel_id),
+						'title' => lang('layout')
 					)
 				)),
 				array(
@@ -164,7 +170,7 @@ class Channel extends CP_Controller {
 
 		$pagination = new CP\Pagination(
 			$vars['table']['limit'],
-			$vars['table']['total_rows'],
+			$total_rows,
 			$vars['table']['page']
 		);
 		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
@@ -263,7 +269,7 @@ class Channel extends CP_Controller {
 		else
 		{
 			$channel = ee('Model')->get('Channel')->filter('channel_id', (int) $channel_id)->first();
-			
+
 			if ( ! $channel)
 			{
 				show_error(lang('unauthorized_access'));
@@ -275,7 +281,7 @@ class Channel extends CP_Controller {
 
 		ee()->view->channel = $channel;
 		$vars = array();
-		
+
 		$channels = ee('Model')->get('Channel')
 			->filter('site_id', ee()->config->item('site_id'))
 			->order('channel_title')
@@ -300,7 +306,7 @@ class Channel extends CP_Controller {
 				$vars['cat_group_options'][$group->group_id] = $group->group_name;
 			}
 		}
-		
+
 		// Populate selected categories based on POST or database
 		if ( ! empty($_POST) && ! isset($_POST['cat_group']))
 		{
@@ -489,7 +495,7 @@ class Channel extends CP_Controller {
 			$channel->channel_url = ee()->functions->fetch_site_index();
 			$channel->channel_lang = ee()->config->item('xml_lang');
 			$channel->site_id = ee()->config->item('site_id');
-			
+
 			// Assign field group if there is only one
 			if ($dupe_id != ''
 				&& ( $channel->field_group === NULL || ! is_numeric($channel->field_group)))
@@ -554,7 +560,7 @@ class Channel extends CP_Controller {
 	public function settings($channel_id)
 	{
 		$channel = ee('Model')->get('Channel', $channel_id)->first();
-		
+
 		if ( ! $channel)
 		{
 			show_error(lang('unauthorized_access'));
@@ -618,7 +624,7 @@ class Channel extends CP_Controller {
 				}
 			}
 		}
-		
+
 		$channel_fields = ee('Model')->get('ChannelFieldStructure')
 			->filter('ChannelFieldStructure.group_id', $channel->field_group)
 			->all();
@@ -918,7 +924,7 @@ class Channel extends CP_Controller {
 					'title' => 'max_versions',
 					'desc' => 'max_versions_desc',
 					'fields' => array(
-						'max_versions' => array(
+						'max_revisions' => array(
 							'type' => 'text',
 							'value' => $channel->max_revisions,
 							'note' => form_label(
@@ -1054,7 +1060,7 @@ class Channel extends CP_Controller {
 					'title' => 'max_characters',
 					'desc' => 'max_characters_desc',
 					'fields' => array(
-						'max_characters' => array(
+						'comment_max_chars' => array(
 							'type' => 'text',
 							'value' => $channel->comment_max_chars
 						)
@@ -1166,7 +1172,7 @@ class Channel extends CP_Controller {
 				'rules' => 'strtolower|trim|strip_tags|valid_xss_check|callback__validPrefix'
 			),
 			array(
-				'field' => 'max_versions',
+				'field' => 'max_revisions',
 				'label' => 'lang:max_versions',
 				'rules' => 'trim|integer'
 			),
@@ -1181,7 +1187,7 @@ class Channel extends CP_Controller {
 				'rules' => 'trim|valid_emails'
 			),
 			array(
-				'field' => 'max_characters',
+				'field' => 'comment_max_chars',
 				'label' => 'lang:max_characters',
 				'rules' => 'trim|integer'
 			),
@@ -1209,7 +1215,7 @@ class Channel extends CP_Controller {
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
 			$this->saveChannelSettings($channel_id, $vars['sections']);
-			
+
 			ee()->view->set_message('success', lang('channel_saved'), lang('channel_saved_desc'), TRUE);
 
 			ee()->functions->redirect(cp_url('channel/settings/' . $channel_id));
@@ -1240,14 +1246,14 @@ class Channel extends CP_Controller {
 			return TRUE;
 		}
 
-		ee()->form_validation->set_message('_valid_prefix', lang('invalid_url_title_prefix'));
+		ee()->form_validation->set_message('_validPrefix', lang('invalid_url_title_prefix'));
 
 		return preg_match('/^[\w\-]+$/', $str) ? TRUE : FALSE;
 	}
 
 	/**
 	 * POST handler for saving channel settings
-	 * 
+	 *
 	 * @param	int	$channel_id	ID of channel to save settings for
 	 */
 	private function saveChannelSettings($channel_id, $sections)

@@ -2,8 +2,9 @@
 
 namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
+use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
-use EllisLab\ExpressionEngine\Model\FieldDataContentModel;
+use EllisLab\ExpressionEngine\Model\Content\ContentModel;
 
 /**
  * Channel Entry
@@ -15,13 +16,10 @@ use EllisLab\ExpressionEngine\Model\FieldDataContentModel;
  *
  * Related to Channel which defines the structure of this content.
  */
-class ChannelEntry extends FieldDataContentModel {
+class ChannelEntry extends ContentModel {
 
 	protected static $_primary_key = 'entry_id';
 	protected static $_gateway_names = array('ChannelTitleGateway', 'ChannelDataGateway');
-
-	protected static $_field_content_class = 'ChannelFieldContent';
-	protected static $_field_content_gateway = 'ChannelDataGateway';
 
 	protected static $_relationships = array(
 		'Channel' => array(
@@ -37,7 +35,9 @@ class ChannelEntry extends FieldDataContentModel {
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'Category',
 			'pivot' => array(
-				'table' => 'categories'
+				'table' => 'category_posts',
+				'left' => 'entry_id',
+				'right' => 'cat_id'
 			)
 		)
 	);
@@ -69,70 +69,42 @@ class ChannelEntry extends FieldDataContentModel {
 	protected $recent_comment_date;
 	protected $comment_total;
 
-	protected $_fields;
-
-	protected function getFieldTypeInfo()
-	{
-		// todo cache/move/ugly!
-		$db = clone ee()->db;
-		$db->_reset_select();
-		$db->from('channel_fields');
-		$db->where('group_id', $this->getChannel()->field_group);
-
-		return new Collection($db->get()->result_object());
-	}
-
-	public function fill($data)
-	{
-		parent::fill($data);
-
-		$fields = array();
-		$field_types = $this->getFieldTypeInfo()->indexBy('field_id');
-
-		foreach ($data as $key => $value)
-		{
-			if (preg_match('/^field_id_(\d+)$/', $key, $matches))
-			{
-				$id = $matches[1];
-
-				if (array_key_exists($id, $field_types))
-				{
-					$field = new Field($id, $field_types[$id]);
-					$field->setData($value);
-					$field->setContentId($this->getId());
-
-					if (isset($data['field_ft_'.$id]))
-					{
-						$field->setFormat($data['field_ft_'.$id]);
-					}
-
-					$fields[] = $field;
-				}
-			}
-		}
-
-		$this->_fields = new Collection($fields);
-	}
-
-	public function getCustomFields()
-	{
-		return $this->_fields;
-	}
-
-	public function getForm()
-	{
-		return $this->_fields->getForm();
-	}
-
 	/**
 	 * A link back to the owning channel object.
 	 *
 	 * @return	Structure	A link to the Structure objects that defines this
 	 * 						Content's structure.
 	 */
-	public function getContentStructure()
+	public function getStructure()
 	{
 		return $this->getChannel();
+	}
+
+	/**
+	 *
+	 */
+	public function getCustomFieldPrefix()
+	{
+		return 'field_id_';
+	}
+
+
+	protected function fillCustomFields($data)
+	{
+		parent::fillCustomFields($data);
+
+		foreach ($data as $name => $value)
+		{
+			if (strpos($name, 'field_ft_') === 0)
+			{
+				$name = str_replace('field_ft_', 'field_id_', $name);
+
+				if ($this->hasCustomField($name))
+				{
+					$this->getCustomField($name)->setFormat($value);
+				}
+			}
+		}
 	}
 
 	/**
@@ -148,132 +120,255 @@ class ChannelEntry extends FieldDataContentModel {
 	public function render($template)
 	{
 	}
-}
 
-class Field {
+	/* HACK ALERT! @TODO */
 
-	private $id;
-	private $data;
-	private $format;
-	public $type_info;
-	private $field_name;
-	private $content_id;
-
-	public function __construct($field_id, $type_info)
+	protected function populateDefaultFields()
 	{
-		$this->id = $field_id;
-		$this->type_info = $type_info;
-		$this->field_name = 'field_id_'.$field_id;
-	}
+		// Channels
+		$allowed_channel_ids = (ee()->session->userdata['group_id'] == 1) ? NULL : array_keys(ee()->session->userdata['assigned_channels']);
+		$channels = ee('Model')->get('Channel', $allowed_channel_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('field_group', $this->getChannel()->field_group)
+			->all();
 
-	public function getName()
-	{
-		return $this->field_name;
-	}
-
-	public function setContentId($id)
-	{
-		$this->content_id = $id;
-	}
-
-	public function setData($data)
-	{
-		$this->data = $data;
-	}
-
-	public function setFormat($format)
-	{
-		$this->format = $format;
-	}
-
-	public function getForm()
-	{
-		$this->setupField();
-
-		$field_output = array();
-
-		$data = $this->setupField();
-
-		if (isset($data['string_override']))
+		$channel_filter_options = array();
+		foreach ($channels as $channel)
 		{
-			return $data['string_override'];
+			$channel_filter_options[$channel->channel_id] = $channel->channel_title;
 		}
 
-		ee()->api_channel_fields->setup_handler($data['field_id']);
-		ee()->api_channel_fields->apply('_init', array(array(
-			'content_id' => $this->content_id
-		)));
+		$this->getCustomField('channel_id')->setItem('field_list_items', $channel_filter_options);
 
-		$field_value = set_value($this->getName(), $data['field_data']);
+		// Statuses
+		$statuses = ee('Model')->get('Status')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('group_id', $this->getChannel()->status_group);
 
-		return ee()->api_channel_fields->apply('display_publish_field', array($field_value));
-	}
+		$status_options = array();
 
-	protected function setupField()
-	{
-		$field_dt = ''; // todo!
-		$field_fmt = $this->format;
-		$field_data = $this->data;
-		$field_name = $this->getName();
+		foreach ($statuses->all() as $status)
+		{
+			$status_name = ($status->status == 'closed' OR $status->status == 'open') ?  lang($status->status) : $status->status;
+			$status_options[$status->status] = $status_name;
+		}
 
-		$info = (array) $this->type_info;
+		$this->getCustomField('status')->setItem('field_list_items', $status_options);
 
-		$settings = array(
-			'field_instructions'	=> trim($info['field_instructions']),
-			'field_text_direction'	=> ($info['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr',
-			'field_fmt'				=> $field_fmt,
-			'field_dt'				=> $field_dt,
-			'field_data'			=> $field_data,
-			'field_name'			=> $field_name
+
+		// Authors
+		$author_options = array();
+
+		// Get all admins
+		$authors = ee('Model')->get('Member')
+			->filter('group_id', 1)
+			->all();
+
+		foreach ($authors as $author)
+		{
+			$author_options[$author->member_id] = $author->getMemberName();
+		}
+
+		// Get all members assigned to this channel
+		foreach ($this->getChannel()->getAssignedMemberGroups() as $group)
+		{
+			foreach ($group->getMembers() as $member)
+			{
+				$author_options[$member->member_id] = $member->getMemberName();
+			}
+		}
+
+		$this->getCustomField('author_id')->setItem('field_list_items', $author_options);
+
+		// Categories
+		$category_group_ids = ee('Model')->get('CategoryGroup', explode('|', $this->getChannel()->cat_group))
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('exclude_group', '!=', 1)
+			->all()
+			->pluck('group_id');
+
+		$categories = ee('Model')->get('Category')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('group_id', 'IN', $category_group_ids)
+			->filter('parent_id', 0)
+			->all();
+
+		$category_string_override = '<div class="scroll-wrap pr">';
+		$set_categories = $this->getCategories()->pluck('cat_id');
+
+		// If this doesn't make Pascal angry I need to try harder!
+		// @TODO Make Pascal happy
+		foreach ($categories as $category)
+		{
+			$class = 'choice block';
+			$checked = '';
+			if (in_array($category->cat_id, $set_categories))
+			{
+				$class .= ' chosen';
+				$checked = ' checked="checked"';
+			}
+
+			$category_string_override .= '<label class="' . $class . '">';
+			$category_string_override .= '<input type="checkbox" name="categories[]" vlaue="' . $category->cat_id .'"' . $checked . '>' . $category->cat_name;
+			$category_string_override .= '</label>';
+
+			// Recursion would be much better
+			foreach ($category->getChildren() as $child_category)
+			{
+				$class = 'choice block child';
+				$checked = '';
+				if (in_array($child_category->cat_id, $set_categories))
+				{
+					$class .= ' chosen';
+					$checked = ' checked="checked"';
+				}
+
+				$category_string_override .= '<label class="' . $class . '">';
+				$category_string_override .= '<input type="checkbox" name="categories[]" vlaue="' . $child_category->cat_id .'"' . $checked . '>' . $child_category->cat_name;
+				$category_string_override .= '</label>';
+			}
+		}
+
+		$category_string_override .= '</div>';
+
+		$this->getCustomField('categories')->setItem('string_override', $category_string_override);
+
+
+		// Comment expiration date
+		$this->getCustomField('comment_expiration_date')->setItem(
+			'default_offset',
+			$this->getChannel()->comment_expiration * 86400
 		);
-
-		$ft_settings = array();
-
-		if (isset($info['field_settings']) && strlen($info['field_settings']))
-		{
-			$ft_settings = unserialize(base64_decode($info['field_settings']));
-		}
-
-		$settings = array_merge($info, $settings, $ft_settings);
-
-		ee()->legacy_api->instantiate('channel_fields');
-		ee()->api_channel_fields->set_settings($info['field_id'], $settings);
-
-		return $settings;
-	}
-}
-
-
-class FieldsCollection {
-
-	protected $data = array();
-	protected $formats = array();
-
-	public function __construct()
-	{
-
 	}
 
-	public function format($id, $value)
-	{
-		$this->formats[$id] = $value;
-	}
-
-	public function data($id, $value)
-	{
-		$this->data[$id] = $value;
-	}
-
-	public function get($id)
+	protected function getDefaultFields()
 	{
 		return array(
-			$this->data[$id],
-			$this->formats[$id]
+			'title' => array(
+				'field_id'				=> 'title',
+				'field_label'			=> lang('title'),
+				'field_required'		=> 'y',
+				'field_show_fmt'		=> 'n',
+				'field_instructions'	=> '',
+				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'text',
+				'field_maxl'			=> 100
+			),
+			'url_title' => array(
+				'field_id'				=> 'url_title',
+				'field_label'			=> lang('url_title'),
+				'field_required'		=> 'n',
+				'field_fmt'				=> 'xhtml',
+				'field_instructions'	=> lang('url_title_desc'),
+				'field_show_fmt'		=> 'n',
+				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'text',
+				'field_maxl'			=> 75
+			),
+			'entry_date' => array(
+				'field_id'				=> 'entry_date',
+				'field_label'			=> lang('entry_date'),
+				'field_required'		=> 'y',
+				'field_type'			=> 'date',
+				'field_text_direction'	=> 'ltr',
+				'field_fmt'				=> 'text',
+				'field_instructions'	=> lang('entry_date_desc'),
+				'field_show_fmt'		=> 'n',
+				'always_show_date'		=> 'y',
+				'default_offset'		=> 0,
+				'selected'				=> 'y',
+			),
+			'expiration_date' => array(
+				'field_id'				=> 'expiration_date',
+				'field_label'			=> lang('expiration_date'),
+				'field_required'		=> 'n',
+				'field_type'			=> 'date',
+				'field_text_direction'	=> 'ltr',
+				'field_fmt'				=> 'text',
+				'field_instructions'	=> lang('expiration_date_desc'),
+				'field_show_fmt'		=> 'n',
+				'default_offset'		=> 0,
+				'selected'				=> 'y',
+			),
+			'comment_expiration_date' => array(
+				'field_id'				=> 'comment_expiration_date',
+				'field_label'			=> lang('comment_expiration_date'),
+				'field_required'		=> 'n',
+				'field_type'			=> 'date',
+				'field_text_direction'	=> 'ltr',
+				'field_fmt'				=> 'text',
+				'field_instructions'	=> lang('comment_expiration_date_desc'),
+				'field_show_fmt'		=> 'n',
+				'default_offset'		=> 0, // @see populateDefaultFields
+				'selected'				=> 'y',
+			),
+			'channel_id' => array(
+				'field_id'				=> 'channel_id',
+				'field_label'			=> lang('channel'),
+				'field_required'		=> 'n',
+				'field_show_fmt'		=> 'n',
+				'field_instructions'	=> lang('channel_desc'),
+				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'select',
+				'field_list_items'      => array(), // @see populateDefaultFields
+				'field_maxl'			=> 100
+			),
+			'status' => array(
+				'field_id'				=> 'status',
+				'field_label'			=> lang('entry_status'),
+				'field_required'		=> 'n',
+				'field_show_fmt'		=> 'n',
+				'field_instructions'	=> lang('entry_status_desc'),
+				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'select',
+				'field_list_items'      => array(), // @see populateDefaultFields
+				'field_maxl'			=> 100
+			),
+			'author_id' => array(
+				'field_id'				=> 'author_id',
+				'field_label'			=> lang('author'),
+				'field_required'		=> 'n',
+				'field_show_fmt'		=> 'n',
+				'field_instructions'	=> lang('author_desc'),
+				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'select',
+				'field_list_items'      => array(), // @see populateDefaultFields
+				'field_maxl'			=> 100
+			),
+			'sticky' => array(
+				'field_id'				=> 'sticky',
+				'field_label'			=> lang('sticky'),
+				'field_required'		=> 'n',
+				'field_show_fmt'		=> 'n',
+				'field_instructions'	=> lang('sticky_desc'),
+				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'radio',
+				'field_list_items'      => array('y' => lang('yes'), 'n' => lang('no')),
+				'field_maxl'			=> 100
+			),
+			'allow_comments' => array(
+				'field_id'				=> 'allow_comments',
+				'field_label'			=> lang('allow_comments'),
+				'field_required'		=> 'n',
+				'field_show_fmt'		=> 'n',
+				'field_instructions'	=> lang('allow_comments_desc'),
+				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'radio',
+				'field_list_items'      => array('y' => lang('yes'), 'n' => lang('no')),
+				'field_maxl'			=> 100
+			),
+			'categories' => array(
+				'field_id'				=> 'categories',
+				'field_label'			=> lang('categories'),
+				'field_required'		=> 'n',
+				'field_show_fmt'		=> 'n',
+				'field_instructions'	=> lang('categories_desc'),
+				'field_text_direction'	=> 'ltr',
+				'field_type'			=> 'checkboxes',
+				'string_override'		=> '', // @see populateDefaultFields
+				'field_list_items'      => '',
+				'field_maxl'			=> 100
+			),
 		);
-	}
-
-	public function all()
-	{
-		return array_map(array($this, 'get'), array_keys($this->data));
 	}
 }

@@ -642,6 +642,7 @@ class Addons extends CP_Controller {
 			$method = (ee()->input->get_post('method') !== FALSE) ? ee()->input->get_post('method') : 'index';
 		}
 
+		// Module
 		$module = $this->getModules($addon);
 		if ( ! empty($module) && $module['installed'] === TRUE)
 		{
@@ -659,6 +660,38 @@ class Addons extends CP_Controller {
 				ee()->view->cp_heading = $module['name'] . ' ' . lang('configuration');
 			}
 		}
+		else
+		{
+			// Fieldtype
+			$fieldtype = $this->getFieldtypes($addon);
+			if ( ! empty($fieldtype) && $fieldtype['installed'] === TRUE)
+			{
+				if ($method == 'save')
+				{
+					$this->saveFieldtypeSettings($fieldtype);
+					ee()->functions->redirect(cp_url('addons/settings/' . $addon));
+				}
+
+				$vars['_module_cp_body'] = $this->getFieldtypeSettings($fieldtype);
+				ee()->view->cp_heading = $fieldtype['name'] . ' ' . lang('configuration');
+			}
+			else
+			{
+				// Extension
+				$extension = $this->getExtensions($addon);
+				if ( ! empty($extension) && $extension['installed'] === TRUE)
+				{
+					if ($method == 'save')
+					{
+						$this->saveExtensionSettings($addon);
+						ee()->functions->redirect(cp_url('addons/settings/' . $addon));
+					}
+
+					$vars['_module_cp_body'] = $this->getExtensionSettings($addon);
+					ee()->view->cp_heading = $extension['name'] . ' ' . lang('configuration');
+				}
+			}
+		}
 
 		if ( ! isset($vars['_module_cp_body']))
 		{
@@ -673,9 +706,9 @@ class Addons extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Display add-on settings
+	 * Display plugin manual/documentation
 	 *
-	 * @param	str	$addon	The name of add-on whose settings to display
+	 * @param	str	$addon	The name of plugin whose manual to display
 	 * @return	void
 	 */
 	public function manual($addon)
@@ -742,6 +775,11 @@ class Addons extends CP_Controller {
 
 		foreach(ee()->addons->get_files() as $module => $info)
 		{
+			if ($name && $name != $module)
+			{
+				continue;
+			}
+
 			ee()->lang->loadfile($module);
 			$display_name = (lang(strtolower($module).'_module_name') != FALSE) ? lang(strtolower($module).'_module_name') : $info['name'];
 
@@ -815,6 +853,11 @@ class Addons extends CP_Controller {
 
 		foreach (ee()->addons_model->get_plugins($name) as $plugin => $info)
 		{
+			if ($name && $name != $plugin)
+			{
+				continue;
+			}
+
 			$developer = (strpos($info['installed_path'], PATH_ADDONS) === FALSE) ? 'native' : 'third_party';
 
 			$data = array(
@@ -867,6 +910,8 @@ class Addons extends CP_Controller {
 	 *        'name'		 => 'FooBar',
 	 *        'package'		 => 'foobar',
 	 *        'type'		 => 'fieldtype',
+	 *        'settings'     => array(),
+	 *        'settings_url' => '' (optional)
 	 */
 	private function getFieldtypes($name = NULL)
 	{
@@ -877,6 +922,11 @@ class Addons extends CP_Controller {
 
 		foreach (ee()->api_channel_fields->fetch_all_fieldtypes() as $fieldtype => $info)
 		{
+			if ($name && $name != $fieldtype)
+			{
+				continue;
+			}
+
 			$data = array(
 				'developer'		=> $info['type'],
 				'version'		=> $info['version'],
@@ -897,6 +947,13 @@ class Addons extends CP_Controller {
 				{
 					$data['update'] = $FT->info['version'];
 				}
+
+				if ($installed[$fieldtype]['has_global_settings'] == 'y')
+				{
+					$data['settings'] = unserialize(base64_decode($installed[$fieldtype]['settings']));
+					$data['settings_url'] = cp_url('addons/settings/' . $fieldtype);
+				}
+
 			}
 
 			if (is_null($name))
@@ -951,6 +1008,11 @@ class Addons extends CP_Controller {
 
 		foreach(ee()->addons->get_files('extensions') as $ext_name => $ext)
 		{
+			if ($name && $name != $ext_name)
+			{
+				continue;
+			}
+
 			// Add the package path so things don't hork in the constructor
 			ee()->load->add_package_path($ext['path']);
 
@@ -1192,10 +1254,10 @@ class Addons extends CP_Controller {
 	 * @param	str	$name	The name of module whose settings to display
 	 * @return	str			The rendered settings (with HTML)
 	 */
-	public function getModuleSettings($name, $method = "index")
+	private function getModuleSettings($name, $method = "index")
 	{
 		$addon = ee()->security->sanitize_filename(strtolower($name));
-		$installed = $this->addons->get_installed('modules', TRUE);
+		$installed = ee()->addons->get_installed('modules', TRUE);
 
 		if (ee()->session->userdata['group_id'] != 1)
 		{
@@ -1253,7 +1315,315 @@ class Addons extends CP_Controller {
 		return $_module_cp_body;
 	}
 
-	// --------------------------------------------------------------------
+	private function getExtensionSettings($name)
+	{
+		if (ee()->config->item('allow_extensions') != 'y')
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$addon = ee()->security->sanitize_filename(strtolower($name));
+
+		$extension = $this->getExtensions($addon);
+
+		if (empty($extension) || $extension['installed'] === FALSE)
+		{
+			show_error(lang('requested_module_not_installed').NBS.$addon);
+		}
+
+		ee()->lang->loadfile(strtolower($addon));
+
+		$extension_model = ee('Model')->get('Extension')
+			->filter('enabled', 'y')
+			->filter('class', $extension['class'])
+			->first();
+
+		$current = strip_slashes(unserialize($extension_model->settings));
+
+		$class_name = $extension['class'];
+		$OBJ = new $class_name();
+
+		if (method_exists($OBJ, 'settings_form') === TRUE)
+		{
+			return $OBJ->settings_form($current);
+		}
+
+		$vars = array(
+			'base_url' => cp_url('addons/settings/' . $name . '/save'),
+			'cp_page_title' => $extension['name'] . ' ' . lang('configuration'),
+			'save_btn_text' => 'btn_save_settings',
+			'save_btn_text_working' => 'btn_save_settings_working',
+			'sections' => array(array())
+		);
+
+		$settings = array();
+
+		foreach ($OBJ->settings() as $key => $options)
+		{
+			$element = array(
+				'title' => $key,
+				'desc' => '',
+				'fields' => array()
+			);
+
+			if (isset($current[$key]))
+			{
+				$value = $current[$key];
+			}
+			elseif (is_array($options))
+			{
+				$value = $options[2];
+			}
+			elseif (is_string($options))
+			{
+				$value = $options;
+			}
+			else
+			{
+				$value = '';
+			}
+
+			$sub = '';
+			$choices = array();
+			$selected = '';
+
+			if (isset($subtext[$key]))
+			{
+				foreach ($subtext[$key] as $txt)
+				{
+					$sub .= lang($txt);
+				}
+			}
+
+			$element['desc'] = $sub;
+
+			if ( ! is_array($options))
+			{
+				$element['fields'][$key] = array(
+					'type' => 'text',
+					'value' => str_replace("\\'", "'", $value),
+				);
+				$vars['sections'][0][] = $element;
+
+				continue;
+			}
+
+			switch ($options[0])
+			{
+				case 's':
+					// Select fields
+					foreach ($options[1] as $k => $v)
+					{
+						$choices[$k] = lang($v);
+					}
+
+					$element['fields'][$key] = array(
+						'type' => 'dropdown',
+						'value' => $value,
+						'choices' => $choices
+					);
+					break;
+
+				case 'r':
+					// Radio buttons
+					foreach ($options[1] as $k => $v)
+					{
+						$choices[$k] = lang($v);
+					}
+
+					$element['fields'][$key] = array(
+						'type' => 'radio',
+						'value' => $value,
+						'choices' => $choices
+					);
+					break;
+
+				case 'ms':
+				case 'c':
+					// Multi-select & Checkboxes
+					foreach ($options[1] as $k => $v)
+					{
+						$choices[$k] = lang($v);
+					}
+
+					$element['fields'][$key] = array(
+						'type' => 'checkbox',
+						'value' => $value,
+						'choices' => $choices
+					);
+					break;
+
+				case 't':
+					// Textareas
+					$element['fields'][$key] = array(
+						'type' => 'textarea',
+						'value' => str_replace("\\'", "'", $value),
+						'kill_pipes' => $options['1']['kill_pipes']
+					);
+					break;
+
+				case 'i':
+					// Input fields
+					$element['fields'][$key] = array(
+						'type' => 'text',
+						'value' => str_replace("\\'", "'", $value),
+					);
+					break;
+			}
+
+			$vars['sections'][0][] = $element;
+		}
+
+		return ee('View')->make('_shared/form')->render($vars);
+	}
+
+	private function saveExtensionSettings($name)
+	{
+		if (ee()->config->item('allow_extensions') != 'y')
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$addon = ee()->security->sanitize_filename(strtolower($name));
+
+		$extension = $this->getExtensions($addon);
+
+		if (empty($extension) || $extension['installed'] === FALSE)
+		{
+			show_error(lang('requested_module_not_installed').NBS.$addon);
+		}
+
+		ee()->lang->loadfile(strtolower($addon));
+
+		$class_name = $extension['class'];
+		$OBJ = new $class_name();
+
+		if (method_exists($OBJ, 'settings_form') === TRUE)
+		{
+			return $OBJ->save_settings();
+		}
+
+		$settings = array();
+
+		foreach ($OBJ->settings() as $key => $value)
+		{
+			if ( ! is_array($value))
+			{
+				$settings[$key] = (ee()->input->post($key) !== FALSE) ? ee()->input->get_post($key) : $value;
+			}
+			elseif (is_array($value) && isset($value['1']) && is_array($value['1']))
+			{
+				if(is_array(ee()->input->post($key)) OR $value[0] == 'ms' OR $value[0] == 'c')
+				{
+					$data = (is_array(ee()->input->post($key))) ? ee()->input->get_post($key) : array();
+
+					$data = array_intersect($data, array_keys($value['1']));
+				}
+				else
+				{
+					if (ee()->input->post($key) === FALSE)
+					{
+						$data = ( ! isset($value['2'])) ? '' : $value['2'];
+					}
+					else
+					{
+						$data = ee()->input->post($key);
+					}
+				}
+
+				$settings[$key] = $data;
+			}
+			else
+			{
+				$settings[$key] = (ee()->input->post($key) !== FALSE) ? ee()->input->get_post($key) : '';
+			}
+		}
+
+		$extension_model = ee('Model')->get('Extension')
+			->filter('enabled', 'y')
+			->filter('class', $extension['class'])
+			->first();
+
+		$extension_model->settings = serialize($settings);
+		$extension_model->save();
+
+		ee('Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang('settings_saved'))
+			->addToBody(sprintf(lang('settings_saved_desc'), $extension['name']))
+			->defer();
+	}
+
+	private function getFieldtypeSettings($fieldtype)
+	{
+		if ( ! ee()->cp->allowed_group('can_access_addons', 'can_access_fieldtypes'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$FT = ee()->api_channel_fields->setup_handler($fieldtype['package'], TRUE);
+
+		$FT->settings = $fieldtype['settings'];
+
+		$fieldtype_settings = ee()->api_channel_fields->apply('display_global_settings');
+
+		if (is_array($fieldtype_settings))
+		{
+			$vars = array(
+				'base_url' => cp_url('addons/settings/' . $fieldtype['package'] . '/save'),
+				'cp_page_title' => $fieldtype['name'] . ' ' . lang('configuration'),
+				'save_btn_text' => 'btn_save_settings',
+				'save_btn_text_working' => 'btn_save_settings_working',
+				'sections' => array(array($fieldtype_settings))
+			);
+			return ee('View')->make('_shared/form')->render($vars);
+		}
+		else
+		{
+			$html = '<div class="box">';
+			$html .= '<h1>' . $fieldtype['name'] . ' ' . lang('configuration') . '</h1>';
+			$html .= form_open(cp_url('addons/settings/' . $fieldtype['package'] . '/save'), 'class="settings"');
+			$html .= ee('Alert')->get('shared-form');
+			$html .= $fieldtype_settings;
+			$html .= '<fieldset class="form-ctrls">';
+			$html .= cp_form_submit('btn_save_settings', 'btn_save_settings_working');
+			$html .= '</fieldset>';
+			$html .= form_close();
+			$html .= '</div>';
+
+			return $html;
+		}
+
+	}
+
+	private function saveFieldtypeSettings($fieldtype)
+	{
+		if ( ! ee()->cp->allowed_group('can_access_addons', 'can_access_fieldtypes'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$FT = ee()->api_channel_fields->setup_handler($fieldtype['package'], TRUE);
+
+		$FT->settings = $fieldtype['settings'];
+
+		$settings = ee()->api_channel_fields->apply('save_global_settings');
+		$settings = base64_encode(serialize($settings));
+
+		$fieldtype_model = ee('Model')->get('ChannelFieldStructure')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('field_name', $fieldtype['package'])
+			->first();
+
+		$fieldtype_model->field_settings = $settings;
+		$fieldtype_model->save();
+
+		ee('Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang('settings_saved'))
+			->addToBody(sprintf(lang('settings_saved_desc'), $fieldtype['name']))
+			->defer();
+	}
 
 	/**
 	 * Wraps the major version number in a <b> tag

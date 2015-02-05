@@ -104,11 +104,36 @@ class Radio_ft extends EE_Fieldtype {
 		$selected = $data;
 
 		$r = '';
+		$class = 'choice mr';
 
 		foreach($field_options as $key => $value)
 		{
 			$selected = ($key == $data);
-			$r .= '<label>'.form_radio($this->field_name, $value, $selected).NBS.$key.'</label>';
+
+			if (REQ == 'CP')
+			{
+				if ($selected)
+				{
+					$class .= ' chosen';
+				}
+
+				if ($key == 'y' && $value == lang('yes'))
+				{
+					$class .= ' yes';
+				}
+				elseif ($key == 'n' && $value == lang('no'))
+				{
+					$class .= ' no';
+				}
+
+				$r .= '<label class="' . $class . '">' . form_radio($this->field_name, $key, $selected) . $value . '</label>';
+			}
+			else
+			{
+				$r .= '<label>'.form_radio($this->field_name, $value, $selected).NBS.$key.'</label>';
+			}
+
+			$class = 'choice';
 		}
 
 		switch ($container)

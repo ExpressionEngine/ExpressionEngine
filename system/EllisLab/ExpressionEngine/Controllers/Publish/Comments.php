@@ -340,7 +340,7 @@ class Comments extends Publish {
 					),
 					array(
 						'title' => 'status',
-						'desc' => 'status_desc',
+						'desc' => 'comment_status_desc',
 						'fields' => array(
 							'status' => array(
 								'type' => 'dropdown',

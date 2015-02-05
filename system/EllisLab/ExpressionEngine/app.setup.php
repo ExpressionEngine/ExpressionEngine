@@ -36,9 +36,17 @@ return array(
 		'Filter' => function($ee)
 		{
 			$filters = new \EllisLab\ExpressionEngine\Service\Filter\FilterFactory($ee->make('View', '_shared/filters'));
-			$filters->seteeContainer($ee);
+			$filters->setDIContainer($ee);
 			return $filters;
 		},
+
+		'Model' => function($ee)
+		{
+			$frontend = new Model\Frontend($ee->make('Model.Datastore'));
+			$frontend->setValidationFactory($ee->make('Validation'));
+
+			return $frontend;
+		}
 
 	),
 
@@ -69,17 +77,15 @@ return array(
 			return new \EllisLab\ExpressionEngine\Service\Grid\Grid();
 		},
 
-		'Model' => function($ee)
+		'Model.Datastore' => function($ee)
 		{
 			$app = $ee->make('App');
 
-			$datastore = new Model\DataStore(
+			return new Model\DataStore(
 				ee()->db,
 				$app->getModels(),
 				$ee->getPrefix()
 			);
-
-			return new Model\Frontend($datastore);
 		},
 
 		'Request' => function($ee)
@@ -153,6 +159,7 @@ return array(
 			'ChannelFieldStructure' => 'Module\Channel\Model\ChannelFieldStructure',
 			'ChannelEntry' => 'Module\Channel\Model\ChannelEntry',
 			'ChannelFormSettings' => 'Module\Channel\Model\ChannelFormSettings',
+			'ChannelLayout' => 'Module\Channel\Model\ChannelLayout',
 
 			// ..\Comment
 			'Comment' => 'Module\Comment\Model\Comment',

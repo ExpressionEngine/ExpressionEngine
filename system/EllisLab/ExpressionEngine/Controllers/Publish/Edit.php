@@ -62,7 +62,7 @@ class Edit extends Publish {
 		// is we will filter by that id. If not we throw an error.
 		if ($channel_id)
 		{
-			if ($this->isAdmin || in_array($channel_id, $this->assignedChannelIds))
+			if ($this->is_admin || in_array($channel_id, $this->assigned_channel_ids))
 			{
 				$entries->filter('channel_id', $channel_id);
 				$channel = ee('Model')->get('Channel', $channel_id)
@@ -78,14 +78,14 @@ class Edit extends Publish {
 		// need to filter via WHERE IN
 		else
 		{
-			if ( ! $this->isAdmin)
+			if ( ! $this->is_admin)
 			{
-				if (empty($this->assignedChannelIds))
+				if (empty($this->assigned_channel_ids))
 				{
 					show_error(lang('no_channels'));
 				}
 
-				$entries->filter('channel_id', 'IN', $this->assignedChannelIds);
+				$entries->filter('channel_id', 'IN', $this->assigned_channel_ids);
 			}
 		}
 
@@ -183,7 +183,7 @@ class Edit extends Publish {
 
 		foreach ($entries->all() as $entry)
 		{
-			$title = $entry->title . '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . $entry->getAuthor()->screen_name . ', ' . lang('in') . ': ' . $entry->getChannel()->channel_title . '</span>';
+			$title = $entry->title . '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . $entry->getAuthor()->getMemberName() . ', ' . lang('in') . ': ' . $entry->getChannel()->channel_title . '</span>';
 
 			if ($entry->comment_total > 1)
 			{
@@ -269,6 +269,37 @@ class Edit extends Publish {
 		ee()->cp->render('publish/edit/index', $vars);
 	}
 
+	public function entry($id)
+	{
+		$entry = ee('Model')->get('ChannelEntry', $id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
+
+		if ( ! $entry)
+		{
+			show_error(lang('no_entries_matching_that_criteria'));
+		}
+
+		$form_attributes = array(
+			'class' => 'settings ajax-validate',
+		);
+
+		$vars = array(
+			'entry' => $entry,
+			'form_url' => cp_url('publish/edit/entry/' . $id),
+			'form_attributes' => $form_attributes,
+			'layout' => $entry->getDisplay()
+		);
+
+		ee()->view->cp_breadcrumbs = array(
+			cp_url('publish/edit', array('filter_by_channel' => $entry->channel_id)) => $entry->getChannel()->channel_title,
+		);
+
+		ee()->view->cp_page_title = sprintf(lang('edit_entry_with_title'), $entry->title);
+
+		ee()->cp->render('publish/edit/entry', $vars);
+	}
+
 	private function createCategoryFilter($channel = NULL)
 	{
 		$cat_id = ($channel) ? explode('|', $channel->cat_group) : NULL;
@@ -325,14 +356,14 @@ class Edit extends Publish {
 		$entries = ee('Model')->get('ChannelEntry', $entry_ids)
 			->filter('site_id', ee()->config->item('site_id'));
 
-		if ( ! $this->isAdmin)
+		if ( ! $this->is_admin)
 		{
-			if (empty($this->assignedChannelIds))
+			if (empty($this->assigned_channel_ids))
 			{
 				show_error(lang('no_channels'));
 			}
 
-			$entries->filter('channel_id', 'IN', $this->assignedChannelIds);
+			$entries->filter('channel_id', 'IN', $this->assigned_channel_ids);
 		}
 
 		$entry_names = $entries->all()->pluck('title');

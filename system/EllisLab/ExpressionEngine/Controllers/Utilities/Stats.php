@@ -30,6 +30,7 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  * @link		http://ellislab.com
  */
 class Stats extends Utilities {
+
 	private $forums_exist	= FALSE;
 	private $sources		= array('members', 'channel_titles', 'sites');
 
@@ -118,6 +119,7 @@ class Stats extends Utilities {
 		ee()->cp->render('utilities/stats', $vars);
 	}
 
+	// @TODO This begs to be done via new Models (or a Service?)
 	public function sync($source = NULL)
 	{
 		$sources = ee()->input->post('selection') ?: array($source);
@@ -132,14 +134,14 @@ class Stats extends Utilities {
 		{
 			$member_entries = array(); // arrays of statements to update
 
-			$member_entries_count = $this->db->query('SELECT COUNT(*) AS count, author_id FROM exp_channel_titles GROUP BY author_id ORDER BY count DESC');
+			$member_entries_count = ee()->db->query('SELECT COUNT(*) AS count, author_id FROM exp_channel_titles GROUP BY author_id ORDER BY count DESC');
 
-			if (isset($this->cp->installed_modules['comment']))
+			if (isset(ee()->cp->installed_modules['comment']))
 			{
-				$member_comments_count = $this->db->query('SELECT COUNT(*) AS count, author_id FROM exp_comments GROUP BY author_id ORDER BY count DESC');
+				$member_comments_count = ee()->db->query('SELECT COUNT(*) AS count, author_id FROM exp_comments GROUP BY author_id ORDER BY count DESC');
 			}
 
-			$member_message_count = $this->db->query('SELECT COUNT(*) AS count, recipient_id FROM exp_message_copies WHERE message_read = "n" GROUP BY recipient_id ORDER BY count DESC');
+			$member_message_count = ee()->db->query('SELECT COUNT(*) AS count, recipient_id FROM exp_message_copies WHERE message_read = "n" GROUP BY recipient_id ORDER BY count DESC');
 
 			$member_data = array();
 
@@ -157,7 +159,7 @@ class Stats extends Utilities {
 				}
 			}
 
-			if ($this->cp->installed_modules['comment'])
+			if (ee()->cp->installed_modules['comment'])
 			{
 				if ($member_comments_count->num_rows() > 0)
 				{
@@ -203,8 +205,8 @@ class Stats extends Utilities {
 
 			if ($this->forums_exist === TRUE)
 			{
-				$forum_topics_count = $this->db->query('SELECT COUNT(*) AS count, author_id FROM exp_forum_topics GROUP BY author_id ORDER BY count DESC');
-				$forum_posts_count = $this->db->query('SELECT COUNT(*) AS count, author_id FROM exp_forum_posts GROUP BY author_id ORDER BY count DESC');
+				$forum_topics_count = ee()->db->query('SELECT COUNT(*) AS count, author_id FROM exp_forum_topics GROUP BY author_id ORDER BY count DESC');
+				$forum_posts_count = ee()->db->query('SELECT COUNT(*) AS count, author_id FROM exp_forum_posts GROUP BY author_id ORDER BY count DESC');
 
 				if ($forum_topics_count->num_rows() > 0)
 				{
@@ -249,7 +251,7 @@ class Stats extends Utilities {
 
 			if ( ! empty($member_entries))
 			{
-				$this->db->update_batch('exp_members', $member_entries, 'member_id');
+				ee()->db->update_batch('exp_members', $member_entries, 'member_id');
 
 				// Set the rest to 0 for all of the above
 
@@ -261,8 +263,8 @@ class Stats extends Utilities {
 					'total_forum_topics'	=> 0
 				);
 
-				$this->db->where_not_in('member_id', array_keys($member_entries));
-				$this->db->update('members', $data);
+				ee()->db->where_not_in('member_id', array_keys($member_entries));
+				ee()->db->update('members', $data);
 			}
 		}
 
@@ -270,10 +272,10 @@ class Stats extends Utilities {
 		{
 			$channel_titles = array(); // arrays of statements to update
 
-			if (isset($this->cp->installed_modules['comment']))
+			if (isset(ee()->cp->installed_modules['comment']))
 			{
-				$channel_comments_count = $this->db->query('SELECT COUNT(comment_id) AS count, entry_id FROM exp_comments WHERE status = "o" GROUP BY entry_id ORDER BY count DESC');
-				$channel_comments_recent = $this->db->query('SELECT MAX(comment_date) AS recent, entry_id FROM exp_comments WHERE status = "o" GROUP BY entry_id ORDER BY recent DESC');
+				$channel_comments_count = ee()->db->query('SELECT COUNT(comment_id) AS count, entry_id FROM exp_comments WHERE status = "o" GROUP BY entry_id ORDER BY count DESC');
+				$channel_comments_recent = ee()->db->query('SELECT MAX(comment_date) AS recent, entry_id FROM exp_comments WHERE status = "o" GROUP BY entry_id ORDER BY recent DESC');
 
 				if ($channel_comments_count->num_rows() > 0)
 				{
@@ -300,20 +302,20 @@ class Stats extends Utilities {
 
 			if (count($channel_titles) > 0)
 			{
-				$this->db->update_batch('exp_channel_titles', $channel_titles, 'entry_id');
+				ee()->db->update_batch('exp_channel_titles', $channel_titles, 'entry_id');
 
-				$this->db->where_not_in('entry_id', array_keys($channel_titles));
-				$this->db->update('channel_titles', $data);
+				ee()->db->where_not_in('entry_id', array_keys($channel_titles));
+				ee()->db->update('channel_titles', $data);
 			}
 			else
 			{
-				$this->db->update('channel_titles', $data);
+				ee()->db->update('channel_titles', $data);
 			}
 		}
 
 		if (in_array('forums', $this->sources))
 		{
-			$query = $this->db->query("SELECT forum_id FROM exp_forums WHERE forum_is_cat = 'n'");
+			$query = ee()->db->query("SELECT forum_id FROM exp_forums WHERE forum_is_cat = 'n'");
 
 			if ($query->num_rows() > 0)
 			{
@@ -321,34 +323,34 @@ class Stats extends Utilities {
 				{
 					$forum_id = $row['forum_id'];
 
-					$res1 = $this->db->query("SELECT COUNT(*) AS count FROM exp_forum_topics WHERE forum_id = '{$forum_id}'");
+					$res1 = ee()->db->query("SELECT COUNT(*) AS count FROM exp_forum_topics WHERE forum_id = '{$forum_id}'");
 					$total1 = $res1->row('count');
 
-					$res2 = $this->db->query("SELECT COUNT(*) AS count FROM exp_forum_posts WHERE forum_id = '{$forum_id}'");
+					$res2 = ee()->db->query("SELECT COUNT(*) AS count FROM exp_forum_posts WHERE forum_id = '{$forum_id}'");
 					$total2 = $res2->row('count');
 
-					$this->db->query("UPDATE exp_forums SET forum_total_topics = '{$total1}', forum_total_posts = '{$total2}' WHERE forum_id = '{$forum_id}'");
+					ee()->db->query("UPDATE exp_forums SET forum_total_topics = '{$total1}', forum_total_posts = '{$total2}' WHERE forum_id = '{$forum_id}'");
 				}
 			}
 		}
 
 		if (in_array('forum_topics', $this->sources))
 		{
-			$total_rows = $this->db->count_all('forum_topics');
+			$total_rows = ee()->db->count_all('forum_topics');
 
-			$query = $this->db->query("SELECT forum_id FROM exp_forums WHERE forum_is_cat = 'n' ORDER BY forum_id");
+			$query = ee()->db->query("SELECT forum_id FROM exp_forums WHERE forum_is_cat = 'n' ORDER BY forum_id");
 
 			foreach ($query->result_array() as $row)
 			{
 				$forum_id = $row['forum_id'];
 
-				$query = $this->db->query("SELECT COUNT(*) AS count FROM exp_forum_topics WHERE forum_id = '{$forum_id}'");
+				$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_forum_topics WHERE forum_id = '{$forum_id}'");
 				$data['forum_total_topics'] = $query->row('count');
 
-				$query = $this->db->query("SELECT COUNT(*) AS count FROM exp_forum_posts WHERE forum_id = '{$forum_id}'");
+				$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_forum_posts WHERE forum_id = '{$forum_id}'");
 				$data['forum_total_posts'] = $query->row('count');
 
-				$query = $this->db->query("SELECT topic_id, title, topic_date, last_post_date, last_post_author_id, screen_name
+				$query = ee()->db->query("SELECT topic_id, title, topic_date, last_post_date, last_post_author_id, screen_name
 									FROM exp_forum_topics, exp_members
 									WHERE member_id = last_post_author_id
 									AND forum_id = '{$forum_id}'
@@ -360,7 +362,7 @@ class Stats extends Utilities {
 				$data['forum_last_post_author_id']	= ($query->num_rows() == 0) ? 0 : $query->row('last_post_author_id') ;
 				$data['forum_last_post_author']		= ($query->num_rows() == 0) ? '' : $query->row('screen_name') ;
 
-				$query = $this->db->query("SELECT post_date, author_id, screen_name
+				$query = ee()->db->query("SELECT post_date, author_id, screen_name
 									FROM exp_forum_posts, exp_members
 									WHERE  member_id = author_id
 									AND forum_id = '{$forum_id}'
@@ -376,64 +378,64 @@ class Stats extends Utilities {
 					}
 				}
 
-				$this->db->query($this->db->update_string('exp_forums', $data, "forum_id='{$forum_id}'"));
+				ee()->db->query(ee()->db->update_string('exp_forums', $data, "forum_id='{$forum_id}'"));
 				unset($data);
 
 				/** -------------------------------------
 				/**  Update
 				/** -------------------------------------*/
 
-				$query = $this->db->query("SELECT forum_id FROM exp_forums");
+				$query = ee()->db->query("SELECT forum_id FROM exp_forums");
 
 				$total_topics = 0;
 				$total_posts  = 0;
 
 				foreach ($query->result_array() as $row)
 				{
-					$q = $this->db->query("SELECT COUNT(*) AS count FROM exp_forum_topics WHERE forum_id = '".$row['forum_id']."'");
+					$q = ee()->db->query("SELECT COUNT(*) AS count FROM exp_forum_topics WHERE forum_id = '".$row['forum_id']."'");
 					$total_topics = ($total_topics == 0) ? $q->row('count')  : $total_topics + $q->row('count') ;
 
-					$q = $this->db->query("SELECT COUNT(*) AS count FROM exp_forum_posts WHERE forum_id = '".$row['forum_id']."'");
+					$q = ee()->db->query("SELECT COUNT(*) AS count FROM exp_forum_posts WHERE forum_id = '".$row['forum_id']."'");
 					$total_posts = ($total_posts == 0) ? $q->row('count')  : $total_posts + $q->row('count') ;
 				}
 
-				$this->db->query("UPDATE exp_stats SET total_forum_topics = '{$total_topics}', total_forum_posts = '{$total_posts}'");
+				ee()->db->query("UPDATE exp_stats SET total_forum_topics = '{$total_topics}', total_forum_posts = '{$total_posts}'");
 			}
 
-			$query = $this->db->query("SELECT topic_id FROM exp_forum_topics WHERE thread_total <= 1");
+			$query = ee()->db->query("SELECT topic_id FROM exp_forum_topics WHERE thread_total <= 1");
 
 			if ($query->num_rows() > 0)
 			{
 				foreach ($query->result_array() as $row)
 				{
-					$res = $this->db->query("SELECT COUNT(*) AS count FROM exp_forum_posts WHERE topic_id = '".$row['topic_id']."'");
+					$res = ee()->db->query("SELECT COUNT(*) AS count FROM exp_forum_posts WHERE topic_id = '".$row['topic_id']."'");
 					$count = ($res->row('count') == 0) ? 1 : $res->row('count')  + 1;
 
-					$this->db->query("UPDATE exp_forum_topics SET thread_total = '{$count}' WHERE topic_id = '".$row['topic_id']."'");
+					ee()->db->query("UPDATE exp_forum_topics SET thread_total = '{$count}' WHERE topic_id = '".$row['topic_id']."'");
 				}
 			}
 		}
 
 		if (in_array('sites', $this->sources))
 		{
-			$original_site_id = $this->config->item('site_id');
+			$original_site_id = ee()->config->item('site_id');
 
-			$query = $this->db->query("SELECT site_id FROM exp_sites");
+			$query = ee()->db->query("SELECT site_id FROM exp_sites");
 
 			foreach($query->result_array() as $row)
 			{
-				$this->config->set_item('site_id', $row['site_id']);
+				ee()->config->set_item('site_id', $row['site_id']);
 
-				if (isset($this->cp->installed_modules['comment']))
+				if (isset(ee()->cp->installed_modules['comment']))
 				{
-					$this->stats->update_comment_stats();
+					ee()->stats->update_comment_stats();
 				}
 
-				$this->stats->update_member_stats();
-				$this->stats->update_channel_stats();
+				ee()->stats->update_member_stats();
+				ee()->stats->update_channel_stats();
 			}
 
-			$this->config->set_item('site_id', $original_site_id);
+			ee()->config->set_item('site_id', $original_site_id);
 		}
 
 		ee()->view->set_message('success', lang('sync_completed'), '', TRUE);

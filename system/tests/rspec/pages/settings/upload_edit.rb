@@ -26,13 +26,13 @@ class UploadEdit < ControlPanelPage
 			click_link 'Upload Directories'
 		end
 
-		find('tr:nth-child('+(number+1).to_s+') li.edit a').click
+		find('tbody tr:nth-child('+number.to_s+') li.edit a').click
 	end
 
 	# Dynamic getter for a specific Grid row
 	def grid_row(row)
 		# Plus three to skip over header, blank row and no results row
-		image_manipulations.find('tr:nth-child('+(row+3).to_s+')')
+		image_manipulations.find('tbody tr:nth-child('+(row+2).to_s+')')
 	end
 
 	# Returns the name field in a specific Grid row, and so on...

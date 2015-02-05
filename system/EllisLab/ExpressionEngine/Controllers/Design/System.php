@@ -137,7 +137,7 @@ class System extends Design {
 		$vars = array(
 			'form_url' => cp_url('design/system/edit/' . $template->template_id),
 			'template' => $template,
-			'author' => (empty($author)) ? '-' : $author->screen_name,
+			'author' => (empty($author)) ? '-' : $author->getMemberName(),
 		);
 
 		$this->loadCodeMirrorAssets();
