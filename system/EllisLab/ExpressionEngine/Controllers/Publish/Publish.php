@@ -2,11 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Controllers\Publish;
 
-use CP_Controller;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
-use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
-use EllisLab\ExpressionEngine\Module\Channel\Model\ChannelEntry;
+use EllisLab\ExpressionEngine\Controllers\Publish\AbstractPublish as AbstractPublishController;
 /**
  * ExpressionEngine - by EllisLab
  *

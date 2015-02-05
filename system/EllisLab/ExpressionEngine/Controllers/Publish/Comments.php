@@ -5,7 +5,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Publish;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
-use EllisLab\ExpressionEngine\Controllers\Publish\Publish;
+use EllisLab\ExpressionEngine\Controllers\Publish\AbstractPublish as AbstractPublishController;
 use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
 
 /**
@@ -31,7 +31,7 @@ use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Comments extends Publish {
+class Comments extends AbstractPublishController {
 
 	public function __construct()
 	{
