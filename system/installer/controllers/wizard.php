@@ -760,9 +760,14 @@ class Wizard extends CI_Controller {
 	{
 		$this->title = sprintf(lang($type.'_success'), $this->version);
 		$this->subtitle = lang('completed');
+
+		// Put the version number in the success note
 		$template_variables['success_note'] = sprintf(lang($type.'_success_note'), $this->version);
+
+		// Send them to their CP via the form
 		$template_variables['action'] = $this->userdata['cp_url'];
 		$template_variables['method'] = 'get';
+
 		$this->set_output('success', $template_variables);
 	}
 
