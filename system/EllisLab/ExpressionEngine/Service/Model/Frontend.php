@@ -77,7 +77,10 @@ class Frontend {
 	public function make($name, array $data = array())
 	{
 		$model = $this->datastore->make($name, $this, $data);
-		$model->setValidator($this->validation->make());
+		if ($this->validation)
+		{
+			$model->setValidator($this->validation->make());
+		}
 		return $model;
 	}
 
