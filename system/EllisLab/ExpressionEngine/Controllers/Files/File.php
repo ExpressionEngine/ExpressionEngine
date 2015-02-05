@@ -2,7 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Controllers\Files;
 
-use EllisLab\ExpressionEngine\Controllers\Files\Files;
+use EllisLab\ExpressionEngine\Controllers\Files\AbstractFiles as AbstractFilesController;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -27,7 +27,7 @@ use EllisLab\ExpressionEngine\Controllers\Files\Files;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class File extends Files {
+class File extends AbstractFilesController {
 
 	public function view($id)
 	{

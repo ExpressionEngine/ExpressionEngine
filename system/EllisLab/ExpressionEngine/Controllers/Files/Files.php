@@ -3,7 +3,7 @@
 namespace EllisLab\ExpressionEngine\Controllers\Files;
 
 use ZipArchive;
-use CP_Controller;
+use EllisLab\ExpressionEngine\Controllers\Files\AbstractFiles as AbstractFilesController;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
@@ -33,7 +33,7 @@ use EllisLab\ExpressionEngine\Model\File\UploadDestination;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Files extends CP_Controller {
+class Files extends AbstractFilesController {
 
 	public function index()
 	{
