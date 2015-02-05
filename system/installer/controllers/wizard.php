@@ -1217,7 +1217,7 @@ class Wizard extends CI_Controller {
 		$suffix = sprintf(lang('subtitle_step'), $this->current_step, $this->steps);
 		$this->subtitle = (empty($this->subtitle))
 			? $suffix
-			: $this->subtitle.' | '.$suffix;
+			: $this->subtitle.' <span class="faded">|</span> '.$suffix;
 
 		$version = explode('.', $this->version, 2);
 		$data = array(
