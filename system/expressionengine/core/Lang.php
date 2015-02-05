@@ -195,8 +195,6 @@ class EE_Lang {
 	{
 		if ($which != '')
 		{
-			$EE =& get_instance();
-
 			$line = ( ! isset($this->language[$which])) ? $which : $this->language[$which];
 
 			if ($label != '')
