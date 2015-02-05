@@ -7,6 +7,7 @@ use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
+use EllisLab\ExpressionEngine\Controllers\Design\AbstractDesign as AbstractDesignController;
 
 /**
  * ExpressionEngine - by EllisLab
