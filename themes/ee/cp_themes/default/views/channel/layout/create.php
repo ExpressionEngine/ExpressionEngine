@@ -20,7 +20,9 @@
 				<div class="layout-tools col w-2">
 					<ul class="toolbar vertical">
 						<li class="move"><a href=""></a></li>
+						<?php if ( ! $field->isRequired()): ?>
 						<li class="hide"><a href=""></a></li>
+						<?php endif; ?>
 					</ul>
 				</div>
 				<div class="setting-txt col w-14">
