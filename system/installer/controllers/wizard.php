@@ -652,7 +652,7 @@ class Wizard extends CI_Controller {
 		// This can happen if someone mistakenly nukes their config.php file
 		// and then trying to run the installer...
 
-		$query = $this->db->query($this->schema->sql_find_like());
+		$query = ee()->db->query($this->schema->sql_find_like());
 
 		if ($query->num_rows() > 0 AND ! isset($_POST['install_override']))
 		{
@@ -1347,8 +1347,8 @@ class Wizard extends CI_Controller {
 		$group_ids      = array();
 		$default_access = array();
 
-		$this->db->select(array('group_title', 'group_id'));
-		$query = $this->db->get_where('member_groups', array('site_id' => 1));
+		ee()->db->select(array('group_title', 'group_id'));
+		$query = ee()->db->get_where('member_groups', array('site_id' => 1));
 
 		foreach($query->result_array() as $row)
 		{
@@ -1403,7 +1403,7 @@ class Wizard extends CI_Controller {
 						'is_site_default' => ($default_group == $group) ? 'y' : 'n'
 					);
 
-					$this->db->insert('template_groups', $data);
+					ee()->db->insert('template_groups', $data);
 
 					$template_groups[substr($folder, 0, -6)] = array();
 
@@ -1501,9 +1501,9 @@ class Wizard extends CI_Controller {
 							}
 						}
 
-						$this->db->insert('templates', $data);
+						ee()->db->insert('templates', $data);
 
-						$template_id = $this->db->insert_id();
+						$template_id = ee()->db->insert_id();
 
 						// Access.  Why, oh, why must this be so complicated?! Ugh...
 						$access = $default_access;
@@ -1527,7 +1527,7 @@ class Wizard extends CI_Controller {
 
 						foreach($access as $group_id)
 						{
-							$this->db->insert('template_no_access',  array('template_id' => $template_id, 'member_group' => $group_id));
+							ee()->db->insert('template_no_access',  array('template_id' => $template_id, 'member_group' => $group_id));
 						}
 					}
 				}
@@ -1563,11 +1563,11 @@ class Wizard extends CI_Controller {
 					{
 						if ($type == 'snippets')
 						{
-							$this->db->insert('snippets', array('snippet_name' => $name, 'snippet_contents' => $contents, 'site_id' => 1));
+							ee()->db->insert('snippets', array('snippet_name' => $name, 'snippet_contents' => $contents, 'site_id' => 1));
 						}
 						else
 						{
-							$this->db->insert('global_variables', array('variable_name' => $name, 'variable_data' => $contents, 'site_id' => 1));
+							ee()->db->insert('global_variables', array('variable_name' => $name, 'variable_data' => $contents, 'site_id' => 1));
 						}
 					}
 				}
@@ -1916,8 +1916,8 @@ class Wizard extends CI_Controller {
 			$site_prefs[$value] = $config[$value];
 		}
 
-		$this->db->where('site_id', 1);
-		$this->db->update('sites', array('site_system_preferences' => base64_encode(serialize($site_prefs))));
+		ee()->db->where('site_id', 1);
+		ee()->db->update('sites', array('site_system_preferences' => base64_encode(serialize($site_prefs))));
 
 		// Default Mailinglists Prefs
 		$mailinglist_default = array('mailinglist_enabled', 'mailinglist_notify', 'mailinglist_notify_emails');
@@ -1929,8 +1929,8 @@ class Wizard extends CI_Controller {
 			$site_prefs[$value] = $config[$value];
 		}
 
-		$this->db->where('site_id', 1);
-		$this->db->update('sites', array('site_mailinglist_preferences' => base64_encode(serialize($site_prefs))));
+		ee()->db->where('site_id', 1);
+		ee()->db->update('sites', array('site_mailinglist_preferences' => base64_encode(serialize($site_prefs))));
 
 		// Default Members Prefs
 		$member_default = array(
@@ -1987,8 +1987,8 @@ class Wizard extends CI_Controller {
 			$site_prefs[$value] = $config[$value];
 		}
 
-		$this->db->where('site_id', 1);
-		$this->db->update('sites', array('site_member_preferences' => base64_encode(serialize($site_prefs))));
+		ee()->db->where('site_id', 1);
+		ee()->db->update('sites', array('site_member_preferences' => base64_encode(serialize($site_prefs))));
 
 		// Default Templates Prefs
 		$template_default = array(
@@ -2007,8 +2007,8 @@ class Wizard extends CI_Controller {
 			$site_prefs[$value] = $config[$value];
 		}
 
-		$this->db->where('site_id', 1);
-		$this->db->update('sites', array('site_template_preferences' => base64_encode(serialize($site_prefs))));
+		ee()->db->where('site_id', 1);
+		ee()->db->update('sites', array('site_template_preferences' => base64_encode(serialize($site_prefs))));
 
 		// Default Channels Prefs
 		$channel_default = array(
@@ -2037,8 +2037,8 @@ class Wizard extends CI_Controller {
 			}
 		}
 
-		$this->db->where('site_id', 1);
-		$this->db->update('sites', array('site_channel_preferences' => base64_encode(serialize($site_prefs))));
+		ee()->db->where('site_id', 1);
+		ee()->db->update('sites', array('site_channel_preferences' => base64_encode(serialize($site_prefs))));
 
 		// Remove Site Prefs from Config
 		foreach(array_merge($admin_default, $mailinglist_default, $member_default, $template_default, $channel_default) as $value)
@@ -2166,8 +2166,8 @@ class Wizard extends CI_Controller {
 	 */
 	private function update_modules()
 	{
-		$this->db->select('module_name, module_version');
-		$query = $this->db->get('modules');
+		ee()->db->select('module_name, module_version');
+		$query = ee()->db->get('modules');
 
 		foreach ($query->result() as $row)
 		{
@@ -2205,7 +2205,7 @@ class Wizard extends CI_Controller {
 
 				if ($UPD->version > $row->module_version && method_exists($UPD, 'update') && $UPD->update($row->module_version) !== FALSE)
 				{
-					$this->db->update('modules', array('module_version' => $UPD->version), array('module_name' => ucfirst($module)));
+					ee()->db->update('modules', array('module_version' => $UPD->version), array('module_name' => ucfirst($module)));
 				}
 
 				$this->load->remove_package_path($path);
