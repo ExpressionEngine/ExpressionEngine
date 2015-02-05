@@ -110,17 +110,6 @@ class Layout extends Channel {
 		);
 		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
 
-		ee()->view->header = array(
-			'title' => lang('channel_manager'),
-			'form_url' => cp_url('channel/search'),
-			'toolbar_items' => array(
-				'settings' => array(
-					'href' => cp_url('settings/content-design'),
-					'title' => lang('settings')
-				)
-			)
-		);
-
 		ee()->view->cp_page_title = sprintf(lang('channel_form_layouts'), $channel->channel_title);
 		ee()->cp->set_breadcrumb(cp_url('channel'), lang('channels'));
 
