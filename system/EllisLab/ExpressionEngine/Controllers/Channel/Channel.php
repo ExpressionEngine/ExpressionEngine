@@ -6,7 +6,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
-use EllisLab\ExpressionEngine\Controllers\AbstractChannel as AbstractChannelController;
+use EllisLab\ExpressionEngine\Controllers\Channel\AbstractChannel as AbstractChannelController;
 
 /**
  * ExpressionEngine - by EllisLab
