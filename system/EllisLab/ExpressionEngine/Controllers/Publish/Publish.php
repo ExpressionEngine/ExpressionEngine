@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Controllers\Publish;
 
 use EllisLab\ExpressionEngine\Controllers\Publish\AbstractPublish as AbstractPublishController;
+
 /**
  * ExpressionEngine - by EllisLab
  *
