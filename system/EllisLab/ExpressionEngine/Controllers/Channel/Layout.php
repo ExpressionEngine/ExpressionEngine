@@ -31,6 +31,12 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  */
 class Layout extends Channel {
 
+	function __construct()
+	{
+		parent::__construct();
+		ee()->lang->loadfile('content');
+	}
+
 	public function layout($channel_id)
 	{
 		$channel = ee('Model')->get('Channel', $channel_id)
@@ -127,7 +133,25 @@ class Layout extends Channel {
 			show_error(lang('unauthorized_access'));
 		}
 
+		$entry = ee('Model')->make('ChannelEntry')->setChannel($channel);
 
+		$vars = array(
+			'channel' => $channel,
+			'form_url' => cp_url('channel/layout/create/' . $channel_id),
+			'layout' => $entry->getDisplay()
+		);
+
+		ee()->view->cp_breadcrumbs = array(
+			cp_url('channel') => lang('channels'),
+			cp_url('channel/layout/' . $channel_id) => lang('form_layouts')
+		);
+
+		ee()->view->cp_page_title = lang('create_form_layout');
+
+		ee()->view->header = NULL;
+		ee()->view->left_nav = NULL;
+
+		ee()->cp->render('channel/layout/create', $vars);
 	}
 
 	public function edit($layout_id)
