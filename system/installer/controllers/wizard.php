@@ -44,6 +44,10 @@ class Wizard extends CI_Controller {
 	public $title             = 'ExpressionEngine Installation and Update Wizard';
 	public $subtitle          = '';
 
+	private $current_step = 1;
+	private $steps        = 3;
+	private $addon_step   = FALSE;
+
 	public $now;
 	public $year;
 	public $month;
@@ -509,6 +513,9 @@ class Wizard extends CI_Controller {
 	 */
 	private function do_install()
 	{
+		// Make sure the current step is the correct number
+		$this->current_step = 2;
+
 		// Assign the _POST array values
 		$this->assign_install_values();
 		$this->load->library('javascript');
@@ -758,6 +765,9 @@ class Wizard extends CI_Controller {
 	 */
 	private function show_success($type = 'update', $template_variables)
 	{
+		// Make sure the title and subtitle are correct, current_step should be
+		// the same as the number of steps
+		$this->current_step = $this->steps;
 		$this->title = sprintf(lang($type.'_success'), $this->version);
 		$this->subtitle = lang('completed');
 
@@ -885,6 +895,9 @@ class Wizard extends CI_Controller {
 	 */
 	private function do_update()
 	{
+		// Make sure the current step is the correct number
+		$this->current_step = ($this->addon_step) ? 3 : 2;
+
 		$this->load->library('javascript');
 
 		$this->load->library('progress');
@@ -1199,6 +1212,12 @@ class Wizard extends CI_Controller {
 				: sprintf(lang('error_installing'), $this->version);
 			$this->subtitle = lang('stopped');
 		}
+
+		// Format the subtitle by adding the current step
+		$suffix = sprintf(lang('subtitle_step'), $this->current_step, $this->steps);
+		$this->subtitle = (empty($this->subtitle))
+			? $suffix
+			: $this->subtitle.' | '.$suffix;
 
 		$version = explode('.', $this->version, 2);
 		$data = array(

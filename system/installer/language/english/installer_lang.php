@@ -3,13 +3,14 @@
 $lang = array(
 
 // Statuses
-'paused'     => 'Paused',     // add-on updater
-'processing' => 'Processing', // working
-'completed'  => 'Completed',  // success
-'stopped'    => 'Stopped',    // error
+'paused'        => 'Paused',
+'processing'    => 'Processing',
+'completed'     => 'Completed',
+'stopped'       => 'Stopped',
+'required'      => '✱ Required Fields',
+'subtitle_step' => 'Step %d of %d',
 
 // Install Form
-'required' => '✱ Required Fields',
 
 	// Database Server
 	'db_hostname'      => 'Database Server Address',
