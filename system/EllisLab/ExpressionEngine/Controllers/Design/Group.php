@@ -2,7 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Controllers\Design;
 
-use EllisLab\ExpressionEngine\Controllers\Design\Design;
+use EllisLab\ExpressionEngine\Controllers\Design\AbstractDesign as AbstractDesignController;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -27,7 +27,7 @@ use EllisLab\ExpressionEngine\Controllers\Design\Design;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Group extends Design {
+class Group extends AbstractDesignController {
 
 	/**
 	 * Constructor

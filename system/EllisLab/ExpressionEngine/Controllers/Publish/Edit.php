@@ -5,7 +5,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Publish;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
-use EllisLab\ExpressionEngine\Controllers\Publish\Publish;
+use EllisLab\ExpressionEngine\Controllers\Publish\AbstractPublish as AbstractPublishController;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -30,7 +30,7 @@ use EllisLab\ExpressionEngine\Controllers\Publish\Publish;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Edit extends Publish {
+class Edit extends AbstractPublishController {
 
 	/**
 	 * Displays all available entries

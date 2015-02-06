@@ -19,7 +19,7 @@ $lang = array(
 'subject'				=> 'Subject',
 'message'				=> 'Message',
 'plaintext_body'		=> 'Plain text body',
-'plaintext_alt'			=> 'Alternate content for your <abbr title="Hyper-Text Markup Language">HTML</abbr> e-mail, will be delivered in Plain Text, when an e-mail application cannot render <abbr title="Hyper-Text Markup Language">HTML</abbr>.',
+'plaintext_alt'			=> 'Alternate content for your <abbr title="Hyper-Text Markup Language">HTML</abbr> Email, will be delivered in Plain Text, when an Email application cannot render <abbr title="Hyper-Text Markup Language">HTML</abbr>.',
 'send_an_email'			=> 'Send an Email',
 'sending_email'			=> 'Sending Email',
 'batchmode_ready_to_begin'	=> 'The email sending routine will begin in five seconds',
@@ -56,8 +56,8 @@ $lang = array(
 'email_sent_message'	=> 'Your email has been sent',
 'all_email_sent_message'	=> 'All emails have been sent',
 'email_success'			=> 'Email Sent',
-'view_email_cache'		=> 'Sent e-mails',
-'emails'				=> 'e-mails',
+'view_email_cache'		=> 'Sent Emails',
+'emails'				=> 'Emails',
 'previous_email'		=> 'Previously Sent Email',
 'email_title'			=> 'Email Title',
 'email_date'			=> 'Date Sent',
@@ -80,7 +80,7 @@ $lang = array(
 'total_sent'			=> 'Total Sent',
 'remove'				=> 'Remove',
 'dummy_location'		=> 'The email was output to: %s',
-'search_emails_button'	=> 'Search e-mails',
+'search_emails_button'	=> 'Search Emails',
 
 ''=>''
 );

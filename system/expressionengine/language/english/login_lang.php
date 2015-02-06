@@ -47,7 +47,7 @@ $lang = array(
 //-----------------------------------
 
 'email_address' =>
-'e-mail address',
+'Email address',
 
 'forgotten_password' =>
 'I forgot my password',

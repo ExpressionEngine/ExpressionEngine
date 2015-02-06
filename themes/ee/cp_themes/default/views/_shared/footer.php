@@ -25,8 +25,25 @@
 		</section>
 		<section class="footer">
 			<div class="snap">
-				<div class="left"><p>&copy;2003&mdash;<?=date('Y')?> <a href="<?=ee()->cp->masked_url('http://ellislab.com/expressionengine')?>" rel="external">EllisLab</a>, Inc.</p></div>
-				<div class="right"><p><a class="scroll" href="#top">scroll to top</a></p></div>
+				<div class="left">
+					<p>&copy;2003&mdash;<?=date('Y')?> <a href="<?=ee()->cp->masked_url('http://ellislab.com/expressionengine')?>" rel="external">EllisLab</a>, Inc.<br><a class="scroll" href="#top">scroll to top</a></p>
+				</div>
+				<div class="right">
+					<p><?=lang('license_no')?>:
+						<?php if (ee()->config->item('license_number')): ?>
+							<?=ee()->config->item('license_number')?>
+						<?php elseif (ee()->cp->allowed_group('can_access_admin', 'can_access_sys_prefs')): ?>
+							<a href="<?=cp_url('settings/license')?>"><?=lang('register_now')?></a>
+						<?php else: ?>
+							<?=lang('not_entered')?>
+						<?php endif ?>
+						<?php if (ee()->config->item('license_contact')): ?>
+							<br><?=lang('owned_by')?>: <a href="mailto:<?=ee()->config->item('license_contact')?>">
+								<?=(ee()->config->item('license_contact_name')) ?: ee()->config->item('license_contact')?>
+							</a>
+						<?php endif ?>
+					</p>
+				</div>
 			</div>
 		</section>
 		<div class="overlay"></div>

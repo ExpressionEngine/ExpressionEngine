@@ -89,6 +89,27 @@ $lang = array(
 'no_layouts' =>
 'No Layouts',
 
+'create_form_layout' =>
+'Create Form Layout',
+
+'layout_options' =>
+'Layout Options',
+
+'name_desc' =>
+'Full descriptive name of this form layout.',
+
+'member_group(s)' =>
+'Member group(s)?',
+
+'member_group(s)_desc' =>
+'Choose the member group(s) to apply this layout to.',
+
+'btn_create_layout' =>
+'Create Layout',
+
+'btn_preview_layout' =>
+'Preview Layout',
+
 /**
  * Channel Create/Edit
  */
@@ -270,10 +291,10 @@ $lang = array(
 'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s to image resources will be automagically rendered as images in this channel\'s entries.',
 
 'convert_urls_emails_to_links' =>
-'Render <abbr title="Unified Resource Locator">URL</abbr>s and e-mail addresses as links?',
+'Render <abbr title="Unified Resource Locator">URL</abbr>s and Email addresses as links?',
 
 'convert_urls_emails_to_links_desc' =>
-'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s and e-mail address will be rendered as links in this channel\'s entries.',
+'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s and Email address will be rendered as links in this channel\'s entries.',
 
 'allow_rich_text_editing' =>
 'Allow Rich Text Editing?',
@@ -333,15 +354,15 @@ $lang = array(
 'Enable channel entry notification?',
 
 'enable_channel_entry_notification_desc' =>
-'When set to <b>enable</b>, all recipients listed will receive e-mail notification when a new entry is published to this channel.</em>
-<em>Separate multiple e-mails with a <mark>comma (,)</mark>.',
+'When set to <b>enable</b>, all recipients listed will receive Email notification when a new entry is published to this channel.</em>
+<em>Separate multiple Emails with a <mark>comma (,)</mark>.',
 
 'enable_comment_notification' =>
 'Enable comment notification?',
 
 'enable_comment_notification_desc' =>
-'When set to <b>enable</b>, all recipients listed will receive e-mail notification when a new comment is submitted to this channel.</em>
-<em>Separate multiple e-mails with a <mark>comma (,)</mark>.',
+'When set to <b>enable</b>, all recipients listed will receive Email notification when a new comment is submitted to this channel.</em>
+<em>Separate multiple Emails with a <mark>comma (,)</mark>.',
 
 'commenting' =>
 'Commenting',
@@ -365,10 +386,10 @@ $lang = array(
 'When set to <b>yes</b>, only registered members can submit comments to this channel\'s entires.',
 
 'require_email' =>
-'Require e-mail?',
+'Require Email?',
 
 'require_email_desc'=>
-'When set to <b>yes</b>, a member must provide a valid e-mail address to submit comments to this channel\'s entries.',
+'When set to <b>yes</b>, a member must provide a valid Email address to submit comments to this channel\'s entries.',
 
 'enable_captcha' =>
 'Enable <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr>?',
@@ -418,7 +439,7 @@ $lang = array(
 'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s to image resources will be automagically rendered as images in this channel\'s comments.',
 
 'comment_convert_urls_emails_to_links_desc' =>
-'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s and e-mail address will be rendered as links in this channel\'s comments.',
+'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s and Email address will be rendered as links in this channel\'s comments.',
 
 'btn_save_settings' =>
 'Save Settings',

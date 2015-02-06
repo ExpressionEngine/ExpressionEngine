@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Design;
 
 use \EE_Route;
 use ZipArchive;
-use EllisLab\ExpressionEngine\Controllers\Design\Design;
+use EllisLab\ExpressionEngine\Controllers\Design\AbstractDesign as AbstractDesignController;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
@@ -33,7 +33,7 @@ use EllisLab\ExpressionEngine\Model\Template\Template as TemplateModel;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Template extends Design {
+class Template extends AbstractDesignController {
 
 	/**
 	 * Constructor

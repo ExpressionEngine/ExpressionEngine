@@ -599,6 +599,18 @@ $lang = array(
 'url_title' =>
 'URL Title',
 
+'license_no' =>
+'License #',
+
+'owned_by' =>
+'Owned by',
+
+'not_entered' =>
+'not entered',
+
+'register_now' =>
+'Register Now',
+
 //----------------------------
 // confirm removal modal
 //----------------------------

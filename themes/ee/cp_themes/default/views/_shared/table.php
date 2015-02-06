@@ -46,12 +46,13 @@ if ($wrap): ?>
 							<?php endif ?>
 							<?php if ($sortable && $settings['sort'] && $base_url != NULL): ?>
 								<?php
+								$url = clone $base_url;
 								$arrow_dir = ($sort_col == $label) ? $sort_dir : 'desc';
 								$link_dir = ($arrow_dir == 'asc') ? 'desc' : 'asc';
-								$base_url->setQueryStringVariable('sort_col', $label);
-								$base_url->setQueryStringVariable('sort_dir', $link_dir);
+								$url->setQueryStringVariable('sort_col', $label);
+								$url->setQueryStringVariable('sort_dir', $link_dir);
 								?>
-								<a href="<?=$base_url?>" class="ico sort <?=$arrow_dir?> right"></a>
+								<a href="<?=$url?>" class="ico sort <?=$arrow_dir?> right"></a>
 							<?php endif ?>
 						</th>
 					<?php endif ?>

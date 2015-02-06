@@ -66,7 +66,7 @@ feature 'Communicate' do
 
 		@page.should have_alert
 		@page.should have_css 'div.alert.issue'
-		@page.alert.should have_text "Attention: e-mail not sent"
+		@page.alert.should have_text "Attention: Email not sent"
 
 		@page.subject.first(:xpath, ".//../..")[:class].should include 'invalid'
 		@page.subject.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
@@ -98,7 +98,7 @@ feature 'Communicate' do
 
 		@page.should have_alert
 		@page.should have_css 'div.alert.issue'
-		@page.alert.should have_text "Attention: e-mail not sent"
+		@page.alert.should have_text "Attention: Email not sent"
 
 		@page.from_email.value.should eq my_email
 		@page.from_email.first(:xpath, ".//../..")[:class].should include 'invalid'
@@ -129,7 +129,7 @@ feature 'Communicate' do
 
 		@page.should have_alert
 		@page.should have_css 'div.alert.issue'
-		@page.alert.should have_text 'Attention: e-mail not sent'
+		@page.alert.should have_text 'Attention: Email not sent'
 
 		@page.from_email.value.should eq my_email
 		@page.from_email.first(:xpath, ".//../..")[:class].should include 'invalid'

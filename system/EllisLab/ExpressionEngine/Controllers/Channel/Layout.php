@@ -5,6 +5,8 @@ namespace EllisLab\ExpressionEngine\Controllers\Channel;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
+use EllisLab\ExpressionEngine\Model\Content\Display\DefaultLayout;
+use EllisLab\ExpressionEngine\Controllers\Channel\AbstractChannel as AbstractChannelController;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -29,9 +31,9 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Layout extends Channel {
+class Layout extends AbstractChannelController {
 
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 		ee()->lang->loadfile('content');
@@ -135,11 +137,66 @@ class Layout extends Channel {
 
 		$entry = ee('Model')->make('ChannelEntry')->setChannel($channel);
 
+		$member_gropus = ee('Model')->get('MemberGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		$default_layout = new DefaultLayout();
+		$channel_layout = ee('Model')->make('ChannelLayout');
+		$field_layout = $default_layout->getLayout();
+
+		foreach($channel->getCustomFields() as $custom_field)
+		{
+			$field_layout[0]['fields'][] = array(
+				'field' => $entry->getCustomFieldPrefix() . $custom_field->field_id,
+				'visible' => TRUE,
+				'collapsed' => FALSE
+			);
+		}
+
+		$channel_layout->field_layout = $field_layout;
+
 		$vars = array(
 			'channel' => $channel,
 			'form_url' => cp_url('channel/layout/create/' . $channel_id),
-			'layout' => $entry->getDisplay()
+			'layout' => $entry->getDisplay(),
+			'channel_layout' => $channel_layout,
+			'selected_member_groups' => array(),
+			'member_groups' => $member_gropus,
 		);
+
+		ee()->load->library('form_validation');
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'layout_name',
+				'label' => 'lang:layout_name',
+				'rules' => 'required'
+			),
+		));
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			if (ee()->input->post('submit') == 'create')
+			{
+				// Crate the layout!
+			}
+			else
+			{
+				// Preview it...somehow
+			}
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee('Alert')->makeInline('layout-form')
+				->asIssue()
+				->withTitle(lang('create_layout_error'))
+				->addToBody(lang('create_layout_error_desc'));
+		}
 
 		ee()->view->cp_breadcrumbs = array(
 			cp_url('channel') => lang('channels'),
@@ -150,6 +207,10 @@ class Layout extends Channel {
 
 		ee()->view->header = NULL;
 		ee()->view->left_nav = NULL;
+
+		ee()->javascript->set_global('publish_layout', $channel_layout->field_layout);
+		ee()->cp->add_js_script('ui', 'sortable');
+		ee()->cp->add_js_script('file', 'cp/channel/layout');
 
 		ee()->cp->render('channel/layout/create', $vars);
 	}

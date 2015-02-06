@@ -39,6 +39,13 @@ class License extends Settings {
 		$vars['sections'] = array(
 			array(
 				array(
+					'title' => 'license_contact_name',
+					'desc' => 'license_contact_name_desc',
+					'fields' => array(
+						'license_contact_name' => array('type' => 'text')
+					)
+				),
+				array(
 					'title' => 'license_contact',
 					'desc' => 'license_contact_desc',
 					'fields' => array(
@@ -57,9 +64,14 @@ class License extends Settings {
 
 		ee()->form_validation->set_rules(array(
 			array(
+				 'field'   => 'license_contact_name',
+				 'label'   => 'lang:license_contact_name',
+				 'rules'   => 'strip_tags|trim|valid_xss_check'
+			),
+			array(
 				 'field'   => 'license_contact',
 				 'label'   => 'lang:license_contact',
-				 'rules'   => 'required'
+				 'rules'   => 'required|strip_tags|trim|valid_xss_check|valid_email'
 			),
 			array(
 				 'field'   => 'license_number',

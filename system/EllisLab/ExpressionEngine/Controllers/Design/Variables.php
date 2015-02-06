@@ -3,7 +3,7 @@
 namespace EllisLab\ExpressionEngine\Controllers\Design;
 
 use ZipArchive;
-use EllisLab\ExpressionEngine\Controllers\Design\Design;
+use EllisLab\ExpressionEngine\Controllers\Design\AbstractDesign as AbstractDesignController;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
@@ -31,7 +31,7 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Variables extends Design {
+class Variables extends AbstractDesignController {
 
 	protected $msm = FALSE;
 
