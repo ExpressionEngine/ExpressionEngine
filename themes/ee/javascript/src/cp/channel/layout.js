@@ -26,6 +26,7 @@ $(document).ready(function () {
 
 	var index_at_start = NaN;
 
+	// Sorting the fields
 	$('form').sortable({
 		handle: "li.move a",
 		items: "fieldset.sortable",
@@ -47,6 +48,7 @@ $(document).ready(function () {
 	});
 
 	$('li.hide a').on('click', function(e) {
+	// Saving the hide/unhide state
 		var tab = getTabIndex();
 		var field = getFieldIndex(this);
 
@@ -57,6 +59,7 @@ $(document).ready(function () {
 		e.preventDefault();
 	});
 
+	// Saving the collapsed state
 	$('.sub-arrow').on('click', function(e) {
 		var tab = getTabIndex();
 		var field = getFieldIndex(this);
