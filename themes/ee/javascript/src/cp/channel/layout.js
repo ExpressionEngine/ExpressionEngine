@@ -26,6 +26,23 @@ $(document).ready(function () {
 
 	var index_at_start = NaN;
 
+	// Sorting the tabs
+	$('div.tab-bar').sortable({
+		items: "li",
+		start: function (event, ui)
+		{
+			index_at_start = $('div.tab-bar ul li').index(ui.item[0]);
+		},
+		stop: function (event, ui) {
+			var index_at_stop = $('div.tab-bar ul li').index(ui.item[0]);
+
+			var tab = EE.publish_layout.splice(index_at_start, 1);
+			EE.publish_layout.splice(index_at_stop, 0, tab[0]);
+
+			index_at_start = NaN
+		}
+	});
+
 	// Sorting the fields
 	$('form').sortable({
 		handle: "li.move a",
@@ -68,4 +85,5 @@ $(document).ready(function () {
 
 		e.preventDefault();
 	});
+
 });
