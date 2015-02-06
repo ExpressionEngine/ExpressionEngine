@@ -14,8 +14,16 @@ class DefaultLayout implements LayoutInterface {
 			'name' => 'publish',
 			'show' => TRUE,
 			'fields' => array(
-				array('title', TRUE),
-				array('url_title', TRUE)
+				array(
+					'field' => 'title',
+					'visible' => TRUE,
+					'collapsed' => FALSE
+				),
+				array(
+					'field' => 'url_title',
+					'visible' => TRUE,
+					'collapsed' => FALSE
+				)
 			)
 		);
 
@@ -23,9 +31,21 @@ class DefaultLayout implements LayoutInterface {
 			'name' => 'date',
 			'show' => TRUE,
 			'fields' => array(
-				array('entry_date', TRUE),
-				array('expiration_date', TRUE),
-				array('comment_expiration_date', TRUE)
+				array(
+					'field' => 'entry_date',
+					'visible' => TRUE,
+					'collapsed' => FALSE
+				),
+				array(
+					'field' => 'expiration_date',
+					'visible' => TRUE,
+					'collapsed' => FALSE
+				),
+				array(
+					'field' => 'comment_expiration_date',
+					'visible' => TRUE,
+					'collapsed' => FALSE
+				)
 			)
 		);
 
@@ -33,7 +53,11 @@ class DefaultLayout implements LayoutInterface {
 			'name' => 'categories',
 			'show' => TRUE,
 			'fields' => array(
-				array('categories', TRUE)
+				array(
+					'field' => 'categories',
+					'visible' => TRUE,
+					'collapsed' => FALSE
+				)
 			)
 		);
 
@@ -41,11 +65,31 @@ class DefaultLayout implements LayoutInterface {
 			'name' => 'options',
 			'show' => TRUE,
 			'fields' => array(
-				array('channel_id', TRUE),
-				array('status', TRUE),
-				array('author_id', TRUE),
-				array('sticky', TRUE),
-				array('allow_comments', TRUE)
+				array(
+					'field' => 'channel_id',
+					'visible' => TRUE,
+					'collapsed' => FALSE
+				),
+				array(
+					'field' => 'status',
+					'visible' => TRUE,
+					'collapsed' => FALSE
+				),
+				array(
+					'field' => 'author_id',
+					'visible' => TRUE,
+					'collapsed' => FALSE
+				),
+				array(
+					'field' => 'sticky',
+					'visible' => TRUE,
+					'collapsed' => FALSE
+				),
+				array(
+					'field' => 'allow_comments',
+					'visible' => TRUE,
+					'collapsed' => FALSE
+				)
 			)
 		);
 	}
@@ -63,8 +107,9 @@ class DefaultLayout implements LayoutInterface {
 		foreach ($this->layout as $section)
 		{
 			$tab = new LayoutTab($section['name'], $section['name']);
-			foreach ($section['fields'] as list($field_id, $visible))
+			foreach ($section['fields'] as $field)
 			{
+				$field_id = $field['field'];
 				$tab->addField($fields[$field_id]);
 				unset($fields[$field_id]);
 			}
