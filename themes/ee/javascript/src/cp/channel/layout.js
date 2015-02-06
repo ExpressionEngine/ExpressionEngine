@@ -24,45 +24,55 @@ $(document).ready(function () {
 		return $('div.tab-open fieldset').index(field);
 	}
 
-	var index_at_start = NaN;
+	var field_index_at_start = NaN;
+	var tab_index_at_start = NaN;
 
 	// Sorting the tabs
 	$('div.tab-bar').sortable({
 		items: "li",
 		start: function (event, ui)
 		{
-			index_at_start = $('div.tab-bar ul li').index(ui.item[0]);
+			tab_index_at_start = $('div.tab-bar ul li').index(ui.item[0]);
 		},
-		stop: function (event, ui) {
 		update: function (event, ui) {
 			var index_at_stop = $('div.tab-bar ul li').index(ui.item[0]);
 
-			var tab = EE.publish_layout.splice(index_at_start, 1);
+			var tab = EE.publish_layout.splice(tab_index_at_start, 1);
 			EE.publish_layout.splice(index_at_stop, 0, tab[0]);
 
-			index_at_start = NaN
+			tab_index_at_start = NaN;
 		}
 	});
 
 	// Sorting the fields
-	$('form').sortable({
+	$('div.tab').sortable({
+		connectWith: "div.tab",
 		handle: "li.move a",
 		items: "fieldset.sortable",
 		start: function (event, ui)
 		{
-			index_at_start = $('div.tab-open fieldset').index(ui.item[0]);
+			field_index_at_start = $('div.tab-open fieldset').index(ui.item[0]);
+			tab_index_at_start = getTabIndex();
+
+			$('.tab-bar ul a').on('mouseover', function() {
+				$(this).trigger('click');
+			});
 		},
 		stop: function (event, ui) {
-		update: function (event, ui) {
+			if (ui.position == ui.originalPosition) {
+				return;
+			}
+
 			var index_at_stop = $('div.tab-open fieldset').index(ui.item[0]);
 
-			var field = EE.publish_layout[getTabIndex()].fields.splice(index_at_start, 1);
+			var field = EE.publish_layout[tab_index_at_start].fields.splice(field_index_at_start, 1);
 			EE.publish_layout[getTabIndex()].fields.splice(index_at_stop, 0, field[0]);
 
 			$('fieldset.sortable').removeClass('last');
 			$('fieldset.sortable:last-child').addClass('last');
 
-			index_at_start = NaN
+			field_index_at_start = NaN;
+			$('.tab-bar ul a').off('mouseover');
 		}
 	});
 
