@@ -34,6 +34,7 @@ $(document).ready(function () {
 			index_at_start = $('div.tab-bar ul li').index(ui.item[0]);
 		},
 		stop: function (event, ui) {
+		update: function (event, ui) {
 			var index_at_stop = $('div.tab-bar ul li').index(ui.item[0]);
 
 			var tab = EE.publish_layout.splice(index_at_start, 1);
@@ -52,6 +53,7 @@ $(document).ready(function () {
 			index_at_start = $('div.tab-open fieldset').index(ui.item[0]);
 		},
 		stop: function (event, ui) {
+		update: function (event, ui) {
 			var index_at_stop = $('div.tab-open fieldset').index(ui.item[0]);
 
 			var field = EE.publish_layout[getTabIndex()].fields.splice(index_at_start, 1);
