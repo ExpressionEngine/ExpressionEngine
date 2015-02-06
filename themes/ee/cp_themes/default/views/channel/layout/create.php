@@ -4,10 +4,10 @@
 	<h1>
 		<?=$cp_page_title?> <span class="required intitle">&#10033; <?=lang('required_fields')?></span>
 	</h1>
-	<div class="tab-bar">
+	<div class="tab-bar layout">
 		<ul>
 			<?php foreach ($layout->getTabs() as $index => $tab): ?>
-			<li><a<?php if ($index == 0): ?> class="act"<?php endif; ?> href="" rel="t-<?=$index?>"><?=lang($tab->title)?></a> <span class="tab-remove"></span></li>
+			<li><a<?php if ($index == 0): ?> class="act"<?php endif; ?> href="" rel="t-<?=$index?>"><?=lang($tab->title)?></a> <?php if ($tab->title != 'publish'): ?><span class="tab-remove"></span><?php endif; ?></li>
 			<?php endforeach; ?>
 		</ul>
 		<a class="btn action add-tab" href="#"><?=lang('add_tab')?></a>
@@ -17,7 +17,7 @@
 		<?php foreach ($layout->getTabs() as $index => $tab): ?>
 		<div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">
 		<?php foreach ($tab->getFields() as $field): ?>
-			<fieldset class="col-group<?php if (end($tab->getFields()) == $field) echo' last'?>">
+			<fieldset class="col-group sortable<?php if (end($tab->getFields()) == $field) echo' last'?>">
 				<div class="layout-tools col w-2">
 					<ul class="toolbar vertical">
 						<li class="move"><a href=""></a></li>
@@ -27,8 +27,8 @@
 					</ul>
 				</div>
 				<div class="setting-txt col w-14">
-					<h3><span class="ico sub-arrow"></span><?=$field->getLabel()?><?php if ($field->isRequired()): ?> <span class="required" title="required field">&#10033;</span><?php endif; ?></h3>
-					<em><?=$field->getType()?></em>
+					<h3<?php if ($field->isCollapsed()): ?> class="field-closed"<?php endif; ?>><span class="ico sub-arrow"></span><?=$field->getLabel()?><?php if ($field->isRequired()): ?> <span class="required" title="required field">&#10033;</span><?php endif; ?></h3>
+					<em<?php if ($field->isCollapsed()): ?> style="display: none"<?php endif; ?>><?=$field->getType()?></em>
 				</div>
 			</fieldset>
 		<?php endforeach; ?>
