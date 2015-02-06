@@ -172,6 +172,12 @@ $lang = array(
 'license_and_reg_title' =>
 'License &amp; Registration Settings',
 
+'license_contact_name' =>
+'Account holder name',
+
+'license_contact_name_desc' =>
+'Name of individual or company that owns this license.',
+
 'license_contact' =>
 'Account holder e-mail',
 

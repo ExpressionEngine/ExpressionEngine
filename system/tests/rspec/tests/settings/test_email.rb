@@ -30,7 +30,7 @@ feature 'Outgoing Email Settings' do
 
   it 'should validate the form' do
     field_required = "This field is required."
-    email_invalid = 'The Address field must contain a valid email address.'
+    email_invalid = 'This field must contain a valid email address.'
     server_required = 'This field is required for SMTP.'
 
     @page.mail_protocol.select 'SMTP'
