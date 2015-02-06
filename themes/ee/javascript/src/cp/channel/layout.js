@@ -47,8 +47,8 @@ $(document).ready(function () {
 		}
 	});
 
-	$('li.hide a').on('click', function(e) {
 	// Saving the hide/unhide state
+	$('li.hide a, li.unhide a').on('click', function(e) {
 		var tab = getTabIndex();
 		var field = getFieldIndex(this);
 
