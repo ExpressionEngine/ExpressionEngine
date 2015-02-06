@@ -29,8 +29,8 @@ $lang = array(
 	'administrator_account' => 'Administrator Account',
 	'username'              => 'Username',
 	'username_note'         => 'Username you want to use to login to the <abbr title="Control Panel">CP</abbr>.',
-	'e_mail'                => 'e-mail',
-	'e_mail_note'           => 'e-mail address you want to use for this account.',
+	'e_mail'                => 'Email',
+	'e_mail_note'           => 'Email address you want to use for this account.',
 	'password'              => 'Password',
 	'password_note'         => 'Password you want to use to login to the <abbr title="Control Panel">CP</abbr>.',
 
