@@ -39,7 +39,7 @@ $lang = array(
 'profile_common' => 'Common',
 'profile_member' => 'Member',
 'profile_account' => 'Account',
-'profile_email' => 'e-mail',
+'profile_email' => 'Email',
 'profile_registration' => 'Registration',
 'profile_subscriptions' => 'Subscriptions',
 

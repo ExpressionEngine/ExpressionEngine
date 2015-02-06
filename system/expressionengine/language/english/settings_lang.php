@@ -16,7 +16,7 @@ $lang = array(
 'URL and Path Settings',
 
 'outgoing_email' =>
-'Outgoing e-mail',
+'Outgoing Email',
 
 'debugging_output' =>
 'Debugging & Output',
@@ -179,10 +179,10 @@ $lang = array(
 'Name of individual or company that owns this license.',
 
 'license_contact' =>
-'Account holder e-mail',
+'Account holder Email',
 
 'license_contact_desc' =>
-'Contact e-mail for the account that owns this license.',
+'Contact Email for the account that owns this license.',
 
 'license_number' =>
 'License number',
@@ -286,25 +286,25 @@ $lang = array(
 'Address',
 
 'webmaster_email_desc' =>
-'e-mail address you want automated e-mail to come from. Without this, automated e-mail will likely be marked as spam.',
+'Email address you want automated Email to come from. Without this, automated Email will likely be marked as spam.',
 
 'webmaster_name' =>
 'From name',
 
 'webmaster_name_desc' =>
-'Name you want automated e-mails to use.',
+'Name you want automated Emails to use.',
 
 'email_charset' =>
 'Character encoding',
 
 'email_charset_desc' =>
-'e-mail require character encoding to be properly formatted. UTF-8 is recommended.',
+'Email require character encoding to be properly formatted. UTF-8 is recommended.',
 
 'mail_protocol' =>
 'Protocol',
 
 'mail_protocol_desc' =>
-'Preferred e-mail sending protocol. SMTP is recommended.',
+'Preferred Email sending protocol. SMTP is recommended.',
 
 'smtp_options' =>
 'SMTP Options',
@@ -334,7 +334,7 @@ $lang = array(
 'Mail format',
 
 'mail_format_desc' =>
-'Format that e-mails are sent in. Plain Text is recommended.',
+'Format that Emails are sent in. Plain Text is recommended.',
 
 'word_wrap' =>
 'Enable word-wrapping?',
@@ -574,7 +574,7 @@ $lang = array(
 'No activation required',
 
 'req_mbr_activation_opt_email' =>
-'Send activation e-mail',
+'Send activation Email',
 
 'req_mbr_activation_opt_manual' =>
 'Manually moderated by administrator',
@@ -658,13 +658,13 @@ $lang = array(
 'Enable new member notifications?',
 
 'new_member_notification_desc' =>
-'When set to <b>yes</b>, the following e-mail addresses will be notified anytime a new registration occurs.',
+'When set to <b>yes</b>, the following Email addresses will be notified anytime a new registration occurs.',
 
 'mbr_notification_emails' =>
 'Notification recipients',
 
 'mbr_notification_emails_desc' =>
-'Separate multiple e-mails with a comma.',
+'Separate multiple Emails with a comma.',
 
 /**
  * Messages
@@ -695,10 +695,10 @@ $lang = array(
 "Convert HTML",
 
 'prv_msg_auto_links' =>
-'Convert <abbr title="Uniform Resource Location">URL</abbr>s and e-mails into links?',
+'Convert <abbr title="Uniform Resource Location">URL</abbr>s and Emails into links?',
 
 'prv_msg_auto_links_desc' =>
-'When set to <b>yes</b>, All <abbr title="Uniform Resource Location">URL</abbr>s and e-mails will be auto converted into hyper links.',
+'When set to <b>yes</b>, All <abbr title="Uniform Resource Location">URL</abbr>s and Emails will be auto converted into hyper links.',
 
 'attachment_settings' =>
 'Attachment Settings',
@@ -1316,10 +1316,10 @@ $lang = array(
 '<abbr title="Unified Resource Locator">URL</abbr> for PayPal to notify on transaction completion.',
 
 'commerce_paypal_email' =>
-'PayPal account e-mail',
+'PayPal account Email',
 
 'commerce_paypal_email_desc' =>
-'e-mail address associated with your PayPal business account.',
+'Email address associated with your PayPal business account.',
 
 'commerce_encrypt_paypal' =>
 'Encrypt PayPal buttons and links?',

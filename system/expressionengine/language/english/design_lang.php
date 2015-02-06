@@ -40,7 +40,7 @@ $lang = array(
 'messages',
 
 'email' =>
-'e-mail',
+'Email',
 
 'members' =>
 'members',
@@ -491,22 +491,22 @@ $lang = array(
 'message_template_warning' =>
 '<b>Warning</b>: Do not delete any of the five required variables: {title} {meta_refresh} {heading} {content} {link}',
 
-// System Templates -> e-mail
+// System Templates -> Email
 
 'email_message_templates' =>
-'e-mail Templates',
+'Email Templates',
 
 'variables' =>
 'Variables',
 
 'variables_desc' =>
-'List of available variables for this e-mail template.',
+'List of available variables for this Email template.',
 
 'enable_template' =>
 'Enable template?',
 
 'enable_template_desc' =>
-'When set to <b>enable</b>, this template will be used, in place of an auto generated e-mail in the users language.',
+'When set to <b>enable</b>, this template will be used, in place of an auto generated Email in the users language.',
 
 'content' =>
 'Content',

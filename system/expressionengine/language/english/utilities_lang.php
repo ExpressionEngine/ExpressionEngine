@@ -56,10 +56,10 @@ $lang = array(
  */
 
 'email_subject' =>
-'e-mail Subject',
+'Email Subject',
 
 'email_body' =>
-'e-mail Body',
+'Email Body',
 
 'send_as' =>
 'send as',
@@ -68,10 +68,10 @@ $lang = array(
 'word wrap',
 
 'your_email' =>
-'Your e-mail',
+'Your Email',
 
 'from_email' =>
-'From e-mail',
+'From Email',
 
 'attachment' =>
 'Attachment',
@@ -86,34 +86,34 @@ $lang = array(
 'Primary recipient(s)',
 
 'primary_recipients_desc' =>
-'To e-mail(s). Separate multiple recipients with a comma.',
+'To Email(s). Separate multiple recipients with a comma.',
 
 'cc_recipients' =>
 '<abbr title="Carbon Copied">CC</abbr> recipient(s)',
 
 'cc_recipients_desc' =>
-'<abbr title="Carbon Copied">CC</abbr> e-mail(s). Separate multiple recipients with a comma.',
+'<abbr title="Carbon Copied">CC</abbr> Email(s). Separate multiple recipients with a comma.',
 
 'bcc_recipients' =>
 '<abbr title="Blind Carbon Copied">BCC</abbr> recipient(s)',
 
 'bcc_recipients_desc' =>
-'<abbr title="Blind Carbon Copied">BCC</abbr> e-mail(s). Separate multiple recipients with a comma.',
+'<abbr title="Blind Carbon Copied">BCC</abbr> Email(s). Separate multiple recipients with a comma.',
 
 'mailing_lists' =>
 'Mailing list(s)',
 
 'mailing_lists_desc' =>
-'Send e-mail to <b>all</b> members in chosen list(s).',
+'Send Email to <b>all</b> members in chosen list(s).',
 
 'add_member_groups' =>
 'Add member group(s)',
 
 'add_member_groups_desc' =>
-'Send e-mail to <b>all</b> members in chosen group(s).',
+'Send Email to <b>all</b> members in chosen group(s).',
 
 'btn_send_email' =>
-'Send e-mail',
+'Send Email',
 
 'btn_send_email_working' =>
 'Sending...',
@@ -123,25 +123,25 @@ $lang = array(
 'xhtml'		=> 'XHTML',
 
 'no_cached_emails' =>
-'No e-mails availble',
+'No Emails availble',
 
 'create_new_email' =>
-'Create new e-mail',
+'Create new Email',
 
 'communicate_error' =>
-'Attention: e-mail not sent',
+'Attention: Email not sent',
 
 'communicate_error_desc' =>
-'We were unable to send this e-mail, please review and fix errors below.',
+'We were unable to send this Email, please review and fix errors below.',
 
 'view_email' =>
-'View e-mail',
+'View Email',
 
 'resend' =>
-'Send e-mail again',
+'Send Email again',
 
 'emails_removed' =>
-'e-mails removed',
+'Emails removed',
 
 /**
  * CP Translation

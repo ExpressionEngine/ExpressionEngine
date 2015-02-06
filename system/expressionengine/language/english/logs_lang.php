@@ -6,18 +6,18 @@ $lang = array(
 'developer_log' 		=> 'Developer',
 'cp_log' 				=> 'Control Panel',
 'throttle_log' 			=> 'Throttling',
-'email_log' 			=> 'e-mail',
+'email_log' 			=> 'Email',
 'search_log' 			=> 'Search',
 
 'all_developer_logs' 	=> 'All %d Developer Logs',
 'all_cp_logs' 			=> 'All %d Control Panel Logs',
 'all_throttle_logs' 	=> 'All %d Throttling Logs',
-'all_email_logs' 		=> 'All %d e-mail Logs',
+'all_email_logs' 		=> 'All %d Email Logs',
 'all_search_logs' 		=> 'All %d Search Logs',
 
 'view_throttle_log' 	=> 'Access Throttling Logs',
 'view_search_log' 		=> 'Search Logs',
-'view_email_logs' 		=> 'e-mail Logs',
+'view_email_logs' 		=> 'Email Logs',
 'view_cp_log' 			=> 'Control Panel Access Logs',
 'view_developer_log'	=> 'Developer Logs',
 
@@ -66,10 +66,10 @@ $lang = array(
 </ul>',
 
 /* Email Log */
-'no_email_logs_found'	=> 'No <b>e-mail Logs</b> found',
-'sent_to'				=> 'Sent e-mail to',
+'no_email_logs_found'	=> 'No <b>Email Logs</b> found',
+'sent_to'				=> 'Sent Email to',
 'subject'				=> 'Subject',
-'clear_email_logs'		=> 'Remove all e-mail Logs',
+'clear_email_logs'		=> 'Remove all Email Logs',
 
 /* Search Log */
 'no_search_logs_found'	=> 'No <b>Search Logs</b> found',
