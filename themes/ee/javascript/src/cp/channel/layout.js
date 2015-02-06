@@ -32,14 +32,12 @@ $(document).ready(function () {
 		start: function (event, ui)
 		{
 			index_at_start = $('div.tab-open fieldset').index(ui.item[0]);
-			console.log(EE.publish_layout[getTabIndex()].fields);
 		},
 		stop: function (event, ui) {
 			var index_at_stop = $('div.tab-open fieldset').index(ui.item[0]);
 
 			var field = EE.publish_layout[getTabIndex()].fields.splice(index_at_start, 1);
 			EE.publish_layout[getTabIndex()].fields.splice(index_at_stop, 0, field[0]);
-			console.log(EE.publish_layout[getTabIndex()].fields);
 
 			$('fieldset.sortable').removeClass('last');
 			$('fieldset.sortable:last-child').addClass('last');
