@@ -384,12 +384,12 @@ class EE_Channel_preparser {
 
 		foreach($this->_channel->cfields as $site_id => $fields)
 		{
-			$unfiltered_all_field_names = array_unique(array_merge($all_field_names, $fields));
+			$unfiltered_all_field_names = array_unique(array_merge($unfiltered_all_field_names, $fields));
 		}
 		
 		// Do a rough cut to slim down the number of fields
 		// else the string can be too long for the preg_match_all
-		foreach ($unfiltered_all_field_names as $name)
+		foreach (array_keys($unfiltered_all_field_names) as $name)
 		{
 			if (strpos($this->_tagdata, $name) !== FALSE)
 			{
@@ -397,7 +397,7 @@ class EE_Channel_preparser {
 			}
 		}		
 
-		$modified_field_options = $prefix.implode('|'.$prefix, array_keys($all_field_names));
+		$modified_field_options = $prefix.implode('|'.$prefix, $all_field_names);
 		$modified_conditionals = array();
 
 		if (preg_match_all("/".preg_quote(LD)."((if:(else))*if)\s+(($modified_field_options):(\w+))(.*?)".preg_quote(RD)."/s", $this->_tagdata, $matches))
