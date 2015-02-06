@@ -17,7 +17,7 @@ feature 'Email Log' do
 
 		# These should always be true at all times if not something has gone wrong
 		@page.displayed?
-		@page.heading.text.should eq 'e-mail Logs'
+		@page.heading.text.should eq 'Email Logs'
 		@page.should have_phrase_search
 		@page.should have_submit_button
 		@page.should have_username_filter
@@ -25,7 +25,7 @@ feature 'Email Log' do
 		@page.should have_perpage_filter
 	end
 
-	it 'shows the e-mail Logs page', :pregen => true do
+	it 'shows the Email Logs page', :pregen => true do
 		@page.should have_remove_all
 		@page.should have_pagination
 
@@ -42,7 +42,7 @@ feature 'Email Log' do
 		@page.load
 
 		@page.displayed?
-		@page.heading.text.should eq 'e-mail Logs'
+		@page.heading.text.should eq 'Email Logs'
 		@page.should have_phrase_search
 		@page.should have_submit_button
 		@page.should_not have_username_filter
@@ -218,7 +218,7 @@ feature 'Email Log' do
 		@page.modal_submit_button.click # Submits a form
 
 		@page.should have_alert
-		@page.alert.text.should eq "Logs Deleted 1 log(s) deleted from e-mail logs"
+		@page.alert.text.should eq "Logs Deleted 1 log(s) deleted from Email logs"
 
 		@page.should have_no_content our_subject
 	end
@@ -229,11 +229,11 @@ feature 'Email Log' do
 		@page.wait_until_modal_visible
 		@page.modal_title.text.should eq "Confirm Removal"
 		@page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
-		@page.modal.text.should include "e-mail Logs: All"
+		@page.modal.text.should include "Email Logs: All"
 		@page.modal_submit_button.click # Submits a form
 
 		@page.should have_alert
-		@page.alert.text.should eq "Logs Deleted 165 log(s) deleted from e-mail logs"
+		@page.alert.text.should eq "Logs Deleted 165 log(s) deleted from Email logs"
 
 		@page.should have_no_results
 		@page.should_not have_pagination
@@ -250,7 +250,7 @@ feature 'Email Log' do
 		log.find('div.message p a').click
 
 		@page.should have_selector('ul.breadcrumb')
-		@page.find('div.box h1').text.should eq 'e-mail: ' + our_subject
+		@page.find('div.box h1').text.should eq 'Email: ' + our_subject
 	end
 
 	# Confirming Pagination behavior

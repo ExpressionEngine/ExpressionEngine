@@ -13,6 +13,6 @@ class EmailSettings < ControlPanelPage
 
 	def load
 		settings_btn.click
-		click_link 'Outgoing e-mail'
+		click_link 'Outgoing Email'
 	end
 end

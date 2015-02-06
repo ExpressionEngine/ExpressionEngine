@@ -85,6 +85,6 @@ class EmailLog < ControlPanelPage
 	def load
 		self.open_dev_menu
 		click_link 'Logs'
-		click_link 'e-mail'
+		click_link 'Email'
 	end
 end

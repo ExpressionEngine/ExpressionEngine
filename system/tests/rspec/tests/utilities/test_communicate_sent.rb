@@ -15,7 +15,7 @@ feature 'Communicate > Sent' do
 		no_php_js_errors
 
 		@page.should be_displayed
-		@page.heading.text.should eq 'Sent e-mails'
+		@page.heading.text.should eq 'Sent Emails'
 		@page.should have_phrase_search
 		@page.should have_search_submit_button
 		@page.should have_email_table
@@ -23,17 +23,17 @@ feature 'Communicate > Sent' do
 		@page.should have_action_submit_button
 	end
 
-	it 'shows the sent e-mails page (with no results)' do
+	it 'shows the sent Emails page (with no results)' do
 		@page.load
 		no_php_js_errors
 
 		@page.should be_displayed
-		@page.heading.text.should eq 'Sent e-mails'
+		@page.heading.text.should eq 'Sent Emails'
 		@page.should have_phrase_search
 		@page.should have_search_submit_button
 		@page.should have_email_table
 		@page.should have_no_results
-		@page.should have_text 'No e-mails availble'
+		@page.should have_text 'No Emails availble'
 		@page.should have_text 'CREATE NEW E-MAIL'
 		@page.should_not have_pagination
 		@page.should_not have_bulk_action
@@ -565,7 +565,7 @@ feature 'Communicate > Sent' do
 		@page.wait_until_modal_visible
 		@page.modal_title.text.should eq "Confirm Removal"
 		@page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
-		@page.modal.text.should include "Sent e-mails: 6 e-mails"
+		@page.modal.text.should include "Sent Emails: 6 Emails"
 	end
 
 	it 'can remove emails in bulk' do
