@@ -5,6 +5,7 @@ namespace EllisLab\ExpressionEngine\Model\Content\Display;
 class FieldDisplay {
 
 	protected $field;
+	protected $collapsed = FALSE;
 
 	public function __construct($field)
 	{
@@ -44,5 +45,20 @@ class FieldDisplay {
 	public function isRequired()
 	{
 		return $this->field->getItem('field_required') == 'y';
+	}
+
+	public function collapse()
+	{
+		$this->collapse = TRUE;
+	}
+
+	public function expand()
+	{
+		$this->collapse = FALSE;
+	}
+
+	public function isCollapsed()
+	{
+		return $this->collapsed;
 	}
 }
