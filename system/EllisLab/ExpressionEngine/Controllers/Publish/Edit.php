@@ -284,11 +284,17 @@ class Edit extends AbstractPublishController {
 			'class' => 'settings ajax-validate',
 		);
 
+		$channel_layout = ee('Model')->get('ChannelLayout')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('channel_id', $entry->channel_id)
+			->filter('member_group', ee()->session->userdata['group_id'])
+			->first();
+
 		$vars = array(
 			'entry' => $entry,
 			'form_url' => cp_url('publish/edit/entry/' . $id),
 			'form_attributes' => $form_attributes,
-			'layout' => $entry->getDisplay()
+			'layout' => $entry->getDisplay($channel_layout)
 		);
 
 		ee()->view->cp_breadcrumbs = array(
