@@ -110,6 +110,12 @@ $lang = array(
 'btn_preview_layout' =>
 'Preview Layout',
 
+'form_layouts' =>
+'Form Layouts',
+
+'edit_form_layout' =>
+'Edit From Layout &ndash; %s',
+
 /**
  * Channel Create/Edit
  */

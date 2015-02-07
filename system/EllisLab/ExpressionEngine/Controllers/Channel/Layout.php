@@ -70,7 +70,7 @@ class Layout extends AbstractChannelController {
 
 		$data = array();
 
-		$layout_id = ee()->session->flashdata('layout_id');
+		$layout_ids = ee()->session->flashdata('layout_ids');
 
 		foreach ($channel->getChannelLayouts() as $layout)
 		{
@@ -94,7 +94,7 @@ class Layout extends AbstractChannelController {
 
 			$attrs = array();
 
-			if ($layout_id && $layout->layout_id == $layout_id)
+			if ($layout_ids && in_array($layout->layout_id, $layout_ids))
 			{
 				$attrs = array('class' => 'selected');
 			}
@@ -172,6 +172,11 @@ class Layout extends AbstractChannelController {
 				'label' => 'lang:layout_name',
 				'rules' => 'required'
 			),
+			array(
+				'field' => 'member_groups',
+				'label' => 'lang:member_groups',
+				'rules' => 'required'
+			),
 		));
 
 		if (AJAX_REQUEST)
@@ -183,7 +188,40 @@ class Layout extends AbstractChannelController {
 		{
 			if (ee()->input->post('submit') == 'create')
 			{
-				// Crate the layout!
+				$ids = array();
+				foreach (ee()->input->post('member_groups') as $group_id)
+				{
+					$layout = ee('Model')->get('ChannelLayout')
+						->filter('site_id', ee()->config->item('site_id'))
+						->filter('channel_id', $channel_id)
+						->filter('member_group', $group_id)
+						->first();
+
+					if ( ! $layout)
+					{
+						$layout = ee('Model')->make('ChannelLayout');
+						$layout->setChannel($channel);
+						$layout->site_id = ee()->config->item('site_id');
+						$layout->member_group = $group_id;
+					}
+
+					$layout->layout_name = ee()->input->post('layout_name');
+					$layout->field_layout = json_decode(ee()->input->post('field_layout'), TRUE);
+
+					$layout->save();
+
+					$ids[] = $layout->layout_id;
+				}
+
+				ee()->session->set_flashdata('layout_ids', $ids);
+
+				ee('Alert')->makeInline('layouts')
+					->asSuccess()
+					->withTitle(lang('create_layout_success'))
+					->addToBody(lang('create_layout_success_desc'))
+					->defer();
+
+				ee()->functions->redirect(cp_url('channel/layout/' . $channel_id));
 			}
 			else
 			{
@@ -217,7 +255,119 @@ class Layout extends AbstractChannelController {
 
 	public function edit($layout_id)
 	{
+		$channel_layout = ee('Model')->get('ChannelLayout', $layout_id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
 
+		if ( ! $channel_layout)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$channel = $channel_layout->getChannel();
+
+		$entry = ee('Model')->make('ChannelEntry')->setChannel($channel);
+
+		$member_gropus = ee('Model')->get('MemberGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		$vars = array(
+			'channel' => $channel,
+			'form_url' => cp_url('channel/layout/edit/' . $layout_id),
+			'layout' => $entry->getDisplay($channel_layout),
+			'channel_layout' => $channel_layout,
+			'selected_member_groups' => array($channel_layout->member_group),
+			'member_groups' => $member_gropus,
+		);
+
+		ee()->load->library('form_validation');
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'layout_name',
+				'label' => 'lang:layout_name',
+				'rules' => 'required'
+			),
+			array(
+				'field' => 'member_groups',
+				'label' => 'lang:member_groups',
+				'rules' => 'required'
+			),
+		));
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			if (ee()->input->post('submit') == 'create')
+			{
+				$ids = array();
+				foreach (ee()->input->post('member_groups') as $group_id)
+				{
+					$layout = ee('Model')->get('ChannelLayout')
+						->filter('site_id', ee()->config->item('site_id'))
+						->filter('channel_id', $channel_id)
+						->filter('member_group', $group_id)
+						->first();
+
+					if ( ! $layout)
+					{
+						$layout = ee('Model')->make('ChannelLayout');
+						$layout->setChannel($channel);
+						$layout->site_id = ee()->config->item('site_id');
+						$layout->member_group = $group_id;
+					}
+
+					$layout->layout_name = ee()->input->post('layout_name');
+					$layout->field_layout = json_decode(ee()->input->post('field_layout'), TRUE);
+
+					$layout->save();
+
+					$ids[] = $layout->layout_id;
+				}
+
+				ee()->session->set_flashdata('layout_ids', $ids);
+
+				// @TODO need to have an edited alert with an added subalert
+				ee('Alert')->makeInline('layout-form')
+					->asSuccess()
+					->withTitle(lang('edit_layout_success'))
+					->addToBody(lang('edit_layout_success_desc'))
+					->defer();
+
+				ee()->functions->redirect(cp_url('channel/layout/edit/' . $layout_id));
+			}
+			else
+			{
+				// Preview it...somehow
+			}
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee('Alert')->makeInline('layout-form')
+				->asIssue()
+				->withTitle(lang('create_layout_error'))
+				->addToBody(lang('create_layout_error_desc'));
+		}
+
+		ee()->view->cp_breadcrumbs = array(
+			cp_url('channel') => lang('channels'),
+			cp_url('channel/layout/' . $channel_layout->channel_id) => lang('form_layouts')
+		);
+
+		ee()->view->cp_page_title = sprintf(lang('edit_form_layout'), $channel_layout->layout_name);
+
+		ee()->view->header = NULL;
+		ee()->view->left_nav = NULL;
+
+		ee()->javascript->set_global('publish_layout', $channel_layout->field_layout);
+		ee()->cp->add_js_script('ui', 'sortable');
+		ee()->cp->add_js_script('file', 'cp/channel/layout');
+
+		ee()->cp->render('channel/layout/create', $vars);
 	}
 
 }
