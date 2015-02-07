@@ -13,6 +13,7 @@
 		<a class="btn action add-tab" href="#"><?=lang('add_tab')?></a>
 	</div>
 	<?=form_open($form_url, 'class="settings ajax-validate"')?>
+		<input type="hidden" name="field_layout" value="<?=json_encode($channel_layout->field_layout)?>">
 		<?=ee('Alert')->get('layout-form')?>
 		<?php foreach ($layout->getTabs() as $index => $tab): ?>
 		<div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">
@@ -48,7 +49,7 @@
 		</fieldset>
 		<fieldset class="col-group last">
 			<div class="setting-txt col w-8">
-				<h3><?=lang('member_group(s)')?></h3>
+				<h3><?=lang('member_group(s)')?> <span class="required" title="required field">&#10033;</span></h3>
 				<em><?=lang('member_group(s)_desc')?></em>
 			</div>
 			<div class="setting-field col w-8 last">
@@ -67,7 +68,7 @@
 					}
 					?>
 					<label class="<?=$class?>">
-						<input type="checkbox" name="member_groups[]" value="<?=$member_group->group_id?>"<?=$checked?>> <?=$member_group->group_title?>
+						<input type="checkbox" name="member_groups[]" value="<?=$member_group->group_id?>"<?=$checked?> class="required"> <?=$member_group->group_title?>
 					</label>
 				<?php endforeach; ?>
 			</div>
