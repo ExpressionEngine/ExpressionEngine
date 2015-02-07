@@ -217,7 +217,7 @@ class Layout extends AbstractChannelController {
 				ee('Alert')->makeInline('layouts')
 					->asSuccess()
 					->withTitle(lang('create_layout_success'))
-					->addToBody(lang('create_layout_success_desc'))
+					->addToBody(sprintf(lang('create_layout_success_desc'), ee()->input->post('layout_name')))
 					->defer();
 
 				ee()->functions->redirect(cp_url('channel/layout/' . $channel_id));
@@ -331,7 +331,7 @@ class Layout extends AbstractChannelController {
 				ee('Alert')->makeInline('layout-form')
 					->asSuccess()
 					->withTitle(lang('edit_layout_success'))
-					->addToBody(lang('edit_layout_success_desc'))
+					->addToBody(sprintf(lang('edit_layout_success_desc'), ee()->input->post('layout_name')))
 					->defer();
 
 				ee()->functions->redirect(cp_url('channel/layout/edit/' . $layout_id));
@@ -345,8 +345,8 @@ class Layout extends AbstractChannelController {
 		{
 			ee('Alert')->makeInline('layout-form')
 				->asIssue()
-				->withTitle(lang('create_layout_error'))
-				->addToBody(lang('create_layout_error_desc'));
+				->withTitle(lang('edit_layout_error'))
+				->addToBody(lang('edit_layout_error_desc'));
 		}
 
 		ee()->view->cp_breadcrumbs = array(
