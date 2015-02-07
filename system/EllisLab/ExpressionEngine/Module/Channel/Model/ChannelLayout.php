@@ -55,7 +55,7 @@ class ChannelLayout extends Model implements LayoutInterface {
 		$layout = $this->getProperty('field_layout');
 		foreach ($layout as $section)
 		{
-			$tab = new LayoutTab($section['name'], $section['name']);
+			$tab = new LayoutTab($section['id'], $section['name']);
 			foreach ($section['fields'] as $field_info)
 			{
 				$field_id = $field_info['field'];

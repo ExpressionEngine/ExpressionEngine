@@ -14,8 +14,8 @@ class DefaultLayout implements LayoutInterface {
 		$this->layout = array();
 
 		$this->layout[] = array(
+			'id' => 'publish',
 			'name' => 'publish',
-			'show' => TRUE,
 			'fields' => array(
 				array(
 					'field' => 'title',
@@ -31,8 +31,8 @@ class DefaultLayout implements LayoutInterface {
 		);
 
 		$this->layout[] = array(
+			'id' => 'date',
 			'name' => 'date',
-			'show' => TRUE,
 			'fields' => array(
 				array(
 					'field' => 'entry_date',
@@ -53,8 +53,8 @@ class DefaultLayout implements LayoutInterface {
 		);
 
 		$this->layout[] = array(
+			'id' => 'categories',
 			'name' => 'categories',
-			'show' => TRUE,
 			'fields' => array(
 				array(
 					'field' => 'categories',
@@ -65,8 +65,8 @@ class DefaultLayout implements LayoutInterface {
 		);
 
 		$this->layout[] = array(
+			'id' => 'options',
 			'name' => 'options',
-			'show' => TRUE,
 			'fields' => array(
 				array(
 					'field' => 'channel_id',
@@ -109,7 +109,7 @@ class DefaultLayout implements LayoutInterface {
 		// Non-custom fields
 		foreach ($this->layout as $section)
 		{
-			$tab = new LayoutTab($section['name'], $section['name']);
+			$tab = new LayoutTab($section['id'], $section['name']);
 			foreach ($section['fields'] as $field)
 			{
 				$field_id = $field['field'];
