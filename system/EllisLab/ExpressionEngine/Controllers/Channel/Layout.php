@@ -250,7 +250,7 @@ class Layout extends AbstractChannelController {
 		ee()->cp->add_js_script('ui', 'sortable');
 		ee()->cp->add_js_script('file', 'cp/channel/layout');
 
-		ee()->cp->render('channel/layout/create', $vars);
+		ee()->cp->render('channel/layout/form', $vars);
 	}
 
 	public function edit($layout_id)
@@ -367,7 +367,7 @@ class Layout extends AbstractChannelController {
 		ee()->cp->add_js_script('ui', 'sortable');
 		ee()->cp->add_js_script('file', 'cp/channel/layout');
 
-		ee()->cp->render('channel/layout/create', $vars);
+		ee()->cp->render('channel/layout/form', $vars);
 	}
 
 }
