@@ -119,7 +119,6 @@ $lang = array(
 'create_layout_error_desc' =>
 'We were unable to update this group, please review and fix errors below.',
 
-
 'btn_edit_layout' =>
 'Edit Layout',
 
@@ -143,6 +142,12 @@ $lang = array(
 
 'edit_layout_error_desc' =>
 'We were unable to update this group, please review and fix errors below.',
+
+'success' =>
+'Success',
+
+'layouts_removed_desc' =>
+'The following form layouts were removed',
 
 /**
  * Channel Create/Edit

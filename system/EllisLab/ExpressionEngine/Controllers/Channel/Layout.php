@@ -38,11 +38,23 @@ class Layout extends AbstractChannelController {
 	public function __construct()
 	{
 		parent::__construct();
+
+		if ( ! ee()->cp->allowed_group('can_admin_channels'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		ee()->lang->loadfile('content');
 	}
 
 	public function layout($channel_id)
 	{
+		if (ee()->input->post('bulk_action') == 'remove')
+		{
+			$this->remove(ee()->input->post('selection'));
+			ee()->functions->redirect(cp_url('channel/layout/' . $channel_id));
+		}
+
 		$channel = ee('Model')->get('Channel', $channel_id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
@@ -52,6 +64,7 @@ class Layout extends AbstractChannelController {
 			show_error(lang('unauthorized_access'));
 		}
 
+		$vars['channel_id'] = $channel_id;
 		$vars['create_url'] = cp_url('channel/layout/create/' . $channel_id);
 
 		$table = Table::create();
@@ -77,7 +90,7 @@ class Layout extends AbstractChannelController {
 		foreach ($channel->getChannelLayouts() as $layout)
 		{
 			$column = array(
-				$layout->layout_name,
+				htmlentities($layout->layout_name, ENT_QUOTES),
 				$layout->getMemberGroup()->group_title,
 				array('toolbar_items' => array(
 					'edit' => array(
@@ -89,7 +102,7 @@ class Layout extends AbstractChannelController {
 					'name' => 'selection[]',
 					'value' => $layout->layout_id,
 					'data' => array(
-						'confirm' => lang('layout') . ': <b>' . htmlentities('A Layout', ENT_QUOTES) . '</b>'
+						'confirm' => lang('layout') . ': <b>' . htmlentities($layout->layout_name, ENT_QUOTES) . '</b>'
 					)
 				)
 			);
@@ -110,7 +123,7 @@ class Layout extends AbstractChannelController {
 
 		$table->setData($data);
 
-		$base_url = new URL('channel', ee()->session->session_id());
+		$base_url = new URL('channel/layout/' . $channel_id, ee()->session->session_id());
 		$vars['table'] = $table->viewData($base_url);
 
 		$pagination = new Pagination(
@@ -119,6 +132,13 @@ class Layout extends AbstractChannelController {
 			$vars['table']['page']
 		);
 		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('layout') . ': <b>### ' . lang('layouts') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/v3/confirm_remove',
+			),
+		));
 
 		ee()->view->cp_page_title = sprintf(lang('channel_form_layouts'), $channel->channel_title);
 		ee()->cp->set_breadcrumb(cp_url('channel'), lang('channels'));
@@ -375,6 +395,33 @@ class Layout extends AbstractChannelController {
 		$member_groups = array_merge($super_admins->asArray(), $channel->getAssignedMemberGroups()->asArray());
 
 		return new Collection($member_groups);
+	}
+
+	private function remove($layout_ids)
+	{
+		if ( ! is_array($layout_ids))
+		{
+			$layout_ids = array($layout_ids);
+		}
+
+		$channel_layouts = ee('Model')->get('ChannelLayout', $layout_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		$layout_names = array();
+
+		foreach ($channel_layouts as $layout)
+		{
+			$layout_names[] = $layout->layout_name;
+		}
+
+		$channel_layouts->delete();
+		ee('Alert')->makeInline('layouts')
+			->asSuccess()
+			->withTitle(lang('success'))
+			->addToBody(lang('layouts_removed_desc'))
+			->addToBody($layout_names)
+			->defer();
 	}
 
 }
