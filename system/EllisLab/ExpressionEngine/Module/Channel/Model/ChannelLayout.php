@@ -3,7 +3,9 @@
 namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Model\Content\Display\LayoutDisplay;
 use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
+use EllisLab\ExpressionEngine\Model\Content\Display\LayoutTab;
 
 class ChannelLayout extends Model implements LayoutInterface {
 
@@ -47,7 +49,40 @@ class ChannelLayout extends Model implements LayoutInterface {
 
 	public function transform(array $fields)
 	{
+		$display = new LayoutDisplay();
 
+		// Fields known to the layout
+		$layout = $this->getProperty('field_layout');
+		foreach ($layout as $section)
+		{
+			$tab = new LayoutTab($section['name'], $section['name']);
+			foreach ($section['fields'] as $field_info)
+			{
+				$field_id = $field_info['field'];
+				if ($field_info['visible'])
+				{
+					$field = $fields[$field_id];
+					if ($field_info['collapsed'])
+					{
+						$field->collapse();
+					}
+
+					$tab->addField($field);
+				}
+				unset($fields[$field_id]);
+			}
+			$display->addTab($tab);
+		}
+
+		// "New" (unknown) fields
+		$tab = $display->getTab('publish');
+
+		foreach ($fields as $field_id => $field)
+		{
+			$tab->addField($field);
+		}
+
+		return $display;
 	}
 
 }
