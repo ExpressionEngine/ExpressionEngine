@@ -187,11 +187,18 @@ class ChannelEntry extends ContentModel {
 			->all()
 			->pluck('group_id');
 
-		$categories = ee('Model')->get('Category')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('group_id', 'IN', $category_group_ids)
-			->filter('parent_id', 0)
-			->all();
+		if (empty($category_group_ids))
+		{
+			$categories = array();
+		}
+		else
+		{
+			$categories = ee('Model')->get('Category')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('group_id', 'IN', $category_group_ids)
+				->filter('parent_id', 0)
+				->all();
+		}
 
 		$category_string_override = '<div class="scroll-wrap pr">';
 		$set_categories = $this->getCategories()->pluck('cat_id');
