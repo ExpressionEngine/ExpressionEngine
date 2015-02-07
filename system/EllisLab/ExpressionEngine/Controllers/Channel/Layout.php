@@ -7,6 +7,8 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Model\Content\Display\DefaultLayout;
 use EllisLab\ExpressionEngine\Controllers\Channel\AbstractChannel as AbstractChannelController;
+use EllisLab\ExpressionEngine\Module\Channel\Model\Channel;
+use EllisLab\ExpressionEngine\Library\Data\Collection;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -137,10 +139,6 @@ class Layout extends AbstractChannelController {
 
 		$entry = ee('Model')->make('ChannelEntry')->setChannel($channel);
 
-		$member_gropus = ee('Model')->get('MemberGroup')
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
-
 		$default_layout = new DefaultLayout();
 		$channel_layout = ee('Model')->make('ChannelLayout');
 		$field_layout = $default_layout->getLayout();
@@ -162,7 +160,8 @@ class Layout extends AbstractChannelController {
 			'layout' => $entry->getDisplay(),
 			'channel_layout' => $channel_layout,
 			'selected_member_groups' => array(),
-			'member_groups' => $member_gropus,
+			'member_groups' => $this->getEligibleMemberGroups($channel),
+			'submit_button_text' => lang('btn_create_layout')
 		);
 
 		ee()->load->library('form_validation');
@@ -268,17 +267,14 @@ class Layout extends AbstractChannelController {
 
 		$entry = ee('Model')->make('ChannelEntry')->setChannel($channel);
 
-		$member_gropus = ee('Model')->get('MemberGroup')
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
-
 		$vars = array(
 			'channel' => $channel,
 			'form_url' => cp_url('channel/layout/edit/' . $layout_id),
 			'layout' => $entry->getDisplay($channel_layout),
 			'channel_layout' => $channel_layout,
 			'selected_member_groups' => array($channel_layout->member_group),
-			'member_groups' => $member_gropus,
+			'member_groups' => $this->getEligibleMemberGroups($channel),
+			'submit_button_text' => lang('btn_edit_layout')
 		);
 
 		ee()->load->library('form_validation');
@@ -309,7 +305,7 @@ class Layout extends AbstractChannelController {
 				{
 					$layout = ee('Model')->get('ChannelLayout')
 						->filter('site_id', ee()->config->item('site_id'))
-						->filter('channel_id', $channel_id)
+						->filter('channel_id', $channel_layout->channel_id)
 						->filter('member_group', $group_id)
 						->first();
 
@@ -368,6 +364,17 @@ class Layout extends AbstractChannelController {
 		ee()->cp->add_js_script('file', 'cp/channel/layout');
 
 		ee()->cp->render('channel/layout/form', $vars);
+	}
+
+	private function getEligibleMemberGroups(Channel $channel)
+	{
+		$super_admins = ee('Model')->get('MemberGroup', 1)
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		$member_groups = array_merge($super_admins->asArray(), $channel->getAssignedMemberGroups()->asArray());
+
+		return new Collection($member_groups);
 	}
 
 }
