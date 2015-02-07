@@ -98,4 +98,8 @@ $(document).ready(function () {
 		e.preventDefault();
 	});
 
+	$('form').on('submit', function(e) {
+		$('input[name="field_layout"]').val(JSON.stringify(EE.publish_layout));
+	});
+
 });
