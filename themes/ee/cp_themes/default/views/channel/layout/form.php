@@ -78,10 +78,10 @@
 
 		<fieldset class="form-ctrls">
 			<?php if (ee()->form_validation->errors_exist()): ?>
-			<button class="btn disable" disabled="disabled" name="submit" type="submit" value="create" data-submit-text="<?=lang('btn_create_layout')?>" data-work-text="<?=lang('btn_saving')?>"><?=lang('btn_fix_errors')?></button>
+			<button class="btn disable" disabled="disabled" name="submit" type="submit" value="create" data-submit-text="<?=$submit_button_text?>" data-work-text="<?=lang('btn_saving')?>"><?=lang('btn_fix_errors')?></button>
 			<button class="btn disable" disabled="disabled" name="submit" type="submit" value="preview" data-submit-text="<?=lang('btn_preview_layout')?>" data-work-text="<?=lang('btn_saving')?>"><?=lang('btn_fix_errors')?></button>
 			<?php else: ?>
-			<button class="btn" name="submit" type="submit" value="create" data-submit-text="<?=lang('btn_create_layout')?>" data-work-text="<?=lang('btn_saving')?>"><?=lang('btn_create_layout')?></button>
+			<button class="btn" name="submit" type="submit" value="create" data-submit-text="<?=$submit_button_text?>" data-work-text="<?=lang('btn_saving')?>"><?=$submit_button_text?></button>
 			<button class="btn" name="submit" type="submit" value="preview" data-submit-text="<?=lang('btn_preview_layout')?>" data-work-text="<?=lang('btn_saving')?>"><?=lang('btn_preview_layout')?></button>
 			<?php endif;?>
 		</fieldset>
