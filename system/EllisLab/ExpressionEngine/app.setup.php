@@ -1,11 +1,15 @@
 <?php
 
-use EllisLab\ExpressionEngine\Service\Config;
-use EllisLab\ExpressionEngine\Service\Database;
-use EllisLab\ExpressionEngine\Service\Model;
-use EllisLab\ExpressionEngine\Service\Validation;
 use EllisLab\ExpressionEngine\Library\Event;
 use EllisLab\ExpressionEngine\Library\Filesystem;
+use EllisLab\ExpressionEngine\Service\Alert;
+use EllisLab\ExpressionEngine\Service\Config;
+use EllisLab\ExpressionEngine\Service\Database;
+use EllisLab\ExpressionEngine\Service\Filter;
+use EllisLab\ExpressionEngine\Service\Grid;
+use EllisLab\ExpressionEngine\Service\Model;
+use EllisLab\ExpressionEngine\Service\Validation;
+use EllisLab\ExpressionEngine\Service\View;
 
 // TODO should put the version in here at some point ...
 return array(
@@ -30,12 +34,12 @@ return array(
 
 		'View' => function($ee, $basepath = '')
 		{
-			return new \EllisLab\ExpressionEngine\Service\View\ViewFactory($basepath, ee()->load, ee()->view);
+			return new View\ViewFactory($basepath, ee()->load, ee()->view);
 		},
 
 		'Filter' => function($ee)
 		{
-			$filters = new \EllisLab\ExpressionEngine\Service\Filter\FilterFactory($ee->make('View', '_shared/filters'));
+			$filters = new Filter\FilterFactory($ee->make('View', '_shared/filters'));
 			$filters->setDIContainer($ee);
 			return $filters;
 		},
@@ -55,7 +59,7 @@ return array(
 		'Alert' => function($ee)
 		{
 			$view = $ee->make('View')->make('_shared/alert');
-			return new \EllisLab\ExpressionEngine\Service\Alert\AlertCollection(ee()->session, $view);
+			return new Alert\AlertCollection(ee()->session, $view);
 		},
 
 		'Config' => function($ee)
@@ -72,9 +76,9 @@ return array(
 			return new Database\Database($db_config);
 		},
 
-		'Grid' => function($di)
+		'Grid' => function($ee)
 		{
-			return new \EllisLab\ExpressionEngine\Service\Grid\Grid();
+			return new Grid\Grid();
 		},
 
 		'Model.Datastore' => function($ee)
@@ -112,7 +116,7 @@ return array(
 			// ..\Addon
 			'Extension' => 'Model\Addon\Extension',
 			'Module' => 'Model\Addon\Module',
-			'Plugin' => 'Model\Addon\Plugin',
+
 
 			// ..\Category
 			'Category' => 'Model\Category\Category',
