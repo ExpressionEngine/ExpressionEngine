@@ -31,7 +31,7 @@ class Integer extends ValidationRule {
 
 	public function validate($value)
 	{
-		return (bool) preg_match( '/^[\-+]?[0-9]+$/', $value);
+		return (bool) preg_match('/^[\-+]?[0-9]+$/', $value);
 	}
 
 }

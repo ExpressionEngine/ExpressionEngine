@@ -33,38 +33,27 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 class WhenPresent extends ValidationRule {
 
 	protected $all_values = array();
-	protected $field_names = array();
 
 	public function validate($value)
 	{
-		if (empty($this->field_names))
+		if (empty($this->parameters))
 		{
-			return isset($value);
+			return isset($value) ? TRUE : $this->skip();
 		}
 
-		foreach ($this->field_names as $name)
+		foreach ($this->parameters as $field_name)
 		{
-			if ( ! array_key_exists($name, $this->all_values))
+			if ( ! array_key_exists($field_name, $this->all_values))
 			{
-				return FALSE;
+				return $this->skip();
 			}
 		}
 
 		return TRUE;
 	}
 
-	public function setParameters(array $field_names)
-	{
-		$this->field_names = $field_names;
-	}
-
 	public function setAllValues(array $values)
 	{
 		$this->all_values = $values;
-	}
-
-	public function skipsOnFailure()
-	{
-		return TRUE;
 	}
 }

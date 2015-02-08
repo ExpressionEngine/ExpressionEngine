@@ -33,14 +33,14 @@ class Required extends ValidationRule {
 	{
 		if ( ! is_array($value))
 		{
-			return (trim($value) == '') ? FALSE : TRUE;
+			$value = trim($value) != '';
 		}
 
-		return ( ! empty($value));
-	}
+		if (empty($value))
+		{
+			return $this->stop();
+		}
 
-	public function stopsOnFailure()
-	{
 		return TRUE;
 	}
 }

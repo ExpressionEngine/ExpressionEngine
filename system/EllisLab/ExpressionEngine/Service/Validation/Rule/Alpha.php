@@ -21,7 +21,6 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 /**
  * ExpressionEngine Alpha Validation Rule
  *
- *
  * @package		ExpressionEngine
  * @subpackage	Validation\Rule
  * @category	Service

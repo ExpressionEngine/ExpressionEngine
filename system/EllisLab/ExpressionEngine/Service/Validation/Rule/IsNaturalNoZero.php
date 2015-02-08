@@ -31,7 +31,7 @@ class IsNaturalNoZero extends ValidationRule {
 
 	public function validate($value)
 	{
-		if ( ! preg_match( '/^[0-9]+$/', $value))
+		if ( ! preg_match('/^[0-9]+$/', $value))
 		{
 			return FALSE;
 		}

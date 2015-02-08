@@ -39,6 +39,9 @@ namespace EllisLab\ExpressionEngine\Service\Validation;
  */
 abstract class ValidationRule {
 
+	protected $parameters = array();
+	protected $parameter_names = array();
+
 	/**
 	 * Validate a Value
 	 *
@@ -50,38 +53,81 @@ abstract class ValidationRule {
 	 */
 	abstract public function validate($value);
 
-	/**
-	 * @return BOOL  Stop validating if this rule fails
-	 */
-	public function stopsOnFailure()
-	{
-		return FALSE;
-	}
-
-	/**
-	 * @return BOOL  Rule is a presence indicator
-	 */
-	public function skipsOnFailure()
-	{
-		return FALSE;
-	}
-
-	/**
-	 * Optional if you wish to support parameters
-	 *
-	 * Not actually defined here so that we can error when
-	 * parameters are passed to a rule that does not take them.
-	 */
-	/*
-	public function setParameters(array $parameters)
-	*/
 
 	/**
 	 * Optional if you need access to other values
+	 *
+	 * Defaults to blank since we don't want to store
+	 * all that information if we're not going to need it.
 	 */
-	public function setAllValues(array $values)
+	public function setAllValues(array $values) { /* blank */ }
+	/**
+	 *
+	 */
+	public function setParameters(array $parameters)
 	{
-		// nada, no need to store this information if it's not needed
+		$this->parameters = $parameters;
 	}
 
+	/**
+	 *
+	 */
+	public function assertParameters()
+	{
+		$names = func_get_args();
+
+		$count_needed = count($names);
+		$count_given = count($this->parameters);
+
+		if ($count_needed > $count_given)
+		{
+			$this->throwNeedsParameters(array_slice($names, $count_given));
+		}
+
+		return $this->parameters;
+	}
+
+	public function stop()
+	{
+		return Validator::STOP;
+	}
+
+	public function skip()
+	{
+		return Validator::SKIP;
+	}
+
+	/**
+	 *
+	 */
+	public function getName()
+	{
+		return strtolower(basename(str_replace('\\', '/', get_class($this))));
+	}
+
+	/**
+	 *
+	 */
+	public function getParameters()
+	{
+		return $this->parameters;
+	}
+
+	/**
+	 *
+	 */
+	protected function throwNeedsParameters($missing = array())
+	{
+		$rule_id = "the {$this->getName()} validation rule";
+
+		if (count($missing) == 1)
+		{
+			throw new \Exception("Missing {$missing[0]} parameter for {$rule_id}.");
+		}
+
+		$last = array_shift($missing);
+		$init = implode(', ', $missing);
+
+		throw new \Exception("Missing {$init} and {$last} parameters for {$rule_id}.");
+	}
 }

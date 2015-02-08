@@ -29,21 +29,10 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  */
 class Regex extends ValidationRule {
 
-	protected $regex = NULL;
-
 	public function validate($value)
 	{
-		if ( ! isset($this->regex))
-		{
-			return FALSE;
-		}
+		list($regex) = $this->assertParameters('expression');
 
-		return (bool) preg_match($this->regex, $value);
+		return (bool) preg_match($regex, $value);
 	}
-
-	public function setParameters($parameters)
-	{
-		$this->regex = $parameters[0];
-	}
-
 }
