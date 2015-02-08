@@ -116,7 +116,7 @@ return array(
 			// ..\Addon
 			'Extension' => 'Model\Addon\Extension',
 			'Module' => 'Model\Addon\Module',
-
+			'Plugin' => 'Model\Addon\Plugin',
 
 			// ..\Category
 			'Category' => 'Model\Category\Category',
