@@ -2,12 +2,26 @@
 
 namespace EllisLab\ExpressionEngine\Service\Validation;
 
+use EllisLab\ExpressionEngine\Service\View\View;
+use EllisLab\ExpressionEngine\Service\View\StringView;
+
 class Result {
 
+	/**
+	 * @var View
+	 */
+	protected $default_view;
+
+	/**
+	 * @var array List of failed fields ([field => errors])
+	 */
 	protected $failed = array();
 
 	/**
+	 * Add a failed rule. Used internally to populate the result
 	 *
+	 * @param String $field Field name
+	 * @param String $rule Rule name
 	 */
 	public function addFailed($field, $rule)
 	{
@@ -20,7 +34,22 @@ class Result {
 	}
 
 	/**
+	 * Get all failures as [field => failed_rules]
+	 */
+	public function getFailed($field = NULL)
+	{
+		if (isset($field))
+		{
+			return $this->failed[$field];
+		}
+
+		return $this->failed;
+	}
+
+	/**
+	 * Check if the validated object is valid
 	 *
+	 * @return bool Valid?
 	 */
 	public function isValid()
 	{
@@ -28,7 +57,19 @@ class Result {
 	}
 
 	/**
+	 * Convenience alias to isValid. Depending on your data and the
+	 * result variable name `passed()` can sometimes work better than
+	 * `isValid()`.
+	 */
+	public function passed()
+	{
+		return $this->isValid();
+	}
+
+	/**
+	 * Check if the validated object is invalid
 	 *
+	 * @return bool Invalid?
 	 */
 	public function isNotValid()
 	{
@@ -36,48 +77,71 @@ class Result {
 	}
 
 	/**
+	 * Convenience alias to isValid. Depending on your data and the
+	 * result variable name `failed()` can sometimes work better than
+	 * `isNotValid()`.
+	 */
+	public function failed()
+	{
+		return $this->isNotValid();
+	}
+
+	/**
 	 *
 	 */
-	public function getErrors($field = NULL)
+	public function renderErrors(View $view = NULL)
 	{
-		if (isset($field))
-		{
-			if ( ! isset($this->failed[$field]))
-			{
-				return array();
-			}
+		$out = array();
 
-			return $this->getErrorsForField($field);
+		foreach ($this->failed as $field => $rule)
+		{
+			$out[$field] = $this->renderError($field, $view);
 		}
 
-		$errors = array();
-
-		foreach (array_keys($this->failed) as $field)
-		{
-			$errors[$field] = $this->getErrorsForField($field);
-		}
-
-		return $errors;
+		return $out;
 	}
 
-	public function createOutput($rule, $field)
+	/**
+	 *
+	 */
+	public function renderError($field, View $view = NULL)
 	{
-		// todo check defaults lang keys, overriden messages, field
-		// long names, etc
-		$name = get_class($rule);
-
-		return "Validation of '{$field}' failed on rule '{$name}'";
-	}
-
-	protected function getErrorsForField($field)
-	{
-		$errors = array();
-
-		foreach ($this->failed[$field] as $rule)
+		if ( ! isset($this->failed[$field]))
 		{
-			$errors[] = $this->createOutput($rule, $field);
+			return '';
 		}
 
-		return $errors;
+		$rules = $this->failed[$field];
+
+		$view = $view ?: $this->getDefaultView();
+
+		return trim(
+			$view->render(compact('field', 'rules'))
+		);
+	}
+
+	/**
+	 *
+	 */
+	protected function getDefaultView()
+	{
+		if ( ! isset($this->default_view))
+		{
+			$this->default_view = new StringView($this->getDefaultTemplate());
+		}
+
+		return $this->default_view;
+	}
+
+	/**
+	 *
+	 */
+	protected function getDefaultTemplate()
+	{
+		return <<<'STR'
+		<?php foreach ($rules as $rule): ?>
+			<p><?=$field?> did not pass rule: <?=$rule->getName()?></p>
+		<?php endforeach; ?>
+STR;
 	}
 }
