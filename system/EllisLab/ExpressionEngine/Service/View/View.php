@@ -1,7 +1,9 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Service\View;
 
-use \EE_Loader;
+use EE_Loader;
+use View as LegacyView;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -56,7 +58,7 @@ class View {
 	 * @param obj $view An instnace of View
 	 * @return void
 	 */
-	public function __construct($path, EE_Loader $loader, \View $view)
+	public function __construct($path, EE_Loader $loader, LegacyView $view)
 	{
 		$this->path = $path;
 		$this->loader = $loader;
