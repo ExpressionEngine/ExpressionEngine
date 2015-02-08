@@ -31,7 +31,7 @@ use InvalidArgumentException;
  *
  *  // Or shorter using chaing. Given here with the DI notation:
  *
- *  $result = ('Validation', $rules)->validate($_POST);
+ *  $result = ee('Validation')->make($rules)->validate($_POST);
  *
  * @package		ExpressionEngine
  * @subpackage	Validation
@@ -40,6 +40,9 @@ use InvalidArgumentException;
  * @link		http://ellislab.com
  */
 class Validator {
+
+	const STOP = 'STOP';
+	const SKIP = 'SKIP';
 
 	protected $rules = array();
 	protected $custom = array();
@@ -54,19 +57,40 @@ class Validator {
 	}
 
 	/**
-	 *
+	 * Set rules for all items
 	 */
 	public function setRules($rules)
 	{
 		$this->rules = $rules;
+
+		return $this;
 	}
 
 	/**
-	 *
+	 * Set rule for a single item
 	 */
 	public function setRule($key, $rule_string)
 	{
 		$this->rules[$key] = $rule_string;
+
+		return $this;
+	}
+
+	/**
+	 * Append a rule
+	 */
+	public function addRule($key, $rule_string)
+	{
+		if ( ! array_key_exists($key, $this->rules))
+		{
+			$this->rules[$key] = $rule_string;
+		}
+		else
+		{
+			$this->rules[$key] = $this->rules[$key].'|'.$rule_string;
+		}
+
+		return $this;
 	}
 
 	/**
@@ -107,7 +131,6 @@ class Validator {
 		foreach ($this->rules as $key => $rules)
 		{
 			$value = NULL;
-			$allow_blank = TRUE;
 
 			if (array_key_exists($key, $values))
 			{
@@ -120,30 +143,31 @@ class Validator {
 			{
 				$rule->setAllValues($values);
 
-				// don't allow blank if rule is strict (e.g. required)
-				if ($rule->stopsOnFailure())
+				$rule_return = $rule->validate($value);
+
+				// Passed? Move on to the next rule
+				if ($rule_return === TRUE)
 				{
-					$allow_blank = FALSE;
+					continue;
 				}
 
-				if ($rule->validate($value) === FALSE)
+				// Skip the rest of the rules?
+				if ($rule_return === self::SKIP)
 				{
-					if ($rule->skipsOnFailure())
-					{
-						break;
-					}
+					break;
+				}
 
-					if ($allow_blank && trim($value) === '')
-					{
-						continue;
-					}
-
+				// Hard stopping rule? Record the error and move on.
+				if ($rule_return === self::STOP)
+				{
 					$result->addFailed($key, $rule);
+					break;
+				}
 
-					if ($rule->stopsOnFailure())
-					{
-						break;
-					}
+				// Add non-blank to failed
+				if (trim($value) !== '')
+				{
+					$result->addFailed($key, $rule);
 				}
 			}
 		}
@@ -157,7 +181,7 @@ class Validator {
 	 */
 	protected function setupRules($rules)
 	{
-		$rules = explode('|', $rules);
+		$rules = explode('|', trim($rules, '|'));
 		$objects = array();
 
 		foreach ($rules as $rule_string)
@@ -189,14 +213,8 @@ class Validator {
 			$object = $this->newValidationRule($name);
 		}
 
-
 		if (isset($params))
 		{
-			if ( ! is_callable(array($object, 'setParameters')))
-			{
-				throw new \Exception("Validation rule `{$name}` does not accept parameters.");
-			}
-
 			$object->setParameters($params);
 		}
 
@@ -204,7 +222,10 @@ class Validator {
 	}
 
 	/**
+	 * Split up the validation rule and its parameters
 	 *
+	 * @param String $string Validation rule
+	 * @return Array [rule name, [...parameters]]
 	 */
 	protected function parseRuleString($string)
 	{
@@ -223,7 +244,10 @@ class Validator {
 	}
 
 	/**
+	 * Helper function to create a validation rule object
 	 *
+	 * @param String $rule_name Validation rule
+	 * @return Object ValidationRule
 	 */
 	protected function newValidationRule($rule_name)
 	{
