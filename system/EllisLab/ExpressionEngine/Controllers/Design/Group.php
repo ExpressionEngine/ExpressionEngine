@@ -315,7 +315,7 @@ class Group extends AbstractDesignController {
 
 		if ( ! $group)
 		{
-			show_error('id_not_found');
+			show_error(lang('group_not_found'));
 		}
 		else
 		{
