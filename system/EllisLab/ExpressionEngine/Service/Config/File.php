@@ -37,7 +37,7 @@ class File implements Config
 				'username' => 'root',
 				'password' => '',
 				'database' => '',
-				'dbdriver' => 'mysql',
+				'dbdriver' => 'mysqli',
 				'pconnect' => FALSE,
 				'dbprefix' => 'exp_',
 				'swap_pre' => 'exp_',
@@ -47,7 +47,6 @@ class File implements Config
 				'char_set' => 'utf8',
 				'dbcollat' => 'utf8_general_ci',
 				'cachedir' => '', // Set in constructor
-				'stricton' => TRUE,
 			)
 		)
 	);
