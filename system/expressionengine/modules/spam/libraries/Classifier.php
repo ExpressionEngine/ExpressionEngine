@@ -64,7 +64,7 @@ class Classifier {
 	 */
 	public function classify($source, $class)
 	{
-		$source = $this->corpus->vectorize($source); 
+		$source = $this->corpus->transform($source); 
 		$other = array_diff($this->classes, array($class));
 		$other = array_shift($other);
 		$class = $this->training[$class];
@@ -77,8 +77,8 @@ class Classifier {
 		// to calculcate the probability the source is spam
 		foreach($source as $feature => $freq)
 		{
-			$class_dist =$class[$feature];
-			$other_dist =$other[$feature];
+			$class_dist = $class[$feature];
+			$other_dist = $other[$feature];
 			$class_prob = $class_dist->probability($freq);
 			$other_prob = $other_dist->probability($freq);
 
@@ -98,7 +98,7 @@ class Classifier {
 
 			// Must calculate the product in the log domain to avoid underflow
 			// so our product becomes a sum of logs
-			$log_sum = log($prob) - log(1 - $prob);
+			$log_sum += log($prob) - log(1 - $prob);
 		}
 
 		$probability = 1 / (1 + pow(M_E, $log_sum));
