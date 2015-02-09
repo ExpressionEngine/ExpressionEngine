@@ -494,15 +494,29 @@ class Wizard extends CI_Controller {
 
 	// --------------------------------------------------------------------
 
-	/**
-	 * Show the update form
-	 * @return void
-	 */
-	private function update_form()
+	public function valid_db_prefix($db_prefix)
 	{
-		$this->title = sprintf(lang('update_title'), $this->installed_version, $this->version);
-		$vars['action'] = $this->set_qstr('do_update');
-		$this->set_output('update_form', $vars);
+		// DB Prefix has some character restrictions
+		if ( ! preg_match("/^[0-9a-zA-Z\$_]*$/", $db_prefix))
+		{
+			ee()->form_validation->set_message(
+				'valid_db_prefix',
+				lang('database_prefix_invalid_characters')
+			);
+			return FALSE;
+		}
+
+		// The DB Prefix should not include "exp_"
+		if ( strpos($db_prefix, 'exp_') !== FALSE)
+		{
+			ee()->form_validation->set_message(
+				'valid_db_prefix',
+				lang('database_prefix_contains_exp_')
+			);
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
 	// --------------------------------------------------------------------
@@ -520,84 +534,34 @@ class Wizard extends CI_Controller {
 		$this->assign_install_values();
 		$this->load->library('javascript');
 
+		// Setup some basic configs for validation
+		ee()->config->set_item('un_min_len', 4);
+		ee()->config->set_item('pw_min_len', 5);
+
+		// Setup form validation
+		ee()->load->library('form_validation');
+		ee()->form_validation->set_rules('db_hostname', 'db_hostname', 'required');
+		ee()->form_validation->set_rules('db_username', 'db_username', 'required');
+		ee()->form_validation->set_rules('db_name', 'db_name', 'required');
+		ee()->form_validation->set_rules('db_prefix', 'db_prefix', 'required|max_length[30]|callback_valid_db_prefix');
+
+		ee()->form_validation->set_rules('username', 'username', 'required|valid_username');
+		ee()->form_validation->set_rules('password', 'password', 'required|valid_password[username]');
+		ee()->form_validation->set_rules('email_address', 'email_address', 'required|valid_email');
+
+		if ( ! ee()->form_validation->run())
+		{
+			var_dump(validation_errors());
+			return $this->install_form();
+		}
+
 		// Start our error trapping
 		$errors = array();
 
-		// Blank fields?
-		foreach (array('db_hostname', 'db_username', 'db_name', 'username', 'password', 'email_address') as $val)
-		{
-			if ($this->userdata[$val] == '')
-			{
-				$errors[] = lang('empty_fields');
-				break;
-			}
-		}
-
-		// Usernames must be at least 4 chars in length
-		if ($this->userdata['username'] != ''
-			AND strlen($this->userdata['username']) < 4)
-		{
-			$errors[] = lang('username_short');
-		}
-
-		// Passwords must be at least 5 chars in length
-		if ($this->userdata['password'] != ''
-			AND strlen($this->userdata['password']) < 5)
-		{
-			$errors[] = lang('password_short');
-		}
-
-		//  Is password the same as username?
-		$lc_user = strtolower($this->userdata['username']);
-		$lc_pass = strtolower($this->userdata['password']);
-		$nm_pass = strtr($lc_pass, 'elos', '3105');
-
-		if ($this->userdata['username'] != ''
-			AND $this->userdata['password'] != '')
-		{
-			if ($lc_user == $lc_pass
-				OR $lc_user == strrev($lc_pass)
-				OR $lc_user == $nm_pass
-				OR $lc_user == strrev($nm_pass))
-			{
-				$errors[] = lang('password_not_unique');
-			}
-		}
-
-		// Is email valid?
-		if ($this->userdata['email_address'] != ''
-			AND ! valid_email($this->userdata['email_address']))
-		{
-			$errors[] = lang('email_invalid');
-		}
-
-		// check screen name and username for valid format
-		if (strlen($this->userdata['username']) > 50
-			OR preg_match("/[\|'\"!<>\{\}]/", $this->userdata['username']))
-		{
-			$errors[] = sprintf(lang('username_invalid'), htmlentities('|\'"!<>{}'));
-		}
+		// ================= Everything below stays
 
 		// Set the screen name
 		$this->userdata['screen_name'] = $this->userdata['username'];
-
-		// DB Prefix has some character restrictions
-		if ( ! preg_match("/^[0-9a-zA-Z\$_]*$/", $this->userdata['db_prefix']))
-		{
-			$errors[] = lang('database_prefix_invalid_characters');
-		}
-
-		// The DB Prefix should not include "exp_"
-		if ( strpos($this->userdata['db_prefix'], 'exp_') !== FALSE)
-		{
-			$errors[] = lang('database_prefix_contains_exp_');
-		}
-
-		// Table names cannot be longer than 64 characters, our longest is 26
-		if ( strlen($this->userdata['db_prefix']) > 30)
-		{
-			$errors[] = lang('database_prefix_too_long');
-		}
 
 		// Connect to the database.  We pass a multi-dimensional array since
 		// that's what is normally found in the database config file
@@ -885,6 +849,19 @@ class Wizard extends CI_Controller {
 				}
 			}
 		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Show the update form
+	 * @return void
+	 */
+	private function update_form()
+	{
+		$this->title = sprintf(lang('update_title'), $this->installed_version, $this->version);
+		$vars['action'] = $this->set_qstr('do_update');
+		$this->set_output('update_form', $vars);
 	}
 
 	// --------------------------------------------------------------------
