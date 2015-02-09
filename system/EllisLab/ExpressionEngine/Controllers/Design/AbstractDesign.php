@@ -267,6 +267,7 @@ abstract class AbstractDesign extends CP_Controller {
 				)
 			)
 		);
+		$table->setNoResultsText('no_templates_available');
 
 		$data = array();
 
