@@ -19,7 +19,7 @@
 			<ul class="folder-list">
 				<?php foreach ($system_templates as $template): ?>
 				<li<?php if ( ! empty($template['class'])): ?> class="<?=$template['class']?>"<?php endif; ?>>
-					<a href="<?=$template['url']?>"><?=$template['name']?></a>
+					<a href="<?=$template['url']?>"><?=strtolower($template['name'])?></a>
 					<ul class="toolbar">
 						<li class="edit"><a href="<?=$template['url']?>" title="<?=lang('edit')?>"></a></li>
 					</ul>
