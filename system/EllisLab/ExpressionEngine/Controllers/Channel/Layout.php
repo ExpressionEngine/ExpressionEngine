@@ -148,6 +148,9 @@ class Layout extends AbstractChannelController {
 
 	public function create($channel_id)
 	{
+		ee()->view->header = NULL;
+		ee()->view->left_nav = NULL;
+
 		$channel = ee('Model')->get('Channel', $channel_id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
@@ -262,9 +265,6 @@ class Layout extends AbstractChannelController {
 
 		ee()->view->cp_page_title = lang('create_form_layout');
 
-		ee()->view->header = NULL;
-		ee()->view->left_nav = NULL;
-
 		ee()->javascript->set_global('publish_layout', $channel_layout->field_layout);
 		ee()->cp->add_js_script('ui', 'sortable');
 		ee()->cp->add_js_script('file', 'cp/channel/layout');
@@ -274,6 +274,9 @@ class Layout extends AbstractChannelController {
 
 	public function edit($layout_id)
 	{
+		ee()->view->header = NULL;
+		ee()->view->left_nav = NULL;
+
 		$channel_layout = ee('Model')->get('ChannelLayout', $layout_id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
@@ -375,9 +378,6 @@ class Layout extends AbstractChannelController {
 		);
 
 		ee()->view->cp_page_title = sprintf(lang('edit_form_layout'), $channel_layout->layout_name);
-
-		ee()->view->header = NULL;
-		ee()->view->left_nav = NULL;
 
 		ee()->javascript->set_global('publish_layout', $channel_layout->field_layout);
 		ee()->cp->add_js_script('ui', 'sortable');
