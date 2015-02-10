@@ -33,4 +33,9 @@ class ValidBase64 extends ValidationRule {
 	{
 		return (bool) preg_match('/^[a-zA-Z0-9\/\+=]+$/', $value);
 	}
+
+	public function getLanguageKey()
+	{
+		return 'valid_base64';
+	}
 }

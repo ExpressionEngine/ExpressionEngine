@@ -34,4 +34,8 @@ class AlphaNumeric extends ValidationRule {
 		return (bool) preg_match("/^([a-z0-9])+$/i", $value);
 	}
 
+	public function getLanguageKey()
+	{
+		return 'alpha_numeric';
+	}
 }

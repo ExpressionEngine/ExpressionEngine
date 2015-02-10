@@ -45,4 +45,9 @@ class MinLength extends ValidationRule {
 
 		return (strlen($value) < $length) ? FALSE : TRUE;
 	}
+
+	public function getLanguageKey()
+	{
+		return 'min_length';
+	}
 }

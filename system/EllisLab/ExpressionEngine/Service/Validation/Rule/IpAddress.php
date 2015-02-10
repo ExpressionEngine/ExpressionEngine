@@ -61,4 +61,9 @@ class IpAddress extends ValidationRule {
 
 		return $flags;
 	}
+
+	public function getLanguageKey()
+	{
+		return 'valid_ip';
+	}
 }
