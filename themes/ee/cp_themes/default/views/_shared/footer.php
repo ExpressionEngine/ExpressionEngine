@@ -48,36 +48,6 @@
 		</section>
 		<div class="overlay"></div>
 
-		<?php if ( ! empty($cp_messages) OR isset($new_checksums)):
-			$class = array_keys($cp_messages);
-			$class = $class[0]; ?>
-			<div class="alert <?=$class?>">
-				<h3><?=lang('cp_message_'.$class);?></h3> <!-- Need to make this dynamic -->
-				<?php foreach ($cp_messages as $key => $message): ?>
-					<p><?=$message?></p>
-					<?php if ($message != end($cp_messages)): ?>
-						<hr>
-					<?php endif;
-				endforeach ?>
-				<?php // Bootstrap Checksum Failure Notice - this probably needs styles from james?>
-				<?php if (isset($new_checksums)):?>
-					<ul id="checksumFailure">
-						<li><?=lang('checksum_changed_warning')?>
-							<ul>
-								<?php foreach($new_checksums as $path): ?>
-								<li><?=$path; ?></li>
-								<?php endforeach; ?>
-							</ul>
-						</li>
-					</ul>
-					<?php if (ee()->session->userdata('group_id') == 1): ?>
-						<a class="submit" href="<?=BASE.AMP.'C=homepage'.AMP.'M=accept_checksums'?>"><?=lang('checksum_changed_accept')?></a>
-					<?php endif; ?>
-				<?php endif; ?>
-				<a class="close" href=""></a>
-			</div>
-		<?php endif ?>
-
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
 		<?=ee()->view->script_tag('v3/common.js')?>
 		<?php
