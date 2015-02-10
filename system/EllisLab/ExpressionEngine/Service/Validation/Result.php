@@ -8,9 +8,14 @@ use EllisLab\ExpressionEngine\Service\View\StringView;
 class Result {
 
 	/**
-	 * @var View
+	 * @var Default formatted view
 	 */
 	protected $default_view;
+
+	/**
+	 * @var Default view for line items
+	 */
+	protected $line_view;
 
 	/**
 	 * @var array List of failed fields ([field => errors])
@@ -87,7 +92,7 @@ class Result {
 	}
 
 	/**
-	 *
+	 * Check if a field has errors
 	 */
 	public function hasErrors($field)
 	{
@@ -95,15 +100,52 @@ class Result {
 	}
 
 	/**
-	 *
+	 * Get error strings for a given field
 	 */
-	public function getErrors($field)
+	public function getErrors($field, View $view = NULL)
 	{
-		return $this->renderError($field, $this->getDefaultView());
+		$out = array();
+
+		$view = $view ?: $this->getLineView();
+
+		foreach ($this->failed[$field] as $rule)
+		{
+			$out[$rule->getName()] = trim($view->render(compact('rule')));
+		}
+
+		return $out;
 	}
 
 	/**
-	 *
+	 * Get all error strings for all failed fields
+	 */
+	public function getAllErrors(View $view = NULL)
+	{
+		$out = array();
+
+		foreach (array_keys($this->failed) as $field)
+		{
+			$out[$field] = $this->getErrors($field, $view);
+		}
+
+		return $out;
+	}
+
+	/**
+	 * Get failed rule objects
+	 */
+	public function getFailedRules($field = NULL)
+	{
+		if (isset($field))
+		{
+			return $this->failed[$field];
+		}
+
+		return $this->failed;
+	}
+
+	/**
+	 * Render
 	 */
 	public function renderErrors(View $view = NULL)
 	{
@@ -152,6 +194,19 @@ class Result {
 	/**
 	 *
 	 */
+	protected function getLineView()
+	{
+		if ( ! isset($this->line_view))
+		{
+			$this->line_view = new StringView($this->getLineTemplate());
+		}
+
+		return $this->line_view;
+	}
+
+	/**
+	 *
+	 */
 	protected function getDefaultTemplate()
 	{
 		return <<<'STR'
@@ -161,6 +216,18 @@ class Result {
 			<?php list($key, $params) = $rule->getLanguageData(); ?>
 			<p><?=sprintf(lang($key), $params) ?></p>
 		<?php endforeach; ?>
+STR;
+	}
+
+	/**
+	 *
+	 */
+	protected function getLineTemplate()
+	{
+		return <<<'STR'
+		<?php $this->lang->load('form_validation'); ?>
+		<?php list($key, $params) = $rule->getLanguageData(); ?>
+		<?=sprintf(lang($key), $params) ?>
 STR;
 	}
 }
