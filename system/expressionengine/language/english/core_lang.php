@@ -164,6 +164,35 @@ and email %s to report the link that generated this message.',
 'version_mismatch' =>
 'Your ExpressionEngine installation&rsquo;s version (%s) is not consistent with the reported version (%s). <a href="http://ellislab.com/expressionengine/user-guide/installation/update.html">Please update your installation of ExpressionEngine again</a>.',
 
+'checksum_changed_warning' =>
+'One or more core files have been altered:',
+
+'checksum_changed_accept' =>
+'Accept Changes',
+
+'checksum_email_subject' =>
+'A core file was modified on your site.',
+
+'checksum_email_message' => 'ExpressionEngine has detected the modification of a core file on: {url}
+
+The following files are affected:
+{changed}
+
+If you made these changes, please accept the modifications on the control panel homepage.  If you did not alter these files it may indicate a hacking attempt. Check the files for any suspicious contents (JavaScript or iFrames) and contact ExpressionEngine support:
+https://support.ellislab.com/',
+
+'new_version_notice' =>
+'ExpressionEngine version %s is now available.'."\n".'
+Download <a href=\'%s\' title=\'Download Here\'>here</a> and follow the <a href=\'%s\' title=\'Version Update Docs\'>Version Update Docs</a>.',
+
+'new_version_notice_high_priority' =>
+'<span style="font-size:18px;color:#3BA1DB;font-weight:bold">Security Update Release</span><br />
+An ExpressionEngine version %s, build %s has been released as a security release.  The latest version is: %s, and the latest build is: %s.<br /><br />
+Please download <a href="%s" title="Download Here">here</a> and follow the <a href="%s" title="Update Docs">update docs</a> to ensure you are running on the most up-to-date version.',
+
+'new_version_error' =>
+'An unexpected error occurred attempting to download the current ExpressionEngine version number.  Please visit your <a href=\'%s\' title=\'download account\'>Download Account</a> to verify you are on the current version.  If this error persists, please contact your system administrator',
+
 //----------------------------
 // Member Groups
 //----------------------------
