@@ -596,11 +596,6 @@ class Wizard extends CI_Controller {
 		// Start our error trapping
 		$errors = array();
 
-		// ================= Everything below stays
-
-		// Set the screen name
-		$this->userdata['screen_name'] = $this->userdata['username'];
-
 		// Connect to the database.  We pass a multi-dimensional array since
 		// that's what is normally found in the database config file
 		$db = array(
@@ -640,6 +635,9 @@ class Wizard extends CI_Controller {
 		}
 
 		// --------------------------------------------------------------------
+
+		// Set the screen name to be the same as the username
+		$this->userdata['screen_name'] = $this->userdata['username'];
 
 		// Load the DB schema
 		require APPPATH.'schema/'.$this->userdata['dbdriver'].'_schema.php';
