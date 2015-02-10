@@ -39,8 +39,10 @@ namespace EllisLab\ExpressionEngine\Service\Validation;
  */
 abstract class ValidationRule {
 
+	/**
+	 * @var array Rule parameters
+	 */
 	protected $parameters = array();
-	protected $parameter_names = array();
 
 	/**
 	 * Validate a Value
@@ -53,7 +55,6 @@ abstract class ValidationRule {
 	 */
 	abstract public function validate($value);
 
-
 	/**
 	 * Optional if you need access to other values
 	 *
@@ -61,6 +62,7 @@ abstract class ValidationRule {
 	 * all that information if we're not going to need it.
 	 */
 	public function setAllValues(array $values) { /* blank */ }
+
 	/**
 	 *
 	 */
