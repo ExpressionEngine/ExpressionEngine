@@ -43,8 +43,10 @@ class Homepage extends CP_Controller {
 			->filter('status', 'p')
 			->count();
 
-		// @TODO Need to build this query
-		$vars['number_of_spam_comments'] = '?';
+		$vars['number_of_spam_comments'] = ee('Model')->get('Comment')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('status', 's')
+			->count();;
 
 		$vars['number_of_channels'] = ee('Model')->get('Channel')
 			->filter('site_id', ee()->config->item('site_id'))
