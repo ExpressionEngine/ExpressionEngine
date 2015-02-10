@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
+use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 use EllisLab\ExpressionEngine\Model\Content\Display\LayoutDisplay;
 use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
@@ -75,10 +76,29 @@ class ChannelLayout extends Model implements LayoutInterface {
 		}
 
 		// "New" (unknown) fields
-		$tab = $display->getTab('publish');
+		$publish_tab = $display->getTab('publish');
 
 		foreach ($fields as $field_id => $field)
 		{
+			if (strpos($field_id, '__') === FALSE)
+			{
+				$tab = $publish_tab;
+			}
+			else
+			{
+				list($tab_id, $garbage) = explode('__', $field_id);
+
+				try
+				{
+					$tab = $display->getTab($tab_id);
+				}
+				catch (InvalidArgumentException $e)
+				{
+					$tab = new LayoutTab($tab_id, $tab_id);
+					$display->addTab($tab);
+				}
+			}
+
 			$tab->addField($field);
 		}
 
