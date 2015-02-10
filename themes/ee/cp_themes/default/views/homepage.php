@@ -29,7 +29,7 @@
 				<h1><?=lang('comments')?> <a class="btn action" href="<?=cp_url('publish/comments')?>"><?=lang('review_all_new')?></a></h1>
 				<div class="info">
 					<p><?=lang('there_were')?> <b><?=$number_of_new_comments?></b> <a href="<?=cp_url('publish/comments')?>"><?=lang('new_comments')?></a> <?=lang('since_last_login')?> (<?=$last_visit?>)</p>
-					<p class="last"><b><?=$number_of_pending_comments?></b> <?=lang('are')?> <a href="<?=cp_url('publish/comments', array('filter_by_status' => 'p'))?>"><?=lang('awaiting_moderation')?></a>, <?=lang('and')?> <b><?=$number_of_spam_comments?></b> <?=lang('have_been')?> <a href="http://localhost/el-projects/ee-cp/views/publish-comments-spam.php"><?=lang('flagged_as_spam')?></a>.</p>
+					<p class="last"><b><?=$number_of_pending_comments?></b> <?=lang('are')?> <a href="<?=cp_url('publish/comments', array('filter_by_status' => 'p'))?>"><?=lang('awaiting_moderation')?></a>, <?=lang('and')?> <b><?=$number_of_spam_comments?></b> <?=lang('have_been')?> <a href="<?=cp_url('publish/comments', array('filter_by_status' => 's'))?>"><?=lang('flagged_as_spam')?></a>.</p>
 				</div>
 			</div>
 		</div>
