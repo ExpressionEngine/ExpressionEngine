@@ -313,7 +313,7 @@ class Cp {
 		$notices = array();
 
 		// Show a notice if the cache folder is not writeable
-		if (TRUE || ! ee()->cache->file->is_supported())
+		if ( ! ee()->cache->file->is_supported())
 		{
 			$notices[] = lang('unwritable_cache_folder');
 		}
