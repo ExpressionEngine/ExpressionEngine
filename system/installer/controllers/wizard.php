@@ -489,7 +489,7 @@ class Wizard extends CI_Controller {
 		$vars['errors'] = $errors;
 
 		$vars['action'] = $this->set_qstr('do_install');
-		$this->subtitle = lang('required');
+		$this->subtitle = lang('required_fields');
 
 		// Display the form and pass the userdata array to it
 		$this->set_output('install_form', array_merge($vars, $this->userdata));

@@ -3,12 +3,12 @@
 $lang = array(
 
 // Statuses
-'paused'        => 'Paused',
-'processing'    => 'Processing',
-'completed'     => 'Completed',
-'stopped'       => 'Stopped',
-'required'      => '✱ Required Fields',
-'subtitle_step' => 'Step %d of %d',
+'paused'          => 'Paused',
+'processing'      => 'Processing',
+'completed'       => 'Completed',
+'stopped'         => 'Stopped',
+'required_fields' => '✱ Required Fields',
+'subtitle_step'   => 'Step %d of %d',
 
 // Install Form
 
