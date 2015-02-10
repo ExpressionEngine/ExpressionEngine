@@ -31,7 +31,12 @@ class Homepage extends CP_Controller {
 
 	public function index()
 	{
-		$vars['number_of_new_comments'] = '?';
+		$vars['last_visit'] = ee()->localize->format_date('%F %j%S, %Y', ee()->session->userdata['last_visit'], TRUE);
+
+		$vars['number_of_new_comments'] = ee('Model')->get('Comment')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('comment_date', '>', ee()->session->userdata['last_visit'])
+			->count();
 
 		$vars['number_of_pending_comments'] = ee('Model')->get('Comment')
 			->filter('site_id', ee()->config->item('site_id'))
