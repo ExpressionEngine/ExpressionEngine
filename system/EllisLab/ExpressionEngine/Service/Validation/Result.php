@@ -89,6 +89,22 @@ class Result {
 	/**
 	 *
 	 */
+	public function hasErrors($field)
+	{
+		return array_key_exists($field, $this->failed);
+	}
+
+	/**
+	 *
+	 */
+	public function getErrors($field)
+	{
+		return $this->renderError($field, $this->getDefaultView());
+	}
+
+	/**
+	 *
+	 */
 	public function renderErrors(View $view = NULL)
 	{
 		$out = array();
@@ -106,7 +122,7 @@ class Result {
 	 */
 	public function renderError($field, View $view = NULL)
 	{
-		if ( ! isset($this->failed[$field]))
+		if ( ! $this->hasErrors($field))
 		{
 			return '';
 		}
@@ -139,8 +155,11 @@ class Result {
 	protected function getDefaultTemplate()
 	{
 		return <<<'STR'
+		<?php $this->lang->load('form_validation'); ?>
+
 		<?php foreach ($rules as $rule): ?>
-			<p><?=$field?> did not pass rule: <?=$rule->getName()?></p>
+			<?php list($key, $params) = $rule->getLanguageData(); ?>
+			<p><?=sprintf(lang($key), $params) ?></p>
 		<?php endforeach; ?>
 STR;
 	}
