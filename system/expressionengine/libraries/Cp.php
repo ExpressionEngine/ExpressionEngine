@@ -398,6 +398,12 @@ class Cp {
 					->addToBody(lang('checksum_changed_warning'))
 					->addToBody($changed);
 
+				$button = form_open(cp_url('homepage/accept_checksums'), '', array('return' => base64_encode(ee()->cp->get_safe_refresh())));
+				$button .= cp_form_submit('checksum_changed_accept', 'checksum_changed_accept');
+				$button .= form_close();
+
+				$alert->addToBody($button);
+
 				return $alert;
 			}
 		}
