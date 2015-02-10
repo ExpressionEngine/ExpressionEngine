@@ -9,7 +9,7 @@ class DefaultLayout implements LayoutInterface {
 
 	protected $layout;
 
-	public function __construct()
+	public function __construct($channel_id = NULL, $entry_id = NULL)
 	{
 		$this->layout = array();
 
@@ -95,6 +95,32 @@ class DefaultLayout implements LayoutInterface {
 				)
 			)
 		);
+
+		if ($channel_id)
+		{
+			// Here comes the ugly! @TODO don't do this
+			ee()->legacy_api->instantiate('channel_fields');
+			$module_tabs = ee()->api_channel_fields->get_module_fields($channel_id, $entry_id);
+
+			foreach ($module_tabs as $tab_id => $fields)
+			{
+				$tab = array(
+					'id' => $tab_id,
+					'name' => $tab_id,
+					'fields' => array()
+				);
+
+				foreach ($fields as $key => $field)
+				{
+					$tab['fields'][] = array(
+						'field' => $field['field_id'],
+						'visible' => TRUE,
+						'collapsed' => FALSE
+					);
+				}
+				$this->layout[] = $tab;
+			}
+		}
 	}
 
 	public function getLayout()
