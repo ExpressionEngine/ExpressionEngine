@@ -46,11 +46,11 @@
 				<div class="user">
 					<a href="<?=cp_url('login/logout')?>"><?=lang('log_out')?></a> <a class="has-sub" href=""><?=$cp_screen_name?> <span class="ico sub-arrow"></span></a>
 					<ul class="quick-links sub-menu">
-						<a href="http://localhost/el-projects/ee-cp/views/members-profile.php">My Profile</a>
+						<a href="<?=cp_url('members/profile', array('id' => ee()->session->userdata['member_id']))?>">My Profile</a>
 						<a href="">Quick Link</a>
 						<a href="">Another Quick Link</a>
 						<a href="">One More Quick Link</a>
-						<a class="last add" href="http://localhost/el-projects/ee-cp/views/members-profile-quicklinks.php">&#10010; New Link</a>
+						<a class="last add" href="<?=cp_url('members/profile/quicklinks/create', array('id' => ee()->session->userdata['member_id']))?>">&#10010; New Link</a>
 					</ul>
 				</div>
 			</nav>
@@ -65,7 +65,7 @@
 								<?php foreach ($cp_main_menu['channels']['create'] as $channel_name => $link): ?>
 									<li><a href="<?=$link?>"><?=$channel_name?></a></li>
 								<?php endforeach ?>
-								<li class="last"><a class="add" href="http://localhost/el-projects/ee-cp/views/channel-new.php">&#10010; <?=lang('new_channel')?></a></li>
+								<li class="last"><a class="add" href="<?=cp_url('channel/create')?>">&#10010; <?=lang('new_channel')?></a></li>
 							</ul>
 						</div>
 					</li>
@@ -83,7 +83,6 @@
 					<li><a href="<?=cp_url('members')?>"><?=lang('menu_members')?></a></li>
 				</ul>
 				<ul class="dev-menu">
-					<!-- <li><a href="http://localhost/el-projects/ee-cp/views/design.php">Design</a></li> -->
 					<li class="develop">
 						<a class="has-sub" href=""><b class="ico develop"></b> <span class="ico sub-arrow"></span> <!-- Develop --></a>
 						<div class="sub-menu">
