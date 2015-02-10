@@ -77,16 +77,47 @@ class Homepage extends CP_Controller {
 			->filter('status', 'closed')
 			->count();
 
-		// @TODO Need to get this working
-		$vars['number_of_comments_on_closed_entries'] = '?' ;/*ee('Model')->get('Comment')
-			->with('Entry')
+		$vars['number_of_comments_on_closed_entries'] = ee('Model')->get('Comment')
+			// ->with('Entry')
 			->filter('Comment.site_id', ee()->config->item('site_id'))
-			->filter('Entry.status', 'closed')
+			// ->filter('Entry.status', 'closed')
 			->count();
-		*/
 
 		ee()->view->cp_page_title = ee()->config->item('site_name') . ' ' . lang('overview');
 		ee()->cp->render('homepage', $vars);
+	}
+
+	public function acceptChecksums()
+	{
+		if (ee()->session->userdata('group_id') != 1)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$return = cp_url('homepage');
+
+		if (ee()->input->post('return'))
+		{
+			ee()->load->library('file_integrity');
+			$changed = ee()->file_integrity->check_bootstrap_files(TRUE);
+
+			if ($changed)
+			{
+				foreach($changed as $site_id => $paths)
+				{
+					foreach($paths as $path)
+					{
+						ee()->file_integrity->create_bootstrap_checksum($path, $site_id);
+					}
+				}
+			}
+
+			$return = base64_decode(ee()->input->post('return'));
+			$uri_elements = json_decode($return, TRUE);
+			$return = cp_url($uri_elements['path'], $uri_elements['arguments']);
+		}
+
+		ee()->functions->redirect($return);
 	}
 
 }
