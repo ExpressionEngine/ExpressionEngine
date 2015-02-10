@@ -161,6 +161,9 @@ To fix: Set the config file (/expressionengine/config/config.php) permissions to
 potentially malicious or dangerous code. We recommend you hit the back button
 and email %s to report the link that generated this message.',
 
+'version_mismatch' =>
+'Your ExpressionEngine installation&rsquo;s version (%s) is not consistent with the reported version (%s). <a href="http://ellislab.com/expressionengine/user-guide/installation/update.html">Please update your installation of ExpressionEngine again</a>.',
+
 //----------------------------
 // Member Groups
 //----------------------------
