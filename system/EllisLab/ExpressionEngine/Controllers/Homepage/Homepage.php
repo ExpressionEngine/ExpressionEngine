@@ -31,7 +31,7 @@ class Homepage extends CP_Controller {
 
 	public function index()
 	{
-		$vars['last_visit'] = ee()->localize->format_date('%F %j%S, %Y', ee()->session->userdata['last_visit'], TRUE);
+		$vars['last_visit'] = ee()->localize->human_time(ee()->session->userdata['last_visit']);
 
 		$vars['number_of_new_comments'] = ee('Model')->get('Comment')
 			->filter('site_id', ee()->config->item('site_id'))
