@@ -15,7 +15,7 @@
 					</div> -->
 					<div class="version-info">
 						<h3>Installed</h3>
-						<p>ExpressionEngine <?=$formatted_version?><br><em><?=lang('build').' '.APP_BUILD?></em></p>
+						<p>ExpressionEngine <?=$formatted_version?><br><em><?=lang('build') . ' ' . $ee_build_date?></em></p>
 						<a href="" class="close">&#10006;</a>
 						<div class="status">current</div>
 					</div>

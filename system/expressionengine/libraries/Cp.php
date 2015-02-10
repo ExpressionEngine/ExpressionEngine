@@ -244,11 +244,31 @@ class Cp {
 		$this->_seal_combo_loader();
 		$this->add_js_script('file', 'cp/global_end');
 
+		$date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
+		ee()->view->ee_build_date = ee()->localize->format_date($date_format, $this->_parse_build_date(), TRUE);
+
 		ee()->view->cp_footer_js = $this->render_footer_js();
 		ee()->view->cp_footer_items = $this->footer_item;
 		ee()->view->cp_its_all_in_your_head = $this->its_all_in_your_head;
 
 		return ee()->view->render($view, $data, $return);
+	}
+
+	/**
+	 * Converts our build date constant into a timestamp so we can format it
+	 * for display
+	 *
+	 * @return int Timestamp representing the build date
+	 */
+	protected function _parse_build_date()
+	{
+		$year = substr(APP_BUILD, 0, 4);
+		$month = substr(APP_BUILD, 4, 2);
+		$day = substr(APP_BUILD, 6, 2);
+
+		$string = $year . '-' . $month . '-' . $day;
+
+		return ee()->localize->string_to_timestamp($string, TRUE, '%Y-%m-%d');
 	}
 
 	// --------------------------------------------------------------------
