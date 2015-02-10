@@ -196,7 +196,7 @@ class EE_Exceptions {
 				{
 					include($path);
 				}
-					else
+				else
 				{
 					include(APPPATH.'errors/'.$template.'.php');
 				}
