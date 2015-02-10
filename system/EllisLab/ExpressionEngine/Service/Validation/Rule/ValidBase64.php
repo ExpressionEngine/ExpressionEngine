@@ -31,6 +31,6 @@ class ValidBase64 extends ValidationRule {
 
 	public function validate($value)
 	{
-		return ! (bool) preg_match('/[^a-zA-Z0-9\/\+=]/', $value);
+		return (bool) preg_match('/^[a-zA-Z0-9\/\+=]+$/', $value);
 	}
 }

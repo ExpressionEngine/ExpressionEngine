@@ -31,7 +31,7 @@ class Alpha extends ValidationRule {
 
 	public function validate($value)
 	{
-		return ( ! preg_match("/^([a-z])+$/i", $value)) ? FALSE : TRUE;
+		return (bool) preg_match("/^([a-z])+$/i", $value);
 	}
 
 }

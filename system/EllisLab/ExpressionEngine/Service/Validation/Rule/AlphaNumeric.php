@@ -31,7 +31,7 @@ class AlphaNumeric extends ValidationRule {
 
 	public function validate($value)
 	{
-		return ( ! preg_match("/^([a-z0-9])+$/i", $value)) ? FALSE : TRUE;
+		return (bool) preg_match("/^([a-z0-9])+$/i", $value);
 	}
 
 }
