@@ -50,7 +50,7 @@
 		</div>
 		<div class="col w-8 last">
 			<div class="box">
-				<h1><?=lang('members')?> <a class="btn action" href="http://localhost/el-projects/ee-cp/views/members-new.php"><?=lang('register_new')?></a></h1>
+				<h1><?=lang('members')?> <a class="btn action" href="<?=cp_url('members/create')?>"><?=lang('register_new')?></a></h1>
 				<div class="info">
 					<p><?=sprintf(lang('members_desc'), cp_url('settings/members'))?></p>
 					<h2><?=ee()->config->item('site_name')?> <?=lang('has')?>:</h2>
@@ -65,7 +65,22 @@
 	<div class="col-group snap">
 		<div class="col w-16 last">
 			<div class="box">
-				<h1><?=lang('content')?> <a class="btn action" href="http://localhost/el-projects/ee-cp/views/publish.php"><?=lang('create_new')?></a></h1>
+				<h1 class="btn-right"><?=lang('content')?>
+					<div class="filters">
+						<ul>
+							<li>
+								<a class="has-sub" href=""><?=lang('create_new')?></a>
+								<div class="sub-menu">
+									<ul>
+										<?php foreach (ee()->menu->generate_menu()['channels']['create'] as $channel_name => $link): ?>
+											<li><a href="<?=$link?>"><?=$channel_name?></a></li>
+										<?php endforeach ?>
+									</ul>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</h1>
 				<div class="info">
 					<p><?=lang('content_desc')?></p>
 					<h2><?=ee()->config->item('site_name')?> <?=lang('has')?>:</h2>
