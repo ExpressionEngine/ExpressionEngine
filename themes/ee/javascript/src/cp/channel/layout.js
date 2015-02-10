@@ -29,6 +29,7 @@ $(document).ready(function () {
 
 	// Sorting the tabs
 	$('div.tab-bar').sortable({
+		cancel: "li:first-child",
 		items: "li",
 		start: function (event, ui)
 		{
