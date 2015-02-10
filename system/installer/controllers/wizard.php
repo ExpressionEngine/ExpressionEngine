@@ -474,6 +474,9 @@ class Wizard extends CI_Controller {
 	 */
 	private function install_form($errors = FALSE)
 	{
+		// Reset current step
+		$this->current_step = 1;
+
 		// Assign the _POST array values
 		$this->assign_install_values();
 
