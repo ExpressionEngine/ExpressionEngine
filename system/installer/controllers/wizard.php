@@ -540,18 +540,53 @@ class Wizard extends CI_Controller {
 
 		// Setup form validation
 		ee()->load->library('form_validation');
-		ee()->form_validation->set_rules('db_hostname', 'db_hostname', 'required');
-		ee()->form_validation->set_rules('db_username', 'db_username', 'required');
-		ee()->form_validation->set_rules('db_name', 'db_name', 'required');
-		ee()->form_validation->set_rules('db_prefix', 'db_prefix', 'required|max_length[30]|callback_valid_db_prefix');
+		ee()->form_validation->set_error_delimiters('<em>', '</em>');
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'db_hostname',
+				'label' => 'lang:db_hostname',
+				'rules' => 'required'
+			),
+			array(
+				'field' => 'db_name',
+				'label' => 'lang:db_name',
+				'rules' => 'required'
+			),
+			array(
+				'field' => 'db_username',
+				'label' => 'lang:db_username',
+				'rules' => 'required'
+			),
+			array(
+				'field' => 'db_prefix',
+				'label' => 'lang:db_prefix',
+				'rules' => 'required|max_length[30]|callback_valid_db_prefix'
+			),
+			array(
+				'field' => 'username',
+				'label' => 'lang:username',
+				'rules' => 'required|valid_username'
+			),
+			array(
+				'field' => 'install_default_theme',
+				'label' => 'lang:install_default_theme',
+				'rules' => ''
+			),
+			array(
+				'field' => 'password',
+				'label' => 'lang:password',
+				'rules' => 'required|valid_password[username]'
+			),
+			array(
+				'field' => 'email_address',
+				'label' => 'lang:email_address',
+				'rules' => 'required|valid_email'
+			),
+		));
 
-		ee()->form_validation->set_rules('username', 'username', 'required|valid_username');
-		ee()->form_validation->set_rules('password', 'password', 'required|valid_password[username]');
-		ee()->form_validation->set_rules('email_address', 'email_address', 'required|valid_email');
-
+		// Bounce if anything failed
 		if ( ! ee()->form_validation->run())
 		{
-			var_dump(validation_errors());
 			return $this->install_form();
 		}
 
