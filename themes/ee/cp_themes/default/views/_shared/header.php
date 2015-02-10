@@ -28,6 +28,7 @@
 		<section class="bar info-wrap">
 			<nav class="snap">
 				<div class="site">
+					<a class="home" href="<?=cp_url('homepage')?>"></a>
 					<?php if (ee()->config->item('multiple_sites_enabled') === 'y'): ?>
 						<a class="has-sub" href=""><?=ee()->config->item('site_name')?> <span class="ico sub-arrow"></span></a> <a href="<?=ee()->config->item('base_url').ee()->config->item('site_index')?>">view</a>
 						<ul class="sites-list sub-menu">
