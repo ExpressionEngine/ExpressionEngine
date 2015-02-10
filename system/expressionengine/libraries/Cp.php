@@ -302,6 +302,8 @@ class Cp {
 	 */
 	protected function _notices()
 	{
+		$alert = $this->_checksum_bootstrap_files();
+
 		// These are only displayed to Super Admins
 		if (ee()->session->userdata['group_id'] != 1)
 		{
@@ -311,7 +313,7 @@ class Cp {
 		$notices = array();
 
 		// Show a notice if the cache folder is not writeable
-		if ( ! ee()->cache->file->is_supported())
+		if (TRUE || ! ee()->cache->file->is_supported())
 		{
 			$notices[] = lang('unwritable_cache_folder');
 		}
@@ -340,9 +342,16 @@ class Cp {
 
 		if ( ! empty($notices))
 		{
-			$alert = ee('Alert')->makeStandard('notices')
-				->asWarning()
-				->withTitle(lang('cp_message_warn'));
+			if ( ! $alert)
+			{
+				$alert = ee('Alert')->makeStandard('notices')
+					->asWarning()
+					->withTitle(lang('cp_message_warn'));
+			}
+			else
+			{
+				$alert->addSeparator();
+			}
 
 			$last = end($notices);
 			reset($notices);
@@ -357,6 +366,45 @@ class Cp {
 			}
 		}
 	}
+
+	/**
+	 * Bootstrap Checksum Validation
+	 *
+	 * Creates a checksum for our bootstrap files and checks their
+	 * validity with the database
+	 *
+	 * @return Alert|null NULL if everything is alright, otherwise an Alert object
+	 */
+	protected function _checksum_bootstrap_files()
+	{
+		// Checksum Validation
+		ee()->load->library('file_integrity');
+		$changed = ee()->file_integrity->check_bootstrap_files();
+		$checksum_alert = NULL;
+
+		if ($changed)
+		{
+			// Email the webmaster - if he isn't already looking at the message
+			if (ee()->session->userdata('email') != ee()->config->item('webmaster_email'))
+			{
+				ee()->file_integrity->send_site_admin_warning($changed);
+			}
+
+			if (ee()->session->userdata('group_id') == 1)
+			{
+				$alert = ee('Alert')->makeStandard('notices')
+					->asWarning()
+					->withTitle(lang('cp_message_warn'))
+					->addToBody(lang('checksum_changed_warning'))
+					->addToBody($changed);
+
+				return $alert;
+			}
+		}
+
+		return NULL;
+	}
+
 
 	/**
 	 * EE Version Check function
