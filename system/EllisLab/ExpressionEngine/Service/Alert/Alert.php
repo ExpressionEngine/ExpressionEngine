@@ -84,6 +84,12 @@ class Alert {
 		return $this;
 	}
 
+	public function addSeparator()
+	{
+		$this->body .= '<hr>';
+		return $this;
+	}
+
 	public function asIssue()
 	{
 		$this->severity = 'issue';
