@@ -1930,7 +1930,7 @@ class Members extends CP_Controller {
 			),
 			'notification_cfg' => array(
 				'new_member_notification' => array('r', array('y' => 'yes', 'n' => 'no')),
-				'mbr_notification_emails' => array('i', '', 'valid_email')
+				'mbr_notification_emails' => array('i', '', 'valid_emails')
 			),
 			'pm_cfg' => array(
 				'prv_msg_max_chars'       => array('i', '', 'integer'),
