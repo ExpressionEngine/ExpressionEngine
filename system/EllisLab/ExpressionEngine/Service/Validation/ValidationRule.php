@@ -39,8 +39,10 @@ namespace EllisLab\ExpressionEngine\Service\Validation;
  */
 abstract class ValidationRule {
 
+	/**
+	 * @var array Rule parameters
+	 */
 	protected $parameters = array();
-	protected $parameter_names = array();
 
 	/**
 	 * Validate a Value
@@ -53,7 +55,6 @@ abstract class ValidationRule {
 	 */
 	abstract public function validate($value);
 
-
 	/**
 	 * Optional if you need access to other values
 	 *
@@ -61,6 +62,7 @@ abstract class ValidationRule {
 	 * all that information if we're not going to need it.
 	 */
 	public function setAllValues(array $values) { /* blank */ }
+
 	/**
 	 *
 	 */
@@ -87,11 +89,19 @@ abstract class ValidationRule {
 		return $this->parameters;
 	}
 
+	/**
+	 * Hard failure. Will mark the rule as failed and stop processing rules
+	 * for this field.
+	 */
 	public function stop()
 	{
 		return Validator::STOP;
 	}
 
+	/**
+	 * Soft failure. Skips the rest of the validation process, but does not
+	 * mark the rule as failed.
+	 */
 	public function skip()
 	{
 		return Validator::SKIP;
@@ -116,6 +126,22 @@ abstract class ValidationRule {
 	/**
 	 *
 	 */
+	public function getLanguageKey()
+	{
+		return $this->getName();
+	}
+
+	/**
+	 * Return the language data for the validation error.
+	 */
+	public function getLanguageData()
+	{
+		return array($this->getName(), $this->getParameters());
+	}
+
+	/**
+	 *
+	 */
 	protected function throwNeedsParameters($missing = array())
 	{
 		$rule_id = "the {$this->getName()} validation rule";
@@ -125,7 +151,7 @@ abstract class ValidationRule {
 			throw new \Exception("Missing {$missing[0]} parameter for {$rule_id}.");
 		}
 
-		$last = array_shift($missing);
+		$last = array_pop($missing);
 		$init = implode(', ', $missing);
 
 		throw new \Exception("Missing {$init} and {$last} parameters for {$rule_id}.");

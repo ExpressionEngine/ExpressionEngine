@@ -46,4 +46,8 @@ class ExactLength extends ValidationRule {
 		return (strlen($value) != $length) ? FALSE : TRUE;
 	}
 
+	public function getLanguageKey()
+	{
+		return 'exact_length';
+	}
 }

@@ -45,4 +45,9 @@ class MaxLength extends ValidationRule {
 
 		return (strlen($value) > $length) ? FALSE : TRUE;
 	}
+
+	public function getLanguageKey()
+	{
+		return 'max_length';
+	}
 }

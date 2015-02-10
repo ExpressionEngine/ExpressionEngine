@@ -50,7 +50,7 @@ class StringView extends View {
 
 		ob_start();
 
-		echo eval('?>'.preg_replace("/;*\s*\?>/", "; ?>", str_replace('<?=', '<?php echo ', $this->string)));
+		ee()->evalStringInFacadeScope($this->string, $vars);
 
 		$buffer = ob_get_contents();
 		ob_end_clean();

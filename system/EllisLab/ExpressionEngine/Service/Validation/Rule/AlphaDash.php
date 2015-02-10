@@ -31,6 +31,11 @@ class AlphaDash extends ValidationRule {
 
 	public function validate($value)
 	{
-		return ( ! preg_match("/^([-a-z0-9_-])+$/i", $value)) ? FALSE : TRUE;
+		return (bool) preg_match("/^([-a-z0-9_-])+$/i", $value);
+	}
+
+	public function getLanguageKey()
+	{
+		return 'alpha_dash';
 	}
 }

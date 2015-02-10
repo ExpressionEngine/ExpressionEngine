@@ -34,4 +34,9 @@ class IsNatural extends ValidationRule {
 		return (bool) preg_match('/^[0-9]+$/', $value);
 	}
 
+	public function getLanguageKey()
+	{
+		return 'is_natural';
+	}
+
 }
