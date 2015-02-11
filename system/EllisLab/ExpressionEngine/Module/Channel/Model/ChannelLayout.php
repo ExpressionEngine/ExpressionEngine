@@ -57,19 +57,30 @@ class ChannelLayout extends Model implements LayoutInterface {
 		foreach ($layout as $section)
 		{
 			$tab = new LayoutTab($section['id'], $section['name']);
+
+			if ( ! $section['visible'])
+			{
+				$tab->hide();
+			}
+
 			foreach ($section['fields'] as $field_info)
 			{
 				$field_id = $field_info['field'];
-				if ($field_info['visible'])
-				{
-					$field = $fields[$field_id];
-					if ($field_info['collapsed'])
-					{
-						$field->collapse();
-					}
 
-					$tab->addField($field);
+				$field = $fields[$field_id];
+
+				if ($field_info['collapsed'])
+				{
+					$field->collapse();
 				}
+
+				if ( ! $field_info['visible'])
+				{
+					$field->hide();
+				}
+
+				$tab->addField($field);
+
 				unset($fields[$field_id]);
 			}
 			$display->addTab($tab);
