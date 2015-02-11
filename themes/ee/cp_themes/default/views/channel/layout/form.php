@@ -118,7 +118,6 @@
 								<h3><?=lang('tab_name')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
 								<em><?=lang('tab_name_desc')?></em>
 							</div>
-
 							<div class="setting-field col w-8 last">
 								<input type="text" name="tab_name">
 							</div>
