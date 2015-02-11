@@ -7,7 +7,6 @@ class LayoutTab {
 	public $id;
 	public $title;
 
-	protected $hidden = FALSE;
 	protected $fields;
 
 	public function __construct($id, $title, array $fields = array())
@@ -33,17 +32,6 @@ class LayoutTab {
 	public function getFields()
 	{
 		return $this->fields;
-	}
-
-	public function setHidden()
-	{
-		$this->hidden = TRUE;
-		return $this;
-	}
-
-	public function isHidden()
-	{
-		return $this->hidden;
 	}
 
 }
