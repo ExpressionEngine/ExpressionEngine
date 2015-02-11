@@ -77,7 +77,27 @@ $(document).ready(function () {
 		}
 	});
 
-	// Saving the hide/unhide state
+	// Saving the on/off state of tabs
+	$('.tab-on, .tab-off').on('click', function(e) {
+		var tab = $(this).parents('li').eq(0);
+		var index = $('div.tab-bar ul li').index(tab);
+		var tabContents = $('div.tab.' + $(tab).find('a').eq(0).attr('rel'));
+
+		if (tabContents.has('.required').length > 0)
+		{
+			alert("Cannot hide a tab with required fields.");
+			return;
+		}
+
+		EE.publish_layout[index].visible = ! EE.publish_layout[index].visible;
+
+		$(this).toggleClass('tab-on tab-off');
+
+		e.preventDefault();
+	});
+
+
+	// Saving the hide/unhide state of fields
 	$('li.hide a, li.unhide a').on('click', function(e) {
 		var tab = getTabIndex();
 		var field = getFieldIndex(this);
