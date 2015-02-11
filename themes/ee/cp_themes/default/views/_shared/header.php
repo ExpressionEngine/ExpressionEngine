@@ -46,11 +46,11 @@
 				<div class="user">
 					<a href="<?=cp_url('login/logout')?>"><?=lang('log_out')?></a> <a class="has-sub" href=""><?=$cp_screen_name?> <span class="ico sub-arrow"></span></a>
 					<ul class="quick-links sub-menu">
-						<a href="<?=cp_url('members/profile', array('id' => ee()->session->userdata['member_id']))?>"><?=lang('my_profile')?></a>
+						<a href="<?=cp_url('members/profile', array('id' => ee()->session->userdata('member_id')))?>"><?=lang('my_profile')?></a>
 						<a href="">Quick Link</a>
 						<a href="">Another Quick Link</a>
 						<a href="">One More Quick Link</a>
-						<a class="last add" href="<?=cp_url('members/profile/quicklinks/create', array('id' => ee()->session->userdata['member_id']))?>">&#10010; <?=lang('new_link')?></a>
+						<a class="last add" href="<?=cp_url('members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id')))?>">&#10010; <?=lang('new_link')?></a>
 					</ul>
 				</div>
 			</nav>
