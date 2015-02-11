@@ -7,14 +7,17 @@
 	<div class="tab-bar">
 		<ul>
 			<?php foreach ($layout->getTabs() as $index => $tab): ?>
+			<?php if ( ! $tab->isVisible()) continue; ?>
 			<li><a<?php if ($index == 0): ?> class="act"<?php endif; ?> href="" rel="t-<?=$index?>"><?=lang($tab->title)?></a></li>
 			<?php endforeach; ?>
 		</ul>
 	</div>
 	<?=form_open($form_url, $form_attributes, (isset($form_hidden)) ? $form_hidden : array())?>
 		<?php foreach ($layout->getTabs() as $index => $tab): ?>
+		<?php if ( ! $tab->isVisible()) continue; ?>
 		<div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">
 		<?php foreach ($tab->getFields() as $field): ?>
+		<?php if ( ! $field->isVisible()) continue; ?>
 			<?php
 				switch ($field->getType())
 				{
