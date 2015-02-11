@@ -130,6 +130,23 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase {
 		$this->assertFalse($result->isValid());
 	}
 
+	public function testPartial()
+	{
+		$rules = array('a' => 'required|min_length[8]');
+		$this->validator->setRules($rules);
+
+		// true
+		$result = $this->validator->validatePartial(array('a' => 'more than eight'));
+		$this->assertTrue($result->isValid());
+
+		$result = $this->validator->validatePartial(array('b' => 'wrong key'));
+		$this->assertTrue($result->isValid());
+
+		// false
+		$result = $this->validator->validatePartial(array('a' => 'short'));
+		$this->assertFalse($result->isValid());
+	}
+
 	/**
 	 * @dataProvider numericDataProvider
 	 */
