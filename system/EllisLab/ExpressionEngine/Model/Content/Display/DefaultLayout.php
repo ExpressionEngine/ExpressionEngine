@@ -16,6 +16,7 @@ class DefaultLayout implements LayoutInterface {
 		$this->layout[] = array(
 			'id' => 'publish',
 			'name' => 'publish',
+			'visible' => TRUE,
 			'fields' => array(
 				array(
 					'field' => 'title',
@@ -33,6 +34,7 @@ class DefaultLayout implements LayoutInterface {
 		$this->layout[] = array(
 			'id' => 'date',
 			'name' => 'date',
+			'visible' => TRUE,
 			'fields' => array(
 				array(
 					'field' => 'entry_date',
@@ -55,6 +57,7 @@ class DefaultLayout implements LayoutInterface {
 		$this->layout[] = array(
 			'id' => 'categories',
 			'name' => 'categories',
+			'visible' => TRUE,
 			'fields' => array(
 				array(
 					'field' => 'categories',
@@ -67,6 +70,7 @@ class DefaultLayout implements LayoutInterface {
 		$this->layout[] = array(
 			'id' => 'options',
 			'name' => 'options',
+			'visible' => TRUE,
 			'fields' => array(
 				array(
 					'field' => 'channel_id',
@@ -107,6 +111,7 @@ class DefaultLayout implements LayoutInterface {
 				$tab = array(
 					'id' => $tab_id,
 					'name' => $tab_id,
+					'visible' => TRUE,
 					'fields' => array()
 				);
 
