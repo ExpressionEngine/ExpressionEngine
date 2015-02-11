@@ -46,8 +46,16 @@ class EE_Lang {
 		$package = ($package == '') ? ee()->security->sanitize_filename(str_replace(array('lang.', '.php'), '', $which)) : ee()->security->sanitize_filename($package);
 		$which = str_replace('lang.', '', $which);
 
-		ee()->load->library('session');
-		$idiom = ee()->security->sanitize_filename(ee()->session->get_language());
+		// If we're in the installer, don't load Session library
+		if ( ! defined('EE_APPPATH'))
+		{
+			ee()->load->library('session');
+			$idiom = ee()->security->sanitize_filename(ee()->session->get_language());
+		}
+		else
+		{
+			$idiom = 'english';
+		}
 
 		if ($which == 'sites_cp')
 		{

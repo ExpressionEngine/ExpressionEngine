@@ -542,6 +542,7 @@ class Wizard extends CI_Controller {
 		ee()->config->set_item('pw_min_len', 5);
 
 		// Setup form validation
+		ee()->lang->loadfile('myaccount');
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_error_delimiters('<em>', '</em>');
 		ee()->form_validation->set_rules(array(
