@@ -44,6 +44,17 @@ class Installer_Lang Extends EE_Lang {
 
 		return $line;
 	}
+
+	public function loadfile($which, $package = '', $show_errors = TRUE)
+	{
+		// Sanitize
+		$package = ($package == '')
+			? ee()->security->sanitize_filename(str_replace(array('lang.', '.php'), '', $which))
+			: ee()->security->sanitize_filename($package);
+		$which = str_replace('lang.', '', $which);
+
+		$this->load($which, 'english', FALSE, TRUE, PATH_ADDONS.$package.'/', $show_errors);
+	}
 }
 
 

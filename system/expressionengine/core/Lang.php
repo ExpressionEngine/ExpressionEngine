@@ -43,19 +43,14 @@ class EE_Lang {
 		}
 
 		// Sec.ur.ity code.  ::sigh::
-		$package = ($package == '') ? ee()->security->sanitize_filename(str_replace(array('lang.', '.php'), '', $which)) : ee()->security->sanitize_filename($package);
+		$package = ($package == '')
+			? ee()->security->sanitize_filename(str_replace(array('lang.', '.php'), '', $which))
+			: ee()->security->sanitize_filename($package);
 		$which = str_replace('lang.', '', $which);
 
 		// If we're in the installer, don't load Session library
-		if ( ! defined('EE_APPPATH'))
-		{
-			ee()->load->library('session');
-			$idiom = ee()->security->sanitize_filename(ee()->session->get_language());
-		}
-		else
-		{
-			$idiom = 'english';
-		}
+		ee()->load->library('session');
+		$idiom = ee()->security->sanitize_filename(ee()->session->get_language());
 
 		if ($which == 'sites_cp')
 		{
