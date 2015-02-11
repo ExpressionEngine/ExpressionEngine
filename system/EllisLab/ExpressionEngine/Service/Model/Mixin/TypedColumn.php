@@ -56,7 +56,7 @@ class TypedColumn implements Mixin {
 		$this->scope = $scope;
 		$this->columns = $this->scope->getTypedColumns();
 		$this->scope->addFilter('get', array($this, 'typedGetter'));
-		$this->scope->addFilter('set',  array($this, 'typedSetter'));
+		$this->scope->addFilter('set', array($this, 'typedSetter'));
 	}
 
 	/**
@@ -73,7 +73,7 @@ class TypedColumn implements Mixin {
 	 * @param String $column Column name
 	 * @return Mixed The cast value [or the original if not typed]
 	 */
-	public function typedGetter($column, $value)
+	public function typedGetter($value, $column)
 	{
 		$scope = $this->scope;
 
@@ -119,7 +119,7 @@ class TypedColumn implements Mixin {
 	 * @param Mixed $value The value they're attempting to set
 	 * @return Mixed The cast value [or the original if not typed]
 	 */
-	public function typedSetter($column, $value)
+	public function typedSetter($value, $column)
 	{
 		if ( ! array_key_exists($column, $this->columns))
 		{
