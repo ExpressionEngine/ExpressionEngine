@@ -397,7 +397,7 @@ class Updater {
 					$tab = array(
 						'id' => $tab_id,
 						'name' => $old_tab['_tab_label'],
-						'show' => TRUE,
+						'visible' => TRUE,
 						'fields' => array()
 					);
 
