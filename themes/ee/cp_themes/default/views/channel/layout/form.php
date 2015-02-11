@@ -7,7 +7,25 @@
 	<div class="tab-bar layout">
 		<ul>
 			<?php foreach ($layout->getTabs() as $index => $tab): ?>
-			<li><a<?php if ($index == 0): ?> class="act"<?php endif; ?> href="" rel="t-<?=$index?>"><?=lang($tab->title)?></a> <?php if ($tab->title != 'publish'): ?><span class="tab-remove"></span><?php endif; ?></li>
+				<?php
+				$icon = '';
+				if (strpos($tab->id, 'custom_') !== FALSE)
+				{
+					$icon = '<span class="tab-remove">';
+				}
+				else
+				{
+					if ($tab->isVisible())
+					{
+						$icon = '<span class="tab-on">';
+					}
+					else
+					{
+						$icon = '<span class="tab-off">';
+					}
+				}
+				?>
+			<li><a<?php if ($index == 0): ?> class="act"<?php endif; ?> href="" rel="t-<?=$index?>"><?=lang($tab->title)?></a> <?php if ($tab->title != 'publish'): ?><?=$icon?></span><?php endif; ?></li>
 			<?php endforeach; ?>
 		</ul>
 		<a class="btn action add-tab" href="#"><?=lang('add_tab')?></a>
@@ -23,7 +41,11 @@
 					<ul class="toolbar vertical">
 						<li class="move"><a href=""></a></li>
 						<?php if ( ! $field->isRequired()): ?>
-						<li class="hide"><a href=""></a></li>
+							<?php if ($field->isVisible()): ?>
+								<li class="hide"><a href=""></a></li>
+							<?php else: ?>
+								<li class="unhide"><a href=""></a></li>
+							<?php endif; ?>
 						<?php endif; ?>
 					</ul>
 				</div>
