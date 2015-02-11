@@ -136,6 +136,7 @@ $(document).ready(function () {
 				$('div.tab-bar ul').append('<li><a href="" rel="t-' + index + '">' + tab_name + '</a> <span class="tab-remove"></span></li>')
 				$('div.tab.t-' + index - 1).after('<div class="tab t-' + index + '"></div>');
 
+				$('.modal-add-new-tab input[name="tab_name"]').val('');
 				$('.modal-add-new-tab .m-close').trigger('click');
 			}
 		}
@@ -143,14 +144,28 @@ $(document).ready(function () {
 		e.preventDefault();
 	});
 
-	// Piggy-back
+	// If you submit the form, trigger the submit button click
 	$('.modal-add-new-tab form').on('submit', function(e) {
 		$('.modal-add-new-tab .submit').trigger('click');
 		e.preventDefault();
 	});
 
-
 	// Removing a tab
+	$('div.tab-bar ul').on('click', '.tab-remove', function(e) {
+		var tab = $(this).parents('li').eq(0);
+		var index = $('div.tab-bar ul li').index(tab);
+		var tabContents = $('div.tab.' + $(tab).find('a').eq(0).attr('rel'));
+
+		if (tabContents.html())
+		{
+			alert("Cannot remove a tab with fields.");
+			return;
+		}
+
+		EE.publish_layout.splice(index, 1);
+		tab.remove();
+		tabContents.remove();
+	});
 
 	// Saving the hide/unhide state of fields
 	$('li.hide a, li.unhide a').on('click', function(e) {
