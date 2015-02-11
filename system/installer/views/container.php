@@ -17,7 +17,7 @@
 			{
 				$refresh_url .= '&ajax_progress=yes';
 			}
-			echo '<meta http-equiv="refresh" content="5;url='.$refresh_url.'" />';
+			echo '<meta http-equiv="refresh" content="1;url='.$refresh_url.'" />';
 		}
 		?>
 	</head>
