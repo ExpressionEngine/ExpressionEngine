@@ -442,7 +442,7 @@ class Cp {
 	 */
 	protected function _version_check()
 	{
-		$download_url = $this->cp->masked_url('https://store.ellislab.com/manage');
+		$download_url = ee()->cp->masked_url('https://store.ellislab.com/manage');
 
 		ee()->load->library('el_pings');
 		$version_file = ee()->el_pings->get_version_info();
