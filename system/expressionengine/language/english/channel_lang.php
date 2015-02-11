@@ -129,7 +129,7 @@ $lang = array(
 'Form Layouts',
 
 'edit_form_layout' =>
-'Edit From Layout &ndash; %s',
+'Edit Form Layout &ndash; %s',
 
 'edit_layout_success' =>
 'Form Layout Updated',
