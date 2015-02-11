@@ -96,6 +96,61 @@ $(document).ready(function () {
 		e.preventDefault();
 	});
 
+	// Adding a tab
+	$('.modal-add-new-tab .submit').on('click', function(e) {
+		var tab_name = $('.modal-add-new-tab input[name="tab_name"]').val();
+		var tab_id = 'custom__' + tab_name.replace(/ /g, "_").replace(/&/g, "and").toLowerCase();
+
+		var legalChars = /^[^*>:+()\[\]=|"'.#$]+$/; // allow all unicode characters except for css selectors and $
+
+		if (tab_name === "") {
+			// Show the required_tab_name alert
+			alert("The tab needs a name.");
+		} else if ( ! legalChars.test(tab_name)) {
+			// Show the illegal_tab_name alert
+			alert("Illegal characters in that there tab name.");
+		} else {
+			var duplicate = false;
+			for (var x = 0; x < EE.publish_layout.length; x++) {
+				if (EE.publish_layout[x].id == tab_id) {
+					duplicate = true;
+				}
+			}
+
+			if (duplicate)
+			{
+				// Show the duplicate_tab_name alert
+				alert("We cannot duplicate tab names")
+			}
+			else
+			{
+				var tab = {
+					fields: [],
+					id: tab_id,
+					name: tab_name,
+					visible: true
+				};
+				EE.publish_layout.push(tab);
+
+				var index = $('div.tab-bar ul li').length;
+				$('div.tab-bar ul').append('<li><a href="" rel="t-' + index + '">' + tab_name + '</a> <span class="tab-remove"></span></li>')
+				$('div.tab.t-' + index - 1).after('<div class="tab t-' + index + '"></div>');
+
+				$('.modal-add-new-tab .m-close').trigger('click');
+			}
+		}
+
+		e.preventDefault();
+	});
+
+	// Piggy-back
+	$('.modal-add-new-tab form').on('submit', function(e) {
+		$('.modal-add-new-tab .submit').trigger('click');
+		e.preventDefault();
+	});
+
+
+	// Removing a tab
 
 	// Saving the hide/unhide state of fields
 	$('li.hide a, li.unhide a').on('click', function(e) {

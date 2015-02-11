@@ -28,7 +28,7 @@
 			<li><a<?php if ($index == 0): ?> class="act"<?php endif; ?> href="" rel="t-<?=$index?>"><?=lang($tab->title)?></a> <?php if ($tab->title != 'publish'): ?><?=$icon?></span><?php endif; ?></li>
 			<?php endforeach; ?>
 		</ul>
-		<a class="btn action add-tab" href="#"><?=lang('add_tab')?></a>
+		<a class="btn action add-tab m-link" rel="modal-add-new-tab" href="#"><?=lang('add_tab')?></a>
 	</div>
 	<?=form_open($form_url, 'class="settings ajax-validate"')?>
 		<input type="hidden" name="field_layout" value="<?=json_encode($channel_layout->field_layout)?>">
@@ -50,7 +50,7 @@
 					</ul>
 				</div>
 				<div class="setting-txt col w-14">
-					<h3<?php if ($field->isCollapsed()): ?> class="field-closed"<?php endif; ?>><span class="ico sub-arrow"></span><?=$field->getLabel()?><?php if ($field->isRequired()): ?> <span class="required" title="required field">&#10033;</span><?php endif; ?></h3>
+					<h3<?php if ($field->isCollapsed()): ?> class="field-closed"<?php endif; ?>><span class="ico sub-arrow"></span><?=$field->getLabel()?><?php if ($field->isRequired()): ?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span><?php endif; ?></h3>
 					<em<?php if ($field->isCollapsed()): ?> style="display: none"<?php endif; ?>><?=$field->getType()?></em>
 				</div>
 			</fieldset>
@@ -103,3 +103,33 @@
 		</fieldset>
 	</form>
 </div>
+
+<?php $this->startOrAppendBlock('modals'); ?>
+<div class="modal-wrap modal-add-new-tab">
+	<div class="modal">
+		<div class="col-group">
+			<div class="col w-16">
+				<a class="m-close" href="#"></a>
+				<div class="box">
+					<h1><?=lang('add_tab')?> <span class="required intitle">&#10033; <?=lang('required_fields')?></h1>
+					<form class="settings">
+						<fieldset class="col-group last">
+							<div class="settig-text col w-8">
+								<h3><?=lang('tab_name')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
+								<em><?=lang('tab_name_desc')?></em>
+							</div>
+
+							<div class="setting-field col w-8 last">
+								<input type="text" name="tab_name">
+							</div>
+						</fieldset>
+						<fieldset class="form-ctrls">
+							<a class="btn submit" href="#"><?=lang('add_tab')?></a>
+						</fieldset>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<?php $this->endBlock(); ?>
