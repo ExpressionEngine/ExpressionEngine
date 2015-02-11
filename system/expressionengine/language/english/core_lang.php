@@ -147,15 +147,15 @@ $lang = array(
 
 'unable_to_load_field_type' =>
 'Unable to load requested field type file:  %s.<br />
-Confirm the fieldtype file is located in the expressionengine/third_party/ directory',
+Confirm the fieldtype file is located in the system/addons/ directory',
 
 'unwritable_cache_folder' =>
 'Your cache folder does not have proper permissions.<br>
-To fix: Set the cache folder (/expressionengine/cache/) permissions to 777 (or equivalent for your server).',
+To fix: Set the cache folder (/system/cache/) permissions to 777 (or equivalent for your server).',
 
 'unwritable_config_file' =>
 'Your configuration file does not have the proper permissions.<br>
-To fix: Set the config file (/expressionengine/config/config.php) permissions to 666 (or equivalent for your server).',
+To fix: Set the config file (/system/config/config.php) permissions to 666 (or equivalent for your server).',
 
 'redirect_xss_fail' => 'The link you are being redirected to contained some
 potentially malicious or dangerous code. We recommend you hit the back button
