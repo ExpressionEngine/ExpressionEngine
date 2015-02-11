@@ -162,7 +162,7 @@ class Layout extends AbstractChannelController {
 
 		$entry = ee('Model')->make('ChannelEntry')->setChannel($channel);
 
-		$default_layout = new DefaultLayout();
+		$default_layout = new DefaultLayout($channel_id);
 		$channel_layout = ee('Model')->make('ChannelLayout');
 		$field_layout = $default_layout->getLayout();
 
