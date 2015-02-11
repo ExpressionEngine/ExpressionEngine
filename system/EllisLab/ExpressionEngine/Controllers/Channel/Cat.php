@@ -5,7 +5,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Channel;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP;
-use EllisLab\ExpressionEngine\Controllers\Channel\Channel;
+use EllisLab\ExpressionEngine\Controllers\Channel\AbstractChannel as AbstractChannelController;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -30,7 +30,20 @@ use EllisLab\ExpressionEngine\Controllers\Channel\Channel;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Cat extends Channel {
+class Cat extends AbstractChannelController {
+
+	/**
+	 * Constructor to set permissions
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+
+		if ( ! $this->cp->allowed_group('can_edit_categories'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+	}
 
 	/**
 	 * Categpry Groups Manager
