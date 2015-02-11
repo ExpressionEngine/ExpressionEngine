@@ -34,7 +34,7 @@
 			?>
 			<fieldset class="col-group<?php if (end($tab->getFields()) == $field) echo' last'?>">
 				<div class="setting-txt col <?=$width?>">
-					<h3><span class="ico sub-arrow"></span><?=$field->getLabel()?><?php if ($field->isRequired()): ?> <span class="required" title="required field">&#10033;</span><?php endif; ?></h3>
+					<h3><span class="ico sub-arrow"></span><?=$field->getLabel()?><?php if ($field->isRequired()): ?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span><?php endif; ?></h3>
 					<em><?=$field->getInstructions()?></em>
 					<?php if ($field->getName() == 'categories'): ?>
 					<p><a class="btn action submit m-link" rel="modal-cats" href="#"><?=lang('btn_add_category')?></a></p>
