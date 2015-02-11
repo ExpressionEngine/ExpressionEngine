@@ -259,7 +259,7 @@ class Layout extends AbstractChannelController {
 		ee()->view->cp_page_title = lang('create_form_layout');
 
 		ee()->javascript->set_global('publish_layout', $channel_layout->field_layout);
-		ee()->cp->add_js_script('ui', 'sortable');
+		ee()->cp->add_js_script('ui', array('droppable', 'sortable'));
 		ee()->cp->add_js_script('file', 'cp/channel/layout');
 
 		ee()->cp->render('channel/layout/form', $vars);
@@ -366,7 +366,7 @@ class Layout extends AbstractChannelController {
 		ee()->view->cp_page_title = sprintf(lang('edit_form_layout'), $channel_layout->layout_name);
 
 		ee()->javascript->set_global('publish_layout', $channel_layout->field_layout);
-		ee()->cp->add_js_script('ui', 'sortable');
+		ee()->cp->add_js_script('ui', array('droppable', 'sortable'));
 		ee()->cp->add_js_script('file', 'cp/channel/layout');
 
 		ee()->cp->render('channel/layout/form', $vars);
