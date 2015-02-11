@@ -247,14 +247,23 @@ $lang = array(
 "Private Message - Empty List",
 */
 
+"personal_messaging" =>
+"Personal Messaging",
+
 "priv_msg_privs" =>
 "Private Messaging Privileges",
 
 "can_send_private_messages" =>
-"Can Send Private Messages",
+"Access personal messages",
+
+"can_send_private_messages_desc" =>
+"When set to yes, users assigned to this group may send and receive personal messages.",
 
 "can_attach_in_private_messages" =>
-"Can Add Attachments to Private Messages",
+"Allow attachments",
+
+"can_attach_in_private_messages_desc" =>
+"When set to yes, users assigned to this group may attach files to personal messages.",
 
 "fieldlabel" =>
 "Field Label",
@@ -287,7 +296,19 @@ $lang = array(
 "Can Moderate Comments",
 
 "exclude_from_moderation" =>
-"Exclude member from comment moderation",
+"Bypass moderation",
+
+"exclude_from_moderation_desc" =>
+"When set to yes, users assigned to this group may comment without being restricted by the default comment settings.",
+
+"moderation_actions" =>
+"Moderation actions",
+
+"moderation_actions_desc" =>
+"Users in this group will be allowed to perform all of the selected actions. actions",
+
+"search" =>
+"Search",
 
 "total_members" =>
 "Total Members:",
@@ -397,6 +418,9 @@ $lang = array(
 "edit_group" =>
 "Edit Group",
 
+"general_access" =>
+"General Access",
+
 "group_title" =>
 "Group Title",
 
@@ -410,7 +434,7 @@ $lang = array(
 "Enable Group Security Lock",
 
 "lock_description" =>
-"When a group is locked, only a Super Admin can assign a member to that group.  If you allow other users to administrate member accounts, it is highly recommended that you ONLY unlock groups you want them to be able to assign other users to.",
+"When set to enable, only Super Admins can add or remove members from this group.",
 
 "locked" =>
 "Locked",
@@ -524,7 +548,10 @@ $lang = array(
 "Create a new group based on an existing one",
 
 "group_name" =>
-"Member Group Name",
+"Name",
+
+"group_name_desc" =>
+"Be descriptive, like authors or editors",
 
 "missing_group_title" =>
 "The member group must have a name",
@@ -533,7 +560,10 @@ $lang = array(
 "There is already a Member Group with that name.",
 
 "site_access" =>
-"Site Access",
+"Website Access",
+
+"site_access_desc" =>
+"Users in this group will be allowed access to the website for each status mode selected.",
 
 "can_view_online_system" =>
 "Can view site when it is online",
@@ -545,22 +575,46 @@ $lang = array(
 "Member Account Privileges",
 
 'prv_msg_storage_limit' =>
-"Maximum Number of Private Messages a user can store",
+"Storage Maximum",
+
+'prv_msg_storage_limit_desc' =>
+"Maximum number of personal messages a user may store in their account.",
 
 'prv_msg_send_limit' =>
-"Maximum Number of Private Messages a user can send per day",
+"Per day maximum",
+
+'prv_msg_send_limit_desc' =>
+"Maximum number of personal messages that a user may send per day.",
 
 "can_view_profiles" =>
-"Can view public profiles",
+"Access public profiles",
+
+"can_view_profiles_desc" =>
+"When set to yes, users assigned to this group may view public profiles of other members.",
 
 "can_edit_html_buttons" =>
 "Can edit own HTML formatting buttons",
 
 'can_delete_self' =>
-"Can delete own account - deletes all posts, entries, and comments as well",
+"Delete account",
+
+'can_delete_self_desc' =>
+"When set to yes, users assigned to this group may delete their own accounts without approval",
 
 'mbr_delete_notify_emails' =>
-'Email Address of Delete Notification Recipient(s)',
+'Recipient(s) for delete notifications',
+
+'mbr_delete_notify_emails_desc' =>
+'All recipients will be notified anytime a user deletes their account. Separate e-mails with a comma.',
+
+'include_members_in' =>
+'Include members in',
+
+'include_members_in_desc' =>
+'Users in this group will be including in all of the selected list types',
+
+'commenting' =>
+'Commenting',
 
 'delete_confirmation_form' =>
 'Delete Account Confirmation Form',
@@ -569,7 +623,16 @@ $lang = array(
 "Comment Posting Privileges",
 
 "can_post_comments" =>
-"Can submit comments",
+"Submit comments",
+
+"can_post_comments_desc" =>
+"When set to yes, users assigned to this group may submit comments to the website.",
+
+"comment_actions" =>
+"Moderation actions",
+
+"comment_actions_desc" =>
+"Users in this group will be allowed to perform all of the selected actions.",
 
 "cp_channel_post_privs" =>
 "Channel Assignment",
@@ -586,8 +649,14 @@ $lang = array(
 "global_cp_access" =>
 "Control Panel Access",
 
+"control_panel" =>
+"Control Panel",
+
 "can_access_cp" =>
-"Can access the control panel?",
+"Access control panel",
+
+"can_access_cp_desc" =>
+"When set to yes, users assigned to this group may access the control panel.",
 
 "can_access_content" =>
 "Can access CONTENT section",
@@ -631,7 +700,13 @@ $lang = array(
 "can_delete_all_comments" =>
 "Can delete comments in ANY channel entries",
 
+"channels" =>
+"Channels",
+
 "can_admin_channels" =>
+"Channels",
+
+"can_admin_channels_desc" =>
 "Can administrate channels and channel preferences",
 
 "can_admin_upload_prefs" =>
@@ -692,16 +767,25 @@ $lang = array(
 "Can administrate template groups and templates",
 
 "can_admin_design" =>
-"Can administrate design preferences",
+"Manage general design settings",
+
+"can_admin_design_desc" =>
+"When set to yes, users assigned to this group may manage content and design settings.",
 
 "can_admin_modules" =>
-"Can install/remove modules",
+"Install or remove add-ons",
+
+"can_admin_modules_desc" =>
+"When set to yes, users assigned to this group may install and remove add-ons.",
 
 "cp_email_privs" =>
 "Control Panel Email Privileges",
 
+"can_send_email_desc" =>
+"When set to yes, users assigned to this group may send e-mails to other members via the system.",
+
 "can_send_email" =>
-"Can send email via the Control Panel",
+"E-mail other members",
 
 "can_email_member_groups" =>
 "Can send email to Member Groups",
@@ -716,11 +800,16 @@ $lang = array(
 "Search Privileges",
 
 "can_search" =>
-"Can use search utility",
+"Access search utility",
+
+"can_search_desc" =>
+"When set to yes, users assigned to this group may use the search functionality of the website.",
 
 "search_flood_control" =>
-"Number of seconds between searches",
+"Search limit (in seconds)",
 
+"search_flood_control_desc" =>
+"Length of time between searches a user must wait before performing another search.",
 
 "warning" =>
 "WARNING:",
@@ -736,6 +825,33 @@ $lang = array(
 
 "member_group_created" =>
 "Member Group Created:",
+
+"channel_entries_management" =>
+"Channel Entries Management",
+
+"channel_entry_actions" =>
+"Allowed actions",
+
+"channel_entry_actions_desc" =>
+"Users can perform all selected actions on the below selected channels.",
+
+"allowed_channels" =>
+"Allowed channels",
+
+"allowed_actions" =>
+"Allowed actions",
+
+"allowed_actions_desc" =>
+"Users can perform all selected actions.",
+
+"allowed_channels_desc" =>
+"Users can access and perform the above selected actions on all selected channels.",
+
+"allowed_template_groups" =>
+"Allowed template groups",
+
+"allowed_template_groups_desc" =>
+"Users can perform all the above selected actions on all selected template groups.",
 
 "cp_channel_privs" =>
 "Channel Posting Privileges",
@@ -767,6 +883,41 @@ $lang = array(
 "can_email_from_profile" =>
 "Can email other members via the profile email console",
 
+"member_groups" =>
+"Member Groups",
+
+"members" =>
+"Members",
+
+"design" =>
+"Design",
+
+"template_management" =>
+"Template Management",
+
+"addons" =>
+"Add-ons",
+
+"addon_access" =>
+"Add-On Access Permissions",
+
+"addon_access_desc" =>
+"",
+
+"tools" =>
+"Tools",
+
+"access_tools" =>
+"Access Tools sections",
+
+"access_tools_desc" =>
+"Users can access all of the selected tools sections.",
+
+"category_actions",
+"Categories",
+
+"category_actions_desc",
+"Users may perform all selected actions.",
 
 //----------------------------
 // Member fields
@@ -905,10 +1056,16 @@ $lang = array(
 "Email Message(s) Deleted",
 
 'can_send_bulletins' =>
-"Can Send Bulletins",
+"Access bulletins",
+
+'can_send_bulletins_desc' =>
+"When set to yes, users assigned to this group may send and receive bulletins.",
 
 'group_description' =>
-"Member Group Description",
+"Description",
+
+"group_description_desc" =>
+"A brief description of the purpose for this group.",
 
 "preferences" =>
 "Preferences",

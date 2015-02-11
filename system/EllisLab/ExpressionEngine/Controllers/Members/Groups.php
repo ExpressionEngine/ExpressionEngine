@@ -216,13 +216,11 @@ class Groups extends Members\Members {
 			$allowed_channels[$channel->channel_id] = $channel->channel_name;
 		}
 
-		var_dump($values);
-
 		$vars['sections'] = array(
 			array(
 				array(
-					'title' => 'name',
-					'desc' => 'name_desc',
+					'title' => 'group_name',
+					'desc' => 'group_name_desc',
 					'fields' => array(
 						'group_title' => array(
 							'type' => 'text',
@@ -232,8 +230,8 @@ class Groups extends Members\Members {
 					)
 				),
 				array(
-					'title' => 'description',
-					'desc' => 'description_desc',
+					'title' => 'group_description',
+					'desc' => 'group_description_desc',
 					'fields' => array(
 						'group_description' => array(
 							'type' => 'textarea',
@@ -260,21 +258,21 @@ class Groups extends Members\Members {
 			'general_access' => array(
 				array(
 					'title' => 'site_access',
-					'desc' => 'site_access_description',
+					'desc' => 'site_access_desc',
 					'fields' => array(
 						'website_access' => array(
 							'type' => 'checkbox',
 							'choices' => array(
-								'can_view_online_system' => 'online',
-								'can_view_offline_system' => 'offline'
+								'can_view_online_system' => 'can_view_online_system',
+								'can_view_offline_system' => 'can_view_offline_system'
 							),
 							'value' => element('site_access', $values)
 						),
 					)
 				),
 				array(
-					'title' => 'access_public_profiles',
-					'desc' => 'access_public_profiles_desc',
+					'title' => 'can_view_profiles',
+					'desc' => 'can_view_profiles_desc',
 					'fields' => array(
 						'can_view_profiles' => array(
 							'type' => 'inline_radio',
@@ -287,8 +285,8 @@ class Groups extends Members\Members {
 					)
 				),
 				array(
-					'title' => 'email_other_members',
-					'desc' => 'email_other_members_desc',
+					'title' => 'can_send_email',
+					'desc' => 'can_send_email_desc',
 					'fields' => array(
 						'can_send_email' => array(
 							'type' => 'inline_radio',
@@ -301,8 +299,8 @@ class Groups extends Members\Members {
 					)
 				),
 				array(
-					'title' => 'delete_account',
-					'desc' => 'delete_account_desc',
+					'title' => 'can_delete_self',
+					'desc' => 'can_delete_self_desc',
 					'fields' => array(
 						'can_delete_self' => array(
 							'type' => 'inline_radio',
@@ -315,8 +313,8 @@ class Groups extends Members\Members {
 					)
 				),
 				array(
-					'title' => 'delete_notifications',
-					'desc' => 'delete_notifications_desc',
+					'title' => 'mbr_delete_notify_emails',
+					'desc' => 'mbr_delete_notify_emails_desc',
 					'fields' => array(
 						'mbr_delete_notify_emails' => array(
 							'type' => 'text',
@@ -331,9 +329,9 @@ class Groups extends Members\Members {
 						'include_members_in' => array(
 							'type' => 'checkbox',
 							'choices' => array(
-								'include_in_authorlist' => 'author_lists',
-								'include_in_memberlist' => 'member_lists',
-								'include_in_mailinglists' => 'mailing_lists'
+								'include_in_authorlist' => 'include_in_authorlist',
+								'include_in_memberlist' => 'include_in_memberlist',
+								'include_in_mailinglists' => 'include_in_mailinglists'
 							),
 							'value' => element('include_members_in', $values)
 						),
@@ -342,8 +340,8 @@ class Groups extends Members\Members {
 			),
 			'commenting' => array(
 				array(
-					'title' => 'submit_comments',
-					'desc' => 'submit_comments_desc',
+					'title' => 'can_post_comments',
+					'desc' => 'can_post_comments_desc',
 					'fields' => array(
 						'can_post_comments' => array(
 							'type' => 'inline_radio',
@@ -356,8 +354,8 @@ class Groups extends Members\Members {
 					)
 				),
 				array(
-					'title' => 'bypass_moderation',
-					'desc' => 'bypass_moderation_desc',
+					'title' => 'exclude_from_moderation',
+					'desc' => 'exclude_from_moderation_desc',
 					'fields' => array(
 						'exclude_from_moderation' => array(
 							'type' => 'inline_radio',
@@ -377,10 +375,10 @@ class Groups extends Members\Members {
 						'comment_actions' => array(
 							'type' => 'checkbox',
 							'choices' => array(
-								'can_edit_own_comments' => 'edit_own_comments',
-								'can_delete_own_comments' => 'delete_own_comments',
-								'can_edit_all_comments' => 'edit_others',
-								'can_delete_all_comments' => 'delete_others'
+								'can_edit_own_comments' => 'can_edit_own_comments',
+								'can_delete_own_comments' => 'can_delete_own_comments',
+								'can_edit_all_comments' => 'can_edit_all_comments',
+								'can_delete_all_comments' => 'can_delete_all_comments'
 							),
 							'value' => element('comment_actions', $values)
 						),
@@ -389,8 +387,8 @@ class Groups extends Members\Members {
 			),
 			'search' => array(
 				array(
-					'title' => 'access_search',
-					'desc' => 'access_search_desc',
+					'title' => 'can_search',
+					'desc' => 'can_search_desc',
 					'fields' => array(
 						'can_search' => array(
 							'type' => 'inline_radio',
@@ -403,8 +401,8 @@ class Groups extends Members\Members {
 					)
 				),
 				array(
-					'title' => 'search_limit',
-					'desc' => 'search_limit_desc',
+					'title' => 'search_flood_control',
+					'desc' => 'search_flood_control_desc',
 					'fields' => array(
 						'search_flood_control' => array(
 							'type' => 'text',
@@ -415,8 +413,8 @@ class Groups extends Members\Members {
 			),
 			'personal_messaging' => array(
 				array(
-					'title' => 'access_personal_messages',
-					'desc' => 'access_personal_messages_desc',
+					'title' => 'can_send_private_messages',
+					'desc' => 'can_send_private_messages_desc',
 					'fields' => array(
 						'can_send_private_messages' => array(
 							'type' => 'inline_radio',
@@ -429,8 +427,8 @@ class Groups extends Members\Members {
 					)
 				),
 				array(
-					'title' => 'per_day_max',
-					'desc' => 'per_day_max_desc',
+					'title' => 'prv_msg_send_limit',
+					'desc' => 'prv_msg_send_limit_desc',
 					'fields' => array(
 						'prv_msg_send_limit' => array(
 							'type' => 'text',
@@ -439,8 +437,8 @@ class Groups extends Members\Members {
 					)
 				),
 				array(
-					'title' => 'storage_max',
-					'desc' => 'storage_max_desc',
+					'title' => 'prv_msg_storage_limit',
+					'desc' => 'prv_msg_storage_limit_desc',
 					'fields' => array(
 						'prv_msg_storage_limit' => array(
 							'type' => 'text',
@@ -449,8 +447,8 @@ class Groups extends Members\Members {
 					)
 				),
 				array(
-					'title' => 'allow_attachments',
-					'desc' => 'allow_attachments_desc',
+					'title' => 'can_attach_in_private_messages',
+					'desc' => 'can_attach_in_private_messages_desc',
 					'fields' => array(
 						'can_attach_in_private_messages' => array(
 							'type' => 'inline_radio',
@@ -463,8 +461,8 @@ class Groups extends Members\Members {
 					)
 				),
 				array(
-					'title' => 'access_bulletins',
-					'desc' => 'access_bulletins_desc',
+					'title' => 'can_send_bulletins',
+					'desc' => 'can_send_bulletins_desc',
 					'fields' => array(
 						'can_send_bulletins' => array(
 							'type' => 'inline_radio',
@@ -479,8 +477,8 @@ class Groups extends Members\Members {
 			),
 			'control_panel' => array(
 				array(
-					'title' => 'access_control_panel',
-					'desc' => 'access_control_panel_desc',
+					'title' => 'can_access_cp',
+					'desc' => 'can_access_cp_desc',
 					'fields' => array(
 						'can_access_cp' => array(
 							'type' => 'inline_radio',
@@ -509,14 +507,14 @@ class Groups extends Members\Members {
 					)
 				),
 				array(
-					'title' => 'categories',
-					'desc' => 'categories_desc',
+					'title' => 'category_actions',
+					'desc' => 'category_actions_desc',
 					'fields' => array(
 						'category_actions' => array(
 							'type' => 'checkbox',
 							'choices' => array(
-								'can_edit_categories' => 'edit_categories',
-								'can_delete_categories' => 'delete_categories'
+								'can_edit_categories' => 'can_edit_categories',
+								'can_delete_categories' => 'can_delete_categories'
 							),
 							'value' => element('category_actions', $values)
 						),
@@ -525,18 +523,18 @@ class Groups extends Members\Members {
 			),
 			'channel_entries_management' => array(
 				array(
-					'title' => 'allowed_actions',
-					'desc' => 'allowed_actions_desc',
+					'title' => 'channel_entry_actions',
+					'desc' => 'channel_entry_actions_desc',
 					'fields' => array(
 						'channel_entry_actions' => array(
 							'type' => 'checkbox',
 							'choices' => array(
 								'create_entries' => 'create_entries',
 								'edit_own_entries' => 'edit_own_entries',
-								'can_delete_self_entries' => 'delete_own_entries',
-								'can_edit_other_entries' => 'edit_other_entries',
-								'can_delete_all_entries' => 'delete_other_entries',
-								'can_assign_post_authors' => 'change_author'
+								'can_delete_self_entries' => 'can_delete_self_entries',
+								'can_edit_other_entries' => 'can_edit_other_entries',
+								'can_delete_all_entries' => 'can_delete_all_entries',
+								'can_assign_post_authors' => 'can_assign_post_authors'
 							),
 							'value' => element('channel_entry_actions', $values)
 						),
@@ -556,16 +554,16 @@ class Groups extends Members\Members {
 			),
 			'members' => array(
 				array(
-					'title' => 'members',
-					'desc' => 'members_desc',
+					'title' => 'allowed_actions',
+					'desc' => 'allowed_actions_desc',
 					'fields' => array(
 						'member_actions' => array(
 							'type' => 'checkbox',
 							'choices' => array(
-								'can_admin_members' => 'create_members',
+								'can_admin_members' => 'can_admin_members',
 								'edit_members' => 'edit_members',
-								'can_delete_members' => 'delete_members',
-								'can_ban_users' => 'ban_members',
+								'can_delete_members' => 'can_delete_members',
+								'can_ban_users' => 'can_ban_users',
 								'change_groups' => 'change_groups'
 							),
 							'value' => element('member_actions', $values)
@@ -575,87 +573,40 @@ class Groups extends Members\Members {
 			),
 			'design' => array(
 				array(
-					'title' => 'manage_design_settings',
-					'desc' => 'manage_design_settings',
+					'title' => 'can_admin_design',
+					'desc' => 'can_admin_design_desc',
 					'fields' => array(
-						'require_field' => array(
+						'can_admin_design' => array(
 							'type' => 'inline_radio',
 							'choices' => array(
 								'y' => 'enable',
 								'n' => 'disable'
 							),
-							'value' => element('manage_design_settings', $values)
+							'value' => element('can_admin_design', $values)
 						)
 					)
 				),
 				array(
-					'title' => 'template_groups',
-					'desc' => 'template_groups_desc',
+					'title' => 'can_admin_templates',
+					'desc' => 'can_admin_templates_desc',
 					'fields' => array(
-						'template_groups' => array(
-							'type' => 'checkbox',
+						'can_admin_templates' => array(
+							'type' => 'inline_radio',
 							'choices' => array(
-								'create_groups' => 'create_groups',
-								'edit_groups' => 'edit_groups',
-								'delete_groups' => 'delete_groups'
+								'y' => 'enable',
+								'n' => 'disable'
 							),
-							'value' => element('template_group_actions', $values)
-						),
+							'value' => element('can_admin_templates', $values)
+						)
 					)
-				),
-				array(
-					'title' => 'snippets',
-					'desc' => 'snippets_desc',
-					'fields' => array(
-						'snippets' => array(
-							'type' => 'checkbox',
-							'choices' => array(
-								'create_snippets' => 'create_snippets',
-								'edit_snippets' => 'edit_snippets',
-								'delete_snippets' => 'delete_snippets'
-							),
-							'value' => element('snippet_actions', $values)
-						),
-					)
-				),
-				array(
-					'title' => 'global_variables',
-					'desc' => 'global_variables_desc',
-					'fields' => array(
-						'global_variables' => array(
-							'type' => 'checkbox',
-							'choices' => array(
-								'create_global_variables' => 'create_global_variables',
-								'edit_global_variables' => 'edit_global_variables',
-								'delete_global_variables' => 'delete_global_variables'
-							),
-							'value' => element('global_variable_actions', $values)
-						),
-					)
-				),
+				)
 			),
 			'template_management' => array(
-				array(
-					'title' => 'allowed_actions',
-					'desc' => 'allowed_actions_desc',
-					'fields' => array(
-						'template_management' => array(
-							'type' => 'checkbox',
-							'choices' => array(
-								'manage_template_settings' => 'manage_template_settings',
-								'create_templates' => 'create_templates',
-								'edit_templates' => 'edit_templates',
-								'delete_templates' => 'delete_templates'
-							),
-							'value' => element('template_management', $values)
-						),
-					)
-				),
 				array(
 					'title' => 'allowed_template_groups',
 					'desc' => 'allowed_template_groups_desc',
 					'fields' => array(
-						'snippets' => array(
+						'allowed_template_groups' => array(
 							'type' => 'checkbox',
 							'choices' => $template_groups,
 							'value' => element('allowed_template_groups', $values)
@@ -665,16 +616,16 @@ class Groups extends Members\Members {
 			),
 			'addons' => array(
 				array(
-					'title' => 'manage_addons',
-					'desc' => 'manage_addons_desc',
+					'title' => 'can_admin_modules',
+					'desc' => 'can_admin_modules_desc',
 					'fields' => array(
-						'manage_addons' => array(
+						'can_admin_modules' => array(
 							'type' => 'inline_radio',
 							'choices' => array(
 								'y' => 'enable',
 								'n' => 'disable'
 							),
-							'value' => element('manage_design_settings', $values)
+							'value' => element('can_admin_modules', $values)
 						)
 					)
 				)
@@ -694,29 +645,12 @@ class Groups extends Members\Members {
 						'access_tools' => array(
 							'type' => 'checkbox',
 							'choices' => array(
-								'utilities' => 'utilities',
-								'logs' => 'logs'
+								'can_access_comm' => 'can_access_comm',
+								'can_access_utilities' => 'can_access_utilities',
+								'can_access_data' => 'can_access_data',
+								'can_access_logs' => 'can_access_logs'
 							),
 							'value' => element('access_tools', $values)
-						),
-					)
-				)
-			),
-			'settings' => array(
-				array(
-					'title' => 'access_settings',
-					'desc' => 'access_settings_desc',
-					'fields' => array(
-						'access_settings' => array(
-							'type' => 'checkbox',
-							'choices' => array(
-								'general_settings' => 'general_settings',
-								'content_settings' => 'content_settings',
-								'member_settings' => 'member_settings',
-								'security_settings' => 'security_settings',
-								'addon_settings' => 'addon_settings',
-							),
-							'value' => element('access_settings', $values)
 						),
 					)
 				)
@@ -843,6 +777,31 @@ class Groups extends Members\Members {
 		if ($result['can_view_offline_system'] == 'y')
 		{
 			$result['member_actions'][] = 'can_ban_users';
+		}
+
+		// Access tools checkbox group
+		
+		$result['access_tools'] = array();
+
+
+		if ($result['can_access_logs'] == 'y')
+		{
+			$result['access_tools'][] = 'can_access_logs';
+		}
+
+		if ($result['can_access_data'] == 'y')
+		{
+			$result['access_tools'][] = 'can_access_data';
+		}
+
+		if ($result['can_access_utilities'] == 'y')
+		{
+			$result['access_tools'][] = 'can_access_utilities';
+		}
+
+		if ($result['can_access_comm'] == 'y')
+		{
+			$result['access_tools'][] = 'can_access_comm';
 		}
 
 		return $result;
