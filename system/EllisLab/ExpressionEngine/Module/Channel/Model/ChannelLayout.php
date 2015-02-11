@@ -72,7 +72,11 @@ class ChannelLayout extends Model implements LayoutInterface {
 				}
 				unset($fields[$field_id]);
 			}
-			$display->addTab($tab);
+
+			if ($section['visible'])
+			{
+				$display->addTab($tab);
+			}
 		}
 
 		// "New" (unknown) fields
