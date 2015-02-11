@@ -149,12 +149,16 @@ abstract class Entity extends MixableImpl {
 	 * @param Array $args List of arguments
 	 * @return Filtered value
 	 */
-	protected function filter($type, $args = array())
+	protected function filter($type, $value, $args = array())
 	{
+		array_unshift($args, $value);
+
 		foreach ($this->getFilters($type) as $filter)
 		{
-			$value = call_user_func_array($filter, $args);
+			$args[0] = call_user_func_array($filter, $args);
 		}
+
+		return $args[0];
 	}
 
 	/**

@@ -158,7 +158,7 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 		$this->emit('beforeGet', $name);
 
 		$value = parent::getProperty($name);
-		$value = $this->filter('get', array($name, $value));
+		$value = $this->filter('get', $value, array($name));
 
 		$this->emit('afterGet', $name);
 
@@ -176,7 +176,7 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	{
 		$this->emit('beforeSet', $name, $value);
 
-		$value = $this->filter('set', array($name, $value));
+		$value = $this->filter('set', $value, array($name));
 
 		parent::setProperty($name, $value);
 
