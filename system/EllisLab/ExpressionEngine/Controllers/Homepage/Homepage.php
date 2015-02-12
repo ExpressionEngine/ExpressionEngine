@@ -31,6 +31,14 @@ class Homepage extends CP_Controller {
 
 	public function index()
 	{
+		$stats = ee('Model')->get('Stats')
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
+
+		$vars['number_of_members'] = $stats->total_members;
+		$vars['number_of_entries'] = $stats->total_entries;
+		$vars['number_of_comments'] = $stats->total_comments;
+
 		$vars['last_visit'] = ee()->localize->human_time(ee()->session->userdata['last_visit']);
 
 		$vars['number_of_new_comments'] = ee('Model')->get('Comment')
@@ -56,20 +64,9 @@ class Homepage extends CP_Controller {
 			->filter('site_id', ee()->config->item('site_id'))
 			->count();
 
-		$vars['number_of_members'] = ee('Model')->get('Member')
-			->count();
-
 		$vars['number_of_banned_members'] = ee('Model')->get('MemberGroup', 2)
 			->first()
 			->getMembers()
-			->count();
-
-		$vars['number_of_entries'] = ee('Model')->get('ChannelEntry')
-			->filter('site_id', ee()->config->item('site_id'))
-			->count();
-
-		$vars['number_of_comments'] = ee('Model')->get('Comment')
-			->filter('site_id', ee()->config->item('site_id'))
 			->count();
 
 		$vars['number_of_closed_entries'] = ee('Model')->get('ChannelEntry')
