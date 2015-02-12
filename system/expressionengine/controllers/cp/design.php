@@ -3462,7 +3462,7 @@ EOT;
 		$vars['first_template'] = $first_template['group_id'];
 
 		// Get template group ID so we can load the right preferences
-		if ($tgpref = $this->input->get('tgpref', TRUE)
+		if (($tgpref = $this->input->get('tgpref', TRUE))
 			&& filter_var($tgpref, FILTER_VALIDATE_INT))
 		{
 			$vars['first_template'] = $tgpref;
