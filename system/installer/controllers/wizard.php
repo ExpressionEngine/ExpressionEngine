@@ -184,7 +184,7 @@ class Wizard extends CI_Controller {
 		$this->load->library('localize');
 		$this->load->library('cp');
 		$this->load->helper('language');
-		$this->lang->load('installer', $this->mylang);
+		$this->lang->loadfile('installer');
 
 		$this->load->model('installer_template_model', 'template_model');
 

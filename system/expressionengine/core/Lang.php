@@ -49,8 +49,7 @@ class EE_Lang {
 		$which = str_replace('lang.', '', $which);
 
 		// If we're in the installer, don't load Session library
-		ee()->load->library('session');
-		$idiom = ee()->security->sanitize_filename(ee()->session->get_language());
+		$idiom = $this->getIdiom();
 
 		if ($which == 'sites_cp')
 		{
@@ -72,6 +71,18 @@ class EE_Lang {
 		}
 
 		$this->load($which, $idiom, FALSE, TRUE, PATH_ADDONS.$package.'/', $show_errors);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get the idiom for the current user/situation
+	 * @return string The idiom to load
+	 */
+	protected function getIdiom()
+	{
+		ee()->load->library('session');
+		return ee()->security->sanitize_filename(ee()->session->get_language());
 	}
 
 	// --------------------------------------------------------------------
@@ -106,15 +117,7 @@ class EE_Lang {
 		}
 
 		$deft_lang = ee()->config->item('deft_lang') ?: 'english';
-
-		if (isset(ee()->session) && $idiom == '')
-		{
-			$idiom = ee()->session->get_language();
-		}
-		else if ($idiom == '')
-		{
-			$idiom = $deft_lang;
-		}
+		$idiom = $this->getIdiom();
 
 		$paths = array(
 			// Check custom languages first
