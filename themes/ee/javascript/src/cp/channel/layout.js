@@ -45,19 +45,40 @@ $(document).ready(function () {
 		}
 	});
 
+	var spring;
+	var spring_delay = 500;
+
+	$('div.tab-bar ul li a').droppable({
+		accept: "fieldset.sortable",
+		tolerance: "pointer",
+		drop: function(e, ui) {
+		},
+		over: function(e, ui) {
+			tab = this;
+			spring = setTimeout(function() {
+				$(tab).trigger('click');
+				$('div.tab').sortable("refreshPositions");
+			}, spring_delay);
+		},
+		out: function(e, ui) {
+			clearTimeout(spring);
+		},
+		deactivate: function(e, ui) {
+			clearTimeout(spring);
+		}
+	});
+
 	// Sorting the fields
 	$('div.tab').sortable({
+		appendTo: "div.box.publish",
 		connectWith: "div.tab",
 		handle: "li.move a",
+		// helper: "clone",
 		items: "fieldset.sortable",
 		start: function (event, ui)
 		{
 			field_index_at_start = $('div.tab-open fieldset').index(ui.item[0]);
 			tab_index_at_start = getTabIndex();
-
-			$('.tab-bar ul a').on('mouseover', function() {
-				$(this).trigger('click');
-			});
 		},
 		stop: function (event, ui) {
 			if (ui.position == ui.originalPosition) {
@@ -73,7 +94,6 @@ $(document).ready(function () {
 			$('fieldset.sortable:last-child').addClass('last');
 
 			field_index_at_start = NaN;
-			$('.tab-bar ul a').off('mouseover');
 		}
 	});
 
