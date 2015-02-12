@@ -114,16 +114,16 @@
 					<h1><?=lang('add_tab')?> <span class="required intitle">&#10033; <?=lang('required_fields')?></h1>
 					<form class="settings">
 						<fieldset class="col-group last">
-							<div class="settig-text col w-8">
+							<div class="setting-txt col w-8">
 								<h3><?=lang('tab_name')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
 								<em><?=lang('tab_name_desc')?></em>
 							</div>
 							<div class="setting-field col w-8 last">
-								<input type="text" name="tab_name">
+								<input type="text" name="tab_name" data-illegal="<?=lang('illegal_tab_name')?>" data-required="<?=lang('tab_name_required')?>" data-duplicate="<?=lang('duplicate_tab_name')?>">
 							</div>
 						</fieldset>
 						<fieldset class="form-ctrls">
-							<a class="btn submit" href="#"><?=lang('add_tab')?></a>
+							<button class="btn"><?=lang('add_tab')?></button>
 						</fieldset>
 					</form>
 				</div>

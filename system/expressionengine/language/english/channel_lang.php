@@ -149,6 +149,24 @@ $lang = array(
 'layouts_removed_desc' =>
 'The following form layouts were removed',
 
+'add_tab' =>
+'Add Tab',
+
+'tab_name' =>
+'Tab Name',
+
+'tab_name_desc' =>
+'Short name for this tab.',
+
+'tab_name_required'	=>
+'Please choose a name for your tab.',
+
+'duplicate_tab_name' =>
+'A tab with this name already exists.',
+
+'illegal_tab_name' =>
+'Tab names may not contain the following characters: *, >, :, +, (, ), [, ], =, |, ", \', ., #, or $',
+
 /**
  * Channel Create/Edit
  */
