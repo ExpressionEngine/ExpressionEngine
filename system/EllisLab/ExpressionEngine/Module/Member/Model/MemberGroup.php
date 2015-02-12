@@ -80,7 +80,6 @@ class MemberGroup extends Model {
 	protected $can_send_email;
 	protected $can_send_cached_email;
 	protected $can_email_member_groups;
-	protected $can_email_mailinglist;
 	protected $can_email_from_profile;
 	protected $can_view_profiles;
 	protected $can_edit_html_buttons;
@@ -97,6 +96,5 @@ class MemberGroup extends Model {
 	protected $can_send_bulletins;
 	protected $include_in_authorlist;
 	protected $include_in_memberlist;
-	protected $include_in_mailinglists;
 
 }
