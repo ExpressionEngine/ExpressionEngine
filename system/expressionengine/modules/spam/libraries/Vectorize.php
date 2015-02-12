@@ -110,7 +110,7 @@ class Collection {
 	{
 		if ( ! $obj instanceOf Vectorizer)
 		{
-			throw new InvalidArgumentException($class.' must implement the Vectorizer interface.');
+			throw new InvalidArgumentException(get_class($obj) . ' must implement the Vectorizer interface.');
 		}
 
 		$this->vectorizers[] = $obj;
