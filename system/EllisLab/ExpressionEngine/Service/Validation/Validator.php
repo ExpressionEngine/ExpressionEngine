@@ -122,9 +122,40 @@ class Validator {
 	}
 
 	/**
+	 * Run the validation
 	 *
+	 * @param Array $values Data to validate
+	 * @return Result object
 	 */
 	public function validate($values)
+	{
+		return $this->_validate($values);
+	}
+
+	/**
+	 * Run partial validation
+	 *
+	 * Drops required rules for unset values, which is useful when you're
+	 * updating an existing entity. If the value is passed as non-null (blank
+	 * string, int 0, FALSE), then it will still trigger a required error,
+	 * since updating such a value would invalidate the stored data.
+	 *
+	 * @param Array $values Data to validate
+	 * @return Result object
+	 */
+	public function validatePartial($values)
+	{
+		return $this->_validate($values, TRUE);
+	}
+
+	/**
+	 * Run the validation
+	 *
+	 * @param Array $values Data to validate
+	 * @param Bool $partial Partial validation? (@see `validatePartial()`)
+	 * @return Result object
+	 */
+	public function _validate($values, $partial = FALSE)
 	{
 		$result = new Result;
 
@@ -141,6 +172,11 @@ class Validator {
 
 			foreach ($rules as $rule)
 			{
+				if ($partial && $rule instanceOf Rule\Required && $value == NULL)
+				{
+					continue;
+				}
+
 				$rule->setAllValues($values);
 
 				$rule_return = $rule->validate($value);

@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Service\Model;
 
 use BadMethodCallException;
+use Closure;
 use OverflowException;
 
 use EllisLab\ExpressionEngine\Library\Data\Entity;
@@ -157,7 +158,7 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 		$this->emit('beforeGet', $name);
 
 		$value = parent::getProperty($name);
-		$value = $this->typedColumnGetter($name, $value);
+		$value = $this->filter('get', $value, array($name));
 
 		$this->emit('afterGet', $name);
 
@@ -175,7 +176,7 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	{
 		$this->emit('beforeSet', $name, $value);
 
-		$value = $this->typedColumnSetter($name, $value);
+		$value = $this->filter('set', $value, array($name));
 
 		parent::setProperty($name, $value);
 
@@ -411,7 +412,7 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	 */
 	public function subscribe(EventSubscriber $subscriber)
 	{
-		return $this->getMixin('event')->subscribe($subscriber);
+		return $this->getMixin('Event')->subscribe($subscriber);
 	}
 
 	/**
@@ -421,7 +422,7 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	 */
 	public function unsubscribe(EventSubscriber $subscriber)
 	{
-		return $this->getMixin('event')->unsubscribe($subscriber);
+		return $this->getMixin('Event')->unsubscribe($subscriber);
 	}
 
 	/**

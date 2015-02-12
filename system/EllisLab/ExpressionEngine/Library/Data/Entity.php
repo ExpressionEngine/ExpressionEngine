@@ -8,6 +8,11 @@ use EllisLab\ExpressionEngine\Library\Mixin\MixableImpl;
 abstract class Entity extends MixableImpl {
 
 	/**
+	 * @var Array Filter storage
+	 */
+	protected $_filters = array();
+
+	/**
 	 * Constructor
 	 */
 	public function __construct(array $data = array())
@@ -111,6 +116,52 @@ abstract class Entity extends MixableImpl {
 	}
 
 	/**
+	 * Add a filter
+	 *
+	 * @param String $type Filter type
+	 * @param Callable $callback Filter callback
+	 */
+	public function addFilter($type, /*Callable */ $callback)
+	{
+		if ( ! array_key_exists($type, $this->_filters))
+		{
+			$this->_filters[$type] = array();
+		}
+
+		$this->_filters[$type][] = $callback;
+	}
+
+	/**
+	 * Get all known filters of a given type
+	 *
+	 * @param String $type Filter type
+	 * @return Array of callables
+	 */
+	protected function getFilters($type)
+	{
+		return $this->_filters[$type];
+	}
+
+	/**
+	 * Apply known filters to a given value
+	 *
+	 * @param String $type Filter type
+	 * @param Array $args List of arguments
+	 * @return Filtered value
+	 */
+	protected function filter($type, $value, $args = array())
+	{
+		array_unshift($args, $value);
+
+		foreach ($this->getFilters($type) as $filter)
+		{
+			$args[0] = call_user_func_array($filter, $args);
+		}
+
+		return $args[0];
+	}
+
+	/**
 	 * Batch update properties
 	 *
 	 * Safely updates any properties that might exist,
@@ -119,7 +170,7 @@ abstract class Entity extends MixableImpl {
 	 * @param array $data Data to update
 	 * @return $this
 	 */
-	public function update(array $data = array())
+	public function set(array $data = array())
 	{
 		foreach ($data as $k => $v)
 		{
