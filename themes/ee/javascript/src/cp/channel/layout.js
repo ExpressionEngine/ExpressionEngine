@@ -24,8 +24,7 @@ $(document).ready(function () {
 		return $('div.tab-open fieldset').index(field);
 	}
 
-	var field_index_at_start = NaN;
-	var tab_index_at_start = NaN;
+	var field;
 
 	// Sorting the tabs
 	$('div.tab-bar').sortable({
@@ -50,8 +49,28 @@ $(document).ready(function () {
 
 	$('div.tab-bar ul li a').droppable({
 		accept: "fieldset.sortable",
+		hoverClass: "highlight",
 		tolerance: "pointer",
 		drop: function(e, ui) {
+			// Stop the Timeout
+			clearTimeout(spring);
+
+			// Open the tab
+			$(this).trigger('click');
+
+			// Remove the fieldset from the old tab
+			ui.draggable.remove();
+
+			// Add the fieldset to the new tab
+			$('<fieldset class="col-group sortable"></fieldset>').append(ui.draggable.html()).prependTo($('div.tab-open'));
+
+			// Add the field to the publish_layout array
+			EE.publish_layout[getTabIndex()].fields.splice(0, 0, field);
+			field = null;
+
+			// Make sure the last element has the last class
+			$('fieldset.sortable').removeClass('last');
+			$('fieldset.sortable:last-child').addClass('last');
 		},
 		over: function(e, ui) {
 			tab = this;
@@ -72,28 +91,29 @@ $(document).ready(function () {
 	$('div.tab').sortable({
 		appendTo: "div.box.publish",
 		connectWith: "div.tab",
+		cursor: "move",
+		forceHelperSize: true,
+		forcePlaceholderSize: true,
 		handle: "li.move a",
-		// helper: "clone",
+		helper: "clone",
 		items: "fieldset.sortable",
 		start: function (event, ui)
 		{
-			field_index_at_start = $('div.tab-open fieldset').index(ui.item[0]);
-			tab_index_at_start = getTabIndex();
+			var fieldIndex = $('div.tab-open fieldset').index(ui.item[0]);
+			field = EE.publish_layout[getTabIndex()].fields.splice(fieldIndex, 1)[0];
 		},
 		stop: function (event, ui) {
 			if (ui.position == ui.originalPosition) {
 				return;
 			}
 
-			var index_at_stop = $('div.tab-open fieldset').index(ui.item[0]);
+			var fieldIndex = $('div.tab-open fieldset').index(ui.item[0]);
 
-			var field = EE.publish_layout[tab_index_at_start].fields.splice(field_index_at_start, 1);
-			EE.publish_layout[getTabIndex()].fields.splice(index_at_stop, 0, field[0]);
+			EE.publish_layout[getTabIndex()].fields.splice(fieldIndex, 0, field);
+			field = null;
 
 			$('fieldset.sortable').removeClass('last');
 			$('fieldset.sortable:last-child').addClass('last');
-
-			field_index_at_start = NaN;
 		}
 	});
 
