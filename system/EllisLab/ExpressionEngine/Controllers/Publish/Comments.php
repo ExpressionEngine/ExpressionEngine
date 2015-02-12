@@ -347,7 +347,8 @@ class Comments extends AbstractPublishController {
 								'choices' => array(
 									'o' => lang('open'),
 									'c' => lang('closed'),
-									'p' => lang('pending')
+									'p' => lang('pending'),
+									's' => lang('spam')
 								),
 								'value' => $comment->status
 							)
@@ -387,7 +388,7 @@ class Comments extends AbstractPublishController {
 			array(
 				'field' => 'status',
 				'label' => 'lang:status',
-				'rules' => 'enum[o,c,p]'
+				'rules' => 'enum[o,c,p,s]'
 			),
 			array(
 				'field' => 'move',
@@ -483,6 +484,9 @@ class Comments extends AbstractPublishController {
 				case 'c':
 					$status = lang('closed');
 					break;
+				case 's':
+					$status = lang('spam');
+					break;
 				default:
 					$status = lang("pending");
 			}
@@ -540,7 +544,8 @@ class Comments extends AbstractPublishController {
 		$status = ee('Filter')->make('filter_by_status', 'filter_by_status', array(
 			'o' => lang('open'),
 			'c' => lang('closed'),
-			'p' => lang('pending')
+			'p' => lang('pending'),
+			's' => lang('spam')
 		));
 		$status->disableCustomValue();
 		return $status;
@@ -554,7 +559,7 @@ class Comments extends AbstractPublishController {
 				$this->remove(ee()->input->post('selection'));
 				break;
 
-			case 'remove':
+			case 'open':
 				$this->setStatus(ee()->input->post('selection'), 'o');
 				break;
 

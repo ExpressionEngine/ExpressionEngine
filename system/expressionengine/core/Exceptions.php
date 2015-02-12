@@ -164,7 +164,7 @@ class EE_Exceptions {
 		}
 
 		// let's be kind if it's a submission error, and offer a back link
-		if ( ! empty($_POST) && ! AJAX_REQUEST)
+		if ( ! empty($_POST) && ! (defined('AJAX_REQUEST') && AJAX_REQUEST))
 		{
 			$message .= '<p><a href="javascript:history.go(-1);">&#171; '.ee()->lang->line('back').'</a></p>';
 		}
@@ -196,7 +196,7 @@ class EE_Exceptions {
 				{
 					include($path);
 				}
-					else
+				else
 				{
 					include(APPPATH.'errors/'.$template.'.php');
 				}

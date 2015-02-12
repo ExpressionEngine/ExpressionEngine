@@ -5,7 +5,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Channel;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP;
-use EllisLab\ExpressionEngine\Controllers\Channel\Channel;
+use EllisLab\ExpressionEngine\Controllers\Channel\AbstractChannel as AbstractChannelController;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -30,7 +30,20 @@ use EllisLab\ExpressionEngine\Controllers\Channel\Channel;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Cat extends Channel {
+class Cat extends AbstractChannelController {
+
+	/**
+	 * Constructor to set permissions
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+
+		if ( ! $this->cp->allowed_group('can_edit_categories'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+	}
 
 	/**
 	 * Categpry Groups Manager
@@ -172,7 +185,10 @@ class Cat extends Channel {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$categories = $cat_group->getCategories();
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_categories');
+
+		$categories = ee()->api_channel_categories->category_tree($group_id);
 
 		$table = CP\Table::create(array(
 			'reorder' => TRUE,
@@ -198,23 +214,55 @@ class Cat extends Channel {
 		);
 
 		$data = array();
+		$parents = array();
 		foreach ($categories as $category)
 		{
+			$parent_id = $category[6];
+
+			// Are we under a parent we've already logged?
+			if (in_array($parent_id, $parents))
+			{
+				// If we already have this parent ID but it's not at the
+				// the end of the array, pop off items until we get to it
+				while (end($parents) != $parent_id)
+				{
+					array_pop($parents);
+				}
+			}
+			// Category hasn't a parent
+			elseif ($parent_id === FALSE)
+			{
+				$parents = array();
+			}
+			else
+			{
+				$parents[] = $parent_id;
+			}
+
+			// Remove all the falses
+			$parents = array_filter($parents);
+			
 			$data[] = array(
-				$category->cat_id,
-				htmlentities($category->cat_name, ENT_QUOTES),
-				htmlentities($category->cat_url_title, ENT_QUOTES),
-				array('toolbar_items' => array(
-					'edit' => array(
-						'href' => cp_url('channel/cat/cat-edit/'.$category->cat_id),
-						'title' => lang('edit')
-					)
-				)),
-				array(
-					'name' => 'categories[]',
-					'value' => $category->cat_id,
-					'data'	=> array(
-						'confirm' => lang('category') . ': <b>' . htmlentities($category->cat_name, ENT_QUOTES) . '</b>'
+				'attrs'	  => array(
+					'data-parent-ids' => json_encode($parents),
+					'data-cat-id'  => $category[0]
+				),
+				'columns' => array(
+					$category[0].form_hidden('cat_order[]', $category[0]),
+					str_repeat('<span class="child"></span>', count($parents)).' '.htmlentities($category[1], ENT_QUOTES, 'UTF-8'),
+					htmlentities($category[9], ENT_QUOTES, 'UTF-8'),
+					array('toolbar_items' => array(
+						'edit' => array(
+							'href' => cp_url('channel/cat/cat-edit/'.$category[0]),
+							'title' => lang('edit')
+						)
+					)),
+					array(
+						'name' => 'categories[]',
+						'value' => $category[0],
+						'data'	=> array(
+							'confirm' => lang('category') . ': <b>' . htmlentities($category[1], ENT_QUOTES, 'UTF-8') . '</b>'
+						)
 					)
 				)
 			);

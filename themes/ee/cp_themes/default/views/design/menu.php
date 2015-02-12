@@ -8,7 +8,7 @@
 					<a href="<?=$group['url']?>"><?=$group['name']?></a>
 					<ul class="toolbar">
 						<li class="edit"><a href="<?=$group['edit_url']?>" title="<?=lang('edit')?>"></a></li>
-						<li class="remove"><a class="m-link" rel="modal-confirm-remove-template-group" href="" title="<?=lang('remove')?>" data-confirm="<?=lang('template_group')?>: <b><?=$group['name']?></b>" data-group-name="<?=$group['name']?>"></a></li>
+						<li class="remove"><a class="m-link" rel="modal-confirm-remove-template-group" href="" title="<?=lang('remove')?>" data-confirm="<?=lang('template_group')?>: <b><?=$group['name']?></b>" data-group-name="<?=strip_tags($group['name'])?>"></a></li>
 					</ul>
 				</li>
 				<?php endforeach; ?>
@@ -19,7 +19,7 @@
 			<ul class="folder-list">
 				<?php foreach ($system_templates as $template): ?>
 				<li<?php if ( ! empty($template['class'])): ?> class="<?=$template['class']?>"<?php endif; ?>>
-					<a href="<?=$template['url']?>"><?=$template['name']?></a>
+					<a href="<?=$template['url']?>"><?=strtolower($template['name'])?></a>
 					<ul class="toolbar">
 						<li class="edit"><a href="<?=$template['url']?>" title="<?=lang('edit')?>"></a></li>
 					</ul>

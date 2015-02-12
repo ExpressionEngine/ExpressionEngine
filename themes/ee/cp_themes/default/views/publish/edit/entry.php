@@ -7,14 +7,17 @@
 	<div class="tab-bar">
 		<ul>
 			<?php foreach ($layout->getTabs() as $index => $tab): ?>
+			<?php if ( ! $tab->isVisible()) continue; ?>
 			<li><a<?php if ($index == 0): ?> class="act"<?php endif; ?> href="" rel="t-<?=$index?>"><?=lang($tab->title)?></a></li>
 			<?php endforeach; ?>
 		</ul>
 	</div>
 	<?=form_open($form_url, $form_attributes, (isset($form_hidden)) ? $form_hidden : array())?>
 		<?php foreach ($layout->getTabs() as $index => $tab): ?>
+		<?php if ( ! $tab->isVisible()) continue; ?>
 		<div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">
 		<?php foreach ($tab->getFields() as $field): ?>
+		<?php if ( ! $field->isVisible()) continue; ?>
 			<?php
 				switch ($field->getType())
 				{
@@ -31,7 +34,7 @@
 			?>
 			<fieldset class="col-group<?php if (end($tab->getFields()) == $field) echo' last'?>">
 				<div class="setting-txt col <?=$width?>">
-					<h3><span class="ico sub-arrow"></span><?=$field->getLabel()?><?php if ($field->isRequired()): ?> <span class="required" title="required field">&#10033;</span><?php endif; ?></h3>
+					<h3><span class="ico sub-arrow"></span><?=$field->getLabel()?><?php if ($field->isRequired()): ?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span><?php endif; ?></h3>
 					<em><?=$field->getInstructions()?></em>
 					<?php if ($field->getName() == 'categories'): ?>
 					<p><a class="btn action submit m-link" rel="modal-cats" href="#"><?=lang('btn_add_category')?></a></p>

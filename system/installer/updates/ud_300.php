@@ -392,7 +392,39 @@ class Updater {
 			foreach ($layouts as $index => $layout)
 			{
 				$layouts[$index]['layout_name'] = 'Layout ' . $layout['layout_id'];
-				// @TODO update the filed_layout column
+
+				$old_field_layout = unserialize($layout['field_layout']);
+				$new_field_layout = array();
+
+				foreach ($old_field_layout as $tab_id => $old_tab)
+				{
+					$tab = array(
+						'id' => $tab_id,
+						'name' => $old_tab['_tab_label'],
+						'visible' => TRUE,
+						'fields' => array()
+					);
+
+					unset($tab['_tab_label']);
+
+					foreach ($old_tab as $field => $info)
+					{
+						if (is_numeric($field))
+						{
+							$field = 'field_id_' . $field;
+						}
+
+						$tab['fields'][] = array(
+							'field' => $field,
+							'visible' => $info['visible'],
+							'collapsed' => $info['collapse']
+						);
+					}
+
+					$new_field_layout[] = $tab;
+				}
+
+				$layouts[$index]['field_layout'] = serialize($new_field_layout);
 			}
 
 			ee()->db->update_batch('layout_publish', $layouts, 'layout_id');

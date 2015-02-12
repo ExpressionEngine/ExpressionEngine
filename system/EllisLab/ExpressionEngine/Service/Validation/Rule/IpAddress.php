@@ -30,18 +30,18 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  */
 class IpAddress extends ValidationRule {
 
-	protected $flags = '';
-
 	public function validate($value)
 	{
-		return (bool) filter_var($value, FILTER_VALIDATE_IP, $this->flags);
+		$flags = $this->processParameters();
+
+		return (bool) filter_var($value, FILTER_VALIDATE_IP, $flags);
 	}
 
-	public function setParameters(array $params)
+	protected function processParameters()
 	{
 		$flags = '';
 
-		foreach ($params as $flag)
+		foreach ($this->parameters as $flag)
 		{
 			switch ($flag)
 			{
@@ -59,6 +59,11 @@ class IpAddress extends ValidationRule {
 			}
 		}
 
-		$this->flags = $flags;
+		return $flags;
+	}
+
+	public function getLanguageKey()
+	{
+		return 'valid_ip';
 	}
 }

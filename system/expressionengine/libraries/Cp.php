@@ -224,7 +224,8 @@ class Cp {
 	public function render($view, $data = array(), $return = FALSE)
 	{
 		$this->_menu();
-		//$this->_sidebar();
+
+		$this->_notices();
 
 		ee()->view->formatted_version = $this->formatted_version(APP_VER);
 
@@ -243,11 +244,31 @@ class Cp {
 		$this->_seal_combo_loader();
 		$this->add_js_script('file', 'cp/global_end');
 
+		$date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
+		ee()->view->ee_build_date = ee()->localize->format_date($date_format, $this->_parse_build_date(), TRUE);
+
 		ee()->view->cp_footer_js = $this->render_footer_js();
 		ee()->view->cp_footer_items = $this->footer_item;
 		ee()->view->cp_its_all_in_your_head = $this->its_all_in_your_head;
 
 		return ee()->view->render($view, $data, $return);
+	}
+
+	/**
+	 * Converts our build date constant into a timestamp so we can format it
+	 * for display
+	 *
+	 * @return int Timestamp representing the build date
+	 */
+	protected function _parse_build_date()
+	{
+		$year = substr(APP_BUILD, 0, 4);
+		$month = substr(APP_BUILD, 4, 2);
+		$day = substr(APP_BUILD, 6, 2);
+
+		$string = $year . '-' . $month . '-' . $day;
+
+		return ee()->localize->string_to_timestamp($string, TRUE, '%Y-%m-%d');
 	}
 
 	// --------------------------------------------------------------------
@@ -295,29 +316,214 @@ class Cp {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Load up the sidebar for our view
+	 * Run a number of checks/tests and display any notices
 	 *
-	 * @access public
 	 * @return void
 	 */
-	protected function _sidebar()
+	protected function _notices()
 	{
-		ee()->view->sidebar_state = '';
-		ee()->view->maincontent_state = '';
+		$alert = $this->_checksum_bootstrap_files();
 
-		if (ee()->session->userdata('show_sidebar') == 'n')
-		{
-			ee()->view->sidebar_state = ' style="display:none"';
-			ee()->view->maincontent_state = ' style="width:100%; display:block"';
-		}
-
-		if (ee()->view->disabled('ee_sidebar'))
+		// These are only displayed to Super Admins
+		if (ee()->session->userdata['group_id'] != 1)
 		{
 			return;
 		}
 
-		// @todo move over sidebar content from set_default_view_vars
-		// has a member query & session cache dependency
+		$notices = array();
+
+		// Show a notice if the cache folder is not writeable
+		if ( ! ee()->cache->file->is_supported())
+		{
+			$notices[] = lang('unwritable_cache_folder');
+		}
+
+		// Show a notice if the config file is not writeable
+		if ( ! is_really_writable(ee()->config->config_path))
+		{
+			$notices[] = lang('unwritable_config_file');
+		}
+
+		if (ee()->config->item('new_version_check') == 'y')
+		{
+			$check = $this->_version_check();
+			if ($check !== FALSE)
+			{
+				$notices[] = $check;
+			}
+		}
+
+		// Check to see if the config file matches the Core version constant
+		if (str_replace('.', '', APP_VER) !== ee()->config->item('app_version'))
+		{
+			$config_version = substr(ee()->config->item('app_version'), 0, 1).'.'.substr(ee()->config->item('app_version'), 1, 1).'.'.substr(ee()->config->item('app_version'), 2);
+			$notices[] = sprintf(lang('version_mismatch'), $config_version, APP_VER);
+		}
+
+		if ( ! empty($notices))
+		{
+			if ( ! $alert)
+			{
+				$alert = ee('Alert')->makeStandard('notices')
+					->asWarning()
+					->withTitle(lang('cp_message_warn'));
+			}
+			else
+			{
+				$alert->addSeparator();
+			}
+
+			$last = end($notices);
+			reset($notices);
+			foreach ($notices as $notice)
+			{
+				$alert->addToBody($notice);
+
+				if ($notice != $last)
+				{
+					$alert->addSeparator();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Bootstrap Checksum Validation
+	 *
+	 * Creates a checksum for our bootstrap files and checks their
+	 * validity with the database
+	 *
+	 * @return Alert|null NULL if everything is alright, otherwise an Alert object
+	 */
+	protected function _checksum_bootstrap_files()
+	{
+		// Checksum Validation
+		ee()->load->library('file_integrity');
+		$changed = ee()->file_integrity->check_bootstrap_files();
+		$checksum_alert = NULL;
+
+		if ($changed)
+		{
+			// Email the webmaster - if he isn't already looking at the message
+			if (ee()->session->userdata('email') != ee()->config->item('webmaster_email'))
+			{
+				ee()->file_integrity->send_site_admin_warning($changed);
+			}
+
+			if (ee()->session->userdata('group_id') == 1)
+			{
+				$alert = ee('Alert')->makeStandard('notices')
+					->asWarning()
+					->withTitle(lang('cp_message_warn'))
+					->addToBody(lang('checksum_changed_warning'))
+					->addToBody($changed);
+
+				$button = form_open(cp_url('homepage/accept_checksums'), '', array('return' => base64_encode(ee()->cp->get_safe_refresh())));
+				$button .= '<input class="btn submit" type="submit" value="' . lang('checksum_changed_accept') . '">';
+				$button .= form_close();
+
+				$alert->addToBody($button);
+
+				return $alert;
+			}
+		}
+
+		return NULL;
+	}
+
+
+	/**
+	 * EE Version Check function
+	 *
+	 * Requests a file from ExpressionEngine.com that informs us what the current available version
+	 * of ExpressionEngine.
+	 *
+	 * @return	bool|string
+	 */
+	protected function _version_check()
+	{
+		$download_url = ee()->cp->masked_url('https://store.ellislab.com/manage');
+
+		ee()->load->library('el_pings');
+		$version_file = ee()->el_pings->get_version_info();
+
+		if ( ! $version_file)
+		{
+			return sprintf(
+				lang('new_version_error'),
+				$download_url
+			);
+		}
+
+		$new_release = FALSE;
+		$high_priority = FALSE;
+
+		// Do we have a newer version out?
+		foreach ($version_file as $app_data)
+		{
+			if ($app_data[0] > APP_VER && $app_data[2] == 'high')
+			{
+				$new_release = TRUE;
+				$high_priority = TRUE;
+				$high_priority_release = array(
+					'version'	=> $app_data[0],
+					'build'		=> $app_data[1]
+				);
+
+				continue;
+			}
+			elseif ($app_data[1] > APP_BUILD && $app_data[2] == 'high')
+			{
+				// A build could sometimes be a security release.  So we can plan for it here.
+				$new_release = TRUE;
+				$high_priority = TRUE;
+				$high_priority_release = array(
+					'version'	=> $app_data[0],
+					'build'		=> $app_data[1]
+				);
+
+				continue;
+			}
+		}
+
+		if ( ! $new_release)
+		{
+			return FALSE;
+		}
+
+		$cur_ver = end($version_file);
+
+		// Extracting the date the build was released.  IF the build was
+		// released in the past 2 calendar days, we don't show anything
+		// on the control panel home page unless it was a security release
+		$date_threshold = mktime(0, 0, 0,
+			substr($cur_ver[1], 4, -2), // Month
+			(substr($cur_ver[1], -2) + 2), // Day + 2
+			substr($cur_ver[1], 0, 4) // Year
+		);
+
+		if ((ee()->localize->now < $date_threshold) && $high_priority != TRUE)
+		{
+			return FALSE;
+		}
+
+		if ($high_priority)
+		{
+			return sprintf(lang('new_version_notice_high_priority'),
+				$high_priority_release['version'],
+				$high_priority_release['build'],
+				$cur_ver[0],
+				$cur_ver[1],
+				$download_url,
+				ee()->cp->masked_url(ee()->config->item('doc_url').'installation/update.html')
+			);
+		}
+
+		return sprintf(lang('new_version_notice'),
+			$details['version'],
+			$download_url,
+			ee()->cp->masked_url(ee()->config->item('doc_url').'installation/update.html')
+		);
 	}
 
 	// --------------------------------------------------------------------

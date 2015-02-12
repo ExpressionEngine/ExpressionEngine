@@ -356,7 +356,7 @@ class Addons extends CP_Controller {
 				$class = ucfirst($addon).'_upd';
 				$version = $installed[$addon]['module_version'];
 
-				$this->load->add_package_path($installed[$addon]['path']);
+				ee()->load->add_package_path($installed[$addon]['path']);
 
 				$UPD = new $class;
 				$UPD->_ee_path = APPPATH;
@@ -472,7 +472,7 @@ class Addons extends CP_Controller {
 			$addons = array($addons);
 		}
 
-		$this->load->library('addons/addons_installer');
+		ee()->load->library('addons/addons_installer');
 
 		$installed = array();
 
@@ -564,7 +564,7 @@ class Addons extends CP_Controller {
 			$addons = array($addons);
 		}
 
-		$this->load->library('addons/addons_installer');
+		ee()->load->library('addons/addons_installer');
 
 		$uninstalled = array();
 

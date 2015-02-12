@@ -110,7 +110,7 @@ $(document).ready(function(){
 	// ====
 
 		// listen for clicks on tabs
-		$('.tab-bar ul a').on('click',function(){
+		$('.tab-bar ul').on('click', 'a', function(){
 			// set the tabClassIs variable
 			// tells us which .tab to control
 			var tabClassIs = $(this).attr('rel');

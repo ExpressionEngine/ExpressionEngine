@@ -474,6 +474,9 @@ $lang = array(
 'error_cannot_create_zip' =>
 'Cannot create a .zip file',
 
+'group_not_found' =>
+'No template group found',
+
 // System Templates -> Messages
 
 'system' =>

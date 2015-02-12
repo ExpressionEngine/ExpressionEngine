@@ -88,6 +88,22 @@ class ChannelEntry extends ContentModel {
 		return 'field_id_';
 	}
 
+	protected function initializeCustomFields()
+	{
+		parent::initializeCustomFields();
+
+		// Here comes the ugly! @TODO don't do this
+		ee()->legacy_api->instantiate('channel_fields');
+		$module_tabs = ee()->api_channel_fields->get_module_fields($this->channel_id, $this->entry_id);
+
+		foreach ($module_tabs as $tab_id => $fields)
+		{
+			foreach ($fields as $key => $field)
+			{
+				$this->addFacade($field['field_id'], $field);
+			}
+		}
+	}
 
 	protected function fillCustomFields($data)
 	{
@@ -187,11 +203,18 @@ class ChannelEntry extends ContentModel {
 			->all()
 			->pluck('group_id');
 
-		$categories = ee('Model')->get('Category')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('group_id', 'IN', $category_group_ids)
-			->filter('parent_id', 0)
-			->all();
+		if (empty($category_group_ids))
+		{
+			$categories = array();
+		}
+		else
+		{
+			$categories = ee('Model')->get('Category')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('group_id', 'IN', $category_group_ids)
+				->filter('parent_id', 0)
+				->all();
+		}
 
 		$category_string_override = '<div class="scroll-wrap pr">';
 		$set_categories = $this->getCategories()->pluck('cat_id');

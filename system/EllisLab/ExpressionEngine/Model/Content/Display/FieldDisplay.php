@@ -6,6 +6,7 @@ class FieldDisplay {
 
 	protected $field;
 	protected $collapsed = FALSE;
+	protected $visible = TRUE;
 
 	public function __construct($field)
 	{
@@ -61,4 +62,21 @@ class FieldDisplay {
 	{
 		return $this->collapsed;
 	}
+	public function hide()
+	{
+		$this->visible = FALSE;
+		return $this;
+	}
+
+	public function show()
+	{
+		$this->visible = TRUE;
+		return $this;
+	}
+
+	public function isVisible()
+	{
+		return $this->visible;
+	}
+
 }

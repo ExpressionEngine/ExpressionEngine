@@ -29,26 +29,25 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  */
 class ExactLength extends ValidationRule {
 
-	protected $length = 0;
-
-	public function setParameters(array $parameters)
-	{
-		$this->length = $parameters[0];
-	}
-
 	public function validate($value)
 	{
-		if (preg_match("/[^0-9]/", $this->length))
+		list($length) = $this->assertParameters('length');
+
+		if (preg_match("/[^0-9]/", $length))
 		{
 			return FALSE;
 		}
 
 		if (function_exists('mb_strlen'))
 		{
-			return (mb_strlen($value) != $this->length) ? FALSE : TRUE;
+			return (mb_strlen($value) != $length) ? FALSE : TRUE;
 		}
 
-		return (strlen($value) != $this->length) ? FALSE : TRUE;
+		return (strlen($value) != $length) ? FALSE : TRUE;
 	}
 
+	public function getLanguageKey()
+	{
+		return 'exact_length';
+	}
 }

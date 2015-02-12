@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Service\Validation\Rule;
 
+use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 
 /**
@@ -19,7 +20,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Non-zero Natural Number Validation Rule
+ * ExpressionEngine File Exists Validation Rule
  *
  * @package		ExpressionEngine
  * @subpackage	Validation\Rule
@@ -27,21 +28,28 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class IsNaturalNoZero extends ValidationRule {
+class FileExists extends ValidationRule {
+
+	protected $fs;
 
 	public function validate($value)
 	{
-		if ( ! preg_match('/^[0-9]+$/', $value))
-		{
-			return FALSE;
-		}
-
-		return ($value > 0);
+		return $this->getFilesystem()->exists($path);
 	}
 
 	public function getLanguageKey()
 	{
-		return 'is_natural_no_zero';
+		return 'file_exists';
+	}
+
+	protected function getFilesystem()
+	{
+		if ( ! isset($this->fs))
+		{
+			$this->fs = new Filesystem();
+		}
+
+		return $this->fs;
 	}
 
 }

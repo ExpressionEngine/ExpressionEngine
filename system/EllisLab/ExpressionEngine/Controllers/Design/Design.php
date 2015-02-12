@@ -64,6 +64,11 @@ class Design extends AbstractDesignController {
 				->filter('is_site_default', 'y')
 				->filter('site_id', ee()->config->item('site_id'))
 				->first();
+
+			if ( ! $group)
+			{
+				ee()->functions->redirect(cp_url('design/system'));
+			}
 		}
 		else
 		{

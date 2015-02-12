@@ -551,6 +551,15 @@ $lang = array(
 'new_channel' =>
 'New Channel',
 
+'new_site' =>
+'New Site',
+
+'my_profile' =>
+'My Profile',
+
+'new_link' =>
+'New Link',
+
 'menu_edit' =>
 'Edit',
 

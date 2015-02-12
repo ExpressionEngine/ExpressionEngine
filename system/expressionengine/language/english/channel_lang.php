@@ -107,8 +107,47 @@ $lang = array(
 'btn_create_layout' =>
 'Create Layout',
 
+'create_layout_success' =>
+'Form Layout Created',
+
+'create_layout_success_desc' =>
+'The form layout <b>%s</b> has been created.',
+
+'create_layout_error' =>
+'Cannot Create Form Layout',
+
+'create_layout_error_desc' =>
+'We were unable to update this group, please review and fix errors below.',
+
+'btn_edit_layout' =>
+'Edit Layout',
+
 'btn_preview_layout' =>
 'Preview Layout',
+
+'form_layouts' =>
+'Form Layouts',
+
+'edit_form_layout' =>
+'Edit Form Layout &ndash; %s',
+
+'edit_layout_success' =>
+'Form Layout Updated',
+
+'edit_layout_success_desc' =>
+'The form layout <b>%s</b> has been updated.',
+
+'edit_layout_error' =>
+'Cannot Update Form Layout',
+
+'edit_layout_error_desc' =>
+'We were unable to update this group, please review and fix errors below.',
+
+'success' =>
+'Success',
+
+'layouts_removed_desc' =>
+'The following form layouts were removed',
 
 /**
  * Channel Create/Edit

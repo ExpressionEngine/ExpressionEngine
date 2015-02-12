@@ -19,7 +19,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Non-zero Natural Number Validation Rule
+ * ExpressionEngine Matches Validation Rule
  *
  * @package		ExpressionEngine
  * @subpackage	Validation\Rule
@@ -27,21 +27,30 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class IsNaturalNoZero extends ValidationRule {
+class Matches extends ValidationRule {
+
+	protected $all_values = array();
 
 	public function validate($value)
 	{
-		if ( ! preg_match('/^[0-9]+$/', $value))
+		foreach ($this->parameters as $field_name)
 		{
-			return FALSE;
+			if ( ! array_key_exists($field_name, $this->all_values))
+			{
+				return isset($value); // both not set technically matches
+			}
+
+			if ($this->all_values[$field_name] != $value)
+			{
+				return FALSE;
+			}
 		}
 
-		return ($value > 0);
+		return TRUE;
 	}
 
-	public function getLanguageKey()
+	public function setAllValues(array $values)
 	{
-		return 'is_natural_no_zero';
+		$this->all_values = $values;
 	}
-
 }

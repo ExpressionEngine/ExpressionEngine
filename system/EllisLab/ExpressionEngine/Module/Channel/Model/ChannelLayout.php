@@ -2,8 +2,11 @@
 
 namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
+use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Model\Content\Display\LayoutDisplay;
 use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
+use EllisLab\ExpressionEngine\Model\Content\Display\LayoutTab;
 
 class ChannelLayout extends Model implements LayoutInterface {
 
@@ -47,7 +50,70 @@ class ChannelLayout extends Model implements LayoutInterface {
 
 	public function transform(array $fields)
 	{
+		$display = new LayoutDisplay();
 
+		// Fields known to the layout
+		$layout = $this->getProperty('field_layout');
+		foreach ($layout as $section)
+		{
+			$tab = new LayoutTab($section['id'], $section['name']);
+
+			if ( ! $section['visible'])
+			{
+				$tab->hide();
+			}
+
+			foreach ($section['fields'] as $field_info)
+			{
+				$field_id = $field_info['field'];
+
+				$field = $fields[$field_id];
+
+				if ($field_info['collapsed'])
+				{
+					$field->collapse();
+				}
+
+				if ( ! $field_info['visible'])
+				{
+					$field->hide();
+				}
+
+				$tab->addField($field);
+
+				unset($fields[$field_id]);
+			}
+			$display->addTab($tab);
+		}
+
+		// "New" (unknown) fields
+		$publish_tab = $display->getTab('publish');
+
+		foreach ($fields as $field_id => $field)
+		{
+			if (strpos($field_id, '__') === FALSE)
+			{
+				$tab = $publish_tab;
+			}
+			else
+			{
+				list($tab_id, $garbage) = explode('__', $field_id);
+
+				try
+				{
+					$tab = $display->getTab($tab_id);
+				}
+				catch (InvalidArgumentException $e)
+				{
+					$tab = new LayoutTab($tab_id, $tab_id);
+					$display->addTab($tab);
+				}
+			}
+
+			$tab->addField($field);
+		}
+
+		return $display;
 	}
 
 }
