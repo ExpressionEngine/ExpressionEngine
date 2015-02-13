@@ -11,6 +11,7 @@ $lang = array(
 'subtitle_step'   => 'Step %d of %d',
 
 // Install Form
+'install_title' => 'Install ExpressionEngine %s',
 
 	// Database Server
 	'db_hostname'      => 'Database Server Address',
