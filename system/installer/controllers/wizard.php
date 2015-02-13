@@ -236,6 +236,12 @@ class Wizard extends CI_Controller {
 	{
 		$this->set_base_url();
 
+		// We may be back here if we're renaming the installer
+		if (ee()->input->get('rename'))
+		{
+			return $this->rename_installer();
+		}
+
 		// Run our pre-flight tests.
 		// This function generates its own error messages so if it returns FALSE
 		// we bail out.
@@ -2264,6 +2270,29 @@ class Wizard extends CI_Controller {
 	private function default_channel_entry()
 	{
 		return read_file(APPPATH.'language/'.$this->userdata['deft_lang'].'/channel_entry_lang.php');
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Rename the installer and redirect to the Control Panel
+	 * @return void
+	 */
+	private function rename_installer()
+	{
+		// Generate the new path by suffixing a dotless version number
+		$new_path = str_replace(
+			'installer',
+			'installer_'.str_replace('.', '', $this->version),
+			APPPATH
+		);
+
+		// Move the directory
+		rename(APPPATH, $new_path);
+
+		// Get outta here!
+		ee()->load->helper('url');
+		redirect($this->userdata['cp_url']);
 	}
 }
 

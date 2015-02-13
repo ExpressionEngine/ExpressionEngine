@@ -3,5 +3,6 @@
 	<p><?=lang('success_delete')?></p>
 </div>
 <fieldset class="install-btn">
-	<input class="btn" type="submit" value="<?=lang('cp_login')?>">
+	<input class="btn" type="submit" name="rename" value="Rename Installer and <?=lang('cp_login')?>">
+	<input class="btn" type="submit" name="login" value="<?=lang('cp_login')?>">
 </fieldset>
