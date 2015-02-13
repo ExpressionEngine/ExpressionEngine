@@ -143,6 +143,13 @@ class Alert {
 	public function defer()
 	{
 		$this->collection->defer($this);
+		return $this;
+	}
+
+	public function now()
+	{
+		$this->collection->save($this);
+		return $this;
 	}
 }
 // EOF
