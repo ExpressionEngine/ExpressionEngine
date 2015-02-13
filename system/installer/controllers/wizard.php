@@ -431,14 +431,20 @@ class Wizard extends CI_Controller {
 			$this->userdata['site_url'] = $host.substr($self, 0, - strlen($_selfloc));
 
 			$vars['site_url'] = rtrim($this->userdata['site_url'], '/').'/'.$this->userdata['site_index'];
-			$vars['cp_url'] = $this->userdata['cp_url'];
 
 			$this->logger->updater("Update complete. Now running version {$this->version}.");
 
 			// List any update notices we have
 			$vars['update_notices'] = $this->update_notices->get();
 
-			$this->show_success('update', $vars);
+			// Did we just install?
+			$member_count = ee()->db->count_all_results('members');
+			$last_visit = ee()->db->select('last_visit')
+				->where('last_visit', 0)
+				->count_all_results('members');
+			$type = ($member_count == 1 && $last_visit == 1) ? 'install' : 'update';
+
+			$this->show_success($type, $vars);
 			return FALSE;
 		}
 
@@ -737,7 +743,6 @@ class Wizard extends CI_Controller {
 		// Build our success links
 		$vars['installer_path'] = '/'.SYSDIR.'/installer';
 		$vars['site_url'] = rtrim($this->userdata['site_url'], '/').'/'.$this->userdata['site_index'];
-		$vars['cp_url'] = $this->userdata['cp_url'];
 
 		// If errors are thrown, this is were we get the "human" names for those modules
 		$vars['module_names'] = $this->userdata['modules'];
@@ -760,7 +765,7 @@ class Wizard extends CI_Controller {
 	 * @param  array  $template_variables Anything to parse in the template
 	 * @return void
 	 */
-	private function show_success($type = 'update', $template_variables)
+	private function show_success($type = 'update', $template_variables = array())
 	{
 		// Make sure the title and subtitle are correct, current_step should be
 		// the same as the number of steps
