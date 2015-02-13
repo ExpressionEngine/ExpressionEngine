@@ -56,6 +56,16 @@ class AlertCollection {
 				$alert = $this->make($name, $type);
 				$alert->title = $value['title'];
 				$alert->body = $value['body'];
+
+				if ($value['can_close'])
+				{
+					$alert->canClose();
+				}
+				else
+				{
+					$alert->cannotClose();
+				}
+
 				switch ($value['severity'])
 				{
 					case 'issue':
@@ -103,7 +113,8 @@ class AlertCollection {
 		$data = array(
 			'title' => $alert->title,
 			'body' => $alert->body,
-			'severity' => $alert->severity
+			'severity' => $alert->severity,
+			'can_close' => $alert->has_close_button
 		);
 
 		if ( ! is_null($alert->sub_alert))
