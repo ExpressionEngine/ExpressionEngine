@@ -427,7 +427,8 @@ class Comments extends AbstractPublishController {
 			ee('Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('edit_comment_error'))
-				->addToBody(lang('edit_comment_error_desc'));
+				->addToBody(lang('edit_comment_error_desc'))
+				->now();
 		}
 
 		ee()->view->cp_page_title = lang('edit_comment');

@@ -338,7 +338,8 @@ class Channel extends AbstractChannelController {
 			ee('Alert')->makeInline('channel-form')
 				->asIssue()
 				->withTitle(lang('channel_not_saved'))
-				->addToBody(lang('channel_not_saved_desc'));
+				->addToBody(lang('channel_not_saved_desc'))
+				->now();
 		}
 
 		ee()->view->header = array(

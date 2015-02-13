@@ -235,6 +235,8 @@ class Members extends AbstractDesignController {
 					$alert->defer();
 					ee()->functions->redirect(cp_url('design/members'));
 				}
+
+				$alert->now();
 			}
 		}
 
@@ -244,7 +246,8 @@ class Members extends AbstractDesignController {
 				->asWarning()
 				->cannotClose()
 				->withTitle(lang('file_not_writable'))
-				->addToBody(lang('file_writing_instructions'));
+				->addToBody(lang('file_writing_instructions'))
+				->now();
 		}
 
 		$fp = fopen($path, 'r');

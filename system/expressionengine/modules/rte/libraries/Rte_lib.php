@@ -83,7 +83,8 @@ class Rte_lib {
 				ee('Alert')->makeInline('toolsets-form')
 					->asIssue()
 					->withTitle(lang('toolset_error'))
-					->addToBody(lang('toolset_error_desc'));
+					->addToBody(lang('toolset_error_desc'))
+					->now();
 			}
 			else
 			{

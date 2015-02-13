@@ -158,11 +158,12 @@ class Commerce extends Settings {
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
 		$base_url = cp_url('settings/commerce');
-		
+
 		ee('Alert')->makeInline('ipn-notice')
 			->asWarning()
 			->cannotClose()
-			->addToBody(sprintf(lang('commerce_ipn_notice'), 'https://cms.paypal.com/us/cgi-bin/?cmd=_render-content&content_ID=developer/e_howto_admin_IPNIntro'));
+			->addToBody(sprintf(lang('commerce_ipn_notice'), 'https://cms.paypal.com/us/cgi-bin/?cmd=_render-content&content_ID=developer/e_howto_admin_IPNIntro'))
+			->now();
 
 		ee()->view->extra_alerts = array('ipn-notice');
 

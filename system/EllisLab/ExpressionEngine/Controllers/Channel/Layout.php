@@ -248,7 +248,8 @@ class Layout extends AbstractChannelController {
 			ee('Alert')->makeInline('layout-form')
 				->asIssue()
 				->withTitle(lang('create_layout_error'))
-				->addToBody(lang('create_layout_error_desc'));
+				->addToBody(lang('create_layout_error_desc'))
+				->now();
 		}
 
 		ee()->view->cp_breadcrumbs = array(
@@ -355,7 +356,8 @@ class Layout extends AbstractChannelController {
 			ee('Alert')->makeInline('layout-form')
 				->asIssue()
 				->withTitle(lang('edit_layout_error'))
-				->addToBody(lang('edit_layout_error_desc'));
+				->addToBody(lang('edit_layout_error_desc'))
+				->now();
 		}
 
 		ee()->view->cp_breadcrumbs = array(

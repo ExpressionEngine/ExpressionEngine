@@ -270,7 +270,8 @@ class Snippets extends AbstractDesignController {
 			ee('Alert')->makeInline('settings-form')
 				->asIssue()
 				->withTitle(lang('create_template_partial_error'))
-				->addToBody(lang('create_template_partial_error_desc'));
+				->addToBody(lang('create_template_partial_error_desc'))
+				->now();
 		}
 
 		ee()->view->cp_page_title = lang('create_partial');
@@ -394,7 +395,8 @@ class Snippets extends AbstractDesignController {
 			ee('Alert')->makeInline('settings-form')
 				->asIssue()
 				->withTitle(lang('edit_template_partial_error'))
-				->addToBody(lang('edit_template_partial_error_desc'));
+				->addToBody(lang('edit_template_partial_error_desc'))
+				->now();
 		}
 
 		ee()->view->cp_page_title = lang('edit_partial');
@@ -457,7 +459,8 @@ class Snippets extends AbstractDesignController {
 			ee('Alert')->makeInline('settings-form')
 				->asIssue()
 				->withTitle(lang('error_export'))
-				->addToBody(lang('error_cannot_create_zip'));
+				->addToBody(lang('error_cannot_create_zip'))
+				->now();
 			return;
 		}
 

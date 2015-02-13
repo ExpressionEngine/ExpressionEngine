@@ -271,7 +271,8 @@ class Variables extends AbstractDesignController {
 			ee('Alert')->makeInline('settings-form')
 				->asIssue()
 				->withTitle(lang('create_template_variable_error'))
-				->addToBody(lang('create_template_variable_error_desc'));
+				->addToBody(lang('create_template_variable_error_desc'))
+				->now();
 		}
 
 		$this->loadCodeMirrorAssets('variable_data');
@@ -395,7 +396,8 @@ class Variables extends AbstractDesignController {
 			ee('Alert')->makeInline('settings-form')
 				->asIssue()
 				->withTitle(lang('edit_template_variable_error'))
-				->addToBody(lang('edit_template_variable_error_desc'));
+				->addToBody(lang('edit_template_variable_error_desc'))
+				->now();
 		}
 
 		$this->loadCodeMirrorAssets('variable_data');
@@ -458,7 +460,8 @@ class Variables extends AbstractDesignController {
 			ee('Alert')->makeInline('settings-form')
 				->asIssue()
 				->withTitle(lang('error_export'))
-				->addToBody(lang('error_cannot_create_zip'));
+				->addToBody(lang('error_cannot_create_zip'))
+				->now();
 			return;
 		}
 
