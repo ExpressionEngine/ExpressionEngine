@@ -58,10 +58,12 @@ class Snippets extends AbstractDesignController {
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
+			ee()->functions->redirect(cp_url('design/snippets'));
 		}
 		elseif (ee()->input->post('bulk_action') == 'export')
 		{
 			$this->exportSnippets(ee()->input->post('selection'));
+			ee()->functions->redirect(cp_url('design/snippets'));
 		}
 
 		$vars = array();
@@ -431,7 +433,8 @@ class Snippets extends AbstractDesignController {
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('snippets_removed_desc'))
-			->addToBody($names);
+			->addToBody($names)
+			->defer();
 	}
 
 	/**
