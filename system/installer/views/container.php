@@ -39,7 +39,7 @@
 				<div class="left">
 					<p><b>ExpressionEngine<?php if ($is_core): echo ' '.$is_core; endif;?></b> <span title="About ExpressionEngine"><b><?=$version_major?></b>.<?=$version_minor?></span></p>
 				</div>
-				<div class="right"><p><a href="/report-bug" rel="external">Report Bug</a> <b class="sep">&middot;</b> <a href="/new-ticket" rel="external">New Ticket</a> <b class="sep">&middot;</b> <a href="/manual" rel="external">Manual</a></p></div>
+				<div class="right"><p><a href="https://support.ellislab.com/bugs/submit" rel="external">Report Bug</a> <b class="sep">&middot;</b> <a href="https://support.ellislab.com/ticket/new" rel="external">New Ticket</a> <b class="sep">&middot;</b> <a href="https://ellislab.com/expressionengine/user-guide/" rel="external">Manual</a></p></div>
 			</div>
 		</section>
 		<section class="footer">
