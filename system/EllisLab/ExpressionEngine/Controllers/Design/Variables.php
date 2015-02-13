@@ -63,7 +63,6 @@ class Variables extends AbstractDesignController {
 		elseif (ee()->input->post('bulk_action') == 'export')
 		{
 			$this->exportVariables(ee()->input->post('selection'));
-			ee()->functions->redirect(cp_url('design/variables', ee()->cp->get_url_state()));
 		}
 
 		$vars = array();
