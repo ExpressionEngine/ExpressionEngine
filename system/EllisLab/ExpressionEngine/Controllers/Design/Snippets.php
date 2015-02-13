@@ -58,12 +58,12 @@ class Snippets extends AbstractDesignController {
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
-			ee()->functions->redirect(cp_url('design/snippets'));
+			ee()->functions->redirect(cp_url('design/snippets', ee()->cp->get_url_state()));
 		}
 		elseif (ee()->input->post('bulk_action') == 'export')
 		{
 			$this->exportSnippets(ee()->input->post('selection'));
-			ee()->functions->redirect(cp_url('design/snippets'));
+			ee()->functions->redirect(cp_url('design/snippets', ee()->cp->get_url_state()));
 		}
 
 		$vars = array();
