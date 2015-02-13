@@ -42,7 +42,7 @@ class Alert {
 	private $collection;
 	private $view;
 
-	public function __construct($type = 'inline', $name = '', AlertCollection $collection, View $view)
+	public function __construct($type = 'standard', $name = '', AlertCollection $collection, View $view)
 	{
 		$this->type = $type;
 		$this->name = $name;
