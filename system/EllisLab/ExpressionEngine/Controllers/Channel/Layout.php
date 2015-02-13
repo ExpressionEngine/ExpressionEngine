@@ -91,7 +91,7 @@ class Layout extends AbstractChannelController {
 		{
 			$column = array(
 				htmlentities($layout->layout_name, ENT_QUOTES),
-				$layout->getMemberGroup()->group_title,
+				implode(',', $layout->getMemberGroups()->pluck('group_title')),
 				array('toolbar_items' => array(
 					'edit' => array(
 						'href' => cp_url('channel/layout/edit/' . $layout->layout_id),
