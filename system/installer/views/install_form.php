@@ -1,5 +1,5 @@
 <div class="alert inline warn">
-	<p><b>Please</b> read <a href="https://ellislab.com/expressionengine/user-guide/installation/installation.html">Installing ExpressionEngine</a> <strong>before</strong> starting.</p>
+	<p><b>Please</b> read <a href="https://ellislab.com/expressionengine/user-guide/installation/installation.html" rel="external">Installing ExpressionEngine</a> <strong>before</strong> starting.</p>
 </div>
 <?php if ( ! empty($errors)): ?>
 	<div class="alert inline issue">
