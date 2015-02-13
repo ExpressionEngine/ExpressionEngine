@@ -93,7 +93,7 @@ class Design extends AbstractDesignController {
 			if ($this->hasEditTemplatePrivileges($group->group_id))
 			{
 				$this->remove(ee()->input->post('selection'));
-				ee()->functions->redirect(cp_url('design/manager/' . $group_name));
+				ee()->functions->redirect(cp_url('design/manager/' . $group_name, ee()->cp->get_url_state()));
 			}
 			else
 			{
@@ -103,6 +103,7 @@ class Design extends AbstractDesignController {
 		elseif (ee()->input->post('bulk_action') == 'export')
 		{
 			$this->export(ee()->input->post('selection'));
+			ee()->functions->redirect(cp_url('design/manager/' . $group_name, ee()->cp->get_url_state()));
 		}
 
 		$vars = array();
