@@ -2,6 +2,7 @@
 namespace EllisLab\ExpressionEngine\Service\Alert;
 
 use \EE_Session;
+use EllisLab\ExpressionEngine\Service\Alert\Alert;
 use EllisLab\ExpressionEngine\Service\View\View;
 
 /**
@@ -108,7 +109,7 @@ class AlertCollection {
 		}
 	}
 
-	public function defer($alert)
+	public function defer(Alert $alert)
 	{
 		$data = array(
 			'title' => $alert->title,
@@ -130,7 +131,7 @@ class AlertCollection {
 		$this->session->set_flashdata('alert:' . $alert->type . ':' . $alert->name, $data);
 	}
 
-	public function save($alert)
+	public function save(Alert $alert)
 	{
 		$this->alerts[$alert->type][$alert->name] = $alert;
 	}
