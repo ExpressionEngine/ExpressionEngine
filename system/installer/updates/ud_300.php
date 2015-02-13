@@ -433,6 +433,32 @@ class Updater {
 						{
 							$field = 'field_id_' . $field;
 						}
+						elseif ($field == 'category')
+						{
+							$field = 'categories';
+						}
+						elseif ($field == 'new_channel')
+						{
+							$field = 'channel_id';
+						}
+						elseif ($field == 'author')
+						{
+							$field = 'author_id';
+						}
+						elseif ($field == 'options')
+						{
+							$tab['fields'][] = array(
+								'field' => 'sticky',
+								'visible' => $info['visible'],
+								'collapsed' => $info['collapse']
+							);
+							$tab['fields'][] = array(
+								'field' => 'allow_comments',
+								'visible' => $info['visible'],
+								'collapsed' => $info['collapse']
+							);
+							continue;
+						}
 
 						$tab['fields'][] = array(
 							'field' => $field,
