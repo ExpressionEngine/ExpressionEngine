@@ -167,6 +167,18 @@ $lang = array(
 'illegal_tab_name' =>
 'Tab names may not contain the following characters: *, >, :, +, (, ), [, ], =, |, ", \', ., #, or $',
 
+'error_cannot_hide_tab' =>
+'Cannot Hide Tab',
+
+'error_tab_has_required_fields' =>
+'<b>%s</b> contains at least one required field and cannot be hidden. Plese move the required field(s) to another tab.',
+
+'error_cannot_remove_tab' =>
+'Cannot Remove Tab',
+
+'error_tab_has_fields' =>
+'<b>%s</b> contains at least one field and cannot be removed. Plese move all fields to another tab.',
+
 /**
  * Channel Create/Edit
  */

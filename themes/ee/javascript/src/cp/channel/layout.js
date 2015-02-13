@@ -125,7 +125,7 @@ $(document).ready(function () {
 
 		if (tabContents.has('.required').length > 0)
 		{
-			alert("Cannot hide a tab with required fields.");
+			$('body').prepend(EE.alert.required.replace('%s', tab.text()));
 			return;
 		}
 
@@ -210,7 +210,7 @@ $(document).ready(function () {
 
 		if (tabContents.html())
 		{
-			alert("Cannot remove a tab with fields.");
+			$('body').prepend(EE.alert.not_empty.replace('%s', tab.text()));
 			return;
 		}
 

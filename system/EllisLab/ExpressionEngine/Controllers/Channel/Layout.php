@@ -363,9 +363,24 @@ class Layout extends AbstractChannelController {
 			cp_url('channel/layout/' . $channel_layout->channel_id) => lang('form_layouts')
 		);
 
+		$alert_required = ee('Alert')->makeBanner('tab-has-required-fields')
+			->asIssue()
+			->canClose()
+			->withTitle(lang('error_cannot_hide_tab'))
+			->addToBody(lang('error_tab_has_required_fields'));
+
+		$alert_not_empty = ee('Alert')->makeBanner('tab-has-fields')
+			->asIssue()
+			->canClose()
+			->withTitle(lang('error_cannot_remove_tab'))
+			->addToBody(lang('error_tab_has_fields'));
+
 		ee()->view->cp_page_title = sprintf(lang('edit_form_layout'), $channel_layout->layout_name);
 
 		ee()->javascript->set_global('publish_layout', $channel_layout->field_layout);
+		ee()->javascript->set_global('alert.required', $alert_required->render());
+		ee()->javascript->set_global('alert.not_empty', $alert_not_empty->render());
+
 		ee()->cp->add_js_script('ui', array('droppable', 'sortable'));
 		ee()->cp->add_js_script('file', 'cp/channel/layout');
 
