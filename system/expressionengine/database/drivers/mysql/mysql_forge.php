@@ -29,7 +29,7 @@ class CI_DB_mysql_forge extends CI_DB_forge {
 	 * available in MySQL.
 	 */
 	const ENGINE_INNODB = 'InnoDB';
-	CONST ENGINE_MYISAM = 'MyISAM';
+	const ENGINE_MYISAM = 'MyISAM';
 	const ENGINE_MEMORY = 'MEMORY';
 	const ENGINE_ARCHIVE = 'ARCHIVE';
 	/**
