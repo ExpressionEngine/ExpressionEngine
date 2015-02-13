@@ -128,7 +128,11 @@ class AlertCollection {
 		}
 
 		$this->session->set_flashdata('alert:' . $alert->type . ':' . $alert->name, $data);
-		unset($this->alerts[$alert->type][$alert->name]);
+	}
+
+	public function save($alert)
+	{
+		$this->alerts[$alert->type][$alert->name] = $alert;
 	}
 
 	public function get($name, $type = 'inline')
@@ -173,9 +177,7 @@ class AlertCollection {
 
 	public function make($name = '', $type = 'standard')
 	{
-		$alert = new Alert($type, $name, $this, $this->view);
-		$this->alerts[$type][$name] = $alert;
-		return $alert;
+		return new Alert($type, $name, $this, $this->view);
 	}
 
 	public function makeInline($name = '')
