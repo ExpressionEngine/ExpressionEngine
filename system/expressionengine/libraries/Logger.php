@@ -441,7 +441,7 @@ class EE_Logger {
 		}
 
 		// Update current tagdata if running outside the updater
-		if (isset(ee()->TMPL->tagdata))
+		if (isset(ee()->TMPL) && isset(ee()->TMPL->tagdata))
 		{
 			ee()->TMPL->tagdata = preg_replace(
 				$regex,
