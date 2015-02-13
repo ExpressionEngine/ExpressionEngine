@@ -58,10 +58,12 @@ class Variables extends AbstractDesignController {
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
+			ee()->functions->redirect(cp_url('design/variables', ee()->cp->get_url_state()));
 		}
 		elseif (ee()->input->post('bulk_action') == 'export')
 		{
 			$this->exportVariables(ee()->input->post('selection'));
+			ee()->functions->redirect(cp_url('design/variables', ee()->cp->get_url_state()));
 		}
 
 		$vars = array();
@@ -432,7 +434,8 @@ class Variables extends AbstractDesignController {
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('template_variables_removed_desc'))
-			->addToBody($names);
+			->addToBody($names)
+			->defer();
 	}
 
 	/**
