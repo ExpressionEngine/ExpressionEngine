@@ -48,10 +48,8 @@
 				<div class="right"><p><a class="scroll" href="#top">scroll to top</a></p></div>
 			</div>
 		</section>
-		<!--
-		<script type="text/javascript" src="<?=$javascript_path?>jquery/jquery.js"></script>
-		-->
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
-		<script src="<?=$theme_url?>/ee/javascript/src/v3/common.min.js" type="text/javascript"></script>
+
+		<script src="<?=$javascript_path?>jquery/jquery.js" type="text/javascript"></script>
+		<script src="<?=$javascript_path?>v3/common.js" type="text/javascript"></script>
 	</body>
 </html>

@@ -110,7 +110,6 @@ class Wizard extends CI_Controller {
 		'redirect_method'       => 'redirect',
 		'upload_folder'         => 'uploads/',
 		'image_path'            => '',
-		'javascript_path'       => 'themes/ee/javascript/compressed/',
 		'cp_images'             => 'cp_images/',
 		'avatar_path'           => '../images/avatars/',
 		'avatar_url'            => 'images/avatars/',
@@ -193,11 +192,7 @@ class Wizard extends CI_Controller {
 		$this->load->library('update_notices');
 
 		// Set the theme URLs
-		$this->theme_url = $this->set_path('themes');
 		$this->image_path = $this->set_path('themes/ee/cp_global_images/');
-
-		// Set the Javascript URL
-		$this->javascript_path = $this->set_path('themes/ee/javascript/compressed/');
 
 		// First try the current directory, if they are running the system with an admin.php file
 		$this->theme_path = substr($_SERVER['SCRIPT_FILENAME'], 0, -strlen(SELF));
@@ -1243,6 +1238,9 @@ class Wizard extends CI_Controller {
 			'ajax_progress'     => (ee()->input->get('ajax_progress') == 'yes'),
 			'image_path'        => $this->image_path,
 
+			// TODO-WB: Change src to compressed before launch
+			'javascript_path'   => $this->set_path('themes/ee/javascript/src/'),
+
 			'version'           => $this->version,
 			'version_major'     => $version[0],
 			'version_minor'     => $version[1],
@@ -1250,7 +1248,7 @@ class Wizard extends CI_Controller {
 
 			'next_version'      => substr($this->next_update, 0, 1).'.'.substr($this->next_update, 1, 1).'.'.substr($this->next_update, 2, 1),
 			'languages'         => $this->languages,
-			'theme_url'         => $this->theme_url,
+			'theme_url'         => $this->set_path('themes'),
 			'is_core'           => (IS_CORE) ? 'Core' : '',
 
 			'action'            => '',
