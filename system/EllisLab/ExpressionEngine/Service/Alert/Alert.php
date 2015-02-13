@@ -137,8 +137,6 @@ class Alert {
 
 	public function render()
 	{
-		// @TODO post-merge of new-modals yank this line!
-		return ee()->load->ee_view('_shared/alert', array('alert' => $this), TRUE);
 		return $this->view->render(array('alert' => $this));
 	}
 
