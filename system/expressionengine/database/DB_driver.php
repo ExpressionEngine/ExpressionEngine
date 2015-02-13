@@ -97,7 +97,6 @@ class CI_DB_driver {
 	/**
 	 * Initialize Database Settings
 	 *
-	 * @access	private Called by the constructor
 	 * @param	mixed
 	 * @return	void
 	 */
