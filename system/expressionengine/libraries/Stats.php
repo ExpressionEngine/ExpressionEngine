@@ -522,6 +522,20 @@ class EE_Stats {
 	 */
 	function update_channels_comment_stats($channel_id, $newtime)
 	{
+		// Is the comments module installed?  
+		if ( ! ee()->db->table_exists('comments'))
+		{
+			$data = array(
+					'total_comments'	=> 0,
+					'last_comment_date'	=> 0
+			);
+
+			ee()->db->where('channel_id', $channel_id)
+						->update('channels', $data);
+						
+			return;
+		}
+
 		$query = ee()->db->where('status', 'o')
 					->where('channel_id', $channel_id)
 					->select('COUNT(comment_id) AS count')
