@@ -51,7 +51,7 @@
 				</div>
 				<div class="setting-txt col w-14">
 					<h3<?php if ($field->isCollapsed()): ?> class="field-closed"<?php endif; ?>><span class="ico sub-arrow"></span><?=$field->getLabel()?><?php if ($field->isRequired()): ?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span><?php endif; ?></h3>
-					<em<?php if ($field->isCollapsed()): ?> style="display: none"<?php endif; ?>><?=$field->getType()?></em>
+					<em<?php if ($field->isCollapsed()): ?> style="display: none"<?php endif; ?>><?=$field->getTypeName()?></em>
 				</div>
 			</fieldset>
 		<?php endforeach; ?>

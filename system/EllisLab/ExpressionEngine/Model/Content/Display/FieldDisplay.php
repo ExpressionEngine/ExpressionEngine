@@ -18,6 +18,11 @@ class FieldDisplay {
 		return $this->field->getItem('field_type');
 	}
 
+	public function getTypeName()
+	{
+		return $this->field->getTypeName();
+	}
+
 	public function getName()
 	{
 		return $this->field->getName();
