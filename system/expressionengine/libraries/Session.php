@@ -913,19 +913,33 @@ class EE_Session {
 
 		if ($tracker != FALSE)
 		{
-			$regex = "#(http:\/\/|https:\/\/|www\.|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#i";
-
-			if (preg_match($regex, $tracker))
-			{
-				return array();
-			}
-
-			$tracker = json_decode($tracker);
+			$tracker = json_decode($tracker, TRUE);
 		}
 
 		if ( ! is_array($tracker))
 		{
 			$tracker = array();
+		}
+
+		if ( ! empty($tracker))
+		{
+			if ( ! isset($tracker['token']))
+			{
+				$tracker = array();
+			}
+			else
+			{
+				$tracker_token = $tracker['token'];
+				unset($tracker['token']);
+
+				ee()->load->library('encrypt');
+
+				// Check for funny business
+				if ( ! ee()->encrypt->verify_signature(implode('', $tracker), $tracker_token))
+				{
+					$tracker = array();
+				}
+			}
 		}
 
 		$uri = (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string;
@@ -934,13 +948,13 @@ class EE_Session {
 
 		// If someone is messing with the URI we won't set the cookie
 
-		if ( ! isset($_GET['ACT']) && preg_match('/[^a-z0-9\%\_\/\-]/i', $uri))
-		{
-			return array();
-		}
-
 		if ( ! isset($_GET['ACT']))
 		{
+			if (preg_match('/[^a-z0-9\%\_\/\-\.]/i', $uri))
+			{
+				return array();
+			}
+
 			if ( ! isset($tracker['0']))
 			{
 				$tracker[] = $uri;
@@ -982,8 +996,19 @@ class EE_Session {
 			$tracker = $this->tracker;
 		}
 
+		// We add a hash to the end so we can check for manipulation
+		if ( ! empty($tracker))
+		{
+			unset($tracker['token']);
+
+			ee()->load->library('encrypt');
+			$tracker['token'] = ee()->encrypt->sign(implode('', $tracker));
+		}
+
 		ee()->input->set_cookie('tracker', json_encode($tracker), '0');
 	}
+
+
 
 	// --------------------------------------------------------------------
 
