@@ -137,7 +137,7 @@ class Alert {
 
 	public function render()
 	{
-		return $this->view->render(array('alert' => $this));
+		return $this->view->ee_view('_shared/alert', array('alert' => $this), TRUE);
 	}
 
 	public function defer()
