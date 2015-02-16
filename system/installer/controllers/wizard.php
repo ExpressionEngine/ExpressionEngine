@@ -1234,11 +1234,14 @@ class Wizard extends CI_Controller {
 			$this->subtitle = lang('stopped');
 		}
 
-		// Format the subtitle by adding the current step
-		$suffix = sprintf(lang('subtitle_step'), $this->current_step, $this->steps);
-		$this->subtitle = (empty($this->subtitle))
-			? $suffix
-			: $this->subtitle.' <span class="faded">|</span> '.$suffix;
+		// Only show steps during upgrades
+		if ($this->is_installed)
+		{
+			$suffix = sprintf(lang('subtitle_step'), $this->current_step, $this->steps);
+			$this->subtitle .= (empty($this->subtitle))
+				? $suffix
+				: ' <span class="faded">|</span> '.$suffix;
+		}
 
 		$version = explode('.', $this->version, 2);
 		$data = array(
