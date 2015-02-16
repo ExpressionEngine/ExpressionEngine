@@ -236,12 +236,6 @@ class Wizard extends CI_Controller {
 	{
 		$this->set_base_url();
 
-		// We may be back here if we're renaming the installer
-		if (ee()->input->get('rename'))
-		{
-			return $this->rename_installer();
-		}
-
 		// Run our pre-flight tests.
 		// This function generates its own error messages so if it returns FALSE
 		// we bail out.
@@ -773,6 +767,16 @@ class Wizard extends CI_Controller {
 	 */
 	private function show_success($type = 'update', $template_variables = array())
 	{
+		// Check to see if there are any errors, if not, bypass this screen
+		if (empty($template_variables['error_messages']))
+		{
+			if ($this->rename_installer())
+			{
+				ee()->load->helper('url');
+				redirect($this->userdata['cp_url']);
+			}
+		}
+
 		// Make sure the title and subtitle are correct, current_step should be
 		// the same as the number of steps
 		$this->current_step = $this->steps;
@@ -2278,7 +2282,7 @@ class Wizard extends CI_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Rename the installer and redirect to the Control Panel
+	 * Rename the installer
 	 * @return void
 	 */
 	private function rename_installer()
@@ -2291,11 +2295,7 @@ class Wizard extends CI_Controller {
 		);
 
 		// Move the directory
-		rename(APPPATH, $new_path);
-
-		// Get outta here!
-		ee()->load->helper('url');
-		redirect($this->userdata['cp_url']);
+		return rename(APPPATH, $new_path);
 	}
 }
 
