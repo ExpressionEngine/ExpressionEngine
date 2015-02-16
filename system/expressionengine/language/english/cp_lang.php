@@ -277,6 +277,12 @@ $lang = array(
 'build' =>
 'Build Date:',
 
+'license_number' =>
+'License Number',
+
+'invalid_license' =>
+'INVALID LICENSE',
+
 'forgot_password' =>
 'Forgot your password?',
 
