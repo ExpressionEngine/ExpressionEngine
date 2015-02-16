@@ -179,6 +179,9 @@ $lang = array(
 'error_tab_has_fields' =>
 '<b>%s</b> contains at least one field and cannot be removed. Plese move all fields to another tab.',
 
+'assigned_to' =>
+'assigned to',
+
 /**
  * Channel Create/Edit
  */

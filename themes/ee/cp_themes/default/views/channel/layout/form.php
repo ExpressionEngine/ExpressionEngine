@@ -76,21 +76,28 @@
 			</div>
 			<div class="setting-field col w-8 last">
 				<div class="scroll-wrap">
-				<?php foreach ($member_groups as $member_group):?>
+				<?php foreach ($member_groups as $member_group): ?>
 					<?php
+					$checked = '';
+					$class = 'choice block';
+					$disabled = '';
+					$display = $member_group->group_title;
+
 					if (in_array($member_group->group_id, $selected_member_groups))
 					{
 						$checked = ' checked="checked"';
 						$class = 'choice block chosen';
 					}
-					else
+
+					if (isset($assigned_member_groups[$member_group->group_id]))
 					{
-						$checked = '';
-						$class = 'choice block';
+						$layout = $assigned_member_groups[$member_group->group_id];
+						$disabled = ' disabled="disabled"';
+						$display = '<s>' . $display . '</s> <i>&mdash; ' . lang('assigned_to') . ' <a href="' . cp_url('channel/layout/edit/' . $layout->layout_id) . '">' . $layout->layout_name . '</a></i>';
 					}
 					?>
 					<label class="<?=$class?>">
-						<input type="checkbox" name="member_groups[]" value="<?=$member_group->group_id?>"<?=$checked?> class="required"> <?=$member_group->group_title?>
+						<input type="checkbox" name="member_groups[]" value="<?=$member_group->group_id?>"<?=$checked?><?=$disabled?> class="required"> <?=$display?>
 					</label>
 				<?php endforeach; ?>
 			</div>
