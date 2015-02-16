@@ -1262,7 +1262,7 @@ class Channel extends AbstractChannelController {
 		if ( ! $channel_form = $channel->getChannelFormSettings())
 		{
 			$channel_form = ee('Model')->make('ChannelFormSettings');
-			$channel_id->site_id = $channel->site_id;
+			$channel_form->site_id = $channel->site_id;
 		}
 
 		$channel_form->default_status = $fields['default_status'];
