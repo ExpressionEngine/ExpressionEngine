@@ -51,7 +51,7 @@
 				</div>
 				<div class="setting-txt col w-14">
 					<h3<?php if ($field->isCollapsed()): ?> class="field-closed"<?php endif; ?>><span class="ico sub-arrow"></span><?=$field->getLabel()?><?php if ($field->isRequired()): ?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span><?php endif; ?></h3>
-					<em<?php if ($field->isCollapsed()): ?> style="display: none"<?php endif; ?>><?=$field->getType()?></em>
+					<em<?php if ($field->isCollapsed()): ?> style="display: none"<?php endif; ?>><?=$field->getTypeName()?></em>
 				</div>
 			</fieldset>
 		<?php endforeach; ?>
@@ -76,21 +76,28 @@
 			</div>
 			<div class="setting-field col w-8 last">
 				<div class="scroll-wrap">
-				<?php foreach ($member_groups as $member_group):?>
+				<?php foreach ($member_groups as $member_group): ?>
 					<?php
+					$checked = '';
+					$class = 'choice block';
+					$disabled = '';
+					$display = $member_group->group_title;
+
 					if (in_array($member_group->group_id, $selected_member_groups))
 					{
 						$checked = ' checked="checked"';
 						$class = 'choice block chosen';
 					}
-					else
+
+					if (isset($assigned_member_groups[$member_group->group_id]))
 					{
-						$checked = '';
-						$class = 'choice block';
+						$layout = $assigned_member_groups[$member_group->group_id];
+						$disabled = ' disabled="disabled"';
+						$display = '<s>' . $display . '</s> <i>&mdash; ' . lang('assigned_to') . ' <a href="' . cp_url('channel/layout/edit/' . $layout->layout_id) . '">' . $layout->layout_name . '</a></i>';
 					}
 					?>
 					<label class="<?=$class?>">
-						<input type="checkbox" name="member_groups[]" value="<?=$member_group->group_id?>"<?=$checked?> class="required"> <?=$member_group->group_title?>
+						<input type="checkbox" name="member_groups[]" value="<?=$member_group->group_id?>"<?=$checked?><?=$disabled?> class="required"> <?=$display?>
 					</label>
 				<?php endforeach; ?>
 			</div>
@@ -114,16 +121,16 @@
 					<h1><?=lang('add_tab')?> <span class="required intitle">&#10033; <?=lang('required_fields')?></h1>
 					<form class="settings">
 						<fieldset class="col-group last">
-							<div class="settig-text col w-8">
+							<div class="setting-txt col w-8">
 								<h3><?=lang('tab_name')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
 								<em><?=lang('tab_name_desc')?></em>
 							</div>
 							<div class="setting-field col w-8 last">
-								<input type="text" name="tab_name">
+								<input type="text" name="tab_name" data-illegal="<?=lang('illegal_tab_name')?>" data-required="<?=lang('tab_name_required')?>" data-duplicate="<?=lang('duplicate_tab_name')?>">
 							</div>
 						</fieldset>
 						<fieldset class="form-ctrls">
-							<a class="btn submit" href="#"><?=lang('add_tab')?></a>
+							<button class="btn"><?=lang('add_tab')?></button>
 						</fieldset>
 					</form>
 				</div>

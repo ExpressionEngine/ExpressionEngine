@@ -110,7 +110,8 @@ class System extends AbstractDesignController {
 			ee('Alert')->makeInline('message-warning')
 				->asWarning()
 				->cannotClose()
-				->addToBody(lang('message_template_warning'));
+				->addToBody(lang('message_template_warning'))
+				->now();
 		}
 
 		if ( ! empty($_POST))
@@ -130,6 +131,8 @@ class System extends AbstractDesignController {
 				$alert->defer();
 				ee()->functions->redirect(cp_url('design/system'));
 			}
+
+			$alert->now();
 		}
 
 		$author = $template->getLastAuthor();

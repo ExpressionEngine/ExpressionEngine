@@ -372,6 +372,25 @@ class Updater {
 	 */
 	private function _update_layout_publish_table()
 	{
+		ee()->smartforge->add_field(
+			array(
+				'layout_id' => array(
+					'type'			 => 'int',
+					'constraint'     => 10,
+					'null'			 => FALSE,
+					'unsigned'		 => TRUE
+				),
+				'group_id' => array(
+					'type'			 => 'int',
+					'constraint'     => 4,
+					'null'			 => FALSE,
+					'unsigned'		 => TRUE
+				)
+			)
+		);
+		ee()->smartforge->add_key(array('layout_id', 'group_id'), TRUE);
+		ee()->smartforge->create_table('layout_publish_member_groups');
+
 		ee()->smartforge->add_column(
 			'layout_publish',
 			array(
@@ -383,14 +402,19 @@ class Updater {
 			)
 		);
 
-		$layouts = ee()->db->select('layout_id, layout_name, field_layout')
+		$layouts = ee()->db->select('layout_id, member_group, layout_name, field_layout')
 			->get('layout_publish')
 			->result_array();
 
-		if ( ! empty($layotus))
+		if ( ! empty($layouts))
 		{
 			foreach ($layouts as $index => $layout)
 			{
+				ee()->db->insert('layout_publish_member_groups', array(
+					'layout_id' => $layout['layout_id'],
+					'group_id' => $layout['member_group']
+				));
+
 				$layouts[$index]['layout_name'] = 'Layout ' . $layout['layout_id'];
 
 				$old_field_layout = unserialize($layout['field_layout']);
@@ -405,13 +429,39 @@ class Updater {
 						'fields' => array()
 					);
 
-					unset($tab['_tab_label']);
+					unset($old_tab['_tab_label']);
 
 					foreach ($old_tab as $field => $info)
 					{
 						if (is_numeric($field))
 						{
 							$field = 'field_id_' . $field;
+						}
+						elseif ($field == 'category')
+						{
+							$field = 'categories';
+						}
+						elseif ($field == 'new_channel')
+						{
+							$field = 'channel_id';
+						}
+						elseif ($field == 'author')
+						{
+							$field = 'author_id';
+						}
+						elseif ($field == 'options')
+						{
+							$tab['fields'][] = array(
+								'field' => 'sticky',
+								'visible' => $info['visible'],
+								'collapsed' => $info['collapse']
+							);
+							$tab['fields'][] = array(
+								'field' => 'allow_comments',
+								'visible' => $info['visible'],
+								'collapsed' => $info['collapse']
+							);
+							continue;
 						}
 
 						$tab['fields'][] = array(
@@ -429,6 +479,8 @@ class Updater {
 
 			ee()->db->update_batch('layout_publish', $layouts, 'layout_id');
 		}
+
+		ee()->smartforge->drop_column('layout_publish', 'member_group');
 	}
 
 }

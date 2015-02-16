@@ -88,7 +88,8 @@ class Login extends Profile {
 		ee('Alert')->makeInline('shared-form')
 			->asWarning()
 			->cannotClose()
-			->addToBody(sprintf(lang('login_as_warning'), $this->member->screen_name), 'warning');
+			->addToBody(sprintf(lang('login_as_warning'), $this->member->screen_name), 'warning')
+			->now();
 
 		ee()->form_validation->set_rules(array(
 			array(

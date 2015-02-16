@@ -2,6 +2,7 @@
 namespace EllisLab\ExpressionEngine\Service\Alert;
 
 use \EE_Session;
+use EllisLab\ExpressionEngine\Service\Alert\Alert;
 use EllisLab\ExpressionEngine\Service\View\View;
 
 /**
@@ -56,6 +57,16 @@ class AlertCollection {
 				$alert = $this->make($name, $type);
 				$alert->title = $value['title'];
 				$alert->body = $value['body'];
+
+				if ($value['can_close'])
+				{
+					$alert->canClose();
+				}
+				else
+				{
+					$alert->cannotClose();
+				}
+
 				switch ($value['severity'])
 				{
 					case 'issue':
@@ -98,12 +109,13 @@ class AlertCollection {
 		}
 	}
 
-	public function defer($alert)
+	public function defer(Alert $alert)
 	{
 		$data = array(
 			'title' => $alert->title,
 			'body' => $alert->body,
-			'severity' => $alert->severity
+			'severity' => $alert->severity,
+			'can_close' => $alert->has_close_button
 		);
 
 		if ( ! is_null($alert->sub_alert))
@@ -117,7 +129,11 @@ class AlertCollection {
 		}
 
 		$this->session->set_flashdata('alert:' . $alert->type . ':' . $alert->name, $data);
-		unset($this->alerts[$alert->type][$alert->name]);
+	}
+
+	public function save(Alert $alert)
+	{
+		$this->alerts[$alert->type][$alert->name] = $alert;
 	}
 
 	public function get($name, $type = 'inline')
@@ -162,9 +178,7 @@ class AlertCollection {
 
 	public function make($name = '', $type = 'standard')
 	{
-		$alert = new Alert($type, $name, $this, $this->view);
-		$this->alerts[$type][$name] = $alert;
-		return $alert;
+		return new Alert($type, $name, $this, $this->view);
 	}
 
 	public function makeInline($name = '')

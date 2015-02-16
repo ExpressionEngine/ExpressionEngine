@@ -49,7 +49,7 @@ abstract class Entity extends MixableImpl {
 	}
 
 	/**
-	 * Access any static metadata you might need. THis automatically
+	 * Access any static metadata you might need. This automatically
 	 * merges metadata for extended classes.
 	 *
 	 * @param String $key Name of the static property
@@ -93,13 +93,24 @@ abstract class Entity extends MixableImpl {
 		$values = array();
 
 		$class = get_called_class();
+		$child = NULL;
 
 		do
 		{
 			if (property_exists($class, $key))
 			{
 				$values[$class] = $class::$$key;
+
+				// If the child result is the same as the parent, then
+				// we read a fallback from the child and don't actually
+				// want to store that. Yick.
+				if (isset($child) && $values[$child] == $values[$class])
+				{
+					unset($values[$child]);
+				}
 			}
+
+			$child = $class;
 		}
 		while ($class = get_parent_class($class));
 
@@ -145,6 +156,7 @@ abstract class Entity extends MixableImpl {
 	/**
 	 * Apply known filters to a given value
 	 *
+	 * @param String $type Filter type
 	 * @param String $type Filter type
 	 * @param Array $args List of arguments
 	 * @return Filtered value

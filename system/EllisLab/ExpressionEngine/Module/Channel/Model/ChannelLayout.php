@@ -18,22 +18,24 @@ class ChannelLayout extends Model implements LayoutInterface {
 			'type' => 'belongsTo',
 			'key' => 'channel_id'
 		),
-		'MemberGroup' => array(
-			'type' => 'belongsTo',
-			'from_key' 	=> 'member_group'
+		'MemberGroups' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'MemberGroup',
+			'pivot' => array(
+				'table' => 'layout_publish_member_groups',
+				'key' => 'group_id',
+			)
 		),
 	);
 
 	protected static $_validation_rules = array(
 		'site_id'      => 'required|isNatural',
-		'member_group' => 'required|isNatural',
 		'channel_id'   => 'required|isNatural',
 		'layout_name'  => 'required',
 	);
 
 	protected $layout_id;
 	protected $site_id;
-	protected $member_group;
 	protected $channel_id;
 	protected $layout_name;
 	protected $field_layout;

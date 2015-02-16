@@ -169,6 +169,8 @@ class Forums extends AbstractDesignController {
 					$alert->defer();
 					ee()->functions->redirect(cp_url('design/forums'));
 				}
+
+				$alert->now();
 			}
 		}
 
@@ -178,7 +180,8 @@ class Forums extends AbstractDesignController {
 				->asWarning()
 				->cannotClose()
 				->withTitle(lang('file_not_writable'))
-				->addToBody(lang('file_writing_instructions'));
+				->addToBody(lang('file_writing_instructions'))
+				->now();
 		}
 
 		$fp = fopen($path, 'r');

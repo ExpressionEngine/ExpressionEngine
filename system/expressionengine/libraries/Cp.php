@@ -366,7 +366,8 @@ class Cp {
 			{
 				$alert = ee('Alert')->makeStandard('notices')
 					->asWarning()
-					->withTitle(lang('cp_message_warn'));
+					->withTitle(lang('cp_message_warn'))
+					->now();
 			}
 			else
 			{
@@ -424,7 +425,7 @@ class Cp {
 
 				$alert->addToBody($button);
 
-				return $alert;
+				return $alert->now();
 			}
 		}
 

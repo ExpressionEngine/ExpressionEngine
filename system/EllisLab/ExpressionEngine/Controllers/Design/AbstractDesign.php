@@ -230,7 +230,8 @@ abstract class AbstractDesign extends CP_Controller {
 			ee('Alert')->makeInline('settings-form')
 				->asIssue()
 				->withTitle(lang('error_export'))
-				->addToBody(lang('error_cannot_create_zip'));
+				->addToBody(lang('error_cannot_create_zip'))
+				->now();
 			return;
 		}
 

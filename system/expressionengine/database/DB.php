@@ -75,11 +75,7 @@ function DB($params = '', $active_record_override = NULL)
 		}
 	}
 
-	// No DB specified yet?  Beat them senseless...
-	if ( ! isset($params['dbdriver']) OR $params['dbdriver'] == '')
-	{
-		show_error('You have not selected a database type to connect to.');
-	}
+	$params['dbdriver'] = 'mysqli';
 
 	// Load the DB classes.  Note: Since the active record class is optional
 	// we need to dynamically create a class that extends proper parent class

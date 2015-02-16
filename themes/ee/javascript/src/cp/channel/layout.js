@@ -125,7 +125,7 @@ $(document).ready(function () {
 
 		if (tabContents.has('.required').length > 0)
 		{
-			alert("Cannot hide a tab with required fields.");
+			$('body').prepend(EE.alert.required.replace('%s', tab.text()));
 			return;
 		}
 
@@ -137,18 +137,24 @@ $(document).ready(function () {
 	});
 
 	// Adding a tab
-	$('.modal-add-new-tab .submit').on('click', function(e) {
+	$('.modal-add-new-tab button').on('click', function(e) {
+		var input = $('.modal-add-new-tab input[name="tab_name"]');
 		var tab_name = $('.modal-add-new-tab input[name="tab_name"]').val();
 		var tab_id = 'custom__' + tab_name.replace(/ /g, "_").replace(/&/g, "and").toLowerCase();
 
 		var legalChars = /^[^*>:+()\[\]=|"'.#$]+$/; // allow all unicode characters except for css selectors and $
 
+		$('.modal-add-new-tab .setting-field em').remove();
+		input.parents('fieldset').removeClass('invalid');
+
 		if (tab_name === "") {
 			// Show the required_tab_name alert
-			alert("The tab needs a name.");
+			input.after($('<em></em>').append(input.data('required')));
+			input.parents('fieldset').addClass('invalid');
 		} else if ( ! legalChars.test(tab_name)) {
 			// Show the illegal_tab_name alert
-			alert("Illegal characters in that there tab name.");
+			input.after($('<em></em>').append(input.data('illegal')));
+			input.parents('fieldset').addClass('invalid');
 		} else {
 			var duplicate = false;
 			for (var x = 0; x < EE.publish_layout.length; x++) {
@@ -160,7 +166,8 @@ $(document).ready(function () {
 			if (duplicate)
 			{
 				// Show the duplicate_tab_name alert
-				alert("We cannot duplicate tab names")
+				input.after($('<em></em>').append(input.data('duplicate')));
+				input.parents('fieldset').addClass('invalid');
 			}
 			else
 			{
@@ -176,12 +183,17 @@ $(document).ready(function () {
 				$('div.tab-bar ul').append('<li><a href="" rel="t-' + index + '">' + tab_name + '</a> <span class="tab-remove"></span></li>')
 				$('div.tab.t-' + index - 1).after('<div class="tab t-' + index + '"></div>');
 
-				$('.modal-add-new-tab input[name="tab_name"]').val('');
 				$('.modal-add-new-tab .m-close').trigger('click');
 			}
 		}
 
 		e.preventDefault();
+	});
+
+	$('.modal-add-new-tab .m-close').on('click', function(e) {
+		$('.modal-add-new-tab input[name="tab_name"]').val('');
+		$('.modal-add-new-tab .setting-field em').remove();
+		input.parents('fieldset').removeClass('invalid');
 	});
 
 	// If you submit the form, trigger the submit button click
@@ -198,7 +210,7 @@ $(document).ready(function () {
 
 		if (tabContents.html())
 		{
-			alert("Cannot remove a tab with fields.");
+			$('body').prepend(EE.alert.not_empty.replace('%s', tab.text()));
 			return;
 		}
 
@@ -229,7 +241,7 @@ $(document).ready(function () {
 		e.preventDefault();
 	});
 
-	$('form').on('submit', function(e) {
+	$('div.publish form').on('submit', function(e) {
 		$('input[name="field_layout"]').val(JSON.stringify(EE.publish_layout));
 	});
 

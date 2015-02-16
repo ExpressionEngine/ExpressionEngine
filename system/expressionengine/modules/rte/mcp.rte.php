@@ -242,14 +242,16 @@ class Rte_mcp {
 			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('settings_saved'))
-				->addToBody(lang('settings_saved_desc'));
+				->addToBody(lang('settings_saved_desc'))
+				->now();
 		}
 		else
 		{
 			ee('Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('settings_error'))
-				->addToBody(lang('settings_error_desc'));
+				->addToBody(lang('settings_error_desc'))
+				->now();
 		}
 	}
 

@@ -232,7 +232,8 @@ class SecurityPrivacy extends Settings {
 			->asWarning()
 			->cannotClose()
 			->addToBody(lang('security_tip'))
-			->addToBody(lang('security_tip_desc'), 'enhance');
+			->addToBody(lang('security_tip_desc'), 'enhance')
+			->now();
 		ee()->view->extra_alerts = array('security-tip');
 
 		if (AJAX_REQUEST)
