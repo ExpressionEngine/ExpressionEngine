@@ -23,8 +23,7 @@
  * @link		http://ellislab.com
  */
 
-require_once PATH_MOD . 'spam/libraries/Classifier.php';
-require_once PATH_MOD . 'spam/libraries/Spam_training.php';
+require_once PATH_MOD . 'spam/libraries/Spam_core.php';
 
 class Spam_mcp {
 
@@ -130,9 +129,8 @@ class Spam_mcp {
 
 		foreach ($query->result() as $document)
 		{
-			$bayes = new Spam_training();
-			$bayes = $bayes->load_classifier();
-			$classification = (int) $bayes->classify($document->source, 'spam');
+			$bayes = new Spam_core();
+			$classification = (int) $bayes->classifier->classify($document->source, 'spam');
 
 			if($classification > $document->class)
 			{
@@ -142,6 +140,11 @@ class Spam_mcp {
 			if($classification < $document->class)
 			{
 				$negatives++;
+			}
+
+			if($classification != $document->class)
+			{
+				 //ee()->db->delete('spam_training', array('training_id' => $document->training_id)); 
 			}
 		}
  
@@ -166,7 +169,9 @@ class Spam_mcp {
 	public function train()
 	{
 		$data = array();
+		$start_time = microtime(true);
 		$this->_train_parameters();
+		$data['time'] = (microtime(true) - $start_time);
 		return ee()->load->view('train', $data, TRUE);
 	}
 
@@ -401,11 +406,12 @@ class Spam_mcp {
 	 * @access private
 	 * @return void
 	 */
-	private function _set_maximum_likelihood($training, $kernel = 'default')
+	private function _set_maximum_likelihood($training_collection, $kernel = 'default')
 	{
 		$kernel = $this->_get_kernel($kernel);
+		$training = array();
 
-		foreach ($training_classes as $class => $sources)
+		foreach ($training_collection as $class => $sources)
 		{
 			$count = count($sources[0]);
 			$zipped = array();
@@ -422,7 +428,6 @@ class Spam_mcp {
 			{
 				// Zipped is now an array of values for a particular feature and 
 				// class. Time to do some estimates.
-
 				$sample = new Expectation($feature);
 
 				$training[] = array(
@@ -435,8 +440,8 @@ class Spam_mcp {
 			}
 		}
 
-		ee()->db->empty_table('spam_member_parameters'); 
-		ee()->db->insert_batch('spam_member_parameters', $training); 
+		ee()->db->empty_table('spam_parameters'); 
+		ee()->db->insert_batch('spam_parameters', $training); 
 	}
 
 
@@ -456,71 +461,51 @@ class Spam_mcp {
 		$spam_classes = array_pad(array(), count($spammers), 1);
 		$ham_classes = array_pad(array(), count($hammers), 0);
 		$classes = array_merge($spam_classes, $ham_classes);
-
 		$training = array();
-		$emails = array();
-		$ips = array();
-		$usernames = array();
-		$urls = array();
 
 		foreach ($members as $member)
 		{
-			$ips[] = explode('.', $member->ip_address);
-			$emails[] = $member->email;
-			$usernames[] = $member->username;
-			$urls[] = $member->urls;
+			$ip = str_replace('.', ' ', $member->ip);
+
+			$training[] = implode(' ', array($member->username, $member->email, $member->url, $ip));
 		}
 
-		$tokenizer = new Tokenizer(2);
-
-		$features = array(
-			'emails' => new Collection($emails, array(), $tokenizer, FALSE),
-			'usernames' => new Collection($usernames, array(), $tokenizer, FALSE),
-			'urls' => new Collection($urls, array(), $tokenizer, FALSE)
-		);
-
+		$tokenizer = new Tokenizer();
 		$training_classes = array();
 
-		foreach ($features as $key => $val)
+		$vocabulary = array();
+		$kernel = $this->_get_kernel('member');
+		$tfidf = new Tfidf($training, $tokenizer);
+
+		$vectorizers = array();
+		$vectorizers[] = $tfidf;
+		$vectorizers[] = new ASCII_Printable();
+		$vectorizers[] = new Punctuation();
+		$training_collection = new Collection($vectorizers);
+
+		foreach ($tfidf->vocabulary as $term => $count)
 		{
-			$vocabulary = array();
-			$kernel = $this->_get_kernel($key);
+			$data = array(
+				'term' => $term,
+				'count' => $count,
+				'kernel_id' => $kernel
+			);
 
-			foreach ($val->vocabulary as $term => $count)
-			{
-				$data = array(
-					'term' => $term,
-					'count' => $count,
-					'kernel_id' => $kernel
-				);
-
-				$vocabulary[] = $data;
-			}
-
-			ee()->db->empty_table("spam_vocabulary"); 
-			ee()->db->insert_batch("spam_vocabulary", $vocabulary); 
-
-			// Loop through and calculate the parameters for each feature and class
-
-			foreach ($val->tfidf() as $key => $vector)
-			{
-				if (is_array($training_classes[$classes[$key]][$key]))
-				{
-					$training_classes[$classes[$key]][$key] = array_merge($training_classes[$classes[$key]][$key], $vector);
-				}
-				else
-				{
-					$training_classes[$classes[$key]][$key] = $vector;
-				}
-			}
+			$vocabulary[] = $data;
 		}
 
-		foreach ($ips as $key => $ip)
+		ee()->db->empty_table("spam_vocabulary"); 
+		ee()->db->insert_batch("spam_vocabulary", $vocabulary); 
+
+		foreach ($training_collection->fit_transform($training) as $key => $vector)
 		{
-			$training_classes[$classes[$key]][$key] = array_merge($training_classes[$classes[$key]][$key], $ip);
+			$training_classes[$classes[$key]][$key] = $vector;
 		}
-	
+
 		$this->_set_maximum_likelihood($training_classes, 'member');
+
+		$spam_training = new Spam_training('default');
+		$spam_training->delete_classifier();
 	}
 
 	/**
@@ -532,11 +517,19 @@ class Spam_mcp {
 	private function _train_parameters()
 	{
 		$stop_words = explode("\n", file_get_contents(PATH_MOD . $this->stop_words_path));
-		$training_data = $this->_get_training_data(5000);
+		$training_data = $this->_get_training_data(10000);
 		$classes = $training_data[1];
 
-		$tokenizer = new Tokenizer(1, '\s');
-		$training_collection = new Collection($training_data[0], $stop_words, $tokenizer);
+		$tokenizer = new Tokenizer();
+		$tfidf = new Tfidf($training_data[0], $tokenizer, $stop_words);
+		$vectorizers = array();
+		$vectorizers[] = new ASCII_Printable();
+		$vectorizers[] = new Entropy();
+		$vectorizers[] = new Links();
+		$vectorizers[] = new Punctuation();
+		$vectorizers[] = new Spaces();
+		$training_collection = new Collection($vectorizers);
+
 		$training_classes = array();
 		$training = array();
 
@@ -545,7 +538,7 @@ class Spam_mcp {
 		// Set the new vocabulary
 		$vocabulary = array();
 
-		foreach ($training_collection->vocabulary as $term => $count)
+		foreach ($tfidf->vocabulary as $term => $count)
 		{
 			$data = array(
 				'term' => $term,
@@ -559,13 +552,13 @@ class Spam_mcp {
 		ee()->db->empty_table('spam_vocabulary'); 
 		ee()->db->insert_batch('spam_vocabulary', $vocabulary); 
 
-		// Loop through and calculate the parameters for each feature and class
-
-		foreach ($training_collection->tfidf() as $key => $vector)
+		foreach ($training_collection->fit_transform($training_data[0]) as $key => $vector)
 		{
 			$training_classes[$classes[$key]][] = $vector;
 		}
 
 		$this->_set_maximum_likelihood($training_classes);
+		$spam_training = new Spam_training('default');
+		$spam_training->delete_classifier();
 	}
 }
