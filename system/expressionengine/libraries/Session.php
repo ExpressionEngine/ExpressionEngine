@@ -910,7 +910,6 @@ class EE_Session {
 	public function tracker()
 	{
 		$tracker = ee()->input->cookie('tracker');
-		$saved_key = FALSE;
 
 		if ($tracker != FALSE)
 		{
@@ -955,7 +954,6 @@ class EE_Session {
 			{
 				return array();
 			}
-
 
 			if ( ! isset($tracker['0']))
 			{
