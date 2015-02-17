@@ -45,7 +45,7 @@ $lang = array(
 // Update Form
 	'update_title'   => "Update ExpressionEngine %s to %s",
 	'start_update'   => 'Start Update',
-	'update_note'    => '<b>Please</b> read <a href="https://ellislab.com/expressionengine/user-guide/installation/update.html">Updating ExpressionEngine</a> <strong>before</strong> starting.',
+	'update_note'    => '<b>Please</b> read <a href="https://ellislab.com/expressionengine/user-guide/installation/update.html" rel="external">Updating ExpressionEngine</a> <strong>before</strong> starting.',
 	'update_backup'  => 'Please <b>back up</b> your database before updating ExpressionEngine',
 	'updating_title' => "Updating ExpressionEngine %s to %s",
 	'updating'       => 'Updating',
