@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -678,7 +678,7 @@ class Members extends CP_Controller {
 				$name_to_use = ($heir->screen_name != '') ? $heir->screen_name : $heir->username;
 				$vars['heirs'][$heir->member_id] = $name_to_use;
 			}
-			
+
 			$vars['heir_action_y'] = TRUE;
 			$vars['heir_action_n'] = FALSE;
 			$vars['selected'] = array($vars['heirs'][$heir->member_id][0]);

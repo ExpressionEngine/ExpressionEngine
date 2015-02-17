@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2015, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -140,7 +140,7 @@ class CI_Security {
 		$str = remove_invisible_characters($str);
 
 		// Strip data URIs
-		// Not all browsers conform strictly to RFC2397 so we strip anything 
+		// Not all browsers conform strictly to RFC2397 so we strip anything
 		// that looks close to a data URI inside an attribute
 		$str = preg_replace_callback("/<\w+.*?(?=>|<|$)/si", array($this, '_strip_data_URIs'), $str);
 
@@ -748,8 +748,8 @@ class CI_Security {
 
 	/**
 	 * Strips all data URIs from a string
-	 * 
-	 * @param string $match  An array of matches from preg_replace_callback. 
+	 *
+	 * @param string $match  An array of matches from preg_replace_callback.
 	 * @access protected
 	 * @return string  The cleaned string.
 	 */

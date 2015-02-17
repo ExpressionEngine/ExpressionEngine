@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.8
@@ -144,7 +144,7 @@ class CI_Cache_redis extends CI_Driver
 		if (is_array($data))
 		{
 			list($data, $time) = $data;
-			
+
 			$ttl = $this->_redis->ttl($key);
 
 			return array(

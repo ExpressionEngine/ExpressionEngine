@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		ExpressionEngine Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://expressionengine.com/user_guide/license.html
  * @link		http://expressionengine.com
  * @since		Version 2.7
@@ -20,7 +20,7 @@
  * @package			ExpressionEngine
  * @category		Plugin
  * @author			EllisLab Dev Team
- * @copyright		Copyright (c) 2004 - 2014, EllisLab, Inc.
+ * @copyright		Copyright (c) 2004 - 2015, EllisLab, Inc.
  * @link			http://ellislab.com
  */
 

@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -153,7 +153,7 @@ class Publish
 				foreach ($link_info as $val)
 				{
 					$edit_links[] = array(
-						'url' =>  cp_url('admin_content/category_editor', array('group_id' => $val['group_id'])), 
+						'url' =>  cp_url('admin_content/category_editor', array('group_id' => $val['group_id'])),
 						'group_name' => $val['group_name']
 					);
 				}
