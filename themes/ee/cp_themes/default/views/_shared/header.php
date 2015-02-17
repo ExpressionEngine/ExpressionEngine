@@ -40,7 +40,7 @@
 							<?php endif ?>
 						</ul>
 					<?php elseif ( ! ($site_name = ee()->config->item('site_name')) OR empty($site_name)): ?>
-						<a href="<?=cp_url('settings/general')?>"><?=lang('name_your_site')?></a>
+						<a href="<?=cp_url('settings/general')?>" class="no-name"><?=lang('name_your_site')?></a>
 					<?php else: ?>
 						<a href=""><?=ee()->config->item('site_name')?></a>
 					<?php endif ?>
