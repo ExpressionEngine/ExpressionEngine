@@ -608,6 +608,15 @@ $lang = array(
 'url_title' =>
 'URL Title',
 
+'url_title_desc' =>
+'<i>No spaces. Underscores and dashes are allowed.</i>',
+
+'description' =>
+'Description',
+
+'image' =>
+'Image',
+
 'license_no' =>
 'License #',
 

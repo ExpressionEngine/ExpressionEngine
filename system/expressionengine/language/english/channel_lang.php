@@ -516,9 +516,6 @@ $lang = array(
 'btn_save_settings' =>
 'Save Settings',
 
-'btn_saving' =>
-'Saving...',
-
 'convert_to_entities' =>
 'Convert to HTML entities',
 
@@ -588,6 +585,33 @@ $lang = array(
 
 'category_groups_removed_desc' =>
 '%d category groups were removed.',
+
+'create_category' =>
+'Create Category',
+
+'cat_description_desc' =>
+'A brief description of this category.',
+
+'cat_image_desc' =>
+'Image representation of this category.',
+
+'parent_category' =>
+'Parent category',
+
+'parent_category_desc' =>
+'You may make this category a sub-category of another.',
+
+'category_saved' =>
+'Category saved',
+
+'category_saved_desc' =>
+'Your category has been saved successfully.',
+
+'category_not_saved' =>
+'Attention: Category not saved',
+
+'channel_not_saved_desc' =>
+'We were unable to save your category, please review and fix errors below.',
 
 ''=>''
 );

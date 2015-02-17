@@ -278,10 +278,11 @@ class Cat extends AbstractChannelController {
 			ee()->cp->add_js_script('file', 'cp/v3/category_reorder');
 		}
 
-		$base_url = new CP\URL('channel/cat', ee()->session->session_id());
+		$base_url = new CP\URL('channel/cat/cat-list'.$group_id, ee()->session->session_id());
 		$vars['table'] = $table->viewData($base_url);
 
 		ee()->view->cp_page_title = $cat_group->group_name . ' &mdash; ' . lang('categories');
+		ee()->view->cat_group = $cat_group;
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('categories') . ': <b>### ' . lang('categories') . '</b>');
 		ee()->cp->add_js_script('file', 'cp/v3/confirm_remove');
@@ -289,6 +290,192 @@ class Cat extends AbstractChannelController {
 		ee()->cp->set_breadcrumb(cp_url('channel/cat'), lang('category_groups'));
 
 		ee()->cp->render('channel/cat-list', $vars);
+	}
+
+	/**
+	 * Category create
+	 *
+	 * @param	int	$group_id		ID of category group category is to be in
+	 */
+	public function catCreate($group_id)
+	{
+		$this->categoryForm($group_id);
+	}
+
+	/**
+	 * Category edit
+	 *
+	 * @param	int	$group_id		ID of category group category is in
+	 * @param	int	$category_id	ID of category to edit
+	 */
+	public function catEdit($group_id, $category_id)
+	{
+		$this->categoryForm($group_id, $category_id);
+	}
+
+	/**
+	 * Category creation/edit form
+	 *
+	 * @param	int	$group_id		ID of category group category is (to be) in
+	 * @param	int	$category_id	ID of category to edit
+	 */
+	private function categoryForm($group_id, $category_id = NULL)
+	{
+		$cat_group = ee('Model')->get('CategoryGroup')
+			->filter('group_id', $group_id)
+			->first();
+
+		if ($category_id)
+		{
+			$category = ee('Model')->get('Category')->filter('cat_id', (int) $category_id)->first();
+		}
+		else
+		{
+			$category = ee('Model')->make('Category');
+		}
+
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_categories');
+		ee()->api_channel_categories->category_tree($group_id, $category->parent_id);
+
+		$parent_id_options[0] = $this->lang->line('none');
+		foreach(ee()->api_channel_categories->categories as $cat)
+		{
+			$indent = ($cat[5] != 1) ? str_repeat(NBS.NBS.NBS.NBS, $cat[5]) : '';
+			$parent_id_options[$cat[0]] = $indent.$cat[1];
+		}
+
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'name',
+					'desc' => '',
+					'fields' => array(
+						'cat_name' => array(
+							'type' => 'text',
+							'value' => $category->cat_name,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'url_title',
+					'desc' => 'url_title_desc',
+					'fields' => array(
+						'cat_url_title' => array(
+							'type' => 'text',
+							'value' => $category->cat_url_title,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'description',
+					'desc' => 'cat_description_desc',
+					'fields' => array(
+						'cat_description' => array(
+							'type' => 'textarea',
+							'value' => $category->cat_description
+						)
+					)
+				),
+				array(
+					'title' => 'image',
+					'desc' => 'cat_image_desc',
+					'fields' => array(
+						'cat_image' => array(
+							'type' => 'radio',
+							'value' => $category->cat_image,
+							'choices' => array()
+						)
+					)
+				),
+				array(
+					'title' => 'parent_category',
+					'desc' => 'parent_category_desc',
+					'fields' => array(
+						'parent_id' => array(
+							'type' => 'dropdown',
+							'value' => $category->parent_id,
+							'choices' => $parent_id_options
+						)
+					)
+				)
+			)
+		);
+
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'cat_name',
+				'label' => 'lang:name',
+				'rules' => 'required|strip_tags|trim|valid_xss_check'
+			),
+			array(
+				'field' => 'cat_url_title',
+				'label' => 'lang:url_title',
+				'rules' => 'required|strip_tags|trim|valid_xss_check|alpha_dash'
+			),
+			array(
+				'field' => 'cat_description',
+				'label' => 'lang:description',
+				'rules' => 'trim|valid_xss_check'
+			),
+			array(
+				'field' => 'cat_description',
+				'label' => 'lang:description',
+				'rules' => 'enum[' . implode(array_keys($parent_id_options), ',') . ']'
+			)
+		));
+
+		ee()->form_validation->validateNonTextInputs($vars['sections']);
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			$this->saveCategory($group_id, $category_id);
+
+			ee('Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('category_saved'))
+				->addToBody(lang('category_saved_desc'))
+				->defer();
+
+			ee()->functions->redirect(cp_url('channel/cat/cat-edit/' . $category_id));
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('category_not_saved'))
+				->addToBody(lang('channel_not_saved_desc'))
+				->now();
+		}
+
+		ee()->view->ajax_validate = TRUE;
+		ee()->view->base_url = ($category_id) ? cp_url('channel/cat/cat-edit/'.$group_id.'/'.$category_id) : cp_url('channel/cat/cat-create/'.$group_id);
+		ee()->view->cp_page_title = lang('create_category');
+		ee()->view->save_btn_text = 'create_category';
+		ee()->view->save_btn_text_working = 'btn_saving';
+
+		ee()->cp->set_breadcrumb(cp_url('channel/cat'), lang('category_groups'));
+		ee()->cp->set_breadcrumb(cp_url('channel/cat/cat-list/'.$cat_group->group_id), $cat_group->group_name . ' &mdash; ' . lang('categories'));
+
+		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * Save routine for categories
+	 *
+	 * @param	int	$group_id		ID of category group category is (to be) in
+	 * @param	int	$category_id	ID of category to edit
+	 */
+	private function saveCategory($group_id, $category_id)
+	{
+
 	}
 }
 // EOF
