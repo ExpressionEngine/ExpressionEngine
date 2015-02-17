@@ -372,32 +372,32 @@ class Updater {
 	 */
 	private function _update_layout_publish_table()
 	{
-		ee()->smartforge->add_field(
+		ee()->dbforge->add_field(
 			array(
 				'layout_id' => array(
-					'type'			 => 'int',
-					'constraint'     => 10,
-					'null'			 => FALSE,
-					'unsigned'		 => TRUE
+					'type'       => 'int',
+					'constraint' => 10,
+					'null'       => FALSE,
+					'unsigned'   => TRUE
 				),
 				'group_id' => array(
-					'type'			 => 'int',
-					'constraint'     => 4,
-					'null'			 => FALSE,
-					'unsigned'		 => TRUE
+					'type'       => 'int',
+					'constraint' => 4,
+					'null'       => FALSE,
+					'unsigned'   => TRUE
 				)
 			)
 		);
-		ee()->smartforge->add_key(array('layout_id', 'group_id'), TRUE);
+		ee()->dbforge->add_key(array('layout_id', 'group_id'), TRUE);
 		ee()->smartforge->create_table('layout_publish_member_groups');
 
 		ee()->smartforge->add_column(
 			'layout_publish',
 			array(
-				'layout_name'    => array(
-					'type'         => 'varchar',
-					'constraint'   => 50,
-					'null'         => FALSE
+				'layout_name' => array(
+					'type'       => 'varchar',
+					'constraint' => 50,
+					'null'       => FALSE
 				),
 			)
 		);
