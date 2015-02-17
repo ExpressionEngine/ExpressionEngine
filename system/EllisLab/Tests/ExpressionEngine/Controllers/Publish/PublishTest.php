@@ -23,7 +23,7 @@ class PublishTest extends \PHPUnit_Framework_TestCase {
 
 		sort($controller_methods);
 
-		$this->assertEquals(array(), $controller_methods);
+		$this->assertEquals(array('autosave'), $controller_methods);
 	}
 
 }
