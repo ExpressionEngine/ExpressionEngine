@@ -29,5 +29,41 @@ use EllisLab\ExpressionEngine\Controllers\Publish\AbstractPublish as AbstractPub
  */
 class Publish extends AbstractPublishController {
 
+	public function autosave($channel_id, $entry_id)
+	{
+		$site_id = ee()->config->item('site_id');
+
+		$autosave = ee('Model')->get('ChannelEntryAutosave')
+			->filter('original_entry_id', $entry_id)
+			->filter('site_id', $site_id)
+			->filter('channel_id', $channel_id)
+			->first();
+
+		if ( ! $autosave)
+		{
+			$autosave = ee('Model')->make('ChannelEntryAutosave');
+			$autosave->original_entry_id = $entry_id;
+			$autosave->site_id = $site_id;
+			$autosave->channel_id = $channel_id;
+		}
+
+		$autosave->entry_data = ee()->input->post('data');
+		$autosave->save();
+
+		$time = ee()->localize->human_time(ee()->localize->now);
+		$time = trim(strstr($time, ' '));
+
+		$alert = ee('Alert')->makeInline()
+			->asWarning()
+			->cannotClose()
+			->addToBody(lang('autosave_success') . $time);
+
+		ee()->output->send_ajax_response(array(
+			'success' => $alert->render(),
+			'autosave_entry_id' => $autosave->entry_id,
+			'original_entry_id'	=> $entry_id
+		));
+	}
+
 }
 // EOF
