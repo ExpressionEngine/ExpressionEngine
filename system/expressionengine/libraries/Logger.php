@@ -561,7 +561,7 @@ class EE_Logger {
 	 */
 	public function updater($log_message, $exception = FALSE)
 	{
-		$this->_setup_log();
+		$this->_setup_update_log();
 
 		$data = array(
 			 'timestamp'	=> ee()->localize->now,
@@ -591,11 +591,13 @@ class EE_Logger {
 	 * @access	private
 	 * @return	bool
 	 */
-	private function _setup_log()
+	private function _setup_update_log()
 	{
 		$table = 'update_log';
 
-		if ( ! $this->logger_db()->table_exists($table))
+		// Using normal ee()->db here since we need to see if this table was
+		// created using the normal DB object
+		if ( ! ee()->db->table_exists($table))
 		{
 			ee()->load->dbforge();
 
