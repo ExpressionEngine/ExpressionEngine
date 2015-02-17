@@ -162,6 +162,7 @@ return array(
 			'ChannelFieldGroup'=> 'Module\Channel\Model\ChannelFieldGroup',
 			'ChannelFieldStructure' => 'Module\Channel\Model\ChannelFieldStructure',
 			'ChannelEntry' => 'Module\Channel\Model\ChannelEntry',
+			'ChannelEntryAutosave' => 'Module\Channel\Model\ChannelEntryAutosave',
 			'ChannelFormSettings' => 'Module\Channel\Model\ChannelFormSettings',
 			'ChannelLayout' => 'Module\Channel\Model\ChannelLayout',
 
