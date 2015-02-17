@@ -281,7 +281,7 @@ class Edit extends AbstractPublishController {
 		}
 
 		$form_attributes = array(
-			'class' => 'settings ajax-validate',
+			'class' => 'settings', //' ajax-validate',
 		);
 
 		$channel_layout = ee('Model')->get('ChannelLayout')
@@ -297,6 +297,13 @@ class Edit extends AbstractPublishController {
 			'form_attributes' => $form_attributes,
 			'layout' => $entry->getDisplay($channel_layout)
 		);
+
+		$this->setGlobalJs($entry, TRUE);
+
+		ee()->cp->add_js_script(array(
+			'plugin' => array('ee_url_title'),
+			'file' => array('cp/v3/publish')
+		));
 
 		ee()->view->cp_breadcrumbs = array(
 			cp_url('publish/edit', array('filter_by_channel' => $entry->channel_id)) => $entry->getChannel()->channel_title,
