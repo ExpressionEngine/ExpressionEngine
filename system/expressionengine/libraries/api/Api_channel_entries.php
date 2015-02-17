@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -444,9 +444,9 @@ class Api_channel_entries extends Api {
 			// Correct member post count
 			ee()->db->select('total_entries');
 			$mquery = ee()->db->get_where('members', array('member_id' => $authors[$val]));
-			
+
 			$tot = 0;
-			
+
 			if ($mquery->num_rows() > 0)
 			{
 				$tot = $mquery->row('total_entries');
@@ -473,7 +473,7 @@ class Api_channel_entries extends Api {
 
 			$entries[] = $val;
 		}
-		
+
 		if ($comments_installed)
 		{
 			// Remove comments for deleted entries
@@ -503,12 +503,12 @@ class Api_channel_entries extends Api {
 				ee()->stats->update_comment_stats($channel_id);
 			}
 		}
-		
+
 		if ($comments_installed)
 		{
 			ee()->stats->update_authors_comment_stats(array_unique($authors));
 		}
-		
+
 
 		$fts = ee()->api_channel_fields->fetch_custom_channel_fields();
 

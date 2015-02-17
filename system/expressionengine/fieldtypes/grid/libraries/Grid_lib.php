@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.7
@@ -277,7 +277,7 @@ class Grid_lib {
 				if ( ! empty($rows[$i]['row_id']))
 				{
 					$fieldtype->settings['grid_row_id'] = $rows[$i]['row_id'];
-				}  
+				}
 
 				ee()->grid_parser->call('post_save', $cell_data);
 
