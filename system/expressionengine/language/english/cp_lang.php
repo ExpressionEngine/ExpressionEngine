@@ -554,6 +554,9 @@ $lang = array(
 'new_site' =>
 'New Site',
 
+'name_your_site' =>
+'Name your site',
+
 'my_profile' =>
 'My Profile',
 
