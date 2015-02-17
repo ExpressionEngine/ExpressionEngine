@@ -62,9 +62,6 @@ $lang = array(
 'btn_edit_file_meta' =>
 'Edit File Meta',
 
-'btn_edit_file_meta_working' =>
-'Saving...',
-
 'edit_file_metadata_success' =>
 'File Meta Data Updated',
 
@@ -115,9 +112,6 @@ $lang = array(
 
 'btn_upload_file' =>
 'Upload File',
-
-'btn_upload_file_working' =>
-'Saving...',
 
 'upload_directory_removed' =>
 'Upload directory removed',
@@ -183,9 +177,6 @@ $lang = array(
 
 'btn_resize_and_save_image' =>
 'Resize &amp; Save Image',
-
-'btn_working' =>
-'Saving...',
 
 'crop' => 'Crop',
 'cropped' => 'cropped',

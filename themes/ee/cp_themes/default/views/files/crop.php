@@ -35,7 +35,7 @@
 			<img src="<?=$file->getAbsoluteURL()?>">
 		</figure>
 		<fieldset class="form-ctrls">
-			<?=cp_form_submit(lang('btn_crop_and_save_image'), lang('btn_working'), 'save_crop')?>
+			<?=cp_form_submit(lang('btn_crop_and_save_image'), lang('btn_saving'), 'save_crop')?>
 		</fieldset>
 	</div>
 	<div class="tab t-1<?php if ($active_tab == 1): ?> tab-open<?php endif; ?>">
@@ -66,7 +66,7 @@
 			<img src="<?=$file->getAbsoluteURL()?>">
 		</figure>
 		<fieldset class="form-ctrls">
-			<?=cp_form_submit(lang('btn_rotate_and_save_image'), lang('btn_working'), 'save_rotate')?>
+			<?=cp_form_submit(lang('btn_rotate_and_save_image'), lang('btn_saving'), 'save_rotate')?>
 		</fieldset>
 	</div>
 	<div class="tab t-2<?php if ($active_tab == 2): ?> tab-open<?php endif; ?>">
@@ -84,7 +84,7 @@
 			<img src="<?=$file->getAbsoluteURL()?>">
 		</figure>
 		<fieldset class="form-ctrls">
-			<?=cp_form_submit(lang('btn_resize_and_save_image'), lang('btn_working'), 'save_resize')?>
+			<?=cp_form_submit(lang('btn_resize_and_save_image'), lang('btn_saving'), 'save_resize')?>
 		</fieldset>
 	</div>
 <?=form_close()?>

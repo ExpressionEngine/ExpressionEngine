@@ -69,9 +69,6 @@ $lang = array(
 'btn_edit_comment' =>
 'Edit Comment',
 
-'btn_edit_comment_working' =>
-'Saving...',
-
 'author_information' =>
 'Author information',
 
@@ -110,9 +107,6 @@ $lang = array(
 
 'btn_edit_entry' =>
 'Edit Entry',
-
-'btn_edit_entry_working' =>
-'Saving...',
 
 'edit_entry_with_title' =>
 'Edit Entry: %s',

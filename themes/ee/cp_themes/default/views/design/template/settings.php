@@ -13,6 +13,6 @@
 		<?=$access?>
 	</div>
 	<fieldset class="form-ctrls">
-		<?=cp_form_submit('btn_save_settings', 'btn_save_settings_working')?>
+		<?=cp_form_submit('btn_save_settings', 'btn_saving')?>
 	</fieldset>
 </form>

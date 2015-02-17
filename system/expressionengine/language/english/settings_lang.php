@@ -136,9 +136,6 @@ $lang = array(
 'btn_save_settings' =>
 'Save Settings',
 
-'btn_save_settings_working' =>
-'Saving...',
-
 'preferences_updated' =>
 'Preferences updated',
 
@@ -1212,9 +1209,6 @@ $lang = array(
 
 'btn_edit_directory' =>
 'Edit Directory',
-
-'btn_edit_directory_working' =>
-'Saving...',
 
 /**
  * Uploads

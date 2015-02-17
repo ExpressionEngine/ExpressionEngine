@@ -18,6 +18,6 @@
 <?php endforeach;?>
 
 	<fieldset class="form-ctrls">
-		<?=cp_form_submit('translate_btn', 'translate_btn_working')?>
+		<?=cp_form_submit('translate_btn', 'btn_saving')?>
 	</fieldset>
 <?=form_close()?>

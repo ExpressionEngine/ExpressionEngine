@@ -5,7 +5,6 @@ $lang = array(
 'rte_module_name' => 'Rich Text Editor',
 'rte_module_description' => 'Enables rich text editing in text areas',
 'btn_save_settings' => 'Save Settings',
-'btn_save_settings_working' => 'Saving...',
 'configuration' => 'Configuration',
 'available_tool_sets' => 'Available Tool Sets',
 'create_new' => 'create new',

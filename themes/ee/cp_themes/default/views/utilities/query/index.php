@@ -52,6 +52,6 @@
 				<?=form_error('password_auth')?>
 			</div>
 		</div>
-		<?=cp_form_submit('query_btn', 'query_btn_working')?>
+		<?=cp_form_submit('query_btn', 'query_btn_saving')?>
 	</fieldset>
 </form>

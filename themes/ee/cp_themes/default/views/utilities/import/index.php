@@ -50,6 +50,6 @@
 	</fieldset>
 
 	<fieldset class="form-ctrls">
-		<?=cp_form_submit('import_convert_btn', 'import_convert_btn_working')?>
+		<?=cp_form_submit('import_convert_btn', 'import_convert_btn_saving')?>
 	</fieldset>
 </form>

@@ -241,7 +241,7 @@ class Metaweblog_api_mcp {
 			// 'ajax_validate' => TRUE,
 			'cp_page_title' => lang('create_metaweblog'),
 			'save_btn_text' => 'create_metaweblog',
-			'save_btn_text_working' => 'btn_save_settings_working',
+			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array()
 			)

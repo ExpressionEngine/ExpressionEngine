@@ -213,7 +213,7 @@ class Files extends AbstractFilesController {
 			'has_file_input' => TRUE,
 			'base_url' => cp_url('files/upload/' . $dir_id),
 			'save_btn_text' => 'btn_upload_file',
-			'save_btn_text_working' => 'btn_upload_file_working',
+			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
 					array(

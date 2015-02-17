@@ -177,7 +177,7 @@ class Snippets extends AbstractDesignController {
 			'ajax_validate' => TRUE,
 			'base_url' => cp_url('design/snippets/create'),
 			'save_btn_text' => 'btn_create_partial',
-			'save_btn_text_working' => 'btn_create_partial_working',
+			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
 					array(

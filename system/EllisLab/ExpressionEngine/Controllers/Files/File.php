@@ -87,7 +87,7 @@ class File extends AbstractFilesController {
 			'ajax_validate' => TRUE,
 			'base_url' => cp_url('files/file/edit/' . $id),
 			'save_btn_text' => 'btn_edit_file_meta',
-			'save_btn_text_working' => 'btn_edit_file_meta_working',
+			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
 					array(

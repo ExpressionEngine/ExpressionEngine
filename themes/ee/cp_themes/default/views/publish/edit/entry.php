@@ -48,7 +48,7 @@
 		</div>
 		<?php endforeach; ?>
 		<fieldset class="form-ctrls">
-			<?=cp_form_submit(lang('btn_edit_entry'), lang('btn_edit_entry_working'))?>
+			<?=cp_form_submit(lang('btn_edit_entry'), lang('btn_saving'))?>
 		</fieldset>
 	</form>
 </div>

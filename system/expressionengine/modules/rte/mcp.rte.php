@@ -134,7 +134,7 @@ class Rte_mcp {
 		$vars = array(
 			'cp_page_title' => lang('rte_module_name') . ' ' . lang('configuration'),
 			'save_btn_text' => 'btn_save_settings',
-			'save_btn_text_working' => 'btn_save_settings_working',
+			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
 					array(

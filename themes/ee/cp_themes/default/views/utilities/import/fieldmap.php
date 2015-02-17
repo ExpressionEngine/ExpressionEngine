@@ -36,6 +36,6 @@
 		</div>
 	</fieldset>
 	<fieldset class="form-ctrls">
-		<?=cp_form_submit('btn_assign_fields', 'btn_assign_fields_working')?>
+		<?=cp_form_submit('btn_assign_fields', 'btn_saving')?>
 	</fieldset>
 </form>

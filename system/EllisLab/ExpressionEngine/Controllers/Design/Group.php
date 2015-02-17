@@ -63,7 +63,7 @@ class Group extends AbstractDesignController {
 			'ajax_validate' => TRUE,
 			'base_url' => cp_url('design/group/create'),
 			'save_btn_text' => 'btn_create_template_group',
-			'save_btn_text_working' => 'btn_create_template_group_working',
+			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
 					array(
@@ -224,7 +224,7 @@ class Group extends AbstractDesignController {
 				'old_name' => $group->group_name
 			),
 			'save_btn_text' => 'btn_create_template_group',
-			'save_btn_text_working' => 'btn_create_template_group_working',
+			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
 					array(

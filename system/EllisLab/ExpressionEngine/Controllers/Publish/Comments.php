@@ -324,7 +324,7 @@ class Comments extends AbstractPublishController {
 			'ajax_validate' => TRUE,
 			'base_url' => cp_url('publish/comments/edit/' . $comment_id),
 			'save_btn_text' => 'btn_edit_comment',
-			'save_btn_text_working' => 'btn_edit_comment_working',
+			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
 					array(
