@@ -190,7 +190,7 @@ abstract class ContentModel extends Model {
 	{
 		if ($this->hasCustomField($name))
 		{
-			$this->getCustomField($name)->setData($value);
+			$this->getCustomField($name)->set($value);
 
 			if ( ! parent::hasProperty($name))
 			{
