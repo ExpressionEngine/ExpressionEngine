@@ -2419,6 +2419,7 @@ PAPAYA;
 			'webmaster_name'				=> '',
 			'channel_nomenclature'			=> 'channel',
 			'max_caches'					=> '150',
+			'cache_driver'					=> 'file',
 			'captcha_url'					=>	$captcha_url,
 			'captcha_path'					=> $this->userdata['captcha_path'],
 			'captcha_font'					=>	'y',
