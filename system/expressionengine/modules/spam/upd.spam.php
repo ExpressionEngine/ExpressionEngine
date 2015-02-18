@@ -88,6 +88,7 @@ class Spam_upd {
 
 		$fields = array(
 			'training_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
+			'kernel_id'		=> array('type' => 'int', 'constraint' => '10'),
 			'source'		=> array('type' => 'text'),
 			'type'			=> array('type' => 'varchar', 'constraint' => '32'),
 			'class'			=> array('type' => 'tinyint', 'constraint' => '1')
