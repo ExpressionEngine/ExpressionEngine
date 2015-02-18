@@ -11,6 +11,7 @@ class FieldFacade {
 	private $metadata;
 	private $field_name;
 	private $content_id;
+	private $value;
 
 	public function __construct($field_id, array $metadata)
 	{
@@ -53,6 +54,13 @@ class FieldFacade {
 		return $this->timezone;
 	}
 
+	public function set($data)
+	{
+		return $this->data = $this->save($data);
+	}
+
+	// sets the raw values as in the db. data coming form
+	// the field post array should pass through setValue
 	public function setData($data)
 	{
 		$this->data = $data;
@@ -91,7 +99,23 @@ class FieldFacade {
 		return $fts[$type]['name'];
 	}
 
+	public function save($value)
+	{
+		$this->initField();
+		return ee()->api_channel_fields->apply('save', array($value));
+	}
+
 	public function getForm()
+	{
+		$data = $this->initField();
+
+		$field_value = set_value($this->getName(), $data['field_data']);
+
+		return ee()->api_channel_fields->apply('display_publish_field', array($field_value));
+	}
+
+
+	public function initField()
 	{
 		$data = $this->setupField();
 
@@ -105,9 +129,7 @@ class FieldFacade {
 			'content_id' => $this->content_id
 		)));
 
-		$field_value = set_value($this->getName(), $data['field_data']);
-
-		return ee()->api_channel_fields->apply('display_publish_field', array($field_value));
+		return $data;
 	}
 
 	protected function setupField()
