@@ -276,13 +276,10 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	 */
 	public function save()
 	{
-		$qb = $this->newQuery();
+		$qb = $this->newSelfReferentialQuery();
 
 		if ($this->isNew())
 		{
-			// insert
-			$qb->set($this->getValues());
-
 			$new_id = $qb->insert();
 			$this->setId($new_id);
 		}
@@ -320,7 +317,7 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 			return $this;
 		}
 
-		$qb = $this->newQuery();
+		$qb = $this->newSelfReferentialQuery();
 
 		$this->constrainQueryToSelf($qb);
 		$qb->delete();
@@ -458,11 +455,11 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	}
 
 	/**
-	 * Create a new query
+	 * Create a new query tied to this object
 	 *
 	 * @return QueryBuilder new query
 	 */
-	protected function newQuery()
+	protected function newSelfReferentialQuery()
 	{
 		return $this->_frontend->get($this);
 	}
