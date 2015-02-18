@@ -194,6 +194,7 @@ abstract class ContentModel extends Model {
 
 			if ( ! parent::hasProperty($name))
 			{
+				$this->markAsDirty($name);
 				return $this;
 			}
 		}
