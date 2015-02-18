@@ -127,7 +127,7 @@ class Updater {
 	 */
 	private function _recompile_template_routes()
 	{
-		ee()->db->select('template_id, route_required, route');
+		ee()->db->select('template_routes.template_id, route_required, route');
 		ee()->db->from('templates');
 		ee()->db->join('template_routes', 'templates.template_id = template_routes.template_id');
 		ee()->db->where('route_parsed is not null');
