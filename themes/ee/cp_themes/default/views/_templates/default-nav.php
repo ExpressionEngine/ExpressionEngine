@@ -32,10 +32,9 @@
 	</div>
 <?php endif ?>
 
-<div class="col-group">
+<div class="col-group align-right">
 	<?php if (isset($left_nav)): ?>
-	<?=$left_nav?>
-	<div class="col w-12 last">
+	<div class="col w-12">
 	<?php else: ?>
 	<div class="col w-16 last">
 	<?php endif; ?>
@@ -55,6 +54,10 @@
 			</div>
 		<?php endif ?>
 	</div>
+
+	<?php if (isset($left_nav)): ?>
+	<?=$left_nav?>
+	<?php endif; ?>
 </div>
 
 <?php if (isset($blocks['modals'])) echo $blocks['modals']; ?>

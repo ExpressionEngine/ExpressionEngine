@@ -1,4 +1,4 @@
-<div class="col w-4">
+<div class="col w-4 last">
 	<div class="box sidebar">
 		<?php
 		// Grab the first and last items from the menu to determine
