@@ -3,6 +3,25 @@
 <div class="box has-tabs publish">
 	<h1>
 		<?=$cp_page_title?> <span class="required intitle">&#10033; <?=lang('required_fields')?></span>
+		<?php if ($entry->getAutosaves()->count()): ?>
+		<div class="filters auto-save">
+			<ul>
+				<li>
+					<a class="has-sub" href=""><?=lang('auto_saved_entries')?></a>
+					<div class="sub-menu">
+						<fieldset class="filter-search">
+							<input type="text" value="" placeholder="<?=lang('filter_autosaves')?>">
+						</fieldset>
+						<ul>
+							<?php foreach ($entry->getAutosaves() as $autosave): ?>
+								<li><a href="" data-autosave-id="<?=$autosave->entry_id?>"><?=ee()->localize->human_time($autosave->edit_date)?></a></li>
+							<?php endforeach; ?>
+						</ul>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<?php endif; ?>
 	</h1>
 	<div class="tab-bar">
 		<ul>
