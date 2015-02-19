@@ -321,9 +321,30 @@ class Cat extends AbstractChannelController {
 	 */
 	private function categoryForm($group_id, $category_id = NULL)
 	{
+		if (empty($group_id) OR ! is_numeric($group_id))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$cat_group = ee('Model')->get('CategoryGroup')
 			->filter('group_id', $group_id)
 			->first();
+
+		if ( ! $cat_group)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		//  Check discrete privileges
+		if (AJAX_REQUEST)
+		{
+			$can_edit = explode('|', rtrim($cat_group->can_edit_categories, '|'));
+
+			if (ee()->session->userdata('group_id') != 1 AND ! in_array(ee()->session->userdata('group_id'), $can_edit))
+			{
+				show_error(lang('unauthorized_access'));
+			}
+		}
 
 		if ($category_id)
 		{
