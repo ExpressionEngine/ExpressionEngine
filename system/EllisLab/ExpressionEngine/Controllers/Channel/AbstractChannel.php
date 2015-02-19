@@ -37,7 +37,7 @@ abstract class AbstractChannel extends CP_Controller {
 		parent::__construct();
 
 		// Allow AJAX requests for category editing
-		if (AJAX_REQUEST && in_array(ee()->router->method, array('catCreate', 'catEdit')))
+		if (AJAX_REQUEST && in_array(ee()->router->method, array('createCat', 'editCat')))
 		{
 			if ( ! $this->cp->allowed_group('can_edit_categories'))
 			{

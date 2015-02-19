@@ -258,7 +258,7 @@ class Cat extends AbstractChannelController {
 					htmlentities($category[9], ENT_QUOTES, 'UTF-8'),
 					array('toolbar_items' => array(
 						'edit' => array(
-							'href' => cp_url('channel/cat/cat-edit/'.$category[0]),
+							'href' => cp_url('channel/cat/edit-cat/'.$category[0]),
 							'title' => lang('edit')
 						)
 					)),
@@ -302,7 +302,7 @@ class Cat extends AbstractChannelController {
 	 *
 	 * @param	int	$group_id		ID of category group category is to be in
 	 */
-	public function catCreate($group_id)
+	public function createCat($group_id)
 	{
 		$this->categoryForm($group_id);
 	}
@@ -313,7 +313,7 @@ class Cat extends AbstractChannelController {
 	 * @param	int	$group_id		ID of category group category is in
 	 * @param	int	$category_id	ID of category to edit
 	 */
-	public function catEdit($group_id, $category_id)
+	public function editCat($group_id, $category_id)
 	{
 		$this->categoryForm($group_id, $category_id);
 	}
@@ -384,14 +384,14 @@ class Cat extends AbstractChannelController {
 
 			ee()->view->cp_page_title = lang('create_category');
 			ee()->view->save_btn_text = 'create_category';
-			ee()->view->base_url = cp_url('channel/cat/cat-create/'.$group_id);
+			ee()->view->base_url = cp_url('channel/cat/create-cat/'.$group_id);
 			$channel = ee('Model')->make('Channel');
 		}
 		else
 		{
 			ee()->view->cp_page_title = lang('edit_category');
 			ee()->view->save_btn_text = 'edit_category';
-			ee()->view->base_url = cp_url('channel/cat/cat-edit/'.$group_id.'/'.$category_id);
+			ee()->view->base_url = cp_url('channel/cat/edit-cat/'.$group_id.'/'.$category_id);
 		}
 
 		// TODO: file field stuff?
