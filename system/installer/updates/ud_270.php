@@ -465,17 +465,21 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		if ( ! defined('RD')) define('RD', '}');
 
 		// We're gonna need this to be already loaded.
+		ee()->remove('functions');
 		require_once(APPPATH . 'libraries/Functions.php');
-		ee()->functions = new Installer_Functions();
+		ee()->set('functions', new Installer_Functions());
 
+		ee()->remove('extensions');
 		require_once(APPPATH . 'libraries/Extensions.php');
-		ee()->extensions = new Installer_Extensions();
+		ee()->set('extensions', new Installer_Extensions());
 
+		ee()->remove('addons');
 		require_once(APPPATH . 'libraries/Addons.php');
-		ee()->addons = new Installer_Addons();
+		ee()->set('addons', new Installer_Addons());
 
 		$installer_config = ee()->config;
-		ee()->config = new MSM_Config();
+		ee()->remove('config');
+		ee()->set('config', new MSM_Config());
 
 		// We need to figure out which template to load.
 		// Need to check the edit date.
@@ -537,7 +541,8 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			}
 		}
 
-		ee()->config = $installer_config;
+		ee()->remove('config');
+		ee()->set('config', $installer_config);
 	}
 
 
@@ -745,7 +750,8 @@ If you do not wish to reset your password, ignore this message. It will expire i
 		{
 			require_once(APPPATH . 'libraries/Template.php');
 		}
-		ee()->template = new Installer_Template();
+		ee()->remove('template');
+		ee()->set('template', new Installer_Template());
 
 		ee()->load->model('snippet_model');
 		$snippets = ee()->snippet_model->fetch();

@@ -91,6 +91,8 @@ class Update_notices {
 	 */
 	private function save($message, $is_header = FALSE)
 	{
+		$this->ensure_table_exists();
+
 		$data = array(
 			'version' => $this->version,
 			'message' => $message,

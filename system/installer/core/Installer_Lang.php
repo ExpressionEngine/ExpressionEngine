@@ -44,6 +44,15 @@ class Installer_Lang Extends EE_Lang {
 
 		return $line;
 	}
+
+	/**
+	 * Forces the current language to English
+	 * @return string The idiom to load
+	 */
+	protected function getIdiom()
+	{
+		return 'english';
+	}
 }
 
 

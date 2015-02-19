@@ -23,7 +23,7 @@
  * @link		http://ellislab.com
  */
 
-require_once(EE_APPPATH.'/libraries/Layout'.EXT);
+require_once(EE_APPPATH.'/libraries/Layout.php');
 
 class Installer_Layout extends EE_Layout {
 	// Nothing to see here.

@@ -39,14 +39,17 @@ class Installer_Template {
 	public function __construct()
 	{
 		// We're gonna need this to be already loaded.
+		ee()->remove('functions');
 		require_once(APPPATH . 'libraries/Functions.php');
-		ee()->functions = new Installer_Functions();
+		ee()->set('functions', new Installer_Functions());
 
+		ee()->remove('extensions');
 		require_once(APPPATH . 'libraries/Extensions.php');
-		ee()->extensions = new Installer_Extensions();
+		ee()->set('extensions', new Installer_Extensions());
 
+		ee()->remove('addons');
 		require_once(APPPATH . 'libraries/Addons.php');
-		ee()->addons = new Installer_Addons();
+		ee()->set('addons', new Installer_Addons());
 	}
 
 	/**

@@ -27,7 +27,6 @@ class Smartforge {
 	function __construct()
 	{
 		ee()->load->dbforge();
-		ee()->load->library('logger');
 		ee()->load->helper('array');
 	}
 
@@ -163,6 +162,27 @@ class Smartforge {
 		ee()->logger->updater("Could not drop column '".ee()->db->dbprefix."$table.$column_name'. Column does not exist.", TRUE);
 
 		return FALSE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Table Drop
+	 *
+	 * Drop a table from the database
+	 * @param  string $table The table name
+	 * @return bool          TRUE if successful, FALSE if not
+	 */
+	public function drop_table($table)
+	{
+		if ( ! ee()->db->table_exists($table))
+		{
+			ee()->logger->updater(__METHOD__." failed. Table '".ee()->db->dbprefix."$table' does not exist.", TRUE);
+
+			return FALSE;
+		}
+
+		return ee()->dbforge->drop_table($table);
 	}
 
 	// --------------------------------------------------------------------

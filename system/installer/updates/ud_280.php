@@ -538,8 +538,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	 **/
 	private function _replace_old_search_pagination()
 	{
-		ee()->load->library('logger');
-
 		$pagination_docs = ee()->config->item('doc_url').'templates/pagination.html';
 
 		// Replace SINGLE {paginate} variable with {pagination_links}
@@ -573,8 +571,6 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	 */
 	private function _replace_old_specialty_pagination()
 	{
-		ee()->load->library('logger');
-
 		$pagination_docs = ee()->config->item('doc_url').'templates/pagination.html';
 
 		ee()->logger->deprecate_specialty_template_tag(

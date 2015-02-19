@@ -27,6 +27,11 @@ class Progress {
 	public $prefix = '';
 	protected $_config = array();
 
+	public function __construct()
+	{
+		ee()->load->library('view');
+	}
+
 	/**
 	 * Updates the current state
 	 *
@@ -87,8 +92,7 @@ class Progress {
 	 */
 	public function fetch_progress_header($settings)
 	{
-		$EE =& get_instance();
-		return $EE->load->view('progress_header', $settings, TRUE);
+		return ee()->load->view('progress_header', $settings, TRUE);
 	}
 }
 
