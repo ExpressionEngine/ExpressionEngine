@@ -33,7 +33,7 @@ class Classifier {
 	public $classes = array();
 
 	// Sensitivity of the classifier, are we at least X% sure this is spam?
-	public $sensitivity = .999;
+	public $sensitivity = .5;
 
 	// This is the assumed a priori spam to ham ratio
 	public $ratio = .8;
@@ -64,6 +64,7 @@ class Classifier {
 	 */
 	public function classify($source, $class)
 	{
+		$orig = $source;
 		$source = $this->corpus->transform($source); 
 		$other = array_diff($this->classes, array($class));
 		$other = array_shift($other);
@@ -85,7 +86,7 @@ class Classifier {
 			// If we don't have enough info to compute a prior simply default to the spam ratio
 			$epsilon = 0.01;
 
-			if($class_dist->variance < $epsilon || $other_dist->variance < $epsilon)
+			if($class_prob < $epsilon || $other_prob < $epsilon)
 			{
 				$prob = 1 - $this->ratio;
 			}
@@ -103,7 +104,7 @@ class Classifier {
 
 		$probability = 1 / (1 + pow(M_E, $log_sum));
 
-		return $probability > $this->sensitivity;
+		return $probability < $this->sensitivity;
 
 	}
 

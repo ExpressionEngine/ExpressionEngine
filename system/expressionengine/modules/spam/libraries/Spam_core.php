@@ -137,7 +137,6 @@ class Spam_core {
 		$tfidf->generate_lookups();
 
 		$vectorizers = array();
-		$vectorizers[] = $tfidf;
 		$vectorizers[] = new ASCII_Printable();
 		$vectorizers[] = new Entropy();
 		$vectorizers[] = new Links();
