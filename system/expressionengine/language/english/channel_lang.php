@@ -589,6 +589,9 @@ $lang = array(
 'create_category' =>
 'Create Category',
 
+'edit_category' =>
+'Edit Category',
+
 'cat_description_desc' =>
 'A brief description of this category.',
 

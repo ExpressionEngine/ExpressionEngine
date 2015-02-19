@@ -366,6 +366,31 @@ class Cat extends AbstractChannelController {
 			$parent_id_options[$cat[0]] = $indent.$cat[1];
 		}
 
+		// New categories get URL title JS
+		if (is_null($category_id))
+		{
+			// Only auto-complete channel short name for new channels
+			ee()->cp->add_js_script('plugin', 'ee_url_title');
+			ee()->javascript->output('
+				$("input[name=cat_name]").bind("keyup keydown", function() {
+					$(this).ee_url_title("input[name=cat_url_title]");
+				});
+			');
+
+			ee()->view->cp_page_title = lang('create_category');
+			ee()->view->save_btn_text = 'create_category';
+			ee()->view->base_url = cp_url('channel/cat/cat-create/'.$group_id);
+			$channel = ee('Model')->make('Channel');
+		}
+		else
+		{
+			ee()->view->cp_page_title = lang('edit_category');
+			ee()->view->save_btn_text = 'edit_category';
+			ee()->view->base_url = cp_url('channel/cat/cat-edit/'.$group_id.'/'.$category_id);
+		}
+
+		// TODO: file field stuff?
+
 		$vars['sections'] = array(
 			array(
 				array(
@@ -465,7 +490,7 @@ class Cat extends AbstractChannelController {
 				->addToBody(lang('category_saved_desc'))
 				->defer();
 
-			ee()->functions->redirect(cp_url('channel/cat/cat-edit/' . $category_id));
+			ee()->functions->redirect(cp_url('channel/cat/cat-edit/'.$group_id.'/'.$category_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -477,9 +502,6 @@ class Cat extends AbstractChannelController {
 		}
 
 		ee()->view->ajax_validate = TRUE;
-		ee()->view->base_url = ($category_id) ? cp_url('channel/cat/cat-edit/'.$group_id.'/'.$category_id) : cp_url('channel/cat/cat-create/'.$group_id);
-		ee()->view->cp_page_title = lang('create_category');
-		ee()->view->save_btn_text = 'create_category';
 		ee()->view->save_btn_text_working = 'btn_saving';
 
 		ee()->cp->set_breadcrumb(cp_url('channel/cat'), lang('category_groups'));
