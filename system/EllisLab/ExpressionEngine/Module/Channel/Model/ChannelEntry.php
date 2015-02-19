@@ -39,6 +39,11 @@ class ChannelEntry extends ContentModel {
 				'left' => 'entry_id',
 				'right' => 'cat_id'
 			)
+		),
+		'Autosaves' => array(
+			'type' => 'hasMany',
+			'model' => 'ChannelEntryAutosave',
+			'to_key' => 'original_entry_id'
 		)
 	);
 
