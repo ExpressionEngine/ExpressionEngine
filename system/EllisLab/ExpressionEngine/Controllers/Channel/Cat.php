@@ -450,6 +450,42 @@ class Cat extends AbstractChannelController {
 			)
 		);
 
+		ee()->db->where('group_id', $group_id);
+		ee()->db->order_by('field_order');
+		$field_query = ee()->db->get('category_fields');
+
+		ee()->db->where('cat_id', $category_id);
+		$data_query = ee()->db->get('category_field_data');
+
+		if ($field_query->num_rows() > 0)
+		{
+			$dq_row = $data_query->row_array();
+			ee()->load->model('addons_model');
+			$plugins = ee()->addons_model->get_plugin_formatting();
+
+			$vars['custom_format_options']['none'] = 'None';
+			foreach ($plugins as $k=>$v)
+			{
+				$vars['custom_format_options'][$k] = $v;
+			}
+			foreach ($field_query->result_array() as $row)
+			{
+				$vars['sections']['custom_fields'][] = array(
+					'title' => $row['field_label'],
+					'desc' => '',
+					'fields' => array(
+						'parent_id' => array(
+							'type' => $row['field_type'],
+							'value' => $category->parent_id,
+							'choices' => array(),
+							'required' => $row['field_required'],
+							'text_direction' => ($row['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr'
+						)
+					)
+				);
+			}
+		}
+
 		ee()->form_validation->set_rules(array(
 			array(
 				'field' => 'cat_name',
