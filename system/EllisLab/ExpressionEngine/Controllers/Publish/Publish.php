@@ -51,7 +51,7 @@ class Publish extends AbstractPublishController {
 		$autosave->title = (ee()->input->post('title')) ?: 'autosave_' . ee()->localize->now;
 		$autosave->url_title = (ee()->input->post('url_title')) ?: 'autosave_' . ee()->localize->now;
 		$autosave->status = ee()->input->post('status');
-		$autosave->entry_date = ee()->input->post('entry_date');
+		$autosave->edit_date = ee()->localize->now;
 		$autosave->entry_data = $_POST;
 
 		$autosave->save();
