@@ -188,7 +188,6 @@ class Channel extends AbstractChannelController {
 		if (is_null($channel_id))
 		{
 			// Only auto-complete channel short name for new channels
-			ee()->load->helper('snippets');
 			ee()->cp->add_js_script('plugin', 'ee_url_title');
 			ee()->javascript->output('
 				$("input[name=channel_title]").bind("keyup keydown", function() {
