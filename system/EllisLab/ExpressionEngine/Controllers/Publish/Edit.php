@@ -183,7 +183,16 @@ class Edit extends AbstractPublishController {
 
 		foreach ($entries->all() as $entry)
 		{
-			$title = $entry->title . '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . $entry->getAuthor()->getMemberName() . ', ' . lang('in') . ': ' . $entry->getChannel()->channel_title . '</span>';
+			$autosaves = $entry->getAutosaves()->count();
+
+			$title = $entry->title;
+
+			if ($autosaves)
+			{
+				$title .= ' <span class="auto-save" title="auto saved">&#10033;</span>';
+			}
+
+			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . $entry->getAuthor()->getMemberName() . ', ' . lang('in') . ': ' . $entry->getChannel()->channel_title . '</span>';
 
 			if ($entry->comment_total > 1)
 			{
@@ -233,6 +242,11 @@ class Edit extends AbstractPublishController {
 			if ($entry_id && $entry->entry_id == $entry_id)
 			{
 				$attrs = array('class' => 'selected');
+			}
+
+			if ($autosaves)
+			{
+				$attrs = array('class' => 'auto-saved');
 			}
 
 			$data[] = array(
