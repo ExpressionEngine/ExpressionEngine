@@ -34,7 +34,7 @@ class CI_DB_driver {
 	var $password;
 	var $hostname;
 	var $database;
-	var $dbdriver		= 'mysql';
+	var $dbdriver		= 'mysqli';
 	var $dbprefix		= '';
 	var $char_set		= 'utf8';
 	var $dbcollat		= 'utf8_general_ci';
@@ -102,6 +102,8 @@ class CI_DB_driver {
 	 */
 	function initialize()
 	{
+		$this->connection->open();
+		/*
 		// If an existing connection resource is available
 		// there is no need to connect and select the database
 		if (is_resource($this->conn_id) OR is_object($this->conn_id))
@@ -152,6 +154,7 @@ class CI_DB_driver {
 				return TRUE;
 			}
 		}
+		*/
 
 		return TRUE;
 	}
@@ -216,19 +219,7 @@ class CI_DB_driver {
 			return FALSE;
 		}
 
-		// Some DBs have functions that return the version, and don't run special
-		// SQL queries per se. In these instances, just return the result.
-		$driver_version_exceptions = array('oci8', 'sqlite');
-
-		if (in_array($this->dbdriver, $driver_version_exceptions))
-		{
-			return $sql;
-		}
-		else
-		{
-			$query = $this->query($sql);
-			return $query->row('ver');
-		}
+		return $this->query($sql)->row('ver');
 	}
 
 	// --------------------------------------------------------------------
@@ -423,19 +414,7 @@ class CI_DB_driver {
 		// Load and instantiate the result driver
 
 		$driver			= $this->load_rdriver();
-		$RES			= new $driver();
-		$RES->conn_id	= $this->conn_id;
-		$RES->result_id	= $this->result_id;
-
-		if ($this->dbdriver == 'oci8')
-		{
-			$RES->stmt_id		= $this->stmt_id;
-			$RES->curs_id		= NULL;
-			$RES->limit_used	= $this->limit_used;
-			$this->stmt_id		= FALSE;
-		}
-
-		// oci8 vars must be set before calling this
+		$RES			= new $driver($this->result_id);
 		$RES->num_rows	= $RES->num_rows();
 
 		// Is query caching enabled?  If so, we'll serialize the
@@ -473,11 +452,13 @@ class CI_DB_driver {
 	 */
 	function load_rdriver()
 	{
+		$this->dbdriver = 'mysqli';
+
 		$driver = 'CI_DB_'.$this->dbdriver.'_result';
 
 		if ( ! class_exists($driver))
 		{
-			$path = (defined('EE_APPPATH')) ? EE_APPPATH : APPPATH;
+			$path = BASEPATH;
 			include_once($path.'database/DB_result.php');
 			include_once($path.'database/drivers/'.$this->dbdriver.'/'.$this->dbdriver.'_result.php');
 		}

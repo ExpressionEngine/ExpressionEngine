@@ -371,7 +371,7 @@ class EE_Loader {
 
 		if ($return === TRUE)
 		{
-			return DB($params, $active_record);
+			return DB($params);
 		}
 
 		if ($this->facade->has('db'))
@@ -380,7 +380,7 @@ class EE_Loader {
 		}
 
 		// Load the DB class
-		$this->facade->set('db', DB($params, $active_record));
+		$this->facade->set('db', DB($params));
 	}
 
 	// --------------------------------------------------------------------
