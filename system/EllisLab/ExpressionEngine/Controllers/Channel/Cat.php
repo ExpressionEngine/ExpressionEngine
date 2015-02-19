@@ -278,8 +278,7 @@ class Cat extends AbstractChannelController {
 		// Only load reorder JS if there's more than one category
 		if (count($data) > 1)
 		{
-			ee()->cp->add_js_script('file', 'cp/sort_helper');
-			ee()->cp->add_js_script('plugin', 'ee_table_reorder');
+			ee()->cp->add_js_script('plugin', 'nestable');
 			ee()->cp->add_js_script('file', 'cp/v3/category_reorder');
 		}
 
