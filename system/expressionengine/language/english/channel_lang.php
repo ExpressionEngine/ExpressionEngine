@@ -586,6 +586,9 @@ $lang = array(
 'category_groups_removed_desc' =>
 '%d category groups were removed.',
 
+'fields' =>
+'Fields',
+
 'create_category' =>
 'Create Category',
 
@@ -615,6 +618,24 @@ $lang = array(
 
 'channel_not_saved_desc' =>
 'We were unable to save your category, please review and fix errors below.',
+
+'category_field' =>
+'Category Field',
+
+'category_fields' =>
+'Category Fields',
+
+'no_category_fields' =>
+'No Category Fields',
+
+'create_category_field' =>
+'Create Category Field',
+
+'category_fields_removed' =>
+'Category fields removed',
+
+'category_fields_removed_desc' =>
+'%d category fields were removed.',
 
 ''=>''
 );

@@ -92,11 +92,16 @@ class Cat extends AbstractChannelController {
 				array('toolbar_items' => array(
 					'view' => array(
 						'href' => cp_url('channel/cat/cat-list/'.$group->group_id),
-						'title' => lang('upload_btn_edit')
+						'title' => lang('view')
 					),
 					'edit' => array(
 						'href' => cp_url('channel/cat/edit/'.$group->group_id),
-						'title' => lang('upload_btn_sync')
+						'title' => lang('edit')
+					),
+					'txt-only' => array(
+						'href' => cp_url('channel/cat/field/'.$group->group_id),
+						'title' => strtolower(lang('custom_fields')),
+						'content' => strtolower(lang('fields'))
 					)
 				)),
 				array(
@@ -555,6 +560,102 @@ class Cat extends AbstractChannelController {
 	private function saveCategory($group_id, $category_id)
 	{
 
+	}
+
+	/**
+	 * Category group custom fields listing
+	 */
+	public function field($group_id)
+	{
+		$cat_group = ee('Model')->get('CategoryGroup')
+			->filter('group_id', $group_id)
+			->first();
+
+		if ( ! $cat_group)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$table = CP\Table::create();
+		$table->setColumns(
+			array(
+				'col_id',
+				'label',
+				'short_name',
+				'type',
+				'manage' => array(
+					'type'	=> CP\Table::COL_TOOLBAR
+				),
+				array(
+					'type'	=> CP\Table::COL_CHECKBOX
+				)
+			)
+		);
+		$table->setNoResultsText(
+			'no_category_fields',
+			'create_category_field',
+			cp_url('channel/cat/create-field')
+		);
+
+		$sort_map = array(
+			'col_id' => 'group_id',
+			'group_name' => 'group_name'
+		);
+
+		$cat_fields = ee('Model')->get('CategoryFields')
+			->filter('group_id', $group_id);
+		$total_rows = $cat_fields->all()->count();
+
+		$cat_fields = $cat_fields->order($sort_map[$table->sort_col], $table->sort_dir)
+			->limit(20)
+			->offset(($table->config['page'] - 1) * 20)
+			->all();
+
+		$data = array();
+		foreach ($cat_fields as $field)
+		{
+			$data[] = array(
+				$field->field_id,
+				$field->field_label,
+				LD.$field->field_name.RD,
+				$field->field_type,
+				array('toolbar_items' => array(
+					'edit' => array(
+						'href' => cp_url('channel/cat/edit-field/'.$field->field_id),
+						'title' => lang('edit')
+					)
+				)),
+				array(
+					'name' => 'fields[]',
+					'value' => $field->group_id,
+					'data'	=> array(
+						'confirm' => lang('category_field') . ': <b>' . htmlentities($field->field_label, ENT_QUOTES) . '</b>'
+					)
+				)
+			);
+		}
+
+		$table->setData($data);
+
+		$base_url = new CP\URL('channel/cat/field', ee()->session->session_id());
+		$vars['table'] = $table->viewData($base_url);
+
+		$pagination = new CP\Pagination(
+			$vars['table']['limit'],
+			$total_rows,
+			$vars['table']['page']
+		);
+		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
+
+		ee()->cp->set_breadcrumb(cp_url('channel/cat'), lang('category_groups'));
+		ee()->view->cp_page_title = lang('category_fields') . ' ' . lang('for') . ' ' . $cat_group->group_name;
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('category_fields') . ': <b>### ' . lang('category_fields') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/confirm_remove'),
+		));
+
+		ee()->cp->render('channel/cat-field', $vars);
 	}
 }
 // EOF
