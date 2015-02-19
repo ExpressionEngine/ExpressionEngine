@@ -66,7 +66,7 @@ class Cat extends AbstractChannelController {
 		$table->setNoResultsText(
 			'no_category_groups',
 			'create_category_group',
-			cp_url('channel/cat/new')
+			cp_url('channel/cat/create')
 		);
 
 		$sort_map = array(
@@ -133,7 +133,7 @@ class Cat extends AbstractChannelController {
 			'file' => array('cp/v3/confirm_remove'),
 		));
 
-		ee()->cp->render('channel/cat', $vars);
+		ee()->cp->render('channel/cat/index', $vars);
 	}
 
 	/**
@@ -294,7 +294,7 @@ class Cat extends AbstractChannelController {
 
 		ee()->cp->set_breadcrumb(cp_url('channel/cat'), lang('category_groups'));
 
-		ee()->cp->render('channel/cat-list', $vars);
+		ee()->cp->render('channel/cat/list', $vars);
 	}
 
 	/**
@@ -655,7 +655,7 @@ class Cat extends AbstractChannelController {
 			'file' => array('cp/v3/confirm_remove'),
 		));
 
-		ee()->cp->render('channel/cat-field', $vars);
+		ee()->cp->render('channel/cat/field', $vars);
 	}
 }
 // EOF
