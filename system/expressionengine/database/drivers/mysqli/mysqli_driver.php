@@ -62,20 +62,11 @@ class CI_DB_mysqli_driver extends CI_DB {
 	/**
 	 * Non-persistent database connection
 	 *
-	 * @access	private called by the base class
 	 * @return	resource
 	 */
 	function db_connect()
 	{
-		if ($this->port != '')
-		{
-			return @mysqli_connect($this->hostname, $this->username, $this->password, $this->database, $this->port);
-		}
-		else
-		{
-			return @mysqli_connect($this->hostname, $this->username, $this->password, $this->database);
-		}
-
+		throw new \Exception('Manual driver connections were removed. Please let us know if you were using them.');
 	}
 
 	// --------------------------------------------------------------------
@@ -83,12 +74,11 @@ class CI_DB_mysqli_driver extends CI_DB {
 	/**
 	 * Persistent database connection
 	 *
-	 * @access	private called by the base class
 	 * @return	resource
 	 */
 	function db_pconnect()
 	{
-		return $this->db_connect();
+		throw new \Exception('Manual driver connections were removed. Please let us know if you were using them.');
 	}
 
 	// --------------------------------------------------------------------
@@ -104,10 +94,7 @@ class CI_DB_mysqli_driver extends CI_DB {
 	 */
 	function reconnect()
 	{
-		if (mysqli_ping($this->conn_id) === FALSE)
-		{
-			$this->conn_id = FALSE;
-		}
+		throw new \Exception('Reconnecting was removed. Please let us know if you were using it.');
 	}
 
 	// --------------------------------------------------------------------
@@ -115,12 +102,11 @@ class CI_DB_mysqli_driver extends CI_DB {
 	/**
 	 * Select the database
 	 *
-	 * @access	private called by the base class
 	 * @return	resource
 	 */
 	function db_select()
 	{
-		return @mysqli_select_db($this->conn_id, $this->database);
+		throw new \Exception('DB selecting was removed. Please let us know if you were using it.');
 	}
 
 	// --------------------------------------------------------------------
@@ -143,11 +129,11 @@ class CI_DB_mysqli_driver extends CI_DB {
 
 		if ($this->use_set_names === TRUE)
 		{
-			return @mysqli_query($this->conn_id, "SET NAMES '".$this->escape_str($charset)."' COLLATE '".$this->escape_str($collation)."'");
+			return $this->connection->query("SET NAMES '".$this->escape_str($charset)."' COLLATE '".$this->escape_str($collation)."'");
 		}
 		else
 		{
-			return @mysqli_set_charset($this->conn_id, $charset);
+			return $this->connection->getNative()->set_charset($charset);
 		}
 	}
 
@@ -176,8 +162,7 @@ class CI_DB_mysqli_driver extends CI_DB {
 	function _execute($sql)
 	{
 		$sql = $this->_prep_query($sql);
-		$result = @mysqli_query($this->conn_id, $sql);
-		return $result;
+		return $this->connection->query($sql);
 	}
 
 	// --------------------------------------------------------------------
@@ -195,12 +180,9 @@ class CI_DB_mysqli_driver extends CI_DB {
 	{
 		// "DELETE FROM TABLE" returns 0 affected rows This hack modifies
 		// the query so that it returns the number of affected rows
-		if ($this->delete_hack === TRUE)
+		if (preg_match('/^\s*DELETE\s+FROM\s+(\S+)\s*$/i', $sql))
 		{
-			if (preg_match('/^\s*DELETE\s+FROM\s+(\S+)\s*$/i', $sql))
-			{
-				$sql = preg_replace("/^\s*DELETE\s+FROM\s+(\S+)\s*$/", "DELETE FROM \\1 WHERE 1=1", $sql);
-			}
+			$sql = preg_replace("/^\s*DELETE\s+FROM\s+(\S+)\s*$/", "DELETE FROM \\1 WHERE 1=1", $sql);
 		}
 
 		return $sql;
@@ -311,25 +293,7 @@ class CI_DB_mysqli_driver extends CI_DB {
 			return $str;
 		}
 
-
-		// If we need to escape a string before the connection is made
-		if ( ! $this->conn_id)
-		{
-			$this->initialize();
-		}
-
-		if (function_exists('mysqli_real_escape_string') AND is_object($this->conn_id))
-		{
-			$str = mysqli_real_escape_string($this->conn_id, $str);
-		}
-		elseif (function_exists('mysql_escape_string'))
-		{
-			$str = mysql_escape_string($str);
-		}
-		else
-		{
-			$str = addslashes($str);
-		}
+		$str = $this->connection->escape($str);
 
 		// escape LIKE condition wildcards
 		if ($like === TRUE)
@@ -350,7 +314,7 @@ class CI_DB_mysqli_driver extends CI_DB {
 	 */
 	function affected_rows()
 	{
-		return @mysqli_affected_rows($this->conn_id);
+		return $this->connection->getAffectedRows();
 	}
 
 	// --------------------------------------------------------------------
@@ -363,7 +327,7 @@ class CI_DB_mysqli_driver extends CI_DB {
 	 */
 	function insert_id()
 	{
-		return @mysqli_insert_id($this->conn_id);
+		return $this->connection->getInsertId();
 	}
 
 	// --------------------------------------------------------------------
@@ -461,7 +425,7 @@ class CI_DB_mysqli_driver extends CI_DB {
 	 */
 	function _error_message()
 	{
-		return mysqli_error($this->conn_id);
+		return $this->connection->getErrorMessage();
 	}
 
 	// --------------------------------------------------------------------
@@ -474,7 +438,7 @@ class CI_DB_mysqli_driver extends CI_DB {
 	 */
 	function _error_number()
 	{
-		return mysqli_errno($this->conn_id);
+		return $this->connection->getErrorNumber();
 	}
 
 	// --------------------------------------------------------------------
@@ -769,12 +733,10 @@ class CI_DB_mysqli_driver extends CI_DB {
 	 * @param	resource
 	 * @return	void
 	 */
-	function _close($conn_id)
+	function _close()
 	{
-		@mysqli_close($conn_id);
+		$this->connection->close();
 	}
-
-
 }
 
 
