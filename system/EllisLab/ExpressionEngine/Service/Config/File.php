@@ -33,7 +33,7 @@ class File implements Config
 			'active_group'     => 'expressionengine',
 			'active_record'    => TRUE,
 			'expressionengine' => array(
-				'hostname' => 'localhost',
+				'hostname' => '127.0.0.1',
 				'username' => 'root',
 				'password' => '',
 				'database' => '',
