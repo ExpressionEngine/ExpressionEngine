@@ -65,7 +65,7 @@
 
             list.placeEl = $('<div class="' + list.options.placeClass + '"/>');
 
-            $.each(this.el.find(list.options.itemNodeName), function(k, el) {
+            $.each(this.el.find(list.options.itemNodeName+'.'+list.options.itemClass), function(k, el) {
                 list.setParent($(el));
             });
 
@@ -75,7 +75,7 @@
                 }
                 var target = $(e.currentTarget),
                     action = target.data('action'),
-                    item   = target.parent(list.options.itemNodeName);
+                    item   = target.parent(list.options.itemNodeName+'.'+list.options.itemClass);
                 if (action === 'collapse') {
                     list.collapseItem(item);
                 }
@@ -144,12 +144,12 @@
                 step  = function(level, depth)
                 {
                     var array = [ ],
-                        items = level.children(list.options.itemNodeName);
+                        items = level.children(list.options.itemNodeName+'.'+list.options.itemClass);
                     items.each(function()
                     {
                         var li   = $(this),
                             item = $.extend({}, li.data()),
-                            sub  = li.children(list.options.listNodeName);
+                            sub  = li.children(list.options.listNodeName+'.'+list.options.listClass);
                         if (sub.length) {
                             item.children = step(sub, depth + 1);
                         }
@@ -157,7 +157,7 @@
                     });
                     return array;
                 };
-            data = step(list.el.find(list.options.listNodeName).first(), depth);
+            data = step(list.el.find(list.options.listNodeName+'.'+list.options.listClass).first(), depth);
             return data;
         },
 
@@ -201,24 +201,24 @@
             li.removeClass(this.options.collapsedClass);
             li.children('[data-action="expand"]').hide();
             li.children('[data-action="collapse"]').show();
-            li.children(this.options.listNodeName).show();
+            li.children(this.options.listNodeName+'.'+this.options.listClass).show();
         },
 
         collapseItem: function(li)
         {
-            var lists = li.children(this.options.listNodeName);
+            var lists = li.children(this.options.listNodeName+'.'+this.options.listClass);
             if (lists.length) {
                 li.addClass(this.options.collapsedClass);
                 li.children('[data-action="collapse"]').hide();
                 li.children('[data-action="expand"]').show();
-                li.children(this.options.listNodeName).hide();
+                li.children(this.options.listNodeName+'.'+this.options.listClass).hide();
             }
         },
 
         expandAll: function()
         {
             var list = this;
-            list.el.find(list.options.itemNodeName).each(function() {
+            list.el.find(list.options.itemNodeName+'.'+list.options.itemClass).each(function() {
                 list.expandItem($(this));
             });
         },
@@ -226,14 +226,14 @@
         collapseAll: function()
         {
             var list = this;
-            list.el.find(list.options.itemNodeName).each(function() {
+            list.el.find(list.options.itemNodeName+'.'+list.options.itemClass).each(function() {
                 list.collapseItem($(this));
             });
         },
 
         setParent: function(li)
         {
-            if (li.children(this.options.listNodeName).length) {
+            if (li.children(this.options.listNodeName+'.'+this.options.listClass).length) {
                 li.prepend($(this.options.expandBtnHTML));
                 li.prepend($(this.options.collapseBtnHTML));
             }
@@ -244,14 +244,14 @@
         {
             li.removeClass(this.options.collapsedClass);
             li.children('[data-action]').remove();
-            li.children(this.options.listNodeName).remove();
+            li.children(this.options.listNodeName+'.'+this.options.listClass).remove();
         },
 
         dragStart: function(e)
         {
             var mouse    = this.mouse,
                 target   = $(e.target),
-                dragItem = target.closest(this.options.itemNodeName);
+                dragItem = target.closest(this.options.itemNodeName+'.'+this.options.itemClass);
 
             this.placeEl.css('height', dragItem.height());
 
@@ -276,9 +276,9 @@
             });
             // total depth of dragging item
             var i, depth,
-                items = this.dragEl.find(this.options.itemNodeName);
+                items = this.dragEl.find(this.options.itemNodeName+'.'+this.options.itemClass);
             for (i = 0; i < items.length; i++) {
-                depth = $(items[i]).parents(this.options.listNodeName).length;
+                depth = $(items[i]).parents(this.options.listNodeName+'.'+this.options.listClass).length;
                 if (depth > this.dragDepth) {
                     this.dragDepth = depth;
                 }
@@ -287,7 +287,7 @@
 
         dragStop: function(e)
         {
-            var el = this.dragEl.children(this.options.itemNodeName).first();
+            var el = this.dragEl.children(this.options.itemNodeName+'.'+this.options.itemClass).first();
             el[0].parentNode.removeChild(el[0]);
             this.placeEl.replaceWith(el);
 
@@ -357,13 +357,13 @@
             if (mouse.dirAx && mouse.distAxX >= opt.threshold) {
                 // reset move distance on x-axis for new phase
                 mouse.distAxX = 0;
-                prev = this.placeEl.prev(opt.itemNodeName);
+                prev = this.placeEl.prev(opt.itemNodeName+'.'+opt.itemClass);
                 // increase horizontal level if previous sibling exists and is not collapsed
                 if (mouse.distX > 0 && prev.length && !prev.hasClass(opt.collapsedClass)) {
                     // cannot increase level when item above is collapsed
-                    list = prev.find(opt.listNodeName).last();
+                    list = prev.find(opt.listNodeName+'.'+opt.listClass).last();
                     // check if depth limit has reached
-                    depth = this.placeEl.parents(opt.listNodeName).length;
+                    depth = this.placeEl.parents(opt.listNodeName+'.'+opt.listClass).length;
                     if (depth + this.dragDepth <= opt.maxDepth) {
                         // create new sub-level if one doesn't exist
                         if (!list.length) {
@@ -373,7 +373,7 @@
                             this.setParent(prev);
                         } else {
                             // else append to next level up
-                            list = prev.children(opt.listNodeName).last();
+                            list = prev.children(opt.listNodeName+'.'+opt.listClass).last();
                             list.append(this.placeEl);
                         }
                     }
@@ -381,10 +381,10 @@
                 // decrease horizontal level
                 if (mouse.distX < 0) {
                     // we can't decrease a level if an item preceeds the current one
-                    next = this.placeEl.next(opt.itemNodeName);
+                    next = this.placeEl.next(opt.itemNodeName+'.'+opt.itemClass);
                     if (!next.length) {
                         parent = this.placeEl.parent();
-                        this.placeEl.closest(opt.itemNodeName).after(this.placeEl);
+                        this.placeEl.closest(opt.itemNodeName+'.'+opt.itemClass).after(this.placeEl);
                         if (!parent.children().length) {
                             this.unsetParent(parent.parent());
                         }
@@ -403,7 +403,7 @@
                 this.dragEl[0].style.visibility = 'visible';
             }
             if (this.pointEl.hasClass(opt.handleClass)) {
-                this.pointEl = this.pointEl.parent(opt.itemNodeName);
+                this.pointEl = this.pointEl.closest(opt.itemNodeName+'.'+opt.itemClass);
             }
             if (this.pointEl.hasClass(opt.emptyClass)) {
                 isEmpty = true;
@@ -425,7 +425,7 @@
                     return;
                 }
                 // check depth limit
-                depth = this.dragDepth - 1 + this.pointEl.parents(opt.listNodeName).length;
+                depth = this.dragDepth - 1 + this.pointEl.parents(opt.listNodeName+'.'+opt.listClass).length;
                 if (depth > opt.maxDepth) {
                     return;
                 }
@@ -446,7 +446,7 @@
                 if (!parent.children().length) {
                     this.unsetParent(parent.parent());
                 }
-                if (!this.dragRootEl.find(opt.itemNodeName).length) {
+                if (!this.dragRootEl.find(opt.itemNodeName+'.'+opt.itemClass).length) {
                     this.dragRootEl.append('<div class="' + opt.emptyClass + '"/>');
                 }
                 // parent root list has changed
