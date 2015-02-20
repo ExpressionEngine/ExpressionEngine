@@ -97,10 +97,12 @@ $(document).ready(function () {
 		handle: "li.move a",
 		helper: "clone",
 		items: "fieldset.sortable",
+		placeholder: "drag-placeholder",
 		start: function (event, ui)
 		{
 			var fieldIndex = $('div.tab-open fieldset').index(ui.item[0]);
 			field = EE.publish_layout[getTabIndex()].fields.splice(fieldIndex, 1)[0];
+			ui.placeholder.append('<div class="none"></div>');
 		},
 		stop: function (event, ui) {
 			if (ui.position == ui.originalPosition) {
