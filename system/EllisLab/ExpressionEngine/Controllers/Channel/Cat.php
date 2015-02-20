@@ -195,29 +195,6 @@ class Cat extends AbstractChannelController {
 
 		$categories = ee()->api_channel_categories->category_tree($group_id);
 
-		$table = CP\Table::create(array(
-			'reorder' => TRUE,
-			'sortable' => FALSE
-		));
-		$table->setColumns(
-			array(
-				'col_id',
-				'name',
-				'url_title',
-				'manage' => array(
-					'type'	=> CP\Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=> CP\Table::COL_CHECKBOX
-				)
-			)
-		);
-		$table->setNoResultsText(
-			'no_category_groups',
-			'create_category_group',
-			cp_url('channel/cat/new')
-		);
-
 		$data = array();
 		$parents = array();
 		foreach ($categories as $category)
@@ -272,9 +249,6 @@ class Cat extends AbstractChannelController {
 				)
 			);
 		}
-
-		$table->setData($data);
-
 		// Only load reorder JS if there's more than one category
 		if (count($data) > 1)
 		{
@@ -282,8 +256,7 @@ class Cat extends AbstractChannelController {
 			ee()->cp->add_js_script('file', 'cp/v3/category_reorder');
 		}
 
-		$base_url = new CP\URL('channel/cat/cat-list'.$group_id, ee()->session->session_id());
-		$vars['table'] = $table->viewData($base_url);
+		$vars['base_url'] = cp_url('channel/cat/cat-list'.$group_id);
 
 		ee()->view->cp_page_title = $cat_group->group_name . ' &mdash; ' . lang('categories');
 		ee()->view->cat_group = $cat_group;

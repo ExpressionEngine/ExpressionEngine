@@ -171,7 +171,7 @@ class Channel extends AbstractChannelController {
 	}
 
 	/**
-	 * New channel form
+	 * Edit channel form
 	 */
 	public function edit($channel_id)
 	{

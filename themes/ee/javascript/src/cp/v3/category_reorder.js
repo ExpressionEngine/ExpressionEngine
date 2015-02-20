@@ -16,10 +16,16 @@
 
 $(document).ready(function() {
 
-	$('table').eeTableReorder({
-		afterSort: function(row){
-			console.log('i sorted!');
-		}
+	$('.nestable').nestable({
+		listNodeName: 'ul',
+		listClass: 'tbl-list',
+		itemClass: 'tbl-list-item',
+		rootClass: 'nestable',
+		dragClass: 'tbl-list-dragging',
+		handleClass: 'reorder',
+		placeClass: 'drag-placeholder',
+		expandBtnHTML: '',
+		collapseBtnHTML: ''
 	});
 });
 
