@@ -102,6 +102,7 @@ abstract class AbstractPublish extends CP_Controller {
 			'lang.loading'						=> lang('loading'),
 			'publish.autosave.interval'			=> (int) $autosave_interval_seconds,
 			'publish.autosave.URL'				=> cp_url('publish/autosave/' . $channel_id . '/' . $entry_id),
+			'publish.restore.URL'				=> cp_url('publish/restore'),
 			// 'publish.channel_id'				=> $this->_channel_data['channel_id'],
 			// 'publish.default_entry_title'		=> $this->_channel_data['default_entry_title'],
 			// 'publish.field_group'				=> $this->_channel_data['field_group'],
