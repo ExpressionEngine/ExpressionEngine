@@ -174,6 +174,12 @@ $lang = array(
 'btn_add_category' =>
 'Add Category',
 
+'auto_saved_entries' =>
+'Auto Saved Entries',
+
+'filter_autosaves' =>
+'filter autosaves',
+
 //----------------------------
 // Publish page
 //----------------------------

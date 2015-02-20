@@ -45,7 +45,7 @@ $(document).ready(function () {
 				type: "POST",
 				dataType: 'json',
 				url: EE.publish.autosave.URL,
-				data: {data: form.serializeArray()},
+				data: form.serialize(),
 				success: function(result) {
 					form.find('div.alert.inline.warn').remove();
 

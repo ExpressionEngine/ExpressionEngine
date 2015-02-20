@@ -23,7 +23,7 @@
  * @link		http://ellislab.com
  */
 
-require_once(EE_APPPATH.'/libraries/Extensions'.EXT);
+require_once(EE_APPPATH.'/libraries/Extensions.php');
 
 class Installer_Extensions extends EE_Extensions {
 	// Nothing to see here.

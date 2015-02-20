@@ -56,8 +56,9 @@ feature 'Communicate' do
 	end
 
 	it "disables groups with no members" do
-		input = @page.find('input[disabled="disabled"]')
-		input.first(:xpath, ".//..").should have_text '(0)'
+		@page.member_groups.each do |group|
+			group.parent.should have_text '(0)' if group[:disabled]
+		end
 	end
 
 	it "shows errors when required fields are not populated" do

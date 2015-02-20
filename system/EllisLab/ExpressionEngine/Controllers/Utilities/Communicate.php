@@ -100,7 +100,6 @@ class Communicate extends Utilities {
 		{
 			$groups = ee('Model')->get('MemberGroup')
 				->with('Members')
-				->filter('include_in_mailinglists', 'y')
 				->all();
 
 			foreach ($groups as $group)
@@ -259,7 +258,6 @@ class Communicate extends Utilities {
 		// Get member group emails
 		$member_groups = ee('Model')->get('MemberGroup', $groups)
 			->with('Members')
-			->filter('include_in_mailinglists', 'y') // for safety
 			->all();
 
 		$email_addresses = array();

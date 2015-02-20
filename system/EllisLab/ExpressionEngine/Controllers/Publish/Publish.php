@@ -47,7 +47,13 @@ class Publish extends AbstractPublishController {
 			$autosave->channel_id = $channel_id;
 		}
 
-		$autosave->entry_data = ee()->input->post('data');
+		$autosave->author_id = ee()->input->post('author_id');
+		$autosave->title = (ee()->input->post('title')) ?: 'autosave_' . ee()->localize->now;
+		$autosave->url_title = (ee()->input->post('url_title')) ?: 'autosave_' . ee()->localize->now;
+		$autosave->status = ee()->input->post('status');
+		$autosave->edit_date = ee()->localize->now;
+		$autosave->entry_data = $_POST;
+
 		$autosave->save();
 
 		$time = ee()->localize->human_time(ee()->localize->now);

@@ -1,5 +1,7 @@
-<h2 class="important"><?=lang('error_occurred')?></h2>
-
-<p class="pad"><?=$error?></p>
-
-<p><?=lang('support_resource_info')?></p>
+<div class="alert inline issue">
+	<h3><?=lang('error_occurred')?></h3>
+	<p><?=$error?></p>
+</div>
+<fieldset class="install-btn">
+	<input class="btn disable" type="submit" value="Install Stopped">
+</fieldset>
