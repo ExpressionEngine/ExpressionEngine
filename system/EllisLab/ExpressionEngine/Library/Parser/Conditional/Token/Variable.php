@@ -38,7 +38,18 @@ class Variable extends Token {
 	{
 		if ($this->has_value)
 		{
-			return var_export($this->value, TRUE);
+			$value = $this->value;
+
+			if (strpos($value, '{') !== FALSE)
+			{
+				$value = str_replace(
+					array('{', '}'),
+					array('&#123', '&#123'),
+					$value
+				);
+			}
+
+			return var_export($value, TRUE);
 		}
 
 		return $this->lexeme;
