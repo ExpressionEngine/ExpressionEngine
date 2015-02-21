@@ -25,7 +25,8 @@ $(document).ready(function() {
 		handleClass: 'reorder',
 		placeClass: 'drag-placeholder',
 		expandBtnHTML: '',
-		collapseBtnHTML: ''
+		collapseBtnHTML: '',
+		maxDepth: 10
 	});
 });
 
