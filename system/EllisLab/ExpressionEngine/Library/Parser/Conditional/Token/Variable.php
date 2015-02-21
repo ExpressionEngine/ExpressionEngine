@@ -18,6 +18,15 @@ class Variable extends Token {
 
 	public function setValue($value)
 	{
+		if (strpos($value, '{') !== FALSE)
+		{
+			$value = str_replace(
+				array('{', '}'),
+				array('&#123;', '&#123;'),
+				$value
+			);
+		}
+
 		$this->value = $value;
 		$this->has_value = TRUE;
 	}
@@ -38,18 +47,7 @@ class Variable extends Token {
 	{
 		if ($this->has_value)
 		{
-			$value = $this->value;
-
-			if (strpos($value, '{') !== FALSE)
-			{
-				$value = str_replace(
-					array('{', '}'),
-					array('&#123;', '&#123;'),
-					$value
-				);
-			}
-
-			return var_export($value, TRUE);
+			return var_export($this->value, TRUE);
 		}
 
 		return $this->lexeme;
