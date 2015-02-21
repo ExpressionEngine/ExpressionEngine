@@ -23,7 +23,7 @@ $(document).ready(function() {
 		rootClass: 'nestable',
 		dragClass: 'tbl-list-dragging',
 		handleClass: 'reorder',
-		placeClass: 'drag-placeholder',
+		placeElement: $('<li><div class="tbl-row drag-placeholder"><div class="none"></div></div></li>'),
 		expandBtnHTML: '',
 		collapseBtnHTML: '',
 		maxDepth: 10

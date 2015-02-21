@@ -63,7 +63,11 @@
 
             list.el.data('nestable-group', this.options.group);
 
-            list.placeEl = $('<div class="' + list.options.placeClass + '"/>');
+            if (this.options.placeElement !== undefined) {
+                list.placeEl = this.options.placeElement;
+            } else {
+                list.placeEl = $('<div class="' + list.options.placeClass + '"/>');
+            }
 
             $.each(this.el.find(list.options.itemNodeName+'.'+list.options.itemClass), function(k, el) {
                 list.setParent($(el));
