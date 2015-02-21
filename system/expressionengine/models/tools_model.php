@@ -584,7 +584,6 @@ class Tools_model extends CI_Model {
 		}
 
 		$info['database_uptime'] = timespan($this->localize->now - $res[$uptime]['Value']);
-		$info['total_queries'] = number_format($query->result_array[$queries]['Value']);
 
 		return $info;
 	}
