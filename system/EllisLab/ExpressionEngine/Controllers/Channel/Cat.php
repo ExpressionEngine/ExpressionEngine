@@ -190,74 +190,18 @@ class Cat extends AbstractChannelController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		ee()->load->library('api');
-		ee()->legacy_api->instantiate('channel_categories');
+		ee()->cp->add_js_script('plugin', 'nestable');
+		ee()->cp->add_js_script('file', 'cp/v3/category_reorder');
 
-		$categories = ee()->api_channel_categories->category_tree($group_id);
-
-		$data = array();
-		$parents = array();
-		foreach ($categories as $category)
-		{
-			$parent_id = $category[6];
-
-			// Are we under a parent we've already logged?
-			if (in_array($parent_id, $parents))
+		// Get only parentless categories, we'll drill down
+		// into children in the view
+		ee()->view->categories = $cat_group->getCategories()
+			->filter(function($category)
 			{
-				// If we already have this parent ID but it's not at the
-				// the end of the array, pop off items until we get to it
-				while (end($parents) != $parent_id)
-				{
-					array_pop($parents);
-				}
-			}
-			// Category hasn't a parent
-			elseif ($parent_id === FALSE)
-			{
-				$parents = array();
-			}
-			else
-			{
-				$parents[] = $parent_id;
-			}
+				return $category->parent_id == 0;
+			});
 
-			// Remove all the falses
-			$parents = array_filter($parents);
-			
-			$data[] = array(
-				'attrs'	  => array(
-					'data-parent-ids' => json_encode($parents),
-					'data-cat-id'  => $category[0]
-				),
-				'columns' => array(
-					$category[0].form_hidden('cat_order[]', $category[0]),
-					str_repeat('<span class="child"></span>', count($parents)).' '.htmlentities($category[1], ENT_QUOTES, 'UTF-8'),
-					htmlentities($category[9], ENT_QUOTES, 'UTF-8'),
-					array('toolbar_items' => array(
-						'edit' => array(
-							'href' => cp_url('channel/cat/edit-cat/'.$category[0]),
-							'title' => lang('edit')
-						)
-					)),
-					array(
-						'name' => 'categories[]',
-						'value' => $category[0],
-						'data'	=> array(
-							'confirm' => lang('category') . ': <b>' . htmlentities($category[1], ENT_QUOTES, 'UTF-8') . '</b>'
-						)
-					)
-				)
-			);
-		}
-		// Only load reorder JS if there's more than one category
-		if (count($data) > 1)
-		{
-			ee()->cp->add_js_script('plugin', 'nestable');
-			ee()->cp->add_js_script('file', 'cp/v3/category_reorder');
-		}
-
-		$vars['base_url'] = cp_url('channel/cat/cat-list'.$group_id);
-
+		ee()->view->base_url = $cat_group->group_name . ' &mdash; ' . lang('categories');
 		ee()->view->cp_page_title = $cat_group->group_name . ' &mdash; ' . lang('categories');
 		ee()->view->cat_group = $cat_group;
 
@@ -266,7 +210,7 @@ class Cat extends AbstractChannelController {
 
 		ee()->cp->set_breadcrumb(cp_url('channel/cat'), lang('category_groups'));
 
-		ee()->cp->render('channel/cat/list', $vars);
+		ee()->cp->render('channel/cat/list');
 	}
 
 	/**

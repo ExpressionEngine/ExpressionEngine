@@ -17,95 +17,9 @@
 			</style>
 			<div class="nestable">
 				<ul class="tbl-list">
-					<li class="tbl-list-item" data-id="1">
-						<div class="tbl-row selected">
-							<div class="reorder"></div>
-							<div class="txt">
-								<div class="main">
-									<b>[category_name]</b>
-								</div>
-								<div class="secondary">
-									<span class="faded">ID#</span> [id] <span class="faded">/</span> [category_url_title]
-								</div>
-							</div>
-							<ul class="toolbar">
-								<li class="edit"><a href="http://localhost/el-projects/ee-cp/views/channel-cat-list-edit.php"></a></li>
-							</ul>
-							<div class="check-ctrl"><input type="checkbox" checked="checked"></div>
-						</div>
-					</li>
-					<li class="tbl-list-item" data-id="2">
-						<div class="tbl-row">
-							<div class="reorder"></div>
-							<div class="txt">
-								<div class="main">
-									<b>News and Events</b>
-								</div>
-								<div class="secondary">
-									<span class="faded">ID#</span> 2 <span class="faded">/</span> news-and-events
-								</div>
-							</div>
-							<ul class="toolbar">
-								<li class="edit"><a href="http://localhost/el-projects/ee-cp/views/channel-cat-list-edit.php"></a></li>
-							</ul>
-							<div class="check-ctrl"><input type="checkbox"></div>
-						</div>
-						<ul class="tbl-list">
-							<li class="tbl-list-item" data-id="3">
-								<div class="tbl-row">
-									<div class="reorder"></div>
-									<div class="txt">
-										<div class="main">
-											<b>[category_name]</b>
-										</div>
-										<div class="secondary">
-											<span class="faded">ID#</span> [id] <span class="faded">/</span> [category_url_title]
-										</div>
-									</div>
-									<ul class="toolbar">
-										<li class="edit"><a href="http://localhost/el-projects/ee-cp/views/channel-cat-list-edit.php"></a></li>
-									</ul>
-									<div class="check-ctrl"><input type="checkbox"></div>
-								</div>
-								<ul class="tbl-list">
-									<li class="tbl-list-item" data-id="4">
-										<div class="tbl-row">
-											<div class="reorder"></div>
-											<div class="txt">
-												<div class="main">
-													<b>[category_name]</b>
-												</div>
-												<div class="secondary">
-													<span class="faded">ID#</span> [id] <span class="faded">/</span> [category_url_title]
-												</div>
-											</div>
-											<ul class="toolbar">
-												<li class="edit"><a href="http://localhost/el-projects/ee-cp/views/channel-cat-list-edit.php"></a></li>
-											</ul>
-											<div class="check-ctrl"><input type="checkbox"></div>
-										</div>
-									</li>
-								</ul>
-							</li>
-							<li class="tbl-list-item" data-id="5">
-								<div class="tbl-row">
-									<div class="reorder"></div>
-									<div class="txt">
-										<div class="main">
-											<b>[category_name]</b>
-										</div>
-										<div class="secondary">
-											<span class="faded">ID#</span> [id] <span class="faded">/</span> [category_url_title]
-										</div>
-									</div>
-									<ul class="toolbar">
-										<li class="edit"><a href="http://localhost/el-projects/ee-cp/views/channel-cat-list-edit.php"></a></li>
-									</ul>
-									<div class="check-ctrl"><input type="checkbox"></div>
-								</div>
-							</li>
-						</ul>
-					</li>
+					<?php foreach ($categories as $category): ?>
+						<?php $this->view('channel/cat/_category', array('category' => $category)); ?>
+					<?php endforeach ?>
 				</ul>
 			</div>
 		</div>
