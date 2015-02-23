@@ -195,7 +195,7 @@ class Cat extends AbstractChannelController {
 
 		// Get only parentless categories, we'll drill down
 		// into children in the view
-		ee()->view->categories = $cat_group->getCategories()
+		ee()->view->categories = $cat_group->getCategories()->sortBy('cat_order')
 			->filter(function($category)
 			{
 				return $category->parent_id == 0;
