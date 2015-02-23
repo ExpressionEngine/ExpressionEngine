@@ -113,7 +113,7 @@ class CI_DB_mysqli_connection {
 
 	public function getAffectedRows()
 	{
-		return $this->connection->affected_rows;
+		return $this->connection->rowCount();
 	}
 
 	public function getNative()
