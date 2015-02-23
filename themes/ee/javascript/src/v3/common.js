@@ -210,6 +210,11 @@ $(document).ready(function(){
 			});
 		});
 
+		// Highlight selected row for table lists
+		$('.tbl-list .check-ctrl input').on('click',function(){console.log('test');
+			$(this).parents('.tbl-row').toggleClass('selected', $(this).is(':checked'));
+		});
+
 	// ======================
 	// grid navigation -> WIP
 	// ======================
