@@ -22,7 +22,7 @@ class Variable extends Token {
 		{
 			$value = str_replace(
 				array('{', '}'),
-				array('&#123;', '&#123;'),
+				array('&#123;', '&#125;'),
 				$value
 			);
 		}
