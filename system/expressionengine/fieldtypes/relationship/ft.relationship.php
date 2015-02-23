@@ -240,7 +240,7 @@ class Relationship_ft extends EE_Fieldtype {
 	{
 		$field_name = $this->field_name;
 
-		$entry_id = ee()->input->get('entry_id');
+		$entry_id = ($this->content_id) ?: ee()->input->get('entry_id');
 
 		$order = array();
 		$entries = array();
