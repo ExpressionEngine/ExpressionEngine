@@ -86,9 +86,9 @@ class Email {
 
 		// Conditionals
 		$cond = array();
-		$cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
-		$cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
-		$cond['captcha']	= ($this->use_captchas == 'y') ? 'TRUE' : 'FALSE';
+		$cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? FALSE : TRUE;
+		$cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? FALSE : TRUE;
+		$cond['captcha']	= ($this->use_captchas == 'y') ? TRUE : FALSE;
 
 		$tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
 
@@ -315,7 +315,7 @@ class Email {
 
 		// Parse conditionals
 		$cond = array();
-		$cond['captcha'] = ($this->use_captchas == 'y') ? 'TRUE' : 'FALSE';
+		$cond['captcha'] = ($this->use_captchas == 'y') ? TRUE : FALSE;
 
 		$tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
 
@@ -554,7 +554,8 @@ class Email {
 		if ($query->num_rows() > 0)
 		{
 			// Max Emails - Quick check
-			if ($query->num_rows() >= $this->email_max_emails)
+			if (ee()->session->userdata('group_id') != 1
+				&& $query->num_rows() >= $this->email_max_emails)
 			{
 				return ee()->output->show_user_error('general', array(lang('em_limit_exceeded')));
 			}
@@ -567,7 +568,8 @@ class Email {
 				$total_sent = $total_sent + $row['number_recipients'];
 			}
 
-			if ($total_sent >= $this->email_max_emails)
+			if (ee()->session->userdata('group_id') != 1
+				&& $total_sent >= $this->email_max_emails)
 			{
 				return ee()->output->show_user_error('general', array(lang('em_limit_exceeded')));
 			}

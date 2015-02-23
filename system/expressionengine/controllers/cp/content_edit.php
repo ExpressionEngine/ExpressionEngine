@@ -190,6 +190,7 @@ class Content_edit extends CP_Controller {
 		));
 
 		$this->javascript->set_global('autosave_map', $vars['autosave_array']);
+		$this->javascript->set_global('lang.selection_required', lang('selection_required'));
 		$this->cp->render('content/edit', $vars);
 	}
 
@@ -415,8 +416,7 @@ class Content_edit extends CP_Controller {
 				$row['screen_name'] = $row['username'];
 			}
 
-			$row['screen_name'] = mailto($row['email'], $row['screen_name']);
-
+			$row['screen_name'] = anchor(cp_url('myaccount', array('id' => $row['author_id'])), $row['screen_name']);
 
 			// live look template
 			$llt = $row['live_look_template'];

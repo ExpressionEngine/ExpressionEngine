@@ -284,6 +284,9 @@ class CI_DB_forge {
 			}
 		}
 
+		// Cached field names have changed
+		unset($this->db->data_cache['field_names'][$table]);
+
 		return TRUE;
 
 	}
@@ -312,6 +315,9 @@ class CI_DB_forge {
 		}
 
 		$sql = $this->_alter_table('DROP', $this->db->dbprefix.$table, $column_name);
+
+		// Cached field names have changed
+		unset($this->db->data_cache['field_names'][$table]);
 
 		return $this->db->query($sql);
 	}
@@ -355,6 +361,9 @@ class CI_DB_forge {
 				return FALSE;
 			}
 		}
+
+		// Cached field names have changed
+		unset($this->db->data_cache['field_names'][$table]);
 
 		return TRUE;
 	}

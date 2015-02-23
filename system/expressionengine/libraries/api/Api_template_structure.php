@@ -167,7 +167,7 @@ class Api_template_structure extends Api {
 
 		if (is_numeric($duplicate_group))
 		{
-			$fields = array('template_name', 'template_data', 'template_type', 'template_notes', 'cache', 'refresh', 'no_auth_bounce', 'allow_php', 'php_parse_location');
+			$fields = array('template_name', 'template_data', 'template_type', 'template_notes', 'cache', 'refresh', 'no_auth_bounce', 'allow_php', 'php_parse_location', 'protect_javascript');
 			$query = ee()->template_model->get_templates($site_id, $fields, array('templates.group_id' => $duplicate_group));
 
 			if ($query->num_rows() > 0)
@@ -202,6 +202,7 @@ class Api_template_structure extends Api {
 								'no_auth_bounce'  		=> $row->no_auth_bounce,
 								'php_parse_location'	=> $row->php_parse_location,
 								'allow_php'  			=> (ee()->session->userdata['group_id'] == 1) ? $row->allow_php : 'n',
+								'protect_javascript'	=> $row->protect_javascript,
 								'template_type' 		=> $row->template_type,
 								'template_data'  		=> $row->template_data,
 								'edit_date'				=> ee()->localize->now,

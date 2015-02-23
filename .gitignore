@@ -1,7 +1,8 @@
 .DS_Store
 Thumbs.db
 env_local.rb
-system/expressionengine/config/config.php
+system/config/*
+system/expressionengine/config/config*.php
 system/expressionengine/config/database.php
 system/expressionengine/config/config1x.php
 system/expressionengine/config/config_1x.php
@@ -22,6 +23,9 @@ system/tests/rspec/screenshots/*
 images/test1/
 images/design/
 
+system/cache/*
+!system/cache/index.html
+!system/cache/.htaccess
 system/expressionengine/cache/*
 !system/expressionengine/cache/index.html
 !system/expressionengine/cache/.htaccess
@@ -30,6 +34,19 @@ system/expressionengine/templates/*
 !system/expressionengine/templates/index.html
 !system/expressionengine/templates/.htaccess
 
+system/addons/*
+!system/addons/index.html
+!system/addons/download
+!system/addons/google_maps
+!system/addons/js_tool
+!system/addons/testage
+!system/addons/debug
+!system/addons/safecracker_file
+!system/addons/cookie_check
+!system/addons/cookie_consent
+!system/addons/nannerbanner
+!system/addons/unregisteredbanner
+!system/addons/ellislab_high_ascii_decode
 system/expressionengine/third_party/*
 !system/expressionengine/third_party/index.html
 !system/expressionengine/third_party/download
@@ -41,11 +58,13 @@ system/expressionengine/third_party/*
 !system/expressionengine/third_party/cookie_check
 !system/expressionengine/third_party/cookie_consent
 !system/expressionengine/third_party/nannerbanner
+!system/expressionengine/third_party/unregisteredbanner
 !system/expressionengine/third_party/ellislab_high_ascii_decode
 
 system/codeigniter/system/language/*
 !system/codeigniter/system/language/english/*
 
+system/language/*
 system/expressionengine/language/*
 !system/expressionengine/language/english/*
 
@@ -86,13 +105,5 @@ themes/site_themes/agile_records/images/uploads/_thumb/*
 !themes/site_themes/agile_records/images/uploads/_thumb/map*.jpg
 !themes/site_themes/agile_records/images/uploads/_thumb/staff*.png
 
-
-
-
-
-
-
-
-
-
-
+system/EllisLab/Tests/vendor/*
+system/EllisLab/Tests/vendor/composer.lock

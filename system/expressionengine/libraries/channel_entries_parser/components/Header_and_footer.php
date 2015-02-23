@@ -208,8 +208,26 @@ class EE_Channel_header_and_footer_parser implements EE_Channel_parser_component
 			//  Weekly footer
 			elseif ($display == 'weekly')
 			{
+				$temp_date = $data['entry_date'];
+				$temp_date_compare = (isset($query_result[$data['count']]['entry_date'])) ? $query_result[$data['count']]['entry_date'] : '';
+
+				// We adjust for date()'s week variable 'W' Monday start
+				if (strtolower(ee()->TMPL->fetch_param('start_day')) != 'monday')
+				{
+					if (ee()->localize->format_date('%w', $temp_date) == 0)
+					{
+						// add 7 days to toss us into the next ISO-8601 week
+						$temp_date = strtotime('+1 week', $temp_date);
+					}
+					if (ee()->localize->format_date('%w', $temp_date_compare) == 0)
+					{
+						// add 7 days to toss us into the next ISO-8601 week
+						$temp_date_compare = strtotime('+1 week', $temp_date_compare);
+					}
+				}
+
 				if ( ! isset($query_result[$data['count']]) OR
-					ee()->localize->format_date('%Y%W', $data['entry_date']) != ee()->localize->format_date('%Y%W', $query_result[$data['count']]['entry_date']))
+					ee()->localize->format_date('%Y%W', $temp_date) != ee()->localize->format_date('%Y%W', $temp_date_compare))
 				{
 					$tagdata = ee()->TMPL->swap_var_pairs($tag, 'date_footer', $tagdata);
 				}

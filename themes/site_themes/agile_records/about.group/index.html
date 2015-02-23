@@ -3,18 +3,18 @@
 	<title>{site_name}: Contact Us</title>
 {global_stylesheets}
 
-{rss} 
+{rss}
 {favicon}
-{html_head_end}	
+{html_head_end}
 	<body>
 {nav_access}
 	{branding_begin}
-			{embed="global_embeds/.top_nav" loc="about"}
+			{embed="global_embeds/_top_nav" loc="about"}
 			{global_top_search}
 			{global_top_member}
 	{branding_end}
 	{wrapper_begin}
-{embed="global_embeds/.page_header" header="About"}
+{embed="global_embeds/_page_header" header="About"}
 
 
 <div id="feature" class="about">
@@ -30,12 +30,12 @@
 
 		<!-- Standard Channel Entries tag, but instead of relying on the URL for what to display, we request a specific entry for display via url-title:
 	http://ellislab.com/expressionengine/user-guide/modules/channel/parameters.html#par_url_title
-	
+
 	and we force the channel entries tag to ignore the URL and always deliver the same content by using dynamic="no":
-	
-	http://ellislab.com/expressionengine/user-guide/modules/channel/parameters.html#par_dynamic	
+
+	http://ellislab.com/expressionengine/user-guide/modules/channel/parameters.html#par_dynamic
 	-->
-	
+
 		{exp:channel:entries channel="about" dynamic="no" url_title="about_the_label" limit="1" disable="pagination|member_data|categories|category_fields"}
 			{about_extended}
 		{/exp:channel:entries}
@@ -54,11 +54,11 @@
 				</li>
 			{if count == total_results}</ul>{/if}
 		{/exp:channel:entries}
-	
-</div>	<!-- ending #content_sec -->	
+
+</div>	<!-- ending #content_sec -->
 
 
-	
+
 {global_footer}
 {wrapper_close}
 {js}

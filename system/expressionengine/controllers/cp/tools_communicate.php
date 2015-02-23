@@ -1112,7 +1112,7 @@ class Tools_communicate extends CP_Controller {
 		while ($email = array_shift($emails))
 		{
 			$rows[] = array(
-				'subject'		=> "<strong><a href='".BASE.AMP.'C=tools_communicate'.AMP.'M=view_email'.AMP.'id='.$email['cache_id']."'>{$email['subject']}</a></strong>",
+				'subject'		=> "<strong><a href='".BASE.AMP.'C=tools_communicate'.AMP.'M=view_email'.AMP.'id='.$email['cache_id']."'>".htmlentities($email['subject'], ENT_QUOTES, 'UTF-8')."</a></strong>",
 				'cache_date'	=> $this->localize->human_time($email['cache_date']),
 				'total_sent'	=> $email['total_sent'],
 				'status' => ($email['recipient_array'] == '') ? lang('complete') :
@@ -1246,7 +1246,7 @@ class Tools_communicate extends CP_Controller {
 		/**  Render output
 		/** -----------------------------*/
 
-		$vars['subject'] = htmlentities($query->row('subject'));
+		$vars['subject'] = htmlentities($query->row('subject'), ENT_QUOTES, 'UTF-8');
 
 		/** ----------------------------------------
 		/**  Instantiate Typography class

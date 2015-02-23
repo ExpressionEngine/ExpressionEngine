@@ -9,10 +9,15 @@
 				<h2><span class="ee_notice_icon"></span><?=lang('important_messages')?><span class="msg_open_close">Ignore Button</span></h2>
 			</div>
 			<div class="pageContents open" id="noticeContents">
-				<?php // New Version Notice
-				if ($message):?>
-				<p id="newVersionNotice"><?=$message?></p>
-				<?php endif; ?>
+				<?php if ( ! empty($message)):
+					foreach ($message as $value): ?>
+						<p><?=$value?></p>
+						<?php if ($value != end($message)): ?>
+							<hr>
+						<?php endif;
+					endforeach;
+				endif; ?>
+
 				<?php // Bootstrap Checksum Failure Notice?>
 				<?php if (isset($new_checksums)):?>
 					<ul id="checksumFailure">

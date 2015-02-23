@@ -419,10 +419,10 @@ class Auth {
 		// remove old remember me's and sessions, so that
 		// changing your password effectively logs out people
 		// using the old one.
-		ee()->remember->delete_others();
+		ee()->remember->delete_others($member_id);
 
 		ee()->db->where('member_id', (int) $member_id);
-		ee()->db->where('session_id !=', ee()->session->userdata('session_id'));
+		ee()->db->where('session_id !=', (string) ee()->session->userdata('session_id'));
 		ee()->db->delete('sessions');
 
 		// update password in db

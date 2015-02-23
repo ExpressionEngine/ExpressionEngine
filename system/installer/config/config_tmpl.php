@@ -12,13 +12,17 @@
 */
 
 $config['app_version'] = '{app_version}';
+$config['license_contact'] = '{license_contact}';
 $config['license_number'] = '{license_number}';
 $config['debug'] = '{debug}';
 $config['cp_url'] = '{cp_url}';
 $config['doc_url'] = '{doc_url}';
 $config['is_system_on'] = '{is_system_on}';
 $config['allow_extensions'] = '{allow_extensions}';
+$config['cache_driver'] = '{cache_driver}';
 {extra_config}
+
+// END EE config items
 
 /*
 |--------------------------------------------------------------------------

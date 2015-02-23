@@ -727,8 +727,11 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		ee()->load->library('grid_lib');
 
-		ee()->grid_lib->entry_id = (isset($this->settings['entry_id']))
+		// Attempt to get an entry ID first
+		$entry_id = (isset($this->settings['entry_id']))
 			? $this->settings['entry_id'] : ee()->input->get_post('entry_id');
+
+		ee()->grid_lib->entry_id = ($this->content_id() == NULL) ? $entry_id : $this->content_id();
 		ee()->grid_lib->field_id = $this->id();
 		ee()->grid_lib->field_name = $this->name();
 		ee()->grid_lib->content_type = $this->content_type();

@@ -1566,6 +1566,13 @@ h2 a:hover {
 	text-shadow:		0 1px 0 #abd8f0;
 }
 
+#ee_homepage_notice.contents hr {
+	background-color: #CCCCCC;
+	border: 0;
+	height: 1px;
+	margin: 0 0 11px;
+}
+
 .bad_path_error_list li {
 	font-weight:		bold;
 	margin-bottom:		5px;color:#F72A58;
@@ -2109,9 +2116,12 @@ a.less_important_link:hover {
   overflow:				hidden;
 }
 
-.templateTable tr.accessRowHeader td .accessTable th.template_manager_template_type,
 .templateTable tr.accessRowHeader td .accessTable th.template_manager_template_name {
-	width:				25%;
+	width:				20%;
+}
+
+.templateTable tr.accessRowHeader td .accessTable th.template_manager_template_type {
+	width:				15%;
 }
 
 .templateTable tr.accessRowHeader td .accessTable th.template_manager_enable_caching,
@@ -2125,6 +2135,10 @@ a.less_important_link:hover {
 
 .templateTable tr.accessRowHeader td .accessTable th.template_manager_parse_stage {
 	width:				12%;
+}
+
+.templateTable tr.accessRowHeader td .accessTable th.protect_javascript {
+	width:				10%;
 }
 
 div.tableRowLeft {
@@ -2230,6 +2244,20 @@ div#template_keywords_reset span {
 #url_manager .route_error {
 	background-color: 	#f5e9e9;
 	border-color: 		#f6b5b5;
+}
+
+#url_manager tr th:first-child,
+#url_manager tr td:first-child {
+	width: 2px;
+}
+
+#url_manager tr td:first-child {
+	background: #f5f6f5 url('../images/grid-sprite.png') no-repeat -66px 10px;
+	cursor: move;
+	cursor: hand;
+	cursor: grab !important;
+	cursor: -moz-grab;
+	cursor: -webkit-grab;
 }
 
 /* Edit Page */

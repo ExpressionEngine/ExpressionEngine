@@ -1939,6 +1939,7 @@ class Member {
 							'link'		=> array(ee()->config->item('site_url'), stripslashes(ee()->config->item('site_name')))
 						 );
 
+			set_status_header(404);
 			return ee()->output->show_message($data, 0);
 		}
 
@@ -2384,7 +2385,12 @@ class Member {
 			$str = ee()->functions->insert_action_ids(ee()->functions->add_form_security_hash($str));
 		}
 
-		$str = preg_replace("/".LD."if\s+.*?".RD.".*?".LD.'\/if'.RD."/s", "", $str);
+		if ( ! is_object(ee()->TMPL))
+		{
+			// cleanup unparsed conditionals and annotations
+			$str = preg_replace("/".LD."if\s+.*?".RD.".*?".LD.'\/if'.RD."/s", "", $str);
+			$str = preg_replace("/\{!--.*?--\}/s", '', $str);
+		}
 
 		return $str;
 	}
@@ -2535,14 +2541,14 @@ class Member {
 			$avatar_path	= ee()->config->item('avatar_url').$query->row('avatar_filename');
 			$avatar_width	= $query->row('avatar_width');
 			$avatar_height	= $query->row('avatar_height');
-			$avatar			= 'TRUE';
+			$avatar			= TRUE;
 		}
 		else
 		{
 			$avatar_path	= '';
 			$avatar_width	= '';
 			$avatar_height	= '';
-			$avatar			= 'FALSE';
+			$avatar			= FALSE;
 		}
 
 		// Is there a member photo?
@@ -2551,14 +2557,14 @@ class Member {
 			$photo_path		= ee()->config->item('photo_url').$query->row('photo_filename');
 			$photo_width	= $query->row('photo_width');
 			$photo_height	= $query->row('photo_height');
-			$photo			= 'TRUE';
+			$photo			= TRUE;
 		}
 		else
 		{
 			$photo_path	= '';
 			$photo_width	= '';
 			$photo_height	= '';
-			$photo			= 'FALSE';
+			$photo			= FALSE;
 		}
 
 		// Is there a signature image?
@@ -2567,14 +2573,14 @@ class Member {
 			$sig_img_path	= ee()->config->item('sig_img_url').$query->row('sig_img_filename');
 			$sig_img_width	= $query->row('sig_img_width');
 			$sig_img_height	= $query->row('sig_img_height');
-			$sig_img_image	= 'TRUE';
+			$sig_img_image	= TRUE;
 		}
 		else
 		{
 			$sig_img_path	= '';
 			$sig_img_width	= '';
 			$sig_img_height	= '';
-			$sig_img		= 'FALSE';
+			$sig_img		= FALSE;
 		}
 
 		// Parse variables

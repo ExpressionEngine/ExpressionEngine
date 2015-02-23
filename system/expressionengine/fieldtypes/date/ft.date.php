@@ -31,11 +31,35 @@ class Date_ft extends EE_Fieldtype {
 
 	var $has_array_data = FALSE;
 
+	/**
+	 * Parses the date input, first with the configured date format (as used
+	 * by the datepicker). If that fails it will try again with a fuzzier
+	 * conversion, which allows things like "2 weeks".
+	 *
+	 * @param	string	$date	A date string for parsing
+	 * @return	mixed	Will return a UNIX timestamp or FALSE
+	 */
+	private function _parse_date($date)
+	{
+		// First we try with the configured date format
+		$timestamp = ee()->localize->string_to_timestamp($date, TRUE, ee()->localize->get_date_format());
+
+		// If the date format didn't work, try something more fuzzy
+		if ($timestamp === FALSE)
+		{
+			$timestamp = ee()->localize->string_to_timestamp($date);
+		}
+
+		return $timestamp;
+	}
+
+	// --------------------------------------------------------------------
+
 	function save($data)
 	{
 		if ( ! is_numeric($data))
 		{
-			$data = ee()->localize->string_to_timestamp($data);
+			$data = $this->_parse_date($data);
 		}
 
 		if (empty($data))
@@ -52,10 +76,10 @@ class Date_ft extends EE_Fieldtype {
 	{
 		if ( ! is_numeric($data))
 		{
-			$data = ee()->localize->string_to_timestamp($data);
+			$data = $this->_parse_date($data);
 		}
 
-		if ($this->settings['localize'] !== TRUE)
+		if ( ! empty($data) && $this->settings['localize'] !== TRUE)
 		{
 			$data = array($data, ee()->session->userdata('timezone'));
 		}
@@ -75,7 +99,7 @@ class Date_ft extends EE_Fieldtype {
 	{
 		if ( ! is_numeric($data) && trim($data) && ! empty($data))
 		{
-			$data = ee()->localize->string_to_timestamp($data);
+			$data = $this->_parse_date($data);
 		}
 
 		if ($data === FALSE)

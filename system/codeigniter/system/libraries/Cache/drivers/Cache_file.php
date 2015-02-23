@@ -114,10 +114,24 @@ class CI_Cache_file extends CI_Driver {
 		// Create namespace directory if it doesn't exist
 		if ( ! file_exists($path) OR ! is_dir($path))
 		{
-			mkdir($path, DIR_WRITE_MODE, TRUE);
+			@mkdir($path, DIR_WRITE_MODE, TRUE);
 
-			// Write an index.html file to ensure no directory indexing
-			write_index_html($path);
+			// Grab the error if there was one
+			$error = error_get_last();
+
+			// If we had trouble creating the directory, it's likely due to a
+			// concurrent process already having created it, so we'll check
+			// to see if that's the case and if not, something else went wrong
+			// and we'll show an error
+			if ( ! is_dir($path) OR ! is_really_writable($path))
+			{
+				trigger_error($error['message'], E_USER_WARNING);
+			}
+			else
+			{
+				// Write an index.html file to ensure no directory indexing
+				write_index_html($path);
+			}
 		}
 
 		if (write_file($this->_cache_path.$key, serialize($contents)))
@@ -155,8 +169,12 @@ class CI_Cache_file extends CI_Driver {
 
 			if (delete_files($path, TRUE))
 			{
-				// Remove the namespace directory
-				return rmdir($path);
+				// Try to remove the namespace directory; it may not be
+				// removeable on some high traffic sites where the cache fills
+				// back up quickly
+				@rmdir($path);
+
+				return TRUE;
 			}
 
 			return FALSE;

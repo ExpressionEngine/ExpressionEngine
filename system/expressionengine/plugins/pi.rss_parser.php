@@ -158,7 +158,7 @@ Class Rss_parser {
 	 *
 	 * @return void
 	 */
-	public function usage()
+	public static function usage()
 	{
 		ob_start();
 		?>

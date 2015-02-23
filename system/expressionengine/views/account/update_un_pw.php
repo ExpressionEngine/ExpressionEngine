@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-<title><?=$cp_page_title?> | ExpressionEngine</title>
+<title><?=$cp_page_title?> | <?=APP_NAME?></title>
 <style type="text/css">
 
 body {
@@ -99,7 +99,7 @@ input.submit {
 	padding:			3px 15px 3px 25px;
 	margin:				-48px 0 20px 0;
 	width:				374px;
-	
+
 	-webkit-border-radius: 6px;
 	border-radius:		6px;
 }
@@ -126,21 +126,21 @@ input.submit {
 				<?php endforeach;?>
 			</ul>
 		</div>
-		
+
 		<?=form_open('C=login'.AMP.'M=update_un_pw', array(), $hidden)?>
-		
+
 		<dl>
 			<?php if ($new_username_required):?>
 			<dt><?=lang('existing_username')?>: <?=$username?><br />
 				<?=lang('choose_new_un', 'new_username')?>:</dt>
-			<dd><?=form_input('new_username', $new_username)?></dd>				
+			<dd><?=form_input('new_username', $new_username)?></dd>
 			<?php endif;?>
-			
+
 			<?php if ($new_username_required AND ! $new_password_required): ?>
 			<dt><?=lang('existing_password')?>:</dt>
 			<dd><?=form_password('password')?></dd>
 			<?php endif;?>
-			
+
 			<?php if ($new_password_required):?>
 			<dt><?=lang('existing_password')?>:</dt>
 			<dd><?=form_password('password')?></dd>

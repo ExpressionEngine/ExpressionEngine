@@ -51,7 +51,7 @@ class EE_Stylesheet {
 		}
 		else
 		{
-			$stylesheet = $_GET['css'];
+			$stylesheet = (isset($_GET['css'])) ? $_GET['css'] : '';
 		}
 
 		if (rtrim($stylesheet, '/') == '_ee_channel_form_css')
@@ -63,7 +63,7 @@ class EE_Stylesheet {
 
 		if ($stylesheet == '' OR strpos($stylesheet, '/') === FALSE)
 		{
-			exit;
+			show_404();
 		}
 
 		if ( ! isset($this->style_cache[$stylesheet]))
@@ -72,7 +72,7 @@ class EE_Stylesheet {
 
 			if (count($ex) != 2)
 			{
-				exit;
+				show_404();
 			}
 
 			ee()->db->select('templates.template_data, templates.template_name,
@@ -89,7 +89,7 @@ class EE_Stylesheet {
 
 			if ($query->num_rows() == 0)
 			{
-				exit;
+				show_404();
 			}
 
 			$row = $query->row_array();

@@ -77,7 +77,7 @@ $lang = array(
 
 
 /* Translation */
-'translation_dir_unwritable' => 
+'translation_dir_unwritable' =>
 'Warning: Your translation directory is not writable.',
 
 /* Developer Log */
@@ -89,6 +89,7 @@ $lang = array(
 'deprecated_use_instead'	=> 'Use %s instead.',
 'deprecated_template'	=> 'From template tag %s in %s.',
 'deprecated_snippets'	=> 'This tag may have been parsed from one of these snippets: %s',
+'deprecated_hook'		=> 'Deprecated extension hook called by the following extensions (Class::method) <ul>%s</ul>',
 'deprecation_detected'	=> 'This is a log for developers to bring notices or warnings to the attention of the Super Admins.',
 'dev_log_view_report'	=> 'View report',
 'dev_log_help'			=> 'What does this mean?',

@@ -26,7 +26,7 @@
 
 class Forum_upd {
 
-	var $version			= '3.1.15';
+	var $version			= '3.1.17';
 
 	function Forum_upd()
 	{
@@ -946,6 +946,21 @@ class Forum_upd {
 		if (version_compare($current, '3.1.11', '<'))
 		{
 			ee()->smartforge->drop_column('forum_topics', 'pentry_id');
+		}
+
+		if (version_compare($current, '3.1.16', '<'))
+		{
+			// No default on mod_member_name resulted in some strict errors
+
+			$fields = array(
+				'mod_member_name' => array(
+					'mod_member_name' => 'mod_member_name',
+					'type' => 'varchar',
+					'constraint'	=> '50',
+					'null'			=> TRUE)
+					);
+
+			ee()->smartforge->modify_column('forum_moderators', $fields);
 		}
 
 		return TRUE;

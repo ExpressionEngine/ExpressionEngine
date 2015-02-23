@@ -63,7 +63,16 @@ class Notifications {
 						'channel_name'		=> $c->row('channel_title'),
 						'entry_title'		=> $e->row('title'),
 						'entry_url'			=> reduce_double_slashes($c->row('channel_url').'/'.$e->row('url_title')),
-						'comment_url'		=> reduce_double_slashes($c->row('comment_url').'/'.$e->row('url_title'))
+						'comment_url'		=> reduce_double_slashes($c->row('comment_url').'/'.$e->row('url_title')),
+						'cp_edit_entry_url'	=> cp_url(
+												'content_publish/entry_form',
+												array(
+													'site_id'		=> $e->row('site_id'),
+													'channel_id'	=> $e->row('channel_id'),
+													'entry_id'		=> $e->row('entry_id'),
+													),
+												TRUE
+												)
 		);
 
 		$template = ee()->functions->fetch_email_template('admin_notify_entry');

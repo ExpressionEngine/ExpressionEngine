@@ -111,21 +111,35 @@ class Member_images extends Member {
 			return $this->_trigger_error('edit_signature', 'signatures_not_allowed');
 		}
 
-		$_POST['body'] = ee()->db->escape_str(ee()->security->xss_clean($_POST['body']));
-
-		$maxlength = (ee()->config->item('sig_maxlength') == 0) ? 10000 : ee()->config->item('sig_maxlength');
-
-		if (strlen($_POST['body']) > $maxlength)
+		// Do we have what we need in $_POST?
+		if ( ! ee()->input->post('body'))
 		{
-			return ee()->output->show_user_error('submission', str_replace('%x', $maxlength, lang('sig_too_big')));
+			return ee()->functions->redirect($this->_member_path('edit_signature'));
 		}
 
-		ee()->db->query("UPDATE exp_members SET signature = '".ee()->input->post('body', TRUE)."' WHERE member_id ='".ee()->session->userdata('member_id')."'");
+		$body = ee()->db->escape_str(ee()->input->post('body', TRUE));
+
+		$maxlength = (ee()->config->item('sig_maxlength') == 0)
+			? 10000
+			: ee()->config->item('sig_maxlength');
+
+		if (strlen($body) > $maxlength)
+		{
+			return ee()->output->show_user_error(
+				'submission',
+				sprintf(lang('sig_too_big'), $maxlength)
+			);
+		}
+
+		ee()->db->update(
+			'members',
+			array('signature' => $body),
+			array('member_id' => ee()->session->userdata('member_id'))
+		);
 
 		// Is there an image to upload or remove?
-		if ((isset($_FILES['userfile']) AND
-			$_FILES['userfile']['name'] != '') OR
-			isset($_POST['remove']))
+		if ((isset($_FILES['userfile']) && $_FILES['userfile']['name'] != '')
+			OR isset($_POST['remove']))
 		{
 			return $this->upload_signature_image();
 		}
@@ -133,8 +147,8 @@ class Member_images extends Member {
 		// Success message
 		return $this->_var_swap($this->_load_element('success'),
 			array(
-				'lang:heading'	=>	lang('signature'),
-				'lang:message'	=>	lang('signature_updated')
+				'lang:heading' => lang('signature'),
+				'lang:message' => lang('signature_updated')
 			)
 		);
 	}

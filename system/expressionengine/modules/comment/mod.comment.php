@@ -527,6 +527,8 @@ class Comment {
 
 		if ($enabled['pagination'])
 		{
+			$pagination->build($pagination->total_items, $pagination->per_page);
+
 			ee()->db->limit($pagination->per_page, $pagination->offset);
 		}
 		else
@@ -551,12 +553,6 @@ class Comment {
 		if (count($result_ids) == 0)
 		{
 			return ee()->TMPL->no_results();
-		}
-
-		if ($enabled['pagination'])
-		{
-			// Build pagination
-			$pagination->build($pagination->total_items, $pagination->per_page);
 		}
 
 		/** -----------------------------------
@@ -681,11 +677,11 @@ class Comment {
 
 			$row['count']			= $relative_count;
 			$row['absolute_count']	= $absolute_count;
-			if ($enabled['pagination'])
-			{
-				$row['total_comments']	= $pagination->total_items;
-			}
 			$row['total_results']	= $total_results;
+
+			// If we do not paginate, then the total comments ARE the comments
+			// on the page
+			$row['total_comments']	= ($enabled['pagination']) ? $pagination->total_items : $total_results;
 
 			// This lets the {if location} variable work
 
@@ -715,14 +711,14 @@ class Comment {
 			/**  Conditionals
 			/** ----------------------------------------*/
 			$cond = array_merge($member_cond_vars, $row);
-			$cond['comments']			= (substr($id, 0, 1) == 't') ? 'FALSE' : 'TRUE';
-			$cond['logged_in']			= (ee()->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
-			$cond['logged_out']			= (ee()->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
-			$cond['allow_comments'] 	= (isset($row['allow_comments']) AND $row['allow_comments'] == 'n') ? 'FALSE' : 'TRUE';
-			$cond['signature_image']	= ( ! isset($row['sig_img_filename']) OR $row['sig_img_filename'] == '' OR ee()->config->item('enable_signatures') == 'n' OR ee()->session->userdata('display_signatures') == 'n') ? 'FALSE' : 'TRUE';
-			$cond['avatar']				= ( ! isset($row['avatar_filename']) OR $row['avatar_filename'] == '' OR ee()->config->item('enable_avatars') == 'n' OR ee()->session->userdata('display_avatars') == 'n') ? 'FALSE' : 'TRUE';
-			$cond['photo']				= ( ! isset($row['photo_filename']) OR $row['photo_filename'] == '' OR ee()->config->item('enable_photos') == 'n' OR ee()->session->userdata('display_photos') == 'n') ? 'FALSE' : 'TRUE';
-			$cond['is_ignored']			= ( ! isset($row['member_id']) OR ! in_array($row['member_id'], ee()->session->userdata['ignore_list'])) ? 'FALSE' : 'TRUE';
+			$cond['comments']			= (substr($id, 0, 1) == 't') ? FALSE : TRUE;
+			$cond['logged_in']			= (ee()->session->userdata('member_id') == 0) ? FALSE : TRUE;
+			$cond['logged_out']			= (ee()->session->userdata('member_id') != 0) ? FALSE : TRUE;
+			$cond['allow_comments'] 	= (isset($row['allow_comments']) AND $row['allow_comments'] == 'n') ? FALSE : TRUE;
+			$cond['signature_image']	= ( ! isset($row['sig_img_filename']) OR $row['sig_img_filename'] == '' OR ee()->config->item('enable_signatures') == 'n' OR ee()->session->userdata('display_signatures') == 'n') ? FALSE : TRUE;
+			$cond['avatar']				= ( ! isset($row['avatar_filename']) OR $row['avatar_filename'] == '' OR ee()->config->item('enable_avatars') == 'n' OR ee()->session->userdata('display_avatars') == 'n') ? FALSE : TRUE;
+			$cond['photo']				= ( ! isset($row['photo_filename']) OR $row['photo_filename'] == '' OR ee()->config->item('enable_photos') == 'n' OR ee()->session->userdata('display_photos') == 'n') ? FALSE : TRUE;
+			$cond['is_ignored']			= ( ! isset($row['member_id']) OR ! in_array($row['member_id'], ee()->session->userdata['ignore_list'])) ? FALSE : TRUE;
 
 			$cond['editable'] = FALSE;
 			$cond['can_moderate_comment'] = FALSE;
@@ -770,7 +766,7 @@ class Comment {
 			/**  parse GMT comment date
 			/** ----------------------------------------*/
 
-			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('gmt_comment_date', $row['comment_date']), FALSE);
+			$tagdata = ee()->TMPL->parse_date_variables($tagdata, array('gmt_comment_date' => $row['comment_date']), FALSE);
 
 			/** ----------------------------------------
 			/**  Parse "single" variables
@@ -1484,17 +1480,17 @@ class Comment {
 		/** ----------------------------------------*/
 
 		$cond = array();
-		$cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
-		$cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
+		$cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? FALSE : TRUE;
+		$cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? FALSE : TRUE;
 
 		if ($query->row('comment_use_captcha')  == 'n')
 		{
-			$cond['captcha'] = 'FALSE';
+			$cond['captcha'] = FALSE;
 		}
 		elseif ($query->row('comment_use_captcha')  == 'y')
 		{
 			$cond['captcha'] =  (ee()->config->item('captcha_require_members') == 'y'  OR
-								(ee()->config->item('captcha_require_members') == 'n' AND ee()->session->userdata('member_id') == 0)) ? 'TRUE' : 'FALSE';
+								(ee()->config->item('captcha_require_members') == 'n' AND ee()->session->userdata('member_id') == 0)) ? TRUE : FALSE;
 		}
 
 		$tagdata = ee()->functions->prep_conditionals($tagdata, $cond);
@@ -1806,8 +1802,8 @@ class Comment {
 		/** ----------------------------------------*/
 
 		$cond = $_POST; // Sanitized on input and also in prep_conditionals, so no real worries here
-		$cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? 'FALSE' : 'TRUE';
-		$cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? 'FALSE' : 'TRUE';
+		$cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? FALSE : TRUE;
+		$cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? FALSE : TRUE;
 		$cond['name']		= $name;
 		$cond['email']		= $email;
 		$cond['url']		= ($url == 'http://') ? '' : $url;
@@ -2460,7 +2456,7 @@ class Comment {
 		$cmtr_email	= ee()->input->post('email');
 		$cmtr_loc	= ee()->input->post('location', TRUE);
 		$cmtr_url	= ee()->input->post('url', TRUE);
-		$cmtr_url	= prep_url($cmtr_url);
+		$cmtr_url	= (string) filter_var(prep_url($cmtr_url), FILTER_VALIDATE_URL);
 
 		$data = array(
 			'channel_id'	=> $channel_id,
@@ -2809,19 +2805,19 @@ class Comment {
 
 		if (ee()->input->post('save_info'))
 		{
-			ee()->input->set_cookie('save_info',	'yes',				60*60*24*365);
-			ee()->input->set_cookie('my_name',		$_POST['name'],		60*60*24*365);
-			ee()->input->set_cookie('my_email',	$_POST['email'],	60*60*24*365);
-			ee()->input->set_cookie('my_url',		$_POST['url'],		60*60*24*365);
-			ee()->input->set_cookie('my_location',	$_POST['location'],	60*60*24*365);
+			ee()->input->set_cookie('save_info', 'yes', 60*60*24*365);
+			ee()->input->set_cookie('my_name', $_POST['name'], 60*60*24*365);
+			ee()->input->set_cookie('my_email', $_POST['email'], 60*60*24*365);
+			ee()->input->set_cookie('my_url', $_POST['url'], 60*60*24*365);
+			ee()->input->set_cookie('my_location', $_POST['location'], 60*60*24*365);
 		}
 		else
 		{
-			ee()->input->set_cookie('save_info',	'no', 60*60*24*365);
-			ee()->input->set_cookie('my_name',		'');
-			ee()->input->set_cookie('my_email',	'');
-			ee()->input->set_cookie('my_url',		'');
-			ee()->input->set_cookie('my_location',	'');
+			ee()->input->set_cookie('save_info', 'no', 60*60*24*365);
+			ee()->input->delete_cookie('my_name');
+			ee()->input->delete_cookie('my_email');
+			ee()->input->delete_cookie('my_url');
+			ee()->input->delete_cookie('my_location');
 		}
 
 		// -------------------------------------------

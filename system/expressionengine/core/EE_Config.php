@@ -344,11 +344,13 @@ class EE_Config Extends CI_Config {
 		// Loop through each site and decode Pages information
 		foreach ($sites as $site)
 		{
-			$data = base64_decode($site['site_pages']);
+			$data = (isset($site['site_pages'])) ? base64_decode($site['site_pages']) : '';
 
+			// No Pages data
 			if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
 			{
 				$site_pages[$site['site_id']] = array('uris' => array(), 'templates' => array());
+				continue;
 			}
 
 			$data = unserialize($data);
@@ -412,7 +414,6 @@ class EE_Config Extends CI_Config {
 			'webmaster_name',
 			'channel_nomenclature',
 			'max_caches',
-			'cache_driver',
 			'captcha_url',
 			'captcha_path',
 			'captcha_font',
@@ -914,7 +915,7 @@ class EE_Config Extends CI_Config {
 		// Is the config file writable?
 		if ( ! is_really_writable($this->config_path))
 		{
-			show_error('Your config.php file does not appear to have the proper file permissions.  Please set the file permissions to 666 on the following file: expressionengine/config/config.php', 503);
+			show_error(lang('unwritable_config_file'), 503);
 		}
 
 		// Read the config file as PHP
@@ -933,6 +934,7 @@ class EE_Config Extends CI_Config {
 			foreach ($remove_values as $key => $val)
 			{
 				$config_file = preg_replace('#\$'."config\[(\042|\047)".$key."\\1\].*#", "", $config_file);
+				unset($config[$val]);
 			}
 		}
 
@@ -1004,7 +1006,14 @@ class EE_Config Extends CI_Config {
 			$new_data = '';
 			foreach ($to_be_added as $key => $val)
 			{
-				$new_data .= "\$config['".$key."'] = '".$val."';".$newline;
+				if (is_array($new_values[$key]))
+				{
+					$new_data .= "\$config['".$key."'] = ".$val.";".$newline;
+				}
+				else
+				{
+					$new_data .= "\$config['".$key."'] = '".$val."';".$newline;
+				}
 			}
 
 			// First we look for our comment marker in the config file. If found, we'll swap
@@ -1214,172 +1223,172 @@ class EE_Config Extends CI_Config {
 
 		$f_data = array(
 			'general_cfg'		=>	array(
-				'multiple_sites_enabled'	=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'is_system_on'				=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'is_site_on'				=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'license_number'			=> array('i', ''),
-				'site_name'					=> array('i', '', 'required'),
-				'site_index'				=> array('i', ''),
-				'site_url'					=> array('i', '', 'required'),
-				'cp_url'					=> array('i', '', 'required'),
-				'theme_folder_url'			=> array('i', '', 'required'),
-				'theme_folder_path'			=> array('i', '', 'required'),
-				'cp_theme'					=> array('f', 'theme_menu'),
-				'deft_lang'					=> array('f', 'language_menu'),
-				'xml_lang'					=> array('f', 'fetch_encoding'),
-				'caching_driver'			=> array('f', 'caching_driver'),
-				'max_caches'				=> array('i', ''),
-				'new_version_check'			=> array('r', array('y' => 'yes', 'n' => 'no')),
-				// 'channel_nomenclature'		=> array('i', ''),
-				'doc_url'					=> array('i', ''),
+				'multiple_sites_enabled' => array('r', array('y' => 'yes', 'n' => 'no')),
+				'is_system_on'           => array('r', array('y' => 'yes', 'n' => 'no')),
+				'is_site_on'             => array('r', array('y' => 'yes', 'n' => 'no')),
+				'site_name'              => array('i', '', 'required|strip_tags|trim|valid_xss_check'),
+				'site_index'             => array('i', '', 'strip_tags|trim|valid_xss_check'),
+				'site_url'               => array('i', '', 'required|strip_tags|trim|valid_xss_check'),
+				'cp_url'                 => array('i', '', 'required|strip_tags|trim|valid_xss_check'),
+				'theme_folder_url'       => array('i', '', 'required|strip_tags|trim|valid_xss_check'),
+				'theme_folder_path'      => array('i', '', 'required|strip_tags|trim|valid_xss_check'),
+				'cp_theme'               => array('f', 'theme_menu'),
+				'deft_lang'              => array('f', 'language_menu'),
+				'xml_lang'               => array('f', 'fetch_encoding'),
+				'caching_driver'         => array('f', 'caching_driver'),
+				'max_caches'             => array('i', '', 'numeric'),
+				'new_version_check'      => array('r', array('y' => 'yes', 'n' => 'no')),
+				'doc_url'                => array('i', '', 'strip_tags|trim|valid_xss_check'),
 			),
 
 			'db_cfg'			=>	array(
-				'db_debug'					=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'pconnect'					=> array('r', array('y' => 'yes', 'n' => 'no')),
-				// 'cache_on'					=> array('r', array('y' => 'yes', 'n' => 'no')),
-				// 'enable_db_caching'			=> array('r', array('y' => 'yes', 'n' => 'no')),
+				'db_debug' => array('r', array('y' => 'yes', 'n' => 'no')),
+				'pconnect' => array('r', array('y' => 'yes', 'n' => 'no')),
 			),
 
 			'output_cfg'		=>	array(
-				'send_headers'				=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'gzip_output'				=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'force_query_string'		=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'redirect_method'			=> array('s', array('redirect' => 'location_method', 'refresh' => 'refresh_method')),
-				'debug'						=> array('s', $debug_options),
-				'show_profiler'				=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'template_debugging'		=> array('r', array('y' => 'yes', 'n' => 'no'))
+				'send_headers'       => array('r', array('y' => 'yes', 'n' => 'no')),
+				'gzip_output'        => array('r', array('y' => 'yes', 'n' => 'no')),
+				'force_query_string' => array('r', array('y' => 'yes', 'n' => 'no')),
+				'redirect_method'    => array('s', array('redirect' => 'location_method', 'refresh' => 'refresh_method')),
+				'debug'              => array('s', $debug_options),
+				'show_profiler'      => array('r', array('y' => 'yes', 'n' => 'no')),
+				'template_debugging' => array('r', array('y' => 'yes', 'n' => 'no'))
 			),
 
 			'channel_cfg'		=>	array(
-				'use_category_name'			=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'reserved_category_word'	=> array('i', ''),
-//					'auto_convert_high_ascii'	=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'auto_assign_cat_parents'	=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'new_posts_clear_caches'	=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'enable_sql_caching'		=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'word_separator'			=> array('s', array('dash' => 'dash', 'underscore' => 'underscore')),
+				'use_category_name'       => array('r', array('y' => 'yes', 'n' => 'no')),
+				'reserved_category_word'  => array('i', ''),
+				'auto_assign_cat_parents' => array('r', array('y' => 'yes', 'n' => 'no')),
+				'new_posts_clear_caches'  => array('r', array('y' => 'yes', 'n' => 'no')),
+				'enable_sql_caching'      => array('r', array('y' => 'yes', 'n' => 'no')),
+				'word_separator'          => array('s', array('dash' => 'dash', 'underscore' => 'underscore')),
 			),
 
 			'image_cfg'			=>	array(
-				'image_resize_protocol'		=> array('s', array('gd' => 'gd', 'gd2' => 'gd2', 'imagemagick' => 'imagemagick', 'netpbm' => 'netpbm')),
-				'image_library_path'		=> array('i', ''),
-				'thumbnail_prefix'			=> array('i', '')
+				'image_resize_protocol' => array('s', array('gd' => 'gd', 'gd2' => 'gd2', 'imagemagick' => 'imagemagick', 'netpbm' => 'netpbm')),
+				'image_library_path'    => array('i', ''),
+				'thumbnail_prefix'      => array('i', '')
 			),
 
 			'security_cfg'		=>	array(
-				'cp_session_type'			=> array('s', array('cs' => 'cs_session', 'c' => 'c_session', 's' => 's_session')),
-				'website_session_type'		=> array('s', array('cs' => 'cs_session', 'c' => 'c_session', 's' => 's_session')),
-				'deny_duplicate_data'		=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'redirect_submitted_links'	=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'allow_username_change'		=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'allow_multi_logins'		=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'require_ip_for_login'		=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'require_ip_for_posting'	=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'xss_clean_uploads'			=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'password_lockout'			=> array('r', array('y' => 'yes', 'n' => 'no')),
+				'cp_session_type'           => array('s', array('cs' => 'cs_session', 'c' => 'c_session', 's' => 's_session')),
+				'website_session_type'      => array('s', array('cs' => 'cs_session', 'c' => 'c_session', 's' => 's_session')),
+				'deny_duplicate_data'       => array('r', array('y' => 'yes', 'n' => 'no')),
+				'redirect_submitted_links'  => array('r', array('y' => 'yes', 'n' => 'no')),
+				'allow_username_change'     => array('r', array('y' => 'yes', 'n' => 'no')),
+				'allow_multi_logins'        => array('r', array('y' => 'yes', 'n' => 'no')),
+				'require_ip_for_login'      => array('r', array('y' => 'yes', 'n' => 'no')),
+				'require_ip_for_posting'    => array('r', array('y' => 'yes', 'n' => 'no')),
+				'xss_clean_uploads'         => array('r', array('y' => 'yes', 'n' => 'no')),
+				'password_lockout'          => array('r', array('y' => 'yes', 'n' => 'no')),
 				'password_lockout_interval' => array('i', ''),
-				'require_secure_passwords'	=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'allow_dictionary_pw'		=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'name_of_dictionary_file'	=> array('i', ''),
-				'un_min_len'				=> array('i', ''),
-				'pw_min_len'				=> array('i', '')
+				'require_secure_passwords'  => array('r', array('y' => 'yes', 'n' => 'no')),
+				'allow_dictionary_pw'       => array('r', array('y' => 'yes', 'n' => 'no')),
+				'name_of_dictionary_file'   => array('i', ''),
+				'un_min_len'                => array('i', ''),
+				'pw_min_len'                => array('i', '')
+			),
+
+			'software_registration'	=> array(
+				'license_contact' => array('i', '', 'required'),
+				'license_number'  => array('i', '', 'callback__valid_license_pattern')
 			),
 
 			'throttling_cfg'	=>	array(
-				'enable_throttling'			=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'banish_masked_ips'			=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'max_page_loads'			=> array('i', ''),
-				'time_interval'				=> array('i', ''),
-				'lockout_time'				=> array('i', ''),
-				'banishment_type'			=> array('s', array('404' => '404_page', 'redirect' => 'url_redirect', 'message' => 'show_message')),
-				'banishment_url'			=> array('i', ''),
-				'banishment_message'		=> array('i', '')
+				'enable_throttling'  => array('r', array('y' => 'yes', 'n' => 'no')),
+				'banish_masked_ips'  => array('r', array('y' => 'yes', 'n' => 'no')),
+				'max_page_loads'     => array('i', ''),
+				'time_interval'      => array('i', ''),
+				'lockout_time'       => array('i', ''),
+				'banishment_type'    => array('s', array('404' => '404_page', 'redirect' => 'url_redirect', 'message' => 'show_message')),
+				'banishment_url'     => array('i', '', 'strip_tags|trim|valid_xss_check'),
+				'banishment_message' => array('i', '', 'strip_tags|trim|valid_xss_check')
 			),
 
 			'localization_cfg'	=>	array(
-				'default_site_timezone'		=> array('f', 'timezone'),
-				'date_format'				=> array('s', array('%n/%j/%y' => 'mm/dd/yy', '%j-%n-%y' => 'dd-mm-yy', '%Y-%m-%d' => 'yyyy-mm-dd')),
-				'time_format'				=> array('r', array('24' => '24_hour', '12' => '12_hour')),
-				'include_seconds'			=> array('r', array('y' => 'yes', 'n' => 'no')),
+				'default_site_timezone' => array('f', 'timezone'),
+				'date_format'           => array('s', array('%n/%j/%y' => 'mm/dd/yy', '%j-%n-%y' => 'dd-mm-yy', '%Y-%m-%d' => 'yyyy-mm-dd')),
+				'time_format'           => array('r', array('24' => '24_hour', '12' => '12_hour')),
+				'include_seconds'       => array('r', array('y' => 'yes', 'n' => 'no')),
 			),
 
 			'email_cfg'			=>	array(
-				'webmaster_email'			=> array('i', '', 'required|valid_email'),
-				'webmaster_name'			=> array('i', ''),
-				'email_charset'				=> array('i', ''),
-				'email_debug'				=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'mail_protocol'				=> array('s', array('mail' => 'php_mail', 'sendmail' => 'sendmail', 'smtp' => 'smtp')),
-				'smtp_server'				=> array('i', '', 'callback__smtp_required_field'),
-				'smtp_port'					=> array('i', '', 'is_natural|callback__smtp_required_field'),
-				'smtp_username'				=> array('i', ''),
-				'smtp_password'				=> array('p', ''),
-				'email_batchmode'			=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'email_batch_size'			=> array('i', ''),
-				'mail_format'				=> array('s', array('plain' => 'plain_text', 'html' => 'html')),
-				'word_wrap'					=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'email_console_timelock'	=> array('i', ''),
-				'log_email_console_msgs'	=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'email_module_captchas'		=> array('r', array('y' => 'yes', 'n' => 'no'))
+				'webmaster_email'        => array('i', '', 'required|valid_email'),
+				'webmaster_name'         => array('i', '', 'strip_tags|trim|valid_xss_check'),
+				'email_charset'          => array('i', ''),
+				'email_debug'            => array('r', array('y' => 'yes', 'n' => 'no')),
+				'mail_protocol'          => array('s', array('mail' => 'php_mail', 'sendmail' => 'sendmail', 'smtp' => 'smtp')),
+				'smtp_server'            => array('i', '', 'callback__smtp_required_field'),
+				'smtp_port'              => array('i', '', 'is_natural|callback__smtp_required_field'),
+				'smtp_username'          => array('i', ''),
+				'smtp_password'          => array('p', ''),
+				'email_batchmode'        => array('r', array('y' => 'yes', 'n' => 'no')),
+				'email_batch_size'       => array('i', ''),
+				'mail_format'            => array('s', array('plain' => 'plain_text', 'html' => 'html')),
+				'word_wrap'              => array('r', array('y' => 'yes', 'n' => 'no')),
+				'email_console_timelock' => array('i', ''),
+				'log_email_console_msgs' => array('r', array('y' => 'yes', 'n' => 'no')),
+				'email_module_captchas'  => array('r', array('y' => 'yes', 'n' => 'no'))
 			),
 
 			'cookie_cfg'		=>	array(
-				'cookie_domain'				=> array('i', ''),
-				'cookie_path'				=> array('i', ''),
-				'cookie_prefix'				=> array('i', '')
+				'cookie_domain' => array('i', ''),
+				'cookie_path'   => array('i', ''),
+				'cookie_prefix' => array('i', '')
 			),
 
 			'captcha_cfg'		=>	array(
-				'captcha_path'				=> array('i', ''),
-				'captcha_url'				=> array('i', ''),
-				'captcha_font'				=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'captcha_rand'				=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'captcha_require_members'	=> array('r', array('y' => 'yes', 'n' => 'no'))
+				'captcha_path'            => array('i', '', 'strip_tags|trim|valid_xss_check'),
+				'captcha_url'             => array('i', '', 'strip_tags|trim|valid_xss_check'),
+				'captcha_font'            => array('r', array('y' => 'yes', 'n' => 'no')),
+				'captcha_rand'            => array('r', array('y' => 'yes', 'n' => 'no')),
+				'captcha_require_members' => array('r', array('y' => 'yes', 'n' => 'no'))
 			),
 
 			'search_log_cfg'	=>	array(
-				'enable_search_log'			=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'max_logged_searches'		=> array('i', '')
+				'enable_search_log'   => array('r', array('y' => 'yes', 'n' => 'no')),
+				'max_logged_searches' => array('i', '')
 			),
 
 			'template_cfg'		=>	array(
-				'enable_template_routes'	=> array('d', array('y' => 'yes', 'n' => 'no')),
-				'strict_urls'				=> array('d', array('y' => 'yes', 'n' => 'no')),
-				'site_404'					=> array('f', 'site_404'),
-				'save_tmpl_revisions'		=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'max_tmpl_revisions'		=> array('i', ''),
-				'save_tmpl_files'			=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'tmpl_file_basepath'		=> array('i', '')
+				'enable_template_routes' => array('d', array('y' => 'yes', 'n' => 'no')),
+				'strict_urls'            => array('d', array('y' => 'yes', 'n' => 'no')),
+				'site_404'               => array('f', 'site_404'),
+				'save_tmpl_revisions'    => array('r', array('y' => 'yes', 'n' => 'no')),
+				'max_tmpl_revisions'     => array('i', ''),
+				'save_tmpl_files'        => array('r', array('y' => 'yes', 'n' => 'no')),
+				'tmpl_file_basepath'     => array('i', '')
 			),
 
 			'censoring_cfg'		=>	array(
-				'enable_censoring'			=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'censor_replacement'		=> array('i', ''),
-				'censored_words'			=> array('t', array('rows' => '20', 'kill_pipes' => TRUE)),
+				'enable_censoring'   => array('r', array('y' => 'yes', 'n' => 'no')),
+				'censor_replacement' => array('i', '', 'strip_tags|trim|valid_xss_check'),
+				'censored_words'     => array('t', array('rows' => '20', 'kill_pipes' => TRUE)),
 			),
 
 			'mailinglist_cfg'	=>	array(
-				'mailinglist_enabled'		=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'mailinglist_notify'		=> array('r', array('y' => 'yes', 'n' => 'no')),
+				'mailinglist_enabled'       => array('r', array('y' => 'yes', 'n' => 'no')),
+				'mailinglist_notify'        => array('r', array('y' => 'yes', 'n' => 'no')),
 				'mailinglist_notify_emails' => array('i', '')
 			),
 
 			'emoticon_cfg'		=>	array(
-				'enable_emoticons'			=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'emoticon_url'				=> array('i', '')
+				'enable_emoticons' => array('r', array('y' => 'yes', 'n' => 'no')),
+				'emoticon_url'     => array('i', '', 'strip_tags|trim|valid_xss_check')
 			),
 
 			'tracking_cfg'		=>	array(
-				'enable_online_user_tracking'	=> array('r', array('y' => 'yes', 'n' => 'no'), 'y'),
-				'enable_hit_tracking'			=> array('r', array('y' => 'yes', 'n' => 'no'), 'y'),
-				'enable_entry_view_tracking'	=> array('r', array('y' => 'yes', 'n' => 'no'), 'n'),
-				'log_referrers'					=> array('r', array('y' => 'yes', 'n' => 'no')),
-				'max_referrers'					=> array('i', ''),
-				'dynamic_tracking_disabling'	=> array('i', '')
+				'enable_online_user_tracking' => array('r', array('y' => 'yes', 'n' => 'no'), 'y'),
+				'enable_hit_tracking'         => array('r', array('y' => 'yes', 'n' => 'no'), 'y'),
+				'enable_entry_view_tracking'  => array('r', array('y' => 'yes', 'n' => 'no'), 'n'),
+				'log_referrers'               => array('r', array('y' => 'yes', 'n' => 'no')),
+				'max_referrers'               => array('i', ''),
+				'dynamic_tracking_disabling'  => array('i', '')
 			),
 
 			'recount_prefs'		=>  array(
-				'recount_batch_total'			=> array('i', array('1000')),
+				'recount_batch_total' => array('i', array('1000')),
 			)
 		);
 
@@ -1647,6 +1656,8 @@ class EE_Config Extends CI_Config {
 			'require_ip_for_login'		=> array('require_ip_explanation'),
 			'allow_multi_logins'		=> array('allow_multi_logins_explanation'),
 			'name_of_dictionary_file'	=> array('dictionary_explanation'),
+			'license_contact'			=> array('license_contact_explanation'),
+			'license_number'			=> array('license_number_explanation'),
 			'force_query_string'		=> array('force_query_string_explanation'),
 			'image_resize_protocol'		=> array('image_resize_protocol_exp'),
 			'image_library_path'		=> array('image_library_path_exp'),

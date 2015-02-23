@@ -46,9 +46,7 @@ class CI_Security {
 		"javascript\s*:"				=> '[removed]',
 		"expression\s*(\(|&\#40;)"		=> '[removed]', // CSS and IE
 		"vbscript\s*:"					=> '[removed]', // IE, surprise!
-		"Redirect\s+302"				=> '[removed]',
-		"([\"'])?data\s*:[^\\1]*?base64[^\\1]*?,[^\\1]*?\\1?"
-			=> '[removed]'
+		"Redirect\s+302"				=> '[removed]'
 	);
 
 	/* html5 entities we need to manually decode pre PHP 5.4 */
@@ -100,15 +98,25 @@ class CI_Security {
 	 * be used for general runtime processing.
 	 *
 	 * This function was based in part on some code and ideas I
-	 * got from Bitflux: http://channel.bitflux.ch/wiki/XSS_Prevention
+	 * got from Bitflux: http://wiki.flux-cms.org/display/BLOG/XSS+Prevention
 	 *
 	 * To help develop this script I used this great list of
 	 * vulnerabilities along with a few other hacks I've
 	 * harvested from examining vulnerabilities in other programs:
 	 * http://ha.ckers.org/xss.html
 	 *
-	 * @param	mixed	string or array
-	 * @return	string
+	 * @param	string|array[string]	$str	The string to be cleaned or an
+	 * 		array of strings to be cleaned.  This needs to contain enough of the
+	 * 		context to allow it to properly be cleaned, but shouldn't be the whole
+	 * 		final output.  For example, if the data to be cleaned is going to wind
+	 * 		up in the href attribute of a link (<a> tag) then the string needs to
+	 * 		include the full anchor tag.  If attributes of the tag contain dangerous
+	 * 		javascript, the whole attribute will be removed.
+	 * @param	boolean	$is_image	If the data is an image file it requires some special
+	 * 		processing to preserve the meta data.
+	 * @return	string	The string cleaned of dangerous code.  If an attribute contains dangerous
+	 * 		code it will be removed entirely.  Certain HTML tags will be encoded (html and body
+	 * 		among them).
 	 */
 	public function xss_clean($str, $is_image = FALSE)
 	{
@@ -130,6 +138,11 @@ class CI_Security {
 		 * Remove Invisible Characters
 		 */
 		$str = remove_invisible_characters($str);
+
+		// Strip data URIs
+		// Not all browsers conform strictly to RFC2397 so we strip anything 
+		// that looks close to a data URI inside an attribute
+		$str = preg_replace_callback("/<\w+.*?(?=>|<|$)/si", array($this, '_strip_data_URIs'), $str);
 
 		// Validate Entities in URLs
 		$str = $this->_validate_entities($str);
@@ -290,7 +303,6 @@ class CI_Security {
 		 */
 		$str = preg_replace('#(alert|cmd|passthru|eval|exec|expression|system|fopen|fsockopen|file|file_get_contents|readfile|unlink)(\s*)\((.*?)\)#si', "\\1\\2&#40;\\3&#41;", $str);
 
-
 		// Final clean up
 		// This adds a bit of extra precaution in case
 		// something got through the above filters
@@ -387,11 +399,11 @@ class CI_Security {
 					array_values($this->_html5_entites),
 					$str
 				);
-				$str = html_entity_decode($str, ENT_COMPAT, $charset);
+				$str = html_entity_decode($str, ENT_COMPAT | ENT_QUOTES, $charset);
 			}
 			else
 			{
-				$str = html_entity_decode($str, ENT_COMPAT | ENT_HTML5, $charset);
+				$str = html_entity_decode($str, ENT_COMPAT | ENT_QUOTES | ENT_HTML5, $charset);
 
 			}
 		}
@@ -484,7 +496,7 @@ class CI_Security {
 
 	// --------------------------------------------------------------------
 
-	/*
+	/**
 	 * Remove Evil HTML Attributes (like evenhandlers and style)
 	 *
 	 * It removes the evil attribute and either:
@@ -502,7 +514,7 @@ class CI_Security {
 	protected function _remove_evil_attributes($str, $is_image)
 	{
 		// All javascript event handlers (e.g. onload, onclick, onmouseover), style, and xmlns
-		$evil_attributes = array('on\w*', 'style', 'xmlns', 'formaction');
+		$evil_attributes = array('on\w{2,}', 'style', 'xmlns', 'formaction');
 
 		if ($is_image === TRUE)
 		{
@@ -518,20 +530,20 @@ class CI_Security {
 			$attribs = array();
 
 			// find occurrences of illegal attribute strings without quotes
-			preg_match_all('/('.implode('|', $evil_attributes).')\s*=\s*([^\s>]*)/is', $str, $matches, PREG_SET_ORDER);
+			preg_match_all('/(\W'.implode('|', $evil_attributes).')\s*=\s*([^\s>]*)/is', $str, $matches, PREG_SET_ORDER);
 
 			foreach ($matches as $attr)
 			{
 
-				$attribs[] = preg_quote($attr[0], '/');
+				$attribs[] = trim(preg_quote($attr[0], '/'));
 			}
 
 			// find occurrences of illegal attribute strings with quotes (042 and 047 are octal quotes)
-			preg_match_all('/('.implode('|', $evil_attributes).')\s*=\s*(\042|\047)([^\\2]*?)(\\2)/is', $str, $matches, PREG_SET_ORDER);
+			preg_match_all('/(\W'.implode('|', $evil_attributes).')\s*=\s*(\042|\047)([^\\2]*?)(\\2)/is', $str, $matches, PREG_SET_ORDER);
 
 			foreach ($matches as $attr)
 			{
-				$attribs[] = preg_quote($attr[0], '/');
+				$attribs[] = trim(preg_quote($attr[0], '/'));
 			}
 
 			// replace illegal attribute strings that are inside an html tag
@@ -730,6 +742,24 @@ class CI_Security {
 		}
 
 		return $str;
+	}
+
+	// ----------------------------------------------------------------------
+
+	/**
+	 * Strips all data URIs from a string
+	 * 
+	 * @param string $match  An array of matches from preg_replace_callback. 
+	 * @access protected
+	 * @return string  The cleaned string.
+	 */
+	protected function _strip_data_URIs($match)
+	{
+		$pattern = "/('|\")?(?:\s*)?data:[\w\/\-\.]+?;?(?:\w+;)?\w+?,?.*(?:\\1)?(\s)/i";
+		$cleaned = $match[0];
+		$cleaned = preg_replace($pattern, '$1$1$2', $cleaned);
+
+		return $cleaned;
 	}
 }
 // END Security Class

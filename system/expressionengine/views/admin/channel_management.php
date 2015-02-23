@@ -11,13 +11,13 @@
 			'',
 			''
 		);
-		
+
 		foreach ($channel_data->result() as $channel)
 		{
 			$this->table->add_row(
-				"<strong>{$channel->channel_title}</strong>",
+				"<strong>".htmlentities($channel->channel_title, ENT_QUOTES)."</strong>",
 				form_input(array(
-					'name'			=> 'field_name', 
+					'name'			=> 'field_name',
 					'readonly'		=> 'readonly',
 					'value'			=> $channel->channel_name,
 					'class'			=> 'input-copy',
@@ -28,7 +28,7 @@
 				'<a href="'.BASE.AMP.'C=admin_content'.AMP.'M=channel_delete_confirm'.AMP.'channel_id='.$channel->channel_id.'">'.lang('delete').'</a>'
 			);
 		}
-    	
+
 		echo $this->table->generate();
 	}
 	else

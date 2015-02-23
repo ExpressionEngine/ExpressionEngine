@@ -27,8 +27,8 @@
 class Forum {
 
 
-	public $version				= '3.1.15';
-	public $build				= '20140228';
+	public $version				= '3.1.17';
+	public $build				= '20141004';
 	public $use_site_profile	= FALSE;
 	public $search_limit		= 250; // Maximum number of search results (x2 since it can include this number of topics + this number of posts)
 	public $return_data 		= '';
@@ -279,21 +279,20 @@ class Forum {
 		// In certain cases we may want different URI function names
 		// to share common methods
 		$remap = array(
-						ee()->config->item('profile_trigger')	=> '_load_member_class',
-								'ban_member'	=> 'ban_member_form',
-								'do_ban_member'	=> 'do_ban_member'
-					  );
-
+			ee()->config->item('profile_trigger') => '_load_member_class',
+			'ban_member'                          => 'ban_member_form',
+			'do_ban_member'                       => 'do_ban_member'
+		);
 		if (isset($remap[$function]))
 		{
 			$function = $remap[$function];
 		}
 
-		// The output is based on whether we are using the main template parser or not.
-		// If the config.php file contains a forum "triggering" word we'll send
-		// the output directly to the output class.  Otherwise, the output
-		// is sent to the template class like normal.  The exception to this is
-		// when action requests are processed
+		// The output is based on whether we are using the main template parser
+		// or not. If the config.php file contains a forum "triggering" word
+		// we'll send the output directly to the output class. Otherwise, the
+		// output is sent to the template class like normal. The exception to
+		// this is when action requests are processed
 		if ($this->use_trigger() OR ee()->input->get_post('ACT') !== FALSE)
 		{
 			ee()->output->set_output(
@@ -301,7 +300,10 @@ class Forum {
 					ee()->functions->add_form_security_hash(
 						$this->_final_prep(
 							$this->_include_recursive($function)
-									))));
+						)
+					)
+				)
+			);
 		}
 		else
 		{
@@ -333,7 +335,7 @@ class Forum {
 	public function move_topic() { return ee()->FRM_CORE->move_topic(); }
 	public function move_reply() { return ee()->FRM_CORE->move_reply(); }
 	public function do_merge() { return ee()->FRM_CORE->do_merge(); }
-	public function do_split()	{ return ee()->FRM_CORE->do_split(); }
+	public function do_split() { return ee()->FRM_CORE->do_split(); }
 	public function do_report() { return ee()->FRM_CORE->do_report(); }
 
 	public function delete_subscription()
@@ -1284,6 +1286,13 @@ class Forum {
 			return $this->parse_template_php($str);
 		}
 
+		if ( ! is_object(ee()->TMPL))
+		{
+			// cleanup unparsed conditionals and annotations
+			$str = preg_replace("/".LD."if\s+.*?".RD.".*?".LD.'\/if'.RD."/s", "", $str);
+			$str = preg_replace("/\{!--.*?--\}/s", '', $str);
+		}
+
 		return $str;
 	}
 
@@ -2148,9 +2157,7 @@ class Forum {
 	{
 		if (isset(ee()->session->tracker[0]) && substr(ee()->session->tracker[0], -17) == 'spellcheck_iframe')
 		{
-			array_shift(ee()->session->tracker);
-
-			ee()->input->set_cookie('tracker', serialize(ee()->session->tracker), '0');
+			ee()->session->do_not_track();
 		}
 
 		if ( ! class_exists('EE_Spellcheck'))

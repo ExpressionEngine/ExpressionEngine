@@ -414,7 +414,7 @@ class Member_settings extends Member {
 			$lcond	= substr($cond, 0, strpos($cond, ' '));
 			$rcond	= substr($cond, strpos($cond, ' '));
 
-			if ( isset($row[$val['3']]))
+			if (array_key_exists($val['3'], $row))
 			{
 				$lcond = str_replace($val['3'], "\$row['".$val['3'] ."']", $lcond);
 				$cond = $lcond.' '.$rcond;
@@ -722,7 +722,7 @@ class Member_settings extends Member {
 				$lcond	= substr($cond, 0, strpos($cond, ' '));
 				$rcond	= substr($cond, strpos($cond, ' '));
 
-				if (isset($fnames[$val['3']]))
+				if (array_key_exists($val['3'], $fnames))
 				{
 					$lcond = str_replace($val['3'], "\$result_row['m_field_id_".$fnames[$val['3']]."']", $lcond);
 
@@ -792,6 +792,7 @@ class Member_settings extends Member {
 				ee()->typography->initialize();
 
 				$str = '';
+				$var_conds = ee()->functions->assign_conditional_variables($field_chunk);
 
 				foreach ($query->result_array() as $row)
 				{
@@ -799,25 +800,55 @@ class Member_settings extends Member {
 
 					$field_data = (isset($result_row['m_field_id_'.$row['m_field_id']])) ? $result_row['m_field_id_'.$row['m_field_id']] : '';
 
+					// enables conditionals on these variables
+					$row['field_label'] = $row['m_field_label'];
+					$row['field_description'] = $row['m_field_description'];
+					$row['field_data'] = $field_data;
+
 					if ($field_data != '')
 					{
 						$field_data = ee()->typography->parse_type($field_data,
-																	 array(
-																				'text_format'	=> $row['m_field_fmt'],
-																				'html_format'	=> 'safe',
-																				'auto_links'	=> 'y',
-																				'allow_img_url' => 'n'
-																			)
-																	);
-
-
-
+							 array(
+										'text_format'   => $row['m_field_fmt'],
+										'html_format'   => 'safe',
+										'auto_links'    => 'y',
+										'allow_img_url' => 'n'
+									)
+							);
 					}
-
 
 					$temp = str_replace('{field_name}', $row['m_field_label'], $temp);
 					$temp = str_replace('{field_description}', $row['m_field_description'], $temp);
 					$temp = str_replace('{field_data}', $field_data, $temp);
+
+					foreach ($var_conds as $val)
+					{
+						// Prep the conditional
+
+						$cond = ee()->functions->prep_conditional($val['0']);
+
+						$lcond	= substr($cond, 0, strpos($cond, ' '));
+						$rcond	= substr($cond, strpos($cond, ' '));
+
+						if (array_key_exists($val['3'], $row))
+						{
+							$lcond = str_replace($val['3'], "\$row['".$val['3'] ."']", $lcond);
+							$cond = $lcond.' '.$rcond;
+							$cond = str_replace("\|", "|", $cond);
+
+							eval("\$result = ".$cond.";");
+
+							if ($result)
+							{
+								$temp = preg_replace("/".LD.$val['0'].RD."(.*?)".LD.'\/if'.RD."/s", "\\1", $temp);
+							}
+							else
+							{
+								$temp = preg_replace("/".LD.$val['0'].RD."(.*?)".LD.'\/if'.RD."/s", "", $temp);
+							}
+						}
+
+					}
 
 					$str .= $temp;
 
@@ -1291,6 +1322,13 @@ class Member_settings extends Member {
 	/** ----------------------------------------*/
 	function update_preferences()
 	{
+		// This form is all checkboxes, so check a hidden form field for existence to ensure
+		// this is a valid POST request, or visiting this page will blank their prefs
+		if ( ! isset($_POST['site_id']))
+		{
+			return ee()->output->show_user_error('general', array(ee()->lang->line('invalid_action')));
+		}
+
 		/** -------------------------------------
 		/**  Assign the query data
 		/** -------------------------------------*/
@@ -1302,7 +1340,7 @@ class Member_settings extends Member {
 						'parse_smileys'			=> (isset($_POST['parse_smileys']))  ? 'y' : 'n'
 					  );
 
-		ee()->db->query(ee()->db->update_string('exp_members', $data, "member_id = '".ee()->session->userdata('member_id')."'"));
+		ee()->db->update('members', $data, array('member_id' => ee()->session->userdata('member_id')));
 
 		// -------------------------------------------
 		// 'member_update_preferences' hook.

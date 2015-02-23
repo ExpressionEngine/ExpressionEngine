@@ -163,7 +163,7 @@ class Grid_parser {
 		// the Relationships tag pair; a better fix is having a separate parser
 		// instance for each instance of the Channel Entries parser but this
 		// will have to do for now
-		if (strpos($tagdata, $field_name) === FALSE)
+		if (strpos($tagdata, $field_name) === FALSE && strpos($field_name, ':') !== FALSE)
 		{
 			$field_name = substr($field_name, strrpos($field_name, ':') + 1);
 			$this->grid_field_names[$field_id] = $field_name;
@@ -225,6 +225,11 @@ class Grid_parser {
 				{
 					$row_index = array_search(current($row_ids), array_keys($entry_data));
 
+					// Non-existent row ID passed, return nothing
+					if ($row_index === FALSE)
+					{
+						return '';
+					}
 					$params['offset'] += $row_index;
 					$params['limit'] = 1;
 				}
@@ -247,12 +252,8 @@ class Grid_parser {
 		);
 
 		// Collect row IDs
-		$row_ids = array();
-		foreach ($display_entry_data as $row)
-		{
-			$row_ids[] = $row['row_id'];
-		}
-
+		$row_ids = array_keys($entry_data);
+		
 		// :total_rows single variable
 		$total_rows = count($display_entry_data);
 

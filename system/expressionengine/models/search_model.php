@@ -120,6 +120,7 @@ class Search_model extends CI_Model {
 	function build_main_query($data, $order = array(), $cp = TRUE)
 	{
 		$where_clause = '';
+		$close_where_clause = TRUE;
 		$pageurl = '';
 
 		if ($cp)
@@ -299,7 +300,16 @@ class Search_model extends CI_Model {
 					{
 						$keyword_clauses[] = " exp_channel_titles.title LIKE '%".$this->db->escape_like_str($keywords[0][$i])."%' ";
 					}
-					$where_clause .= " AND (" . join($keyword_clauses, ' AND ');
+
+					if (count($keyword_clauses))
+					{
+						$where_clause .= " AND (" . join($keyword_clauses, ' AND ');
+					}
+					else
+					{
+						$close_where_clause = FALSE;
+					}
+
 					unset($keywords, $keyword_clauses);
 				}
 				else
@@ -346,7 +356,10 @@ class Search_model extends CI_Model {
 				}
 			}
 
-			$where_clause .= ")";
+			if ($close_where_clause)
+			{
+				$where_clause .= ")";
+			}
 		}
 
 		if ($data['channel_id'] != '')

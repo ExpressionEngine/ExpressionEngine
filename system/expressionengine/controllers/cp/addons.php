@@ -75,8 +75,8 @@ class Addons extends CP_Controller {
 		$this->load->model('addons_model');
 		$this->lang->loadfile('modules');
 
-		$return = $this->input->get_post('return');
-		$package = $this->input->get_post('package');
+		$return = $this->input->get_post('return', TRUE);
+		$package = $this->input->get_post('package', TRUE);
 		$required = array();
 
 		if ( ! $package OR ! $this->addons->is_package($package))
@@ -200,7 +200,7 @@ class Addons extends CP_Controller {
 			$components['fieldtype']['installed'] = $is_package_installed;
 		}
 
-		$vars['form_action'] = 'C=addons'.AMP.'M=package_settings'.AMP.'package='.$package.AMP.'return='.$return;
+		$vars['form_action'] = 'C=addons'.AMP.'M=package_settings'.AMP.'package='.$package.AMP.'return='.htmlentities($return, ENT_QUOTES, 'UTF-8');
 		$vars['package'] = ucfirst(str_replace('_', ' ', $package));
 		$vars['components'] = $components;
 		$vars['required'] = $required;

@@ -85,6 +85,18 @@ class Csrf_database implements Csrf_storage_backend {
 	}
 
 	/**
+	 * Refresh the token
+	 *
+	 * Not used in the Database CSRF provider
+	 *
+	 * @return bool TRUE
+	 */
+	public function refresh_token()
+	{
+		return TRUE;
+	}
+
+	/**
 	 * Run garbage collection for old tokens on 5% of requests
 	 *
 	 * We no longer have anonymous data in this table, so the most that can

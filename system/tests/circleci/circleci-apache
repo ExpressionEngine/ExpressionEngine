@@ -1,4 +1,5 @@
 Listen 8080
+ServerName localhost
 
 <VirtualHost *:8080>
   DocumentRoot /home/ubuntu/ExpressionEngine

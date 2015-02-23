@@ -18,7 +18,7 @@
 	$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 	$preference = lang('channel_description', 'channel_description');
-	$controls = form_input(array('id'=>'channel_description','name'=>'channel_description','class'=>'fullfield', 'value'=>$channel_description));
+	$controls = form_input(array('id'=>'channel_description','name'=>'channel_description','class'=>'fullfield', 'value'=>set_value('channel_description', $channel_description)));
 	$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 	$preference = lang('channel_lang', 'channel_lang');
@@ -33,19 +33,19 @@
 	$this->table->set_heading(lang('preference'), lang('setting'));
 
 	$preference = lang('channel_url', 'channel_url').'<br />'.lang('channel_url_exp');
-	$controls = form_input(array('id'=>'channel_url','name'=>'channel_url','class'=>'fullfield', 'value'=>$channel_url));
+	$controls = form_input(array('id'=>'channel_url','name'=>'channel_url','class'=>'fullfield', 'value'=>set_value('channel_url', $channel_url)));
 	$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 	$preference = lang('comment_url', 'comment_url').'<br />'.lang('comment_url_exp');
-	$controls = form_input(array('id'=>'comment_url','name'=>'comment_url','class'=>'fullfield', 'value'=>$comment_url));
+	$controls = form_input(array('id'=>'comment_url','name'=>'comment_url','class'=>'fullfield', 'value'=>set_value('comment_url', $comment_url)));
 	$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 	$preference = lang('search_results_url', 'search_results_url').'<br />'.lang('search_results_url_exp');
-	$controls = form_input(array('id'=>'search_results_url','name'=>'search_results_url','class'=>'fullfield', 'value'=>$search_results_url));
+	$controls = form_input(array('id'=>'search_results_url','name'=>'search_results_url','class'=>'fullfield', 'value'=>set_value('search_results_url', $search_results_url)));
 	$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 	$preference = lang('rss_url', 'rss_url').'<br />'.lang('rss_url_exp');
-	$controls = form_input(array('id'=>'rss_url','name'=>'rss_url','class'=>'fullfield', 'value'=>$rss_url));
+	$controls = form_input(array('id'=>'rss_url','name'=>'rss_url','class'=>'fullfield', 'value'=>set_value('rss_url', $rss_url)));
 	$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 	$preference = lang('live_look_template', 'live_look_template');
@@ -134,23 +134,23 @@
 	$controls = form_input(array('id'=>'channel_notify_emails','name'=>'channel_notify_emails','class'=>'fullfield', 'value'=>$channel_notify_emails));
 	$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
-	if (isset($this->cp->installed_modules['comment'])) 
+	if (isset($this->cp->installed_modules['comment']))
 	{
 		$preference = lang('comment_notify', 'comment_notify');
 		$controls = form_radio(array('name'=>'comment_notify', 'id'=>'comment_notify_y', 'value'=>'y', 'checked'=>($comment_notify == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'comment_notify_y').NBS.NBS.NBS.NBS.NBS;
 		$controls .= form_radio(array('name'=>'comment_notify', 'id'=>'comment_notify_n', 'value'=>'n', 'checked'=>($comment_notify == 'n') ? TRUE : FALSE)).NBS.lang('no', 'comment_notify_n');
 		$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-		
+
 		$preference = lang('comment_notify_emails', 'comment_notify_emails');
 		$controls = form_input(array('id'=>'comment_notify_emails','name'=>'comment_notify_emails','class'=>'fullfield', 'value'=>$comment_notify_emails));
 		$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
-			
+
 		$preference = lang('comment_notify_authors', 'comment_notify_authors');
 		$controls = form_radio(array('name'=>'comment_notify_authors', 'id'=>'comment_notify_authors_y', 'value'=>'y', 'checked'=>($comment_notify_authors == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'comment_notify_authors_y').NBS.NBS.NBS.NBS.NBS;
 		$controls .= form_radio(array('name'=>'comment_notify_authors', 'id'=>'comment_notify_authors_n', 'value'=>'n', 'checked'=>($comment_notify_authors == 'n') ? TRUE : FALSE)).NBS.lang('no', 'comment_notify_authors_n');
-		$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));						
+		$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 	}
-		
+
 	echo $this->table->generate();
 	$this->table->clear(); // Clear out for the next one
 
@@ -164,7 +164,7 @@
 		$preference = lang('comment_system_enabled', 'comment_system_enabled');
 		$controls = form_radio(array('name'=>'comment_system_enabled', 'id'=>'comment_system_enabled_y', 'value'=>'y', 'checked'=>($comment_system_enabled == 'y') ? TRUE : FALSE)).NBS.lang('yes', 'comment_system_enabled_y').NBS.NBS.NBS.NBS.NBS;
 		$controls .= form_radio(array('name'=>'comment_system_enabled', 'id'=>'comment_system_enabled_n', 'value'=>'n', 'checked'=>($comment_system_enabled == 'n') ? TRUE : FALSE)).NBS.lang('no', 'comment_system_enabled_n');
-		$controls .= '<br/>'.form_checkbox(array('name'=>'apply_comment_enabled_to_existing', 'id'=>'apply_comment_enabled_to_existing', 'value'=>'y', 'checked'=>FALSE)).NBS.'<span class="notice">'.lang('update_existing_comments_mod', 'apply_comment_enabled_to_existing').'</span>';					
+		$controls .= '<br/>'.form_checkbox(array('name'=>'apply_comment_enabled_to_existing', 'id'=>'apply_comment_enabled_to_existing', 'value'=>'y', 'checked'=>FALSE)).NBS.'<span class="notice">'.lang('update_existing_comments_mod', 'apply_comment_enabled_to_existing').'</span>';
 		$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 		$preference = lang('comment_require_membership', 'comment_require_membership');
@@ -196,7 +196,7 @@
 		$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
 		$preference = lang('comment_expiration', 'comment_expiration').'<br />'.lang('comment_expiration_desc');
-		$controls = form_input(array('id'=>'comment_expiration','name'=>'comment_expiration','class'=>'fullfield', 'value'=>$comment_expiration));
+		$controls = form_input(array('id'=>'comment_expiration','name'=>'comment_expiration','class'=>'fullfield', 'value'=>set_value('comment_expiration', $comment_expiration)));
 		$controls .= '<br/>'.form_checkbox(array('name'=>'apply_expiration_to_existing', 'id'=>'apply_expiration_to_existing', 'value'=>'y', 'checked'=>FALSE)).NBS.'<span class="notice">'.lang('update_existing_comments', 'apply_expiration_to_existing').'</span>';
 		$this->table->add_row($preference, array('style'=> 'width:50%;', 'data'=>$controls));
 
@@ -245,7 +245,7 @@
 ?>
 
 <p style="margin-top: 15px;">
-	<?=form_submit(array('name' => 'channel_prefs_submit', 'value' => lang('update'), 'class' => 'submit'))?> 
+	<?=form_submit(array('name' => 'channel_prefs_submit', 'value' => lang('update'), 'class' => 'submit'))?>
 	<?=form_submit(array('name' => 'return', 'value' => lang('update_and_return'), 'class' => 'submit'))?>
 </p>
 <?=form_close()?>

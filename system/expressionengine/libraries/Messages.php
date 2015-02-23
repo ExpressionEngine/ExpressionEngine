@@ -287,7 +287,14 @@ class EE_Messages {
 				}
 				elseif( ! is_array($value))
 				{
-					if ($key != 'title' && ! stristr($value, '<option'))
+					$user_input = array('member_description');
+
+					if (in_array($key, $user_input))
+					{
+						$value = ee()->functions->encode_ee_tags($value, TRUE);
+					}
+
+					elseif ($key != 'title' && ! stristr($value, '<option'))
 					{
 						// {title} is link title for message menu
 						$value = htmlspecialchars($value, ENT_QUOTES);
@@ -413,12 +420,12 @@ class EE_Messages {
 
 				if ($row['listed_type'] == 'buddy')
 				{
-					$this->buddies[] = array($row['listed_member'], $row['username'], $row['screen_name'], $row['listed_description'], $row['listed_id'], $row['member_id']);
+					$this->buddies[] = array($row['listed_member'], $row['username'], $row['screen_name'], ee()->security->xss_clean($row['listed_description']), $row['listed_id'], $row['member_id']);
 					$this->goodies[] = $row['listed_member'];
 				}
 				else
 				{
-					$this->blocked[] = array($row['listed_member'], $row['username'], $row['screen_name'], $row['listed_description'], $row['listed_id'], $row['member_id']);
+					$this->blocked[] = array($row['listed_member'], $row['username'], $row['screen_name'], ee()->security->xss_clean($row['listed_description']), $row['listed_id'], $row['member_id']);
 					$this->baddies[] = $row['listed_member'];
 				}
 			}
@@ -1599,7 +1606,7 @@ DOH;
 		}
 		else
 		{
-			$redirect_url = $this->_create_path('member_search').$which_field.'/';
+			$redirect_url = $this->_create_path('member_search').'/'.$which_field.'/';
 		}
 
 		$this->single_parts['path']['new_search_url'] = $redirect_url;
@@ -1741,7 +1748,7 @@ DOH;
 		}
 		else
 		{
-			$redirect_url = $this->_create_path('buddy_search').$which.'/';
+			$redirect_url = $this->_create_path('buddy_search').'/'.$which.'/';
 		}
 
 		$this->single_parts['path']['new_search_url'] = $redirect_url;
@@ -1809,7 +1816,7 @@ DOH;
 		{
 			$link =  ($which == 'blocked') ? $this->_create_path('add_block') : $this->_create_path('add_buddy');
 
-			$link .= ($this->allegiance == 'cp') ? '&mid='.$row['member_id'] : $row['member_id'].'/';
+			$link .= ($this->allegiance == 'cp') ? '&mid='.$row['member_id'] : '/'.$row['member_id'].'/';
 
 			$r .= $this->_process_template($this->retrieve_template('member_results_row'), array('item' => '<a href="#" onclick="window.opener.location.href=\''.$link.'\';return false;">'.$row['screen_name'].'</a>'));
 		}
@@ -3526,7 +3533,7 @@ DOH;
 			}
 
 			$data = array('member_id'			=> $this->member_id,
-						  'listed_description'	=> ee()->functions->char_limiter($_POST['description'], 50),
+						  'listed_description'	=> ee()->security->xss_clean(ee()->functions->char_limiter($_POST['description'], 50)),
 						  'listed_type'			=> $which);
 
 			for ($i=0, $s = count($person); $i < $s; ++$i)

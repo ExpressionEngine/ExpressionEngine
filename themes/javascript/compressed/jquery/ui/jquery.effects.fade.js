@@ -10,5 +10,4 @@
  * Depends:
  *	jquery.effects.core.js
  */
-
-(function(b,e){b.effects.fade=function(a){return this.queue(function(){var c=b(this),d=b.effects.setMode(c,a.options.mode||"hide");c.animate({opacity:d},{queue:!1,duration:a.duration,easing:a.options.easing,complete:function(){a.callback&&a.callback.apply(this,arguments);c.dequeue()}})})}})(jQuery);
+!function(e){e.effects.fade=function(t){return this.queue(function(){var n=e(this),i=e.effects.setMode(n,t.options.mode||"hide");n.animate({opacity:i},{queue:!1,duration:t.duration,easing:t.options.easing,complete:function(){t.callback&&t.callback.apply(this,arguments),n.dequeue()}})})}}(jQuery);

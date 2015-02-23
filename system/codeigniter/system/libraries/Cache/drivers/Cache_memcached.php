@@ -146,7 +146,15 @@ class CI_Cache_memcached extends CI_Driver {
 	 */
 	public function cache_info()
 	{
-		return $this->_memcached->getStats();
+		if ($this->_memcached instanceOf Memcached)
+		{
+			return $this->_memcached->getStats();
+		}
+
+		if ($this->_memcached instanceOf Memcache)
+		{
+			return $this->_memcached->getExtendedStats();
+		}
 	}
 
 	// ------------------------------------------------------------------------
@@ -237,16 +245,19 @@ class CI_Cache_memcached extends CI_Driver {
 			}
 		}
 
-		// Attempt to get previously-created namespaces and assign to class variable
-		$this->_namespaces = $this->get('namespaces', Cache::GLOBAL_SCOPE, FALSE);
-
 		// Check each server to see if it's reporting the time; if at least
 		// one server reports the time, we'll consider this driver ok to use
-		foreach ($this->cache_info() as $server)
+		if (is_array($this->cache_info()))
 		{
-			if ($server['time'] != 0)
+			foreach ($this->cache_info() as $server)
 			{
-				return TRUE;
+				if ( ! empty($server['time']))
+				{
+					// Attempt to get previously-created namespaces and assign to class variable
+					$this->_namespaces = $this->get('namespaces', Cache::GLOBAL_SCOPE, FALSE);
+
+					return TRUE;
+				}
 			}
 		}
 

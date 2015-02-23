@@ -6,7 +6,7 @@
 -----------------------------------------------------
  http://ellislab.com/
 -----------------------------------------------------
- Copyright (c) 2004 - 2014 EllisLab, Inc.
+ Copyright (c) 2004 - 2015 EllisLab, Inc.
 =====================================================
  THIS IS COPYRIGHTED SOFTWARE
  PLEASE READ THE LICENSE AGREEMENT
@@ -284,7 +284,7 @@ Class Magpie {
 	/** ----------------------------------------
 	/**  Plugin Usage
 	/** ----------------------------------------*/
-	function usage()
+	public static function usage()
 	{
 	ob_start();
 	?>

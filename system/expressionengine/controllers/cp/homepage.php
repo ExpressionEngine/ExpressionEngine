@@ -42,6 +42,18 @@ class Homepage extends CP_Controller {
 		// Notices only show for super admins
 		if ($this->session->userdata['group_id'] == 1)
 		{
+			// Show a notice if the cache folder is not writeable
+			if ( ! ee()->cache->file->is_supported())
+			{
+				$message[] = lang('unwritable_cache_folder');
+			}
+
+			// Show a notice if the config file is not writeable
+			if ( ! is_really_writable(ee()->config->config_path))
+			{
+				$message[] = lang('unwritable_config_file');
+			}
+
 			if ($this->config->item('new_version_check') == 'y')
 			{
 				$message[] = $this->_version_check();
@@ -58,7 +70,7 @@ class Homepage extends CP_Controller {
 		}
 
 		$vars = array(
-			'message'			=> implode($message, "\n\n"),
+			'message'			=> array_filter($message),
 			'instructions'		=> lang('select_channel_to_post_in'),
 			'show_page_option'	=> (isset($this->cp->installed_modules['pages'])) ? TRUE : FALSE,
 			'info_message_open'	=> ($this->input->cookie('home_msg_state') != 'closed' && $show_notice) ? TRUE : FALSE,
@@ -263,9 +275,8 @@ class Homepage extends CP_Controller {
 	{
 		$download_url = $this->cp->masked_url('https://store.ellislab.com/manage');
 
-		$this->load->helper('version_helper');
-
-		$version_file = get_version_info();
+		$this->load->library('el_pings');
+		$version_file = ee()->el_pings->get_version_info();
 
 		if ( ! $version_file)
 		{

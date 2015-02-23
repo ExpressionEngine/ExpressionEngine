@@ -364,7 +364,11 @@ class EE_Session {
 	 */
 	public function create_new_session($member_id, $admin_session = FALSE)
 	{
-		if ($this->validation == 'c' AND $this->access_cp == TRUE)
+		$member = ee()->db->get_where('members', array('member_id' => $member_id));
+		$member_group = ee()->db->where('group_id', $member->row('group_id'))
+			->get('member_groups');
+
+		if ($this->access_cp == TRUE OR $member_group->row('can_access_cp') == 'y')
 		{
 			$this->sdata['admin_sess'] = 1;
 		}
@@ -373,9 +377,7 @@ class EE_Session {
 			$this->sdata['admin_sess'] 	= ($admin_session == FALSE) ? 0 : 1;
 		}
 
-		$crypt_key = ee()->db->select('crypt_key')
-			->get_where('members', array('member_id' => $member_id))
-			->row('crypt_key');
+		$crypt_key = $member->row('crypt_key');
 
 		// Create crypt key for member if one doesn't exist
 		if (empty($crypt_key))
@@ -911,29 +913,33 @@ class EE_Session {
 
 		if ($tracker != FALSE)
 		{
-			$regex = "#(http:\/\/|https:\/\/|www\.|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#i";
-
-			if (preg_match($regex, $tracker))
-			{
-				return array();
-			}
-
-			if (stristr($tracker, ':') !== FALSE)
-			{
-				$tracker_parts = explode(':', $tracker);
-
-				if (current($tracker_parts) != 'a' OR count($tracker_parts) < 3 OR ! is_numeric(next($tracker_parts)))
-				{
-					return array();
-				}
-			}
-
-			$tracker = unserialize(stripslashes($tracker));
+			$tracker = json_decode($tracker, TRUE);
 		}
 
 		if ( ! is_array($tracker))
 		{
 			$tracker = array();
+		}
+
+		if ( ! empty($tracker))
+		{
+			if ( ! isset($tracker['token']))
+			{
+				$tracker = array();
+			}
+			else
+			{
+				$tracker_token = $tracker['token'];
+				unset($tracker['token']);
+
+				ee()->load->library('encrypt');
+
+				// Check for funny business
+				if ( ! ee()->encrypt->verify_signature(implode('', $tracker), $tracker_token))
+				{
+					$tracker = array();
+				}
+			}
 		}
 
 		$uri = (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string;
@@ -942,13 +948,13 @@ class EE_Session {
 
 		// If someone is messing with the URI we won't set the cookie
 
-		if ( ! isset($_GET['ACT']) && preg_match('/[^a-z0-9\%\_\/\-]/i', $uri))
-		{
-			return array();
-		}
-
 		if ( ! isset($_GET['ACT']))
 		{
+			if (preg_match('/[^a-z0-9\%\_\/\-\.]/i', $uri))
+			{
+				return array();
+			}
+
 			if ( ! isset($tracker['0']))
 			{
 				$tracker[] = $uri;
@@ -969,10 +975,55 @@ class EE_Session {
 
 		if (REQ == 'PAGE')
 		{
-			ee()->input->set_cookie('tracker', serialize($tracker), '0');
+			$this->set_tracker_cookie($tracker);
 		}
 
 		return $tracker;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * This will set the tracker cookie with proper encoding
+	 *
+	 * @param array	$tracker An optional tracker array to set, defaults to
+     *                       ee()->session->tracker
+	 */
+	public function set_tracker_cookie($tracker = NULL)
+	{
+		if (is_null($tracker))
+		{
+			$tracker = $this->tracker;
+		}
+
+		// We add a hash to the end so we can check for manipulation
+		if ( ! empty($tracker))
+		{
+			unset($tracker['token']);
+
+			ee()->load->library('encrypt');
+			$tracker['token'] = ee()->encrypt->sign(implode('', $tracker));
+		}
+
+		ee()->input->set_cookie('tracker', json_encode($tracker), '0');
+	}
+
+
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * This will un-set the most recent URL from the tracker
+	 */
+	public function do_not_track()
+	{
+		static $shifted;
+		if ($shifted !== TRUE)
+		{
+			array_shift($this->tracker);
+			$shifted = TRUE;
+		}
+		$this->set_tracker_cookie();
 	}
 
 	// --------------------------------------------------------------------

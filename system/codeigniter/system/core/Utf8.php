@@ -68,6 +68,7 @@ class CI_Utf8 {
 		{
 			log_message('debug', "UTF-8 Support Disabled");
 			define('UTF8_ENABLED', FALSE);
+			define('MB_ENABLED', FALSE);
 		}
 	}
 

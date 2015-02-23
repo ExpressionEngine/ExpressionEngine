@@ -6,6 +6,13 @@
 	echo lang('build'). '&nbsp;'.APP_BUILD;?> - &copy; <?=lang('copyright')?> 2003 - <?= date('Y') ?> <a href="<?=$this->cp->masked_url('http://ellislab.com/')?>" rel="external">EllisLab, Inc.</a><br />
 
 	<?php
+		$license = valid_license_pattern(config_item('license_number')) ? config_item('license_number') : lang('invalid_license');
+		echo lang('license_number').': '.$license.
+		' - '.
+		mailto(config_item('license_contact'));
+	?>
+	<br>
+	<?php
 		echo str_replace("%x", $this->benchmark->elapsed_time('total_execution_time_start', 'total_execution_time_end'), lang('page_rendered'));
 		echo ' - ';
 		echo str_replace("%x", $this->db->query_count, lang('queries_executed'));
@@ -16,12 +23,12 @@
 <div id="idle-modal" class="pageContents">
 	<p id="idle-description" class="shun"><?=lang('session_idle_description')?></p>
 
-	<p class="idle-fourth"><strong>User:</strong></p>
+	<p class="idle-fourth"><strong><?=lang('user_label')?></strong></p>
 
 	<?=form_open('C=login&M=authenticate')?>
 	<div class="idle-three-fourths shun">
 		<p class="idle-fourth">
-			<img src="<?=$cp_avatar_path ? $cp_avatar_path : $cp_theme_url.'images/site_logo.gif'?>" width="50" alt="User Avatar" />
+			<img src="<?=$cp_avatar_path ? $cp_avatar_path : $cp_theme_url.'images/site_logo.gif'?>" width="50" alt="<?=lang('user_avatar_alt')?>" />
 		</p>
 		<p class="idle-three-fourths">
 			<p id="idle-screen-name"><?=$cp_screen_name?></p>
@@ -31,10 +38,10 @@
 	</div>
 
 	<div class="idle-fourth">
-		<p><label for="logout-confirm-password">Password:</label></p>
+		<p><label for="logout-confirm-password"><?=lang('password_label')?></label></p>
 	</div>
 	<div class="idle-three-fourths shun">
-		<p><input type="password" name="password" class="field" id="logout-confirm-password"/></p>
+		<p><input type="password" name="password" class="field" id="logout-confirm-password" autocomplete="off" /></p>
 	</div>
 
 	<p id="idle-button-group">

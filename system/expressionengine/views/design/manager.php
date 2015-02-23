@@ -29,13 +29,13 @@
 						<?php if ($can_admin_templates): ?>
 							<a href="<?=BASE.AMP.'C=design'.AMP.'M=new_template_group'?>"><?=lang('new_template_group')?></a>
 						<?php endif; ?></div>
-						
+
 						<?=lang('template_groups')?>
 					</div>
-					
+
 					<div class="groupList">
 						<h3><?=lang('choose_group')?></h3>
-						
+
 						<ul id="sortable_template_groups">
 							<?php foreach ($template_groups as $row): ?>
 							<li id="template_group_<?=$row['group_id']?>"><a class="templateGroupName" href="#"><?php if ($row['is_site_default'] == 'y'):?><span class="defaultIndicator">*&nbsp;</span><?php endif?><?=$row['group_name']?></a></li>
@@ -51,12 +51,12 @@
 							</div>
 							<?php endif; ?>
 						<?php endif; ?>
-					</div>					
+					</div>
 				</div>
 			</div>
 
 			<div id="templates">
-				<div class="column">					
+				<div class="column">
 
 				<?=$this->load->view('_shared/message')?>
 
@@ -74,6 +74,7 @@
 								<th class="template_manager_enable_php"><?=lang('enable_php')?></th>
 								<th class="template_manager_parse_stage"><?=lang('parse_stage')?></th>
 								<th class="template_manager_hits"><?=lang('hit_counter')?></th>
+								<th class="protect_javascript"><?=lang('protect_javascript')?></th>
 							</tr>
 							<tr>
 								<td><input name="template_name" class="template_name" type="text" size="15" value="" /></td>
@@ -93,6 +94,9 @@
 								    <?=form_dropdown('php_parse_location', array('i' => lang('input'), 'o' => lang('output')))?>
 								</td>
 								<td><input name="hits" class="hits" type="text" size="8" value="" /></td>
+								<td>
+									<?=form_dropdown('protect_javascript', array('y' => lang('yes'), 'n' => lang('no')))?>
+								</td>
 							</tr>
 						</table>
 					</div>
@@ -146,7 +150,7 @@
 						</table>
 					</div>
 				<?php endif; ?>
-				
+
 				<?php if ($no_results):?>
 					<div class="noTemplateResultsMessage">
 					<?=$no_results?>
@@ -154,9 +158,9 @@
 				<?php endif;?>
 
 					<?php
-					
+
 					$this->table->set_template($table_template);
-						foreach ($templates as $group): 
+						foreach ($templates as $group):
 							$temp = current($group);
 							$group_id = $temp['group_id'];
 							unset($temp);
@@ -164,52 +168,52 @@
 							<div id="template_group_<?=$group_id?>_templates" class="templateGrouping">
 							<div class="formHeading">
 								<div style="margin-left:15px" class="newTemplate"><a href="<?=BASE.AMP.'C=design'.AMP.'M=new_template'.AMP.'group_id='.$group_id?>"><?=lang('create_new_template')?></a></div>
-								
-							<?php if ($can_admin_templates): ?>								
+
+							<?php if ($can_admin_templates): ?>
 								<div style="margin-left:15px" class="newTemplate"><a href="<?=BASE.AMP.'C=design'.AMP.'M=template_group_delete_confirm'.AMP.'group_id='.$group_id?>"><?=lang('delete_template_group')?></a></div>
 								<div class="newTemplate"><a href="<?=BASE.AMP.'C=design'.AMP.'M=edit_template_group'.AMP.'group_id='.$group_id?>"><?=lang('edit_template_group')?></a></div>
 							<?php endif; ?>
 								<?=lang('name_of_template_group')?>: <?=$groups[$group_id]?>
 							</div>
-							
+
 							<?php
 							$main_table_headings = array(lang('edit_template'), lang('view'));
-							
+
 							if ($can_admin_design)
 							{
 								$main_table_headings = array_merge($main_table_headings, array(lang('access'), lang('preferences')));
 							}
-							
+
 							$main_table_headings = array_merge($main_table_headings, array(array('data' => lang('hits'), 'style' => 'text-align:right;'), array('data' => lang('delete'), 'style' => 'font-size:11px;', 'class' => 'cellRight')));
-							
+
 							$this->table->set_heading($main_table_headings);
 
 							foreach ($group as $template):
-								
+
 								$delete_link = ($template['template_name'] == 'index') ? '--' :
 								'<a href="'.BASE.AMP.'C=design'.AMP.'M=template_delete_confirm'.AMP.
 								'template_id='.$template['template_id'].'">'.lang('delete').'</a>';
-								
+
 								$auth_key = ($template['enable_http_auth'] == 'y') ? '<img style="float:right" class="auth_icon" src="'.$cp_theme_url.'images/key_10.gif" /> ' : FALSE;
 
 								$main_table_data = 	array(
 									    array('data' => '<a id="templateId_'.$template['template_id'].'" href="'.BASE.AMP.'C=design'.AMP.'M=edit_template'.AMP.'id='.$template['template_id'].'">'.$template['template_name'].'</a> '.$auth_key,
 									 'class' => 'templateName '.$template['class']),
 									'<a rel="external" href="'.$template['view_path'].'">'.lang('view').'</a>');
-									
+
 								if ($can_admin_design)
 								{
 									$main_table_data = array_merge($main_table_data, array('<a href="#" class="show_access_link" id="show_access_link_'.$template['template_id'].'">'.lang('access').'</a>',
 									'<a href="#" class="show_prefs_link" id="show_prefs_link_'.$template['template_id'].'">'.lang('edit_preferences').'</a>'));
 								}
-									
+
 								$main_table_data = array_merge($main_table_data, array(
 									array('data' => $template['hits'], 'style' => 'text-align:right;', 'id'=>'hitsId_'.$template['template_id'], 'class' => 'less_important'),
 									array('data' => $delete_link, 'class' => 'cellRight')));
-								
+
 								$this->table->add_row($main_table_data);
 							endforeach;
-						
+
 							echo $this->table->generate();
 							$this->table->clear(); ?>
 							</div>

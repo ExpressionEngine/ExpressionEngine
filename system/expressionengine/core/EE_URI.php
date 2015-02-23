@@ -288,7 +288,7 @@ class EE_URI extends CI_URI {
 			}
 
 			$query_str = trim($query_str.'&'.$session_id, '&');
-			$query_str = $query_str ? '?'.$query_str : '';
+			$query_str = $query_str ? '&'.$query_str : '';
 
 			$new = $matches[1].'?'.$controller.$query_str;
 		}

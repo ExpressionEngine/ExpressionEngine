@@ -10,6 +10,4 @@
  * Depends:
  *	jquery.effects.core.js
  */
-
-(function(e,g){e.effects.transfer=function(a){return this.queue(function(){var b=e(this),c=e(a.options.to),d=c.offset(),c={top:d.top,left:d.left,height:c.innerHeight(),width:c.innerWidth()},d=b.offset(),f=e('<div class="ui-effects-transfer"></div>').appendTo(document.body).addClass(a.options.className).css({top:d.top,left:d.left,height:b.innerHeight(),width:b.innerWidth(),position:"absolute"}).animate(c,a.duration,a.options.easing,function(){f.remove();a.callback&&a.callback.apply(b[0],arguments);
-b.dequeue()})})}})(jQuery);
+!function(t){t.effects.transfer=function(e){return this.queue(function(){var i=t(this),n=t(e.options.to),o=n.offset(),s={top:o.top,left:o.left,height:n.innerHeight(),width:n.innerWidth()},a=i.offset(),f=t('<div class="ui-effects-transfer"></div>').appendTo(document.body).addClass(e.options.className).css({top:a.top,left:a.left,height:i.innerHeight(),width:i.innerWidth(),position:"absolute"}).animate(s,e.duration,e.options.easing,function(){f.remove(),e.callback&&e.callback.apply(i[0],arguments),i.dequeue()})})}}(jQuery);

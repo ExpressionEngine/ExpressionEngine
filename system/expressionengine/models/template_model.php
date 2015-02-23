@@ -86,9 +86,7 @@ class Template_model extends CI_Model {
 	 */
 	protected function _load_template_file(Template_Entity $template, $only_load_last_edit=FALSE)
 	{
-		// FIXME  Why on EARTH was this done in the Template parser and not
-		// originally written right into EE_Config?  Why is EE_Config not
-		// itself capable of caching preferences when used with MSM
+		// Fetch the site config if we need it
 		$site_switch = FALSE;
 		if ($this->config->item('site_id') != $template->site_id)
 		{
@@ -108,7 +106,7 @@ class Template_model extends CI_Model {
 		// Get the filepath to the template's saved file.
 		$this->load->library('api');
 		$this->api->instantiate('template_structure');
-		$basepath = rtrim($this->config->item('tmpl_file_basepath'), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+		$basepath = $this->config->slash_item('tmpl_file_basepath');
 
 		$filepath = $basepath . $this->config->item('site_short_name') . DIRECTORY_SEPARATOR
 			. $template->get_group()->group_name . '.group' . DIRECTORY_SEPARATOR . $template->template_name
@@ -428,7 +426,8 @@ class Template_model extends CI_Model {
 			'enable_http_auth' => $entity->enable_http_auth,
 			'allow_php' => $entity->allow_php,
 			'php_parse_location' => $entity->php_parse_location,
-			'hits' => $entity->hits
+			'hits' => $entity->hits,
+			'protect_javascript' => $entity->protect_javascript
 		);
 		return $data;
 	}
@@ -1100,7 +1099,7 @@ class Template_model extends CI_Model {
 	{
 		$vars = array(
 						'admin_notify_reg'						=> array('name', 'username', 'email', 'site_name', 'control_panel_url'),
-						'admin_notify_entry'					=> array('channel_name', 'entry_title', 'entry_url', 'comment_url', 'name', 'email'),
+						'admin_notify_entry'					=> array('channel_name', 'entry_title', 'entry_url', 'comment_url', 'cp_edit_entry_url', 'name', 'email'),
 						'admin_notify_comment'					=> array('channel_name', 'entry_title', 'entry_id', 'url_title', 'channel_id', 'comment_url_title_auto_path',  'comment_url', 'comment', 'comment_id', 'name', 'url', 'email', 'location', 'unwrap}{delete_link}{/unwrap', 'unwrap}{close_link}{/unwrap', 'unwrap}{approve_link}{/unwrap'),
 						'admin_notify_forum_post'				=> array('name_of_poster', 'forum_name', 'title', 'body', 'thread_url', 'post_url'),
 						'admin_notify_mailinglist'				=> array('email', 'mailing_list'),
@@ -1244,6 +1243,8 @@ class Template_Entity {
 	 *
 	 */
 	protected $hits;
+
+	protected $protect_javascript;
 
 
 	// ----------------------------------------------------

@@ -1,4 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+use \Michelf\MarkdownExtra;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -68,8 +71,8 @@ class EE_Typography extends CI_Typography {
 	 */
 	public function __construct()
 	{
-		$this->EE =& get_instance();
 		$this->initialize();
+		Autoloader::getInstance()->addPrefix('Michelf', APPPATH.'libraries/typography/Markdown/Michelf/');
 	}
 
 	// --------------------------------------------------------------------
@@ -273,19 +276,11 @@ class EE_Typography extends CI_Typography {
 		// Set up preferences
 		$this->_set_preferences($prefs);
 
-		// Encode PHP Tags
-		// Separate parsers handle this later
-		ee()->load->helper('security');
-		if ( ! $this->separate_parser)
+		// Parser-specific pre_process
+		if ($this->separate_parser
+			&& method_exists($this, $this->text_format.'_pre_process'))
 		{
-			$str = encode_php_tags($str);
-		}
-
-		// Encode EE Tags
-		// Separate parsers should handle this on their end
-		if ( ! $this->separate_parser)
-		{
-			$str = ee()->functions->encode_ee_tags($str, $this->convert_curly);
+			$str = $this->{$this->text_format.'_pre_process'}($str);
 		}
 
 		// Handle single line paragraphs
@@ -368,12 +363,6 @@ class EE_Typography extends CI_Typography {
 				break;
 		}
 
-		// Encode PHP post-Markdown parsing
-		if ($this->separate_parser)
-		{
-			$str = encode_php_tags($str);
-		}
-
 		//  Parse emoticons
 		$str = $this->emoticon_replace($str);
 
@@ -408,6 +397,13 @@ class EE_Typography extends CI_Typography {
 			}
 		//
 		// -------------------------------------------
+
+		// Encode PHP Tags
+		ee()->load->helper('security');
+		$str = encode_php_tags($str);
+
+		// Encode EE Tags
+		$str = ee()->functions->encode_ee_tags($str, $this->convert_curly);
 
 		return $str;
 	}
@@ -708,6 +704,102 @@ class EE_Typography extends CI_Typography {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Run the Mardown code through a pre processor so we can convert all code
+	 * blocks (not inline) to bbcode blocks for highlighting
+	 * @param  String $str The string to pre-process
+	 * @return String      The pre-processed string
+	 */
+	protected function markdown_pre_process($str)
+	{
+		// Must use a named group of codeblock for this to work properly
+		$hashes = array();
+		$codeblocks = array();
+		$extract_callback = function ($matches) use (&$hashes, &$codeblocks) {
+			$hash = random_string('md5');
+			$hashes[] = $hash;
+			$codeblocks[] = "[code]\n".trim($matches['codeblock'])."\n[/code]\n\n";
+			return $hash;
+		};
+
+		// First, get the fenced code blocks. Fenced code blocks consist of
+		// three tildes or backticks in a row on their own line, followed by
+		// some code, followed by a matching set of three or more tildes or
+		// backticks on their own line again
+		if (strpos($str, '```') !== FALSE
+			OR strpos($str, '~~~') !== FALSE)
+		{
+			$str = preg_replace_callback(
+				"/
+				# We only care about fences that are the beginning of their line
+				(^
+
+				# Must start with ~~~ or ``` and only contain that character
+				(?:`{3,}|~{3,}))
+
+				# Capture the codeblock AND name it
+				(?P<codeblock>.*?)
+
+				# Find the matching bunch of ~ or `
+				\\1
+				/ixsm",
+				$extract_callback,
+				$str
+			);
+		}
+
+		// Second, extract actual code blocks
+		if (strpos($str, '[code]') !== FALSE
+			&& strpos($str, '[/code]') !== FALSE)
+		{
+			$str = preg_replace_callback(
+				"/\\[code\\](?P<codeblock>.*?)\\[\\/code\\]/s",
+				$extract_callback,
+				$str
+			);
+		}
+
+		// Replace tabs with spaces
+		if (strpos($str, "\t") !== FALSE)
+		{
+			$str = preg_replace("/^\t/m", "    ", $str);
+		}
+
+		// Now process tab indented code blocks
+		if (strpos($str, '    ') !== FALSE)
+		{
+			$str = preg_replace_callback(
+				'/
+				# Must be beginning of line OR file
+				(?:\n\n|\A\n?)
+
+				# Lines must start with four spaces, using atomic groups here so
+				# the regular expression parser can not backtrack. Capture all
+				# lines like this in a row.
+				((?>[ ]{4}.*\n*)+)
+
+				# Lookahead for non space at the start or end of string
+				((?=^[ ]{0,4}\S)|\Z)
+				/xm',
+				function ($matches) {
+					$codeblock = $matches[1];
+
+					// Outdent these code blocks
+					$codeblock = preg_replace("/^[ ]{4}(.*)$/m", "$1", $codeblock);
+
+					// Trim the whole string and wrap it in [code]
+					return "[code]\n".trim($codeblock)."\n[/code]\n\n";
+				},
+				$str
+			);
+		}
+
+		// Put everything back in to place
+		return str_replace($hashes, $codeblocks, $str);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Parse content to Markdown
 	 * @param  string $str     String to parse
 	 * @param  array  $options Associative array containing options
@@ -719,11 +811,9 @@ class EE_Typography extends CI_Typography {
 	 */
 	public function markdown($str, $options = array())
 	{
-		require_once(APPPATH.'libraries/typography/Markdown/markdown.php');
-
 		// Ignore [code]
 		$code_blocks = array();
-		preg_match_all("/\[code\](.*?)\[\/code\]/uis", $str, $matches);
+		preg_match_all('/\<div class="codeblock">(.*?)\<\/div>/uis', $str, $matches);
 		foreach ($matches[0] as $match)
 		{
 			$hash = random_string('md5');
@@ -731,7 +821,7 @@ class EE_Typography extends CI_Typography {
 			$str = str_replace($match, $hash, $str);
 		}
 
-		$parser = new Markdown_Parser();
+		$parser = new MarkdownExtra;
 
 		// Disable other markup if this is set
 		if (isset($options['no_markup'])
@@ -748,39 +838,25 @@ class EE_Typography extends CI_Typography {
 		$str = $parser->transform($str);
 
 		// Run everything through SmartyPants
-		if (isset($options['smartypants'])
-			&& get_bool_from_string($options['smartypants']))
+		if ( ! isset($options['smartypants'])
+			OR get_bool_from_string($options['smartypants']) == TRUE)
 		{
-			require_once(APPPATH.'libraries/typography/SmartyPants/smartypants.php');
-			$str = SmartyPants($str);
+			if ( ! class_exists('SmartyPants_Parser')){
+				require_once(APPPATH.'libraries/typography/SmartyPants/smartypants.php');
+			}
+			// 2  ->  "---" for em-dashes; "--" for en-dashes
+			$str = SmartyPants($str, 2);
 		}
 
 		// Restore the quotes we protected earlier.
 		$str = $this->restore_quotes_in_tags($str);
 
-		// Replace <pre><code> with [code]
-		// Only relevant IF being called by typography parser
-		$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
-		if (in_array($backtrace[1]['class'], array('EE_Typography')))
-		{
-			$str = preg_replace(
-				"/<pre><code>(.*?)<\/code><\/pre>/uis",
-				"[code]$1[/code]",
-				$str
-			);
-		}
-
-		// Replace [code]
+		// Replace <div class="codeblock"> ([code]) blocks.
 		foreach ($code_blocks as $hash => $code_block)
 		{
 			$str = str_replace($hash, $code_block, $str);
 		}
 
-		// Clean up code blocks and BBCodde
-		$str = $this->_protect_bbcode($str);
-		$str = ee()->functions->encode_ee_tags($str, $this->convert_curly);
-		$str = $this->decode_bbcode($str);
-		$str = $this->_convert_code_markers($str);
 		return $str;
 	}
 
@@ -908,13 +984,31 @@ class EE_Typography extends CI_Typography {
 
 		foreach($this->safe_decode as $key => $val)
 		{
-			if (is_array($val) && isset($val['property']))
+			if (is_array($val)
+				&& isset($val['property'])
+				&& preg_match_all('/\['.$key.'=(.*?)\](.*?)\[\/'.$key.'\]/is', $str, $matches, PREG_SET_ORDER))
 			{
-				$str = preg_replace(
-					'/\['.$key.'=(.*?)\](.*?)\[\/'.$key.'\]/is',
-					"<".$val['tag']." ".$val['property']."=\\1>\\2</".$val['tag'].">",
-					$str
-				);
+				foreach ($matches as $tag_match)
+				{
+					// Clean up the contents of the property
+					$tag_match[1] = htmlspecialchars(
+						ee()->security->xss_clean($tag_match[1])
+					);
+
+					// If there's any evidence of XSS then don't add anything
+					if (stripos($tag_match[0], '[removed]') !== FALSE)
+					{
+						$str = str_replace($tag_match[0], '', $str);
+					}
+					else
+					{
+						$str = str_replace(
+							$tag_match[0],
+							"<".$val['tag']." ".$val['property']."='".$tag_match[1]."''>".$tag_match[2]."</".$val['tag'].">",
+							$str
+						);
+					}
+				}
 			}
 			else
 			{
@@ -931,13 +1025,7 @@ class EE_Typography extends CI_Typography {
 		/**  Decode codeblock division for code tag
 		/** -------------------------------------*/
 
-		if (count($this->code_chunks) > 0)
-		{
-			foreach ($this->code_chunks as $key => $val)
-			{
-				$str = str_replace('[div class="codeblock"]{'.$key.'yH45k02wsSdrp}[/div]', '<div class="codeblock">{'.$key.'yH45k02wsSdrp}</div>', $str);
-			}
-		}
+		$str = $this->_decode_code_tags($str);
 
 		/** -------------------------------------
 		/**  Decode color tags
@@ -1138,6 +1226,26 @@ class EE_Typography extends CI_Typography {
 		if (stripos($str, '[quote') !== FALSE)
 		{
 			$str = preg_replace('/\[quote\s+(author=".*?"\s+date=".*?")\]/si', '<blockquote \\1>', $str);
+		}
+
+		return $str;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Replace [div class="codeblock"] with <div class="codeblock">
+	 * @param  String $str The string to parse
+	 * @return String      The resulsting parsed string
+	 */
+	private function _decode_code_tags($str)
+	{
+		if (count($this->code_chunks) > 0)
+		{
+			foreach ($this->code_chunks as $key => $val)
+			{
+				$str = str_replace('[div class="codeblock"]{'.$key.'yH45k02wsSdrp}[/div]', '<div class="codeblock">{'.$key.'yH45k02wsSdrp}</div>', $str);
+			}
 		}
 
 		return $str;

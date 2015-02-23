@@ -417,7 +417,7 @@ class Forum_mcp {
 		$vars['form_action'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=forum'.AMP.'method=delete_board';
 		$vars['hidden'] = array('board_id' => $board_id);
 
-		return ee()->load->view('delete_board_confirmation', $vars, TRUE);
+		return $this->_content_wrapper('delete_board_confirmation', 'delete_board_confirmation', $vars);
 	}
 
 	// --------------------------------------------------------------------
@@ -2921,6 +2921,7 @@ class Forum_mcp {
 	{
 		$this->show_nav = FALSE;
 		$path = ee()->input->get_post('folder') ? ee()->input->get_post('folder') : '';
+		$vars['theme_list'] = '';
 
 		list($crumb, $path) = $this->_create_template_breadcrumb(PATH_THEMES.'/forum_themes', $path);
 		$full_path = PATH_THEMES.'/forum_themes/'.$path;
@@ -2942,7 +2943,8 @@ class Forum_mcp {
 		// can't read file?
 		if (($vars['template_data'] = read_file($full_path)) === FALSE)
 		{
-			return ee()->load->view('theme_templates', $vars, TRUE);
+			$vars['templates'] = array();
+			return $this->_content_wrapper('forum_templates', 'forum_templates', $vars);
 		}
 
 		ee()->cp->add_js_script('plugin', 'markitup');
@@ -3051,7 +3053,7 @@ class Forum_mcp {
 			}
 			else
 			{
-				$crumb[] = array($url.key(end($crumb)).'/'.$new_val => ucfirst(str_replace('_', ' ', $new_val)));
+				$crumb[] = array(key(end($crumb)).'/'.$new_val => ucfirst(str_replace('_', ' ', $new_val)));
 			}
 
 			$parts[] = $new_val;

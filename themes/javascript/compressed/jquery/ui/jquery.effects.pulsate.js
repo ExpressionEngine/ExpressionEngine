@@ -10,5 +10,4 @@
  * Depends:
  *	jquery.effects.core.js
  */
-
-(function(e,k){e.effects.pulsate=function(a){return this.queue(function(){var b=e(this),d=e.effects.setMode(b,a.options.mode||"show"),g=2*(a.options.times||5)-1,h=a.duration?a.duration/2:e.fx.speeds._default/2,f=b.is(":visible"),c=0;f||(b.css("opacity",0).show(),c=1);("hide"==d&&f||"show"==d&&!f)&&g--;for(d=0;d<g;d++)b.animate({opacity:c},h,a.options.easing),c=(c+1)%2;b.animate({opacity:c},h,a.options.easing,function(){0==c&&b.hide();a.callback&&a.callback.apply(this,arguments)});b.queue("fx",function(){b.dequeue()}).dequeue()})}})(jQuery);
+!function(e){e.effects.pulsate=function(i){return this.queue(function(){var t=e(this),o=e.effects.setMode(t,i.options.mode||"show"),s=2*(i.options.times||5)-1,n=i.duration?i.duration/2:e.fx.speeds._default/2,a=t.is(":visible"),u=0;a||(t.css("opacity",0).show(),u=1),("hide"==o&&a||"show"==o&&!a)&&s--;for(var c=0;s>c;c++)t.animate({opacity:u},n,i.options.easing),u=(u+1)%2;t.animate({opacity:u},n,i.options.easing,function(){0==u&&t.hide(),i.callback&&i.callback.apply(this,arguments)}),t.queue("fx",function(){t.dequeue()}).dequeue()})}}(jQuery);

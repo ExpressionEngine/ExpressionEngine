@@ -304,6 +304,23 @@ class Grid_model extends CI_Model {
 	// ------------------------------------------------------------------------
 
 	/**
+	 * Returns the row data for a single entry ID and field ID
+	 *
+	 * @param	int 	Entry ID
+	 * @param	int		Field ID to get row data for
+	 * @param	string	Content type to get data for
+	 * @return	array	Row data
+	 */
+	public function get_entry($entry_id, $field_id, $content_type)
+	{
+		$table = $this->_data_table($content_type, $field_id);
+		ee()->db->where('entry_id', $entry_id);
+		return ee()->db->get($table)->result_array();
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
 	 * Returns entry row data for a given entry ID and field ID, caches data
 	 * it has already queried for
 	 *

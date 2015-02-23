@@ -171,6 +171,40 @@ class Grid_lib {
 	 */
 	public function validate($data)
 	{
+		// Get row data for this entry
+		$rows = ee()->grid_model->get_entry($this->entry_id, $this->field_id, $this->content_type);
+
+		// Check that we're editing a row that actually belongs to this entry
+		$valid_rows = array();
+
+		foreach($rows as $row)
+		{
+			$valid_rows[] = $row['row_id'];
+		}
+
+		if (isset($data['rows']))
+		{
+			foreach ($data['rows'] as $key => $row)
+			{
+				if (substr($key, 0, 6) == 'row_id')
+				{
+					$row_key = str_replace('row_id_', '', $key);
+
+					if ( ! in_array($row_key, $valid_rows))
+					{
+						if (ee()->session->userdata['group_id'] == 1)
+						{
+							return array('value' => '', 'error' => lang('not_authorized'));
+						}
+						else
+						{
+							unset($data['rows'][$key]);
+						}
+					}
+				}
+			}
+		}
+
 		// Empty field
 		if ( ! isset($data['rows']))
 		{
@@ -224,6 +258,7 @@ class Grid_lib {
 		}
 
 		$i = 0;
+		$rows = array_values($rows);
 
 		// Call post_save callback for fieldtypes
 		foreach ($field_data['value'] as $row_name => $data)
@@ -239,9 +274,10 @@ class Grid_lib {
 					$this->entry_id
 				);
 
-				$row = array_slice($rows, $i, 1);
-
-				$fieldtype->settings['grid_row_id'] = $row[0]['row_id'];
+				if ( ! empty($rows[$i]['row_id']))
+				{
+					$fieldtype->settings['grid_row_id'] = $rows[$i]['row_id'];
+				}  
 
 				ee()->grid_parser->call('post_save', $cell_data);
 

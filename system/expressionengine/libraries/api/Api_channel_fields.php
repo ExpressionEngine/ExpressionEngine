@@ -1231,6 +1231,13 @@ class Api_channel_fields extends Api {
 			$this->errors[] = lang('invalid_characters').': '.$field_data['field_name'];
 		}
 
+		if ($field_data['field_label'] != ee()->security->xss_clean($field_data['field_label'])
+			OR $field_data['field_instructions'] != ee()->security->xss_clean($field_data['field_instructions']))
+		{
+			ee()->lang->loadfile('admin');
+			$this->errors[] = sprintf(lang('invalid_xss_check'), cp_url('homepage'));
+		}
+
 		// Truncated field name to test against duplicates
 		$trunc_field_name = substr(element('field_name', $field_data), 0, 32);
 
@@ -1687,7 +1694,7 @@ class Api_channel_fields extends Api {
 
 				foreach ($rez->result_array() as $frow)
 				{
-					$vars['field_pre_populate_id_options'][$row['channel_title']][$row['channel_id'].'_'.$frow['field_id']] = $frow['field_label'];
+					$vars['field_pre_populate_id_options'][$row['channel_title']][$row['channel_id'].'_'.$frow['field_id']] = htmlentities($frow['field_label'], ENT_QUOTES, 'UTF-8');
 				}
 			}
 		}
@@ -1920,7 +1927,7 @@ class Api_channel_fields extends Api {
 		}
 
 		$field_info['field_name'] = $field_name;
-		$field_info['params'] = ($param_string) ? ee()->functions->assign_parameters($param_string) : array();
+		$field_info['params'] = (trim($param_string)) ? ee()->functions->assign_parameters($param_string) : array();
 		$field_info['modifier'] = $modifier;
 
 		return $field_info;

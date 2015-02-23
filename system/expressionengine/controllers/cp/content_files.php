@@ -65,9 +65,9 @@ class Content_files extends CP_Controller {
 		}
 
 		if (AJAX_REQUEST)
-        {
-            $this->output->enable_profiler(FALSE);
-        }
+		{
+			$this->output->enable_profiler(FALSE);
+		}
 
 
 		$nav['file_manager']	= BASE.AMP.'C=content_files'.AMP.'M=index';
@@ -350,7 +350,7 @@ class Content_files extends CP_Controller {
 			{
 				$r = array(
 					'file_id' => $file['file_id'],
-					'title'	=> $file['title']
+					'title'	=> htmlentities($file['title'], ENT_QUOTES, 'UTF-8')
 				);
 
 				$is_image = FALSE;
@@ -774,7 +774,10 @@ class Content_files extends CP_Controller {
 		// _save_file to update the data
 		$this->load->library('form_validation');
 		$this->form_validation->set_error_delimiters('<div class="notice">', '</div>');
-		$this->form_validation->set_rules('file_title', 'lang:file_title', 'trim|required');
+		$this->form_validation->set_rules('file_title', 'lang:file_title', 'required|strip_tags|trim|valid_xss_check');
+		$this->form_validation->set_rules('description', 'lang:description', 'strip_tags|trim|valid_xss_check');
+		$this->form_validation->set_rules('credit', 'lang:credit', 'strip_tags|trim|valid_xss_check');
+		$this->form_validation->set_rules('location', 'lang:location', 'strip_tags|trim|valid_xss_check');
 
 		if ($this->form_validation->run())
 		{
@@ -807,7 +810,7 @@ class Content_files extends CP_Controller {
 				'field' => form_input(array(
 					'name' 	=> 'file_title',
 					'id' 	=> 'file_title',
-					'value' => $data['title'],
+					'value' => set_value('file_title', $data['title']),
 					'size' 	=> 255
 				)),
 				'type' => 'text',
@@ -821,7 +824,7 @@ class Content_files extends CP_Controller {
 				'field' => form_textarea(array(
 					'name'	=> 'description',
 					'id'	=> 'description',
-					'value'	=> $data['description']
+					'value'	=> set_value('description', $data['description'])
 				)),
 				'type' => 'textarea'
 			),
@@ -829,7 +832,7 @@ class Content_files extends CP_Controller {
 				'field' => form_input(array(
 					'name'	=> 'credit',
 					'id'	=> 'credit',
-					'value'	=> $data['credit'],
+					'value'	=> set_value('credit', $data['credit']),
 					'size' 	=> 255
 				)),
 				'type' => 'text'
@@ -838,17 +841,29 @@ class Content_files extends CP_Controller {
 				'field' => form_input(array(
 					'name'	=> 'location',
 					'id'	=> 'location',
-					'value'	=> $data['location'],
+					'value'	=> set_value('location', $data['location']),
 					'size' 	=> 255
 				)),
 				'type' => 'text'
 			)
 		);
 
+		// This is needed for editing/adding categories
+		$this->load->library('file_field');
+		$this->file_field->browser();
+
+		$js_files = array('cp/publish_tabs');
+
+		if (isset($data['categories']))
+		{
+			$js_files[] = 'cp/category_editor';
+		}
+
 		// Droppable is in here because of publish_tabs
 		$this->cp->add_js_script(array(
 			'ui'		=> array('droppable'),
-			'file'		=> array('cp/publish_tabs')
+			'file'		=> $js_files,
+			'plugin' 	=> array('ee_url_title')
 		));
 
 		$this->cp->render('content/files/edit_file', $data);
@@ -957,7 +972,7 @@ class Content_files extends CP_Controller {
 		));
 
 		$this->javascript->output('
-	        $("#file_manager_toolbar").accordion({
+			$("#file_manager_toolbar").accordion({
 				autoHeight: false,
 				header: "h3",
 				active: ' . $accordion_position . '
@@ -1286,8 +1301,8 @@ class Content_files extends CP_Controller {
 				}
 
 				// Rename the file
-        		if ( ! @copy($this->_upload_dirs[$id]['server_path'].$file['name'],
-	 						$this->_upload_dirs[$id]['server_path'].$clean_filename))
+				if ( ! @copy($this->_upload_dirs[$id]['server_path'].$file['name'],
+							$this->_upload_dirs[$id]['server_path'].$clean_filename))
 				{
 					$errors[$file['name']] = lang('invalid_filename');
 					continue;
@@ -1451,7 +1466,6 @@ class Content_files extends CP_Controller {
 		$this->view->cp_page_title = lang('watermark_prefs');
 		$this->cp->set_breadcrumb($this->_base_url, lang('file_manager'));
 
-
 		$this->jquery->tablesorter('.mainTable', '{
 			headers: {1: {sorter: false}, 2: {sorter: false}},
 			widgets: ["zebra"]
@@ -1492,11 +1506,6 @@ class Content_files extends CP_Controller {
 		$this->view->cp_page_title = lang('wm_'.$type);
 		$this->cp->set_breadcrumb($this->_base_url, lang('file_manager'));
 		$this->cp->set_breadcrumb($this->_base_url.AMP.'M=watermark_preferences', lang('watermark_prefs'));
-
-		// if (FALSE)
-		// {
-		// 	show_error(lang('unauthorized_access'));
-		// }
 
 		$default_fields = array(
 			'wm_name'				=> '',
@@ -1541,9 +1550,9 @@ class Content_files extends CP_Controller {
 		{
 			$wm_query = $this->file_model->get_watermark_preferences(array($id));
 
-   			$settings = $wm_query->row_array();
+			$settings = $wm_query->row_array();
 
- 			foreach ($settings as $k => $v)
+			foreach ($settings as $k => $v)
 			{
 				$vars[$k] = ($this->input->post($k)) ? $this->input->post($k) : $settings[$k];
 			}
@@ -1574,7 +1583,7 @@ class Content_files extends CP_Controller {
 			array(
 				'field' => 'name',
 				'label' => 'lang:wm_name',
-				'rules' => 'trim|required|callback__name_check'
+				'rules' => 'required|trim|strip_tags|valid_xss_check|callback__name_check'
 			),
 			array(
 				'field' => 'wm_type',
@@ -1687,7 +1696,7 @@ class Content_files extends CP_Controller {
 		$id = $this->input->post('id');
 
 		$type = ($id) ? 'edit' : 'new';
-		$data['wm_name'] = $this->input->post('name');
+		$data['wm_name'] = strip_tags($this->input->post('name'));
 
 		$defaults = array(
 						'wm_image_path'					=>	'',
@@ -1809,13 +1818,12 @@ class Content_files extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$id = $this->input->get_post('id');
+		$id = $this->input->get_post('id', TRUE);
 
-		if ( ! $id)
+		if ( ! $id OR ! filter_var($id, FILTER_VALIDATE_INT))
 		{
 			show_error(lang('unauthorized_access'));
 		}
-
 
 		$name = $this->file_model->delete_watermark_preferences($id);
 
@@ -2153,7 +2161,7 @@ class Content_files extends CP_Controller {
 		// Is the name taken?
 		if (
 			$this->admin_model->unique_upload_name(
-				strtolower($this->input->post('name')),
+				strtolower(strip_tags($this->input->post('name'))),
 				strtolower($this->input->post('cur_name')),
 				$edit
 			)
@@ -2289,6 +2297,10 @@ class Content_files extends CP_Controller {
 
 					$names[]  = $_POST[$name];
 				}
+			}
+			elseif ($key == 'name')
+			{
+				$data[$key] = strip_tags($val);
 			}
 			else
 			{

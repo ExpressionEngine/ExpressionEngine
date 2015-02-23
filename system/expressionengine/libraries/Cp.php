@@ -188,6 +188,9 @@ class Cp {
 			'session_idle'		=> lang('session_idle')
 		);
 
+		require_once(APPPATH.'libraries/El_pings'.EXT);
+		$pings = new El_pings();
+
 		ee()->javascript->set_global(array(
 			'BASE'				=> str_replace(AMP, '&', BASE),
 			'XID'				=> CSRF_TOKEN,
@@ -195,6 +198,7 @@ class Cp {
 			'PATH_CP_GBL_IMG'	=> PATH_CP_GBL_IMG,
 			'CP_SIDEBAR_STATE'	=> ee()->session->userdata('show_sidebar'),
 			'username'			=> ee()->session->userdata('username'),
+			'registered'		=> $pings->is_registered(),
 			'router_class'		=> ee()->router->class, // advanced css
 			'lang'				=> $js_lang_keys,
 			'THEME_URL'			=> $this->cp_theme_url,
@@ -865,11 +869,16 @@ class Cp {
 			'parents', 'siblings'
 		);
 
+		$control_structures = array(
+			'if', 'else', 'elseif'
+		);
+
 		return array_unique(array_merge(
 			$channel_vars,
 			$global_vars,
 			$orderby_vars,
-			$prefixes
+			$prefixes,
+			$control_structures
 		));
 	}
 
@@ -898,6 +907,44 @@ class Cp {
 		return $query->row('action_id');
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Site Switching Logic
+	 *
+	 * @param	int		$site_id	ID of site to switch to
+	 * @param	string	$redirect	Optional URL to redirect to after site
+	 * 								switching is successful
+	 * @return	void
+	 */
+	public function switch_site($site_id, $redirect = '')
+	{
+		if (ee()->session->userdata('group_id') != 1)
+		{
+			ee()->db->select('can_access_cp');
+			ee()->db->where('site_id', $site_id);
+			ee()->db->where('group_id', ee()->session->userdata['group_id']);
+
+			$query = ee()->db->get('member_groups');
+
+			if ($query->num_rows() == 0 OR $query->row('can_access_cp') !== 'y')
+			{
+				show_error(lang('unauthorized_access'));
+			}
+		}
+
+		if (empty($redirect))
+		{
+			$redirect = cp_url('homepage');
+		}
+
+		// We set the cookie before switching prefs to ensure it uses current settings
+		ee()->input->set_cookie('cp_last_site_id', $site_id, 0);
+
+		ee()->config->site_prefs('', $site_id);
+
+		ee()->functions->redirect($redirect);
+	}
 }
 
 /* End of file Cp.php */

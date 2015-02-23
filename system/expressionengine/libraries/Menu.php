@@ -153,7 +153,9 @@ class EE_Menu {
 				'tracking_preferences'			=> cp_url('admin_system/tracking_preferences'),
 				'captcha_preferences'			=> cp_url('admin_system/captcha_preferences'),
 				'throttling_configuration'		=> cp_url('admin_system/throttling_configuration')
-			)
+			),
+			'----',
+			'software_registration'			=>  cp_url('admin_system/software_registration')
 		);
 
 

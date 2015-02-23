@@ -36,7 +36,7 @@ $lang = array(
 'new_password_request' =>
 'New Password Request',
 
-'session_auto_timeout' => 
+'session_auto_timeout' =>
 'Your session has timed out due to inactivity',
 
 //-----------------------------------
@@ -46,8 +46,8 @@ $lang = array(
 'forgotten_password' =>
 'Reset Password',
 
-'no_reset_id' => 
-'The ID number you submitted does not appear to be valid.  Please check the link you followed.',
+'no_reset_id' =>
+'The password reset token does not appear to be valid.  Please check the link you followed.',
 
 'id_not_found' =>
 'The code number you submitted was not found in the database.',

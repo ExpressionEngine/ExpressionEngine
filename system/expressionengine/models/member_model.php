@@ -99,6 +99,9 @@ class Member_model extends CI_Model {
 	 */
 	function get_members($group_id = '', $limit = '', $offset = '', $search_value = '', $order = array(), $column = 'all')
 	{
+		// Is a unique order by specified
+		$add_orderby = TRUE;
+
 		$this->db->select("members.username, members.member_id, members.screen_name, members.email, members.join_date, members.last_visit, members.group_id, members.in_authorlist");
 
 		$this->_prep_search_query($group_id, $search_value, $column);
@@ -117,12 +120,22 @@ class Member_model extends CI_Model {
 		{
 			foreach ($order as $key => $val)
 			{
+				if ($key == 'member_id')
+				{
+					$add_orderby = FALSE;
+				}
+
 				$this->db->order_by($key, $val);
 			}
 		}
 		else
 		{
 			$this->db->order_by('join_date');
+		}
+
+		if ($add_orderby)
+		{
+			$this->db->order_by('member_id');
 		}
 
 		$members = $this->db->get('members');
@@ -400,7 +413,7 @@ class Member_model extends CI_Model {
 		// hook.
 		if ($this->extensions->active_hook('member_create_start'))
 		{
-			list($data, $cdata) = $this->extensions->call('member_create_start', $member_id, $data, $cdata);
+			list($data, $cdata) = $this->extensions->call('member_create_start', $data, $cdata);
 		}
 		//
 		// ---------------------------------------------------------------
@@ -711,23 +724,16 @@ class Member_model extends CI_Model {
 				{
 					// Entries to delete
 					$entry_ids[] = $entry['entry_id'];
-
-					// Gather channel IDs to update stats later
-					$channel_ids[]  = $entry['channel_id'];
 				}
 
-				$this->db->where_in('author_id', $member_ids)->delete('channel_titles');
-				$this->db->where_in('entry_id', $entry_ids)->delete('channel_data');
-
-				if ($this->db->table_exists('comments'))
-				{
-					$this->db->where_in('entry_id', $entry_ids)->delete('comments');
-				}
+				ee()->load->library('api');
+				ee()->api->instantiate('channel_entries');
+				ee()->api_channel_entries->delete_entry($entry_ids);
 			}
 		}
 
 		// ---------------------------------------------------------------
-		// Find affected entries for members's comments and update totals
+		// Delete removed members comments and recount entry stats
 		// ---------------------------------------------------------------
 
 		if ($this->db->table_exists('comments'))
@@ -740,26 +746,15 @@ class Member_model extends CI_Model {
 			foreach ($entries->result_array() as $row)
 			{
 				// Entries to update
-				$entry_ids[] = $row['entry_id'];
-
-				// Gather channel IDs to update stats later
-				$channel_ids[]  = $row['channel_id'];
+				$entry_ids[$row['entry_id']] = $row['entry_id'];
 			}
 
 			// Delete comments
 			$this->db->where_in('author_id', $member_ids)->delete('comments');
 
-			// Update individual entry comment counts
+			// Update entry comment counts
 			$this->load->model('comment_model');
 			$this->comment_model->recount_entry_comments($entry_ids);
-		}
-
-		// Update channel and comment stats
-		$channel_ids = array_unique($channel_ids);
-		foreach ($channel_ids as $channel_id)
-		{
-			$this->stats->update_channel_stats($channel_id);
-			$this->stats->update_comment_stats($channel_id);
 		}
 
 		// ---------------------------------------------------------------
@@ -1625,6 +1620,11 @@ class Member_model extends CI_Model {
 				// Check to see if the token is ID
 				$token_name = ($token_name === 'id') ? 'member_id' : $token_name;
 
+				// Clean the token name to arrive at a potential column name
+				// and prevent any shenanigans
+				$token_name = ee()->db->protect_identifiers(
+					preg_replace('/[^\w-.]/', '', $token_name)
+				);
 				$this->db->like('members.'.$token_name, $token_value);
 			}
 		}
@@ -1636,6 +1636,9 @@ class Member_model extends CI_Model {
 			}
 			else
 			{
+				$search_in = ee()->db->protect_identifiers(
+					preg_replace('/[^\w-.]/', '', $search_in)
+				);
 				$this->db->like('members.'.$search_in, $search_value);
 			}
 		}

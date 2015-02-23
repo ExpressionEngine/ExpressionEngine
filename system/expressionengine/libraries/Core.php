@@ -86,8 +86,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20140314');
-		define('APP_VER',		'2.8.1');
+		define('APP_BUILD',		'20150217');
+		define('APP_VER',		'2.9.3');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
 		define('RD',			'}');
@@ -97,6 +97,9 @@ class EE_Core {
 		define('NL',			"\n");
 		define('PATH_DICT', 	APPPATH.'config/');
 		define('AJAX_REQUEST',	ee()->input->is_ajax_request());
+
+		// Load the default caching driver
+		ee()->load->driver('cache');
 
 		// Load DB and set DB preferences
 		ee()->load->database();
@@ -118,8 +121,11 @@ class EE_Core {
 
 		ee()->config->site_prefs(ee()->config->item('site_name'));
 
-		// Load the default caching driver
-		ee()->load->driver('cache');
+		// earliest point we can apply this, makes sure that PHPSESSID cookies
+		// don't leak to JS by setting the httpOnly flag
+		$secure = bool_config_item('cookie_secure');
+		$httpOnly = (ee()->config->item('cookie_httponly')) ? bool_config_item('cookie_httponly') : TRUE;
+		session_set_cookie_params(0, ee()->config->item('cookie_path'), ee()->config->item('cookie_domain'), $secure, $httpOnly);
 
 		// this look backwards, but QUERY_MARKER is only used where we MUST
 		// have a ?, and do not want to double up

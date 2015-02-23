@@ -77,7 +77,7 @@ class Pages_mcp {
 	{
 	    ee()->load->model('pages_model');
 
-		$vars['cp_page_title'] = ee()->lang->line('pages_module_name');
+		ee()->view->cp_page_title = ee()->lang->line('pages_module_name');
 		$vars['new_page_location'] = '';
 
 		ee()->load->library('table');
@@ -189,7 +189,7 @@ class Pages_mcp {
 
         ee()->load->library('table');
 
-		$vars['cp_page_title'] = ee()->lang->line('pages_configuration');
+		ee()->view->cp_page_title = ee()->lang->line('pages_configuration');
 
 		ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=pages',
 		                              ee()->lang->line('pages_module_name'));
@@ -317,7 +317,7 @@ class Pages_mcp {
 
 		ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=pages', ee()->lang->line('pages_module_name'));
 
-		$vars['cp_page_title'] = ee()->lang->line('pages_delete_confirm');
+		ee()->view->cp_page_title = ee()->lang->line('pages_delete_confirm');
 
 		foreach ($_POST['toggle'] as $key => $val)
 		{

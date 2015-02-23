@@ -95,7 +95,20 @@ if ( ! function_exists('encode_php_tags'))
 {
 	function encode_php_tags($str)
 	{
-		return str_replace(array('<?php', '<?PHP', '<?', '?>'),  array('&lt;?php', '&lt;?PHP', '&lt;?', '?&gt;'), $str);
+		$str = str_replace(array('<?php', '<?PHP', '<?', '?>', '<%', '%>'),
+		                   array('&lt;?php', '&lt;?PHP', '&lt;?', '?&gt;', '&lt;%', '%&gt;'),
+		                   $str);
+
+		if (stristr($str, '<script') &&
+			preg_match_all("/<script.*?language\s*=\s*(\042|\047)?php(\\1)?.*?>.*?<\/script>/is", $str, $matches))
+		{
+			foreach ($matches[0] as $match)
+			{
+				$str = str_replace($match, htmlspecialchars($match), $str);
+			}
+		}
+
+		return $str;
 	}
 }
 

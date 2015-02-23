@@ -822,24 +822,42 @@ class CI_Upload {
 		{
 			$current = ini_get('memory_limit') * 1024 * 1024;
 
-			// There was a bug/behavioural change in PHP 5.2, where numbers over one million get output
-			// into scientific notation.  number_format() ensures this number is an integer
+			// There was a bug/behavioural change in PHP 5.2, where numbers over
+			// one million get output into scientific notation.  number_format()
+			// ensures this number is an integer
 			// http://bugs.php.net/bug.php?id=43053
 
 			$new_memory = number_format(ceil(filesize($file) + $current), 0, '.', '');
 
-			ini_set('memory_limit', $new_memory); // When an integer is used, the value is measured in bytes. - PHP.net
+			// When an integer is used, the value is measured in bytes.
+			ini_set('memory_limit', $new_memory);
 		}
 
-		// If the file being uploaded is an image, then we should have no problem with XSS attacks (in theory), but
-		// IE can be fooled into mime-type detecting a malformed image as an html file, thus executing an XSS attack on anyone
-		// using IE who looks at the image.  It does this by inspecting the first 255 bytes of an image.  To get around this
-		// CI will itself look at the first 255 bytes of an image to determine its relative safety.  This can save a lot of
-		// processor power and time if it is actually a clean image, as it will be in nearly all instances _except_ an
-		// attempted XSS attack.
+		// If the file being uploaded is an image, then we should have no
+		// problem with XSS attacks (in theory), but IE can be fooled into mime-
+		// type detecting a malformed image as an html file, thus executing an
+		// XSS attack on anyone using IE who looks at the image.  It does this
+		// by inspecting the first 255 bytes of an image.  To get around this CI
+		// will itself look at the first 255 bytes of an image to determine its
+		// relative safety.  This can save a lot of processor power and time if
+		// it is actually a clean image, as it will be in nearly all instances
+		// _except_ an attempted XSS attack.
 
-		if (function_exists('getimagesize') && @getimagesize($file) !== FALSE)
+		if (function_exists('getimagesize') && ($image = getimagesize($file)) !== FALSE)
 		{
+			$ext = strtolower(ltrim($this->file_ext, '.'));
+			$mime_by_ext = $this->mimes_types($ext);
+
+			if ( ! is_array($mime_by_ext))
+			{
+				$mime_by_ext = array($mime_by_ext);
+			}
+
+			if ( ! in_array($image['mime'], $mime_by_ext))
+			{
+				return FALSE; // tricky tricky
+			}
+
 			if (($file = @fopen($file, 'rb')) === FALSE) // "b" to force binary
 			{
 				return FALSE; // Couldn't open the file, return FALSE
@@ -848,8 +866,9 @@ class CI_Upload {
 			$opening_bytes = fread($file, 256);
 			fclose($file);
 
-			// These are known to throw IE into mime-type detection chaos
-			// <a, <body, <head, <html, <img, <plaintext, <pre, <script, <table, <title
+			// These are known to throw IE into mime-type detection chaos <a,
+			// <body, <head, <html, <img, <plaintext, <pre, <script, <table,
+			// <title
 			// title is basically just in SVG, but we filter it anyhow
 
 			if ( ! preg_match('/<(a|body|head|html|img|plaintext|pre|script|table|title)[\s>]/i', $opening_bytes))

@@ -124,14 +124,15 @@ class EE_Extensions {
 	/**
 	 * The Universal Caller (Added in EE 1.6)
 	 *
-	 *  Originally, using call(), objects could not be called by reference in PHP 4
-	 *  and thus could not be directly modified.  I found a clever way around that restriction
-	 *  by always having the second argument gotten by reference.  The problem (and the reason
-	 *  there is a call() hook above) is that not all extension hooks have a second argument
-	 *  and the PHP developers in their infinite wisdom decided that only variables could be passed
-	 *  by reference.  So, call() does a little magic to make sure there is always a second
-	 *  argument and universal_call() handles all of the object and reference handling
-	 *  when needed.  -Paul
+	 * Originally, using call(), objects could not be called by reference in PHP
+	 * 4 and thus could not be directly modified. I found a clever way around
+	 * that restriction by always having the second argument gotten by
+	 * reference. The problem (and the reason there is a call() hook above) is
+	 * that not all extension hooks have a second argument and the PHP
+	 * developers in their infinite wisdom decided that only variables could be
+	 * passed by reference. So, call() does a little magic to make sure there is
+	 * always a second argument and universal_call() handles all of the object
+	 * and reference handling when needed. -Paul
 	 *
 	 * @access	public
 	 * @param	string	Name of the  extension hook
@@ -141,9 +142,9 @@ class EE_Extensions {
 	function universal_call($which, &$parameter_one)
 	{
 		// Reset Our Variables
-		$this->end_script	= FALSE;
-		$this->last_call	= FALSE;
-		$php5_args			= array();
+		$this->end_script = FALSE;
+		$this->last_call  = FALSE;
+		$php5_args        = array();
 
 		// Anything to Do Here?
 		if ( ! isset($this->extensions[$which])) return;
@@ -193,15 +194,18 @@ class EE_Extensions {
 				$path = ee()->addons->_packages[$name]['extension']['path'];
 				$extension_path = reduce_double_slashes($path.'/ext.'.$name.'.php');
 
-				if (file_exists($extension_path))
-				{
-					ee()->load->add_package_path($path, FALSE);
-				}
+				// Check to see if we need to automatically load the path
+				$automatically_load_path = (array_search($path, ee()->load->get_package_paths()) === FALSE);
 
-				else
+				if ($automatically_load_path)
 				{
-					$error = 'Unable to load the following extension file:<br /><br />'.'ext.'.$name.'.php';
-					return ee()->output->fatal_error($error);
+					if ( ! file_exists($extension_path))
+					{
+						$error = 'Unable to load the following extension file:<br /><br />'.'ext.'.$name.'.php';
+						return ee()->output->fatal_error($error);
+					}
+
+					ee()->load->add_package_path($path, FALSE);
 				}
 
 				// Include File
@@ -266,22 +270,53 @@ class EE_Extensions {
 					$this->last_call = call_user_func_array(array(&$this->OBJ[$class_name], $method), $args);
 				}
 
-				$this->in_progress = '';
+				if ($automatically_load_path)
+				{
+					ee()->load->remove_package_path($path);
+				}
 
+				// A ee()->extensions->end_script value of TRUE means that the
+				// called method wishes us to stop the calling of the main
+				// script. In this case, even if there are methods after this
+				// one for the hook we still stop the script now because
+				// extensions with a higher priority call the shots and thus
+				// override any extensions with a lower priority.
+				if ($this->end_script === TRUE)
+				{
+					break;
+				}
+			}
 
-				ee()->load->remove_package_path($path);
-
-				//  A ee()->extensions->end_script value of TRUE means that the called
-				//	method wishes us to stop the calling of the main script.
-				//  In this case, even if there are methods after this one for
-				//  the hook we still stop the script now because extensions with
-				//  a higher priority call the shots and thus override any
-				//  extensions with a lower priority.
-				if ($this->end_script === TRUE) return $this->last_call;
+			// Have to keep breaking since break only accepts parameters as of
+			// PHP 5.4.0
+			if ($this->end_script === TRUE)
+			{
+				break;
 			}
 		}
 
+		$this->in_progress = '';
 		return $this->last_call;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get Active Hook Info
+	 *
+	 * Getter for the $extensions property
+	 *
+	 * @param	string		name of the extension hook
+	 * @return	array|bool	Hook details array or FALSE if not active
+	 **/
+	public function get_active_hook_info($hook)
+	{
+		if ( ! $this->active_hook($hook))
+		{
+			return FALSE;
+		}
+
+		return $this->extensions[$hook];
 	}
 
 	// --------------------------------------------------------------------
@@ -297,6 +332,9 @@ class EE_Extensions {
 	 */
 	function active_hook($which)
 	{
+		// Hop out if extensions are disabled
+		if (ee()->config->item('allow_extensions') != 'y') return FALSE;
+
 		return (isset($this->extensions[$which])) ? TRUE : FALSE;
 	}
 

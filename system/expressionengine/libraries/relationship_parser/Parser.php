@@ -266,7 +266,7 @@ class EE_Relationship_data_parser {
 	 *					$whole_tag is TRUE, then whole {if no_results} {/if}
 	 *					tag block will be returned.
 	 */
-	public function find_no_results($node, $node_tagdata, $whole_tag=FALSE)
+	public function find_no_results($node, $node_tagdata, $whole_tag = FALSE)
 	{
 		$tag = preg_quote($node->name(), '/');
 
@@ -275,7 +275,17 @@ class EE_Relationship_data_parser {
 
 		if ($has_no_results && preg_match("/".LD."if {$tag}:no_results".RD."(.*?)".LD.'\/'."if".RD."/s", $node_tagdata, $match))
 		{
-			return ($whole_tag ? $match[0] : $match[1]);
+			if (stristr($match[1], LD.'if'))
+			{
+				$match[0] = ee()->functions->full_tag($match[0], $node_tagdata, LD.'if', LD.'\/'."if".RD);
+			}
+
+			if ($whole_tag)
+			{
+				return $match[0];
+			}
+
+			return substr($match[0], strlen(LD."if {$tag}:no_results".RD), -strlen(LD.'/'."if".RD));
 		}
 
 		return '';
@@ -438,13 +448,14 @@ class EE_Relationship_data_parser {
 
 				$value = trim($value,  " |\t\n\r");
 				$value = explode('|', $value);
+				$value = array_map('strtolower', $value);
 
 				if ($p == 'channel')
 				{
 					$p = 'channel_name';
 				}
 
-				$data_matches = in_array($data[$p], $value);
+				$data_matches = in_array(strtolower($data[$p]), $value);
 
 				if (($data_matches && $not) OR
 					( ! $data_matches && ! $not))

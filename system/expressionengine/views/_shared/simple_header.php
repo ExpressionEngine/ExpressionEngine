@@ -3,17 +3,17 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-	<title><?=$cp_page_title?> | ExpressionEngine</title>
+	<title><?=$cp_page_title?> | <?=APP_NAME?></title>
 
-	<link rel="stylesheet" href="<?=BASE.AMP.'C=css'?>" type="text/css" media="screen" title="Global Styles" charset="utf-8">
+	<link rel="stylesheet" href="<?=BASE.AMP.'C=css'?>" type="text/css" media="screen" />
 
 	<?php
-	
+
 	if (isset($cp_global_js))
 	{
 		echo $cp_global_js;
 	}
-	
+
 	if (isset($library_src))
 	{
 		echo $library_src;
