@@ -111,11 +111,6 @@ class CI_DB_mysqli_connection {
 		return $this->connection->lastInsertId();
 	}
 
-	public function getAffectedRows()
-	{
-		return $this->connection->rowCount();
-	}
-
 	public function getNative()
 	{
 		return $this->connection;
