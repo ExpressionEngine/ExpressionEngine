@@ -27,6 +27,20 @@ $(document).ready(function() {
 		expandBtnHTML: '',
 		collapseBtnHTML: '',
 		maxDepth: 10
+	}).on('change', function() {
+
+		$.ajax({
+			url: EE.cat.reorder_url,
+			data: {'order': $('.nestable').nestable('serialize') },
+			type: 'POST',
+			dataType: 'json',
+			error: function(xhr, text, error) {
+				// Let the user know something went wrong
+				if ($('body > .banner').size() == 0) {
+					$('body').prepend(EE.alert.reorder_ajax_fail);
+				}
+			}
+		});
 	});
 });
 

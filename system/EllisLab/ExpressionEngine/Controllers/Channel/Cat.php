@@ -32,6 +32,8 @@ use EllisLab\ExpressionEngine\Controllers\Channel\AbstractChannel as AbstractCha
  */
 class Cat extends AbstractChannelController {
 
+	private $new_order_reference = array();
+
 	/**
 	 * Constructor to set permissions
 	 */
@@ -208,9 +210,87 @@ class Cat extends AbstractChannelController {
 		ee()->javascript->set_global('lang.remove_confirm', lang('categories') . ': <b>### ' . lang('categories') . '</b>');
 		ee()->cp->add_js_script('file', 'cp/v3/confirm_remove');
 
+		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
+			->asIssue()
+			->canClose()
+			->withTitle(lang('category_ajax_reorder_fail'))
+			->addToBody(lang('category_ajax_reorder_fail_desc'));
+
+		ee()->javascript->set_global('cat.reorder_url', cp_url('channel/cat/cat-reorder/'.$group_id));
+		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
+
 		ee()->cp->set_breadcrumb(cp_url('channel/cat'), lang('category_groups'));
 
 		ee()->cp->render('channel/cat/list');
+	}
+
+	/**
+	 * AJAX end point for reordering categories on catList page
+	 */
+	public function catReorder($group_id)
+	{
+		$cat_group = ee('Model')->get('CategoryGroup')
+			->filter('group_id', $group_id)
+			->first();
+
+		$new_order = ee()->input->post('order');
+
+		if ( ! AJAX_REQUEST OR ! $cat_group OR empty($new_order))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		// Create a flattened array based on the JSON response
+		// from Nestable; we basically want to mirror the data
+		// format we have in the database for easy comparison
+		$order = 1;
+		foreach ($new_order as $category)
+		{
+			$this->flattenCategoryTree($category, 0, $order);
+			$order++;
+		}
+
+		// Compare all categories to what we got back from
+		// Nestable to see if any parent IDs or orderings
+		// changed; if so, ONLY update those categories
+		foreach ($cat_group->getCategories() as $category)
+		{
+			$new_category = $this->new_order_reference[$category->cat_id];
+
+			if ($category->parent_id != $new_category['parent_id'] OR
+				$category->cat_order != $new_category['order'])
+			{
+				$category->parent_id = $new_category['parent_id'];
+				$category->cat_order = $new_category['order'];
+				$category->save();
+			}
+		}
+
+		ee()->output->send_ajax_response(NULL);
+		exit;
+	}
+
+	/**
+	 * Recursive function to flatten the category tree we get back
+	 * from the Nestable jQuery plugin
+	 */
+	private function flattenCategoryTree($category, $parent_id, $order)
+	{
+		$this->new_order_reference[$category['id']] = array(
+			'parent_id' => $parent_id,
+			'order' => $order
+		);
+
+		// Has children? Flatten them to same array
+		if (isset($category['children']))
+		{
+			$order = 1;
+			foreach ($category['children'] as $child)
+			{
+				$this->flattenCategoryTree($child, $category['id'], $order);
+				$order++;
+			}
+		}
 	}
 
 	/**

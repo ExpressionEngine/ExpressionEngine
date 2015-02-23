@@ -637,6 +637,12 @@ $lang = array(
 'category_fields_removed_desc' =>
 '%d category fields were removed.',
 
+'category_ajax_reorder_fail' =>
+'Attention: Failed to save category order',
+
+'category_ajax_reorder_fail_desc' =>
+'We failed to save your new categories order. Refresh the page and make sure you\'re logged in.',
+
 ''=>''
 );
 
