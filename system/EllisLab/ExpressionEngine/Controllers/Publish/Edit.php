@@ -189,7 +189,7 @@ class Edit extends AbstractPublishController {
 
 			if ($autosaves)
 			{
-				$title .= ' <span class="auto-save" title="auto saved">&#10033;</span>';
+				$title .= ' <span class="auto-save" title="' . lang('auto_saved') . '">&#10033;</span>';
 			}
 
 			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . $entry->getAuthor()->getMemberName() . ', ' . lang('in') . ': ' . $entry->getChannel()->channel_title . '</span>';

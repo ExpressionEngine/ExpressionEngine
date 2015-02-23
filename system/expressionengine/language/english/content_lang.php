@@ -177,6 +177,9 @@ $lang = array(
 'auto_saved_entries' =>
 'Auto Saved Entries',
 
+'auto_saved' =>
+'auto saved',
+
 'filter_autosaves' =>
 'filter autosaves',
 
