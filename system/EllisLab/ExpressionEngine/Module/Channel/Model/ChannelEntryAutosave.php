@@ -56,12 +56,12 @@ class ChannelEntryAutosave extends Model {
 
 	public function set__entry_data($entry_data)
 	{
-		$this->entry_data = serialize($entry_data);
+		$this->entry_data = json_encode($entry_data);
 	}
 
 	public function get__entry_data()
 	{
-		return unserialize($this->entry_data);
+		return json_decode($this->entry_data, TRUE);
 	}
 
 }
