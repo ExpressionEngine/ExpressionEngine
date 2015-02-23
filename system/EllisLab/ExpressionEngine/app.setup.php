@@ -22,6 +22,11 @@ return array(
 
 	'services' => array(
 
+		'db' => function($ee)
+		{
+			return $ee->make('Database')->newQuery();
+		},
+
 		'Event' => function($ee)
 		{
 			return new Event\Emitter();
