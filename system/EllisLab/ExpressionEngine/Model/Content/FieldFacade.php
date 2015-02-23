@@ -109,6 +109,13 @@ class FieldFacade {
 	{
 		$data = $this->initField();
 
+		// initField can sometimes return a string if the field has a
+		// string_override key.
+		if (is_string($data))
+		{
+			return $data;
+		}
+
 		$field_value = set_value($this->getName(), $data['field_data']);
 
 		return ee()->api_channel_fields->apply('display_publish_field', array($field_value));
