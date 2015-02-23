@@ -2087,7 +2087,7 @@ class CI_DB_active_record extends CI_DB_driver {
 								'ar_limit'			=> FALSE,
 								'ar_offset'			=> FALSE,
 								'ar_order'			=> FALSE,
-								'ar_empty_group'	=> TRUE,
+								'ar_empty_group'	=> empty($this->ar_cache_where),
 								'ar_group_count'	=> 0
 							);
 
@@ -2115,7 +2115,7 @@ class CI_DB_active_record extends CI_DB_driver {
 								'ar_keys'		=> array(),
 								'ar_limit'		=> FALSE,
 								'ar_order'		=> FALSE,
-								'ar_empty_group'	=> TRUE,
+								'ar_empty_group'	=> empty($this->ar_cache_where),
 								'ar_group_count'	=> 0
 								);
 
