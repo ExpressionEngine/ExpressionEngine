@@ -118,6 +118,7 @@ abstract class ContentModel extends Model {
 
 		$facade = new FieldFacade($id, $info);
 		$facade->setName($name);
+		$facade->setContentId($this->getId());
 
 		$this->_field_facades[$name] = $facade;
 	}
