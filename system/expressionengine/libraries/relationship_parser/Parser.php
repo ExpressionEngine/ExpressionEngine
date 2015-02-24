@@ -158,6 +158,16 @@ class EE_Relationship_data_parser {
 					);
 				}
 
+				if ($node->shortcut == 'entry_ids')
+				{
+					$delim = (isset($node->params['delimiter'])) ? $node->params['delimiter'] : '|';
+					return str_replace(
+						$node->open_tag,
+						implode($delim, $entry_ids),
+						$tagdata
+					);
+				}
+
 				$matches = array(array($node->open_tag, $node->open_tag));
 			}
 
