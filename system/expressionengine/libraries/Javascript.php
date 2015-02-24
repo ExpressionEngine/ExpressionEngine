@@ -843,8 +843,7 @@ class EE_Javascript {
 	 */
 	public function script_foot()
 	{
-		$this->js->_compile('script_foot', TRUE);
-		return $this->CI->view->$view_var;
+		return $this->js->_compile('script_foot', TRUE);
 	}
 }
 
