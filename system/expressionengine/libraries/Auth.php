@@ -443,7 +443,7 @@ class Auth {
 	{
 		$always_disallowed = array(4);
 
-		if (get_bool_from_string(ee()->config->item('allow_pending_login')))
+		if (bool_config_item('allow_pending_login'))
 		{
 			$always_disallowed = array_diff($always_disallowed, array(4));
 		}
