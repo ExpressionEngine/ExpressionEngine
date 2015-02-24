@@ -17,7 +17,7 @@
 		<link href="touch-icon-ipad.png" rel="apple-touch-icon-precomposed" sizes="144x144"> -->
 
 		<?php
-		foreach ($cp_its_all_in_your_head as $item)
+		foreach (ee()->cp->its_all_in_your_head as $item)
 		{
 			echo $item."\n";
 		}

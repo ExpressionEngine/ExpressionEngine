@@ -56,7 +56,7 @@
 			echo $cp_global_js;
 		}
 
-		echo $cp_footer_js;
+		echo ee()->cp->render_footer_js();
 
 		if (isset($library_src))
 		{
@@ -68,7 +68,7 @@
 			echo $script_foot;
 		}
 
-		foreach ($cp_footer_items as $item)
+		foreach (ee()->cp->footer_item as $item)
 		{
 			echo $item."\n";
 		}

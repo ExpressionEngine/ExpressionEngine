@@ -247,10 +247,6 @@ class Cp {
 		$date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
 		ee()->view->ee_build_date = ee()->localize->format_date($date_format, $this->_parse_build_date(), TRUE);
 
-		ee()->view->cp_footer_js = $this->render_footer_js();
-		ee()->view->cp_footer_items = $this->footer_item;
-		ee()->view->cp_its_all_in_your_head = $this->its_all_in_your_head;
-
 		return ee()->view->render($view, $data, $return);
 	}
 
