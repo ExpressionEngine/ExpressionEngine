@@ -14,7 +14,7 @@
 		</ul>
 		<div class="check-ctrl"><input type="checkbox"></div>
 	</div>
-	<?php $children = $category->getChildren();
+	<?php $children = $category->getChildren()->sortBy('cat_order');
 	if (count($children)): ?>
 		<ul class="tbl-list">
 			<?php foreach ($children as $child): ?>

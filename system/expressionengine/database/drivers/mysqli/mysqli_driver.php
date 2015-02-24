@@ -162,7 +162,10 @@ class CI_DB_mysqli_driver extends CI_DB {
 	function _execute($sql)
 	{
 		$sql = $this->_prep_query($sql);
-		return $this->connection->query($sql);
+		$query = $this->connection->query($sql);
+
+		$this->last_query = $query;
+		return $query;
 	}
 
 	// --------------------------------------------------------------------
@@ -314,7 +317,12 @@ class CI_DB_mysqli_driver extends CI_DB {
 	 */
 	function affected_rows()
 	{
-		return $this->connection->getAffectedRows();
+		if ( ! isset($this->last_query))
+		{
+			return 0;
+		}
+
+		return $this->last_query->rowCount();
 	}
 
 	// --------------------------------------------------------------------

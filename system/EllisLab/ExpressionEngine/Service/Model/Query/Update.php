@@ -74,9 +74,16 @@ class Update extends Query {
 
 	protected function actOnGateway($gateway, $object)
 	{
+		$values = $gateway->getValues();
+
+		if (empty($values))
+		{
+			return;
+		}
+
 		$query = $this->store
 			->rawQuery()
-			->set($gateway->getValues());
+			->set($values);
 
 		if ( ! $object->isNew())
 		{
