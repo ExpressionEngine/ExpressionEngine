@@ -59,8 +59,17 @@ class EE_Route {
 	 */
 	public function __construct($route, $required = FALSE)
 	{
-		require_once APPPATH.'libraries/template_router/Segment.php';
-		require_once APPPATH.'libraries/template_router/Converters.php';
+		if (defined('EE_APPPATH'))
+		{
+			$path = EE_APPPATH;
+		}
+		else
+		{
+			$path = APPPATH;
+		}
+
+		require_once $path.'libraries/template_router/Segment.php';
+		require_once $path.'libraries/template_router/Converters.php';
 		ee()->lang->loadfile('template_router');
 		$this->required = $required;
 		$this->rules = new EE_Template_router_converters();

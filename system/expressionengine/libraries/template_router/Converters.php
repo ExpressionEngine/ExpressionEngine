@@ -14,18 +14,27 @@
 
 // ------------------------------------------------------------------------
 
-require_once APPPATH.'libraries/template_router/converters/Alpha_dash.php';
-require_once APPPATH.'libraries/template_router/converters/Alpha_numeric.php';
-require_once APPPATH.'libraries/template_router/converters/Alpha.php';
-require_once APPPATH.'libraries/template_router/converters/Base64.php';
-require_once APPPATH.'libraries/template_router/converters/Category.php';
-require_once APPPATH.'libraries/template_router/converters/Integer.php';
-require_once APPPATH.'libraries/template_router/converters/Max_length.php';
-require_once APPPATH.'libraries/template_router/converters/Min_length.php';
-require_once APPPATH.'libraries/template_router/converters/Natural.php';
-require_once APPPATH.'libraries/template_router/converters/Numeric.php';
-require_once APPPATH.'libraries/template_router/converters/Pagination.php';
-require_once APPPATH.'libraries/template_router/converters/Regex.php';
+if (defined('EE_APPPATH'))
+{
+	$path = EE_APPPATH;
+}
+else
+{
+	$path = APPPATH;
+}
+
+require_once $path.'libraries/template_router/converters/Alpha_dash.php';
+require_once $path.'libraries/template_router/converters/Alpha_numeric.php';
+require_once $path.'libraries/template_router/converters/Alpha.php';
+require_once $path.'libraries/template_router/converters/Base64.php';
+require_once $path.'libraries/template_router/converters/Category.php';
+require_once $path.'libraries/template_router/converters/Integer.php';
+require_once $path.'libraries/template_router/converters/Max_length.php';
+require_once $path.'libraries/template_router/converters/Min_length.php';
+require_once $path.'libraries/template_router/converters/Natural.php';
+require_once $path.'libraries/template_router/converters/Numeric.php';
+require_once $path.'libraries/template_router/converters/Pagination.php';
+require_once $path.'libraries/template_router/converters/Regex.php';
 
 // ------------------------------------------------------------------------
 

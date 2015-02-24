@@ -127,6 +127,10 @@ class Updater {
 	 */
 	private function _recompile_template_routes()
 	{
+		ee()->load->model('template_model');
+		ee()->lang->load('template_router', ee()->lang->user_lang, FALSE, TRUE, EE_APPPATH);
+		require_once EE_APPPATH . 'libraries/template_router/Route.php';
+
 		ee()->db->select('template_routes.template_id, route_required, route');
 		ee()->db->from('templates');
 		ee()->db->join('template_routes', 'templates.template_id = template_routes.template_id');
@@ -138,7 +142,7 @@ class Updater {
 			$ee_route = new EE_Route($template->route, $template->route_required == 'y');
 			$compiled = $ee_route->compile();
 			$data = array('route_parsed' => $compiled);
-			$this->template_model->update_template_route($template->template_id, $data);
+			ee()->template_model->update_template_route($template->template_id, $data);
 		}
 	}
 }
