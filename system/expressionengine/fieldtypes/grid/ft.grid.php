@@ -141,7 +141,7 @@ class Grid_ft extends EE_Fieldtype {
 		{
 			if (REQ == 'CP')
 			{
-				$css_link = ee()->view->head_link('css/grid.css');
+				$css_link = ee()->view->head_link('css/v3/grid.css');
 			}
 			// Channel Form
 			else
