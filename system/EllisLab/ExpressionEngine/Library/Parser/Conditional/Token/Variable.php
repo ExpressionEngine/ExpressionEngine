@@ -18,11 +18,11 @@ class Variable extends Token {
 
 	public function setValue($value)
 	{
-		if (strpos($value, '{') !== FALSE)
+		if (is_string($value))
 		{
 			$value = str_replace(
 				array('{', '}'),
-				array('&#123;', '&#123;'),
+				array('&#123;', '&#125;'),
 				$value
 			);
 		}
