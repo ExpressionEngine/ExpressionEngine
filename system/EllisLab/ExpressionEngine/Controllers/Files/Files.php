@@ -3,7 +3,7 @@
 namespace EllisLab\ExpressionEngine\Controllers\Files;
 
 use ZipArchive;
-use EllisLab\ExpressionEngine\Controllers\Files\AbstractFiles as AbstractFilesController;
+use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
@@ -33,7 +33,208 @@ use EllisLab\ExpressionEngine\Model\File\UploadDestination;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Files extends AbstractFilesController {
+class Files extends CP_Controller {
+
+	/**
+	 * Constructor
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+
+		if ( ! ee()->cp->allowed_group('can_access_content', 'can_access_files'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		ee()->lang->loadfile('filemanager');
+
+		ee()->view->can_admin_upload_prefs = ee()->cp->allowed_group('can_admin_upload_prefs');
+	}
+
+	protected function sidebarMenu($active = NULL)
+	{
+		$active_id = NULL;
+		if (is_numeric($active))
+		{
+			$active_id = (int) $active;
+		}
+
+		// Register our menu
+		$vars = array(
+			'can_admin_upload_prefs' => ee()->cp->allowed_group('can_admin_upload_prefs'),
+			'upload_directories' => array()
+		);
+
+		$upload_destinations = ee('Model')->get('UploadDestination')
+			->filter('site_id', ee()->config->item('site_id'));
+
+		foreach ($upload_destinations->all() as $destination)
+		{
+			if ($this->hasFileGroupAccessPrivileges($destination) === FALSE)
+			{
+				continue;
+			}
+
+			$class = ($active_id == $destination->id) ? 'act' : '';
+
+			$data = array(
+				'name' => $destination->name,
+				'id' => $destination->id,
+				'url' => cp_url('files/directory/' . $destination->id),
+				'edit_url' => cp_url('settings/uploads/edit/' . $destination->id),
+			);
+
+			if ( ! empty($class))
+			{
+				$data['class'] = $class;
+			}
+
+			$vars['upload_directories'][] = $data;
+		}
+
+		ee()->view->left_nav = ee('View')->make('files/menu')->render($vars);
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/files/menu'),
+		));
+	}
+
+	protected function stdHeader()
+	{
+		ee()->view->header = array(
+			'title' => lang('file_manager'),
+			'form_url' => cp_url('files/search'),
+			'toolbar_items' => array(
+				'download' => array(
+					'href' => cp_url('files/export'),
+					'title' => lang('export_all')
+				)
+			),
+			'search_button_value' => lang('search_files')
+		);
+	}
+
+	protected function buildTableFromFileCollection(Collection $files, $limit = 20)
+	{
+		$table = Table::create(array('autosort' => TRUE, 'limit' => $limit));
+		$table->setColumns(
+			array(
+				'title_or_name',
+				'file_type',
+				'date_added',
+				'manage' => array(
+					'type'	=> Table::COL_TOOLBAR
+				),
+				array(
+					'type'	=> Table::COL_CHECKBOX
+				)
+			)
+		);
+		$table->setNoResultsText(lang('no_uploaded_files'));
+
+		$data = array();
+
+		$file_id = ee()->session->flashdata('file_id');
+
+		foreach ($files as $file)
+		{
+			if ( ! $file->getUploadDestination()
+				|| $this->hasFileGroupAccessPrivileges($file->getUploadDestination()) === FALSE)
+			{
+				continue;
+			}
+
+			$toolbar = array(
+				'view' => array(
+					'href' => '',
+					'rel' => 'modal-view-file',
+					'class' => 'm-link',
+					'title' => lang('view'),
+					'data-file-id' => $file->file_id
+				),
+				'edit' => array(
+					'href' => cp_url('files/file/edit/' . $file->file_id),
+					'title' => lang('edit')
+				),
+				'crop' => array(
+					'href' => cp_url('files/file/crop/' . $file->file_id),
+					'title' => lang('crop'),
+				),
+				'download' => array(
+					'href' => cp_url('files/file/download/' . $file->file_id),
+					'title' => lang('download'),
+				),
+			);
+
+			if ( ! $file->isImage())
+			{
+				unset($toolbar['view']);
+				unset($toolbar['crop']);
+			}
+
+			$column = array(
+				$file->title . '<br><em class="faded">' . $file->file_name . '</em>',
+				$file->mime_type,
+				ee()->localize->human_time($file->upload_date),
+				array('toolbar_items' => $toolbar),
+				array(
+					'name' => 'selection[]',
+					'value' => $file->file_id,
+					'data' => array(
+						'confirm' => lang('file') . ': <b>' . htmlentities($file->title, ENT_QUOTES) . '</b>'
+					)
+				)
+			);
+
+			$attrs = array();
+
+			if ($file_id && $file->file_id == $file_id)
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs'		=> $attrs,
+				'columns'	=> $column
+			);
+		}
+
+		$table->setData($data);
+
+		return $table;
+	}
+
+	protected function hasFileGroupAccessPrivileges(UploadDestination $dir)
+	{
+		// 2 = Banned
+		// 3 = Guests
+		// 4 = Pending
+		$hardcoded_disallowed_groups = array('2', '3', '4');
+
+		$member_group_id = ee()->session->userdata['group_id'];
+		// If the user is a Super Admin, return true
+		if ($member_group_id == 1)
+		{
+			return TRUE;
+		}
+
+		if (in_array($member_group_id, $hardcoded_disallowed_groups))
+		{
+			return FALSE;
+		}
+
+		if ( ! $dir)
+		{
+			return FALSE;
+		}
+
+		if (in_array($member_group_id, $dir->getNoAccess()->pluck('group_id')))
+		{
+			return FALSE;
+		}
+
+		return TRUE;
+	}
 
 	public function index()
 	{
@@ -55,8 +256,7 @@ class Files extends AbstractFilesController {
 		$filters = ee('Filter')
 			->add('Perpage', $files->count(), 'show_all_files');
 
-		$filter_values = $filters->values();
-		$table = $this->buildTableFromFileCollection($files->all(), $filter_values['perpage']);
+		$table = $this->buildTableFromFileCollection($files->all(), $filters->values()['perpage']);
 
 		$base_url->setQueryStringVariable('sort_col', $table->sort_col);
 		$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
@@ -137,8 +337,7 @@ class Files extends AbstractFilesController {
 		$filters = ee('Filter')
 			->add('Perpage', $dir->getFiles()->count(), 'show_all_files');
 
-		$filter_values = $filters->values();
-		$table = $this->buildTableFromFileCollection($dir->getFiles(), $filter_values['perpage']);
+		$table = $this->buildTableFromFileCollection($dir->getFiles(), $filters->values()['perpage']);
 
 		$base_url->setQueryStringVariable('sort_col', $table->sort_col);
 		$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
@@ -177,6 +376,211 @@ class Files extends AbstractFilesController {
 		ee()->cp->render('files/directory', $vars);
 	}
 
+	public function picker()
+	{
+		$directories = array();
+		$dirs = ee('Model')->get('UploadDestination')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+		
+		foreach($dirs as $dir)
+		{
+			$directories[$dir->id] = $dir;
+		}
+
+		if ( ! empty(ee()->input->get('directory')))
+		{
+			$id = ee()->input->get('directory');
+		}
+
+		if (empty($id) || $id == 'all')
+		{
+			$id = 'all';
+			$files = ee('Model')->get('File')
+				->filter('site_id', ee()->config->item('site_id'))->all();
+		}
+		else
+		{
+			$dir = $directories[$id];
+			$files = $dir->getFiles();
+		}
+
+		if (ee()->input->post('bulk_action') == 'remove')
+		{
+			$this->remove(ee()->input->post('selection'));
+			ee()->functions->redirect(cp_url('files/directory/' . $id, ee()->cp->get_url_state()));
+		}
+		elseif (ee()->input->post('bulk_action') == 'download')
+		{
+			$this->exportFiles(ee()->input->post('selection'));
+		}
+
+		$base_url = new URL('files/picker', ee()->session->session_id());
+
+		$filters = ee('Filter')->add('Perpage', $files->count(), 'show_all_files');
+
+		$directories = array_map(function($dir) {return $dir->name;}, $directories);
+		$directories = array('all' => lang('all')) + $directories;
+		$dirFilter = ee('Filter')->make('directory', lang('directory'), $directories);
+		$dirFilter->disableCustomValue();
+
+		$filters = $filters->add($dirFilter);
+
+		$table = $this->buildTableFromFileCollection($files, $filters->values()['perpage']);
+
+		$base_url->setQueryStringVariable('sort_col', $table->sort_col);
+		$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
+		$base_url->setQueryStringVariable('directory', $id);
+
+		ee()->view->filters = $filters->render($base_url);
+
+		$vars['table'] = $table->viewData($base_url);
+		$vars['form_url'] = $vars['table']['base_url'];
+		$vars['dir'] = $id;
+
+		if ( ! empty($vars['table']['data']))
+		{
+			// Paginate!
+			$pagination = new Pagination(
+				$vars['table']['limit'],
+				$vars['table']['total_rows'],
+				$vars['table']['page']
+			);
+			$vars['pagination'] = $pagination->cp_links($base_url);
+		}
+
+		ee()->view->cp_heading = $id == 'all' ? lang('all_files') : sprintf(lang('files_in_directory'), $dir->name);
+
+		ee()->cp->render('_shared/modal_file_picker', $vars);
+	}
+
+	public function avatars()
+	{
+		if ( ! empty(ee()->input->get('directory')))
+		{
+			$id = ee()->input->get('directory');
+		}
+
+		$avatar_path = $this->config->slash_item('avatar_path') . ee()->security->sanitize_filename($dir).'/';
+		$avatar_url = $this->config->slash_item('avatar_url') . ee()->security->sanitize_filename($dir).'/';
+
+		// Is this a valid avatar folder?
+
+		$extensions = array('.gif', '.jpg', '.jpeg', '.png');
+
+		if ( ! @is_dir($avatar_path) OR ! $fp = @opendir($avatar_path))
+		{
+			return array();
+		}
+
+		// Grab the image names
+
+		$avatars = array();
+
+		while (FALSE !== ($file = readdir($fp)))
+		{
+			if (FALSE !== ($pos = strpos($file, '.')))
+			{
+				if (in_array(substr($file, $pos), $extensions))
+				{
+					$avatars[] = $file;
+				}
+			}
+		}
+
+		closedir($fp);
+		$total_count = count($avatars);
+
+		// Did we succeed?
+
+		if (count($avatars) == 0)
+		{
+			show_error(lang('avatars_not_found'));
+		}
+
+		$filters = ee('Filter')->add('Perpage', $total_count, 'show_all_files');
+
+		$table = Table::create(array('autosort' => TRUE, 'limit' => $filters->values()['perpage']));
+		$table->setColumns(
+			array(
+				'title_or_name',
+				'file_type',
+				'date_added',
+				'manage' => array(
+					'type'	=> Table::COL_TOOLBAR
+				),
+				array(
+					'type'	=> Table::COL_CHECKBOX
+				)
+			)
+		);
+		$table->setNoResultsText(lang('no_uploaded_files'));
+
+		$data = array();
+
+		$file_id = ee()->session->flashdata('file_id');
+
+		foreach ($avatars as $avatar)
+		{
+			$file = $avatar_path . $avatar;
+			$toolbar = array(
+				'view' => array(
+					'href' => '',
+					'rel' => 'modal-view-file',
+					'class' => 'm-link',
+					'title' => lang('view'),
+				)
+			);
+
+			$column = array(
+				$avatar . '<br><em class="faded">' . $avatar . '</em>',
+				filetype($file),
+				ee()->localize->human_time(filemtime($file)),
+				array('toolbar_items' => $toolbar),
+				array(
+					'name' => 'selection[]',
+					'value' => $avatar,
+					'data' => array(
+						'confirm' => lang('file') . ': <b>' . htmlentities($avatar, ENT_QUOTES) . '</b>'
+					)
+				)
+			);
+
+			$attrs = array();
+
+			$data[] = array(
+				'attrs'		=> $attrs,
+				'columns'	=> $column
+			);
+		}
+
+		$table->setData($data);
+		$base_url = new URL('files/avatars', ee()->session->session_id());
+		$base_url->setQueryStringVariable('sort_col', $table->sort_col);
+		$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
+
+		ee()->view->filters = $filters->render($base_url);
+
+		$vars['table'] = $table->viewData($base_url);
+		$vars['form_url'] = $vars['table']['base_url'];
+		$vars['dir'] = $dir;
+
+		if ( ! empty($vars['table']['data']))
+		{
+			// Paginate!
+			$pagination = new Pagination(
+				$vars['table']['limit'],
+				$vars['table']['total_rows'],
+				$vars['table']['page']
+			);
+			$vars['pagination'] = $pagination->cp_links($base_url);
+		}
+
+		ee()->view->cp_heading = sprintf(lang('files_in_directory'), lang($dir));
+
+		ee()->cp->render('_shared/modal_file_picker', $vars);
+	}
+
 	public function export()
 	{
 		$files = ee('Model')->get('File')
@@ -213,7 +617,7 @@ class Files extends AbstractFilesController {
 			'has_file_input' => TRUE,
 			'base_url' => cp_url('files/upload/' . $dir_id),
 			'save_btn_text' => 'btn_upload_file',
-			'save_btn_text_working' => 'btn_saving',
+			'save_btn_text_working' => 'btn_upload_file_working',
 			'sections' => array(
 				array(
 					array(
@@ -305,8 +709,7 @@ class Files extends AbstractFilesController {
 				ee('Alert')->makeInline('settings-form')
 					->asIssue()
 					->withTitle(lang('upload_filedata_error'))
-					->addToBody($upload_response['error'])
-					->now();
+					->addToBody($upload_response['error']);
 				break 2;
 			}
 
@@ -346,8 +749,7 @@ class Files extends AbstractFilesController {
 			ee('Alert')->makeInline('settings-form')
 				->asIssue()
 				->withTitle(lang('upload_filedata_error'))
-				->addToBody(lang('upload_filedata_error_desc'))
-				->now();
+				->addToBody(lang('upload_filedata_error_desc'));
 		}
 
 		$this->sidebarMenu($dir_id);
@@ -413,8 +815,7 @@ class Files extends AbstractFilesController {
 			ee('Alert')->makeInline('settings-form')
 				->asIssue()
 				->withTitle(lang('error_export'))
-				->addToBody(lang('error_cannot_create_zip'))
-				->now();
+				->addToBody(lang('error_cannot_create_zip'));
 			return;
 		}
 
@@ -434,8 +835,7 @@ class Files extends AbstractFilesController {
 					ee('Alert')->makeInline('settings-form')
 						->asIssue()
 						->withTitle(lang('error_export'))
-						->addToBody(sprintf(lang('error_cannot_add_file_to_zip'), $file->title))
-						->now();
+						->addToBody(sprintf(lang('error_cannot_add_file_to_zip'), $file->title));
 					return;
 
 					$zip->close();
