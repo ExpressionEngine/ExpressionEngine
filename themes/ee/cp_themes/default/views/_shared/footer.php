@@ -51,10 +51,8 @@
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
 		<?=ee()->view->script_tag('v3/common.js')?>
 		<?php
-		if (isset($cp_global_js))
-		{
-			echo $cp_global_js;
-		}
+
+		echo ee()->javascript->global_js();
 
 		echo ee()->cp->render_footer_js();
 
@@ -63,10 +61,7 @@
 			echo $library_src;
 		}
 
-		if (isset($script_foot))
-		{
-			echo $script_foot;
-		}
+		echo ee()->javascript->script_foot();
 
 		foreach (ee()->cp->footer_item as $item)
 		{

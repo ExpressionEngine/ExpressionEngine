@@ -858,6 +858,37 @@ class EE_Javascript {
 
 		$this->CI->view->cp_global_js = $global_js;
 	}
+
+	/**
+	 * Prepares and returns the HTML+JS for injecting variables into the EE
+	 * namespace.
+	 *
+	 * @access public
+	 * @return string The HTML markup containing our JS.
+	 */
+	function global_js()
+	{
+		return $this->inline('
+			document.documentElement.className += "js";
+
+			var EE = '.json_encode($this->global_vars).';
+
+			if (typeof console === "undefined" || ! console.log) {
+				console = { log: function() { return false; }};
+			}
+		');
+	}
+
+	/**
+	 * Prepares and returns the JS to be output in the foot
+	 *
+	 * @return string The HTML markup for our foot JS
+	 */
+	function script_foot()
+	{
+		$this->js->_compile('script_foot', TRUE);
+		return $this->CI->view->$view_var;
+	}
 }
 
 // END EE_Javascript
