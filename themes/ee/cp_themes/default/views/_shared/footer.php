@@ -52,7 +52,7 @@
 		<?=ee()->view->script_tag('v3/common.js')?>
 		<?php
 
-		echo ee()->javascript->global_js();
+		echo ee()->javascript->get_global();
 
 		echo ee()->cp->render_footer_js();
 
