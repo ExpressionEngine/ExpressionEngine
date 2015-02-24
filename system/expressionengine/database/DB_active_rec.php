@@ -1996,6 +1996,7 @@ class CI_DB_active_record extends CI_DB_driver {
 									'ar_cache_set'			=> array(),
 									'ar_cache_exists'		=> array(),
 									'ar_cache_no_escape'    => array(),
+									'ar_empty_group'	    => empty($this->ar_where),
 								)
 							);
 	}
