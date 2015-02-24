@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -522,7 +522,7 @@ class EE_Stats {
 	 */
 	function update_channels_comment_stats($channel_id, $newtime)
 	{
-		// Is the comments module installed?  
+		// Is the comments module installed?
 		if ( ! ee()->db->table_exists('comments'))
 		{
 			$data = array(
@@ -532,7 +532,7 @@ class EE_Stats {
 
 			ee()->db->where('channel_id', $channel_id)
 						->update('channels', $data);
-						
+
 			return;
 		}
 

@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.7
@@ -253,7 +253,7 @@ class Grid_parser {
 
 		// Collect row IDs
 		$row_ids = array_keys($entry_data);
-		
+
 		// :total_rows single variable
 		$total_rows = count($display_entry_data);
 

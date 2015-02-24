@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -291,7 +291,7 @@ class EE_Route {
 
 					if (preg_match("/^[a-zA-Z0-9_\-]*$/ix", $variable))
 					{
-						// Subpattern names must be alpha numeric, start with a 
+						// Subpattern names must be alpha numeric, start with a
 						// non-digit and be less than 32 character long.
 						// SHA1 in base36 = 31 characters + 1 character prefix
 						$hash = 'e' . base_convert(sha1($variable), 16, 36);
