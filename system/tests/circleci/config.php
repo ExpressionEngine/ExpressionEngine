@@ -35,6 +35,7 @@ $config['database'] = array(
 	'expressionengine' => array(
 		'database' => 'circle_test',
 		'username' => 'ubuntu',
+		'hostname' => 'localhost'
 	),
 );
 
