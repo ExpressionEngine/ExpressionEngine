@@ -333,7 +333,7 @@ class CI_DB_driver {
 				$source .= ($func != '') ? $func . '() ' : '';
 			}
 
-			$this->queries[] = $sql . $source;
+			$save_string = $sql . $source;
 		}
 
 		// Start the Query Timer
@@ -344,7 +344,7 @@ class CI_DB_driver {
 		{
 			if ($this->save_queries == TRUE)
 			{
-				$this->query_times[] = 0;
+				$this->connection->getLog()->addQuery($save_string, 0);
 			}
 
 			// This will trigger a rollback if transactions are being used
@@ -383,7 +383,7 @@ class CI_DB_driver {
 
 		if ($this->save_queries == TRUE)
 		{
-			$this->query_times[] = ($em + $es) - ($sm + $ss);
+			$this->connection->getLog()->addQuery($save_string, $this->benchmark);
 		}
 
 		// Increment the query counter

@@ -31,12 +31,27 @@ class Connection extends \CI_DB_mysqli_connection {
 
 	protected static $legacy_loaded = FALSE;
 
+	protected $log;
+
 	/**
 	 *
 	 */
 	public function __construct($config)
 	{
 		parent::__construct($this->parseConfig($config));
+	}
+
+	public function getLog()
+	{
+		return $this->log;
+	}
+
+	/**
+	 *
+	 */
+	public function setLog($log)
+	{
+		$this->log = $log;
 	}
 
 	/**

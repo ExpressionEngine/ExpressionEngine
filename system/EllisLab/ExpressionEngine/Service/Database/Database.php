@@ -88,6 +88,7 @@ class Database
 	public function setConnection(Connection $connection)
 	{
 		$this->connection = $connection;
+		$this->connection->setLog($this->getLog());
 	}
 
 	/**
