@@ -14,7 +14,7 @@
 		</ul>
 		<div class="check-ctrl"><input type="checkbox" name="categories[]" value="<?=$category->cat_id?>" data-confirm="<?=lang('category') . ': <b>' . htmlentities($category->cat_name, ENT_QUOTES) . '</b>'?>"></div>
 	</div>
-	<?php $children = $category->getChildren()->sortBy('cat_order');
+	<?php $children = $category->getChildren()->sortBy(ee()->view->sort_column);
 	if (count($children)): ?>
 		<ul class="tbl-list">
 			<?php foreach ($children as $child): ?>
