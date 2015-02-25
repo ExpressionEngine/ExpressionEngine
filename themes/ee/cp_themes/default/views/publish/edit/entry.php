@@ -50,6 +50,11 @@
 						$width = "w-8";
 						break;
 				}
+
+				if ($field->getType() == 'relationship' && $field->getSetting('allow_multiple'))
+				{
+					$width = "w-16";
+				}
 			?>
 			<fieldset class="col-group<?php if (end($tab->getFields()) == $field) echo' last'?>">
 				<div class="setting-txt col <?=$width?>">
