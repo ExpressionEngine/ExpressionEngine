@@ -81,7 +81,7 @@ class Delete extends Query {
 
 				$this->deleteAsLeaf($to_meta, $delete_ids);
 
-				$delete_models->trigger('afterDelete');
+				$delete_models->emit('afterDelete');
 			}
 			while (count($delete_ids) == $batch_size);
 		}
