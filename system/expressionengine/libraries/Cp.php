@@ -75,16 +75,14 @@ class Cp {
 		ee()->output->set_header('X-Frame-Options: SameOrigin');
 	}
 
-
 	// --------------------------------------------------------------------
 
 	/**
 	 * Set Certain Default Control Panel View Variables
 	 *
-	 * @access	public
 	 * @return	void
 	 */
-	function set_default_view_variables()
+	public function set_default_view_variables()
 	{
 		$js_folder = (ee()->config->item('use_compressed_js') == 'n') ? 'src' : 'compressed';
 		$langfile  = substr(ee()->router->class, 0, strcspn(ee()->router->class, '_'));
@@ -531,11 +529,10 @@ class Cp {
 	 * To be used to create url's that "mask" the real location of the
 	 * users control panel.  Eg:  http://example.com/index.php?URL=http://example2.com
 	 *
-	 * @access public
 	 * @param string	URL
 	 * @return string	Masked URL
 	 */
-	function masked_url($url)
+	public function masked_url($url)
 	{
 		return ee()->functions->fetch_site_index(0,0).QUERY_MARKER.'URL='.urlencode($url);
 	}
@@ -547,10 +544,9 @@ class Cp {
 	 *
 	 * Adds a javascript file to the javascript combo loader
 	 *
-	 * @access public
 	 * @param array - associative array of
 	 */
-	function add_js_script($script = array(), $in_footer = TRUE)
+	public function add_js_script($script = array(), $in_footer = TRUE)
 	{
 		if ( ! is_array($script))
 		{
@@ -593,10 +589,9 @@ class Cp {
 	/**
 	 * Render Footer Javascript
 	 *
-	 * @access public
 	 * @return string
 	 */
-	function render_footer_js()
+	public function render_footer_js()
 	{
 		$str = '';
 		$requests = $this->_seal_combo_loader();
@@ -667,12 +662,11 @@ class Cp {
 	 * Get last modification time of a js file.
 	 * Returns highest if passed an array.
 	 *
-	 * @access	private
 	 * @param	string
 	 * @param	mixed
 	 * @return	int
 	 */
-	function _get_js_mtime($type, $name)
+	private function _get_js_mtime($type, $name)
 	{
 		if (is_array($name))
 		{
@@ -712,12 +706,11 @@ class Cp {
 	/**
 	 * Set the right navigation
 	 *
-	 * @access	public
 	 * @param	array
 	 * @param	string
 	 * @return	int
 	 */
-	function set_right_nav($nav = array())
+	public function set_right_nav($nav = array())
 	{
 		ee()->view->cp_right_nav = array_reverse($nav);
 	}
@@ -727,12 +720,11 @@ class Cp {
 	/**
 	 * Set the in-header navigation
 	 *
-	 * @access	public
 	 * @param	array
 	 * @param	string
 	 * @return	int
 	 */
-	function set_action_nav($nav = array())
+	public function set_action_nav($nav = array())
 	{
 		ee()->view->cp_action_nav = array_reverse($nav);
 	}
@@ -743,10 +735,9 @@ class Cp {
 	 * URL to the current page unless POST data exists - in which case it
 	 * goes to the root controller.  To use the result, prefix it with BASE.AMP
 	 *
-	 * @access	public
 	 * @return	string
 	 */
-	function get_safe_refresh()
+	public function get_safe_refresh()
 	{
 		static $url = '';
 
@@ -830,10 +821,9 @@ class Cp {
 	 *
 	 * 	Does a lookup for quick links.  Based on the URL we determine if it is external or not
 	 *
-	 * 	@access private
 	 * 	@return array
 	 */
-	function _get_quicklinks($quick_links)
+	private function _get_quicklinks($quick_links)
 	{
 		$i = 1;
 
@@ -894,10 +884,9 @@ class Cp {
 	/**
 	 * Abstracted Way to Add a Breadcrumb Links
 	 *
-	 * @access	public
 	 * @return	void
 	 */
-	function set_breadcrumb($link, $title)
+	public function set_breadcrumb($link, $title)
 	{
 		static $_crumbs = array();
 
@@ -912,11 +901,10 @@ class Cp {
 	 *
 	 * Load a javascript file from a package
 	 *
-	 * @access	public
 	 * @param	string
 	 * @return	void
 	 */
-	function load_package_js($file)
+	public function load_package_js($file)
 	{
 		$current_top_path = ee()->load->first_package_path();
 		$package = trim(str_replace(array(PATH_ADDONS, 'views'), '', $current_top_path), '/');
@@ -930,11 +918,10 @@ class Cp {
 	 *
 	 * Load a stylesheet from a package
 	 *
-	 * @access	public
 	 * @param	string
 	 * @return	void
 	 */
-	function load_package_css($file)
+	public function load_package_css($file)
 	{
 		$current_top_path = ee()->load->first_package_path();
 		$package = trim(str_replace(array(PATH_ADDONS, 'views'), '', $current_top_path), '/');
@@ -950,11 +937,10 @@ class Cp {
 	 *
 	 * Add any string to the <head> tag
 	 *
-	 * @access	public
 	 * @param	string
 	 * @return	string
 	 */
-	function add_to_head($data)
+	public function add_to_head($data)
 	{
 		// Deprecated for scripts. Let's encourage good practices. This will
 		// also let us move jquery in the future.
@@ -974,11 +960,10 @@ class Cp {
 	 *
 	 * Add any string above the </body> tag
 	 *
-	 * @access	public
 	 * @param	string
 	 * @return	string
 	 */
-	function add_to_foot($data)
+	public function add_to_foot($data)
 	{
 		$this->footer_item[] = $data;
 	}
@@ -990,11 +975,10 @@ class Cp {
 	 *
 	 * Member access validation
 	 *
-	 * @access	public
 	 * @param	string  any number of permission names
 	 * @return	bool    TRUE if member has all permissions
 	 */
-	function allowed_group()
+	public function allowed_group()
 	{
 		$which = func_get_args();
 
@@ -1029,10 +1013,9 @@ class Cp {
 	 *
 	 * Returns array of installed modules.
 	 *
-	 * @access public
 	 * @return array
 	 */
-	function get_installed_modules()
+	public function get_installed_modules()
 	{
 		if ( ! is_array($this->installed_modules))
 		{
@@ -1061,10 +1044,9 @@ class Cp {
 	 *
 	 * Tracks "reserved" words to avoid variable name collision
 	 *
-	 * @access	public
 	 * @return	array
 	 */
-	function invalid_custom_field_names()
+	public function invalid_custom_field_names()
 	{
 		static $invalid_fields = array();
 
@@ -1135,12 +1117,11 @@ class Cp {
 	/**
 	 * 	Fetch Action IDs
 	 *
-	 * 	@access public
 	 *	@param string
 	 * 	@param string
 	 *	@return mixed
 	 */
-	function fetch_action_id($class, $method)
+	public function fetch_action_id($class, $method)
 	{
 		ee()->db->select('action_id');
 		ee()->db->where('class', $class);
