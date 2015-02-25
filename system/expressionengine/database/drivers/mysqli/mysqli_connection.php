@@ -142,7 +142,7 @@ class CI_DB_mysqli_connection {
 
 	private function getBadSocketMessage($hostname)
 	{
-		$message =  "Could not find socket: '{$hostname}'. ";
+		$message =  "Database Connection Error: Could not find socket: '{$hostname}'. ";
 
 		if ($hostname == 'localhost')
 		{
