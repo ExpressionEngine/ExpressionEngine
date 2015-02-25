@@ -181,7 +181,7 @@ $lang = array(
 'auto saved',
 
 'filter_autosaves' =>
-'filter autosaves',
+'filter auto saves',
 
 //----------------------------
 // Publish page
@@ -537,7 +537,7 @@ $lang = array(
 'choose_layout_group_preview' => 'Select the group layout you wish to preview.',
 'layout_save_warning' => 'If you have altered your layout, the changes will not be saved.',
 
-'autosave_success'	=> '<b>Autosaved</b> at ',
+'autosave_success'	=> '<b>Auto saved</b> at ',
 'autosave_title'	=> 'Saved data available',
 'autosave_warning_1'	=> 'ExpressionEngine has saved data from this entry since it was last saved.',
 'autosave_warning_2'	=> 'Saved data is removed when an entry is saved or re-saved.',
@@ -698,16 +698,16 @@ $lang = array(
 'Publish Another Entry',
 
 'autosaved_entries' =>
-'Autosaved Entries',
+'Auto saved Entries',
 
 'autosaved' =>
-'Autosaved',
+'Auto saved',
 
 'original' =>
 'Original',
 
 'discard_autosave' =>
-'Discard Autosaved Data',
+'Discard Auto saved Data',
 
 'date_range' =>
 'Date Range',
@@ -983,10 +983,10 @@ $lang = array(
 'Remove Categories',
 
 'no_autosave_data' =>
-'No Autosaved Entries',
+'No Auto saved Entries',
 
-'autosave_data_available' => 'autosaved data available',
-'autosaved_entries' => 'Autosaved Entries',
+'autosave_data_available' => 'auto saved data available',
+'autosaved_entries' => 'Auto saved Entries',
 
 'no_category_group_match' =>
 'No Category Group Match was found for all of the entries.  Please choose entries that have at least one category group in common.',
