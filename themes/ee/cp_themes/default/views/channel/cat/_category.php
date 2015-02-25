@@ -12,7 +12,7 @@
 		<ul class="toolbar">
 			<li class="edit"><a href="<?=cp_url('channel/cat/edit-cat/'.$category->cat_id)?>"></a></li>
 		</ul>
-		<div class="check-ctrl"><input type="checkbox"></div>
+		<div class="check-ctrl"><input type="checkbox" name="categories[]" value="<?=$category->cat_id?>" data-confirm="<?=lang('category') . ': <b>' . htmlentities($category->cat_name, ENT_QUOTES) . '</b>'?>"></div>
 	</div>
 	<?php $children = $category->getChildren()->sortBy('cat_order');
 	if (count($children)): ?>

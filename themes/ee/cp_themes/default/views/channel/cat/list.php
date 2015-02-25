@@ -39,9 +39,10 @@
 
 $modal_vars = array(
 	'name'		=> 'modal-confirm-remove',
-	'form_url'	=> cp_url('channel/cat/remove-cat', ee()->cp->get_url_state()),
+	'form_url'	=> cp_url('channel/cat/remove-cat'),
 	'hidden'	=> array(
-		'bulk_action'	=> 'remove'
+		'bulk_action'	=> 'remove',
+		'cat_group_id'	=> $cat_group->group_id
 	)
 );
 

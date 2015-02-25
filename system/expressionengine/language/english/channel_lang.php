@@ -586,6 +586,12 @@ $lang = array(
 'category_groups_removed_desc' =>
 '%d category groups were removed.',
 
+'categories_removed' =>
+'Categories removed',
+
+'categories_removed_desc' =>
+'%d categories were removed.',
+
 'fields' =>
 'Fields',
 

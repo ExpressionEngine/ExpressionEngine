@@ -154,8 +154,6 @@ class Cat extends AbstractChannelController {
 			{
 				ee()->load->model('category_model');
 
-				// Do each channel individually because the old category_model only
-				// accepts one channel at a time to delete
 				foreach ($group_ids as $group_id)
 				{
 					$group = ee('Model')->get('CategoryGroup', $group_id)->first();
@@ -291,6 +289,44 @@ class Cat extends AbstractChannelController {
 				$order++;
 			}
 		}
+	}
+
+	/**
+	 * Category removal handler
+	 */
+	public function removeCat()
+	{
+		$cat_ids = ee()->input->post('categories');
+
+		if ( ! empty($cat_ids) && ee()->input->post('bulk_action') == 'remove')
+		{
+			// Filter out junk
+			$cat_ids = array_filter($cat_ids, 'is_numeric');
+
+			if ( ! empty($cat_ids))
+			{
+				ee()->load->model('category_model');
+
+				foreach ($cat_ids as $cat_id)
+				{
+					ee()->category_model->delete_category($cat_id);
+				}
+
+				ee('Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('categories_removed'))
+					->addToBody(sprintf(lang('categories_removed_desc'), count($cat_ids)))
+					->defer();
+			}
+		}
+		else
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		ee()->functions->redirect(
+			cp_url('channel/cat/cat-list/'.ee()->input->post('cat_group_id'))
+		);
 	}
 
 	/**
