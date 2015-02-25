@@ -34,8 +34,7 @@ $config['use_compressed_js'] = 'n';
 $config['database'] = array(
 	'expressionengine' => array(
 		'database' => 'circle_test',
-		'username' => 'ubuntu',
-		'hostname' => 'localhost'
+		'username' => 'ubuntu'
 	),
 );
 
