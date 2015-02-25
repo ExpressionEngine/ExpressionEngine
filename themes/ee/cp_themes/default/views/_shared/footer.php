@@ -63,7 +63,7 @@
 
 		echo ee()->javascript->script_foot();
 
-		foreach (ee()->cp->footer_item as $item)
+		foreach (ee()->cp->get_foot() as $item)
 		{
 			echo $item."\n";
 		}

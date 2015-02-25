@@ -26,13 +26,12 @@ class Cp {
 
 	private $view;
 
+	protected $its_all_in_your_head = array();
+	protected $footer_item          = array();
+
 	public $cp_theme             = '';
 	public $cp_theme_url         = '';	// base URL to the CP theme folder
-
 	public $installed_modules    = FALSE;
-
-	public $its_all_in_your_head = array();
-	public $footer_item          = array();
 	public $requests             = array();
 	public $loaded               = array();
 
@@ -43,7 +42,6 @@ class Cp {
 		'package'   => array(),
 		'fp_module' => array()
 	);
-
 
 	/**
 	 * Constructor
@@ -956,6 +954,18 @@ class Cp {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Returns the array of items to be added in the header
+	 *
+	 * @return array The array of items to be added in the header
+	 */
+	public function get_head()
+	{
+		return $this->its_all_in_your_head;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Add Footer Data
 	 *
 	 * Add any string above the </body> tag
@@ -966,6 +976,18 @@ class Cp {
 	public function add_to_foot($data)
 	{
 		$this->footer_item[] = $data;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns the array of items to be added in the footer
+	 *
+	 * @return array The array of items to be added in the footer
+	 */
+	public function get_foot()
+	{
+		return $this->footer_item;
 	}
 
 	// --------------------------------------------------------------------
