@@ -64,12 +64,25 @@ class CI_DB_mysqli_connection {
 			PDO::ATTR_PERSISTENT => $pconnect
 		);
 
-		$this->connection = new PDO(
-			$dsn,
-			$username,
-			$password,
-			$options
-		);
+		try {
+			$this->connection = new PDO(
+				$dsn,
+				$username,
+				$password,
+				$options
+			);
+		}
+		catch (\Exception $e)
+		{
+			$message = $e->getMessage();
+
+			if ($this->testBadSocket($message))
+			{
+				$message = $this->getBadSocketMessage($hostname);
+			}
+
+			show_error($message);
+		}
 	}
 
 	public function close()
@@ -119,6 +132,28 @@ class CI_DB_mysqli_connection {
 	public function isOpen()
 	{
 		return isset($this->connection);
+	}
+
+
+	private function testBadSocket($message)
+	{
+		return strpos($message, "SQLSTATE[HY000] [2002] No such file or directory") !== FALSE;
+	}
+
+	private function getBadSocketMessage($hostname)
+	{
+		$message =  "Could not find socket: '{$hostname}'. ";
+
+		if ($hostname == 'localhost')
+		{
+			$message .= "Try using '127.0.0.1' instead.";
+		}
+		else
+		{
+			$message .= "Try connecting with an IP address.";
+		}
+
+		return $message;
 	}
 /*
 	public function setCharset($charset, $collation)
