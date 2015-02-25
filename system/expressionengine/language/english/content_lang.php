@@ -1018,12 +1018,27 @@ $lang = array(
 'show_all' =>
 'Show All',
 
+// Textarea Buttons
+'make_bold' => 'make bold',
+'make_italic' => 'make italic',
+'create_blockquote' => 'create blockquote',
+'create_unordered_list' => 'create unordered list',
+'create_ordered_list' => 'create ordered list',
+'create_hyperlink' => 'create hyperlink',
+'upload_file' => 'upload file',
+'view_code' => 'view code',
+
+'launch_writemode' => 'launch writemode',
+'upload_file' => 'upload file',
+'open_spellcheck' => 'open spellcheck',
+'open_glossary' => 'open glossary',
+'open_emoji' => 'open emoji',
+
 'add_new_html_button' =>
 'Add New HTML button',
 
 'show' => 'Show',
 'hide' => 'Hide',
-'write_mode' => 'Write Mode',
 'show_tools' => 'Show Tools',
 
 // writemode

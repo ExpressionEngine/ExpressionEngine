@@ -71,6 +71,40 @@ class Textarea_ft extends EE_Fieldtype {
 			}
 		}
 
+		if (REQ == 'CP')
+		{
+			$class = ($grid_markitup) ? 'markItUp' : '';
+
+			$toolbar = FALSE;
+
+			$format_options = array(
+				'field_show_spellcheck',
+				'field_show_smileys',
+				'field_show_glossary',
+				'field_show_writemode',
+				'field_show_file_selector',
+				'field_show_fmt',
+			);
+
+			foreach ($format_options as $option)
+			{
+				if ($this->settings[$option] == 'y')
+				{
+					$toolbar = TRUE;
+					$class .= ' has-format-options';
+					break;
+				}
+			}
+
+			return ee('View')->make('publish')->render(array(
+				'name'     => $this->name(),
+				'settings' => $this->settings,
+				'value'    => $data,
+				'class'    => trim($class),
+				'toolbar'  => $toolbar
+			));
+		}
+
 		return form_textarea(array(
 			'name'	=> $this->name(),
 			'value'	=> $data,
