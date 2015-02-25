@@ -58,7 +58,7 @@ class Delete extends Query {
 				$to_meta = $this->store->getMetaDataReader($model);
 				$to_pk = $to_meta->getPrimaryKey();
 
-				$delete_ids = $builder
+				$delete_models = $builder
 					->getFrontend()
 					->get($model)
 					->with($withs)
@@ -66,8 +66,11 @@ class Delete extends Query {
 					->filter("{$from}.{$from_pk}", 'IN', $parent_ids)
 					->offset($offset)
 					->limit($batch_size)
-					->all()
-					->pluck($to_pk);
+					->all();
+
+				$delete_ids = $delete_models->pluck($to_pk);
+
+				$delete_models->emit('beforeDelete');
 
 				$offset += $batch_size;
 
@@ -77,6 +80,8 @@ class Delete extends Query {
 				}
 
 				$this->deleteAsLeaf($to_meta, $delete_ids);
+
+				$delete_models->trigger('afterDelete');
 			}
 			while (count($delete_ids) == $batch_size);
 		}
