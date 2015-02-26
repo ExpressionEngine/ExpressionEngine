@@ -26,9 +26,6 @@
 		<?php if (isset($settings['field_show_file_selector']) && $settings['field_show_file_selector'] == 'y'): ?>
 		<li class="upload"><a class="m-link" href="" title="<?=lang('upload_file')?>" rel="modal-file"></a></li>
 		<?php endif; ?>
-		<?php if (isset($settings['field_show_spellcheck']) && $settings['field_show_spellcheck'] == 'y'): ?>
-		<li class="spellcheck"><a href="" title="<?=lang('open_spellcheck')?>"></a></li>
-		<?php endif; ?>
 		<?php if (isset($settings['field_show_glossary']) && $settings['field_show_glossary'] == 'y'): ?>
 		<li class="glossary"><a href="" title="<?=lang('open_glossary')?>"></a></li>
 		<?php endif; ?>
