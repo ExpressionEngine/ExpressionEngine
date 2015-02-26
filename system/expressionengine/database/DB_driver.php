@@ -117,6 +117,9 @@ class CI_DB_driver {
 	 */
 	function db_set_charset($charset, $collation)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('3.0');
+
 		return TRUE;
 	}
 
