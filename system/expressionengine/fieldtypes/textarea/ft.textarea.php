@@ -96,12 +96,42 @@ class Textarea_ft extends EE_Fieldtype {
 				}
 			}
 
+			$format_options = array();
+
+			if ($this->settings['field_show_fmt'] == 'y')
+			{
+				// @TODO I should be shot for using ee()->db -sb
+				ee()->db->select('field_fmt');
+				ee()->db->where('field_id', $this->field_id);
+				ee()->db->order_by('field_fmt');
+				$query = ee()->db->get('field_formatting');
+
+				if ($query->num_rows() > 0)
+				{
+					foreach ($query->result_array() as $row)
+					{
+						$name = ucwords(str_replace('_', ' ', $row['field_fmt']));
+
+						if ($name == 'Br')
+						{
+							$name = lang('auto_br');
+						}
+						elseif ($name == 'Xhtml')
+						{
+							$name = lang('xhtml');
+						}
+						$format_options[$row['field_fmt']] = $name;
+					}
+				}
+			}
+
 			return ee('View')->make('publish')->render(array(
-				'name'     => $this->name(),
-				'settings' => $this->settings,
-				'value'    => $data,
-				'class'    => trim($class),
-				'toolbar'  => $toolbar
+				'name'           => $this->name(),
+				'settings'       => $this->settings,
+				'value'          => $data,
+				'class'          => trim($class),
+				'toolbar'        => $toolbar,
+				'format_options' => $format_options
 			));
 		}
 
