@@ -122,8 +122,9 @@ class EE_Tree {
 		// will in turn allow for quick subtree lookup.
 		foreach ($data as $row)
 		{
-			$id = $row[$child_key];
-			$nodes[$id] = new $class($row[$name], $row);
+			$id = (is_object($row)) ? $row->$child_key : $row[$child_key];
+			$node_name = (is_object($row)) ? $row->$name : $row[$name];
+			$nodes[$id] = new $class($node_name, $row);
 		}
 
 		$tree = new EE_TreeNode('__root__');
@@ -131,8 +132,8 @@ class EE_Tree {
 		// And now build the actual tree by assigning children
 		foreach ($data as $row)
 		{
-			$parent = $row[$parent_key];
-			$node = $nodes[$row[$child_key]];
+			$parent = (is_object($row)) ? $row->$parent_key : $row[$parent_key];
+			$node = (is_object($row)) ? $nodes[$row->$child_key] : $nodes[$row[$child_key]];
 
 			if (isset($nodes[$parent]))
 			{

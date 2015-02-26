@@ -16,7 +16,7 @@
 			</style>
 			<div class="nestable">
 				<ul class="tbl-list">
-					<?php foreach ($categories as $category): ?>
+					<?php foreach ($categories->children() as $category): ?>
 						<?php $this->view('channel/cat/_category', array('category' => $category)); ?>
 					<?php endforeach ?>
 				</ul>

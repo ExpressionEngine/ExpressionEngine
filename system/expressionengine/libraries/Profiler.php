@@ -156,7 +156,7 @@ class EE_Profiler {
 	protected function _compile_queries()
 	{
 		$dbs = array();
-
+/*
 		// Let's determine which databases are currently connected to
 		foreach (get_object_vars($this->CI) as $CI_object)
 		{
@@ -165,7 +165,9 @@ class EE_Profiler {
 				$dbs[] = $CI_object;
 			}
 		}
-
+*/
+		$dbs = array(ee('Database'));
+/*
 		if (count($dbs) == 0)
 		{
 			$output  = "\n\n";
@@ -179,7 +181,7 @@ class EE_Profiler {
 			$output .= "</fieldset>";
 
 			return $output;
-		}
+		}*/
 
 		// Load the text helper so we can highlight the SQL
 		$this->CI->load->helper('text');
@@ -195,7 +197,9 @@ class EE_Profiler {
 		{
 			$count++;
 
-			$hide_queries = (count($db->queries) > $this->_query_toggle_count) ? ' display:none' : '';
+			$log = $db->getLog();
+
+			$hide_queries = ($log->getQueryCount() > $this->_query_toggle_count) ? ' display:none' : '';
 
 			$show_hide_js = '(<span style="cursor: pointer;" onclick="var s=document.getElementById(\'ci_profiler_queries_db_'.$count.'\').style;s.display=s.display==\'none\'?\'\':\'none\';this.innerHTML=this.innerHTML==\''.$this->CI->lang->line('profiler_section_hide').'\'?\''.$this->CI->lang->line('profiler_section_show').'\':\''.$this->CI->lang->line('profiler_section_hide').'\';">'.$this->CI->lang->line('profiler_section_hide').'</span>)';
 
@@ -206,19 +210,21 @@ class EE_Profiler {
 
 			$output .= '<fieldset style="border:1px solid #0000FF;padding:6px 10px 10px 10px;margin:20px 0 20px 0;background-color:#eee">';
 			$output .= "\n";
-			$output .= '<legend style="color:#0000FF;">&nbsp;&nbsp;'.$this->CI->lang->line('profiler_database').':&nbsp; '.$db->database.'&nbsp;&nbsp;&nbsp;'.$this->CI->lang->line('profiler_queries').': '.count($db->queries).'&nbsp;&nbsp;'.$show_hide_js.'</legend>';
+			$output .= '<legend style="color:#0000FF;">&nbsp;&nbsp;'.$this->CI->lang->line('profiler_database').':&nbsp; '.$db->getConfig()->get('database').'&nbsp;&nbsp;&nbsp;'.$this->CI->lang->line('profiler_queries').': '.$log->getQueryCount().'&nbsp;&nbsp;'.$show_hide_js.'</legend>';
 			$output .= "\n";
 			$output .= "\n\n<table style='width:100%;{$hide_queries}' id='ci_profiler_queries_db_{$count}'>\n";
 
-			if (count($db->queries) == 0)
+			if ($log->getQueryCount() == 0)
 			{
 				$output .= "<tr><td style='width:100%;color:#0000FF;font-weight:normal;background-color:#eee;padding:5px;'>".$this->CI->lang->line('profiler_no_queries')."</td></tr>\n";
 			}
 			else
 			{
-				foreach ($db->queries as $key => $val)
+				foreach ($log->getQueries() as $query)
 				{
-					$time = number_format($db->query_times[$key], 4);
+					list($val, $time) = $query;
+
+					$time = number_format($time, 4);
 
 					$val = highlight_code($val, ENT_QUOTES);
 

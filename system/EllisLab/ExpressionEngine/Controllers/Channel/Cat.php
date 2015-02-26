@@ -177,6 +177,138 @@ class Cat extends AbstractChannelController {
 	}
 
 	/**
+	 * New category group form
+	 */
+	public function create()
+	{
+		$this->form();
+	}
+
+	/**
+	 * Edit category group form
+	 */
+	public function edit($group_id)
+	{
+		$this->form($group_id);
+	}
+
+	/**
+	 * Category group creation/edit form
+	 *
+	 * @param	int	$channel_id	ID of category group to edit
+	 */
+	private function form($group_id = NULL)
+	{
+		if (is_null($group_id))
+		{
+			ee()->view->cp_page_title = lang('create_category_group');
+			ee()->view->base_url = cp_url('channel/cat/create');
+			ee()->view->save_btn_text = 'create_category_group';
+			$cat_group = ee('Model')->make('CategoryGroup');
+		}
+		else
+		{
+			$cat_group = ee('Model')->get('CategoryGroup')
+				->filter('group_id', $group_id)
+				->first();
+
+			if ( ! $cat_group)
+			{
+				show_error(lang('unauthorized_access'));
+			}
+
+			ee()->view->cp_page_title = lang('edit_category_group');
+			ee()->view->base_url = cp_url('channel/cat/edit/'.$group_id);
+			ee()->view->save_btn_text = 'edit_category_group';
+		}
+
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'name',
+					'desc' => 'cat_name_desc',
+					'fields' => array(
+						'cat_name' => array(
+							'type' => 'text',
+							'value' => $cat_group->group_name,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'html_formatting',
+					'desc' => 'html_formatting_desc',
+					'fields' => array(
+						'field_html_formatting' => array(
+							'type' => 'dropdown',
+							'choices' => array(
+								'all'	=> lang('allow_all_html'),
+								'safe'	=> lang('allow_safe_html'),
+								'none'	=> lang('convert_to_entities')
+							),
+							'value' => $cat_group->field_html_formatting
+						)
+					)
+				)
+			)
+		);
+
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'group_name',
+				'label' => 'lang:name',
+				'rules' => 'required|strip_tags|trim|valid_xss_check'
+			)
+		));
+
+		ee()->form_validation->validateNonTextInputs($vars['sections']);
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			$group_id = $this->saveCategoryGroup($group_id);
+
+			ee('Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('category_group_saved'))
+				->addToBody(lang('category_group_saved_desc'))
+				->defer();
+
+			ee()->functions->redirect(cp_url('channel/cat/edit/'.$group_id));
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('category_group_not_saved'))
+				->addToBody(lang('category_group_not_saved_desc'))
+				->now();
+		}
+
+		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text_working = 'btn_saving';
+
+		ee()->cp->set_breadcrumb(cp_url('channel/cat'), lang('category_groups'));
+
+		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * Saves a category group
+	 *
+	 * @param	int $group_id ID of category group to save
+	 * @return	int ID of category group saved
+	 */
+	private function saveCategoryGroup($group_id = NULL)
+	{
+		// Save
+	}
+
+	/**
 	 * Category listing
 	 */
 	public function catList($group_id)
@@ -193,15 +325,9 @@ class Cat extends AbstractChannelController {
 		ee()->cp->add_js_script('plugin', 'nestable');
 		ee()->cp->add_js_script('file', 'cp/v3/category_reorder');
 
-		ee()->view->sort_column = ($cat_group->sort_order == 'a') ? 'cat_name' : 'cat_order';
-
-		// Get only parentless categories, we'll drill down
-		// into children in the view
-		ee()->view->categories = $cat_group->getCategories()->sortBy(ee()->view->sort_column)
-			->filter(function($category)
-			{
-				return $category->parent_id == 0;
-			});
+		// Get the category tree with a single query
+		ee()->load->library('datastructures/tree');
+		ee()->view->categories = $cat_group->getCategoryTree(ee()->tree);
 
 		ee()->view->base_url = $cat_group->group_name . ' &mdash; ' . lang('categories');
 		ee()->view->cp_page_title = $cat_group->group_name . ' &mdash; ' . lang('categories');
@@ -575,7 +701,7 @@ class Cat extends AbstractChannelController {
 			ee('Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('category_not_saved'))
-				->addToBody(lang('channel_not_saved_desc'))
+				->addToBody(lang('category_not_saved_desc'))
 				->now();
 		}
 

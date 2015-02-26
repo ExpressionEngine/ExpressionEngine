@@ -90,9 +90,23 @@ class CI_DB_mysqli_connection {
 		$this->connection = NULL;
 	}
 
+	/**
+	 * Run a query
+	 */
 	public function query($query)
 	{
-		return $this->connection->query($query);
+		$time_start = microtime(TRUE);
+
+		$result = $this->connection->query($query);
+
+		$time_end = microtime(TRUE);
+
+		if (isset($this->log))
+		{
+			$this->log->addQuery($query, $time_end-$time_start);
+		}
+
+		return $result;
 	}
 
 	public function escape($str)
@@ -142,7 +156,7 @@ class CI_DB_mysqli_connection {
 
 	private function getBadSocketMessage($hostname)
 	{
-		$message =  "Could not find socket: '{$hostname}'. ";
+		$message =  "Database Connection Error: Could not find socket: '{$hostname}'. ";
 
 		if ($hostname == 'localhost')
 		{
@@ -155,20 +169,5 @@ class CI_DB_mysqli_connection {
 
 		return $message;
 	}
-/*
-	public function setCharset($charset, $collation)
-	{
-		$version = $this->connection->server_info;
 
-		// mysqli::set_charset() requires MySQL >= 5.0.7, use SET NAMES as fallback
-		if (version_compare($version, '5.0.7', '>='))
-		{
-			$this->connection->set_charset($charset);
-		}
-		else
-		{
-			$this->query("SET NAMES '".$this->escape($charset)."' COLLATE '".$this->escape($collation)."'");
-		}
-	}
-	*/
 }

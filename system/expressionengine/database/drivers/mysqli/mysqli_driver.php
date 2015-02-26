@@ -112,34 +112,6 @@ class CI_DB_mysqli_driver extends CI_DB {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Set client character set
-	 *
-	 * @access	private
-	 * @param	string
-	 * @param	string
-	 * @return	resource
-	 */
-	function _db_set_charset($charset, $collation)
-	{
-		if ( ! isset($this->use_set_names))
-		{
-			// mysqli_set_charset() requires MySQL >= 5.0.7, use SET NAMES as fallback
-			$this->use_set_names = (version_compare(mysqli_get_server_info($this->conn_id), '5.0.7', '>=')) ? FALSE : TRUE;
-		}
-
-		if ($this->use_set_names === TRUE)
-		{
-			return $this->connection->query("SET NAMES '".$this->escape_str($charset)."' COLLATE '".$this->escape_str($collation)."'");
-		}
-		else
-		{
-			return $this->connection->getNative()->set_charset($charset);
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Version number query string
 	 *
 	 * @access	public
