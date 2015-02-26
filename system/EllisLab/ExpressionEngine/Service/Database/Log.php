@@ -28,6 +28,11 @@ namespace EllisLab\ExpressionEngine\Service\Database;
 class Log {
 
 	/**
+	 * @var String Identifying name in the query log
+	 */
+	protected $name;
+
+	/**
 	 * @var Int Query count
 	 */
 	protected $count = 0;
@@ -41,6 +46,15 @@ class Log {
 	 * @var Bool Store queries for debugging?
 	 */
 	protected $save_queries = FALSE;
+
+	/**
+	 * Create a named log. We have a name so that we can display logs
+	 * for each connection individually.
+	 */
+	public function __construct($name)
+	{
+		$this->name = $name;
+	}
 
 	/**
 	 * Turn on/off saving queries
@@ -59,7 +73,9 @@ class Log {
 
 		if ($this->save_queries)
 		{
-			$this->queries[] = array($sql, $time);
+			$query = $sql.$this->getTrace();
+
+			$this->queries[] = array($query, $time);
 		}
 	}
 
@@ -77,5 +93,59 @@ class Log {
 	public function getQueryCount()
 	{
 		return $this->count;
+	}
+
+	/**
+	 *
+	 */
+	protected function getTrace()
+	{
+		$source = '';
+		$trace = debug_backtrace();
+
+		// Log file the query came from
+		if (count($trace) >= 3)
+		{
+			$path = BASEPATH;
+			require_once $path.'helpers/array_helper.php';
+
+			$i = 1;
+			$frame = NULL;
+
+			while (isset($trace[$i]))
+			{
+				$frame = $trace[$i];
+
+				if (isset($frame['class']))
+				{
+					$class = $frame['class'];
+
+					if (strpos($class, 'CI_DB_') !== 0 && strpos($class, __NAMESPACE__) !== 0)
+					{
+						break;
+					}
+				}
+
+				$i++;
+			}
+
+			$file = element('file', $frame, '');
+			$line = element('line', $frame, '');
+			$class = element('class', $frame, '');
+			$func = element('function', $frame, '');
+
+			// Replace path with APP or CI to shorten the string
+			if ($file != '')
+			{
+				$file = 'system/' . str_replace(SYSPATH,'',$file);
+			}
+
+			// Build the caller source info
+			$source = "\n#".$file . ' L:' . $line . '  ';
+			$source .= ($class != '') ? $class . '::' : '';
+			$source .= ($func != '') ? $func . '() ' : '';
+		}
+
+		return $source;
 	}
 }

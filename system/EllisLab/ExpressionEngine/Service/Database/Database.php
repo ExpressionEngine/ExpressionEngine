@@ -134,6 +134,6 @@ class Database
 	 */
 	protected function newLog()
 	{
-		return new Log();
+		return new Log('default');
 	}
 }

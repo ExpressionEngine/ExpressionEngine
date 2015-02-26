@@ -41,6 +41,9 @@ class Connection extends \CI_DB_mysqli_connection {
 		parent::__construct($this->parseConfig($config));
 	}
 
+	/**
+	 *
+	 */
 	public function getLog()
 	{
 		return $this->log;
