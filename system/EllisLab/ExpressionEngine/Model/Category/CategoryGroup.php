@@ -70,13 +70,14 @@ class CategoryGroup extends Model implements ContentStructure {
 	/**
 	 * Returns the category tree for this category group
 	 *
-	 * @param 	EE_Tree	$tree	An EE_Tree library object
+	 * @param 	EE_Tree	$tree		An EE_Tree library object
+	 * @param 	String	$sort_by	Column to sort the leafs by
 	 * @return 	Object<ImmutableTree> Traversable tree object
 	 */
-	public function getCategoryTree(\EE_Tree $tree, $sort = 'a')
+	public function getCategoryTree(\EE_Tree $tree, $sort_by = 'cat_name')
 	{
 		return $tree->from_list(
-			$this->getCategories()->sortBy($sort),
+			$this->getCategories()->sortBy($sort_by),
 			array('id' => 'cat_id')
 		);
 	}
