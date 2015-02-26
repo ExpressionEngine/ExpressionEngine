@@ -193,11 +193,9 @@ class Cat extends AbstractChannelController {
 		ee()->cp->add_js_script('plugin', 'nestable');
 		ee()->cp->add_js_script('file', 'cp/v3/category_reorder');
 
-		$sort_column = ($cat_group->sort_order == 'a') ? 'cat_name' : 'cat_order';
-
 		// Get the category tree with a single query
 		ee()->load->library('datastructures/tree');
-		ee()->view->categories = $cat_group->getCategoryTree(ee()->tree, $sort_column);
+		ee()->view->categories = $cat_group->getCategoryTree(ee()->tree);
 
 		ee()->view->base_url = $cat_group->group_name . ' &mdash; ' . lang('categories');
 		ee()->view->cp_page_title = $cat_group->group_name . ' &mdash; ' . lang('categories');
