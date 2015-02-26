@@ -125,28 +125,21 @@ class Checkboxes_ft extends EE_Fieldtype {
 
 		$values = decode_multi_field($data);
 
+		if (REQ == 'CP' && $container != 'grid')
+		{
+			return ee('View')->make('publish')->render(array(
+				'field_name' => $this->field_name,
+				'values' => $values,
+				'options' => $field_options
+			));
+		}
+
 		$r = '';
-		$class = 'choice block';
 
 		foreach($field_options as $key => $option)
 		{
-			if (REQ == 'CP')
-			{
-				$checked = (in_array(form_prep($key), $values)) ? TRUE : FALSE;
-				if ($checked)
-				{
-					$class .= ' chosen';
-				}
-
-				$r .= '<label class="' . $class . '">' . form_checkbox($this->field_name.'[]', $key, $checked) . $option . '</label>';
-			}
-			else
-			{
-				$checked = (in_array(form_prep($option), $values)) ? TRUE : FALSE;
-				$r .= '<label>'.form_checkbox($this->field_name.'[]', $option, $checked).NBS.$option.'</label>';
-			}
-
-			$class = 'choice block';
+			$checked = (in_array(form_prep($option), $values)) ? TRUE : FALSE;
+			$r .= '<label>'.form_checkbox($this->field_name.'[]', $option, $checked).NBS.$option.'</label>';
 		}
 
 		switch ($container)
