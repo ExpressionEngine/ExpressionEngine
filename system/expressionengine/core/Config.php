@@ -367,17 +367,6 @@ class EE_Config {
 
 		// lowercase version charset to use in HTML output
 		$this->config['output_charset'] = strtolower($this->config['charset']);
-
-		//  Set up DB caching prefs
-
-		if ($this->item('enable_db_caching') == 'y' AND REQ == 'PAGE')
-		{
-			ee()->db->cache_on();
-		}
-		else
-		{
-			ee()->db->cache_off();
-		}
 	}
 
 	// --------------------------------------------------------------------
