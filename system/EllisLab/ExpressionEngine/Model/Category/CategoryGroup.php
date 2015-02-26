@@ -67,4 +67,18 @@ class CategoryGroup extends Model implements ContentStructure {
 	public function getPublishForm($content)
 	{}
 
+	/**
+	 * Returns the category tree for this category group
+	 *
+	 * @param 	EE_Tree	$tree	An EE_Tree library object
+	 * @return 	Object<ImmutableTree> Traversable tree object
+	 */
+	public function getCategoryTree(\EE_Tree $tree, $sort = 'a')
+	{
+		return $tree->from_list(
+			$this->getCategories()->sortBy($sort),
+			array('id' => 'cat_id')
+		);
+	}
+
 }

@@ -193,15 +193,11 @@ class Cat extends AbstractChannelController {
 		ee()->cp->add_js_script('plugin', 'nestable');
 		ee()->cp->add_js_script('file', 'cp/v3/category_reorder');
 
-		ee()->view->sort_column = ($cat_group->sort_order == 'a') ? 'cat_name' : 'cat_order';
+		$sort_column = ($cat_group->sort_order == 'a') ? 'cat_name' : 'cat_order';
 
-		// Get only parentless categories, we'll drill down
-		// into children in the view
-		ee()->view->categories = $cat_group->getCategories()->sortBy(ee()->view->sort_column)
-			->filter(function($category)
-			{
-				return $category->parent_id == 0;
-			});
+		// Get the category tree with a single query
+		ee()->load->library('datastructures/tree');
+		ee()->view->categories = $cat_group->getCategoryTree(ee()->tree, $sort_column);
 
 		ee()->view->base_url = $cat_group->group_name . ' &mdash; ' . lang('categories');
 		ee()->view->cp_page_title = $cat_group->group_name . ' &mdash; ' . lang('categories');
