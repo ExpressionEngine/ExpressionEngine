@@ -92,7 +92,18 @@ class CI_DB_mysqli_connection {
 
 	public function query($query)
 	{
-		return $this->connection->query($query);
+		$time_start = microtime(TRUE);
+
+		$result = $this->connection->query($query);
+
+		$time_end = microtime(TRUE);
+
+		if (isset($this->log))
+		{
+			$this->log->addQuery($query, $time_end-$time_start);
+		}
+
+		return $result;
 	}
 
 	public function escape($str)
