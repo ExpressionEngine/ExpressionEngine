@@ -90,6 +90,9 @@ class CI_DB_mysqli_connection {
 		$this->connection = NULL;
 	}
 
+	/**
+	 * Run a query
+	 */
 	public function query($query)
 	{
 		$time_start = microtime(TRUE);
@@ -166,20 +169,5 @@ class CI_DB_mysqli_connection {
 
 		return $message;
 	}
-/*
-	public function setCharset($charset, $collation)
-	{
-		$version = $this->connection->server_info;
 
-		// mysqli::set_charset() requires MySQL >= 5.0.7, use SET NAMES as fallback
-		if (version_compare($version, '5.0.7', '>='))
-		{
-			$this->connection->set_charset($charset);
-		}
-		else
-		{
-			$this->query("SET NAMES '".$this->escape($charset)."' COLLATE '".$this->escape($collation)."'");
-		}
-	}
-	*/
 }
