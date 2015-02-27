@@ -1034,6 +1034,14 @@ $lang = array(
 'open_glossary' => 'open glossary',
 'open_emoji' => 'open emoji',
 
+// Relationships
+'search_avilable_entries' => 'Search available entries',
+'search_related_entries' => 'Search related entries',
+'items_to_relate_with' => 'Items to <strong>relate with</strong> this entry.',
+'items_related_to' => 'Items <strong>related to</strong> this entry.',
+
+'upload_file' => 'upload file',
+
 'add_new_html_button' =>
 'Add New HTML button',
 
