@@ -151,9 +151,15 @@ class EE_Relationship_data_parser {
 				// channel entries parser.
 				if ($node->shortcut == 'total_results')
 				{
+					$total_results = count($entry_ids);
+					$tagdata = ee()->functions->prep_conditionals(
+						$tagdata,
+						array($node->field_name.':total_results' => $total_results)
+					);
+
 					return str_replace(
 						$node->open_tag,
-						count($entry_ids),
+						$total_results,
 						$tagdata
 					);
 				}
