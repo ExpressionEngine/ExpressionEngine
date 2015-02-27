@@ -72,7 +72,9 @@
 						if (that.shift && currentlyChecked !== false) {
 							var low  = (currentlyChecked > index) ? index : currentlyChecked,
 								high = (currentlyChecked > index) ? currentlyChecked : index;
-							$(that.tableCells).slice(low, high).find('input[type=checkbox]').attr('checked', true);
+							$(that.tableCells).slice(low, high).find('input[type=checkbox]')
+								.attr('checked', true)
+								.trigger('change');
 						}
 					});
 				});
