@@ -94,11 +94,17 @@ class File_ft extends EE_Fieldtype {
 		$show_existing			= (isset($this->settings['show_existing'])) ? $this->settings['show_existing'] : 'n';
 		$filebrowser			= (REQ == 'CP');
 
-		if (REQ != 'CP')
+		if (REQ == 'CP')
 		{
-			$this->_frontend_js();
-			$this->_frontend_css();
+			return ee('View')->make('publish')->render(array(
+				'field_name' => $this->field_name,
+				'value' => $data,
+				'file' => ee()->file_field->parse_field($data),
+			));
 		}
+
+		$this->_frontend_js();
+		$this->_frontend_css();
 
 		return ee()->file_field->field(
 			$this->field_name,
