@@ -55,8 +55,24 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 						}
 					}
 					$security = (isset($setting['security']) && $setting['security'] == TRUE);
+					$caution = (isset($setting['caution']) && $setting['caution'] == TRUE);
+					$required_span = '<span class="required" title="required field">&#10033;</span>'
 					?>
-					<h3<?php if ($security):?> class="enhance"<?php endif ?>><?=lang($setting['title'])?><?php if ($required): ?> <span class="required" title="required field">&#10033;</span><?php endif ?><?php if ($security): ?> <span title="enhance security"></span><?php endif ?></h3>
+					<?php if($security): ?>
+					<h3 class="enchance">
+						<?=lang($setting['title'])?>
+						<?=$required ? $required_span : ''?>
+						<span title="enhance security"></span>
+					</h3>
+					<?php elseif($caution): ?>
+					<h3 class="caution">
+						<?=lang($setting['title'])?>
+						<?=$required ? $required_span : ''?>
+						<span title="exercise caution"></span>
+					</h3>
+					<?php else: ?>
+					<h3><?=$setting['title']?></h3>
+					<?php endif ?>
 					<em><?=lang($setting['desc'])?></em>
 				</div>
 				<div class="setting-field col <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?> last">
@@ -96,6 +112,7 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 								$checked = ($key == $value); ?>
 								<label class="choice mr block <?=($checked) ? 'chosen' : ''?>"><input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=$required?>> <?=lang($label)?></label>
 							<?php endforeach ?>
+							<?php if ( ! empty($field['html'])): ?><?=$field['html']?><?php endif ?>
 						<?php break;
 
 						case 'inline_radio': ?>

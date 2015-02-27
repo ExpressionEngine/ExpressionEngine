@@ -90,6 +90,30 @@ class Settings extends Profile {
 			$settings[] = 'allow_messages';
 		}
 
+		$this->load->helper('html');
+		$this->load->helper('directory');
+
+		$avatarDirs = directory_map(ee()->config->slash_item('avatar_path'), 2);
+
+		if (is_array($avatarDirs))
+		{
+			$avatarDirs = array_filter($avatarDirs, 'is_array');	// only grab subfolders
+			unset($avatarDirs['uploads']); // remove user uploaded avatars
+			$avatarDirs = array_keys($avatarDirs);
+		}
+		else
+		{
+			$avatarDirs = array();
+		}
+
+		$dirs = array();
+
+		foreach ($avatarDirs as $dir)
+		{
+			$href = cp_url('files/picker', array('directory' => 'all'));
+			$dirs[] = "<a class='m-link filepicker' rel='modal-file' href='$href'>". lang($dir) ."</a>";
+		}
+
 		$vars['sections'] = array(
 			array(
 				array(
@@ -176,19 +200,21 @@ class Settings extends Profile {
 					'title' => 'change_avatar',
 					'desc' => 'current_avatar_desc',
 					'fields' => array(
-						'avatar' => array(
+						'avatar_upload' => array(
 							'type' => 'radio',
 							'choices' => array(
 								'upload' => 'upload'
 							)
 						),
-						'avatar' => array(
+						'avatar_picker' => array(
 							'type' => 'radio',
+							'value' => 'choose',
 							'choices' => array(
 								'choose' => 'choose'
-							)
+							),
+							'html' => ul($dirs, array('class' => 'arrow-list'))
 						),
-						'avatar' => array(
+						'avatar_link' => array(
 							'type' => 'radio',
 							'choices' => array(
 								'link' => 'link'
@@ -235,13 +261,19 @@ class Settings extends Profile {
 			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
 		}
 
-		ee()->view->base_url = $this->base_url;
+		ee()->javascript->set_global('file_picker_url', cp_url('files/picker/', array('directory' => 'DIRID')));
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/files/picker'
+			),
+		));
+
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('personal_settings');
 		ee()->view->save_btn_text = 'btn_save_settings';
-		ee()->view->save_btn_text_working = 'btn_saving';
-		ee()->cp->render('settings/form', $vars);
+		ee()->view->save_btn_text_working = 'btn_save_settings_working';
+		ee()->cp->render('account/settings', $vars);
 	}
 }
 // END CLASS
