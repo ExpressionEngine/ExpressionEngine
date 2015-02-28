@@ -1172,7 +1172,6 @@ class Wizard extends CI_Controller {
 
 		ee()->load->database($db, FALSE, TRUE);
 		// Force caching off
-		ee()->db->cache_off();
 		ee()->db->save_queries = TRUE;
 
 		// Ask for exceptions so we can show proper errors in the form
