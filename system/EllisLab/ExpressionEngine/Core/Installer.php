@@ -4,6 +4,8 @@ namespace EllisLab\ExpressionEngine\Core;
 
 class Installer extends Core {
 
+	protected $configPath = SYSPATH.'installer/config';
+
 	/**
 	 *
 	 */

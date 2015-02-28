@@ -18,6 +18,11 @@ abstract class Core {
 	protected $running = FALSE;
 
 	/**
+	 * @var string Config path
+	 */
+	protected $configPath = SYSPATH.'config';
+
+	/**
 	 * Boot the application
 	 */
 	public function boot()
@@ -227,7 +232,7 @@ abstract class Core {
 			'ee'
 		);
 
-		$provider->setConfigPath(SYSPATH.'config');
+		$provider->setConfigPath($this->configPath);
 
 		$dependencies->register('App', function($di, $prefix = NULL) use ($application)
 		{
