@@ -773,7 +773,7 @@ class Wizard extends CI_Controller {
 			if ($this->rename_installer())
 			{
 				ee()->load->helper('url');
-				redirect($this->userdata['cp_url']);
+				redirect($this->userdata['cp_url'].'?/cp/login&return=&after='.$type);
 			}
 		}
 

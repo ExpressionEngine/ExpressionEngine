@@ -64,9 +64,10 @@ class Login extends CP_Controller {
 		}
 
 		// Are we here after a new install or update?
-		if ($type = ee()->input->get('after'))
+		$installer_dir = SYSPATH.'installer_'.ee()->config->item('app_version').'/';
+		if (($type = ee()->input->get('after')) && is_dir($installer_dir))
 		{
-			ee()->lang->load('installer', 'english', FALSE, TRUE, SYSPATH.'installer/');
+			ee()->lang->load('installer', 'english', FALSE, TRUE, $installer_dir);
 			$this->view->message =
 				sprintf(
 					lang("{$type}_success_note"),
