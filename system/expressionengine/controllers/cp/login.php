@@ -63,6 +63,23 @@ class Login extends CP_Controller {
 			die('Logged out');
 		}
 
+		// Are we here after a new install or update?
+		if ($type = ee()->input->get('after'))
+		{
+			ee()->lang->load('installer', 'english', FALSE, TRUE, SYSPATH.'installer/');
+			$this->view->message =
+				sprintf(
+					lang("{$type}_success_note"),
+					APP_VER
+				)
+				.BR.
+				sprintf(
+					lang('success_moved'),
+					ee()->config->item('app_version')
+				);
+			$this->view->message_status = 'success';
+		}
+
 		$username = $this->session->flashdata('username');
 
 		$this->view->return_path = '';
