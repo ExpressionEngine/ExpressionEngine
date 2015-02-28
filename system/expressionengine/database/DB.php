@@ -25,12 +25,21 @@
  */
 function DB($params = NULL)
 {
-	if (isset($params))
+	$database = ee('Database');
+
+	if ( ! empty($params))
 	{
-		// TODO
+		// Manually set the things we need
+		$database_config = $database->getConfig();
+		$database_config->set('hostname', $params['hostname']);
+		$database_config->set('database', $params['database']);
+		$database_config->set('username', $params['username']);
+		$database_config->set('password', $params['password']);
+		$database_config->set('dbprefix', $params['dbprefix']);
+		$database->setConfig($database_config);
 	}
 
-	return ee('Database')->newQuery();
+	return $database->newQuery();
 }
 
 
