@@ -30,7 +30,9 @@
 			if ($table.data('table_config')) {
 				$table.bind('tableupdate', function() {
 					rows = $table.table('get_current_data').html_rows;
-					$table.find('input:checkbox').prop('checked', false);
+					$table.find('input:checkbox')
+						.prop('checked', false)
+						.trigger('change');
 				});
 			}
 
@@ -72,7 +74,9 @@
 						if (that.shift && currentlyChecked !== false) {
 							var low  = (currentlyChecked > index) ? index : currentlyChecked,
 								high = (currentlyChecked > index) ? currentlyChecked : index;
-							$(that.tableCells).slice(low, high).find('input[type=checkbox]').attr('checked', true);
+							$(that.tableCells).slice(low, high).find('input[type=checkbox]')
+								.attr('checked', true)
+								.trigger('change');
 						}
 					});
 				});
@@ -154,11 +158,15 @@
 
 					if (event.target != $header_checkbox.get(0)) {
 						checked = ! checked;
-						$header_checkbox.prop('checked', checked);
+						$header_checkbox
+							.prop('checked', checked)
+							.trigger('change');
 					}
 
 					var cells = row_cache.getColumn(column);
-					$(cells).find(':checkbox').prop('checked', checked);
+					$(cells).find(':checkbox')
+						.prop('checked', checked)
+						.trigger('change');
 				});
 
 				// remember the headers
@@ -186,7 +194,9 @@
 
 				if ( ! event.target.checked) {
 					// unchecked one, definitely not all checked
-					header_checkboxes[column].prop('checked', false);
+					header_checkboxes[column]
+						.prop('checked', false)
+						.trigger('change');
 					return true;
 				}
 
@@ -200,7 +210,9 @@
 				});
 
 				// set the header checkbox
-				header_checkboxes[column].prop('checked', all_checked);
+				header_checkboxes[column]
+					.prop('checked', all_checked)
+					.trigger('change');
 			});
 		});
 	};
