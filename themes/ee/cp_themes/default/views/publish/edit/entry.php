@@ -56,7 +56,11 @@
 					$width = "w-16";
 				}
 			?>
+			<?php if ($field->getType() == 'grid'): ?>
+			<div class="grid-publish col-group">
+			<?php else: ?>
 			<fieldset class="col-group<?php if (end($tab->getFields()) == $field) echo' last'?>">
+			<?php endif; ?>
 				<div class="setting-txt col <?=$width?>">
 					<h3><span class="ico sub-arrow"></span><?=$field->getLabel()?><?php if ($field->isRequired()): ?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span><?php endif; ?></h3>
 					<em><?=$field->getInstructions()?></em>
@@ -67,7 +71,11 @@
 				<div class="setting-field col <?=$width?> last">
 					<?=$field->getForm()?>
 				</div>
+			<?php if ($field->getType() == 'grid'): ?>
+			</div>
+			<?php else: ?>
 			</fieldset>
+			<?php endif; ?>
 		<?php endforeach; ?>
 		</div>
 		<?php endforeach; ?>
