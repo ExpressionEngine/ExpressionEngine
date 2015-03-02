@@ -31,6 +31,7 @@ $config['is_system_on'] = 'y';
 $config['allow_extensions'] = 'y';
 $config['cookie_prefix'] = '';
 $config['use_compressed_js'] = 'n';
+$config['cache_driver'] = 'file';
 $config['database'] = array(
 	'expressionengine' => array(
 		'database' => 'circle_test',
