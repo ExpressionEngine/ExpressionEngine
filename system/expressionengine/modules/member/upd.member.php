@@ -53,6 +53,44 @@ class Member_upd {
 			ee()->db->query($query);
 		}
 
+		$site_id = ee()->config->item('site_id');
+
+		$avatar_directory = ee('Model')->make('UploadDestination');
+		$avatar_directory->site_id = $site_id;
+		$avatar_directory->name = 'Avatars';
+		$avatar_directory->server_path = ee()->config->item('avatar_path');
+		$avatar_directory->url = ee()->config->item('avatar_url');
+		$avatar_directory->allowed_types = 'img';
+		$avatar_directory->removeNoAccess();
+		$avatar_directory->save();
+
+		// Insert Avatars
+		$dir = ee()->config->item('avatar_path');
+		$files = scandir($dir); 
+
+		foreach ($files as $file)
+		{
+			$path = $dir . $file;
+			
+			if ($file != 'index.html' && is_file($path))
+			{
+				$time = time();
+				$avatar = ee('Model')->make('File');
+				$avatar->site_id = $site_id;
+				$avatar->upload_location_id = $avatar_directory->id;
+				$avatar->uploaded_by_member_id = 1;
+				$avatar->modified_by_member_id = 1;
+				$avatar->title = $file;
+				$avatar->rel_path = $file;
+				$avatar->file_name = $file;
+				$avatar->upload_date = $time;
+				$avatar->modified_date = $time;
+				$avatar->mime_type = mime_content_type($path);
+				$avatar->file_size = filesize($path);
+				$avatar->save();
+			}
+		}
+
 		return TRUE;
 	}
 
@@ -66,6 +104,15 @@ class Member_upd {
 	 */
 	public function uninstall()
 	{
+		// Remove avatar upload directory
+		$directory = ee('Model')->get('UploadDestination')->filter('server_path', ee()->config->item('avatar_path'))->first();
+
+		if ( ! empty($directory))
+		{
+			ee()->load->model('file_upload_preferences_model');
+			ee()->file_upload_preferences_model->delete_upload_preferences(array($directory->id));
+		}
+
 		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Member'");
 
 		$sql[] = "DELETE FROM exp_module_member_groups WHERE module_id = '".$query->row('module_id') ."'";
