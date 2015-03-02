@@ -88,7 +88,8 @@ class Textarea_ft extends EE_Fieldtype {
 
 			foreach ($format_options as $option)
 			{
-				if ($this->settings[$option] == 'y')
+				if (isset($this->settings[$option])
+					&& $this->settings[$option] == 'y')
 				{
 					$toolbar = TRUE;
 					$class .= ' has-format-options';
@@ -98,7 +99,8 @@ class Textarea_ft extends EE_Fieldtype {
 
 			$format_options = array();
 
-			if ($this->settings['field_show_fmt'] == 'y')
+			if (isset($this->settings['field_show_fmt'])
+				&& $this->settings['field_show_fmt'] == 'y')
 			{
 				// @TODO I should be shot for using ee()->db -sb
 				ee()->db->select('field_fmt');
