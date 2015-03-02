@@ -296,7 +296,6 @@ class Cache extends EE_Driver_Library {
 	 */
 	public function admin_setting()
 	{
-		$options = array();
 		$adapter = ee()->config->item('cache_driver');
 		$current_adapter = $this->get_adapter();
 
@@ -305,16 +304,16 @@ class Cache extends EE_Driver_Library {
 			$adapter = 'file';
 		}
 
+		$field = array('type' => 'dropdown');
+
 		// Create options array fit for a dropdown
 		foreach ($this->valid_drivers as $driver)
 		{
-			$options[$driver] = ucwords($driver);
+			$field['choices'][$driver] = ucwords($driver);
 		}
 
 		// Rename dummy driver for presentation
-		$options['dummy'] = lang('disable_caching');
-
-		$output = form_dropdown('cache_driver', $options, $adapter);
+		$field['choices']['dummy'] = lang('disable_caching');
 
 		// If the driver we want to use isn't what we are using, build an error
 		// message
@@ -323,13 +322,10 @@ class Cache extends EE_Driver_Library {
 			$error_key = ($adapter == 'file')
 				? 'caching_driver_file_fail' : 'caching_driver_failover';
 
-			$output .= NBS.NBS
-				.'<span style="color: red; font-size: 11px; font-weight: bold">'
-				.sprintf(lang($error_key), ucwords($adapter), ucwords($this->get_adapter()))
-				.'</span>';
+			$field['note'] = sprintf(lang($error_key), ucwords($adapter), ucwords($this->get_adapter()));
 		}
 
-		return $output;
+		return $field;
 	}
 }
 
