@@ -21,7 +21,7 @@ $(document).ready(function() {
 		listClass: 'tbl-list',
 		itemClass: 'tbl-list-item',
 		rootClass: 'nestable',
-		dragClass: 'tbl-list-dragging',
+		dragClass: 'drag-tbl-row',
 		handleClass: 'reorder',
 		placeElement: $('<li><div class="tbl-row drag-placeholder"><div class="none"></div></div></li>'),
 		expandBtnHTML: '',
