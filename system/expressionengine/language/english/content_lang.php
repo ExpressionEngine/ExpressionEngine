@@ -1042,6 +1042,10 @@ $lang = array(
 
 'upload_file' => 'upload file',
 
+'no_rows_created' => 'No rows created',
+'add_new_row' => 'add new row',
+'remove_row' => 'remove row',
+
 'add_new_html_button' =>
 'Add New HTML button',
 
