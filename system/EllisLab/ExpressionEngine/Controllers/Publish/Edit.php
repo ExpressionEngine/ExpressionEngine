@@ -315,7 +315,11 @@ class Edit extends AbstractPublishController {
 		$this->setGlobalJs($entry, TRUE);
 
 		ee()->cp->add_js_script(array(
-			'plugin' => array('ee_url_title'),
+			'plugin' => array(
+				'ee_url_title',
+				'ee_filebrowser',
+				'ee_fileuploader',
+			),
 			'file' => array('cp/v3/publish')
 		));
 
