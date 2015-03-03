@@ -44,6 +44,24 @@ class ChannelEntry extends ContentModel {
 			'type' => 'hasMany',
 			'model' => 'ChannelEntryAutosave',
 			'to_key' => 'original_entry_id'
+		),
+		'Parents' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'ChannelEntry',
+			'pivot' => array(
+				'table' => 'relationships',
+				'left' => 'entry_id',
+				'right' => 'parent_id'
+			)
+		),
+		'Children' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'ChannelEntry',
+			'pivot' => array(
+				'table' => 'relationships',
+				'left' => 'entry_id',
+				'right' => 'child_id'
+			)
 		)
 	);
 
