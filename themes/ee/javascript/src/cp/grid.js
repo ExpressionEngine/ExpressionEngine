@@ -125,10 +125,25 @@ Grid.Publish.prototype = {
 	_toggleRowManipulationButtons: function()
 	{
 		var rowCount = this._getRows().size(),
-			addButton = this.root.parents('.grid-publish').find('.toolbar .add a');
+			addButton = this.root.parents('.grid-publish').find('.toolbar .add a').parents('ul.toolbar'),
+			reorderCol = this.root.find('th.reorder-col'),
+			gridRemove = this.root.find('th.grid-remove');
 
 		// Show add button below field when there are more than zero rows
 		addButton.toggle(rowCount > 0);
+		reorderCol.toggle(rowCount > 0);
+		gridRemove.toggle(rowCount > 0);
+
+		if (rowCount > 0)
+		{
+			reorderCol.next().removeClass('first');
+			gridRemove.prev().removeClass('last');
+		}
+		else
+		{
+			reorderCol.next().addClass('first');
+			gridRemove.prev().addClass('last');
+		}
 
 		if (this.settings.grid_max_rows !== '')
 		{
@@ -147,7 +162,7 @@ Grid.Publish.prototype = {
 		// Do not allow sortable to run when there is only one row, otherwise
 		// the row becomes detached from the table and column headers change
 		// width in a fluid-column-width table
-		this.rowContainer.find('td.grid_handle').toggleClass('sort-cancel', rowCount == 1);
+		this.rowContainer.find('td.reorder-col').toggleClass('sort-cancel', rowCount == 1);
 	},
 
 	/**
@@ -186,7 +201,10 @@ Grid.Publish.prototype = {
 		// Clone our blank row
 		el = this.blankRow.clone();
 
+		console.log(el);
+
 		el.removeClass('grid-blank-row');
+		el.show();
 
 		// Increment namespacing on inputs
 		this.original_row_count++;
@@ -201,6 +219,7 @@ Grid.Publish.prototype = {
 		el.find(':input').removeAttr('disabled');
 
 		// Append the row to the end of the row container
+		console.log(this.rowContainer);
 		this.rowContainer.append(el);
 
 		// Make sure empty field message is hidden
