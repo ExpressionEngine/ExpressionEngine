@@ -2649,7 +2649,7 @@ WysiHat.Formatting = {
 		});
 
 		// Remove the extra white space that gets added after the
-		// last block in the .replace(that.reBlocks, '$1\n\n') line.	
+		// last block in the .replace(that.reBlocks, '$1\n\n') line.
 		// If we don't remove it, then it sticks around and eventually
 		// becomes a new paragraph.  Which is just annoying.
 		$el.html($el.html().trim());
@@ -2812,7 +2812,7 @@ WysiHat.Toolbar = function($el, buttons)
 	this.suspendQueries = false;
 
 	this.$editor = $el;
-	this.$toolbar = $('<div class="' + WysiHat.name + '-editor-toolbar" role="presentation"></div>');
+	this.$toolbar = $('<ul class="toolbar rte"></ul>');
 
 	$el.before(this.$toolbar);
 
@@ -2872,19 +2872,9 @@ WysiHat.Toolbar.prototype = {
 		}
 		else
 		{
-			$btn = $('<button aria-pressed="false" tabindex="-1" type="button"></button>');
+			$btn = $('<li><a href=""></a></li>');
 
-			$btn.append('<b>' + button.label + '</b>')
-				.addClass( 'button ' + button.name)
-				.hover(
-					function() {
-						this.title = $(this).find('b').text();
-					},
-					function() {
-						$(this).removeAttr('title');
-					}
-				)
-				.appendTo(this.$toolbar);
+			$btn.appendTo(this.$toolbar);
 		}
 
 		if (button.cssClass)
@@ -2894,7 +2884,7 @@ WysiHat.Toolbar.prototype = {
 
 		if (button.title)
 		{
-			$btn.attr('title', button.title);
+			$btn.find('a').attr('title', button.title);
 		}
 
 		$btn.data('text', button.label);
