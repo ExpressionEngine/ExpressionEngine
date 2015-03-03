@@ -101,7 +101,7 @@ class Radio_ft extends EE_Fieldtype {
 
 		$field_options = $this->_get_field_options($data);
 
-		if (REQ == 'CP' && $container != 'grid')
+		if (REQ == 'CP')
 		{
 			return ee('View')->make('publish')->render(array(
 				'field_name' => $this->field_name,

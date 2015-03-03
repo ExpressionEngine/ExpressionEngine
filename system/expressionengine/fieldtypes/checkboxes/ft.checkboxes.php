@@ -125,7 +125,7 @@ class Checkboxes_ft extends EE_Fieldtype {
 
 		$values = decode_multi_field($data);
 
-		if (REQ == 'CP' && $container != 'grid')
+		if (REQ == 'CP')
 		{
 			return ee('View')->make('publish')->render(array(
 				'field_name' => $this->field_name,
