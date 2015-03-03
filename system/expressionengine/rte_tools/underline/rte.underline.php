@@ -60,6 +60,7 @@ class Underline_rte {
 		ob_start(); ?>
 
 		WysiHat.addButton('underline', {
+			cssClass: 'rte-underline',
 			label:			EE.rte.underline.add,
 			'toggle-text':	EE.rte.underline.remove
 		});

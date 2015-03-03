@@ -43,7 +43,8 @@ class View_source_rte {
 		return array(
 			'rte.view_source'	=> array(
 				'code'		=> lang('view_code'),
-				'content'	=> lang('view_content')
+				'content'	=> lang('view_content'),
+				'title'		=> lang('title_view')
 			)
 		);
 	}
@@ -80,6 +81,8 @@ class View_source_rte {
 		ob_start(); ?>
 
 		WysiHat.addButton('view_source', {
+			cssClass: 'rte-view',
+			title:			EE.rte.view_source.title,
 			label:			EE.rte.view_source.code,
 			'toggle-text':	EE.rte.view_source.content,
 			handler: function() {

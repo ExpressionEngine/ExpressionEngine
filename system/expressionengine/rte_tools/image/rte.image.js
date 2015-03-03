@@ -348,6 +348,8 @@ var ImageChooser = {
 
 
 WysiHat.addButton('image', {
+	cssClass: 'rte-upload',
+	title: EE.rte.image.title,
 	label: EE.rte.image.add,
 	init: function(name, $editor) {
 
