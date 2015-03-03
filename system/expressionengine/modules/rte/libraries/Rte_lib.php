@@ -519,7 +519,8 @@ class Rte_lib {
 			'name'	=> $field_name,
 			'id'	=> $field_name,
 			'rows'	=> $settings['field_ta_rows'],
-			'dir'	=> $settings['field_text_direction']
+			'dir'	=> $settings['field_text_direction'],
+			'class' => 'has-rte'
 		);
 
 
@@ -557,7 +558,7 @@ class Rte_lib {
 		if (ee()->session->userdata('rte_enabled') == 'y'
 			AND ee()->config->item('rte_enabled') == 'y')
 		{
-			$field['class']	= 'WysiHat-field';
+			$field['class']	.= ' WysiHat-field';
 
 			foreach ($code_chunks as $i => $chunk)
 			{
@@ -598,11 +599,6 @@ class Rte_lib {
 		$field['value'] = $data;
 
 		$return_data = form_textarea($field);
-
-		if ($container = 'grid')
-		{
-			$return_data = '<div class="grid_full_cell_container">'.$return_data.'</div>';
-		}
 
 		return $return_data;
 	}
