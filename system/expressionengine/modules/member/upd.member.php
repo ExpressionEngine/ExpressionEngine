@@ -53,41 +53,91 @@ class Member_upd {
 			ee()->db->query($query);
 		}
 
+		// Install member uplaod directories
 		$site_id = ee()->config->item('site_id');
+		$member_directories = array();
 
-		$avatar_directory = ee('Model')->make('UploadDestination');
-		$avatar_directory->site_id = $site_id;
-		$avatar_directory->name = 'Avatars';
-		$avatar_directory->server_path = ee()->config->item('avatar_path');
-		$avatar_directory->url = ee()->config->item('avatar_url');
-		$avatar_directory->allowed_types = 'img';
-		$avatar_directory->removeNoAccess();
-		$avatar_directory->save();
-
-		// Insert Avatars
-		$dir = ee()->config->item('avatar_path');
-		$files = scandir($dir); 
-
-		foreach ($files as $file)
+		if (ee()->config->item('enable_avatars') == 'y')
 		{
-			$path = $dir . $file;
-			
-			if ($file != 'index.html' && is_file($path))
+			$member_directories['Avatars'] = array(
+				'server_path' => ee()->config->item('avatar_path'),
+				'url' => ee()->config->item('avatar_url'),
+				'allowed_types' => 'img',
+				'max_width' => ee()->config->item('avatar_max_width'),
+				'max_height' => ee()->config->item('avatar_max_height'),
+				'max_size' => ee()->config->item('avatar_max_kb'),
+			);
+		}
+
+		if (ee()->config->item('enable_photos') == 'y')
+		{
+			$member_directories['Member Photos'] = array(
+				'server_path' => ee()->config->item('photo_path'),
+				'url' => ee()->config->item('photo_url'),
+				'allowed_types' => 'img',
+				'max_width' => ee()->config->item('avatar_max_width'),
+				'max_height' => ee()->config->item('avatar_max_height'),
+				'max_size' => ee()->config->item('avatar_max_kb'),
+			);
+		}
+
+		if (ee()->config->item('allow_signatures') == 'y')
+		{
+			$member_directories['Signature Attachments'] = array(
+				'server_path' => ee()->config->item('sig_img_path'),
+				'url' => ee()->config->item('sig_img_url'),
+				'allowed_types' => 'img',
+				'max_width' => ee()->config->item('avatar_max_width'),
+				'max_height' => ee()->config->item('avatar_max_height'),
+				'max_size' => ee()->config->item('avatar_max_kb'),
+			);
+		}
+
+		$member_directories['PM Attachments'] = array(
+			'server_path' => ee()->config->item('prv_msg_upload_path'),
+			'url' => str_replace('avatars', 'pm_attachments', ee()->config->item('avatar_url')),
+			'allowed_types' => 'img',
+			'max_size' => ee()->config->item('prv_msg_attach_maxsize')
+		);
+
+		foreach ($member_directories as $name => $dir)
+		{
+			$directory = ee('Model')->make('UploadDestination');
+			$directory->site_id = $site_id;
+			$directory->name = $name;
+			$directory->removeNoAccess();
+
+			foreach ($dir as $property => $value)
 			{
-				$time = time();
-				$avatar = ee('Model')->make('File');
-				$avatar->site_id = $site_id;
-				$avatar->upload_location_id = $avatar_directory->id;
-				$avatar->uploaded_by_member_id = 1;
-				$avatar->modified_by_member_id = 1;
-				$avatar->title = $file;
-				$avatar->rel_path = $file;
-				$avatar->file_name = $file;
-				$avatar->upload_date = $time;
-				$avatar->modified_date = $time;
-				$avatar->mime_type = mime_content_type($path);
-				$avatar->file_size = filesize($path);
-				$avatar->save();
+				$directory->$property = $value;
+			}
+
+			$directory->save();
+
+			// Insert Files
+			$files = scandir($dir['server_path']); 
+
+			foreach ($files as $filename)
+			{
+				$path = $dir['server_path'] . $filename;
+				
+				if ($file != 'index.html' && is_file($path))
+				{
+					$time = time();
+					$file = ee('Model')->make('File');
+					$file->site_id = $site_id;
+					$file->upload_location_id = $directory->id;
+					$file->uploaded_by_member_id = 1;
+					$file->modified_by_member_id = 1;
+					$file->title = $filename;
+					$file->rel_path = $filename;
+					$file->file_name = $filename;
+					$file->upload_date = $time;
+					$file->modified_date = $time;
+					$file->mime_type = mime_content_type($path);
+					$file->file_size = filesize($path);
+					$file->save();
+				}
 			}
 		}
 
@@ -104,13 +154,27 @@ class Member_upd {
 	 */
 	public function uninstall()
 	{
-		// Remove avatar upload directory
-		$directory = ee('Model')->get('UploadDestination')->filter('server_path', ee()->config->item('avatar_path'))->first();
+		// Remove upload directories
+		$directories = array(
+			ee()->config->item('avatar_path'),
+			ee()->config->item('photo_path'),
+			ee()->config->item('sig_img_path'),
+			ee()->config->item('prv_msg_upload_path'),
+		);
 
-		if ( ! empty($directory))
+		$directories = ee('Model')->get('UploadDestination')->filter('server_path', 'IN', $directories)->all();
+
+		if (count($directories) > 0)
 		{
 			ee()->load->model('file_upload_preferences_model');
-			ee()->file_upload_preferences_model->delete_upload_preferences(array($directory->id));
+			$ids = array();
+
+			foreach ($directories as $dir)
+			{
+				$ids = $dir->id;
+			}
+
+			ee()->file_upload_preferences_model->delete_upload_preferences($ids);
 		}
 
 		$query = ee()->db->query("SELECT module_id FROM exp_modules WHERE module_name = 'Member'");
