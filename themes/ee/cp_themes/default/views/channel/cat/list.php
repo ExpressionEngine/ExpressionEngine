@@ -11,9 +11,6 @@
 			<div class="tbl-list-ctrl">
 				<label><span>select all</span> <input type="checkbox"></label>
 			</div>
-			<style>
-				.tbl-list-dragging { display:block; position: absolute; pointer-events: none; z-index: 9999; }
-			</style>
 			<div class="nestable">
 				<ul class="tbl-list">
 					<?php foreach ($categories->children() as $category): ?>

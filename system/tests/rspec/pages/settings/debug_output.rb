@@ -15,6 +15,7 @@ class DebugOutput < ControlPanelPage
 	element :send_headers_n, 'input[name=send_headers][value=n]'
 
 	element :redirect_method, 'select[name=redirect_method]'
+	element :cache_driver, 'select[name=cache_driver]'
 	element :max_caches, 'input[name=max_caches]'
 
 	def load

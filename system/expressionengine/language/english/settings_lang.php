@@ -412,6 +412,21 @@ $lang = array(
 'redirect_method_opt_refresh' =>
 'Refresh (Windows only)',
 
+'caching_driver' =>
+'Caching Driver',
+
+'caching_driver_desc' =>
+'Caches can be stored in either a file-based or memory-based driver.',
+
+'caching_driver_failover' =>
+'Cannot connect to %s, using %s driver instead.',
+
+'caching_driver_file_fail' =>
+'Cannot use %s driver, check cache path permissions.',
+
+'disable_caching' =>
+'Disable Caching',
+
 'max_caches' =>
 'Cachable <abbr title="Uniform Resource Identifier">URI</abbr>s',
 

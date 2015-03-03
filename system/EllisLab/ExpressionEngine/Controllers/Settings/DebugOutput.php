@@ -102,6 +102,13 @@ class DebugOutput extends Settings {
 					)
 				),
 				array(
+					'title' => 'caching_driver',
+					'desc' => 'caching_driver_desc',
+					'fields' => array(
+						'cache_driver' => ee()->cache->admin_setting()
+					)
+				),
+				array(
 					'title' => 'max_caches',
 					'desc' => 'max_caches_desc',
 					'fields' => array(

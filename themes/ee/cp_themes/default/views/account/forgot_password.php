@@ -3,7 +3,9 @@
 <div class="box snap">
 	<h1><?=lang('reset_password')?> <span class="ico locked"></span></h1>
 	<?php if ($message != ''):?>
-		<div class="alert inline <?=$message_status?>"><p><b>!!</b> <?=$message?></p></div>
+		<div class="alert inline <?=$message_status?>">
+			<p><?php if ($message_status != 'success'): ?><b>!!</b> <?php endif ?><?=$message?></p>
+		</div>
 	<?php endif;?>
 	<?=form_open(cp_url('/cp/login/send_reset_token'))?>
 		<fieldset class="last">

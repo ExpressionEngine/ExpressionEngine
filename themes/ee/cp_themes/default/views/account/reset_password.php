@@ -5,7 +5,7 @@
 	<?php if ( ! empty($messages)):?>
 		<div class="alert inline <?=$message_status?>">
 			<?php foreach ($messages as $message): ?>
-				<p><b>!!</b> <?=$message?></p>
+				<p><?php if ($message_status != 'success'): ?><b>!!</b> <?php endif ?><?=$message?></p>
 			<?php endforeach ?>
 		</div>
 	<?php endif;?>
