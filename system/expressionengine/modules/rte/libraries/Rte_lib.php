@@ -407,7 +407,7 @@ class Rte_lib {
 
 				// RTE editor setup for this page
 				$("' . $selector . '")
-					.not(".grid_field ' . $selector . '")
+					.not(".grid-input-form ' . $selector . '")
 					.addClass("WysiHat-field")
 					.wysihat({
 						buttons: '.json_encode($bits['buttons']).'
