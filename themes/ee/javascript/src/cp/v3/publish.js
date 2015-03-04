@@ -117,6 +117,13 @@ $(document).ready(function () {
 
 							el.parents('fieldset').addClass('fs-highlight');
 							el.parents('.setting-field').append('<em>Auto saved content</em>');
+
+							// Highlight tabs
+							var tab = el.parents('div.tab');
+							if (tab.length) {
+								var tabId = tab.attr('class').replace('tab ', '').replace(' tab-open', '');
+								$('.tab-bar a[rel="' + tabId + '"]').addClass('highlight');
+							}
 						}
 					}
 				}
