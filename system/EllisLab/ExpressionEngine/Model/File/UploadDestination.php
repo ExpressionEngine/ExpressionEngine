@@ -42,6 +42,9 @@ class UploadDestination extends Model {
 		'Site' => array(
 			'type' => 'belongsTo'
 		),
+		'Module' => array(
+			'type' => 'belongsTo'
+		),
 		'NoAccess' => array(
 			'type' => 'hasAndBelongsToMany',
 			'model' => 'MemberGroup',
@@ -82,6 +85,7 @@ class UploadDestination extends Model {
 	protected $file_post_format;
 	protected $cat_group;
 	protected $batch_location;
+	protected $module_id;
 
 	/**
 	 * Because of the 'upload_preferences' Config value, the data in the DB
