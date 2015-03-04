@@ -146,13 +146,51 @@ class Uploads extends Settings {
 				$upload_ids = array($upload_ids);
 			}
 
+			$modules = ee('Model')->get('Module')->all();
+			$modules_ids = array();
+
+			foreach ($modules as $module)
+			{
+				$module_ids[] = $module->module_id;
+			}
+
+			$dirs = ee('Model')->get('UploadDestination')
+						->filter('module_id', 'IN', $module_ids)
+						->all();
+			$module_dirs = array();
+
+			foreach ($dirs as $dir)
+			{
+				$module_dirs[$dir->id] = $dir;
+			}
+
+			$module_errors = array_intersect($upload_ids, array_keys($module_dirs));
+			$upload_ids = array_diff($upload_ids, array_keys($module_dirs));
+
 			// Filter out junk
 			$upload_ids = array_filter($upload_ids, 'is_numeric');
 
-			ee()->load->model('file_upload_preferences_model');
-			ee()->file_upload_preferences_model->delete_upload_preferences($upload_ids);
+			if ( ! empty($upload_ids))
+			{
+				ee()->load->model('file_upload_preferences_model');
+				ee()->file_upload_preferences_model->delete_upload_preferences($upload_ids);
+				ee()->view->set_message('success', lang('upload_directories_removed'), sprintf(lang('upload_directories_removed_desc'), count($upload_ids)), TRUE);
+			}
 
-			ee()->view->set_message('success', lang('upload_directories_removed'), sprintf(lang('upload_directories_removed_desc'), count($upload_ids)), TRUE);
+			if ( ! empty($module_errors))
+			{
+				ee()->load->helper('html');
+				$errors = array();
+
+				foreach ($module_errors as $dir)
+				{
+					$directory = $module_dirs[$dir];
+					$module = $directory->getModule();
+					$errors[] = sprintf(lang('upload_directories_module_owner'), $directory->name, $module->module_name);
+				}
+
+				ee()->view->set_message('issue', lang('upload_directories_module_error'), ul($errors), TRUE);
+			}
 		}
 
 		ee()->functions->redirect(cp_url('settings/uploads', ee()->cp->get_url_state()));
@@ -772,6 +810,7 @@ class Uploads extends Settings {
 				->with('FileDimensions')
 				->filter('id', $id)
 				->first();
+			$current = clone($upload_destination);
 		}
 		else
 		{
@@ -881,6 +920,36 @@ class Uploads extends Settings {
 		}
 
 		$image_sizes->filter('upload_location_id', $upload_destination->id)->delete();
+
+
+		// If this directoy is owned by a module, call the update routine
+		if($edit)
+		{
+			if ( ! empty($module = $upload_destination->getModule()))
+			{
+				$module = lcfirst($module->module_name);
+
+				if (in_array($module, ee()->core->native_modules))
+				{
+					$path = PATH_MOD.$module.'/upd.'.$module.'.php';
+				}
+				else
+				{
+					$path = PATH_ADDONS.$module.'/upd.'.$module.'.php';
+				}
+
+				$class  = ucfirst($module).'_upd';
+
+				if ( ! class_exists($class))
+				{
+					require $path;
+				}
+
+				$module = new $class();
+				$module->_ee_path = APPPATH;
+				$module->update_upload_directories($current, $_POST);
+			}
+		}
 
 		return $upload_destination->id;
 	}

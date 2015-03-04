@@ -1077,6 +1077,12 @@ $lang = array(
 'upload_directories_removed_desc' =>
 '%d upload directories were removed.',
 
+'upload_directories_module_error' =>
+'Some directories could not be deleted because they belong to a module',
+
+'upload_directories_module_owner' =>
+'%s is owned by the %s module',
+
 'no_upload_directories' =>
 'No Upload Directories',
 
