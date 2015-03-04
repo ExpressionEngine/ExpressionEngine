@@ -138,7 +138,12 @@ class Messages extends Settings {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			if ($this->saveSettings($vars['sections']))
+			$directory_settings = array(
+				'prv_msg_upload_path' => ee()->input->post('prv_msg_upload_path'),
+				'prv_msg_attach_maxsize' => ee()->input->post('prv_msg_attach_maxsize'),
+			);
+
+			if ($this->saveSettings($vars['sections']) && $this->updateUploadDirectory($directory_settings))
 			{
 				ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), TRUE);
 			}
@@ -157,6 +162,24 @@ class Messages extends Settings {
 		ee()->view->save_btn_text_working = 'btn_saving';
 
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * Update the upload preferences for the associated upload directory
+	 * 
+	 * @param mixed $data 
+	 * @access private
+	 * @return void
+	 */
+	private function updateUploadDirectory($data)
+	{
+		$current = ee()->config->item('prv_msg_upload_path');
+		$directory = ee('Model')->get('UploadDestination')->filter('server_path', $current)->first();
+		$directory->server_path = $data['prv_msg_upload_path'];
+		$directory->max_size = $data['prv_msg_attach_maxsize'];
+		$directory->save();
+
+		return TRUE;
 	}
 }
 // END CLASS
