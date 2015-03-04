@@ -13,9 +13,6 @@
 				<?php endif ?>
 					<h1>
 						<?=$cp_page_title?>
-						<ul class="toolbar">
-							<li class="solo settings"><a href="<?=cp_url('settings/general')?>" title="<?=lang('settings')?>"></a></li>
-						</ul>
 					</h1>
 				<?php if (isset($form_url)): ?>
 				</form>

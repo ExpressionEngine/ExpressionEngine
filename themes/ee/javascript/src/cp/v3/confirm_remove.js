@@ -27,16 +27,18 @@ $(document).ready(function () {
 				$(modalIs + " .checklist").append('<li>' + confirm_text + '</li>');
 			}
 
-			if ($('td input:checked').length < 6) {
-				$('td input:checked').each(function() {
+			var checked = $(this).parents('form').find('td input:checked, li input:checked');
+
+			if (checked.length < 6) {
+				checked.each(function() {
 					$(modalIs + " .checklist").append('<li>' + $(this).attr('data-confirm') + '</li>');
 				});
 			} else {
-				$(modalIs + " .checklist").append('<li>' + EE.lang.remove_confirm.replace('###', $('td input:checked').length) + '</li>');
+				$(modalIs + " .checklist").append('<li>' + EE.lang.remove_confirm.replace('###', checked.length) + '</li>');
 			}
 
 			// Add hidden <input> elements
-			$('td input:checked').each(function() {
+			checked.each(function() {
 				$(modalIs + " .checklist li:last").append('<input type="hidden" name="' + $(this).attr('name') + '" value="' + $(this).val() + '">');
 			});
 

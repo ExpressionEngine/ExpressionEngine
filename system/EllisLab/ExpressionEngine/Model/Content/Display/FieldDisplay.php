@@ -84,4 +84,10 @@ class FieldDisplay {
 		return $this->visible;
 	}
 
+	public function getSetting($item)
+	{
+		$settings = $this->field->initField();
+		return $settings[$item];
+	}
+
 }

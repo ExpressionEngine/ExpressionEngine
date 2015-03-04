@@ -189,7 +189,7 @@ class Edit extends AbstractPublishController {
 
 			if ($autosaves)
 			{
-				$title .= ' <span class="auto-save" title="auto saved">&#10033;</span>';
+				$title .= ' <span class="auto-save" title="' . lang('auto_saved') . '">&#10033;</span>';
 			}
 
 			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . $entry->getAuthor()->getMemberName() . ', ' . lang('in') . ': ' . $entry->getChannel()->channel_title . '</span>';
@@ -315,7 +315,11 @@ class Edit extends AbstractPublishController {
 		$this->setGlobalJs($entry, TRUE);
 
 		ee()->cp->add_js_script(array(
-			'plugin' => array('ee_url_title'),
+			'plugin' => array(
+				'ee_url_title',
+				'ee_filebrowser',
+				'ee_fileuploader',
+			),
 			'file' => array('cp/v3/publish')
 		));
 

@@ -580,14 +580,29 @@ $lang = array(
 'create_category_group' =>
 'Create Category Group',
 
+'edit_category_group' =>
+'Edit Category Group',
+
 'category_groups_removed' =>
 'Category groups removed',
 
 'category_groups_removed_desc' =>
 '%d category groups were removed.',
 
+'categories_removed' =>
+'Categories removed',
+
+'categories_removed_desc' =>
+'%d categories were removed.',
+
 'fields' =>
 'Fields',
+
+'edit_category_group' =>
+'Edit Category Group',
+
+'cat_name_desc' =>
+'Descriptive name of this category group.',
 
 'create_category' =>
 'Create Category',
@@ -600,6 +615,24 @@ $lang = array(
 
 'cat_image_desc' =>
 'Image representation of this category.',
+
+'html_formatting' =>
+'HTML formatting',
+
+'html_formatting_desc' =>
+'Level of HTML allowed in custom category fields.',
+
+'category_group_saved' =>
+'Category group saved',
+
+'category_group_saved_desc' =>
+'Your category group has been saved successfully.',
+
+'category_group_not_saved' =>
+'Attention: Category group not saved',
+
+'category_group_not_saved_desc' =>
+'We were unable to save your category group, please review and fix errors below.',
 
 'parent_category' =>
 'Parent category',
@@ -616,7 +649,7 @@ $lang = array(
 'category_not_saved' =>
 'Attention: Category not saved',
 
-'channel_not_saved_desc' =>
+'category_not_saved_desc' =>
 'We were unable to save your category, please review and fix errors below.',
 
 'category_field' =>
@@ -636,6 +669,12 @@ $lang = array(
 
 'category_fields_removed_desc' =>
 '%d category fields were removed.',
+
+'category_ajax_reorder_fail' =>
+'Attention: Failed to save category order',
+
+'category_ajax_reorder_fail_desc' =>
+'We failed to save your new categories order. Refresh the page and make sure you\'re logged in.',
 
 ''=>''
 );

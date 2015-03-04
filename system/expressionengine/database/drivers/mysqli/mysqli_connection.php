@@ -64,12 +64,25 @@ class CI_DB_mysqli_connection {
 			PDO::ATTR_PERSISTENT => $pconnect
 		);
 
-		$this->connection = new PDO(
-			$dsn,
-			$username,
-			$password,
-			$options
-		);
+		try {
+			$this->connection = new PDO(
+				$dsn,
+				$username,
+				$password,
+				$options
+			);
+		}
+		catch (\Exception $e)
+		{
+			$message = $e->getMessage();
+
+			if ($this->testBadSocket($message))
+			{
+				$message = $this->getBadSocketMessage($hostname);
+			}
+
+			show_error($message);
+		}
 	}
 
 	public function close()
@@ -77,9 +90,23 @@ class CI_DB_mysqli_connection {
 		$this->connection = NULL;
 	}
 
+	/**
+	 * Run a query
+	 */
 	public function query($query)
 	{
-		return $this->connection->query($query);
+		$time_start = microtime(TRUE);
+
+		$result = $this->connection->query($query);
+
+		$time_end = microtime(TRUE);
+
+		if (isset($this->log))
+		{
+			$this->log->addQuery($query, $time_end-$time_start);
+		}
+
+		return $result;
 	}
 
 	public function escape($str)
@@ -111,11 +138,6 @@ class CI_DB_mysqli_connection {
 		return $this->connection->lastInsertId();
 	}
 
-	public function getAffectedRows()
-	{
-		return $this->connection->affected_rows;
-	}
-
 	public function getNative()
 	{
 		return $this->connection;
@@ -125,20 +147,27 @@ class CI_DB_mysqli_connection {
 	{
 		return isset($this->connection);
 	}
-/*
-	public function setCharset($charset, $collation)
-	{
-		$version = $this->connection->server_info;
 
-		// mysqli::set_charset() requires MySQL >= 5.0.7, use SET NAMES as fallback
-		if (version_compare($version, '5.0.7', '>='))
+
+	private function testBadSocket($message)
+	{
+		return strpos($message, "SQLSTATE[HY000] [2002] No such file or directory") !== FALSE;
+	}
+
+	private function getBadSocketMessage($hostname)
+	{
+		$message =  "Database Connection Error: Could not find socket: '{$hostname}'. ";
+
+		if ($hostname == 'localhost')
 		{
-			$this->connection->set_charset($charset);
+			$message .= "Try using '127.0.0.1' instead.";
 		}
 		else
 		{
-			$this->query("SET NAMES '".$this->escape($charset)."' COLLATE '".$this->escape($collation)."'");
+			$message .= "Try connecting with an IP address.";
 		}
+
+		return $message;
 	}
-	*/
+
 }

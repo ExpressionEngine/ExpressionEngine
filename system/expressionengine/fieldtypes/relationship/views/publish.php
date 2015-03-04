@@ -1,47 +1,55 @@
-<?php
-
-$scroll_class = count($entries) ? 'force-scroll' : 'empty';
-
-// underscore.js template string
-$active_template = '
-	<li><span class="reorder-handle">&nbsp;</span>
-	<%= title %>
-	<span class="remove-item">&times;</span></li>
-';
-?>
-
-<div class="relationship" id="relationship-<?=$field_name?>">
-
-	<!-- Active Pane -->
-	<div class="multiselect-active force-scroll <?=$field_name?>-active" data-template="<?=form_prep($active_template)?>">
-		<ul></ul>
+<div class="col w-8 relate-wrap">
+	<h4><?=lang('items_to_relate_with')?></h4>
+	<div class="relate-actions">
+		<div class="filters">
+			<ul>
+				<li>
+					<a class="has-sub" href="">channel <span class="faded">(Blog Entries)</span></a>
+					<div class="sub-menu">
+						<fieldset class="filter-search">
+							<input type="text" value="" placeholder="filter channels">
+						</fieldset>
+						<ul>
+							<li><a href="">[Allowed Channel]</a></li>
+							<li><a href="">[Allowed Channel]</a></li>
+							<li><a href="">[Allowed Channel]</a></li>
+							<li><a href="">[Allowed Channel]</a></li>
+							<li><a href="">[Allowed Channel]</a></li>
+						</ul>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<input class="relate-search" type="text" value="" placeholder="<?=lang('search_avilable_entries')?>">
 	</div>
+	<div class="scroll-wrap">
 
-	<!-- Filter Textbox-->
-	<div class="multiselect-filter js_show">
-		<?=form_input('', '', 'class="'.$field_name.'-filter"')?>
+		<?php
+		foreach ($entries as $entry):
+			$class = 'choice block';
+			$checked = FALSE;
+			if (in_array($entry, $selected))
+			{
+				$class = 'choice block chosen';
+				$checked = TRUE;
+			}
+		?>
+		<label class="<?=$class?>">
+			<?=form_checkbox($field_name.'[]', $entry->entry_id, $checked)?> <?=$entry->title?> <i>&mdash; <?=$entry->getChannel()->channel_title?></i>
+		</label>
+		<?php endforeach; ?>
 	</div>
-
-	<!-- Selection Pane -->
-	<div class="multiselect <?=$field_name?> <?=$scroll_class?>">
-		<ul>
-		<?php foreach ($entries as $row):?>
-			<?php $checked = in_array($row['entry_id'], $selected); ?>
-			<?php $sort = $checked ? $order[$row['entry_id']] : 0; ?>
-
-			<li <?=($checked ? 'class="selected"' : '')?>>
-				<label>
-					<?=form_input($field_name.'[sort][]', $sort, 'class="js_hide"')?>
-					<?=form_checkbox($field_name.'[data][]', $row['entry_id'], $checked, 'class="js_hide"')?>
-					<?=$row['title']?>
-				</label>
-			</li>
-		<?php endforeach;?>
-
-		<?php if ( ! count($entries)): ?>
-			<li><?=lang('rel_ft_no_entries')?></li>
-		<?php endif; ?>
-		</ul>
+</div>
+<div class="col w-8 relate-wrap last">
+	<h4><?=lang('items_related_to')?></h4>
+	<div class="relate-actions">
+		<input class="relate-search" type="text" value="" placeholder="<?=lang('search_related_entries')?>">
 	</div>
-
+	<div class="scroll-wrap">
+		<?php foreach ($related as $entry): ?>
+		<label class="choice block chosen">
+			<?=$entry->title?> <i>&mdash; <?=$entry->getChannel()->channel_title?></i>
+		</label>
+		<?php endforeach; ?>
+	</div>
 </div>

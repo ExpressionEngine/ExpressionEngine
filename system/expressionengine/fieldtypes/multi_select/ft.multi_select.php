@@ -41,6 +41,15 @@ class Multi_select_ft extends EE_Fieldtype {
 		$text_direction = (isset($this->settings['field_text_direction']))
 			? $this->settings['field_text_direction'] : 'ltr';
 
+		if (REQ == 'CP')
+		{
+			return ee('View')->make('publish')->render(array(
+				'field_name' => $this->field_name,
+				'values' => $values,
+				'options' => $field_options
+			));
+		}
+
 		return form_multiselect($this->field_name.'[]', $field_options, $values, 'dir="'.$text_direction.'" class="multiselect_input"');
 	}
 

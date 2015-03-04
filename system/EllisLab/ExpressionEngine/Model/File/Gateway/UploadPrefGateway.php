@@ -41,6 +41,11 @@ class UploadPrefGateway extends Gateway {
 			'key' => 'site_id'
 		),
 
+		'module_id' => array(
+			'gateway' => 'ModuleGateway',
+			'key' => 'module_id'
+		),
+
 		// A many to many relationship to member group.  Member groups attached
 		// through this relationship are not allowed access to this upload
 		// location.
@@ -76,4 +81,5 @@ class UploadPrefGateway extends Gateway {
 	protected $file_post_format;
 	protected $cat_group;
 	protected $batch_location;
+	protected $module_id;
 }

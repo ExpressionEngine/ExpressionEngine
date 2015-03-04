@@ -3,7 +3,7 @@
 <div class="tbl-ctrls">
 	<?=form_open($base_url)?>
 		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=cp_url('channel/cat/cat-create/'.$cat_group->group_id)?>"><?=lang('create_new')?></a>
+			<a class="btn tn action" href="<?=cp_url('channel/cat/create-cat/'.$cat_group->group_id)?>"><?=lang('create_new')?></a>
 		</fieldset>
 		<h1><?=$cp_page_title?></h1>
 		<?=ee('Alert')->getAllInlines()?>
@@ -11,13 +11,9 @@
 			<div class="tbl-list-ctrl">
 				<label><span>select all</span> <input type="checkbox"></label>
 			</div>
-			<style>
-				.nestable, .tbl-list, .tbl-list-item, .drag-placeholder { display: block; position: relative; }
-				.tbl-list-dragging { display:block; position: absolute; pointer-events: none; z-index: 9999; }
-			</style>
 			<div class="nestable">
 				<ul class="tbl-list">
-					<?php foreach ($categories as $category): ?>
+					<?php foreach ($categories->children() as $category): ?>
 						<?php $this->view('channel/cat/_category', array('category' => $category)); ?>
 					<?php endforeach ?>
 				</ul>
@@ -39,9 +35,10 @@
 
 $modal_vars = array(
 	'name'		=> 'modal-confirm-remove',
-	'form_url'	=> cp_url('channel/cat/remove-cat', ee()->cp->get_url_state()),
+	'form_url'	=> cp_url('channel/cat/remove-cat'),
 	'hidden'	=> array(
-		'bulk_action'	=> 'remove'
+		'bulk_action'	=> 'remove',
+		'cat_group_id'	=> $cat_group->group_id
 	)
 );
 

@@ -1,5 +1,46 @@
 $(document).ready(function(){
 
+	// =============================================
+	// For backwards compatibility: adding $.browser
+	// from: https://github.com/jquery/jquery-migrate
+	// =============================================
+
+	jQuery.uaMatch = function( ua ) {
+		ua = ua.toLowerCase();
+
+		var match = /(chrome)[ \/]([\w.]+)/.exec( ua ) ||
+			/(webkit)[ \/]([\w.]+)/.exec( ua ) ||
+			/(opera)(?:.*version|)[ \/]([\w.]+)/.exec( ua ) ||
+			/(msie) ([\w.]+)/.exec( ua ) ||
+			ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec( ua ) ||
+			[];
+
+		return {
+			browser: match[ 1 ] || "",
+			version: match[ 2 ] || "0"
+		};
+	};
+
+	// Don't clobber any existing jQuery.browser in case it's different
+	if ( !jQuery.browser ) {
+		matched = jQuery.uaMatch( navigator.userAgent );
+		browser = {};
+
+		if ( matched.browser ) {
+			browser[ matched.browser ] = true;
+			browser.version = matched.version;
+		}
+
+		// Chrome is Webkit, but Webkit is also Safari.
+		if ( browser.chrome ) {
+			browser.webkit = true;
+		} else if ( browser.webkit ) {
+			browser.safari = true;
+		}
+
+		jQuery.browser = browser;
+	}
+
 	// ==============================
 	// open links in NEW window / tab
 	// ==============================
@@ -208,6 +249,11 @@ $(document).ready(function(){
 			$('.choice input[name="'+$(this).attr('name')+'"]').each(function(index, el) {
 				$(this).parents('.choice').toggleClass('chosen', $(this).is(':checked'));
 			});
+		});
+
+		// Highlight selected row for table lists
+		$('.tbl-list .check-ctrl input').on('click',function(){console.log('test');
+			$(this).parents('.tbl-row').toggleClass('selected', $(this).is(':checked'));
 		});
 
 	// ======================

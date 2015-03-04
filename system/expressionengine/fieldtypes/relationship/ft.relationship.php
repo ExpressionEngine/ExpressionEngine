@@ -240,7 +240,7 @@ class Relationship_ft extends EE_Fieldtype {
 	{
 		$field_name = $this->field_name;
 
-		$entry_id = ee()->input->get('entry_id');
+		$entry_id = ($this->content_id) ?: ee()->input->get('entry_id');
 
 		$order = array();
 		$entries = array();
@@ -333,22 +333,20 @@ class Relationship_ft extends EE_Fieldtype {
 			$order_field = 'entry_date';
 		}
 
-		ee()->db
-			->distinct()
-			->from('channel_titles')
-			->select('channel_titles.entry_id, channel_titles.title')
-			->order_by($order_field, $this->settings['order_dir']);
+		$entries = ee('Model')->get('ChannelEntry')
+			// ->fields('entry_id', 'title')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order($order_field, $this->settings['order_dir']);
 
 		if (count($limit_channels))
 		{
-			ee()->db->where_in('channel_titles.channel_id', $limit_channels);
+			$entries->filter('channel_id', 'IN', $limit_channels);
 		}
 
 		if (count($limit_categories))
 		{
-			ee()->db->from('category_posts');
-			ee()->db->where('exp_channel_titles.entry_id = exp_category_posts.entry_id', NULL, FALSE); // todo ick
-			ee()->db->where_in('category_posts.cat_id', $limit_categories);
+			$entries->with('Categories')
+				->filter('Categories.cat_id', 'IN', $limit_categories);
 		}
 
 		if (count($limit_statuses))
@@ -359,7 +357,7 @@ class Relationship_ft extends EE_Fieldtype {
 				$limit_statuses
 			);
 
-			ee()->db->where_in('channel_titles.status', $limit_statuses);
+			$entries->filter('status', 'IN', $limit_statuses);
 		}
 
 		if (count($limit_authors))
@@ -378,23 +376,26 @@ class Relationship_ft extends EE_Fieldtype {
 				}
 			}
 
-			$where = '';
+			$entries->with('Author');
 
-			if (count($members))
+			if (count($members) && count($groups))
 			{
-				$where .= ee()->db->dbprefix('channel_titles').'.author_id IN ('.implode(', ', $members).')';
+				$entries->filterGroup()
+					->filter('author_id', 'IN', implode(', ', $members))
+					->orFilter('group_id', 'IN', implode(', ', $groups))
+					->endFilterGroup();
 			}
-
-			if (count($groups))
+			else
 			{
-				$where .= $where ? ' OR ' : '';
-				$where .= ee()->db->dbprefix('members').'.group_id IN ('.implode(', ', $groups).')';
-				ee()->db->join('members', 'members.member_id = channel_titles.author_id');
-			}
+				if (count($members))
+				{
+					$entries->filter('author_id', 'IN', implode(', ', $members));
+				}
 
-			if ($where)
-			{
-				ee()->db->where("({$where})");
+				if (count($groups))
+				{
+					$entries->filter('group_id', 'IN', implode(', ', $groups));
+				}
 			}
 		}
 
@@ -403,23 +404,25 @@ class Relationship_ft extends EE_Fieldtype {
 
 		if ( ! $show_future)
 		{
-			ee()->db->where('channel_titles.entry_date < ', $now);
+			$entries->filter('entry_date', '<', $now);
 		}
 
 		if ( ! $show_expired)
 		{
-			$t = ee()->db->dbprefix('channel_titles');
-			ee()->db->where("(${t}.expiration_date = 0 OR ${t}.expiration_date > ${now})", NULL, FALSE);
+			$entries->filterGroup()
+				->filter('expiration_date', 0)
+				->orFilter('expiration_date', '>', $now)
+				->endFilterGroup();
 		}
 
 		if ($entry_id)
 		{
-			ee()->db->where('channel_titles.entry_id !=', $entry_id);
+			$entries->filter('entry_id', '!=', $entry_id);
 		}
 
 		if ($limit)
 		{
-			ee()->db->limit($limit);
+			$entries->limit($limit);
 		}
 
 		// If we've got a limit and selected entries, we need to run the query
@@ -428,23 +431,22 @@ class Relationship_ft extends EE_Fieldtype {
 
 		if ($separate_query_for_selected)
 		{
-			ee()->db->stop_cache();
-			ee()->db->where_not_in('channel_titles.entry_id', $selected);
-		}
+			$selected_entries = clone $entries;
 
-		$entries = ee()->db->get()->result_array();
+			$entries->filter('entry_id', 'NOT IN', $selected);
 
-		if ($separate_query_for_selected)
-		{
-			ee()->db->limit(count($selected));
-			ee()->db->where_in('channel_titles.entry_id', $selected);
+			$selected_entries->limit(count($selected))
+				->filter('entry_id', 'IN', $selected);
+
 			$entries = array_merge(
-				$entries,
-				ee()->db->get()->result_array()
+				$entries->all()->asArray(),
+				$selected_entries->all()->asArray()
 			);
 		}
-
-		ee()->db->flush_cache();
+		else
+		{
+			$entries = $entries->all()->asArray();
+		}
 
 		if ($this->settings['allow_multiple'] == 0)
 		{
@@ -452,7 +454,7 @@ class Relationship_ft extends EE_Fieldtype {
 
 			foreach ($entries as $entry)
 			{
-				$options[$entry['entry_id']] = $entry['title'];
+				$options[$entry->entry_id] = $entry->title;
 			}
 
 			return form_dropdown($field_name.'[data][]', $options, current($selected));
@@ -481,7 +483,13 @@ class Relationship_ft extends EE_Fieldtype {
 
 		ee()->cp->add_to_head($css_link);
 
-		return ee()->load->view('publish', compact('field_name', 'entries', 'selected', 'order'), TRUE);
+		// $related = ee('Model')->get('ChannelEntry', $entry_id)
+		// 	->first()
+		// 	->getParents();
+
+		$related = array();
+
+		return ee('View')->make('publish')->render(compact('field_name', 'entries', 'selected', 'related'));
 	}
 
 	// --------------------------------------------------------------------

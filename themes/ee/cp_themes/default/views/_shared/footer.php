@@ -51,24 +51,19 @@
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
 		<?=ee()->view->script_tag('v3/common.js')?>
 		<?php
-		if (isset($cp_global_js))
-		{
-			echo $cp_global_js;
-		}
 
-		echo $cp_footer_js;
+		echo ee()->javascript->get_global();
+
+		echo ee()->cp->render_footer_js();
 
 		if (isset($library_src))
 		{
 			echo $library_src;
 		}
 
-		if (isset($script_foot))
-		{
-			echo $script_foot;
-		}
+		echo ee()->javascript->script_foot();
 
-		foreach ($cp_footer_items as $item)
+		foreach (ee()->cp->get_foot() as $item)
 		{
 			echo $item."\n";
 		}
