@@ -3,9 +3,6 @@
 namespace EllisLab\ExpressionEngine\Core;
 
 class Installer extends Core {
-
-	protected $configPath = SYSPATH.'installer/config';
-
 	/**
 	 *
 	 */
@@ -19,5 +16,12 @@ class Installer extends Core {
 		parent::boot();
 	}
 
-
+	/**
+	 * Retrieve the config path for this core
+	 * @return string Config path
+	 */
+	protected function getConfigPath()
+	{
+		return SYSPATH.'installer/config';
+	}
 }
