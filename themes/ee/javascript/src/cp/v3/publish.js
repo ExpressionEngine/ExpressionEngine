@@ -23,7 +23,8 @@ $(document).ready(function () {
 	}
 
 	var autosave_entry,
-		start_autosave;
+		start_autosave,
+	    saving;
 
 	if (EE.publish.autosave && EE.publish.autosave.interval) {
 		var autosaving = false;
@@ -34,7 +35,7 @@ $(document).ready(function () {
 			}
 
 			autosaving = true;
-			setTimeout(autosave_entry, 1000 * EE.publish.autosave.interval); // 1000 milliseconds per second
+			saving = setTimeout(autosave_entry, 1000 * EE.publish.autosave.interval); // 1000 milliseconds per second
 		};
 
 		autosave_entry = function() {
@@ -87,11 +88,44 @@ $(document).ready(function () {
 							attrName = property + "[]";
 						}
 
-						$('form [name="' + attrName + '"]').val(result[property]);
+						var el = $('form [name="' + attrName + '"]');
+						var currentValue = el.val();
+
+						// Radio buttons are special
+						if (el.attr('type') == 'radio') {
+							currentValue = $('form [name="' + attrName + '"]:checked').val();
+						}
+
+						if (currentValue != result[property]) {
+							// Triggering clicks for radios and checkboxes
+							if (el.attr('type') == 'radio' || el.attr('type') == 'checkbox') {
+								if ( ! Array.isArray(result[property])) {
+									result[property] = new Array(result[property]);
+								}
+
+								// Without this the radio isn't set on time
+								if (el.attr('type') == 'radio')	{
+									el.val(result[property]);
+								}
+
+								for (var i = 0; i < result[property].length; i++) {
+									$('form input[name="' + attrName + '"][value="' + result[property][i] + '"]').trigger('click');
+								};
+							} else {
+								el.val(result[property]);
+							}
+
+							el.parents('fieldset').addClass('fs-highlight');
+							el.parents('.setting-field').append('<em>Auto saved content</em>');
+						}
 					}
 				}
+
+				// Don't trigger an auto-save when restoring
+				clearTimeout(saving);
 			}
 		})
+		$(this).parents('.sub-menu').hide();
 		e.preventDefault();
 	});
 
