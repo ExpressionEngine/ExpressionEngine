@@ -69,7 +69,7 @@ abstract class ContentModel extends Model {
 	/**
 	 *
 	 */
-	protected function fillCustomFields($data)
+	protected function fillCustomFields(array $data = array())
 	{
 		$this->usesCustomFields();
 
@@ -145,11 +145,10 @@ abstract class ContentModel extends Model {
 		return $this->_field_facades[$name];
 	}
 
-
 	/**
 	 *
 	 */
-	public function fill($data)
+	public function fill(array $data = array())
 	{
 		parent::fill($data);
 
