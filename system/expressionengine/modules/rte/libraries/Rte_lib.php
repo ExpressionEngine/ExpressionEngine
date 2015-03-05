@@ -344,6 +344,22 @@ class Rte_lib {
 			$bits['buttons'][] = strtolower(str_replace(' ', '_', $tool['info']['name']));
 		}
 
+		// Due to some UI constraints headings must come after "normal" buttons
+		$key = array_search('headings', $bits['buttons']);
+		if ($key !== FALSE)
+		{
+			$button = array_splice($bits['buttons'], $key, 1);
+			$bits['buttons'][] = $button;
+		}
+
+		// Due to some UI constraints view_source must come last
+		$key = array_search('view_source', $bits['buttons']);
+		if ($key !== FALSE)
+		{
+			$button = array_splice($bits['buttons'], $key, 1);
+			$bits['buttons'][] = $button;
+		}
+
 		// potentially required assets
 		$jquery = URL_THEMES . 'javascript/' .
 				  (ee()->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed') .
