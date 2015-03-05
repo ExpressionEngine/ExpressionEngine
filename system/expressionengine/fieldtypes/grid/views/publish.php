@@ -68,7 +68,7 @@
 			</td>
 		</tr>
 		<?php endforeach ?>
-		<tr class="grid-blank-row"<?php if (empty($rows)) echo $hide?>>
+		<tr class="grid-blank-row"<?=$hide?>>
 			<td class="reorder-col"><span class="ico reorder"></span></td>
 			<?php foreach ($columns as $column): ?>
 			<td	data-fieldtype="<?=$column['col_type']?>"
