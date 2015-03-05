@@ -888,6 +888,8 @@ WysiHat.Event.prototype = {
 			before.html, after.html,
 			before.selection, after.selection
 		);
+
+		this.$editor.closest('form').trigger("entry:startAutosave");
 	},
 
 	/**
