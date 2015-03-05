@@ -278,6 +278,8 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	{
 		$qb = $this->newSelfReferentialQuery();
 
+		$this->saveCompositeColumns();
+
 		if ($this->isNew())
 		{
 			$new_id = $qb->insert();
@@ -285,8 +287,6 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 		}
 		else
 		{
-			// update
-			$this->saveCompositeColumns();
 			$this->constrainQueryToSelf($qb);
 			$qb->update();
 		}
