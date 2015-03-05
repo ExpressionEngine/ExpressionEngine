@@ -316,7 +316,7 @@ class Cat extends AbstractChannelController {
 					'desc' => 'exclude_group_form_desc',
 					'fields' => array(
 						'exclude_group' => array(
-							'type' => 'radio',
+							'type' => 'dropdown',
 							'choices' => array(
 								0 => lang('none'),
 								1 => lang('channels'),

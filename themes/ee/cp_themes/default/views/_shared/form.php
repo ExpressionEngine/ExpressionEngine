@@ -98,7 +98,7 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 									<?=lang($field['no_results']['link_text'])?>
 								</a></p>
 							</div>
-						<?php endif ?>
+						<?php continue; endif ?>
 						<?php if ($has_note): ?>
 							<div class="setting-note">
 						<?php endif ?>

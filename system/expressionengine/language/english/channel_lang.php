@@ -211,8 +211,10 @@ $lang = array(
 'Publishing Options',
 
 'channel_publishing_options_warning' =>
-'<p><b>Warning</b>: Channels require custom fields to collect any data other than title, and date.</p>
-<p>If you need to collect additional data for this channel, it\'s best practice to create any <a href="%s">custom fields</a>, first.</p>',
+'<b>Warning</b>: Channels require custom fields to collect any data other than title, and date.',
+
+'channel_publishing_options_warning2' =>
+'If you need to collect additional data for this channel, it\'s best practice to create any <a href="%s">custom fields</a>, first.',
 
 'status_groups_desc' =>
 'Choose the status group you want for this channel.',
