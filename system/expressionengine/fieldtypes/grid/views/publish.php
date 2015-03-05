@@ -1,4 +1,3 @@
-<?php $hide = ' style="display:none"'; ?>
 <div class="tbl-wrap">
 	<table id="<?=$field_id?>" class="grid-input-form" cellespacing="0">
 		<tr>
@@ -40,7 +39,7 @@
 			?>
 			<th<?=$class?>><?=$column['col_label']?><?php if ( ! empty($column['col_instructions'])): ?> <em class="grid-instruct"><?=$column['col_instructions']?></em><?php endif; ?></th>
 			<?php endforeach ?>
-			<th class="last grid-remove"<?php if (empty($rows)) echo $hide?>></th>
+			<th class="last grid-remove<?php if (empty($rows)) echo ' hidden'?>"></th>
 		</tr>
 		<?php
 		$last = end($rows);
@@ -68,7 +67,7 @@
 			</td>
 		</tr>
 		<?php endforeach ?>
-		<tr class="grid-blank-row"<?=$hide?>>
+		<tr class="grid-blank-row hidden">
 			<td class="reorder-col"><span class="ico reorder"></span></td>
 			<?php foreach ($columns as $column): ?>
 			<td	data-fieldtype="<?=$column['col_type']?>"
@@ -82,11 +81,11 @@
 				</ul>
 			</td>
 		</tr>
-		<tr class="no-results"<?php if ( ! empty($rows)) echo $hide?>>
+		<tr class="no-results<?php if ( ! empty($rows)) echo ' hidden'?>">
 			<td class="solo" colspan="<?=count($columns)?>"><?=lang('no_rows_created')?> <a class="btn" href=""><?=lang('add_new_row')?></a></td>
 		</tr>
 	</table>
 </div>
-<ul class="toolbar"<?php if (empty($rows)) echo $hide?>>
+<ul class="toolbar<?php if (empty($rows)) echo ' hidden'?>">
 	<li class="add"><a href="#" title="<?=lang('add_new_row')?>"></a></li>
 </ul>
