@@ -322,11 +322,6 @@ class Relationship_ft extends EE_Fieldtype {
 
 		$separate_query_for_selected = (count($selected) && $limit);
 
-		if ($separate_query_for_selected)
-		{
-			ee()->db->start_cache();
-		}
-
 		// Bug 19321, old fields use date
 		if ($order_field == 'date')
 		{
