@@ -40,6 +40,13 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 		<?php foreach ($settings as $setting): ?>
 			<?php
 
+			// If a string is passed, just display the string
+			if (is_string($setting))
+			{
+				echo $setting;
+				continue;
+			}
+
 			$last_class = ($setting == end($settings)) ? ' last' : '';
 			$grid = (isset($setting['grid']) && $setting['grid'] == TRUE);
 
