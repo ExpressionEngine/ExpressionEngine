@@ -2823,6 +2823,15 @@ WysiHat.Toolbar = function($el, buttons)
 	{
 		this.addButton(buttons[i]);
 	}
+
+	// Add .last to the last "normal" tool (not .rte-elements nor .rte-view)
+	if (this.$toolbar.children('.rte-elements').length) {
+		this.$toolbar.children('.rte-elements').prev().addClass('last');
+	} else if (this.$toolbar.children('.rte-view').length) {
+		this.$toolbar.children('.rte-view').prev().addClass('last');
+	} else {
+		this.$toolbar.children('li:last').addClass('last');
+	}
 }
 
 WysiHat.Toolbar.prototype = {
