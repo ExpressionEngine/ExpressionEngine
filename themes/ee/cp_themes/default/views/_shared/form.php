@@ -86,7 +86,19 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 							$required = ' class="required"';
 						}
 						$has_note = isset($field['note']);
+
+						$no_results = (in_array($field['type'], array('checkbox', 'radio', 'dropdown')) &&
+							isset($field['no_results']) &&
+							count($field['choices']) == 0);
 						?>
+						<?php if ($no_results): ?>
+							<div class="no-results">
+								<p><?=lang($field['no_results']['text'])?></p>
+								<p><a class="btn action" href="<?=lang($field['no_results']['link_href'])?>">
+									<?=lang($field['no_results']['link_text'])?>
+								</a></p>
+							</div>
+						<?php endif ?>
 						<?php if ($has_note): ?>
 							<div class="setting-note">
 						<?php endif ?>
