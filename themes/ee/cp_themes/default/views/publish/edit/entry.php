@@ -14,7 +14,7 @@
 						</fieldset>
 						<ul>
 							<?php foreach ($entry->getAutosaves() as $autosave): ?>
-								<li><a href="" data-autosave-id="<?=$autosave->entry_id?>"><?=ee()->localize->human_time($autosave->edit_date)?></a></li>
+								<li><a href="<?=cp_url('publish/edit/entry/' . $entry->entry_id . '/' . $autosave->entry_id)?>"><?=ee()->localize->human_time($autosave->edit_date)?></a></li>
 							<?php endforeach; ?>
 						</ul>
 					</div>

@@ -66,28 +66,5 @@ class Publish extends AbstractPublishController {
 		));
 	}
 
-	public function restore()
-	{
-		$id = ee()->input->post('id');
-
-		if ( ! $id)
-		{
-			ee()->output->send_ajax_response(NULL);
-			exit;
-		}
-
-		$autosaved = ee('Model')->get('ChannelEntryAutosave', $id)
-			->filter('site_id', ee()->config->item('site_id'))
-			->first();
-
-		if ( ! $autosaved)
-		{
-			ee()->output->send_ajax_response(NULL);
-			exit;
-		}
-
-		ee()->output->send_ajax_response($autosaved->entry_data);
-	}
-
 }
 // EOF
