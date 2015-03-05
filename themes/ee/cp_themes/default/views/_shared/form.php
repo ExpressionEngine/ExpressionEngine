@@ -62,8 +62,14 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 						}
 					}
 					$security = (isset($setting['security']) && $setting['security'] == TRUE);
+					$caution = (isset($setting['caution']) && $setting['caution'] == TRUE);
 					?>
-					<h3<?php if ($security):?> class="enhance"<?php endif ?>><?=lang($setting['title'])?><?php if ($required): ?> <span class="required" title="required field">&#10033;</span><?php endif ?><?php if ($security): ?> <span title="enhance security"></span><?php endif ?></h3>
+					<h3<?php if ($security):?> class="enhance"<?php endif ?><?php if ($caution):?> class="caution"<?php endif ?>>
+						<?=lang($setting['title'])?>
+						<?php if ($required): ?> <span class="required" title="required field">&#10033;</span><?php endif ?>
+						<?php if ($security): ?> <span title="enhance security"></span><?php endif ?>
+						<?php if ($caution): ?> <span title="enhance caution"></span><?php endif ?>
+					</h3>
 					<em><?=lang($setting['desc'])?></em>
 				</div>
 				<div class="setting-field col <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?> last">
