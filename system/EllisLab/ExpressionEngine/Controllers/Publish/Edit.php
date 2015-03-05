@@ -294,6 +294,17 @@ class Edit extends AbstractPublishController {
 			show_error(lang('no_entries_matching_that_criteria'));
 		}
 
+		// -------------------------------------------
+		// 'publish_form_entry_data' hook.
+		//  - Modify entry's data
+		//  - Added: 1.4.1
+			if (ee()->extensions->active_hook('publish_form_entry_data') === TRUE)
+			{
+				$result = ee()->extensions->call('publish_form_entry_data', $entry->getValues());
+				$entry->set($result);
+			}
+		// -------------------------------------------
+
 		if ($autosave_id)
 		{
 			$autosaved = ee('Model')->get('ChannelEntryAutosave', $autosave_id)
@@ -305,17 +316,6 @@ class Edit extends AbstractPublishController {
 				$entry->set($autosaved->entry_data);
 			}
 		}
-
-		// -------------------------------------------
-		// 'publish_form_entry_data' hook.
-		//  - Modify entry's data
-		//  - Added: 1.4.1
-			if (ee()->extensions->active_hook('publish_form_entry_data') === TRUE)
-			{
-				$result = ee()->extensions->call('publish_form_entry_data', $entry->getValues());
-				$entry->set($result);
-			}
-		// -------------------------------------------
 
 		$form_attributes = array(
 			'class' => 'settings', //' ajax-validate',
