@@ -94,6 +94,7 @@ $lang = array(
 'update_success'       => "ExpressionEngine Updated to %s",
 'update_success_note'  => '<b>Yay!</b> ExpressionEngine is now updated to %s.',
 'success_delete'       => 'Please delete the installer folder/directory from your server before proceeding.',
+'success_moved'        => 'The installer folder has been renamed to <kbd>system/installer_%s</kbd>.',
 'cp_login'             => 'Control Panel login',
 
 // Surveys
