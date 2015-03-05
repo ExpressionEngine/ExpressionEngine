@@ -33,22 +33,37 @@ class Publish extends AbstractPublishController {
 	{
 		$site_id = ee()->config->item('site_id');
 
-		$autosave = ee('Model')->make('ChannelEntryAutosave');
-		$autosave->original_entry_id = $entry_id;
-		$autosave->site_id = $site_id;
-		$autosave->channel_id = $channel_id;
+		$autosave = ee('Model')->get('ChannelEntryAutosave')
+			->filter('original_entry_id', $entry_id)
+			->filter('site_id', $site_id)
+			->filter('channel_id', $channel_id)
+			->first();
+
+		if ( ! $autosave)
+		{
+			$autosave = ee('Model')->make('ChannelEntryAutosave');
+			$autosave->original_entry_id = $entry_id;
+			$autosave->site_id = $site_id;
+			$autosave->channel_id = $channel_id;
+		}
+
+		$autosave->edit_date = ee()->localize->now;
+		$autosave->entry_data = $_POST;
+
+		// This is currently unused, but might be useful for display purposes
 		$autosave->author_id = ee()->input->post('author_id');
+
+		// This group of columns is unused
 		$autosave->title = (ee()->input->post('title')) ?: 'autosave_' . ee()->localize->now;
 		$autosave->url_title = (ee()->input->post('url_title')) ?: 'autosave_' . ee()->localize->now;
 		$autosave->status = ee()->input->post('status');
-		$autosave->edit_date = ee()->localize->now;
 
+		// This group of columns is also unused
 		$autosave->entry_date = 0;
 		$autosave->year = 0;
 		$autosave->month = 0;
 		$autosave->day = 0;
 
-		$autosave->entry_data = $_POST;
 		$autosave->save();
 
 		$time = ee()->localize->human_time(ee()->localize->now);
