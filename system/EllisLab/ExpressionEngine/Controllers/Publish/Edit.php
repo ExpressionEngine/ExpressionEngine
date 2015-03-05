@@ -283,7 +283,7 @@ class Edit extends AbstractPublishController {
 		ee()->cp->render('publish/edit/index', $vars);
 	}
 
-	public function entry($id)
+	public function entry($id, $autosave_id = NULL)
 	{
 		$entry = ee('Model')->get('ChannelEntry', $id)
 			->filter('site_id', ee()->config->item('site_id'))
@@ -292,6 +292,18 @@ class Edit extends AbstractPublishController {
 		if ( ! $entry)
 		{
 			show_error(lang('no_entries_matching_that_criteria'));
+		}
+
+		if ($autosave_id)
+		{
+			$autosaved = ee('Model')->get('ChannelEntryAutosave', $autosave_id)
+				->filter('site_id', ee()->config->item('site_id'))
+				->first();
+
+			if ($autosaved)
+			{
+				$entry->set($autosaved->entry_data);
+			}
 		}
 
 		$form_attributes = array(
