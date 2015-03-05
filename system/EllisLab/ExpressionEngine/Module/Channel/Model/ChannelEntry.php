@@ -119,11 +119,14 @@ class ChannelEntry extends ContentModel {
 		ee()->legacy_api->instantiate('channel_fields');
 		$module_tabs = ee()->api_channel_fields->get_module_fields($this->channel_id, $this->entry_id);
 
-		foreach ($module_tabs as $tab_id => $fields)
+		if ($module_tabs)
 		{
-			foreach ($fields as $key => $field)
+			foreach ($module_tabs as $tab_id => $fields)
 			{
-				$this->addFacade($field['field_id'], $field);
+				foreach ($fields as $key => $field)
+				{
+					$this->addFacade($field['field_id'], $field);
+				}
 			}
 		}
 	}
