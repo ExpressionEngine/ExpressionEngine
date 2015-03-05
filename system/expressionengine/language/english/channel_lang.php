@@ -601,7 +601,7 @@ $lang = array(
 'edit_category_group' =>
 'Edit Category Group',
 
-'cat_name_desc' =>
+'group_name_desc' =>
 'Descriptive name of this category group.',
 
 'create_category' =>
@@ -609,6 +609,9 @@ $lang = array(
 
 'edit_category' =>
 'Edit Category',
+
+'files' =>
+'Files',
 
 'cat_description_desc' =>
 'A brief description of this category.',
@@ -621,6 +624,39 @@ $lang = array(
 
 'html_formatting_desc' =>
 'Level of HTML allowed in custom category fields.',
+
+'permissions' =>
+'Permissions',
+
+'category_permissions_warning' =>
+'<b>Warning</b>: Please be very careful with the access privileges you grant.',
+
+'category_permissions_warning2' =>
+'Any setting marked with %s should only be granted to people you trust implicitly.',
+
+'edit_categories' =>
+'Edit Categories',
+
+'edit_categories_desc' =>
+'Users in selected groups will be allowed to edit categories in this category group.</em><em>Super Administrators are <b>always</b> allowed.',
+
+'delete_categories' =>
+'Delete Categories',
+
+'delete_categories_desc' =>
+'Users in selected groups will be allowed to delete categories in this category group.</em><em>Super Administrators are <b>always</b> allowed.',
+
+'cat_group_no_member_groups_found' =>
+'Zero <b>member groups</b> with permissions found',
+
+'edit_member_groups' =>
+'Edit Member Groups',
+
+'exclude_group_form' =>
+'Exclude group from?',
+
+'exclude_group_form_desc' =>
+'Prevent this category group from being offered as choice for assignment to channels and file directories.',
 
 'category_group_saved' =>
 'Category group saved',
