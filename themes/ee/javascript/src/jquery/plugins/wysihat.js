@@ -2858,7 +2858,7 @@ WysiHat.Toolbar.prototype = {
 			var opts = button.options,
 				l = opts.length, i = 0;
 
-			$btn = $('<select class="button"/>');
+			$btn = $('<select/>');
 
 			for ( ; i < l; i++)
 			{
@@ -2868,7 +2868,7 @@ WysiHat.Toolbar.prototype = {
 			}
 
 			$btn.appendTo(this.$toolbar)
-				.wrap('<div class="button select-container"/>');
+				.wrap('<li class="rte-elements"/>');
 		}
 		else
 		{
