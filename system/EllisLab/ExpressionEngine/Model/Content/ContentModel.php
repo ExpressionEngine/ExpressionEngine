@@ -22,6 +22,17 @@ abstract class ContentModel extends Model {
 
 	abstract public function getCustomFieldPrefix();
 
+	public function save()
+	{
+		foreach ($this->_field_facades as $name => $field)
+		{
+			if (isset($this->isDirty[$name]))
+			{
+				$field->save();
+			}
+		}
+	}
+
 	/**
 	 * Optional
 	 */

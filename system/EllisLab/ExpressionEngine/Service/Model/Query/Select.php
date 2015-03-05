@@ -114,6 +114,10 @@ class Select extends Query {
 
 			if ($table != $main_table)
 			{
+				if ($will_join)
+				{
+					$query->from("{$table} as {$table_alias}");
+				}
 				$query->where("{$table_alias}.{$primary_key} = {$alias}_{$main_table}.{$primary_key}", NULL, FALSE);
 			}
 
