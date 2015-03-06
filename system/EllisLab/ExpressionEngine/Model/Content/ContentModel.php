@@ -26,7 +26,7 @@ abstract class ContentModel extends Model {
 	{
 		foreach ($this->_field_facades as $name => $field)
 		{
-			if (isset($this->isDirty[$name]))
+			if (isset($this->_dirty[$name]))
 			{
 				$field->save();
 			}
