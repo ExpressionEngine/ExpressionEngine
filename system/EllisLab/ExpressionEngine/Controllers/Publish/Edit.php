@@ -317,6 +317,22 @@ class Edit extends AbstractPublishController {
 			}
 		}
 
+		if (count($_POST))
+		{
+			$result = $entry->validate();
+			// var_dump($result);
+			$entry->set($_POST);
+			$entry->save();
+
+			ee('Alert')->makeInline('entry-form')
+				->asSuccess()
+				->withTitle(lang('soemthing_accurate'))
+				->addToBody(lang('something_accurate_desc'))
+				->defer();
+
+			ee()->functions->redirect(cp_url('publish/edit/entry/' . $id, ee()->cp->get_url_state()));
+		}
+
 		$form_attributes = array(
 			'class' => 'settings', //' ajax-validate',
 		);
