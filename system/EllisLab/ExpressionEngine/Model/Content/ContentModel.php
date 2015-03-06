@@ -31,6 +31,8 @@ abstract class ContentModel extends Model {
 				$field->save();
 			}
 		}
+
+		return parent::save();
 	}
 
 	/**
