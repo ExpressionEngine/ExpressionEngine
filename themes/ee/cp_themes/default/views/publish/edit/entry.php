@@ -32,6 +32,7 @@
 		</ul>
 	</div>
 	<?=form_open($form_url, $form_attributes, (isset($form_hidden)) ? $form_hidden : array())?>
+		<?=ee('Alert')->getAllInlines()?>
 		<?php foreach ($layout->getTabs() as $index => $tab): ?>
 		<?php if ( ! $tab->isVisible()) continue; ?>
 		<div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">
