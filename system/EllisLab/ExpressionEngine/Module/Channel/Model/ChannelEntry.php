@@ -21,6 +21,17 @@ class ChannelEntry extends ContentModel {
 	protected static $_primary_key = 'entry_id';
 	protected static $_gateway_names = array('ChannelTitleGateway', 'ChannelDataGateway');
 
+	protected static $_typed_columns = array(
+		'versioning_enabled'      => 'boolString',
+		'allow_comments'          => 'boolString',
+		'sticky'                  => 'boolString',
+		'entry_date'              => 'timestamp',
+		'expiration_date'         => 'timestamp',
+		'comment_expiration_date' => 'timestamp',
+		'edit_date'               => 'timestamp',
+		'recent_comment_date'     => 'timestamp',
+	);
+
 	protected static $_relationships = array(
 		'Channel' => array(
 			'type' => 'belongsTo',
