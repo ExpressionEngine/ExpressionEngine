@@ -714,6 +714,22 @@ $lang = array(
 'category_ajax_reorder_fail_desc' =>
 'We failed to save your new categories order. Refresh the page and make sure you\'re logged in.',
 
+/**
+ * Status Groups
+ */
+
+'status_groups' =>
+'Status Groups',
+
+'status_group' =>
+'Status Group',
+
+'status_groups_removed' =>
+'Status groups removed',
+
+'status_groups_removed_desc' =>
+'%d status groups were removed.',
+
 ''=>''
 );
 
