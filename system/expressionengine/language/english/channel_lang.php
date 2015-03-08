@@ -730,6 +730,27 @@ $lang = array(
 'status_groups_removed_desc' =>
 '%d status groups were removed.',
 
+'create_status_group' =>
+'Create Status Group',
+
+'edit_status_group' =>
+'Edit Status Group',
+
+'status_name_desc' =>
+'Descriptive name of this status group.',
+
+'status_group_saved' =>
+'Status group saved',
+
+'status_group_saved_desc' =>
+'Your status group has been saved successfully.',
+
+'status_group_not_saved' =>
+'Attention: Status group not saved',
+
+'status_group_not_saved_desc' =>
+'We were unable to save your status group, please review and fix errors below.',
+
 ''=>''
 );
 

@@ -141,5 +141,127 @@ class Status extends AbstractChannelController {
 
 		ee()->functions->redirect(cp_url('channel/status', ee()->cp->get_url_state()));
 	}
+
+	/**
+	 * New status group form
+	 */
+	public function create()
+	{
+		$this->form();
+	}
+
+	/**
+	 * Edit status group form
+	 */
+	public function edit($group_id)
+	{
+		$this->form($group_id);
+	}
+
+	/**
+	 * Status group creation/edit form
+	 *
+	 * @param	int	$group_id	ID of status group to edit
+	 */
+	private function form($group_id = NULL)
+	{
+		if (is_null($group_id))
+		{
+			ee()->view->cp_page_title = lang('create_status_group');
+			ee()->view->base_url = cp_url('channel/status/create');
+			ee()->view->save_btn_text = 'create_status_group';
+			$status_group = ee('Model')->make('StatusGroup');
+		}
+		else
+		{
+			$status_group = ee('Model')->get('StatusGroup')
+				->filter('group_id', $group_id)
+				->first();
+
+			if ( ! $status_group)
+			{
+				show_error(lang('unauthorized_access'));
+			}
+
+			ee()->view->cp_page_title = lang('edit_status_group');
+			ee()->view->base_url = cp_url('channel/status/edit/'.$group_id);
+			ee()->view->save_btn_text = 'edit_status_group';
+		}
+
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'name',
+					'desc' => 'edit_status_group',
+					'fields' => array(
+						'group_name' => array(
+							'type' => 'text',
+							'value' => $status_group->group_name,
+							'required' => TRUE
+						)
+					)
+				)
+			)
+		);
+
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'group_name',
+				'label' => 'lang:name',
+				'rules' => 'required|strip_tags|trim|valid_xss_check'
+			)
+		));
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			$group_id = $this->saveStatusGroup($group_id);
+
+			ee('Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('status_group_saved'))
+				->addToBody(lang('status_group_saved_desc'))
+				->defer();
+
+			ee()->functions->redirect(cp_url('channel/status/edit/'.$group_id));
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('status_group_not_saved'))
+				->addToBody(lang('status_group_not_saved_desc'))
+				->now();
+		}
+
+		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text_working = 'btn_saving';
+
+		ee()->cp->set_breadcrumb(cp_url('channel/status'), lang('status_groups'));
+
+		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * Saves a status group
+	 *
+	 * @param	int $group_id ID of status group to save
+	 * @return	int ID of status group saved
+	 */
+	private function saveStatusGroup($group_id = NULL)
+	{
+		// TODO: add default statuses in model create event
+		$status_group = ee('Model')->make('StatusGroup');
+		$status_group->group_id = $group_id;
+		$status_group->site_id = ee()->config->item('site_id');
+		$status_group->group_name = ee()->input->post('group_name');
+		$status_group->save();
+
+		return $status_group->group_id;
+	}
 }
 // EOF
