@@ -263,5 +263,73 @@ class Status extends AbstractChannelController {
 
 		return $status_group->group_id;
 	}
+
+	/**
+	 * Status listing for a group
+	 */
+	public function statusList($group_id)
+	{
+		$status_group = ee('Model')->get('StatusGroup')
+			->filter('group_id', $group_id)
+			->first();
+
+		if ( ! $status_group)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$table = CP\Table::create(array('reorder' => TRUE));
+		$table->setColumns(
+			array(
+				'status_name',
+				'manage' => array(
+					'type'	=> CP\Table::COL_TOOLBAR
+				),
+				array(
+					'type'	=> CP\Table::COL_CHECKBOX
+				)
+			)
+		);
+
+		$statuses = $status_group->getStatuses();
+
+		$data = array();
+		foreach ($statuses as $status)
+		{
+			$data[] = array(
+				htmlentities($status->status, ENT_QUOTES),
+				array('toolbar_items' => array(
+					'edit' => array(
+						'href' => cp_url('channel/status/edit-status/'.$status->getId()),
+						'title' => lang('edit')
+					)
+				)),
+				array(
+					'name' => 'statuses[]',
+					'value' => $status->getId(),
+					'data'	=> array(
+						'confirm' => lang('status') . ': <b>' . htmlentities($status->status, ENT_QUOTES) . '</b>'
+					),
+					// Cannot delete default statuses
+					'disabled' => ($status->getId() == 1 OR $status->getId() == 2) ? 'disabled' : NULL
+				)
+			);
+		}
+
+		$table->setData($data);
+
+		$base_url = new CP\URL('channel/status/status-list', ee()->session->session_id());
+		$vars['table'] = $table->viewData($base_url);
+
+		ee()->view->cp_page_title = $status_group->group_name . ' &mdash; ' . lang('statuses');
+		ee()->cp->set_breadcrumb(cp_url('channel/status'), lang('status_groups'));
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('statuses') . ': <b>### ' . lang('statuses') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/confirm_remove'),
+		));
+
+		ee()->cp->render('channel/status/index', $vars);
+	}
 }
 // EOF

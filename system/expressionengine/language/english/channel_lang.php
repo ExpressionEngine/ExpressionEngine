@@ -751,6 +751,15 @@ $lang = array(
 'status_group_not_saved_desc' =>
 'We were unable to save your status group, please review and fix errors below.',
 
+'status_name' =>
+'Status Name',
+
+'statuses' =>
+'Statuses',
+
+'status' =>
+'Status',
+
 ''=>''
 );
 
