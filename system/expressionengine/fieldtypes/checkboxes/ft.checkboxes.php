@@ -364,6 +364,17 @@ class Checkboxes_ft extends EE_Fieldtype {
 	{
 		return TRUE;
 	}
+
+	public function save($data)
+	{
+		if (is_array($data))
+		{
+			ee()->load->helper('custom_field');
+			$data = encode_multi_field($data);
+		}
+
+		return $data;
+	}
 }
 
 // END Checkboxes_ft class
