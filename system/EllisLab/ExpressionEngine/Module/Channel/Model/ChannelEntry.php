@@ -76,6 +76,18 @@ class ChannelEntry extends ContentModel {
 		)
 	);
 
+	protected static $_validation_rules = array(
+		'channel_id'         => 'required',
+		'ip_address'         => 'ip_address',
+		'title'              => 'required',
+		'url_title'          => 'required',
+		'status'             => 'required',
+		'entry_date'         => 'required',
+		'versioning_enabled' => 'enum[y,n]',
+		'allow_comments'     => 'enum[y,n]',
+		'sticky'             => 'enum[y,n]',
+	);
+
 	// Properties
 	protected $entry_id;
 	protected $site_id;
