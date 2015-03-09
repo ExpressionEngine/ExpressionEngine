@@ -110,6 +110,7 @@ class ChannelEntry extends ContentModel {
 		$this->entry_date = $field->getData();
 
 		// Day, Month, and Year Fields
+		// @TODO un-break these windows: inject this dependency
 		$this->year = ee()->localize->format_date('%Y', $this->entry_date);
 		$this->month = ee()->localize->format_date('%m', $this->entry_date);
 		$this->day = ee()->localize->format_date('%d', $this->entry_date);
