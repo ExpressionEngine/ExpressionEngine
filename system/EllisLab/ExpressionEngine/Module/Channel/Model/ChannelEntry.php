@@ -103,6 +103,43 @@ class ChannelEntry extends ContentModel {
 	protected $recent_comment_date;
 	protected $comment_total;
 
+	public function set__entry_date($date)
+	{
+		$field = $this->_field_facades['entry_date'];
+		$field->save();
+		$this->entry_date = $field->getData();
+
+		// Day, Month, and Year Fields
+		$this->year = ee()->localize->format_date('%Y', $this->entry_date);
+		$this->month = ee()->localize->format_date('%m', $this->entry_date);
+		$this->day = ee()->localize->format_date('%d', $this->entry_date);
+	}
+
+	public function set__expiration_date($date)
+	{
+		$field = $this->_field_facades['expiration_date'];
+		$field->save();
+		$this->expiration_date = $field->getData();
+	}
+
+	public function set__comment_expiration_date($date)
+	{
+		$field = $this->_field_facades['comment_expiration_date'];
+		$field->save();
+		$this->comment_expiration_date = $field->getData();
+	}
+	public function set__edit_date($date)
+	{
+		$field = $this->_field_facades['edit_date'];
+		$field->save();
+		$this->edit_date = $field->getData();
+	}
+	public function set__recent_comment_date($date)
+	{
+		$field = $this->_field_facades['recent_comment_date'];
+		$field->save();
+		$this->recent_comment_date = $field->getData();
+	}
 	/**
 	 * A link back to the owning channel object.
 	 *
