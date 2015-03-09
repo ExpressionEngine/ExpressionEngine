@@ -56,11 +56,17 @@
 				{
 					$width = "w-16";
 				}
+
+				$field_class = 'col-group';
+				if (end($tab->getFields()) == $field)
+				{
+					$field_class .= ' last';
+				}
 			?>
 			<?php if ($field->getType() == 'grid'): ?>
-			<div class="grid-publish col-group">
+			<div class="grid-publish <?=$field_class?>">
 			<?php else: ?>
-			<fieldset class="col-group<?php if (end($tab->getFields()) == $field) echo' last'?>">
+			<fieldset class="<?=$field_class?><?php if ($errors->hasErrors($field->getName())) echo ' invalid'; ?>">
 			<?php endif; ?>
 				<div class="setting-txt col <?=$width?>">
 					<h3><span class="ico sub-arrow"></span><?=$field->getLabel()?><?php if ($field->isRequired()): ?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span><?php endif; ?></h3>
@@ -71,6 +77,7 @@
 				</div>
 				<div class="setting-field col <?=$width?> last">
 					<?=$field->getForm()?>
+					<?=$errors->renderError($field->getName())?>
 				</div>
 			<?php if ($field->getType() == 'grid'): ?>
 			</div>

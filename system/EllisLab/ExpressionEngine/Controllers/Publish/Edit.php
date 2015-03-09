@@ -305,6 +305,18 @@ class Edit extends AbstractPublishController {
 			}
 		// -------------------------------------------
 
+		ee()->view->cp_page_title = sprintf(lang('edit_entry_with_title'), $entry->title);
+
+		$form_attributes = array(
+			'class' => 'settings ajax-validate',
+		);
+
+		$vars = array(
+			'form_url' => cp_url('publish/edit/entry/' . $id),
+			'form_attributes' => $form_attributes,
+			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result
+		);
+
 		if ($autosave_id)
 		{
 			$autosaved = ee('Model')->get('ChannelEntryAutosave', $autosave_id)
@@ -319,23 +331,51 @@ class Edit extends AbstractPublishController {
 
 		if (count($_POST))
 		{
-			$result = $entry->validate();
-			// var_dump($result);
 			$entry->set($_POST);
-			$entry->save();
+			$result = $entry->validate();
 
-			ee('Alert')->makeInline('entry-form')
-				->asSuccess()
-				->withTitle(lang('soemthing_accurate'))
-				->addToBody(lang('something_accurate_desc'))
-				->defer();
+			if (AJAX_REQUEST)
+			{
+				$field = ee()->input->post('ee_fv_field');
+				// Remove any namespacing to run validation for the parent field
+				$field = preg_replace('/\[.+?\]/', '', $field);
 
-			ee()->functions->redirect(cp_url('publish/edit/entry/' . $id, ee()->cp->get_url_state()));
+				if ($result->hasErrors($field))
+				{
+					ee()->output->send_ajax_response(array('error' => $result->renderError($field)));
+				}
+				else
+				{
+					ee()->output->send_ajax_response('success');
+				}
+				exit;
+			}
+
+			if ($result->isValid())
+			{
+				$entry->save();
+
+				ee('Alert')->makeInline('entry-form')
+					->asSuccess()
+					->withTitle(lang('edit_entry_success'))
+					->addToBody(sprintf(lang('edit_entry_success_desc'), $entry->title))
+					->defer();
+
+				ee()->functions->redirect(cp_url('publish/edit/entry/' . $id, ee()->cp->get_url_state()));
+			}
+			else
+			{
+				$vars['errors'] = $result;
+				// Hacking
+				ee()->load->library('form_validation');
+				ee()->form_validation->_error_array = $result->renderErrors();
+				ee('Alert')->makeInline('entry-form')
+					->asIssue()
+					->withTitle(lang('edit_entry_error'))
+					->addToBody(lang('edit_entry_error_desc'))
+					->now();
+			}
 		}
-
-		$form_attributes = array(
-			'class' => 'settings', //' ajax-validate',
-		);
 
 		$channel_layout = ee('Model')->get('ChannelLayout')
 			->filter('site_id', ee()->config->item('site_id'))
@@ -344,12 +384,11 @@ class Edit extends AbstractPublishController {
 			->filter('MemberGroups.group_id', ee()->session->userdata['group_id'])
 			->first();
 
-		$vars = array(
+		$vars = array_merge($vars, array(
 			'entry' => $entry,
-			'form_url' => cp_url('publish/edit/entry/' . $id),
-			'form_attributes' => $form_attributes,
-			'layout' => $entry->getDisplay($channel_layout)
-		);
+			'layout' => $entry->getDisplay($channel_layout),
+			'validation' => $entry->validate()
+		));
 
 		$this->setGlobalJs($entry, TRUE);
 
@@ -365,8 +404,6 @@ class Edit extends AbstractPublishController {
 		ee()->view->cp_breadcrumbs = array(
 			cp_url('publish/edit', array('filter_by_channel' => $entry->channel_id)) => $entry->getChannel()->channel_title,
 		);
-
-		ee()->view->cp_page_title = sprintf(lang('edit_entry_with_title'), $entry->title);
 
 		ee()->cp->render('publish/edit/entry', $vars);
 	}
