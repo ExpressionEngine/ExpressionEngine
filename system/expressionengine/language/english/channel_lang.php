@@ -760,6 +760,18 @@ $lang = array(
 'status' =>
 'Status',
 
+'status_ajax_reorder_fail' =>
+'Attention: Failed to save status order',
+
+'status_ajax_reorder_fail_desc' =>
+'We failed to save your new statuses order. Refresh the page and make sure you\'re logged in.',
+
+'statuses_removed' =>
+'Statuses removed',
+
+'statuses_removed_desc' =>
+'%d statuses were removed.',
+
 ''=>''
 );
 

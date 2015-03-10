@@ -75,9 +75,9 @@ class Homepage extends CP_Controller {
 			->count();
 
 		$vars['number_of_comments_on_closed_entries'] = ee('Model')->get('Comment')
-			// ->with('Entry')
+			->with('Entry')
 			->filter('Comment.site_id', ee()->config->item('site_id'))
-			// ->filter('Entry.status', 'closed')
+			->filter('Entry.status', 'closed')
 			->count();
 
 		ee()->view->cp_page_title = ee()->config->item('site_name') . ' ' . lang('overview');

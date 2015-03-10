@@ -27,7 +27,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Query;
  */
 class Insert extends Update {
 
-	protected $insert_ids;
+	protected $insert_id;
 
 	public function run()
 	{
@@ -45,27 +45,47 @@ class Insert extends Update {
 
 	public function doWork($object)
 	{
-		$this->insert_ids = array();
+		$this->insert_id = NULL;
 
 		parent::doWork($object);
 
-		$insert_id = current($this->insert_ids);
+		$object->setId($this->insert_id);
 
-		$object->setId($insert_id);
+		return $this->insert_id;
+	}
 
-		return $insert_id;
+	/**
+	 * Set insert id to the first one we get
+	 */
+	protected function setInsertId($id)
+	{
+		if ( ! isset($this->insert_id))
+		{
+			$this->insert_id = $id;
+		}
 	}
 
 	protected function actOnGateway($gateway, $object)
 	{
 		$values = $gateway->getValues();
-		unset($values[$gateway->getPrimaryKey()]);
+		$primary_key = $gateway->getPrimaryKey();
+
+		if (isset($this->insert_id))
+		{
+			unset($values[$primary_key]);
+		}
+		else
+		{
+			$values[$primary_key] = $this->insert_id;
+		}
 
 		$query = $this->store
 			->rawQuery()
 			->set($gateway->getValues())
 			->insert($gateway->getTableName());
 
-		$this->insert_ids[] = $this->store->rawQuery()->insert_id();
+		$this->setInsertId(
+			$this->store->rawQuery()->insert_id()
+		);
 	}
 }

@@ -86,6 +86,17 @@ class MetaDataReader {
 	/**
 	 *
 	 */
+	public function getEvents()
+	{
+		$class = $this->class;
+		$relationships = $class::getMetaData('events');
+
+		return $relationships ?: array();
+	}
+
+	/**
+	 *
+	 */
 	public function getGateways()
 	{
 		$class = $this->class;
