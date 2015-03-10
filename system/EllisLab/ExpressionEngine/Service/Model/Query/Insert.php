@@ -31,13 +31,29 @@ class Insert extends Update {
 
 	public function run()
 	{
-		$this->insert_ids = array();
-
-		parent::run();
-
 		$object = $this->builder->getExisting();
 
-		return current($this->insert_ids);
+		$object->emit('beforeSave');
+		$object->emit('beforeInsert');
+
+		$insert_id = $this->doWork($object);
+
+		$object->emit('afterInsert');
+		$object->emit('afterSave');
+
+	}
+
+	public function doWork($object)
+	{
+		$this->insert_ids = array();
+
+		parent::doWork($object);
+
+		$insert_id = current($this->insert_ids);
+
+		$object->setId($insert_id);
+
+		return $insert_id;
 	}
 
 	protected function actOnGateway($gateway, $object)
