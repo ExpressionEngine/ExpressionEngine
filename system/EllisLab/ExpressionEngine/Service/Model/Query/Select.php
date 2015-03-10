@@ -128,7 +128,7 @@ class Select extends Query {
 
 				// but only select it if they did not specify fields to select
 				// or they specifically chose this one to be selected
-				if (empty($fields) OR in_array("{$alias}.{$column}", $fields))
+				if (empty($fields) OR in_array("{$alias}.{$column}", $fields) OR in_array("{$alias}.*", $fields))
 				{
 					$query->select("{$table_alias}.{$column} as {$alias}__{$column}");
 				}
