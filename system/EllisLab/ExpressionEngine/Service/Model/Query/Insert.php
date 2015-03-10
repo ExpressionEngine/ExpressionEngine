@@ -81,7 +81,7 @@ class Insert extends Update {
 
 		$query = $this->store
 			->rawQuery()
-			->set($gateway->getValues())
+			->set($values)
 			->insert($gateway->getTableName());
 
 		$this->setInsertId(
