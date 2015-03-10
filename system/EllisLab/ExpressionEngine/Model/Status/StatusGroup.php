@@ -54,7 +54,6 @@ class StatusGroup extends Model {
 	{
 		$open = $this->getFrontend()->make('Status');
 		$open->group_id = $this->getId();
-		$open->status_id = 1;
 		$open->site_id = $this->site_id;
 		$open->status = 'open';
 		$open->status_order = 1;
@@ -63,7 +62,6 @@ class StatusGroup extends Model {
 
 		$closed = $this->getFrontend()->make('Status');
 		$closed->group_id = $this->getId();
-		$closed->status_id = 2;
 		$closed->site_id = $this->site_id;
 		$closed->status = 'closed';
 		$closed->status_order = 2;

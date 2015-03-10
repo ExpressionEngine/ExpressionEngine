@@ -254,7 +254,6 @@ class Status extends AbstractChannelController {
 	 */
 	private function saveStatusGroup($group_id = NULL)
 	{
-		// TODO: add default statuses in model create event
 		$status_group = ee('Model')->make('StatusGroup');
 		$status_group->group_id = $group_id;
 		$status_group->site_id = ee()->config->item('site_id');
