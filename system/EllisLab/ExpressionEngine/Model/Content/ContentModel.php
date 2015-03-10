@@ -52,6 +52,23 @@ abstract class ContentModel extends Model {
 	}
 
 	/**
+	 * Get a list of fields
+	 *
+	 * @return array field names
+	 */
+	public function getFields()
+	{
+		$fields = parent::getFields();
+
+		foreach ($this->_field_facades as $field_facade)
+		{
+			$fields[] = $field_facade->getName();
+		}
+
+		return $fields;
+	}
+
+	/**
 	 *
 	 */
 	public function getDisplay(LayoutInterface $layout = NULL)
