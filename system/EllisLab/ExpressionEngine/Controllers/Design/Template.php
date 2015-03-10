@@ -422,7 +422,7 @@ class Template extends AbstractDesignController {
 			$alert = ee('Alert')->makeInline('settings-form')
 				->asSuccess()
 				->withTitle(lang('update_template_success'))
-				->addToBody(sprintf(lang('eupdate_template_success_desc'), $group->group_name, $template->template_name))
+				->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name.'/'.$template->template_name))
 				->defer();
 
 			ee()->session->set_flashdata('template_id', $template->template_id);
