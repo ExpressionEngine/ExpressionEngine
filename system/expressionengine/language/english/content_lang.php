@@ -108,8 +108,14 @@ $lang = array(
 'btn_edit_entry' =>
 'Edit Entry',
 
+'btn_publish' =>
+'Publish',
+
 'edit_entry_with_title' =>
 'Edit Entry: %s',
+
+'create_entry_with_channel_name' =>
+'New Entry: %s',
 
 'create_entry_success' =>
 'Entry Created',
