@@ -1738,7 +1738,7 @@ class Wizard extends CI_Controller {
 			'cookie_path'               => '',
 			'cookie_prefix'             => '',
 			'website_session_type'      => 'c',
-			'cp_session_type'           => 'cs',
+			'cp_session_type'           => 'c',
 			'cookie_httponly'           => 'y',
 			'allow_username_change'     => 'y',
 			'allow_multi_logins'        => 'y',
