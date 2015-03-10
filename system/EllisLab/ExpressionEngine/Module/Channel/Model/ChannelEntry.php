@@ -141,18 +141,7 @@ class ChannelEntry extends ContentModel {
 		$field->save();
 		$this->comment_expiration_date = $field->getData();
 	}
-	public function set__edit_date($date)
-	{
-		$field = $this->_field_facades['edit_date'];
-		$field->save();
-		$this->edit_date = $field->getData();
-	}
-	public function set__recent_comment_date($date)
-	{
-		$field = $this->_field_facades['recent_comment_date'];
-		$field->save();
-		$this->recent_comment_date = $field->getData();
-	}
+
 	/**
 	 * A link back to the owning channel object.
 	 *
