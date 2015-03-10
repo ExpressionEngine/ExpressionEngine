@@ -127,9 +127,9 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 		$m->save();
 
 		// post insert assertions
-		$this->assertFalse($m->isNew());
+		// $this->assertFalse($m->isNew()); // this is checked in the datastore
+		// $this->assertEquals(8, $m->id);  // test, where the ids are set
 		$this->assertFalse($m->isDirty());
-		$this->assertEquals(8, $m->id);
 	}
 
 	public function testSaveUpdate()
