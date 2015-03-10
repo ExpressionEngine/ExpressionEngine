@@ -103,7 +103,10 @@ class TypedColumn implements Mixin {
 				$value = $this->getBool($value, 1, 0);
 				break;
 			case 'timestamp':
-				$value = new DateTime("@{$value}");
+				if ($value !== NULL)
+				{
+					$value = new DateTime("@{$value}");
+				}
 				break;
 			default:
 				throw new \Exception("Invalid column type `{$type}`");
@@ -188,7 +191,7 @@ class TypedColumn implements Mixin {
 		{
 			return $value ? $truthy : $falsey;
 		}
-		
+
 		if ($value === $truthy || $value === $falsey)
 		{
 			return $value;
