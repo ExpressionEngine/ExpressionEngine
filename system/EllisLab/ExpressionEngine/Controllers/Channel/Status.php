@@ -290,13 +290,13 @@ class Status extends AbstractChannelController {
 			)
 		);
 
-		$statuses = $status_group->getStatuses();
+		$statuses = $status_group->getStatuses()->sortBy('status_order');
 
 		$data = array();
 		foreach ($statuses as $status)
 		{
 			$data[] = array(
-				htmlentities($status->status, ENT_QUOTES),
+				htmlentities($status->status, ENT_QUOTES).form_hidden('order[]', $status->getId()),
 				array('toolbar_items' => array(
 					'edit' => array(
 						'href' => cp_url('channel/status/edit-status/'.$status->getId()),
@@ -326,9 +326,57 @@ class Status extends AbstractChannelController {
 		ee()->javascript->set_global('lang.remove_confirm', lang('statuses') . ': <b>### ' . lang('statuses') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/v3/confirm_remove'),
+			'plugin' => array('ee_table_reorder'),
+			'file' => array('cp/v3/status_reorder'),
 		));
 
+		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
+			->asIssue()
+			->canClose()
+			->withTitle(lang('status_ajax_reorder_fail'))
+			->addToBody(lang('status_ajax_reorder_fail_desc'));
+
+		ee()->javascript->set_global('statuses.reorder_url', cp_url('channel/status/status-reorder/'.$group_id));
+		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
+
 		ee()->cp->render('channel/status/index', $vars);
+	}
+
+	/**
+	 * AJAX end point for reordering statuses on status listing page
+	 */
+	public function statusReorder($group_id)
+	{
+		$status_group = ee('Model')->get('StatusGroup')
+			->filter('group_id', $group_id)
+			->first();
+
+		// Parse out the serialized inputs sent by the JavaScript
+		$new_order = array();
+		parse_str(ee()->input->post('order'), $new_order);
+
+		if ( ! AJAX_REQUEST OR ! $status_group OR empty($new_order['order']))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$statuses = $status_group->getStatuses()->indexBy('status_id');
+
+		$order = 1;
+		foreach ($new_order['order'] as $status_id)
+		{
+			// Only update status orders that have changed
+			if (isset($statuses[$status_id]) && $statuses[$status_id]->status_id != $order)
+			{
+				$statuses[$status_id]->status_order = $order;
+				$statuses[$status_id]->save();
+			}
+
+			$order++;
+		}
+
+		ee()->output->send_ajax_response(NULL);
+		exit;
 	}
 }
 // EOF
