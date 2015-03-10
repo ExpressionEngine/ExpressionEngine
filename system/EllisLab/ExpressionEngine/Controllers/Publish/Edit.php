@@ -354,6 +354,7 @@ class Edit extends AbstractPublishController {
 
 			if ($result->isValid())
 			{
+				$entry->edit_date = ee()->localize->now;
 				$entry->save();
 
 				ee('Alert')->makeInline('entry-form')
