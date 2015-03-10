@@ -314,7 +314,8 @@ class Edit extends AbstractPublishController {
 		$vars = array(
 			'form_url' => cp_url('publish/edit/entry/' . $id),
 			'form_attributes' => $form_attributes,
-			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result
+			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
+			'button_text' => lang('btn_edit_entry')
 		);
 
 		if ($autosave_id)
@@ -387,7 +388,6 @@ class Edit extends AbstractPublishController {
 		$vars = array_merge($vars, array(
 			'entry' => $entry,
 			'layout' => $entry->getDisplay($channel_layout),
-			'validation' => $entry->validate()
 		));
 
 		$this->setGlobalJs($entry, TRUE);
