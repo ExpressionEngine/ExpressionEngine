@@ -4,6 +4,8 @@ namespace EllisLab\ExpressionEngine\Model\Template;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
+use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -79,6 +81,11 @@ class Template extends Model {
 		'protect_javascript' => 'enum[y,n]',
 	);
 
+	protected static $_events = array(
+		'afterDelete',
+		'afterSave'
+	);
+
 	protected $template_id;
 	protected $site_id;
 	protected $group_id;
@@ -107,4 +114,65 @@ class Template extends Model {
 		return $this->getTemplateGroup()->group_name . '/' . $this->template_name;
 	}
 
+	/**
+	 *
+	 */
+	public function getFilePath()
+	{
+		if (ee()->config->item('save_tmpl_files') != 'y')
+		{
+			return NULL;
+		}
+
+		$group = $this->getTemplateGroup();
+		$group->ensureFolderExists();
+
+		$path = $group->getFolderPath();
+		$file = $this->template_name;
+		$ext  = $this->getFileExtension();
+
+		if ($path == '' || $file == '' || $ext == '')
+		{
+			return NULL;
+		}
+
+		return $path.'/'.$file.$ext;
+	}
+
+	/**
+	 *
+	 */
+	public function getFileExtension()
+	{
+		ee()->legacy_api->instantiate('template_structure');
+		return ee()->api_template_structure->file_extensions($this->template_type);
+	}
+
+	/**
+	 *
+	 */
+	public function onAfterSave()
+	{
+		$fs = new Filesystem();
+		$path = $this->getFilePath();
+
+		if (isset($path) && $fs->exists($fs->dirname($path)))
+		{
+			$fs->write($path, $this->template_data, TRUE);
+		}
+	}
+
+	/**
+	 *
+	 */
+	public function onAfterDelete()
+	{
+		$fs = new Filesystem();
+		$path = $this->getFilePath();
+
+		if (isset($path) && $fs->exists($path))
+		{
+			$fs->delete($path);
+		}
+	}
 }

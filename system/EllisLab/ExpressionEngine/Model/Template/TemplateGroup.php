@@ -4,6 +4,8 @@ namespace EllisLab\ExpressionEngine\Model\Template;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
+use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -57,6 +59,11 @@ class TemplateGroup extends Model {
 		'group_name' => 'required|is_valid_group_name|unique',
 	);
 
+	protected static $_events = array(
+		'afterDelete',
+		'afterSave'
+	);
+
 	protected $group_id;
 	protected $site_id;
 	protected $group_name;
@@ -98,6 +105,58 @@ class TemplateGroup extends Model {
 	protected function get__is_site_default()
 	{
 		return ($this->is_site_default == 'y');
+	}
+
+	public function ensureFolderExists()
+	{
+		$fs = new Filesystem();
+		$path = $this->getFolderPath();
+
+		if (isset($path) && $fs->isDir($fs->dirname($path)) && ! $fs->isDir($path))
+		{
+			$fs->mkDir($path);
+		}
+	}
+
+	/**
+	 *
+	 */
+	public function getFolderPath()
+	{
+		if ($this->group_name == '')
+		{
+			return NULL;
+		}
+
+		$basepath = rtrim(ee()->config->item('tmpl_file_basepath'), '/');
+
+		if (ee()->config->item('save_tmpl_files') != 'y' || $basepath == '')
+		{
+			return NULL;
+		}
+
+		$site = ee()->config->item('site_short_name');
+		return $basepath.'/'.$site.'/'.$this->group_name . '.group';
+	}
+
+	// TODO allow for renaming?
+	public function onAfterSave()
+	{
+		$this->ensureFolderExists();
+	}
+
+	/**
+	 *
+	 */
+	public function onAfterDelete()
+	{
+		$fs = new Filesystem();
+		$path = $this->getFolderPath();
+
+		if (isset($path) && $fs->isDir($path))
+		{
+			$fs->deleteDir($path);
+		}
 	}
 
 }
