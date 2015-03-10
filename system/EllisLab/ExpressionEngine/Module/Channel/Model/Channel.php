@@ -39,6 +39,12 @@ class Channel extends Model implements ContentStructure {
 			'from_key' => 'field_group',
 			'to_key' => 'group_id'
 		),
+		'StatusGroup' => array(
+			'type' => 'belongsTo',
+			'model' => 'StatusGroup',
+			'from_key' => 'status_group',
+			'to_key' => 'group_id'
+		),
 		'CustomFields' => array(
 			'type' => 'hasMany',
 			'model' => 'ChannelFieldStructure',
