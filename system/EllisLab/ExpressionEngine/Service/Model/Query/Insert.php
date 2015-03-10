@@ -72,11 +72,11 @@ class Insert extends Update {
 
 		if (isset($this->insert_id))
 		{
-			unset($values[$primary_key]);
+			$values[$primary_key] = $this->insert_id;
 		}
 		else
 		{
-			$values[$primary_key] = $this->insert_id;
+			unset($values[$primary_key]);
 		}
 
 		$query = $this->store
