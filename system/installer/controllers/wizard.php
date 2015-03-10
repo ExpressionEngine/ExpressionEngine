@@ -1049,24 +1049,7 @@ class Wizard extends CI_Controller {
 		}
 
 		// Update the config file
-		// If we are dealing with an update file that is prior to 2.0 we'll
-		// update the config file using the old way.
-		if ($this->next_update < 200)
-		{
-			$this->config->_append_config_1x(array('app_version' => $this->next_update, 'ud_next_step' => ($status !== FALSE && $status !== TRUE) ? $status : ''));
-		}
-		// If the cycle is version 2.0 we'll switch to the new style config file
-		else
-		{
-			// If we are dealing with 2.0 we need to switch the old style config
-			// file to the new version
-			if ($this->next_update == 200)
-			{
-				$this->write_config_from_template();
-			}
-
-			$this->config->_update_config(array('app_version' => $this->next_update.$UD->version_suffix), array('ud_next_step' => ''));
-		}
+		$this->config->_update_config(array('app_version' => $this->next_update.$UD->version_suffix), array('ud_next_step' => ''));
 
 		// EE's application settings are now in the config, so we need to make
 		// two on the fly switches for the rest of the wizard to work.
