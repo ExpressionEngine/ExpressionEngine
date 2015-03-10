@@ -310,25 +310,26 @@ class Status extends AbstractChannelController {
 						'confirm' => lang('status') . ': <b>' . htmlentities($status->status, ENT_QUOTES) . '</b>'
 					),
 					// Cannot delete default statuses
-					'disabled' => ($status->getId() == 1 OR $status->getId() == 2) ? 'disabled' : NULL
+					'disabled' => ($status->status == 'open' OR $status->status == 'closed') ? 'disabled' : NULL
 				)
 			);
 		}
 
 		$table->setData($data);
 
-		$base_url = new CP\URL('channel/status/status-list', ee()->session->session_id());
+		$base_url = new CP\URL('channel/status/status-list/'.$group_id, ee()->session->session_id());
 		$vars['table'] = $table->viewData($base_url);
+
+		ee()->view->group_id = $group_id;
 
 		ee()->view->cp_page_title = $status_group->group_name . ' &mdash; ' . lang('statuses');
 		ee()->cp->set_breadcrumb(cp_url('channel/status'), lang('status_groups'));
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('statuses') . ': <b>### ' . lang('statuses') . '</b>');
-		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
-			'plugin' => array('ee_table_reorder'),
-			'file' => array('cp/v3/status_reorder'),
-		));
+		ee()->cp->add_js_script('file', 'cp/v3/confirm_remove');
+		ee()->cp->add_js_script('file', 'cp/sort_helper');
+		ee()->cp->add_js_script('plugin', 'ee_table_reorder');
+		ee()->cp->add_js_script('file', 'cp/v3/status_reorder');
 
 		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
 			->asIssue()
@@ -339,7 +340,7 @@ class Status extends AbstractChannelController {
 		ee()->javascript->set_global('statuses.reorder_url', cp_url('channel/status/status-reorder/'.$group_id));
 		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
-		ee()->cp->render('channel/status/index', $vars);
+		ee()->cp->render('channel/status/list', $vars);
 	}
 
 	/**
@@ -366,7 +367,7 @@ class Status extends AbstractChannelController {
 		foreach ($new_order['order'] as $status_id)
 		{
 			// Only update status orders that have changed
-			if (isset($statuses[$status_id]) && $statuses[$status_id]->status_id != $order)
+			if (isset($statuses[$status_id]) && $statuses[$status_id]->status_order != $order)
 			{
 				$statuses[$status_id]->status_order = $order;
 				$statuses[$status_id]->save();
@@ -377,6 +378,41 @@ class Status extends AbstractChannelController {
 
 		ee()->output->send_ajax_response(NULL);
 		exit;
+	}
+
+	/**
+	 * Remove status groups handler
+	 */
+	public function removeStatus()
+	{
+		$status_ids = ee()->input->post('statuses');
+
+		if ( ! empty($status_ids) && ee()->input->post('bulk_action') == 'remove')
+		{
+			// Filter out junk
+			$status_ids = array_filter($status_ids, 'is_numeric');
+
+			if ( ! empty($status_ids))
+			{
+				ee('Model')->get('Status')
+					->filter('status_id', 'IN', $status_ids)
+					->delete();
+
+				ee('Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('statuses_removed'))
+					->addToBody(sprintf(lang('statuses_removed_desc'), count($status_ids)))
+					->defer();
+			}
+		}
+		else
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		ee()->functions->redirect(
+			cp_url('channel/status/status-list/'.ee()->input->post('status_group_id'), ee()->cp->get_url_state())
+		);
 	}
 }
 // EOF
