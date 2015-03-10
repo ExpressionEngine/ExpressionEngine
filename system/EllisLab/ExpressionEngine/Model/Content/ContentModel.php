@@ -232,4 +232,10 @@ abstract class ContentModel extends Model {
 		return parent::setProperty($name, $value);
 	}
 
+	public function set(array $data = array())
+	{
+		$this->usesCustomFields();
+		return parent::set($data);
+	}
+
 }
