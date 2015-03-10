@@ -25,7 +25,7 @@
 			<?php if ($this->config->item('save_tmpl_revisions') == 'y'):?>
 			<span class="button" style="margin-top:-6px">
 			<?=form_open('C=design'.AMP.'M=template_revision_history'.AMP.'tgpref='.$group_id, array('id' => 'revisions', 'name' => 'revisions', 'template_id' => $template_id, 'target' => 'Revisions'))?>
-
+			<?=form_hidden('template', $template_id)?>
 			<?=form_dropdown('revision_id', $revision_options, '', 'id="revision_id"')?>
 
 			<?=form_submit('submit', lang('view'), 'class="submit" id="revision_button"')?>
