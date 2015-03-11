@@ -192,7 +192,7 @@ class Status extends AbstractChannelController {
 			array(
 				array(
 					'title' => 'name',
-					'desc' => 'edit_status_group',
+					'desc' => 'status_group_name_desc',
 					'fields' => array(
 						'group_name' => array(
 							'type' => 'text',
@@ -299,7 +299,7 @@ class Status extends AbstractChannelController {
 				htmlentities($status->status, ENT_QUOTES).form_hidden('order[]', $status->getId()),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => cp_url('channel/status/edit-status/'.$status->getId()),
+						'href' => cp_url('channel/status/edit-status/'.$group_id.'/'.$status->getId()),
 						'title' => lang('edit')
 					)
 				)),
@@ -413,6 +413,218 @@ class Status extends AbstractChannelController {
 		ee()->functions->redirect(
 			cp_url('channel/status/status-list/'.ee()->input->post('status_group_id'), ee()->cp->get_url_state())
 		);
+	}
+
+	/**
+	 * New status form
+	 */
+	public function createStatus($group_id)
+	{
+		$this->statusForm($group_id);
+	}
+
+	/**
+	 * Edit status form
+	 */
+	public function editStatus($group_id, $status_id)
+	{
+		$this->statusForm($group_id, $status_id);
+	}
+
+	/**
+	 * Status creation/edit form
+	 *
+	 * @param	int	$status_id	ID of status group to edit
+	 */
+	private function statusForm($group_id, $status_id = NULL)
+	{
+		$status_group = ee('Model')->get('StatusGroup')
+			->filter('group_id', $group_id)
+			->first();
+
+		if ( ! $status_group)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		if (is_null($status_id))
+		{
+			ee()->view->cp_page_title = lang('create_status');
+			ee()->view->base_url = cp_url('channel/status/create-status/'.$group_id);
+			ee()->view->save_btn_text = 'create_status';
+			$status = ee('Model')->make('Status');
+		}
+		else
+		{
+			$status = ee('Model')->get('Status')
+				->filter('status_id', $status_id)
+				->first();
+
+			if ( ! $status_id)
+			{
+				show_error(lang('unauthorized_access'));
+			}
+
+			ee()->view->cp_page_title = lang('edit_status');
+			ee()->view->base_url = cp_url('channel/status/edit-status/'.$group_id.'/'.$status_id);
+			ee()->view->save_btn_text = 'edit_status';
+		}
+
+		// Member IDs NOT in $no_access have access...
+		list($allowed_groups, $member_groups) = $this->getAllowedGroups(is_null($status_id) ? NULL : $status);
+
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'name',
+					'desc' => 'status_name_desc',
+					'fields' => array(
+						'status' => array(
+							'type' => 'text',
+							'value' => $status->status,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'highlight_color',
+					'desc' => 'highlight_color_desc',
+					'fields' => array(
+						'status' => array(
+							'type' => 'text',
+							'value' => $status->highlight
+						)
+					)
+				)
+			),
+			'permissions' => array(
+				ee('Alert')->makeInline('permissions-warn')
+					->asWarning()
+					->addToBody(lang('category_permissions_warning'))
+					->addToBody(
+						sprintf(lang('category_permissions_warning2'), '<span title="excercise caution"></span>'),
+						'caution'
+					)
+					->cannotClose()
+					->render(),
+				array(
+					'title' => 'status_access',
+					'desc' => 'status_access_desc',
+					'caution' => TRUE,
+					'fields' => array(
+						'status_access' => array(
+							'type' => 'checkbox',
+							'choices' => $member_groups,
+							'value' => $allowed_groups
+						)
+					)
+				)
+			)
+		);
+
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'group_name',
+				'label' => 'lang:name',
+				'rules' => 'required|strip_tags|trim|valid_xss_check'
+			)
+		));
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			$status_id = $this->saveStatus($group_id, $status_id);
+
+			ee('Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('status_saved'))
+				->addToBody(lang('status_saved_desc'))
+				->defer();
+
+			ee()->functions->redirect(cp_url('channel/status/edit-status/'.$group_id.'/'.$status_id));
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('status_not_saved'))
+				->addToBody(lang('status_not_saved_desc'))
+				->now();
+		}
+
+		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text_working = 'btn_saving';
+
+		ee()->cp->set_breadcrumb(cp_url('channel/status'), lang('status_groups'));
+		ee()->cp->set_breadcrumb(
+			cp_url('channel/status/status-list/'.$group_id),
+			$status_group->group_name . ' &mdash; ' . lang('statuses')
+		);
+
+		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * Returns an array of member group IDs allowed to use this status
+	 * in the form of id => title, along with an array of all member
+	 * groups in the same format
+	 *
+	 * @param	model	$status		Model object for status
+	 * @return	array	Array containing each of the arrays mentioned above
+	 */
+	private function getAllowedGroups($status = NULL)
+	{
+		$groups = ee('Model')->get('MemberGroup')
+			->filter('group_id', 'NOT IN', array(1,2,3,4))
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('group_title')
+			->all();
+
+		$member_groups = array();
+		foreach ($groups as $group)
+		{
+			$member_groups[$group->group_id] = $group->group_title;
+		}
+
+		if ( ! empty($_POST))
+		{
+			if (isset($_POST['status_access']))
+			{
+				return array($_POST['status_access'], $member_groups);
+			}
+
+			return array(array(), $member_groups);
+		}
+
+		$no_access = array();
+		if ($status !== NULL)
+		{
+			$no_access = $status->getNoAccess()->pluck('group_id');
+		}
+
+		$allowed_groups = array_diff(array_keys($member_groups), $no_access);
+
+		// Member IDs NOT in $no_access have access...
+		return array($allowed_groups, $member_groups);
+	}
+
+	public function validateName($name)
+	{
+		// Check for duplicate statuses, special characters, etc
+	}
+
+	public function validateHex($hex)
+	{
+		// Make sure it's a valid hex
+	}
+
+	private function saveStatus($group_id, $status_id = NULL)
+	{
+		// Save status
 	}
 }
 // EOF

@@ -172,26 +172,24 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 */
 	function &get_config($replace = array())
 	{
-		static $_config;
+		static $config;
 
-		if (isset($_config))
+		if (isset($config))
 		{
-			return $_config[0];
+			return $config;
 		}
 
 		// Check various paths for config files
 		$basepath = (defined('EE_APPPATH')) ? APPPATH : SYSPATH;
 
 		// Fetch the config file
-		if (file_exists($basepath.'config/config.php'))
-		{
-			require($basepath.'config/config.php');
-		}
-		else
+		if ( ! file_exists($basepath.'config/config.php'))
 		{
 			set_status_header(503);
 			exit('The configuration file does not exist.');
 		}
+
+		require($basepath.'config/config.php');
 
 		// Does the $config array exist in the file?
 		if ( ! isset($config) OR ! is_array($config))
@@ -212,9 +210,7 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 			}
 		}
 
-		$_config[0] =& $config;
-
-		return $_config[0];
+		return $config;
 	}
 
 // ------------------------------------------------------------------------
@@ -227,20 +223,14 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 */
 	function config_item($item)
 	{
-		static $_config_item = array();
+		$config =& get_config();
 
-		if ( ! isset($_config_item[$item]))
+		if ( ! isset($config[$item]))
 		{
-			$config =& get_config();
-
-			if ( ! isset($config[$item]))
-			{
-				return FALSE;
-			}
-			$_config_item[$item] = $config[$item];
+			return FALSE;
 		}
 
-		return $_config_item[$item];
+		return $config[$item];
 	}
 
 // ------------------------------------------------------------------------

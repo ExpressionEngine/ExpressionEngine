@@ -27,7 +27,7 @@
 <?php $this->startOrAppendBlock('modals'); ?>
 
 <?php foreach($emails as $email): ?>
-<div class="modal-wrap modal-email-<?=$email->cache_id?>">
+<div class="modal-wrap modal-email-<?=$email->cache_id?> hidden">
 	<div class="modal">
 		<div class="col-group">
 			<div class="col w-16">

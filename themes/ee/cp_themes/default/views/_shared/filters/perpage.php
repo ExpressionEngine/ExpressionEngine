@@ -30,7 +30,7 @@
 
 <?php if ($confirm_show_all): ?>
 <?php $this->startOrAppendBlock('modals'); ?>
-<div class="modal-wrap modal-confirm-show-all">
+<div class="modal-wrap modal-confirm-show-all hidden">
 	<div class="modal">
 		<div class="col-group">
 			<div class="col w-16">

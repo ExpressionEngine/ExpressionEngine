@@ -38,6 +38,15 @@ class Status extends Model {
 		),
 		'Site' => array(
 			'type' => 'BelongsTo'
+		),
+		'NoAccess' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'MemberGroup',
+			'pivot' => array(
+				'table' => 'status_no_access',
+				'left' => 'status_id',
+				'right' => 'member_group'
+			)
 		)
 	);
 
