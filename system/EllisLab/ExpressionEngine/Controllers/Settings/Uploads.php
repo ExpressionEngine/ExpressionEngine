@@ -69,7 +69,7 @@ class Uploads extends Settings {
 				htmlentities($dir['name'], ENT_QUOTES),
 				array('toolbar_items' => array(
 					'view' => array(
-						'href' => cp_url(''),
+						'href' => cp_url('files/directory/'.$dir['id']),
 						'title' => lang('upload_btn_view')
 					),
 					'edit' => array(
