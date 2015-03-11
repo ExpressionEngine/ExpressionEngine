@@ -112,7 +112,7 @@
 </div>
 
 <?php $this->startOrAppendBlock('modals'); ?>
-<div class="modal-wrap modal-add-new-tab">
+<div class="modal-wrap modal-add-new-tab hidden">
 	<div class="modal">
 		<div class="col-group">
 			<div class="col w-16">
