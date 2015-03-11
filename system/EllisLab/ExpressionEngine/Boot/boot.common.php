@@ -223,20 +223,14 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 */
 	function config_item($item)
 	{
-		static $_config_item = array();
+		$config =& get_config();
 
-		if ( ! isset($_config_item[$item]))
+		if ( ! isset($config[$item]))
 		{
-			$config =& get_config();
-
-			if ( ! isset($config[$item]))
-			{
-				return FALSE;
-			}
-			$_config_item[$item] = $config[$item];
+			return FALSE;
 		}
 
-		return $_config_item[$item];
+		return $config[$item];
 	}
 
 // ------------------------------------------------------------------------
