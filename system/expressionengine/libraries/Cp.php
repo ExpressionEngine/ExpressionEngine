@@ -664,7 +664,7 @@ class Cp {
 	 * @param	mixed
 	 * @return	int
 	 */
-	private function _get_js_mtime($type, $name)
+	public function _get_js_mtime($type, $name)
 	{
 		if (is_array($name))
 		{

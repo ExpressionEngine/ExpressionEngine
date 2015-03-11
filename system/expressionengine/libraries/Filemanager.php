@@ -50,6 +50,9 @@ class Filemanager {
 		ee()->load->library('javascript');
 		ee()->lang->loadfile('filemanager');
 
+		ee()->router->set_class('cp');
+		ee()->load->library('cp');
+		ee()->router->set_class('ee');
 		$this->theme_url = ee()->cp->cp_theme_url;
 	}
 
