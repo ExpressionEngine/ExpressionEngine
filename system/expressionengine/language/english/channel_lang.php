@@ -736,7 +736,7 @@ $lang = array(
 'edit_status_group' =>
 'Edit Status Group',
 
-'status_name_desc' =>
+'status_group_name_desc' =>
 'Descriptive name of this status group.',
 
 'status_group_saved' =>
@@ -771,6 +771,39 @@ $lang = array(
 
 'statuses_removed_desc' =>
 '%d statuses were removed.',
+
+'create_status' =>
+'Create Status',
+
+'edit_status' =>
+'Edit Status',
+
+'status_name_desc' =>
+'Descriptive name of this status.',
+
+'highlight_color' =>
+'Highlight color',
+
+'highlight_color_desc' =>
+'Text color for this status. Accepts HEX codes.',
+
+'status_access' =>
+'Status access',
+
+'status_access_desc' =>
+'Users in selected groups will be allowed to access this status.</em><em>Super Administrators are <b>always</b> allowed.',
+
+'status_saved' =>
+'Status saved',
+
+'status_saved_desc' =>
+'Your status has been saved successfully.',
+
+'status_not_saved' =>
+'Attention: Status not saved',
+
+'status_not_saved_desc' =>
+'We were unable to save your status, please review and fix errors below.',
 
 ''=>''
 );
