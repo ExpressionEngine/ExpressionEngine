@@ -120,7 +120,9 @@ class Log {
 				{
 					$class = $frame['class'];
 
-					if (strpos($class, 'CI_DB_') !== 0 && strpos($class, __NAMESPACE__) !== 0)
+					if (strpos($class, 'CI_DB_') !== 0 &&
+						strpos($class, __NAMESPACE__) !== 0 &&
+						strpos($class, 'EllisLab\ExpressionEngine\Service\Model') !== 0)
 					{
 						break;
 					}
