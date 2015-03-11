@@ -6,8 +6,6 @@ use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
 class VariableColumnGateway extends Gateway {
 
-	protected $_field_list_cache;
-
 	/**
 	 *
 	 */
