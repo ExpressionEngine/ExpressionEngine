@@ -110,16 +110,11 @@ class Select extends Query {
 			if ( ! $will_join)
 			{
 				$query->from("{$table} as {$table_alias}");
-			}
 
-			if ($table != $main_table)
-			{
-				if ($will_join)
+				if ($table != $main_table)
 				{
-					$query->from("{$table} as {$table_alias}");
+					$query->where("{$table_alias}.{$primary_key} = {$alias}_{$main_table}.{$primary_key}", NULL, FALSE);
 				}
-
-				$query->where("{$table_alias}.{$primary_key} = {$alias}_{$main_table}.{$primary_key}", NULL, FALSE);
 			}
 
 			foreach ($table_fields as $column)
@@ -335,6 +330,11 @@ class Select extends Query {
 	 */
 	protected function storeAlias($alias, $model)
 	{
+		if (array_key_exists($alias, $this->aliases))
+		{
+			throw new \Exception("Not unique alias '{$alias}'.");
+		}
+
 		$this->aliases[$alias] = $model;
 	}
 
