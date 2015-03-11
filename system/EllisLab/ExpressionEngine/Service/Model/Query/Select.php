@@ -118,6 +118,7 @@ class Select extends Query {
 				{
 					$query->from("{$table} as {$table_alias}");
 				}
+
 				$query->where("{$table_alias}.{$primary_key} = {$alias}_{$main_table}.{$primary_key}", NULL, FALSE);
 			}
 

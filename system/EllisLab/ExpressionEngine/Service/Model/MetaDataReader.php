@@ -29,6 +29,7 @@ class MetaDataReader {
 
 	protected $name;
 	protected $class;
+	protected $tables;
 
 	public function __construct($name, $class)
 	{
@@ -106,6 +107,11 @@ class MetaDataReader {
 		{
 			$table_name = $class::getMetaData('table_name');
 
+			if ( ! $table_name)
+			{
+				throw new \Exception("Model '{$class}' did not declare a table.");
+			}
+
 			return array($table_name => $this->synthesize($class, $table_name));
 		}
 
@@ -135,6 +141,11 @@ class MetaDataReader {
 	 */
 	public function getTables()
 	{
+		if (isset($this->tables))
+		{
+			return $this->tables;
+		}
+
 		$tables = array();
 
 		$gateways = $this->getGateways();
@@ -147,6 +158,7 @@ class MetaDataReader {
 			$tables[$table] = $fields;
 		}
 
+		$this->tables = $tables;
 		return $tables;
 	}
 
