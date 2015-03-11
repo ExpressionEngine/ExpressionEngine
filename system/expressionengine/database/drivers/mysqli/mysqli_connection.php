@@ -18,10 +18,6 @@
 /**
  * MySQLi Database Adapter Class
  *
- * Note: _DB is an extender class that the app controller
- * creates dynamically based on whether the active record
- * class is being used or not.
- *
  * @package		CodeIgniter
  * @subpackage	Drivers
  * @category	Database
@@ -30,9 +26,21 @@
  */
 class CI_DB_mysqli_connection {
 
-	protected $connection;
+	/**
+	 * @var Array of config values
+	 */
 	protected $config;
 
+	/**
+	 * @var PDO connection
+	 */
+	protected $connection;
+
+	/**
+	 * Create a conneciton
+	 *
+	 * @param Array $config Config values
+	 */
 	public function __construct($config)
 	{
 		if ( ! isset($config['port']))
@@ -43,11 +51,19 @@ class CI_DB_mysqli_connection {
 		$this->config = $config;
 	}
 
+	/**
+	 * Get the connection config
+	 *
+	 * @return Array Config values
+	 */
 	public function getConfig()
 	{
 		return $this->config;
 	}
 
+	/**
+	 * Open the connection
+	 */
 	public function open()
 	{
 		$hostname = $this->config['hostname'];
@@ -85,6 +101,9 @@ class CI_DB_mysqli_connection {
 		}
 	}
 
+	/**
+	 * Close the connection
+	 */
 	public function close()
 	{
 		$this->connection = NULL;
@@ -92,6 +111,9 @@ class CI_DB_mysqli_connection {
 
 	/**
 	 * Run a query
+	 *
+	 * @param String $query SQL to run
+	 * @return Query result
 	 */
 	public function query($query)
 	{
@@ -109,6 +131,12 @@ class CI_DB_mysqli_connection {
 		return $result;
 	}
 
+	/**
+	 * Escape a value
+	 *
+	 * @param String $str Value to escape
+	 * @return Escaped value
+	 */
 	public function escape($str)
 	{
 		if ( ! $this->isOpen())
@@ -116,44 +144,81 @@ class CI_DB_mysqli_connection {
 			$this->open();
 		}
 
-		// todo In future, use quoted value directly. Yuck.
 		$result = $this->connection->quote($str);
 
+		// todo In future, use quoted value directly. For now, do the
+		// yucky thing and remove the quotes.
 		return substr($result, 1, -1);
 	}
 
+	/**
+	 * Get the error message
+	 *
+	 * @return String Error message
+	 */
 	public function getErrorMessage()
 	{
 		$error = $this->connection->errorInfo();
 		return $error[2];
 	}
 
+	/**
+	 * Get the error code
+	 *
+	 * @return Int Error code
+	 */
 	public function getErrorNumber()
 	{
 		return $this->connection->errorCode();
 	}
 
+	/**
+	 * Get last insert id
+	 *
+	 * @return Int Last insert id
+	 */
 	public function getInsertId()
 	{
 		return $this->connection->lastInsertId();
 	}
 
+	/**
+	 * Get the pdo object
+	 *
+	 * @return PDO
+	 */
 	public function getNative()
 	{
 		return $this->connection;
 	}
 
+	/**
+	 * Connection is open?
+	 *
+	 * @return bool Is Open
+	 */
 	public function isOpen()
 	{
 		return isset($this->connection);
 	}
 
-
+	/**
+	 * Check if the error message might be caused by a bad socket
+	 *
+	 * @param String $message The error message
+	 * @return Bool Is socket error?
+	 */
 	private function testBadSocket($message)
 	{
 		return strpos($message, "SQLSTATE[HY000] [2002] No such file or directory") !== FALSE;
 	}
 
+	/**
+	 * Generate a message for when the socket connection fails.
+	 *
+	 * @param String $hostname Connection hostname
+	 * @return String Human error message
+	 */
 	private function getBadSocketMessage($hostname)
 	{
 		$message =  "Database Connection Error: Could not find socket: '{$hostname}'. ";
