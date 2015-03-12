@@ -338,9 +338,14 @@ $(document).ready(function(){
 		var pos = $(this).offset();
 		Calendar.init(this);
 		// position and toggle the .date-picker-wrap relative to the input clicked
-		$('.date-picker-wrap').css({ 'top': pos.top + 30, 'left': pos.left }).toggle();
-	}).on('blur', function() {
-		$('.date-picker-wrap').hide();
+		$('.date-picker-wrap').css({ 'top': pos.top + 30, 'left': pos.left }).show();
+	});
+
+	$(document).on('click',function(e){
+		if ( ! ($(e.target).attr('rel') == 'date-picker')
+			&&  ! $(e.target).closest('.date-picker-wrap').length) {
+			$('.date-picker-wrap').hide();
+		}
 	});
 
 }); // close (document).ready

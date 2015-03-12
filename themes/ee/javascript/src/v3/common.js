@@ -134,7 +134,7 @@ $(document).ready(function(){
 		// listen for clicks to the document
 		$(document).on('click',function(e){
 			// check to see if we are inside a sub-menu or not.
-			if(!$(e.target).closest('.sub-menu, .date-picker-wrap').length){
+			if( ! $(e.target).closest('.sub-menu, .date-picker-wrap').length){
 				// close OTHER open sub menus
 				// when clicking outside ANY sub menu trigger
 				// thanks me :D
