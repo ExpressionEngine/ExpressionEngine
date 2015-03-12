@@ -21,6 +21,7 @@
  * ------------------------------------------------------
  */
 	define('BASEPATH', SYSPATH.'expressionengine/');
+	define('CONFIG_PATH', SYSPATH.'user/config/');
 
 	require BASEPATH.'config/constants.php';
 

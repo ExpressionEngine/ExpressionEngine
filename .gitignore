@@ -62,6 +62,7 @@ system/user/cache/*
 system/user/config/*
 system/user/config/config.php
 system/user/config/database.php
+!system/user/config/index.html
 
 system/user/language/*
 !system/user/language/index.html
