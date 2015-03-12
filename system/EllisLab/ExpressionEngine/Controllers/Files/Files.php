@@ -388,6 +388,31 @@ class Files extends CP_Controller {
 			$directories[$dir->id] = $dir;
 		}
 
+		// check if we have a request for a specific file id
+		if ( ! empty(ee()->input->get('file')))
+		{
+			$id = ee()->input->get('file');
+			$file = ee('Model')->get('File', $id)
+				->filter('site_id', ee()->config->item('site_id'))
+				->first();
+
+			$path = $directories[$file->upload_location_id]->url;
+
+			$result = array(
+				'id' => $file->file_id,
+				'site_id' => $file->site_id,
+				'title' => $file->title,
+				'file_name' => $file->file_name,
+				'path' => $path . $file->file_name,
+				'mime_type' => $file->mime_type,
+				'size' => $file->file_size,
+				'upload_directory' => $file->upload_location_id
+			);
+
+			echo json_encode($result);
+			return;
+		}
+
 		if ( ! empty(ee()->input->get('directory')))
 		{
 			$id = ee()->input->get('directory');
@@ -403,16 +428,6 @@ class Files extends CP_Controller {
 		{
 			$dir = $directories[$id];
 			$files = $dir->getFiles();
-		}
-
-		if (ee()->input->post('bulk_action') == 'remove')
-		{
-			$this->remove(ee()->input->post('selection'));
-			ee()->functions->redirect(cp_url('files/directory/' . $id, ee()->cp->get_url_state()));
-		}
-		elseif (ee()->input->post('bulk_action') == 'download')
-		{
-			$this->exportFiles(ee()->input->post('selection'));
 		}
 
 		$base_url = new URL('files/picker', ee()->session->session_id());
@@ -450,133 +465,6 @@ class Files extends CP_Controller {
 		}
 
 		ee()->view->cp_heading = $id == 'all' ? lang('all_files') : sprintf(lang('files_in_directory'), $dir->name);
-
-		ee()->cp->render('_shared/modal_file_picker', $vars);
-	}
-
-	public function avatars()
-	{
-		if ( ! empty(ee()->input->get('directory')))
-		{
-			$id = ee()->input->get('directory');
-		}
-
-		$avatar_path = $this->config->slash_item('avatar_path') . ee()->security->sanitize_filename($dir).'/';
-		$avatar_url = $this->config->slash_item('avatar_url') . ee()->security->sanitize_filename($dir).'/';
-
-		// Is this a valid avatar folder?
-
-		$extensions = array('.gif', '.jpg', '.jpeg', '.png');
-
-		if ( ! @is_dir($avatar_path) OR ! $fp = @opendir($avatar_path))
-		{
-			return array();
-		}
-
-		// Grab the image names
-
-		$avatars = array();
-
-		while (FALSE !== ($file = readdir($fp)))
-		{
-			if (FALSE !== ($pos = strpos($file, '.')))
-			{
-				if (in_array(substr($file, $pos), $extensions))
-				{
-					$avatars[] = $file;
-				}
-			}
-		}
-
-		closedir($fp);
-		$total_count = count($avatars);
-
-		// Did we succeed?
-
-		if (count($avatars) == 0)
-		{
-			show_error(lang('avatars_not_found'));
-		}
-
-		$filters = ee('Filter')->add('Perpage', $total_count, 'show_all_files');
-
-		$table = Table::create(array('autosort' => TRUE, 'limit' => $filters->values()['perpage']));
-		$table->setColumns(
-			array(
-				'title_or_name',
-				'file_type',
-				'date_added',
-				'manage' => array(
-					'type'	=> Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=> Table::COL_CHECKBOX
-				)
-			)
-		);
-		$table->setNoResultsText(lang('no_uploaded_files'));
-
-		$data = array();
-
-		$file_id = ee()->session->flashdata('file_id');
-
-		foreach ($avatars as $avatar)
-		{
-			$file = $avatar_path . $avatar;
-			$toolbar = array(
-				'view' => array(
-					'href' => '',
-					'rel' => 'modal-view-file',
-					'class' => 'm-link',
-					'title' => lang('view'),
-				)
-			);
-
-			$column = array(
-				$avatar . '<br><em class="faded">' . $avatar . '</em>',
-				filetype($file),
-				ee()->localize->human_time(filemtime($file)),
-				array('toolbar_items' => $toolbar),
-				array(
-					'name' => 'selection[]',
-					'value' => $avatar,
-					'data' => array(
-						'confirm' => lang('file') . ': <b>' . htmlentities($avatar, ENT_QUOTES) . '</b>'
-					)
-				)
-			);
-
-			$attrs = array();
-
-			$data[] = array(
-				'attrs'		=> $attrs,
-				'columns'	=> $column
-			);
-		}
-
-		$table->setData($data);
-		$base_url = new URL('files/avatars', ee()->session->session_id());
-		$base_url->setQueryStringVariable('sort_col', $table->sort_col);
-		$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
-
-		ee()->view->filters = $filters->render($base_url);
-
-		$vars['table'] = $table->viewData($base_url);
-		$vars['form_url'] = $vars['table']['base_url'];
-		$vars['dir'] = $dir;
-
-		if ( ! empty($vars['table']['data']))
-		{
-			// Paginate!
-			$pagination = new Pagination(
-				$vars['table']['limit'],
-				$vars['table']['total_rows'],
-				$vars['table']['page']
-			);
-			$vars['pagination'] = $pagination->cp_links($base_url);
-		}
-
-		ee()->view->cp_heading = sprintf(lang('files_in_directory'), lang($dir));
 
 		ee()->cp->render('_shared/modal_file_picker', $vars);
 	}
