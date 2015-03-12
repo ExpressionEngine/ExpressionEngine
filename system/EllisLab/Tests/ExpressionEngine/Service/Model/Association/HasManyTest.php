@@ -48,6 +48,9 @@ class HasManyTest extends \PHPUnit_Framework_TestCase {
 		$builder->shouldReceive('setLazyConstraint')->once()->with($relation, $parent)->andReturn($builder);
 		$builder->shouldReceive('all')->andReturn(array($child));
 
+		// todo this is incorrect, but the correct behavior is that we
+		$relation->shouldReceive('getInverse')->once()->andReturn(new \StdClass);
+
 		$has_many = new HasMany($parent);
 		$has_many->setRelation($relation);
 		$has_many->setFrontend($frontend);
