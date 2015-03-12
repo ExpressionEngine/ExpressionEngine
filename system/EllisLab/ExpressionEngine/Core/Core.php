@@ -227,7 +227,7 @@ abstract class Core {
 			'ee'
 		);
 
-		$provider->setConfigPath(SYSPATH.'config');
+		$provider->setConfigPath($this->getConfigPath());
 
 		$dependencies->register('App', function($di, $prefix = NULL) use ($application)
 		{
@@ -242,6 +242,16 @@ abstract class Core {
 		$this->legacy->getFacade()->set('di', $dependencies);
 
 		return $application;
+	}
+
+
+	/**
+	 * Retrieve the config path for this core
+	 * @return string Config path
+	 */
+	protected function getConfigPath()
+	{
+		return SYSPATH.'config';
 	}
 
 	/**
