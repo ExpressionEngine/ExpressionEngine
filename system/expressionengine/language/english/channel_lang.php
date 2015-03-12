@@ -805,6 +805,18 @@ $lang = array(
 'status_not_saved_desc' =>
 'We were unable to save your status, please review and fix errors below.',
 
+'taken_status_group_name' =>
+'This status group name is already taken.',
+
+'invalid_status_name' =>
+'Status names can only have alpha-numeric characters, as well as spaces, underscores and hyphens.',
+
+'duplicate_status_name' =>
+'A status already exists with the same name.',
+
+'invalid_hex_code' =>
+'This field must contain a valid hex color code.',
+
 ''=>''
 );
 

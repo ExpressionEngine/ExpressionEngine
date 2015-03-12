@@ -423,7 +423,7 @@ class Channel extends AbstractChannelController {
 	/**
 	 * Custom validator for channel short name
 	 */
-	function _validChannelName($str, $channel_id = NULL)
+	public function _validChannelName($str, $channel_id = NULL)
 	{
 		// Check short name characters
 		if (preg_match('/[^a-z0-9\-\_]/i', $str))
