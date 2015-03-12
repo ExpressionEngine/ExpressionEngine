@@ -21,7 +21,7 @@ if (function_exists('opcache_reset'))
 $config['site_url'] = 'http://ee2.test:8080/';
 $config['app_version'] = '300';
 $config['license_contact'] = 'ellislab.devleopers@gmail.com';
-$config['license_number'] = '1234-1234-1234-1234';
+$config['license_number'] = '1234-5678-9123-4567';
 $config['debug'] = '1';
 $config['cp_url'] = 'http://ee2.test:8080/system/index.php';
 $config['theme_folder_url'] = 'http://ee2.test:8080/themes/';
