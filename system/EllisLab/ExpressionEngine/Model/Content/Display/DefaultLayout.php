@@ -105,6 +105,7 @@ class DefaultLayout implements LayoutInterface {
 			// Here comes the ugly! @TODO don't do this
 			ee()->legacy_api->instantiate('channel_fields');
 			$module_tabs = ee()->api_channel_fields->get_module_fields($channel_id, $entry_id);
+			$module_tabs = $module_tabs ?: array();
 
 			foreach ($module_tabs as $tab_id => $fields)
 			{
