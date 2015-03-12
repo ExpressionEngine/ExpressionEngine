@@ -155,7 +155,7 @@ To fix: Set the cache folder (/system/cache/) permissions to 777 (or equivalent 
 
 'unwritable_config_file' =>
 'Your configuration file does not have the proper permissions.<br>
-To fix: Set the config file (/system/config/config.php) permissions to 666 (or equivalent for your server).',
+To fix: Set the config file (/system/user/config/config.php) permissions to 666 (or equivalent for your server).',
 
 'redirect_xss_fail' => 'The link you are being redirected to contained some
 potentially malicious or dangerous code. We recommend you hit the back button
