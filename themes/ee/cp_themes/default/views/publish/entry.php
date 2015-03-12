@@ -25,9 +25,29 @@
 	</h1>
 	<div class="tab-bar">
 		<ul>
-			<?php foreach ($layout->getTabs() as $index => $tab): ?>
-			<?php if ( ! $tab->isVisible()) continue; ?>
-			<li><a<?php if ($index == 0): ?> class="act"<?php endif; ?> href="" rel="t-<?=$index?>"><?=lang($tab->title)?></a></li>
+			<?php
+			foreach ($layout->getTabs() as $index => $tab):
+				if ( ! $tab->isVisible()) continue;
+				$class = '';
+
+				if ($index == 0)
+				{
+					$class .= ' act';
+				}
+
+				if ($tab->hasErrors($errors))
+				{
+					$class .= ' invalid';
+				}
+
+				$class = trim($class);
+
+				if ( ! empty($class))
+				{
+					$class = ' class="' . $class . '"';
+				}
+			?>
+			<li><a<?=$class?> href="" rel="t-<?=$index?>"><?=lang($tab->title)?></a></li>
 			<?php endforeach; ?>
 		</ul>
 	</div>

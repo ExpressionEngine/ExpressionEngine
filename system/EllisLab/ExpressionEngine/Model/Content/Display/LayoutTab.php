@@ -2,6 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Model\Content\Display;
 
+use EllisLab\ExpressionEngine\Service\Validation\Result;
+
 class LayoutTab {
 
 	public $id;
@@ -50,6 +52,19 @@ class LayoutTab {
 	public function isVisible()
 	{
 		return $this->visible;
+	}
+
+	public function hasErrors(Result $errors)
+	{
+		foreach ($this->fields as $field)
+		{
+			if ($errors->hasErrors($field->getName()))
+			{
+				return TRUE;
+			}
+		}
+
+		return FALSE;
 	}
 
 }
