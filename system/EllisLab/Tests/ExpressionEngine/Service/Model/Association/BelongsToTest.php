@@ -49,6 +49,10 @@ class BelongsToTest extends \PHPUnit_Framework_TestCase {
 		$builder->shouldReceive('all')->once()->andReturn(array($child));
 
 		$relation->shouldReceive('linkIds')->with($parent, $child);
+		$relation->shouldReceive('linkIds')->with($parent, $child);
+
+		// todo this is incorrect, but the correct behavior is that we
+		$relation->shouldReceive('getInverse')->once()->andReturn(new \StdClass);
 
 		$belongs = new BelongsTo($parent);
 		$belongs->setRelation($relation);
