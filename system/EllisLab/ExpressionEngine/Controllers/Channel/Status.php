@@ -208,7 +208,7 @@ class Status extends AbstractChannelController {
 			array(
 				'field' => 'group_name',
 				'label' => 'lang:name',
-				'rules' => 'required|strip_tags|trim|valid_xss_check'
+				'rules' => 'required|strip_tags|trim|valid_xss_check|alpha_dash_space|callback_validateStatusGroupName['.$group_id.']'
 			)
 		));
 
@@ -244,6 +244,34 @@ class Status extends AbstractChannelController {
 		ee()->cp->set_breadcrumb(cp_url('channel/status'), lang('status_groups'));
 
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * Custom validator for status group name to check for duplicate
+	 * status group names
+	 *
+	 * @param	model	$name		Status group name
+	 * @param	model	$group_id	Group ID for status group
+	 * @return	bool	Valid status group name or not
+	 */
+	public function validateStatusGroupName($name, $group_id)
+	{
+		$status_group = ee('Model')->get('StatusGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('group_name', $name);
+
+		if ( ! empty($status_id))
+		{
+			$status_group->filter('group_id', '!=', $group_id);
+		}
+
+		if ($status_group->all()->count() > 0)
+		{
+			ee()->form_validation->set_message('validateStatusGroupName', lang('duplicate_status_group_name'));
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
 	/**
