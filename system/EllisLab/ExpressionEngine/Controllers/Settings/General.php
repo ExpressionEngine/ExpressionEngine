@@ -44,7 +44,7 @@ class General extends Settings {
 					'title' => 'site_name',
 					'desc' => 'site_name_desc',
 					'fields' => array(
-						'site_label' => array('type' => 'text', 'required' => TRUE)
+						'site_name' => array('type' => 'text', 'required' => TRUE)
 					)
 				),
 				array(
@@ -146,7 +146,7 @@ class General extends Settings {
 
 		$base_url = cp_url('settings/general');
 
-		ee()->form_validation->set_rules('site_label', 'lang:site_label', 'required|strip_tags|valid_xss_check');
+		ee()->form_validation->set_rules('site_name', 'lang:site_name', 'required|strip_tags|valid_xss_check');
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 

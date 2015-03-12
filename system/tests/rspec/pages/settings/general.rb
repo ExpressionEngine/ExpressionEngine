@@ -1,6 +1,6 @@
 class GeneralSettings < ControlPanelPage
 
-	element :site_name, 'input[name=site_label]'
+	element :site_name, 'input[name=site_name]'
 	element :is_system_on_y, 'input[name=is_system_on][value=y]'
 	element :is_system_on_n, 'input[name=is_system_on][value=n]'
 	element :new_version_check_y, 'input[name=new_version_check][value=y]'
