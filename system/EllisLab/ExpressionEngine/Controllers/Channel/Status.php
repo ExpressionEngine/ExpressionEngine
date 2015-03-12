@@ -555,7 +555,7 @@ class Status extends AbstractChannelController {
 			array(
 				'field' => 'status',
 				'label' => 'lang:name',
-				'rules' => 'required|strip_tags|trim|valid_xss_check|callback_validateName['.$group_id.','.$status_id.']'
+				'rules' => 'required|strip_tags|trim|valid_xss_check|alpha_dash_space|callback_validateName['.$group_id.','.$status_id.']'
 			),
 			array(
 				'field' => 'highlight',
@@ -649,8 +649,8 @@ class Status extends AbstractChannelController {
 	}
 
 	/**
-	 * Custom validator for status name to check for special characters
-	 * and duplicate status names within the same group
+	 * Custom validator for status name to check for duplicate status
+	 * names within the same group
 	 *
 	 * @param	model	$name		Status name
 	 * @param	model	$group_id	Group ID for status
@@ -660,13 +660,6 @@ class Status extends AbstractChannelController {
 	public function validateName($name, $payload)
 	{
 		list($group_id, $status_id) = explode(',', $payload);
-
-		// Check short name characters
-		if (preg_match('/[^a-z0-9\_\-\+\s]/i', $name))
-		{
-			ee()->form_validation->set_message('validateName', lang('invalid_status_name'));
-			return FALSE;
-		}
 
 		$status = ee('Model')->get('Status')
 			->filter('site_id', ee()->config->item('site_id'))

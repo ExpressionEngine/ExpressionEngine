@@ -808,8 +808,8 @@ $lang = array(
 'taken_status_group_name' =>
 'This status group name is already taken.',
 
-'invalid_status_name' =>
-'Status names can only have alpha-numeric characters, as well as spaces, underscores and hyphens.',
+'duplicate_status_group_name' =>
+'A status group already exists with the same name.',
 
 'duplicate_status_name' =>
 'A status already exists with the same name.',
