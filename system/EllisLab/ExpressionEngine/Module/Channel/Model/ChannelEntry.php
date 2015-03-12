@@ -88,6 +88,11 @@ class ChannelEntry extends ContentModel {
 		'sticky'             => 'enum[y,n]',
 	);
 
+	protected static $_events = array(
+		'afterDelete',
+		'afterSave'
+	);
+
 	// Properties
 	protected $entry_id;
 	protected $site_id;
@@ -140,6 +145,16 @@ class ChannelEntry extends ContentModel {
 		$field = $this->_field_facades['comment_expiration_date'];
 		$field->save();
 		$this->comment_expiration_date = $field->getData();
+	}
+
+	public function onAfterSave()
+	{
+		$this->getAutosaves()->delete();
+	}
+
+	public function onAfterDelete()
+	{
+		$this->getAutosaves()->delete();
 	}
 
 	/**
