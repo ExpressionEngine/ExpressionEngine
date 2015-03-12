@@ -105,7 +105,7 @@ $(document).ready(function(){
 	// =========
 
 		// listen for clicks on elements with a class of has-sub
-		$('.has-sub').on('click',function(){
+		$('body').on('click', '.has-sub', function(){
 			// close OTHER open sub menus
 			// when clicking THIS sub menu trigger
 			// thanks me :D
