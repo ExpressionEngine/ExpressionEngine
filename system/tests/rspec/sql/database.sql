@@ -46,6 +46,7 @@ DROP TABLE IF EXISTS `exp_member_fields`;
 DROP TABLE IF EXISTS `exp_member_data`;
 DROP TABLE IF EXISTS `exp_member_bulletin_board`;
 DROP TABLE IF EXISTS `exp_layout_publish`;
+DROP TABLE IF EXISTS `exp_layout_publish_member_groups`;
 DROP TABLE IF EXISTS `exp_html_buttons`;
 DROP TABLE IF EXISTS `exp_grid_columns`;
 DROP TABLE IF EXISTS `exp_global_variables`;
@@ -723,6 +724,7 @@ CREATE TABLE `exp_layout_publish` (
   `site_id` int(4) unsigned NOT NULL DEFAULT '1',
   `member_group` int(4) unsigned NOT NULL DEFAULT '0',
   `channel_id` int(4) unsigned NOT NULL DEFAULT '0',
+  `layout_name` varchar(50) NOT NULL,
   `field_layout` text,
   PRIMARY KEY (`layout_id`),
   KEY `site_id` (`site_id`),
@@ -730,6 +732,11 @@ CREATE TABLE `exp_layout_publish` (
   KEY `channel_id` (`channel_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+CREATE TABLE `exp_layout_publish_member_groups` (
+  `layout_id` int(10) unsigned NOT NULL,
+  `group_id` int(4) unsigned NOT NULL,
+  PRIMARY KEY `layout_id_group_id` (`layout_id`, `group_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE `exp_member_bulletin_board` (
   `bulletin_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
