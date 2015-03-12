@@ -56,7 +56,7 @@ class EE_Core {
 
 		$addon_path = (ee()->config->item('addons_path'))
 			? rtrim(realpath(ee()->config->item('addons_path')), '/').'/'
-			: SYSPATH.'addons/';
+			: SYSPATH.'user/addons/';
 		define('PATH_ADDONS', $addon_path);
 		define('PATH_THIRD', $addon_path);
 
