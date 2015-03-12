@@ -258,6 +258,19 @@ class Date_ft extends EE_Fieldtype {
 			$input_class .= ' field';
 		}
 
+		if (REQ == 'CP')
+		{
+			$localized = ( ! isset($_POST[$date_local])) ? (($localize === TRUE) ? 'y' : 'n') : ee()->input->post($date_local, TRUE);
+
+			return ee('View')->make('publish')->render(array(
+				'has_localize_option' => ( ! in_array($this->field_name, $special)),
+				'field_name' => $this->field_name,
+				'value' => $custom_date,
+				'localize_option_name' => $date_local,
+				'localized' => $localized,
+			));
+		}
+
 		$r = form_input(array(
 			'name'	=> $this->field_name,
 			'value'	=> $custom_date,

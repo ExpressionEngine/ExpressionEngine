@@ -125,9 +125,18 @@ class Checkboxes_ft extends EE_Fieldtype {
 
 		$values = decode_multi_field($data);
 
+		if (REQ == 'CP')
+		{
+			return ee('View')->make('publish')->render(array(
+				'field_name' => $this->field_name,
+				'values' => $values,
+				'options' => $field_options
+			));
+		}
+
 		$r = '';
 
-		foreach($field_options as $option)
+		foreach($field_options as $key => $option)
 		{
 			$checked = (in_array(form_prep($option), $values)) ? TRUE : FALSE;
 			$r .= '<label>'.form_checkbox($this->field_name.'[]', $option, $checked).NBS.$option.'</label>';
@@ -354,6 +363,17 @@ class Checkboxes_ft extends EE_Fieldtype {
 	public function accepts_content_type($name)
 	{
 		return TRUE;
+	}
+
+	public function save($data)
+	{
+		if (is_array($data))
+		{
+			ee()->load->helper('custom_field');
+			$data = encode_multi_field($data);
+		}
+
+		return $data;
 	}
 }
 

@@ -11,7 +11,7 @@ class ChannelFieldGroup extends Model {
 
 	protected static $_relationships = array(
 		'ChannelFieldStructures' => array(
-			'type' => 'one_to_many',
+			'type' => 'hasMany',
 			'model' => 'ChannelFieldStructure'
 		)
 	);

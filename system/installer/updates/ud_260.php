@@ -453,13 +453,15 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	 */
 	private function _update_relationship_tags()
 	{
+		ee()->remove('template');
 		require_once(APPPATH . 'libraries/Template.php');
-		ee()->template = new Installer_Template();
+		ee()->set('template', new Installer_Template());
 
 		// Since we don't have consistent destructors,
 		// we'll keep this here.
 		$installer_config = ee()->config;
-		ee()->config = new MSM_Config();
+		ee()->remove('config');
+		ee()->set('config', new MSM_Config());
 
 		// We need to figure out which template to load.
 		// Need to check the edit date.
@@ -492,7 +494,8 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			}
 		}
 
-		ee()->config = $installer_config;
+		ee()->remove('config');
+		ee()->set('config', $installer_config);
 	}
 
 

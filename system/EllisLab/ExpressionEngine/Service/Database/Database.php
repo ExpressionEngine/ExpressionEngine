@@ -2,8 +2,6 @@
 
 namespace EllisLab\ExpressionEngine\Service\Database;
 
-use \EllisLab\ExpressionEngine\Service\Database\DBConfig;
-
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -29,6 +27,7 @@ use \EllisLab\ExpressionEngine\Service\Database\DBConfig;
  */
 class Database
 {
+	protected $log;
 	protected $config;
 	protected $connection;
 
@@ -39,7 +38,15 @@ class Database
 	 */
 	public function __construct(DBConfig $db_config)
 	{
-		$this->config = $db_config;
+		$this->setConfig($db_config);
+	}
+
+	/**
+	 *
+	 */
+	public function newQuery()
+	{
+		return new Query($this->getConnection());
 	}
 
 	/**
@@ -50,5 +57,83 @@ class Database
 	public function getConfig()
 	{
 		return $this->config;
+	}
+
+	/**
+	 * Set the active configuration
+	 *
+	 * @param DBConfig $config DBConfig object
+	 */
+	public function setConfig(DBConfig $config)
+	{
+		$this->config = $config;
+	}
+
+	/**
+	 *
+	 */
+	public function getConnection()
+	{
+		if ( ! isset($this->connection))
+		{
+			$this->setConnection($this->newConnection());
+		}
+
+		return $this->connection;
+	}
+
+	/**
+	 *
+	 */
+	public function setConnection(Connection $connection)
+	{
+		$this->connection = $connection;
+		$this->connection->setLog($this->getLog());
+	}
+
+	/**
+	 *
+	 */
+	public function getLog()
+	{
+		if ( ! isset($this->log))
+		{
+			$this->setLog($this->newLog());
+		}
+
+		return $this->log;
+	}
+
+	/**
+	 *
+	 */
+	public function setLog(Log $log)
+	{
+		$this->log = $log;
+	}
+
+	/**
+	 * Create a default connection object
+	 */
+	protected function newConnection()
+	{
+		$config = $this->config->getGroupConfig();
+		$connection = new Connection($config);
+
+		if (isset($config['stricton']) && $config['stricton'] == TRUE)
+		{
+			$connection->open();
+			$connection->query('SET SESSION sql_mode="STRICT_ALL_TABLES"');
+		}
+
+		return $connection;
+	}
+
+	/**
+	 * Create a default log object
+	 */
+	protected function newLog()
+	{
+		return new Log('default');
 	}
 }

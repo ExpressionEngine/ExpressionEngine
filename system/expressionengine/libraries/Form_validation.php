@@ -29,8 +29,8 @@ class EE_Form_validation {
 	var $_config_rules			= array();
 	var $_error_array			= array();
 	var $_error_messages		= array();
-	var $_error_prefix			= '<p>';
-	var $_error_suffix			= '</p>';
+	var $_error_prefix			= '<em class="ee-form-error-message">';
+	var $_error_suffix			= '</em>';
 	var $error_string			= '';
 	var $_safe_form_data		= FALSE;
 	var $old_values				= array();
@@ -43,7 +43,7 @@ class EE_Form_validation {
 	 */
 	function __construct($rules = array())
 	{
-		$this->CI =& get_instance();
+		$this->CI =& ee()->get('__legacy_controller');
 
 		// Validation rules can be stored in a config file.
 		$this->_config_rules = $rules;
@@ -62,10 +62,140 @@ class EE_Form_validation {
 			isset($this->CI->_mcp_reference)
 		)
 		{
-			$this->CI->_mcp_reference->lang =& $this->CI->lang;
-			$this->CI->_mcp_reference->input =& $this->CI->input;
-			$this->CI->_mcp_reference->security =& $this->CI->security;
-			$this->CI =& $this->CI->_mcp_reference;
+			$this->setCallbackObject($this->CI->_mcp_reference);
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Sets the callback object
+	 *
+	 * @access	public
+	 * @param	obj $obj	The object to use for callbacks
+	 * @return	void
+	 */
+	public function setCallbackObject($obj)
+	{
+		$obj->lang =& $this->CI->lang;
+		$obj->input =& $this->CI->input;
+		$obj->security =& $this->CI->security;
+		$this->CI =& $obj;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Handles validations that are performed over AJAX
+	 *
+	 * This ultimately calls our parent run() method where all validation
+	 * happens, but this handles validation of single fields and the
+	 * sending of AJAX responses so our controllers don't have to.
+	 *
+	 * @return	void
+	 */
+	function run_ajax()
+	{
+		$result = (count($this->_field_data));
+
+		// We should currently only be validating one field at a time,
+		// and this POST field should have the name of it
+		$field = ee()->input->post('ee_fv_field');
+
+		// Remove any namespacing to run validation for the parent field
+		$field = preg_replace('/\[.+?\]/', '', $field);
+
+		// Unset any other rules that aren't for the field we want to
+		// validate
+		foreach ($this->_field_data as $key => $value)
+		{
+			if ($key != $field)
+			{
+				unset($this->_field_data[$key]);
+			}
+		}
+
+		// Skip validation if we've emptied the field_data array,
+		// can happen if we're not validating the requested field
+		if (empty($this->_field_data) && $result)
+		{
+			$result = TRUE;
+		}
+
+		// Validate the field
+		if ($result !== TRUE)
+		{
+			$result = $this->run();
+		}
+
+		// Send appropriate AJAX response based on validation result
+		if ($result === FALSE)
+		{
+			ee()->output->send_ajax_response(array('error' => form_error($field)));
+		}
+		else
+		{
+			ee()->output->send_ajax_response('success');
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns TRUE/FALSE based on existance of validation errors
+	 *
+	 * @return	bool
+	 */
+	public function errors_exist()
+	{
+		return ! empty($this->_error_array);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Given a "sections" array formatted for the shared form view, sets
+	 * validation rules for fields that have defined options to make sure
+	 * only those defined options make it through POST, this is to keep out
+	 * form-tinkerers
+	 *
+	 * @param	array	$sections	Array of sections passed to form view
+	 */
+	public function validateNonTextInputs($sections)
+	{
+		foreach ($sections as $settings)
+		{
+			foreach ($settings as $setting)
+			{
+				if (is_array($setting))
+				{
+					foreach ($setting['fields'] as $field_name => $field)
+					{
+						$enum = NULL;
+
+						// If this field has 'choices', make sure only those
+						// choices are let through the submission
+						if (isset($field['choices']))
+						{
+							$enum = implode(',', array_keys($field['choices']));
+						}
+						// Only allow y/n through for yes_no fields
+						elseif ($field['type'] == 'yes_no')
+						{
+							$enum = 'y,n';
+						}
+
+						if (isset($enum))
+						{
+							$this->set_rules(
+								$field_name,
+								$setting['title'],
+								'enum['.$enum.']'
+							);
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -179,10 +309,10 @@ class EE_Form_validation {
 
 		$exists = $this->CI->api_channel_fields->setup_handler($field_id);
 
-        if ( ! $exists)
-        {
-            return TRUE;
-        }
+		if ( ! $exists)
+		{
+			return TRUE;
+		}
 
 		$res = $this->CI->api_channel_fields->apply('validate', array($data));
 
@@ -462,6 +592,27 @@ class EE_Form_validation {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Authorize Password
+	 *
+	 * Checks if the submitted password is valid for the logged-in user
+	 *
+	 * @param	string 	$password 	Password string
+	 * @return	bool
+	 */
+	public function auth_password($password)
+	{
+		ee()->load->library('auth');
+		$validate = ee()->auth->authenticate_id(
+			ee()->session->userdata('member_id'),
+			$password
+		);
+
+		return ($validate !== FALSE);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Validate Email
 	 *
 	 * Checks if the submitted email is valid
@@ -528,6 +679,7 @@ class EE_Form_validation {
 	/**
 	 * Check to see if a date is valid by passing it to
 	 * Localize::string_to_timestamp
+	 *
 	 * @param  String $date Date value to validate
 	 * @return Boolean      TRUE if it's a date, FALSE otherwise
 	 */
@@ -542,6 +694,7 @@ class EE_Form_validation {
 	/**
 	 * Check to see if a string is unchanged after running it through
 	 * Security::xss_clean()
+	 *
 	 * @param  String $string The string to validate
 	 * @return Boolean        TRUE if it's unchanged, FALSE otherwise
 	 */
@@ -559,6 +712,36 @@ class EE_Form_validation {
 		}
 
 		return $valid;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * File exists
+	 *
+	 * Validation callback that checks if a file exits
+	 *
+	 * @param	string	$file	Path to file
+	 * @return	boolean
+	 */
+	public function file_exists($file)
+	{
+		return file_exists($file);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Path/file writeable
+	 *
+	 * Validation callback that checks if a path/file is writeable
+	 *
+	 * @param	string	$path	Path or path to file file
+	 * @return	boolean
+	 */
+	public function writable($path)
+	{
+		return is_really_writable($path);
 	}
 
 	// --------------------------------------------------------------------
@@ -688,6 +871,13 @@ class EE_Form_validation {
 		$this->set_message('enum', 'The option you selected is not valid.');
 
 		$opts = explode(',', $opts);
+
+		// For checkboxes, for example
+		if (is_array($str))
+		{
+			return count(array_intersect($str, $opts)) == count($str);
+		}
+
 		return in_array($str, $opts);
 	}
 
@@ -786,7 +976,7 @@ class EE_Form_validation {
 		// --------------------------------------------------------------------
 
 		// Cycle through each rule and run it
-		foreach ($rules As $rule)
+		foreach ($rules as $rule)
 		{
 			$_in_array = FALSE;
 

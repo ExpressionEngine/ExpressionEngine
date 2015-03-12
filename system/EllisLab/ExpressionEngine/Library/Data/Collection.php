@@ -127,8 +127,43 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	{
 		return $this->map(function($item) use($key)
 		{
-			return $item->$key;
+			return is_array($item) ? $item[$key] : $item->$key;
 		});
+	}
+
+	/**
+	 * Sort the data by a given column and return a new
+	 * collection containing the sorted results
+	 *
+	 * @param String $key The key to sort by
+	 * @param Int    $flags Sort flags (as per http://php.net/sort)
+	 * @return Sorted collection
+	 */
+	public function sortBy($column, $flags = SORT_REGULAR)
+	{
+		$values = $this->pluck($column);
+
+		asort($values, $flags);
+
+		$elements = array();
+
+		foreach ($values as $key => $value)
+		{
+			$elements[] = $this->elements[$key];
+		}
+
+		return new static($elements);
+	}
+
+	/**
+	 * Reverse the collection data and return a new collection
+	 * containing the reversed elements
+	 *
+	 * @return Collection Reversed collection
+	 */
+	public function reverse()
+	{
+		return new static(array_reverse($this->elements));
 	}
 
 	/**

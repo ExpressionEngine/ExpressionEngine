@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Service\Model\Mixin;
 
 use EllisLab\ExpressionEngine\Library\Mixin\Mixin as MixinInterface;
+use EllisLab\ExpressionEngine\Service\Validation\Validator;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -90,5 +91,15 @@ class Validation implements MixinInterface {
 		);
 
 		return $this->scope;
+	}
+
+	/**
+	 * Get the validator
+	 *
+	 * @return Validator object
+	 */
+	public function getValidator()
+	{
+		return $this->validator;
 	}
 }

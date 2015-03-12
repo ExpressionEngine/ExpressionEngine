@@ -2,86 +2,89 @@
 # Encoding: Unicode (UTF-8)
 #
 
-DROP TABLE IF EXISTS `exp_accessories`;
-DROP TABLE IF EXISTS `exp_actions`;
-DROP TABLE IF EXISTS `exp_captcha`;
-DROP TABLE IF EXISTS `exp_categories`;
-DROP TABLE IF EXISTS `exp_category_field_data`;
-DROP TABLE IF EXISTS `exp_category_fields`;
-DROP TABLE IF EXISTS `exp_category_groups`;
-DROP TABLE IF EXISTS `exp_category_posts`;
-DROP TABLE IF EXISTS `exp_channel_data`;
-DROP TABLE IF EXISTS `exp_channel_entries_autosave`;
-DROP TABLE IF EXISTS `exp_channel_fields`;
-DROP TABLE IF EXISTS `exp_channel_form_settings`;
-DROP TABLE IF EXISTS `exp_channel_member_groups`;
-DROP TABLE IF EXISTS `exp_channel_titles`;
-DROP TABLE IF EXISTS `exp_channels`;
-DROP TABLE IF EXISTS `exp_comment_subscriptions`;
-DROP TABLE IF EXISTS `exp_comments`;
-DROP TABLE IF EXISTS `exp_content_types`;
-DROP TABLE IF EXISTS `exp_cp_log`;
-DROP TABLE IF EXISTS `exp_cp_search_index`;
-DROP TABLE IF EXISTS `exp_developer_log`;
-DROP TABLE IF EXISTS `exp_email_cache`;
-DROP TABLE IF EXISTS `exp_email_cache_mg`;
-DROP TABLE IF EXISTS `exp_email_cache_ml`;
-DROP TABLE IF EXISTS `exp_email_console_cache`;
-DROP TABLE IF EXISTS `exp_email_tracker`;
-DROP TABLE IF EXISTS `exp_entry_versioning`;
-DROP TABLE IF EXISTS `exp_extensions`;
-DROP TABLE IF EXISTS `exp_field_formatting`;
-DROP TABLE IF EXISTS `exp_field_groups`;
-DROP TABLE IF EXISTS `exp_fieldtypes`;
-DROP TABLE IF EXISTS `exp_file_categories`;
-DROP TABLE IF EXISTS `exp_file_dimensions`;
-DROP TABLE IF EXISTS `exp_file_watermarks`;
-DROP TABLE IF EXISTS `exp_files`;
-DROP TABLE IF EXISTS `exp_global_variables`;
-DROP TABLE IF EXISTS `exp_grid_columns`;
-DROP TABLE IF EXISTS `exp_html_buttons`;
-DROP TABLE IF EXISTS `exp_layout_publish`;
-DROP TABLE IF EXISTS `exp_member_bulletin_board`;
-DROP TABLE IF EXISTS `exp_member_data`;
-DROP TABLE IF EXISTS `exp_member_fields`;
-DROP TABLE IF EXISTS `exp_member_groups`;
-DROP TABLE IF EXISTS `exp_member_homepage`;
-DROP TABLE IF EXISTS `exp_member_search`;
-DROP TABLE IF EXISTS `exp_members`;
-DROP TABLE IF EXISTS `exp_message_attachments`;
-DROP TABLE IF EXISTS `exp_message_copies`;
-DROP TABLE IF EXISTS `exp_message_data`;
-DROP TABLE IF EXISTS `exp_message_folders`;
-DROP TABLE IF EXISTS `exp_message_listed`;
-DROP TABLE IF EXISTS `exp_module_member_groups`;
-DROP TABLE IF EXISTS `exp_modules`;
-DROP TABLE IF EXISTS `exp_online_users`;
-DROP TABLE IF EXISTS `exp_password_lockout`;
-DROP TABLE IF EXISTS `exp_relationships`;
-DROP TABLE IF EXISTS `exp_remember_me`;
-DROP TABLE IF EXISTS `exp_reset_password`;
-DROP TABLE IF EXISTS `exp_revision_tracker`;
-DROP TABLE IF EXISTS `exp_rte_tools`;
-DROP TABLE IF EXISTS `exp_rte_toolsets`;
-DROP TABLE IF EXISTS `exp_search`;
-DROP TABLE IF EXISTS `exp_search_log`;
-DROP TABLE IF EXISTS `exp_security_hashes`;
-DROP TABLE IF EXISTS `exp_sessions`;
-DROP TABLE IF EXISTS `exp_sites`;
-DROP TABLE IF EXISTS `exp_snippets`;
-DROP TABLE IF EXISTS `exp_specialty_templates`;
-DROP TABLE IF EXISTS `exp_stats`;
-DROP TABLE IF EXISTS `exp_status_groups`;
-DROP TABLE IF EXISTS `exp_status_no_access`;
-DROP TABLE IF EXISTS `exp_statuses`;
-DROP TABLE IF EXISTS `exp_template_groups`;
-DROP TABLE IF EXISTS `exp_template_member_groups`;
-DROP TABLE IF EXISTS `exp_template_no_access`;
-DROP TABLE IF EXISTS `exp_template_routes`;
-DROP TABLE IF EXISTS `exp_templates`;
-DROP TABLE IF EXISTS `exp_throttle`;
-DROP TABLE IF EXISTS `exp_upload_no_access`;
+
 DROP TABLE IF EXISTS `exp_upload_prefs`;
+DROP TABLE IF EXISTS `exp_upload_no_access`;
+DROP TABLE IF EXISTS `exp_throttle`;
+DROP TABLE IF EXISTS `exp_templates`;
+DROP TABLE IF EXISTS `exp_template_routes`;
+DROP TABLE IF EXISTS `exp_template_no_access`;
+DROP TABLE IF EXISTS `exp_template_member_groups`;
+DROP TABLE IF EXISTS `exp_template_groups`;
+DROP TABLE IF EXISTS `exp_statuses`;
+DROP TABLE IF EXISTS `exp_status_no_access`;
+DROP TABLE IF EXISTS `exp_status_groups`;
+DROP TABLE IF EXISTS `exp_stats`;
+DROP TABLE IF EXISTS `exp_specialty_templates`;
+DROP TABLE IF EXISTS `exp_snippets`;
+DROP TABLE IF EXISTS `exp_sites`;
+DROP TABLE IF EXISTS `exp_sessions`;
+DROP TABLE IF EXISTS `exp_security_hashes`;
+DROP TABLE IF EXISTS `exp_search_log`;
+DROP TABLE IF EXISTS `exp_search`;
+DROP TABLE IF EXISTS `exp_rte_toolsets`;
+DROP TABLE IF EXISTS `exp_rte_tools`;
+DROP TABLE IF EXISTS `exp_revision_tracker`;
+DROP TABLE IF EXISTS `exp_reset_password`;
+DROP TABLE IF EXISTS `exp_remember_me`;
+DROP TABLE IF EXISTS `exp_relationships`;
+DROP TABLE IF EXISTS `exp_plugins`;
+DROP TABLE IF EXISTS `exp_password_lockout`;
+DROP TABLE IF EXISTS `exp_online_users`;
+DROP TABLE IF EXISTS `exp_modules`;
+DROP TABLE IF EXISTS `exp_module_member_groups`;
+DROP TABLE IF EXISTS `exp_message_listed`;
+DROP TABLE IF EXISTS `exp_message_folders`;
+DROP TABLE IF EXISTS `exp_message_data`;
+DROP TABLE IF EXISTS `exp_message_copies`;
+DROP TABLE IF EXISTS `exp_message_attachments`;
+DROP TABLE IF EXISTS `exp_members`;
+DROP TABLE IF EXISTS `exp_member_search`;
+DROP TABLE IF EXISTS `exp_member_homepage`;
+DROP TABLE IF EXISTS `exp_member_groups`;
+DROP TABLE IF EXISTS `exp_member_fields`;
+DROP TABLE IF EXISTS `exp_member_data`;
+DROP TABLE IF EXISTS `exp_member_bulletin_board`;
+DROP TABLE IF EXISTS `exp_layout_publish`;
+DROP TABLE IF EXISTS `exp_layout_publish_member_groups`;
+DROP TABLE IF EXISTS `exp_html_buttons`;
+DROP TABLE IF EXISTS `exp_grid_columns`;
+DROP TABLE IF EXISTS `exp_global_variables`;
+DROP TABLE IF EXISTS `exp_files`;
+DROP TABLE IF EXISTS `exp_file_watermarks`;
+DROP TABLE IF EXISTS `exp_file_dimensions`;
+DROP TABLE IF EXISTS `exp_file_categories`;
+DROP TABLE IF EXISTS `exp_fieldtypes`;
+DROP TABLE IF EXISTS `exp_field_groups`;
+DROP TABLE IF EXISTS `exp_field_formatting`;
+DROP TABLE IF EXISTS `exp_extensions`;
+DROP TABLE IF EXISTS `exp_entry_versioning`;
+DROP TABLE IF EXISTS `exp_email_tracker`;
+DROP TABLE IF EXISTS `exp_email_console_cache`;
+DROP TABLE IF EXISTS `exp_email_cache_ml`;
+DROP TABLE IF EXISTS `exp_email_cache_mg`;
+DROP TABLE IF EXISTS `exp_email_cache`;
+DROP TABLE IF EXISTS `exp_developer_log`;
+DROP TABLE IF EXISTS `exp_cp_search_index`;
+DROP TABLE IF EXISTS `exp_cp_log`;
+DROP TABLE IF EXISTS `exp_content_types`;
+DROP TABLE IF EXISTS `exp_comments`;
+DROP TABLE IF EXISTS `exp_comment_subscriptions`;
+DROP TABLE IF EXISTS `exp_channels`;
+DROP TABLE IF EXISTS `exp_channel_titles`;
+DROP TABLE IF EXISTS `exp_channel_member_groups`;
+DROP TABLE IF EXISTS `exp_channel_form_settings`;
+DROP TABLE IF EXISTS `exp_channel_fields`;
+DROP TABLE IF EXISTS `exp_channel_entries_autosave`;
+DROP TABLE IF EXISTS `exp_channel_data`;
+DROP TABLE IF EXISTS `exp_category_posts`;
+DROP TABLE IF EXISTS `exp_category_groups`;
+DROP TABLE IF EXISTS `exp_category_fields`;
+DROP TABLE IF EXISTS `exp_category_field_data`;
+DROP TABLE IF EXISTS `exp_categories`;
+DROP TABLE IF EXISTS `exp_captcha`;
+DROP TABLE IF EXISTS `exp_actions`;
+DROP TABLE IF EXISTS `exp_accessories`;
 
 
 CREATE TABLE `exp_accessories` (
@@ -498,11 +501,10 @@ CREATE TABLE `exp_email_cache` (
   `subject` varchar(120) NOT NULL,
   `message` mediumtext NOT NULL,
   `plaintext_alt` mediumtext NOT NULL,
-  `mailinglist` char(1) NOT NULL DEFAULT 'n',
   `mailtype` varchar(6) NOT NULL,
   `text_fmt` varchar(40) NOT NULL,
   `wordwrap` char(1) NOT NULL DEFAULT 'y',
-  `priority` char(1) NOT NULL DEFAULT '3',
+  `attachments` mediumtext,
   PRIMARY KEY (`cache_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -722,6 +724,7 @@ CREATE TABLE `exp_layout_publish` (
   `site_id` int(4) unsigned NOT NULL DEFAULT '1',
   `member_group` int(4) unsigned NOT NULL DEFAULT '0',
   `channel_id` int(4) unsigned NOT NULL DEFAULT '0',
+  `layout_name` varchar(50) NOT NULL,
   `field_layout` text,
   PRIMARY KEY (`layout_id`),
   KEY `site_id` (`site_id`),
@@ -729,6 +732,11 @@ CREATE TABLE `exp_layout_publish` (
   KEY `channel_id` (`channel_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+CREATE TABLE `exp_layout_publish_member_groups` (
+  `layout_id` int(10) unsigned NOT NULL,
+  `group_id` int(4) unsigned NOT NULL,
+  PRIMARY KEY `layout_id_group_id` (`layout_id`, `group_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE `exp_member_bulletin_board` (
   `bulletin_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -843,7 +851,6 @@ CREATE TABLE `exp_member_groups` (
   `can_send_bulletins` char(1) NOT NULL DEFAULT 'n',
   `include_in_authorlist` char(1) NOT NULL DEFAULT 'n',
   `include_in_memberlist` char(1) NOT NULL DEFAULT 'y',
-  `include_in_mailinglists` char(1) NOT NULL DEFAULT 'y',
   PRIMARY KEY (`group_id`,`site_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -1094,6 +1101,14 @@ CREATE TABLE `exp_password_lockout` (
   KEY `user_agent` (`user_agent`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+CREATE TABLE exp_plugins (
+	plugin_id int(10) unsigned NOT NULL auto_increment,
+	plugin_name varchar(50) NOT NULL,
+	plugin_package varchar(50) NOT NULL,
+	plugin_version varchar(12) NOT NULL,
+	is_typography_related char(1) NOT NULL default 'n',
+	PRIMARY KEY `plugin_id` (`plugin_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE TABLE `exp_relationships` (
   `relationship_id` int(6) unsigned NOT NULL AUTO_INCREMENT,
@@ -1346,6 +1361,7 @@ CREATE TABLE `exp_template_no_access` (
 CREATE TABLE `exp_template_routes` (
   `route_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `template_id` int(10) unsigned NOT NULL,
+  `order` int(10) unsigned DEFAULT NULL,
   `route` varchar(512) DEFAULT NULL,
   `route_parsed` varchar(512) DEFAULT NULL,
   `route_required` char(1) NOT NULL DEFAULT 'n',
@@ -1372,6 +1388,7 @@ CREATE TABLE `exp_templates` (
   `allow_php` char(1) NOT NULL DEFAULT 'n',
   `php_parse_location` char(1) NOT NULL DEFAULT 'o',
   `hits` int(10) unsigned NOT NULL DEFAULT '0',
+  `protect_javascript` char(1) NOT NULL DEFAULT 'n',
   PRIMARY KEY (`template_id`),
   KEY `group_id` (`group_id`),
   KEY `template_name` (`template_name`),
@@ -1393,7 +1410,6 @@ CREATE TABLE `exp_throttle` (
 
 CREATE TABLE `exp_upload_no_access` (
   `upload_id` int(6) unsigned NOT NULL,
-  `upload_loc` varchar(3) NOT NULL,
   `member_group` smallint(4) unsigned NOT NULL,
   PRIMARY KEY (`upload_id`,`member_group`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -1424,2439 +1440,624 @@ CREATE TABLE `exp_upload_prefs` (
 
 
 
+SET @PREVIOUS_FOREIGN_KEY_CHECKS = @@FOREIGN_KEY_CHECKS;
 SET FOREIGN_KEY_CHECKS = 0;
 
 
-INSERT INTO `exp_accessories` (`accessory_id`, `class`, `member_groups`, `controllers`, `accessory_version`) VALUES (1, 'Expressionengine_info_acc', '1|5', 'addons|addons_accessories|addons_extensions|addons_fieldtypes|addons_modules|addons_plugins|admin_content|admin_system|content|content_edit|content_files|content_files_modal|content_publish|design|homepage|members|myaccount|tools|tools_communicate|tools_data|tools_logs|tools_utilities', '1.0');
+LOCK TABLES `exp_accessories` WRITE;
+INSERT INTO `exp_accessories` (`accessory_id`, `class`, `member_groups`, `controllers`, `accessory_version`) VALUES
+	(1,'Expressionengine_info_acc','1|5','addons|addons_accessories|addons_extensions|addons_fieldtypes|addons_modules|addons_plugins|admin_content|admin_system|content|content_edit|content_files|content_files_modal|content_publish|design|homepage|members|myaccount|sites','1.0');
+UNLOCK TABLES;
+
+
+LOCK TABLES `exp_actions` WRITE;
+INSERT INTO `exp_actions` (`action_id`, `class`, `method`, `csrf_exempt`) VALUES
+	(1,'Channel','submit_entry',0),
+	(2,'Channel','filemanager_endpoint',0),
+	(3,'Channel','smiley_pop',0),
+	(4,'Channel','combo_loader',0),
+	(5,'Member','registration_form',0),
+	(6,'Member','register_member',0),
+	(7,'Member','activate_member',0),
+	(8,'Member','member_login',0),
+	(9,'Member','member_logout',0),
+	(10,'Member','send_reset_token',0),
+	(11,'Member','process_reset_password',0),
+	(12,'Member','send_member_email',0),
+	(13,'Member','update_un_pw',0),
+	(14,'Member','member_search',0),
+	(15,'Member','member_delete',0),
+	(16,'Rte','get_js',0),
+	(17,'Email','send_email',0),
+	(18,'Comment','insert_new_comment',0),
+	(19,'Comment_mcp','delete_comment_notification',0),
+	(20,'Comment','comment_subscribe',0),
+	(21,'Comment','edit_comment',0),
+	(22,'Search','do_search',1);
+UNLOCK TABLES;
+
+
+LOCK TABLES `exp_captcha` WRITE;
+UNLOCK TABLES;
+
+
+LOCK TABLES `exp_categories` WRITE;
+INSERT INTO `exp_categories` (`cat_id`, `site_id`, `group_id`, `parent_id`, `cat_name`, `cat_url_title`, `cat_description`, `cat_image`, `cat_order`) VALUES
+	(1,1,1,0,'News','news','','',2),
+	(2,1,1,0,'Bands','bands','','',3),
+	(3,1,2,0,'Staff Bios','staff_bios','','',2),
+	(4,1,2,0,'Site Info','site_info','','',1);
+UNLOCK TABLES;
+
+
+LOCK TABLES `exp_category_field_data` WRITE;
+INSERT INTO `exp_category_field_data` (`cat_id`, `site_id`, `group_id`) VALUES
+	(1,1,1),
+	(2,1,1),
+	(3,1,2),
+	(4,1,2);
+UNLOCK TABLES;
+
+
+LOCK TABLES `exp_category_fields` WRITE;
+UNLOCK TABLES;
+
+
+LOCK TABLES `exp_category_groups` WRITE;
+INSERT INTO `exp_category_groups` (`group_id`, `site_id`, `group_name`, `sort_order`, `exclude_group`, `field_html_formatting`, `can_edit_categories`, `can_delete_categories`) VALUES
+	(1,1,'News Categories','a',0,'all','',''),
+	(2,1,'About','a',0,'all','','');
+UNLOCK TABLES;
+
+
+LOCK TABLES `exp_category_posts` WRITE;
+INSERT INTO `exp_category_posts` (`entry_id`, `cat_id`) VALUES
+	(1,1),
+	(2,1),
+	(3,4),
+	(4,3),
+	(5,3),
+	(6,3),
+	(7,3),
+	(8,3),
+	(9,3),
+	(10,2);
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_actions` (`action_id`, `class`, `method`, `csrf_exempt`) VALUES (1, 'Channel', 'submit_entry', 0), (2, 'Channel', 'filemanager_endpoint', 0), (3, 'Channel', 'smiley_pop', 0), (4, 'Channel', 'combo_loader', 0), (5, 'Member', 'registration_form', 0), (6, 'Member', 'register_member', 0), (7, 'Member', 'activate_member', 0), (8, 'Member', 'member_login', 0), (9, 'Member', 'member_logout', 0), (10, 'Member', 'send_reset_token', 0), (11, 'Member', 'process_reset_password', 0), (12, 'Member', 'send_member_email', 0), (13, 'Member', 'update_un_pw', 0), (14, 'Member', 'member_search', 0), (15, 'Member', 'member_delete', 0), (16, 'Rte', 'get_js', 0), (17, 'Email', 'send_email', 0), (18, 'Comment', 'insert_new_comment', 0), (19, 'Comment_mcp', 'delete_comment_notification', 0), (20, 'Comment', 'comment_subscribe', 0), (21, 'Comment', 'edit_comment', 0), (22, 'Search', 'do_search', 1);
+LOCK TABLES `exp_channel_data` WRITE;
+INSERT INTO `exp_channel_data` (`entry_id`, `site_id`, `channel_id`, `field_id_1`, `field_ft_1`, `field_id_2`, `field_ft_2`, `field_id_3`, `field_ft_3`, `field_id_4`, `field_ft_4`, `field_id_5`, `field_ft_5`, `field_id_6`, `field_ft_6`, `field_id_7`, `field_ft_7`) VALUES
+	(1,1,1,'Thank you for choosing ExpressionEngine! This entry contains helpful resources to help you <a href="http://ellislab.com/expressionengine/user-guide/intro/getting_the_most.html">get the most from ExpressionEngine</a> and the EllisLab Community.\n\n<strong>Learning resources:</strong>\n\n<a href="http://ellislab.com/expressionengine/user-guide/">ExpressionEngine User Guide</a>\n<a href="http://ellislab.com/expressionengine/user-guide/intro/the_big_picture.html">The Big Picture</a>\n<a href="http://ellislab.com/support">EllisLab Support</a>\n\nIf you need to hire a web developer consider our <a href="http://ellislab.com/pro-network/">Professionals Network</a>.\n\nWelcome to our community,\n\n<span style="font-size:16px;">The EllisLab Team</span>','xhtml','','xhtml','{filedir_2}ee_banner_120_240.gif','none','','xhtml','','none','','none','','xhtml'),
+	(2,1,1,'Welcome to Agile Records, our Example Site.  Here you will be able to learn ExpressionEngine through a real site, with real features and in-depth comments to assist you along the way.\n\n','xhtml','','xhtml','{filedir_2}map.jpg','none','','xhtml','','none','','none','','xhtml'),
+	(3,1,2,'',NULL,'',NULL,'',NULL,'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Duis congue accumsan tellus. Aliquam diam arcu, suscipit eu, condimentum sed, ultricies accumsan, massa.\n','xhtml','{filedir_2}map2.jpg','none','','none','Donec et ante. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vestibulum dignissim dolor nec erat dictum posuere. Vivamus lacinia, quam id fringilla dapibus, ante ante bibendum nulla, a ornare nisl est congue purus. Duis pulvinar vehicula diam.\n\nSed vehicula. Praesent vitae nisi. Phasellus molestie, massa sed varius ultricies, dolor lectus interdum felis, ut porta eros nibh at magna. Cras aliquam vulputate lacus. Nullam tempus vehicula mi. Quisque posuere, erat quis iaculis consequat, tortor ipsum varius mauris, sit amet pulvinar nibh mauris sed lectus. Cras vitae arcu sit amet nunc luctus molestie. Nam neque orci, tincidunt non, semper convallis, sodales fringilla, nulla. Donec non nunc. Sed condimentum urna hendrerit erat. Curabitur in felis in neque fermentum interdum.\n\nProin magna. In in orci. Curabitur at lectus nec arcu vehicula bibendum. Duis euismod sollicitudin augue. Maecenas auctor cursus odio.\n','xhtml'),
+	(4,1,2,'',NULL,'',NULL,'',NULL,'','xhtml','{filedir_2}staff_randell.png','none','Co-Owner/Label Manager','none','','xhtml'),
+	(5,1,2,'',NULL,'',NULL,'',NULL,'','xhtml','{filedir_2}staff_chloe.png','none','Co-Owner / Press &amp; Marketing','none','','xhtml'),
+	(6,1,2,'',NULL,'',NULL,'',NULL,'','xhtml','{filedir_2}staff_howard.png','none','Tours/Publicity/PR','none','','xhtml'),
+	(7,1,2,'',NULL,'',NULL,'',NULL,'','xhtml','{filedir_2}staff_jane.png','none','Sales/Accounts','none','','xhtml'),
+	(8,1,2,'',NULL,'',NULL,'',NULL,'','xhtml','{filedir_2}staff_josh.png','none','Product Manager','none','','xhtml'),
+	(9,1,2,'',NULL,'',NULL,'',NULL,'','xhtml','{filedir_2}staff_jason.png','none','Graphic/Web Designer','none','','xhtml'),
+	(10,1,1,'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Proin congue mi a sapien. Duis augue erat, fringilla ac, volutpat ut, venenatis vitae, nisl. Phasellus lorem. Praesent mi. Suspendisse imperdiet felis a libero. uspendisse placerat tortor in ligula vestibulum vehicula.\n','xhtml','','xhtml','{filedir_2}testband300.jpg','none','',NULL,'',NULL,'',NULL,'',NULL);
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_channel_entries_autosave` WRITE;
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_categories` (`cat_id`, `site_id`, `group_id`, `parent_id`, `cat_name`, `cat_url_title`, `cat_description`, `cat_image`, `cat_order`) VALUES (1, 1, 1, 0, 'News', 'news', NULL, NULL, 2), (2, 1, 1, 0, 'Bands', 'bands', NULL, NULL, 3), (3, 1, 2, 0, 'Staff Bios', 'staff_bios', NULL, NULL, 2), (4, 1, 2, 0, 'Site Info', 'site_info', NULL, NULL, 1);
+LOCK TABLES `exp_channel_fields` WRITE;
+INSERT INTO `exp_channel_fields` (`field_id`, `site_id`, `group_id`, `field_name`, `field_label`, `field_instructions`, `field_type`, `field_list_items`, `field_pre_populate`, `field_pre_channel_id`, `field_pre_field_id`, `field_ta_rows`, `field_maxl`, `field_required`, `field_text_direction`, `field_search`, `field_is_hidden`, `field_fmt`, `field_show_fmt`, `field_order`, `field_content_type`, `field_settings`) VALUES
+	(1,1,1,'news_body','Body','','textarea','','n',0,0,10,0,'n','ltr','y','n','xhtml','y',2,'any','YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30='),
+	(2,1,1,'news_extended','Extended text','','textarea','','n',0,0,12,0,'n','ltr','n','y','xhtml','y',3,'any','YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30='),
+	(3,1,1,'news_image','News Image','','file','','n',0,0,6,128,'n','ltr','n','n','none','n',3,'any','YTo3OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToibiI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJuIjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToibiI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToibiI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6Im4iO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6Im4iO3M6MTg6ImZpZWxkX2NvbnRlbnRfdHlwZSI7czo1OiJpbWFnZSI7fQ=='),
+	(4,1,2,'about_body','Body','','textarea','','n',0,0,6,128,'n','ltr','n','n','xhtml','y',4,'any','YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30='),
+	(5,1,2,'about_image','Image','URL Only','file','','n',0,0,6,128,'n','ltr','n','n','none','n',5,'any','YTo3OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToibiI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJuIjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToibiI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToibiI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6Im4iO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6Im4iO3M6MTg6ImZpZWxkX2NvbnRlbnRfdHlwZSI7czo1OiJpbWFnZSI7fQ=='),
+	(6,1,2,'about_staff_title','Staff Member\'s Title','This is the Title that the staff member has within the company.  Example: CEO','text','','n',0,0,6,128,'n','ltr','y','n','none','n',6,'any','YTo4OntzOjE4OiJmaWVsZF9jb250ZW50X3RleHQiO2I6MDtzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToibiI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJuIjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToibiI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToibiI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6Im4iO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6Im4iO3M6MTg6ImZpZWxkX2NvbnRlbnRfdHlwZSI7czozOiJhbnkiO30='),
+	(7,1,2,'about_extended','Extended','','textarea','','n',0,0,6,128,'n','ltr','y','y','xhtml','y',7,'any','YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30=');
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_category_field_data` (`cat_id`, `site_id`, `group_id`) VALUES (1, 1, 1), (2, 1, 1), (3, 1, 2), (4, 1, 2);
+LOCK TABLES `exp_channel_form_settings` WRITE;
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_channel_member_groups` WRITE;
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_category_groups` (`group_id`, `site_id`, `group_name`, `sort_order`, `exclude_group`, `field_html_formatting`, `can_edit_categories`, `can_delete_categories`) VALUES (1, 1, 'News Categories', 'a', 0, 'all', NULL, NULL), (2, 1, 'About', 'a', 0, 'all', NULL, NULL);
+LOCK TABLES `exp_channel_titles` WRITE;
+INSERT INTO `exp_channel_titles` (`entry_id`, `site_id`, `channel_id`, `author_id`, `forum_topic_id`, `ip_address`, `title`, `url_title`, `status`, `versioning_enabled`, `view_count_one`, `view_count_two`, `view_count_three`, `view_count_four`, `allow_comments`, `sticky`, `entry_date`, `year`, `month`, `day`, `expiration_date`, `comment_expiration_date`, `edit_date`, `recent_comment_date`, `comment_total`) VALUES
+	(1,1,1,1,NULL,'127.0.0.1','Getting to Know ExpressionEngine','getting_to_know_expressionengine','open','n',0,0,0,0,'y','n',1409242029,'2014','08','28',0,0,20140828160710,NULL,0),
+	(2,1,1,1,NULL,'127.0.0.1','Welcome to the Example Site!','welcome_to_the_example_site','open','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
+	(3,1,2,1,NULL,'127.0.0.1','About the Label','about_the_label','open','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
+	(4,1,2,1,NULL,'127.0.0.1','Randell','randell','open','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
+	(5,1,2,1,NULL,'127.0.0.1','Chloe','chloe','open','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
+	(6,1,2,1,NULL,'127.0.0.1','Howard','howard','open','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
+	(7,1,2,1,NULL,'127.0.0.1','Jane','jane','open','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
+	(8,1,2,1,NULL,'127.0.0.1','Josh','josh','open','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
+	(9,1,2,1,NULL,'127.0.0.1','Jason','jason','open','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0),
+	(10,1,1,1,NULL,'127.0.0.1','Band Title','band_title','Featured','n',0,0,0,0,'y','n',1409242030,'2014','08','28',0,0,20140828160710,NULL,0);
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_category_posts` (`entry_id`, `cat_id`) VALUES (1, 1), (2, 1), (3, 4), (4, 3), (5, 3), (6, 3), (7, 3), (8, 3), (9, 3), (10, 2);
+LOCK TABLES `exp_channels` WRITE;
+INSERT INTO `exp_channels` (`channel_id`, `site_id`, `channel_name`, `channel_title`, `channel_url`, `channel_description`, `channel_lang`, `total_entries`, `total_comments`, `last_entry_date`, `last_comment_date`, `cat_group`, `status_group`, `deft_status`, `field_group`, `search_excerpt`, `deft_category`, `deft_comments`, `channel_require_membership`, `channel_max_chars`, `channel_html_formatting`, `channel_allow_img_urls`, `channel_auto_link_urls`, `channel_notify`, `channel_notify_emails`, `comment_url`, `comment_system_enabled`, `comment_require_membership`, `comment_use_captcha`, `comment_moderate`, `comment_max_chars`, `comment_timelock`, `comment_require_email`, `comment_text_formatting`, `comment_html_formatting`, `comment_allow_img_urls`, `comment_auto_link_urls`, `comment_notify`, `comment_notify_authors`, `comment_notify_emails`, `comment_expiration`, `search_results_url`, `show_button_cluster`, `rss_url`, `enable_versioning`, `max_revisions`, `default_entry_title`, `url_title_prefix`, `live_look_template`) VALUES
+	(1,1,'news','News','http://ee2/index.php/news',NULL,'en',3,0,1409242030,0,'1',1,'open',1,2,'','y','y',0,'all','y','y','n','','http://ee2/index.php/news/comments','y','n','y','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','y','','n',10,'','',0),
+	(2,1,'about','Information Pages','http://ee2/index.php/about',NULL,'en',7,0,1409242030,0,'2',1,'open',2,7,'','y','y',0,'all','y','n','n','','http://ee2/index.php/news/comments','y','n','y','n',0,0,'y','xhtml','safe','n','y','n','n','',0,'http://ee2/index.php/news/comments','y','','n',10,'','',0);
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_channel_data` (`entry_id`, `site_id`, `channel_id`, `field_id_1`, `field_ft_1`, `field_id_2`, `field_ft_2`, `field_id_3`, `field_ft_3`, `field_id_4`, `field_ft_4`, `field_id_5`, `field_ft_5`, `field_id_6`, `field_ft_6`, `field_id_7`, `field_ft_7`) VALUES (1, 1, 1, 'Thank you for choosing ExpressionEngine! This entry contains helpful resources to help you <a href="http://ellislab.com/expressionengine/user-guide/intro/getting_the_most.html">get the most from ExpressionEngine</a> and the EllisLab Community.
+LOCK TABLES `exp_comment_subscriptions` WRITE;
+UNLOCK TABLES;
 
-<strong>Learning resources:</strong>
 
-<a href="http://ellislab.com/expressionengine/user-guide/">ExpressionEngine User Guide</a>
-<a href="http://ellislab.com/expressionengine/user-guide/intro/the_big_picture.html">The Big Picture</a>
-<a href="http://ellislab.com/support">EllisLab Support</a>
+LOCK TABLES `exp_comments` WRITE;
+UNLOCK TABLES;
 
-If you need to hire a web developer consider our <a href="http://ellislab.com/pro-network/">Professionals Network</a>.
 
-Welcome to our community,
+LOCK TABLES `exp_content_types` WRITE;
+INSERT INTO `exp_content_types` (`content_type_id`, `name`) VALUES
+	(1,'grid'),
+	(2,'channel');
+UNLOCK TABLES;
 
-<span style="font-size:16px;">The EllisLab Team</span>', 'xhtml', NULL, 'xhtml', '{filedir_2}ee_banner_120_240.gif', 'none', NULL, 'xhtml', NULL, 'none', NULL, 'none', NULL, 'xhtml'), (2, 1, 1, 'Welcome to Agile Records, our Example Site.  Here you will be able to learn ExpressionEngine through a real site, with real features and in-depth comments to assist you along the way.
 
-', 'xhtml', NULL, 'xhtml', '{filedir_2}map.jpg', 'none', NULL, 'xhtml', NULL, 'none', NULL, 'none', NULL, 'xhtml'), (3, 1, 2, NULL, NULL, NULL, NULL, NULL, NULL, 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Duis congue accumsan tellus. Aliquam diam arcu, suscipit eu, condimentum sed, ultricies accumsan, massa.
-', 'xhtml', '{filedir_2}map2.jpg', 'none', NULL, 'none', 'Donec et ante. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vestibulum dignissim dolor nec erat dictum posuere. Vivamus lacinia, quam id fringilla dapibus, ante ante bibendum nulla, a ornare nisl est congue purus. Duis pulvinar vehicula diam.
+LOCK TABLES `exp_cp_log` WRITE;
+UNLOCK TABLES;
 
-Sed vehicula. Praesent vitae nisi. Phasellus molestie, massa sed varius ultricies, dolor lectus interdum felis, ut porta eros nibh at magna. Cras aliquam vulputate lacus. Nullam tempus vehicula mi. Quisque posuere, erat quis iaculis consequat, tortor ipsum varius mauris, sit amet pulvinar nibh mauris sed lectus. Cras vitae arcu sit amet nunc luctus molestie. Nam neque orci, tincidunt non, semper convallis, sodales fringilla, nulla. Donec non nunc. Sed condimentum urna hendrerit erat. Curabitur in felis in neque fermentum interdum.
 
-Proin magna. In in orci. Curabitur at lectus nec arcu vehicula bibendum. Duis euismod sollicitudin augue. Maecenas auctor cursus odio.
-', 'xhtml'), (4, 1, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'xhtml', '{filedir_2}staff_randell.png', 'none', 'Co-Owner/Label Manager', 'none', NULL, 'xhtml'), (5, 1, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'xhtml', '{filedir_2}staff_chloe.png', 'none', 'Co-Owner / Press &amp; Marketing', 'none', NULL, 'xhtml'), (6, 1, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'xhtml', '{filedir_2}staff_howard.png', 'none', 'Tours/Publicity/PR', 'none', NULL, 'xhtml'), (7, 1, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'xhtml', '{filedir_2}staff_jane.png', 'none', 'Sales/Accounts', 'none', NULL, 'xhtml'), (8, 1, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'xhtml', '{filedir_2}staff_josh.png', 'none', 'Product Manager', 'none', NULL, 'xhtml'), (9, 1, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'xhtml', '{filedir_2}staff_jason.png', 'none', 'Graphic/Web Designer', 'none', NULL, 'xhtml'), (10, 1, 1, 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Proin congue mi a sapien. Duis augue erat, fringilla ac, volutpat ut, venenatis vitae, nisl. Phasellus lorem. Praesent mi. Suspendisse imperdiet felis a libero. uspendisse placerat tortor in ligula vestibulum vehicula.
-', 'xhtml', NULL, 'xhtml', '{filedir_2}testband300.jpg', 'none', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+LOCK TABLES `exp_cp_search_index` WRITE;
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_developer_log` WRITE;
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_channel_fields` (`field_id`, `site_id`, `group_id`, `field_name`, `field_label`, `field_instructions`, `field_type`, `field_list_items`, `field_pre_populate`, `field_pre_channel_id`, `field_pre_field_id`, `field_ta_rows`, `field_maxl`, `field_required`, `field_text_direction`, `field_search`, `field_is_hidden`, `field_fmt`, `field_show_fmt`, `field_order`, `field_content_type`, `field_settings`) VALUES (1, 1, 1, 'news_body', 'Body', NULL, 'textarea', '', 'n', 0, 0, 10, 0, 'n', 'ltr', 'y', 'n', 'xhtml', 'y', 2, 'any', 'YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30='), (2, 1, 1, 'news_extended', 'Extended text', NULL, 'textarea', '', 'n', 0, 0, 12, 0, 'n', 'ltr', 'n', 'y', 'xhtml', 'y', 3, 'any', 'YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30='), (3, 1, 1, 'news_image', 'News Image', NULL, 'file', '', 'n', 0, 0, 6, 128, 'n', 'ltr', 'n', 'n', 'none', 'n', 3, 'any', 'YTo3OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToibiI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJuIjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToibiI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToibiI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6Im4iO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6Im4iO3M6MTg6ImZpZWxkX2NvbnRlbnRfdHlwZSI7czo1OiJpbWFnZSI7fQ=='), (4, 1, 2, 'about_body', 'Body', NULL, 'textarea', '', 'n', 0, 0, 6, 128, 'n', 'ltr', 'n', 'n', 'xhtml', 'y', 4, 'any', 'YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30='), (5, 1, 2, 'about_image', 'Image', 'URL Only', 'file', '', 'n', 0, 0, 6, 128, 'n', 'ltr', 'n', 'n', 'none', 'n', 5, 'any', 'YTo3OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToibiI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJuIjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToibiI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToibiI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6Im4iO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6Im4iO3M6MTg6ImZpZWxkX2NvbnRlbnRfdHlwZSI7czo1OiJpbWFnZSI7fQ=='), (6, 1, 2, 'about_staff_title', 'Staff Member\'s Title', 'This is the Title that the staff member has within the company.  Example: CEO', 'text', '', 'n', 0, 0, 6, 128, 'n', 'ltr', 'y', 'n', 'none', 'n', 6, 'any', 'YTo4OntzOjE4OiJmaWVsZF9jb250ZW50X3RleHQiO2I6MDtzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToibiI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJuIjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToibiI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToibiI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6Im4iO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6Im4iO3M6MTg6ImZpZWxkX2NvbnRlbnRfdHlwZSI7czozOiJhbnkiO30='), (7, 1, 2, 'about_extended', 'Extended', NULL, 'textarea', '', 'n', 0, 0, 6, 128, 'n', 'ltr', 'y', 'y', 'xhtml', 'y', 7, 'any', 'YTo2OntzOjE4OiJmaWVsZF9zaG93X3NtaWxleXMiO3M6MToieSI7czoxOToiZmllbGRfc2hvd19nbG9zc2FyeSI7czoxOiJ5IjtzOjIxOiJmaWVsZF9zaG93X3NwZWxsY2hlY2siO3M6MToieSI7czoyNjoiZmllbGRfc2hvd19mb3JtYXR0aW5nX2J0bnMiO3M6MToieSI7czoyNDoiZmllbGRfc2hvd19maWxlX3NlbGVjdG9yIjtzOjE6InkiO3M6MjA6ImZpZWxkX3Nob3dfd3JpdGVtb2RlIjtzOjE6InkiO30=');
+LOCK TABLES `exp_email_cache` WRITE;
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_email_cache_mg` WRITE;
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_email_cache_ml` WRITE;
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_channel_titles` (`entry_id`, `site_id`, `channel_id`, `author_id`, `forum_topic_id`, `ip_address`, `title`, `url_title`, `status`, `versioning_enabled`, `view_count_one`, `view_count_two`, `view_count_three`, `view_count_four`, `allow_comments`, `sticky`, `entry_date`, `year`, `month`, `day`, `expiration_date`, `comment_expiration_date`, `edit_date`, `recent_comment_date`, `comment_total`) VALUES (1, 1, 1, 1, NULL, '::1', 'Getting to Know ExpressionEngine', 'getting_to_know_expressionengine', 'open', 'n', 0, 0, 0, 0, 'y', 'n', 1394136208, '2014', '03', '06', 0, 0, 20140306200329, NULL, 0), (2, 1, 1, 1, NULL, '::1', 'Welcome to the Example Site!', 'welcome_to_the_example_site', 'open', 'n', 0, 0, 0, 0, 'y', 'n', 1394136209, '2014', '03', '06', 0, 0, 20140306200329, NULL, 0), (3, 1, 2, 1, NULL, '::1', 'About the Label', 'about_the_label', 'open', 'n', 0, 0, 0, 0, 'y', 'n', 1394136209, '2014', '03', '06', 0, 0, 20140306200329, NULL, 0), (4, 1, 2, 1, NULL, '::1', 'Randell', 'randell', 'open', 'n', 0, 0, 0, 0, 'y', 'n', 1394136209, '2014', '03', '06', 0, 0, 20140306200329, NULL, 0), (5, 1, 2, 1, NULL, '::1', 'Chloe', 'chloe', 'open', 'n', 0, 0, 0, 0, 'y', 'n', 1394136209, '2014', '03', '06', 0, 0, 20140306200329, NULL, 0), (6, 1, 2, 1, NULL, '::1', 'Howard', 'howard', 'open', 'n', 0, 0, 0, 0, 'y', 'n', 1394136209, '2014', '03', '06', 0, 0, 20140306200329, NULL, 0), (7, 1, 2, 1, NULL, '::1', 'Jane', 'jane', 'open', 'n', 0, 0, 0, 0, 'y', 'n', 1394136209, '2014', '03', '06', 0, 0, 20140306200329, NULL, 0), (8, 1, 2, 1, NULL, '::1', 'Josh', 'josh', 'open', 'n', 0, 0, 0, 0, 'y', 'n', 1394136209, '2014', '03', '06', 0, 0, 20140306200329, NULL, 0), (9, 1, 2, 1, NULL, '::1', 'Jason', 'jason', 'open', 'n', 0, 0, 0, 0, 'y', 'n', 1394136209, '2014', '03', '06', 0, 0, 20140306200329, NULL, 0), (10, 1, 1, 1, NULL, '::1', 'Band Title', 'band_title', 'Featured', 'n', 0, 0, 0, 0, 'y', 'n', 1394136209, '2014', '03', '06', 0, 0, 20140306200329, NULL, 0);
+LOCK TABLES `exp_email_console_cache` WRITE;
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_channels` (`channel_id`, `site_id`, `channel_name`, `channel_title`, `channel_url`, `channel_description`, `channel_lang`, `total_entries`, `total_comments`, `last_entry_date`, `last_comment_date`, `cat_group`, `status_group`, `deft_status`, `field_group`, `search_excerpt`, `deft_category`, `deft_comments`, `channel_require_membership`, `channel_max_chars`, `channel_html_formatting`, `channel_allow_img_urls`, `channel_auto_link_urls`, `channel_notify`, `channel_notify_emails`, `comment_url`, `comment_system_enabled`, `comment_require_membership`, `comment_use_captcha`, `comment_moderate`, `comment_max_chars`, `comment_timelock`, `comment_require_email`, `comment_text_formatting`, `comment_html_formatting`, `comment_allow_img_urls`, `comment_auto_link_urls`, `comment_notify`, `comment_notify_authors`, `comment_notify_emails`, `comment_expiration`, `search_results_url`, `show_button_cluster`, `rss_url`, `enable_versioning`, `max_revisions`, `default_entry_title`, `url_title_prefix`, `live_look_template`) VALUES (1, 1, 'news', 'News', 'http://ee2.test/index.php/news', NULL, 'en', 3, 0, 1394136209, 0, '1', 1, 'open', 1, 2, NULL, 'y', 'y', 0, 'all', 'y', 'y', 'n', NULL, 'http://ee2.test/index.php/news/comments', 'y', 'n', 'y', 'n', 0, 0, 'y', 'xhtml', 'safe', 'n', 'y', 'n', 'n', NULL, 0, 'http://ee2.test/index.php/news/comments', 'y', NULL, 'n', 10, NULL, NULL, 0), (2, 1, 'about', 'Information Pages', 'http://ee2.test/index.php/about', NULL, 'en', 7, 0, 1394136209, 0, '2', 1, 'open', 2, 7, NULL, 'y', 'y', 0, 'all', 'y', 'n', 'n', NULL, 'http://ee2.test/index.php/news/comments', 'y', 'n', 'y', 'n', 0, 0, 'y', 'xhtml', 'safe', 'n', 'y', 'n', 'n', NULL, 0, 'http://ee2.test/index.php/news/comments', 'y', NULL, 'n', 10, NULL, NULL, 0);
+LOCK TABLES `exp_email_tracker` WRITE;
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_entry_versioning` WRITE;
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_extensions` WRITE;
+INSERT INTO `exp_extensions` (`extension_id`, `class`, `method`, `hook`, `settings`, `priority`, `version`, `enabled`) VALUES
+	(1,'Rte_ext','myaccount_nav_setup','myaccount_nav_setup','',10,'1.0.1','y'),
+	(2,'Rte_ext','cp_menu_array','cp_menu_array','',10,'1.0.1','y');
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_content_types` (`content_type_id`, `name`) VALUES (1, 'grid'), (2, 'channel');
+LOCK TABLES `exp_field_formatting` WRITE;
+INSERT INTO `exp_field_formatting` (`formatting_id`, `field_id`, `field_fmt`) VALUES
+	(1,1,'none'),
+	(2,1,'br'),
+	(3,1,'xhtml'),
+	(4,1,'markdown'),
+	(5,2,'none'),
+	(6,2,'br'),
+	(7,2,'xhtml'),
+	(8,2,'markdown'),
+	(9,3,'none'),
+	(10,3,'br'),
+	(11,3,'xhtml'),
+	(12,3,'markdown'),
+	(13,4,'none'),
+	(14,4,'br'),
+	(15,4,'xhtml'),
+	(16,4,'markdown'),
+	(17,5,'none'),
+	(18,5,'br'),
+	(19,5,'xhtml'),
+	(20,5,'markdown'),
+	(21,6,'none'),
+	(22,6,'br'),
+	(23,6,'xhtml'),
+	(24,6,'markdown'),
+	(25,7,'none'),
+	(26,7,'br'),
+	(27,7,'xhtml'),
+	(28,7,'markdown');
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_field_groups` WRITE;
+INSERT INTO `exp_field_groups` (`group_id`, `site_id`, `group_name`) VALUES
+	(1,1,'News'),
+	(2,1,'About');
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_fieldtypes` WRITE;
+INSERT INTO `exp_fieldtypes` (`fieldtype_id`, `name`, `version`, `settings`, `has_global_settings`) VALUES
+	(1,'select','1.0','YTowOnt9','n'),
+	(2,'text','1.0','YTowOnt9','n'),
+	(3,'textarea','1.0','YTowOnt9','n'),
+	(4,'date','1.0','YTowOnt9','n'),
+	(5,'file','1.0','YTowOnt9','n'),
+	(6,'grid','1.0','YTowOnt9','n'),
+	(7,'multi_select','1.0','YTowOnt9','n'),
+	(8,'checkboxes','1.0','YTowOnt9','n'),
+	(9,'radio','1.0','YTowOnt9','n'),
+	(10,'relationship','1.0','YTowOnt9','n'),
+	(11,'rte','1.0','YTowOnt9','n');
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_file_categories` WRITE;
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_file_dimensions` WRITE;
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_file_watermarks` WRITE;
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_files` WRITE;
+INSERT INTO `exp_files` (`file_id`, `site_id`, `title`, `upload_location_id`, `rel_path`, `mime_type`, `file_name`, `file_size`, `description`, `credit`, `location`, `uploaded_by_member_id`, `upload_date`, `modified_by_member_id`, `modified_date`, `file_hw_original`) VALUES
+	(1,1,'staff_jane.png',2,'staff_jane.png','image/png','staff_jane.png',51612,NULL,NULL,NULL,1,1302889304,1,1302889304,''),
+	(2,1,'staff_jason.png',2,'staff_jason.png','image/png','staff_jason.png',51430,NULL,NULL,NULL,1,1302889304,1,1302889304,''),
+	(3,1,'staff_josh.png',2,'staff_josh.png','image/png','staff_josh.png',50638,NULL,NULL,NULL,1,1302889304,1,1302889304,''),
+	(4,1,'staff_randell.png',2,'staff_randell.png','image/png','staff_randell.png',51681,NULL,NULL,NULL,1,1302889304,1,1302889304,''),
+	(5,1,'ee_banner_120_240.gif',2,'ee_banner_120_240.gif','image/gif','ee_banner_120_240.gif',9257,NULL,NULL,NULL,1,1302889304,1,1302889304,''),
+	(6,1,'testband300.jpg',2,'testband300.jpg','image/jpeg','testband300.jpg',23986,NULL,NULL,NULL,1,1302889304,1,1302889304,''),
+	(7,1,'map.jpg',2,'map.jpg','image/jpeg','map.jpg',71299,NULL,NULL,NULL,1,1302889304,1,1302889304,''),
+	(8,1,'map2.jpg',2,'map2.jpg','image/jpeg','map2.jpg',49175,NULL,NULL,NULL,1,1302889304,1,1302889304,''),
+	(9,1,'staff_chloe.png',2,'staff_chloe.png','image/png','staff_chloe.png',50262,NULL,NULL,NULL,1,1302889304,1,1302889304,''),
+	(10,1,'staff_howard.png',2,'staff_howard.png','image/png','staff_howard.png',51488,NULL,NULL,NULL,1,1302889304,1,1302889304,'');
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_global_variables` WRITE;
+INSERT INTO `exp_global_variables` (`variable_id`, `site_id`, `variable_name`, `variable_data`) VALUES
+	(1,1,'.htaccess','deny from all'),
+	(2,1,'branding_begin','<div id="branding">\n	<div id="branding_logo"></div>\n	<div id="branding_sub">\n		<h1><a href="{site_url}" title="Agile Records Home"></a></h1>'),
+	(3,1,'branding_end','</div> <!-- ending #branding_sub -->\n</div> <!-- ending #branding -->'),
+	(4,1,'comment_guidelines','<div id="comment_guidelines">\n	<h6>Comment Guidelines</h6>\n	<p>Basic HTML formatting permitted - <br />\n		<code>&lt;ul&gt;</code>, <code>&lt;li&gt;</code>, <code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;a href&gt;</code>, <code>&lt;blockquote&gt;</code>, <code>&lt;code&gt;</code></p>\n</div>'),
+	(5,1,'favicon','<!-- Favicon -->\n'),
+	(6,1,'html_close','</body>\n</html>'),
+	(7,1,'html_head','<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n<html xmlns="http://www.w3.org/1999/xhtml">\n<head>\n<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n'),
+	(8,1,'html_head_end','</head>\n'),
+	(9,1,'js','<!-- JS -->\n<script src="{site_url}themes/site_themes/agile_records/js/jquery.js" type="text/javascript"></script>\n<script src="{site_url}themes/site_themes/agile_records/js/onload.js" type="text/javascript"></script>'),
+	(10,1,'nav_access','<ul id="nav_access">\n	<li><a href="#navigation">Skip to navigation</a></li>\n	<li><a href="#primary_content_wrapper">Skip to content</a></li>\n</ul>'),
+	(11,1,'rss','<!-- RSS -->\n<link href="{path=news/rss}" rel="alternate" type="application/rss+xml" title="RSS Feed" />'),
+	(12,1,'rss_links','<h5>RSS Feeds <img src="{site_url}themes/site_themes/agile_records/images/rss12.gif" alt="RSS Icon" class="rssicon" /></h5>\n		<div id="news_rss">\n			<p>Subscribe to our RSS Feeds</p>\n			<ul>\n				<li><a href="{path=\'news/rss\'}">News RSS Feed</a></li>\n				<li><a href="{path=\'news/atom\'}">News ATOM Feed</a></li>\n			</ul>\n		</div>'),
+	(13,1,'wrapper_begin','<div id="page">\n<div id="content_wrapper">'),
+	(14,1,'wrapper_close','</div> <!-- ending #content_wrapper -->\n</div> <!-- ending #page -->');
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_grid_columns` WRITE;
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_html_buttons` WRITE;
+INSERT INTO `exp_html_buttons` (`id`, `site_id`, `member_id`, `tag_name`, `tag_open`, `tag_close`, `accesskey`, `tag_order`, `tag_row`, `classname`) VALUES
+	(1,1,0,'b','<strong>','</strong>','b',1,'1','btn_b'),
+	(2,1,0,'i','<em>','</em>','i',2,'1','btn_i'),
+	(3,1,0,'blockquote','<blockquote>','</blockquote>','q',3,'1','btn_blockquote'),
+	(4,1,0,'a','<a href="[![Link:!:http://]!]"(!( title="[![Title]!]")!)>','</a>','a',4,'1','btn_a'),
+	(5,1,0,'img','<img src="[![Link:!:http://]!]" alt="[![Alternative text]!]" />','','',5,'1','btn_img');
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_extensions` (`extension_id`, `class`, `method`, `hook`, `settings`, `priority`, `version`, `enabled`) VALUES (1, 'Rte_ext', 'myaccount_nav_setup', 'myaccount_nav_setup', '', 10, '1.0.1', 'y'), (2, 'Rte_ext', 'cp_menu_array', 'cp_menu_array', '', 10, '1.0.1', 'y');
+LOCK TABLES `exp_layout_publish` WRITE;
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_field_formatting` (`formatting_id`, `field_id`, `field_fmt`) VALUES (1, 1, 'none'), (2, 1, 'br'), (3, 1, 'xhtml'), (4, 1, 'markdown'), (5, 2, 'none'), (6, 2, 'br'), (7, 2, 'xhtml'), (8, 2, 'markdown'), (9, 3, 'none'), (10, 3, 'br'), (11, 3, 'xhtml'), (12, 3, 'markdown'), (13, 4, 'none'), (14, 4, 'br'), (15, 4, 'xhtml'), (16, 4, 'markdown'), (17, 5, 'none'), (18, 5, 'br'), (19, 5, 'xhtml'), (20, 5, 'markdown'), (21, 6, 'none'), (22, 6, 'br'), (23, 6, 'xhtml'), (24, 6, 'markdown'), (25, 7, 'none'), (26, 7, 'br'), (27, 7, 'xhtml'), (28, 7, 'markdown');
+LOCK TABLES `exp_member_bulletin_board` WRITE;
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_field_groups` (`group_id`, `site_id`, `group_name`) VALUES (1, 1, 'News'), (2, 1, 'About');
+LOCK TABLES `exp_member_data` WRITE;
+INSERT INTO `exp_member_data` (`member_id`) VALUES
+	(1);
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_fieldtypes` (`fieldtype_id`, `name`, `version`, `settings`, `has_global_settings`) VALUES (1, 'select', '1.0', 'YTowOnt9', 'n'), (2, 'text', '1.0', 'YTowOnt9', 'n'), (3, 'textarea', '1.0', 'YTowOnt9', 'n'), (4, 'date', '1.0', 'YTowOnt9', 'n'), (5, 'file', '1.0', 'YTowOnt9', 'n'), (6, 'grid', '1.0', 'YTowOnt9', 'n'), (7, 'multi_select', '1.0', 'YTowOnt9', 'n'), (8, 'checkboxes', '1.0', 'YTowOnt9', 'n'), (9, 'radio', '1.0', 'YTowOnt9', 'n'), (10, 'relationship', '1.0', 'YTowOnt9', 'n'), (11, 'rte', '1.0', 'YTowOnt9', 'n');
+LOCK TABLES `exp_member_fields` WRITE;
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_member_groups` WRITE;
+INSERT INTO `exp_member_groups` (`group_id`, `site_id`, `group_title`, `group_description`, `is_locked`, `can_view_offline_system`, `can_view_online_system`, `can_access_cp`, `can_access_content`, `can_access_publish`, `can_access_edit`, `can_access_files`, `can_access_fieldtypes`, `can_access_design`, `can_access_addons`, `can_access_modules`, `can_access_extensions`, `can_access_accessories`, `can_access_plugins`, `can_access_members`, `can_access_admin`, `can_access_sys_prefs`, `can_access_content_prefs`, `can_access_tools`, `can_access_comm`, `can_access_utilities`, `can_access_data`, `can_access_logs`, `can_admin_channels`, `can_admin_upload_prefs`, `can_admin_design`, `can_admin_members`, `can_delete_members`, `can_admin_mbr_groups`, `can_admin_mbr_templates`, `can_ban_users`, `can_admin_modules`, `can_admin_templates`, `can_edit_categories`, `can_delete_categories`, `can_view_other_entries`, `can_edit_other_entries`, `can_assign_post_authors`, `can_delete_self_entries`, `can_delete_all_entries`, `can_view_other_comments`, `can_edit_own_comments`, `can_delete_own_comments`, `can_edit_all_comments`, `can_delete_all_comments`, `can_moderate_comments`, `can_send_email`, `can_send_cached_email`, `can_email_member_groups`, `can_email_mailinglist`, `can_email_from_profile`, `can_view_profiles`, `can_edit_html_buttons`, `can_delete_self`, `mbr_delete_notify_emails`, `can_post_comments`, `exclude_from_moderation`, `can_search`, `search_flood_control`, `can_send_private_messages`, `prv_msg_send_limit`, `prv_msg_storage_limit`, `can_attach_in_private_messages`, `can_send_bulletins`, `include_in_authorlist`, `include_in_memberlist`) VALUES
+	(1,1,'Super Admins','','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','y','','y','y','y',0,'y',20,60,'y','y','y','y'),
+	(2,1,'Banned','','y','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','','n','n','n',60,'n',20,60,'n','n','n','n'),
+	(3,1,'Guests','','y','n','y','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','y','n','n','n','n','','y','n','y',15,'n',20,60,'n','n','n','n'),
+	(4,1,'Pending','','y','n','y','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','y','n','n','n','n','','y','n','y',15,'n',20,60,'n','n','n','n'),
+	(5,1,'Members','','y','n','y','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','n','y','y','y','n','','y','n','y',10,'y',20,60,'y','n','n','y');
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_member_homepage` WRITE;
+INSERT INTO `exp_member_homepage` (`member_id`, `recent_entries`, `recent_entries_order`, `recent_comments`, `recent_comments_order`, `recent_members`, `recent_members_order`, `site_statistics`, `site_statistics_order`, `member_search_form`, `member_search_form_order`, `notepad`, `notepad_order`, `bulletin_board`, `bulletin_board_order`, `pmachine_news_feed`, `pmachine_news_feed_order`) VALUES
+	(1,'l',1,'l',2,'n',0,'r',1,'n',0,'r',2,'r',0,'l',0);
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_member_search` WRITE;
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_files` (`file_id`, `site_id`, `title`, `upload_location_id`, `rel_path`, `mime_type`, `file_name`, `file_size`, `description`, `credit`, `location`, `uploaded_by_member_id`, `upload_date`, `modified_by_member_id`, `modified_date`, `file_hw_original`) VALUES (1, 1, 'staff_jane.png', 2, 'staff_jane.png', 'image/png', 'staff_jane.png', 51612, NULL, NULL, NULL, 1, 1302889304, 1, 1302889304, ''), (2, 1, 'staff_jason.png', 2, 'staff_jason.png', 'image/png', 'staff_jason.png', 51430, NULL, NULL, NULL, 1, 1302889304, 1, 1302889304, ''), (3, 1, 'staff_josh.png', 2, 'staff_josh.png', 'image/png', 'staff_josh.png', 50638, NULL, NULL, NULL, 1, 1302889304, 1, 1302889304, ''), (4, 1, 'staff_randell.png', 2, 'staff_randell.png', 'image/png', 'staff_randell.png', 51681, NULL, NULL, NULL, 1, 1302889304, 1, 1302889304, ''), (5, 1, 'ee_banner_120_240.gif', 2, 'ee_banner_120_240.gif', 'image/gif', 'ee_banner_120_240.gif', 9257, NULL, NULL, NULL, 1, 1302889304, 1, 1302889304, ''), (6, 1, 'testband300.jpg', 2, 'testband300.jpg', 'image/jpeg', 'testband300.jpg', 23986, NULL, NULL, NULL, 1, 1302889304, 1, 1302889304, ''), (7, 1, 'map.jpg', 2, 'map.jpg', 'image/jpeg', 'map.jpg', 71299, NULL, NULL, NULL, 1, 1302889304, 1, 1302889304, ''), (8, 1, 'map2.jpg', 2, 'map2.jpg', 'image/jpeg', 'map2.jpg', 49175, NULL, NULL, NULL, 1, 1302889304, 1, 1302889304, ''), (9, 1, 'staff_chloe.png', 2, 'staff_chloe.png', 'image/png', 'staff_chloe.png', 50262, NULL, NULL, NULL, 1, 1302889304, 1, 1302889304, ''), (10, 1, 'staff_howard.png', 2, 'staff_howard.png', 'image/png', 'staff_howard.png', 51488, NULL, NULL, NULL, 1, 1302889304, 1, 1302889304, '');
+LOCK TABLES `exp_members` WRITE;
+INSERT INTO `exp_members` (`member_id`, `group_id`, `username`, `screen_name`, `password`, `salt`, `unique_id`, `crypt_key`, `authcode`, `email`, `url`, `location`, `occupation`, `interests`, `bday_d`, `bday_m`, `bday_y`, `aol_im`, `yahoo_im`, `msn_im`, `icq`, `bio`, `signature`, `avatar_filename`, `avatar_width`, `avatar_height`, `photo_filename`, `photo_width`, `photo_height`, `sig_img_filename`, `sig_img_width`, `sig_img_height`, `ignore_list`, `private_messages`, `accept_messages`, `last_view_bulletins`, `last_bulletin_date`, `ip_address`, `join_date`, `last_visit`, `last_activity`, `total_entries`, `total_comments`, `total_forum_topics`, `total_forum_posts`, `last_entry_date`, `last_comment_date`, `last_forum_post_date`, `last_email_date`, `in_authorlist`, `accept_admin_email`, `accept_user_email`, `notify_by_default`, `notify_of_pm`, `display_avatars`, `display_signatures`, `parse_smileys`, `smart_notifications`, `language`, `timezone`, `time_format`, `date_format`, `include_seconds`, `cp_theme`, `profile_theme`, `forum_theme`, `tracker`, `template_size`, `notepad`, `notepad_size`, `quick_links`, `quick_tabs`, `show_sidebar`, `pmember_id`, `rte_enabled`, `rte_toolset_id`) VALUES
+	(1,1,'admin','Admin','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','','bc62f762437a95f19b722924b85f76bc19fb6430',NULL,NULL,'kevin.cupp@gmail.com',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,'y',0,0,'127.0.0.1',1409242030,0,0,10,0,0,0,1409242030,0,0,0,'n','y','y','y','y','y','y','y','y','english','America/New_York','12','%n/%j/%y','n',NULL,NULL,NULL,NULL,'28',NULL,'18','',NULL,'n',0,'y',0);
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_global_variables` (`variable_id`, `site_id`, `variable_name`, `variable_data`) VALUES (1, 1, '.htaccess', 'deny from all'), (2, 1, 'branding_begin', '<div id="branding">
-	<div id="branding_logo"></div>
-	<div id="branding_sub">
-		<h1><a href="{site_url}" title="Agile Records Home"></a></h1>'), (3, 1, 'branding_end', '</div> <!-- ending #branding_sub -->
-</div> <!-- ending #branding -->'), (4, 1, 'comment_guidelines', '<div id="comment_guidelines">
-	<h6>Comment Guidelines</h6>
-	<p>Basic HTML formatting permitted - <br />
-		<code>&lt;ul&gt;</code>, <code>&lt;li&gt;</code>, <code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;a href&gt;</code>, <code>&lt;blockquote&gt;</code>, <code>&lt;code&gt;</code></p>
-</div>'), (5, 1, 'favicon', '<!-- Favicon -->
-'), (6, 1, 'html_close', '</body>
-</html>'), (7, 1, 'html_head', '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-'), (8, 1, 'html_head_end', '</head>
-'), (9, 1, 'js', '<!-- JS -->
-<script src="{site_url}themes/site_themes/agile_records/js/jquery.js" type="text/javascript"></script>
-<script src="{site_url}themes/site_themes/agile_records/js/onload.js" type="text/javascript"></script>'), (10, 1, 'nav_access', '<ul id="nav_access">
-	<li><a href="#navigation">Skip to navigation</a></li>
-	<li><a href="#primary_content_wrapper">Skip to content</a></li>
-</ul>'), (11, 1, 'rss', '<!-- RSS -->
-<link href="{path=news/rss}" rel="alternate" type="application/rss+xml" title="RSS Feed" />'), (12, 1, 'rss_links', '<h5>RSS Feeds <img src="{site_url}themes/site_themes/agile_records/images/rss12.gif" alt="RSS Icon" class="rssicon" /></h5>
-		<div id="news_rss">
-			<p>Subscribe to our RSS Feeds</p>
-			<ul>
-				<li><a href="{path=\'news/rss\'}">News RSS Feed</a></li>
-				<li><a href="{path=\'news/atom\'}">News ATOM Feed</a></li>
-			</ul>
-		</div>'), (13, 1, 'wrapper_begin', '<div id="page">
-<div id="content_wrapper">'), (14, 1, 'wrapper_close', '</div> <!-- ending #content_wrapper -->
-</div> <!-- ending #page -->');
+LOCK TABLES `exp_message_attachments` WRITE;
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_message_copies` WRITE;
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_html_buttons` (`id`, `site_id`, `member_id`, `tag_name`, `tag_open`, `tag_close`, `accesskey`, `tag_order`, `tag_row`, `classname`) VALUES (1, 1, 0, 'b', '<strong>', '</strong>', 'b', 1, '1', 'btn_b'), (2, 1, 0, 'i', '<em>', '</em>', 'i', 2, '1', 'btn_i'), (3, 1, 0, 'blockquote', '<blockquote>', '</blockquote>', 'q', 3, '1', 'btn_blockquote'), (4, 1, 0, 'a', '<a href="[![Link:!:http://]!]"(!( title="[![Title]!]")!)>', '</a>', 'a', 4, '1', 'btn_a'), (5, 1, 0, 'img', '<img src="[![Link:!:http://]!]" alt="[![Alternative text]!]" />', '', '', 5, '1', 'btn_img');
+LOCK TABLES `exp_message_data` WRITE;
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_message_folders` WRITE;
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_message_listed` WRITE;
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_member_data` (`member_id`) VALUES (1);
+LOCK TABLES `exp_module_member_groups` WRITE;
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_modules` WRITE;
+INSERT INTO `exp_modules` (`module_id`, `module_name`, `module_version`, `has_cp_backend`, `has_publish_fields`) VALUES
+	(1,'Emoticon','2.0','n','n'),
+	(2,'Jquery','1.0','n','n'),
+	(3,'Channel','2.0.1','n','n'),
+	(4,'Member','2.1','n','n'),
+	(5,'Stats','2.0','n','n'),
+	(6,'Rte','1.0.1','y','n'),
+	(7,'Email','2.0','n','n'),
+	(8,'Rss','2.0','n','n'),
+	(9,'Comment','2.3.2','y','n'),
+	(10,'Search','2.2.2','n','n');
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_member_groups` (`group_id`, `site_id`, `group_title`, `group_description`, `is_locked`, `can_view_offline_system`, `can_view_online_system`, `can_access_cp`, `can_access_content`, `can_access_publish`, `can_access_edit`, `can_access_files`, `can_access_fieldtypes`, `can_access_design`, `can_access_addons`, `can_access_modules`, `can_access_extensions`, `can_access_accessories`, `can_access_plugins`, `can_access_members`, `can_access_admin`, `can_access_sys_prefs`, `can_access_content_prefs`, `can_access_tools`, `can_access_comm`, `can_access_utilities`, `can_access_data`, `can_access_logs`, `can_admin_channels`, `can_admin_upload_prefs`, `can_admin_design`, `can_admin_members`, `can_delete_members`, `can_admin_mbr_groups`, `can_admin_mbr_templates`, `can_ban_users`, `can_admin_modules`, `can_admin_templates`, `can_edit_categories`, `can_delete_categories`, `can_view_other_entries`, `can_edit_other_entries`, `can_assign_post_authors`, `can_delete_self_entries`, `can_delete_all_entries`, `can_view_other_comments`, `can_edit_own_comments`, `can_delete_own_comments`, `can_edit_all_comments`, `can_delete_all_comments`, `can_moderate_comments`, `can_send_email`, `can_send_cached_email`, `can_email_member_groups`, `can_email_mailinglist`, `can_email_from_profile`, `can_view_profiles`, `can_edit_html_buttons`, `can_delete_self`, `mbr_delete_notify_emails`, `can_post_comments`, `exclude_from_moderation`, `can_search`, `search_flood_control`, `can_send_private_messages`, `prv_msg_send_limit`, `prv_msg_storage_limit`, `can_attach_in_private_messages`, `can_send_bulletins`, `include_in_authorlist`, `include_in_memberlist`, `include_in_mailinglists`) VALUES (1, 1, 'Super Admins', '', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', NULL, 'y', 'y', 'y', 0, 'y', 20, 60, 'y', 'y', 'y', 'y', 'y'), (2, 1, 'Banned', '', 'y', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', NULL, 'n', 'n', 'n', 60, 'n', 20, 60, 'n', 'n', 'n', 'n', 'n'), (3, 1, 'Guests', '', 'y', 'n', 'y', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'y', 'n', 'n', 'n', 'n', NULL, 'y', 'n', 'y', 15, 'n', 20, 60, 'n', 'n', 'n', 'n', 'n'), (4, 1, 'Pending', '', 'y', 'n', 'y', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'y', 'n', 'n', 'n', 'n', NULL, 'y', 'n', 'y', 15, 'n', 20, 60, 'n', 'n', 'n', 'n', 'n'), (5, 1, 'Members', '', 'y', 'n', 'y', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'y', 'y', 'y', 'n', NULL, 'y', 'n', 'y', 10, 'y', 20, 60, 'y', 'n', 'n', 'y', 'y');
+LOCK TABLES `exp_online_users` WRITE;
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_member_homepage` (`member_id`, `recent_entries`, `recent_entries_order`, `recent_comments`, `recent_comments_order`, `recent_members`, `recent_members_order`, `site_statistics`, `site_statistics_order`, `member_search_form`, `member_search_form_order`, `notepad`, `notepad_order`, `bulletin_board`, `bulletin_board_order`, `pmachine_news_feed`, `pmachine_news_feed_order`) VALUES (1, 'l', 1, 'l', 2, 'n', 0, 'r', 1, 'n', 0, 'r', 2, 'r', 0, 'l', 0);
+LOCK TABLES `exp_password_lockout` WRITE;
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_relationships` WRITE;
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_members` (`member_id`, `group_id`, `username`, `screen_name`, `password`, `salt`, `unique_id`, `crypt_key`, `authcode`, `email`, `url`, `location`, `occupation`, `interests`, `bday_d`, `bday_m`, `bday_y`, `aol_im`, `yahoo_im`, `msn_im`, `icq`, `bio`, `signature`, `avatar_filename`, `avatar_width`, `avatar_height`, `photo_filename`, `photo_width`, `photo_height`, `sig_img_filename`, `sig_img_width`, `sig_img_height`, `ignore_list`, `private_messages`, `accept_messages`, `last_view_bulletins`, `last_bulletin_date`, `ip_address`, `join_date`, `last_visit`, `last_activity`, `total_entries`, `total_comments`, `total_forum_topics`, `total_forum_posts`, `last_entry_date`, `last_comment_date`, `last_forum_post_date`, `last_email_date`, `in_authorlist`, `accept_admin_email`, `accept_user_email`, `notify_by_default`, `notify_of_pm`, `display_avatars`, `display_signatures`, `parse_smileys`, `smart_notifications`, `language`, `timezone`, `time_format`, `date_format`, `include_seconds`, `cp_theme`, `profile_theme`, `forum_theme`, `tracker`, `template_size`, `notepad`, `notepad_size`, `quick_links`, `quick_tabs`, `show_sidebar`, `pmember_id`, `rte_enabled`, `rte_toolset_id`) VALUES (1, 1, 'admin', 'Admin', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', '', '465e6155e3c56aa5581fa4fefc25423f9e0e66ce', NULL, NULL, 'kevin.cupp@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 'y', 0, 0, '::1', 1394136209, 0, 0, 10, 0, 0, 0, 1394136209, 0, 0, 0, 'n', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'y', 'english', 'America/New_York', '12', '%n/%j/%y', 'n', NULL, NULL, NULL, NULL, '28', NULL, '18', NULL, NULL, 'n', 0, 'y', 0);
+LOCK TABLES `exp_remember_me` WRITE;
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_reset_password` WRITE;
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_revision_tracker` WRITE;
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_rte_tools` WRITE;
+INSERT INTO `exp_rte_tools` (`tool_id`, `name`, `class`, `enabled`) VALUES
+	(1,'Blockquote','Blockquote_rte','y'),
+	(2,'Bold','Bold_rte','y'),
+	(3,'Headings','Headings_rte','y'),
+	(4,'Image','Image_rte','y'),
+	(5,'Italic','Italic_rte','y'),
+	(6,'Link','Link_rte','y'),
+	(7,'Ordered List','Ordered_list_rte','y'),
+	(8,'Underline','Underline_rte','y'),
+	(9,'Unordered List','Unordered_list_rte','y'),
+	(10,'View Source','View_source_rte','y');
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_rte_toolsets` WRITE;
+INSERT INTO `exp_rte_toolsets` (`toolset_id`, `member_id`, `name`, `tools`, `enabled`) VALUES
+	(1,0,'Default','3|2|5|1|9|7|6|4|10','y');
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_search` WRITE;
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_search_log` WRITE;
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_modules` (`module_id`, `module_name`, `module_version`, `has_cp_backend`, `has_publish_fields`) VALUES (1, 'Emoticon', '2.0', 'n', 'n'), (2, 'Jquery', '1.0', 'n', 'n'), (3, 'Channel', '2.0.1', 'n', 'n'), (4, 'Member', '2.1', 'n', 'n'), (5, 'Stats', '2.0', 'n', 'n'), (6, 'Rte', '1.0.1', 'y', 'n'), (7, 'Email', '2.0', 'n', 'n'), (8, 'Rss', '2.0', 'n', 'n'), (9, 'Comment', '2.3.2', 'y', 'n'), (10, 'Search', '2.2.2', 'n', 'n');
+LOCK TABLES `exp_security_hashes` WRITE;
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_sessions` WRITE;
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_sites` WRITE;
+INSERT INTO `exp_sites` (`site_id`, `site_label`, `site_name`, `site_description`, `site_system_preferences`, `site_mailinglist_preferences`, `site_member_preferences`, `site_template_preferences`, `site_channel_preferences`, `site_bootstrap_checksums`) VALUES
+	(1,'EE3','default_site',NULL,'YTo5MDp7czoxMDoic2l0ZV9pbmRleCI7czo5OiJpbmRleC5waHAiO3M6ODoic2l0ZV91cmwiO3M6MTE6Imh0dHA6Ly9lZTIvIjtzOjE2OiJ0aGVtZV9mb2xkZXJfdXJsIjtzOjE4OiJodHRwOi8vZWUyL3RoZW1lcy8iO3M6MTU6IndlYm1hc3Rlcl9lbWFpbCI7czoyMDoia2V2aW4uY3VwcEBnbWFpbC5jb20iO3M6MTQ6IndlYm1hc3Rlcl9uYW1lIjtzOjA6IiI7czoyMDoiY2hhbm5lbF9ub21lbmNsYXR1cmUiO3M6NzoiY2hhbm5lbCI7czoxMDoibWF4X2NhY2hlcyI7czozOiIxNTAiO3M6MTE6ImNhcHRjaGFfdXJsIjtzOjI3OiJodHRwOi8vZWUyL2ltYWdlcy9jYXB0Y2hhcy8iO3M6MTI6ImNhcHRjaGFfcGF0aCI7czo1MDoiL3ByaXZhdGUvdmFyL3d3dy9leHByZXNzaW9uZW5naW5lL2ltYWdlcy9jYXB0Y2hhcy8iO3M6MTI6ImNhcHRjaGFfZm9udCI7czoxOiJ5IjtzOjEyOiJjYXB0Y2hhX3JhbmQiO3M6MToieSI7czoyMzoiY2FwdGNoYV9yZXF1aXJlX21lbWJlcnMiO3M6MToibiI7czoxNzoiZW5hYmxlX2RiX2NhY2hpbmciO3M6MToibiI7czoxODoiZW5hYmxlX3NxbF9jYWNoaW5nIjtzOjE6Im4iO3M6MTg6ImZvcmNlX3F1ZXJ5X3N0cmluZyI7czoxOiJuIjtzOjEzOiJzaG93X3Byb2ZpbGVyIjtzOjE6Im4iO3M6MTg6InRlbXBsYXRlX2RlYnVnZ2luZyI7czoxOiJuIjtzOjE1OiJpbmNsdWRlX3NlY29uZHMiO3M6MToibiI7czoxMzoiY29va2llX2RvbWFpbiI7czowOiIiO3M6MTE6ImNvb2tpZV9wYXRoIjtzOjA6IiI7czoyMDoid2Vic2l0ZV9zZXNzaW9uX3R5cGUiO3M6MToiYyI7czoxNToiY3Bfc2Vzc2lvbl90eXBlIjtzOjI6ImNzIjtzOjIxOiJhbGxvd191c2VybmFtZV9jaGFuZ2UiO3M6MToieSI7czoxODoiYWxsb3dfbXVsdGlfbG9naW5zIjtzOjE6InkiO3M6MTY6InBhc3N3b3JkX2xvY2tvdXQiO3M6MToieSI7czoyNToicGFzc3dvcmRfbG9ja291dF9pbnRlcnZhbCI7czoxOiIxIjtzOjIwOiJyZXF1aXJlX2lwX2Zvcl9sb2dpbiI7czoxOiJ5IjtzOjIyOiJyZXF1aXJlX2lwX2Zvcl9wb3N0aW5nIjtzOjE6InkiO3M6MjQ6InJlcXVpcmVfc2VjdXJlX3Bhc3N3b3JkcyI7czoxOiJuIjtzOjE5OiJhbGxvd19kaWN0aW9uYXJ5X3B3IjtzOjE6InkiO3M6MjM6Im5hbWVfb2ZfZGljdGlvbmFyeV9maWxlIjtzOjA6IiI7czoxNzoieHNzX2NsZWFuX3VwbG9hZHMiO3M6MToieSI7czoxNToicmVkaXJlY3RfbWV0aG9kIjtzOjg6InJlZGlyZWN0IjtzOjk6ImRlZnRfbGFuZyI7czo3OiJlbmdsaXNoIjtzOjg6InhtbF9sYW5nIjtzOjI6ImVuIjtzOjEyOiJzZW5kX2hlYWRlcnMiO3M6MToieSI7czoxMToiZ3ppcF9vdXRwdXQiO3M6MToibiI7czoxMzoibG9nX3JlZmVycmVycyI7czoxOiJuIjtzOjEzOiJtYXhfcmVmZXJyZXJzIjtzOjM6IjUwMCI7czoxMToiZGF0ZV9mb3JtYXQiO3M6ODoiJW4vJWovJXkiO3M6MTE6InRpbWVfZm9ybWF0IjtzOjI6IjEyIjtzOjEzOiJzZXJ2ZXJfb2Zmc2V0IjtzOjA6IiI7czoyMToiZGVmYXVsdF9zaXRlX3RpbWV6b25lIjtzOjE2OiJBbWVyaWNhL05ld19Zb3JrIjtzOjEzOiJtYWlsX3Byb3RvY29sIjtzOjQ6Im1haWwiO3M6MTE6InNtdHBfc2VydmVyIjtzOjA6IiI7czoxMzoic210cF91c2VybmFtZSI7czowOiIiO3M6MTM6InNtdHBfcGFzc3dvcmQiO3M6MDoiIjtzOjExOiJlbWFpbF9kZWJ1ZyI7czoxOiJuIjtzOjEzOiJlbWFpbF9jaGFyc2V0IjtzOjU6InV0Zi04IjtzOjE1OiJlbWFpbF9iYXRjaG1vZGUiO3M6MToibiI7czoxNjoiZW1haWxfYmF0Y2hfc2l6ZSI7czowOiIiO3M6MTE6Im1haWxfZm9ybWF0IjtzOjU6InBsYWluIjtzOjk6IndvcmRfd3JhcCI7czoxOiJ5IjtzOjIyOiJlbWFpbF9jb25zb2xlX3RpbWVsb2NrIjtzOjE6IjUiO3M6MjI6ImxvZ19lbWFpbF9jb25zb2xlX21zZ3MiO3M6MToieSI7czo4OiJjcF90aGVtZSI7czo3OiJkZWZhdWx0IjtzOjIxOiJlbWFpbF9tb2R1bGVfY2FwdGNoYXMiO3M6MToibiI7czoxNjoibG9nX3NlYXJjaF90ZXJtcyI7czoxOiJ5IjtzOjE5OiJkZW55X2R1cGxpY2F0ZV9kYXRhIjtzOjE6InkiO3M6MjQ6InJlZGlyZWN0X3N1Ym1pdHRlZF9saW5rcyI7czoxOiJuIjtzOjE2OiJlbmFibGVfY2Vuc29yaW5nIjtzOjE6Im4iO3M6MTQ6ImNlbnNvcmVkX3dvcmRzIjtzOjA6IiI7czoxODoiY2Vuc29yX3JlcGxhY2VtZW50IjtzOjA6IiI7czoxMDoiYmFubmVkX2lwcyI7czowOiIiO3M6MTM6ImJhbm5lZF9lbWFpbHMiO3M6MDoiIjtzOjE2OiJiYW5uZWRfdXNlcm5hbWVzIjtzOjA6IiI7czoxOToiYmFubmVkX3NjcmVlbl9uYW1lcyI7czowOiIiO3M6MTA6ImJhbl9hY3Rpb24iO3M6ODoicmVzdHJpY3QiO3M6MTE6ImJhbl9tZXNzYWdlIjtzOjM0OiJUaGlzIHNpdGUgaXMgY3VycmVudGx5IHVuYXZhaWxhYmxlIjtzOjE1OiJiYW5fZGVzdGluYXRpb24iO3M6MjE6Imh0dHA6Ly93d3cueWFob28uY29tLyI7czoxNjoiZW5hYmxlX2Vtb3RpY29ucyI7czoxOiJ5IjtzOjEyOiJlbW90aWNvbl91cmwiO3M6MjY6Imh0dHA6Ly9lZTIvaW1hZ2VzL3NtaWxleXMvIjtzOjE5OiJyZWNvdW50X2JhdGNoX3RvdGFsIjtzOjQ6IjEwMDAiO3M6MTc6Im5ld192ZXJzaW9uX2NoZWNrIjtzOjE6InkiO3M6MTc6ImVuYWJsZV90aHJvdHRsaW5nIjtzOjE6Im4iO3M6MTc6ImJhbmlzaF9tYXNrZWRfaXBzIjtzOjE6InkiO3M6MTQ6Im1heF9wYWdlX2xvYWRzIjtzOjI6IjEwIjtzOjEzOiJ0aW1lX2ludGVydmFsIjtzOjE6IjgiO3M6MTI6ImxvY2tvdXRfdGltZSI7czoyOiIzMCI7czoxNToiYmFuaXNobWVudF90eXBlIjtzOjc6Im1lc3NhZ2UiO3M6MTQ6ImJhbmlzaG1lbnRfdXJsIjtzOjA6IiI7czoxODoiYmFuaXNobWVudF9tZXNzYWdlIjtzOjUwOiJZb3UgaGF2ZSBleGNlZWRlZCB0aGUgYWxsb3dlZCBwYWdlIGxvYWQgZnJlcXVlbmN5LiI7czoxNzoiZW5hYmxlX3NlYXJjaF9sb2ciO3M6MToieSI7czoxOToibWF4X2xvZ2dlZF9zZWFyY2hlcyI7czozOiI1MDAiO3M6MTc6InRoZW1lX2ZvbGRlcl9wYXRoIjtzOjQxOiIvcHJpdmF0ZS92YXIvd3d3L2V4cHJlc3Npb25lbmdpbmUvdGhlbWVzLyI7czoxMDoiaXNfc2l0ZV9vbiI7czoxOiJ5IjtzOjExOiJydGVfZW5hYmxlZCI7czoxOiJ5IjtzOjIyOiJydGVfZGVmYXVsdF90b29sc2V0X2lkIjtzOjE6IjEiO3M6MTU6ImNvb2tpZV9odHRwb25seSI7czoxOiJ5IjtzOjEzOiJjb29raWVfc2VjdXJlIjtzOjE6Im4iO30=','YTozOntzOjE5OiJtYWlsaW5nbGlzdF9lbmFibGVkIjtzOjE6InkiO3M6MTg6Im1haWxpbmdsaXN0X25vdGlmeSI7czoxOiJuIjtzOjI1OiJtYWlsaW5nbGlzdF9ub3RpZnlfZW1haWxzIjtzOjA6IiI7fQ==','YTo0NDp7czoxMDoidW5fbWluX2xlbiI7czoxOiI0IjtzOjEwOiJwd19taW5fbGVuIjtzOjE6IjUiO3M6MjU6ImFsbG93X21lbWJlcl9yZWdpc3RyYXRpb24iO3M6MToibiI7czoyNToiYWxsb3dfbWVtYmVyX2xvY2FsaXphdGlvbiI7czoxOiJ5IjtzOjE4OiJyZXFfbWJyX2FjdGl2YXRpb24iO3M6NToiZW1haWwiO3M6MjM6Im5ld19tZW1iZXJfbm90aWZpY2F0aW9uIjtzOjE6Im4iO3M6MjM6Im1icl9ub3RpZmljYXRpb25fZW1haWxzIjtzOjA6IiI7czoyNDoicmVxdWlyZV90ZXJtc19vZl9zZXJ2aWNlIjtzOjE6InkiO3M6MjI6InVzZV9tZW1iZXJzaGlwX2NhcHRjaGEiO3M6MToibiI7czoyMDoiZGVmYXVsdF9tZW1iZXJfZ3JvdXAiO3M6MToiNSI7czoxNToicHJvZmlsZV90cmlnZ2VyIjtzOjY6Im1lbWJlciI7czoxMjoibWVtYmVyX3RoZW1lIjtzOjEzOiJhZ2lsZV9yZWNvcmRzIjtzOjE0OiJlbmFibGVfYXZhdGFycyI7czoxOiJ5IjtzOjIwOiJhbGxvd19hdmF0YXJfdXBsb2FkcyI7czoxOiJuIjtzOjEwOiJhdmF0YXJfdXJsIjtzOjI2OiJodHRwOi8vZWUyL2ltYWdlcy9hdmF0YXJzLyI7czoxMToiYXZhdGFyX3BhdGgiO3M6NDk6Ii9wcml2YXRlL3Zhci93d3cvZXhwcmVzc2lvbmVuZ2luZS9pbWFnZXMvYXZhdGFycy8iO3M6MTY6ImF2YXRhcl9tYXhfd2lkdGgiO3M6MzoiMTAwIjtzOjE3OiJhdmF0YXJfbWF4X2hlaWdodCI7czozOiIxMDAiO3M6MTM6ImF2YXRhcl9tYXhfa2IiO3M6MjoiNTAiO3M6MTM6ImVuYWJsZV9waG90b3MiO3M6MToibiI7czo5OiJwaG90b191cmwiO3M6MzI6Imh0dHA6Ly9lZTIvaW1hZ2VzL21lbWJlcl9waG90b3MvIjtzOjEwOiJwaG90b19wYXRoIjtzOjU1OiIvcHJpdmF0ZS92YXIvd3d3L2V4cHJlc3Npb25lbmdpbmUvaW1hZ2VzL21lbWJlcl9waG90b3MvIjtzOjE1OiJwaG90b19tYXhfd2lkdGgiO3M6MzoiMTAwIjtzOjE2OiJwaG90b19tYXhfaGVpZ2h0IjtzOjM6IjEwMCI7czoxMjoicGhvdG9fbWF4X2tiIjtzOjI6IjUwIjtzOjE2OiJhbGxvd19zaWduYXR1cmVzIjtzOjE6InkiO3M6MTM6InNpZ19tYXhsZW5ndGgiO3M6MzoiNTAwIjtzOjIxOiJzaWdfYWxsb3dfaW1nX2hvdGxpbmsiO3M6MToibiI7czoyMDoic2lnX2FsbG93X2ltZ191cGxvYWQiO3M6MToibiI7czoxMToic2lnX2ltZ191cmwiO3M6NDA6Imh0dHA6Ly9lZTIvaW1hZ2VzL3NpZ25hdHVyZV9hdHRhY2htZW50cy8iO3M6MTI6InNpZ19pbWdfcGF0aCI7czo2MzoiL3ByaXZhdGUvdmFyL3d3dy9leHByZXNzaW9uZW5naW5lL2ltYWdlcy9zaWduYXR1cmVfYXR0YWNobWVudHMvIjtzOjE3OiJzaWdfaW1nX21heF93aWR0aCI7czozOiI0ODAiO3M6MTg6InNpZ19pbWdfbWF4X2hlaWdodCI7czoyOiI4MCI7czoxNDoic2lnX2ltZ19tYXhfa2IiO3M6MjoiMzAiO3M6MTk6InBydl9tc2dfdXBsb2FkX3BhdGgiO3M6NTY6Ii9wcml2YXRlL3Zhci93d3cvZXhwcmVzc2lvbmVuZ2luZS9pbWFnZXMvcG1fYXR0YWNobWVudHMvIjtzOjIzOiJwcnZfbXNnX21heF9hdHRhY2htZW50cyI7czoxOiIzIjtzOjIyOiJwcnZfbXNnX2F0dGFjaF9tYXhzaXplIjtzOjM6IjI1MCI7czoyMDoicHJ2X21zZ19hdHRhY2hfdG90YWwiO3M6MzoiMTAwIjtzOjE5OiJwcnZfbXNnX2h0bWxfZm9ybWF0IjtzOjQ6InNhZmUiO3M6MTg6InBydl9tc2dfYXV0b19saW5rcyI7czoxOiJ5IjtzOjE3OiJwcnZfbXNnX21heF9jaGFycyI7czo0OiI2MDAwIjtzOjE5OiJtZW1iZXJsaXN0X29yZGVyX2J5IjtzOjExOiJ0b3RhbF9wb3N0cyI7czoyMToibWVtYmVybGlzdF9zb3J0X29yZGVyIjtzOjQ6ImRlc2MiO3M6MjA6Im1lbWJlcmxpc3Rfcm93X2xpbWl0IjtzOjI6IjIwIjt9','YTo3OntzOjIyOiJlbmFibGVfdGVtcGxhdGVfcm91dGVzIjtzOjE6InkiO3M6MTE6InN0cmljdF91cmxzIjtzOjE6InkiO3M6ODoic2l0ZV80MDQiO3M6OToiYWJvdXQvNDA0IjtzOjE5OiJzYXZlX3RtcGxfcmV2aXNpb25zIjtzOjE6Im4iO3M6MTg6Im1heF90bXBsX3JldmlzaW9ucyI7czoxOiI1IjtzOjE1OiJzYXZlX3RtcGxfZmlsZXMiO3M6MToibiI7czoxODoidG1wbF9maWxlX2Jhc2VwYXRoIjtzOjE6Ii8iO30=','YToxMzp7czoyMToiaW1hZ2VfcmVzaXplX3Byb3RvY29sIjtzOjM6ImdkMiI7czoxODoiaW1hZ2VfbGlicmFyeV9wYXRoIjtzOjA6IiI7czoxNjoidGh1bWJuYWlsX3ByZWZpeCI7czo1OiJ0aHVtYiI7czoxNDoid29yZF9zZXBhcmF0b3IiO3M6NDoiZGFzaCI7czoxNzoidXNlX2NhdGVnb3J5X25hbWUiO3M6MToibiI7czoyMjoicmVzZXJ2ZWRfY2F0ZWdvcnlfd29yZCI7czo4OiJjYXRlZ29yeSI7czoyMzoiYXV0b19jb252ZXJ0X2hpZ2hfYXNjaWkiO3M6MToibiI7czoyMjoibmV3X3Bvc3RzX2NsZWFyX2NhY2hlcyI7czoxOiJ5IjtzOjIzOiJhdXRvX2Fzc2lnbl9jYXRfcGFyZW50cyI7czoxOiJ5IjtzOjE1OiJlbmFibGVfY29tbWVudHMiO3M6MToieSI7czoyMjoiY29tbWVudF93b3JkX2NlbnNvcmluZyI7czoxOiJuIjtzOjI3OiJjb21tZW50X21vZGVyYXRpb25fb3ZlcnJpZGUiO3M6MToibiI7czoyMzoiY29tbWVudF9lZGl0X3RpbWVfbGltaXQiO3M6MToiMCI7fQ==','');
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_snippets` WRITE;
+INSERT INTO `exp_snippets` (`snippet_id`, `site_id`, `snippet_name`, `snippet_contents`) VALUES
+	(1,1,'.htaccess','deny from all'),
+	(2,1,'global_edit_this','{if author_id == logged_in_member_id OR logged_in_group_id == "1"}&bull; <a href="{cp_url}?S={cp_session_id}&amp;D=cp&amp;C=content_publish&amp;M=entry_form&amp;channel_id={channel_id}&amp;entry_id={entry_id}">Edit This</a>{/if}'),
+	(3,1,'global_featured_band','<div id="featured_band">\n    <h2>Featured Band</h2>\n    {exp:channel:entries channel="news" limit="1" status="featured" rdf="off" disable="trackbacks" category="2" dynamic="no"}\n    <div class="image">\n        <h4><a href="{comment_url_title_auto_path}"><span>{title}</span></a></h4>\n        {if news_image}\n			<img src="{news_image}" alt="{title}"/>\n		{/if}\n    </div>\n    {news_body}\n    {/exp:channel:entries}\n</div>'),
+	(4,1,'global_featured_welcome','<div id="welcome">\n    {exp:channel:entries channel="about" url_title="about_the_label" dynamic="no"  limit="1" disable="pagination|member_date|categories|category_fields|trackbacks"}\n    {if about_image != ""}\n        <img src="{about_image}" alt="map" width="210" height="170" />\n    {/if}\n    {about_body}\n    <a href="{comment_url_title_auto_path}">Read more about us</a>\n    {/exp:channel:entries}\n</div>'),
+	(5,1,'global_footer','<div id="siteinfo">\n    <p>Copyright @ {exp:channel:entries limit="1" sort="asc" disable="custom_fields|comments|pagination|categories"}\n\n{if "{entry_date format=\'%Y\'}" != "{current_time format=\'%Y\'}"}{entry_date format="%Y"} - {/if}{/exp:channel:entries} {current_time format="%Y"}, powered by <a href="http://expressionengine.com">ExpressionEngine</a></p>\n    <p class="logo"><a href="#">Agile Records</a></p>\n	{if group_id == "1"}<p>{total_queries} queries in {elapsed_time} seconds</p>{/if}\n</div> <!-- ending #siteinfo -->'),
+	(6,1,'global_strict_urls','<!-- Strict URLS: http://ellislab.com/expressionengine/user-guide/cp/templates/global_template_preferences.html -->\n{if segment_2 != \'\'}\n  {redirect="404"}\n{/if}'),
+	(7,1,'global_stylesheets','<!-- CSS -->\n<!-- This makes use of the stylesheet= parameter, which automatically appends a time stamp to allow for the browser\'s caching mechanism to cache the stylesheet.  This allows for faster page-loads times.\nStylesheet linking is documented at http://ellislab.com/expressionengine/user-guide/templates/globals/stylesheet.html -->\n    <link href="{stylesheet=global_embeds/site_css}" type="text/css" rel="stylesheet" media="screen" />\n    <!--[if IE 6]><link href="{stylesheet=global_embeds/css_screen-ie6}" type="text/css" rel="stylesheet" media="screen" /><![endif]-->\n    <!--[if IE 7]><link href="{stylesheet=global_embeds/css_screen-ie7}" type="text/css" rel="stylesheet" media="screen" /><![endif]-->\n'),
+	(8,1,'global_top_member','<div id="member">\n\n	<!-- Utilized member conditionals: http://ellislab.com/expressionengine/user-guide/templates/globals/conditionals.html-->\n            <h4>Hello{if logged_in} {screen_name}{/if}!</h4>\n            {if is_core == FALSE}\n			<ul>\n				{if logged_in}\n                <li><a href="{path=\'member/profile\'}">Your Home</a></li>\n                <li><a href="{path=LOGOUT}">Log out</a></li>\n				{/if}\n				{if logged_out}\n				<li><a href="{path=\'member/register\'}">Register</a></li>\n				<li><a href="{path=\'member/login\'}">Log in</a></li>\n				{/if}\n            </ul>\n			{/if}\n        </div> <!-- ending #member -->'),
+	(9,1,'global_top_search','<!-- Simple Search Form: http://ellislab.com/expressionengine/user-guide/modules/search/index.html#simple \n\nThe parameters here help to identify what templates to use and where to search:\n\nResults page - result_page: http://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_result_page\n\nNo Results found: no_result_page: http://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_no_result_page\n\nsearch_in - search in titles? titles and entries? titles, entries?  http://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_search_in-->\n\n{exp:search:simple_form channel="news" result_page="search/results" no_result_page="search/no_results" search_in="everywhere"}\n<fieldset>\n    <label for="search">Search:</label>\n    <input type="text" name="keywords" id="search" value=""  />\n	<input type="image" id="submit" name="submit" class="submit" src="{site_url}themes/site_themes/agile_records/images/spacer.gif" />\n</fieldset>\n{/exp:search:simple_form}'),
+	(10,1,'news_calendar','<h5>Calendar</h5>\n		<div id="news_calendar">\n			\n			<!-- Channel Calendar Tag: http://ellislab.com/expressionengine/user-guide/modules/channel/calendar.html -->\n			\n			{exp:channel:calendar switch="calendarToday|calendarCell" channel="news"}\n			<table class="calendarBG" border="0" cellpadding="6" cellspacing="1" summary="My Calendar">\n			<tr class="calendarHeader">\n			<th><div class="calendarMonthLinks"><a href="{previous_path=\'news/archives\'}">&lt;&lt;</a></div></th>\n			<th colspan="5">{date format="%F %Y"}</th>\n			<th><div class="calendarMonthLinks"><a class="calendarMonthLinks" href="{next_path=\'news/archives\'}">&gt;&gt;</a></div></th>\n			</tr>\n			<tr>\n			{calendar_heading}\n			<td class="calendarDayHeading">{lang:weekday_abrev}</td>\n			{/calendar_heading}\n			</tr>\n\n			{calendar_rows }\n			{row_start}<tr>{/row_start}\n\n			{if entries}\n			<td class=\'{switch}\' align=\'center\'><a href="{day_path=\'news/archives\'}">{day_number}</a></td>\n			{/if}\n\n			{if not_entries}\n			<td class=\'{switch}\' align=\'center\'>{day_number}</td>\n			{/if}\n\n			{if blank}\n			<td class=\'calendarBlank\'>{day_number}</td>\n			{/if}\n\n			{row_end}</tr>{/row_end}\n			{/calendar_rows}\n			</table>\n			{/exp:channel:calendar}\n		</div> <!-- ending #news_calendar -->'),
+	(11,1,'news_categories','<div id="sidebar_category_archives">\n      		<h5>Categories</h5>\n  			<ul id="categories">\n  				<!-- Weblog Categories tag: http://ellislab.com/expressionengine/user-guide/modules/weblog/categories.html -->\n				\n  				{exp:channel:categories channel="news" style="linear"}\n  				<li><a href="{path=\'news/archives\'}">{category_name}</a></li>\n  				{/exp:channel:categories}\n  			</ul>\n  		</div>'),
+	(12,1,'news_month_archives','<div id="sidebar_date_archives">\n    	    <h5>Date Archives</h5>\n    		<ul id="months">\n    			{!-- Archive Month Link Tags: http://ellislab.com/expressionengine/user-guide/modules/weblog/archive_month_links.html --}\n		\n    			{exp:channel:month_links channel="news" limit="50"}\n    			<li><a href="{path=\'news/archives\'}">{month}, {year}</a></li>\n    			{/exp:channel:month_links}\n    		</ul>\n    	</div>'),
+	(13,1,'news_popular','<h5>Popular News Items</h5>\n\n<!-- Channel Entries tag ordered by track views for "popular posts".  See Tracking Entry Views at http://ellislab.com/expressionengine/user-guide/modules/weblog/entry_tracking.html -->\n\n{exp:channel:entries channel="news" limit="4" disable="categories|custom_fields|category_fields|trackbacks|pagination|member_data" dynamic="no"}\n	{if count == "1"}<ul>{/if}\n		<li><a href="{comment_url_title_auto_path}">{title}</a> </li>\n	{if count == total_results}</ul>{/if}\n{/exp:channel:entries}');
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_specialty_templates` WRITE;
+INSERT INTO `exp_specialty_templates` (`template_id`, `site_id`, `enable_template`, `template_name`, `data_title`, `template_data`) VALUES
+	(1,1,'y','offline_template','','<html>\n<head>\n\n<title>System Offline</title>\n\n<style type="text/css">\n\nbody {\nbackground-color:	#ffffff;\nmargin:				50px;\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size:			11px;\ncolor:				#000;\nbackground-color:	#fff;\n}\n\na {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-weight:		bold;\nletter-spacing:		.09em;\ntext-decoration:	none;\ncolor:			  #330099;\nbackground-color:	transparent;\n}\n\na:visited {\ncolor:				#330099;\nbackground-color:	transparent;\n}\n\na:hover {\ncolor:				#000;\ntext-decoration:	underline;\nbackground-color:	transparent;\n}\n\n#content  {\nborder:				#999999 1px solid;\npadding:			22px 25px 14px 25px;\n}\n\nh1 {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-weight:		bold;\nfont-size:			14px;\ncolor:				#000;\nmargin-top: 		0;\nmargin-bottom:		14px;\n}\n\np {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size: 			12px;\nfont-weight: 		normal;\nmargin-top: 		12px;\nmargin-bottom: 		14px;\ncolor: 				#000;\n}\n</style>\n\n</head>\n\n<body>\n\n<div id="content">\n\n<h1>System Offline</h1>\n\n<p>This site is currently offline</p>\n\n</div>\n\n</body>\n\n</html>'),
+	(2,1,'y','message_template','','<html>\n<head>\n\n<title>{title}</title>\n\n<meta http-equiv=\'content-type\' content=\'text/html; charset={charset}\' />\n\n{meta_refresh}\n\n<style type="text/css">\n\nbody {\nbackground-color:	#ffffff;\nmargin:				50px;\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size:			11px;\ncolor:				#000;\nbackground-color:	#fff;\n}\n\na {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nletter-spacing:		.09em;\ntext-decoration:	none;\ncolor:			  #330099;\nbackground-color:	transparent;\n}\n\na:visited {\ncolor:				#330099;\nbackground-color:	transparent;\n}\n\na:active {\ncolor:				#ccc;\nbackground-color:	transparent;\n}\n\na:hover {\ncolor:				#000;\ntext-decoration:	underline;\nbackground-color:	transparent;\n}\n\n#content  {\nborder:				#000 1px solid;\nbackground-color: 	#DEDFE3;\npadding:			22px 25px 14px 25px;\n}\n\nh1 {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-weight:		bold;\nfont-size:			14px;\ncolor:				#000;\nmargin-top: 		0;\nmargin-bottom:		14px;\n}\n\np {\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size: 			12px;\nfont-weight: 		normal;\nmargin-top: 		12px;\nmargin-bottom: 		14px;\ncolor: 				#000;\n}\n\nul {\nmargin-bottom: 		16px;\n}\n\nli {\nlist-style:			square;\nfont-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;\nfont-size: 			12px;\nfont-weight: 		normal;\nmargin-top: 		8px;\nmargin-bottom: 		8px;\ncolor: 				#000;\n}\n\n</style>\n\n</head>\n\n<body>\n\n<div id="content">\n\n<h1>{heading}</h1>\n\n{content}\n\n<p>{link}</p>\n\n</div>\n\n</body>\n\n</html>'),
+	(3,1,'y','admin_notify_reg','Notification of new member registration','New member registration site: {site_name}\n\nScreen name: {name}\nUser name: {username}\nEmail: {email}\n\nYour control panel URL: {control_panel_url}'),
+	(4,1,'y','admin_notify_entry','A new channel entry has been posted','A new entry has been posted in the following channel:\n{channel_name}\n\nThe title of the entry is:\n{entry_title}\n\nPosted by: {name}\nEmail: {email}\n\nTo read the entry please visit:\n{entry_url}\n'),
+	(5,1,'y','admin_notify_mailinglist','Someone has subscribed to your mailing list','A new mailing list subscription has been accepted.\n\nEmail Address: {email}\nMailing List: {mailing_list}'),
+	(6,1,'y','admin_notify_comment','You have just received a comment','You have just received a comment for the following channel:\n{channel_name}\n\nThe title of the entry is:\n{entry_title}\n\nLocated at:\n{comment_url}\n\nPosted by: {name}\nEmail: {email}\nURL: {url}\nLocation: {location}\n\n{comment}'),
+	(7,1,'y','mbr_activation_instructions','Enclosed is your activation code','Thank you for your new member registration.\n\nTo activate your new account, please visit the following URL:\n\n{unwrap}{activation_url}{/unwrap}\n\nThank You!\n\n{site_name}\n\n{site_url}'),
+	(8,1,'y','forgot_password_instructions','Login information','{name},\n\nTo reset your password, please go to the following page:\n\n{reset_url}\n\nThen log in with your username: {username}\n\nIf you do not wish to reset your password, ignore this message. It will expire in 24 hours.\n\n{site_name}\n{site_url}'),
+	(9,1,'y','validated_member_notify','Your membership account has been activated','{name},\n\nYour membership account has been activated and is ready for use.\n\nThank You!\n\n{site_name}\n{site_url}'),
+	(10,1,'y','decline_member_validation','Your membership account has been declined','{name},\n\nWe\'re sorry but our staff has decided not to validate your membership.\n\n{site_name}\n{site_url}'),
+	(11,1,'y','mailinglist_activation_instructions','Email Confirmation','Thank you for joining the "{mailing_list}" mailing list!\n\nPlease click the link below to confirm your email.\n\nIf you do not want to be added to our list, ignore this email.\n\n{unwrap}{activation_url}{/unwrap}\n\nThank You!\n\n{site_name}'),
+	(12,1,'y','comment_notification','Someone just responded to your comment','{name_of_commenter} just responded to the entry you subscribed to at:\n{channel_name}\n\nThe title of the entry is:\n{entry_title}\n\nYou can see the comment at the following URL:\n{comment_url}\n\n{comment}\n\nTo stop receiving notifications for this comment, click here:\n{notification_removal_url}'),
+	(13,1,'y','comments_opened_notification','New comments have been added','Responses have been added to the entry you subscribed to at:\n{channel_name}\n\nThe title of the entry is:\n{entry_title}\n\nYou can see the comments at the following URL:\n{comment_url}\n\n{comments}\n{comment}\n{/comments}\n\nTo stop receiving notifications for this entry, click here:\n{notification_removal_url}'),
+	(14,1,'y','private_message_notification','Someone has sent you a Private Message','\n{recipient_name},\n\n{sender_name} has just sent you a Private Message titled ‘{message_subject}’.\n\nYou can see the Private Message by logging in and viewing your inbox at:\n{site_url}\n\nContent:\n\n{message_content}\n\nTo stop receiving notifications of Private Messages, turn the option off in your Email Settings.\n\n{site_name}\n{site_url}'),
+	(15,1,'y','pm_inbox_full','Your private message mailbox is full','{recipient_name},\n\n{sender_name} has just attempted to send you a Private Message,\nbut your inbox is full, exceeding the maximum of {pm_storage_limit}.\n\nPlease log in and remove unwanted messages from your inbox at:\n{site_url}');
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_stats` WRITE;
+INSERT INTO `exp_stats` (`stat_id`, `site_id`, `total_members`, `recent_member_id`, `recent_member`, `total_entries`, `total_forum_topics`, `total_forum_posts`, `total_comments`, `last_entry_date`, `last_forum_post_date`, `last_comment_date`, `last_visitor_date`, `most_visitors`, `most_visitor_date`, `last_cache_clear`) VALUES
+	(1,1,1,1,'Admin',1,0,0,0,1409242030,0,0,0,0,0,1409242030);
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_status_groups` WRITE;
+INSERT INTO `exp_status_groups` (`group_id`, `site_id`, `group_name`) VALUES
+	(1,1,'Statuses');
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_rte_tools` (`tool_id`, `name`, `class`, `enabled`) VALUES (1, 'Blockquote', 'Blockquote_rte', 'y'), (2, 'Bold', 'Bold_rte', 'y'), (3, 'Headings', 'Headings_rte', 'y'), (4, 'Image', 'Image_rte', 'y'), (5, 'Italic', 'Italic_rte', 'y'), (6, 'Link', 'Link_rte', 'y'), (7, 'Ordered List', 'Ordered_list_rte', 'y'), (8, 'Underline', 'Underline_rte', 'y'), (9, 'Unordered List', 'Unordered_list_rte', 'y'), (10, 'View Source', 'View_source_rte', 'y');
+LOCK TABLES `exp_status_no_access` WRITE;
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_rte_toolsets` (`toolset_id`, `member_id`, `name`, `tools`, `enabled`) VALUES (1, 0, 'Default', '3|2|5|1|9|7|6|4|10', 'y');
+LOCK TABLES `exp_statuses` WRITE;
+INSERT INTO `exp_statuses` (`status_id`, `site_id`, `group_id`, `status`, `status_order`, `highlight`) VALUES
+	(1,1,1,'open',1,'009933'),
+	(2,1,1,'closed',2,'990000'),
+	(3,1,1,'Featured',3,'000000');
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_template_groups` WRITE;
+INSERT INTO `exp_template_groups` (`group_id`, `site_id`, `group_name`, `group_order`, `is_site_default`) VALUES
+	(1,1,'about',1,'n'),
+	(2,1,'global_embeds',2,'n'),
+	(3,1,'news',3,'y'),
+	(4,1,'search',4,'n');
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_template_member_groups` WRITE;
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_template_no_access` WRITE;
+INSERT INTO `exp_template_no_access` (`template_id`, `member_group`) VALUES
+	(1,2),
+	(2,2),
+	(3,2),
+	(4,2),
+	(4,3),
+	(4,4),
+	(4,5),
+	(5,2),
+	(6,2),
+	(7,2),
+	(8,2),
+	(9,2),
+	(10,2),
+	(11,2),
+	(12,2),
+	(13,2),
+	(14,2),
+	(15,2),
+	(16,2),
+	(16,3),
+	(16,4),
+	(16,5),
+	(17,2),
+	(18,2);
+UNLOCK TABLES;
 
 
+LOCK TABLES `exp_template_routes` WRITE;
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_sites` (`site_id`, `site_label`, `site_name`, `site_description`, `site_system_preferences`, `site_mailinglist_preferences`, `site_member_preferences`, `site_template_preferences`, `site_channel_preferences`, `site_bootstrap_checksums`) VALUES (1, 'EE2', 'default_site', NULL, 'YTo4ODp7czoxMDoic2l0ZV9pbmRleCI7czo5OiJpbmRleC5waHAiO3M6ODoic2l0ZV91cmwiO3M6MTY6Imh0dHA6Ly9lZTIudGVzdC8iO3M6MTY6InRoZW1lX2ZvbGRlcl91cmwiO3M6MjM6Imh0dHA6Ly9lZTIudGVzdC90aGVtZXMvIjtzOjE1OiJ3ZWJtYXN0ZXJfZW1haWwiO3M6MjA6ImtldmluLmN1cHBAZ21haWwuY29tIjtzOjE0OiJ3ZWJtYXN0ZXJfbmFtZSI7czowOiIiO3M6MjA6ImNoYW5uZWxfbm9tZW5jbGF0dXJlIjtzOjc6ImNoYW5uZWwiO3M6MTA6Im1heF9jYWNoZXMiO3M6MzoiMTUwIjtzOjExOiJjYXB0Y2hhX3VybCI7czozMjoiaHR0cDovL2VlMi50ZXN0L2ltYWdlcy9jYXB0Y2hhcy8iO3M6MTI6ImNhcHRjaGFfcGF0aCI7czo1NToiL3ByaXZhdGUvdmFyL3d3dy9leHByZXNzaW9uZW5naW5lLXRlc3QvaW1hZ2VzL2NhcHRjaGFzLyI7czoxMjoiY2FwdGNoYV9mb250IjtzOjE6InkiO3M6MTI6ImNhcHRjaGFfcmFuZCI7czoxOiJ5IjtzOjIzOiJjYXB0Y2hhX3JlcXVpcmVfbWVtYmVycyI7czoxOiJuIjtzOjE3OiJlbmFibGVfZGJfY2FjaGluZyI7czoxOiJuIjtzOjE4OiJlbmFibGVfc3FsX2NhY2hpbmciO3M6MToibiI7czoxODoiZm9yY2VfcXVlcnlfc3RyaW5nIjtzOjE6Im4iO3M6MTM6InNob3dfcHJvZmlsZXIiO3M6MToibiI7czoxODoidGVtcGxhdGVfZGVidWdnaW5nIjtzOjE6Im4iO3M6MTU6ImluY2x1ZGVfc2Vjb25kcyI7czoxOiJuIjtzOjEzOiJjb29raWVfZG9tYWluIjtzOjA6IiI7czoxMToiY29va2llX3BhdGgiO3M6MDoiIjtzOjIwOiJ3ZWJzaXRlX3Nlc3Npb25fdHlwZSI7czoxOiJjIjtzOjE1OiJjcF9zZXNzaW9uX3R5cGUiO3M6MjoiY3MiO3M6MjE6ImFsbG93X3VzZXJuYW1lX2NoYW5nZSI7czoxOiJ5IjtzOjE4OiJhbGxvd19tdWx0aV9sb2dpbnMiO3M6MToieSI7czoxNjoicGFzc3dvcmRfbG9ja291dCI7czoxOiJ5IjtzOjI1OiJwYXNzd29yZF9sb2Nrb3V0X2ludGVydmFsIjtzOjE6IjEiO3M6MjA6InJlcXVpcmVfaXBfZm9yX2xvZ2luIjtzOjE6InkiO3M6MjI6InJlcXVpcmVfaXBfZm9yX3Bvc3RpbmciO3M6MToieSI7czoyNDoicmVxdWlyZV9zZWN1cmVfcGFzc3dvcmRzIjtzOjE6Im4iO3M6MTk6ImFsbG93X2RpY3Rpb25hcnlfcHciO3M6MToieSI7czoyMzoibmFtZV9vZl9kaWN0aW9uYXJ5X2ZpbGUiO3M6MDoiIjtzOjE3OiJ4c3NfY2xlYW5fdXBsb2FkcyI7czoxOiJ5IjtzOjE1OiJyZWRpcmVjdF9tZXRob2QiO3M6ODoicmVkaXJlY3QiO3M6OToiZGVmdF9sYW5nIjtzOjc6ImVuZ2xpc2giO3M6ODoieG1sX2xhbmciO3M6MjoiZW4iO3M6MTI6InNlbmRfaGVhZGVycyI7czoxOiJ5IjtzOjExOiJnemlwX291dHB1dCI7czoxOiJuIjtzOjEzOiJsb2dfcmVmZXJyZXJzIjtzOjE6Im4iO3M6MTM6Im1heF9yZWZlcnJlcnMiO3M6MzoiNTAwIjtzOjExOiJkYXRlX2Zvcm1hdCI7czo4OiIlbi8lai8leSI7czoxMToidGltZV9mb3JtYXQiO3M6MjoiMTIiO3M6MTM6InNlcnZlcl9vZmZzZXQiO3M6MDoiIjtzOjIxOiJkZWZhdWx0X3NpdGVfdGltZXpvbmUiO3M6MTY6IkFtZXJpY2EvTmV3X1lvcmsiO3M6MTM6Im1haWxfcHJvdG9jb2wiO3M6NDoibWFpbCI7czoxMToic210cF9zZXJ2ZXIiO3M6MDoiIjtzOjEzOiJzbXRwX3VzZXJuYW1lIjtzOjA6IiI7czoxMzoic210cF9wYXNzd29yZCI7czowOiIiO3M6MTE6ImVtYWlsX2RlYnVnIjtzOjE6Im4iO3M6MTM6ImVtYWlsX2NoYXJzZXQiO3M6NToidXRmLTgiO3M6MTU6ImVtYWlsX2JhdGNobW9kZSI7czoxOiJuIjtzOjE2OiJlbWFpbF9iYXRjaF9zaXplIjtzOjA6IiI7czoxMToibWFpbF9mb3JtYXQiO3M6NToicGxhaW4iO3M6OToid29yZF93cmFwIjtzOjE6InkiO3M6MjI6ImVtYWlsX2NvbnNvbGVfdGltZWxvY2siO3M6MToiNSI7czoyMjoibG9nX2VtYWlsX2NvbnNvbGVfbXNncyI7czoxOiJ5IjtzOjg6ImNwX3RoZW1lIjtzOjc6ImRlZmF1bHQiO3M6MjE6ImVtYWlsX21vZHVsZV9jYXB0Y2hhcyI7czoxOiJuIjtzOjE2OiJsb2dfc2VhcmNoX3Rlcm1zIjtzOjE6InkiO3M6MTk6ImRlbnlfZHVwbGljYXRlX2RhdGEiO3M6MToieSI7czoyNDoicmVkaXJlY3Rfc3VibWl0dGVkX2xpbmtzIjtzOjE6Im4iO3M6MTY6ImVuYWJsZV9jZW5zb3JpbmciO3M6MToibiI7czoxNDoiY2Vuc29yZWRfd29yZHMiO3M6MDoiIjtzOjE4OiJjZW5zb3JfcmVwbGFjZW1lbnQiO3M6MDoiIjtzOjEwOiJiYW5uZWRfaXBzIjtzOjA6IiI7czoxMzoiYmFubmVkX2VtYWlscyI7czowOiIiO3M6MTY6ImJhbm5lZF91c2VybmFtZXMiO3M6MDoiIjtzOjE5OiJiYW5uZWRfc2NyZWVuX25hbWVzIjtzOjA6IiI7czoxMDoiYmFuX2FjdGlvbiI7czo4OiJyZXN0cmljdCI7czoxMToiYmFuX21lc3NhZ2UiO3M6MzQ6IlRoaXMgc2l0ZSBpcyBjdXJyZW50bHkgdW5hdmFpbGFibGUiO3M6MTU6ImJhbl9kZXN0aW5hdGlvbiI7czoyMToiaHR0cDovL3d3dy55YWhvby5jb20vIjtzOjE2OiJlbmFibGVfZW1vdGljb25zIjtzOjE6InkiO3M6MTI6ImVtb3RpY29uX3VybCI7czozMToiaHR0cDovL2VlMi50ZXN0L2ltYWdlcy9zbWlsZXlzLyI7czoxOToicmVjb3VudF9iYXRjaF90b3RhbCI7czo0OiIxMDAwIjtzOjE3OiJuZXdfdmVyc2lvbl9jaGVjayI7czoxOiJ5IjtzOjE3OiJlbmFibGVfdGhyb3R0bGluZyI7czoxOiJuIjtzOjE3OiJiYW5pc2hfbWFza2VkX2lwcyI7czoxOiJ5IjtzOjE0OiJtYXhfcGFnZV9sb2FkcyI7czoyOiIxMCI7czoxMzoidGltZV9pbnRlcnZhbCI7czoxOiI4IjtzOjEyOiJsb2Nrb3V0X3RpbWUiO3M6MjoiMzAiO3M6MTU6ImJhbmlzaG1lbnRfdHlwZSI7czo3OiJtZXNzYWdlIjtzOjE0OiJiYW5pc2htZW50X3VybCI7czowOiIiO3M6MTg6ImJhbmlzaG1lbnRfbWVzc2FnZSI7czo1MDoiWW91IGhhdmUgZXhjZWVkZWQgdGhlIGFsbG93ZWQgcGFnZSBsb2FkIGZyZXF1ZW5jeS4iO3M6MTc6ImVuYWJsZV9zZWFyY2hfbG9nIjtzOjE6InkiO3M6MTk6Im1heF9sb2dnZWRfc2VhcmNoZXMiO3M6MzoiNTAwIjtzOjE3OiJ0aGVtZV9mb2xkZXJfcGF0aCI7czo0NjoiL3ByaXZhdGUvdmFyL3d3dy9leHByZXNzaW9uZW5naW5lLXRlc3QvdGhlbWVzLyI7czoxMDoiaXNfc2l0ZV9vbiI7czoxOiJ5IjtzOjExOiJydGVfZW5hYmxlZCI7czoxOiJ5IjtzOjIyOiJydGVfZGVmYXVsdF90b29sc2V0X2lkIjtzOjE6IjEiO30=', 'YTozOntzOjE5OiJtYWlsaW5nbGlzdF9lbmFibGVkIjtzOjE6InkiO3M6MTg6Im1haWxpbmdsaXN0X25vdGlmeSI7czoxOiJuIjtzOjI1OiJtYWlsaW5nbGlzdF9ub3RpZnlfZW1haWxzIjtzOjA6IiI7fQ==', 'YTo0NDp7czoxMDoidW5fbWluX2xlbiI7czoxOiI0IjtzOjEwOiJwd19taW5fbGVuIjtzOjE6IjUiO3M6MjU6ImFsbG93X21lbWJlcl9yZWdpc3RyYXRpb24iO3M6MToibiI7czoyNToiYWxsb3dfbWVtYmVyX2xvY2FsaXphdGlvbiI7czoxOiJ5IjtzOjE4OiJyZXFfbWJyX2FjdGl2YXRpb24iO3M6NToiZW1haWwiO3M6MjM6Im5ld19tZW1iZXJfbm90aWZpY2F0aW9uIjtzOjE6Im4iO3M6MjM6Im1icl9ub3RpZmljYXRpb25fZW1haWxzIjtzOjA6IiI7czoyNDoicmVxdWlyZV90ZXJtc19vZl9zZXJ2aWNlIjtzOjE6InkiO3M6MjI6InVzZV9tZW1iZXJzaGlwX2NhcHRjaGEiO3M6MToibiI7czoyMDoiZGVmYXVsdF9tZW1iZXJfZ3JvdXAiO3M6MToiNSI7czoxNToicHJvZmlsZV90cmlnZ2VyIjtzOjY6Im1lbWJlciI7czoxMjoibWVtYmVyX3RoZW1lIjtzOjEzOiJhZ2lsZV9yZWNvcmRzIjtzOjE0OiJlbmFibGVfYXZhdGFycyI7czoxOiJ5IjtzOjIwOiJhbGxvd19hdmF0YXJfdXBsb2FkcyI7czoxOiJuIjtzOjEwOiJhdmF0YXJfdXJsIjtzOjMxOiJodHRwOi8vZWUyLnRlc3QvaW1hZ2VzL2F2YXRhcnMvIjtzOjExOiJhdmF0YXJfcGF0aCI7czo1NDoiL3ByaXZhdGUvdmFyL3d3dy9leHByZXNzaW9uZW5naW5lLXRlc3QvaW1hZ2VzL2F2YXRhcnMvIjtzOjE2OiJhdmF0YXJfbWF4X3dpZHRoIjtzOjM6IjEwMCI7czoxNzoiYXZhdGFyX21heF9oZWlnaHQiO3M6MzoiMTAwIjtzOjEzOiJhdmF0YXJfbWF4X2tiIjtzOjI6IjUwIjtzOjEzOiJlbmFibGVfcGhvdG9zIjtzOjE6Im4iO3M6OToicGhvdG9fdXJsIjtzOjM3OiJodHRwOi8vZWUyLnRlc3QvaW1hZ2VzL21lbWJlcl9waG90b3MvIjtzOjEwOiJwaG90b19wYXRoIjtzOjYwOiIvcHJpdmF0ZS92YXIvd3d3L2V4cHJlc3Npb25lbmdpbmUtdGVzdC9pbWFnZXMvbWVtYmVyX3Bob3Rvcy8iO3M6MTU6InBob3RvX21heF93aWR0aCI7czozOiIxMDAiO3M6MTY6InBob3RvX21heF9oZWlnaHQiO3M6MzoiMTAwIjtzOjEyOiJwaG90b19tYXhfa2IiO3M6MjoiNTAiO3M6MTY6ImFsbG93X3NpZ25hdHVyZXMiO3M6MToieSI7czoxMzoic2lnX21heGxlbmd0aCI7czozOiI1MDAiO3M6MjE6InNpZ19hbGxvd19pbWdfaG90bGluayI7czoxOiJuIjtzOjIwOiJzaWdfYWxsb3dfaW1nX3VwbG9hZCI7czoxOiJuIjtzOjExOiJzaWdfaW1nX3VybCI7czo0NToiaHR0cDovL2VlMi50ZXN0L2ltYWdlcy9zaWduYXR1cmVfYXR0YWNobWVudHMvIjtzOjEyOiJzaWdfaW1nX3BhdGgiO3M6Njg6Ii9wcml2YXRlL3Zhci93d3cvZXhwcmVzc2lvbmVuZ2luZS10ZXN0L2ltYWdlcy9zaWduYXR1cmVfYXR0YWNobWVudHMvIjtzOjE3OiJzaWdfaW1nX21heF93aWR0aCI7czozOiI0ODAiO3M6MTg6InNpZ19pbWdfbWF4X2hlaWdodCI7czoyOiI4MCI7czoxNDoic2lnX2ltZ19tYXhfa2IiO3M6MjoiMzAiO3M6MTk6InBydl9tc2dfdXBsb2FkX3BhdGgiO3M6NjE6Ii9wcml2YXRlL3Zhci93d3cvZXhwcmVzc2lvbmVuZ2luZS10ZXN0L2ltYWdlcy9wbV9hdHRhY2htZW50cy8iO3M6MjM6InBydl9tc2dfbWF4X2F0dGFjaG1lbnRzIjtzOjE6IjMiO3M6MjI6InBydl9tc2dfYXR0YWNoX21heHNpemUiO3M6MzoiMjUwIjtzOjIwOiJwcnZfbXNnX2F0dGFjaF90b3RhbCI7czozOiIxMDAiO3M6MTk6InBydl9tc2dfaHRtbF9mb3JtYXQiO3M6NDoic2FmZSI7czoxODoicHJ2X21zZ19hdXRvX2xpbmtzIjtzOjE6InkiO3M6MTc6InBydl9tc2dfbWF4X2NoYXJzIjtzOjQ6IjYwMDAiO3M6MTk6Im1lbWJlcmxpc3Rfb3JkZXJfYnkiO3M6MTE6InRvdGFsX3Bvc3RzIjtzOjIxOiJtZW1iZXJsaXN0X3NvcnRfb3JkZXIiO3M6NDoiZGVzYyI7czoyMDoibWVtYmVybGlzdF9yb3dfbGltaXQiO3M6MjoiMjAiO30=', 'YTo3OntzOjIyOiJlbmFibGVfdGVtcGxhdGVfcm91dGVzIjtzOjE6InkiO3M6MTE6InN0cmljdF91cmxzIjtzOjE6InkiO3M6ODoic2l0ZV80MDQiO3M6OToiYWJvdXQvNDA0IjtzOjE5OiJzYXZlX3RtcGxfcmV2aXNpb25zIjtzOjE6Im4iO3M6MTg6Im1heF90bXBsX3JldmlzaW9ucyI7czoxOiI1IjtzOjE1OiJzYXZlX3RtcGxfZmlsZXMiO3M6MToibiI7czoxODoidG1wbF9maWxlX2Jhc2VwYXRoIjtzOjE6Ii8iO30=', 'YTo5OntzOjIxOiJpbWFnZV9yZXNpemVfcHJvdG9jb2wiO3M6MzoiZ2QyIjtzOjE4OiJpbWFnZV9saWJyYXJ5X3BhdGgiO3M6MDoiIjtzOjE2OiJ0aHVtYm5haWxfcHJlZml4IjtzOjU6InRodW1iIjtzOjE0OiJ3b3JkX3NlcGFyYXRvciI7czo0OiJkYXNoIjtzOjE3OiJ1c2VfY2F0ZWdvcnlfbmFtZSI7czoxOiJuIjtzOjIyOiJyZXNlcnZlZF9jYXRlZ29yeV93b3JkIjtzOjg6ImNhdGVnb3J5IjtzOjIzOiJhdXRvX2NvbnZlcnRfaGlnaF9hc2NpaSI7czoxOiJuIjtzOjIyOiJuZXdfcG9zdHNfY2xlYXJfY2FjaGVzIjtzOjE6InkiO3M6MjM6ImF1dG9fYXNzaWduX2NhdF9wYXJlbnRzIjtzOjE6InkiO30=', '');
+LOCK TABLES `exp_templates` WRITE;
+INSERT INTO `exp_templates` (`template_id`, `site_id`, `group_id`, `template_name`, `save_template_file`, `template_type`, `template_data`, `template_notes`, `edit_date`, `last_author_id`, `cache`, `refresh`, `no_auth_bounce`, `enable_http_auth`, `allow_php`, `php_parse_location`, `hits`, `protect_javascript`) VALUES
+	(1,1,1,'index','n','webpage','{!-- Explanations and learning materials can be found in news/index and the other news template groups.  In-line comments here are only for features not introduced in news/index. --}\n{html_head}\n	<title>{site_name}: Contact Us</title>\n{global_stylesheets}\n\n{rss}\n{favicon}\n{html_head_end}\n	<body>\n{nav_access}\n	{branding_begin}\n			{embed="global_embeds/_top_nav" loc="about"}\n			{global_top_search}\n			{global_top_member}\n	{branding_end}\n	{wrapper_begin}\n{embed="global_embeds/_page_header" header="About"}\n\n\n<div id="feature" class="about">\n	{exp:channel:entries channel="about" url_title="about_the_label" dynamic="no"  limit="1" disable="pagination|member_data|categories|category_fields"}\n		<h3 class="about">{title}</h3>\n		{about_body}\n	{/exp:channel:entries}\n</div> <!-- ending #feature -->\n\n	<div class="feature_end"></div>\n\n<div id="content_pri" class="about"> <!-- This is where all primary content, left column gets entered -->\n\n		<!-- Standard Channel Entries tag, but instead of relying on the URL for what to display, we request a specific entry for display via url-title:\n	http://ellislab.com/expressionengine/user-guide/modules/channel/parameters.html#par_url_title\n\n	and we force the channel entries tag to ignore the URL and always deliver the same content by using dynamic="no":\n\n	http://ellislab.com/expressionengine/user-guide/modules/channel/parameters.html#par_dynamic\n	-->\n\n		{exp:channel:entries channel="about" dynamic="no" url_title="about_the_label" limit="1" disable="pagination|member_data|categories|category_fields"}\n			{about_extended}\n		{/exp:channel:entries}\n</div>\n\n<div id="content_sec" class="staff_profiles right green40">\n		<h3 class="staff">Staff Profiles</h3>\n		{exp:channel:entries channel="about" limit="6" category="3" dynamic="off" orderby="date" sort="asc"}\n			{if count == "1"}<ul class="staff_member">{/if}\n				<li class="{switch="||end"}">\n					<h4>{title} <a href="#">i</a></h4>\n					<div class="profile">\n						{about_staff_title}\n					</div>\n					<img src="{about_image}" alt="{title}" />\n				</li>\n			{if count == total_results}</ul>{/if}\n		{/exp:channel:entries}\n\n</div>	<!-- ending #content_sec -->\n\n\n\n{global_footer}\n{wrapper_close}\n{js}\n{html_close}\n',NULL,1409242030,1,'n',0,'','n','n','o',0,'n'),
+	(2,1,1,'404','n','webpage','{!-- Explanations and learning materials can be found in news/index and the other news template groups.  In-line comments here are only for features not introduced in news/index. --}\n{html_head}\n	<title>{site_name}: Not Found</title>\n{global_stylesheets}\n\n{rss}\n{favicon}\n{html_head_end}\n	<body>\n{nav_access}\n	{branding_begin}\n			{embed="global_embeds/_top_nav" loc="contact"}\n			{global_top_search}\n			{global_top_member}\n	{branding_end}\n	{wrapper_begin}\n{embed="global_embeds/_page_header" header="Not Found"}\n\n\n	<div id="content_pri"> <!-- This is where all primary content, left column gets entered -->\n		<h4>Not Found</h4>\n				 <p>The page you attempted to load was Not Found.  Please try again.</p>\n	</div>\n\n\n		<div id="content_sec" class="right green40">\n			<h3 class="oldernews">Browse Older News</h3>\n			<div id="news_archives">\n				<div id="categories_box">\n				{news_categories}\n				</div>\n				<div id="month_box">\n				{news_month_archives}\n				</div>\n			</div> <!-- ending #news_archives -->\n\n			{news_calendar}\n\n			{news_popular}\n\n		{rss_links}\n\n		</div>	<!-- ending #content_sec -->\n\n	{global_footer}\n	{wrapper_close}\n	{js}\n	{html_close}\n',NULL,1409242030,1,'n',0,'','n','n','o',0,'n'),
+	(3,1,1,'contact','n','webpage','{!-- Explanations and learning materials can be found in news/index and the other news template groups.  In-line comments here are only for features not introduced in news/index. --}\n{html_head}\n	<title>{site_name}: Contact Us</title>\n{global_stylesheets}\n\n{rss}\n{favicon}\n{html_head_end}\n	<body>\n{nav_access}\n	{branding_begin}\n			{embed="global_embeds/_top_nav" loc="contact"}\n			{global_top_search}\n			{global_top_member}\n	{branding_end}\n	{wrapper_begin}\n{embed="global_embeds/_page_header" header="Contact Us"}\n    <div id="feature" class="contact">\n		<h3 class="getintouch">Get in Touch</h3>\n\n\n<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat .</p>\n</div> <!-- ending #feature -->\n\n	<div class="feature_end"></div>\n\n	<div id="content_pri" class="contact"> <!-- This is where all primary content, left column gets entered -->\n\n			<!-- This uses the Email Module\'s Contact Form: http://ellislab.com/expressionengine/user-guide/modules/email/contact_form.html -->\n			{exp:email:contact_form user_recipients="false" recipients="admin@example.com" charset="utf-8"}\n			<fieldset id="contact_fields">\n			<label for="from">\n				<span>Your Email:</span>\n				<input type="text" id="from" name="from" value="{member_email}" />\n			</label>\n\n			<label for="subject">\n				<span>Subject:</span>\n				<input type="text" id="subject" name="subject" size="40" value="Contact Form" />\n			</label>\n\n			<label for="message">\n				<span>Message:</span>\n				<textarea id="message" name="message" rows="18" cols="40">Email from: {member_name}, Sent at: {current_time format="%Y %m %d"}</textarea>\n			</label>\n			</fieldset>\n\n			<fieldset id="contact_action">\n				<p>We will never pass on your details to third parties.</p>\n				<input name="submit" type=\'submit\' value=\'Submit\' id=\'contactSubmit\' />\n			</fieldset>\n			{/exp:email:contact_form}\n	</div>\n\n	<div id="content_sec" class="contact">\n		<h3 class="address">Address</h3>\n		 <p>\n			12343 Valencia Street,<br />\n			Mission District,<br />\n			San Francisco,<br />\n			California,<br />\n			ZIP 123\n			 </p>\n	<p><img src="{site_url}themes/site_themes/agile_records/images/uploads/map2.jpg" alt="" /></p>\n\n	</div>	<!-- ending #content_sec -->\n\n{global_footer}\n{wrapper_close}\n{js}\n{html_close}\n',NULL,1409242030,1,'n',0,'','n','n','o',0,'n'),
+	(4,1,2,'index','n','webpage','',NULL,1409242030,1,'n',0,'','n','n','o',0,'n'),
+	(5,1,2,'_page_header','n','webpage','<div id="page_header">\n        <h2>{embed:header}</h2>\n    </div>\n',NULL,1409242030,1,'n',0,'','n','n','o',0,'n'),
+	(6,1,2,'_top_nav','n','webpage',' <ul id="navigation_pri">\n            <li id="home" {if embed:loc== "home"}class="cur"{/if}><a href="{homepage}">Home</a></li>\n            <li id="events" {if embed:loc == "about"}class="cur"{/if}><a href="{path=\'about/index\'}">About</a></li>\n            <li id="contact" {if embed:loc=="contact"}class="cur"{/if}><a href="{path=\'about/contact\'}">Contact</a></li>\n        </ul>',NULL,1409242030,1,'n',0,'','n','n','o',0,'n'),
+	(7,1,2,'css_screen-ie6','n','css','/*\n\n	AGILE RECORDS, EE2.0 EXAMPLE SITE by ERSKINE DESIGN\n	VERSION 1.0\n	IE6 OVERRIDE STYLES\n	\n	CONTENTS ----------\n	\n	\n	\n	-------------------\n	\n*/\n\n\n\nul#nav_access { position:static; display:none; }\n\ndiv#feature { margin-bottom:10px !important; }\nhr.legend_start,\nhr.feature_end { display:none !important; }\n\n/* TABLES */\n\ntable { background-image:none; background-color:#ddd; font-size:12px; }\ntr.alt { background-image:none; background-color:#eee; }\nth { background-image:none; background-color:#ddd; }\n\n\n\n/* LAYOUT */\n\ndiv#feature { width:950px; overflow:hidden; float:none; padding:30px 0; position:static; margin:0; background:url({site_url}themes/site_themes/agile_records/images/feature_bg.jpg); margin-bottom:30px; }\ndiv#page_header { background-image:none; background-color:#6b5f57; height:40px; z-index:3; position:static; top:0px; margin-bottom:0; padding-bottom:10px; }\n\ndiv#branding { height:290px; background:url({site_url}themes/site_themes/agile_records/images/ie_branding_bg.gif) repeat-x center top; position:relative; z-index:2; }\ndiv#branding_sub { width:930px; margin:0 auto; position:relative; }\n\ndiv#page { background:url({site_url}themes/site_themes/agile_records/images/page_bg.jpg); }\n\ndiv#content_pri { display:inline; }\ndiv#content_sec { }\n\n\n\n/* BRANDING/MASTHEAD */\n\ndiv#branding_logo { background:url({site_url}themes/site_themes/agile_records/images/ie_branding_sub_bg.gif) no-repeat left top; }\ndiv#branding_sub h1 a { position:static; background:url({site_url}themes/site_themes/agile_records/images/logo_bg.jpg) no-repeat bottom left; }\ndiv#branding_sub div#member { background:none; }\ndiv#branding_sub form { background:url({site_url}themes/site_themes/agile_records/images/ie_search_bg.jpg) no-repeat; }\n\n\n\n\n/* NAVIGATION */\n\nul#navigation_pri { background-image:none; background-color:#2f261d; }\nul#navigation_pri li { height:auto; text-indent:0; font-family:"Cooper Black",Arial; font-weight:bold; }\nul#navigation_pri li a:link,\nul#navigation_pri li a:visited { background:none; text-decoration:none; color:#a09f9d;}\nul#navigation_pri li a:hover,\nul#navigation_pri li a:focus { color:#ccc;}\nul#navigation_pri li.cur a:link,\nul#navigation_pri li.cur a:visited,\nul#navigation_pri li.cur a:hover,\nul#navigation_pri li.cur a:focus { color:#d55401; }\nul#navigation_pri li#home,\nul#navigation_pri li#events,\nul#navigation_pri li#contact { top:8px; }\nul#navigation_pri li#bands,\nul#navigation_pri li#news,\nul#navigation_pri li#forums { top:30px; }\nul#navigation_pri li#releases,\nul#navigation_pri li#about,\nul#navigation_pri li#wiki { top:54px; }\n\n\n\n/* HEADINGS */\ndiv#page_header { height:1px; z-index:99; position:static; top:0; margin-bottom:0; }\ndiv#page_header h2 { text-indent:0 !important; background:none !important; color:#e6e6e6 !important; padding-top:15px !important; float:left;}\ndiv#page_header ol#breadcrumbs { margin-top:10px; padding:0; background:none; }\ndiv#page_header ol#breadcrumbs li { margin-left:10px; }\n\nh2,h3 { text-indent:0 !important; background:none !important; width:auto !important; height:auto !important; }\n\n\n\n/* HOMEPAGE */\n\n.home div#feature div#featured_band { width:450px; float:left; position:static; margin:0px; }\n.home div#feature div#featured_band h2 { margin-bottom:5px; width:auto; height:auto; text-indent:0; background:none; }\n\n.home div#content_sec { display:inline; margin:0 30px 0 10px; }\n\n.home div#feature div#featured_band div.image { width:300px; height:200px; left:0; bottom:-10px; margin:0 10px 0 10px; padding:0; display:inline; }\n.home div#feature div#featured_band div.image h4 { height:auto; width:auto; background:none; margin:0; top:auto; bottom:0; }\n.home div#feature div#featured_band div.image h4 span { position:static; background:none; }\n.home div#feature div#featured_band div.image img { top:0; left:0; }\n\n.home div#homepage_events ul { padding-bottom:30px; }\n.home div#homepage_events ul li a { background:none !important; text-indent:0 !important; text-align:center; color:#fff; font-weight:bold; }\n\n.home div#homepage_forums ul,\n.home div#homepage_rss p,\n.home div#homepage_rss ul { background-image:none; background-color:#eee; }\n\n\n\n/* BANDS */\n\n.bands ul#bands1 li.one { width:450px; height:300px; left:-480px; top:0; margin-right:-450px; margin-bottom:30px; }\n.bands ul#bands1 li.one img { top:0; left:0; }\n \n.bands ul#bands1 li.two img,\n.bands ul#bands1 li.three img { padding:0; background:none; position:static; margin:0; margin:0 10px; }\n\n.band div#band_image { width:450px; height:300px; float:left; position:relative; left:10px; top:0px; margin:0 30px 30px 0; display:inline; }\n.band div#band_image img { top:0; left:0; }\n\ndiv#band_latestrelease { padding:20px; overflow:hidden; color:#d6d6d6; margin-left:10px; }\ndiv#band_latestrelease h3 { padding-top:20px; }\n\n.band div#content_pri { display:inline; }\n\n.band div#band_events ul { padding-bottom:30px; }\n.band div#band_events ul li a { background:none !important; text-indent:0 !important; text-align:center; color:#fff; font-weight:bold; }\n\n.band div#band_more ul { background-image:none; background-color:#eee; }\n\n\n\n/* RELEASES */\n\n.releases div#content_pri table th { background:none; text-indent:0; color:#fff; }\n.releases div#content_pri table th.release_details { width:360px; padding-right:30px; background:none; }\n.releases div#content_pri table th.release_catno { width:80px; background:none; }\n.releases div#content_pri table th.release_format { width:120px; background:none; text-align:center; }\n\n.releases div#content_pri table tr { background-image:none; background-color:#a3a39c; }\n.releases div#content_pri table tr.releases_head { background:none; }\n.releases div#content_pri table tr.alt { background-image:none; background-color:#c1c1bc; }\n\n.release div#content_pri { display:inline; padding-top:30px;}\n.release div#content_sec { padding:0; padding-top:30px; background:none; position:relative; left:-10px; }\n\n.release div#release_details { border-bottom:1px solid blue; }\n.release div#release_details span { font-family:Georgia,serif; font-style:italic; }\n.release div#release_details ul { list-style:url({site_url}themes/site_themes/agile_records/images/pixel.gif); }\n\n.release div#release_tracks div.release_format { float:left; padding-bottom:20px; margin-bottom:20px; }\n\n\n\n/* EVENTS */\n\n.events div#content_pri { display:inline; }\n\n\n\n/* NEWS */\n\n.news div#content_pri { display:inline; padding:30px 0; }\n.news div#content_sec { margin:30px 0 ; }\n\n.news div#news_calendar h6 a.prev { position:static; }\n.news div#news_calendar h6 a.next { position:static; }\n\n.news div#news_calendar { background-image:none; background-color:#cfcfcb; }\n.news div#news_calendar table td.post { background-image:none; background-color:#d7d7d3; }\n\n.news div#news_rss { background-image:none; background-color:#cfcfcb; }\n\ndiv#news_comments ol li { background-image:none; background-color:#f1f1f1; }\ndiv#news_comments ol li.alt { background-image:none; background-color:#e7e7e7; }\n\ndiv#news_comments fieldset#comment_fields label { display:block; width:320px; }\ndiv#news_comments fieldset#comment_fields label.comment { width:530px; }\ndiv#news_comments fieldset#comment_fields label span { width:80px; float:none; position:relative; top:20px; }\ndiv#news_comments fieldset#comment_fields label input { float:right; }\ndiv#news_comments fieldset#comment_fields label textarea { float:right; }\n\ndiv#news_comments fieldset#comment_fields label input,\ndiv#news_comments fieldset#comment_fields label textarea { background-image:none; background-color:#f1f1f1; }\n\n\n\n/* FORUMS */\n\n.forums div#content_pri { display:inline; }\n.forums div#content_sec { background-image:none; background-color:#f1f1f1; }\n\n.forums #page_header form { position:absolute; left:770px; padding-top:5px; }\n.forums #page_header form input.search { padding:1px; margin-right:10px;}\n.forums #page_header form input.submit { padding:0; position:relative; top:5px; }\n\n.forums div#content_pri h3 { background-color:#71715f !important; }\n\ndiv.forum_posts { background-image:none; background-color:#9e9e94; }\ndiv.forum_posts table tr td { background-image:none; background-color:#d0d0cc;}\ndiv.forum_posts table tr.alt td { background-image:none; background-color:#b3b3ab; }\n\ndiv.forum_posts table tr th { text-indent:0; color:#fff; }\ndiv.forum_posts table tr th.forum_name,\ndiv.forum_posts table tr th.forum_topics,\ndiv.forum_posts table tr th.forum_replies,\ndiv.forum_posts table tr th.forum_latest { background-image:none; }\n\ndiv.forum_posts table td.forum_newpostindicator img { position:static; }\n\n.forums div#legend div#forum_stats ul.legend { float:left; background-image:none; background-color:#cecec8; }\n.forums div#legend div#forum_stats p.most_visitors { background-image:none; background-color:#ecd2c3; }\n\n\n\n/* WIKI */\n\n.wiki div#navigation_sec { padding-top:57px; display:inline;  behavior: url(css/iepngfix/iepngfix.htc); }\n.wiki div#navigation_sec ul { background:url({site_url}themes/site_themes/agile_records/images/ie_wiki_menubg.jpg) repeat-y 5px top ; }\n.wiki div#navigation_sec div.bottom { behavior: url(css/iepngfix/iepngfix.htc); }\n\n\n\n/* MEMBERS CONTROL PANEL */\n\n.member_cp div#navigation_sec { display:inline; background-image:none; background-color:#9c9b92; }\n.member_cp div#navigation_sec h4 a.expand { display:none; }\n\n.member_cp div#content_pri table tr { background-image:none; background-color:#f1f1f1; }\n.member_cp div#content_pri table tr.alt { background-image:none; background-color:#e7e7e7; }\n.member_cp div#content_pri table tr th { background-image:none; background-color:#f1f1f1; }\n.member_cp div#content_pri table tr.alt th { background-image:none; background-color:#e7e7e7; }\n\n\n\n/* MEMBER PROFILE */\n\n.member_profile div#feature div#memberprofile_main { background-image:none; background-color:#cecec8; margin:20px 0 0 10px; }\n.member_profile div#feature div#memberprofile_main ul { padding:0 0 10px 0; }\n\n.member_profile div#feature div#memberprofile_photo { float:left; width:210px; height:180px; background:none; position:relative; left:-20px; }\n.member_profile div#feature div#memberprofile_photo img { width:206px; height:176px; border:3px solid #6b5f57; position:static; }\n\n.member_profile div#feature div#memberprofile_communicate { background-image:none; background-color:#adada3; margin-top:5px; } \n.member_profile div#feature div#memberprofile_communicate table tr { background-image:none; background-color:#cdcdc7; }\n.member_profile div#feature div#memberprofile_communicate table tr.alt { background-image:none; background-color:#bebeb7; }\n\n.member_profile div#content_pri table tr,\n.member_profile div#content_sec table tr { background-image:none; background-color:#f1f1f1; }\n.member_profile div#content_pri table tr.alt,\n.member_profile div#content_sec table tr.alt { background-image:none; background-color:#e7e7e7; }\n\n.member_profile div#content_pri table tr th,\n.member_profile div#content_sec table tr th { background-image:none; background-color:#f1f1f1; }\n.member_profile div#content_pri table tr.alt th,\n.member_profile div#content_sec table tr.alt th { background-image:none; background-color:#e7e7e7; }\n\n\n',NULL,1409242030,1,'n',0,'','n','n','o',0,'n'),
+	(8,1,2,'css_screen-ie7','n','css','body {position:relative;}\ndiv#branding {margin:0 auto;}\n\n\ndiv#content_wrapper {position:relative;}\n\ndiv.feature_end {margin-top:0; }\ndiv#content_pri {float:left;margin:0 30px 0 10px;width:600px; padding-left:10px;}\ndiv#content_sec {float:left;width:270px; position:relative; z-index:999;}\n\ndiv#content_pri.contact {width:520px; margin-right:110px;}\ndiv#content_sec.contact {float:right; margin: 0 10px -140px auto; }\n\n\ndiv#page_header {position:relative;z-index:1;}\n\ndiv#feature{top:-10px;float:none;margin-bottom:30px;padding-top:25px;padding-top:10px;position:relative;width:950px;z-index:900;display:block;}\n\ndiv.feature_end {clear:none;height:35px;margin-bottom:20px;margin-top:-40px;width:950px;}\n\n/*#content_wrapper.member_cp {padding:0 10px;} */\n#content_wrapper.member_cp table {width:550px;}\n\ndiv#navigation_sec.member_cp { \n	width:150px; \n	left:10px;\n}\n\ndiv#content_wrapper.member_cp form {margin-left:200px;}',NULL,1409242030,1,'n',0,'','n','n','o',0,'n'),
+	(9,1,2,'site_css','n','css','html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,hr{margin:0;padding:0;border:0;outline:0;font-weight:inherit;font-style:inherit;font-size:100%;font-family:inherit;vertical-align:baseline;}:focus{outline:0;}body{line-height:1;color:black;background:white;}ol,ul{list-style:none;}table{border-collapse:collapse;border-spacing:0;}caption,th,td{text-align:left;font-weight:normal;}blockquote:before,blockquote:after,q:before,q:after{content:"";}blockquote,q{quotes:"""";}@font-face{font-family:\'miso\';src:url(\'{site_url}themes/site_themes/agile_records/fonts/miso-bold.ttf\');}body{background:#ccc url({site_url}themes/site_themes/agile_records/images/body_bg.jpg) top center;font-size:13px;font-family:Arial,sans-serif;}ul#nav_access{position:absolute;top:-9999px;left:-9999px;}p,ul,dl,ol{margin-bottom:22px;line-height:22px;}ul{list-style:url({site_url}themes/site_themes/agile_records/images/bullet.jpg);}ul li{margin-left:12px;}ol{list-style:decimal;list-style-position:inside;}hr{height:0;border-top:1px solid #ccc;margin-bottom:22px;}abbr{border-bottom:1px dotted;}strong{font-weight:bold;}em{font-style:italic;}h1,h2,h3,h4,h5{font-weight:bold;}h2{color:#48482d;font-size:16px;margin-bottom:10px;}h3{margin-bottom:20px;}h4{margin-bottom:10px;}h5{margin-bottom:10px;}h6{text-transform:uppercase;font-size:11px;color:#666;letter-spacing:1px;margin-bottom:10px;}a:link,a:visited{color:#333;text-decoration:underline;}a:hover,a:focus{color:#111;}h2 a:link,h2 a:visited,h3 a:link,h3 a:visited,h4 a:link,h4 a:visited{text-decoration:none;}\n\n/* Tables */\n/* site_url explanation: http://ellislab.com/expressionengine/user-guide/templates/globals/single_variables.html#var_site_url */\n/* only site_url will be parsed, other variables will not be parsed unless you call the stylesheet using path= instead of stylesheet=:\n\nhttp://ellislab.com/expressionengine/user-guide/templates/globals/stylesheet.html */\n\ntable{background:url({site_url}themes/site_themes/agile_records/images/white_40.png);font-size:12px;}\ntr{border-bottom:1px dotted #999;}\ntr.alt{background:url({site_url}themes/site_themes/agile_records/images/white_20.png);}\nth,td{padding:10px;}\nth{background:url({site_url}themes/site_themes/agile_records/images/white_20.png);color:#666;font-weight:bold;font-size:13px;}\n.member_table{width:60%; margin:10px;}\n.member_console{width:100%;}\n\n/* Page Styles */\ndiv#branding{height:290px;background:url({site_url}themes/site_themes/agile_records/images/branding_bg.png) repeat-x center top;position:relative;z-index:2;}\ndiv#branding_sub{width:930px;margin:0 auto;position:relative;}\ndiv#page{width:950px;padding-top:50px;margin:0 auto;position:relative;top:0px;margin-top:-80px;z-index:1;background:url({site_url}themes/site_themes/agile_records/images/white_40.png);}\ndiv#content_wrapper{padding-top:30px;}\ndiv#feature{width:950px;background:url({site_url}themes/site_themes/agile_records/images/white_70.png);float:left;padding-top:30px;position:relative;bottom:30px;margin-bottom:-30px;}\n\ndiv.feature_end {background:transparent url({site_url}themes/site_themes/agile_records/images/agile_sprite.png) no-repeat scroll left -747px; border:none;outline:none;clear:both;height:35px;margin-top:-6px;margin-bottom:20px;width:950px;}\n\ndiv#legend{width:950px;background:url({site_url}themes/site_themes/agile_records/images/white_70.png);overflow:hidden;position:relative;top:30px;margin-top:-30px;padding:10px 0 30px 0;font-size:11px;}\nhr.legend_start{width:950px;clear:both;background:url({site_url}themes/site_themes/agile_records/images/white_70_top.png) no-repeat top left;height:35px;margin:0;margin-top:20px;border:none;}\ndiv#content_pri{width:610px;float:left;margin:0 30px 0 10px;}\ndiv#content_sec{width:270px;float:left;}\n\ninput.input { border:1px solid #aaa; position:relative; left:5px; background:url({site_url}themes/site_themes/agile_records/images/white_50.png);}\ninput.input:focus { background:url({site_url}themes/site_themes/agile_records/images/white_70.png); }\ntextarea { border:1px solid #aaa; background:url({site_url}themes/site_themes/agile_records/images/white_50.png); }\ntextarea:focus { background:url({site_url}themes/site_themes/agile_records/images/white_70.png); }\n\n\n\n\n/* Branding */\ndiv#branding_logo{background:url({site_url}themes/site_themes/agile_records/images/agile_sprite.png) no-repeat 9px -428px;margin:0 auto;position:relative;left:-80px;margin-bottom:-230px;height:230px;width:950px;}\ndiv#branding_logo img{display:none;}\ndiv#branding_sub h1 a {width:182px;height:196px;display:block;text-indent:-9999em;background:url({site_url}themes/site_themes/agile_records/images/agile_sprite.png) no-repeat -264px 15px;  padding-top:15px;}\ndiv#branding_sub form{position:absolute; right:130px;top:25px;width:240px;height:51px;background:url({site_url}themes/site_themes/agile_records/images/agile_sprite.png) no-repeat -534px -21px;}\ndiv#branding_sub form fieldset{position:relative;}\ndiv#branding_sub form label{text-indent:-9999em;margin-top:10px;width:60px;padding:5px;position:absolute;left:0px;display:inline;}\ndiv#branding_sub form input#search{background:none;border:none;position:absolute;top:13px;left:70px;width:100px;padding:2px 5px;font-size:11px;color:#fff;}\n\ndiv#branding_sub form input#submit{position:absolute;right:30px;top:6px; background:transparent url({site_url}themes/site_themes/agile_records/images/agile_sprite.png) no-repeat -587px -77px; width:24px; height:24px; display:block; font-size:1px; border:none; outline:none;}\n\ndiv#branding_sub div#member{position:absolute;right:0;top:20px;background:url({site_url}themes/site_themes/agile_records/images/brown_40.png);border:1px solid #846f65;color:#ccc;font-size:11px;padding:8px;}\ndiv#branding_sub div#member ul{margin:0;line-height:13px;list-style:disc;}\ndiv#branding_sub div#member h4{margin-bottom:4px;}\ndiv#branding_sub div#member a:link, div#branding_sub div#member a:visited{color:#ccc;}\ndiv#branding_sub div#member a:hover, div#branding_sub div#member a:focus{color:#fff;}\n\n/* Navigation */\nul#navigation_pri{list-style:none;margin:0 auto;padding:5px 15px;width:340px;max-height:100px;background:#2f261d;position:absolute;right:0;bottom:20px;}\nul#navigation_pri li{margin:0;float:left;font-size:16px;width:33%;}\nul#navigation_pri li a{font-family:\'Cooper Black\',miso,\'Georgia\',serif;font-weight:bold;color:#999999;text-decoration:none}\nul#navigation_pri li a:hover{color:#efefef;}\nul#navigation_pri li.cur a{color:#f47424}\n\n/* Footer */\ndiv#siteinfo{background:url({site_url}themes/site_themes/agile_records/images/agile_sprite.png) no-repeat left -287px;height:80px;padding-top:40px;position:relative;clear:both;font-size:12px;z-index:3;}\ndiv#siteinfo p{color:#5b5b42;font-weight:bold;margin:0 0 0 10px;}\ndiv#siteinfo p.logo{width:65px;height:70px;background:url({site_url}themes/site_themes/agile_records/images/agile_sprite.png); text-indent:-9999em;position:absolute;left:865px;bottom:15px;}\ndiv#siteinfo a {color:#5b5b42;text-decoration:underline;}\ndiv#siteinfo a:hover {color:#3B3A25;text-decoration:underline;}\ndiv#siteinfo p.logo a{display:block;}\n\n\n/* 11.PAGEHEADERS\n---------------------------------------------------------------------- */\n\ndiv#page_header { background:url({site_url}themes/site_themes/agile_records/images/agile_sprite.png) no-repeat left -205px; height:72px; z-index:3; position:relative; top:-25px; margin-bottom:-15px; }\n\ndiv#page_header h2 { float:left; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: normal; text-transform:uppercase; color:#ebebeb; letter-spacing: -0.01em; }\ndiv#page_header h2 a { display:block; }\n\ndiv#page_header h2 { margin:0; width:400px; height:15px; padding-top:30px; margin-left:10px;}\n\ndiv#page_header ol#breadcrumbs { float:left; list-style:none; margin:0; margin-left:10px; margin-top:26px; padding:0px 0 0 20px; background:url({site_url}themes/site_themes/agile_records/images/breadcrumbs_bg.png) no-repeat left center; }\ndiv#page_header ol#breadcrumbs li { margin:0; float:left; font-weight:bold; color:#d6d6d6; text-transform:uppercase; font-size:12px; }\ndiv#page_header ol#breadcrumbs li a { color:#d6d6d6; text-decoration:none; }\n\n\n/*  Featured Band / Welcome\n-------------------------------- */\ndiv#featured_band {width:450px; float:left; position:relative; z-index:5; bottom:52px; margin-bottom:-52px;}\ndiv#welcome {width:450px; float:left; margin:0 30px 0 10px;}\ndiv#welcome img {float:left; margin:0 30px 10px 0;}\ndiv#featured_band h2 {margin-bottom:38px; width:135px; height:14px; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: normal; text-transform:uppercase; color:#ebebeb; letter-spacing: -0.01em;}\n\ndiv#featured_band div.image { float:right; width:323px; height:243px; position:relative; left:50px; bottom:75px; margin: 0 0 -75px -50px; }\ndiv#featured_band div.image h4 { width:324px; height:243px; background:url({site_url}themes/site_themes/agile_records/images/featuredband_border.png) no-repeat top left; position:absolute; top:0; left:0; z-index:2; }\ndiv#featured_band div.image h4 span { position:absolute; top:177px; left:30px; background:url({site_url}themes/site_themes/agile_records/images/white_70.png); font-size:11px; padding:2px; padding-left:60px; }\ndiv#featured_band div.image img { position:absolute; top:20px; left:15px;}\n.green40 {background:transparent url({site_url}themes/site_themes/agile_records/images/green_40.png) repeat scroll 0 0; color:#EEEEEE; float:left; padding:10px;}\ndiv#feature p {margin-left:10px;}\n\n/* News\n---------------- */\nh3.oldernews {}\nul#news_listing { list-style:none; }\nul#news_listing li { margin:0 0 30px 0; overflow:hidden; }\nul#news_listing li img { float:left; margin:0 10px 10px 0;}\nul#news_listing li p { margin-bottom:10px; }\n\ndiv#news_archives { overflow:hidden; }\ndiv#news_archives div#categories_box {width:120px; float: left;}\ndiv#news_archives div#months_box {width:120px; float: right;}\ndiv#news_archives ul#categories { width:120px; float:left; margin-right:30px; }\ndiv#news_archives ul#months { width:120px; float:left; }\n\ndiv#news_calendar { padding:10px; background:url({site_url}themes/site_themes/agile_records/images/white_50.png); margin-bottom:40px; }\n\ndiv#news_calendar a:link,\ndiv#news_calendar a:visited { color:#666; }\ndiv#news_calendar a:hover,\ndiv#news_calendar a:focus { color:#333; }\n\ndiv#news_calendar h6 { position:relative; text-align:center; text-transform:uppercase; color:#666; padding:0 0 10px 0; }\ndiv#news_calendar h6 a.prev { position:absolute; left:0; top:-3px; font-size:16px; }\ndiv#news_calendar h6 a.next { position:absolute; right:0; top:-3px; font-size:16px; }\n\ndiv#news_calendar table { background:none; font-size:11px; width:250px; color:#666; }\ndiv#news_calendar table th { background:url({site_url}themes/site_themes/agile_records/images/green_50.png); color:#ccc; }\ndiv#news_calendar table th,\ndiv#news_calendar table td  { padding:5px 0; text-align:center; }\ndiv#news_calendar table tr { border:none; }\ndiv#news_calendar table td.unused { color:#999; }\ndiv#news_calendar table td.post { background:url({site_url}themes/site_themes/agile_records/images/white_20.png); }\ndiv#news_calendar table td.post:hover { background:url({site_url}themes/site_themes/agile_records/images/white_40.png); }\n\ndiv#news_rss { padding:10px; background:url({site_url}themes/site_themes/agile_records/images/white_50.png); color:#666; }\ndiv#news_rss ul { list-style:url({site_url}themes/site_themes/agile_records/images/bullet.jpg); margin:0; }\ndiv#news_rss a:link,\ndiv#news_rss a:visited { color:#666; }\ndiv#news_rss a:hover,\ndiv#news_rss a:focus { color:#333; }\n\n\n/* Staff Profiles */\ndiv#content_sec.staff_profiles {\nbackground:transparent url({site_url}themes/site_themes/agile_records/images/staff_bg.jpg) repeat scroll 0 0;float:right;margin-bottom:-110px;padding:10px;position:relative;top:-140px; right:10px; width:430px;}\n\n/* Comments */\ndiv#news_comments { border-top:#bfbebf 1px solid; padding-top:20px; }\n\ndiv#news_comments ol { list-style:none; border-top:1px dotted #ccc; margin-bottom:30px; }\ndiv#news_comments ol li { border-bottom:1px dotted #ccc; background:url({site_url}themes/site_themes/agile_records/images/white_70.png); padding:20px 10px 0 160px; font-size:12px; line-height:20px; }\ndiv#news_comments ol li.alt { background:url({site_url}themes/site_themes/agile_records/images/white_50.png); }\n\ndiv#news_comments ol li h5.commentdata { width:120px; float:left; position:relative; left:-150px; margin-right:-150px; font-size:13px; line-height:20px; }\ndiv#news_comments ol li h5.commentdata span { display:block; font-weight:normal; font-size:11px; }\ndiv#news_comments ol li h5.commentdata img { margin-top:10px; }\n\ndiv#news_comments h3.leavecomment {color:#47472C; font-family:\'Cooper Black\', miso, \'Georgia\', serif; font-size:20px;}\ndiv#news_comments form { position:relative; margin-bottom:30px; }\n\ndiv#news_comments fieldset#comment_fields label { display:block; overflow:hidden; font-size:12px; margin-bottom:20px; }\ndiv#news_comments fieldset#comment_fields label span { width:80px; float:left; position:relative; top:5px; }\ndiv#news_comments fieldset#comment_fields label input { border:1px solid #aaa; width:228px; float:left; background:url({site_url}themes/site_themes/agile_records/images/white_50.png); }\ndiv#news_comments fieldset#comment_fields label input:focus { background:url({site_url}themes/site_themes/agile_records/images/white_70.png); }\ndiv#news_comments fieldset#comment_fields label textarea { border:1px solid #aaa; float:left; height:150px; width:438px; background:url({site_url}themes/site_themes/agile_records/images/white_50.png); }\ndiv#news_comments fieldset#comment_fields label textarea:focus { background:url({site_url}themes/site_themes/agile_records/images/white_70.png); }\n\ndiv#news_comments div#comment_guidelines { width:418px; padding:10px; margin:10px 0 10px 80px; color:#fff; background:#9f9995; }\ndiv#news_comments div#comment_guidelines h6 { font-weight:normal; font-size:12px; margin-bottom:0; }\ndiv#news_comments div#comment_guidelines p { margin:10px 0 0 0 ; font-size:11px; line-height:16px; font-style:italic; }\n\ndiv#news_comments fieldset#comment_action { background:url({site_url}themes/site_themes/agile_records/images/orange_20.png); padding:10px; font-size:11px; position:relative; }\ndiv#news_comments fieldset#comment_action label { display:block; padding:5px 0; }\ndiv#news_comments fieldset#comment_action label input { position:relative; left:5px; }\ndiv#news_comments fieldset#comment_action input#submit_comment { position:absolute; bottom:10px; right:10px; font-size:12px; }\n\ndiv#captcha_box img {margin-left: 5px;}\n\ninput#captcha {display:block; margin: 5px 0 0 0; border:1px solid #aaa; width:228px; background:url({site_url}themes/site_themes/agile_records/images/white_50.png);}\ninput#captcha:focus {background:url({site_url}themes/site_themes/agile_records/images/white_70.png);}\n\n/* News Archive Page */\ndiv.archive ul#news_listing li img {float:right; margin:auto auto 10px 10px;}\ndiv.archive ul#news_listing li p {margin-bottom:10px; padding-left:0;}\n\n/* About */\ndiv#content_pri.about {width:450px;}\ndiv#feature.about p {color:#666666;font-weight:bold;margin-left:10px;width:450px;}\ndiv#feature h3.about {font-size:22px; font-family:\'Cooper Black\',miso,\'Georgia\',serif;font-weight:bold;color:#47472C;text-decoration:none; margin:10px 0 20px 10px; width:300px;}\n\n\ndiv#content_sec ul.staff_member li {float:left;height:180px;margin:0 35px 40px 0;overflow:hidden;position:relative;width:120px;}\n\ndiv#content_sec ul.staff_member { list-style:none; overflow:hidden; margin-bottom:-20px; }\ndiv#content_sec ul.staff_member li { width:120px; height:180px; overflow:hidden; position:relative; float:left; margin:0 35px 40px 0; }\ndiv#content_sec ul.staff_member li.end { margin-right:0; }\ndiv#content_sec ul.staff_member li h4 { font-size:12px; padding:5px 5px; background:#afafa8; position:absolute; bottom:0; left:0; z-index:3; color:#fff; width:110px; height:20px; cursor:pointer; }\ndiv#content_sec ul.staff_member li h4 a { position:absolute; right:5px; color:#eee; font-family:Georgia, "Times New Roman", Times, serif; font-style:italic; font-weight:bold; }\ndiv#content_sec ul.staff_member li div.profile { position:absolute; bottom:40px; left:0; background:url({site_url}themes/site_themes/agile_records/images/white_50.png); z-index:2; padding:5px; width:110px; }\ndiv#content_sec ul.staff_member li img { position:absolute; top:0; left:0; }\ndiv.profile {color:#000;}\n\n\n/* Contact */\ndiv#content_pri.contact { width:530px; margin-right:110px; }\ndiv#content_sec.contact {  width:270px; float:left; padding:10px; padding-bottom:0; background:url({site_url}themes/site_themes/agile_records/images/staff_bg.jpg); position:relative; top:-170px; margin-bottom:-140px; color:#eee; }\ndiv#feature.contact p {color:#666666;font-weight:bold;margin-left:10px;width:600px;}\n\n/*div#feature { padding-left:10px; padding-right:410px; width:530px; }*/\ndiv#feature h3.getintouch { width:140px; font-family:\'Cooper Black\',miso,\'Georgia\',serif;font-size:20px; color:#47472C;text-decoration:none; margin-left:10px;}\n\ndiv#content_pri form { position:relative; margin-bottom:30px; }\n\ndiv#content_pri fieldset#contact_fields label { display:block; overflow:hidden; font-size:12px; margin-bottom:20px; }\ndiv#content_pri fieldset#contact_fields label span { width:80px; float:left; position:relative; top:5px; }\ndiv#content_pri fieldset#contact_fields label input { border:1px solid #aaa; width:228px; float:left; background:url({site_url}themes/site_themes/agile_records/images/white_50.png); }\ndiv#content_pri fieldset#contact_fields label input:focus { background:url({site_url}themes/site_themes/agile_records/images/white_70.png); }\ndiv#content_pri fieldset#contact_fields label textarea { border:1px solid #aaa; float:left; height:150px; width:438px; background:url({site_url}themes/site_themes/agile_records/images/white_50.png); }\ndiv#content_pri fieldset#contact_fields label textarea:focus { background:url({site_url}themes/site_themes/agile_records/images/white_70.png); }\n\ndiv#content_pri div#contact_guidelines { position:absolute; top:0; right:0; width:170px; padding:10px; color:#fff; background:#9f9995; }\ndiv#content_pri div#contact_guidelines h6 { font-weight:normal; font-size:12px; margin-bottom:10px; }\ndiv#content_pri div#contact_guidelines p { margin:0; font-size:11px; line-height:16px; font-style:italic; }\n\ndiv#content_pri fieldset#contact_action { background:url({site_url}themes/site_themes/agile_records/images/orange_20.png); padding:10px; font-size:11px; position:relative; }\ndiv#content_pri fieldset#contact_action label { display:block; padding:5px 0; }\ndiv#content_pri fieldset#contact_action label input { position:relative; left:5px; }\ndiv#content_pri fieldset#contact_action input#contactSubmit { position:absolute; bottom:10px; right:10px; font-size:12px; }\n\n\n\n\n/*  Member Templates */\n/* 22.MEMBERS\n---------------------------------------------------------------------- */\n\n/* CONTROL PANEL */\ndiv#navigation_sec.member_cp { width:270px; padding:10px; float:left; background:url({site_url}themes/site_themes/agile_records/images/green_40.png); margin:35px 30px 30px 10px; font-size:11px; line-height:16px; }\n/*div#content_pri.member_cp  { width:610px; margin:0 0 0 10px; }*/\n\ndiv#page_header.member_cp  a.viewprofile { display:block; width:182px; height:22px; background:url({site_url}themes/site_themes/agile_records/images/member_viewprofile.jpg) no-repeat left top; text-indent:-9999em; position:absolute; right:10px; top:25px; }\n.member_cp div#page_header a.viewprofile:hover,\n.member_cp div#page_header a.viewprofile:focus { background-position:left bottom; }\n\ndiv#navigation_sec.member_cp h4 { color:#fff; border-bottom:1px solid #b1b1a9; font-size:12px; padding-bottom:5px; position:relative; }\ndiv#navigation_sec.member_cp h4 a.expand { position:absolute; right:0; top:0; display:block; height:14px; width:14px; background:url({site_url}themes/site_themes/agile_records/images/controlpanel_expand.jpg) no-repeat bottom left; text-indent:-9999em; }\ndiv#navigation_sec.member_cp h4 a.expand.open { background:url({site_url}themes/site_themes/agile_records/images/controlpanel_expand.jpg) no-repeat top left; }\ndiv#navigation_sec.member_cp a:link,\ndiv#navigation_sec.member_cp a:visited { color:#ddd; }\ndiv#navigation_sec.member_cp a:hover,\ndiv#navigation_sec.member_cp a:focus { color:#fff; }\n\ndiv#content_pri table { width:610px; background:none;}\ndiv#content_pri table th { background:none; }\ndiv#content_pri table tr { background:url({site_url}themes/site_themes/agile_records/images/white_60.png); }\ndiv#content_pri table tr.alt { background:url({site_url}themes/site_themes/agile_records/images/white_40.png); }\n\n/* PROFILE */\ndiv#content_pri.member_profile, div#content_pri.member_cp  { width:450px; float:left; margin:0 30px 30px 10px; }\ndiv#content_sec.member_profile, div#content_sec.member_cp  { width:450px; float:left; margin:0 0 30px 0; }\n\nh3.statistics {height:11px; font-family:\'Cooper Black\',miso,\'Georgia\',serif; color:#f47424; font-size:18px; }\nh3.personalinfo {height:11px; color:#47472C; font-family:\'Cooper Black\',miso,\'Georgia\',serif; font-size:18px;}\nh3.biography {height:11px; color:#47472C; font-family:\'Cooper Black\',miso,\'Georgia\',serif; font-size:18px; margin-top:20px;}\n\ndiv#memberprofile_main { background:url({site_url}themes/site_themes/agile_records/images/green_20.png); width:300px; padding:10px; margin:40px 0 0 10px; float:left; }\ndiv#memberprofile_main img { float:left; margin:0 10px 10px 0; }\ndiv#memberprofile_main h3 { margin:5px 0 10px 0; }\ndiv#memberprofile_main ul { clear:both; margin:0; padding:10px 0; font-size:12px; }\ndiv#memberprofile_main ul a { color:#666; }\n\ndiv#memberprofile_photo { float:left; width:250px; height:220px; background:url({site_url}themes/site_themes/agile_records/images/memberprofile_photo_bg.png) no-repeat center center; position:relative; left:-20px; }\ndiv#memberprofile_photo img { width:206px; height:176px; border:3px solid #6b5f57; position:absolute; top:20px; left:20px; }\n\ndiv#memberprofile_communicate { width:270px; padding:10px; margin:20px 10px 0 0; float:right; background:url({site_url}themes/site_themes/agile_records/images/green_40.png); }\ndiv#memberprofile_communicate h3.communicate { width:83px; height:12px; font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; color:#EBEBEB; text-transform: uppercase; margin-bottom:10px; }\ndiv#memberprofile_communicate table { width:270px; font-size:10px; background:none; }\ndiv#memberprofile_communicate table tr { background:url({site_url}themes/site_themes/agile_records/images/white_40.png); }\ndiv#memberprofile_communicate table tr.alt { background:url({site_url}themes/site_themes/agile_records/images/white_20.png); }\ndiv#memberprofile_communicate table th { font-weight:normal; font-size:10px; background:none; padding:4px; }\ndiv#feature div#memberprofile_communicate table td { padding:4px; color:#444;}\n\ndiv#content_pri.member_cp table,\ndiv#content_sec.member_cp table { width:100%; background:none; margin-bottom:30px; }\ndiv#content_pri.member_cp table th,\ndiv#content_sec.member_cp table th { background:none; }\ndiv#content_pri.member_cp table tr,\ndiv#content_sec.member_cp table tr { background:url({site_url}themes/site_themes/agile_records/images/white_60.png); }\ndiv#content_pri.member_cp table tr.alt,\ndiv#content_sec.member_cp table tr.alt  { background:url({site_url}themes/site_themes/agile_records/images/white_40.png); }\n\n/* Private Messages: Move and Copy pop-up menu control */\n#movemenu {position: absolute !important; top: 410px !important; left: 390px !important; border: 0 !important;}\n#copymenu {position: absolute !important; top: 410px !important; left: 332px !important; border: 0 !important;}\n\n/* Search Results */\n.pagination ul { overflow: auto; }\n.pagination li { float: left; list-style: none; background: transparent url(http://expressionengine2/themes/site_themes/agile_records/images/green_40.png) repeat scroll 0 0; padding: 1px 7px; margin: 0 3px; }\n.pagination li.active { background: none; }\n.pagination li.active a { text-decoration: none; }',NULL,1409242030,1,'n',0,'','n','n','o',0,'n'),
+	(10,1,3,'index','n','webpage','{if segment_2 != \'\'}\n  {redirect="404"}\n{/if}\n{html_head}\n	<title>{site_name}</title>\n{global_stylesheets}\n{rss}\n{favicon}\n{html_head_end}\n	<body>\n	{nav_access}\n	{branding_begin}\n			{embed="global_embeds/_top_nav" loc="home"}\n			{global_top_search}\n			{global_top_member}\n	{branding_end}\n	{wrapper_begin}\n{embed="global_embeds/_page_header" header="News"}\n	<div id="feature" class="news">\n			{global_featured_welcome}\n			{global_featured_band}\n	    </div> <!-- ending #feature -->\n\n        	<div class="feature_end"></div>\n\n	<div id="content_pri"> <!-- This is where all primary content, left column gets entered -->\n		<!--  This is the channel entries tag.  Documentation for this parameter can be found at http://ellislab.com/expressionengine/user-guide/modules/channel/channel_entries.html\n				 Parameter Explanation:\n		channel= which channel to output, multiple channels may be piped in (channel_1|channel_2)\n		limit= limits the number of entries output in this instance of the tag\n		disable= turns off parsing of un-needed data -->\n\n		{exp:channel:entries channel="news" limit="3" disable="categories|member_data|category_fields|pagination"}\n\n		<!-- if no_results is a conditional variable, it can not be combined with advanced conditionals.  http://ellislab.com/expressionengine/user-guide/modules/channel/conditional_variables.html#cond_if_no_results -->\n\n		{if no_results}<p>Sample No Results Information</p>{/if}\n		{if count == "1"}\n		<h3 class="recentnews">Recent News</h3>\n		<ul id="news_listing">\n		{/if}\n			<li>\n				<h4><a href="{comment_url_title_auto_path}">{title}</a>  //  <!-- entry_date is a variable, and date formatting variables can be found at http://ellislab.com/expressionengine/user-guide/templates/date_variable_formatting.html -->{entry_date format="%F %d %Y"}</h4>\n\n				<!-- the following two lines are custom channel fields. http://ellislab.com/expressionengine/user-guide/cp/admin/channel_administration/custom_channel_fields.html -->\n\n				{if news_image}\n					<img src="{news_image}" alt="{title}" />\n				{/if}\n				{news_body}\n				<p><a href="{comment_url_title_auto_path}#news_comments">{comment_total} comments</a> {global_edit_this}\n								{if news_extended != ""}  |  <a href="{comment_url_title_auto_path}">Read more</a>{/if}</p>\n\n			</li>\n		{if count == total_results}</ul>{/if}\n		{/exp:channel:entries}\n\n\n\n\n	</div>\n\n	<div id="content_sec" class="right green40">\n		<h3 class="oldernews">Browse Older News</h3>\n		<div id="news_archives">\n			<div id="categories_box">\n			{news_categories}\n			</div>\n			<div id="month_box">\n			{news_month_archives}\n			</div>\n		</div> <!-- ending #news_archives -->\n\n		{news_calendar}\n\n		{news_popular}\n\n	{rss_links}\n\n	</div>	<!-- ending #content_sec -->\n\n{global_footer}\n{wrapper_close}\n{js}\n{html_close}\n',NULL,1409242030,1,'n',0,'','n','n','o',0,'n'),
+	(11,1,3,'archives','n','webpage','{html_head}\n	<title>{site_name}: News Archives</title>\n{global_stylesheets}\n{rss}\n{favicon}\n{html_head_end}\n	<body>\n	{nav_access}\n	{branding_begin}\n			{embed="global_embeds/_top_nav" loc="home"}\n			{global_top_search}\n			{global_top_member}\n	{branding_end}\n	{wrapper_begin}\n{embed="global_embeds/_page_header" header="News"}\n	<div id="feature">\n			{global_featured_welcome}\n			{global_featured_band}\n	    </div> <!-- ending #feature -->\n\n        	<div class="feature_end"></div>\n\n	<div id="content_pri" class="archive"> <!-- This is where all primary content, left column gets entered -->\n\n			<!--  This is the channel entries tag.  Documentation for this tag can be found at http://ellislab.com/expressionengine/user-guide/modules/weblog/parameters.html\n\n			channel= which channel to output, multiple channels may be piped in (channel_1|channel_2)\n			limit= limits the number of entries output in this instance of the tag\n			disable= turns off parsing of un-needed data\n			relaxed_categories= allows you use the category indicator in your URLs with an entries tag specifying multiple weblogs that do not share category groups.\n\n			-->\n\n		{exp:channel:entries channel="news" limit="3" disable="member_data|category_fields|pagination" status="open|featured" relaxed_categories="yes"}\n\n		<!-- if no_results is a conditional variable, it can not be combined with advanced conditionals.  http://ellislab.com/expressionengine/user-guide/modules/channel/conditional_variables.html#cond_if_no_results -->\n\n		{if no_results}<p>No Results</p>{/if}\n		{if count == "1"}\n		<h3 class="recentnews">Recent News</h3>\n		<ul id="news_listing">\n		{/if}\n			<li>\n				<h4><a href="{comment_url_title_auto_path}">{title}</a>  //  {!-- entry_date is a variable, and date formatting variables can be found at http://ellislab.com/expressionengine/user-guide/templates/date_variable_formatting.html --}{entry_date format="%F %d %Y"}</h4>\n\n				<!-- the following two lines are custom channel fields. http://ellislab.com/expressionengine/user-guide/cp/admin/channel_administration/custom_channel_fields.html -->\n\n				{if news_image}\n					<img src="{news_image}" alt="{title}" />\n				{/if}\n				{news_body}\n				<p><a href="{comment_url_title_auto_path}#news_comments">{comment_total} comments</a> {global_edit_this}\n								{if news_extended != ""}  |  <a href="{comment_url_title_auto_path}">Read more</a>{/if}</p>\n\n			</li>\n		{if count == total_results}</ul>{/if}\n		{/exp:channel:entries}\n\n\n\n\n	</div>\n\n	<div id="content_sec" class="right green40">\n		<h3 class="oldernews">Browse Older News</h3>\n		<div id="news_archives">\n			<div id="categories_box">\n			{news_categories}\n			</div>\n			<div id="month_box">\n			{news_month_archives}\n			</div>\n		</div> <!-- ending #news_archives -->\n\n		{news_calendar}\n\n		{news_popular}\n\n	{rss_links}\n\n	</div>	<!-- ending #content_sec -->\n\n{global_footer}\n{wrapper_close}\n{js}\n{html_close}\n',NULL,1409242030,1,'n',0,'','n','n','o',0,'n'),
+	(12,1,3,'atom','n','feed','{exp:rss:feed channel="news"}\n\n<?xml version="1.0" encoding="{encoding}"?>\n<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="{channel_language}">\n\n	<title type="text">{exp:xml_encode}{channel_name}{/exp:xml_encode}</title>\n	<subtitle type="text">{exp:xml_encode}{channel_name}:{channel_description}{/exp:xml_encode}</subtitle>\n	<link rel="alternate" type="text/html" href="{channel_url}" />\n	<link rel="self" type="application/atom+xml" href="{path={atom_feed_location}}" />\n	<updated>{gmt_edit_date format=\'%Y-%m-%dT%H:%i:%sZ\'}</updated>\n	<rights>Copyright (c) {gmt_date format="%Y"}, {author}</rights>\n	<generator uri="http://ellislab.com/" version="{version}">ExpressionEngine</generator>\n	<id>tag:{trimmed_url},{gmt_date format="%Y:%m:%d"}</id>\n\n{exp:channel:entries channel="news" limit="15" dynamic_start="on" disable="member_data"}\n	<entry>\n	  <title>{exp:xml_encode}{title}{/exp:xml_encode}</title>\n	  <link rel="alternate" type="text/html" href="{comment_url_title_auto_path}" />\n	  <id>tag:{trimmed_url},{gmt_entry_date format="%Y"}:{relative_url}/{channel_id}.{entry_id}</id>\n	  <published>{gmt_entry_date format="%Y-%m-%dT%H:%i:%sZ"}</published>\n	  <updated>{gmt_edit_date format=\'%Y-%m-%dT%H:%i:%sZ\'}</updated>\n	  <author>\n			<name>{author}</name>\n			<email>{email}</email>\n			{if url}<uri>{url}</uri>{/if}\n	  </author>\n{categories}\n	  <category term="{exp:xml_encode}{category_name}{/exp:xml_encode}"\n		scheme="{path=news/index}"\n		label="{exp:xml_encode}{category_name}{/exp:xml_encode}" />{/categories}\n	  <content type="html"><![CDATA[\n		{news_body} {news_extended}\n	  ]]></content>\n	</entry>\n{/exp:channel:entries}\n\n</feed>\n\n{/exp:rss:feed}						',NULL,1409242030,1,'n',0,'','n','n','o',0,'n'),
+	(13,1,3,'comment_preview','n','webpage','{!-- Explanations and learning materials can be found in news/index and the other news template groups.  In-line comments here are only for features not introduced in news/index.\n	 NOTE:  This is an ExpressionEngine Comment and it will not appear in the rendered source.\n			http://ellislab.com/expressionengine/user-guide/templates/commenting.html\n--}\n{html_head}\n<!-- Below we use a channel entries tag to deliver a dynamic title element. -->\n	<title>{site_name}: Comment Preview for\n		{exp:channel:entries channel="news|about" limit="1" disable="categories|member_data|category_fields|pagination"}{title}{/exp:channel:entries}</title>\n{global_stylesheets}\n{rss}\n{favicon}\n{html_head_end}\n	<body>\n{nav_access}\n	{branding_begin}\n			{embed="global_embeds/_top_nav" loc="home"}\n			{global_top_search}\n			{global_top_member}\n	{branding_end}\n	{wrapper_begin}\n{embed="global_embeds/_page_header" header="News"}\n	<div id="feature">\n		{global_featured_welcome}\n		{global_featured_band}\n	    </div> <!-- ending #feature -->\n\n        	<div class="feature_end"></div>\n\n	<div id="content_pri"> <!-- This is where all primary content, left column gets entered -->\n		<!--  This is the channel entries tag.  Documentation for this parameter can be found at http://ellislab.com/expressionengine/user-guide/modules/channel/channel_entries.html\n				 Parameters are the items inside the opening exp:channel:entries tag that allow limiting, filtering, and sorting. They go in the format item="limiter".  ie: channel="news". Below are links to the parameters used in this particular instance of the channel entries tag.  These are documented here:\n\n				http://ellislab.com/expressionengine/user-guide/channels/weblog/parameters.html\n\n		channel= which channel to output, multiple channels may be piped in (channel_1|channel_2)\n		limit= limits the number of entries output in this instance of the tag\n		disable= turns off parsing of un-needed data\n		require_entry= forces ExpressionEngine to compare Segment 3 to existing URL titles.  If there is no match, then nothing is output.  Use this in combination with if no_results to force a redirect to 404. -->\n\n		{exp:channel:entries channel="news|about" disable="categories|member_data|category_fields|pagination" status="open|featured"}\n		<!-- count is a single variable: http://ellislab.com/expressionengine/user-guide/modules/weblog/variables.html#var_count\n\n		In this case we\'ve combined the count single variable with a Conditional Global Variable:\n\n		http://ellislab.com/expressionengine/user-guide/templates/globals/conditionals.html\n\n		to create code that shows up only once, at the top of the list of outputted channel entries and only if there is 1 or more entries -->\n\n		{if count == "1"}\n		<h3 class="recentnews">Recent News</h3>\n		<ul id="news_listing">\n\n			<!-- Here we close the conditional after all of the conditional data is processed. -->\n\n		{/if}\n			<li>\n					<!-- comment_url_title_auto_path is a channel entries variable:\n\n					http://ellislab.com/expressionengine/user-guide/modules/channel/variables.html#var_comment_url_title_auto_path\n\n					This allows you to outpt a per-channel link to a single-entry page.  This can be used even if you are not using comments as a way to get a per-channel "permalink" page without writing your own conditional. -->\n\n				<h4><a href="{comment_url_title_auto_path}">{title}</a>  //  <!-- entry_date is a variable, and date formatting variables can be found at http://ellislab.com/expressionengine/user-guide/templates/date_variable_formatting.html -->{entry_date format="%F %d %Y"}</h4>\n\n				<!-- the following two lines are custom channel fields. http://ellislab.com/expressionengine/user-guide/cp/admin/channel_administration/custom_channel_fields.html -->\n\n				{if news_image}\n					<img src="{news_image}" alt="{title}" />\n				{/if}\n\n				<!-- Here we come a custom field variable with a global conditional to output the HTML only if he custom field is _not_ blank -->\n\n				{if about_image != ""}<img src="{about_image}" alt="{title}"  />{/if}\n				{news_body}\n				{about_body}\n				{news_extended}\n\n				<!-- Here we compare the channel short-name to a predefined word to output some information only if the entry occurs in a particular channel -->\n				{if channel_short_name == "news"}<p><a href="{comment_url_title_auto_path}#news_comments">{comment_total} comments</a> <!-- edit_this is a Snippet: http://ellislab.com/expressionengine/user-guide/templates/globals/snippets.html --> {global_edit_this} </p> {/if}\n			</li>\n		<!-- Comparing two channel entries variables to output data only at the end of the list of outputted channel entries -->\n		{if count == total_results}</ul>{/if}\n		<!-- Closing the Channel Entries tag -->\n		{/exp:channel:entries}\n\n			<div id="news_comments">\n			<!-- Comment Entries Tag outputs comments: http://ellislab.com/expressionengine/user-guide/ http://ellislab.com/expressionengine/user-guide/\n			Parameters found here: http://ellislab.com/expressionengine/user-guide/modules/comment/entries.html#parameters\n			sort= defines in what order to sort the comments\n			limit= how many comments to output\n			channel= what channels to show comments from\n			-->\n			{exp:comment:preview channel="news|about"}\n			<h3>Comments</h3>\n			<ol>\n				<li>\n					<h5 class="commentdata">\n						<!-- Comment Entries variable: http://ellislab.com/expressionengine/user-guide/modules/comment/entries.html#url_as_author\n						url_as_author outputs the URL if entered/in the member profile (if registered) or just the name if no URL-->\n						{url_as_author}\n						<!-- Comment date:\n						 http://ellislab.com/expressionengine/user-guide/modules/comment/entries.html#var_comment_date\n\n						Formatted with Date Variable Formatting:\n\n	http://ellislab.com/expressionengine/user-guide//templates/date_variable_formatting.html -->\n\n						<span>{comment_date format="%h:%i%a"}, {comment_date format=" %m/%d/%Y"}</span>\n						<!-- Checks if the member has chosen an avatar and displays it if so\n\n	http://ellislab.com/expressionengine/user-guide/modules/comment/entries.html#conditionals\n						-->\n						{if avatar}\n							<img src="{avatar_url}" width="{avatar_image_width}" height="{avatar_image_height}" alt="{author}\'s avatar" />\n						{/if}\n					</h5>\n					{comment}\n\n                    <div style="clear: both;"></div>\n				</li>\n			</ol>\n			{/exp:comment:preview}\n\n			<!-- Comment Submission Form:\n\n			http://ellislab.com/expressionengine/user-guide/ modules/comment/entries.html#submission_form\n\n			channel= parameter says which channel to submit this comment too.  This is very important to include if you use multiple channels that may have the same URL title.  It will stop the comment from being attached to the wrong entry.  channel= should always be included.\n			-->\n\n\n			{exp:comment:form channel="news"}\n			<h3 class="leavecomment">Leave a comment</h3>\n			<fieldset id="comment_fields">\n			<!-- Show inputs only if the member is logged out.  If logged in, this information is pulled from the member\'s account details -->\n			{if logged_out}\n				<label for="name">\n					<span>Name:</span>\n					<input type="text" id="name" name="name" value="{name}" size="50" />\n				</label>\n				<label for="email">\n					<span>Email:</span>\n					<input type="text" id="email" name="email" value="{email}" size="50" />\n				</label>\n				<label for="location">\n					<span>Location:</span>\n					 <input type="text" id="location" name="location" value="{location}" size="50" />\n				</label>\n				<label for="url">\n					<span>URL:</span>\n					<input type="text" id="url" name="url" value="{url}" size="50" />\n				</label>\n			{/if}\n				<!-- comment_guidelines is a User Defined Global Variable: http://ellislab.com/expressionengine/user-guide/templates/globals/user_defined.html -->\n				{comment_guidelines}\n				<label for="comment" class="comment">\n					<span>Comment:</span>\n					<textarea id="comment" name="comment" rows="10" cols="70">{comment}</textarea>\n				</label>\n			</fieldset>\n\n				<fieldset id="comment_action">\n				{if logged_out}\n				<label for="save_info">Remember my personal info? <input type="checkbox" name="save_info" value="yes" {save_info} /> </label>\n				{/if}\n				<label for="notify_me">Notify me of follow-up comments? <input type="checkbox" id="notify_me" name="notify_me" value="yes" {notify_me} /></label>\n\n				<!-- Insert CAPTCHA.  Will show for those that are not exempt from needing the CAPTCHA as set in the member group preferences\n\n				-->\n				{if captcha}\n				<div id="captcha_box">\n					<span>{captcha}</span>\n				</div>\n					<label for="captcha">Please enter the word you see in the image above:\n<input type="text" id="captcha" name="captcha" value="{captcha_word}" maxlength="20" />\n					</label>\n				{/if}\n				<input type="submit" name="preview" value="Preview Comment" />\n				<input type="submit" name="submit" value="Submit" id="submit_comment" />\n			</fieldset>\n			{/exp:comment:form}\n\n	</div> <!-- ending #news_comments -->\n	</div> <!-- ending #content_pri -->\n\n	<div id="content_sec" class="right green40">\n		<h3 class="oldernews">Browse Older News</h3>\n		<div id="news_archives">\n			<!-- The period before the template in this embed indicates a "hidden template".  Hidden templates can not be viewed directly but can only be viewed when embedded in another template: http://ellislab.com/expressionengine/user-guide/templates/hidden_templates.html -->\n			<div id="categories_box">\n			{news_categories}\n			</div>\n			<div id="month_box">\n			{news_month_archives}\n			</div>\n		</div> <!-- ending #news_archives -->\n\n		{news_calendar}\n\n		{news_popular}\n\n	{rss_links}\n\n	</div>	<!-- ending #content_sec -->\n\n{global_footer}\n{wrapper_close}\n{js}\n{html_close}\n',NULL,1409242030,1,'n',0,'','n','n','o',0,'n'),
+	(14,1,3,'comments','n','webpage','{!-- Explanations and learning materials can be found in news/index and the other news template groups.  In-line comments here are only for features not introduced in news/index.\n	 NOTE:  This is an ExpressionEngine Comment and it will not appear in the rendered source.\n			http://ellislab.com/expressionengine/user-guide/templates/commenting.html\n--}\n{html_head}\n<!-- Below we use a channel entries tag to deliver a dynamic title element. -->\n	<title>{site_name}: Comments  on\n		{exp:channel:entries channel="news|about" limit="1" disable="categories|member_data|category_fields|pagination"}{title}{/exp:channel:entries}</title>\n{global_stylesheets}\n{rss}\n{favicon}\n{html_head_end}\n	<body>\n{nav_access}\n	{branding_begin}\n			{embed="global_embeds/_top_nav" loc="home"}\n			{global_top_search}\n			{global_top_member}\n	{branding_end}\n	{wrapper_begin}\n{embed="global_embeds/_page_header" header="News"}\n	<div id="feature">\n			{global_featured_welcome}\n			{global_featured_band}\n	    </div> <!-- ending #feature -->\n\n        	<div class="feature_end"></div>\n\n	<div id="content_pri"> <!-- This is where all primary content, left column gets entered -->\n		<!--  This is the channel entries tag.  Documentation for this parameter can be found at http://ellislab.com/expressionengine/user-guide/modules/channel/channel_entries.html\n				 Parameters are the items inside the opening exp:channel:entries tag that allow limiting, filtering, and sorting. They go in the format item="limiter".  ie: channel="news". Below are links to the parameters used in this particular instance of the channel entries tag.  These are documented here:\n\n				http://ellislab.com/expressionengine/user-guide/channels/weblog/parameters.html\n\n		channel= which channel to output, multiple channels may be piped in (channel_1|channel_2)\n		limit= limits the number of entries output in this instance of the tag\n		disable= turns off parsing of un-needed data\n		require_entry= forces ExpressionEngine to compare Segment 3 to existing URL titles.  If there is no match, then nothing is output.  Use this in combination with if no_results to force a redirect to 404. -->\n\n		{exp:channel:entries channel="news|about" limit="3" disable="categories|member_data|category_fields|pagination" require_entry="yes" status="open|featured"}\n\n		<!-- if no_results is a conditional variable, it can not be combined with advanced conditionals.  http://ellislab.com/expressionengine/user-guide/modules/channel/conditional_variables.html#cond_if_no_results\n\n		This is used here in combination with the require_entry parameter to ensure correct delivery of information or redirect to a 404 -->\n\n		{if no_results}{redirect="404"}{/if}\n		<!-- count is a single variable: http://ellislab.com/expressionengine/user-guide/modules/weblog/variables.html#var_count\n\n		In this case we\'ve combined the count single variable with a Conditional Global Variable:\n\n		http://ellislab.com/expressionengine/user-guide/templates/globals/conditionals.html\n\n		to create code that shows up only once, at the top of the list of outputted channel entries and only if there is 1 or more entries -->\n\n		{if count == "1"}\n		<h3 class="recentnews">Recent News</h3>\n		<ul id="news_listing">\n\n			<!-- Here we close the conditional after all of the conditional data is processed. -->\n\n		{/if}\n			<li>\n					<!-- comment_url_title_auto_path is a channel entries variable:\n\n					http://ellislab.com/expressionengine/user-guide/modules/channel/variables.html#var_comment_url_title_auto_path\n\n					This allows you to outpt a per-channel link to a single-entry page.  This can be used even if you are not using comments as a way to get a per-channel "permalink" page without writing your own conditional. -->\n\n				<h4><a href="{comment_url_title_auto_path}">{title}</a>  //  <!-- entry_date is a variable, and date formatting variables can be found at http://ellislab.com/expressionengine/user-guide/templates/date_variable_formatting.html -->{entry_date format="%F %d %Y"}</h4>\n\n				<!-- the following two lines are custom channel fields. http://ellislab.com/expressionengine/user-guide/cp/admin/channel_administration/custom_channel_fields.html -->\n\n				{if news_image}\n					<img src="{news_image}" alt="{title}" />\n				{/if}\n\n				<!-- Here we come a custom field variable with a global conditional to output the HTML only if he custom field is _not_ blank -->\n\n				{if about_image != ""}<img src="{about_image}" alt="{title}"  />{/if}\n				{news_body}\n				{about_body}\n				{news_extended}\n\n				<!-- Here we compare the channel short-name to a predefined word to output some information only if the entry occurs in a particular channel -->\n				{if channel_short_name == "news"}<p><a href="{comment_url_title_auto_path}#news_comments">{comment_total} comments</a> <!-- edit_this is a Snippet: http://ellislab.com/expressionengine/user-guide/templates/globals/snippets.html --> {global_edit_this} </p> {/if}\n			</li>\n		<!-- Comparing two channel entries variables to output data only at the end of the list of outputted channel entries -->\n		{if count == total_results}</ul>{/if}\n		<!-- Closing the Channel Entries tag -->\n		{/exp:channel:entries}\n\n			<div id="news_comments">\n			<!-- Comment Entries Tag outputs comments: http://ellislab.com/expressionengine/user-guide/ http://ellislab.com/expressionengine/user-guide/\n			Parameters found here: http://ellislab.com/expressionengine/user-guide/modules/comment/entries.html#parameters\n			sort= defines in what order to sort the comments\n			limit= how many comments to output\n			channel= what channels to show comments from\n			-->\n			{exp:comment:entries sort="asc" limit="20" channel="news"}\n			{if count == "1"}\n			<h3>Comments</h3>\n			<ol>{/if}\n				<li>\n					<h5 class="commentdata">\n						<!-- Comment Entries variable: http://ellislab.com/expressionengine/user-guide/modules/comment/entries.html#url_as_author\n						url_as_author outputs the URL if entered/in the member profile (if registered) or just the name if no URL-->\n						{url_as_author}\n						<!-- Comment date:\n						 http://ellislab.com/expressionengine/user-guide/modules/comment/entries.html#var_comment_date\n\n						Formatted with Date Variable Formatting:\n\n	http://ellislab.com/expressionengine/user-guide//templates/date_variable_formatting.html -->\n\n						<span>{comment_date format="%h:%i%a"}, {comment_date format=" %m/%d/%Y"}</span>\n						<!-- Checks if the member has chosen an avatar and displays it if so\n\n	http://ellislab.com/expressionengine/user-guide/modules/comment/entries.html#conditionals\n						-->\n						{if avatar}\n							<img src="{avatar_url}" width="{avatar_image_width}" height="{avatar_image_height}" alt="{author}\'s avatar" />\n						{/if}\n					</h5>\n					{comment}\n\n                    <div style="clear: both;"></div>\n				</li>\n			{if count == total_results}</ol>{/if}\n			{/exp:comment:entries}\n\n			<!-- Comment Submission Form:\n\n			http://ellislab.com/expressionengine/user-guide/ modules/comment/entries.html#submission_form\n\n			channel= parameter says which channel to submit this comment too.  This is very important to include if you use multiple channels that may have the same URL title.  It will stop the comment from being attached to the wrong entry.  channel= should always be included.\n\n			-->\n\n			{exp:comment:form channel="news" preview="news/comment_preview"}\n			<h3 class="leavecomment">Leave a comment</h3>\n			<fieldset id="comment_fields">\n			<!-- Show inputs only if the member is logged out.  If logged in, this information is pulled from the member\'s account details -->\n			{if logged_out}\n				<label for="name">\n					<span>Name:</span>\n					<input type="text" id="name" name="name" value="{name}" size="50" />\n				</label>\n				<label for="email">\n					<span>Email:</span>\n					<input type="text" id="email" name="email" value="{email}" size="50" />\n				</label>\n				<label for="location">\n					<span>Location:</span>\n					 <input type="text" id="location" name="location" value="{location}" size="50" />\n				</label>\n				<label for="url">\n					<span>URL:</span>\n					<input type="text" id="url" name="url" value="{url}" size="50" />\n				</label>\n			{/if}\n				<!-- comment_guidelines is a User Defined Global Variable: http://ellislab.com/expressionengine/user-guide/templates/globals/user_defined.html -->\n				{comment_guidelines}\n				<label for="comment" class="comment">\n					<span>Comment:</span>\n					<textarea id="comment" name="comment" rows="10" cols="70">{comment}</textarea>\n				</label>\n			</fieldset>\n\n				<fieldset id="comment_action">\n				{if logged_out}\n				<label for="save_info">Remember my personal info? <input type="checkbox" name="save_info" value="yes" {save_info} /> </label>\n				{/if}\n				<label for="notify_me">Notify me of follow-up comments? <input type="checkbox" id="notify_me" name="notify_me" value="yes" {notify_me} /></label>\n\n				<!-- Insert CAPTCHA.  Will show for those that are not exempt from needing the CAPTCHA as set in the member group preferences\n\n				-->\n				{if captcha}\n				<div id="captcha_box">\n					<span>{captcha}</span>\n				</div>\n					<label for="captcha">Please enter the word you see in the image above:\n<input type="text" id="captcha" name="captcha" value="{captcha_word}" maxlength="20" />\n					</label>\n				{/if}\n				<input type="submit" name="preview" value="Preview Comment" />\n				<input type="submit" name="submit" value="Submit" id="submit_comment" />\n			</fieldset>\n			{/exp:comment:form}\n\n	</div> <!-- ending #news_comments -->\n	</div> <!-- ending #content_pri -->\n\n	<div id="content_sec" class="right green40">\n		<h3 class="oldernews">Browse Older News</h3>\n		<div id="news_archives">\n			<!-- The period before the template in this embed indicates a "hidden template".  Hidden templates can not be viewed directly but can only be viewed when embedded in another template: http://ellislab.com/expressionengine/user-guide/templates/hidden_templates.html -->\n			<div id="categories_box">\n			{news_categories}\n			</div>\n			<div id="month_box">\n			{news_month_archives}\n			</div>\n		</div> <!-- ending #news_archives -->\n\n		{news_calendar}\n\n		{news_popular}\n\n	{rss_links}\n\n	</div>	<!-- ending #content_sec -->\n\n{global_footer}\n{wrapper_close}\n{js}\n{html_close}\n',NULL,1409242030,1,'n',0,'','n','n','o',0,'n'),
+	(15,1,3,'rss','n','feed','{exp:rss:feed channel="news"}\n\n<?xml version="1.0" encoding="{encoding}"?>\n<rss version="2.0"\n	xmlns:dc="http://purl.org/dc/elements/1.1/"\n	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"\n	xmlns:admin="http://webns.net/mvcb/"\n	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"\n	xmlns:content="http://purl.org/rss/1.0/modules/content/">\n\n	<channel>\n	\n	<title>{exp:xml_encode}{channel_name}{/exp:xml_encode}</title>\n	<link>{channel_url}</link>\n	<description>{channel_description}</description>\n	<dc:language>{channel_language}</dc:language>\n	<dc:creator>{email}</dc:creator>\n	<dc:rights>Copyright {gmt_date format="%Y"}</dc:rights>\n	<dc:date>{gmt_date format="%Y-%m-%dT%H:%i:%s%Q"}</dc:date>\n	<admin:generatorAgent rdf:resource="http://ellislab.com/" />\n	\n{exp:channel:entries channel="news" limit="10" dynamic_start="on" disable="member_data"}\n	<item>\n	  <title>{exp:xml_encode}{title}{/exp:xml_encode}</title>\n	  <link>{comment_url_title_auto_path}</link>\n	  <guid>{comment_url_title_auto_path}#When:{gmt_entry_date format="%H:%i:%sZ"}</guid>\n	  <description><![CDATA[{news_body}]]></description> \n	  <dc:subject>{exp:xml_encode}{categories backspace="1"}{category_name}, {/categories}{/exp:xml_encode}</dc:subject>\n	  <dc:date>{gmt_entry_date format="%Y-%m-%dT%H:%i:%s%Q"}</dc:date>\n	</item>\n{/exp:channel:entries}\n	\n	</channel>\n</rss>\n\n{/exp:rss:feed}						',NULL,1409242030,1,'n',0,'','n','n','o',0,'n'),
+	(16,1,4,'index','n','webpage','<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"\n"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{lang}" lang="{lang}">\n\n<head>\n<title>{site_name}{lang:search}</title>\n\n<meta http-equiv="content-type" content="text/html; charset={charset}" />\n\n<link rel=\'stylesheet\' type=\'text/css\' media=\'all\' href=\'{stylesheet=search/search_css}\' />\n<style type=\'text/css\' media=\'screen\'>@import "{stylesheet=search/search_css}";</style>\n\n</head>\n<body>\n\n<div id=\'pageheader\'>\n<div class="heading">{lang:search_engine}</div>\n</div>\n\n<div id="content">\n\n<div class=\'breadcrumb\'>\n<span class="defaultBold">&nbsp; <a href="{homepage}">{site_name}</a>&nbsp;&#8250;&nbsp;&nbsp;{lang:search}</span>\n</div>\n\n<div class=\'outerBorder\'>\n<div class=\'tablePad\'>\n\n{exp:search:advanced_form result_page="search/results" cat_style="nested"}\n\n<table cellpadding=\'4\' cellspacing=\'6\' border=\'0\' width=\'100%\'>\n<tr>\n<td width="50%">\n\n<fieldset class="fieldset">\n<legend>{lang:search_by_keyword}</legend>\n\n<input type="text" class="input" maxlength="100" size="40" name="keywords" style="width:100%;" />\n\n<div class="default">\n<select name="search_in">\n<option value="titles" selected="selected">{lang:search_in_titles}</option>\n<option value="entries">{lang:search_in_entries}</option>\n<option value="everywhere" >{lang:search_everywhere}</option>\n</select>\n\n</div>\n\n<div class="default">\n<select name="where">\n<option value="exact" selected="selected">{lang:exact_phrase_match}</option>\n<option value="any">{lang:search_any_words}</option>\n<option value="all" >{lang:search_all_words}</option>\n<option value="word" >{lang:search_exact_word}</option>\n</select>\n</div>\n\n</fieldset>\n\n<div class="default"><br /></div>\n\n<table cellpadding=\'0\' cellspacing=\'0\' border=\'0\'>\n<tr>\n<td valign="top">\n\n<div class="defaultBold">{lang:channels}</div>\n\n<select id="channel_id" name=\'channel_id[]\' class=\'multiselect\' size=\'12\' multiple=\'multiple\' onchange=\'changemenu(this.selectedIndex);\'>\n{channel_names}\n</select>\n\n</td>\n<td valign="top" width="16">&nbsp;</td>\n<td valign="top">\n\n<div class="defaultBold">{lang:categories}</div>\n\n<select name=\'cat_id[]\' size=\'12\'  class=\'multiselect\' multiple=\'multiple\'>\n<option value=\'all\' selected="selected">{lang:any_category}</option>\n</select>\n\n</td>\n</tr>\n</table>\n\n\n\n</td><td width="50%" valign="top">\n\n\n<fieldset class="fieldset">\n<legend>{lang:search_by_member_name}</legend>\n\n<input type="text" class="input" maxlength="100" size="40" name="member_name" style="width:100%;" />\n<div class="default"><input type="checkbox" class="checkbox" name="exact_match" value="y"  /> {lang:exact_name_match}</div>\n\n</fieldset>\n\n<div class="default"><br /></div>\n\n\n<fieldset class="fieldset">\n<legend>{lang:search_entries_from}</legend>\n\n<select name="date" style="width:150px">\n<option value="0" selected="selected">{lang:any_date}</option>\n<option value="1" >{lang:today_and}</option>\n<option value="7" >{lang:this_week_and}</option>\n<option value="30" >{lang:one_month_ago_and}</option>\n<option value="90" >{lang:three_months_ago_and}</option>\n<option value="180" >{lang:six_months_ago_and}</option>\n<option value="365" >{lang:one_year_ago_and}</option>\n</select>\n\n<div class="default">\n<input type=\'radio\' name=\'date_order\' value=\'newer\' class=\'radio\' checked="checked" />&nbsp;{lang:newer}\n<input type=\'radio\' name=\'date_order\' value=\'older\' class=\'radio\' />&nbsp;{lang:older}\n</div>\n\n</fieldset>\n\n<div class="default"><br /></div>\n\n<fieldset class="fieldset">\n<legend>{lang:sort_results_by}</legend>\n\n<select name="orderby">\n<option value="date" >{lang:date}</option>\n<option value="title" >{lang:title}</option>\n<option value="most_comments" >{lang:most_comments}</option>\n<option value="recent_comment" >{lang:recent_comment}</option>\n</select>\n\n<div class="default">\n<input type=\'radio\' name=\'sort_order\' class="radio" value=\'desc\' checked="checked" /> {lang:descending}\n<input type=\'radio\' name=\'sort_order\' class="radio" value=\'asc\' /> {lang:ascending}\n</div>\n</fieldset>\n\n</td>\n</tr>\n</table>\n\n\n<div class=\'searchSubmit\'>\n\n<input type=\'submit\' value=\'Search\' class=\'submit\' />\n\n</div>\n\n{/exp:search:advanced_form}\n\n<div class=\'copyright\'><a href="http://ellislab.com/">Powered by ExpressionEngine</a></div>\n\n\n</div>\n</div>\n</div>\n\n</body>\n</html>',NULL,1409242030,1,'n',0,'','n','n','o',0,'n'),
+	(17,1,4,'no_results','n','webpage','{!-- Explanations and learning materials can be found in news/index and the other news template groups.  In-line comments here are only for features not introduced in news/index. --}\n{html_head}\n	<title>{site_name}: No Search Results</title>\n{global_stylesheets}\n{rss}\n{favicon}\n{html_head_end}\n	<body>\n{nav_access}\n	{branding_begin}\n			{embed="global_embeds/_top_nav" loc="not_found"}\n			{global_top_search}\n			{global_top_member}\n	{branding_end}\n	{wrapper_begin}\n{embed="global_embeds/_page_header" header="Search Results"}\n\n\n	<div id="content_pri"> <!-- This is where all primary content, left column gets entered -->\n\n		<!-- No search results: http://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_no_result_page -->\n		<!-- This is delivered based on the no_result_page parameter of the search form  -->\n\n				<h3>Search Results</h3>\n\n				<!-- exp:search:keywords: http://ellislab.com/expressionengine/user-guide/modules/search/keywords.html -->\n				<!-- exp:search:keywords lets you echo out what search term was used -->\n					<p>Sorry, no results were found for "<strong>{exp:search:keywords}</strong>".  Please try again.</p>\n	</div>\n\n	<div id="content_sec" class="right green40">\n		<h3 class="oldernews">Browse Older News</h3>\n		<div id="news_archives">\n			<div id="categories_box">\n			{news_categories}\n			</div>\n			<div id="month_box">\n			{news_month_archives}\n			</div>\n		</div> <!-- ending #news_archives -->\n\n		{news_calendar}\n\n		{news_popular}\n\n	{rss_links}\n\n	</div>	<!-- ending #content_sec -->\n\n{global_footer}\n{wrapper_close}\n{js}\n{html_close}\n',NULL,1409242030,1,'n',0,'','n','n','o',0,'n'),
+	(18,1,4,'results','n','webpage','{!-- Explanations and learning materials can be found in news/index and the other news template groups.  In-line comments here are only for features not introduced in news/index. --}\n{html_head}\n	<title>{site_name}: {exp:search:search_results}\n		{if count == "1"}\n			Search Results for "{exp:search:keywords}"\n		{/if}\n		{/exp:search:search_results}\n	</title>\n{global_stylesheets}\n{rss}\n{favicon}\n{html_head_end}\n	<body>\n{nav_access}\n	{branding_begin}\n		{embed="global_embeds/_top_nav" loc="not_found"}\n		{global_top_search}\n		{global_top_member}\n	{branding_end}\n	{wrapper_begin}\n	{embed="global_embeds/_page_header" header="Search Results"}\n\n	<div id="content_pri"> <!-- This is where all primary content, left column gets entered -->\n\n		<!-- Search Results tag: http://ellislab.com/expressionengine/user-guide/modules/search/index.html#results -->\n\n		{exp:search:search_results}\n			{if count == "1"}\n				<!-- exp:search:keywords: http://ellislab.com/expressionengine/user-guide/modules/search/keywords.html -->\n				<!-- exp:search:keywords lets you echo out what search term was used -->\n\n				<h3>Search Results for "<strong>{exp:search:keywords}</strong>":</h3>\n				<ul id="news_listing">\n			{/if}\n\n			<li>\n				<h4>\n					<a href="{comment_url_title_auto_path}">{title}</a>  //\n					<!-- entry_date is a variable, and date formatting variables can be found at http://ellislab.com/expressionengine/user-guide/templates/date_variable_formatting.html -->\n					{entry_date format="%F %d %Y"}\n				</h4>\n\n				<!-- news_body and news_image are  custom channel fields. http://ellislab.com/expressionengine/user-guide/cp/admin/channel_administration/custom_channel_fields.html -->\n				{if news_image}\n					<img src="{news_image}" alt="{title}" />\n				{/if}\n				{news_body}\n			</li>\n			{if count == total_results}</ul>{/if}\n\n			{paginate}\n				<div class="pagination">\n					{pagination_links}\n						<ul>\n							{first_page}\n								<li><a href="{pagination_url}" class="page-first">First Page</a></li>\n							{/first_page}\n\n							{previous_page}\n								<li><a href="{pagination_url}" class="page-previous">Previous Page</a></li>\n							{/previous_page}\n\n							{page}\n								<li><a href="{pagination_url}" class="page-{pagination_page_number} {if current_page}active{/if}">{pagination_page_number}</a></li>\n							{/page}\n\n							{next_page}\n								<li><a href="{pagination_url}" class="page-next">Next Page</a></li>\n							{/next_page}\n\n							{last_page}\n								<li><a href="{pagination_url}" class="page-last">Last Page</a></li>\n							{/last_page}\n						</ul>\n					{/pagination_links}\n				</div> <!-- ending .pagination -->\n			{/paginate}\n		{/exp:search:search_results}\n	</div>\n\n	<div id="content_sec" class="right green40">\n		<h3 class="oldernews">Browse Older News</h3>\n		<div id="news_archives">\n			<div id="categories_box">\n			{news_categories}\n			</div>\n			<div id="month_box">\n			{news_month_archives}\n			</div>\n		</div> <!-- ending #news_archives -->\n\n		{news_calendar}\n\n		{news_popular}\n\n	{rss_links}\n\n	</div>	<!-- ending #content_sec -->\n\n{global_footer}\n{wrapper_close}\n{js}\n{html_close}\n',NULL,1409242030,1,'n',0,'','n','n','o',0,'n');
+UNLOCK TABLES;
 
 
-INSERT INTO `exp_snippets` (`snippet_id`, `site_id`, `snippet_name`, `snippet_contents`) VALUES (1, 1, '.htaccess', 'deny from all'), (2, 1, 'global_edit_this', '{if author_id == logged_in_member_id OR logged_in_group_id == "1"}&bull; <a href="{cp_url}?S={cp_session_id}&amp;D=cp&amp;C=content_publish&amp;M=entry_form&amp;channel_id={channel_id}&amp;entry_id={entry_id}">Edit This</a>{/if}'), (3, 1, 'global_featured_band', '<div id="featured_band">
-    <h2>Featured Band</h2>
-    {exp:channel:entries channel="news" limit="1" status="featured" rdf="off" disable="trackbacks" category="2" dynamic="no"}
-    <div class="image">
-        <h4><a href="{comment_url_title_auto_path}"><span>{title}</span></a></h4>
-        {if news_image}
-			<img src="{news_image}" alt="{title}"/>
-		{/if}
-    </div>
-    {news_body}
-    {/exp:channel:entries}
-</div>'), (4, 1, 'global_featured_welcome', '<div id="welcome">
-    {exp:channel:entries channel="about" url_title="about_the_label" dynamic="no"  limit="1" disable="pagination|member_date|categories|category_fields|trackbacks"}
-    {if about_image != ""}
-        <img src="{about_image}" alt="map" width="210" height="170" />
-    {/if}
-    {about_body}
-    <a href="{comment_url_title_auto_path}">Read more about us</a>
-    {/exp:channel:entries}
-</div>'), (5, 1, 'global_footer', '<div id="siteinfo">
-    <p>Copyright @ {exp:channel:entries limit="1" sort="asc" disable="custom_fields|comments|pagination|categories"}
+LOCK TABLES `exp_throttle` WRITE;
+UNLOCK TABLES;
 
-{if "{entry_date format=\'%Y\'}" != "{current_time format=\'%Y\'}"}{entry_date format="%Y"} - {/if}{/exp:channel:entries} {current_time format="%Y"}, powered by <a href="http://expressionengine.com">ExpressionEngine</a></p>
-    <p class="logo"><a href="#">Agile Records</a></p>
-	{if group_id == "1"}<p>{total_queries} queries in {elapsed_time} seconds</p>{/if}
-</div> <!-- ending #siteinfo -->'), (6, 1, 'global_strict_urls', '<!-- Strict URLS: http://ellislab.com/expressionengine/user-guide/cp/templates/global_template_preferences.html -->
-{if segment_2 != \'\'}
-  {redirect="404"}
-{/if}'), (7, 1, 'global_stylesheets', '<!-- CSS -->
-<!-- This makes use of the stylesheet= parameter, which automatically appends a time stamp to allow for the browser\'s caching mechanism to cache the stylesheet.  This allows for faster page-loads times.
-Stylesheet linking is documented at http://ellislab.com/expressionengine/user-guide/templates/globals/stylesheet.html -->
-    <link href="{stylesheet=global_embeds/site_css}" type="text/css" rel="stylesheet" media="screen" />
-    <!--[if IE 6]><link href="{stylesheet=global_embeds/css_screen-ie6}" type="text/css" rel="stylesheet" media="screen" /><![endif]-->
-    <!--[if IE 7]><link href="{stylesheet=global_embeds/css_screen-ie7}" type="text/css" rel="stylesheet" media="screen" /><![endif]-->
-'), (8, 1, 'global_top_member', '<div id="member">
 
-	<!-- Utilized member conditionals: http://ellislab.com/expressionengine/user-guide/templates/globals/conditionals.html-->
-            <h4>Hello{if logged_in} {screen_name}{/if}!</h4>
-            {if is_core == FALSE}
-			<ul>
-				{if logged_in}
-                <li><a href="{path=\'member/profile\'}">Your Home</a></li>
-                <li><a href="{path=LOGOUT}">Log out</a></li>
-				{/if}
-				{if logged_out}
-				<li><a href="{path=\'member/register\'}">Register</a></li>
-				<li><a href="{path=\'member/login\'}">Log in</a></li>
-				{/if}
-            </ul>
-			{/if}
-        </div> <!-- ending #member -->'), (9, 1, 'global_top_search', '<!-- Simple Search Form: http://ellislab.com/expressionengine/user-guide/modules/search/index.html#simple
+LOCK TABLES `exp_upload_no_access` WRITE;
+UNLOCK TABLES;
 
-The parameters here help to identify what templates to use and where to search:
 
-Results page - result_page: http://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_result_page
+LOCK TABLES `exp_upload_prefs` WRITE;
+INSERT INTO `exp_upload_prefs` (`id`, `site_id`, `name`, `server_path`, `url`, `allowed_types`, `max_size`, `max_height`, `max_width`, `properties`, `pre_format`, `post_format`, `file_properties`, `file_pre_format`, `file_post_format`, `cat_group`, `batch_location`) VALUES
+	(1,1,'Main Upload Directory','/private/var/www/expressionengine/images/uploads/','http://ee2/images/uploads/','all','','','','style="border: 0;" alt="image"','','','','','',NULL,NULL),
+	(2,1,'About','/private/var/www/expressionengine/themes/site_themes/agile_records/images/uploads/','http://ee2/themes/site_themes/agile_records/images/uploads/','img','','','','','','','','','',NULL,NULL);
+UNLOCK TABLES;
 
-No Results found: no_result_page: http://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_no_result_page
 
-search_in - search in titles? titles and entries? titles, entries?  http://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_search_in-->
 
-{exp:search:simple_form channel="news" result_page="search/results" no_result_page="search/no_results" search_in="everywhere"}
-<fieldset>
-    <label for="search">Search:</label>
-    <input type="text" name="keywords" id="search" value=""  />
-	<input type="image" id="submit" name="submit" class="submit" src="{site_url}themes/site_themes/agile_records/images/spacer.gif" />
-</fieldset>
-{/exp:search:simple_form}'), (10, 1, 'news_calendar', '<h5>Calendar</h5>
-		<div id="news_calendar">
 
-			<!-- Channel Calendar Tag: http://ellislab.com/expressionengine/user-guide/modules/channel/calendar.html -->
-
-			{exp:channel:calendar switch="calendarToday|calendarCell" channel="news"}
-			<table class="calendarBG" border="0" cellpadding="6" cellspacing="1" summary="My Calendar">
-			<tr class="calendarHeader">
-			<th><div class="calendarMonthLinks"><a href="{previous_path=\'news/archives\'}">&lt;&lt;</a></div></th>
-			<th colspan="5">{date format="%F %Y"}</th>
-			<th><div class="calendarMonthLinks"><a class="calendarMonthLinks" href="{next_path=\'news/archives\'}">&gt;&gt;</a></div></th>
-			</tr>
-			<tr>
-			{calendar_heading}
-			<td class="calendarDayHeading">{lang:weekday_abrev}</td>
-			{/calendar_heading}
-			</tr>
-
-			{calendar_rows }
-			{row_start}<tr>{/row_start}
-
-			{if entries}
-			<td class=\'{switch}\' align=\'center\'><a href="{day_path=\'news/archives\'}">{day_number}</a></td>
-			{/if}
-
-			{if not_entries}
-			<td class=\'{switch}\' align=\'center\'>{day_number}</td>
-			{/if}
-
-			{if blank}
-			<td class=\'calendarBlank\'>{day_number}</td>
-			{/if}
-
-			{row_end}</tr>{/row_end}
-			{/calendar_rows}
-			</table>
-			{/exp:channel:calendar}
-		</div> <!-- ending #news_calendar -->'), (11, 1, 'news_categories', '<div id="sidebar_category_archives">
-      		<h5>Categories</h5>
-  			<ul id="categories">
-  				<!-- Weblog Categories tag: http://ellislab.com/expressionengine/user-guide/modules/weblog/categories.html -->
-
-  				{exp:channel:categories channel="news" style="linear"}
-  				<li><a href="{path=\'news/archives\'}">{category_name}</a></li>
-  				{/exp:channel:categories}
-  			</ul>
-  		</div>'), (12, 1, 'news_month_archives', '<div id="sidebar_date_archives">
-    	    <h5>Date Archives</h5>
-    		<ul id="months">
-    			{!-- Archive Month Link Tags: http://ellislab.com/expressionengine/user-guide/modules/weblog/archive_month_links.html --}
-
-    			{exp:channel:month_links channel="news" limit="50"}
-    			<li><a href="{path=\'news/archives\'}">{month}, {year}</a></li>
-    			{/exp:channel:month_links}
-    		</ul>
-    	</div>'), (13, 1, 'news_popular', '<h5>Popular News Items</h5>
-
-<!-- Channel Entries tag ordered by track views for "popular posts".  See Tracking Entry Views at http://ellislab.com/expressionengine/user-guide/modules/weblog/entry_tracking.html -->
-
-{exp:channel:entries channel="news" limit="4" disable="categories|custom_fields|category_fields|trackbacks|pagination|member_data" dynamic="no"}
-	{if count == "1"}<ul>{/if}
-		<li><a href="{comment_url_title_auto_path}">{title}</a> </li>
-	{if count == total_results}</ul>{/if}
-{/exp:channel:entries}');
-
-
-INSERT INTO `exp_specialty_templates` (`template_id`, `site_id`, `enable_template`, `template_name`, `data_title`, `template_data`) VALUES (1, 1, 'y', 'offline_template', '', '<html>
-<head>
-
-<title>System Offline</title>
-
-<style type="text/css">
-
-body {
-background-color:	#ffffff;
-margin:				50px;
-font-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;
-font-size:			11px;
-color:				#000;
-background-color:	#fff;
-}
-
-a {
-font-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;
-font-weight:		bold;
-letter-spacing:		.09em;
-text-decoration:	none;
-color:			  #330099;
-background-color:	transparent;
-}
-
-a:visited {
-color:				#330099;
-background-color:	transparent;
-}
-
-a:hover {
-color:				#000;
-text-decoration:	underline;
-background-color:	transparent;
-}
-
-#content  {
-border:				#999999 1px solid;
-padding:			22px 25px 14px 25px;
-}
-
-h1 {
-font-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;
-font-weight:		bold;
-font-size:			14px;
-color:				#000;
-margin-top: 		0;
-margin-bottom:		14px;
-}
-
-p {
-font-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;
-font-size: 			12px;
-font-weight: 		normal;
-margin-top: 		12px;
-margin-bottom: 		14px;
-color: 				#000;
-}
-</style>
-
-</head>
-
-<body>
-
-<div id="content">
-
-<h1>System Offline</h1>
-
-<p>This site is currently offline</p>
-
-</div>
-
-</body>
-
-</html>'), (2, 1, 'y', 'message_template', '', '<html>
-<head>
-
-<title>{title}</title>
-
-<meta http-equiv=\'content-type\' content=\'text/html; charset={charset}\' />
-
-{meta_refresh}
-
-<style type="text/css">
-
-body {
-background-color:	#ffffff;
-margin:				50px;
-font-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;
-font-size:			11px;
-color:				#000;
-background-color:	#fff;
-}
-
-a {
-font-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;
-letter-spacing:		.09em;
-text-decoration:	none;
-color:			  #330099;
-background-color:	transparent;
-}
-
-a:visited {
-color:				#330099;
-background-color:	transparent;
-}
-
-a:active {
-color:				#ccc;
-background-color:	transparent;
-}
-
-a:hover {
-color:				#000;
-text-decoration:	underline;
-background-color:	transparent;
-}
-
-#content  {
-border:				#000 1px solid;
-background-color: 	#DEDFE3;
-padding:			22px 25px 14px 25px;
-}
-
-h1 {
-font-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;
-font-weight:		bold;
-font-size:			14px;
-color:				#000;
-margin-top: 		0;
-margin-bottom:		14px;
-}
-
-p {
-font-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;
-font-size: 			12px;
-font-weight: 		normal;
-margin-top: 		12px;
-margin-bottom: 		14px;
-color: 				#000;
-}
-
-ul {
-margin-bottom: 		16px;
-}
-
-li {
-list-style:			square;
-font-family:		Verdana, Arial, Tahoma, Trebuchet MS, Sans-serif;
-font-size: 			12px;
-font-weight: 		normal;
-margin-top: 		8px;
-margin-bottom: 		8px;
-color: 				#000;
-}
-
-</style>
-
-</head>
-
-<body>
-
-<div id="content">
-
-<h1>{heading}</h1>
-
-{content}
-
-<p>{link}</p>
-
-</div>
-
-</body>
-
-</html>'), (3, 1, 'y', 'admin_notify_reg', 'Notification of new member registration', 'New member registration site: {site_name}
-
-Screen name: {name}
-User name: {username}
-Email: {email}
-
-Your control panel URL: {control_panel_url}'), (4, 1, 'y', 'admin_notify_entry', 'A new channel entry has been posted', 'A new entry has been posted in the following channel:
-{channel_name}
-
-The title of the entry is:
-{entry_title}
-
-Posted by: {name}
-Email: {email}
-
-To read the entry please visit:
-{entry_url}
-'), (5, 1, 'y', 'admin_notify_mailinglist', 'Someone has subscribed to your mailing list', 'A new mailing list subscription has been accepted.
-
-Email Address: {email}
-Mailing List: {mailing_list}'), (6, 1, 'y', 'admin_notify_comment', 'You have just received a comment', 'You have just received a comment for the following channel:
-{channel_name}
-
-The title of the entry is:
-{entry_title}
-
-Located at:
-{comment_url}
-
-Posted by: {name}
-Email: {email}
-URL: {url}
-Location: {location}
-
-{comment}'), (7, 1, 'y', 'mbr_activation_instructions', 'Enclosed is your activation code', 'Thank you for your new member registration.
-
-To activate your new account, please visit the following URL:
-
-{unwrap}{activation_url}{/unwrap}
-
-Thank You!
-
-{site_name}
-
-{site_url}'), (8, 1, 'y', 'forgot_password_instructions', 'Login information', '{name},
-
-To reset your password, please go to the following page:
-
-{reset_url}
-
-Then log in with your username: {username}
-
-If you do not wish to reset your password, ignore this message. It will expire in 24 hours.
-
-{site_name}
-{site_url}'), (9, 1, 'y', 'validated_member_notify', 'Your membership account has been activated', '{name},
-
-Your membership account has been activated and is ready for use.
-
-Thank You!
-
-{site_name}
-{site_url}'), (10, 1, 'y', 'decline_member_validation', 'Your membership account has been declined', '{name},
-
-We\'re sorry but our staff has decided not to validate your membership.
-
-{site_name}
-{site_url}'), (11, 1, 'y', 'mailinglist_activation_instructions', 'Email Confirmation', 'Thank you for joining the "{mailing_list}" mailing list!
-
-Please click the link below to confirm your email.
-
-If you do not want to be added to our list, ignore this email.
-
-{unwrap}{activation_url}{/unwrap}
-
-Thank You!
-
-{site_name}'), (12, 1, 'y', 'comment_notification', 'Someone just responded to your comment', '{name_of_commenter} just responded to the entry you subscribed to at:
-{channel_name}
-
-The title of the entry is:
-{entry_title}
-
-You can see the comment at the following URL:
-{comment_url}
-
-{comment}
-
-To stop receiving notifications for this comment, click here:
-{notification_removal_url}'), (13, 1, 'y', 'comments_opened_notification', 'New comments have been added', 'Responses have been added to the entry you subscribed to at:
-{channel_name}
-
-The title of the entry is:
-{entry_title}
-
-You can see the comments at the following URL:
-{comment_url}
-
-{comments}
-{comment}
-{/comments}
-
-To stop receiving notifications for this entry, click here:
-{notification_removal_url}'), (14, 1, 'y', 'private_message_notification', 'Someone has sent you a Private Message', '
-{recipient_name},
-
-{sender_name} has just sent you a Private Message titled ‘{message_subject}’.
-
-You can see the Private Message by logging in and viewing your inbox at:
-{site_url}
-
-Content:
-
-{message_content}
-
-To stop receiving notifications of Private Messages, turn the option off in your Email Settings.
-
-{site_name}
-{site_url}'), (15, 1, 'y', 'pm_inbox_full', 'Your private message mailbox is full', '{recipient_name},
-
-{sender_name} has just attempted to send you a Private Message,
-but your inbox is full, exceeding the maximum of {pm_storage_limit}.
-
-Please log in and remove unwanted messages from your inbox at:
-{site_url}');
-
-
-INSERT INTO `exp_stats` (`stat_id`, `site_id`, `total_members`, `recent_member_id`, `recent_member`, `total_entries`, `total_forum_topics`, `total_forum_posts`, `total_comments`, `last_entry_date`, `last_forum_post_date`, `last_comment_date`, `last_visitor_date`, `most_visitors`, `most_visitor_date`, `last_cache_clear`) VALUES (1, 1, 1, 1, 'Admin', 1, 0, 0, 0, 1394136209, 0, 0, 0, 0, 0, 1394136209);
-
-
-INSERT INTO `exp_status_groups` (`group_id`, `site_id`, `group_name`) VALUES (1, 1, 'Statuses');
-
-
-
-
-INSERT INTO `exp_statuses` (`status_id`, `site_id`, `group_id`, `status`, `status_order`, `highlight`) VALUES (1, 1, 1, 'open', 1, '009933'), (2, 1, 1, 'closed', 2, '990000'), (3, 1, 1, 'Featured', 3, '000000');
-
-
-INSERT INTO `exp_template_groups` (`group_id`, `site_id`, `group_name`, `group_order`, `is_site_default`) VALUES (1, 1, 'about', 1, 'n'), (2, 1, 'global_embeds', 2, 'n'), (3, 1, 'news', 3, 'y'), (4, 1, 'search', 4, 'n');
-
-
-
-
-INSERT INTO `exp_template_no_access` (`template_id`, `member_group`) VALUES (1, 2), (2, 2), (3, 2), (4, 2), (4, 3), (4, 4), (4, 5), (5, 2), (6, 2), (7, 2), (8, 2), (9, 2), (10, 2), (11, 2), (12, 2), (13, 2), (14, 2), (15, 2), (16, 2), (16, 3), (16, 4), (16, 5), (17, 2), (18, 2);
-
-
-
-
-INSERT INTO `exp_templates` (`template_id`, `site_id`, `group_id`, `template_name`, `save_template_file`, `template_type`, `template_data`, `template_notes`, `edit_date`, `last_author_id`, `cache`, `refresh`, `no_auth_bounce`, `enable_http_auth`, `allow_php`, `php_parse_location`, `hits`) VALUES (1, 1, 1, 'index', 'n', 'webpage', '{!-- Explanations and learning materials can be found in news/index and the other news template groups.  In-line comments here are only for features not introduced in news/index. --}
-{html_head}
-	<title>{site_name}: Contact Us</title>
-{global_stylesheets}
-
-{rss}
-{favicon}
-{html_head_end}
-	<body>
-{nav_access}
-	{branding_begin}
-			{embed="global_embeds/.top_nav" loc="about"}
-			{global_top_search}
-			{global_top_member}
-	{branding_end}
-	{wrapper_begin}
-{embed="global_embeds/.page_header" header="About"}
-
-
-<div id="feature" class="about">
-	{exp:channel:entries channel="about" url_title="about_the_label" dynamic="no"  limit="1" disable="pagination|member_data|categories|category_fields"}
-		<h3 class="about">{title}</h3>
-		{about_body}
-	{/exp:channel:entries}
-</div> <!-- ending #feature -->
-
-	<div class="feature_end"></div>
-
-<div id="content_pri" class="about"> <!-- This is where all primary content, left column gets entered -->
-
-		<!-- Standard Channel Entries tag, but instead of relying on the URL for what to display, we request a specific entry for display via url-title:
-	http://ellislab.com/expressionengine/user-guide/modules/channel/parameters.html#par_url_title
-
-	and we force the channel entries tag to ignore the URL and always deliver the same content by using dynamic="no":
-
-	http://ellislab.com/expressionengine/user-guide/modules/channel/parameters.html#par_dynamic
-	-->
-
-		{exp:channel:entries channel="about" dynamic="no" url_title="about_the_label" limit="1" disable="pagination|member_data|categories|category_fields"}
-			{about_extended}
-		{/exp:channel:entries}
-</div>
-
-<div id="content_sec" class="staff_profiles right green40">
-		<h3 class="staff">Staff Profiles</h3>
-		{exp:channel:entries channel="about" limit="6" category="3" dynamic="off" orderby="date" sort="asc"}
-			{if count == "1"}<ul class="staff_member">{/if}
-				<li class="{switch="||end"}">
-					<h4>{title} <a href="#">i</a></h4>
-					<div class="profile">
-						{about_staff_title}
-					</div>
-					<img src="{about_image}" alt="{title}" />
-				</li>
-			{if count == total_results}</ul>{/if}
-		{/exp:channel:entries}
-
-</div>	<!-- ending #content_sec -->
-
-
-
-{global_footer}
-{wrapper_close}
-{js}
-{html_close}', NULL, 1394136209, 1, 'n', 0, '', 'n', 'n', 'o', 0), (2, 1, 1, '404', 'n', 'webpage', '{!-- Explanations and learning materials can be found in news/index and the other news template groups.  In-line comments here are only for features not introduced in news/index. --}
-{html_head}
-	<title>{site_name}: Not Found</title>
-{global_stylesheets}
-
-{rss}
-{favicon}
-{html_head_end}
-	<body>
-{nav_access}
-	{branding_begin}
-			{embed="global_embeds/.top_nav" loc="contact"}
-			{global_top_search}
-			{global_top_member}
-	{branding_end}
-	{wrapper_begin}
-{embed="global_embeds/.page_header" header="Not Found"}
-
-
-	<div id="content_pri"> <!-- This is where all primary content, left column gets entered -->
-		<h4>Not Found</h4>
-				 <p>The page you attempted to load was Not Found.  Please try again.</p>
-	</div>
-
-
-		<div id="content_sec" class="right green40">
-			<h3 class="oldernews">Browse Older News</h3>
-			<div id="news_archives">
-				<div id="categories_box">
-				{news_categories}
-				</div>
-				<div id="month_box">
-				{news_month_archives}
-				</div>
-			</div> <!-- ending #news_archives -->
-
-			{news_calendar}
-
-			{news_popular}
-
-		{rss_links}
-
-		</div>	<!-- ending #content_sec -->
-
-	{global_footer}
-	{wrapper_close}
-	{js}
-	{html_close}', NULL, 1394136209, 1, 'n', 0, '', 'n', 'n', 'o', 0), (3, 1, 1, 'contact', 'n', 'webpage', '{!-- Explanations and learning materials can be found in news/index and the other news template groups.  In-line comments here are only for features not introduced in news/index. --}
-{html_head}
-	<title>{site_name}: Contact Us</title>
-{global_stylesheets}
-
-{rss}
-{favicon}
-{html_head_end}
-	<body>
-{nav_access}
-	{branding_begin}
-			{embed="global_embeds/.top_nav" loc="contact"}
-			{global_top_search}
-			{global_top_member}
-	{branding_end}
-	{wrapper_begin}
-{embed="global_embeds/.page_header" header="Contact Us"}
-    <div id="feature" class="contact">
-		<h3 class="getintouch">Get in Touch</h3>
-
-
-<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat .</p>
-</div> <!-- ending #feature -->
-
-	<div class="feature_end"></div>
-
-	<div id="content_pri" class="contact"> <!-- This is where all primary content, left column gets entered -->
-
-			<!-- This uses the Email Module\'s Contact Form: http://ellislab.com/expressionengine/user-guide/modules/email/contact_form.html -->
-			{exp:email:contact_form user_recipients="false" recipients="admin@example.com" charset="utf-8"}
-			<fieldset id="contact_fields">
-			<label for="from">
-				<span>Your Email:</span>
-				<input type="text" id="from" name="from" value="{member_email}" />
-			</label>
-
-			<label for="subject">
-				<span>Subject:</span>
-				<input type="text" id="subject" name="subject" size="40" value="Contact Form" />
-			</label>
-
-			<label for="message">
-				<span>Message:</span>
-				<textarea id="message" name="message" rows="18" cols="40">Email from: {member_name}, Sent at: {current_time format="%Y %m %d"}</textarea>
-			</label>
-			</fieldset>
-
-			<fieldset id="contact_action">
-				<p>We will never pass on your details to third parties.</p>
-				<input name="submit" type=\'submit\' value=\'Submit\' id=\'contactSubmit\' />
-			</fieldset>
-			{/exp:email:contact_form}
-	</div>
-
-	<div id="content_sec" class="contact">
-		<h3 class="address">Address</h3>
-		 <p>
-			12343 Valencia Street,<br />
-			Mission District,<br />
-			San Francisco,<br />
-			California,<br />
-			ZIP 123
-			 </p>
-	<p><img src="{site_url}themes/site_themes/agile_records/images/uploads/map2.jpg" alt="" /></p>
-
-	</div>	<!-- ending #content_sec -->
-
-{global_footer}
-{wrapper_close}
-{js}
-{html_close}', NULL, 1394136209, 1, 'n', 0, '', 'n', 'n', 'o', 0), (4, 1, 2, 'index', 'n', 'webpage', NULL, NULL, 1394136209, 1, 'n', 0, '', 'n', 'n', 'o', 0), (5, 1, 2, '.page_header', 'n', 'webpage', '<div id="page_header">
-        <h2>{embed:header}</h2>
-    </div>
-', NULL, 1394136209, 1, 'n', 0, '', 'n', 'n', 'o', 0), (6, 1, 2, '.top_nav', 'n', 'webpage', ' <ul id="navigation_pri">
-            <li id="home" {if embed:loc== "home"}class="cur"{/if}><a href="{homepage}">Home</a></li>
-            <li id="events" {if embed:loc == "about"}class="cur"{/if}><a href="{path=\'about/index\'}">About</a></li>
-            <li id="contact" {if embed:loc=="contact"}class="cur"{/if}><a href="{path=\'about/contact\'}">Contact</a></li>
-        </ul>', NULL, 1394136209, 1, 'n', 0, '', 'n', 'n', 'o', 0), (7, 1, 2, 'css_screen-ie6', 'n', 'css', '/*
-
-	AGILE RECORDS, EE2.0 EXAMPLE SITE by ERSKINE DESIGN
-	VERSION 1.0
-	IE6 OVERRIDE STYLES
-
-	CONTENTS ----------
-
-
-
-	-------------------
-
-*/
-
-
-
-ul#nav_access { position:static; display:none; }
-
-div#feature { margin-bottom:10px !important; }
-hr.legend_start,
-hr.feature_end { display:none !important; }
-
-/* TABLES */
-
-table { background-image:none; background-color:#ddd; font-size:12px; }
-tr.alt { background-image:none; background-color:#eee; }
-th { background-image:none; background-color:#ddd; }
-
-
-
-/* LAYOUT */
-
-div#feature { width:950px; overflow:hidden; float:none; padding:30px 0; position:static; margin:0; background:url({site_url}themes/site_themes/agile_records/images/feature_bg.jpg); margin-bottom:30px; }
-div#page_header { background-image:none; background-color:#6b5f57; height:40px; z-index:3; position:static; top:0px; margin-bottom:0; padding-bottom:10px; }
-
-div#branding { height:290px; background:url({site_url}themes/site_themes/agile_records/images/ie_branding_bg.gif) repeat-x center top; position:relative; z-index:2; }
-div#branding_sub { width:930px; margin:0 auto; position:relative; }
-
-div#page { background:url({site_url}themes/site_themes/agile_records/images/page_bg.jpg); }
-
-div#content_pri { display:inline; }
-div#content_sec { }
-
-
-
-/* BRANDING/MASTHEAD */
-
-div#branding_logo { background:url({site_url}themes/site_themes/agile_records/images/ie_branding_sub_bg.gif) no-repeat left top; }
-div#branding_sub h1 a { position:static; background:url({site_url}themes/site_themes/agile_records/images/logo_bg.jpg) no-repeat bottom left; }
-div#branding_sub div#member { background:none; }
-div#branding_sub form { background:url({site_url}themes/site_themes/agile_records/images/ie_search_bg.jpg) no-repeat; }
-
-
-
-
-/* NAVIGATION */
-
-ul#navigation_pri { background-image:none; background-color:#2f261d; }
-ul#navigation_pri li { height:auto; text-indent:0; font-family:"Cooper Black",Arial; font-weight:bold; }
-ul#navigation_pri li a:link,
-ul#navigation_pri li a:visited { background:none; text-decoration:none; color:#a09f9d;}
-ul#navigation_pri li a:hover,
-ul#navigation_pri li a:focus { color:#ccc;}
-ul#navigation_pri li.cur a:link,
-ul#navigation_pri li.cur a:visited,
-ul#navigation_pri li.cur a:hover,
-ul#navigation_pri li.cur a:focus { color:#d55401; }
-ul#navigation_pri li#home,
-ul#navigation_pri li#events,
-ul#navigation_pri li#contact { top:8px; }
-ul#navigation_pri li#bands,
-ul#navigation_pri li#news,
-ul#navigation_pri li#forums { top:30px; }
-ul#navigation_pri li#releases,
-ul#navigation_pri li#about,
-ul#navigation_pri li#wiki { top:54px; }
-
-
-
-/* HEADINGS */
-div#page_header { height:1px; z-index:99; position:static; top:0; margin-bottom:0; }
-div#page_header h2 { text-indent:0 !important; background:none !important; color:#e6e6e6 !important; padding-top:15px !important; float:left;}
-div#page_header ol#breadcrumbs { margin-top:10px; padding:0; background:none; }
-div#page_header ol#breadcrumbs li { margin-left:10px; }
-
-h2,h3 { text-indent:0 !important; background:none !important; width:auto !important; height:auto !important; }
-
-
-
-/* HOMEPAGE */
-
-.home div#feature div#featured_band { width:450px; float:left; position:static; margin:0px; }
-.home div#feature div#featured_band h2 { margin-bottom:5px; width:auto; height:auto; text-indent:0; background:none; }
-
-.home div#content_sec { display:inline; margin:0 30px 0 10px; }
-
-.home div#feature div#featured_band div.image { width:300px; height:200px; left:0; bottom:-10px; margin:0 10px 0 10px; padding:0; display:inline; }
-.home div#feature div#featured_band div.image h4 { height:auto; width:auto; background:none; margin:0; top:auto; bottom:0; }
-.home div#feature div#featured_band div.image h4 span { position:static; background:none; }
-.home div#feature div#featured_band div.image img { top:0; left:0; }
-
-.home div#homepage_events ul { padding-bottom:30px; }
-.home div#homepage_events ul li a { background:none !important; text-indent:0 !important; text-align:center; color:#fff; font-weight:bold; }
-
-.home div#homepage_forums ul,
-.home div#homepage_rss p,
-.home div#homepage_rss ul { background-image:none; background-color:#eee; }
-
-
-
-/* BANDS */
-
-.bands ul#bands1 li.one { width:450px; height:300px; left:-480px; top:0; margin-right:-450px; margin-bottom:30px; }
-.bands ul#bands1 li.one img { top:0; left:0; }
-
-.bands ul#bands1 li.two img,
-.bands ul#bands1 li.three img { padding:0; background:none; position:static; margin:0; margin:0 10px; }
-
-.band div#band_image { width:450px; height:300px; float:left; position:relative; left:10px; top:0px; margin:0 30px 30px 0; display:inline; }
-.band div#band_image img { top:0; left:0; }
-
-div#band_latestrelease { padding:20px; overflow:hidden; color:#d6d6d6; margin-left:10px; }
-div#band_latestrelease h3 { padding-top:20px; }
-
-.band div#content_pri { display:inline; }
-
-.band div#band_events ul { padding-bottom:30px; }
-.band div#band_events ul li a { background:none !important; text-indent:0 !important; text-align:center; color:#fff; font-weight:bold; }
-
-.band div#band_more ul { background-image:none; background-color:#eee; }
-
-
-
-/* RELEASES */
-
-.releases div#content_pri table th { background:none; text-indent:0; color:#fff; }
-.releases div#content_pri table th.release_details { width:360px; padding-right:30px; background:none; }
-.releases div#content_pri table th.release_catno { width:80px; background:none; }
-.releases div#content_pri table th.release_format { width:120px; background:none; text-align:center; }
-
-.releases div#content_pri table tr { background-image:none; background-color:#a3a39c; }
-.releases div#content_pri table tr.releases_head { background:none; }
-.releases div#content_pri table tr.alt { background-image:none; background-color:#c1c1bc; }
-
-.release div#content_pri { display:inline; padding-top:30px;}
-.release div#content_sec { padding:0; padding-top:30px; background:none; position:relative; left:-10px; }
-
-.release div#release_details { border-bottom:1px solid blue; }
-.release div#release_details span { font-family:Georgia,serif; font-style:italic; }
-.release div#release_details ul { list-style:url({site_url}themes/site_themes/agile_records/images/pixel.gif); }
-
-.release div#release_tracks div.release_format { float:left; padding-bottom:20px; margin-bottom:20px; }
-
-
-
-/* EVENTS */
-
-.events div#content_pri { display:inline; }
-
-
-
-/* NEWS */
-
-.news div#content_pri { display:inline; padding:30px 0; }
-.news div#content_sec { margin:30px 0 ; }
-
-.news div#news_calendar h6 a.prev { position:static; }
-.news div#news_calendar h6 a.next { position:static; }
-
-.news div#news_calendar { background-image:none; background-color:#cfcfcb; }
-.news div#news_calendar table td.post { background-image:none; background-color:#d7d7d3; }
-
-.news div#news_rss { background-image:none; background-color:#cfcfcb; }
-
-div#news_comments ol li { background-image:none; background-color:#f1f1f1; }
-div#news_comments ol li.alt { background-image:none; background-color:#e7e7e7; }
-
-div#news_comments fieldset#comment_fields label { display:block; width:320px; }
-div#news_comments fieldset#comment_fields label.comment { width:530px; }
-div#news_comments fieldset#comment_fields label span { width:80px; float:none; position:relative; top:20px; }
-div#news_comments fieldset#comment_fields label input { float:right; }
-div#news_comments fieldset#comment_fields label textarea { float:right; }
-
-div#news_comments fieldset#comment_fields label input,
-div#news_comments fieldset#comment_fields label textarea { background-image:none; background-color:#f1f1f1; }
-
-
-
-/* FORUMS */
-
-.forums div#content_pri { display:inline; }
-.forums div#content_sec { background-image:none; background-color:#f1f1f1; }
-
-.forums #page_header form { position:absolute; left:770px; padding-top:5px; }
-.forums #page_header form input.search { padding:1px; margin-right:10px;}
-.forums #page_header form input.submit { padding:0; position:relative; top:5px; }
-
-.forums div#content_pri h3 { background-color:#71715f !important; }
-
-div.forum_posts { background-image:none; background-color:#9e9e94; }
-div.forum_posts table tr td { background-image:none; background-color:#d0d0cc;}
-div.forum_posts table tr.alt td { background-image:none; background-color:#b3b3ab; }
-
-div.forum_posts table tr th { text-indent:0; color:#fff; }
-div.forum_posts table tr th.forum_name,
-div.forum_posts table tr th.forum_topics,
-div.forum_posts table tr th.forum_replies,
-div.forum_posts table tr th.forum_latest { background-image:none; }
-
-div.forum_posts table td.forum_newpostindicator img { position:static; }
-
-.forums div#legend div#forum_stats ul.legend { float:left; background-image:none; background-color:#cecec8; }
-.forums div#legend div#forum_stats p.most_visitors { background-image:none; background-color:#ecd2c3; }
-
-
-
-/* WIKI */
-
-.wiki div#navigation_sec { padding-top:57px; display:inline;  behavior: url(css/iepngfix/iepngfix.htc); }
-.wiki div#navigation_sec ul { background:url({site_url}themes/site_themes/agile_records/images/ie_wiki_menubg.jpg) repeat-y 5px top ; }
-.wiki div#navigation_sec div.bottom { behavior: url(css/iepngfix/iepngfix.htc); }
-
-
-
-/* MEMBERS CONTROL PANEL */
-
-.member_cp div#navigation_sec { display:inline; background-image:none; background-color:#9c9b92; }
-.member_cp div#navigation_sec h4 a.expand { display:none; }
-
-.member_cp div#content_pri table tr { background-image:none; background-color:#f1f1f1; }
-.member_cp div#content_pri table tr.alt { background-image:none; background-color:#e7e7e7; }
-.member_cp div#content_pri table tr th { background-image:none; background-color:#f1f1f1; }
-.member_cp div#content_pri table tr.alt th { background-image:none; background-color:#e7e7e7; }
-
-
-
-/* MEMBER PROFILE */
-
-.member_profile div#feature div#memberprofile_main { background-image:none; background-color:#cecec8; margin:20px 0 0 10px; }
-.member_profile div#feature div#memberprofile_main ul { padding:0 0 10px 0; }
-
-.member_profile div#feature div#memberprofile_photo { float:left; width:210px; height:180px; background:none; position:relative; left:-20px; }
-.member_profile div#feature div#memberprofile_photo img { width:206px; height:176px; border:3px solid #6b5f57; position:static; }
-
-.member_profile div#feature div#memberprofile_communicate { background-image:none; background-color:#adada3; margin-top:5px; }
-.member_profile div#feature div#memberprofile_communicate table tr { background-image:none; background-color:#cdcdc7; }
-.member_profile div#feature div#memberprofile_communicate table tr.alt { background-image:none; background-color:#bebeb7; }
-
-.member_profile div#content_pri table tr,
-.member_profile div#content_sec table tr { background-image:none; background-color:#f1f1f1; }
-.member_profile div#content_pri table tr.alt,
-.member_profile div#content_sec table tr.alt { background-image:none; background-color:#e7e7e7; }
-
-.member_profile div#content_pri table tr th,
-.member_profile div#content_sec table tr th { background-image:none; background-color:#f1f1f1; }
-.member_profile div#content_pri table tr.alt th,
-.member_profile div#content_sec table tr.alt th { background-image:none; background-color:#e7e7e7; }
-
-
-', NULL, 1394136209, 1, 'n', 0, '', 'n', 'n', 'o', 0), (8, 1, 2, 'css_screen-ie7', 'n', 'css', 'body {position:relative;}
-div#branding {margin:0 auto;}
-
-
-div#content_wrapper {position:relative;}
-
-div.feature_end {margin-top:0; }
-div#content_pri {float:left;margin:0 30px 0 10px;width:600px; padding-left:10px;}
-div#content_sec {float:left;width:270px; position:relative; z-index:999;}
-
-div#content_pri.contact {width:520px; margin-right:110px;}
-div#content_sec.contact {float:right; margin: 0 10px -140px auto; }
-
-
-div#page_header {position:relative;z-index:1;}
-
-div#feature{top:-10px;float:none;margin-bottom:30px;padding-top:25px;padding-top:10px;position:relative;width:950px;z-index:900;display:block;}
-
-div.feature_end {clear:none;height:35px;margin-bottom:20px;margin-top:-40px;width:950px;}
-
-/*#content_wrapper.member_cp {padding:0 10px;} */
-#content_wrapper.member_cp table {width:550px;}
-
-div#navigation_sec.member_cp {
-	width:150px;
-	left:10px;
-}
-
-div#content_wrapper.member_cp form {margin-left:200px;}', NULL, 1394136209, 1, 'n', 0, '', 'n', 'n', 'o', 0), (9, 1, 2, 'site_css', 'n', 'css', 'html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,hr{margin:0;padding:0;border:0;outline:0;font-weight:inherit;font-style:inherit;font-size:100%;font-family:inherit;vertical-align:baseline;}:focus{outline:0;}body{line-height:1;color:black;background:white;}ol,ul{list-style:none;}table{border-collapse:collapse;border-spacing:0;}caption,th,td{text-align:left;font-weight:normal;}blockquote:before,blockquote:after,q:before,q:after{content:"";}blockquote,q{quotes:"""";}@font-face{font-family:\'miso\';src:url(\'{site_url}themes/site_themes/agile_records/fonts/miso-bold.ttf\');}body{background:#ccc url({site_url}themes/site_themes/agile_records/images/body_bg.jpg) top center;font-size:13px;font-family:Arial,sans-serif;}ul#nav_access{position:absolute;top:-9999px;left:-9999px;}p,ul,dl,ol{margin-bottom:22px;line-height:22px;}ul{list-style:url({site_url}themes/site_themes/agile_records/images/bullet.jpg);}ul li{margin-left:12px;}ol{list-style:decimal;list-style-position:inside;}hr{height:0;border-top:1px solid #ccc;margin-bottom:22px;}abbr{border-bottom:1px dotted;}strong{font-weight:bold;}em{font-style:italic;}h1,h2,h3,h4,h5{font-weight:bold;}h2{color:#48482d;font-size:16px;margin-bottom:10px;}h3{margin-bottom:20px;}h4{margin-bottom:10px;}h5{margin-bottom:10px;}h6{text-transform:uppercase;font-size:11px;color:#666;letter-spacing:1px;margin-bottom:10px;}a:link,a:visited{color:#333;text-decoration:underline;}a:hover,a:focus{color:#111;}h2 a:link,h2 a:visited,h3 a:link,h3 a:visited,h4 a:link,h4 a:visited{text-decoration:none;}
-
-/* Tables */
-/* site_url explanation: http://ellislab.com/expressionengine/user-guide/templates/globals/single_variables.html#var_site_url */
-/* only site_url will be parsed, other variables will not be parsed unless you call the stylesheet using path= instead of stylesheet=:
-
-http://ellislab.com/expressionengine/user-guide/templates/globals/stylesheet.html */
-
-table{background:url({site_url}themes/site_themes/agile_records/images/white_40.png);font-size:12px;}
-tr{border-bottom:1px dotted #999;}
-tr.alt{background:url({site_url}themes/site_themes/agile_records/images/white_20.png);}
-th,td{padding:10px;}
-th{background:url({site_url}themes/site_themes/agile_records/images/white_20.png);color:#666;font-weight:bold;font-size:13px;}
-.member_table{width:60%; margin:10px;}
-.member_console{width:100%;}
-
-/* Page Styles */
-div#branding{height:290px;background:url({site_url}themes/site_themes/agile_records/images/branding_bg.png) repeat-x center top;position:relative;z-index:2;}
-div#branding_sub{width:930px;margin:0 auto;position:relative;}
-div#page{width:950px;padding-top:50px;margin:0 auto;position:relative;top:0px;margin-top:-80px;z-index:1;background:url({site_url}themes/site_themes/agile_records/images/white_40.png);}
-div#content_wrapper{padding-top:30px;}
-div#feature{width:950px;background:url({site_url}themes/site_themes/agile_records/images/white_70.png);float:left;padding-top:30px;position:relative;bottom:30px;margin-bottom:-30px;}
-
-div.feature_end {background:transparent url({site_url}themes/site_themes/agile_records/images/agile_sprite.png) no-repeat scroll left -747px; border:none;outline:none;clear:both;height:35px;margin-top:-6px;margin-bottom:20px;width:950px;}
-
-div#legend{width:950px;background:url({site_url}themes/site_themes/agile_records/images/white_70.png);overflow:hidden;position:relative;top:30px;margin-top:-30px;padding:10px 0 30px 0;font-size:11px;}
-hr.legend_start{width:950px;clear:both;background:url({site_url}themes/site_themes/agile_records/images/white_70_top.png) no-repeat top left;height:35px;margin:0;margin-top:20px;border:none;}
-div#content_pri{width:610px;float:left;margin:0 30px 0 10px;}
-div#content_sec{width:270px;float:left;}
-
-input.input { border:1px solid #aaa; position:relative; left:5px; background:url({site_url}themes/site_themes/agile_records/images/white_50.png);}
-input.input:focus { background:url({site_url}themes/site_themes/agile_records/images/white_70.png); }
-textarea { border:1px solid #aaa; background:url({site_url}themes/site_themes/agile_records/images/white_50.png); }
-textarea:focus { background:url({site_url}themes/site_themes/agile_records/images/white_70.png); }
-
-
-
-
-/* Branding */
-div#branding_logo{background:url({site_url}themes/site_themes/agile_records/images/agile_sprite.png) no-repeat 9px -428px;margin:0 auto;position:relative;left:-80px;margin-bottom:-230px;height:230px;width:950px;}
-div#branding_logo img{display:none;}
-div#branding_sub h1 a {width:182px;height:196px;display:block;text-indent:-9999em;background:url({site_url}themes/site_themes/agile_records/images/agile_sprite.png) no-repeat -264px 15px;  padding-top:15px;}
-div#branding_sub form{position:absolute; right:130px;top:25px;width:240px;height:51px;background:url({site_url}themes/site_themes/agile_records/images/agile_sprite.png) no-repeat -534px -21px;}
-div#branding_sub form fieldset{position:relative;}
-div#branding_sub form label{text-indent:-9999em;margin-top:10px;width:60px;padding:5px;position:absolute;left:0px;display:inline;}
-div#branding_sub form input#search{background:none;border:none;position:absolute;top:13px;left:70px;width:100px;padding:2px 5px;font-size:11px;color:#fff;}
-
-div#branding_sub form input#submit{position:absolute;right:30px;top:6px; background:transparent url({site_url}themes/site_themes/agile_records/images/agile_sprite.png) no-repeat -587px -77px; width:24px; height:24px; display:block; font-size:1px; border:none; outline:none;}
-
-div#branding_sub div#member{position:absolute;right:0;top:20px;background:url({site_url}themes/site_themes/agile_records/images/brown_40.png);border:1px solid #846f65;color:#ccc;font-size:11px;padding:8px;}
-div#branding_sub div#member ul{margin:0;line-height:13px;list-style:disc;}
-div#branding_sub div#member h4{margin-bottom:4px;}
-div#branding_sub div#member a:link, div#branding_sub div#member a:visited{color:#ccc;}
-div#branding_sub div#member a:hover, div#branding_sub div#member a:focus{color:#fff;}
-
-/* Navigation */
-ul#navigation_pri{list-style:none;margin:0 auto;padding:5px 15px;width:340px;max-height:100px;background:#2f261d;position:absolute;right:0;bottom:20px;}
-ul#navigation_pri li{margin:0;float:left;font-size:16px;width:33%;}
-ul#navigation_pri li a{font-family:\'Cooper Black\',miso,\'Georgia\',serif;font-weight:bold;color:#999999;text-decoration:none}
-ul#navigation_pri li a:hover{color:#efefef;}
-ul#navigation_pri li.cur a{color:#f47424}
-
-/* Footer */
-div#siteinfo{background:url({site_url}themes/site_themes/agile_records/images/agile_sprite.png) no-repeat left -287px;height:80px;padding-top:40px;position:relative;clear:both;font-size:12px;z-index:3;}
-div#siteinfo p{color:#5b5b42;font-weight:bold;margin:0 0 0 10px;}
-div#siteinfo p.logo{width:65px;height:70px;background:url({site_url}themes/site_themes/agile_records/images/agile_sprite.png); text-indent:-9999em;position:absolute;left:865px;bottom:15px;}
-div#siteinfo a {color:#5b5b42;text-decoration:underline;}
-div#siteinfo a:hover {color:#3B3A25;text-decoration:underline;}
-div#siteinfo p.logo a{display:block;}
-
-
-/* 11.PAGEHEADERS
----------------------------------------------------------------------- */
-
-div#page_header { background:url({site_url}themes/site_themes/agile_records/images/agile_sprite.png) no-repeat left -205px; height:72px; z-index:3; position:relative; top:-25px; margin-bottom:-15px; }
-
-div#page_header h2 { float:left; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: normal; text-transform:uppercase; color:#ebebeb; letter-spacing: -0.01em; }
-div#page_header h2 a { display:block; }
-
-div#page_header h2 { margin:0; width:400px; height:15px; padding-top:30px; margin-left:10px;}
-
-div#page_header ol#breadcrumbs { float:left; list-style:none; margin:0; margin-left:10px; margin-top:26px; padding:0px 0 0 20px; background:url({site_url}themes/site_themes/agile_records/images/breadcrumbs_bg.png) no-repeat left center; }
-div#page_header ol#breadcrumbs li { margin:0; float:left; font-weight:bold; color:#d6d6d6; text-transform:uppercase; font-size:12px; }
-div#page_header ol#breadcrumbs li a { color:#d6d6d6; text-decoration:none; }
-
-
-/*  Featured Band / Welcome
--------------------------------- */
-div#featured_band {width:450px; float:left; position:relative; z-index:5; bottom:52px; margin-bottom:-52px;}
-div#welcome {width:450px; float:left; margin:0 30px 0 10px;}
-div#welcome img {float:left; margin:0 30px 10px 0;}
-div#featured_band h2 {margin-bottom:38px; width:135px; height:14px; font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: normal; text-transform:uppercase; color:#ebebeb; letter-spacing: -0.01em;}
-
-div#featured_band div.image { float:right; width:323px; height:243px; position:relative; left:50px; bottom:75px; margin: 0 0 -75px -50px; }
-div#featured_band div.image h4 { width:324px; height:243px; background:url({site_url}themes/site_themes/agile_records/images/featuredband_border.png) no-repeat top left; position:absolute; top:0; left:0; z-index:2; }
-div#featured_band div.image h4 span { position:absolute; top:177px; left:30px; background:url({site_url}themes/site_themes/agile_records/images/white_70.png); font-size:11px; padding:2px; padding-left:60px; }
-div#featured_band div.image img { position:absolute; top:20px; left:15px;}
-.green40 {background:transparent url({site_url}themes/site_themes/agile_records/images/green_40.png) repeat scroll 0 0; color:#EEEEEE; float:left; padding:10px;}
-div#feature p {margin-left:10px;}
-
-/* News
----------------- */
-h3.oldernews {}
-ul#news_listing { list-style:none; }
-ul#news_listing li { margin:0 0 30px 0; overflow:hidden; }
-ul#news_listing li img { float:left; margin:0 10px 10px 0;}
-ul#news_listing li p { margin-bottom:10px; }
-
-div#news_archives { overflow:hidden; }
-div#news_archives div#categories_box {width:120px; float: left;}
-div#news_archives div#months_box {width:120px; float: right;}
-div#news_archives ul#categories { width:120px; float:left; margin-right:30px; }
-div#news_archives ul#months { width:120px; float:left; }
-
-div#news_calendar { padding:10px; background:url({site_url}themes/site_themes/agile_records/images/white_50.png); margin-bottom:40px; }
-
-div#news_calendar a:link,
-div#news_calendar a:visited { color:#666; }
-div#news_calendar a:hover,
-div#news_calendar a:focus { color:#333; }
-
-div#news_calendar h6 { position:relative; text-align:center; text-transform:uppercase; color:#666; padding:0 0 10px 0; }
-div#news_calendar h6 a.prev { position:absolute; left:0; top:-3px; font-size:16px; }
-div#news_calendar h6 a.next { position:absolute; right:0; top:-3px; font-size:16px; }
-
-div#news_calendar table { background:none; font-size:11px; width:250px; color:#666; }
-div#news_calendar table th { background:url({site_url}themes/site_themes/agile_records/images/green_50.png); color:#ccc; }
-div#news_calendar table th,
-div#news_calendar table td  { padding:5px 0; text-align:center; }
-div#news_calendar table tr { border:none; }
-div#news_calendar table td.unused { color:#999; }
-div#news_calendar table td.post { background:url({site_url}themes/site_themes/agile_records/images/white_20.png); }
-div#news_calendar table td.post:hover { background:url({site_url}themes/site_themes/agile_records/images/white_40.png); }
-
-div#news_rss { padding:10px; background:url({site_url}themes/site_themes/agile_records/images/white_50.png); color:#666; }
-div#news_rss ul { list-style:url({site_url}themes/site_themes/agile_records/images/bullet.jpg); margin:0; }
-div#news_rss a:link,
-div#news_rss a:visited { color:#666; }
-div#news_rss a:hover,
-div#news_rss a:focus { color:#333; }
-
-
-/* Staff Profiles */
-div#content_sec.staff_profiles {
-background:transparent url({site_url}themes/site_themes/agile_records/images/staff_bg.jpg) repeat scroll 0 0;float:right;margin-bottom:-110px;padding:10px;position:relative;top:-140px; right:10px; width:430px;}
-
-/* Comments */
-div#news_comments { border-top:#bfbebf 1px solid; padding-top:20px; }
-
-div#news_comments ol { list-style:none; border-top:1px dotted #ccc; margin-bottom:30px; }
-div#news_comments ol li { border-bottom:1px dotted #ccc; background:url({site_url}themes/site_themes/agile_records/images/white_70.png); padding:20px 10px 0 160px; font-size:12px; line-height:20px; }
-div#news_comments ol li.alt { background:url({site_url}themes/site_themes/agile_records/images/white_50.png); }
-
-div#news_comments ol li h5.commentdata { width:120px; float:left; position:relative; left:-150px; margin-right:-150px; font-size:13px; line-height:20px; }
-div#news_comments ol li h5.commentdata span { display:block; font-weight:normal; font-size:11px; }
-div#news_comments ol li h5.commentdata img { margin-top:10px; }
-
-div#news_comments h3.leavecomment {color:#47472C; font-family:\'Cooper Black\', miso, \'Georgia\', serif; font-size:20px;}
-div#news_comments form { position:relative; margin-bottom:30px; }
-
-div#news_comments fieldset#comment_fields label { display:block; overflow:hidden; font-size:12px; margin-bottom:20px; }
-div#news_comments fieldset#comment_fields label span { width:80px; float:left; position:relative; top:5px; }
-div#news_comments fieldset#comment_fields label input { border:1px solid #aaa; width:228px; float:left; background:url({site_url}themes/site_themes/agile_records/images/white_50.png); }
-div#news_comments fieldset#comment_fields label input:focus { background:url({site_url}themes/site_themes/agile_records/images/white_70.png); }
-div#news_comments fieldset#comment_fields label textarea { border:1px solid #aaa; float:left; height:150px; width:438px; background:url({site_url}themes/site_themes/agile_records/images/white_50.png); }
-div#news_comments fieldset#comment_fields label textarea:focus { background:url({site_url}themes/site_themes/agile_records/images/white_70.png); }
-
-div#news_comments div#comment_guidelines { width:418px; padding:10px; margin:10px 0 10px 80px; color:#fff; background:#9f9995; }
-div#news_comments div#comment_guidelines h6 { font-weight:normal; font-size:12px; margin-bottom:0; }
-div#news_comments div#comment_guidelines p { margin:10px 0 0 0 ; font-size:11px; line-height:16px; font-style:italic; }
-
-div#news_comments fieldset#comment_action { background:url({site_url}themes/site_themes/agile_records/images/orange_20.png); padding:10px; font-size:11px; position:relative; }
-div#news_comments fieldset#comment_action label { display:block; padding:5px 0; }
-div#news_comments fieldset#comment_action label input { position:relative; left:5px; }
-div#news_comments fieldset#comment_action input#submit_comment { position:absolute; bottom:10px; right:10px; font-size:12px; }
-
-div#captcha_box img {margin-left: 5px;}
-
-input#captcha {display:block; margin: 5px 0 0 0; border:1px solid #aaa; width:228px; background:url({site_url}themes/site_themes/agile_records/images/white_50.png);}
-input#captcha:focus {background:url({site_url}themes/site_themes/agile_records/images/white_70.png);}
-
-/* News Archive Page */
-div.archive ul#news_listing li img {float:right; margin:auto auto 10px 10px;}
-div.archive ul#news_listing li p {margin-bottom:10px; padding-left:0;}
-
-/* About */
-div#content_pri.about {width:450px;}
-div#feature.about p {color:#666666;font-weight:bold;margin-left:10px;width:450px;}
-div#feature h3.about {font-size:22px; font-family:\'Cooper Black\',miso,\'Georgia\',serif;font-weight:bold;color:#47472C;text-decoration:none; margin:10px 0 20px 10px; width:300px;}
-
-
-div#content_sec ul.staff_member li {float:left;height:180px;margin:0 35px 40px 0;overflow:hidden;position:relative;width:120px;}
-
-div#content_sec ul.staff_member { list-style:none; overflow:hidden; margin-bottom:-20px; }
-div#content_sec ul.staff_member li { width:120px; height:180px; overflow:hidden; position:relative; float:left; margin:0 35px 40px 0; }
-div#content_sec ul.staff_member li.end { margin-right:0; }
-div#content_sec ul.staff_member li h4 { font-size:12px; padding:5px 5px; background:#afafa8; position:absolute; bottom:0; left:0; z-index:3; color:#fff; width:110px; height:20px; cursor:pointer; }
-div#content_sec ul.staff_member li h4 a { position:absolute; right:5px; color:#eee; font-family:Georgia, "Times New Roman", Times, serif; font-style:italic; font-weight:bold; }
-div#content_sec ul.staff_member li div.profile { position:absolute; bottom:40px; left:0; background:url({site_url}themes/site_themes/agile_records/images/white_50.png); z-index:2; padding:5px; width:110px; }
-div#content_sec ul.staff_member li img { position:absolute; top:0; left:0; }
-div.profile {color:#000;}
-
-
-/* Contact */
-div#content_pri.contact { width:530px; margin-right:110px; }
-div#content_sec.contact {  width:270px; float:left; padding:10px; padding-bottom:0; background:url({site_url}themes/site_themes/agile_records/images/staff_bg.jpg); position:relative; top:-170px; margin-bottom:-140px; color:#eee; }
-div#feature.contact p {color:#666666;font-weight:bold;margin-left:10px;width:600px;}
-
-/*div#feature { padding-left:10px; padding-right:410px; width:530px; }*/
-div#feature h3.getintouch { width:140px; font-family:\'Cooper Black\',miso,\'Georgia\',serif;font-size:20px; color:#47472C;text-decoration:none; margin-left:10px;}
-
-div#content_pri form { position:relative; margin-bottom:30px; }
-
-div#content_pri fieldset#contact_fields label { display:block; overflow:hidden; font-size:12px; margin-bottom:20px; }
-div#content_pri fieldset#contact_fields label span { width:80px; float:left; position:relative; top:5px; }
-div#content_pri fieldset#contact_fields label input { border:1px solid #aaa; width:228px; float:left; background:url({site_url}themes/site_themes/agile_records/images/white_50.png); }
-div#content_pri fieldset#contact_fields label input:focus { background:url({site_url}themes/site_themes/agile_records/images/white_70.png); }
-div#content_pri fieldset#contact_fields label textarea { border:1px solid #aaa; float:left; height:150px; width:438px; background:url({site_url}themes/site_themes/agile_records/images/white_50.png); }
-div#content_pri fieldset#contact_fields label textarea:focus { background:url({site_url}themes/site_themes/agile_records/images/white_70.png); }
-
-div#content_pri div#contact_guidelines { position:absolute; top:0; right:0; width:170px; padding:10px; color:#fff; background:#9f9995; }
-div#content_pri div#contact_guidelines h6 { font-weight:normal; font-size:12px; margin-bottom:10px; }
-div#content_pri div#contact_guidelines p { margin:0; font-size:11px; line-height:16px; font-style:italic; }
-
-div#content_pri fieldset#contact_action { background:url({site_url}themes/site_themes/agile_records/images/orange_20.png); padding:10px; font-size:11px; position:relative; }
-div#content_pri fieldset#contact_action label { display:block; padding:5px 0; }
-div#content_pri fieldset#contact_action label input { position:relative; left:5px; }
-div#content_pri fieldset#contact_action input#contactSubmit { position:absolute; bottom:10px; right:10px; font-size:12px; }
-
-
-
-
-/*  Member Templates */
-/* 22.MEMBERS
----------------------------------------------------------------------- */
-
-/* CONTROL PANEL */
-div#navigation_sec.member_cp { width:270px; padding:10px; float:left; background:url({site_url}themes/site_themes/agile_records/images/green_40.png); margin:35px 30px 30px 10px; font-size:11px; line-height:16px; }
-/*div#content_pri.member_cp  { width:610px; margin:0 0 0 10px; }*/
-
-div#page_header.member_cp  a.viewprofile { display:block; width:182px; height:22px; background:url({site_url}themes/site_themes/agile_records/images/member_viewprofile.jpg) no-repeat left top; text-indent:-9999em; position:absolute; right:10px; top:25px; }
-.member_cp div#page_header a.viewprofile:hover,
-.member_cp div#page_header a.viewprofile:focus { background-position:left bottom; }
-
-div#navigation_sec.member_cp h4 { color:#fff; border-bottom:1px solid #b1b1a9; font-size:12px; padding-bottom:5px; position:relative; }
-div#navigation_sec.member_cp h4 a.expand { position:absolute; right:0; top:0; display:block; height:14px; width:14px; background:url({site_url}themes/site_themes/agile_records/images/controlpanel_expand.jpg) no-repeat bottom left; text-indent:-9999em; }
-div#navigation_sec.member_cp h4 a.expand.open { background:url({site_url}themes/site_themes/agile_records/images/controlpanel_expand.jpg) no-repeat top left; }
-div#navigation_sec.member_cp a:link,
-div#navigation_sec.member_cp a:visited { color:#ddd; }
-div#navigation_sec.member_cp a:hover,
-div#navigation_sec.member_cp a:focus { color:#fff; }
-
-div#content_pri table { width:610px; background:none;}
-div#content_pri table th { background:none; }
-div#content_pri table tr { background:url({site_url}themes/site_themes/agile_records/images/white_60.png); }
-div#content_pri table tr.alt { background:url({site_url}themes/site_themes/agile_records/images/white_40.png); }
-
-/* PROFILE */
-div#content_pri.member_profile, div#content_pri.member_cp  { width:450px; float:left; margin:0 30px 30px 10px; }
-div#content_sec.member_profile, div#content_sec.member_cp  { width:450px; float:left; margin:0 0 30px 0; }
-
-h3.statistics {height:11px; font-family:\'Cooper Black\',miso,\'Georgia\',serif; color:#f47424; font-size:18px; }
-h3.personalinfo {height:11px; color:#47472C; font-family:\'Cooper Black\',miso,\'Georgia\',serif; font-size:18px;}
-h3.biography {height:11px; color:#47472C; font-family:\'Cooper Black\',miso,\'Georgia\',serif; font-size:18px; margin-top:20px;}
-
-div#memberprofile_main { background:url({site_url}themes/site_themes/agile_records/images/green_20.png); width:300px; padding:10px; margin:40px 0 0 10px; float:left; }
-div#memberprofile_main img { float:left; margin:0 10px 10px 0; }
-div#memberprofile_main h3 { margin:5px 0 10px 0; }
-div#memberprofile_main ul { clear:both; margin:0; padding:10px 0; font-size:12px; }
-div#memberprofile_main ul a { color:#666; }
-
-div#memberprofile_photo { float:left; width:250px; height:220px; background:url({site_url}themes/site_themes/agile_records/images/memberprofile_photo_bg.png) no-repeat center center; position:relative; left:-20px; }
-div#memberprofile_photo img { width:206px; height:176px; border:3px solid #6b5f57; position:absolute; top:20px; left:20px; }
-
-div#memberprofile_communicate { width:270px; padding:10px; margin:20px 10px 0 0; float:right; background:url({site_url}themes/site_themes/agile_records/images/green_40.png); }
-div#memberprofile_communicate h3.communicate { width:83px; height:12px; font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; color:#EBEBEB; text-transform: uppercase; margin-bottom:10px; }
-div#memberprofile_communicate table { width:270px; font-size:10px; background:none; }
-div#memberprofile_communicate table tr { background:url({site_url}themes/site_themes/agile_records/images/white_40.png); }
-div#memberprofile_communicate table tr.alt { background:url({site_url}themes/site_themes/agile_records/images/white_20.png); }
-div#memberprofile_communicate table th { font-weight:normal; font-size:10px; background:none; padding:4px; }
-div#feature div#memberprofile_communicate table td { padding:4px; color:#444;}
-
-div#content_pri.member_cp table,
-div#content_sec.member_cp table { width:100%; background:none; margin-bottom:30px; }
-div#content_pri.member_cp table th,
-div#content_sec.member_cp table th { background:none; }
-div#content_pri.member_cp table tr,
-div#content_sec.member_cp table tr { background:url({site_url}themes/site_themes/agile_records/images/white_60.png); }
-div#content_pri.member_cp table tr.alt,
-div#content_sec.member_cp table tr.alt  { background:url({site_url}themes/site_themes/agile_records/images/white_40.png); }
-
-/* Private Messages: Move and Copy pop-up menu control */
-#movemenu {position: absolute !important; top: 410px !important; left: 390px !important; border: 0 !important;}
-#copymenu {position: absolute !important; top: 410px !important; left: 332px !important; border: 0 !important;}
-
-/* Search Results */
-.pagination ul { overflow: auto; }
-.pagination li { float: left; list-style: none; background: transparent url(http://expressionengine2/themes/site_themes/agile_records/images/green_40.png) repeat scroll 0 0; padding: 1px 7px; margin: 0 3px; }
-.pagination li.active { background: none; }
-.pagination li.active a { text-decoration: none; }', NULL, 1394136209, 1, 'n', 0, '', 'n', 'n', 'o', 0), (10, 1, 3, 'index', 'n', 'webpage', '{if segment_2 != \'\'}
-  {redirect="404"}
-{/if}
-{html_head}
-	<title>{site_name}</title>
-{global_stylesheets}
-{rss}
-{favicon}
-{html_head_end}
-	<body>
-	{nav_access}
-	{branding_begin}
-			{embed="global_embeds/.top_nav" loc="home"}
-			{global_top_search}
-			{global_top_member}
-	{branding_end}
-	{wrapper_begin}
-{embed="global_embeds/.page_header" header="News"}
-	<div id="feature" class="news">
-			{global_featured_welcome}
-			{global_featured_band}
-	    </div> <!-- ending #feature -->
-
-        	<div class="feature_end"></div>
-
-	<div id="content_pri"> <!-- This is where all primary content, left column gets entered -->
-		<!--  This is the channel entries tag.  Documentation for this parameter can be found at http://ellislab.com/expressionengine/user-guide/modules/channel/channel_entries.html
-				 Parameter Explanation:
-		channel= which channel to output, multiple channels may be piped in (channel_1|channel_2)
-		limit= limits the number of entries output in this instance of the tag
-		disable= turns off parsing of un-needed data -->
-
-		{exp:channel:entries channel="news" limit="3" disable="categories|member_data|category_fields|pagination"}
-
-		<!-- if no_results is a conditional variable, it can not be combined with advanced conditionals.  http://ellislab.com/expressionengine/user-guide/modules/channel/conditional_variables.html#cond_if_no_results -->
-
-		{if no_results}<p>Sample No Results Information</p>{/if}
-		{if count == "1"}
-		<h3 class="recentnews">Recent News</h3>
-		<ul id="news_listing">
-		{/if}
-			<li>
-				<h4><a href="{comment_url_title_auto_path}">{title}</a>  //  <!-- entry_date is a variable, and date formatting variables can be found at http://ellislab.com/expressionengine/user-guide/templates/date_variable_formatting.html -->{entry_date format="%F %d %Y"}</h4>
-
-				<!-- the following two lines are custom channel fields. http://ellislab.com/expressionengine/user-guide/cp/admin/channel_administration/custom_channel_fields.html -->
-
-				{if news_image}
-					<img src="{news_image}" alt="{title}" />
-				{/if}
-				{news_body}
-				<p><a href="{comment_url_title_auto_path}#news_comments">{comment_total} comments</a> {global_edit_this}
-								{if news_extended != ""}  |  <a href="{comment_url_title_auto_path}">Read more</a>{/if}</p>
-
-			</li>
-		{if count == total_results}</ul>{/if}
-		{/exp:channel:entries}
-
-
-
-
-	</div>
-
-	<div id="content_sec" class="right green40">
-		<h3 class="oldernews">Browse Older News</h3>
-		<div id="news_archives">
-			<div id="categories_box">
-			{news_categories}
-			</div>
-			<div id="month_box">
-			{news_month_archives}
-			</div>
-		</div> <!-- ending #news_archives -->
-
-		{news_calendar}
-
-		{news_popular}
-
-	{rss_links}
-
-	</div>	<!-- ending #content_sec -->
-
-{global_footer}
-{wrapper_close}
-{js}
-{html_close}', NULL, 1394136209, 1, 'n', 0, '', 'n', 'n', 'o', 0), (11, 1, 3, 'archives', 'n', 'webpage', '{html_head}
-	<title>{site_name}: News Archives</title>
-{global_stylesheets}
-{rss}
-{favicon}
-{html_head_end}
-	<body>
-	{nav_access}
-	{branding_begin}
-			{embed="global_embeds/.top_nav" loc="home"}
-			{global_top_search}
-			{global_top_member}
-	{branding_end}
-	{wrapper_begin}
-{embed="global_embeds/.page_header" header="News"}
-	<div id="feature">
-			{global_featured_welcome}
-			{global_featured_band}
-	    </div> <!-- ending #feature -->
-
-        	<div class="feature_end"></div>
-
-	<div id="content_pri" class="archive"> <!-- This is where all primary content, left column gets entered -->
-
-			<!--  This is the channel entries tag.  Documentation for this tag can be found at http://ellislab.com/expressionengine/user-guide/modules/weblog/parameters.html
-
-			channel= which channel to output, multiple channels may be piped in (channel_1|channel_2)
-			limit= limits the number of entries output in this instance of the tag
-			disable= turns off parsing of un-needed data
-			relaxed_categories= allows you use the category indicator in your URLs with an entries tag specifying multiple weblogs that do not share category groups.
-
-			-->
-
-		{exp:channel:entries channel="news" limit="3" disable="member_data|category_fields|pagination" status="open|featured" relaxed_categories="yes"}
-
-		<!-- if no_results is a conditional variable, it can not be combined with advanced conditionals.  http://ellislab.com/expressionengine/user-guide/modules/channel/conditional_variables.html#cond_if_no_results -->
-
-		{if no_results}<p>No Results</p>{/if}
-		{if count == "1"}
-		<h3 class="recentnews">Recent News</h3>
-		<ul id="news_listing">
-		{/if}
-			<li>
-				<h4><a href="{comment_url_title_auto_path}">{title}</a>  //  {!-- entry_date is a variable, and date formatting variables can be found at http://ellislab.com/expressionengine/user-guide/templates/date_variable_formatting.html --}{entry_date format="%F %d %Y"}</h4>
-
-				<!-- the following two lines are custom channel fields. http://ellislab.com/expressionengine/user-guide/cp/admin/channel_administration/custom_channel_fields.html -->
-
-				{if news_image}
-					<img src="{news_image}" alt="{title}" />
-				{/if}
-				{news_body}
-				<p><a href="{comment_url_title_auto_path}#news_comments">{comment_total} comments</a> {global_edit_this}
-								{if news_extended != ""}  |  <a href="{comment_url_title_auto_path}">Read more</a>{/if}</p>
-
-			</li>
-		{if count == total_results}</ul>{/if}
-		{/exp:channel:entries}
-
-
-
-
-	</div>
-
-	<div id="content_sec" class="right green40">
-		<h3 class="oldernews">Browse Older News</h3>
-		<div id="news_archives">
-			<div id="categories_box">
-			{news_categories}
-			</div>
-			<div id="month_box">
-			{news_month_archives}
-			</div>
-		</div> <!-- ending #news_archives -->
-
-		{news_calendar}
-
-		{news_popular}
-
-	{rss_links}
-
-	</div>	<!-- ending #content_sec -->
-
-{global_footer}
-{wrapper_close}
-{js}
-{html_close}', NULL, 1394136209, 1, 'n', 0, '', 'n', 'n', 'o', 0), (12, 1, 3, 'atom', 'n', 'feed', '{exp:rss:feed channel="news"}
-
-<?xml version="1.0" encoding="{encoding}"?>
-<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="{channel_language}">
-
-	<title type="text">{exp:xml_encode}{channel_name}{/exp:xml_encode}</title>
-	<subtitle type="text">{exp:xml_encode}{channel_name}:{channel_description}{/exp:xml_encode}</subtitle>
-	<link rel="alternate" type="text/html" href="{channel_url}" />
-	<link rel="self" type="application/atom+xml" href="{path={atom_feed_location}}" />
-	<updated>{gmt_edit_date format=\'%Y-%m-%dT%H:%i:%sZ\'}</updated>
-	<rights>Copyright (c) {gmt_date format="%Y"}, {author}</rights>
-	<generator uri="http://ellislab.com/" version="{version}">ExpressionEngine</generator>
-	<id>tag:{trimmed_url},{gmt_date format="%Y:%m:%d"}</id>
-
-{exp:channel:entries channel="news" limit="15" dynamic_start="on" disable="member_data"}
-	<entry>
-	  <title>{exp:xml_encode}{title}{/exp:xml_encode}</title>
-	  <link rel="alternate" type="text/html" href="{comment_url_title_auto_path}" />
-	  <id>tag:{trimmed_url},{gmt_entry_date format="%Y"}:{relative_url}/{channel_id}.{entry_id}</id>
-	  <published>{gmt_entry_date format="%Y-%m-%dT%H:%i:%sZ"}</published>
-	  <updated>{gmt_edit_date format=\'%Y-%m-%dT%H:%i:%sZ\'}</updated>
-	  <author>
-			<name>{author}</name>
-			<email>{email}</email>
-			{if url}<uri>{url}</uri>{/if}
-	  </author>
-{categories}
-	  <category term="{exp:xml_encode}{category_name}{/exp:xml_encode}"
-		scheme="{path=news/index}"
-		label="{exp:xml_encode}{category_name}{/exp:xml_encode}" />{/categories}
-	  <content type="html"><![CDATA[
-		{news_body} {news_extended}
-	  ]]></content>
-	</entry>
-{/exp:channel:entries}
-
-</feed>
-
-{/exp:rss:feed}						', NULL, 1394136209, 1, 'n', 0, '', 'n', 'n', 'o', 0), (13, 1, 3, 'comment_preview', 'n', 'webpage', '{!-- Explanations and learning materials can be found in news/index and the other news template groups.  In-line comments here are only for features not introduced in news/index.
-	 NOTE:  This is an ExpressionEngine Comment and it will not appear in the rendered source.
-			http://ellislab.com/expressionengine/user-guide/templates/commenting.html
---}
-{html_head}
-<!-- Below we use a channel entries tag to deliver a dynamic title element. -->
-	<title>{site_name}: Comment Preview for
-		{exp:channel:entries channel="news|about" limit="1" disable="categories|member_data|category_fields|pagination"}{title}{/exp:channel:entries}</title>
-{global_stylesheets}
-{rss}
-{favicon}
-{html_head_end}
-	<body>
-{nav_access}
-	{branding_begin}
-			{embed="global_embeds/.top_nav" loc="home"}
-			{global_top_search}
-			{global_top_member}
-	{branding_end}
-	{wrapper_begin}
-{embed="global_embeds/.page_header" header="News"}
-	<div id="feature">
-		{global_featured_welcome}
-		{global_featured_band}
-	    </div> <!-- ending #feature -->
-
-        	<div class="feature_end"></div>
-
-	<div id="content_pri"> <!-- This is where all primary content, left column gets entered -->
-		<!--  This is the channel entries tag.  Documentation for this parameter can be found at http://ellislab.com/expressionengine/user-guide/modules/channel/channel_entries.html
-				 Parameters are the items inside the opening exp:channel:entries tag that allow limiting, filtering, and sorting. They go in the format item="limiter".  ie: channel="news". Below are links to the parameters used in this particular instance of the channel entries tag.  These are documented here:
-
-				http://ellislab.com/expressionengine/user-guide/channels/weblog/parameters.html
-
-		channel= which channel to output, multiple channels may be piped in (channel_1|channel_2)
-		limit= limits the number of entries output in this instance of the tag
-		disable= turns off parsing of un-needed data
-		require_entry= forces ExpressionEngine to compare Segment 3 to existing URL titles.  If there is no match, then nothing is output.  Use this in combination with if no_results to force a redirect to 404. -->
-
-		{exp:channel:entries channel="news|about" disable="categories|member_data|category_fields|pagination" status="open|featured"}
-		<!-- count is a single variable: http://ellislab.com/expressionengine/user-guide/modules/weblog/variables.html#var_count
-
-		In this case we\'ve combined the count single variable with a Conditional Global Variable:
-
-		http://ellislab.com/expressionengine/user-guide/templates/globals/conditionals.html
-
-		to create code that shows up only once, at the top of the list of outputted channel entries and only if there is 1 or more entries -->
-
-		{if count == "1"}
-		<h3 class="recentnews">Recent News</h3>
-		<ul id="news_listing">
-
-			<!-- Here we close the conditional after all of the conditional data is processed. -->
-
-		{/if}
-			<li>
-					<!-- comment_url_title_auto_path is a channel entries variable:
-
-					http://ellislab.com/expressionengine/user-guide/modules/channel/variables.html#var_comment_url_title_auto_path
-
-					This allows you to outpt a per-channel link to a single-entry page.  This can be used even if you are not using comments as a way to get a per-channel "permalink" page without writing your own conditional. -->
-
-				<h4><a href="{comment_url_title_auto_path}">{title}</a>  //  <!-- entry_date is a variable, and date formatting variables can be found at http://ellislab.com/expressionengine/user-guide/templates/date_variable_formatting.html -->{entry_date format="%F %d %Y"}</h4>
-
-				<!-- the following two lines are custom channel fields. http://ellislab.com/expressionengine/user-guide/cp/admin/channel_administration/custom_channel_fields.html -->
-
-				{if news_image}
-					<img src="{news_image}" alt="{title}" />
-				{/if}
-
-				<!-- Here we come a custom field variable with a global conditional to output the HTML only if he custom field is _not_ blank -->
-
-				{if about_image != ""}<img src="{about_image}" alt="{title}"  />{/if}
-				{news_body}
-				{about_body}
-				{news_extended}
-
-				<!-- Here we compare the channel short-name to a predefined word to output some information only if the entry occurs in a particular channel -->
-				{if channel_short_name == "news"}<p><a href="{comment_url_title_auto_path}#news_comments">{comment_total} comments</a> <!-- edit_this is a Snippet: http://ellislab.com/expressionengine/user-guide/templates/globals/snippets.html --> {global_edit_this} </p> {/if}
-			</li>
-		<!-- Comparing two channel entries variables to output data only at the end of the list of outputted channel entries -->
-		{if count == total_results}</ul>{/if}
-		<!-- Closing the Channel Entries tag -->
-		{/exp:channel:entries}
-
-			<div id="news_comments">
-			<!-- Comment Entries Tag outputs comments: http://ellislab.com/expressionengine/user-guide/ http://ellislab.com/expressionengine/user-guide/
-			Parameters found here: http://ellislab.com/expressionengine/user-guide/modules/comment/entries.html#parameters
-			sort= defines in what order to sort the comments
-			limit= how many comments to output
-			channel= what channels to show comments from
-			-->
-			{exp:comment:preview channel="news|about"}
-			<h3>Comments</h3>
-			<ol>
-				<li>
-					<h5 class="commentdata">
-						<!-- Comment Entries variable: http://ellislab.com/expressionengine/user-guide/modules/comment/entries.html#url_as_author
-						url_as_author outputs the URL if entered/in the member profile (if registered) or just the name if no URL-->
-						{url_as_author}
-						<!-- Comment date:
-						 http://ellislab.com/expressionengine/user-guide/modules/comment/entries.html#var_comment_date
-
-						Formatted with Date Variable Formatting:
-
-	http://ellislab.com/expressionengine/user-guide//templates/date_variable_formatting.html -->
-
-						<span>{comment_date format="%h:%i%a"}, {comment_date format=" %m/%d/%Y"}</span>
-						<!-- Checks if the member has chosen an avatar and displays it if so
-
-	http://ellislab.com/expressionengine/user-guide/modules/comment/entries.html#conditionals
-						-->
-						{if avatar}
-							<img src="{avatar_url}" width="{avatar_image_width}" height="{avatar_image_height}" alt="{author}\'s avatar" />
-						{/if}
-					</h5>
-					{comment}
-
-                    <div style="clear: both;"></div>
-				</li>
-			</ol>
-			{/exp:comment:preview}
-
-			<!-- Comment Submission Form:
-
-			http://ellislab.com/expressionengine/user-guide/ modules/comment/entries.html#submission_form
-
-			channel= parameter says which channel to submit this comment too.  This is very important to include if you use multiple channels that may have the same URL title.  It will stop the comment from being attached to the wrong entry.  channel= should always be included.
-			-->
-
-
-			{exp:comment:form channel="news"}
-			<h3 class="leavecomment">Leave a comment</h3>
-			<fieldset id="comment_fields">
-			<!-- Show inputs only if the member is logged out.  If logged in, this information is pulled from the member\'s account details -->
-			{if logged_out}
-				<label for="name">
-					<span>Name:</span>
-					<input type="text" id="name" name="name" value="{name}" size="50" />
-				</label>
-				<label for="email">
-					<span>Email:</span>
-					<input type="text" id="email" name="email" value="{email}" size="50" />
-				</label>
-				<label for="location">
-					<span>Location:</span>
-					 <input type="text" id="location" name="location" value="{location}" size="50" />
-				</label>
-				<label for="url">
-					<span>URL:</span>
-					<input type="text" id="url" name="url" value="{url}" size="50" />
-				</label>
-			{/if}
-				<!-- comment_guidelines is a User Defined Global Variable: http://ellislab.com/expressionengine/user-guide/templates/globals/user_defined.html -->
-				{comment_guidelines}
-				<label for="comment" class="comment">
-					<span>Comment:</span>
-					<textarea id="comment" name="comment" rows="10" cols="70">{comment}</textarea>
-				</label>
-			</fieldset>
-
-				<fieldset id="comment_action">
-				{if logged_out}
-				<label for="save_info">Remember my personal info? <input type="checkbox" name="save_info" value="yes" {save_info} /> </label>
-				{/if}
-				<label for="notify_me">Notify me of follow-up comments? <input type="checkbox" id="notify_me" name="notify_me" value="yes" {notify_me} /></label>
-
-				<!-- Insert CAPTCHA.  Will show for those that are not exempt from needing the CAPTCHA as set in the member group preferences
-
-				-->
-				{if captcha}
-				<div id="captcha_box">
-					<span>{captcha}</span>
-				</div>
-					<label for="captcha">Please enter the word you see in the image above:
-<input type="text" id="captcha" name="captcha" value="{captcha_word}" maxlength="20" />
-					</label>
-				{/if}
-				<input type="submit" name="preview" value="Preview Comment" />
-				<input type="submit" name="submit" value="Submit" id="submit_comment" />
-			</fieldset>
-			{/exp:comment:form}
-
-	</div> <!-- ending #news_comments -->
-	</div> <!-- ending #content_pri -->
-
-	<div id="content_sec" class="right green40">
-		<h3 class="oldernews">Browse Older News</h3>
-		<div id="news_archives">
-			<!-- The period before the template in this embed indicates a "hidden template".  Hidden templates can not be viewed directly but can only be viewed when embedded in another template: http://ellislab.com/expressionengine/user-guide/templates/hidden_templates.html -->
-			<div id="categories_box">
-			{news_categories}
-			</div>
-			<div id="month_box">
-			{news_month_archives}
-			</div>
-		</div> <!-- ending #news_archives -->
-
-		{news_calendar}
-
-		{news_popular}
-
-	{rss_links}
-
-	</div>	<!-- ending #content_sec -->
-
-{global_footer}
-{wrapper_close}
-{js}
-{html_close}', NULL, 1394136209, 1, 'n', 0, '', 'n', 'n', 'o', 0), (14, 1, 3, 'comments', 'n', 'webpage', '{!-- Explanations and learning materials can be found in news/index and the other news template groups.  In-line comments here are only for features not introduced in news/index.
-	 NOTE:  This is an ExpressionEngine Comment and it will not appear in the rendered source.
-			http://ellislab.com/expressionengine/user-guide/templates/commenting.html
---}
-{html_head}
-<!-- Below we use a channel entries tag to deliver a dynamic title element. -->
-	<title>{site_name}: Comments  on
-		{exp:channel:entries channel="news|about" limit="1" disable="categories|member_data|category_fields|pagination"}{title}{/exp:channel:entries}</title>
-{global_stylesheets}
-{rss}
-{favicon}
-{html_head_end}
-	<body>
-{nav_access}
-	{branding_begin}
-			{embed="global_embeds/.top_nav" loc="home"}
-			{global_top_search}
-			{global_top_member}
-	{branding_end}
-	{wrapper_begin}
-{embed="global_embeds/.page_header" header="News"}
-	<div id="feature">
-			{global_featured_welcome}
-			{global_featured_band}
-	    </div> <!-- ending #feature -->
-
-        	<div class="feature_end"></div>
-
-	<div id="content_pri"> <!-- This is where all primary content, left column gets entered -->
-		<!--  This is the channel entries tag.  Documentation for this parameter can be found at http://ellislab.com/expressionengine/user-guide/modules/channel/channel_entries.html
-				 Parameters are the items inside the opening exp:channel:entries tag that allow limiting, filtering, and sorting. They go in the format item="limiter".  ie: channel="news". Below are links to the parameters used in this particular instance of the channel entries tag.  These are documented here:
-
-				http://ellislab.com/expressionengine/user-guide/channels/weblog/parameters.html
-
-		channel= which channel to output, multiple channels may be piped in (channel_1|channel_2)
-		limit= limits the number of entries output in this instance of the tag
-		disable= turns off parsing of un-needed data
-		require_entry= forces ExpressionEngine to compare Segment 3 to existing URL titles.  If there is no match, then nothing is output.  Use this in combination with if no_results to force a redirect to 404. -->
-
-		{exp:channel:entries channel="news|about" limit="3" disable="categories|member_data|category_fields|pagination" require_entry="yes" status="open|featured"}
-
-		<!-- if no_results is a conditional variable, it can not be combined with advanced conditionals.  http://ellislab.com/expressionengine/user-guide/modules/channel/conditional_variables.html#cond_if_no_results
-
-		This is used here in combination with the require_entry parameter to ensure correct delivery of information or redirect to a 404 -->
-
-		{if no_results}{redirect="404"}{/if}
-		<!-- count is a single variable: http://ellislab.com/expressionengine/user-guide/modules/weblog/variables.html#var_count
-
-		In this case we\'ve combined the count single variable with a Conditional Global Variable:
-
-		http://ellislab.com/expressionengine/user-guide/templates/globals/conditionals.html
-
-		to create code that shows up only once, at the top of the list of outputted channel entries and only if there is 1 or more entries -->
-
-		{if count == "1"}
-		<h3 class="recentnews">Recent News</h3>
-		<ul id="news_listing">
-
-			<!-- Here we close the conditional after all of the conditional data is processed. -->
-
-		{/if}
-			<li>
-					<!-- comment_url_title_auto_path is a channel entries variable:
-
-					http://ellislab.com/expressionengine/user-guide/modules/channel/variables.html#var_comment_url_title_auto_path
-
-					This allows you to outpt a per-channel link to a single-entry page.  This can be used even if you are not using comments as a way to get a per-channel "permalink" page without writing your own conditional. -->
-
-				<h4><a href="{comment_url_title_auto_path}">{title}</a>  //  <!-- entry_date is a variable, and date formatting variables can be found at http://ellislab.com/expressionengine/user-guide/templates/date_variable_formatting.html -->{entry_date format="%F %d %Y"}</h4>
-
-				<!-- the following two lines are custom channel fields. http://ellislab.com/expressionengine/user-guide/cp/admin/channel_administration/custom_channel_fields.html -->
-
-				{if news_image}
-					<img src="{news_image}" alt="{title}" />
-				{/if}
-
-				<!-- Here we come a custom field variable with a global conditional to output the HTML only if he custom field is _not_ blank -->
-
-				{if about_image != ""}<img src="{about_image}" alt="{title}"  />{/if}
-				{news_body}
-				{about_body}
-				{news_extended}
-
-				<!-- Here we compare the channel short-name to a predefined word to output some information only if the entry occurs in a particular channel -->
-				{if channel_short_name == "news"}<p><a href="{comment_url_title_auto_path}#news_comments">{comment_total} comments</a> <!-- edit_this is a Snippet: http://ellislab.com/expressionengine/user-guide/templates/globals/snippets.html --> {global_edit_this} </p> {/if}
-			</li>
-		<!-- Comparing two channel entries variables to output data only at the end of the list of outputted channel entries -->
-		{if count == total_results}</ul>{/if}
-		<!-- Closing the Channel Entries tag -->
-		{/exp:channel:entries}
-
-			<div id="news_comments">
-			<!-- Comment Entries Tag outputs comments: http://ellislab.com/expressionengine/user-guide/ http://ellislab.com/expressionengine/user-guide/
-			Parameters found here: http://ellislab.com/expressionengine/user-guide/modules/comment/entries.html#parameters
-			sort= defines in what order to sort the comments
-			limit= how many comments to output
-			channel= what channels to show comments from
-			-->
-			{exp:comment:entries sort="asc" limit="20" channel="news"}
-			{if count == "1"}
-			<h3>Comments</h3>
-			<ol>{/if}
-				<li>
-					<h5 class="commentdata">
-						<!-- Comment Entries variable: http://ellislab.com/expressionengine/user-guide/modules/comment/entries.html#url_as_author
-						url_as_author outputs the URL if entered/in the member profile (if registered) or just the name if no URL-->
-						{url_as_author}
-						<!-- Comment date:
-						 http://ellislab.com/expressionengine/user-guide/modules/comment/entries.html#var_comment_date
-
-						Formatted with Date Variable Formatting:
-
-	http://ellislab.com/expressionengine/user-guide//templates/date_variable_formatting.html -->
-
-						<span>{comment_date format="%h:%i%a"}, {comment_date format=" %m/%d/%Y"}</span>
-						<!-- Checks if the member has chosen an avatar and displays it if so
-
-	http://ellislab.com/expressionengine/user-guide/modules/comment/entries.html#conditionals
-						-->
-						{if avatar}
-							<img src="{avatar_url}" width="{avatar_image_width}" height="{avatar_image_height}" alt="{author}\'s avatar" />
-						{/if}
-					</h5>
-					{comment}
-
-                    <div style="clear: both;"></div>
-				</li>
-			{if count == total_results}</ol>{/if}
-			{/exp:comment:entries}
-
-			<!-- Comment Submission Form:
-
-			http://ellislab.com/expressionengine/user-guide/ modules/comment/entries.html#submission_form
-
-			channel= parameter says which channel to submit this comment too.  This is very important to include if you use multiple channels that may have the same URL title.  It will stop the comment from being attached to the wrong entry.  channel= should always be included.
-
-			-->
-
-			{exp:comment:form channel="news" preview="news/comment_preview"}
-			<h3 class="leavecomment">Leave a comment</h3>
-			<fieldset id="comment_fields">
-			<!-- Show inputs only if the member is logged out.  If logged in, this information is pulled from the member\'s account details -->
-			{if logged_out}
-				<label for="name">
-					<span>Name:</span>
-					<input type="text" id="name" name="name" value="{name}" size="50" />
-				</label>
-				<label for="email">
-					<span>Email:</span>
-					<input type="text" id="email" name="email" value="{email}" size="50" />
-				</label>
-				<label for="location">
-					<span>Location:</span>
-					 <input type="text" id="location" name="location" value="{location}" size="50" />
-				</label>
-				<label for="url">
-					<span>URL:</span>
-					<input type="text" id="url" name="url" value="{url}" size="50" />
-				</label>
-			{/if}
-				<!-- comment_guidelines is a User Defined Global Variable: http://ellislab.com/expressionengine/user-guide/templates/globals/user_defined.html -->
-				{comment_guidelines}
-				<label for="comment" class="comment">
-					<span>Comment:</span>
-					<textarea id="comment" name="comment" rows="10" cols="70">{comment}</textarea>
-				</label>
-			</fieldset>
-
-				<fieldset id="comment_action">
-				{if logged_out}
-				<label for="save_info">Remember my personal info? <input type="checkbox" name="save_info" value="yes" {save_info} /> </label>
-				{/if}
-				<label for="notify_me">Notify me of follow-up comments? <input type="checkbox" id="notify_me" name="notify_me" value="yes" {notify_me} /></label>
-
-				<!-- Insert CAPTCHA.  Will show for those that are not exempt from needing the CAPTCHA as set in the member group preferences
-
-				-->
-				{if captcha}
-				<div id="captcha_box">
-					<span>{captcha}</span>
-				</div>
-					<label for="captcha">Please enter the word you see in the image above:
-<input type="text" id="captcha" name="captcha" value="{captcha_word}" maxlength="20" />
-					</label>
-				{/if}
-				<input type="submit" name="preview" value="Preview Comment" />
-				<input type="submit" name="submit" value="Submit" id="submit_comment" />
-			</fieldset>
-			{/exp:comment:form}
-
-	</div> <!-- ending #news_comments -->
-	</div> <!-- ending #content_pri -->
-
-	<div id="content_sec" class="right green40">
-		<h3 class="oldernews">Browse Older News</h3>
-		<div id="news_archives">
-			<!-- The period before the template in this embed indicates a "hidden template".  Hidden templates can not be viewed directly but can only be viewed when embedded in another template: http://ellislab.com/expressionengine/user-guide/templates/hidden_templates.html -->
-			<div id="categories_box">
-			{news_categories}
-			</div>
-			<div id="month_box">
-			{news_month_archives}
-			</div>
-		</div> <!-- ending #news_archives -->
-
-		{news_calendar}
-
-		{news_popular}
-
-	{rss_links}
-
-	</div>	<!-- ending #content_sec -->
-
-{global_footer}
-{wrapper_close}
-{js}
-{html_close}', NULL, 1394136209, 1, 'n', 0, '', 'n', 'n', 'o', 0), (15, 1, 3, 'rss', 'n', 'feed', '{exp:rss:feed channel="news"}
-
-<?xml version="1.0" encoding="{encoding}"?>
-<rss version="2.0"
-	xmlns:dc="http://purl.org/dc/elements/1.1/"
-	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
-	xmlns:admin="http://webns.net/mvcb/"
-	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-	xmlns:content="http://purl.org/rss/1.0/modules/content/">
-
-	<channel>
-
-	<title>{exp:xml_encode}{channel_name}{/exp:xml_encode}</title>
-	<link>{channel_url}</link>
-	<description>{channel_description}</description>
-	<dc:language>{channel_language}</dc:language>
-	<dc:creator>{email}</dc:creator>
-	<dc:rights>Copyright {gmt_date format="%Y"}</dc:rights>
-	<dc:date>{gmt_date format="%Y-%m-%dT%H:%i:%s%Q"}</dc:date>
-	<admin:generatorAgent rdf:resource="http://ellislab.com/" />
-
-{exp:channel:entries channel="news" limit="10" dynamic_start="on" disable="member_data"}
-	<item>
-	  <title>{exp:xml_encode}{title}{/exp:xml_encode}</title>
-	  <link>{comment_url_title_auto_path}</link>
-	  <guid>{comment_url_title_auto_path}#When:{gmt_entry_date format="%H:%i:%sZ"}</guid>
-	  <description><![CDATA[{news_body}]]></description>
-	  <dc:subject>{exp:xml_encode}{categories backspace="1"}{category_name}, {/categories}{/exp:xml_encode}</dc:subject>
-	  <dc:date>{gmt_entry_date format="%Y-%m-%dT%H:%i:%s%Q"}</dc:date>
-	</item>
-{/exp:channel:entries}
-
-	</channel>
-</rss>
-
-{/exp:rss:feed}						', NULL, 1394136209, 1, 'n', 0, '', 'n', 'n', 'o', 0), (16, 1, 4, 'index', 'n', 'webpage', '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{lang}" lang="{lang}">
-
-<head>
-<title>{site_name}{lang:search}</title>
-
-<meta http-equiv="content-type" content="text/html; charset={charset}" />
-
-<link rel=\'stylesheet\' type=\'text/css\' media=\'all\' href=\'{stylesheet=search/search_css}\' />
-<style type=\'text/css\' media=\'screen\'>@import "{stylesheet=search/search_css}";</style>
-
-</head>
-<body>
-
-<div id=\'pageheader\'>
-<div class="heading">{lang:search_engine}</div>
-</div>
-
-<div id="content">
-
-<div class=\'breadcrumb\'>
-<span class="defaultBold">&nbsp; <a href="{homepage}">{site_name}</a>&nbsp;&#8250;&nbsp;&nbsp;{lang:search}</span>
-</div>
-
-<div class=\'outerBorder\'>
-<div class=\'tablePad\'>
-
-{exp:search:advanced_form result_page="search/results" cat_style="nested"}
-
-<table cellpadding=\'4\' cellspacing=\'6\' border=\'0\' width=\'100%\'>
-<tr>
-<td width="50%">
-
-<fieldset class="fieldset">
-<legend>{lang:search_by_keyword}</legend>
-
-<input type="text" class="input" maxlength="100" size="40" name="keywords" style="width:100%;" />
-
-<div class="default">
-<select name="search_in">
-<option value="titles" selected="selected">{lang:search_in_titles}</option>
-<option value="entries">{lang:search_in_entries}</option>
-<option value="everywhere" >{lang:search_everywhere}</option>
-</select>
-
-</div>
-
-<div class="default">
-<select name="where">
-<option value="exact" selected="selected">{lang:exact_phrase_match}</option>
-<option value="any">{lang:search_any_words}</option>
-<option value="all" >{lang:search_all_words}</option>
-<option value="word" >{lang:search_exact_word}</option>
-</select>
-</div>
-
-</fieldset>
-
-<div class="default"><br /></div>
-
-<table cellpadding=\'0\' cellspacing=\'0\' border=\'0\'>
-<tr>
-<td valign="top">
-
-<div class="defaultBold">{lang:channels}</div>
-
-<select id="channel_id" name=\'channel_id[]\' class=\'multiselect\' size=\'12\' multiple=\'multiple\' onchange=\'changemenu(this.selectedIndex);\'>
-{channel_names}
-</select>
-
-</td>
-<td valign="top" width="16">&nbsp;</td>
-<td valign="top">
-
-<div class="defaultBold">{lang:categories}</div>
-
-<select name=\'cat_id[]\' size=\'12\'  class=\'multiselect\' multiple=\'multiple\'>
-<option value=\'all\' selected="selected">{lang:any_category}</option>
-</select>
-
-</td>
-</tr>
-</table>
-
-
-
-</td><td width="50%" valign="top">
-
-
-<fieldset class="fieldset">
-<legend>{lang:search_by_member_name}</legend>
-
-<input type="text" class="input" maxlength="100" size="40" name="member_name" style="width:100%;" />
-<div class="default"><input type="checkbox" class="checkbox" name="exact_match" value="y"  /> {lang:exact_name_match}</div>
-
-</fieldset>
-
-<div class="default"><br /></div>
-
-
-<fieldset class="fieldset">
-<legend>{lang:search_entries_from}</legend>
-
-<select name="date" style="width:150px">
-<option value="0" selected="selected">{lang:any_date}</option>
-<option value="1" >{lang:today_and}</option>
-<option value="7" >{lang:this_week_and}</option>
-<option value="30" >{lang:one_month_ago_and}</option>
-<option value="90" >{lang:three_months_ago_and}</option>
-<option value="180" >{lang:six_months_ago_and}</option>
-<option value="365" >{lang:one_year_ago_and}</option>
-</select>
-
-<div class="default">
-<input type=\'radio\' name=\'date_order\' value=\'newer\' class=\'radio\' checked="checked" />&nbsp;{lang:newer}
-<input type=\'radio\' name=\'date_order\' value=\'older\' class=\'radio\' />&nbsp;{lang:older}
-</div>
-
-</fieldset>
-
-<div class="default"><br /></div>
-
-<fieldset class="fieldset">
-<legend>{lang:sort_results_by}</legend>
-
-<select name="orderby">
-<option value="date" >{lang:date}</option>
-<option value="title" >{lang:title}</option>
-<option value="most_comments" >{lang:most_comments}</option>
-<option value="recent_comment" >{lang:recent_comment}</option>
-</select>
-
-<div class="default">
-<input type=\'radio\' name=\'sort_order\' class="radio" value=\'desc\' checked="checked" /> {lang:descending}
-<input type=\'radio\' name=\'sort_order\' class="radio" value=\'asc\' /> {lang:ascending}
-</div>
-</fieldset>
-
-</td>
-</tr>
-</table>
-
-
-<div class=\'searchSubmit\'>
-
-<input type=\'submit\' value=\'Search\' class=\'submit\' />
-
-</div>
-
-{/exp:search:advanced_form}
-
-<div class=\'copyright\'><a href="http://ellislab.com/">Powered by ExpressionEngine</a></div>
-
-
-</div>
-</div>
-</div>
-
-</body>
-</html>', NULL, 1394136209, 1, 'n', 0, '', 'n', 'n', 'o', 0), (17, 1, 4, 'no_results', 'n', 'webpage', '{!-- Explanations and learning materials can be found in news/index and the other news template groups.  In-line comments here are only for features not introduced in news/index. --}
-{html_head}
-	<title>{site_name}: No Search Results</title>
-{global_stylesheets}
-{rss}
-{favicon}
-{html_head_end}
-	<body>
-{nav_access}
-	{branding_begin}
-			{embed="global_embeds/.top_nav" loc="not_found"}
-			{global_top_search}
-			{global_top_member}
-	{branding_end}
-	{wrapper_begin}
-{embed="global_embeds/.page_header" header="Search Results"}
-
-
-	<div id="content_pri"> <!-- This is where all primary content, left column gets entered -->
-
-		<!-- No search results: http://ellislab.com/expressionengine/user-guide/modules/search/simple.html#par_no_result_page -->
-		<!-- This is delivered based on the no_result_page parameter of the search form  -->
-
-				<h3>Search Results</h3>
-
-				<!-- exp:search:keywords: http://ellislab.com/expressionengine/user-guide/modules/search/keywords.html -->
-				<!-- exp:search:keywords lets you echo out what search term was used -->
-					<p>Sorry, no results were found for "<strong>{exp:search:keywords}</strong>".  Please try again.</p>
-	</div>
-
-	<div id="content_sec" class="right green40">
-		<h3 class="oldernews">Browse Older News</h3>
-		<div id="news_archives">
-			<div id="categories_box">
-			{news_categories}
-			</div>
-			<div id="month_box">
-			{news_month_archives}
-			</div>
-		</div> <!-- ending #news_archives -->
-
-		{news_calendar}
-
-		{news_popular}
-
-	{rss_links}
-
-	</div>	<!-- ending #content_sec -->
-
-{global_footer}
-{wrapper_close}
-{js}
-{html_close}', NULL, 1394136209, 1, 'n', 0, '', 'n', 'n', 'o', 0), (18, 1, 4, 'results', 'n', 'webpage', '{!-- Explanations and learning materials can be found in news/index and the other news template groups.  In-line comments here are only for features not introduced in news/index. --}
-{html_head}
-	<title>{site_name}: {exp:search:search_results}
-		{if count == "1"}
-			Search Results for "{exp:search:keywords}"
-		{/if}
-		{/exp:search:search_results}
-	</title>
-{global_stylesheets}
-{rss}
-{favicon}
-{html_head_end}
-	<body>
-{nav_access}
-	{branding_begin}
-		{embed="global_embeds/.top_nav" loc="not_found"}
-		{global_top_search}
-		{global_top_member}
-	{branding_end}
-	{wrapper_begin}
-	{embed="global_embeds/.page_header" header="Search Results"}
-
-	<div id="content_pri"> <!-- This is where all primary content, left column gets entered -->
-
-		<!-- Search Results tag: http://ellislab.com/expressionengine/user-guide/modules/search/index.html#results -->
-
-		{exp:search:search_results}
-			{if count == "1"}
-				<!-- exp:search:keywords: http://ellislab.com/expressionengine/user-guide/modules/search/keywords.html -->
-				<!-- exp:search:keywords lets you echo out what search term was used -->
-
-				<h3>Search Results for "<strong>{exp:search:keywords}</strong>":</h3>
-				<ul id="news_listing">
-			{/if}
-
-			<li>
-				<h4>
-					<a href="{comment_url_title_auto_path}">{title}</a>  //
-					<!-- entry_date is a variable, and date formatting variables can be found at http://ellislab.com/expressionengine/user-guide/templates/date_variable_formatting.html -->
-					{entry_date format="%F %d %Y"}
-				</h4>
-
-				<!-- news_body and news_image are  custom channel fields. http://ellislab.com/expressionengine/user-guide/cp/admin/channel_administration/custom_channel_fields.html -->
-				{if news_image}
-					<img src="{news_image}" alt="{title}" />
-				{/if}
-				{news_body}
-			</li>
-			{if count == total_results}</ul>{/if}
-
-			{paginate}
-				<div class="pagination">
-					{pagination_links}
-						<ul>
-							{first_page}
-								<li><a href="{pagination_url}" class="page-first">First Page</a></li>
-							{/first_page}
-
-							{previous_page}
-								<li><a href="{pagination_url}" class="page-previous">Previous Page</a></li>
-							{/previous_page}
-
-							{page}
-								<li><a href="{pagination_url}" class="page-{pagination_page_number} {if current_page}active{/if}">{pagination_page_number}</a></li>
-							{/page}
-
-							{next_page}
-								<li><a href="{pagination_url}" class="page-next">Next Page</a></li>
-							{/next_page}
-
-							{last_page}
-								<li><a href="{pagination_url}" class="page-last">Last Page</a></li>
-							{/last_page}
-						</ul>
-					{/pagination_links}
-				</div> <!-- ending .pagination -->
-			{/paginate}
-		{/exp:search:search_results}
-	</div>
-
-	<div id="content_sec" class="right green40">
-		<h3 class="oldernews">Browse Older News</h3>
-		<div id="news_archives">
-			<div id="categories_box">
-			{news_categories}
-			</div>
-			<div id="month_box">
-			{news_month_archives}
-			</div>
-		</div> <!-- ending #news_archives -->
-
-		{news_calendar}
-
-		{news_popular}
-
-	{rss_links}
-
-	</div>	<!-- ending #content_sec -->
-
-{global_footer}
-{wrapper_close}
-{js}
-{html_close}', NULL, 1394136209, 1, 'n', 0, '', 'n', 'n', 'o', 0);
-
-
-
-
-
-
-INSERT INTO `exp_upload_prefs` (`id`, `site_id`, `name`, `server_path`, `url`, `allowed_types`, `max_size`, `max_height`, `max_width`, `properties`, `pre_format`, `post_format`, `file_properties`, `file_pre_format`, `file_post_format`, `cat_group`, `batch_location`) VALUES (1, 1, 'Main Upload Directory', '/private/var/www/expressionengine-test/images/uploads/', 'http://ee2.test/images/uploads/', 'all', NULL, NULL, NULL, 'style="border: 0;" alt="image"', NULL, NULL, NULL, NULL, NULL, NULL, NULL), (2, 1, 'About', '/private/var/www/expressionengine-test/themes/site_themes/agile_records/images/uploads/', 'http://ee2.test/themes/site_themes/agile_records/images/uploads/', 'img', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-
-
-
-
-SET FOREIGN_KEY_CHECKS = 1;
+SET FOREIGN_KEY_CHECKS = @PREVIOUS_FOREIGN_KEY_CHECKS;
 
 

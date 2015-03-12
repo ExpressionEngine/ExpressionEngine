@@ -4,6 +4,7 @@
 .cm-s-default {
 	font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
 	line-height: 1.5;
+	font-size: 11px;
 }
 
 /* remove brown comments */

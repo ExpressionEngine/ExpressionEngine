@@ -22,6 +22,7 @@ system/tests/phpunit/vendor/
 system/tests/phpunit/composer.lock
 system/tests/rspec/config.local.rb
 system/tests/rspec/screenshots/*
+system/tests/rspec/support/file-sync/uploads/*
 
 images/test1/
 images/design/
@@ -73,7 +74,7 @@ system/codeigniter/system/language/*
 system/language/*
 !system/language/index.html
 system/expressionengine/language/*
-!system/expressionengine/language/english/*
+!system/expressionengine/language/english
 
 ^images/(captchas|avatars/uploads|forum_attachments|member_photos|signature_attachments|pm_attachments|uploads)/(?!index\.html)
 

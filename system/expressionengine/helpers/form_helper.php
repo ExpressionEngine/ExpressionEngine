@@ -47,7 +47,7 @@ if (REQ == 'CP')
 
 		if (strpos($action, '://') === FALSE && strpos($action, BASE) !== 0)
 		{
-			$action = BASE.AMP.$action;
+			//$action = BASE.AMP.$action;
 		}
 
 		$action = ee()->uri->reformat($action);
@@ -235,6 +235,43 @@ function form_preference($name, $details)
 			break;
 	}
 	return $pref;
+}
+
+// ------------------------------------------------------------------------
+
+/**
+ * Outputs a standard CP form submit button in the current state of the
+ * form validation result. If there are errors, this button will be in a
+ * disabled state on load. Button text will be "Fix Errors, Please" if
+ * there are errors, otherwise the value of $value will be used.
+ *
+ * @param	string	$value		Standard text for the button
+ * @param	string	$work_text	Text to display when form is submitting
+ * @param   string  $name       The value of a name="" attribute
+ * @return	string	Button HTML
+ */
+function cp_form_submit($value, $work_text, $name = NULL)
+{
+	$class = 'btn';
+	$disable = '';
+	$btn_text = lang($value);
+	$validation_errors = validation_errors();
+
+	// Disabled state
+	if ( ! empty($validation_errors))
+	{
+		$class .= ' disable';
+		$disable = ' disabled="disabled"';
+		$btn_text = lang('btn_fix_errors');
+	}
+
+	if ($name)
+	{
+		$name = ' name="' . $name . '"';
+	}
+
+	return '<input class="'.$class.'" type="submit"' . $name . ' value="'.$btn_text.'" data-submit-text="'.lang($value).'" data-work-text="'.lang($work_text).'"'.$disable.'>';
+
 }
 
 // ------------------------------------------------------------------------
@@ -786,6 +823,10 @@ if ( ! function_exists('form_prep'))
 
 			return $str;
 		}
+		elseif (is_bool($str))
+		{
+			$str = ($str) ? 'y' : 'n';
+		}
 
 		if ($str === '')
 		{
@@ -964,40 +1005,7 @@ if ( ! function_exists('set_radio'))
 {
 	function set_radio($field = '', $value = '', $default = FALSE)
 	{
-		$OBJ =& _get_validation_object();
-
-		if ($OBJ === FALSE)
-		{
-			if ( ! isset($_POST[$field]))
-			{
-				if (count($_POST) === 0 AND $default == TRUE)
-				{
-					return ' checked="checked"';
-				}
-				return '';
-			}
-
-			$field = $_POST[$field];
-
-			if (is_array($field))
-			{
-				if ( ! in_array($value, $field))
-				{
-					return '';
-				}
-			}
-			else
-			{
-				if (($field == '' OR $value == '') OR ($field != $value))
-				{
-					return '';
-				}
-			}
-
-			return ' checked="checked"';
-		}
-
-		return $OBJ->set_radio($field, $value, $default);
+		return set_checkbox($field, $value, $default);
 	}
 }
 
@@ -1025,6 +1033,42 @@ if ( ! function_exists('form_error'))
 		}
 
 		return $OBJ->error($field, $prefix, $suffix);
+	}
+}
+
+// ------------------------------------------------------------------------
+
+/**
+ * Form Error Class
+ *
+ * If an error exists for a particular field, returns a bit of text to be
+ * used as a class name for specific styling
+ *
+ * @access	public
+ * @param	array	$field	Array of field names, or string of single field name
+ * @param	string	$class	Class name to return, defaults to 'invalid'
+ * @return	string	Empty string if no error, class name if error
+ */
+if ( ! function_exists('form_error_class'))
+{
+	function form_error_class($fields = '', $class = 'invalid')
+	{
+		if ( ! is_array($fields))
+		{
+			$fields = array($fields);
+		}
+
+		foreach ($fields as $field)
+		{
+			$error = form_error($field);
+
+			if ( ! empty($error))
+			{
+				return $class;
+			}
+		}
+
+		return '';
 	}
 }
 

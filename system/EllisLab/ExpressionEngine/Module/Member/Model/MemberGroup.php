@@ -16,6 +16,13 @@ class MemberGroup extends Model {
 		'Members' => array(
 			'type' => 'hasMany',
 			'model' => 'Member'
+		),
+		'AssignedChannels' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'Channel',
+			'pivot' => array(
+				'table' => 'channel_member_groups'
+			)
 		)
 	);
 
@@ -37,7 +44,6 @@ class MemberGroup extends Model {
 	protected $can_access_addons;
 	protected $can_access_modules;
 	protected $can_access_extensions;
-	protected $can_access_accessories;
 	protected $can_access_plugins;
 	protected $can_access_members;
 	protected $can_access_admin;
@@ -74,7 +80,6 @@ class MemberGroup extends Model {
 	protected $can_send_email;
 	protected $can_send_cached_email;
 	protected $can_email_member_groups;
-	protected $can_email_mailinglist;
 	protected $can_email_from_profile;
 	protected $can_view_profiles;
 	protected $can_edit_html_buttons;
@@ -91,6 +96,5 @@ class MemberGroup extends Model {
 	protected $can_send_bulletins;
 	protected $include_in_authorlist;
 	protected $include_in_memberlist;
-	protected $include_in_mailinglists;
 
 }

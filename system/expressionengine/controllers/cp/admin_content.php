@@ -149,7 +149,7 @@ class Admin_content extends CP_Controller {
 		}
 
 		$vars['cat_group_options'][''] = lang('none');
-		$category_groups = ee()->api->get('CategoryGroup')
+		$category_groups = ee('Model')->get('CategoryGroup')
 			->filter('site_id', $this->config->item('site_id'))
 			->order('group_name')
 			->all();
@@ -162,7 +162,7 @@ class Admin_content extends CP_Controller {
 		}
 
 		$vars['status_group_options'][''] = lang('none');
-		$status_groups = ee()->api->get('StatusGroup')
+		$status_groups = ee('Model')->get('StatusGroup')
 			->filter('site_id', $this->config->item('site_id'))
 			->order('group_name')
 			->all();
@@ -175,7 +175,7 @@ class Admin_content extends CP_Controller {
 		}
 
 		$vars['field_group_options'][''] = lang('none');
-		$field_groups = ee()->api->get('ChannelFieldGroup')
+		$field_groups = ee('Model')->get('ChannelFieldGroup')
 			->filter('site_id', $this->config->item('site_id'))
 			->order('group_name')
 			->all();
@@ -190,7 +190,7 @@ class Admin_content extends CP_Controller {
 		// New themes may contain more than one group, thus naming collisions will happen
 		// unless this is revamped.
 		$vars['themes'] = array();
-		$query = ee()->api->get('TemplateGroup')
+		$query = ee('Model')->get('TemplateGroup')
 			->with('Site')
 			->order('TemplateGroup.group_name');
 		if ($this->config->item('multiple_sites_enabled') !== 'y')
@@ -246,13 +246,13 @@ class Admin_content extends CP_Controller {
 			return $this->channel_update();
 		}
 
-		$channel = ee()->api->get('Channel')->filter('channel_id', $channel_id)->first();
+		$channel = ee('Model')->get('Channel')->filter('channel_id', $channel_id)->first();
 		$vars['channel'] = $channel;
 
 		$vars['form_hidden']['channel_id'] = $channel_id;
 
 		// live_look_template
-		$templates = ee()->api->get('Template')
+		$templates = ee('Model')->get('Template')
 			->with('TemplateGroup')
 			->all();
 
@@ -267,7 +267,7 @@ class Admin_content extends CP_Controller {
 		}
 
 		// Default status menu
-		$statuses = ee()->api->get('Status')
+		$statuses = ee('Model')->get('Status')
 			->with('StatusGroup')
 			->filter('Status.group_id', $channel->status_group)
 			->all();
@@ -297,7 +297,7 @@ class Admin_content extends CP_Controller {
 		// Needz moar felineness!
 		if (count($category_group_ids))
 		{
-			$categories = ee()->api->get('Category')
+			$categories = ee('Model')->get('Category')
 				->with('CategoryGroup')
 				->filter('CategoryGroup.group_id', 'in', $category_group_ids)
 				->order('CategoryGroup.group_name')
@@ -314,7 +314,7 @@ class Admin_content extends CP_Controller {
 			}
 		}
 
-		$channel_fields = ee()->api->get('ChannelFieldStructure')
+		$channel_fields = ee('Model')->get('ChannelFieldStructure')
 			->filter('ChannelFieldStructure.group_id', $channel->field_group)
 			->all();
 
@@ -517,7 +517,7 @@ class Admin_content extends CP_Controller {
 			$_POST['default_entry_title'] = '';
 			$_POST['url_title_prefix'] = '';
 
-			$channel = ee()->api->make('Channel', $_POST);
+			$channel = ee('Model')->make('Channel', $_POST);
 			$channel->channel_url = $this->functions->fetch_site_index();
 			$channel->channel_lang = $this->config->item('xml_lang');
 			$channel->site_id = $this->config->item('site_id');
@@ -526,7 +526,7 @@ class Admin_content extends CP_Controller {
 			if ($dupe_id != ''
 				&& ( $channel->field_group === NULL || ! is_numeric($channel->field_group)))
 			{
-				$field_groups = ee()->api->get('ChannelFieldGroup')
+				$field_groups = ee('Model')->get('ChannelFieldGroup')
 					->filter('site_id', $channel->site_id)
 					->all();
 
@@ -594,7 +594,7 @@ class Admin_content extends CP_Controller {
 			$this->layout->sync_layout($_POST, $_POST['channel_id']);
 
 
-			$channel = ee()->api->make('Channel', $_POST);
+			$channel = ee('Model')->make('Channel', $_POST);
 			$channel->save();
 
 			$success_msg = lang('channel_updated');

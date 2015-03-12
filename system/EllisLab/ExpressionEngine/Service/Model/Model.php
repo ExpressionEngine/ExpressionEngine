@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Service\Model;
 
 use BadMethodCallException;
+use Closure;
 use OverflowException;
 
 use EllisLab\ExpressionEngine\Library\Data\Entity;
@@ -135,9 +136,12 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	/**
 	 * Set the primary key value
 	 *
+	 * This will not trigger a dirty state. Primary keys should be
+	 * considered immutable!
+	 *
 	 * @return $this
 	 */
-	protected function setId($id)
+	public function setId($id)
 	{
 		$pk = $this->getPrimaryKey();
 		$this->$pk = $id;
@@ -157,7 +161,7 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 		$this->emit('beforeGet', $name);
 
 		$value = parent::getProperty($name);
-		$value = $this->typedColumnGetter($name, $value);
+		$value = $this->filter('get', $value, array($name));
 
 		$this->emit('afterGet', $name);
 
@@ -175,7 +179,7 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	{
 		$this->emit('beforeSet', $name, $value);
 
-		$value = $this->typedColumnSetter($name, $value);
+		$value = $this->filter('set', $value, array($name));
 
 		parent::setProperty($name, $value);
 
@@ -275,20 +279,16 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	 */
 	public function save()
 	{
-		$qb = $this->newQuery();
+		$qb = $this->newSelfReferentialQuery();
+
+		$this->saveCompositeColumns();
 
 		if ($this->isNew())
 		{
-			// insert
-			$qb->set($this->getValues());
-
-			$new_id = $qb->insert();
-			$this->setId($new_id);
+			$qb->insert();
 		}
 		else
 		{
-			// update
-			$this->saveCompositeColumns();
 			$this->constrainQueryToSelf($qb);
 			$qb->update();
 		}
@@ -319,7 +319,7 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 			return $this;
 		}
 
-		$qb = $this->newQuery();
+		$qb = $this->newSelfReferentialQuery();
 
 		$this->constrainQueryToSelf($qb);
 		$qb->delete();
@@ -411,7 +411,7 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	 */
 	public function subscribe(EventSubscriber $subscriber)
 	{
-		return $this->getMixin('event')->subscribe($subscriber);
+		return $this->getMixin('Event')->subscribe($subscriber);
 	}
 
 	/**
@@ -421,7 +421,7 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	 */
 	public function unsubscribe(EventSubscriber $subscriber)
 	{
-		return $this->getMixin('event')->unsubscribe($subscriber);
+		return $this->getMixin('Event')->unsubscribe($subscriber);
 	}
 
 	/**
@@ -457,11 +457,11 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	}
 
 	/**
-	 * Create a new query
+	 * Create a new query tied to this object
 	 *
 	 * @return QueryBuilder new query
 	 */
-	protected function newQuery()
+	protected function newSelfReferentialQuery()
 	{
 		return $this->_frontend->get($this);
 	}

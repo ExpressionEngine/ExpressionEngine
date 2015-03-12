@@ -2,9 +2,15 @@
 
 namespace EllisLab\ExpressionEngine\Library\Data;
 
+use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Library\Mixin\MixableImpl;
 
 abstract class Entity extends MixableImpl {
+
+	/**
+	 * @var Array Filter storage
+	 */
+	protected $_filters = array();
 
 	/**
 	 * Constructor
@@ -43,7 +49,7 @@ abstract class Entity extends MixableImpl {
 	}
 
 	/**
-	 * Access any static metadata you might need. THis automatically
+	 * Access any static metadata you might need. This automatically
 	 * merges metadata for extended classes.
 	 *
 	 * @param String $key Name of the static property
@@ -87,13 +93,24 @@ abstract class Entity extends MixableImpl {
 		$values = array();
 
 		$class = get_called_class();
+		$child = NULL;
 
 		do
 		{
 			if (property_exists($class, $key))
 			{
 				$values[$class] = $class::$$key;
+
+				// If the child result is the same as the parent, then
+				// we read a fallback from the child and don't actually
+				// want to store that. Yick.
+				if (isset($child) && $values[$child] == $values[$class])
+				{
+					unset($values[$child]);
+				}
 			}
+
+			$child = $class;
 		}
 		while ($class = get_parent_class($class));
 
@@ -110,6 +127,53 @@ abstract class Entity extends MixableImpl {
 	}
 
 	/**
+	 * Add a filter
+	 *
+	 * @param String $type Filter type
+	 * @param Callable $callback Filter callback
+	 */
+	public function addFilter($type, /*Callable */ $callback)
+	{
+		if ( ! array_key_exists($type, $this->_filters))
+		{
+			$this->_filters[$type] = array();
+		}
+
+		$this->_filters[$type][] = $callback;
+	}
+
+	/**
+	 * Get all known filters of a given type
+	 *
+	 * @param String $type Filter type
+	 * @return Array of callables
+	 */
+	protected function getFilters($type)
+	{
+		return $this->_filters[$type];
+	}
+
+	/**
+	 * Apply known filters to a given value
+	 *
+	 * @param String $type Filter type
+	 * @param String $type Filter type
+	 * @param Array $args List of arguments
+	 * @return Filtered value
+	 */
+	protected function filter($type, $value, $args = array())
+	{
+		array_unshift($args, $value);
+
+		foreach ($this->getFilters($type) as $filter)
+		{
+			$args[0] = call_user_func_array($filter, $args);
+		}
+
+		return $args[0];
+	}
+
+	/**
 	 * Batch update properties
 	 *
 	 * Safely updates any properties that might exist,
@@ -118,7 +182,7 @@ abstract class Entity extends MixableImpl {
 	 * @param array $data Data to update
 	 * @return $this
 	 */
-	public function update(array $data = array())
+	public function set(array $data = array())
 	{
 		foreach ($data as $k => $v)
 		{
@@ -241,7 +305,15 @@ abstract class Entity extends MixableImpl {
 	 *
 	 * @return array field names
 	 */
-	public static function getFields()
+	public function getFields()
+	{
+		return static::getClassFields();
+	}
+
+	/**
+	 * Get a static list of fields.
+	 */
+	public static function getClassFields()
 	{
 		$vars = get_class_vars(get_called_class());
 		$fields = array();

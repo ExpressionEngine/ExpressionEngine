@@ -4,8 +4,11 @@ module Login
 	extend RSpec::Expectations
 	extend RSpec::Matchers
 
+	attr_accessor :button
+
 	def self.visit
 		go_to '/system'
+		@button = page.find('input.btn');
 	end
 
 	def self.login(username = 'admin', password = 'password')
@@ -14,7 +17,11 @@ module Login
 		fill_in 'username', with: username
 		fill_in 'password', with: password
 
-		click_button 'Login'
+		@button.click
+	end
+
+	def self.button
+		@button
 	end
 
 end

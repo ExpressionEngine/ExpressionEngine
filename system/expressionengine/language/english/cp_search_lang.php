@@ -66,10 +66,10 @@ $lang = array(
 'cont_field_group_management' =>
 'Field Group Management',
 
-'members_member_group_manager' => 
+'members_member_group_manager' =>
 'Member Group Management',
 
-'cont_category_management' => 
+'cont_category_management' =>
 'Category Management',
 
 'members_custom_profile_fields' =>
@@ -100,19 +100,14 @@ $lang = array(
 'Translation Utility',
 
 // Plugins
-'plug_index'	=> 
+'plug_index'	=>
 'Plugins',
 
-'modu_index'	=> 
+'modu_index'	=>
 'Modules',
 
-'exte_index'	=> 
+'exte_index'	=>
 'Extensions',
-
-'acce_index' =>
-'Accessories',
-
-
 
 
 ''=>''

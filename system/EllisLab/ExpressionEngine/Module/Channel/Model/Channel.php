@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
+use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Service\Model\Model as Model;
 use EllisLab\ExpressionEngine\Service\Model\Interfaces\Content\ContentStructure
 	as ContentStructure;
@@ -10,20 +11,91 @@ use EllisLab\ExpressionEngine\Service\Model\Interfaces\Content\ContentStructure
 class Channel extends Model implements ContentStructure {
 
 	protected static $_primary_key = 'channel_id';
-	protected static $_gateway_names = array('ChannelGateway');
+	protected static $_table_name = 'channels';
+
+	protected static $_typed_columns = array(
+		'deft_comments'              => 'boolString',
+		'channel_require_membership' => 'boolString',
+		'channel_allow_img_urls'     => 'boolString',
+		'channel_auto_link_urls'     => 'boolString',
+		'channel_notify'             => 'boolString',
+		'comment_system_enabled'     => 'boolString',
+		'comment_require_membership' => 'boolString',
+		'comment_use_captcha'        => 'boolString',
+		'comment_moderate'           => 'boolString',
+		'comment_require_email'      => 'boolString',
+		'comment_allow_img_urls'     => 'boolString',
+		'comment_auto_link_urls'     => 'boolString',
+		'comment_notify'             => 'boolString',
+		'comment_notify_authors'     => 'boolString',
+		'show_button_cluster'        => 'boolString',
+		'enable_versioning'          => 'boolString',
+	);
 
 	protected static $_relationships = array(
-		'ChannelFieldGroup' => array(
+		'FieldGroup' => array(
 			'type' => 'belongsTo',
-			'key' => 'field_group'
+			'model' => 'ChannelFieldGroup',
+			'from_key' => 'field_group',
+			'to_key' => 'group_id'
 		),
-		'ChannelEntries'	=> array(
+		'StatusGroup' => array(
+			'type' => 'belongsTo',
+			'model' => 'StatusGroup',
+			'from_key' => 'status_group',
+			'to_key' => 'group_id'
+		),
+		'CustomFields' => array(
 			'type' => 'hasMany',
+			'model' => 'ChannelFieldStructure',
+			'from_key' => 'field_group',
+			'to_key' => 'group_id'
+		),
+		'Entries' => array(
+			'type' => 'hasMany',
+			'model' => 'ChannelEntries',
 			'model' => 'ChannelEntry'
 		),
 		'ChannelFormSettings' => array(
 			'type' => 'hasOne'
+		),
+		'LiveLookTemplate' => array(
+			'type' => 'hasOne',
+			'model' => 'Template',
+			'from_key' => 'live_look_template',
+			'to_key' => 'template_id'
+		),
+		'AssignedMemberGroups' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'MemberGroup',
+			'pivot' => array(
+				'table' => 'channel_member_groups'
+			)
+		),
+		'ChannelLayouts' => array(
+			'type' => 'hasMany',
+			'model' => 'ChannelLayout'
 		)
+	);
+
+	protected static $_validation_rules = array(
+		'site_id'                    => 'required|isNatural',
+		'deft_comments'              => 'enum[y,n]',
+		'channel_require_membership' => 'enum[y,n]',
+		'channel_allow_img_urls'     => 'enum[y,n]',
+		'channel_auto_link_urls'     => 'enum[y,n]',
+		'channel_notify'             => 'enum[y,n]',
+		'comment_system_enabled'     => 'enum[y,n]',
+		'comment_require_membership' => 'enum[y,n]',
+		'comment_use_captcha'        => 'enum[y,n]',
+		'comment_moderate'           => 'enum[y,n]',
+		'comment_require_email'      => 'enum[y,n]',
+		'comment_allow_img_urls'     => 'enum[y,n]',
+		'comment_auto_link_urls'     => 'enum[y,n]',
+		'comment_notify'             => 'enum[y,n]',
+		'comment_notify_authors'     => 'enum[y,n]',
+		'show_button_cluster'        => 'enum[y,n]',
+		'enable_versioning'          => 'enum[y,n]',
 	);
 
 	// Properties
@@ -83,18 +155,27 @@ class Channel extends Model implements ContentStructure {
 	protected $url_title_prefix;
 	protected $live_look_template;
 
+
 	/**
 	 * Display the CP entry form
 	 *
 	 * @param Content $content  An object implementing the Content interface
 	 * @return Array of HTML field elements for the entry / edit form
 	 */
-	public function getPublishForm($content)
+	public function getPublishForm($content = NULL)
 	{
-		$form_elements = array();
-		// populate from custom fields
+		if ( ! isset($content))
+		{
+			$content = $this->getFrontend()->make('ChannelEntry');
+			$content->setChannel($this);
+		}
+		elseif ($content->getChannel()->channel_id != $this->channel_id)
+		{
+			// todo
+			exit('Given channel entry does not belong to this channel.');
+		}
 
-		return $form_elements;
+		return $content->getForm();
 	}
 
 	/**
@@ -113,15 +194,13 @@ class Channel extends Model implements ContentStructure {
 				continue;
 			}
 
-
-
 			switch ($property)
 			{
 				// category, field, and status fields should only be duped
 				// if both channels are assigned to the same group of each
 				case 'cat_group':
 					// allow to implicitly set category group to "None"
-					if ( ! isset($this->{$property}))
+					if (empty($this->{$property}))
 					{
 						$this->{$property} = $channel->{$property};
 					}
@@ -162,28 +241,4 @@ class Channel extends Model implements ContentStructure {
 			}
 		}
 	}
-
-	public function testPrint($depth='')
-	{
-		if ($depth == "\t\t\t")
-		{
-			return;
-		}
-		$primary_key = static::getMetaData('primary_key');
-		$model_name = substr(get_class($this), strrpos(get_class($this), '\\')+1);
-		echo $depth . '=====' . $model_name . ': ' . '(' . $this->{$primary_key} . ') ' . $this->channel_title . ' OBJ(' . spl_object_hash($this) .')' . "=====\n";
-		foreach($this->_related_models as $relationship_name=>$models)
-		{
-			echo $depth . '----Relationship: ' . $relationship_name . "----\n";
-			foreach($models as $model)
-			{
-				$model->testPrint($depth . "\t");
-			}
-			echo $depth . '---- END Relationship: ' . $relationship_name . "----\n";
-		}
-		echo $depth . '===== END ' . $model_name . ': ' . '(' . $this->{$primary_key} . ') ' . $this->channel_title . "=====\n";
-		echo "\n";
-
-	}
-
 }

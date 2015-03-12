@@ -2,6 +2,203 @@
 
 $lang = array(
 
+// 3.0
+
+'file'  => 'File',
+'files' => 'Files',
+'pixels' => 'pixels',
+
+'file_manager' =>
+'File Manager',
+
+'upload_directory' =>
+'Upload Directory',
+
+'upload_directories' =>
+'Upload Directories',
+
+'all_files' =>
+'All Files',
+
+'show' =>
+'show',
+
+'custom_limit' =>
+'custom limit',
+
+'show_all_files' =>
+'All %d files',
+
+'upload_new_file' =>
+'Upload New File',
+
+'title_or_name' =>
+'Title/Name',
+
+'file_type' =>
+'File Type',
+
+'date_added' =>
+'Date Added',
+
+'download' =>
+'Download',
+
+'edit_file_metadata' =>
+'Edit "%s" Meta Data',
+
+'title' => 'Title',
+'title_desc' => 'Title of this file.',
+
+'description' => 'Description',
+'description_desc' => 'Description of this file.',
+
+'credit' => 'Credit',
+'credit_desc' => 'Who created this file?',
+
+'location' => 'Location',
+'location_desc' => 'Where is this file from?',
+
+'btn_edit_file_meta' =>
+'Edit File Meta',
+
+'edit_file_metadata_success' =>
+'File Meta Data Updated',
+
+'edit_file_metadata_success_desc' =>
+'The meta data for the file <b>%s</b> has been updated.',
+
+'edit_file_metadata_error' =>
+'Cannot Update File Meta Data',
+
+'edit_file_metadata_error_desc' =>
+'We were unable to update the meta data, please review and fix errors below.',
+
+'no_file' =>
+'No file selected',
+
+'no_upload_destination' =>
+'No upload destination found',
+
+'files_in_directory' =>
+'Files in <b>%s</b>',
+
+'no_uploaded_files' =>
+'No files have been uploaded to this directory.',
+
+'export_all' =>
+'Export All Files',
+
+'error_export' =>
+'Cannot Export',
+
+'error_cannot_create_zip' =>
+'Cannot create a .zip file',
+
+'error_cannot_add_file_to_zip' =>
+'We were unable to add <b>%s</b> to the zip archive.',
+
+'size_b'  => ' bytes',
+'size_kb' => '<abbr title="Kilobyte">kb</abbr>',
+'size_mb' => '<abbr title="Metgabyte">mb</abbr>',
+'size_gb' => '<abbr title="Gigabyte">gb</abbr>',
+'size_tb' => '<abbr title="Terabyte">tb</abbr>',
+
+'success' =>
+'Success',
+
+'files_removed_desc' =>
+'The following files were removed',
+
+'btn_upload_file' =>
+'Upload File',
+
+'upload_directory_removed' =>
+'Upload directory removed',
+
+'upload_directory_removed_desc' =>
+'The upload directory <b>%s</b> has been removed.',
+
+'file_desc' =>
+'Choose a file to upload.',
+
+'upload_filedata_success' =>
+'File Upload Success',
+
+'upload_filedata_success_desc' =>
+'The file <b>%s</b> was uploaded successfully.',
+
+'edit_file_name' =>
+'Edit "%s"',
+
+'crop_file' =>
+'Crop, Rotate &amp; Resize "%s"',
+
+'btn_crop' =>
+'Crop, Rotate &amp; Resize',
+
+'constraints' =>
+'Constraints',
+
+'crop_constraints_desc' =>
+'Maximum width and height to crop this image down to.',
+
+'resize_constraints_desc' =>
+'Maximum width and height to resize this image to.',
+
+'width' => 'width',
+'height' => 'height',
+
+'coordinates' =>
+'Coordinates',
+
+'coordiantes_desc' =>
+'x (horizontal) and y (vertical) axis coordinates to start the crop from.',
+
+'x_axis' => 'x-axis',
+'y_axis' => 'y-axis',
+
+'rotation' =>
+'Rotation',
+
+'rotation_desc' =>
+'Image will be rotated to match choice.',
+
+'90_degrees_right' => '90 degrees, right',
+'90_degrees_left' => '90 degrees, left',
+'flip_vertically' => 'Flip, vertically',
+'flip_horizontally' => 'Flip, horizontally',
+
+'btn_crop_and_save_image' =>
+'Crop &amp; Save Image',
+
+'btn_rotate_and_save_image' =>
+'Rotate &amp; Save Image',
+
+'btn_resize_and_save_image' =>
+'Resize &amp; Save Image',
+
+'crop' => 'Crop',
+'cropped' => 'cropped',
+'rotate' => 'Rotate',
+'rotated' => 'rotated',
+'resize' => 'Resize',
+'resized' => 'resized',
+
+'crop_file_success' =>
+'File %s Success',
+
+'crop_file_success_desc' =>
+'The file <b>%s</b> was %s successfully.',
+
+'crop_file_error' =>
+'Cannot %s File',
+
+'crop_file_error_desc' =>
+'We were unable to %s the file, please review and fix errors below.',
+
+// 2.x
+
 'content_files' 		=> 'File Manager',
 
 'upload_dir_choose'		=> 'Choose an upload directory',
@@ -18,7 +215,6 @@ $lang = array(
 'confirm_del_files'		=> 'Are you sure you wish to permanently delete these files?',
 'delete_success'		=> 'Delete Successful',
 'delete_fail'			=> 'There was a problem deleting one or more file(s). Please review the file list below.',
-'no_file'				=> 'No file selected',
 'file_name'				=> 'File Name',
 'file_size'				=> 'File Size',
 'file_size_unit'		=> 'KB',
@@ -31,7 +227,6 @@ $lang = array(
 'upload_rename'			=> 'File Already Exists',
 'upload_rename_message'	=> 'A file with that filename already exists. You can either choose a new name and the file will be renamed, or you can use the same name and the existing file will be overwritten.',
 'no_upload_dirs'		=> 'You have no upload directories defined',
-'no_uploaded_files'		=> 'You have no files uploaded to this directory. Please take a look at <a href="%s" rel="external" target="_blank">the documentation</a>, and then <a href="%s">sync your directories</a>.',
 'image_editor'			=> 'Image Editor',
 'download_selected'		=> 'Download Selected Files',
 'email_files'			=> 'Email Selected Files',
@@ -442,9 +637,6 @@ $lang = array(
 
 'credit' =>
 'Credit',
-
-'upload_directory' =>
-'Upload Directory:',
 
 ''=>''
 );

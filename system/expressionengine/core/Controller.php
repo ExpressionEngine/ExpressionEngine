@@ -38,6 +38,7 @@ class Controller {
 	public function __construct()
 	{
 		log_message('debug', "Controller Class Initialized");
+		ee()->set('__legacy_controller', $this);
 	}
 
 	/**

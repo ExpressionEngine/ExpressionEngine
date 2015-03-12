@@ -153,9 +153,13 @@ class Relationship implements Mixin {
 	 */
 	public function setAssociation($name, Association $association)
 	{
+		$this->scope->emit('beforeSetAssociation', $name, $association);
+
 		$association->setFrontend($this->scope->getFrontend());
 
 		$this->associations[$name] = $association;
+
+		$this->scope->emit('afterSetAssociation', $name, $association);
 
 		return $this->scope;
 	}

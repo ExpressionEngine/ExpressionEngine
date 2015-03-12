@@ -1,9 +1,50 @@
 <?php
 
 $lang = array(
+'forum_announcements' => 'Announcements',
+'forum_archives' => 'Archives',
+'forum_atom' => 'Atom',
+'forum_breadcrumb' => 'Breadcrumb',
+'forum_category' => 'Category',
+'forum_css' => 'Css',
+'forum_delete_post' => 'Delete Post',
+'forum_emoticons' => 'Emoticons',
+'forum_error' => 'Error',
+'forum_global' => 'Global',
+'forum_ignore' => 'Ignore',
+'forum_index' => 'Index',
+'forum_javascript' => 'Javascript',
+'forum_legends' => 'Legends',
+'forum_login' => 'Login',
+'forum_member' => 'Member',
+'forum_merge' => 'Merge',
+'forum_move_reply' => 'Move Reply',
+'forum_move_topic' => 'Move Topic',
+'forum_offline' => 'Offline',
+'forum_poll' => 'Poll',
+'forum_report' => 'Report',
+'forum_rss' => 'Rss',
+'forum_search' => 'Search',
+'forum_split' => 'Split',
+'forum_stats' => 'Stats',
+'forum_submission' => 'Submission',
+'forum_threads' => 'Threads',
+'forum_topics' => 'Topics',
+'forum_user_banning' => 'User Banning',
+
+'profile_profile' => 'Profile',
+'profile_breadcrumb' => 'Breadcrumb',
+'profile_private_messages' => 'Private Messages',
+'profile_bulletin_board' => 'Bulletin Board',
+'profile_common' => 'Common',
+'profile_member' => 'Member',
+'profile_account' => 'Account',
+'profile_email' => 'Email',
+'profile_registration' => 'Registration',
+'profile_subscriptions' => 'Subscriptions',
 
 'admin_notify_mailinglist' =>
-'Admin Notification of Mailing List Subscription',
+'Admin &ndash; List subscription notification',
 
 'admin_notify_mailinglist_desc' =>
 'This template defines the message that an admin receives when someone subscribes to a mailing list.',
@@ -12,13 +53,13 @@ $lang = array(
 'This template defines the message that an admin receives when a new forum post is submitted',
 
 'admin_notify_entry' =>
-'Admin Notification of New Entries',
+'Admin &ndash; New Entry notification',
 
 'admin_notify_entry_desc' =>
 'This template defines the message that notification recipients receive when new channel entries are submitted.',
 
 'private_message_notification' =>
-'Private Message Notification',
+'User &ndash; Private message notification',
 
 'private_message_notification_desc' =>
 'This template defines the message that a user receives when someone has sent them a Private Message',
@@ -27,10 +68,10 @@ $lang = array(
 'This template defines the message that a user receives when someone has responded to their forum post',
 
 'admin_notify_forum_post' =>
-'Admin Notification of Forum Posts',
+'Admin &ndash; New forum post(s) notification',
 
 'forum_post_notification' =>
-'User Notification of Forum Posts',
+'User &ndash; New forum post(s) notification',
 
 'email_title' =>
 'Email Title',
@@ -39,49 +80,49 @@ $lang = array(
 'Email Message',
 
 'admin_notify_comment' =>
-'Admin Notification of Comments',
+'Admin &ndash; Comment(s) notification',
 
 'admin_notify_comment_desc' =>
 'This template defines the message that an admin receives when a comment is posted',
 
 'admin_notify_reg' =>
-'Admin Notification of New Member Registration',
+'Admin &ndash; New registration notification',
 
 'admin_notify_reg_desc' =>
 'This template defines the message that an admin receives when a new member has registered',
 
 'comment_notification' =>
-'User Comment Notification',
+'User &ndash; Comment(s) notification',
 
 'comments_opened_notification' =>
-'User Comments Added Notification',
+'User &ndash; Comment(s) added notification',
 
 'comment_notification_desc' =>
 'This template defines the message that a user receives when someone has responded to their commment',
 
 'forgot_password_instructions' =>
-'Forgotten Password Instructions',
+'User &ndash; Forgotten password instructions',
 
 'forgot_password_instructions_desc' =>
 'This template defines the instructions that a user who has forgotten their password receives',
 
 'mailinglist_activation_instructions' =>
-'Mailing List Activation Instructions',
+'User &ndash; List activation instructions',
 
 'mailinglist_activation_instructions_desc' =>
 'This template defines the mailing list activation instructions',
 
 'mbr_activation_instructions' =>
-'Member Account Activation Instructions',
+'User &ndash; Account activation instructions',
 
 'mbr_activation_instructions_desc' =>
 'This template defines the member activation instructions that are sent to people who register at this site',
 
 'validated_member_notify' =>
-'Member Account Validation Notification',
+'User &ndash; Account validation notification',
 
 'decline_member_validation' =>
-'Member Account Decline Notification',
+'User &ndash; Account declined notification',
 
 'validated_member_notify_desc' =>
 'This template defines the notification that members receive when an admin has validated their membership account',
@@ -105,19 +146,19 @@ $lang = array(
 'Most of the above variables accept a char_limit parameter: {title char_limit="40"}',
 
 'pm_inbox_full' =>
-'Private Message InBox Full Notification',
+'User &ndash; Inbox full notification',
 
 'pm_inbox_full_desc' =>
 'This template defines the message that a user receives when they are not able to receive Private Messages due to a full InBox',
 
 'forum_moderation_notification' =>
-'User Notification of Forum Thread Moderation',
+'User &ndash; Forum thread moderation notification',
 
 'forum_moderation_notification_desc' =>
 'This template defines notifications that members receive when their forum topic is moved, split, or merged by a moderator',
 
 'forum_report_notification' =>
-'Moderator Notification of Forum Post Report',
+'Moderator &ndash; Forum post reported notification',
 
 'forum_report_notification_desc' =>
 'This template defines notifications that moderators receive when a user reports a forum post',

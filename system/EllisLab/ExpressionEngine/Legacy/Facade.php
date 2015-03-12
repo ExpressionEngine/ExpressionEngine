@@ -37,7 +37,7 @@ class Facade {
 	{
 		// here only for the duration of the dev preview:
 		$this->set($name, $value);
-		trigger_error('Setting values on ee()-> is no longer supported. Tried to set {$name}.', E_USER_DEPRECATED);
+		trigger_error("Setting values on ee()-> is no longer supported. Tried to set {$name}.", E_USER_DEPRECATED);
 
 		// TODO throw this exception for release.
 		//throw new RuntimeException("Cannot set variables on the super object. Tried to set {$name}.");
@@ -120,28 +120,36 @@ class Facade {
 	 */
 	public function runFileInFacadeScope($path, $vars, $eval = FALSE)
 	{
+		if ($eval)
+		{
+			$str = file_get_contents($path);
+			return $this->evalStringInFacadeScope($str, $vars);
+		}
+
+		$this->in_scope++;
+
+		extract($vars);
+		include($path);
+
+		$this->in_scope--;
+	}
+
+	/**
+	 *
+	 */
+	public function evalStringInFacadeScope($string, $vars)
+	{
 		$this->in_scope++;
 
 		extract($vars);
 
-		if ($eval == TRUE)
-		{
-			// If the PHP installation does not support short tags we'll
-			// do a little string replacement, changing the short tags
-			// to standard PHP echo statements.
-			echo eval('?>'.preg_replace(
-				"/;*\s*\?>/", "; ?>",
-				str_replace(
-					'<?=',
-					'<?php echo ',
-					file_get_contents($path)
-				)
-			));
-		}
-		else
-		{
-			include($path);
-		}
+		// If the PHP installation does not support short tags we'll
+		// do a little string replacement, changing the short tags
+		// to standard PHP echo statements.
+		echo eval('?>'.preg_replace(
+			"/;*\s*\?>/", "; ?>",
+			str_replace('<?=', '<?php echo ', $string)
+		));
 
 		$this->in_scope--;
 	}

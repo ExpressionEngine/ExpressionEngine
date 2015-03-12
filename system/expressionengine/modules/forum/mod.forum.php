@@ -772,7 +772,7 @@ class Forum {
 			$this->preferences['member_profile_path'] 	= $this->forum_path(ee()->config->item('profile_trigger').'/');
 		}
 
-		$this->preferences['board_theme_path'] = PATH_THEMES.'forum_themes/';
+		$this->preferences['board_theme_path'] = PATH_ADDONS_THEMES.'forum_themes/';
 		$this->preferences['board_theme_url']  = URL_THEMES.'forum_themes/';
 	}
 

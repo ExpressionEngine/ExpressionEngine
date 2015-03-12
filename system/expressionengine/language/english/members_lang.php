@@ -8,17 +8,26 @@ $lang = array(
 "view_members" =>
 "View Members",
 
+"all_members" =>
+"All Members",
+
 "view_search_members" =>
 "View / Search Members",
 
 "member_validation" =>
 "Activate Pending Members",
 
+"pending_activation" =>
+"Pending Activation",
+
 "member_search" =>
 "Member Search",
 
 "user_banning" =>
 "User Banning",
+
+"manage_bans" =>
+"Manage Bans",
 
 "custom_profile_fields" =>
 "Member Fields",
@@ -370,6 +379,9 @@ $lang = array(
 "group_id" =>
 "Group ID",
 
+"member_id" =>
+"ID",
+
 "no_members_matching_that_criteria" =>
 "There are no members matching the criteria you selected",
 
@@ -643,9 +655,6 @@ $lang = array(
 'can_access_extensions' =>
 'Can access ADD-ONS: Extensions',
 
-'can_access_accessories' =>
-'Can access ADD-ONS: Accessories',
-
 'can_access_plugins' =>
 'Can access ADD-ONS: Plugins',
 
@@ -853,6 +862,9 @@ $lang = array(
 "member_search" =>
 "Member Search",
 
+"search_members_button" =>
+"Search Members",
+
 "member_search_results" =>
 "Member Search Results",
 
@@ -921,9 +933,6 @@ $lang = array(
 
 'can_access_site' =>
 "Can Access Site",
-
-'include_in_mailinglists' =>
-"Allow Members in Site's Mailing Lists and Related Abilities? (i.e. Group Available in Communicate section)",
 
 'member_delete_dont_reassign_entries' =>
 "Delete the member's entries",

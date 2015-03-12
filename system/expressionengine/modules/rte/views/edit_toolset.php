@@ -1,56 +1,32 @@
-	<?=form_open($action.($is_private ? AMP.'private=true' : ''))?>
-
-<?php	if ( ! $is_private): ?>
-	<table class="rte-toolset-settings" cellspacing="0" cellpadding="0" border="0">
-		<tr>
-			<td><label for="toolset_name"><?=lang('toolset_name')?></label></td>
-			<td><?=form_input(array('name'=>'toolset_name','id'=>'toolset_name','value'=>$toolset_name))?></td>
-		</tr>
-	</table>
-<?php 	else: ?>
-	<input type="hidden" name="private" value="true"/>
-	<input type="hidden" name="toolset_name" value="<?=lang('my_toolset')?>"/>
-<?php 	endif; ?>
-
-	<div class="rte-toolset-builder ui-widget">
-		<input type="hidden" id="rte-toolset-tools" name="selected_tools"/>
-
-		<div class="notice"></div>	
-
-		<table cellspacing="0" cellpadding="0" border="0">
-			<tr>
-				<td class="rte-toolset-builder-pane">
-					<strong><?=lang('available_tools')?></strong>
-					<div class="rte-toolset-builder-scrollpane" tabindex="0">
-						<ul id="rte-tools-unused" class="rte-tools-connected">
-<?php	foreach ($unused_tools as $tool): ?>
-							<li class="rte-tool" data-tool-id="<?=$tool['tool_id']?>"><?=$tool['name']?></li>
-<?php	endforeach; ?>
-						</ul>
-					</div>
-				</td>
-
-				<td class="rte-toolset-builder-divider">
-				</td>
-
-				<td class="rte-toolset-builder-pane">
-					<strong><?=lang('tools_in_toolset')?></strong>
-					<div class="rte-toolset-builder-scrollpane" tabindex="0">
-						<ul id="rte-tools-selected" class="rte-tools-connected ui-sortable">
-<?php	foreach ($used_tools as $tool): ?>
-							<li class="rte-tool" data-tool-id="<?=$tool['tool_id']?>"><?=$tool['name']?></li>
-<?php	endforeach; ?>
-						</ul>
-					</div>
-				</td>
-			</tr>
-		</table>
-	</div>
-
-	<p>
-		<?=form_submit(array('name' => 'submit', 'value' => lang('submit'), 'class' => 'submit'));?>
-		&nbsp; <?=lang('or')?>
-		<a id="rte-builder-closer"><?=lang('cancel')?></a>
-	</p>
-	
+<div class="box">
+	<h1><?=lang($header)?> <span class="required intitle">&#10033; Required Fields</span></h1>
+	<?=form_open($form_action, 'class="settings ajax-validate"')?>
+		<?=ee('Alert')->getAllInlines()?>
+		<fieldset class="col-group <?=form_error_class('toolset_name')?>">
+			<div class="setting-txt col w-8">
+				<h3><?=lang('tool_set_name')?> <span class="required" title="required field">&#10033;</span></h3>
+				<em><?=lang('tool_set_name_desc')?></em>
+			</div>
+			<div class="setting-field col w-8 last">
+				<input class="required" type="text" name="toolset_name" value="<?=$toolset_name?>">
+				<?=form_error('toolset_name')?>
+			</div>
+		</fieldset>
+		<fieldset class="col-group last">
+			<div class="setting-txt col w-8">
+				<h3><?=lang('choose_tools')?></h3>
+				<em><?=lang('choose_tools_desc')?></em>
+			</div>
+			<div class="setting-field col w-8 last">
+				<?php foreach ($tools as $tool): ?>
+				<label class="choice block<?php if ($tool['selected']) echo " chosen"; ?>">
+					<input type="checkbox" name="tools[]" value="<?=$tool['id']?>"<?php if ($tool['selected']) echo ' checked="checked"'; ?>> <?=$tool['name']?> <?php if ($tool['desc']): ?><i>&mdash; <?=$tool['desc']?></i><?php endif; ?>
+				</label>
+				<?php endforeach; ?>
+			</div>
+		</fieldset>
+		<fieldset class="form-ctrls">
+			<?=cp_form_submit($btn_save_text, 'btn_saving')?>
+		</fieldset>
 	<?=form_close();?>
+</div>

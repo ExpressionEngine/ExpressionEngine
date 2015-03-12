@@ -63,12 +63,63 @@ class Login extends CP_Controller {
 			die('Logged out');
 		}
 
+		// Are we here after a new install or update?
+		$installer_dir = SYSPATH.'installer_'.ee()->config->item('app_version').'/';
+		if (($type = ee()->input->get('after')) && is_dir($installer_dir))
+		{
+			ee()->lang->load('installer', 'english', FALSE, TRUE, $installer_dir);
+			$this->view->message =
+				sprintf(
+					lang("{$type}_success_note"),
+					APP_VER
+				)
+				.BR.
+				sprintf(
+					lang('success_moved'),
+					ee()->config->item('app_version')
+				);
+			$this->view->message_status = 'success';
+		}
+
 		$username = $this->session->flashdata('username');
 
 		$this->view->return_path = '';
 		$this->view->focus_field = ($username) ? 'password' : 'username';
 		$this->view->username = ($username) ? form_prep($username) : '';
-		$this->view->message = ($this->input->get('auto_expire')) ? lang('session_auto_timeout') : $this->session->flashdata('message');
+
+		if ( ! isset($this->view->message))
+		{
+			$this->view->message = ($this->input->get('auto_expire')) ? lang('session_auto_timeout') : $this->session->flashdata('message');
+		}
+
+		// Normal login button state
+		$this->view->btn_class = 'btn';
+		$this->view->btn_label = lang('login');
+		$this->view->btn_disabled = '';
+
+		// Set lockout message and form state
+		if (ee()->session->check_password_lockout($username) === TRUE)
+		{
+			$this->view->btn_class .= ' disable';
+			$this->view->btn_label = lang('locked');
+			$this->view->btn_disabled = 'disabled';
+			$this->view->message = sprintf(
+				lang('password_lockout_in_effect'),
+				ee()->config->item('password_lockout_interval')
+			);
+		}
+
+		if ($this->view->message != '' && ! isset($this->view->message_status))
+		{
+			$this->view->message_status = 'issue';
+		}
+
+		// Show the site label
+		$this->view->site_label = ee()->api
+			->get('Site')
+			->filter('site_id', ee()->config->item('site_id'))
+			->first()
+			->site_label;
 
 		if ($this->input->get('BK'))
 		{
@@ -80,6 +131,8 @@ class Login extends CP_Controller {
 		}
 
 		$this->view->cp_page_title = lang('login');
+
+		$this->view->cp_session_type = ee()->config->item('cp_session_type');
 
 		$this->view->render('account/login');
 	}
@@ -160,7 +213,17 @@ class Login extends CP_Controller {
 
 		if ($this->input->post('return_path'))
 		{
-			$return_path = $base.AMP.base64_decode($this->input->post('return_path'));
+			$return_path = base64_decode($this->input->post('return_path'));
+
+			if (strpos($return_path, '{') === 0)
+			{
+				$uri_elements = json_decode($return_path, TRUE);
+				$return_path = cp_url($uri_elements['path'], $uri_elements['arguments']);
+			}
+			else
+			{
+				$return_path = ee()->uri->reformat($base.AMP.$return_path, $base);
+			}
 		}
 
 		if (AJAX_REQUEST)
@@ -172,7 +235,7 @@ class Login extends CP_Controller {
 			));
 		}
 
-		$this->functions->redirect(ee()->uri->reformat($return_path, $base));
+		$this->functions->redirect($return_path);
 	}
 
 	// --------------------------------------------------------------------
@@ -427,15 +490,16 @@ class Login extends CP_Controller {
 			return $this->functions->redirect(BASE);
 		}
 
-		$message = $this->session->flashdata('message');
+		$this->view->email = ( ! $this->input->post('email')) ? '' : $this->input->get_post('email');
+		$this->view->cp_page_title = lang('forgotten_password');
+		$this->view->focus_field = 'email';
 
-		$variables = array(
-			'email'			=> ( ! $this->input->post('email')) ? '' : $this->input->get_post('email'),
-			'message' 		=> $message,
-			'cp_page_title'	=> lang('forgotten_password')
-		);
+		if ( ! isset($this->view->message))
+		{
+			$this->view->message = '';
+		}
 
-		$this->load->view('account/forgot_password', $variables);
+		$this->view->render('account/forgot_password');
 	}
 
 	// --------------------------------------------------------------------
@@ -474,8 +538,9 @@ class Login extends CP_Controller {
 		// don't know if an email exists or not
 		if ($query->num_rows() == 0)
 		{
-			$vars['message_success'] = lang('forgotten_email_sent');
-			return $this->load->view('account/show_reset_password_message', $vars);
+			$this->view->message = lang('forgotten_email_sent');
+			$this->view->message_status = 'success';
+			return $this->forgotten_password_form();
 		}
 
 		$member_id = $query->row('member_id');
@@ -523,20 +588,18 @@ class Login extends CP_Controller {
 		$this->email->subject($message_title);
 		$this->email->message($message);
 
-		$vars['message_success'] = '';
-		$vars['message_error'] = '';
-
 		if ( ! $this->email->send())
 		{
-			$vars['message_error'] = lang('error_sending_email');
+			$this->view->message = lang('error_sending_email');
+			$this->view->message_status = 'issue';
 		}
 		else
 		{
-			$vars['message_success'] = lang('forgotten_email_sent');
+			$this->view->message = lang('forgotten_email_sent');
+			$this->view->message_status = 'success';
 		}
 
-		$vars['cp_page_title'] = lang('forgotten_password');
-		$this->load->view('account/show_reset_password_message', $vars);
+		$this->forgotten_password_form();
 	}
 
 	// --------------------------------------------------------------------
@@ -625,30 +688,41 @@ class Login extends CP_Controller {
 					->or_where('member_id', $member_id)
 					->delete('reset_password');
 
-				// Show them a success message with a link back to the login
-				// screen, the only place they could have come from.
-				$vars = array(
-					'message_success' => lang('successfully_changed_password'),
-					'cp_page_title' => lang('password_changed')
-				);
-
-				return $this->load->view('account/show_reset_password_message', $vars);
+				$this->view->message = lang('successfully_changed_password');
+				$this->view->message_status = 'success';
+				return $this->index();
 			}
 		}
 
-		// Show them the form.  If we have any errors from an attempt
-		// to validate a previous submission, then they will be
-		// shown using "form_error()" which has access to them through
-		// the form_validation singleton.
-		$message = $this->session->flashdata('message');
-		$variables = array(
-			'resetcode'			=> $resetcode,
-			'password'			=> '',
-			'password_confirm'  => '',
-			'message' 		=> $message,
-			'cp_page_title'	=> lang('enter_new_password')
-		);
-		$this->load->view('account/reset_password', $variables);
+		$this->view->messages = array();
+
+		// Show form validation errors
+		if (form_error('password'))
+		{
+			// Regular array appending is throwing an error, so merging
+			$this->view->messages = array_merge(
+				$this->view->messages,
+				array(strip_tags(form_error('password')))
+			);
+		}
+
+		if (form_error('password_confirm'))
+		{
+			$this->view->messages = array_merge(
+				$this->view->messages,
+				array(strip_tags(form_error('password_confirm')))
+			);
+		}
+
+		if ( ! empty($this->view->messages))
+		{
+			$this->view->message_status = 'issue';
+		}
+
+		$this->view->cp_page_title = lang('enter_new_password');
+		$this->view->resetcode = $resetcode;
+
+		$this->view->render('account/reset_password');
 	}
 
 	// --------------------------------------------------------------------
@@ -717,7 +791,20 @@ class Login extends CP_Controller {
 		}
 
 		$this->session->set_flashdata('message', lang($lang_key));
-		$this->functions->redirect(BASE.AMP.'C=login');
+
+		$redirect = 'C=login';
+
+		// If we have a return argument, keep it
+		if (ee()->input->post('return_path'))
+		{
+			$redirect .= AMP . 'return=' . ee()->input->post('return_path');
+		}
+		elseif (ee()->input->get('return'))
+		{
+			$redirect .= AMP . 'return=' . ee()->input->get('return');
+		}
+
+		$this->functions->redirect(BASE.AMP.$redirect);
 	}
 }
 // END CLASS

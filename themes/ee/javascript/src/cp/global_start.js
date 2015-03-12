@@ -142,13 +142,6 @@ $(document).ready(function () {
 		EE.insert_placeholders();
 	}
 
-
-	// External links open in new window
-	$('a[rel="external"]').click(function () {
-		window.open(this.href);
-		return false;
-	});
-
 	// Notice banners
 	if (EE.importantMessage) {
 		EE.cp.showNoticeBanner();
@@ -162,6 +155,7 @@ $(document).ready(function () {
 	EE.cp.notepad.init();
 	EE.cp.accessory_toggle();
 	EE.cp.control_panel_search();
+	EE.cp.bindCpMessageClose();
 
 	// Setup sidebar hover descriptions
 	$('#quickLinks h4').click(function () {
@@ -175,6 +169,15 @@ $(document).ready(function () {
 	.css('cursor', 'pointer');
 
 });
+
+// Close alert modal when close button is clicked
+EE.cp.bindCpMessageClose = function() {
+	$('div.alert a.close').click(function(event)
+	{
+		event.preventDefault();
+		$(this).parent().hide();
+	});
+}
 
 
 // Simple function to deal with csrf tokens
@@ -631,10 +634,10 @@ EE.cp.zebra_tables = function(table) {
 
 	$(table)
 		.find('tr')
-		.removeClass('even odd')
-		.filter(':even').addClass('even')
+		.removeClass('alt')
+		.filter(':even').addClass('alt')
 		.end()
-		.filter(':odd').addClass('odd');
+		.filter(':first').removeClass('alt');
 };
 
 /**

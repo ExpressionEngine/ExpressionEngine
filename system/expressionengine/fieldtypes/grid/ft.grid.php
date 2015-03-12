@@ -139,20 +139,15 @@ class Grid_ft extends EE_Fieldtype {
 	{
 		if ( ! ee()->session->cache(__CLASS__, 'grid_assets_loaded'))
 		{
-			if (REQ == 'CP')
-			{
-				$css_link = ee()->view->head_link('css/grid.css');
-			}
-			// Channel Form
-			else
+			if (REQ != 'CP')
 			{
 				$css_link = '<link rel="stylesheet" href="'.URL_THEMES.'cp_themes/default/css/grid.css" type="text/css" media="screen" />'.PHP_EOL;
+				ee()->cp->add_to_head($css_link);
 			}
-
-			ee()->cp->add_to_head($css_link);
 
 			ee()->cp->add_js_script('ui', 'sortable');
 			ee()->cp->add_js_script('file', 'cp/sort_helper');
+			ee()->cp->add_js_script('plugin', 'ee_table_reorder');
 			ee()->cp->add_js_script('file', 'cp/grid');
 
 			ee()->session->set_cache(__CLASS__, 'grid_assets_loaded', TRUE);
@@ -572,7 +567,7 @@ class Grid_ft extends EE_Fieldtype {
 		// The big column configuration row, generated from the settings view
 		ee()->table->add_row($settings_html);
 
-		ee()->cp->add_to_head(ee()->view->head_link('css/grid.css'));
+		// ee()->cp->add_to_head(ee()->view->head_link('css/grid.css'));
 
 		ee()->cp->add_js_script('plugin', 'ee_url_title');
 		ee()->cp->add_js_script('ui', 'sortable');

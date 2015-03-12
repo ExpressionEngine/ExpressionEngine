@@ -331,7 +331,7 @@ class EE_Email {
 	 * @see	CI_Email::$protocol
 	 * @var	string[]
 	 */
-	protected $_protocols		= array('mail', 'sendmail', 'smtp');
+	protected $_protocols		= array('dummy', 'mail', 'sendmail', 'smtp');
 
 	/**
 	 * Base charsets
@@ -2244,6 +2244,31 @@ class EE_Email {
 		}
 
 		$this->_set_error_message('lang:email_sent', $this->_get_protocol());
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Dummy protocol: write the message out to disk (this is helpful for testing)
+	 *
+	 * @return	bool
+	 */
+	protected function _send_with_dummy()
+	{
+		$tmppath = ee()->config->item('dummy_mail_path') ?: '/tmp';
+		$tmpfname = tempnam($tmppath, "mail-");
+		$fp = file_put_contents($tmpfname, $this->_header_str . $this->_finalbody);
+
+		if ($fp === FALSE)
+		{
+			return FALSE;
+		}
+
+		chmod($tmpfname, 0644);
+
+		$this->_set_error_message('lang:dummy_location', $tmpfname);
+
 		return TRUE;
 	}
 }

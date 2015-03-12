@@ -51,7 +51,6 @@ class EE_Core {
 		define('PATH_MOD',		APPPATH.'modules/');
 		define('PATH_PI',		APPPATH.'plugins/');
 		define('PATH_EXT',		APPPATH.'extensions/');
-		define('PATH_ACC',		APPPATH.'accessories/');
 		define('PATH_FT',		APPPATH.'fieldtypes/');
 		define('PATH_RTE',		APPPATH.'rte_tools/');
 
@@ -64,8 +63,8 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20141004');
-		define('APP_VER',		'2.9.2');
+		define('APP_BUILD',		'20141010');
+		define('APP_VER',		'3.0.0');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
 		define('RD',			'}');
@@ -479,6 +478,9 @@ class EE_Core {
 
 		// Load the Super Model
 		ee()->load->model('super_model');
+
+		// Laod Menu library
+		ee()->load->library('menu');
 
 		// update documentation URL if site was running the beta and had the old location
 		// @todo remove after 2.1.1's release, move to the update script

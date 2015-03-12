@@ -413,13 +413,7 @@ class EE_Logger {
 				$changed++;
 
 				// save the template
-				ee()->template_model->save_to_database($template);
-
-				// if saving to file, save the file
-				if ($template->save_template_file)
-				{
-					ee()->template_model->save_to_file($template);
-				}
+				ee()->template_model->save_entity($template);
 			}
 		}
 
@@ -447,7 +441,7 @@ class EE_Logger {
 		}
 
 		// Update current tagdata if running outside the updater
-		if (isset(ee()->TMPL->tagdata))
+		if (isset(ee()->TMPL) && isset(ee()->TMPL->tagdata))
 		{
 			ee()->TMPL->tagdata = preg_replace(
 				$regex,
@@ -555,79 +549,6 @@ class EE_Logger {
 		return FALSE;
 	}
 
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Builds deprecation notice language based on data given
-	 *
-	 * @param	array $deprecated Data array of deprecated function details
-	 * @return	string Message constructed from language keys describing function deprecation
-	 */
-	function build_deprecation_language($deprecated)
-	{
-		ee()->lang->loadfile('tools');
-
-		if ( ! isset($deprecated['function']))
-		{
-			return $deprecated['description'];
-		}
-
-		// "Deprecated function %s called"
-		$message = sprintf(lang('deprecated_function'), $deprecated['function']);
-
-		// "in %s on line %d."
-		if (isset($deprecated['file']) && isset($deprecated['line']))
-		{
-			$message .= NBS.sprintf(lang('deprecated_on_line'), $deprecated['file'], $deprecated['line']);
-		}
-
-		// "from template tag: %s in template %s"
-		if (isset($deprecated['addon_module']) && isset($deprecated['addon_method']))
-		{
-			$message .= '<br />';
-			$message .= sprintf(
-				lang('deprecated_template'),
-				'<code>exp:'.strtolower($deprecated['addon_module']).':'.$deprecated['addon_method'].'</code>',
-				'<a href="'.BASE.AMP.'C=design'.AMP.'M=edit_template'.AMP.'id='.$deprecated['template_id'].'">'.$deprecated['template_group'].'/'.$deprecated['template_name'].'</a>'
-			);
-
-			if ($deprecated['snippets'])
-			{
-				$snippets = explode('|', $deprecated['snippets']);
-
-				foreach ($snippets as &$snip)
-				{
-					$snip = '<a href="'.BASE.AMP.'C=design'.AMP.'M=snippets_edit'.AMP.'snippet='.$snip.'">{'.$snip.'}</a>';
-				}
-
-				$message .= '<br />';
-				$message .= sprintf(lang('deprecated_snippets'), implode(', ', $snippets));
-			}
-		}
-
-		if (isset($deprecated['deprecated_since'])
-			|| isset($deprecated['deprecated_use_instead']))
-		{
-			// Add a line break if there is additional information
-			$message .= '<br />';
-
-			// "Deprecated since %s."
-			if (isset($deprecated['deprecated_since']))
-			{
-				$message .= sprintf(lang('deprecated_since'), $deprecated['deprecated_since']);
-			}
-
-			// "Use %s instead."
-			if (isset($deprecated['use_instead']))
-			{
-				$message .= NBS.sprintf(lang('deprecated_use_instead'), $deprecated['use_instead']);
-			}
-		}
-
-		return $message;
-	}
-
 	// --------------------------------------------------------------------
 
 	/**
@@ -640,7 +561,7 @@ class EE_Logger {
 	 */
 	public function updater($log_message, $exception = FALSE)
 	{
-		$this->_setup_log();
+		$this->_setup_update_log();
 
 		$data = array(
 			 'timestamp'	=> ee()->localize->now,
@@ -670,11 +591,13 @@ class EE_Logger {
 	 * @access	private
 	 * @return	bool
 	 */
-	private function _setup_log()
+	private function _setup_update_log()
 	{
 		$table = 'update_log';
 
-		if ( ! $this->logger_db()->table_exists($table))
+		// Using normal ee()->db here since we need to see if this table was
+		// created using the normal DB object
+		if ( ! ee()->db->table_exists($table))
 		{
 			ee()->load->dbforge();
 

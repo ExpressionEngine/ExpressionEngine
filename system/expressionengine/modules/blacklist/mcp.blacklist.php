@@ -1,4 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+use EllisLab\ExpressionEngine\Library\CP\URL;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -24,15 +27,14 @@
  */
 class Blacklist_mcp {
 
-	var $value		= '';
-	var $LB			= "\r\n";
+	public $LB			= "\r\n";
 
 	/**
 	 * Constructor
 	 *
 	 * @access	public
 	 */
-	function Blacklist_mcp( $switch = TRUE )
+	public function Blacklist_mcp( $switch = TRUE )
 	{
 		ee()->load->dbforge();
 
@@ -70,20 +72,67 @@ class Blacklist_mcp {
 	 * @access	public
 	 * @return	string
 	 */
-	function index()
+	public function index()
 	{
-		$vars['license_number'] = ee()->config->item('license_number');
-		$vars['cp_page_title'] = lang('blacklist_module_name');
+		if ( ! ee()->db->table_exists("blacklisted"))
+		{
+			show_error(lang("ref_no_blacklist_table"));
+		}
 
-		$vars['allow_write_htaccess'] = FALSE; // overwritten below if admin
+		if ( ! ee()->db->table_exists("whitelisted"))
+		{
+			show_error(lang("ref_no_whitelist_table"));
+		}
+
+		$allow_write_htaccess = FALSE;
+		$htaccess_path = NULL;
 
 		if (ee()->session->userdata('group_id') == '1')
 		{
-			$vars['allow_write_htaccess'] = TRUE;
-
+			$allow_write_htaccess = TRUE;
 			$htaccess_path = ee()->config->item('htaccess_path');
+		}
 
-			$vars['htaccess_path'] = $htaccess_path;
+		$vars = array(
+			'allow_write_htaccess' => $allow_write_htaccess,
+			'base_url' => cp_url('addons/settings/blacklist/save_htaccess_path'),
+			'cp_page_title' => lang('blacklist_module_name') . ' ' . lang('settings'),
+			'save_btn_text' => 'btn_save_settings',
+			'save_btn_text_working' => 'btn_saving',
+			'sections' => array(
+				array(
+					array(
+						'title' => 'add_htaccess_file',
+						'desc' => 'add_htaccess_file_desc',
+						'fields' => array(
+							'htaccess_path' => array(
+								'type' => 'text',
+								'value' => $htaccess_path
+							)
+						)
+					),
+				)
+			),
+			'blacklist_ip' => '',
+			'blacklist_agent' => '',
+			'blacklist_url' => '',
+			'whitelist_ip' => '',
+			'whitelist_agent' => '',
+			'whitelist_url' => ''
+		);
+
+		foreach (array('black', 'white') as $kind)
+		{
+			$query = ee()->db->get("{$kind}listed");
+
+			if ($query->num_rows() != 0)
+			{
+				foreach($query->result_array() as $row)
+				{
+					$vars["{$kind}list_" . $row["{$kind}listed_type"]] = str_replace('|', NL, $row["{$kind}listed_value"]);
+				}
+			}
+
 		}
 
 		return ee()->load->view('index', $vars, TRUE);
@@ -97,11 +146,11 @@ class Blacklist_mcp {
 	 * @access	public
 	 * @return	void
 	 */
-	function save_htaccess_path()
+	public function save_htaccess_path()
 	{
 		if (ee()->session->userdata('group_id') != '1' OR ee()->input->get_post('htaccess_path') === FALSE OR (ee()->input->get_post('htaccess_path') == '' && ee()->config->item('htaccess_path') === FALSE))
 		{
-			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blacklist');
+			ee()->functions->redirect(cp_url('addons/settings/blacklist'));
 		}
 
 		ee()->load->library('form_validation');
@@ -119,18 +168,25 @@ class Blacklist_mcp {
 
 		if (ee()->input->get_post('htaccess_path') == '' && ! ee()->config->item('htaccess_path'))
 		{
-			ee()->session->set_flashdata('message_success', lang('htaccess_path_removed'));
-			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blacklist');
+			ee('Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('htaccess_path_removed'))
+				->addToBody(lang('htaccess_path_removed_desc'))
+				->defer();
+			ee()->functions->redirect(cp_url('addons/settings/blacklist'));
 		}
 
 		$this->write_htaccess(ee()->input->get_post('htaccess_path'));
 
-		ee()->session->set_flashdata('message_success', lang('htaccess_written_successfully'));
-		ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blacklist');
+		ee('Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang('htaccess_written_successfully'))
+			->addToBody(lang('htaccess_written_successfully_desc'))
+			->defer();
+		ee()->functions->redirect(cp_url('addons/settings/blacklist'));
 	}
 
-
-	function _check_path($str)
+	private function _check_path($str)
 	{
 		if ($str == '')
 		{
@@ -159,13 +215,13 @@ class Blacklist_mcp {
 	 * @access	public
 	 * @return	void
 	 */
-	function write_htaccess($htaccess_path = '', $return = 'redirect')
+	public function write_htaccess($htaccess_path = '', $return = 'redirect')
 	{
 		$htaccess_path = ($htaccess_path == '') ? ee()->config->item('htaccess_path') : $htaccess_path;
 
 		if (ee()->session->userdata('group_id') != '1' OR $htaccess_path == '')
 		{
-			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blacklist');
+			ee()->functions->redirect(cp_url('addons/settings/blacklist'));
 		}
 
 		if ( ! $fp = @fopen($htaccess_path, FOPEN_READ))
@@ -271,9 +327,15 @@ class Blacklist_mcp {
 	 * @access	public
 	 * @return	string
 	 */
-	function ee_blacklist()
+	public function ee_blacklist()
 	{
-		return $this->_download_update_list('black');
+		$this->_download_update_list('black');
+		ee('Alert')->makeInline('lists-form')
+			->asSuccess()
+			->withTitle(lang('lists_updated'))
+			->addToBody(lang('blacklist_downloaded'))
+			->defer();
+		ee()->functions->redirect(cp_url('addons/settings/blacklist'));
 	}
 
 	// --------------------------------------------------------------------
@@ -284,42 +346,30 @@ class Blacklist_mcp {
 	 * @access	public
 	 * @return	string
 	 */
-	function ee_whitelist()
+	public function ee_whitelist()
 	{
-		return $this->_download_update_list('white');
+		$this->_download_update_list('white');
+		ee('Alert')->makeInline('lists-form')
+			->asSuccess()
+			->withTitle(lang('lists_updated'))
+			->addToBody(lang('whitelist_downloaded'))
+			->defer();
+		ee()->functions->redirect(cp_url('addons/settings/blacklist'));
 	}
 
 	// --------------------------------------------------------------------
 
-	/**
-	 * View Blacklisted
-	 *
-	 * @access	public
-	 * @return	string
-	 */
-	function view_blacklist()
+	public function save_lists()
 	{
-		$vars = $this->_view_list('black');
-
-		return ee()->load->view('view', $vars, TRUE);
+		$this->update_whitelist();
+		$this->update_blacklist();
+		ee('Alert')->makeInline('lists-form')
+			->asSuccess()
+			->withTitle(lang('lists_updated'))
+			->addToBody(lang('lists_updated_desc'))
+			->defer();
+		ee()->functions->redirect(cp_url('addons/settings/blacklist'));
 	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * View Whitelisted
-	 *
-	 * @access	public
-	 * @return	string
-	 */
-	function view_whitelist()
-	{
-		$vars = $this->_view_list('white');
-
-		return ee()->load->view('view', $vars, TRUE);
-	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Update Blacklisted Items
@@ -327,22 +377,18 @@ class Blacklist_mcp {
 	 * @access	public
 	 * @return	void
 	 */
-	function update_blacklist($additions = array(), $write = FALSE, $return = 'redirect')
+	private function update_blacklist()
 	{
 		if ( ! ee()->db->table_exists('blacklisted'))
 		{
 			show_error(lang('ref_no_blacklist_table'));
 		}
 
-		$write_htaccess = ($write) ? $write : ee()->input->get_post('write_htaccess');
-
 		// Current Blacklisted
-
 		$query 			= ee()->db->get('blacklisted');
 		$old['url']		= array();
 		$old['agent']	= array();
 		$old['ip']		= array();
-		$use_post		= TRUE;
 
 		if ($query->num_rows() > 0)
 		{
@@ -380,32 +426,20 @@ class Blacklist_mcp {
 
 		// Update Blacklist with New Values sans Whitelist Matches
 
-		$default = array('ip', 'agent', 'url');
+		$default = array('blacklist_ip', 'blacklist_agent', 'blacklist_url');
 		$modified_channels = array();
-
-		if (count($additions) > 0)
-		{
-			$use_post = FALSE;
-
-			$new_data['agent']		= (isset($additions['agent'])) ? array_merge($old['agent'], $additions['agent']) : $old['agent'];
-			$new_data['url']		= (isset($additions['url'])) ? array_merge($old['url'], $additions['url']) : $old['url'];
-			$new_data['ip']		= (isset($additions['ip'])) ? array_merge($old['ip'], $additions['ip']) : array();
-
-		}
 
 		foreach ($default as $val)
 		{
+			$type = str_replace('blacklist_', '', $val);
+
 			if (isset($_POST[$val]))
 			{
-				 $_POST[$val] = str_replace('[-]', '', $_POST[$val]);
-				 $_POST[$val] = str_replace('[+]', '', $_POST[$val]);
-				 $_POST[$val] = trim(stripslashes($_POST[$val]));
+				$_POST[$val] = str_replace('[-]', '', $_POST[$val]);
+				$_POST[$val] = str_replace('[+]', '', $_POST[$val]);
+				$_POST[$val] = trim(stripslashes($_POST[$val]));
 
-				 $new_values = explode(NL,strip_tags($_POST[$val]));
-			}
-			elseif (isset($new_data[$val]))
-			{
-				$new_values = $new_data[$val];
+				$new_values = explode(NL,strip_tags($_POST[$val]));
 			}
 			else
 			{
@@ -414,21 +448,21 @@ class Blacklist_mcp {
 
 			 // Clean out user mistakes; and
 			 // Clean out Referrers with new additions
-			 foreach ($new_values as $key => $this->value)
+			 foreach ($new_values as $key => $value)
 			 {
-				if (trim($this->value) == "" OR trim($this->value) == NL)
+				if (trim($value) == "" OR trim($value) == NL)
 				{
 					unset($new_values[$key]);
 				}
-				elseif ( ! in_array($this->value, $old[$val]))
+				elseif ( ! in_array($value, $old[$type]))
 				{
-					$name = ($val == 'url') ? 'from' : $val;
+					$name = ($type == 'url') ? 'from' : $type;
 
 					if (ee()->db->table_exists('referrers'))
 					{
-						ee()->db->like('ref_'.$name, $this->value);
+						ee()->db->like('ref_'.$name, $value);
 
-						foreach ($white[$val] as $w_value)
+						foreach ($white[$type] as $w_value)
 						{
 							ee()->db->not_like('ref_'.$name, $w_value);
 						}
@@ -437,12 +471,12 @@ class Blacklist_mcp {
 					}
 				}
 
-				if ($val == 'ip')
+				if ($type == 'ip')
 				{
 					// Collapse IPv6 addresses
-					if (ee()->input->valid_ip($this->value, 'ipv6'))
+					if (ee()->input->valid_ip($value, 'ipv6'))
 					{
-						$new_values[$key] = inet_ntop(inet_pton($this->value));
+						$new_values[$key] = inet_ntop(inet_pton($value));
 					}
 				}
 			 }
@@ -455,28 +489,12 @@ class Blacklist_mcp {
 			 ee()->db->delete('blacklisted');
 
 			 $data = array(
-			 	'blacklisted_type' => $val,
+			 	'blacklisted_type' => $type,
 			 	'blacklisted_value' => $_POST[$val]
 			 );
 
 			 ee()->db->insert('blacklisted', $data);
 		}
-
-
-		if ($write_htaccess == 'y')
-		{
-			$this->write_htaccess();
-		}
-
-		if ($return == 'bool')
-		{
-			return TRUE;
-		}
-
-		ee()->session->set_flashdata('message_success', lang('blacklist_updated'));
-		ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'
-		.AMP.'module=blacklist'.AMP.'method=view_blacklist');
-
 	}
 
 	// --------------------------------------------------------------------
@@ -487,7 +505,7 @@ class Blacklist_mcp {
 	 * @access	public
 	 * @return	void
 	 */
-	function update_whitelist()
+	private function update_whitelist()
 	{
 		if ( ! ee()->db->table_exists('whitelisted'))
 		{
@@ -514,28 +532,30 @@ class Blacklist_mcp {
 
 		// Update Whitelist with New Values
 
-		$default = array('ip', 'agent', 'url');
+		$default = array('whitelist_ip', 'whitelist_agent', 'whitelist_url');
 
 		foreach ($default as $val)
 		{
 			if (isset($_POST[$val]))
 			{
-				 $_POST[$val] = str_replace('[-]', '', $_POST[$val]);
-				 $_POST[$val] = str_replace('[+]', '', $_POST[$val]);
-				 $_POST[$val] = trim(stripslashes($_POST[$val]));
+				$type = str_replace('whitelist_', '', $val);
 
-				 $new_values = explode(NL,strip_tags($_POST[$val]));
+				$_POST[$val] = str_replace('[-]', '', $_POST[$val]);
+				$_POST[$val] = str_replace('[+]', '', $_POST[$val]);
+				$_POST[$val] = trim(stripslashes($_POST[$val]));
 
-				 // Clean out user mistakes; and
-				 // Clean out Whitelists with new additions
-				 foreach ($new_values as $key => $value)
-				 {
+				$new_values = explode(NL,strip_tags($_POST[$val]));
+
+				// Clean out user mistakes; and
+				// Clean out Whitelists with new additions
+				foreach ($new_values as $key => $value)
+				{
 					if (trim($value) == "" OR trim($value) == NL)
 					{
 						unset($new_values[$key]);
 					}
 
-					if ($val == 'ip')
+					if ($type == 'ip')
 					{
 						// Collapse IPv6 addresses
 						if (ee()->input->valid_ip($value, 'ipv6'))
@@ -543,25 +563,21 @@ class Blacklist_mcp {
 							$new_values[$key] = inet_ntop(inet_pton($value));
 						}
 					}
-				 }
+				}
 
-				 $_POST[$val] = implode("|",$new_values);
+				$_POST[$val] = implode("|",$new_values);
 
-				 ee()->db->where('whitelisted_type', $val);
-				 ee()->db->delete('whitelisted');
+				ee()->db->where('whitelisted_type', $val);
+				ee()->db->delete('whitelisted');
 
-				 $data = array(
-				 	'whitelisted_type' 	=> $val,
-				 	'whitelisted_value'	=> $_POST[$val]
-				 );
+				$data = array(
+					'whitelisted_type' 	=> $type,
+					'whitelisted_value'	=> $_POST[$val]
+				);
 
-				 ee()->db->insert('whitelisted', $data);
+				ee()->db->insert('whitelisted', $data);
 			}
 		}
-
-		ee()->session->set_flashdata('message_success', lang('whitelist_updated'));
-		ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP
-		.'module=blacklist'.AMP.'method=view_whitelist');
 	}
 
 	// --------------------------------------------------------------------
@@ -572,7 +588,7 @@ class Blacklist_mcp {
 	 * @access	private
 	 * @return	string
 	 */
-	function _download_update_list($listtype = "black")
+	private function _download_update_list($listtype = "black")
 	{
 		$vars['cp_page_title'] = lang('blacklist_module_name'); // both black and white lists share this title
 
@@ -671,8 +687,7 @@ class Blacklist_mcp {
 		if ($listtype == 'white')
 		{
 			// If this is a whitelist update, we're done, send data to view and get out
-			ee()->session->set_flashdata('message_success', lang('whitelist_updated'));
-			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blacklist');
+			return;
 		}
 
 		//  Using new blacklist members, clean out spam
@@ -708,92 +723,6 @@ class Blacklist_mcp {
 				}
 			}
 		}
-
-		//  Blacklist updated message
-
-		$vars['message'] = lang('blacklist_updated');
-		$vars['form_hidden']['write_htaccess'] = 'n'; // over-ridden below if needed
-
-		if (ee()->session->userdata('group_id') == '1' && ee()->config->item('htaccess_path') === FALSE)
-		{
-			$vars['use_htaccess'] = TRUE;
-			$vars['form_action'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blacklist'.AMP.'method=write_htaccess';
-			$vars['form_hidden']['htaccess_path'] = ee()->config->item('htaccess_path');
-			$vars['form_hidden']['write_htaccess'] = 'y';
-
-		}
-		else
-		{
-			ee()->session->set_flashdata('message_success', lang('blacklist_updated'));
-			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blacklist');
-		}
-
-		return ee()->load->view('update', $vars, TRUE);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * View List
-	 *
-	 * @access	private
-	 * @return	mixed
-	 */
-	function _view_list($black_or_white = 'black')
-	{
-		if ( ! ee()->db->table_exists("{$black_or_white}listed"))
-		{
-			show_error(lang("ref_no_{$black_or_white}list_table"));
-		}
-
-		$vars['cp_page_title'] =  lang("ref_view_{$black_or_white}list");
-
-		ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=blacklist', lang('blacklist_module_name'));
-
-		ee()->load->helper('form');
-
-		$rows = array();
-		$default = array('ip', 'url','agent');
-		foreach ($default as $value)
-		{
-			$rows[$value] = '';
-		}
-
-		// Store by type with | between values
-		ee()->db->order_by("{$black_or_white}listed_type", 'asc');
-		$query = ee()->db->get("{$black_or_white}listed");
-
-		if ($query->num_rows() != 0)
-		{
-			foreach($query->result_array() as $row)
-			{
-				$rows[$row["{$black_or_white}listed_type"]] = $row["{$black_or_white}listed_value"];
-			}
-		}
-
-		$vars['form_action'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP."module=blacklist".AMP."method=update_{$black_or_white}list";
-
-		//sort($rows);
-		foreach($rows as $key => $value)
-		{
-			$vars['list_item'][$key]['name'] = $key;
-			$vars['list_item'][$key]['id'] = $key;
-			$vars['list_item'][$key]['value'] = str_replace('|',NL,$value);
-			$vars['list_item'][$key]['class'] = 'module_textarea shun';
-		}
-
-		if (ee()->session->userdata('group_id') == '1' && ee()->config->item('htaccess_path') != '' && $black_or_white == 'black')
-		{
-			$vars['form_hidden']['htaccess_path'] = ee()->config->item('htaccess_path');
-			$vars['write_to_htaccess'] = TRUE;
-		}
-		else
-		{
-			$vars['form_hidden']['htaccess_path'] = ''; // empty value for the view
-			$vars['write_to_htaccess'] = FALSE;
-		}
-
-		return $vars;
 	}
 
 }

@@ -57,9 +57,9 @@ class Template_model extends CI_Model {
 	public function fetch(array $fields=array(), $load_groups=FALSE)
 	{
 		$templates = $this->fetch_from_db($fields, $load_groups);
-		foreach($templates as $template)
+		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '')
 		{
-			if ($template->save_template_file)
+			foreach($templates as $template)
 			{
 				$this->_load_template_file($template);
 			}
@@ -200,7 +200,6 @@ class Template_model extends CI_Model {
 		$entities = array();
 		foreach ($result->result_array() as $row)
 		{
-			$row['save_template_file'] = ($row['save_template_file'] == 'y' ? TRUE : FALSE);
 			$entity = new Template_Entity($row);
 			if ($load_groups)
 			{
@@ -236,9 +235,9 @@ class Template_model extends CI_Model {
 	public function fetch_last_edit(array $fields=array(), $load_groups=FALSE)
 	{
 		$templates = $this->fetch_from_db($fields, $load_groups);
-		foreach($templates as $template)
+		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '')
 		{
-			if ($template->save_template_file)
+			foreach($templates as $template)
 			{
 				$this->_load_template_file($template, TRUE);
 			}
@@ -260,7 +259,7 @@ class Template_model extends CI_Model {
 	{
 		$this->save_to_database($entity);
 
-		if ($entity->save_template_file)
+		if ($this->config->item('save_tmpl_files') == 'y' AND $this->config->item('tmpl_file_basepath') != '')
 		{
 			$this->save_to_file($entity);
 		}
@@ -414,7 +413,6 @@ class Template_model extends CI_Model {
 			'site_id' => $entity->site_id,
 			'group_id' => $entity->group_id,
 			'template_name' => $entity->template_name,
-			'save_template_file' => ($entity->save_template_file ? 'y' : 'n'),
 			'template_type' => $entity->template_type,
 			'template_data' => $entity->template_data,
 			'template_notes' => $entity->template_notes,
@@ -1178,11 +1176,6 @@ class Template_Entity {
 	 *
 	 */
 	protected $template_name;
-
-	/**
-	 *
-	 */
-	protected $save_template_file;
 
 	/**
 	 *

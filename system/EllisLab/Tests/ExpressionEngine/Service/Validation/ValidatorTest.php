@@ -55,13 +55,13 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase {
 
 		// false
 		$result = $this->validator->validate(array('a' => 'no'));
-		$this->assertEquals(1, count($result->getErrors('a')));
+		$this->assertEquals(1, count($result->getFailed('a')));
 
 		$result = $this->validator->validate(array('a' => 'foo-ey'));
-		$this->assertEquals(2, count($result->getErrors('a')));
+		$this->assertEquals(2, count($result->getFailed('a')));
 
 		$result = $this->validator->validate(array('a' => 'not good++'));
-		$this->assertEquals(3, count($result->getErrors('a')));
+		$this->assertEquals(3, count($result->getFailed('a')));
 	}
 
 	public function testStopAfterRequired()
@@ -80,10 +80,10 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase {
 
 		// false
 		$result = $this->validator->validate(array('a' => '+'));
-		$this->assertEquals(3, count($result->getErrors('a')));
+		$this->assertEquals(3, count($result->getFailed('a')));
 
 		$result = $this->validator->validate(array('a' => ''));
-		$this->assertEquals(1, count($result->getErrors('a')));
+		$this->assertEquals(1, count($result->getFailed('a')));
 	}
 
 	public function testSkipIfBlankAndNotRequired()
@@ -104,10 +104,13 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase {
 	public function testWhenPresent()
 	{
 		$rules = array(
-			'nickname' => 'whenPresent|min_length[5]',
+			'nickname' => 'whenPresent|required|min_length[5]',
 			'email' => 'whenPresent[newsletter]|required|email'
 		);
 		$this->validator->setRules($rules);
+
+		$result = $this->validator->validate(array('not' => 'set'));
+		$this->assertTrue($result->isValid());
 
 		$result = $this->validator->validate(array('nickname' => 'jimmy'));
 		$this->assertTrue($result->isValid());
@@ -124,6 +127,23 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase {
 			'newsletter' => '1',
 			'email' => 'not an email'
 		));
+		$this->assertFalse($result->isValid());
+	}
+
+	public function testPartial()
+	{
+		$rules = array('a' => 'required|min_length[8]');
+		$this->validator->setRules($rules);
+
+		// true
+		$result = $this->validator->validatePartial(array('a' => 'more than eight'));
+		$this->assertTrue($result->isValid());
+
+		$result = $this->validator->validatePartial(array('b' => 'wrong key'));
+		$this->assertTrue($result->isValid());
+
+		// false
+		$result = $this->validator->validatePartial(array('a' => 'short'));
 		$this->assertFalse($result->isValid());
 	}
 

@@ -19,17 +19,14 @@
 
 */
 
-$plugin_info = array(
-	'pi_name'			=> 'Magpie RSS Parser',
-	'pi_version'		=> '1.3.5',
-	'pi_author'			=> 'Paul Burdick',
-	'pi_author_url'		=> 'http://ellislab.com/',
-	'pi_description'	=> 'Retrieves and Parses RSS/Atom Feeds',
-	'pi_usage'			=> Magpie::usage()
-);
-
-
 Class Magpie {
+
+	public static $name        = 'Magpie RSS Parser';
+	public static $version     = '1.3.50';
+	public static $author      = 'Paul Burdick';
+	public static $author_url  = 'http://ellislab.com/';
+	public static $description = 'Retrieves and Parses RSS/Atom Feeds';
+	public static $typography  = FALSE;
 
 	var $cache_name		= 'magpie_cache';						// Name of cache directory
 	var $cache_refresh	= 360;									// Period between cache refreshes (in minutes)

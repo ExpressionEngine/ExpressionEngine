@@ -36,72 +36,26 @@ class Addons_model extends CI_Model {
 	 */
 	function get_plugin_formatting($include_none = FALSE)
 	{
-		$this->load->helper('directory');
-
 		static $filelist = array();
+		static $plugins  = array();
 
-		$exclude	= array('auto_xhtml');
-		$default	= array('br' => $this->lang->line('auto_br'), 'xhtml' => 'Xhtml');
+		if (empty($plugins))
+		{
+			$plugins = ee('Model')->get('Plugin')
+				->filter('is_typography_related', 'y')
+				->all();
+		}
+
+		$default = array('br' => lang('auto_br'), 'xhtml' => lang('xhtml'));
 
 		if ($include_none === TRUE)
 		{
-			$default['none'] = $this->lang->line('none');
+			$default['none'] = lang('none');
 		}
 
-		if ( ! count($filelist))
+		foreach ($plugins as $plugin)
 		{
-			$ext_len = strlen('.php');
-
-			// first party plugins
-			if (($map = directory_map(PATH_PI, TRUE)) !== FALSE)
-			{
-				foreach ($map as $file)
-				{
-					if (strncasecmp($file, 'pi.', 3) == 0 &&
-						substr($file, -$ext_len) == '.php' &&
-						strlen($file) > strlen('pi..php'))
-					{
-						$file = substr($file, 3, -strlen('.php'));
-						$filelist[$file] = ucwords(str_replace('_', ' ', $file));
-					}
-				}
-			}
-
-
-			// now third party add-ons, which are arranged in "packages"
-			// only catch files that match the package name, as other files are merely assets
-			if (($map = directory_map(PATH_ADDONS, 2)) !== FALSE)
-			{
-				foreach ($map as $pkg_name => $files)
-				{
-					if ( ! is_array($files))
-					{
-						$files = array($files);
-					}
-
-					foreach ($files as $file)
-					{
-						if (is_array($file))
-						{
-							// we're only interested in the top level files for the addon
-							continue;
-						}
-
-						// how abouts a plugin?
-						elseif (strncasecmp($file, 'pi.', 3) == 0 &&
-								substr($file, -$ext_len) == '.php' &&
-								strlen($file) > strlen('pi..php'))
-						{
-							$file = substr($file, 3, -$ext_len);
-
-							if ($file == $pkg_name)
-							{
-								$filelist[$pkg_name] = ucwords(str_replace('_', ' ', $pkg_name));
-							}
-						}
-					}
-				}
-			}
+			$filelist[$plugin->plugin_package] = $plugin->plugin_name;
 		}
 
 		$return = $default + $filelist;
@@ -116,15 +70,17 @@ class Addons_model extends CI_Model {
 	 * Get Plugins
 	 *
 	 * @access	public
+	 * @param	str	$plugin_name	(optional) Limit the return to this add-on
 	 * @return	array
 	 */
-	function get_plugins()
+	function get_plugins($plugin_name = NULL)
 	{
 		$this->load->helper('directory');
 
-		$plugins = array();
-		$info 	= array();
+		$info = array();
+
 		$ext_len = strlen('.php');
+		$plugins = array();
 
 		// first party plugins
 		if (($map = directory_map(PATH_PI, TRUE)) !== FALSE)
@@ -133,16 +89,17 @@ class Addons_model extends CI_Model {
 			{
 				if (strncasecmp($file, 'pi.', 3) == 0 && substr($file, -$ext_len) == '.php' && strlen($file) > strlen('pi..php'))
 				{
-					if ( ! @include_once(PATH_PI.$file))
+					$name = substr($file, 3, -$ext_len);
+
+					if ($plugin_name && $name != $plugin_name)
 					{
 						continue;
 					}
 
-					$name = substr($file, 3, -$ext_len);
-
-					$plugins[] = $name;
-
-					$info[$name] = array_unique($plugin_info);
+					$plugins[] = array(
+						'name' => $name,
+						'path' => PATH_PI.$file
+					);
 				}
 			}
 		}
@@ -172,18 +129,77 @@ class Addons_model extends CI_Model {
 					{
 						if ( ! class_exists(ucfirst($pkg_name)))
 						{
-							if ( ! @include_once(PATH_ADDONS.$pkg_name.'/'.$file))
+							if ($plugin_name && $pkg_name != $plugin_name)
 							{
 								continue;
 							}
+
+							$plugins[] = array(
+								'name' => $pkg_name,
+								'path' => PATH_ADDONS.$pkg_name.'/'.$file
+							);
 						}
-
-						$plugins[] = $pkg_name;
-
-						$info[$pkg_name] = array_unique($plugin_info);
 					}
 				}
 			}
+		}
+
+		foreach ($plugins as $plugin)
+		{
+			$class_name = ucfirst($plugin['name']);
+
+			if ( ! class_exists($class_name))
+			{
+				include($plugin['path']);
+
+				if ( ! class_exists($class_name))
+				{
+					trigger_error(str_replace(array('%c', '%f'), array(htmlentities($class_name), htmlentities($plugin['path'])), lang('plugin_class_does_not_exist')));
+					continue;
+				}
+			}
+
+			$properties = array('name', 'version', 'author', 'author_url', 'description', 'typography');
+			$error = FALSE;
+			$missing_properties = array();
+
+			foreach ($properties as $property)
+			{
+				if ( ! property_exists($class_name, $property))
+				{
+					$missing_properties[] = $property;
+				}
+			}
+
+			if ( ! empty($missing_properties))
+			{
+				ee()->logger->developer('Error: the plugin "' . $plugin["name"] . '" is missing the following static properties: ' . implode(', ', $missing_properties) . '.');
+				$error = TRUE;
+			}
+
+			if ( ! method_exists($class_name, 'usage'))
+			{
+				ee()->logger->developer('Error: the plugin "' . $plugin["name"] . '" is missing the usage() static method.');
+				$error = TRUE;
+			}
+
+			if ($error)
+			{
+				continue;
+			}
+
+			$plugin_info = array(
+				'installed_path' => $plugin['path'],
+				'pi_name'        => $class_name::$name,
+				'pi_version'     => $class_name::$version,
+				'pi_author'      => $class_name::$author,
+				'pi_author_url'  => $class_name::$author_url,
+				'pi_description' => $class_name::$description,
+				'pi_usage'       => $class_name::usage(),
+				'pi_typography'  => $class_name::$typography
+			);
+
+			$info[$plugin['name']] = $plugin_info;
 		}
 
 		return $info;
@@ -261,31 +277,6 @@ class Addons_model extends CI_Model {
 		}
 
 		return $_installed[$module_name];
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Accessory installed
-	 *
-	 * Returns true if an accessory is installed, false if not
-	 *
-	 * @access	public
-	 * @param	string
-	 * @return	boolean
-	 */
-	function accessory_installed($acc_name)
-	{
-		static $_installed = array();
-
-		if ( ! isset($_installed[$acc_name]))
-		{
-			$this->db->from("accessories");
-			$this->db->where("class", ucfirst(strtolower($acc_name.'_acc')));
-			$_installed[$acc_name] = ($this->db->count_all_results() > 0) ? TRUE : FALSE;
-		}
-
-		return $_installed[$acc_name];
 	}
 
 	// --------------------------------------------------------------------
@@ -382,26 +373,6 @@ class Addons_model extends CI_Model {
 		$this->db->set($data);
 		$this->db->where('class', $class);
 		$this->db->update('extensions');
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Update Accessory Information
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function update_accessory($class, $data)
-	{
-		// allow either "class", or "class_acc" to be passed
-		if (substr($class, -4) != '_acc')
-		{
-			$class = $class.'_acc';
-		}
-
-		$this->db->where('class', $class);
-		$this->db->update('accessories', $data);
 	}
 }
 

@@ -1,32 +1,54 @@
-<?php if(isset($pages) && count($pages) > 0):?>
+<div class="box">
+	<?=form_open($base_url, 'class="tbl-ctrls"')?>
+		<fieldset class="tbl-search right">
+			<div class="filters">
+				<ul>
+					<li>
+						<a class="has-sub" href=""><?=lang('create_new')?></a>
+						<div class="sub-menu">
+							<fieldset class="filter-search">
+								<input type="text" value="" placeholder="<?=lang('filter_channels')?>">
+							</fieldset>
+							<ul>
+								<?php foreach (ee()->menu->generate_menu()['channels']['create'] as $channel_name => $link): ?>
+									<li><a href="<?=$link?>"><?=$channel_name?></a></li>
+								<?php endforeach ?>
+							</ul>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</fieldset>
+		<h1><?=lang('all_pages')?></h1>
 
-	<?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=pages'.AMP.'method=delete_confirm')?>
+		<?=ee('Alert')->get('pages-form')?>
 
-	<?php
-		$this->table->set_heading(
-			lang('page'),
-			lang('view_page'),
-			form_checkbox('select_all', 'true', FALSE, 'class="toggle_all" id="select_all"').NBS.lang('delete', 'select_all')
-		);
+		<?php $this->ee_view('_shared/table', $table); ?>
+		<?php $this->ee_view('_shared/pagination'); ?>
+		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
+		<fieldset class="tbl-bulk-act">
+			<select name="bulk_action">
+				<option value="">-- <?=lang('with_selected')?> --</option>
+				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
+			</select>
+			<input class="btn submit" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
+		</fieldset>
+		<?php endif; ?>
+	<?=form_close();?>
+</div>
 
-		foreach($pages as $page)
-		{
-			$this->table->add_row(
-									$page['indent'].'<a href="'.BASE.AMP.'C=content_publish'.AMP.'M=entry_form'.AMP.'entry_id='.$page['entry_id'].'">'.$page['page'].'</a>',
-									'<a href="'.$page['view_url'].'">'.lang('view_page').'</a>',
-									form_checkbox($page['toggle'])
-									);
-		}
+<?php $this->startOrAppendBlock('modals'); ?>
 
-	?>
-			<?=$this->table->generate()?>
+<?php
+$modal_vars = array(
+	'name'      => 'modal-confirm-remove',
+	'form_url'	=> cp_url('addons/settings/pages'),
+	'hidden'	=> array(
+		'bulk_action'	=> 'remove'
+	)
+);
 
-	<p>
-		<?=form_submit(array('name' => 'submit', 'value' => lang('delete'), 'class' => 'submit'))?>
-	</p>
+$this->ee_view('_shared/modal_confirm_remove', $modal_vars);
+?>
 
-	<?=form_close()?>
-
-<?php else: ?>
-	<p class="notice"><?=lang('no_pages')?></p>
-<?php endif;?>
+<?php $this->endBlock(); ?>

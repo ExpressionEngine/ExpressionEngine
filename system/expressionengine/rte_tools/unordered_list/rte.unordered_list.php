@@ -44,7 +44,8 @@ class Unordered_list_rte {
 		return array(
 			'rte.unordered_list'	=> array(
 				'add'		=> lang('make_ul'),
-				'remove'	=> lang('remove_ul')
+				'remove'	=> lang('remove_ul'),
+				'title'		=> lang('title_ul')
 			)
 		);
 	}
@@ -61,6 +62,8 @@ class Unordered_list_rte {
 		ob_start(); ?>
 
 		WysiHat.addButton('unordered_list', {
+			cssClass: 'rte-list',
+			title:			EE.rte.unordered_list.title,
 			label:			EE.rte.unordered_list.add,
 			'toggle-text':	EE.rte.unordered_list.remove,
 			handler: function(state){

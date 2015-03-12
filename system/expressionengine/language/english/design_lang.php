@@ -4,6 +4,530 @@ $lang = array(
 
 'design'						=> 'Design',
 
+// 3.0
+
+'template_manager' =>
+'Template Manager',
+
+'sync_all_templates' =>
+'Sync All Templates',
+
+'export_all' =>
+'Export All Templates',
+
+'search_templates' =>
+'Search Templates',
+
+'template_groups' =>
+'Template Groups',
+
+'system_templates' =>
+'System Templates',
+
+'template_partials' =>
+'Template Partials',
+
+'template_variables' =>
+'Template Variables',
+
+'template_routes' =>
+'Template Routes',
+
+'create_new_template' =>
+'Create New Template',
+
+'messages' =>
+'messages',
+
+'email' =>
+'Email',
+
+'members' =>
+'members',
+
+'forums' =>
+'forums',
+
+'default' =>
+'default',
+
+'templates_in_group' =>
+'Templates in <b>%s</b>',
+
+'btn_create_template_group' =>
+'Create Template Group',
+
+'name' =>
+'Name',
+
+'name_desc' =>
+'Short name for this group.<br><i>No spaces. Underscores and dashes are allowed.',
+
+'duplicate_group' =>
+'Duplicate existing group?',
+
+'duplicate_group_desc' =>
+'Will be created with all templates found in copied group.',
+
+'make_default_group' =>
+'Make default group?',
+
+'make_default_group_desc' =>
+'When set to <b>yes</b>, this group will become the default group for this website.',
+
+'edit_template_group' =>
+'Edit Template Group',
+
+'create_template_group' =>
+'Create Template Group',
+
+'create_template_group_success' =>
+'Template Group Created',
+
+'create_template_group_success_desc' =>
+'The template group <b>%s</b> has been created.',
+
+'create_template_group_error' =>
+'Cannot Create Template Group',
+
+'create_template_group_error_desc' =>
+'We were unable to create this group, please review and fix errors below.',
+
+'edit_template_group_success' =>
+'Template Group Updated',
+
+'edit_template_group_success_desc' =>
+'The template group <b>%s</b> has been updated.',
+
+'edit_template_group_error' =>
+'Cannot Update Template Group',
+
+'edit_template_group_error_desc' =>
+'We were unable to update this group, please review and fix errors below.',
+
+'template_group_removed' =>
+'Template Group Removed',
+
+'template_group_removed_desc' =>
+'The template group <b>%s</b> has been removed.',
+
+'illegal_characters' =>
+'The name you submitted may only contain alpha-numeric characters, underscores, and dashes',
+
+'reserved_name' =>
+'The name you have chosen is a reserved word that cannot be used.',
+
+'template_group_taken' =>
+'The template group name you submitted is already taken',
+
+'template_partials_header' =>
+'Template Partials<br><i>Reusable dynamic content, tags &amp; templates.</i>',
+
+'partial' =>
+'Partial',
+
+'all_sites' =>
+'All Sites',
+
+'template_partial' =>
+'Template Partial',
+
+'export_partials' =>
+'Export Partials',
+
+'export_variables' =>
+'Export Variables',
+
+'yes' =>
+'yes',
+
+'no' =>
+'no',
+
+'create_partial' =>
+'Create Partial',
+
+'edit_partial' =>
+'Edit Partial',
+
+'btn_create_partial' =>
+'Create Partial',
+
+'btn_edit_partial' =>
+'Edit Partial',
+
+'snippet_name' =>
+'Name',
+
+'snippet_name_desc' =>
+'Short name for this partial.',
+
+'snippet_contents' =>
+'Content',
+
+'snippet_contents_desc' =>
+'Content of this partial.',
+
+'enable_partial_on_all_sites' =>
+'Enable on all sites?',
+
+'enable_partial_on_all_sites_desc' =>
+'When set to <b>enable</b>, this partial will be available for use in all <abbr title="Multi-Site Manager">MSM</abbr> sites.',
+
+'create_template_partial_success' =>
+'Template Partial Created',
+
+'create_template_partial_success_desc' =>
+'The template partial <b>%s</b> has been created.',
+
+'create_template_partial_error' =>
+'Cannot Create Template Partial',
+
+'create_template_partial_error_desc' =>
+'We were unable to create this partial, please review and fix errors below.',
+
+'edit_template_partial_success' =>
+'Template Partial Updated',
+
+'edit_template_partial_success_desc' =>
+'The template partial <b>%s</b> has been updated.',
+
+'edit_template_partial_error' =>
+'Cannot Update Template Partial',
+
+'edit_template_partial_error_desc' =>
+'We were unable to update this partial, please review and fix errors below.',
+
+'error_no_template_group' =>
+'The Template Group <b>%s</b> does not exist.',
+
+'error_no_template' =>
+'No such Template exists.',
+
+'error_no_snippet' =>
+'The Template Partial <b>%s</b> does not exist.',
+
+'error_no_global_variable' =>
+'The Template Variable <b>%s</b> does not exist.',
+
+'template_name_taken' =>
+'The template name you submitted is already taken',
+
+'snippet_name_taken' =>
+'The template partial name you submitted is already taken',
+
+'success' =>
+'Success',
+
+'snippets_removed_desc' =>
+'The following snippets were removed',
+
+'template_variables_header' =>
+'Template Variables<br><i>Reusable static content replacements.</i>',
+
+'template_variable' =>
+'Template Variable',
+
+'template_variables' =>
+'Template Variables',
+
+'variable' =>
+'Variable',
+
+'no_global_variables' =>
+'There are currently no Template Variables',
+
+'no_snippets' =>
+'There are currently no Template Partials',
+
+'btn_create_template_variable' =>
+'Create Template Variable',
+
+'btn_edit_template_variable' =>
+'Edit Template Variable',
+
+'create_template_variable_success' =>
+'Template Partial Created',
+
+'create_template_variable_success_desc' =>
+'The template variable <b>%s</b> has been created.',
+
+'create_template_variable_error' =>
+'Cannot Create Template Partial',
+
+'create_template_variable_error_desc' =>
+'We were unable to create this variable, please review and fix errors below.',
+
+'edit_template_variable_success' =>
+'Template Partial Updated',
+
+'edit_template_variable_success_desc' =>
+'The template variable <b>%s</b> has been updated.',
+
+'edit_template_variable_error' =>
+'Cannot Update Template Partial',
+
+'edit_template_variable_error_desc' =>
+'We were unable to update this variable, please review and fix errors below.',
+
+'create_template_variable' =>
+'Create Template Variable',
+
+'edit_template_variable' =>
+'Edit Template Variable',
+
+'variable_name' =>
+'Name',
+
+'variable_name_desc' =>
+'Short name for this variable.',
+
+'variable_data' =>
+'Content',
+
+'variable_data_desc' =>
+'Content of this variable.',
+
+'enable_template_variable_on_all_sites' =>
+'Enable on all sites?',
+
+'enable_template_variable_on_all_sites_desc' =>
+'When set to <b>enable</b>, this variable will be available for use in all <abbr title="Multi-Site Manager">MSM</abbr> sites.',
+
+'template_variables_removed_desc' =>
+'The following template variables were removed',
+
+'create_template' =>
+'Create Template',
+
+'template_name_desc' =>
+'Short name for this template.<br><i>No spaces. Underscores and dashes are allowed.</i>',
+
+'template_type' =>
+'Type',
+
+'template_type_desc' =>
+'Choose a template type.',
+
+'duplicate_existing_template' =>
+'Duplicate existing template?',
+
+'duplicate_existing_template_desc' =>
+'Will be created with all code found in copied template.',
+
+'btn_create_template' =>
+'Create Template',
+
+'btn_create_and_edit_template' =>
+'Create &amp; Edit Template',
+
+'create_template_success' =>
+'Template Created',
+
+'create_template_success_desc' =>
+'The template <b>%s/%s</b> has been created.',
+
+'edit_template' =>
+'Edit Template: %s',
+
+'breadcrumb_group' =>
+'Group: %s',
+
+'last_edit' =>
+'Last Edit: %s by %s',
+
+'view_rendered' =>
+'view rendered',
+
+'notes' =>
+'Notes',
+
+'settings' =>
+'Settings',
+
+'access' =>
+'Access',
+
+'template_notes' =>
+'Template Notes',
+
+'template_notes_desc' =>
+'Use this form field to store notes and information about this template',
+
+'enable_caching' =>
+'Enable Caching?',
+
+'enable_caching_desc' =>
+'When set to <b>enable</b>, ExpressionEngine will cache this template.',
+
+'refresh_interval' =>
+'Refresh Interval',
+
+'refresh_interval_desc' =>
+'Set how often should the cache refresh in minutes.',
+
+'enable_php' =>
+'Allow PHP?',
+
+'enable_php_desc' =>
+'Allows the use of standard PHP within this template.',
+
+'parse_stage' =>
+'PHP Parsing Stage',
+
+'parse_stage_desc' =>
+'When set to <b>output</b>, PHP will be parsed after the template.',
+
+'hit_counter' =>
+'Hit Counter',
+
+'hit_counter_desc' =>
+'Shows the number of times this template has been accessed from the website.',
+
+'allowed_member_groups' =>
+'Allowed member groups',
+
+'allowed_member_groups_desc' =>
+'The following user groups are allowed to access this template.',
+
+'allowed_member_groups_super_admin' =>
+'Super Administrators are <b>always</b> allowed.',
+
+'non_access_redirect' =>
+'Non-access redirect',
+
+'non_access_redirect_desc' =>
+'Page to redirect users without permissions to.',
+
+'enable_http_authentication' =>
+'Enable HTTP Authentication?',
+
+'enable_http_authentication_desc' =>
+'When set to <b>enable</b>, users with permissions will have to login to view this template.',
+
+'template_route_override' =>
+'Template route override',
+
+'template_route_override_desc' =>
+'Overrides the ExpressionEngine standard <mark>group/template</mark> routing.',
+
+'require_all_segments' =>
+'Require all segments?',
+
+'require_all_segments_desc' =>
+'When set to <b>yes</b>, all segments must be present in the request <abbr title="Unified Resource Identifier">URI</abbr>.',
+
+'btn_update_template' =>
+'Update Template',
+
+'btn_update_and_finish_editing' =>
+'Update &amp; Finish Editing',
+
+'update_template_error' =>
+'Cannot Update Template',
+
+'update_template_error_desc' =>
+'We were unable to update this template, please review and fix the errors.',
+
+'update_template_success' =>
+'Template Updated',
+
+'update_template_success_desc' =>
+'The template <b>%s</b> has been updated.',
+
+'template_settings_and_access' =>
+'Template Settings &amp; Access',
+
+'btn_save_settings' =>
+'Save Settings',
+
+'templates_removed_desc' =>
+'The following templates were removed',
+
+'error_export' =>
+'Cannot Export',
+
+'error_cannot_create_zip' =>
+'Cannot create a .zip file',
+
+'group_not_found' =>
+'No template group found',
+
+// System Templates -> Messages
+
+'system' =>
+'System',
+
+'system_message_templates' =>
+'System Message Templates',
+
+'offline_template' =>
+'Site Offline',
+
+'message_template' =>
+'User Messages',
+
+'message_template_warning' =>
+'<b>Warning</b>: Do not delete any of the five required variables: {title} {meta_refresh} {heading} {content} {link}',
+
+// System Templates -> Email
+
+'email_message_templates' =>
+'Email Templates',
+
+'variables' =>
+'Variables',
+
+'variables_desc' =>
+'List of available variables for this Email template.',
+
+'enable_template' =>
+'Enable template?',
+
+'enable_template_desc' =>
+'When set to <b>enable</b>, this template will be used, in place of an auto generated Email in the users language.',
+
+'content' =>
+'Content',
+
+'comments' =>
+'Comments',
+
+'members' =>
+'Members',
+
+'private_messages' =>
+'Private Messages',
+
+'mailing_lists' =>
+'Mailing Lists',
+
+'forums' =>
+'Forums',
+
+// System Templates -> Members
+
+'file_not_writable' =>
+'<b>Warning</b>: This file is not writable',
+
+'file_writing_instructions' =>
+'You will not be able to save changes to this template until it is given write permissions for this server.',
+
+// System Templates -> Forums
+
+'forum_manager' =>
+'Forum Manager',
+
+'forum_templates' =>
+'Forum Templates',
+
+
+'unable_to_find_templates' =>
+'Unable to locate the templates.',
+
+'unable_to_find_template_file' =>
+'Unable to locate the template file.',
+
 //----------------------------
 // Menu
 //----------------------------
@@ -112,9 +636,6 @@ $lang = array(
 'user_messages_template' =>
 'User Message Template',
 
-'offline_template' =>
-'System Offline Template',
-
 'offline_template_desc' =>
 'This template contains the page that is shown when your site is offline.',
 
@@ -130,9 +651,6 @@ $lang = array(
 'no_templates_assigned' =>
 'There are no templates currently assigned to you',
 
-'save_template_file' =>
-'Save Template as File',
-
 'template_not_saved' =>
 'Unable to save your template as a text file',
 
@@ -141,12 +659,6 @@ $lang = array(
 
 'template_file_not_renamed' =>
 'Unable to rename the associated template file',
-
-'template_group_taken' =>
-'The template group name you submitted is already taken',
-
-'template_type' =>
-'Template Type',
 
 'do_not_duplicate_group' =>
 'Do not duplicate a group',
@@ -172,32 +684,14 @@ $lang = array(
 'cache_enable' =>
 'Enable Caching?',
 
-'refresh_interval' =>
-'Refresh Interval',
-
 'refresh_in_minutes' =>
 'In minutes',
-
-'enable_php' =>
-'Allow PHP?',
-
-'parse_stage' =>
-'PHP Parsing Stage',
 
 'protect_javascript' =>
 'Protect Javascript',
 
-'access' =>
-'Access',
-
-'create_new_template' =>
-'Create a New Template',
-
 'security_warning' =>
 'Note: Allowing PHP in templates has security implications. Please consult the <a href=\'%s\' title=\'Documentation\'>documentation</a>.',
-
-'hit_counter' =>
-'Hit Counter',
 
 'input' =>
 'Input',
@@ -223,9 +717,6 @@ $lang = array(
 'name_of_template_group' =>
 'Template Group Name',
 
-'template_groups' =>
-'Template Groups',
-
 'template_group_instructions' =>
 'The name must be a single word with no spaces',
 
@@ -247,11 +738,8 @@ $lang = array(
 'order' =>
 'Order',
 
-'reserved_name' =>
-'The name you have chosen is a reserved word that cannot be used.',
-
 'webpage' =>
-'Web Page',
+'Web Page (HTML)',
 
 'css_stylesheet' =>
 'CSS',
@@ -265,17 +753,11 @@ $lang = array(
 'id_not_found' =>
 'Template does not exist - invalid id',
 
-'template_name_taken' =>
-'The template name you submitted is already taken',
-
 'template_group_del_conf' =>
 'Template group delete confirm',
 
 'template_del_conf' =>
 'Template delete confirm',
-
-'edit_template' =>
-'Edit Template',
 
 'delete_template_group' =>
 'Delete Group',
@@ -283,17 +765,11 @@ $lang = array(
 'choose_delete_template_group' =>
 'Please choose the template group to delete',
 
-'edit_template_group' =>
-'Edit Group',
-
 'group_order' =>
 'Group order',
 
 'export_templates' =>
 'Export Templates',
-
-'export_all' =>
-'Export All',
 
 'export_group' =>
 'Export Group',
@@ -309,9 +785,6 @@ $lang = array(
 
 'from_db' =>
 'From Database',
-
-'last_edit' =>
-'Last Edit:',
 
 'template_edit_date' =>
 'Template Edit Date',
@@ -360,9 +833,6 @@ $lang = array(
 
 'all_fields_required' =>
 'You must submit all form fields',
-
-'illegal_characters' =>
-'The name you submitted may only contain alpha-numeric characters, underscores, and dashes',
 
 'edit_template_group_order' =>
 'Edit Group Order',
@@ -466,9 +936,6 @@ $lang = array(
 'do_not_duplicate_template' =>
 'Do not duplicate a template',
 
-'duplicate_existing_template' =>
-'Duplicate an Existing Template?',
-
 'template_from_library' =>
 'Use a template from your library',
 
@@ -502,29 +969,14 @@ $lang = array(
 'template_notes_desc' =>
 'Use this form field to store notes and information about this template',
 
-'global_variables' =>
-'Global Variables',
-
 'global_variables_explanation' =>
 'You can define your own variables and add them to any of your templates.',
-
-'no_global_variables' =>
-'There are currently no global variables',
-
-'global_variable_name' =>
-'Variable Name',
 
 'create_new_global_variable' =>
 'Create a New Global Variable',
 
-'variable_name' =>
-'Variable Name',
-
 'global_variable_syntax' =>
 'Variable Syntax',
-
-'variable_data' =>
-'Variable Content',
 
 'global_var_created' =>
 'Global Variable Created',
@@ -563,14 +1015,8 @@ ExpressionEngine tags, variables, or PHP, consider <a href =\'%s\'>Global Variab
 'create_new_snippet' =>
 'Create a New Snippet',
 
-'no_snippets' =>
-'There are currently no Snippets',
-
 'snippet_syntax' =>
 'Snippet Syntax',
-
-'snippet_name' =>
-'Snippet Name',
 
 'snippet_edit' =>
 'Edit Snippet: %s',
@@ -633,13 +1079,6 @@ ExpressionEngine tags, variables, or PHP, consider <a href =\'%s\'>Global Variab
 'alphabetize_group_order' =>
 'Alphabetize Group Order',
 
-'enable_http_authentication' =>
-'Enable HTTP Authentication?',
-
-'enable_http_authentication_subtext' =>
-'If turned on, users from the allowed groups above will have to login via their
-username and password to view the template.',
-
 'template_route' =>
 'Template Route:',
 
@@ -683,9 +1122,6 @@ and templates will only be accesible from the default group/template URL.',
 'no_templates_available' =>
 'No Templates Available',
 
-'template_manager' =>
-'Template Manager',
-
 'url_manager' =>
 'Template Route Manager',
 
@@ -721,26 +1157,14 @@ You can drag and drop to rearrange the order.',
 'template_set_names' =>
 'Available Template Sets',
 
-'unable_to_find_templates' =>
-'Unable to locate the member profile templates.',
-
-'unable_to_find_template_file' =>
-'Unable to locate the member template file.',
-
 'template_updated' =>
 'Template Has Been Updated',
 
 'template_set' =>
 'Template Set:',
 
-'file_not_writable' =>
-'Note: This file is not writable',
-
 'error_opening_template' =>
 'Error: Unable to open the template file in order to write its contents.',
-
-'file_writing_instructions' =>
-'You will not be able to save changes to this template until it is given write permissions for this server.',
 
 'aim_console' =>
 'AOL Instant Messenger Console',
@@ -807,9 +1231,6 @@ You can drag and drop to rearrange the order.',
 
 'stylesheet' =>
 'CSS Stylesheet',
-
-'success' =>
-'Profile Update Message',
 
 'username_change_disallowed' =>
 'Username Change Disallowed Message',

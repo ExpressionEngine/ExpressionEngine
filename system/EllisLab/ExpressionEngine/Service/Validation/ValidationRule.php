@@ -40,6 +40,11 @@ namespace EllisLab\ExpressionEngine\Service\Validation;
 abstract class ValidationRule {
 
 	/**
+	 * @var array Rule parameters
+	 */
+	protected $parameters = array();
+
+	/**
 	 * Validate a Value
 	 *
 	 * Validate a value against this rule. If it is valid, return TRUE
@@ -51,37 +56,104 @@ abstract class ValidationRule {
 	abstract public function validate($value);
 
 	/**
-	 * @return BOOL  Stop validating if this rule fails
-	 */
-	public function stopsOnFailure()
-	{
-		return FALSE;
-	}
-
-	/**
-	 * @return BOOL  Rule is a presence indicator
-	 */
-	public function skipsOnFailure()
-	{
-		return FALSE;
-	}
-
-	/**
-	 * Optional if you wish to support parameters
-	 *
-	 * Not actually defined here so that we can error when
-	 * parameters are passed to a rule that does not take them.
-	 */
-	/*
-	public function setParameters(array $parameters)
-	*/
-
-	/**
 	 * Optional if you need access to other values
+	 *
+	 * Defaults to blank since we don't want to store
+	 * all that information if we're not going to need it.
 	 */
-	public function setAllValues(array $values)
+	public function setAllValues(array $values) { /* blank */ }
+
+	/**
+	 *
+	 */
+	public function setParameters(array $parameters)
 	{
-		// nada, no need to store this information if it's not needed
+		$this->parameters = $parameters;
 	}
 
+	/**
+	 *
+	 */
+	public function assertParameters()
+	{
+		$names = func_get_args();
+
+		$count_needed = count($names);
+		$count_given = count($this->parameters);
+
+		if ($count_needed > $count_given)
+		{
+			$this->throwNeedsParameters(array_slice($names, $count_given));
+		}
+
+		return $this->parameters;
+	}
+
+	/**
+	 * Hard failure. Will mark the rule as failed and stop processing rules
+	 * for this field.
+	 */
+	public function stop()
+	{
+		return Validator::STOP;
+	}
+
+	/**
+	 * Soft failure. Skips the rest of the validation process, but does not
+	 * mark the rule as failed.
+	 */
+	public function skip()
+	{
+		return Validator::SKIP;
+	}
+
+	/**
+	 *
+	 */
+	public function getName()
+	{
+		return strtolower(basename(str_replace('\\', '/', get_class($this))));
+	}
+
+	/**
+	 *
+	 */
+	public function getParameters()
+	{
+		return $this->parameters;
+	}
+
+	/**
+	 *
+	 */
+	public function getLanguageKey()
+	{
+		return $this->getName();
+	}
+
+	/**
+	 * Return the language data for the validation error.
+	 */
+	public function getLanguageData()
+	{
+		return array($this->getName(), $this->getParameters());
+	}
+
+	/**
+	 *
+	 */
+	protected function throwNeedsParameters($missing = array())
+	{
+		$rule_id = "the {$this->getName()} validation rule";
+
+		if (count($missing) == 1)
+		{
+			throw new \Exception("Missing {$missing[0]} parameter for {$rule_id}.");
+		}
+
+		$last = array_pop($missing);
+		$init = implode(', ', $missing);
+
+		throw new \Exception("Missing {$init} and {$last} parameters for {$rule_id}.");
+	}
 }

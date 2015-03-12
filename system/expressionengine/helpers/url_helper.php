@@ -30,34 +30,19 @@
 /**
  * Create a CP Path
  *
- * @param	string	$path				controller/method path
- * @param	mixed	$qs					query string [array|string]
- * @param	bool	$force_base_cp_url	whether to force the 'cp_url' base address on CP generated URLs
+ * @param	string	path
+ * @param	mixed	query string [array|string]
  * @return	string
  */
-function cp_url($path, $qs = '', $force_base_cp_url = FALSE)
+function cp_url($path, $qs = '')
 {
-	$path = trim($path, '/');
-	$path = preg_replace('#^cp(/|$)#', '', $path);
-
-	if (is_array($qs))
-	{
-		$qs = http_build_query($qs, AMP);
-	}
-
-	$s = ee()->session->session_id();
-
-	if ($s)
-	{
-		// Remove AMP from the beginning of the query string if it exists
-		$qs = preg_replace('#^'.AMP.'#', '', $qs.AMP.'S='.$s);
-	}
-
-	$path = rtrim('?/cp/'.$path, '/');
-
-	$base = (REQ == 'CP' && ! $force_base_cp_url) ? SELF : ee()->config->item('cp_url');
-
-	return $base.$path.rtrim('&'.$qs, '&');
+	$url = new \EllisLab\ExpressionEngine\Library\CP\URL(
+		$path,
+		ee()->session->session_id(),
+		$qs,
+		(REQ != 'CP') ? ee()->config->item('cp_url') : ''
+	);
+	return $url->compile();
 }
 
 // ------------------------------------------------------------------------

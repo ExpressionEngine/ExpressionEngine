@@ -485,7 +485,7 @@ class Members {
 		{
 			// Fetch Comment Subscriptions
 			ee()->db->distinct();
-			ee()->db->select('comment_subscriptions.entry_id, recent_comment_date, subscription_date');
+			ee()->db->select('comment_subscriptions.entry_id, recent_comment_date, subscription_date, hash');
 			ee()->db->from('comment_subscriptions');
 			ee()->db->join('channel_titles', 'comment_subscriptions.entry_id = channel_titles.entry_id', 'left');
 			ee()->db->where('member_id', $member_id);
@@ -514,7 +514,7 @@ class Members {
 		if (ee()->db->table_exists('exp_forum_subscriptions'))
 		{
 			// Fetch Forum Subscriptions
-			ee()->db->select('forum_subscriptions.topic_id, last_post_date, subscription_date');
+			ee()->db->select('forum_subscriptions.topic_id, last_post_date, subscription_date, hash');
 			ee()->db->from('forum_subscriptions');
 			ee()->db->join('forum_topics', 'forum_subscriptions.topic_id = forum_topics.topic_id', 'left');
 			ee()->db->where('member_id', $member_id);

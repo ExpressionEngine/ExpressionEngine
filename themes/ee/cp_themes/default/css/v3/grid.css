@@ -1,0 +1,4 @@
+.grid-input-form tr.grid-blank-row,
+.grid-input-form tr.no-results {
+	display: none;
+}

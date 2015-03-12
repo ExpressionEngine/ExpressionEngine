@@ -1,15 +1,18 @@
 <?php
 
-use EllisLab\ExpressionEngine\Service\Config;
-use EllisLab\ExpressionEngine\Service\Database;
-use EllisLab\ExpressionEngine\Service\Model;
-use EllisLab\ExpressionEngine\Service\Validation;
 use EllisLab\ExpressionEngine\Library\Event;
 use EllisLab\ExpressionEngine\Library\Filesystem;
+use EllisLab\ExpressionEngine\Service\Alert;
+use EllisLab\ExpressionEngine\Service\Config;
+use EllisLab\ExpressionEngine\Service\Database;
+use EllisLab\ExpressionEngine\Service\Filter;
+use EllisLab\ExpressionEngine\Service\Grid;
+use EllisLab\ExpressionEngine\Service\Model;
+use EllisLab\ExpressionEngine\Service\Validation;
+use EllisLab\ExpressionEngine\Service\View;
 
 // TODO should put the version in here at some point ...
 return array(
-
 
 	'vendor' => 'EllisLab',
 	'product' => 'ExpressionEngine',
@@ -18,6 +21,11 @@ return array(
 	'namespace' => 'EllisLab\ExpressionEngine',
 
 	'services' => array(
+
+		'db' => function($ee)
+		{
+			return $ee->make('Database')->newQuery();
+		},
 
 		'Event' => function($ee)
 		{
@@ -29,9 +37,35 @@ return array(
 			return new Filesystem\Filesystem();
 		},
 
+		'View' => function($ee, $basepath = '')
+		{
+			return new View\ViewFactory($basepath, ee()->load, ee()->view);
+		},
+
+		'Filter' => function($ee)
+		{
+			$filters = new Filter\FilterFactory($ee->make('View', '_shared/filters'));
+			$filters->setDIContainer($ee);
+			return $filters;
+		},
+
+		'Model' => function($ee)
+		{
+			$frontend = new Model\Frontend($ee->make('Model.Datastore'));
+			$frontend->setValidationFactory($ee->make('Validation'));
+
+			return $frontend;
+		}
+
 	),
 
 	'services.singletons' => array(
+
+		'Alert' => function($ee)
+		{
+			$view = $ee->make('View')->make('_shared/alert');
+			return new Alert\AlertCollection(ee()->session, $view);
+		},
 
 		'Config' => function($ee)
 		{
@@ -47,17 +81,20 @@ return array(
 			return new Database\Database($db_config);
 		},
 
-		'Model' => function($ee)
+		'Grid' => function($ee)
+		{
+			return new Grid\Grid();
+		},
+
+		'Model.Datastore' => function($ee)
 		{
 			$app = $ee->make('App');
 
-			$datastore = new Model\DataStore(
+			return new Model\DataStore(
 				ee()->db,
 				$app->getModels(),
 				$ee->getPrefix()
 			);
-
-			return new Model\Frontend($datastore);
 		},
 
 		'Request' => function($ee)
@@ -82,9 +119,9 @@ return array(
 		# EllisLab\ExpressionEngine\Model..
 
 			// ..\Addon
-			'Accessory' => 'Model\Addon\Accessory',
 			'Extension' => 'Model\Addon\Extension',
 			'Module' => 'Model\Addon\Module',
+			'Plugin' => 'Model\Addon\Plugin',
 
 			// ..\Category
 			'Category' => 'Model\Category\Category',
@@ -93,6 +130,7 @@ return array(
 			// ..\File
 			'UploadDestination' => 'Model\File\UploadDestination',
 			'FileDimension' => 'Model\File\FileDimension',
+			'File' => 'Model\File\File',
 
 			// ..\Log
 			'CpLog' => 'Model\Log\CpLog',
@@ -129,7 +167,9 @@ return array(
 			'ChannelFieldGroup'=> 'Module\Channel\Model\ChannelFieldGroup',
 			'ChannelFieldStructure' => 'Module\Channel\Model\ChannelFieldStructure',
 			'ChannelEntry' => 'Module\Channel\Model\ChannelEntry',
-			'ChannelFormSettings' => 'EllisLab\ExpressionEngine\Module\Channel\Model\ChannelFormSettings',
+			'ChannelEntryAutosave' => 'Module\Channel\Model\ChannelEntryAutosave',
+			'ChannelFormSettings' => 'Module\Channel\Model\ChannelFormSettings',
+			'ChannelLayout' => 'Module\Channel\Model\ChannelLayout',
 
 			// ..\Comment
 			'Comment' => 'Module\Comment\Model\Comment',

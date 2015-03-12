@@ -1420,8 +1420,8 @@ class EE_Template {
 
 								while (is_int(strpos($TMPL2->tag_data[$i][$tag_data_key][$name], LD.'exp:')))
 								{
-									unset(ee()->TMPL);
-									ee()->TMPL = new EE_Template();
+									ee()->remove('TMPL');
+									ee()->set('TMPL', new EE_Template());
 									ee()->TMPL->start_microtime = $this->start_microtime;
 									ee()->TMPL->template = $TMPL2->tag_data[$i][$tag_data_key][$name];
 									ee()->TMPL->tag_data	= array();
@@ -1445,7 +1445,8 @@ class EE_Template {
 
 								unset($TMPL2);
 
-								ee()->TMPL = $this;
+								ee()->remove('TMPL');
+								ee()->set('TMPL', $this);
 							}
 						}
 					}
@@ -1462,8 +1463,8 @@ class EE_Template {
 
 						while (is_int(strpos($TMPL2->tag_data[$i]['block'], LD.'exp:')))
 						{
-							unset(ee()->TMPL);
-							ee()->TMPL = new EE_Template();
+							ee()->remove('TMPL');
+							ee()->set('TMPL', new EE_Template());
 							ee()->TMPL->start_microtime = $this->start_microtime;
 							ee()->TMPL->template = $TMPL2->tag_data[$i]['block'];
 							ee()->TMPL->tag_data	= array();
@@ -1487,7 +1488,8 @@ class EE_Template {
 
 						unset($TMPL2);
 
-						ee()->TMPL = $this;
+						ee()->remove('TMPL');
+						ee()->set('TMPL', $this);
 					}
 				}
 
@@ -2460,9 +2462,8 @@ class EE_Template {
 
 					$query = ee()->db->select('a.template_id, a.template_data,
 						a.template_name, a.template_type, a.edit_date,
-						a.save_template_file, a.cache, a.refresh, a.hits,
-						a.allow_php, a.php_parse_location, a.protect_javascript,
-						b.group_name')
+						a.cache, a.refresh, a.hits,
+						a.allow_php, a.php_parse_location, b.group_name')
 						->from('templates a')
 						->join('template_groups b', 'a.group_id = b.group_id')
 						->where('template_id', $query->row('no_auth_bounce'))
@@ -2576,7 +2577,7 @@ class EE_Template {
 		}
 
 		// Retrieve template file if necessary
-		if ($row['save_template_file'] == 'y')
+		if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '')
 		{
 			$site_switch = FALSE;
 
@@ -2595,23 +2596,19 @@ class EE_Template {
 				}
 			}
 
-			if (ee()->config->item('save_tmpl_files') == 'y'
-				AND ee()->config->item('tmpl_file_basepath') != '')
+			$this->log_item("Retrieving Template from File");
+			ee()->load->library('api');
+			ee()->legacy_api->instantiate('template_structure');
+
+			$basepath = rtrim(ee()->config->item('tmpl_file_basepath'), '/').'/';
+
+			$basepath .= ee()->config->item('site_short_name').'/'
+				.$row['group_name'].'.group/'.$row['template_name']
+				.ee()->api_template_structure->file_extensions($row['template_type']);
+
+			if (file_exists($basepath))
 			{
-				$this->log_item("Retrieving Template from File");
-				ee()->load->library('api');
-				ee()->legacy_api->instantiate('template_structure');
-
-				$basepath = rtrim(ee()->config->item('tmpl_file_basepath'), '/').'/';
-
-				$basepath .= ee()->config->item('site_short_name').'/'
-					.$row['group_name'].'.group/'.$row['template_name']
-					.ee()->api_template_structure->file_extensions($row['template_type']);
-
-				if (file_exists($basepath))
-				{
-					$row['template_data'] = file_get_contents($basepath);
-				}
+				$row['template_data'] = file_get_contents($basepath);
 			}
 
 			if ($site_switch !== FALSE)
@@ -2762,7 +2759,6 @@ class EE_Template {
 			'template_type'			=> $template_type,
 			'template_data'			=> file_get_contents($basepath.'/'.$filename),
 			'edit_date'				=> ee()->localize->now,
-			'save_template_file'	=> 'y',
 			'last_author_id'		=> '1',	// assume a super admin
 			'site_id'				=> ee()->config->item('site_id')
 		 );
@@ -2901,67 +2897,12 @@ class EE_Template {
 			}
 		}
 
-		// now first party plugins
-		if (($map = directory_map(PATH_PI, TRUE)) !== FALSE)
+		// Fetch a list of installed plugins
+		$plugins = ee('Model')->get('Plugin')->all();
+
+		if ($plugins->count() > 0)
 		{
-			foreach ($map as $file)
-			{
-				if (strncasecmp($file, 'pi.', 3) == 0 &&
-					substr($file, -$ext_len) == '.php' &&
-					strlen($file) > strlen('pi..php') &&
-					in_array(substr($file, 3, -$ext_len), ee()->core->native_plugins))
-				{
-					$this->plugins[] = substr($file, 3, -$ext_len);
-				}
-			}
-		}
-
-
-		// now third party add-ons, which are arranged in "packages"
-		// only catch files that match the package name, as other files are merely assets
-		if (($map = directory_map(PATH_ADDONS, 2)) !== FALSE)
-		{
-			foreach ($map as $pkg_name => $files)
-			{
-				if ( ! is_array($files))
-				{
-					$files = array($files);
-				}
-
-				foreach ($files as $file)
-				{
-					if (is_array($file))
-					{
-						// we're only interested in the top level files for the addon
-						continue;
-					}
-
-					// we gots a module?
-					if (strncasecmp($file, 'mod.', 4) == 0 &&
-						substr($file, -$ext_len) == '.php' &&
-						strlen($file) > strlen('mod..php'))
-					{
-						$file = substr($file, 4, -$ext_len);
-
-						if ($file == $pkg_name)
-						{
-							$this->modules[] = $file;
-						}
-					}
-					// how abouts a plugin?
-					elseif (strncasecmp($file, 'pi.', 3) == 0 &&
-							substr($file, -$ext_len) == '.php' &&
-							strlen($file) > strlen('pi..php'))
-					{
-						$file = substr($file, 3, -$ext_len);
-
-						if ($file == $pkg_name)
-						{
-							$this->plugins[] = $file;
-						}
-					}
-				}
-			}
+			$this->plugins = $plugins->pluck('plugin_package');
 		}
 	}
 
@@ -3088,7 +3029,7 @@ class EE_Template {
 
 			if (ee()->config->item('send_headers') == 'y')
 			{
-				$sql = "SELECT t.template_name, tg.group_name, t.edit_date, t.save_template_file FROM exp_templates t, exp_template_groups tg
+				$sql = "SELECT t.template_name, tg.group_name, t.edit_date FROM exp_templates t, exp_template_groups tg
 						WHERE  t.group_id = tg.group_id
 						AND    t.template_type = 'css'
 						AND    t.site_id = '".ee()->db->escape_str(ee()->config->item('site_id'))."'";
@@ -3111,7 +3052,7 @@ class EE_Template {
 					{
 						$css_versions[$row['group_name'].'/'.$row['template_name']] = $row['edit_date'];
 
-						if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '' AND $row['save_template_file'] == 'y')
+						if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '')
 						{
 							$basepath = ee()->config->slash_item('tmpl_file_basepath').ee()->config->item('site_short_name').'/';
 							$basepath .= $row['group_name'].'.group/'.$row['template_name'].'.css';

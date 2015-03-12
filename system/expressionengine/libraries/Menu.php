@@ -39,12 +39,213 @@ class EE_Menu {
 	/**
 	 * Generate Menu
 	 *
+	 * Puts together the links for the main menu header area
+	 *
+	 * @access	public
+	 * @return	void
+	 */
+	public function generate_menu()
+	{
+		$menu = array();
+
+		$menu['sites']    = $this->_site_menu();
+		$menu['channels'] = $this->_channels_menu();
+		$menu['develop']  = $this->_develop_menu();
+
+		// CP-TODO: Add back cp_menu_array hook?
+
+		return $menu;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Fetch Site List
+	 *
+	 * Returns array of sites or simply a link to the current site
+	 *
+	 * @access	private
+	 * @return	array
+	 */
+	private function _site_menu()
+	{
+		// Add MSM Site Switcher
+		ee()->load->model('site_model');
+
+		$site_list = ee()->session->userdata('assigned_sites');
+		$site_list = (ee()->config->item('multiple_sites_enabled') === 'y' && ! IS_CORE) ? $site_list : FALSE;
+
+		$menu = array();
+
+		if ($site_list)
+		{
+			$site_backlink = ee()->cp->get_safe_refresh();
+
+			if ($site_backlink)
+			{
+				$site_backlink = implode('|', explode(AMP, $site_backlink));
+				$site_backlink = strtr(base64_encode($site_backlink), '+=', '-_');
+			}
+
+			foreach($site_list as $site_id => $site_name)
+			{
+				if ($site_id != ee()->config->item('site_id'))
+				{
+					$menu[$site_name] = cp_url('sites', array('site_id' => $site_id, 'page' => $site_backlink));
+				}
+			}
+		}
+
+		return $menu;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get channels the user currently has access to for putting into the
+	 * Create and Edit links in the menu
+	 *
+	 * @access	private
+	 * @return	array	Array of channels and their edit/publish links
+	 */
+	private function _channels_menu()
+	{
+		ee()->legacy_api->instantiate('channel_structure');
+		$channels = ee()->api_channel_structure->get_channels();
+
+		$menu['create'] = array();
+		$menu['edit'] = array();
+
+		if ($channels)
+		{
+			foreach($channels->result() as $channel)
+			{
+				// Create link
+				$menu['create'][$channel->channel_title] = cp_url('publish/create/' . $channel->channel_id);
+
+				// Edit link
+				$menu['edit'][$channel->channel_title] = cp_url('publish/edit', array('filter_by_channel' => $channel->channel_id));
+			}
+		}
+
+		return $menu;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Fetch the develop menu
+	 *
+	 * @access	private
+	 * @return	array
+	 */
+	private function _develop_menu()
+	{
+		$menu = array(
+			'channel_manager'  => cp_url('channel'),
+			'template_manager' => cp_url('design'),
+			'addon_manager'    => cp_url('addons'),
+			'utilities'        => cp_url('utilities'),
+			'logs'             => cp_url('logs')
+		);
+
+		if ( ! ee()->cp->allowed_group('can_access_addons'))
+		{
+			unset($menu['addon_manager']);
+		}
+
+		if ( ! ee()->cp->allowed_group('can_access_logs'))
+		{
+			unset($menu['logs']);
+		}
+
+		return $menu;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Future home of quick links
+	 *
+	 * @access	private
+	 * @return	array
+	 */
+	private function _quicklinks()
+	{
+		$quicklinks = array();
+
+		return $quicklinks;
+
+		// CP-TODO: Combine quick_links and quick_tabs in updater, make this
+		// method return something
+
+		// OLD CODE FOR GETTING THESE LIINKS:
+
+		$quicklinks = $this->member_model->get_member_quicklinks(
+			ee()->session->userdata('member_id')
+		);
+
+		if (isset(ee()->session->userdata['quick_tabs']) && ee()->session->userdata['quick_tabs'] != '')
+		{
+			foreach (explode("\n", ee()->session->userdata['quick_tabs']) as $row)
+			{
+				$x = explode('|', $row);
+
+				$title = (isset($x['0'])) ? $x['0'] : '';
+				$link  = (isset($x['1'])) ? $x['1'] : '';
+
+				// Look to see if the session is in the link; if so, it was
+				// it was likely stored the old way which made for possibly
+				// broken links, like if it was saved with index.php but is
+				// being accessed through admin.php
+				if (strstr($link, '?S=') === FALSE)
+				{
+					$link = BASE.AMP.$link;
+				}
+
+				$tabs[$title] = $link;
+			}
+		}
+
+		return $tabs;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Sets up left sidebar navigation given an array of data like this:
+	 *
+	 * array(
+	 *     'key_of_heading' => cp_url('optional/link'),
+	 *     'heading_with_no_link',
+	 *     array(
+	 *         'item_in_subsection' => cp_url('sub/section')
+	 *     )
+	 * )
+	 *
+	 * @param	array	$nav	Array of navigation data like above
+	 * @return	void
+	 */
+	public function register_left_nav($nav)
+	{
+		ee()->view->left_nav = ee()->load->view(
+			'_shared/left_nav',
+			array('nav' => $nav),
+			TRUE
+		);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Generate Menu
+	 *
 	 * Builds the CP menu
 	 *
 	 * @access	public
 	 * @return	void
 	 */
-	function generate_menu($permissions = '')
+	function generate_menu_old($permissions = '')
 	{
 		if ( ! ee()->cp->allowed_group('can_access_cp'))
 		{
@@ -96,7 +297,6 @@ class EE_Menu {
 
 		$menu['addons'] = array(
 			'modules'							=> cp_url('addons_modules'),
-			'accessories'						=> cp_url('addons_accessories'),
 			'extensions'						=> cp_url('addons_extensions'),
 			'fieldtypes'						=> cp_url('addons_fieldtypes'),
 			'plugins'							=> cp_url('addons_plugins')
@@ -321,7 +521,7 @@ class EE_Menu {
 		$menu_string .= $this->_process_menu(array('help' => $this->generate_help_link()), 0, TRUE, '', 'external');
 
 		// Visit Site / MSM Switcher gets an extra class
-		$menu_string .= $this->_process_menu($this->_fetch_site_list(), 0, FALSE, 'msm_sites');
+		$menu_string .= $this->_process_menu($this->site_menu(), 0, FALSE, 'msm_sites');
 
 		ee()->load->vars('menu_string', $menu_string);
 
@@ -574,11 +774,6 @@ class EE_Menu {
 				unset($menu['addons']['modules']);
 			}
 
-			if ( ! ee()->cp->allowed_group('can_access_accessories'))
-			{
-				unset($menu['addons']['accessories']);
-			}
-
 			if ( ! ee()->cp->allowed_group('can_access_extensions'))
 			{
 				unset($menu['addons']['extensions']);
@@ -767,58 +962,6 @@ class EE_Menu {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Fetch Site List
-	 *
-	 * Returns array of sites or simply a link to the current site
-	 *
-	 * @access	private
-	 * @return	array
-	 */
-	function _fetch_site_list()
-	{
-		// Add MSM Site Switcher
-		ee()->load->model('site_model');
-
-		$site_list = ee()->session->userdata('assigned_sites');
-		$site_list = (ee()->config->item('multiple_sites_enabled') === 'y' && ! IS_CORE) ? $site_list : FALSE;
-
-		$menu = array();
-
-		if ($site_list)
-		{
-			$site_backlink = ee()->cp->get_safe_refresh();
-
-			if ($site_backlink)
-			{
-				$site_backlink = implode('|', explode(AMP, $site_backlink));
-				$site_backlink = AMP."page=".strtr(base64_encode($site_backlink), '+=', '-_');
-			}
-
-			$menu[ee()->config->item('site_name')][lang('view_site')] = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'URL='.ee()->functions->fetch_site_index();
-
-			if (ee()->cp->allowed_group('can_admin_sites'))
-			{
-				$menu[ee()->config->item('site_name')][lang('edit_sites')] = BASE.AMP.'C=sites'.AMP.'M=manage_sites';
-			}
-
-			$menu[ee()->config->item('site_name')][] = '----';
-
-			foreach($site_list as $site_id => $site_name)
-			{
-				$menu[ee()->config->item('site_name')][$site_name] = BASE.AMP.'C=sites'.AMP.'site_id='.$site_id.$site_backlink;
-			}
-		}
-		else
-		{
-			$menu[ee()->config->item('site_name')] = ee()->config->item('base_url').ee()->config->item('site_index').'?URL='.ee()->config->item('base_url').ee()->config->item('site_index');
-		}
-
-		return $menu;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Generate Help Link
 	 *
 	 * Maps the current page request to a suitable location in the user guide
@@ -839,7 +982,6 @@ class EE_Menu {
 		}
 
 		$help_map = array(
-			'addons_accessories'	=> 'cp/add-ons/accessory_manager.html',
 			'addons_extensions'		=> 'cp/add-ons/extension_manager.html',
 			'addons_modules'		=> 'cp/add-ons/module_manager.html',
 			'addons_plugins'		=> 'cp/add-ons/plugin_manager.html',
@@ -847,7 +989,6 @@ class EE_Menu {
 			'addons'				=> array(
 				'index'								=> 'cp/add-ons/index.html',
 				'modules'							=> 'cp/add-ons/module_manager.html',
-				'accessories'						=> 'cp/add-ons/accessory_manager.html',
 				'extensions'						=> 'cp/add-ons/extension_manager.html',
 				'fieldtypes'						=> 'cp/add-ons/fieldtype_manager.html',
 				'plugins'							=> 'cp/add-ons/plugin_manager.html'

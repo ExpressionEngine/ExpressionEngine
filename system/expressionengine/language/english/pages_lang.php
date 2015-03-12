@@ -14,6 +14,36 @@ $lang = array(
 
 //----------------------------------------
 
+// 3.x:
+
+'all_pages' =>
+'All Pages',
+
+'page_url' =>
+'Page URL',
+
+'create_new' =>
+'Create New',
+
+'no_pages' =>
+'No Pages Currently Exist',
+
+'filter_channels' =>
+'filter channels',
+
+'success' =>
+'Success',
+
+'pages_deleted_desc' =>
+'The following Page URLs were deleted',
+
+//----------------------------------------
+
+'pages_manager' =>
+'Pages Manager',
+
+// 2.x:
+
 'pages_homepage' =>
 'Pages Homepage',
 
@@ -22,9 +52,6 @@ $lang = array(
 
 'pages_uri' =>
 'Pages URI',
-
-'no_pages' =>
-'No Pages Currently Exist',
 
 'create_page' =>
 'Create New Page',
@@ -55,18 +82,6 @@ $lang = array(
 
 'choose_entry' =>
 'Choose Entry',
-
-'pages_delete_confirm' =>
-'Delete Pages',
-
-'pages_delete_question' =>
-'Are you sure you want to delete the selected Page URI(s)?<br /><em>Note: Deleting a Page only deletes the URL. It does not delete the entry.</em>',
-
-'page_deleted' =>
-'Page Deleted',
-
-'pages_deleted' =>
-'Pages Deleted',
 
 'create_entry' =>
 'Create Entry',

@@ -1,4 +1,9 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+use EllisLab\ExpressionEngine\Library\CP\Pagination;
+use EllisLab\ExpressionEngine\Library\CP\Table;
+use EllisLab\ExpressionEngine\Library\CP\URL;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -42,9 +47,8 @@ class Rte_mcp {
 		ee()->load->model('rte_tool_model');
 
 		// set some properties
-		$this->_base_url	= BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
-		$this->_form_base	= 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=rte';
-		ee()->rte_lib->form_url = $this->_form_base;
+		$this->_base_url = new URL('addons/settings/rte', ee()->session->session_id());
+		ee()->rte_lib->form_url = 'addons/settings/rte';
 
 		// Delete missing tools
 		ee()->rte_tool_model->delete_missing_tools();
@@ -60,7 +64,11 @@ class Rte_mcp {
 	 */
 	public function index()
 	{
-		ee()->load->library(array('table','javascript'));
+		if ( ! empty($_POST))
+		{
+			$this->prefs_update();
+		}
+
 		ee()->load->model('rte_toolset_model');
 
 		$toolsets = ee()->rte_toolset_model->get_toolset_list();
@@ -68,42 +76,129 @@ class Rte_mcp {
 		// prep the Default Toolset dropdown
 		$toolset_opts = array();
 
+		$data = array();
+		$toolset_id = ee()->session->flashdata('toolset_id');
+
+		$default_toolset_id = ee()->config->item('rte_default_toolset_id');
+
 		foreach ($toolsets as $t)
 		{
+			$url = cp_url('addons/settings/rte/edit_toolset', array('toolset_id' => $t['toolset_id']));
+			$toolset_name = htmlentities($t['name'], ENT_QUOTES);
+			$checkbox = array(
+				'name' => 'selection[]',
+				'value' => $t['toolset_id'],
+				'data'	=> array(
+					'confirm' => lang('toolset') . ': <b>' . htmlentities($t['name'], ENT_QUOTES) . '</b>'
+				)
+			);
+
+			if ($default_toolset_id == $t['toolset_id'])
+			{
+				$toolset_name = '<span class="default">' . $toolset_name . ' ✱</span>';
+				$checkbox['disabled'] = 'disabled';
+			}
+
+			$toolset = array(
+				'tool_set' => $toolset_name,
+				'status' => lang('disabled'),
+				array('toolbar_items' => array(
+						'edit' => array(
+							'href' => $url,
+							'title' => lang('edit'),
+						)
+					)
+				),
+				$checkbox
+			);
+
 			if ($t['enabled'] == 'y')
 			{
-				$toolset_opts[$t['toolset_id']] = $t['name'];
+				$toolset_opts[$t['toolset_id']] = htmlentities($t['name'], ENT_QUOTES);
+				$toolset['status'] = lang('enabled');
 			}
+
+			$attrs = array();
+
+			if ($toolset_id && $t['toolset_id'] == $toolset_id)
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs'		=> $attrs,
+				'columns'	=> $toolset
+			);
 		}
 
 		$vars = array(
-			'cp_page_title'				=> lang('rte_module_name'),
-			'module_base'				=> $this->_base_url,
-			'action'					=> $this->_form_base.AMP.'method=prefs_update',
-			'rte_enabled'				=> ee()->config->item('rte_enabled'),
-			'rte_default_toolset_id'	=> ee()->config->item('rte_default_toolset_id'),
-			'toolsets'					=> $toolsets,
-			'toolset_opts'				=> $toolset_opts,
-			'tools'						=> ee()->rte_tool_model->get_tool_list(),
-			'new_toolset_link'			=> $this->_base_url.AMP.'method=edit_toolset'.AMP.'toolset_id=0'
-		);
-
-		// JS
-		ee()->cp->add_js_script(array(
-			'file'		=> 'cp/rte'
-		));
-
-		ee()->javascript->set_global(array(
-			'rte'	=> array(
-				'lang' => array(
-					'edit_toolset'		=> lang('edit_toolset'),
-					'create_toolset'	=> lang('create_new_toolset')
+			'cp_page_title' => lang('rte_module_name') . ' ' . lang('configuration'),
+			'save_btn_text' => 'btn_save_settings',
+			'save_btn_text_working' => 'btn_saving',
+			'sections' => array(
+				array(
+					array(
+						'title' => 'enable_rte',
+						'desc' => 'enable_rte_desc',
+						'fields' => array(
+							'rte_enabled' => array(
+								'type' => 'inline_radio',
+								'choices' => array(
+									'y' => 'enable',
+									'n' => 'disable'
+								)
+							)
+						)
+					),
+					array(
+						'title' => 'default_toolset',
+						'desc' => '',
+						'fields' => array(
+							'rte_default_toolset_id' => array(
+								'type' => 'dropdown',
+								'choices' => $toolset_opts
+							)
+						)
+					)
 				)
 			)
-		));
+		);
 
-		// CSS
-		ee()->cp->add_to_head(ee()->view->head_link('css/rte.css'));
+		$table = Table::create(array('autosort' => TRUE, 'autosearch' => FALSE, 'limit' => 20));
+		$table->setColumns(
+			array(
+				'tool_set',
+				'status',
+				'manage' => array(
+					'type'	=> Table::COL_TOOLBAR
+				),
+				array(
+					'type'	=> Table::COL_CHECKBOX
+				)
+			)
+		);
+
+		$table->setNoResultsText('no_tool_sets');
+		$table->setData($data);
+
+		$vars['table'] = $table->viewData($this->_base_url);
+		$vars['base_url'] = clone $vars['table']['base_url'];
+
+		if ( ! empty($vars['table']['data']))
+		{
+			// Paginate!
+			$pagination = new Pagination(
+				$vars['table']['limit'],
+				$vars['table']['total_rows'],
+				$vars['table']['page']
+			);
+			$vars['pagination'] = $pagination->cp_links($this->_base_url);
+		}
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('toolset') . ': <b>### ' . lang('toolsets') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/confirm_remove'),
+		));
 
 		// return the page
 		return ee()->load->view('index', $vars, TRUE);
@@ -115,7 +210,6 @@ class Rte_mcp {
 	/**
 	 * Update prefs form action
 	 *
-	 * @access	public
 	 * @return	void
 	 */
 	public function prefs_update()
@@ -128,24 +222,57 @@ class Rte_mcp {
 			'required|enum[y,n]'
 		);
 
+		$toolids = array();
+		ee()->load->model('rte_toolset_model');
+		foreach (ee()->rte_toolset_model->get_toolset_list() as $toolset)
+		{
+			$toolids[] = $toolset['toolset_id'];
+		}
+
 		ee()->form_validation->set_rules(
 			'rte_default_toolset_id',
 			lang('default_toolset'),
-			'required|is_numeric'
+			'required|is_numeric|enum[' . implode($toolids, ',') . ']'
 		);
 
 		if (ee()->form_validation->run())
 		{
 			// update the prefs
 			$this->_do_update_prefs();
-			ee()->session->set_flashdata('message_success', lang('settings_saved'));
+			ee('Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('settings_saved'))
+				->addToBody(lang('settings_saved_desc'))
+				->now();
 		}
 		else
 		{
-			ee()->session->set_flashdata('message_failure', lang('settings_not_saved'));
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('settings_error'))
+				->addToBody(lang('settings_error_desc'))
+				->now();
 		}
+	}
 
-		ee()->functions->redirect($this->_base_url);
+	// --------------------------------------------------------------------
+
+	/**
+	 * Provides New Toolset Screen HTML
+	 *
+	 * @access	public
+	 * @param	int $toolset_id The Toolset ID to be edited (optional)
+	 * @return	string The page
+	 */
+	public function new_toolset()
+	{
+		return array(
+			'body'			=> ee()->rte_lib->edit_toolset(0),
+			'heading'		=> lang('create_tool_set_header'),
+			'breadcrumb' 	=> array(
+				cp_url('addons/settings/rte') => lang('rte_module_name') . ' ' . lang('configuration')
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -159,94 +286,135 @@ class Rte_mcp {
 	 */
 	public function edit_toolset($toolset_id = FALSE)
 	{
-		return ee()->rte_lib->edit_toolset($toolset_id);
+		return array(
+			'body'			=> ee()->rte_lib->edit_toolset($toolset_id),
+			'heading'		=> lang('edit_tool_set_header'),
+			'breadcrumb' 	=> array(
+				cp_url('addons/settings/rte') => lang('rte_module_name') . ' ' . lang('configuration')
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Saves a toolset
+	 * Performs bulk actions (enable, disable, or remove) on tool sets
 	 *
-	 * @access	public
-	 * @return	void
+	 * @return void
 	 */
-	public function save_toolset()
-	{
-		ee()->rte_lib->save_toolset();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Enables or disables a toolset
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	public function toggle_toolset()
+	public function update_toolsets()
 	{
 		ee()->load->model('rte_toolset_model');
 
-		$toolset_id = ee()->input->get_post('toolset_id');
-		$enabled = ee()->input->get_post('enabled') != 'n' ? 'y' :'n';
+		$action = ee()->input->post('bulk_action');
+		$selection = ee()->input->post('selection');
+		$default_toolset_id = ee()->config->item('rte_default_toolset_id');
 
-		if (ee()->rte_toolset_model->save_toolset(array('enabled' => $enabled), $toolset_id))
+		$toolsets = array();
+
+		foreach (ee()->rte_toolset_model->get_toolset_list() as $toolset)
 		{
-			ee()->session->set_flashdata('message_success', lang('toolset_updated'));
+			$toolsets[$toolset['toolset_id']] = $toolset['name'];
+		}
+
+		$errors = array();
+		$successes = array();
+
+		switch ($action)
+		{
+			case 'enable':
+				$message_title = 'toolsets_updated';
+				$message_desc = 'toolsets_enabled';
+				foreach ($selection as $toolset_id)
+				{
+					$saved = ee()->rte_toolset_model->save_toolset(array('enabled' => 'y'), $toolset_id);
+					if ( ! $saved)
+					{
+						$errors[] = $toolsets[$toolset_id];
+					}
+					else
+					{
+						$successes[] = $toolsets[$toolset_id];
+					}
+				}
+				break;
+
+			case 'disable':
+				$message_title = 'toolsets_updated';
+				$message_desc = 'toolsets_disabled';
+				foreach ($selection as $toolset_id)
+				{
+					if ($toolset_id == $default_toolset_id)
+					{
+						$errors[] = $toolsets[$toolset_id] . ' &mdash; ' . lang('cannot_disable_default_toolset');
+					}
+					else
+					{
+						$saved = ee()->rte_toolset_model->save_toolset(array('enabled' => 'n'), $toolset_id);
+						if ( ! $saved)
+						{
+							$errors[] = $toolsets[$toolset_id];
+						}
+						else
+						{
+							$successes[] = $toolsets[$toolset_id];
+						}
+					}
+				}
+				break;
+
+			case 'remove':
+				$message_title = 'toolsets_removed';
+				$message_desc = 'toolsets_removed_desc';
+				foreach ($selection as $toolset_id)
+				{
+					if ($toolset_id == $default_toolset_id)
+					{
+						$errors[] = $toolsets[$toolset_id] . ' &mdash; ' . lang('cannot_remove_default_toolset');
+					}
+					else
+					{
+						$removed = ee()->rte_toolset_model->delete($toolset_id);
+						if ( ! $removed)
+						{
+							$errors[] = $toolsets[$toolset_id];
+						}
+						else
+						{
+							$successes[] = $toolsets[$toolset_id];
+						}
+					}
+				}
+				break;
+		}
+
+		if ( ! empty($errors))
+		{
+			$errorAlert = ee('Alert')->makeInline('toolsets-form')
+				->asIssue()
+				->withTitle(lang('toolset_error'))
+				->addToBody(lang($action . '_fail_desc'))
+				->addToBody($errors);
+		}
+
+		if (empty($successes) && ! empty($errors))
+		{
+			$errorAlert->defer();
 		}
 		else
 		{
-			ee()->session->set_flashdata('message_failure', lang('toolset_update_failed'));
-		}
+			$successAlert = ee('Alert')->makeInline('toolsets-form')
+				->asSuccess()
+				->withTitle(lang($message_title))
+				->addToBody(lang($action . '_success_desc'))
+				->addToBody($successes);
 
-		ee()->functions->redirect($this->_base_url);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Deletes a toolset
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	public function delete_toolset()
-	{
-		ee()->load->model('rte_toolset_model');
-
-		$toolset_id = ee()->input->get_post('toolset_id');
-
-		// Delete
-		if (ee()->rte_toolset_model->delete($toolset_id))
-		{
-			ee()->session->set_flashdata('message_success', lang('toolset_deleted'));
-
-			// If the default toolset was deleted
-			if ($toolset_id == ee()->config->item('rte_default_toolset_id'))
+			if (isset($errorAlert))
 			{
-				$toolsets = ee()->rte_toolset_model->get_toolset_list();
-
-				// Make the new default toolset the first available
-				if ( ! empty($toolsets))
-				{
-					$default_toolset_pref = array(
-						'rte_default_toolset_id' => $toolsets[0]['toolset_id']
-					);
-				}
-				// Or set it to zero if there are no toolsets left
-				else
-				{
-					$default_toolset_pref = array(
-						'rte_default_toolset_id' => 0
-					);
-				}
-
-				ee()->config->update_site_prefs($default_toolset_pref);
+				$successAlert->setSubAlert($errorAlert);
 			}
-		}
-		else
-		{
-			ee()->session->set_flashdata('message_failure', lang('toolset_not_deleted'));
+
+			$successAlert->defer();
 		}
 
 		ee()->functions->redirect($this->_base_url);

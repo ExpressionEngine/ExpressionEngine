@@ -142,7 +142,8 @@ class App {
 				return $routing;
 			}
 
-			if (in_array(strtolower($method), $controller_methods))
+			if (in_array(strtolower($method), $controller_methods)
+				|| method_exists($class, '__call'))
 			{
 				return $routing;
 			}

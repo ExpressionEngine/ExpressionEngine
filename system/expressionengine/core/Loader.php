@@ -371,11 +371,16 @@ class EE_Loader {
 
 		if ($return === TRUE)
 		{
-			return DB($params, $active_record);
+			return DB($params);
+		}
+
+		if ($this->facade->has('db'))
+		{
+			return;
 		}
 
 		// Load the DB class
-		$this->facade->set('db', DB($params, $active_record));
+		$this->facade->set('db', DB($params));
 	}
 
 	// --------------------------------------------------------------------
@@ -388,6 +393,11 @@ class EE_Loader {
 	public function dbutil()
 	{
 		$CI =& get_instance();
+
+		if ($this->facade->has('dbutil'))
+		{
+			return;
+		}
 
 		if ( ! class_exists('CI_DB'))
 		{
@@ -415,6 +425,11 @@ class EE_Loader {
 	public function dbforge()
 	{
 		$CI =& get_instance();
+
+		if ($this->facade->has('dbforge'))
+		{
+			return;
+		}
 
 		if ( ! class_exists('CI_DB'))
 		{
@@ -852,7 +867,15 @@ class EE_Loader {
 		 */
 		ob_start();
 
-		$this->facade->runFileInFacadeScope($_ci_path, $this->_ci_cached_vars, $use_eval);
+		if (isset($_ci_view) && isset(ee()->di))
+		{
+			echo ee('View')->make($_ci_view)->parse($_ci_path, $this->_ci_cached_vars, TRUE);
+		}
+		else
+		{
+			$this->facade->runFileInFacadeScope($_ci_path, $this->_ci_cached_vars, $use_eval);
+		}
+
 
 		log_message('debug', 'File loaded: '.$_ci_path);
 

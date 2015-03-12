@@ -43,7 +43,8 @@ class Bold_rte {
 		return array(
 			'rte.bold'	=> array(
 				'add'		=> lang('make_bold'),
-				'remove'	=> lang('remove_bold')
+				'remove'	=> lang('remove_bold'),
+				'title'		=> lang('title_bold')
 			)
 		);
 	}
@@ -60,6 +61,8 @@ class Bold_rte {
 		ob_start(); ?>
 
 		WysiHat.addButton('bold', {
+			cssClass: 'rte-bold',
+			title: 			EE.rte.bold.title,
 			label: 			EE.rte.bold.add,
 			'toggle-text':	EE.rte.bold.remove
 		});

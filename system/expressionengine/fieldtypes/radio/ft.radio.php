@@ -101,13 +101,24 @@ class Radio_ft extends EE_Fieldtype {
 
 		$field_options = $this->_get_field_options($data);
 
+		if (REQ == 'CP')
+		{
+			return ee('View')->make('publish')->render(array(
+				'field_name' => $this->field_name,
+				'selected' => $data,
+				'options' => $field_options
+			));
+		}
+
 		$selected = $data;
 
 		$r = '';
+		$class = 'choice mr';
 
 		foreach($field_options as $key => $value)
 		{
 			$selected = ($key == $data);
+
 			$r .= '<label>'.form_radio($this->field_name, $value, $selected).NBS.$key.'</label>';
 		}
 

@@ -567,7 +567,7 @@ class Forum_upd {
 		{
 			ee()->db->query("INSERT INTO exp_actions (class, method) VALUES ('Forum', 'set_theme')");
 
-			ee()->db->query("INSERT INTO exp_specialty_templates(template_name, data_title, template_data) VALUES ('forum_moderation_notification', '".addslashes(trim(forum_moderation_notification_title()))."', '".addslashes(forum_moderation_notification())."')");
+			ee()->db->query("INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('forum_moderation_notification', 'email', 'forums', " . time() . ", '".addslashes(trim(forum_moderation_notification_title()))."', '".addslashes(forum_moderation_notification())."')");
 
 			ee()->db->query("ALTER TABLE `exp_forum_topics` ADD `last_post_id` int(10) unsigned NOT NULL default '0'");
 

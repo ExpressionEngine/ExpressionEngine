@@ -2,7 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Model\Category;
 
-use EllisLab\ExpressionEngine\Model\FieldDataContentModel;
+use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -27,13 +27,10 @@ use EllisLab\ExpressionEngine\Model\FieldDataContentModel;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Category extends FieldDataContentModel {
+class Category extends Model {
 
 	protected static $_primary_key = 'cat_id';
 	protected static $_gateway_names = array('CategoryGateway', 'CategoryFieldDataGateway');
-
-	protected static $_field_content_class = 'CategoryFieldContent';
-	protected static $_field_content_gateway = 'CategoryFieldDataGateway';
 
 	protected static $_relationships = array(
 		'CategoryGroup' => array(
@@ -49,14 +46,15 @@ class Category extends FieldDataContentModel {
 			)
 		),
 		'Parent' => array(
-			'type' => 'hasAndBelongsToMany',
+			'type' => 'belongsTo',
 			'model' => 'Category',
-			'pivot' => array(
-				'table' => 'categories',
-				'left' => 'cat_id',
-				'right' => 'parent_id'
-			)
+			'from_key' => 'parent_id'
 		),
+		'Children' => array(
+			'type' => 'hasMany',
+			'model' => 'Category',
+			'to_key' => 'parent_id'
+		)
 	);
 
 	// Properties

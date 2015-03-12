@@ -12,6 +12,78 @@ $lang = array(
 'Metaweblog API Module',
 
 /*----------------------------------------*/
+
+'metaweblog_settings' =>
+'MetaWeblog <abbr title="Application Programming Interface">API</abbr> Settings',
+
+'create_new' =>
+'Create New',
+
+'create_metaweblog' =>
+'Create MetaWeblog',
+
+'metaweblog_pref_name' =>
+'Name',
+
+'metaweblog_parse_type' =>
+'Use default text formatting preferences?',
+
+'metaweblog_parse_type_desc' =>
+'When set to <b>yes</b>, content will be sent with custom field text formatting intact.',
+
+'metaweblog_entry_status' =>
+'Status',
+
+'metaweblog_entry_status_desc' =>
+'Default status to use for entires from this MetaWeblog.',
+
+'metaweblog_channel' =>
+'Channel',
+
+'metaweblog_channel_desc' =>
+'Default channel for this MetaWeblog. Used for the following settings.',
+
+'metaweblog_excerpt_field' =>
+'Excerpt',
+
+'metaweblog_excerpt_field_desc' =>
+'Field used for excerpt.',
+
+'metaweblog_content_field' =>
+'Content',
+
+'metaweblog_content_field_desc' =>
+'Field used for content.',
+
+'metaweblog_more_field' =>
+'More',
+
+'metaweblog_more_field_desc' =>
+'Field used for more.',
+
+'metaweblog_keywords_field' =>
+'Keywords',
+
+'metaweblog_keywords_field_desc' =>
+'Field used for keywords.',
+
+'metaweblog_upload_dir' =>
+'Allowed directory',
+
+'metaweblog_upload_dir_desc' =>
+'Default directory to store files uploaded with this MetaWeblog.',
+
+'do_not_set' =>
+'Do not set',
+
+'open' =>
+'Open',
+
+'closed' =>
+'Closed',
+
+/*----------------------------------------*/
+
 'metaweblog_api_home' =>
 'Control Panel',
 
@@ -19,7 +91,7 @@ $lang = array(
 'View URLs for MetaWeblog API',
 
 'invalid_access' =>
-'Invalid Access to MetaWeblog API.  Make sure you used the correct username and 
+'Invalid Access to MetaWeblog API.  Make sure you used the correct username and
 password for a member account with permissions to post to at least one channel.',
 
 'no_channels_found' =>
@@ -52,9 +124,6 @@ password for a member account with permissions to post to at least one channel.'
 'no_metaweblog_configs' =>
 'There are currently no MetaWeblog API Configurations',
 
-'metaweblog_configurations' =>
-'MetaWeblog API Configurations',
-
 'metaweblog_config_name' =>
 'Name',
 
@@ -85,17 +154,6 @@ password for a member account with permissions to post to at least one channel.'
 'configuration_options' =>
 'Configuration Options',
 
-'metaweblog_pref_name' =>
-'Configuration Name',
-
-'metaweblog_parse_type' => 
-'Use Default Text Formatting Preferences',
-
-'metaweblog_parse_type_subtext' =>
-'If Yes, the Channel Fields below will be sent as if they are being displayed on 
-a webpage, with the field\'s Text Formatting preference respected. If No, the field\'s
-content will be sent untouched.',
-
 'yes' =>
 'Yes',
 
@@ -104,21 +162,6 @@ content will be sent untouched.',
 
 'none' =>
 'None',
-
-'metaweblog_field_group' =>
-'Channel Field Group',
-
-'metaweblog_excerpt_field' =>
-'Excerpt Field',
-
-'metaweblog_content_field' =>
-'Content Field',
-
-'metaweblog_more_field' =>
-'More Field',
-
-'metaweblog_keywords_field' =>
-'Keywords Field',
 
 
 'metaweblog_mising_fields' =>
@@ -138,19 +181,6 @@ content will be sent untouched.',
 
 'invalid_file_content' =>
 'The file you are attempting to upload has invalid content for its MIME type',
-
-'metaweblog_upload_dir' =>
-'Upload Directory for File Uploading',
-
-'metaweblog_upload_dir_subtext' =>
-'Relatively few channel editors allow this option and you may not wish to allow uploads
-over the API, so setting to \'None\' will prevent any file uploads via channel editor.',
-
-'metaweblog_entry_status' =>
-'Entry Status',
-
-'do_not_set_status' =>
-'Do Not Set Status (Client decides)',
 
 'auto_br' =>
 'Auto <br/>',

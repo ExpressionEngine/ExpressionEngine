@@ -165,17 +165,21 @@ class Updater {
 		if ( ! defined('RD')) define('RD', '}');
 
 		// We're gonna need this to be already loaded.
+		ee()->remove('functions');
 		require_once(APPPATH . 'libraries/Functions.php');
-		ee()->functions = new Installer_Functions();
+		ee()->set('functions', new Installer_Functions());
 
+		ee()->remove('extensions');
 		require_once(APPPATH . 'libraries/Extensions.php');
-		ee()->extensions = new Installer_Extensions();
+		ee()->set('extensions', new Installer_Extensions());
 
+		ee()->remove('addons');
 		require_once(APPPATH . 'libraries/Addons.php');
-		ee()->addons = new Installer_Addons();
+		ee()->set('addons', new Installer_Addons());
 
 		$installer_config = ee()->config;
-		ee()->config = new MSM_Config();
+		ee()->remove('config');
+		ee()->set('config', new MSM_Config());
 
 		// We need to figure out which template to load.
 		// Need to check the edit date.
@@ -266,7 +270,8 @@ class Updater {
 			ee()->update_notices->item('Done.');
 		}
 
-		ee()->config = $installer_config;
+		ee()->remove('config');
+		ee()->set('config', $installer_config);
 	}
 
 	// -------------------------------------------------------------------
@@ -285,11 +290,13 @@ class Updater {
 		ee()->update_notices->header('{layout:contents} reserved variable is strictly enforced.');
 		ee()->update_notices->item(' Checking for templates to review ...');
 
+		ee()->remove('template');
 		require_once(APPPATH . 'libraries/Template.php');
-		ee()->template = new Installer_Template();
+		ee()->set('template', new Installer_Template());
 
 		$installer_config = ee()->config;
-		ee()->config = new MSM_Config();
+		ee()->remove('config');
+		ee()->set('config', new MSM_Config());
 
 		$templates = ee()->template_model->fetch_last_edit(array(), TRUE);
 
@@ -322,7 +329,8 @@ class Updater {
 
 		ee()->update_notices->item('Done.');
 
-		ee()->config = $installer_config;
+		ee()->remove('config');
+		ee()->set('config', $installer_config);
 	}
 }
 /* END CLASS */

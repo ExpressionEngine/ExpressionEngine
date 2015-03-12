@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Model\Addon;
 
+use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
 /**
@@ -44,4 +45,64 @@ class Extension extends Model {
 	protected $priority;
 	protected $version;
 	protected $enabled;
+
+	/**
+	 * Reports if the Extension is enabled or not
+	 *
+	 * @return bool TRUE for enabled; FALSE for disabled
+	 */
+	public function isEnabled()
+	{
+		return ($this->enabled == 'y');
+	}
+
+	/**
+	 * Marks the Extension as enabled
+	 */
+	public function enable()
+	{
+		$this->enabled = 'y';
+	}
+
+	/**
+	 * Marks the Extension as disabled
+	 */
+	public function disable()
+	{
+		$this->enabled = 'n';
+	}
+
+	/**
+	 * A setter for the enabled property
+	 *
+	 * @param str|bool $new_value For TRUE or 'y' we enable, for FALSE or 'n' we
+	 *   disable
+	 * @throws InvalidArgumentException if the provided argument is not a
+	 *   boolean or is not 'y' or 'n'.
+	 * @return void
+	 */
+	protected function set__enabled($new_value)
+	{
+		if ($new_value === TRUE || $new_value == 'y')
+		{
+			return $this->enable();
+		}
+
+		if ($new_value === FALSE || $new_value == 'n')
+		{
+			return $this->disable();
+		}
+
+		throw new InvalidArgumentException('enabled must be TRUE or "y", or FALSE or "n"');
+	}
+
+	/**
+	 * A getter for the enabled property
+	 *
+	 * @return bool TRUE for enabled; FALSE for disabled
+	 */
+	protected function get__enabled()
+	{
+		return $this->isEnabled();
+	}
 }

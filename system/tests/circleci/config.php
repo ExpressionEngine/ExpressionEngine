@@ -11,21 +11,31 @@
 |
 */
 
-$config['app_version'] = '292';
-$config['license_number'] = '';
+// Reset opcache, otherwise this file gets cached with old values on
+// Circle's PHP 5.5 machine
+if (function_exists('opcache_reset'))
+{
+    opcache_reset();
+}
+
+$config['site_url'] = 'http://ee2.test:8080/';
+$config['app_version'] = '300';
+$config['license_contact'] = 'ellislab.devleopers@gmail.com';
+$config['license_number'] = '1234-1234-1234-1234';
 $config['debug'] = '1';
 $config['cp_url'] = 'http://ee2.test:8080/system/index.php';
 $config['theme_folder_url'] = 'http://ee2.test:8080/themes/';
-$config['theme_folder_path'] = $_SERVER['DOCUMENT_ROOT'] . '/themes/';
+$config['theme_folder_path'] = '/home/ubuntu/ExpressionEngine/themes/';
 $config['doc_url'] = 'http://ellislab.com/expressionengine/user-guide/';
 $config['is_system_on'] = 'y';
 $config['allow_extensions'] = 'y';
 $config['cookie_prefix'] = '';
-$config['cookie_httponly'] = 'y';
+$config['use_compressed_js'] = 'n';
+$config['cache_driver'] = 'file';
 $config['database'] = array(
 	'expressionengine' => array(
 		'database' => 'circle_test',
-		'username' => 'ubuntu',
+		'username' => 'ubuntu'
 	),
 );
 

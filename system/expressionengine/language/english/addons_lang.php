@@ -2,31 +2,79 @@
 
 $lang = array(
 
-'addons'						=>		'Add-ons',
+/* Sidebar Menu */
+'all_addons'					=>		'All Add-Ons',
+'show_all_addons'				=>		'All %d Add-Ons',
+'manage_extensions'				=>		'Manage Extensions',
+'manage_addon_extensions'		=>		'Manage Add-on Extensions',
 
-'accessories'					=> 		'Accessories',
+'addon_manager'					=>		'Add-On Manager',
+'search_addons_button'			=>		'search add-ons',
+
+'addon'							=>		'Add-On',
+'addons'						=>		'Add-Ons',
+'no_addon_search_results'		=>		'No <b>Add-Ons</b> Found',
+'no_addon_extensions_search_results'	=>		'No <b>Add-on Extensions</b> Found',
+
+'requested_module_not_installed' =>
+'The requested module is not installed:',
+
+'manual'						=>		'Manual',
+'author'						=> 		'Author',
+'example_usage'					=>		'Example Usage',
+'available_parameters'			=>		'Available Parameters',
+
+'update'						=>		'Update',
+'update_to_version'				=>		'Update to %s',
+
+/* Filters */
+'filters'						=>		'Filters',
+'filter_by_status'				=>		'status',
+'developer'						=>		'developer',
+'show'							=>		'show',
+'custom_limit'					=>		'custom limit',
+'entries'						=>		'Entries',
+
+'install'						=>		'Install',
+'installed'						=>		'Installed',
+'uninstall'						=>		'Uninstall',
+'uninstalled'					=>		'Uninstalled',
+'needs_updates'					=>		'Needs Updates',
+'addons_installed'				=>		'Add-Ons Installed',
+'addons_installed_desc'			=>		'The following add-on(s) have been installed: ',
+'addons_uninstalled'			=>		'Add-Ons Removed',
+'addons_uninstalled_desc'		=>		'The following add-on(s) have been removed: ',
+'addons_updated'				=>		'Add-Ons Updated',
+'addons_updated_desc'			=>		'The following add-on(s) have been updated: ',
+
+'btn_save_settings'             =>      'Save Settings',
+'settings_saved'			    =>		'Settings Saved',
+'settings_saved_desc'		    =>		'The settings for %s have been saved.',
+
+// Google Maps Keys
+'default_map'					=>		'Default Map',
+'manual_override'				=>		'Manual Override',
+'latitude'						=>		'Latitude',
+'longitude'						=>		'Longitude',
+'zoom'							=>		'Zoom',
+
+// 2.x
+
 'modules'						=>		'Modules',
 'extensions'					=>		'Extensions',
 'plugins'						=>		'Plugins',
 
-'accessory'						=>		'Accessory',
 'module'						=>		'Module',
 'extension'						=>		'Extension',
 'rte_tool'						=>		'Rich Text Editor Tool',
 
-'addons_accessories'			=> 		'Accessories',
 'addons_modules'				=>		'Modules',
 'addons_plugins'				=>		'Plugins',
 'addons_extensions'				=>		'Extensions',
 'addons_fieldtypes'				=>		'Fieldtypes',
 
-'accessory_name' 				=> 		'Accessory Name',
 'fieldtype_name'				=>		'Fieldtype Name',
-'install'						=>		'Install',
-'uninstall'						=>		'Uninstall',
-'installed'						=>		'Installed',
 'not_installed'					=>		'Not Installed',
-'uninstalled'					=>		'Uninstalled',
 'remove'						=>		'Remove',
 'preferences_updated'			=>		'Preferences Updated',
 'extension_enabled'				=>		'Extension Enabled',
@@ -51,10 +99,9 @@ $lang = array(
 'specific_page'					=>		'Specific Page?',
 'description'					=>		'Description',
 'version'						=>		'Version',
-'status'						=>		'Status',
+// 'status'						=>		'Status',
 'fieldtype'						=>		'Fieldtype',
 
-'edit_accessory_preferences'	=>		'Edit Accessory Preferences',
 'member_group_assignment'		=>		'Assigned Member Groups',
 'page_assignment'				=>		'Assigned Pages',
 

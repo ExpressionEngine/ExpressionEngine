@@ -34,6 +34,7 @@ class EE_Router {
 	var $method			= 'index';
 	var $directory		= '';
 	var $default_controller;
+	var $namespace_prefix = '';
 
 	/**
 	 * Constructor
@@ -69,7 +70,7 @@ class EE_Router {
 			if (isset($_GET[$this->config->item('directory_trigger')]))
 			{
 				$this->set_directory(trim($this->uri->_filter_uri($_GET[$this->config->item('directory_trigger')])));
-				$segments[] = $this->fetch_directory();
+				$segments[] = rtrim($this->fetch_directory(), '/');
 			}
 
 			if (isset($_GET[$this->config->item('controller_trigger')]))
@@ -218,53 +219,113 @@ class EE_Router {
 			return $segments;
 		}
 
-		// Does the requested controller exist in the root folder?
-		if (file_exists(APPPATH.'controllers/'.$segments[0].'.php'))
+		$last = end($segments);
+		reset($segments);
+
+		$c = 0;
+
+		// First check for a namespaced situation
+		$saved_segments = $segments;
+		$directory = APPPATH.'../EllisLab/ExpressionEngine/Controllers/';
+		$namespace = '';
+		if (strtolower($segments[0]) == 'cp')
 		{
+			array_shift($segments); // This will not factor into the path for namespaced stuff
+			$c++;
+		}
+
+		while ($c < count($saved_segments))
+		{
+			$segment = str_replace('-', '_', $segments[0]);
+			$words = explode('_', $segment);
+			$words = array_map('ucfirst', $words);
+			$segment = implode('', $words);
+
+			// Do we have a directory instead of a controller file?
+			if ( ! file_exists($directory . $segment . '.php') && is_dir($directory . $segment))
+			{
+				$directory .= $segment . '/';
+				$namespace .= '\\' . $segment;
+				array_shift($segments);
+				$c++;
+				continue;
+			}
+
+			// For organization purposes everything is in a subdirectory inside
+			// .../Controllers/. Top level controllers may be structured thus:
+			// .../Controllers/FooBar/FooBar.php
+			// We now check for that eventuality. This is important because
+			// the returned array assumes that the string at index 0 is the
+			// controller class.
+			if ( ! file_exists($directory . $segment . '.php'))
+			{
+				if ($c > 0)
+				{
+					$segment = str_replace('-', '_', $saved_segments[$c - 1]);
+					$words = explode('_', $segment);
+					$words = array_map('ucfirst', $words);
+					$segment = implode('', $words);
+
+					if (file_exists($directory . $segment . '.php'))
+					{
+						array_unshift($segments, $saved_segments[$c - 1]);
+					}
+				}
+			}
+
+			break;
+		}
+
+		if ($namespace != '')
+		{
+			$this->set_directory($directory);
+			$this->namespace_prefix = '\EllisLab\ExpressionEngine\Controllers' . $namespace;
+
+			// If the final segment is a directory check for a file matching the
+			// directory's name inside the directory. Use its index method.
+			if (empty($segments))
+			{
+				$segment = str_replace('-', '_', $last);
+				$words = explode('_', $segment);
+				$words = array_map('ucfirst', $words);
+				$segment = implode('', $words);
+
+				if (file_exists($directory . $segment . '.php'))
+				{
+					return array($last, 'index');
+				}
+			}
 			return $segments;
 		}
 
-		// Is the controller in a sub-folder?
-		if (is_dir(APPPATH.'controllers/'.$segments[0]))
+		$segments = $saved_segments;
+		$c = 0;
+
+		// Loop through our segments and return as soon as a controller
+		// is found or when such a directory doesn't exist
+		while ($c < count($saved_segments))
 		{
-			// Set the directory and remove it from the segment array
-			$this->set_directory($segments[0]);
-			$segments = array_slice($segments, 1);
+			$test = $this->directory.str_replace('-', '_', $segments[0]);
 
-			if (count($segments) > 0)
+			// First lowercase
+			if ( ! file_exists(APPPATH.'controllers/'.$test.'.php') && is_dir(APPPATH.'controllers/'.$this->directory.$segments[0]))
 			{
-				// Does the requested controller exist in the sub-folder?
-				if ( ! file_exists(APPPATH.'controllers/'.$this->fetch_directory().$segments[0].'.php'))
-				{
-					show_404($this->fetch_directory().$segments[0]);
-				}
-			}
-			else
-			{
-				// Is the method being specified in the route?
-				if (strpos($this->default_controller, '/') !== FALSE)
-				{
-					$x = explode('/', $this->default_controller);
-
-					$this->set_class($x[0]);
-					$this->set_method($x[1]);
-				}
-				else
-				{
-					$this->set_class($this->default_controller);
-					$this->set_method('index');
-				}
-
-				// Does the default controller exist in the sub-folder?
-				if ( ! file_exists(APPPATH.'controllers/'.$this->fetch_directory().$this->default_controller.'.php'))
-				{
-					$this->directory = '';
-					return array();
-				}
-
+				$this->set_directory(array_shift($segments), TRUE);
+				$c++;
+				continue;
 			}
 
 			return $segments;
+		}
+
+		// If the final segment is a directory check for a file matching the
+		// directory's name inside the directory. Use its index method.
+		if (empty($segments))
+		{
+			if (file_exists(APPPATH.'controllers/'.$this->directory.$last.'.php'))
+			{
+				return array($last, 'index');
+			}
 		}
 
 		// If we've gotten this far it means that the URI does not correlate to a valid
@@ -356,9 +417,20 @@ class EE_Router {
 	 * @access	public
 	 * @return	string
 	 */
-	function fetch_class()
+	function fetch_class($prepend_namespace = FALSE)
 	{
-		return $this->class;
+		$class = str_replace('-', '_', $this->class);
+
+		// If we are in a namespaced controller the class is PascalCased
+		if ($prepend_namespace && ! empty($this->namespace_prefix))
+		{
+			$words = explode('_', $class);
+			$words = array_map('ucfirst', $words);
+			$class = implode('', $words);
+			return $this->namespace_prefix . '\\' . $class;
+		}
+
+		return $class;
 	}
 
 	// --------------------------------------------------------------------
@@ -390,7 +462,18 @@ class EE_Router {
 			return 'index';
 		}
 
-		return $this->method;
+		$method = str_replace('-', '_', $this->method);
+
+		// If we are in a namespaced controller the method is camelCased
+		if ( ! empty($this->namespace_prefix))
+		{
+			$words = explode('_', $method);
+			$method = strtolower(array_shift($words));
+			$words = array_map('ucfirst', $words);
+			$method .= implode('', $words);
+		}
+
+		return $method;
 	}
 
 	// --------------------------------------------------------------------
@@ -398,13 +481,20 @@ class EE_Router {
 	/**
 	 *  Set the directory name
 	 *
-	 * @access	public
-	 * @param	string
+	 * @param	string	$dir	Directory name
+	 * @param	bool	$appent Whether we're appending rather then setting the full value
 	 * @return	void
 	 */
-	function set_directory($dir)
+	public function set_directory($dir, $append = FALSE)
 	{
-		$this->directory = str_replace(array('/', '.'), '', $dir).'/';
+		if ($append !== TRUE OR empty($this->directory))
+		{
+			$this->directory = str_replace('.', '', trim($dir, '/')).'/';
+		}
+		else
+		{
+			$this->directory .= str_replace('.', '', trim($dir, '/')).'/';
+		}
 	}
 
 	// --------------------------------------------------------------------

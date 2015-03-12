@@ -77,9 +77,6 @@ $lang = array(
 'search_preferences' =>
 "Search Preferences",
 
-'no_search_results' =>
-"No Results Found",
-
 'search_results' =>
 "Search Results",
 
@@ -1157,9 +1154,6 @@ $lang = array(
 
 "12_hour" =>
 "12-hour with AM/PM",
-
-"include_seconds" =>
-"Include Seconds in the Default Time Format",
 
 "default_site_timezone" =>
 "Site Timezone",

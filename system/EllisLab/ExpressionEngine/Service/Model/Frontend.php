@@ -2,6 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Service\Model;
 
+use EllisLab\ExpressionEngine\Service\Validation\Factory as ValidationFactory;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -34,14 +36,15 @@ namespace EllisLab\ExpressionEngine\Service\Model;
  */
 class Frontend {
 
-	protected $store;
+	protected $datastore;
+	protected $validation;
 
 	/**
-	 * @param $store EllisLab\ExpressionEngine\Service\Model\DataStore
+	 * @param $datastore EllisLab\ExpressionEngine\Service\Model\DataStore
 	 */
-	public function __construct(DataStore $store)
+	public function __construct(DataStore $datastore)
 	{
-		$this->store = $store;
+		$this->datastore = $datastore;
 	}
 
 	/**
@@ -51,7 +54,7 @@ class Frontend {
 	 */
 	public function get($name, $default_ids = NULL)
 	{
-		$builder = $this->store->get($name);
+		$builder = $this->datastore->get($name);
 
 		if ( ! empty($default_ids))
 		{
@@ -73,7 +76,20 @@ class Frontend {
 	 */
 	public function make($name, array $data = array())
 	{
-		return $this->store->make($name, $this, $data);
+		$model = $this->datastore->make($name, $this, $data);
+		if ($this->validation)
+		{
+			$model->setValidator($this->validation->make());
+		}
+		return $model;
+	}
+
+	/**
+	 *
+	 */
+	public function setValidationFactory(ValidationFactory $validation)
+	{
+		$this->validation = $validation;
 	}
 
 	/**

@@ -362,21 +362,11 @@ class EE_Config {
 		}
 
 		// If we just reloaded, then we reset a few things automatically
-		ee()->db->save_queries = (ee()->config->item('show_profiler') == 'y' OR DEBUG == 1) ? TRUE : FALSE;
+		$save_queries = (ee()->config->item('show_profiler') == 'y' OR DEBUG == 1) ? TRUE : FALSE;
+		ee('Database')->getLog()->saveQueries($save_queries);
 
 		// lowercase version charset to use in HTML output
 		$this->config['output_charset'] = strtolower($this->config['charset']);
-
-		//  Set up DB caching prefs
-
-		if ($this->item('enable_db_caching') == 'y' AND REQ == 'PAGE')
-		{
-			ee()->db->cache_on();
-		}
-		else
-		{
-			ee()->db->cache_off();
-		}
 	}
 
 	// --------------------------------------------------------------------
@@ -546,6 +536,8 @@ class EE_Config {
 			'include_seconds',
 			'cookie_domain',
 			'cookie_path',
+			'cookie_httponly',
+			'cookie_secure',
 			'website_session_type',
 			'cp_session_type',
 			'allow_username_change',
@@ -687,7 +679,11 @@ class EE_Config {
 			'reserved_category_word',
 			'auto_convert_high_ascii',
 			'new_posts_clear_caches',
-			'auto_assign_cat_parents'
+			'auto_assign_cat_parents',
+			'enable_comments',
+			'comment_word_censoring',
+			'comment_moderation_override',
+			'comment_edit_time_limit'
 		);
 
 		$name = $which.'_default';
@@ -1049,7 +1045,7 @@ class EE_Config {
 			foreach ($remove_values as $key => $val)
 			{
 				$config_file = preg_replace('#\$'."config\[(\042|\047)".$key."\\1\].*#", "", $config_file);
-				unset($config[$val]);
+				unset($this->config[$key]);
 			}
 		}
 
@@ -1108,6 +1104,8 @@ class EE_Config {
 						);
 					}
 				}
+
+				$this->config[$key] = $val;
 			}
 		}
 

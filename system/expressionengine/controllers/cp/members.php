@@ -1295,7 +1295,6 @@ class Members extends CP_Controller {
 				'can_edit_html_buttons'		=> 'n',
 				'include_in_authorlist'		=> 'n',
 				'include_in_memberlist'		=> 'n',
-				'include_in_mailinglists'	=> 'y',
 				'can_delete_self'			=> 'n',
 				'mbr_delete_notify_emails'	=> $this->config->item('webmaster_email')
 			),
@@ -1327,7 +1326,6 @@ class Members extends CP_Controller {
 				'can_access_addons'			=> 'n',
 				'can_access_modules'		=> 'n',
 				'can_access_extensions'		=> 'n',
-				'can_access_accessories'	=> 'n',
 				'can_access_plugins'		=> 'n',
 				'can_access_fieldtypes'		=> 'n',
 				'can_access_members'		=> 'n',

@@ -38,9 +38,9 @@ class Snippet extends Model {
 		)
 	);
 
-	public $snippet_id;
-	public $site_id;
-	public $snippet_name;
-	public $snippet_contents;
+	protected $snippet_id;
+	protected $site_id;
+	protected $snippet_name;
+	protected $snippet_contents;
 
 }

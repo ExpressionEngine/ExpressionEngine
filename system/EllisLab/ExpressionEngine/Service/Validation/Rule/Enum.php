@@ -29,16 +29,18 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  */
 class Enum extends ValidationRule {
 
-	protected $options = array();
-
-	public function setParameters(array $parameters)
-	{
-		$this->options = $parameters;
-	}
-
 	public function validate($value)
 	{
-		return in_array($value, $this->options);
+		return in_array($value, $this->parameters);
+	}
+
+	/**
+	 * Return the language data for the validation error.
+	 */
+	public function getLanguageData()
+	{
+		$list = implode(', ', $this->parameters);
+		return array($this->getName(), $list);
 	}
 
 }

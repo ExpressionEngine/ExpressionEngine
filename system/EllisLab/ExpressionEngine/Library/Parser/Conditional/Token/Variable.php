@@ -18,6 +18,15 @@ class Variable extends Token {
 
 	public function setValue($value)
 	{
+		if (is_string($value))
+		{
+			$value = str_replace(
+				array('{', '}'),
+				array('&#123;', '&#125;'),
+				$value
+			);
+		}
+
 		$this->value = $value;
 		$this->has_value = TRUE;
 	}

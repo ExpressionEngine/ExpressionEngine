@@ -112,55 +112,6 @@ class Addons_installer {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Accessory Installer
-	 *
-	 * @access	private
-	 * @param	string
-	 * @return	void
-	 */
-	function install_accessory($accessory)
-	{
-		$class = $this->_accessory_install_setup($accessory);
-		$ACC = new $class();
-
-		if (method_exists($ACC, 'install'))
-		{
-			$ACC->install();
-		}
-
-		ee()->db->insert('accessories', array(
-				'class'				=> $class,
-				'accessory_version'	=> $ACC->version
-		));
-
-		ee()->accessories->update_placement($class);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Accessory Uninstaller
-	 *
-	 * @access	private
-	 * @param	string
-	 * @return	void
-	 */
-	function uninstall_accessory($accessory)
-	{
-		$class = $this->_accessory_install_setup($accessory, FALSE);
-		$ACC = new $class();
-
-		if (method_exists($ACC, 'uninstall'))
-		{
-			$ACC->uninstall();
-		}
-
-		ee()->db->delete('accessories', array('class' => $class));
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Extension Installer
 	 *
 	 * @access	private
@@ -388,41 +339,6 @@ class Addons_installer {
 		}
 
 		return $class;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Accessory Install Setup
-	 *
-	 * Contains common code for install and uninstall routines
-	 *
-	 * @access	private
-	 * @param	string
-	 * @return	void
-	 */
-	function _accessory_install_setup($accessory, $install = TRUE)
-	{
-		if ( ! ee()->cp->allowed_group('can_access_accessories'))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		if ($accessory == '')
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		$class = ucfirst($accessory).'_acc';
-		$count = ee()->super_model->count('accessories', array('class' => $class));
-
-		if ( ! ($install XOR $count))
-		{
-			show_error(lang('unauthorized_access'));
-		}
-
-		ee()->load->library('accessories');
-		return ee()->accessories->_get_accessory_class($accessory);
 	}
 
 	// --------------------------------------------------------------------

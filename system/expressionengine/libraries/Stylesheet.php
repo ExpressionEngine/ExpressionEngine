@@ -66,8 +66,7 @@ class EE_Stylesheet {
 				exit;
 			}
 
-			ee()->db->select('templates.template_data, templates.template_name,
-									templates.save_template_file, templates.edit_date');
+			ee()->db->select('templates.template_data, templates.template_name,	templates.edit_date');
 			ee()->db->from(array('templates', 'template_groups'));
 			ee()->db->where(ee()->db->dbprefix('templates').'.group_id',
 								ee()->db->dbprefix('template_groups').'.group_id', FALSE);
@@ -89,7 +88,7 @@ class EE_Stylesheet {
 			/**  Retreive template file if necessary
 			/** -----------------------------------------*/
 
-			if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '' AND $row['save_template_file'] == 'y')
+			if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '')
 			{
 				ee()->load->helper('file');
 				$basepath = ee()->config->slash_item('tmpl_file_basepath').'/'.ee()->config->item('site_short_name').'/';

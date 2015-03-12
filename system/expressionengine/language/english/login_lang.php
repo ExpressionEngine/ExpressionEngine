@@ -7,28 +7,31 @@ $lang = array(
 //----------------------------
 
 'remember_me' =>
-'Auto log-in on future visits?',
+'Keep me logged in.',
 
 'no_username' =>
-'The username field is required.',
+'The username field is required',
 
 'no_password' =>
-'The password field is required.',
+'The password field is required',
 
 'no_email' =>
 'You must submit your email address.',
 
 'credential_missmatch' =>
-'Invalid username or password.',
+'That is the wrong username or password',
 
 'multi_login_warning' =>
-'Someone is already logged in using this account.',
+'Someone is already logged in using this account',
 
 'return_to_login' =>
 'Return to login',
 
 'password_lockout_in_effect' =>
 'You are only permitted to make four login attempts every %d minute(s)',
+
+'locked' =>
+'Locked',
 
 'unauthorized_request' =>
 'You are not authorized to perform this action',
@@ -43,8 +46,11 @@ $lang = array(
 // Reset Password
 //-----------------------------------
 
+'email_address' =>
+'Email address',
+
 'forgotten_password' =>
-'Reset Password',
+'I forgot my password',
 
 'no_reset_id' =>
 'The password reset token does not appear to be valid.  Please check the link you followed.',
@@ -58,14 +64,23 @@ $lang = array(
 'successfully_changed_password' =>
 'You have successfully changed your password.  Please login using your new password.',
 
+'reset_password' =>
+'Reset Password',
+
 'new_password' =>
-'New Password',
+'New password',
 
 'new_password_confirm' =>
-'Confirm New Password',
+'Confirm new password',
 
 'enter_new_password' =>
 'Enter a New Password',
+
+'login' =>
+'Log In',
+
+'log_into' =>
+'Log into',
 
 ''=>''
 );

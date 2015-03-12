@@ -200,7 +200,7 @@ class EE_Table {
 		$this->raw_data = $data['rows'];
 		$this->set_data($data['rows']);
 
-		$data['pagination_html'] = $this->_create_pagination($data);
+		$data['pagination'] = $this->_create_pagination($data);
 
 		$data['table_html'] = $this->generate();
 
@@ -903,20 +903,13 @@ class EE_Table {
 
 		// sensible CP defaults
 		$config = array(
-			'base_url'				=> $this->base_url,
+			'base_url'				=> '',
 			'per_page'				=> 50,
 			'cur_page'				=> $this->page_offset,
+			'num_links'				=> 2,
 
-			'page_query_string'		=> TRUE,
-			'query_string_segment'	=> 'tbl_offset',
-
-			'full_tag_open'			=> '<p id="paginationLinks">', // @todo having an id here is nonsense, you can have more than one!
-			'full_tag_close'		=> '</p>',
-
-			'prev_link'				=> '<img src="'.ee()->cp->cp_theme_url.'images/pagination_prev_button.gif" width="13" height="13" alt="&lt;" />',
-			'next_link'				=> '<img src="'.ee()->cp->cp_theme_url.'images/pagination_next_button.gif" width="13" height="13" alt="&gt;" />',
-			'first_link'			=> '<img src="'.ee()->cp->cp_theme_url.'images/pagination_first_button.gif" width="13" height="13" alt="&lt; &lt;" />',
-			'last_link'				=> '<img src="'.ee()->cp->cp_theme_url.'images/pagination_last_button.gif" width="13" height="13" alt="&gt; &gt;" />'
+			'full_tag_open'			=> '<div class="paginate"><ul>', // @todo having an id here is nonsense, you can have more than one!
+			'full_tag_close'		=> '</ul></div>',
 		);
 
 		$config = array_merge($config, $data['pagination']);
@@ -951,53 +944,49 @@ class EE_Table {
 
 		$p = ee()->pagination;
 
-
 		$temp = $p->full_tag_open;
 
-		$temp .= '{{if first_page && first_page[0] && first_page[0].text}}';
-		$temp .= $p->first_tag_open.'<a '.$p->anchor_class.'href="${first_page[0].pagination_url}">{{html first_page[0].text}}</a>'.$p->first_tag_close;
-		$temp .= '{{/if}}';
-
-		$temp .= '{{if previous_page && previous_page[0] && previous_page[0].text}}';
-		$temp .= $p->prev_tag_open.'<a '.$p->anchor_class.'href="${previous_page[0].pagination_url}">{{html previous_page[0].text}}</a>'.$p->prev_tag_close;
-		$temp .= '{{/if}}';
-
+		$temp .= '<li><a href="${first_page[0].pagination_url}">{{html first_page[0].text}}</a></li>';
+		$temp .= '<li><a href="${previous_page[0].pagination_url}">{{html previous_page[0].text}}</a></li>';
 
 		$temp .= '{{each(i, c_page) page}}';
 			$temp .= '{{if c_page.current_page}}';
-			$temp .= $p->cur_tag_open.'${c_page.pagination_page_number}'.$p->cur_tag_close;
+			$temp .= '<li><a class="act" href="${c_page.pagination_url}">${c_page.pagination_page_number}</a></li>';
 			$temp .= '{{else}}';
-			$temp .= $p->num_tag_open.'<a '.$p->anchor_class.'href="${c_page.pagination_url}">${c_page.pagination_page_number}</a>'.$p->num_tag_close;
+			$temp .= '<li><a href="${c_page.pagination_url}">${c_page.pagination_page_number}</a></li>';
 			$temp .= '{{/if}}';
 		$temp .= '{{/each}}';
 
-
-		$temp .= '{{if next_page && next_page[0] && next_page[0].text}}';
-		$temp .= $p->next_tag_open.'<a '.$p->anchor_class.'href="${next_page[0].pagination_url}">{{html next_page[0].text}}</a>'.$p->next_tag_close;
-		$temp .= '{{/if}}';
-
-		$temp .= '{{if last_page && last_page[0] && last_page[0].text}}';
-		$temp .= $p->last_tag_open.'<a '.$p->anchor_class.'href="${last_page[0].pagination_url}">{{html last_page[0].text}}</a>'.$p->last_tag_close;
-		$temp .= '{{/if}}';
+		$temp .= '<li><a href="${next_page[0].pagination_url}">{{html next_page[0].text}}</a></li>';
+		$temp .= '<li><a href="${last_page[0].pagination_url}">{{html last_page[0].text}}</a></li>';
 
 		$temp .= $p->full_tag_close;
 
 		$this->pagination_tmpl = $temp;
 		unset($temp);
 
-		$initial = ee()->pagination->create_links();
+		$links = ee()->pagination->create_link_array();
 
-		if ($initial == '')
+		// "Fixing" the URLs
+		foreach ($links as &$section)
 		{
-			$initial = str_replace(
-				$this->uniqid,
-				$this->uniqid.' js_hide',
-				$p->full_tag_open
-			);
-			$initial .= $p->full_tag_close;
+			foreach ($section as &$link)
+			{
+				if (empty($link)) continue;
+
+				$url = clone $this->base_url;
+
+				$offset = str_replace('/', '', $link['pagination_url']);
+				if ( ! empty($offset))
+				{
+					$url->setQueryStringVariable('tbl_offset', $offset);
+				}
+
+				$link['pagination_url'] = $url->compile();
+			}
 		}
 
-		return $initial;
+		return $links;
 	}
 }
 

@@ -3,7 +3,7 @@
 namespace EllisLab\Tests\ExpressionEngine\Core;
 
 use EllisLab\AutoloaderTest as TestAlias;
-use EllisLab\ExpressionEngine\Service\Autoloader as Autoloader;
+use EllisLab\ExpressionEngine\Core\Autoloader as Autoloader;
 
 class AutoloaderTest extends \PHPUnit_Framework_TestCase {
 
@@ -11,7 +11,6 @@ class AutoloaderTest extends \PHPUnit_Framework_TestCase {
 
 	protected function setUp()
 	{
-		require_once __DIR__.'/../../../ExpressionEngine/Service/Autoloader.php';
 		$this->autoloader = new Autoloader();
 
 		// The testsuite autoloader technically handles the full EllisLab

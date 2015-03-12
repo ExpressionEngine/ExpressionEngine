@@ -24,13 +24,14 @@
  */
 class View {
 
+	public $alerts = array();
+	public $blocks = array();
+
 	protected $_theme = 'default';
 	protected $_extend = '';
 	protected $_data = array();
 	protected $_disabled = array();
 	protected $_disable_up = array();
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Set Theme
@@ -40,11 +41,6 @@ class View {
 	 */
 	public function set_cp_theme($cp_theme)
 	{
-		if ($cp_theme == 'default')
-		{
-			return;
-		}
-
 		$this->_theme = $cp_theme;
 		ee()->session->userdata['cp_theme'] = $cp_theme;
 
@@ -68,6 +64,8 @@ class View {
 		ee()->javascript->compile();
 
 		$data = array_merge($this->_data, $data);
+		$data['blocks'] = $this->blocks;
+		$data['localize'] = ee()->localize;
 
 		// load up the inner
 		$rendered_view = ee()->load->view($view, $data, TRUE);
@@ -79,7 +77,11 @@ class View {
 			$view = $this->_extend;
 			$this->_extend = '';
 			$this->disable($this->_disable_up);
-			$rendered_view = ee()->load->view($view, array('EE_rendered_view' => $rendered_view), TRUE);
+			$data = array(
+				'EE_rendered_view' => $rendered_view,
+				'blocks'           => $this->blocks
+			);
+			$rendered_view = ee()->load->view($view, $data, TRUE);
 		}
 
 		// clear for future calls
@@ -230,6 +232,117 @@ class View {
 		}
 
 		return '<link rel="stylesheet" href="'.$file_url.'?v='.$filemtime.'" type="text/css" media="'.$media.'" />'.PHP_EOL;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Sets success or error message to display on page load
+	 *
+	 * This function will gather messages that need to appear in the inline
+	 * alert box in the CP. Think of the messages like a git commit: summary
+	 * in the headline (title), more detail in the body (description).
+	 *
+	 * @param 	string	$type			'success', 'warn', or 'issue'
+	 * @param	string	$title			Title of message
+	 * @param 	string	$description	More detailed message
+	 * @param 	bool	$flashdata		Whether or not to persist this message
+	 * 		                      		in flashdata for the next page load
+	 * @return 	void
+	 */
+	public function set_message($type, $title, $description = '', $flashdata = FALSE)
+	{
+		if (is_array($description))
+		{
+			$description = implode('<br>', $description);
+		}
+
+		$message_array = array('type' => $type, 'title' => $title, 'description' => $description);
+
+		$this->set_alert('inline', $message_array, $flashdata);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Populates the alerts view array based on the alert type
+	 *
+	 * @param	string	$type		'standard', 'inline', or 'banner'
+	 * @param	array	$alert_data	An array with keys 'type', 'title', and 'description'
+	 * @param 	bool	$flashdata	Whether or not to persist this message
+	 * 		                      	in flashdata for the next page load
+	 * @return 	void
+	 */
+	public function set_alert($type, array $alert_data, $flashdata = FALSE)
+	{
+		$alert = ee('Alert')->make('shared-form', strtolower($type))
+			->withTitle($alert_data['title'])
+			->addToBody($alert_data['description']);
+
+		switch ($alert_data['type'])
+		{
+			case 'issue':
+				$alert->asIssue();
+				break;
+
+			case 'success':
+				$alert->asSuccess();
+				break;
+
+			case 'warn':
+				$alert->asWarning();
+				break;
+		}
+
+		if ($flashdata)
+		{
+			$alert->defer();
+		}
+
+		$alert->now();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Sets variables for defining a meta-refresh tag
+	 *
+	 * @param	string	$url	The URL to refresh to
+	 * @param	int		$rate	The refresh rate
+	 *
+	 * @return void
+	 */
+	public function set_refresh($url, $rate, $flashdata = FALSE)
+	{
+		$refresh = array('url' => $url, 'rate' => $rate);
+		if ($flashdata)
+		{
+			ee()->session->set_flashdata('meta-refresh', $refresh);
+		}
+		else
+		{
+			ee()->view->meta_refresh = $refresh;
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get themes URL from supplied system path
+	 *
+	 * this function will extract which theme we will be loading the file from.
+	 *
+	 * @access protected
+	 * @param 	string	system path of the file.
+	 * @return 	string	the URL
+	 */
+	protected function _get_theme_from_path($path)
+	{
+		$path = '/'.trim($path, '/');
+
+		$theme_name = ltrim(strrchr($path, '/'), '/');
+
+		return ee()->config->item('theme_folder_url') . 'cp_themes/' . $theme_name . '/';
 	}
 
 	// --------------------------------------------------------------------

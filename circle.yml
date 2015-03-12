@@ -1,9 +1,7 @@
 machine:
   timezone: America/New_York
-  php:
-    version: 5.3.10
   ruby:
-    version: 2.1.1
+    version: 2.1.2
   hosts:
     ee2.test: 127.0.0.1
   environment:
@@ -27,9 +25,13 @@ checkout:
     - chmod 666 system/config/config.php
     - chmod -R 777 system/cache
     - chmod -R 777 system/templates
+    - chmod -R 777 system/expressionengine/translations
+    - chmod 777 system/tests/rspec/support/tmp
+    - chmod -R 777 system/tests/rspec/support/file-sync/uploads
     - chmod -R 777 images
     - chmod +x system/tests/circleci/runtests.sh
 
 test:
   override:
-    - "./system/tests/circleci/runtests.sh"
+    - "rvm use 2.1.2 && ./system/tests/circleci/runtests.sh":
+        parallel: true

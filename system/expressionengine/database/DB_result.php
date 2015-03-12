@@ -28,14 +28,18 @@
  */
 class CI_DB_result {
 
-	var $conn_id		= NULL;
-	var $result_id		= NULL;
 	var $result_array	= array();
 	var $result_object	= array();
 	var $current_row	= 0;
 	var $num_rows		= 0;
 	var $row_data		= NULL;
 
+	protected $pdo_statement;
+
+	public function __construct($statement = NULL)
+	{
+		$this->pdo_statement = $statement;
+	}
 
 	/**
 	 * Query result.  Acts as a wrapper function for the following functions.
@@ -64,15 +68,15 @@ class CI_DB_result {
 			return $this->result_object;
 		}
 
-		// In the event that query caching is on the result_id variable
-		// will return FALSE since there isn't a valid SQL resource so
+		// In the event that query caching is on the pdo_statement variable
+		// will return NULL since there isn't a valid SQL resource so
 		// we'll simply return an empty array.
-		if ($this->result_id === FALSE OR $this->num_rows() == 0)
+		if ($this->pdo_statement === FALSE OR $this->num_rows() == 0)
 		{
 			return array();
 		}
 
-		$this->_data_seek(0);
+		//$this->_data_seek(0);
 		while ($row = $this->_fetch_object())
 		{
 			$this->result_object[] = $row;
@@ -91,26 +95,14 @@ class CI_DB_result {
 	 */
 	function result_array()
 	{
-		if (count($this->result_array) > 0)
+		$result = $this->result_object();
+
+		foreach ($result as &$row)
 		{
-			return $this->result_array;
+			$row = (array) $row;
 		}
 
-		// In the event that query caching is on the result_id variable
-		// will return FALSE since there isn't a valid SQL resource so
-		// we'll simply return an empty array.
-		if ($this->result_id === FALSE OR $this->num_rows() == 0)
-		{
-			return array();
-		}
-
-		$this->_data_seek(0);
-		while ($row = $this->_fetch_assoc())
-		{
-			$this->result_array[] = $row;
-		}
-
-		return $this->result_array;
+		return $result;
 	}
 
 	// --------------------------------------------------------------------
@@ -212,19 +204,7 @@ class CI_DB_result {
 	 */
 	function row_array($n = 0)
 	{
-		$result = $this->result_array();
-
-		if (count($result) == 0)
-		{
-			return $result;
-		}
-
-		if ($n != $this->current_row AND isset($result[$n]))
-		{
-			$this->current_row = $n;
-		}
-
-		return $result[$this->current_row];
+		return (array) $this->row_object($n);
 	}
 
 
@@ -244,6 +224,7 @@ class CI_DB_result {
 		{
 			return $result;
 		}
+
 		return $result[0];
 	}
 
@@ -263,7 +244,8 @@ class CI_DB_result {
 		{
 			return $result;
 		}
-		return $result[count($result) -1];
+
+		return $result[count($result) - 1];
 	}
 
 	// --------------------------------------------------------------------
@@ -312,6 +294,7 @@ class CI_DB_result {
 		{
 			--$this->current_row;
 		}
+
 		return $result[$this->current_row];
 	}
 

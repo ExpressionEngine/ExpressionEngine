@@ -27,6 +27,9 @@ namespace EllisLab\ExpressionEngine\Service\Model;
  */
 class Gateway {
 
+	protected $_field_list_cache;
+	protected $_field_values = array();
+
 	/**
 	 *
 	 */
@@ -35,6 +38,10 @@ class Gateway {
 		if ($this->hasProperty($key))
 		{
 			$this->setProperty($key, $value);
+		}
+		elseif ($this->hasField($key))
+		{
+			$this->setField($key);
 		}
 	}
 
@@ -51,6 +58,11 @@ class Gateway {
 	 */
 	public function getFieldList()
 	{
+		if (isset($this->_field_list_cache))
+		{
+			return $this->_field_list_cache;
+		}
+
 		$vars = get_object_vars($this);
 		$fields = array();
 
@@ -62,7 +74,23 @@ class Gateway {
 			}
 		}
 
-		return $fields;
+		return $this->_field_list_cache = $fields;
+	}
+
+	/**
+	 *
+	 */
+	public function hasField($name)
+	{
+		return in_array($name, $this->getFieldList());
+	}
+
+	/**
+	 *
+	 */
+	public function setField($name, $value)
+	{
+		$this->_field_values[$name] = $value;
 	}
 
 	/**
@@ -110,6 +138,10 @@ class Gateway {
 			{
 				$this->setProperty($key, $value);
 			}
+			elseif ($this->hasField($key))
+			{
+				$this->setField($key, $value);
+			}
 		}
 	}
 
@@ -133,6 +165,6 @@ class Gateway {
 			}
 		}
 
-		return $values;
+		return array_merge($values, $this->_field_values);
 	}
 }

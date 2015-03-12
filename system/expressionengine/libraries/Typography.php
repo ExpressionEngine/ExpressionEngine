@@ -1,7 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-use \Michelf\MarkdownExtra;
-use \EllisLab\ExpressionEngine\Core\Autoloader;
+use Michelf\MarkdownExtra;
+use EllisLab\ExpressionEngine\Core\Autoloader;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -51,6 +51,7 @@ class EE_Typography {
 	public $html_format      = 'safe';	// safe, all, none
 	public $auto_links       = 'y';
 	public $allow_img_url    = 'n';
+	public $bbencode_links   = TRUE;
 	public $separate_parser  = FALSE;
 	public $parse_images     = TRUE;
 	public $allow_headings   = TRUE;
@@ -132,6 +133,7 @@ class EE_Typography {
 		$this->html_format      = 'safe';	// safe, all, none
 		$this->auto_links       = 'y';
 		$this->allow_img_url    = 'n';
+		$this->bbencode_links   = TRUE;
 		$this->separate_parser  = FALSE;
 		$this->parse_images     = TRUE;
 		$this->allow_headings   = TRUE;
@@ -711,7 +713,7 @@ class EE_Typography {
 		// be formatted as redirects, to prevent the control panel address from
 		// showing up in referrer logs except when sending emails, where we
 		// don't want created links piped through the site
-		if (REQ == 'CP' && ee()->input->get('M') != 'send_email' && strpos($str, 'href=') !== FALSE)
+		if (REQ == 'CP' && $this->bbencode_links && strpos($str, 'href=') !== FALSE)
 		{
 			$str = preg_replace("#<a\s+(.*?)href=(\042|\047)([^\\2]*?)\\2(.*?)\>(.*?)</a>#si", "[url=\"\\3\"\\1\\4]\\5[/url]", $str);
 		}
@@ -1222,7 +1224,7 @@ class EE_Typography {
 			OR get_bool_from_string($options['smartypants']) == TRUE)
 		{
 			if ( ! class_exists('SmartyPants_Parser')){
-				require_once(APPPATH.'libraries/typography/SmartyPants/smartypants.php');
+			require_once(APPPATH.'libraries/typography/SmartyPants/smartypants.php');
 			}
 			// 2  ->  "---" for em-dashes; "--" for en-dashes
 			$str = SmartyPants($str, 2);
@@ -1381,14 +1383,14 @@ class EE_Typography {
 						$str = str_replace($tag_match[0], '', $str);
 					}
 					else
-					{
+			{
 						$str = str_replace(
 							$tag_match[0],
 							"<".$val['tag']." ".$val['property']."='".$tag_match[1]."''>".$tag_match[2]."</".$val['tag'].">",
-							$str
-						);
+					$str
+				);
 					}
-				}
+			}
 			}
 			else
 			{

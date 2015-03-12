@@ -87,7 +87,7 @@ class Forum_mcp {
 			}
 		}
 
-		$this->prefs['board_theme_path'] = PATH_THEMES.'forum_themes/';
+		$this->prefs['board_theme_path'] = PATH_ADDONS_THEMES.'forum_themes/';
 		$this->prefs['board_theme_url']  = URL_THEMES.'forum_themes/';
 
 		ee()->load->model('addons_model');
@@ -2762,6 +2762,9 @@ class Forum_mcp {
 			$d = array(
 					'site_id'			=> ee()->input->post('board_site_id'),
 					'template_name'		=> 'admin_notify_forum_post',
+					'template_type'		=> 'email',
+					'template_subtype'	=> 'forums',
+					'edit_date'			=> time(),
 					'data_title'		=> addslashes(trim(admin_notify_forum_post_title())),
 					'template_data'		=> addslashes(admin_notify_forum_post())
 				);
@@ -2771,6 +2774,9 @@ class Forum_mcp {
 			$d = array(
 					'site_id'			=> ee()->input->post('board_site_id'),
 					'template_name'		=> 'forum_post_notification',
+					'template_type'		=> 'email',
+					'template_subtype'	=> 'forums',
+					'edit_date'			=> time(),
 					'data_title'		=> addslashes(trim(forum_post_notification_title())),
 					'template_data'		=> addslashes(forum_post_notification())
 				);
@@ -2780,6 +2786,9 @@ class Forum_mcp {
 			$d = array(
 					'site_id'			=> ee()->input->post('board_site_id'),
 					'template_name'		=> 'forum_moderation_notification',
+					'template_type'		=> 'email',
+					'template_subtype'	=> 'forums',
+					'edit_date'			=> time(),
 					'data_title'		=> addslashes(trim(forum_moderation_notification_title())),
 					'template_data'		=> addslashes(forum_moderation_notification())
 				);
@@ -2789,6 +2798,9 @@ class Forum_mcp {
 			$d = array(
 					'site_id'			=> ee()->input->post('board_site_id'),
 					'template_name'		=> 'forum_report_notification',
+					'template_type'		=> 'email',
+					'template_subtype'	=> 'forums',
+					'edit_date'			=> time(),
 					'data_title'		=> addslashes(trim(forum_report_notification_title())),
 					'template_data'		=> addslashes(forum_report_notification())
 				);
@@ -2860,8 +2872,8 @@ class Forum_mcp {
 
 		$path = ee()->input->get_post('folder') ? ee()->input->get_post('folder') : '';
 
-		list($crumb, $path) = $this->_create_template_breadcrumb(PATH_THEMES.'/forum_themes', $path);
-		$full_path = PATH_THEMES.'/forum_themes/'.$path;
+		list($crumb, $path) = $this->_create_template_breadcrumb(PATH_ADDONS_THEMES.'/forum_themes', $path);
+		$full_path = PATH_ADDONS_THEMES.'/forum_themes/'.$path;
 
 		if (count($crumb))
 		{
@@ -2920,8 +2932,8 @@ class Forum_mcp {
 		$path = ee()->input->get_post('folder') ? ee()->input->get_post('folder') : '';
 		$vars['theme_list'] = '';
 
-		list($crumb, $path) = $this->_create_template_breadcrumb(PATH_THEMES.'/forum_themes', $path);
-		$full_path = PATH_THEMES.'/forum_themes/'.$path;
+		list($crumb, $path) = $this->_create_template_breadcrumb(PATH_ADDONS_THEMES.'/forum_themes', $path);
+		$full_path = PATH_ADDONS_THEMES.'/forum_themes/'.$path;
 
 		if (count($crumb))
 		{
@@ -2987,8 +2999,8 @@ class Forum_mcp {
 			show_error(ee()->lang->line('invalid_template'));
 		}
 
-		list($crumb, $path) = $this->_create_template_breadcrumb(PATH_THEMES.'/forum_themes', $path);
-		$full_path = PATH_THEMES.'/forum_themes/'.$path;
+		list($crumb, $path) = $this->_create_template_breadcrumb(PATH_ADDONS_THEMES.'/forum_themes', $path);
+		$full_path = PATH_ADDONS_THEMES.'/forum_themes/'.$path;
 
 		if ( ! file_exists($full_path))
 		{

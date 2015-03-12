@@ -31,23 +31,33 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  */
 class Comment extends Model {
 	protected static $_primary_key = 'comment_id';
-	protected static $_gateway_names = array('CommentGateway');
+	protected static $_table_name = 'comments';
 
 	protected static $_relationships = array(
 		'Site' => array(
-			'type' => 'many_to_one'
+			'type' => 'BelongsTo'
 		),
 		'Entry' => array(
-			'type' => 'many_to_one',
+			'type' => 'BelongsTo',
 			'model' => 'ChannelEntry'
 		),
 		'Channel' => array(
-			'type' => 'many_to_one'
+			'type' => 'BelongsTo'
 		),
 		'Author' => array(
-			'type' => 'many_to_one',
+			'type' => 'BelongsTo',
 			'model' => 'Member'
 		)
+	);
+
+	protected static $_validation_rules = array(
+		'site_id'    => 'required|isNatural',
+		'entry_id'   => 'required|isNatural',
+		'channel_id' => 'required|isNatural',
+		'author_id'  => 'required|isNatural',
+		'status'     => 'enum[o,c,p,s]',
+		'ip_address' => 'ip_address',
+		'comment'    => 'required',
 	);
 
 	protected $comment_id;
@@ -64,45 +74,5 @@ class Comment extends Model {
 	protected $comment_date;
 	protected $edit_date;
 	protected $comment;
-
-	public function getSite()
-	{
-		return $this->getRelated('Site');
-	}
-
-	public function setSite(Site $site)
-	{
-		return $this->setRelated('Site', $site);
-	}
-
-	public function getEntry()
-	{
-		return $this->getRelated('Entry');
-	}
-
-	public function setEntry(ChannelEntry $entry)
-	{
-		return $this->setRelated('Entry', $entry);
-	}
-
-	public function getChannel()
-	{
-		return $this->getRelated('Channel');
-	}
-
-	public function setChannel(Channel $channel)
-	{
-		return $this->setRelated('Channel', $channel);
-	}
-
-	public function getAuthor()
-	{
-		return $this->getRelated('Author');
-	}
-
-	public function setAuthor(Member $author)
-	{
-		return $this->setRelated('Author', $author);
-	}
 
 }

@@ -1,4 +1,9 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+use EllisLab\ExpressionEngine\Library\CP\Pagination;
+use EllisLab\ExpressionEngine\Library\CP\Table;
+use EllisLab\ExpressionEngine\Library\CP\URL;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -47,59 +52,76 @@ class Metaweblog_api_mcp {
 	 */
 	function index()
 	{
-		$vars['cp_page_title'] = ee()->lang->line('metaweblog_api_module_name');
-
-		ee()->load->library('table');
-		ee()->load->library('javascript');
-		ee()->load->helper('form');
-
-		ee()->jquery->tablesorter('.mainTable', '{
-			headers: {2: {sorter: false}, 3: {sorter: false}, 4: {sorter: false}, 6: {sorter: false}},
-			widgets: ["zebra"]
-		}');
-
-		ee()->javascript->output(array(
-				'$(".toggle_all").toggle(
-					function(){
-						$("input.toggle").each(function() {
-							this.checked = true;
-						});
-					}, function (){
-						var checked_status = this.checked;
-						$("input.toggle").each(function() {
-							this.checked = false;
-						});
-					}
-				);'
-			)
-		);
+		$base_url = new URL('addons/settings/metaweblog_api', ee()->session->session_id());
 
 		$api_url = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->cp->fetch_action_id('Metaweblog_api', 'incoming');
 
 		ee()->db->select('metaweblog_pref_name, metaweblog_id');
 		$metaweblogs = ee()->db->get('metaweblog_api');
 
-		ee()->javascript->compile();
-
-		$vars['metaweblogs'] = array();
+		$table = Table::create(array('autosort' => TRUE, 'autosearch' => FALSE, 'limit' => 20));
+		$table->setColumns(
+			array(
+				'name',
+				'url',
+				'manage' => array(
+					'type'	=> Table::COL_TOOLBAR
+				),
+				array(
+					'type'	=> Table::COL_CHECKBOX
+				)
+			)
+		);
+		$table->setNoResultsText('no_something_or_other');
 
 		if ($metaweblogs->num_rows() == 0)
 		{
+			$vars['table'] = $table->viewData($this->_base_url);
+			$vars['base_url'] = clone $vars['table']['base_url'];
 			return ee()->load->view('index', $vars, TRUE);
-			exit;
 		}
+
+		$data = array();
 
 		foreach ($metaweblogs->result() as $metaweblog)
 		{
-			$vars['metaweblogs'][$metaweblog->metaweblog_id]['id'] = $metaweblog->metaweblog_id;
-			$vars['metaweblogs'][$metaweblog->metaweblog_id]['name'] = $metaweblog->metaweblog_pref_name;
-			$vars['metaweblogs'][$metaweblog->metaweblog_id]['url'] = $api_url.'&id='.$metaweblog->metaweblog_id;
-			$vars['metaweblogs'][$metaweblog->metaweblog_id]['toggle'] = array(
-																			'name'		=> 'toggle[]',
-																			'id'		=> 'delete_box_'.$metaweblog->metaweblog_id,
-																			'value'		=> $metaweblog->metaweblog_id,
-																			'class'		=>'toggle'
-			    														);
+			$checkbox = array(
+				'name' => 'selection[]',
+				'value' => $metaweblog->metaweblog_id,
+				'data'	=> array(
+					'confirm' => lang('metaweblog') . ': <b>' . htmlentities($metaweblog->metaweblog_pref_name, ENT_QUOTES) . '</b>'
+				)
+			);
+
+			$data[] = array(
+				'name' => $metaweblog->metaweblog_pref_name,
+				'url' => $api_url . '&id=' . $metaweblog->metaweblog_id,
+				array(
+					'toolbar_items' => array(
+						'edit' => array(
+							'href' => cp_url('addons/settings/metaweblog_api/modify', array('id' => $metaweblog->metaweblog_id)),
+							'title' => lang('edit')
+						)
+					)
+				),
+				$checkbox
+			);
+		}
+
+		$table->setData($data);
+
+		$vars['table'] = $table->viewData($base_url);
+		$vars['base_url'] = clone $vars['table']['base_url'];
+
+		if ( ! empty($vars['table']['data']))
+		{
+			// Paginate!
+			$pagination = new Pagination(
+				$vars['table']['limit'],
+				$vars['table']['total_rows'],
+				$vars['table']['page']
+			);
+			$vars['pagination'] = $pagination->cp_links($base_url);
 		}
 
 		return ee()->load->view('index', $vars, TRUE);
@@ -131,167 +153,315 @@ class Metaweblog_api_mcp {
 
 		if ($id == '')
 		{
-			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=metaweblog_api');
+			ee()->functions->redirect(cp_url('addons/settings/metaweblog_api'));
 		}
 
-		ee()->load->library('form_validation');
+		$channels = array();
 
-		ee()->form_validation->set_rules('metaweblog_id',			'lang:metaweblog_id',						'required');
-		ee()->form_validation->set_rules('metaweblog_pref_name',	'lang:metaweblog_pref_name',				'required');
-		ee()->form_validation->set_rules('metaweblog_parse_type',	'lang:metaweblog_parse_type',				'required');
-		ee()->form_validation->set_rules('entry_status',			'lang:metaweblog_entry_status',				'required');
-		ee()->form_validation->set_rules('field_group_id',			'lang:metaweblog_field_group_id',			'required');
-		ee()->form_validation->set_rules('excerpt_field_id',		'lang:metaweblog_excerpt_field_id',			'required');
-		ee()->form_validation->set_rules('content_field_id',		'lang:metaweblog_content_field_id',			'required');
-		ee()->form_validation->set_rules('more_field_id',			'lang:metaweblog_more_field_id',			'required');
-		ee()->form_validation->set_rules('keywords_field_id',		'lang:metaweblog_keywords_field_id',		'required');
-		ee()->form_validation->set_rules('upload_dir',				'lang:metaweblog_upload_dir',				'required');
+		ee('Model')->get('Channel')
+			->fields('channel_id', 'channel_title')
+			->all()
+			->each(function($channel) use (&$channels) {
+				$channels[$channel->channel_id] = $channel->channel_title;
+			});
 
-		//  Form Values
-		$vars['pref_name']			= '';
-		$vars['parse_type']			= 'n';
-		$vars['entry_status']		= 'null';
-		$vars['field_group_id']		= '1';
-		$vars['excerpt_field_id']	= '0';
-		$vars['content_field_id']	= '1';
-		$vars['more_field_id']		= '0';
-		$vars['keywords_field_id']	= '0';
-		$vars['upload_dir']			= '1';
-		$vars['submit_text']	= 'submit';
+		// Filtering Javascript
+		$this->filtering_menus();
+		ee()->javascript->compile();
 
-		if ($id != 'new')
+		$values = array();
+
+		if ($id == 'new')
 		{
+			$create = TRUE;
+			$base_url = cp_url('addons/settings/metaweblog_api/create');
+		}
+		else
+		{
+			$create = FALSE;
+			$base_url = cp_url('addons/settings/metaweblog_api/modify/' . $id);
+
 			$query = ee()->db->get_where('metaweblog_api', array('metaweblog_id' => $id));
-			$vars['submit_text']	= 'update';
 
 			if ($query->num_rows() == 0)
 			{
-				ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=metaweblog_api');
+				ee()->functions->redirect(cp_url('addons/settings/metaweblog_api'));
 			}
 
-			foreach($query->row_array() as $name => $pref)
+			foreach($query->row_array() as $name => $value)
 			{
-				$name	= str_replace('metaweblog_', '', $name);
-				$vars["$name"] = $pref;
+				$values[$name] = $value;
+			}
+
+			// @TODO Determine which channel this was set to -- might need to store that instead of field group id
+			// @TODO Pre-populate the field choices based on the store channel
+		}
+
+		// Get the directories
+		$upload_directories = array('ALL' => lang('all'));
+		// Any group restrictions?
+		if (ee()->session->userdata['group_id'] !== 1)
+		{
+			ee()->db->select('upload_id');
+			$no_access = ee()->db->get_where('upload_no_access', array('member_group' => ee()->session->userdata['group_id']));
+
+			if (ee()->config->item('multiple_sites_enabled') !== 'y')
+			{
+				ee()->db->where('sites.site_id', 1);
+			}
+
+			if ($no_access->num_rows() > 0)
+			{
+				foreach ($no_access->result() as $row)
+				{
+					ee()->db->where('id', $row->upload_id);
+				}
 			}
 		}
 
+		// Grab them (the above restrictions still apply)
+		ee()->db->select('id, name, site_label');
+		ee()->db->from('upload_prefs');
+		ee()->db->from('sites');
+		ee()->db->where(ee()->db->dbprefix.'upload_prefs.site_id = '.ee()->db->dbprefix.'sites.site_id', NULL, FALSE);
+		ee()->db->order_by('name');
+
+		$query = ee()->db->get();
+
+		if ($query->num_rows() > 0)
+		{
+			foreach($query->result() as $row)
+			{
+				$upload_directories[$row->id] = (ee()->config->item('multiple_sites_enabled') === 'y') ? $row->site_label.NBS.'-'.NBS.$row->name : $row->name;
+			}
+		}
+
+		$vars = array(
+			'base_url' => $base_url,
+			// 'ajax_validate' => TRUE,
+			'cp_page_title' => lang('create_metaweblog'),
+			'save_btn_text' => 'create_metaweblog',
+			'save_btn_text_working' => 'btn_saving',
+			'sections' => array(
+				array()
+			)
+		);
+
+		$form_element = array(
+			'title' => 'metaweblog_pref_name',
+			'desc' => '',
+			'fields' => array(
+				'metaweblog_pref_name' => array(
+					'type' => 'text',
+					'required' => TRUE
+				)
+			)
+		);
+		if (isset($values['metaweblog_pref_name']))
+		{
+			$form_element['fields']['metaweblog_pref_name']['value'] = $values['metaweblog_pref_name'];
+		}
+		$vars['sections'][0][] = $form_element;
+
+		$form_element = array(
+			'title' => 'metaweblog_parse_type',
+			'desc' => 'metaweblog_parse_type_desc',
+			'fields' => array(
+				'metaweblog_parse_type' => array(
+					'type' => 'yes_no',
+					'required' => TRUE
+				)
+			)
+		);
+		if (isset($values['metaweblog_parse_type']))
+		{
+			$form_element['fields']['metaweblog_parse_type']['value'] = $values['metaweblog_parse_type'];
+		}
+		$vars['sections'][0][] = $form_element;
+
+		$form_element = array(
+			'title' => 'metaweblog_entry_status',
+			'desc' => 'metaweblog_entry_status_desc',
+			'fields' => array(
+				'entry_status' => array(
+					'type' => 'dropdown',
+					'choices' => array(
+						'null' => lang('do_not_set'),
+						'open' => lang('open'),
+						'closed' => lang('closed')
+					)
+				)
+			)
+		);
+		if (isset($values['entry_status']))
+		{
+			$form_element['fields']['entry_status']['value'] = $values['entry_status'];
+		}
+		$vars['sections'][0][] = $form_element;
+
+		$form_element = array(
+			'title' => 'metaweblog_channel',
+			'desc' => 'metaweblog_channel_desc',
+			'fields' => array(
+				'channel_id' => array(
+					'type' => 'dropdown',
+					'choices' => $channels
+				)
+			)
+		);
+		if (isset($values['channel_id']))
+		{
+			$form_element['fields']['channel_id']['value'] = $values['channel_id'];
+		}
+		$vars['sections'][0][] = $form_element;
+
+		$form_element = array(
+			'title' => 'metaweblog_excerpt_field',
+			'desc' => 'metaweblog_excerpt_field_desc',
+			'fields' => array(
+				'excerpt_field_id' => array(
+					'type' => 'dropdown',
+					'choices' => array(
+						'0' => lang('none'),
+					)
+				)
+			)
+		);
+		if (isset($values['excerpt_field_id']))
+		{
+			$form_element['fields']['excerpt_field_id']['value'] = $values['excerpt_field_id'];
+		}
+		$vars['sections'][0][] = $form_element;
+
+		$form_element = array(
+			'title' => 'metaweblog_content_field',
+			'desc' => 'metaweblog_content_field_desc',
+			'fields' => array(
+				'content_field_id' => array(
+					'type' => 'dropdown',
+					'choices' => array(
+						'0' => lang('none'),
+					)
+				)
+			)
+		);
+		if (isset($values['content_field_id']))
+		{
+			$form_element['fields']['content_field_id']['value'] = $values['content_field_id'];
+		}
+		$vars['sections'][0][] = $form_element;
+
+		$form_element = array(
+			'title' => 'metaweblog_more_field',
+			'desc' => 'metaweblog_more_field_desc',
+			'fields' => array(
+				'more_field_id' => array(
+					'type' => 'dropdown',
+					'choices' => array(
+						'0' => lang('none'),
+					)
+				)
+			)
+		);
+		if (isset($values['more_field_id']))
+		{
+			$form_element['fields']['more_field_id']['value'] = $values['more_field_id'];
+		}
+		$vars['sections'][0][] = $form_element;
+
+		$form_element = array(
+			'title' => 'metaweblog_keywords_field',
+			'desc' => 'metaweblog_keywords_field_desc',
+			'fields' => array(
+				'keywords_field_id' => array(
+					'type' => 'dropdown',
+					'choices' => array(
+						'0' => lang('none'),
+					)
+				)
+			)
+		);
+		if (isset($values['keywords_field_id']))
+		{
+			$form_element['fields']['keywords_field_id']['value'] = $values['keywords_field_id'];
+		}
+		$vars['sections'][0][] = $form_element;
+
+		$form_element = array(
+			'title' => 'metaweblog_upload_dir',
+			'desc' => 'metaweblog_upload_dir_desc',
+			'fields' => array(
+				'upload_dir' => array(
+					'type' => 'dropdown',
+					'choices' => $upload_directories
+				)
+			)
+		);
+		if (isset($values['metaweblog_upload_dir']))
+		{
+			$form_element['fields']['metaweblog_upload_dir']['value'] = $values['metaweblog_upload_dir'];
+		}
+		$vars['sections'][0][] = $form_element;
+
+
+		ee()->load->library('form_validation');
+
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'metaweblog_pref_name',
+				'label' => 'lang:metaweblog_pref_name',
+				'rules' => 'required'
+			),
+			array(
+				'field' => 'metaweblog_parse_type',
+				'label' => 'lang:metaweblog_parse_type',
+				'rules' => 'required'
+			),
+			array(
+				'field' => 'entry_status',
+				'label' => 'lang:metaweblog_entry_status',
+				'rules' => 'required'
+			),
+			array(
+				'field' => 'channel_id',
+				'label' => 'lang:metaweblog_channel',
+				'rules' => 'required'
+			),
+			array(
+				'field' => 'excerpt_field_id',
+				'label' => 'lang:metaweblog_excerpt_field',
+				'rules' => 'required'
+			),
+			array(
+				'field' => 'content_field_id',
+				'label' => 'lang:metaweblog_content_field',
+				'rules' => 'required'
+			),
+			array(
+				'field' => 'more_field_id',
+				'label' => 'lang:metaweblog_more_field',
+				'rules' => 'required'
+			),
+			array(
+				'field' => 'keywords_field_id',
+				'label' => 'lang:metaweblog_keywords_field',
+				'rules' => 'required'
+			),
+			array(
+				'field' => '',
+				'label' => '',
+				'rules' => 'required'
+			)
+		));
 
 		if (ee()->form_validation->run() === FALSE)
 		{
-			ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=metaweblog_api', ee()->lang->line('metaweblog_api_module_name'));
-
-			$vars['cp_page_title'] = ($id == 'new') ? ee()->lang->line('new_config') : ee()->lang->line('modify_config');
-			$vars['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=metaweblog_api'.AMP.'method='.(($id == 'new') ? 'create' : 'modify'.AMP.'id='.$id);
-			$vars['form_hidden']['metaweblog_id'] = $id;
-
-			// Filtering Javascript
-
-			$this->filtering_menus();
-			ee()->javascript->compile();
-
-			$i=0;
-			$style = '';
-
-			// PARSE TYPE
-			$vars['metaweblog_parse_type_options'] = array(
-													'y'=>ee()->lang->line('yes'),
-													'n'=>ee()->lang->line('no')
-												);
-			$vars['metaweblog_parse_type_selected'] = ($vars['parse_type'] == 'y') ? 'y' : 'n';
-
-			// Entry Status
-			$vars['entry_status_options'] = array(
-													'null'=>ee()->lang->line('do_not_set_status'),
-													'open'=>ee()->lang->line('open'),
-													'closed'=>ee()->lang->line('closed')
-												);
-
-			foreach($this->status_array as $value)
-			{
-				$vars['entry_status_options'][$value[1]] = $value[1];
-			}
-
-			// FIELD GROUP
-			$vars['field_group_id_options'] = array();
-
-			foreach($this->group_array as $key => $value)
-			{
-				$vars['field_group_id_options'][$key] = $value['0'];
-
-			}
-
-			// This field array is used for many of the dropdowns below, so we'll
-			// generate it once, and just array_merge() it into the fold.
-			$fields_array = array();
-
-			foreach($this->field_array as $value)
-			{
-				if ($value['0'] == $vars['field_group_id'])
-				{
-					$fields_array[$value['1']] = $value['2'];
-				}
-			}
-
-			// EXCERPT FIELDS
-			$vars['excerpt_field_id_options'] = array(0 => ee()->lang->line('none')) + $fields_array;
-
-			// CONTENT FIELDS
-			$vars['content_field_id_options'] = array(0 => ee()->lang->line('none')) + $fields_array;
-
-			/// MORE FIELDS
-			$vars['more_field_id_options'] = array(0 => ee()->lang->line('none')) + $fields_array;
-
-			/// KEYWORDS FIELDS
-			$vars['keywords_field_id_options'] = array(0 => ee()->lang->line('none')) + $fields_array;
-
-
-			// UPLOAD DIRECTORIES
-			$vars['upload_dir_options'] = array(0=>ee()->lang->line('none'));
-
-			// Any group restrictions?
-			if (ee()->session->userdata['group_id'] !== 1)
-			{
-				ee()->db->select('upload_id');
-				$no_access = ee()->db->get_where('upload_no_access', array('member_group' => ee()->session->userdata['group_id']));
-
-				if (ee()->config->item('multiple_sites_enabled') !== 'y')
-				{
-					ee()->db->where('sites.site_id', 1);
-				}
-
-				if ($no_access->num_rows() > 0)
-				{
-					foreach ($no_access->result() as $row)
-					{
-						ee()->db->where('id', $row->upload_id);
-					}
-				}
-			}
-
-			// Grab them (the above restrictions still apply)
-			ee()->db->select('id, name, site_label');
-			ee()->db->from('upload_prefs');
-			ee()->db->from('sites');
-			ee()->db->where(ee()->db->dbprefix.'upload_prefs.site_id = '.ee()->db->dbprefix.'sites.site_id', NULL, FALSE);
-			ee()->db->order_by('name');
-
-			$query = ee()->db->get();
-
-			if ($query->num_rows() > 0)
-			{
-				foreach($query->result() as $row)
-				{
-					$vars['upload_dir_options'][$row->id] = (ee()->config->item('multiple_sites_enabled') === 'y') ? $row->site_label.NBS.'-'.NBS.$row->name : $row->name;
-				}
-			}
-
 			return ee()->load->view('create_modify', $vars, TRUE);
 		}
 		else
 		{
-			$fields		= array('metaweblog_id', 'metaweblog_pref_name', 'metaweblog_parse_type', 'entry_status',
-								'field_group_id','excerpt_field_id','content_field_id',
+			$fields		= array('metaweblog_pref_name', 'metaweblog_parse_type', 'entry_status',
+								'channel_id','excerpt_field_id','content_field_id',
 								'more_field_id','keywords_field_id','upload_dir');
 
 			$data		= array();
@@ -300,26 +470,38 @@ class Metaweblog_api_mcp {
 			{
 				if ( ! isset($_POST[$var]) OR $_POST[$var] == '')
 				{
-					return ee()->output->show_user_error('submission', ee()->lang->line('metaweblog_mising_fields'));
+					return ee()->output->show_user_error('submission', lang('metaweblog_mising_fields'));
 				}
 
 				$data[$var] = $_POST[$var];
 			}
 
-			if ($_POST['metaweblog_id'] == 'new' )
+			$data['field_group_id'] = ee('Model')->get('Channel', $data['channel_id'])
+				->fields('field_group')
+				->first()
+				->field_group;
+
+			unset($data['channel_id']);
+
+			if ($create)
 			{
-				unset($data['metaweblog_id']);
 				ee()->db->query(ee()->db->insert_string('exp_metaweblog_api', $data));
-				$message = ee()->lang->line('configuration_created');
+				$message = lang('configuration_created');
 			}
 			else
 			{
-				ee()->db->query(ee()->db->update_string('exp_metaweblog_api', $data, "metaweblog_id = '".ee()->db->escape_str($_POST['metaweblog_id'])."'"));
-				$message = ee()->lang->line('configuration_updated');
+				$data['metaweblog_id'] = $id;
+				ee()->db->query(ee()->db->update_string('exp_metaweblog_api', $data, "metaweblog_id = '".ee()->db->escape_str($id)."'"));
+				$message = lang('configuration_updated');
 			}
 
-			ee()->session->set_flashdata('message_success', $message);
-			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=metaweblog_api');
+			ee('Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('success'))
+				->addToBody($message)
+				->defer();
+
+			ee()->functions->redirect(cp_url('addons/settings/metaweblog_api'));
 		}
 	}
 
@@ -337,9 +519,9 @@ class Metaweblog_api_mcp {
 			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=metaweblog_api');
 		}
 
-		ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=metaweblog_api', ee()->lang->line('metaweblog_api_module_name'));
+		ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=metaweblog_api', lang('metaweblog_api_module_name'));
 
-		$vars['cp_page_title'] = ee()->lang->line('metaweblog_delete_confirm');
+		$vars['cp_page_title'] = lang('metaweblog_delete_confirm');
 
 		foreach ($_POST['toggle'] as $key => $val)
 		{
@@ -375,7 +557,7 @@ class Metaweblog_api_mcp {
 
 		ee()->db->query("DELETE FROM exp_metaweblog_api WHERE ".$IDS);
 
-		$message = (count($ids) == 1) ? ee()->lang->line('metaweblog_deleted') : ee()->lang->line('metaweblogs_deleted');
+		$message = (count($ids) == 1) ? lang('metaweblog_deleted') : lang('metaweblogs_deleted');
 
 		ee()->session->set_flashdata('message_success', $message);
 		ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=metaweblog_api');
@@ -518,9 +700,9 @@ class Metaweblog_api_mcp {
 		foreach ($this->group_array as $key => $val)
 		{
 			$statuses = array(
-				array('null', ee()->lang->line('do_not_set_status')),
-				array('open', ee()->lang->line('open')),
-				array('closed', ee()->lang->line('closed'))
+				array('null', lang('do_not_set')),
+				array('open', lang('open')),
+				array('closed', lang('closed'))
 			);
 
 			if (count($this->status_array) > 0)
@@ -538,7 +720,7 @@ class Metaweblog_api_mcp {
 
 			$fields = array();
 
-			$fields[] = array('0', ee()->lang->line('none'));
+			$fields[] = array('0', lang('none'));
 
 			if (count($this->field_array) > 0)
 			{
@@ -555,7 +737,7 @@ class Metaweblog_api_mcp {
 		}
 
 		$channel_info = json_encode($channel_info);
-		$none_text = ee()->lang->line('none');
+		$none_text = lang('none');
 
 		$javascript = <<<MAGIC
 
@@ -609,9 +791,9 @@ function changemenu(index)
 	}
 }
 
-$('select[name=field_group_id]').change(function() {
+$('select[name=channel_id]').change(function() {
 	changemenu(this.value);
-});
+}).change();
 MAGIC;
 		ee()->javascript->output($javascript);
 	}

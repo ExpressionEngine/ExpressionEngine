@@ -72,6 +72,7 @@ function createCodeMirror(code_textarea)
 		usetabs = detectUseTabs(code);
 
 	var cm = CodeMirror.fromTextArea(code_textarea[0], {
+		lineWrapping: true,
 		lineNumbers: true,
 		autoCloseBrackets: true,
 		mode: "ee",

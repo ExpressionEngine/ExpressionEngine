@@ -160,28 +160,33 @@ class File_upload_preferences_model extends CI_Model
 	 * Delete Upload Preferences
 	 *
 	 * @access	public
-	 * @param	int
+	 * @param	array	Array of upload directory IDs to delete, or single ID
 	 * @return	string
 	 */
-	function delete_upload_preferences($id = '')
+	function delete_upload_preferences($ids = array())
 	{
+		if ( ! is_array($ids))
+		{
+			$ids = array($ids);
+		}
+
 		// There are no permission checks- I don't really think there should be
 
-		$this->db->where('upload_id', $id);
+		$this->db->where_in('upload_id', $ids);
 		$this->db->delete('upload_no_access');
 
 		// get the name we're going to delete so that we can return it when we're done
 		$this->db->select('name');
-		$this->db->where('id', $id);
+		$this->db->where_in('id', $ids);
 		$deleting = $this->db->get('upload_prefs');
 
 		// Delete the files associated with this preference
 		// Note we aren't doing anything to the files/folders yet
-		$this->db->where('upload_location_id', $id);
+		$this->db->where_in('upload_location_id', $ids);
 		$this->db->delete('files');
 
 		// ok, now remove the pref
-		$this->db->where('id', $id);
+		$this->db->where_in('id', $ids);
 		$this->db->delete('upload_prefs');
 
 		return $deleting->row('name');

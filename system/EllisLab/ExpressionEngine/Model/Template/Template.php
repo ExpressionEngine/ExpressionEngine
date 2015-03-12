@@ -4,6 +4,8 @@ namespace EllisLab\ExpressionEngine\Model\Template;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
+use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -37,7 +39,6 @@ class Template extends Model {
 	protected static $_table_name = 'templates';
 
 	protected static $_typed_columns = array(
-		'save_template_file' => 'boolString',
 		'cache'              => 'boolString',
 		'enable_http_auth'   => 'boolString',
 		'allow_php'          => 'boolString',
@@ -74,18 +75,21 @@ class Template extends Model {
 		'site_id'            => 'required|isNatural',
 		'group_id'           => 'required|isNatural',
 		'template_name'      => 'required|alphaDash',
-		'save_template_file' => 'enum[y,n]',
 		'cache'              => 'enum[y,n]',
 		'enable_http_auth'   => 'enum[y,n]',
 		'allow_php'          => 'enum[y,n]',
 		'protect_javascript' => 'enum[y,n]',
 	);
 
+	protected static $_events = array(
+		'afterDelete',
+		'afterSave'
+	);
+
 	protected $template_id;
 	protected $site_id;
 	protected $group_id;
 	protected $template_name;
-	protected $save_template_file;
 	protected $template_type;
 	protected $template_data;
 	protected $template_notes;
@@ -100,4 +104,75 @@ class Template extends Model {
 	protected $hits;
 	protected $protect_javascript;
 
+	/**
+	 * Returns the path to this template i.e. "site/index"
+	 *
+	 * @return string The path to this template
+	 */
+	public function getPath()
+	{
+		return $this->getTemplateGroup()->group_name . '/' . $this->template_name;
+	}
+
+	/**
+	 *
+	 */
+	public function getFilePath()
+	{
+		if (ee()->config->item('save_tmpl_files') != 'y')
+		{
+			return NULL;
+		}
+
+		$group = $this->getTemplateGroup();
+		$group->ensureFolderExists();
+
+		$path = $group->getFolderPath();
+		$file = $this->template_name;
+		$ext  = $this->getFileExtension();
+
+		if ($path == '' || $file == '' || $ext == '')
+		{
+			return NULL;
+		}
+
+		return $path.'/'.$file.$ext;
+	}
+
+	/**
+	 *
+	 */
+	public function getFileExtension()
+	{
+		ee()->legacy_api->instantiate('template_structure');
+		return ee()->api_template_structure->file_extensions($this->template_type);
+	}
+
+	/**
+	 *
+	 */
+	public function onAfterSave()
+	{
+		$fs = new Filesystem();
+		$path = $this->getFilePath();
+
+		if (isset($path) && $fs->exists($fs->dirname($path)))
+		{
+			$fs->write($path, $this->template_data, TRUE);
+		}
+	}
+
+	/**
+	 *
+	 */
+	public function onAfterDelete()
+	{
+		$fs = new Filesystem();
+		$path = $this->getFilePath();
+
+		if (isset($path) && $fs->exists($path))
+		{
+			$fs->delete($path);
+		}
+	}
 }

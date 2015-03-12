@@ -43,11 +43,13 @@ class EE_Lang {
 		}
 
 		// Sec.ur.ity code.  ::sigh::
-		$package = ($package == '') ? ee()->security->sanitize_filename(str_replace(array('lang.', '.php'), '', $which)) : ee()->security->sanitize_filename($package);
+		$package = ($package == '')
+			? ee()->security->sanitize_filename(str_replace(array('lang.', '.php'), '', $which))
+			: ee()->security->sanitize_filename($package);
 		$which = str_replace('lang.', '', $which);
 
-		ee()->load->library('session');
-		$idiom = ee()->security->sanitize_filename(ee()->session->get_language());
+		// If we're in the installer, don't load Session library
+		$idiom = $this->getIdiom();
 
 		if ($which == 'sites_cp')
 		{
@@ -69,6 +71,18 @@ class EE_Lang {
 		}
 
 		$this->load($which, $idiom, FALSE, TRUE, PATH_ADDONS.$package.'/', $show_errors);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get the idiom for the current user/situation
+	 * @return string The idiom to load
+	 */
+	protected function getIdiom()
+	{
+		ee()->load->library('session');
+		return ee()->security->sanitize_filename(ee()->session->get_language());
 	}
 
 	// --------------------------------------------------------------------
@@ -103,24 +117,25 @@ class EE_Lang {
 		}
 
 		$deft_lang = ee()->config->item('deft_lang') ?: 'english';
+		$idiom = $this->getIdiom();
 
-		if (isset(ee()->session) && $idiom == '')
-		{
-			$idiom = ee()->session->get_language();
-		}
-		else if ($idiom == '')
-		{
-			$idiom = 'english';
-		}
-
-		$paths     = array(
+		$paths = array(
 			// Check custom languages first
 			SYSPATH.'language/'.$idiom.'/'.$langfile,
-			// Check english afterwards
-			APPPATH.'language/'.$deft_lang.'/'.$langfile,
-			// Add full path in case we're in the installer
-			SYSPATH.'expressionengine/language/'.$deft_lang.'/'.$langfile
+			// Check their defined default language
+			SYSPATH.'language/'.$deft_lang.'/'.$langfile,
+			// Lastly render the english
+			BASEPATH.'language/english/'.$langfile
 		);
+
+		if (defined('EE_APPPATH'))
+		{
+			array_unshift(
+				$paths,
+				APPPATH.'language/'.$idiom.'/'.$langfile,
+				APPPATH.'language/'.$deft_lang.'/'.$langfile
+			);
+		}
 
 		// if it's in an alternate location, such as a package, check there first
 		if ($alt_path != '')
@@ -186,8 +201,6 @@ class EE_Lang {
 	{
 		if ($which != '')
 		{
-			$EE =& get_instance();
-
 			$line = ( ! isset($this->language[$which])) ? $which : $this->language[$which];
 
 			if ($label != '')

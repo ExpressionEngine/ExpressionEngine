@@ -34,15 +34,15 @@ class CategoryGroup extends Model implements ContentStructure {
 	protected static $_gateway_names = array('CategoryGroupGateway');
 
 	protected static $_relationships = array(
-		'CategoryFieldStructures' => array(
+		/*'CategoryFieldStructures' => array(
 			'type' => 'many_to_one'
-		),
+		),*/
 		'Categories' => array(
-			'type' => 'one_to_many',
+			'type' => 'hasMany',
 			'model' => 'Category'
 		),
 		'Parent' => array(
-			'type' => 'many_to_one',
+			'type' => 'belongsTo',
 			'model' => 'Category',
 			'key' => 'parent_id'
 		),
@@ -59,32 +59,6 @@ class CategoryGroup extends Model implements ContentStructure {
 	protected $can_delete_categories;
 
 	/**
-	 * Relationship to the field structure for this category.
-	 */
-	public function getCategoryFieldStructures()
-	{
-		return $this->getRelated('CategoryFieldStructures');
-	}
-
-	public function setCategoryFieldStructures(array $structures)
-	{
-		return $this->setRelated('CategoryFieldStructures', $structures);
-	}
-
-	/**
-	 * Relationship to ChannelEntries for this Channel.
-	 */
-	public function getCategories()
-	{
-		return $this->getRelated('Categories');
-	}
-
-	public function setCategories(array $categories)
-	{
-		return $this->setRelated('Categories', $categories);
-	}
-
-	/**
 	 * Display the CP entry form
 	 *
 	 * @param Content $content  An object implementing the Content interface
@@ -92,5 +66,21 @@ class CategoryGroup extends Model implements ContentStructure {
 	 */
 	public function getPublishForm($content)
 	{}
+
+	/**
+	 * Returns the category tree for this category group
+	 *
+	 * @param 	EE_Tree	$tree		An EE_Tree library object
+	 * @return 	Object<ImmutableTree> Traversable tree object
+	 */
+	public function getCategoryTree(\EE_Tree $tree)
+	{
+		$sort_column = ($this->sort_order == 'a') ? 'cat_name' : 'cat_order';
+
+		return $tree->from_list(
+			$this->getCategories()->sortBy($sort_column),
+			array('id' => 'cat_id')
+		);
+	}
 
 }

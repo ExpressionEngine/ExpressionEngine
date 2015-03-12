@@ -1,4 +1,9 @@
+<div class="box">
+	<?php $this->ee_view('_shared/form')?>
+</div>
 
+
+<?php /*
 <h3><?=lang('configuration_options')?></h3>
 
 <?=form_open($action_url, '', $form_hidden)?>
@@ -75,3 +80,4 @@
 
 <?=form_close()?>
 
+*/?>

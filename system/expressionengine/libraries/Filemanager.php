@@ -1672,7 +1672,7 @@ class Filemanager {
 			return FALSE;
 		}
 
-		$server_files = $this->directory_files_map($upload_prefs['server_path'], 0, FALSE, $upload_prefs['allowed_types']);
+		$server_files = $this->directory_files_map($upload_prefs['server_path'], 1, FALSE, $upload_prefs['allowed_types']);
 
 		// get file names in db that are not on server
 		$delete = array_diff($db_files, $server_files);

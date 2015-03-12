@@ -26,6 +26,22 @@ class EE_Addons {
 
 	var $_map;						// addons sorted by addon_type (plural)
 	var $_packages = array();		// contains references to _map by package name
+	var $_exclusions = array();
+
+	/**
+	 * Constructor
+	 *
+	 * @access	public
+	 */
+	function __construct()
+	{
+		$this->_exclusions = array(
+			'channel',
+			'comment',
+		);
+	}
+
+	// --------------------------------------------------------------------
 
 	/**
 	 * Addon File Handler
@@ -39,7 +55,6 @@ class EE_Addons {
 		$type_ident = array(
 			'modules'		=> 'mcp',
 			'extensions'	=> 'ext',
-			'accessories'	=> 'acc',
 			'plugins'		=> 'pi',
 			'fieldtypes'	=> 'ft',
 			'rte_tools'		=> 'rte'
@@ -55,7 +70,6 @@ class EE_Addons {
 			$this->_map = array(
 				'modules'		=> array(),
 				'extensions'	=> array(),
-				'accessories'	=> array(),
 				'plugins'		=> array(),
 				'fieldtypes'	=> array(),
 				'rte_tools'		=> array()
@@ -156,7 +170,6 @@ class EE_Addons {
 		$type_ident = array(
 			'modules'		=> 'mcp',
 			'extensions'	=> 'ext',
-			'accessories'	=> 'acc',
 			'plugins'		=> 'pi',
 			'fieldtypes'	=> 'ft',
 			'rte_tools'		=> 'rte'
@@ -169,7 +182,6 @@ class EE_Addons {
 			'modules'		=> 'module',
 			'extensions'	=> 'extension',
 			'plugins'		=> 'plugin',
-			'accessories'	=> 'accessory',
 			'fieldtypes'	=> 'fieldtype',
 			'rte_tools'		=> 'rte_tool'
 		);
@@ -199,6 +211,11 @@ class EE_Addons {
 					if ($valid)
 					{
 						$name = ($ident === 'ft') ? $match[1] : $pkg_name;
+
+						if (in_array($name, $this->_exclusions))
+						{
+							continue;
+						}
 
 						// Plugin classes don't have a suffix
 						$class = ($ident == 'pi') ? ucfirst($name) : ucfirst($name).'_'.$ident;
@@ -244,12 +261,18 @@ class EE_Addons {
 	 * Get information on what's installed
 	 *
 	 * @access	private
-	 * @param	string
+	 * @param	string	$type	The type of add-on to filter by
+	 * @param	bool	$reset	Reset the previously saved installed values
 	 * @return	void
 	 */
-	function get_installed($type = 'modules')
+	function get_installed($type = 'modules', $reset = FALSE)
 	{
 		static $_installed = array();
+
+		if ($reset)
+		{
+			$_installed = array();
+		}
 
 		if (isset($_installed[$type]))
 		{
@@ -273,25 +296,6 @@ class EE_Addons {
 					if (isset($files[$row['module_name']]))
 					{
 						$_installed[$type][$row['module_name']] = array_merge($files[$row['module_name']], $row);
-					}
-				}
-			}
-		}
-		elseif ($type == 'accessories')
-		{
-			$query = ee()->db->get('accessories');
-
-			if ($query->num_rows() > 0)
-			{
-				$files = $this->get_files('accessories');
-
-				foreach ($query->result_array() as $row)
-				{
-					$name = strtolower(substr($row['class'], 0, -4));
-
-					if (isset($files[$name]))
-					{
-						$_installed[$type][$name] = array_merge($files[$name], $row);
 					}
 				}
 			}

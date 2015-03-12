@@ -1,6 +1,6 @@
 <?php
 $lang = array(
-	
+
 'your_name'				=> 'Your Name',
 'your_email'			=> 'Your Email',
 'recipient'				=> 'Recipient',
@@ -18,11 +18,13 @@ $lang = array(
 'not_allowed_to_email_cache'			=> 'You are not allowed to view the email cache.',
 'subject'				=> 'Subject',
 'message'				=> 'Message',
-'plaintext_alt'			=> 'Plain Text Alternative (optional, HTML emails only, no text formatting applied)',
+'plaintext_body'		=> 'Plain text body',
+'plaintext_alt'			=> 'Alternate content for your <abbr title="Hyper-Text Markup Language">HTML</abbr> Email, will be delivered in Plain Text, when an Email application cannot render <abbr title="Hyper-Text Markup Language">HTML</abbr>.',
 'send_an_email'			=> 'Send an Email',
 'sending_email'			=> 'Sending Email',
 'batchmode_ready_to_begin'	=> 'The email sending routine will begin in five seconds',
 'batchmode_warning'		=> 'Do not touch your browser until the process is completely finished!',
+'batchmode_disabled'	=> 'Batch Mode is disabled',
 'problem_with_id'		=> 'A problem was encountered with the ID number needed to send emails',
 'cache_data_missing'	=> 'The email cache data was not located.',
 'currently_sending_batch'	=> 'Now sending emails %x through %y',
@@ -31,6 +33,7 @@ $lang = array(
 'send_it'				=> 'Send it',
 'total_emails_sent'		=> 'Total number of emails sent:',
 'plain_text'			=> 'Plain Text',
+'markdown'				=> 'Markdown',
 'html'					=> 'HTML',
 'mail_format'			=> 'Email Formatting',
 'text_formatting'		=> 'Text Formatting',
@@ -53,7 +56,8 @@ $lang = array(
 'email_sent_message'	=> 'Your email has been sent',
 'all_email_sent_message'	=> 'All emails have been sent',
 'email_success'			=> 'Email Sent',
-'view_email_cache'		=> 'View Previously Sent Email',
+'view_email_cache'		=> 'Sent Emails',
+'emails'				=> 'Emails',
 'previous_email'		=> 'Previously Sent Email',
 'email_title'			=> 'Email Title',
 'email_date'			=> 'Date Sent',
@@ -73,6 +77,10 @@ $lang = array(
 'finish_sending'		=> 'Finish Sending',
 'on'					=> 'On',
 'off'					=> 'Off',
+'total_sent'			=> 'Total Sent',
+'remove'				=> 'Remove',
+'dummy_location'		=> 'The email was output to: %s',
+'search_emails_button'	=> 'Search Emails',
 
 ''=>''
 );

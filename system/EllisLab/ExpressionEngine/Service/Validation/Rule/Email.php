@@ -34,4 +34,9 @@ class Email extends ValidationRule {
 		return (bool) filter_var($value, FILTER_VALIDATE_EMAIL);
 	}
 
+	public function getLanguageKey()
+	{
+		return 'valid_email';
+	}
+
 }

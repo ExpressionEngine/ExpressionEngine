@@ -2,8 +2,12 @@
  * Links are hard
  */
 WysiHat.addButton('link', {
+	cssClass: 'rte-link',
+
+	title:	EE.rte.link.title,
+
 	label:	EE.rte.link.add,
-	
+
 	init: function() {
 		this.parent.init.apply(this, arguments);
 
@@ -30,7 +34,7 @@ WysiHat.addButton('link', {
 		// get the elements
 		s_el = sel.anchorNode;
 		e_el = sel.focusNode;
-		
+
 		this.range = sel.getRangeAt(0);
 
 		if ((s_el == e_el && sel.anchorOffset == sel.focusOffset) ||
@@ -38,7 +42,7 @@ WysiHat.addButton('link', {
 		{
 			link = false;
 		}
-		
+
 		// find link element
 		test_el = this._findLinkableNode(s_el, 'img', sel.anchorOffset);
 		if ( ! this._is(test_el, 'a'))
@@ -54,7 +58,7 @@ WysiHat.addButton('link', {
 			this.range.selectNode(s_el);
 			this.link_node = s_el;
 		}
-		
+
 		if ( link )
 		{
 			this.$link_dialog = this._setupDialog();
@@ -68,7 +72,7 @@ WysiHat.addButton('link', {
 
 			return false;
 		}
-		
+
 		// only return false if we go async
 		alert( EE.rte.link.dialog.selection_error );
 	},
@@ -92,7 +96,7 @@ WysiHat.addButton('link', {
 	{
 		var _is = this._is,
 			firefox_node = el.childNodes[offset];
-		
+
 		// can we go deeper? do it!
 		if (el.childNodes.length > 0 || _is(el, childTagName))
 		{
@@ -128,7 +132,7 @@ WysiHat.addButton('link', {
 				return el;
 			}
 		}
-		
+
 		// Firefox gives is the parent node, with the anchor offset
 		// being the index of the node in the parent node
 		if (firefox_node !== undefined)
@@ -193,7 +197,7 @@ WysiHat.addButton('link', {
 	_dialogClose: function()
 	{
 		var	title = $('#rte_link_title-').val();
-		
+
 		if (title != '')
 		{
 			this._editLinkNode(function($el) {
@@ -276,7 +280,7 @@ WysiHat.addButton('link', {
 	_validateLinkDialog: function()
 	{
 		this._clearErrors();
-		
+
 		var	url		= this.$url.val().replace(/^\s+|\s+$/g, ''),
 			title	= this.$title.val();
 
@@ -293,18 +297,18 @@ WysiHat.addButton('link', {
 		var sel = window.getSelection();
 		sel.removeAllRanges();
 		sel.addRange(this.range);
-		
+
 		if (this.link_node)
 		{
 			this.range.selectNode(this.link_node);
 		}
 
 		this.$link_dialog.dialog('close');
-		
+
 		// Make a link! This is what the other 300
 		// lines of code are here for, folks.
 		this.make('link', url);
-		
+
 		// Select our new link so that Firefox will not keep the
 		// selection inside the link, thus trapping the cursor, and
 		// we also need to add the optional title attribute; if we
@@ -315,18 +319,18 @@ WysiHat.addButton('link', {
 		var sel = window.getSelection(),
 			_is = this._is,
 			anchor_node = this._findLinkableNode(sel.anchorNode, 'img', sel.anchorOffset);
-		
+
 		if ( ! _is(anchor_node, 'a'))
 		{
 			anchor_node = this._findLinkableNode(sel.focusNode, 'img', sel.focusOffset);
 		}
-		
+
 		if (anchor_node !== false)
 		{
 			sel.removeAllRanges();
 			this.range.selectNode(anchor_node);
 			sel.addRange(this.range);
-			
+
 			// Title attribute
 			if (title == '')
 			{
@@ -347,7 +351,7 @@ WysiHat.addButton('link', {
 				$(anchor_node).removeAttr('target');
 			}
 		}
-		
+
 		// close
 		this.$link_dialog.dialog('close');
 	}

@@ -25,16 +25,14 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from EllisLab, Inc.
 */
 
-$plugin_info = array(
-	'pi_name'			=> 'RSS Parser',
-	'pi_version'		=> '1.0',
-	'pi_author'			=> 'EllisLab Development Team',
-	'pi_author_url'		=> 'http://ellislab.com/',
-	'pi_description'	=> 'Retrieves and Parses RSS/Atom Feeds',
-	'pi_usage'			=> Rss_parser::usage()
-);
-
 Class Rss_parser {
+
+	public static $name        = 'RSS Parser';
+	public static $version     = '1.0';
+	public static $author      = 'EllisLab Development Team';
+	public static $author_url  = 'http://ellislab.com/';
+	public static $description = 'Retrieves and Parses RSS/Atom Feeds';
+	public static $typography  = FALSE;
 
 	private $cache_name = 'rss_parser_plugin';
 

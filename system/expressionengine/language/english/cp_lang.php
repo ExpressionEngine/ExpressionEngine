@@ -60,8 +60,6 @@ $lang = array(
 	'nav_member_profile_templates_short_desc'	=> 'Edit Member Profile Templates',
 
 'nav_addons'					=> 'Add-Ons',
-'nav_accessories'				=> 'Accessories',
-'nav_accessories_short_desc'	=> 'Manage Accessories and Accessory Permissions',
 'nav_extensions'				=> 'Extensions',
 'nav_extensions_short_desc'	=> 'Manage Extensions',
 'nav_plugins'					=> 'Plugins',
@@ -193,6 +191,16 @@ $lang = array(
 'nav_add_tab'					=> '+ Add',
 
 //----------------------------
+// Develop Menu
+//----------------------------
+
+'channel_manager'  => 'Channel Manager',
+'template_manager' => 'Template Manager',
+'addon_manager'    => 'Add-On Manager',
+'utilities'        => 'Utilities',
+'logs'             => 'Logs',
+
+//----------------------------
 // Control Panel
 //----------------------------
 
@@ -278,7 +286,7 @@ $lang = array(
 '%x SQL queries used',
 
 'build' =>
-'Build Date:',
+'build date:',
 
 'forgot_password' =>
 'Forgot your password?',
@@ -305,10 +313,10 @@ $lang = array(
 'Back',
 
 'no' =>
-'No',
+'no',
 
 'yes' =>
-'Yes',
+'yes',
 
 'all' =>
 'All',
@@ -317,7 +325,7 @@ $lang = array(
 'Any',
 
 'required_fields' =>
-'Indicates required fields',
+'Required Fields',
 
 'login' =>
 'Login',
@@ -399,6 +407,12 @@ $lang = array(
 'ip_address' =>
 'IP Address',
 
+'ip' =>
+'IP',
+
+'internet_protocol' =>
+'Internet Protocol',
+
 'date' =>
 'Date',
 
@@ -410,9 +424,6 @@ $lang = array(
 
 'member_logged_out' =>
 'Logged out',
-
-'cleared_logs' =>
-'Cleared Log Files',
 
 'close' =>
 'Close',
@@ -427,6 +438,8 @@ $lang = array(
 'or_delete' 					=>	'or delete',
 'view' 							=>	'View',
 'switch'						=>	'Switch',
+'manage'						=>	'Manage',
+'edit'							=>	'Edit',
 
 'entry' 						=>	'Entry',
 'template' 						=>	'Template',
@@ -446,7 +459,17 @@ $lang = array(
 'status'						=> 'Status',
 'select_all'					=> 'Select All',
 
-'name'							=> 'Name',
+'by_username'					=> 'by username',
+'by_site'						=> 'by site',
+'by_date'						=> 'by date',
+'custom_date_range'				=> 'Custom Date Range',
+'limit_by'						=> 'limit by',
+'type_phrase'					=> 'type phrase...',
+'with_selected'					=> 'with selected',
+
+'no_search_results'	 			=> 'No Results Found',
+
+'total_entries'					=> 'total entries',
 
 //----------------------------
 // Sites and Channels
@@ -496,6 +519,147 @@ $lang = array(
 'ee_insider'					=> 'EE Insider',
 'devot_ee'						=> 'Devot-EE',
 'ee_podcast'					=> 'EE Podcast',
+
+/**
+ * 3.0
+ */
+
+'btn_fix_errors' =>
+'Fix Errors, Please',
+
+'btn_saving' =>
+'Saving...',
+
+'cp_message_success' =>
+'Action was a success',
+
+'cp_message_warn' =>
+'Warning',
+
+'cp_message_issue' =>
+'An error occurred',
+
+'form_validation_error' =>
+'There was a problem processing your submission, please check below and fix all errors.',
+
+'log_out' =>
+'log out',
+
+'menu_create' =>
+'Create',
+
+'new_channel' =>
+'New Channel',
+
+'new_site' =>
+'New Site',
+
+'name_your_site' =>
+'Name your site',
+
+'my_profile' =>
+'My Profile',
+
+'new_link' =>
+'New Link',
+
+'menu_edit' =>
+'Edit',
+
+'menu_files' =>
+'Files',
+
+'menu_members' =>
+'Members',
+
+'enable' =>
+'Enable',
+
+'disable' =>
+'Disable',
+
+'search_results_heading' =>
+'Search Results<br><i>we found %d results for "%s"</i>',
+
+'submit' =>
+'Submit',
+
+'with_selected' =>
+'with selected',
+
+'remove' =>
+'Remove',
+
+'create_new' =>
+'Create New',
+
+'new' =>
+'New',
+
+'none' =>
+'None',
+
+'col_id' =>
+'ID#',
+
+'manage' =>
+'Manage',
+
+'name' =>
+'Name',
+
+'url_title' =>
+'URL Title',
+
+'url_title_desc' =>
+'<i>No spaces. Underscores and dashes are allowed.</i>',
+
+'description' =>
+'Description',
+
+'image' =>
+'Image',
+
+'license_no' =>
+'License #',
+
+'owned_by' =>
+'Owned by',
+
+'not_entered' =>
+'not entered',
+
+'register_now' =>
+'Register Now',
+
+//----------------------------
+// confirm removal modal
+//----------------------------
+
+'confirm_removal' =>
+'Confirm Removal',
+
+'confirm_removal_desc' =>
+'You are attempting to remove the following items, please confirm this action.',
+
+'btn_confirm_and_remove' =>
+'Confirm, and Remove',
+
+'btn_confirm_and_remove_working' =>
+'Removing...',
+
+//----------------------------
+// confirm show all modal
+//----------------------------
+
+'confirm_show_all' =>
+'Danger, Will Robinson!',
+
+'confirm_show_all_desc' =>
+'Viewing more than %d items at a time may result in reduced performance.',
+
+'confirm_show_all_btn' =>
+'Damn the torpedoes, full speed ahead!',
 
 ''=>''
 );

@@ -405,7 +405,6 @@ class Parser extends AbstractParser {
 		}
 		else
 		{
-
 			$expression->add($this->token);
 		}
 	}
