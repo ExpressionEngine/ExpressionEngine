@@ -1,59 +1,29 @@
+# Basics =======================================================================
+
 .DS_Store
 Thumbs.db
 env_local.rb
-system/config/*
-system/config/config.php
-system/config/database.php
-system/expressionengine/config/config*.php
-system/expressionengine/config/database.php
-system/expressionengine/config/config1x.php
-system/expressionengine/config/config_1x.php
-members_1k.xml
-media/*
-
-themes/addons/*
-themes/cp_themes/brilliant_retail/
-themes/site_themes/brilliant_retail/
-themes/solspace_themes/
-themes/third_party/
 *.swp
-code_coverage/
-system/tests/phpunit/vendor/
-system/tests/phpunit/composer.lock
-system/tests/rspec/config.local.rb
-system/tests/rspec/screenshots/*
-system/tests/rspec/support/file-sync/uploads/*
 
-images/test1/
-images/design/
 
-system/cache/*
-!system/cache/index.html
-!system/cache/.htaccess
+# 2.0 Paths ====================================================================
+
 system/expressionengine/cache/*
 !system/expressionengine/cache/index.html
 !system/expressionengine/cache/.htaccess
 
-system/templates/*
-!system/templates/index.html
-!system/templates/.htaccess
+system/expressionengine/config/config*.php
+system/expressionengine/config/database.php
+system/expressionengine/config/config1x.php
+system/expressionengine/config/config_1x.php
+
+system/expressionengine/language/*
+!system/expressionengine/language/english
+
 system/expressionengine/templates/*
 !system/expressionengine/templates/index.html
 !system/expressionengine/templates/.htaccess
 
-system/addons/*
-!system/addons/index.html
-!system/addons/download
-!system/addons/google_maps
-!system/addons/js_tool
-!system/addons/testage
-!system/addons/debug
-!system/addons/safecracker_file
-!system/addons/cookie_check
-!system/addons/cookie_consent
-!system/addons/nannerbanner
-!system/addons/unregisteredbanner
-!system/addons/ellislab_high_ascii_decode
 system/expressionengine/third_party/*
 !system/expressionengine/third_party/index.html
 !system/expressionengine/third_party/download
@@ -68,13 +38,59 @@ system/expressionengine/third_party/*
 !system/expressionengine/third_party/unregisteredbanner
 !system/expressionengine/third_party/ellislab_high_ascii_decode
 
-system/codeigniter/system/language/*
-!system/codeigniter/system/language/english/*
 
-system/language/*
-!system/language/index.html
-system/expressionengine/language/*
-!system/expressionengine/language/english
+# 3.0 Paths ====================================================================
+
+system/user/addons/*
+!system/user/addons/index.html
+!system/user/addons/download
+!system/user/addons/google_maps
+!system/user/addons/js_tool
+!system/user/addons/testage
+!system/user/addons/debug
+!system/user/addons/safecracker_file
+!system/user/addons/cookie_check
+!system/user/addons/cookie_consent
+!system/user/addons/nannerbanner
+!system/user/addons/unregisteredbanner
+!system/user/addons/ellislab_high_ascii_decode
+
+system/user/cache/*
+!system/user/cache/index.html
+!system/user/cache/.htaccess
+
+system/user/config/*
+system/user/config/config.php
+system/user/config/database.php
+
+system/user/language/*
+!system/user/language/index.html
+
+system/user/templates/*
+!system/user/templates/index.html
+!system/user/templates/.htaccess
+
+themes/user/*
+
+
+# Tests ========================================================================
+
+system/tests/phpunit/vendor/
+system/tests/phpunit/composer.lock
+system/tests/rspec/config.local.rb
+system/tests/rspec/screenshots/*
+system/tests/rspec/support/file-sync/uploads/*
+
+system/EllisLab/Tests/vendor/*
+system/EllisLab/Tests/composer.lock
+
+
+# Themes/Images ================================================================
+
+media/*
+
+images/test1/
+images/design/
 
 ^images/(captchas|avatars/uploads|forum_attachments|member_photos|signature_attachments|pm_attachments|uploads)/(?!index\.html)
 
@@ -113,5 +129,7 @@ themes/site_themes/agile_records/images/uploads/_thumb/*
 !themes/site_themes/agile_records/images/uploads/_thumb/map*.jpg
 !themes/site_themes/agile_records/images/uploads/_thumb/staff*.png
 
-system/EllisLab/Tests/vendor/*
-system/EllisLab/Tests/composer.lock
+themes/cp_themes/brilliant_retail/
+themes/site_themes/brilliant_retail/
+themes/solspace_themes/
+themes/third_party/
