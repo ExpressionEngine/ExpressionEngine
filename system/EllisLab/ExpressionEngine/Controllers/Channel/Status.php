@@ -482,7 +482,8 @@ class Status extends AbstractChannelController {
 						'status' => array(
 							'type' => 'text',
 							'value' => $status->status,
-							'required' => TRUE
+							'required' => TRUE,
+							'disabled' => ($status->status == 'open' OR $status->status == 'closed') ? 'disabled' : NULL
 						)
 					)
 				),
