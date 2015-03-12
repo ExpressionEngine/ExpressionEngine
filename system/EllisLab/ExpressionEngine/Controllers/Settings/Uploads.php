@@ -819,22 +819,14 @@ class Uploads extends Settings {
 
 		$access = ee()->input->post('upload_member_groups') ?: array();
 
-		ee()->load->model('member_model');
-		$groups = ee()->member_model->get_upload_groups()->result();
+		$no_access = ee('Model')->get('MemberGroup')
+			->filter('group_id', 'NOT IN', array_merge(array(1,2,3,4), $access))
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
 
-		$no_access = array();
-		foreach ($groups as $group)
+		if ($no_access->count() > 0)
 		{
-			if ( ! in_array($group->group_id, $access))
-			{
-				$no_access[] = $group->group_id;
-			}
-		}
-
-		if ( ! empty($no_access))
-		{
-			$groups = ee('Model')->get('MemberGroup')->filter('group_id', 'IN', $no_access)->all();
-			$upload_destination->setNoAccess($groups);
+			$upload_destination->setNoAccess($no_access);
 		}
 		else
 		{

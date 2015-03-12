@@ -3,7 +3,7 @@
 <div class="tbl-ctrls">
 	<?=form_open($table['base_url'])?>
 		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=cp_url('channel/cat')?>"><?=lang('create_new')?></a>
+			<a class="btn tn action" href="<?=cp_url('channel/cat/create')?>"><?=lang('create_new')?></a>
 		</fieldset>
 		<h1><?=$cp_page_title?></h1>
 		<?=ee('Alert')->getAllInlines()?>

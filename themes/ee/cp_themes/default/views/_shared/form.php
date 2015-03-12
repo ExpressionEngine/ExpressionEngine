@@ -80,10 +80,14 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 						{
 							$value = isset($field['value']) ? $field['value'] : ee()->config->item($field_name);
 						}
-						$required = '';
+						$attrs = '';
 						if (isset($field['required']) && $field['required'] == TRUE)
 						{
-							$required = ' class="required"';
+							$attrs = ' class="required"';
+						}
+						if (isset($field['disabled']) && $field['disabled'] == TRUE)
+						{
+							$attrs = ' disabled="disabled"';
 						}
 						$has_note = isset($field['note']);
 
@@ -104,13 +108,13 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 						<?php endif ?>
 						<?php switch ($field['type']):
 						case 'text': ?>
-							<input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$required?>>
+							<input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
 						<?php break;
 						case 'file': ?>
-							<input type="file" name="<?=$field_name?>"<?=$required?>>
+							<input type="file" name="<?=$field_name?>"<?=$attrs?>>
 						<?php break;
 						case 'password': ?>
-							<input type="password" name="<?=$field_name?>"<?=$required?>>
+							<input type="password" name="<?=$field_name?>"<?=$attrs?>>
 						<?php break;
 						case 'hidden': ?>
 							<input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
@@ -119,24 +123,24 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 						case 'radio': ?>
 							<?php foreach ($field['choices'] as $key => $label):
 								$checked = ($key == $value); ?>
-								<label class="choice mr block <?=($checked) ? 'chosen' : ''?>"><input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=$required?>> <?=lang($label)?></label>
+								<label class="choice mr block <?=($checked) ? 'chosen' : ''?>"><input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=$attrs?>> <?=lang($label)?></label>
 							<?php endforeach ?>
 						<?php break;
 
 						case 'inline_radio': ?>
 							<?php foreach ($field['choices'] as $key => $label):
 								$checked = ((is_bool($value) && get_bool_from_string($key) === $value) OR ( ! is_bool($value) && $key == $value)); ?>
-								<label class="choice mr <?=($checked) ? 'chosen' : ''?>"><input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=$required?>> <?=lang($label)?></label>
+								<label class="choice mr <?=($checked) ? 'chosen' : ''?>"><input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=$attrs?>> <?=lang($label)?></label>
 							<?php endforeach ?>
 						<?php break;
 
 						case 'yes_no': ?>
-							<label class="choice mr<?php if (get_bool_from_string($value)):?> chosen<?php endif ?> yes"><input type="radio" name="<?=$field_name?>" value="y"<?php if (get_bool_from_string($value)):?> checked="checked"<?php endif ?><?=$required?>> yes</label>
-							<label class="choice <?php if (get_bool_from_string($value) === FALSE):?> chosen<?php endif ?> no"><input type="radio" name="<?=$field_name?>" value="n"<?php if (get_bool_from_string($value) === FALSE):?> checked="checked"<?php endif ?><?=$required?>> no</label>
+							<label class="choice mr<?php if (get_bool_from_string($value)):?> chosen<?php endif ?> yes"><input type="radio" name="<?=$field_name?>" value="y"<?php if (get_bool_from_string($value)):?> checked="checked"<?php endif ?><?=$attrs?>> yes</label>
+							<label class="choice <?php if (get_bool_from_string($value) === FALSE):?> chosen<?php endif ?> no"><input type="radio" name="<?=$field_name?>" value="n"<?php if (get_bool_from_string($value) === FALSE):?> checked="checked"<?php endif ?><?=$attrs?>> no</label>
 						<?php break;
 
 						case 'dropdown': ?>
-							<?=form_dropdown($field_name, $field['choices'], $value, $required)?>
+							<?=form_dropdown($field_name, $field['choices'], $value, $attrs)?>
 						<?php break;
 
 						case 'checkbox': ?>
@@ -152,14 +156,14 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 									}
 								?>
 									<label class="choice block<?php if ($selected):?> chosen<?php endif ?>">
-										<input type="checkbox" name="<?=$field_name?>[]" value="<?=$key?>"<?php if ($selected):?> checked="checked"<?php endif ?><?=$required?>> <?=$label?>
+										<input type="checkbox" name="<?=$field_name?>[]" value="<?=$key?>"<?php if ($selected):?> checked="checked"<?php endif ?><?=$attrs?>> <?=$label?>
 									</label>
 								<?php endforeach ?>
 							</div>
 						<?php break;
 
 						case 'textarea': ?>
-							<textarea name="<?=$field_name?>" cols="" rows=""<?=$required?>>
+							<textarea name="<?=$field_name?>" cols="" rows=""<?=$attrs?>>
 <?=(isset($field['kill_pipes']) && $field['kill_pipes'] === TRUE) ? str_replace('|', NL, $value) : $value?>
 </textarea>
 						<?php break;

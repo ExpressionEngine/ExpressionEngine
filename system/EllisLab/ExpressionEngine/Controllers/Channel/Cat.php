@@ -195,7 +195,7 @@ class Cat extends AbstractChannelController {
 	/**
 	 * Category group creation/edit form
 	 *
-	 * @param	int	$channel_id	ID of category group to edit
+	 * @param	int	$group_id	ID of category group to edit
 	 */
 	private function form($group_id = NULL)
 	{
@@ -333,7 +333,7 @@ class Cat extends AbstractChannelController {
 			array(
 				'field' => 'group_name',
 				'label' => 'lang:name',
-				'rules' => 'required|strip_tags|trim|valid_xss_check'
+				'rules' => 'required|strip_tags|trim|valid_xss_check|alpha_dash_space|callback_validCategoryGroupName['.$group_id.']'
 			)
 		));
 
@@ -371,6 +371,34 @@ class Cat extends AbstractChannelController {
 		ee()->cp->set_breadcrumb(cp_url('channel/cat'), lang('category_groups'));
 
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * Custom validator for category group name to check for duplicate
+	 * category group names
+	 *
+	 * @param	model	$name		Category group name
+	 * @param	model	$group_id	Group ID for category group
+	 * @return	bool	Valid category group name or not
+	 */
+	public function validCategoryGroupName($name, $group_id)
+	{
+		$cat_group = ee('Model')->get('CategoryGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('group_name', $name);
+
+		if ( ! empty($status_id))
+		{
+			$cat_group->filter('group_id', '!=', $group_id);
+		}
+
+		if ($cat_group->all()->count() > 0)
+		{
+			ee()->form_validation->set_message('validCategoryGroupName', lang('duplicate_category_group_name'));
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
 	/**
