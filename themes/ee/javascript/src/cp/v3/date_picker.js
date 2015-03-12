@@ -164,6 +164,11 @@ $(document).ready(function(){
 						var d = new Date(Calendar.year, Calendar.month, $(this).text());
 					}
 
+					var now = new Date();
+					d.setHours(now.getHours());
+					d.setMinutes(now.getMinutes());
+					d.setSeconds(now.getSeconds());
+
 					$(Calendar.element).val(get_formatted_date(d, EE.date.date_format));
 					$(Calendar.element).attr('data-timestamp', get_formatted_date(d, '%U'));
 
