@@ -714,6 +714,9 @@ $lang = array(
 'category_ajax_reorder_fail_desc' =>
 'We failed to save your new categories order. Refresh the page and make sure you\'re logged in.',
 
+'duplicate_category_group_name' =>
+'A category group already exists with the same name.',
+
 /**
  * Status Groups
  */
@@ -804,9 +807,6 @@ $lang = array(
 
 'status_not_saved_desc' =>
 'We were unable to save your status, please review and fix errors below.',
-
-'taken_status_group_name' =>
-'This status group name is already taken.',
 
 'duplicate_status_group_name' =>
 'A status group already exists with the same name.',
