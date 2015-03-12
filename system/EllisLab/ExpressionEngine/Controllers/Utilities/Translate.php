@@ -197,7 +197,7 @@ class Translate extends Utilities {
 	 */
 	private function getLanguageDirectory($language)
 	{
-		foreach (array(SYSPATH, APPPATH) as $parent_directory)
+		foreach (array(SYSPATH.'user/', APPPATH) as $parent_directory)
 		{
 			if (is_dir($parent_directory.'language/'.$language))
 			{
