@@ -239,9 +239,9 @@ WysiHat.Editor.prototype = {
 
 		this.$field.change($.proxy(this, 'updateEditor'));
 
-		// if, on submit, the editor is active, we
+		// if, on submit or autosave, the editor is active, we
 		// need to sync to the field before sending the data
-		$ed.closest('form').submit(function() {
+		$ed.closest('form').on('submit entry:autosave', function() {
 			// Instead of checking to see if the $editor is visible,
 			// we check to see if the $field is NOT visible to account
 			// cases where the editor may be hidden in a dynamic layout
@@ -888,6 +888,8 @@ WysiHat.Event.prototype = {
 			before.html, after.html,
 			before.selection, after.selection
 		);
+
+		this.$editor.closest('form').trigger("entry:startAutosave");
 	},
 
 	/**
@@ -2823,6 +2825,15 @@ WysiHat.Toolbar = function($el, buttons)
 	{
 		this.addButton(buttons[i]);
 	}
+
+	// Add .last to the last "normal" tool (not .rte-elements nor .rte-view)
+	if (this.$toolbar.children('.rte-elements').length) {
+		this.$toolbar.children('.rte-elements').prev().addClass('last');
+	} else if (this.$toolbar.children('.rte-view').length) {
+		this.$toolbar.children('.rte-view').prev().addClass('last');
+	} else {
+		this.$toolbar.children('li:last').addClass('last');
+	}
 }
 
 WysiHat.Toolbar.prototype = {
@@ -2858,7 +2869,7 @@ WysiHat.Toolbar.prototype = {
 			var opts = button.options,
 				l = opts.length, i = 0;
 
-			$btn = $('<select class="button"/>');
+			$btn = $('<select/>');
 
 			for ( ; i < l; i++)
 			{
@@ -2868,7 +2879,7 @@ WysiHat.Toolbar.prototype = {
 			}
 
 			$btn.appendTo(this.$toolbar)
-				.wrap('<div class="button select-container"/>');
+				.wrap('<li class="rte-elements"/>');
 		}
 		else
 		{

@@ -108,8 +108,38 @@ $lang = array(
 'btn_edit_entry' =>
 'Edit Entry',
 
+'btn_publish' =>
+'Publish',
+
 'edit_entry_with_title' =>
 'Edit Entry: %s',
+
+'create_entry_with_channel_name' =>
+'New Entry: %s',
+
+'create_entry_success' =>
+'Entry Created',
+
+'create_entry_success_desc' =>
+'The entry <b>%s</b> has been created.',
+
+'create_entry_error' =>
+'Cannot Create Entry',
+
+'create_entry_error_desc' =>
+'We were unable to create this entry, please review and fix errors below.',
+
+'edit_entry_success' =>
+'Entry Updated',
+
+'edit_entry_success_desc' =>
+'The entry <b>%s</b> has been updated.',
+
+'edit_entry_error' =>
+'Cannot Update Entry',
+
+'edit_entry_error_desc' =>
+'We were unable to update this entry, please review and fix errors below.',
 
 'url_title' =>
 '<abbr title="Unified Resource Locator">URL</abbr> title',

@@ -9,7 +9,7 @@
 
 		if ($checked)
 		{
-			$class = ' chosen';
+			$class .= ' chosen';
 		}
 ?>
 	<label class="<?=$class?>">

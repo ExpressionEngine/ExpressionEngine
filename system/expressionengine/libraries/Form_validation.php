@@ -167,29 +167,32 @@ class EE_Form_validation {
 		{
 			foreach ($settings as $setting)
 			{
-				foreach ($setting['fields'] as $field_name => $field)
+				if (is_array($setting))
 				{
-					$enum = NULL;
+					foreach ($setting['fields'] as $field_name => $field)
+					{
+						$enum = NULL;
 
-					// If this field has 'choices', make sure only those
-					// choices are let through the submission
-					if (isset($field['choices']))
-					{
-						$enum = implode(',', array_keys($field['choices']));
-					}
-					// Only allow y/n through for yes_no fields
-					elseif ($field['type'] == 'yes_no')
-					{
-						$enum = 'y,n';
-					}
+						// If this field has 'choices', make sure only those
+						// choices are let through the submission
+						if (isset($field['choices']))
+						{
+							$enum = implode(',', array_keys($field['choices']));
+						}
+						// Only allow y/n through for yes_no fields
+						elseif ($field['type'] == 'yes_no')
+						{
+							$enum = 'y,n';
+						}
 
-					if (isset($enum))
-					{
-						$this->set_rules(
-							$field_name,
-							$setting['title'],
-							'enum['.$enum.']'
-						);
+						if (isset($enum))
+						{
+							$this->set_rules(
+								$field_name,
+								$setting['title'],
+								'enum['.$enum.']'
+							);
+						}
 					}
 				}
 			}

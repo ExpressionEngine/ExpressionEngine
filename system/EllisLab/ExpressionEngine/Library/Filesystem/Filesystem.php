@@ -84,7 +84,7 @@ class Filesystem {
 	 */
 	public function mkDir($path, $with_index = TRUE)
 	{
-		mkdir($path, DIR_WRITE_MODE);
+		mkdir($path, DIR_WRITE_MODE, TRUE);
 
 		if ($with_index)
 		{
@@ -237,6 +237,17 @@ class Filesystem {
 
 		copy($source, $dest);
 		$this->ensureCorrectAccessMode($dest);
+	}
+
+	/**
+	 * Get the path to the parent directory
+	 *
+	 * @param String $path Path to extract dirname from
+	 * @return String Path to the parent directory
+	 */
+	public function dirname($path)
+	{
+		return dirname($path);
 	}
 
 	/**

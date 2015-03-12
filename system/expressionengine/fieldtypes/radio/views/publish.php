@@ -17,7 +17,7 @@
 	foreach ($options as $key => $value):
 		if ($selected == $key)
 		{
-			$class = ' chosen';
+			$class .= ' chosen';
 		}
 
 		if ($key == 'y' && $value == lang('yes'))

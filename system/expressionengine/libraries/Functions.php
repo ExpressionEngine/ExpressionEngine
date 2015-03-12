@@ -2334,7 +2334,7 @@ class EE_Functions {
 			return $str;
 		}
 
-		if (isset(ee()->TMPL->embed_vars))
+		if (isset(ee()->TMPL) && isset(ee()->TMPL->embed_vars))
 		{
 			// If this is being called from a module tag, embedded variables
 			// aren't going to be available yet.  So this is a quick workaround

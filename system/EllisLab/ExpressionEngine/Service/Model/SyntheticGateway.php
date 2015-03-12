@@ -36,7 +36,7 @@ class SyntheticGateway extends Gateway {
 	{
 		$this->table_name = $table_name;
 		$this->model = $model;
-		$this->fields = $model::getFields();
+		$this->fields = $model::getClassFields();
 
 		foreach ($this->fields as $field)
 		{

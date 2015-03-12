@@ -184,8 +184,6 @@ Grid.Publish.prototype = {
 		// Clone our blank row
 		el = this.blankRow.clone();
 
-		console.log(el);
-
 		el.removeClass('grid-blank-row');
 		el.show();
 
@@ -202,7 +200,6 @@ Grid.Publish.prototype = {
 		el.find(':input').removeAttr('disabled');
 
 		// Append the row to the end of the row container
-		console.log(this.rowContainer);
 		this.rowContainer.append(el);
 
 		// Make sure empty field message is hidden

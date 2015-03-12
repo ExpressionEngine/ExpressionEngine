@@ -196,7 +196,8 @@ class Channel extends AbstractChannelController {
 			');
 
 			ee()->view->cp_page_title = lang('create_new_channel');
-			ee()->view->form_url = cp_url('channel/create');
+			ee()->view->base_url = cp_url('channel/create');
+			ee()->view->save_btn_text = 'create_channel';
 			$channel = ee('Model')->make('Channel');
 		}
 		else
@@ -209,76 +210,155 @@ class Channel extends AbstractChannelController {
 			}
 
 			ee()->view->cp_page_title = lang('edit_channel');
-			ee()->view->form_url = cp_url('channel/edit/'.$channel_id);
+			ee()->view->base_url = cp_url('channel/edit/'.$channel_id);
+			ee()->view->save_btn_text = 'edit_channel';
 		}
 
-		ee()->view->channel = $channel;
-		$vars = array();
-
+		// Channel duplicate preferences menu
 		$channels = ee('Model')->get('Channel')
 			->filter('site_id', ee()->config->item('site_id'))
 			->order('channel_title')
 			->all();
-		$vars['duplicate_channel_prefs_options'][''] = lang('channel_do_not_duplicate');
-		if ( ! empty($channels))
+		$duplicate_channel_prefs_options[''] = lang('channel_do_not_duplicate');
+		foreach($channels as $dupe_channel)
 		{
-			foreach($channels as $dupe_channel)
-			{
-				$vars['duplicate_channel_prefs_options'][$dupe_channel->channel_id] = $dupe_channel->channel_title;
-			}
+			$duplicate_channel_prefs_options[$dupe_channel->channel_id] = $dupe_channel->channel_title;
 		}
 
+		// Category group options
+		$cat_group_options = array();
 		$category_groups = ee('Model')->get('CategoryGroup')
 			->filter('site_id', ee()->config->item('site_id'))
 			->order('group_name')
 			->all();
-		if ( ! empty($category_groups))
+		foreach ($category_groups as $group)
 		{
-			foreach ($category_groups as $group)
-			{
-				$vars['cat_group_options'][$group->group_id] = $group->group_name;
-			}
+			$cat_group_options[$group->group_id] = $group->group_name;
 		}
 
-		// Populate selected categories based on POST or database
-		if ( ! empty($_POST) && ! isset($_POST['cat_group']))
-		{
-			$vars['selected_cats'] = array();
-		}
-		elseif (isset($_POST['cat_group']))
-		{
-			$vars['selected_cats'] = $_POST['cat_group'];
-		}
-		else
-		{
-			$vars['selected_cats'] = explode('|', $channel->cat_group);
-		}
-
-		$vars['status_group_options'][''] = lang('none');
+		// Status group options
+		$status_group_options[''] = lang('none');
 		$status_groups = ee('Model')->get('StatusGroup')
 			->filter('site_id', ee()->config->item('site_id'))
 			->order('group_name')
 			->all();
-		if ( ! empty($status_groups))
+		foreach ($status_groups as $group)
 		{
-			foreach ($status_groups as $group)
-			{
-				$vars['status_group_options'][$group->group_id] = $group->group_name;
-			}
+			$status_group_options[$group->group_id] = $group->group_name;
 		}
 
-		$vars['field_group_options'][''] = lang('none');
+		// Field group options
+		$field_group_options[''] = lang('none');
 		$field_groups = ee('Model')->get('ChannelFieldGroup')
 			->filter('site_id', ee()->config->item('site_id'))
 			->order('group_name')
 			->all();
-		if ( ! empty($field_groups))
+		foreach ($field_groups as $group)
 		{
-			foreach ($field_groups as $group)
-			{
-				$vars['field_group_options'][$group->group_id] = $group->group_name;
-			}
+			$field_group_options[$group->group_id] = $group->group_name;
 		}
+
+		// Alert to show only for new channels
+		$alert = (is_null($channel_id)) ? ee('Alert')->makeInline('permissions-warn')
+			->asWarning()
+			->addToBody(lang('channel_publishing_options_warning'))
+			->addToBody(sprintf(lang('channel_publishing_options_warning2'), cp_url('channel/field')))
+			->cannotClose()
+			->render() : '';
+
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'channel_title',
+					'desc' => 'channel_title_desc',
+					'fields' => array(
+						'channel_title' => array(
+							'type' => 'text',
+							'value' => $channel->channel_title,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'channel_short_name',
+					'desc' => 'channel_short_name_desc',
+					'fields' => array(
+						'channel_name' => array(
+							'type' => 'text',
+							'value' => $channel->channel_name,
+							'required' => TRUE
+						)
+					)
+				)
+			)
+		);
+
+		// Only show duplicate channel option for new channels
+		if (is_null($channel_id))
+		{
+			$vars['sections'][0][] = array(
+				'title' => 'channel_duplicate',
+				'desc' => 'channel_duplicate_desc',
+				'fields' => array(
+					'duplicate_channel_prefs' => array(
+						'type' => 'dropdown',
+						'choices' => $duplicate_channel_prefs_options
+					)
+				)
+			);
+		}
+
+		$vars['sections']['channel_publishing_options'] = array(
+			$alert,
+			array(
+				'title' => ucfirst(strtolower(lang('status_groups'))),
+				'desc' => 'status_groups_desc',
+				'fields' => array(
+					'status_group' => array(
+						'type' => 'dropdown',
+						'choices' => $status_group_options,
+						'value' => $channel->status_group,
+						'no_results' => array(
+							'text' => 'status_groups_not_found',
+							'link_text' => 'create_new_status_group',
+							'link_href' => cp_url('channel/status/create')
+						)
+					)
+				)
+			),
+			array(
+				'title' => 'custom_field_group',
+				'desc' => 'custom_field_group_desc',
+				'fields' => array(
+					'field_group' => array(
+						'type' => 'dropdown',
+						'choices' => $field_group_options,
+						'value' => $channel->field_group,
+						'no_results' => array(
+							'text' => 'custom_field_groups_not_found',
+							'link_text' => 'create_new_field_group',
+							'link_href' => cp_url('channel/groups/create')
+						)
+					)
+				)
+			),
+			array(
+				'title' => ucfirst(strtolower(lang('category_groups'))),
+				'desc' => 'category_groups_desc',
+				'fields' => array(
+					'cat_group' => array(
+						'type' => 'checkbox',
+						'choices' => $cat_group_options,
+						'value' => explode('|', $channel->cat_group),
+						'no_results' => array(
+							'text' => 'category_groups_not_found',
+							'link_text' => 'create_new_category_group',
+							'link_href' => cp_url('channel/cat/create')
+						)
+					)
+				)
+			)
+		);
 
 		ee()->form_validation->set_rules(array(
 			array(
@@ -290,28 +370,10 @@ class Channel extends AbstractChannelController {
 				'field' => 'channel_name',
 				'label' => 'lang:channel_short_name',
 				'rules' => 'required|strip_tags|callback__validChannelName['.$channel_id.']'
-			),
-			array(
-				'field' => 'duplicate_channel_prefs',
-				'label' => 'lang:channel_duplicate',
-				'rules' => 'enum[' . implode(array_keys($vars['duplicate_channel_prefs_options']), ',') . ']'
-			),
-			array(
-				'field' => 'status_group',
-				'label' => 'lang:status_groups',
-				'rules' => 'enum[' . implode(array_keys($vars['status_group_options']), ',') . ']'
-			),
-			array(
-				'field' => 'field_group',
-				'label' => 'lang:custom_field_group',
-				'rules' => 'enum[' . implode(array_keys($vars['field_group_options']), ',') . ']'
-			),
-			array(
-				'field' => 'cat_group',
-				'label' => 'lang:category_groups',
-				'rules' => 'enum[' . implode(array_keys($vars['cat_group_options']), ',') . ']'
 			)
 		));
+
+		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
 		if (AJAX_REQUEST)
 		{
@@ -322,9 +384,7 @@ class Channel extends AbstractChannelController {
 		{
 			$channel_id = $this->saveChannel($channel_id);
 
-			ee()->view->set_message('success', lang('directory_saved'), lang('directory_saved_desc'), TRUE);
-
-			ee('Alert')->makeInline('channel-form')
+			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('channel_saved'))
 				->addToBody(lang('channel_saved_desc'))
@@ -334,7 +394,7 @@ class Channel extends AbstractChannelController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('channel-form')
+			ee('Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('channel_not_saved'))
 				->addToBody(lang('channel_not_saved_desc'))
@@ -353,10 +413,11 @@ class Channel extends AbstractChannelController {
 		);
 
 		ee()->view->cp_page_title = is_null($channel_id) ? lang('create_channel') : lang('edit_channel');
-		ee()->view->edit = ! is_null($channel_id);
+		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->set_breadcrumb(cp_url('channel'), lang('channels'));
 
-		ee()->cp->render('channel/edit', $vars);
+		ee()->cp->render('settings/form', $vars);
 	}
 
 	/**

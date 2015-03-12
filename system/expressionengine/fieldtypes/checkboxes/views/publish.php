@@ -19,7 +19,7 @@
 
 		if ($checked)
 		{
-			$class = ' chosen';
+			$class .= ' chosen';
 		}
 
 		if ($key == 'y' && $value == lang('yes'))
