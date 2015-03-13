@@ -29,8 +29,6 @@ require_once BASEPATH."database/drivers/mysqli/mysqli_connection.php";
  */
 class Connection extends \CI_DB_mysqli_connection {
 
-	protected static $legacy_loaded = FALSE;
-
 	protected $log;
 
 	/**

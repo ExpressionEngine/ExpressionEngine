@@ -4,6 +4,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Association;
 
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Service\Model\Relation;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -228,7 +229,18 @@ abstract class Association {
 		$query = $this->frontend->get($this->relation->getTargetModel());
 		$query->setLazyConstraint($this->relation, $this->source);
 
-		$this->fill($query->all());
+		$result = $query->all();
+		$this->fill($result);
+
+		// If we're a single owner, then we fill the inverse
+		// relationship, in essence caching the parent relation
+		$inverse = $this->relation->getInverse();
+
+		if ($inverse instanceOf Relation\BelongsTo)
+		{
+			$inverse_name = $inverse->getName();
+			$result->{'fill'.$inverse_name}($this->source);
+		}
 
 		$this->markAsLoaded();
 	}

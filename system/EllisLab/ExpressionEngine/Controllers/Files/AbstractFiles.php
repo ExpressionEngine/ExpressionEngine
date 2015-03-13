@@ -4,6 +4,10 @@ namespace EllisLab\ExpressionEngine\Controllers\Files;
 
 use CP_Controller;
 
+use EllisLab\ExpressionEngine\Model\File\UploadDestination;
+use EllisLab\ExpressionEngine\Library\Data\Collection;
+use EllisLab\ExpressionEngine\Library\CP\Table;
+
 /**
  * ExpressionEngine - by EllisLab
  *

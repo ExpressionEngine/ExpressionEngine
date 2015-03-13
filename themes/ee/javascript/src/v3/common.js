@@ -252,8 +252,28 @@ $(document).ready(function(){
 		});
 
 		// Highlight selected row for table lists
-		$('.tbl-list .check-ctrl input').on('click',function(){console.log('test');
+		$('.tbl-list .check-ctrl input').on('change',function() {
 			$(this).parents('.tbl-row').toggleClass('selected', $(this).is(':checked'));
+
+			// If all checkboxes are checked, check the Select All box
+			var allSelected = true;
+			$(this).parents('.tbl-list-wrap')
+				.find('.tbl-list .check-ctrl input').each(function() {
+					if ( ! $(this).is(':checked')) {
+						allSelected = false;
+						return false;
+					}
+				});
+
+			$(this).parents('.tbl-list-wrap').find('.tbl-list-ctrl input').prop('checked', allSelected);
+		});
+
+		// Select all for table lists
+		$('.tbl-list-ctrl input').on('click', function(){
+			$(this).parents('.tbl-list-wrap')
+				.find('.tbl-list .check-ctrl input')
+				.prop('checked', $(this).is(':checked'))
+				.trigger('change');
 		});
 
 	// ======================

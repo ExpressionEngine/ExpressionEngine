@@ -43,7 +43,8 @@ class Italic_rte {
 		return array(
 			'rte.italics'	=> array(
 				'add'		=> lang('make_italics'),
-				'remove'	=> lang('remove_italics')
+				'remove'	=> lang('remove_italics'),
+				'title'		=> lang('title_italics'),
 			)
 		);
 	}
@@ -60,6 +61,8 @@ class Italic_rte {
 		ob_start(); ?>
 
 		WysiHat.addButton('italic', {
+			cssClass: 'rte-italic',
+			title:			EE.rte.italics.title,
 			label:			EE.rte.italics.add,
 			'toggle-text':	EE.rte.italics.remove
 		});

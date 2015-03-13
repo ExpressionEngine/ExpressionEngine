@@ -69,7 +69,7 @@ class Uploads extends Settings {
 				htmlentities($dir['name'], ENT_QUOTES),
 				array('toolbar_items' => array(
 					'view' => array(
-						'href' => cp_url(''),
+						'href' => cp_url('files/directory/'.$dir['id']),
 						'title' => lang('upload_btn_view')
 					),
 					'edit' => array(
@@ -761,8 +761,11 @@ class Uploads extends Settings {
 	 */
 	private function getAllowedGroups($upload_destination = NULL)
 	{
-		ee()->load->model('member_model');
-		$groups = ee()->member_model->get_upload_groups()->result();
+		$groups = ee('Model')->get('MemberGroup')
+			->filter('group_id', 'NOT IN', array(1,2,3,4))
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('group_title')
+			->all();
 
 		$member_groups = array();
 		foreach ($groups as $group)
@@ -772,9 +775,9 @@ class Uploads extends Settings {
 
 		if ( ! empty($_POST))
 		{
-			if (isset($_POST['cat_group']))
+			if (isset($_POST['upload_member_groups']))
 			{
-				return array($_POST['cat_group'], $member_groups);
+				return array($_POST['upload_member_groups'], $member_groups);
 			}
 
 			return array(array(), $member_groups);

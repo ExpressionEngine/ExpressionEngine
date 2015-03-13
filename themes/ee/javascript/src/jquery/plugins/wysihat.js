@@ -239,9 +239,9 @@ WysiHat.Editor.prototype = {
 
 		this.$field.change($.proxy(this, 'updateEditor'));
 
-		// if, on submit, the editor is active, we
+		// if, on submit or autosave, the editor is active, we
 		// need to sync to the field before sending the data
-		$ed.closest('form').submit(function() {
+		$ed.closest('form').on('submit entry:autosave', function() {
 			// Instead of checking to see if the $editor is visible,
 			// we check to see if the $field is NOT visible to account
 			// cases where the editor may be hidden in a dynamic layout
@@ -888,6 +888,8 @@ WysiHat.Event.prototype = {
 			before.html, after.html,
 			before.selection, after.selection
 		);
+
+		this.$editor.closest('form').trigger("entry:startAutosave");
 	},
 
 	/**
@@ -2649,7 +2651,7 @@ WysiHat.Formatting = {
 		});
 
 		// Remove the extra white space that gets added after the
-		// last block in the .replace(that.reBlocks, '$1\n\n') line.	
+		// last block in the .replace(that.reBlocks, '$1\n\n') line.
 		// If we don't remove it, then it sticks around and eventually
 		// becomes a new paragraph.  Which is just annoying.
 		$el.html($el.html().trim());
@@ -2812,7 +2814,7 @@ WysiHat.Toolbar = function($el, buttons)
 	this.suspendQueries = false;
 
 	this.$editor = $el;
-	this.$toolbar = $('<div class="' + WysiHat.name + '-editor-toolbar" role="presentation"></div>');
+	this.$toolbar = $('<ul class="toolbar rte"></ul>');
 
 	$el.before(this.$toolbar);
 
@@ -2822,6 +2824,15 @@ WysiHat.Toolbar = function($el, buttons)
 	for (i = 0 ; i < l; i++)
 	{
 		this.addButton(buttons[i]);
+	}
+
+	// Add .last to the last "normal" tool (not .rte-elements nor .rte-view)
+	if (this.$toolbar.children('.rte-elements').length) {
+		this.$toolbar.children('.rte-elements').prev().addClass('last');
+	} else if (this.$toolbar.children('.rte-view').length) {
+		this.$toolbar.children('.rte-view').prev().addClass('last');
+	} else {
+		this.$toolbar.children('li:last').addClass('last');
 	}
 }
 
@@ -2858,7 +2869,7 @@ WysiHat.Toolbar.prototype = {
 			var opts = button.options,
 				l = opts.length, i = 0;
 
-			$btn = $('<select class="button"/>');
+			$btn = $('<select/>');
 
 			for ( ; i < l; i++)
 			{
@@ -2868,23 +2879,13 @@ WysiHat.Toolbar.prototype = {
 			}
 
 			$btn.appendTo(this.$toolbar)
-				.wrap('<div class="button select-container"/>');
+				.wrap('<li class="rte-elements"/>');
 		}
 		else
 		{
-			$btn = $('<button aria-pressed="false" tabindex="-1" type="button"></button>');
+			$btn = $('<li><a href=""></a></li>');
 
-			$btn.append('<b>' + button.label + '</b>')
-				.addClass( 'button ' + button.name)
-				.hover(
-					function() {
-						this.title = $(this).find('b').text();
-					},
-					function() {
-						$(this).removeAttr('title');
-					}
-				)
-				.appendTo(this.$toolbar);
+			$btn.appendTo(this.$toolbar);
 		}
 
 		if (button.cssClass)
@@ -2894,7 +2895,7 @@ WysiHat.Toolbar.prototype = {
 
 		if (button.title)
 		{
-			$btn.attr('title', button.title);
+			$btn.find('a').attr('title', button.title);
 		}
 
 		$btn.data('text', button.label);

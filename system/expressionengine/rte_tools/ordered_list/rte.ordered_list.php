@@ -43,7 +43,8 @@ class Ordered_list_rte {
 		return array(
 			'rte.ordered_list'	=> array(
 				'add'		=> lang('make_ol'),
-				'remove'	=> lang('remove_ol')
+				'remove'	=> lang('remove_ol'),
+				'title'		=> lang('title_ol'),
 			)
 		);
 	}
@@ -60,6 +61,8 @@ class Ordered_list_rte {
 		ob_start(); ?>
 
 		WysiHat.addButton('ordered_list', {
+			cssClass: 'rte-order-list',
+			title:			EE.rte.ordered_list.title,
 			label:			EE.rte.ordered_list.add,
 			'toggle-text':	EE.rte.ordered_list.remove,
 			handler: function(state) {

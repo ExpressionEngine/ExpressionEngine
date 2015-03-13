@@ -136,9 +136,12 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	/**
 	 * Set the primary key value
 	 *
+	 * This will not trigger a dirty state. Primary keys should be
+	 * considered immutable!
+	 *
 	 * @return $this
 	 */
-	protected function setId($id)
+	public function setId($id)
 	{
 		$pk = $this->getPrimaryKey();
 		$this->$pk = $id;
@@ -278,15 +281,14 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	{
 		$qb = $this->newSelfReferentialQuery();
 
+		$this->saveCompositeColumns();
+
 		if ($this->isNew())
 		{
-			$new_id = $qb->insert();
-			$this->setId($new_id);
+			$qb->insert();
 		}
 		else
 		{
-			// update
-			$this->saveCompositeColumns();
 			$this->constrainQueryToSelf($qb);
 			$qb->update();
 		}

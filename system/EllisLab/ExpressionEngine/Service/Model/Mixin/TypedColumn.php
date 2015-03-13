@@ -4,6 +4,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Mixin;
 
 use DateTime;
 use EllisLab\ExpressionEngine\Library\Mixin\Mixin;
+use EllisLab\ExpressionEngine\Service\Event\Subscriber;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -28,7 +29,7 @@ use EllisLab\ExpressionEngine\Library\Mixin\Mixin;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class TypedColumn implements Mixin {
+class TypedColumn implements Mixin, Subscriber {
 
 	/**
 	 * @var The parent scope
@@ -55,8 +56,19 @@ class TypedColumn implements Mixin {
 	{
 		$this->scope = $scope;
 		$this->columns = $this->scope->getTypedColumns();
+
+		$this->scope->subscribe($this);
+
 		$this->scope->addFilter('get', array($this, 'typedGetter'));
 		$this->scope->addFilter('set', array($this, 'typedSetter'));
+	}
+
+	/**
+	 * Event subscriber
+	 */
+	public function getSubscribedEvents()
+	{
+		return array('beforeValidate');
 	}
 
 	/**
@@ -65,6 +77,47 @@ class TypedColumn implements Mixin {
 	public function getName()
 	{
 		return 'Model:TypedColumn';
+	}
+
+	/**
+	 *
+	 */
+	public function onBeforeValidate()
+	{
+		$validator = $this->scope->getValidator();
+
+		foreach ($this->columns as $name => $type)
+		{
+			$rule_string = $this->getValidationRule($type);
+
+			if (isset($rule_string))
+			{
+				$validator->addRule($name, $rule_string);
+			}
+		}
+	}
+
+	/**
+	 * Get the validation rule for a given column type
+	 */
+	protected function getValidationRule($type)
+	{
+		switch ($type)
+		{
+			case 'int':
+			case 'timestamp':
+				return 'integer';
+			case 'float':
+				return 'numeric';
+			case 'bool':
+				return 'boolean';
+			case 'boolString':
+				return 'enum[y,n]';
+			case 'boolInt':
+				return 'integer|enum[1,0]';
+		}
+
+		return NULL;
 	}
 
 	/**
@@ -103,7 +156,10 @@ class TypedColumn implements Mixin {
 				$value = $this->getBool($value, 1, 0);
 				break;
 			case 'timestamp':
-				$value = new DateTime("@{$value}");
+				if ($value !== NULL)
+				{
+					$value = new DateTime("@{$value}");
+				}
 				break;
 			default:
 				throw new \Exception("Invalid column type `{$type}`");
@@ -188,7 +244,7 @@ class TypedColumn implements Mixin {
 		{
 			return $value ? $truthy : $falsey;
 		}
-		
+
 		if ($value === $truthy || $value === $falsey)
 		{
 			return $value;

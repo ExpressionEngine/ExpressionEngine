@@ -222,11 +222,11 @@ class EE_Profiler {
 			{
 				foreach ($log->getQueries() as $query)
 				{
-					list($val, $time) = $query;
+					list($sql, $location, $time) = $query;
 
 					$time = number_format($time, 4);
 
-					$val = highlight_code($val, ENT_QUOTES);
+					$val = highlight_code($sql.$location, ENT_QUOTES);
 
 					foreach ($highlight as $bold)
 					{

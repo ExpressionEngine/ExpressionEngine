@@ -26,7 +26,7 @@
 
 <?php $this->startOrAppendBlock('modals'); ?>
 
-<div class="modal-wrap modal-template-settings">
+<div class="modal-wrap modal-template-settings hidden">
 	<div class="modal">
 		<div class="col-group">
 			<div class="col w-16">

@@ -40,6 +40,13 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 		<?php foreach ($settings as $setting): ?>
 			<?php
 
+			// If a string is passed, just display the string
+			if (is_string($setting))
+			{
+				echo $setting;
+				continue;
+			}
+
 			$last_class = ($setting == end($settings)) ? ' last' : '';
 			$grid = (isset($setting['grid']) && $setting['grid'] == TRUE);
 
@@ -55,8 +62,14 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 						}
 					}
 					$security = (isset($setting['security']) && $setting['security'] == TRUE);
+					$caution = (isset($setting['caution']) && $setting['caution'] == TRUE);
 					?>
-					<h3<?php if ($security):?> class="enhance"<?php endif ?>><?=lang($setting['title'])?><?php if ($required): ?> <span class="required" title="required field">&#10033;</span><?php endif ?><?php if ($security): ?> <span title="enhance security"></span><?php endif ?></h3>
+					<h3<?php if ($security):?> class="enhance"<?php endif ?><?php if ($caution):?> class="caution"<?php endif ?>>
+						<?=lang($setting['title'])?>
+						<?php if ($required): ?> <span class="required" title="required field">&#10033;</span><?php endif ?>
+						<?php if ($security): ?> <span title="enhance security"></span><?php endif ?>
+						<?php if ($caution): ?> <span title="enhance caution"></span><?php endif ?>
+					</h3>
 					<em><?=lang($setting['desc'])?></em>
 				</div>
 				<div class="setting-field col <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?> last">
@@ -73,7 +86,19 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 							$required = ' class="required"';
 						}
 						$has_note = isset($field['note']);
+
+						$no_results = (in_array($field['type'], array('checkbox', 'radio', 'dropdown')) &&
+							isset($field['no_results']) &&
+							count($field['choices']) == 0);
 						?>
+						<?php if ($no_results): ?>
+							<div class="no-results">
+								<p><?=lang($field['no_results']['text'])?></p>
+								<p><a class="btn action" href="<?=lang($field['no_results']['link_href'])?>">
+									<?=lang($field['no_results']['link_text'])?>
+								</a></p>
+							</div>
+						<?php continue; endif ?>
 						<?php if ($has_note): ?>
 							<div class="setting-note">
 						<?php endif ?>

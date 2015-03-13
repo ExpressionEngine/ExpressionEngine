@@ -211,8 +211,10 @@ $lang = array(
 'Publishing Options',
 
 'channel_publishing_options_warning' =>
-'<p><b>Warning</b>: Channels require custom fields to collect any data other than title, and date.</p>
-<p>If you need to collect additional data for this channel, it\'s best practice to create any <a href="%s">custom fields</a>, first.</p>',
+'<b>Warning</b>: Channels require custom fields to collect any data other than title, and date.',
+
+'channel_publishing_options_warning2' =>
+'If you need to collect additional data for this channel, it\'s best practice to create any <a href="%s">custom fields</a>, first.',
 
 'status_groups_desc' =>
 'Choose the status group you want for this channel.',
@@ -601,7 +603,7 @@ $lang = array(
 'edit_category_group' =>
 'Edit Category Group',
 
-'cat_name_desc' =>
+'group_name_desc' =>
 'Descriptive name of this category group.',
 
 'create_category' =>
@@ -609,6 +611,9 @@ $lang = array(
 
 'edit_category' =>
 'Edit Category',
+
+'files' =>
+'Files',
 
 'cat_description_desc' =>
 'A brief description of this category.',
@@ -621,6 +626,39 @@ $lang = array(
 
 'html_formatting_desc' =>
 'Level of HTML allowed in custom category fields.',
+
+'permissions' =>
+'Permissions',
+
+'category_permissions_warning' =>
+'<b>Warning</b>: Please be very careful with the access privileges you grant.',
+
+'category_permissions_warning2' =>
+'Any setting marked with %s should only be granted to people you trust implicitly.',
+
+'edit_categories' =>
+'Edit Categories',
+
+'edit_categories_desc' =>
+'Users in selected groups will be allowed to edit categories in this category group.</em><em>Super Administrators are <b>always</b> allowed.',
+
+'delete_categories' =>
+'Delete Categories',
+
+'delete_categories_desc' =>
+'Users in selected groups will be allowed to delete categories in this category group.</em><em>Super Administrators are <b>always</b> allowed.',
+
+'cat_group_no_member_groups_found' =>
+'Zero <b>member groups</b> with permissions found',
+
+'edit_member_groups' =>
+'Edit Member Groups',
+
+'exclude_group_form' =>
+'Exclude group from?',
+
+'exclude_group_form_desc' =>
+'Prevent this category group from being offered as choice for assignment to channels and file directories.',
 
 'category_group_saved' =>
 'Category group saved',
@@ -675,6 +713,97 @@ $lang = array(
 
 'category_ajax_reorder_fail_desc' =>
 'We failed to save your new categories order. Refresh the page and make sure you\'re logged in.',
+
+/**
+ * Status Groups
+ */
+
+'status_groups' =>
+'Status Groups',
+
+'status_group' =>
+'Status Group',
+
+'status_groups_removed' =>
+'Status groups removed',
+
+'status_groups_removed_desc' =>
+'%d status groups were removed.',
+
+'create_status_group' =>
+'Create Status Group',
+
+'edit_status_group' =>
+'Edit Status Group',
+
+'status_group_name_desc' =>
+'Descriptive name of this status group.',
+
+'status_group_saved' =>
+'Status group saved',
+
+'status_group_saved_desc' =>
+'Your status group has been saved successfully.',
+
+'status_group_not_saved' =>
+'Attention: Status group not saved',
+
+'status_group_not_saved_desc' =>
+'We were unable to save your status group, please review and fix errors below.',
+
+'status_name' =>
+'Status Name',
+
+'statuses' =>
+'Statuses',
+
+'status' =>
+'Status',
+
+'status_ajax_reorder_fail' =>
+'Attention: Failed to save status order',
+
+'status_ajax_reorder_fail_desc' =>
+'We failed to save your new statuses order. Refresh the page and make sure you\'re logged in.',
+
+'statuses_removed' =>
+'Statuses removed',
+
+'statuses_removed_desc' =>
+'%d statuses were removed.',
+
+'create_status' =>
+'Create Status',
+
+'edit_status' =>
+'Edit Status',
+
+'status_name_desc' =>
+'Descriptive name of this status.',
+
+'highlight_color' =>
+'Highlight color',
+
+'highlight_color_desc' =>
+'Text color for this status. Accepts HEX codes.',
+
+'status_access' =>
+'Status access',
+
+'status_access_desc' =>
+'Users in selected groups will be allowed to access this status.</em><em>Super Administrators are <b>always</b> allowed.',
+
+'status_saved' =>
+'Status saved',
+
+'status_saved_desc' =>
+'Your status has been saved successfully.',
+
+'status_not_saved' =>
+'Attention: Status not saved',
+
+'status_not_saved_desc' =>
+'We were unable to save your status, please review and fix errors below.',
 
 ''=>''
 );

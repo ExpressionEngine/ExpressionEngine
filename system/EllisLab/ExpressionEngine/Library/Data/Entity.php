@@ -305,7 +305,15 @@ abstract class Entity extends MixableImpl {
 	 *
 	 * @return array field names
 	 */
-	public static function getFields()
+	public function getFields()
+	{
+		return static::getClassFields();
+	}
+
+	/**
+	 * Get a static list of fields.
+	 */
+	public static function getClassFields()
 	{
 		$vars = get_class_vars(get_called_class());
 		$fields = array();
