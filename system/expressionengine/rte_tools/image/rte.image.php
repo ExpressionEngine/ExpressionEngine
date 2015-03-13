@@ -56,7 +56,8 @@ class Image_rte {
 				'caption_text'	=> lang('rte_image_caption'),
 				'center_error'	=> lang('rte_center_error'),
 				'folders'		=> $this->folders,
-				'filedirs'		=> $this->filedirs
+				'filedirs'		=> $this->filedirs,
+				'title'			=> lang('img_title')
 			)
 		);
 	}

@@ -42,6 +42,27 @@ $(document).ready(function() {
 			}
 		});
 	});
+
+	// This is probably best in a plugin or common area as
+	// we have more of these; keeping it here for now while
+	// we assess the requirements for new table lists
+	$('.tbl-list .check-ctrl input').click(function(){
+		if ($(this).is(':checked')) {
+			// Child categories should be checked along with parent
+			$(this).parents('.tbl-list-item')
+				.first()
+				.find('.tbl-list .check-ctrl input')
+				.prop('checked', true)
+				.trigger('change');
+		} else {
+			// If we're unchecking something, make sure all its
+			// parents are also unchecked; children can stay checked
+			$(this).parents('.tbl-list-item')
+				.find('> .tbl-row > .check-ctrl input')
+				.prop('checked', false)
+				.trigger('change');
+		}
+	});
 });
 
 })(jQuery);

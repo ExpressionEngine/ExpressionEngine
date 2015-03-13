@@ -344,6 +344,22 @@ class Rte_lib {
 			$bits['buttons'][] = strtolower(str_replace(' ', '_', $tool['info']['name']));
 		}
 
+		// Due to some UI constraints headings must come after "normal" buttons
+		$key = array_search('headings', $bits['buttons']);
+		if ($key !== FALSE)
+		{
+			$button = array_splice($bits['buttons'], $key, 1);
+			$bits['buttons'][] = $button;
+		}
+
+		// Due to some UI constraints view_source must come last
+		$key = array_search('view_source', $bits['buttons']);
+		if ($key !== FALSE)
+		{
+			$button = array_splice($bits['buttons'], $key, 1);
+			$bits['buttons'][] = $button;
+		}
+
 		// potentially required assets
 		$jquery = URL_THEMES . 'javascript/' .
 				  (ee()->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed') .
@@ -407,7 +423,7 @@ class Rte_lib {
 
 				// RTE editor setup for this page
 				$("' . $selector . '")
-					.not(".grid_field ' . $selector . '")
+					.not(".grid-input-form ' . $selector . '")
 					.addClass("WysiHat-field")
 					.wysihat({
 						buttons: '.json_encode($bits['buttons']).'
@@ -456,12 +472,20 @@ class Rte_lib {
 			return NULL;
 		}
 
-		// The rte tries to create pretty html for its source view, but we want
-		// to store our data with minimal html, allowing EE's auto typography to
-		// do the bulk work and letting us switch back and forth. So first up, we
-		// remove a bunch of newline formatting.
+		return $this->clean_data($data);
+	}
 
-		// Strip newlines around <br>s
+	/**
+	 * The rte tries to create pretty html for its source view, but we want
+	 * to store our data with minimal html, allowing EE's auto typography to
+	 * do the bulk work and letting us switch back and forth. We strip extra
+	 * newlines, <br>s, and <p> tags.
+	 *
+	 * @param string $data The data for the RTE field
+	 * @return string The clean data
+	 */
+	private function clean_data($data)
+	{
 		$data = preg_replace("#\n?(<br>|<br />)\n?#i", "\n", $data);
 
 		// Strip <br>s
@@ -519,7 +543,8 @@ class Rte_lib {
 			'name'	=> $field_name,
 			'id'	=> $field_name,
 			'rows'	=> $settings['field_ta_rows'],
-			'dir'	=> $settings['field_text_direction']
+			'dir'	=> $settings['field_text_direction'],
+			'class' => 'has-rte'
 		);
 
 
@@ -530,34 +555,13 @@ class Rte_lib {
 		$data = trim($data);
 		$data = htmlspecialchars_decode($data, ENT_QUOTES);
 
-		// Collapse tags and undo any existing newline formatting. Typography
-		// will change it anyways and the rte will add its own. Having this here
-		// prevents growing-newline syndrome in the rte and lets us switch
-		// between rte and non-rte.
-		$data = preg_replace('/<br( *\/)?>\n*/is', "<br>\n", $data);
-
-		$data = preg_replace("/<\/p>\n*<p>/is", "\n\n", $data);
-		$data = preg_replace("/<br>\n/is", "\n", $data);
-
-		// most newlines we should ever have is 2
-		$data = preg_replace('/\n\n+/', "\n\n", $data);
-
-		// remove code chunks
-		if (preg_match_all("/\[code\](.+?)\[\/code\]/si", $data, $matches))
-		{
-
-			foreach ($matches[1] as $i => $chunk)
-			{
-				$code_chunks[$i] = trim($chunk);
-				$data = str_replace($matches[0][$i], $code_marker.$i, $data);
-			}
-		}
+		$data = $this->clean_data($data);
 
 		// Check the RTE module and user's preferences
 		if (ee()->session->userdata('rte_enabled') == 'y'
 			AND ee()->config->item('rte_enabled') == 'y')
 		{
-			$field['class']	= 'WysiHat-field';
+			$field['class']	.= ' WysiHat-field';
 
 			foreach ($code_chunks as $i => $chunk)
 			{
@@ -598,11 +602,6 @@ class Rte_lib {
 		$field['value'] = $data;
 
 		$return_data = form_textarea($field);
-
-		if ($container = 'grid')
-		{
-			$return_data = '<div class="grid_full_cell_container">'.$return_data.'</div>';
-		}
 
 		return $return_data;
 	}

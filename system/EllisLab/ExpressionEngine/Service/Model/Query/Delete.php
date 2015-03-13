@@ -47,26 +47,43 @@ class Delete extends Query {
 
 		$delete_list = $this->getDeleteList($from);
 
+
 		foreach ($delete_list as $model => $withs)
 		{
 			$offset		= 0;
 			$batch_size = self::DELETE_BATCH_SIZE; // TODO change depending on model?
 
-			do {
-				// TODO yuck. The relations have this info more correctly
-				// in their to and from keys. store that instead.
-				$to_meta = $this->store->getMetaDataReader($model);
-				$to_pk = $to_meta->getPrimaryKey();
+			// TODO yuck. The relations have this info more correctly
+			// in their to and from keys. store that instead.
+			$to_meta = $this->store->getMetaDataReader($model);
+			$to_pk = $to_meta->getPrimaryKey();
+			$events = $to_meta->getEvents();
 
-				$delete_models = $builder
+			$has_delete_event = (
+				in_array('beforeDelete', $events) ||
+				in_array('afterDelete', $events)
+			 );
+
+			// TODO optimize further for on-db deletes
+			do {
+				$fetch_query = $builder
 					->getFrontend()
 					->get($model)
 					->with($withs)
-					->fields("{$model}.{$to_pk}")
 					->filter("{$from}.{$from_pk}", 'IN', $parent_ids)
 					->offset($offset)
-					->limit($batch_size)
-					->all();
+					->limit($batch_size);
+
+				if ($has_delete_event)
+				{
+					$fetch_query->fields("{$model}.*");
+				}
+				else
+				{
+					$fetch_query->fields("{$model}.{$to_pk}");
+				}
+
+				$delete_models = $fetch_query->all();
 
 				$delete_ids = $delete_models->pluck($to_pk);
 
@@ -180,6 +197,15 @@ class Delete extends Query {
 				}
 
 				$inherit = $this->delete_list[$parent];
+
+				if (isset($this->delete_list[$to_model][$to_name]))
+				{
+					var_dump($to_model);
+					var_dump($to_name);
+					$this->delete_list[$to_model][$to_name][] = 'recursion';
+					continue;
+				}
+
 				$this->delete_list[$to_model][$to_name] = $inherit;
 
 				$this->deleteListRecursive($to_model);

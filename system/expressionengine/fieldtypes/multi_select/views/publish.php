@@ -9,11 +9,11 @@
 
 		if ($checked)
 		{
-			$class = ' chosen';
+			$class .= ' chosen';
 		}
 ?>
 	<label class="<?=$class?>">
-		<?=form_checkbox($field_name, $key, $checked)?> <?=$value?>
+		<?=form_checkbox($field_name . '[]', $key, $checked)?> <?=$value?>
 	</label>
 	<?php $class = 'choice block'; ?>
 <?php endforeach; ?>

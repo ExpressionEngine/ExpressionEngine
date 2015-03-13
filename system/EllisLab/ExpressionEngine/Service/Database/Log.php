@@ -38,7 +38,7 @@ class Log {
 	protected $count = 0;
 
 	/**
-	 * @var Array [Query => time]
+	 * @var Array [[Query, location, time]]
 	 */
 	protected $queries = array();
 
@@ -73,9 +73,10 @@ class Log {
 
 		if ($this->save_queries)
 		{
-			$query = $sql.$this->getTrace();
+			$query = $sql;
+			$location = $this->getTrace();
 
-			$this->queries[] = array($query, $time);
+			$this->queries[] = array($query, $location, $time);
 		}
 	}
 
@@ -120,7 +121,9 @@ class Log {
 				{
 					$class = $frame['class'];
 
-					if (strpos($class, 'CI_DB_') !== 0 && strpos($class, __NAMESPACE__) !== 0)
+					if (strpos($class, 'CI_DB_') !== 0 &&
+						strpos($class, __NAMESPACE__) !== 0 &&
+						strpos($class, 'EllisLab\ExpressionEngine\Service\Model') !== 0)
 					{
 						break;
 					}

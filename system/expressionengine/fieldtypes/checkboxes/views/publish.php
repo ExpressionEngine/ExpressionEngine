@@ -19,7 +19,7 @@
 
 		if ($checked)
 		{
-			$class = ' chosen';
+			$class .= ' chosen';
 		}
 
 		if ($key == 'y' && $value == lang('yes'))
@@ -32,7 +32,7 @@
 		}
 ?>
 	<label class="<?=$class?>">
-		<?=form_checkbox($field_name, $key, $checked)?> <?=$value?>
+		<?=form_checkbox($field_name . '[]', $key, $checked)?> <?=$value?>
 	</label>
 	<?php $class = $default_class; ?>
 <?php endforeach; ?>

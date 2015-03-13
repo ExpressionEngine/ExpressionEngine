@@ -54,12 +54,7 @@ class FieldFacade {
 		return $this->timezone;
 	}
 
-	public function set($data)
-	{
-		return $this->data = $this->save($data);
-	}
-
-	// sets the raw values as in the db. data coming form
+	// sets the raw values as in the db. data coming from
 	// the field post array should pass through setValue
 	public function setData($data)
 	{
@@ -99,10 +94,11 @@ class FieldFacade {
 		return $fts[$type]['name'];
 	}
 
-	public function save($value)
+	public function save()
 	{
+		$value = $this->data;
 		$this->initField();
-		return ee()->api_channel_fields->apply('save', array($value));
+		return $this->data = ee()->api_channel_fields->apply('save', array($value));
 	}
 
 	public function getForm()

@@ -22,6 +22,19 @@ abstract class ContentModel extends Model {
 
 	abstract public function getCustomFieldPrefix();
 
+	public function save()
+	{
+		foreach ($this->_field_facades as $name => $field)
+		{
+			if (isset($this->_dirty[$name]))
+			{
+				$field->save();
+			}
+		}
+
+		return parent::save();
+	}
+
 	/**
 	 * Optional
 	 */
@@ -36,6 +49,23 @@ abstract class ContentModel extends Model {
 	protected function populateDefaultFields()
 	{
 		return;
+	}
+
+	/**
+	 * Get a list of fields
+	 *
+	 * @return array field names
+	 */
+	public function getFields()
+	{
+		$fields = parent::getFields();
+
+		foreach ($this->_field_facades as $field_facade)
+		{
+			$fields[] = $field_facade->getName();
+		}
+
+		return $fields;
 	}
 
 	/**
@@ -69,7 +99,7 @@ abstract class ContentModel extends Model {
 	/**
 	 *
 	 */
-	protected function fillCustomFields($data)
+	protected function fillCustomFields(array $data = array())
 	{
 		$this->usesCustomFields();
 
@@ -145,11 +175,10 @@ abstract class ContentModel extends Model {
 		return $this->_field_facades[$name];
 	}
 
-
 	/**
 	 *
 	 */
-	public function fill($data)
+	public function fill(array $data = array())
 	{
 		parent::fill($data);
 
@@ -191,7 +220,7 @@ abstract class ContentModel extends Model {
 	{
 		if ($this->hasCustomField($name))
 		{
-			$this->getCustomField($name)->set($value);
+			$this->getCustomField($name)->setData($value);
 
 			if ( ! parent::hasProperty($name))
 			{
@@ -201,6 +230,12 @@ abstract class ContentModel extends Model {
 		}
 
 		return parent::setProperty($name, $value);
+	}
+
+	public function set(array $data = array())
+	{
+		$this->usesCustomFields();
+		return parent::set($data);
 	}
 
 }

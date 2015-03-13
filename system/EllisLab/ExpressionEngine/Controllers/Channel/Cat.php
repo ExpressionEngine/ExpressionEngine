@@ -222,13 +222,29 @@ class Cat extends AbstractChannelController {
 			ee()->view->save_btn_text = 'edit_category_group';
 		}
 
+		$member_groups = ee('Model')->get('MemberGroup')
+			->filter('group_id', 'NOT IN', array(1,2,3,4))
+			->filter('site_id', ee()->config->item('site_id'));
+
+		$can_edit_categories = array();
+		foreach ($member_groups->filter('can_edit_categories', 'y')->all() as $member_group)
+		{
+			$can_edit_categories[$member_group->group_id] = $member_group->group_title;
+		}
+
+		$can_delete_categories = array();
+		foreach ($member_groups->filter('can_delete_categories', 'y')->all() as $member_group)
+		{
+			$can_delete_categories[$member_group->group_id] = $member_group->group_title;
+		}
+
 		$vars['sections'] = array(
 			array(
 				array(
 					'title' => 'name',
-					'desc' => 'cat_name_desc',
+					'desc' => 'group_name_desc',
 					'fields' => array(
-						'cat_name' => array(
+						'group_name' => array(
 							'type' => 'text',
 							'value' => $cat_group->group_name,
 							'required' => TRUE
@@ -247,6 +263,66 @@ class Cat extends AbstractChannelController {
 								'none'	=> lang('convert_to_entities')
 							),
 							'value' => $cat_group->field_html_formatting
+						)
+					)
+				)
+			),
+			'permissions' => array(
+				ee('Alert')->makeInline('permissions-warn')
+					->asWarning()
+					->addToBody(lang('category_permissions_warning'))
+					->addToBody(
+						sprintf(lang('category_permissions_warning2'), '<span title="excercise caution"></span>'),
+						'caution'
+					)
+					->cannotClose()
+					->render(),
+				array(
+					'title' => 'edit_categories',
+					'desc' => 'edit_categories_desc',
+					'caution' => TRUE,
+					'fields' => array(
+						'can_edit_categories' => array(
+							'type' => 'checkbox',
+							'choices' => $can_edit_categories,
+							'value' => explode('|', rtrim($cat_group->can_edit_categories, '|')),
+							'no_results' => array(
+								'text' => 'cat_group_no_member_groups_found',
+								'link_text' => 'edit_member_groups',
+								'link_href' => cp_url('members/groups')
+							)
+						)
+					)
+				),
+				array(
+					'title' => 'delete_categories',
+					'desc' => 'delete_categories_desc',
+					'caution' => TRUE,
+					'fields' => array(
+						'can_delete_categories' => array(
+							'type' => 'checkbox',
+							'choices' => $can_delete_categories,
+							'value' => explode('|', rtrim($cat_group->can_edit_categories, '|')),
+							'no_results' => array(
+								'text' => 'cat_group_no_member_groups_found',
+								'link_text' => 'edit_member_groups',
+								'link_href' => cp_url('members/groups')
+							)
+						)
+					)
+				),
+				array(
+					'title' => 'exclude_group_form',
+					'desc' => 'exclude_group_form_desc',
+					'fields' => array(
+						'exclude_group' => array(
+							'type' => 'dropdown',
+							'choices' => array(
+								0 => lang('none'),
+								1 => lang('channels'),
+								2 => lang('files')
+							),
+							'value' => $cat_group->exclude_group
 						)
 					)
 				)
@@ -305,7 +381,16 @@ class Cat extends AbstractChannelController {
 	 */
 	private function saveCategoryGroup($group_id = NULL)
 	{
-		// Save
+		$cat_group = ee('Model')->make('CategoryGroup', $_POST);
+		$cat_group->group_id = $group_id;
+		$cat_group->site_id = ee()->config->item('site_id');
+		$cat_group->can_edit_categories = (ee()->input->post('can_edit_categories'))
+			? implode('|', $_POST['can_edit_categories']) : '';
+		$cat_group->can_delete_categories = (ee()->input->post('can_delete_categories'))
+			? implode('|', $_POST['can_delete_categories']) : '';
+
+		$cat_group->save();
+		return $cat_group->group_id;
 	}
 
 	/**

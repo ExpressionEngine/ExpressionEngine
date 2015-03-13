@@ -43,7 +43,8 @@ class Blockquote_rte {
 		return array(
 			'rte.blockquote'	=> array(
 				'add'		=> lang('make_blockquote'),
-				'remove'	=> lang('remove_blockquote')
+				'remove'	=> lang('remove_blockquote'),
+				'title'		=> lang('title_blockquote')
 			)
 		);
 	}
@@ -60,6 +61,8 @@ class Blockquote_rte {
 		ob_start(); ?>
 
 		WysiHat.addButton('blockquote', {
+			cssClass: 'rte-quote',
+			title:			EE.rte.blockquote.title,
 			label:			EE.rte.blockquote.add,
 			'toggle-text': 	EE.rte.blockquote.remove,
 			handler: function(state) {

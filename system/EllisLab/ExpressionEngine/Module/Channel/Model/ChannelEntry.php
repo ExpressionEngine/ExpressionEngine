@@ -21,6 +21,17 @@ class ChannelEntry extends ContentModel {
 	protected static $_primary_key = 'entry_id';
 	protected static $_gateway_names = array('ChannelTitleGateway', 'ChannelDataGateway');
 
+	protected static $_typed_columns = array(
+		'versioning_enabled'      => 'boolString',
+		'allow_comments'          => 'boolString',
+		'sticky'                  => 'boolString',
+		'entry_date'              => 'timestamp',
+		'expiration_date'         => 'timestamp',
+		'comment_expiration_date' => 'timestamp',
+		'edit_date'               => 'timestamp',
+		'recent_comment_date'     => 'timestamp',
+	);
+
 	protected static $_relationships = array(
 		'Channel' => array(
 			'type' => 'belongsTo',
@@ -44,7 +55,37 @@ class ChannelEntry extends ContentModel {
 			'type' => 'hasMany',
 			'model' => 'ChannelEntryAutosave',
 			'to_key' => 'original_entry_id'
+		),
+		'Parents' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'ChannelEntry',
+			'pivot' => array(
+				'table' => 'relationships',
+				'left' => 'entry_id',
+				'right' => 'parent_id'
+			)
+		),
+		'Children' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'ChannelEntry',
+			'pivot' => array(
+				'table' => 'relationships',
+				'left' => 'entry_id',
+				'right' => 'child_id'
+			)
 		)
+	);
+
+	protected static $_validation_rules = array(
+		'channel_id'         => 'required',
+		'ip_address'         => 'ip_address',
+		'title'              => 'required',
+		'url_title'          => 'required',
+		'status'             => 'required',
+		'entry_date'         => 'required',
+		'versioning_enabled' => 'enum[y,n]',
+		'allow_comments'     => 'enum[y,n]',
+		'sticky'             => 'enum[y,n]',
 	);
 
 	// Properties
@@ -74,6 +115,33 @@ class ChannelEntry extends ContentModel {
 	protected $recent_comment_date;
 	protected $comment_total;
 
+	public function set__entry_date($date)
+	{
+		$field = $this->_field_facades['entry_date'];
+		$field->save();
+		$this->entry_date = $field->getData();
+
+		// Day, Month, and Year Fields
+		// @TODO un-break these windows: inject this dependency
+		$this->setProperty('year', ee()->localize->format_date('%Y', $this->entry_date));
+		$this->setProperty('month', ee()->localize->format_date('%m', $this->entry_date));
+		$this->setProperty('day', ee()->localize->format_date('%d', $this->entry_date));
+	}
+
+	public function set__expiration_date($date)
+	{
+		$field = $this->_field_facades['expiration_date'];
+		$field->save();
+		$this->expiration_date = $field->getData();
+	}
+
+	public function set__comment_expiration_date($date)
+	{
+		$field = $this->_field_facades['comment_expiration_date'];
+		$field->save();
+		$this->comment_expiration_date = $field->getData();
+	}
+
 	/**
 	 * A link back to the owning channel object.
 	 *
@@ -101,11 +169,14 @@ class ChannelEntry extends ContentModel {
 		ee()->legacy_api->instantiate('channel_fields');
 		$module_tabs = ee()->api_channel_fields->get_module_fields($this->channel_id, $this->entry_id);
 
-		foreach ($module_tabs as $tab_id => $fields)
+		if ($module_tabs)
 		{
-			foreach ($fields as $key => $field)
+			foreach ($module_tabs as $tab_id => $fields)
 			{
-				$this->addFacade($field['field_id'], $field);
+				foreach ($fields as $key => $field)
+				{
+					$this->addFacade($field['field_id'], $field);
+				}
 			}
 		}
 	}

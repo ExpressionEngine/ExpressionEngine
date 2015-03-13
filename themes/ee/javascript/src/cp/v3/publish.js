@@ -22,77 +22,50 @@ $(document).ready(function () {
 		});
 	}
 
-	var autosave_entry,
-		start_autosave;
+	var publishForm = $("div.publish form");
 
 	if (EE.publish.autosave && EE.publish.autosave.interval) {
 		var autosaving = false;
 
-		start_autosave = function() {
+		publishForm.on("entry:startAutosave", function() {
+			publishForm.trigger("entry:autosave");
+
 			if (autosaving) {
 				return;
 			}
 
 			autosaving = true;
-			setTimeout(autosave_entry, 1000 * EE.publish.autosave.interval); // 1000 milliseconds per second
-		};
+			setTimeout(function() {
+				$.ajax({
+					type: "POST",
+					dataType: 'json',
+					url: EE.publish.autosave.URL,
+					data: publishForm.serialize(),
+					success: function(result) {
+						publishForm.find('div.alert.inline.warn').remove();
 
-		autosave_entry = function() {
-			var form = $("div.publish form");
+						if (result.error) {
+							console.log(result.error);
+						}
+						else if (result.success) {
+							publishForm.prepend(result.success);
+						}
+						else {
+							console.log('Autosave Failed');
+						}
 
-			$.ajax({
-				type: "POST",
-				dataType: 'json',
-				url: EE.publish.autosave.URL,
-				data: form.serialize(),
-				success: function(result) {
-					form.find('div.alert.inline.warn').remove();
-
-					if (result.error) {
-						console.log(result.error);
+						autosaving = false;
 					}
-					else if (result.success) {
-						form.prepend(result.success);
-					}
-					else {
-						console.log('Autosave Failed');
-					}
-
-					autosaving = false;
-				}
-			});
-		};
+				});
+			}, 1000 * EE.publish.autosave.interval); // 1000 milliseconds per second
+		});
 
 		// Start autosave when something changes
 		var writeable = $('textarea, input').not(':password,:checkbox,:radio,:submit,:button,:hidden'),
 			changeable = $('select, :checkbox, :radio, :file');
 
-		writeable.bind('keypress change', start_autosave);
-		changeable.bind('change', start_autosave);
+		writeable.on('keypress change', function(){publishForm.trigger("entry:startAutosave")});
+		changeable.on('change', function(){publishForm.trigger("entry:startAutosave")});
 	}
-
-	// Load an auto-saved entry
-	$('div.auto-save').on('click', 'li a', function(e) {
-		$.ajax({
-			type: "POST",
-			dataType: 'json',
-			url: EE.publish.restore.URL,
-			data: {id: $(this).data('autosave-id')},
-			success: function(result) {
-				for (var property in result) {
-					if (result.hasOwnProperty(property)) {
-						var attrName = property;
-
-						if (Array.isArray(result[property])) {
-							attrName = property + "[]";
-						}
-
-						$('form [name="' + attrName + '"]').val(result[property]);
-					}
-				}
-			}
-		})
-		e.preventDefault();
-	});
 
 });

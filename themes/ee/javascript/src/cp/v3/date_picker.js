@@ -333,12 +333,14 @@ $(document).ready(function(){
 	};
 
 	// listen for clicks on inputs with rel date-picker
-	$('input[rel="date-picker"]').on('click',function(){
+	$('input[rel="date-picker"]').on('click', function(){
 		// find the position of the input clicked
 		var pos = $(this).offset();
 		Calendar.init(this);
 		// position and toggle the .date-picker-wrap relative to the input clicked
 		$('.date-picker-wrap').css({ 'top': pos.top + 30, 'left': pos.left }).toggle();
+	}).on('blur', function() {
+		$('.date-picker-wrap').hide();
 	});
 
 }); // close (document).ready

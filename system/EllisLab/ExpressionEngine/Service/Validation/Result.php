@@ -214,7 +214,7 @@ class Result {
 
 		<?php foreach ($rules as $rule): ?>
 			<?php list($key, $params) = $rule->getLanguageData(); ?>
-			<p><?=sprintf(lang($key), $params) ?></p>
+			<em class="ee-form-error-message"><?=sprintf(lang($key), $params) ?></em>
 		<?php endforeach; ?>
 STR;
 	}
