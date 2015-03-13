@@ -166,7 +166,7 @@ class General extends Settings {
 		$base_url = cp_url('settings/general');
 
 		ee()->form_validation->set_rules('site_name', 'lang:site_name', 'required|strip_tags|valid_xss_check');
-		ee()->form_validation->set_rules('site_short_name', 'lang:site_short_name', 'required|alpha_dash|strip_tags|valid_xss_check');
+		ee()->form_validation->set_rules('site_short_name', 'lang:site_short_name', 'required|alpha_dash|strip_tags|callback__validShortName|valid_xss_check');
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
@@ -213,6 +213,35 @@ class General extends Settings {
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Ensure the short name is valid
+	 * @param  string $short_name Short name for the site
+	 * @return boolean            TRUE if valid, FALSE if not
+	 */
+	public function _validShortName($short_name)
+	{
+		$count = ee('Model')->get('Site')
+			->filter('site_id', '!=', ee()->config->item('site_id'))
+			->filter('site_name', $short_name)
+			->count();
+
+		if ($count > 0)
+		{
+			ee()->form_validation->set_message(
+				'_validShortName',
+				lang('site_short_name_taken')
+			);
+			return FALSE;
+		}
+
+		return TRUE;
+
+
+		return preg_match('/^[\w\-]+$/', $str) ? TRUE : FALSE;
 	}
 
 	// --------------------------------------------------------------------
