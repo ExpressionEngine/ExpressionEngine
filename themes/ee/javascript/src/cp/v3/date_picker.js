@@ -338,7 +338,7 @@ $(document).ready(function(){
 	};
 
 	// listen for clicks on inputs with rel date-picker
-	$('input[rel="date-picker"]').on('click', function(){
+	$('input[rel="date-picker"]').on('focus', function() {
 		// find the position of the input clicked
 		var pos = $(this).offset();
 		Calendar.init(this);
@@ -346,7 +346,14 @@ $(document).ready(function(){
 		$('.date-picker-wrap').css({ 'top': pos.top + 30, 'left': pos.left }).show();
 	});
 
-	$(document).on('click',function(e){
+	$(document).on('focus', 'input,select,button', function(e) {
+		if ( ! ($(e.target).attr('rel') == 'date-picker')
+			&&  ! $(e.target).closest('.date-picker-wrap').length) {
+			$('.date-picker-wrap').hide();
+		}
+	});
+
+	$(document).on('click', function(e) {
 		if ( ! ($(e.target).attr('rel') == 'date-picker')
 			&&  ! $(e.target).closest('.date-picker-wrap').length) {
 			$('.date-picker-wrap').hide();
