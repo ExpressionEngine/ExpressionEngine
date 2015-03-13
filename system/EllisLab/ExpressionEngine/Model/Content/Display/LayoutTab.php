@@ -56,6 +56,11 @@ class LayoutTab {
 
 	public function hasErrors(Result $errors)
 	{
+		if ($errors->isValid())
+		{
+			return FALSE;
+		}
+
 		foreach ($this->fields as $field)
 		{
 			if ($errors->hasErrors($field->getName()))
