@@ -239,7 +239,7 @@ class EE_relationship_tree_builder {
 
 		if ( ! $is_grid)
 		{
-			$regex = "/".LD.'\/?((?:(?:'.$all_fields.'):?)+)\b([^}{]*)?'.RD."/";
+			$regex = "/".'\/?((?:(?:'.$all_fields.'):?)+)\b([^}{]*)?'."/";
 		}
 		else
 		{
