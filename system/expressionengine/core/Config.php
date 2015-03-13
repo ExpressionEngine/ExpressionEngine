@@ -514,7 +514,6 @@ class EE_Config {
 	{
 		$system_default = array(
 			'is_site_on',
-			'site_name',
 			'site_index',
 			'site_url',
 			'cp_url',

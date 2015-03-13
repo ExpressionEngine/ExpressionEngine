@@ -62,10 +62,16 @@ $lang = array(
  */
 
 'site_name' =>
-'Website name',
+'Name',
 
 'site_name_desc' =>
-'Used for <mark>{site_name}</mark>',
+'Full descriptive name of this site.',
+
+'site_short_name' =>
+'Short name',
+
+'site_short_name_desc' =>
+'Short name for this site.<br /><i>No spaces. Underscores and dashes are allowed.</i>',
 
 'site_online' =>
 'Website online?',

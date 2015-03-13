@@ -38,13 +38,32 @@ class General extends Settings {
 	{
 		ee()->load->model('admin_model');
 
+		$site = ee('Model')->get('Site')
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
+
 		$vars['sections'] = array(
 			array(
 				array(
 					'title' => 'site_name',
 					'desc' => 'site_name_desc',
 					'fields' => array(
-						'site_name' => array('type' => 'text', 'required' => TRUE)
+						'site_name' => array(
+							'type' => 'text',
+							'value' => set_value('site_name', $site->site_label),
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'site_short_name',
+					'desc' => 'site_short_name_desc',
+					'fields' => array(
+						'site_short_name' => array(
+							'type' => 'text',
+							'value' => set_value('site_short_name', $site->site_name),
+							'required' => TRUE
+						)
 					)
 				),
 				array(
@@ -147,6 +166,7 @@ class General extends Settings {
 		$base_url = cp_url('settings/general');
 
 		ee()->form_validation->set_rules('site_name', 'lang:site_name', 'required|strip_tags|valid_xss_check');
+		ee()->form_validation->set_rules('site_short_name', 'lang:site_short_name', 'required|alpha_dash|strip_tags|valid_xss_check');
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
@@ -193,6 +213,35 @@ class General extends Settings {
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Save the settings from General, but make sure to save site name and label
+	 * manually
+	 *
+	 * @param	array	$sections	Array of sections passed to form view
+	 * @return	bool	Success or failure of saving the settings
+	 */
+	protected function saveSettings($sections)
+	{
+		// Remove site_name/label
+		$site = ee('Model')->get('Site')
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
+
+		// Site_name is the version of the name that's used in parameters and
+		// must be all one word, no spaces. site_label is the version that's
+		// more outward facing.
+		$site->site_name = ee()->input->post('site_short_name');
+		$site->site_label = ee()->input->post('site_name');
+		$site->save();
+
+		unset($sections[0][0]);
+		unset($sections[0][1]);
+
+		return parent::saveSettings($sections);
 	}
 
 	// --------------------------------------------------------------------
