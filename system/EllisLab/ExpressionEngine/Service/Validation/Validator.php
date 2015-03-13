@@ -201,7 +201,7 @@ class Validator {
 				}
 
 				// Add non-blank to failed
-				if (trim($value) !== '')
+				if (is_string($value) && trim($value) !== '')
 				{
 					$result->addFailed($key, $rule);
 				}

@@ -157,7 +157,7 @@ class Wizard extends CI_Controller {
 		// Third party constants
 		$addon_path = (ee()->config->item('addons_path'))
 			? rtrim(realpath(ee()->config->item('addons_path')), '/').'/'
-			: SYSPATH.'addons/';
+			: SYSPATH.'user/addons/';
 		define('PATH_ADDONS', $addon_path);
 		define('PATH_THIRD', $addon_path);
 
@@ -1809,7 +1809,7 @@ class Wizard extends CI_Controller {
 			'save_tmpl_revisions'       => 'n',
 			'max_tmpl_revisions'        => '5',
 			'save_tmpl_files'           => 'n',
-			'tmpl_file_basepath'        => realpath('./templates/').DIRECTORY_SEPARATOR,
+			'tmpl_file_basepath'        => realpath('./user/templates/').DIRECTORY_SEPARATOR,
 			'deny_duplicate_data'       => 'y',
 			'redirect_submitted_links'  => 'n',
 			'enable_censoring'          => 'n',

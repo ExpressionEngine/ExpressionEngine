@@ -9,6 +9,7 @@ class FieldFacade {
 	private $format;  // field_ft_*
 	private $timezone; // field_dt_*
 	private $metadata;
+	private $required;
 	private $field_name;
 	private $content_id;
 	private $value;
@@ -76,6 +77,11 @@ class FieldFacade {
 		return $this->format;
 	}
 
+	public function isRequired()
+	{
+		return $this->getItem('field_required') == 'y';
+	}
+
 	public function getItem($field)
 	{
 		return $this->metadata[$field];
@@ -92,6 +98,17 @@ class FieldFacade {
 		$fts = ee()->api_channel_fields->fetch_all_fieldtypes();
 		$type = $this->getItem('field_type');
 		return $fts[$type]['name'];
+	}
+
+	public function validate($value)
+	{
+		if ($value == '' && $this->isRequired())
+		{
+			return 'required';
+		}
+
+		$this->initField();
+		return ee()->api_channel_fields->apply('validate', array($value));
 	}
 
 	public function save()

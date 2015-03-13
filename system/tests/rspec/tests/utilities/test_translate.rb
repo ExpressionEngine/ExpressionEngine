@@ -2,7 +2,7 @@ require './bootstrap.rb'
 
 feature 'Translate Tool' do
 	english_path = '../../expressionengine/language/english/'
-	language_path = '../../language/'
+	language_path = '../../user/language/'
 	translations_path = '../../expressionengine/translations/'
 
 	before(:all) do

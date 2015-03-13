@@ -58,7 +58,7 @@ class File implements Config
 	 */
 	function __construct($path)
 	{
-		$this->defaults['database']['expressionengine']['cachedir'] = rtrim(APPPATH, '/').'/cache/db_cache/';
+		$this->defaults['database']['expressionengine']['cachedir'] = rtrim(APPPATH, '/').'/user/cache/db_cache/';
 
 		// Load in config
 		require($path);

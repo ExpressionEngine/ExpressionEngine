@@ -136,7 +136,7 @@ abstract class ValidationRule {
 	 */
 	public function getLanguageData()
 	{
-		return array($this->getName(), $this->getParameters());
+		return array($this->getLanguageKey(), $this->getParameters());
 	}
 
 	/**

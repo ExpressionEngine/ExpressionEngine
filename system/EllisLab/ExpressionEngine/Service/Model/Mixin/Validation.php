@@ -65,6 +65,10 @@ class Validation implements MixinInterface {
 			return TRUE;
 		}
 
+		$this->validator->setRules(
+			$this->scope->getValidationRules()
+		);
+
 		$this->scope->emit('beforeValidate');
 
 		$result = $this->validator->validate(
@@ -85,10 +89,6 @@ class Validation implements MixinInterface {
 	public function setValidator(Validator $validator)
 	{
 		$this->validator = $validator;
-
-		$validator->setRules(
-			$this->scope->getValidationRules()
-		);
 
 		return $this->scope;
 	}

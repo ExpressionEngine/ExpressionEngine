@@ -153,6 +153,39 @@ abstract class ContentModel extends Model {
 		$this->_field_facades[$name] = $facade;
 	}
 
+	public function validate()
+	{
+		$validator = $this->getValidator();
+
+		foreach ($this->_field_facades as $name => $facade)
+		{
+			$validator->defineRule("customField-{$name}", function($value) use ($facade)
+			{
+				return $facade->validate($value);
+			});
+		}
+
+		return parent::validate();
+	}
+
+	/**
+	 * Support method for the model validation mixin
+	 */
+	public function getValidationRules()
+	{
+		$this->usesCustomFields();
+
+		$rules = parent::getValidationRules();
+
+		$field_names = array_keys($this->_field_facades);
+
+		foreach ($field_names as $name)
+		{
+			$rules[$name] = "customField-{$name}";
+		}
+
+		return $rules;
+	}
 
 	/**
 	 * Field accessors

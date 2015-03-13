@@ -47,7 +47,7 @@ class EE_Config {
 		$this->config =& get_config();
 
 		// Change this path before release.
-		$this->config_path = SYSPATH.'config/config.php';
+		$this->config_path = SYSPATH.'user/config/config.php';
 
 		$this->_initialize();
 	}
