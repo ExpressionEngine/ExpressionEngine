@@ -33,7 +33,7 @@ class Installer_Config Extends EE_Config {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->config_path = SYSPATH.'/config/config.php';
+		$this->config_path = SYSPATH.'user/config/config.php';
 		$this->_initialize();
 	}
 
@@ -50,7 +50,7 @@ class Installer_Config Extends EE_Config {
 		// Fetch the config file
 		if ( ! @include($this->config_path))
 		{
-			show_error('Unable to locate your config file (expressionengine/config/config.php)');
+			show_error('Unable to locate your config file (user/config/config.php)');
 		}
 
 		// Prior to 2.0 the config array was named $conf.  This has changed to $config for 2.0

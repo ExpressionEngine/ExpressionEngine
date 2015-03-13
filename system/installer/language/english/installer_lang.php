@@ -57,8 +57,8 @@ $lang = array(
 
 // Errors
 'invalid_action'                     => 'The action you have requested is not valid.',
-'unreadable_config'                  => 'Your config.php file is unreadable. Please make sure the file exists and that the file permissions to 666 (or the equivalent write permissions for your server) on the following file: expressionengine/config/config.php',
-'unwritable_config'                  => 'Your config.php file does not appear to have the proper file permissions. Please set the file permissions to 666 (or the equivalent write permissions for your server) on the following file: expressionengine/config/config.php',
+'unreadable_config'                  => 'Your config.php file is unreadable. Please make sure the file exists and that the file permissions to 666 (or the equivalent write permissions for your server) on the following file: user/config/config.php',
+'unwritable_config'                  => 'Your config.php file does not appear to have the proper file permissions. Please set the file permissions to 666 (or the equivalent write permissions for your server) on the following file: user/config/config.php',
 'unwritable_cache_folder'            => 'Your cache folder does not appear to have proper permissions. Please set the folder permissions to 777 (or the equivalent write permissions for your server) on the following folder: expressionengine/cache',
 'database_no_config'                 => 'Unable to connect to your database using the configuration settings found in the following file: config/config.php file. Please correct the settings so that the update can proceed.',
 'database_no_data'                   => 'Unable to locate any database connection information.',

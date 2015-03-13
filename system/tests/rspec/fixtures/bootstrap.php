@@ -26,9 +26,9 @@ function &get_config($replace = array())
 	}
 
 	// Fetch the config file
-	if (file_exists(SYSPATH.'config/config.php'))
+	if (file_exists(SYSPATH.'user/config/config.php'))
 	{
-		require(SYSPATH.'config/config.php');
+		require(SYSPATH.'user/config/config.php');
 	}
 	else
 	{
@@ -169,7 +169,7 @@ $provider = $app->addProvider(
 	'ee'
 );
 
-$provider->setConfigPath(SYSPATH.'config');
+$provider->setConfigPath(SYSPATH.'user/config');
 
 $di->register('App', function($di, $prefix = NULL) use ($app)
 {
