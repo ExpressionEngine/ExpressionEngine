@@ -239,9 +239,6 @@ class General extends Settings {
 		}
 
 		return TRUE;
-
-
-		return preg_match('/^[\w\-]+$/', $str) ? TRUE : FALSE;
 	}
 
 	// --------------------------------------------------------------------
