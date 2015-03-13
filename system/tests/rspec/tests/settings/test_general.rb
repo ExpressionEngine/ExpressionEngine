@@ -68,7 +68,6 @@ feature 'General Settings' do
 
     # AJAX validation
     it "should validate with ajax" do
-      @page.load
       # Make sure old values didn't save after validation error
       should_have_no_form_errors(@page)
       should_have_no_error_text(@page.site_name)
