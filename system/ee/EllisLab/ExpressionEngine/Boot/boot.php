@@ -20,7 +20,7 @@
  *             files check for this (`if ! defined ...`)
  * ------------------------------------------------------
  */
-	define('BASEPATH', SYSPATH.'expressionengine/');
+	define('BASEPATH', SYSPATH.'ee/legacy/');
 
 	require BASEPATH.'config/constants.php';
 
@@ -29,7 +29,7 @@
  *  Load the autoloader and register it
  * ------------------------------------------------------
  */
-	require SYSPATH.'EllisLab/ExpressionEngine/Core/Autoloader.php';
+	require SYSPATH.'ee/EllisLab/ExpressionEngine/Core/Autoloader.php';
 
 	EllisLab\ExpressionEngine\Core\Autoloader::getInstance()
 		->addPrefix('EllisLab', SYSPATH.'ee/EllisLab/')
@@ -56,7 +56,7 @@
  */
 	use EllisLab\ExpressionEngine\Core;
 
-	if (FALSE && defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
+	if (FALSE && defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'ee/installer/'))
 	{
 		$core = new Core\Installer();
 	}
