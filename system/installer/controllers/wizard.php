@@ -321,7 +321,7 @@ class Wizard extends CI_Controller {
 		// Attempt to grab cache_path config if it's set
 		$cache_path = (ee()->config->item('cache_path'))
 			? ee()->config->item('cache_path')
-			: SYSPATH.'cache';
+			: SYSPATH.'user/cache';
 
 		// Is the cache folder writable?
 		if ( ! is_really_writable($cache_path))

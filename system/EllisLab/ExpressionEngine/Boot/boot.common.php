@@ -180,16 +180,16 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 		}
 
 		// Check various paths for config files
-		$basepath = (defined('EE_APPPATH')) ? APPPATH : SYSPATH;
+		$basepath = (defined('EE_APPPATH')) ? APPPATH : SYSPATH.'user/';
 
 		// Fetch the config file
-		if ( ! file_exists($basepath.'user/config/config.php'))
+		if ( ! file_exists($basepath.'config/config.php'))
 		{
 			set_status_header(503);
 			exit('The configuration file does not exist.');
 		}
 
-		require($basepath.'user/config/config.php');
+		require($basepath.'config/config.php');
 
 		// Does the $config array exist in the file?
 		if ( ! isset($config) OR ! is_array($config))
