@@ -36,11 +36,6 @@ class Autoloader {
 
 	protected static $instance;
 
-	public function __construct()
-	{
-		$this->prefixes['EllisLab'] = SYSPATH.'EllisLab/';
-	}
-
 	/**
 	 * Use as a singleton
 	 */
@@ -60,6 +55,8 @@ class Autoloader {
 	public function register()
 	{
 		spl_autoload_register(array($this, 'loadClass'));
+
+		return $this;
 	}
 
 	/**
@@ -68,6 +65,8 @@ class Autoloader {
 	public function unregister()
 	{
 		spl_autoload_unregister(array($this, 'loadClass'));
+
+		return $this;
 	}
 
 	/**
@@ -76,6 +75,8 @@ class Autoloader {
 	public function addPrefix($namespace, $path)
 	{
 		$this->prefixes[$namespace] = $path;
+
+		return $this;
 	}
 
 	/**

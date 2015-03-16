@@ -31,7 +31,9 @@
  */
 	require SYSPATH.'EllisLab/ExpressionEngine/Core/Autoloader.php';
 
-	EllisLab\ExpressionEngine\Core\Autoloader::getInstance()->register();
+	EllisLab\ExpressionEngine\Core\Autoloader::getInstance()
+		->addPrefix('EllisLab', SYSPATH.'ee/EllisLab/')
+		->register();
 
 /*
  * ------------------------------------------------------
