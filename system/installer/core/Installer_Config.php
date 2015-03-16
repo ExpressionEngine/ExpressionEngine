@@ -71,6 +71,8 @@ class Installer_Config Extends EE_Config {
 		$this->_set_overrides($this->config);
 		$this->set_item('enable_query_strings', TRUE);
 
+		// Reinforce the subclass_prefix
+		$this->set_item('subclass_prefix', 'Installer_');
 	}
 
 	// --------------------------------------------------------------------
