@@ -29,7 +29,7 @@ df_build    = (tmp = /^ee2.forum.build\s*?= (.*)/.match(contents)) ? tmp[1].chom
 
 # Core.php
 replace(
-  'system/expressionengine/libraries/Core.php',
+  'system/ee/legacy/libraries/Core.php',
   Hash[
     /define\('APP_VER',(\s+)'.*?'\);/   => "define('APP_VER',\\1'#{ee_version}');",
     /define\('APP_BUILD',(\s+)'.*?'\);/ => "define('APP_BUILD',\\1'#{ee_build}');"
@@ -38,13 +38,13 @@ replace(
 
 # wizard.php
 replace(
-  'system/installer/controllers/wizard.php',
+  'system/ee/installer/controllers/wizard.php',
   Hash[/\$version(\s+)= '.*?';/ => "$version\\1= '#{ee_version}';"]
 )
 
 # mod.forum.php
 replace(
-  'system/expressionengine/modules/forum/mod.forum.php',
+  'system/ee/legacy/modules/forum/mod.forum.php',
   Hash[
     /\$version(\s+)= '.*?';/ => "$version\\1= '#{df_version}';",
     /\$build(\s+)= '.*?';/ => "$build\\1= '#{df_build}';"
@@ -53,13 +53,13 @@ replace(
 
 # upd.forum.php
 replace(
-  'system/expressionengine/modules/forum/upd.forum.php',
+  'system/ee/legacy/modules/forum/upd.forum.php',
   Hash[/\$version(\s+)= '.*?';/ => "$version\\1= '#{df_version}';"]
 )
 
 # sites.php (controllers)
 replace(
-  'system/expressionengine/controllers/cp/sites.php',
+  'system/ee/legacy/controllers/cp/sites.php',
   Hash[
     /\$version(\s+)= '.*?';/ => "$version\\1= '#{msm_version}';",
     /\$build_number(\s+)= '.*?';/ => "$build_number\\1= '#{msm_build}';"

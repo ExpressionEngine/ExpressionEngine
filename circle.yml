@@ -10,14 +10,14 @@ machine:
 dependencies:
   override:
     - "cd system/tests/rspec && bundle install --without development --deployment"
-    - "cd system/EllisLab/Tests && composer install --prefer-source --no-interaction"
+    - "cd system/ee/EllisLab/Tests && composer install --prefer-source --no-interaction"
   post:
     - cp system/tests/circleci/circleci-apache /etc/apache2/sites-available
     - a2ensite circleci-apache
     - sudo service apache2 restart
   cache_directories:
     - "system/tests/rspec/vendor/bundle"
-    - "system/EllisLab/Tests/vendor"
+    - "system/ee/EllisLab/Tests/vendor"
 
 checkout:
   post:
@@ -25,7 +25,7 @@ checkout:
     - chmod 666 system/user/config/config.php
     - chmod -R 777 system/user/cache
     - chmod -R 777 system/user/templates
-    - chmod -R 777 system/expressionengine/translations
+    - chmod -R 777 system/ee/legacy/translations
     - chmod 777 system/tests/rspec/support/tmp
     - chmod -R 777 system/tests/rspec/support/file-sync/uploads
     - chmod -R 777 images
