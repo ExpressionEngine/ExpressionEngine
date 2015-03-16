@@ -372,6 +372,11 @@ class Updater {
 	 */
 	private function _update_layout_publish_table()
 	{
+		if (ee()->db->table_exists('layout_publish_member_groups'))
+		{
+			return;
+		}
+
 		ee()->dbforge->add_field(
 			array(
 				'layout_id' => array(
