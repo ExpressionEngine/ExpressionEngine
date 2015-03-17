@@ -632,6 +632,16 @@ class Login extends CP_Controller {
 					'cp_page_title' => lang('password_changed')
 				);
 
+				/* -------------------------------------------
+				/* 'cp_login_process_reset_password' hook.
+				/*  - Additional processing after user resets password
+				/*  - Added EE 2.9.3
+				*/
+					$this->extensions->call('cp_member_process_reset_password');
+					if ($this->extensions->end_script === TRUE) return;
+				/*
+				/* -------------------------------------------*/
+
 				return $this->load->view('account/show_reset_password_message', $vars);
 			}
 		}
