@@ -47,7 +47,8 @@ class Updater {
 				'_update_specialty_templates_table',
 				'_remove_watermarks_table',
 				'_update_templates_save_as_files',
-				'_update_layout_publish_table'
+				'_update_layout_publish_table',
+				'_update_entry_edit_date_format'
 			)
 		);
 
@@ -488,6 +489,23 @@ class Updater {
 		ee()->smartforge->drop_column('layout_publish', 'member_group');
 	}
 
+	/**
+	 * Transitioning away from our old MySQL Timestamp format to a Unix epoch
+	 * for the edit_date column of channel_titles
+	 */
+	public function _update_entry_edit_date_format()
+	{
+		ee()->db->query("SET time_zone = '+0:00';");
+		ee()->db->query("UPDATE exp_channel_titles SET edit_date=UNIX_TIMESTAMP(edit_date);");
+		ee()->db->query("SET time_zone = @@global.time_zone;");
+
+		ee()->smartforge->modify_column('channel_titles', array(
+			'edit_date' => array(
+				'type' => 'int',
+				'constraint' => 10,
+			)
+		));
+	}
 }
 /* END CLASS */
 
