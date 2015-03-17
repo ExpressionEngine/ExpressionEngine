@@ -3,8 +3,9 @@
 use EllisLab\ExpressionEngine\Library\Parser\Conditional\Lexer;
 
 /**
- * A small helper class to interweave the results of tags and
- *
+ * A small helper class to find all tags and conditional variables
+ * matching a given regular expression, and return the matches,
+ * flagged by type, in template order.
  */
 class VariableFinder {
 
