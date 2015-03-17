@@ -20,7 +20,8 @@ class VariableFinder {
 	}
 
 	/**
-	 *
+	 * Find tags and conditional variables that match the regex
+	 * and return them in template order.
 	 */
 	public function find($str)
 	{
@@ -37,7 +38,7 @@ class VariableFinder {
 	}
 
 	/**
-	 *
+	 * Match regex wrapped in { ... }.
 	 */
 	public function findInTags($str)
 	{
@@ -61,7 +62,7 @@ class VariableFinder {
 	}
 
 	/**
-	 *
+	 * Match regex on conditional variables
 	 */
 	public function findInConditionals($str)
 	{
@@ -117,6 +118,10 @@ class VariableFinder {
 		return $variables;
 	}
 
+	/**
+	 * Wrap the regular expression in a beginning and an end and then
+	 * add the delimiter and flags.
+	 */
 	protected function wrapRegex($before, $after)
 	{
 		return $this->delimiter.$before.$this->regex.$after.$this->delimiter.$this->flags;
