@@ -633,11 +633,11 @@ class Login extends CP_Controller {
 				);
 
 				/* -------------------------------------------
-				/* 'cp_login_process_reset_password' hook.
+				/* 'cp_member_reset_password' hook.
 				/*  - Additional processing after user resets password
 				/*  - Added EE 2.9.3
 				*/
-					$this->extensions->call('cp_member_process_reset_password');
+					$this->extensions->call('cp_member_reset_password');
 					if ($this->extensions->end_script === TRUE) return;
 				/*
 				/* -------------------------------------------*/
