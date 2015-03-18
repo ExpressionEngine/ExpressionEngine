@@ -329,9 +329,17 @@ class EE_Route {
 			// We just have a static route with no variables
 			$parts = explode("/", $route);
 
-			foreach($parts as $segment)
+			for ($i = 0; $i < count($parts); $i++)
 			{
-				$segments[] = array('static' => $segment . '/');
+				$segment = $parts[$i];
+
+				// Don't add trailing slash to last segment
+				if ($i < count($parts) -1)
+				{
+					$segment .= '/';
+				}
+
+				$segments[] = array('static' => $segment);
 			}
 		}
 
