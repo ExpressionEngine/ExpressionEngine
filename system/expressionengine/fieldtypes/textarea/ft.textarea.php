@@ -126,13 +126,16 @@ class Textarea_ft extends EE_Fieldtype {
 				}
 			}
 
+			ee()->cp->get_installed_modules();
+
 			return ee('View')->make('publish')->render(array(
-				'name'           => $this->name(),
-				'settings'       => $this->settings,
-				'value'          => $data,
-				'class'          => trim($class),
-				'toolbar'        => $toolbar,
-				'format_options' => $format_options
+				'name'            => $this->name(),
+				'settings'        => $this->settings,
+				'value'           => $data,
+				'class'           => trim($class),
+				'toolbar'         => $toolbar,
+				'format_options'  => $format_options,
+				'smileys_enabled' => (isset(ee()->cp->installed_modules['emoticon']) ? TRUE : FALSE)
 			));
 		}
 
