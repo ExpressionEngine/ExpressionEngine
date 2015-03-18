@@ -762,7 +762,17 @@ class Channel {
 
 				// Text version of the category
 
-				if ($qstring != '' AND $this->reserved_cat_segment != '' AND in_array($this->reserved_cat_segment, explode("/", $qstring)) AND $dynamic AND ee()->TMPL->fetch_param('channel'))
+				// Check if we're using a template route category segment
+				if ( ! empty(ee()->TMPL->template_route_vars['segment:category']))
+				{
+					$category_segment = ee()->TMPL->template_route_vars['segment:category'];
+				}
+
+				$named_category = $qstring != ''
+				                  AND $this->reserved_cat_segment != ''
+				                  AND in_array($this->reserved_cat_segment, explode("/", $qstring));
+
+				if ($named_category OR ! empty($category_segment) AND $dynamic AND ee()->TMPL->fetch_param('channel'))
 				{
 					$qstring = preg_replace("/(.*?)\/".preg_quote($this->reserved_cat_segment)."\//i", '', '/'.$qstring);
 
@@ -819,6 +829,12 @@ class Channel {
 						$arr = explode('/', $qstring);
 						$cut_qstring = array_shift($arr);
 						unset($arr);
+
+						// Override qstring if we're using the template routes category variable
+						if ( ! empty($category_segment))
+						{
+							$cut_qstring = $category_segment;
+						}
 
 						$result = ee()->db->query("SELECT cat_id FROM exp_categories
 							WHERE cat_url_title='".ee()->db->escape_str($cut_qstring)."'
