@@ -70,7 +70,10 @@ class VariableFinder {
 		$lexer = new Lexer();
 		$regex = $this->wrapRegex('^', '$');
 
-		$str = preg_replace('/{!--(.*?)--}/', '', $str);
+		// Remove annotations for this step to prevent the automatic
+		// line-number adjustment in the conditional lexer. The original
+		// string will still have them when we actually prep the conditionals.
+		$str = preg_replace('/{!-- ra:(\w+) --}/', '', $str);
 
 		// Get the token stream
 		$tokens = $lexer->tokenize($str);
