@@ -175,6 +175,17 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 							</div>
 						<?php break;
 
+						case 'image': ?>
+							<figure class="file-chosen">
+								<div id="<?=$field['id']?>"><img src="<?=$field['image']?>"></div>
+								<ul class="toolbar">
+									<li class="edit"><a href="" title="edit"></a></li>
+									<li class="remove"><a href="" title="remove"></a></li>
+								</ul>
+								<input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
+							</figure>
+						<?php break;
+
 						case 'html': ?>
 							<?=$field['content']?>
 						<?php endswitch ?>

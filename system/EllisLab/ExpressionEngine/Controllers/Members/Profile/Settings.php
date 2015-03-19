@@ -5,6 +5,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Members\Profile;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
+use EllisLab\ExpressionEngine\Module\FilePicker\FilePicker as FilePicker;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -106,13 +107,10 @@ class Settings extends Profile {
 			$avatarDirs = array();
 		}
 
+		$fp = new FilePicker();
+		$fp->inject(ee()->view);
 		$dirs = array();
-
-		foreach ($avatarDirs as $dir)
-		{
-			$href = cp_url('files/picker', array('directory' => 'all'));
-			$dirs[] = "<a class='m-link filepicker' rel='modal-file' href='$href'>". lang($dir) ."</a>";
-		}
+		$dirs[] = $fp->link('test', 'all', array('input' => 'avatar', 'image' => 'avatar'));
 
 		$vars['sections'] = array(
 			array(
@@ -191,8 +189,9 @@ class Settings extends Profile {
 					'desc' => 'current_avatar_desc',
 					'fields' => array(
 						'avatar' => array(
-							'type' => 'html',
-							'content' => ''
+							'type' => 'image',
+							'id' => 'avatar',
+							'image' => '/images/avatars/expression_radar.jpg'
 						)
 					)
 				),
@@ -261,19 +260,12 @@ class Settings extends Profile {
 			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
 		}
 
-		ee()->javascript->set_global('file_picker_url', cp_url('files/picker/', array('directory' => 'DIRID')));
-		ee()->cp->add_js_script(array(
-			'file' => array(
-				'cp/files/picker'
-			),
-		));
-
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('personal_settings');
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_save_settings_working';
-		ee()->cp->render('account/settings', $vars);
+		ee()->cp->render('settings/form', $vars);
 	}
 }
 // END CLASS

@@ -36,21 +36,22 @@
 		});
 		$('.filepicker').click(function (e) {
 			picker_url = $(this).attr('href');
-			input_value = $(# + $(this).data('input-value'));
-			input_name = $(# + $(this).data('input-name'));
-			input_img = $(# + $(this).data('input-img'));
+			input_value = $('input[name="' + $(this).data('input-value') + '"]');
+			input_name = $('#' + $(this).data('input-name'));
+			input_img = $('#' + $(this).data('input-image'));
 			modal = $("." + $(this).attr('rel'));
-			modal.find(" div.box").load(picker_url);
+			modal.find("div.box").load(picker_url);
 		});
 		$('.modal-file').on('click', 'tbody > tr', function(e) {
 			var id = $(this).find("input[type='checkbox']").val();
 			var file_url = picker_url.replace(/directory=.+(?=&)/ig, 'file=' + id);
 
-			if (typeof EE.file_picker_url != 'undefined')
+			if (typeof EE.file_picker_callback != 'undefined')
 			{
 				callback = EE.file_picker_callback;
 			} else {
 				callback = function(data) {
+					console.log(data);
 					modal.find('.m-close').click();
 					input_value.val(data.id);
 					input_name.html(data.file_name);
@@ -58,7 +59,11 @@
 				}
 			}
 
-			$.get(file_url, callback);
+			$.ajax({
+				url: file_url,
+				success: callback,
+				dataType: 'json'
+			});
 		});
 	});
 })(jQuery);
