@@ -103,7 +103,14 @@ class FieldFacade {
 	public function validate($value)
 	{
 		$this->initField();
-		return ee()->api_channel_fields->apply('validate', array($value));
+		$result = ee()->api_channel_fields->apply('validate', array($value));
+
+		if (is_string($result) && strlen($result) > 0)
+		{
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
 	public function save()
