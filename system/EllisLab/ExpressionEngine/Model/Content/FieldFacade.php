@@ -79,7 +79,7 @@ class FieldFacade {
 
 	public function isRequired()
 	{
-		return $this->getItem('field_required') == 'y';
+		return $this->getItem('field_required') === 'y';
 	}
 
 	public function getItem($field)
@@ -102,13 +102,15 @@ class FieldFacade {
 
 	public function validate($value)
 	{
-		if ($value == '' && $this->isRequired())
+		$this->initField();
+		$result = ee()->api_channel_fields->apply('validate', array($value));
+
+		if (is_string($result) && strlen($result) > 0)
 		{
-			return 'required';
+			return FALSE;
 		}
 
-		$this->initField();
-		return ee()->api_channel_fields->apply('validate', array($value));
+		return TRUE;
 	}
 
 	public function save()

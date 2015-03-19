@@ -81,7 +81,7 @@ class Status extends AbstractChannelController {
 						'confirm' => lang('status_group') . ': <b>' . htmlentities($group->group_name, ENT_QUOTES) . '</b>'
 					),
 					// Cannot delete default group
-					'disabled' => ($group->group_id == 1) ? 'disabled' : NULL
+					'disabled' => ($group->group_name == 'Default') ? 'disabled' : NULL
 				)
 			);
 		}

@@ -1739,7 +1739,7 @@ class Sites extends CP_Controller {
 
 			if ($count > 0)
 			{
-				$this->status_model->insert_statuses('Statuses', $site_id);
+				$this->status_model->insert_statuses('Default', $site_id);
 			}
 		}
 
