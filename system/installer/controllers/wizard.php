@@ -317,6 +317,14 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
+		// Check for JSON encode/decode
+		$json_errors = array();
+		if (  function_exists('json_encode') OR ! function_exists('json_decode'))
+		{
+			$this->set_output('error', array('error' => lang('json_parser_missing')));
+			return FALSE;
+		}
+
 		// Is the config file writable?
 		if ( ! is_really_writable($this->config->config_path))
 		{
