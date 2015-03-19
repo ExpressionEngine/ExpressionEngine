@@ -62,11 +62,6 @@ class Date_ft extends EE_Fieldtype {
 			$data = $this->_parse_date($data);
 		}
 
-		if (empty($data))
-		{
-			$data = 0;
-		}
-
 		return $data;
 	}
 
