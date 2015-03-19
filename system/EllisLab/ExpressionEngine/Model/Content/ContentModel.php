@@ -177,11 +177,18 @@ abstract class ContentModel extends Model {
 
 		$rules = parent::getValidationRules();
 
-		$field_names = array_keys($this->_field_facades);
+		$facades = $this->_field_facades;
 
-		foreach ($field_names as $name)
+		foreach ($facades as $name => $facade)
 		{
-			$rules[$name] = "customField-{$name}";
+			$rules[$name] = '';
+
+			if ($facade->isRequired())
+			{
+				$rules[$name] .= 'required|';
+			}
+
+			$rules[$name] .= "customField-{$name}";
 		}
 
 		return $rules;
