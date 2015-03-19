@@ -105,9 +105,23 @@ class FieldFacade {
 		$this->initField();
 		$result = ee()->api_channel_fields->apply('validate', array($value));
 
+		if (is_array($result))
+		{
+			if (isset($result['value']))
+			{
+				$this->setData($result['value']);
+				$result = TRUE;
+			}
+
+			if (isset($result['error']))
+			{
+				$result = $result['error'];
+			}
+		}
+
 		if (is_string($result) && strlen($result) > 0)
 		{
-			return FALSE;
+			return $string;
 		}
 
 		return TRUE;

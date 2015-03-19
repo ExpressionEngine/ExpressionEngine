@@ -86,8 +86,7 @@ class Wizard extends CI_Controller {
 		'ip'                    => '',
 		'database'              => 'mysql',
 		'db_conntype'           => '0',
-		'databases'             => array(),
-		'dbdriver'              => 'mysql',
+		'dbdriver'              => 'mysqli',
 		'db_hostname'           => 'localhost',
 		'db_username'           => '',
 		'db_password'           => '',
@@ -311,6 +310,21 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
+		// Check for PDO
+		if ( ! class_exists('PDO'))
+		{
+			$this->set_output('error', array('error' => lang('database_no_pdo')));
+			return FALSE;
+		}
+
+		// Check for JSON encode/decode
+		$json_errors = array();
+		if (  function_exists('json_encode') OR ! function_exists('json_decode'))
+		{
+			$this->set_output('error', array('error' => lang('json_parser_missing')));
+			return FALSE;
+		}
+
 		// Is the config file writable?
 		if ( ! is_really_writable($this->config->config_path))
 		{
@@ -351,18 +365,9 @@ class Wizard extends CI_Controller {
 				return FALSE;
 			}
 
-			// Fetch the database schemas
-			$this->get_supported_dbs();
-
 			// set the image path and theme folder path
 			$this->userdata['image_path'] = $this->image_path;
 			$this->userdata['theme_folder_path'] = $this->root_theme_path;
-
-			// We'll switch the default if MySQLi is available
-			if (function_exists('mysqli_connect'))
-			{
-				$this->userdata['dbdriver'] = 'mysqli';
-			}
 
 			// At this point we are reasonably sure that this is a first time
 			// installation. We will set the flag and bail out since we're done
@@ -1300,39 +1305,11 @@ class Wizard extends CI_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get a list of supported database types
-	 * @return array Array containing all supported database types
-	 */
-	private function get_supported_dbs()
-	{
-		$names = array('mysqli' => 'MySQLi', 'mysql' => 'MySQL');
-
-		$dbs = array();
-		foreach (get_filenames(APPPATH.'schema/') as $val)
-		{
-			$val = str_replace(array('_schema', '.php'), '', $val);
-
-			if (isset($names[$val]))
-			{
-				if (function_exists($names[$val].'_connect'))
-				{
-					$dbs[$val] = $names[$val];
-				}
-			}
-		}
-
-		$this->userdata['databases'] = $dbs;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Install the default site theme
 	 * @return boolean  TRUE if successful, FALSE if not
 	 */
 	function install_site_theme()
 	{
-		// TODO-WB: Rename themes
 		$this->userdata['theme'] = (IS_CORE)
 			? 'agile_records_core'
 			: 'agile_records';
