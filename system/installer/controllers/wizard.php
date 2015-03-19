@@ -1302,7 +1302,6 @@ class Wizard extends CI_Controller {
 	 */
 	function install_site_theme()
 	{
-		// TODO-WB: Rename themes
 		$this->userdata['theme'] = (IS_CORE)
 			? 'agile_records_core'
 			: 'agile_records';
