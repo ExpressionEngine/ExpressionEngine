@@ -313,7 +313,7 @@ class Wizard extends CI_Controller {
 		// Check for PDO
 		if ( ! class_exists('PDO'))
 		{
-			$this->set_output('error', array('error' => lang()));
+			$this->set_output('error', array('error' => lang('database_no_pdo')));
 			return FALSE;
 		}
 
