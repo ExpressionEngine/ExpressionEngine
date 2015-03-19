@@ -1956,7 +1956,7 @@ UNLOCK TABLES;
 
 LOCK TABLES `exp_status_groups` WRITE;
 INSERT INTO `exp_status_groups` (`group_id`, `site_id`, `group_name`) VALUES
-	(1,1,'Statuses');
+	(1,1,'Default');
 UNLOCK TABLES;
 
 

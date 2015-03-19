@@ -48,7 +48,8 @@ class Updater {
 				'_remove_watermarks_table',
 				'_update_templates_save_as_files',
 				'_update_layout_publish_table',
-				'_update_entry_edit_date_format'
+				'_update_entry_edit_date_format',
+				'_rename_default_status_groups'
 			)
 		);
 
@@ -505,6 +506,16 @@ class Updater {
 				'constraint' => 10,
 			)
 		));
+	}
+
+	/**
+	 * Changes default name for status groups from Statuses to Default
+	 */
+	public function _rename_default_status_groups()
+	{
+		ee()->db->where('group_name', 'Statuses')
+			->set('group_name', 'Default')
+			->update('status_groups');
 	}
 }
 /* END CLASS */
