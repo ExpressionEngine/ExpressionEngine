@@ -311,6 +311,13 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
+		// Check for PDO
+		if ( ! class_exists('PDO'))
+		{
+			$this->set_output('error', array('error' => lang()));
+			return FALSE;
+		}
+
 		// Is the config file writable?
 		if ( ! is_really_writable($this->config->config_path))
 		{

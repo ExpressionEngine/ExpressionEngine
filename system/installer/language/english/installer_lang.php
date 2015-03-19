@@ -63,6 +63,7 @@ $lang = array(
 'database_no_config'                 => 'Unable to connect to your database using the configuration settings found in the following file: config/config.php file. Please correct the settings so that the update can proceed.',
 'database_no_data'                   => 'Unable to locate any database connection information.',
 'database_no_connect'                => 'Unable to connect to your database using the configuration settings you submitted.',
+'database_no_pdo'                    => 'Unable to connect to your database. Please ask your server administrator to enable PDO.',
 'database_prefix_invalid_characters' => 'There are invalid characters in the database prefix. Only 0-9, a-z, A-Z, $, and _ are allowed.',
 'database_prefix_contains_exp_'      => 'The database prefix cannot contain the string "exp_".',
 'database_prefix_too_long'           => 'The database prefix cannot be longer than 30 characters.',
