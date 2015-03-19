@@ -86,8 +86,7 @@ class Wizard extends CI_Controller {
 		'ip'                    => '',
 		'database'              => 'mysql',
 		'db_conntype'           => '0',
-		'databases'             => array(),
-		'dbdriver'              => 'mysql',
+		'dbdriver'              => 'mysqli',
 		'db_hostname'           => 'localhost',
 		'db_username'           => '',
 		'db_password'           => '',
@@ -358,18 +357,9 @@ class Wizard extends CI_Controller {
 				return FALSE;
 			}
 
-			// Fetch the database schemas
-			$this->get_supported_dbs();
-
 			// set the image path and theme folder path
 			$this->userdata['image_path'] = $this->image_path;
 			$this->userdata['theme_folder_path'] = $this->root_theme_path;
-
-			// We'll switch the default if MySQLi is available
-			if (function_exists('mysqli_connect'))
-			{
-				$this->userdata['dbdriver'] = 'mysqli';
-			}
 
 			// At this point we are reasonably sure that this is a first time
 			// installation. We will set the flag and bail out since we're done
@@ -1302,33 +1292,6 @@ class Wizard extends CI_Controller {
 	{
 		$query_string = 'C=wizard&M='.$method.'&language='.$this->mylang;
 		return site_url($query_string);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get a list of supported database types
-	 * @return array Array containing all supported database types
-	 */
-	private function get_supported_dbs()
-	{
-		$names = array('mysqli' => 'MySQLi', 'mysql' => 'MySQL');
-
-		$dbs = array();
-		foreach (get_filenames(APPPATH.'schema/') as $val)
-		{
-			$val = str_replace(array('_schema', '.php'), '', $val);
-
-			if (isset($names[$val]))
-			{
-				if (function_exists($names[$val].'_connect'))
-				{
-					$dbs[$val] = $names[$val];
-				}
-			}
-		}
-
-		$this->userdata['databases'] = $dbs;
 	}
 
 	// --------------------------------------------------------------------
