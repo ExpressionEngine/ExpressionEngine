@@ -79,7 +79,7 @@ feature 'Channel Create/Edit' do
     @page.channel_name.value.should == 'test'
 
     @page.duplicate_channel_prefs.select 'News'
-    @page.status_group.select 'Statuses'
+    @page.status_group.select 'Default'
     @page.field_group.select 'About'
 
     # Check both category groups
