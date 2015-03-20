@@ -119,9 +119,15 @@ class EE_Relationship_data_parser {
 	 */
 	public function parse_node($node, $parent_id, $tagdata)
 	{
-
 		if ( ! isset($node->entry_ids[$parent_id]))
 		{
+			if ($node->in_cond)
+			{
+				return ee()->functions->prep_conditionals($tagdata, array(
+					$node->open_tag => FALSE
+				));
+			}
+
 			return $this->clear_node_tagdata($node, $tagdata);
 		}
 
@@ -151,11 +157,22 @@ class EE_Relationship_data_parser {
 				// channel entries parser.
 				if ($node->shortcut == 'total_results')
 				{
-					return str_replace(
-						$node->open_tag,
-						count($entry_ids),
-						$tagdata
-					);
+					$total_results = count($entry_ids);
+
+					if ($node->in_cond)
+					{
+						return ee()->functions->prep_conditionals($tagdata, array(
+							$node->open_tag => $total_results
+						));
+					}
+					else
+					{
+						return str_replace(
+							$node->open_tag,
+							$total_results,
+							$tagdata
+						);
+					}
 				}
 
 				$matches = array(array($node->open_tag, $node->open_tag));
