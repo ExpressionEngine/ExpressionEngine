@@ -20,7 +20,7 @@ feature 'Channel Create/Edit' do
     @page.should have_text 'Warning: Channels require'
   end
 
-  it 'should validate regular fields' do    
+  it 'should validate regular fields' do
     @page.submit
 
     no_php_js_errors
@@ -110,7 +110,7 @@ feature 'Channel Create/Edit' do
     # Channel name should autopopulate
     @page.channel_name.value.should == 'test'
 
-    @page.status_group.select 'Statuses'
+    @page.status_group.select 'Default'
     @page.field_group.select 'About'
 
     # Check both category groups
