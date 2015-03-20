@@ -330,6 +330,22 @@ class Localize {
 				{
 					$date_format = str_replace('%', '', $date_format);
 					$dt = DateTime::createFromFormat($date_format, $date_string, $timezone);
+
+					// In the event there's less data in the $date_string than
+					// is expected from the $date_format, we simplify our
+					// $date_format and try again
+					if ( ! $dt) {
+						$date_only_format = ee()->session->userdata(
+							'date_format',
+							ee()->config->item('date_format')
+						);
+						$date_only_format = str_replace('%', '', $date_only_format);
+						$dt = DateTime::createFromFormat(
+							$date_only_format,
+							$date_string,
+							$timezone
+						);
+					}
 				}
 			}
 		}
