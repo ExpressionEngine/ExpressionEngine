@@ -12,7 +12,7 @@ WysiHat.addButton('link', {
 		this.parent.init.apply(this, arguments);
 
 		this.$link_dialog;
-		this.$error = $('<div class="notice"/>').text(EE.rte.link.dialog.url_required);
+		this.$error = $('<em class="ee-form-error-message"/>').text(EE.rte.link.dialog.url_required);
 
 		this.origState;
 		this.link_node;
@@ -20,8 +20,7 @@ WysiHat.addButton('link', {
 		return this;
 	},
 
-	handler: function(state, finalize)
-	{
+	handler: function(state, finalize) {
 		this.link_node = null;
 
 		this.origState = state;
@@ -45,30 +44,37 @@ WysiHat.addButton('link', {
 
 		// find link element
 		test_el = this._findLinkableNode(s_el, 'img', sel.anchorOffset);
-		if ( ! this._is(test_el, 'a'))
-		{
+		if ( ! this._is(test_el, 'a')) {
 			test_el = this._findLinkableNode(e_el, 'img', sel.focusOffset);
 		}
 
 		// found?
-		if (test_el !== false)
-		{
+		if (test_el !== false) {
 			s_el = test_el;
 			link = true;
 			this.range.selectNode(s_el);
 			this.link_node = s_el;
 		}
 
-		if ( link )
-		{
+		if ( link ) {
+			var that = this;
 			this.$link_dialog = this._setupDialog();
-			this.$link_dialog.dialog('open');
-			this.$link_dialog.bind('dialogclose', function() {
-				$(this).remove();
+
+			this.$link_dialog.on('modal:open', function() {
+				setTimeout(function() {
+					that._dialogOpen();
+				}, 10)
+			});
+
+			this.$link_dialog.on('modal:close', function() {
+				that._dialogClose();
 				setTimeout(function() {
 					finalize();
+					that.$link_dialog.remove();
 				}, 50);
 			});
+
+			this.$link_dialog.trigger('modal:open');
 
 			return false;
 		}
@@ -77,8 +83,7 @@ WysiHat.addButton('link', {
 		alert( EE.rte.link.dialog.selection_error );
 	},
 
-	query: function($editor)
-	{
+	query: function($editor) {
 		return this.is('linked');
 	},
 
@@ -87,58 +92,47 @@ WysiHat.addButton('link', {
 	// Private Methods //
 	/////////////////////
 
-	_is: function(node, name)
-	{
+	_is: function(node, name) {
 		return (node.tagName && node.tagName.toLowerCase() == name);
 	},
 
-	_findLinkableNode: function(el, childTagName, offset)
-	{
+	_findLinkableNode: function(el, childTagName, offset) {
 		var _is = this._is,
 			firefox_node = el.childNodes[offset];
 
 		// can we go deeper? do it!
-		if (el.childNodes.length > 0 || _is(el, childTagName))
-		{
-			while(el.childNodes.length > 0)
-			{
+		if (el.childNodes.length > 0 || _is(el, childTagName)) {
+			while(el.childNodes.length > 0) {
 				el = el.childNodes[0];
 			}
 
 			// If we found the child, and it's already in an anchor tag,
 			// grab the anchor tag for selection instead
-			if (_is(el, childTagName) && _is(el.parentNode, 'a'))
-			{
+			if (_is(el, childTagName) && _is(el.parentNode, 'a')) {
 				return el.parentNode;
 			}
 		}
 
 		// ended up with a child or link? good, select them
-		if (_is(el, 'a') || _is(el, childTagName))
-		{
+		if (_is(el, 'a') || _is(el, childTagName)) {
 			return el;
 		}
 
 		// look up for luck
-		if ( ! _is(el, 'a') && ! _is(el, childTagName))
-		{
-			while (el.nodeType != 1)
-			{
+		if ( ! _is(el, 'a') && ! _is(el, childTagName)) {
+			while (el.nodeType != 1) {
 				el = el.parentNode;
 			}
 
-			if (_is(el, 'a') || _is(el, childTagName))
-			{
+			if (_is(el, 'a') || _is(el, childTagName)) {
 				return el;
 			}
 		}
 
 		// Firefox gives is the parent node, with the anchor offset
 		// being the index of the node in the parent node
-		if (firefox_node !== undefined)
-		{
-			if (_is(firefox_node, 'a'))
-			{
+		if (firefox_node !== undefined) {
+			if (_is(firefox_node, 'a')) {
 				return firefox_node;
 			}
 		}
@@ -146,42 +140,40 @@ WysiHat.addButton('link', {
 		return false;
 	},
 
-
-	_clearErrors: function()
-	{
-		this.$link_dialog.find('.notice').remove();
+	_clearErrors: function() {
+		this.$link_dialog.find('.ee-form-error-message').remove();
+		this.$link_dialog.find('.invalid').removeClass('invalid');
 	},
 
-	_editLinkNode: function(found, notfound)
-	{
+	_editLinkNode: function(found, notfound) {
 		var el = this.link_node;
 
-		if (el)
-		{
-			while (el.nodeType != 1)
-			{
+		if (el) {
+			while (el.nodeType != 1) {
 				el = el.parentNode;
 			}
 
-			if (el.tagName.toLowerCase() == 'a')
-			{
+			if (el.tagName.toLowerCase() == 'a') {
 				found.call(this, $(el));
 			}
-			else if (notfound)
-			{
+			else if (notfound) {
 				notfound.call(this);
 			}
 		}
 	},
 
-	_dialogOpen: function()
-	{
+	_dialogOpen: function() {
 		this._clearErrors();
 		this._editLinkNode(
 			function($el) {
-				this.$url.val( $el.attr('href'));
-				this.$title.val( $el.attr('title'));
-				this.$external.prop('checked', $el.attr('target') == '_blank');
+				this.$url.val($el.attr('href'));
+				this.$title.val($el.attr('title'));
+
+				var val = ($el.attr('target') == '_blank') ? 'y' : 'n';
+				this.$external.val([val]);
+				// Trigger the click event on this element
+				this.$link_dialog.find('input[value=' + val + ']').click();
+
 				this.$submit.val(EE.rte.link.dialog.update_link);
 				$('#rte-remove-link').show();
 			},
@@ -194,100 +186,97 @@ WysiHat.addButton('link', {
 		this.$url.focus();
 	},
 
-	_dialogClose: function()
-	{
+	_dialogClose: function() {
 		var	title = $('#rte_link_title-').val();
 
-		if (title != '')
-		{
+		if (title != '') {
 			this._editLinkNode(function($el) {
 				$el.attr('title', title);
 			});
 		}
-
-		// empty the fields
-		this.$link_dialog.find('input[type=text],select').val('');
 	},
 
-	_keyEvent: function(e)
-	{
-		if (e.which == 13) // enter
-		{
-			this._validateLinkDialog();
-			return false;
-		}
-	},
-
-	_removeLink: function()
-	{
+	_removeLink: function() {
 		this.Commands.deleteElement(this.link_node);
 
-		this.$link_dialog.dialog('close');
+		this.$link_dialog.trigger('modal:close');
 		this.Selection.set(this.origState.selection);
 	},
 
-	_submit: function()
-	{
+	_submit: function(e) {
+		e.preventDefault();
 		this._validateLinkDialog();
 	},
 
-	_setupDialog: function()
-	{
+	_setupDialog: function() {
 		var $link_dialog = $(
-			'<div id="rte-link-dialog">' +
-			'<p><label>* ' + EE.rte.link.dialog.url_field_label + '</label>' +
-			'<input type="text" name="url" required="required" /></p>' +
-			'<p><label>' + EE.rte.link.dialog.title_field_label + '</label>' +
-			'<input type="text" name="title" /></p>' +
-			'<p><input type="checkbox" id="rte-link-dialog-external"/> ' +
-			'<label for="rte-link-dialog-external">' + EE.rte.link.dialog.external_link + '</label></p>' +
-			'<p class="buttons">' +
-			'	<a id="rte-remove-link" style="display:none">' + EE.rte.link.dialog.remove_link + '</a>' +
-			'	<input class="submit" type="submit" value="' + EE.rte.link.dialog.add_link +'" /></p>' +
-			'</div>'
-		), that = this;
-
-		$link_dialog
+			'<div class="modal-wrap modal-rte-link-dialog">' +
+			'<div class="modal">' +
+			'<div class="col-group">' +
+			'<div class="col w-16">' +
+			'<a class="m-close" href="#"></a>' +
+			'<div class="box">' +
+			'<h1>' + EE.rte.link.dialog.title + '</h1>' +
+			'<form class="settings">' +
+			'<fieldset class="col-group">' +
+			'<div class="setting-txt col w-8">' +
+			'<h3>' + EE.rte.link.dialog.url_field_label + ' <span class="required" title="required field">&#10033;</span></h3>' +
+			'</div>' +
+			'<div class="setting-field col w-8 last">' +
+			'<input type="text" name="url" required="required">' +
+			'</div>' +
+			'</fieldset>' +
+			'<fieldset class="col-group">' +
+			'<div class="setting-txt col w-8">' +
+			'<h3>' + EE.rte.link.dialog.title_field_label + '</h3>' +
+			'</div>' +
+			'<div class="setting-field col w-8 last">' +
+			'<input type="text" name="title">' +
+			'</div>' +
+			'</fieldset>' +
+			'<fieldset class="col-group">' +
+			'<div class="setting-txt col w-8">' +
+			'<h3>' + EE.rte.link.dialog.external_link + '</h3>' +
+			'</div>' +
+			'<div class="setting-field col w-8 last">' +
+			// @TODO localize 'yes' and 'no'
+			'<label class="choice mr yes"><input type="radio" name="external" value="y"> yes</label>' +
+			'<label class="choice chosen no"><input type="radio" name="external" value="n" checked="checked"> no</label>' +
+			'</div>' +
+			'</fieldset>' +
+			'<fieldset class="form-ctrls">' +
+			'<button id="rte-remove-link" class="btn hidden">' + EE.rte.link.dialog.remove_link + '</button>' +
+			'<input class="btn" type="submit" value="' + EE.rte.link.dialog.add_link + '">' +
+			'</fieldset>' +
+			'</form>' +
+			'</div>' +
+			'</div>' +
+			'</div>' +
+			'</div>' +
+			'</div>')
 			.appendTo('body')
-			.dialog({
-				width: 400,
-				resizable: false,
-				position: ["center","center"],
-				modal: true,
-				draggable: true,
-				title: EE.rte.link.dialog.title,
-				autoOpen: false,
-				zIndex: 99999,
-				open: function() {
-					setTimeout(function() {
-						that._dialogOpen();
-					}, 10)
-				},
-				close: $.proxy(this, '_dialogClose')
-			})
-			.on('keypress', 'input', $.proxy(this, '_keyEvent'))				// Close on Enter
-			.on('click', '#rte-remove-link', $.proxy(this, '_removeLink'))		// Remove link
-			.on('click', '#rte-link-dialog .submit', $.proxy(this, '_submit'));	// Add link
+			.hide()
+			.on('click', '#rte-remove-link', $.proxy(this, '_removeLink'))
+			.find('form').on('submit', $.proxy(this, '_submit'));
 
 		this.$url		= $link_dialog.find('input[name=url]');
 		this.$title		= $link_dialog.find('input[name=title]');
-		this.$submit	= $link_dialog.find('input.submit');
-		this.$external	= $link_dialog.find('#rte-link-dialog-external');
+		this.$submit	= $link_dialog.find('input[type=submit]');
+		this.$external	= $link_dialog.find('input[name=external]');
 
 		return $link_dialog;
 	},
 
-	_validateLinkDialog: function()
-	{
+	_validateLinkDialog: function() {
 		this._clearErrors();
 
 		var	url		= this.$url.val().replace(/^\s+|\s+$/g, ''),
 			title	= this.$title.val();
 
 		// is it empty?
-		if (url == '')
-		{
+		if (url == '') {
 			this.$error.appendTo(this.$url.parent());
+			this.$url.parents('fieldset').addClass('invalid');
 			return;
 		}
 
@@ -298,12 +287,11 @@ WysiHat.addButton('link', {
 		sel.removeAllRanges();
 		sel.addRange(this.range);
 
-		if (this.link_node)
-		{
+		if (this.link_node) {
 			this.range.selectNode(this.link_node);
 		}
 
-		this.$link_dialog.dialog('close');
+		this.$link_dialog.trigger('modal:close');
 
 		// Make a link! This is what the other 300
 		// lines of code are here for, folks.
@@ -320,20 +308,17 @@ WysiHat.addButton('link', {
 			_is = this._is,
 			anchor_node = this._findLinkableNode(sel.anchorNode, 'img', sel.anchorOffset);
 
-		if ( ! _is(anchor_node, 'a'))
-		{
+		if ( ! _is(anchor_node, 'a')) {
 			anchor_node = this._findLinkableNode(sel.focusNode, 'img', sel.focusOffset);
 		}
 
-		if (anchor_node !== false)
-		{
+		if (anchor_node !== false) {
 			sel.removeAllRanges();
 			this.range.selectNode(anchor_node);
 			sel.addRange(this.range);
 
 			// Title attribute
-			if (title == '')
-			{
+			if (title == '') {
 				$(anchor_node).removeAttr('title');
 			}
 			else
@@ -342,8 +327,7 @@ WysiHat.addButton('link', {
 			}
 
 			// Target attribute
-			if (this.$external.prop('checked'))
-			{
+			if (this.$external.filter(':checked').val() == 'y') {
 				$(anchor_node).attr('target', '_blank');
 			}
 			else
@@ -353,6 +337,6 @@ WysiHat.addButton('link', {
 		}
 
 		// close
-		this.$link_dialog.dialog('close');
+		this.$link_dialog.trigger('modal:close');
 	}
 });

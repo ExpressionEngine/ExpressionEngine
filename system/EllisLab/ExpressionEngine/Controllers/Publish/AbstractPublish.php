@@ -49,6 +49,8 @@ abstract class AbstractPublish extends CP_Controller {
 
 		ee()->lang->loadfile('content');
 
+		ee()->cp->get_installed_modules();
+
 		$this->is_admin = (ee()->session->userdata['group_id'] == 1);
 		$this->assigned_channel_ids = array_keys(ee()->session->userdata['assigned_channels']);
 	}
@@ -95,6 +97,14 @@ abstract class AbstractPublish extends CP_Controller {
 		/*
 		/* -------------------------------------*/
 
+		$smileys_enabled = (isset(ee()->cp->installed_modules['emoticon']) ? TRUE : FALSE);
+
+		if ($smileys_enabled)
+		{
+			ee()->load->helper('smiley');
+			ee()->cp->add_to_foot(smiley_js());
+		}
+
 		ee()->javascript->set_global(array(
 			'lang.add_new_html_button'			=> lang('add_new_html_button'),
 			'lang.close' 						=> lang('close'),
@@ -102,7 +112,6 @@ abstract class AbstractPublish extends CP_Controller {
 			'lang.loading'						=> lang('loading'),
 			'publish.autosave.interval'			=> (int) $autosave_interval_seconds,
 			'publish.autosave.URL'				=> cp_url('publish/autosave/' . $channel_id . '/' . $entry_id),
-			'publish.restore.URL'				=> cp_url('publish/restore'),
 			// 'publish.channel_id'				=> $this->_channel_data['channel_id'],
 			// 'publish.default_entry_title'		=> $this->_channel_data['default_entry_title'],
 			// 'publish.field_group'				=> $this->_channel_data['field_group'],
@@ -112,7 +121,7 @@ abstract class AbstractPublish extends CP_Controller {
 			'publish.lang.tab_count_zero'		=> lang('tab_count_zero'),
 			'publish.lang.tab_has_req_field'	=> lang('tab_has_req_field'),
 			'publish.markitup.foo'				=> FALSE,
-			// 'publish.smileys'					=> ($this->_smileys_enabled) ? TRUE : FALSE,
+			'publish.smileys'					=> $smileys_enabled,
 			// 'publish.url_title_prefix'			=> $this->_channel_data['url_title_prefix'],
 			'publish.which'						=> ($entry_id) ? 'edit' : 'new',
 			'publish.word_separator'			=> ee()->config->item('word_separator') != "dash" ? '_' : '-',

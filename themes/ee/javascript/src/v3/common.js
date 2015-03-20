@@ -211,31 +211,42 @@ $(document).ready(function(){
 			return false;
 		});
 
-		// listen for clicks to elements with a class of m-link
-		$('body').on('click','.m-link',function(e){
+		$('body').on('modal:open', '.modal-wrap', function(e) {
 			// set the heightIs variable
 			// this allows the overlay to be scrolled
 			var heightIs = $(document).height();
-			// set the modalIs variable
-			var modalIs = $(this).attr('rel');
 
 			// fade in the overlay
 			$('.overlay').fadeIn('slow').css('height',heightIs);
 			// fade in modal
-			$('.'+modalIs).fadeIn('slow');
-			// stop THIS href from loading
-			// in the source window
-			e.preventDefault();
+			$(this).fadeIn('slow');
+
 			// scroll up, if needed
 			$('#top').animate({ scrollTop: 0 }, 100);
 		});
 
-		// listen for clicks on the element with a class of overlay
-		$('.m-close').on('click',function(e){
+		$('body').on('modal:close', '.modal-wrap', function(e) {
 			// fade out the overlay
 			$('.overlay').fadeOut('slow');
 			// fade out the modal
 			$('.modal-wrap').fadeOut('slow');
+		});
+
+		// listen for clicks to elements with a class of m-link
+		$('body').on('click', '.m-link', function(e) {
+			// set the modalIs variable
+			var modalIs = $(this).attr('rel');
+			$('.'+modalIs).trigger('modal:open');
+
+			// stop THIS href from loading
+			// in the source window
+			e.preventDefault();
+		});
+
+		// listen for clicks on the element with a class of overlay
+		$('body').on('click', '.m-close', function(e) {
+			$(this).closest('.modal-wrap').trigger('modal:close');
+
 			// stop THIS from reloading the source window
 			e.preventDefault();
 		});
@@ -245,7 +256,7 @@ $(document).ready(function(){
 	// ==================================
 
 		// listen for clicks on inputs within a choice classed label
-		$('.choice input').on('click',function(){
+		$('body').on('click', '.choice input', function() {
 			$('.choice input[name="'+$(this).attr('name')+'"]').each(function(index, el) {
 				$(this).parents('.choice').toggleClass('chosen', $(this).is(':checked'));
 			});

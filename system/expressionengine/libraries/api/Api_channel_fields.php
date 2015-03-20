@@ -1292,7 +1292,7 @@ class Api_channel_fields extends Api {
 		$ft_settings = $this->apply('save_settings', array($this->get_posted_field_settings($field_type)));
 
 		// Default display options
-		foreach(array('smileys', 'glossary', 'spellcheck', 'formatting_btns', 'file_selector', 'writemode') as $key)
+		foreach(array('smileys', 'glossary', 'formatting_btns', 'file_selector', 'writemode') as $key)
 		{
 			$tmp = $this->_get_ft_data($field_type, 'field_show_'.$key, $field_data);
 			$ft_settings['field_show_'.$key] = $tmp ? $tmp : 'n';
@@ -1751,7 +1751,6 @@ class Api_channel_fields extends Api {
 			'field_search'					=> set_value('field_search', 'n'),
 			'field_is_hidden'				=> set_value('field_is_hidden', 'n'),
 			'field_pre_populate'			=> set_value('field_pre_populate', 'n'),
-			'field_show_spellcheck'			=> set_value('field_show_spellcheck', 'n'),
 			'field_show_smileys'			=> set_value('field_show_smileys', 'n'),
 			'field_show_glossary'			=> set_value('field_show_glossary', 'n'),
 			'field_show_formatting_btns'	=> set_value('field_show_formatting_btns', 'n'),

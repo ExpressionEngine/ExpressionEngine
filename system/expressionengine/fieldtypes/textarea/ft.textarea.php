@@ -78,7 +78,6 @@ class Textarea_ft extends EE_Fieldtype {
 			$toolbar = FALSE;
 
 			$format_options = array(
-				'field_show_spellcheck',
 				'field_show_smileys',
 				'field_show_glossary',
 				'field_show_writemode',
@@ -127,13 +126,16 @@ class Textarea_ft extends EE_Fieldtype {
 				}
 			}
 
+			ee()->cp->get_installed_modules();
+
 			return ee('View')->make('publish')->render(array(
-				'name'           => $this->name(),
-				'settings'       => $this->settings,
-				'value'          => $data,
-				'class'          => trim($class),
-				'toolbar'        => $toolbar,
-				'format_options' => $format_options
+				'name'            => $this->name(),
+				'settings'        => $this->settings,
+				'value'           => $data,
+				'class'           => trim($class),
+				'toolbar'         => $toolbar,
+				'format_options'  => $format_options,
+				'smileys_enabled' => (isset(ee()->cp->installed_modules['emoticon']) ? TRUE : FALSE)
 			));
 		}
 
@@ -201,7 +203,6 @@ class Textarea_ft extends EE_Fieldtype {
 		$this->field_show_formatting_btns_row($data, $prefix);
 		$this->field_show_smileys_row($data, $prefix);
 		$this->field_show_glossary_row($data, $prefix);
-		$this->field_show_spellcheck_row($data, $prefix);
 		$this->field_show_writemode_row($data, $prefix);
 		$this->field_show_file_selector_row($data, $prefix);
 	}

@@ -29,7 +29,7 @@
 		<?php if (isset($settings['field_show_glossary']) && $settings['field_show_glossary'] == 'y'): ?>
 		<li class="glossary"><a href="" title="<?=lang('open_glossary')?>"></a></li>
 		<?php endif; ?>
-		<?php if (isset($settings['field_show_smileys']) && $settings['field_show_smileys'] == 'y'): ?>
+		<?php if ($smileys_enabled && isset($settings['field_show_smileys']) && $settings['field_show_smileys'] == 'y'): ?>
 		<li class="emoji"><a href="" title="<?=lang('open_emoji')?>"></a></li>
 		<?php endif; ?>
 		<?php if (isset($settings['field_show_fmt']) && $settings['field_show_fmt'] == 'y'): ?>
