@@ -1291,7 +1291,7 @@ class EE_Config Extends CI_Config {
 			),
 
 			'software_registration'	=> array(
-				'license_contact' => array('i', '', 'required'),
+				'license_contact' => array('i', '', 'required|valid_email'),
 				'license_number'  => array('i', '', 'callback__valid_license_pattern')
 			),
 
