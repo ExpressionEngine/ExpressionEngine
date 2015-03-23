@@ -945,6 +945,9 @@ $lang = array(
 'invalid_date' =>
 'The date you submitted is not valid.',
 
+'invalid_date_ambiguous' =>
+'The date you submitted is ambiguous, please either use a four digit year or use slashes instead of dashes.',
+
 'fields' =>
 'Fields',
 
