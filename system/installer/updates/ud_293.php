@@ -39,7 +39,8 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'_extract_cache_driver_config',
-				'_recompile_template_routes'
+				'_recompile_template_routes',
+				'_date_format_years'
 			)
 		);
 
@@ -144,6 +145,27 @@ class Updater {
 			$data = array('route_parsed' => $compiled);
 			ee()->template_model->update_template_route($template->template_id, $data);
 		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Change all date formatting columns to show full years
+	 * @return void
+	 */
+	private function _date_format_years()
+	{
+		// Update members' date formats
+		ee()->db->update(
+			'members',
+			array('date_format' => '%n/%j/%Y'),
+			array('date_format' => '%n/%j/%y')
+		);
+		ee()->db->update(
+			'members',
+			array('date_format' => '%j-%n-%Y'),
+			array('date_format' => '%j-%n-%y')
+		);
 	}
 }
 /* END CLASS */
