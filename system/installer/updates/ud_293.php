@@ -163,7 +163,7 @@ class Updater {
 		);
 		ee()->db->update(
 			'members',
-			array('date_format' => '%j-%n-%Y'),
+			array('date_format' => '%j/%n/%Y'),
 			array('date_format' => '%j-%n-%y')
 		);
 	}

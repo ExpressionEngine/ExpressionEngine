@@ -1314,7 +1314,7 @@ class EE_Config Extends CI_Config {
 				'default_site_timezone' => array('f', 'timezone'),
 				'date_format'           => array('s', array(
 					'%n/%j/%Y' => 'mm/dd/yyyy',
-					'%j-%n-%Y' => 'dd-mm-yyyy',
+					'%j-%n-%Y' => 'dd/mm/yyyy',
 					'%Y-%m-%d' => 'yyyy-mm-dd'
 				)),
 				'time_format'           => array('r', array('24' => '24_hour', '12' => '12_hour')),
