@@ -348,7 +348,7 @@ class Localize {
 
 				// If there's no date format, or if the date format failed, toss
 				// it back to PHP.
-				$dt = ($dt) ?: new DateTime($date_string, $timezone);
+				$dt = ( ! empty($dt)) ? $dt : new DateTime($date_string, $timezone);
 			}
 		}
 		catch (Exception $e)
