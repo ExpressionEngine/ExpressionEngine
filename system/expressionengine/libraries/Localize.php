@@ -322,24 +322,22 @@ class Localize {
 			// the timezone later will transform the date
 			else
 			{
-				if (is_null($date_format))
-				{
-					$dt = new DateTime($date_string, $timezone);
-				}
-				else
+				// Attempt to use their date (and time) format
+				if ( ! is_null($date_format))
 				{
 					$date_format = str_replace('%', '', $date_format);
 					$dt = DateTime::createFromFormat($date_format, $date_string, $timezone);
 
-					// In the event there's less data in the $date_string than
-					// is expected from the $date_format, we simplify our
-					// $date_format and try again
+					// In the case they just passed a date, we need to only use
+					// their date format.
 					if ( ! $dt) {
 						$date_only_format = ee()->session->userdata(
 							'date_format',
 							ee()->config->item('date_format')
 						);
-						$date_only_format = str_replace('%', '', $date_only_format);
+						// The pipe makes sure all other time elements are
+						// replaced by the unix epoch
+						$date_only_format = str_replace('%', '', $date_only_format).'|';
 						$dt = DateTime::createFromFormat(
 							$date_only_format,
 							$date_string,
@@ -347,6 +345,10 @@ class Localize {
 						);
 					}
 				}
+
+				// If there's no date format, or if the date format failed, toss
+				// it back to PHP.
+				$dt = ($dt) ?: new DateTime($date_string, $timezone);
 			}
 		}
 		catch (Exception $e)
