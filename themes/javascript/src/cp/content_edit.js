@@ -14,19 +14,6 @@ $(document).ready(function() {
 	$(".paginationLinks .first").hide();
 	$(".paginationLinks .previous").hide();
 
-	$(".toggle_all").toggle(
-		function(){
-			$("input.toggle").each(function() {
-				this.checked = true;
-			});
-		}, function (){
-			var checked_status = this.checked;
-			$("input.toggle").each(function() {
-				this.checked = false;
-			});
-		}
-	);
-
 	$("#custom_date_start_span").datepicker({
 		dateFormat: "yy-mm-dd",
 		prevText: "<<",
