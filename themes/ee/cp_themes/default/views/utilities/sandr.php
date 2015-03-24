@@ -8,7 +8,7 @@
 	<?=ee('Alert')->getAllInlines()?>
 	<fieldset class="col-group <?=form_error_class('search_term')?>">
 		<div class="setting-txt col w-16">
-			<h3><?=lang('sandr_search_text')?> <span class="required" title="required field">&#10033;</span></h3>
+			<h3><?=lang('sandr_search_text')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
 		</div>
 		<div class="setting-field col w-16 last">
 			<textarea name="search_term" cols="" rows=""><?=set_value('search_term')?></textarea>
@@ -17,7 +17,7 @@
 	</fieldset>
 	<fieldset class="col-group <?=form_error_class('replace_term')?>">
 		<div class="setting-txt col w-16">
-			<h3><?=lang('sandr_replace_text')?> <span class="required" title="required field">&#10033;</span></h3>
+			<h3><?=lang('sandr_replace_text')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
 		</div>
 		<div class="setting-field col w-16 last">
 			<textarea name="replace_term" cols="" rows=""><?=set_value('replace_term')?></textarea>
@@ -26,7 +26,7 @@
 	</fieldset>
 	<fieldset class="col-group last <?=form_error_class('replace_where')?>">
 		<div class="setting-txt col w-8">
-			<h3><?=lang('sandr_in')?> <span class="required" title="required field">&#10033;</span></h3>
+			<h3><?=lang('sandr_in')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
 			<em><?=lang('sandr_in_desc')?></em>
 		</div>
 		<div class="setting-field col w-8 last">
@@ -50,7 +50,7 @@
 	<fieldset class="form-ctrls <?=form_error_class('password_auth')?>">
 		<div class="password-req">
 			<div class="setting-txt col w-8">
-				<h3><?=lang('current_password')?> <span class="required" title="required field">&#10033;</span></h3>
+				<h3><?=lang('current_password')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
 				<em><?=lang('sandr_password_desc')?></em>
 			</div>
 			<div class="setting-field col w-8 last">
