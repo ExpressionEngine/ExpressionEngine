@@ -39,7 +39,8 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'_extract_cache_driver_config',
-				'_recompile_template_routes'
+				'_recompile_template_routes',
+				'_date_format_years'
 			)
 		);
 
@@ -143,6 +144,58 @@ class Updater {
 			$compiled = $ee_route->compile();
 			$data = array('route_parsed' => $compiled);
 			ee()->template_model->update_template_route($template->template_id, $data);
+		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Change all date formatting columns to show full years
+	 * @return void
+	 */
+	private function _date_format_years()
+	{
+		// Update members' date formats
+		ee()->db->update(
+			'members',
+			array('date_format' => '%n/%j/%Y'),
+			array('date_format' => '%n/%j/%y')
+		);
+		ee()->db->update(
+			'members',
+			array('date_format' => '%j/%n/%Y'),
+			array('date_format' => '%j-%n-%y')
+		);
+
+		// Update the site preferences
+		$sites = ee()->db->select('site_id')->get('sites');
+		$msm_config = new MSM_Config();
+
+		if ($sites->num_rows() > 0)
+		{
+			foreach ($sites->result_array() as $row)
+			{
+				$msm_config->site_prefs('', $row['site_id']);
+
+				$localization_preferences = array();
+
+				if ($msm_config->item('date_format') == '%n/%j/%y')
+				{
+					$localization_preferences['date_format'] = '%n/%j/%y';
+				}
+				elseif ($msm_config->item('date_format') == '%j-%n-%y')
+				{
+					$localization_preferences['date_format'] = '%j/%n/%Y';
+				}
+
+				if ( ! empty($localization_preferences))
+				{
+					$msm_config->update_site_prefs(
+						$localization_preferences,
+						$row['site_id']
+					);
+				}
+			}
 		}
 	}
 }

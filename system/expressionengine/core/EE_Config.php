@@ -1071,11 +1071,9 @@ class EE_Config Extends CI_Config {
 		{
 			return $this->_config_path_errors;
 		}
-		else
-		{
-			return TRUE;
-		}
-		 // <?php BBEdit bug fix
+		
+		$this->clear_opcache($this->config_path);
+		return TRUE;
 	}
 
 	// --------------------------------------------------------------------
@@ -1200,7 +1198,29 @@ class EE_Config Extends CI_Config {
 		flock($fp, LOCK_UN);
 		fclose($fp);
 
+		$this->clear_opcache($this->database_path);
+
 		return TRUE;
+	}
+	
+	// --------------------------------------------------------------------
+
+	/**
+	 * Clear the opcode cache
+	 *
+	 * @param String $path Path to the modified file
+	 */
+	private function clear_opcache($path)
+	{
+		if (function_exists('opcache_invalidate'))
+		{
+			opcache_invalidate($path);
+		}
+
+		if (function_exists('apc_delete_file'))
+		{
+			apc_delete_file($path);
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -1312,7 +1332,11 @@ class EE_Config Extends CI_Config {
 
 			'localization_cfg'	=>	array(
 				'default_site_timezone' => array('f', 'timezone'),
-				'date_format'           => array('s', array('%n/%j/%y' => 'mm/dd/yy', '%j-%n-%y' => 'dd-mm-yy', '%Y-%m-%d' => 'yyyy-mm-dd')),
+				'date_format'           => array('s', array(
+					'%n/%j/%Y' => 'mm/dd/yyyy',
+					'%j/%n/%Y' => 'dd/mm/yyyy',
+					'%Y-%m-%d' => 'yyyy-mm-dd'
+				)),
 				'time_format'           => array('r', array('24' => '24_hour', '12' => '12_hour')),
 				'include_seconds'       => array('r', array('y' => 'yes', 'n' => 'no')),
 			),
