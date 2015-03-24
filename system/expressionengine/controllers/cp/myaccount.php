@@ -1094,7 +1094,7 @@ class MyAccount extends CP_Controller {
 		$vars['cp_page_title'] = lang('subscriptions');
 
 		$this->jquery->tablesorter('.mainTable', '{
-			headers: {3: {sorter: false}},
+			headers: {2: {sorter: false}},
 			widgets: ["zebra"]
 		}');
 
