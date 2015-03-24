@@ -24,8 +24,6 @@ var Comment_cp = {
 	},
 
 	toggles: function() {
-		this.table.toggle_all();
-
 		$("#target").submit(function () {
 			if ( ! $("input[class=comment_toggle]", this).is(":checked")) {
 				$.ee_notice(EE.lang.selection_required, {"type" : "error"});
