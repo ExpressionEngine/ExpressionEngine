@@ -84,22 +84,6 @@ class Pages_mcp {
 		ee()->load->library('javascript');
 		ee()->load->helper('form');
 
-		ee()->javascript->output(array(
-				'$(".toggle_all").toggle(
-					function(){
-						$("input.toggle").each(function() {
-							this.checked = true;
-						});
-					}, function (){
-						var checked_status = this.checked;
-						$("input.toggle").each(function() {
-							this.checked = false;
-						});
-					}
-				);'
-			)
-		);
-
 		ee()->javascript->compile();
 
 		$pages = ee()->config->item('site_pages');

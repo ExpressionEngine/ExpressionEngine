@@ -1098,21 +1098,6 @@ class MyAccount extends CP_Controller {
 			widgets: ["zebra"]
 		}');
 
-		$this->javascript->output('
-			$(".toggle_all").toggle(
-				function(){
-					$("input.toggle").each(function() {
-						this.checked = true;
-					});
-				}, function (){
-					var checked_status = this.checked;
-					$("input.toggle").each(function() {
-						this.checked = false;
-					});
-				}
-			);
-		');
-
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
 		// Set some base values
@@ -2405,19 +2390,6 @@ class MyAccount extends CP_Controller {
 		}');
 
 		$this->javascript->output('
-			$(".toggle_all").toggle(
-				function(){
-					$("input.toggle").each(function() {
-						this.checked = true;
-					});
-				}, function (){
-					var checked_status = this.checked;
-					$("input.toggle").each(function() {
-						this.checked = false;
-					});
-				}
-			);
-
 			$("#add_member").hide();
 
 			$(".cp_button").show();

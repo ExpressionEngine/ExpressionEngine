@@ -235,21 +235,6 @@ class Tools_data extends CP_Controller {
 			BASE.AMP.'C=tools_data'.AMP.'M=sql_manager' => lang('sql_manager')
 		);
 
-		$this->javascript->output('
-			$(".toggle_all").toggle(
-				function(){
-					$("input.toggle").each(function() {
-						this.checked = true;
-					});
-				}, function (){
-					var checked_status = this.checked;
-					$("input.toggle").each(function() {
-						this.checked = false;
-					});
-				}
-			);'
-		);
-
 		$this->cp->render('tools/sql_view_database', $details);
 	}
 
