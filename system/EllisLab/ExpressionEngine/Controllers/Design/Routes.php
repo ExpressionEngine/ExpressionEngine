@@ -71,29 +71,31 @@ class Routes extends Design {
 
 		$table->setColumns($columns);
 		$data = array();
-		$routes = ee()->api->get('TemplateRoute')->order('order', 'asc')->all();
+		$templates = ee()->api->get('Template')
+						->with('TemplateGroup')
+						->with('TemplateRoute')
+						->order('TemplateRoute.order', 'asc')
+						->order('TemplateGroup.group_name', 'asc')
+						->order('template_name', 'asc')
+						->all();
 
-		if (count($routes) == 0)
+		foreach($templates as $template)
 		{
-			$routes = ee()->api->get('Template')->with('TemplateGroup')->order('TemplateGroup.group_name', 'asc')->order('template_name', 'asc')->all();
-		}
+			$route = $template->getTemplateRoute();
 
-		foreach($routes as $route)
-		{
-			if (property_exists($route, 'template_name'))
+			// create a route of the template doesn't have one yet
+			if (empty($route))
 			{
-				$template = $route;
-				$route = $route->getTemplateRoute();
-			}
-			else
-			{
-				$template = $route->getTemplate();
+				$template->createTemplateRoute(array());
+				$template->save();
+				$route = $template->getTemplateRoute();
 			}
 
-			$id = $template->template_id;
 			$group = $template->getTemplateGroup();
+			$id = $template->template_id;
+			$route_id = $route->getId();
 
-			if (empty($route) || $route->route_required == 'n')
+			if (empty($route) || $route->route_required === FALSE)
 			{
 				$no_class = "chosen";
 				$no_selected = "checked='checked'";
@@ -108,21 +110,22 @@ class Routes extends Design {
 
 			$required = <<<RADIO
 <label class="choice yes mr $yes_class">
-	<input type="radio" name="{$id}[required]" value="y" $yes_selected>
+	<input type="radio" name="routes[{$id}][required]" value="y" $yes_selected>
 	yes
 </label>
 <label class="choice no $no_class">
-	<input type="radio" name="{$id}[required]" value="n" $no_selected>
+	<input type="radio" name="routes[{$id}][required]" value="n" $no_selected>
 	no
 </label>
 RADIO;
 
-			$route = empty($route->route) ? '' : $route->route;
-			$route = form_input("{$id}[route]", $route);
+			$route = $route->route;
+			$route = empty($route) ? '' : $route;
+			$route = form_input("routes[{$id}][route]", $route);
 
 			$row = array();
 			$row['columns'] = array(
-				$group->group_name,
+				htmlentities($group->group_name, ENT_QUOTES),
 				$template->template_name,
 				$route,
 				$required
@@ -136,66 +139,57 @@ RADIO;
 		$table->setData($data);
 
 		$vars['table'] = $table->viewData($this->base_url);
-		$vars['form_url'] = $vars['table']['base_url'];
-
+		$vars['form_url'] = cp_url('design/routes/update');
 
 		$this->stdHeader();
 
 		ee()->cp->add_js_script('plugin', 'ee_table_reorder');
 		ee()->cp->add_js_script('file', 'cp/v3/route_reorder');
 
-		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
-			->asIssue()
-			->canClose()
-			->withTitle(lang('route_ajax_reorder_fail'))
-			->addToBody(lang('route_ajax_reorder_fail_desc'));
-
-		ee()->javascript->set_global('routes.reorder_url', cp_url('design/routes/reorder'));
-		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
-
 		ee()->view->cp_page_title = lang('template_manager');
 		ee()->view->cp_heading = lang('template_routes_header');
 		ee()->cp->render('design/routes/index', $vars);
 	}
 
-	public function reorder()
-	{
-	}
-
 	public function update()
 	{
-
 		if (empty($_POST))
 		{
 			ee()->functions->redirect($this->base_url);
 		}
+
 
 		ee()->load->library('template_router');
 
 		$errors = array();
 		$error_ids = array();
 		$updated_routes = array();
-		$query = $this->template_model->get_templates();
+		$templates = ee()->api->get('Template')->all();
+		$submitted = ee()->input->post('routes');
+		$order = array_keys($submitted);
 
-		foreach ($query->result() as $template)
+		foreach ($templates as $template)
 		{
 			$error = FALSE;
 			$id = $template->template_id;
-			$route_required = $this->input->post('required_' . $id);
-			$route = $this->input->post('route_' . $id);
+			$route_required = $submitted[$id]['required'];
+			$route = $submitted[$id]['route'];
 			$ee_route = NULL;
+
 			if ($route_required !== FALSE)
 			{
-				$required = $route_required; }
+				$required = $route_required;
+			}
 			else
 			{
 				$required = 'n';
 			}
+
 			if ( ! empty($route))
 			{
 				try
 				{
-					$ee_route = new EE_Route($route, $required == 'y');
+					$ee_route = new \EE_Route($route, $required == 'y');
 					$compiled = $ee_route->compile();
 				}
 				catch (Exception $error)
@@ -209,8 +203,8 @@ RADIO;
 			{
 				$compiled = NULL;
 				$route = NULL;
-				$required = 'n';
 			}
+
 			// Check if we have a duplicate route
 			if ( ! empty($ee_route))
 			{
@@ -228,13 +222,15 @@ RADIO;
 					$updated_routes[] = $ee_route;
 				}
 			}
+
 			if ($error === FALSE)
 			{
 				$data = array(
 					'route' => $route,
 					'route_parsed' => $compiled,
 					'route_required' => $required,
-					'template_id' => $id
+					'template_id' => $id,
+					'order' => array_search($id, $order)
 				);
 				$current = ee()->api->get('TemplateRoute')->filter('template_id', $id)->first();
 
@@ -245,7 +241,7 @@ RADIO;
 				}
 				else
 				{
-					ee()->api->get('TemplateRoute')->filter('template_id', $id)->set($data)->update();
+					ee()->api->get('TemplateRoute')->filter('template_id', $id)->first()->set($data)->save();
 				}
 			}
 		}
