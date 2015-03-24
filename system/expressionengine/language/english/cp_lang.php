@@ -327,6 +327,9 @@ $lang = array(
 'required_fields' =>
 'Required Fields',
 
+'required_field' =>
+'required field',
+
 'login' =>
 'Login',
 

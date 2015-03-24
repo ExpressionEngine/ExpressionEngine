@@ -8,6 +8,7 @@ $lang = array(
 'completed'       => 'Completed',
 'stopped'         => 'Stopped',
 'required_fields' => '✱ Required Fields',
+'required_field'  =>'required field',
 'subtitle_step'   => 'Step %d of %d',
 
 // Install Form
