@@ -10,5 +10,5 @@
 	.bind('tableupdate', function() {
 		indicator.css('visibility', 'hidden');
 	});
-	
+
 })(jQuery);

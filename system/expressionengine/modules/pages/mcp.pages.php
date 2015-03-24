@@ -75,7 +75,7 @@ class Pages_mcp {
 	  */
 	function index()
 	{
-	    ee()->load->model('pages_model');
+		ee()->load->model('pages_model');
 
 		ee()->view->cp_page_title = ee()->lang->line('pages_module_name');
 		$vars['new_page_location'] = '';
