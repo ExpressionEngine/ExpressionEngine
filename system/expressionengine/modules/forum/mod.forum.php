@@ -27,8 +27,8 @@
 class Forum {
 
 
-	public $version				= '3.1.17';
-	public $build				= '20141004';
+	public $version				= '3.1.18';
+	public $build				= '20150324';
 	public $use_site_profile	= FALSE;
 	public $search_limit		= 250; // Maximum number of search results (x2 since it can include this number of topics + this number of posts)
 	public $return_data 		= '';
