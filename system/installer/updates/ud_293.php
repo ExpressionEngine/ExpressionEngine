@@ -168,30 +168,32 @@ class Updater {
 		);
 
 		// Update the site preferences
-		ee()->db->select('site_id, site_system_preferences');
-    	$query = ee()->db->get('sites');
+		$sites = ee()->db->select('site_id')->get('sites');
+		$msm_config = new MSM_Config();
 
-    	if ($query->num_rows() > 0)
-    	{
-			foreach ($query->result_array() as $row)
+		if ($sites->num_rows() > 0)
+		{
+			foreach ($sites->result_array() as $row)
 			{
-				$system_prefs = base64_decode($row['site_system_preferences']);
-				$system_prefs = unserialize($system_prefs);
+				$msm_config->site_prefs('', $row['site_id']);
 
 				$localization_preferences = array();
 
-				if ($system_prefs['date_format'] == '%n/%j/%y')
+				if ($msm_config->item('date_format') == '%n/%j/%y')
 				{
 					$localization_preferences['date_format'] = '%n/%j/%y';
 				}
-				elseif ($system_prefs['date_format'] == '%j-%n-%y')
+				elseif ($msm_config->item('date_format') == '%j-%n-%y')
 				{
 					$localization_preferences['date_format'] = '%j/%n/%Y';
 				}
 
 				if ( ! empty($localization_preferences))
 				{
-					ee()->config->update_site_prefs($localization_preferences, $row['site_id']);
+					$msm_config->update_site_prefs(
+						$localization_preferences,
+						$row['site_id']
+					);
 				}
 			}
 		}
