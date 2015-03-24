@@ -11,7 +11,7 @@
 <?php endif ?>
 <fieldset class="col-group <?=form_error_class('db_hostname')?>">
 	<div class="setting-txt col w-8">
-		<h3><?=lang('db_hostname')?> <span class="required" title="required field">&#10033;</span></h3>
+		<h3><?=lang('db_hostname')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
 		<em><?=lang('db_hostname_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
@@ -21,7 +21,7 @@
 </fieldset>
 <fieldset class="col-group <?=form_error_class('db_name')?>">
 	<div class="setting-txt col w-8">
-		<h3><?=lang('db_name')?> <span class="required" title="required field">&#10033;</span></h3>
+		<h3><?=lang('db_name')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
 		<em><?=lang('db_name_note')?></em>
 		<em><mark><?=lang('db_name_warning')?></mark></em>
 	</div>
@@ -32,7 +32,7 @@
 </fieldset>
 <fieldset class="col-group <?=form_error_class('db_username')?>">
 	<div class="setting-txt col w-8">
-		<h3><?=lang('db_username')?> <span class="required" title="required field">&#10033;</span></h3>
+		<h3><?=lang('db_username')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
 		<em><?=lang('db_username_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
@@ -52,7 +52,7 @@
 </fieldset>
 <fieldset class="col-group  <?=form_error_class('db_prefix')?> last">
 	<div class="setting-txt col w-8">
-		<h3><?=lang('db_prefix')?> <span class="required" title="required field">&#10033;</span></h3>
+		<h3><?=lang('db_prefix')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
 		<em><?=lang('db_prefix_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
@@ -74,7 +74,7 @@
 <h2><?=lang('administrator_account')?></h2>
 <fieldset class="col-group <?=form_error_class('username')?>">
 	<div class="setting-txt col w-8">
-		<h3><?=lang('username')?> <span class="required" title="required field">&#10033;</span></h3>
+		<h3><?=lang('username')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
 		<em><?=lang('username_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
@@ -84,7 +84,7 @@
 </fieldset>
 <fieldset class="col-group <?=form_error_class('email_address')?>">
 	<div class="setting-txt col w-8">
-		<h3><?=lang('e_mail')?> <span class="required" title="required field">&#10033;</span></h3>
+		<h3><?=lang('e_mail')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
 		<em><?=lang('e_mail_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
@@ -94,7 +94,7 @@
 </fieldset>
 <fieldset class="col-group  <?=form_error_class('password')?> last">
 	<div class="setting-txt col w-8">
-		<h3><?=lang('password')?> <span class="required" title="required field">&#10033;</span></h3>
+		<h3><?=lang('password')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
 		<em><?=lang('password_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
