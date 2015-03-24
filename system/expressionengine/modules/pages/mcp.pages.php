@@ -75,7 +75,7 @@ class Pages_mcp {
 	  */
 	function index()
 	{
-	    ee()->load->model('pages_model');
+		ee()->load->model('pages_model');
 
 		ee()->view->cp_page_title = ee()->lang->line('pages_module_name');
 		$vars['new_page_location'] = '';
@@ -83,22 +83,6 @@ class Pages_mcp {
 		ee()->load->library('table');
 		ee()->load->library('javascript');
 		ee()->load->helper('form');
-
-		ee()->javascript->output(array(
-				'$(".toggle_all").toggle(
-					function(){
-						$("input.toggle").each(function() {
-							this.checked = true;
-						});
-					}, function (){
-						var checked_status = this.checked;
-						$("input.toggle").each(function() {
-							this.checked = false;
-						});
-					}
-				);'
-			)
-		);
 
 		ee()->javascript->compile();
 

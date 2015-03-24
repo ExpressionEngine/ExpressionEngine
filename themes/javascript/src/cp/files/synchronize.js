@@ -21,8 +21,6 @@ EE.file_manager.resize_ids = [];
 
 $(document).ready(function() {
 	$.template("sync_complete_template", $('#sync_complete_template'));
-
-	$('table#dimensions').toggle_all();
 	EE.file_manager.sync_listen();
 });
 

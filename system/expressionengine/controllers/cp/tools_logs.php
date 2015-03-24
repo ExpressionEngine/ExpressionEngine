@@ -428,20 +428,6 @@ class Tools_logs extends CP_Controller {
 			BASE.AMP.'C=tools_logs'=> lang('tools_logs')
 		);
 
-		$this->javascript->output('
-			$("#toggle_all").toggle(
-				function(){
-					$("input[class=toggle_email]").each(function() {
-						this.checked = true;
-					});
-				}, function (){
-					$("input[class=toggle_email]").each(function() {
-						this.checked = false;
-					});
-				}
-			);
-		');
-
 		if (count($data['rows']))
 		{
 			$this->cp->set_right_nav(array(

@@ -4364,21 +4364,6 @@ EOT;
 		$vars['cp_page_title'] = lang('sync_templates');
 		$this->cp->set_breadcrumb(cp_url('design/manager'), lang('template_manager'));
 
-		$this->javascript->output(array(
-				'$(".toggle_all").toggle(
-					function(){
-						$("input.toggle").each(function() {
-							this.checked = true;
-						});
-					}, function (){
-						var checked_status = this.checked;
-						$("input.toggle").each(function() {
-							this.checked = false;
-						});
-					}
-				);')
-		);
-
 		$vars['templates'] = array();
 		$vars['form_hidden']['confirm'] = 'confirm';
 

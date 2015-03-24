@@ -1056,20 +1056,6 @@ class Tools_communicate extends CP_Controller {
 
 		$vars = $this->table->datasource('_view_cache_data', $initial_state, $params);
 
-		$this->javascript->output('
-			$(".toggle_all").toggle(
-				function(){
-					$("input.toggle").each(function() {
-						this.checked = true;
-					});
-				}, function (){
-					$("input.toggle").each(function() {
-						this.checked = false;
-					});
-				}
-			);'
-		);
-
 		$this->view->cp_page_title = lang('view_email_cache');
 
 		// a bit of a breadcrumb override is needed

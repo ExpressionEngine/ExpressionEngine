@@ -215,21 +215,6 @@ $.ee_filemanager.date_range = function() {
 	});
 };
 
-$.ee_filemanager.toggle_all = function() {
-	$(".toggle_all").toggle(
-		function(){
-			$("input.toggle").each(function() {
-				this.checked = true;
-			});
-		}, function (){
-			var checked_status = this.checked;
-			$("input.toggle").each(function() {
-				this.checked = false;
-			});
-		}
-	);
-};
-
 $.ee_filemanager.image_overlay = function() {
 	function show_image() {
 		// Destroy any existing overlay

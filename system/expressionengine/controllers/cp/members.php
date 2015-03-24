@@ -136,18 +136,6 @@ class Members extends CP_Controller {
 		$vars = $this->table->datasource('_member_search', $initial_state, $params);
 
 		$this->javascript->output('
-			$(".toggle_all").toggle(
-				function(){
-					$("input.toggle").each(function() {
-						this.checked = true;
-					});
-				}, function (){
-					$("input.toggle").each(function() {
-						this.checked = false;
-					});
-				}
-			);
-
 			// Keyword filter
 			var indicator = $(".searchIndicator");
 
@@ -3384,15 +3372,6 @@ class Members extends CP_Controller {
 		$this->view->cp_page_title = lang('member_validation');
 
 		$this->jquery->tablesorter('.mainTable', '{headers: {1: {sorter: false}},	widgets: ["zebra"]}');
-
-		$this->javascript->output('
-			$("#toggle_all").click(function() {
-				var checked_status = this.checked;
-				$("input.toggle").each(function() {
-					this.checked = checked_status;
-				});
-			});
-		');
 
 		$group_members = $this->member_model->get_group_members(4);
 

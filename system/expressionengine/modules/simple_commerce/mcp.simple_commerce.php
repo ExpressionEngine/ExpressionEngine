@@ -568,22 +568,6 @@ class Simple_commerce_mcp {
 
 		$data['action_url'] = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce'.AMP.'method=edit_items';
 
-		// Add javascript
-		ee()->javascript->output(array(
-				'$(".toggle_all").toggle(
-					function(){
-						$("input.toggle").each(function() {
-							this.checked = true;
-						});
-					}, function (){
-						$("input.toggle").each(function() {
-							this.checked = false;
-						});
-					}
-				);'
-			)
-		);
-
 		ee()->javascript->compile();
 
 		return ee()->load->view('edit_items', $data, TRUE);
@@ -957,23 +941,6 @@ class Simple_commerce_mcp {
 		ee()->cp->set_breadcrumb(
 			BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce',
 			lang('simple_commerce_module_name')
-		);
-
-		// Add javascript
-		ee()->javascript->output(array(
-				'$(".toggle_all").toggle(
-					function(){
-						$("input.toggle").each(function() {
-							this.checked = true;
-						});
-					}, function (){
-						var checked_status = this.checked;
-						$("input.toggle").each(function() {
-							this.checked = false;
-						});
-					}
-				);'
-			)
 		);
 
 		ee()->javascript->compile();
@@ -1427,24 +1394,6 @@ class Simple_commerce_mcp {
 			lang('simple_commerce_module_name')
 		);
 
-		// Add javascript
-		ee()->javascript->output(array(
-				'$(".toggle_all").toggle(
-					function(){
-						$("input.toggle").each(function() {
-							this.checked = true;
-						});
-					}, function (){
-						var checked_status = this.checked;
-						$("input.toggle").each(function() {
-							this.checked = false;
-						});
-					}
-				);'
-			)
-		);
-
-
 		ee()->javascript->compile();
 
 		//  Check for pagination
@@ -1843,21 +1792,6 @@ MAGIC;
 			ee()->javascript->hide(".paginationLinks .first"),
 			ee()->javascript->hide(".paginationLinks .previous")
 		));
-
-		ee()->javascript->output('
-			$(".toggle_all").toggle(
-				function(){
-					$("input.toggle").each(function() {
-						this.checked = true;
-					});
-				}, function (){
-					var checked_status = this.checked;
-					$("input.toggle").each(function() {
-						this.checked = false;
-					});
-				}
-			);
-		');
 
 		ee()->jquery->tablesorter('.mainTable', '{
 			headers: {

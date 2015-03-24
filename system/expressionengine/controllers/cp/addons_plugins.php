@@ -63,22 +63,6 @@ class Addons_plugins extends CP_Controller {
 			widgets: ["zebra"]
 		}');
 
-		$this->javascript->output('
-			$(".toggle_all").toggle(
-				function(){
-					$(".mainTable tbody tr").addClass("selected");
-					$("input.toggle").each(function() {
-						this.checked = true;
-					});
-				}, function (){
-					$(".mainTable tbody tr").removeClass("selected");
-					$("input.toggle").each(function() {
-						this.checked = false;
-					});
-				}
-			);
-		');
-
 		$this->javascript->compile();
 
 		// Grab the data

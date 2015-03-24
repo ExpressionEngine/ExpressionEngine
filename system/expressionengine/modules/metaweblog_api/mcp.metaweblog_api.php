@@ -60,22 +60,6 @@ class Metaweblog_api_mcp {
 			widgets: ["zebra"]
 		}');
 
-		ee()->javascript->output(array(
-				'$(".toggle_all").toggle(
-					function(){
-						$("input.toggle").each(function() {
-							this.checked = true;
-						});
-					}, function (){
-						var checked_status = this.checked;
-						$("input.toggle").each(function() {
-							this.checked = false;
-						});
-					}
-				);'
-			)
-		);
-
 		$api_url = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->cp->fetch_action_id('Metaweblog_api', 'incoming');
 
 		ee()->db->select('metaweblog_pref_name, metaweblog_id');

@@ -1094,24 +1094,9 @@ class MyAccount extends CP_Controller {
 		$vars['cp_page_title'] = lang('subscriptions');
 
 		$this->jquery->tablesorter('.mainTable', '{
-			headers: {3: {sorter: false}},
+			headers: {2: {sorter: false}},
 			widgets: ["zebra"]
 		}');
-
-		$this->javascript->output('
-			$(".toggle_all").toggle(
-				function(){
-					$("input.toggle").each(function() {
-						this.checked = true;
-					});
-				}, function (){
-					var checked_status = this.checked;
-					$("input.toggle").each(function() {
-						this.checked = false;
-					});
-				}
-			);
-		');
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
@@ -2405,19 +2390,6 @@ class MyAccount extends CP_Controller {
 		}');
 
 		$this->javascript->output('
-			$(".toggle_all").toggle(
-				function(){
-					$("input.toggle").each(function() {
-						this.checked = true;
-					});
-				}, function (){
-					var checked_status = this.checked;
-					$("input.toggle").each(function() {
-						this.checked = false;
-					});
-				}
-			);
-
 			$("#add_member").hide();
 
 			$(".cp_button").show();

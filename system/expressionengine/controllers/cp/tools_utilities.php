@@ -451,21 +451,6 @@ class Tools_utilities extends CP_Controller {
 		$this->load->helper('date');
 		$this->lang->loadfile('member_import');
 
-		$this->javascript->output(array(
-				'$(".toggle_all").toggle(
-					function(){
-						$("input.toggle").each(function() {
-							this.checked = true;
-						});
-					}, function (){
-						var checked_status = this.checked;
-						$("input.toggle").each(function() {
-							this.checked = false;
-						});
-					}
-				);')
-			);
-
 		$vars['form_hidden']['new'] = $new_custom_fields['new'];
 		$vars['xml_fields'] = $new_custom_fields['xml_fields'];
 

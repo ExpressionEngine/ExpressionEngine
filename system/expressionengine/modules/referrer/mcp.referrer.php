@@ -79,21 +79,6 @@ class Referrer_mcp {
 			widgets: ["zebra"]
 		}');
 
-		ee()->javascript->output(array(
-				'$(".toggle_all").toggle(
-					function(){
-						$("input.toggle").each(function() {
-							this.checked = true;
-						});
-					}, function (){
-						var checked_status = this.checked;
-						$("input.toggle").each(function() {
-							this.checked = false;
-						});
-					}
-				);')
-		);
-
 		ee()->cp->add_to_foot('<script type="text/javascript">function showHide(entryID, htmlObj, linkType) {
 
 				extTextDivID = ("extText" + (entryID));
