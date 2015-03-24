@@ -1312,7 +1312,11 @@ class EE_Config Extends CI_Config {
 
 			'localization_cfg'	=>	array(
 				'default_site_timezone' => array('f', 'timezone'),
-				'date_format'           => array('s', array('%n/%j/%y' => 'mm/dd/yy', '%j-%n-%y' => 'dd-mm-yy', '%Y-%m-%d' => 'yyyy-mm-dd')),
+				'date_format'           => array('s', array(
+					'%n/%j/%Y' => 'mm/dd/yyyy',
+					'%j/%n/%Y' => 'dd/mm/yyyy',
+					'%Y-%m-%d' => 'yyyy-mm-dd'
+				)),
 				'time_format'           => array('r', array('24' => '24_hour', '12' => '12_hour')),
 				'include_seconds'       => array('r', array('y' => 'yes', 'n' => 'no')),
 			),

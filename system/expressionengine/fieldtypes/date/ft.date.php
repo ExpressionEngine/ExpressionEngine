@@ -97,6 +97,11 @@ class Date_ft extends EE_Fieldtype {
 	 */
 	function validate($data)
 	{
+		if (preg_match('/\d{1,2}-\d{1,2}-\d{2}\b/', $data))
+		{
+			return lang('invalid_date_ambiguous');
+		}
+
 		if ( ! is_numeric($data) && trim($data) && ! empty($data))
 		{
 			$data = $this->_parse_date($data);

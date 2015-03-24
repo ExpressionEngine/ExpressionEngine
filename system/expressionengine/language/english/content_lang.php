@@ -242,7 +242,7 @@ $lang = array(
 'publish_form' =>
 'Publish Form',
 
-'entry_date' => 
+'entry_date' =>
 'Entry Date',
 
 'url_title_is_numeric' =>
@@ -266,7 +266,7 @@ $lang = array(
 'comment_expiration_date' =>
 'Comment Expiration Date',
 
-'invalid_comment_date_formatting' => 
+'invalid_comment_date_formatting' =>
 'The comment expiration date you submitted was not formatted correctly (year-month-day hour:minute).  Leave the field blank if you do not wish your comments to expire.',
 
 'keywords' =>
@@ -302,37 +302,37 @@ $lang = array(
 'status_changed' =>
 'Status Changed',
 
-'publish' => 
+'publish' =>
 'Publish',
 
-'content_publish' => 
+'content_publish' =>
 'Publish',
 
 'content' =>
 'Content',
 
-'no_channel_exists' => 
+'no_channel_exists' =>
 'You have tried to access a channel that does not exist.',
 
-'no_entries_matching_that_criteria' => 
+'no_entries_matching_that_criteria' =>
 'There are no entries matching the criteria you selected.',
 
-'no_entries_exist' => 
+'no_entries_exist' =>
 'There are no entries in this channel',
 
-'select_channel_to_post_in' => 
+'select_channel_to_post_in' =>
 'Choose a channel to post in',
 
-'select_channel_to_edit' => 
+'select_channel_to_edit' =>
 'Choose a channel to view',
 
-'this_entry_will_appear_in' => 
+'this_entry_will_appear_in' =>
 'This entry will appear in:',
 
-'unauthorized_for_this_channel' => 
+'unauthorized_for_this_channel' =>
 'You are not authorized to post in this channel',
 
-'unauthorized_for_any_channels' => 
+'unauthorized_for_any_channels' =>
 'You are not authorized to post channel entries',
 
 'unauthorized_to_delete_others' =>
@@ -418,37 +418,37 @@ $lang = array(
 'edit_channel_entries' =>
 'Edit Channel Entries',
 
-'continue_editing' => 
+'continue_editing' =>
 'Continue Editing',
 
-'entry_status' => 
+'entry_status' =>
 'Entry Status',
 
-'status' => 
+'status' =>
 'Status',
 
-'comments' => 
+'comments' =>
 'Comments',
 
-'open' => 
+'open' =>
 'Open',
 
-'close' => 
+'close' =>
 'Close',
 
-'closed' => 
+'closed' =>
 'Closed',
 
-'options' => 
+'options' =>
 'Options',
 
-'sticky' => 
+'sticky' =>
 'Make Entry Sticky',
 
-'allow_comments' => 
+'allow_comments' =>
 'Allow Comments',
 
-'date' => 
+'date' =>
 'Date',
 
 'start_date' =>
@@ -457,55 +457,55 @@ $lang = array(
 'end_date' =>
 'End',
 
-'expiration_date' => 
+'expiration_date' =>
 'Expiration Date',
 
-'invalid_date_formatting' => 
+'invalid_date_formatting' =>
 'The date you submitted was not formatted correctly (year-month-day hour:minute)',
 
-'date_outside_of_range' => 
+'date_outside_of_range' =>
 'The date you submitted is outside the accepted range (1902 - 2037).',
 
 'category' =>
 'Category',
 
-'categories' => 
+'categories' =>
 'Categories',
 
-'no_categories' => 
+'no_categories' =>
 'No categories have been assigned to this channel.',
 
-'title' => 
+'title' =>
 'Title',
 
-'url_title' => 
+'url_title' =>
 'URL Title',
 
-'author' => 
+'author' =>
 'Author',
 
-'newline_format' => 
+'newline_format' =>
 'Formatting:',
 
-'none' => 
+'none' =>
 'None',
 
-'xhtml' => 
+'xhtml' =>
 'XHTML',
 
-'auto_br' => 
+'auto_br' =>
 'Auto &lt;br /&gt;',
 
-'link' => 
+'link' =>
 'Link',
 
-'image' => 
+'image' =>
 'Image',
 
-'email' => 
+'email' =>
 'Email',
 
-'upload' => 
+'upload' =>
 'Upload',
 
 'upload_file' =>
@@ -529,7 +529,7 @@ $lang = array(
 'no_emoticons' =>
 'Unable to find the location of your emoticons',
 
-'close_all' => 
+'close_all' =>
 'Close All',
 
 'missing_title' =>
@@ -556,13 +556,13 @@ $lang = array(
 'click_to_view_your_entry' =>
 'Click here to view your entry',
 
-'view' => 
+'view' =>
 'View',
 
-'edit_this_entry' => 
+'edit_this_entry' =>
 'Edit This Entry',
 
-'view_filtered' => 
+'view_filtered' =>
 'Return to Filtered Entries',
 
 'publish_another_entry' =>
@@ -874,10 +874,10 @@ $lang = array(
 'no_channels' =>
 'You have no channels assigned to you for this site.',
 
-'no_channels_exist' => 
+'no_channels_exist' =>
 'There are currently no channels',
 
-'selection_required' => 
+'selection_required' =>
 'At least one selection is required to submit',
 
 'no_valid_selections' =>
@@ -924,16 +924,16 @@ $lang = array(
 'width_needed'			=> 'A width or width/height must be selected',
 'edit_image'			=> 'Edit Image',
 
-'layout_success' => 
+'layout_success' =>
 'Layout successfully saved.',
 
-'layout_failure' => 
+'layout_failure' =>
 'There was a problem saving your layout.',
 
-'layout_failure_required' => 
+'layout_failure_required' =>
 'The following fields are required and may not be hidden: ',
 
-'layout_failure_invalid_name' => 
+'layout_failure_invalid_name' =>
 'The following fields have invalid characters in the short names: ',
 
 'layout_preview' =>
@@ -945,11 +945,14 @@ $lang = array(
 'invalid_date' =>
 'The date you submitted is not valid.',
 
+'invalid_date_ambiguous' =>
+'The date you submitted is ambiguous, please either use a four digit year or use slashes instead of dashes.',
+
 'fields' =>
 'Fields',
 
 'comment_moved' =>
-'Comment moved', 
+'Comment moved',
 
 'comments_moved' =>
 'Comments moved',
@@ -957,7 +960,7 @@ $lang = array(
 'search_entries' =>
 'Search Entries',
 
-'unable_to_load_tab' => 
+'unable_to_load_tab' =>
 'Unable to load requested publish tab file: %s',
 
 'unable_to_load_field_type' =>
