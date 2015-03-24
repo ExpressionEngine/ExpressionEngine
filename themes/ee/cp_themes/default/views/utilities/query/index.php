@@ -29,7 +29,7 @@
 	</fieldset>
 	<fieldset class="col-group <?=form_error_class('thequery')?>">
 		<div class="setting-txt col w-16">
-			<h3><?=lang('sql_query_to_run')?> <span class="required" title="required field">&#10033;</span></h3>
+			<h3><?=lang('sql_query_to_run')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
 		</div>
 		<div class="setting-field col w-16 last">
 			<textarea class="has-format-options" name="thequery" cols="" rows=""><?=set_value('thequery')?></textarea>
@@ -44,7 +44,7 @@
 	<fieldset class="form-ctrls <?=form_error_class('password_auth')?>">
 		<div class="password-req">
 			<div class="setting-txt col w-8">
-				<h3><?=lang('current_password')?> <span class="required" title="required field">&#10033;</span></h3>
+				<h3><?=lang('current_password')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
 				<em><?=lang('sql_password_desc')?></em>
 			</div>
 			<div class="setting-field col w-8 last">
