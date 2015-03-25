@@ -204,50 +204,6 @@ class EE_Router {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Checks for the existence of a file inside our registered namespaces
-	 *
-	 * @access	private
-	 * @param	string
-	 * @return	mixed The path to the matching namespace, or false if none match
-	 */
-	private function _check_file($path)
-	{
-		foreach ($this->directories as $directory)
-		{
-			if (file_exists($directory . '/' . $path))
-			{
-				return $directory;
-			}
-		}
-
-		return FALSE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Checks for the existence of a directory inside our registered namespaces
-	 *
-	 * @access	private
-	 * @param	string
-	 * @return	mixed The path to the matching namespace, or false if none match
-	 */
-	private function _check_dir($path)
-	{
-		foreach ($this->directories as $directory)
-		{
-			if (is_dir($directory . '/' . $path))
-			{
-				return $directory;
-			}
-		}
-
-		return FALSE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Validates the supplied segments.  Attempts to determine the path to
 	 * the controller.
 	 *
@@ -258,7 +214,6 @@ class EE_Router {
 	 */
 	function _validate_request($segments, $override = TRUE)
 	{
-
 		if (count($segments) == 0)
 		{
 			return $segments;
@@ -271,17 +226,8 @@ class EE_Router {
 
 		// First check for a namespaced situation
 		$saved_segments = $segments;
+		$directory = APPPATH.'../EllisLab/ExpressionEngine/Controllers/';
 		$namespace = '';
-		$directory = '';
-
-		$this->directories = array();
-		$namespaces = ee('App')->getNamespaces();
-
-		foreach ($namespaces as $space)
-		{
-			$this->directories['\\' . $space . '\\Controllers'] = SYSPATH . str_replace('\\', '/', $space) . '/Controllers';
-		}
-
 		if (strtolower($segments[0]) == 'cp')
 		{
 			array_shift($segments); // This will not factor into the path for namespaced stuff
@@ -296,7 +242,7 @@ class EE_Router {
 			$segment = implode('', $words);
 
 			// Do we have a directory instead of a controller file?
-			if ( ! $this->_check_file($directory . $segment . '.php') && $this->_check_dir($directory . $segment))
+			if ( ! file_exists($directory . $segment . '.php') && is_dir($directory . $segment))
 			{
 				$directory .= $segment . '/';
 				$namespace .= '\\' . $segment;
@@ -305,14 +251,13 @@ class EE_Router {
 				continue;
 			}
 
-
 			// For organization purposes everything is in a subdirectory inside
 			// .../Controllers/. Top level controllers may be structured thus:
 			// .../Controllers/FooBar/FooBar.php
 			// We now check for that eventuality. This is important because
 			// the returned array assumes that the string at index 0 is the
 			// controller class.
-			if ( ! $this->_check_file($directory . $segment . '.php'))
+			if ( ! file_exists($directory . $segment . '.php'))
 			{
 				if ($c > 0)
 				{
@@ -321,7 +266,7 @@ class EE_Router {
 					$words = array_map('ucfirst', $words);
 					$segment = implode('', $words);
 
-					if ($this->_check_file($directory . $segment . '.php'))
+					if (file_exists($directory . $segment . '.php'))
 					{
 						array_unshift($segments, $saved_segments[$c - 1]);
 					}
@@ -331,21 +276,11 @@ class EE_Router {
 			break;
 		}
 
-		// Check for a top level match in our registered namespaces
-		if ($match = $this->_check_file($segment . '.php'))
-		{
-			$namespaces = array_flip($this->directories);
-			$this->set_directory($match);
-			$this->namespace_prefix = $namespaces[$match];
-			return array($last, 'index');
-		}
-
 		if ($namespace != '')
 		{
-			$namespace_dir = $this->_check_dir($directory);
-			$namespaces = array_flip($this->directories);
-			$this->set_directory($namespace_dir . '/' . $directory);
-			$this->namespace_prefix = $namespaces[$namespace_dir] . $namespace;
+			$this->set_directory($directory);
+			$this->namespace_prefix = '\EllisLab\ExpressionEngine\Controllers' . $namespace;
+
 			// If the final segment is a directory check for a file matching the
 			// directory's name inside the directory. Use its index method.
 			if (empty($segments))
@@ -355,12 +290,11 @@ class EE_Router {
 				$words = array_map('ucfirst', $words);
 				$segment = implode('', $words);
 
-				if ($this->_check_file($directory . $segment . '.php'))
+				if (file_exists($directory . $segment . '.php'))
 				{
 					return array($last, 'index');
 				}
 			}
-
 			return $segments;
 		}
 
