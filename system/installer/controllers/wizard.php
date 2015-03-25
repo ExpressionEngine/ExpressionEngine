@@ -59,21 +59,21 @@ class Wizard extends CI_Controller {
 	public $allowed_methods = array('install_form', 'do_install', 'do_update');
 
 	// Absolutely, positively must always be installed
-	public $required_modules = array('channel', 'comment', 'member', 'stats', 'rte');
+	public $required_modules = array('channel', 'comment', 'member', 'stats', 'rte', 'filepicker');
 
 	public $theme_required_modules = array();
 
 	// Our default installed modules, if there is no "override"
 	public $default_installed_modules = array('comment', 'email', 'emoticon',
 		'jquery', 'member', 'query', 'rss', 'search', 'stats', 'channel',
-		'mailinglist', 'rte');
+		'mailinglist', 'rte', 'filepicker');
 
 	// Native First Party ExpressionEngine Modules (everything else is in third party folder)
 	public $native_modules = array('blacklist', 'channel', 'comment', 'commerce',
 		'email', 'emoticon', 'file', 'forum', 'gallery', 'ip_to_nation',
 		'jquery', 'mailinglist', 'member', 'metaweblog_api', 'moblog', 'pages',
 		'query', 'referrer', 'rss', 'rte', 'search',
-		'simple_commerce', 'stats', 'wiki');
+		'simple_commerce', 'stats', 'wiki', 'filepicker');
 
 	// Third Party Modules may send error messages if something goes wrong.
 	public $module_install_errors = array(); // array that collects all error messages
@@ -1634,7 +1634,13 @@ class Wizard extends CI_Controller {
 		// Install required modules
 		foreach($this->required_modules as $module)
 		{
+			// This is ugly, but only here until we consolidate our addons
 			$path = SYSPATH.'/expressionengine/modules/'.$module.'/';
+
+			if ( ! file_exists($path))
+			{
+				$path = SYSPATH.'/EllisLab/ExpressionEngine/Modules/'.$module.'/';
+			}
 
 			if (file_exists($path.'upd.'.$module.'.php'))
 			{
