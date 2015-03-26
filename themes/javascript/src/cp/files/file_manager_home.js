@@ -25,7 +25,6 @@ $(document).ready(function () {
 	$.ee_filemanager.datatables();
 	$.ee_filemanager.image_overlay();
 	$.ee_filemanager.date_range();
-	$.ee_filemanager.toggle_all();
 	$.ee_filemanager.directory_change();
 
 	// Hide first and previous pagination
