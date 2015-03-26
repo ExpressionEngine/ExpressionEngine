@@ -2087,7 +2087,9 @@ DOH;
 				{
 					foreach ($query->result_array() as $row)
 					{
-						@unlink($row['attachment_location']);
+						$base_path = (substr(ee()->config->item('prv_msg_upload_path'), -1) == '/') ? ee()->config->item('prv_msg_upload_path') : ee()->config->item('prv_msg_upload_path') . '/';
+
+						@unlink($base_path.$row['attachment_location']);
 					}
 
 					ee()->db->query("DELETE FROM exp_message_attachments WHERE message_id IN ('".implode("','", $message_ids)."')");
