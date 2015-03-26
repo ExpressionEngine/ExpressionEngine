@@ -2087,7 +2087,8 @@ DOH;
 				{
 					foreach ($query->result_array() as $row)
 					{
-						$base_path = (substr(ee()->config->item('prv_msg_upload_path'), -1) == '/') ? ee()->config->item('prv_msg_upload_path') : ee()->config->item('prv_msg_upload_path') . '/';
+						// No trailing double slashes
+						$base_path = rtrim(ee()->config->item('prv_msg_upload_path'), '/') . '/';
 
 						@unlink($base_path.$row['attachment_location']);
 					}
@@ -2993,7 +2994,8 @@ DOH;
 			ee()->output->show_user_error('submission', ee()->lang->line('not_authorized'));
 		}
 
-		$base_path = (substr(ee()->config->item('prv_msg_upload_path'), -1) == '/') ? ee()->config->item('prv_msg_upload_path') : ee()->config->item('prv_msg_upload_path') . '/';
+		// No trailing double slashes
+		$base_path = rtrim(ee()->config->item('prv_msg_upload_path'), '/') . '/';
 
 		$filepath = $base_path.$query->row('attachment_location') ;
 
