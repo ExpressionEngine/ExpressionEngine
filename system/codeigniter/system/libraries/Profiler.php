@@ -33,17 +33,16 @@
 class CI_Profiler {
 
 	protected $_available_sections = array(
-										'benchmarks',
-										'get',
-										'memory_usage',
-										'post',
-										'uri_string',
-										'controller_info',
-										'queries',
-										'http_headers',
-										'session_data',
-										'config'
-										);
+		'benchmarks',
+		'get',
+		'memory_usage',
+		'post',
+		'uri_string',
+		'controller_info',
+		'queries',
+		'http_headers',
+		'session_data'
+	);
 
 	protected $_query_toggle_count = 25;
 
