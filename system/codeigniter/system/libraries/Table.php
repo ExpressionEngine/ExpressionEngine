@@ -476,7 +476,19 @@ class CI_Table {
 		}
 
 		$this->temp = $this->_default_template();
-		foreach (array('table_open', 'thead_open', 'thead_close', 'heading_row_start', 'heading_row_end', 'heading_cell_start', 'heading_cell_end', 'tbody_open', 'tbody_close', 'row_start', 'row_end', 'cell_start', 'cell_end', 'row_alt_start', 'row_alt_end', 'cell_alt_start', 'cell_alt_end', 'table_close') as $val)
+		$segments = array(
+			'table_open',
+			'thead_open', 'thead_close',
+			'heading_row_start', 'heading_row_end',
+			'heading_cell_start', 'heading_cell_end',
+			'tbody_open', 'tbody_close',
+			'row_start', 'row_end',
+			'cell_start', 'cell_end',
+			'row_alt_start', 'row_alt_end',
+			'cell_alt_start', 'cell_alt_end',
+			'table_close'
+		);
+		foreach ($segments as $val)
 		{
 			if ( ! isset($this->template[$val]))
 			{
@@ -496,31 +508,31 @@ class CI_Table {
 	function _default_template()
 	{
 		return  array (
-						'table_open'			=> '<table border="0" cellpadding="4" cellspacing="0">',
+			'table_open'         => '<table border="0" cellpadding="4" cellspacing="0">',
 
-						'thead_open'			=> '<thead>',
-						'thead_close'			=> '</thead>',
+			'thead_open'         => '<thead>',
+			'thead_close'        => '</thead>',
 
-						'heading_row_start'		=> '<tr>',
-						'heading_row_end'		=> '</tr>',
-						'heading_cell_start'	=> '<th>',
-						'heading_cell_end'		=> '</th>',
+			'heading_row_start'  => '<tr>',
+			'heading_row_end'    => '</tr>',
+			'heading_cell_start' => '<th>',
+			'heading_cell_end'   => '</th>',
 
-						'tbody_open'			=> '<tbody>',
-						'tbody_close'			=> '</tbody>',
+			'tbody_open'         => '<tbody>',
+			'tbody_close'        => '</tbody>',
 
-						'row_start'				=> '<tr>',
-						'row_end'				=> '</tr>',
-						'cell_start'			=> '<td>',
-						'cell_end'				=> '</td>',
+			'row_start'          => '<tr>',
+			'row_end'            => '</tr>',
+			'cell_start'         => '<td>',
+			'cell_end'           => '</td>',
 
-						'row_alt_start'		=> '<tr>',
-						'row_alt_end'			=> '</tr>',
-						'cell_alt_start'		=> '<td>',
-						'cell_alt_end'			=> '</td>',
+			'row_alt_start'      => '<tr>',
+			'row_alt_end'        => '</tr>',
+			'cell_alt_start'     => '<td>',
+			'cell_alt_end'       => '</td>',
 
-						'table_close'			=> '</table>'
-					);
+			'table_close'        => '</table>'
+		);
 	}
 
 
