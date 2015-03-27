@@ -30,6 +30,7 @@ class CI_Table {
 
 	var $rows				= array();
 	var $heading			= array();
+	var $footer				= array();
 	var $auto_heading		= TRUE;
 	var $caption			= NULL;
 	var $template			= NULL;
@@ -76,6 +77,23 @@ class CI_Table {
 	{
 		$args = func_get_args();
 		$this->heading = $this->_prep_args($args);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Set the table footer
+	 *
+	 * Can be passed as an array or discreet params
+	 *
+	 * @access	public
+	 * @param	mixed
+	 * @return	void
+	 */
+	function set_footer()
+	{
+		$args = func_get_args();
+		$this->footer = $this->_prep_args($args);
 	}
 
 	// --------------------------------------------------------------------
@@ -365,6 +383,37 @@ class CI_Table {
 			$out .= $this->newline;
 		}
 
+		// Is there a table heading to display?
+		if (count($this->footer) > 0)
+		{
+			$out .= $this->template['tfoot_open'];
+			$out .= $this->newline;
+			$out .= $this->template['heading_row_start'];
+			$out .= $this->newline;
+
+			foreach($this->footer as $footer)
+			{
+				$temp = $this->template['heading_cell_start'];
+
+				foreach ($footer as $key => $val)
+				{
+					if ($key != 'data')
+					{
+						$temp = str_replace('<th', "<th $key='$val'", $temp);
+					}
+				}
+
+				$out .= $temp;
+				$out .= isset($footer['data']) ? $footer['data'] : '';
+				$out .= $this->template['heading_cell_end'];
+			}
+
+			$out .= $this->template['heading_row_end'];
+			$out .= $this->newline;
+			$out .= $this->template['tfoot_close'];
+			$out .= $this->newline;
+		}
+
 		$out .= $this->template['table_close'];
 
 		// Clear table class properties before generating the table
@@ -486,6 +535,7 @@ class CI_Table {
 			'cell_start', 'cell_end',
 			'row_alt_start', 'row_alt_end',
 			'cell_alt_start', 'cell_alt_end',
+			'tfoot_open', 'tfoot_close',
 			'table_close'
 		);
 		foreach ($segments as $val)
@@ -530,6 +580,9 @@ class CI_Table {
 			'row_alt_end'        => '</tr>',
 			'cell_alt_start'     => '<td>',
 			'cell_alt_end'       => '</td>',
+
+			'tfoot_open'         => '<tfoot>',
+			'tfoot_close'        => '</tfoot>',
 
 			'table_close'        => '</table>'
 		);
