@@ -27,7 +27,7 @@
 			"<strong>{$records}</strong>",
 			"<strong>{$total_size}</strong>"
 		);
-		$this->table->add_row(
+		$this->table->set_footer(
 			form_checkbox('select_all', 'true', FALSE, 'class="toggle_all"'),
 			array('data' => lang('select_all'), 'colspan' => 4)
 		);
