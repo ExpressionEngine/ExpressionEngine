@@ -42,7 +42,6 @@ feature 'Statuses' do
 
     # Reload the page and make sure it stuck
     @page.load_view_for_status_group(1)
-    puts @statuses
     @page.status_names.map {|source| source.text}.should == @statuses
   end
 
