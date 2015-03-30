@@ -4,7 +4,7 @@
 </div>
 <fieldset class="col-group <?=form_error_class('template_name')?>">
 	<div class="setting-txt col w-8 <?=form_error_class('template_name')?>">
-		<h3><?=lang('template_name')?> <span class="required" title="required field">&#10033;</span></h3>
+		<h3><?=lang('template_name')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
 		<em><?=lang('template_name_desc')?></em>
 	</div>
 	<div class="setting-field col w-8 last">

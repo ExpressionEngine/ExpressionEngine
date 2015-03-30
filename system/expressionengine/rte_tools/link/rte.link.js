@@ -12,7 +12,7 @@ WysiHat.addButton('link', {
 		this.parent.init.apply(this, arguments);
 
 		this.$link_dialog;
-		this.$error = $('<em class="ee-form-error-message"/>').text(EE.rte.link.dialog.url_required);
+		this.$error = $('<em class="ee-form-error-message"/>').text(EE.rte.link.modal.url_required);
 
 		this.origState;
 		this.link_node;
@@ -80,7 +80,7 @@ WysiHat.addButton('link', {
 		}
 
 		// only return false if we go async
-		alert( EE.rte.link.dialog.selection_error );
+		alert( EE.rte.link.modal.selection_error );
 	},
 
 	query: function($editor) {
@@ -174,11 +174,11 @@ WysiHat.addButton('link', {
 				// Trigger the click event on this element
 				this.$link_dialog.find('input[value=' + val + ']').click();
 
-				this.$submit.val(EE.rte.link.dialog.update_link);
+				this.$submit.val(EE.rte.link.modal.update_link);
 				$('#rte-remove-link').show();
 			},
 			function() {
-				this.$submit.val(EE.rte.link.dialog.add_link);
+				this.$submit.val(EE.rte.link.modal.add_link);
 				$('#rte-remove-link').hide();
 			}
 		);
@@ -209,51 +209,7 @@ WysiHat.addButton('link', {
 	},
 
 	_setupDialog: function() {
-		var $link_dialog = $(
-			'<div class="modal-wrap modal-rte-link-dialog">' +
-			'<div class="modal">' +
-			'<div class="col-group">' +
-			'<div class="col w-16">' +
-			'<a class="m-close" href="#"></a>' +
-			'<div class="box">' +
-			'<h1>' + EE.rte.link.dialog.title + '</h1>' +
-			'<form class="settings">' +
-			'<fieldset class="col-group">' +
-			'<div class="setting-txt col w-8">' +
-			'<h3>' + EE.rte.link.dialog.url_field_label + ' <span class="required" title="required field">&#10033;</span></h3>' +
-			'</div>' +
-			'<div class="setting-field col w-8 last">' +
-			'<input type="text" name="url" required="required">' +
-			'</div>' +
-			'</fieldset>' +
-			'<fieldset class="col-group">' +
-			'<div class="setting-txt col w-8">' +
-			'<h3>' + EE.rte.link.dialog.title_field_label + '</h3>' +
-			'</div>' +
-			'<div class="setting-field col w-8 last">' +
-			'<input type="text" name="title">' +
-			'</div>' +
-			'</fieldset>' +
-			'<fieldset class="col-group">' +
-			'<div class="setting-txt col w-8">' +
-			'<h3>' + EE.rte.link.dialog.external_link + '</h3>' +
-			'</div>' +
-			'<div class="setting-field col w-8 last">' +
-			// @TODO localize 'yes' and 'no'
-			'<label class="choice mr yes"><input type="radio" name="external" value="y"> yes</label>' +
-			'<label class="choice chosen no"><input type="radio" name="external" value="n" checked="checked"> no</label>' +
-			'</div>' +
-			'</fieldset>' +
-			'<fieldset class="form-ctrls">' +
-			'<button id="rte-remove-link" class="btn hidden">' + EE.rte.link.dialog.remove_link + '</button>' +
-			'<input class="btn" type="submit" value="' + EE.rte.link.dialog.add_link + '">' +
-			'</fieldset>' +
-			'</form>' +
-			'</div>' +
-			'</div>' +
-			'</div>' +
-			'</div>' +
-			'</div>')
+		var $link_dialog = $(EE.rte.link.modal.html)
 			.appendTo('body')
 			.hide()
 			.on('click', '#rte-remove-link', $.proxy(this, '_removeLink'))
