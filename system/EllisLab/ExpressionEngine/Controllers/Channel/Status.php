@@ -305,7 +305,10 @@ class Status extends AbstractChannelController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$table = CP\Table::create(array('reorder' => TRUE));
+		$table = CP\Table::create(array(
+			'reorder' => TRUE,
+			'sortable' => FALSE
+		));
 		$table->setColumns(
 			array(
 				'status_name',
