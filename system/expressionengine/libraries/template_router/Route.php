@@ -29,14 +29,15 @@ class EE_Route {
 	public $subpatterns = array();
 
 	public $segment_regex = "
-		(?P<static>[^{]*)                         # static rule data
+		(\/|
+		(?P<static>[^{\/]*)                         # static rule data
 		({
 		(?P<variable>[^}:]*)                      # variable name
 		(?:
 			\:                                    # variable delimiter
 			(?P<rules>.*?(regex\[\(.*?\)\])?.*?)  # rules
 		)?
-		})?
+		})?)
 	";
 
 	public $rules_regex = "
@@ -199,7 +200,9 @@ class EE_Route {
 	 */
 	public function parse_route($route)
 	{
+		// Make sure we have a trailing slash so segments parse correctly
 		$route = trim($route, '/ ');
+		$route = $route . '/';
 
 		// Check for xss
 		if ($route !== ee()->security->xss_clean($route))
@@ -212,11 +215,11 @@ class EE_Route {
 
 		foreach ($segments as $segment)
 		{
-			if ( ! empty($segment['static']))
+			if ( ! empty($segment['static']) && empty($segment['variables']))
 			{
 				$this->segments[] = $segment['static'];
 			}
-			elseif ( ! empty($segment['variable']))
+			elseif ( ! empty($segment['variables']))
 			{
 				if (empty($segment['rules']))
 				{
@@ -236,6 +239,7 @@ class EE_Route {
 
 			$index++;
 		}
+		die();
 	}
 
 	/**
@@ -256,9 +260,12 @@ class EE_Route {
 
 		if (strpos($route, '{') !== FALSE)
 		{
+			$segment = array();
+			$segment['static'] = '';
+			$variables = array();
+
 			while ($pos < $end)
 			{
-				$segment = array();
 				$result = preg_match("/{$this->segment_regex}/ix", $route, $matches, 0, $pos);
 
 				if(empty($matches[0]))
@@ -271,9 +278,18 @@ class EE_Route {
 					break;
 				}
 
+				if ($matches[0] == '/')
+				{
+					$segment['variables'] = $variables;
+					$segments[] = $segment;
+					$segment = array();
+					$segment['static'] = '';
+					$variables = array();
+				};
+
 				if ( ! empty($matches['static']))
 				{
-					$segments[] = array('static' => $matches['static']);
+					$segment['static'] .= $matches['static'];
 				}
 
 				if ( ! empty($matches['variable']))
@@ -287,7 +303,8 @@ class EE_Route {
 						// SHA1 in base36 = 31 characters + 1 character prefix
 						$hash = 'e' . base_convert(sha1($variable), 16, 36);
 						$this->subpatterns[$hash] = $variable;
-						$segment['variable'] = $hash;
+						$variables[$variable] = array('hash' => $hash);
+						$segment['static'] .= $hash;
 					}
 					else
 					{
@@ -296,18 +313,17 @@ class EE_Route {
 
 					if ( ! empty($matches['rules']))
 					{
-						$segment['rules'] = $matches['rules'];
+						$variables[$variable]['rules'] = $matches['rules'];
 					}
 
-					if (in_array($segment['variable'], $used_names))
+					if (in_array($hash, $used_names))
 					{
 						throw new Exception(lang('variable_in_use') . $variable);
 					}
 
-					$used_names[] = $segment['variable'];
+					$used_names[] = $hash;
 				}
 
-				$segments[] = $segment;
 				$pos += strlen($matches[0]);
 			}
 			if ($pos < $end)
