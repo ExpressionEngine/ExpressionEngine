@@ -689,8 +689,13 @@ class Status extends AbstractChannelController {
 	 */
 	public function validateHex($hex)
 	{
-		ee()->form_validation->set_message('validateHex', lang('invalid_hex_code'));
-		return ! empty(preg_match('/^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $hex));
+		if ( ! preg_match('/^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $hex))
+		{
+			ee()->form_validation->set_message('validateHex', lang('invalid_hex_code'));
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
 	/**
