@@ -1,5 +1,2 @@
 # Prevent execution of PHP files
-<FilesMatch "(?i)\.(php[s0-9]?|phtml)$">
-	Order Deny,Allow
-	Deny from All
-</FilesMatch>
+SetHandler default-handler
