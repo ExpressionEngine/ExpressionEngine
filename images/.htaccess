@@ -1,2 +1,2 @@
-# Prevent execution of PHP files
+# Prevent execution of code
 SetHandler default-handler
