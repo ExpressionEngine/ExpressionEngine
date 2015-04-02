@@ -32,11 +32,23 @@ class MimeType {
 	protected $whitelist = array();
 	protected $images    = array();
 
+	/**
+	 * Constructor
+	 *
+	 * @param array $mimes An array of MIME types to add to the whitelist
+	 * @return void
+	 */
 	public function __construct(array $mimes = array())
 	{
 		$this->whitelist = $mimes;
 	}
 
+	/**
+	 * Adds a mime type to the whitelist
+	 *
+	 * @param string $mime The mime type to add to the whitelist
+	 * @return void
+	 */
 	public function addMimeType($mime)
 	{
 		if ( ! in_array($mime, $this->whitelist))
@@ -45,6 +57,12 @@ class MimeType {
 		}
 	}
 
+	/**
+	 * Adds multiple mime types to the whitelist
+	 *
+	 * @param array $mimes An array of MIME types to add to the whitelist
+	 * @return void
+	 */
 	public function addMimeTypes(array $mimes = array())
 	{
 		foreach ($mimes as $mime)
@@ -53,6 +71,13 @@ class MimeType {
 		}
 	}
 
+	/**
+	 * Checks the mime-type of a file
+	 *
+	 * @throws Exception If the file does not exist
+	 * @param string $path The full path to the file being checked
+	 * @return string The mime-type of the file
+	 */
 	public function ofFile($path)
 	{
 		if ( ! file_exists($path))
@@ -80,6 +105,12 @@ class MimeType {
 		return $mime;
 	}
 
+	/**
+	 * Filters through the whitelist of MIME types looking for just image
+	 * MIME types.
+	 *
+	 * @return array An array of image MIME types.
+	 */
 	protected function divineImages()
 	{
 		if (empty($this->images))
@@ -96,21 +127,49 @@ class MimeType {
 		return $this->images;
 	}
 
+	/**
+	 * Determines if a file is an image or not.
+	 *
+	 * @throws Exception If the file does not exist
+	 * @param string $path The full path to the file being checked
+	 * @return bool TRUE if it is an image; FALSE if not
+	 */
 	public function fileIsImage($path)
 	{
 		return in_array($this->ofFile($path), $this->divineImages());
 	}
 
+	/**
+	 * Determines if a MIME type is in our list of valid image MIME types.
+	 *
+	 * @param string $mime The mime to check
+	 * @return bool TRUE if it is an image; FALSE if not
+	 */
 	public function isImage($mime)
 	{
 		return in_array($mime, $this->divineImages());
 	}
 
+	/**
+	 * Gets the MIME type of a file and compares it to our whitelist to see if
+	 * it is safe for upload.
+	 *
+	 * @throws Exception If the file does not exist
+	 * @param string $path The full path to the file being checked
+	 * @return bool TRUE if it safe; FALSE if not
+	 */
 	public function fileIsSafeForUpload($path)
 	{
 		return in_array($this->ofFile($path), $this->whitelist);
 	}
 
+	/**
+	 * Checks a given MIME type against our whitelist to see if it is safe for
+	 * upload
+	 *
+	 * @param string $mime The mime to check
+	 * @return bool TRUE if it is an image; FALSE if not
+	 */
 	public function isSafeForUpload($mime)
 	{
 		return in_array($mime, $this->whitelist);
