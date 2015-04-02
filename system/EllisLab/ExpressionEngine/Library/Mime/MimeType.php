@@ -41,7 +41,7 @@ class MimeType {
 	 */
 	public function __construct(array $mimes = array())
 	{
-		$this->whitelist = $mimes;
+		$this->addMimeTypes($mimes);
 	}
 
 	/**
