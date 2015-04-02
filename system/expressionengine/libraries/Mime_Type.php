@@ -1,6 +1,6 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-use EllisLab\ExpressionEngine\Library\Mime;
+use EllisLab\ExpressionEngine\Library\Mime\MimeType;
 
 /**
  * ExpressionEngine - by EllisLab
