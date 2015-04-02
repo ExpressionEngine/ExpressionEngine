@@ -82,7 +82,7 @@ class MimeType {
 
 	protected function divineImages()
 	{
-		if (empty($images))
+		if (empty($this->images))
 		{
 			foreach ($this->whitelist as $mime)
 			{
