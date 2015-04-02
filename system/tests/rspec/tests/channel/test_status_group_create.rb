@@ -15,8 +15,6 @@ feature 'Status Group Create/Edit' do
   end
 
   it 'should validate regular fields' do
-    duplicate_group = 'A status group already exists with the same name.'
-
     @page.submit
 
     no_php_js_errors
