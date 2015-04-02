@@ -29,6 +29,13 @@ class Mime_Type {
 
 	protected $mime_type;
 
+	/**
+	 * Instantiates a new MimeType object and adds whitelisted MIME types based
+	 * on the config/mimes.php file and any MIME types in the
+	 * 'mime_whitelist_additions' config override.
+	 *
+	 * @return void
+	 */
 	public function __construct()
 	{
 		$this->mime_type = new MimeType();
@@ -61,6 +68,12 @@ class Mime_Type {
 		}
 	}
 
+	/**
+	 * Checks the config for specific member exceptions or member group
+	 * exceptions and compares the current member to those lists.
+	 *
+	 * @return bool TRUE if excluded; FALSE otherwise
+	 */
 	protected function memberExcludedFromWhitelistRestrictions()
 	{
 		$excluded_members = ee()->config->item('mime_whitelist_member_exception');
@@ -90,6 +103,11 @@ class Mime_Type {
 		return FALSE;
 	}
 
+	/**
+	 * Checks the mime-type of a file
+	 *
+	 * @see MimeType::ofFile
+	 */
 	public function ofFile($path)
 	{
 		try
@@ -102,11 +120,21 @@ class Mime_Type {
 		}
 	}
 
+	/**
+	 * Determines if a file is an image or not.
+	 *
+	 * @see MimeType::fileIsImage
+	 */
 	public function fileIsImage($path)
 	{
 		return $this->mime_type->fileIsImage($path);
 	}
 
+	/**
+	 * Determines if a MIME type is in our list of valid image MIME types.
+	 *
+	 * @see MimeType::isImage
+	 */
 	public function isImage($mime)
 	{
 		try
@@ -119,6 +147,12 @@ class Mime_Type {
 		}
 	}
 
+	/**
+	 * Gets the MIME type of a file and compares it to our whitelist to see if
+	 * it is safe for upload.
+	 *
+	 * @see MimeType::fileIsSafeForUpload
+	 */
 	public function fileIsSafeForUpload($path)
 	{
 		if ($this->memberExcludedFromWhitelistRestrictions())
@@ -129,6 +163,12 @@ class Mime_Type {
 		return $this->mime_type->fileIsSafeForUpload($path);
 	}
 
+	/**
+	 * Checks a given MIME type against our whitelist to see if it is safe for
+	 * upload
+	 *
+	 * @see MimeType::isSafeForUpload
+	 */
 	public function isSafeForUpload($mime)
 	{
 		if ($this->memberExcludedFromWhitelistRestrictions())
