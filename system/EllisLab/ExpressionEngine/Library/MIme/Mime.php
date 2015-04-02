@@ -52,8 +52,7 @@ class Mime {
 			}
 			else
 			{
-				// show_error()?
-				// log an error?
+				throw new Exception("Cannot import your mime-type whitelist: the file " . $mime_file . " does not exist or cannot be read.");
 			}
 		}
 	}
