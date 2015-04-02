@@ -27,7 +27,7 @@ use Exception;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Mime {
+class MimeType {
 
 	protected $whitelist = array();
 	protected $images    = array();
@@ -37,7 +37,7 @@ class Mime {
 		$this->whitelist = $mimes;
 	}
 
-	public function addMime($mime)
+	public function addMimeType($mime)
 	{
 		if ( ! in_array($mime, $this->whitelist))
 		{
@@ -45,11 +45,11 @@ class Mime {
 		}
 	}
 
-	public function addMimes(array $mimes = array())
+	public function addMimeTypes(array $mimes = array())
 	{
 		foreach ($mimes as $mime)
 		{
-			$this->addMime($mime);
+			$this->addMimeType($mime);
 		}
 	}
 
@@ -106,11 +106,9 @@ class Mime {
 		return in_array($mime, $this->divineImages());
 	}
 
-
 	public function fileIsSafeForUpload($path)
 	{
 		return in_array($this->ofFile($path), $this->whitelist);
-
 	}
 
 	public function isSafeForUpload($mime)
