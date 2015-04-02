@@ -28,150 +28,114 @@
  * @link		http://ellislab.com
  */
 
-/*
-| -------------------------------------------------------------------
-| MIME TYPES
-| -------------------------------------------------------------------
-| This file contains an array of mime types.  It is used by the
-| Upload class to help identify allowed file types.
-|
-*/
-$mimes = array(
-				'ai'	=>	'application/postscript',
-				'aif'	=>	'audio/x-aiff',
-				'aifc'	=>	'audio/x-aiff',
-				'aiff'	=>	'audio/x-aiff',
-				'avi'	=>	'video/x-msvideo',
-				'bin'	=>	'application/macbinary',
-				'bmp'	=>	'image/bmp',
-				'cpt'	=>	'application/mac-compactpro',
-				'css'	=>	'text/css',
-				'csv'	=>	array('text/x-comma-separated-values', 'text/comma-separated-values', 'application/octet-stream', 'application/vnd.ms-excel', 'text/csv', 'application/csv', 'application/excel', 'application/vnd.msexcel'),
-				'class'	=>	'application/octet-stream',
-				'dcr'	=>	'application/x-director',
-				'dir'	=>	'application/x-director',
-				'dll'	=>	'application/octet-stream',
-				'dms'	=>	'application/octet-stream',
-				'doc'	=>	'application/msword',
-				'docm'	=>	'application/vnd.ms-word.document.macroEnabled.12',
-				'docx'	=>	array('application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.openxmlformats-officedocument.wordprocessingml'),
-				'dotm'	=>	'application/vnd.ms-word.template.macroEnabled.12',
-				'dotx'	=>	'application/vnd.openxmlformats-officedocument.wordprocessingml.template',
-				'dvi'	=>	'application/x-dvi',
-				'dxr'	=>	'application/x-director',
-				'eml'	=>	'message/rfc822',
-				'eps'	=>	'application/postscript',
-				'epub'	=>	'application/epub+zip',
-				'exe'	=>	'application/octet-stream',
-				'flac'	=>	'audio/flac',
-				'gif'	=>	'image/gif',
-				'gtar'	=>	'application/x-gtar',
-				'gz'	=>	'application/x-gzip',
-				'hqx'	=>	'application/mac-binhex40',
-				'htm'	=>	'text/html',
-				'html'	=>	'text/html',
-				'jpg'	=>	array('image/jpeg', 'image/pjpeg'),
-				'jpe'	=>	array('image/jpeg', 'image/pjpeg'),
-				'jpeg'	=>	array('image/jpeg', 'image/pjpeg'),
-				'js'	=>	'application/x-javascript',
-				'lha'	=>	'application/octet-stream',
-				'log'	=>	array('text/plain', 'text/x-log'),
-				'lzh'	=>	'application/octet-stream',
-				'm4a'	=>	'audio/m4a',
-				'm4v'	=>	'video/m4v',
-				'mid'	=>	'audio/midi',
-				'midi'	=>	'audio/midi',
-				'mif'	=>	'application/vnd.mif',
-				'mov'	=>	'video/quicktime',
-				'movie'	=>	'video/x-sgi-movie',
-				'mp2'	=>	'audio/mpeg',
-				'mp3'	=>	array('audio/mpeg', 'audio/mpg'),
-				'mp4'	=>	array('audio/mp4', 'video/mp4'),
-				'mpe'	=>	'video/mpeg',
-				'mpeg'	=>	'video/mpeg',
-				'mpg'	=>	'video/mpeg',
-				'mpga'	=>	'audio/mpeg',
-				'oda'	=>	'application/oda',
-				'odb'	=>	'application/vnd.oasis.opendocument.database',
-				'odc'	=>	'application/vnd.oasis.opendocument.chart',
-				'odf'	=>	'application/vnd.oasis.opendocument.formula',
-				'odg'	=>	'application/vnd.oasis.opendocument.graphics',
-				'odi'	=>	'application/vnd.oasis.opendocument.image',
-				'odm'	=>	'application/vnd.oasis.opendocument.text-master',
-				'odp'	=>	'application/vnd.oasis.opendocument.presentation',
-				'ods'	=>	'application/vnd.oasis.opendocument.spreadsheet',
-				'odt'	=>	'application/vnd.oasis.opendocument.text',
-				'ogg'	=>	'audio/ogg',
-				'ogv'	=>	'video/ogg',
-				'otc'	=>  'application/vnd.oasis.opendocument.chart-template',
-				'otf'	=>  'application/vnd.oasis.opendocument.formula-template',
-				'otg'	=>  'application/vnd.oasis.opendocument.graphics-template',
-				'oth'	=>  'application/vnd.oasis.opendocument.text-web',
-				'oti'	=>  'application/vnd.oasis.opendocument.image-template',
-				'otp'	=>  'application/vnd.oasis.opendocument.presentation-template',
-				'ots'	=>  'application/vnd.oasis.opendocument.spreadsheet-template',
-				'ott'	=>  'application/vnd.oasis.opendocument.text-template',
-				'pdf'	=>	array('application/pdf', 'application/x-download'),
-				'php'	=>	'application/x-httpd-php',
-				'php3'	=>	'application/x-httpd-php',
-				'php4'	=>	'application/x-httpd-php',
-				'phps'	=>	'application/x-httpd-php-source',
-				'phtml'	=>	'application/x-httpd-php',
-				'png'	=>	array('image/png',  'image/x-png'),
-				'potm'	=>	'application/vnd.ms-powerpoint.template.macroEnabled.12',
-				'potx'	=>	'application/vnd.openxmlformats-officedocument.presentationml.template',
-				'ppam'	=>	'application/vnd.ms-powerpoint.addin.macroEnabled.12',
-				'ppsm'	=>	'application/vnd.ms-powerpoint.slideshow.macroEnabled.12',
-				'ppsx'	=>	'application/vnd.openxmlformats-officedocument.presentationml.slideshow',
-				'ppt'	=>	array('application/powerpoint', 'application/vnd.ms-powerpoint'),
-				'pptm'	=>	'application/vnd.ms-powerpoint.presentation.macroEnabled.12',
-				'pptx'	=>	'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-				'ps'	=>	'application/postscript',
-				'psd'	=>	'application/x-photoshop',
-				'qt'	=>	'video/quicktime',
-				'ra'	=>	'audio/x-realaudio',
-				'ram'	=>	'audio/x-pn-realaudio',
-				'rar'	=>	'application/x-rar-compressed',
-				'rm'	=>	'audio/x-pn-realaudio',
-				'rpm'	=>	'audio/x-pn-realaudio-plugin',
-				'rtx'	=>	'text/richtext',
-				'rtf'	=>	'text/rtf',
-				'rv'	=>	'video/vnd.rn-realvideo',
-				'sea'	=>	'application/octet-stream',
-				'shtml'	=>	'text/html',
-				'sit'	=>	'application/x-stuffit',
-				'smi'	=>	'application/smil',
-				'smil'	=>	'application/smil',
-				'so'	=>	'application/octet-stream',
-				'swf'	=>	'application/x-shockwave-flash',
-				'tar'	=>	'application/x-tar',
-				'text'	=>	'text/plain',
-				'tgz'	=>	'application/x-tar',
-				'tif'	=>	'image/tiff',
-				'tiff'	=>	'image/tiff',
-				'txt'	=>	'text/plain',
-				'wav'	=>	'audio/x-wav',
-				'wbxml'	=>	'application/wbxml',
-				'webm'	=>	'video/webm',
-				'wmlc'	=>	'application/wmlc',
-				'word'	=>	array('application/msword', 'application/octet-stream'),
-				'wmv' 	=> 	'video/x-ms-wmv',
-				'xht'	=>	'application/xhtml+xml',
-				'xhtml'	=>	'application/xhtml+xml',
-				'xl'	=>	'application/excel',
-				'xlam'	=>	'application/vnd.ms-excel.addin.macroEnabled.12',
-				'xlsb'	=>	'application/vnd.ms-excel.sheet.binary.macroEnabled.12',
-				'xlsm'	=>	'application/vnd.ms-excel.sheet.binary.macroEnabled.12',
-				'xlsb'	=>	'application/vnd.ms-excel.sheet.macroEnabled.12',
-				'xls'	=>	array('application/excel', 'application/vnd.ms-excel'),
-				'xlsx'	=>	'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-				'xltm'	=>	'application/vnd.ms-excel.template.macroEnabled.12',
-				'xltx'	=>	'application/vnd.openxmlformats-officedocument.spreadsheetml',
-				'xml'	=>	'text/xml',
-				'xps'	=>	'application/vnd.ms-xpsdocument',
-				'xsl'	=>	'text/xml',
-				'zip'	=>  array('application/x-zip', 'application/zip', 'application/x-zip-compressed')
-			);
+$whitelist = array(
+	'application/csv', // .csv
+	'application/epub+zip', // .epub
+	'application/excel', // .csv, .xl, .xls
+	'application/mac-binhex40', // .hqx
+	'application/mac-compactpro', // .cpt
+	'application/msword', // .doc, .word
+	'application/oda', // .oda
+	'application/pdf', // .pdf
+	'application/postscript', // .ai, .eps, .ps
+	'application/powerpoint', // .ppt
+	'application/smil', // .smi, .smil
+	'application/vnd.mif', // .mif
+	'application/vnd.ms-excel', // .csv, .xls
+	'application/vnd.ms-excel.addin.macroEnabled.12', // .xlam
+	'application/vnd.ms-excel.sheet.binary.macroEnabled.12', // .xlsm
+	'application/vnd.ms-excel.sheet.macroEnabled.12', // .xlsb
+	'application/vnd.ms-excel.template.macroEnabled.12', // .xltm
+	'application/vnd.ms-powerpoint', // .ppt
+	'application/vnd.ms-powerpoint.addin.macroEnabled.12', // .ppam
+	'application/vnd.ms-powerpoint.presentation.macroEnabled.12', // .pptm
+	'application/vnd.ms-powerpoint.slideshow.macroEnabled.12', // .ppsm
+	'application/vnd.ms-powerpoint.template.macroEnabled.12', // .potm
+	'application/vnd.ms-word.document.macroEnabled.12', // .docm
+	'application/vnd.ms-word.template.macroEnabled.12', // .dotm
+	'application/vnd.ms-xpsdocument', // .xps
+	'application/vnd.msexcel', // .csv
+	'application/vnd.oasis.opendocument.chart', // .odc
+	'application/vnd.oasis.opendocument.chart-template', // .otc
+	'application/vnd.oasis.opendocument.database', // .odb
+	'application/vnd.oasis.opendocument.formula', // .odf
+	'application/vnd.oasis.opendocument.formula-template', // .otf
+	'application/vnd.oasis.opendocument.graphics', // .odg
+	'application/vnd.oasis.opendocument.graphics-template', // .otg
+	'application/vnd.oasis.opendocument.image', // .odi
+	'application/vnd.oasis.opendocument.image-template', // .oti
+	'application/vnd.oasis.opendocument.presentation', // .odp
+	'application/vnd.oasis.opendocument.presentation-template', // .otp
+	'application/vnd.oasis.opendocument.spreadsheet', // .ods
+	'application/vnd.oasis.opendocument.spreadsheet-template', // .ots
+	'application/vnd.oasis.opendocument.text', // .odt
+	'application/vnd.oasis.opendocument.text-master', // .odm
+	'application/vnd.oasis.opendocument.text-template', // .ott
+	'application/vnd.oasis.opendocument.text-web', // .oth
+	'application/vnd.openxmlformats-officedocument.presentationml.presentation', // .pptx
+	'application/vnd.openxmlformats-officedocument.presentationml.slideshow', // .ppsx
+	'application/vnd.openxmlformats-officedocument.presentationml.template', // .potx
+	'application/vnd.openxmlformats-officedocument.spreadsheetml', // .xltx
+	'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+	'application/vnd.openxmlformats-officedocument.wordprocessingml', // .docx
+	'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+	'application/vnd.openxmlformats-officedocument.wordprocessingml.template', // .dotx
+	'application/wbxml', // .wbxml
+	'application/wmlc', // .wmlc
+	'application/x-director', // .dcr, .dir, .dxr
+	'application/x-download', // .pdf
+	'application/x-dvi', // .dvi
+	'application/x-gtar', // .gtar
+	'application/x-gzip', // .gz
+	'application/x-photoshop', // .psd
+	'application/x-rar-compressed', // .rar
+	'application/x-stuffit', // .sit
+	'application/x-tar', // .tar, .tgz
+	'application/x-zip', // .zip
+	'application/x-zip-compressed', // .zip
+	'application/xhtml+xml', // .xht, .xhtml
+	'application/zip', // .zip
+	'audio/flac', // .flac
+	'audio/m4a', // .m4a
+	'audio/midi', // .mid, .midi
+	'audio/mp4', // .mp4
+	'audio/mpeg', // .mp2, .mp3, .mpga
+	'audio/mpg', // .mp3
+	'audio/ogg', // .ogg
+	'audio/x-aiff', // .aif, .aifc, .aiff
+	'audio/x-pn-realaudio', // .ram, .rm
+	'audio/x-pn-realaudio-plugin', // .rpm
+	'audio/x-realaudio', // .ra
+	'audio/x-wav', // .wav
+	'image/bmp', // .bmp
+	'image/gif', // .gif
+	'image/jpeg', // .jpg, .jpe, .jpeg
+	'image/pjpeg', // .jpg, .jpe, .jpeg
+	'image/png', // .png
+	'image/tiff', // .tif, .tiff
+	'image/x-png', // .png
+	'message/rfc822', // .eml
+	'text/comma-separated-values', // .csv
+	'text/css', // .css
+	'text/csv', // .csv
+	'text/html', // .htm, .html, .shtml
+	'text/plain', // .log, .text, .txt
+	'text/richtext', // .rtx
+	'text/rtf', // .rtf
+	'text/x-comma-separated-values', // .csv
+	'text/x-log', // .log
+	'text/xml', // .xml, .xsl
+	'video/m4v', // .m4v
+	'video/mp4', // .mp4
+	'video/mpeg', // .mpe, .mpeg, .mpg
+	'video/ogg', // .ogv
+	'video/quicktime', // .mov, .qt
+	'video/vnd.rn-realvideo', // .rv
+	'video/webm', // .webm
+	'video/x-ms-wmv', // .wmv
+	'video/x-msvideo', // .avi
+	'video/x-sgi-movie', // .movie
+);
 
-/* End of file CI_mimes.php */
+/* End of file mimes.php */
 /* Location: ./system/expressionengine/config/mimes.php */
