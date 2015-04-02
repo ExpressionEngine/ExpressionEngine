@@ -61,6 +61,35 @@ class Mime_Type {
 		}
 	}
 
+	protected function memberExcludedFromWhitelistRestrictions()
+	{
+		$excluded_members = ee()->config->item('mime_whitelist_member_exception');
+		if ($excluded_members !== FALSE)
+		{
+			$excluded_members = preg_split('/[\s|,]/', $excluded_members, -1, PREG_SPLIT_NO_EMPTY);
+			$excluded_members = is_array($excluded_members) ? $excluded_members : array($excluded_members);
+
+			if (in_array(ee()->session->userdata('member_id'), $excluded_members))
+			{
+				return TRUE;
+			}
+		}
+
+		$excluded_member_groups = ee()->config->item('mime_whitelist_member_group_exception');
+		if ($excluded_member_groups !== FALSE)
+		{
+			$excluded_member_groups = preg_split('/[\s|,]/', $excluded_member_groups, -1, PREG_SPLIT_NO_EMPTY);
+			$excluded_member_groups = is_array($excluded_member_groups) ? $excluded_member_groups : array($excluded_member_groups);
+
+			if (in_array(ee()->session->userdata('group_id'), $excluded_member_groups))
+			{
+				return TRUE;
+			}
+		}
+
+		return FALSE;
+	}
+
 	public function ofFile($path)
 	{
 		try
@@ -92,11 +121,21 @@ class Mime_Type {
 
 	public function fileIsSafeForUpload($path)
 	{
+		if ($this->memberExcludedFromWhitelistRestrictions())
+		{
+			return TRUE;
+		}
+
 		return $this->mime_type->fileIsSafeForUpload($path);
 	}
 
 	public function isSafeForUpload($mime)
 	{
+		if ($this->memberExcludedFromWhitelistRestrictions())
+		{
+			return TRUE;
+		}
+
 		try
 		{
 			return $this->mime_type->isSafeForUpload($path);
