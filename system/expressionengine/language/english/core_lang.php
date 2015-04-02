@@ -155,6 +155,12 @@ To fix: Set the config file (/expressionengine/config/config.php) permissions to
 potentially malicious or dangerous code. We recommend you hit the back button
 and email %s to report the link that generated this message.',
 
+'missing_mime_config' =>
+'Cannot import your mime-type whitelist: the file %s does not exist or cannot be read.',
+
+'file_not_found' =>
+'File %s does not exist.',
+
 //----------------------------
 // Member Groups
 //----------------------------
