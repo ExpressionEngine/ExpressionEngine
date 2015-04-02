@@ -31,7 +31,7 @@ class Mime_Type {
 
 	public function __construct()
 	{
-		$this->mime_type = new Mime();
+		$this->mime_type = new MimeType();
 
 		// Load the whitelisted mimes from disk
 		$mime_file = APPPATH.'config/mimes.php';
