@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Library\Mime;
 
 use Exception;
+use InvalidArgumentException;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -51,6 +52,16 @@ class MimeType {
 	 */
 	public function addMimeType($mime)
 	{
+		if ( ! is_string($mime))
+		{
+			throw new InvalidArgumentException("addMimeType only accepts strings; " . gettype($mime) . " found instead.");
+		}
+
+		if (count(explode('/', $mime)) != 2)
+		{
+			throw new InvalidArgumentException($mime . " is not a valid MIME type.");
+		}
+
 		if ( ! in_array($mime, $this->whitelist))
 		{
 			$this->whitelist[] = $mime;
