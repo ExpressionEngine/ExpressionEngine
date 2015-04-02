@@ -63,7 +63,7 @@ class MimeType {
 	 * @param array $mimes An array of MIME types to add to the whitelist
 	 * @return void
 	 */
-	public function addMimeTypes(array $mimes = array())
+	public function addMimeTypes(array $mimes)
 	{
 		foreach ($mimes as $mime)
 		{
