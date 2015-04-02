@@ -72,6 +72,16 @@ class MimeType {
 	}
 
 	/**
+	 * Returns the whitelist of MIME Types
+	 *
+	 * @return array An array of MIME types that are on the whitelist
+	 */
+	public function getWhitelist()
+	{
+		return $this->whitelist;
+	}
+
+	/**
 	 * Checks the mime-type of a file
 	 *
 	 * @throws Exception If the file does not exist

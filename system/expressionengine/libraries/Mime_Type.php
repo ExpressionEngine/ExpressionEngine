@@ -186,5 +186,15 @@ class Mime_Type {
 		}
 	}
 
+	/**
+	 * Returns the whitelist of MIME Types
+	 *
+	 * @return array An array of MIME types that are on the whitelist
+	 */
+	public function getWhitelist()
+	{
+		return $this->mime_type->getWhitelist();
+	}
+
 }
 // EOF
