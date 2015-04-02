@@ -142,8 +142,7 @@ class CI_Upload {
 	 */
 	public function do_upload($field = 'userfile')
 	{
-
-	// Is $_FILES[$field] set? If not, no reason to continue.
+		// Is $_FILES[$field] set? If not, no reason to continue.
 		if ( ! isset($_FILES[$field]))
 		{
 			$this->set_error('upload_no_file_selected');
@@ -192,7 +191,6 @@ class CI_Upload {
 			return FALSE;
 		}
 
-
 		// Set the uploaded data as class variables
 		$this->file_temp = $_FILES[$field]['tmp_name'];
 		$this->file_size = $_FILES[$field]['size'];
@@ -201,6 +199,13 @@ class CI_Upload {
 		$this->file_name = $this->_prep_filename($_FILES[$field]['name']);
 		$this->file_ext	 = $this->get_extension($this->file_name);
 		$this->client_name = $this->file_name;
+
+		// Is this a hidden file? Not allowed
+		if (strncmp($this->file_name, '.', 1) == 0)
+		{
+			$this->set_error('upload_invalid_filetype');
+			return FALSE;
+		}
 
 		// Is the file type allowed to be uploaded?
 		if ( ! $this->is_allowed_filetype())
