@@ -470,6 +470,55 @@ $lang = array(
 'channel_manager' =>
 'Channel Manager',
 
+'image_resizing' =>
+'Image Resizing',
+
+'image_resize_protocol' =>
+'Protocol',
+
+'image_resize_protocol_desc' =>
+'Ask your web host for server compatibility.',
+
+'gd' =>
+'GD',
+
+'gd2' =>
+'GD 2',
+
+'netpbm' =>
+'NetPBM',
+
+'imagemagick' =>
+'ImageMagick',
+
+'image_library_path' =>
+'Converter path',
+
+'image_library_path_desc' =>
+'Full path location of the <mark>image program</mark>.</em>
+<em><b>Required</b> for ImageMagick and NetPBM.',
+
+'invalid_image_library_path' =>
+'This field must contain a valid path to an image processing library if ImageMagick or NetPBM is the selected protocol.',
+
+'thumbnail_suffix' =>
+'Thumbnail suffix',
+
+'thumbnail_suffix_desc' =>
+'Added to all auto-generated thumbnails. <b>Example</b>: photo_thumb.jpg',
+
+'enable_emoticons' =>
+'Enable emoticons?',
+
+'enable_emoticons_desc' =>
+'When set to <b>yes</b>, text based emoticons will be converted to image based emoticons.',
+
+'emoticon_url' =>
+'<abbr title="Unified Resource Locator">URL</abbr>',
+
+'emoticon_url_desc' =>
+'<abbr title="Unified Resource Locator">URL</abbr> location of the <mark>emoticon</mark> directory.',
+
 /**
  * Comment Settings
  */
