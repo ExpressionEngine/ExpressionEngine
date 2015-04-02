@@ -32,28 +32,24 @@ class Mime {
 	protected $whitelist = array();
 	protected $images    = array();
 
-	public function __construct($mimes = '')
+	public function __construct(array $mimes = array())
 	{
-		if (is_array($mimes))
-		{
-			$this->whitelist = $mimes;
-		}
-		else
-		{
-			if (empty($mime_file))
-			{
-				$mime_file = APPPATH.'config/mimes.php';
-			}
+		$this->whitelist = $mimes;
+	}
 
-			if (file_exists($mime_file) && is_readable($mime_file))
-			{
-				include($mime_file);
-				$this->whitelist = $whitelist;
-			}
-			else
-			{
-				throw new Exception("Cannot import your mime-type whitelist: the file " . $mime_file . " does not exist or cannot be read.");
-			}
+	public function addMime($mime)
+	{
+		if ( ! in_array($mime, $this->whitelist))
+		{
+			$this->whitelist[] = $mime;
+		}
+	}
+
+	public function addMimes(array $mimes = array())
+	{
+		foreach ($mimes as $mime)
+		{
+			$this->addMime($mime);
 		}
 	}
 
@@ -123,4 +119,4 @@ class Mime {
 	}
 
 }
-
+// EOF
