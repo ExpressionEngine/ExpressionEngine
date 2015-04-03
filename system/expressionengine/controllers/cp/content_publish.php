@@ -335,8 +335,7 @@ class Content_publish extends CP_Controller {
 
 		$data = array(
 			'message'			=> '',	// @todo consider pulling?
-			'cp_page_title'		=> $entry_id ? lang('edit_entry') : lang('new_entry') . ': '. $this->_channel_data['channel_title'],
-
+			'cp_page_title'		=> lang($entry_id ? 'edit_entry' : 'new_entry').': '.$this->_channel_data['channel_title'],
 			'tabs'				=> $tab_hierarchy,
 			'first_tab'			=> key($tab_hierarchy),
 			'tab_labels'		=> $this->_tab_labels,
