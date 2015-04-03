@@ -157,7 +157,7 @@ class MimeType {
 	 */
 	public function fileIsImage($path)
 	{
-		return in_array($this->ofFile($path), $this->divineImages());
+		return $this->isImage($this->ofFile($path));
 	}
 
 	/**
@@ -181,7 +181,7 @@ class MimeType {
 	 */
 	public function fileIsSafeForUpload($path)
 	{
-		return in_array($this->ofFile($path), $this->whitelist, TRUE);
+		return $this->isSafeForUpload($this->ofFile($path));
 	}
 
 	/**
