@@ -140,9 +140,24 @@ class MimeTypeTest extends \PHPUnit_Framework_TestCase {
 		);
 	}
 
-	public function testOfFile()
+	/**
+	 * @dataProvider ofFileDataProvider
+	 */
+	public function testOfFile($description, $in, $out, $exception)
 	{
+		if ($exception)
+		{
+			$this->setExpectedException('Exception');
+		}
+		$this->assertEquals($this->mime_type->ofFile($in), $out, $description);
+	}
 
+	public function ofFileDataProvider()
+	{
+		return array(
+			array('Bad Path',  'foo.bar', '', TRUE),
+			array('Good Path', __FILE__,  'text/x-php', FALSE),
+		);
 	}
 
 	public function testFileIsImage()
