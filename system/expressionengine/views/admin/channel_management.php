@@ -1,4 +1,4 @@
-<?php extend_template('default')
+<?php extend_template('default');
 
 	if ($channel_data !== FALSE)
 	{
