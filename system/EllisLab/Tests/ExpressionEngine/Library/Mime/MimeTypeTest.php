@@ -160,14 +160,36 @@ class MimeTypeTest extends \PHPUnit_Framework_TestCase {
 		);
 	}
 
-	public function testFileIsImage()
+	/**
+	 * @dataProvider fileDataProvider
+	 */
+	public function testFileIsImage($description, $in, $out, $exception)
 	{
-
+		if ($exception)
+		{
+			$this->setExpectedException('Exception');
+		}
+		$this->assertEquals($this->mime_type->fileIsImage($in), $out, $description);
 	}
 
-	public function testFileIsSafeForUpload()
+	/**
+	 * @dataProvider fileDataProvider
+	 */
+	public function testFileIsSafeForUpload($description, $in, $out, $exception)
 	{
+		if ($exception)
+		{
+			$this->setExpectedException('Exception');
+		}
+		$this->assertEquals($this->mime_type->fileIsSafeForUpload($in), $out, $description);
+	}
 
+	public function fileDataProvider()
+	{
+		return array(
+			array('Bad Path',  'foo.bar', '', TRUE),
+			array('Good Path', __FILE__,  FALSE, FALSE),
+		);
 	}
 
 	/**
