@@ -100,11 +100,21 @@ feature 'Content & Design Settings' do
     @page.new_posts_clear_caches_n.click
     @page.enable_sql_caching_y.click
     @page.auto_assign_cat_parents_n.click
+    @page.image_resize_protocol.select 'ImageMagick'
+    @page.image_library_path.set '/'
+    @page.thumbnail_suffix.set 'mysuffix'
+    @page.enable_emoticons_n.click
+    @page.emoticon_url.set 'http://myemoticons/'
     @page.submit
 
     @page.should have_text 'Preferences updated'
     @page.new_posts_clear_caches_n.checked?.should == true
     @page.enable_sql_caching_y.checked?.should == true
     @page.auto_assign_cat_parents_n.checked?.should == true
+    @page.image_resize_protocol.value.should == 'imagemagick'
+    @page.image_library_path.value.should == '/'
+    @page.thumbnail_suffix.value.should == 'mysuffix'
+    @page.enable_emoticons_n.checked?.should == true
+    @page.emoticon_url.value.should == 'http://myemoticons/'
   end
 end
