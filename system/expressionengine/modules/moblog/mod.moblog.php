@@ -2010,9 +2010,14 @@ class Moblog {
 			$file_path = realpath(substr($directory, 1)).'/'.$filename;
 		}
 
-		// Upload the file and check for errors
-		if (file_put_contents($file_path, $file_code) === FALSE)
+		// Upload the file
+		$config = array('upload_path' => dirname($filepath));
+		$mime = $type . '/' . $subtype;
+		ee()->load->library('upload', $config);
+
+		if (ee()->upload->raw_upload($filename, $mime, $file_code) === FALSE)
 		{
+			$this->message_array[] = ee()->upload->display_errors();
 			$this->message_array[] = 'error_writing_attachment';
 			return FALSE;
 		}
