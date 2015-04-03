@@ -48,6 +48,37 @@ class EE_Upload extends CI_Upload
 	// --------------------------------------------------------------------
 
 	/**
+	 * Take raw file data and populate our tmp directory and FILES array and
+	 * then pass it through the normal do_upload routine.
+	 *
+	 * @access	public
+	 * @param string $name The file name
+	 * @param string $type The mime type
+	 * @param string $data The raw file data
+	 * @return mixed The result of do_upload
+	 */
+	public function raw_upload($name, $type, $data)
+	{
+		$tmp = tempnam(sys_get_temp_dir(), 'raw');
+		$tmp_name = basename($tmp);
+
+		if (file_put_contents($tmp, $data) === FALSE)
+		{
+			throw new Exception('Could not upload file');
+		}
+
+		$_FILES[$tmp_name]['name'] = $name;
+		$_FILES[$tmp_name]['type'] = $type;
+		$_FILES[$tmp_name]['size'] = mb_strlen($data);;
+		$_FILES[$tmp_name]['tmp_name'] = $tmp_name;
+		$_FILES[$tmp_name]['error'] = NULL;
+
+		return $this->do_upload();
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Overwrite OR Rename Files Manually
 	 *
 	 * @access	public
