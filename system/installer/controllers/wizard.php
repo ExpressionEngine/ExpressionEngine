@@ -32,7 +32,8 @@ class Wizard extends CI_Controller {
 	var $mylang				= 'english';// Set dynamically by the user when they run the installer
 	var $image_path			= ''; 		// URL path to the cp_global_images folder.  This is set dynamically
 	var $is_installed		= FALSE;	// Does an EE installation already exist?  This is set dynamically.
-	var $next_update		= FALSE;	// The next update file that needs to be loaded, when an update is performed.
+	var $next_update		= FALSE;	// The next update version that needs to be loaded, when an update is performed.
+	var $next_ud_file		= FALSE;	// The next update file that needs to be loaded, when an update is performed.
 	var $remaining_updates	= 0; 		// Number of updates remaining, in the event the user is updating from several back
 	var $refresh			= FALSE;	// Whether to refresh the page for the next update.  Set dynamically
 	var $refresh_url		= '';		// The URL where the refresh should go to.  Set dynamically
@@ -582,7 +583,7 @@ class Wizard extends CI_Controller {
 		}
 
 		// Before moving on, let's load the update file to make sure it's readable
-		$ud_file = 'ud_'.str_replace('.', '_', $this->next_update).'.php';
+		$ud_file = 'ud_'.$this->next_ud_file.'.php';
 
 		if ( ! include(APPPATH.'updates/'.$ud_file))
 		{
@@ -1404,7 +1405,7 @@ PAPAYA;
 		}
 
 		// is there a survey for this version?
-		$survey_view = 'survey_'.str_replace('.', '_', $this->next_update);
+		$survey_view = 'survey_'.$this->next_ud_file;
 
 		if (file_exists(APPPATH.'views/surveys/'.$survey_view.'.php'))
 		{
@@ -1539,6 +1540,8 @@ PAPAYA;
 	function _fetch_updates($current_version)
 	{
 		$next_update = FALSE;
+		$next_ud_file = FALSE;
+
 		$remaining_updates = 0;
 
 		$path = APPPATH.'updates/';
@@ -1554,7 +1557,7 @@ PAPAYA;
 		{
 			$file_name = $file->getFilename();
 
-			if (preg_match('/^ud_(\d+)_(\d+)_(\d+).php$/', $file_name, $m))
+			if (preg_match('/^ud_0*(\d+)_0*(\d+)_0*(\d+).php$/', $file_name, $m))
 			{
 				$file_version = "{$m[1]}.{$m[2]}.{$m[3]}";
 
@@ -1565,12 +1568,14 @@ PAPAYA;
 					if ( ! $next_update || version_compare($file_version, $next_update, '<'))
 					{
 						$next_update = $file_version;
+						$next_ud_file = substr($file_name, 3, -4);
 					}
 				}
 			}
 		}
 
 		$this->next_update = $next_update;
+		$this->next_ud_file = $next_ud_file;
 		$this->remaining_updates = $remaining_updates;
 
 		return TRUE;
