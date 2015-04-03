@@ -150,19 +150,66 @@ class MimeTypeTest extends \PHPUnit_Framework_TestCase {
 
 	}
 
-	public function testIsImage()
-	{
-
-	}
-
 	public function testFileIsSafeForUpload()
 	{
 
 	}
 
-	public function testIsSafeForUpload()
+	/**
+	 * @dataProvider isImageDataProvider
+	 */
+	public function testIsImage($description, $in, $out)
 	{
+		$this->assertEquals($this->mime_type->isImage($in), $out, $description);
+	}
 
+	public function isImageDataProvider()
+	{
+		return array(
+			array('JPEG MIME Type', 'image/jpeg',      TRUE),
+			array('PNG MIME Type',  'image/png',       FALSE),
+			array('HTML MIME Type', 'text/html',       FALSE),
+			array('PDF MIME Type',  'application/pdf', FALSE),
+
+			array('Boolen Argument',         TRUE,                        FALSE),
+			array('Integer Argument',        1,                           FALSE),
+			array('Float Argument',          1.1,                         FALSE),
+			array('Invalid String Argument', "text",                      FALSE),
+			array('Invalid String Argument', "a/b/c",                     FALSE),
+			array('Empty Array Argument',    array(),                     FALSE),
+			array('Array Argument',          array('text/html'),          FALSE),
+			array('Object Argument',         new \stdClass(),             FALSE),
+			array('Closure Argument',        function() { return TRUE; }, FALSE),
+			array('NULL Argument',           NULL,                        FALSE),
+		);
+	}
+
+	/**
+	 * @dataProvider isSafeUploadDataProvider
+	 */
+	public function testIsSafeForUpload($description, $in, $out)
+	{
+		$this->assertEquals($this->mime_type->isSafeForUpload($in), $out, $description);
+	}
+
+	public function isSafeUploadDataProvider()
+	{
+		return array(
+			array('JPEG MIME Type', 'image/jpeg',      TRUE),
+			array('HTML MIME Type', 'text/html',       FALSE),
+			array('PDF MIME Type',  'application/pdf', TRUE),
+
+			array('Boolen Argument',         TRUE,                        FALSE),
+			array('Integer Argument',        1,                           FALSE),
+			array('Float Argument',          1.1,                         FALSE),
+			array('Invalid String Argument', "text",                      FALSE),
+			array('Invalid String Argument', "a/b/c",                     FALSE),
+			array('Empty Array Argument',    array(),                     FALSE),
+			array('Array Argument',          array('text/html'),          FALSE),
+			array('Object Argument',         new \stdClass(),             FALSE),
+			array('Closure Argument',        function() { return TRUE; }, FALSE),
+			array('NULL Argument',           NULL,                        FALSE),
+		);
 	}
 
 }
