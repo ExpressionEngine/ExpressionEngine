@@ -2011,7 +2011,7 @@ class Moblog {
 		}
 
 		// Upload the file
-		$config = array('upload_path' => dirname($filepath));
+		$config = array('upload_path' => dirname($file_path));
 		$mime = $type . '/' . $subtype;
 		ee()->load->library('upload', $config);
 
