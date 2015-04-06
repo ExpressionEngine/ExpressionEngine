@@ -66,6 +66,7 @@ class CI_Upload {
 			$this->initialize($props);
 		}
 
+		ee()->load->library('Mime_Type');
 		log_message('debug', "Upload Class Initialized");
 	}
 
@@ -576,33 +577,11 @@ class CI_Upload {
 	 */
 	public function is_allowed_filetype($ignore_mime = FALSE)
 	{
-		if ($this->allowed_types == '*')
-		{
-			return TRUE;
-		}
-
-		if (count($this->allowed_types) == 0 OR ! is_array($this->allowed_types))
-		{
-			$this->set_error('upload_no_file_types');
-			return FALSE;
-		}
-
 		$ext = strtolower(ltrim($this->file_ext, '.'));
 
-		if ( ! in_array($ext, $this->allowed_types))
+		if ( ! empty($this->allowed_types) && ! in_array($ext, $this->allowed_types))
 		{
 			return FALSE;
-		}
-
-		// Images get some additional checks
-		$image_types = array('gif', 'jpg', 'jpeg', 'png', 'jpe');
-
-		if (in_array($ext, $image_types))
-		{
-			if (getimagesize($this->file_temp) === FALSE)
-			{
-				return FALSE;
-			}
 		}
 
 		if ($ignore_mime === TRUE)
@@ -610,21 +589,12 @@ class CI_Upload {
 			return TRUE;
 		}
 
-		$mime = $this->mimes_types($ext);
-
-		if (is_array($mime))
+		if ($this->is_image)
 		{
-			if (in_array($this->file_type, $mime, TRUE))
-			{
-				return TRUE;
-			}
-		}
-		elseif ($mime == $this->file_type)
-		{
-				return TRUE;
+			return ee()->mime_type->isImage($this->file_temp);
 		}
 
-		return FALSE;
+		return ee()->mime_type->fileIsSafeForUpload($this->file_temp);
 	}
 
 	// --------------------------------------------------------------------
