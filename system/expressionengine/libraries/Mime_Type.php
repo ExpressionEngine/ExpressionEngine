@@ -135,7 +135,7 @@ class Mime_Type {
 	 *
 	 * @see MimeType::isImage
 	 */
-	public function isImage($mime)
+	public function isImage($path)
 	{
 		try
 		{
