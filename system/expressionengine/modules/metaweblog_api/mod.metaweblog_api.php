@@ -1641,8 +1641,11 @@ class Metaweblog_api {
 			$file_path = realpath(substr($directory, 1)).'/'.$filename;
 		}
 
-		// Upload the file and check for errors
-		if (file_put_contents($file_path, $parameters['3']['bits']) === FALSE)
+		// Upload the file
+		$config = array('upload_path' => dirname($file_path));
+		ee()->load->library('upload', $config);
+
+		if (ee()->upload->raw_upload($filename, $mime, $file_code) === FALSE)
 		{
 			return ee()->xmlrpc->send_error_message(
 				'810',
