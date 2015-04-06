@@ -64,7 +64,6 @@ class EE_Upload extends CI_Upload
 		$this->raw_upload = TRUE;
 
 		$tmp = tempnam(sys_get_temp_dir(), 'raw');
-		$tmp_name = basename($tmp);
 
 		if (file_put_contents($tmp, $data) === FALSE)
 		{
@@ -75,7 +74,7 @@ class EE_Upload extends CI_Upload
 			'name' => $name,
 			'type' => $type,
 			'size' => mb_strlen($data),
-			'tmp_name' => $tmp_name,
+			'tmp_name' => $tmp,
 			'error' => UPLOAD_ERR_OK
 		);
 
