@@ -249,4 +249,21 @@ class MimeTypeTest extends \PHPUnit_Framework_TestCase {
 		);
 	}
 
+	/**
+	 * @dataProvider ofBufferDataProvider
+	 */
+	public function testOfBuffer($description, $in, $out)
+	{
+		$this->assertEquals($this->mime_type->ofBuffer($in), $out, $description);
+	}
+
+	public function ofBufferDataProvider()
+	{
+		return array(
+			array('HTML Data',    '<html><body>Hello world</body></html>', 'text/html'),
+			array('PHP Data',     '<?php echo "Hello world";?>',           'text/x-php'),
+			array('Random Bytes', openssl_random_pseudo_bytes(42),         'application/octet-stream')
+		);
+	}
+
 }

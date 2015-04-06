@@ -104,7 +104,7 @@ class Mime_Type {
 	}
 
 	/**
-	 * Checks the mime-type of a file
+	 * Determines the MIME type of a file
 	 *
 	 * @see MimeType::ofFile
 	 */
@@ -118,6 +118,16 @@ class Mime_Type {
 		{
 			show_error(sprintf(lang('file_not_found'), $path));
 		}
+	}
+
+	/**
+	 * Determines the MIME type of a buffer
+	 *
+	 * @see MimeType::ofFile
+	 */
+	public function ofBuffer($buffer)
+	{
+		return $this->mime_type->ofBuffer($buffer);
 	}
 
 	/**
