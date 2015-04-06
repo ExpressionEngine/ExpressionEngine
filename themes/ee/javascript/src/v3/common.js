@@ -151,20 +151,23 @@ $(document).ready(function(){
 	// ====
 
 		// listen for clicks on tabs
-		$('.tab-bar ul').on('click', 'a', function(){
+		$('.tab-wrap ul a').on('click',function(){
 			// set the tabClassIs variable
 			// tells us which .tab to control
 			var tabClassIs = $(this).attr('rel');
 
+			$('.tb-act').removeClass('tb-act');
+			$(this).parents('ul').parents('.tab-wrap').addClass('tb-act');
+
 			// close OTHER .tab(s), ignores the currently open tab
-			$('.tab-bar ul a').not(this).removeClass('act');
+			$('.tb-act ul a').not(this).removeClass('act');
 			// removes the .tab-open class from any open tabs, and hides them
-			$('.tab').not('.tab.'+tabClassIs+'.tab-open').removeClass('tab-open');
+			$('.tb-act .tab').not('.tab.'+tabClassIs+'.tab-open').removeClass('tab-open');
 
 			// add a class of .act to THIS tab
 			$(this).addClass('act');
 			// add a class of .open to the proper .tab
-			$('.tab.'+tabClassIs).addClass('tab-open');
+			$('.tb-act .tab.'+tabClassIs).addClass('tab-open');
 			// stop THIS from reloading
 			// the source window and appending to the URI
 			// and stop propagation up to document
