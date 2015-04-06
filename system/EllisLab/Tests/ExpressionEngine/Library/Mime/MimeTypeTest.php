@@ -20,7 +20,7 @@ class MimeTypeTest extends \PHPUnit_Framework_TestCase {
 			'text/plain',
 			'video/mp4',
 		);
-		$this->mime_type = new MimeType();
+		$this->mime_type = new MimeType($this->safe_mime_types);
 	}
 
 	public function tearDown()
@@ -30,6 +30,7 @@ class MimeTypeTest extends \PHPUnit_Framework_TestCase {
 
 	public function testEmptyConstructor()
 	{
+		$this->mime_type = new MimeType();
 		$this->assertEquals($this->mime_type->getWhiteList(), array(), "Empty constructor should produce an empty whitelist.");
 	}
 
@@ -61,6 +62,7 @@ class MimeTypeTest extends \PHPUnit_Framework_TestCase {
 		{
 			$this->setExpectedException($exception);
 		}
+		$this->mime_type = new MimeType();
 		$this->mime_type->addMimeTypes($in);
 		$this->assertEquals($this->mime_type->getWhiteList(), $out, $description);
 	}
@@ -68,18 +70,20 @@ class MimeTypeTest extends \PHPUnit_Framework_TestCase {
 	public function mimesDataProvider()
 	{
 		return array(
-			array('Boolen Argument',        TRUE,                        NULL,                'PHPUnit_Framework_Error'),
-			array('Integer Argument',       1,                           NULL,                'PHPUnit_Framework_Error'),
-			array('Float Argument',         1.1,                         NULL,                'PHPUnit_Framework_Error'),
-			array('String Argument',        "text/plain",                NULL,                'PHPUnit_Framework_Error'),
-			array('Empty Array Argument',   array(),                     array(),             FALSE),
-			array('Valid Array Argument',   array('text/html'),          array('text/html'),  FALSE),
-			array('Invalid Array Argument', array('text'),               NULL,                'InvalidArgumentException'),
-			array('Invalid Array Argument', array('text/html', 'text',), NULL,                'InvalidArgumentException'),
-			array('Invalid Array Argument', array('a/b/c'),              NULL,                'InvalidArgumentException'),
-			array('Object Argument',        new \stdClass(),             NULL,                'PHPUnit_Framework_Error'),
-			array('Closure Argument',       function() { return TRUE; }, NULL,                'PHPUnit_Framework_Error'),
-			array('NULL Argument',          NULL,                        NULL,                'PHPUnit_Framework_Error'),
+			array('Boolen Argument',          TRUE,                             NULL,                             'PHPUnit_Framework_Error'),
+			array('Integer Argument',         1,                                NULL,                             'PHPUnit_Framework_Error'),
+			array('Float Argument',           1.1,                              NULL,                             'PHPUnit_Framework_Error'),
+			array('String Argument',          "text/plain",                     NULL,                             'PHPUnit_Framework_Error'),
+			array('Empty Array Argument',     array(),                          array(),                          FALSE),
+			array('Valid Array Argument',     array('text/html'),               array('text/html'),               FALSE),
+			array('Valid Array Argument',     array('text/html', 'text/plain'), array('text/html', 'text/plain'), FALSE),
+			array('Duplicate Array Argument', array('text/html', 'text/html'),  array('text/html'),               FALSE),
+			array('Invalid Array Argument',   array('text'),                    NULL,                             'InvalidArgumentException'),
+			array('Invalid Array Argument',   array('text/html', 'text',),      NULL,                             'InvalidArgumentException'),
+			array('Invalid Array Argument',   array('a/b/c'),                   NULL,                             'InvalidArgumentException'),
+			array('Object Argument',          new \stdClass(),                  NULL,                             'PHPUnit_Framework_Error'),
+			array('Closure Argument',         function() { return TRUE; },      NULL,                             'PHPUnit_Framework_Error'),
+			array('NULL Argument',            NULL,                             NULL,                             'PHPUnit_Framework_Error'),
 		);
 	}
 
@@ -92,6 +96,7 @@ class MimeTypeTest extends \PHPUnit_Framework_TestCase {
 		{
 			$this->setExpectedException('InvalidArgumentException');
 		}
+		$this->mime_type = new MimeType();
 		$this->mime_type->addMimeType($in);
 		$this->assertEquals($this->mime_type->getWhiteList(), $out, $description);
 	}
@@ -113,34 +118,135 @@ class MimeTypeTest extends \PHPUnit_Framework_TestCase {
 		);
 	}
 
-	public function testGetWhitelist()
+	/**
+	 * @dataProvider multipleMimeDataProvider
+	 */
+	public function testMultipleAddMimeType($description, $in, $out)
 	{
-
+		$this->mime_type = new MimeType();
+		foreach ($in as $mime)
+		{
+			$this->mime_type->addMimeType($mime);
+		}
+		$this->assertEquals($this->mime_type->getWhiteList(), $out, $description);
 	}
 
-	public function testOfFile()
+	public function multipleMimeDataProvider()
 	{
-
+		return array(
+			array('Two Unique',           array('text/html', 'text/plain'),              array('text/html', 'text/plain')),
+			array('Two Duplicate',        array('text/html', 'text/html'),               array('text/html')),
+			array('Three with Duplicate', array('text/html', 'text/plain', 'text/html'), array('text/html', 'text/plain')),
+		);
 	}
 
-	public function testFileIsImage()
+	/**
+	 * @dataProvider ofFileDataProvider
+	 */
+	public function testOfFile($description, $in, $out, $exception)
 	{
-
+		if ($exception)
+		{
+			$this->setExpectedException('Exception');
+		}
+		$this->assertEquals($this->mime_type->ofFile($in), $out, $description);
 	}
 
-	public function testIsImage()
+	public function ofFileDataProvider()
 	{
-
+		return array(
+			array('Bad Path',  'foo.bar', '', TRUE),
+			array('Good Path', __FILE__,  'text/x-php', FALSE),
+		);
 	}
 
-	public function testFileIsSafeForUpload()
+	/**
+	 * @dataProvider fileDataProvider
+	 */
+	public function testFileIsImage($description, $in, $out, $exception)
 	{
-
+		if ($exception)
+		{
+			$this->setExpectedException('Exception');
+		}
+		$this->assertEquals($this->mime_type->fileIsImage($in), $out, $description);
 	}
 
-	public function testIsSafeForUpload()
+	/**
+	 * @dataProvider fileDataProvider
+	 */
+	public function testFileIsSafeForUpload($description, $in, $out, $exception)
 	{
+		if ($exception)
+		{
+			$this->setExpectedException('Exception');
+		}
+		$this->assertEquals($this->mime_type->fileIsSafeForUpload($in), $out, $description);
+	}
 
+	public function fileDataProvider()
+	{
+		return array(
+			array('Bad Path',  'foo.bar', '', TRUE),
+			array('Good Path', __FILE__,  FALSE, FALSE),
+		);
+	}
+
+	/**
+	 * @dataProvider isImageDataProvider
+	 */
+	public function testIsImage($description, $in, $out)
+	{
+		$this->assertEquals($this->mime_type->isImage($in), $out, $description);
+	}
+
+	public function isImageDataProvider()
+	{
+		return array(
+			array('JPEG MIME Type', 'image/jpeg',      TRUE),
+			array('PNG MIME Type',  'image/png',       FALSE),
+			array('HTML MIME Type', 'text/html',       FALSE),
+			array('PDF MIME Type',  'application/pdf', FALSE),
+
+			array('Boolen Argument',         TRUE,                        FALSE),
+			array('Integer Argument',        1,                           FALSE),
+			array('Float Argument',          1.1,                         FALSE),
+			array('Invalid String Argument', "text",                      FALSE),
+			array('Invalid String Argument', "a/b/c",                     FALSE),
+			array('Empty Array Argument',    array(),                     FALSE),
+			array('Array Argument',          array('text/html'),          FALSE),
+			array('Object Argument',         new \stdClass(),             FALSE),
+			array('Closure Argument',        function() { return TRUE; }, FALSE),
+			array('NULL Argument',           NULL,                        FALSE),
+		);
+	}
+
+	/**
+	 * @dataProvider isSafeUploadDataProvider
+	 */
+	public function testIsSafeForUpload($description, $in, $out)
+	{
+		$this->assertEquals($this->mime_type->isSafeForUpload($in), $out, $description);
+	}
+
+	public function isSafeUploadDataProvider()
+	{
+		return array(
+			array('JPEG MIME Type', 'image/jpeg',      TRUE),
+			array('HTML MIME Type', 'text/html',       FALSE),
+			array('PDF MIME Type',  'application/pdf', TRUE),
+
+			array('Boolen Argument',         TRUE,                        FALSE),
+			array('Integer Argument',        1,                           FALSE),
+			array('Float Argument',          1.1,                         FALSE),
+			array('Invalid String Argument', "text",                      FALSE),
+			array('Invalid String Argument', "a/b/c",                     FALSE),
+			array('Empty Array Argument',    array(),                     FALSE),
+			array('Array Argument',          array('text/html'),          FALSE),
+			array('Object Argument',         new \stdClass(),             FALSE),
+			array('Closure Argument',        function() { return TRUE; }, FALSE),
+			array('NULL Argument',           NULL,                        FALSE),
+		);
 	}
 
 }
