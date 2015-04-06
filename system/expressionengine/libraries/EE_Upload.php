@@ -25,6 +25,7 @@
 class EE_Upload extends CI_Upload
 {
 	protected $use_temp_dir = FALSE;
+	protected $raw_upload = FALSE;
 
 	/**
 	 * Constructor
@@ -59,6 +60,9 @@ class EE_Upload extends CI_Upload
 	 */
 	public function raw_upload($name, $type, $data)
 	{
+		// This will force do_upload to skip its is_uploaded_file checks
+		$this->raw_upload = TRUE;
+
 		$tmp = tempnam(sys_get_temp_dir(), 'raw');
 		$tmp_name = basename($tmp);
 
@@ -67,11 +71,13 @@ class EE_Upload extends CI_Upload
 			throw new Exception('Could not upload file');
 		}
 
-		$_FILES[$tmp_name]['name'] = $name;
-		$_FILES[$tmp_name]['type'] = $type;
-		$_FILES[$tmp_name]['size'] = mb_strlen($data);;
-		$_FILES[$tmp_name]['tmp_name'] = $tmp_name;
-		$_FILES[$tmp_name]['error'] = NULL;
+		$_FILES['userfile'] = array(
+			'name' => $name,
+			'type' => $type,
+			'size' => mb_strlen($data),
+			'tmp_name' => $tmp_name,
+			'error' => UPLOAD_ERR_OK
+		);
 
 		return $this->do_upload();
 	}
