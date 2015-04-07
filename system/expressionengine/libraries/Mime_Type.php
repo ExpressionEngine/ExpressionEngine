@@ -137,16 +137,6 @@ class Mime_Type {
 	 */
 	public function fileIsImage($path)
 	{
-		return $this->mime_type->fileIsImage($path);
-	}
-
-	/**
-	 * Determines if a MIME type is in our list of valid image MIME types.
-	 *
-	 * @see MimeType::isImage
-	 */
-	public function isImage($path)
-	{
 		try
 		{
 			return $this->mime_type->fileIsImage($path);
@@ -155,6 +145,16 @@ class Mime_Type {
 		{
 			show_error(sprintf(lang('file_not_found'), $path));
 		}
+	}
+
+	/**
+	 * Determines if a MIME type is in our list of valid image MIME types.
+	 *
+	 * @see MimeType::isImage
+	 */
+	public function isImage($mime)
+	{
+		return $this->mime_type->isImage($mime);
 	}
 
 	/**
