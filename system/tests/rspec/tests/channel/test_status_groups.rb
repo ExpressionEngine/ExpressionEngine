@@ -16,7 +16,7 @@ feature 'Status Groups manager' do
 
   def get_status_groups
     status_groups = []
-    $db.query('SELECT group_name FROM exp_status_groups ORDER BY group_name ASC').each(:as => :array) do |row|
+    $db.query('SELECT group_name FROM exp_status_groups ORDER BY group_id ASC').each(:as => :array) do |row|
       status_groups << row[0]
     end
     clear_db_result
@@ -49,16 +49,24 @@ feature 'Status Groups manager' do
     status_groups = get_status_groups
 
     @page.load
-    @page.sort_col.text.should eq 'Group Name'
+    @page.sort_col.text.should eq 'ID#'
     @page.status_group_titles.map {|source| source.text}.should == status_groups
     @page.should have(status_groups.count).status_group_titles
 
-    @page.sort_links[0].click
+    @page.sort_links[1].click
+    no_php_js_errors
+
+    # Sort alphabetically
+    @page.sort_col.text.should eq 'Group Name'
+    @page.status_group_titles.map {|source| source.text}.should == status_groups.sort
+    @page.should have(status_groups.count).status_group_titles
+
+    @page.sort_links[1].click
     no_php_js_errors
 
     # Sort reverse alphabetically
     @page.sort_col.text.should eq 'Group Name'
-    @page.status_group_titles.map {|source| source.text}.should == status_groups.reverse
+    @page.status_group_titles.map {|source| source.text}.should == status_groups.sort.reverse
     @page.should have(status_groups.count).status_group_titles
   end
 
@@ -68,7 +76,7 @@ feature 'Status Groups manager' do
 
     # Also set a sort state to make sure it's maintained
     @page.load
-    @page.sort_links[0].click
+    @page.sort_links[1].click
     no_php_js_errors
     @page.sort_col.text.should eq 'Group Name'
 
@@ -76,7 +84,7 @@ feature 'Status Groups manager' do
     @page.bulk_action.select 'Remove'
     @page.action_submit_button.click
     @page.wait_until_modal_visible
-    @page.modal.should have_text 'Status Group: ' + status_groups[0]
+    @page.modal.should have_text 'Status Group: ' + status_groups.sort[2]
     @page.modal_submit_button.click
     no_php_js_errors
 
@@ -89,7 +97,7 @@ feature 'Status Groups manager' do
     # Check that it maintained sort state
     @page.sort_col.text.should eq 'Group Name'
     status_groups = get_status_groups
-    @page.status_group_titles.map {|source| source.text}.should == status_groups.reverse
+    @page.status_group_titles.map {|source| source.text}.should == status_groups.sort
     @page.should have(status_groups.count).status_group_titles
   end
 

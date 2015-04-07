@@ -40,6 +40,7 @@ class Status extends AbstractChannelController {
 		$table = CP\Table::create();
 		$table->setColumns(
 			array(
+				'col_id',
 				'group_name',
 				'manage' => array(
 					'type'	=> CP\Table::COL_TOOLBAR
@@ -54,7 +55,12 @@ class Status extends AbstractChannelController {
 			->filter('site_id', ee()->config->item('site_id'));
 		$total_rows = $status_groups->all()->count();
 
-		$status_groups = $status_groups->order($table->sort_col, $table->sort_dir)
+		$sort_map = array(
+			'col_id' => 'group_id',
+			'group_name' => 'group_name'
+		);
+
+		$status_groups = $status_groups->order($sort_map[$table->sort_col], $table->sort_dir)
 			->limit(20)
 			->offset(($table->config['page'] - 1) * 20)
 			->all();
@@ -63,6 +69,7 @@ class Status extends AbstractChannelController {
 		foreach ($status_groups as $group)
 		{
 			$data[] = array(
+				$group->group_id,
 				htmlentities($group->group_name, ENT_QUOTES),
 				array('toolbar_items' => array(
 					'view' => array(
