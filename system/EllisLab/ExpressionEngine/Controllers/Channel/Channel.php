@@ -41,6 +41,7 @@ class Channel extends AbstractChannelController {
 		$table = CP\Table::create();
 		$table->setColumns(
 			array(
+				'col_id',
 				'channel',
 				'channel_short_name',
 				'manage' => array(
@@ -54,6 +55,7 @@ class Channel extends AbstractChannelController {
 		$table->setNoResultsText('no_channels', 'create_channel', cp_url('channel/create'));
 
 		$sort_map = array(
+			'col_id' => 'channel_id',
 			'channel' => 'channel_title',
 			'channel_short_name' => 'channel_name'
 		);
@@ -71,6 +73,7 @@ class Channel extends AbstractChannelController {
 		foreach ($channels as $channel)
 		{
 			$data[] = array(
+				$channel->channel_id,
 				htmlentities($channel->channel_title, ENT_QUOTES),
 				htmlentities($channel->channel_name, ENT_QUOTES),
 				array('toolbar_items' => array(
