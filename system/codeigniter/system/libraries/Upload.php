@@ -66,7 +66,7 @@ class CI_Upload {
 			$this->initialize($props);
 		}
 
-		ee()->load->library('Mime_Type');
+		ee()->load->library('mime_type');
 		log_message('debug', "Upload Class Initialized");
 	}
 
