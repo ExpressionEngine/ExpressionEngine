@@ -4922,12 +4922,7 @@ class Wiki {
 
 		if ($upload_prefs['allowed_types']  == 'all')
 		{
-			include(APPPATH.'config/mimes.php');
-
-			foreach ($mimes as $key => $val)
-			{
-				$file_types .= ', '.$key;
-			}
+			$file_types = 'all';
 		}
 
 		$this->conditionals['file_types'] = $file_types;
