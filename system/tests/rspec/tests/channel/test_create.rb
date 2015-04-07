@@ -162,7 +162,7 @@ feature 'Channel Create/Edit' do
   it 'should duplicate an existing channel' do
     # Set some arbitrary settings on the News channel
     channel_settings = ChannelSettings.new
-    channel_settings.load_settings_for_channel(2)
+    channel_settings.load_settings_for_channel(1)
     channel_settings.channel_description.set 'Some description'
     channel_settings.channel_url.set 'http://someurl/channel'
     channel_settings.comment_url.set 'http://someurl/channel/comment'
@@ -231,7 +231,7 @@ feature 'Channel Create/Edit' do
     @page.cat_group[1].checked?.should == true
 
     # Now make sure settings were duplicated
-    channel_settings.load_settings_for_channel(2)
+    channel_settings.load_settings_for_channel(1)
     channel_settings.channel_description.value.should == 'Some description'
     channel_settings.channel_lang.value.should == 'english'
 

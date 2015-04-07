@@ -15,9 +15,9 @@ feature 'Channel Settings' do
   end
 
   it 'should validate the form and reject XSS' do
-    @page.load_settings_for_channel(1)
+    @page.load_settings_for_channel(2)
     no_php_js_errors
-    
+
     @page.channel_description.set $xss_vector
     @page.channel_description.trigger 'blur'
     @page.wait_for_error_message_count(1)
@@ -115,7 +115,7 @@ feature 'Channel Settings' do
     # should_have_error_text(@page.comment_expiration, $integer_error)
 
     # Fix everything
-    
+
     @page.channel_description.set 'test'
     @page.channel_description.trigger 'blur'
     @page.wait_for_error_message_count(12)
@@ -201,7 +201,7 @@ feature 'Channel Settings' do
   end
 
   it 'should save and load the settings' do
-    @page.load_settings_for_channel(1)
+    @page.load_settings_for_channel(2)
     no_php_js_errors
 
     @page.channel_description.set 'Some description'
