@@ -17,7 +17,7 @@ use EllisLab\ExpressionEngine\Library\Mime\MimeType;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Core Mime Class
+ * ExpressionEngine Core Mime type Class
  *
  * @package		ExpressionEngine
  * @subpackage	Core
@@ -25,7 +25,7 @@ use EllisLab\ExpressionEngine\Library\Mime\MimeType;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Mime_Type {
+class Mime_type {
 
 	protected $mime_type;
 
