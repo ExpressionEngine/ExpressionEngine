@@ -814,15 +814,7 @@ class CI_Upload {
 
 		if (function_exists('getimagesize') && ($image = getimagesize($file)) !== FALSE)
 		{
-			$ext = strtolower(ltrim($this->file_ext, '.'));
-			$mime_by_ext = $this->mimes_types($ext);
-
-			if ( ! is_array($mime_by_ext))
-			{
-				$mime_by_ext = array($mime_by_ext);
-			}
-
-			if ( ! in_array($image['mime'], $mime_by_ext))
+			if (ee()->mime_type->fileIsSafeForUpload($file) === FALSE)
 			{
 				return FALSE; // tricky tricky
 			}
