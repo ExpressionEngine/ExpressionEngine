@@ -2084,7 +2084,6 @@ class Filemanager {
 		$config = array(
 			'file_name'		=> $clean_filename,
 			'upload_path'	=> $dir['server_path'],
-			'allowed_types'	=> $allowed_types,
 			'max_size'		=> round($dir['max_size']/1024, 3)
 		);
 
@@ -2692,15 +2691,6 @@ class Filemanager {
 		ee()->load->helper(array('file', 'directory'));
 		ee()->load->library('mime_type');
 
-		if ($allowed_types == 'img')
-		{
-			$allowed_type = array('image/gif','image/jpeg','image/png');
-		}
-		elseif ($allowed_types == 'all')
-		{
-			$allowed_type = array();
-		}
-
 		if ($fp = @opendir($source_dir))
 		{
 			$filedata	= array();
@@ -2709,6 +2699,7 @@ class Filemanager {
 
 			while (FALSE !== ($file = readdir($fp)))
 			{
+				$allowed = FALSE;
 				// Remove '.', '..', and hidden files [optional]
 				if ( ! trim($file, '.') OR ($hidden == FALSE && $file[0] == '.'))
 				{
