@@ -4810,27 +4810,19 @@ class Wiki {
 
 			$server_path = $upload_prefs['server_path'];
 
-
-
-			switch($upload_prefs['allowed_types'])
-			{
-				case 'all' : $allowed_types = '*';
-					break;
-				case 'img' : $allowed_types = 'jpg|jpeg|png|gif';
-					break;
-				default :
-					$allowed_types = $upload_prefs['allowed_types'];
-			}
-
 			// Upload the image
 			$config = array(
 					'file_name'		=> $new_name,
 					'upload_path'	=> $server_path,
-					'allowed_types'	=> $allowed_types,
 					'max_size'		=> round($upload_prefs['max_size']/1024, 3),
 					'max_width'		=> $upload_prefs['max_width'],
 					'max_height'	=> $upload_prefs['max_height'],
-				);
+			);
+
+			if ($upload_prefs['allowed_types'] == 'img')
+			{
+				$config['is_image'] == TRUE;
+			}
 
 			if (ee()->config->item('xss_clean_uploads') == 'n')
 			{
