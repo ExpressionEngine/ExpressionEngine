@@ -772,7 +772,7 @@ class Channel {
 				                  AND $this->reserved_cat_segment != ''
 				                  AND in_array($this->reserved_cat_segment, explode("/", $qstring));
 
-				if ($named_category OR ! empty($category_segment) AND $dynamic AND ee()->TMPL->fetch_param('channel'))
+				if (($named_category OR ! empty($category_segment)) AND $dynamic AND ee()->TMPL->fetch_param('channel'))
 				{
 					$qstring = preg_replace("/(.*?)\/".preg_quote($this->reserved_cat_segment)."\//i", '', '/'.$qstring);
 
