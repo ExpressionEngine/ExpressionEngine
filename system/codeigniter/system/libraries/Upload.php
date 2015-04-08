@@ -579,7 +579,7 @@ class CI_Upload {
 	{
 		$ext = strtolower(ltrim($this->file_ext, '.'));
 
-		if ( ! empty($this->allowed_types) && ! in_array($ext, $this->allowed_types))
+		if ( ! empty($this->allowed_types) && is_array($this->allowed_types) && ! in_array($ext, $this->allowed_types))
 		{
 			return FALSE;
 		}
