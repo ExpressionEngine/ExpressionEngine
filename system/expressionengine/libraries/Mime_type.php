@@ -186,14 +186,7 @@ class Mime_type {
 			return TRUE;
 		}
 
-		try
-		{
-			return $this->mime_type->isSafeForUpload($path);
-		}
-		catch (Exception $e)
-		{
-			show_error(sprintf(lang('file_not_found'), $path));
-		}
+		return $this->mime_type->isSafeForUpload($mime);
 	}
 
 	/**
