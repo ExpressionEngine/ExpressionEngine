@@ -350,34 +350,10 @@ if ( ! function_exists('get_mime_by_extension'))
 {
 	function get_mime_by_extension($file)
 	{
-		$extension = strtolower(substr(strrchr($file, '.'), 1));
-
-		global $mimes;
-
-		if ( ! is_array($mimes))
-		{
-			if ( ! require_once(APPPATH.'config/mimes.php'))
-			{
-				return FALSE;
-			}
-		}
-
-		if (array_key_exists($extension, $mimes))
-		{
-			if (is_array($mimes[$extension]))
-			{
-				// Multiple mime types, just give the first one
-				return current($mimes[$extension]);
-			}
-			else
-			{
-				return $mimes[$extension];
-			}
-		}
-		else
-		{
-			return FALSE;
-		}
+		// This is not 1:1 parity with the old code....
+		ee()->load->library('mime_type');
+		$mime = ee()->mime_type->ofFile($file);
+		return $mime;
 	}
 }
 

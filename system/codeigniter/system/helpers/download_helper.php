@@ -46,29 +46,8 @@ if ( ! function_exists('force_download'))
 			return FALSE;
 		}
 
-		// Try to determine if the filename includes a file extension.
-		// We need it in order to set the MIME type
-		if (FALSE === strpos($filename, '.'))
-		{
-			return FALSE;
-		}
-
-		// Grab the file extension
-		$x = explode('.', $filename);
-		$extension = end($x);
-
-		// Load the mime types
-		@include(APPPATH.'config/mimes.php');
-
-		// Set a default mime if we can't find it
-		if ( ! isset($mimes[$extension]))
-		{
-			$mime = 'application/octet-stream';
-		}
-		else
-		{
-			$mime = (is_array($mimes[$extension])) ? $mimes[$extension][0] : $mimes[$extension];
-		}
+		ee()->load->library('mime_type');
+		$mime = ee()->mime_type->ofBuffer($data);
 
 		$len = (function_exists('mb_strlen')) ? mb_strlen($data, '8bit') : strlen($data);
 

@@ -93,11 +93,11 @@ class MimeType {
 	}
 
 	/**
-	 * Checks the mime-type of a file
+	 * Determines the MIME type of a file
 	 *
 	 * @throws Exception If the file does not exist
 	 * @param string $path The full path to the file being checked
-	 * @return string The mime-type of the file
+	 * @return string The MIME type of the file
 	 */
 	public function ofFile($path)
 	{
@@ -113,6 +113,34 @@ class MimeType {
 		if ($finfo !== FALSE)
 		{
 			$fres = @finfo_file($finfo, $path);
+			if ( ($fres !== FALSE)
+				&& is_string($fres)
+				&& (strlen($fres)>0))
+			{
+				$mime = $fres;
+			}
+
+			@finfo_close($finfo);
+		}
+
+		return $mime;
+	}
+
+	/**
+	 * Determines the MIME type of a buffer
+	 *
+	 * @param string $buffer The buffer/data to check
+	 * @return string The MIME type of the buffer
+	 */
+	public function ofBuffer($buffer)
+	{
+		// Set a default
+		$mime = 'application/octet-stream';
+
+		$finfo = @finfo_open(FILEINFO_MIME_TYPE);
+		if ($finfo !== FALSE)
+		{
+			$fres = @finfo_buffer($finfo, $buffer);
 			if ( ($fres !== FALSE)
 				&& is_string($fres)
 				&& (strlen($fres)>0))

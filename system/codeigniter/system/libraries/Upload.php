@@ -66,7 +66,7 @@ class CI_Upload {
 			$this->initialize($props);
 		}
 
-		ee()->load->library('Mime_Type');
+		ee()->load->library('mime_type');
 		log_message('debug', "Upload Class Initialized");
 	}
 
@@ -928,18 +928,8 @@ class CI_Upload {
 	 */
 	public function mimes_types($mime)
 	{
-		global $mimes;
-
-		if (count($this->mimes) == 0)
-		{
-			if (@require_once(APPPATH.'config/mimes.php'))
-			{
-				$this->mimes = $mimes;
-				unset($mimes);
-			}
-		}
-
-		return ( ! isset($this->mimes[$mime])) ? FALSE : $this->mimes[$mime];
+		ee()->load->library('mime_type');
+		return ee()->mime_type->isSafeForUpload($mime);
 	}
 
 	// --------------------------------------------------------------------

@@ -17,7 +17,7 @@ use EllisLab\ExpressionEngine\Library\Mime\MimeType;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Core Mime Class
+ * ExpressionEngine Core Mime type Class
  *
  * @package		ExpressionEngine
  * @subpackage	Core
@@ -25,7 +25,7 @@ use EllisLab\ExpressionEngine\Library\Mime\MimeType;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Mime_Type {
+class Mime_type {
 
 	protected $mime_type;
 
@@ -104,7 +104,7 @@ class Mime_Type {
 	}
 
 	/**
-	 * Checks the mime-type of a file
+	 * Determines the MIME type of a file
 	 *
 	 * @see MimeType::ofFile
 	 */
@@ -121,21 +121,21 @@ class Mime_Type {
 	}
 
 	/**
+	 * Determines the MIME type of a buffer
+	 *
+	 * @see MimeType::ofFile
+	 */
+	public function ofBuffer($buffer)
+	{
+		return $this->mime_type->ofBuffer($buffer);
+	}
+
+	/**
 	 * Determines if a file is an image or not.
 	 *
 	 * @see MimeType::fileIsImage
 	 */
 	public function fileIsImage($path)
-	{
-		return $this->mime_type->fileIsImage($path);
-	}
-
-	/**
-	 * Determines if a MIME type is in our list of valid image MIME types.
-	 *
-	 * @see MimeType::isImage
-	 */
-	public function isImage($path)
 	{
 		try
 		{
@@ -145,6 +145,16 @@ class Mime_Type {
 		{
 			show_error(sprintf(lang('file_not_found'), $path));
 		}
+	}
+
+	/**
+	 * Determines if a MIME type is in our list of valid image MIME types.
+	 *
+	 * @see MimeType::isImage
+	 */
+	public function isImage($mime)
+	{
+		return $this->mime_type->isImage($mime);
 	}
 
 	/**

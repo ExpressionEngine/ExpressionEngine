@@ -243,37 +243,31 @@ class Filemanager {
 	function security_check($file_path, $prefs)
 	{
 		ee()->load->helper(array('file', 'xss'));
+		ee()->load->library('mime_type');
 
 		$is_image = FALSE;
 		$allowed = $prefs['allowed_types'];
-		$mime = get_mime_by_extension($file_path);
-
-		if (is_array($mime))
-		{
-			$mime = $mime[0];
-		}
+		$mime = ee()->mime_type->ofFile($file_path);
 
 		if ($allowed == 'all' OR $allowed == '*')
 		{
-			return $mime;
+			if (ee()->mime_type->isSafeForUpload($mime))
+			{
+				return $mime;
+			}
+			else
+			{
+				return FALSE;
+			}
 		}
 
 		if ($allowed == 'img')
 		{
-			$allowed = 'gif|jpg|jpeg|png|jpe';
-		}
+			if ( ! ee()->mime_type->isImage($mime))
+			{
+				return FALSE;
+			}
 
-		$extension = strtolower(substr(strrchr($file_path, '.'), 1));
-
-		if (strpos($allowed, $extension) === FALSE)
-		{
-			return FALSE;
-		}
-
-		// Double check mime type for images so we can
-		// be sure that our xss check is run correctly
-		if (substr($mime, 0, 5) == 'image')
-		{
 			$is_image = TRUE;
 		}
 
@@ -1253,6 +1247,7 @@ class Filemanager {
 	function create_thumb($file_path, $prefs, $thumb = TRUE, $missing_only = TRUE)
 	{
 		ee()->load->library('image_lib');
+		ee()->load->library('mime_type');
 		ee()->load->helper('file');
 
 		$img_path = rtrim($prefs['server_path'], '/').'/';
@@ -1261,7 +1256,7 @@ class Filemanager {
 		if ( ! isset($prefs['mime_type']))
 		{
 			// Figure out the mime type
-			$prefs['mime_type'] = get_mime_by_extension($file_path);
+			$prefs['mime_type'] = ee()->mime_type->ofFile($file_path);
 		}
 
 		if ( ! $this->is_editable_image($file_path, $prefs['mime_type']))
@@ -1572,10 +1567,11 @@ class Filemanager {
 		if ( ! is_array($file) OR ! isset($file['mime_type']))
 		{
 			ee()->load->helper('file');
+			ee()->load->library('mime_type');
 
 			$file = array(
 				'file_name' => $file,
-				'mime_type' => get_mime_by_extension($file)
+				'mime_type' => ee()->mime_type->ofFile($directory['server_path'] . $file)
 			);
 		}
 
@@ -2152,7 +2148,6 @@ class Filemanager {
 			);
 		}
 
-
 		$thumb_info = $this->get_thumb($file['file_name'], $dir['id']);
 
 		// Build list of information to save and return
@@ -2704,6 +2699,7 @@ class Filemanager {
 	function directory_files_map($source_dir, $directory_depth = 0, $hidden = false, $allowed_types = 'all')
 	{
 		ee()->load->helper(array('file', 'directory'));
+		ee()->load->library('mime_type');
 
 		if ($allowed_types == 'img')
 		{
@@ -2730,16 +2726,20 @@ class Filemanager {
 
 				if ( ! is_dir($source_dir.$file))
 				{
-					if ( ! empty($allowed_type))
+					$mime = ee()->mime_type->ofFile($source_dir.$file);
+
+					if ($allowed_types == 'img')
 					{
-						$mime = get_mime_by_extension($file);
+						$allowed = ee()->mime_type->isImage($mime);
+					}
+					elseif ($allowed_types == 'all')
+					{
+						$allowed = ee()->mime_type->isSafeForUpload($mime);
+					}
 
-						//echo $mime;
-
-						if ( ! in_array($mime, $allowed_type))
-						{
-							continue;
-						}
+					if ( ! $allowed)
+					{
+						continue;
 					}
 
 					$filedata[] = $file;
@@ -2862,29 +2862,8 @@ class Filemanager {
 	 */
 	public function is_image($mime)
 	{
-		// IE will sometimes return odd mime-types during upload,
-		// so here we just standardize all jpegs or pngs to the same file type.
-
-		$png_mimes  = array('image/x-png');
-		$jpeg_mimes = array('image/jpg', 'image/jpe', 'image/jpeg', 'image/pjpeg');
-
-		if (in_array($mime, $png_mimes))
-		{
-			$mime = 'image/png';
-		}
-
-		if (in_array($mime, $jpeg_mimes))
-		{
-			$mime = 'image/jpeg';
-		}
-
-		$img_mimes = array(
-			'image/gif',
-			'image/jpeg',
-			'image/png',
-		);
-
-		return (in_array($mime, $img_mimes, TRUE)) ? TRUE : FALSE;
+		ee()->load->library('mime_type');
+		return ee()->mime_type->isImage($mime);
 	}
 
 	// --------------------------------------------------------------------
