@@ -5218,9 +5218,13 @@ class Forum_Core extends Forum {
 		// Upload the image
 		$config = array(
 				'upload_path'	=> $server_path,
-				'allowed_types'	=> ($query->row('board_attach_types') == 'all') ? '*' : 'gif|jpg|jpeg|png',
 				'max_size'		=> $query->row('board_max_attach_size')
 		);
+
+		if ($query->row('board_attach_types') !== 'all')
+		{
+			$config['is_image'] == TRUE;
+		}
 
 		if (ee()->config->item('xss_clean_uploads') == 'n')
 		{
