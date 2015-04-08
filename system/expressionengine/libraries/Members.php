@@ -348,7 +348,7 @@ class Members {
 		// Upload the image
 		$config['file_name'] = $new_filename;
 		$config['upload_path'] = $upload_path;
-		$config['allowed_types'] = 'gif|jpg|jpeg|png';
+		$config['is_iame'] = TRUE;
 		$config['max_size']	= $max_kb;
 		$config['max_width']  = $max_width;
 		$config['max_height']  = $max_height;
