@@ -559,13 +559,7 @@ class CI_Upload {
 			$this->file_type = 'image/jpeg';
 		}
 
-		$img_mimes = array(
-							'image/gif',
-							'image/jpeg',
-							'image/png',
-						);
-
-		return (in_array($this->file_type, $img_mimes, TRUE)) ? TRUE : FALSE;
+		return ee()->mime_type->isImage($this->file_temp);
 	}
 
 	// --------------------------------------------------------------------
