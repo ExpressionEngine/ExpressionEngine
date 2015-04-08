@@ -2048,21 +2048,6 @@ class Filemanager {
 		// --------------------------------------------------------------------
 		// Make sure the file is allowed
 
-		// Restricted upload directory?
-		switch($dir['allowed_types'])
-		{
-			case 'all':
-				$allowed_types = '*';
-				break;
-
-			case 'img':
-				$allowed_types = 'gif|jpg|jpeg|png|jpe';
-				break;
-
-			default:
-				$allowed_types = '';
-		}
-
 		// Is this a custom field?
 		if (strpos($field_name, 'field_id_') === 0)
 		{
@@ -2102,6 +2087,12 @@ class Filemanager {
 			'allowed_types'	=> $allowed_types,
 			'max_size'		=> round($dir['max_size']/1024, 3)
 		);
+
+		// Restricted upload directory?
+		if ($dir['allowed_types'] == 'img')
+		{
+			$config['is_image'] == TRUE;
+		}
 
 		ee()->load->helper('xss');
 
