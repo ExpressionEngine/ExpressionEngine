@@ -343,7 +343,7 @@ class EE_Schema {
 			language varchar(50) NOT NULL,
 			timezone varchar(50) NOT NULL,
 			time_format char(2) DEFAULT '12' NOT NULL,
-			date_format varchar(8) DEFAULT '%n/%j/%y' NOT NULL,
+			date_format varchar(8) DEFAULT '%n/%j/%Y' NOT NULL,
 			include_seconds char(1) DEFAULT 'n' NOT NULL,
 			cp_theme varchar(32) NULL DEFAULT NULL,
 			profile_theme varchar(32) NULL DEFAULT NULL,
