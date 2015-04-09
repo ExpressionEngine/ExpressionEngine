@@ -591,7 +591,7 @@ class CI_Upload {
 
 		if ($this->is_image)
 		{
-			return ee()->mime_type->isImage($this->file_temp);
+			return ee()->mime_type->fileIsImage($this->file_temp);
 		}
 
 		return ee()->mime_type->fileIsSafeForUpload($this->file_temp);
