@@ -5223,7 +5223,7 @@ class Forum_Core extends Forum {
 
 		if ($query->row('board_attach_types') !== 'all')
 		{
-			$config['is_image'] == TRUE;
+			$config['is_image'] = TRUE;
 		}
 
 		if (ee()->config->item('xss_clean_uploads') == 'n')
