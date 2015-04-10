@@ -126,6 +126,7 @@ return array(
 			// ..\Category
 			'Category' => 'Model\Category\Category',
 			'CategoryGroup' => 'Model\Category\CategoryGroup',
+			'CategoryField' => 'Model\Category\CategoryField',
 
 			// ..\File
 			'UploadDestination' => 'Model\File\UploadDestination',
@@ -165,7 +166,7 @@ return array(
 			// ..\Channel
 			'Channel' => 'Module\Channel\Model\Channel',
 			'ChannelFieldGroup'=> 'Module\Channel\Model\ChannelFieldGroup',
-			'ChannelFieldStructure' => 'Module\Channel\Model\ChannelFieldStructure',
+			'ChannelField' => 'Module\Channel\Model\ChannelField',
 			'ChannelEntry' => 'Module\Channel\Model\ChannelEntry',
 			'ChannelEntryAutosave' => 'Module\Channel\Model\ChannelEntryAutosave',
 			'ChannelFormSettings' => 'Module\Channel\Model\ChannelFormSettings',
