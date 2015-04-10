@@ -121,7 +121,7 @@ class FieldFacade {
 
 		if (is_string($result) && strlen($result) > 0)
 		{
-			return $string;
+			return $result;
 		}
 
 		return TRUE;
