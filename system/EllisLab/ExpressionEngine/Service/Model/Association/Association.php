@@ -184,10 +184,15 @@ abstract class Association {
 	{
 		if (is_array($item))
 		{
-			$item = $this->frontend->make($this->name, $item);
+			$item = $this->frontend->make(
+				$this->relation->getTargetModel(),
+				$item
+			);
 		}
 
 		$this->addToRelated($item);
+
+		return $item;
 	}
 
 	/**
