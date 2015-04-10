@@ -623,8 +623,8 @@ class Channel extends AbstractChannelController {
 			}
 		}
 
-		$channel_fields = ee('Model')->get('ChannelFieldStructure')
-			->filter('ChannelFieldStructure.group_id', $channel->field_group)
+		$channel_fields = ee('Model')->get('ChannelField')
+			->filter('ChannelField.group_id', $channel->field_group)
 			->all();
 
 		$search_excerpt_options = array();

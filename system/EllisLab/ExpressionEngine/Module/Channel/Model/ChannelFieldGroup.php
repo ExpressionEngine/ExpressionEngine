@@ -10,9 +10,9 @@ class ChannelFieldGroup extends Model {
 	protected static $_gateway_names 	= array('ChannelFieldGroupGateway');
 
 	protected static $_relationships = array(
-		'ChannelFieldStructures' => array(
+		'ChannelFields' => array(
 			'type' => 'hasMany',
-			'model' => 'ChannelFieldStructure'
+			'model' => 'ChannelField'
 		)
 	);
 

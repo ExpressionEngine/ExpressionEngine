@@ -314,8 +314,8 @@ class Admin_content extends CP_Controller {
 			}
 		}
 
-		$channel_fields = ee('Model')->get('ChannelFieldStructure')
-			->filter('ChannelFieldStructure.group_id', $channel->field_group)
+		$channel_fields = ee('Model')->get('ChannelField')
+			->filter('ChannelField.group_id', $channel->field_group)
 			->all();
 
 		$vars['search_excerpt_options'] = array();

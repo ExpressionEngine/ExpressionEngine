@@ -1610,7 +1610,7 @@ class Addons extends CP_Controller {
 		$settings = ee()->api_channel_fields->apply('save_global_settings');
 		$settings = base64_encode(serialize($settings));
 
-		$fieldtype_model = ee('Model')->get('ChannelFieldStructure')
+		$fieldtype_model = ee('Model')->get('ChannelField')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('field_name', $fieldtype['package'])
 			->first();
