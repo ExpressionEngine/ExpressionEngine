@@ -16,6 +16,15 @@ class ChannelFieldGroup extends Model {
 		)
 	);
 
+
+	/**
+	 * Convenience method to fix inflection
+	 */
+	public function createChannelField($data)
+	{
+		return $this->createChannelFields($data);
+	}
+
 	protected $group_id;
 	protected $site_id;
 	protected $group_name;

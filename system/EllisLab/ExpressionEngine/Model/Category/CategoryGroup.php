@@ -60,12 +60,15 @@ class CategoryGroup extends Model implements ContentStructure {
 	protected $can_delete_categories;
 
 	/**
-	 * Display the CP entry form
-	 *
-	 * @param Content $content  An object implementing the Content interface
-	 * @return Array of HTML field elements for the entry / edit form
+	 * Convenience method to fix inflection
 	 */
-	public function getPublishForm($content)
+	public function createCategoryField($data)
+	{
+		return $this->createCategoryFields($data);
+	}
+
+
+	public function getPublishForm($content = NULL)
 	{}
 
 	/**
