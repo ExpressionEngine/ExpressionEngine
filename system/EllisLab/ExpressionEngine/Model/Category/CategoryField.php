@@ -32,6 +32,12 @@ class CategoryField extends FieldModel {
 	protected static $_primary_key = 'field_id';
 	protected static $_table_name = 'category_fields';
 
+	protected static $_relationships = array(
+		'CategoryGroup' => array(
+			'type' => 'belongsTo'
+		)
+	);
+
 	protected $field_id;
 	protected $site_id;
 	protected $group_id;
