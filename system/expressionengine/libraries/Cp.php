@@ -356,7 +356,7 @@ class Cp {
 		{
 			if ( ! $alert)
 			{
-				$alert = ee('Alert')->makeStandard('notices')
+				$alert = ee('Alert')->makeBanner('notices')
 					->asWarning()
 					->withTitle(lang('cp_message_warn'))
 					->now();
