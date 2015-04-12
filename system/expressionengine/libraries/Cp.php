@@ -235,17 +235,6 @@ class Cp {
 
 		ee()->view->formatted_version = $this->formatted_version(APP_VER);
 
-		if (isset(ee()->table))
-		{
-			// We have a code order issue with accessories.
-			// If an accessory changed the table template (this happens
-			// a lot due to differences in design), we need to re-set the CP
-			// template. Otherwise this is set in the table lib constructor.
-			ee()->table->set_template(
-				ee()->session->cache('table', 'cp_template')
-			);
-		}
-
 		// add global end file
 		$this->_seal_combo_loader();
 		$this->add_js_script('file', 'cp/global_end');
