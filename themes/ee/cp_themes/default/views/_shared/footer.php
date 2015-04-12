@@ -2,28 +2,28 @@
 		<section class="product-bar">
 			<div class="snap">
 				<div class="left">
-					<p><b>ExpressionEngine</b> <span class="version<?php if (isset($new_version)): ?> out-of-date<?php endif ?>" title="About ExpressionEngine"><?=$formatted_version?></span></p>
+					<p><b>ExpressionEngine</b> <span class="version<?php if (isset($new_version)): ?> out-of-date<?php endif ?>" title="<?=lang('about_expressionengine')?>"><?=$formatted_version?></span></p>
 					<div class="version-info">
-						<h3>Installed</h3>
+						<h3><?=lang('installed')?></h3>
 						<p>ExpressionEngine <?=$formatted_version?><br><em><?=lang('build') . ' ' . $ee_build_date?></em></p>
 						<?php if (isset($new_version)): ?>
-							<h3>Latest Version (<a href="<?=ee()->cp->masked_url('https://store.ellislab.com/manage')?>" rel="external">download</a>)</h3>
+							<h3><?=lang('latest_version')?> (<a href="<?=ee()->cp->masked_url('https://store.ellislab.com/manage')?>" rel="external"><?=lang('download')?></a>)</h3>
 							<p>ExpressionEngine <?=$new_version['version']?><br><em><?=lang('build') . ' ' . $new_version['build']?></em></p>
 							<a href="" class="close">&#10006;</a>
-							<div class="status out">out of date</div>
+							<div class="status out"><?=lang('out_of_date')?></div>
 						<?php else: ?>
 							<a href="" class="close">&#10006;</a>
-							<div class="status">current</div>
+							<div class="status"><?=lang('current')?></div>
 						<?php endif ?>
 					</div>
 				</div>
-				<div class="right"><p><a href="https://support.ellislab.com/bugs/submit" rel="external">Report Bug</a> <b class="sep">&middot;</b> <a href="https://support.ellislab.com" rel="external">New Ticket</a> <b class="sep">&middot;</b> <a href="http://ellislab.com/expressionengine/user-guide/" rel="external">Manual</a></p></div>
+				<div class="right"><p><a href="https://support.ellislab.com/bugs/submit" rel="external"><?=lang('report_bug')?></a> <b class="sep">&middot;</b> <a href="https://support.ellislab.com" rel="external"><?=lang('new_ticket')?></a> <b class="sep">&middot;</b> <a href="http://ellislab.com/expressionengine/user-guide/" rel="external"><?=lang('manual')?></a></p></div>
 			</div>
 		</section>
 		<section class="footer">
 			<div class="snap">
 				<div class="left">
-					<p>&copy;2003&mdash;<?=date('Y')?> <a href="<?=ee()->cp->masked_url('http://ellislab.com/expressionengine')?>" rel="external">EllisLab</a>, Inc.<br><a class="scroll" href="#top">scroll to top</a></p>
+					<p>&copy;2003&mdash;<?=date('Y')?> <a href="<?=ee()->cp->masked_url('http://ellislab.com/expressionengine')?>" rel="external">EllisLab</a>, Inc.<br><a class="scroll" href="#top"><?=lang('scroll_to_top')?></a></p>
 				</div>
 				<div class="right">
 					<p><?=lang('license_no')?>:

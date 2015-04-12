@@ -623,6 +623,10 @@ $lang = array(
 'image' =>
 'Image',
 
+/**
+ * Footer
+ */
+
 'license_no' =>
 'License #',
 
@@ -634,6 +638,36 @@ $lang = array(
 
 'register_now' =>
 'Register Now',
+
+'current' =>
+'current',
+
+'out_of_date' =>
+'out of date',
+
+'installed' =>
+'Installed',
+
+'latest_version' =>
+'Latest Version',
+
+'download' =>
+'download',
+
+'report_bug' =>
+'Report Bug',
+
+'new_ticket' =>
+'New Ticket',
+
+'scroll_to_top' =>
+'scroll to top',
+
+'about_expressionengine' =>
+'About ExpressionEngine',
+
+'manual' =>
+'Manual',
 
 //----------------------------
 // confirm removal modal
