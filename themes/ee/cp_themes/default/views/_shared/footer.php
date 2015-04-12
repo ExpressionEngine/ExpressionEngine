@@ -2,22 +2,19 @@
 		<section class="product-bar">
 			<div class="snap">
 				<div class="left">
-					<p><b>ExpressionEngine</b> <span class="version" title="About ExpressionEngine"><?=$formatted_version?></span></p>
-					<!-- use class out-of-date on the version link. -->
-					<!-- Waiting to implement until new Pings library is merged -->
-					<!-- <div class="version-info">
-						<h3>Installed</h3>
-						<p>ExpressionEngine <b>3</b>.0<br><em>build date: 07.12.2014</em></p>
-						<h3>Latest Version (<a href="" rel="external">download</a>)</h3>
-						<p>ExpressionEngine <b>3</b>.0.1<br><em>build date: 09.16.2014</em></p>
-						<a href="" class="close">&#10006;</a>
-						<div class="status out">out of date</div>
-					</div> -->
+					<p><b>ExpressionEngine</b> <span class="version<?php if (isset($new_version)): ?> out-of-date<?php endif ?>" title="About ExpressionEngine"><?=$formatted_version?></span></p>
 					<div class="version-info">
 						<h3>Installed</h3>
 						<p>ExpressionEngine <?=$formatted_version?><br><em><?=lang('build') . ' ' . $ee_build_date?></em></p>
-						<a href="" class="close">&#10006;</a>
-						<div class="status">current</div>
+						<?php if (isset($new_version)): ?>
+							<h3>Latest Version (<a href="<?=ee()->cp->masked_url('https://store.ellislab.com/manage')?>" rel="external">download</a>)</h3>
+							<p>ExpressionEngine <?=$new_version['version']?><br><em><?=lang('build') . ' ' . $new_version['build']?></em></p>
+							<a href="" class="close">&#10006;</a>
+							<div class="status out">out of date</div>
+						<?php else: ?>
+							<a href="" class="close">&#10006;</a>
+							<div class="status">current</div>
+						<?php endif ?>
 					</div>
 				</div>
 				<div class="right"><p><a href="https://support.ellislab.com/bugs/submit" rel="external">Report Bug</a> <b class="sep">&middot;</b> <a href="https://support.ellislab.com" rel="external">New Ticket</a> <b class="sep">&middot;</b> <a href="http://ellislab.com/expressionengine/user-guide/" rel="external">Manual</a></p></div>

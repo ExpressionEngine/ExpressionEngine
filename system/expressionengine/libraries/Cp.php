@@ -221,6 +221,16 @@ class Cp {
 	{
 		$this->_menu();
 
+		$date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
+
+		if (ee()->config->item('new_version_check') == 'y' &&
+			$new_version = $this->_version_check())
+		{
+			$new_version['version'] = $this->formatted_version($new_version['version']);
+			$new_version['build'] = ee()->localize->format_date($date_format, $this->_parse_build_date($new_version['build']), TRUE);
+			ee()->view->new_version = $new_version;
+		}
+
 		$this->_notices();
 
 		ee()->view->formatted_version = $this->formatted_version(APP_VER);
@@ -240,7 +250,6 @@ class Cp {
 		$this->_seal_combo_loader();
 		$this->add_js_script('file', 'cp/global_end');
 
-		$date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
 		ee()->view->ee_build_date = ee()->localize->format_date($date_format, $this->_parse_build_date(), TRUE);
 
 		return ee()->view->render($view, $data, $return);
@@ -250,13 +259,19 @@ class Cp {
 	 * Converts our build date constant into a timestamp so we can format it
 	 * for display
 	 *
+	 * @param  string Build date in the format of yyyymmdd, uses APP_BUILD by default
 	 * @return int Timestamp representing the build date
 	 */
-	protected function _parse_build_date()
+	protected function _parse_build_date($build = NULL)
 	{
-		$year = substr(APP_BUILD, 0, 4);
-		$month = substr(APP_BUILD, 4, 2);
-		$day = substr(APP_BUILD, 6, 2);
+		if (empty($build))
+		{
+			$build = APP_BUILD;
+		}
+
+		$year = substr($build, 0, 4);
+		$month = substr($build, 4, 2);
+		$day = substr($build, 6, 2);
 
 		$string = $year . '-' . $month . '-' . $day;
 
@@ -334,15 +349,6 @@ class Cp {
 		if ( ! is_really_writable(ee()->config->config_path))
 		{
 			$notices[] = lang('unwritable_config_file');
-		}
-
-		if (ee()->config->item('new_version_check') == 'y')
-		{
-			$check = $this->_version_check();
-			if ($check !== FALSE)
-			{
-				$notices[] = $check;
-			}
 		}
 
 		// Check to see if the config file matches the Core version constant
@@ -435,88 +441,34 @@ class Cp {
 	 */
 	protected function _version_check()
 	{
-		$download_url = ee()->cp->masked_url('https://store.ellislab.com/manage');
-
 		ee()->load->library('el_pings');
 		$version_file = ee()->el_pings->get_version_info();
 
 		if ( ! $version_file)
 		{
-			return sprintf(
-				lang('new_version_error'),
-				$download_url
-			);
+			ee('Alert')->makeBanner('notices')
+				->asWarning()
+				->withTitle(lang('cp_message_warn'))
+				->addToBody(sprintf(
+					lang('new_version_error'),
+					ee()->cp->masked_url('https://store.ellislab.com/manage')
+				))
+				->now();
+			return FALSE;
 		}
 
-		$new_release = FALSE;
-		$high_priority = FALSE;
+		$version_info = array(
+			'version' => $version_file[0][0],
+			'build' => $version_file[0][1],
+			'security' => $version_file[0][2] == 'high',
+		);
 
-		// Do we have a newer version out?
-		foreach ($version_file as $app_data)
-		{
-			if ($app_data[0] > APP_VER && $app_data[2] == 'high')
-			{
-				$new_release = TRUE;
-				$high_priority = TRUE;
-				$high_priority_release = array(
-					'version'	=> $app_data[0],
-					'build'		=> $app_data[1]
-				);
-
-				continue;
-			}
-			elseif ($app_data[1] > APP_BUILD && $app_data[2] == 'high')
-			{
-				// A build could sometimes be a security release.  So we can plan for it here.
-				$new_release = TRUE;
-				$high_priority = TRUE;
-				$high_priority_release = array(
-					'version'	=> $app_data[0],
-					'build'		=> $app_data[1]
-				);
-
-				continue;
-			}
-		}
-
-		if ( ! $new_release)
+		if (version_compare($version_info['version'], APP_VER) < 1)
 		{
 			return FALSE;
 		}
 
-		$cur_ver = end($version_file);
-
-		// Extracting the date the build was released.  IF the build was
-		// released in the past 2 calendar days, we don't show anything
-		// on the control panel home page unless it was a security release
-		$date_threshold = mktime(0, 0, 0,
-			substr($cur_ver[1], 4, -2), // Month
-			(substr($cur_ver[1], -2) + 2), // Day + 2
-			substr($cur_ver[1], 0, 4) // Year
-		);
-
-		if ((ee()->localize->now < $date_threshold) && $high_priority != TRUE)
-		{
-			return FALSE;
-		}
-
-		if ($high_priority)
-		{
-			return sprintf(lang('new_version_notice_high_priority'),
-				$high_priority_release['version'],
-				$high_priority_release['build'],
-				$cur_ver[0],
-				$cur_ver[1],
-				$download_url,
-				ee()->cp->masked_url(ee()->config->item('doc_url').'installation/update.html')
-			);
-		}
-
-		return sprintf(lang('new_version_notice'),
-			$details['version'],
-			$download_url,
-			ee()->cp->masked_url(ee()->config->item('doc_url').'installation/update.html')
-		);
+		return $version_info;
 	}
 
 	// --------------------------------------------------------------------
