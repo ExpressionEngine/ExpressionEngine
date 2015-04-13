@@ -533,7 +533,7 @@ class Status extends AbstractChannelController {
 					'fields' => array(
 						'highlight' => array(
 							'type' => 'text',
-							'value' => $status->highlight
+							'value' => $status->highlight ?: '000000'
 						)
 					)
 				)
@@ -572,7 +572,7 @@ class Status extends AbstractChannelController {
 			array(
 				'field' => 'highlight',
 				'label' => 'lang:highlight_color',
-				'rules' => 'required|strip_tags|trim|valid_xss_check|callback_validateHex'
+				'rules' => 'strip_tags|trim|valid_xss_check|callback_validateHex'
 			)
 		));
 
@@ -701,7 +701,7 @@ class Status extends AbstractChannelController {
 	 */
 	public function validateHex($hex)
 	{
-		if ( ! preg_match('/^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $hex))
+		if ($hex != '' && ! preg_match('/^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $hex))
 		{
 			ee()->form_validation->set_message('validateHex', lang('invalid_hex_code'));
 			return FALSE;
