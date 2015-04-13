@@ -768,6 +768,12 @@ $lang = array(
 'duplicate_field_name' =>
 'The field name you chose is already taken.',
 
+'cat_field_ajax_reorder_fail' =>
+'Attention: Failed to save category field order',
+
+'cat_field_ajax_reorder_fail_desc' =>
+'We failed to save your new category fields order. Refresh the page and make sure you\'re logged in.',
+
 /**
  * Status Groups
  */

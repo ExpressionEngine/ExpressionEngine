@@ -852,7 +852,10 @@ class Cat extends AbstractChannelController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$table = CP\Table::create();
+		$table = CP\Table::create(array(
+			'reorder' => TRUE,
+			'sortable' => FALSE
+		));
 		$table->setColumns(
 			array(
 				'col_id',
@@ -880,14 +883,7 @@ class Cat extends AbstractChannelController {
 			'type' => 'field_type'
 		);
 
-		$cat_fields = ee('Model')->get('CategoryField')
-			->filter('group_id', $group_id);
-		$total_rows = $cat_fields->all()->count();
-
-		$cat_fields = $cat_fields->order($sort_map[$table->sort_col], $table->sort_dir)
-			->limit(20)
-			->offset(($table->config['page'] - 1) * 20)
-			->all();
+		$cat_fields = $cat_group->getCategoryFields()->sortBy('field_order');
 
 		$type_map = array(
 			'text' => lang('text_input'),
@@ -899,19 +895,19 @@ class Cat extends AbstractChannelController {
 		foreach ($cat_fields as $field)
 		{
 			$data[] = array(
-				$field->field_id,
+				$field->getId().form_hidden('order[]', $field->getId()),
 				$field->field_label,
 				LD.$field->field_name.RD,
 				strtolower($type_map[$field->field_type]),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => cp_url('channel/cat/edit-field/'.$group_id.'/'.$field->field_id),
+						'href' => cp_url('channel/cat/edit-field/'.$group_id.'/'.$field->getId()),
 						'title' => lang('edit')
 					)
 				)),
 				array(
 					'name' => 'fields[]',
-					'value' => $field->field_id,
+					'value' => $field->getId(),
 					'data'	=> array(
 						'confirm' => lang('category_field') . ': <b>' . htmlentities($field->field_label, ENT_QUOTES) . '</b>'
 					)
@@ -925,22 +921,62 @@ class Cat extends AbstractChannelController {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['group_id'] = $group_id;
 
-		$pagination = new CP\Pagination(
-			$vars['table']['limit'],
-			$total_rows,
-			$vars['table']['page']
-		);
-		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
-
 		ee()->cp->set_breadcrumb(cp_url('channel/cat'), lang('category_groups'));
 		ee()->view->cp_page_title = lang('category_fields') . ' ' . lang('for') . ' ' . $cat_group->group_name;
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('category_fields') . ': <b>### ' . lang('category_fields') . '</b>');
-		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
-		));
+		ee()->cp->add_js_script('file', 'cp/v3/confirm_remove');
+		ee()->cp->add_js_script('file', 'cp/sort_helper');
+		ee()->cp->add_js_script('plugin', 'ee_table_reorder');
+		ee()->cp->add_js_script('file', 'cp/v3/cat_field_reorder');
+
+		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
+			->asIssue()
+			->canClose()
+			->withTitle(lang('cat_field_ajax_reorder_fail'))
+			->addToBody(lang('cat_field_ajax_reorder_fail_desc'));
+
+		ee()->javascript->set_global('cat_fields.reorder_url', cp_url('channel/cat/cat-field-reorder/'.$group_id));
+		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
 		ee()->cp->render('channel/cat/field', $vars);
+	}
+
+	/**
+	 * AJAX end point for reordering category fields on fields listing page
+	 */
+	public function catFieldReorder($group_id)
+	{
+		$cat_group = ee('Model')->get('CategoryGroup')
+			->filter('group_id', $group_id)
+			->first();
+
+		// Parse out the serialized inputs sent by the JavaScript
+		$new_order = array();
+		parse_str(ee()->input->post('order'), $new_order);
+
+		if ( ! AJAX_REQUEST OR ! $cat_group OR empty($new_order['order']))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$fields = $cat_group->getCategoryFields()->indexBy('field_id');
+
+		$order = 1;
+		foreach ($new_order['order'] as $field_id)
+		{
+			// Only update status orders that have changed
+			if (isset($fields[$field_id]) && $fields[$field_id]->field_order != $order)
+			{
+				$fields[$field_id]->field_order = $order;
+				$fields[$field_id]->save();
+			}
+
+			$order++;
+		}
+
+		ee()->output->send_ajax_response(NULL);
+		exit;
 	}
 
 	/**
