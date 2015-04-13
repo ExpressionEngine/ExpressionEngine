@@ -965,7 +965,7 @@ class Cat extends AbstractChannelController {
 		$order = 1;
 		foreach ($new_order['order'] as $field_id)
 		{
-			// Only update status orders that have changed
+			// Only update category fields orders that have changed
 			if (isset($fields[$field_id]) && $fields[$field_id]->field_order != $order)
 			{
 				$fields[$field_id]->field_order = $order;
