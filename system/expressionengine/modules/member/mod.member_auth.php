@@ -335,7 +335,7 @@ class Member_auth extends Member {
 
 		if ( ! $sess_q->num_rows())
 		{
-			return FALSE;
+			return ee()->output->show_user_error('general', lang('not_authorized'));
 		}
 
 		// Grab member
