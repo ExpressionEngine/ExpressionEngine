@@ -121,8 +121,9 @@ class Member_auth extends Member {
 		$sites_array = explode('|', $sites);
 
 		// No username/password?  Bounce them...
-		$multi	  = (ee()->input->get('multi') && count($sites_array) > 0) ?
-						ee()->input->get('multi') : 0;
+		$multi = (ee()->input->get('multi') && count($sites_array) > 0)
+			? ee()->input->get('multi')
+			: FALSE;
 		$username = ee()->input->post('username');
 		$password = ee()->input->post('password');
 
@@ -152,6 +153,21 @@ class Member_auth extends Member {
 
 		$success = '';
 
+		// Set login state
+		if ($multi)
+		{
+			$login_state = $multi;
+		}
+		else
+		{
+			$login_state = random_string('md5');
+			ee()->db->update(
+				'sessions',
+				array('login_state' => $login_state),
+				array('session_id' => ee()->session->userdata('session_id'))
+			);
+		}
+
 		// Log me in.
 		if ($multi)
 		{
@@ -177,8 +193,13 @@ class Member_auth extends Member {
 		// More sites?
 		if ($sites && ee()->config->item('allow_multi_logins') == 'y')
 		{
-			$this->_redirect_next_site($sites, $current_idx, $current_url);
+			$this->_redirect_next_site($sites, $current_idx, $current_url, $login_state);
 		}
+
+		// Clear out login_state
+		ee()->db->set('login_state', NULL, FALSE)
+			->where('session_id', ee()->session->userdata('session_id'))
+			->update('sessions');
 
 		$this->$success($sites_array);
 	}
@@ -289,12 +310,15 @@ class Member_auth extends Member {
 	/**
 	 * Do Multi-site authentication
 	 *
-	 * @param 	array 	array of sites
+	 * @param array $sites Array of site URLs to login to
+	 * @param string $login_state The hash identifying the member
 	 * @return 	object 	member auth object
 	 */
-	private function _do_multi_auth($sites, $session_id)
+	private function _do_multi_auth($sites, $login_state)
 	{
-		if ( ! $sites OR ee()->config->item('allow_multi_logins') == 'n')
+		if ( ! $sites
+			OR ee()->config->item('allow_multi_logins') == 'n'
+			OR empty($login_state))
 		{
 			return ee()->output->show_user_error('general', lang('not_authorized'));
 		}
@@ -305,10 +329,9 @@ class Member_auth extends Member {
 
 		// Grab session
 		$sess_q = ee()->db->get_where('sessions', array(
-			'session_id' => $session_id
+			'user_agent'  => substr(ee()->input->user_agent(), 0, 120),
+			'login_state' => $login_state
 		));
-
-
 
 		if ( ! $sess_q->num_rows())
 		{
@@ -349,10 +372,8 @@ class Member_auth extends Member {
 	 *
 	 * This function redirects to the next site for multi-site login based on
 	 * the array setup in config.php
-	 *
-	 *
 	 */
-	public function _redirect_next_site($sites, $current_idx, $current_url)
+	public function _redirect_next_site($sites, $current_idx, $current_url, $login_state)
 	{
 		$sites = explode('|', $sites);
 		$num_sites = count($sites);
@@ -386,11 +407,11 @@ class Member_auth extends Member {
 
 			// next site
 			$next_qs = array(
-				'ACT'	=> $action_id->row('action_id'),
-				'RET'	=> $return,
-				'cur'	=> $next_idx,
-				'orig'	=> $orig_idx,
-				'multi'	=> ee()->session->userdata('session_id'),
+				'ACT'          => $action_id->row('action_id'),
+				'RET'          => $return,
+				'cur'          => $next_idx,
+				'orig'         => $orig_idx,
+				'multi'        => $login_state,
 				'orig_site_id' => $orig_id,
 			);
 

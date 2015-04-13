@@ -718,7 +718,7 @@ class EE_Session {
 	 */
 	public function fetch_session_data()
 	{
-		ee()->db->select('member_id, admin_sess, last_activity, fingerprint, sess_start');
+		ee()->db->select('member_id, admin_sess, last_activity, fingerprint, sess_start, login_state');
 		ee()->db->where('session_id', (string) $this->sdata['session_id']);
 
 		// We already have a fingerprint to compare if they're running cs sessions
@@ -745,6 +745,9 @@ class EE_Session {
 		// Log last activity
 		$this->sdata['last_activity'] = $query->row('last_activity');
 		$this->sdata['sess_start'] = $query->row('sess_start');
+
+		// Login state
+		$this->sdata['login_state'] = $query->row('login_state');
 
 		// Set the fingerprint for c and s sessions to validate when fetching member data
 		$this->sdata['fingerprint'] = $query->row('fingerprint');
