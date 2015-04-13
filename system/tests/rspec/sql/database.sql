@@ -1217,6 +1217,7 @@ CREATE TABLE `exp_sessions` (
   `admin_sess` tinyint(1) NOT NULL DEFAULT '0',
   `ip_address` varchar(45) NOT NULL DEFAULT '0',
   `user_agent` varchar(120) NOT NULL,
+  `login_state` varchar(32) NULL DEFAULT NULL,
   `fingerprint` varchar(40) NOT NULL,
   `sess_start` int(10) unsigned NOT NULL DEFAULT '0',
   `last_activity` int(10) unsigned NOT NULL DEFAULT '0',
