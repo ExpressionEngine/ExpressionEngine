@@ -2,8 +2,22 @@
 		<section class="product-bar">
 			<div class="snap">
 				<div class="left">
-					<p><b>ExpressionEngine</b> <span class="version<?php if (isset($new_version)): ?> out-of-date<?php endif ?>" title="<?=lang('about_expressionengine')?>"><?=$formatted_version?></span></p>
+					<?php
+					$ver_title = lang('about_expressionengine');
+					if (isset($new_version))
+					{
+						$ver_title = lang('out_of_date_upgrade');
+						if ($new_version['security'])
+						{
+							$ver_title = lang('out_of_date_recommended');
+						}
+					}
+					?>
+					<p><b>ExpressionEngine</b> <span class="version<?php if (isset($new_version)): ?> out-of-date<?php if ($new_version['security']): ?>-vital<?php endif; endif ?>" title="<?=$ver_title?>"><?=$formatted_version?></span></p>
 					<div class="version-info">
+						<?php if (isset($new_version) && $new_version['security']): ?>
+							<p class="alert inline warn"><?=lang('recommended_upgrade')?></p>
+						<?php endif ?>
 						<h3><?=lang('installed')?></h3>
 						<p>ExpressionEngine <?=$formatted_version?><br><em><?=lang('build') . ' ' . $ee_build_date?></em></p>
 						<?php if (isset($new_version)): ?>

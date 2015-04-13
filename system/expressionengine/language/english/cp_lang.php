@@ -645,6 +645,15 @@ $lang = array(
 'out_of_date' =>
 'out of date',
 
+'out_of_date_upgrade' =>
+'Out of date, please upgrade',
+
+'out_of_date_recommended' =>
+'Out of date, Recommended upgrade',
+
+'recommended_upgrade' =>
+'<b>Recommended</b> upgrade.',
+
 'installed' =>
 'Installed',
 
