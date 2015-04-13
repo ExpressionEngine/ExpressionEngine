@@ -1,7 +1,7 @@
 class StatusGroups < ControlPanelPage
 
 	elements :status_groups, 'table tbody tr'
-	elements :status_group_titles, 'table tr td:nth-child(2)'
+	elements :status_group_titles, 'table tr td:nth-child(3)'
 
 	def load
 		self.open_dev_menu

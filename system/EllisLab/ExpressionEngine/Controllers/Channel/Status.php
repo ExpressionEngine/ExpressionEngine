@@ -318,6 +318,7 @@ class Status extends AbstractChannelController {
 		));
 		$table->setColumns(
 			array(
+				'col_id',
 				'status_name',
 				'manage' => array(
 					'type'	=> CP\Table::COL_TOOLBAR
@@ -334,6 +335,7 @@ class Status extends AbstractChannelController {
 		foreach ($statuses as $status)
 		{
 			$data[] = array(
+				$status->getId(),
 				htmlentities($status->status, ENT_QUOTES).form_hidden('order[]', $status->getId()),
 				array('toolbar_items' => array(
 					'edit' => array(
