@@ -334,23 +334,23 @@ if ( ! function_exists('get_file_info'))
 // --------------------------------------------------------------------
 
 /**
- * Get Mime by Extension
+ * Determines the MIME type of a file
  *
- * Translates a file extension into a mime type based on config/mimes.php.
- * Returns FALSE if it can't determine the type, or open the mime config file
- *
- * Note: this is NOT an accurate way of determining file mime types, and is here strictly as a convenience
- * It should NOT be trusted, and should certainly NOT be used for security
- *
+ * @deprecated 2.10.0 No longer used; please use the Mime_type library instead
  * @access	public
  * @param	string	path to file
- * @return	mixed
+ * @return	string The MIME type of the file
  */
 if ( ! function_exists('get_mime_by_extension'))
 {
 	function get_mime_by_extension($file)
 	{
-		// This is not 1:1 parity with the old code....
+		// Deprecate
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.10', 'ee()->mime_type->ofFile($filepath)');
+
+		// This is not 1:1 parity with the old code as this does more than
+		// examine the extension
 		ee()->load->library('mime_type');
 		$mime = ee()->mime_type->ofFile($file);
 		return $mime;
