@@ -387,7 +387,7 @@ class Cat extends AbstractChannelController {
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('group_name', $name);
 
-		if ( ! empty($status_id))
+		if ( ! empty($group_id))
 		{
 			$cat_group->filter('group_id', '!=', $group_id);
 		}
@@ -799,7 +799,7 @@ class Cat extends AbstractChannelController {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			$this->saveCategory($group_id, $category_id);
+			$category_id = $this->saveCategory($group_id, $category_id);
 
 			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
@@ -870,15 +870,17 @@ class Cat extends AbstractChannelController {
 		$table->setNoResultsText(
 			'no_category_fields',
 			'create_category_field',
-			cp_url('channel/cat/create-field')
+			cp_url('channel/cat/create-field/'.$group_id)
 		);
 
 		$sort_map = array(
-			'col_id' => 'group_id',
-			'group_name' => 'group_name'
+			'col_id' => 'field_id',
+			'label' => 'field_label',
+			'short_name' => 'field_name',
+			'type' => 'field_type'
 		);
 
-		$cat_fields = ee('Model')->get('CategoryFields')
+		$cat_fields = ee('Model')->get('CategoryField')
 			->filter('group_id', $group_id);
 		$total_rows = $cat_fields->all()->count();
 
@@ -887,6 +889,12 @@ class Cat extends AbstractChannelController {
 			->offset(($table->config['page'] - 1) * 20)
 			->all();
 
+		$type_map = array(
+			'text' => lang('text_input'),
+			'textarea' => lang('textarea'),
+			'select' => lang('select_dropdown'),
+		);
+
 		$data = array();
 		foreach ($cat_fields as $field)
 		{
@@ -894,16 +902,16 @@ class Cat extends AbstractChannelController {
 				$field->field_id,
 				$field->field_label,
 				LD.$field->field_name.RD,
-				$field->field_type,
+				strtolower($type_map[$field->field_type]),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => cp_url('channel/cat/edit-field/'.$field->field_id),
+						'href' => cp_url('channel/cat/edit-field/'.$group_id.'/'.$field->field_id),
 						'title' => lang('edit')
 					)
 				)),
 				array(
 					'name' => 'fields[]',
-					'value' => $field->group_id,
+					'value' => $field->field_id,
 					'data'	=> array(
 						'confirm' => lang('category_field') . ': <b>' . htmlentities($field->field_label, ENT_QUOTES) . '</b>'
 					)
@@ -913,8 +921,9 @@ class Cat extends AbstractChannelController {
 
 		$table->setData($data);
 
-		$base_url = new CP\URL('channel/cat/field', ee()->session->session_id());
+		$base_url = new CP\URL('channel/cat/field/'.$group_id, ee()->session->session_id());
 		$vars['table'] = $table->viewData($base_url);
+		$vars['group_id'] = $group_id;
 
 		$pagination = new CP\Pagination(
 			$vars['table']['limit'],
@@ -932,6 +941,266 @@ class Cat extends AbstractChannelController {
 		));
 
 		ee()->cp->render('channel/cat/field', $vars);
+	}
+
+	/**
+	 * Remove channels handler
+	 */
+	public function removeField()
+	{
+		$field_ids = ee()->input->post('fields');
+
+		if ( ! empty($field_ids) && ee()->input->post('bulk_action') == 'remove')
+		{
+			// Filter out junk
+			$field_ids = array_filter($field_ids, 'is_numeric');
+
+			if ( ! empty($field_ids))
+			{
+				ee('Model')->get('CategoryField')
+					->filter('field_id', 'IN', $field_ids)
+					->delete();
+
+				ee('Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('category_fields_removed'))
+					->addToBody(sprintf(lang('category_fields_removed_desc'), count($field_ids)))
+					->defer();
+			}
+		}
+		else
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		ee()->functions->redirect(
+			cp_url('channel/cat/field/'.ee()->input->post('group_id'), ee()->cp->get_url_state())
+		);
+	}
+
+	/**
+	 * Category field create
+	 *
+	 * @param	int	$group_id		ID of category group field is to be in
+	 */
+	public function createField($group_id)
+	{
+		$this->categoryFieldForm($group_id);
+	}
+
+	/**
+	 * Category field edit
+	 *
+	 * @param	int	$group_id	ID of category group field is in
+	 * @param	int	$field_id	ID of Field to edit
+	 */
+	public function editField($group_id, $field_id)
+	{
+		$this->categoryFieldForm($group_id, $field_id);
+	}
+
+	/**
+	 * Category field creation/edit form
+	 *
+	 * @param	int	$group_id	ID of category group field is (to be) in
+	 * @param	int	$field_id	ID of field to edit
+	 */
+	private function categoryFieldForm($group_id, $field_id = NULL)
+	{
+		if (empty($group_id) OR ! is_numeric($group_id))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		if ($field_id)
+		{
+			$cat_field = ee('Model')->get('CategoryField')
+				->filter('field_id', (int) $field_id)
+				->first();
+
+			ee()->view->save_btn_text = 'btn_edit_field';
+			ee()->view->cp_page_title = lang('edit_category_field');
+			ee()->view->base_url = cp_url('channel/cat/edit-field/'.$group_id.'/'.$field_id);
+		}
+		else
+		{
+			// Only auto-complete field short name for new fields
+			ee()->cp->add_js_script('plugin', 'ee_url_title');
+			ee()->javascript->output('
+				$("input[name=field_label]").bind("keyup keydown", function() {
+					$(this).ee_url_title("input[name=field_name]");
+				});
+			');
+
+			$cat_field = ee('Model')->make('CategoryField');
+
+			ee()->view->save_btn_text = 'btn_create_field';
+			ee()->view->cp_page_title = lang('create_category_field');
+			ee()->view->base_url = cp_url('channel/cat/create-field/'.$group_id);
+		}
+
+		if ( ! $cat_field)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'type',
+					'desc' => '',
+					'fields' => array(
+						'field_type' => array(
+							'type' => 'dropdown',
+							'choices' => array(
+								'text'     => lang('text_input'),
+								'textarea' => lang('textarea'),
+								'select'   => lang('select_dropdown')
+							),
+							'value' => $cat_field->field_type
+						)
+					)
+				),
+				array(
+					'title' => 'label',
+					'desc' => 'cat_field_label_desc',
+					'fields' => array(
+						'field_label' => array(
+							'type' => 'text',
+							'value' => $cat_field->field_label,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'short_name',
+					'desc' => 'cat_field_short_name_desc',
+					'fields' => array(
+						'field_name' => array(
+							'type' => 'text',
+							'value' => $cat_field->field_name,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'require_field',
+					'desc' => 'cat_require_field_desc',
+					'fields' => array(
+						'field_required' => array(
+							'type' => 'yes_no',
+							'value' => $cat_field->field_required
+						)
+					)
+				)
+			)
+		);
+
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'field_type',
+				'label' => 'lang:type',
+				'rules' => 'required|enum[text,textarea,select]'
+			),
+			array(
+				'field' => 'field_label',
+				'label' => 'lang:label',
+				'rules' => 'required|strip_tags|trim|valid_xss_check'
+			),
+			array(
+				'field' => 'field_name',
+				'label' => 'lang:short_name',
+				'rules' => 'required|strip_tags|trim|valid_xss_check|alpha_dash|callback_validCategoryFieldName['.$field_id.']'
+			)
+		));
+
+		ee()->form_validation->validateNonTextInputs($vars['sections']);
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			$field_id = $this->saveCategoryField($group_id, $field_id);
+
+			ee('Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('category_field_saved'))
+				->addToBody(lang('category_field_saved_desc'))
+				->defer();
+
+			ee()->functions->redirect(cp_url('channel/cat/edit-field/'.$group_id.'/'.$field_id));
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('category_field_not_saved'))
+				->addToBody(lang('category_field_not_saved_desc'))
+				->now();
+		}
+
+		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text_working = 'btn_saving';
+
+		ee()->cp->set_breadcrumb(cp_url('channel/cat'), lang('category_groups'));
+		ee()->cp->set_breadcrumb(cp_url('channel/cat/field/'.$group_id), lang('category_fields'));
+
+		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * Custom validator for category field name to check for duplicate
+	 * category field names
+	 *
+	 * @param	model	$name		Category field name
+	 * @param	model	$field_id	Field ID for category field
+	 * @return	bool	Valid category field name or not
+	 */
+	public function validCategoryFieldName($name, $field_id)
+	{
+		$cat_field = ee('Model')->get('CategoryField')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('field_name', $name);
+
+		if ( ! empty($field_id))
+		{
+			$cat_field->filter('field_id', '!=', $field_id);
+		}
+
+		if ($cat_field->all()->count() > 0)
+		{
+			ee()->form_validation->set_message('validCategoryFieldName', lang('duplicate_field_name'));
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Save routine for category fields
+	 *
+	 * @param	int	$group_id	ID of category group field is (to be) in
+	 * @param	int	$field_id	ID of field to save
+	 */
+	private function saveCategoryField($group_id, $field_id)
+	{
+		$cat_field = ee('Model')->make('CategoryField', $_POST);
+		$cat_field->field_id = $field_id;
+		$cat_field->group_id = $group_id;
+		$cat_field->site_id = ee()->config->item('site_id');
+		$cat_field->field_list_items = '';
+
+		// New fields get put on the end
+		$cat_field->field_order = ee('Model')->get('CategoryField')
+			->filter('group_id', $group_id)
+			->all()
+			->count() + 1;
+
+		$cat_field->save();
+		return $cat_field->field_id;
 	}
 }
 // EOF

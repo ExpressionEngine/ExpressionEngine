@@ -43,7 +43,7 @@ class Channel extends AbstractChannelController {
 			array(
 				'col_id',
 				'channel',
-				'channel_short_name',
+				'short_name',
 				'manage' => array(
 					'type'	=> CP\Table::COL_TOOLBAR
 				),
@@ -57,7 +57,7 @@ class Channel extends AbstractChannelController {
 		$sort_map = array(
 			'col_id' => 'channel_id',
 			'channel' => 'channel_title',
-			'channel_short_name' => 'channel_name'
+			'short_name' => 'channel_name'
 		);
 
 		$channels = ee('Model')->get('Channel')
