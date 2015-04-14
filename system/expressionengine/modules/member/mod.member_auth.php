@@ -150,23 +150,7 @@ class Member_auth extends Member {
 		}
 
 		$csrf_token = ee()->csrf->refresh_token();
-
 		$success = '';
-
-		// Set login state
-		if ($multi)
-		{
-			$login_state = $multi;
-		}
-		else
-		{
-			$login_state = random_string('md5');
-			ee()->db->update(
-				'sessions',
-				array('login_state' => $login_state),
-				array('session_id' => ee()->session->userdata('session_id'))
-			);
-		}
 
 		// Log me in.
 		if ($multi)
@@ -188,6 +172,21 @@ class Member_auth extends Member {
 			$current_url = ee()->functions->fetch_site_index();
 			$current_search_url = preg_replace('/\/S=.*$/', '', $current_url);
 			$current_idx = array_search($current_search_url, $sites_array);
+		}
+
+		// Set login state
+		if ($multi)
+		{
+			$login_state = $multi;
+		}
+		else
+		{
+			$login_state = random_string('md5');
+			ee()->db->update(
+				'sessions',
+				array('login_state' => $login_state),
+				array('session_id' => ee()->session->userdata('session_id'))
+			);
 		}
 
 		// More sites?
@@ -335,6 +334,7 @@ class Member_auth extends Member {
 
 		if ( ! $sess_q->num_rows())
 		{
+			var_dump($login_state);
 			return ee()->output->show_user_error('general', lang('not_authorized'));
 		}
 
