@@ -197,7 +197,7 @@ class Member_auth extends Member {
 		}
 
 		// Clear out login_state
-		ee()->db->set('login_state', NULL, FALSE)
+		ee()->db->set('login_state', NULL)
 			->where('session_id', ee()->session->userdata('session_id'))
 			->update('sessions');
 
