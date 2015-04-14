@@ -859,6 +859,12 @@ $lang = array(
 'captcha_settings_title' =>
 '<abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> Settings',
 
+'require_captcha' =>
+'Require <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> for front-end forms?',
+
+'require_captcha_desc' =>
+'When set to <b>yes</b>, visitors will be required to fill in a <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> field for all front-end forms.',
+
 'captcha_font' =>
 'Use TrueType font?',
 

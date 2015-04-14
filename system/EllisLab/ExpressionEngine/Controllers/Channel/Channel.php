@@ -891,16 +891,6 @@ class Channel extends AbstractChannelController {
 							'value' => $channel_form->allow_guest_posts
 						)
 					)
-				),
-				array(
-					'title' => 'channel_form_require_captcha',
-					'desc' => 'channel_form_require_captcha_desc',
-					'fields' => array(
-						'require_captcha' => array(
-							'type' => 'yes_no',
-							'value' => $channel_form->require_captcha
-						)
-					)
 				)
 			),
 			'versioning' => array(
@@ -1027,20 +1017,6 @@ class Channel extends AbstractChannelController {
 						'comment_require_email' => array(
 							'type' => 'yes_no',
 							'value' => $channel->comment_require_email
-						)
-					)
-				),
-				array(
-					'title' => 'enable_captcha',
-					'desc' => 'enable_captcha_desc',
-					'fields' => array(
-						'comment_use_captcha' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
-							'value' => $channel->comment_use_captcha
 						)
 					)
 				),
@@ -1329,7 +1305,6 @@ class Channel extends AbstractChannelController {
 		}
 
 		$channel_form->default_status = $fields['default_status'];
-		$channel_form->require_captcha = $fields['require_captcha'];
 		$channel_form->allow_guest_posts = $fields['allow_guest_posts'];
 		$channel_form->default_author = $fields['default_author'];
 		$channel->setChannelFormSettings($channel_form);
