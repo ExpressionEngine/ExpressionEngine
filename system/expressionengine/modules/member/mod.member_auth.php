@@ -357,7 +357,7 @@ class Member_auth extends Member {
 		}
 
 		// hook onto an existing session
-		$incoming->use_session_id($session_id);
+		$incoming->use_session_id($sess_q->row('session_id'));
 		$incoming->start_session();
 
 		$new_row = $sess_q->row_array();
