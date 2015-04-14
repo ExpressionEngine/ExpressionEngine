@@ -195,8 +195,7 @@ class CI_Upload {
 		// Set the uploaded data as class variables
 		$this->file_temp = $_FILES[$field]['tmp_name'];
 		$this->file_size = $_FILES[$field]['size'];
-		$this->file_type = preg_replace("/^(.+?);.*$/", "\\1", $_FILES[$field]['type']);
-		$this->file_type = strtolower(trim(stripslashes($this->file_type), '"'));
+		$this->file_type = ee()->mime_type->ofFile();
 		$this->file_name = $this->_prep_filename($_FILES[$field]['name']);
 		$this->file_ext	 = $this->get_extension($this->file_name);
 		$this->client_name = $this->file_name;
@@ -543,23 +542,7 @@ class CI_Upload {
 	 */
 	public function is_image()
 	{
-		// IE will sometimes return odd mime-types during upload, so here we just standardize all
-		// jpegs or pngs to the same file type.
-
-		$png_mimes  = array('image/x-png');
-		$jpeg_mimes = array('image/jpg', 'image/jpe', 'image/jpeg', 'image/pjpeg');
-
-		if (in_array($this->file_type, $png_mimes))
-		{
-			$this->file_type = 'image/png';
-		}
-
-		if (in_array($this->file_type, $jpeg_mimes))
-		{
-			$this->file_type = 'image/jpeg';
-		}
-
-		return ee()->mime_type->isImage($this->file_temp);
+		return ee()->mime_type->fileIsImage($this->file_temp);
 	}
 
 	// --------------------------------------------------------------------
