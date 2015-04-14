@@ -746,9 +746,6 @@ class EE_Session {
 		$this->sdata['last_activity'] = $query->row('last_activity');
 		$this->sdata['sess_start'] = $query->row('sess_start');
 
-		// Login state
-		$this->sdata['login_state'] = $query->row('login_state');
-
 		// Set the fingerprint for c and s sessions to validate when fetching member data
 		$this->sdata['fingerprint'] = $query->row('fingerprint');
 
