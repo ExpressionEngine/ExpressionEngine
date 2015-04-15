@@ -207,6 +207,30 @@ class CI_Upload {
 			return FALSE;
 		}
 
+		// Disallowed File Names
+		$disallowed_names = ee()->config->item('upload_file_name_blacklist');
+
+		if ($disallowed_names !== FALSE)
+		{
+			if ( ! is_array($disallowed_names))
+			{
+				$disallowed_names = explode('|', $disallowed_names);
+			}
+			$disallowed_names = array_map("strtolower", $disallowed_names);
+		}
+		else
+		{
+			$disallowed_names = array();
+		}
+
+		$disallowed_names[] = 'web.config';
+		if (in_array(strtolower($this->file_name), $disallowed_names))
+		{
+			$this->set_error('upload_invalid_filetype');
+			return FALSE;
+		}
+
+
 		// Is the file type allowed to be uploaded?
 		if ( ! $this->is_allowed_filetype())
 		{
