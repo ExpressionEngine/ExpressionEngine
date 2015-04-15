@@ -214,7 +214,7 @@ class CI_Upload {
 		{
 			if ( ! is_array($disallowed_names))
 			{
-				$disallowed_names = explode('|', $disallowed_names);
+				$disallowed_names = array($disallowed_names);
 			}
 			$disallowed_names = array_map("strtolower", $disallowed_names);
 		}
@@ -223,7 +223,11 @@ class CI_Upload {
 			$disallowed_names = array();
 		}
 
+		// Yes ".htaccess" is covered by the above hidden file check
+		// but this is here as an extra sanity-saving precation.
+		$disallowed_names[] = '.htaccess';
 		$disallowed_names[] = 'web.config';
+
 		if (in_array(strtolower($this->file_name), $disallowed_names))
 		{
 			$this->set_error('upload_invalid_filetype');
