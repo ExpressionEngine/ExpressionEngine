@@ -1,1 +1,1 @@
-<?php require_once APPPATH.'views/surveys/default_survey.php'; ?>
+<?php $this->load->view('surveys/default_survey'); ?>
