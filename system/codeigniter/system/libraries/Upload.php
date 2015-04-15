@@ -195,7 +195,7 @@ class CI_Upload {
 		// Set the uploaded data as class variables
 		$this->file_temp = $_FILES[$field]['tmp_name'];
 		$this->file_size = $_FILES[$field]['size'];
-		$this->file_type = ee()->mime_type->ofFile();
+		$this->file_type = ee()->mime_type->ofFile($this->file_temp);
 		$this->file_name = $this->_prep_filename($_FILES[$field]['name']);
 		$this->file_ext	 = $this->get_extension($this->file_name);
 		$this->client_name = $this->file_name;
