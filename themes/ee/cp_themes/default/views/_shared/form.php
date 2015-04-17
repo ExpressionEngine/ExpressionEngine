@@ -15,7 +15,7 @@ foreach ($sections as $name => $settings)
 	}
 } ?>
 
-<h1><?=(isset($cp_page_title_alt)) ? $cp_page_title_alt : $cp_page_title?><?php if ($required): ?> <span class="required intitle">&#10033; <?=lang('required_fields')?></span><?php endif ?></h1>
+<h1><?=(isset($cp_page_title_alt)) ? $cp_page_title_alt : $cp_page_title?><?php if ($required): ?> <span class="req-title"><?=lang('required_fields')?></span><?php endif ?></h1>
 <?php
 $form_class = 'settings';
 if (isset($ajax_validate) && $ajax_validate == TRUE)
@@ -47,29 +47,37 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 				continue;
 			}
 
-			$last_class = ($setting == end($settings)) ? ' last' : '';
+			// Gather classes needed to set on the fieldset
+			$fieldset_classes = '';
+			// Any fields required?
+			foreach ($setting['fields'] as $field_name => $field)
+			{
+				if (isset($field['required']) && $field['required'] == TRUE)
+				{
+					$fieldset_classes .= ' required';
+					break;
+				}
+			}
+			if (isset($setting['security']) && $setting['security'] == TRUE)
+			{
+				$fieldset_classes .= ' security-enhance';
+			}
+			if (isset($setting['caution']) && $setting['caution'] == TRUE)
+			{
+				$fieldset_classes .= ' security-caution';
+			}
+			if ($setting == end($settings))
+			{
+				$fieldset_classes .= ' last';
+			}
+
 			$grid = (isset($setting['grid']) && $setting['grid'] == TRUE);
 
 			// Grids have to be in a div for an overflow bug in Firefox
 			$element = ($grid) ? 'div' : 'fieldset'; ?>
-			<<?=$element?> class="col-group<?=$last_class?> <?=( ! $grid) ? form_error_class(array_keys($setting['fields'])) : '' ?> <?=($grid) ? 'grid-publish' : '' ?>">
+			<<?=$element?> class="col-group<?=$fieldset_classes?> <?=( ! $grid) ? form_error_class(array_keys($setting['fields'])) : '' ?> <?=($grid) ? 'grid-publish' : '' ?>">
 				<div class="setting-txt col <?=($grid) ? form_error_class(array_keys($setting['fields'])) : '' ?> <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?>">
-					<?php foreach ($setting['fields'] as $field_name => $field)
-					{
-						if ($required = (isset($field['required']) && $field['required'] == TRUE))
-						{
-							break;
-						}
-					}
-					$security = (isset($setting['security']) && $setting['security'] == TRUE);
-					$caution = (isset($setting['caution']) && $setting['caution'] == TRUE);
-					?>
-					<h3<?php if ($security):?> class="enhance"<?php endif ?><?php if ($caution):?> class="caution"<?php endif ?>>
-						<?=lang($setting['title'])?>
-						<?php if ($required): ?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span><?php endif ?>
-						<?php if ($security): ?> <span title="enhance security"></span><?php endif ?>
-						<?php if ($caution): ?> <span title="enhance caution"></span><?php endif ?>
-					</h3>
+					<h3><?=lang($setting['title'])?></h3>
 					<em><?=lang($setting['desc'])?></em>
 				</div>
 				<div class="setting-field col <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?> last">
