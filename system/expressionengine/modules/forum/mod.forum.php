@@ -1202,11 +1202,17 @@ class Forum {
 		// Parse {current_time}
 		$str = ee()->TMPL->parse_date_variables($str, array('current_time' => ee()->localize->now));
 
+		if ( ! class_exists('EE_Messages'))
+		{
+			require APPPATH.'libraries/Messages.php';
+		}
+
 		// Parse the forum segments and board prefs
 		$conds = array(
 			'current_request'	=> $this->current_request,
 			'current_id'		=> $this->current_id,
-			'current_page'		=> $this->current_page
+			'current_page'		=> $this->current_page,
+			'pm_enabled'		=> EE_Messages::can_send_pm(),
 		);
 
 		// parse certain board preferences as well

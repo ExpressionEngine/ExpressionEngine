@@ -465,6 +465,9 @@ $lang = array(
 'pm_cfg' =>
 "Private Messaging Preferences",
 
+'prv_msg_enabled' =>
+'Enable private messaging between members?',
+
 'prv_msg_storage_limit' =>
 "Maximum Number of Private Messages a user can store",
 
@@ -475,7 +478,7 @@ $lang = array(
 "Maximum Number of characters to allow in Private Messages",
 
 'prv_msg_allow_attachments' =>
-'Enable attachments in private messages?',
+'Allow attachments in private messages?',
 
 "prv_msg_max_attachments" =>
 "Maximum Number of Attachments per Private Message",

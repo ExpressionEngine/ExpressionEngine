@@ -1925,6 +1925,7 @@ class Members extends CP_Controller {
 				'mbr_notification_emails' => array('i', '', 'valid_emails')
 			),
 			'pm_cfg' => array(
+				'prv_msg_enabled'         => array('r', array('y' => 'yes', 'n' => 'no')),
 				'prv_msg_max_chars'       => array('i', '', 'integer'),
 				'prv_msg_html_format'     => array('s', array('safe' => 'html_safe', 'none' => 'html_none', 'all' => 'html_all')),
 				'prv_msg_auto_links'      => array('r', array('y' => 'yes', 'n' => 'no')),

@@ -537,6 +537,7 @@ class EE_Config Extends CI_Config {
 			'sig_img_max_width',
 			'sig_img_max_height',
 			'sig_img_max_kb',
+			'prv_msg_enabled',
 			'prv_msg_allow_attachments',
 			'prv_msg_upload_path',
 			'prv_msg_max_attachments',

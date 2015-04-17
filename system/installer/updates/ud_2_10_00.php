@@ -148,7 +148,10 @@ class Updater {
 		$msm_config = new MSM_Config();
 
 		$msm_config->update_site_prefs(
-			array('prv_msg_allow_attachments' => 'y'),
+			array(
+				'prv_msg_enabled' => 'y',
+				'prv_msg_allow_attachments' => 'y'
+			),
 			'all'
 		);
 	}

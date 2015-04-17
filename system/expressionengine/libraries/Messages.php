@@ -104,8 +104,8 @@ class EE_Messages {
 		/** -----------------------------------*/
 
 		$this->member_id	  = ee()->session->userdata['member_id'];
-		$this->allow_pm		  = (ee()->session->userdata['group_id'] == '1') ? 'y' : ee()->session->userdata['can_send_private_messages'];
-		$this->allow_pm		  = ($this->allow_pm == 'y' && ee()->session->userdata['accept_messages'] == 'y') ? 'y' : 'n';
+
+		$this->allow_pm = self::can_send_pm() ? 'y' : 'n';
 
 		$this->attach_allowed = (ee()->config->item('prv_msg_allow_attachments') == 'y'
 			&& ee()->session->userdata('can_attach_in_private_messages') == 'y') ? 'y' : 'n';
@@ -158,10 +158,29 @@ class EE_Messages {
 
 		srand(time());
 
-		if ((rand() % 100) < 5)
+		if ((rand() % 100) < 5 && ee()->config->item('prv_msg_enabled') == 'y')
 		{
 			$this->maintenance();
 		}
+	}
+
+	/**
+	 * Determines if the current user can send private messages, static
+	 * method so Messages does not have to be instantiated
+	 *
+	 * @return bool
+	 */
+	static public function can_send_pm()
+	{
+		if (ee()->config->item('prv_msg_enabled') != 'y' OR
+				(ee()->session->userdata('can_send_private_messages') != 'y' &&
+				ee()->session->userdata('group_id') != '1') OR
+			ee()->session->userdata('accept_messages') != 'y')
+		{
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
 
