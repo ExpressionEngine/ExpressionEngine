@@ -329,7 +329,7 @@ class Relationship_ft extends EE_Fieldtype {
 		}
 
 		$entries = ee('Model')->get('ChannelEntry')
-			// ->fields('entry_id', 'title')
+			->fields('entry_id', 'title', 'channel_id')
 			->filter('site_id', ee()->config->item('site_id'))
 			->order($order_field, $this->settings['order_dir']);
 
