@@ -39,7 +39,8 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'_modify_category_data_fields',
-				'_date_format_years'
+				'_date_format_years',
+				'_add_allow_pm_attachments_option'
 			)
 		);
 
@@ -135,6 +136,21 @@ class Updater {
 				}
 			}
 		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Populates the new prv_msg_allow_attachments setting, defaulted to yes
+	 */
+	public function _add_allow_pm_attachments_option()
+	{
+		$msm_config = new MSM_Config();
+
+		$msm_config->update_site_prefs(
+			array('prv_msg_allow_attachments' => 'y'),
+			'all'
+		);
 	}
 }
 // EOF

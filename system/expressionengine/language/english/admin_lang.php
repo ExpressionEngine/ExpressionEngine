@@ -474,6 +474,9 @@ $lang = array(
 'prv_msg_max_chars' =>
 "Maximum Number of characters to allow in Private Messages",
 
+'prv_msg_allow_attachments' =>
+'Enable attachments in private messages?',
+
 "prv_msg_max_attachments" =>
 "Maximum Number of Attachments per Private Message",
 

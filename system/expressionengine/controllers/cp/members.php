@@ -1928,6 +1928,7 @@ class Members extends CP_Controller {
 				'prv_msg_max_chars'       => array('i', '', 'integer'),
 				'prv_msg_html_format'     => array('s', array('safe' => 'html_safe', 'none' => 'html_none', 'all' => 'html_all')),
 				'prv_msg_auto_links'      => array('r', array('y' => 'yes', 'n' => 'no')),
+				'prv_msg_allow_attachments' => array('r', array('y' => 'yes', 'n' => 'no')),
 				'prv_msg_upload_path'     => array('i', '', 'strip_tags|trim|valid_xss_check'),
 				'prv_msg_max_attachments' => array('i', '', 'integer'),
 				'prv_msg_attach_maxsize'  => array('i', '', 'integer'),
