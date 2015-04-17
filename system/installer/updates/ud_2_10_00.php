@@ -40,7 +40,7 @@ class Updater {
 			array(
 				'_modify_category_data_fields',
 				'_date_format_years',
-				'_add_allow_pm_attachments_option'
+				'_add_new_private_messages_options'
 			)
 		);
 
@@ -141,9 +141,10 @@ class Updater {
 	// -------------------------------------------------------------------------
 
 	/**
-	 * Populates the new prv_msg_allow_attachments setting, defaulted to yes
+	 * Populates the new prv_msg_enabled and prv_msg_allow_attachments settings,
+	 * defaulted to yes
 	 */
-	public function _add_allow_pm_attachments_option()
+	public function _add_new_private_messages_options()
 	{
 		$msm_config = new MSM_Config();
 
