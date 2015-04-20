@@ -1560,8 +1560,6 @@ class Filemanager {
 	 */
 	public function get_thumb($file, $directory_id, $ignore_site_id = FALSE)
 	{
-		$directory = $this->fetch_upload_dir_prefs($directory_id, $ignore_site_id);
-
 		$thumb_info = array(
 			'thumb' => PATH_CP_GBL_IMG.'default.png',
 			'thumb_path' => '',
@@ -1572,6 +1570,8 @@ class Filemanager {
 		{
 			return $thumb_info;
 		}
+
+		$directory = $this->fetch_upload_dir_prefs($directory_id, $ignore_site_id);
 
 		// If the raw file name was passed in, figure out the mime_type
 		if ( ! is_array($file) OR ! isset($file['mime_type']))
