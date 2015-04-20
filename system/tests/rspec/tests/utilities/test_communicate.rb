@@ -28,7 +28,7 @@ feature 'Communicate' do
 		@page.load
 
 		@page.should be_displayed
-		@page.heading.text.should eq 'Communicate ✱ Required Fields'
+		@page.heading.text.should eq 'Communicate Required Fields'
 		@page.should have_subject
 		@page.should have_body
 		@page.should have_mailtype

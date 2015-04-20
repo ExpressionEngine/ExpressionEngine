@@ -511,7 +511,7 @@ feature 'Communicate > Sent' do
 		communicate = Communicate.new
 
 		communicate.should be_displayed
-		communicate.heading.text.should eq 'Communicate ✱ Required Fields'
+		communicate.heading.text.should eq 'Communicate Required Fields'
 
 		communicate.subject.value.should eq my_subject
 		communicate.from_email.value.should eq test_from
