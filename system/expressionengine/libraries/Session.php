@@ -718,7 +718,7 @@ class EE_Session {
 	 */
 	public function fetch_session_data()
 	{
-		ee()->db->select('member_id, admin_sess, last_activity, fingerprint, sess_start');
+		ee()->db->select('member_id, admin_sess, last_activity, fingerprint, sess_start, login_state');
 		ee()->db->where('session_id', (string) $this->sdata['session_id']);
 
 		// We already have a fingerprint to compare if they're running cs sessions

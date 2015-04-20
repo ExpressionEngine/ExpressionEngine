@@ -67,6 +67,7 @@ class EE_Schema {
 			admin_sess tinyint(1) default '0' NOT NULL,
 			ip_address varchar(45) default '0' NOT NULL,
 			user_agent varchar(120) NOT NULL,
+			login_state varchar(32) NULL DEFAULT NULL,
 			fingerprint varchar(40) NOT NULL,
 			sess_start int(10) unsigned DEFAULT '0' NOT NULL,
 			last_activity int(10) unsigned DEFAULT '0' NOT NULL,

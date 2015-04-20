@@ -38,6 +38,7 @@ class Updater {
 
 		$steps = new ProgressIterator(
 			array(
+				'_member_login_state',
 				'_modify_category_data_fields',
 				'_date_format_years'
 			)
@@ -135,6 +136,21 @@ class Updater {
 				}
 			}
 		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Adds a login_state column to the sessions table
+	 */
+	private function _member_login_state()
+	{
+		ee()->smartforge->add_column('sessions', array(
+			'login_state' => array(
+				'type'       => 'varchar',
+				'constraint' => 32
+			)
+		));
 	}
 }
 // EOF
