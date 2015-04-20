@@ -286,7 +286,7 @@ class Localize {
 		{
 			if (preg_match('/\b\d{1,2}-\d{1,2}-\d{2}\b/', $date_string))
 			{
-				return lang('invalid_date_ambiguous');
+				throw new Exception(lang('invalid_date_ambiguous'));
 			}
 		}
 
