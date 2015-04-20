@@ -1579,8 +1579,6 @@ class Filemanager {
 			ee()->load->helper('file');
 			ee()->load->library('mime_type');
 
-			var_dump($file, $directory);
-
 			$file = array(
 				'file_name' => $file,
 				'mime_type' => ee()->mime_type->ofFile($directory['server_path'] . $file)
