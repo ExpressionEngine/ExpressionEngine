@@ -149,7 +149,6 @@ class Member_auth extends Member {
 			ee()->output->show_user_error('general', $line);
 		}
 
-		$csrf_token = ee()->csrf->refresh_token();
 		$success = '';
 
 		// Log me in.
@@ -287,6 +286,8 @@ class Member_auth extends Member {
 		// Check user/pass minimum length
 		$this->_check_min_unpwd($sess, $username, $password);
 
+		$csrf_token = ee()->csrf->refresh_token();
+
 		// Start Session
 		// "Remember Me" is one year
 		if (isset($_POST['auto_login']))
@@ -348,6 +349,7 @@ class Member_auth extends Member {
 		}
 
 		$incoming = new Auth_result($mem_q->row());
+		$csrf_token = ee()->csrf->refresh_token();
 
 		// this is silly - only works for the first site
 		if (isset($_POST['auto_login']))

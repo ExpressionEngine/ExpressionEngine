@@ -902,7 +902,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 	 * Modify custom fields in exp_category_data
 	 *
 	 * Possible mix of column types with regard to allowing NULL due to a bug
-	 * in MSM.  Modifying to make sure the all allow NULL for consistency.
+	 * in MSM.  Modifying to make sure they all allow NULL for consistency.
 	 */
 	protected function _modify_category_data_fields()
 	{
@@ -915,7 +915,7 @@ If you do not wish to reset your password, ignore this message. It will expire i
 			$field_name = 'field_id_'.$field['field_id'];
 
 			ee()->smartforge->modify_column(
-				'category_data',
+				'category_field_data',
 				array(
 					$field_name => array(
 						'name' 			=> $field_name,

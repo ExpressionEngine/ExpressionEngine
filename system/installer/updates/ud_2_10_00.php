@@ -38,8 +38,9 @@ class Updater {
 
 		$steps = new ProgressIterator(
 			array(
-				'_date_format_years',
-				'_member_login_state'
+				'_member_login_state',
+				'_modify_category_data_fields',
+				'_date_format_years'
 			)
 		);
 
@@ -49,6 +50,40 @@ class Updater {
 		}
 
 		return TRUE;
+	}
+
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Modify custom fields in exp_category_data.  Again.
+	 *
+	 * Redo from ud_270 where the wrong table name was used, so the inconsistent
+	 * data could still be in there.
+	 * Possible mix of column types with regard to allowing NULL due to a bug
+	 * in MSM.  Modifying to make sure they all allow NULL for consistency.
+	 */
+	private function _modify_category_data_fields()
+	{
+		// Get all fields
+
+		$cat_fields = ee()->db->get('category_fields');
+
+		foreach ($cat_fields->result_array() as $field)
+		{
+			$field_name = 'field_id_'.$field['field_id'];
+
+			ee()->smartforge->modify_column(
+				'category_field_data',
+				array(
+					$field_name => array(
+						'name' 			=> $field_name,
+						'type' 			=> 'text',
+						'null' 			=> TRUE
+					)
+				)
+			);
+		}
 	}
 
 	// -------------------------------------------------------------------------

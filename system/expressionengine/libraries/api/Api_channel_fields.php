@@ -674,11 +674,20 @@ class Api_channel_fields extends Api {
 
 				ee()->dbforge->add_column($data_table, array($field => $prefs));
 
-				// Make sure the value is an empty string
+				// Make sure the value is correct, default to empty string
+				if ($field == $ft_field_name)
+				{
+					$default_value = $data['field_fmt'];
+				}
+				else
+				{
+					$default_value = (isset($prefs['default'])) ? $prefs['default'] : '';
+				}
+
 				ee()->db->update(
 					$data_table,
 					array(
-						$field => (isset($prefs['default'])) ? $prefs['default'] : ''
+						$field => $default_value
 					)
 				);
 			}
@@ -1457,10 +1466,6 @@ class Api_channel_fields extends Api {
 				$insert_id,
 				$native_settings
 			);
-
-			ee()->db->update('channel_data', array('field_ft_'.$insert_id => $native_settings['field_fmt']));
-
-			ee()->db->update('channel_data', array('field_ft_'.$insert_id => $native_settings['field_fmt']));
 
 			$field_formatting = array('none', 'br', 'markdown', 'xhtml');
 
