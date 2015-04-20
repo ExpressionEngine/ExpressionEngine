@@ -594,7 +594,7 @@ class File_model extends CI_Model {
 
 					$file['encrypted_path'] = rawurlencode($this->encrypt->encode($file['relative_path'].$file['name'], $this->session->sess_crypt_key));
 
-					$file['mime'] = ee()->mime_type->ofFile($file['relative_path']);
+					$file['mime'] = ee()->mime_type->ofFile($file['relative_path'].$file['name']);
 
 					if ($get_dimensions)
 					{
