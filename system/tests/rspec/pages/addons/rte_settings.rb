@@ -28,7 +28,7 @@ class RTESettings < ControlPanelPage
 	element :action_submit_button, 'form fieldset.tbl-bulk-act input.submit'
 
 	# Tool Set View
-	element :tool_set_name, 'input.required[name="toolset_name"]'
+	element :tool_set_name, 'input[name="toolset_name"]'
 	elements :choose_tools, 'form fieldset.col-group div.setting-field label.choice.block input'
 	element :tool_set_submit_button, 'form.settings fieldset.form-ctrls input.btn[type="submit"]'
 

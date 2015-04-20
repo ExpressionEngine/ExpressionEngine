@@ -304,7 +304,7 @@ feature 'RTE Settings' do
 	end
 
 	it 'can navigate back to settings from tool set', :stage => 'toolset' do
-		@page.breadcrumb.find('a:nth-child(2)').click
+		@page.breadcrumb.find('li:nth-child(2) a').click
 		no_php_js_errors
 		@page.displayed?
 
