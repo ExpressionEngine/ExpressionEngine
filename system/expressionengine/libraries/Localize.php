@@ -280,6 +280,16 @@ class Localize {
 	 */
 	private function _datetime($date_string = NULL, $timezone = TRUE, $date_format = NULL)
 	{
+		// Checking for ambiguous dates but only when we don't have a date
+		// format.
+		if ( ! $date_format)
+		{
+			if (preg_match('/\b\d{1,2}-\d{1,2}-\d{2}\b/', $date_string))
+			{
+				return lang('invalid_date_ambiguous');
+			}
+		}
+
 		// Localize to member's timezone or leave as GMT
 		if (is_bool($timezone))
 		{
