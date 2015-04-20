@@ -69,6 +69,13 @@ class ImportConverter extends Utilities {
 						),
 						'delimiter_special' => array('type' => 'text')
 					)
+				),
+				array(
+					'title' => 'enclosing_char',
+					'desc' => 'enclosing_char_desc',
+					'fields' => array(
+						'enclosure' => array('type' => 'text')
+					)
 				)
 			)
 		);
