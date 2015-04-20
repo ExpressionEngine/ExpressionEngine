@@ -152,7 +152,9 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 						<?php break;
 
 						case 'checkbox': ?>
-							<div class="scroll-wrap">
+							<?php if (isset($field['wrap']) && $field['wrap']): ?>
+								<div class="scroll-wrap">
+							<?php endif ?>
 								<?php foreach ($field['choices'] as $key => $label):
 									if (is_array($value))
 									{
@@ -167,7 +169,9 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 										<input type="checkbox" name="<?=$field_name?>[]" value="<?=$key?>"<?php if ($selected):?> checked="checked"<?php endif ?><?=$attrs?>> <?=$label?>
 									</label>
 								<?php endforeach ?>
-							</div>
+							<?php if (isset($field['wrap']) && $field['wrap']): ?>
+								</div>
+							<?php endif ?>
 						<?php break;
 
 						case 'textarea': ?>

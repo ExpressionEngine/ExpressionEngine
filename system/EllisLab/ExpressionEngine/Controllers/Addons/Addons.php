@@ -1284,7 +1284,7 @@ class Addons extends CP_Controller {
 
 		// Add the helper/library load path and temporarily
 		// switch the view path to the module's view folder
-		ee()->load->add_package_path($installed[$addon]['path'], FALSE);
+		ee()->load->add_package_path($installed[$addon]['path']);
 
 		require_once $installed[$addon]['path'].$installed[$addon]['file'];
 
