@@ -1065,7 +1065,7 @@ class Content_edit extends CP_Controller {
 			}
 
 			// Convert the date to a Unix timestamp
-			$data['entry_date'] = $this->localize->string_to_timestamp($data['entry_date']);
+			$data['entry_date'] = $this->localize->string_to_timestamp($data['entry_date'], TRUE, ee()->localize->get_date_format());
 
 			if ( ! is_numeric($data['entry_date']))
 			{
