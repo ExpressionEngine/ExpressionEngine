@@ -26,7 +26,7 @@
 			<div class="col-group">
 				<div class="col w-16 last">
 					<div class="box">
-						<h1><?=$title?> <span class="required intitle"><?=$subtitle?></span></h1>
+						<h1><?=$title?> <span class="req-title no-asterisk"><?=$subtitle?></span></h1>
 						<form class="settings" action="<?=$action?>" method="<?=$method?>">
 							<?=$content?>
 						</form>

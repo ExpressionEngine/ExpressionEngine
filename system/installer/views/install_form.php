@@ -9,9 +9,9 @@
 		<?php endforeach ?>
 	</div>
 <?php endif ?>
-<fieldset class="col-group <?=form_error_class('db_hostname')?>">
+<fieldset class="col-group required <?=form_error_class('db_hostname')?>">
 	<div class="setting-txt col w-8">
-		<h3><?=lang('db_hostname')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
+		<h3><?=lang('db_hostname')?></h3>
 		<em><?=lang('db_hostname_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
@@ -19,9 +19,9 @@
 		<?=form_error('db_hostname');?>
 	</div>
 </fieldset>
-<fieldset class="col-group <?=form_error_class('db_name')?>">
+<fieldset class="col-group required <?=form_error_class('db_name')?>">
 	<div class="setting-txt col w-8">
-		<h3><?=lang('db_name')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
+		<h3><?=lang('db_name')?></h3>
 		<em><?=lang('db_name_note')?></em>
 		<em><mark><?=lang('db_name_warning')?></mark></em>
 	</div>
@@ -30,9 +30,9 @@
 		<?=form_error('db_name');?>
 	</div>
 </fieldset>
-<fieldset class="col-group <?=form_error_class('db_username')?>">
+<fieldset class="col-group required <?=form_error_class('db_username')?>">
 	<div class="setting-txt col w-8">
-		<h3><?=lang('db_username')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
+		<h3><?=lang('db_username')?></h3>
 		<em><?=lang('db_username_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
@@ -40,7 +40,7 @@
 		<?=form_error('db_username');?>
 	</div>
 </fieldset>
-<fieldset class="col-group <?=form_error_class('db_password')?>">
+<fieldset class="col-group required <?=form_error_class('db_password')?>">
 	<div class="setting-txt col w-8">
 		<h3><?=lang('db_password')?></h3>
 		<em><?=lang('db_password_note')?></em>
@@ -50,9 +50,9 @@
 		<?=form_error('db_password');?>
 	</div>
 </fieldset>
-<fieldset class="col-group  <?=form_error_class('db_prefix')?> last">
+<fieldset class="col-group required <?=form_error_class('db_prefix')?> last">
 	<div class="setting-txt col w-8">
-		<h3><?=lang('db_prefix')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
+		<h3><?=lang('db_prefix')?></h3>
 		<em><?=lang('db_prefix_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
@@ -72,9 +72,9 @@
 	</div>
 </fieldset>
 <h2><?=lang('administrator_account')?></h2>
-<fieldset class="col-group <?=form_error_class('username')?>">
+<fieldset class="col-group required <?=form_error_class('username')?>">
 	<div class="setting-txt col w-8">
-		<h3><?=lang('username')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
+		<h3><?=lang('username')?></h3>
 		<em><?=lang('username_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
@@ -82,9 +82,9 @@
 		<?=form_error('username');?>
 	</div>
 </fieldset>
-<fieldset class="col-group <?=form_error_class('email_address')?>">
+<fieldset class="col-group required <?=form_error_class('email_address')?>">
 	<div class="setting-txt col w-8">
-		<h3><?=lang('e_mail')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
+		<h3><?=lang('e_mail')?></h3>
 		<em><?=lang('e_mail_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
@@ -92,9 +92,9 @@
 		<?=form_error('email_address');?>
 	</div>
 </fieldset>
-<fieldset class="col-group  <?=form_error_class('password')?> last">
+<fieldset class="col-group required <?=form_error_class('password')?> last">
 	<div class="setting-txt col w-8">
-		<h3><?=lang('password')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
+		<h3><?=lang('password')?></h3>
 		<em><?=lang('password_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
