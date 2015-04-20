@@ -48,7 +48,7 @@
 				<em><?=lang('sql_password_desc')?></em>
 			</div>
 			<div class="setting-field col w-8 last">
-				<input class="required" type="password" name="password_auth" value="">
+				<input type="password" name="password_auth" value="">
 				<?=form_error('password_auth')?>
 			</div>
 		</div>

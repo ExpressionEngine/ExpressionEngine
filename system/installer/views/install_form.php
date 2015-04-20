@@ -15,7 +15,7 @@
 		<em><?=lang('db_hostname_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
-		<input name="db_hostname" class="required" type="text" value="<?=set_value('db_hostname', 'localhost')?>">
+		<input name="db_hostname" type="text" value="<?=set_value('db_hostname', 'localhost')?>">
 		<?=form_error('db_hostname');?>
 	</div>
 </fieldset>
@@ -26,7 +26,7 @@
 		<em><mark><?=lang('db_name_warning')?></mark></em>
 	</div>
 	<div class="setting-field col w-8 last">
-		<input name="db_name" class="required" type="text" value="<?=set_value('db_name')?>">
+		<input name="db_name" type="text" value="<?=set_value('db_name')?>">
 		<?=form_error('db_name');?>
 	</div>
 </fieldset>
@@ -36,7 +36,7 @@
 		<em><?=lang('db_username_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
-		<input name="db_username" class="required" type="text" value="<?=set_value('db_username')?>">
+		<input name="db_username" type="text" value="<?=set_value('db_username')?>">
 		<?=form_error('db_username');?>
 	</div>
 </fieldset>
@@ -46,7 +46,7 @@
 		<em><?=lang('db_password_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
-		<input name="db_password" class="required" type="password" value="<?=set_value('db_password')?>">
+		<input name="db_password" type="password" value="<?=set_value('db_password')?>">
 		<?=form_error('db_password');?>
 	</div>
 </fieldset>
@@ -56,7 +56,7 @@
 		<em><?=lang('db_prefix_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
-		<input name="db_prefix" class="required" type="text" value="<?=set_value('db_prefix', 'exp')?>">
+		<input name="db_prefix" type="text" value="<?=set_value('db_prefix', 'exp')?>">
 		<?=form_error('db_prefix');?>
 	</div>
 </fieldset>
@@ -78,7 +78,7 @@
 		<em><?=lang('username_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
-		<input name="username" class="required" type="text" value="<?=set_value('username')?>">
+		<input name="username" type="text" value="<?=set_value('username')?>">
 		<?=form_error('username');?>
 	</div>
 </fieldset>
@@ -88,7 +88,7 @@
 		<em><?=lang('e_mail_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
-		<input name="email_address" class="required" type="text" value="<?=set_value('email_address')?>">
+		<input name="email_address" type="text" value="<?=set_value('email_address')?>">
 		<?=form_error('email_address');?>
 	</div>
 </fieldset>
@@ -98,7 +98,7 @@
 		<em><?=lang('password_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
-		<input name="password" class="required" type="password" value="">
+		<input name="password" type="password" value="">
 		<?=form_error('password');?>
 	</div>
 </fieldset>

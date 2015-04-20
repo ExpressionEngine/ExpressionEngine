@@ -54,7 +54,7 @@
 				<em><?=lang('sandr_password_desc')?></em>
 			</div>
 			<div class="setting-field col w-8 last">
-				<input class="required" name="password_auth" type="password" value="">
+				<input name="password_auth" type="password" value="">
 				<?=form_error('password_auth')?>
 			</div>
 		</div>

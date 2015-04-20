@@ -9,7 +9,7 @@
 	</div>
 	<div class="setting-field col w-8 last">
 		<input type="hidden" name="old_name" value="<?=$template->template_name?>">
-		<input type="text" name="template_name" value="<?=set_value('template_name', $template->template_name)?>" class="required">
+		<input type="text" name="template_name" value="<?=set_value('template_name', $template->template_name)?>">
 		<?=form_error('template_name')?>
 	</div>
 </fieldset>

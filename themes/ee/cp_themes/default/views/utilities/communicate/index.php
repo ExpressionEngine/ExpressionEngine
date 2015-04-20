@@ -8,7 +8,7 @@
 			<h3><?=lang('email_subject')?></h3>
 		</div>
 		<div class="setting-field col w-16 last">
-			<input class="required" type="text" name="subject" value="<?=set_value('subject', $subject)?>">
+			<input type="text" name="subject" value="<?=set_value('subject', $subject)?>">
 			<?=form_error('subject')?>
 		</div>
 	</fieldset>
@@ -33,7 +33,7 @@
 			<em><?=lang('plaintext_alt')?></em>
 		</div>
 		<div class="setting-field col w-16 last">
-			<textarea class="required" name="plaintext_alt" cols="" rows=""><?=set_value('plaintext_alt', $plaintext_alt)?></textarea>
+			<textarea name="plaintext_alt" cols="" rows=""><?=set_value('plaintext_alt', $plaintext_alt)?></textarea>
 		</div>
 	</fieldset>
 	<fieldset class="col-group required <?=form_error_class('from')?>">
@@ -42,7 +42,7 @@
 			<em><?=lang('from_email')?>.</em>
 		</div>
 		<div class="setting-field col w-8 last">
-			<input class="required" type="text" name="from" value="<?=set_value('from', $from)?>">
+			<input type="text" name="from" value="<?=set_value('from', $from)?>">
 			<?=form_error('from')?>
 		</div>
 	</fieldset>

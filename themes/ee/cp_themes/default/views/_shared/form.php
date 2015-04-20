@@ -89,10 +89,6 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 							$value = isset($field['value']) ? $field['value'] : ee()->config->item($field_name);
 						}
 						$attrs = '';
-						if (isset($field['required']) && $field['required'] == TRUE)
-						{
-							$attrs = ' class="required"';
-						}
 						if (isset($field['disabled']) && $field['disabled'] == TRUE)
 						{
 							$attrs = ' disabled="disabled"';

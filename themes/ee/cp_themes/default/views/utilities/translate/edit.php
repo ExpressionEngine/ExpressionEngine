@@ -10,7 +10,7 @@
 			<em></em>
 		</div>
 		<div class="setting-field col w-8 last">
-			<input class="required" type="text" name="<?=$key?>" value="<?=set_value($key, $value['trans'])?>">
+			<input type="text" name="<?=$key?>" value="<?=set_value($key, $value['trans'])?>">
 			<?=form_error($key)?>
 		</div>
 	</fieldset>

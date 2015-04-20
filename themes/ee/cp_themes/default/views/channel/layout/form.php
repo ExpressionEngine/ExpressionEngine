@@ -64,7 +64,7 @@
 					<em><?=lang('name_desc')?></em>
 				</div>
 				<div class="setting-field col w-8 last">
-					<input class="required" type="text" name="layout_name" value="<?=set_value('route', $channel_layout->layout_name)?>">
+					<input type="text" name="layout_name" value="<?=set_value('route', $channel_layout->layout_name)?>">
 					<?=form_error('layout_name')?>
 				</div>
 			</fieldset>
@@ -96,7 +96,7 @@
 						}
 						?>
 						<label class="<?=$class?>">
-							<input type="checkbox" name="member_groups[]" value="<?=$member_group->group_id?>"<?=$checked?><?=$disabled?> class="required"> <?=$display?>
+							<input type="checkbox" name="member_groups[]" value="<?=$member_group->group_id?>"<?=$checked?><?=$disabled?>> <?=$display?>
 						</label>
 					<?php endforeach; ?>
 				</div>

@@ -97,7 +97,7 @@
 										<em></em>
 									</div>
 									<div class="setting-field col w-8 last">
-										<input class="required" type="text" value="<?=form_prep(ee()->session->userdata('username'))?>">
+										<input type="text" value="<?=form_prep(ee()->session->userdata('username'))?>">
 									</div>
 								</fieldset>
 								<fieldset class="col-group required last">
@@ -106,7 +106,7 @@
 										<em></em>
 									</div>
 									<div class="setting-field col w-8 last">
-										<input class="required" type="password" value="" id="logout-confirm-password">
+										<input type="password" value="" id="logout-confirm-password">
 									</div>
 								</fieldset>
 								<fieldset class="form-ctrls">
