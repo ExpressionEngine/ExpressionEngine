@@ -4,11 +4,11 @@
 			<div class="col w-16">
 				<a class="m-close" href="#"></a>
 				<div class="box">
-					<h1><?=lang('link')?> <span class="required intitle">&#10033; <?=lang('required_fields')?></span></h1>
+					<h1><?=lang('link')?> <span class="req-title"><?=lang('required_fields')?></span></h1>
 					<form class="settings">
-						<fieldset class="col-group">
+						<fieldset class="col-group required">
 							<div class="setting-txt col w-8">
-								<h3><?=lang('rte_url')?> <span class="required" title="<?=lang('required_field')?>">✱</span></h3>
+								<h3><?=lang('rte_url')?></h3>
 							</div>
 							<div class="setting-field col w-8 last">
 								<input type="text" name="url" required="required">

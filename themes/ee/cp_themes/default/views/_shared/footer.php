@@ -85,24 +85,24 @@
 					<div class="col w-16 last">
 						<a class="m-close" href="#"></a>
 						<div class="box">
-							<h1>Log into <?=ee()->config->item('site_name')?> <span class="required intitle">&#10033; Required Fields</span></h1>
+							<h1>Log into <?=ee()->config->item('site_name')?> <span class="req-title"><?=lang('required_fields')?></span></h1>
 							<?=form_open('C=login&M=authenticate', array('class' => 'settings'))?>
 							<form class="settings" action="">
 								<div class="alert inline warn">
 									<p>Your administration access session has timed out. Please use the form below to log back into your control panel.</p>
 								</div>
-								<fieldset class="col-group">
+								<fieldset class="col-group required">
 									<div class="setting-txt col w-8">
-										<h3>Username <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
+										<h3>Username</h3>
 										<em></em>
 									</div>
 									<div class="setting-field col w-8 last">
 										<input class="required" type="text" value="<?=form_prep(ee()->session->userdata('username'))?>">
 									</div>
 								</fieldset>
-								<fieldset class="col-group last">
+								<fieldset class="col-group required last">
 									<div class="setting-txt col w-8">
-										<h3>Password <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
+										<h3>Password</h3>
 										<em></em>
 									</div>
 									<div class="setting-field col w-8 last">

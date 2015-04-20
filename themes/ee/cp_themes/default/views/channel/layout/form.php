@@ -2,7 +2,7 @@
 
 <div class="box has-tabs publish">
 	<h1>
-		<?=$cp_page_title?> <span class="required intitle">&#10033; <?=lang('required_fields')?></span>
+		<?=$cp_page_title?> <span class="req-title"><?=lang('required_fields')?></span>
 	</h1>
 	<div class="tab-wrap layout">
 		<ul class="tabs">
@@ -58,9 +58,9 @@
 			<?php endforeach; ?>
 
 			<h2><?=lang('layout_options')?></h2>
-			<fieldset class="col-group">
+			<fieldset class="col-group required">
 				<div class="setting-txt col w-8">
-					<h3><?=lang('name')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
+					<h3><?=lang('name')?></h3>
 					<em><?=lang('name_desc')?></em>
 				</div>
 				<div class="setting-field col w-8 last">
@@ -68,9 +68,9 @@
 					<?=form_error('layout_name')?>
 				</div>
 			</fieldset>
-			<fieldset class="col-group last">
+			<fieldset class="col-group required last">
 				<div class="setting-txt col w-8">
-					<h3><?=lang('member_group(s)')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
+					<h3><?=lang('member_group(s)')?></h3>
 					<em><?=lang('member_group(s)_desc')?></em>
 				</div>
 				<div class="setting-field col w-8 last">
@@ -118,11 +118,11 @@
 			<div class="col w-16">
 				<a class="m-close" href="#"></a>
 				<div class="box">
-					<h1><?=lang('add_tab')?> <span class="required intitle">&#10033; <?=lang('required_fields')?></h1>
+					<h1><?=lang('add_tab')?> <span class="req-title"><?=lang('required_fields')?></h1>
 					<form class="settings">
-						<fieldset class="col-group last">
+						<fieldset class="col-group required last">
 							<div class="setting-txt col w-8">
-								<h3><?=lang('tab_name')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
+								<h3><?=lang('tab_name')?></h3>
 								<em><?=lang('tab_name_desc')?></em>
 							</div>
 							<div class="setting-field col w-8 last">
