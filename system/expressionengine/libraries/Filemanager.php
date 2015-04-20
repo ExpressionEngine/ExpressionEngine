@@ -1561,13 +1561,25 @@ class Filemanager {
 	public function get_thumb($file, $directory_id, $ignore_site_id = FALSE)
 	{
 		$directory = $this->fetch_upload_dir_prefs($directory_id, $ignore_site_id);
-		$thumb_info = array();
+
+		$thumb_info = array(
+			'thumb' => PATH_CP_GBL_IMG.'default.png',
+			'thumb_path' => '',
+			'thumb_class' => 'no_image',
+		);
+
+		if (empty($file))
+		{
+			return $thumb_info;
+		}
 
 		// If the raw file name was passed in, figure out the mime_type
 		if ( ! is_array($file) OR ! isset($file['mime_type']))
 		{
 			ee()->load->helper('file');
 			ee()->load->library('mime_type');
+
+			var_dump($file, $directory);
 
 			$file = array(
 				'file_name' => $file,
@@ -1583,12 +1595,6 @@ class Filemanager {
 			$thumb_info['thumb'] = $directory['url'].'_thumbs/'.$file['file_name'];
 			$thumb_info['thumb_path'] = $directory['server_path'] . '_thumbs/' . $file['file_name'];
 			$thumb_info['thumb_class'] = 'image';
-		}
-		else
-		{
-			$thumb_info['thumb'] = PATH_CP_GBL_IMG.'default.png';
-			$thumb_info['thumb_path'] = '';
-			$thumb_info['thumb_class'] = 'no_image';
 		}
 
 		return $thumb_info;
