@@ -21,6 +21,7 @@ def confirm_settings_page (page)
 end
 
 def confirm_toolset_page (page)
+	@page.breadcrumb.text.should include 'Add-On Manager'
 	@page.breadcrumb.text.should include 'Rich Text Editor Configuration'
 	@page.breadcrumb.text.should include 'RTE Tool Set'
 
@@ -303,7 +304,7 @@ feature 'RTE Settings' do
 	end
 
 	it 'can navigate back to settings from tool set', :stage => 'toolset' do
-		@page.breadcrumb.find('a').click
+		@page.breadcrumb.find('a:nth-child(2)').click
 		no_php_js_errors
 		@page.displayed?
 
