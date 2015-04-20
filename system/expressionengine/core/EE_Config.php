@@ -1071,7 +1071,7 @@ class EE_Config Extends CI_Config {
 		{
 			return $this->_config_path_errors;
 		}
-		
+
 		$this->clear_opcache($this->config_path);
 		return TRUE;
 	}
@@ -1202,7 +1202,7 @@ class EE_Config Extends CI_Config {
 
 		return TRUE;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
