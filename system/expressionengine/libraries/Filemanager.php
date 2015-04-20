@@ -2094,7 +2094,7 @@ class Filemanager {
 		// Restricted upload directory?
 		if ($dir['allowed_types'] == 'img')
 		{
-			$config['is_image'] == TRUE;
+			$config['is_image'] = TRUE;
 		}
 
 		ee()->load->helper('xss');
