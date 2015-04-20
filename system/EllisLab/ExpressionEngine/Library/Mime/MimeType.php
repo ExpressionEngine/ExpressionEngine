@@ -65,6 +65,11 @@ class MimeType {
 		if ( ! in_array($mime, $this->whitelist))
 		{
 			$this->whitelist[] = $mime;
+
+			if (strpos($mime, 'image/') === 0)
+			{
+				$this->images[] = $mime;
+			}
 		}
 	}
 
@@ -155,28 +160,6 @@ class MimeType {
 	}
 
 	/**
-	 * Filters through the whitelist of MIME types looking for just image
-	 * MIME types.
-	 *
-	 * @return array An array of image MIME types.
-	 */
-	protected function divineImages()
-	{
-		if (empty($this->images))
-		{
-			foreach ($this->whitelist as $mime)
-			{
-				if (strpos($mime, 'image/') === 0)
-				{
-					$this->images[] = $mime;
-				}
-			}
-		}
-
-		return $this->images;
-	}
-
-	/**
 	 * Determines if a file is an image or not.
 	 *
 	 * @throws Exception If the file does not exist
@@ -196,7 +179,7 @@ class MimeType {
 	 */
 	public function isImage($mime)
 	{
-		return in_array($mime, $this->divineImages(), TRUE);
+		return in_array($mime, $this->images, TRUE);
 	}
 
 	/**
