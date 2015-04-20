@@ -148,8 +148,6 @@ class Member_auth extends Member {
 			ee()->output->show_user_error('general', $line);
 		}
 
-		$csrf_token = ee()->csrf->refresh_token();
-
 		$success = '';
 
 		// Log me in.
@@ -168,6 +166,7 @@ class Member_auth extends Member {
 			// Regular Login
 			$incoming = $this->_do_auth($username, $password);
 			$success = '_build_success_message';
+
 
 			$current_url = ee()->functions->fetch_site_index();
 			$current_search_url = preg_replace('/\/S=.*$/', '', $current_url);
@@ -267,6 +266,8 @@ class Member_auth extends Member {
 		// Check user/pass minimum length
 		$this->_check_min_unpwd($sess, $username, $password);
 
+		$csrf_token = ee()->csrf->refresh_token();
+
 		// Start Session
 		// "Remember Me" is one year
 		if (isset($_POST['auto_login']))
@@ -308,8 +309,6 @@ class Member_auth extends Member {
 			'session_id' => $session_id
 		));
 
-
-
 		if ( ! $sess_q->num_rows())
 		{
 			return FALSE;
@@ -326,6 +325,7 @@ class Member_auth extends Member {
 		}
 
 		$incoming = new Auth_result($mem_q->row());
+		$csrf_token = ee()->csrf->refresh_token();
 
 		// this is silly - only works for the first site
 		if (isset($_POST['auto_login']))
