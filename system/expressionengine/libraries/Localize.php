@@ -84,6 +84,14 @@ class Localize {
 
 		$dt = $this->_datetime($human_string, $localized, $date_format);
 
+		// A sanity-check fall back. If we were passed a date format but we
+		// failed to parse the date, we'll try again, but without the format.
+		// This mimics how we handled date input prior to 2.9.3.
+		if ($date_format && ! $dt)
+		{
+			$dt = $this->_datetime($human_string, $localized);
+		}
+
 		return ($dt) ? $dt->format('U') : FALSE;
 	}
 
