@@ -26,6 +26,11 @@ class VariableFinder {
 	 */
 	public function find($str)
 	{
+		// Remove annotations for this step to prevent the automatic
+		// line-number adjustment in the conditional lexer. The original
+		// string will still have them when we actually prep the conditionals.
+		$str = preg_replace('/{!-- ra:(\w+) --}/', '', $str);
+
 		$tags = $this->findInTags($str);
 		$vars = $this->findInConditionals($str);
 
@@ -70,11 +75,6 @@ class VariableFinder {
 		$lexer = new Lexer();
 		$regex = $this->wrapRegex('^', '$');
 
-		// Remove annotations for this step to prevent the automatic
-		// line-number adjustment in the conditional lexer. The original
-		// string will still have them when we actually prep the conditionals.
-		$str = preg_replace('/{!-- ra:(\w+) --}/', '', $str);
-
 		// Get the token stream
 		$tokens = $lexer->tokenize($str);
 		$variables = array();
@@ -106,7 +106,11 @@ class VariableFinder {
 
 			for ($i = 0; $i < $line - 1; $i++)
 			{
-				if ($str[$offset] == "\n")
+				if ($offset >= strlen($str))
+				{
+					break 2;
+				}
+				elseif ($str[$offset] == "\n")
 				{
 					$offset += 1;
 				}

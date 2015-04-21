@@ -24,7 +24,7 @@
  */
 class Wizard extends CI_Controller {
 
-	var $version			= '2.9.3';	// The version being installed
+	var $version			= '2.10.0';	// The version being installed
 	var $installed_version	= ''; 		// The version the user is currently running (assuming they are running EE)
 	var $minimum_php		= '5.3.10';	// Minimum version required to run EE
 	var $schema				= NULL;		// This will contain the schema object with our queries
@@ -32,7 +32,8 @@ class Wizard extends CI_Controller {
 	var $mylang				= 'english';// Set dynamically by the user when they run the installer
 	var $image_path			= ''; 		// URL path to the cp_global_images folder.  This is set dynamically
 	var $is_installed		= FALSE;	// Does an EE installation already exist?  This is set dynamically.
-	var $next_update		= FALSE;	// The next update file that needs to be loaded, when an update is performed.
+	var $next_update		= FALSE;	// The next update version that needs to be loaded, when an update is performed.
+	var $next_ud_file		= FALSE;	// The next update file that needs to be loaded, when an update is performed.
 	var $remaining_updates	= 0; 		// Number of updates remaining, in the event the user is updating from several back
 	var $refresh			= FALSE;	// Whether to refresh the page for the next update.  Set dynamically
 	var $refresh_url		= '';		// The URL where the refresh should go to.  Set dynamically
@@ -169,7 +170,7 @@ class Wizard extends CI_Controller {
 
 		$this->output->enable_profiler(FALSE);
 
-		$this->userdata['app_version'] = str_replace('.', '', $this->version);
+		$this->userdata['app_version'] = $this->version;
 
  		// Load the helpers we intend to use
  		$this->load->helper(array('form', 'url', 'html', 'directory', 'file', 'email', 'security', 'date', 'string'));
@@ -471,22 +472,27 @@ class Wizard extends CI_Controller {
 		// so we'll write the version to the config file
 		if ( ! isset($config['app_version']))
 		{
-			$this->config->_append_config_1x(array('app_version' => 0));
-			$config['app_version'] = 0;  // Update the $config array
+			$this->config->_append_config_1x(array('app_version' => '0.0.0'));
+			$config['app_version'] = '0.0.0';  // Update the $config array
 		}
 
-		// Fixes a bug in the installation script for 2.0.2, where periods were included
-		$config['app_version'] = str_replace('.', '', $config['app_version']);
+		// In 2.10.0, we started putting .'s in the app_verson config. The rest
+		// of the code assumes this to be true, so we need to tweak their old config.
+		if (strpos($config['app_version'], '.') === FALSE)
+		{
+			$cap = $config['app_version'];
+			$config['app_version'] = "{$cap[0]}.{$cap[1]}.{$cap[2]}";
+		}
 
 		// This fixes a bug introduced in the installation script for v 1.3.1
-		if ($config['app_version'] == 130)
+		if ($config['app_version'] == '1.3.0')
 		{
 			if ($this->db->field_exists('accept_messages', 'exp_members') == TRUE)
 			{
-				$this->config->_append_config_1x(array('app_version' => 131));
+				$this->config->_append_config_1x(array('app_version' => '1.3.1'));
 
 				// Update the $config array
-				$config['app_version'] = 131;
+				$config['app_version'] = '1.3.1';
 			}
 		}
 
@@ -577,7 +583,9 @@ class Wizard extends CI_Controller {
 		}
 
 		// Before moving on, let's load the update file to make sure it's readable
-		if ( ! include(APPPATH.'updates/ud_'.$this->next_update.EXT))
+		$ud_file = 'ud_'.$this->next_ud_file.'.php';
+
+		if ( ! include(APPPATH.'updates/'.$ud_file))
 		{
 			$this->_set_output('error', array('error' => $this->lang->line('unreadable_files')));
 			return FALSE;
@@ -590,13 +598,13 @@ class Wizard extends CI_Controller {
 		$this->_db = $db;
 
 		// This is what the user is currently running
-		if ($config['app_version'] == 0)
+		if ($config['app_version'] == '0.0.0')
 		{
 			$this->installed_version = 'Public Beta pb01';
 		}
 		else
 		{
-			$this->installed_version = substr($config['app_version'], 0, 1).'.'.substr($config['app_version'], 1, 1).'.'.substr($config['app_version'], 2, 1);
+			$this->installed_version = $config['app_version'];
 		}
 
 		// Set the flag
@@ -1347,7 +1355,7 @@ PAPAYA;
 
 		$this->load->library('progress');
 
-		$next_version = $this->next_update[0].'.'.$this->next_update[1].'.'.$this->next_update[2];
+		$next_version = $this->next_update;
 		$this->progress->prefix = $next_version.': ';
 
 		// Is this a call from the Progress Indicator?
@@ -1397,7 +1405,9 @@ PAPAYA;
 		}
 
 		// is there a survey for this version?
-		if (file_exists(APPPATH.'views/surveys/survey_'.$this->next_update.EXT))
+		$survey_view = 'survey_'.$this->next_ud_file;
+
+		if (file_exists(APPPATH.'views/surveys/'.$survey_view.'.php'))
 		{
 			$this->load->library('survey');
 
@@ -1426,7 +1436,7 @@ PAPAYA;
 					$data['anonymous_server_data'][$key] = $val;
 				}
 
-				$this->_set_output('surveys/survey_'.$this->next_update, $data);
+				$this->_set_output('surveys/'.$survey_view, $data);
 				return FALSE;
 			}
 			elseif ($this->input->get_post('participate_in_survey') == 'y')
@@ -1457,7 +1467,7 @@ PAPAYA;
 		if ($status !== TRUE)
 		{
 			$this->config->set_item('ud_next_step', $status);
-			$this->next_update = str_replace('.', '', $this->installed_version);
+			$this->next_update = $this->installed_version;
 		}
 		elseif ($this->remaining_updates == 1)
 		{
@@ -1468,7 +1478,7 @@ PAPAYA;
 		// Update the config file
 		// If we are dealing with an update file that is prior to 2.0 we'll
 		// update the config file using the old way.
-		if ($this->next_update < 200)
+		if (version_compare($this->next_update, '2.0.0', '<'))
 		{
 			$this->config->_append_config_1x(array('app_version' => $this->next_update, 'ud_next_step' => ($status !== FALSE && $status !== TRUE) ? $status : ''));
 		}
@@ -1476,7 +1486,7 @@ PAPAYA;
 		else
 		{
 			// If we are dealing with 2.0 we need to switch the old style config file to the new version
-			if ($this->next_update == 200)
+			if (version_compare($this->next_update, '2.0.0', '=='))
 			{
 				$this->_write_config_from_template();
 			}
@@ -1527,45 +1537,46 @@ PAPAYA;
 	 * @access	private
 	 * @return	null
 	 */
-	function _fetch_updates($current_version = 0)
+	function _fetch_updates($current_version)
 	{
-		if ( ! $fp = opendir(APPPATH.'updates/'))
+		$next_update = FALSE;
+		$next_ud_file = FALSE;
+
+		$remaining_updates = 0;
+
+		$path = APPPATH.'updates/';
+
+		if ( ! is_readable($path))
 		{
 			return FALSE;
 		}
 
-		$updates = array();
-		while (false !== ($file = readdir($fp)))
-		{
-			if (substr($file, 0, 3) == 'ud_')
-			{
-				$file = str_replace(EXT,  '', $file);
-				$file = str_replace('ud_', '', $file);
-				$file = substr($file, 0, 3);
+		$files = new FilesystemIterator($path);
 
-				if (is_numeric($file) AND $file > $current_version)
+		foreach ($files as $file)
+		{
+			$file_name = $file->getFilename();
+
+			if (preg_match('/^ud_0*(\d+)_0*(\d+)_0*(\d+).php$/', $file_name, $m))
+			{
+				$file_version = "{$m[1]}.{$m[2]}.{$m[3]}";
+
+				if (version_compare($file_version, $current_version, '>'))
 				{
-					$updates[] = $file;
+					$remaining_updates++;
+
+					if ( ! $next_update || version_compare($file_version, $next_update, '<'))
+					{
+						$next_update = $file_version;
+						$next_ud_file = substr($file_name, 3, -4);
+					}
 				}
 			}
 		}
 
-		closedir($fp);
-
-		sort($updates, SORT_NUMERIC);
-
-		// we don't need this since we have a $version class variable in the wizard that
-		// will always contain the latest version number
-		// $version = end($updates);
-		// $this->version = substr($version, 0, 1).'.'.substr($version, 1, 1).'.'.substr($version, 2);
-		$this->remaining_updates = count($updates);
-
-		reset($updates);
-
-		if ($this->remaining_updates > 0)
-		{
-			$this->next_update = current($updates);
-		}
+		$this->next_update = $next_update;
+		$this->next_ud_file = $next_ud_file;
+		$this->remaining_updates = $remaining_updates;
 
 		return TRUE;
 	}
@@ -1670,7 +1681,7 @@ PAPAYA;
 			'image_path'		=> $this->image_path,
 			'copyright'			=> $this->copyright,
 			'version'			=> $this->version,
-			'next_version'		=> substr($this->next_update, 0, 1).'.'.substr($this->next_update, 1, 1).'.'.substr($this->next_update, 2, 1),
+			'next_version'		=> $this->next_update,
 			'installed_version'	=> $this->installed_version,
 			'languages'			=> $this->languages,
 			'javascript_path'	=> $this->javascript_path,
@@ -2456,7 +2467,7 @@ PAPAYA;
 			'max_referrers'					=>	'500',
 			'is_system_on'					=>	'y',
 			'allow_extensions'				=>	'y',
-			'date_format'					=>	'%n/%j/%y',
+			'date_format'					=>	'%n/%j/%Y',
 			'time_format'					=>	'12',
 			'include_seconds'				=>	'n',
 			'server_offset'					=>	'',
@@ -2510,6 +2521,8 @@ PAPAYA;
 			'sig_img_max_width'				=> '480',
 			'sig_img_max_height'			=> '80',
 			'sig_img_max_kb'				=> '30',
+			'prv_msg_enabled'				=> 'y',
+			'prv_msg_allow_attachments'		=> 'y',
 			'prv_msg_upload_path'			=> $this->userdata['pm_path'],
 			'prv_msg_max_attachments'		=> '3',
 			'prv_msg_attach_maxsize'		=> '250',
@@ -2719,6 +2732,8 @@ PAPAYA;
 			'sig_img_max_width',
 			'sig_img_max_height',
 			'sig_img_max_kb',
+			'prv_msg_enabled',
+			'prv_msg_allow_attachments',
 			'prv_msg_upload_path',
 			'prv_msg_max_attachments',
 			'prv_msg_attach_maxsize',

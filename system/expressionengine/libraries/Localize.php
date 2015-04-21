@@ -84,6 +84,14 @@ class Localize {
 
 		$dt = $this->_datetime($human_string, $localized, $date_format);
 
+		// A sanity-check fall back. If we were passed a date format but we
+		// failed to parse the date, we'll try again, but without the format.
+		// This mimics how we handled date input prior to 2.9.3.
+		if ($date_format && ! $dt)
+		{
+			$dt = $this->_datetime($human_string, $localized);
+		}
+
 		return ($dt) ? $dt->format('U') : FALSE;
 	}
 
@@ -280,6 +288,16 @@ class Localize {
 	 */
 	private function _datetime($date_string = NULL, $timezone = TRUE, $date_format = NULL)
 	{
+		// Checking for ambiguous dates but only when we don't have a date
+		// format.
+		if ( ! $date_format)
+		{
+			if (preg_match('/\b\d{1,2}-\d{1,2}-\d{2}\b/', $date_string))
+			{
+				return FALSE;
+			}
+		}
+
 		// Localize to member's timezone or leave as GMT
 		if (is_bool($timezone))
 		{

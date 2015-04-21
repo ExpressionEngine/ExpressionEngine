@@ -636,7 +636,7 @@ class EE_Session {
 		if (ee()->config->item('allow_member_localization') == 'n')
 		{
 			$this->userdata['timezone'] = ee()->config->item('default_site_timezone');
-			$this->userdata['date_format'] = ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%y';
+			$this->userdata['date_format'] = ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%Y';
 			$this->userdata['time_format'] = ee()->config->item('time_format') ? ee()->config->item('time_format') : '12';
 			$this->userdata['include_seconds'] = ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n';
  		}
@@ -718,7 +718,7 @@ class EE_Session {
 	 */
 	public function fetch_session_data()
 	{
-		ee()->db->select('member_id, admin_sess, last_activity, fingerprint, sess_start');
+		ee()->db->select('member_id, admin_sess, last_activity, fingerprint, sess_start, login_state');
 		ee()->db->where('session_id', (string) $this->sdata['session_id']);
 
 		// We already have a fingerprint to compare if they're running cs sessions
@@ -1244,7 +1244,7 @@ class EE_Session {
 			'location'			=> ee()->input->cookie('my_location'),
 			'language'			=> '',
 			'timezone'			=> ee()->config->item('default_site_timezone'),
-			'date_format'		=> ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%y',
+			'date_format'		=> ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%Y',
 			'time_format'		=> ee()->config->item('time_format') ? ee()->config->item('time_format') : '12',
 			'include_seconds'	=> ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n',
 			'group_id'			=> '3',

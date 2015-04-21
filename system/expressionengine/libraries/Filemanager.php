@@ -1675,7 +1675,7 @@ class Filemanager {
 			return FALSE;
 		}
 
-		$server_files = $this->directory_files_map($upload_prefs['server_path'], 0, FALSE, $upload_prefs['allowed_types']);
+		$server_files = $this->directory_files_map($upload_prefs['server_path'], 1, FALSE, $upload_prefs['allowed_types']);
 
 		// get file names in db that are not on server
 		$delete = array_diff($db_files, $server_files);
@@ -2690,6 +2690,22 @@ class Filemanager {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Create a Directory Map
+	 *
+	 * Reads the specified directory and builds an array
+	 * representation of it.  Sub-folders contained with the
+	 * directory will be mapped as well.
+	 *
+	 * @param  string $source_dir path to source
+	 * @param  int    $directory_depth depth of directories to traverse
+	 *   (0 = fully recursive, 1 = current dir, etc)
+	 * @param  bool   $hidden Include hidden files (default: FALSE)
+	 * @param  string $allowed_tpyes Either "img" for images or "all" for
+	 *   everything
+	 * @return array|bool FALSE if we cannot open the directory, an array of
+	 *   files otherwise.
+	 */
 	function directory_files_map($source_dir, $directory_depth = 0, $hidden = false, $allowed_types = 'all')
 	{
 		ee()->load->helper(array('file', 'directory'));

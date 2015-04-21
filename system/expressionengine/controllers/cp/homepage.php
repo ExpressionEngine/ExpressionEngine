@@ -60,9 +60,10 @@ class Homepage extends CP_Controller {
 			}
 
 			// Check to see if the config file matches the Core version constant
-			if (str_replace('.', '', APP_VER) !== $this->config->item('app_version'))
+			$config_version = $this->config->item('app_version');
+
+			if (version_compare(APP_VER, $config_version, '!='))
 			{
-				$config_version = 	substr($this->config->item('app_version'), 0, 1).'.'.substr($this->config->item('app_version'), 1, 1).'.'.substr($this->config->item('app_version'), 2);
 				$message[] = sprintf(lang('version_mismatch'), $config_version, APP_VER);
 			}
 

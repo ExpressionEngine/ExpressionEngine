@@ -1925,9 +1925,11 @@ class Members extends CP_Controller {
 				'mbr_notification_emails' => array('i', '', 'valid_emails')
 			),
 			'pm_cfg' => array(
+				'prv_msg_enabled'         => array('r', array('y' => 'yes', 'n' => 'no')),
 				'prv_msg_max_chars'       => array('i', '', 'integer'),
 				'prv_msg_html_format'     => array('s', array('safe' => 'html_safe', 'none' => 'html_none', 'all' => 'html_all')),
 				'prv_msg_auto_links'      => array('r', array('y' => 'yes', 'n' => 'no')),
+				'prv_msg_allow_attachments' => array('r', array('y' => 'yes', 'n' => 'no')),
 				'prv_msg_upload_path'     => array('i', '', 'strip_tags|trim|valid_xss_check'),
 				'prv_msg_max_attachments' => array('i', '', 'integer'),
 				'prv_msg_attach_maxsize'  => array('i', '', 'integer'),
@@ -2369,7 +2371,7 @@ class Members extends CP_Controller {
 		$data['join_date']	= $this->localize->now;
 		$data['language'] 	= $this->config->item('deft_lang');
 		$data['timezone'] 	= $this->config->item('default_site_timezone');
-		$data['date_format'] = $this->config->item('date_format') ? $this->config->item('date_format') : '%n/%j/%y';
+		$data['date_format'] = $this->config->item('date_format') ? $this->config->item('date_format') : '%n/%j/%Y';
 		$data['time_format'] = $this->config->item('time_format') ? $this->config->item('time_format') : '12';
 		$data['include_seconds'] = $this->config->item('include_seconds') ? $this->config->item('include_seconds') : 'n';
 

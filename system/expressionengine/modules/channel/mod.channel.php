@@ -2986,6 +2986,9 @@ class Channel {
 					$chunk = str_replace(LD.'count'.RD, $this->category_count, $chunk);
 				}
 
+				// {switch=}
+				$chunk = ee()->TMPL->parse_switch($chunk, $this->category_count - 1);
+
 				/** --------------------------------
 				/**  {total_results}
 				/** --------------------------------*/
@@ -3923,6 +3926,9 @@ class Channel {
 				{
 					$chunk = str_replace(LD.'count'.RD, $this->category_count, $chunk);
 				}
+
+				// {switch=}
+				$chunk = ee()->TMPL->parse_switch($chunk, $this->category_count - 1);
 
 				/** --------------------------------
 				/**  {total_results}

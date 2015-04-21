@@ -537,6 +537,8 @@ class EE_Config Extends CI_Config {
 			'sig_img_max_width',
 			'sig_img_max_height',
 			'sig_img_max_kb',
+			'prv_msg_enabled',
+			'prv_msg_allow_attachments',
 			'prv_msg_upload_path',
 			'prv_msg_max_attachments',
 			'prv_msg_attach_maxsize',
@@ -1071,7 +1073,7 @@ class EE_Config Extends CI_Config {
 		{
 			return $this->_config_path_errors;
 		}
-		
+
 		$this->clear_opcache($this->config_path);
 		return TRUE;
 	}
@@ -1202,7 +1204,7 @@ class EE_Config Extends CI_Config {
 
 		return TRUE;
 	}
-	
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -1335,6 +1337,7 @@ class EE_Config Extends CI_Config {
 				'date_format'           => array('s', array(
 					'%n/%j/%Y' => 'mm/dd/yyyy',
 					'%j/%n/%Y' => 'dd/mm/yyyy',
+					'%j-%n-%Y' => 'dd-mm-yyyy',
 					'%Y-%m-%d' => 'yyyy-mm-dd'
 				)),
 				'time_format'           => array('r', array('24' => '24_hour', '12' => '12_hour')),
