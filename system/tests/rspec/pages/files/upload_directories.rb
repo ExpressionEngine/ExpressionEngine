@@ -5,7 +5,7 @@ class UploadDirectories < ControlPanelPage
 	elements :directory_names, 'table tr td:nth-child(2)'
 
 	def load
-		settings_btn.click
+		click_link 'Files'
 		within 'div.sidebar' do
 			click_link 'Upload Directories'
 		end

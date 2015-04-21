@@ -613,7 +613,7 @@ JSC;
 		{
 			ee()->lang->loadfile('filemanager');
 			return sprintf(
-				lang('no_upload_directories'),
+				lang('no_upload_directories_for_fieldtype'),
 				BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
 			);
 		}
@@ -652,7 +652,7 @@ JSC;
 			ee()->form_validation->set_message(
 				'_validate_file_settings',
 				sprintf(
-					lang('no_upload_directories'),
+					lang('no_upload_directories_for_fieldtype'),
 					BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
 				)
 			);

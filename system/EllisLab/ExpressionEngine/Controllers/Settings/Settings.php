@@ -62,7 +62,6 @@ class Settings extends CP_Controller {
 		}
 
 		$content_design += array(
-			'upload_directories' => cp_url('settings/uploads'),
 			'word_censoring' => cp_url('settings/word-censor')
 		);
 

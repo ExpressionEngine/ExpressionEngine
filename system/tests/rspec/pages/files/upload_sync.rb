@@ -6,7 +6,7 @@ class UploadSync < ControlPanelPage
 
 	# Load the sync screen for the nth directory listed
 	def load_sync_for_dir(number)
-		settings_btn.click
+		click_link 'Files'
 		within 'div.sidebar' do
 			click_link 'Upload Directories'
 		end
@@ -19,7 +19,7 @@ class UploadSync < ControlPanelPage
 	def log_progress_bar_moves
 		i = 0;
 		sizes = [0];
-		
+
 		while self.progress_bar['style'] != 'width: 100%; ' && i < 500
 
 			# Get the raw number out of the style
