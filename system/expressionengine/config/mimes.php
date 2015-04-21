@@ -118,6 +118,7 @@ $whitelist = array(
 	'text/comma-separated-values', // .csv
 	'text/css', // .css
 	'text/csv', // .csv
+	'text/html', // .html, .htm
 	'text/plain', // .log, .text, .txt
 	'text/richtext', // .rtx
 	'text/rtf', // .rtf
