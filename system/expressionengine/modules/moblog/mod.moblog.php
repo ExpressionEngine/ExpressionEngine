@@ -1917,7 +1917,6 @@ class Moblog {
 		if (stristr($encoding,"base64"))
 		{
 			$file_code = base64_decode($file_code);
-			$this->message_array[] = 'base64 decoded.';
 		}
 
 		/** ------------------------------
