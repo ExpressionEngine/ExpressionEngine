@@ -988,7 +988,7 @@ class Wiki {
 		/**  Date Formats
 		/** ----------------------------------------*/
 
-		$this->return_data = ee()->TMPL->parse_date_variables($this->return_data, array('upload_date' => $row['upload_date']));
+		$this->return_data = ee()->TMPL->parse_date_variables($this->return_data, array('upload_date' => $query->row('upload_date')));
 
 		/** ----------------------------------------
 		/**  Parse Variables
@@ -4810,27 +4810,19 @@ class Wiki {
 
 			$server_path = $upload_prefs['server_path'];
 
-
-
-			switch($upload_prefs['allowed_types'])
-			{
-				case 'all' : $allowed_types = '*';
-					break;
-				case 'img' : $allowed_types = 'jpg|jpeg|png|gif';
-					break;
-				default :
-					$allowed_types = $upload_prefs['allowed_types'];
-			}
-
 			// Upload the image
 			$config = array(
 					'file_name'		=> $new_name,
 					'upload_path'	=> $server_path,
-					'allowed_types'	=> $allowed_types,
 					'max_size'		=> round($upload_prefs['max_size']/1024, 3),
 					'max_width'		=> $upload_prefs['max_width'],
 					'max_height'	=> $upload_prefs['max_height'],
-				);
+			);
+
+			if ($upload_prefs['allowed_types'] == 'img')
+			{
+				$config['is_image'] = TRUE;
+			}
 
 			if (ee()->config->item('xss_clean_uploads') == 'n')
 			{
@@ -4869,17 +4861,18 @@ class Wiki {
 
 			@chmod($file_data['full_path'], DIR_WRITE_MODE);
 
-			$data = array(	'wiki_id'				=> $this->wiki_id,
-							'file_name'				=> $new_name,
-							'upload_summary'		=> (ee()->input->get_post('summary') !== FALSE) ? ee()->security->xss_clean(ee()->input->get_post('summary')) : '',
-							'upload_author'			=> ee()->session->userdata('member_id'),
-							'upload_date'			=> ee()->localize->now,
-							'image_width'			=> $file_data['image_width'],
-							'image_height'			=> $file_data['image_height'],
-							'file_type'				=> $file_data['file_type'],
-							'file_size'				=> $file_data['file_size'],
-							'file_hash'				=> ee()->functions->random('md5')
-						 );
+			$data = array(
+				'wiki_id'        => $this->wiki_id,
+				'file_name'      => $new_name,
+				'upload_summary' => (ee()->input->get_post('summary') !== FALSE) ? ee()->security->xss_clean(ee()->input->get_post('summary')) : '',
+				'upload_author'  => ee()->session->userdata('member_id'),
+				'upload_date'    => ee()->localize->now,
+				'image_width'    => ($file_data['image_width']) ?: 0,
+				'image_height'   => ($file_data['image_height']) ?: 0,
+				'file_type'      => $file_data['file_type'],
+				'file_size'      => $file_data['file_size'],
+				'file_hash'      => ee()->functions->random('md5')
+			);
 
 			$file_data['uploaded_by_member_id']	= ee()->session->userdata('member_id');
 			$file_data['modified_by_member_id'] = ee()->session->userdata('member_id');
@@ -4922,12 +4915,7 @@ class Wiki {
 
 		if ($upload_prefs['allowed_types']  == 'all')
 		{
-			include(APPPATH.'config/mimes.php');
-
-			foreach ($mimes as $key => $val)
-			{
-				$file_types .= ', '.$key;
-			}
+			$file_types = 'all';
 		}
 
 		$this->conditionals['file_types'] = $file_types;

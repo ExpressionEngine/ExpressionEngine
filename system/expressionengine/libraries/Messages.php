@@ -3019,23 +3019,8 @@ DOH;
 
 		$filepath = $base_path.$query->row('attachment_location') ;
 
-		$extension = strtolower(str_replace('.', '', $query->row('attachment_extension') ));
-
-		if ($this->mimes == '')
-		{
-			include(APPPATH.'config/mimes.php');
-			$this->mimes = $mimes;
-		}
-
-		if ($this->mimes[$extension] == 'html')
-		{
-			$mime = 'text/html';
-		}
-		else
-		{
-			$mime = (is_array($this->mimes[$extension])) ? $this->mimes[$extension][0] : $this->mimes[$extension];
-		}
-
+		ee()->load->library('mime_type');
+		$mime = ee()->mime_type->ofFile($filepath);
 
 		if ( ! file_exists($filepath) OR ! isset($mime))
 		{

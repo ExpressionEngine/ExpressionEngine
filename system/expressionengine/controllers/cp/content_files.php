@@ -2654,11 +2654,11 @@ class Content_files extends CP_Controller {
 		$files = array_slice($files, 0, 5);
 		$current_processing_count = count($files);
 
+		ee()->load->library('mime_type');
+
 		foreach ($files as $k => $file)
 		{
-			$mime = get_mime_by_extension($file['name']);
-
-			if ($this->filemanager->is_image($mime))
+			if (ee()->mime_type->fileIsImage($file['server_path']))
 			{
 				$files[$k]['image'] = BASE.AMP.'C=content_files'.AMP.'M=batch_thumbs'.AMP."file=".base64_encode($file['server_path']);
 			}

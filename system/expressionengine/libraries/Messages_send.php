@@ -120,9 +120,8 @@ class EE_Messages_send extends EE_Messages {
 		// Upload the image
 		$config = array(
 				'upload_path'	=> $this->upload_path,
-				'allowed_types'	=> '*',
 				'max_size'		=> $this->attach_maxsize
-			);
+		);
 
 		if (ee()->config->item('xss_clean_uploads') == 'n')
 		{

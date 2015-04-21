@@ -304,7 +304,6 @@ class Tools_communicate extends CP_Controller {
 
 		$this->load->library('upload');
 		$this->upload->initialize(array(
-			'allowed_types'	=> '*',
 			'use_temp_dir'	=> TRUE
 		));
 

@@ -1455,23 +1455,6 @@ class Forum {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Fetch Mimes Array
-	 *
-	 * Load the system/expressionengine/config/mimes.php file if we haven't
-	 * already done so.
-	 */
-	protected function _fetch_mimes()
-	{
-		if ($this->mimes == '')
-		{
-			include(APPPATH.'config/mimes.php');
-			$this->mimes = $mimes;
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Is the user authorized for the specfic page?
 	 * @return TRUE
 	 */

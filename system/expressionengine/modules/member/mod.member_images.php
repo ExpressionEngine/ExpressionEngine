@@ -112,7 +112,8 @@ class Member_images extends Member {
 		}
 
 		// Do we have what we need in $_POST?
-		if ( ! ee()->input->post('body'))
+		if (empty(ee()->input->post('body'))
+			&& (empty($_FILES) && ee()->config->item('sig_allow_img_upload') == 'y'))
 		{
 			return ee()->functions->redirect($this->_member_path('edit_signature'));
 		}
