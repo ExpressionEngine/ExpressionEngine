@@ -4821,7 +4821,7 @@ class Wiki {
 
 			if ($upload_prefs['allowed_types'] == 'img')
 			{
-				$config['is_image'] == TRUE;
+				$config['is_image'] = TRUE;
 			}
 
 			if (ee()->config->item('xss_clean_uploads') == 'n')
