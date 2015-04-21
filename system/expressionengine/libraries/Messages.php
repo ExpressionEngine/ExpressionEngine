@@ -3448,8 +3448,8 @@ DOH;
 			return $this->send_bulletin();
 		}
 
-		$begins  = ee()->localize->string_to_timestamp($_POST['bulletin_date']);
-		$expires = ee()->localize->string_to_timestamp($_POST['bulletin_expires']);
+		$begins  = ee()->localize->string_to_timestamp($_POST['bulletin_date'], TRUE, ee()->localize->get_date_format());
+		$expires = ee()->localize->string_to_timestamp($_POST['bulletin_expires'], TRUE, ee()->localize->get_date_format());
 
 		if ($begins == 0)
 		{
