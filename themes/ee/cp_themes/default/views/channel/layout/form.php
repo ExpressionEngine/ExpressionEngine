@@ -35,7 +35,7 @@
 			<?php foreach ($layout->getTabs() as $index => $tab): ?>
 			<div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">
 			<?php foreach ($tab->getFields() as $field): ?>
-				<fieldset class="col-group sortable<?php if (end($tab->getFields()) == $field) echo' last'?>">
+				<fieldset class="col-group sortable<?php if ($field->isRequired()) echo ' required'; ?><?php if (end($tab->getFields()) == $field) echo' last'?>">
 					<div class="layout-tools col w-2">
 						<ul class="toolbar vertical">
 							<li class="move"><a href=""></a></li>
@@ -49,7 +49,7 @@
 						</ul>
 					</div>
 					<div class="setting-txt col w-14">
-						<h3<?php if ($field->isCollapsed()): ?> class="field-closed"<?php endif; ?>><span class="ico sub-arrow"></span><?=$field->getLabel()?><?php if ($field->isRequired()): ?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span><?php endif; ?></h3>
+						<h3<?php if ($field->isCollapsed()): ?> class="field-closed"<?php endif; ?>><span class="ico sub-arrow"></span><?=$field->getLabel()?></h3>
 						<em<?php if ($field->isCollapsed()): ?> style="display: none"<?php endif; ?>><?=$field->getTypeName()?></em>
 					</div>
 				</fieldset>

@@ -2,7 +2,7 @@
 
 <div class="box has-tabs publish">
 	<h1>
-		<?=$cp_page_title?> <span class="required intitle">&#10033; <?=lang('required_fields')?></span>
+		<?=$cp_page_title?> <span class="req-title"><?=lang('required_fields')?></span>
 		<?php if ($entry->getAutosaves()->count()): ?>
 		<div class="filters auto-save">
 			<ul>
@@ -85,10 +85,10 @@
 				<?php if ($field->getType() == 'grid'): ?>
 				<div class="grid-publish <?=$field_class?>">
 				<?php else: ?>
-				<fieldset class="<?=$field_class?><?php if ($errors->hasErrors($field->getName())) echo ' invalid'; ?>">
+				<fieldset class="<?=$field_class?><?php if ($errors->hasErrors($field->getName())) echo ' invalid'; ?><?php if ($field->isRequired()) echo ' required'; ?>">
 				<?php endif; ?>
 					<div class="setting-txt col <?=$width?>">
-						<h3><span class="ico sub-arrow"></span><?=$field->getLabel()?><?php if ($field->isRequired()): ?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span><?php endif; ?></h3>
+						<h3><span class="ico sub-arrow"></span><?=$field->getLabel()?></h3>
 						<em><?=$field->getInstructions()?></em>
 						<?php if ($field->getName() == 'categories'): ?>
 						<p><a class="btn action submit m-link" rel="modal-cats" href="#"><?=lang('btn_add_category')?></a></p>
