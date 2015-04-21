@@ -4861,17 +4861,18 @@ class Wiki {
 
 			@chmod($file_data['full_path'], DIR_WRITE_MODE);
 
-			$data = array(	'wiki_id'				=> $this->wiki_id,
-							'file_name'				=> $new_name,
-							'upload_summary'		=> (ee()->input->get_post('summary') !== FALSE) ? ee()->security->xss_clean(ee()->input->get_post('summary')) : '',
-							'upload_author'			=> ee()->session->userdata('member_id'),
-							'upload_date'			=> ee()->localize->now,
-							'image_width'			=> $file_data['image_width'],
-							'image_height'			=> $file_data['image_height'],
-							'file_type'				=> $file_data['file_type'],
-							'file_size'				=> $file_data['file_size'],
-							'file_hash'				=> ee()->functions->random('md5')
-						 );
+			$data = array(
+				'wiki_id'        => $this->wiki_id,
+				'file_name'      => $new_name,
+				'upload_summary' => (ee()->input->get_post('summary') !== FALSE) ? ee()->security->xss_clean(ee()->input->get_post('summary')) : '',
+				'upload_author'  => ee()->session->userdata('member_id'),
+				'upload_date'    => ee()->localize->now,
+				'image_width'    => ($file_data['image_width']) ?: 0,
+				'image_height'   => ($file_data['image_height']) ?: 0,
+				'file_type'      => $file_data['file_type'],
+				'file_size'      => $file_data['file_size'],
+				'file_hash'      => ee()->functions->random('md5')
+			);
 
 			$file_data['uploaded_by_member_id']	= ee()->session->userdata('member_id');
 			$file_data['modified_by_member_id'] = ee()->session->userdata('member_id');

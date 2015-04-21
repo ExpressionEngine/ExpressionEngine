@@ -1355,8 +1355,9 @@ class MyAccount extends CP_Controller {
 		}
 
 		// Do we have what we need in $_POST?
-		if ( ! ee()->input->post('signature')
-			&& ! ee()->input->post('remove'))
+		if (empty(ee()->input->post('signature'))
+			&& empty(ee()->input->post('remove'))
+			&& (empty($_FILES) && ee()->config->item('sig_allow_img_upload') == 'y'))
 		{
 			return ee()->functions->redirect(
 				cp_url('myaccount/edit_signature', $params)

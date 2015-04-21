@@ -260,9 +260,19 @@ class MimeTypeTest extends \PHPUnit_Framework_TestCase {
 	public function ofBufferDataProvider()
 	{
 		return array(
-			array('HTML Data',    '<html><body>Hello world</body></html>', 'text/html'),
-			array('PHP Data',     '<?php echo "Hello world";?>',           'text/x-php'),
-			array('Random Bytes', openssl_random_pseudo_bytes(42),         'application/octet-stream')
+			array('HTML Data',    '<html><body>Hello world</body></html>',    'text/html'),
+			array('PHP Data',     '<?php echo "Hello world";?>',              'text/x-php'),
+			array('Empty Data',   '',                                         'application/x-empty'),
+			array('Random Bytes', pack('l', openssl_random_pseudo_bytes(42)), 'application/octet-stream'),
+
+			array('Boolen Argument',         TRUE,                        'application/octet-stream'),
+			array('Integer Argument',        1,                           'application/octet-stream'),
+			array('Float Argument',          1.1,                         'text/plain'),
+			array('Empty Array Argument',    array(),                     'application/octet-stream'),
+			array('Array Argument',          array('text/html'),          'application/octet-stream'),
+			array('Object Argument',         new \stdClass(),             'application/octet-stream'),
+			array('Closure Argument',        function() { return TRUE; }, 'application/octet-stream'),
+			array('NULL Argument',           NULL,                        'application/x-empty'),
 		);
 	}
 
