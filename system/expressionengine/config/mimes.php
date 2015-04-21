@@ -112,6 +112,7 @@ $whitelist = array(
 	'image/jpeg', // .jpg, .jpe, .jpeg
 	'image/pjpeg', // .jpg, .jpe, .jpeg
 	'image/png', // .png
+	'image/svg+xml', // .svg
 	'image/tiff', // .tif, .tiff
 	'image/x-png', // .png
 	'message/rfc822', // .eml
