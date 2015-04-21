@@ -962,7 +962,7 @@ class Api_channel_entries extends Api {
 		{
 			if ( ! is_numeric($data[$date]) && trim($data[$date]))
 			{
-				$data[$date] = ee()->localize->string_to_timestamp($data[$date]);
+				$data[$date] = ee()->localize->string_to_timestamp($data[$date], TRUE, ee()->localize->get_date_format());
 			}
 
 			if ($data[$date] === FALSE)
@@ -1229,7 +1229,7 @@ class Api_channel_entries extends Api {
 		//  Date might already be numeric format- so we check
 		if ( ! is_numeric($data['field_id_'.$row['field_id']]))
 		{
-			$data['field_id_'.$row['field_id']] = ee()->localize->string_to_timestamp($data['field_id_'.$row['field_id']]);
+			$data['field_id_'.$row['field_id']] = ee()->localize->string_to_timestamp($data['field_id_'.$row['field_id']], TRUE, ee()->localize->get_date_format());
 		}
 
 		if ($data['field_id_'.$row['field_id']] === FALSE)
