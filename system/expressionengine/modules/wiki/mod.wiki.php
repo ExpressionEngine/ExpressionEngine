@@ -988,7 +988,7 @@ class Wiki {
 		/**  Date Formats
 		/** ----------------------------------------*/
 
-		$this->return_data = ee()->TMPL->parse_date_variables($this->return_data, array('upload_date' => $row['upload_date']));
+		$this->return_data = ee()->TMPL->parse_date_variables($this->return_data, array('upload_date' => $query->row('upload_date')));
 
 		/** ----------------------------------------
 		/**  Parse Variables
