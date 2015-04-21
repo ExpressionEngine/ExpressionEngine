@@ -40,7 +40,8 @@ class Updater {
 			array(
 				'_member_login_state',
 				'_modify_category_data_fields',
-				'_date_format_years'
+				'_date_format_years',
+				'_add_new_private_messages_options'
 			)
 		);
 
@@ -142,6 +143,7 @@ class Updater {
 
 	/**
 	 * Adds a login_state column to the sessions table
+	 * defaulted to yes
 	 */
 	private function _member_login_state()
 	{
@@ -151,6 +153,24 @@ class Updater {
 				'constraint' => 32
 			)
 		));
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Populates the new prv_msg_enabled and prv_msg_allow_attachments settings,
+	 * defaulted to yes
+	 */
+	public function _add_new_private_messages_options()
+	{
+		$msm_config = new MSM_Config();
+		$msm_config->update_site_prefs(
+			array(
+				'prv_msg_enabled' => 'y',
+				'prv_msg_allow_attachments' => 'y'
+			),
+			'all'
+		);
 	}
 }
 // EOF
