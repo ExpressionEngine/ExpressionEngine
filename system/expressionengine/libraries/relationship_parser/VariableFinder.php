@@ -106,7 +106,11 @@ class VariableFinder {
 
 			for ($i = 0; $i < $line - 1; $i++)
 			{
-				if ($str[$offset] == "\n")
+				if ($offset >= strlen($str))
+				{
+					break 2;
+				}
+				elseif ($str[$offset] == "\n")
 				{
 					$offset += 1;
 				}
