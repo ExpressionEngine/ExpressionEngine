@@ -1645,7 +1645,7 @@ class Metaweblog_api {
 		$config = array('upload_path' => dirname($file_path));
 		ee()->load->library('upload', $config);
 
-		if (ee()->upload->raw_upload($filename, $mime, $file_code) === FALSE)
+		if (ee()->upload->raw_upload($filename, $parameters['3']['bits']) === FALSE)
 		{
 			return ee()->xmlrpc->send_error_message(
 				'810',

@@ -2014,7 +2014,7 @@ class Moblog {
 		$mime = $type . '/' . $subtype;
 		ee()->load->library('upload', $config);
 
-		if (ee()->upload->raw_upload($filename, $mime, $file_code) === FALSE)
+		if (ee()->upload->raw_upload($filename, $file_code) === FALSE)
 		{
 			$this->message_array[] = ee()->upload->display_errors();
 			$this->message_array[] = 'error_writing_attachment';
