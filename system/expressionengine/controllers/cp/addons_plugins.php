@@ -156,7 +156,7 @@ class Addons_plugins extends CP_Controller {
 
 		$hidden = $this->input->post('toggle');
 
-		if (count($hidden) == 0)
+		if (empty($hidden))
 		{
 			$this->functions->redirect(BASE.AMP.'C=addons_plugins');
 		}
