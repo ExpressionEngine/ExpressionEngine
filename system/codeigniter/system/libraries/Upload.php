@@ -203,7 +203,7 @@ class CI_Upload {
 		// Is this a hidden file? Not allowed
 		if (strncmp($this->file_name, '.', 1) == 0)
 		{
-			$this->set_error('upload_invalid_filetype');
+			$this->set_error('upload_invalid_file');
 			return FALSE;
 		}
 
@@ -230,7 +230,7 @@ class CI_Upload {
 
 		if (in_array(strtolower($this->file_name), $disallowed_names))
 		{
-			$this->set_error('upload_invalid_filetype');
+			$this->set_error('upload_invalid_file');
 			return FALSE;
 		}
 
@@ -238,7 +238,7 @@ class CI_Upload {
 		// Is the file type allowed to be uploaded?
 		if ( ! $this->is_allowed_filetype())
 		{
-			$this->set_error('upload_invalid_filetype');
+			$this->set_error('upload_invalid_file');
 			return FALSE;
 		}
 
@@ -250,7 +250,7 @@ class CI_Upload {
 
 			if ( ! $this->is_allowed_filetype(TRUE))
 			{
-				$this->set_error('upload_invalid_filetype');
+				$this->set_error('upload_invalid_file');
 				return FALSE;
 			}
 		}
