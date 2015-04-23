@@ -525,9 +525,16 @@ class Updater {
 	 */
 	public function _centralize_captcha_settings()
 	{
+		// Prevent this from running again
+		if ( ! ee()->db->field_exists('comment_use_captcha', 'channels'))
+		{
+			return;
+		}
+
 		// First, let's see which sites have CAPTCHA turned on for Channel Forms
 		// or comments, and mark those sites as needing CAPTCHA required
-		$site_ids_query = ee()->db->distinct('channels.site_id')
+		$site_ids_query = ee()->db->select('channels.site_id')
+			->distinct()
 			->where('channels.comment_use_captcha', 'y')
 			->or_where('channel_form_settings.require_captcha', 'y')
 			->join(
@@ -538,6 +545,7 @@ class Updater {
 			->result();
 
 		$sites_require_captcha = array();
+
 		foreach ($site_ids_query as $site)
 		{
 			$sites_require_captcha[] = $site->site_id;
