@@ -41,6 +41,45 @@ class ImportConverter extends Utilities {
 
 		ee()->lang->loadfile('member_import');
 
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'file_location',
+					'desc' => 'file_location_desc',
+					'fields' => array(
+						'member_file' => array(
+							'type' => 'text',
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'delimiting_char',
+					'desc' => 'delimiting_char_desc',
+					'fields' => array(
+						'delimiter' => array(
+							'type' => 'radio',
+							'choices' => array(
+								'comma' => lang('comma_delimit') . ' <i>,</i>',
+								'tab' => lang('tab_delimit'),
+								'pipe' => lang('pipe_delimit') . ' <i>|</i>',
+								'other' => lang('other_delimit')
+							),
+							'value' => 'comma'
+						),
+						'delimiter_special' => array('type' => 'text')
+					)
+				),
+				array(
+					'title' => 'enclosing_char',
+					'desc' => 'enclosing_char_desc',
+					'fields' => array(
+						'enclosure' => array('type' => 'text')
+					)
+				)
+			)
+		);
+
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_rules(array(
 			array(
@@ -79,8 +118,12 @@ class ImportConverter extends Utilities {
 			ee()->view->set_message('issue', lang('file_not_converted'), lang('file_not_converted_desc'));
 		}
 
+		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('import_converter');
-		ee()->cp->render('utilities/import/index');
+		ee()->view->base_url = cp_url('utilities/import-converter');
+		ee()->view->save_btn_text = 'import_convert_btn';
+		ee()->view->save_btn_text_working = 'import_convert_btn_saving';
+		ee()->cp->render('settings/form', $vars);
 	}
 
 	// --------------------------------------------------------------------

@@ -700,7 +700,7 @@ class Template extends AbstractDesignController {
 			->fields('template_id')
 			->filter('site_id', ee()->config->item('site_id'))
 			->all()
-			->getIds();
+			->pluck('template_id');
 
 		$routes = ee('Model')->get('TemplateRoute')
 			->filter('template_id', 'IN', $template_ids)

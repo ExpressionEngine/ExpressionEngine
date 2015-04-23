@@ -42,6 +42,28 @@ class Cache extends Utilities {
 			show_error(lang('unauthorized_access'));
 		}
 
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'caches_to_clear',
+					'desc' => 'caches_to_clear_desc',
+					'fields' => array(
+						'cache_type' => array(
+							'type' => 'checkbox',
+							'choices' => array(
+								'page' => lang('templates'),
+								'tag'  => lang('tags'),
+								'db'   => lang('database'),
+								'all'  => lang('all')
+							),
+							'value' => set_value('cache_type', 'all'),
+							'required' => TRUE
+						)
+					)
+				)
+			)
+		);
+
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_rules('cache_type[]', 'lang:caches_to_clear', 'required');
 
@@ -62,8 +84,12 @@ class Cache extends Utilities {
 			ee()->functions->redirect(cp_url('utilities/cache'));
 		}
 
+		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('cache_manager');
-		ee()->cp->render('utilities/cache');
+		ee()->view->base_url = cp_url('utilities/cache');
+		ee()->view->save_btn_text = 'btn_clear_caches';
+		ee()->view->save_btn_text_working = 'btn_clear_caches_working';
+		ee()->cp->render('settings/form', $vars);
 	}
 }
 // END CLASS

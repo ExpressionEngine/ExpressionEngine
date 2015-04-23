@@ -13,7 +13,7 @@ class UploadEdit < ControlPanelPage
 	elements :cat_group, 'input[name="cat_group[]"]'
 
 	def load
-		settings_btn.click
+		click_link 'Files'
 		within 'div.sidebar' do
 			click_link 'Upload Directories'
 		end
@@ -21,7 +21,7 @@ class UploadEdit < ControlPanelPage
 	end
 
 	def load_edit_for_dir(number)
-		settings_btn.click
+		click_link 'Files'
 		within 'div.sidebar' do
 			click_link 'Upload Directories'
 		end

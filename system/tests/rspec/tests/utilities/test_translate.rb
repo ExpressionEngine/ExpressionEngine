@@ -36,7 +36,7 @@ feature 'Translate Tool' do
 
 		@edit_page.should be_displayed
 
-		@edit_page.heading.text.should eq 'addons_lang.php Translation'
+		@edit_page.heading.text.should include 'addons_lang.php Translation'
 		@edit_page.should have_breadcrumb
 		@edit_page.should have_items
 		@edit_page.should have_submit_button

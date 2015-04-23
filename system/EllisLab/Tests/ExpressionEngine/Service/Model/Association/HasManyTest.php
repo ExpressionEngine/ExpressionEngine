@@ -109,6 +109,7 @@ class HasManyTest extends \PHPUnit_Framework_TestCase {
 		$child->shouldReceive('save')->once();
 		$frontend->shouldReceive('make')->once()->with($child_type, $child_data)->andReturn($child);
 		$relation->shouldReceive('linkIds')->once()->with($parent, $child);
+		$relation->shouldReceive('getTargetModel')->once()->andReturn($child_type);
 
 		$has_many = new HasMany($parent, $child_type);
 

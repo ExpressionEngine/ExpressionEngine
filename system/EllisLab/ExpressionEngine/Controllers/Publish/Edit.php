@@ -225,7 +225,7 @@ class Edit extends AbstractPublishController {
 				$entry->entry_id,
 				$title,
 				$comments,
-				ee()->localize->human_time($entry->entry_date),
+				ee()->localize->human_time($entry->entry_date->format('U')),
 				$entry->status,
 				array('toolbar_items' => $toolbar),
 				array(

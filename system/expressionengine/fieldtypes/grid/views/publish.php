@@ -1,7 +1,7 @@
 <div class="tbl-wrap">
 	<table id="<?=$field_id?>" class="grid-input-form" cellespacing="0">
 		<tr>
-			<th class="first reorder-col"<?php if (empty($rows)) echo $hide?>></th>
+			<th class="first reorder-col"></th>
 			<?php
 			$first = current($columns);
 			$last = end($columns);

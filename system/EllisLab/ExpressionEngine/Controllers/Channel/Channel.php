@@ -283,7 +283,7 @@ class Channel extends AbstractChannelController {
 					)
 				),
 				array(
-					'title' => 'channel_short_name',
+					'title' => 'short_name',
 					'desc' => 'channel_short_name_desc',
 					'fields' => array(
 						'channel_name' => array(

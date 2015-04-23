@@ -5,7 +5,7 @@
 		<?=form_open($table['base_url'])?>
 			<?=ee('Alert')->getAllInlines()?>
 			<fieldset class="tbl-search right">
-				<a class="btn tn action" href="<?=cp_url('settings/uploads/new-upload')?>"><?=lang('create_new')?></a>
+				<a class="btn tn action" href="<?=cp_url('files/uploads/new-upload')?>"><?=lang('create_new')?></a>
 			</fieldset>
 			<h1><?=$table_heading?></h1>
 			<?php $this->view('_shared/table', $table); ?>
@@ -26,7 +26,7 @@
 <?php
 $modal_vars = array(
 	'name'		=> 'modal-confirm-remove',
-	'form_url'	=> cp_url('settings/uploads/remove_directory', ee()->cp->get_url_state()),
+	'form_url'	=> cp_url('files/uploads/remove_directory', ee()->cp->get_url_state()),
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
 	)
