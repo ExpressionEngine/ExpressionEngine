@@ -56,7 +56,6 @@ class ChannelGateway extends Gateway {
 	public $comment_url;
 	public $comment_system_enabled;
 	public $comment_require_membership;
-	public $comment_use_captcha;
 	public $comment_moderate;
 	public $comment_max_chars;
 	public $comment_timelock;

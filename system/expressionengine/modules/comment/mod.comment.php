@@ -1328,7 +1328,7 @@ class Comment {
 		// The where clauses above will affect this query - it's below the conditional
 		// because AR cannot keep track of two queries at once
 
-		ee()->db->select('channel_titles.entry_id, channel_titles.entry_date, channel_titles.comment_expiration_date, channel_titles.allow_comments, channels.comment_system_enabled, channels.comment_use_captcha, channels.comment_expiration');
+		ee()->db->select('channel_titles.entry_id, channel_titles.entry_date, channel_titles.comment_expiration_date, channel_titles.allow_comments, channels.comment_system_enabled, channels.comment_expiration');
 		ee()->db->from(array('channel_titles', 'channels'));
 
 		ee()->db->where_in('channel_titles.site_id', ee()->TMPL->site_ids);
@@ -1383,7 +1383,7 @@ class Comment {
 
 		if ($return_form == FALSE)
 		{
-			if ($query->row('comment_use_captcha')  == 'n')
+			if ( ! bool_config_item('require_captcha'))
 			{
 				ee()->TMPL->tagdata = str_replace(LD.'captcha'.RD, '', ee()->TMPL->tagdata);
 			}
@@ -1492,11 +1492,11 @@ class Comment {
 		$cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? FALSE : TRUE;
 		$cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? FALSE : TRUE;
 
-		if ($query->row('comment_use_captcha')  == 'n')
+		if ( ! bool_config_item('require_captcha'))
 		{
 			$cond['captcha'] = FALSE;
 		}
-		elseif ($query->row('comment_use_captcha')  == 'y')
+		else
 		{
 			$cond['captcha'] =  (ee()->config->item('captcha_require_members') == 'y'  OR
 								(ee()->config->item('captcha_require_members') == 'n' AND ee()->session->userdata('member_id') == 0)) ? TRUE : FALSE;
@@ -1654,7 +1654,7 @@ class Comment {
 			'entry_id' 	=> $query->row('entry_id')
 		);
 
-		if ($query->row('comment_use_captcha')  == 'y')
+		if (bool_config_item('require_captcha'))
 		{
 			if (preg_match("/({captcha})/", $tagdata))
 			{
@@ -2416,7 +2416,7 @@ class Comment {
 		/**  Do we require CAPTCHA?
 		/** ----------------------------------------*/
 
-		if ($query->row('comment_use_captcha')  == 'y')
+		if (bool_config_item('require_captcha'))
 		{
 			if (ee()->config->item('captcha_require_members') == 'y'  OR  (ee()->config->item('captcha_require_members') == 'n' AND ee()->session->userdata('member_id') == 0))
 			{
