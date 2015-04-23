@@ -206,7 +206,11 @@ class Updater {
 
 				foreach ($sites as $site_id => $groups)
 				{
-					ee()->db->query(ee()->db->update_string('exp_category_groups', array($field => implode('|', $groups)), "site_id = '{$site_id}'"));
+					ee()->db->update(
+					    'category_groups',
+					    array($field => implode('|', $groups)),
+					    array('site_id' => $site_id)
+					);
 				}
 			}
 		}
