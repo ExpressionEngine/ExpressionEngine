@@ -1,5 +1,7 @@
 class CaptchaSettings < ControlPanelPage
 
+	element :require_captcha_y, 'input[name=require_captcha][value=y]'
+	element :require_captcha_n, 'input[name=require_captcha][value=n]'
 	element :captcha_font_y, 'input[name=captcha_font][value=y]'
 	element :captcha_font_n, 'input[name=captcha_font][value=n]'
 	element :captcha_rand_y, 'input[name=captcha_rand][value=y]'

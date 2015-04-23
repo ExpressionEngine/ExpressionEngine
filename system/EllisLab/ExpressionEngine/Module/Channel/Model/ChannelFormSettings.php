@@ -36,7 +36,6 @@ class ChannelFormSettings extends Model {
 	protected $site_id;
 	protected $channel_id;
 	protected $default_status;
-	protected $require_captcha;
 	protected $allow_guest_posts;
 	protected $default_author;
 }
