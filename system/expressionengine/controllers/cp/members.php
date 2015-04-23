@@ -2008,7 +2008,7 @@ class Members extends CP_Controller {
 
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_error_delimiters('<p class="notice">', '</p>');
-;
+
 		ee()->form_validation->set_rules(
 			'group_title',
 			'lang:group_title',
