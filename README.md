@@ -41,7 +41,7 @@ to
 if (defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
 ```
 
-Create an empty `config.php` file in `/user/config/config.php`
+Create an empty `config.php` file in `/system/user/config/`
 
 Run the installer.
 
