@@ -1345,7 +1345,8 @@ class MyAccount extends CP_Controller {
 	  */
 	function update_signature()
 	{
-		$signature = $this->input->post('signature');
+		$signature = ee()->input->post('signature');
+		$remove = ee()->input->post('remove');
 
 		// Get member_id for redirects
 		$params = array();
@@ -1355,8 +1356,8 @@ class MyAccount extends CP_Controller {
 		}
 
 		// Do we have what we need in $_POST?
-		if (empty(ee()->input->post('signature'))
-			&& empty(ee()->input->post('remove'))
+		if (empty($signature)
+			&& empty($remove)
 			&& (empty($_FILES) && ee()->config->item('sig_allow_img_upload') == 'y'))
 		{
 			return ee()->functions->redirect(
