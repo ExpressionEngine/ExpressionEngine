@@ -236,7 +236,7 @@ EE.publish.category_editor = function() {
 			},
 			error: function(response) {
 				response = $.parseJSON(response.responseText);
-				$editor_container.text(response.error);
+				$editor_container.html(response.error);
 				setup_page.call(cat_groups_containers[gid], response.error, true);
 			}
 		});
