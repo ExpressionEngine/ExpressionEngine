@@ -3144,7 +3144,7 @@ class EE_Template {
 		// Fetch CAPTCHA
 		if (strpos($str, "{captcha}") !== FALSE)
 		{
-			$str = str_replace("{captcha}", ee()->functions->create_captcha(), $str);
+			$str = str_replace("{captcha}", ee('Captcha')->create_captcha(), $str);
 		}
 
 		// Add security hashes to forms

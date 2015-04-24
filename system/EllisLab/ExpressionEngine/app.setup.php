@@ -1,5 +1,6 @@
 <?php
 
+use EllisLab\ExpressionEngine\Library;
 use EllisLab\ExpressionEngine\Library\Event;
 use EllisLab\ExpressionEngine\Library\Filesystem;
 use EllisLab\ExpressionEngine\Service\Alert;
@@ -65,6 +66,11 @@ return array(
 		{
 			$view = $ee->make('View')->make('_shared/alert');
 			return new Alert\AlertCollection(ee()->session, $view);
+		},
+
+		'Captcha' => function($ee)
+		{
+			return new Library\Captcha();
 		},
 
 		'Config' => function($ee)

@@ -37,15 +37,7 @@ class Email {
 	 */
 	public function __construct()
 	{
-		if ( ! bool_config_item('require_captcha'))
-		{
-			$this->use_captchas = 'n';
-		}
-		else
-		{
-			$this->use_captchas = (ee()->config->item('captcha_require_members') == 'y'  OR (ee()->config->item('captcha_require_members') == 'n' AND ee()->session->userdata('member_id') == 0))
-				? 'y' : 'n';
-		}
+		$this->use_captchas = ee('Captcha')->should_require_captcha() ? 'y' : 'n';
 	}
 
 	// --------------------------------------------------------------------

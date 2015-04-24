@@ -692,7 +692,11 @@ class Channel_form_lib
 
 		// Parse captcha conditional
 		$captcha_conditional = array(
-			'captcha' => ($this->channel('channel_id') && $this->logged_out_member_id && ! empty($this->settings['require_captcha'][ee()->config->item('site_id')][$this->channel('channel_id')]))
+			'captcha' => (
+				$this->channel('channel_id') &&
+				$this->logged_out_member_id &&
+				ee('Captcha')->should_require_captcha()
+			)
 		);
 
         $conditionals = array_merge($conditional_errors, $captcha_conditional);
@@ -709,7 +713,7 @@ class Channel_form_lib
 		ee()->TMPL->tagdata = ee()->TMPL->swap_var_single('captcha_word', '', ee()->TMPL->tagdata);
 
 		// Replace {captcha} with actual captcha
-		ee()->TMPL->tagdata = ee()->TMPL->swap_var_single('captcha', ee()->functions->create_captcha('', $captcha_conditional['captcha']), ee()->TMPL->tagdata);
+		ee()->TMPL->tagdata = ee()->TMPL->swap_var_single('captcha', ee('Captcha')->create_captcha('', $captcha_conditional['captcha']), ee()->TMPL->tagdata);
 
 		// Parse the variables
 		if ($this->parse_variables)

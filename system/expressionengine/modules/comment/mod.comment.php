@@ -1383,7 +1383,7 @@ class Comment {
 
 		if ($return_form == FALSE)
 		{
-			if ( ! bool_config_item('require_captcha'))
+			if ( ! ee('Captcha')->should_require_captcha())
 			{
 				ee()->TMPL->tagdata = str_replace(LD.'captcha'.RD, '', ee()->TMPL->tagdata);
 			}
@@ -1492,7 +1492,7 @@ class Comment {
 		$cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? FALSE : TRUE;
 		$cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? FALSE : TRUE;
 
-		if ( ! bool_config_item('require_captcha'))
+		if ( ! ee('Captcha')->should_require_captcha())
 		{
 			$cond['captcha'] = FALSE;
 		}
@@ -1654,11 +1654,11 @@ class Comment {
 			'entry_id' 	=> $query->row('entry_id')
 		);
 
-		if (bool_config_item('require_captcha'))
+		if (ee('Captcha')->should_require_captcha())
 		{
 			if (preg_match("/({captcha})/", $tagdata))
 			{
-				$tagdata = preg_replace("/{captcha}/", ee()->functions->create_captcha(), $tagdata);
+				$tagdata = preg_replace("/{captcha}/", ee('Captcha')->create_captcha(), $tagdata);
 			}
 		}
 
@@ -2416,30 +2416,27 @@ class Comment {
 		/**  Do we require CAPTCHA?
 		/** ----------------------------------------*/
 
-		if (bool_config_item('require_captcha'))
+		if (ee('Captcha')->should_require_captcha())
 		{
-			if (ee()->config->item('captcha_require_members') == 'y'  OR  (ee()->config->item('captcha_require_members') == 'n' AND ee()->session->userdata('member_id') == 0))
+			if ( ! isset($_POST['captcha']) OR $_POST['captcha'] == '')
 			{
-				if ( ! isset($_POST['captcha']) OR $_POST['captcha'] == '')
+				return ee()->output->show_user_error('submission', ee()->lang->line('captcha_required'));
+			}
+			else
+			{
+				ee()->db->where('word', $_POST['captcha']);
+				ee()->db->where('ip_address', ee()->input->ip_address());
+				ee()->db->where('date > UNIX_TIMESTAMP()-7200', NULL, FALSE);
+
+				$result = ee()->db->count_all_results('captcha');
+
+				if ($result == 0)
 				{
-					return ee()->output->show_user_error('submission', ee()->lang->line('captcha_required'));
+					return ee()->output->show_user_error('submission', ee()->lang->line('captcha_incorrect'));
 				}
-				else
-				{
-					ee()->db->where('word', $_POST['captcha']);
-					ee()->db->where('ip_address', ee()->input->ip_address());
-					ee()->db->where('date > UNIX_TIMESTAMP()-7200', NULL, FALSE);
 
-					$result = ee()->db->count_all_results('captcha');
-
-					if ($result == 0)
-					{
-						return ee()->output->show_user_error('submission', ee()->lang->line('captcha_incorrect'));
-					}
-
-					// @TODO: AR
-					ee()->db->query("DELETE FROM exp_captcha WHERE (word='".ee()->db->escape_str($_POST['captcha'])."' AND ip_address = '".ee()->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
-				}
+				// @TODO: AR
+				ee()->db->query("DELETE FROM exp_captcha WHERE (word='".ee()->db->escape_str($_POST['captcha'])."' AND ip_address = '".ee()->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
 			}
 		}
 
