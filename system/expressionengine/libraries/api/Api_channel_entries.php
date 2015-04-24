@@ -1047,7 +1047,7 @@ class Api_channel_entries extends Api {
 			$this->_set_error('not_authorized');
 		}
 
-		if ($data['author_id'] != ee()->session->userdata('member_id') && ee()->session->userdata('group_id') != 1)
+		if ($data['author_id'] != ee()->session->userdata('member_id') && ee()->session->userdata('group_id') != 1 && ee()->session->userdata('can_edit_other_entries') != 'y')
 		{
 			if ( ! isset($this->_cache['orig_author_id']) OR $data['author_id'] != $this->_cache['orig_author_id'])
 			{
