@@ -1214,6 +1214,11 @@ class EE_Config Extends CI_Config {
 	 */
 	private function clear_opcache($path)
 	{
+		if ( ! file_exists($path))
+		{
+			return;
+		}
+
 		if (function_exists('opcache_invalidate'))
 		{
 			opcache_invalidate($path);
