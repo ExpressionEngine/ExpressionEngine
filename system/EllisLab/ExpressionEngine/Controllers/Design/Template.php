@@ -286,16 +286,16 @@ class Template extends AbstractDesignController {
 			$alert = ee('Alert')->makeInline('template-form')
 				->asSuccess()
 				->withTitle(lang('update_template_success'))
-				->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name . '/' . $template->template_name));
+				->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name . '/' . $template->template_name))
+				->defer();
 
 			if (ee()->input->post('submit') == 'finish')
 			{
-				$alert->defer();
 				ee()->session->set_flashdata('template_id', $template->template_id);
 				ee()->functions->redirect(cp_url('design/manager/' . $group->group_name));
 			}
 
-			$alert->now();
+			ee()->functions->redirect(cp_url('design/template/edit/' . $template->template_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
