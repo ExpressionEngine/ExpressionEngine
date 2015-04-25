@@ -652,7 +652,7 @@ class Template extends AbstractDesignController {
 	  */
 	public function _template_name_checks($str, $group_id)
 	{
-		if ( ! preg_match("#^[a-zA-Z0-9_\-/]+$#i", $str))
+		if ( ! preg_match("#^[a-zA-Z0-9_\.\-/]+$#i", $str))
 		{
 			ee()->lang->loadfile('admin');
 			ee()->form_validation->set_message('_template_name_checks', lang('illegal_characters'));
