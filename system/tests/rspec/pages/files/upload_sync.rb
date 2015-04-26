@@ -8,11 +8,11 @@ class UploadSync < ControlPanelPage
 	# Load the sync screen for the nth directory listed
 	def load_sync_for_dir(number)
 		click_link 'Files'
-		within 'div.sidebar' do
-			click_link 'Upload Directories'
-		end
 
-		find('tbody tr:nth-child('+number.to_s+') li.sync a').click
+		directory_selector = 'div.sidebar .folder-list > li:nth-child('+number.to_s+')'
+
+		find(directory_selector).hover
+		find(directory_selector+' li.sync a').click
 	end
 
 	# Each time the progress bar changes, logs the percentage value

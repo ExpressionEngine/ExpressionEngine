@@ -80,6 +80,7 @@ abstract class AbstractFiles extends CP_Controller {
 				'name' => $destination->name,
 				'id' => $destination->id,
 				'url' => cp_url('files/directory/' . $destination->id),
+				'sync_url' => cp_url('files/uploads/sync/' . $destination->id),
 				'edit_url' => cp_url('files/uploads/edit/' . $destination->id),
 			);
 
