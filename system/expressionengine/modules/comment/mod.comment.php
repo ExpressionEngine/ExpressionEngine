@@ -1658,7 +1658,7 @@ class Comment {
 		{
 			if (preg_match("/({captcha})/", $tagdata))
 			{
-				$tagdata = preg_replace("/{captcha}/", ee('Captcha')->create_captcha(), $tagdata);
+				$tagdata = preg_replace("/{captcha}/", ee('Captcha')->create(), $tagdata);
 			}
 		}
 

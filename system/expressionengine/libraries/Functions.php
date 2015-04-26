@@ -1377,8 +1377,8 @@ class EE_Functions {
 	public function create_captcha($old_word = '', $force_word = FALSE)
 	{
 		ee()->load->library('logger');
-		ee()->logger->deprecated('3.0', "ee('Captcha')->create_captcha()");
-		return ee('Captcha')->create_captcha($old_word, $force_word);
+		ee()->logger->deprecated('3.0', "ee('Captcha')->create()");
+		return ee('Captcha')->create($old_word, $force_word);
 	}
 
 	// --------------------------------------------------------------------

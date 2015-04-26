@@ -192,7 +192,7 @@ class Member_register extends Member {
 
 				if ( ! class_exists('Template'))
 				{
-					$reg_form = preg_replace("/{captcha}/", ee('Captcha')->create_captcha(), $reg_form);
+					$reg_form = preg_replace("/{captcha}/", ee('Captcha')->create(), $reg_form);
 				}
 			}
 			else

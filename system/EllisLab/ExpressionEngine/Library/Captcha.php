@@ -53,7 +53,7 @@ class Captcha {
 	 * @param	boolean	$force_word	Boolean to skip CAPTCHA creation
 	 * @return	string	HTML of image tag referencing CAPTCHA
 	 */
-	public function create_captcha($old_word = '', $force_word = FALSE)
+	public function create($old_word = '', $force_word = FALSE)
 	{
 		if (ee()->config->item('captcha_require_members') == 'n' &&
 			ee()->session->userdata['member_id'] != 0 &&
