@@ -649,12 +649,6 @@ $lang = array(
 'req_mbr_activation_opt_manual' =>
 'Manually moderated by administrator',
 
-'use_membership_captcha' =>
-'Enable registration <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr>?',
-
-'use_membership_captcha_desc' =>
-'When set to <b>enable</b>, users will be required to pass a <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> during registration.',
-
 'require_terms_of_service' =>
 'Require terms of service?',
 
