@@ -1179,6 +1179,11 @@ class Filemanager {
 
 		$memory_setting = ini_get('memory_limit');
 
+		if ($memory_setting === -1)
+		{
+		    return TRUE;
+		}
+
 		if ( ! $memory_setting)
 		{
 			$memory_setting = '8M';
