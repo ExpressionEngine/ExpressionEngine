@@ -128,6 +128,20 @@ class Textarea_ft extends EE_Fieldtype {
 
 			ee()->cp->get_installed_modules();
 
+			ee()->load->helper('smiley');
+			ee()->load->library('table');
+
+			$smileys_enabled = (isset(ee()->cp->installed_modules['emoticon']) ? TRUE : FALSE);
+			$smileys = '';
+
+			if ($smileys_enabled)
+			{
+				$image_array = get_clickable_smileys(ee()->config->slash_item('emoticon_url'), $this->name());
+				$col_array = ee()->table->make_columns($image_array, 8);
+				$smileys = ee()->table->generate($col_array);
+				ee()->table->clear();
+			}
+
 			return ee('View')->make('publish')->render(array(
 				'name'            => $this->name(),
 				'settings'        => $this->settings,
@@ -135,7 +149,8 @@ class Textarea_ft extends EE_Fieldtype {
 				'class'           => trim($class),
 				'toolbar'         => $toolbar,
 				'format_options'  => $format_options,
-				'smileys_enabled' => (isset(ee()->cp->installed_modules['emoticon']) ? TRUE : FALSE)
+				'smileys_enabled' => $smileys_enabled,
+				'smileys'         => $smileys
 			));
 		}
 

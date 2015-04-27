@@ -12,6 +12,8 @@
 
 $(document).ready(function () {
 
+	var publishForm = $("div.publish form");
+
 	if (EE.publish.title_focus == true) {
 		$("div.publish form input[name=title]").focus();
 	}
@@ -22,8 +24,15 @@ $(document).ready(function () {
 		});
 	}
 
-	var publishForm = $("div.publish form");
+	// Emoji
+	if (EE.publish.smileys === true) {
+		$('.format-options .toolbar .emoji a').click(function(e) {
+			$(this).parents('.format-options').find('.emoji-wrap').slideToggle('fast');
+			e.preventDefault();
+		});
+	}
 
+	// Autosaving
 	if (EE.publish.autosave && EE.publish.autosave.interval) {
 		var autosaving = false;
 
