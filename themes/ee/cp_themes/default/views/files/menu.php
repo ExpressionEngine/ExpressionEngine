@@ -7,6 +7,9 @@
 		<?php endif; ?>
 		<div class="scroll-wrap">
 			<ul class="folder-list">
+				<?php if (empty($upload_directories)): ?>
+					<li class="no-results"><?=lang('zero_directories_found')?></li>
+				<?php endif ?>
 				<?php foreach ($upload_directories as $dir): ?>
 				<li<?php if (isset($dir['class'])): ?> class="<?=$dir['class']?>"<?php endif; ?>>
 					<a href="<?=$dir['url']?>"><?=$dir['name']?></a>
