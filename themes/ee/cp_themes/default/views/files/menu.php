@@ -13,7 +13,6 @@
 					<?php if ($can_admin_upload_prefs): ?>
 					<ul class="toolbar">
 						<li class="edit"><a href="<?=$dir['edit_url']?>" title="<?=lang('edit')?>"></a></li>
-						<li class="sync"><a href="<?=$dir['sync_url']?>" title="<?=lang('sync')?>"></a></li>
 						<li class="remove"><a class="m-link" rel="modal-confirm-remove-directory" href="" title="<?=lang('remove')?>" data-confirm="<?=lang('upload_directory')?>: <b><?=$dir['name']?></b>" data-dir-id="<?=$dir['id']?>"></a></li>
 					</ul>
 					<?php endif; ?>
