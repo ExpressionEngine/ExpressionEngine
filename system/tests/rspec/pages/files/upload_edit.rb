@@ -13,20 +13,19 @@ class UploadEdit < ControlPanelPage
 	elements :cat_group, 'input[name="cat_group[]"]'
 
 	def load
-		settings_btn.click
-		within 'div.sidebar' do
-			click_link 'Upload Directories'
+		click_link 'Files'
+		within 'div.sidebar h2:nth-child(1)' do
+			click_link 'New'
 		end
-		click_link 'Create New'
 	end
 
 	def load_edit_for_dir(number)
-		settings_btn.click
-		within 'div.sidebar' do
-			click_link 'Upload Directories'
-		end
+		click_link 'Files'
 
-		find('tbody tr:nth-child('+number.to_s+') li.edit a').click
+		directory_selector = 'div.sidebar .folder-list > li:nth-child('+number.to_s+')'
+
+		find(directory_selector).hover
+		find(directory_selector+' li.edit a').click
 	end
 
 	# Dynamic getter for a specific Grid row

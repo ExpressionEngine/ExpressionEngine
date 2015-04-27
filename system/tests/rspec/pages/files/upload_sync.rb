@@ -3,15 +3,14 @@ class UploadSync < ControlPanelPage
 	element :alert, 'div.alert'
 	element :progress_bar, '.progress-bar .progress'
 	elements :sizes, 'input[name="sizes[]"]'
+	elements :submit_buttons, '.w-12 .form-ctrls input.btn'
 
 	# Load the sync screen for the nth directory listed
 	def load_sync_for_dir(number)
-		settings_btn.click
-		within 'div.sidebar' do
-			click_link 'Upload Directories'
-		end
+		click_link 'Files'
 
-		find('tbody tr:nth-child('+number.to_s+') li.sync a').click
+		find('div.sidebar .folder-list > li:nth-child('+number.to_s+') > a').click
+		find('li.sync a').click
 	end
 
 	# Each time the progress bar changes, logs the percentage value
@@ -19,7 +18,7 @@ class UploadSync < ControlPanelPage
 	def log_progress_bar_moves
 		i = 0;
 		sizes = [0];
-		
+
 		while self.progress_bar['style'] != 'width: 100%; ' && i < 500
 
 			# Get the raw number out of the style

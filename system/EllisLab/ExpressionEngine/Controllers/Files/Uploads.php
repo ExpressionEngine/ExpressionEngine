@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Settings;
+namespace EllisLab\ExpressionEngine\Controllers\Files;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -31,7 +31,7 @@ use EllisLab\ExpressionEngine\Library\CP;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Uploads extends Settings {
+class Uploads extends Files {
 
 	// We'll keep Grid validation errors in here
 	private $image_sizes_errors = array();
@@ -48,114 +48,11 @@ class Uploads extends Settings {
 		{
 			show_error(lang('unauthorized_access'));
 		}
-	}
 
-	/**
-	 * Main screen
-	 */
-	public function index()
-	{
-		ee()->load->model('file_upload_preferences_model');
+		$this->sidebarMenu(NULL);
+		$this->stdHeader();
 
-		$upload_dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(
-			ee()->session->userdata('group_id')
-		);
-
-		$data = array();
-		foreach ($upload_dirs as $id => $dir)
-		{
-			$data[] = array(
-				$dir['id'],
-				htmlentities($dir['name'], ENT_QUOTES),
-				array('toolbar_items' => array(
-					'view' => array(
-						'href' => cp_url('files/directory/'.$dir['id']),
-						'title' => lang('upload_btn_view')
-					),
-					'edit' => array(
-						'href' => cp_url('settings/uploads/edit/'.$dir['id']),
-						'title' => lang('upload_btn_edit')
-					),
-					'sync' => array(
-						'href' => cp_url('settings/uploads/sync/'.$dir['id']),
-						'title' => lang('upload_btn_sync')
-					)
-				)),
-				array(
-					'name' => 'uploads[]',
-					'value' => $dir['id'],
-					'data'	=> array(
-						'confirm' => lang('upload_remove_modal_upload_directory') . ': <b>' . htmlentities($dir['name'], ENT_QUOTES) . '</b>'
-					)
-				)
-			);
-		}
-
-		$table = CP\Table::create(array('autosort' => TRUE));
-		$table->setColumns(
-			array(
-				'upload_id' => array(
-					'type'	=> CP\Table::COL_ID
-				),
-				'upload_directory',
-				'upload_manage' => array(
-					'type'	=> CP\Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=> CP\Table::COL_CHECKBOX
-				)
-			)
-		);
-		$table->setNoResultsText('no_upload_directories', 'create_upload_directory', cp_url('settings/uploads/new-upload'));
-		$table->setData($data);
-
-		$base_url = new CP\URL('settings/uploads', ee()->session->session_id());
-		$vars['table'] = $table->viewData($base_url);
-
-		$pagination = new CP\Pagination(
-			$vars['table']['limit'],
-			$vars['table']['total_rows'],
-			$vars['table']['page']
-		);
-		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
-
-		ee()->view->cp_page_title = lang('upload_directories');
-		ee()->view->table_heading = lang('all_upload_dirs');
-
-		ee()->cp->set_breadcrumb(cp_url('files'), lang('file_manager'));
-
-		ee()->javascript->set_global('lang.remove_confirm', lang('upload_directories') . ': <b>### ' . lang('upload_remove_modal_directories') . '</b>');
-		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
-		));
-
-		ee()->cp->render('settings/uploads', $vars);
-	}
-
-	/**
-	 * POST action to remove an upload directory
-	 */
-	public function removeDirectory()
-	{
-		$upload_ids = ee()->input->post('uploads');
-
-		if ( ! empty($upload_ids) && ee()->input->post('bulk_action') == 'remove')
-		{
-			if ( ! is_array($upload_ids))
-			{
-				$upload_ids = array($upload_ids);
-			}
-
-			// Filter out junk
-			$upload_ids = array_filter($upload_ids, 'is_numeric');
-
-			ee()->load->model('file_upload_preferences_model');
-			ee()->file_upload_preferences_model->delete_upload_preferences($upload_ids);
-
-			ee()->view->set_message('success', lang('upload_directories_removed'), sprintf(lang('upload_directories_removed_desc'), count($upload_ids)), TRUE);
-		}
-
-		ee()->functions->redirect(cp_url('settings/uploads', ee()->cp->get_url_state()));
+		ee()->load->library('form_validation');
 	}
 
 	/**
@@ -324,7 +221,7 @@ class Uploads extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = 'settings/uploads/';
+		$base_url = 'files/uploads/';
 		$base_url .= ($upload_id) ? 'edit/' . $upload_id : 'new-upload';
 		$base_url = cp_url($base_url);
 
@@ -339,7 +236,7 @@ class Uploads extends Settings {
 			{
 				ee()->view->set_message('success', lang('directory_saved'), lang('directory_saved_desc'), TRUE);
 
-				ee()->functions->redirect(cp_url('settings/uploads/edit/' . $new_upload_id));
+				ee()->functions->redirect(cp_url('files/uploads/edit/' . $new_upload_id));
 			}
 
 			ee()->view->set_message('issue', lang('directory_not_saved'), lang('directory_not_saved_desc'));
@@ -430,7 +327,7 @@ class Uploads extends Settings {
 		ee()->view->save_btn_text_working = (empty($upload_id)) ? 'btn_create_directory_working' : 'btn_saving';
 
 		ee()->cp->set_breadcrumb(cp_url('files'), lang('file_manager'));
-		ee()->cp->set_breadcrumb(cp_url('settings/uploads'), lang('upload_directories'));
+		ee()->cp->set_breadcrumb(cp_url('files/uploads'), lang('upload_directories'));
 
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -889,7 +786,7 @@ class Uploads extends Settings {
 	{
 		if (empty($upload_id))
 		{
-			ee()->functions->redirect(cp_url('settings/uploads'));
+			ee()->functions->redirect(cp_url('files/uploads'));
 		}
 
 		ee()->load->model('file_upload_preferences_model');
@@ -960,7 +857,7 @@ class Uploads extends Settings {
 			);
 		}
 
-		$base_url = cp_url('settings/uploads/sync/'.$upload_id);
+		$base_url = cp_url('files/uploads/sync/'.$upload_id);
 
 		ee()->cp->add_js_script('file', 'cp/files/synchronize');
 
@@ -971,7 +868,7 @@ class Uploads extends Settings {
 				'sync_file_count' => $files_count,
 				'sync_sizes'      => $js_size,
 				'sync_baseurl'    => $base_url,
-				'sync_endpoint'   => cp_url('settings/uploads/do_sync_files'),
+				'sync_endpoint'   => cp_url('files/uploads/do_sync_files'),
 				'sync_dir_name'   => $upload_destination['name'],
 			)
 		));

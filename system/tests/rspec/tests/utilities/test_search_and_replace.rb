@@ -14,11 +14,7 @@ feature 'Search and Replace' do
   it 'shows the Search and Replace page' do
     @page.should have_text 'Data Search and Replace'
     @page.should have_text 'Advanced users only.'
-    @page.should have_search_term
-    @page.should have_replace_term
-    @page.should have_replace_where
-    @page.should have_password_auth
-    @page.should have_submit_button
+    @page.all_there?.should == true
   end
 
   it 'should validate the form' do
@@ -59,6 +55,11 @@ feature 'Search and Replace' do
 
     @page.password_auth.set 'test'
     @page.password_auth.trigger 'blur'
+    @page.wait_for_error_message_count(2)
+
+    @page.password_auth.set 'test'
+    @page.password_auth.trigger 'blur'
+    @page.wait_for_error_message_count(3)
     should_have_no_error_text(@page.search_term)
     should_have_error_text(@page.replace_where, @field_required)
     should_have_error_text(@page.replace_term, @field_required)
@@ -66,11 +67,14 @@ feature 'Search and Replace' do
     should_have_form_errors(@page)
 
     @page.password_auth.set 'password'
+    @page.password_auth.trigger 'blur'
+    @page.wait_for_error_message_count(2)
     @page.replace_term.set 'test'
     @page.replace_term.trigger 'blur'
+    @page.wait_for_error_message_count(1)
     @page.replace_where.select 'Channel Entry Titles'
-
     @page.wait_for_error_message_count(0)
+
     should_have_no_error_text(@page.search_term)
     should_have_no_error_text(@page.replace_where)
     should_have_no_error_text(@page.replace_term)
@@ -79,7 +83,7 @@ feature 'Search and Replace' do
 
     no_php_js_errors
 
-    @page.submit_button.click
+    @page.submit
 
     no_php_js_errors
 
@@ -88,7 +92,7 @@ feature 'Search and Replace' do
   end
 
   it 'should fail validation without AJAX too' do
-    @page.submit_button.click
+    @page.submit
 
     @page.should have_text 'Attention: Search and replace not run'
     should_have_error_text(@page.search_term, @field_required)
@@ -101,12 +105,14 @@ feature 'Search and Replace' do
 
     @page.search_term.set 'Text'
     @page.search_term.trigger 'blur'
+    @page.wait_for_error_message_count(3)
     @page.replace_term.set 'test'
     @page.replace_term.trigger 'blur'
+    @page.wait_for_error_message_count(2)
     @page.replace_where.select 'Channel Entry Titles'
+    @page.wait_for_error_message_count(1)
     @page.password_auth.set 'password'
     @page.password_auth.trigger 'blur'
-
     @page.wait_for_error_message_count(0)
 
     should_have_no_error_text(@page.search_term)
@@ -117,7 +123,7 @@ feature 'Search and Replace' do
 
     no_php_js_errors
 
-    @page.submit_button.click
+    @page.submit
 
     no_php_js_errors
 
@@ -132,7 +138,7 @@ feature 'Search and Replace' do
     @page.replace_where.select 'Channel Entry Titles'
     @page.password_auth.set 'password'
 
-    @page.submit_button.click
+    @page.submit
 
     no_php_js_errors
 

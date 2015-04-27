@@ -9,7 +9,7 @@
 			<?=$cp_heading?>
 			<?php if ($can_admin_upload_prefs): ?>
 			<ul class="toolbar">
-				<li class="sync"><a href="<?=cp_url('settings/upload/sync/' . $dir_id)?>" title="<?=lang('sync')?>"></a></li>
+				<li class="sync"><a href="<?=cp_url('files/uploads/sync/' . $dir_id)?>" title="<?=lang('sync')?>"></a></li>
 			</ul>
 			<?php endif; ?>
 		</h1>
