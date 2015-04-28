@@ -187,6 +187,8 @@ $lang['template_move_errors'] = 'There was an error moving your existing templat
 $lang['template_folder_not_writeable'] = 'The template folder is not writeable, make sure permissions are set to 777 on %s';
 $lang['unable_to_read_tmpl_file'] = 'Unable to read the following file:  %s Verify it exists.';
 $lang['could_not_create_folder'] = 'Could not create folder for %s.  Please make sure %s is writable';
+$lang['unwritable_config_file'] = 'Your configuration file does not have the proper permissions.<br>
+To fix: Set the config file (/expressionengine/config/config.php) permissions to 666 (or equivalent for your server).';
 
 /* End of file installer_lang.php */
 /* Location: ./system/expressionengine/installer/language/english/installer_lang.php */
