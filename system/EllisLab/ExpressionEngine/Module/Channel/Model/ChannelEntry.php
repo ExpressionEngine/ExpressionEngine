@@ -137,14 +137,14 @@ class ChannelEntry extends ContentModel {
 	{
 		$field = $this->_field_facades['expiration_date'];
 		$field->save();
-		$this->expiration_date = $field->getData();
+		$this->expiration_date = (int) $field->getData();
 	}
 
 	public function set__comment_expiration_date($date)
 	{
 		$field = $this->_field_facades['comment_expiration_date'];
 		$field->save();
-		$this->comment_expiration_date = $field->getData();
+		$this->comment_expiration_date = (int) $field->getData();
 	}
 
 	public function onAfterSave()
