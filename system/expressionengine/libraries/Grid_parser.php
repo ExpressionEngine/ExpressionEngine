@@ -239,7 +239,17 @@ class Grid_parser {
 		// Order by random
 		if ($params['orderby'] == 'random')
 		{
-			shuffle($entry_data);
+			// key preserving shuffle of $entry_data
+			$keys = array_keys($entry_data);
+
+			$shuffled_entry_data = array();
+
+			foreach ($keys as $key)
+			{
+				$shuffled_entry_data[$key] = $entry_data[$key];
+			}
+
+			$entry_data = $shuffled_entry_data;
 		}
 
 		// We'll handle limit and offset parameters this way; we can't do
