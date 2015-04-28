@@ -241,6 +241,7 @@ class Grid_parser {
 		{
 			// key preserving shuffle of $entry_data
 			$keys = array_keys($entry_data);
+			shuffle($keys);
 
 			$shuffled_entry_data = array();
 
