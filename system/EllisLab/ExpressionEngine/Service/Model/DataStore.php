@@ -66,7 +66,7 @@ class DataStore {
 		if ($name instanceOf Model)
 		{
 			$object = $name;
-			$name = $this->getModelAlias(get_class($object));
+			$name = $object->getName();
 		}
 		else
 		{
@@ -301,18 +301,6 @@ class DataStore {
 
 		$worker = new $class($this, $qb);
 		return $worker->run();
-	}
-
-	/**
-	 * Given a class name, get the model alias if one exists
-	 *
-	 * @param String $class The class name to look up
-	 * @return String The alias name
-	 */
-	protected function getModelAlias($class)
-	{
-		$classes = array_flip($this->aliases[$name]);
-		return $classes[$name];
 	}
 
 	/**
