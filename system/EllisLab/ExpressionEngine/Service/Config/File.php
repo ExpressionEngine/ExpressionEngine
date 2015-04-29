@@ -89,6 +89,45 @@ class File implements Config
 	}
 
 	/**
+	 * Get a config item as a boolean
+	 *
+	 * This is aware of some of EE's conventions, so it will
+	 * cast strings y and n to the correct boolean.
+	 *
+	 * @param string $path    The config item to get
+	 * @param bool   $default The default value
+	 * @return bool  The value cast to bool
+	 */
+	public function getBoolean($path, $default = FALSE)
+	{
+		$value = $this->get($path, $default);
+
+		if (is_bool($value))
+		{
+			return $value;
+		}
+
+		switch(strtolower($value))
+		{
+			case 'yes':
+			case 'y':
+			case 'on':
+				return TRUE;
+			break;
+
+			case 'no':
+			case 'n':
+			case 'off':
+				return FALSE;
+			break;
+
+			default:
+				return NULL;
+			break;
+		}
+	}
+
+	/**
 	 * Set an item in the config. You can use 'item.subitem.subsubitem' to drill
 	 * down in the config.
 	 *
