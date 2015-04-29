@@ -252,6 +252,16 @@ abstract class Entity extends MixableImpl {
 	}
 
 	/**
+	 * Get the list of original values that have changed.
+	 *
+	 * @return Array of old values
+	 */
+	public function getOriginal()
+	{
+		return $this->_clean_backups;
+	}
+
+	/**
 	 * Mark a property or the entire entity as clean.
 	 *
 	 * @param String $name Property name [optional]

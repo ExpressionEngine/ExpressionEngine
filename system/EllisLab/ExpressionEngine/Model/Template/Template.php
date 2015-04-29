@@ -83,7 +83,8 @@ class Template extends Model {
 
 	protected static $_events = array(
 		'afterDelete',
-		'afterSave'
+		'afterSave',
+		'afterUpdate'
 	);
 
 	protected $template_id;
@@ -133,6 +134,7 @@ class Template extends Model {
 
 		if ($path == '' || $file == '' || $ext == '')
 		{
+
 			return NULL;
 		}
 
@@ -140,17 +142,16 @@ class Template extends Model {
 	}
 
 	/**
-	 *
+	 * @param String $template_type Used by onAfterUpdate to divine the old path
 	 */
-	public function getFileExtension()
+	public function getFileExtension($template_type = NULL)
 	{
+		$type = $template_type ?: $this->template_type;
+
 		ee()->legacy_api->instantiate('template_structure');
-		return ee()->api_template_structure->file_extensions($this->template_type);
+		return ee()->api_template_structure->file_extensions($type);
 	}
 
-	/**
-	 *
-	 */
 	public function onAfterSave()
 	{
 		$fs = new Filesystem();
@@ -159,6 +160,21 @@ class Template extends Model {
 		if (isset($path) && $fs->exists($fs->dirname($path)))
 		{
 			$fs->write($path, $this->template_data, TRUE);
+		}
+	}
+
+	/**
+	 *
+	 */
+	public function onAfterUpdate($previous)
+	{
+		$fs = new Filesystem();
+		$path = $this->getFilePath();
+		$old_path = $this->getPreviousPath($previous);
+
+		if ($path != $old_path && $fs->exists($old_path))
+		{
+			$fs->delete($old_path);
 		}
 	}
 
@@ -174,5 +190,31 @@ class Template extends Model {
 		{
 			$fs->delete($path);
 		}
+	}
+
+	protected function getPreviousPath($prev)
+	{
+		$values = $this->getValues();
+		$parts = array_merge($values, $prev);
+
+		if ($parts['group_id'] != $this->group_id)
+		{
+			$group = $this->getFrontend()->get('TemplateGroup', $parts['group_id'])->first();
+		}
+		else
+		{
+			$group = $this->getTemplateGroup();
+		}
+
+		$path = $group->getFolderPath();
+		$file = $parts['template_name'];
+		$ext  = $this->getFileExtension($parts['template_type']);
+
+		if ($path == '' || $file == '' || $ext == '')
+		{
+			return NULL;
+		}
+
+		return $path.'/'.$file.$ext;
 	}
 }
