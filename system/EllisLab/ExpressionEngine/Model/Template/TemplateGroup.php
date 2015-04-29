@@ -61,7 +61,8 @@ class TemplateGroup extends Model {
 
 	protected static $_events = array(
 		'afterDelete',
-		'afterSave'
+		'afterInsert',
+		'afterUpdate'
 	);
 
 	protected $group_id;
@@ -107,6 +108,9 @@ class TemplateGroup extends Model {
 		return ($this->is_site_default == 'y');
 	}
 
+	/**
+	 *
+	 */
 	public function ensureFolderExists()
 	{
 		$fs = new Filesystem();
@@ -139,9 +143,26 @@ class TemplateGroup extends Model {
 		return $basepath.'/'.$site.'/'.$this->group_name . '.group';
 	}
 
-	// TODO allow for renaming?
-	public function onAfterSave()
+	public function onAfterInsert()
 	{
+		$this->ensureFolderExists();
+	}
+
+	public function onAfterUpdate($previous)
+	{
+		if (isset($previous['group_name']))
+		{
+			$this->set($previous);
+			$old_path = $this->getFolderPath();
+			$this->restore();
+
+			$new_path = $this->getFolderPath();
+
+			$fs = new Filesystem();
+
+			$fs->rename($old_path, $new_path);
+		}
+
 		$this->ensureFolderExists();
 	}
 
