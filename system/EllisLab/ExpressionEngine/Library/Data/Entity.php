@@ -292,9 +292,11 @@ abstract class Entity extends MixableImpl {
 				$this->restore($key);
 			}
 		}
-
-		$this->$name = $this->getBackup($name);
-		$this->markAsClean($name);
+		else
+		{
+			$this->$name = $this->getBackup($name);
+			$this->markAsClean($name);
+		}
 
 		return $this;
 	}
