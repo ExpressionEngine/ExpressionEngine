@@ -335,6 +335,17 @@ class Installer_Config Extends EE_Config {
 
 class MSM_Config extends EE_Config
 {
+	/**
+	 * Constructor
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+
+		$this->config_path = EE_APPPATH.'config/config.php';
+
+		ee()->load->helper('language_helper');
+	}
 
 	function site_prefs($site_name, $site_id = 1)
 	{

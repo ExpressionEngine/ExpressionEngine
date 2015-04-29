@@ -41,7 +41,8 @@ class Updater {
 				'_member_login_state',
 				'_modify_category_data_fields',
 				'_date_format_years',
-				'_add_new_private_messages_options'
+				'_add_new_private_messages_options',
+				'_sync_category_permissions'
 			)
 		);
 
@@ -171,6 +172,48 @@ class Updater {
 			),
 			'all'
 		);
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Rebuilds/sychronizes the can_edit_categories, can_delete_categories
+	 * columns in the exp_category_groups table because we were not always
+	 * updating those columns when the member group form was submitted.
+	 */
+	public function _sync_category_permissions()
+	{
+		$fields = array('can_edit_categories', 'can_delete_categories');
+
+		foreach ($fields as $field)
+		{
+			ee()->db->select('group_id, site_id');
+			ee()->db->where($field, 'y');
+			ee()->db->where('group_id !=', 1);
+			$query = ee()->db->get('member_groups');
+
+			if ($query->num_rows() > 0)
+			{
+				$sites = array();
+				foreach ($query->result_array() as $row)
+				{
+					if ( ! array_key_exists($row['site_id'], $sites))
+					{
+						$sites[$row['site_id']] = array();
+					}
+					$sites[$row['site_id']][] = $row['group_id'];
+				}
+
+				foreach ($sites as $site_id => $groups)
+				{
+					ee()->db->update(
+					    'category_groups',
+					    array($field => implode('|', $groups)),
+					    array('site_id' => $site_id)
+					);
+				}
+			}
+		}
 	}
 }
 // EOF

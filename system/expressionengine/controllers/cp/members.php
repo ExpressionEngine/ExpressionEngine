@@ -2000,7 +2000,7 @@ class Members extends CP_Controller {
 		$this->load->model(array('Member_group_model', 'Site_model'));
 
 		$group_id = $this->input->post('group_id');
-		$clone_id = $this->input->post('clone_id');
+		$clone_id = $this->input->post('clone_id') ?: FALSE;
 		$site_id = $this->input->post('site_id');
 
 		unset($_POST['group_id']);
