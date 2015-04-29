@@ -172,7 +172,7 @@ class Validator {
 
 			foreach ($rules as $rule)
 			{
-				if ($partial && $rule instanceOf Rule\Required && $value == NULL)
+				if ($partial && $rule instanceOf Rule\Required && $value === NULL)
 				{
 					continue;
 				}
