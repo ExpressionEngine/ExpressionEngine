@@ -46,6 +46,7 @@ class Update extends Query {
 		$object->emit('beforeSave');
 
 		$this->doWork($object);
+		$object->markAsClean();
 
 		$object->emit('afterSave');
 		$object->emit('afterUpdate', $backup);

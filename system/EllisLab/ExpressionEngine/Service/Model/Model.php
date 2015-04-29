@@ -226,8 +226,6 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 			$qb->update();
 		}
 
-		$this->markAsClean();
-
 		// update relationships
 		foreach ($this->getAllAssociations() as $assoc)
 		{
