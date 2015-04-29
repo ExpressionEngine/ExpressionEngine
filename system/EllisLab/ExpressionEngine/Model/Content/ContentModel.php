@@ -16,12 +16,9 @@ use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
 
 abstract class ContentModel extends Model {
 
-	protected static $_dates = array();
-
 	protected static $_events = array(
 		'afterSetCustomField'
 	);
-
 
 	protected $_field_facades;
 
