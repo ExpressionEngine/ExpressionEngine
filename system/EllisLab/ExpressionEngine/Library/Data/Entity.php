@@ -13,6 +13,11 @@ abstract class Entity extends MixableImpl {
 	protected $_filters = array();
 
 	/**
+	 * @var Backup of clean values
+	 */
+	protected $_clean_backups = array();
+
+	/**
 	 * Constructor
 	 */
 	public function __construct(array $data = array())
@@ -215,6 +220,76 @@ abstract class Entity extends MixableImpl {
 	}
 
 	/**
+	 * Check if entity has dirty values
+	 *
+	 * @return bool is dirty?
+	 */
+	public function isDirty($name = NULL)
+	{
+		if ( ! isset($name))
+		{
+			return ! empty($this->_clean_backups);
+		}
+
+		return $this->hasBackup($name);
+	}
+
+	/**
+	 * Get all dirty keys and values
+	 *
+	 * @return array Dirty properties and their values
+	 */
+	public function getDirty()
+	{
+		$dirty = array();
+
+		foreach (array_keys($this->_clean_backups) as $key)
+		{
+			$dirty[$key] = $this->$key;
+		}
+
+		return $dirty;
+	}
+
+	/**
+	 * Mark a property or the entire entity as clean.
+	 *
+	 * @param String $name Property name [optional]
+	 */
+	public function markAsClean($name = NULL)
+	{
+		if (isset($name))
+		{
+			$this->deleteBackup($name);
+		}
+		else
+		{
+			$this->clearBackups();
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Restore original value(s).
+	 */
+	public function restore($name = NULL)
+	{
+		if ( ! isset($name))
+		{
+			foreach (array_keys($this->_clean_backups) as $key)
+			{
+				$this->restore($key);
+			}
+		}
+
+		$this->$name = $this->getBackup($name);
+		$this->markAsClean($name);
+
+		return $this;
+	}
+
+	/**
 	 * Check if the entity has a given property
 	 *
 	 * @param String $name Property name
@@ -233,7 +308,7 @@ abstract class Entity extends MixableImpl {
 	 */
 	public function getProperty($name)
 	{
-		if (method_exists($this, 'get__'.$name))
+		if ($this->hasGetterFor($name))
 		{
 			return $this->{'get__'.$name}();
 		}
@@ -250,7 +325,7 @@ abstract class Entity extends MixableImpl {
 	 */
 	public function setProperty($name, $value)
 	{
-		if (method_exists($this, 'set__'.$name))
+		if ($this->hasSetterFor($name))
 		{
 			$this->{'set__'.$name}($value);
 		}
@@ -260,6 +335,28 @@ abstract class Entity extends MixableImpl {
 		}
 
 		return $this;
+	}
+
+	/**
+	 * Check if the child class provides a getter
+	 *
+	 * @param String $name Property name
+	 * @return Bool Has getter?
+	 */
+	protected function hasGetterFor($name)
+	{
+		return method_exists($this, 'get__'.$name);
+	}
+
+	/**
+	 * Check if the child class provides a setter
+	 *
+	 * @param String $name Property name
+	 * @return Bool Has setter?
+	 */
+	protected function hasSetterFor($name)
+	{
+		return method_exists($this, 'set__'.$name);
 	}
 
 	/**
@@ -283,7 +380,7 @@ abstract class Entity extends MixableImpl {
 	/**
 	 * Get a property directly, bypassing the getter. This method should
 	 * not be extended with additional logic, it should be treated as a
-	 * way to bypass __get() and all that comes with it.
+	 * way to bypass __set() and all that comes with it.
 	 *
 	 * @param String $name Name of the property
 	 * @param Mixed  $value Value of the property
@@ -293,6 +390,8 @@ abstract class Entity extends MixableImpl {
 	{
 		if ($this->hasProperty($name))
 		{
+			$this->backupIfChanging($name, $this->$name, $value);
+
 			$this->$name = $value;
 			return $this;
 		}
@@ -382,4 +481,85 @@ abstract class Entity extends MixableImpl {
 	{
 		return json_encode($this->toArray());
 	}
+
+
+	/**
+	 * Track changes to properties so we can report which ones have been
+	 * modified. This method is smart enough to recognize changing things
+	 * and then changing them back.
+	 */
+	protected function backupIfChanging($name, $old_value, $new_value)
+	{
+		if ($new_value != $old_value)
+		{
+			if ( ! $this->hasBackup($name))
+			{
+				$this->setBackup($name, $old_value);
+			}
+			elseif ($new_value == $this->getBackup($name))
+			{
+				$this->markAsClean($name);
+			}
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Check if we've had to backup a given property
+	 *
+	 * @param String $name Name of property
+	 * @return bool Backup for given property exists
+	 */
+	protected function hasBackup($name)
+	{
+		return array_key_exists($name, $this->_clean_backups);
+	}
+
+	/**
+	 * Get the original value for a property
+	 *
+	 * @param String $name    Name of property
+	 * @param Mixed  $default Value to return if property has not been modified
+	 * @return Mixed Original value
+	 */
+	protected function getBackup($name, $default = NULL)
+	{
+		if ($this->hasBackup($name))
+		{
+			return $this->_clean_backups[$name];
+		}
+
+		return NULL;
+	}
+
+	/**
+	 * Set a backup
+	 *
+	 * @param String $name  Name of property
+	 * @param Mixed  $value Original value of the property
+	 */
+	protected function setBackup($name, $value)
+	{
+		$this->_clean_backups[$name] = $value;
+	}
+
+	/**
+	 * Delete a backup
+	 *
+	 * @param String $name Name of property
+	 */
+	protected function deleteBackup($name)
+	{
+		unset($this->_clean_backups[$name]);
+	}
+
+	/**
+	 * Delete all backups
+	 */
+	protected function clearBackups()
+	{
+		$this->_clean_backups = array();
+	}
+
 }

@@ -42,11 +42,6 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	protected $_name;
 
 	/**
-	 * @var List of dirty values
-	 */
-	protected $_dirty = array();
-
-	/**
 	 * @var Query frontend object
 	 */
 	protected $_frontend = NULL;
@@ -183,71 +178,9 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 
 		parent::setProperty($name, $value);
 
-		$this->markAsDirty($name);
-
 		$this->emit('afterSet', $name, $value);
 
 		return $this;
-	}
-
-	/**
-	 * Check if model has dirty values
-	 *
-	 * @return bool is dirty?
-	 */
-	public function isDirty()
-	{
-		return ! empty($this->_dirty);
-	}
-
-	/**
-	 * Mark a property as dirty
-	 *
-	 * @param String $name property name
-	 * @return $this
-	 */
-	protected function markAsDirty($name)
-	{
-		$this->_dirty[$name] = TRUE;
-
-		return $this;
-	}
-
-	/**
-	 * Clear out our dirty marker. Happens after saving.
-	 *
-	 * @param String $name property name [optional]
-	 * @return $this
-	 */
-	public function markAsClean($name = NULL)
-	{
-		if (isset($name))
-		{
-			unset($this->_dirty[$name]);
-		}
-		else
-		{
-			$this->_dirty = array();
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Get all dirty keys and values
-	 *
-	 * @return array Dirty properties and their values
-	 */
-	public function getDirty()
-	{
-		$dirty = array();
-
-		foreach (array_keys($this->_dirty) as $key)
-		{
-			$dirty[$key] = $this->$key;
-		}
-
-		return $dirty;
 	}
 
 	/**
