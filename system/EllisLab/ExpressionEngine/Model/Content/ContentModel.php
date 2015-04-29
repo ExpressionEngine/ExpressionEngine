@@ -16,17 +16,40 @@ use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
 
 abstract class ContentModel extends Model {
 
+	protected static $_dates = array();
+
+	protected static $_events = array(
+		'afterSetCustomField'
+	);
+
+
 	protected $_field_facades;
 
 	abstract public function getStructure();
 
 	abstract public function getCustomFieldPrefix();
 
+	/**
+	 * Date fields are terrible, intercept that mess
+	 */
+	public function onAfterSetCustomField($name, $value)
+	{
+		if ($this->hasCustomField($name))
+		{
+			$field = $this->getCustomField($name);
+
+			if ($field->getType() == 'date')
+			{
+				$field->save();
+			}
+		}
+	}
+
 	public function save()
 	{
 		foreach ($this->_field_facades as $name => $field)
 		{
-			if (isset($this->_dirty[$name]))
+			if ($this->isDirty($name))
 			{
 				$field->save();
 			}
@@ -256,20 +279,30 @@ abstract class ContentModel extends Model {
 	/**
 	 *
 	 */
-	public function setProperty($name, $value)
+	public function setProperty($name, $new_value)
 	{
 		if ($this->hasCustomField($name))
 		{
-			$this->getCustomField($name)->setData($value);
+			$this->emit('beforeSetCustomField', $name, $new_value);
+
+			$field = $this->getCustomField($name);
+			$value = $field->getData(); // old value
+
+			$this->backupIfChanging($name, $value, $new_value);
+
+			$field->setData($new_value);
+
+			$this->emit('afterSetCustomField', $name, $new_value);
 
 			if ( ! parent::hasProperty($name))
 			{
-				$this->markAsDirty($name);
 				return $this;
 			}
+
+			$new_value = $field->getData();
 		}
 
-		return parent::setProperty($name, $value);
+		return parent::setProperty($name, $new_value);
 	}
 
 	public function set(array $data = array())

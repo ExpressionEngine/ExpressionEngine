@@ -120,31 +120,13 @@ class ChannelEntry extends ContentModel {
 	protected $recent_comment_date;
 	protected $comment_total;
 
-	public function set__entry_date($date)
+	public function set__entry_date($entry_date)
 	{
-		$field = $this->_field_facades['entry_date'];
-		$field->save();
-		$this->entry_date = $field->getData();
-
 		// Day, Month, and Year Fields
 		// @TODO un-break these windows: inject this dependency
-		$this->setProperty('year', ee()->localize->format_date('%Y', $this->entry_date));
-		$this->setProperty('month', ee()->localize->format_date('%m', $this->entry_date));
-		$this->setProperty('day', ee()->localize->format_date('%d', $this->entry_date));
-	}
-
-	public function set__expiration_date($date)
-	{
-		$field = $this->_field_facades['expiration_date'];
-		$field->save();
-		$this->expiration_date = (int) $field->getData();
-	}
-
-	public function set__comment_expiration_date($date)
-	{
-		$field = $this->_field_facades['comment_expiration_date'];
-		$field->save();
-		$this->comment_expiration_date = (int) $field->getData();
+		$this->setProperty('year', ee()->localize->format_date('%Y', $entry_date));
+		$this->setProperty('month', ee()->localize->format_date('%m', $entry_date));
+		$this->setProperty('day', ee()->localize->format_date('%d', $entry_date));
 	}
 
 	public function onAfterSave()
