@@ -71,9 +71,17 @@ class Validation implements MixinInterface {
 
 		$this->scope->emit('beforeValidate');
 
-		$result = $this->validator->validate(
-			$this->scope->getValidationData()
-		);
+		$data = $this->scope->getValidationData();
+
+		if ($this->scope->isNew())
+		{
+			$result = $this->validator->validate($data);
+		}
+		else
+		{
+			$result = $this->validator->validatePartial($data);
+		}
+
 
 		$this->scope->emit('afterValidate');
 
