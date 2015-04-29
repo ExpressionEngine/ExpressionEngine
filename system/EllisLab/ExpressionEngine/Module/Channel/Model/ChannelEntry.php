@@ -25,9 +25,9 @@ class ChannelEntry extends ContentModel {
 		'versioning_enabled'      => 'boolString',
 		'allow_comments'          => 'boolString',
 		'sticky'                  => 'boolString',
-		'entry_date'              => 'timestamp',
-		'expiration_date'         => 'timestamp',
-		'comment_expiration_date' => 'timestamp',
+		'entry_date'              => 'int',
+		'expiration_date'         => 'int',
+		'comment_expiration_date' => 'int',
 		'edit_date'               => 'timestamp',
 		'recent_comment_date'     => 'timestamp',
 	);
