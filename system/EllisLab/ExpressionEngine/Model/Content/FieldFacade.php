@@ -92,11 +92,16 @@ class FieldFacade {
 		$this->metadata[$field] = $value;
 	}
 
+	public function getType()
+	{
+		return $this->getItem('field_type');
+	}
+
 	public function getTypeName()
 	{
 		ee()->legacy_api->instantiate('channel_fields');
 		$fts = ee()->api_channel_fields->fetch_all_fieldtypes();
-		$type = $this->getItem('field_type');
+		$type = $this->getType();
 		return $fts[$type]['name'];
 	}
 
