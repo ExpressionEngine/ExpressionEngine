@@ -35,7 +35,7 @@ class Captcha {
 	 *
 	 * @return	boolean
 	 */
-	public function should_require_captcha()
+	public function shouldRequireCaptcha()
 	{
 		return bool_config_item('require_captcha') &&
 			( !
@@ -85,52 +85,28 @@ class Captcha {
 		$img_width	= 140;	// Image width
 		$img_height	= 30;	// Image height
 
-		if ($img_path == '' OR $img_url == '')
+		if ($img_path == '' OR
+			$img_url == '' OR
+			! @is_dir($img_path) OR
+			! is_really_writable($img_path) OR
+			! file_exists(APPPATH.'config/captcha.php') OR
+			! extension_loaded('gd'))
 		{
 			return FALSE;
 		}
 
-		if ( ! @is_dir($img_path))
+		if (substr($img_url, -1) != '/')
 		{
-			return FALSE;
-		}
-
-		if ( ! is_really_writable($img_path))
-		{
-			return FALSE;
-		}
-
-		if ( ! file_exists(APPPATH.'config/captcha.php'))
-		{
-			return FALSE;
-		}
-
-		if ( ! extension_loaded('gd'))
-		{
-			return FALSE;
-		}
-
-		if (substr($img_url, -1) != '/') $img_url .= '/';
-
-
-		// Disable DB caching if it's currently set
-
-		$db_reset = FALSE;
-		if (ee()->db->cache_on == TRUE)
-		{
-			ee()->db->cache_off();
-			$db_reset = TRUE;
+			$img_url .= '/';
 		}
 
 		// Remove old images - add a bit of randomness so we aren't doing this every page access
+		$now = microtime(TRUE);
 
-		list($usec, $sec) = explode(" ", microtime());
-		$now = ((float)$usec + (float)$sec);
-
-		if ((mt_rand() % 100) < ee()->session->gc_probability)
+		if ((mt_rand() % 100) < 5)
 		{
-			$old = time() - $expiration;
-			ee()->db->query("DELETE FROM exp_captcha WHERE date < ".$old);
+			ee('Model')->get('Captcha')
+				->filter('date', '<', time() - $expiration)->delete();
 
 			$current_dir = @opendir($img_path);
 
@@ -140,7 +116,7 @@ class Captcha {
 				{
 					$name = str_replace(".jpg", "", $filename);
 
-					if (($name + $expiration) < $now)
+					if (($name + $expiration) < microtime(TRUE))
 					{
 						@unlink($img_path.$filename);
 					}
@@ -158,10 +134,14 @@ class Captcha {
 
 			if (ee()->config->item('captcha_rand') == 'y')
 			{
-				$word .= ee()->functions->random('nozero', 2);
+				$word .= random_string('nozero', 2);
 			}
 
-			ee()->db->query("INSERT INTO exp_captcha (date, ip_address, word) VALUES (UNIX_TIMESTAMP(), '".ee()->input->ip_address()."', '".ee()->db->escape_str($word)."')");
+			$captcha = ee('Model')->make('Captcha');
+			$captcha->date = ee()->localize->now;
+			$captcha->ip_address = ee()->input->ip_address();
+			$captcha->word = $word;
+			$captcha->save();
 		}
 		else
 		{
@@ -244,12 +224,6 @@ class Captcha {
 		$img = "<img src=\"$img_url$img_name\" width=\"$img_width\" height=\"$img_height\" style=\"border:0;\" alt=\" \" />";
 
 		ImageDestroy($im);
-
-		// Re-enable DB caching
-		if ($db_reset == TRUE)
-		{
-			ee()->db->cache_on();
-		}
 
 		return $img;
 	}

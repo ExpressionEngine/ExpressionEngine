@@ -37,7 +37,7 @@ class Email {
 	 */
 	public function __construct()
 	{
-		$this->use_captchas = ee('Captcha')->should_require_captcha() ? 'y' : 'n';
+		$this->use_captchas = ee('Captcha')->shouldRequireCaptcha() ? 'y' : 'n';
 	}
 
 	// --------------------------------------------------------------------

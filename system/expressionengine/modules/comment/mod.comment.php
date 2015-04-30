@@ -1383,7 +1383,7 @@ class Comment {
 
 		if ($return_form == FALSE)
 		{
-			if ( ! ee('Captcha')->should_require_captcha())
+			if ( ! ee('Captcha')->shouldRequireCaptcha())
 			{
 				ee()->TMPL->tagdata = str_replace(LD.'captcha'.RD, '', ee()->TMPL->tagdata);
 			}
@@ -1492,7 +1492,7 @@ class Comment {
 		$cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? FALSE : TRUE;
 		$cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? FALSE : TRUE;
 
-		if ( ! ee('Captcha')->should_require_captcha())
+		if ( ! ee('Captcha')->shouldRequireCaptcha())
 		{
 			$cond['captcha'] = FALSE;
 		}
@@ -1654,7 +1654,7 @@ class Comment {
 			'entry_id' 	=> $query->row('entry_id')
 		);
 
-		if (ee('Captcha')->should_require_captcha())
+		if (ee('Captcha')->shouldRequireCaptcha())
 		{
 			if (preg_match("/({captcha})/", $tagdata))
 			{
@@ -2416,7 +2416,7 @@ class Comment {
 		/**  Do we require CAPTCHA?
 		/** ----------------------------------------*/
 
-		if (ee('Captcha')->should_require_captcha())
+		if (ee('Captcha')->shouldRequireCaptcha())
 		{
 			if ( ! isset($_POST['captcha']) OR $_POST['captcha'] == '')
 			{

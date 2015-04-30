@@ -695,7 +695,7 @@ class Channel_form_lib
 			'captcha' => (
 				$this->channel('channel_id') &&
 				$this->logged_out_member_id &&
-				ee('Captcha')->should_require_captcha()
+				ee('Captcha')->shouldRequireCaptcha()
 			)
 		);
 
