@@ -105,6 +105,11 @@ class Text_ft extends EE_Fieldtype {
 			'field_content_type' => $type
 		);
 
+		if (isset($this->settings['field_placeholder']))
+		{
+			$field['placeholder'] = $this->settings['field_placeholder'];
+		}
+
 		// maxlength attribute should only appear if its value is > 0
 		if ($this->settings['field_maxl'])
 		{
