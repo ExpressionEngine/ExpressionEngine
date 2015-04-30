@@ -265,7 +265,8 @@ abstract class ContentModel extends Model {
 			$this->_field_facades
 		);
 
-		$layout = $layout ?: new DefaultLayout($this->channel_id, $this->entry_id);
+		$layout = $layout ?: new DefaultLayout();
+
 		return $layout->transform($fields);
 	}
 
