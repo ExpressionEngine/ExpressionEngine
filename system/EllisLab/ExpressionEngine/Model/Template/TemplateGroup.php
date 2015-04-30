@@ -34,6 +34,10 @@ class TemplateGroup extends Model {
 	protected static $_primary_key = 'group_id';
 	protected static $_table_name = 'template_groups';
 
+	protected static $_typed_columns = array(
+		'is_site_default' => 'boolString'
+	);
+
 	protected static $_relationships = array(
 		'MemberGroups' => array(
 			'type'     => 'HasAndBelongsToMany',
@@ -72,44 +76,39 @@ class TemplateGroup extends Model {
 	protected $is_site_default;
 
 	/**
-	 * A setter for the is_site_default property
-	 *
-	 * @param str|bool $new_value Accept TRUE or 'y' for 'yes' or FALSE or 'n'
-	 *   for 'no'
-	 * @throws InvalidArgumentException if the provided argument is not a
-	 *   boolean or is not 'y' or 'n'.
-	 * @return void
+	 * For a new group, make sure the folder exists if it needs to
 	 */
-	protected function set__is_site_default($new_value)
+	public function onAfterInsert()
 	{
-		if ($new_value === TRUE || $new_value == 'y')
-		{
-			$this->is_site_default = 'y';
-		}
-
-		elseif ($new_value === FALSE || $new_value == 'n')
-		{
-			$this->is_site_default = 'n';
-		}
-
-		else
-		{
-			throw new InvalidArgumentException('is_site_default must be TRUE or "y", or FALSE or "n"');
-		}
+		$this->ensureFolderExists();
 	}
 
 	/**
-	 * A getter for the is_site_default property
+	 * After updating we need to check if the group name changed.
+	 * If it did we rename the folder.
 	 *
-	 * @return bool TRUE if this is the default; FALSE if not
+	 * @param Array The old values that have been changed
 	 */
-	protected function get__is_site_default()
+	public function onAfterUpdate($previous)
 	{
-		return ($this->is_site_default == 'y');
+		if (isset($previous['group_name']))
+		{
+			$this->set($previous);
+			$old_path = $this->getFolderPath();
+			$this->restore();
+
+			$new_path = $this->getFolderPath();
+
+			$fs = new Filesystem();
+			$fs->rename($old_path, $new_path);
+		}
+
+		$this->ensureFolderExists();
 	}
 
 	/**
-	 *
+	 * Make sure the group folder exists. Needs to be public
+	 * so that the template post-save can have access to it.
 	 */
 	public function ensureFolderExists()
 	{
@@ -123,7 +122,7 @@ class TemplateGroup extends Model {
 	}
 
 	/**
-	 *
+	 * Get the full folder path
 	 */
 	public function getFolderPath()
 	{
@@ -143,31 +142,8 @@ class TemplateGroup extends Model {
 		return $basepath.'/'.$site.'/'.$this->group_name . '.group';
 	}
 
-	public function onAfterInsert()
-	{
-		$this->ensureFolderExists();
-	}
-
-	public function onAfterUpdate($previous)
-	{
-		if (isset($previous['group_name']))
-		{
-			$this->set($previous);
-			$old_path = $this->getFolderPath();
-			$this->restore();
-
-			$new_path = $this->getFolderPath();
-
-			$fs = new Filesystem();
-
-			$fs->rename($old_path, $new_path);
-		}
-
-		$this->ensureFolderExists();
-	}
-
 	/**
-	 *
+	 * If we group is deleted we need to remove the folder
 	 */
 	public function onAfterDelete()
 	{
