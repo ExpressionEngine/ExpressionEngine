@@ -22,8 +22,11 @@ abstract class ContentModel extends Model {
 
 	protected $_field_facades;
 
+	/**
+	 * Define a way to get the parent structure. For example,
+	 * in a channel entry, this would return the parent channel.
+	 */
 	abstract public function getStructure();
-
 
 	/**
 	 * Get the prefix for custom fields. Typically custom fields are
@@ -36,9 +39,50 @@ abstract class ContentModel extends Model {
 		return 'field_id_';
 	}
 
+	/**
+	 * Optionally return an array of default fields. If you override
+	 * this you may also want to override `populateDefaultFields()`.
+	 *
+	 * @return Array of field definitions
+	 */
+	protected function getDefaultFields()
+	{
+		return array();
+	}
 
 	/**
-	 * Date fields are terrible, intercept that mess
+	 * Do any work needed to setup the default fields with data
+	 */
+	protected function populateDefaultFields()
+	{
+		return;
+	}
+
+	/**
+	 * Check if a custom field of $name exists
+	 */
+	public function hasCustomField($name)
+	{
+		if ( ! isset($this->_field_facades))
+		{
+			return FALSE;
+		}
+
+		return array_key_exists($name, $this->_field_facades);
+	}
+
+	/**
+	 * Get a custom field facade
+	 */
+	public function getCustomField($name)
+	{
+		return $this->_field_facades[$name];
+	}
+
+	/**
+	 * TODO This is messy. Some fields don't return their data on save()
+	 * and some use it to prep the data. Date is one of the prep ones,
+	 * which we'll do here, but this definitely will need work. /TODO
 	 */
 	public function onAfterSetCustomField($name, $value)
 	{
@@ -53,6 +97,22 @@ abstract class ContentModel extends Model {
 		}
 	}
 
+	/**
+	 * Make sure that calls to fill() also apply to custom fields
+	 */
+	public function fill(array $data = array())
+	{
+		parent::fill($data);
+
+		$this->fillCustomFields($data);
+
+		return $this;
+	}
+
+	/**
+	 * Small change to custom fields to make sure the save() method
+	 * gets fired.
+	 */
 	public function save()
 	{
 		foreach ($this->_field_facades as $name => $field)
@@ -67,123 +127,9 @@ abstract class ContentModel extends Model {
 	}
 
 	/**
-	 * Optional
+	 * Slight tweak to validate to make the custom fields
+	 * validate correctly.
 	 */
-	protected function getDefaultFields()
-	{
-		return array();
-	}
-
-	/**
-	 *
-	 */
-	protected function populateDefaultFields()
-	{
-		return;
-	}
-
-	/**
-	 * Get a list of fields
-	 *
-	 * @return array field names
-	 */
-	public function getFields()
-	{
-		$fields = parent::getFields();
-
-		foreach ($this->_field_facades as $field_facade)
-		{
-			$fields[] = $field_facade->getName();
-		}
-
-		return $fields;
-	}
-
-	/**
-	 *
-	 */
-	public function getDisplay(LayoutInterface $layout = NULL)
-	{
-		$this->usesCustomFields();
-
-		$fields = array_map(
-			function($field) { return new FieldDisplay($field); },
-			$this->_field_facades
-		);
-
-		$layout = $layout ?: new DefaultLayout($this->channel_id, $this->entry_id);
-		return $layout->transform($fields);
-	}
-
-	/**
-	 * Ensures that custom fields are setup and their data is in sync.
-	 */
-	protected function usesCustomFields()
-	{
-		if ( ! isset($this->_field_facades))
-		{
-			$this->initializeCustomFields();
-			$this->populateDefaultFields();
-		}
-	}
-
-	/**
-	 *
-	 */
-	protected function fillCustomFields(array $data = array())
-	{
-		$this->usesCustomFields();
-
-		foreach ($data as $name => $value)
-		{
-			if ($this->hasCustomField($name))
-			{
-				$this->getCustomField($name)->setData($value);
-			}
-		}
-	}
-
-	/**
-	 * Magic meat
-	 */
-	protected function initializeCustomFields()
-	{
-		$this->_field_facades = array();
-
-		$default_fields = $this->getDefaultFields();
-
-		foreach ($default_fields as $id => $field)
-		{
-			$this->addFacade($id, $field);
-		}
-
-		$native_fields = $this->getStructure()->getCustomFields();
-		$native_prefix = $this->getCustomFieldPrefix();
-
-		foreach ($native_fields as $field)
-		{
-			$this->addFacade(
-				$field->getId(),
-				$field->toArray(),
-				$native_prefix
-			);
-		}
-	}
-
-	/**
-	 *
-	 */
-	protected function addFacade($id, $info, $name_prefix = '')
-	{
-		$name = $name_prefix.$id;
-
-		$facade = new FieldFacade($id, $info);
-		$facade->setName($name);
-		$facade->setContentId($this->getId());
-
-		$this->_field_facades[$name] = $facade;
-	}
-
 	public function validate()
 	{
 		$validator = $this->getValidator();
@@ -197,6 +143,71 @@ abstract class ContentModel extends Model {
 		}
 
 		return parent::validate();
+	}
+
+
+	/**
+	 * Make sure set() calls have access to custom fields
+	 */
+	public function set(array $data = array())
+	{
+		$this->usesCustomFields();
+		return parent::set($data);
+	}
+
+	/**
+	 * Custom fields coutn as a valid property
+	 */
+	public function hasProperty($name)
+	{
+		if ( ! parent::hasProperty($name))
+		{
+			return $this->hasCustomField($name);
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Getting a property needs to check custom fields
+	 */
+	public function getProperty($name)
+	{
+		if ( ! parent::hasProperty($name) && $this->hasCustomField($name))
+		{
+			return $this->getCustomField($name)->getData();
+		}
+
+		return parent::getProperty($name);
+	}
+
+	/**
+	 * Setting a property needs to apply to custom fields
+	 */
+	public function setProperty($name, $new_value)
+	{
+		if ($this->hasCustomField($name))
+		{
+			$this->emit('beforeSetCustomField', $name, $new_value);
+
+			$field = $this->getCustomField($name);
+			$value = $field->getData(); // old value
+
+			$this->backupIfChanging($name, $value, $new_value);
+
+			$field->setData($new_value);
+
+			$this->emit('afterSetCustomField', $name, $new_value);
+
+			if ( ! parent::hasProperty($name))
+			{
+				return $this;
+			}
+
+			$new_value = $field->getData();
+		}
+
+		return parent::setProperty($name, $new_value);
 	}
 
 	/**
@@ -226,97 +237,105 @@ abstract class ContentModel extends Model {
 	}
 
 	/**
-	 * Field accessors
+	 * Get a list of fields
+	 *
+	 * @return array field names
 	 */
-	public function hasCustomField($name)
+	public function getFields()
+	{
+		$fields = parent::getFields();
+
+		foreach ($this->_field_facades as $field_facade)
+		{
+			$fields[] = $field_facade->getName();
+		}
+
+		return $fields;
+	}
+
+	/**
+	 * Get the layout for this content.
+	 */
+	public function getDisplay(LayoutInterface $layout = NULL)
+	{
+		$this->usesCustomFields();
+
+		$fields = array_map(
+			function($field) { return new FieldDisplay($field); },
+			$this->_field_facades
+		);
+
+		$layout = $layout ?: new DefaultLayout($this->channel_id, $this->entry_id);
+		return $layout->transform($fields);
+	}
+
+	/**
+	 * Ensures that custom fields are setup and their data is in sync.
+	 */
+	protected function usesCustomFields()
 	{
 		if ( ! isset($this->_field_facades))
 		{
-			return FALSE;
+			$this->initializeCustomFields();
+			$this->populateDefaultFields();
 		}
-
-		return array_key_exists($name, $this->_field_facades);
 	}
 
 	/**
-	 *
+	 * Populate the custom fields on fill()
 	 */
-	public function getCustomField($name)
-	{
-		return $this->_field_facades[$name];
-	}
-
-	/**
-	 *
-	 */
-	public function fill(array $data = array())
-	{
-		parent::fill($data);
-
-		$this->fillCustomFields($data);
-
-		return $this;
-	}
-
-	/**
-	 * Entity tweaks to support setting and getting correctly
-	 */
-	public function hasProperty($name)
-	{
-		if ( ! parent::hasProperty($name))
-		{
-			return $this->hasCustomField($name);
-		}
-
-		return TRUE;
-	}
-
-	/**
-	 *
-	 */
-	public function getProperty($name)
-	{
-		if ( ! parent::hasProperty($name) && $this->hasCustomField($name))
-		{
-			return $this->getCustomField($name)->getData();
-		}
-
-		return parent::getProperty($name);
-	}
-
-	/**
-	 *
-	 */
-	public function setProperty($name, $new_value)
-	{
-		if ($this->hasCustomField($name))
-		{
-			$this->emit('beforeSetCustomField', $name, $new_value);
-
-			$field = $this->getCustomField($name);
-			$value = $field->getData(); // old value
-
-			$this->backupIfChanging($name, $value, $new_value);
-
-			$field->setData($new_value);
-
-			$this->emit('afterSetCustomField', $name, $new_value);
-
-			if ( ! parent::hasProperty($name))
-			{
-				return $this;
-			}
-
-			$new_value = $field->getData();
-		}
-
-		return parent::setProperty($name, $new_value);
-	}
-
-	public function set(array $data = array())
+	protected function fillCustomFields(array $data = array())
 	{
 		$this->usesCustomFields();
-		return parent::set($data);
+
+		foreach ($data as $name => $value)
+		{
+			if ($this->hasCustomField($name))
+			{
+				$this->getCustomField($name)->setData($value);
+			}
+		}
+	}
+
+	/**
+	 * Get the party started, grab the structure and setup everything.
+	 */
+	protected function initializeCustomFields()
+	{
+		$this->_field_facades = array();
+
+		$default_fields = $this->getDefaultFields();
+
+		foreach ($default_fields as $id => $field)
+		{
+			$this->addFacade($id, $field);
+		}
+
+		$native_fields = $this->getStructure()->getCustomFields();
+		$native_prefix = $this->getCustomFieldPrefix();
+
+		foreach ($native_fields as $field)
+		{
+			$this->addFacade(
+				$field->getId(),
+				$field->toArray(),
+				$native_prefix
+			);
+		}
+	}
+
+	/**
+	 * Turn a field into a facade for more consistent access.
+	 */
+	protected function addFacade($id, $info, $name_prefix = '')
+	{
+		$name = $name_prefix.$id;
+
+		$facade = new FieldFacade($id, $info);
+		$facade->setName($name);
+		$facade->setContentId($this->getId());
+
+		$this->_field_facades[$name] = $facade;
 	}
 
 }
