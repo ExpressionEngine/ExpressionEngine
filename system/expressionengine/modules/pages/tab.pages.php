@@ -66,8 +66,6 @@ class Pages_tab {
 
 		if ($pages_uri == '')
 		{
-			ee()->javascript->set_global('publish.pages.pagesUri', lang('example_uri'));
-
 			$qry = ee()->db->select('configuration_value')
 								->where('configuration_name', 'template_channel_'.$channel_id)
 								->where('site_id', (int) $site_id)
@@ -77,10 +75,6 @@ class Pages_tab {
 			{
 				$pages_template_id = (int) $qry->row('configuration_value');
 			}
-		}
-		else
-		{
-			ee()->javascript->set_global('publish.pages.pageUri', $pages_uri);
 		}
 
 		ee()->load->model('template_model');
@@ -106,6 +100,7 @@ class Pages_tab {
 				'field_text_direction'	=> 'ltr',
 				'field_maxl'			=> 100,
 				'field_instructions'	=> '',
+				'field_placeholder'     => lang('example_uri')
 			),
 			'pages_template_id'		=> array(
 				'field_id'				=> 'pages_template_id',
