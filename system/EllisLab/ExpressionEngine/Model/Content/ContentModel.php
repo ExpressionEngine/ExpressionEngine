@@ -24,7 +24,18 @@ abstract class ContentModel extends Model {
 
 	abstract public function getStructure();
 
-	abstract public function getCustomFieldPrefix();
+
+	/**
+	 * Get the prefix for custom fields. Typically custom fields are
+	 * stored as 'field_id_#' where # is the field id.
+	 *
+	 * @return String Custom field column prefix
+	 */
+	public function getCustomFieldPrefix()
+	{
+		return 'field_id_';
+	}
+
 
 	/**
 	 * Date fields are terrible, intercept that mess

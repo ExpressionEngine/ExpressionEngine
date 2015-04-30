@@ -150,13 +150,6 @@ class ChannelEntry extends ContentModel {
 		return $this->getChannel();
 	}
 
-	/**
-	 *
-	 */
-	public function getCustomFieldPrefix()
-	{
-		return 'field_id_';
-	}
 
 	protected function initializeCustomFields()
 	{
