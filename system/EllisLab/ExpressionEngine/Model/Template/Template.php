@@ -116,7 +116,9 @@ class Template extends Model {
 	}
 
 	/**
+	 * Get the full filesystem path to the template file
 	 *
+	 * @return String Filesystem path to the template file
 	 */
 	public function getFilePath()
 	{
@@ -142,7 +144,10 @@ class Template extends Model {
 	}
 
 	/**
+	 * Get the file extension for a given template type
+	 *
 	 * @param String $template_type Used by onAfterUpdate to divine the old path
+	 * @return String File extension (including the .)
 	 */
 	public function getFileExtension($template_type = NULL)
 	{
@@ -152,6 +157,13 @@ class Template extends Model {
 		return ee()->api_template_structure->file_extensions($type);
 	}
 
+	/**
+	 * For all saves, write the template file with the new contents.
+	 *
+	 * Technically we could make this afterInsert and do more checks
+	 * in afterUpdate to make sure things actually changed, but this
+	 * is much simpler.
+	 */
 	public function onAfterSave()
 	{
 		$fs = new Filesystem();
@@ -164,7 +176,12 @@ class Template extends Model {
 	}
 
 	/**
+	 * If the template is updated, we need to make sure things like
+	 * renames or changes in template group are reflected in the
+	 * filesystem. We do this by simply deleting the old file, since
+	 * our afterSave event will always write a new one.
 	 *
+	 * @param Array Old values that were changed by this save
 	 */
 	public function onAfterUpdate($previous)
 	{
@@ -179,7 +196,7 @@ class Template extends Model {
 	}
 
 	/**
-	 *
+	 * If the template is deleted, remove the template file
 	 */
 	public function onAfterDelete()
 	{
@@ -192,6 +209,10 @@ class Template extends Model {
 		}
 	}
 
+	/**
+	 * Get the old template path, so that we can delete it if
+	 * the path changed.
+	 */
 	protected function getPreviousPath($prev)
 	{
 		$values = $this->getValues();
@@ -199,6 +220,7 @@ class Template extends Model {
 
 		if ($parts['group_id'] != $this->group_id)
 		{
+			// TODO there must be a better way
 			$group = $this->getFrontend()->get('TemplateGroup', $parts['group_id'])->first();
 		}
 		else
