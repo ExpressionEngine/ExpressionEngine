@@ -1223,16 +1223,24 @@ class Cat extends AbstractChannelController {
 	 */
 	private function saveCategoryField($group_id, $field_id)
 	{
-		$cat_field = ee('Model')->make('CategoryField', $_POST);
-		$cat_field->field_id = $field_id;
+		if ($field_id)
+		{
+			$cat_field = ee('Model')->get('CategoryField', $field_id)
+				->first()
+				->set($_POST);
+		}
+		else
+		{
+			$cat_field = ee('Model')->make('CategoryField', $_POST);
+			$cat_field->site_id = ee()->config->item('site_id');
+			$cat_field->field_list_items = '';
+		}
+
 		$cat_field->group_id = $group_id;
-		$cat_field->site_id = ee()->config->item('site_id');
-		$cat_field->field_list_items = '';
 
 		// New fields get put on the end
 		$cat_field->field_order = ee('Model')->get('CategoryField')
 			->filter('group_id', $group_id)
-			->all()
 			->count() + 1;
 
 		$cat_field->save();
