@@ -6,6 +6,8 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 
 abstract class FieldModel extends Model {
 
+	protected $field_type;
+
 	protected static $_events = array(
 		'afterInsert',
 		'afterUpdate',
@@ -28,6 +30,7 @@ abstract class FieldModel extends Model {
 		$data['ee_action'] = 'add';
 
 		$columns = $ft->settings_modify_column($data);
+		$columns = $this->ensureDefaultColumns($columns);
 
 		$this->createColumns($columns);
 	}
@@ -43,32 +46,87 @@ abstract class FieldModel extends Model {
 		$data['ee_action'] = 'delete';
 
 		$columns = $ft->settings_modify_column($data);
+		$columns = $this->ensureDefaultColumns($columns);
 
 		$this->dropColumns($columns);
 	}
 
 	/**
-	 * After updating, sync the columns on the data table
+	 * If the update changes the field_type, we need to sync the columns
+	 * on the data table
 	 */
-	public function onAfterUpdate()
+	public function onAfterUpdate($changed)
 	{
-		// diff columns
-		// add any that don't exist
-		// remove any that shouldn't exist
-		// alter any that changed
+		if (isset($changed['field_type']))
+		{
+			$old_ft = $this->getFieldtypeInstance($changed['field_type'], $changed);
+			$old_columns = $this->callSettingsModify($old_ft, 'delete', $changed);
+
+			$new_ft = $this->getFieldtypeInstance();
+			$new_columns = $this->callSettingsModify($new_ft, 'get_info');
+
+			$this->diffColumns($old_columns, $new_columns);
+		}
+	}
+
+	protected function callSettingsModify($ft, $action, $changed = array())
+	{
+		$data = $this->getValues();
+		$data = array_merge($data, $changed);
+
+		if ( ! isset($data['field_settings']))
+		{
+			$data['field_settings'] = base64_encode(serialize(array()));
+		}
+
+		$data['ee_action'] = $action;
+
+		return $ft->settings_modify_column($data);
 	}
 
 	/**
 	 * Get the instance of the current fieldtype
 	 */
-	protected function getFieldtypeInstance()
+	protected function getFieldtypeInstance($field_type = NULL, $changed = array())
 	{
-		ee()->legacy_api->instantiate('channel_fields');
+		$field_type = $field_type ?: $this->field_type;
+		$values = array_merge($this->getValues(), $changed);
 
-		$api = ee()->api_channel_fields;
-		$api->fetch_all_fieldtypes();
+		$facade = new FieldFacade($this->getId(), $values);
+		return $facade->getNativeField();
+	}
 
-		return $api->setup_handler($this->field_type, TRUE);
+	/**
+	 *
+	 */
+	private function diffColumns($old, $new)
+	{
+		$old = $this->ensureDefaultColumns($old);
+		$new = $this->ensureDefaultColumns($new);
+
+		$drop = array();
+		$change = array();
+
+		foreach ($old as $name => $prefs)
+		{
+			if ( ! isset($new[$name]))
+			{
+				$drop[$name] = $old[$name];
+			}
+			elseif ($prefs != $new[$name])
+			{
+				$change[$name] = $new[$name];
+				unset($new[$name]);
+			}
+			else
+			{
+				unset($new[$name]);
+			}
+		}
+
+		$this->dropColumns($drop);
+		$this->modifyColumns($change);
+		$this->createColumns($new);
 	}
 
 	/**
@@ -78,15 +136,41 @@ abstract class FieldModel extends Model {
 	 */
 	private function createColumns($columns)
 	{
-		$columns = $this->ensureDefaultColumns($columns);
+		if (empty($columns))
+		{
+			return;
+		}
 
 		$data_table = $this->getDataTable();
-		ee()->load->dbforge();
 
-		foreach ($columns as $name => $prefs)
+		ee()->load->dbforge();
+		ee()->dbforge->add_column($data_table, $columns);
+	}
+
+	/**
+	 * Modify columns that were changed
+	 *
+	 * @param Array $columns List of [column name => column definition]
+	 */
+	private function modifyColumns($columns)
+	{
+		if (empty($columns))
 		{
-			ee()->dbforge->add_column($data_table, array($name => $prefs));
+			return;
 		}
+
+		$data_table = $this->getDataTable();
+
+		foreach ($columns as $name => &$column)
+		{
+			if ( ! isset($column['name']))
+			{
+				$column['name'] = $name;
+			}
+		}
+
+		ee()->load->dbforge();
+		ee()->dbforge->modify_column($data_table, $columns);
 	}
 
 	/**
@@ -97,17 +181,18 @@ abstract class FieldModel extends Model {
 	 */
 	private function dropColumns($columns)
 	{
+		if (empty($columns))
+		{
+			return;
+		}
+
 		$columns = $this->ensureDefaultColumns($columns);
 		$columns = array_keys($columns);
 
 		$data_table = $this->getDataTable();
 
 		ee()->load->dbforge();
-
-		foreach ($columns as $column)
-		{
-			ee()->dbforge->drop_column($data_table, $column);
-		}
+		ee()->dbforge->drop_column($columns, $column);
 	}
 
 	/**
