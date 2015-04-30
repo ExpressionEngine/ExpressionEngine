@@ -281,7 +281,9 @@ abstract class Entity extends MixableImpl {
 	}
 
 	/**
-	 * Restore original value(s).
+	 * Restore all or one original value(s).
+	 *
+	 * @param String $name Name of property to restore [optional]
 	 */
 	public function restore($name = NULL)
 	{
