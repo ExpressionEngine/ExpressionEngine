@@ -504,13 +504,13 @@ abstract class Entity extends MixableImpl {
 	 */
 	protected function backupIfChanging($name, $old_value, $new_value)
 	{
-		if ($new_value != $old_value)
+		if ($new_value !== $old_value)
 		{
 			if ( ! $this->hasBackup($name))
 			{
 				$this->setBackup($name, $old_value);
 			}
-			elseif ($new_value == $this->getBackup($name))
+			elseif ($new_value === $this->getBackup($name))
 			{
 				$this->markAsClean($name);
 			}
