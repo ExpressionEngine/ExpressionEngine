@@ -2,7 +2,6 @@
 
 namespace EllisLab\ExpressionEngine\Service\Model;
 
-use BadMethodCallException;
 use Closure;
 use OverflowException;
 
