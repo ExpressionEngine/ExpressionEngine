@@ -180,7 +180,14 @@ class FieldFacade {
 		$field_data = $this->data;
 		$field_name = $this->getName();
 
+		// not all custom field tables will specify all of these things
+		$defaults = array(
+			'field_instructions' => '',
+			'field_text_direction' => 'rtl'
+		);
+
 		$info = $this->metadata;
+		$info = array_merge($defaults, $info);
 
 		$settings = array(
 			'field_instructions'	=> trim($info['field_instructions']),
