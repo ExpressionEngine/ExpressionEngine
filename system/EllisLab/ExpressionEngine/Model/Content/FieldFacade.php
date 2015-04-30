@@ -156,6 +156,14 @@ class FieldFacade {
 	}
 
 
+	// TODO THIS WILL MOST DEFINITELY GO AWAY! BAD DEVELOPER!
+	public function getNativeField()
+	{
+		$data = $this->initField();
+		return ee()->api_channel_fields->setup_handler($this->getType(), TRUE);
+	}
+
+
 	public function initField()
 	{
 		$data = $this->setupField();
@@ -203,6 +211,10 @@ class FieldFacade {
 		if (isset($info['field_settings']) && strlen($info['field_settings']))
 		{
 			$ft_settings = unserialize(base64_decode($info['field_settings']));
+		}
+		else
+		{
+			$info['field_settings'] = array();
 		}
 
 		$settings = array_merge($info, $settings, $ft_settings);
