@@ -79,8 +79,6 @@ class Textarea_ft extends EE_Fieldtype {
 
 			$format_options = array(
 				'field_show_smileys',
-				'field_show_glossary',
-				'field_show_writemode',
 				'field_show_file_selector',
 				'field_show_fmt',
 			);
@@ -217,8 +215,6 @@ class Textarea_ft extends EE_Fieldtype {
 		$this->text_direction_row($data, $prefix);
 		$this->field_show_formatting_btns_row($data, $prefix);
 		$this->field_show_smileys_row($data, $prefix);
-		$this->field_show_glossary_row($data, $prefix);
-		$this->field_show_writemode_row($data, $prefix);
 		$this->field_show_file_selector_row($data, $prefix);
 	}
 

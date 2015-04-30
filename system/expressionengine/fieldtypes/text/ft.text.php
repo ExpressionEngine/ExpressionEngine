@@ -182,7 +182,6 @@ class Text_ft extends EE_Fieldtype {
 		);
 
 		$this->field_show_smileys_row($data, $prefix);
-		$this->field_show_glossary_row($data, $prefix);
 		$this->field_show_file_selector_row($data, $prefix);
 
 		ee()->javascript->output('
