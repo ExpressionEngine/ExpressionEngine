@@ -207,7 +207,7 @@
 
 .force-scroll::-webkit-scrollbar-track {
 	background-color: #fff;
-	// See comment on .force-scroll ul ... border-left does *not* work here either
+	/* See comment on .force-scroll ul ... border-left does *not* work here either */
 	box-shadow: 1px 0 1px #B6C0C2;
 }
 
