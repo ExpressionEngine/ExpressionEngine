@@ -42,7 +42,7 @@ class DataStore {
 	 * @param $db \CI_DB
 	 * @param $aliases Array of model aliases
 	 */
-	public function __construct($db, $aliases, $default_prefix)
+	public function __construct(Database $db, $aliases, $default_prefix)
 	{
 		$this->db = $db;
 		$this->aliases = $aliases;
@@ -112,7 +112,7 @@ class DataStore {
 	 */
 	public function rawQuery()
 	{
-		return $this->db;
+		return $this->db->newQuery();
 	}
 
 	/**

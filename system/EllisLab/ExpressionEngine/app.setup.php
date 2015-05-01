@@ -91,7 +91,7 @@ return array(
 			$app = $ee->make('App');
 
 			return new Model\DataStore(
-				ee()->db,
+				$ee->make('Database'),
 				$app->getModels(),
 				$ee->getPrefix()
 			);
