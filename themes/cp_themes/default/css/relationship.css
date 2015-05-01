@@ -15,7 +15,7 @@
 	background: #DDE2E5;
 	border: 1px solid #B6C0C2;
 	height: 240px;
-	overflow: auto;
+	overflow: scroll;
 }
 
 .multiselect-active {
