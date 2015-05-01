@@ -102,7 +102,7 @@ class Expressionengine_info_acc {
 		end($details);
 		$latest_version = current($details);
 
-		if ($latest_version[0] > APP_VER)
+		if (version_compare($latest_version[0], APP_VER, '>'))
 		{
 			$instruct_url = ee()->cp->masked_url(ee()->config->item('doc_url').'installation/update.html');
 

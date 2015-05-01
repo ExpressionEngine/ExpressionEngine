@@ -112,13 +112,12 @@ class Member_images extends Member {
 		}
 
 		// Do we have what we need in $_POST?
-		if (empty(ee()->input->post('body'))
+		$body = ee()->db->escape_str(ee()->input->post('body', TRUE));
+		if (empty($body)
 			&& (empty($_FILES) && ee()->config->item('sig_allow_img_upload') == 'y'))
 		{
 			return ee()->functions->redirect($this->_member_path('edit_signature'));
 		}
-
-		$body = ee()->db->escape_str(ee()->input->post('body', TRUE));
 
 		$maxlength = (ee()->config->item('sig_maxlength') == 0)
 			? 10000

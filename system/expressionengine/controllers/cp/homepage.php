@@ -293,7 +293,7 @@ class Homepage extends CP_Controller {
 		// Do we have a newer version out?
 		foreach ($version_file as $app_data)
 		{
-			if ($app_data[0] > APP_VER && $app_data[2] == 'high')
+			if (version_compare($app_data[0], APP_VER, '>') && $app_data[2] == 'high')
 			{
 				$new_release = TRUE;
 				$high_priority = TRUE;
