@@ -49,7 +49,8 @@ class Updater {
 				'_update_templates_save_as_files',
 				'_update_layout_publish_table',
 				'_update_entry_edit_date_format',
-				'_rename_default_status_groups'
+				'_rename_default_status_groups',
+				'_update_members_table',
 			)
 		);
 
@@ -516,6 +517,40 @@ class Updater {
 		ee()->db->where('group_name', 'Statuses')
 			->set('group_name', 'Default')
 			->update('status_groups');
+	}
+
+	/**
+	 * Adds columns to the members table as needed
+	 */
+	public function _update_members_table()
+	{
+		if ( ! ee()->db->field_exists('rte_enabled', 'members'))
+		{
+			ee()->smartforge->add_column(
+				'members',
+				array(
+					'rte_enabled' => array(
+						'type'    => 'CHAR(1)',
+						'null'    => FALSE,
+						'default' => 'y'
+					)
+				)
+			);
+		}
+
+		if ( ! ee()->db->field_exists('rte_toolset_id', 'members'))
+		{
+			ee()->smartforge->add_column(
+				'members',
+				array(
+					'rte_toolset_id' => array(
+						'type'       => 'INT(10)',
+						'null'       => FALSE,
+						'default'    => '0'
+					)
+				)
+			);
+		}
 	}
 }
 /* END CLASS */
