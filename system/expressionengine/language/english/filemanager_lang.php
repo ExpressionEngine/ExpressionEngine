@@ -234,12 +234,6 @@ $lang = array(
 'upload_remove_modal_directories' =>
 'directories',
 
-'upload_directories_removed' =>
-'Upload directories removed',
-
-'upload_directories_removed_desc' =>
-'%d upload directories were removed.',
-
 'no_upload_directories' =>
 'No Upload Directories',
 
@@ -432,6 +426,72 @@ $lang = array(
 
 'directory_sync_warning' =>
 'Some files could not be synchronized',
+
+'watermark' =>
+'Watermark',
+
+'watermarks' =>
+'Watermarks',
+
+'no_watermarks' =>
+'No Watermarks',
+
+'create_watermark' =>
+'Create Watermark',
+
+'edit_watermark' =>
+'Edit Watermark',
+
+'watermarks_removed' =>
+'Watermarks removed',
+
+'watermarks_removed_desc' =>
+'%d watermarks were removed.',
+
+'watermark_name_desc' =>
+'Full descriptive name of this watermark.',
+
+'watermark_type_desc' =>
+'Choose a watermark type.',
+
+'text' =>
+'Text',
+
+'image' =>
+'Image',
+
+'watermark_alignment' =>
+'Alignment',
+
+'watermark_alignment_desc' =>
+'Determines where this watermark will appear on the image.',
+
+'top' =>
+'Top',
+
+'middle' =>
+'Middle',
+
+'bottom' =>
+'Bottom',
+
+'watermark_padding' =>
+'Padding',
+
+'watermark_padding_desc' =>
+'Add padding around this watermark.',
+
+'watermark_offset' =>
+'Offset',
+
+'watermark_offset_desc' =>
+'Distance in pixels from the edge of the image.',
+
+'horizontal' =>
+'horizontal',
+
+'vertical' =>
+'vertical',
 
 // 2.x
 
@@ -680,9 +740,6 @@ $lang = array(
 'include'					=> 'Include?',
 
 ////Watermark
-
-'no_watermarks' =>
-'No watermarks exist',
 
 'add_watermark' =>
 'None',

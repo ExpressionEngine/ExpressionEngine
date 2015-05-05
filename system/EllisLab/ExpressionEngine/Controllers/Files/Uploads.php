@@ -7,6 +7,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 use CP_Controller;
 
 use EllisLab\ExpressionEngine\Library\CP;
+use EllisLab\ExpressionEngine\Controllers\Files\AbstractFiles as AbstractFilesController;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -31,7 +32,7 @@ use EllisLab\ExpressionEngine\Library\CP;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Uploads extends Files {
+class Uploads extends AbstractFilesController {
 
 	// We'll keep Grid validation errors in here
 	private $image_sizes_errors = array();
