@@ -183,6 +183,7 @@ return array(
 			'MailingListUser' => 'Module\MailingList\Model\MailingListUser',
 
 			// ..\Member
+			'HTMLButton' => 'Module\Member\Model\HTMLButton',
 			'Member' => 'Module\Member\Model\Member',
 			'MemberGroup' => 'Module\Member\Model\MemberGroup',
 
