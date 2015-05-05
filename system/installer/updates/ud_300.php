@@ -45,7 +45,6 @@ class Updater {
 				'_create_plugins_table',
 				'_remove_accessories_table',
 				'_update_specialty_templates_table',
-				'_remove_watermarks_table',
 				'_update_templates_save_as_files',
 				'_update_layout_publish_table',
 				'_update_entry_edit_date_format',
@@ -308,17 +307,6 @@ class Updater {
 
 			ee()->db->update_batch('specialty_templates', $templates, 'template_id');
 		}
-	}
-
-	/**
-	 * File Watermarks are going away in 3.0. This removes their table.
-	 *
-	 * @return void
-	 */
-	private function _remove_watermarks_table()
-	{
-		ee()->smartforge->drop_table('file_watermarks');
-		ee()->smartforge->drop_column('file_dimensions', 'watermark_id');
 	}
 
 	// -------------------------------------------------------------------

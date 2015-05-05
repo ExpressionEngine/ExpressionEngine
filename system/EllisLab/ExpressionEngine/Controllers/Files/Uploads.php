@@ -839,7 +839,7 @@ class Uploads extends Files {
 				' <i>' . lang($size->resize_type) . ', ' . $size->width . 'px ' . lang('by') . ' ' . $size->height . 'px</i>';
 
 			// For JS sync script
-			$js_size[$size->upload_location_id][$size->id] = array('short_name' => $size->short_name, 'resize_type' => $size->resize_type, 'width' => $size->width, 'height' => $size->height);
+			$js_size[$size->upload_location_id][$size->id] = array('short_name' => $size->short_name, 'resize_type' => $size->resize_type, 'width' => $size->width, 'height' => $size->height, 'watermark_id' => $size->watermark_id);
 		}
 
 		// Only show the manipulations section if there are manipulations

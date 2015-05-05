@@ -35,8 +35,6 @@ class FileDimension extends Model {
 	protected static $_primary_key = 'id';
 	protected static $_gateway_names = array('FileDimensionGateway');
 
-
-
 	protected $id;
 	protected $site_id;
 	protected $upload_location_id;
@@ -45,4 +43,5 @@ class FileDimension extends Model {
 	protected $resize_type;
 	protected $width;
 	protected $height;
+	protected $watermark_id;
 }
