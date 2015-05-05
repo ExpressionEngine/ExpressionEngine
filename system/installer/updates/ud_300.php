@@ -50,6 +50,7 @@ class Updater {
 				'_update_entry_edit_date_format',
 				'_rename_default_status_groups',
 				'_update_members_table',
+				'_update_html_buttons',
 			)
 		);
 
@@ -538,6 +539,29 @@ class Updater {
 					)
 				)
 			);
+		}
+	}
+
+	/**
+	 * Adjusts the CSS class for some standard buttons
+	 */
+	public function _update_html_buttons()
+	{
+		$data = array(
+			'b'          => 'html-bold',
+			'i'          => 'html-italic',
+			'ul'         => 'html-order-list',
+			'ol'         => 'html-order-list',
+			'a'          => 'html-link',
+			'img'        => 'html-upload',
+			'blockquote' => 'html-quote',
+		);
+
+		foreach ($data as $tag => $class)
+		{
+			ee()->db->where('tag_name', $tag)
+				->set('classname', $class)
+				->update('html_buttons');
 		}
 	}
 }

@@ -681,7 +681,7 @@ class Comment {
 			// on the page
 			$row['total_comments']	= ($enabled['pagination']) ? $pagination->total_items : $total_results;
 
-			if ($comment_moderation_override !== y)
+			if ($comment_moderation_override !== 'y')
 			{
 				$row['comments_expired'] = ($row['comment_expiration_date'] != 0 && $row['comment_expiration_date']< ee()->localize->now);
 			}
