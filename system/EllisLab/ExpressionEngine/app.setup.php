@@ -132,6 +132,7 @@ return array(
 			'UploadDestination' => 'Model\File\UploadDestination',
 			'FileDimension' => 'Model\File\FileDimension',
 			'File' => 'Model\File\File',
+			'Watermark' => 'Model\File\Watermark',
 
 			// ..\Log
 			'CpLog' => 'Model\Log\CpLog',
