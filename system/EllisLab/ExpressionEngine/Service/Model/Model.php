@@ -323,6 +323,25 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	}
 
 	/**
+	 * Default callback to validate unique columns
+	 */
+	public function validateUnique($key, $value)
+	{
+		$existing = $this->getFrontend()
+			->get($this->getName())
+			->filter($key, $value)
+			->count();
+
+		if ($existing > 0)
+		{
+			// TODO lang key
+			return "Field '{$key}' must be unique, '{$value}' already exists.";
+		}
+
+		return TRUE;
+	}
+
+	/**
 	 * Interface method to implement Event\Subscriber, which automatically
 	 * subscribes this class to itself to call on<EventName>.
 	 */
