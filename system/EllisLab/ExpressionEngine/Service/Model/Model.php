@@ -355,6 +355,9 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber, Valid
 	{
 		$this->_validator = $validator;
 
+		// alias unique to validateUnique
+		$validator->defineRule('unique', array($this, 'validateUnique'));
+
 		return $this;
 	}
 
