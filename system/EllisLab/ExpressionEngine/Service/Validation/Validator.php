@@ -155,9 +155,14 @@ class Validator {
 	 * @param Bool $partial Partial validation? (@see `validatePartial()`)
 	 * @return Result object
 	 */
-	public function _validate($values, $partial = FALSE)
+	protected function _validate($values, $partial = FALSE)
 	{
 		$result = new Result;
+
+		if (is_object($values))
+		{
+			$values = $this->prepForObject($values);
+		}
 
 		foreach ($this->rules as $key => $rules)
 		{
@@ -178,8 +183,9 @@ class Validator {
 				}
 
 				$rule->setAllValues($values);
+				$rule->setAllValues($values);
 
-				$rule_return = $rule->validate($value);
+				$rule_return = $rule->validate($key, $value);
 
 				// Passed? Move on to the next rule
 				if ($rule_return === TRUE)
@@ -209,6 +215,34 @@ class Validator {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * If we're passed an object we will try to interpret it as an array
+	 * unless we're told that it knows how to do its own validation.
+	 */
+	protected function prepForObject($object)
+	{
+		if ( ! ($object instanceOf ValidationAware))
+		{
+			return (array) $object;
+		}
+
+		$values = $object->getValidationData();
+
+		$this->setRules($object->getValidationRules());
+
+		$callbacks = preg_grep('/^validate/', get_class_methods($object));
+
+		foreach ($callbacks as $name)
+		{
+			$this->defineRule($name, function($key, $value, $params) use ($object, $name)
+			{
+				return $object->$name($key, $value, $params);
+			});
+		}
+
+		return $values;
 	}
 
 	/**
