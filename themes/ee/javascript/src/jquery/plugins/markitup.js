@@ -31,6 +31,15 @@
 		var options, ctrlKey, shiftKey, altKey;
 		ctrlKey = shiftKey = altKey = false;
 
+		specialButtons = [
+			'html-bold',
+			'html-italic',
+			'html-order-list',
+			'html-link',
+			'html-upload',
+			'html-quote',
+		];
+
 		options = {	id:						'',
 					nameSpace:				'',
 					root:					'',
@@ -149,7 +158,7 @@
 				var ul = $('<ul class="toolbar html-btns"></ul>'), i = 0;
 				$('li:hover > ul', ul).css('display', 'block');
 				$.each(markupSet, function() {
-					var button = this, t = '', title, li, j;
+					var button = this, t = '', name = '', title, li, j;
 					title = (button.key) ? (button.name||'')+' [Ctrl+'+button.key+']' : (button.name||'');
 					key   = (button.key) ? 'accesskey="'+button.key+'"' : '';
 					if (button.separator) {
@@ -159,7 +168,14 @@
 						for (j = levels.length -1; j >= 0; j--) {
 							t += levels[j]+"-";
 						}
-						li = $('<li class="markItUpButton markItUpButton'+t+(i)+' '+(button.className||'')+'"><a href="" '+key+' title="'+title+'">'+(button.name||'')+'</a></li>')
+
+						if (specialButtons.indexOf(button.className.split(' ')[0]) > -1) {
+							name = '';
+						} else {
+							name = button.name||'';
+						}
+
+						li = $('<li class="markItUpButton markItUpButton'+t+(i)+' '+(button.className||'')+'"><a href="" '+key+' title="'+title+'">'+name+'</a></li>')
 						.bind("contextmenu", function() { // prevent contextmenu on mac and allow ctrl+click
 							return false;
 						}).click(function() {
