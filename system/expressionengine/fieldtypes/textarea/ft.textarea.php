@@ -42,6 +42,31 @@ class Textarea_ft extends EE_Fieldtype {
 
 	function display_field($data)
 	{
+		if (isset($this->settings['field_show_formatting_btns'])
+			&& $this->settings['field_show_formatting_btns'] == 'y'
+			&& ! ee()->session->cache(__CLASS__, 'markitup_initialized'))
+		{
+			$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))
+				->first();
+			$buttons = $member->getHTMLButtonsForSite(ee()->config->item('site_id'));
+
+			$markItUp = array(
+				'nameSpace' => 'html',
+				'markupSet' => array()
+			);
+
+			foreach ($buttons as $button)
+			{
+				$markItUp['markupSet'][] = $button->prepForJSON();
+			}
+
+			ee()->javascript->set_global('markitup.settings', $markItUp);
+			ee()->cp->add_js_script(array('plugin' => array('markitup')));
+			ee()->javascript->output('$("textarea[data-markitup]").markItUp(EE.markitup.settings);');
+
+			ee()->session->set_cache(__CLASS__, 'markitup_initialized', TRUE);
+		}
+
 		// Set a boolean telling if we're in Grid AND this textarea has
 		// markItUp enabled
 		$grid_markitup = ($this->content_type() == 'grid' &&
@@ -61,7 +86,7 @@ class Textarea_ft extends EE_Fieldtype {
 						// Only apply file browser trigger if a field was found
 						if (textarea.size())
 						{
-							textarea.markItUp(mySettings);
+							textarea.markItUp(EE.markitup.settings);
 							EE.publish.file_browser.textarea(cell);
 						}
 					});
