@@ -71,6 +71,10 @@ class DataStore {
 		else
 		{
 			$model = $this->newModelFromAlias($name);
+		}
+
+		if (count($data))
+		{
 			$model->set($data);
 		}
 
