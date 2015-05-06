@@ -49,4 +49,25 @@ class HTMLButton extends Model {
 	protected $tag_row;
 	protected $classname;
 
+	public function prepForJSON()
+	{
+		if(strpos($this->classname, 'markItUpSeparator') !== FALSE)
+		{
+			// separators are purely presentational
+			$button_js = array('separator' => '---');
+		}
+		else
+		{
+			$button_js = array(
+				'name'		  => htmlentities($this->tag_name, ENT_QUOTES, 'UTF-8'),
+				'key'		    => strtoupper($this->accesskey),
+				'openWith'	=> $this->tag_open,
+				'closeWith'	=> $this->tag_close,
+				'className'	=> $this->classname.' id'.$this->id
+			);
+		}
+
+		return $button_js;
+	}
+
 }
