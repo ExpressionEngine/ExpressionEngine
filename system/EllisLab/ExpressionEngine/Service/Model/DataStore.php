@@ -70,8 +70,8 @@ class DataStore {
 		}
 		else
 		{
-			$class = $this->expandModelAlias($name);
-			$model = new $class($data);
+			$model = $this->newModelFromAlias($name);
+			$model->set($data);
 		}
 
 		$model->setName($name);
