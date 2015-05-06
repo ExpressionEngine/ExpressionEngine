@@ -9,6 +9,8 @@ use EllisLab\ExpressionEngine\Library\Data\Entity;
 use EllisLab\ExpressionEngine\Service\Event\Publisher as EventPublisher;
 use EllisLab\ExpressionEngine\Service\Event\Subscriber as EventSubscriber;
 use EllisLab\ExpressionEngine\Service\Event\ReflexiveSubscriber;
+use EllisLab\ExpressionEngine\Service\Validation\Validator;
+use EllisLab\ExpressionEngine\Service\Validation\ValidationAware;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -33,7 +35,7 @@ use EllisLab\ExpressionEngine\Service\Event\ReflexiveSubscriber;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
+class Model extends Entity implements EventPublisher, ReflexiveSubscriber, ValidationAware {
 
 	/**
 	 * @var String model short name
@@ -46,12 +48,21 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	protected $_frontend = NULL;
 
 	/**
+	 * @var Validator object
+	 */
+	protected $_validator = NULL;
+
+	/**
+	 * @var Relationships property must default to array
+	 */
+	protected static $_relationships = array();
+
+	/**
 	 * @var Default mixins for models
 	 */
 	protected static $_mixins = array(
 		'EllisLab\ExpressionEngine\Service\Event\Mixin',
 		'EllisLab\ExpressionEngine\Service\Model\Mixin\TypedColumn',
-		'EllisLab\ExpressionEngine\Service\Model\Mixin\Validation',
 		'EllisLab\ExpressionEngine\Service\Model\Mixin\CompositeColumn',
 		'EllisLab\ExpressionEngine\Service\Model\Mixin\Relationship',
 	);
@@ -307,7 +318,61 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	}
 
 	/**
-	 * Support method for the model validation mixin
+	 * Validate the model
+	 *
+	 * @return validation result
+	 */
+	public function validate()
+	{
+		if ( ! isset($this->_validator))
+		{
+			return TRUE;
+		}
+
+		$this->emit('beforeValidate');
+
+		if ($this->isNew())
+		{
+			$result = $this->_validator->validate($this);
+		}
+		else
+		{
+			$result = $this->_validator->validatePartial($this);
+		}
+
+		$this->emit('afterValidate');
+
+		return $result;
+	}
+
+	/**
+	 * Set the validator
+	 *
+	 * @param Validator $validator The validator to use
+	 * @return Current scope
+	 */
+	public function setValidator(Validator $validator)
+	{
+		$this->_validator = $validator;
+
+		// alias unique to validateUnique
+		$validator->defineRule('unique', array($this, 'validateUnique'));
+
+		return $this;
+	}
+
+	/**
+	 * Get the validator
+	 *
+	 * @return Validator object
+	 */
+	public function getValidator()
+	{
+		return $this->_validator;
+	}
+
+	/**
+	 * Support ValidationAware
 	 */
 	public function getValidationData()
 	{
@@ -315,11 +380,30 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	}
 
 	/**
-	 * Support method for the model validation mixin
+	 * Support ValidationAware
 	 */
 	public function getValidationRules()
 	{
 		return $this->getMetaData('validation_rules') ?: array();
+	}
+
+	/**
+	 * Default callback to validate unique columns
+	 */
+	public function validateUnique($key, $value)
+	{
+		$existing = $this->getFrontend()
+			->get($this->getName())
+			->filter($key, $value)
+			->count();
+
+		if ($existing > 0)
+		{
+			// TODO lang key
+			return "Field '{$key}' must be unique, '{$value}' already exists.";
+		}
+
+		return TRUE;
 	}
 
 	/**

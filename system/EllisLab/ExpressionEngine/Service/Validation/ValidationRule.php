@@ -53,7 +53,7 @@ abstract class ValidationRule {
 	 * @param  mixed   $value  The value to validate.
 	 * @return boolean Success?
 	 */
-	abstract public function validate($value);
+	abstract public function validate($key, $value);
 
 	/**
 	 * Optional if you need access to other values
