@@ -127,26 +127,6 @@ abstract class ContentModel extends Model {
 	}
 
 	/**
-	 * Slight tweak to validate to make the custom fields
-	 * validate correctly.
-	 */
-	public function validate()
-	{
-		$validator = $this->getValidator();
-
-		foreach ($this->_field_facades as $name => $facade)
-		{
-			$validator->defineRule("customField-{$name}", function($value) use ($facade)
-			{
-				return $facade->validate($value);
-			});
-		}
-
-		return parent::validate();
-	}
-
-
-	/**
 	 * Make sure set() calls have access to custom fields
 	 */
 	public function set(array $data = array())
@@ -230,11 +210,20 @@ abstract class ContentModel extends Model {
 				$rules[$name] .= 'required|';
 			}
 
-			$rules[$name] .= "customField-{$name}";
+			$rules[$name] .= "validateCustomField";
 		}
 
 		return $rules;
 	}
+
+	/**
+	 * Callback to validate custom fields
+	 */
+	public function validateCustomField($key, $value)
+	{
+		return $this->getCustomField($key)->validate($value);
+	}
+
 
 	/**
 	 * Get a list of fields
