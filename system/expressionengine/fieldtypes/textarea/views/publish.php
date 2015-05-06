@@ -1,22 +1,18 @@
-<?php if (isset($settings['field_show_formatting_btns']) && $settings['field_show_formatting_btns'] == 'y'): ?>
-<ul class="toolbar rte">
-	<li class="rte-bold"><a href="" title="<?=lang('make_bold')?>"></a></li>
-	<li class="rte-italic"><a href="" title="<?=lang('make_italic')?>"></a></li>
-	<li class="rte-quote"><a href="" title="<?=lang('create_blockquote')?>"></a></li>
-	<li class="rte-list"><a href="" title="<?=lang('create_unordered_list')?>"></a></li>
-	<li class="rte-order-list"><a href="" title="<?=lang('create_ordered_list')?>"></a></li>
-	<li class="rte-link"><a href="" title="<?=lang('create_hyperlink')?>"></a></li>
-	<li class="rte-upload"><a href="" title="<?=lang('upload_file')?>"></a></li>
-	<li class="rte-view"><a href="" title="<?=lang('view_code')?>"></a></li>
-</ul>
-<?php endif; ?>
-<?=form_textarea(array(
-			'name'	=> $name,
-			'value'	=> $value,
-			'rows'	=> $settings['field_ta_rows'],
-			'dir'	=> $settings['field_text_direction'],
-			'class' => $class
-		));?>
+<?php
+$attributes = array(
+	'name'	=> $name,
+	'value'	=> $value,
+	'rows'	=> $settings['field_ta_rows'],
+	'dir'	=> $settings['field_text_direction'],
+	'class' => $class
+);
+
+if (isset($settings['field_show_formatting_btns']) && $settings['field_show_formatting_btns'] == 'y')
+{
+	$attributes['data-markitup'] = 'yes';
+}
+?>
+<?=form_textarea($attributes);?>
 <?php if ($toolbar): ?>
 <div class="format-options">
 	<ul class="toolbar">
