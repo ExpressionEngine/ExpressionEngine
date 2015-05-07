@@ -24,7 +24,14 @@ abstract class Entity extends MixableImpl {
 	{
 		$this->initialize();
 
-		$this->fill($data);
+		//$this->fill($data);
+		foreach ($data as $k => $v)
+		{
+			if ($this->hasProperty($k))
+			{
+				$this->$k = $v;
+			}
+		}
 	}
 
 	abstract protected function initialize();
