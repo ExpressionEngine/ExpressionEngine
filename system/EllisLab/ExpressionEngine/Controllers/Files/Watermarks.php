@@ -192,7 +192,7 @@ class Watermarks extends AbstractFilesController {
 		}
 		else
 		{
-			$watermark = ee('Model')->get('StatusGroup', $watermark_id)->first();
+			$watermark = ee('Model')->get('Watermark', $watermark_id)->first();
 
 			if ( ! $watermark)
 			{
@@ -204,7 +204,251 @@ class Watermarks extends AbstractFilesController {
 			ee()->view->save_btn_text = 'edit_watermark';
 		}
 
-		// ...
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'name',
+					'desc' => 'watermark_name_desc',
+					'fields' => array(
+						'wm_name' => array(
+							'type' => 'text',
+							'value' => $watermark->wm_name,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'type',
+					'desc' => 'watermark_type_desc',
+					'fields' => array(
+						'wm_type' => array(
+							'type' => 'dropdown',
+							'choices' => array(
+								'text' => lang('text'),
+								'image' => lang('image')
+							),
+							'value' => $watermark->wm_type,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'watermark_alignment',
+					'desc' => 'watermark_alignment_desc',
+					'fields' => array(
+						'wm_vrt_alignment' => array(
+							'type' => 'dropdown',
+							'choices' => array(
+								'top' => lang('top'),
+								'middle' => lang('middle'),
+								'bottom' => lang('bottom')
+							),
+							'value' => $watermark->wm_vrt_alignment,
+						),
+						'wm_hor_alignment' => array(
+							'type' => 'dropdown',
+							'choices' => array(
+								'left' => lang('left'),
+								'center' => lang('center'),
+								'right' => lang('right')
+							),
+							'value' => $watermark->wm_hor_alignment,
+						)
+					)
+				),
+				array(
+					'title' => 'watermark_padding',
+					'desc' => 'watermark_padding_desc',
+					'fields' => array(
+						'wm_padding' => array(
+							'type' => 'text',
+							'value' => $watermark->wm_padding
+						)
+					)
+				),
+				array(
+					'title' => 'watermark_offset',
+					'desc' => 'watermark_offset_desc',
+					'fields' => array(
+						'wm_hor_offset' => array(
+							'type' => 'short-text',
+							'value' => $watermark->wm_hor_offset,
+							'label' => 'horizontal'
+						),
+						'wm_vrt_offset' => array(
+							'type' => 'short-text',
+							'value' => $watermark->wm_vrt_offset,
+							'label' => 'vertical'
+						)
+					)
+				)
+			),
+			'text_options' => array(
+				array(
+					'title' => 'watermarks_true_type',
+					'desc' => 'watermarks_true_type_desc',
+					'fields' => array(
+						'wm_use_font' => array(
+							'type' => 'yes_no',
+							'value' => $watermark->wm_use_font
+						)
+					)
+				),
+				array(
+					'title' => 'watermark_text',
+					'desc' => 'watermark_text_desc',
+					'fields' => array(
+						'wm_text' => array(
+							'type' => 'text',
+							'value' => $watermark->wm_text
+						)
+					)
+				),
+				array(
+					'title' => 'watermark_text_font',
+					'desc' => 'watermark_text_font_desc',
+					'fields' => array(
+						'wm_font' => array(
+							'type' => 'dropdown',
+							'choices' => array(), // TODO
+							'value' => $watermark->wm_font
+						)
+					)
+				),
+				array(
+					'title' => 'watermark_text_size',
+					'desc' => 'watermark_text_size_desc',
+					'fields' => array(
+						'wm_font_size' => array(
+							'type' => 'text',
+							'value' => $watermark->wm_font_size
+						)
+					)
+				),
+				array(
+					'title' => 'watermark_text_color',
+					'desc' => 'watermark_text_color_desc',
+					'fields' => array(
+						'wm_font_color' => array(
+							'type' => 'text',
+							'value' => $watermark->wm_font_color
+						)
+					)
+				),
+				array(
+					'title' => 'watermark_text_dropshadow',
+					'desc' => 'watermark_text_dropshadow_desc',
+					'fields' => array(
+						'wm_use_drop_shadow' => array(
+							'type' => 'yes_no',
+							'value' => $watermark->wm_use_drop_shadow
+						)
+					)
+				),
+				array(
+					'title' => 'watermark_text_dropshadow_distance',
+					'desc' => 'watermark_text_dropshadow_distance_desc',
+					'fields' => array(
+						'wm_shadow_distance' => array(
+							'type' => 'text',
+							'value' => $watermark->wm_shadow_distance
+						)
+					)
+				),
+				array(
+					'title' => 'watermark_text_dropshadow_color',
+					'desc' => 'watermark_text_dropshadow_color_desc',
+					'fields' => array(
+						'wm_shadow_distance' => array(
+							'type' => 'text',
+							'value' => $watermark->wm_shadow_distance
+						)
+					)
+				)
+			),
+			'image_options' => array(
+				array(
+					'title' => 'watermark_image_path',
+					'desc' => 'watermark_image_path_desc',
+					'fields' => array(
+						'wm_image_path' => array(
+							'type' => 'text',
+							'value' => $watermark->wm_image_path
+						)
+					)
+				),
+				array(
+					'title' => 'watermark_image_opacity',
+					'desc' => 'watermark_image_opacity_desc',
+					'fields' => array(
+						'wm_opacity' => array(
+							'type' => 'text',
+							'value' => $watermark->wm_opacity
+						)
+					)
+				),
+				array(
+					'title' => 'watermark_image_transparency_map',
+					'desc' => 'watermark_image_transparency_map_desc',
+					'fields' => array(
+						'wm_x_transp' => array(
+							'type' => 'short-text',
+							'value' => $watermark->wm_x_transp,
+							'label' => 'x_axis'
+						),
+						'wm_y_transp' => array(
+							'type' => 'short-text',
+							'value' => $watermark->wm_y_transp,
+							'label' => 'y_axis'
+						)
+					)
+				)
+			)
+		);
+
+		if ( ! empty($_POST))
+		{
+			$watermark->set($_POST);
+			$result = $watermark->validate();
+
+			if (AJAX_REQUEST)
+			{
+				$field = ee()->input->post('ee_fv_field');
+
+				if ($result->hasErrors($field))
+				{
+					ee()->output->send_ajax_response(array('error' => $result->renderError($field)));
+				}
+				else
+				{
+					ee()->output->send_ajax_response('success');
+				}
+				exit;
+			}
+
+			if ($result->isValid())
+			{
+				$watermark_id = $watermark->save()->getId();
+
+				ee('Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('watermark_saved'))
+					->addToBody(lang('watermark_saved_desc'))
+					->defer();
+
+				ee()->functions->redirect(cp_url('files/watermarks/edit/' . $watermark_id));
+			}
+			else
+			{
+				ee()->load->library('form_validation');
+				ee()->form_validation->_error_array = $result->renderErrors();
+				ee('Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('watermark_not_saved'))
+					->addToBody(lang('watermark_not_saved_desc'))
+					->now();
+			}
+		}
 
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text_working = 'btn_saving';
