@@ -355,7 +355,7 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber, Valid
 	{
 		$this->_validator = $validator;
 
-		// alias unique to validateUnique
+		// alias unique to the validateUnique callback
 		$validator->defineRule('unique', array($this, 'validateUnique'));
 
 		return $this;
@@ -389,17 +389,22 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber, Valid
 
 	/**
 	 * Default callback to validate unique columns
+	 *
+	 * TODO lang key for the error
 	 */
-	public function validateUnique($key, $value)
+	public function validateUnique($key, $value, array $params = array())
 	{
-		$existing = $this->getFrontend()
+		$unique = $this->getFrontend()
 			->get($this->getName())
-			->filter($key, $value)
-			->count();
+			->filter($key, $value);
 
-		if ($existing > 0)
+		foreach ($params as $field)
 		{
-			// TODO lang key
+			$unique->filter($field, $this->getProperty($field));
+		}
+
+		if ($unique->count() > 0)
+		{
 			return "Field '{$key}' must be unique, '{$value}' already exists.";
 		}
 

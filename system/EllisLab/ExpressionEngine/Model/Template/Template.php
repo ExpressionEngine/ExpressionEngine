@@ -74,7 +74,7 @@ class Template extends Model {
 	protected static $_validation_rules = array(
 		'site_id'            => 'required|isNatural',
 		'group_id'           => 'required|isNatural',
-		'template_name'      => 'required|alphaDash',
+		'template_name'      => 'required|alphaDash|unique[group_id]',
 		'cache'              => 'enum[y,n]',
 		'enable_http_auth'   => 'enum[y,n]',
 		'allow_php'          => 'enum[y,n]',
