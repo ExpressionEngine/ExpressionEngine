@@ -29,7 +29,7 @@ abstract class Entity extends MixableImpl {
 		{
 			if ($this->hasProperty($k))
 			{
-				$this->$k = $v;
+				$this->setRawProperty($k, $v);
 			}
 		}
 	}
