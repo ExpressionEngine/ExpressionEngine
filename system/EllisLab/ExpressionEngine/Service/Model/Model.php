@@ -67,6 +67,11 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber, Valid
 		'EllisLab\ExpressionEngine\Service\Model\Mixin\Relationship',
 	);
 
+	protected function initialize()
+	{
+		// Nothing. Use this for any setup work you need to do.
+	}
+
 	/**
 	 * Forward methods to various mixins
 	 *

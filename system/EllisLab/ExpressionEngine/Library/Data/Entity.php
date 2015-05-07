@@ -22,11 +22,12 @@ abstract class Entity extends MixableImpl {
 	 */
 	public function __construct(array $data = array())
 	{
-		foreach ($data as $key => $value)
-		{
-			$this->setProperty($key, $value);
-		}
+		$this->initialize();
+
+		$this->fill($data);
 	}
+
+	abstract protected function initialize();
 
 	/**
 	 *
