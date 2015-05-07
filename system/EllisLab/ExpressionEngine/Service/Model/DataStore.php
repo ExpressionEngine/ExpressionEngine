@@ -2,6 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Service\Model;
 
+use Closure;
+
 use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
 use EllisLab\ExpressionEngine\Service\Database\Database;
 
@@ -306,6 +308,22 @@ class DataStore {
 
 		$worker = new $class($this, $qb);
 		return $worker->run();
+	}
+
+	protected function newModelFromAlias($name)
+	{
+		$class = $this->expandModelAlias($name);
+
+		if ($class instanceOf Closure)
+		{
+			$model = $class();
+		}
+		else
+		{
+			$model = new $class();
+		}
+
+		return $model;
 	}
 
 	/**
