@@ -50,9 +50,8 @@ class Mixin implements MixinInterface, Publisher {
 	{
 		$this->scope = $scope;
 
-		// Subscribe to events on self if the class is a reflexive
-		// subscriber.
-		if ($scope instanceOf ReflexiveSubscriber)
+		// Subscribe to events on self if the class is also a subscriber
+		if ($scope instanceOf Subscriber)
 		{
 			$this->subscribe($scope);
 		}

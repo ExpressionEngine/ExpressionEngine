@@ -8,7 +8,6 @@ use OverflowException;
 use EllisLab\ExpressionEngine\Library\Data\Entity;
 use EllisLab\ExpressionEngine\Service\Event\Publisher as EventPublisher;
 use EllisLab\ExpressionEngine\Service\Event\Subscriber as EventSubscriber;
-use EllisLab\ExpressionEngine\Service\Event\ReflexiveSubscriber;
 use EllisLab\ExpressionEngine\Service\Validation\Validator;
 use EllisLab\ExpressionEngine\Service\Validation\ValidationAware;
 
@@ -35,7 +34,8 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationAware;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Model extends Entity implements EventPublisher, ReflexiveSubscriber, ValidationAware {
+class Model extends Entity implements EventPublisher, EventSubscriber, ValidationAware {
+
 
 	/**
 	 * @var String model short name
