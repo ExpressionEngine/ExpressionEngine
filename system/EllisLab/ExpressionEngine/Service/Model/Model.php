@@ -415,7 +415,10 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	/**
 	 * Default callback to validate unique columns
 	 *
-	 * TODO lang key for the error
+	 * @param String $key    Property name
+	 * @param String $value  Property value
+	 * @param Array  $params Rule parameters
+	 * @return Mixed String if error, TRUE if success
 	 */
 	public function validateUnique($key, $value, array $params = array())
 	{
@@ -430,15 +433,14 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 
 		if ($unique->count() > 0)
 		{
-			return "Field '{$key}' must be unique, '{$value}' already exists.";
+			return 'unique'; // lang key
 		}
 
 		return TRUE;
 	}
 
 	/**
-	 * Interface method to implement Event\Subscriber, which automatically
-	 * subscribes this class to itself to call on<EventName>.
+	 * Interface method to implement Event\Subscriber
 	 */
 	public function getSubscribedEvents()
 	{

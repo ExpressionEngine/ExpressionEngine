@@ -18,6 +18,7 @@ $lang['min_length']			= "This field must be at least %s characters in length.";
 $lang['numeric']			= "This field must contain only numbers.";
 $lang['regex']				= "This field must match the regular expression `%s`.";
 $lang['required']			= "This field is required.";
+$lang['unique']				= "This field must be unique.";
 $lang['valid_base64']		= "This field may only contain characters in the base64 character set (alpha-numeric, slash, plus, and equals).";
 $lang['valid_email']		= "This field must contain a valid email address.";
 $lang['valid_emails']		= "This field must contain all valid email addresses.";
