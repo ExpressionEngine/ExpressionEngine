@@ -324,10 +324,14 @@ abstract class Entity extends MixableImpl {
 	{
 		if ($this->hasGetterFor($name))
 		{
-			return $this->{'get__'.$name}();
+			$value = $this->{'get__'.$name}();
+		}
+		else
+		{
+			$value = $this->getRawProperty($name);
 		}
 
-		return $this->getRawProperty($name);
+		return $this->filter('get', $value, array($name));
 	}
 
 	/**
@@ -339,6 +343,8 @@ abstract class Entity extends MixableImpl {
 	 */
 	public function setProperty($name, $value)
 	{
+		$value = $this->filter('set', $value, array($name));
+
 		if ($this->hasSetterFor($name))
 		{
 			$this->{'set__'.$name}($value);

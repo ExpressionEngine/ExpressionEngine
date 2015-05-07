@@ -156,7 +156,6 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber, Valid
 
 	/**
 	 * Attempt to get a property. Overriden from Entity to support events
-	 * and typed columns.
 	 *
 	 * @param String $name Name of the property
 	 * @return Mixed  $value Value of the property
@@ -166,7 +165,6 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber, Valid
 		$this->emit('beforeGet', $name);
 
 		$value = parent::getProperty($name);
-		$value = $this->filter('get', $value, array($name));
 
 		$this->emit('afterGet', $name);
 
@@ -174,8 +172,7 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber, Valid
 	}
 
 	/**
-	 * Attempt to set a property. Overriden from Entity to support events,
-	 * dirty values, and typed columns.
+	 * Attempt to set a property. Overriden from Entity to support events
 	 *
 	 * @param String $name Name of the property
 	 * @param Mixed  $value Value of the property
@@ -183,8 +180,6 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber, Valid
 	public function setProperty($name, $value)
 	{
 		$this->emit('beforeSet', $name, $value);
-
-		$value = $this->filter('set', $value, array($name));
 
 		parent::setProperty($name, $value);
 
