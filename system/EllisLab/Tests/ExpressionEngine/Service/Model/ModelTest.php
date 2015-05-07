@@ -47,11 +47,15 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 		$this->assertTrue($m1->isNew());
 
 		$m2 = new ModelStub;
-		$m2->id = 5;
+		$m2->setId(5);
 		$this->assertFalse($m2->isNew());
 
 		$m3 = new ModelStub(array('id' => 5));
-		$this->assertFalse($m3->isNew());
+		$this->assertTrue($m3->isNew());
+
+		$m4 = new ModelStub();
+		$m4->fill(array('id' => 5));
+		$this->assertFalse($m4->isNew());
 	}
 
 	public function testDirty()
@@ -166,7 +170,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 		$qb->shouldReceive('delete');
 
 		$m = new ModelStub();
-		$m->id = 5;
+		$m->setId(5);
 
 		// pre delete assertion
 		$this->assertFalse($m->isNew());
