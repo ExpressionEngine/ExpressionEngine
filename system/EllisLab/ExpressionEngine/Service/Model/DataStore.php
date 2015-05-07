@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Service\Model;
 
 use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
+use EllisLab\ExpressionEngine\Service\Database\Database;
 
 /**
  * ExpressionEngine - by EllisLab
