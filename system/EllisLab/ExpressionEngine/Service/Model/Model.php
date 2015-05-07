@@ -43,6 +43,11 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber, Valid
 	protected $_name;
 
 	/**
+	 * @var Is new instance
+	 */
+	protected $_new = TRUE;
+
+	/**
 	 * @var Query frontend object
 	 */
 	protected $_frontend = NULL;
@@ -156,6 +161,8 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber, Valid
 		$pk = $this->getPrimaryKey();
 		$this->$pk = $id;
 
+		$this->_new = is_null($id);
+
 		return $this;
 	}
 
@@ -194,6 +201,24 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber, Valid
 	}
 
 	/**
+	 * Fill data without passing through a getter
+	 *
+	 * @param array $data Data to fill
+	 * @return $this
+	 */
+	public function fill(array $data = array())
+	{
+		$pk = $this->getPrimaryKey();
+
+		if (isset($data[$pk]))
+		{
+			$this->_new = FALSE;
+		}
+
+		return parent::fill($data);
+	}
+
+	/**
 	 * Get all current values
 	 *
 	 * @return array Current values. Including null values - Beware.
@@ -212,7 +237,7 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber, Valid
 	 */
 	public function isNew()
 	{
-		return ($this->getId() === NULL);
+		return $this->_new;
 	}
 
 	/**
