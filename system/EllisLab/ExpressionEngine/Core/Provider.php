@@ -173,9 +173,15 @@ class Provider extends InjectionBindingDecorator {
 	public function getModels()
 	{
 		$ns = $this->getNamespace();
+		$scope = $this;
 
-		return $this->get('models', array(), function($element) use ($ns)
+		return $this->get('models', array(), function($element) use ($ns, $scope)
 		{
+			if ($element instanceOf Closure)
+			{
+				return $this->forceCurry($element, $scope);
+			}
+
 			return $ns.'\\'.$element;
 		});
 	}
