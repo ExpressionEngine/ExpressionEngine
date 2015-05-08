@@ -4,7 +4,7 @@ class FileManager < ControlPanelPage
   # Title/header box elements
 	element :title, 'div.box.full.mb form h1'
 	element :title_toolbar, 'div.box.full.mb form h1 ul.toolbar'
-	element :export_all, 'div.box.full.mb form h1 ul.toolbar li.download'
+	element :download_all, 'div.box.full.mb form h1 ul.toolbar li.download'
 	element :phrase_search, 'fieldset.tbl-search input[name=search]'
 	element :search_submit_button, 'fieldset.tbl-search input.submit'
 
@@ -42,12 +42,15 @@ class FileManager < ControlPanelPage
 	elements :title_names, 'div.box form div.tbl-wrap table tr td:first-child'
 	elements :file_types, 'div.box form div.tbl-wrap table tr td:nth-child(2)'
 	elements :dates_added, 'div.box form div.tbl-wrap table tr td:nth-child(3)'
-	elements :manages, 'div.box form div.tbl-wrap table tr td:nth-child(4)'
+	elements :manage_actions, 'div.box form div.tbl-wrap table tr td:nth-child(4)'
 
 	element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]'
 	element :action_submit_button, 'form fieldset.tbl-bulk-act button.submit'
 
 	element :no_results, 'tr.no-results'
+
+	element :view_modal, 'div.modal-view-file', visible: false
+	element :view_modal_header, 'div.modal-view-file h1'
 
 	def load
 		click_link 'Files'

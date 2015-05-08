@@ -18,7 +18,7 @@ feature 'File Manager', :all_files => true do
 		# Check that the heder data is intact
 		@page.title.text.should eq 'File Manager'
 		@page.should have_title_toolbar
-		@page.should have_export_all
+		@page.should have_download_all
 		@page.should have_phrase_search
 		@page.should have_search_submit_button
 
@@ -178,41 +178,137 @@ end
 	end
 
 	it 'can view an image', :all_files => true do
+		@page.manage_actions[0].find('li.view a').click
+		@page.wait_until_view_modal_visible
+		@page.wait_for_view_modal_header
+		@page.view_modal.text.should include @page.title_names[0].find('em').text
 	end
 
 	it 'can edit file', :all_files => true do
+		@page.manage_actions[0].find('li.edit a').click
+		no_php_js_errors
+
+		@page.current_url.should include 'files/file/edit'
 	end
 
 	it 'can crop and image', :all_files => true do
+		@page.manage_actions[0].find('li.crop a').click
+		no_php_js_errors
+
+		@page.current_url.should include 'files/file/crop'
 	end
 
-	it 'can download a file', :all_files => true do
+	# The capybara/webkit driver is munging headers.
+	# it 'can download a file', :all_files => true do
+	# 	@page.manage_actions[0].find('li.download a').click
+	# 	no_php_js_errors
+	#
+	# 	@page.response_headers['Content-Disposition'].should include 'attachment; filename='
+	# end
+
+	it 'displays an itemzied modal when attempting to remove 5 or less add-on' do
+		file_name = @page.title_names[0].find('em').text
+
+		@page.files[1].find('input[type="checkbox"]').set true
+		@page.bulk_action.select "Remove"
+		@page.action_submit_button.click
+
+		@page.wait_until_modal_visible
+		@page.modal_title.text.should eq "Confirm Removal"
+		@page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
+		@page.modal.text.should include file_name
+		@page.modal.all('.checklist li').length.should eq 1
+	end
+
+	it 'displays a bulk confirmation modal when attempting to remove more than 5 add-ons' do
+		@page.checkbox_header.click
+		@page.bulk_action.select "Remove"
+		@page.action_submit_button.click
+
+		@page.wait_until_modal_visible
+		@page.modal_title.text.should eq "Confirm Removal"
+		@page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
+		@page.modal.text.should include 'File: 10 Files'
 	end
 
 	it 'can remove a single file', :all_files => true do
+		file_name = @page.title_names[0].text
+
+		@page.files[1].find('input[type="checkbox"]').set true
+		@page.bulk_action.select "Remove"
+		@page.action_submit_button.click
+		@page.wait_until_modal_visible
+		@page.modal_submit_button.click # Submits a form
+		no_php_js_errors
+
+		@page.text.should_not include file_name
 	end
 
 	it 'can remove multiple files', :all_files => true do
+		@page.checkbox_header.click
+		@page.bulk_action.select "Remove"
+		@page.action_submit_button.click
+		@page.wait_until_modal_visible
+		@page.modal_submit_button.click # Submits a form
+		no_php_js_errors
+
+		@page.should have_no_results
 	end
 
-	it 'can download a single file via the bulk action', :all_files => true do
-	end
+	# The capybara/webkit driver is munging headers.
+	# it 'can download a single file via the bulk action', :all_files => true do
+	# 	@page.files[1].find('input[type="checkbox"]').set true
+	# 	@page.bulk_action.select "Download"
+	# 	@page.action_submit_button.click
+	# 	no_php_js_errors
+	#
+	# 	@page.response_headers['Content-Disposition'].should include 'attachment; filename='
+	# end
 
-	it 'can download multiple files', :all_files => true do
-	end
+	# The capybara/webkit driver is munging headers.
+	# it 'can download multiple files', :all_files => true do
+	# 	@page.checkbox_header.click
+	# 	@page.bulk_action.select "Download"
+	# 	@page.action_submit_button.click
+	# 	no_php_js_errors
+	#
+	# 	@page.response_headers['Content-Disposition'].should include 'attachment; filename='
+	# end
 
-	it 'can download all files', :all_files => true do
-	end
+	# The capybara/webkit driver is munging headers.
+	# it 'can download all files', :all_files => true do
+	# 	@page.download_all.click
+	# 	no_php_js_errors
+	#
+	# 	@page.response_headers['Content-Disposition'].should include 'attachment; filename='
+	# end
 
 	it 'can add a new directory', :all_files => true do
+		@page.new_directory_button.click
+		no_php_js_errors
+
+		@page.current_url.should include 'files/uploads/new-upload'
 	end
 
 	it 'can view a single directory', :all_files => true do
+		click_link "Main Upload Directory"
+		no_php_js_errors
+
+		@page.current_url.should include 'files/directory/'
+		@page.heading.text.should eq 'Files in Main Upload Directory'
+		@page.should have_sync_button
+		@page.should have_no_results
 	end
 
 	# Tests specific to the "All Files" view
 
 	it 'must choose where to upload a new file when viewing All Files', :all_files => true do
+		@page.upload_new_file_filter.click
+		@page.wait_until_upload_new_file_filter_menu_visible
+		@page.upload_new_file_filter_menu_items[0].click
+		no_php_js_errors
+
+		@page.current_url.should include 'files/upload'
 	end
 
 	it 'can filter the Upload New File menu', :all_files => true do
@@ -221,9 +317,17 @@ end
 	# Tests specific to a directory view
 
 	it 'can synchronize a directory', :all_files => false do
+		@page.sync_button.click
+		no_php_js_errors
+
+		@page.current_url.should include 'files/uploads/sync'
 	end
 
 	it 'can upload a new file into the currently displayed directory', :all_files => false do
+		@page.upload_new_file_button.click
+		no_php_js_errors
+
+		@page.current_url.should include 'files/upload'
 	end
 
 end
