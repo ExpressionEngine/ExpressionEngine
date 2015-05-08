@@ -62,7 +62,7 @@ class File implements Config
 
 		// Load in config
 		require($path);
-		$this->config = $config;
+		$this->config = $config ?: array();
 	}
 
 	/**
