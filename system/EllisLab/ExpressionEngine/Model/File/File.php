@@ -114,4 +114,25 @@ class File extends Model {
 		unlink($this->getAbsolutePath());
 	}
 
+	/**
+	* Determines if the member group (by ID) has access permission to this
+	* upload destination.
+	* @see UploadDestination::memberGroupHasAccess
+	*
+	* @throws InvalidArgumentException
+	* @param int|MemberGroup $group_id The Meber Group ID
+	* @return bool TRUE if access is granted; FALSE if access denied
+	*/
+	public function memberGroupHasAccess($group)
+	{
+		$dir = $this->getUploadDestination();
+		if ( ! $dir)
+		{
+			return FALSE;
+		}
+
+		return $dir->memberGroupHasAccess($group);
+	}
+
+
 }
