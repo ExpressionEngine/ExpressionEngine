@@ -37,15 +37,7 @@ class Files extends AbstractFilesController {
 
 	public function index()
 	{
-		if (ee()->input->post('bulk_action') == 'remove')
-		{
-			$this->remove(ee()->input->post('selection'));
-			ee()->functions->redirect(cp_url('files', ee()->cp->get_url_state()));
-		}
-		elseif (ee()->input->post('bulk_action') == 'download')
-		{
-			$this->exportFiles(ee()->input->post('selection'));
-		}
+		$this->handleBulkActions(cp_url('files', ee()->cp->get_url_state()));
 
 		$base_url = new URL('files', ee()->session->session_id());
 
@@ -123,15 +115,7 @@ class Files extends AbstractFilesController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		if (ee()->input->post('bulk_action') == 'remove')
-		{
-			$this->remove(ee()->input->post('selection'));
-			ee()->functions->redirect(cp_url('files/directory/' . $id, ee()->cp->get_url_state()));
-		}
-		elseif (ee()->input->post('bulk_action') == 'download')
-		{
-			$this->exportFiles(ee()->input->post('selection'));
-		}
+		$this->handleBulkActions(cp_url('files/directory/' . $id, ee()->cp->get_url_state()));
 
 		$base_url = new URL('files/directory/' . $id, ee()->session->session_id());
 
@@ -397,6 +381,34 @@ class Files extends AbstractFilesController {
 		}
 
 		ee()->functions->redirect($return_url);
+	}
+
+	/**
+	 * Checks for a bulk_action submission and if present will dispatch the
+	 * correct action/method.
+	 *
+	 * @param string $redirect_url The URL to redirect to once the action has been
+	 *   performed
+	 * @return void
+	 */
+	private function handleBulkActions($redirect_url)
+	{
+		$action = ee()->input->post('bulk_action');
+
+		if ( ! $action)
+		{
+			return;
+		}
+		elseif ($action == 'remove')
+		{
+			$this->remove(ee()->input->post('selection'));
+		}
+		elseif ($action == 'download')
+		{
+			$this->exportFiles(ee()->input->post('selection'));
+		}
+
+		ee()->functions->redirect($redirect_url);
 	}
 
 	private function exportFiles($file_ids)
