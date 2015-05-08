@@ -1,5 +1,10 @@
 require './bootstrap.rb'
 
+# @TODO Add test coverage for upload destination permissions
+#  - Sidebar only lists directories member has access to
+#  - "All Files" upload new file menu only lists directories member has access to
+#  - Table of files only show files in directories member has access to
+
 feature 'File Manager', :all_files => true do
 
 	before(:each) do
