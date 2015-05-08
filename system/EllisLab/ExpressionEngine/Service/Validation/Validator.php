@@ -183,7 +183,6 @@ class Validator {
 				}
 
 				$rule->setAllValues($values);
-				$rule->setAllValues($values);
 
 				$rule_return = $rule->validate($key, $value);
 
