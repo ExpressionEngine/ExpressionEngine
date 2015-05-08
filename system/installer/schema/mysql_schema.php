@@ -1538,12 +1538,19 @@ class EE_Schema {
 			)
 		);
 
+		$member_group_defaults = array(
+			'group_description' => ''
+		);
+
 		$add_quotes = function($value) {
 				return (is_string($value)) ? "'{$value}'" : $value;
 			};
 
 		foreach ($member_groups as $group)
 		{
+			// Merge in defaults
+			$group = array_merge($member_group_defaults, $group);
+
 			$Q[] = "INSERT INTO exp_member_groups
 				(".implode(', ', array_keys($group)).")
 				VALUES (".implode(', ' , array_map($add_quotes, $group)).")";
