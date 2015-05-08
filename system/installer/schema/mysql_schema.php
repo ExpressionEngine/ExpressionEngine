@@ -1543,8 +1543,8 @@ class EE_Schema {
 		);
 
 		$add_quotes = function($value) {
-				return (is_string($value)) ? "'{$value}'" : $value;
-			};
+			return (is_string($value)) ? "'{$value}'" : $value;
+		};
 
 		foreach ($member_groups as $group)
 		{
