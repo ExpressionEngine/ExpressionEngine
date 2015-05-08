@@ -80,13 +80,17 @@ class Files extends AbstractFilesController {
 			->fields('id', 'name')
 			->filter('site_id', ee()->config->item('site_id'));
 
+		$upload_destinations = $upload_destinations->all();
+
 		if (ee()->session->userdata['group_id'] != 1)
 		{
-			// Add filter to exclude any directories the user's group
-			// has been denied access
+			$member_group = ee()->session->userdata['group_id'];
+			$upload_destinations->filter(function($dir) use ($member_group){
+				return $dir->memberGroupHasAccess($member_group);
+			});
 		}
 
-		$vars['directories'] = $upload_destinations->all();
+		$vars['directories'] = $upload_destinations;
 
 		ee()->javascript->set_global('file_view_url', cp_url('files/file/view/###'));
 		ee()->javascript->set_global('lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>');
@@ -129,7 +133,7 @@ class Files extends AbstractFilesController {
 			show_error(lang('no_upload_destination'));
 		}
 
-		if ( ! $this->hasFileGroupAccessPrivileges($dir))
+		if ( ! $dir->memberGroupHasAccess(ee()->session->userdata['group_id']))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -207,7 +211,7 @@ class Files extends AbstractFilesController {
 			show_error(lang('no_upload_destination'));
 		}
 
-		if ( ! $this->hasFileGroupAccessPrivileges($dir))
+		if ( ! $dir->memberGroupHasAccess(ee()->session->userdata['group_id']))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -373,7 +377,7 @@ class Files extends AbstractFilesController {
 			show_error(lang('no_upload_destination'));
 		}
 
-		if ( ! $this->hasFileGroupAccessPrivileges($dir))
+		if ( ! $dir->memberGroupHasAccess(ee()->session->userdata['group_id']))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -450,29 +454,31 @@ class Files extends AbstractFilesController {
 			return;
 		}
 
+		$member_group = ee()->session->userdata['group_id'];
+
 		// Loop through the files and add them to the zip
 		$files = ee('Model')->get('File', $file_ids)
 			->filter('site_id', ee()->config->item('site_id'))
-			->all();
+			->all()
+			->filter(function($file) use ($member_group) {
+				return $file->memberGroupHasAccess($member_group);
+			});
 
 		foreach ($files as $file)
 		{
-			if ($this->hasFileGroupAccessPrivileges($file->getUploadDestination()))
+			$res = $zip->addFile($file->getAbsolutePath());
+
+			if ($res === FALSE)
 			{
-				$res = $zip->addFile($file->getAbsolutePath());
+				ee('Alert')->makeInline('settings-form')
+					->asIssue()
+					->withTitle(lang('error_export'))
+					->addToBody(sprintf(lang('error_cannot_add_file_to_zip'), $file->title))
+					->now();
+				return;
 
-				if ($res === FALSE)
-				{
-					ee('Alert')->makeInline('settings-form')
-						->asIssue()
-						->withTitle(lang('error_export'))
-						->addToBody(sprintf(lang('error_cannot_add_file_to_zip'), $file->title))
-						->now();
-					return;
-
-					$zip->close();
-					unlink($zipfilename);
-				}
+				$zip->close();
+				unlink($zipfilename);
 			}
 		}
 
@@ -492,18 +498,20 @@ class Files extends AbstractFilesController {
 			$file_ids = array($file_ids);
 		}
 
+		$member_group = ee()->session->userdata['group_id'];
+
 		$files = ee('Model')->get('File', $file_ids)
 			->filter('site_id', ee()->config->item('site_id'))
-			->all();
+			->all()
+			->filter(function($file) use ($member_group) {
+				return $file->memberGroupHasAccess($member_group);
+			});
 
 		$names = array();
 		foreach ($files as $file)
 		{
-			if ($this->hasFileGroupAccessPrivileges($file->getUploadDestination()))
-			{
-				$names[] = $file->title;
-				$file->delete();
-			}
+			$names[] = $file->title;
+			$file->delete();
 		}
 
 		ee('Alert')->makeInline('files-form')

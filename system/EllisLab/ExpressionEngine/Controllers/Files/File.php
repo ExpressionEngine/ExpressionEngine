@@ -40,7 +40,7 @@ class File extends AbstractFilesController {
 			show_error(lang('no_file'));
 		}
 
-		if ( ! $this->hasFileGroupAccessPrivileges($file->getUploadDestination()))
+		if ( ! $file->memberGroupHasAccess(ee()->session->userdata['group_id']))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -78,7 +78,7 @@ class File extends AbstractFilesController {
 			show_error(lang('no_file'));
 		}
 
-		if ( ! $this->hasFileGroupAccessPrivileges($file->getUploadDestination()))
+		if ( ! $file->memberGroupHasAccess(ee()->session->userdata['group_id']))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -214,7 +214,7 @@ class File extends AbstractFilesController {
 			show_error(lang('no_file'));
 		}
 
-		if ( ! $this->hasFileGroupAccessPrivileges($file->getUploadDestination()))
+		if ( ! $file->memberGroupHasAccess(ee()->session->userdata['group_id']))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -364,7 +364,7 @@ class File extends AbstractFilesController {
 			show_error(lang('no_file'));
 		}
 
-		if ( ! $this->hasFileGroupAccessPrivileges($file->getUploadDestination()))
+		if ( ! $file->memberGroupHasAccess(ee()->session->userdata['group_id']))
 		{
 			show_error(lang('unauthorized_access'));
 		}

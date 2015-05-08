@@ -69,7 +69,7 @@ abstract class AbstractFiles extends CP_Controller {
 
 		foreach ($upload_destinations->all() as $destination)
 		{
-			if ($this->hasFileGroupAccessPrivileges($destination) === FALSE)
+			if ($destination->memberGroupHasAccess(ee()->session->userdata['group_id']) === FALSE)
 			{
 				continue;
 			}
@@ -133,11 +133,11 @@ abstract class AbstractFiles extends CP_Controller {
 		$data = array();
 
 		$file_id = ee()->session->flashdata('file_id');
+		$member_group = ee()->session->userdata['group_id'];
 
 		foreach ($files as $file)
 		{
-			if ( ! $file->getUploadDestination()
-				|| $this->hasFileGroupAccessPrivileges($file->getUploadDestination()) === FALSE)
+			if ( ! $file->memberGroupHasAccess($member_group))
 			{
 				continue;
 			}
@@ -200,38 +200,6 @@ abstract class AbstractFiles extends CP_Controller {
 		$table->setData($data);
 
 		return $table;
-	}
-
-	protected function hasFileGroupAccessPrivileges(UploadDestination $dir)
-	{
-		// 2 = Banned
-		// 3 = Guests
-		// 4 = Pending
-		$hardcoded_disallowed_groups = array('2', '3', '4');
-
-		$member_group_id = ee()->session->userdata['group_id'];
-		// If the user is a Super Admin, return true
-		if ($member_group_id == 1)
-		{
-			return TRUE;
-		}
-
-		if (in_array($member_group_id, $hardcoded_disallowed_groups))
-		{
-			return FALSE;
-		}
-
-		if ( ! $dir)
-		{
-			return FALSE;
-		}
-
-		if (in_array($member_group_id, $dir->getNoAccess()->pluck('group_id')))
-		{
-			return FALSE;
-		}
-
-		return TRUE;
 	}
 
 }
