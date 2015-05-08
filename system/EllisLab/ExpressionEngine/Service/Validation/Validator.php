@@ -183,7 +183,6 @@ class Validator {
 				}
 
 				$rule->setAllValues($values);
-				$rule->setAllValues($values);
 
 				$rule_return = $rule->validate($key, $value);
 
@@ -194,19 +193,27 @@ class Validator {
 				}
 
 				// Skip the rest of the rules?
+				// e.g. Presence failed
 				if ($rule_return === self::SKIP)
 				{
 					break;
 				}
 
 				// Hard stopping rule? Record the error and move on.
+				// e.g. Required failed
 				if ($rule_return === self::STOP)
 				{
 					$result->addFailed($key, $rule);
 					break;
 				}
 
-				// Add non-blank to failed
+				// At this point:
+				//
+				// 1) The rule failed (`$rule_return` === FALSE)
+				// 2) This field is *not* required (no self::STOP)
+				//
+				// This means we have an incorrect optional value. Accordingly,
+				// empty values are ok (because optional) anything else is not.
 				if (is_string($value) && trim($value) !== '')
 				{
 					$result->addFailed($key, $rule);
