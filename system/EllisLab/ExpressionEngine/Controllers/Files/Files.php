@@ -41,6 +41,12 @@ class Files extends AbstractFilesController {
 
 		$base_url = new URL('files', ee()->session->session_id());
 
+		$search_terms = ee()->input->get_post('search');
+		if ($search_terms)
+		{
+			$base_url->setQueryStringVariable('search', $search_terms);
+		}
+
 		$files = ee('Model')->get('File')
 			->filter('site_id', ee()->config->item('site_id'));
 
@@ -94,7 +100,20 @@ class Files extends AbstractFilesController {
 		$this->sidebarMenu(NULL);
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('file_manager');
-		ee()->view->cp_heading = lang('all_files');
+
+		// Set search results heading
+		if ( ! empty($vars['table']['search']))
+		{
+			ee()->view->cp_heading = sprintf(
+				lang('search_results_heading'),
+				$vars['table']['total_rows'],
+				$vars['table']['search']
+			);
+		}
+		else
+		{
+			ee()->view->cp_heading = lang('all_files');
+		}
 
 		ee()->cp->render('files/index', $vars);
 	}

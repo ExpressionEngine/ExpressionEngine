@@ -101,7 +101,7 @@ abstract class AbstractFiles extends CP_Controller {
 	{
 		ee()->view->header = array(
 			'title' => lang('file_manager'),
-			'form_url' => cp_url('files/search'),
+			'form_url' => cp_url('files'),
 			'toolbar_items' => array(
 				'download' => array(
 					'href' => cp_url('files/export'),
@@ -114,7 +114,7 @@ abstract class AbstractFiles extends CP_Controller {
 
 	protected function buildTableFromFileCollection(Collection $files, $limit = 20)
 	{
-		$table = Table::create(array('autosort' => TRUE, 'limit' => $limit));
+		$table = Table::create(array('autosort' => TRUE, 'limit' => $limit, 'autosearch' => TRUE));
 		$table->setColumns(
 			array(
 				'title_or_name',
