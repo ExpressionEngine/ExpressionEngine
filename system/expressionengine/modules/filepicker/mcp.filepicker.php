@@ -1,7 +1,5 @@
 <?php
 
-var_dump('sdfgsdfgdg');
-
 use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
@@ -12,6 +10,7 @@ class Filepicker_mcp {
 	public function __construct()
 	{
 		$this->picker = new Picker();
+		$this->base_url = 'addons/settings/filepicker';
 	}
 
 	public function index()
@@ -68,7 +67,9 @@ class Filepicker_mcp {
 			$files = $dir->getFiles();
 		}
 
-		$base_url = new URL('files/picker', ee()->session->session_id());
+		var_dump($dir);
+
+		$base_url = new URL($this->base_url, ee()->session->session_id());
 
 		$filters = ee('Filter')->add('Perpage', $files->count(), 'show_all_files');
 
@@ -104,7 +105,14 @@ class Filepicker_mcp {
 
 		ee()->view->cp_heading = $id == 'all' ? lang('all_files') : sprintf(lang('files_in_directory'), $dir->name);
 
-		ee()->cp->render('_shared/modal_file_picker', $vars);
+		return ee()->cp->render('ModalView', $vars, TRUE);
+	}
+
+	public function modal()
+	{
+		$this->base_url = $this->picker->controller;
+		ee()->output->_display($this->index());
+		exit();
 	}
 
 }
