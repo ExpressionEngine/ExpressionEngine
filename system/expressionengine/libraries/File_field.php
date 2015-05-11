@@ -187,7 +187,7 @@ class File_field {
 	 * 			jQuery object representing the field from the field_name given
 	 * @param string $endpoint_url The URL the file browser will hit
 	 */
-	public function browser($config = array(), $endpoint_url = 'C=content_publish&M=filemanager_actions')
+	public function browser($config = array(), $endpoint_url = 'addons/settings/filepicker/modal')
 	{
 		ee()->lang->loadfile('content');
 
