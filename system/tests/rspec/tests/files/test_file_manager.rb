@@ -5,7 +5,7 @@ require './bootstrap.rb'
 #  - "All Files" upload new file menu only lists directories member has access to
 #  - Table of files only show files in directories member has access to
 
-feature 'File Manager', :all_files => true do
+feature 'File Manager' do
 
 	before(:each) do
 		cp_session
