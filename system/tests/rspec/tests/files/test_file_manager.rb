@@ -189,6 +189,8 @@ end
 		no_php_js_errors
 
 		@page.current_url.should include 'files/file/edit'
+		edit_page = EditFile.new
+		edit_page.displayed?
 	end
 
 	it 'can crop and image', :all_files => true do
@@ -196,6 +198,8 @@ end
 		no_php_js_errors
 
 		@page.current_url.should include 'files/file/crop'
+		crop_page = CropFile.new
+		crop_page.displayed?
 	end
 
 	# The capybara/webkit driver is munging headers.
