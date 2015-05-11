@@ -359,7 +359,7 @@ class Watermarks extends AbstractFilesController {
 					'title' => 'watermark_text_dropshadow_color',
 					'desc' => 'watermark_text_dropshadow_color_desc',
 					'fields' => array(
-						'wm_shadow_distance' => array(
+						'wm_shadow_color' => array(
 							'type' => 'text',
 							'value' => $watermark->wm_shadow_distance
 						)
