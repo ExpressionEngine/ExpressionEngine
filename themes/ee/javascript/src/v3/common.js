@@ -265,6 +265,19 @@ $(document).ready(function(){
 			});
 		});
 
+		// Highlight table rows when checked
+		$('table tr td:last-child input[type=checkbox]').on('change',function() {
+			$(this).parents('tr').toggleClass('selected', $(this).is(':checked'));
+		});
+
+		// Select all for tables
+		$('table th.check-ctrl input').on('click', function(){
+			$(this).parents('table')
+				.find('tr td:last-child input[type=checkbox]')
+				.prop('checked', $(this).is(':checked'))
+				.trigger('change');
+		});
+
 		// Highlight selected row for table lists
 		$('.tbl-list .check-ctrl input').on('change',function() {
 			$(this).parents('.tbl-row').toggleClass('selected', $(this).is(':checked'));
