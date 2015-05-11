@@ -191,7 +191,7 @@
 					}
 
 					// Check all normal checkboxes
-					$(row_cache.getColumn(column)).find(':checkbox')
+					$(row_cache.getColumn(column)).find(':checkbox:enabled')
 						.prop('checked', checked)
 						.trigger('change');
 
