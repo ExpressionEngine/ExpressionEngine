@@ -31,7 +31,7 @@ class HexColor extends ValidationRule {
 
 	public function validate($key, $value)
 	{
-		return (bool) ! preg_match('/^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $value);
+		return (bool) preg_match('/^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $value);
 	}
 
 	public function getLanguageKey()
