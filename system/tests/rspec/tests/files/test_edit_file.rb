@@ -103,6 +103,8 @@ feature 'File Manger / Edit File' do
 
 	it 'can navigate back to the filemanger' do
 		click_link "File Manager"
+		no_php_js_errors
+
 		@return.displayed?
 	end
 
