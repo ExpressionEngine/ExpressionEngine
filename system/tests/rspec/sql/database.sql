@@ -2052,7 +2052,7 @@ UNLOCK TABLES;
 LOCK TABLES `exp_upload_prefs` WRITE;
 INSERT INTO `exp_upload_prefs` (`id`, `site_id`, `name`, `server_path`, `url`, `allowed_types`, `max_size`, `max_height`, `max_width`, `properties`, `pre_format`, `post_format`, `file_properties`, `file_pre_format`, `file_post_format`, `cat_group`, `batch_location`) VALUES
 	(1,1,'Main Upload Directory','/private/var/www/expressionengine/images/uploads/','http://ee2/images/uploads/','all','','','','style="border: 0;" alt="image"','','','','','',NULL,NULL),
-	(2,1,'About','/private/var/www/expressionengine/themes/site_themes/agile_records/images/uploads/','http://ee2/themes/site_themes/agile_records/images/uploads/','img','','','','','','','','','',NULL,NULL);
+	(2,1,'About','/private/var/www/expressionengine/themes/ee/site_themes/agile_records/images/uploads/','http://ee2/themes/site_themes/agile_records/images/uploads/','img','','','','','','','','','',NULL,NULL);
 UNLOCK TABLES;
 
 
