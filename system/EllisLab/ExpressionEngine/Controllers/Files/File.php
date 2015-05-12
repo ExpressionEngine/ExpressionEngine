@@ -55,7 +55,7 @@ class File extends AbstractFilesController {
 
 		// Adapted from http://jeffreysambells.com/2012/10/25/human-readable-filesize-php
 		$size   = array('b', 'kb', 'mb', 'gb', 'tb', 'pb', 'eb', 'zb', 'yb');
-	    $factor = floor((strlen($file->file_size) - 1) / 3);
+		$factor = floor((strlen($file->file_size) - 1) / 3);
 
 		$vars = array(
 			'file' => $file,
