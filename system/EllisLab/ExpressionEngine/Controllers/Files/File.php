@@ -306,33 +306,34 @@ class File extends AbstractFilesController {
 					->withTitle(sprintf(lang('crop_file_error'), lang($action)))
 					->addToBody($response['errors'])
 					->now();
-				break 2;
 			}
+			else
+			{
+				$file->file_hw_original = $response['dimensions']['height'] . ' ' . $response['dimensions']['width'];
+				$file->file_size = $response['file_info']['size'];
+				$file->save();
 
-			$file->file_hw_original = $response['dimensions']['height'] . ' ' . $response['dimensions']['width'];
-			$file->file_size = $response['file_info']['size'];
-			$file->save();
+				// Regenerate thumbnails
+				$dir = $file->getUploadDestination();
+				$dimensions = $dir->getFileDimensions();
 
-			// Regenerate thumbnails
-			$dir = $file->getUploadDestination();
-			$dimensions = $dir->getFileDimensions();
+				ee()->filemanager->create_thumb(
+					$file->getAbsolutePath(),
+					array(
+						'server_path' => $dir->server_path,
+						'file_name' => $file->file_name,
+						'dimensions' => $dimensions->asArray()
+					),
+					TRUE, // Regenerate thumbnails
+					FALSE // Regenerate all images
+				);
 
-			ee()->filemanager->create_thumb(
-				$file->getAbsolutePath(),
-				array(
-					'server_path' => $dir->server_path,
-					'file_name' => $file->file_name,
-					'dimensions' => $dimensions->asArray()
-				),
-				TRUE, // Regenerate thumbnails
-				FALSE // Regenerate all images
-			);
-
-			ee('Alert')->makeInline('crop-form')
-				->asSuccess()
-				->withTitle(sprintf(lang('crop_file_success'), lang($action)))
-				->addToBody(sprintf(lang('crop_file_success_desc'), $file->title, lang($action_desc)))
-				->now();
+				ee('Alert')->makeInline('crop-form')
+					->asSuccess()
+					->withTitle(sprintf(lang('crop_file_success'), lang($action)))
+					->addToBody(sprintf(lang('crop_file_success_desc'), $file->title, lang($action_desc)))
+					->now();
+			}
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
