@@ -64,6 +64,7 @@ class TemplateGroup extends Model {
 	);
 
 	protected static $_events = array(
+		'beforeInsert',
 		'afterDelete',
 		'afterInsert',
 		'afterUpdate'
@@ -74,6 +75,20 @@ class TemplateGroup extends Model {
 	protected $group_name;
 	protected $group_order;
 	protected $is_site_default;
+
+	/**
+	 * For new groups, make sure the group order is set
+	 */
+	public function onBeforeInsert()
+	{
+		$group_order = $this->getProperty('group_order');
+		if (empty($group_order))
+		{
+			$count = $this->getFrontend()->get('TemplateGroup')
+				->count();
+			$this->setProperty('group_order', $count + 1);
+		}
+	}
 
 	/**
 	 * For a new group, make sure the folder exists if it needs to
