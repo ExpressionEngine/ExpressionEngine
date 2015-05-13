@@ -1328,7 +1328,7 @@ class Comment {
 		// The where clauses above will affect this query - it's below the conditional
 		// because AR cannot keep track of two queries at once
 
-		ee()->db->select('channel_titles.entry_id, channel_titles.entry_date, channel_titles.comment_expiration_date, channel_titles.allow_comments, channels.comment_system_enabled, channels.comment_use_captcha, channels.comment_expiration');
+		ee()->db->select('channel_titles.entry_id, channel_titles.entry_date, channel_titles.comment_expiration_date, channel_titles.allow_comments, channels.comment_system_enabled, channels.comment_expiration');
 		ee()->db->from(array('channel_titles', 'channels'));
 
 		ee()->db->where_in('channel_titles.site_id', ee()->TMPL->site_ids);
@@ -1383,7 +1383,7 @@ class Comment {
 
 		if ($return_form == FALSE)
 		{
-			if ($query->row('comment_use_captcha')  == 'n')
+			if ( ! ee('Captcha')->shouldRequireCaptcha())
 			{
 				ee()->TMPL->tagdata = str_replace(LD.'captcha'.RD, '', ee()->TMPL->tagdata);
 			}
@@ -1492,11 +1492,11 @@ class Comment {
 		$cond['logged_in']	= (ee()->session->userdata('member_id') == 0) ? FALSE : TRUE;
 		$cond['logged_out']	= (ee()->session->userdata('member_id') != 0) ? FALSE : TRUE;
 
-		if ($query->row('comment_use_captcha')  == 'n')
+		if ( ! ee('Captcha')->shouldRequireCaptcha())
 		{
 			$cond['captcha'] = FALSE;
 		}
-		elseif ($query->row('comment_use_captcha')  == 'y')
+		else
 		{
 			$cond['captcha'] =  (ee()->config->item('captcha_require_members') == 'y'  OR
 								(ee()->config->item('captcha_require_members') == 'n' AND ee()->session->userdata('member_id') == 0)) ? TRUE : FALSE;
@@ -1654,11 +1654,11 @@ class Comment {
 			'entry_id' 	=> $query->row('entry_id')
 		);
 
-		if ($query->row('comment_use_captcha')  == 'y')
+		if (ee('Captcha')->shouldRequireCaptcha())
 		{
 			if (preg_match("/({captcha})/", $tagdata))
 			{
-				$tagdata = preg_replace("/{captcha}/", ee()->functions->create_captcha(), $tagdata);
+				$tagdata = preg_replace("/{captcha}/", ee('Captcha')->create(), $tagdata);
 			}
 		}
 
@@ -2416,30 +2416,27 @@ class Comment {
 		/**  Do we require CAPTCHA?
 		/** ----------------------------------------*/
 
-		if ($query->row('comment_use_captcha')  == 'y')
+		if (ee('Captcha')->shouldRequireCaptcha())
 		{
-			if (ee()->config->item('captcha_require_members') == 'y'  OR  (ee()->config->item('captcha_require_members') == 'n' AND ee()->session->userdata('member_id') == 0))
+			if ( ! isset($_POST['captcha']) OR $_POST['captcha'] == '')
 			{
-				if ( ! isset($_POST['captcha']) OR $_POST['captcha'] == '')
+				return ee()->output->show_user_error('submission', ee()->lang->line('captcha_required'));
+			}
+			else
+			{
+				ee()->db->where('word', $_POST['captcha']);
+				ee()->db->where('ip_address', ee()->input->ip_address());
+				ee()->db->where('date > UNIX_TIMESTAMP()-7200', NULL, FALSE);
+
+				$result = ee()->db->count_all_results('captcha');
+
+				if ($result == 0)
 				{
-					return ee()->output->show_user_error('submission', ee()->lang->line('captcha_required'));
+					return ee()->output->show_user_error('submission', ee()->lang->line('captcha_incorrect'));
 				}
-				else
-				{
-					ee()->db->where('word', $_POST['captcha']);
-					ee()->db->where('ip_address', ee()->input->ip_address());
-					ee()->db->where('date > UNIX_TIMESTAMP()-7200', NULL, FALSE);
 
-					$result = ee()->db->count_all_results('captcha');
-
-					if ($result == 0)
-					{
-						return ee()->output->show_user_error('submission', ee()->lang->line('captcha_incorrect'));
-					}
-
-					// @TODO: AR
-					ee()->db->query("DELETE FROM exp_captcha WHERE (word='".ee()->db->escape_str($_POST['captcha'])."' AND ip_address = '".ee()->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
-				}
+				// @TODO: AR
+				ee()->db->query("DELETE FROM exp_captcha WHERE (word='".ee()->db->escape_str($_POST['captcha'])."' AND ip_address = '".ee()->input->ip_address()."') OR date < UNIX_TIMESTAMP()-7200");
 			}
 		}
 

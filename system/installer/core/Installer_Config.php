@@ -228,7 +228,9 @@ class MSM_Config extends EE_Config
 	}
 
 	/**
-	 * Remove a config item from all msm sites
+	 * Remove config items from all MSM sites
+	 *
+	 * @param	mixed	$remove_key	String or array of strings of keys to remove
 	 */
 	public function remove_config_item($remove_key)
 	{
@@ -239,6 +241,11 @@ class MSM_Config extends EE_Config
 			'site_template_preferences',
 			'site_channel_preferences',
 		);
+
+		if ( ! is_array($remove_key))
+		{
+			$remove_key = array($remove_key);
+		}
 
 		ee()->db->select(implode(', ', $columns).', site_id');
 
@@ -255,11 +262,14 @@ class MSM_Config extends EE_Config
 			{
 				$data = unserialize(base64_decode($data));
 
-				if (isset($data[$remove_key]))
+				foreach ($remove_key as $key)
 				{
-					$changed = TRUE;
-					unset($data[$remove_key]);
-					$site[$column] = base64_encode(serialize($data));
+					if (isset($data[$key]))
+					{
+						$changed = TRUE;
+						unset($data[$key]);
+						$site[$column] = base64_encode(serialize($data));
+					}
 				}
 			}
 

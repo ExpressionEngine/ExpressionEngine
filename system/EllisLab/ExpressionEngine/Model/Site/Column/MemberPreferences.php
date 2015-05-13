@@ -37,7 +37,6 @@ class MemberPreferences extends Base64SerializedComposite {
 	protected $new_member_notification;
 	protected $mbr_notification_emails;
 	protected $require_terms_of_service;
-	protected $use_membership_captcha;
 	protected $default_member_group;
 	protected $profile_trigger;
 	protected $member_theme;

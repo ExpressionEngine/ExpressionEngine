@@ -183,7 +183,6 @@ feature 'Channel Create/Edit' do
 
     channel_settings.default_status.select 'Closed'
     channel_settings.allow_guest_posts[0].click
-    channel_settings.require_captcha[0].click
 
     channel_settings.enable_versioning[0].click
     channel_settings.max_revisions.set '20'
@@ -200,7 +199,6 @@ feature 'Channel Create/Edit' do
     channel_settings.deft_comments[1].click
     channel_settings.comment_require_membership[0].click
     channel_settings.comment_require_email[1].click
-    channel_settings.comment_use_captcha[1].click
     channel_settings.comment_moderate[0].click
     channel_settings.comment_max_chars.set '40'
     channel_settings.comment_timelock.set '50'
@@ -255,7 +253,6 @@ feature 'Channel Create/Edit' do
     channel_settings.default_status.value.should == 'closed'
     channel_settings.default_author.value.should == '1'
     channel_settings.allow_guest_posts[0].checked?.should == true
-    channel_settings.require_captcha[0].checked?.should == true
 
     channel_settings.enable_versioning[0].checked?.should == true
     channel_settings.max_revisions.value.should == '20'
@@ -272,7 +269,6 @@ feature 'Channel Create/Edit' do
     channel_settings.deft_comments[1].checked?.should == true
     channel_settings.comment_require_membership[0].checked?.should == true
     channel_settings.comment_require_email[1].checked?.should == true
-    channel_settings.comment_use_captcha[1].checked?.should == true
     channel_settings.comment_moderate[0].checked?.should == true
     channel_settings.comment_max_chars.value.should ==  '40'
     channel_settings.comment_timelock.value.should ==  '50'

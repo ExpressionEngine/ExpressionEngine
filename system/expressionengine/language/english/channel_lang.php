@@ -394,12 +394,6 @@ $lang = array(
 'allow_guest_submission_desc' =>
 'When set to <b>yes</b>, unregistered users will be able to submit forms for this channel.',
 
-'channel_form_require_captcha' =>
-'Require <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr>',
-
-'channel_form_require_captcha_desc' =>
-'When set to <b>yes</b>, users will be presented with a <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> when submitting an entry for this channel.',
-
 'versioning' =>
 'Versioning',
 
@@ -464,12 +458,6 @@ $lang = array(
 
 'require_email_desc'=>
 'When set to <b>yes</b>, a member must provide a valid Email address to submit comments to this channel\'s entries.',
-
-'enable_captcha' =>
-'Enable <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr>?',
-
-'enable_captcha_desc' =>
-'When set to <b>enable</b>, a member must pass a <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> test to submit comments to this channel\'s entries.',
 
 'moderate_comments' =>
 'Moderate comments?',

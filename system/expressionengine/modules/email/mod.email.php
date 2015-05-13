@@ -37,16 +37,7 @@ class Email {
 	 */
 	public function __construct()
 	{
-		if (ee()->config->item('email_module_captchas') === FALSE OR
-			ee()->config->item('email_module_captchas') == 'n')
-		{
-			$this->use_captchas = 'n';
-		}
-		elseif (ee()->config->item('email_module_captchas') == 'y')
-		{
-			$this->use_captchas = (ee()->config->item('captcha_require_members') == 'y'  OR (ee()->config->item('captcha_require_members') == 'n' AND ee()->session->userdata('member_id') == 0))
-				? 'y' : 'n';
-		}
+		$this->use_captchas = ee('Captcha')->shouldRequireCaptcha() ? 'y' : 'n';
 	}
 
 	// --------------------------------------------------------------------

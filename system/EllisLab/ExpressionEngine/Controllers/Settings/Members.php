@@ -77,19 +77,6 @@ class Members extends Settings {
 					)
 				),
 				array(
-					'title' => 'use_membership_captcha',
-					'desc' => 'use_membership_captcha_desc',
-					'fields' => array(
-						'use_membership_captcha' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							)
-						)
-					)
-				),
-				array(
 					'title' => 'require_terms_of_service',
 					'desc' => 'require_terms_of_service_desc',
 					'fields' => array(

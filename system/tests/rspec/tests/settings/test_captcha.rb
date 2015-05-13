@@ -16,10 +16,13 @@ feature 'CAPTCHA Settings' do
   end
 
   it 'should load current settings into form fields' do
+    require_captcha = ee_config(item: 'require_captcha')
     captcha_font = ee_config(item: 'captcha_font')
     captcha_rand = ee_config(item: 'captcha_rand')
     captcha_require_members = ee_config(item: 'captcha_require_members')
 
+    @page.require_captcha_y.checked?.should == (require_captcha == 'y')
+    @page.require_captcha_n.checked?.should == (require_captcha == 'n')
     @page.captcha_font_y.checked?.should == (captcha_font == 'y')
     @page.captcha_font_n.checked?.should == (captcha_font == 'n')
     @page.captcha_rand_y.checked?.should == (captcha_rand == 'y')
@@ -77,6 +80,7 @@ feature 'CAPTCHA Settings' do
   end
 
   it 'should save and load the settings' do
+    @page.require_captcha_y.click
     @page.captcha_font_n.click
     @page.captcha_rand_n.click
     @page.captcha_require_members_y.click
@@ -85,6 +89,7 @@ feature 'CAPTCHA Settings' do
     @page.submit
 
     @page.should have_text 'Preferences updated'
+    @page.require_captcha_y.checked?.should == true
     @page.captcha_font_n.checked?.should == true
     @page.captcha_rand_n.checked?.should == true
     @page.captcha_require_members_y.checked?.should == true

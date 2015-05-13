@@ -183,7 +183,7 @@ class Member_register extends Member {
 		// {if captcha}
 		if (preg_match("/{if captcha}(.+?){\/if}/s", $reg_form, $match))
 		{
-			if (ee()->config->item('use_membership_captcha') == 'y')
+			if (ee('Captcha')->shouldRequireCaptcha())
 			{
 				$reg_form = preg_replace("/{if captcha}.+?{\/if}/s", $match['1'], $reg_form);
 
@@ -192,7 +192,7 @@ class Member_register extends Member {
 
 				if ( ! class_exists('Template'))
 				{
-					$reg_form = preg_replace("/{captcha}/", ee()->functions->create_captcha(), $reg_form);
+					$reg_form = preg_replace("/{captcha}/", ee('Captcha')->create(), $reg_form);
 				}
 			}
 			else
@@ -379,7 +379,7 @@ class Member_register extends Member {
 			$cust_errors[] = lang('mbr_emails_not_match');
 		}
 
-		if (ee()->config->item('use_membership_captcha') == 'y')
+		if (ee('Captcha')->shouldRequireCaptcha())
 		{
 			if ( ! isset($_POST['captcha']) OR $_POST['captcha'] == '')
 			{
@@ -415,7 +415,7 @@ class Member_register extends Member {
 		}
 
 		// Do we require captcha?
-		if (ee()->config->item('use_membership_captcha') == 'y')
+		if (ee('Captcha')->shouldRequireCaptcha())
 		{
 			$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_captcha WHERE word='".ee()->db->escape_str($_POST['captcha'])."' AND ip_address = '".ee()->input->ip_address()."' AND date > UNIX_TIMESTAMP()-7200");
 

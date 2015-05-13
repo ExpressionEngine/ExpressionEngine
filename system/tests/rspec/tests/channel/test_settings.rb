@@ -224,7 +224,6 @@ feature 'Channel Settings' do
 
     @page.default_status.select 'Closed'
     @page.allow_guest_posts[0].click
-    @page.require_captcha[0].click
 
     @page.enable_versioning[0].click
     @page.max_revisions.set '20'
@@ -241,7 +240,6 @@ feature 'Channel Settings' do
     @page.deft_comments[1].click
     @page.comment_require_membership[0].click
     @page.comment_require_email[1].click
-    @page.comment_use_captcha[1].click
     @page.comment_moderate[0].click
     @page.comment_max_chars.set '40'
     @page.comment_timelock.set '50'
@@ -280,7 +278,6 @@ feature 'Channel Settings' do
     @page.default_status.value.should == 'closed'
     @page.default_author.value.should == '1'
     @page.allow_guest_posts[0].checked?.should == true
-    @page.require_captcha[0].checked?.should == true
 
     @page.enable_versioning[0].checked?.should == true
     @page.max_revisions.value.should == '20'
@@ -297,7 +294,6 @@ feature 'Channel Settings' do
     @page.deft_comments[1].checked?.should == true
     @page.comment_require_membership[0].checked?.should == true
     @page.comment_require_email[1].checked?.should == true
-    @page.comment_use_captcha[1].checked?.should == true
     @page.comment_moderate[0].checked?.should == true
     @page.comment_max_chars.value.should ==  '40'
     @page.comment_timelock.value.should ==  '50'

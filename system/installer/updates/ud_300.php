@@ -49,6 +49,7 @@ class Updater {
 				'_update_layout_publish_table',
 				'_update_entry_edit_date_format',
 				'_rename_default_status_groups',
+				'_centralize_captcha_settings',
 				'_update_members_table',
 				'_update_html_buttons',
 			)
@@ -507,6 +508,94 @@ class Updater {
 			->set('group_name', 'Default')
 			->update('status_groups');
 	}
+
+	/**
+	 * Combines all CAPTCHA settings into one on/off switch; if a site has
+	 * CAPTCHA turned on for any form, we'll turn CAPTCHA on for the whole site
+	 */
+	public function _centralize_captcha_settings()
+	{
+		// Prevent this from running again
+		if ( ! ee()->db->field_exists('comment_use_captcha', 'channels'))
+		{
+			return;
+		}
+
+		// First, let's see which sites have CAPTCHA turned on for Channel Forms
+		// or comments, and mark those sites as needing CAPTCHA required
+		$site_ids_query = ee()->db->select('channels.site_id')
+			->distinct()
+			->where('channels.comment_use_captcha', 'y')
+			->or_where('channel_form_settings.require_captcha', 'y')
+			->join(
+				'channel_form_settings',
+				'channels.channel_id = channel_form_settings.channel_id',
+				'left')
+			->get('channels')
+			->result();
+
+		$sites_require_captcha = array();
+
+		foreach ($site_ids_query as $site)
+		{
+			$sites_require_captcha[] = $site->site_id;
+		}
+
+		// Get all site IDs; this is for eventually comparing against the site
+		// IDs we have collected to see which sites should have CAPTCHA turned
+		// OFF, but we also need to loop through each site to see if any other
+		// forms have CAPTCHA turned on
+		$all_site_ids_query = ee()->db->select('site_id')
+			->get('sites')
+			->result();
+
+		$all_site_ids = array();
+		foreach ($all_site_ids_query as $site)
+		{
+			$all_site_ids[] = $site->site_id;
+		}
+
+		$msm_config = new MSM_Config();
+
+		foreach ($all_site_ids as $site_id)
+		{
+			// Skip sites we're already requiring CAPTCHA on
+			if (in_array($site_id, $sites_require_captcha))
+			{
+				continue;
+			}
+
+			$msm_config->site_prefs('', $site_id);
+
+			if ($msm_config->item('use_membership_captcha') == 'y' OR
+				$msm_config->item('email_module_captchas') == 'y')
+			{
+				$sites_require_captcha[] = $site_id;
+			}
+		}
+
+		// Diff all site IDs against the ones we're requiring CAPTCHA for
+		// to get a list of sites we're NOT requiring CAPTCHA for
+		$sites_do_not_require_captcha = array_diff($all_site_ids, $sites_require_captcha);
+
+		// Add the new preferences
+		// These sites require CAPTCHA
+		if ( ! empty($sites_require_captcha))
+		{
+			ee()->config->update_site_prefs(array('require_captcha' => 'y'), $sites_require_captcha);
+		}
+
+		// These sites do NOT require CAPTCHA
+		if ( ! empty($sites_do_not_require_captcha))
+		{
+			ee()->config->update_site_prefs(array('require_captcha' => 'n'), $sites_do_not_require_captcha);
+		}
+
+		// And finally, drop the old columns and remove old config items
+		ee()->smartforge->drop_column('channels', 'comment_use_captcha');
+		ee()->smartforge->drop_column('channel_form_settings', 'require_captcha');
+
+		$msm_config->remove_config_item(array('use_membership_captcha', 'email_module_captchas'));
 
 	/**
 	 * Adds columns to the members table as needed

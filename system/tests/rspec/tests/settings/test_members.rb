@@ -15,7 +15,6 @@ feature 'Member Settings' do
 
   it 'should load current settings into form fields' do
     allow_member_registration = ee_config(item: 'allow_member_registration')
-    use_membership_captcha = ee_config(item: 'use_membership_captcha')
     require_terms_of_service = ee_config(item: 'require_terms_of_service')
     allow_member_localization = ee_config(item: 'allow_member_localization')
     new_member_notification = ee_config(item: 'new_member_notification')
@@ -23,8 +22,6 @@ feature 'Member Settings' do
     @page.allow_member_registration_y.checked?.should == (allow_member_registration == 'y')
     @page.allow_member_registration_n.checked?.should == (allow_member_registration == 'n')
     @page.req_mbr_activation.value.should == ee_config(item: 'req_mbr_activation')
-    @page.use_membership_captcha_y.checked?.should == (use_membership_captcha == 'y')
-    @page.use_membership_captcha_n.checked?.should == (use_membership_captcha == 'n')
     @page.require_terms_of_service_y.checked?.should == (require_terms_of_service == 'y')
     @page.require_terms_of_service_n.checked?.should == (require_terms_of_service == 'n')
     @page.allow_member_localization_y.checked?.should == (allow_member_localization == 'y')
@@ -68,7 +65,6 @@ feature 'Member Settings' do
   it 'should save and load the settings' do
     @page.allow_member_registration_y.click
     @page.req_mbr_activation.select 'No activation required'
-    @page.use_membership_captcha_y.click
     @page.require_terms_of_service_n.click
     @page.allow_member_localization_n.click
     @page.default_member_group.select 'Super Admins'
@@ -83,7 +79,6 @@ feature 'Member Settings' do
     @page.should have_text 'Preferences updated'
     @page.allow_member_registration_y.checked?.should == true
     @page.req_mbr_activation.value.should == 'none'
-    @page.use_membership_captcha_y.checked?.should == true
     @page.require_terms_of_service_n.checked?.should == true
     @page.allow_member_localization_n.checked?.should == true
     @page.default_member_group.value.should == '1'
