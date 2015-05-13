@@ -165,7 +165,7 @@ class Group extends AbstractDesignController {
 					$values = $master_template->getValues();
 					unset($values['template_id']);
 					$new_template = ee('Model')->make('Template', $values);
-					$new_tempalte->template_id = NULL;
+					$new_template->template_id = NULL;
 					$new_template->group_id = $group->group_id;
 					$new_template->edit_date = ee()->localize->now;
 					$new_template->site_id = ee()->config->item('site_id');
