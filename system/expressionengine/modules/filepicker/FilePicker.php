@@ -78,13 +78,6 @@ class FilePicker {
 			}
 
 			$toolbar = array(
-				'view' => array(
-					'href' => '',
-					'rel' => 'modal-view-file',
-					'class' => 'm-link',
-					'title' => lang('view'),
-					'data-file-id' => $file->file_id
-				),
 				'edit' => array(
 					'href' => cp_url('files/file/edit/' . $file->file_id),
 					'title' => lang('edit')
@@ -101,7 +94,6 @@ class FilePicker {
 
 			if ( ! $file->isImage())
 			{
-				unset($toolbar['view']);
 				unset($toolbar['crop']);
 			}
 

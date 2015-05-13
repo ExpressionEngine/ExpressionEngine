@@ -116,12 +116,20 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 							<input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
 						<?php break;
 
+						case 'radio_block': ?>
+							<?php foreach ($field['choices'] as $key => $choice):
+								$label = $choice['label'];
+								$checked = ($key == $value); ?>
+								<label class="choice mr block <?=($checked) ? 'chosen' : ''?>"><input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=$attrs?>> <?=lang($label)?></label>
+								<?php if ( ! empty($choice['html'])): ?><?=$choice['html']?><?php endif ?>
+							<?php endforeach ?>
+						<?php break;
+
 						case 'radio': ?>
 							<?php foreach ($field['choices'] as $key => $label):
 								$checked = ($key == $value); ?>
 								<label class="choice mr block <?=($checked) ? 'chosen' : ''?>"><input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=$required?>> <?=lang($label)?></label>
 							<?php endforeach ?>
-							<?php if ( ! empty($field['html'])): ?><?=$field['html']?><?php endif ?>
 						<?php break;
 
 						case 'inline_radio': ?>

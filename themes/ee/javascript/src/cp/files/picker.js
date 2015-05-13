@@ -51,7 +51,6 @@
 				callback = EE.file_picker_callback;
 			} else {
 				callback = function(data) {
-					console.log(data);
 					modal.find('.m-close').click();
 					input_value.val(data.id);
 					input_name.html(data.file_name);
