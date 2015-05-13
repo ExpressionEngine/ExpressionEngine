@@ -80,6 +80,9 @@ $lang = array(
 'no_upload_destination' =>
 'No upload destination found',
 
+'zero_directories_found' =>
+'Zero <b>Directories</b> found',
+
 'files_in_directory' =>
 'Files in <b>%s</b>',
 
@@ -230,12 +233,6 @@ $lang = array(
 
 'upload_remove_modal_directories' =>
 'directories',
-
-'upload_directories_removed' =>
-'Upload directories removed',
-
-'upload_directories_removed_desc' =>
-'%d upload directories were removed.',
 
 'no_upload_directories' =>
 'No Upload Directories',
@@ -429,6 +426,171 @@ $lang = array(
 
 'directory_sync_warning' =>
 'Some files could not be synchronized',
+
+'watermark' =>
+'Watermark',
+
+'watermarks' =>
+'Watermarks',
+
+'no_watermarks' =>
+'No Watermarks',
+
+'create_watermark' =>
+'Create Watermark',
+
+'edit_watermark' =>
+'Edit Watermark',
+
+'watermarks_removed' =>
+'Watermarks removed',
+
+'watermarks_removed_desc' =>
+'%d watermarks were removed.',
+
+'watermark_name_desc' =>
+'Full descriptive name of this watermark.',
+
+'watermark_type_desc' =>
+'Choose a watermark type.',
+
+'text' =>
+'Text',
+
+'image' =>
+'Image',
+
+'watermark_alignment' =>
+'Alignment',
+
+'watermark_alignment_desc' =>
+'Determines where this watermark will appear on the image.',
+
+'top' =>
+'Top',
+
+'middle' =>
+'Middle',
+
+'bottom' =>
+'Bottom',
+
+'left' =>
+'Left',
+
+'center' =>
+'Center',
+
+'right' =>
+'Right',
+
+'watermark_padding' =>
+'Padding',
+
+'watermark_padding_desc' =>
+'Add padding around this watermark.',
+
+'watermark_offset' =>
+'Offset',
+
+'watermark_offset_desc' =>
+'Distance in pixels from the edge of the image.',
+
+'horizontal' =>
+'horizontal',
+
+'vertical' =>
+'vertical',
+
+'text_options' =>
+'Text Options',
+
+'watermarks_true_type' =>
+'Enable True Type?',
+
+'watermarks_true_type_desc' =>
+'When set to <b>yes</b>, text watermarks will be rendered with True Type.',
+
+'watermark_text' =>
+'Text',
+
+'watermark_text_desc' =>
+'Content of this watermark',
+
+'watermark_text_font' =>
+'Font face',
+
+'watermark_text_font_desc' =>
+'Choose the font face for this watermark.',
+
+'watermark_text_size' =>
+'Text size',
+
+'watermark_text_size_desc' =>
+'Size in pixels of this watermark\'s text.',
+
+'watermark_text_color' =>
+'Text color',
+
+'watermark_text_color_desc' =>
+'Color of this watermark\'s text.',
+
+'watermark_text_dropshadow' =>
+'Enable dropshadow?',
+
+'watermark_text_dropshadow_desc' =>
+'When set to <b>yes</b>, a drop-shadow will be rendered.',
+
+'watermark_text_dropshadow_distance' =>
+'Dropshadow distance',
+
+'watermark_text_dropshadow_distance_desc' =>
+'Size of this watermark\'s drop shadow.',
+
+'watermark_text_dropshadow_color' =>
+'Dropshadow color',
+
+'watermark_text_dropshadow_color_desc' =>
+'Color of the dropshadow for this watermark.',
+
+'image_options' =>
+'Image Options',
+
+'watermark_image_path' =>
+'Path',
+
+'watermark_image_path_desc' =>
+'Full path location of your watermark image.',
+
+'watermark_image_opacity' =>
+'Opacity',
+
+'watermark_image_opacity_desc' =>
+'Value for this image watermark\'s opacity.',
+
+'watermark_image_transparency_map' =>
+'Image transparency map',
+
+'watermark_image_transparency_map_desc' =>
+'Coordinates for alpha transparency of images to be watermarked.',
+
+'x_axis' =>
+'x-axis',
+
+'y_axis' =>
+'y-axis',
+
+'watermark_saved' =>
+'Watermark saved',
+
+'watermark_saved_desc' =>
+'Your watermark has been saved successfully.',
+
+'watermark_not_saved' =>
+'Attention: Watermark not saved',
+
+'watermark_not_saved_desc' =>
+'We were unable to save your watermark, please review and fix errors below.',
 
 // 2.x
 
@@ -677,9 +839,6 @@ $lang = array(
 'include'					=> 'Include?',
 
 ////Watermark
-
-'no_watermarks' =>
-'No watermarks exist',
 
 'add_watermark' =>
 'None',

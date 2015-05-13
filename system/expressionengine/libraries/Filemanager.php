@@ -1179,6 +1179,11 @@ class Filemanager {
 
 		$memory_setting = ini_get('memory_limit');
 
+		if ($memory_setting === -1)
+		{
+		    return TRUE;
+		}
+
 		if ( ! $memory_setting)
 		{
 			$memory_setting = '8M';
@@ -3049,7 +3054,7 @@ class Filemanager {
 	/**
 	 * Image crop
 	 */
-	private function _do_crop($file_path)
+	public function _do_crop($file_path)
 	{
 		$config = array(
 			'width'				=> ee()->input->post('crop_width'),
@@ -3098,7 +3103,7 @@ class Filemanager {
 	/**
 	 * Do image rotation.
 	 */
-	private function _do_rotate($file_path)
+	public function _do_rotate($file_path)
 	{
 		$config = array(
 			'rotation_angle'	=> ee()->input->post('rotate'),
@@ -3142,7 +3147,7 @@ class Filemanager {
 	/**
 	 * Do image resizing.
 	 */
-	private function _do_resize($file_path)
+	public function _do_resize($file_path)
 	{
 		$config = array(
 			'width'				=> ee()->input->get_post('resize_width'),

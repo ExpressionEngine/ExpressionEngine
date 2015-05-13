@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  */
 class Alpha extends ValidationRule {
 
-	public function validate($value)
+	public function validate($key, $value)
 	{
 		return (bool) preg_match("/^([a-z])+$/i", $value);
 	}

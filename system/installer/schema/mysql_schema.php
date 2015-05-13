@@ -347,6 +347,8 @@ class EE_Schema {
 			quick_tabs text NULL,
 			show_sidebar char(1) NOT NULL default 'n',
 			pmember_id int(10) NOT NULL default '0',
+		    rte_enabled char(1) NOT NULL DEFAULT 'y',
+		    rte_toolset_id int(10) NOT NULL DEFAULT '0',
 			PRIMARY KEY `member_id` (`member_id`),
 			KEY `group_id` (`group_id`),
 			KEY `unique_id` (`unique_id`),
@@ -1278,8 +1280,34 @@ class EE_Schema {
 			`resize_type` varchar(50) DEFAULT '',
 			`width` int(10) DEFAULT '0',
 			`height` int(10) DEFAULT '0',
+			`watermark_id` int(4) unsigned DEFAULT NULL,
 			PRIMARY KEY (`id`),
 			KEY `upload_location_id` (`upload_location_id`)
+		)";
+
+		$Q[] = "CREATE TABLE `exp_file_watermarks` (
+			`wm_id` int(4) unsigned NOT NULL AUTO_INCREMENT,
+			`wm_name` varchar(80) DEFAULT NULL,
+			`wm_type` varchar(10) DEFAULT 'text',
+			`wm_image_path` varchar(100) DEFAULT NULL,
+			`wm_test_image_path` varchar(100) DEFAULT NULL,
+			`wm_use_font` char(1) DEFAULT 'y',
+			`wm_font` varchar(30) DEFAULT NULL,
+			`wm_font_size` int(3) unsigned DEFAULT NULL,
+			`wm_text` varchar(100) DEFAULT NULL,
+			`wm_vrt_alignment` varchar(10) DEFAULT 'top',
+			`wm_hor_alignment` varchar(10) DEFAULT 'left',
+			`wm_padding` int(3) unsigned DEFAULT NULL,
+			`wm_opacity` int(3) unsigned DEFAULT NULL,
+			`wm_hor_offset` int(4) unsigned DEFAULT NULL,
+			`wm_vrt_offset` int(4) unsigned DEFAULT NULL,
+			`wm_x_transp` int(4) DEFAULT NULL,
+			`wm_y_transp` int(4) DEFAULT NULL,
+			`wm_font_color` varchar(7) DEFAULT NULL,
+			`wm_use_drop_shadow` char(1) DEFAULT 'y',
+			`wm_shadow_distance` int(3) unsigned DEFAULT NULL,
+			`wm_shadow_color` varchar(7) DEFAULT NULL,
+			PRIMARY KEY (`wm_id`)
 		)";
 
 		// Developer log table
@@ -1508,12 +1536,19 @@ class EE_Schema {
 			)
 		);
 
+		$member_group_defaults = array(
+			'group_description' => ''
+		);
+
 		$add_quotes = function($value) {
-				return (is_string($value)) ? "'{$value}'" : $value;
-			};
+			return (is_string($value)) ? "'{$value}'" : $value;
+		};
 
 		foreach ($member_groups as $group)
 		{
+			// Merge in defaults
+			$group = array_merge($member_group_defaults, $group);
+
 			$Q[] = "INSERT INTO exp_member_groups
 				(".implode(', ', array_keys($group)).")
 				VALUES (".implode(', ' , array_map($add_quotes, $group)).")";

@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  */
 class Email extends ValidationRule {
 
-	public function validate($value)
+	public function validate($key, $value)
 	{
 		return (bool) filter_var($value, FILTER_VALIDATE_EMAIL);
 	}

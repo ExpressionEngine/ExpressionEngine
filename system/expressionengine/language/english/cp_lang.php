@@ -611,6 +611,9 @@ $lang = array(
 'name' =>
 'Name',
 
+'type' =>
+'Type',
+
 'url_title' =>
 'URL Title',
 
@@ -622,6 +625,9 @@ $lang = array(
 
 'image' =>
 'Image',
+
+'no_rows_returned' =>
+'No rows returned',
 
 /**
  * Footer

@@ -59,6 +59,11 @@ class CategoryGroup extends Model implements ContentStructure {
 	protected $can_edit_categories;
 	protected $can_delete_categories;
 
+	public function getCustomFields()
+	{
+		return $this->getCategoryFields();
+	}
+
 	/**
 	 * Convenience method to fix inflection
 	 */

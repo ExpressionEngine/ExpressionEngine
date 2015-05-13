@@ -2,9 +2,9 @@
 	<p><b>Warning</b>: Allowing PHP in templates has security implications.</p>
 	<p class="caution">Any setting marked with <span title="excercise caution"></span> should be used with caution.</p>
 </div>
-<fieldset class="col-group <?=form_error_class('template_name')?>">
+<fieldset class="col-group required <?=form_error_class('template_name')?>">
 	<div class="setting-txt col w-8 <?=form_error_class('template_name')?>">
-		<h3><?=lang('template_name')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
+		<h3><?=lang('template_name')?></h3>
 		<em><?=lang('template_name_desc')?></em>
 	</div>
 	<div class="setting-field col w-8 last">

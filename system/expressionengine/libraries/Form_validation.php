@@ -1909,6 +1909,62 @@ class EE_Form_validation {
 	// --------------------------------------------------------------------
 
 	/**
+	* Greater than
+	*
+	* @param	string
+	* @param	int
+	* @return	bool
+	*/
+	public function greater_than($str, $min)
+	{
+		return is_numeric($str) ? ($str > $min) : FALSE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	* Equal to or Greater than
+	*
+	* @param	string
+	* @param	int
+	* @return	bool
+	*/
+	public function greater_than_equal_to($str, $min)
+	{
+		return is_numeric($str) ? ($str >= $min) : FALSE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	* Less than
+	*
+	* @param	string
+	* @param	int
+	* @return	bool
+	*/
+	public function less_than($str, $max)
+	{
+		return is_numeric($str) ? ($str < $max) : FALSE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	* Equal to or Less than
+	*
+	* @param	string
+	* @param	int
+	* @return	bool
+	*/
+	public function less_than_equal_to($str, $max)
+	{
+		return is_numeric($str) ? ($str <= $max) : FALSE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Is a Natural number  (0,1,2,3, etc.)
 	 *
 	 * @access	public

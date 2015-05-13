@@ -97,7 +97,7 @@ return array(
 			$app = $ee->make('App');
 
 			return new Model\DataStore(
-				ee()->db,
+				$ee->make('Database'),
 				$app->getModels(),
 				$ee->getPrefix()
 			);
@@ -138,6 +138,7 @@ return array(
 			'UploadDestination' => 'Model\File\UploadDestination',
 			'FileDimension' => 'Model\File\FileDimension',
 			'File' => 'Model\File\File',
+			'Watermark' => 'Model\File\Watermark',
 
 			// ..\Log
 			'CpLog' => 'Model\Log\CpLog',
@@ -189,6 +190,7 @@ return array(
 			'MailingListUser' => 'Module\MailingList\Model\MailingListUser',
 
 			// ..\Member
+			'HTMLButton' => 'Module\Member\Model\HTMLButton',
 			'Member' => 'Module\Member\Model\Member',
 			'MemberGroup' => 'Module\Member\Model\MemberGroup',
 

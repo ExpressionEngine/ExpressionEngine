@@ -199,41 +199,40 @@ class Channel extends Model implements ContentStructure {
 					// allow to implicitly set category group to "None"
 					if (empty($this->{$property}))
 					{
-						$this->{$property} = $channel->{$property};
+						$this->setRawProperty($property, $channel->{$property});
 					}
 					break;
 				case 'status_group':
 				case 'field_group':
 					if ( ! isset($this->{$property}))
 					{
-						$this->{$property} = $channel->{$property};
+						$this->setRawProperty($property, $channel->{$property});
 					}
 					elseif ($this->{$property} == '')
 					{
-						 $this->{$property} = NULL;
+						 $this->setRawProperty($property, NULL);
 					}
 					break;
 				case 'deft_status':
-				case 'deft_status':
 					if ( ! isset($this->status_group) OR $this->status_group == $channel->status_group )
 					{
-						$this->{$property} = $channel->{$property};
+						$this->setRawProperty($property, $channel->{$property});
 					}
 					break;
 				case 'search_excerpt':
 					if ( ! isset($this->field_group) OR $this->field_group == $channel->field_group )
 					{
-						$this->{$property} = $channel->{$property};
+						$this->setRawProperty($property, $channel->{$property});
 					}
 					break;
 				case 'deft_category':
 					if ( ! isset($this->cat_group) OR count(array_diff(explode('|', $this->cat_group), explode('|', $channel->cat_group ))) == 0)
 					{
-						$this->{$property} = $channel->{$property};
+						$this->setRawProperty($property, $channel->{$property});
 					}
 					break;
 				default:
-					$this->{$property} = $channel->{$property};
+					$this->setRawProperty($property, $channel->{$property});
 					break;
 			}
 		}

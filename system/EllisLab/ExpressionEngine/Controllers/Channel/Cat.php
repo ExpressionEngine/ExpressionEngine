@@ -1159,7 +1159,8 @@ class Cat extends AbstractChannelController {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			$field_id = $this->saveCategoryField($group_id, $field_id);
+			$cat_field->group_id = $group_id;
+			$field_id = $this->saveCategoryField($cat_field);
 
 			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
@@ -1218,25 +1219,26 @@ class Cat extends AbstractChannelController {
 	/**
 	 * Save routine for category fields
 	 *
-	 * @param	int	$group_id	ID of category group field is (to be) in
-	 * @param	int	$field_id	ID of field to save
+	 * @param	Model	$cat_field	Model object of category field
 	 */
-	private function saveCategoryField($group_id, $field_id)
+	private function saveCategoryField($cat_field)
 	{
-		$cat_field = ee('Model')->make('CategoryField', $_POST);
-		$cat_field->field_id = $field_id;
-		$cat_field->group_id = $group_id;
-		$cat_field->site_id = ee()->config->item('site_id');
-		$cat_field->field_list_items = '';
+		$cat_field->set($_POST);
 
-		// New fields get put on the end
-		$cat_field->field_order = ee('Model')->get('CategoryField')
-			->filter('group_id', $group_id)
-			->all()
-			->count() + 1;
+		if ($cat_field->isNew())
+		{
+			$cat_field->site_id = ee()->config->item('site_id');
+			$cat_field->field_list_items = '';
+
+			// New fields get put on the end
+			$cat_field->field_order = ee('Model')->get('CategoryField')
+				->filter('group_id', $cat_field->group_id)
+				->count() + 1;
+		}
 
 		$cat_field->save();
-		return $cat_field->field_id;
+
+		return $cat_field->getID();
 	}
 }
 // EOF

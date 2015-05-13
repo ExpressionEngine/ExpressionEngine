@@ -1752,9 +1752,7 @@ class Api_channel_fields extends Api {
 			'field_is_hidden'				=> set_value('field_is_hidden', 'n'),
 			'field_pre_populate'			=> set_value('field_pre_populate', 'n'),
 			'field_show_smileys'			=> set_value('field_show_smileys', 'n'),
-			'field_show_glossary'			=> set_value('field_show_glossary', 'n'),
 			'field_show_formatting_btns'	=> set_value('field_show_formatting_btns', 'n'),
-			'field_show_writemode'			=> set_value('field_show_writemode', 'n'),
 			'field_show_file_selector'		=> set_value('field_show_file_selector', 'n'),
 			'field_text_direction'			=> set_value('field_text_direction', 'ltr')
 		);

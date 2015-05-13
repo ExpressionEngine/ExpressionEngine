@@ -711,9 +711,6 @@ $lang = array(
 'label' =>
 'Label',
 
-'type' =>
-'Type',
-
 'cat_field_label_desc' =>
 'Name of field that appears in the category form.',
 

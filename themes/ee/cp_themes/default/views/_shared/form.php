@@ -114,6 +114,9 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 						case 'text': ?>
 							<input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
 						<?php break;
+						case 'short-text': ?>
+							<label class="short-txt"><input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>> <?=lang($field['label'])?></label>
+						<?php break;
 						case 'file': ?>
 							<input type="file" name="<?=$field_name?>"<?=$attrs?>>
 						<?php break;

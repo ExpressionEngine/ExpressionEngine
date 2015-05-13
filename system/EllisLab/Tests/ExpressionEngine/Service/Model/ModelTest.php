@@ -47,11 +47,15 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 		$this->assertTrue($m1->isNew());
 
 		$m2 = new ModelStub;
-		$m2->id = 5;
+		$m2->setId(5);
 		$this->assertFalse($m2->isNew());
 
 		$m3 = new ModelStub(array('id' => 5));
-		$this->assertFalse($m3->isNew());
+		$this->assertTrue($m3->isNew());
+
+		$m4 = new ModelStub();
+		$m4->fill(array('id' => 5));
+		$this->assertFalse($m4->isNew());
 	}
 
 	public function testDirty()
@@ -125,11 +129,6 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 
 		$m->setFrontend($fe);
 		$m->save();
-
-		// post insert assertions
-		// $this->assertFalse($m->isNew()); // this is checked in the datastore
-		// $this->assertEquals(8, $m->id);  // test, where the ids are set
-		$this->assertFalse($m->isDirty());
 	}
 
 	public function testSaveUpdate()
@@ -158,8 +157,6 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 		$m->save();
 
 		// post insert assertions
-		$this->assertFalse($m->isNew());
-		$this->assertFalse($m->isDirty());
 		$this->assertEquals('Robert', $m->name);
 	}
 
@@ -173,7 +170,7 @@ class ModelTest extends \PHPUnit_Framework_TestCase {
 		$qb->shouldReceive('delete');
 
 		$m = new ModelStub();
-		$m->id = 5;
+		$m->setId(5);
 
 		// pre delete assertion
 		$this->assertFalse($m->isNew());
@@ -203,9 +200,9 @@ class ModelStub extends Model {
 
 	public function set__full_name($value)
 	{
-		list($this->name, $this->surname) = explode(' ', $value);
+		list($name, $surname) = explode(' ', $value);
 
-		$this->markAsDirty($this->name);
-		$this->markAsDirty($this->surname);
+		$this->setRawProperty('name', $name);
+		$this->setRawProperty('surname', $surname);
 	}
 }

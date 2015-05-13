@@ -151,7 +151,7 @@ $(document).ready(function(){
 	// ====
 
 		// listen for clicks on tabs
-		$('.tab-wrap ul a').on('click',function(){
+		$('.tab-wrap ul.tabs a').on('click',function(){
 			// set the tabClassIs variable
 			// tells us which .tab to control
 			var tabClassIs = $(this).attr('rel');
@@ -263,6 +263,11 @@ $(document).ready(function(){
 			$('.choice input[name="'+$(this).attr('name')+'"]').each(function(index, el) {
 				$(this).parents('.choice').toggleClass('chosen', $(this).is(':checked'));
 			});
+		});
+
+		// Highlight table rows when checked
+		$('table tr td:last-child input[type=checkbox]').on('change',function() {
+			$(this).parents('tr').toggleClass('selected', $(this).is(':checked'));
 		});
 
 		// Highlight selected row for table lists

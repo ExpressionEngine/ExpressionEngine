@@ -286,16 +286,16 @@ class Template extends AbstractDesignController {
 			$alert = ee('Alert')->makeInline('template-form')
 				->asSuccess()
 				->withTitle(lang('update_template_success'))
-				->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name . '/' . $template->template_name));
+				->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name . '/' . $template->template_name))
+				->defer();
 
 			if (ee()->input->post('submit') == 'finish')
 			{
-				$alert->defer();
 				ee()->session->set_flashdata('template_id', $template->template_id);
 				ee()->functions->redirect(cp_url('design/manager/' . $group->group_name));
 			}
 
-			$alert->now();
+			ee()->functions->redirect(cp_url('design/template/edit/' . $template->template_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -652,7 +652,7 @@ class Template extends AbstractDesignController {
 	  */
 	public function _template_name_checks($str, $group_id)
 	{
-		if ( ! preg_match("#^[a-zA-Z0-9_\-/]+$#i", $str))
+		if ( ! preg_match("#^[a-zA-Z0-9_\.\-/]+$#i", $str))
 		{
 			ee()->lang->loadfile('admin');
 			ee()->form_validation->set_message('_template_name_checks', lang('illegal_characters'));

@@ -30,7 +30,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  */
 class IpAddress extends ValidationRule {
 
-	public function validate($value)
+	public function validate($key, $value)
 	{
 		$flags = $this->processParameters();
 

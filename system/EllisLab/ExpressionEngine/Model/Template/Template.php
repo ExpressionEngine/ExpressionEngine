@@ -74,7 +74,7 @@ class Template extends Model {
 	protected static $_validation_rules = array(
 		'site_id'            => 'required|isNatural',
 		'group_id'           => 'required|isNatural',
-		'template_name'      => 'required|alphaDash',
+		'template_name'      => 'required|alphaDash|unique[group_id]',
 		'cache'              => 'enum[y,n]',
 		'enable_http_auth'   => 'enum[y,n]',
 		'allow_php'          => 'enum[y,n]',
@@ -83,7 +83,8 @@ class Template extends Model {
 
 	protected static $_events = array(
 		'afterDelete',
-		'afterSave'
+		'afterSave',
+		'afterUpdate'
 	);
 
 	protected $template_id;
@@ -115,7 +116,9 @@ class Template extends Model {
 	}
 
 	/**
+	 * Get the full filesystem path to the template file
 	 *
+	 * @return String Filesystem path to the template file
 	 */
 	public function getFilePath()
 	{
@@ -133,6 +136,7 @@ class Template extends Model {
 
 		if ($path == '' || $file == '' || $ext == '')
 		{
+
 			return NULL;
 		}
 
@@ -140,16 +144,25 @@ class Template extends Model {
 	}
 
 	/**
+	 * Get the file extension for a given template type
 	 *
+	 * @param String $template_type Used by onAfterUpdate to divine the old path
+	 * @return String File extension (including the .)
 	 */
-	public function getFileExtension()
+	public function getFileExtension($template_type = NULL)
 	{
+		$type = $template_type ?: $this->template_type;
+
 		ee()->legacy_api->instantiate('template_structure');
-		return ee()->api_template_structure->file_extensions($this->template_type);
+		return ee()->api_template_structure->file_extensions($type);
 	}
 
 	/**
+	 * For all saves, write the template file with the new contents.
 	 *
+	 * Technically we could make this afterInsert and do more checks
+	 * in afterUpdate to make sure things actually changed, but this
+	 * is much simpler.
 	 */
 	public function onAfterSave()
 	{
@@ -163,7 +176,27 @@ class Template extends Model {
 	}
 
 	/**
+	 * If the template is updated, we need to make sure things like
+	 * renames or changes in template group are reflected in the
+	 * filesystem. We do this by simply deleting the old file, since
+	 * our afterSave event will always write a new one.
 	 *
+	 * @param Array Old values that were changed by this save
+	 */
+	public function onAfterUpdate($previous)
+	{
+		$fs = new Filesystem();
+		$path = $this->getFilePath();
+		$old_path = $this->getPreviousPath($previous);
+
+		if ($path != $old_path && $fs->exists($old_path))
+		{
+			$fs->delete($old_path);
+		}
+	}
+
+	/**
+	 * If the template is deleted, remove the template file
 	 */
 	public function onAfterDelete()
 	{
@@ -174,5 +207,36 @@ class Template extends Model {
 		{
 			$fs->delete($path);
 		}
+	}
+
+	/**
+	 * Get the old template path, so that we can delete it if
+	 * the path changed.
+	 */
+	protected function getPreviousPath($prev)
+	{
+		$values = $this->getValues();
+		$parts = array_merge($values, $prev);
+
+		if ($parts['group_id'] != $this->group_id)
+		{
+			// TODO there must be a better way
+			$group = $this->getFrontend()->get('TemplateGroup', $parts['group_id'])->first();
+		}
+		else
+		{
+			$group = $this->getTemplateGroup();
+		}
+
+		$path = $group->getFolderPath();
+		$file = $parts['template_name'];
+		$ext  = $this->getFileExtension($parts['template_type']);
+
+		if ($path == '' || $file == '' || $ext == '')
+		{
+			return NULL;
+		}
+
+		return $path.'/'.$file.$ext;
 	}
 }

@@ -92,11 +92,16 @@ class FieldFacade {
 		$this->metadata[$field] = $value;
 	}
 
+	public function getType()
+	{
+		return $this->getItem('field_type');
+	}
+
 	public function getTypeName()
 	{
 		ee()->legacy_api->instantiate('channel_fields');
 		$fts = ee()->api_channel_fields->fetch_all_fieldtypes();
-		$type = $this->getItem('field_type');
+		$type = $this->getType();
 		return $fts[$type]['name'];
 	}
 
@@ -151,6 +156,14 @@ class FieldFacade {
 	}
 
 
+	// TODO THIS WILL MOST DEFINITELY GO AWAY! BAD DEVELOPER!
+	public function getNativeField()
+	{
+		$data = $this->initField();
+		return ee()->api_channel_fields->setup_handler($this->getType(), TRUE);
+	}
+
+
 	public function initField()
 	{
 		$data = $this->setupField();
@@ -175,7 +188,14 @@ class FieldFacade {
 		$field_data = $this->data;
 		$field_name = $this->getName();
 
+		// not all custom field tables will specify all of these things
+		$defaults = array(
+			'field_instructions' => '',
+			'field_text_direction' => 'rtl'
+		);
+
 		$info = $this->metadata;
+		$info = array_merge($defaults, $info);
 
 		$settings = array(
 			'field_instructions'	=> trim($info['field_instructions']),
@@ -191,6 +211,10 @@ class FieldFacade {
 		if (isset($info['field_settings']) && strlen($info['field_settings']))
 		{
 			$ft_settings = unserialize(base64_decode($info['field_settings']));
+		}
+		else
+		{
+			$info['field_settings'] = array();
 		}
 
 		$settings = array_merge($info, $settings, $ft_settings);

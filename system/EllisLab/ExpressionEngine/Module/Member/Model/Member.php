@@ -113,4 +113,24 @@ class Member extends Model {
 		return $this->screen_name ?: $this->username;
 	}
 
+	public function getHTMLButtonsForSite($site_id)
+	{
+		$buttons = $this->getFrontend()->get('HTMLButton')
+			->filter('site_id', $site_id)
+			->filter('member_id', $this->member_id)
+			->order('tag_order')
+			->all();
+
+			if ( ! $buttons->count())
+			{
+				$buttons = $this->getFrontend()->get('HTMLButton')
+					->filter('site_id', $site_id)
+					->filter('member_id', 0)
+					->order('tag_order')
+					->all();
+			}
+
+			return $buttons;
+	}
+
 }

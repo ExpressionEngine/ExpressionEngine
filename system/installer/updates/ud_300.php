@@ -45,12 +45,13 @@ class Updater {
 				'_create_plugins_table',
 				'_remove_accessories_table',
 				'_update_specialty_templates_table',
-				'_remove_watermarks_table',
 				'_update_templates_save_as_files',
 				'_update_layout_publish_table',
 				'_update_entry_edit_date_format',
 				'_rename_default_status_groups',
-				'_centralize_captcha_settings'
+				'_centralize_captcha_settings',
+				'_update_members_table',
+				'_update_html_buttons',
 			)
 		);
 
@@ -308,17 +309,6 @@ class Updater {
 
 			ee()->db->update_batch('specialty_templates', $templates, 'template_id');
 		}
-	}
-
-	/**
-	 * File Watermarks are going away in 3.0. This removes their table.
-	 *
-	 * @return void
-	 */
-	private function _remove_watermarks_table()
-	{
-		ee()->smartforge->drop_table('file_watermarks');
-		ee()->smartforge->drop_column('file_dimensions', 'watermark_id');
 	}
 
 	// -------------------------------------------------------------------
@@ -606,6 +596,62 @@ class Updater {
 		ee()->smartforge->drop_column('channel_form_settings', 'require_captcha');
 
 		$msm_config->remove_config_item(array('use_membership_captcha', 'email_module_captchas'));
+
+	/**
+	 * Adds columns to the members table as needed
+	 */
+	public function _update_members_table()
+	{
+		if ( ! ee()->db->field_exists('rte_enabled', 'members'))
+		{
+			ee()->smartforge->add_column(
+				'members',
+				array(
+					'rte_enabled' => array(
+						'type'    => 'CHAR(1)',
+						'null'    => FALSE,
+						'default' => 'y'
+					)
+				)
+			);
+		}
+
+		if ( ! ee()->db->field_exists('rte_toolset_id', 'members'))
+		{
+			ee()->smartforge->add_column(
+				'members',
+				array(
+					'rte_toolset_id' => array(
+						'type'       => 'INT(10)',
+						'null'       => FALSE,
+						'default'    => '0'
+					)
+				)
+			);
+		}
+	}
+
+	/**
+	 * Adjusts the CSS class for some standard buttons
+	 */
+	public function _update_html_buttons()
+	{
+		$data = array(
+			'b'          => 'html-bold',
+			'i'          => 'html-italic',
+			'ul'         => 'html-order-list',
+			'ol'         => 'html-order-list',
+			'a'          => 'html-link',
+			'img'        => 'html-upload',
+			'blockquote' => 'html-quote',
+		);
+
+		foreach ($data as $tag => $class)
+		{
+			ee()->db->where('tag_name', $tag)
+				->set('classname', $class)
+				->update('html_buttons');
+		}
 	}
 }
 /* END CLASS */

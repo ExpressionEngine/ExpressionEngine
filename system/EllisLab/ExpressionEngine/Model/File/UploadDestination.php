@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Model\File;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Module\Member\Model\MemberGroup;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -124,6 +125,54 @@ class UploadDestination extends Model {
 		}
 
 		return $value;
+	}
+
+	/**
+	 * Determines if the member group (by ID) has access permission to this
+	 * upload destination.
+	 *
+	 * @throws InvalidArgumentException
+	 * @param int|MemberGroup $group_id The Meber Group ID
+	 * @return bool TRUE if access is granted; FALSE if access denied
+	 */
+	public function memberGroupHasAccess($group)
+	{
+		if ($group instanceOf MemberGroup)
+		{
+			$group_id = $group->group_id;
+		}
+		elseif(is_numeric($group))
+		{
+			$group_id = (int) $group;
+		}
+		else
+		{
+			throw new \InvalidArgumentException('memberGroupHasAccess expects an number or an instance of MemberGroup.');
+		}
+
+		// 2 = Banned
+		// 3 = Guests
+		// 4 = Pending
+		$hardcoded_disallowed_groups = array('2', '3', '4');
+
+		// If the user is a Super Admin, return true
+		if ($group_id == 1)
+		{
+			return TRUE;
+		}
+
+		if (in_array($group_id, $hardcoded_disallowed_groups))
+		{
+			return FALSE;
+		}
+
+		if (in_array($group_id, $this->getNoAccess()->pluck('group_id')))
+		{
+			return FALSE;
+		}
+
+		return TRUE;
+
 	}
 
 }

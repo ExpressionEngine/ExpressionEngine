@@ -40,13 +40,16 @@ class Update extends Query {
 			);
 		}
 
-		$object->emit('beforeUpdate');
+		$backup = $object->getOriginal();
+
+		$object->emit('beforeUpdate', $backup);
 		$object->emit('beforeSave');
 
 		$this->doWork($object);
+		$object->markAsClean();
 
 		$object->emit('afterSave');
-		$object->emit('afterUpdate');
+		$object->emit('afterUpdate', $backup);
 	}
 
 	protected function doWork($object)

@@ -1715,15 +1715,15 @@ UNLOCK TABLES;
 LOCK TABLES `exp_files` WRITE;
 INSERT INTO `exp_files` (`file_id`, `site_id`, `title`, `upload_location_id`, `rel_path`, `mime_type`, `file_name`, `file_size`, `description`, `credit`, `location`, `uploaded_by_member_id`, `upload_date`, `modified_by_member_id`, `modified_date`, `file_hw_original`) VALUES
 	(1,1,'staff_jane.png',2,'staff_jane.png','image/png','staff_jane.png',51612,NULL,NULL,NULL,1,1302889304,1,1302889304,''),
-	(2,1,'staff_jason.png',2,'staff_jason.png','image/png','staff_jason.png',51430,NULL,NULL,NULL,1,1302889304,1,1302889304,''),
-	(3,1,'staff_josh.png',2,'staff_josh.png','image/png','staff_josh.png',50638,NULL,NULL,NULL,1,1302889304,1,1302889304,''),
-	(4,1,'staff_randell.png',2,'staff_randell.png','image/png','staff_randell.png',51681,NULL,NULL,NULL,1,1302889304,1,1302889304,''),
-	(5,1,'ee_banner_120_240.gif',2,'ee_banner_120_240.gif','image/gif','ee_banner_120_240.gif',9257,NULL,NULL,NULL,1,1302889304,1,1302889304,''),
-	(6,1,'testband300.jpg',2,'testband300.jpg','image/jpeg','testband300.jpg',23986,NULL,NULL,NULL,1,1302889304,1,1302889304,''),
-	(7,1,'map.jpg',2,'map.jpg','image/jpeg','map.jpg',71299,NULL,NULL,NULL,1,1302889304,1,1302889304,''),
-	(8,1,'map2.jpg',2,'map2.jpg','image/jpeg','map2.jpg',49175,NULL,NULL,NULL,1,1302889304,1,1302889304,''),
-	(9,1,'staff_chloe.png',2,'staff_chloe.png','image/png','staff_chloe.png',50262,NULL,NULL,NULL,1,1302889304,1,1302889304,''),
-	(10,1,'staff_howard.png',2,'staff_howard.png','image/png','staff_howard.png',51488,NULL,NULL,NULL,1,1302889304,1,1302889304,'');
+	(2,1,'staff_jason.png',2,'staff_jason.png','image/png','staff_jason.png',51430,NULL,NULL,NULL,1,1302888304,1,1302888304,''),
+	(3,1,'staff_josh.png',2,'staff_josh.png','image/png','staff_josh.png',50638,NULL,NULL,NULL,1,1302887304,1,1302887304,''),
+	(4,1,'staff_randell.png',2,'staff_randell.png','image/png','staff_randell.png',51681,NULL,NULL,NULL,1,1302886304,1,1302886304,''),
+	(5,1,'ee_banner_120_240.gif',2,'ee_banner_120_240.gif','image/gif','ee_banner_120_240.gif',9257,NULL,NULL,NULL,1,1302885304,1,1302885304,''),
+	(6,1,'testband300.jpg',2,'testband300.jpg','image/jpeg','testband300.jpg',23986,NULL,NULL,NULL,1,1302884304,1,1302884304,''),
+	(7,1,'map.jpg',2,'map.jpg','image/jpeg','map.jpg',71299,NULL,NULL,NULL,1,1302883304,1,1302883304,''),
+	(8,1,'map2.jpg',2,'map2.jpg','image/jpeg','map2.jpg',49175,NULL,NULL,NULL,1,1302882304,1,1302882304,''),
+	(9,1,'staff_chloe.png',2,'staff_chloe.png','image/png','staff_chloe.png',50262,NULL,NULL,NULL,1,1302881304,1,1302881304,''),
+	(10,1,'staff_howard.png',2,'staff_howard.png','image/png','staff_howard.png',51488,NULL,NULL,NULL,1,1302880304,1,1302880304,'');
 UNLOCK TABLES;
 
 
@@ -2053,8 +2053,8 @@ UNLOCK TABLES;
 
 LOCK TABLES `exp_upload_prefs` WRITE;
 INSERT INTO `exp_upload_prefs` (`id`, `site_id`, `name`, `server_path`, `url`, `allowed_types`, `max_size`, `max_height`, `max_width`, `properties`, `pre_format`, `post_format`, `file_properties`, `file_pre_format`, `file_post_format`, `cat_group`, `batch_location`) VALUES
-	(1,1,'Main Upload Directory','/private/var/www/expressionengine/images/uploads/','http://ee2/images/uploads/','all','','','','style="border: 0;" alt="image"','','','','','',NULL,NULL),
-	(2,1,'About','/private/var/www/expressionengine/themes/site_themes/agile_records/images/uploads/','http://ee2/themes/site_themes/agile_records/images/uploads/','img','','','','','','','','','',NULL,NULL);
+	(1,1,'Main Upload Directory','../images/uploads/','/images/uploads/','all','','','','style="border: 0;" alt="image"','','','','','',NULL,NULL),
+	(2,1,'About','../themes/ee/site_themes/agile_records/images/uploads/','/themes/ee/site_themes/agile_records/images/uploads/','img','','','','','','','','','',NULL,NULL);
 UNLOCK TABLES;
 
 
