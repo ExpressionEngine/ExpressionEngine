@@ -1028,6 +1028,13 @@ if ( ! function_exists('form_error'))
 			return '';
 		}
 
+		// Error messages were forced in by other validation service
+		if ( ! isset($OBJ->_field_data[$field]['error']) &&
+			isset($OBJ->_error_array[$field]))
+		{
+			return $OBJ->_error_array[$field];
+		}
+
 		return $OBJ->error($field, $prefix, $suffix);
 	}
 }
