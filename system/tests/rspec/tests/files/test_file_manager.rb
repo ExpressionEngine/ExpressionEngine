@@ -58,6 +58,10 @@ feature 'File Manager' do
 		@page.should_not have_no_results
 	end
 
+	after(:each) do
+		system('git checkout -- ../../../themes/ee/site_themes/agile_records/images/uploads/')
+	end
+
 	it 'shows the "All Files" File Manager page', :all_files => true do
 		@page.perpage_filter.text.should eq 'show (20)'
 		@page.title_name_header[:class].should eq 'highlight'
@@ -86,7 +90,7 @@ feature 'File Manager' do
 		@page.perpage_filter.text.should eq "show (50)"
 		@page.should_not have_pagination
 		@page.should have(11).files
-end
+	end
 
 	it 'can change the page size manually', :all_files => true do
 		@page.perpage_filter.click

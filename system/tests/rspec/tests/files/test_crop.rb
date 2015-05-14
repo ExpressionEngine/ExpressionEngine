@@ -49,6 +49,10 @@ feature 'File Manger / Crop File' do
 		@page.wait_until_resize_submit_button_visible
 	end
 
+	after(:each) do
+		system('git checkout -- ../../../themes/ee/site_themes/agile_records/images/uploads/')
+	end
+
 	it 'shows the crop form by default' do
 		@page.should have_crop_width_input
 		@page.should have_crop_height_input

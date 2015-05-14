@@ -37,6 +37,10 @@ feature 'File Manger / Edit File' do
 		@page.should have_form_submit_button
 	end
 
+	after(:each) do
+		system('git checkout -- ../../../themes/ee/site_themes/agile_records/images/uploads/')
+	end
+
 	it 'shows the Edit Meta Data form' do
 		@page.breadcrumb.text.should include @page.title_input.value
 		@page.heading.text.should include @page.title_input.value
