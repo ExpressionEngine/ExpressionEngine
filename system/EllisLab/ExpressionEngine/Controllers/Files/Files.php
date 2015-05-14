@@ -216,6 +216,19 @@ class Files extends AbstractFilesController {
 			show_error(lang('unauthorized_access'));
 		}
 
+		if ( ! file_exists($dir->server_path))
+		{
+			$upload_edit_url = cp_url('files/uploads/edit/' . $dir->id);
+			$alert = ee('Alert')->makeStandard()
+				->asIssue()
+				->withTitle(lang('file_not_found'))
+				->addToBody(sprintf(lang('directory_not_found'), $dir->server_path))
+				->addToBody(sprintf(lang('check_upload_settings'), $upload_edit_url))
+				->now();
+
+			show_404();
+		}
+
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'has_file_input' => TRUE,
