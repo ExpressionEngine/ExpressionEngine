@@ -219,7 +219,7 @@ class Files extends AbstractFilesController {
 		if ( ! file_exists($dir->server_path))
 		{
 			$upload_edit_url = cp_url('files/uploads/edit/' . $dir->id);
-			$alert = ee('Alert')->makeStandard()
+			ee('Alert')->makeStandard()
 				->asIssue()
 				->withTitle(lang('file_not_found'))
 				->addToBody(sprintf(lang('directory_not_found'), $dir->server_path))
@@ -227,6 +227,16 @@ class Files extends AbstractFilesController {
 				->now();
 
 			show_404();
+		}
+
+		// Check permissions on the directory
+		if ( ! is_writable($dir->server_path))
+		{
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('file_not_writable'))
+				->addToBody(sprintf(lang('file_not_writable_desc'), $dir->server_path))
+				->now();
 		}
 
 		$vars = array(
