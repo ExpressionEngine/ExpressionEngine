@@ -175,4 +175,24 @@ class UploadDestination extends Model {
 
 	}
 
+	/**
+	 * Determines if the directory exists
+	 *
+	 * @return bool TRUE if it does FALSE otherwise
+	 */
+	public function exists()
+	{
+		return file_exists($this->server_path);
+	}
+
+	/**
+	 * Determines if the directory is writable
+	 *
+	 * @return bool TRUE if it is FALSE otherwise
+	 */
+	public function isWritable()
+	{
+		return is_writable($this->server_path);
+	}
+
 }

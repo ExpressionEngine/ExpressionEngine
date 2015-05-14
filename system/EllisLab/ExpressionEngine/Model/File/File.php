@@ -134,5 +134,24 @@ class File extends Model {
 		return $dir->memberGroupHasAccess($group);
 	}
 
+	/**
+	 * Determines if the file exists
+	 *
+	 * @return bool TRUE if it does FALSE otherwise
+	 */
+	public function exists()
+	{
+		return file_exists($this->getAbsolutePath());
+	}
+
+	/**
+	 * Determines if the file is writable
+	 *
+	 * @return bool TRUE if it is FALSE otherwise
+	 */
+	public function isWritable()
+	{
+		return is_writable($this->getAbsolutePath());
+	}
 
 }
