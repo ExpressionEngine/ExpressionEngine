@@ -256,6 +256,7 @@ class File extends AbstractFilesController {
 
 			ee()->load->library('image_lib');
 			$info = ee()->image_lib->get_image_properties($file->getAbsolutePath(), TRUE);
+			ee()->image_lib->error_msg = array(); // Reset any erorrs
 		}
 
 		$vars = array(
