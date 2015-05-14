@@ -39,14 +39,14 @@ class Watermark extends Model {
 	protected static $_typed_columns = array(
 		'wm_use_font'        => 'boolString',
 		'wm_use_drop_shadow' => 'boolString',
-		'wm_font_size'       => 'int',
-		'wm_padding'         => 'int',
-		'wm_opacity'         => 'int',
-		'wm_hor_offset'      => 'int',
-		'wm_vrt_offset'      => 'int',
-		'wm_x_transp'        => 'int',
-		'wm_y_transp'        => 'int',
-		'wm_shadow_distance' => 'int'
+		//'wm_font_size'       => 'int',
+		//'wm_padding'         => 'int',
+		//'wm_opacity'         => 'int',
+		//'wm_hor_offset'      => 'int',
+		//'wm_vrt_offset'      => 'int',
+		//'wm_x_transp'        => 'int',
+		//'wm_y_transp'        => 'int',
+		//'wm_shadow_distance' => 'int'
 	);
 
 	protected static $_validation_rules = array(
