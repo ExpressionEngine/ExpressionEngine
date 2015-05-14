@@ -224,8 +224,39 @@ class File extends AbstractFilesController {
 			show_error(lang('not_an_image'));
 		}
 
-		ee()->load->library('image_lib');
-		$info = ee()->image_lib->get_image_properties($file->getAbsolutePath(), TRUE);
+		if ( ! file_exists($file->getAbsolutePath()))
+		{
+			$alert = ee('Alert')->makeStandard()
+				->asIssue()
+				->withTitle(lang('file_not_found'))
+				->addToBody(sprintf(lang('file_not_found_desc'), $file->getAbsolutePath()));
+
+			$dir = $file->getUploadDestination();
+			if ( ! file_exists($dir->server_path))
+			{
+				$upload_edit_url = cp_url('files/uploads/edit/' . $dir->id);
+				$alert->addToBody(sprintf(lang('directory_not_found'), $dir->server_path))
+					->addToBody(sprintf(lang('check_upload_settings'), $upload_edit_url));
+			}
+
+			$alert->now();
+			show_404();
+		}
+		else
+		{
+			// Check permissions on the file
+			if ( ! is_writable($file->getAbsolutePath()))
+			{
+				$alert = ee('Alert')->makeInline('crop-form')
+					->asIssue()
+					->withTitle(lang('file_not_writable'))
+					->addToBody(sprintf(lang('file_not_writable_desc'), $file->getAbsolutePath()))
+					->now();
+			}
+
+			ee()->load->library('image_lib');
+			$info = ee()->image_lib->get_image_properties($file->getAbsolutePath(), TRUE);
+		}
 
 		$vars = array(
 			'file' => $file,
