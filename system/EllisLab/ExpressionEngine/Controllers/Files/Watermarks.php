@@ -227,6 +227,10 @@ class Watermarks extends AbstractFilesController {
 								'text' => lang('text'),
 								'image' => lang('image')
 							),
+							'group_toggle' => array(
+								'text' => 'text_options',
+								'image' => 'image_options'
+							),
 							'value' => $watermark->wm_type,
 							'required' => TRUE
 						)
@@ -284,122 +288,128 @@ class Watermarks extends AbstractFilesController {
 				)
 			),
 			'text_options' => array(
-				array(
-					'title' => 'watermarks_true_type',
-					'desc' => 'watermarks_true_type_desc',
-					'fields' => array(
-						'wm_use_font' => array(
-							'type' => 'yes_no',
-							'value' => $watermark->wm_use_font
+				'group' => 'text_options',
+				'settings' => array(
+					array(
+						'title' => 'watermarks_true_type',
+						'desc' => 'watermarks_true_type_desc',
+						'fields' => array(
+							'wm_use_font' => array(
+								'type' => 'yes_no',
+								'value' => $watermark->wm_use_font
+							)
 						)
-					)
-				),
-				array(
-					'title' => 'watermark_text',
-					'desc' => 'watermark_text_desc',
-					'fields' => array(
-						'wm_text' => array(
-							'type' => 'text',
-							'value' => $watermark->wm_text
+					),
+					array(
+						'title' => 'watermark_text',
+						'desc' => 'watermark_text_desc',
+						'fields' => array(
+							'wm_text' => array(
+								'type' => 'text',
+								'value' => $watermark->wm_text
+							)
 						)
-					)
-				),
-				array(
-					'title' => 'watermark_text_font',
-					'desc' => 'watermark_text_font_desc',
-					'fields' => array(
-						'wm_font' => array(
-							'type' => 'dropdown',
-							'choices' => array(), // TODO
-							'value' => $watermark->wm_font
+					),
+					array(
+						'title' => 'watermark_text_font',
+						'desc' => 'watermark_text_font_desc',
+						'fields' => array(
+							'wm_font' => array(
+								'type' => 'dropdown',
+								'choices' => array(), // TODO
+								'value' => $watermark->wm_font
+							)
 						)
-					)
-				),
-				array(
-					'title' => 'watermark_text_size',
-					'desc' => 'watermark_text_size_desc',
-					'fields' => array(
-						'wm_font_size' => array(
-							'type' => 'text',
-							'value' => $watermark->wm_font_size
+					),
+					array(
+						'title' => 'watermark_text_size',
+						'desc' => 'watermark_text_size_desc',
+						'fields' => array(
+							'wm_font_size' => array(
+								'type' => 'text',
+								'value' => $watermark->wm_font_size
+							)
 						)
-					)
-				),
-				array(
-					'title' => 'watermark_text_color',
-					'desc' => 'watermark_text_color_desc',
-					'fields' => array(
-						'wm_font_color' => array(
-							'type' => 'text',
-							'value' => $watermark->wm_font_color
+					),
+					array(
+						'title' => 'watermark_text_color',
+						'desc' => 'watermark_text_color_desc',
+						'fields' => array(
+							'wm_font_color' => array(
+								'type' => 'text',
+								'value' => $watermark->wm_font_color
+							)
 						)
-					)
-				),
-				array(
-					'title' => 'watermark_text_dropshadow',
-					'desc' => 'watermark_text_dropshadow_desc',
-					'fields' => array(
-						'wm_use_drop_shadow' => array(
-							'type' => 'yes_no',
-							'value' => $watermark->wm_use_drop_shadow
+					),
+					array(
+						'title' => 'watermark_text_dropshadow',
+						'desc' => 'watermark_text_dropshadow_desc',
+						'fields' => array(
+							'wm_use_drop_shadow' => array(
+								'type' => 'yes_no',
+								'value' => $watermark->wm_use_drop_shadow
+							)
 						)
-					)
-				),
-				array(
-					'title' => 'watermark_text_dropshadow_distance',
-					'desc' => 'watermark_text_dropshadow_distance_desc',
-					'fields' => array(
-						'wm_shadow_distance' => array(
-							'type' => 'text',
-							'value' => $watermark->wm_shadow_distance
+					),
+					array(
+						'title' => 'watermark_text_dropshadow_distance',
+						'desc' => 'watermark_text_dropshadow_distance_desc',
+						'fields' => array(
+							'wm_shadow_distance' => array(
+								'type' => 'text',
+								'value' => $watermark->wm_shadow_distance
+							)
 						)
-					)
-				),
-				array(
-					'title' => 'watermark_text_dropshadow_color',
-					'desc' => 'watermark_text_dropshadow_color_desc',
-					'fields' => array(
-						'wm_shadow_color' => array(
-							'type' => 'text',
-							'value' => $watermark->wm_shadow_distance
+					),
+					array(
+						'title' => 'watermark_text_dropshadow_color',
+						'desc' => 'watermark_text_dropshadow_color_desc',
+						'fields' => array(
+							'wm_shadow_color' => array(
+								'type' => 'text',
+								'value' => $watermark->wm_shadow_distance
+							)
 						)
 					)
 				)
 			),
 			'image_options' => array(
-				array(
-					'title' => 'watermark_image_path',
-					'desc' => 'watermark_image_path_desc',
-					'fields' => array(
-						'wm_image_path' => array(
-							'type' => 'text',
-							'value' => $watermark->wm_image_path
+				'group' => 'image_options',
+				'settings' => array(
+					array(
+						'title' => 'watermark_image_path',
+						'desc' => 'watermark_image_path_desc',
+						'fields' => array(
+							'wm_image_path' => array(
+								'type' => 'text',
+								'value' => $watermark->wm_image_path
+							)
 						)
-					)
-				),
-				array(
-					'title' => 'watermark_image_opacity',
-					'desc' => 'watermark_image_opacity_desc',
-					'fields' => array(
-						'wm_opacity' => array(
-							'type' => 'text',
-							'value' => $watermark->wm_opacity
+					),
+					array(
+						'title' => 'watermark_image_opacity',
+						'desc' => 'watermark_image_opacity_desc',
+						'fields' => array(
+							'wm_opacity' => array(
+								'type' => 'text',
+								'value' => $watermark->wm_opacity
+							)
 						)
-					)
-				),
-				array(
-					'title' => 'watermark_image_transparency_map',
-					'desc' => 'watermark_image_transparency_map_desc',
-					'fields' => array(
-						'wm_x_transp' => array(
-							'type' => 'short-text',
-							'value' => $watermark->wm_x_transp,
-							'label' => 'x_axis'
-						),
-						'wm_y_transp' => array(
-							'type' => 'short-text',
-							'value' => $watermark->wm_y_transp,
-							'label' => 'y_axis'
+					),
+					array(
+						'title' => 'watermark_image_transparency_map',
+						'desc' => 'watermark_image_transparency_map_desc',
+						'fields' => array(
+							'wm_x_transp' => array(
+								'type' => 'short-text',
+								'value' => $watermark->wm_x_transp,
+								'label' => 'x_axis'
+							),
+							'wm_y_transp' => array(
+								'type' => 'short-text',
+								'value' => $watermark->wm_y_transp,
+								'label' => 'y_axis'
+							)
 						)
 					)
 				)
@@ -455,6 +465,10 @@ class Watermarks extends AbstractFilesController {
 
 		ee()->cp->set_breadcrumb(cp_url('files'), lang('file_manager'));
 		ee()->cp->set_breadcrumb(cp_url('files/watermarks'), lang('watermarks'));
+
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/form_group'),
+		));
 
 		ee()->cp->render('settings/form', $vars);
 	}

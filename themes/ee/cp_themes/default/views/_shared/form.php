@@ -34,8 +34,17 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 		<?php foreach ($extra_alerts as $alert) echo ee('Alert')->get($alert) ?>
 	<?php endif; ?>
 	<?php foreach ($sections as $name => $settings): ?>
+		<?php
+		// Tags an entire section with a group name, intended for hiding/showing via JS
+		$group = FALSE;
+		if (isset($settings['group']))
+		{
+			$group = $settings['group'];
+			$settings = $settings['settings'];
+		}?>
+
 		<?php if (is_string($name)): ?>
-			<h2><?=lang($name)?></h2>
+			<h2<?php if ($group): ?> data-group="<?=$group?>"<?php endif ?>><?=lang($name)?></h2>
 		<?php endif ?>
 		<?php foreach ($settings as $setting): ?>
 			<?php
@@ -71,11 +80,18 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 				$fieldset_classes .= ' last';
 			}
 
+			// Individual settings can have their own groups
+			$setting_group = $group;
+			if (isset($setting['group']))
+			{
+				$setting_group = $setting['group'];
+			}
+
 			$grid = (isset($setting['grid']) && $setting['grid'] == TRUE);
 
 			// Grids have to be in a div for an overflow bug in Firefox
 			$element = ($grid) ? 'div' : 'fieldset'; ?>
-			<<?=$element?> class="col-group<?=$fieldset_classes?> <?=( ! $grid) ? form_error_class(array_keys($setting['fields'])) : '' ?> <?=($grid) ? 'grid-publish' : '' ?>">
+			<<?=$element?> class="col-group<?=$fieldset_classes?> <?=( ! $grid) ? form_error_class(array_keys($setting['fields'])) : '' ?> <?=($grid) ? 'grid-publish' : '' ?>" <?php if ($setting_group): ?> data-group="<?=$setting_group?>"<?php endif ?>>
 				<div class="setting-txt col <?=($grid) ? form_error_class(array_keys($setting['fields'])) : '' ?> <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?>">
 					<h3><?=lang($setting['title'])?></h3>
 					<em><?=lang($setting['desc'])?></em>
@@ -92,6 +108,11 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 						if (isset($field['disabled']) && $field['disabled'] == TRUE)
 						{
 							$attrs = ' disabled="disabled"';
+						}
+						if (isset($field['group_toggle']))
+						{
+							$attrs .= " data-group-toggle='".json_encode($field['group_toggle'])."'";;
+							$attrs .= ' onchange="EE.cp.form_group_toggle(this)"';
 						}
 						$has_note = isset($field['note']);
 
