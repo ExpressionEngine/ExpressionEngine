@@ -234,8 +234,8 @@ class Files extends AbstractFilesController {
 		{
 			ee('Alert')->makeInline('shared-form')
 				->asIssue()
-				->withTitle(lang('file_not_writable'))
-				->addToBody(sprintf(lang('file_not_writable_desc'), $dir->server_path))
+				->withTitle(lang('dir_not_writable'))
+				->addToBody(sprintf(lang('dir_not_writable_desc'), $dir->server_path))
 				->now();
 		}
 

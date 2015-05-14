@@ -218,6 +218,12 @@ $lang = array(
 'file_not_writable_desc' =>
 'Cannot write to the file <b>%s</b>.<br>Check your file permissions on the server.',
 
+'dir_not_writable' =>
+'Directory Not Writable',
+
+'dir_not_writable_desc' =>
+'Cannot write to the directory <b>%s</b>.<br>Check your file permissions on the server.',
+
 /**
  * Uploads
  */
