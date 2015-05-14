@@ -200,6 +200,24 @@ $lang = array(
 'crop_file_error_desc' =>
 'We were unable to %s the file, please review and fix errors below.',
 
+'file_not_found' =>
+'File Not Found',
+
+'file_not_found_desc' =>
+'Cannot find the file <b>%s</b>.',
+
+'directory_not_found' =>
+'Cannot find the directory <b>%s</b>.',
+
+'check_upload_settings' =>
+'Check the <a href="%s">settings</a> for this upload directory.',
+
+'file_not_writable' =>
+'File Not Writable',
+
+'file_not_writable_desc' =>
+'Cannot write to the file <b>%s</b>.<br>Check your file permissions on the server.',
+
 /**
  * Uploads
  */
