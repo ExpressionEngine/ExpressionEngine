@@ -216,7 +216,7 @@ class Files extends AbstractFilesController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		if ( ! file_exists($dir->server_path))
+		if ( ! $dir->exists())
 		{
 			$upload_edit_url = cp_url('files/uploads/edit/' . $dir->id);
 			ee('Alert')->makeStandard()
@@ -230,7 +230,7 @@ class Files extends AbstractFilesController {
 		}
 
 		// Check permissions on the directory
-		if ( ! is_writable($dir->server_path))
+		if ( ! $dir->isWritable())
 		{
 			ee('Alert')->makeInline('shared-form')
 				->asIssue()

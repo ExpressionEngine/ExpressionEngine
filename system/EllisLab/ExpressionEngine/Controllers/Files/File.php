@@ -224,7 +224,7 @@ class File extends AbstractFilesController {
 			show_error(lang('not_an_image'));
 		}
 
-		if ( ! file_exists($file->getAbsolutePath()))
+		if ( ! $file->exists())
 		{
 			$alert = ee('Alert')->makeStandard()
 				->asIssue()
@@ -232,7 +232,7 @@ class File extends AbstractFilesController {
 				->addToBody(sprintf(lang('file_not_found_desc'), $file->getAbsolutePath()));
 
 			$dir = $file->getUploadDestination();
-			if ( ! file_exists($dir->server_path))
+			if ( ! $dir->exists())
 			{
 				$upload_edit_url = cp_url('files/uploads/edit/' . $dir->id);
 				$alert->addToBody(sprintf(lang('directory_not_found'), $dir->server_path))
@@ -245,7 +245,7 @@ class File extends AbstractFilesController {
 		else
 		{
 			// Check permissions on the file
-			if ( ! is_writable($file->getAbsolutePath()))
+			if ( ! $file->isWritable())
 			{
 				$alert = ee('Alert')->makeInline('crop-form')
 					->asIssue()
