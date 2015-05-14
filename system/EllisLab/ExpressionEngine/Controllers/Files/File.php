@@ -174,7 +174,7 @@ class File extends AbstractFilesController {
 
 			$file->save();
 
-			ee('Alert')->makeInline('settings-form')
+			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('edit_file_metadata_success'))
 				->addToBody(sprintf(lang('edit_file_metadata_success_desc'), $file->title))
@@ -184,7 +184,7 @@ class File extends AbstractFilesController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('settings-form')
+			ee('Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('edit_file_metadata_error'))
 				->addToBody(lang('edit_file_metadata_error_desc'))

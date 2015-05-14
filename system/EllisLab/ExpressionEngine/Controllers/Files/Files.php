@@ -333,7 +333,7 @@ class Files extends AbstractFilesController {
 			$upload_response = ee()->filemanager->upload_file($dir_id, 'file');
 			if (isset($upload_response['error']))
 			{
-				ee('Alert')->makeInline('settings-form')
+				ee('Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('upload_filedata_error'))
 					->addToBody($upload_response['error'])
@@ -364,7 +364,7 @@ class Files extends AbstractFilesController {
 
 			ee()->session->set_flashdata('file_id', $file->file_id);
 
-			ee('Alert')->makeInline('settings-form')
+			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('upload_filedata_success'))
 				->addToBody(sprintf(lang('upload_filedata_success_desc'), $file->title))
@@ -374,7 +374,7 @@ class Files extends AbstractFilesController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('settings-form')
+			ee('Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('upload_filedata_error'))
 				->addToBody(lang('upload_filedata_error_desc'))
@@ -469,7 +469,7 @@ class Files extends AbstractFilesController {
 		$zip = new ZipArchive();
 		if ($zip->open($zipfilename, ZipArchive::CREATE) !== TRUE)
 		{
-			ee('Alert')->makeInline('settings-form')
+			ee('Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('error_export'))
 				->addToBody(lang('error_cannot_create_zip'))
@@ -493,7 +493,7 @@ class Files extends AbstractFilesController {
 
 			if ($res === FALSE)
 			{
-				ee('Alert')->makeInline('settings-form')
+				ee('Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('error_export'))
 					->addToBody(sprintf(lang('error_cannot_add_file_to_zip'), $file->title))

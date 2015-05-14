@@ -227,7 +227,7 @@ abstract class AbstractDesign extends CP_Controller {
 		$zip = new ZipArchive();
 		if ($zip->open($zipfilename, ZipArchive::CREATE) !== TRUE)
 		{
-			ee('Alert')->makeInline('settings-form')
+			ee('Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('error_export'))
 				->addToBody(lang('error_cannot_create_zip'))
