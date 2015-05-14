@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Model\File;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Service\Validation\Validator;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -55,7 +56,7 @@ class Watermark extends Model {
 		'wm_test_image_path' => 'fileExists',
 		'wm_use_font'        => 'enum[y,n]',
 		'wm_font_size'       => 'isNaturalNoZero',
-		'wm_text'            => 'validateText',
+		'wm_text'            => 'validateText|required',
 		'wm_vrt_alignment'   => 'enum[top,middle,bottom]',
 		'wm_hor_alignment'   => 'enum[left,center,right]',
 		'wm_padding'         => 'isNatural',
@@ -94,7 +95,6 @@ class Watermark extends Model {
 
 	public function validateText()
 	{
-		// TODO: Make sure text is populated when $this->wm_type == 'text'
-		return TRUE;
+		return ($this->wm_type == 'text') ? TRUE : Validator::SKIP;
 	}
 }
