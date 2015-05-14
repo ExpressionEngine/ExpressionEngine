@@ -3071,11 +3071,18 @@ class Filemanager {
 
 		// Must initialize seperately in case image_lib was loaded previously
 		ee()->load->library('image_lib');
-		ee()->image_lib->initialize($config);
+		$return = ee()->image_lib->initialize($config);
 
-		if ( ! ee()->image_lib->crop())
+		if ($return === FALSE)
 		{
-	    	$errors = ee()->image_lib->display_errors();
+			$errors = ee()->image_lib->display_errors();
+		}
+		else
+		{
+			if ( ! ee()->image_lib->crop())
+			{
+		    	$errors = ee()->image_lib->display_errors();
+			}
 		}
 
 		$reponse = array();
@@ -3115,11 +3122,18 @@ class Filemanager {
 
 		// Must initialize seperately in case image_lib was loaded previously
 		ee()->load->library('image_lib');
-		ee()->image_lib->initialize($config);
+		$return = ee()->image_lib->initialize($config);
 
-		if ( ! ee()->image_lib->rotate())
+		if ($return === FALSE)
 		{
-	    	$errors = ee()->image_lib->display_errors();
+			$errors = ee()->image_lib->display_errors();
+		}
+		else
+		{
+			if ( ! ee()->image_lib->rotate())
+			{
+		    	$errors = ee()->image_lib->display_errors();
+			}
 		}
 
 		$reponse = array();
@@ -3169,11 +3183,18 @@ class Filemanager {
 
 		// Must initialize seperately in case image_lib was loaded previously
 		ee()->load->library('image_lib');
-		ee()->image_lib->initialize($config);
+		$return = ee()->image_lib->initialize($config);
 
-		if ( ! ee()->image_lib->resize())
+		if ($return === FALSE)
 		{
-	    	$errors = ee()->image_lib->display_errors();
+			$errors = ee()->image_lib->display_errors();
+		}
+		else
+		{
+			if ( ! ee()->image_lib->resize())
+			{
+		    	$errors = ee()->image_lib->display_errors();
+			}
 		}
 
 		$reponse = array();
