@@ -60,6 +60,7 @@ feature 'File Manager' do
 
 	after(:each) do
 		system('git checkout -- ../../../themes/ee/site_themes/agile_records/images/uploads/')
+		system('chmod -R 777 ../../../themes/ee/site_themes/agile_records/images/uploads')
 	end
 
 	it 'shows the "All Files" File Manager page', :all_files => true do

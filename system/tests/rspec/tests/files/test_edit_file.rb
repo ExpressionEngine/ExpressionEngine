@@ -39,6 +39,7 @@ feature 'File Manger / Edit File' do
 
 	after(:each) do
 		system('git checkout -- ../../../themes/ee/site_themes/agile_records/images/uploads/')
+		system('chmod -R 777 ../../../themes/ee/site_themes/agile_records/images/uploads')
 	end
 
 	it 'shows the Edit Meta Data form' do

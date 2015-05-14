@@ -51,6 +51,7 @@ feature 'File Manger / Crop File' do
 
 	after(:each) do
 		system('git checkout -- ../../../themes/ee/site_themes/agile_records/images/uploads/')
+		system('chmod -R 777 ../../../themes/ee/site_themes/agile_records/images/uploads')
 	end
 
 	it 'shows the crop form by default' do
