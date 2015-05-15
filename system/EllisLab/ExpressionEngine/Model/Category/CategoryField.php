@@ -38,6 +38,10 @@ class CategoryField extends FieldModel {
 		)
 	);
 
+	protected static $_events = array(
+		'beforeInsert'
+	);
+
 	protected $field_id;
 	protected $site_id;
 	protected $group_id;
@@ -52,6 +56,22 @@ class CategoryField extends FieldModel {
 	protected $field_text_direction;
 	protected $field_required;
 	protected $field_order;
+
+	/**
+	 * New fields get appended
+	 */
+	public function onBeforeInsert()
+	{
+		$field_order = $this->getProperty('field_order');
+
+		if (empty($field_order))
+		{
+			$count = $this->getFrontend()->get('CategoryField')
+				->filter('group_id', $this->getProperty('group_id'))
+				->count();
+			$this->setProperty('field_order', $count + 1);
+		}
+	}
 
 	public function getDataTable()
 	{

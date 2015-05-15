@@ -735,15 +735,6 @@ class Status extends AbstractChannelController {
 		$status->status = ee()->input->post('status');
 		$status->highlight = ee()->input->post('highlight');
 
-		// Status order required
-		if ($status->status_order === NULL)
-		{
-			$status->status_order = ee('Model')->get('Status')
-				->filter('group_id', $group_id)
-				->all()
-				->count() + 1;
-		}
-
 		$access = ee()->input->post('status_access') ?: array();
 
 		$no_access = ee('Model')->get('MemberGroup')

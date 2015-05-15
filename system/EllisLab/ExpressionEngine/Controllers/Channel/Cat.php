@@ -1229,11 +1229,6 @@ class Cat extends AbstractChannelController {
 		{
 			$cat_field->site_id = ee()->config->item('site_id');
 			$cat_field->field_list_items = '';
-
-			// New fields get put on the end
-			$cat_field->field_order = ee('Model')->get('CategoryField')
-				->filter('group_id', $cat_field->group_id)
-				->count() + 1;
 		}
 
 		$cat_field->save();

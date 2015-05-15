@@ -32,6 +32,12 @@ class Status extends Model {
 	protected static $_primary_key = 'status_id';
 	protected static $_table_name = 'statuses';
 
+	protected static $_typed_columns = array(
+		'site_id'         => 'int',
+		'group_id'        => 'int',
+		'status_order'    => 'int'
+	);
+
 	protected static $_relationships = array(
 		'StatusGroup' => array(
 			'type' => 'BelongsTo'
@@ -50,10 +56,30 @@ class Status extends Model {
 		)
 	);
 
+	protected static $_events = array(
+		'beforeInsert'
+	);
+
 	protected $status_id;
 	protected $site_id;
 	protected $group_id;
 	protected $status;
 	protected $status_order;
 	protected $highlight;
+
+	/**
+	 * New statuses get appended
+	 */
+	public function onBeforeInsert()
+	{
+		$status_order = $this->getProperty('status_order');
+
+		if (empty($status_order))
+		{
+			$count = $this->getFrontend()->get('Status')
+				->filter('group_id', $this->getProperty('group_id'))
+				->count();
+			$this->setProperty('status_order', $count + 1);
+		}
+	}
 }
