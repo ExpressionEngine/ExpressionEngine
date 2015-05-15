@@ -266,7 +266,7 @@ class Watermarks extends AbstractFilesController {
 					'fields' => array(
 						'wm_padding' => array(
 							'type' => 'text',
-							'value' => $watermark->wm_padding
+							'value' => ($watermark->isNew()) ? 10 : $watermark->wm_padding
 						)
 					)
 				),
@@ -276,12 +276,12 @@ class Watermarks extends AbstractFilesController {
 					'fields' => array(
 						'wm_hor_offset' => array(
 							'type' => 'short-text',
-							'value' => $watermark->wm_hor_offset,
+							'value' => $watermark->wm_hor_offset ?: 0,
 							'label' => 'horizontal'
 						),
 						'wm_vrt_offset' => array(
 							'type' => 'short-text',
-							'value' => $watermark->wm_vrt_offset,
+							'value' => $watermark->wm_vrt_offset ?: 0,
 							'label' => 'vertical'
 						)
 					)
@@ -296,7 +296,7 @@ class Watermarks extends AbstractFilesController {
 						'fields' => array(
 							'wm_use_font' => array(
 								'type' => 'yes_no',
-								'value' => $watermark->wm_use_font
+								'value' => $watermark->wm_use_font ?: 'y'
 							)
 						)
 					),
@@ -306,7 +306,7 @@ class Watermarks extends AbstractFilesController {
 						'fields' => array(
 							'wm_text' => array(
 								'type' => 'text',
-								'value' => $watermark->wm_text
+								'value' => $watermark->wm_text ?: 'Copyright '.date('Y', ee()->localize->now)
 							)
 						)
 					),
@@ -316,8 +316,8 @@ class Watermarks extends AbstractFilesController {
 						'fields' => array(
 							'wm_font' => array(
 								'type' => 'dropdown',
-								'choices' => array(), // TODO
-								'value' => $watermark->wm_font
+								'choices' => ee()->filemanager->fetch_fontlist(),
+								'value' => $watermark->wm_font ?: 'texb.ttf'
 							)
 						)
 					),
@@ -327,7 +327,7 @@ class Watermarks extends AbstractFilesController {
 						'fields' => array(
 							'wm_font_size' => array(
 								'type' => 'text',
-								'value' => $watermark->wm_font_size
+								'value' => $watermark->wm_font_size ?: 16
 							)
 						)
 					),
@@ -337,7 +337,7 @@ class Watermarks extends AbstractFilesController {
 						'fields' => array(
 							'wm_font_color' => array(
 								'type' => 'text',
-								'value' => $watermark->wm_font_color
+								'value' => $watermark->wm_font_color ?: '#FFFF00'
 							)
 						)
 					),
@@ -347,7 +347,7 @@ class Watermarks extends AbstractFilesController {
 						'fields' => array(
 							'wm_use_drop_shadow' => array(
 								'type' => 'yes_no',
-								'value' => $watermark->wm_use_drop_shadow
+								'value' => $watermark->wm_use_drop_shadow ?: 'y'
 							)
 						)
 					),
@@ -357,7 +357,7 @@ class Watermarks extends AbstractFilesController {
 						'fields' => array(
 							'wm_shadow_distance' => array(
 								'type' => 'text',
-								'value' => $watermark->wm_shadow_distance
+								'value' => ($watermark->isNew()) ? 1 : $watermark->wm_shadow_distance
 							)
 						)
 					),
@@ -367,7 +367,7 @@ class Watermarks extends AbstractFilesController {
 						'fields' => array(
 							'wm_shadow_color' => array(
 								'type' => 'text',
-								'value' => $watermark->wm_shadow_distance
+								'value' => $watermark->wm_shadow_color ?: '#999999'
 							)
 						)
 					)
@@ -392,7 +392,7 @@ class Watermarks extends AbstractFilesController {
 						'fields' => array(
 							'wm_opacity' => array(
 								'type' => 'text',
-								'value' => $watermark->wm_opacity
+								'value' => ($watermark->isNew()) ? 50 : $watermark->wm_opacity
 							)
 						)
 					),
@@ -402,12 +402,12 @@ class Watermarks extends AbstractFilesController {
 						'fields' => array(
 							'wm_x_transp' => array(
 								'type' => 'short-text',
-								'value' => $watermark->wm_x_transp,
+								'value' => ($watermark->isNew()) ? 2 : $watermark->wm_x_transp,
 								'label' => 'x_axis'
 							),
 							'wm_y_transp' => array(
 								'type' => 'short-text',
-								'value' => $watermark->wm_y_transp,
+								'value' => ($watermark->isNew()) ? 2 : $watermark->wm_y_transp,
 								'label' => 'y_axis'
 							)
 						)
