@@ -474,8 +474,13 @@ class Channel extends AbstractChannelController {
 			$_POST['cat_group'] = '';
 		}
 
-		$channel = ee('Model')->make('Channel', $_POST);
-		$channel->channel_id = $channel_id;
+		if (empty($channel_id))
+		{
+			$channel = ee('Model')->make('Channel', $_POST);
+		}
+		else {
+			$channel = ee('Model')->get('Channel', $channel_id)->first();
+		}
 
 		// Make sure these are the correct NULL value if they are not set.
 		$channel->status_group = ($channel->status_group !== FALSE
