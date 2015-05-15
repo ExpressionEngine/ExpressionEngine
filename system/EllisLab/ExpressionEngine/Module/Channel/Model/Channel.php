@@ -96,6 +96,10 @@ class Channel extends Model implements ContentStructure {
 		'enable_versioning'          => 'enum[y,n]',
 	);
 
+	protected static $_events = array(
+		'beforeSave'
+	);
+
 	// Properties
 
 	/**
@@ -234,6 +238,17 @@ class Channel extends Model implements ContentStructure {
 				default:
 					$this->setRawProperty($property, $channel->{$property});
 					break;
+			}
+		}
+	}
+
+	public function onBeforeSave()
+	{
+		foreach (array('channel_url', 'channel_lang') as $column) {
+			$value = $this->getProperty($column);
+			if (empty($value))
+			{
+				$this->setProperty($column, '');
 			}
 		}
 	}
