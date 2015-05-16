@@ -110,11 +110,21 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	/**
 	 * Retrieve the first item
 	 *
-	 * @return Mixed First child object
+	 * @return Mixed First child
 	 */
 	public function first()
 	{
 		return $this->elements[0];
+	}
+
+	/**
+	* Retrieve the last item
+	*
+	* @return Mixed Last child
+	*/
+	public function last()
+	{
+		return $this->elements[$this->count() - 1];
 	}
 
 	/**
