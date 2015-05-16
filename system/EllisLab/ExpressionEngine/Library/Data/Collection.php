@@ -195,25 +195,21 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	}
 
 	/**
-	 * Given a property name or callback, create a list of elements
-	 * that is indexed by the property name or the return value of
+	 * Given a property name or callback, create an array of elements
+	 * that is indexed by the property value or the return value of
 	 * the callback for each element
 	 *
-	 * @param Closure|String $extractor Property name or callback to extract keys
-	 * @return Array of [Extractor keys => Collection elements]
+	 * @param Closure|String $collector Property name or callback to extract keys
+	 * @return Array of [Collector keys => Collection elements]
 	 */
-	public function indexBy($extractor)
+	public function indexBy($collector)
 	{
-		if ($extractor instanceOf Closure)
-		{
-			$keys = $this->map($extractor);
-		}
-		else
-		{
-			$keys = $this->pluck($extractor);
-		}
+		return array_combine(
+			$this->collect($collector),
+			$this->elements
+		);
+	}
 
-		return array_combine($keys, $this->elements);
 	}
 
 	/**
