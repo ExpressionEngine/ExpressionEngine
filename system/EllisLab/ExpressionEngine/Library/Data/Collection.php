@@ -210,6 +210,19 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 		);
 	}
 
+	/**
+	 * Get a key => value array. Basically indexBy + pluck.
+	 *
+	 * @param Closure|String $key Collector to extract keys
+	 * @param Closure|String $value Collector to extract values
+	 * @return Associative array of [key => value]
+	 */
+	public function keyValue($key, $value)
+	{
+		return array_combine(
+			$this->collect($key),
+			$this->collect($value)
+		);
 	}
 
 	/**
