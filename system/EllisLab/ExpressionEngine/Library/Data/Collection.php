@@ -142,6 +142,24 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	}
 
 	/**
+	 * Get an arbitrary value from each element, depending on whether
+	 * the parameter is a key or a closure. Useful for internal methods
+	 * that can take both.
+	 *
+	 * @param Closure|String $collector Property name or callback used to extract
+	 * @return Array Collected values
+	 */
+	public function collect($collector)
+	{
+		if ($collector instanceOf Closure)
+		{
+			return $this->map($collector);
+		}
+
+		return $this->pluck($collector);
+	}
+
+	/**
 	 * Sort the data by a given column and return a new
 	 * collection containing the sorted results
 	 *
