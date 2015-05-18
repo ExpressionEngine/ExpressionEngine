@@ -686,7 +686,7 @@ class EE_Form_validation {
 	public function valid_date($date)
 	{
 		ee()->load->library('localize');
-		return (ee()->localize->string_to_timestamp($date) != FALSE);
+		return (ee()->localize->string_to_timestamp($date, TRUE, ee()->localize->get_date_format()) != FALSE);
 	}
 
 	// --------------------------------------------------------------------
