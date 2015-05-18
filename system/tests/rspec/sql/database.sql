@@ -1231,6 +1231,7 @@ CREATE TABLE `exp_sessions` (
   `ip_address` varchar(45) NOT NULL DEFAULT '0',
   `user_agent` varchar(120) NOT NULL,
   `fingerprint` varchar(40) NOT NULL,
+  `login_state` varchar(32) NULL DEFAULT NULL,
   `sess_start` int(10) unsigned NOT NULL DEFAULT '0',
   `last_activity` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`session_id`),
