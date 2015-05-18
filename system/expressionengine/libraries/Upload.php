@@ -86,13 +86,12 @@ class EE_Upload {
 	 * @param string $data The raw file data
 	 * @return mixed The result of do_upload
 	 */
-	public function raw_upload($name, $type, $data)
+	public function raw_upload($name, $data)
 	{
 		// This will force do_upload to skip its is_uploaded_file checks
 		$this->raw_upload = TRUE;
 
 		$tmp = tempnam(sys_get_temp_dir(), 'raw');
-		$tmp_name = basename($tmp);
 
 		if (file_put_contents($tmp, $data) === FALSE)
 		{
@@ -101,9 +100,8 @@ class EE_Upload {
 
 		$_FILES['userfile'] = array(
 			'name' => $name,
-			'type' => $type,
 			'size' => mb_strlen($data),
-			'tmp_name' => $tmp_name,
+			'tmp_name' => $tmp,
 			'error' => UPLOAD_ERR_OK
 		);
 
