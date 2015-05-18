@@ -1,0 +1,2 @@
+# Prevent execution of code
+SetHandler default-handler

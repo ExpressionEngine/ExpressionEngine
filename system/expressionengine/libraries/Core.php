@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -53,6 +53,17 @@ class EE_Core {
 		define('PATH_EXT',		APPPATH.'extensions/');
 		define('PATH_FT',		APPPATH.'fieldtypes/');
 		define('PATH_RTE',		APPPATH.'rte_tools/');
+		if (ee()->config->item('third_party_path'))
+		{
+			define(
+				'PATH_THIRD',
+				rtrim(realpath(ee()->config->item('third_party_path')), '/').'/'
+			);
+		}
+		else
+		{
+			define('PATH_THIRD',	APPPATH.'third_party/');
+		}
 
 		$addon_path = (ee()->config->item('addons_path'))
 			? rtrim(realpath(ee()->config->item('addons_path')), '/').'/'
@@ -428,6 +439,7 @@ class EE_Core {
 
 			$_GET = array_merge($get, $_GET);
 		}
+
 
 		// Load our view library
 		ee()->load->library('view');

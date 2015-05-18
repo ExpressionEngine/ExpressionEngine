@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -1094,24 +1094,9 @@ class MyAccount extends CP_Controller {
 		$vars['cp_page_title'] = lang('subscriptions');
 
 		$this->jquery->tablesorter('.mainTable', '{
-			headers: {3: {sorter: false}},
+			headers: {2: {sorter: false}},
 			widgets: ["zebra"]
 		}');
-
-		$this->javascript->output('
-			$(".toggle_all").toggle(
-				function(){
-					$("input.toggle").each(function() {
-						this.checked = true;
-					});
-				}, function (){
-					var checked_status = this.checked;
-					$("input.toggle").each(function() {
-						this.checked = false;
-					});
-				}
-			);
-		');
 
 		$vars = array_merge($this->_account_menu_setup(), $vars);
 
@@ -1360,7 +1345,8 @@ class MyAccount extends CP_Controller {
 	  */
 	function update_signature()
 	{
-		$signature = $this->input->post('signature');
+		$signature = ee()->input->post('signature');
+		$remove = ee()->input->post('remove');
 
 		// Get member_id for redirects
 		$params = array();
@@ -1370,8 +1356,9 @@ class MyAccount extends CP_Controller {
 		}
 
 		// Do we have what we need in $_POST?
-		if ( ! ee()->input->post('signature')
-			&& ! ee()->input->post('remove'))
+		if (empty($signature)
+			&& empty($remove)
+			&& (empty($_FILES) && ee()->config->item('sig_allow_img_upload') == 'y'))
 		{
 			return ee()->functions->redirect(
 				cp_url('myaccount/edit_signature', $params)
@@ -2405,19 +2392,6 @@ class MyAccount extends CP_Controller {
 		}');
 
 		$this->javascript->output('
-			$(".toggle_all").toggle(
-				function(){
-					$("input.toggle").each(function() {
-						this.checked = true;
-					});
-				}, function (){
-					var checked_status = this.checked;
-					$("input.toggle").each(function() {
-						this.checked = false;
-					});
-				}
-			);
-
 			$("#add_member").hide();
 
 			$(".cp_button").show();

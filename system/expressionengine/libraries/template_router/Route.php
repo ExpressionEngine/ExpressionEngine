@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -59,8 +59,17 @@ class EE_Route {
 	 */
 	public function __construct($route, $required = FALSE)
 	{
-		require_once APPPATH.'libraries/template_router/Segment.php';
-		require_once APPPATH.'libraries/template_router/Converters.php';
+		if (defined('EE_APPPATH'))
+		{
+			$path = EE_APPPATH;
+		}
+		else
+		{
+			$path = APPPATH;
+		}
+
+		require_once $path.'libraries/template_router/Segment.php';
+		require_once $path.'libraries/template_router/Converters.php';
 		ee()->lang->loadfile('template_router');
 		$this->required = $required;
 		$this->rules = new EE_Template_router_converters();
@@ -282,7 +291,7 @@ class EE_Route {
 
 					if (preg_match("/^[a-zA-Z0-9_\-]*$/ix", $variable))
 					{
-						// Subpattern names must be alpha numeric, start with a 
+						// Subpattern names must be alpha numeric, start with a
 						// non-digit and be less than 32 character long.
 						// SHA1 in base36 = 31 characters + 1 character prefix
 						$hash = 'e' . base_convert(sha1($variable), 16, 36);
@@ -329,9 +338,17 @@ class EE_Route {
 			// We just have a static route with no variables
 			$parts = explode("/", $route);
 
-			foreach($parts as $segment)
+			for ($i = 0; $i < count($parts); $i++)
 			{
-				$segments[] = array('static' => $segment . '/');
+				$segment = $parts[$i];
+
+				// Don't add trailing slash to last segment
+				if ($i < count($parts) -1)
+				{
+					$segment .= '/';
+				}
+
+				$segments[] = array('static' => $segment);
 			}
 		}
 

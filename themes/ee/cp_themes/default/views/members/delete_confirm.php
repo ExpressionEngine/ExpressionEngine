@@ -25,8 +25,8 @@
 			<?php endif; ?>
 		</p>
 		<ul>
-			<li><label class="notice"><?=form_radio('heir_action', 'delete')?> <?= lang('member_delete_dont_reassign_entries') ?></label></li>
-			<li><label><?=form_radio('heir_action', 'assign')?> <?= lang('member_delete_reassign_entries')?> <?= form_dropdown('heir', $heirs) ?></label></li>
+			<li><label class="notice"><?=form_radio('heir_action', 'delete', $heir_action_n)?> <?= lang('member_delete_dont_reassign_entries') ?></label></li>
+			<li><label><?=form_radio('heir_action', 'assign', $heir_action_y)?> <?= lang('member_delete_reassign_entries')?> <?= form_dropdown('heir', $heirs, $selected) ?></label></li>
 		</ul>
 	<?php endif; ?>
 

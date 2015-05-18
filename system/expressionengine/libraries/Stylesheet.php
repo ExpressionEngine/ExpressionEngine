@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -42,7 +42,7 @@ class EE_Stylesheet {
 		}
 		else
 		{
-			$stylesheet = $_GET['css'];
+			$stylesheet = (isset($_GET['css'])) ? $_GET['css'] : '';
 		}
 
 		if (rtrim($stylesheet, '/') == '_ee_channel_form_css')
@@ -54,7 +54,7 @@ class EE_Stylesheet {
 
 		if ($stylesheet == '' OR strpos($stylesheet, '/') === FALSE)
 		{
-			exit;
+			show_404();
 		}
 
 		if ( ! isset($this->style_cache[$stylesheet]))
@@ -63,7 +63,7 @@ class EE_Stylesheet {
 
 			if (count($ex) != 2)
 			{
-				exit;
+				show_404();
 			}
 
 			ee()->db->select('templates.template_data, templates.template_name,	templates.edit_date');
@@ -79,7 +79,7 @@ class EE_Stylesheet {
 
 			if ($query->num_rows() == 0)
 			{
-				exit;
+				show_404();
 			}
 
 			$row = $query->row_array();

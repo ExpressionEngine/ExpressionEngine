@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -539,10 +539,11 @@ class File_model extends CI_Model {
 			$allowed_types = array($allowed_types);
 		}
 
-		$this->load->helper('file');
-		$this->load->helper('text');
-		$this->load->helper('directory');
-		$this->load->library('encrypt');
+		ee()->load->helper('file');
+		ee()->load->helper('text');
+		ee()->load->helper('directory');
+		ee()->load->library('encrypt');
+		ee()->load->library('mime_type');
 
 		if (count($directories) == 0)
 		{
@@ -593,7 +594,7 @@ class File_model extends CI_Model {
 
 					$file['encrypted_path'] = rawurlencode($this->encrypt->encode($file['relative_path'].$file['name'], $this->session->sess_crypt_key));
 
-					$file['mime'] = get_mime_by_extension($file['name']);
+					$file['mime'] = ee()->mime_type->ofFile($file['relative_path'].$file['name']);
 
 					if ($get_dimensions)
 					{

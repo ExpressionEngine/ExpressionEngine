@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.8
@@ -73,5 +73,17 @@ class Csrf_cookie implements Csrf_storage_backend {
 	public function fetch_token()
 	{
 		return ee()->input->cookie(self::COOKIE_NAME);
+	}
+
+	/**
+	 * Refresh the current token
+	 * @return void
+	 */
+	public function refresh_token()
+	{
+		if ($token = $this->fetch_token())
+		{
+			$this->store_token($token);
+		}
 	}
 }

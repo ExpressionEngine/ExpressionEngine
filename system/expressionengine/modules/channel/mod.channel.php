@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -3041,6 +3041,9 @@ class Channel {
 					$chunk = str_replace(LD.'count'.RD, $this->category_count, $chunk);
 				}
 
+				// {switch=}
+				$chunk = ee()->TMPL->parse_switch($chunk, $this->category_count - 1);
+
 				/** --------------------------------
 				/**  {total_results}
 				/** --------------------------------*/
@@ -3833,7 +3836,9 @@ class Channel {
 			'path'			=> $path,
 			'template'		=> $template,
 			'channel_array'	=> $channel_array
-		));
+			),
+			$active_cat
+		);
 	}
 
 	// ------------------------------------------------------------------------
@@ -3841,7 +3846,7 @@ class Channel {
 	/**
 	  *  Category Sub-tree
 	  */
-	public function category_subtree($cdata = array())
+	public function category_subtree($cdata = array(), $active_cat)
 	{
 		$default = array('parent_id', 'path', 'template', 'depth', 'channel_array', 'show_empty');
 
@@ -3864,8 +3869,11 @@ class Channel {
 		$total_results = count($this->cat_array);
 
 		// Get category ID from URL for {if active} conditional
-		ee()->load->helper('segment');
-		$active_cat = parse_category($this->query_string);
+		if ($active_cat === NULL)
+		{
+			$active_cat = parse_category($this->query_string);
+			ee()->load->helper('segment');
+		}
 
 		foreach($this->cat_array as $key => $val)
 		{
@@ -3974,6 +3982,9 @@ class Channel {
 					$chunk = str_replace(LD.'count'.RD, $this->category_count, $chunk);
 				}
 
+				// {switch=}
+				$chunk = ee()->TMPL->parse_switch($chunk, $this->category_count - 1);
+
 				/** --------------------------------
 				/**  {total_results}
 				/** --------------------------------*/
@@ -4019,7 +4030,9 @@ class Channel {
 					'template'		=> $template,
 					'depth' 		=> $depth + 2,
 					'channel_array'	=> $channel_array
-				));
+					),
+					$active_cat
+				);
 
 				if (isset($fillable_entries) && $fillable_entries == 'y')
 				{

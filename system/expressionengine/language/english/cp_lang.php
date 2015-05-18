@@ -119,6 +119,7 @@ $lang = array(
 'nav_security_and_privacy'		=> 'Security and Privacy',
 
 'nav_software_registration'		=> 'Software Registration',
+'nav_software_registration_short_desc'		=> 'Manage Software Registraion Information',
 
 'nav_admin_system'				=> 'System Administration',
 	'nav_general_configuration'			=> 'General Configuration',
@@ -287,6 +288,12 @@ $lang = array(
 
 'build' =>
 'build date:',
+
+'license_number' =>
+'License Number',
+
+'invalid_license' =>
+'INVALID LICENSE',
 
 'forgot_password' =>
 'Forgot your password?',

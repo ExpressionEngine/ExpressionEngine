@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -302,7 +302,7 @@ class Api_channel_entries extends Api {
 	 * Handles deleting of existing entries from arbitrary, authenticated source
 	 *
 	 * @access	public
-	 * @param	int
+	 * @param	mixed	An entry ID or array of entry IDs to delete
 	 * @return	bool
 	 */
 	function delete_entry($entry_ids)
@@ -335,6 +335,7 @@ class Api_channel_entries extends Api {
 		// Check permissions
 		$allowed_channels = ee()->functions->fetch_assigned_channels();
 		$authors = array();
+		$channel_ids = array();
 
 		foreach ($query->result_array() as $row)
 		{
@@ -410,6 +411,7 @@ class Api_channel_entries extends Api {
 		{
 			$val = $row['entry_id'];
 			$channel_id = $row['channel_id'];
+			$channel_ids[$row['channel_id']] = $row['channel_id'];
 
 			// No field group- skip this bit
 			if ( ! isset($channel_groups[$channel_id]) OR ! isset($group_fields[$channel_groups[$channel_id]]))
@@ -443,7 +445,12 @@ class Api_channel_entries extends Api {
 			ee()->db->select('total_entries');
 			$mquery = ee()->db->get_where('members', array('member_id' => $authors[$val]));
 
-			$tot = $mquery->row('total_entries');
+			$tot = 0;
+
+			if ($mquery->num_rows() > 0)
+			{
+				$tot = $mquery->row('total_entries');
+			}
 
 			if ($tot > 0)
 			{
@@ -452,34 +459,6 @@ class Api_channel_entries extends Api {
 
 			ee()->db->where('member_id', $authors[$val]);
 			ee()->db->update('members', array('total_entries' => $tot));
-
-			if ($comments_installed)
-			{
-				ee()->db->where('status', 'o');
-				ee()->db->where('entry_id', $val);
-				ee()->db->where('author_id', $authors[$val]);
-				$count = ee()->db->count_all_results('comments');
-
-				if ($count > 0)
-				{
-					ee()->db->select('total_comments');
-					$mc_query = ee()->db->get_where('members', array('member_id' => $authors[$val]));
-
-					ee()->db->where('member_id', $authors[$val]);
-					ee()->db->update('members', array('total_comments' => ($mc_query->row('total_comments') - $count)));
-				}
-
-				ee()->db->delete('comments', array('entry_id' => $val));
-				ee()->db->delete('comment_subscriptions', array('entry_id' => $val));
-			}
-
-			// Delete entries in the channel_entries_autosave table
-			ee()->db->where('original_entry_id', $val)
-						 ->delete('channel_entries_autosave');
-
-			// Delete entries from the versions table
-			ee()->db->where('entry_id', $val)
-						 ->delete('entry_versioning');
 
 
 			// -------------------------------------------
@@ -492,16 +471,44 @@ class Api_channel_entries extends Api {
 			//
 			// -------------------------------------------
 
-			// Update statistics
+			$entries[] = $val;
+		}
+
+		if ($comments_installed)
+		{
+			// Remove comments for deleted entries
+			ee()->db->where_in('entry_id', $entries)
+					 ->delete('comments');
+
+			// Remove comment subscriptions for deleted entries
+			ee()->db->where_in('entry_id', $entries)
+					 ->delete('comment_subscriptions');
+		}
+
+		// Delete entries in the channel_entries_autosave table
+		ee()->db->where_in('original_entry_id', $entries)
+					 ->delete('channel_entries_autosave');
+
+		// Delete entries from the versions table
+		ee()->db->where_in('entry_id', $entries)
+					 ->delete('entry_versioning');
+
+		// Let's run through some stats updates
+		foreach ($channel_ids as $channel_id)
+		{
 			ee()->stats->update_channel_stats($channel_id);
 
 			if ($comments_installed)
 			{
 				ee()->stats->update_comment_stats($channel_id);
 			}
-
-			$entries[] = $val;
 		}
+
+		if ($comments_installed)
+		{
+			ee()->stats->update_authors_comment_stats(array_unique($authors));
+		}
+
 
 		$fts = ee()->api_channel_fields->fetch_custom_channel_fields();
 
@@ -955,7 +962,7 @@ class Api_channel_entries extends Api {
 		{
 			if ( ! is_numeric($data[$date]) && trim($data[$date]))
 			{
-				$data[$date] = ee()->localize->string_to_timestamp($data[$date]);
+				$data[$date] = ee()->localize->string_to_timestamp($data[$date], TRUE, ee()->localize->get_date_format());
 			}
 
 			if ($data[$date] === FALSE)
@@ -1040,7 +1047,7 @@ class Api_channel_entries extends Api {
 			$this->_set_error('not_authorized');
 		}
 
-		if ($data['author_id'] != ee()->session->userdata('member_id') && ee()->session->userdata('group_id') != 1)
+		if ($data['author_id'] != ee()->session->userdata('member_id') && ee()->session->userdata('group_id') != 1 && ee()->session->userdata('can_edit_other_entries') != 'y')
 		{
 			if ( ! isset($this->_cache['orig_author_id']) OR $data['author_id'] != $this->_cache['orig_author_id'])
 			{
@@ -1222,7 +1229,7 @@ class Api_channel_entries extends Api {
 		//  Date might already be numeric format- so we check
 		if ( ! is_numeric($data['field_id_'.$row['field_id']]))
 		{
-			$data['field_id_'.$row['field_id']] = ee()->localize->string_to_timestamp($data['field_id_'.$row['field_id']]);
+			$data['field_id_'.$row['field_id']] = ee()->localize->string_to_timestamp($data['field_id_'.$row['field_id']], TRUE, ee()->localize->get_date_format());
 		}
 
 		if ($data['field_id_'.$row['field_id']] === FALSE)

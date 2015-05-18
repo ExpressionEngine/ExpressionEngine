@@ -9,7 +9,7 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -64,10 +64,114 @@ class Pages_mcp {
 	  */
 	function index()
 	{
+		ee()->load->model('pages_model');
+
+		ee()->view->cp_page_title = ee()->lang->line('pages_module_name');
+		$vars['new_page_location'] = '';
+
+		ee()->load->library('table');
+		ee()->load->library('javascript');
+		ee()->load->helper('form');
+
+		ee()->javascript->compile();
+
+		$pages = ee()->config->item('site_pages');
+
+		if ($pages === FALSE OR count($pages[ee()->config->item('site_id')]['uris']) == 0)
+		{
+			return ee()->load->view('index', $vars, TRUE);
+		}
+
+		natcasesort($pages[ee()->config->item('site_id')]['uris']);
+		$vars['pages'] = array();
+
+		//  Our Pages
+
+		$i = 0;
+		$previous = array();
+		$spcr = '<img src="'.PATH_CP_GBL_IMG.'clear.gif" border="0"  width="24" height="14" alt="" title="" />';
+		$indent = $spcr.'<img src="'.PATH_CP_GBL_IMG.'cat_marker.gif" border="0"  width="18" height="14" alt="" title="" />';
+
+		foreach($pages[ee()->config->item('site_id')]['uris'] as $entry_id => $url)
+		{
+			$url = ($url == '/') ? '/' : '/'.trim($url, '/');
+
+			$vars['pages'][$entry_id]['entry_id'] = $entry_id;
+			$vars['pages'][$entry_id]['entry_id'] = $entry_id;
+			$vars['pages'][$entry_id]['view_url'] = ee()->functions->fetch_site_index().QUERY_MARKER.'URL='.urlencode(ee()->functions->create_url($url));
+			$vars['pages'][$entry_id]['page'] = $url;
+			$vars['pages'][$entry_id]['indent'] = '';
+
+			if ($this->homepage_display == 'nested' && $url != '/')
+            {
+            	$x = explode('/', trim($url, '/'));
+
+            	for($i=0, $s=count($x); $i < $s; ++$i)
+            	{
+            		if (isset($previous[$i]) && $previous[$i] == $x[$i])
+            		{
+            			continue;
+            		}
+
+					$this_indent = ($i == 0) ? '' : str_repeat($spcr, $i-1).$indent;
+					$vars['pages'][$entry_id]['indent'] = $this_indent;
+            	}
+
+            	$previous = $x;
+            }
+
+			$vars['pages'][$entry_id]['toggle'] = array(
+														'name'		=> 'toggle[]',
+														'id'		=> 'delete_box_'.$entry_id,
+														'value'		=> $entry_id,
+														'class'		=>'toggle'
+														);
+
+		}
+
+		return ee()->load->view('index', $vars, TRUE);
+	}
+
+
+	/*
+		Hunting for Bugs in the Code...
+
+	           /      \
+	        \  \  ,,  /  /
+	         '-.`\()/`.-'
+	        .--_'(  )'_--.
+	       / /` /`""`\ `\ \
+	        |  |  ><  \  \
+	        \  \      /  /
+	            '.__.'
+	*/
+
+	// --------------------------------------------------------------------
+
+	/**
+	  *  Pages Configuration Screen
+	  */
+	function configuration()
+	{
+	    ee()->load->model('pages_model');
+
 		if ( ! empty($_POST))
 		{
 			$this->delete();
 		}
+
+        ee()->load->library('table');
+
+		ee()->view->cp_page_title = ee()->lang->line('pages_configuration');
+
+		ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=pages',
+		                              ee()->lang->line('pages_module_name'));
+
+		ee()->load->helper('form');
+
+		//  Get Channels
+        ee()->load->model('channel_model');
+		$wquery = ee()->channel_model->get_channels(ee()->config->item('site_id'));
 
 		$base_url = new URL('addons/settings/pages', ee()->session->session_id());
 

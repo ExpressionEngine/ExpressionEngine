@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -190,6 +190,7 @@ class Content_edit extends CP_Controller {
 		));
 
 		$this->javascript->set_global('autosave_map', $vars['autosave_array']);
+		$this->javascript->set_global('lang.selection_required', lang('selection_required'));
 		$this->cp->render('content/edit', $vars);
 	}
 
@@ -1064,7 +1065,7 @@ class Content_edit extends CP_Controller {
 			}
 
 			// Convert the date to a Unix timestamp
-			$data['entry_date'] = $this->localize->string_to_timestamp($data['entry_date']);
+			$data['entry_date'] = $this->localize->string_to_timestamp($data['entry_date'], TRUE, ee()->localize->get_date_format());
 
 			if ( ! is_numeric($data['entry_date']))
 			{
