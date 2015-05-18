@@ -224,7 +224,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	 * @param Closure|String $value Collector to extract values
 	 * @return Associative array of [key => value]
 	 */
-	public function keyValue($key, $value)
+	public function getDictionary($key, $value)
 	{
 		return array_combine(
 			$this->collect($key),
