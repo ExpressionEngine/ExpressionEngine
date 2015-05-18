@@ -533,6 +533,68 @@ class EE_Encrypt {
 		}
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Creates a signed hash value using hash_hmac()
+	 *
+	 * @param string $data	 Content to hash
+	 * @param mixed	$key Secret key, defaults to DB username.password if empty
+	 * @param string $algo hashing algorithm, defaults to md5
+	 * @return 	mixed   NULL if there is no data
+	 * 					FALSE if the hashing algorithm is unknown
+	 * 	        		String consisting of the calculated message digest as lowercase hexits
+	 *
+	 */
+
+	public function sign($data, $key = NULL, $algo = 'md5')
+	{
+		if (empty($data))
+		{
+			return NULL;
+		}
+
+		// do we want to start using encryption_key config if available?
+		$key = (empty($key)) ? ee()->db->username.ee()->db->password : $key;
+
+		$token = hash_hmac($algo, $data, $key);
+
+		return $token;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Verify the signed data hash
+	 *
+	 * @param string $data Current content
+	 * @param string $signed_data Hashed content to compare to
+	 * @param mixed	$key Secret key
+	 * @param string $algo hashing algorithm, defaults to md5
+	 * @return 	mixed   NULL if there is no data
+	 * 					FALSE if the signed data is not verified
+	 * 	        		TRUE if the signed data is verified
+	 *
+	 */
+
+	public function verify_signature($data, $signed_data, $key = NULL, $algo = 'md5')
+	{
+		if (empty($data))
+		{
+			return NULL;
+		}
+
+		 $new_sig = $this->sign($data, $key, $algo);
+
+		// See PHP documentation not re timing attacks
+		// http://php.net/manual/en/function.hash-hmac.php#111435
+		if ($new_sig === $signed_data)
+		{
+			return TRUE;
+		}
+
+		return FALSE;
+	}
 }
 
 // END CI_Encrypt class
