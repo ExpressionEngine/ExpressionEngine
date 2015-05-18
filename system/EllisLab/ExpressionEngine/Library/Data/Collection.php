@@ -59,7 +59,14 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	{
 		foreach ($this->elements as $element)
 		{
-			$element->$key = $value;
+			if (is_array($element))
+			{
+				$element[$key] = $value;
+			}
+			else
+			{
+				$element->$key = $value;
+			}
 		}
 	}
 
