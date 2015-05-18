@@ -163,13 +163,13 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	 * Sort the data by a given column and return a new
 	 * collection containing the sorted results
 	 *
-	 * @param String $key The key to sort by
+	 * @param Closure|String $collector The property name to collect (or a closure)
 	 * @param Int    $flags Sort flags (as per http://php.net/sort)
 	 * @return Sorted collection
 	 */
-	public function sortBy($column, $flags = SORT_REGULAR)
+	public function sortBy($collector, $flags = SORT_REGULAR)
 	{
-		$values = $this->pluck($column);
+		$values = $this->collect($collector);
 
 		asort($values, $flags);
 
