@@ -53,17 +53,6 @@ class EE_Core {
 		define('PATH_EXT',		APPPATH.'extensions/');
 		define('PATH_FT',		APPPATH.'fieldtypes/');
 		define('PATH_RTE',		APPPATH.'rte_tools/');
-		if (ee()->config->item('third_party_path'))
-		{
-			define(
-				'PATH_THIRD',
-				rtrim(realpath(ee()->config->item('third_party_path')), '/').'/'
-			);
-		}
-		else
-		{
-			define('PATH_THIRD',	APPPATH.'third_party/');
-		}
 
 		$addon_path = (ee()->config->item('addons_path'))
 			? rtrim(realpath(ee()->config->item('addons_path')), '/').'/'
