@@ -204,7 +204,7 @@ class EE_URI {
 		}
 
 		// Safety Check:  If the URL contains more than 9 segments we'll show an error message
-		if (count($segs) > 9)
+		if (count($segs) > (config_item('max_url_segments') ?: 12))
 		{
 			show_error("Error: The URL contains too many segments.", 404);
 		}
