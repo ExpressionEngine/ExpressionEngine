@@ -341,10 +341,9 @@ class Cp {
 		}
 
 		// Check to see if the config file matches the Core version constant
-		if (str_replace('.', '', APP_VER) !== ee()->config->item('app_version'))
+		if (APP_VER !== ee()->config->item('app_version'))
 		{
-			$config_version = substr(ee()->config->item('app_version'), 0, 1).'.'.substr(ee()->config->item('app_version'), 1, 1).'.'.substr(ee()->config->item('app_version'), 2);
-			$notices[] = sprintf(lang('version_mismatch'), $config_version, APP_VER);
+			$notices[] = sprintf(lang('version_mismatch'), ee()->config->item('app_version'), APP_VER);
 		}
 
 		if ( ! empty($notices))
