@@ -35,7 +35,7 @@ class EE_Typography {
 	public $skip_elements	= 'figure|p|pre|ol|ul|dl|object|table|h\d';
 
 	// Tags we want the parser to completely ignore when splitting the string.
-	public $inline_elements = 'a|abbr|acronym|b|bdo|big|br|button|cite|code|del|dfn|em|figcaption|i|img|ins|input|label|map|kbd|q|samp|select|small|span|strong|sub|sup|textarea|tt|var';
+	public $inline_elements = 'a|abbr|acronym|b|bdo|big|br|button|cite|code|del|dfn|em|figcaption|i|img|ins|input|kbd|label|map|mark|q|samp|select|small|span|strong|sub|sup|textarea|tt|var';
 
 	// array of block level elements that require inner content to be within another block level element
 	public $inner_block_required = array('blockquote');
