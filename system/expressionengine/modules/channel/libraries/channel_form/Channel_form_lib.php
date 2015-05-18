@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team,
  * 		- Original Development by Barrett Newton -- http://barrettnewton.com
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -3070,7 +3070,7 @@ GRID_FALLBACK;
 				'field_name' => 'entry_date',
 				'field_label' => 'lang:entry_date',
 				'field_type' => 'date',
-				'rules' => 'required|valid_date|call_field_validation[entry_date]'
+				'rules' => 'required|call_field_validation[entry_date]'
 			),
 			'expiration_date' => array(
 				'field_name' => 'expiration_date',

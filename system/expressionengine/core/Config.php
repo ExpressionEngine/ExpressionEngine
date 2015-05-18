@@ -647,6 +647,8 @@ class EE_Config {
 			'sig_img_max_width',
 			'sig_img_max_height',
 			'sig_img_max_kb',
+			'prv_msg_enabled',
+			'prv_msg_allow_attachments',
 			'prv_msg_upload_path',
 			'prv_msg_max_attachments',
 			'prv_msg_attach_maxsize',
@@ -1043,8 +1045,12 @@ class EE_Config {
 		{
 			foreach ($remove_values as $key => $val)
 			{
-				$config_file = preg_replace('#\$'."config\[(\042|\047)".$key."\\1\].*#", "", $config_file);
-				unset($this->config[$key]);
+				$config_file = preg_replace(
+					'#\$'."config\[(\042|\047)".$key."\\1\].*?;\n#is",
+					"",
+					$config_file
+				);
+				unset($config[$key]);
 			}
 		}
 
@@ -1179,10 +1185,9 @@ class EE_Config {
 		{
 			return $this->_config_path_errors;
 		}
-		else
-		{
-			return TRUE;
-		}
+
+		$this->clear_opcache($this->config_path);
+		return TRUE;
 	}
 
 	// --------------------------------------------------------------------
@@ -1217,6 +1222,31 @@ class EE_Config {
 		));
 
 		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	* Clear the opcode cache
+	*
+	* @param String $path Path to the modified file
+	*/
+	private function clear_opcache($path)
+	{
+		if ( ! file_exists($path))
+		{
+			return;
+		}
+
+		if (function_exists('opcache_invalidate'))
+		{
+			opcache_invalidate($path);
+		}
+
+		if (function_exists('apc_delete_file'))
+		{
+			apc_delete_file($path);
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -1311,7 +1341,7 @@ class EE_Config {
 			),
 
 			'software_registration'	=> array(
-				'license_contact' => array('i', '', 'required'),
+				'license_contact' => array('i', '', 'required|valid_email'),
 				'license_number'  => array('i', '', 'callback__valid_license_pattern')
 			),
 
@@ -1328,7 +1358,12 @@ class EE_Config {
 
 			'localization_cfg'	=>	array(
 				'default_site_timezone' => array('f', 'timezone'),
-				'date_format'           => array('s', array('%n/%j/%y' => 'mm/dd/yy', '%j-%n-%y' => 'dd-mm-yy', '%Y-%m-%d' => 'yyyy-mm-dd')),
+				'date_format'           => array('s', array(
+					'%n/%j/%Y' => 'mm/dd/yyyy',
+					'%j/%n/%Y' => 'dd/mm/yyyy',
+					'%j-%n-%Y' => 'dd-mm-yyyy',
+					'%Y-%m-%d' => 'yyyy-mm-dd'
+				)),
 				'time_format'           => array('r', array('24' => '24_hour', '12' => '12_hour')),
 				'include_seconds'       => array('r', array('y' => 'yes', 'n' => 'no')),
 			),

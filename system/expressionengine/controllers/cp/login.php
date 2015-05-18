@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -693,6 +693,16 @@ class Login extends CP_Controller {
 				return $this->index();
 			}
 		}
+
+				/* -------------------------------------------
+				/* 'cp_member_reset_password' hook.
+				/*  - Additional processing after user resets password
+				/*  - Added EE 2.9.3
+				*/
+					$this->extensions->call('cp_member_reset_password');
+					if ($this->extensions->end_script === TRUE) return;
+				/*
+				/* -------------------------------------------*/
 
 		$this->view->messages = array();
 

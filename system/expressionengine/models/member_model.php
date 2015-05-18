@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -724,23 +724,16 @@ class Member_model extends CI_Model {
 				{
 					// Entries to delete
 					$entry_ids[] = $entry['entry_id'];
-
-					// Gather channel IDs to update stats later
-					$channel_ids[]  = $entry['channel_id'];
 				}
 
-				$this->db->where_in('author_id', $member_ids)->delete('channel_titles');
-				$this->db->where_in('entry_id', $entry_ids)->delete('channel_data');
-
-				if ($this->db->table_exists('comments'))
-				{
-					$this->db->where_in('entry_id', $entry_ids)->delete('comments');
-				}
+				ee()->load->library('api');
+				ee()->api->instantiate('channel_entries');
+				ee()->api_channel_entries->delete_entry($entry_ids);
 			}
 		}
 
 		// ---------------------------------------------------------------
-		// Find affected entries for members's comments and update totals
+		// Delete removed members comments and recount entry stats
 		// ---------------------------------------------------------------
 
 		if ($this->db->table_exists('comments'))
@@ -753,26 +746,15 @@ class Member_model extends CI_Model {
 			foreach ($entries->result_array() as $row)
 			{
 				// Entries to update
-				$entry_ids[] = $row['entry_id'];
-
-				// Gather channel IDs to update stats later
-				$channel_ids[]  = $row['channel_id'];
+				$entry_ids[$row['entry_id']] = $row['entry_id'];
 			}
 
 			// Delete comments
 			$this->db->where_in('author_id', $member_ids)->delete('comments');
 
-			// Update individual entry comment counts
+			// Update entry comment counts
 			$this->load->model('comment_model');
 			$this->comment_model->recount_entry_comments($entry_ids);
-		}
-
-		// Update channel and comment stats
-		$channel_ids = array_unique($channel_ids);
-		foreach ($channel_ids as $channel_id)
-		{
-			$this->stats->update_channel_stats($channel_id);
-			$this->stats->update_comment_stats($channel_id);
 		}
 
 		// ---------------------------------------------------------------

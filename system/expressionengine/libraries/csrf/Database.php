@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.8
@@ -82,6 +82,18 @@ class Csrf_database implements Csrf_storage_backend {
 			->row();
 
 		return empty($result) ? FALSE : $result->hash;
+	}
+
+	/**
+	 * Refresh the token
+	 *
+	 * Not used in the Database CSRF provider
+	 *
+	 * @return bool TRUE
+	 */
+	public function refresh_token()
+	{
+		return TRUE;
 	}
 
 	/**

@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -419,16 +419,14 @@ class Member {
 	 */
 	public function messages()
 	{
-		if ((ee()->session->userdata('can_send_private_messages') != 'y' &&
-			ee()->session->userdata('group_id') != '1') OR
-			ee()->session->userdata('accept_messages') != 'y')
-		{
-			return $this->profile_main();
-		}
-
 		if ( ! class_exists('EE_Messages'))
 		{
 			require APPPATH.'libraries/Messages.php';
+		}
+
+		if ( ! EE_Messages::can_send_pm())
+		{
+			return $this->profile_main();
 		}
 
 		$MESS = new EE_Messages;
@@ -474,16 +472,14 @@ class Member {
 	 */
 	public function pm_menu()
 	{
-		if ((ee()->session->userdata('can_send_private_messages') != 'y' &&
-			ee()->session->userdata('group_id') != '1') OR
-			ee()->session->userdata('accept_messages') != 'y')
-		{
-			return;
-		}
-
 		if ( ! class_exists('EE_Messages'))
 		{
 			require APPPATH.'libraries/Messages.php';
+		}
+
+		if ( ! EE_Messages::can_send_pm())
+		{
+			return;
 		}
 
 		$MESS = new EE_Messages;

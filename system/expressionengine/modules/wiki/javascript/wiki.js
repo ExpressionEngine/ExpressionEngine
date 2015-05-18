@@ -3,18 +3,6 @@ $(document).ready(function() {
 		headers: {2: {sorter: false}},
 		widgets: ["zebra"]
 	});
-	$(".toggle_all").toggle(
-		function(){
-			$("input.toggle").each(function() {
-				this.checked = true;
-			});
-		}, function (){
-			var checked_status = this.checked;
-			$("input.toggle").each(function() {
-				this.checked = false;
-			});
-		}
-	);
 
 	$('.remove_namespace').click(function(e) {
 		var namespace_id	= $(this).attr('name').substr(17),
@@ -35,7 +23,7 @@ $(document).ready(function() {
 				}
 			}
 		});
-		
+
 		return false;
 
 	});

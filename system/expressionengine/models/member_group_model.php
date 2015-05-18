@@ -10,7 +10,7 @@ if (!defined('BASEPATH')) {
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -43,18 +43,18 @@ class Member_group_model extends CI_Model
 	}
 
 	/**
-		Determine whether a group with a certain title exists or not.
-		Throws an error when a title is found.
-
-		TODO This could probably be made public and generalized,
-		if we're ever going to use it elsewhere.  The show_error
-		call would need to be bumped into parse_add_form and parse_edit_form
-
-		@param int $group_id The id of the group we want to check.
-		@param string $group_title The title to look for.
-
-		@return boolean True if a group with the given title is found, false otherwise.
-	*/
+	 * Determine whether a group with a certain title exists or not.
+	 * Throws an error when a title is found.
+     *
+	 * TODO This could probably be made public and generalized,
+	 * if we're ever going to use it elsewhere.  The show_error
+	 * call would need to be bumped into parse_add_form and parse_edit_form
+     *
+	 * @param int $group_id The id of the group we want to check.
+	 * @param string $group_title The title to look for.
+     *
+	 * @return boolean True if a group with the given title is found, false otherwise.
+	 */
 	private function _group_title_exists($site_id, $group_id, $group_title)
 	{
 		$this->db->from('member_groups')
@@ -70,15 +70,15 @@ class Member_group_model extends CI_Model
 	}
 
 	/**
-		Parse the data from the post data we're passed. Builds a data array,
-		containing several permissions sub arrays that are meant to be pulled
-		out before the data array is sent to the database as a row
-		in the exp_member_groups table.  The subarrays to be
-		pulled out are 'channel', 'template' and 'module'.
-
-		@param int $group_id The id of the group we're parsing data for.
-		@param int $site_id The site id submitted with the form, not necessarily the site we'll be creating a group for.
-	*/
+	 * Parse the data from the post data we're passed. Builds a data array,
+	 * containing several permissions sub arrays that are meant to be pulled
+	 * out before the data array is sent to the database as a row
+	 * in the exp_member_groups table.  The subarrays to be
+	 * pulled out are 'channel', 'template' and 'module'.
+     *
+	 * @param int $group_id The id of the group we're parsing data for.
+	 * @param int $site_id The site id submitted with the form, not necessarily the site we'll be creating a group for.
+	 */
 	private function _parse_form_data($post, $form_site_id, $group_id)
 	{
 
@@ -162,8 +162,8 @@ class Member_group_model extends CI_Model
 	}
 
 	/**
-		TODO Anyone know what and why?
-	*/
+	 * TODO Anyone know what and why?
+	 */
 	private function _update_uploads($group_id, $site_id)
 	{
 		$uploads = $this->db->query("SELECT exp_upload_prefs.id FROM exp_upload_prefs WHERE site_id = '".$this->db->escape_str($site_id)."'");
@@ -242,15 +242,15 @@ class Member_group_model extends CI_Model
 	}
 
 	/**
-		Update the related permissions tables
-
-			exp_channel_member_groups
-			exp_module_member_groups
-			exp_template_member_groups
-
-		@param int $group_id The id of the group who's relations we're updating.
-		@param array $permissions The packed permissions array that comes from _parse_form_data()
-	*/
+	 * Update the related permissions tables
+     *
+	 * 	exp_channel_member_groups
+	 * 	exp_module_member_groups
+	 * 	exp_template_member_groups
+     *
+	 * @param int $group_id The id of the group who's relations we're updating.
+	 * @param array $permissions The packed permissions array that comes from _parse_form_data()
+	 */
 	private function _update_permissions($group_id, array $permissions)
 	{
 		// Unpack the data we packed into the data
@@ -318,18 +318,18 @@ class Member_group_model extends CI_Model
 	}
 
 	/**
-		Handle the input from the Member Groups form when we're adding.
-			(CP Home > Members > Member Groups > Add Member Group)
-
-		Update the exp_member_groups table and several child and related tables.
-
-		@param array $post The post data from the form that we are processing.
-		@param int $site_id The id of the site to which the group belongs.
-		@param int $clone_id TODO  Anyone know what this is?
-		@param string $group_title The title of the group we're adding.
-
-		@return The message to send to the CP.
-	*/
+	 * Handle the input from the Member Groups form when we're adding.
+	 * 	(CP Home > Members > Member Groups > Add Member Group)
+     *
+	 * Update the exp_member_groups table and several child and related tables.
+     *
+	 * @param array $post The post data from the form that we are processing.
+	 * @param int $site_id The id of the site to which the group belongs.
+	 * @param int $clone_id TODO  Anyone know what this is?
+	 * @param string $group_title The title of the group we're adding.
+     *
+	 * @return The message to send to the CP.
+	 */
 	public function parse_add_form(array $post, $form_site_id, $clone_id, $group_title)
 	{
 		// This is less than optimal, but it allows us to use
@@ -413,19 +413,19 @@ class Member_group_model extends CI_Model
 	}
 
 	/**
-		Handle the input from the Member Groups form when we're editing.
-			(CP Home > Members > Member Groups > Edit Member Group)
-
-		Update the exp_member_groups table and several child and related tables.
-
-		@param array $post The post data from the form that we are processing.
-		@param int $group_id The id of the group we're editing.
-		@param int $site_id The id of the site to which the group belongs.
-		@param int $clone_id TODO  Anyone know what this is?
-		@param string $group_title The title of the group we're editing.
-
-		@return The message to send to the CP.
-	*/
+	 * Handle the input from the Member Groups form when we're editing.
+	 * 	(CP Home > Members > Member Groups > Edit Member Group)
+     *
+	 * Update the exp_member_groups table and several child and related tables.
+     *
+	 * @param array $post The post data from the form that we are processing.
+	 * @param int $group_id The id of the group we're editing.
+	 * @param int $site_id The id of the site to which the group belongs.
+	 * @param int $clone_id TODO  Anyone know what this is?
+	 * @param string $group_title The title of the group we're editing.
+     *
+	 * @return The message to send to the CP.
+	 */
 	public function parse_edit_form(array $post, $group_id, $site_id, $clone_id, $group_title)
 	{
 		if($this->_group_title_exists($site_id, $group_id, $group_title))
@@ -505,13 +505,13 @@ class Member_group_model extends CI_Model
 	}
 
 	/**
-		Retrieve rows from the exp_member_groups table.  $fields is an array
-		of fields to select.  It defaults to group_id, site_id and group_title.
-		$where_group is an array of where condition groupings.
-
-		@param array $where_conditions The where conditions you wish to limit your search by.
-		@param array $fields The fields you wish to select.
-	*/
+	 * Retrieve rows from the exp_member_groups table.  $fields is an array
+	 * of fields to select.  It defaults to group_id, site_id and group_title.
+	 * $where_group is an array of where condition groupings.
+     *
+	 * @param array $where_conditions The where conditions you wish to limit your search by.
+	 * @param array $fields The fields you wish to select.
+	 */
 	public function get(array $where_conditions=array(), array $fields=array('group_id', 'site_id', 'group_title'))
 	{
 		$this->db->select(implode(',', $fields));
@@ -532,29 +532,29 @@ class Member_group_model extends CI_Model
 	}
 
 	/**
-		Create a row in the exp_member_groups table.
-
-		@param array $data  The data we will insert into the table.
-
-		@return void
-	*/
+	 * Create a row in the exp_member_groups table.
+     *
+	 * @param array $data  The data we will insert into the table.
+     *
+	 * @return void
+	 */
 	public function create(array $data)
 	{
 		$this->db->insert('exp_member_groups', $data);
 	}
 
 	/**
-		Apply the update to all groups with with the given group_id.
-
-		NOTE: Made this a seperate method instead of making site_id
-		optional in update, because leaving out the site_id is not
-		something we want to happen accidentially.  If we're going
-		to be updating all member groups, it should be done with
-		intention.
-
-		@param int $group_id The id of the member group that we'll be updating.
-		@param array $data The data we'll changing to in the form db_field=>value.
-	*/
+	 * Apply the update to all groups with with the given group_id.
+     *
+	 * NOTE: Made this a seperate method instead of making site_id
+	 * optional in update, because leaving out the site_id is not
+	 * something we want to happen accidentially.  If we're going
+	 * to be updating all member groups, it should be done with
+	 * intention.
+     *
+	 * @param int $group_id The id of the member group that we'll be updating.
+	 * @param array $data The data we'll changing to in the form db_field=>value.
+	 */
 	public function update_all_sites($group_id, array $data)
 	{
 		$this->db->where('group_id', $group_id);
@@ -563,14 +563,14 @@ class Member_group_model extends CI_Model
 	}
 
 	/**
-		Update a row in the exp_member_groups table.
-
-		@param int $group_id The id of the group we're updating
-		@param int $site_id The id of the site that the group belongs to, this is the second half of the primary key
-		@param array $data The array of data we will use to update.
-
-		@return void
-	*/
+	 * Update a row in the exp_member_groups table.
+     *
+	 * @param int $group_id The id of the group we're updating
+	 * @param int $site_id The id of the site that the group belongs to, this is the second half of the primary key
+	 * @param array $data The array of data we will use to update.
+     *
+	 * @return void
+	 */
 	public function update($group_id, $site_id, array $data)
 	{
 		$this->db->where('group_id', $group_id)
@@ -580,12 +580,12 @@ class Member_group_model extends CI_Model
 	}
 
 	/**
-		Delete a group of rows from the exp_channel_member_groups table.  The
-		rows have ids in the $channel_ids array and a group_id equal to $group_id.
-
-		@param int $group_id The group for which to delete the permissions rows.
-		@param array $channel_ids A list of channel ids to delete.
-	*/
+	 * Delete a group of rows from the exp_channel_member_groups table.  The
+	 * rows have ids in the $channel_ids array and a group_id equal to $group_id.
+     *
+	 * @param int $group_id The group for which to delete the permissions rows.
+	 * @param array $channel_ids A list of channel ids to delete.
+	 */
 	public function delete_channel_permissions($group_id, array $channel_ids)
 	{
 		$this->db->where('group_id', $group_id);
@@ -594,12 +594,12 @@ class Member_group_model extends CI_Model
 	}
 
 	/**
-		Delete a group of rows from the exp_template_member_groups table.  The
-		rows have ids in the $template_ids array and a group_id equal to $group_id.
-
-		@param int $group_id The group for which to delete the permissions rows.
-		@param array $template_ids A list of template ids to delete.
-	*/
+	 * Delete a group of rows from the exp_template_member_groups table.  The
+	 * rows have ids in the $template_ids array and a group_id equal to $group_id.
+     *
+	 * @param int $group_id The group for which to delete the permissions rows.
+	 * @param array $template_ids A list of template ids to delete.
+	 */
 	public function delete_template_permissions($group_id, array $template_ids)
 	{
 		$this->db->where('group_id', $group_id);
@@ -608,14 +608,14 @@ class Member_group_model extends CI_Model
 	}
 
 	/**
-		Delete a group of rows from the exp_module_member_groups table.  The
-		rows have ids in the $module_ids array and a group_id equal to $group_id.
-
-		@param int $group_id The group for which to delete the permissions rows.
-		@param array $module_ids A list of channel ids to delete.
-
-		@return void
-	*/
+	 * Delete a group of rows from the exp_module_member_groups table.  The
+	 * rows have ids in the $module_ids array and a group_id equal to $group_id.
+     *
+	 * @param int $group_id The group for which to delete the permissions rows.
+	 * @param array $module_ids A list of channel ids to delete.
+     *
+	 * @return void
+	 */
 	public function delete_module_permissions($group_id, array $module_ids)
 	{
 		$this->db->where('group_id', $group_id);
@@ -624,4 +624,4 @@ class Member_group_model extends CI_Model
 	}
 
 }
-
+// EOF

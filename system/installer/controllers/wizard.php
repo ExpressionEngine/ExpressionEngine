@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -165,7 +165,7 @@ class Wizard extends CI_Controller {
 
 		$this->output->enable_profiler(FALSE);
 
-		$this->userdata['app_version'] = str_replace('.', '', $this->version);
+		$this->userdata['app_version'] = $this->version;
 
  		// Load the helpers we intend to use
  		$this->load->helper(array('form', 'url', 'html', 'directory', 'file', 'email', 'security', 'date', 'string'));
@@ -397,9 +397,14 @@ class Wizard extends CI_Controller {
 		// EXCEPTIONS
 		// We need to deal with a couple possible issues.
 
-		// Fixes a bug in the installation script for 2.0.2, where periods were
-		// included
-		$config['app_version'] = str_replace('.', '', $config['app_version']);
+		// In 2.10.0, we started putting .'s in the app_verson config. The rest
+		// of the code assumes this to be true, so we need to tweak their old config.
+		if (strpos($config['app_version'], '.') === FALSE)
+		{
+			$cap = $config['app_version'];
+			$config['app_version'] = "{$cap[0]}.{$cap[1]}.{$cap[2]}";
+		}
+
 
 		// OK, now let's determine if the update files are available and whether
 		// the currently installed version is older then the most recent update
@@ -454,6 +459,8 @@ class Wizard extends CI_Controller {
 		}
 
 		// Before moving on, let's load the update file to make sure it's readable
+		$ud_file = 'ud_'.$this->next_ud_file.'.php';
+
 		if ( ! include(APPPATH.'updates/ud_'.$this->next_update.'.php'))
 		{
 			$this->set_output('error', array('error' => lang('unreadable_files')));
@@ -932,7 +939,7 @@ class Wizard extends CI_Controller {
 
 		$this->load->library('progress');
 
-		$next_version = $this->next_update[0].'.'.$this->next_update[1].'.'.$this->next_update[2];
+		$next_version = $this->next_update;
 		$this->progress->prefix = $next_version.': ';
 
 		// Is this a call from the Progress Indicator?
@@ -984,6 +991,8 @@ class Wizard extends CI_Controller {
 		}
 
 		// is there a survey for this version?
+		$survey_view = 'survey_'.$this->next_ud_file;
+
 		// if (file_exists(APPPATH.'views/surveys/survey_'.$this->next_update.'.php'))
 		// {
 		// 	$this->load->library('survey');
@@ -1045,7 +1054,7 @@ class Wizard extends CI_Controller {
 		if ($status !== TRUE)
 		{
 			$this->config->set_item('ud_next_step', $status);
-			$this->next_update = str_replace('.', '', $this->installed_version);
+			$this->next_update = $this->installed_version;
 		}
 		elseif ($this->remaining_updates == 1)
 		{
@@ -1102,43 +1111,44 @@ class Wizard extends CI_Controller {
 	 */
 	private function fetch_updates($current_version = 0)
 	{
-		if ( ! $fp = opendir(APPPATH.'updates/'))
+		$next_update = FALSE;
+		$next_ud_file = FALSE;
+
+		$remaining_updates = 0;
+
+		$path = APPPATH.'updates/';
+
+		if ( ! is_readable($path))
 		{
 			return FALSE;
 		}
 
-		$updates = array();
-		while (false !== ($file = readdir($fp)))
+		$files = new FilesystemIterator($path);
+
+		foreach ($files as $file)
 		{
-			if (substr($file, 0, 3) == 'ud_')
+			$file_name = $file->getFilename();
+
+			if (preg_match('/^ud_0*(\d+)_0*(\d+)_0*(\d+).php$/', $file_name, $m))
 			{
 				$file = str_replace('.php',  '', $file);
-				$file = str_replace('ud_', '', $file);
-				$file = substr($file, 0, 3);
 
-				if (is_numeric($file) AND $file > $current_version)
+				if (version_compare($file_version, $current_version, '>'))
 				{
-					$updates[] = $file;
+					$remaining_updates++;
+
+					if ( ! $next_update || version_compare($file_version, $next_update, '<'))
+					{
+						$next_update = $file_version;
+						$next_ud_file = substr($file_name, 3, -4);
+					}
 				}
 			}
 		}
 
-		closedir($fp);
-
-		sort($updates, SORT_NUMERIC);
-
-		// we don't need this since we have a $version class variable in the wizard that
-		// will always contain the latest version number
-		// $version = end($updates);
-		// $this->version = substr($version, 0, 1).'.'.substr($version, 1, 1).'.'.substr($version, 2);
-		$this->remaining_updates = count($updates);
-
-		reset($updates);
-
-		if ($this->remaining_updates > 0)
-		{
-			$this->next_update = current($updates);
-		}
+		$this->next_update = $next_update;
+		$this->next_ud_file = $next_ud_file;
+		$this->remaining_updates = $remaining_updates;
 
 		return TRUE;
 	}
@@ -1683,6 +1693,7 @@ class Wizard extends CI_Controller {
 			'webmaster_name'            => '',
 			'channel_nomenclature'      => 'channel',
 			'max_caches'                => '150',
+			'cache_driver'					=> 'file',
 			'captcha_url'               => $captcha_url,
 			'captcha_path'              => $this->userdata['captcha_path'],
 			'captcha_font'              => 'y',
@@ -1747,6 +1758,7 @@ class Wizard extends CI_Controller {
 			'new_member_notification'   => 'n',
 			'mbr_notification_emails'   => '',
 			'require_terms_of_service'  => 'y',
+			'use_membership_captcha'    => 'n',
 			'default_member_group'      => '5',
 			'profile_trigger'           => 'member',
 			'member_theme'              => 'default',
@@ -1772,6 +1784,8 @@ class Wizard extends CI_Controller {
 			'sig_img_max_width'         => '480',
 			'sig_img_max_height'        => '80',
 			'sig_img_max_kb'            => '30',
+			'prv_msg_enabled'           => 'y',
+			'prv_msg_allow_attachments' => 'y',
 			'prv_msg_upload_path'       => $this->userdata['pm_path'],
 			'prv_msg_max_attachments'   => '3',
 			'prv_msg_attach_maxsize'    => '250',
@@ -1980,6 +1994,8 @@ class Wizard extends CI_Controller {
 			'sig_img_max_width',
 			'sig_img_max_height',
 			'sig_img_max_kb',
+			'prv_msg_enabled',
+			'prv_msg_allow_attachments',
 			'prv_msg_upload_path',
 			'prv_msg_max_attachments',
 			'prv_msg_attach_maxsize',

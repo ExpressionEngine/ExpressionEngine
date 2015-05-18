@@ -125,6 +125,9 @@ $lang = array(
 'file_desc' =>
 'Choose a file to upload.',
 
+'upload_filedata_error' =>
+'Cannot Upload File',
+
 'upload_filedata_success' =>
 'File Upload Success',
 

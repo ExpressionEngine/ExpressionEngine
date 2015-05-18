@@ -6,7 +6,7 @@
  *
  * @package		CodeIgniter
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2008 - 2015, EllisLab, Inc.
  * @license		http://codeigniter.com/user_guide/license.html
  * @link		http://codeigniter.com
  * @since		Version 1.0
@@ -334,50 +334,26 @@ if ( ! function_exists('get_file_info'))
 // --------------------------------------------------------------------
 
 /**
- * Get Mime by Extension
+ * Determines the MIME type of a file
  *
- * Translates a file extension into a mime type based on config/mimes.php.
- * Returns FALSE if it can't determine the type, or open the mime config file
- *
- * Note: this is NOT an accurate way of determining file mime types, and is here strictly as a convenience
- * It should NOT be trusted, and should certainly NOT be used for security
- *
+ * @deprecated 2.10.0 No longer used; please use the Mime_type library instead
  * @access	public
  * @param	string	path to file
- * @return	mixed
+ * @return	string The MIME type of the file
  */
 if ( ! function_exists('get_mime_by_extension'))
 {
 	function get_mime_by_extension($file)
 	{
-		$extension = strtolower(substr(strrchr($file, '.'), 1));
+		// Deprecate
+		ee()->load->library('logger');
+		ee()->logger->deprecated('2.10', 'ee()->mime_type->ofFile($filepath)');
 
-		global $mimes;
-
-		if ( ! is_array($mimes))
-		{
-			if ( ! require_once(APPPATH.'config/mimes.php'))
-			{
-				return FALSE;
-			}
-		}
-
-		if (array_key_exists($extension, $mimes))
-		{
-			if (is_array($mimes[$extension]))
-			{
-				// Multiple mime types, just give the first one
-				return current($mimes[$extension]);
-			}
-			else
-			{
-				return $mimes[$extension];
-			}
-		}
-		else
-		{
-			return FALSE;
-		}
+		// This is not 1:1 parity with the old code as this does more than
+		// examine the extension
+		ee()->load->library('mime_type');
+		$mime = ee()->mime_type->ofFile($file);
+		return $mime;
 	}
 }
 

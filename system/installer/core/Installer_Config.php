@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -122,6 +122,17 @@ class Installer_Config Extends EE_Config {
 
 class MSM_Config extends EE_Config
 {
+	/**
+	 * Constructor
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+
+		$this->config_path = EE_APPPATH.'config/config.php';
+
+		ee()->load->helper('language_helper');
+	}
 
 	function site_prefs($site_name, $site_id = 1)
 	{
