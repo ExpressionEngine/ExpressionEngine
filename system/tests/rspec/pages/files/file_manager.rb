@@ -32,6 +32,7 @@ class FileManager < ControlPanelPage
 
 	# Main box's table elements
 	elements :files, 'div.box form div.tbl-wrap table tr'
+	element :selected_file, 'div.box form div.tbl-wrap table tr.selected'
 
 	element :title_name_header, 'div.box form div.tbl-wrap table tr th:first-child'
 	element :file_type_header, 'div.box form div.tbl-wrap table tr th:nth-child(2)'
