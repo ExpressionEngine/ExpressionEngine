@@ -341,6 +341,21 @@ class Files extends AbstractFilesController {
 			}
 			else
 			{
+				$file = ee('Model')->get('File', $upload_response['file_id'])->first();
+				$file->upload_location_id = $dir_id;
+				$file->site_id = ee()->config->item('site_id');
+
+				$file->title = (ee()->input->post('title')) ?: $file->file_name;
+				$file->description = ee()->input->post('description');
+				$file->credit = ee()->input->post('credit');
+				$file->location = ee()->input->post('location');
+
+				$file->uploaded_by_member_id = ee()->session->userdata('member_id');
+				$file->upload_date = ee()->localize->now;
+				$file->modified_by_member_id = ee()->session->userdata('member_id');
+				$file->modified_date = ee()->localize->now;
+
+				$file->save();
 				ee()->session->set_flashdata('file_id', $upload_response['file_id']);
 
 				ee('Alert')->makeInline('shared-form')
