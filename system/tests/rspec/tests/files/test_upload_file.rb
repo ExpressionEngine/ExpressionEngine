@@ -49,10 +49,8 @@ feature 'File Manger / Upload File' do
 	after(:each) do
 		Dir.foreach(@upload_dir) {|f|
 			fn = File.join(@upload_dir, f)
-			File.delete(fn) if f != '.' && f != '..' && f != 'index.htlm'
+			File.delete(fn) if f != '.' && f != '..' && f != 'index.html'
 		}
-		# system('rm ../../../images/uploads/*')
-		# system('git checkout -- ../../../images/uploads/')
 	end
 
 	it 'shows the upload form' do
@@ -203,6 +201,10 @@ feature 'File Manger / Upload File' do
 		@return.alert.text.should include "The file programming.gif was uploaded successfully."
 		@return.should have_selected_file
 		@return.selected_file.text.should include "programming.gif"
+
+		# Cleaning up after myself
+		File.delete(File.expand_path('../../../themes/ee/site_themes/agile_records/images/uploads/programming.gif'))
+		File.delete(File.expand_path('../../../themes/ee/site_themes/agile_records/images/uploads/_thumbs/programming.gif'))
 	end
 
 	it 'cannot upload a non-image when the directory is restricted to images' do
