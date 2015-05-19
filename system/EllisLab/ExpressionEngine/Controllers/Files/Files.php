@@ -341,28 +341,7 @@ class Files extends AbstractFilesController {
 			}
 			else
 			{
-				$file = ee('Model')->make('File', $upload_response['file_id']);
-				$file->upload_location_id = $dir_id;
-				$file->site_id = ee()->config->item('site_id');
-
-				$file->mime_type = $upload_response['mime_type'];
-				$file->rel_path = $upload_response['rel_path'];
-				$file->file_name = $upload_response['file_name'];
-				$file->file_size = $upload_response['file_size'];
-
-				$file->title = ee()->input->post('title');
-				$file->description = ee()->input->post('description');
-				$file->credit = ee()->input->post('credit');
-				$file->location = ee()->input->post('location');
-
-				$file->uploaded_by_member_id = ee()->session->userdata('member_id');
-				$file->upload_date = ee()->localize->now;
-				$file->modified_by_member_id = ee()->session->userdata('member_id');
-				$file->modified_date = ee()->localize->now;
-
-				$file->save();
-
-				ee()->session->set_flashdata('file_id', $file->file_id);
+				ee()->session->set_flashdata('file_id', $upload_response['file_id']);
 
 				ee('Alert')->makeInline('shared-form')
 					->asSuccess()
@@ -370,7 +349,7 @@ class Files extends AbstractFilesController {
 					->addToBody(sprintf(lang('upload_filedata_success_desc'), $file->title))
 					->defer();
 
-				ee()->functions->redirect(cp_url('files/directory/' . $file->upload_location_id));
+				ee()->functions->redirect(cp_url('files/directory/' . $dir_id));
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())
