@@ -385,7 +385,7 @@ class Channel extends AbstractChannelController {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			$channel_id = $this->saveChannel($channel_id);
+			$channel_id = $this->saveChannel($channel);
 
 			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
@@ -460,7 +460,7 @@ class Channel extends AbstractChannelController {
 	 * This function receives the submitted channel preferences
 	 * and stores them in the database.
 	 */
-	private function saveChannel($channel_id = NULL)
+	private function saveChannel($channel)
 	{
 		$dupe_id = ee()->input->get_post('duplicate_channel_prefs');
 		unset($_POST['duplicate_channel_prefs']);
@@ -474,13 +474,7 @@ class Channel extends AbstractChannelController {
 			$_POST['cat_group'] = '';
 		}
 
-		if (empty($channel_id))
-		{
-			$channel = ee('Model')->make('Channel', $_POST);
-		}
-		else {
-			$channel = ee('Model')->get('Channel', $channel_id)->first();
-		}
+		$channel->set($_POST);
 
 		// Make sure these are the correct NULL value if they are not set.
 		$channel->status_group = ($channel->status_group !== FALSE
@@ -491,7 +485,7 @@ class Channel extends AbstractChannelController {
 			? $channel->field_group : NULL;
 
 		// Create Channel
-		if (empty($channel_id))
+		if ($channel->isNew())
 		{
 			$channel->default_entry_title = '';
 			$channel->url_title_prefix = '';
@@ -550,7 +544,6 @@ class Channel extends AbstractChannelController {
 		}
 		else
 		{
-			$_POST['channel_id'] = $channel_id;
 			$channel->save();
 		}
 
