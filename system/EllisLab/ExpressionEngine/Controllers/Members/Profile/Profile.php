@@ -44,6 +44,8 @@ class Profile extends CP_Controller {
 	{
 		parent::__construct();
 
+		ee()->lang->loadfile('myaccount');
+
 		if ( ! $this->cp->allowed_group('can_access_members'))
 		{
 			show_error(lang('unauthorized_access'));
@@ -126,7 +128,7 @@ class Profile extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Generic method for saving member settings given an expected array 
+	 * Generic method for saving member settings given an expected array
 	 * of fields.
 	 *
 	 * @param	array	$sections	Array of sections passed to form view
