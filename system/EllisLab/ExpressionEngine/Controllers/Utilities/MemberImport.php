@@ -104,8 +104,9 @@ class MemberImport extends Utilities {
 						'date_format' => array(
 							'type' => 'dropdown',
 							'choices' => array(
-								'%n/%j/%y' => 'mm/dd/yy',
-								'%j-%n-%y' => 'dd-mm-yy',
+								'%n/%j/%Y' => 'mm/dd/yyyy',
+								'%j/%n/%Y' => 'dd/mm/yyyy',
+								'%j-%n-%Y' => 'dd-mm-yyyy',
 								'%Y-%m-%d' => 'yyyy-mm-dd'
 							)
 						),
