@@ -84,7 +84,7 @@ class File extends Model {
 	 */
 	public function isImage()
 	{
-		return in_array($this->mime_type, array('image/png', 'image/jpeg', 'image/gif'));
+		return (strpos($this->mime_type, 'image/') === 0);
 	}
 
 	/**
