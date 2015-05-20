@@ -71,7 +71,7 @@ feature 'File Manger / Upload File' do
 	end
 
 	it 'can upload a Markdown file' do
-			@page.attach_file('file', @md_file)
+		@page.attach_file('file', @md_file)
 		@page.form_submit_button.click
 		no_php_js_errors
 
@@ -238,6 +238,7 @@ feature 'File Manger / Upload File' do
 	it 'shows an error if the directory upload path has no write permissions' do
 		File.chmod(0555, @upload_dir)
 		@page.load
+		no_php_js_errors
 
 		@page.should have_alert
 		@page.should have_css('div.alert.issue')
@@ -250,6 +251,7 @@ feature 'File Manger / Upload File' do
 	it 'shows an error if the directory upload path does not exist' do
 		File.rename(@upload_dir, @upload_dir + '.rspec')
 		@page.load
+		no_php_js_errors
 
 		@page.text.should include "404"
 
