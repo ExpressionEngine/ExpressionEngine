@@ -478,6 +478,11 @@ class Files extends AbstractFilesController {
 
 		foreach ($files as $file)
 		{
+			if ( ! $file->exists())
+			{
+				continue;
+			}
+
 			$res = $zip->addFile($file->getAbsolutePath());
 
 			if ($res === FALSE)
