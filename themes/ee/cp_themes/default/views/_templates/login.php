@@ -2,6 +2,8 @@
 <html>
 	<head>
 		<?=ee()->view->head_title($cp_page_title)?>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" lang="en-us" dir="ltr">
+		<meta content="width=device-width, initial-scale=1.0" name="viewport">
 		<?=ee()->view->head_link('css/v3/out.min.css'); ?>
 	</head>
 	<body>

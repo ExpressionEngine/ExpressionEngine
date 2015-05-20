@@ -121,13 +121,14 @@ class EE_Lang {
 
 		$paths = array(
 			// Check custom languages first
-			SYSPATH.'language/'.$idiom.'/'.$langfile,
+			SYSPATH.'user/language/'.$idiom.'/'.$langfile,
 			// Check their defined default language
-			SYSPATH.'language/'.$deft_lang.'/'.$langfile,
+			SYSPATH.'user/language/'.$deft_lang.'/'.$langfile,
 			// Lastly render the english
 			BASEPATH.'language/english/'.$langfile
 		);
 
+		// If we're in the installer, add those lang files
 		if (defined('EE_APPPATH'))
 		{
 			array_unshift(
@@ -222,7 +223,7 @@ class EE_Lang {
 	 */
 	public function language_pack_names()
 	{
-		$source_dir = SYSPATH.'language/';
+		$source_dir = SYSPATH.'user/language/';
 
 		$dirs = array('english' => 'English');
 

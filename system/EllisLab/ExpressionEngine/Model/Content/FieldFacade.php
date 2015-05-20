@@ -9,6 +9,7 @@ class FieldFacade {
 	private $format;  // field_ft_*
 	private $timezone; // field_dt_*
 	private $metadata;
+	private $required;
 	private $field_name;
 	private $content_id;
 	private $value;
@@ -76,6 +77,11 @@ class FieldFacade {
 		return $this->format;
 	}
 
+	public function isRequired()
+	{
+		return $this->getItem('field_required') === 'y';
+	}
+
 	public function getItem($field)
 	{
 		return $this->metadata[$field];
@@ -86,12 +92,44 @@ class FieldFacade {
 		$this->metadata[$field] = $value;
 	}
 
+	public function getType()
+	{
+		return $this->getItem('field_type');
+	}
+
 	public function getTypeName()
 	{
 		ee()->legacy_api->instantiate('channel_fields');
 		$fts = ee()->api_channel_fields->fetch_all_fieldtypes();
-		$type = $this->getItem('field_type');
+		$type = $this->getType();
 		return $fts[$type]['name'];
+	}
+
+	public function validate($value)
+	{
+		$this->initField();
+		$result = ee()->api_channel_fields->apply('validate', array($value));
+
+		if (is_array($result))
+		{
+			if (isset($result['value']))
+			{
+				$this->setData($result['value']);
+				$result = TRUE;
+			}
+
+			if (isset($result['error']))
+			{
+				$result = $result['error'];
+			}
+		}
+
+		if (is_string($result) && strlen($result) > 0)
+		{
+			return $result;
+		}
+
+		return TRUE;
 	}
 
 	public function save()
@@ -115,6 +153,14 @@ class FieldFacade {
 		$field_value = set_value($this->getName(), $data['field_data']);
 
 		return ee()->api_channel_fields->apply('display_publish_field', array($field_value));
+	}
+
+
+	// TODO THIS WILL MOST DEFINITELY GO AWAY! BAD DEVELOPER!
+	public function getNativeField()
+	{
+		$data = $this->initField();
+		return ee()->api_channel_fields->setup_handler($this->getType(), TRUE);
 	}
 
 
@@ -142,7 +188,14 @@ class FieldFacade {
 		$field_data = $this->data;
 		$field_name = $this->getName();
 
+		// not all custom field tables will specify all of these things
+		$defaults = array(
+			'field_instructions' => '',
+			'field_text_direction' => 'rtl'
+		);
+
 		$info = $this->metadata;
+		$info = array_merge($defaults, $info);
 
 		$settings = array(
 			'field_instructions'	=> trim($info['field_instructions']),
@@ -158,6 +211,10 @@ class FieldFacade {
 		if (isset($info['field_settings']) && strlen($info['field_settings']))
 		{
 			$ft_settings = unserialize(base64_decode($info['field_settings']));
+		}
+		else
+		{
+			$info['field_settings'] = array();
 		}
 
 		$settings = array_merge($info, $settings, $ft_settings);

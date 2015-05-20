@@ -155,9 +155,14 @@ class Validator {
 	 * @param Bool $partial Partial validation? (@see `validatePartial()`)
 	 * @return Result object
 	 */
-	public function _validate($values, $partial = FALSE)
+	protected function _validate($values, $partial = FALSE)
 	{
 		$result = new Result;
+
+		if (is_object($values))
+		{
+			$values = $this->prepForObject($values);
+		}
 
 		foreach ($this->rules as $key => $rules)
 		{
@@ -172,14 +177,14 @@ class Validator {
 
 			foreach ($rules as $rule)
 			{
-				if ($partial && $rule instanceOf Rule\Required && $value == NULL)
+				if ($partial && $rule instanceOf Rule\Required && $value === NULL)
 				{
 					continue;
 				}
 
 				$rule->setAllValues($values);
 
-				$rule_return = $rule->validate($value);
+				$rule_return = $rule->validate($key, $value);
 
 				// Passed? Move on to the next rule
 				if ($rule_return === TRUE)
@@ -188,20 +193,28 @@ class Validator {
 				}
 
 				// Skip the rest of the rules?
+				// e.g. Presence failed
 				if ($rule_return === self::SKIP)
 				{
 					break;
 				}
 
 				// Hard stopping rule? Record the error and move on.
+				// e.g. Required failed
 				if ($rule_return === self::STOP)
 				{
 					$result->addFailed($key, $rule);
 					break;
 				}
 
-				// Add non-blank to failed
-				if (trim($value) !== '')
+				// At this point:
+				//
+				// 1) The rule failed (`$rule_return` === FALSE)
+				// 2) This field is *not* required (no self::STOP)
+				//
+				// This means we have an incorrect optional value. Accordingly,
+				// empty values are ok (because optional) anything else is not.
+				if (is_string($value) && trim($value) !== '')
 				{
 					$result->addFailed($key, $rule);
 				}
@@ -209,6 +222,34 @@ class Validator {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * If we're passed an object we will try to interpret it as an array
+	 * unless we're told that it knows how to do its own validation.
+	 */
+	protected function prepForObject($object)
+	{
+		if ( ! ($object instanceOf ValidationAware))
+		{
+			return (array) $object;
+		}
+
+		$values = $object->getValidationData();
+
+		$this->setRules($object->getValidationRules());
+
+		$callbacks = preg_grep('/^validate/', get_class_methods($object));
+
+		foreach ($callbacks as $name)
+		{
+			$this->defineRule($name, function($key, $value, $params) use ($object, $name)
+			{
+				return $object->$name($key, $value, $params);
+			});
+		}
+
+		return $values;
 	}
 
 	/**

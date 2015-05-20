@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -56,7 +56,7 @@ class EE_Core {
 
 		$addon_path = (ee()->config->item('addons_path'))
 			? rtrim(realpath(ee()->config->item('addons_path')), '/').'/'
-			: SYSPATH.'addons/';
+			: SYSPATH.'user/addons/';
 		define('PATH_ADDONS', $addon_path);
 		define('PATH_THIRD', $addon_path);
 
@@ -204,10 +204,10 @@ class EE_Core {
 
 		define('PATH_THEMES', $theme_path.'ee/');
 		define('URL_THEMES', $theme_url.'ee/');
-		define('PATH_ADDONS_THEMES', $theme_path.'addons/');
-		define('PATH_THIRD_THEMES', $theme_path.'addons/');
-		define('URL_ADDONS_THEMES', $theme_url.'addons/');
-		define('URL_THIRD_THEMES', $theme_url.'addons/');
+		define('PATH_ADDONS_THEMES', $theme_path.'user/');
+		define('PATH_THIRD_THEMES', $theme_path.'user/');
+		define('URL_ADDONS_THEMES', $theme_url.'user/');
+		define('URL_THIRD_THEMES', $theme_url.'user/');
 
 		define('PATH_MBR_THEMES', PATH_THEMES.'profile_themes/');
 		define('PATH_CP_GBL_IMG', ee()->config->slash_item('theme_folder_url').'ee/cp_global_images/');
@@ -428,6 +428,7 @@ class EE_Core {
 
 			$_GET = array_merge($get, $_GET);
 		}
+
 
 		// Load our view library
 		ee()->load->library('view');

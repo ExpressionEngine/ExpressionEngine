@@ -406,7 +406,7 @@ class Edit extends AbstractPublishController {
 			cp_url('publish/edit', array('filter_by_channel' => $entry->channel_id)) => $entry->getChannel()->channel_title,
 		);
 
-		ee()->cp->render('publish/edit/entry', $vars);
+		ee()->cp->render('publish/entry', $vars);
 	}
 
 	private function createCategoryFilter($channel = NULL)

@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -698,29 +698,83 @@ abstract class EE_Fieldtype {
 		$this->_yes_no_row($data, 'show_smileys', 'field_show_smileys', $prefix);
 	}
 
+	/**
+	 * Helper methods for our yes/no checkbox rows
+	 *
+	 * The row is added to the currently active table instance.
+	 *
+	 * @deprecated 3.0.0
+	 * @param   array   data array passed to display_settings()
+	 * @param   string  A prefix to use, typically the field name
+	 * @return	void
+	 */
 	public function field_show_spellcheck_row($data, $prefix = FALSE)
 	{
-		$this->_yes_no_row($data, 'show_spellcheck', 'field_show_spellcheck', $prefix);
+		ee()->load->library('logger');
+		ee()->logger->deprecated('3.0');
+		return;
 	}
 
+	/**
+	 * Helper methods for our yes/no checkbox rows
+	 *
+	 * The row is added to the currently active table instance.
+	 *
+	 * @deprecated 3.0.0
+	 * @param   array   data array passed to display_settings()
+	 * @param   string  A prefix to use, typically the field name
+	 * @return	void
+	 */
 	public function field_show_glossary_row($data, $prefix = FALSE)
 	{
-		$this->_yes_no_row($data, 'show_glossary', 'field_show_glossary', $prefix);
+		ee()->load->library('logger');
+		ee()->logger->deprecated('3.0');
+		return;
 	}
 
+	/**
+	 * Helper methods for our yes/no checkbox rows
+	 *
+	 * The row is added to the currently active table instance.
+	 *
+	 * @param   array   data array passed to display_settings()
+	 * @param   string  A prefix to use, typically the field name
+	 * @return	void
+	 */
 	public function field_show_file_selector_row($data, $prefix = FALSE)
 	{
 		$this->_yes_no_row($data, 'show_file_selector', 'field_show_file_selector', $prefix);
 	}
 
+	/**
+	 * Helper methods for our yes/no checkbox rows
+	 *
+	 * The row is added to the currently active table instance.
+	 *
+	 * @param   array   data array passed to display_settings()
+	 * @param   string  A prefix to use, typically the field name
+	 * @return	void
+	 */
 	public function field_show_formatting_btns_row($data, $prefix = FALSE)
 	{
 		$this->_yes_no_row($data, 'show_formatting_btns', 'field_show_formatting_btns', $prefix);
 	}
 
+	/**
+	 * Helper methods for our yes/no checkbox rows
+	 *
+	 * The row is added to the currently active table instance.
+	 *
+	 * @deprecated 3.0.0
+	 * @param   array   data array passed to display_settings()
+	 * @param   string  A prefix to use, typically the field name
+	 * @return	void
+	 */
 	public function field_show_writemode_row($data, $prefix = FALSE)
 	{
-		$this->_yes_no_row($data, 'show_writemode', 'field_show_writemode', $prefix);
+		ee()->load->library('logger');
+		ee()->logger->deprecated('3.0');
+		return;
 	}
 
 	// --------------------------------------------------------------------

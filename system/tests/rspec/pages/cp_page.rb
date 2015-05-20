@@ -1,8 +1,7 @@
 class ControlPanelPage < SitePrism::Page
 
 	section :main_menu, MenuSection, 'section.menu-wrap'
-	element :submit_button, '.form-ctrls input.btn'
-	element :submit_button_disabled, '.form-ctrls input.btn.disable'
+	elements :submit_buttons, '.form-ctrls input.btn'
 	element :fieldset_errors, '.invalid'
 	element :settings_btn, 'b.ico.settings'
 	elements :error_messages, 'em.ee-form-error-message'
@@ -35,13 +34,12 @@ class ControlPanelPage < SitePrism::Page
 	end
 
 	def submit
-		submit_button.click
+		submit_buttons[0].click
 	end
 
 	def submit_enabled?
-		submit_button.value != 'Fix Errors, Please' &&
-		submit_button[:disabled] != true &&
-		self.has_submit_button_disabled? == false
+		submit_buttons[0].value != 'Fix Errors, Please' &&
+		submit_buttons[0][:disabled] != true
 	end
 
 	# Waits until the error message is gone before proceeding;

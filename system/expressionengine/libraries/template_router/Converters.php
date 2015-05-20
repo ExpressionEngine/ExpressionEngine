@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.6
@@ -14,18 +14,27 @@
 
 // ------------------------------------------------------------------------
 
-require_once APPPATH.'libraries/template_router/converters/Alpha_dash.php';
-require_once APPPATH.'libraries/template_router/converters/Alpha_numeric.php';
-require_once APPPATH.'libraries/template_router/converters/Alpha.php';
-require_once APPPATH.'libraries/template_router/converters/Base64.php';
-require_once APPPATH.'libraries/template_router/converters/Category.php';
-require_once APPPATH.'libraries/template_router/converters/Integer.php';
-require_once APPPATH.'libraries/template_router/converters/Max_length.php';
-require_once APPPATH.'libraries/template_router/converters/Min_length.php';
-require_once APPPATH.'libraries/template_router/converters/Natural.php';
-require_once APPPATH.'libraries/template_router/converters/Numeric.php';
-require_once APPPATH.'libraries/template_router/converters/Pagination.php';
-require_once APPPATH.'libraries/template_router/converters/Regex.php';
+if (defined('EE_APPPATH'))
+{
+	$path = EE_APPPATH;
+}
+else
+{
+	$path = APPPATH;
+}
+
+require_once $path.'libraries/template_router/converters/Alpha_dash.php';
+require_once $path.'libraries/template_router/converters/Alpha_numeric.php';
+require_once $path.'libraries/template_router/converters/Alpha.php';
+require_once $path.'libraries/template_router/converters/Base64.php';
+require_once $path.'libraries/template_router/converters/Category.php';
+require_once $path.'libraries/template_router/converters/Integer.php';
+require_once $path.'libraries/template_router/converters/Max_length.php';
+require_once $path.'libraries/template_router/converters/Min_length.php';
+require_once $path.'libraries/template_router/converters/Natural.php';
+require_once $path.'libraries/template_router/converters/Numeric.php';
+require_once $path.'libraries/template_router/converters/Pagination.php';
+require_once $path.'libraries/template_router/converters/Regex.php';
 
 // ------------------------------------------------------------------------
 

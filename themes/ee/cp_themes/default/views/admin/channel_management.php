@@ -1,10 +1,10 @@
-<?php extend_template('default') ?>
+<?php extend_template('default');
 
-<?php
 	if ($channel_data !== FALSE)
 	{
 		$this->table->set_template($cp_pad_table_template);
 		$this->table->set_heading(
+			lang('channel_id'),
 			lang('channel_full_name'),
 			lang('channel_short_name'),
 			'',
@@ -15,6 +15,7 @@
 		foreach ($channel_data->result() as $channel)
 		{
 			$this->table->add_row(
+				$channel->channel_id,
 				"<strong>".htmlentities($channel->channel_title, ENT_QUOTES)."</strong>",
 				form_input(array(
 					'name'			=> 'field_name',

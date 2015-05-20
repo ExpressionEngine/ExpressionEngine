@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team,
  * 		- Original Development by Barrett Newton -- http://barrettnewton.com
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -692,7 +692,11 @@ class Channel_form_lib
 
 		// Parse captcha conditional
 		$captcha_conditional = array(
-			'captcha' => ($this->channel('channel_id') && $this->logged_out_member_id && ! empty($this->settings['require_captcha'][ee()->config->item('site_id')][$this->channel('channel_id')]))
+			'captcha' => (
+				$this->channel('channel_id') &&
+				$this->logged_out_member_id &&
+				ee('Captcha')->shouldRequireCaptcha()
+			)
 		);
 
         $conditionals = array_merge($conditional_errors, $captcha_conditional);
@@ -709,7 +713,7 @@ class Channel_form_lib
 		ee()->TMPL->tagdata = ee()->TMPL->swap_var_single('captcha_word', '', ee()->TMPL->tagdata);
 
 		// Replace {captcha} with actual captcha
-		ee()->TMPL->tagdata = ee()->TMPL->swap_var_single('captcha', ee()->functions->create_captcha('', $captcha_conditional['captcha']), ee()->TMPL->tagdata);
+		ee()->TMPL->tagdata = ee()->TMPL->swap_var_single('captcha', ee('Captcha')->create('', $captcha_conditional['captcha']), ee()->TMPL->tagdata);
 
 		// Parse the variables
 		if ($this->parse_variables)
@@ -3066,7 +3070,7 @@ GRID_FALLBACK;
 				'field_name' => 'entry_date',
 				'field_label' => 'lang:entry_date',
 				'field_type' => 'date',
-				'rules' => 'required|valid_date|call_field_validation[entry_date]'
+				'rules' => 'required|call_field_validation[entry_date]'
 			),
 			'expiration_date' => array(
 				'field_name' => 'expiration_date',

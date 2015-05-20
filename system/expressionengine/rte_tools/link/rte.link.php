@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5
@@ -41,20 +41,15 @@ class Link_rte {
 	{
 		ee()->lang->loadfile('rte');
 		return array(
-			'rte.link'	=> array(
-				'add'		=> lang('link'),
-				'title'		=> lang('title_link'),
-				'dialog'	=> array(
-						'title'				=> lang('link'),
-						'url_field_label'	=> lang('rte_url'),
-						'title_field_label'	=> lang('rte_title'),
-						'rel_field_label'	=> lang('rte_relationship'),
-						'selection_error'	=> lang('rte_selection_error'),
-						'url_required'		=> lang('valid_url_required'),
-						'add_link'			=> lang('add_link'),
-						'update_link'		=> lang('update_link'),
-						'remove_link'		=> lang('remove_link'),
-						'external_link'		=> lang('external_link')
+			'rte.link'	 => array(
+				'add'    => lang('link'),
+				'title'  => lang('title_link'),
+				'modal'  => array(
+					'html'            => ee('View')->make('link')->render(array()),
+					'url_required'    => lang('valid_url_required'),
+					'selection_error' => lang('rte_selection_error'),
+					'add_link'        => lang('add_link'),
+					'update_link'     => lang('update_link'),
 				)
 			)
 		);

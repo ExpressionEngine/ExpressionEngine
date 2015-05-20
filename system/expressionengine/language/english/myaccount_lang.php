@@ -27,13 +27,20 @@ $lang = array(
 'Leave blank if you do not wish to change it',
 
 'language' =>
-'Select Language',
+'Language',
+
+'language_desc' =>
+'Your preferred language.
+Used in the control panel only.',
 
 'notepad_blurb' =>
 'Use this form to store personal notes and information',
 
+'administration' =>
+'Administration',
+
 'subscriptions' =>
-'Subscription Manager',
+'Subscriptions',
 
 'utilities' =>
 'Utilities',
@@ -97,6 +104,12 @@ $lang = array(
 
 'tab_order' =>
 'Order',
+
+'preferences' =>
+'Preferences',
+
+'preferences_desc' =>
+'Allow the following.',
 
 'member_preferences' =>
 'Member Preferences',
@@ -272,6 +285,15 @@ $lang = array(
 'email_settings' =>
 'Email Settings',
 
+'auth_settings' =>
+'Username & Password',
+
+'date_settings' =>
+'Date & Time',
+
+'publishing_settings' =>
+'Publishing Settings',
+
 'email_options' =>
 'Options',
 
@@ -312,13 +334,22 @@ $lang = array(
 'Confirm Email Address',
 
 'url' =>
-'URL',
+'Personal website',
 
-'bio' =>
-'Bio',
+'url_desc' =>
+'URL location of your personal website',
+
+'biography' =>
+'Biography',
+
+'biography_desc' =>
+'Your biography.',
 
 'birthday' =>
 'Birthday',
+
+'birthday_desc' =>
+'Your date of birth.',
 
 'year' =>
 'Year',
@@ -340,6 +371,9 @@ $lang = array(
 
 'location' =>
 'Location',
+
+'location_desc' =>
+'Your physical location.',
 
 'occupation' =>
 'Occupation',
@@ -512,6 +546,9 @@ $lang = array(
 'bookmarklet' =>
 'Bookmarklet',
 
+'bookmarklets' =>
+'Bookmarklets',
+
 'bookmarklet_created' =>
 'Bookmarklet Created',
 
@@ -569,6 +606,42 @@ Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.
 
 'invalid_group_id' =>
 'You must select a valid group.',
+
+'allow_messages' =>
+'Allow messages from other members',
+
+'display_avatars' =>
+"Display other member's avatars",
+
+'parse_smileys' =>
+'Display emoticon images in content ',
+
+'avatar_settings' =>
+'Avatar Settings',
+
+'current_avatar' =>
+'Current avatar',
+
+'current_avatar_desc' =>
+'This is your avatar currently in use.',
+
+'change_avatar' =>
+'Change avatar',
+
+'change_avatar_desc' =>
+'Add an avatar to your profile.',
+
+'blocked_members' =>
+'Blocked Members',
+
+'email_username' =>
+'Email %s',
+
+'login_as' =>
+'Login as %s',
+
+'delete_username' =>
+'Delete %s',
 
 ''=>''
 );

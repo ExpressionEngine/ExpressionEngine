@@ -32,9 +32,9 @@ class FileExists extends ValidationRule {
 
 	protected $fs;
 
-	public function validate($value)
+	public function validate($key, $value)
 	{
-		return $this->getFilesystem()->exists($path);
+		return $this->getFilesystem()->exists($value);
 	}
 
 	public function getLanguageKey()

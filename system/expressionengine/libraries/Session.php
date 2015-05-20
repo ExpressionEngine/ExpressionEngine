@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -632,7 +632,7 @@ class EE_Session {
 		if (ee()->config->item('allow_member_localization') == 'n')
 		{
 			$this->userdata['timezone'] = ee()->config->item('default_site_timezone');
-			$this->userdata['date_format'] = ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%y';
+			$this->userdata['date_format'] = ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%Y';
 			$this->userdata['time_format'] = ee()->config->item('time_format') ? ee()->config->item('time_format') : '12';
 			$this->userdata['include_seconds'] = ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n';
  		}
@@ -714,7 +714,7 @@ class EE_Session {
 	 */
 	public function fetch_session_data()
 	{
-		ee()->db->select('member_id, admin_sess, last_activity, fingerprint, sess_start');
+		ee()->db->select('member_id, admin_sess, last_activity, fingerprint, sess_start, login_state');
 		ee()->db->where('session_id', (string) $this->sdata['session_id']);
 
 		// We already have a fingerprint to compare if they're running cs sessions
@@ -909,19 +909,33 @@ class EE_Session {
 
 		if ($tracker != FALSE)
 		{
-			$regex = "#(http:\/\/|https:\/\/|www\.|[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3})#i";
-
-			if (preg_match($regex, $tracker))
-			{
-				return array();
-			}
-
-			$tracker = json_decode($tracker);
+			$tracker = json_decode($tracker, TRUE);
 		}
 
 		if ( ! is_array($tracker))
 		{
 			$tracker = array();
+		}
+
+		if ( ! empty($tracker))
+		{
+			if ( ! isset($tracker['token']))
+			{
+				$tracker = array();
+			}
+			else
+			{
+				$tracker_token = $tracker['token'];
+				unset($tracker['token']);
+
+				ee()->load->library('encrypt');
+
+				// Check for funny business
+				if ( ! ee()->encrypt->verify_signature(implode('', $tracker), $tracker_token))
+				{
+					$tracker = array();
+				}
+			}
 		}
 
 		$uri = (ee()->uri->uri_string == '') ? 'index' : ee()->uri->uri_string;
@@ -930,13 +944,13 @@ class EE_Session {
 
 		// If someone is messing with the URI we won't set the cookie
 
-		if ( ! isset($_GET['ACT']) && preg_match('/[^a-z0-9\%\_\/\-]/i', $uri))
-		{
-			return array();
-		}
-
 		if ( ! isset($_GET['ACT']))
 		{
+			if (preg_match('/[^a-z0-9\%\_\/\-\.]/i', $uri))
+			{
+				return array();
+			}
+
 			if ( ! isset($tracker['0']))
 			{
 				$tracker[] = $uri;
@@ -978,8 +992,19 @@ class EE_Session {
 			$tracker = $this->tracker;
 		}
 
+		// We add a hash to the end so we can check for manipulation
+		if ( ! empty($tracker))
+		{
+			unset($tracker['token']);
+
+			ee()->load->library('encrypt');
+			$tracker['token'] = ee()->encrypt->sign(implode('', $tracker));
+		}
+
 		ee()->input->set_cookie('tracker', json_encode($tracker), '0');
 	}
+
+
 
 	// --------------------------------------------------------------------
 
@@ -1241,7 +1266,7 @@ class EE_Session {
 			'location'			=> ee()->input->cookie('my_location'),
 			'language'			=> '',
 			'timezone'			=> ee()->config->item('default_site_timezone'),
-			'date_format'		=> ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%y',
+			'date_format'		=> ee()->config->item('date_format') ? ee()->config->item('date_format') : '%n/%j/%Y',
 			'time_format'		=> ee()->config->item('time_format') ? ee()->config->item('time_format') : '12',
 			'include_seconds'	=> ee()->config->item('include_seconds') ? ee()->config->item('include_seconds') : 'n',
 			'group_id'			=> '3',

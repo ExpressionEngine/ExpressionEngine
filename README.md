@@ -27,6 +27,25 @@ should be created. Version numbers should follow
 * release/2.9.0
 * release/2.22.0-dp.15+intrepid-earwig
 
+## Installing / Getting up and running
+
+Modify installer conditional in `system/EllisLab/ExpressionEngine/Boot/boot.php` from:
+
+```
+if (FALSE && defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
+```
+
+to
+
+```
+if (defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
+```
+
+Create an empty `config.php` file in `/system/user/config/`
+
+Run the installer.
+
+Set the development configuration items below.
 
 ## Development Configuration
 

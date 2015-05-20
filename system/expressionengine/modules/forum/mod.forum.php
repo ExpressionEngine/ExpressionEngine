@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -27,8 +27,8 @@
 class Forum {
 
 
-	public $version				= '3.1.17';
-	public $build				= '20141004';
+	public $version				= '3.1.19';
+	public $build				= '20150501';
 	public $use_site_profile	= FALSE;
 	public $search_limit		= 250; // Maximum number of search results (x2 since it can include this number of topics + this number of posts)
 	public $return_data 		= '';
@@ -1199,11 +1199,17 @@ class Forum {
 		// Parse {current_time}
 		$str = ee()->TMPL->parse_date_variables($str, array('current_time' => ee()->localize->now));
 
+		if ( ! class_exists('EE_Messages'))
+		{
+			require APPPATH.'libraries/Messages.php';
+		}
+
 		// Parse the forum segments and board prefs
 		$conds = array(
 			'current_request'	=> $this->current_request,
 			'current_id'		=> $this->current_id,
-			'current_page'		=> $this->current_page
+			'current_page'		=> $this->current_page,
+			'pm_enabled'		=> EE_Messages::can_send_pm(),
 		);
 
 		// parse certain board preferences as well
@@ -1441,23 +1447,6 @@ class Forum {
 			);
 
 		return ( ! isset($matrix[$index])) ? FALSE : $matrix[$index];
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Fetch Mimes Array
-	 *
-	 * Load the system/expressionengine/config/mimes.php file if we haven't
-	 * already done so.
-	 */
-	protected function _fetch_mimes()
-	{
-		if ($this->mimes == '')
-		{
-			include(APPPATH.'config/mimes.php');
-			$this->mimes = $mimes;
-		}
 	}
 
 	// --------------------------------------------------------------------

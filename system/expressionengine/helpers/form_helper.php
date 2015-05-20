@@ -823,10 +823,6 @@ if ( ! function_exists('form_prep'))
 
 			return $str;
 		}
-		elseif (is_bool($str))
-		{
-			$str = ($str) ? 'y' : 'n';
-		}
 
 		if ($str === '')
 		{
@@ -1030,6 +1026,13 @@ if ( ! function_exists('form_error'))
 		if (FALSE === ($OBJ =& _get_validation_object()))
 		{
 			return '';
+		}
+
+		// Error messages were forced in by other validation service
+		if ( ! isset($OBJ->_field_data[$field]['error']) &&
+			isset($OBJ->_error_array[$field]))
+		{
+			return $OBJ->_error_array[$field];
 		}
 
 		return $OBJ->error($field, $prefix, $suffix);

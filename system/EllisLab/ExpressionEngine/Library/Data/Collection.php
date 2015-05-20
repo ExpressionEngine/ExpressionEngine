@@ -59,7 +59,14 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	{
 		foreach ($this->elements as $element)
 		{
-			$element->$key = $value;
+			if (is_array($element))
+			{
+				$element[$key] = $value;
+			}
+			else
+			{
+				$element->$key = $value;
+			}
 		}
 	}
 
@@ -110,11 +117,21 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	/**
 	 * Retrieve the first item
 	 *
-	 * @return Mixed First child object
+	 * @return Mixed First child
 	 */
 	public function first()
 	{
 		return $this->elements[0];
+	}
+
+	/**
+	* Retrieve the last item
+	*
+	* @return Mixed Last child
+	*/
+	public function last()
+	{
+		return $this->elements[$this->count() - 1];
 	}
 
 	/**
@@ -132,16 +149,34 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	}
 
 	/**
+	 * Get an arbitrary value from each element, depending on whether
+	 * the parameter is a key or a closure. Useful for internal methods
+	 * that can take both.
+	 *
+	 * @param Closure|String $collector Property name or callback used to extract
+	 * @return Array Collected values
+	 */
+	public function collect($collector)
+	{
+		if ($collector instanceOf Closure)
+		{
+			return $this->map($collector);
+		}
+
+		return $this->pluck($collector);
+	}
+
+	/**
 	 * Sort the data by a given column and return a new
 	 * collection containing the sorted results
 	 *
-	 * @param String $key The key to sort by
+	 * @param Closure|String $collector The property name to collect (or a closure)
 	 * @param Int    $flags Sort flags (as per http://php.net/sort)
 	 * @return Sorted collection
 	 */
-	public function sortBy($column, $flags = SORT_REGULAR)
+	public function sortBy($collector, $flags = SORT_REGULAR)
 	{
-		$values = $this->pluck($column);
+		$values = $this->collect($collector);
 
 		asort($values, $flags);
 
@@ -167,25 +202,34 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	}
 
 	/**
-	 * Given a property name or callback, create a list of elements
-	 * that is indexed by the property name or the return value of
+	 * Given a property name or callback, create an array of elements
+	 * that is indexed by the property value or the return value of
 	 * the callback for each element
 	 *
-	 * @param Closure|String $extractor Property name or callback to extract keys
-	 * @return Array of [Extractor keys => Collection elements]
+	 * @param Closure|String $collector Property name or callback to extract keys
+	 * @return Array of [Collector keys => Collection elements]
 	 */
-	public function indexBy($extractor)
+	public function indexBy($collector)
 	{
-		if ($extractor instanceOf Closure)
-		{
-			$keys = $this->map($extractor);
-		}
-		else
-		{
-			$keys = $this->pluck($extractor);
-		}
+		return array_combine(
+			$this->collect($collector),
+			$this->elements
+		);
+	}
 
-		return array_combine($keys, $this->elements);
+	/**
+	 * Get a key => value array. Basically indexBy + pluck.
+	 *
+	 * @param Closure|String $key Collector to extract keys
+	 * @param Closure|String $value Collector to extract values
+	 * @return Associative array of [key => value]
+	 */
+	public function getDictionary($key, $value)
+	{
+		return array_combine(
+			$this->collect($key),
+			$this->collect($value)
+		);
 	}
 
 	/**

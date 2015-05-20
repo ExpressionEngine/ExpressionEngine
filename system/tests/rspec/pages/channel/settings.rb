@@ -23,7 +23,6 @@ class ChannelSettings < ControlPanelPage
 	element :default_status, 'select[name=default_status]'
 	element :default_author, 'select[name=default_author]'
 	elements :allow_guest_posts, 'input[name=allow_guest_posts]'
-	elements :require_captcha, 'input[name=require_captcha]'
 
 	elements :enable_versioning, 'input[name=enable_versioning]'
 	element :max_revisions, 'input[name=max_revisions]'
@@ -40,7 +39,6 @@ class ChannelSettings < ControlPanelPage
 	elements :deft_comments, 'input[name=deft_comments]'
 	elements :comment_require_membership, 'input[name=comment_require_membership]'
 	elements :comment_require_email, 'input[name=comment_require_email]'
-	elements :comment_use_captcha, 'input[name=comment_use_captcha]'
 	elements :comment_moderate, 'input[name=comment_moderate]'
 	element :comment_max_chars, 'input[name=comment_max_chars]'
 	element :comment_timelock, 'input[name=comment_timelock]'

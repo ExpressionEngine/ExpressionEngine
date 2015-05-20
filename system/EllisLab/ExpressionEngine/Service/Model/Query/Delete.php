@@ -200,8 +200,6 @@ class Delete extends Query {
 
 				if (isset($this->delete_list[$to_model][$to_name]))
 				{
-					var_dump($to_model);
-					var_dump($to_name);
 					$this->delete_list[$to_model][$to_name][] = 'recursion';
 					continue;
 				}

@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.6
@@ -239,18 +239,24 @@ class EE_relationship_tree_builder {
 
 		if ( ! $is_grid)
 		{
-			$regex = "/".LD.'\/?((?:(?:'.$all_fields.'):?)+)\b([^}{]*)?'.RD."/";
+			$regex = '\/?((?:(?:'.$all_fields.'):?)+)\b([^}{]*)?';
 		}
 		else
 		{
 			$force_parent = implode('|', $this->grid_relationship_names);
-			$regex = "/".LD.'\/?('.$force_parent.'(?:[:](?:(?:'.$all_fields.'):?)+)?)\b([^}{]*)?'.RD."/";
+			$regex = '\/?('.$force_parent.'(?:[:](?:(?:'.$all_fields.'):?)+)?)\b([^}{]*)?';
 		}
 
-		if ( ! preg_match_all($regex, $str, $matches, PREG_SET_ORDER))
+		require_once __DIR__.'/VariableFinder.php';
+
+		$finder = new VariableFinder($regex);
+		$found = $finder->find($str);
+
+		if (empty($found))
 		{
 			return NULL;
 		}
+
 
 		$root = new QueryNode('__root__');
 
@@ -258,8 +264,10 @@ class EE_relationship_tree_builder {
 			'__root__' => $root
 		);
 
-		foreach ($matches as $match)
+		foreach ($found as $tag)
 		{
+			list($match, $offset, $type) = $tag;
+
 			$relationship_prefix = $match[1];
 
 			// some helpful booleans
@@ -273,7 +281,6 @@ class EE_relationship_tree_builder {
 			{
 				$is_only_relationship = ($match[2][0] != ':');
 			}
-
 
 			// catch closing tags right away, we don't need them
 			if ($is_closing)
@@ -331,13 +338,14 @@ class EE_relationship_tree_builder {
 
 			// instantiate and hook to tree
 			$node = new $node_class($tag_name, array(
-				'field_name'=> $determinant_relationship,
-				'tag_info'	=> array(),
-				'entry_ids'	=> array(),
-				'params'	=> $params,
-				'shortcut'	=> $is_only_relationship ? FALSE : $tag,
-				'open_tag'	=> $match[0],
-				'in_grid'	=> $in_grid
+				'field_name'  => $determinant_relationship,
+				'tag_info'	  => array(),
+				'entry_ids'	  => array(),
+				'params'	  => $params,
+				'shortcut'	  => $is_only_relationship ? FALSE : $tag,
+				'open_tag'	  => $match[0],
+				'in_grid'	  => $in_grid,
+				'in_cond' => $type == 'conditional' ? TRUE : FALSE
 			));
 
 			if ($is_only_relationship)

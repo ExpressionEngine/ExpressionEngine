@@ -44,12 +44,20 @@ class Profile extends CP_Controller {
 	{
 		parent::__construct();
 
+		ee()->lang->loadfile('myaccount');
+
 		if ( ! $this->cp->allowed_group('can_access_members'))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
 		$id = ee()->input->get('id');
+
+		if (empty($id))
+		{
+			$id = ee()->session->userdata['member_id'];
+		}
+
 		$qs = array('id' => $id);
 		$this->query_string = $qs;
 		$this->base_url = new URL('members/profile/settings', ee()->session->session_id());
@@ -71,16 +79,16 @@ class Profile extends CP_Controller {
 			'publishing_settings' => cp_url('members/profile/publishing', $qs),
 			array(
 				'quick_links' => cp_url('members/profile/quicklinks', $qs),
-				'bookmarks' => cp_url('members/profile/bookmarks', $qs),
+				'bookmarklets' => cp_url('members/profile/bookmarks', $qs),
 				'subscriptions' => cp_url('members/profile/subscriptions', $qs)
 			),
 			'administration',
 			array(
 				'blocked_members' => cp_url('members/profile/ignore', $qs),
 				'member_group' => cp_url('members/profile/group', $qs),
-				'email_username' => cp_url('utilities/communicate'),
-				'login_as' => cp_url('members/profile/login', $qs),
-				'delete_username' => array(
+				sprintf(lang('email_username'), $this->member->username) => cp_url('utilities/communicate'),
+				sprintf(lang('login_as'), $this->member->username) => cp_url('members/profile/login', $qs),
+				sprintf(lang('delete_username'), $this->member->username) => array(
 					'href' => cp_url('members/delete', $qs),
 					'class' => 'remove',
 					'attrs' => array(
@@ -126,7 +134,7 @@ class Profile extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Generic method for saving member settings given an expected array 
+	 * Generic method for saving member settings given an expected array
 	 * of fields.
 	 *
 	 * @param	array	$sections	Array of sections passed to form view

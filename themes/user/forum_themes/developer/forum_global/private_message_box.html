@@ -1,0 +1,26 @@
+<div class="privatemessagebox">
+
+<table cellpadding="0" cellspacing="3" border="0" style="width:100%;">
+<tr>
+{if pm_enabled}
+<td style="width:50px;">
+{if no_private_messages}
+{lang:no_new_messages}
+{/if}
+{if private_messages}
+{lang:new_messages}
+{/if}
+
+</td>
+<td>
+<a href="{path:private_messages}">{lang:private_message}</a><br />
+{lang:unread_pm} {total_unread_private_messages}
+</td>
+{/if}
+<td>
+{include:member_post_total}<br />
+{lang:your_last_visit} {last_visit_date format="%m-%d-%Y %h:%i %A"}
+</td>
+</tr>
+</table>
+</div>

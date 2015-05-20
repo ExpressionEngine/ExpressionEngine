@@ -41,8 +41,9 @@ class Channel extends AbstractChannelController {
 		$table = CP\Table::create();
 		$table->setColumns(
 			array(
+				'col_id',
 				'channel',
-				'channel_short_name',
+				'short_name',
 				'manage' => array(
 					'type'	=> CP\Table::COL_TOOLBAR
 				),
@@ -54,8 +55,9 @@ class Channel extends AbstractChannelController {
 		$table->setNoResultsText('no_channels', 'create_channel', cp_url('channel/create'));
 
 		$sort_map = array(
+			'col_id' => 'channel_id',
 			'channel' => 'channel_title',
-			'channel_short_name' => 'channel_name'
+			'short_name' => 'channel_name'
 		);
 
 		$channels = ee('Model')->get('Channel')
@@ -71,6 +73,7 @@ class Channel extends AbstractChannelController {
 		foreach ($channels as $channel)
 		{
 			$data[] = array(
+				$channel->channel_id,
 				htmlentities($channel->channel_title, ENT_QUOTES),
 				htmlentities($channel->channel_name, ENT_QUOTES),
 				array('toolbar_items' => array(
@@ -280,7 +283,7 @@ class Channel extends AbstractChannelController {
 					)
 				),
 				array(
-					'title' => 'channel_short_name',
+					'title' => 'short_name',
 					'desc' => 'channel_short_name_desc',
 					'fields' => array(
 						'channel_name' => array(
@@ -382,7 +385,7 @@ class Channel extends AbstractChannelController {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			$channel_id = $this->saveChannel($channel_id);
+			$channel_id = $this->saveChannel($channel);
 
 			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
@@ -423,7 +426,7 @@ class Channel extends AbstractChannelController {
 	/**
 	 * Custom validator for channel short name
 	 */
-	function _validChannelName($str, $channel_id = NULL)
+	public function _validChannelName($str, $channel_id = NULL)
 	{
 		// Check short name characters
 		if (preg_match('/[^a-z0-9\-\_]/i', $str))
@@ -457,7 +460,7 @@ class Channel extends AbstractChannelController {
 	 * This function receives the submitted channel preferences
 	 * and stores them in the database.
 	 */
-	private function saveChannel($channel_id = NULL)
+	private function saveChannel($channel)
 	{
 		$dupe_id = ee()->input->get_post('duplicate_channel_prefs');
 		unset($_POST['duplicate_channel_prefs']);
@@ -471,8 +474,7 @@ class Channel extends AbstractChannelController {
 			$_POST['cat_group'] = '';
 		}
 
-		$channel = ee('Model')->make('Channel', $_POST);
-		$channel->channel_id = $channel_id;
+		$channel->set($_POST);
 
 		// Make sure these are the correct NULL value if they are not set.
 		$channel->status_group = ($channel->status_group !== FALSE
@@ -483,7 +485,7 @@ class Channel extends AbstractChannelController {
 			? $channel->field_group : NULL;
 
 		// Create Channel
-		if (empty($channel_id))
+		if ($channel->isNew())
 		{
 			$channel->default_entry_title = '';
 			$channel->url_title_prefix = '';
@@ -542,7 +544,6 @@ class Channel extends AbstractChannelController {
 		}
 		else
 		{
-			$_POST['channel_id'] = $channel_id;
 			$channel->save();
 		}
 
@@ -620,8 +621,8 @@ class Channel extends AbstractChannelController {
 			}
 		}
 
-		$channel_fields = ee('Model')->get('ChannelFieldStructure')
-			->filter('ChannelFieldStructure.group_id', $channel->field_group)
+		$channel_fields = ee('Model')->get('ChannelField')
+			->filter('ChannelField.group_id', $channel->field_group)
 			->all();
 
 		$search_excerpt_options = array();
@@ -888,16 +889,6 @@ class Channel extends AbstractChannelController {
 							'value' => $channel_form->allow_guest_posts
 						)
 					)
-				),
-				array(
-					'title' => 'channel_form_require_captcha',
-					'desc' => 'channel_form_require_captcha_desc',
-					'fields' => array(
-						'require_captcha' => array(
-							'type' => 'yes_no',
-							'value' => $channel_form->require_captcha
-						)
-					)
 				)
 			),
 			'versioning' => array(
@@ -1024,20 +1015,6 @@ class Channel extends AbstractChannelController {
 						'comment_require_email' => array(
 							'type' => 'yes_no',
 							'value' => $channel->comment_require_email
-						)
-					)
-				),
-				array(
-					'title' => 'enable_captcha',
-					'desc' => 'enable_captcha_desc',
-					'fields' => array(
-						'comment_use_captcha' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'enable',
-								'n' => 'disable'
-							),
-							'value' => $channel->comment_use_captcha
 						)
 					)
 				),
@@ -1326,7 +1303,6 @@ class Channel extends AbstractChannelController {
 		}
 
 		$channel_form->default_status = $fields['default_status'];
-		$channel_form->require_captcha = $fields['require_captcha'];
 		$channel_form->allow_guest_posts = $fields['allow_guest_posts'];
 		$channel_form->default_author = $fields['default_author'];
 		$channel->setChannelFormSettings($channel_form);

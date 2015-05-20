@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  */
 class Boolean extends ValidationRule {
 
-	public function validate($value)
+	public function validate($key, $value)
 	{
 		return is_bool($value);
 	}

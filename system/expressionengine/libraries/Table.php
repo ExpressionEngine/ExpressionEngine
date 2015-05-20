@@ -38,14 +38,15 @@ class EE_Table {
 	protected $page_offset = array();
 	protected $column_config = array();
 
-	var $rows				= array();
-	var $heading			= array();
-	var $auto_heading		= TRUE;
-	var $caption			= NULL;
-	var $template			= NULL;
-	var $newline			= "\n";
-	var $empty_cells		= "";
-	var	$function			= FALSE;
+	var $rows         = array();
+	var $heading      = array();
+	var $footer       = array();
+	var $auto_heading = TRUE;
+	var $caption      = NULL;
+	var $template     = NULL;
+	var $newline      = "\n";
+	var $empty_cells  = "";
+	var	$function     = FALSE;
 
 	/**
 	 * Constructor
@@ -535,6 +536,38 @@ class EE_Table {
 			$out .= $this->newline;
 		}
 
+		// Is there a table heading to display?
+		if (count($this->footer) > 0)
+		{
+			$out .= $this->template['tfoot_open'];
+			$out .= $this->newline;
+			$out .= $this->template['heading_row_start'];
+			$out .= $this->newline;
+
+			foreach($this->footer as $footer)
+			{
+				$temp = $this->template['heading_cell_start'];
+
+				foreach ($footer as $key => $val)
+				{
+					if ($key != 'data')
+					{
+						$temp = str_replace('<th', "<th $key='$val'", $temp);
+					}
+				}
+
+				$out .= $temp;
+				$out .= isset($footer['data']) ? $footer['data'] : '';
+				$out .= $this->template['heading_cell_end'];
+			}
+
+			$out .= $this->template['heading_row_end'];
+			$out .= $this->newline;
+			$out .= $this->template['tfoot_close'];
+			$out .= $this->newline;
+		}
+
+
 		$out .= $this->template['table_close'];
 
 		// Clear table class properties before generating the table
@@ -601,6 +634,23 @@ class EE_Table {
 	{
 		$args = func_get_args();
 		$this->heading = $this->_prep_args($args);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Set the table footer
+	 *
+	 * Can be passed as an array or discreet params
+	 *
+	 * @access	public
+	 * @param	mixed
+	 * @return	void
+	 */
+	function set_footer()
+	{
+		$args = func_get_args();
+		$this->footer = $this->_prep_args($args);
 	}
 
 	// --------------------------------------------------------------------
@@ -834,7 +884,20 @@ class EE_Table {
 		}
 
 		$this->temp = $this->_default_template();
-		foreach (array('table_open', 'thead_open', 'thead_close', 'heading_row_start', 'heading_row_end', 'heading_cell_start', 'heading_cell_end', 'tbody_open', 'tbody_close', 'row_start', 'row_end', 'cell_start', 'cell_end', 'row_alt_start', 'row_alt_end', 'cell_alt_start', 'cell_alt_end', 'table_close') as $val)
+		$segments = array(
+			'table_open',
+			'thead_open', 'thead_close',
+			'heading_row_start', 'heading_row_end',
+			'heading_cell_start', 'heading_cell_end',
+			'tbody_open', 'tbody_close',
+			'row_start', 'row_end',
+			'cell_start', 'cell_end',
+			'row_alt_start', 'row_alt_end',
+			'cell_alt_start', 'cell_alt_end',
+			'tfoot_open', 'tfoot_close',
+			'table_close'
+		);
+		foreach ($segments as $val)
 		{
 			if ( ! isset($this->template[$val]))
 			{
@@ -854,31 +917,34 @@ class EE_Table {
 	function _default_template()
 	{
 		return  array (
-						'table_open'			=> '<table border="0" cellpadding="4" cellspacing="0">',
+			'table_open'         => '<table border ="0" cellpadding ="4" cellspacing ="0">',
 
-						'thead_open'			=> '<thead>',
-						'thead_close'			=> '</thead>',
+			'thead_open'         => '<thead>',
+			'thead_close'        => '</thead>',
 
-						'heading_row_start'		=> '<tr>',
-						'heading_row_end'		=> '</tr>',
-						'heading_cell_start'	=> '<th>',
-						'heading_cell_end'		=> '</th>',
+			'heading_row_start'  => '<tr>',
+			'heading_row_end'    => '</tr>',
+			'heading_cell_start' => '<th>',
+			'heading_cell_end'   => '</th>',
 
-						'tbody_open'			=> '<tbody>',
-						'tbody_close'			=> '</tbody>',
+			'tbody_open'         => '<tbody>',
+			'tbody_close'        => '</tbody>',
 
-						'row_start'				=> '<tr>',
-						'row_end'				=> '</tr>',
-						'cell_start'			=> '<td>',
-						'cell_end'				=> '</td>',
+			'row_start'          => '<tr>',
+			'row_end'            => '</tr>',
+			'cell_start'         => '<td>',
+			'cell_end'           => '</td>',
 
-						'row_alt_start'		=> '<tr>',
-						'row_alt_end'			=> '</tr>',
-						'cell_alt_start'		=> '<td>',
-						'cell_alt_end'			=> '</td>',
+			'row_alt_start'      => '<tr>',
+			'row_alt_end'        => '</tr>',
+			'cell_alt_start'     => '<td>',
+			'cell_alt_end'       => '</td>',
 
-						'table_close'			=> '</table>'
-					);
+			'tfoot_open'         => '<tfoot>',
+			'tfoot_close'        => '</tfoot>',
+
+			'table_close'        => '</table>'
+		);
 	}
 
 	// --------------------------------------------------------------------

@@ -1,0 +1,38 @@
+
+<div id="login">
+
+{form_declaration:member:member_login}
+<table cellpadding="0" cellspacing="0" border="0">
+						<tr>
+							{if pm_enabled}
+							<td>{if no_private_messages}
+								<img src="{path:image_url}priv_msg_off.gif" border='0' width='40' height='39' alt='{lang:no_new_messages}' />{/if}{if private_messages}
+								<img src="{path:image_url}priv_msg_on.gif" border='0' width='40' height='39' alt='{lang:new_messages}' />
+								{/if}</td>
+							<td><a href="{path:private_messages}">{lang:private_message}</a><br />
+								{lang:unread_pm} {total_unread_private_messages}
+							</td>
+							{/if}
+									<td>{include:member_post_total}<br />
+{lang:your_last_visit} {last_visit_date format="%m-%d-%Y %h:%i %A"}
+</td>
+									<td id="postlinks" rowspan="2">
+
+									{if logged_in}<ul>
+
+											<li><a href="{path:view_new_topics}">{lang:view_new_topics}</a></li>
+											<li><a href="{path:view_active_topics}">{lang:view_active_topics}</a></li>
+											<li><a href="{path:view_pending_topics}">{lang:view_pending_topics}</a></li>
+											<li><a href="{path:mark_all_read}">{lang:mark_all_read}</a></li>
+										</ul>{/if}
+									</td>
+								</tr>
+
+								<tr>
+									<td colspan="6"><div  class="breadcrumb">{include:breadcrumb}</div></td>
+								</tr>
+							</table>
+
+</form>
+
+</div><!-- END login -->

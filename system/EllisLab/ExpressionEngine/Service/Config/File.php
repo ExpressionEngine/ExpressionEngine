@@ -58,11 +58,11 @@ class File implements Config
 	 */
 	function __construct($path)
 	{
-		$this->defaults['database']['expressionengine']['cachedir'] = rtrim(APPPATH, '/').'/cache/db_cache/';
+		$this->defaults['database']['expressionengine']['cachedir'] = rtrim(APPPATH, '/').'/user/cache/db_cache/';
 
 		// Load in config
 		require($path);
-		$this->config = $config;
+		$this->config = $config ?: array();
 	}
 
 	/**
@@ -86,6 +86,45 @@ class File implements Config
 		}
 
 		return ($config !== NULL) ? $config : $default;
+	}
+
+	/**
+	 * Get a config item as a boolean
+	 *
+	 * This is aware of some of EE's conventions, so it will
+	 * cast strings y and n to the correct boolean.
+	 *
+	 * @param string $path    The config item to get
+	 * @param bool   $default The default value
+	 * @return bool  The value cast to bool
+	 */
+	public function getBoolean($path, $default = FALSE)
+	{
+		$value = $this->get($path, $default);
+
+		if (is_bool($value))
+		{
+			return $value;
+		}
+
+		switch(strtolower($value))
+		{
+			case 'yes':
+			case 'y':
+			case 'on':
+				return TRUE;
+			break;
+
+			case 'no':
+			case 'n':
+			case 'off':
+				return FALSE;
+			break;
+
+			default:
+				return NULL;
+			break;
+		}
 	}
 
 	/**

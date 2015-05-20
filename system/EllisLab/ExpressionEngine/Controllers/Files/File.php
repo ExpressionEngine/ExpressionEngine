@@ -40,7 +40,7 @@ class File extends AbstractFilesController {
 			show_error(lang('no_file'));
 		}
 
-		if ( ! $this->hasFileGroupAccessPrivileges($file->getUploadDestination()))
+		if ( ! $file->memberGroupHasAccess(ee()->session->userdata['group_id']))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -55,7 +55,7 @@ class File extends AbstractFilesController {
 
 		// Adapted from http://jeffreysambells.com/2012/10/25/human-readable-filesize-php
 		$size   = array('b', 'kb', 'mb', 'gb', 'tb', 'pb', 'eb', 'zb', 'yb');
-	    $factor = floor((strlen($file->file_size) - 1) / 3);
+		$factor = floor((strlen($file->file_size) - 1) / 3);
 
 		$vars = array(
 			'file' => $file,
@@ -78,7 +78,7 @@ class File extends AbstractFilesController {
 			show_error(lang('no_file'));
 		}
 
-		if ( ! $this->hasFileGroupAccessPrivileges($file->getUploadDestination()))
+		if ( ! $file->memberGroupHasAccess(ee()->session->userdata['group_id']))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -174,7 +174,7 @@ class File extends AbstractFilesController {
 
 			$file->save();
 
-			ee('Alert')->makeInline('settings-form')
+			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('edit_file_metadata_success'))
 				->addToBody(sprintf(lang('edit_file_metadata_success_desc'), $file->title))
@@ -184,7 +184,7 @@ class File extends AbstractFilesController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('settings-form')
+			ee('Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('edit_file_metadata_error'))
 				->addToBody(lang('edit_file_metadata_error_desc'))
@@ -214,7 +214,7 @@ class File extends AbstractFilesController {
 			show_error(lang('no_file'));
 		}
 
-		if ( ! $this->hasFileGroupAccessPrivileges($file->getUploadDestination()))
+		if ( ! $file->memberGroupHasAccess(ee()->session->userdata['group_id']))
 		{
 			show_error(lang('unauthorized_access'));
 		}
@@ -224,8 +224,40 @@ class File extends AbstractFilesController {
 			show_error(lang('not_an_image'));
 		}
 
-		ee()->load->library('image_lib');
-		$info = ee()->image_lib->get_image_properties($file->getAbsolutePath(), TRUE);
+		if ( ! $file->exists())
+		{
+			$alert = ee('Alert')->makeStandard()
+				->asIssue()
+				->withTitle(lang('file_not_found'))
+				->addToBody(sprintf(lang('file_not_found_desc'), $file->getAbsolutePath()));
+
+			$dir = $file->getUploadDestination();
+			if ( ! $dir->exists())
+			{
+				$upload_edit_url = cp_url('files/uploads/edit/' . $dir->id);
+				$alert->addToBody(sprintf(lang('directory_not_found'), $dir->server_path))
+					->addToBody(sprintf(lang('check_upload_settings'), $upload_edit_url));
+			}
+
+			$alert->now();
+			show_404();
+		}
+		else
+		{
+			// Check permissions on the file
+			if ( ! $file->isWritable())
+			{
+				$alert = ee('Alert')->makeInline('crop-form')
+					->asIssue()
+					->withTitle(lang('file_not_writable'))
+					->addToBody(sprintf(lang('file_not_writable_desc'), $file->getAbsolutePath()))
+					->now();
+			}
+
+			ee()->load->library('image_lib');
+			$info = ee()->image_lib->get_image_properties($file->getAbsolutePath(), TRUE);
+			ee()->image_lib->error_msg = array(); // Reset any erorrs
+		}
 
 		$vars = array(
 			'file' => $file,
@@ -306,33 +338,34 @@ class File extends AbstractFilesController {
 					->withTitle(sprintf(lang('crop_file_error'), lang($action)))
 					->addToBody($response['errors'])
 					->now();
-				break 2;
 			}
+			else
+			{
+				$file->file_hw_original = $response['dimensions']['height'] . ' ' . $response['dimensions']['width'];
+				$file->file_size = $response['file_info']['size'];
+				$file->save();
 
-			$file->file_hw_original = $response['dimensions']['height'] . ' ' . $response['dimensions']['width'];
-			$file->file_size = $response['file_info']['size'];
-			$file->save();
+				// Regenerate thumbnails
+				$dir = $file->getUploadDestination();
+				$dimensions = $dir->getFileDimensions();
 
-			// Regenerate thumbnails
-			$dir = $file->getUploadDestination();
-			$dimensions = $dir->getFileDimensions();
+				ee()->filemanager->create_thumb(
+					$file->getAbsolutePath(),
+					array(
+						'server_path' => $dir->server_path,
+						'file_name' => $file->file_name,
+						'dimensions' => $dimensions->asArray()
+					),
+					TRUE, // Regenerate thumbnails
+					FALSE // Regenerate all images
+				);
 
-			ee()->filemanager->create_thumb(
-				$file->getAbsolutePath(),
-				array(
-					'server_path' => $dir->server_path,
-					'file_name' => $file->file_name,
-					'dimensions' => $dimensions->asArray()
-				),
-				TRUE, // Regenerate thumbnails
-				FALSE // Regenerate all images
-			);
-
-			ee('Alert')->makeInline('crop-form')
-				->asSuccess()
-				->withTitle(sprintf(lang('crop_file_success'), lang($action)))
-				->addToBody(sprintf(lang('crop_file_success_desc'), $file->title, lang($action_desc)))
-				->now();
+				ee('Alert')->makeInline('crop-form')
+					->asSuccess()
+					->withTitle(sprintf(lang('crop_file_success'), lang($action)))
+					->addToBody(sprintf(lang('crop_file_success_desc'), $file->title, lang($action_desc)))
+					->now();
+			}
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -364,7 +397,7 @@ class File extends AbstractFilesController {
 			show_error(lang('no_file'));
 		}
 
-		if ( ! $this->hasFileGroupAccessPrivileges($file->getUploadDestination()))
+		if ( ! $file->memberGroupHasAccess(ee()->session->userdata['group_id']))
 		{
 			show_error(lang('unauthorized_access'));
 		}

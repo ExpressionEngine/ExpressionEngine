@@ -31,7 +31,7 @@ class Matches extends ValidationRule {
 
 	protected $all_values = array();
 
-	public function validate($value)
+	public function validate($key, $value)
 	{
 		foreach ($this->parameters as $field_name)
 		{

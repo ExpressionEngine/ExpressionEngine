@@ -813,20 +813,11 @@ $lang = array(
 'show_smileys' =>
 'Show Smileys',
 
-'show_glossary' =>
-'Show Glossary',
-
-'show_spellcheck' =>
-'Show Spellcheck',
-
 'show_file_selector' =>
 'Show File Chooser',
 
 'show_formatting_btns' =>
 'Show Formatting Buttons',
-
-'show_writemode' =>
-'Show Writemode',
 
 'text_input' =>
 'Text Input',

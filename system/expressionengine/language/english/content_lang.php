@@ -601,6 +601,9 @@ $lang = array(
 'continue_editing' =>
 'Continue Editing',
 
+'entry_status' =>
+'Status',
+
 'status' =>
 'Status',
 
@@ -619,6 +622,9 @@ $lang = array(
 'options' =>
 'Options',
 
+'sticky' =>
+'Make Entry Sticky',
+
 'date' =>
 'Date',
 
@@ -628,6 +634,9 @@ $lang = array(
 'end_date' =>
 'End',
 
+'expiration_date' =>
+'Expiration Date',
+
 'invalid_date_formatting' =>
 'The date you submitted was not formatted correctly (year-month-day hour:minute)',
 
@@ -636,6 +645,9 @@ $lang = array(
 
 'category' =>
 'Category',
+
+'categories' =>
+'Categories',
 
 'no_categories' =>
 'No categories have been assigned to this channel.',
@@ -1127,6 +1139,9 @@ $lang = array(
 
 'invalid_date' =>
 'The date you submitted is not valid.',
+
+'invalid_date_ambiguous' =>
+'The date you submitted is ambiguous, please either use a four digit year or use slashes instead of dashes.',
 
 'fields' =>
 'Fields',

@@ -9,7 +9,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
@@ -35,7 +35,12 @@ class FileDimension extends Model {
 	protected static $_primary_key = 'id';
 	protected static $_gateway_names = array('FileDimensionGateway');
 
-
+	protected static $_relationships = array(
+		'Watermark' => array(
+			'type' => 'hasOne',
+			'from_key' => 'watermark_id'
+		)
+	);
 
 	protected $id;
 	protected $site_id;
@@ -45,4 +50,5 @@ class FileDimension extends Model {
 	protected $resize_type;
 	protected $width;
 	protected $height;
+	protected $watermark_id;
 }

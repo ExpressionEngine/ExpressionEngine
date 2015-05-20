@@ -21,7 +21,6 @@ class Channel extends Model implements ContentStructure {
 		'channel_notify'             => 'boolString',
 		'comment_system_enabled'     => 'boolString',
 		'comment_require_membership' => 'boolString',
-		'comment_use_captcha'        => 'boolString',
 		'comment_moderate'           => 'boolString',
 		'comment_require_email'      => 'boolString',
 		'comment_allow_img_urls'     => 'boolString',
@@ -47,7 +46,7 @@ class Channel extends Model implements ContentStructure {
 		),
 		'CustomFields' => array(
 			'type' => 'hasMany',
-			'model' => 'ChannelFieldStructure',
+			'model' => 'ChannelField',
 			'from_key' => 'field_group',
 			'to_key' => 'group_id'
 		),
@@ -87,7 +86,6 @@ class Channel extends Model implements ContentStructure {
 		'channel_notify'             => 'enum[y,n]',
 		'comment_system_enabled'     => 'enum[y,n]',
 		'comment_require_membership' => 'enum[y,n]',
-		'comment_use_captcha'        => 'enum[y,n]',
 		'comment_moderate'           => 'enum[y,n]',
 		'comment_require_email'      => 'enum[y,n]',
 		'comment_allow_img_urls'     => 'enum[y,n]',
@@ -96,6 +94,10 @@ class Channel extends Model implements ContentStructure {
 		'comment_notify_authors'     => 'enum[y,n]',
 		'show_button_cluster'        => 'enum[y,n]',
 		'enable_versioning'          => 'enum[y,n]',
+	);
+
+	protected static $_events = array(
+		'beforeSave'
 	);
 
 	// Properties
@@ -133,7 +135,6 @@ class Channel extends Model implements ContentStructure {
 	protected $comment_url;
 	protected $comment_system_enabled;
 	protected $comment_require_membership;
-	protected $comment_use_captcha;
 	protected $comment_moderate;
 	protected $comment_max_chars;
 	protected $comment_timelock;
@@ -202,42 +203,52 @@ class Channel extends Model implements ContentStructure {
 					// allow to implicitly set category group to "None"
 					if (empty($this->{$property}))
 					{
-						$this->{$property} = $channel->{$property};
+						$this->setRawProperty($property, $channel->{$property});
 					}
 					break;
 				case 'status_group':
 				case 'field_group':
 					if ( ! isset($this->{$property}))
 					{
-						$this->{$property} = $channel->{$property};
+						$this->setRawProperty($property, $channel->{$property});
 					}
 					elseif ($this->{$property} == '')
 					{
-						 $this->{$property} = NULL;
+						 $this->setRawProperty($property, NULL);
 					}
 					break;
 				case 'deft_status':
-				case 'deft_status':
 					if ( ! isset($this->status_group) OR $this->status_group == $channel->status_group )
 					{
-						$this->{$property} = $channel->{$property};
+						$this->setRawProperty($property, $channel->{$property});
 					}
 					break;
 				case 'search_excerpt':
 					if ( ! isset($this->field_group) OR $this->field_group == $channel->field_group )
 					{
-						$this->{$property} = $channel->{$property};
+						$this->setRawProperty($property, $channel->{$property});
 					}
 					break;
 				case 'deft_category':
 					if ( ! isset($this->cat_group) OR count(array_diff(explode('|', $this->cat_group), explode('|', $channel->cat_group ))) == 0)
 					{
-						$this->{$property} = $channel->{$property};
+						$this->setRawProperty($property, $channel->{$property});
 					}
 					break;
 				default:
-					$this->{$property} = $channel->{$property};
+					$this->setRawProperty($property, $channel->{$property});
 					break;
+			}
+		}
+	}
+
+	public function onBeforeSave()
+	{
+		foreach (array('channel_url', 'channel_lang') as $column) {
+			$value = $this->getProperty($column);
+			if (empty($value))
+			{
+				$this->setProperty($column, '');
 			}
 		}
 	}

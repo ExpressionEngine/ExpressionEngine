@@ -223,9 +223,9 @@ class Filesystem {
 	}
 
 	/**
-	 * Copy a file or directory
+	 * Copy a file
 	 *
-	 * @param String $source File or directory to copy
+	 * @param String $source File to copy
 	 * @param Stirng $dest Path to the duplicate
 	 */
 	public function copy($source, $dest)

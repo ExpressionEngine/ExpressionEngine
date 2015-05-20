@@ -550,9 +550,6 @@ $lang = array(
 'type_phrase' =>
 'type phrase...',
 
-'no_rows_returned' =>
-'No rows returned',
-
 'query_form_error' =>
 'Attention: Query not run',
 

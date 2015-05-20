@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5
@@ -152,23 +152,6 @@ class Rte_upd {
 			)
 		);
 
-		// Add the member columns
-		ee()->dbforge->add_column(
-			'members',
-			array(
-				'rte_enabled'		=> array(
-					'type'		=> 'CHAR(1)',
-					'null'		=> FALSE,
-					'default'	=> 'y'
-				),
-				'rte_toolset_id'	=> array(
-					'type'		=> 'INT(10)',
-					'null'		=> FALSE,
-					'default'	=> '0'
-				)
-			)
-		);
-
 		// Update the config
 		ee()->config->update_site_prefs(
 			array(
@@ -221,10 +204,6 @@ class Rte_upd {
 		// Tables
 		ee()->dbforge->drop_table('rte_toolsets');
 		ee()->dbforge->drop_table('rte_tools');
-
-		// Remove the member columns
-		ee()->dbforge->drop_column('members', 'rte_enabled');
-		ee()->dbforge->drop_column('members', 'rte_toolset_id');
 
 		// Update the config
 		ee()->config->update_site_prefs(

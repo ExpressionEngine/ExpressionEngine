@@ -44,7 +44,7 @@ $lang = array(
 'channels' =>
 'Channels',
 
-'channel_short_name' =>
+'short_name' =>
 'Short name',
 
 'custom_fields' =>
@@ -394,12 +394,6 @@ $lang = array(
 'allow_guest_submission_desc' =>
 'When set to <b>yes</b>, unregistered users will be able to submit forms for this channel.',
 
-'channel_form_require_captcha' =>
-'Require <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr>',
-
-'channel_form_require_captcha_desc' =>
-'When set to <b>yes</b>, users will be presented with a <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> when submitting an entry for this channel.',
-
 'versioning' =>
 'Versioning',
 
@@ -464,12 +458,6 @@ $lang = array(
 
 'require_email_desc'=>
 'When set to <b>yes</b>, a member must provide a valid Email address to submit comments to this channel\'s entries.',
-
-'enable_captcha' =>
-'Enable <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr>?',
-
-'enable_captcha_desc' =>
-'When set to <b>enable</b>, a member must pass a <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> test to submit comments to this channel\'s entries.',
 
 'moderate_comments' =>
 'Moderate comments?',
@@ -702,6 +690,9 @@ $lang = array(
 'create_category_field' =>
 'Create Category Field',
 
+'edit_category_field' =>
+'Edit Category Field',
+
 'category_fields_removed' =>
 'Category fields removed',
 
@@ -713,6 +704,60 @@ $lang = array(
 
 'category_ajax_reorder_fail_desc' =>
 'We failed to save your new categories order. Refresh the page and make sure you\'re logged in.',
+
+'duplicate_category_group_name' =>
+'A category group already exists with the same name.',
+
+'label' =>
+'Label',
+
+'cat_field_label_desc' =>
+'Name of field that appears in the category form.',
+
+'cat_field_short_name_desc' =>
+'Short name for this field.<br><i>No spaces. Underscores and dashes are allowed.</i>',
+
+'require_field' =>
+'Require field?',
+
+'cat_require_field_desc' =>
+'When set to <b>yes</b>, this field will be required to save a category.',
+
+'text_input' =>
+'Text Input',
+
+'textarea' =>
+'Textarea',
+
+'select_dropdown' =>
+'Select Dropdown',
+
+'btn_create_field' =>
+'Create Field',
+
+'btn_edit_field' =>
+'Edit Field',
+
+'category_field_saved' =>
+'Category field saved',
+
+'category_field_saved_desc' =>
+'Your category field has been saved successfully.',
+
+'category_field_not_saved' =>
+'Attention: Category field not saved',
+
+'category_field_not_saved_desc' =>
+'We were unable to save your category field, please review and fix errors below.',
+
+'duplicate_field_name' =>
+'The field name you chose is already taken.',
+
+'cat_field_ajax_reorder_fail' =>
+'Attention: Failed to save category field order',
+
+'cat_field_ajax_reorder_fail_desc' =>
+'We failed to save your new category fields order. Refresh the page and make sure you\'re logged in.',
 
 /**
  * Status Groups
@@ -804,6 +849,15 @@ $lang = array(
 
 'status_not_saved_desc' =>
 'We were unable to save your status, please review and fix errors below.',
+
+'duplicate_status_group_name' =>
+'A status group already exists with the same name.',
+
+'duplicate_status_name' =>
+'A status already exists with the same name.',
+
+'invalid_hex_code' =>
+'This field must contain a valid hex color code.',
 
 ''=>''
 );

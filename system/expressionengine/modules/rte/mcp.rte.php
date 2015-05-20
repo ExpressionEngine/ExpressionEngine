@@ -9,7 +9,7 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5
@@ -270,6 +270,7 @@ class Rte_mcp {
 			'body'			=> ee()->rte_lib->edit_toolset(0),
 			'heading'		=> lang('create_tool_set_header'),
 			'breadcrumb' 	=> array(
+				cp_url('addons') => lang('addon_manager'),
 				cp_url('addons/settings/rte') => lang('rte_module_name') . ' ' . lang('configuration')
 			)
 		);
@@ -290,6 +291,7 @@ class Rte_mcp {
 			'body'			=> ee()->rte_lib->edit_toolset($toolset_id),
 			'heading'		=> lang('edit_tool_set_header'),
 			'breadcrumb' 	=> array(
+				cp_url('addons') => lang('addon_manager'),
 				cp_url('addons/settings/rte') => lang('rte_module_name') . ' ' . lang('configuration')
 			)
 		);

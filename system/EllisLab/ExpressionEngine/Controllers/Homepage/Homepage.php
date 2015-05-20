@@ -60,7 +60,7 @@ class Homepage extends CP_Controller {
 			->filter('site_id', ee()->config->item('site_id'))
 			->count();
 
-		$vars['number_of_channel_fields'] = ee('Model')->get('ChannelFieldStructure')
+		$vars['number_of_channel_fields'] = ee('Model')->get('ChannelField')
 			->filter('site_id', ee()->config->item('site_id'))
 			->count();
 

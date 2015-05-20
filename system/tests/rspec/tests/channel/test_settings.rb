@@ -15,9 +15,9 @@ feature 'Channel Settings' do
   end
 
   it 'should validate the form and reject XSS' do
-    @page.load_settings_for_channel(1)
+    @page.load_settings_for_channel(2)
     no_php_js_errors
-    
+
     @page.channel_description.set $xss_vector
     @page.channel_description.trigger 'blur'
     @page.wait_for_error_message_count(1)
@@ -115,7 +115,7 @@ feature 'Channel Settings' do
     # should_have_error_text(@page.comment_expiration, $integer_error)
 
     # Fix everything
-    
+
     @page.channel_description.set 'test'
     @page.channel_description.trigger 'blur'
     @page.wait_for_error_message_count(12)
@@ -201,7 +201,7 @@ feature 'Channel Settings' do
   end
 
   it 'should save and load the settings' do
-    @page.load_settings_for_channel(1)
+    @page.load_settings_for_channel(2)
     no_php_js_errors
 
     @page.channel_description.set 'Some description'
@@ -224,7 +224,6 @@ feature 'Channel Settings' do
 
     @page.default_status.select 'Closed'
     @page.allow_guest_posts[0].click
-    @page.require_captcha[0].click
 
     @page.enable_versioning[0].click
     @page.max_revisions.set '20'
@@ -241,7 +240,6 @@ feature 'Channel Settings' do
     @page.deft_comments[1].click
     @page.comment_require_membership[0].click
     @page.comment_require_email[1].click
-    @page.comment_use_captcha[1].click
     @page.comment_moderate[0].click
     @page.comment_max_chars.set '40'
     @page.comment_timelock.set '50'
@@ -280,7 +278,6 @@ feature 'Channel Settings' do
     @page.default_status.value.should == 'closed'
     @page.default_author.value.should == '1'
     @page.allow_guest_posts[0].checked?.should == true
-    @page.require_captcha[0].checked?.should == true
 
     @page.enable_versioning[0].checked?.should == true
     @page.max_revisions.value.should == '20'
@@ -297,7 +294,6 @@ feature 'Channel Settings' do
     @page.deft_comments[1].checked?.should == true
     @page.comment_require_membership[0].checked?.should == true
     @page.comment_require_email[1].checked?.should == true
-    @page.comment_use_captcha[1].checked?.should == true
     @page.comment_moderate[0].checked?.should == true
     @page.comment_max_chars.value.should ==  '40'
     @page.comment_timelock.value.should ==  '50'

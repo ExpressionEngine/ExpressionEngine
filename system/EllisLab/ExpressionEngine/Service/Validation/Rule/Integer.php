@@ -29,9 +29,14 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  */
 class Integer extends ValidationRule {
 
-	public function validate($value)
+	public function validate($key, $value)
 	{
 		return (bool) preg_match('/^[\-+]?[0-9]+$/', $value);
+	}
+
+	public function getLanguageKey()
+	{
+		return 'integer';
 	}
 
 }

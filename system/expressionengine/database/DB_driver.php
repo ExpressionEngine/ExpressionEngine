@@ -964,10 +964,21 @@ class CI_DB_driver {
 	 */
 	function display_error($error = '', $swap = '', $native = FALSE)
 	{
-		$LANG =& load_class('Lang', 'core');
-		$LANG->load('db');
+		// we can get db errors before the session is loaded, but we
+		// need the session for language keys in EE. So skip the language
+		// game if session doesn't exist yet.
+		if (function_exists('ee') && isset(ee()->session))
+		{
+			$LANG =& load_class('Lang', 'core');
+			$LANG->load('db');
 
-		$heading = $LANG->line('db_error_heading');
+			$heading = $LANG->line('db_error_heading');
+		}
+		else
+		{
+			$native = TRUE;
+			$heading = 'Database Error';
+		}
 
 		if ($native == TRUE)
 		{

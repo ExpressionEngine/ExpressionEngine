@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.6
@@ -329,7 +329,7 @@ class Relationship_ft extends EE_Fieldtype {
 		}
 
 		$entries = ee('Model')->get('ChannelEntry')
-			// ->fields('entry_id', 'title')
+			->fields('entry_id', 'title', 'channel_id')
 			->filter('site_id', ee()->config->item('site_id'))
 			->order($order_field, $this->settings['order_dir']);
 

@@ -34,9 +34,10 @@ class CategoryGroup extends Model implements ContentStructure {
 	protected static $_gateway_names = array('CategoryGroupGateway');
 
 	protected static $_relationships = array(
-		/*'CategoryFieldStructures' => array(
-			'type' => 'many_to_one'
-		),*/
+		'CategoryFields' => array(
+			'type' => 'hasMany',
+			'model' => 'CategoryField'
+		),
 		'Categories' => array(
 			'type' => 'hasMany',
 			'model' => 'Category'
@@ -58,13 +59,21 @@ class CategoryGroup extends Model implements ContentStructure {
 	protected $can_edit_categories;
 	protected $can_delete_categories;
 
+	public function getCustomFields()
+	{
+		return $this->getCategoryFields();
+	}
+
 	/**
-	 * Display the CP entry form
-	 *
-	 * @param Content $content  An object implementing the Content interface
-	 * @return Array of HTML field elements for the entry / edit form
+	 * Convenience method to fix inflection
 	 */
-	public function getPublishForm($content)
+	public function createCategoryField($data)
+	{
+		return $this->createCategoryFields($data);
+	}
+
+
+	public function getPublishForm($content = NULL)
 	{}
 
 	/**

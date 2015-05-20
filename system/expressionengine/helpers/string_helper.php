@@ -338,6 +338,11 @@ function valid_license_pattern($license)
 		return TRUE;
 	}
 
+	if (count(count_chars(str_replace('-', '', $license), 1)) == 1 OR $license == '1234-1234-1234-1234')
+	{
+		return FALSE;
+	}
+
 	if ( ! preg_match('/^[\d]{4}-[\d]{4}-[\d]{4}-[\d]{4}$/', $license))
 	{
 		return FALSE;

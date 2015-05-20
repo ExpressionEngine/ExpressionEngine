@@ -1,18 +1,4 @@
 (function($) {
-	
-	$(".toggle_all").toggle(
-		function(){
-			$("input.toggle").each(function() {
-				this.checked = true;
-			});
-		}, function (){
-			var checked_status = this.checked;
-			$("input.toggle").each(function() {
-				this.checked = false;
-			});
-		}
-	);
-	
 	// Keyword filter
 	var indicator = $('.searchIndicator');
 
@@ -24,5 +10,5 @@
 	.bind('tableupdate', function() {
 		indicator.css('visibility', 'hidden');
 	});
-	
+
 })(jQuery);

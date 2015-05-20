@@ -119,6 +119,7 @@ $lang = array(
 'nav_security_and_privacy'		=> 'Security and Privacy',
 
 'nav_software_registration'		=> 'Software Registration',
+'nav_software_registration_short_desc'		=> 'Manage Software Registraion Information',
 
 'nav_admin_system'				=> 'System Administration',
 	'nav_general_configuration'			=> 'General Configuration',
@@ -288,6 +289,12 @@ $lang = array(
 'build' =>
 'build date:',
 
+'license_number' =>
+'License Number',
+
+'invalid_license' =>
+'INVALID LICENSE',
+
 'forgot_password' =>
 'Forgot your password?',
 
@@ -326,6 +333,9 @@ $lang = array(
 
 'required_fields' =>
 'Required Fields',
+
+'required_field' =>
+'required field',
 
 'login' =>
 'Login',
@@ -608,6 +618,9 @@ $lang = array(
 'name' =>
 'Name',
 
+'type' =>
+'Type',
+
 'url_title' =>
 'URL Title',
 
@@ -620,6 +633,13 @@ $lang = array(
 'image' =>
 'Image',
 
+'no_rows_returned' =>
+'No rows returned',
+
+/**
+ * Footer
+ */
+
 'license_no' =>
 'License #',
 
@@ -631,6 +651,45 @@ $lang = array(
 
 'register_now' =>
 'Register Now',
+
+'current' =>
+'current',
+
+'out_of_date' =>
+'out of date',
+
+'out_of_date_upgrade' =>
+'Out of date, please upgrade',
+
+'out_of_date_recommended' =>
+'Out of date, Recommended upgrade',
+
+'recommended_upgrade' =>
+'<b>Recommended</b> upgrade.',
+
+'installed' =>
+'Installed',
+
+'latest_version' =>
+'Latest Version',
+
+'download' =>
+'download',
+
+'report_bug' =>
+'Report Bug',
+
+'new_ticket' =>
+'New Ticket',
+
+'scroll_to_top' =>
+'scroll to top',
+
+'about_expressionengine' =>
+'About ExpressionEngine',
+
+'manual' =>
+'Manual',
 
 //----------------------------
 // confirm removal modal

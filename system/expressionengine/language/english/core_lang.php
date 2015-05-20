@@ -155,11 +155,14 @@ To fix: Set the cache folder (/system/cache/) permissions to 777 (or equivalent 
 
 'unwritable_config_file' =>
 'Your configuration file does not have the proper permissions.<br>
-To fix: Set the config file (/system/config/config.php) permissions to 666 (or equivalent for your server).',
+To fix: Set the config file (/system/user/config/config.php) permissions to 666 (or equivalent for your server).',
 
 'redirect_xss_fail' => 'The link you are being redirected to contained some
 potentially malicious or dangerous code. We recommend you hit the back button
 and email %s to report the link that generated this message.',
+
+'missing_mime_config' =>
+'Cannot import your mime-type whitelist: the file %s does not exist or cannot be read.',
 
 'version_mismatch' =>
 'Your ExpressionEngine installation&rsquo;s version (%s) is not consistent with the reported version (%s). <a href="http://ellislab.com/expressionengine/user-guide/installation/update.html">Please update your installation of ExpressionEngine again</a>.',
@@ -181,17 +184,11 @@ The following files are affected:
 If you made these changes, please accept the modifications on the control panel homepage.  If you did not alter these files it may indicate a hacking attempt. Check the files for any suspicious contents (JavaScript or iFrames) and contact ExpressionEngine support:
 https://support.ellislab.com/',
 
-'new_version_notice' =>
-'ExpressionEngine version %s is now available.'."\n".'
-Download <a href=\'%s\' title=\'Download Here\'>here</a> and follow the <a href=\'%s\' title=\'Version Update Docs\'>Version Update Docs</a>.',
-
-'new_version_notice_high_priority' =>
-'<span style="font-size:18px;color:#3BA1DB;font-weight:bold">Security Update Release</span><br />
-An ExpressionEngine version %s, build %s has been released as a security release.  The latest version is: %s, and the latest build is: %s.<br /><br />
-Please download <a href="%s" title="Download Here">here</a> and follow the <a href="%s" title="Update Docs">update docs</a> to ensure you are running on the most up-to-date version.',
-
 'new_version_error' =>
 'An unexpected error occurred attempting to download the current ExpressionEngine version number.  Please visit your <a href=\'%s\' title=\'download account\'>Download Account</a> to verify you are on the current version.  If this error persists, please contact your system administrator',
+
+'file_not_found' =>
+'File %s does not exist.',
 
 //----------------------------
 // Member Groups

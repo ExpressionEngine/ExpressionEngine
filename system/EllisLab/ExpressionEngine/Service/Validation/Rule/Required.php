@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  */
 class Required extends ValidationRule {
 
-	public function validate($value)
+	public function validate($key, $value)
 	{
 		if ( ! is_array($value))
 		{

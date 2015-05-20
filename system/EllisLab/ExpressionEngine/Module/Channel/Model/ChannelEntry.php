@@ -5,6 +5,7 @@ namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Model\Content\ContentModel;
+use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
 
 /**
  * Channel Entry
@@ -25,9 +26,9 @@ class ChannelEntry extends ContentModel {
 		'versioning_enabled'      => 'boolString',
 		'allow_comments'          => 'boolString',
 		'sticky'                  => 'boolString',
-		'entry_date'              => 'timestamp',
-		'expiration_date'         => 'timestamp',
-		'comment_expiration_date' => 'timestamp',
+		'entry_date'              => 'int',
+		'expiration_date'         => 'int',
+		'comment_expiration_date' => 'int',
 		'edit_date'               => 'timestamp',
 		'recent_comment_date'     => 'timestamp',
 	);
@@ -88,6 +89,11 @@ class ChannelEntry extends ContentModel {
 		'sticky'             => 'enum[y,n]',
 	);
 
+	protected static $_events = array(
+		'afterDelete',
+		'afterSave'
+	);
+
 	// Properties
 	protected $entry_id;
 	protected $site_id;
@@ -115,31 +121,23 @@ class ChannelEntry extends ContentModel {
 	protected $recent_comment_date;
 	protected $comment_total;
 
-	public function set__entry_date($date)
+	public function set__entry_date($entry_date)
 	{
-		$field = $this->_field_facades['entry_date'];
-		$field->save();
-		$this->entry_date = $field->getData();
-
 		// Day, Month, and Year Fields
 		// @TODO un-break these windows: inject this dependency
-		$this->setProperty('year', ee()->localize->format_date('%Y', $this->entry_date));
-		$this->setProperty('month', ee()->localize->format_date('%m', $this->entry_date));
-		$this->setProperty('day', ee()->localize->format_date('%d', $this->entry_date));
+		$this->setProperty('year', ee()->localize->format_date('%Y', $entry_date));
+		$this->setProperty('month', ee()->localize->format_date('%m', $entry_date));
+		$this->setProperty('day', ee()->localize->format_date('%d', $entry_date));
 	}
 
-	public function set__expiration_date($date)
+	public function onAfterSave()
 	{
-		$field = $this->_field_facades['expiration_date'];
-		$field->save();
-		$this->expiration_date = $field->getData();
+		$this->getAutosaves()->delete();
 	}
 
-	public function set__comment_expiration_date($date)
+	public function onAfterDelete()
 	{
-		$field = $this->_field_facades['comment_expiration_date'];
-		$field->save();
-		$this->comment_expiration_date = $field->getData();
+		$this->getAutosaves()->delete();
 	}
 
 	/**
@@ -154,11 +152,13 @@ class ChannelEntry extends ContentModel {
 	}
 
 	/**
-	 *
+	 * Modify the default layout for channels
 	 */
-	public function getCustomFieldPrefix()
+	public function getDisplay(LayoutInterface $layout = NULL)
 	{
-		return 'field_id_';
+		$layout = $layout ?: new Display\DefaultChannelLayout($this->channel_id, $this->entry_id);
+
+		return parent::getDisplay($layout);
 	}
 
 	protected function initializeCustomFields()
@@ -197,20 +197,6 @@ class ChannelEntry extends ContentModel {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Renders the piece of content for the front end, parses the tag data
-	 * called by the module when rendering tagdata.
-	 *
-	 * @param	ParsedTemplate|string	$template	The parsed template from
-	 * 						the template engine or a string of tagdata.
-	 *
-	 * @return	Template|string	The parsed template with relevant tags replaced
-	 *							or the tagdata string with relevant tags replaced.
-	 */
-	public function render($template)
-	{
 	}
 
 	/* HACK ALERT! @TODO */

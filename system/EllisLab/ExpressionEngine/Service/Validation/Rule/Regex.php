@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  */
 class Regex extends ValidationRule {
 
-	public function validate($value)
+	public function validate($key, $value)
 	{
 		list($regex) = $this->assertParameters('expression');
 

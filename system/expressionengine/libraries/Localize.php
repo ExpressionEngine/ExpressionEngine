@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -80,6 +80,14 @@ class Localize {
 		}
 
 		$dt = $this->_datetime($human_string, $localized, $date_format);
+
+		// A sanity-check fall back. If we were passed a date format but we
+		// failed to parse the date, we'll try again, but without the format.
+		// This mimics how we handled date input prior to 2.9.3.
+		if ($date_format && ! $dt)
+		{
+			$dt = $this->_datetime($human_string, $localized);
+		}
 
 		return ($dt) ? $dt->format('U') : FALSE;
 	}
@@ -277,13 +285,14 @@ class Localize {
 	 */
 	private function _datetime($date_string = NULL, $timezone = TRUE, $date_format = NULL)
 	{
-		// Fix for some versions of PHP 5.2 where DateTime will throw an
-		// uncaught exception when an invalid date string is passed in
-		if ( ! empty($date_string) &&
-			! is_numeric($date_string) &&
-			@strtotime($date_string) === FALSE)
+		// Checking for ambiguous dates but only when we don't have a date
+		// format.
+		if ( ! $date_format)
 		{
-			return FALSE;
+			if (preg_match('/\b\d{1,2}-\d{1,2}-\d{2}\b/', $date_string))
+			{
+				return FALSE;
+			}
 		}
 
 		// Localize to member's timezone or leave as GMT
@@ -319,15 +328,33 @@ class Localize {
 			// the timezone later will transform the date
 			else
 			{
-				if (is_null($date_format))
-				{
-					$dt = new DateTime($date_string, $timezone);
-				}
-				else
+				// Attempt to use their date (and time) format
+				if ( ! is_null($date_format))
 				{
 					$date_format = str_replace('%', '', $date_format);
 					$dt = DateTime::createFromFormat($date_format, $date_string, $timezone);
+
+					// In the case they just passed a date, we need to only use
+					// their date format.
+					if ( ! $dt) {
+						$date_only_format = ee()->session->userdata(
+							'date_format',
+							ee()->config->item('date_format')
+						);
+						// The pipe makes sure all other time elements are
+						// replaced by the unix epoch
+						$date_only_format = str_replace('%', '', $date_only_format).'|';
+						$dt = DateTime::createFromFormat(
+							$date_only_format,
+							$date_string,
+							$timezone
+						);
+					}
 				}
+
+				// If there's no date format, or if the date format failed, toss
+				// it back to PHP.
+				$dt = ( ! empty($dt)) ? $dt : new DateTime($date_string, $timezone);
 			}
 		}
 		catch (Exception $e)

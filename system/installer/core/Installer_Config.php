@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -33,7 +33,7 @@ class Installer_Config Extends EE_Config {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->config_path = SYSPATH.'/config/config.php';
+		$this->config_path = SYSPATH.'user/config/config.php';
 		$this->_initialize();
 	}
 
@@ -50,13 +50,7 @@ class Installer_Config Extends EE_Config {
 		// Fetch the config file
 		if ( ! @include($this->config_path))
 		{
-			show_error('Unable to locate your config file (expressionengine/config/config.php)');
-		}
-
-		// Prior to 2.0 the config array was named $conf.  This has changed to $config for 2.0
-		if (isset($conf))
-		{
-			$config = $conf;
+			show_error('Unable to locate your config file (user/config/config.php)');
 		}
 
 		// Is the config file blank?  If not, we bail out since EE hasn't been installed
@@ -77,6 +71,8 @@ class Installer_Config Extends EE_Config {
 		$this->_set_overrides($this->config);
 		$this->set_item('enable_query_strings', TRUE);
 
+		// Reinforce the subclass_prefix
+		$this->set_item('subclass_prefix', 'Installer_');
 	}
 
 	// --------------------------------------------------------------------
@@ -122,204 +118,21 @@ class Installer_Config Extends EE_Config {
 		unset($params);
 		unset($exceptions);
 	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Get config file - Old version, used by updates leading up to 2.0
-	 *
-	 * Loads the "container" view file and sets the content
-	 *
-	 * @access	private
-	 * @return	void
-	 */
-	function _get_config_1x($preference = '')
-	{
-		if (isset($this->config))
-		{
-			$table_name = $this->config['db_prefix'].'_sites';
-		}
-		else
-		{
-			$table_name = 'exp_sites';
-		}
-
-		// Preferences table won't exist pre-1.6
-		if ( ! ee()->db->table_exists($table_name))
-		{
-			return;
-		}
-
-		$query = ee()->db->query("SELECT `site_system_preferences` FROM $table_name WHERE site_id = '1'");
-
-		$all_preferences = unserialize($query->row('site_system_preferences'));
-
-		// if no specific preference was asked for, return the whole array
-		if ($preference == '')
-		{
-			return $all_preferences;
-		}
-		else
-		{
-			return $all_preferences[$preference];
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Update config file - Old version, used by updates leading up to 2.0
-	 *
-	 * Loads the "container" view file and sets the content
-	 *
-	 * @access	private
-	 * @return	void
-	 */
-	function _update_config_1x($newdata = array(), $return_loc = FALSE, $remove_values = array())
-	{
-		if ( ! is_array($newdata) AND count($remove_values) == 0)
-		{
-			return FALSE;
-		}
-
-		require $this->config_path;
-
-		// Add new data values to config file
-		if (count($newdata) > 0)
-		{
-			foreach ($newdata as $key => $val)
-			{
-				$val = str_replace("\n", " ", $val);
-
-				if (isset($config[$key]))
-				{
-					$config[$key] = trim($val);
-				}
-			}
-		}
-
-		// Remove values if needed
-		if (is_array($remove_values) AND count($remove_values) > 0)
-		{
-			foreach ($remove_values as $val)
-			{
-				unset($config[$val]);
-			}
-		}
-
-		reset($config);
-
-		// Write config file as a string
-		$new  = "<?php if ( ! defined('BASEPATH')) exit('Invalid file request');\n\n";
-
-		foreach ($config as $key => $val)
-		{
-			$val = str_replace("\\\"", "\"", $val);
-			$val = str_replace("\\'", "'", $val);
-			$val = str_replace('\\\\', '\\', $val);
-
-			$val = str_replace('\\', '\\\\', $val);
-			$val = str_replace("'", "\\'", $val);
-			$val = str_replace("\"", "\\\"", $val);
-
-			$new .= "\$config['".$key."'] = \"".$val."\";\n";
-		}
-
-		$new .= '?'.'>';
-
-		//  Write config file
-		if ($fp = @fopen($this->config_path, FOPEN_WRITE_CREATE_DESTRUCTIVE))
-		{
-			flock($fp, LOCK_EX);
-			fwrite($fp, $new, strlen($new));
-			flock($fp, LOCK_UN);
-			fclose($fp);
-		}
-
-		if ($return_loc !== FALSE)
-		{
-			$override = (ee()->input->get('class_override') != '') ? AMP.'class_override='.ee()->input->get_post('class_override') : '';
-
-			ee()->functions->redirect($return_loc.$override);
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Append config file - Old version, used by updates leading up to 2.0
-	 *
-	 *  This function allows us to add new config file elements
-	 *
-	 * @access	private
-	 * @param	array
-	 * @param	array
-	 * @return	void
-	 */
-	function _append_config_1x($new_config, $unset = array())
-	{
-		require $this->config_path;
-
-		// Prior to 2.0 the config array was named $conf.  This has changed to $config for 2.0
-		if (isset($conf))
-		{
-			$config = $conf;
-		}
-
-		if ( ! isset($config))
-		{
-			return FALSE;
-		}
-
-		if ( ! is_array($new_config))
-		{
-			return FALSE;
-		}
-
-		// Merge new data to the congig file
-		$config = array_merge($config, $new_config);
-
-
-		// Do we need to remove items?
-		if (is_array($unset) AND count($unset) > 0)
-		{
-			foreach ($unset as $kill)
-			{
-				if (isset($config[$kill]))
-				{
-					unset($config[$kill]);
-				}
-			}
-		}
-
-		// Build the config string
-		$new  = "<?php if ( ! defined('BASEPATH')) exit('Invalid file request');\n\n";
-
-		foreach ($config as $key => $val)
-		{
-			$val = str_replace("\\'", "'", $val);
-			$val = str_replace('\\', '\\\\', $val);
-			$val = str_replace("\"", "\\\"", $val);
-
-			$new .= "\$config['".$key."'] = \"".$val."\";\n";
-		}
-
-		$new .= '?'.'>';
-
-
-		// Write the file
-		if ($fp = @fopen($this->config_path, FOPEN_WRITE_CREATE_DESTRUCTIVE))
-		{
-			flock($fp, LOCK_EX);
-			fwrite($fp, $new, strlen($new));
-			flock($fp, LOCK_UN);
-			fclose($fp);
-		}
-	}
 }
 
 class MSM_Config extends EE_Config
 {
+	/**
+	 * Constructor
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+
+		$this->config_path = EE_APPPATH.'config/config.php';
+
+		ee()->load->helper('language_helper');
+	}
 
 	function site_prefs($site_name, $site_id = 1)
 	{
@@ -423,21 +236,12 @@ class MSM_Config extends EE_Config
 
 		// lowercase version charset to use in HTML output
 		$this->config['output_charset'] = strtolower($this->config['charset']);
-
-		//  Set up DB caching prefs
-
-		if ($this->item('enable_db_caching') == 'y' AND REQ == 'PAGE')
-		{
-			ee()->db->cache_on();
-		}
-		else
-		{
-			ee()->db->cache_off();
-		}
 	}
 
 	/**
-	 * Remove a config item from all msm sites
+	 * Remove config items from all MSM sites
+	 *
+	 * @param	mixed	$remove_key	String or array of strings of keys to remove
 	 */
 	public function remove_config_item($remove_key)
 	{
@@ -448,6 +252,11 @@ class MSM_Config extends EE_Config
 			'site_template_preferences',
 			'site_channel_preferences',
 		);
+
+		if ( ! is_array($remove_key))
+		{
+			$remove_key = array($remove_key);
+		}
 
 		ee()->db->select(implode(', ', $columns).', site_id');
 
@@ -464,11 +273,14 @@ class MSM_Config extends EE_Config
 			{
 				$data = unserialize(base64_decode($data));
 
-				if (isset($data[$remove_key]))
+				foreach ($remove_key as $key)
 				{
-					$changed = TRUE;
-					unset($data[$remove_key]);
-					$site[$column] = base64_encode(serialize($data));
+					if (isset($data[$key]))
+					{
+						$changed = TRUE;
+						unset($data[$key]);
+						$site[$column] = base64_encode(serialize($data));
+					}
 				}
 			}
 

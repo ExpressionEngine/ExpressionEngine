@@ -34,7 +34,7 @@ class WhenPresent extends ValidationRule {
 
 	protected $all_values = array();
 
-	public function validate($value)
+	public function validate($key, $value)
 	{
 		if (empty($this->parameters))
 		{

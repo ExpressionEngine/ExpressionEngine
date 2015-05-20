@@ -40,6 +40,7 @@ class Status extends AbstractChannelController {
 		$table = CP\Table::create();
 		$table->setColumns(
 			array(
+				'col_id',
 				'group_name',
 				'manage' => array(
 					'type'	=> CP\Table::COL_TOOLBAR
@@ -54,7 +55,12 @@ class Status extends AbstractChannelController {
 			->filter('site_id', ee()->config->item('site_id'));
 		$total_rows = $status_groups->all()->count();
 
-		$status_groups = $status_groups->order($table->sort_col, $table->sort_dir)
+		$sort_map = array(
+			'col_id' => 'group_id',
+			'group_name' => 'group_name'
+		);
+
+		$status_groups = $status_groups->order($sort_map[$table->sort_col], $table->sort_dir)
 			->limit(20)
 			->offset(($table->config['page'] - 1) * 20)
 			->all();
@@ -63,6 +69,7 @@ class Status extends AbstractChannelController {
 		foreach ($status_groups as $group)
 		{
 			$data[] = array(
+				$group->group_id,
 				htmlentities($group->group_name, ENT_QUOTES),
 				array('toolbar_items' => array(
 					'view' => array(
@@ -81,7 +88,7 @@ class Status extends AbstractChannelController {
 						'confirm' => lang('status_group') . ': <b>' . htmlentities($group->group_name, ENT_QUOTES) . '</b>'
 					),
 					// Cannot delete default group
-					'disabled' => ($group->group_id == 1) ? 'disabled' : NULL
+					'disabled' => ($group->group_name == 'Default') ? 'disabled' : NULL
 				)
 			);
 		}
@@ -208,7 +215,7 @@ class Status extends AbstractChannelController {
 			array(
 				'field' => 'group_name',
 				'label' => 'lang:name',
-				'rules' => 'required|strip_tags|trim|valid_xss_check'
+				'rules' => 'required|strip_tags|trim|valid_xss_check|alpha_dash_space|callback_validateStatusGroupName['.$group_id.']'
 			)
 		));
 
@@ -247,6 +254,34 @@ class Status extends AbstractChannelController {
 	}
 
 	/**
+	 * Custom validator for status group name to check for duplicate
+	 * status group names
+	 *
+	 * @param	model	$name		Status group name
+	 * @param	model	$group_id	Group ID for status group
+	 * @return	bool	Valid status group name or not
+	 */
+	public function validateStatusGroupName($name, $group_id)
+	{
+		$status_group = ee('Model')->get('StatusGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('group_name', $name);
+
+		if ( ! empty($status_id))
+		{
+			$status_group->filter('group_id', '!=', $group_id);
+		}
+
+		if ($status_group->all()->count() > 0)
+		{
+			ee()->form_validation->set_message('validateStatusGroupName', lang('duplicate_status_group_name'));
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	/**
 	 * Saves a status group
 	 *
 	 * @param	int $group_id ID of status group to save
@@ -277,9 +312,13 @@ class Status extends AbstractChannelController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$table = CP\Table::create(array('reorder' => TRUE));
+		$table = CP\Table::create(array(
+			'reorder' => TRUE,
+			'sortable' => FALSE
+		));
 		$table->setColumns(
 			array(
+				'col_id',
 				'status_name',
 				'manage' => array(
 					'type'	=> CP\Table::COL_TOOLBAR
@@ -296,6 +335,7 @@ class Status extends AbstractChannelController {
 		foreach ($statuses as $status)
 		{
 			$data[] = array(
+				$status->getId(),
 				htmlentities($status->status, ENT_QUOTES).form_hidden('order[]', $status->getId()),
 				array('toolbar_items' => array(
 					'edit' => array(
@@ -482,7 +522,8 @@ class Status extends AbstractChannelController {
 						'status' => array(
 							'type' => 'text',
 							'value' => $status->status,
-							'required' => TRUE
+							'required' => TRUE,
+							'disabled' => ($status->status == 'open' OR $status->status == 'closed') ? 'disabled' : NULL
 						)
 					)
 				),
@@ -490,9 +531,9 @@ class Status extends AbstractChannelController {
 					'title' => 'highlight_color',
 					'desc' => 'highlight_color_desc',
 					'fields' => array(
-						'status' => array(
+						'highlight' => array(
 							'type' => 'text',
-							'value' => $status->highlight
+							'value' => $status->highlight ?: '000000'
 						)
 					)
 				)
@@ -524,11 +565,18 @@ class Status extends AbstractChannelController {
 
 		ee()->form_validation->set_rules(array(
 			array(
-				'field' => 'group_name',
+				'field' => 'status',
 				'label' => 'lang:name',
-				'rules' => 'required|strip_tags|trim|valid_xss_check'
+				'rules' => 'required|strip_tags|trim|valid_xss_check|alpha_dash_space|callback_validateName['.$group_id.','.$status_id.']'
+			),
+			array(
+				'field' => 'highlight',
+				'label' => 'lang:highlight_color',
+				'rules' => 'strip_tags|trim|valid_xss_check|callback_validateHex'
 			)
 		));
+
+		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
 		if (AJAX_REQUEST)
 		{
@@ -612,19 +660,101 @@ class Status extends AbstractChannelController {
 		return array($allowed_groups, $member_groups);
 	}
 
-	public function validateName($name)
+	/**
+	 * Custom validator for status name to check for duplicate status
+	 * names within the same group
+	 *
+	 * @param	model	$name		Status name
+	 * @param	model	$group_id	Group ID for status
+	 * @param	model	$status_id	Status ID if editing
+	 * @return	bool	Valid status name or not
+	 */
+	public function validateName($name, $payload)
 	{
-		// Check for duplicate statuses, special characters, etc
+		list($group_id, $status_id) = explode(',', $payload);
+
+		$status = ee('Model')->get('Status')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('status', $name)
+			->filter('group_id', $group_id);
+
+		if ( ! empty($status_id))
+		{
+			$status->filter('status_id', '!=', $status_id);
+		}
+
+		if ($status->all()->count() > 0)
+		{
+			ee()->form_validation->set_message('validateName', lang('duplicate_status_name'));
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
+	/**
+	 * Custom validator for status highlight color to ensure valid
+	 * hex value was entered
+	 *
+	 * @param	model	$hex	Hex code
+	 * @return	bool	Valid hex code or not
+	 */
 	public function validateHex($hex)
 	{
-		// Make sure it's a valid hex
+		if ($hex != '' && ! preg_match('/^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $hex))
+		{
+			ee()->form_validation->set_message('validateHex', lang('invalid_hex_code'));
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
+	/**
+	 * Save a status
+	 *
+	 * @param	model	$group_id	Group ID for status
+	 * @param	model	$status_id	Status ID if editing
+	 * @return	int		Status ID of newly-saved status
+	 */
 	private function saveStatus($group_id, $status_id = NULL)
 	{
-		// Save status
+		if ($status_id)
+		{
+			$status = ee('Model')->get('Status')
+				->filter('status_id', $status_id)
+				->first();
+		}
+		else
+		{
+			$status = ee('Model')->make('Status');
+			$status->site_id = ee()->config->item('site_id');
+			$status->group_id = $group_id;
+		}
+
+		$status->status = ee()->input->post('status');
+		$status->highlight = ee()->input->post('highlight');
+
+		$access = ee()->input->post('status_access') ?: array();
+
+		$no_access = ee('Model')->get('MemberGroup')
+			->filter('group_id', 'NOT IN', array_merge(array(1,2,3,4), $access))
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		if ($no_access->count() > 0)
+		{
+			$status->setNoAccess($no_access);
+		}
+		else
+		{
+			// Remove all member groups from this status
+			$status->removeNoAccess();
+		}
+
+		$status->save();
+
+		return $status->status_id;
 	}
 }
 // EOF

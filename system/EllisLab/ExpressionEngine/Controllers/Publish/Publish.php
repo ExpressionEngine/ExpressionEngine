@@ -195,7 +195,7 @@ class Publish extends AbstractPublishController {
 			'file' => array('cp/v3/publish')
 		));
 
-		ee()->cp->render('publish/edit/entry', $vars);
+		ee()->cp->render('publish/entry', $vars);
 	}
 }
 // EOF

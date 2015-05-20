@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -101,10 +101,11 @@ class EE_Messages {
 		/** -----------------------------------*/
 
 		$this->member_id	  = ee()->session->userdata['member_id'];
-		$this->allow_pm		  = (ee()->session->userdata['group_id'] == '1') ? 'y' : ee()->session->userdata['can_send_private_messages'];
-		$this->allow_pm		  = ($this->allow_pm == 'y' && ee()->session->userdata['accept_messages'] == 'y') ? 'y' : 'n';
 
-		$this->attach_allowed = ee()->session->userdata('can_attach_in_private_messages');
+		$this->allow_pm = self::can_send_pm() ? 'y' : 'n';
+
+		$this->attach_allowed = (ee()->config->item('prv_msg_allow_attachments') == 'y'
+			&& ee()->session->userdata('can_attach_in_private_messages') == 'y') ? 'y' : 'n';
 
 		$this->storage_limit	= (ee()->session->userdata['group_id'] == '1') ? 0 : ee()->session->userdata['prv_msg_storage_limit'];
 		$this->send_limit		= ee()->session->userdata['prv_msg_send_limit'];
@@ -154,10 +155,29 @@ class EE_Messages {
 
 		srand(time());
 
-		if ((rand() % 100) < 5)
+		if ((rand() % 100) < 5 && ee()->config->item('prv_msg_enabled') == 'y')
 		{
 			$this->maintenance();
 		}
+	}
+
+	/**
+	 * Determines if the current user can send private messages, static
+	 * method so Messages does not have to be instantiated
+	 *
+	 * @return bool
+	 */
+	static public function can_send_pm()
+	{
+		if (ee()->config->item('prv_msg_enabled') != 'y' OR
+				(ee()->session->userdata('can_send_private_messages') != 'y' &&
+				ee()->session->userdata('group_id') != '1') OR
+			ee()->session->userdata('accept_messages') != 'y')
+		{
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
 
@@ -2084,7 +2104,10 @@ DOH;
 				{
 					foreach ($query->result_array() as $row)
 					{
-						@unlink($row['attachment_location']);
+						// No trailing double slashes
+						$base_path = rtrim(ee()->config->item('prv_msg_upload_path'), '/') . '/';
+
+						@unlink($base_path.$row['attachment_location']);
 					}
 
 					ee()->db->query("DELETE FROM exp_message_attachments WHERE message_id IN ('".implode("','", $message_ids)."')");
@@ -2988,27 +3011,13 @@ DOH;
 			ee()->output->show_user_error('submission', ee()->lang->line('not_authorized'));
 		}
 
-		$base_path = (substr(ee()->config->item('prv_msg_upload_path'), -1) == '/') ? ee()->config->item('prv_msg_upload_path') : ee()->config->item('prv_msg_upload_path') . '/';
+		// No trailing double slashes
+		$base_path = rtrim(ee()->config->item('prv_msg_upload_path'), '/') . '/';
 
 		$filepath = $base_path.$query->row('attachment_location') ;
 
-		$extension = strtolower(str_replace('.', '', $query->row('attachment_extension') ));
-
-		if ($this->mimes == '')
-		{
-			include(APPPATH.'config/mimes.php');
-			$this->mimes = $mimes;
-		}
-
-		if ($this->mimes[$extension] == 'html')
-		{
-			$mime = 'text/html';
-		}
-		else
-		{
-			$mime = (is_array($this->mimes[$extension])) ? $this->mimes[$extension][0] : $this->mimes[$extension];
-		}
-
+		ee()->load->library('mime_type');
+		$mime = ee()->mime_type->ofFile($filepath);
 
 		if ( ! file_exists($filepath) OR ! isset($mime))
 		{
@@ -3441,8 +3450,8 @@ DOH;
 			return $this->send_bulletin();
 		}
 
-		$begins  = ee()->localize->string_to_timestamp($_POST['bulletin_date']);
-		$expires = ee()->localize->string_to_timestamp($_POST['bulletin_expires']);
+		$begins  = ee()->localize->string_to_timestamp($_POST['bulletin_date'], TRUE, ee()->localize->get_date_format());
+		$expires = ee()->localize->string_to_timestamp($_POST['bulletin_expires'], TRUE, ee()->localize->get_date_format());
 
 		if ($begins == 0)
 		{

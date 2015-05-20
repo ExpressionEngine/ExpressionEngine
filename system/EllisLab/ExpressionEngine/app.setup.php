@@ -1,5 +1,6 @@
 <?php
 
+use EllisLab\ExpressionEngine\Library;
 use EllisLab\ExpressionEngine\Library\Event;
 use EllisLab\ExpressionEngine\Library\Filesystem;
 use EllisLab\ExpressionEngine\Service\Alert;
@@ -67,6 +68,11 @@ return array(
 			return new Alert\AlertCollection(ee()->session, $view);
 		},
 
+		'Captcha' => function($ee)
+		{
+			return new Library\Captcha();
+		},
+
 		'Config' => function($ee)
 		{
 			return new Config\Factory();
@@ -91,7 +97,7 @@ return array(
 			$app = $ee->make('App');
 
 			return new Model\DataStore(
-				ee()->db,
+				$ee->make('Database'),
 				$app->getModels(),
 				$ee->getPrefix()
 			);
@@ -126,11 +132,13 @@ return array(
 			// ..\Category
 			'Category' => 'Model\Category\Category',
 			'CategoryGroup' => 'Model\Category\CategoryGroup',
+			'CategoryField' => 'Model\Category\CategoryField',
 
 			// ..\File
 			'UploadDestination' => 'Model\File\UploadDestination',
 			'FileDimension' => 'Model\File\FileDimension',
 			'File' => 'Model\File\File',
+			'Watermark' => 'Model\File\Watermark',
 
 			// ..\Log
 			'CpLog' => 'Model\Log\CpLog',
@@ -138,6 +146,7 @@ return array(
 			'EmailConsoleCache' => 'Model\Log\EmailConsoleCache',
 
 			// ..\Security
+			'Captcha' => 'Model\Security\Captcha',
 			'Throttle' => 'Model\Security\Throttle',
 			'ResetPassword' => 'Model\Security\ResetPassword',
 
@@ -165,7 +174,7 @@ return array(
 			// ..\Channel
 			'Channel' => 'Module\Channel\Model\Channel',
 			'ChannelFieldGroup'=> 'Module\Channel\Model\ChannelFieldGroup',
-			'ChannelFieldStructure' => 'Module\Channel\Model\ChannelFieldStructure',
+			'ChannelField' => 'Module\Channel\Model\ChannelField',
 			'ChannelEntry' => 'Module\Channel\Model\ChannelEntry',
 			'ChannelEntryAutosave' => 'Module\Channel\Model\ChannelEntryAutosave',
 			'ChannelFormSettings' => 'Module\Channel\Model\ChannelFormSettings',
@@ -181,6 +190,7 @@ return array(
 			'MailingListUser' => 'Module\MailingList\Model\MailingListUser',
 
 			// ..\Member
+			'HTMLButton' => 'Module\Member\Model\HTMLButton',
 			'Member' => 'Module\Member\Model\Member',
 			'MemberGroup' => 'Module\Member\Model\MemberGroup',
 
