@@ -191,12 +191,6 @@ class Files extends AbstractFilesController {
 			->fields('file_id')
 			->filter('site_id', ee()->config->item('site_id'));
 
-		if (ee()->session->userdata['group_id'] != 1)
-		{
-			// Add filter to exclude any directories the user's group
-			// has been denied access
-		}
-
 		$this->exportFiles($files->all()->pluck('file_id'));
 	}
 
