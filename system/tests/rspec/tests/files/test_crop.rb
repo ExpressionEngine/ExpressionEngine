@@ -3,6 +3,8 @@ require './bootstrap.rb'
 feature 'File Manger / Crop File' do
 
 	before(:each) do
+		@upload_dir = File.expand_path('../../../themes/ee/site_themes/agile_records/images/uploads/')
+
 		cp_session
 		@page = CropFile.new
 		@return = FileManager.new
@@ -50,8 +52,8 @@ feature 'File Manger / Crop File' do
 	end
 
 	after(:each) do
-		system('git checkout -- ../../../themes/ee/site_themes/agile_records/images/uploads/')
-		system('chmod -R 777 ../../../themes/ee/site_themes/agile_records/images/uploads')
+		system('git checkout -- ' + @upload_dir)
+		FileUtils.chmod_R 0777, @upload_dir
 	end
 
 	it 'shows the crop form by default' do
@@ -394,6 +396,42 @@ feature 'File Manger / Crop File' do
 
 		edit_file = EditFile.new
 		edit_file.displayed?
+	end
+
+	it 'shows an error if the file has no write permissions' do
+		FileUtils.chmod 0444, Dir.glob(@upload_dir + '/*.{gif,jpg,png}')
+		@page.load
+		no_php_js_errors
+
+		@page.should have_alert
+		@page.should have_css('div.alert.issue')
+		@page.alert.text.should include "File Not Writable"
+		@page.alert.text.should include "Cannot write to the file"
+		@page.alert.text.should include "Check your file permissions on the server"
+	end
+
+	it 'shows an error if the file does not exist' do
+		FileUtils.rm Dir.glob(@upload_dir + '/*.{gif,jpg,png}')
+		@page.load
+		no_php_js_errors
+
+		@page.text.should include "404"
+
+		# @page.should have_alert
+		# @page.should have_css('div.alert.issue')
+		# @page.alert.text.should include "Cannot find the file"
+	end
+
+	it 'shows an error if the directory does not exist' do
+		FileUtils.rm_rf @upload_dir
+		@page.load
+		no_php_js_errors
+
+		@page.text.should include "404"
+
+		# @page.should have_alert
+		# @page.should have_css('div.alert.issue')
+		# @page.alert.text.should include "Cannot find the file"
 	end
 
 end
