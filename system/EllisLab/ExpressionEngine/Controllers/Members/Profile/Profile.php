@@ -79,16 +79,16 @@ class Profile extends CP_Controller {
 			'publishing_settings' => cp_url('members/profile/publishing', $qs),
 			array(
 				'quick_links' => cp_url('members/profile/quicklinks', $qs),
-				'bookmarks' => cp_url('members/profile/bookmarks', $qs),
+				'bookmarklets' => cp_url('members/profile/bookmarks', $qs),
 				'subscriptions' => cp_url('members/profile/subscriptions', $qs)
 			),
 			'administration',
 			array(
 				'blocked_members' => cp_url('members/profile/ignore', $qs),
 				'member_group' => cp_url('members/profile/group', $qs),
-				'email_username' => cp_url('utilities/communicate'),
-				'login_as' => cp_url('members/profile/login', $qs),
-				'delete_username' => array(
+				sprintf(lang('email_username'), $this->member->username) => cp_url('utilities/communicate'),
+				sprintf(lang('login_as'), $this->member->username) => cp_url('members/profile/login', $qs),
+				sprintf(lang('delete_username'), $this->member->username) => array(
 					'href' => cp_url('members/delete', $qs),
 					'class' => 'remove',
 					'attrs' => array(

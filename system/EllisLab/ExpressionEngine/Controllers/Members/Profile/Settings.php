@@ -131,7 +131,7 @@ class Settings extends Profile {
 					'title' => 'biography',
 					'desc' => 'biography_desc',
 					'fields' => array(
-						'bio' => array('type' => 'text', 'value' => $this->member->bio)
+						'bio' => array('type' => 'textarea', 'value' => $this->member->bio)
 					)
 				),
 				array(
@@ -152,16 +152,16 @@ class Settings extends Profile {
 						'preferences' => array(
 							'type' => 'checkbox',
 							'choices' => array(
-								'allow_messages' => 'allow_messages',
-								'display_avatars' => 'display_avatars',
-								'parse_smileys' => 'parse_smileys'
+								'allow_messages' => lang('allow_messages'),
+								'display_avatars' => lang('display_avatars'),
+								'parse_smileys' => lang('parse_smileys')
 							),
 							'value' => $settings
 						),
 					)
 				)
 			),
-			'avatar' => array(
+			'avatar_settings' => array(
 				array(
 					'title' => 'current_avatar',
 					'desc' => 'current_avatar_desc',
