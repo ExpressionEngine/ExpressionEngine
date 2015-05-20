@@ -53,6 +53,9 @@ class FileManager < ControlPanelPage
 	element :view_modal, 'div.modal-view-file', visible: false
 	element :view_modal_header, 'div.modal-view-file h1'
 
+	element :remove_directory_modal, 'div.modal-confirm-remove-directory', visible: false
+	element :remove_directory_modal_submit_button, 'div.modal-confirm-remove-directory .form-ctrls input.btn', visible: false
+
 	def load
 		click_link 'Files'
 	end

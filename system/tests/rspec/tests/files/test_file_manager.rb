@@ -309,6 +309,55 @@ feature 'File Manager' do
 		@page.should have_no_results
 	end
 
+	it 'displays an itemized modal when attempting to remove a directory', :all_files => true do
+		about_directory_selector = 'div.sidebar .folder-list > li:nth-child(2)'
+		find(about_directory_selector).hover
+		find(about_directory_selector + ' li.remove a').click
+
+		@page.wait_until_remove_directory_modal_visible
+		@page.modal_title.text.should eq "Confirm Removal"
+		@page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
+		@page.modal.text.should include "Directory: About"
+		@page.modal.all('.checklist li').length.should eq 1
+	end
+
+	it 'can remove a directory', :all_files => true do
+		about_directory_selector = 'div.sidebar .folder-list > li:nth-child(2)'
+		find(about_directory_selector).hover
+		find(about_directory_selector + ' li.remove a').click
+
+		@page.wait_until_remove_directory_modal_visible
+		@page.modal_submit_button.click # Submits a form
+		no_php_js_errors
+
+		@page.sidebar.text.should_not include "About"
+		@page.should have_alert
+		@page.alert.text.should include "Upload directory removed"
+		@page.alert.text.should include "The upload directory About has been removed."
+		@page.should have_no_results
+	end
+
+	it 'can remove the directory you are viewing', :all_files => true do
+		click_link "About"
+		no_php_js_errors
+
+		@page.sidebar.find('li.act').text.should eq 'About'
+
+		about_directory_selector = 'div.sidebar .folder-list > li:nth-child(2)'
+		find(about_directory_selector).hover
+		find(about_directory_selector + ' li.remove a').click
+
+		@page.wait_until_remove_directory_modal_visible
+		@page.modal_submit_button.click # Submits a form
+		no_php_js_errors
+
+		@page.sidebar.text.should_not include "About"
+		@page.should have_alert
+		@page.alert.text.should include "Upload directory removed"
+		@page.alert.text.should include "The upload directory About has been removed."
+		@page.should have_no_results
+	end
+
 	# Tests specific to the "All Files" view
 
 	it 'must choose where to upload a new file when viewing All Files', :all_files => true do
