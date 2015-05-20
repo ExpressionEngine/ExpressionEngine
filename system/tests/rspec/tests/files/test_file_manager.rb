@@ -8,6 +8,8 @@ require './bootstrap.rb'
 feature 'File Manager' do
 
 	before(:each) do
+		@upload_dir = File.expand_path('../../../themes/ee/site_themes/agile_records/images/uploads/')
+
 		cp_session
 		@page = FileManager.new
 		@page.load
@@ -59,8 +61,8 @@ feature 'File Manager' do
 	end
 
 	after(:each) do
-		system('git checkout -- ../../../themes/ee/site_themes/agile_records/images/uploads/')
-		system('chmod -R 777 ../../../themes/ee/site_themes/agile_records/images/uploads')
+		system('git checkout -- ' + @upload_dir)
+		FileUtils.chmod_R 0777, @upload_dir
 	end
 
 	it 'shows the "All Files" File Manager page', :all_files => true do
@@ -386,6 +388,32 @@ feature 'File Manager' do
 		no_php_js_errors
 
 		@page.current_url.should include 'files/upload'
+	end
+
+	it 'marks all missing files in index view', :all_files => false do
+		FileUtils.rm Dir.glob(@upload_dir + '/*.jpg')
+		@page.load
+		no_php_js_errors
+
+		@page.should have_alert
+		@page.should have_css('div.alert.warn')
+		@page.alert.text.should include "Files Not Found"
+		@page.alert.text.should include "Highlighted files cannot be found on the server."
+
+		@page.should have_css('tr.missing')
+	end
+
+	it 'marks all missing files in directory view', :all_files => true do
+		FileUtils.rm Dir.glob(@upload_dir + '/*.jpg')
+		@page.load
+		no_php_js_errors
+
+		@page.should have_alert
+		@page.should have_css('div.alert.warn')
+		@page.alert.text.should include "Files Not Found"
+		@page.alert.text.should include "Highlighted files cannot be found on the server."
+
+		@page.should have_css('tr.missing')
 	end
 
 end
