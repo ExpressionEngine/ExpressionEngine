@@ -67,6 +67,9 @@ class Filepicker_mcp {
 			$files = $dir->getFiles();
 		}
 
+		// Filter out any files that are no longer on disk
+		$files->filter(function($file) { return $file->exists(); });
+
 		$base_url = new URL($this->base_url, ee()->session->session_id());
 
 		$filters = ee('Filter')->add('Perpage', $files->count(), 'show_all_files');
