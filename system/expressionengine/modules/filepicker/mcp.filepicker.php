@@ -67,8 +67,6 @@ class Filepicker_mcp {
 			$files = $dir->getFiles();
 		}
 
-		var_dump($dir);
-
 		$base_url = new URL($this->base_url, ee()->session->session_id());
 
 		$filters = ee('Filter')->add('Perpage', $files->count(), 'show_all_files');
