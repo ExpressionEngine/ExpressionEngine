@@ -131,6 +131,7 @@ abstract class AbstractFiles extends CP_Controller {
 		$table->setNoResultsText(lang('no_uploaded_files'));
 
 		$data = array();
+		$missing_files = FALSE;
 
 		$file_id = ee()->session->flashdata('file_id');
 		$member_group = ee()->session->userdata['group_id'];
@@ -186,9 +187,22 @@ abstract class AbstractFiles extends CP_Controller {
 
 			$attrs = array();
 
+			if ( ! $file->exists())
+			{
+				$attrs['class'] = 'missing';
+				$missing_files = TRUE;
+			}
+
 			if ($file_id && $file->file_id == $file_id)
 			{
-				$attrs = array('class' => 'selected');
+				if (array_key_exists('class', $attrs))
+				{
+					$attrs['class'] .= ' selected';
+				}
+				else
+				{
+					$attrs['class'] = 'selected';
+				}
 			}
 
 			$data[] = array(
@@ -198,6 +212,16 @@ abstract class AbstractFiles extends CP_Controller {
 		}
 
 		$table->setData($data);
+
+		if ($missing_files)
+		{
+			ee('Alert')->makeInline('missing-files')
+				->asWarning()
+				->cannotClose()
+				->withTitle(lang('files_not_found'))
+				->addToBody(lang('files_not_found_desc'))
+				->now();
+		}
 
 		return $table;
 	}
