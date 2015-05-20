@@ -203,6 +203,12 @@ $lang = array(
 'crop_file_error_desc' =>
 'We were unable to %s the file, please review and fix errors below.',
 
+'files_not_found' =>
+'Files Not Found',
+
+'files_not_found_desc' =>
+'Highlighted files cannot be found on the server.',
+
 'file_not_found' =>
 'File Not Found',
 
