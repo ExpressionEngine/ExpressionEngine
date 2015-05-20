@@ -52,6 +52,12 @@ class Profile extends CP_Controller {
 		}
 
 		$id = ee()->input->get('id');
+
+		if (empty($id))
+		{
+			$id = ee()->session->userdata['member_id'];
+		}
+
 		$qs = array('id' => $id);
 		$this->query_string = $qs;
 		$this->base_url = new URL('members/profile/settings', ee()->session->session_id());
