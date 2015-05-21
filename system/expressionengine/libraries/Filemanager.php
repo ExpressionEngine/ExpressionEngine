@@ -2719,7 +2719,7 @@ class Filemanager {
 
 			while (FALSE !== ($file = readdir($fp)))
 			{
-				$allowed = FALSE;
+				$allowed = TRUE;
 				// Remove '.', '..', and hidden files [optional]
 				if ( ! trim($file, '.') OR ($hidden == FALSE && $file[0] == '.'))
 				{
@@ -2733,10 +2733,6 @@ class Filemanager {
 					if ($allowed_types == 'img')
 					{
 						$allowed = ee()->mime_type->isImage($mime);
-					}
-					elseif ($allowed_types == 'all')
-					{
-						$allowed = ee()->mime_type->isSafeForUpload($mime);
 					}
 
 					if ( ! $allowed)
