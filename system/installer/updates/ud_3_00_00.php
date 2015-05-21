@@ -596,6 +596,7 @@ class Updater {
 		ee()->smartforge->drop_column('channel_form_settings', 'require_captcha');
 
 		$msm_config->remove_config_item(array('use_membership_captcha', 'email_module_captchas'));
+	}
 
 	/**
 	 * Adds columns to the members table as needed
