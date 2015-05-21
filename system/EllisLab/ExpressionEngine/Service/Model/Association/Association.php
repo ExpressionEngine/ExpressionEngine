@@ -100,7 +100,7 @@ abstract class Association {
 	 */
 	public function get()
 	{
-		if ( ! $this->isLoaded())
+		if ( ! $this->isLoaded() && ! $this->source->isNew())
 		{
 			$this->reload();
 		}
