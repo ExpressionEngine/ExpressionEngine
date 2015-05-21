@@ -69,7 +69,6 @@ class Updater {
 	/**
 	 * Removes 3 columns and adds 1 column to the email_cache table
 	 *
-	 * @access private
 	 * @return void
 	 */
 	private function _update_email_cache_table()
@@ -108,7 +107,6 @@ class Updater {
 	 * out of there and put them in the sites table because it's a better place
 	 * for them and they can be separated by site.
 	 *
-	 * @access private
 	 * @return void
 	 */
 	private function _insert_comment_settings_into_db()
@@ -136,7 +134,6 @@ class Updater {
 	 * cookie_httponly and cookie_secure were only stored in config.php, let's
 	 * pluck them out into the database.
 	 *
-	 * @access private
 	 * @return void
 	 */
 	private function _insert_cookie_settings_into_db()
@@ -229,6 +226,8 @@ class Updater {
 
 	/**
 	 * Adds 4 columns to the specialty_templates table
+	 *
+	 * @return void
 	 */
 	private function _update_specialty_templates_table()
 	{
@@ -318,6 +317,8 @@ class Updater {
 	 * We are removing the per-template "save to file" option. Instead it is
 	 * an all or nothing proposition based on the global preferences. So we are
 	 * removing the column from the database and resyncing the templates.
+	 *
+	 * @return void
 	 */
 	private function _update_templates_save_as_files()
 	{
@@ -363,6 +364,8 @@ class Updater {
 	/**
 	 * In 3.x Layouts now have names and the data structure for the field layout
 	 * has changed.
+	 *
+	 * @return void
 	 */
 	private function _update_layout_publish_table()
 	{
@@ -485,8 +488,10 @@ class Updater {
 	/**
 	 * Transitioning away from our old MySQL Timestamp format to a Unix epoch
 	 * for the edit_date column of channel_titles
+	 *
+	 * @return void
 	 */
-	public function _update_entry_edit_date_format()
+	private function _update_entry_edit_date_format()
 	{
 		ee()->db->query("SET time_zone = '+0:00';");
 		ee()->db->query("UPDATE exp_channel_titles SET edit_date=UNIX_TIMESTAMP(edit_date);");
@@ -502,8 +507,10 @@ class Updater {
 
 	/**
 	 * Changes default name for status groups from Statuses to Default
+	 *
+	 * @return void
 	 */
-	public function _rename_default_status_groups()
+	private function _rename_default_status_groups()
 	{
 		ee()->db->where('group_name', 'Statuses')
 			->set('group_name', 'Default')
@@ -513,8 +520,10 @@ class Updater {
 	/**
 	 * Combines all CAPTCHA settings into one on/off switch; if a site has
 	 * CAPTCHA turned on for any form, we'll turn CAPTCHA on for the whole site
+	 *
+	 * @return void
 	 */
-	public function _centralize_captcha_settings()
+	private function _centralize_captcha_settings()
 	{
 		// Prevent this from running again
 		if ( ! ee()->db->field_exists('comment_use_captcha', 'channels'))
@@ -601,8 +610,10 @@ class Updater {
 
 	/**
 	 * Adds columns to the members table as needed
+	 *
+	 * @return void
 	 */
-	public function _update_members_table()
+	private function _update_members_table()
 	{
 		if ( ! ee()->db->field_exists('rte_enabled', 'members'))
 		{
@@ -635,8 +646,10 @@ class Updater {
 
 	/**
 	 * Adjusts the CSS class for some standard buttons
+	 *
+	 * @return void
 	 */
-	public function _update_html_buttons()
+	private function _update_html_buttons()
 	{
 		$data = array(
 			'b'          => 'html-bold',
@@ -658,6 +671,8 @@ class Updater {
 
 	/**
 	 * Removes the rel_path column from the exp_files table
+	 *
+	 * @return void
 	 */
 	private function _update_files_table()
 	{
