@@ -52,6 +52,7 @@ class Updater {
 				'_centralize_captcha_settings',
 				'_update_members_table',
 				'_update_html_buttons',
+				'_update_files_table',
 			)
 		);
 
@@ -653,6 +654,14 @@ class Updater {
 				->set('classname', $class)
 				->update('html_buttons');
 		}
+	}
+
+	/**
+	 * Removes the rel_path column from the exp_files table
+	 */
+	private function _update_files_table()
+	{
+		ee()->smartforge->drop_column('files', 'rel_path');
 	}
 }
 /* END CLASS */
