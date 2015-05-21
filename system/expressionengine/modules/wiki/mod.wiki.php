@@ -4873,7 +4873,6 @@ class Wiki {
 
 			$file_data['uploaded_by_member_id']	= ee()->session->userdata('member_id');
 			$file_data['modified_by_member_id'] = ee()->session->userdata('member_id');
-			$file_data['rel_path'] = $new_name;
 
 			ee()->load->library('filemanager');
 			ee()->filemanager->xss_clean_off();
