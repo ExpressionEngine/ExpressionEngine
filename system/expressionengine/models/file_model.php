@@ -187,7 +187,6 @@ class File_model extends CI_Model {
 			'site_id' => '',
 			'title' => '',
 			'upload_location_id' => '',
-			'rel_path' => '',
 			'mime_type' => '',
 			'file_name' => '',
 			'file_size' => '',
