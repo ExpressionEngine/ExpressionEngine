@@ -267,7 +267,7 @@ feature 'Upload Directory Sync' do
     @page.submit
     @page.wait_for_alert
     @page.alert.should have_text 'Some files could not be synchronized'
-    @page.alert.should have_text 'script copy 2.sh: Invalid mime type, filecould not be processed script copy 3.sh: Invalid mime type, file could not be processed script copy 4.sh: Invalid mime type, file could not be processed script copy.sh: Invalid mime type, file could not be processed script.sh: Invalid mime type, file could not be processed'
+    @page.alert.should have_text 'script copy 2.sh: The file type you are attempting to upload is not allowed. script copy 3.sh: The file type you are attempting to upload is not allowed. script copy 4.sh: The file type you are attempting to upload is not allowed. script copy.sh: The file type you are attempting to upload is not allowed. script.sh: The file type you are attempting to upload is not allowed.'
   end
 
   after(:all) do
