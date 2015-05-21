@@ -2027,7 +2027,6 @@ class Moblog {
 			$upload_dir_id,
 			array(
 				'title'     => $filename,
-				'rel_path'  => dirname($file_path),
 				'file_name' => $filename
 			)
 		);
