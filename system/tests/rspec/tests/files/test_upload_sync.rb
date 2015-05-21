@@ -250,7 +250,7 @@ feature 'Upload Directory Sync' do
   it 'should not sync invalid mimes' do
     FileUtils.cp_r @bad_files + '.', @upload_path
 
-    file_count = $images_count# + $bad_files_count
+    file_count = $images_count + $bad_files_count
 
     new_upload = UploadEdit.new
     new_upload.load_edit_for_dir(3)
@@ -266,9 +266,8 @@ feature 'Upload Directory Sync' do
 
     @page.submit
     @page.wait_for_alert
-    @page.alert.should have_text 'Upload directory synchronized'
-    # @page.alert.should have_text 'Some files could not be synchronized'
-    # @page.alert.should have_text 'script copy 2.sh: Invalid mime type, file could not be processed script copy 3.sh: Invalid mime type, file could not be processed script copy 4.sh: Invalid mime type, file could not be processed script copy.sh: Invalid mime type, file could not be processed script.sh: Invalid mime type, file could not be processed'
+    @page.alert.should have_text 'Some files could not be synchronized'
+    @page.alert.should have_text 'script copy 2.sh: Invalid mime type, filecould not be processed script copy 3.sh: Invalid mime type, file could not be processed script copy 4.sh: Invalid mime type, file could not be processed script copy.sh: Invalid mime type, file could not be processed script.sh: Invalid mime type, file could not be processed'
   end
 
   after(:all) do
