@@ -64,7 +64,6 @@ class File extends Model {
 	protected $site_id;
 	protected $title;
 	protected $upload_location_id;
-	protected $rel_path;
 	protected $mime_type;
 	protected $file_name;
 	protected $file_size;
