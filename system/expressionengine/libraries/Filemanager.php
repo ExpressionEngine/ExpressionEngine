@@ -2158,7 +2158,6 @@ class Filemanager {
 			'is_image'				=> $file['is_image'],
 			'mime_type'				=> $file['file_type'],
 
-			'rel_path'				=> $file['full_path'],
 			'file_thumb'			=> $thumb_info['thumb'],
 			'thumb_class' 			=> $thumb_info['thumb_class'],
 
@@ -2343,7 +2342,6 @@ class Filemanager {
 		$updated_data = array(
 			'file_id'	=> $file_id,
 			'file_name'	=> $new_file_name,
-			'rel_path'	=> str_replace($old_file_name, $new_file_name, $previous_data->rel_path)
 		);
 
 		// Change title if it was automatically set
@@ -2784,7 +2782,7 @@ class Filemanager {
 		if (count($files) === 1)
 		{
 			// Get the file Location:
-			$file_data = ee()->db->select('upload_location_id, rel_path, file_name')
+			$file_data = ee()->db->select('upload_location_id, file_name')
 				->from('files')
 				->where('file_id', $files[0])
 				->get()
@@ -2811,7 +2809,7 @@ class Filemanager {
 		// Zip up a bunch of files for download
 		ee()->load->library('zip');
 
-		$files_data = ee()->db->select('upload_location_id, rel_path, file_name')
+		$files_data = ee()->db->select('upload_location_id, file_name')
 			->from('files')
 			->where_in('file_id', $files)
 			->get();
