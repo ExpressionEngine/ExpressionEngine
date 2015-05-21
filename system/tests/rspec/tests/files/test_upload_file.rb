@@ -49,7 +49,7 @@ feature 'File Manger / Upload File' do
 	after(:each) do
 		Dir.foreach(@upload_dir) {|f|
 			fn = File.join(@upload_dir, f)
-			File.delete(fn) if f != '.' && f != '..' && f != 'index.html'
+			File.delete(fn) if f != '.' && f != '..' && f != 'index.html' && f != '_thumbs'
 		}
 	end
 
