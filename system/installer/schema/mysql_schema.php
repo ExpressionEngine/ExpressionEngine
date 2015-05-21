@@ -1245,7 +1245,6 @@ class EE_Schema {
 			`site_id` int(4) unsigned DEFAULT '1',
 			`title` varchar(255) DEFAULT NULL,
 			`upload_location_id` int(4) unsigned DEFAULT '0',
-			`rel_path` varchar(255) DEFAULT NULL,
 			`mime_type` varchar(255) DEFAULT NULL,
 			`file_name` varchar(255) DEFAULT NULL,
 			`file_size` int(10) DEFAULT '0',
