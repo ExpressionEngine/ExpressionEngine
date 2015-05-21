@@ -95,7 +95,7 @@ class File extends Model {
 	 */
 	public function getAbsolutePath()
 	{
-		return rtrim($this->getUploadDestination()->server_path, '/') . '/' . $this->rel_path;
+		return rtrim($this->getUploadDestination()->server_path, '/') . '/' . $this->file_name;
 	}
 
 	/**
@@ -106,7 +106,7 @@ class File extends Model {
 	 */
 	public function getAbsoluteURL()
 	{
-		return rtrim($this->getUploadDestination()->url, '/') . '/' . $this->rel_path;
+		return rtrim($this->getUploadDestination()->url, '/') . '/' . $this->file_name;
 	}
 
 	public function onBeforeDelete()
