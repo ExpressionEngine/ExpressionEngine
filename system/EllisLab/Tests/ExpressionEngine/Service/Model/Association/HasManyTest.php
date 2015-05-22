@@ -41,6 +41,8 @@ class HasManyTest extends \PHPUnit_Framework_TestCase {
 		$frontend = m::mock('EllisLab\ExpressionEngine\Service\Model\Frontend');
 
 		$parent = $this->newModelMock();
+		$parent->shouldReceive('isNew')->once()->andReturn(FALSE);
+
 		$child = $this->newModelMock();
 
 		$relation->shouldReceive('getTargetModel')->once()->andReturn('ModelStub');
