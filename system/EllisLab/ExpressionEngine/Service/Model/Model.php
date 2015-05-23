@@ -383,6 +383,9 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		// alias unique to the validateUnique callback
 		$validator->defineRule('unique', array($this, 'validateUnique'));
 
+		// alias uniqueWithinSiblings to the validateUniqueWithinSiblings callback
+		$validator->defineRule('uniqueWithinSiblings', array($this, 'validateUniqueWithinSiblings'));
+
 		return $this;
 	}
 
@@ -434,6 +437,41 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		if ($unique->count() > 0)
 		{
 			return 'unique'; // lang key
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Default callback to validate unique columns across siblings
+	 *
+	 * @param String $key    Property name
+	 * @param String $value  Property value
+	 * @param Array  $params Rule parameters, first parameter must be the parent
+	 *	relationship name, second must be child relationship name from parent
+	 * @return Mixed String if error, TRUE if success
+	 */
+	public function validateUniqueWithinSiblings($key, $value, array $params)
+	{
+		if (count($params) != 2)
+		{
+			throw new InvalidArgumentException('uniqueWithinSiblings must have at least two arguments.');
+		}
+
+		$get_parent = 'get' . $params[0];
+		$get_siblings = 'get' . $params[1];
+
+		$unique = $this->$get_parent()
+			->$get_siblings()
+			->filter(function ($element) use ($key, $value)
+			{
+				return $element->$key == $value;
+			});
+
+		// Greater than one to account for self
+		if (count($unique) > 1)
+		{
+			return 'unique';
 		}
 
 		return TRUE;
