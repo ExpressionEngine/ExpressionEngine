@@ -138,6 +138,44 @@ class UploadDestination extends Model {
 	}
 
 	/**
+	 * Custom setter for server path to ensure it's saved with a trailing slash
+	 *
+	 * @param str $value Value to set on property
+	 * @return void
+	 */
+	protected function set__server_path($value)
+	{
+		$this->setRawProperty('server_path', $this->getWithTrailingSlash($value));
+	}
+
+	/**
+	 * Custom setter for URL to ensure it's saved with a trailing slash
+	 *
+	 * @param str $value Value to set on property
+	 * @return void
+	 */
+	protected function set__url($value)
+	{
+		$this->setRawProperty('url', $this->getWithTrailingSlash($value));
+	}
+
+	/**
+	 * Appends a trailing slash on to a value that doesn't have it
+	 *
+	 * @param str $path Path string to ensure has a trailing slash
+	 * @return void
+	 */
+	private function getWithTrailingSlash($path)
+	{
+		if ( ! empty($path) && substr($path, -1) != '/' AND substr($path, -1) != '\\')
+		{
+			$path .= '/';
+		}
+
+		return $path;
+	}
+
+	/**
 	 * Determines if the member group (by ID) has access permission to this
 	 * upload destination.
 	 *
