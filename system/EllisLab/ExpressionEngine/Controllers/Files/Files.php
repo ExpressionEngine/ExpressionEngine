@@ -192,6 +192,9 @@ class Files extends AbstractFilesController {
 			->filter('site_id', ee()->config->item('site_id'));
 
 		$this->exportFiles($files->all()->pluck('file_id'));
+
+		// If we got here the download didn't happen due to an error.
+		show_error(lang('error_cannot_create_zip'), 500, lang('error_export'));
 	}
 
 	public function upload($dir_id)
@@ -446,6 +449,13 @@ class Files extends AbstractFilesController {
 		ee()->functions->redirect($redirect_url);
 	}
 
+	/**
+	 * Generates a ZipArchive and forces a download
+	 *
+	 * @param  array $file_ids An array of file ids
+	 * @return void If the ZipArchive cannot be created it returns early,
+	 *   otherwise it exits.
+	 */
 	private function exportFiles($file_ids)
 	{
 		if ( ! is_array($file_ids))
