@@ -372,15 +372,15 @@ feature 'Upload Destination Create/Edit' do
     @page.max_width.value.should == '300'
     @page.max_height.value.should == '200'
 
-    #@page.name_for_row(1).value.should == 'some_name'
-    #@page.resize_type_for_row(1).value.should == 'constrain'
-    #@page.width_for_row(1).value.should == '20'
-    #@page.height_for_row(1).value.should == '30'
+    @page.name_for_row(1).value.should == 'some_name'
+    @page.resize_type_for_row(1).value.should == 'constrain'
+    @page.width_for_row(1).value.should == '20'
+    @page.height_for_row(1).value.should == '30'
 
-    #@page.name_for_row(2).value.should == 'some_other_name'
-    #@page.resize_type_for_row(2).value.should == 'crop'
-    #@page.width_for_row(2).value.should == '50'
-    #@page.height_for_row(2).value.should == '40'
+    @page.name_for_row(2).value.should == 'some_other_name'
+    @page.resize_type_for_row(2).value.should == 'crop'
+    @page.width_for_row(2).value.should == '50'
+    @page.height_for_row(2).value.should == '40'
 
     @page.upload_member_groups[0].checked?.should == false
     @page.cat_group[0].checked?.should == true
@@ -424,15 +424,15 @@ feature 'Upload Destination Create/Edit' do
     @page.max_width.value.should == '300'
     @page.max_height.value.should == '200'
 
-    #@page.name_for_row(1).value.should == 'some_name'
-    #@page.resize_type_for_row(1).value.should == 'constrain'
-    #@page.width_for_row(1).value.should == '20'
-    #@page.height_for_row(1).value.should == '30'
+    @page.name_for_row(1).value.should == 'some_name'
+    @page.resize_type_for_row(1).value.should == 'constrain'
+    @page.width_for_row(1).value.should == '20'
+    @page.height_for_row(1).value.should == '30'
 
-    #@page.name_for_row(2).value.should == 'some_other_name'
-    #@page.resize_type_for_row(2).value.should == 'crop'
-    #@page.width_for_row(2).value.should == '50'
-    #@page.height_for_row(2).value.should == '40'
+    @page.name_for_row(2).value.should == 'some_other_name'
+    @page.resize_type_for_row(2).value.should == 'crop'
+    @page.width_for_row(2).value.should == '50'
+    @page.height_for_row(2).value.should == '40'
 
     @page.upload_member_groups[0].checked?.should == false
     @page.cat_group[0].checked?.should == true

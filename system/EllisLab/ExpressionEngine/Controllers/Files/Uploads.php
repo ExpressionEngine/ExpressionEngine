@@ -624,15 +624,27 @@ class Uploads extends AbstractFilesController {
 	{
 		$upload_destination->save();
 
-		// Delete deleted image size rows
-		$image_sizes = ee('Model')->get('FileDimension');
+		// Delete deleted image size rows (uncomment when models are fixed)
+		//$image_sizes = $upload_destination->getFileDimensions();
 
-		if ( ! empty($row_ids))
+		//if ( ! empty($image_sizes))
+		//{
+		//	$image_sizes->filter('id', 'NOT IN', $image_sizes->pluck('id'));
+		//}
+
+		//$image_sizes->filter('upload_location_id', $upload_destination->id)->delete();
+
+		// Temporary workaround for models bug where the upload_location_id is not
+		// filled in if you save image sizes with a new upload destination
+		$image_sizes = ee('Model')->get('FileDimension')
+			->filter('upload_location_id', NULL)
+			->all();
+
+		foreach ($image_sizes as $image_size)
 		{
-			$image_sizes->filter('id', 'NOT IN', $upload_destination->getFileDimensions()->pluck('id'));
+			$image_size->upload_location_id = $upload_destination->id;
+			$image_size->save();
 		}
-
-		$image_sizes->filter('upload_location_id', $upload_destination->id)->delete();
 
 		return $upload_destination->id;
 	}
