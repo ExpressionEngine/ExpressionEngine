@@ -226,10 +226,16 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	 */
 	public function getDictionary($key, $value)
 	{
-		return array_combine(
-			$this->collect($key),
-			$this->collect($value)
-		);
+		$keys = $this->collect($key);
+		$values = $this->collect($value);
+
+		// 5.3 requires array_combine arguments to have at least one element
+		if (empty($keys) OR empty($values))
+		{
+			return array();
+		}
+
+		return array_combine($keys, $values);
 	}
 
 	/**
