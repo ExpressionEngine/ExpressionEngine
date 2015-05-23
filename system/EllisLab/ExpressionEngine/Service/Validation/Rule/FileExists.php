@@ -34,7 +34,19 @@ class FileExists extends ValidationRule {
 
 	public function validate($key, $value)
 	{
-		return $this->getFilesystem()->exists($value);
+		if ($this->getFilesystem()->exists($value))
+		{
+			return TRUE;
+		}
+
+		// STOP if not exists, there's no point in further validating an
+		// invalid file path
+		if ($value !== NULL)
+		{
+			return $this->stop();
+		}
+
+		return FALSE;
 	}
 
 	public function getLanguageKey()
