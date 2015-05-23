@@ -67,6 +67,6 @@ class FileDimension extends Model {
 
 	public function validateDimension()
 	{
-		return empty($this->watermark_id == '') ? TRUE : Validator::SKIP;
+		return empty($this->watermark_id) ? TRUE : Validator::SKIP;
 	}
 }
