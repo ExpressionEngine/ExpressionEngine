@@ -25,8 +25,8 @@ feature 'Upload Destination Create/Edit' do
   end
 
   it 'should validate regular fields' do
-    url_error = 'You must submit the URL to your upload directory.'
-    
+    url_error = 'This field must contain a valid URL.'
+
     @page.submit
 
     no_php_js_errors
@@ -54,7 +54,7 @@ feature 'Upload Destination Create/Edit' do
     @page.name.set 'Main Upload Directory'
     @page.name.trigger 'blur'
     @page.wait_for_error_message_count(1)
-    should_have_error_text(@page.name, 'The name of your directory is already taken.')
+    should_have_error_text(@page.name, 'This field must be unique.')
     should_have_form_errors(@page)
 
     # Multiple errors for URL
@@ -116,19 +116,19 @@ feature 'Upload Destination Create/Edit' do
     @page.max_size.set 'sdf'
     @page.max_size.trigger 'blur'
     @page.wait_for_error_message_count(4)
-    should_have_error_text(@page.max_size, $integer_error)
+    should_have_error_text(@page.max_size, $natural_number)
     should_have_form_errors(@page)
 
     @page.max_width.set 'sdf'
     @page.max_width.trigger 'blur'
     @page.wait_for_error_message_count(5)
-    should_have_error_text(@page.max_width, $integer_error)
+    should_have_error_text(@page.max_width, $natural_number)
     should_have_form_errors(@page)
 
     @page.max_height.set 'sdf'
     @page.max_height.trigger 'blur'
     @page.wait_for_error_message_count(6)
-    should_have_error_text(@page.max_height, $integer_error)
+    should_have_error_text(@page.max_height, $natural_number)
     should_have_form_errors(@page)
 
     # These fields should not be required
@@ -230,36 +230,41 @@ feature 'Upload Destination Create/Edit' do
     @page.wait_for_error_message_count(1)
     grid_cell_should_have_error_text(name_cell, $alpha_dash)
 
+    name_cell.set 'some_name'
+    name_cell.trigger 'blur'
+    @page.wait_for_error_message_count(0)
+    grid_cell_should_have_no_error_text(name_cell)
+
     # Width cell
     width_cell = @page.width_for_row(1)
     width_cell.trigger 'blur'
-    @page.wait_for_error_message_count(2)
+    @page.wait_for_error_message_count(1)
     grid_cell_should_have_error_text(width_cell, $required_error)
 
     width_cell.set '4'
     width_cell.trigger 'blur'
-    @page.wait_for_error_message_count(1)
+    @page.wait_for_error_message_count(0)
     grid_cell_should_have_no_error_text(width_cell)
 
     width_cell.set 'ssdfsdsd'
     width_cell.trigger 'blur'
-    @page.wait_for_error_message_count(2)
+    @page.wait_for_error_message_count(1)
     grid_cell_should_have_error_text(width_cell, $natural_number)
 
     # Height cell
     height_cell = @page.height_for_row(1)
     height_cell.trigger 'blur'
-    @page.wait_for_error_message_count(3)
+    @page.wait_for_error_message_count(2)
     grid_cell_should_have_error_text(height_cell, $required_error)
 
     height_cell.set '4'
     height_cell.trigger 'blur'
-    @page.wait_for_error_message_count(2)
+    @page.wait_for_error_message_count(1)
     grid_cell_should_have_no_error_text(height_cell)
 
     height_cell.set 'ssdfsdsd'
     height_cell.trigger 'blur'
-    @page.wait_for_error_message_count(3)
+    @page.wait_for_error_message_count(2)
     grid_cell_should_have_error_text(height_cell, $natural_number)
 
     @page.grid_add.click
@@ -267,28 +272,22 @@ feature 'Upload Destination Create/Edit' do
 
     name_cell = @page.name_for_row(2)
     name_cell.trigger 'blur'
-    @page.wait_for_error_message_count(4)
+    @page.wait_for_error_message_count(3)
     grid_cell_should_have_error_text(name_cell, $required_error)
+
+    name_cell.set 'some_name2'
+    name_cell.trigger 'blur'
+    @page.wait_for_error_message_count(2)
+    grid_cell_should_have_no_error_text(name_cell)
 
     name_cell.set 'some_name'
     name_cell.trigger 'blur'
     @page.wait_for_error_message_count(3)
-    grid_cell_should_have_no_error_text(name_cell)
-
-    name_cell.set 'some name'
-    name_cell.trigger 'blur'
-    @page.wait_for_error_message_count(4)
-    grid_cell_should_have_error_text(name_cell, 'You must enter a unique name for this image manipulation.')
+    grid_cell_should_have_error_text(name_cell, 'This field must be unique.')
 
     grid_should_have_error(name_cell)
 
     name_cell.set 'some_name2'
-    name_cell.trigger 'blur'
-    @page.wait_for_error_message_count(3)
-    grid_cell_should_have_no_error_text(name_cell)
-
-    name_cell = @page.name_for_row(1)
-    name_cell.set 'some_name'
     name_cell.trigger 'blur'
     @page.wait_for_error_message_count(2)
     grid_cell_should_have_no_error_text(name_cell)

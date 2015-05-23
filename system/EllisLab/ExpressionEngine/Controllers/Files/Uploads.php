@@ -34,8 +34,7 @@ use EllisLab\ExpressionEngine\Controllers\Files\AbstractFiles as AbstractFilesCo
  */
 class Uploads extends AbstractFilesController {
 
-	// We'll keep Grid validation errors in here
-	private $image_sizes_errors = array();
+	private $upload_errors = array();
 	private $_upload_dirs = array();
 
 	/**
@@ -59,7 +58,7 @@ class Uploads extends AbstractFilesController {
 	/**
 	 * New upload destination
 	 */
-	public function newUpload()
+	public function create()
 	{
 		return $this->form();
 	}
@@ -83,18 +82,89 @@ class Uploads extends AbstractFilesController {
 	private function form($upload_id = NULL)
 	{
 		// Get the upload directory
-		$upload_dir = array();
-		if ( ! empty($upload_id))
+		if (is_null($upload_id))
 		{
-			ee()->load->model('file_upload_preferences_model');
-			$upload_dir = ee()->file_upload_preferences_model->get_file_upload_preferences(
-				ee()->session->userdata('group_id'),
-				$upload_id
-			);
+			ee()->view->cp_page_title = lang('create_upload_directory');
+			ee()->view->base_url = cp_url('files/uploads/create');
+			ee()->view->save_btn_text = 'btn_create_directory';
+			ee()->view->save_btn_text_working = 'btn_create_directory_working';
+			$upload_destination = ee('Model')->make('UploadDestination');
+			$upload_destination->site_id = ee()->config->item('site_id');
+		}
+		else
+		{
+			$upload_destination = ee('Model')->get('UploadDestination', $upload_id)->first();
 
-			if (empty($upload_dir))
+			if ( ! $upload_destination)
 			{
 				show_error(lang('unauthorized_access'));
+			}
+
+			ee()->view->cp_page_title = lang('edit_upload_directory');
+			ee()->view->base_url = cp_url('files/uploads/edit/'.$upload_id);
+			ee()->view->save_btn_text = 'btn_edit_directory';
+			ee()->view->save_btn_text_working = 'btn_saving';
+		}
+
+		if ( ! empty($_POST))
+		{
+			$validate = $this->validateUploadPreferences($upload_destination);
+
+			if (AJAX_REQUEST)
+			{
+				$field = ee()->input->post('ee_fv_field');
+
+				// We may be validating a field in a Grid
+				preg_match("/\[rows\]\[(\w+)\]\[(\w+)\]/", $field, $matches);
+
+				// Error is present for the validating field, send it back
+				if ( ! empty($matches) && isset($this->upload_errors['image_sizes'][$matches[1]][$matches[2]]))
+				{
+					ee()->output->send_ajax_response(array('error' => $this->upload_errors['image_sizes'][$matches[1]][$matches[2]]));
+				}
+				elseif (isset($this->upload_errors[$field]))
+				{
+					ee()->output->send_ajax_response(array('error' => $this->upload_errors[$field]));
+				}
+				else
+				{
+					ee()->output->send_ajax_response('success');
+				}
+				exit;
+			}
+
+			if ($validate)
+			{
+				$new_upload_id = $this->saveUploadPreferences($upload_destination);
+
+				ee('Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('directory_saved'))
+					->addToBody(lang('directory_saved_desc'))
+					->defer();
+
+				ee()->functions->redirect(cp_url('files/uploads/edit/' . $new_upload_id));
+			}
+			else
+			{
+				ee()->load->library('form_validation');
+				ee()->form_validation->_error_array = $this->upload_errors;
+
+				// Do some fenagling to fit our errors into Form Validation
+				if (isset(ee()->form_validation->_error_array['image_sizes']))
+				{
+					// This is an array, Form Validation expects strings
+					unset(ee()->form_validation->_error_array['image_sizes']);
+
+					// We need a dummy error here to set the invalid class on the parent fieldset
+					ee()->form_validation->_error_array['image_manipulations'] = 'asdf';
+				}
+
+				ee('Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('directory_not_saved'))
+					->addToBody(lang('directory_not_saved_desc'))
+					->now();
 			}
 		}
 
@@ -106,7 +176,7 @@ class Uploads extends AbstractFilesController {
 					'fields' => array(
 						'name' => array(
 							'type' => 'text',
-							'value' => (isset($upload_dir['name'])) ? $upload_dir['name'] : '',
+							'value' => $upload_destination->name,
 							'required' => TRUE
 						)
 					)
@@ -117,7 +187,7 @@ class Uploads extends AbstractFilesController {
 					'fields' => array(
 						'url' => array(
 							'type' => 'text',
-							'value' => (isset($upload_dir['url'])) ? $upload_dir['url'] : 'http://',
+							'value' => $upload_destination->url ?: 'http://',
 							'required' => TRUE
 						)
 					)
@@ -128,7 +198,7 @@ class Uploads extends AbstractFilesController {
 					'fields' => array(
 						'server_path' => array(
 							'type' => 'text',
-							'value' => (isset($upload_dir['server_path'])) ? $upload_dir['server_path'] : '',
+							'value' => $upload_destination->server_path,
 							'required' => TRUE
 						)
 					)
@@ -143,7 +213,7 @@ class Uploads extends AbstractFilesController {
 								'img' => lang('upload_allowed_types_opt_images'),
 								'all' => lang('upload_allowed_types_opt_all')
 							),
-							'value' => (isset($upload_dir['allowed_types'])) ? $upload_dir['allowed_types'] : 'images'
+							'value' => $upload_destination->allowed_types ?: 'img'
 						)
 					)
 				)
@@ -155,7 +225,7 @@ class Uploads extends AbstractFilesController {
 					'fields' => array(
 						'max_size' => array(
 							'type' => 'text',
-							'value' => (isset($upload_dir['max_size'])) ? $upload_dir['max_size'] : ''
+							'value' => $upload_destination->max_size
 						)
 					)
 				),
@@ -165,7 +235,7 @@ class Uploads extends AbstractFilesController {
 					'fields' => array(
 						'max_width' => array(
 							'type' => 'text',
-							'value' => (isset($upload_dir['max_width'])) ? $upload_dir['max_width'] : ''
+							'value' => $upload_destination->max_width
 						)
 					)
 				),
@@ -175,83 +245,12 @@ class Uploads extends AbstractFilesController {
 					'fields' => array(
 						'max_height' => array(
 							'type' => 'text',
-							'value' => (isset($upload_dir['max_height'])) ? $upload_dir['max_height'] : ''
+							'value' => $upload_destination->max_height
 						)
 					)
 				)
 			)
 		);
-
-		ee()->form_validation->set_rules(array(
-			array(
-				'field' => 'name',
-				'label' => 'lang:upload_name',
-				'rules' => 'required|strip_tags|valid_xss_check|callback_validateName'
-			),
-			array(
-				'field' => 'server_path',
-				'label' => 'lang:upload_path',
-				'rules' => 'required|strip_tags|valid_xss_check|file_exists|writable'
-			),
-			array(
-				'field' => 'url',
-				'label' => 'lang:upload_url',
-				'rules' => 'required|strip_tags|valid_xss_check|callback_notHttp'
-			),
-			array(
-				'field' => 'max_size',
-				'label' => 'lang:upload_file_size',
-				'rules' => 'integer'
-			),
-			array(
-				'field' => 'max_width',
-				'label' => 'lang:upload_image_width',
-				'rules' => 'integer'
-			),
-			array(
-				'field' => 'max_height',
-				'label' => 'lang:upload_image_height',
-				'rules' => 'integer'
-			),
-			array(
-				'field' => 'image_manipulations',
-				'label' => 'lang:constrain_or_crop',
-				'rules' => 'callback_validateImageSizes'
-			)
-		));
-
-		ee()->form_validation->validateNonTextInputs($vars['sections']);
-
-		$base_url = 'files/uploads/';
-		$base_url .= ($upload_id) ? 'edit/' . $upload_id : 'new-upload';
-		$base_url = cp_url($base_url);
-
-		if (AJAX_REQUEST)
-		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			if ($new_upload_id = $this->saveUploadPreferences($upload_id))
-			{
-				ee()->view->set_message('success', lang('directory_saved'), lang('directory_saved_desc'), TRUE);
-
-				ee()->functions->redirect(cp_url('files/uploads/edit/' . $new_upload_id));
-			}
-
-			ee()->view->set_message('issue', lang('directory_not_saved'), lang('directory_not_saved_desc'));
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee()->view->set_message('issue', lang('directory_not_saved'), lang('directory_not_saved_desc'));
-		}
-
-		// Do not use to access attributes of directory, use $upload_dir
-		// so that config.php overrides take place
-		$upload_destination = ee('Model')->get('UploadDestination')
-			->filter('id', $upload_id)
-			->first();
 
 		// Image manipulations Grid
 		$grid = $this->getImageSizesGrid($upload_destination);
@@ -289,7 +288,8 @@ class Uploads extends AbstractFilesController {
 		);
 
 		// Grid validation results
-		ee()->view->image_sizes_errors = $this->image_sizes_errors;
+		ee()->view->image_sizes_errors = isset($this->upload_errors['image_sizes'])
+			? $this->upload_errors['image_sizes'] : array();
 
 		// Category group assignment
 		$this->load->model('category_model');
@@ -310,162 +310,16 @@ class Uploads extends AbstractFilesController {
 				'cat_group' => array(
 					'type' => 'checkbox',
 					'choices' => $cat_group_options,
-					'value' => ($upload_destination) ? explode('|', $upload_dir['cat_group']) : array()
+					'value' => ($upload_destination) ? explode('|', $upload_destination->cat_group) : array()
 				)
 			)
 		);
 
-		// Set current name hidden input for duplicate-name-checking in validation later
-		if ($upload_destination !== NULL)
-		{
-			ee()->view->form_hidden = array('cur_name' => $upload_dir['name']);
-		}
-
 		ee()->view->ajax_validate = TRUE;
-		ee()->view->base_url = $base_url;
-		ee()->view->cp_page_title = (empty($upload_id)) ? lang('create_upload_directory') : lang('edit_upload_directory');
-		ee()->view->save_btn_text = (empty($upload_id)) ? 'btn_create_directory' : 'btn_edit_directory';
-		ee()->view->save_btn_text_working = (empty($upload_id)) ? 'btn_create_directory_working' : 'btn_saving';
 
 		ee()->cp->set_breadcrumb(cp_url('files'), lang('file_manager'));
-		ee()->cp->set_breadcrumb(cp_url('files/uploads'), lang('upload_directories'));
 
 		ee()->cp->render('settings/form', $vars);
-	}
-
-	/**
-	 * Not Http
-	 *
-	 * Custom validation, not for public access
-	 *
-	 * @return	boolean	Whether or not it passed validation
-	 */
-	public function notHttp($str = '')
-	{
-		if ($str == 'http://' OR $str == '')
-		{
-			ee()->form_validation->set_message('notHttp', lang('no_upload_dir_url'));
-			return FALSE;
-		}
-
-		return TRUE;
-	}
-
-	/**
-	 * Custom validation for the image sizes Grid
-	 *
-	 * @return	boolean	Whether or not it passed validation
-	 */
-	public function validateImageSizes($image_sizes = NULL)
-	{
-		if (empty($image_sizes))
-		{
-			return TRUE;
-		}
-
-		// Create an array of row names for counting to see if there are
-		// duplicate column names; they should be unique
-		foreach ($image_sizes['rows'] as $row_id => $columns)
-		{
-			$row_names[] = $columns['short_name'];
-		}
-
-		$row_name_count = array_count_values($row_names);
-
-		foreach ($image_sizes['rows'] as $row_id => $columns)
-		{
-			// Short name is required
-			if (trim($columns['short_name']) == '')
-			{
-				$this->image_sizes_errors[$row_id]['short_name'] = lang('required');
-			}
-			// There cannot be duplicate image manipulation names
-			elseif ($row_name_count[$columns['short_name']] > 1)
-			{
-				$this->image_sizes_errors[$row_id]['short_name'] = lang('duplicate_image_size_name');
-			}
-			// Column names must contain only alpha-numeric characters and no spaces
-			elseif (preg_match('/[^a-z0-9\-\_]/i', $columns['short_name']))
-			{
-				$this->image_sizes_errors[$row_id]['short_name'] = lang('alpha_dash');
-			}
-
-			// Double-check for form tampering (why would you tamper this?)
-			if ( ! in_array($columns['resize_type'], array('crop', 'constrain')))
-			{
-				$this->image_sizes_errors[$row_id]['resize_type'] = lang('required');
-			}
-
-			foreach (array('width', 'height') as $dimension)
-			{
-				// Height and width are required
-				if (trim($columns[$dimension]) == '')
-				{
-					$this->image_sizes_errors[$row_id][$dimension] = lang('required');
-				}
-
-				// Make sure height and width are positive numbers
-				if (( ! is_numeric($columns[$dimension]) OR $columns[$dimension] < 0)
-					AND ! isset($this->image_sizes_errors[$row_id][$dimension]))
-				{
-					$this->image_sizes_errors[$row_id][$dimension] = lang('is_natural');
-				}
-			}
-		}
-
-		// TODO: Abstract into service?
-		if ( ! empty($this->image_sizes_errors))
-		{
-			// For AJAX validation, only send back the relvant error message
-			if (AJAX_REQUEST)
-			{
-				// Figure out which field we need to grab out of the array
-				$field = ee()->input->post('ee_fv_field');
-				preg_match("/\[rows\]\[(\w+)\]\[(\w+)\]/", $field, $matches);
-
-				// Error is present for the validating field, send it back
-				if (isset($this->image_sizes_errors[$matches[1]][$matches[2]]))
-				{
-					ee()->form_validation->set_message('validateImageSizes', $this->image_sizes_errors[$matches[1]][$matches[2]]);
-
-					return FALSE;
-				}
-
-				// This particular field is fine!
-				return TRUE;
-			}
-
-			// Dummy error message
-			ee()->form_validation->set_message('validateImageSizes', 'asdf');
-
-			return FALSE;
-		}
-
-		return TRUE;
-	}
-
-	/**
-	 * Custom validation for the directory names to ensure there
-	 * are no duplicate names
-	 *
-	 * @return	boolean	Whether or not it passed validation
-	 */
-	public function validateName($name)
-	{
-		ee()->load->model('admin_model');
-
-		if (ee()->admin_model->unique_upload_name(
-				strtolower(strip_tags(ee()->input->post('name'))),
-				strtolower(ee()->input->post('cur_name')),
-				(ee()->input->post('cur_name') !== FALSE)
-			))
-		{
-			ee()->form_validation->set_message('validateName', lang('duplicate_dir_name'));
-
-			return FALSE;
-		}
-
-		return TRUE;
 	}
 
 	/**
@@ -494,11 +348,21 @@ class Uploads extends AbstractFilesController {
 				),
 				'image_manip_height' => array(
 					'desc'  => 'image_manip_height_desc'
+				),
+				'image_manip_watermark' => array(
+					'desc'  => 'image_manip_watermark_desc'
 				)
 			)
 		);
 		$grid->setNoResultsText('no_manipulations', 'add_manipulation');
-		$grid->setBlankRow($this->getGridRow());
+
+		$watermarks_choices = array(0 => lang('no_watermark'));
+		$watermarks_choices += ee('Model')->get('Watermark')
+			->order('wm_name')
+			->all()
+			->getDictionary('wm_id', 'wm_name');
+
+		$grid->setBlankRow($this->getGridRow($watermarks_choices));
 
 		$validation_data = ee()->input->post('image_manipulations');
 		$image_sizes = array();
@@ -511,17 +375,21 @@ class Uploads extends AbstractFilesController {
 			{
 				$image_sizes[$row_id] = array(
 					// Fix this, multiple new rows won't namespace right
-					'id'          => str_replace('row_id_', '', $row_id),
-					'short_name'  => $columns['short_name'],
-					'resize_type' => $columns['resize_type'],
-					'width'       => $columns['width'],
-					'height'      => $columns['height']
+					'id'           => str_replace('row_id_', '', $row_id),
+					'short_name'   => $columns['short_name'],
+					'resize_type'  => $columns['resize_type'],
+					'width'        => $columns['width'],
+					'height'       => $columns['height'],
+					'watermark_id' => $columns['watermark_id'],
 				);
 			}
 
-			foreach ($this->image_sizes_errors as $row_id => $columns)
+			if (isset($this->upload_errors['image_sizes']))
 			{
-				$image_sizes[$row_id]['errors'] = $columns;
+				foreach ($this->upload_errors['image_sizes'] as $row_id => $columns)
+				{
+					$image_sizes[$row_id]['errors'] = array_map('strip_tags', $columns);
+				}
 			}
 		}
 		// Otherwise, pull from the database if we're editing
@@ -544,7 +412,7 @@ class Uploads extends AbstractFilesController {
 			{
 				$data[] = array(
 					'attrs' => array('row_id' => $size['id']),
-					'columns' => $this->getGridRow($size),
+					'columns' => $this->getGridRow($watermarks_choices, $size),
 				);
 			}
 
@@ -561,9 +429,15 @@ class Uploads extends AbstractFilesController {
 	 * @param	array	$size	Array of image size information to populate Grid row
 	 * @return	array	Array of HTML representing a single Grid row
 	 */
-	private function getGridRow($size = array())
+	private function getGridRow($watermarks_choices, $size = array())
 	{
-		$defaults = array('short_name' => '', 'resize_type' => '', 'width' => '', 'height' => '');
+		$defaults = array(
+			'short_name' => '',
+			'resize_type' => '',
+			'width' => '',
+			'height' => '',
+			'watermark_id' => ''
+		);
 
 		$size = array_merge($defaults, $size);
 
@@ -590,6 +464,14 @@ class Uploads extends AbstractFilesController {
 			array(
 				'html' => form_input('height', $size['height']),
 				'error' => $this->getGridFieldError($size, 'height')
+			),
+			array(
+				'html' => form_dropdown(
+					'watermark_id',
+					$watermarks_choices,
+					$size['watermark_id']
+				),
+				'error' => $this->getGridFieldError($size, 'watermark_id')
 			)
 		);
 	}
@@ -643,11 +525,7 @@ class Uploads extends AbstractFilesController {
 			return array(array(), $member_groups);
 		}
 
-		$no_access = array();
-		if ($upload_destination !== NULL)
-		{
-			$no_access = $upload_destination->getNoAccess()->pluck('group_id');
-		}
+		$no_access = $upload_destination->getNoAccess()->pluck('group_id');
 
 		$allowed_groups = array_diff(array_keys($member_groups), $no_access);
 
@@ -656,50 +534,15 @@ class Uploads extends AbstractFilesController {
 	}
 
 	/**
-	 * Saves the upload destination or reports any errors from saving
+	 * Sets information on the UploadDestination object and its children and
+	 * validates them all
 	 *
-	 * @param	int		$id	ID of upload destination to save
-	 * @return	bool	Success or failure
+	 * @param	model	$upload_destination		Model object for upload destination
+	 * @return	boolean	Success or failure of validation
 	 */
-	private function saveUploadPreferences($id = NULL)
+	private function validateUploadPreferences($upload_destination)
 	{
-		// If the $id variable is present we are editing an
-		// existing field, otherwise we are creating a new one
-		$edit = ! empty($id);
-
-		if ($edit)
-		{
-			$upload_destination = ee('Model')->get('UploadDestination')
-				->with('FileDimensions')
-				->filter('id', $id)
-				->first();
-		}
-		else
-		{
-			$upload_destination = ee('Model')->make('UploadDestination');
-			$upload_destination->site_id = ee()->config->item('site_id');
-		}
-
-		$server_path = ee()->input->post('server_path');
-		$url = ee()->input->post('url');
-
-		$upload_destination->name = ee()->input->post('name');
-		$upload_destination->server_path = ee()->input->post('server_path');
-		$upload_destination->url = ee()->input->post('url');
-		$upload_destination->max_height = ee()->input->post('max_height');
-		$upload_destination->max_width = ee()->input->post('max_width');
-		$upload_destination->max_size = ee()->input->post('max_size');
-		$upload_destination->allowed_types = ee()->input->post('allowed_types');
-
-		if (substr($server_path, -1) != '/' AND substr($server_path, -1) != '\\')
-		{
-			$upload_destination->server_path .= '/';
-		}
-
-		if (substr($url, -1) != '/')
-		{
-			$upload_destination->url .= '/';
-		}
+		$upload_destination->set($_POST);
 
 		if ((count($this->input->post('cat_group')) > 0) && $this->input->post('cat_group'))
 		{
@@ -732,10 +575,14 @@ class Uploads extends AbstractFilesController {
 			$upload_destination->removeNoAccess();
 		}
 
-		$upload_destination->save();
+		$result = $upload_destination->validate();
+
+		if ( ! $result->isValid())
+		{
+			$this->upload_errors = $result->renderErrors();
+		}
 
 		$image_sizes = ee()->input->post('image_manipulations');
-		$row_ids = array();
 
 		if ( ! empty($image_sizes))
 		{
@@ -744,33 +591,45 @@ class Uploads extends AbstractFilesController {
 				// Existing rows
 				if (strpos($row_id, 'row_id_') !== FALSE)
 				{
-					$image_size = ee('Model')->get('FileDimension')
-						->filter('id', str_replace('row_id_', '', $row_id))
+					$image_size = ee('Model')->get('FileDimension', str_replace('row_id_', '', $row_id))
 						->first();
 				}
 				else
 				{
 					$image_size = ee('Model')->make('FileDimension');
-					$image_size->upload_location_id = $upload_destination->id;
+					$upload_destination->createFileDimensions($image_size);
+					$image_size->setUploadDestination($upload_destination);
 				}
 
-				$image_size->title = $columns['short_name'];
-				$image_size->short_name = $columns['short_name'];
-				$image_size->resize_type = $columns['resize_type'];
-				$image_size->width = $columns['width'];
-				$image_size->height = $columns['height'];
-				$image_size->save();
+				$image_size->set($columns);
+				$result = $image_size->validate();
 
-				$row_ids[] = $image_size->id;
+				if ( ! $result->isValid())
+				{
+					$this->upload_errors['image_sizes'][$row_id] = $result->renderErrors();
+				}
 			}
 		}
+
+		return empty($this->upload_errors);
+	}
+
+	/**
+	 * Saves the upload destination and its children
+	 *
+	 * @param	int		$id	ID of upload destination to save
+	 * @return	bool	Success or failure
+	 */
+	private function saveUploadPreferences($upload_destination)
+	{
+		$upload_destination->save();
 
 		// Delete deleted image size rows
 		$image_sizes = ee('Model')->get('FileDimension');
 
 		if ( ! empty($row_ids))
 		{
-			$image_sizes->filter('id', 'NOT IN', $row_ids);
+			$image_sizes->filter('id', 'NOT IN', $upload_destination->getFileDimensions()->pluck('id'));
 		}
 
 		$image_sizes->filter('upload_location_id', $upload_destination->id)->delete();

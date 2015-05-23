@@ -51,7 +51,11 @@ class UploadEdit < ControlPanelPage
 		self.grid_row(row).find('td:nth-child(4) input')
 	end
 
+	def watermark_for_row(row)
+		self.grid_row(row).find('td:nth-child(5) select')
+	end
+
 	def delete_for_row(row)
-		self.grid_row(row).find('td:nth-child(5) li.remove a')
+		self.grid_row(row).find('td:nth-child(6) li.remove a')
 	end
 end

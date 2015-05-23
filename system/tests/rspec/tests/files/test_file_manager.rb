@@ -298,7 +298,7 @@ feature 'File Manager' do
 		@page.new_directory_button.click
 		no_php_js_errors
 
-		@page.current_url.should include 'files/uploads/new-upload'
+		@page.current_url.should include 'files/uploads/create'
 	end
 
 	it 'can view a single directory', :all_files => true do

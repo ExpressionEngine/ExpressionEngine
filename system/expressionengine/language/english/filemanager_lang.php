@@ -363,6 +363,15 @@ $lang = array(
 'image_manip_height_desc' =>
 'Final height of image',
 
+'image_manip_watermark' =>
+'Watermark',
+
+'image_manip_watermark_desc' =>
+'Add a watermark',
+
+'no_watermark' =>
+'No watermark',
+
 'no_manipulations' =>
 'No manipulations created',
 
@@ -399,9 +408,6 @@ $lang = array(
 
 'duplicate_dir_name' =>
 'The name of your directory is already taken.',
-
-'no_upload_dir_url' =>
-'You must submit the URL to your upload directory.',
 
 'duplicate_image_size_name' =>
 'You must enter a unique name for this image manipulation.',

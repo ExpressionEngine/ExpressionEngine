@@ -204,6 +204,8 @@ class Watermarks extends AbstractFilesController {
 			ee()->view->save_btn_text = 'edit_watermark';
 		}
 
+		ee()->load->library('filemanager');
+
 		$vars['sections'] = array(
 			array(
 				array(
