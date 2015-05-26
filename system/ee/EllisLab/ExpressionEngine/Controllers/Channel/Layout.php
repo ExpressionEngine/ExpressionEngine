@@ -5,7 +5,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Channel;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
-use EllisLab\ExpressionEngine\Model\Content\Display\DefaultLayout;
+use EllisLab\ExpressionEngine\Module\Channel\Model\Display\DefaultChannelLayout;
 use EllisLab\ExpressionEngine\Controllers\Channel\AbstractChannel as AbstractChannelController;
 use EllisLab\ExpressionEngine\Module\Channel\Model\Channel;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
@@ -162,7 +162,7 @@ class Layout extends AbstractChannelController {
 
 		$entry = ee('Model')->make('ChannelEntry')->setChannel($channel);
 
-		$default_layout = new DefaultLayout($channel_id);
+		$default_layout = new DefaultChannelLayout($channel_id, NULL);
 		$channel_layout = ee('Model')->make('ChannelLayout');
 		$field_layout = $default_layout->getLayout();
 
@@ -236,7 +236,7 @@ class Layout extends AbstractChannelController {
 
 			$layout->save();
 
-			ee('Alert')->makeInline('layouts')
+			ee('Alert')->makeInline('layout-form')
 				->asSuccess()
 				->withTitle(lang('create_layout_success'))
 				->addToBody(sprintf(lang('create_layout_success_desc'), ee()->input->post('layout_name')))
