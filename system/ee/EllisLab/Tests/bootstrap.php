@@ -8,8 +8,8 @@ $project_base = realpath(dirname(__FILE__).'/../../').'/';
 
 // Path constants
 define('SYSPATH', $project_base);
-define('BASEPATH', $project_base.'expressionengine/');
-define('APPPATH',  $project_base.'expressionengine/');
+define('BASEPATH', $project_base.'legacy/');
+define('APPPATH',  $project_base.'legacy/');
 
 // application constants
 define('AMP', '&amp;');
