@@ -222,7 +222,7 @@ abstract class Core {
 		$application  = new Application($autoloader, $dependencies, $providers);
 
 		$provider = $application->addProvider(
-			SYSPATH.'EllisLab/ExpressionEngine',
+			SYSPATH.'ee/EllisLab/ExpressionEngine',
 			'app.setup.php',
 			'ee'
 		);

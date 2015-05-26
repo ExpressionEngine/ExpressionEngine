@@ -8,7 +8,7 @@ class Installer extends Core {
 	 */
 	public function boot()
 	{
-		define('APPPATH', SYSPATH.'installer/');
+		define('APPPATH', SYSPATH.'ee/installer/');
 		define('EE_APPPATH', BASEPATH);
 
 		get_config(array('subclass_prefix' => 'Installer_'));

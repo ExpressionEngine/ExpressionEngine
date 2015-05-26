@@ -1621,7 +1621,7 @@ class Wizard extends CI_Controller {
 		// Install required modules
 		foreach($this->required_modules as $module)
 		{
-			$path = SYSPATH.'/expressionengine/modules/'.$module.'/';
+			$path = SYSPATH.'ee/expressionengine/modules/'.$module.'/';
 
 			if (file_exists($path.'upd.'.$module.'.php'))
 			{

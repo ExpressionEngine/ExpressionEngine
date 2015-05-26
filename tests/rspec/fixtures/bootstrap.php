@@ -164,7 +164,7 @@ $app = new EllisLab\ExpressionEngine\Core\Application(
 );
 
 $provider = $app->addProvider(
-	SYSPATH.'EllisLab/ExpressionEngine',
+	SYSPATH.'ee/EllisLab/ExpressionEngine',
 	'app.setup.php',
 	'ee'
 );
