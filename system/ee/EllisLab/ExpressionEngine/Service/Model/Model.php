@@ -96,12 +96,28 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 			return $this->getMixin('Model:CompositeColumn')->getCompositeColumn($column);
 		}
 
-		if ($action = $this->getMixin('Model:Relationship')->getAssociationActionFromMethod($method))
+		return parent::__call($method, $args);
+	}
+
+	/**
+	 * Extend __get to grant access to associated objects
+	 *
+	 * Associations must start with an uppercase letter
+	 *
+	 * @param String $key The property to access
+	 * @return Mixed The property value
+	 */
+	public function __get($key)
+	{
+		if (strtoupper($key[0]) == $key[0])
 		{
-			return $this->getMixin('Model:Relationship')->runAssociationAction($action, $args);
+			if ($this->hasAssociation($key))
+			{
+				return $this->getAssociation($key);
+			}
 		}
 
-		return parent::__call($method, $args);
+		return parent::__get($key);
 	}
 
 	/**
@@ -379,7 +395,7 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	 * Set the validator
 	 *
 	 * @param Validator $validator The validator to use
-	 * @return Current scope
+	 * @return $this
 	 */
 	public function setValidator(Validator $validator)
 	{

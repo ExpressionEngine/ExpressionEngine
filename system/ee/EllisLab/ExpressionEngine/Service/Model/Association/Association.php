@@ -287,7 +287,7 @@ abstract class Association {
 		if ($inverse instanceOf Relation\BelongsTo)
 		{
 			$inverse_name = $inverse->getName();
-			$result->{'fill'.$inverse_name}($this->source);
+			$result->$inverse_name->fill($this->source);
 		}
 
 		$this->markAsLoaded();
