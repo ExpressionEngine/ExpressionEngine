@@ -76,11 +76,11 @@ themes/user/*
 
 # Tests ========================================================================
 
-system/tests/phpunit/vendor/
-system/tests/phpunit/composer.lock
-system/tests/rspec/config.local.rb
-system/tests/rspec/screenshots/*
-system/tests/rspec/support/file-sync/uploads/*
+tests/phpunit/vendor/
+tests/phpunit/composer.lock
+tests/rspec/config.local.rb
+tests/rspec/screenshots/*
+tests/rspec/support/file-sync/uploads/*
 
 system/EllisLab/Tests/vendor/*
 system/EllisLab/Tests/composer.lock
