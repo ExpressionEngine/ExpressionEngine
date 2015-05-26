@@ -3,7 +3,7 @@ require './bootstrap.rb'
 feature 'Translate Tool' do
 	english_path = '../../system/ee/legacy/language/english/'
 	language_path = '../../system/user/language/'
-	translations_path = '../../system/ee/translations/'
+	translations_path = '../../system/ee/legacy/translations/'
 
 	before(:all) do
 		FileUtils.mkdir(language_path + 'rspeclingo')
