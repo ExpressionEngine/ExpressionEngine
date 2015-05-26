@@ -103,7 +103,7 @@
 			return ee()->category_model->get_category_id($category_name);
 		}
 		// Parse out category ID in the format of CXX
-		else if (preg_match("#(^|\/)C(\d+)#", $query_string, $match))
+		else if (preg_match("#(^|\/)C(\d+)(\/|$)#", $query_string, $match))
 		{
 			return $match[2];
 		}
