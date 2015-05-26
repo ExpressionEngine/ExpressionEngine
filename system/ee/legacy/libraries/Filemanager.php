@@ -1647,7 +1647,8 @@ class Filemanager {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Delete files from the database that do not exist in the upload folder.
+	 * This used to only delete files. We decided we do not like that behavior
+	 * so now it does nothing.
 	 *
 	 * @param mixed $dir_id
 	 * @access public
@@ -1655,37 +1656,7 @@ class Filemanager {
 	 */
 	function sync_database($dir_id)
 	{
-		$db_files = array();
-		$server_files = array();
-
-		$query = ee()->file_model->get_files_by_dir($dir_id);
-
-		if ($query->num_rows() == 0)
-		{
-			return FALSE;
-		}
-
-		foreach ($query->result_array() as $row)
-		{
-			$db_files[$row['file_id']] = $row['file_name'];
-		}
-
-		$upload_prefs = ee()->file_upload_preferences_model->get_file_upload_preferences(1, $dir_id);
-
-		if (count($upload_prefs) == 0)
-		{
-			return FALSE;
-		}
-
-		$server_files = $this->directory_files_map($upload_prefs['server_path'], 1, FALSE, $upload_prefs['allowed_types']);
-
-		// get file names in db that are not on server
-		$delete = array_diff($db_files, $server_files);
-
-		if (count($delete))
-		{
-			ee()->file_model->delete_files(array_keys($delete));
-		}
+		return;
 	}
 
 	// --------------------------------------------------------------------

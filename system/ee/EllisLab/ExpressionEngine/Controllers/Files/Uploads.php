@@ -813,8 +813,6 @@ class Uploads extends AbstractFilesController {
 		// Final run through, it syncs the db, removing stray records and thumbs
 		if ($db_sync == 'y')
 		{
-			ee()->filemanager->sync_database($id);
-
 			if (AJAX_REQUEST)
 			{
 				$errors = ee()->input->post('errors');
@@ -994,11 +992,6 @@ class Uploads extends AbstractFilesController {
 			{
 				$errors[$file['name']] = $saved['message'];
 			}
-		}
-
-		if ($db_sync == 'y')
-		{
-			ee()->filemanager->sync_database($id);
 		}
 
 		if (AJAX_REQUEST)
