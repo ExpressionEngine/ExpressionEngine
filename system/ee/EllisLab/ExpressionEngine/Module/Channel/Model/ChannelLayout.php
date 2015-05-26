@@ -40,6 +40,7 @@ class ChannelLayout extends Model implements LayoutInterface {
 	protected $layout_name;
 	protected $field_layout;
 
+	// @TODO Make this a typed/composite column
 	public function set__field_layout($field_layout)
 	{
 		$this->setRawProperty('field_layout', serialize($field_layout));
