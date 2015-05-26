@@ -89,7 +89,7 @@ feature 'Member Import' do
         ['XML file location', 'Member group', 'Language', 'Timezone',
             'Date & time format', 'Show seconds?', 'Create custom fields?']
     @page.values.map {|value| value.text}.should ==
-        ['tests/rspec/support/member-import/members.xml', 'Members', 'English',
+        [@members_xml, 'Members', 'English',
             'America/New_York', 'yyyy-mm-dd, 24-hour', 'yes', 'no']
   end
 

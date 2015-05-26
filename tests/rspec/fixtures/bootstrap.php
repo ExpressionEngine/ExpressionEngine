@@ -1,10 +1,10 @@
 <?php
-$project_base = realpath(dirname(__FILE__).'/../../system/').'/';
+$project_base = realpath(dirname(__FILE__).'/../../../system/').'/';
 
 // Path constants
 define('SYSPATH', $project_base);
-define('BASEPATH', BASEPATH.'ee/legacy/');
-define('APPPATH',  APPPATH);
+define('BASEPATH', SYSPATH.'ee/legacy/');
+define('APPPATH',  BASEPATH);
 
 define('LD', '{');
 define('RD', '}');
@@ -150,7 +150,8 @@ function set_status_header($id) {}
 
 require SYSPATH."ee/EllisLab/ExpressionEngine/Core/Autoloader.php";
 
-$autoloader = new \EllisLab\ExpressionEngine\Core\Autoloader();
+$autoloader = EllisLab\ExpressionEngine\Core\Autoloader::getInstance()
+	->addPrefix('EllisLab', SYSPATH.'ee/EllisLab/');
 $autoloader->register();
 
 
