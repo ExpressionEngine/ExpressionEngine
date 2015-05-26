@@ -1,10 +1,10 @@
 <?php
-$project_base = realpath(dirname(__FILE__).'/../../').'/';
+$project_base = realpath(dirname(__FILE__).'/../../system/').'/';
 
 // Path constants
 define('SYSPATH', $project_base);
-define('BASEPATH', $project_base.'expressionengine/');
-define('APPPATH',  $project_base.'expressionengine/');
+define('BASEPATH', BASEPATH.'ee/legacy/');
+define('APPPATH',  APPPATH);
 
 define('LD', '{');
 define('RD', '}');
@@ -148,7 +148,7 @@ function load_class($class, $directory = 'libraries', $prefix = 'CI_')
 function set_status_header($id) {}
 
 
-require SYSPATH."EllisLab/ExpressionEngine/Core/Autoloader.php";
+require SYSPATH."ee/EllisLab/ExpressionEngine/Core/Autoloader.php";
 
 $autoloader = new \EllisLab\ExpressionEngine\Core\Autoloader();
 $autoloader->register();
