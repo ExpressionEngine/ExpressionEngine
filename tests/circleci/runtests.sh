@@ -24,7 +24,7 @@ do
 		# We'll store our build artifacts under the name of the current PHP version
 		mkdir -p $CIRCLE_ARTIFACTS/$PHPVERSION/
 
-		pushd system/tests/rspec
+		pushd tests/rspec
 			# Run the tests, outputting the results in the artifacts directory.
 			printf "Running Rspec tests\n\n"
 			bundle exec rspec -c -fd -fh -o $CIRCLE_ARTIFACTS/$PHPVERSION/rspec.html tests/**/*.rb
