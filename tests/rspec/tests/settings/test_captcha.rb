@@ -8,7 +8,7 @@ feature 'CAPTCHA Settings' do
     @page.load
     no_php_js_errors
 
-    @upload_path = File.expand_path('../../../images')
+    @upload_path = File.expand_path('../../images')
   end
 
   it 'shows the Avatar Settings page' do

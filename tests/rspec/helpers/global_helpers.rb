@@ -103,7 +103,7 @@ end
 # Given a filename in the support folder, returns the whole path relative
 # to the CP index.php
 def asset_path(file)
-  'tests/rspec/support/' + file
+  '../tests/rspec/support/' + file
 end
 
 # Silly thing for comparing HTML in a textarea, Capybara will return the

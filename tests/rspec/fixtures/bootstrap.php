@@ -1,5 +1,5 @@
 <?php
-$project_base = realpath(dirname(__FILE__).'/../../../').'/';
+$project_base = realpath(dirname(__FILE__).'/../../').'/';
 
 // Path constants
 define('SYSPATH', $project_base);

@@ -8,7 +8,7 @@ feature 'Upload Destination Create/Edit' do
     @page.load
     no_php_js_errors
 
-    @upload_path = File.expand_path('../../../images')
+    @upload_path = File.expand_path('../../images')
   end
 
   it 'shows the Upload Destination Create/Edit page' do
