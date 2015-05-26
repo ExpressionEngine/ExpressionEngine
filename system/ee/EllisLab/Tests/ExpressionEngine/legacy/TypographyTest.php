@@ -1,6 +1,6 @@
 <?php
 
-require_once SYSPATH.'EllisLab/ExpressionEngine/Boot/boot.common.php';
+require_once SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.common.php';
 require_once APPPATH.'helpers/string_helper.php';
 require_once APPPATH.'libraries/Typography.php';
 require_once APPPATH.'libraries/typography/Markdown/Michelf/MarkdownExtra.inc.php';
