@@ -12,7 +12,7 @@ dependencies:
     - "cd tests/rspec && bundle install --without development --deployment"
     - "cd system/ee/EllisLab/Tests && composer install --prefer-source --no-interaction"
   post:
-    - cp system/tests/circleci/circleci-apache /etc/apache2/sites-available
+    - cp tests/circleci/circleci-apache /etc/apache2/sites-available
     - a2ensite circleci-apache
     - sudo service apache2 restart
   cache_directories:
