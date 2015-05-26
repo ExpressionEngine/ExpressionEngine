@@ -55,12 +55,12 @@ class FieldDisplay {
 
 	public function collapse()
 	{
-		$this->collapse = TRUE;
+		$this->collapsed = TRUE;
 	}
 
 	public function expand()
 	{
-		$this->collapse = FALSE;
+		$this->collapsed = FALSE;
 	}
 
 	public function isCollapsed()
