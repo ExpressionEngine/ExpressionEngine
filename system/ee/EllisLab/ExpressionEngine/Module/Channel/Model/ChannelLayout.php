@@ -42,7 +42,7 @@ class ChannelLayout extends Model implements LayoutInterface {
 
 	public function set__field_layout($field_layout)
 	{
-		$this->field_layout = serialize($field_layout);
+		$this->setRawProperty('field_layout', serialize($field_layout));
 	}
 
 	public function get__field_layout()
