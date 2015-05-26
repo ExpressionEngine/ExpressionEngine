@@ -111,10 +111,53 @@ abstract class Association {
 	/**
 	 *
 	 */
+	public function all()
+	{
+		$related = $this->get();
+
+		if ( ! isset($related))
+		{
+			return new Collection();
+		}
+
+		if ( ! is_array($related))
+		{
+			$related = array($related);
+		}
+
+		return new Collection($related);
+	}
+
+	/**
+	 *
+	 */
+	public function count()
+	{
+		$related = $this->get();
+
+		if ( ! isset($related))
+		{
+			return 0;
+		}
+
+		return is_array($related) ? count($related) : 1;
+	}
+
+	/**
+	 *
+	 */
+	public function first()
+	{
+		return $this->all()->first();
+	}
+
+	/**
+	 *
+	 */
 	public function fill($related)
 	{
 		$this->related = $related;
-		$this->markAsLoaded(); // TODO this clashes with reload a little
+		$this->markAsLoaded();
 	}
 
 	/**
