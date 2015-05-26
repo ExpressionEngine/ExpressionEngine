@@ -78,7 +78,7 @@ $lang = array(
 'settings',
 
 'layout' =>
-'layout',
+'Layout',
 
 'channel_form_layouts' =>
 '%s &ndash; Form Layouts',
