@@ -35,6 +35,10 @@ class ControlPanelPage < SitePrism::Page
 	# Sidebar
 	element :sidebar, 'div.sidebar'
 
+	# Tabs
+	element :tab_bar, 'div.tab-wrap'
+	elements :tabs, 'div.tab-wrap ul.tabs li'
+
 	def open_dev_menu
 		main_menu.dev_menu.click
 	end
