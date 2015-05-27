@@ -1,4 +1,4 @@
-class UploadSync < ControlPanelPage
+class UploadSync < FileManagerPage
 
 	element :progress_bar, '.progress-bar .progress'
 	elements :sizes, 'input[name="sizes[]"]'

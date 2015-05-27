@@ -20,7 +20,7 @@ feature 'File Manger / Upload File' do
 		@page.displayed?
 
 		# Check that the heder data is intact
-		@page.title.text.should eq 'File Manager'
+		@page.manager_title.text.should eq 'File Manager'
 		@page.should have_title_toolbar
 		@page.should have_download_all
 		@page.should have_phrase_search
