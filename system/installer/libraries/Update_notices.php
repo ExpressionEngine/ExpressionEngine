@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.9
@@ -91,6 +91,8 @@ class Update_notices {
 	 */
 	private function save($message, $is_header = FALSE)
 	{
+		$this->ensure_table_exists();
+
 		$data = array(
 			'version' => $this->version,
 			'message' => $message,

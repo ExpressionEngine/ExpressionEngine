@@ -1,9 +1,7 @@
 machine:
   timezone: America/New_York
-  php:
-    version: 5.3.10
   ruby:
-    version: 2.1.1
+    version: 2.1.2
   hosts:
     ee2.test: 127.0.0.1
   environment:
@@ -11,25 +9,30 @@ machine:
 
 dependencies:
   override:
-    - "cd system/tests/rspec && bundle install --without development --deployment"
-    - "cd system/EllisLab/Tests && composer install --prefer-source --no-interaction"
+    - "cd tests/rspec && bundle install --without development --deployment"
+    - "cd system/ee/EllisLab/Tests && composer install --prefer-source --no-interaction"
   post:
-    - cp system/tests/circleci/circleci-apache /etc/apache2/sites-available
+    - cp tests/circleci/circleci-apache /etc/apache2/sites-available
     - a2ensite circleci-apache
     - sudo service apache2 restart
   cache_directories:
-    - "system/tests/rspec/vendor/bundle"
-    - "system/EllisLab/Tests/vendor"
+    - "tests/rspec/vendor/bundle"
+    - "system/ee/EllisLab/Tests/vendor"
 
 checkout:
   post:
-    - "cp system/tests/circleci/{config.php,database.php} system/expressionengine/config/"
-    - "chmod 666 system/expressionengine/config/{config.php,database.php}"
-    - chmod -R 777 system/expressionengine/cache
-    - chmod -R 777 system/expressionengine/templates
+    - cp tests/circleci/config.php system/user/config/
+    - chmod 666 system/user/config/config.php
+    - chmod -R 777 system/user/cache
+    - chmod -R 777 system/user/templates
+    - chmod -R 777 system/ee/legacy/translations
+    - chmod 777 tests/rspec/support/tmp
+    - chmod -R 777 tests/rspec/support/file-sync/uploads
     - chmod -R 777 images
-    - chmod +x system/tests/circleci/runtests.sh
+    - chmod -R 777 themes/ee/site_themes/agile_records/images/uploads
+    - chmod +x tests/circleci/runtests.sh
 
 test:
   override:
-    - "./system/tests/circleci/runtests.sh"
+    - "rvm use 2.1.2 && ./tests/circleci/runtests.sh":
+        parallel: true

@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -60,15 +60,18 @@ class Survey {
 		// Get a list of add-ons in their third_party folder
 		$CI->load->helper('directory');
 
+		$mysql_info = ($CI->db->dbdriver == 'mysqli')
+			? mysqli_get_server_info($CI->db->conn_id) : mysql_get_server_info();
+
 		return array(
 			'anon_id'			=> md5($site_url),
 			'os'				=> preg_replace("/.*?\((.*?)\).*/", '\\1', $_SERVER['SERVER_SOFTWARE']),
 			'server_software'	=> preg_replace("/(.*?)\(.*/", '\\1', $_SERVER['SERVER_SOFTWARE']),
 			'php_version'		=> phpversion(),
 			'php_extensions'	=> json_encode(get_loaded_extensions()),
-			'mysql_version'		=> preg_replace("/(.*?)\-.*/", "\\1", mysql_get_server_info()),
+			'mysql_version'		=> preg_replace("/(.*?)\-.*/", "\\1", $mysql_info),
 			'path_info_support'	=> $path_info_support,
-			'addons'			=> json_encode(directory_map(PATH_THIRD, 1)),
+			'addons'			=> json_encode(directory_map(PATH_ADDONS, 1)),
 			'forums'			=> ($CI->config->item('forum_is_installed') == "y") ? 'y' : 'n',
 			'msm'				=> ($CI->config->item('multiple_sites_enabled') == "y") ? 'y' : 'n',
 		);

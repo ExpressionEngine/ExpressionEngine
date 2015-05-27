@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -39,14 +39,17 @@ class Installer_Template {
 	public function __construct()
 	{
 		// We're gonna need this to be already loaded.
+		ee()->remove('functions');
 		require_once(APPPATH . 'libraries/Functions.php');
-		ee()->functions = new Installer_Functions();
+		ee()->set('functions', new Installer_Functions());
 
+		ee()->remove('extensions');
 		require_once(APPPATH . 'libraries/Extensions.php');
-		ee()->extensions = new Installer_Extensions();
+		ee()->set('extensions', new Installer_Extensions());
 
+		ee()->remove('addons');
 		require_once(APPPATH . 'libraries/Addons.php');
-		ee()->addons = new Installer_Addons();
+		ee()->set('addons', new Installer_Addons());
 	}
 
 	/**

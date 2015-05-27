@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -26,6 +26,11 @@ class Progress {
 
 	public $prefix = '';
 	protected $_config = array();
+
+	public function __construct()
+	{
+		ee()->load->library('view');
+	}
 
 	/**
 	 * Updates the current state
@@ -87,8 +92,7 @@ class Progress {
 	 */
 	public function fetch_progress_header($settings)
 	{
-		$EE =& get_instance();
-		return $EE->load->view('progress_header', $settings, TRUE);
+		return ee()->load->view('progress_header', $settings, TRUE);
 	}
 }
 
@@ -99,7 +103,6 @@ class ProgressIterator extends ArrayIterator {
 	public function __construct($arr)
 	{
 		parent::__construct($arr);
-		$this->EE =& get_instance();
 	}
 
 	public function current()

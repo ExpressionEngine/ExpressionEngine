@@ -1,1 +1,0 @@
-Dir["tests/test_*.rb"].each {|f| require_relative f}
