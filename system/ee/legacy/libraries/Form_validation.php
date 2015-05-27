@@ -378,7 +378,7 @@ class EE_Form_validation {
 		// Is username max length correct?
 		if (strlen($str) > 50)
 		{
-			$this->set_message('valid_username', $this->CI->lang->line('username_password_too_long'));
+			$this->set_message('valid_username', $this->CI->lang->line('username_too_long'));
 			return FALSE;
 		}
 
@@ -514,9 +514,9 @@ class EE_Form_validation {
 
 		// Is password max length correct?
 
-		if (strlen($str) > 40)
+		if (strlen($str) > 250)
 		{
-			$this->set_message('valid_password', $this->CI->lang->line('username_password_too_long'));
+			$this->set_message('valid_password', $this->CI->lang->line('password_too_long'));
 		}
 
 

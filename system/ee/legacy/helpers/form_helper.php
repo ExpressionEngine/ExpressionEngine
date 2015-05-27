@@ -220,7 +220,7 @@ function form_preference($name, $details)
 			break;
 		// Password
 		case 'p':
-			$pref = form_password(array_merge($details['value'], array('id' => $name, 'class' => 'input fullfield', 'size' => 20, 'maxlength' => 120)));
+			$pref = form_password(array_merge($details['value'], array('id' => $name, 'class' => 'input fullfield', 'size' => 20, 'maxlength' => 250)));
 			break;
 		// Checkbox
 		case 'c':

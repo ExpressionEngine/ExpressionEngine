@@ -469,13 +469,16 @@ Used in the control panel only.',
 'The password and password confirmation do not match',
 
 'username_too_short' =>
-'The username you submitted must be at least %x characters long',
+'Your username must be at least %x characters long',
+
+'username_too_long' =>
+'Your username cannot be over 50 characters in length',
 
 'password_too_short' =>
-'The password you submitted must be at least %x characters long',
+'Your password must be at least %x characters long',
 
-'username_password_too_long' =>
-'Usernames and passwords cannot be over 32 characters in length',
+'password_too_long' =>
+'Your password cannot be over 250 characters in length',
 
 'username_taken' =>
 'The username you chose is not available',
