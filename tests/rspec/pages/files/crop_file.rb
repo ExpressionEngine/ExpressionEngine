@@ -1,7 +1,7 @@
 class CropFile < ControlPanelPage
 	set_url_matcher /files\/file\/crop/
 
-  # Title/header box elements
+	# Title/header box elements
 	element :title, 'div.box.full.mb form h1'
 	element :title_toolbar, 'div.box.full.mb form h1 ul.toolbar'
 	element :download_all, 'div.box.full.mb form h1 ul.toolbar li.download'
@@ -17,7 +17,6 @@ class CropFile < ControlPanelPage
 	elements :folder_list, 'div.sidebar div.scroll-wrap ul.folder-list li'
 
 	# Main box elements
-	element :breadcrumb, 'ul.breadcrumb'
 	element :heading, 'div.col.w-16 div.box h1'
 	element :crop_tab, 'ul.tabs a[rel="t-0"]'
 	element :rotate_tab, 'ul.tabs a[rel="t-1"]'

@@ -17,7 +17,6 @@ class UploadFile < ControlPanelPage
 	elements :folder_list, 'div.sidebar div.scroll-wrap ul.folder-list li'
 
 	# Main box elements
-	element :breadcrumb, 'ul.breadcrumb'
 	element :heading, 'div.col.w-12 div.box h1'
 
 	# Edit form

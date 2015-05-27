@@ -2,7 +2,6 @@ class AddonManager < ControlPanelPage
 	set_url_matcher /addons/
 
 	element :title, 'div.box.full.mb form h1'
-	element :breadcrumb, 'ul.breadcrumb'
 	element :heading, 'div.box.snap form h1'
 
 	element :phrase_search, 'fieldset.tbl-search input[name=search]'

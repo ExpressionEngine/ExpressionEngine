@@ -29,6 +29,9 @@ class ControlPanelPage < SitePrism::Page
 	element :grid_add_no_results, 'tr.no-results a.btn'
 	element :grid_add, 'ul.toolbar li.add a'
 
+	# Breadcrumb
+	element :breadcrumb, 'ul.breadcrumb'
+
 	def open_dev_menu
 		main_menu.dev_menu.click
 	end
