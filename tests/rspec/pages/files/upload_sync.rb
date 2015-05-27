@@ -1,6 +1,5 @@
 class UploadSync < ControlPanelPage
 
-	element :alert, 'div.alert'
 	element :progress_bar, '.progress-bar .progress'
 	elements :sizes, 'input[name="sizes[]"]'
 	elements :submit_buttons, '.w-12 .form-ctrls input.btn'
