@@ -289,10 +289,13 @@ class Wizard extends CI_Controller {
 		}
 
 		// Determine current version
-		$this->installed_version = implode(
-			'.',
-			str_split(ee()->config->item('app_version'))
-		);
+		$this->installed_version = ee()->config->item('app_version');
+		if (strpos($this->installed_version, '.') == FALSE) {
+			$this->installed_version = implode(
+				'.',
+				str_split($this->installed_version)
+			);
+		}
 
 		// Check for minimum version of PHP
 		// Comes after including the config because that gives us an idea if
@@ -461,7 +464,7 @@ class Wizard extends CI_Controller {
 		// Before moving on, let's load the update file to make sure it's readable
 		$ud_file = 'ud_'.$this->next_ud_file.'.php';
 
-		if ( ! include(APPPATH.'updates/ud_'.$this->next_update.'.php'))
+		if ( ! include(APPPATH.'updates/'.$ud_file))
 		{
 			$this->set_output('error', array('error' => lang('unreadable_files')));
 			return FALSE;
@@ -1131,7 +1134,7 @@ class Wizard extends CI_Controller {
 
 			if (preg_match('/^ud_0*(\d+)_0*(\d+)_0*(\d+).php$/', $file_name, $m))
 			{
-				$file = str_replace('.php',  '', $file);
+				$file_version = "{$m[1]}.{$m[2]}.{$m[3]}";
 
 				if (version_compare($file_version, $current_version, '>'))
 				{
