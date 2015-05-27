@@ -32,6 +32,9 @@ class ControlPanelPage < SitePrism::Page
 	# Breadcrumb
 	element :breadcrumb, 'ul.breadcrumb'
 
+	# Sidebar
+	element :sidebar, 'div.sidebar'
+
 	def open_dev_menu
 		main_menu.dev_menu.click
 	end

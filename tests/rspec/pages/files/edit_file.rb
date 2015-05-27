@@ -9,7 +9,6 @@ class EditFile < ControlPanelPage
 	element :search_submit_button, 'fieldset.tbl-search input.submit'
 
 	# Sidebar elements
-	element :sidebar, 'div.sidebar'
 	element :upload_directories_header, 'div.sidebar h2:first-child'
 	element :new_directory_button, 'div.sidebar h2:first-child a.btn.action'
 	element :watermarks_header, 'div.sidebar h2:nth-child(3)'
