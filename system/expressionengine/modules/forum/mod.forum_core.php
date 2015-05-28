@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -4119,18 +4119,17 @@ class Forum_Core extends Forum {
 
 		$filepath = $this->fetch_pref('board_upload_path').$query->row('filehash') .$thumb_prefix.$query->row('extension') ;
 
-		$extension = strtolower(str_replace('.', '', $query->row('extension') ));
+		ee()->load->library('mime_type');
+		$mime = ee()->mime_type->ofFile($filepath);
 
-		$this->_fetch_mimes();
-
-		if ( ! file_exists($filepath) OR ! isset($this->mimes[$extension]))
+		if ( ! file_exists($filepath) OR ! isset($mime))
 		{
 			exit;
 		}
 
 		if ($this->fetch_pref('board_attach_types') == 'img')
 		{
-			if ( ! in_array($extension, array('jpg', 'jpeg', 'png', 'gif')))
+			if ( ! ee()->mime_type->isImage($mime) )
 			{
 				exit;
 			}
@@ -4141,15 +4140,6 @@ class Forum_Core extends Forum {
 		ee()->db->set('hits', $hits);
 		ee()->db->where('filehash', $attach_hash);
 		ee()->db->update('forum_attachments');
-
-		if ($this->mimes[$extension] == 'html')
-		{
-			$mime = 'text/html';
-		}
-		else
-		{
-			$mime = (is_array($this->mimes[$extension])) ? $this->mimes[$extension][0] : $this->mimes[$extension];
-		}
 
 		if ($query->row('is_image')  == 'y')
 		{
@@ -5227,9 +5217,13 @@ class Forum_Core extends Forum {
 		// Upload the image
 		$config = array(
 				'upload_path'	=> $server_path,
-				'allowed_types'	=> ($query->row('board_attach_types') == 'all') ? '*' : 'gif|jpg|jpeg|png',
 				'max_size'		=> $query->row('board_max_attach_size')
 		);
+
+		if ($query->row('board_attach_types') !== 'all')
+		{
+			$config['is_image'] = TRUE;
+		}
 
 		if (ee()->config->item('xss_clean_uploads') == 'n')
 		{

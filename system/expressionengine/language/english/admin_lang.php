@@ -324,7 +324,7 @@ $lang = array(
 "Maximum Number of Cachable URIs",
 
 "max_caches_explanation" =>
-"If you cache your pages or your database, this preference limits the total number of cache instances in order to prevent your cache files from taking up too much disk space.  150 is a good number for a small site.  If you have a large site and disk space is not an issue you can set it higher (over 300).  We have an internal limit of 1000 regardless of your preference.",
+"If you cache your pages or database, this limits the number of cache instances. We recommend 150 for small sites and 300 for large sites. The allowed maximum is 1000.",
 
 "standby_recount" =>
 "Recounting... please stand by...",
@@ -462,6 +462,9 @@ $lang = array(
 'pm_cfg' =>
 "Private Messaging Preferences",
 
+'prv_msg_enabled' =>
+'Enable private messaging between members?',
+
 'prv_msg_storage_limit' =>
 "Maximum Number of Private Messages a user can store",
 
@@ -470,6 +473,9 @@ $lang = array(
 
 'prv_msg_max_chars' =>
 "Maximum Number of characters to allow in Private Messages",
+
+'prv_msg_allow_attachments' =>
+'Allow attachments in private messages?',
 
 "prv_msg_max_attachments" =>
 "Maximum Number of Attachments per Private Message",

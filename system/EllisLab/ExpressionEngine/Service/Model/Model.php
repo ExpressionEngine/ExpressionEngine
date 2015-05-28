@@ -2,14 +2,14 @@
 
 namespace EllisLab\ExpressionEngine\Service\Model;
 
-use BadMethodCallException;
 use Closure;
 use OverflowException;
 
 use EllisLab\ExpressionEngine\Library\Data\Entity;
 use EllisLab\ExpressionEngine\Service\Event\Publisher as EventPublisher;
 use EllisLab\ExpressionEngine\Service\Event\Subscriber as EventSubscriber;
-use EllisLab\ExpressionEngine\Service\Event\ReflexiveSubscriber;
+use EllisLab\ExpressionEngine\Service\Validation\Validator;
+use EllisLab\ExpressionEngine\Service\Validation\ValidationAware;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -34,7 +34,8 @@ use EllisLab\ExpressionEngine\Service\Event\ReflexiveSubscriber;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
+class Model extends Entity implements EventPublisher, EventSubscriber, ValidationAware {
+
 
 	/**
 	 * @var String model short name
@@ -42,9 +43,9 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	protected $_name;
 
 	/**
-	 * @var List of dirty values
+	 * @var Is new instance
 	 */
-	protected $_dirty = array();
+	protected $_new = TRUE;
 
 	/**
 	 * @var Query frontend object
@@ -52,15 +53,29 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	protected $_frontend = NULL;
 
 	/**
+	 * @var Validator object
+	 */
+	protected $_validator = NULL;
+
+	/**
+	 * @var Relationships property must default to array
+	 */
+	protected static $_relationships = array();
+
+	/**
 	 * @var Default mixins for models
 	 */
 	protected static $_mixins = array(
 		'EllisLab\ExpressionEngine\Service\Event\Mixin',
 		'EllisLab\ExpressionEngine\Service\Model\Mixin\TypedColumn',
-		'EllisLab\ExpressionEngine\Service\Model\Mixin\Validation',
 		'EllisLab\ExpressionEngine\Service\Model\Mixin\CompositeColumn',
 		'EllisLab\ExpressionEngine\Service\Model\Mixin\Relationship',
 	);
+
+	protected function initialize()
+	{
+		// Nothing. Use this for any setup work you need to do.
+	}
 
 	/**
 	 * Forward methods to various mixins
@@ -146,12 +161,13 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 		$pk = $this->getPrimaryKey();
 		$this->$pk = $id;
 
+		$this->_new = is_null($id);
+
 		return $this;
 	}
 
 	/**
 	 * Attempt to get a property. Overriden from Entity to support events
-	 * and typed columns.
 	 *
 	 * @param String $name Name of the property
 	 * @return Mixed  $value Value of the property
@@ -161,7 +177,6 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 		$this->emit('beforeGet', $name);
 
 		$value = parent::getProperty($name);
-		$value = $this->filter('get', $value, array($name));
 
 		$this->emit('afterGet', $name);
 
@@ -169,8 +184,7 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	}
 
 	/**
-	 * Attempt to set a property. Overriden from Entity to support events,
-	 * dirty values, and typed columns.
+	 * Attempt to set a property. Overriden from Entity to support events
 	 *
 	 * @param String $name Name of the property
 	 * @param Mixed  $value Value of the property
@@ -179,11 +193,7 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	{
 		$this->emit('beforeSet', $name, $value);
 
-		$value = $this->filter('set', $value, array($name));
-
 		parent::setProperty($name, $value);
-
-		$this->markAsDirty($name);
 
 		$this->emit('afterSet', $name, $value);
 
@@ -191,63 +201,21 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	}
 
 	/**
-	 * Check if model has dirty values
+	 * Fill data without passing through a getter
 	 *
-	 * @return bool is dirty?
-	 */
-	public function isDirty()
-	{
-		return ! empty($this->_dirty);
-	}
-
-	/**
-	 * Mark a property as dirty
-	 *
-	 * @param String $name property name
+	 * @param array $data Data to fill
 	 * @return $this
 	 */
-	protected function markAsDirty($name)
+	public function fill(array $data = array())
 	{
-		$this->_dirty[$name] = TRUE;
+		$pk = $this->getPrimaryKey();
 
-		return $this;
-	}
-
-	/**
-	 * Clear out our dirty marker. Happens after saving.
-	 *
-	 * @param String $name property name [optional]
-	 * @return $this
-	 */
-	public function markAsClean($name = NULL)
-	{
-		if (isset($name))
+		if (isset($data[$pk]))
 		{
-			unset($this->_dirty[$name]);
-		}
-		else
-		{
-			$this->_dirty = array();
+			$this->_new = FALSE;
 		}
 
-		return $this;
-	}
-
-	/**
-	 * Get all dirty keys and values
-	 *
-	 * @return array Dirty properties and their values
-	 */
-	public function getDirty()
-	{
-		$dirty = array();
-
-		foreach (array_keys($this->_dirty) as $key)
-		{
-			$dirty[$key] = $this->$key;
-		}
-
-		return $dirty;
+		return parent::fill($data);
 	}
 
 	/**
@@ -269,7 +237,7 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	 */
 	public function isNew()
 	{
-		return ($this->getId() === NULL);
+		return $this->_new;
 	}
 
 	/**
@@ -292,8 +260,6 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 			$this->constrainQueryToSelf($qb);
 			$qb->update();
 		}
-
-		$this->markAsClean();
 
 		// update relationships
 		foreach ($this->getAllAssociations() as $assoc)
@@ -377,7 +343,61 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	}
 
 	/**
-	 * Support method for the model validation mixin
+	 * Validate the model
+	 *
+	 * @return validation result
+	 */
+	public function validate()
+	{
+		if ( ! isset($this->_validator))
+		{
+			return TRUE;
+		}
+
+		$this->emit('beforeValidate');
+
+		if ($this->isNew())
+		{
+			$result = $this->_validator->validate($this);
+		}
+		else
+		{
+			$result = $this->_validator->validatePartial($this);
+		}
+
+		$this->emit('afterValidate');
+
+		return $result;
+	}
+
+	/**
+	 * Set the validator
+	 *
+	 * @param Validator $validator The validator to use
+	 * @return Current scope
+	 */
+	public function setValidator(Validator $validator)
+	{
+		$this->_validator = $validator;
+
+		// alias unique to the validateUnique callback
+		$validator->defineRule('unique', array($this, 'validateUnique'));
+
+		return $this;
+	}
+
+	/**
+	 * Get the validator
+	 *
+	 * @return Validator object
+	 */
+	public function getValidator()
+	{
+		return $this->_validator;
+	}
+
+	/**
+	 * Support ValidationAware
 	 */
 	public function getValidationData()
 	{
@@ -385,7 +405,7 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	}
 
 	/**
-	 * Support method for the model validation mixin
+	 * Support ValidationAware
 	 */
 	public function getValidationRules()
 	{
@@ -393,8 +413,34 @@ class Model extends Entity implements EventPublisher, ReflexiveSubscriber {
 	}
 
 	/**
-	 * Interface method to implement Event\Subscriber, which automatically
-	 * subscribes this class to itself to call on<EventName>.
+	 * Default callback to validate unique columns
+	 *
+	 * @param String $key    Property name
+	 * @param String $value  Property value
+	 * @param Array  $params Rule parameters
+	 * @return Mixed String if error, TRUE if success
+	 */
+	public function validateUnique($key, $value, array $params = array())
+	{
+		$unique = $this->getFrontend()
+			->get($this->getName())
+			->filter($key, $value);
+
+		foreach ($params as $field)
+		{
+			$unique->filter($field, $this->getProperty($field));
+		}
+
+		if ($unique->count() > 0)
+		{
+			return 'unique'; // lang key
+		}
+
+		return TRUE;
+	}
+
+	/**
+	 * Interface method to implement Event\Subscriber
 	 */
 	public function getSubscribedEvents()
 	{

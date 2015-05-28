@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -617,6 +617,7 @@ class Channel_model extends CI_Model {
 		$site_id = ($site_id !== FALSE) ? 'wd.site_id=' . $site_id . ' AND ' : '';
 
 		$search_sql = '';
+		$col_name = $site_id . $col_name;
 		foreach ($terms as $term)
 		{
 			if($search_sql !== '')
@@ -625,21 +626,22 @@ class Channel_model extends CI_Model {
 			}
 			if ($term == 'IS_EMPTY')
 			{
-				$search_sql .= ' (' . $site_id
-					. $col_name . ($not=='NOT' ? '!' : '') . '="") ';
+				// Empty string
+				$search_sql .= ' (' . $col_name . ($not ? '!' : '') . '=""';
+				// IS (NOT) NULL
+				$search_sql .= $not ? ' AND ' : ' OR ';
+				$search_sql .= $col_name . ' IS ' . ($not ?: '') . ' NULL) ';
 			}
 			elseif (strpos($term, '\W') !== FALSE) // full word only, no partial matches
 			{
 				// Note: MySQL's nutty POSIX regex word boundary is [[:>:]]
 				$term = '([[:<:]]|^)'.preg_quote(str_replace('\W', '', $term)).'([[:>:]]|$)';
 
-				$search_sql .= ' (' . $site_id
-					. $col_name . ' ' . $not . ' REGEXP "' . ee()->db->escape_str($term).'") ';
+				$search_sql .= ' (' . $col_name . ' ' . $not . ' REGEXP "' . ee()->db->escape_str($term).'") ';
 			}
 			else
 			{
-				$search_sql .= ' (' . $site_id
-					. $col_name . ' ' . $not . ' LIKE "%' . ee()->db->escape_like_str($term) . '%") ';
+				$search_sql .= ' (' . $col_name . ' ' . $not . ' LIKE "%' . ee()->db->escape_like_str($term) . '%") ';
 			}
 		}
 

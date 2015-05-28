@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -105,6 +105,11 @@ class Text_ft extends EE_Fieldtype {
 			'field_content_type' => $type
 		);
 
+		if (isset($this->settings['field_placeholder']))
+		{
+			$field['placeholder'] = $this->settings['field_placeholder'];
+		}
+
 		// maxlength attribute should only appear if its value is > 0
 		if ($this->settings['field_maxl'])
 		{
@@ -177,8 +182,6 @@ class Text_ft extends EE_Fieldtype {
 		);
 
 		$this->field_show_smileys_row($data, $prefix);
-		$this->field_show_glossary_row($data, $prefix);
-		$this->field_show_spellcheck_row($data, $prefix);
 		$this->field_show_file_selector_row($data, $prefix);
 
 		ee()->javascript->output('
@@ -243,10 +246,10 @@ class Text_ft extends EE_Fieldtype {
 
 	function settings_modify_column($data)
 	{
-
 		$settings = unserialize(base64_decode($data['field_settings']));
+		$field_content_type = isset($settings['field_content_type']) ? $settings['field_content_type'] : 'all';
 
-		return $this->_get_column_settings($settings['field_content_type'], $data['field_id']);
+		return $this->_get_column_settings($field_content_type, $data['field_id']);
 	}
 
 	// --------------------------------------------------------------------

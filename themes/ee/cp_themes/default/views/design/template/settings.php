@@ -1,6 +1,6 @@
 <h1><?=lang('template_settings_and_access')?></h1>
-<div class="tab-bar">
-	<ul>
+<div class="tab-wrap">
+	<ul class="tabs">
 		<li><a class="act" href="" rel="t-0"><?=lang('settings')?></a></li>
 		<li><a href="" rel="t-1"><?=lang('access')?></a></li>
 	</ul>

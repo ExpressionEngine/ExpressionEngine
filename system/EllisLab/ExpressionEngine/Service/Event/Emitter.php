@@ -79,7 +79,7 @@ class Emitter implements Publisher {
 
 	/**
 	 * Subscribe an object to events on this emitter. Any public method
-	 * call `on<EventName>` will be considered a listener on that event.
+	 * called `on<EventName>` will be considered a listener on that event.
 	 *
 	 * @param Subscriber $subscriber Subscriber to add
 	 */

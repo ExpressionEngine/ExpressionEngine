@@ -45,9 +45,13 @@ class Updater {
 				'_create_plugins_table',
 				'_remove_accessories_table',
 				'_update_specialty_templates_table',
-				'_remove_watermarks_table',
 				'_update_templates_save_as_files',
-				'_update_layout_publish_table'
+				'_update_layout_publish_table',
+				'_update_entry_edit_date_format',
+				'_rename_default_status_groups',
+				'_centralize_captcha_settings',
+				'_update_members_table',
+				'_update_html_buttons',
 			)
 		);
 
@@ -307,17 +311,6 @@ class Updater {
 		}
 	}
 
-	/**
-	 * File Watermarks are going away in 3.0. This removes their table.
-	 *
-	 * @return void
-	 */
-	private function _remove_watermarks_table()
-	{
-		ee()->smartforge->drop_table('file_watermarks');
-		ee()->smartforge->drop_column('file_dimensions', 'watermark_id');
-	}
-
 	// -------------------------------------------------------------------
 
 	/**
@@ -372,6 +365,11 @@ class Updater {
 	 */
 	private function _update_layout_publish_table()
 	{
+		if (ee()->db->table_exists('layout_publish_member_groups'))
+		{
+			return;
+		}
+
 		ee()->dbforge->add_field(
 			array(
 				'layout_id' => array(
@@ -483,6 +481,178 @@ class Updater {
 		ee()->smartforge->drop_column('layout_publish', 'member_group');
 	}
 
+	/**
+	 * Transitioning away from our old MySQL Timestamp format to a Unix epoch
+	 * for the edit_date column of channel_titles
+	 */
+	public function _update_entry_edit_date_format()
+	{
+		ee()->db->query("SET time_zone = '+0:00';");
+		ee()->db->query("UPDATE exp_channel_titles SET edit_date=UNIX_TIMESTAMP(edit_date);");
+		ee()->db->query("SET time_zone = @@global.time_zone;");
+
+		ee()->smartforge->modify_column('channel_titles', array(
+			'edit_date' => array(
+				'type' => 'int',
+				'constraint' => 10,
+			)
+		));
+	}
+
+	/**
+	 * Changes default name for status groups from Statuses to Default
+	 */
+	public function _rename_default_status_groups()
+	{
+		ee()->db->where('group_name', 'Statuses')
+			->set('group_name', 'Default')
+			->update('status_groups');
+	}
+
+	/**
+	 * Combines all CAPTCHA settings into one on/off switch; if a site has
+	 * CAPTCHA turned on for any form, we'll turn CAPTCHA on for the whole site
+	 */
+	public function _centralize_captcha_settings()
+	{
+		// Prevent this from running again
+		if ( ! ee()->db->field_exists('comment_use_captcha', 'channels'))
+		{
+			return;
+		}
+
+		// First, let's see which sites have CAPTCHA turned on for Channel Forms
+		// or comments, and mark those sites as needing CAPTCHA required
+		$site_ids_query = ee()->db->select('channels.site_id')
+			->distinct()
+			->where('channels.comment_use_captcha', 'y')
+			->or_where('channel_form_settings.require_captcha', 'y')
+			->join(
+				'channel_form_settings',
+				'channels.channel_id = channel_form_settings.channel_id',
+				'left')
+			->get('channels')
+			->result();
+
+		$sites_require_captcha = array();
+
+		foreach ($site_ids_query as $site)
+		{
+			$sites_require_captcha[] = $site->site_id;
+		}
+
+		// Get all site IDs; this is for eventually comparing against the site
+		// IDs we have collected to see which sites should have CAPTCHA turned
+		// OFF, but we also need to loop through each site to see if any other
+		// forms have CAPTCHA turned on
+		$all_site_ids_query = ee()->db->select('site_id')
+			->get('sites')
+			->result();
+
+		$all_site_ids = array();
+		foreach ($all_site_ids_query as $site)
+		{
+			$all_site_ids[] = $site->site_id;
+		}
+
+		$msm_config = new MSM_Config();
+
+		foreach ($all_site_ids as $site_id)
+		{
+			// Skip sites we're already requiring CAPTCHA on
+			if (in_array($site_id, $sites_require_captcha))
+			{
+				continue;
+			}
+
+			$msm_config->site_prefs('', $site_id);
+
+			if ($msm_config->item('use_membership_captcha') == 'y' OR
+				$msm_config->item('email_module_captchas') == 'y')
+			{
+				$sites_require_captcha[] = $site_id;
+			}
+		}
+
+		// Diff all site IDs against the ones we're requiring CAPTCHA for
+		// to get a list of sites we're NOT requiring CAPTCHA for
+		$sites_do_not_require_captcha = array_diff($all_site_ids, $sites_require_captcha);
+
+		// Add the new preferences
+		// These sites require CAPTCHA
+		if ( ! empty($sites_require_captcha))
+		{
+			ee()->config->update_site_prefs(array('require_captcha' => 'y'), $sites_require_captcha);
+		}
+
+		// These sites do NOT require CAPTCHA
+		if ( ! empty($sites_do_not_require_captcha))
+		{
+			ee()->config->update_site_prefs(array('require_captcha' => 'n'), $sites_do_not_require_captcha);
+		}
+
+		// And finally, drop the old columns and remove old config items
+		ee()->smartforge->drop_column('channels', 'comment_use_captcha');
+		ee()->smartforge->drop_column('channel_form_settings', 'require_captcha');
+
+		$msm_config->remove_config_item(array('use_membership_captcha', 'email_module_captchas'));
+
+	/**
+	 * Adds columns to the members table as needed
+	 */
+	public function _update_members_table()
+	{
+		if ( ! ee()->db->field_exists('rte_enabled', 'members'))
+		{
+			ee()->smartforge->add_column(
+				'members',
+				array(
+					'rte_enabled' => array(
+						'type'    => 'CHAR(1)',
+						'null'    => FALSE,
+						'default' => 'y'
+					)
+				)
+			);
+		}
+
+		if ( ! ee()->db->field_exists('rte_toolset_id', 'members'))
+		{
+			ee()->smartforge->add_column(
+				'members',
+				array(
+					'rte_toolset_id' => array(
+						'type'       => 'INT(10)',
+						'null'       => FALSE,
+						'default'    => '0'
+					)
+				)
+			);
+		}
+	}
+
+	/**
+	 * Adjusts the CSS class for some standard buttons
+	 */
+	public function _update_html_buttons()
+	{
+		$data = array(
+			'b'          => 'html-bold',
+			'i'          => 'html-italic',
+			'ul'         => 'html-order-list',
+			'ol'         => 'html-order-list',
+			'a'          => 'html-link',
+			'img'        => 'html-upload',
+			'blockquote' => 'html-quote',
+		);
+
+		foreach ($data as $tag => $class)
+		{
+			ee()->db->where('tag_name', $tag)
+				->set('classname', $class)
+				->update('html_buttons');
+		}
+	}
 }
 /* END CLASS */
 

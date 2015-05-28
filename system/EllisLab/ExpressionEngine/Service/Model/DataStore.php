@@ -2,7 +2,10 @@
 
 namespace EllisLab\ExpressionEngine\Service\Model;
 
+use Closure;
+
 use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
+use EllisLab\ExpressionEngine\Service\Database\Database;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -42,7 +45,7 @@ class DataStore {
 	 * @param $db \CI_DB
 	 * @param $aliases Array of model aliases
 	 */
-	public function __construct($db, $aliases, $default_prefix)
+	public function __construct(Database $db, $aliases, $default_prefix)
 	{
 		$this->db = $db;
 		$this->aliases = $aliases;
@@ -66,12 +69,16 @@ class DataStore {
 		if ($name instanceOf Model)
 		{
 			$object = $name;
-			$name = $this->getModelAlias(get_class($object));
+			$name = $object->getName();
 		}
 		else
 		{
-			$class = $this->expandModelAlias($name);
-			$model = new $class($data);
+			$model = $this->newModelFromAlias($name);
+		}
+
+		if (count($data))
+		{
+			$model->set($data);
 		}
 
 		$model->setName($name);
@@ -112,7 +119,7 @@ class DataStore {
 	 */
 	public function rawQuery()
 	{
-		return $this->db;
+		return $this->db->newQuery();
 	}
 
 	/**
@@ -303,16 +310,20 @@ class DataStore {
 		return $worker->run();
 	}
 
-	/**
-	 * Given a class name, get the model alias if one exists
-	 *
-	 * @param String $class The class name to look up
-	 * @return String The alias name
-	 */
-	protected function getModelAlias($class)
+	protected function newModelFromAlias($name)
 	{
-		$classes = array_flip($this->aliases[$name]);
-		return $classes[$name];
+		$class = $this->expandModelAlias($name);
+
+		if ($class instanceOf Closure)
+		{
+			$model = $class();
+		}
+		else
+		{
+			$model = new $class();
+		}
+
+		return $model;
 	}
 
 	/**

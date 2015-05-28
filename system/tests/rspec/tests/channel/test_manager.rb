@@ -16,7 +16,7 @@ feature 'Channel Manager' do
 
   def get_channel_titles
     channels = []
-    $db.query('SELECT channel_title FROM exp_channels ORDER BY channel_title ASC').each(:as => :array) do |row|
+    $db.query('SELECT channel_title FROM exp_channels ORDER BY channel_id ASC').each(:as => :array) do |row|
       channels << row[0]
     end
     clear_db_result
@@ -26,7 +26,7 @@ feature 'Channel Manager' do
 
   def get_channel_names
     channels = []
-    $db.query('SELECT channel_name FROM exp_channels ORDER BY channel_title ASC').each(:as => :array) do |row|
+    $db.query('SELECT channel_name FROM exp_channels ORDER BY channel_id ASC').each(:as => :array) do |row|
       channels << row[0]
     end
     clear_db_result
@@ -44,8 +44,8 @@ feature 'Channel Manager' do
   end
 
   it 'should sort the list of channels' do
-    @page.sort_col.text.should eq 'Channel'
-    @page.sort_links[0].click
+    @page.sort_col.text.should eq 'ID#'
+    @page.sort_links[1].click
     no_php_js_errors
 
     channels = get_channel_titles
@@ -57,13 +57,13 @@ feature 'Channel Manager' do
     @page.sort_col.text.should eq 'Channel'
 
     # Sort by short name alphabetically
-    @page.sort_links[1].click
+    @page.sort_links[2].click
     no_php_js_errors
     @page.channel_names.map {|source| source.text}.should == channel_short_names.sort
     @page.sort_col.text.should eq 'Short name'
 
     # Sort by short name reverse alphabetically
-    @page.sort_links[1].click
+    @page.sort_links[2].click
     no_php_js_errors
     @page.channel_names.map {|source| source.text}.should == channel_short_names.sort.reverse
     @page.sort_col.text.should eq 'Short name'
@@ -74,7 +74,7 @@ feature 'Channel Manager' do
     channel_short_names = get_channel_names
 
     # Also set a sort state to make sure it's maintained
-    @page.sort_links[1].click
+    @page.sort_links[2].click
     no_php_js_errors
     @page.sort_col.text.should eq 'Short name'
 

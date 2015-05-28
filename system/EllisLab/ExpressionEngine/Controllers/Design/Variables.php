@@ -258,7 +258,7 @@ class Variables extends AbstractDesignController {
 
 			ee()->session->set_flashdata('variable_id', $variable->variable_id);
 
-			ee('Alert')->makeInline('settings-form')
+			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('create_template_variable_success'))
 				->addToBody(sprintf(lang('create_template_variable_success_desc'), $variable->variable_name))
@@ -268,7 +268,7 @@ class Variables extends AbstractDesignController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('settings-form')
+			ee('Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('create_template_variable_error'))
 				->addToBody(lang('create_template_variable_error_desc'))
@@ -383,7 +383,7 @@ class Variables extends AbstractDesignController {
 
 			ee()->session->set_flashdata('variable_id', $variable->variable_id);
 
-			ee('Alert')->makeInline('settings-form')
+			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('edit_template_variable_success'))
 				->addToBody(sprintf(lang('edit_template_variable_success_desc'), $variable->variable_name))
@@ -393,7 +393,7 @@ class Variables extends AbstractDesignController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('settings-form')
+			ee('Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('edit_template_variable_error'))
 				->addToBody(lang('edit_template_variable_error_desc'))
@@ -457,7 +457,7 @@ class Variables extends AbstractDesignController {
 		$zip = new ZipArchive();
 		if ($zip->open($zipfilename, ZipArchive::CREATE) !== TRUE)
 		{
-			ee('Alert')->makeInline('settings-form')
+			ee('Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('error_export'))
 				->addToBody(lang('error_cannot_create_zip'))

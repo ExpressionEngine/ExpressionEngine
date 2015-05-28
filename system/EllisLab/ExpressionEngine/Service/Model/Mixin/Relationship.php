@@ -104,7 +104,7 @@ class Relationship implements Mixin {
 	{
 		$result = call_user_func_array($action, $args);
 
-		if ($action[1] == 'has' || $action[1] == 'get')
+		if ($action[1] == 'has' || $action[1] == 'get' || $action[1] == 'create')
 		{
 			return $result;
 		}

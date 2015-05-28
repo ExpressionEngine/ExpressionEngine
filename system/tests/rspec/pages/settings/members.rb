@@ -3,8 +3,6 @@ class MemberSettings < ControlPanelPage
 	element :allow_member_registration_y, 'input[name=allow_member_registration][value=y]'
 	element :allow_member_registration_n, 'input[name=allow_member_registration][value=n]'
 	element :req_mbr_activation, 'select[name=req_mbr_activation]'
-	element :use_membership_captcha_y, 'input[name=use_membership_captcha][value=y]'
-	element :use_membership_captcha_n, 'input[name=use_membership_captcha][value=n]'
 	element :require_terms_of_service_y, 'input[name=require_terms_of_service][value=y]'
 	element :require_terms_of_service_n, 'input[name=require_terms_of_service][value=n]'
 	element :allow_member_localization_y, 'input[name=allow_member_localization][value=y]'

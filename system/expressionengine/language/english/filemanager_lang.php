@@ -80,6 +80,9 @@ $lang = array(
 'no_upload_destination' =>
 'No upload destination found',
 
+'zero_directories_found' =>
+'Zero <b>Directories</b> found',
+
 'files_in_directory' =>
 'Files in <b>%s</b>',
 
@@ -121,6 +124,9 @@ $lang = array(
 
 'file_desc' =>
 'Choose a file to upload.',
+
+'upload_filedata_error' =>
+'Cannot Upload File',
 
 'upload_filedata_success' =>
 'File Upload Success',
@@ -196,6 +202,422 @@ $lang = array(
 
 'crop_file_error_desc' =>
 'We were unable to %s the file, please review and fix errors below.',
+
+'file_not_found' =>
+'File Not Found',
+
+'file_not_found_desc' =>
+'Cannot find the file <b>%s</b>.',
+
+'directory_not_found' =>
+'Cannot find the directory <b>%s</b>.',
+
+'check_upload_settings' =>
+'Check the <a href="%s">settings</a> for this upload directory.',
+
+'file_not_writable' =>
+'File Not Writable',
+
+'file_not_writable_desc' =>
+'Cannot write to the file <b>%s</b>.<br>Check your file permissions on the server.',
+
+'dir_not_writable' =>
+'Directory Not Writable',
+
+'dir_not_writable_desc' =>
+'Cannot write to the directory <b>%s</b>.<br>Check your file permissions on the server.',
+
+/**
+ * Uploads
+ */
+
+'all_upload_dirs' =>
+'All Upload Directories',
+
+'file_manager' =>
+'File Manager',
+
+'upload_id' =>
+'ID#',
+
+'upload_directory' =>
+'Directory',
+
+'upload_manage' =>
+'Manage',
+
+'upload_btn_view' =>
+'view',
+
+'upload_btn_edit' =>
+'edit',
+
+'upload_btn_sync' =>
+'sync',
+
+'upload_remove_modal_upload_directory' =>
+'Upload directory',
+
+'upload_remove_modal_directories' =>
+'directories',
+
+'no_upload_directories' =>
+'No Upload Directories',
+
+'create_upload_directory' =>
+'Create Upload Directory',
+
+'edit_upload_directory' =>
+'Edit Upload Directory',
+
+'upload_name' =>
+'Directory name',
+
+'upload_name_desc' =>
+'Be descriptive, like <b>photos</b> or <b>documents</b>.',
+
+'upload_url' =>
+'Upload directory',
+
+'upload_url_desc' =>
+'<abbr title="Uniform Resource Location">URL</abbr> location of this <mark>upload</mark> directory.',
+
+'upload_path' =>
+'Upload path',
+
+'upload_path_desc' =>
+'Full path location of this <mark>upload</mark> directory.',
+
+'upload_allowed_types' =>
+'Allowed file types?',
+
+'upload_allowed_types_opt_images' =>
+'Images only',
+
+'upload_allowed_types_opt_all' =>
+'All file types',
+
+'file_limits' =>
+'File Limits',
+
+'upload_file_size' =>
+'File size',
+
+'upload_file_size_desc' =>
+'Maximum file size in megabytes.',
+
+'upload_image_width' =>
+'Image width',
+
+'upload_image_width_desc' =>
+'Maximum image width in pixels.',
+
+'upload_image_height' =>
+'Image height',
+
+'upload_image_height_desc' =>
+'Maximum image height in pixels.',
+
+'upload_image_manipulations' =>
+'Image Manipulations',
+
+'constrain_or_crop' =>
+'Constrain or Crop',
+
+'constrain_or_crop_desc' =>
+'Changes to images in this <mark>upload</mark> directory, made upon upload.',
+
+'image_manip_name' =>
+'Short Name',
+
+'image_manip_name_desc' =>
+'Short name of this manipulation',
+
+'image_manip_type' =>
+'Type',
+
+'image_manip_type_desc' =>
+'Type of manipulation',
+
+'image_manip_type_opt_constrain' =>
+'Constrain (full image resized)',
+
+'image_manip_type_opt_crop' =>
+'Crop (part of image)',
+
+'image_manip_width' =>
+'Width',
+
+'image_manip_width_desc' =>
+'Final width of image',
+
+'image_manip_height' =>
+'Height',
+
+'image_manip_height_desc' =>
+'Final height of image',
+
+'no_manipulations' =>
+'No manipulations created',
+
+'add_manipulation' =>
+'Add New Manipulation',
+
+'upload_privileges' =>
+'Upload Privileges',
+
+'upload_member_groups' =>
+'Allowed member groups',
+
+'upload_member_groups_desc' =>
+'The following user groups are allowed to upload to this directory.</em>
+<em>Super Administrators are <b>always</b> allowed.',
+
+'upload_category_groups' =>
+'Allowed category groups',
+
+'upload_category_groups_desc' =>
+'The following category groups are allowed to upload to this directory.',
+
+'directory_saved' =>
+'Upload directory saved',
+
+'directory_saved_desc' =>
+'Your upload directory has been saved successfully.',
+
+'directory_not_saved' =>
+'Attention: Upload directory not saved',
+
+'directory_not_saved_desc' =>
+'We were unable to save your upload directory, please review and fix errors below.',
+
+'duplicate_dir_name' =>
+'The name of your directory is already taken.',
+
+'no_upload_dir_url' =>
+'You must submit the URL to your upload directory.',
+
+'duplicate_image_size_name' =>
+'You must enter a unique name for this image manipulation.',
+
+'btn_create_directory' =>
+'Create Directory',
+
+'btn_create_directory_working' =>
+'Creating...',
+
+'btn_edit_directory' =>
+'Edit Directory',
+
+'sync_title' =>
+'Directory Sync',
+
+'sync_alt_title' =>
+'Sync %s',
+
+'file_sync' =>
+'File sync',
+
+'file_sync_desc' =>
+'<b>%d</b> files',
+
+'file_sync_desc_images' =>
+'<b>%d</b> <mark>image</mark> files',
+
+'apply_manipulations' =>
+'Apply manipulations',
+
+'apply_manipulations_desc' =>
+'Applies chosen image manipulations to the files in this directory during sync operation. Increases sync time.',
+
+'crop' =>
+'crop',
+
+'constrain' =>
+'constrain',
+
+'by' =>
+'by',
+
+'btn_sync_directory' =>
+'Sync Directory',
+
+'btn_sync_directory_working' =>
+'Syncing...',
+
+'directory_synced' =>
+'Upload directory synchronized',
+
+'directory_synced_desc' =>
+'The contents of the upload directory have been successfully synchronized.',
+
+'directory_sync_warning' =>
+'Some files could not be synchronized',
+
+'watermark' =>
+'Watermark',
+
+'watermarks' =>
+'Watermarks',
+
+'no_watermarks' =>
+'No Watermarks',
+
+'create_watermark' =>
+'Create Watermark',
+
+'edit_watermark' =>
+'Edit Watermark',
+
+'watermarks_removed' =>
+'Watermarks removed',
+
+'watermarks_removed_desc' =>
+'%d watermarks were removed.',
+
+'watermark_name_desc' =>
+'Full descriptive name of this watermark.',
+
+'watermark_type_desc' =>
+'Choose a watermark type.',
+
+'text' =>
+'Text',
+
+'image' =>
+'Image',
+
+'watermark_alignment' =>
+'Alignment',
+
+'watermark_alignment_desc' =>
+'Determines where this watermark will appear on the image.',
+
+'top' =>
+'Top',
+
+'middle' =>
+'Middle',
+
+'bottom' =>
+'Bottom',
+
+'left' =>
+'Left',
+
+'center' =>
+'Center',
+
+'right' =>
+'Right',
+
+'watermark_padding' =>
+'Padding',
+
+'watermark_padding_desc' =>
+'Add padding around this watermark.',
+
+'watermark_offset' =>
+'Offset',
+
+'watermark_offset_desc' =>
+'Distance in pixels from the edge of the image.',
+
+'horizontal' =>
+'horizontal',
+
+'vertical' =>
+'vertical',
+
+'text_options' =>
+'Text Options',
+
+'watermarks_true_type' =>
+'Enable True Type?',
+
+'watermarks_true_type_desc' =>
+'When set to <b>yes</b>, text watermarks will be rendered with True Type.',
+
+'watermark_text' =>
+'Text',
+
+'watermark_text_desc' =>
+'Content of this watermark',
+
+'watermark_text_font' =>
+'Font face',
+
+'watermark_text_font_desc' =>
+'Choose the font face for this watermark.',
+
+'watermark_text_size' =>
+'Text size',
+
+'watermark_text_size_desc' =>
+'Size in pixels of this watermark\'s text.',
+
+'watermark_text_color' =>
+'Text color',
+
+'watermark_text_color_desc' =>
+'Color of this watermark\'s text.',
+
+'watermark_text_dropshadow' =>
+'Enable dropshadow?',
+
+'watermark_text_dropshadow_desc' =>
+'When set to <b>yes</b>, a drop-shadow will be rendered.',
+
+'watermark_text_dropshadow_distance' =>
+'Dropshadow distance',
+
+'watermark_text_dropshadow_distance_desc' =>
+'Size of this watermark\'s drop shadow.',
+
+'watermark_text_dropshadow_color' =>
+'Dropshadow color',
+
+'watermark_text_dropshadow_color_desc' =>
+'Color of the dropshadow for this watermark.',
+
+'image_options' =>
+'Image Options',
+
+'watermark_image_path' =>
+'Path',
+
+'watermark_image_path_desc' =>
+'Full path location of your watermark image.',
+
+'watermark_image_opacity' =>
+'Opacity',
+
+'watermark_image_opacity_desc' =>
+'Value for this image watermark\'s opacity.',
+
+'watermark_image_transparency_map' =>
+'Image transparency map',
+
+'watermark_image_transparency_map_desc' =>
+'Coordinates for alpha transparency of images to be watermarked.',
+
+'x_axis' =>
+'x-axis',
+
+'y_axis' =>
+'y-axis',
+
+'watermark_saved' =>
+'Watermark saved',
+
+'watermark_saved_desc' =>
+'Your watermark has been saved successfully.',
+
+'watermark_not_saved' =>
+'Attention: Watermark not saved',
+
+'watermark_not_saved_desc' =>
+'We were unable to save your watermark, please review and fix errors below.',
 
 // 2.x
 
@@ -308,7 +730,7 @@ $lang = array(
 'no_upload_prefs' =>
 'There are currently no file upload preferences',
 
-'no_upload_directories' =>
+'no_upload_directories_for_fieldtype' =>
 'There are currently no upload directories available. Please <a href="%s" rel="external" target="_blank">add one or more upload directories</a> to use the File field type.',
 
 'please_add_upload' =>
@@ -348,18 +770,6 @@ $lang = array(
 
 'post_format' =>
 'Image Post Formatting',
-
-'no_upload_dir_name' =>
-'You must submit a name for your upload directory',
-
-'no_upload_dir_path' =>
-'You must submit the path to your upload directory',
-
-'no_upload_dir_url' =>
-'You must submit the URL to your upload directory',
-
-'duplicate_dir_name' =>
-'The name of your directory is already taken',
 
 'delete_upload_preference' =>
 'Delete Upload Preference',
@@ -456,9 +866,6 @@ $lang = array(
 'include'					=> 'Include?',
 
 ////Watermark
-
-'no_watermarks' =>
-'No watermarks exist',
 
 'add_watermark' =>
 'None',

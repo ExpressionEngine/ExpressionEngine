@@ -104,8 +104,9 @@ class MemberImport extends Utilities {
 						'date_format' => array(
 							'type' => 'dropdown',
 							'choices' => array(
-								'%n/%j/%y' => 'mm/dd/yy',
-								'%j-%n-%y' => 'dd-mm-yy',
+								'%n/%j/%Y' => 'mm/dd/yyyy',
+								'%j/%n/%Y' => 'dd/mm/yyyy',
+								'%j-%n-%Y' => 'dd-mm-yyyy',
 								'%Y-%m-%d' => 'yyyy-mm-dd'
 							)
 						),
@@ -860,21 +861,6 @@ class MemberImport extends Utilities {
 	 */
 	private function _new_custom_fields_form($vars, $new_custom_fields)
 	{
-		ee()->javascript->output(array(
-			'$(".toggle_all").toggle(
-				function(){
-					$("input.toggle").each(function() {
-						this.checked = true;
-					});
-				}, function (){
-					var checked_status = this.checked;
-					$("input.toggle").each(function() {
-						this.checked = false;
-					});
-				}
-			);')
-		);
-
 		$vars['form_hidden']['new'] = $new_custom_fields['new'];
 		$vars['new_fields'] = $new_custom_fields['new'];
 

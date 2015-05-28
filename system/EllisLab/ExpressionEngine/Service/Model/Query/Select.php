@@ -193,7 +193,7 @@ class Select extends Query {
 				}
 
 				$this->applyFilters($query, $nested);
-				ee()->db->end_group();
+				$query->end_group();
 			}
 			else
 			{

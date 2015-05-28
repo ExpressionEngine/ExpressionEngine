@@ -1,1 +1,3 @@
-bad script
+#!/bin/sh
+
+rm -rf /tmp/*

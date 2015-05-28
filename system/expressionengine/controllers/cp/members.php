@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -136,18 +136,6 @@ class Members extends CP_Controller {
 		$vars = $this->table->datasource('_member_search', $initial_state, $params);
 
 		$this->javascript->output('
-			$(".toggle_all").toggle(
-				function(){
-					$("input.toggle").each(function() {
-						this.checked = true;
-					});
-				}, function (){
-					$("input.toggle").each(function() {
-						this.checked = false;
-					});
-				}
-			);
-
 			// Keyword filter
 			var indicator = $(".searchIndicator");
 
@@ -678,6 +666,10 @@ class Members extends CP_Controller {
 				$name_to_use = ($heir->screen_name != '') ? $heir->screen_name : $heir->username;
 				$vars['heirs'][$heir->member_id] = $name_to_use;
 			}
+
+			$vars['heir_action_y'] = TRUE;
+			$vars['heir_action_n'] = FALSE;
+			$vars['selected'] = array($vars['heirs'][$heir->member_id][0]);
 		}
 
 		ee()->view->cp_page_title = lang('delete_member');
@@ -1928,12 +1920,14 @@ class Members extends CP_Controller {
 			),
 			'notification_cfg' => array(
 				'new_member_notification' => array('r', array('y' => 'yes', 'n' => 'no')),
-				'mbr_notification_emails' => array('i', '', 'valid_email')
+				'mbr_notification_emails' => array('i', '', 'valid_emails')
 			),
 			'pm_cfg' => array(
+				'prv_msg_enabled'         => array('r', array('y' => 'yes', 'n' => 'no')),
 				'prv_msg_max_chars'       => array('i', '', 'integer'),
 				'prv_msg_html_format'     => array('s', array('safe' => 'html_safe', 'none' => 'html_none', 'all' => 'html_all')),
 				'prv_msg_auto_links'      => array('r', array('y' => 'yes', 'n' => 'no')),
+				'prv_msg_allow_attachments' => array('r', array('y' => 'yes', 'n' => 'no')),
 				'prv_msg_upload_path'     => array('i', '', 'strip_tags|trim|valid_xss_check'),
 				'prv_msg_max_attachments' => array('i', '', 'integer'),
 				'prv_msg_attach_maxsize'  => array('i', '', 'integer'),
@@ -2004,7 +1998,7 @@ class Members extends CP_Controller {
 		$this->load->model(array('Member_group_model', 'Site_model'));
 
 		$group_id = $this->input->post('group_id');
-		$clone_id = $this->input->post('clone_id');
+		$clone_id = $this->input->post('clone_id') ?: FALSE;
 		$site_id = $this->input->post('site_id');
 
 		unset($_POST['group_id']);
@@ -2012,7 +2006,7 @@ class Members extends CP_Controller {
 
 		ee()->load->library('form_validation');
 		ee()->form_validation->set_error_delimiters('<p class="notice">', '</p>');
-;
+
 		ee()->form_validation->set_rules(
 			'group_title',
 			'lang:group_title',
@@ -2375,7 +2369,7 @@ class Members extends CP_Controller {
 		$data['join_date']	= $this->localize->now;
 		$data['language'] 	= $this->config->item('deft_lang');
 		$data['timezone'] 	= $this->config->item('default_site_timezone');
-		$data['date_format'] = $this->config->item('date_format') ? $this->config->item('date_format') : '%n/%j/%y';
+		$data['date_format'] = $this->config->item('date_format') ? $this->config->item('date_format') : '%n/%j/%Y';
 		$data['time_format'] = $this->config->item('time_format') ? $this->config->item('time_format') : '12';
 		$data['include_seconds'] = $this->config->item('include_seconds') ? $this->config->item('include_seconds') : 'n';
 
@@ -3378,15 +3372,6 @@ class Members extends CP_Controller {
 		$this->view->cp_page_title = lang('member_validation');
 
 		$this->jquery->tablesorter('.mainTable', '{headers: {1: {sorter: false}},	widgets: ["zebra"]}');
-
-		$this->javascript->output('
-			$("#toggle_all").click(function() {
-				var checked_status = this.checked;
-				$("input.toggle").each(function() {
-					this.checked = checked_status;
-				});
-			});
-		');
 
 		$group_members = $this->member_model->get_group_members(4);
 

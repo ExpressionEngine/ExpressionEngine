@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -86,8 +86,7 @@ class Wizard extends CI_Controller {
 		'ip'                    => '',
 		'database'              => 'mysql',
 		'db_conntype'           => '0',
-		'databases'             => array(),
-		'dbdriver'              => 'mysql',
+		'dbdriver'              => 'mysqli',
 		'db_hostname'           => 'localhost',
 		'db_username'           => '',
 		'db_password'           => '',
@@ -157,7 +156,7 @@ class Wizard extends CI_Controller {
 		// Third party constants
 		$addon_path = (ee()->config->item('addons_path'))
 			? rtrim(realpath(ee()->config->item('addons_path')), '/').'/'
-			: SYSPATH.'addons/';
+			: SYSPATH.'user/addons/';
 		define('PATH_ADDONS', $addon_path);
 		define('PATH_THIRD', $addon_path);
 
@@ -166,7 +165,7 @@ class Wizard extends CI_Controller {
 
 		$this->output->enable_profiler(FALSE);
 
-		$this->userdata['app_version'] = str_replace('.', '', $this->version);
+		$this->userdata['app_version'] = $this->version;
 
  		// Load the helpers we intend to use
  		$this->load->helper(array('form', 'url', 'html', 'directory', 'file', 'email', 'security', 'date', 'string'));
@@ -311,6 +310,21 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
+		// Check for PDO
+		if ( ! class_exists('PDO'))
+		{
+			$this->set_output('error', array('error' => lang('database_no_pdo')));
+			return FALSE;
+		}
+
+		// Check for JSON encode/decode
+		$json_errors = array();
+		if ( ! function_exists('json_encode') OR ! function_exists('json_decode'))
+		{
+			$this->set_output('error', array('error' => lang('json_parser_missing')));
+			return FALSE;
+		}
+
 		// Is the config file writable?
 		if ( ! is_really_writable($this->config->config_path))
 		{
@@ -321,7 +335,7 @@ class Wizard extends CI_Controller {
 		// Attempt to grab cache_path config if it's set
 		$cache_path = (ee()->config->item('cache_path'))
 			? ee()->config->item('cache_path')
-			: SYSPATH.'cache';
+			: SYSPATH.'user/cache';
 
 		// Is the cache folder writable?
 		if ( ! is_really_writable($cache_path))
@@ -351,18 +365,9 @@ class Wizard extends CI_Controller {
 				return FALSE;
 			}
 
-			// Fetch the database schemas
-			$this->get_supported_dbs();
-
 			// set the image path and theme folder path
 			$this->userdata['image_path'] = $this->image_path;
 			$this->userdata['theme_folder_path'] = $this->root_theme_path;
-
-			// We'll switch the default if MySQLi is available
-			if (function_exists('mysqli_connect'))
-			{
-				$this->userdata['dbdriver'] = 'mysqli';
-			}
 
 			// At this point we are reasonably sure that this is a first time
 			// installation. We will set the flag and bail out since we're done
@@ -392,9 +397,14 @@ class Wizard extends CI_Controller {
 		// EXCEPTIONS
 		// We need to deal with a couple possible issues.
 
-		// Fixes a bug in the installation script for 2.0.2, where periods were
-		// included
-		$config['app_version'] = str_replace('.', '', $config['app_version']);
+		// In 2.10.0, we started putting .'s in the app_verson config. The rest
+		// of the code assumes this to be true, so we need to tweak their old config.
+		if (strpos($config['app_version'], '.') === FALSE)
+		{
+			$cap = $config['app_version'];
+			$config['app_version'] = "{$cap[0]}.{$cap[1]}.{$cap[2]}";
+		}
+
 
 		// OK, now let's determine if the update files are available and whether
 		// the currently installed version is older then the most recent update
@@ -449,6 +459,8 @@ class Wizard extends CI_Controller {
 		}
 
 		// Before moving on, let's load the update file to make sure it's readable
+		$ud_file = 'ud_'.$this->next_ud_file.'.php';
+
 		if ( ! include(APPPATH.'updates/ud_'.$this->next_update.'.php'))
 		{
 			$this->set_output('error', array('error' => lang('unreadable_files')));
@@ -927,7 +939,7 @@ class Wizard extends CI_Controller {
 
 		$this->load->library('progress');
 
-		$next_version = $this->next_update[0].'.'.$this->next_update[1].'.'.$this->next_update[2];
+		$next_version = $this->next_update;
 		$this->progress->prefix = $next_version.': ';
 
 		// Is this a call from the Progress Indicator?
@@ -979,6 +991,8 @@ class Wizard extends CI_Controller {
 		}
 
 		// is there a survey for this version?
+		$survey_view = 'survey_'.$this->next_ud_file;
+
 		// if (file_exists(APPPATH.'views/surveys/survey_'.$this->next_update.'.php'))
 		// {
 		// 	$this->load->library('survey');
@@ -1040,7 +1054,7 @@ class Wizard extends CI_Controller {
 		if ($status !== TRUE)
 		{
 			$this->config->set_item('ud_next_step', $status);
-			$this->next_update = str_replace('.', '', $this->installed_version);
+			$this->next_update = $this->installed_version;
 		}
 		elseif ($this->remaining_updates == 1)
 		{
@@ -1097,43 +1111,44 @@ class Wizard extends CI_Controller {
 	 */
 	private function fetch_updates($current_version = 0)
 	{
-		if ( ! $fp = opendir(APPPATH.'updates/'))
+		$next_update = FALSE;
+		$next_ud_file = FALSE;
+
+		$remaining_updates = 0;
+
+		$path = APPPATH.'updates/';
+
+		if ( ! is_readable($path))
 		{
 			return FALSE;
 		}
 
-		$updates = array();
-		while (false !== ($file = readdir($fp)))
+		$files = new FilesystemIterator($path);
+
+		foreach ($files as $file)
 		{
-			if (substr($file, 0, 3) == 'ud_')
+			$file_name = $file->getFilename();
+
+			if (preg_match('/^ud_0*(\d+)_0*(\d+)_0*(\d+).php$/', $file_name, $m))
 			{
 				$file = str_replace('.php',  '', $file);
-				$file = str_replace('ud_', '', $file);
-				$file = substr($file, 0, 3);
 
-				if (is_numeric($file) AND $file > $current_version)
+				if (version_compare($file_version, $current_version, '>'))
 				{
-					$updates[] = $file;
+					$remaining_updates++;
+
+					if ( ! $next_update || version_compare($file_version, $next_update, '<'))
+					{
+						$next_update = $file_version;
+						$next_ud_file = substr($file_name, 3, -4);
+					}
 				}
 			}
 		}
 
-		closedir($fp);
-
-		sort($updates, SORT_NUMERIC);
-
-		// we don't need this since we have a $version class variable in the wizard that
-		// will always contain the latest version number
-		// $version = end($updates);
-		// $this->version = substr($version, 0, 1).'.'.substr($version, 1, 1).'.'.substr($version, 2);
-		$this->remaining_updates = count($updates);
-
-		reset($updates);
-
-		if ($this->remaining_updates > 0)
-		{
-			$this->next_update = current($updates);
-		}
+		$this->next_update = $next_update;
+		$this->next_ud_file = $next_ud_file;
+		$this->remaining_updates = $remaining_updates;
 
 		return TRUE;
 	}
@@ -1300,39 +1315,11 @@ class Wizard extends CI_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get a list of supported database types
-	 * @return array Array containing all supported database types
-	 */
-	private function get_supported_dbs()
-	{
-		$names = array('mysqli' => 'MySQLi', 'mysql' => 'MySQL');
-
-		$dbs = array();
-		foreach (get_filenames(APPPATH.'schema/') as $val)
-		{
-			$val = str_replace(array('_schema', '.php'), '', $val);
-
-			if (isset($names[$val]))
-			{
-				if (function_exists($names[$val].'_connect'))
-				{
-					$dbs[$val] = $names[$val];
-				}
-			}
-		}
-
-		$this->userdata['databases'] = $dbs;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Install the default site theme
 	 * @return boolean  TRUE if successful, FALSE if not
 	 */
 	function install_site_theme()
 	{
-		// TODO-WB: Rename themes
 		$this->userdata['theme'] = (IS_CORE)
 			? 'agile_records_core'
 			: 'agile_records';
@@ -1712,11 +1699,13 @@ class Wizard extends CI_Controller {
 			'webmaster_name'            => '',
 			'channel_nomenclature'      => 'channel',
 			'max_caches'                => '150',
+			'cache_driver'					=> 'file',
 			'captcha_url'               => $captcha_url,
 			'captcha_path'              => $this->userdata['captcha_path'],
 			'captcha_font'              => 'y',
 			'captcha_rand'              => 'y',
 			'captcha_require_members'   => 'n',
+			'require_captcha'           => 'n',
 			'enable_db_caching'         => 'n',
 			'enable_sql_caching'        => 'n',
 			'force_query_string'        => 'n',
@@ -1766,7 +1755,6 @@ class Wizard extends CI_Controller {
 			'email_console_timelock'    => '5',
 			'log_email_console_msgs'    => 'y',
 			'cp_theme'                  => 'default',
-			'email_module_captchas'     => 'n',
 			'log_search_terms'          => 'y',
 			'un_min_len'                => '4',
 			'pw_min_len'                => '5',
@@ -1802,6 +1790,8 @@ class Wizard extends CI_Controller {
 			'sig_img_max_width'         => '480',
 			'sig_img_max_height'        => '80',
 			'sig_img_max_kb'            => '30',
+			'prv_msg_enabled'           => 'y',
+			'prv_msg_allow_attachments' => 'y',
 			'prv_msg_upload_path'       => $this->userdata['pm_path'],
 			'prv_msg_max_attachments'   => '3',
 			'prv_msg_attach_maxsize'    => '250',
@@ -1815,7 +1805,7 @@ class Wizard extends CI_Controller {
 			'save_tmpl_revisions'       => 'n',
 			'max_tmpl_revisions'        => '5',
 			'save_tmpl_files'           => 'n',
-			'tmpl_file_basepath'        => realpath('./templates/').DIRECTORY_SEPARATOR,
+			'tmpl_file_basepath'        => realpath('./user/templates/').DIRECTORY_SEPARATOR,
 			'deny_duplicate_data'       => 'y',
 			'redirect_submitted_links'  => 'n',
 			'enable_censoring'          => 'n',
@@ -1875,6 +1865,7 @@ class Wizard extends CI_Controller {
 			'captcha_font',
 			'captcha_rand',
 			'captcha_require_members',
+			'require_captcha',
 			'enable_db_caching',
 			'enable_sql_caching',
 			'force_query_string',
@@ -1920,7 +1911,6 @@ class Wizard extends CI_Controller {
 			'email_console_timelock',
 			'log_email_console_msgs',
 			'cp_theme',
-			'email_module_captchas',
 			'log_search_terms',
 			'deny_duplicate_data',
 			'redirect_submitted_links',
@@ -1985,7 +1975,6 @@ class Wizard extends CI_Controller {
 			'new_member_notification',
 			'mbr_notification_emails',
 			'require_terms_of_service',
-			'use_membership_captcha',
 			'default_member_group',
 			'profile_trigger',
 			'member_theme',
@@ -2011,6 +2000,8 @@ class Wizard extends CI_Controller {
 			'sig_img_max_width',
 			'sig_img_max_height',
 			'sig_img_max_kb',
+			'prv_msg_enabled',
+			'prv_msg_allow_attachments',
 			'prv_msg_upload_path',
 			'prv_msg_max_attachments',
 			'prv_msg_attach_maxsize',

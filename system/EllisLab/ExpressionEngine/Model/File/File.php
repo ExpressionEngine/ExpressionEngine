@@ -109,9 +109,49 @@ class File extends Model {
 		return rtrim($this->getUploadDestination()->url, '/') . '/' . $this->rel_path;
 	}
 
-	protected function onBeforeDelete()
+	public function onBeforeDelete()
 	{
 		unlink($this->getAbsolutePath());
+	}
+
+	/**
+	* Determines if the member group (by ID) has access permission to this
+	* upload destination.
+	* @see UploadDestination::memberGroupHasAccess
+	*
+	* @throws InvalidArgumentException
+	* @param int|MemberGroup $group_id The Meber Group ID
+	* @return bool TRUE if access is granted; FALSE if access denied
+	*/
+	public function memberGroupHasAccess($group)
+	{
+		$dir = $this->getUploadDestination();
+		if ( ! $dir)
+		{
+			return FALSE;
+		}
+
+		return $dir->memberGroupHasAccess($group);
+	}
+
+	/**
+	 * Determines if the file exists
+	 *
+	 * @return bool TRUE if it does FALSE otherwise
+	 */
+	public function exists()
+	{
+		return file_exists($this->getAbsolutePath());
+	}
+
+	/**
+	 * Determines if the file is writable
+	 *
+	 * @return bool TRUE if it is FALSE otherwise
+	 */
+	public function isWritable()
+	{
+		return is_writable($this->getAbsolutePath());
 	}
 
 }

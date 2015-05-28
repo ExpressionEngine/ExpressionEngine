@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -124,22 +124,8 @@ class Channel {
 	{
 		$tag = ($identifier == '') ? ee()->TMPL->tagproper : ee()->TMPL->tagproper.$identifier;
 
-		if (ee()->TMPL->fetch_param('dynamic_parameters') !== FALSE && (! empty($_POST) OR ! empty($_GET)))
-		{
-			foreach (explode('|', ee()->TMPL->fetch_param('dynamic_parameters')) as $var)
-			{
-				if (ee()->input->get_post($var) && in_array($var, $this->_dynamic_parameters))
-				{
-					$tag .= $var.'="'.ee()->input->get_post($var).'"';
-				}
-
-				if (strncmp($var, 'search:', 7) == 0 && ee()->input->get_post($var))
-				{
-					$tag .= $var.'="'.substr(ee()->input->get_post($var), 7).'"';
-				}
-			}
-		}
-
+		$tag .= $this->fetch_dynamic_params();
+		
 		return ee()->cache->get('/'.$this->_sql_cache_prefix.'/'.md5($tag.$this->uri));
 	}
 
@@ -533,6 +519,91 @@ class Channel {
 		unset($this->cat_array);
 	}
 
+	// --------------------------------------------------------------------
+
+	/**
+	 * Fetch dynamic parameters
+	 *
+	 * Processes dynamic parameters, setting values based on $_GET/$_POST
+	 * Returns a string formatted for use in a tag and sets adds them to 
+	 * TMPL->tagparams 
+	 *
+	 * @return	string	The dynamic parameters formatted for use in a tag
+	 */
+	function fetch_dynamic_params()
+	{
+		$tag = '';
+
+		if (ee()->TMPL->fetch_param('dynamic_parameters') === FALSE OR ( empty($_POST) && empty($_GET)))
+		{
+			return $tag;
+		}
+		
+		// Swap out a placeholder for [&] and [|]
+		$placeholders = array('[*PIPE*]', '[*AMP*]');
+		$dynamic_params = explode('|', str_replace(array('[|]', '[&]'), $placeholders, ee()->TMPL->fetch_param('dynamic_parameters')));
+		
+		foreach ($dynamic_params as $var)
+		{
+			// We default to pipes for joining arrays
+			$modifier = '|';
+
+			// Do we have a pipe or ampersand?
+			if (strpos($var, '[*') !== FALSE)
+			{
+				if (substr($var, -8) == '[*PIPE*]')
+				{
+						$var = substr($var, 0, -8);
+						$modifier = '|';						
+				}
+				elseif (substr($var, -7) == '[*AMP*]')
+				{
+						$var = substr($var, 0, -7);
+						$modifier = '&';
+				}
+			}
+
+			if ($this->EE->input->get_post($var))
+			{
+				if (in_array($var, $this->_dynamic_parameters))
+				{
+					// Allow arrays
+					$param_value = $this->EE->input->get_post($var);
+				
+					if (is_array($param_value))
+					{
+						// Drop empty, leave 0 
+						$param_value = array_filter($param_value, 'strlen');
+						$param_value = rtrim(implode($param_value, $modifier), $modifier);
+					}
+		
+					$tag .= $var.'="'.$param_value.'"';
+					ee()->TMPL->tagparams[$var] = $param_value;
+				}
+				elseif (strncmp($var, 'search:', 7) == 0)
+				{
+					// Search uses double ampersands
+					$modifier = ($modifier == '&') ? '&&' : '|';
+					
+					// Allow arrays
+					$param_value = $this->EE->input->get_post($var);
+				
+					if (is_array($param_value))
+					{
+						$param_value = array_filter($param_value, 'strlen');
+						$param_value = rtrim(implode($param_value, $modifier), $modifier);
+					}
+
+					$tag .= substr($var, 7).'="'.$param_value.'"';
+					ee()->TMPL->search_fields[substr($var, 7)] = $param_value;
+				}
+			}
+		}
+
+		return $tag;
+	}
+
+
 	// ------------------------------------------------------------------------
 
 
@@ -655,22 +726,9 @@ class Channel {
 		/**------
 		/**  Do we allow dynamic POST variables to set parameters?
 		/**------*/
-		if (ee()->TMPL->fetch_param('dynamic_parameters') !== FALSE && (! empty($_POST) OR ! empty($_GET)))
-		{
-			foreach (explode('|', ee()->TMPL->fetch_param('dynamic_parameters')) as $var)
-			{
-				if (ee()->input->get_post($var) && in_array($var, $this->_dynamic_parameters))
-				{
-					ee()->TMPL->tagparams[$var] = ee()->input->get_post($var);
-				}
-
-				if (strncmp($var, 'search:', 7) == 0 && ee()->input->get_post($var))
-				{
-					ee()->TMPL->search_fields[substr($var, 7)] = ee()->input->get_post($var);
-				}
-			}
-		}
-
+		
+		$this->fetch_dynamic_params();
+		
 		/**------
 		/**  Parse the URL query string
 		/**------*/
@@ -2983,6 +3041,9 @@ class Channel {
 					$chunk = str_replace(LD.'count'.RD, $this->category_count, $chunk);
 				}
 
+				// {switch=}
+				$chunk = ee()->TMPL->parse_switch($chunk, $this->category_count - 1);
+
 				/** --------------------------------
 				/**  {total_results}
 				/** --------------------------------*/
@@ -3775,7 +3836,9 @@ class Channel {
 			'path'			=> $path,
 			'template'		=> $template,
 			'channel_array'	=> $channel_array
-		));
+			),
+			$active_cat
+		);
 	}
 
 	// ------------------------------------------------------------------------
@@ -3783,7 +3846,7 @@ class Channel {
 	/**
 	  *  Category Sub-tree
 	  */
-	public function category_subtree($cdata = array())
+	public function category_subtree($cdata = array(), $active_cat)
 	{
 		$default = array('parent_id', 'path', 'template', 'depth', 'channel_array', 'show_empty');
 
@@ -3806,8 +3869,11 @@ class Channel {
 		$total_results = count($this->cat_array);
 
 		// Get category ID from URL for {if active} conditional
-		ee()->load->helper('segment');
-		$active_cat = parse_category($this->query_string);
+		if ($active_cat === NULL)
+		{
+			$active_cat = parse_category($this->query_string);
+			ee()->load->helper('segment');
+		}
 
 		foreach($this->cat_array as $key => $val)
 		{
@@ -3916,6 +3982,9 @@ class Channel {
 					$chunk = str_replace(LD.'count'.RD, $this->category_count, $chunk);
 				}
 
+				// {switch=}
+				$chunk = ee()->TMPL->parse_switch($chunk, $this->category_count - 1);
+
 				/** --------------------------------
 				/**  {total_results}
 				/** --------------------------------*/
@@ -3961,7 +4030,9 @@ class Channel {
 					'template'		=> $template,
 					'depth' 		=> $depth + 2,
 					'channel_array'	=> $channel_array
-				));
+					),
+					$active_cat
+				);
 
 				if (isset($fillable_entries) && $fillable_entries == 'y')
 				{

@@ -686,7 +686,7 @@ class EE_Form_validation {
 	public function valid_date($date)
 	{
 		ee()->load->library('localize');
-		return (ee()->localize->string_to_timestamp($date) != FALSE);
+		return (ee()->localize->string_to_timestamp($date, TRUE, ee()->localize->get_date_format()) != FALSE);
 	}
 
 	// --------------------------------------------------------------------
@@ -1904,6 +1904,62 @@ class EE_Form_validation {
 	function integer($str)
 	{
 		return (bool)preg_match( '/^[\-+]?[0-9]+$/', $str);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	* Greater than
+	*
+	* @param	string
+	* @param	int
+	* @return	bool
+	*/
+	public function greater_than($str, $min)
+	{
+		return is_numeric($str) ? ($str > $min) : FALSE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	* Equal to or Greater than
+	*
+	* @param	string
+	* @param	int
+	* @return	bool
+	*/
+	public function greater_than_equal_to($str, $min)
+	{
+		return is_numeric($str) ? ($str >= $min) : FALSE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	* Less than
+	*
+	* @param	string
+	* @param	int
+	* @return	bool
+	*/
+	public function less_than($str, $max)
+	{
+		return is_numeric($str) ? ($str < $max) : FALSE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	* Equal to or Less than
+	*
+	* @param	string
+	* @param	int
+	* @return	bool
+	*/
+	public function less_than_equal_to($str, $max)
+	{
+		return is_numeric($str) ? ($str <= $max) : FALSE;
 	}
 
 	// --------------------------------------------------------------------

@@ -1382,7 +1382,8 @@ class EE_Email {
 					return FALSE;
 				}
 
-				$ctype = $this->_mime_types(pathinfo($filename, PATHINFO_EXTENSION));
+				ee()->load->library('mime_type');
+				$ctype = ee()->mime_type->ofFile($filename);
 				$file_content = fread($fp, $file);
 				fclose($fp);
 			}
@@ -2148,35 +2149,6 @@ class EE_Email {
 		{
 			$this->_debug_msg[] = str_replace('%s', $val, $line).'<br />';
 		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Mime Types
-	 *
-	 * @param	string
-	 * @return	string
-	 */
-	protected function _mime_types($ext = '')
-	{
-		static $mimes;
-
-		$ext = strtolower($ext);
-
-		if ( ! is_array($mimes))
-		{
-			include(APPPATH.'config/mimes.php');
-		}
-
-		if (isset($mimes[$ext]))
-		{
-			return is_array($mimes[$ext])
-				? current($mimes[$ext])
-				: $mimes[$ext];
-		}
-
-		return 'application/x-unknown-content-type';
 	}
 
 	// --------------------------------------------------------------------

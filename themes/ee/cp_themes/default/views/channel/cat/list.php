@@ -9,7 +9,7 @@
 		<?=ee('Alert')->getAllInlines()?>
 		<div class="tbl-list-wrap">
 			<div class="tbl-list-ctrl">
-				<label><span>select all</span> <input type="checkbox"></label>
+				<label class="ctrl-all"><span>select all</span> <input type="checkbox"></label>
 			</div>
 			<div class="nestable">
 				<ul class="tbl-list">

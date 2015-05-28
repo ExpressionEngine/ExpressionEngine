@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -613,7 +613,7 @@ JSC;
 		{
 			ee()->lang->loadfile('filemanager');
 			return sprintf(
-				lang('no_upload_directories'),
+				lang('no_upload_directories_for_fieldtype'),
 				BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
 			);
 		}
@@ -652,7 +652,7 @@ JSC;
 			ee()->form_validation->set_message(
 				'_validate_file_settings',
 				sprintf(
-					lang('no_upload_directories'),
+					lang('no_upload_directories_for_fieldtype'),
 					BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
 				)
 			);

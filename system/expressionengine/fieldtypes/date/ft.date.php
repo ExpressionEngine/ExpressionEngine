@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -62,11 +62,6 @@ class Date_ft extends EE_Fieldtype {
 			$data = $this->_parse_date($data);
 		}
 
-		if (empty($data))
-		{
-			$data = 0;
-		}
-
 		return $data;
 	}
 
@@ -102,7 +97,8 @@ class Date_ft extends EE_Fieldtype {
 			$data = $this->_parse_date($data);
 		}
 
-		if ($data === FALSE)
+		if ($data === FALSE
+			OR (is_numeric($data) && ($data > 2147483647 OR $data < -2147483647)))
 		{
 			return lang('invalid_date');
 		}
@@ -197,7 +193,57 @@ class Date_ft extends EE_Fieldtype {
 
 		if (REQ == 'CP')
 		{
-			ee()->javascript->set_global('date', $date_js_globals);
+			ee()->javascript->set_global('date.date_format', ee()->localize->get_date_format());
+			ee()->javascript->set_global('lang.date.months.full', array(
+				lang('january'),
+				lang('february'),
+				lang('march'),
+				lang('april'),
+				lang('may'),
+				lang('june'),
+				lang('july'),
+				lang('august'),
+				lang('september'),
+				lang('october'),
+				lang('november'),
+				lang('december')
+			));
+			ee()->javascript->set_global('lang.date.months.abbreviated', array(
+				lang('jan'),
+				lang('feb'),
+				lang('mar'),
+				lang('apr'),
+				lang('may'),
+				lang('june'),
+				lang('july'),
+				lang('aug'),
+				lang('sept'),
+				lang('oct'),
+				lang('nov'),
+				lang('dec')
+			));
+			ee()->javascript->set_global('lang.date.days', array(
+				lang('su'),
+				lang('mo'),
+				lang('tu'),
+				lang('we'),
+				lang('th'),
+				lang('fr'),
+				lang('sa'),
+			));
+			ee()->cp->add_js_script(array(
+				'file' => array('cp/v3/date_picker'),
+			));
+
+			$localized = ( ! isset($_POST[$date_local])) ? (($localize === TRUE) ? 'y' : 'n') : ee()->input->post($date_local, TRUE);
+
+			return ee('View')->make('publish')->render(array(
+				'has_localize_option' => ( ! in_array($this->field_name, $special)),
+				'field_name' => $this->field_name,
+				'value' => $custom_date,
+				'localize_option_name' => $date_local,
+				'localized' => $localized,
+			));
 		}
 		elseif ( ! ee()->session->cache(__CLASS__, 'date_js_loaded'))
 		{
@@ -256,19 +302,6 @@ class Date_ft extends EE_Fieldtype {
 		if ( ! $is_grid)
 		{
 			$input_class .= ' field';
-		}
-
-		if (REQ == 'CP')
-		{
-			$localized = ( ! isset($_POST[$date_local])) ? (($localize === TRUE) ? 'y' : 'n') : ee()->input->post($date_local, TRUE);
-
-			return ee('View')->make('publish')->render(array(
-				'has_localize_option' => ( ! in_array($this->field_name, $special)),
-				'field_name' => $this->field_name,
-				'value' => $custom_date,
-				'localize_option_name' => $date_local,
-				'localized' => $localized,
-			));
 		}
 
 		$r = form_input(array(

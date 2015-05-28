@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -112,12 +112,12 @@ class Member_images extends Member {
 		}
 
 		// Do we have what we need in $_POST?
-		if ( ! ee()->input->post('body'))
+		$body = ee()->db->escape_str(ee()->input->post('body', TRUE));
+		if (empty($body)
+			&& (empty($_FILES) && ee()->config->item('sig_allow_img_upload') == 'y'))
 		{
 			return ee()->functions->redirect($this->_member_path('edit_signature'));
 		}
-
-		$body = ee()->db->escape_str(ee()->input->post('body', TRUE));
 
 		$maxlength = (ee()->config->item('sig_maxlength') == 0)
 			? 10000

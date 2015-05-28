@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -62,57 +62,49 @@ class Rte_lib {
 			show_404();
 		}
 
+		ee()->load->model(array('rte_toolset_model','rte_tool_model'));
 		ee()->output->enable_profiler(FALSE);
 
-		ee()->load->model(array('rte_toolset_model','rte_tool_model'));
-
-		if (count($_POST))
-		{
-			// set up the validation
-			ee()->load->library('form_validation');
-			ee()->form_validation->setCallbackObject($this);
-			ee()->form_validation->set_rules('toolset_name', 'lang:tool_set_name', 'required|callback__valid_name|callback__unique_name');
-
-			if (AJAX_REQUEST)
-			{
-				ee()->form_validation->run_ajax();
-				exit;
-			}
-			elseif (ee()->form_validation->run() === FALSE)
-			{
-				ee('Alert')->makeInline('toolsets-form')
-					->asIssue()
-					->withTitle(lang('toolset_error'))
-					->addToBody(lang('toolset_error_desc'))
-					->now();
-			}
-			else
-			{
-				return $this->save_toolset();
-			}
-		}
-
-		$vars = array(
-			'form_action'	=> '',
-			'header'		=> '',
-			'toolset_name'	=> set_value('toolset_name'),
-			'tools'			=> array(),
-			'btn_save_text'	=> '',
+		ee()->load->library('form_validation');
+		ee()->form_validation->setCallbackObject($this);
+		ee()->form_validation->set_rules(
+			'toolset_name',
+			'lang:tool_set_name',
+			'required|callback__valid_name|callback__unique_name'
 		);
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			return $this->save_toolset();
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('toolset_error'))
+				->addToBody(lang('toolset_error_desc'))
+				->now();
+		}
 
 		// new toolset?
 		if ($toolset_id == 0)
 		{
-			$vars['form_action'] = cp_url('addons/settings/rte/new_toolset');
-			$vars['header'] = 'create_tool_set_header';
-			$vars['btn_save_text'] = 'create_tool_set';
+			$vars['base_url'] = cp_url('addons/settings/rte/new_toolset');
+			$vars['cp_page_title_alt'] = lang('create_tool_set_header');
+			$vars['save_btn_text'] = 'create_tool_set';
 			$toolset['tools'] = array();
+			$toolset_name = '';
 		}
 		else
 		{
-			$vars['form_action'] = cp_url('addons/settings/rte/edit_toolset', array('toolset_id' => $toolset_id));
-			$vars['header'] = 'edit_tool_set_header';
-			$vars['btn_save_text'] = 'edit_tool_set';
+			$vars['base_url'] = cp_url('addons/settings/rte/edit_toolset', array('toolset_id' => $toolset_id));
+			$vars['cp_page_title_alt'] = lang('edit_tool_set_header');
+			$vars['save_btn_text'] = 'edit_tool_set';
 
 			// make sure user can access the existing toolset
 			if ( ! ee()->rte_toolset_model->member_can_access($toolset_id))
@@ -122,28 +114,56 @@ class Rte_lib {
 
 			// grab the toolset
 			$toolset = ee()->rte_toolset_model->get($toolset_id);
-			$vars['toolset_name'] = set_value('toolset_name', $toolset['name']);
+			$toolset_name = $toolset['name'];
 		}
 
-		// get list of enabled tools
-		$enabled_tools = ee()->rte_tool_model->get_tool_list(TRUE);
-
-		foreach ($enabled_tools as $tool)
+		$tools = array();
+		foreach (ee()->rte_tool_model->get_tool_list(TRUE) as $tool)
 		{
 			$name_key = strtolower($tool['class']);
 			$desc_key = $name_key . '_desc';
 
-			$selected = set_value('tools', $toolset['tools']);
+			$tool_name = (lang($name_key) != $name_key) ? lang($name_key) : $tool['name'];
+			$tool_desc = (lang($desc_key) != $desc_key) ? lang($desc_key) : '';
 
-			$vars['tools'][] = array(
-				'id'		=> $tool['tool_id'],
-				'selected'	=> in_array($tool['tool_id'], $selected),
-				'name'		=> (lang($name_key) != $name_key) ? lang($name_key) : $tool['name'],
-				'desc'		=> (lang($desc_key) != $desc_key) ? lang($desc_key) : ''
-			);
+			$tools[$tool['tool_id']] = $tool_name;
+			if ($tool_desc)
+			{
+				$tools[$tool['tool_id']] .= ' <i>&mdash; ' . $tool_desc . '</i>';
+			}
 		}
 
-		return ee()->load->view('edit_toolset', $vars, TRUE);
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'tool_set_name',
+					'desc' => 'tool_set_name_desc',
+					'fields' => array(
+						'toolset_name' => array(
+							'type' => 'text',
+							'value' => $toolset_name,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'choose_tools',
+					'desc' => 'choose_tools_desc',
+					'fields' => array(
+						'tools' => array(
+							'type' => 'checkbox',
+							'choices' => $tools,
+							'value' => $toolset['tools'],
+							'wrap' => FALSE
+						)
+					)
+				)
+			)
+		);
+
+		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text_working = 'btn_saving';
+		return ee()->cp->render('box_wrapper', $vars, TRUE);
 	}
 
 	// --------------------------------------------------------------------
@@ -190,7 +210,7 @@ class Rte_lib {
 
 			if ( ! $orig || $is_members && $orig['member_id'] != ee()->session->userdata('member_id'))
 			{
-				ee('Alert')->makeInline('toolsets-form')
+				ee('Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('toolset_error'))
 					->addToBody(lang('toolset_update_failed'))
@@ -202,7 +222,7 @@ class Rte_lib {
 		// save it
 		if (ee()->rte_toolset_model->save_toolset($toolset, $toolset_id) === FALSE)
 		{
-			ee('Alert')->makeInline('toolsets-form')
+			ee('Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('toolset_error'))
 				->addToBody(lang('toolset_update_failed'))
@@ -212,7 +232,7 @@ class Rte_lib {
 
 		if ($toolset_id)
 		{
-			ee('Alert')->makeInline('toolsets-form')
+			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('toolset_updated'))
 				->addToBody(lang('toolset_updated_desc'))
@@ -220,7 +240,7 @@ class Rte_lib {
 		}
 		else
 		{
-			ee('Alert')->makeInline('toolsets-form')
+			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('toolset_created'))
 				->addToBody(sprintf(lang('toolset_created_desc'), $toolset['name']))

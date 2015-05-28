@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -314,8 +314,8 @@ class Admin_content extends CP_Controller {
 			}
 		}
 
-		$channel_fields = ee('Model')->get('ChannelFieldStructure')
-			->filter('ChannelFieldStructure.group_id', $channel->field_group)
+		$channel_fields = ee('Model')->get('ChannelField')
+			->filter('ChannelField.group_id', $channel->field_group)
 			->all();
 
 		$vars['search_excerpt_options'] = array();

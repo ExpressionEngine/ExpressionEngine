@@ -34,6 +34,10 @@ class TemplateRoute extends Model {
 	protected static $_primary_key = 'route_id';
 	protected static $_table_name = 'template_routes';
 
+	protected static $_type_columns = array(
+		'route_required' => 'boolString'
+	);
+
 	protected static $_relationships = array(
 		'Template' => array(
 			'type' => 'BelongsTo'
@@ -51,42 +55,5 @@ class TemplateRoute extends Model {
 	protected $route;
 	protected $route_parsed;
 	protected $route_required;
-
-	/**
-	 * A setter for the route_required property
-	 *
-	 * @param str|bool $new_value Accept TRUE or 'y' for 'yes' or FALSE or 'n'
-	 *   for 'no'
-	 * @throws InvalidArgumentException if the provided argument is not a
-	 *   boolean or is not 'y' or 'n'.
-	 * @return void
-	 */
-	protected function set__route_required($new_value)
-	{
-		if ($new_value === TRUE || $new_value == 'y')
-		{
-			$this->route_required = 'y';
-		}
-
-		elseif ($new_value === FALSE || $new_value == 'n')
-		{
-			$this->route_required = 'n';
-		}
-
-		else
-		{
-			throw new InvalidArgumentException('route_required must be TRUE or "y", or FALSE or "n"');
-		}
-	}
-
-	/**
-	 * A getter for the route_required property
-	 *
-	 * @return bool TRUE if this is the default; FALSE if not
-	 */
-	protected function get__route_required()
-	{
-		return ($this->route_required == 'y');
-	}
 
 }

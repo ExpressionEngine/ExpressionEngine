@@ -8,6 +8,7 @@ $lang = array(
 'completed'       => 'Completed',
 'stopped'         => 'Stopped',
 'required_fields' => '✱ Required Fields',
+'required_field'  =>'required field',
 'subtitle_step'   => 'Step %d of %d',
 
 // Install Form
@@ -57,12 +58,14 @@ $lang = array(
 
 // Errors
 'invalid_action'                     => 'The action you have requested is not valid.',
-'unreadable_config'                  => 'Your config.php file is unreadable. Please make sure the file exists and that the file permissions to 666 (or the equivalent write permissions for your server) on the following file: expressionengine/config/config.php',
-'unwritable_config'                  => 'Your config.php file does not appear to have the proper file permissions. Please set the file permissions to 666 (or the equivalent write permissions for your server) on the following file: expressionengine/config/config.php',
+'unreadable_config'                  => 'Your config.php file is unreadable. Please make sure the file exists and that the file permissions to 666 (or the equivalent write permissions for your server) on the following file: user/config/config.php',
+'unwritable_config'                  => 'Your config.php file does not appear to have the proper file permissions. Please set the file permissions to 666 (or the equivalent write permissions for your server) on the following file: user/config/config.php',
+'json_parser_missing'                => 'Your instance of PHP does not support the <code>json_encode</code> and <code>json_decode</code> methods.',
 'unwritable_cache_folder'            => 'Your cache folder does not appear to have proper permissions. Please set the folder permissions to 777 (or the equivalent write permissions for your server) on the following folder: expressionengine/cache',
 'database_no_config'                 => 'Unable to connect to your database using the configuration settings found in the following file: config/config.php file. Please correct the settings so that the update can proceed.',
 'database_no_data'                   => 'Unable to locate any database connection information.',
 'database_no_connect'                => 'Unable to connect to your database using the configuration settings you submitted.',
+'database_no_pdo'                    => 'Unable to connect to your database. Please ask your server administrator to enable <a href="http://php.net/manual/en/book.pdo.php">PDO</a>.',
 'database_prefix_invalid_characters' => 'There are invalid characters in the database prefix. Only 0-9, a-z, A-Z, $, and _ are allowed.',
 'database_prefix_contains_exp_'      => 'The database prefix cannot contain the string "exp_".',
 'database_prefix_too_long'           => 'The database prefix cannot be longer than 30 characters.',

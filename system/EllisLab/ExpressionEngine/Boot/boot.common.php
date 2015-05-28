@@ -180,7 +180,7 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 		}
 
 		// Check various paths for config files
-		$basepath = (defined('EE_APPPATH')) ? APPPATH : SYSPATH;
+		$basepath = (defined('EE_APPPATH')) ? APPPATH : SYSPATH.'user/';
 
 		// Fetch the config file
 		if ( ! file_exists($basepath.'config/config.php'))

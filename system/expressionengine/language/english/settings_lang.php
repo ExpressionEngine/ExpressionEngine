@@ -62,10 +62,19 @@ $lang = array(
  */
 
 'site_name' =>
-'Website name',
+'Name',
 
 'site_name_desc' =>
-'Used for <mark>{site_name}</mark>',
+'Full descriptive name of this site.',
+
+'site_short_name' =>
+'Short name',
+
+'site_short_name_desc' =>
+'Short name for this site.<br /><i>No spaces. Underscores and dashes are allowed.</i>',
+
+'site_short_name_taken' =>
+'This short name is already taken.',
 
 'site_online' =>
 'Website online?',
@@ -461,6 +470,55 @@ $lang = array(
 'channel_manager' =>
 'Channel Manager',
 
+'image_resizing' =>
+'Image Resizing',
+
+'image_resize_protocol' =>
+'Protocol',
+
+'image_resize_protocol_desc' =>
+'Ask your web host for server compatibility.',
+
+'gd' =>
+'GD',
+
+'gd2' =>
+'GD 2',
+
+'netpbm' =>
+'NetPBM',
+
+'imagemagick' =>
+'ImageMagick',
+
+'image_library_path' =>
+'Converter path',
+
+'image_library_path_desc' =>
+'Full path location of the <mark>image program</mark>.</em>
+<em><b>Required</b> for ImageMagick and NetPBM.',
+
+'invalid_image_library_path' =>
+'This field must contain a valid path to an image processing library if ImageMagick or NetPBM is the selected protocol.',
+
+'thumbnail_suffix' =>
+'Thumbnail suffix',
+
+'thumbnail_suffix_desc' =>
+'Added to all auto-generated thumbnails. <b>Example</b>: photo_thumb.jpg',
+
+'enable_emoticons' =>
+'Enable emoticons?',
+
+'enable_emoticons_desc' =>
+'When set to <b>yes</b>, text based emoticons will be converted to image based emoticons.',
+
+'emoticon_url' =>
+'<abbr title="Unified Resource Locator">URL</abbr>',
+
+'emoticon_url_desc' =>
+'<abbr title="Unified Resource Locator">URL</abbr> location of the <mark>emoticon</mark> directory.',
+
 /**
  * Comment Settings
  */
@@ -590,12 +648,6 @@ $lang = array(
 
 'req_mbr_activation_opt_manual' =>
 'Manually moderated by administrator',
-
-'use_membership_captcha' =>
-'Enable registration <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr>?',
-
-'use_membership_captcha_desc' =>
-'When set to <b>enable</b>, users will be required to pass a <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> during registration.',
 
 'require_terms_of_service' =>
 'Require terms of service?',
@@ -800,6 +852,12 @@ $lang = array(
 
 'captcha_settings_title' =>
 '<abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> Settings',
+
+'require_captcha' =>
+'Require <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr>?',
+
+'require_captcha_desc' =>
+'When set to <b>yes</b>, visitors will be required to fill in a <abbr title="Completely Automated Public Turing test to tell Computers and Humans Apart">CAPTCHA</abbr> field for all front-end forms.',
 
 'captcha_font' =>
 'Use TrueType font?',
@@ -1036,249 +1094,6 @@ $lang = array(
 
 'banishment_message_desc' =>
 'Displayed using <mark>user messages</mark> template.',
-
-/**
- * Uploads
- */
-
-'all_upload_dirs' =>
-'All Upload Directories',
-
-'file_manager' =>
-'File Manager',
-
-'upload_id' =>
-'ID#',
-
-'upload_directory' =>
-'Directory',
-
-'upload_manage' =>
-'Manage',
-
-'upload_btn_view' =>
-'view',
-
-'upload_btn_edit' =>
-'edit',
-
-'upload_btn_sync' =>
-'sync',
-
-'upload_remove_modal_upload_directory' =>
-'Upload directory',
-
-'upload_remove_modal_directories' =>
-'directories',
-
-'upload_directories_removed' =>
-'Upload directories removed',
-
-'upload_directories_removed_desc' =>
-'%d upload directories were removed.',
-
-'upload_directories_module_error' =>
-'Some directories could not be deleted because they belong to a module',
-
-'upload_directories_module_owner' =>
-'%s is owned by the %s module',
-
-'no_upload_directories' =>
-'No Upload Directories',
-
-'create_upload_directory' =>
-'Create Upload Directory',
-
-'edit_upload_directory' =>
-'Edit Upload Directory',
-
-'upload_name' =>
-'Directory name',
-
-'upload_name_desc' =>
-'Be descriptive, like <b>photos</b> or <b>documents</b>.',
-
-'upload_url' =>
-'Upload directory',
-
-'upload_url_desc' =>
-'<abbr title="Uniform Resource Location">URL</abbr> location of this <mark>upload</mark> directory.',
-
-'upload_path' =>
-'Upload path',
-
-'upload_path_desc' =>
-'Full path location of this <mark>upload</mark> directory.',
-
-'upload_allowed_types' =>
-'Allowed file types?',
-
-'upload_allowed_types_opt_images' =>
-'Images only',
-
-'upload_allowed_types_opt_all' =>
-'All file types',
-
-'file_limits' =>
-'File Limits',
-
-'upload_file_size' =>
-'File size',
-
-'upload_file_size_desc' =>
-'Maximum file size in megabytes.',
-
-'upload_image_width' =>
-'Image width',
-
-'upload_image_width_desc' =>
-'Maximum image width in pixels.',
-
-'upload_image_height' =>
-'Image height',
-
-'upload_image_height_desc' =>
-'Maximum image height in pixels.',
-
-'upload_image_manipulations' =>
-'Image Manipulations',
-
-'constrain_or_crop' =>
-'Constrain or Crop',
-
-'constrain_or_crop_desc' =>
-'Changes to images in this <mark>upload</mark> directory, made upon upload.',
-
-'image_manip_name' =>
-'Short Name',
-
-'image_manip_name_desc' =>
-'Short name of this manipulation',
-
-'image_manip_type' =>
-'Type',
-
-'image_manip_type_desc' =>
-'Type of manipulation',
-
-'image_manip_type_opt_constrain' =>
-'Constrain (full image resized)',
-
-'image_manip_type_opt_crop' =>
-'Crop (part of image)',
-
-'image_manip_width' =>
-'Width',
-
-'image_manip_width_desc' =>
-'Final width of image',
-
-'image_manip_height' =>
-'Height',
-
-'image_manip_height_desc' =>
-'Final height of image',
-
-'no_manipulations' =>
-'No manipulations created',
-
-'add_manipulation' =>
-'Add New Manipulation',
-
-'upload_privileges' =>
-'Upload Privileges',
-
-'upload_member_groups' =>
-'Allowed member groups',
-
-'upload_member_groups_desc' =>
-'The following user groups are allowed to upload to this directory.</em>
-<em>Super Administrators are <b>always</b> allowed.',
-
-'upload_category_groups' =>
-'Allowed category groups',
-
-'upload_category_groups_desc' =>
-'The following category groups are allowed to upload to this directory.',
-
-'directory_saved' =>
-'Upload directory saved',
-
-'directory_saved_desc' =>
-'Your upload directory has been saved successfully.',
-
-'directory_not_saved' =>
-'Attention: Upload directory not saved',
-
-'directory_not_saved_desc' =>
-'We were unable to save your upload directory, please review and fix errors below.',
-
-'duplicate_dir_name' =>
-'The name of your directory is already taken.',
-
-'no_upload_dir_url' =>
-'You must submit the URL to your upload directory.',
-
-'duplicate_image_size_name' =>
-'You must enter a unique name for this image manipulation.',
-
-'btn_create_directory' =>
-'Create Directory',
-
-'btn_create_directory_working' =>
-'Creating...',
-
-'btn_edit_directory' =>
-'Edit Directory',
-
-/**
- * Uploads
- */
-
-'sync_title' =>
-'Directory Sync',
-
-'sync_alt_title' =>
-'Sync %s',
-
-'file_sync' =>
-'File sync',
-
-'file_sync_desc' =>
-'<b>%d</b> files',
-
-'file_sync_desc_images' =>
-'<b>%d</b> <mark>image</mark> files',
-
-'apply_manipulations' =>
-'Apply manipulations',
-
-'apply_manipulations_desc' =>
-'Applies chosen image manipulations to the files in this directory during sync operation. Increases sync time.',
-
-'crop' =>
-'crop',
-
-'constrain' =>
-'constrain',
-
-'by' =>
-'by',
-
-'btn_sync_directory' =>
-'Sync Directory',
-
-'btn_sync_directory_working' =>
-'Syncing...',
-
-'directory_synced' =>
-'Upload directory synchronized',
-
-'directory_synced_desc' =>
-'The contents of the upload directory have been successfully synchronized.',
-
-'directory_sync_warning' =>
-'Some files could not be synchronized',
 
 /**
  * Pages Settings

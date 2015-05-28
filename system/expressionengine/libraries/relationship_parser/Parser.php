@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.6
@@ -119,9 +119,15 @@ class EE_Relationship_data_parser {
 	 */
 	public function parse_node($node, $parent_id, $tagdata)
 	{
-
 		if ( ! isset($node->entry_ids[$parent_id]))
 		{
+			if ($node->in_cond)
+			{
+				return ee()->functions->prep_conditionals($tagdata, array(
+					$node->open_tag => FALSE
+				));
+			}
+
 			return $this->clear_node_tagdata($node, $tagdata);
 		}
 
@@ -151,9 +157,30 @@ class EE_Relationship_data_parser {
 				// channel entries parser.
 				if ($node->shortcut == 'total_results')
 				{
+					$total_results = count($entry_ids);
+
+					if ($node->in_cond)
+					{
+						return ee()->functions->prep_conditionals($tagdata, array(
+							$node->open_tag => $total_results
+						));
+					}
+					else
+					{
+						return str_replace(
+							$node->open_tag,
+							$total_results,
+							$tagdata
+						);
+					}
+				}
+
+				if ($node->shortcut == 'entry_ids')
+				{
+					$delim = (isset($node->params['delimiter'])) ? $node->params['delimiter'] : '|';
 					return str_replace(
 						$node->open_tag,
-						count($entry_ids),
+						implode($delim, $entry_ids),
 						$tagdata
 					);
 				}

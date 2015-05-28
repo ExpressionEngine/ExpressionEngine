@@ -2,7 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Model\Category;
 
-use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Model\Content\ContentModel;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -27,7 +27,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Category extends Model {
+class Category extends ContentModel {
 
 	protected static $_primary_key = 'cat_id';
 	protected static $_gateway_names = array('CategoryGateway', 'CategoryFieldDataGateway');
@@ -74,26 +74,9 @@ class Category extends Model {
 	 * @return	Structure	A link to the Structure objects that defines this
 	 * 						Content's structure.
 	 */
-	public function getContentStructure()
+	public function getStructure()
 	{
 		return $this->getCategoryGroup();
 	}
-
-
-	/**
-	 * Renders the piece of content for the front end, parses the tag data
-	 * called by the module when rendering tagdata.
-	 *
-	 * @param	ParsedTemplate|string	$template	The parsed template from
-	 * 						the template engine or a string of tagdata.
-	 *
-	 * @return	Template|string	The parsed template with relevant tags replaced
-	 *							or the tagdata string with relevant tags replaced.
-	 */
-	public function render($template)
-	{
-		// call render on all custom fields
-	}
-
 
 }

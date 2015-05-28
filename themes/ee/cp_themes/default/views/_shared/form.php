@@ -15,7 +15,7 @@ foreach ($sections as $name => $settings)
 	}
 } ?>
 
-<h1><?=(isset($cp_page_title_alt)) ? $cp_page_title_alt : $cp_page_title?><?php if ($required): ?> <span class="required intitle">&#10033; <?=lang('required_fields')?></span><?php endif ?></h1>
+<h1><?=(isset($cp_page_title_alt)) ? $cp_page_title_alt : $cp_page_title?><?php if ($required): ?> <span class="req-title"><?=lang('required_fields')?></span><?php endif ?></h1>
 <?php
 $form_class = 'settings';
 if (isset($ajax_validate) && $ajax_validate == TRUE)
@@ -34,8 +34,17 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 		<?php foreach ($extra_alerts as $alert) echo ee('Alert')->get($alert) ?>
 	<?php endif; ?>
 	<?php foreach ($sections as $name => $settings): ?>
+		<?php
+		// Tags an entire section with a group name, intended for hiding/showing via JS
+		$group = FALSE;
+		if (isset($settings['group']))
+		{
+			$group = $settings['group'];
+			$settings = $settings['settings'];
+		}?>
+
 		<?php if (is_string($name)): ?>
-			<h2><?=lang($name)?></h2>
+			<h2<?php if ($group): ?> data-group="<?=$group?>"<?php endif ?>><?=lang($name)?></h2>
 		<?php endif ?>
 		<?php foreach ($settings as $setting): ?>
 			<?php
@@ -47,29 +56,44 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 				continue;
 			}
 
-			$last_class = ($setting == end($settings)) ? ' last' : '';
+			// Gather classes needed to set on the fieldset
+			$fieldset_classes = '';
+			// Any fields required?
+			foreach ($setting['fields'] as $field_name => $field)
+			{
+				if (isset($field['required']) && $field['required'] == TRUE)
+				{
+					$fieldset_classes .= ' required';
+					break;
+				}
+			}
+			if (isset($setting['security']) && $setting['security'] == TRUE)
+			{
+				$fieldset_classes .= ' security-enhance';
+			}
+			if (isset($setting['caution']) && $setting['caution'] == TRUE)
+			{
+				$fieldset_classes .= ' security-caution';
+			}
+			if ($setting == end($settings))
+			{
+				$fieldset_classes .= ' last';
+			}
+
+			// Individual settings can have their own groups
+			$setting_group = $group;
+			if (isset($setting['group']))
+			{
+				$setting_group = $setting['group'];
+			}
+
 			$grid = (isset($setting['grid']) && $setting['grid'] == TRUE);
 
 			// Grids have to be in a div for an overflow bug in Firefox
 			$element = ($grid) ? 'div' : 'fieldset'; ?>
-			<<?=$element?> class="col-group<?=$last_class?> <?=( ! $grid) ? form_error_class(array_keys($setting['fields'])) : '' ?> <?=($grid) ? 'grid-publish' : '' ?>">
+			<<?=$element?> class="col-group<?=$fieldset_classes?> <?=( ! $grid) ? form_error_class(array_keys($setting['fields'])) : '' ?> <?=($grid) ? 'grid-publish' : '' ?>" <?php if ($setting_group): ?> data-group="<?=$setting_group?>"<?php endif ?>>
 				<div class="setting-txt col <?=($grid) ? form_error_class(array_keys($setting['fields'])) : '' ?> <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?>">
-					<?php foreach ($setting['fields'] as $field_name => $field)
-					{
-						if ($required = (isset($field['required']) && $field['required'] == TRUE))
-						{
-							break;
-						}
-					}
-					$security = (isset($setting['security']) && $setting['security'] == TRUE);
-					$caution = (isset($setting['caution']) && $setting['caution'] == TRUE);
-					?>
-					<h3<?php if ($security):?> class="enhance"<?php endif ?><?php if ($caution):?> class="caution"<?php endif ?>>
-						<?=lang($setting['title'])?>
-						<?php if ($required): ?> <span class="required" title="required field">&#10033;</span><?php endif ?>
-						<?php if ($security): ?> <span title="enhance security"></span><?php endif ?>
-						<?php if ($caution): ?> <span title="enhance caution"></span><?php endif ?>
-					</h3>
+					<h3><?=lang($setting['title'])?></h3>
 					<em><?=lang($setting['desc'])?></em>
 				</div>
 				<div class="setting-field col <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?> last">
@@ -80,10 +104,15 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 						{
 							$value = isset($field['value']) ? $field['value'] : ee()->config->item($field_name);
 						}
-						$required = '';
-						if (isset($field['required']) && $field['required'] == TRUE)
+						$attrs = '';
+						if (isset($field['disabled']) && $field['disabled'] == TRUE)
 						{
-							$required = ' class="required"';
+							$attrs = ' disabled="disabled"';
+						}
+						if (isset($field['group_toggle']))
+						{
+							$attrs .= " data-group-toggle='".json_encode($field['group_toggle'])."'";;
+							$attrs .= ' onchange="EE.cp.form_group_toggle(this)"';
 						}
 						$has_note = isset($field['note']);
 
@@ -104,13 +133,16 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 						<?php endif ?>
 						<?php switch ($field['type']):
 						case 'text': ?>
-							<input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$required?>>
+							<input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>>
+						<?php break;
+						case 'short-text': ?>
+							<label class="short-txt"><input type="text" name="<?=$field_name?>" value="<?=$value?>"<?=$attrs?>> <?=lang($field['label'])?></label>
 						<?php break;
 						case 'file': ?>
-							<input type="file" name="<?=$field_name?>"<?=$required?>>
+							<input type="file" name="<?=$field_name?>"<?=$attrs?>>
 						<?php break;
 						case 'password': ?>
-							<input type="password" name="<?=$field_name?>"<?=$required?>>
+							<input type="password" name="<?=$field_name?>"<?=$attrs?>>
 						<?php break;
 						case 'hidden': ?>
 							<input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
@@ -128,28 +160,30 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 						case 'radio': ?>
 							<?php foreach ($field['choices'] as $key => $label):
 								$checked = ($key == $value); ?>
-								<label class="choice mr block <?=($checked) ? 'chosen' : ''?>"><input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=$required?>> <?=lang($label)?></label>
+								<label class="choice mr block <?=($checked) ? 'chosen' : ''?>"><input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=$attrs?>> <?=lang($label)?></label>
 							<?php endforeach ?>
 						<?php break;
 
 						case 'inline_radio': ?>
 							<?php foreach ($field['choices'] as $key => $label):
 								$checked = ((is_bool($value) && get_bool_from_string($key) === $value) OR ( ! is_bool($value) && $key == $value)); ?>
-								<label class="choice mr <?=($checked) ? 'chosen' : ''?>"><input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=$required?>> <?=lang($label)?></label>
+								<label class="choice mr <?=($checked) ? 'chosen' : ''?>"><input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=$attrs?>> <?=lang($label)?></label>
 							<?php endforeach ?>
 						<?php break;
 
 						case 'yes_no': ?>
-							<label class="choice mr<?php if (get_bool_from_string($value)):?> chosen<?php endif ?> yes"><input type="radio" name="<?=$field_name?>" value="y"<?php if (get_bool_from_string($value)):?> checked="checked"<?php endif ?><?=$required?>> yes</label>
-							<label class="choice <?php if (get_bool_from_string($value) === FALSE):?> chosen<?php endif ?> no"><input type="radio" name="<?=$field_name?>" value="n"<?php if (get_bool_from_string($value) === FALSE):?> checked="checked"<?php endif ?><?=$required?>> no</label>
+							<label class="choice mr<?php if (get_bool_from_string($value)):?> chosen<?php endif ?> yes"><input type="radio" name="<?=$field_name?>" value="y"<?php if (get_bool_from_string($value)):?> checked="checked"<?php endif ?><?=$attrs?>> yes</label>
+							<label class="choice <?php if (get_bool_from_string($value) === FALSE):?> chosen<?php endif ?> no"><input type="radio" name="<?=$field_name?>" value="n"<?php if (get_bool_from_string($value) === FALSE):?> checked="checked"<?php endif ?><?=$attrs?>> no</label>
 						<?php break;
 
 						case 'dropdown': ?>
-							<?=form_dropdown($field_name, $field['choices'], $value, $required)?>
+							<?=form_dropdown($field_name, $field['choices'], $value, $attrs)?>
 						<?php break;
 
 						case 'checkbox': ?>
-							<div class="scroll-wrap">
+							<?php if (isset($field['wrap']) && $field['wrap']): ?>
+								<div class="scroll-wrap">
+							<?php endif ?>
 								<?php foreach ($field['choices'] as $key => $label):
 									if (is_array($value))
 									{
@@ -161,14 +195,16 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 									}
 								?>
 									<label class="choice block<?php if ($selected):?> chosen<?php endif ?>">
-										<input type="checkbox" name="<?=$field_name?>[]" value="<?=$key?>"<?php if ($selected):?> checked="checked"<?php endif ?><?=$required?>> <?=$label?>
+										<input type="checkbox" name="<?=$field_name?>[]" value="<?=$key?>"<?php if ($selected):?> checked="checked"<?php endif ?><?=$attrs?>> <?=$label?>
 									</label>
 								<?php endforeach ?>
-							</div>
+							<?php if (isset($field['wrap']) && $field['wrap']): ?>
+								</div>
+							<?php endif ?>
 						<?php break;
 
 						case 'textarea': ?>
-							<textarea name="<?=$field_name?>" cols="" rows=""<?=$required?>>
+							<textarea name="<?=$field_name?>" cols="" rows=""<?=$attrs?>>
 <?=(isset($field['kill_pipes']) && $field['kill_pipes'] === TRUE) ? str_replace('|', NL, $value) : $value?>
 </textarea>
 						<?php break;

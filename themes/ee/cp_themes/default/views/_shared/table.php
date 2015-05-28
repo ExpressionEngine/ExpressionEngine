@@ -18,7 +18,10 @@ if ($wrap): ?>
 	<table cellspacing="0"<?php if ($grid_input): ?> id="<?=$grid_field_name?>" class="grid-input-form"<?php endif?>>
 		<thead>
 			<tr>
-				<?php if ($reorder): ?>
+				<?php
+				// Don't do reordering logic if the table is empty
+				$reorder = $reorder && ! empty($data);
+				if ($reorder): ?>
 					<th class="first reorder-col"></th>
 				<?php endif ?>
 				<?php foreach ($columns as $label => $settings): ?>

@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  */
 class IsNaturalNoZero extends ValidationRule {
 
-	public function validate($value)
+	public function validate($key, $value)
 	{
 		if ( ! preg_match('/^[0-9]+$/', $value))
 		{

@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  */
 class Enum extends ValidationRule {
 
-	public function validate($value)
+	public function validate($key, $value)
 	{
 		return in_array($value, $this->parameters);
 	}

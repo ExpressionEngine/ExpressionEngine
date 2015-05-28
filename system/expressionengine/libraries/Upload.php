@@ -51,6 +51,7 @@ class EE_Upload {
 	public $client_name				= '';
 
 	protected $use_temp_dir			= FALSE;
+	protected $raw_upload = FALSE;
 	protected $_file_name_override	= '';
 
 	/**
@@ -69,7 +70,42 @@ class EE_Upload {
 
 		$this->initialize($props);
 
+		ee()->load->library('mime_type');
 		log_message('debug', "Upload Class Initialized");
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Take raw file data and populate our tmp directory and FILES array and
+	 * then pass it through the normal do_upload routine.
+	 *
+	 * @access	public
+	 * @param string $name The file name
+	 * @param string $type The mime type
+	 * @param string $data The raw file data
+	 * @return mixed The result of do_upload
+	 */
+	public function raw_upload($name, $data)
+	{
+		// This will force do_upload to skip its is_uploaded_file checks
+		$this->raw_upload = TRUE;
+
+		$tmp = tempnam(sys_get_temp_dir(), 'raw');
+
+		if (file_put_contents($tmp, $data) === FALSE)
+		{
+			throw new Exception('Could not upload file');
+		}
+
+		$_FILES['userfile'] = array(
+			'name' => $name,
+			'size' => mb_strlen($data),
+			'tmp_name' => $tmp,
+			'error' => UPLOAD_ERR_OK
+		);
+
+		return $this->do_upload();
 	}
 
 	// --------------------------------------------------------------------
@@ -81,8 +117,7 @@ class EE_Upload {
 	 */
 	public function do_upload($field = 'userfile')
 	{
-
-	// Is $_FILES[$field] set? If not, no reason to continue.
+		// Is $_FILES[$field] set? If not, no reason to continue.
 		if ( ! isset($_FILES[$field]))
 		{
 			$this->set_error('upload_no_file_selected');
@@ -97,7 +132,7 @@ class EE_Upload {
 		}
 
 		// Was the file able to be uploaded? If not, determine the reason why.
-		if ( ! is_uploaded_file($_FILES[$field]['tmp_name']))
+		if ( ! $this->raw_upload && ! is_uploaded_file($_FILES[$field]['tmp_name']))
 		{
 			$error = ( ! isset($_FILES[$field]['error'])) ? 4 : $_FILES[$field]['error'];
 
@@ -131,20 +166,53 @@ class EE_Upload {
 			return FALSE;
 		}
 
-
 		// Set the uploaded data as class variables
 		$this->file_temp = $_FILES[$field]['tmp_name'];
 		$this->file_size = $_FILES[$field]['size'];
-		$this->file_type = preg_replace("/^(.+?);.*$/", "\\1", $_FILES[$field]['type']);
-		$this->file_type = strtolower(trim(stripslashes($this->file_type), '"'));
+		$this->file_type = ee()->mime_type->ofFile($this->file_temp);
 		$this->file_name = $this->_prep_filename($_FILES[$field]['name']);
 		$this->file_ext	 = $this->get_extension($this->file_name);
 		$this->client_name = $this->file_name;
 
+		// Is this a hidden file? Not allowed
+		if (strncmp($this->file_name, '.', 1) == 0)
+		{
+			$this->set_error('upload_invalid_file');
+			return FALSE;
+		}
+
+		// Disallowed File Names
+		$disallowed_names = ee()->config->item('upload_file_name_blacklist');
+
+		if ($disallowed_names !== FALSE)
+		{
+			if ( ! is_array($disallowed_names))
+			{
+				$disallowed_names = array($disallowed_names);
+			}
+			$disallowed_names = array_map("strtolower", $disallowed_names);
+		}
+		else
+		{
+			$disallowed_names = array();
+		}
+
+		// Yes ".htaccess" is covered by the above hidden file check
+		// but this is here as an extra sanity-saving precation.
+		$disallowed_names[] = '.htaccess';
+		$disallowed_names[] = 'web.config';
+
+		if (in_array(strtolower($this->file_name), $disallowed_names))
+		{
+			$this->set_error('upload_invalid_file');
+			return FALSE;
+		}
+
+
 		// Is the file type allowed to be uploaded?
 		if ( ! $this->is_allowed_filetype())
 		{
-			$this->set_error('upload_invalid_filetype');
+			$this->set_error('upload_invalid_file');
 			return FALSE;
 		}
 
@@ -156,7 +224,7 @@ class EE_Upload {
 
 			if ( ! $this->is_allowed_filetype(TRUE))
 			{
-				$this->set_error('upload_invalid_filetype');
+				$this->set_error('upload_invalid_file');
 				return FALSE;
 			}
 		}
@@ -476,29 +544,7 @@ class EE_Upload {
 	 */
 	public function is_image()
 	{
-		// IE will sometimes return odd mime-types during upload, so here we just standardize all
-		// jpegs or pngs to the same file type.
-
-		$png_mimes  = array('image/x-png');
-		$jpeg_mimes = array('image/jpg', 'image/jpe', 'image/jpeg', 'image/pjpeg');
-
-		if (in_array($this->file_type, $png_mimes))
-		{
-			$this->file_type = 'image/png';
-		}
-
-		if (in_array($this->file_type, $jpeg_mimes))
-		{
-			$this->file_type = 'image/jpeg';
-		}
-
-		$img_mimes = array(
-							'image/gif',
-							'image/jpeg',
-							'image/png',
-						);
-
-		return (in_array($this->file_type, $img_mimes, TRUE)) ? TRUE : FALSE;
+		return ee()->mime_type->fileIsImage($this->file_temp);
 	}
 
 	// --------------------------------------------------------------------
@@ -510,33 +556,11 @@ class EE_Upload {
 	 */
 	public function is_allowed_filetype($ignore_mime = FALSE)
 	{
-		if ($this->allowed_types == '*')
-		{
-			return TRUE;
-		}
-
-		if (count($this->allowed_types) == 0 OR ! is_array($this->allowed_types))
-		{
-			$this->set_error('upload_no_file_types');
-			return FALSE;
-		}
-
 		$ext = strtolower(ltrim($this->file_ext, '.'));
 
-		if ( ! in_array($ext, $this->allowed_types))
+		if ( ! empty($this->allowed_types) && is_array($this->allowed_types) && ! in_array($ext, $this->allowed_types))
 		{
 			return FALSE;
-		}
-
-		// Images get some additional checks
-		$image_types = array('gif', 'jpg', 'jpeg', 'png', 'jpe');
-
-		if (in_array($ext, $image_types))
-		{
-			if (getimagesize($this->file_temp) === FALSE)
-			{
-				return FALSE;
-			}
 		}
 
 		if ($ignore_mime === TRUE)
@@ -544,21 +568,12 @@ class EE_Upload {
 			return TRUE;
 		}
 
-		$mime = $this->mimes_types($ext);
-
-		if (is_array($mime))
+		if ($this->is_image)
 		{
-			if (in_array($this->file_type, $mime, TRUE))
-			{
-				return TRUE;
-			}
-		}
-		elseif ($mime == $this->file_type)
-		{
-				return TRUE;
+			return ee()->mime_type->fileIsImage($this->file_temp);
 		}
 
-		return FALSE;
+		return ee()->mime_type->fileIsSafeForUpload($this->file_temp);
 	}
 
 	// --------------------------------------------------------------------
@@ -745,15 +760,7 @@ class EE_Upload {
 
 		if (function_exists('getimagesize') && ($image = getimagesize($file)) !== FALSE)
 		{
-			$ext = strtolower(ltrim($this->file_ext, '.'));
-			$mime_by_ext = $this->mimes_types($ext);
-
-			if ( ! is_array($mime_by_ext))
-			{
-				$mime_by_ext = array($mime_by_ext);
-			}
-
-			if ( ! in_array($image['mime'], $mime_by_ext))
+			if (ee()->mime_type->fileIsSafeForUpload($file) === FALSE)
 			{
 				return FALSE; // tricky tricky
 			}
@@ -853,18 +860,8 @@ class EE_Upload {
 	 */
 	public function mimes_types($mime)
 	{
-		global $mimes;
-
-		if (count($this->mimes) == 0)
-		{
-			if (@require_once(APPPATH.'config/mimes.php'))
-			{
-				$this->mimes = $mimes;
-				unset($mimes);
-			}
-		}
-
-		return ( ! isset($this->mimes[$mime])) ? FALSE : $this->mimes[$mime];
+		ee()->load->library('mime_type');
+		return ee()->mime_type->isSafeForUpload($mime);
 	}
 
 	// --------------------------------------------------------------------
@@ -891,7 +888,9 @@ class EE_Upload {
 
 		foreach ($parts as $part)
 		{
-			if ( ! in_array(strtolower($part), $this->allowed_types) OR $this->mimes_types(strtolower($part)) === FALSE)
+			if ((is_array($this->allowed_types)
+				 && ! in_array(strtolower($part), $this->allowed_types)
+				) OR $this->mimes_types(strtolower($part)) === FALSE)
 			{
 				$filename .= '.'.$part.'_';
 			}

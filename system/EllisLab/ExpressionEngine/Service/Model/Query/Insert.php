@@ -37,6 +37,7 @@ class Insert extends Update {
 		$object->emit('beforeInsert');
 
 		$insert_id = $this->doWork($object);
+		$object->markAsClean();
 
 		$object->emit('afterInsert');
 		$object->emit('afterSave');

@@ -5,7 +5,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -243,37 +243,31 @@ class Filemanager {
 	function security_check($file_path, $prefs)
 	{
 		ee()->load->helper(array('file', 'xss'));
+		ee()->load->library('mime_type');
 
 		$is_image = FALSE;
 		$allowed = $prefs['allowed_types'];
-		$mime = get_mime_by_extension($file_path);
-
-		if (is_array($mime))
-		{
-			$mime = $mime[0];
-		}
+		$mime = ee()->mime_type->ofFile($file_path);
 
 		if ($allowed == 'all' OR $allowed == '*')
 		{
-			return $mime;
+			if (ee()->mime_type->isSafeForUpload($mime))
+			{
+				return $mime;
+			}
+			else
+			{
+				return FALSE;
+			}
 		}
 
 		if ($allowed == 'img')
 		{
-			$allowed = 'gif|jpg|jpeg|png|jpe';
-		}
+			if ( ! ee()->mime_type->isImage($mime))
+			{
+				return FALSE;
+			}
 
-		$extension = strtolower(substr(strrchr($file_path, '.'), 1));
-
-		if (strpos($allowed, $extension) === FALSE)
-		{
-			return FALSE;
-		}
-
-		// Double check mime type for images so we can
-		// be sure that our xss check is run correctly
-		if (substr($mime, 0, 5) == 'image')
-		{
 			$is_image = TRUE;
 		}
 
@@ -1182,6 +1176,11 @@ class Filemanager {
 
 		$memory_setting = ini_get('memory_limit');
 
+		if ($memory_setting === -1)
+		{
+		    return TRUE;
+		}
+
 		if ( ! $memory_setting)
 		{
 			$memory_setting = '8M';
@@ -1253,6 +1252,7 @@ class Filemanager {
 	function create_thumb($file_path, $prefs, $thumb = TRUE, $missing_only = TRUE)
 	{
 		ee()->load->library('image_lib');
+		ee()->load->library('mime_type');
 		ee()->load->helper('file');
 
 		$img_path = rtrim($prefs['server_path'], '/').'/';
@@ -1261,7 +1261,7 @@ class Filemanager {
 		if ( ! isset($prefs['mime_type']))
 		{
 			// Figure out the mime type
-			$prefs['mime_type'] = get_mime_by_extension($file_path);
+			$prefs['mime_type'] = ee()->mime_type->ofFile($file_path);
 		}
 
 		if ( ! $this->is_editable_image($file_path, $prefs['mime_type']))
@@ -1565,17 +1565,28 @@ class Filemanager {
 	 */
 	public function get_thumb($file, $directory_id, $ignore_site_id = FALSE)
 	{
+		$thumb_info = array(
+			'thumb' => PATH_CP_GBL_IMG.'default.png',
+			'thumb_path' => '',
+			'thumb_class' => 'no_image',
+		);
+
+		if (empty($file))
+		{
+			return $thumb_info;
+		}
+
 		$directory = $this->fetch_upload_dir_prefs($directory_id, $ignore_site_id);
-		$thumb_info = array();
 
 		// If the raw file name was passed in, figure out the mime_type
 		if ( ! is_array($file) OR ! isset($file['mime_type']))
 		{
 			ee()->load->helper('file');
+			ee()->load->library('mime_type');
 
 			$file = array(
 				'file_name' => $file,
-				'mime_type' => get_mime_by_extension($file)
+				'mime_type' => ee()->mime_type->ofFile($directory['server_path'] . $file)
 			);
 		}
 
@@ -1587,12 +1598,6 @@ class Filemanager {
 			$thumb_info['thumb'] = $directory['url'].'_thumbs/'.$file['file_name'];
 			$thumb_info['thumb_path'] = $directory['server_path'] . '_thumbs/' . $file['file_name'];
 			$thumb_info['thumb_class'] = 'image';
-		}
-		else
-		{
-			$thumb_info['thumb'] = PATH_CP_GBL_IMG.'default.png';
-			$thumb_info['thumb_path'] = '';
-			$thumb_info['thumb_class'] = 'no_image';
 		}
 
 		return $thumb_info;
@@ -2052,21 +2057,6 @@ class Filemanager {
 		// --------------------------------------------------------------------
 		// Make sure the file is allowed
 
-		// Restricted upload directory?
-		switch($dir['allowed_types'])
-		{
-			case 'all':
-				$allowed_types = '*';
-				break;
-
-			case 'img':
-				$allowed_types = 'gif|jpg|jpeg|png|jpe';
-				break;
-
-			default:
-				$allowed_types = '';
-		}
-
 		// Is this a custom field?
 		if (strpos($field_name, 'field_id_') === 0)
 		{
@@ -2103,9 +2093,14 @@ class Filemanager {
 		$config = array(
 			'file_name'		=> $clean_filename,
 			'upload_path'	=> $dir['server_path'],
-			'allowed_types'	=> $allowed_types,
 			'max_size'		=> round($dir['max_size']/1024, 3)
 		);
+
+		// Restricted upload directory?
+		if ($dir['allowed_types'] == 'img')
+		{
+			$config['is_image'] = TRUE;
+		}
 
 		ee()->load->helper('xss');
 
@@ -2151,7 +2146,6 @@ class Filemanager {
 				)
 			);
 		}
-
 
 		$thumb_info = $this->get_thumb($file['file_name'], $dir['id']);
 
@@ -2701,18 +2695,26 @@ class Filemanager {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Create a Directory Map
+	 *
+	 * Reads the specified directory and builds an array
+	 * representation of it.  Sub-folders contained with the
+	 * directory will be mapped as well.
+	 *
+	 * @param  string $source_dir path to source
+	 * @param  int    $directory_depth depth of directories to traverse
+	 *   (0 = fully recursive, 1 = current dir, etc)
+	 * @param  bool   $hidden Include hidden files (default: FALSE)
+	 * @param  string $allowed_tpyes Either "img" for images or "all" for
+	 *   everything
+	 * @return array|bool FALSE if we cannot open the directory, an array of
+	 *   files otherwise.
+	 */
 	function directory_files_map($source_dir, $directory_depth = 0, $hidden = false, $allowed_types = 'all')
 	{
 		ee()->load->helper(array('file', 'directory'));
-
-		if ($allowed_types == 'img')
-		{
-			$allowed_type = array('image/gif','image/jpeg','image/png');
-		}
-		elseif ($allowed_types == 'all')
-		{
-			$allowed_type = array();
-		}
+		ee()->load->library('mime_type');
 
 		if ($fp = @opendir($source_dir))
 		{
@@ -2722,6 +2724,7 @@ class Filemanager {
 
 			while (FALSE !== ($file = readdir($fp)))
 			{
+				$allowed = FALSE;
 				// Remove '.', '..', and hidden files [optional]
 				if ( ! trim($file, '.') OR ($hidden == FALSE && $file[0] == '.'))
 				{
@@ -2730,16 +2733,20 @@ class Filemanager {
 
 				if ( ! is_dir($source_dir.$file))
 				{
-					if ( ! empty($allowed_type))
+					$mime = ee()->mime_type->ofFile($source_dir.$file);
+
+					if ($allowed_types == 'img')
 					{
-						$mime = get_mime_by_extension($file);
+						$allowed = ee()->mime_type->isImage($mime);
+					}
+					elseif ($allowed_types == 'all')
+					{
+						$allowed = ee()->mime_type->isSafeForUpload($mime);
+					}
 
-						//echo $mime;
-
-						if ( ! in_array($mime, $allowed_type))
-						{
-							continue;
-						}
+					if ( ! $allowed)
+					{
+						continue;
 					}
 
 					$filedata[] = $file;
@@ -2862,29 +2869,8 @@ class Filemanager {
 	 */
 	public function is_image($mime)
 	{
-		// IE will sometimes return odd mime-types during upload,
-		// so here we just standardize all jpegs or pngs to the same file type.
-
-		$png_mimes  = array('image/x-png');
-		$jpeg_mimes = array('image/jpg', 'image/jpe', 'image/jpeg', 'image/pjpeg');
-
-		if (in_array($mime, $png_mimes))
-		{
-			$mime = 'image/png';
-		}
-
-		if (in_array($mime, $jpeg_mimes))
-		{
-			$mime = 'image/jpeg';
-		}
-
-		$img_mimes = array(
-			'image/gif',
-			'image/jpeg',
-			'image/png',
-		);
-
-		return (in_array($mime, $img_mimes, TRUE)) ? TRUE : FALSE;
+		ee()->load->library('mime_type');
+		return ee()->mime_type->isImage($mime);
 	}
 
 	// --------------------------------------------------------------------
@@ -3052,7 +3038,7 @@ class Filemanager {
 	/**
 	 * Image crop
 	 */
-	private function _do_crop($file_path)
+	public function _do_crop($file_path)
 	{
 		$config = array(
 			'width'				=> ee()->input->post('crop_width'),
@@ -3069,11 +3055,18 @@ class Filemanager {
 
 		// Must initialize seperately in case image_lib was loaded previously
 		ee()->load->library('image_lib');
-		ee()->image_lib->initialize($config);
+		$return = ee()->image_lib->initialize($config);
 
-		if ( ! ee()->image_lib->crop())
+		if ($return === FALSE)
 		{
-	    	$errors = ee()->image_lib->display_errors();
+			$errors = ee()->image_lib->display_errors();
+		}
+		else
+		{
+			if ( ! ee()->image_lib->crop())
+			{
+		    	$errors = ee()->image_lib->display_errors();
+			}
 		}
 
 		$reponse = array();
@@ -3101,7 +3094,7 @@ class Filemanager {
 	/**
 	 * Do image rotation.
 	 */
-	private function _do_rotate($file_path)
+	public function _do_rotate($file_path)
 	{
 		$config = array(
 			'rotation_angle'	=> ee()->input->post('rotate'),
@@ -3113,11 +3106,18 @@ class Filemanager {
 
 		// Must initialize seperately in case image_lib was loaded previously
 		ee()->load->library('image_lib');
-		ee()->image_lib->initialize($config);
+		$return = ee()->image_lib->initialize($config);
 
-		if ( ! ee()->image_lib->rotate())
+		if ($return === FALSE)
 		{
-	    	$errors = ee()->image_lib->display_errors();
+			$errors = ee()->image_lib->display_errors();
+		}
+		else
+		{
+			if ( ! ee()->image_lib->rotate())
+			{
+		    	$errors = ee()->image_lib->display_errors();
+			}
 		}
 
 		$reponse = array();
@@ -3145,7 +3145,7 @@ class Filemanager {
 	/**
 	 * Do image resizing.
 	 */
-	private function _do_resize($file_path)
+	public function _do_resize($file_path)
 	{
 		$config = array(
 			'width'				=> ee()->input->get_post('resize_width'),
@@ -3167,11 +3167,18 @@ class Filemanager {
 
 		// Must initialize seperately in case image_lib was loaded previously
 		ee()->load->library('image_lib');
-		ee()->image_lib->initialize($config);
+		$return = ee()->image_lib->initialize($config);
 
-		if ( ! ee()->image_lib->resize())
+		if ($return === FALSE)
 		{
-	    	$errors = ee()->image_lib->display_errors();
+			$errors = ee()->image_lib->display_errors();
+		}
+		else
+		{
+			if ( ! ee()->image_lib->resize())
+			{
+		    	$errors = ee()->image_lib->display_errors();
+			}
 		}
 
 		$reponse = array();

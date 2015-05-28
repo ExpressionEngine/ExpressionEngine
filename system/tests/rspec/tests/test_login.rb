@@ -31,7 +31,6 @@ feature 'Login Page' do
     Login::login
 
     page.should have_content('Overview')
-    Login::button[:disabled].should eq nil
     no_php_js_errors
   end
 

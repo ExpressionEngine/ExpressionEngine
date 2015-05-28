@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -113,9 +113,8 @@ class EE_Messages_send extends EE_Messages {
 		// Upload the image
 		$config = array(
 				'upload_path'	=> $this->upload_path,
-				'allowed_types'	=> '*',
 				'max_size'		=> $this->attach_maxsize
-			);
+		);
 
 		if (ee()->config->item('xss_clean_uploads') == 'n')
 		{

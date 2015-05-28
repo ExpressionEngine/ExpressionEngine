@@ -30,14 +30,28 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 class Callback extends ValidationRule {
 
 	protected $callback = NULL;
+	protected $last_error = '';
 
 	public function __construct($callback)
 	{
 		$this->callback = $callback;
 	}
 
-	public function validate($value)
+	public function validate($key, $value)
 	{
-		return call_user_func($this->callback, $value, $this->parameters);
+		$result = call_user_func($this->callback, $key, $value, $this->parameters);
+
+		if ($result !== TRUE)
+		{
+			$this->last_error = $result;
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	public function getLanguageKey()
+	{
+		return $this->last_error;
 	}
 }

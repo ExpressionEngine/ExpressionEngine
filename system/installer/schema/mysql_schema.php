@@ -59,6 +59,7 @@ class EE_Schema {
 			admin_sess tinyint(1) default '0' NOT NULL,
 			ip_address varchar(45) default '0' NOT NULL,
 			user_agent varchar(120) NOT NULL,
+			login_state varchar(32) NULL DEFAULT NULL,
 			fingerprint varchar(40) NOT NULL,
 			sess_start int(10) unsigned DEFAULT '0' NOT NULL,
 			last_activity int(10) unsigned DEFAULT '0' NOT NULL,
@@ -334,7 +335,7 @@ class EE_Schema {
 			language varchar(50) NOT NULL,
 			timezone varchar(50) NOT NULL,
 			time_format char(2) DEFAULT '12' NOT NULL,
-			date_format varchar(8) DEFAULT '%n/%j/%y' NOT NULL,
+			date_format varchar(8) DEFAULT '%n/%j/%Y' NOT NULL,
 			include_seconds char(1) DEFAULT 'n' NOT NULL,
 			cp_theme varchar(32) NULL DEFAULT NULL,
 			profile_theme varchar(32) NULL DEFAULT NULL,
@@ -347,6 +348,8 @@ class EE_Schema {
 			quick_tabs text NULL,
 			show_sidebar char(1) NOT NULL default 'n',
 			pmember_id int(10) NOT NULL default '0',
+			rte_enabled char(1) NOT NULL DEFAULT 'y',
+			rte_toolset_id int(10) NOT NULL DEFAULT '0',
 			PRIMARY KEY `member_id` (`member_id`),
 			KEY `group_id` (`group_id`),
 			KEY `unique_id` (`unique_id`),
@@ -554,7 +557,6 @@ class EE_Schema {
 			comment_url varchar(80) NULL DEFAULT NULL,
 			comment_system_enabled char(1) NOT NULL default 'y',
 			comment_require_membership char(1) NOT NULL default 'n',
-			comment_use_captcha char(1) NOT NULL default 'n',
 			comment_moderate char(1) NOT NULL default 'n',
 			comment_max_chars int(5) unsigned NULL DEFAULT '5000',
 			comment_timelock int(5) unsigned NOT NULL default '0',
@@ -721,7 +723,6 @@ class EE_Schema {
 			`site_id` int(4) unsigned NOT NULL DEFAULT '0',
 			`channel_id` int(6) unsigned NOT NULL DEFAULT '0',
 			`default_status` varchar(50) NOT NULL DEFAULT 'open',
-			`require_captcha` char(1) NOT NULL DEFAULT 'n',
 			`allow_guest_posts` char(1) NOT NULL DEFAULT 'n',
 			`default_author` int(11) NOT NULL DEFAULT '0',
 			PRIMARY KEY `channel_form_settings_id` (`channel_form_settings_id`),
@@ -1280,8 +1281,34 @@ class EE_Schema {
 			`resize_type` varchar(50) DEFAULT '',
 			`width` int(10) DEFAULT '0',
 			`height` int(10) DEFAULT '0',
+			`watermark_id` int(4) unsigned DEFAULT NULL,
 			PRIMARY KEY (`id`),
 			KEY `upload_location_id` (`upload_location_id`)
+		)";
+
+		$Q[] = "CREATE TABLE `exp_file_watermarks` (
+			`wm_id` int(4) unsigned NOT NULL AUTO_INCREMENT,
+			`wm_name` varchar(80) DEFAULT NULL,
+			`wm_type` varchar(10) DEFAULT 'text',
+			`wm_image_path` varchar(100) DEFAULT NULL,
+			`wm_test_image_path` varchar(100) DEFAULT NULL,
+			`wm_use_font` char(1) DEFAULT 'y',
+			`wm_font` varchar(30) DEFAULT NULL,
+			`wm_font_size` int(3) unsigned DEFAULT NULL,
+			`wm_text` varchar(100) DEFAULT NULL,
+			`wm_vrt_alignment` varchar(10) DEFAULT 'top',
+			`wm_hor_alignment` varchar(10) DEFAULT 'left',
+			`wm_padding` int(3) unsigned DEFAULT NULL,
+			`wm_opacity` int(3) unsigned DEFAULT NULL,
+			`wm_hor_offset` int(4) unsigned DEFAULT NULL,
+			`wm_vrt_offset` int(4) unsigned DEFAULT NULL,
+			`wm_x_transp` int(4) DEFAULT NULL,
+			`wm_y_transp` int(4) DEFAULT NULL,
+			`wm_font_color` varchar(7) DEFAULT NULL,
+			`wm_use_drop_shadow` char(1) DEFAULT 'y',
+			`wm_shadow_distance` int(3) unsigned DEFAULT NULL,
+			`wm_shadow_color` varchar(7) DEFAULT NULL,
+			PRIMARY KEY (`wm_id`)
 		)";
 
 		// Developer log table
@@ -1510,19 +1537,26 @@ class EE_Schema {
 			)
 		);
 
+		$member_group_defaults = array(
+			'group_description' => ''
+		);
+
 		$add_quotes = function($value) {
-				return (is_string($value)) ? "'{$value}'" : $value;
-			};
+			return (is_string($value)) ? "'{$value}'" : $value;
+		};
 
 		foreach ($member_groups as $group)
 		{
+			// Merge in defaults
+			$group = array_merge($member_group_defaults, $group);
+
 			$Q[] = "INSERT INTO exp_member_groups
 				(".implode(', ', array_keys($group)).")
 				VALUES (".implode(', ' , array_map($add_quotes, $group)).")";
 		}
 
 		// default statuses - these are really always needed
-		$Q[] = "INSERT INTO `exp_status_groups` (`group_id`, `site_id`, `group_name`) VALUES (1, 1, 'Statuses')";
+		$Q[] = "INSERT INTO `exp_status_groups` (`group_id`, `site_id`, `group_name`) VALUES (1, 1, 'Default')";
 		$Q[] = "INSERT INTO exp_statuses (group_id, status, status_order, highlight) VALUES ('1', 'open', '1', '009933')";
 		$Q[] = "INSERT INTO exp_statuses (group_id, status, status_order, highlight) VALUES ('1', 'closed', '2', '990000')";
 

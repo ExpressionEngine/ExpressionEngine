@@ -144,7 +144,7 @@ class Settings extends Profile {
 					'title' => 'biography',
 					'desc' => 'biography_desc',
 					'fields' => array(
-						'bio' => array('type' => 'text', 'value' => $this->member->bio)
+						'bio' => array('type' => 'textarea', 'value' => $this->member->bio)
 					)
 				),
 				array(
@@ -174,7 +174,7 @@ class Settings extends Profile {
 					)
 				)
 			),
-			'avatar' => array(
+			'avatar_settings' => array(
 				array(
 					'title' => 'current_avatar',
 					'desc' => 'current_avatar_desc',

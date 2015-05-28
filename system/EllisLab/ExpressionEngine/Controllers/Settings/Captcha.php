@@ -36,6 +36,13 @@ class Captcha extends Settings {
 		$vars['sections'] = array(
 			array(
 				array(
+					'title' => 'require_captcha',
+					'desc' => 'require_captcha_desc',
+					'fields' => array(
+						'require_captcha' => array('type' => 'yes_no')
+					)
+				),
+				array(
 					'title' => 'captcha_font',
 					'desc' => 'captcha_font_desc',
 					'fields' => array(

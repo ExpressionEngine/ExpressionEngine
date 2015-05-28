@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -42,6 +42,31 @@ class Textarea_ft extends EE_Fieldtype {
 
 	function display_field($data)
 	{
+		if (isset($this->settings['field_show_formatting_btns'])
+			&& $this->settings['field_show_formatting_btns'] == 'y'
+			&& ! ee()->session->cache(__CLASS__, 'markitup_initialized'))
+		{
+			$member = ee('Model')->get('Member', ee()->session->userdata('member_id'))
+				->first();
+			$buttons = $member->getHTMLButtonsForSite(ee()->config->item('site_id'));
+
+			$markItUp = array(
+				'nameSpace' => 'html',
+				'markupSet' => array()
+			);
+
+			foreach ($buttons as $button)
+			{
+				$markItUp['markupSet'][] = $button->prepForJSON();
+			}
+
+			ee()->javascript->set_global('markitup.settings', $markItUp);
+			ee()->cp->add_js_script(array('plugin' => array('markitup')));
+			ee()->javascript->output('$("textarea[data-markitup]").markItUp(EE.markitup.settings);');
+
+			ee()->session->set_cache(__CLASS__, 'markitup_initialized', TRUE);
+		}
+
 		// Set a boolean telling if we're in Grid AND this textarea has
 		// markItUp enabled
 		$grid_markitup = ($this->content_type() == 'grid' &&
@@ -61,7 +86,7 @@ class Textarea_ft extends EE_Fieldtype {
 						// Only apply file browser trigger if a field was found
 						if (textarea.size())
 						{
-							textarea.markItUp(mySettings);
+							textarea.markItUp(EE.markitup.settings);
 							EE.publish.file_browser.textarea(cell);
 						}
 					});
@@ -78,10 +103,7 @@ class Textarea_ft extends EE_Fieldtype {
 			$toolbar = FALSE;
 
 			$format_options = array(
-				'field_show_spellcheck',
 				'field_show_smileys',
-				'field_show_glossary',
-				'field_show_writemode',
 				'field_show_file_selector',
 				'field_show_fmt',
 			);
@@ -127,13 +149,31 @@ class Textarea_ft extends EE_Fieldtype {
 				}
 			}
 
+			ee()->cp->get_installed_modules();
+
+			ee()->load->helper('smiley');
+			ee()->load->library('table');
+
+			$smileys_enabled = (isset(ee()->cp->installed_modules['emoticon']) ? TRUE : FALSE);
+			$smileys = '';
+
+			if ($smileys_enabled)
+			{
+				$image_array = get_clickable_smileys(ee()->config->slash_item('emoticon_url'), $this->name());
+				$col_array = ee()->table->make_columns($image_array, 8);
+				$smileys = ee()->table->generate($col_array);
+				ee()->table->clear();
+			}
+
 			return ee('View')->make('publish')->render(array(
-				'name'           => $this->name(),
-				'settings'       => $this->settings,
-				'value'          => $data,
-				'class'          => trim($class),
-				'toolbar'        => $toolbar,
-				'format_options' => $format_options
+				'name'            => $this->name(),
+				'settings'        => $this->settings,
+				'value'           => $data,
+				'class'           => trim($class),
+				'toolbar'         => $toolbar,
+				'format_options'  => $format_options,
+				'smileys_enabled' => $smileys_enabled,
+				'smileys'         => $smileys
 			));
 		}
 
@@ -200,9 +240,6 @@ class Textarea_ft extends EE_Fieldtype {
 		$this->text_direction_row($data, $prefix);
 		$this->field_show_formatting_btns_row($data, $prefix);
 		$this->field_show_smileys_row($data, $prefix);
-		$this->field_show_glossary_row($data, $prefix);
-		$this->field_show_spellcheck_row($data, $prefix);
-		$this->field_show_writemode_row($data, $prefix);
 		$this->field_show_file_selector_row($data, $prefix);
 	}
 

@@ -227,7 +227,7 @@ abstract class AbstractDesign extends CP_Controller {
 		$zip = new ZipArchive();
 		if ($zip->open($zipfilename, ZipArchive::CREATE) !== TRUE)
 		{
-			ee('Alert')->makeInline('settings-form')
+			ee('Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('error_export'))
 				->addToBody(lang('error_cannot_create_zip'))
@@ -240,7 +240,7 @@ abstract class AbstractDesign extends CP_Controller {
 			->filter('site_id', ee()->config->item('site_id'))
 			->all()
 			->each(function($template) use($zip) {
-				$filename = $template->getTemplateGroup()->group_name . '/' . $template->template_name . '.html';
+				$filename = $template->getTemplateGroup()->group_name . 'group/' . $template->template_name . $template->getFileExtension();
 				$zip->addFromString($filename, $template->template_data);
 			});
 

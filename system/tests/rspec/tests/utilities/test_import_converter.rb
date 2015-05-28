@@ -26,6 +26,7 @@ feature 'Import File Converter' do
     @page.should have_text 'File location'
     @page.should have_file_location
     @page.should have_delimiter
+    @page.should have_delimiter_special
     @page.should have_enclosing_char
   end
 
@@ -38,16 +39,21 @@ feature 'Import File Converter' do
     ###################
     # Validate via AJAX
     ###################
-    
+
     # No path
     @page.file_location.trigger 'blur'
     @page.wait_for_error_message_count(1)
     should_have_error_text(@page.file_location, @field_required)
     should_have_form_errors(@page)
-    
+
+    @page.file_location.set @tab_file
+    @page.file_location.trigger 'blur'
+    @page.wait_for_error_message_count(0)
+
     # Bogus path
     @page.file_location.set '/some/bogus/path'
     @page.file_location.trigger 'blur'
+    @page.wait_for_error_message_count(1)
     should_have_error_text(@page.file_location, @file_location_validation)
     should_have_form_errors(@page)
 
@@ -70,9 +76,14 @@ feature 'Import File Converter' do
     should_have_error_text(@page.delimiter_special, custom_delimit_required)
     should_have_form_errors(@page)
 
+    @page.delimiter_special.set '"'
+    @page.delimiter_special.trigger 'blur'
+    @page.wait_for_error_message_count(0)
+
     # Invalid custom delimiter
     @page.delimiter_special.set 'd'
     @page.delimiter_special.trigger 'blur'
+    @page.wait_for_error_message_count(1)
     should_have_error_text(@page.delimiter_special, custom_delimit_validation)
     should_have_form_errors(@page)
 
@@ -87,17 +98,17 @@ feature 'Import File Converter' do
 
     # Should submit successfully now
     @page.find('input[value=tab]').click
-    @page.submit_button.click
+    @page.submit
     @page.should have_text @assign_fields_title
     no_php_js_errors
 
     #########################
     # Regular form validation
     #########################
-    
+
     # No file path
     @page.load
-    @page.submit_button.click
+    @page.submit
     @page.should have_text @file_required
     should_have_error_text(@page.file_location, @field_required)
     no_php_js_errors
@@ -105,7 +116,7 @@ feature 'Import File Converter' do
     # Bogus path entered
     @page.load
     @page.file_location.set '/some/bogus/path'
-    @page.submit_button.click
+    @page.submit
     no_php_js_errors
 
     @page.should have_text 'Attention: File not converted'
@@ -122,21 +133,21 @@ feature 'Import File Converter' do
     no_php_js_errors
 
     # Selected wrong delimiter for file
-    @page.submit_button.click
+    @page.submit
     @page.should have_text @min_field_error
     no_php_js_errors
 
     @page.file_location.set @tab_file
     @page.find('input[value=tab]').click
 
-    @page.submit_button.click
+    @page.submit
     @page.should have_text @assign_fields_title
     no_php_js_errors
 
     # "Other" selected and no custom delimiter entered
     @page.load
     @page.find('input[value=other]').click
-    @page.submit_button.click
+    @page.submit
     should_have_error_text(@page.file_location, @field_required)
     @page.should have_text custom_delimit_required
     no_php_js_errors
@@ -145,7 +156,7 @@ feature 'Import File Converter' do
     @page.load
     @page.find('input[value=other]').click
     @page.delimiter_special.set 'd'
-    @page.submit_button.click
+    @page.submit
     no_php_js_errors
 
     @page.should have_text 'Attention: File not converted'
@@ -160,26 +171,26 @@ feature 'Import File Converter' do
     @page.file_location.set @tab_file
     @page.file_location.trigger 'blur'
     @page.should have_no_text @field_required
-    @page.submit_button.click
+    @page.submit
     @page.should have_text @min_field_error
     no_php_js_errors
 
     @page.file_location.set @tab_file
     @page.find('input[value=pipe]').click
-    @page.submit_button.click
+    @page.submit
     @page.should have_text @min_field_error
     no_php_js_errors
 
     @page.file_location.set @tab_file
     @page.find('input[value=other]').click
     @page.delimiter_special.set '*'
-    @page.submit_button.click
+    @page.submit
     @page.should have_text @min_field_error
     no_php_js_errors
 
     @page.file_location.set @tab_file
     @page.find('input[value=tab]').click
-    @page.submit_button.click
+    @page.submit
     @page.should have_no_text @min_field_error
     @page.should have_text @assign_fields_title
     no_php_js_errors
@@ -188,26 +199,26 @@ feature 'Import File Converter' do
     @page.load
     @page.file_location.set @comma_file
     @page.find('input[value=tab]').click
-    @page.submit_button.click
+    @page.submit
     @page.should have_text @min_field_error
     no_php_js_errors
 
     @page.file_location.set @comma_file
     @page.find('input[value=pipe]').click
-    @page.submit_button.click
+    @page.submit
     @page.should have_text @min_field_error
     no_php_js_errors
 
     @page.file_location.set @comma_file
     @page.find('input[value=other]').click
     @page.delimiter_special.set '*'
-    @page.submit_button.click
+    @page.submit
     @page.should have_text @min_field_error
     no_php_js_errors
 
     @page.file_location.set @comma_file
     @page.find('input[value=comma]').click
-    @page.submit_button.click
+    @page.submit
     @page.should have_no_text @min_field_error
     @page.should have_text @assign_fields_title
     no_php_js_errors
@@ -216,26 +227,26 @@ feature 'Import File Converter' do
     @page.load
     @page.file_location.set @pipe_file
     @page.find('input[value=comma]').click
-    @page.submit_button.click
+    @page.submit
     @page.should have_text @min_field_error
     no_php_js_errors
 
     @page.file_location.set @pipe_file
     @page.find('input[value=tab]').click
-    @page.submit_button.click
+    @page.submit
     @page.should have_text @min_field_error
     no_php_js_errors
 
     @page.file_location.set @pipe_file
     @page.find('input[value=other]').click
     @page.delimiter_special.set '*'
-    @page.submit_button.click
+    @page.submit
     @page.should have_text @min_field_error
     no_php_js_errors
 
     @page.file_location.set @pipe_file
     @page.find('input[value=pipe]').click
-    @page.submit_button.click
+    @page.submit
     @page.should have_no_text @min_field_error
     @page.should have_text @assign_fields_title
     no_php_js_errors
@@ -244,26 +255,26 @@ feature 'Import File Converter' do
     @page.load
     @page.file_location.set @other_file
     @page.find('input[value=comma]').click
-    @page.submit_button.click
+    @page.submit
     @page.should have_text @min_field_error
     no_php_js_errors
 
     @page.file_location.set @other_file
     @page.find('input[value=tab]').click
-    @page.submit_button.click
+    @page.submit
     @page.should have_text @min_field_error
     no_php_js_errors
 
     @page.file_location.set @other_file
     @page.find('input[value=pipe]').click
-    @page.submit_button.click
+    @page.submit
     @page.should have_text @min_field_error
     no_php_js_errors
 
     @page.file_location.set @other_file
     @page.find('input[value=other]').click
     @page.delimiter_special.set '*'
-    @page.submit_button.click
+    @page.submit
     @page.should have_no_text @min_field_error
     @page.should have_text @assign_fields_title
     no_php_js_errors
@@ -278,14 +289,14 @@ feature 'Import File Converter' do
 
     @page.file_location.set @tab_file
     @page.find('input[value=tab]').click
-    @page.submit_button.click
+    @page.submit
     @page.should have_text @assign_fields_title
     @page.should have_text 'member1'
     @page.should have_text 'Member1'
     @page.should have_text 'member1@fake.com'
     no_php_js_errors
 
-    @page.submit_button.click
+    @page.submit
     @page.should have_text form_error
     @page.should have_text username_error
     @page.should have_text screenname_error
@@ -293,7 +304,7 @@ feature 'Import File Converter' do
     no_php_js_errors
 
     @page.field1.select 'username'
-    @page.submit_button.click
+    @page.submit
     @page.should have_text form_error
     @page.should have_no_text username_error
     @page.should have_text screenname_error
@@ -301,7 +312,7 @@ feature 'Import File Converter' do
     no_php_js_errors
 
     @page.field2.select 'username'
-    @page.submit_button.click
+    @page.submit
     @page.should have_text form_error
     @page.should have_no_text username_error
     @page.should have_text duplicate_error
@@ -311,7 +322,7 @@ feature 'Import File Converter' do
 
     @page.field2.select 'screen_name'
     @page.field3.select 'password'
-    @page.submit_button.click
+    @page.submit
     @page.should have_text form_error
     @page.should have_no_text username_error
     @page.should have_no_text duplicate_error
@@ -320,7 +331,7 @@ feature 'Import File Converter' do
     no_php_js_errors
 
     @page.field4.select 'email'
-    @page.submit_button.click
+    @page.submit
     @page.should have_text 'Confirm Assignments'
     no_php_js_errors
   end
@@ -328,14 +339,14 @@ feature 'Import File Converter' do
   it 'should generate valid XML for the member importer' do
     @page.file_location.set @tab_file
     @page.find('input[value=tab]').click
-    @page.submit_button.click
+    @page.submit
     @page.field1.select 'username'
     @page.field2.select 'screen_name'
     @page.field3.select 'password'
     @page.field4.select 'email'
-    @page.submit_button.click
+    @page.submit
     @page.should have_text 'Confirm Assignments'
-    @page.submit_button.click
+    @page.submit
     no_php_js_errors
 
     @page.should have_text 'XML Code'
@@ -369,15 +380,15 @@ feature 'Import File Converter' do
     @page.load
     @page.file_location.set @tab_file
     @page.find('input[value=tab]').click
-    @page.submit_button.click
+    @page.submit
     @page.field1.select 'username'
     @page.field2.select 'screen_name'
     @page.field3.select 'password'
     @page.field4.select 'email'
     @page.find('input[value=n]').click
-    @page.submit_button.click
+    @page.submit
     @page.should have_text 'Confirm Assignments'
-    @page.submit_button.click
+    @page.submit
     no_php_js_errors
 
     @page.should have_text 'XML Code'

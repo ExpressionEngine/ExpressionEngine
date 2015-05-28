@@ -255,7 +255,7 @@ abstract class Core {
 	 */
 	protected function getConfigPath()
 	{
-		return SYSPATH.'config';
+		return SYSPATH.'user/config';
 	}
 
 	/**
