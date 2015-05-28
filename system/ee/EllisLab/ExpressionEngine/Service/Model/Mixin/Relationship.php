@@ -86,9 +86,9 @@ class Relationship implements Mixin {
 	 */
 	public function getAssociationAction($name, $action)
 	{
-		if ($this->hasAssociation($name))
+		if ($this->scope->hasAssociation($name))
 		{
-			$assoc = $this->getAssociation($name);
+			$assoc = $this->scope->getAssociation($name);
 			return array($assoc, $action);
 		}
 	}
@@ -108,58 +108,6 @@ class Relationship implements Mixin {
 		{
 			return $result;
 		}
-
-		return $this->scope;
-	}
-
-	/**
-	 * Get all associations
-	 *
-	 * @return array associations
-	 */
-	public function getAllAssociations()
-	{
-		return $this->associations;
-	}
-
-	/**
-	 * Check if an association of a given name exists
-	 *
-	 * @param String $name Name of the association
-	 * @return bool has association?
-	 */
-	public function hasAssociation($name)
-	{
-		return array_key_exists($name, $this->associations);
-	}
-
-	/**
-	 * Get an association of a given name
-	 *
-	 * @param String $name Name of the association
-	 * @return Mixed the association
-	 */
-	public function getAssociation($name)
-	{
-		return $this->associations[$name];
-	}
-
-	/**
-	 * Set a given association
-	 *
-	 * @param String $name Name of the association
-	 * @param Association $association Association to set
-	 * @return Current scope
-	 */
-	public function setAssociation($name, Association $association)
-	{
-		$this->scope->emit('beforeSetAssociation', $name, $association);
-
-		$association->setFrontend($this->scope->getFrontend());
-
-		$this->associations[$name] = $association;
-
-		$this->scope->emit('afterSetAssociation', $name, $association);
 
 		return $this->scope;
 	}
