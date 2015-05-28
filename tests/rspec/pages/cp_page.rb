@@ -56,6 +56,13 @@ class ControlPanelPage < SitePrism::Page
 	# if we just check for invisible but it's already gone,
 	# Capybara will complain, so we must do this
 	def wait_for_error_message_count(count)
+
+		# Wait for any AJAX requests or other scripts that have backed up
+		ajax = false
+		while ajax == false do
+			ajax = (self.evaluate_script('$.active') == 0)
+		end
+
 		i = 0;
 		element_count = nil;
 		# This is essentially our own version of wait_until_x_invisible/visible,

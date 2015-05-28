@@ -66,10 +66,11 @@ feature 'File Manger / Crop File' do
 	end
 
 	it 'requires crop width when cropping' do
-		@page.crop_width_input.set ''
 		@page.crop_height_input.set 5
 		@page.crop_x_input.set 0
 		@page.crop_y_input.set 0
+		wait_for_ajax
+		@page.crop_width_input.set ''
 		@page.crop_submit_button.click
 		no_php_js_errors
 
@@ -82,9 +83,10 @@ feature 'File Manger / Crop File' do
 
 	it 'requires crop height when cropping' do
 		@page.crop_width_input.set 5
-		@page.crop_height_input.set ''
 		@page.crop_x_input.set 0
 		@page.crop_y_input.set 0
+		wait_for_ajax
+		@page.crop_height_input.set ''
 		@page.crop_submit_button.click
 		no_php_js_errors
 
@@ -98,8 +100,9 @@ feature 'File Manger / Crop File' do
 	it 'requires crop x when cropping' do
 		@page.crop_width_input.set 5
 		@page.crop_height_input.set 5
-		@page.crop_x_input.set ''
 		@page.crop_y_input.set 0
+		wait_for_ajax
+		@page.crop_x_input.set ''
 		@page.crop_submit_button.click
 		no_php_js_errors
 
@@ -114,6 +117,7 @@ feature 'File Manger / Crop File' do
 		@page.crop_width_input.set 5
 		@page.crop_height_input.set 5
 		@page.crop_x_input.set 0
+		wait_for_ajax
 		@page.crop_y_input.set ''
 		@page.crop_submit_button.click
 		no_php_js_errors
@@ -126,10 +130,11 @@ feature 'File Manger / Crop File' do
 	end
 
 	it 'validates that crop width is a number' do
-		@page.crop_width_input.set 'a'
 		@page.crop_height_input.set 5
 		@page.crop_x_input.set 0
 		@page.crop_y_input.set 0
+		wait_for_ajax
+		@page.crop_width_input.set 'a'
 		@page.crop_submit_button.click
 		no_php_js_errors
 
@@ -142,9 +147,10 @@ feature 'File Manger / Crop File' do
 
 	it 'validates that crop height is a number' do
 		@page.crop_width_input.set 5
-		@page.crop_height_input.set 'a'
 		@page.crop_x_input.set 0
 		@page.crop_y_input.set 0
+		wait_for_ajax
+		@page.crop_height_input.set 'a'
 		@page.crop_submit_button.click
 		no_php_js_errors
 
@@ -158,8 +164,9 @@ feature 'File Manger / Crop File' do
 	it 'validates that crop x is a number' do
 		@page.crop_width_input.set 5
 		@page.crop_height_input.set 5
-		@page.crop_x_input.set 'a'
 		@page.crop_y_input.set 0
+		wait_for_ajax
+		@page.crop_x_input.set 'a'
 		@page.crop_submit_button.click
 		no_php_js_errors
 
@@ -174,6 +181,7 @@ feature 'File Manger / Crop File' do
 		@page.crop_width_input.set 5
 		@page.crop_height_input.set 5
 		@page.crop_x_input.set 0
+		wait_for_ajax
 		@page.crop_y_input.set 'a'
 		@page.crop_submit_button.click
 		no_php_js_errors
@@ -186,10 +194,11 @@ feature 'File Manger / Crop File' do
 	end
 
 	it 'validates that crop width is greater than zero' do
-		@page.crop_width_input.set 0
 		@page.crop_height_input.set 5
 		@page.crop_x_input.set 0
 		@page.crop_y_input.set 0
+		wait_for_ajax
+		@page.crop_width_input.set 0
 		@page.crop_submit_button.click
 		no_php_js_errors
 
@@ -202,9 +211,10 @@ feature 'File Manger / Crop File' do
 
 	it 'validates that crop height is greater than zero' do
 		@page.crop_width_input.set 5
-		@page.crop_height_input.set 0
 		@page.crop_x_input.set 0
 		@page.crop_y_input.set 0
+		wait_for_ajax
+		@page.crop_height_input.set 0
 		@page.crop_submit_button.click
 		no_php_js_errors
 
@@ -345,8 +355,9 @@ feature 'File Manger / Crop File' do
 	end
 
 	it 'validates that resize height is greater than zero', :tab => 'resize' do
-		@page.resize_width_input.set 0
 		@page.resize_height_input.set 5
+		wait_for_ajax
+		@page.resize_width_input.set 0
 		@page.resize_submit_button.click
 		no_php_js_errors
 
@@ -359,6 +370,7 @@ feature 'File Manger / Crop File' do
 
 	it 'validates that resize width is greater than zero', :tab => 'resize' do
 		@page.resize_width_input.set 5
+		wait_for_ajax
 		@page.resize_height_input.set 0
 		@page.resize_submit_button.click
 		no_php_js_errors

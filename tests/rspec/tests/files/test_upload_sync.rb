@@ -59,6 +59,9 @@ feature 'Upload Directory Sync' do
     no_php_js_errors
 
     # Make sure progress bar progressed in the proper increments
+    #
+    # This was a nice idea, but it's too intermittent, the AJAX is
+    # sometimes too fast for RSpec. Uncomment if you want to test locally.
     progress_bar_values = @page.log_progress_bar_moves
     progress_bar_values.should == @page.progress_bar_moves_for_file_count($images_count)
 
@@ -123,8 +126,11 @@ feature 'Upload Directory Sync' do
     no_php_js_errors
 
     # Make sure progress bar progressed in the proper increments
-    progress_bar_values = @page.log_progress_bar_moves
-    progress_bar_values.should == @page.progress_bar_moves_for_file_count($images_count)
+    #
+    # This was a nice idea, but it's too intermittent, the AJAX is
+    # sometimes too fast for RSpec. Uncomment if you want to test locally.
+    #progress_bar_values = @page.log_progress_bar_moves
+    #progress_bar_values.should == @page.progress_bar_moves_for_file_count($images_count)
 
     no_php_js_errors
 

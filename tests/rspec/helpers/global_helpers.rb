@@ -75,6 +75,26 @@ def grid_cell_should_have_no_error_text(node)
   node.first(:xpath, ".//..").should have_no_css 'em.ee-form-error-message'
 end
 
+# Wait for any pending AJAX requests
+def wait_for_ajax
+  ajax = false
+  while ajax == false do
+    ajax = (page.evaluate_script('$.active') == 0)
+  end
+end
+
+# Wait for DOM to be ready
+def wait_for_dom
+  uuid = SecureRandom.uuid
+  page.find("body")
+  page.evaluate_script <<-EOS
+    _.defer(function() {
+      $('body').append("<div id='#{uuid}'></div>");
+    });
+  EOS
+  page.find("##{uuid}")
+end
+
 # Reset the DB to a clean slate and reset sessions
 def reset_db
   $db.query(IO.read('sql/truncate_db.sql'))
