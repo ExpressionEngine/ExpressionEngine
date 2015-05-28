@@ -74,7 +74,8 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	protected static $_mixins = array(
 		'EllisLab\ExpressionEngine\Service\Event\Mixin',
 		'EllisLab\ExpressionEngine\Service\Model\Mixin\TypedColumn',
-		'EllisLab\ExpressionEngine\Service\Model\Mixin\CompositeColumn'
+		'EllisLab\ExpressionEngine\Service\Model\Mixin\CompositeColumn',
+		'EllisLab\ExpressionEngine\Service\Model\Mixin\Relationship'
 	);
 
 	protected function initialize()
@@ -94,6 +95,11 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		if ($column = $this->getMixin('Model:CompositeColumn')->getCompositeColumnNameFromMethod($method))
 		{
 			return $this->getMixin('Model:CompositeColumn')->getCompositeColumn($column);
+		}
+
+		if ($action = $this->getMixin('Model:Relationship')->getAssociationActionFromMethod($method))
+		{
+			return $this->getMixin('Model:Relationship')->runAssociationAction($action, $args);
 		}
 
 		return parent::__call($method, $args);
