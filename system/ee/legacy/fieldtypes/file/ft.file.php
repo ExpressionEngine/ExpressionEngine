@@ -1,4 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+use EllisLab\ExpressionEngine\Module\FilePicker\FilePicker;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -96,10 +99,19 @@ class File_ft extends EE_Fieldtype {
 
 		if (REQ == 'CP')
 		{
+			$fp = new FilePicker();
+			$fp->inject(ee()->view);
+
+			if ($allowed_file_dirs == '')
+			{
+				$allowed_file_dirs = 'all';
+			}
+
 			return ee('View')->make('publish')->render(array(
 				'field_name' => $this->field_name,
 				'value' => $data,
 				'file' => ee()->file_field->parse_field($data),
+				'fp_url' => cp_url($fp->controller, array('directory' => $allowed_file_dirs))
 			));
 		}
 
