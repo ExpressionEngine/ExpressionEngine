@@ -643,6 +643,15 @@ Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.
 'delete_username' =>
 'Delete %s',
 
+'choose_avatar' =>
+'Choose from library',
+
+'upload_avatar' =>
+'Upload — .gif, .jpg, .png (max 50kb)',
+
+'link_avatar' =>
+' Link to avatar',
+
 ''=>''
 );
 
