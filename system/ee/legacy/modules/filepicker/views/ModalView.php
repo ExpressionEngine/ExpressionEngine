@@ -20,9 +20,9 @@
 
 	<?php if (isset($filters)) echo $filters; ?>
 
-	<?php $this->view('_shared/table', $table); ?>
+	<?php $this->ee_view('_shared/table', $table); ?>
 
-	<?php if ( ! empty($pagination)) $this->view('_shared/pagination', $pagination); ?>
+	<?php if ( ! empty($pagination)) $this->ee_view('_shared/pagination', $pagination); ?>
 
 <?=form_close()?>
 </div>
