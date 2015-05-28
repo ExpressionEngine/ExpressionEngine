@@ -270,8 +270,8 @@ class File extends AbstractFilesController {
 		ee()->load->library('form_validation');
 		if (isset($_POST['save_crop']))
 		{
-			ee()->form_validation->set_rules('crop_width', 'lang:width', 'trim|numeric|greater_than[0]|required');
-			ee()->form_validation->set_rules('crop_height', 'lang:height', 'trim|numeric|greater_than[0]|required');
+			ee()->form_validation->set_rules('crop_width', 'lang:width', 'trim|is_natural_no_zero|required');
+			ee()->form_validation->set_rules('crop_height', 'lang:height', 'trim|is_natural_no_zero|required');
 			ee()->form_validation->set_rules('crop_x', 'lang:x_axis', 'trim|numeric|required');
 			ee()->form_validation->set_rules('crop_y', 'lang:y_axis', 'trim|numeric|required');
 			$action = "crop";
@@ -286,8 +286,8 @@ class File extends AbstractFilesController {
 		}
 		else if (isset($_POST['save_resize']))
 		{
-			ee()->form_validation->set_rules('resize_width', 'lang:width', 'trim|numeric|greater_than[0]|required');
-			ee()->form_validation->set_rules('resize_height', 'lang:height', 'trim|numeric|greater_than[0]|required');
+			ee()->form_validation->set_rules('resize_width', 'lang:width', 'trim|is_natural_no_zero|required');
+			ee()->form_validation->set_rules('resize_height', 'lang:height', 'trim|is_natural_no_zero|required');
 			$action = "resize";
 			$action_desc = "resized";
 			$vars['active_tab'] = 2;
@@ -299,13 +299,13 @@ class File extends AbstractFilesController {
 			// specify the rules, so we'll do it here. Note: run_ajax() removes
 			// rules for all fields but the one submitted.
 
-			ee()->form_validation->set_rules('crop_width', 'lang:width', 'trim|numeric|greater_than[0]|required');
-			ee()->form_validation->set_rules('crop_height', 'lang:height', 'trim|numeric|greater_than[0]|required');
+			ee()->form_validation->set_rules('crop_width', 'lang:width', 'trim|is_natural_no_zero|required');
+			ee()->form_validation->set_rules('crop_height', 'lang:height', 'trim|is_natural_no_zero|required');
 			ee()->form_validation->set_rules('crop_x', 'lang:x_axis', 'trim|numeric|required');
 			ee()->form_validation->set_rules('crop_y', 'lang:y_axis', 'trim|numeric|required');
 			ee()->form_validation->set_rules('rotate', 'lang:rotate', 'required');
-			ee()->form_validation->set_rules('resize_width', 'lang:width', 'trim|numeric|greater_than[0]|required');
-			ee()->form_validation->set_rules('resize_height', 'lang:height', 'trim|numeric|greater_than[0]|required');
+			ee()->form_validation->set_rules('resize_width', 'lang:width', 'trim|is_natural_no_zero|required');
+			ee()->form_validation->set_rules('resize_height', 'lang:height', 'trim|is_natural_no_zero|required');
 
 			ee()->form_validation->run_ajax();
 			exit;
