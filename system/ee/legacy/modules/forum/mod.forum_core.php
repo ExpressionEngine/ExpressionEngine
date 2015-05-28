@@ -5749,6 +5749,20 @@ class Forum_Core extends Forum {
 		// Or... do we have errors to display?
 		ee()->stats->update_stats();
 
+		// Check for spam
+		if (ee()->input->post('preview') == FALSE && ee()->session->userdata('group_id') != 1)
+		{
+			$body = ee()->input->get_post('body');
+			$title = ee()->input->get_post('title');
+			$text = "$title $body";
+
+			if (ee()->spam->classify($text))
+			{
+				ee()->spam->moderate(NULL, NULL, NULL, NULL, $text);
+				$this->submission_error = lang('spam');
+			}
+		}
+
 		if (ee()->input->post('preview') !== FALSE OR $this->submission_error != '')
 		{
 			$type = array(

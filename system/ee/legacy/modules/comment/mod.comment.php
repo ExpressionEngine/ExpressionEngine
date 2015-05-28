@@ -661,8 +661,6 @@ class Comment {
 			$absolute_count = 0;
 		}
 
-		$comment_moderation_override = ee()->config->item('comment_moderation_override');
-
 		foreach ($results as $id => $row)
 		{
 			if ( ! is_array($row))
@@ -680,17 +678,6 @@ class Comment {
 			// If we do not paginate, then the total comments ARE the comments
 			// on the page
 			$row['total_comments']	= ($enabled['pagination']) ? $pagination->total_items : $total_results;
-
-			if ($comment_moderation_override !== 'y')
-			{
-				$row['comments_expired'] = ($row['comment_expiration_date'] != 0 && $row['comment_expiration_date']< ee()->localize->now);
-			}
-			else
-			{
-				$row['comments_expired'] = FALSE;
-			}
-
-			$row['comments_disabled'] = ($row['allow_comments'] == 'n' OR $row['comment_system_enabled'] == 'n');
 
 			// This lets the {if location} variable work
 
@@ -2296,6 +2283,16 @@ class Comment {
 		$notify_address = ($query->row('comment_notify')  == 'y' AND $query->row('comment_notify_emails')  != '') ? $query->row('comment_notify_emails')  : '';
 
 
+		// Force comment moderation if spam
+		$comment_string = ee()->security->xss_clean($_POST['comment']);
+		$is_spam = ee()->spam->classify($comment_string);
+
+		if ($is_spam === TRUE)
+		{
+			$comment_moderate = 'y';
+		}
+
+
 		/** ----------------------------------------
 		/**  Start error trapping
 		/** ----------------------------------------*/
@@ -2462,7 +2459,7 @@ class Comment {
 			'email'			=> $cmtr_email,
 			'url'			=> $cmtr_url,
 			'location'		=> $cmtr_loc,
-			'comment'		=> ee()->security->xss_clean($_POST['comment']),
+			'comment'		=> $comment_string,
 			'comment_date'	=> ee()->localize->now,
 			'ip_address'	=> ee()->input->ip_address(),
 			'status'		=> ($comment_moderate == 'y') ? 'p' : 'o',
@@ -2487,6 +2484,12 @@ class Comment {
 		$sql = ee()->db->insert_string('exp_comments', $data);
 		ee()->db->query($sql);
 		$comment_id = ee()->db->insert_id();
+
+		if ($is_spam == TRUE)
+		{
+			$spam_data = array($comment_id, 'o');
+			ee()->spam->moderate(__FILE__, 'Comment', 'moderate_comment', $spam_data, $comment_string);
+		}
 
 		if ($notify == 'y')
 		{
@@ -2843,6 +2846,22 @@ class Comment {
 		}
 	}
 
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * moderate_comment
+	 * 
+	 * @param integer $comment_id  The ID of the comment
+	 * @param string  $status  The status to set
+	 * @access public
+	 * @return void
+	 */
+	function moderate_comment($comment_id, $status)
+	{
+		ee()->db->where('comment_id', $comment_id);
+		ee()->db->update('comments', array('status' => $status));
+	}
 
 	// --------------------------------------------------------------------
 
