@@ -8,6 +8,7 @@ use OverflowException;
 use EllisLab\ExpressionEngine\Library\Data\Entity;
 use EllisLab\ExpressionEngine\Service\Event\Publisher as EventPublisher;
 use EllisLab\ExpressionEngine\Service\Event\Subscriber as EventSubscriber;
+use EllisLab\ExpressionEngine\Service\Model\Association\Association;
 use EllisLab\ExpressionEngine\Service\Validation\Validator;
 use EllisLab\ExpressionEngine\Service\Validation\ValidationAware;
 
@@ -58,6 +59,11 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	protected $_validator = NULL;
 
 	/**
+	 *
+	 */
+	protected $_associations = array();
+
+	/**
 	 * @var Relationships property must default to array
 	 */
 	protected static $_relationships = array();
@@ -69,7 +75,7 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		'EllisLab\ExpressionEngine\Service\Event\Mixin',
 		'EllisLab\ExpressionEngine\Service\Model\Mixin\TypedColumn',
 		'EllisLab\ExpressionEngine\Service\Model\Mixin\CompositeColumn',
-		'EllisLab\ExpressionEngine\Service\Model\Mixin\Relationship',
+		'EllisLab\ExpressionEngine\Service\Model\Mixin\Relationship'
 	);
 
 	protected function initialize()
@@ -97,6 +103,27 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		}
 
 		return parent::__call($method, $args);
+	}
+
+	/**
+	 * Extend __get to grant access to associated objects
+	 *
+	 * Associations must start with an uppercase letter
+	 *
+	 * @param String $key The property to access
+	 * @return Mixed The property value
+	 */
+	public function __get($key)
+	{
+		if (strtoupper($key[0]) == $key[0])
+		{
+			if ($this->hasAssociation($key))
+			{
+				return $this->getAssociation($key);
+			}
+		}
+
+		return parent::__get($key);
 	}
 
 	/**
@@ -374,7 +401,7 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	 * Set the validator
 	 *
 	 * @param Validator $validator The validator to use
-	 * @return Current scope
+	 * @return $this
 	 */
 	public function setValidator(Validator $validator)
 	{
@@ -507,6 +534,61 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	{
 		return $this->getMixin('Event')->unsubscribe($subscriber);
 	}
+
+
+	/**
+	* Get all associations
+	*
+	* @return array associations
+	*/
+	public function getAllAssociations()
+	{
+		return $this->_associations;
+	}
+
+	/**
+	* Check if an association of a given name exists
+	*
+	* @param String $name Name of the association
+	* @return bool has association?
+	*/
+	public function hasAssociation($name)
+	{
+		return array_key_exists($name, $this->_associations);
+	}
+
+	/**
+	* Get an association of a given name
+	*
+	* @param String $name Name of the association
+	* @return Mixed the association
+	*/
+	public function getAssociation($name)
+	{
+		return $this->_associations[$name];
+	}
+
+	/**
+	* Set a given association
+	*
+	* @param String $name Name of the association
+	* @param Association $association Association to set
+	* @return $this
+	*/
+	public function setAssociation($name, Association $association)
+	{
+		$this->emit('beforeSetAssociation', $name, $association);
+
+		$association->setFrontend($this->getFrontend());
+
+		$this->_associations[$name] = $association;
+
+		$this->emit('afterSetAssociation', $name, $association);
+
+		return $this;
+	}
+
+
 
 	/**
 	 * Support method for the typed columns mixin
