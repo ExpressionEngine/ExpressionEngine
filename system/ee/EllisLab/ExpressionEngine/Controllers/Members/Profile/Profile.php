@@ -65,6 +65,7 @@ class Profile extends CP_Controller {
 		$this->member = ee()->api->get('Member')->filter('member_id', $id)->first();
 
 		ee()->lang->loadfile('members');
+		ee()->lang->loadfile('myaccount');
 		ee()->load->model('member_model');
 		ee()->load->library('form_validation');
 
@@ -154,7 +155,7 @@ class Profile extends CP_Controller {
 					// Handle arrays of checkboxes as a special case;
 					if ($field['type'] == 'checkbox' && is_array($post))
 					{
-						foreach ($field['choices']  as $property)
+						foreach ($field['choices']  as $property => $label)
 						{
 							$this->member->$property = in_array($property, $post) ? 'y' : 'n';
 						}
@@ -172,10 +173,10 @@ class Profile extends CP_Controller {
 
 		$validated = $this->member->validate();
 
-		if ($validated !== TRUE)
+		if ($validated->isNotValid())
 		{
 			ee()->load->helper('html_helper');
-			ee()->view->set_message('issue', lang('cp_message_issue'), ul($validated), TRUE);
+			ee()->view->set_message('issue', lang('cp_message_issue'), ul($validated->getAllErrors()), TRUE);
 
 			return FALSE;
 		}
