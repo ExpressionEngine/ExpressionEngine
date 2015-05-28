@@ -11,10 +11,16 @@ class FilePicker {
 
 	public $controller = 'addons/settings/filepicker/modal';
 
+	public function __construct()
+	{
+		 ee()->load->add_package_path(PATH_THEMES . 'cp_themes/default/views/');
+	}
+
 	public function inject($view)
 	{
 		// Insert the modal
 		$modal_vars = array('name'=> 'modal-file', 'contents' => '');
+		if (empty($view->blocks['modals'])) $view->blocks['modals'] = '';
 		$view->blocks['modals'] .= $view->render('_shared/modal', $modal_vars, TRUE);
 
 		ee()->cp->add_js_script(array(
