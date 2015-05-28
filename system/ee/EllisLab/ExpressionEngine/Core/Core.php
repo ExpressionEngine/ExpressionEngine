@@ -241,9 +241,9 @@ abstract class Core {
 
 		$this->legacy->getFacade()->set('di', $dependencies);
 
-		// This is potentially where we'll consolidate the first party stuff, 
+		// This is potentially where we'll consolidate the first party stuff,
 		// not sure where the best place to load this in is
-		$application->setupAddons(SYSPATH . 'EllisLab/ExpressionEngine/Module/');
+		$application->setupAddons(SYSPATH . 'ee/EllisLab/ExpressionEngine/Module/');
 
 		return $application;
 	}
