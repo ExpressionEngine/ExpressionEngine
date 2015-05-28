@@ -493,6 +493,22 @@ class Updater {
 	 */
 	private function _update_entry_edit_date_format()
 	{
+		$fields = ee()->db->field_data('channel_titles');
+		foreach ($fields as $field)
+		{
+			if ($field->name == 'edit_date')
+			{
+				// Prior to 3.0.0 this column is a bigint if it is now an int
+				// then this method has already run and we need to return
+				if ($field->type == 'int')
+				{
+					return;
+				}
+
+				break;
+			}
+		}
+
 		ee()->db->query("SET time_zone = '+0:00';");
 		ee()->db->query("UPDATE exp_channel_titles SET edit_date=UNIX_TIMESTAMP(edit_date);");
 		ee()->db->query("SET time_zone = @@global.time_zone;");
