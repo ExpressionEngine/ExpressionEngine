@@ -333,4 +333,18 @@ $(document).ready(function(){
 			$(this).parents('h3').toggleClass('field-closed');
 		});
 
+	// ===================
+	// input range sliders
+	// ===================
+
+		// listen for input on a range input
+		$('input[type="range"]').on('input',function(){
+			// set the newVal var
+			var newVal = $(this).val();
+			// set the rangeIS
+			var rangeIs = $(this).attr('rel');
+			// change the value on the fly
+			$('.'+rangeIs).html(newVal);
+		});
+
 }); // close (document).ready
