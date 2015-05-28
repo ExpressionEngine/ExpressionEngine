@@ -2,7 +2,7 @@
 <figure class="file-chosen<?php if ( ! $file) echo " hidden";?>" id="<?=$field_name?>">
 	<img src="<?=$file['url']?>" alt="<?=$file['title']?>">
 	<ul class="toolbar">
-		<li class="edit"><a href="" title="<?=lang('edit')?>"></a></li>
+		<li class="edit"><a class="m-link filepicker" href="<?=$fp_url?>" rel="modal-file" data-field-name="<?=$field_name?>" data-input-image="<?=$field_name?>" data-input-value="<?=$field_name?>" title="<?=lang('edit')?>"></a></li>
 		<li class="remove"><a href="" title="<?=lang('remove')?>"></a></li>
 	</ul>
 </figure>
