@@ -8,35 +8,35 @@ env_local.rb
 
 # 2.0 Paths ====================================================================
 
-system/expressionengine/cache/*
-!system/expressionengine/cache/index.html
-!system/expressionengine/cache/.htaccess
+system/ee/legacy/cache/*
+!system/ee/legacy/cache/index.html
+!system/ee/legacy/cache/.htaccess
 
-system/expressionengine/config/config*.php
-system/expressionengine/config/database.php
-system/expressionengine/config/config1x.php
-system/expressionengine/config/config_1x.php
+system/ee/legacy/config/config*.php
+system/ee/legacy/config/database.php
+system/ee/legacy/config/config1x.php
+system/ee/legacy/config/config_1x.php
 
-system/expressionengine/language/*
-!system/expressionengine/language/english
+system/ee/legacy/language/*
+!system/ee/legacy/language/english
 
-system/expressionengine/templates/*
-!system/expressionengine/templates/index.html
-!system/expressionengine/templates/.htaccess
+system/ee/legacy/templates/*
+!system/ee/legacy/templates/index.html
+!system/ee/legacy/templates/.htaccess
 
-system/expressionengine/third_party/*
-!system/expressionengine/third_party/index.html
-!system/expressionengine/third_party/download
-!system/expressionengine/third_party/google_maps
-!system/expressionengine/third_party/js_tool
-!system/expressionengine/third_party/testage
-!system/expressionengine/third_party/debug
-!system/expressionengine/third_party/safecracker_file
-!system/expressionengine/third_party/cookie_check
-!system/expressionengine/third_party/cookie_consent
-!system/expressionengine/third_party/nannerbanner
-!system/expressionengine/third_party/unregisteredbanner
-!system/expressionengine/third_party/ellislab_high_ascii_decode
+system/ee/legacy/third_party/*
+!system/ee/legacy/third_party/index.html
+!system/ee/legacy/third_party/download
+!system/ee/legacy/third_party/google_maps
+!system/ee/legacy/third_party/js_tool
+!system/ee/legacy/third_party/testage
+!system/ee/legacy/third_party/debug
+!system/ee/legacy/third_party/safecracker_file
+!system/ee/legacy/third_party/cookie_check
+!system/ee/legacy/third_party/cookie_consent
+!system/ee/legacy/third_party/nannerbanner
+!system/ee/legacy/third_party/unregisteredbanner
+!system/ee/legacy/third_party/ellislab_high_ascii_decode
 
 
 # 3.0 Paths ====================================================================
@@ -76,11 +76,11 @@ themes/user/*
 
 # Tests ========================================================================
 
-system/tests/phpunit/vendor/
-system/tests/phpunit/composer.lock
-system/tests/rspec/config.local.rb
-system/tests/rspec/screenshots/*
-system/tests/rspec/support/file-sync/uploads/*
+system/ee/EllisLab/Tests/vendor/
+system/ee/EllisLab/Tests/phpunit/composer.lock
+tests/rspec/config.local.rb
+tests/rspec/screenshots/*
+tests/rspec/support/file-sync/uploads/*
 
 system/EllisLab/Tests/vendor/*
 system/EllisLab/Tests/composer.lock

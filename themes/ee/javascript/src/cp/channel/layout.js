@@ -14,8 +14,8 @@ $(document).ready(function () {
 
 	function getTabIndex()
 	{
-		var tab = $('div.tab-bar a.act').parents('li').eq(0);
-		return $('div.tab-bar ul li').index(tab);
+		var tab = $('ul.tabs a.act').parents('li').eq(0);
+		return $('ul.tabs li').index(tab);
 	}
 
 	function getFieldIndex(elemnet)
@@ -27,15 +27,15 @@ $(document).ready(function () {
 	var field;
 
 	// Sorting the tabs
-	$('div.tab-bar').sortable({
+	$('ul.tabs').sortable({
 		cancel: "li:first-child",
 		items: "li",
 		start: function (event, ui)
 		{
-			tab_index_at_start = $('div.tab-bar ul li').index(ui.item[0]);
+			tab_index_at_start = $('ul.tabs li').index(ui.item[0]);
 		},
 		update: function (event, ui) {
-			var index_at_stop = $('div.tab-bar ul li').index(ui.item[0]);
+			var index_at_stop = $('ul.tabs li').index(ui.item[0]);
 
 			var tab = EE.publish_layout.splice(tab_index_at_start, 1);
 			EE.publish_layout.splice(index_at_stop, 0, tab[0]);
@@ -47,7 +47,7 @@ $(document).ready(function () {
 	var spring;
 	var spring_delay = 500;
 
-	$('div.tab-bar ul li a').droppable({
+	$('ul.tabs li a').droppable({
 		accept: "fieldset.sortable",
 		hoverClass: "highlight",
 		tolerance: "pointer",
@@ -122,7 +122,7 @@ $(document).ready(function () {
 	// Saving the on/off state of tabs
 	$('.tab-on, .tab-off').on('click', function(e) {
 		var tab = $(this).parents('li').eq(0);
-		var index = $('div.tab-bar ul li').index(tab);
+		var index = $('ul.tabs li').index(tab);
 		var tabContents = $('div.tab.' + $(tab).find('a').eq(0).attr('rel'));
 
 		if (tabContents.has('.required').length > 0)
@@ -181,8 +181,8 @@ $(document).ready(function () {
 				};
 				EE.publish_layout.push(tab);
 
-				var index = $('div.tab-bar ul li').length;
-				$('div.tab-bar ul').append('<li><a href="" rel="t-' + index + '">' + tab_name + '</a> <span class="tab-remove"></span></li>')
+				var index = $('ul.tabs li').length;
+				$('ul.tabs').append('<li><a href="" rel="t-' + index + '">' + tab_name + '</a> <span class="tab-remove"></span></li>')
 				$('div.tab.t-' + index - 1).after('<div class="tab t-' + index + '"></div>');
 
 				$('.modal-add-new-tab .m-close').trigger('click');
@@ -205,9 +205,9 @@ $(document).ready(function () {
 	});
 
 	// Removing a tab
-	$('div.tab-bar ul').on('click', '.tab-remove', function(e) {
+	$('ul.tabs').on('click', '.tab-remove', function(e) {
 		var tab = $(this).parents('li').eq(0);
-		var index = $('div.tab-bar ul li').index(tab);
+		var index = $('ul.tabs li').index(tab);
 		var tabContents = $('div.tab.' + $(tab).find('a').eq(0).attr('rel'));
 
 		if (tabContents.html())

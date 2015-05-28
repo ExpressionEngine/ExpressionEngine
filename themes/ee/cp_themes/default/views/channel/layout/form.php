@@ -4,8 +4,8 @@
 	<h1>
 		<?=$cp_page_title?> <span class="req-title"><?=lang('required_fields')?></span>
 	</h1>
-	<div class="tab-wrap layout">
-		<ul class="tabs">
+	<div class="tab-wrap">
+		<ul class="tabs layout">
 			<?php foreach ($layout->getTabs() as $index => $tab): ?>
 				<?php
 				$icon = '';
