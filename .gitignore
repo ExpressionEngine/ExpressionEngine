@@ -82,8 +82,8 @@ tests/rspec/config.local.rb
 tests/rspec/screenshots/*
 tests/rspec/support/file-sync/uploads/*
 
-system/EllisLab/Tests/vendor/*
-system/EllisLab/Tests/composer.lock
+system/ee/EllisLab/Tests/vendor/*
+system/ee/EllisLab/Tests/composer.lock
 
 
 # Themes/Images ================================================================
