@@ -1431,6 +1431,7 @@ CREATE TABLE `exp_upload_prefs` (
   `file_post_format` varchar(120) DEFAULT NULL,
   `cat_group` varchar(255) DEFAULT NULL,
   `batch_location` varchar(255) DEFAULT NULL,
+  `module_id` int(4) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `site_id` (`site_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
@@ -1723,7 +1724,22 @@ INSERT INTO `exp_files` (`file_id`, `site_id`, `title`, `upload_location_id`, `m
 	(7,1,'map.jpg',2,'image/jpeg','map.jpg',71299,NULL,NULL,NULL,1,1302883304,1,1302883304,''),
 	(8,1,'map2.jpg',2,'image/jpeg','map2.jpg',49175,NULL,NULL,NULL,1,1302882304,1,1302882304,''),
 	(9,1,'staff_chloe.png',2,'image/png','staff_chloe.png',50262,NULL,NULL,NULL,1,1302881304,1,1302881304,''),
-	(10,1,'staff_howard.png',2,'image/png','staff_howard.png',51488,NULL,NULL,NULL,1,1302880304,1,1302880304,'');
+	(10,1,'staff_howard.png',2,'image/png','staff_howard.png',51488,NULL,NULL,NULL,1,1302880304,1,1302880304,''),
+	(11,1,'avatar_tree_hugger_color.png',3,'image/png','avatar_tree_hugger_color.png',7529,NULL,NULL,NULL,1,1432910425,1,1432910425,''),
+	(12,1,'bad_fur_day.jpg',3,'image/jpeg','bad_fur_day.jpg',15766,NULL,NULL,NULL,1,1432910425,1,1432910425,''),
+	(13,1,'big_horns.jpg',3,'image/jpeg','big_horns.jpg',20631,NULL,NULL,NULL,1,1432910425,1,1432910425,''),
+	(14,1,'eat_it_up.jpg',3,'image/jpeg','eat_it_up.jpg',23085,NULL,NULL,NULL,1,1432910425,1,1432910425,''),
+	(15,1,'ee_paint.jpg',3,'image/jpeg','ee_paint.jpg',24029,NULL,NULL,NULL,1,1432910425,1,1432910425,''),
+	(16,1,'expression_radar.jpg',3,'image/jpeg','expression_radar.jpg',3692,NULL,NULL,NULL,1,1432910425,1,1432910425,''),
+	(17,1,'flying_high.jpg',3,'image/jpeg','flying_high.jpg',13743,NULL,NULL,NULL,1,1432910425,1,1432910425,''),
+	(18,1,'hair.png',3,'image/png','hair.png',4974,NULL,NULL,NULL,1,1432910425,1,1432910425,''),
+	(19,1,'hanging_out.jpg',3,'image/jpeg','hanging_out.jpg',19150,NULL,NULL,NULL,1,1432910425,1,1432910425,''),
+	(20,1,'hello_prey.jpg',3,'image/jpeg','hello_prey.jpg',14282,NULL,NULL,NULL,1,1432910425,1,1432910425,''),
+	(21,1,'light_blur.jpg',3,'image/jpeg','light_blur.jpg',23949,NULL,NULL,NULL,1,1432910425,1,1432910425,''),
+	(22,1,'ninjagirl.png',3,'image/png','ninjagirl.png',9756,NULL,NULL,NULL,1,1432910425,1,1432910425,''),
+	(23,1,'procotopus.png',3,'image/png','procotopus.png',6456,NULL,NULL,NULL,1,1432910425,1,1432910425,''),
+	(24,1,'sneak_squirrel.jpg',3,'image/jpeg','sneak_squirrel.jpg',19542,NULL,NULL,NULL,1,1432910425,1,1432910425,''),
+	(25,1,'zombie_bunny.png',3,'image/png','zombie_bunny.png',6830,NULL,NULL,NULL,1,1432910425,1,1432910425,'');
 UNLOCK TABLES;
 
 
@@ -2052,9 +2068,12 @@ UNLOCK TABLES;
 
 
 LOCK TABLES `exp_upload_prefs` WRITE;
-INSERT INTO `exp_upload_prefs` (`id`, `site_id`, `name`, `server_path`, `url`, `allowed_types`, `max_size`, `max_height`, `max_width`, `properties`, `pre_format`, `post_format`, `file_properties`, `file_pre_format`, `file_post_format`, `cat_group`, `batch_location`) VALUES
-	(1,1,'Main Upload Directory','../images/uploads/','/images/uploads/','all','','','','style="border: 0;" alt="image"','','','','','',NULL,NULL),
-	(2,1,'About','../themes/ee/site_themes/agile_records/images/uploads/','/themes/ee/site_themes/agile_records/images/uploads/','img','','','','','','','','','',NULL,NULL);
+INSERT INTO `exp_upload_prefs` (`id`, `site_id`, `name`, `server_path`, `url`, `allowed_types`, `max_size`, `max_height`, `max_width`, `properties`, `pre_format`, `post_format`, `file_properties`, `file_pre_format`, `file_post_format`, `cat_group`, `batch_location`, `module_id`) VALUES
+	(1,1,'Main Upload Directory','../images/uploads/','/images/uploads/','all','','','','style="border: 0;" alt="image"','','','','','',NULL,NULL,NULL),
+	(2,1,'About','../themes/ee/site_themes/agile_records/images/uploads/','/themes/ee/site_themes/agile_records/images/uploads/','img','','','','','','','','','',NULL,NULL,NULL),
+	(3,1,'Avatars','/private/var/www/expressionengine/images/avatars/','/images/avatars/','img','50','100','100',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
+	(4,1,'Signature Attachments','/private/var/www/expressionengine/images/signature_attachments/','/images/signature_attachments/','img','30','80','480',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
+	(5,1,'PM Attachments','/private/var/www/expressionengine/images/pm_attachments/','/images/pm_attachments/','img','250',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4);
 UNLOCK TABLES;
 
 
