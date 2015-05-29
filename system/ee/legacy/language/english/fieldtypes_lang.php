@@ -55,6 +55,7 @@ $lang = array(
 'file_ft_limit_right'			=> 'returned',
 'file_ft_limit_files_subtext'	=> 'leave blank to show ALL files',
 'file_ft_select_existing'		=> 'Select an existing file',
+'file_ft_cannot_find_file'		=> '<b>File not found.</b> We could not locate %s on the server.',
 
 // Grid
 'grid_options'				=> 'Grid Field Options',
