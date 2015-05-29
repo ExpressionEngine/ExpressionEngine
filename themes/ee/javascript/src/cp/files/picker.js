@@ -6,7 +6,7 @@
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
- * @since		Version 2.0
+ * @since		Version 3.0
  * @filesource
  */
 /* This file exposes three callback functions:
