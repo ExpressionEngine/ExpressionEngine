@@ -50,17 +50,24 @@
 			{
 				callback = EE.file_picker_callback;
 			} else {
-				callback = function(data) {
-					modal.find('.m-close').click();
-					input_value.val(data.id);
-					input_name.html(data.file_name);
-					input_img.html("<img src='" + data.path + "' />");
+				callback = function(data, picker) {
+					picker.modal.find('.m-close').click();
+					picker.input_value.val(data.id);
+					picker.input_name.html(data.file_name);
+					picker.input_img.html("<img src='" + data.path + "' />");
 				}
 			}
 
 			$.ajax({
 				url: file_url,
-				success: callback,
+				success: function(data) {
+					var picker = {
+						modal: modal,
+						input_value: input_value,
+						input_img: input_img
+					}
+					callback(data, picker);
+				},
 				dataType: 'json'
 			});
 		});
