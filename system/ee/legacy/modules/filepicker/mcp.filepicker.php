@@ -11,6 +11,7 @@ class Filepicker_mcp {
 	{
 		$this->picker = new Picker();
 		$this->base_url = 'addons/settings/filepicker';
+		ee()->lang->loadfile('filemanager');
 	}
 
 	public function index()
@@ -19,7 +20,7 @@ class Filepicker_mcp {
 		$dirs = ee()->api->get('UploadDestination')
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
-		
+
 		foreach($dirs as $dir)
 		{
 			$directories[$dir->id] = $dir;
