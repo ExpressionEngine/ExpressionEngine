@@ -73,7 +73,8 @@ class FilePicker {
 		foreach ($files as $file)
 		{
 			if ( ! $file->getUploadDestination()
-				|| $this->hasFileGroupAccessPrivileges($file->getUploadDestination()) === FALSE)
+				|| $this->hasFileGroupAccessPrivileges($file->getUploadDestination()) === FALSE
+				|| ! $file->exists())
 			{
 				continue;
 			}
