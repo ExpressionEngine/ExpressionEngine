@@ -36,6 +36,11 @@ class FileDimension extends Model {
 	protected static $_primary_key = 'id';
 	protected static $_gateway_names = array('FileDimensionGateway');
 
+	protected static $_typed_columns = array(
+		'width'  => 'int',
+		'height' => 'int'
+	);
+
 	protected static $_relationships = array(
 		'UploadDestination' => array(
 			'type' => 'belongsTo',
@@ -51,8 +56,8 @@ class FileDimension extends Model {
 	protected static $_validation_rules = array(
 		'short_name'  => 'required|alphaDash|uniqueWithinSiblings[UploadDestination,FileDimensions]',
 		'resize_type' => 'enum[crop,constrain]',
-		'width'       => 'isNatural|validateDimension|required',
-		'height'      => 'isNatural|validateDimension|required'
+		'width'       => 'validateDimension|isNatural|required',
+		'height'      => 'validateDimension|isNatural|required'
 	);
 
 	protected $id;

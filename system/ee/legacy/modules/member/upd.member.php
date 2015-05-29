@@ -55,7 +55,7 @@ class Member_upd {
 			ee()->db->query($query);
 		}
 
-		// Install member uplaod directories
+		// Install member upload directories
 		$site_id = ee()->config->item('site_id');
 		$member_directories = array();
 
@@ -159,10 +159,6 @@ class Member_upd {
 	 */
 	public function uninstall()
 	{
-		$errors = ee()->config->update_site_prefs(array('avatar_path' => '/home/quinnchr/Projects/DontFuckThisUp/images/avatars/'));
-		var_dump($errors);
-		var_dump(ee()->config);
-		die();
 		$module = ee('Model')->get('Module')->filter('module_name', 'Member')->first();
 		$module_id = $module->module_id;
 		$directories = ee('Model')->get('UploadDestination')->filter('module_id', $module_id)->all();
