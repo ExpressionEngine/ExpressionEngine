@@ -101,6 +101,12 @@ class File_ft extends EE_Fieldtype {
 		{
 			ee()->lang->loadfile('fieldtypes');
 
+			ee()->cp->add_js_script(array(
+				'file' => array(
+					'cp/fields/file'
+				),
+			));
+
 			$fp = new FilePicker();
 			$fp->inject(ee()->view);
 
