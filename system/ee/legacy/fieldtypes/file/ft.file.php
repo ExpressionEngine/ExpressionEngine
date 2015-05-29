@@ -99,6 +99,8 @@ class File_ft extends EE_Fieldtype {
 
 		if (REQ == 'CP')
 		{
+			ee()->lang->loadfile('fieldtypes');
+
 			$fp = new FilePicker();
 			$fp->inject(ee()->view);
 
@@ -107,10 +109,33 @@ class File_ft extends EE_Fieldtype {
 				$allowed_file_dirs = 'all';
 			}
 
+			$file = NULL;
+
+			// If the file field is in the "{filedir_n}image.jpg" format
+			if (preg_match('/^{filedir_(\d+)}/', $data, $matches))
+			{
+				// Set upload directory ID and file name
+				$dir_id = $matches[1];
+				$file_name = str_replace($matches[0], '', $data);
+
+				$file = ee('Model')->get('File')
+					->filter('file_name', $file_name)
+					->filter('upload_location_id', $dir_id)
+					->filter('site_id', ee()->config->item('site_id'))
+					->first();
+			}
+			// If file field is just a file ID
+			else if (! empty($data) && is_numeric($data))
+			{
+				$file = ee('Model')->get('File', $data)->first();
+			}
+
+			// var_dump($file->getValues()); die();
+
 			return ee('View')->make('publish')->render(array(
 				'field_name' => $this->field_name,
 				'value' => $data,
-				'file' => ee()->file_field->parse_field($data),
+				'file' => $file,
 				'fp_url' => cp_url($fp->controller, array('directory' => $allowed_file_dirs))
 			));
 		}
