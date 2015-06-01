@@ -36,8 +36,8 @@ class FileDimension extends Model {
 	protected static $_gateway_names = array('FileDimensionGateway');
 
 	protected static $_typed_columns = array(
-		'width'  => 'int',
-		'height' => 'int'
+		//'width'  => 'int',
+		//'height' => 'int'
 	);
 
 	protected static $_relationships = array(
