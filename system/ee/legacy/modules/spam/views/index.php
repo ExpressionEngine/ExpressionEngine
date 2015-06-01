@@ -1,26 +1,25 @@
-<p>
-	<?= form_open('C=addons_modules'. AMP . 'M=show_module_cp' . AMP . 'module=spam' . AMP. 'method=test'); ?>
-		<input type='hidden' name='train' value='yes' />
-		<?=form_submit(array('value'=>'Test Spam Filter','class'=>'submit'));?>
-	</form>
-</p>
-<p>
-	<?= form_open('C=addons_modules'. AMP . 'M=show_module_cp' . AMP . 'module=spam' . AMP. 'method=train'); ?>
-		<input type='hidden' name='train' value='yes' />
-		<?=form_submit(array('value'=>'Train Spam Filter','class'=>'submit'));?>
-	</form>
-</p>
-<?php
-$this->table->set_template(array(
-	'table_open' => '<table class="mainTable" border="0" cellspacing="0" cellpadding="0">'
-));
-$this->table->set_heading(array(
-	'Spam ID',
-	'Content',
-	'Moderate'
-));
-echo form_open('C=addons_modules'. AMP . 'M=show_module_cp' . AMP . 'module=spam' . AMP. 'method=moderate');
-echo $this->table->generate($moderation);
-echo form_submit(array('value'=>'Submit','class'=>'submit'));
-?>
-</form>
+<div class="tbl-ctrls">
+<?=form_open($table['base_url'])?>
+	<fieldset class="tbl-search right">
+		<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=$table['search']?>">
+		<input class="btn submit" type="submit" value="<?=lang('search_spam')?>">
+	</fieldset>
+	<h1>
+		<ul class="toolbar">
+			<li class="settings">
+				<a href="<?=cp_url('settings/members')?>" title="<?=lang('member_settings')?>"></a>
+			</li>
+		</ul>
+		<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?>
+	</h1>
+
+	<?=ee('Alert')->getAllInlines()?>
+
+	<?php if (isset($filters)) echo $filters; ?>
+
+	<?php $this->ee_view('_shared/table', $table); ?>
+
+	<?php if ( ! empty($pagination)) $this->ee_view('_shared/pagination', $pagination); ?>
+
+<?=form_close()?>
+</div>
