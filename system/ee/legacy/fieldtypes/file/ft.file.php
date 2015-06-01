@@ -103,7 +103,7 @@ class File_ft extends EE_Fieldtype {
 
 			ee()->cp->add_js_script(array(
 				'file' => array(
-					'cp/fields/file'
+					'fields/file/cp'
 				),
 			));
 
