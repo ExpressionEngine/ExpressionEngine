@@ -200,6 +200,10 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 </textarea>
 						<?php break;
 
+						case 'slider': ?>
+							<input name="<?=$field_name?>" min="0" max="100" value="<?=$field['value']?>" rel="range-value" type="range">
+						<?php break;
+
 						case 'multi_dropdown': ?>
 							<div class="scroll-wrap">
 								<?php foreach ($field['choices'] as $field_name => $options): ?>
