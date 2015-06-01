@@ -36,7 +36,7 @@ class Required extends ValidationRule {
 			$value = trim($value);
 		}
 
-		if (empty($value))
+		if ($value === '' OR is_null($value))
 		{
 			return $this->stop();
 		}
