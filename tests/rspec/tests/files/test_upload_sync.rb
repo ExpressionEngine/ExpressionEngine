@@ -65,7 +65,7 @@ feature 'Upload Directory Sync' do
     #progress_bar_values = @page.log_progress_bar_moves
     #progress_bar_values.should == @page.progress_bar_moves_for_file_count($images_count)
 
-    wait_for_ajax
+    @page.wait_for_alert
 
     no_php_js_errors
 
@@ -134,7 +134,7 @@ feature 'Upload Directory Sync' do
     #progress_bar_values = @page.log_progress_bar_moves
     #progress_bar_values.should == @page.progress_bar_moves_for_file_count($images_count)
 
-    wait_for_ajax
+    @page.wait_for_alert
 
     no_php_js_errors
 
