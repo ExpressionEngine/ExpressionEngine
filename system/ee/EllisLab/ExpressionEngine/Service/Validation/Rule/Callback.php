@@ -2,7 +2,6 @@
 
 namespace EllisLab\ExpressionEngine\Service\Validation\Rule;
 
-use EllisLab\ExpressionEngine\Service\Validation\Validator;
 use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 
 /**
@@ -40,17 +39,11 @@ class Callback extends ValidationRule {
 
 	public function validate($key, $value)
 	{
-		$result = call_user_func($this->callback, $key, $value, $this->parameters);
+		$result = call_user_func($this->callback, $key, $value, $this->parameters, $this);
 
 		if ($result !== TRUE)
 		{
 			$this->last_error = $result;
-
-			// Allow callbacks to return SKIP or STOP
-			if (in_array($result, array(Validator::SKIP, Validator::STOP)))
-			{
-				return $result;
-			}
 
 			return FALSE;
 		}

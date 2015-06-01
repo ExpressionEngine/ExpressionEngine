@@ -3,7 +3,6 @@
 namespace EllisLab\ExpressionEngine\Model\File;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Service\Validation\Validator;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -93,8 +92,11 @@ class Watermark extends Model {
 	protected $wm_shadow_distance;
 	protected $wm_shadow_color;
 
-	public function validateText()
+	/**
+	 * Require text only if watermark type is text
+	 */
+	public function validateText($key, $value, $params, $rule)
 	{
-		return ($this->wm_type == 'text') ? TRUE : Validator::SKIP;
+		return ($this->wm_type == 'text') ? TRUE : $rule->skip();
 	}
 }

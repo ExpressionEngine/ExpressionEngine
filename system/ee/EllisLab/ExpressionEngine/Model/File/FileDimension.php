@@ -3,7 +3,6 @@
 namespace EllisLab\ExpressionEngine\Model\File;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Service\Validation\Validator;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -70,8 +69,11 @@ class FileDimension extends Model {
 	protected $height;
 	protected $watermark_id;
 
-	public function validateDimension()
+	/**
+	 * Require dimensions only if no watermark is set
+	 */
+	public function validateDimension($key, $value, $params, $rule)
 	{
-		return empty($this->watermark_id) ? TRUE : Validator::SKIP;
+		return empty($this->watermark_id) ? TRUE : $rule->skip();
 	}
 }
