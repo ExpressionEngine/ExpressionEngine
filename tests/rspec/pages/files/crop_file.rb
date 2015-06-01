@@ -31,6 +31,7 @@ class CropFile < FileManagerPage
 
 	def load
 		click_link 'Files'
+		click_link 'About'
 		file_name = find('div.box form div.tbl-wrap table tr:nth-child(2) td:first-child em').text
 		find('div.box form div.tbl-wrap table tr:nth-child(2) td:nth-child(4) ul.toolbar li.crop').click
 
