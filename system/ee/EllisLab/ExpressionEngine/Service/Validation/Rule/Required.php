@@ -33,7 +33,7 @@ class Required extends ValidationRule {
 	{
 		if ( ! is_array($value))
 		{
-			$value = trim($value) != '';
+			$value = trim($value);
 		}
 
 		if (empty($value))
