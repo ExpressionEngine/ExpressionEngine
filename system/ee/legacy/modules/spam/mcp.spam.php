@@ -1,4 +1,12 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+use EllisLab\ExpressionEngine\Library\CP;
+use EllisLab\ExpressionEngine\Library\CP\Pagination;
+use EllisLab\ExpressionEngine\Library\CP\Table;
+use EllisLab\ExpressionEngine\Library\CP\URL;
+use EllisLab\ExpressionEngine\Service\CP\Filter\Filter;
+use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -37,6 +45,7 @@ class Spam_mcp {
 	 */
 	public function __construct()
 	{
+		$this->base_url = new URL('addons/settings/spam', ee()->session->session_id());
 		ini_set('memory_limit', '16G');
 		set_time_limit(0);
 	}
@@ -49,10 +58,167 @@ class Spam_mcp {
 	 */
 	public function index()
 	{
+		$table = Table::create();
 		$data = array();
-		$data['moderation'] = $this->_get_spam_trap();
-		ee()->load->library('table');
-		return ee()->load->view('index', $data, TRUE);
+		$trapped = array();
+		$trap = $this->_get_spam_trap();
+
+		foreach ($trap as $spam)
+		{
+			$toolbar = array('toolbar_items' => array(
+				'view' => array(
+					'href' => '',
+					'title' => strtolower(lang('edit'))
+				)
+			));
+
+			$trapped[] = array(
+				'content' => $spam['text'],
+				'date' => $spam['date'],
+				'ip' => $spam['ip'],
+				'type' => $spam['type'],
+				$toolbar,
+				array(
+					'name' => 'selection[]',
+					'value' => $spam['id'],
+					'data'	=> array(
+						'confirm' => lang('quick_link') . ': <b>' . htmlentities($spam['content'], ENT_QUOTES) . '</b>'
+					)
+				)
+			);
+		}
+
+		$options = array(
+			'all' => lang('all'),
+			'comment' => lang('comment'),
+			'forum_post' => lang('forum_post'),
+			'wiki_post' => lang('wiki_post')
+		);
+
+		$types = ee('Filter')->make('content_type', 'content_type', $options);
+		$types->setPlaceholder(lang('all'));
+		$types->disableCustomValue();
+
+		$filters = ee('Filter')
+			->add($types)
+			->add('Date', 'date')
+			->add('Perpage', count($trap), 'show_all_files');
+
+		$filter_values = $filters->values();
+
+		$table->setColumns(
+			array(
+				'content',
+				'date',
+				'ip',
+				'type',
+				'manage' => array(
+					'type'	=> Table::COL_TOOLBAR
+				),
+				array(
+					'type'	=> Table::COL_CHECKBOX
+				)
+			)
+		);
+
+		$table->setNoResultsText('no_search_results');
+		$table->setData($trapped);
+
+		// Set search results heading
+		if ( ! empty($data['table']['search']))
+		{
+			ee()->view->cp_heading = sprintf(
+				lang('search_results_heading'),
+				$data['table']['total_rows'],
+				$data['table']['search']
+			);
+		}
+
+		$this->base_url->addQueryStringVariables($filter_values);
+		$this->base_url->setQueryStringVariable('sort_col', $table->sort_col);
+		$this->base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
+
+		ee()->view->filters = $filters->render($this->base_url);
+
+		$data['table'] = $table->viewData($this->base_url);
+		$data['form_url'] = cp_url('addons/settings/spam');
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('spam') . ': <b>### ' . lang('spam') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/confirm_remove'),
+		));
+
+		return ee()->cp->render('index', $data, TRUE);
+	}
+
+	public function config()
+	{
+		ee()->load->library('form_validation');
+
+		$settings = array(
+			'sensitivity' => 70,
+			'word_limit' => 5000,
+			'content_limit' => 5000
+		);
+
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'spam_sensitivity',
+					'desc' => 'spam_sensitivity_desc',
+					'fields' => array(
+						'sensitivity' => array(
+							'type' => 'slider',
+							'value' => $settings['sensitivity']
+						)
+					)
+				),
+			),
+			'engine_training' => array(
+				array(
+					'title' => 'spam_word_limit',
+					'desc' => 'spam_word_limit_desc',
+					'fields' => array(
+						'word_limit' => array('type' => 'text', 'value' => $settings['word_limit'])
+					)
+				),
+				array(
+					'title' => 'spam_content_limit',
+					'desc' => 'spam_content_limit_desc',
+					'fields' => array(
+						'content_limit' => array('type' => 'text', 'value' => $settings['content_limit'])
+					)
+				),
+			)
+		);
+
+		ee()->form_validation->set_rules(array(
+		));
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			if ($this->update())
+			{
+				ee()->view->set_message('success', lang('spam_settings_updated'), lang('spam_settings_updated_desc'), TRUE);
+				ee()->functions->redirect($base_url);
+			}
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+		}
+
+		ee()->view->base_url = $this->base_url;
+		ee()->view->ajax_validate = TRUE;
+		ee()->view->cp_page_title = lang('spam_settings');
+		ee()->view->save_btn_text = 'btn_save_settings';
+		ee()->view->save_btn_text_working = 'btn_saving';
+		ee()->cp->render('_shared/form', $vars, TRUE);
 	}
 
 	/**
