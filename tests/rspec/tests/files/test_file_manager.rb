@@ -9,6 +9,7 @@ feature 'File Manager' do
 
 	before(:each) do
 		@upload_dir = File.expand_path('../../themes/ee/site_themes/agile_records/images/uploads/')
+		@avatar_dir = File.expand_path('../../images/avatars')
 
 		cp_session
 		@page = FileManager.new
@@ -60,15 +61,23 @@ feature 'File Manager' do
 		@page.should_not have_no_results
 	end
 
+	before(:each, :perpage => 50) do
+		@page.perpage_filter.click
+		@page.wait_until_perpage_filter_menu_visible
+		@page.perpage_filter_menu.click_link "50 results"
+		no_php_js_errors
+	end
+
 	after(:each) do
 		system('git checkout -- ' + @upload_dir)
+		system('git checkout -- ' + @avatar_dir)
 		FileUtils.chmod_R 0777, @upload_dir
 	end
 
 	it 'shows the "All Files" File Manager page', :all_files => true do
 		@page.perpage_filter.text.should eq 'show (20)'
 		@page.title_name_header[:class].should eq 'highlight'
-		@page.should have(11).files
+		@page.should have(21).files
 	end
 
 	# General Tests
@@ -92,7 +101,7 @@ feature 'File Manager' do
 
 		@page.perpage_filter.text.should eq "show (50)"
 		@page.should_not have_pagination
-		@page.should have(11).files
+		@page.should have(26).files
 	end
 
 	it 'can change the page size manually', :all_files => true do
@@ -104,8 +113,8 @@ feature 'File Manager' do
 
 		@page.perpage_filter.text.should eq "show (5)"
 		@page.should have_pagination
-		@page.should have(5).pages
-		@page.pages.map {|name| name.text}.should == ["First", "1", "2", "Next", "Last"]
+		@page.should have(6).pages
+		@page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
 		@page.should have(6).files
 	end
 
@@ -121,12 +130,12 @@ feature 'File Manager' do
 
 		@page.perpage_filter.text.should eq "show (5)"
 		@page.should have_pagination
-		@page.should have(5).pages
-		@page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "Last"]
+		@page.should have(7).pages
+		@page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
 		@page.should have(6).files
 	end
 
-	it 'can reverse sort by title/name', :all_files => true do
+	it 'can reverse sort by title/name', :all_files => true, :perpage => 50 do
 		a_to_z_titles = @page.title_names.map {|title| title.text}
 
 		@page.title_name_header.find('a.sort').click
@@ -136,7 +145,7 @@ feature 'File Manager' do
 		@page.title_names.map {|title| title.text}.should == a_to_z_titles.reverse!
 	end
 
-	it 'can sort by file type', :all_files => true do
+	it 'can sort by file type', :all_files => true, :perpage => 50 do
 		file_types = @page.file_types.map {|file_type| file_type.text}
 
 		@page.file_type_header.find('a.sort').click
@@ -147,7 +156,7 @@ feature 'File Manager' do
 		sorted_file_types.should_not == file_types
 	end
 
-	it 'can reverse sort by file type', :all_files => true do
+	it 'can reverse sort by file type', :all_files => true, :perpage => 50 do
 		@page.file_type_header.find('a.sort').click
 		no_php_js_errors
 
@@ -160,7 +169,7 @@ feature 'File Manager' do
 		@page.file_types.map {|file_type| file_type.text}.should == a_to_z_file_types.reverse!
 	end
 
-	it 'can sort by date added', :all_files => true do
+	it 'can sort by date added', :all_files => true, :perpage => 50 do
 		dates_added = @page.dates_added.map {|date_added| date_added.text}
 
 		@page.date_added_header.find('a.sort').click
@@ -171,7 +180,7 @@ feature 'File Manager' do
 		sorted_dates_added.should_not == dates_added
 	end
 
-	it 'can reverse sort by date added', :all_files => true do
+	it 'can reverse sort by date added', :all_files => true, :perpage => 50 do
 		@page.date_added_header.find('a.sort').click
 		no_php_js_errors
 
@@ -239,7 +248,7 @@ feature 'File Manager' do
 		@page.wait_until_modal_visible
 		@page.modal_title.text.should eq "Confirm Removal"
 		@page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
-		@page.modal.text.should include 'File: 10 Files'
+		@page.modal.text.should include 'File: 20 Files'
 	end
 
 	it 'can remove a single file', :all_files => true do
@@ -255,7 +264,7 @@ feature 'File Manager' do
 		@page.text.should_not include file_name
 	end
 
-	it 'can remove multiple files', :all_files => true do
+	it 'can remove multiple files', :all_files => true, :perpage => 50 do
 		@page.checkbox_header.click
 		@page.bulk_action.select "Remove"
 		@page.action_submit_button.click
@@ -336,7 +345,6 @@ feature 'File Manager' do
 		@page.should have_alert
 		@page.alert.text.should include "Upload directory removed"
 		@page.alert.text.should include "The upload directory About has been removed."
-		@page.should have_no_results
 	end
 
 	it 'can remove the directory you are viewing', :all_files => true do
@@ -357,7 +365,6 @@ feature 'File Manager' do
 		@page.should have_alert
 		@page.alert.text.should include "Upload directory removed"
 		@page.alert.text.should include "The upload directory About has been removed."
-		@page.should have_no_results
 	end
 
 	# Tests specific to the "All Files" view

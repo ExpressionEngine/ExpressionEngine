@@ -32,7 +32,7 @@ feature 'Upload Directory Sync' do
     new_upload.should have_text 'Upload directory saved'
 
     @page = UploadSync.new
-    @page.load_sync_for_dir(3)
+    @page.load_sync_for_dir(6)
     no_php_js_errors
   end
 
@@ -87,7 +87,7 @@ feature 'Upload Directory Sync' do
   # Helper that creates a couple image manipulations for us
   def create_manipulation
     new_upload = UploadEdit.new
-    new_upload.load_edit_for_dir(3)
+    new_upload.load_edit_for_dir(6)
 
     new_upload.grid_add_no_results.click
     new_upload.name_for_row(1).set 'some_name'
@@ -112,7 +112,7 @@ feature 'Upload Directory Sync' do
     # First we need to create the manipulations
     create_manipulation
 
-    @page.load_sync_for_dir(3)
+    @page.load_sync_for_dir(6)
     @page.should have_sizes
     @page.should have_text 'some_name Constrain, 20px by 30px'
     @page.should have_text 'some_other_name Crop, 50px by 40px'
@@ -170,7 +170,7 @@ feature 'Upload Directory Sync' do
   it 'should not overwrite existing manipulations if not told to' do
     create_manipulation
 
-    @page.load_sync_for_dir(3)
+    @page.load_sync_for_dir(6)
     @page.submit
     @page.wait_for_alert
     no_php_js_errors
@@ -194,7 +194,7 @@ feature 'Upload Directory Sync' do
   it 'should overwrite existing manipulations if told to' do
     create_manipulation
 
-    @page.load_sync_for_dir(3)
+    @page.load_sync_for_dir(6)
     @page.submit
     @page.wait_for_alert
     no_php_js_errors
@@ -235,13 +235,13 @@ feature 'Upload Directory Sync' do
     file_count = $images_count + $non_images_count
 
     new_upload = UploadEdit.new
-    new_upload.load_edit_for_dir(3)
+    new_upload.load_edit_for_dir(6)
     new_upload.allowed_types.select 'All file types'
     new_upload.submit
     new_upload.should have_text 'Upload directory saved'
     no_php_js_errors
 
-    @page.load_sync_for_dir(3)
+    @page.load_sync_for_dir(6)
 
     # Page should show file count for all files now
     @page.should have_text file_count.to_s + ' files'
@@ -259,13 +259,13 @@ feature 'Upload Directory Sync' do
     file_count = $images_count + $bad_files_count
 
     new_upload = UploadEdit.new
-    new_upload.load_edit_for_dir(3)
+    new_upload.load_edit_for_dir(6)
     new_upload.allowed_types.select 'All file types'
     new_upload.submit
     new_upload.should have_text 'Upload directory saved'
     no_php_js_errors
 
-    @page.load_sync_for_dir(3)
+    @page.load_sync_for_dir(6)
 
     # Page should show file count for all files now
     @page.should have_text file_count.to_s + ' files'
