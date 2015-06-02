@@ -295,6 +295,26 @@ abstract class EE_Fieldtype {
 		return TRUE;
 	}
 
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Mark the field as having a certain status. Different statuses *may*
+	 * cause changes in the appearance of the field or it's elements. For
+	 * example a field in a warning state may be rendered with a yellow flag
+	 * to alert the user that it requires attention.
+	 *
+	 * Statuses are not to be confused with validation. No status will
+	 * prevent the submission of the form, but it may indicate to the user
+	 * that validaiton is likely to fail.
+	 *
+	 * @return String {ok, invalid, warning, error, failure}
+	 */
+	public function get_field_status()
+	{
+		return 'ok';
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
