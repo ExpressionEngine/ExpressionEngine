@@ -310,7 +310,7 @@ abstract class EE_Fieldtype {
 	 *
 	 * @return String {ok, invalid, warning, error, failure}
 	 */
-	public function get_field_status()
+	public function get_field_status($data)
 	{
 		return 'ok';
 	}
