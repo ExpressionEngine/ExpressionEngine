@@ -36,7 +36,7 @@
 		});
 		$('.filepicker').click(function (e) {
 			picker_url = $(this).attr('href');
-			input_value = $('input[name="' + $(this).data('input-value') + '"]');
+			input_value = $('input[name="' + $(this).data('input-value') + '"], textarea[name="' + $(this).data('input-value') + '"]');
 			input_name = $('#' + $(this).data('input-name'));
 			input_img = $('#' + $(this).data('input-image'));
 			modal = $("." + $(this).attr('rel'));
