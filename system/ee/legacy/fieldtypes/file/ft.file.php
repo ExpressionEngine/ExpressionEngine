@@ -136,12 +136,11 @@ class File_ft extends EE_Fieldtype {
 				$file = ee('Model')->get('File', $data)->first();
 			}
 
-			// var_dump($file->getValues()); die();
-
 			return ee('View')->make('publish')->render(array(
 				'field_name' => $this->field_name,
 				'value' => $data,
 				'file' => $file,
+				'thumbnail' => ee('Thumbnail')->get($file)->url,
 				'fp_url' => cp_url($fp->controller, array('directory' => $allowed_file_dirs))
 			));
 		}
