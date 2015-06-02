@@ -16,16 +16,6 @@ class Filepicker_mcp {
 
 	public function index()
 	{
-		$directories = array();
-		$dirs = ee()->api->get('UploadDestination')
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
-
-		foreach($dirs as $dir)
-		{
-			$directories[$dir->id] = $dir;
-		}
-
 		// check if we have a request for a specific file id
 		if ( ! empty(ee()->input->get('file')))
 		{
@@ -34,21 +24,24 @@ class Filepicker_mcp {
 				->filter('site_id', ee()->config->item('site_id'))
 				->first();
 
-			$path = $directories[$file->upload_location_id]->url;
+			$result = $file->getValues();
 
-			$result = array(
-				'id' => $file->file_id,
-				'site_id' => $file->site_id,
-				'title' => $file->title,
-				'file_name' => $file->file_name,
-				'path' => trim($path, '/') . '/' . $file->file_name,
-				'mime_type' => $file->mime_type,
-				'size' => $file->file_size,
-				'upload_directory' => $file->upload_location_id
-			);
+			$result['path'] = $file->getAbsoluteURL();
+			$result['thumb_path'] = $file->getThumbnailURL();
+			$result['isImage'] = $file->isImage();
 
 			echo json_encode($result);
 			return;
+		}
+
+		$directories = array();
+		$dirs = ee()->api->get('UploadDestination')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		foreach($dirs as $dir)
+		{
+			$directories[$dir->id] = $dir;
 		}
 
 		if ( ! empty(ee()->input->get('directory')))
