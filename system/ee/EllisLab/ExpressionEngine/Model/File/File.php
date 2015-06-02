@@ -108,22 +108,6 @@ class File extends Model {
 		return rtrim($this->getUploadDestination()->url, '/') . '/' . $this->file_name;
 	}
 
-	public function getThumbnailURL()
-	{
-		$url = PATH_CP_GBL_IMG.'default.png';
-
-		if ( ! $this->exists())
-		{
-			$url = PATH_CP_GBL_IMG.'missing.jpg';
-		}
-		elseif ($this->isImage())
-		{
-			$url = rtrim($this->getUploadDestination()->url, '/') . '/_thumbs/' . $this->file_name;
-		}
-
-		return $url;
-	}
-
 	public function onBeforeDelete()
 	{
 		unlink($this->getAbsolutePath());
