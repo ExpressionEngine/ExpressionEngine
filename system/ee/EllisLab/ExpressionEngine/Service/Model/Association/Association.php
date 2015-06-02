@@ -120,6 +120,11 @@ abstract class Association {
 			return new Collection();
 		}
 
+		if ($related instanceOf Collection)
+		{
+			return $related;
+		}
+
 		if ( ! is_array($related))
 		{
 			$related = array($related);

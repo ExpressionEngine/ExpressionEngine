@@ -127,6 +127,25 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	}
 
 	/**
+	 * Allow use of __set to set an association
+	 *
+	 * @param String $key The property to set
+	 * @param Mixed $value The property value
+	 */
+	public function __set($key, $value)
+	{
+		if (strtoupper($key[0]) == $key[0])
+		{
+			if ($this->hasAssociation($key))
+			{
+				return $this->getAssociation($key)->set($value);
+			}
+		}
+
+		return parent::__set($key, $value);
+	}
+
+	/**
 	 * Get the short name
 	 *
 	 * @return String short name
