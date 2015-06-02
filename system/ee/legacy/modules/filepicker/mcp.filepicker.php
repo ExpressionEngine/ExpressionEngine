@@ -24,14 +24,18 @@ class Filepicker_mcp {
 				->filter('site_id', ee()->config->item('site_id'))
 				->first();
 
+			if ( ! $file)
+			{
+				ee()->output->send_ajax_response(lang('file_not_found'), TRUE);
+			}
+
 			$result = $file->getValues();
 
 			$result['path'] = $file->getAbsoluteURL();
 			$result['thumb_path'] = $file->getThumbnailURL();
 			$result['isImage'] = $file->isImage();
 
-			echo json_encode($result);
-			return;
+			ee()->output->send_ajax_response($result);
 		}
 
 		$directories = array();
