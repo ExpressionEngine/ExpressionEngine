@@ -36,6 +36,7 @@ class ThumbnailFactory {
 		// the thumbnail now
 		if ( ! $thumb->exists()
 			&& $file
+			&& $file->exists()
 			&& $file->isImage())
 		{
 			$thumb = $this->make($file);
@@ -49,7 +50,8 @@ class ThumbnailFactory {
 		// We only make thumbnails of images
 		if ($file->isImage())
 		{
-			$dir = $file->UploadDestinations->first();
+			ee()->load->library('filemanager');
+			$dir = $file->UploadDestination->first();
 			$dimensions = $dir->FileDimensions->all();
 
 			$success = ee()->filemanager->create_thumb(
