@@ -91,8 +91,8 @@ class Thumbnail {
 	 */
 	public function setMissing()
 	{
-		$this->url = PATH_CP_GBL_IMG . 'missing.png';
-		$this->path = PATH_THEMES . 'cp_global_images/missing.png';
+		$this->url = PATH_CP_GBL_IMG . 'missing.jpg';
+		$this->path = PATH_THEMES . 'cp_global_images/missing.jpg';
 	}
 
 	/**
