@@ -22,7 +22,7 @@
 			references.modal.find('.m-close').click();
 
 			// Assign the value {filedir_#}filename.ext
-			input.insertAtCursor('<img src="{filedir_' + data.upload_directory + '}' + data.file_name + '" alt="" height="" width="">');
+			input.insertAtCursor('<img src="{filedir_' + data.upload_location_id + '}' + data.file_name + '" alt="" height="" width="">');
 		};
 	});
 })(jQuery);

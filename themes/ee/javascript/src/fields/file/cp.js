@@ -21,7 +21,7 @@
 			references.modal.find('.m-close').click();
 
 			// Assign the value {filedir_#}filename.ext
-			input.val('{filedir_' + data.upload_directory + '}' + data.file_name);
+			input.val('{filedir_' + data.upload_location_id + '}' + data.file_name);
 
 			// Set the thumbnail
 			references.input_img.attr('src', data.path);

@@ -52,7 +52,7 @@
 			} else {
 				callback = function(data, picker) {
 					picker.modal.find('.m-close').click();
-					picker.input_value.val(data.id);
+					picker.input_value.val(data.file_id);
 					picker.input_name.html(data.file_name);
 					picker.input_img.html("<img src='" + data.path + "' />");
 				}
