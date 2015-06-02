@@ -339,8 +339,8 @@ abstract class Association {
 	 */
 	protected function addToRelated(Model $model)
 	{
-		$this->tracker->add($model);
 		$this->relation->linkIds($this->source, $model);
+		$this->tracker->add($model);
 	}
 
 	/**
