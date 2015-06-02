@@ -391,7 +391,15 @@ class Channel_form_lib
 
 			if ($tag_name == 'categories')
 			{
-				ee()->TMPL->tagdata = $this->swap_var_pair($tag_pair_open, $this->categories($tagparams), ee()->TMPL->tagdata, $tag_name, ! empty($tagparams['backspace']) ? $tagparams['backspace'] : FALSE);
+				$checkbox_fields[] = 'category';
+
+				ee()->TMPL->tagdata = $this->swap_var_pair(
+					$tag_pair_open,
+					$this->categories($tagparams),
+					ee()->TMPL->tagdata,
+					$tag_name,
+					! empty($tagparams['backspace']) ? $tagparams['backspace'] : FALSE
+				);
 			}
 
 			elseif ($tag_name == 'statuses')
@@ -1467,11 +1475,6 @@ GRID_FALLBACK;
 			{
 				throw new Channel_form_exception(lang('channel_form_author_only'));
 			}
-
-			if (ee()->input->post('category') === FALSE && $this->entry('categories'))
-			{
-				$_POST['category'] = $this->entry('categories');
-			}
 		}
 		else
 		{
@@ -1493,6 +1496,14 @@ GRID_FALLBACK;
 					$_POST[$checkbox] = '';
 				}
 			}
+		}
+
+		// Reset categories if they weren't set above
+		if ($this->_meta['entry_id'] &&
+			ee()->input->post('category') === FALSE &&
+			$this->entry('categories'))
+		{
+			$_POST['category'] = $this->entry('categories');
 		}
 
 		foreach ($this->custom_fields as $i => $field)

@@ -41,9 +41,6 @@ use InvalidArgumentException;
  */
 class Validator {
 
-	const STOP = 'STOP';
-	const SKIP = 'SKIP';
-
 	protected $rules = array();
 	protected $custom = array();
 	protected $failed = array();
@@ -186,25 +183,25 @@ class Validator {
 
 				$rule_return = $rule->validate($key, $value);
 
-				// Passed? Move on to the next rule
-				if ($rule_return === TRUE)
-				{
-					continue;
-				}
-
 				// Skip the rest of the rules?
 				// e.g. Presence failed
-				if ($rule_return === self::SKIP)
+				if ($rule->isFailed())
 				{
 					break;
 				}
 
 				// Hard stopping rule? Record the error and move on.
 				// e.g. Required failed
-				if ($rule_return === self::STOP)
+				if ($rule->isStopped())
 				{
 					$result->addFailed($key, $rule);
 					break;
+				}
+
+				// Passed? Move on to the next rule
+				if ($rule_return === TRUE)
+				{
+					continue;
 				}
 
 				// At this point:
@@ -243,9 +240,9 @@ class Validator {
 
 		foreach ($callbacks as $name)
 		{
-			$this->defineRule($name, function($key, $value, $params) use ($object, $name)
+			$this->defineRule($name, function($key, $value, $params, $rule) use ($object, $name)
 			{
-				return $object->$name($key, $value, $params);
+				return $object->$name($key, $value, $params, $rule);
 			});
 		}
 

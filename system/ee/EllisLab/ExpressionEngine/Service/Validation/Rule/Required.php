@@ -33,10 +33,10 @@ class Required extends ValidationRule {
 	{
 		if ( ! is_array($value))
 		{
-			$value = trim($value) != '';
+			$value = trim($value);
 		}
 
-		if (empty($value))
+		if ($value === '' OR is_null($value))
 		{
 			return $this->stop();
 		}

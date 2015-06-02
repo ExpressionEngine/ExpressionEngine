@@ -87,11 +87,11 @@ class Layout extends AbstractChannelController {
 
 		$layout_id = ee()->session->flashdata('layout_id');
 
-		foreach ($channel->getChannelLayouts() as $layout)
+		foreach ($channel->ChannelLayouts->all() as $layout)
 		{
 			$column = array(
 				htmlentities($layout->layout_name, ENT_QUOTES),
-				implode(',', $layout->getMemberGroups()->pluck('group_title')),
+				implode(',', $layout->MemberGroups->all()->pluck('group_title')),
 				array('toolbar_items' => array(
 					'edit' => array(
 						'href' => cp_url('channel/layout/edit/' . $layout->layout_id),
@@ -160,13 +160,14 @@ class Layout extends AbstractChannelController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$entry = ee('Model')->make('ChannelEntry')->setChannel($channel);
+		$entry = ee('Model')->make('ChannelEntry');
+		$entry->Channel = $channel;
 
 		$default_layout = new DefaultChannelLayout($channel_id, NULL);
 		$channel_layout = ee('Model')->make('ChannelLayout');
 		$field_layout = $default_layout->getLayout();
 
-		foreach($channel->getCustomFields() as $custom_field)
+		foreach ($channel->CustomFields->all() as $custom_field)
 		{
 			$field_layout[0]['fields'][] = array(
 				'field' => $entry->getCustomFieldPrefix() . $custom_field->field_id,
@@ -184,7 +185,7 @@ class Layout extends AbstractChannelController {
 			->filter('channel_id', $channel_id)
 			->all()
 			->each(function($layout) use (&$assigned_member_groups) {
-				foreach ($layout->getMemberGroups()->pluck('group_id') as $group_id)
+				foreach ($layout->MemberGroups->all()->pluck('group_id') as $group_id)
 				{
 					$assigned_member_groups[$group_id] = $layout;
 				}
@@ -223,7 +224,7 @@ class Layout extends AbstractChannelController {
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
 			$layout = ee('Model')->make('ChannelLayout');
-			$layout->setChannel($channel);
+			$layout->Channel = $channel;
 			$layout->site_id = ee()->config->item('site_id');
 			$layout->layout_name = ee()->input->post('layout_name');
 			$layout->field_layout = json_decode(ee()->input->post('field_layout'), TRUE);
@@ -232,7 +233,7 @@ class Layout extends AbstractChannelController {
 				->filter('site_id', ee()->config->item('site_id'))
 				->all();
 
-			$layout->setMemberGroups($member_groups);
+			$layout->MemberGroups = $member_groups;
 
 			$layout->save();
 
@@ -281,9 +282,10 @@ class Layout extends AbstractChannelController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$channel = $channel_layout->getChannel();
+		$channel = $channel_layout->Channel->first();
 
-		$entry = ee('Model')->make('ChannelEntry')->setChannel($channel);
+		$entry = ee('Model')->make('ChannelEntry');
+		$entry->Channel = $channel;
 
 		$assigned_member_groups = array();
 
@@ -293,7 +295,7 @@ class Layout extends AbstractChannelController {
 			->filter('layout_id', '!=', $layout_id) // Exclude this layout
 			->all()
 			->each(function($layout) use (&$assigned_member_groups) {
-				foreach ($layout->getMemberGroups()->pluck('group_id') as $group_id)
+				foreach ($layout->MemberGroups->all()->pluck('group_id') as $group_id)
 				{
 					$assigned_member_groups[$group_id] = $layout;
 				}
@@ -305,7 +307,7 @@ class Layout extends AbstractChannelController {
 			'layout' => $entry->getDisplay($channel_layout),
 			'channel_layout' => $channel_layout,
 			'member_groups' => $this->getEligibleMemberGroups($channel),
-			'selected_member_groups' => $channel_layout->getMemberGroups()->pluck('group_id'),
+			'selected_member_groups' => $channel_layout->MemberGroups->all()->pluck('group_id'),
 			'assigned_member_groups' => $assigned_member_groups,
 			'submit_button_text' => lang('btn_edit_layout')
 		);
@@ -338,7 +340,7 @@ class Layout extends AbstractChannelController {
 				->filter('site_id', ee()->config->item('site_id'))
 				->all();
 
-			$channel_layout->setMemberGroups($member_groups);
+			$channel_layout->MemberGroups = $member_groups;
 
 			$channel_layout->save();
 
@@ -394,7 +396,7 @@ class Layout extends AbstractChannelController {
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
-		$member_groups = array_merge($super_admins->asArray(), $channel->getAssignedMemberGroups()->asArray());
+		$member_groups = array_merge($super_admins->asArray(), $channel->AssignedMemberGroups->all()->asArray());
 
 		return new Collection($member_groups);
 	}

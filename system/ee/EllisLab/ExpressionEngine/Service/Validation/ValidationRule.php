@@ -39,10 +39,18 @@ namespace EllisLab\ExpressionEngine\Service\Validation;
  */
 abstract class ValidationRule {
 
+	const STOP = 'STOP';
+	const SKIP = 'SKIP';
+
 	/**
 	 * @var array Rule parameters
 	 */
 	protected $parameters = array();
+
+	/**
+	 * @var string Stop/Skipped state
+	 */
+	protected $state = '';
 
 	/**
 	 * Validate a Value
@@ -95,7 +103,7 @@ abstract class ValidationRule {
 	 */
 	public function stop()
 	{
-		return Validator::STOP;
+		$this->state = self::STOP;
 	}
 
 	/**
@@ -104,7 +112,27 @@ abstract class ValidationRule {
 	 */
 	public function skip()
 	{
-		return Validator::SKIP;
+		$this->state = self::SKIP;
+	}
+
+	/**
+	 * Report hard failure status.
+	 *
+	 * @return 	bool	Hard failure or not
+	 */
+	public function isStopped()
+	{
+		return $this->state == self::STOP;
+	}
+
+	/**
+	 * Report soft failure status.
+	 *
+	 * @return 	bool	Soft failure or not
+	 */
+	public function isFailed()
+	{
+		return $this->state == self::SKIP;
 	}
 
 	/**
