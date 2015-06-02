@@ -11,6 +11,13 @@ class Filepicker_mcp {
 	{
 		$this->picker = new Picker();
 		$this->base_url = 'addons/settings/filepicker';
+		$this->access = FALSE;
+
+		if (ee()->cp->allowed_group('can_access_content', 'can_access_files'))
+		{
+			$this->access = TRUE;
+		}
+
 		ee()->lang->loadfile('filemanager');
 	}
 
@@ -19,23 +26,12 @@ class Filepicker_mcp {
 		// check if we have a request for a specific file id
 		if ( ! empty(ee()->input->get('file')))
 		{
-			$id = ee()->input->get('file');
-			$file = ee('Model')->get('File', $id)
-				->filter('site_id', ee()->config->item('site_id'))
-				->first();
+			$this->fileInfo(ee()->input->get('file'));
+		}
 
-			if ( ! $file)
-			{
-				ee()->output->send_ajax_response(lang('file_not_found'), TRUE);
-			}
-
-			$result = $file->getValues();
-
-			$result['path'] = $file->getAbsoluteURL();
-			$result['thumb_path'] = $file->getThumbnailURL();
-			$result['isImage'] = $file->isImage();
-
-			ee()->output->send_ajax_response($result);
+		if ($this->access === FALSE)
+		{
+			show_error(lang('unauthorized_access'));
 		}
 
 		$directories = array();
@@ -113,6 +109,41 @@ class Filepicker_mcp {
 		ee()->output->_display($this->index());
 		exit();
 	}
+
+	/**
+	 * Return an AJAX response for a particular file ID
+	 * 
+	 * @param mixed $id 
+	 * @access private
+	 * @return void
+	 */
+	private function fileInfo($id)
+	{
+		$file = ee('Model')->get('File', $id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
+
+		if ( ! $file || ! $file->exists())
+		{
+			ee()->output->send_ajax_response(lang('file_not_found'), TRUE);
+		}
+
+		$member_group = ee()->session->userdata['group_id'];
+
+		if ($file->memberGroupHasAccess($member_group) === FALSE || $this->access === FALSE)
+		{
+			ee()->output->send_ajax_response(lang('unauthorized_access'), TRUE);
+		}
+
+		$result = $file->getValues();
+
+		$result['path'] = $file->getAbsoluteURL();
+		$result['thumb_path'] = $file->getThumbnailURL();
+		$result['isImage'] = $file->isImage();
+
+		ee()->output->send_ajax_response($result);
+	}
+	// }}}
 
 }
 ?>
