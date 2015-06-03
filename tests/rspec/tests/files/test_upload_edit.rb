@@ -252,6 +252,16 @@ feature 'Upload Destination Create/Edit' do
     @page.wait_for_error_message_count(1)
     grid_cell_should_have_error_text(width_cell, $required_error)
 
+    # Not required when a watermark is selected
+    @page.watermark_for_row(1).select('Test')
+    width_cell.trigger 'blur'
+    @page.wait_for_error_message_count(0)
+    grid_cell_should_have_no_error_text(width_cell)
+
+    @page.watermark_for_row(1).select('No watermark')
+    width_cell.trigger 'blur'
+    @page.wait_for_error_message_count(1)
+
     width_cell.set '4'
     width_cell.trigger 'blur'
     @page.wait_for_error_message_count(0)
@@ -267,6 +277,16 @@ feature 'Upload Destination Create/Edit' do
     height_cell.trigger 'blur'
     @page.wait_for_error_message_count(2)
     grid_cell_should_have_error_text(height_cell, $required_error)
+
+    # Not required when a watermark is selected
+    @page.watermark_for_row(1).select('Test')
+    height_cell.trigger 'blur'
+    @page.wait_for_error_message_count(1)
+    grid_cell_should_have_no_error_text(height_cell)
+
+    @page.watermark_for_row(1).select('No watermark')
+    height_cell.trigger 'blur'
+    @page.wait_for_error_message_count(2)
 
     height_cell.set '4'
     height_cell.trigger 'blur'
