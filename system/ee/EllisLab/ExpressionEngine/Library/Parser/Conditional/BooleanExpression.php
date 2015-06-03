@@ -320,12 +320,13 @@ class BooleanExpression {
 			return $left;
 		}
 
-		// 5 == "5anything" is definitely not true
-		if (is_numeric($left) && is_string($right))
+		// 5 == "5anything" is definitely not true, but only fix it
+		// if the string has contents so that we're not breaking 0 == ''
+		if (is_numeric($left) && is_string($right) && $right != '')
 		{
 			$left = (string) $left;
 		}
-		elseif (is_numeric($right) && is_string($left))
+		elseif (is_numeric($right) && is_string($left) && $left != '')
 		{
 			$right = (string) $right;
 		}

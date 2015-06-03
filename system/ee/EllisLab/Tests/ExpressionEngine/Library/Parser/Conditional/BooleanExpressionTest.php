@@ -71,6 +71,30 @@ class BooleanExpressionTest extends \PHPUnit_Framework_TestCase {
 	/**
 	 * @dataProvider falseyDataProvider
 	 */
+	public function testFalseyZero($token)
+	{
+		$this->expr->add($token);
+		$this->expr->add(new Token\Operator('=='));
+		$this->expr->add(new Token\Number(0));
+
+		$this->assertTrue($this->expr->evaluate());
+	}
+
+	/**
+	* @dataProvider falseyDataProvider
+	*/
+	public function testFalseyEqualsEmptyString($token)
+	{
+		$this->expr->add($token);
+		$this->expr->add(new Token\Operator('=='));
+		$this->expr->add(new Token\String(''));
+
+		$this->assertTrue($this->expr->evaluate());
+	}
+
+	/**
+	 * @dataProvider falseyDataProvider
+	 */
 	public function testFalseyNotEqualsTrue($token)
 	{
 		$this->expr->add($token);
