@@ -56,7 +56,7 @@ class Token {
 
 	public function __toString()
 	{
-		return $this->lexeme;
+		return (string) $this->lexeme;
 	}
 
 	public function toArray()

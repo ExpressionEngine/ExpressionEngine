@@ -115,33 +115,13 @@ class File_ft extends EE_Fieldtype {
 				$allowed_file_dirs = 'all';
 			}
 
-			$file = NULL;
-
-			// If the file field is in the "{filedir_n}image.jpg" format
-			if (preg_match('/^{filedir_(\d+)}/', $data, $matches))
-			{
-				// Set upload directory ID and file name
-				$dir_id = $matches[1];
-				$file_name = str_replace($matches[0], '', $data);
-
-				$file = ee('Model')->get('File')
-					->filter('file_name', $file_name)
-					->filter('upload_location_id', $dir_id)
-					->filter('site_id', ee()->config->item('site_id'))
-					->first();
-			}
-			// If file field is just a file ID
-			else if (! empty($data) && is_numeric($data))
-			{
-				$file = ee('Model')->get('File', $data)->first();
-			}
-
-			// var_dump($file->getValues()); die();
+			$file = $this->_parse_field($data);
 
 			return ee('View')->make('publish')->render(array(
 				'field_name' => $this->field_name,
 				'value' => $data,
 				'file' => $file,
+				'thumbnail' => ee('Thumbnail')->get($file)->url,
 				'fp_url' => cp_url($fp->controller, array('directory' => $allowed_file_dirs))
 			));
 		}
@@ -157,6 +137,51 @@ class File_ft extends EE_Fieldtype {
 			$filebrowser,
 			($show_existing == 'y') ? $existing_limit : NULL
 		);
+	}
+
+	/**
+	 * Return a status of "warning" if the file is missing, otherwise "ok"
+	 *
+	 * @return string "warning" if the file is missing, "ok" otherwise
+	 */
+	public function get_field_status($data)
+	{
+		$status = 'ok';
+
+		$file = $this->_parse_field($data);
+
+		if ( $file && ! $file->exists())
+		{
+			$status = 'warning';
+		}
+
+		return $status;
+	}
+
+	private function _parse_field($data)
+	{
+		$file = NULL;
+
+		// If the file field is in the "{filedir_n}image.jpg" format
+		if (preg_match('/^{filedir_(\d+)}/', $data, $matches))
+		{
+			// Set upload directory ID and file name
+			$dir_id = $matches[1];
+			$file_name = str_replace($matches[0], '', $data);
+
+			$file = ee('Model')->get('File')
+				->filter('file_name', $file_name)
+				->filter('upload_location_id', $dir_id)
+				->filter('site_id', ee()->config->item('site_id'))
+				->first();
+		}
+		// If file field is just a file ID
+		else if (! empty($data) && is_numeric($data))
+		{
+			$file = ee('Model')->get('File', $data)->first();
+		}
+
+		return $file;
 	}
 
 	// --------------------------------------------------------------------

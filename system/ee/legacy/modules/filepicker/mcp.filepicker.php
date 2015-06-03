@@ -112,8 +112,8 @@ class Filepicker_mcp {
 
 	/**
 	 * Return an AJAX response for a particular file ID
-	 * 
-	 * @param mixed $id 
+	 *
+	 * @param mixed $id
 	 * @access private
 	 * @return void
 	 */
@@ -138,7 +138,7 @@ class Filepicker_mcp {
 		$result = $file->getValues();
 
 		$result['path'] = $file->getAbsoluteURL();
-		$result['thumb_path'] = $file->getThumbnailURL();
+		$result['thumb_path'] = ee('Thumbnail')->get($file)->url;
 		$result['isImage'] = $file->isImage();
 
 		ee()->output->send_ajax_response($result);

@@ -28,6 +28,11 @@ class FieldDisplay {
 		return $this->field->getName();
 	}
 
+	public function getStatus()
+	{
+		return $this->field->getStatus();
+	}
+
 	public function getLabel()
 	{
 		return $this->field->getItem('field_label');

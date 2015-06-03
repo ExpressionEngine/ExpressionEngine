@@ -646,18 +646,6 @@ class Uploads extends AbstractFilesController {
 			$image_size->save();
 		}
 
-		$image_manipulations = ee()->input->post('image_manipulations');
-
-		// Temporary workaround for models bug where it's not saving the
-		// first image manipulation if there are more than one
-		if (empty($this->upload_errors) && ! empty($image_manipulations))
-		{
-			$keys = array_keys($image_manipulations['rows']);
-			$image_size = ee('Model')->make('FileDimension', $image_manipulations['rows'][$keys[0]]);
-			$image_size->upload_location_id = $upload_destination->id;
-			$image_size->save();
-		}
-
 		return $upload_destination->id;
 	}
 

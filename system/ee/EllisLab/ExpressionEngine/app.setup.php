@@ -11,6 +11,7 @@ use EllisLab\ExpressionEngine\Service\Grid;
 use EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Validation;
 use EllisLab\ExpressionEngine\Service\View;
+use EllisLab\ExpressionEngine\Service\Thumbnail;
 
 // TODO should put the version in here at some point ...
 return array(
@@ -56,6 +57,11 @@ return array(
 			$frontend->setValidationFactory($ee->make('Validation'));
 
 			return $frontend;
+		},
+
+		'Thumbnail' => function($ee)
+		{
+			return new Thumbnail\ThumbnailFactory();
 		}
 
 	),

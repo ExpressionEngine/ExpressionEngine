@@ -155,6 +155,20 @@ class FieldFacade {
 		return ee()->api_channel_fields->apply('display_publish_field', array($field_value));
 	}
 
+	public function getStatus()
+	{
+		$data = $this->initField();
+		// initField can sometimes return a string if the field has a
+		// string_override key.
+
+		$field_value = set_value(
+			$this->getName(),
+			is_string($data) ? $data : $data['field_data']
+		);
+
+		return ee()->api_channel_fields->apply('get_field_status', array($field_value));
+	}
+
 
 	// TODO THIS WILL MOST DEFINITELY GO AWAY! BAD DEVELOPER!
 	public function getNativeField()
