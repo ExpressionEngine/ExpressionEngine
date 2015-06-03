@@ -28,6 +28,8 @@
 	var input_value;
 	var input_name;
 	var input_img;
+	var callback;
+	var callback_name;
 
 	$(document).ready(function () {
 		$('.modal-file').on('click', 'a:not([href=""])', function(e) {
@@ -39,6 +41,7 @@
 			input_value = $('input[name="' + $(this).data('input-value') + '"], textarea[name="' + $(this).data('input-value') + '"]');
 			input_name = $('#' + $(this).data('input-name'));
 			input_img = $('#' + $(this).data('input-image'));
+			callback_name = $(this).data('callback');
 			modal = $("." + $(this).attr('rel'));
 			modal.find("div.box").load(picker_url);
 		});
@@ -46,9 +49,20 @@
 			var id = $(this).find("input[type='checkbox']").val();
 			var file_url = picker_url.replace(/directory=.+(?=&)/ig, 'file=' + id);
 
-			if (typeof EE.file_picker_callback != 'undefined')
+			if (callback_name.length !== 0)
 			{
-				callback = EE.file_picker_callback;
+				callback = function(data, picker) {
+					var args = [data, picker];
+					var namespaces = callback_name.split(".");
+					var func = namespaces.pop();
+					var context = window;
+
+					for(var i = 0; i < namespaces.length; i++) {
+						context = context[namespaces[i]];
+					}
+
+					return context[func].apply(this, args);
+				};
 			} else {
 				callback = function(data, picker) {
 					picker.modal.find('.m-close').click();
@@ -64,6 +78,7 @@
 					var picker = {
 						modal: modal,
 						input_value: input_value,
+						input_name: input_name,
 						input_img: input_img
 					}
 					callback(data, picker);

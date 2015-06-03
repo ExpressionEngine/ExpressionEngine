@@ -15,8 +15,16 @@ class FilePicker {
 	{
 		// Insert the modal
 		$modal_vars = array('name'=> 'modal-file', 'contents' => '');
-		if (empty($view->blocks['modals'])) $view->blocks['modals'] = '';
-		$view->blocks['modals'] .= ee('View')->make('_shared/modal')->ee_view('_shared/modal', $modal_vars, TRUE);
+		$modal = ee('View')->make('_shared/modal')->ee_view('_shared/modal', $modal_vars, TRUE);
+
+		if (empty($view->blocks['modals'])) 
+		{
+			$view->blocks['modals'] = '';
+		}
+
+		if (strpos($view->blocks['modals'], $modal) === FALSE) {
+			$view->blocks['modals'] .= $modal;
+		}
 
 		ee()->cp->add_js_script(array(
 			'file' => array(
@@ -43,6 +51,11 @@ class FilePicker {
 		if ( ! empty($data['name']))
 		{
 			$extra .= " data-input-name='{$data['name']}'";
+		}
+
+		if ( ! empty($data['callback']))
+		{
+			$extra .= " data-callback='{$data['callback']}'";
 		}
 
 		return "<a class='m-link filepicker' rel='modal-file' href='$href' $extra>". $text ."</a>";
