@@ -178,6 +178,12 @@ feature 'Upload Destination Create/Edit' do
   end
 
   it 'should validate image manipulation data' do
+    watermark = WatermarkEdit.new
+    watermark.load
+    watermark.wm_name.set 'Test'
+    watermark.submit
+
+    @page.load
     @page.should have_text 'No manipulations created'
     @page.should have_grid_add_no_results
     @page.should have_no_grid_add
@@ -188,6 +194,11 @@ feature 'Upload Destination Create/Edit' do
     @page.should have_no_grid_add_no_results
     @page.should have_grid_add
     @page.grid_rows.size.should == 2 # Includes header
+
+    # Make sure watermarks are available
+    within @page.watermark_for_row(1) do
+        all('option').map(&:value).should == ['0','1']
+    end
 
     # Should remove row and show "no manipulations" message
     @page.delete_for_row(1).click
