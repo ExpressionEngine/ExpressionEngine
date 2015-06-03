@@ -298,7 +298,7 @@ class Watermarks extends AbstractFilesController {
 						'fields' => array(
 							'wm_use_font' => array(
 								'type' => 'yes_no',
-								'value' => $watermark->wm_use_font ?: 'y'
+								'value' => ! is_null($watermark->wm_use_font) ? $watermark->wm_use_font : 'y'
 							)
 						)
 					),
@@ -339,7 +339,7 @@ class Watermarks extends AbstractFilesController {
 						'fields' => array(
 							'wm_font_color' => array(
 								'type' => 'text',
-								'value' => $watermark->wm_font_color ?: '#FFFF00'
+								'value' => $watermark->wm_font_color ?: 'FFFF00'
 							)
 						)
 					),
@@ -349,7 +349,7 @@ class Watermarks extends AbstractFilesController {
 						'fields' => array(
 							'wm_use_drop_shadow' => array(
 								'type' => 'yes_no',
-								'value' => $watermark->wm_use_drop_shadow ?: 'y'
+								'value' => ! is_null($watermark->wm_use_drop_shadow) ? $watermark->wm_use_drop_shadow : 'y'
 							)
 						)
 					),
@@ -369,7 +369,7 @@ class Watermarks extends AbstractFilesController {
 						'fields' => array(
 							'wm_shadow_color' => array(
 								'type' => 'text',
-								'value' => $watermark->wm_shadow_color ?: '#999999'
+								'value' => $watermark->wm_shadow_color ?: '999999'
 							)
 						)
 					)
