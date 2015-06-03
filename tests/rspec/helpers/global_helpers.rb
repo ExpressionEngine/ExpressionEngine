@@ -2,9 +2,11 @@
 $required_error = 'This field is required.'
 $integer_error = 'This field must contain an integer.'
 $natural_number = 'This field must contain only positive numbers.'
+$natural_number_not_zero = 'This field must contain a number greater than zero.'
 $invalid_path = 'The path you submitted is not valid.'
 $not_writable = 'The path you submitted is not writable.'
 $alpha_dash = 'This field may only contain alpha-numeric characters, underscores, and dashes.'
+$hex_color = 'This field must contain a valid hex color code.'
 
 $xss_error = 'The data you submitted did not pass our security check.'
 $xss_vector = '"><script>alert(\'stored xss\')<%2fscript>'

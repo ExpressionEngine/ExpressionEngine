@@ -2,8 +2,8 @@ class WatermarkEdit < FileManagerPage
 
 	element :wm_name, 'input[name=wm_name]'
 	element :wm_type, 'select[name=wm_type]'
-	element :wm_vrt_alignment, 'input[name=wm_vrt_alignment]'
-	element :wm_hor_alignment, 'input[name=wm_hor_alignment]'
+	element :wm_vrt_alignment, 'select[name=wm_vrt_alignment]'
+	element :wm_hor_alignment, 'select[name=wm_hor_alignment]'
 	element :wm_padding, 'input[name=wm_padding]'
 	element :wm_hor_offset, 'input[name=wm_hor_offset]'
 	element :wm_vrt_offset, 'input[name=wm_vrt_offset]'
@@ -26,7 +26,7 @@ class WatermarkEdit < FileManagerPage
 
 	def load
 		click_link 'Files'
-		within 'div.sidebar h2:nth-child(2)' do
+		within 'div.sidebar h2:nth-of-type(2)' do
 			click_link 'New'
 		end
 	end
