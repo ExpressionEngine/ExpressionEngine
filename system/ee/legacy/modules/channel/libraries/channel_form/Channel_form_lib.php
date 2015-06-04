@@ -2124,21 +2124,21 @@ GRID_FALLBACK;
 
 		if ($channel_id)
 		{
-			ee()->db->where('exp_channels.channel_id', ee()->security->xss_clean($channel_id));
+			ee()->db->where('exp_channels.channel_id', ee('Security/XSS')->clean($channel_id));
 		}
 		elseif ($channel_name)
 		{
-			ee()->db->where('exp_channels.channel_name', ee()->security->xss_clean($channel_name));
+			ee()->db->where('exp_channels.channel_name', ee('Security/XSS')->clean($channel_name));
 		}
 		elseif ($entry_id)
 		{
 			ee()->db->join('exp_channel_titles', 'exp_channel_titles.channel_id = exp_channels.channel_id');
-			ee()->db->where('exp_channel_titles.entry_id', ee()->security->xss_clean($entry_id));
+			ee()->db->where('exp_channel_titles.entry_id', ee('Security/XSS')->clean($entry_id));
 		}
 		elseif ($url_title)
 		{
 			ee()->db->join('exp_channel_titles', 'exp_channel_titles.channel_id = exp_channels.channel_id');
-			ee()->db->where('exp_channel_titles.url_title', ee()->security->xss_clean($url_title));
+			ee()->db->where('exp_channel_titles.url_title', ee('Security/XSS')->clean($url_title));
 		}
 		else
 		{
@@ -2259,7 +2259,7 @@ GRID_FALLBACK;
 		ee()->db->from('exp_channel_titles');
 		ee()->db->join('exp_channel_data', 'exp_channel_titles.entry_id = exp_channel_data.entry_id');
 		ee()->db->where('exp_channel_titles.site_id', $this->site_id);
-		ee()->db->where('exp_channel_titles.'.(($entry_id) ? 'entry_id' : 'url_title'), ee()->security->xss_clean(($entry_id) ? $entry_id : $url_title));
+		ee()->db->where('exp_channel_titles.'.(($entry_id) ? 'entry_id' : 'url_title'), ee('Security/XSS')->clean(($entry_id) ? $entry_id : $url_title));
 		ee()->db->where('exp_channel_data.channel_id', $this->channel('channel_id'));
 		ee()->db->limit(1);
 

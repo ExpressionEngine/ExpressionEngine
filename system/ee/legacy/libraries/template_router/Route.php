@@ -211,7 +211,7 @@ class EE_Route {
 		$route = trim($route, '/ ');
 
 		// Check for xss
-		if ($route !== ee()->security->xss_clean($route))
+		if ($route !== ee('Security/XSS')->clean($route))
 		{
 			throw new Exception(lang('invalid_route'));
 		}

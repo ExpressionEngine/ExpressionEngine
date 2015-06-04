@@ -258,7 +258,7 @@ class Member_memberlist extends Member {
 				'recipient'			=> $recipient,
 				'recipient_name'	=> $recipient_name,
 				'subject'			=> $subject,
-				'message'			=> ee()->security->xss_clean($message)
+				'message'			=> ee('Security/XSS')->clean($message)
 			);
 
 			ee()->db->query(ee()->db->insert_string('exp_email_console_cache', $data));

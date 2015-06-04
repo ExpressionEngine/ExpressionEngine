@@ -276,7 +276,7 @@ class Filemanager {
 		//Apply XSS Filtering to uploaded files?
 		if ($this->_xss_on AND
 			xss_check() AND
-			! ee()->security->xss_clean($file_path, $is_image))
+			! ee('Security/XSS')->clean($file_path, $is_image))
 		{
 			return FALSE;
 		}

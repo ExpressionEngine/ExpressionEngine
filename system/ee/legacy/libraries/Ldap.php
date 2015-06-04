@@ -273,8 +273,8 @@ class EE_LDAP {
 
 	function authenticate($username, $password)
 	{
-		$username = ee()->security->xss_clean($username);
-		$password = ee()->security->xss_clean($password);
+		$username = ee('Security/XSS')->clean($username);
+		$password = ee('Security/XSS')->clean($password);
 
 		/** -------------------------------------
 		/**  Make a LDAP (Love Da Paul) Connection

@@ -129,7 +129,7 @@ class Updater {
 			// Each link is three parts, the first being the name (which is
 			// where we're concerned about XSS cleaning), the link, the order
 			$links = explode('|', $line);
-			$links[0] = ee()->security->xss_clean($links[0]);
+			$links[0] = ee('Security/XSS')->clean($links[0]);
 			$lines[$index] = implode('|', $links);
 		}
 

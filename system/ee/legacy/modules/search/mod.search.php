@@ -218,7 +218,7 @@ class Search {
 
 		if (isset($_POST['member_name']) AND $_POST['member_name'] != "")
 		{
-			$_POST['member_name'] = ee()->security->xss_clean($_POST['member_name']);
+			$_POST['member_name'] = ee('Security/XSS')->clean($_POST['member_name']);
 		}
 
 		/** ----------------------------------------

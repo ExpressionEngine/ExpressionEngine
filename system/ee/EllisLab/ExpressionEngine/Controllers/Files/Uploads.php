@@ -440,6 +440,7 @@ class Uploads extends AbstractFilesController {
 		);
 
 		$size = array_merge($defaults, $size);
+		$size = array_map('form_prep', $size);
 
 		return array(
 			array(

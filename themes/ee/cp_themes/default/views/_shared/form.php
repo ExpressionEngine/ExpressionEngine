@@ -104,6 +104,11 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 						{
 							$value = isset($field['value']) ? $field['value'] : ee()->config->item($field_name);
 						}
+						// Escape output
+						if (is_string($value))
+						{
+							$value = form_prep($value, $field_name);
+						}
 						$attrs = '';
 						if (isset($field['disabled']) && $field['disabled'] == TRUE)
 						{

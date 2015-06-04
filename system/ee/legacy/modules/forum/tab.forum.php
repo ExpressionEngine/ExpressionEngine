@@ -285,8 +285,8 @@ class Forum_tab {
 				$body 	= $this->_convert_forum_tags(reduce_double_slashes($body));
 
 				$data = array(
-					'title'					=> ee()->security->xss_clean($title),
-					'body'					=> ee()->security->xss_clean($body),
+					'title'					=> ee('Security/XSS')->clean($title),
+					'body'					=> ee('Security/XSS')->clean($body),
 				);
 
 				// This allows them to overwrite existing forum data- 1.x did not allow this

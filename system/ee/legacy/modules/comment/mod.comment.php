@@ -62,7 +62,7 @@ class Comment {
 
 				if ($val == 'comment')
 				{
-					$_POST[$val] = ee()->security->xss_clean($_POST[$val]);
+					$_POST[$val] = ee('Security/XSS')->clean($_POST[$val]);
 				}
 			}
 		}
@@ -1978,7 +1978,7 @@ class Comment {
 		// Clean return value- segments only
 		$clean_return = str_replace(ee()->functions->fetch_site_index(), '', $_POST['RET']);
 
-		$_POST['PRV'] = trim_slashes(ee()->security->xss_clean($_POST['PRV']));
+		$_POST['PRV'] = trim_slashes(ee('Security/XSS')->clean($_POST['PRV']));
 
 		ee()->functions->clear_caching('all', $_POST['PRV']);
 		ee()->functions->clear_caching('all', $clean_return);
@@ -2462,7 +2462,7 @@ class Comment {
 			'email'			=> $cmtr_email,
 			'url'			=> $cmtr_url,
 			'location'		=> $cmtr_loc,
-			'comment'		=> ee()->security->xss_clean($_POST['comment']),
+			'comment'		=> ee('Security/XSS')->clean($_POST['comment']),
 			'comment_date'	=> ee()->localize->now,
 			'ip_address'	=> ee()->input->ip_address(),
 			'status'		=> ($comment_moderate == 'y') ? 'p' : 'o',
@@ -2582,7 +2582,7 @@ class Comment {
 			'word_censor'		=> (ee()->config->item('comment_word_censoring') == 'y') ? TRUE : FALSE)
 		);
 
-		$comment = ee()->security->xss_clean($_POST['comment']);
+		$comment = ee('Security/XSS')->clean($_POST['comment']);
 		$comment = ee()->typography->parse_type(
 			$comment,
 			array(

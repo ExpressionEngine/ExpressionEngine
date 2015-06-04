@@ -5096,7 +5096,7 @@ class Forum_Core extends Forum {
 
 		$body = $this->_quote_decode(
 							ee()->typography->parse_type(
-														ee()->security->xss_clean($body),
+														ee('Security/XSS')->clean($body),
 									 					array(
 																'text_format'	=> $forum_text_formatting,
 																'html_format'	=> $forum_html_formatting ,
@@ -5107,7 +5107,7 @@ class Forum_Core extends Forum {
 
 								);
 
-		$title = str_replace('{include:', '&#123;include:', ee()->security->xss_clean(ee()->input->get_post('title')));
+		$title = str_replace('{include:', '&#123;include:', ee('Security/XSS')->clean(ee()->input->get_post('title')));
 
 		return $this->var_swap($this->load_element('preview_post'),
 								array(
@@ -5851,8 +5851,8 @@ class Forum_Core extends Forum {
 					$body = $this->convert_forum_tags(ee()->input->get_post('body'));
 
 					$data = array(
-									'title'			=> ee()->security->xss_clean($title),
-									'body'			=> ee()->security->xss_clean($body),
+									'title'			=> ee('Security/XSS')->clean($title),
+									'body'			=> ee('Security/XSS')->clean($body),
 									'sticky'		=> (ee()->input->get_post('sticky') == 'y') ? 'y' : 'n',
 									'status'		=> (ee()->input->get_post('status') == 'c') ? 'c' : 'o',
 									'announcement'	=> $announcement,
@@ -5975,7 +5975,7 @@ class Forum_Core extends Forum {
 					$data = array(
 									'topic_id'		=> ee()->db->escape_str(ee()->input->get_post('topic_id')),
 									'forum_id'		=> ee()->input->get_post('forum_id'),
-									'body'			=> ee()->security->xss_clean($body),
+									'body'			=> ee('Security/XSS')->clean($body),
 									'parse_smileys'	=> (isset($_POST['smileys'])) ? 'y' : 'n'
 								 );
 
@@ -7575,7 +7575,7 @@ class Forum_Core extends Forum {
 		$title = $this->convert_forum_tags(ee()->input->get_post('title'));
 		$data = array(
 						'forum_id'				=> $new_forum_id,
-						'title'					=> ee()->security->xss_clean($title),
+						'title'					=> ee('Security/XSS')->clean($title),
 						'body'					=> $query->row('body') ,
 						'sticky'				=> 'n',
 						'status'				=> 'o',
@@ -7887,9 +7887,9 @@ class Forum_Core extends Forum {
 						'forum_name'		=> $this->fetch_pref('board_label'),
 						'reporter_name'		=> ee()->session->userdata['screen_name'],
 						'author'			=> $author,
-						'body'				=> ee()->security->xss_clean($body),
+						'body'				=> ee('Security/XSS')->clean($body),
 						'reasons'			=> $reason_text,
-						'notes'				=> (ee()->input->post('notes')) ? ee()->security->xss_clean($_POST['notes']) : '',
+						'notes'				=> (ee()->input->post('notes')) ? ee('Security/XSS')->clean($_POST['notes']) : '',
 						'post_url'			=> ($is_topic) ? "{$forum_path}viewthread/{$post_id}/" : "{$forum_path}viewreply/{$post_id}/"
 					 );
 
@@ -8846,11 +8846,11 @@ class Forum_Core extends Forum {
 
 			if (isset($_POST['exact_match']) AND $_POST['exact_match'] == 'y')
 			{
-				$sql .= " screen_name = '".ee()->db->escape_str(ee()->security->xss_clean($_POST['member_name']))."' ";
+				$sql .= " screen_name = '".ee()->db->escape_str(ee('Security/XSS')->clean($_POST['member_name']))."' ";
 			}
 			else
 			{
-				$sql .= " screen_name LIKE '%".ee()->db->escape_like_str(ee()->security->xss_clean($_POST['member_name']))."%' ";
+				$sql .= " screen_name LIKE '%".ee()->db->escape_like_str(ee('Security/XSS')->clean($_POST['member_name']))."%' ";
 			}
 
 			if ($groups != '')
