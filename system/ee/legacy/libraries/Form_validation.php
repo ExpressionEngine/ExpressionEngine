@@ -700,7 +700,7 @@ class EE_Form_validation {
 	 */
 	public function valid_xss_check($string)
 	{
-		$valid = ($value == ee('Security/XSS')->clean($value));
+		$valid = ($string == ee('Security/XSS')->clean($string));
 
 		if ( ! $valid)
 		{
