@@ -260,11 +260,11 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	 * of the results.
 	 *
 	 * @param Closure $callback Function to apply
-	 * @return array  results
+	 * @return Collection  results
 	 */
-	public function filter(Closure $callback)
+	public function filter($callback)
 	{
-		return array_values(array_filter($this->elements, $callback));
+		return new static(array_filter($this->elements, $callback));
 	}
 
 	/**
