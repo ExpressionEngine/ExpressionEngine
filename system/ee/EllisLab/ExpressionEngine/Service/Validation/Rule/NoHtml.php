@@ -19,7 +19,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine XSS Validation Rule
+ * ExpressionEngine No HTML Validation Rule
  *
  * @package		ExpressionEngine
  * @subpackage	Validation\Rule
@@ -27,16 +27,16 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Xss extends ValidationRule {
+class NoHtml extends ValidationRule {
 
 	public function validate($key, $value)
 	{
-		return ($value == ee('Security/XSS')->clean($value)) ? TRUE : $this->stop();
+		return ! (bool) preg_match("/<[^>]*>/", $value);
 	}
 
 	public function getLanguageKey()
 	{
-		return sprintf(lang('invalid_xss_check'), ee('CP/URL', 'homepage'));
+		return 'no_html';
 	}
 
 }
