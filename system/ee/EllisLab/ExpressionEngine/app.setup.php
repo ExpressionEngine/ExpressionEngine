@@ -53,7 +53,7 @@ return array(
 
 		'Model' => function($ee)
 		{
-			$frontend = new Model\Frontend($ee->make('Model.Datastore'));
+			$frontend = new Model\Frontend($ee->make('Model/Datastore'));
 			$frontend->setValidationFactory($ee->make('Validation'));
 
 			return $frontend;
@@ -98,7 +98,7 @@ return array(
 			return new Grid\Grid();
 		},
 
-		'Model.Datastore' => function($ee)
+		'Model/Datastore' => function($ee)
 		{
 			$app = $ee->make('App');
 
@@ -117,6 +117,11 @@ return array(
 		'Response' => function($ee)
 		{
 			return $ee->make('App')->getResponse();
+		},
+
+		'Security/XSS' => function($ee)
+		{
+			return new Library\Security\XSS();
 		},
 
 		'Validation' => function($ee)
