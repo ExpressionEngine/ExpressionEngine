@@ -126,7 +126,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	 */
 	public function first()
 	{
-		return $this->elements[0];
+		return $this->count() ? $this->elements[0] : NULL;
 	}
 
 	/**
@@ -136,7 +136,8 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	*/
 	public function last()
 	{
-		return $this->elements[$this->count() - 1];
+		$count = $this->count();
+		return $count ? $this->elements[$count - 1] : NULL;
 	}
 
 	/**
