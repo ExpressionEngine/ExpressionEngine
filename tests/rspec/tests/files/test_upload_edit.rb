@@ -482,19 +482,11 @@ feature 'Upload Destination Create/Edit' do
     @page.name.value.should == 'New name upload dir'
   end
 
-  #it 'should reject XSS' do
-  #  # These are really the only fields we allow free form entry into
-  #  @page.name.set $xss_vector
-  #  @page.name.trigger 'blur'
-  #  @page.wait_for_error_message_count(1)
-  #  should_have_error_text(@page.name, $xss_error)
-  #  should_have_form_errors(@page)
-
-  #  @page.url.set $xss_vector
-  #  @page.url.trigger 'blur'
-  #  @page.wait_for_error_message_count(2)
-  #  should_have_error_text(@page.name, $xss_error)
-  #  should_have_error_text(@page.url, $xss_error)
-  #  should_have_form_errors(@page)
-  #end
+  it 'should reject XSS' do
+    @page.name.set $xss_vector
+    @page.name.trigger 'blur'
+    @page.wait_for_error_message_count(1)
+    should_have_error_text(@page.name, $xss_error)
+    should_have_form_errors(@page)
+  end
 end

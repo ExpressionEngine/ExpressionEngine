@@ -49,7 +49,7 @@ class Watermark extends Model {
 	);
 
 	protected static $_validation_rules = array(
-		'wm_name'            => 'required|unique',
+		'wm_name'            => 'required|xss|unique',
 		'wm_type'            => 'enum[text,image]',
 		'wm_image_path'      => 'fileExists',
 		'wm_test_image_path' => 'fileExists',

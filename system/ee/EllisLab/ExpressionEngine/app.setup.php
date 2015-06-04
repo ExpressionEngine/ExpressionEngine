@@ -24,6 +24,13 @@ return array(
 
 	'services' => array(
 
+		'CP/URL' => function($ee, $path, $session_id = '', $qs = array(), $cp_url = '')
+		{
+			$session_id = $session_id ?: ee()->session->session_id();
+
+			return new Library\CP\URL($path, $session_id, $qs, $cp_url);
+		},
+
 		'db' => function($ee)
 		{
 			return $ee->make('Database')->newQuery();

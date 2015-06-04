@@ -168,4 +168,12 @@ feature 'Watermark Create/Edit' do
     @page.alert.text.should include 'Watermark saved'
   end
 
+  it 'should reject XSS' do
+    @page.wm_name.set $xss_vector
+    @page.wm_name.trigger 'blur'
+    @page.wait_for_error_message_count(1)
+    should_have_error_text(@page.wm_name, $xss_error)
+    should_have_form_errors(@page)
+  end
+
 end

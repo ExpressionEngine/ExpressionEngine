@@ -70,7 +70,7 @@ class UploadDestination extends Model {
 	);
 
 	protected static $_validation_rules = array(
-		'name'          => 'required|unique[site_id]',
+		'name'          => 'required|xss|unique[site_id]',
 		'server_path'   => 'required|fileExists|writable',
 		'url'           => 'required|url',
 		'allowed_types' => 'enum[img,all]',

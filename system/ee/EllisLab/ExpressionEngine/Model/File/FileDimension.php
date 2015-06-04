@@ -53,7 +53,7 @@ class FileDimension extends Model {
 	);
 
 	protected static $_validation_rules = array(
-		'short_name'  => 'required|alphaDash|uniqueWithinSiblings[UploadDestination,FileDimensions]',
+		'short_name'  => 'required|xss|alphaDash|uniqueWithinSiblings[UploadDestination,FileDimensions]',
 		'resize_type' => 'enum[crop,constrain]',
 		'width'       => 'isNatural|validateDimension|required',
 		'height'      => 'isNatural|validateDimension|required'

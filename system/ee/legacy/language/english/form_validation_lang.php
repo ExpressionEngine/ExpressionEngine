@@ -26,6 +26,7 @@ $lang['valid_emails']		= "This field must contain all valid email addresses.";
 $lang['valid_ip']			= "This field must contain a valid IP.";
 $lang['valid_url']			= "This field must contain a valid URL.";
 $lang['writable']			= "The path you submitted is not writable.";
+$lang['invalid_xss_check']  = 'The data you submitted did not pass our security check. If you did not intend to submit this form, please <a href="%s">click here</a> and no settings will be changed.';
 
 // special and legacy things
 $lang['isset']				= "The %s field must have a value.";
