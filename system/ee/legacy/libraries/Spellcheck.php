@@ -1241,7 +1241,7 @@ EOH;
 		// We are also removing any HTML code and HTML code entities so that we
 		// do not process them as misspelled words.
 
-		$content = preg_replace("|<.*?".">|", '', rawurldecode(ee()->security->xss_clean(ee()->input->get_post('q'))));
+		$content = preg_replace("|<.*?".">|", '', rawurldecode(ee('Security/XSS')->clean(ee()->input->get_post('q'))));
 		$content = str_replace(array('&amp;', '&lt;', '&gt;'), '', $content);
 
 		$str = '<?xml version="1.0" encoding="UTF-8"?'.">\n<items>\n";

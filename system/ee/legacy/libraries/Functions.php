@@ -1158,7 +1158,7 @@ class EE_Functions {
 								'ip_address'	=> ee()->input->ip_address(),
 								'search_date'	=> ee()->localize->now,
 								'search_type'	=> $type,
-								'search_terms'	=> xml_convert(ee()->functions->encode_ee_tags(ee()->security->xss_clean($terms), TRUE)),
+								'search_terms'	=> xml_convert(ee()->functions->encode_ee_tags(ee('Security/XSS')->clean($terms), TRUE)),
 								'site_id'		=> ee()->config->item('site_id')
 							);
 
@@ -2249,7 +2249,7 @@ class EE_Functions {
 
 		$str =	preg_replace("/\%u([0-9A-F]{4,4})/e","'&#'.base_convert('\\1',16,10).';'", $str);
 
-		$str = $this->security->xss_clean(stripslashes(urldecode($str)));
+		$str = ee('Security/XSS')->clean(stripslashes(urldecode($str)));
 
 		return $str;
 	}

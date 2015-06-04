@@ -1968,7 +1968,7 @@ class Moblog {
 
 		if (xss_check())
 		{
-			$xss_result = ee()->security->xss_clean($file_code, $is_image);
+			$xss_result = ee('Security/XSS')->clean($file_code, $is_image);
 
 			// XSS Clean Failed - bail out
 			if ($xss_result === FALSE)

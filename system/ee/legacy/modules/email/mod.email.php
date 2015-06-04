@@ -540,7 +540,7 @@ class Email {
 					$_POST[$val] = $this->_decrypt($_POST[$val]);
 				}
 
-				$_POST[$val] = ee()->security->xss_clean(trim(stripslashes($_POST[$val])));
+				$_POST[$val] = ee('Security/XSS')->clean(trim(stripslashes($_POST[$val])));
 			}
 		}
 

@@ -266,7 +266,7 @@ class Query extends Utilities {
 		$data = $view_data['data'];
 		$vars['table'] = $view_data;
 
-		$vars['thequery'] = ee()->security->xss_clean($sql);
+		$vars['thequery'] = ee('Security/XSS')->clean($sql);
 		$vars['total_results'] = (isset($total_results)) ? $total_results : 0;
 		$vars['total_results'] = ($show_query) ? $vars['table']['total_rows'] : $vars['total_results'];
 

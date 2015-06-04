@@ -791,7 +791,7 @@ class Rte_lib {
 		// check name for XSS
 		if ($str != strip_tags($str)
 			OR $str != htmlentities($str)
-			OR $str != ee()->security->xss_clean($str))
+			OR $str != ee('Security/XSS')->clean($str))
 		{
 			ee()->form_validation->set_message('_valid_name', lang('valid_name_required'));
 			return FALSE;

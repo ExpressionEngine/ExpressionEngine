@@ -132,7 +132,7 @@ class Wiki {
 
 		$x	= explode('/', $this->base_path);
 
-		$this->seg_parts = explode('/', ee()->security->xss_clean(strip_tags(stripslashes(ee()->uri->query_string))));
+		$this->seg_parts = explode('/', ee('Security/XSS')->clean(strip_tags(stripslashes(ee()->uri->query_string))));
 
 		/* ----------------------------------------
 			Fixes a minor bug in ExpressionEngine where the QSTR variable
@@ -2917,7 +2917,7 @@ class Wiki {
 			return;
 		}
 
-		$article_title = $this->prep_title($this->valid_title(ee()->security->xss_clean(strip_tags($this->seg_parts['1']))));
+		$article_title = $this->prep_title($this->valid_title(ee('Security/XSS')->clean(strip_tags($this->seg_parts['1']))));
 
 		$this->return_data = str_replace(LD.'wiki:page'.RD, $this->_fetch_template('wiki_special_associated_pages.html'), $this->return_data);
 		$this->return_data = str_replace(LD.'article_title'.RD, $article_title, $this->return_data);
@@ -3755,7 +3755,7 @@ class Wiki {
 							'revision_date'		=> ee()->localize->now,
 							'revision_author'	=> ee()->session->userdata['member_id'],
 							'revision_notes'	=> (ee()->input->get_post('revision_notes') !== FALSE) ? ee()->input->get_post('revision_notes') : '',
-							'page_content'		=> ee()->security->xss_clean($content)
+							'page_content'		=> ee('Security/XSS')->clean($content)
 						  );
 
 		if ($query->num_rows() > 0 && $query->row('page_moderated')  == 'y' && ! in_array(ee()->session->userdata['group_id'], $this->admins))
@@ -3803,7 +3803,7 @@ class Wiki {
 			$revision['author']				 = ee()->session->userdata['screen_name'];
 			$revision['email']				 = ee()->session->userdata['email'];
 			$revision['title']				 = $this->title;
-			$revision['content']			 = ee()->security->xss_clean($content);
+			$revision['content']			 = ee('Security/XSS')->clean($content);
 			$revision['path:view_article']	 = $link;
 			$revision['path:view_revision']	 = $link.'/revision/'.$revision['revision_id'];
 			$revision['path:open_revision']	 = $link.'/revision/'.$revision['revision_id'].'/open';
@@ -3815,7 +3815,7 @@ class Wiki {
 						'parse_smileys'	=> FALSE)
 						);
 
-			$revision['article'] = $this->convert_curly_brackets(ee()->typography->parse_type( $this->wiki_syntax(ee()->security->xss_clean($content)),
+			$revision['article'] = $this->convert_curly_brackets(ee()->typography->parse_type( $this->wiki_syntax(ee('Security/XSS')->clean($content)),
 																  array(
 																		'text_format'	=> $this->text_format,
 																		'html_format'	=> $this->html_format,
@@ -4145,7 +4145,7 @@ class Wiki {
 	{
 		if (ee()->input->post('title') !== FALSE && ee()->input->get_post('title') != '')
 		{
-			$title = $this->valid_title(ee()->security->xss_clean(strip_tags(ee()->input->post('title'))));
+			$title = $this->valid_title(ee('Security/XSS')->clean(strip_tags(ee()->input->post('title'))));
 
 			$this->redirect('', $title);
 		}
@@ -4861,7 +4861,7 @@ class Wiki {
 			$data = array(
 				'wiki_id'        => $this->wiki_id,
 				'file_name'      => $new_name,
-				'upload_summary' => (ee()->input->get_post('summary') !== FALSE) ? ee()->security->xss_clean(ee()->input->get_post('summary')) : '',
+				'upload_summary' => (ee()->input->get_post('summary') !== FALSE) ? ee('Security/XSS')->clean(ee()->input->get_post('summary')) : '',
 				'upload_author'  => ee()->session->userdata('member_id'),
 				'upload_date'    => ee()->localize->now,
 				'image_width'    => ($file_data['image_width']) ?: 0,
@@ -5158,7 +5158,7 @@ class Wiki {
 				if (stristr($matches['1'][$i], ':'))
 				{
 					$x = explode(':', $matches['1'][$i], 2);
-					$title = $this->valid_title(ee()->security->xss_clean(strip_tags($x['1'])));
+					$title = $this->valid_title(ee('Security/XSS')->clean(strip_tags($x['1'])));
 
 					switch($x['0'])
 					{
@@ -5167,7 +5167,7 @@ class Wiki {
 							{
 								$link = trim(substr($matches['1'][$i], 0, $pipe_pos));
 								$display = trim(substr($matches['1'][$i], $pipe_pos + 1));
-								$title = ee()->db->escape_str($this->valid_title(ee()->security->xss_clean(strip_tags($link))));
+								$title = ee()->db->escape_str($this->valid_title(ee('Security/XSS')->clean(strip_tags($link))));
 								$matches['1'][$i] = '[url="'.$this->base_url.$title.'" title="'.$title.'"]'.
 													$this->prep_title($display).
 													'[/url]';
@@ -5209,7 +5209,7 @@ class Wiki {
 							{
 								$link = trim(substr($matches['1'][$i], 0, $pipe_pos));
 								$display_title[$i] = trim(substr($matches['1'][$i], $pipe_pos + 1));
-								$regular[$i] = $this->valid_title(ee()->security->xss_clean(strip_tags($link)));
+								$regular[$i] = $this->valid_title(ee('Security/XSS')->clean(strip_tags($link)));
 							}
 							else
 							{
@@ -5224,11 +5224,11 @@ class Wiki {
 					{
 						$link = trim(substr($matches['1'][$i], 0, $pipe_pos));
 						$display_title[$i] = trim(substr($matches['1'][$i], $pipe_pos + 1));
-						$regular[$i] = $this->valid_title(ee()->security->xss_clean(strip_tags($link)));
+						$regular[$i] = $this->valid_title(ee('Security/XSS')->clean(strip_tags($link)));
 					}
 					else
 					{
-						$regular[$i] = $this->valid_title(ee()->security->xss_clean(strip_tags($matches['1'][$i])));
+						$regular[$i] = $this->valid_title(ee('Security/XSS')->clean(strip_tags($matches['1'][$i])));
 					}
 				}
 			}

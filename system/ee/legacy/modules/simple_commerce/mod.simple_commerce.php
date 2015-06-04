@@ -398,7 +398,7 @@ class Simple_commerce {
 
 		foreach($_POST as $key => $value)
 		{
-			$this->post[$key] = ee()->security->xss_clean($value);
+			$this->post[$key] = ee('Security/XSS')->clean($value);
 		}
 
 		if ($this->debug === TRUE)

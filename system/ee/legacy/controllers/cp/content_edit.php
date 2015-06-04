@@ -230,7 +230,7 @@ class Content_edit extends CP_Controller {
 
 		if ($keywords)
 		{
-			$keywords = $this->security->xss_clean($keywords);
+			$keywords = ee('Security/XSS')->clean($keywords);
 
 			if (substr(strtolower($keywords), 0, 3) == 'ip:')
 			{
@@ -688,7 +688,7 @@ class Content_edit extends CP_Controller {
 
 		if (isset($_POST['pageurl']))
 		{
-			$vars['form_hidden']['redirect'] = $this->security->xss_clean($_POST['pageurl']);
+			$vars['form_hidden']['redirect'] = ee('Security/XSS')->clean($_POST['pageurl']);
 		}
 
 		// used in date field
@@ -1132,9 +1132,9 @@ class Content_edit extends CP_Controller {
 
 		$this->session->set_flashdata('message_success', lang('multi_entries_updated'));
 
-		if (isset($_POST['redirect']) && ($redirect = base64_decode($this->security->xss_clean($_POST['redirect']))) !== FALSE)
+		if (isset($_POST['redirect']) && ($redirect = base64_decode(ee('Security/XSS')->clean($_POST['redirect']))) !== FALSE)
 		{
-			$this->functions->redirect($this->security->xss_clean($redirect));
+			$this->functions->redirect(ee('Security/XSS')->clean($redirect));
 		}
 		else
 		{

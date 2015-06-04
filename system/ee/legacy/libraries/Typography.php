@@ -985,7 +985,7 @@ class EE_Typography {
 		/**  Permit only safe HTML
 		/** -------------------------------------*/
 
-		$str = ee()->security->xss_clean($str);
+		$str = ee('Security/XSS')->clean($str);
 
 		// We strip any JavaScript event handlers from image links or anchors
 		// This prevents cross-site scripting hacks.
@@ -1039,7 +1039,7 @@ class EE_Typography {
 			{
 				if (preg_match("/<".$key.".*?".$val['property']."=(\042|\047)(.*?)\\1.*?>(.*?)<\/".$key.">/is", $str, $matches))
 				{
-					$property = ee()->security->xss_clean($matches[2]);
+					$property = ee('Security/XSS')->clean($matches[2]);
 					$str = preg_replace(
 						"/<".$key.".*?".$val['property']."=(\042|\047).*?\\1.*?>(.*?)<\/".$key.">/is",
 						"[".$key."=\\1".$property."\\1]\\2[/".$key."]",
@@ -1374,7 +1374,7 @@ class EE_Typography {
 				{
 					// Clean up the contents of the property
 					$tag_match[1] = htmlspecialchars(
-						ee()->security->xss_clean($tag_match[1])
+						ee('Security/XSS')->clean($tag_match[1])
 					);
 
 					// If there's any evidence of XSS then don't add anything

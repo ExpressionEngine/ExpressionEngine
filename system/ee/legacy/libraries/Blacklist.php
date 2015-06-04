@@ -45,7 +45,7 @@ class EE_Blacklist {
 		// below, we'll temporarily write our referrer to $_POST.
 		if (isset($_SERVER['HTTP_REFERER']) && $_SERVER['HTTP_REFERER'] != '')
 		{
-			$test_ref = ee()->security->xss_clean($_SERVER['HTTP_REFERER']);
+			$test_ref = ee('Security/XSS')->clean($_SERVER['HTTP_REFERER']);
 
 			if ( ! preg_match("#^http://\w+\.\w+\.\w*#", $test_ref))
 			{

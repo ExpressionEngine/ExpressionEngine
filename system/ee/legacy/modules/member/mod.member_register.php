@@ -369,7 +369,7 @@ class Member_register extends Member {
 
 				if ($valid)
 				{
-					$cust_fields[$field_name] = ee()->security->xss_clean($_POST[$field_name]);
+					$cust_fields[$field_name] = ee('Security/XSS')->clean($_POST[$field_name]);
 				}
 			}
 		}
