@@ -23,31 +23,58 @@
 
 (function ($) {
 
-	var picker_url;
-	var modal;
-	var input_value;
-	var input_name;
-	var input_img;
-	var callback;
-	var callback_name;
+	var bind_modal = function(options) {
+		$('.modal-file').off('click', 'tbody > tr');
+		$('.modal-file').on('click', 'tbody > tr', function(e) {
+			var id = $(this).find("input[type='checkbox']").val();
+			var file_url = options.url.replace(/directory=.+(?=&)/ig, 'file=' + id);
+
+			$.ajax({
+				url: file_url,
+				success: function(data) {
+					var picker = {
+						modal: modal,
+						input_value: options.input_value,
+						input_name: options.input_name,
+						input_img: options.input_img
+					}
+					callback(data, picker);
+				},
+				dataType: 'json'
+			});
+		});
+	};
+
+	$.fn.FilePicker = function(options) {
+
+		this.off('click');
+		options['url'] = this.attr('href');
+		options['rel'] = this.attr('rel');
+		options['input_value'] = $(options.input_value);
+		options['input_name'] = $(options.input_name);
+		options['input_img'] = $(options.input_img);
+		
+		return this.each(function() {
+			$(this).on('click', function(){
+				modal = $("." + options.rel);
+				modal.find("div.box").load(options.url);
+				bind_modal(options);
+			});
+		});
+	};
 
 	$(document).ready(function () {
 		$('.modal-file').on('click', 'a:not([href=""])', function(e) {
 			e.preventDefault();
 			$(this).parents('div.box').load($(this).attr('href'));
 		});
-		$('.filepicker').click(function (e) {
-			picker_url = $(this).attr('href');
-			input_value = $('input[name="' + $(this).data('input-value') + '"], textarea[name="' + $(this).data('input-value') + '"]');
-			input_name = $('#' + $(this).data('input-name'));
-			input_img = $('#' + $(this).data('input-image'));
+		$('#Pilepicker').click(function (e) {
+			var options = {};
+			options['input_value'] = $('input[name="' + $(this).data('input-value') + '"], textarea[name="' + $(this).data('input-value') + '"]');
+			options['input_name'] = $('#' + $(this).data('input-name'));
+			options['input_img'] = $('#' + $(this).data('input-image'));
 			callback_name = $(this).data('callback');
-			modal = $("." + $(this).attr('rel'));
-			modal.find("div.box").load(picker_url);
-		});
-		$('.modal-file').on('click', 'tbody > tr', function(e) {
-			var id = $(this).find("input[type='checkbox']").val();
-			var file_url = picker_url.replace(/directory=.+(?=&)/ig, 'file=' + id);
+			picker_url = $(this).attr('href');
 
 			if (callback_name.length !== 0)
 			{
@@ -72,19 +99,12 @@
 				}
 			}
 
-			$.ajax({
-				url: file_url,
-				success: function(data) {
-					var picker = {
-						modal: modal,
-						input_value: input_value,
-						input_name: input_name,
-						input_img: input_img
-					}
-					callback(data, picker);
-				},
-				dataType: 'json'
-			});
+			options['url'] = picker_url;
+			options['callback'] = callback;
+			modal = $("." + $(this).attr('rel'));
+			modal.find("div.box").load(picker_url);
+			bind_modal(options);
 		});
 	});
+
 })(jQuery);
