@@ -14,15 +14,26 @@
 
 (function ($) {
 	$(document).ready(function () {
-		EE.file_picker_callback = function(data, references) {
-			var input = references.input_value;
-			console.log(data);
+		$('.textarea-field-filepicker').FilePicker({
+			callback: function(data, references) {
+				var input = references.input_value;
 
-			// Close the modal
-			references.modal.find('.m-close').click();
+				// Close the modal
+				references.modal.find('.m-close').click();
 
-			// Assign the value {filedir_#}filename.ext
-			input.insertAtCursor('<img src="{filedir_' + data.upload_location_id + '}' + data.file_name + '" alt="" height="" width="">');
-		};
+				// Assign the value {filedir_#}filename.ext
+				var html = '<img src="{filedir_' + data.upload_location_id + '}' + data.file_name + '"';
+				html = html + ' alt=""';
+
+				if (data.file_hw_original) {
+					dimensions = data.file_hw_original.split(' ');
+					html = html + ' height="' + dimensions[0] + '" width="' + dimensions[1] + '"';
+				}
+
+				html = html + '>';
+
+				input.insertAtCursor(html);
+			}
+		});
 	});
 })(jQuery);

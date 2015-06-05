@@ -17,7 +17,7 @@ if (isset($settings['field_show_formatting_btns']) && $settings['field_show_form
 <div class="format-options">
 	<ul class="toolbar">
 		<?php if (isset($settings['field_show_file_selector']) && $settings['field_show_file_selector'] == 'y'): ?>
-		<li class="upload"><a class="m-link filepicker" href="<?=$fp_url?>" rel="modal-file" title="<?=lang('upload_file')?>" rel="modal-file" data-input-value="<?=$name?>"></a></li>
+		<li class="upload"><a class="m-link textarea-field-filepicker" href="<?=$fp_url?>" rel="modal-file" title="<?=lang('upload_file')?>" rel="modal-file" data-input-value="<?=$name?>"></a></li>
 		<?php endif; ?>
 		<?php if ($smileys_enabled && isset($settings['field_show_smileys']) && $settings['field_show_smileys'] == 'y'): ?>
 		<li class="emoji"><a href="" title="<?=lang('open_emoji')?>"></a></li>
