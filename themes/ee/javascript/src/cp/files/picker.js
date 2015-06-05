@@ -38,7 +38,7 @@
 						input_name: options.input_name,
 						input_img: options.input_img
 					}
-					callback(data, picker);
+					options.callback(data, picker);
 				},
 				dataType: 'json'
 			});
@@ -68,7 +68,7 @@
 			e.preventDefault();
 			$(this).parents('div.box').load($(this).attr('href'));
 		});
-		$('#Pilepicker').click(function (e) {
+		$('.filepicker').click(function (e) {
 			var options = {};
 			options['input_value'] = $('input[name="' + $(this).data('input-value') + '"], textarea[name="' + $(this).data('input-value') + '"]');
 			options['input_name'] = $('#' + $(this).data('input-name'));
@@ -106,5 +106,4 @@
 			bind_modal(options);
 		});
 	});
-
 })(jQuery);
