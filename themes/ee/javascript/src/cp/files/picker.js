@@ -46,14 +46,28 @@
 	};
 
 	$.fn.FilePicker = function(options) {
-
 		this.off('click');
 		options['url'] = this.attr('href');
 		options['rel'] = this.attr('rel');
-		options['input_value'] = $(options.input_value);
-		options['input_name'] = $(options.input_name);
-		options['input_img'] = $(options.input_img);
-		
+
+		if (options.input_value) {
+			options['input_value'] = $(options.input_value);
+		} else {
+			options['input_value'] = $('input[name="' + $(this).data('input-value') + '"], textarea[name="' + $(this).data('input-value') + '"]');
+		}
+
+		if (options.input_name) {
+			options['input_name'] = $(options.input_name);
+		} else {
+			options['input_name'] = $('#' + $(this).data('input-name'));
+		}
+
+		if (options.input_img) {
+			options['input_img'] = $(options.input_img);
+		} else {
+			options['input_img'] = $('#' + $(this).data('input-image'));
+		}
+
 		return this.each(function() {
 			$(this).on('click', function(){
 				modal = $("." + options.rel);
@@ -76,8 +90,7 @@
 			callback_name = $(this).data('callback');
 			picker_url = $(this).attr('href');
 
-			if (callback_name.length !== 0)
-			{
+			if (callback_name.length !== 0)	{
 				callback = function(data, picker) {
 					var args = [data, picker];
 					var namespaces = callback_name.split(".");
