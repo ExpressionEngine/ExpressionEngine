@@ -118,7 +118,7 @@ class Channels extends AbstractChannelsController {
 			'file' => array('cp/v3/confirm_remove'),
 		));
 
-		ee()->cp->render('channel/index', $vars);
+		ee()->cp->render('channels/index', $vars);
 	}
 
 	/**

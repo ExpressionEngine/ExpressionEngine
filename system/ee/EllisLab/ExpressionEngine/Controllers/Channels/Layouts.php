@@ -141,7 +141,7 @@ class Layouts extends AbstractChannelsController {
 		ee()->view->cp_page_title = sprintf(lang('channel_form_layouts'), $channel->channel_title);
 		ee()->cp->set_breadcrumb(cp_url('channels'), lang('channels'));
 
-		ee()->cp->render('channel/layout/index', $vars);
+		ee()->cp->render('channels/layout/index', $vars);
 	}
 
 	public function create($channel_id)
@@ -263,7 +263,7 @@ class Layouts extends AbstractChannelsController {
 		ee()->cp->add_js_script('ui', array('droppable', 'sortable'));
 		ee()->cp->add_js_script('file', 'cp/channel/layout');
 
-		ee()->cp->render('channel/layout/form', $vars);
+		ee()->cp->render('channels/layout/form', $vars);
 	}
 
 	public function edit($layout_id)
@@ -385,7 +385,7 @@ class Layouts extends AbstractChannelsController {
 		ee()->cp->add_js_script('ui', array('droppable', 'sortable'));
 		ee()->cp->add_js_script('file', 'cp/channel/layout');
 
-		ee()->cp->render('channel/layout/form', $vars);
+		ee()->cp->render('channels/layout/form', $vars);
 	}
 
 	private function getEligibleMemberGroups(Channel $channel)

@@ -135,7 +135,7 @@ class Cat extends AbstractChannelsController {
 			'file' => array('cp/v3/confirm_remove'),
 		));
 
-		ee()->cp->render('channel/cat/index', $vars);
+		ee()->cp->render('channels/cat/index', $vars);
 	}
 
 	/**
@@ -460,7 +460,7 @@ class Cat extends AbstractChannelsController {
 
 		ee()->cp->set_breadcrumb(cp_url('channels/cat'), lang('category_groups'));
 
-		ee()->cp->render('channel/cat/list');
+		ee()->cp->render('channels/cat/list');
 	}
 
 	/**
@@ -939,7 +939,7 @@ class Cat extends AbstractChannelsController {
 		ee()->javascript->set_global('cat_fields.reorder_url', cp_url('channels/cat/cat-field-reorder/'.$group_id));
 		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
-		ee()->cp->render('channel/cat/field', $vars);
+		ee()->cp->render('channels/cat/field', $vars);
 	}
 
 	/**

@@ -112,7 +112,7 @@ class Status extends AbstractChannelsController {
 			'file' => array('cp/v3/confirm_remove'),
 		));
 
-		ee()->cp->render('channel/status/index', $vars);
+		ee()->cp->render('channels/status/index', $vars);
 	}
 
 	/**
@@ -380,7 +380,7 @@ class Status extends AbstractChannelsController {
 		ee()->javascript->set_global('statuses.reorder_url', cp_url('channels/status/status-reorder/'.$group_id));
 		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
-		ee()->cp->render('channel/status/list', $vars);
+		ee()->cp->render('channels/status/list', $vars);
 	}
 
 	/**
