@@ -185,7 +185,7 @@ class Query extends Utilities {
 			$table_config['autosearch'] = TRUE;
 		}
 
-		$table = CP\Table::create($table_config);
+		$table = ee('CP/Table', $table_config);
 		$table->setColumns($columns);
 
 		$search = $table->search; // PHP 5.3

@@ -67,7 +67,7 @@ class Layout extends AbstractChannelController {
 		$vars['channel_id'] = $channel_id;
 		$vars['create_url'] = cp_url('channel/layout/create/' . $channel_id);
 
-		$table = Table::create();
+		$table = ee('CP/Table');
 		$table->setColumns(
 			array(
 				'name',

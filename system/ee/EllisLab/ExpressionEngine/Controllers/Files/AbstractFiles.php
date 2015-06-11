@@ -114,7 +114,7 @@ abstract class AbstractFiles extends CP_Controller {
 
 	protected function buildTableFromFileCollection(Collection $files, $limit = 20)
 	{
-		$table = Table::create(array('autosort' => TRUE, 'limit' => $limit, 'autosearch' => TRUE));
+		$table = ee('CP/Table', array('autosort' => TRUE, 'limit' => $limit, 'autosearch' => TRUE));
 		$table->setColumns(
 			array(
 				'title_or_name',

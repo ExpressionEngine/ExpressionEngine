@@ -147,7 +147,7 @@ class Translate extends Utilities {
 			}
 		}
 
-		$table = Table::create(array('autosort' => TRUE, 'autosearch' => TRUE));
+		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => TRUE));
 		$table->setColumns(
 			array(
 				'file_name',

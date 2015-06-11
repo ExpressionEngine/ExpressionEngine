@@ -55,7 +55,7 @@ class Watermarks extends AbstractFilesController {
 	 */
 	public function index()
 	{
-		$table = CP\Table::create();
+		$table = ee('CP/Table');
 		$table->setColumns(
 			array(
 				'name',

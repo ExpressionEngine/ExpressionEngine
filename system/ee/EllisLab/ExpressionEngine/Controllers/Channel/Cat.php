@@ -52,7 +52,7 @@ class Cat extends AbstractChannelController {
 	 */
 	public function index()
 	{
-		$table = CP\Table::create();
+		$table = ee('CP/Table');
 		$table->setColumns(
 			array(
 				'col_id',
@@ -852,7 +852,7 @@ class Cat extends AbstractChannelController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$table = CP\Table::create(array(
+		$table = ee('CP/Table', array(
 			'reorder' => TRUE,
 			'sortable' => FALSE
 		));

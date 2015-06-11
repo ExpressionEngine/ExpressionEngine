@@ -31,6 +31,11 @@ return array(
 			return new Library\CP\URL($path, $session_id, $qs, $cp_url);
 		},
 
+		'CP/Table' => function($ee, $config = array())
+		{
+			return Library\CP\Table::fromGlobals($config);
+		},
+
 		'db' => function($ee)
 		{
 			return $ee->make('Database')->newQuery();

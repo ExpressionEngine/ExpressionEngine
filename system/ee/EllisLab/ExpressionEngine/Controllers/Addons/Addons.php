@@ -135,7 +135,7 @@ class Addons extends CP_Controller {
 		$addons = $this->getAllAddons();
 
 		// Setup the Table
-		$table = Table::create(array('autosort' => TRUE, 'autosearch' => TRUE));
+		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => TRUE));
 		$table->setColumns(
 			array(
 				'addon',

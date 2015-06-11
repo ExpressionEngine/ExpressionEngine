@@ -164,7 +164,7 @@ class Rte_mcp {
 			)
 		);
 
-		$table = Table::create(array('autosort' => TRUE, 'autosearch' => FALSE, 'limit' => 20));
+		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => FALSE, 'limit' => 20));
 		$table->setColumns(
 			array(
 				'tool_set',

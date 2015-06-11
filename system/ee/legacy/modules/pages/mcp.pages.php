@@ -175,7 +175,7 @@ class Pages_mcp {
 
 		$base_url = new URL('addons/settings/pages', ee()->session->session_id());
 
-		$table = Table::create(array('autosort' => TRUE, 'autosearch' => FALSE, 'limit' => 20));
+		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => FALSE, 'limit' => 20));
 		$table->setColumns(
 			array(
 				'page_name',

@@ -38,7 +38,7 @@ class Channel extends AbstractChannelController {
 	 */
 	public function index()
 	{
-		$table = CP\Table::create();
+		$table = ee('CP/Table');
 		$table->setColumns(
 			array(
 				'col_id',

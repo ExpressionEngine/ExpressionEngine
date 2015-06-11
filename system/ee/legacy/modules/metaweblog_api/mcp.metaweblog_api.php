@@ -59,7 +59,7 @@ class Metaweblog_api_mcp {
 		ee()->db->select('metaweblog_pref_name, metaweblog_id');
 		$metaweblogs = ee()->db->get('metaweblog_api');
 
-		$table = Table::create(array('autosort' => TRUE, 'autosearch' => FALSE, 'limit' => 20));
+		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => FALSE, 'limit' => 20));
 		$table->setColumns(
 			array(
 				'name',

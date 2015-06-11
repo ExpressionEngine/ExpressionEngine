@@ -17,7 +17,7 @@ class FilePicker {
 		$modal_vars = array('name'=> 'modal-file', 'contents' => '');
 		$modal = ee('View')->make('_shared/modal')->ee_view('_shared/modal', $modal_vars, TRUE);
 
-		if (empty($view->blocks['modals'])) 
+		if (empty($view->blocks['modals']))
 		{
 			$view->blocks['modals'] = '';
 		}
@@ -63,7 +63,7 @@ class FilePicker {
 
 	public function buildTableFromFileCollection(Collection $files, $limit = 20)
 	{
-		$table = Table::create(array('autosort' => TRUE, 'limit' => $limit));
+		$table = new Table(array('autosort' => TRUE, 'limit' => $limit));
 		$table->setColumns(
 			array(
 				'title_or_name',

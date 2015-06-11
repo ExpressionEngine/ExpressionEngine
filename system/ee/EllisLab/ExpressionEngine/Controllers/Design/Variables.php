@@ -66,7 +66,7 @@ class Variables extends AbstractDesignController {
 		}
 
 		$vars = array();
-		$table = Table::create(array('autosort' => TRUE));
+		$table = ee('CP/Table', array('autosort' => TRUE));
 		$columns = array(
 			'variable',
 			'all_sites',

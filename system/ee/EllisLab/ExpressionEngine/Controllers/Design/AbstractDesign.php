@@ -255,7 +255,7 @@ abstract class AbstractDesign extends CP_Controller {
 
 	protected function buildTableFromTemplateCollection(Collection $templates, $include_group_name = FALSE)
 	{
-		$table = Table::create(array('autosort' => TRUE));
+		$table = ee('CP/Table', array('autosort' => TRUE));
 		$table->setColumns(
 			array(
 				'template',

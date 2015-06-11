@@ -122,22 +122,42 @@ class Table {
 
 	/**
 	 * Convenience method for initializing a Table object with current
-	 * sort parameters within an EE controller
+	 * sort parameters set via globals within a CP controller
 	 *
 	 * @param	array 	$config	See constructor doc block
 	 * @return  object	New Table object
 	 */
-	public static function create($config = array())
+	public static function fromGlobals($config = array())
 	{
-		$defaults = array(
-			'sort_col'	=> ee()->input->get('sort_col'),
-			'sort_dir'	=> ee()->input->get('sort_dir'),
-			'search'	=> ee()->input->post('search') !== FALSE
-				? ee()->input->post('search') : ee()->input->get('search'),
-			'page'		=> ee()->input->get('page') > 0 ? ee()->input->get('page') : 1
-		);
+		// We'll only place in here what needs overriding
+		$defaults = array();
 
-		return new Table(array_merge($defaults, $config));
+		// Look for search in POST first, then GET
+		if (isset($_POST['search']))
+		{
+			$defaults['search'] = $_POST['search'];
+		}
+		else if (isset($_GET['search']))
+		{
+			$defaults['search'] = $_GET['search'];
+		}
+
+		if (isset($_POST['sort_col']))
+		{
+			$defaults['sort_col'] = $_POST['sort_col'];
+		}
+
+		if (isset($_POST['sort_dir']))
+		{
+			$defaults['sort_dir'] = $_POST['sort_dir'];
+		}
+
+		if (isset($_POST['page']) && $_POST['page'] > 0)
+		{
+			$defaults['page'] = $_POST['page'];
+		}
+
+		return new static(array_merge($defaults, $config));
 	}
 
 	/**

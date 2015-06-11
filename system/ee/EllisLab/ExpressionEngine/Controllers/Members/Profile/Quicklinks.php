@@ -50,7 +50,7 @@ class Quicklinks extends Profile {
 	 */
 	public function index()
 	{
-		$table = Table::create();
+		$table = ee('CP/Table');
 		$links = array();
 		$data = array();
 
@@ -108,7 +108,7 @@ class Quicklinks extends Profile {
 
 	/**
 	 * Create new quicklink
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */
@@ -136,8 +136,8 @@ class Quicklinks extends Profile {
 	}
 
 	/**
-	 * Edit quicklink 
-	 * 
+	 * Edit quicklink
+	 *
 	 * @param int $id  The ID of the quicklink to be updated
 	 * @access public
 	 * @return void
@@ -171,7 +171,7 @@ class Quicklinks extends Profile {
 
 	/**
 	 * Delete Quicklinks
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */
@@ -189,7 +189,7 @@ class Quicklinks extends Profile {
 
 	/**
 	 * saveQuicklinks compiles the links and saves them for the current member
-	 * 
+	 *
 	 * @access private
 	 * @return void
 	 */
@@ -221,9 +221,9 @@ class Quicklinks extends Profile {
 
 	/**
 	 * Display a generic form for creating/editing a Quicklink
-	 * 
-	 * @param mixed $vars 
-	 * @param array $values 
+	 *
+	 * @param mixed $vars
+	 * @param array $values
 	 * @access private
 	 * @return void
 	 */
