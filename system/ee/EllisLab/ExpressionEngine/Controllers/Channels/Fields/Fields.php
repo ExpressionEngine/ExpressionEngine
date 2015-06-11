@@ -21,7 +21,7 @@ use EllisLab\ExpressionEngine\Controllers\Channels\AbstractChannels as AbstractC
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine CP Channel\Layout Class
+ * ExpressionEngine CP Channel\Fields\Fields Class
  *
  * @package		ExpressionEngine
  * @subpackage	Control Panel
@@ -44,7 +44,8 @@ class Fields extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		ee()->lang->loadfile('content');
+		ee()->lang->loadfile('admin');
+		ee()->lang->loadfile('admin_content');
 	}
 
 	public function fields()

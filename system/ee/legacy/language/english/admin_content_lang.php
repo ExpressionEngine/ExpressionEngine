@@ -2,6 +2,28 @@
 
 $lang = array(
 
+// @since 3.0
+
+'custom_fields' =>
+'Custom Fields',
+
+'field' =>
+'Field',
+
+'fields' =>
+'Fields',
+
+'field_groups' =>
+'Field Groups',
+
+'field_groups_desc' =>
+'Used to group together related custom fields.',
+
+'id' =>
+'ID#',
+
+// @since 2.x
+
 'reserved_word' =>
 'The field name you have chosen is a reserved word and cannot be used.  Please see the user guide for more information.',
 
@@ -151,9 +173,6 @@ $lang = array(
 
 'alpha' =>
 'Alphabetical',
-
-'id' =>
-'ID',
 
 'channel_id' =>
 'ID',
@@ -692,9 +711,6 @@ $lang = array(
 
 'field_groups' =>
 'Field Groups',
-
-'custom_fields' =>
-'Channel Field Groups',
 
 'no_field_group_message' =>
 'There are currently no channel fields',
