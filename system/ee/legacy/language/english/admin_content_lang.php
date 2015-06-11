@@ -49,6 +49,37 @@ $lang = array(
 'btn_edit_field_group' =>
 'Edit Field Group',
 
+'create_field_group_success' =>
+'Field Group Created',
+
+'create_field_group_success_desc' =>
+'The field group <b>%s</b> has been created.',
+
+'create_field_group_error' =>
+'Cannot Create Field Group',
+
+'create_field_group_error_desc' =>
+'We were unable to create this field group, please review and fix errors below.',
+
+'edit_field_group_success' =>
+'Field Group Updated',
+
+'edit_field_group_success_desc' =>
+'The field group <b>%s</b> has been updated.',
+
+'edit_field_group_error' =>
+'Cannot Update Field Group',
+
+'edit_field_group_error_desc' =>
+'We were unable to update this field group, please review and fix errors below.',
+
+'field_group_removed' =>
+'Field Group Removed',
+
+'field_group_removed_desc' =>
+'The field group <b>%s</b> has been removed.',
+
+
 // @since 2.x
 
 'reserved_word' =>

@@ -150,9 +150,39 @@ class Groups extends AbstractChannelsController {
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL', 'channels/fields/groups/create'),
 			'sections' => $this->form(),
-			'save_btn_text' => 'btn_edit_field_group',
+			'save_btn_text' => 'btn_create_field_group',
 			'save_btn_text_working' => 'btn_saving'
 		);
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			$field_group = ee('Model')->make('ChannelFieldGroup');
+			$field_group->group_name = ee()->input->post('group_name');
+			$field_group->save();
+
+			ee()->session->set_flashdata('group_id', $field_group->group_id);
+
+			ee('Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('create_field_group_success'))
+				->addToBody(sprintf(lang('create_field_group_success_desc'), $field_group->group_name))
+				->defer();
+
+			ee()->functions->redirect(ee('CP/URL', 'channels/fields/groups'));
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('create_field_group_error'))
+				->addToBody(lang('create_field_group_error_desc'))
+				->now();
+		}
 
 		ee()->view->cp_page_title = lang('create_field_group');
 
@@ -179,6 +209,33 @@ class Groups extends AbstractChannelsController {
 			'save_btn_text' => 'btn_edit_field_group',
 			'save_btn_text_working' => 'btn_saving'
 		);
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			$field_group->group_name = ee()->input->post('group_name');
+			$field_group->save();
+
+			ee('Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('edit_field_group_success'))
+				->addToBody(sprintf(lang('edit_field_group_success_desc'), $field_group->group_name))
+				->defer();
+
+			ee()->functions->redirect(ee('CP/URL', 'channels/fields/groups/edit/' . $id));
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('edit_field_group_error'))
+				->addToBody(lang('edit_field_group_error_desc'))
+				->now();
+		}
 
 		ee()->view->cp_page_title = lang('edit_field_group');
 
@@ -265,12 +322,50 @@ class Groups extends AbstractChannelsController {
 						)
 					)
 				)
-
 			)
 		);
 
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'group_name',
+				'label' => 'lang:name',
+				'rules' => 'required|callback__field_group_name_checks[' . $field_group->group_id . ']'
+			)
+		));
+
 		return $sections;
 	}
+
+	/**
+	  *	 Check Field Group Name
+	  */
+	public function _field_group_name_checks($str, $group_id)
+	{
+		if ( ! preg_match("#^[a-zA-Z0-9_\-/\s]+$#i", $str))
+		{
+			ee()->lang->loadfile('admin');
+			ee()->form_validation->set_message('_field_group_name_checks', lang('illegal_characters'));
+			return FALSE;
+		}
+
+		$group = ee('Model')->get('ChannelFieldGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('group_name', $str);
+
+		if ($group_id)
+		{
+			$group->filter('group_id', '!=', $group_id);
+		}
+
+		if ($group->count())
+		{
+			ee()->form_validation->set_message('_field_group_name_checks', lang('taken_field_group_name'));
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
 
 	private function remove($group_ids)
 	{
