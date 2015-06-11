@@ -331,10 +331,11 @@ class Uploads extends AbstractFilesController {
 	private function getImageSizesGrid($upload_destination = NULL)
 	{
 		// Image manipulations Grid
-		$grid = ee('Grid')->make(array(
+		$grid = ee('CP/GridInput', array(
 			'field_name' => 'image_manipulations',
 			'reorder'    => FALSE, // Order doesn't matter here
 		));
+		$grid->loadAssets();
 		$grid->setColumns(
 			array(
 				'image_manip_name' => array(

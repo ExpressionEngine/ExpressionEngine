@@ -28,6 +28,11 @@ namespace EllisLab\ExpressionEngine\Library\CP;
 
 class GridInput extends Table {
 
+	protected $view;
+	protected $cp;
+	protected $ee_config;
+	protected $javascript;
+
 	/**
 	 * GridInput currently provides these options for configuration:
 	 *
@@ -39,11 +44,20 @@ class GridInput extends Table {
 	 *
 	 * The rest of the config items have good defaults for use in Grid, it's
 	 * probably best not to set any other config items.
-	 * 
-	 * @param	array 	$config	See Table constructor for options
+	 *
+	 * @param	array 	$config		See Table constructor for options
+	 * @param	object 	$view		EE view library, used for loading assets
+	 * @param	object 	$cp			EE CP library, used for loading assets
+	 * @param	object 	$ee_config	EE config library, used for loading assets
+	 * @param	object 	$javascript	EE javascript library, used for loading assets
 	 */
-	public function __construct($config = array())
+	public function __construct($config = array(), $view = NULL, $cp = NULL, $ee_config = NULL, $javascript = NULL)
 	{
+		$this->view = $view;
+		$this->cp = $cp;
+		$this->config = $ee_config;
+		$this->javascript = $javascript;
+
 		// These should be our default to properly initialize a Table class
 		// for use as a Grid input
 		$defaults = array(
@@ -57,18 +71,6 @@ class GridInput extends Table {
 		);
 
 		parent::__construct(array_merge($defaults, $config));
-	}
-
-	/**
-	 * Convenience method for initializing a Grid Input object, currently
-	 * doesn't do much but we may use it later to inject certain dependencies
-	 *
-	 * @param	array 	$columns	Column names and settings
-	 * @return  object	New GridInput object
-	 */
-	public static function create($config = array())
-	{
-		return new GridInput($config);
 	}
 
 	/**
@@ -95,7 +97,7 @@ class GridInput extends Table {
 
 	/**
 	 * Set and normalizes the data for the table.
-	 * 
+	 *
 	 * Overrides the parent setData to add our blank row to the bottom.
 	 *
 	 * @param	array 	$data	Table data
@@ -153,7 +155,7 @@ class GridInput extends Table {
 				{
 					$row_id = $row['attrs']['row_id'];
 				}
-				
+
 				return $grid->namespaceForGrid($field, $row_id);
 
 			}, $row['columns']);
@@ -200,6 +202,59 @@ class GridInput extends Table {
 			$search,
 			'$1name="'.$this->config['field_name'].'[rows]['.$row_id.'][$2]$3"'
 		);
+	}
+
+	/**
+	 * Loads necessary JS and CSS
+	 */
+	public function loadAssets()
+	{
+		static $assets_loaded;
+
+		if ( ! $assets_loaded)
+		{
+			if (REQ == 'CP')
+			{
+				$css_link = $this->view->head_link('css/v3/grid.css');
+			}
+			// Channel Form
+			else
+			{
+				$css_link = '<link rel="stylesheet" href="'.$this->ee_config->slash_item('theme_folder_url').'cp_themes/default/css/v3/grid.css" type="text/css" media="screen" />'.PHP_EOL;
+			}
+
+			$this->cp->add_to_head($css_link);
+
+			$this->cp->add_js_script('ui', 'sortable');
+			$this->cp->add_js_script('file', 'cp/sort_helper');
+			$this->cp->add_js_script('plugin', 'ee_table_reorder');
+			$this->cp->add_js_script('file', 'cp/grid');
+
+			$assets_loaded = TRUE;
+		}
+
+		$settings = array(
+			'grid_min_rows' => $this->config['grid_min_rows'],
+			'grid_max_rows' => $this->config['grid_max_rows']
+		);
+
+		$name = $this->config['field_name'];
+
+		if (REQ == 'CP')
+		{
+			// Set settings as a global for easy reinstantiation of field
+			// by third parties
+			$this->javascript->set_global('grid_field_settings.'.$name, $settings);
+
+			// getElementById instead of $('#...') for field names that have
+			// brackets in them
+			$this->javascript->output('EE.grid(document.getElementById("'.$name.'"));');
+		}
+		// Channel Form
+		else
+		{
+			$this->javascript->output('EE.grid(document.getElementById("'.$name.'"), '.json_encode($settings).');');
+		}
 	}
 }
 
