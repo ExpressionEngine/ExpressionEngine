@@ -22,6 +22,33 @@ $lang = array(
 'id' =>
 'ID#',
 
+'create_field_group_warning' =>
+'<b>Warning</b>: Field groups require custom fields to be created.',
+
+'create_field_group_warning2' =>
+'It\'s best practice to create any <a href="%s">custom fields</a>, first.',
+
+'create_field_group' =>
+'Create Field Group',
+
+'custom_fields_desc' =>
+'Choose the fields you would like to include in this field group.',
+
+'custom_fields_not_found' =>
+'Zero <b>custom fields</b> found',
+
+'create_new_field' =>
+'Create New Field',
+
+'btn_create_field_group' =>
+'Create Field Group',
+
+'edit_field_group' =>
+'Edit Field Group',
+
+'btn_edit_field_group' =>
+'Edit Field Group',
+
 // @since 2.x
 
 'reserved_word' =>

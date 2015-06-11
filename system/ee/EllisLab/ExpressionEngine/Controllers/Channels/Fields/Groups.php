@@ -5,6 +5,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Channels\Fields;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Controllers\Channels\AbstractChannels as AbstractChannelsController;
+use EllisLab\ExpressionEngine\Module\Channel\Model\ChannelFieldGroup;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -141,13 +142,134 @@ class Groups extends AbstractChannelsController {
 
 	public function create()
 	{
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL', 'channels/fields/groups')->compile() => lang('field_groups'),
+		);
 
-		ee()->cp->render('channels/groups/form', $vars);
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'base_url' => ee('CP/URL', 'channels/fields/groups/create'),
+			'sections' => $this->form(),
+			'save_btn_text' => 'btn_edit_field_group',
+			'save_btn_text_working' => 'btn_saving'
+		);
+
+		ee()->view->cp_page_title = lang('create_field_group');
+
+		ee()->cp->render('settings/form', $vars);
 	}
 
-	public function edit()
+	public function edit($id)
 	{
+		$field_group = ee('Model')->get('ChannelFieldGroup', $id)->first();
 
+		if ( ! $field_group)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL', 'channels/fields/groups')->compile() => lang('field_groups'),
+		);
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'base_url' => ee('CP/URL', 'channels/fields/groups/edit/' . $id),
+			'sections' => $this->form($field_group),
+			'save_btn_text' => 'btn_edit_field_group',
+			'save_btn_text_working' => 'btn_saving'
+		);
+
+		ee()->view->cp_page_title = lang('edit_field_group');
+
+		ee()->cp->render('settings/form', $vars);
+	}
+
+	private function form(ChannelFieldGroup $field_group = NULL)
+	{
+		if ( ! $field_group)
+		{
+			$field_group = ee('Model')->make('ChannelFieldGroup');
+		}
+
+		$custom_fields_options = array();
+		$disabled_custom_fields_options = array();
+
+		$fields = ee('Model')->get('ChannelField')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		foreach ($fields as $field)
+		{
+			$display = $field->field_label;
+
+			$assigned_to = $field->ChannelFieldGroup->first();
+
+			if ($assigned_to
+				&& $assigned_to->group_id != $field_group->group_id)
+			{
+				$disabled_custom_fields_options[] = $field->field_id;
+
+				$display =  '<s>' . $display . '</s>';
+				$display .= ' <i>&mdash; ' . lang('assigned_to');
+				$display .= ' <a href="' . ee('CP/URL', 'channels/fields/groups/edit/' . $assigned_to->group_id) . '">' . $assigned_to->group_name . '</a></i>';
+			}
+
+			$custom_fields_options[$field->field_id] = $display;
+		}
+
+		$custom_fields_value = array();
+
+		$selected_fields = ($field_group->ChannelFields->all()) ?: array();
+		foreach ($selected_fields as $field)
+		{
+			$custom_fields_value[] = $field->field_id;
+		}
+
+		// Alert to show only for new channels
+		$alert = ee('Alert')->makeInline('permissions-warn')
+			->asWarning()
+			->addToBody(lang('create_field_group_warning'))
+			->addToBody(sprintf(lang('create_field_group_warning2'), ee('CP/URL', 'channels/fields/create')))
+			->cannotClose()
+			->render();
+
+		$sections = array(
+			array(
+				$alert,
+				array(
+					'title' => 'name',
+					'desc' => '',
+					'fields' => array(
+						'group_name' => array(
+							'type' => 'text',
+							'value' => $field_group->group_name,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'custom_fields',
+					'desc' => 'custom_fields_desc',
+					'fields' => array(
+						'custom_fields' => array(
+							'type' => 'checkbox',
+							'choices' => $custom_fields_options,
+							'disabled_choices' => $disabled_custom_fields_options,
+							'value' => $custom_fields_value,
+							'no_results' => array(
+								'text' => 'custom_fields_not_found',
+								'link_text' => 'create_new_field',
+								'link_href' => ee('CP/URL', 'channels/fields/create')->compile()
+							)
+						)
+					)
+				)
+
+			)
+		);
+
+		return $sections;
 	}
 
 	private function remove($group_ids)
