@@ -142,19 +142,19 @@ class Table {
 			$defaults['search'] = $_GET['search'];
 		}
 
-		if (isset($_POST['sort_col']))
+		if (isset($_GET['sort_col']))
 		{
-			$defaults['sort_col'] = $_POST['sort_col'];
+			$defaults['sort_col'] = $_GET['sort_col'];
 		}
 
-		if (isset($_POST['sort_dir']))
+		if (isset($_GET['sort_dir']))
 		{
-			$defaults['sort_dir'] = $_POST['sort_dir'];
+			$defaults['sort_dir'] = $_GET['sort_dir'];
 		}
 
-		if (isset($_POST['page']) && $_POST['page'] > 0)
+		if (isset($_GET['page']) && $_GET['page'] > 0)
 		{
-			$defaults['page'] = $_POST['page'];
+			$defaults['page'] = $_GET['page'];
 		}
 
 		return new static(array_merge($defaults, $config));
