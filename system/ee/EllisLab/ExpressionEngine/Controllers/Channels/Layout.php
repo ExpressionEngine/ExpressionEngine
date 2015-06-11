@@ -1,12 +1,12 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Channel;
+namespace EllisLab\ExpressionEngine\Controllers\Channels;
 
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Module\Channel\Model\Display\DefaultChannelLayout;
-use EllisLab\ExpressionEngine\Controllers\Channel\AbstractChannel as AbstractChannelController;
+use EllisLab\ExpressionEngine\Controllers\Channels\AbstractChannel as AbstractChannelController;
 use EllisLab\ExpressionEngine\Module\Channel\Model\Channel;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 

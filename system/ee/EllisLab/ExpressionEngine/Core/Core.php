@@ -154,7 +154,7 @@ abstract class Core {
 		);
 
 		// This allows for routes of 'cp/channel/layout/1' to end up calling
-		// \EllisLab\ExpressionEngine\Controllers\Channel\Layout::layout(1)
+		// \EllisLab\ExpressionEngine\Controllers\Channels\Layout::layout(1)
 		if ( ! in_array($method, $controller_methods)
 			&& in_array($RTR->fetch_class(), $controller_methods))
 		{

@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Channel;
+namespace EllisLab\ExpressionEngine\Controllers\Channels;
 
 use CP_Controller;
 

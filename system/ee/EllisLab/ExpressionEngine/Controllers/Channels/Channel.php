@@ -1,12 +1,12 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Channel;
+namespace EllisLab\ExpressionEngine\Controllers\Channels;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
-use EllisLab\ExpressionEngine\Controllers\Channel\AbstractChannel as AbstractChannelController;
+use EllisLab\ExpressionEngine\Controllers\Channels\AbstractChannel as AbstractChannelController;
 
 /**
  * ExpressionEngine - by EllisLab
