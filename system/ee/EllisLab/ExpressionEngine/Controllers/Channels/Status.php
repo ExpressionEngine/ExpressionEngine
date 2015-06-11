@@ -73,11 +73,11 @@ class Status extends AbstractChannelController {
 				htmlentities($group->group_name, ENT_QUOTES),
 				array('toolbar_items' => array(
 					'view' => array(
-						'href' => cp_url('channel/status/status-list/'.$group->group_id),
+						'href' => cp_url('channels/status/status-list/'.$group->group_id),
 						'title' => lang('view')
 					),
 					'edit' => array(
-						'href' => cp_url('channel/status/edit/'.$group->group_id),
+						'href' => cp_url('channels/status/edit/'.$group->group_id),
 						'title' => lang('edit')
 					)
 				)),
@@ -146,7 +146,7 @@ class Status extends AbstractChannelController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		ee()->functions->redirect(cp_url('channel/status', ee()->cp->get_url_state()));
+		ee()->functions->redirect(cp_url('channels/status', ee()->cp->get_url_state()));
 	}
 
 	/**
@@ -175,7 +175,7 @@ class Status extends AbstractChannelController {
 		if (is_null($group_id))
 		{
 			ee()->view->cp_page_title = lang('create_status_group');
-			ee()->view->base_url = cp_url('channel/status/create');
+			ee()->view->base_url = cp_url('channels/status/create');
 			ee()->view->save_btn_text = 'create_status_group';
 			$status_group = ee('Model')->make('StatusGroup');
 		}
@@ -191,7 +191,7 @@ class Status extends AbstractChannelController {
 			}
 
 			ee()->view->cp_page_title = lang('edit_status_group');
-			ee()->view->base_url = cp_url('channel/status/edit/'.$group_id);
+			ee()->view->base_url = cp_url('channels/status/edit/'.$group_id);
 			ee()->view->save_btn_text = 'edit_status_group';
 		}
 
@@ -234,7 +234,7 @@ class Status extends AbstractChannelController {
 				->addToBody(lang('status_group_saved_desc'))
 				->defer();
 
-			ee()->functions->redirect(cp_url('channel/status/edit/'.$group_id));
+			ee()->functions->redirect(cp_url('channels/status/edit/'.$group_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -248,7 +248,7 @@ class Status extends AbstractChannelController {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text_working = 'btn_saving';
 
-		ee()->cp->set_breadcrumb(cp_url('channel/status'), lang('status_groups'));
+		ee()->cp->set_breadcrumb(cp_url('channels/status'), lang('status_groups'));
 
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -339,7 +339,7 @@ class Status extends AbstractChannelController {
 				htmlentities($status->status, ENT_QUOTES).form_hidden('order[]', $status->getId()),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => cp_url('channel/status/edit-status/'.$group_id.'/'.$status->getId()),
+						'href' => cp_url('channels/status/edit-status/'.$group_id.'/'.$status->getId()),
 						'title' => lang('edit')
 					)
 				)),
@@ -363,7 +363,7 @@ class Status extends AbstractChannelController {
 		ee()->view->group_id = $group_id;
 
 		ee()->view->cp_page_title = $status_group->group_name . ' &mdash; ' . lang('statuses');
-		ee()->cp->set_breadcrumb(cp_url('channel/status'), lang('status_groups'));
+		ee()->cp->set_breadcrumb(cp_url('channels/status'), lang('status_groups'));
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('statuses') . ': <b>### ' . lang('statuses') . '</b>');
 		ee()->cp->add_js_script('file', 'cp/v3/confirm_remove');
@@ -377,7 +377,7 @@ class Status extends AbstractChannelController {
 			->withTitle(lang('status_ajax_reorder_fail'))
 			->addToBody(lang('status_ajax_reorder_fail_desc'));
 
-		ee()->javascript->set_global('statuses.reorder_url', cp_url('channel/status/status-reorder/'.$group_id));
+		ee()->javascript->set_global('statuses.reorder_url', cp_url('channels/status/status-reorder/'.$group_id));
 		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
 		ee()->cp->render('channel/status/list', $vars);
@@ -451,7 +451,7 @@ class Status extends AbstractChannelController {
 		}
 
 		ee()->functions->redirect(
-			cp_url('channel/status/status-list/'.ee()->input->post('status_group_id'), ee()->cp->get_url_state())
+			cp_url('channels/status/status-list/'.ee()->input->post('status_group_id'), ee()->cp->get_url_state())
 		);
 	}
 
@@ -490,7 +490,7 @@ class Status extends AbstractChannelController {
 		if (is_null($status_id))
 		{
 			ee()->view->cp_page_title = lang('create_status');
-			ee()->view->base_url = cp_url('channel/status/create-status/'.$group_id);
+			ee()->view->base_url = cp_url('channels/status/create-status/'.$group_id);
 			ee()->view->save_btn_text = 'create_status';
 			$status = ee('Model')->make('Status');
 		}
@@ -506,7 +506,7 @@ class Status extends AbstractChannelController {
 			}
 
 			ee()->view->cp_page_title = lang('edit_status');
-			ee()->view->base_url = cp_url('channel/status/edit-status/'.$group_id.'/'.$status_id);
+			ee()->view->base_url = cp_url('channels/status/edit-status/'.$group_id.'/'.$status_id);
 			ee()->view->save_btn_text = 'edit_status';
 		}
 
@@ -593,7 +593,7 @@ class Status extends AbstractChannelController {
 				->addToBody(lang('status_saved_desc'))
 				->defer();
 
-			ee()->functions->redirect(cp_url('channel/status/edit-status/'.$group_id.'/'.$status_id));
+			ee()->functions->redirect(cp_url('channels/status/edit-status/'.$group_id.'/'.$status_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -607,9 +607,9 @@ class Status extends AbstractChannelController {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text_working = 'btn_saving';
 
-		ee()->cp->set_breadcrumb(cp_url('channel/status'), lang('status_groups'));
+		ee()->cp->set_breadcrumb(cp_url('channels/status'), lang('status_groups'));
 		ee()->cp->set_breadcrumb(
-			cp_url('channel/status/status-list/'.$group_id),
+			cp_url('channels/status/status-list/'.$group_id),
 			$status_group->group_name . ' &mdash; ' . lang('statuses')
 		);
 

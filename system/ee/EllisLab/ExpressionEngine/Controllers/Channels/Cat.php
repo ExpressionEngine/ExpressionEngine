@@ -68,7 +68,7 @@ class Cat extends AbstractChannelController {
 		$table->setNoResultsText(
 			'no_category_groups',
 			'create_category_group',
-			cp_url('channel/cat/create')
+			cp_url('channels/cat/create')
 		);
 
 		$sort_map = array(
@@ -93,15 +93,15 @@ class Cat extends AbstractChannelController {
 				htmlentities($group->group_name, ENT_QUOTES) . ' ('.count($group->getCategories()).')',
 				array('toolbar_items' => array(
 					'view' => array(
-						'href' => cp_url('channel/cat/cat-list/'.$group->group_id),
+						'href' => cp_url('channels/cat/cat-list/'.$group->group_id),
 						'title' => lang('view')
 					),
 					'edit' => array(
-						'href' => cp_url('channel/cat/edit/'.$group->group_id),
+						'href' => cp_url('channels/cat/edit/'.$group->group_id),
 						'title' => lang('edit')
 					),
 					'txt-only' => array(
-						'href' => cp_url('channel/cat/field/'.$group->group_id),
+						'href' => cp_url('channels/cat/field/'.$group->group_id),
 						'title' => strtolower(lang('custom_fields')),
 						'content' => strtolower(lang('fields'))
 					)
@@ -173,7 +173,7 @@ class Cat extends AbstractChannelController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		ee()->functions->redirect(cp_url('channel/cat', ee()->cp->get_url_state()));
+		ee()->functions->redirect(cp_url('channels/cat', ee()->cp->get_url_state()));
 	}
 
 	/**
@@ -202,7 +202,7 @@ class Cat extends AbstractChannelController {
 		if (is_null($group_id))
 		{
 			ee()->view->cp_page_title = lang('create_category_group');
-			ee()->view->base_url = cp_url('channel/cat/create');
+			ee()->view->base_url = cp_url('channels/cat/create');
 			ee()->view->save_btn_text = 'create_category_group';
 			$cat_group = ee('Model')->make('CategoryGroup');
 		}
@@ -218,7 +218,7 @@ class Cat extends AbstractChannelController {
 			}
 
 			ee()->view->cp_page_title = lang('edit_category_group');
-			ee()->view->base_url = cp_url('channel/cat/edit/'.$group_id);
+			ee()->view->base_url = cp_url('channels/cat/edit/'.$group_id);
 			ee()->view->save_btn_text = 'edit_category_group';
 		}
 
@@ -354,7 +354,7 @@ class Cat extends AbstractChannelController {
 				->addToBody(lang('category_group_saved_desc'))
 				->defer();
 
-			ee()->functions->redirect(cp_url('channel/cat/edit/'.$group_id));
+			ee()->functions->redirect(cp_url('channels/cat/edit/'.$group_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -368,7 +368,7 @@ class Cat extends AbstractChannelController {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text_working = 'btn_saving';
 
-		ee()->cp->set_breadcrumb(cp_url('channel/cat'), lang('category_groups'));
+		ee()->cp->set_breadcrumb(cp_url('channels/cat'), lang('category_groups'));
 
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -455,10 +455,10 @@ class Cat extends AbstractChannelController {
 			->withTitle(lang('category_ajax_reorder_fail'))
 			->addToBody(lang('category_ajax_reorder_fail_desc'));
 
-		ee()->javascript->set_global('cat.reorder_url', cp_url('channel/cat/cat-reorder/'.$group_id));
+		ee()->javascript->set_global('cat.reorder_url', cp_url('channels/cat/cat-reorder/'.$group_id));
 		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
-		ee()->cp->set_breadcrumb(cp_url('channel/cat'), lang('category_groups'));
+		ee()->cp->set_breadcrumb(cp_url('channels/cat'), lang('category_groups'));
 
 		ee()->cp->render('channel/cat/list');
 	}
@@ -569,7 +569,7 @@ class Cat extends AbstractChannelController {
 		}
 
 		ee()->functions->redirect(
-			cp_url('channel/cat/cat-list/'.ee()->input->post('cat_group_id'))
+			cp_url('channels/cat/cat-list/'.ee()->input->post('cat_group_id'))
 		);
 	}
 
@@ -660,14 +660,14 @@ class Cat extends AbstractChannelController {
 
 			ee()->view->cp_page_title = lang('create_category');
 			ee()->view->save_btn_text = 'create_category';
-			ee()->view->base_url = cp_url('channel/cat/create-cat/'.$group_id);
+			ee()->view->base_url = cp_url('channels/cat/create-cat/'.$group_id);
 			$channel = ee('Model')->make('Channel');
 		}
 		else
 		{
 			ee()->view->cp_page_title = lang('edit_category');
 			ee()->view->save_btn_text = 'edit_category';
-			ee()->view->base_url = cp_url('channel/cat/edit-cat/'.$group_id.'/'.$category_id);
+			ee()->view->base_url = cp_url('channels/cat/edit-cat/'.$group_id.'/'.$category_id);
 		}
 
 		// TODO: file field stuff?
@@ -807,7 +807,7 @@ class Cat extends AbstractChannelController {
 				->addToBody(lang('category_saved_desc'))
 				->defer();
 
-			ee()->functions->redirect(cp_url('channel/cat/cat-edit/'.$group_id.'/'.$category_id));
+			ee()->functions->redirect(cp_url('channels/cat/cat-edit/'.$group_id.'/'.$category_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -821,8 +821,8 @@ class Cat extends AbstractChannelController {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text_working = 'btn_saving';
 
-		ee()->cp->set_breadcrumb(cp_url('channel/cat'), lang('category_groups'));
-		ee()->cp->set_breadcrumb(cp_url('channel/cat/cat-list/'.$cat_group->group_id), $cat_group->group_name . ' &mdash; ' . lang('categories'));
+		ee()->cp->set_breadcrumb(cp_url('channels/cat'), lang('category_groups'));
+		ee()->cp->set_breadcrumb(cp_url('channels/cat/cat-list/'.$cat_group->group_id), $cat_group->group_name . ' &mdash; ' . lang('categories'));
 
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -873,7 +873,7 @@ class Cat extends AbstractChannelController {
 		$table->setNoResultsText(
 			'no_category_fields',
 			'create_category_field',
-			cp_url('channel/cat/create-field/'.$group_id)
+			cp_url('channels/cat/create-field/'.$group_id)
 		);
 
 		$sort_map = array(
@@ -901,7 +901,7 @@ class Cat extends AbstractChannelController {
 				strtolower($type_map[$field->field_type]),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => cp_url('channel/cat/edit-field/'.$group_id.'/'.$field->getId()),
+						'href' => cp_url('channels/cat/edit-field/'.$group_id.'/'.$field->getId()),
 						'title' => lang('edit')
 					)
 				)),
@@ -921,7 +921,7 @@ class Cat extends AbstractChannelController {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['group_id'] = $group_id;
 
-		ee()->cp->set_breadcrumb(cp_url('channel/cat'), lang('category_groups'));
+		ee()->cp->set_breadcrumb(cp_url('channels/cat'), lang('category_groups'));
 		ee()->view->cp_page_title = lang('category_fields') . ' ' . lang('for') . ' ' . $cat_group->group_name;
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('category_fields') . ': <b>### ' . lang('category_fields') . '</b>');
@@ -936,7 +936,7 @@ class Cat extends AbstractChannelController {
 			->withTitle(lang('cat_field_ajax_reorder_fail'))
 			->addToBody(lang('cat_field_ajax_reorder_fail_desc'));
 
-		ee()->javascript->set_global('cat_fields.reorder_url', cp_url('channel/cat/cat-field-reorder/'.$group_id));
+		ee()->javascript->set_global('cat_fields.reorder_url', cp_url('channels/cat/cat-field-reorder/'.$group_id));
 		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
 		ee()->cp->render('channel/cat/field', $vars);
@@ -1010,7 +1010,7 @@ class Cat extends AbstractChannelController {
 		}
 
 		ee()->functions->redirect(
-			cp_url('channel/cat/field/'.ee()->input->post('group_id'), ee()->cp->get_url_state())
+			cp_url('channels/cat/field/'.ee()->input->post('group_id'), ee()->cp->get_url_state())
 		);
 	}
 
@@ -1056,7 +1056,7 @@ class Cat extends AbstractChannelController {
 
 			ee()->view->save_btn_text = 'btn_edit_field';
 			ee()->view->cp_page_title = lang('edit_category_field');
-			ee()->view->base_url = cp_url('channel/cat/edit-field/'.$group_id.'/'.$field_id);
+			ee()->view->base_url = cp_url('channels/cat/edit-field/'.$group_id.'/'.$field_id);
 		}
 		else
 		{
@@ -1072,7 +1072,7 @@ class Cat extends AbstractChannelController {
 
 			ee()->view->save_btn_text = 'btn_create_field';
 			ee()->view->cp_page_title = lang('create_category_field');
-			ee()->view->base_url = cp_url('channel/cat/create-field/'.$group_id);
+			ee()->view->base_url = cp_url('channels/cat/create-field/'.$group_id);
 		}
 
 		if ( ! $cat_field)
@@ -1168,7 +1168,7 @@ class Cat extends AbstractChannelController {
 				->addToBody(lang('category_field_saved_desc'))
 				->defer();
 
-			ee()->functions->redirect(cp_url('channel/cat/edit-field/'.$group_id.'/'.$field_id));
+			ee()->functions->redirect(cp_url('channels/cat/edit-field/'.$group_id.'/'.$field_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -1182,8 +1182,8 @@ class Cat extends AbstractChannelController {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text_working = 'btn_saving';
 
-		ee()->cp->set_breadcrumb(cp_url('channel/cat'), lang('category_groups'));
-		ee()->cp->set_breadcrumb(cp_url('channel/cat/field/'.$group_id), lang('category_fields'));
+		ee()->cp->set_breadcrumb(cp_url('channels/cat'), lang('category_groups'));
+		ee()->cp->set_breadcrumb(cp_url('channels/cat/field/'.$group_id), lang('category_fields'));
 
 		ee()->cp->render('settings/form', $vars);
 	}

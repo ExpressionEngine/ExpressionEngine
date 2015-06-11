@@ -55,33 +55,33 @@ abstract class AbstractChannel extends CP_Controller {
 		// Register our menu
 		ee()->menu->register_left_nav(array(
 			'channels' => array(
-				'href' => cp_url('channel'),
+				'href' => cp_url('channels'),
 				'button' => array(
-					'href' => cp_url('channel/create'),
+					'href' => cp_url('channels/create'),
 					'text' => 'new'
 				)
 			),
 			'custom_fields' => array(
-				'href' => cp_url('channel/field'),
+				'href' => cp_url('channels/field'),
 				'button' => array(
-					'href' => cp_url('channel/field/create'),
+					'href' => cp_url('channels/field/create'),
 					'text' => 'new'
 				)
 			),
 			array(
-				'field_groups' => cp_url('channel/field-group')
+				'field_groups' => cp_url('channels/field-group')
 			),
 			'category_groups' => array(
-				'href' => cp_url('channel/cat'),
+				'href' => cp_url('channels/cat'),
 				'button' => array(
-					'href' => cp_url('channel/cat/create'),
+					'href' => cp_url('channels/cat/create'),
 					'text' => 'new'
 				)
 			),
 			'status_groups' => array(
-				'href' => cp_url('channel/status'),
+				'href' => cp_url('channels/status'),
 				'button' => array(
-					'href' => cp_url('channel/status/create'),
+					'href' => cp_url('channels/status/create'),
 					'text' => 'new'
 				)
 			)
@@ -90,7 +90,7 @@ abstract class AbstractChannel extends CP_Controller {
 		// This header is section-wide
 		ee()->view->header = array(
 			'title' => lang('channel_manager'),
-			'form_url' => cp_url('channel/search'),
+			'form_url' => cp_url('channels/search'),
 			'toolbar_items' => array(
 				'settings' => array(
 					'href' => cp_url('settings/content-design'),

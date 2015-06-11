@@ -142,7 +142,7 @@ class EE_Menu {
 	private function _develop_menu()
 	{
 		$menu = array(
-			'channel_manager'  => cp_url('channel'),
+			'channel_manager'  => cp_url('channels'),
 			'template_manager' => cp_url('design'),
 			'addon_manager'    => cp_url('addons'),
 			'utilities'        => cp_url('utilities'),

@@ -34,13 +34,13 @@
 	<div class="col-group snap mb">
 		<div class="col w-8">
 			<div class="box">
-				<h1><?=lang('channels')?> <a class="btn action" href="<?=cp_url('channel/create')?>"><?=lang('create_new')?></a></h1>
+				<h1><?=lang('channels')?> <a class="btn action" href="<?=cp_url('channels/create')?>"><?=lang('create_new')?></a></h1>
 				<div class="info">
 					<p><?=lang('channels_desc')?></p>
 					<h2><?=ee()->config->item('site_name')?> <?=lang('has')?>:</h2>
 					<ul class="arrow-list">
-						<li><a href="<?=cp_url('channel')?>"><b><?=$number_of_channels?></b> <?=lang('channels')?></a></li>
-						<li><a href="<?=cp_url('channel/field')?>"><b><?=$number_of_channel_fields?></b> <?=lang('channel_fields')?></a></li>
+						<li><a href="<?=cp_url('channels')?>"><b><?=$number_of_channels?></b> <?=lang('channels')?></a></li>
+						<li><a href="<?=cp_url('channels/field')?>"><b><?=$number_of_channel_fields?></b> <?=lang('channel_fields')?></a></li>
 					</ul>
 				</div>
 			</div>
