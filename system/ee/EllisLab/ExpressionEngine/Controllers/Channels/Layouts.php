@@ -47,7 +47,7 @@ class Layouts extends AbstractChannelsController {
 		ee()->lang->loadfile('content');
 	}
 
-	public function layout($channel_id)
+	public function layouts($channel_id)
 	{
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
