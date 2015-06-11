@@ -42,7 +42,7 @@ return array(
 			return Library\CP\Table::fromGlobals($config);
 		},
 
-		'CP/URL' => function($ee, $path, $session_id = NULL, $qs = array(), $cp_url = '')
+		'CP/URL' => function($ee, $path, $qs = array(), $cp_url = '', $session_id = NULL)
 		{
 			$session_id = $session_id ?: ee()->session->session_id();
 
