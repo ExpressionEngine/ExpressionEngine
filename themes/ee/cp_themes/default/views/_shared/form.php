@@ -203,9 +203,15 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 									{
 										$selected = ($value == $key);
 									}
+
+									$disabled = FALSE;
+									if (isset($field['disabled_choices']))
+									{
+										$disabled = in_array($key, $field['disabled_choices']);
+									}
 								?>
 									<label class="choice block<?php if ($selected):?> chosen<?php endif ?>">
-										<input type="checkbox" name="<?=$field_name?>[]" value="<?=$key?>"<?php if ($selected):?> checked="checked"<?php endif ?><?=$attrs?>> <?=$label?>
+										<input type="checkbox" name="<?=$field_name?>[]" value="<?=$key?>"<?php if ($selected):?> checked="checked"<?php endif ?><?php if ($disabled):?> disabled="disabled"<?php endif ?><?=$attrs?>> <?=$label?>
 									</label>
 								<?php endforeach ?>
 							<?php if (isset($field['wrap']) && $field['wrap']): ?>
