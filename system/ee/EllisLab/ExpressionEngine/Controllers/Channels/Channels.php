@@ -85,7 +85,7 @@ class Channels extends AbstractChannelsController {
 						'title' => lang('settings')
 					),
 					'layout' => array(
-						'href' => cp_url('channels/layout/'.$channel->channel_id),
+						'href' => cp_url('channels/layouts/'.$channel->channel_id),
 						'title' => lang('layout')
 					)
 				)),
