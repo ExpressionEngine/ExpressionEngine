@@ -31,7 +31,7 @@ use EllisLab\ExpressionEngine\Controllers\Channels\AbstractChannel as AbstractCh
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Channel extends AbstractChannelController {
+class Channels extends AbstractChannelController {
 
 	/**
 	 * Channel Manager
