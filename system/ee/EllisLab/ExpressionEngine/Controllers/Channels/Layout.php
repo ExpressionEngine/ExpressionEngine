@@ -6,7 +6,7 @@ use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Module\Channel\Model\Display\DefaultChannelLayout;
-use EllisLab\ExpressionEngine\Controllers\Channels\AbstractChannel as AbstractChannelController;
+use EllisLab\ExpressionEngine\Controllers\Channels\AbstractChannels as AbstractChannelsController;
 use EllisLab\ExpressionEngine\Module\Channel\Model\Channel;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 
@@ -33,7 +33,7 @@ use EllisLab\ExpressionEngine\Library\Data\Collection;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Layout extends AbstractChannelController {
+class Layout extends AbstractChannelsController {
 
 	public function __construct()
 	{

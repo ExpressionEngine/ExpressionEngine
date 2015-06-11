@@ -27,7 +27,7 @@ use CP_Controller;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-abstract class AbstractChannel extends CP_Controller {
+abstract class AbstractChannels extends CP_Controller {
 
 	/**
 	 * Constructor

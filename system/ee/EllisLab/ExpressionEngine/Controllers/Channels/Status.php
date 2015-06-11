@@ -5,7 +5,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Channels;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP;
-use EllisLab\ExpressionEngine\Controllers\Channels\AbstractChannel as AbstractChannelController;
+use EllisLab\ExpressionEngine\Controllers\Channels\AbstractChannels as AbstractChannelsController;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -30,7 +30,7 @@ use EllisLab\ExpressionEngine\Controllers\Channels\AbstractChannel as AbstractCh
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Status extends AbstractChannelController {
+class Status extends AbstractChannelsController {
 
 	/**
 	 * Status groups listing
