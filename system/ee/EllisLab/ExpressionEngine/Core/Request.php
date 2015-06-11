@@ -206,7 +206,8 @@ class Request {
 	{
 		if (array_key_exists($key, $this->$arr))
 		{
-			return $this->$arr[$key];
+			$source = $this->$arr;
+			return $source[$key];
 		}
 
 		return $default;
