@@ -123,7 +123,7 @@ class Layouts extends AbstractChannelsController {
 
 		$table->setData($data);
 
-		$base_url = new URL('channel/layout/' . $channel_id, ee()->session->session_id());
+		$base_url = new URL('channels/layout/' . $channel_id, ee()->session->session_id());
 		$vars['table'] = $table->viewData($base_url);
 
 		$pagination = new Pagination(

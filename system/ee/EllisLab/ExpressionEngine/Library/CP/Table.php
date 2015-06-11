@@ -133,6 +133,7 @@ class Table {
 		$defaults = array();
 
 		// Look for search in POST first, then GET
+		$defaults['search'] = FALSE;
 		if (isset($_POST['search']))
 		{
 			$defaults['search'] = $_POST['search'];
