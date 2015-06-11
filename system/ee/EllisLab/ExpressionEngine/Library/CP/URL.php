@@ -43,7 +43,7 @@ class URL {
 	 *                        		include when creating CP URLs that are to
 	 *                        		be used on the front end
 	 */
-	public function __construct($path, $session_id = '', $qs = array(), $cp_url = '')
+	public function __construct($path, $session_id = NULL, $qs = array(), $cp_url = '')
 	{
 		if (is_array($path) || (is_object($path) && ! method_exists($path, '__toString')))
 		{
