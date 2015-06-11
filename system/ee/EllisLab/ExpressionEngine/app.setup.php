@@ -24,16 +24,29 @@ return array(
 
 	'services' => array(
 
-		'CP/URL' => function($ee, $path, $session_id = '', $qs = array(), $cp_url = '')
+		'CP/GridInput' => function($ee, $config = array())
 		{
-			$session_id = $session_id ?: ee()->session->session_id();
+			$grid = new Library\CP\GridInput(
+				$config,
+				ee()->view,
+				ee()->cp,
+				ee()->config,
+				ee()->javascript
+			);
 
-			return new Library\CP\URL($path, $session_id, $qs, $cp_url);
+			return $grid;
 		},
 
 		'CP/Table' => function($ee, $config = array())
 		{
 			return Library\CP\Table::fromGlobals($config);
+		},
+
+		'CP/URL' => function($ee, $path, $session_id = '', $qs = array(), $cp_url = '')
+		{
+			$session_id = $session_id ?: ee()->session->session_id();
+
+			return new Library\CP\URL($path, $session_id, $qs, $cp_url);
 		},
 
 		'db' => function($ee)
@@ -103,11 +116,6 @@ return array(
 			);
 
 			return new Database\Database($db_config);
-		},
-
-		'Grid' => function($ee)
-		{
-			return new Grid\Grid();
 		},
 
 		'Model/Datastore' => function($ee)
