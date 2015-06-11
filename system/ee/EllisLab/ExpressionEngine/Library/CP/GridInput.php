@@ -55,7 +55,7 @@ class GridInput extends Table {
 	{
 		$this->view = $view;
 		$this->cp = $cp;
-		$this->config = $ee_config;
+		$this->ee_config = $ee_config;
 		$this->javascript = $javascript;
 
 		// These should be our default to properly initialize a Table class
