@@ -153,7 +153,7 @@ abstract class Core {
 			'strtolower', get_class_methods($class)
 		);
 
-		// This allows for routes of 'cp/channel/layout/1' to end up calling
+		// This allows for routes of 'cp/channels/layout/1' to end up calling
 		// \EllisLab\ExpressionEngine\Controllers\Channels\Layout::layout(1)
 		if ( ! in_array($method, $controller_methods)
 			&& in_array($RTR->fetch_class(), $controller_methods))
