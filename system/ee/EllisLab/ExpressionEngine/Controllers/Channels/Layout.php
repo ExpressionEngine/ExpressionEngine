@@ -33,7 +33,7 @@ use EllisLab\ExpressionEngine\Library\Data\Collection;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Layout extends AbstractChannelsController {
+class Layouts extends AbstractChannelsController {
 
 	public function __construct()
 	{
