@@ -62,14 +62,14 @@ abstract class AbstractChannels extends CP_Controller {
 				)
 			),
 			'custom_fields' => array(
-				'href' => cp_url('channels/field'),
+				'href' => cp_url('channels/fields'),
 				'button' => array(
-					'href' => cp_url('channels/field/create'),
+					'href' => cp_url('channels/fields/create'),
 					'text' => 'new'
 				)
 			),
 			array(
-				'field_groups' => cp_url('channels/field-group')
+				'field_groups' => cp_url('channels/fields/groups')
 			),
 			'category_groups' => array(
 				'href' => cp_url('channels/cat'),
