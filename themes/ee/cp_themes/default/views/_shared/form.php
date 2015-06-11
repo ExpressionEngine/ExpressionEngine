@@ -5,6 +5,11 @@ foreach ($sections as $name => $settings)
 {
 	foreach ($settings as $setting)
 	{
+		if ( ! is_array($setting))
+		{
+			continue;
+		}
+
 		foreach ($setting['fields'] as $field_name => $field)
 		{
 			if ($required = (isset($field['required']) && $field['required'] == TRUE))
