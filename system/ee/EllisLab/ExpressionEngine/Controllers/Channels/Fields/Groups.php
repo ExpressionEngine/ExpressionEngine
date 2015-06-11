@@ -53,7 +53,7 @@ class Groups extends AbstractChannelsController {
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
-			ee()->functions->redirect(ee('CP/URL', 'channels/groups/groups'));
+			ee()->functions->redirect(ee('CP/URL', 'channels/fields/groups/groups'));
 		}
 
 		$groups = ee('Model')->get('ChannelFieldGroup')
@@ -61,7 +61,7 @@ class Groups extends AbstractChannelsController {
 			->all();
 
 		$vars = array(
-			'create_url' => ee('CP/URL', 'channels/groups/create')
+			'create_url' => ee('CP/URL', 'channels/fields/groups/create')
 		);
 
 		$table = ee('CP/Table');
@@ -89,7 +89,7 @@ class Groups extends AbstractChannelsController {
 				$group->group_name,
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => cp_url('channels/groups/edit/' . $group->group_id),
+						'href' => cp_url('channels/fields/groups/edit/' . $group->group_id),
 						'title' => lang('edit')
 					)
 				)),
@@ -117,7 +117,7 @@ class Groups extends AbstractChannelsController {
 
 		$table->setData($data);
 
-		$vars['table'] = $table->viewData(ee('CP/URL', 'channels/groups'));
+		$vars['table'] = $table->viewData(ee('CP/URL', 'channels/fields/groups'));
 
 		$pagination = new Pagination(
 			$vars['table']['limit'],
@@ -136,7 +136,23 @@ class Groups extends AbstractChannelsController {
 		ee()->view->cp_page_title = lang('field_groups');
 		ee()->view->cp_page_title_desc = lang('field_groups_desc');
 
-		ee()->cp->render('channels/groups/index', $vars);
+		ee()->cp->render('channels/fields/groups/index', $vars);
+	}
+
+	public function create()
+	{
+
+		ee()->cp->render('channels/groups/form', $vars);
+	}
+
+	public function edit()
+	{
+
+	}
+
+	private function remove($group_ids)
+	{
+
 	}
 
 }
