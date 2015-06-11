@@ -23,7 +23,7 @@ class URLTest extends \PHPUnit_Framework_TestCase {
 
 	/**
 	 * @dataProvider exceptionalDataProvider
-	 * @expectedException \InvalidArgumentException
+	 * @expectedException PHPUnit_Framework_Error
 	 */
 	public function testExceptions($path, $session_id, $qs)
 	{
