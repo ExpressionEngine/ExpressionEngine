@@ -161,14 +161,7 @@ class Groups extends AbstractChannelsController {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			$custom_fields = ee('Model')->get('ChannelField', ee()->input->post('custom_fields'))
-				->filter('site_id', ee()->config->item('site_id'))
-				->all();
-
-			$field_group = ee('Model')->make('ChannelFieldGroup');
-			$field_group->group_name = ee()->input->post('group_name');
-			$field_group->ChannelFields = $custom_fields;
-			$field_group->save();
+			$field_group = $this->saveWithPost(ee('Model')->make('ChannelFieldGroup'));
 
 			ee()->session->set_flashdata('group_id', $field_group->group_id);
 
@@ -222,13 +215,7 @@ class Groups extends AbstractChannelsController {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			$custom_fields = ee('Model')->get('ChannelField', ee()->input->post('custom_fields'))
-				->filter('site_id', ee()->config->item('site_id'))
-				->all();
-
-			$field_group->group_name = ee()->input->post('group_name');
-			$field_group->ChannelFields = $custom_fields;
-			$field_group->save();
+			$this->saveWithPost($field_group);
 
 			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
@@ -250,6 +237,17 @@ class Groups extends AbstractChannelsController {
 		ee()->view->cp_page_title = lang('edit_field_group');
 
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	private function saveWithPost(ChannelFieldGroup $field_group)
+	{
+		$custom_fields = ee('Model')->get('ChannelField', ee()->input->post('custom_fields'))
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		$field_group->group_name = ee()->input->post('group_name');
+		$field_group->ChannelFields = $custom_fields;
+		$field_group->save();
 	}
 
 	private function form(ChannelFieldGroup $field_group = NULL)
