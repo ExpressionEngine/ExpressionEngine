@@ -287,11 +287,8 @@ class Groups extends AbstractChannelsController {
 
 		$custom_fields_value = array();
 
-		$selected_fields = ($field_group->ChannelFields->all()) ?: array();
-		foreach ($selected_fields as $field)
-		{
-			$custom_fields_value[] = $field->field_id;
-		}
+		$selected_fields = $field_group->ChannelFields->all();
+		$custom_fields_value = ($selected_fields) ? $selected_fields->pluck('field_id') : array();
 
 		// Alert to show only for new channels
 		$alert = ee('Alert')->makeInline('permissions-warn')
