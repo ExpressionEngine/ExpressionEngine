@@ -73,11 +73,11 @@ $lang = array(
 'edit_field_group_error_desc' =>
 'We were unable to update this field group, please review and fix errors below.',
 
-'field_group_removed' =>
-'Field Group Removed',
+'success' =>
+'Success',
 
-'field_group_removed_desc' =>
-'The field group <b>%s</b> has been removed.',
+'field_groups_removed_desc' =>
+'The following field groups were removed',
 
 
 // @since 2.x

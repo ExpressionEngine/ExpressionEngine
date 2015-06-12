@@ -374,7 +374,29 @@ class Groups extends AbstractChannelsController {
 
 	private function remove($group_ids)
 	{
+		if ( ! is_array($group_ids))
+		{
+			$group_ids = array($group_ids);
+		}
 
+		$field_groups = ee('Model')->get('ChannelFieldGroup', $group_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		$group_names = array();
+
+		foreach ($field_groups as $field_group)
+		{
+			$group_names[] = $field_group->group_name;
+		}
+
+		$field_groups->delete();
+		ee('Alert')->makeInline('field-groups')
+			->asSuccess()
+			->withTitle(lang('success'))
+			->addToBody(lang('field_groups_removed_desc'))
+			->addToBody($group_names)
+			->defer();
 	}
 
 }
