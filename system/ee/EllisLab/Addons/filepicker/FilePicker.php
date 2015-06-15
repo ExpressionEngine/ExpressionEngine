@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Module\FilePicker;
+namespace EllisLab\Addons\FilePicker;
 
 use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Library\CP\Table;

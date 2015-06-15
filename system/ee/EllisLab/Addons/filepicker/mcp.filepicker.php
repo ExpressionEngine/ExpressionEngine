@@ -3,7 +3,7 @@
 use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
-use EllisLab\ExpressionEngine\Module\FilePicker\FilePicker as Picker;
+use EllisLab\Addons\FilePicker\FilePicker as Picker;
 
 class Filepicker_mcp {
 
