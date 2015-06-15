@@ -1530,7 +1530,6 @@ class Addons extends CP_Controller {
 
 			return $html;
 		}
-
 	}
 
 	private function saveFieldtypeSettings($fieldtype)
