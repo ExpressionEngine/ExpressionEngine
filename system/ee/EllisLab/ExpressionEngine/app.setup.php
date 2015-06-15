@@ -159,6 +159,7 @@ return array(
 			'Extension' => 'Model\Addon\Extension',
 			'Module' => 'Model\Addon\Module',
 			'Plugin' => 'Model\Addon\Plugin',
+			'Fieldtype' => 'Model\Addon\Fieldtype',
 
 			// ..\Category
 			'Category' => 'Model\Category\Category',
