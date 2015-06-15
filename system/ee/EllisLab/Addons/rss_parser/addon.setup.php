@@ -3,9 +3,9 @@
 return array(
     'author'      => 'EllisLab',
 	'author_url'  => 'http://ellislab.com/',
-    'name'        => 'Foo',
-	'description' => '',
-    'version'     => 'Foo',
-    'namespace'   => 'EllisLab\Addons\Foo',
+    'name'        => 'RSS Parser',
+	'description' => 'Retrieves and Parses RSS/Atom Feeds',
+    'version'     => '1.0',
+    'namespace'   => 'EllisLab\Addons\RssParser',
 	'settings_exist' => FALSE,
 );
