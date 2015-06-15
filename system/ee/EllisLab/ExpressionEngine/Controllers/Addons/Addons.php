@@ -71,7 +71,7 @@ class Addons extends CP_Controller {
 	 * @param int	$total	The total number of add-ons (used in the show filter)
 	 * @return	void
 	 */
-	private function filters($total)
+	private function filters($total, $developers)
 	{
 		// Status
 		$status = ee('Filter')->make('filter_by_status', 'filter_by_status', array(
@@ -82,10 +82,12 @@ class Addons extends CP_Controller {
 		$status->disableCustomValue();
 
 		// Developer
-		$developer = ee('Filter')->make('filter_by_developer', 'developer', array(
-			'native'		=> 'EllisLab',
-			'third_party'	=> 'Third Party',
-		));
+		$developer_options = array();
+		foreach ($developers as $developer)
+		{
+			$developer_options[$this->makeDeveloperKey($developer)] = $developer;
+		}
+		$developer = ee('Filter')->make('filter_by_developer', 'developer', $developer_options);
 		$developer->disableCustomValue();
 
 		$filters = ee('Filter')
@@ -96,6 +98,11 @@ class Addons extends CP_Controller {
 		ee()->view->filters = $filters->render($this->base_url);
 		$this->params = $filters->values();
 		$this->base_url->addQueryStringVariables($this->params);
+	}
+
+	private function makeDeveloperKey($str)
+	{
+		return strtolower(str_replace(' ', '_', $str));
 	}
 
 	// --------------------------------------------------------------------
@@ -133,6 +140,8 @@ class Addons extends CP_Controller {
 		$data = array();
 
 		$addons = $this->getAllAddons();
+		$developers = array_map(function($addon) { return $addon['developer']; }, $addons);
+		array_unique($developers);
 
 		// Setup the Table
 		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => TRUE));
@@ -152,7 +161,7 @@ class Addons extends CP_Controller {
 		$this->base_url->setQueryStringVariable('sort_col', $table->sort_col);
 		$this->base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
 
-		$this->filters(count($addons));
+		$this->filters(count($addons), $developers);
 
 		// [Re]set the table's limit
 		$table->config['limit'] = $this->params['perpage'];
@@ -176,7 +185,7 @@ class Addons extends CP_Controller {
 			// Filter based on developer
 			if (isset($this->params['filter_by_developer']))
 			{
-				if (strtolower($this->params['filter_by_developer']) != strtolower($info['developer']))
+				if ($this->params['filter_by_developer'] != $this->makeDeveloperKey($info['developer']))
 				{
 					continue;
 				}
