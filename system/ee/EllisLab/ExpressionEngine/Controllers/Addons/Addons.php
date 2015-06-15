@@ -284,45 +284,22 @@ class Addons extends CP_Controller {
 	 */
 	private function getAllAddons()
 	{
+		$providers = ee('App')->getProviders();
+		// Remove non-add-on providers from the list
+		unset($providers['ee']);
+
 		$addons = array();
 
-		$addons = $this->mergeAddonData($addons, $this->getExtensions());
-		$addons = $this->mergeAddonData($addons, $this->getFieldtypes());
-		$addons = $this->mergeAddonData($addons, $this->getPlugins());
-		$addons = $this->mergeAddonData($addons, $this->getModules());
-
-		return $addons;
-	}
-
-	/**
-	 * Merges the data from one add-on array into another
-	 *
-	 * @param array $to   The addon array to merge into
-	 * @param array $from The addon array to merge from
-	 * @return array An associative array of add-on data
-	 */
-	private function mergeAddonData(array $to, array $from)
-	{
-		foreach ($from as $addon => $data)
+		foreach (array_keys($providers) as $name)
 		{
-			if ( ! isset($to[$addon]))
-			{
-				$to[$addon] = $data;
-			}
-			else
-			{
-				foreach ($data as $key => $value)
-				{
-					if ( ! isset($to[$addon][$key])
-						 OR $to[$addon][$key] != $value)
-					{
-						$to[$addon][$key] = $value;
-					}
-				}
-			}
+			$addon = $this->getExtension($name);
+			$addon = array_merge($addon, $this->getFieldType($name));
+			$addon = array_merge($addon, $this->getPlugin($name));
+			$addon = array_merge($addon, $this->getModule($name));
+			$addons[$name] = $addon;
 		}
 
-		return $to;
+		return $addons;
 	}
 
 	// --------------------------------------------------------------------
@@ -344,7 +321,7 @@ class Addons extends CP_Controller {
 
 		foreach ($addons as $addon)
 		{
-			$module = $this->getModules($addon);
+			$module = $this->getModule($addon);
 			if ( ! empty($module)
 				&& $module['installed'] === TRUE
 				&& array_key_exists('update', $module))
@@ -374,7 +351,7 @@ class Addons extends CP_Controller {
 				}
 			}
 
-			$fieldtype = $this->getFieldtypes($addon);
+			$fieldtype = $this->getFieldtype($addon);
 			if ( ! empty($fieldtype)
 				&& $fieldtype['installed'] === TRUE
 				&& array_key_exists('update', $fieldtype))
@@ -395,7 +372,7 @@ class Addons extends CP_Controller {
 				}
 			}
 
-			$extension = $this->getExtensions($addon);
+			$extension = $this->getExtension($addon);
 			if ( ! empty($extension)
 				&& $extension['installed'] === TRUE
 				&& array_key_exists('update', $extension))
@@ -411,7 +388,7 @@ class Addons extends CP_Controller {
 				}
 			}
 
-			$plugin = $this->getPlugins($addon);
+			$plugin = $this->getPlugin($addon);
 			if ( ! empty($plugin)
 				&& $plugin['installed'] === TRUE
 				&& array_key_exists('update', $plugin))
@@ -478,7 +455,7 @@ class Addons extends CP_Controller {
 
 		foreach ($addons as $addon)
 		{
-			$module = $this->getModules($addon);
+			$module = $this->getModule($addon);
 			if ( ! empty($module) && $module['installed'] === FALSE)
 			{
 				$name = $this->installModule($addon);
@@ -488,7 +465,7 @@ class Addons extends CP_Controller {
 				}
 			}
 
-			$fieldtype = $this->getFieldtypes($addon);
+			$fieldtype = $this->getFieldtype($addon);
 			if ( ! empty($fieldtype) && $fieldtype['installed'] === FALSE)
 			{
 				$name = $this->installFieldtype($addon);
@@ -498,7 +475,7 @@ class Addons extends CP_Controller {
 				}
 			}
 
-			$extension = $this->getExtensions($addon);
+			$extension = $this->getExtension($addon);
 			if ( ! empty($extension) && $extension['installed'] === FALSE)
 			{
 				$name = $this->installExtension($addon);
@@ -508,7 +485,7 @@ class Addons extends CP_Controller {
 				}
 			}
 
-			$plugin = $this->getPlugins($addon);
+			$plugin = $this->getPlugin($addon);
 			if ( ! empty($plugin) && $plugin['installed'] === FALSE)
 			{
 				$info = $plugin['info'];
@@ -570,7 +547,7 @@ class Addons extends CP_Controller {
 
 		foreach ($addons as $addon)
 		{
-			$module = $this->getModules($addon);
+			$module = $this->getModule($addon);
 			if ( ! empty($module) && $module['installed'] === TRUE)
 			{
 				$name = $this->uninstallModule($addon);
@@ -580,7 +557,7 @@ class Addons extends CP_Controller {
 				}
 			}
 
-			$fieldtype = $this->getFieldtypes($addon);
+			$fieldtype = $this->getFieldtype($addon);
 			if ( ! empty($fieldtype) && $fieldtype['installed'] === TRUE)
 			{
 				$name = $this->uninstallFieldtype($addon);
@@ -590,7 +567,7 @@ class Addons extends CP_Controller {
 				}
 			}
 
-			$extension = $this->getExtensions($addon);
+			$extension = $this->getExtension($addon);
 			if ( ! empty($extension) && $extension['installed'] === TRUE)
 			{
 				$name = $this->uninstallExtension($addon);
@@ -600,7 +577,7 @@ class Addons extends CP_Controller {
 				}
 			}
 
-			$plugin = $this->getPlugins($addon);
+			$plugin = $this->getPlugin($addon);
 			if ( ! empty($plugin) && $plugin['installed'] === TRUE)
 			{
 				ee('Model')->get('Plugin')
@@ -643,7 +620,7 @@ class Addons extends CP_Controller {
 		}
 
 		// Module
-		$module = $this->getModules($addon);
+		$module = $this->getModule($addon);
 		if ( ! empty($module) && $module['installed'] === TRUE)
 		{
 			$data = $this->getModuleSettings($addon, $method);
@@ -663,7 +640,7 @@ class Addons extends CP_Controller {
 		else
 		{
 			// Fieldtype
-			$fieldtype = $this->getFieldtypes($addon);
+			$fieldtype = $this->getFieldtype($addon);
 			if ( ! empty($fieldtype) && $fieldtype['installed'] === TRUE)
 			{
 				if ($method == 'save')
@@ -678,7 +655,7 @@ class Addons extends CP_Controller {
 			else
 			{
 				// Extension
-				$extension = $this->getExtensions($addon);
+				$extension = $this->getExtension($addon);
 				if ( ! empty($extension) && $extension['installed'] === TRUE)
 				{
 					if ($method == 'save')
@@ -717,7 +694,7 @@ class Addons extends CP_Controller {
 
 		$vars = array();
 
-		$plugin = $this->getPlugins($addon);
+		$plugin = $this->getPlugin($addon);
 		if (empty($plugin))
 		{
 			show_error(lang('requested_module_not_installed').NBS.$addon);
@@ -755,9 +732,9 @@ class Addons extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get a list of modules
+	 * Get data on a module
 	 *
-	 * @param	str	$name	(optional) Limit the return to this add-on
+	 * @param	str	$name	The add-on name
 	 * @return	array		Add-on data in the following format:
 	 *   e.g. 'developer'	 => 'native',
 	 *        'version'		 => '--',
@@ -768,75 +745,74 @@ class Addons extends CP_Controller {
 	 *        'type'		 => 'module',
 	 *        'settings_url' => '' (optional)
 	 */
-	private function getModules($name = NULL)
+	private function getModule($name)
 	{
-		$modules = array();
-		$installed = ee()->addons->get_installed('modules', TRUE);
-
-		foreach(ee()->addons->get_files() as $module => $info)
+		try
 		{
-			if ($name && $name != $module)
+			$info = ee('App')->get($name);
+		}
+		catch (\Exception $e)
+		{
+			show_404();
+		}
+
+		if ( ! file_exists($info->getPath() . '/mod.' . $name . '.php'))
+		{
+			return array();
+		}
+
+		ee()->lang->loadfile($name);
+		$display_name = (lang(strtolower($name).'_module_name') != FALSE) ? lang(strtolower($name).'_module_name') : $info->getName();
+
+		$data = array(
+			'developer'		=> $info->getAuthor(),
+			'version'		=> '--',
+			'installed'		=> FALSE,
+			'name'			=> $display_name,
+			'package'		=> $name,
+			'type'			=> 'module',
+		);
+
+		$module = ee('Model')->get('Module')
+			->filter('module_name', $name)
+			->first();
+
+		if ($module)
+		{
+			$data['installed'] = TRUE;
+			$data['version'] = $module->module_version;
+
+			if ($module->has_cp_backend)
 			{
-				continue;
+				$data['settings_url'] = ee('CP/URL', 'addons/settings/' . $name);
 			}
 
-			ee()->lang->loadfile($module);
-			$display_name = (lang(strtolower($module).'_module_name') != FALSE) ? lang(strtolower($module).'_module_name') : $info['name'];
-
-			$data = array(
-				'developer'		=> $info['type'],
-				'version'		=> '--',
-				'installed'		=> FALSE,
-				'name'			=> $display_name,
-				'package'		=> $module,
-				'type'			=> 'module',
-			);
-
-			if (isset($installed[$module]))
+			if (file_exists($info->getPath() . '/upd.' . $name . '.php'))
 			{
-				if (file_exists($installed[$module]['path'].'upd.'.$module.'.php'))
+				require_once $info->getPath() . '/upd.' . $name . '.php';
+				$class = ucfirst($name).'_upd';
+
+				ee()->load->add_package_path($info->getPath());
+
+				$UPD = new $class;
+
+				if (version_compare($info->getVersion(), $module->module_version, '>')
+					&& method_exists($UPD, 'update'))
 				{
-					require_once $installed[$module]['path'].'upd.'.$module.'.php';
-					$class = ucfirst($module).'_upd';
-
-					ee()->load->add_package_path($installed[$module]['path']);
-
-					$UPD = new $class;
-					$UPD->_ee_path = APPPATH;
-					if (version_compare($UPD->version, $installed[$module]['module_version'], '>')
-						&& method_exists($UPD, 'update'))
-					{
-						$data['update'] = $UPD->version;
-					}
+					$data['update'] = $info->getVersion();
 				}
-
-				$data['version'] = $installed[$module]['module_version'];
-				$data['installed'] = TRUE;
-				if ($installed[$module]['has_cp_backend'] == 'y')
-				{
-					$data['settings_url'] = cp_url('addons/settings/' . $module);
-				}
-			}
-
-			if (is_null($name))
-			{
-				$modules[$module] = $data;
-			}
-			elseif ($name == $module)
-			{
-				return $data;
 			}
 		}
 
-		return $modules;
+		return $data;
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get a list of plugins
+	 * Get data on a plugin
 	 *
-	 * @param	str	$name	(optional) Limit the return to this add-on
+	 * @param	str	$name	The add-on name
 	 * @return	array		Add-on data in the following format:
 	 *   e.g. 'developer'	 => 'native',
 	 *        'version'		 => '--',
@@ -846,63 +822,54 @@ class Addons extends CP_Controller {
 	 *        'type'		 => 'plugin',
 	 *        'manual_url' => ''
 	 */
-	private function getPlugins($name = NULL)
+	private function getPlugin($name)
 	{
-		ee()->load->model('addons_model');
-		$plugins = array();
-
-		foreach (ee()->addons_model->get_plugins($name) as $plugin => $info)
+		try
 		{
-			if ($name && $name != $plugin)
-			{
-				continue;
-			}
+			$info = ee('App')->get($name);
+		}
+		catch (\Exception $e)
+		{
+			show_404();
+		}
 
-			$developer = (strpos($info['installed_path'], PATH_ADDONS) === FALSE) ? 'native' : 'third_party';
+		if ( ! file_exists($info->getPath() . '/pi.' . $name . '.php'))
+		{
+			return array();
+		}
 
-			$data = array(
-				'developer'		=> $developer,
-				'version'		=> $info['pi_version'],
-				'installed'		=> FALSE,
-				'name'			=> $info['pi_name'],
-				'package'		=> $plugin,
-				'type'			=> 'plugin',
-				'manual_url'	=> cp_url('addons/manual/' . $plugin),
-				'info'			=> $info // Cache this
-			);
+		$data = array(
+			'developer'		=> $info->getAuthor(),
+			'version'		=> '--',
+			'installed'		=> FALSE,
+			'name'			=> $info->getName(),
+			'package'		=> $name,
+			'type'			=> 'plugin',
+			'manual_url'	=> ee('CP/URL', 'addons/manual/' . $name),
+		);
 
-			$model = ee('Model')->get('Plugin')
-				->filter('plugin_package', $plugin)
-				->first();
-			if ( ! is_null($model))
+		$model = ee('Model')->get('Plugin')
+			->filter('plugin_package', $name)
+			->first();
+		if ( ! is_null($model))
+		{
+			$data['installed'] = TRUE;
+			if (version_compare($info->getVersion(), $model->plugin_version, '>'))
 			{
-				$data['installed'] = TRUE;
-				if (version_compare($info['pi_version'], $model->plugin_version, '>'))
-				{
-					$data['update'] = $info['pi_version'];
-					$data['version'] = $model->plugin_version;
-				}
-			}
-
-			if (is_null($name))
-			{
-				$plugins[$plugin] = $data;
-			}
-			elseif ($name == $plugin)
-			{
-				return $data;
+				$data['update'] = $info->getVersion();
+				$data['version'] = $model->plugin_version;
 			}
 		}
 
-		return $plugins;
+		return $data;
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get a list of fieldtypes
+	 * Get data on a fieldtype
 	 *
-	 * @param	str	$name	(optional) Limit the return to this add-on
+	 * @param	str	$name	The add-on name
 	 * @return	array		Add-on data in the following format:
 	 *   e.g. 'developer'	 => 'native',
 	 *        'version'		 => '--',
@@ -913,68 +880,61 @@ class Addons extends CP_Controller {
 	 *        'settings'     => array(),
 	 *        'settings_url' => '' (optional)
 	 */
-	private function getFieldtypes($name = NULL)
+	private function getFieldtype($name)
 	{
+		try
+		{
+			$info = ee('App')->get($name);
+		}
+		catch (\Exception $e)
+		{
+			show_404();
+		}
+
+		if ( ! file_exists($info->getPath() . '/ft.' . $name . '.php'))
+		{
+			return array();
+		}
+
+		$data = array(
+			'developer'		=> $info->getAuthor(),
+			'version'		=> '--',
+			'installed'		=> FALSE,
+			'name'			=> $info->getName(),
+			'package'		=> $name,
+			'type'			=> 'fieldtype',
+		);
+
 		ee()->legacy_api->instantiate('channel_fields');
 
-		$fieldtypes = array();
 		$installed = ee()->addons->get_installed('fieldtypes', TRUE);
 
-		foreach (ee()->api_channel_fields->fetch_all_fieldtypes() as $fieldtype => $info)
+		if (isset($installed[$name]))
 		{
-			if ($name && $name != $fieldtype)
+			$data['installed'] = TRUE;
+			$data['version'] = $installed[$name]['version'];
+
+			if (version_compare($info->getVersion(), $installed[$name]['version'], '>'))
 			{
-				continue;
+				$data['update'] = $info->getVersion();
 			}
 
-			$data = array(
-				'developer'		=> $info['type'],
-				'version'		=> $info['version'],
-				'installed'		=> FALSE,
-				'name'			=> $info['name'],
-				'package'		=> $fieldtype,
-				'type'			=> 'fieldtype',
-			);
-
-			if (isset($installed[$fieldtype]))
+			if ($installed[$name]['has_global_settings'] == 'y')
 			{
-				$data['installed'] = TRUE;
-				$data['version'] = $installed[$fieldtype]['version'];
-
-				$FT = ee()->api_channel_fields->setup_handler($fieldtype, TRUE);
-
-				if (version_compare($FT->info['version'], $installed[$fieldtype]['version'], '>'))
-				{
-					$data['update'] = $FT->info['version'];
-				}
-
-				if ($installed[$fieldtype]['has_global_settings'] == 'y')
-				{
-					$data['settings'] = unserialize(base64_decode($installed[$fieldtype]['settings']));
-					$data['settings_url'] = cp_url('addons/settings/' . $fieldtype);
-				}
-
-			}
-
-			if (is_null($name))
-			{
-				$fieldtypes[$fieldtype] = $data;
-			}
-			elseif ($name == $fieldtype)
-			{
-				return $data;
+				$data['settings'] = unserialize(base64_decode($installed[$name]['settings']));
+				$data['settings_url'] = ee('CP/URL', 'addons/settings/' . $fieldtype);
 			}
 		}
 
-		return $fieldtypes;
+		return $data;
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get a list of extensions
+	 * Get data on an extension
 	 *
-	 * @param	str	$name	(optional) Limit the return to this add-on
+	 * @param	str	$name	The add-on name
 	 * @return	array		Add-on data in the following format:
 	 *   e.g. 'developer'	 => 'native',
 	 *        'version'		 => '--',
@@ -987,54 +947,66 @@ class Addons extends CP_Controller {
 	 *        'manual_url'	 => '' (optional),
 	 *        'settings_url' => '' (optional)
 	 */
-	private function getExtensions($name = NULL)
+	private function getExtension($name)
 	{
 		if (ee()->config->item('allow_extensions') != 'y')
 		{
 			return array();
 		}
 
-		ee()->load->model('addons_model');
-
-		$extensions = array();
-
-		$installed_ext_q = ee()->addons_model->get_installed_extensions(FALSE);
-		foreach ($installed_ext_q->result_array() as $row)
+		try
 		{
-			// Check the meta data
-			$installed[$row['class']] = $row;
+			$info = ee('App')->get($name);
 		}
-		$installed_ext_q->free_result();
-
-		foreach(ee()->addons->get_files('extensions') as $ext_name => $ext)
+		catch (\Exception $e)
 		{
-			if ($name && $name != $ext_name)
+			show_404();
+		}
+
+		if ( ! file_exists($info->getPath() . '/ext.' . $name . '.php'))
+		{
+			return array();
+		}
+
+		$data = array(
+			'developer'		=> $info->getAuthor(),
+			'version'		=> '--',
+			'installed'		=> FALSE,
+			'enabled'		=> NULL,
+			'name'			=> $info->getName(),
+			'package'		=> $name,
+			'class'			=> ucfirst($name) . '_ext',
+		);
+
+		$extension = ee('Model')->get('Extension')
+			->filter('class', $data['class'])
+			->first();
+
+		if ($extension)
+		{
+			$data['version'] = $extension->version;
+			$data['installed'] = TRUE;
+			$data['enabled'] = $extension->enabled;
+
+			ee()->load->add_package_path($info->getPath());
+
+			if ( ! class_exists($data['class']))
 			{
-				continue;
-			}
-
-			// Add the package path so things don't hork in the constructor
-			ee()->load->add_package_path($ext['path']);
-
-			// Include the file so we can grab its meta data
-			$class_name = $ext['class'];
-
-			if ( ! class_exists($class_name))
-			{
+				$file = $info->getPath() . '/ext.' . $name . '.php';
 				if (ee()->config->item('debug') == 2
 					OR (ee()->config->item('debug') == 1
 						AND ee()->session->userdata('group_id') == 1))
 				{
-					include($ext['path'].$ext['file']);
+					include($file);
 				}
 				else
 				{
-					@include($ext['path'].$ext['file']);
+					@include($file);
 				}
 
 				if ( ! class_exists($class_name))
 				{
-					trigger_error(str_replace(array('%c', '%f'), array(htmlentities($class_name), htmlentities($ext['path'].$ext['file'])), lang('extension_class_does_not_exist')));
+					trigger_error(str_replace(array('%c', '%f'), array(htmlentities($class_name), htmlentities($file)), lang('extension_class_does_not_exist')));
 					unset($extension_files[$ext_name]);
 					continue;
 				}
@@ -1042,52 +1014,24 @@ class Addons extends CP_Controller {
 
 			// Get some details on the extension
 			$Extension = new $class_name();
-
-			$developer = (strpos($ext['path'], PATH_ADDONS) === FALSE) ? 'native' : 'third_party';
-
-			$data = array(
-				'developer'		=> $developer,
-				'version'		=> $Extension->version,
-				'installed'		=> FALSE,
-				'enabled'		=> NULL,
-				'name'			=> (isset($Extension->name)) ? $Extension->name : $ext['name'],
-				'package'		=> $ext_name,
-				'class'			=> $class_name,
-			);
-
-			if (isset($installed[$class_name]))
+			if (version_compare($info->getVersion(), $extension->version, '>')
+				&& method_exists($Extension, 'update_extension') === TRUE)
 			{
-				$data['version'] = $installed[$class_name]['version'];
-				$data['installed'] = TRUE;
-				$data['enabled'] = ($installed[$class_name]['enabled'] == 'y');
-
-				if ($Extension->settings_exist == 'y')
-				{
-					$data['settings_url'] = cp_url('addons/settings/' . $ext_name);
-				}
-
-				if ($Extension->docs_url)
-				{
-					$data['manual_url'] = ee()->cp->masked_url($Extension->docs_url);
-				}
-
-				if (version_compare($Extension->version, $installed[$class_name]['version'], '>') && method_exists($Extension, 'update_extension') === TRUE)
-				{
-					$data['update'] = $Extension->version;
-				}
+				$data['update'] = $info->getVersion();
 			}
 
-			if (is_null($name))
+			if ($info->get('settings_exist'))
 			{
-				$extensions[$ext_name] = $data;
+				$data['settings_url'] = ee('CP/URL', 'addons/settings/' . $name);
 			}
-			elseif ($name == $ext_name)
+
+			if ($info->get('docs_url'))
 			{
-				return $data;
+				$data['manual_url'] = ee()->cp->masked_url($info->get('docs_url'));
 			}
 		}
 
-		return $extensions;
+		return $data;
 	}
 
 	// --------------------------------------------------------------------
@@ -1102,7 +1046,7 @@ class Addons extends CP_Controller {
 	{
 	 	$name = NULL;
 		$module = ee()->security->sanitize_filename(strtolower($addon));
-		$extension = $this->getExtensions($addon);
+		$extension = $this->getExtension($addon);
 
 		if (ee()->addons_installer->install($addon, 'extension', FALSE))
 		{
@@ -1124,7 +1068,7 @@ class Addons extends CP_Controller {
 	{
 		$name = NULL;
 		$module = ee()->security->sanitize_filename(strtolower($addon));
-		$extension = $this->getExtensions($addon);
+		$extension = $this->getExtension($addon);
 
 		if (ee()->addons_installer->uninstall($addon, 'extension', FALSE))
 		{
@@ -1135,30 +1079,6 @@ class Addons extends CP_Controller {
 	}
 
 	// -------------------------------------------------------------------------
-
-	/**
-	 * Check for usage of the magpie plugin and get the plugin_info manually
-	 *
-	 * @param  string $filename The filename to check
-	 * @param  String $path     Path where the file exists
-	 * @return Mixed            Returns $plugin_info if it's MagPie, otherwise
-	 *                          nothing
-	 */
-	private function magpieCheck($filename, $path)
-	{
-		// Magpie maight already be in use for an accessory or other function
-		// If so, we still need the $plugin_info, so we'll open it up and
-		// harvest what we need. This is a special exception for Magpie.
-		if ($filename == 'magpie' AND in_array($path, get_included_files()) AND class_exists('Magpie'))
-		{
-			$contents = file_get_contents($path);
-			$start = strpos($contents, '$plugin_info');
-			$length = strpos($contents, 'Class Magpie') - $start;
-			return eval(substr($contents, $start, $length));
-		}
-	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Installs a module
@@ -1217,7 +1137,7 @@ class Addons extends CP_Controller {
 
 		if (ee()->addons_installer->install($fieldtype, 'fieldtype', FALSE))
 		{
-			$data = $this->getFieldtypes($fieldtype);
+			$data = $this->getFieldtype($fieldtype);
 			$name = $data['name'];
 		}
 
@@ -1239,7 +1159,7 @@ class Addons extends CP_Controller {
 
 		if (ee()->addons_installer->uninstall($fieldtype, 'fieldtype', FALSE))
 		{
-			$data = $this->getFieldtypes($fieldtype);
+			$data = $this->getFieldtype($fieldtype);
 			$name = $data['name'];
 		}
 
@@ -1324,7 +1244,7 @@ class Addons extends CP_Controller {
 
 		$addon = ee()->security->sanitize_filename(strtolower($name));
 
-		$extension = $this->getExtensions($addon);
+		$extension = $this->getExtension($addon);
 
 		if (empty($extension) || $extension['installed'] === FALSE)
 		{
@@ -1486,7 +1406,7 @@ class Addons extends CP_Controller {
 
 		$addon = ee()->security->sanitize_filename(strtolower($name));
 
-		$extension = $this->getExtensions($addon);
+		$extension = $this->getExtension($addon);
 
 		if (empty($extension) || $extension['installed'] === FALSE)
 		{
