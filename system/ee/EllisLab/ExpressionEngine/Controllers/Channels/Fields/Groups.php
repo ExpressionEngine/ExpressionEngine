@@ -383,12 +383,7 @@ class Groups extends AbstractChannelsController {
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
-		$group_names = array();
-
-		foreach ($field_groups as $field_group)
-		{
-			$group_names[] = $field_group->group_name;
-		}
+		$group_names = $field_groups->pluck('group_name');
 
 		$field_groups->delete();
 		ee('Alert')->makeInline('field-groups')
