@@ -1186,21 +1186,26 @@ class Addons extends CP_Controller {
 	private function getModuleSettings($name, $method = "index")
 	{
 		$addon = ee()->security->sanitize_filename(strtolower($name));
-		$installed = ee()->addons->get_installed('modules', TRUE);
+
+		$info = ee('App')->get($name);
+
+		$module = ee('Model')->get('Module')
+			->filter('module_name', $name)
+			->first();
 
 		if (ee()->session->userdata['group_id'] != 1)
 		{
 			// Do they have access to this module?
-			if ( ! isset($installed[$addon]) OR
-				 ! isset(ee()->session->userdata['assigned_modules'][$installed[$addon]['module_id']]) OR
-				ee()->session->userdata['assigned_modules'][$installed[$addon]['module_id']] !== TRUE)
+			if ( ! isset($module) OR
+				 ! isset(ee()->session->userdata['assigned_modules'][$module->module_id]) OR
+				ee()->session->userdata['assigned_modules'][$module->module_id] !== TRUE)
 			{
 				show_error(lang('unauthorized_access'));
 			}
 		}
 		else
 		{
-			if ( ! isset($installed[$addon]))
+			if ( ! isset($module))
 			{
 				show_error(lang('requested_module_not_installed').NBS.$addon);
 			}
@@ -1209,16 +1214,17 @@ class Addons extends CP_Controller {
 		$view_folder = 'views';
 
 		// set the view path
-		define('MODULE_VIEWS', $installed[$addon]['path'].$view_folder.'/');
+		define('MODULE_VIEWS', $info->getPath() . '/' . $view_folder . '/');
 
 		// Add the helper/library load path and temporarily
 		// switch the view path to the module's view folder
-		ee()->load->add_package_path($installed[$addon]['path']);
+		ee()->load->add_package_path($info->getPath());
 
-		require_once $installed[$addon]['path'].$installed[$addon]['file'];
+		require_once $info->getPath() . '/mcp.' . $name . '.php';
 
 		// instantiate the module cp class
-		$mod = new $installed[$addon]['class'];
+		$class = ucfirst($name) . '_mcp';
+		$mod = new $class;
 		$mod->_ee_path = APPPATH;
 
 		// add validation callback support to the mcp class (see EE_form_validation for more info)
@@ -1239,7 +1245,7 @@ class Addons extends CP_Controller {
 		ee()->remove('_mcp_reference');
 
 		// remove package paths
-		ee()->load->remove_package_path($installed[$addon]['path']);
+		ee()->load->remove_package_path($info->getPath());
 
 		return $_module_cp_body;
 	}
