@@ -16,8 +16,8 @@ use EllisLab\ExpressionEngine\Service\Thumbnail;
 // TODO should put the version in here at some point ...
 return array(
 
-	'vendor' => 'EllisLab',
-	'product' => 'ExpressionEngine',
+	'author' => 'EllisLab',
+	'name' => 'ExpressionEngine',
 	'description' => 'The worlds most flexible content management system.',
 
 	'namespace' => 'EllisLab\ExpressionEngine',
