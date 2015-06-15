@@ -709,12 +709,14 @@ class Addons extends CP_Controller {
 			show_error(lang('requested_module_not_installed').NBS.$addon);
 		}
 
+		$info = ee('App')->get($addon);
+
 		$vars = array(
-			'name'			=> $plugin['info']['pi_name'],
-			'version'		=> $this->formatVersionNumber($plugin['info']['pi_version']),
-			'author'		=> $plugin['info']['pi_author'],
-			'author_url'	=> $plugin['info']['pi_author_url'],
-			'description'	=> $plugin['info']['pi_description'],
+			'name'			=> $info->getName(),
+			'version'		=> $this->formatVersionNumber($info->getVersion()),
+			'author'		=> $info->getAuthor(),
+			'author_url'	=> $info->get('author_url'),
+			'description'	=> $info->get('description')
 		);
 
 		$vars['usage'] = array(
