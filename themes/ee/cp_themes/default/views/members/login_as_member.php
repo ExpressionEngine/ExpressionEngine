@@ -25,7 +25,7 @@
 	<br />
 	<p>
 		<span class="notice"><?=lang('password_auth', 'password_auth')?></span>
-		<?=form_password(array('id' => 'password_auth', 'name' => 'password_auth', 'maxlength' => 250, 'autofocus' => 'autofocus'))?>
+		<?=form_password(array('id' => 'password_auth', 'name' => 'password_auth', 'maxlength' => PASSWORD_MAX_LENGTH, 'autofocus' => 'autofocus'))?>
 	</p>
 
 	<p>

@@ -37,7 +37,7 @@ $this->table->add_row(array(
 			'id'	=> 'password',
 			'name'	=> 'password',
 			'class' => 'field',
-			'maxlength' => 250,
+			'maxlength' => PASSWORD_MAX_LENGTH,
 			'value' => set_value('password'),
 			'auto_complete' => 'off'
 			)
@@ -52,7 +52,7 @@ $this->table->add_row(array(
 			'id'	=> 'password_confirm',
 			'name'	=> 'password_confirm',
 			'class' => 'field',
-			'maxlength' => 250,
+			'maxlength' => PASSWORD_MAX_LENGTH,
 			'value' => set_value('password_confirm'),
 			'auto_complete' => 'off'
 			)

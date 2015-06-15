@@ -21,7 +21,7 @@
 		</em>
 		<br />
 		<?=form_label(lang('existing_password'), 'current_password')?>
-		<?=form_password(array('id' => 'current_password', 'name' => 'current_password', 'class' => 'current_password' ,'value' => '', 'maxlength' => 250, 'autocomplete' => 'off'))?>
+		<?=form_password(array('id' => 'current_password', 'name' => 'current_password', 'class' => 'current_password' ,'value' => '', 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
 	</p>
 
 	<fieldset><legend><?=lang('email_options')?></legend>
