@@ -96,6 +96,16 @@ class Provider extends InjectionBindingDecorator {
 	}
 
 	/**
+	 * Get the registered path
+	 *
+	 * @return String Path in use
+	 */
+	public function getPath()
+	{
+		return $this->path;
+	}
+
+	/**
 	 * Get the registered prefix
 	 *
 	 * @return String Prefix in use
