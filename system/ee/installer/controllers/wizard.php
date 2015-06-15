@@ -152,6 +152,7 @@ class Wizard extends CI_Controller {
 		parent::__construct();
 
 		define('IS_CORE', FALSE);
+		define('PASSWORD_MAX_LENGTH', 72);
 
 		// Third party constants
 		$addon_path = (ee()->config->item('addons_path'))
@@ -593,7 +594,7 @@ class Wizard extends CI_Controller {
 			array(
 				'field' => 'password',
 				'label' => 'lang:password',
-				'rules' => 'required|valid_password[username]'
+				'rules' => 'required|valid_password[username]|max_length['.PASSWORD_MAX_LENGTH.']'
 			),
 			array(
 				'field' => 'email_address',

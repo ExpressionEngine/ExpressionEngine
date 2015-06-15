@@ -98,7 +98,7 @@
 		<em><?=lang('password_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
-		<input name="password" type="password" value="">
+		<input name="password" type="password" value="" maxlength="<?=PASSWORD_MAX_LENGTH?>">
 		<?=form_error('password');?>
 	</div>
 </fieldset>

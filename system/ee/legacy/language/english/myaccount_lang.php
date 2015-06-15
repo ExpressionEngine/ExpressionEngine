@@ -478,7 +478,7 @@ Used in the control panel only.',
 'Your password must be at least %x characters long',
 
 'password_too_long' =>
-'Your password cannot be over 250 characters in length',
+'Your password cannot be over '.PASSWORD_MAX_LENGTH.' characters in length',
 
 'username_taken' =>
 'The username you chose is not available',

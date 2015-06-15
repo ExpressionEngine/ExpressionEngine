@@ -514,7 +514,7 @@ class EE_Form_validation {
 
 		// Is password max length correct?
 
-		if (strlen($str) > 250)
+		if (strlen($str) > PASSWORD_MAX_LENGTH)
 		{
 			$this->set_message('valid_password', $this->CI->lang->line('password_too_long'));
 		}

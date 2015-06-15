@@ -74,6 +74,7 @@ class EE_Core {
 		define('NL',			"\n");
 		define('PATH_DICT', 	APPPATH.'config/');
 		define('AJAX_REQUEST',	ee()->input->is_ajax_request());
+		define('PASSWORD_MAX_LENGTH', 72);
 
 		ee()->load->helper('language');
 		ee()->load->helper('string');
