@@ -244,6 +244,7 @@ abstract class Core {
 		// This is potentially where we'll consolidate the first party stuff,
 		// not sure where the best place to load this in is
 		$application->setupAddons(SYSPATH . 'ee/EllisLab/ExpressionEngine/Module/');
+		$application->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
 
 		return $application;
 	}
