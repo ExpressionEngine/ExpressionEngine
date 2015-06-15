@@ -719,16 +719,18 @@ class Addons extends CP_Controller {
 			'description'	=> $info->get('description')
 		);
 
+		$usage = $info->get('plugin.usage');
+
 		$vars['usage'] = array(
 			'description' => '',
-			'example' => $plugin['info']['pi_usage']
+			'example' => $usage
 		);
 
-		if (is_array($plugin['info']['pi_usage']))
+		if (is_array($usage))
 		{
-			$vars['usage']['description'] = $plugin['info']['pi_usage']['description'];
-			$vars['usage']['example'] = $plugin['info']['pi_usage']['example'];
-			$vars['parameters'] = $plugin['info']['pi_usage']['parameters'];
+			$vars['usage']['description'] = $usage['description'];
+			$vars['usage']['example'] = $usage['example'];
+			$vars['parameters'] = $usage['parameters'];
 		}
 
 		ee()->view->cp_heading = $vars['name'] . ' ' . lang('manual');
