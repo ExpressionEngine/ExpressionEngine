@@ -549,12 +549,9 @@ class Cat extends AbstractChannelsController {
 
 			if ( ! empty($cat_ids))
 			{
-				ee()->load->model('category_model');
-
-				foreach ($cat_ids as $cat_id)
-				{
-					ee()->category_model->delete_category($cat_id);
-				}
+				ee('Model')->get('Category')
+					->filter('cat_id', 'IN', $cat_ids)
+					->delete();
 
 				ee('Alert')->makeInline('shared-form')
 					->asSuccess()
@@ -835,7 +832,17 @@ class Cat extends AbstractChannelsController {
 	 */
 	private function saveCategory($group_id, $category_id)
 	{
+		// -------------------------------------------
+		// 'category_save' hook.
+		//
+		if (ee()->extensions->active_hook('category_save') === TRUE)
+		{
+			ee()->extensions->call('category_save', $cat_id, $category_data);
+		}
+		//
+		// -------------------------------------------
 
+		return $category_id;
 	}
 
 	/**
@@ -1132,51 +1139,50 @@ class Cat extends AbstractChannelsController {
 			)
 		);
 
-		ee()->form_validation->set_rules(array(
-			array(
-				'field' => 'field_type',
-				'label' => 'lang:type',
-				'rules' => 'required|enum[text,textarea,select]'
-			),
-			array(
-				'field' => 'field_label',
-				'label' => 'lang:label',
-				'rules' => 'required|strip_tags|trim|valid_xss_check'
-			),
-			array(
-				'field' => 'field_name',
-				'label' => 'lang:short_name',
-				'rules' => 'required|strip_tags|trim|valid_xss_check|alpha_dash|callback_validCategoryFieldName['.$field_id.']'
-			)
-		));
-
-		ee()->form_validation->validateNonTextInputs($vars['sections']);
-
-		if (AJAX_REQUEST)
-		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
+		if ( ! empty($_POST))
 		{
 			$cat_field->group_id = $group_id;
-			$field_id = $this->saveCategoryField($cat_field);
+			$cat_field->field_list_items = '';
+			$cat_field->set($_POST);
+			$result = $cat_field->validate();
 
-			ee('Alert')->makeInline('shared-form')
-				->asSuccess()
-				->withTitle(lang('category_field_saved'))
-				->addToBody(lang('category_field_saved_desc'))
-				->defer();
+			if (AJAX_REQUEST)
+			{
+				$field = ee()->input->post('ee_fv_field');
 
-			ee()->functions->redirect(cp_url('channels/cat/edit-field/'.$group_id.'/'.$field_id));
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee('Alert')->makeInline('shared-form')
-				->asIssue()
-				->withTitle(lang('category_field_not_saved'))
-				->addToBody(lang('category_field_not_saved_desc'))
-				->now();
+				if ($result->hasErrors($field))
+				{
+					ee()->output->send_ajax_response(array('error' => $result->renderError($field)));
+				}
+				else
+				{
+					ee()->output->send_ajax_response('success');
+				}
+				exit;
+			}
+
+			if ($result->isValid())
+			{
+				$field_id = $cat_field->save()->getId();
+
+				ee('Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('category_field_saved'))
+					->addToBody(lang('category_field_saved_desc'))
+					->defer();
+
+				ee()->functions->redirect(cp_url('channels/cat/edit-field/' . $group_id . '/' . $field_id));
+			}
+			else
+			{
+				ee()->load->library('form_validation');
+				ee()->form_validation->_error_array = $result->renderErrors();
+				ee('Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('category_field_not_saved'))
+					->addToBody(lang('category_field_not_saved_desc'))
+					->now();
+			}
 		}
 
 		ee()->view->ajax_validate = TRUE;

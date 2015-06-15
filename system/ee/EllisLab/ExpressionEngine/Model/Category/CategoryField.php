@@ -42,6 +42,12 @@ class CategoryField extends FieldModel {
 		'beforeInsert'
 	);
 
+	protected static $_validation_rules = array(
+		'field_type'  => 'required|enum[text,textarea,select]',
+		'field_label' => 'required|xss|noHtml',
+		'field_name'  => 'required|alphaDash|unique[site_id]'
+	);
+
 	protected $field_id;
 	protected $site_id;
 	protected $group_id;
