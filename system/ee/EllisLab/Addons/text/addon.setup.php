@@ -3,9 +3,9 @@
 return array(
 	'author'      => 'EllisLab',
 	'author_url'  => 'http://ellislab.com/',
-	'name'        => 'Referrer',
+	'name'        => 'Text Input',
 	'description' => '',
-	'version'     => '2.1.1',
-	'namespace'   => 'EllisLab\Addons\Referrer',
+	'version'     => '1.0',
+	'namespace'   => 'EllisLab\Addons\TextInput',
 	'settings_exist' => FALSE,
 );

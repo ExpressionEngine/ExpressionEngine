@@ -51,7 +51,7 @@ class EE_Core {
 		define('PATH_MOD',		SYSPATH . 'ee/EllisLab/Addons/');
 		define('PATH_PI',		SYSPATH . 'ee/EllisLab/Addons/');
 		define('PATH_EXT',		SYSPATH . 'ee/EllisLab/Addons/');
-		define('PATH_FT',		APPPATH.'fieldtypes/');
+		define('PATH_FT',		SYSPATH . 'ee/EllisLab/Addons/');
 		define('PATH_RTE',		APPPATH.'rte_tools/');
 
 		$addon_path = (ee()->config->item('addons_path'))

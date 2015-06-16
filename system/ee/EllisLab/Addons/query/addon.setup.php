@@ -1,11 +1,11 @@
 <?php
 
 return array(
-    'author'      => 'EllisLab',
+	'author'      => 'EllisLab',
 	'author_url'  => 'http://ellislab.com/',
-    'name'        => 'Query',
+	'name'        => 'Query',
 	'description' => '',
-    'version'     => '2.0',
-    'namespace'   => 'EllisLab\Addons\Query',
+	'version'     => '2.0',
+	'namespace'   => 'EllisLab\Addons\Query',
 	'settings_exist' => FALSE,
 );

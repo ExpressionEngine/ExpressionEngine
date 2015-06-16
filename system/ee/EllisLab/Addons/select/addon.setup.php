@@ -3,9 +3,9 @@
 return array(
 	'author'      => 'EllisLab',
 	'author_url'  => 'http://ellislab.com/',
-	'name'        => 'Referrer',
+	'name'        => 'Select Dropdown',
 	'description' => '',
-	'version'     => '2.1.1',
-	'namespace'   => 'EllisLab\Addons\Referrer',
+	'version'     => '1.0',
+	'namespace'   => 'EllisLab\Addons\SelectDropdown',
 	'settings_exist' => FALSE,
 );

@@ -1,11 +1,11 @@
 <?php
 
 return array(
-    'author'      => 'EllisLab',
+	'author'      => 'EllisLab',
 	'author_url'  => 'http://ellislab.com/',
-    'name'        => 'Channel',
+	'name'        => 'Channel',
 	'description' => '',
-    'version'     => '2.0.1',
-    'namespace'   => 'EllisLab\Addons\Channel',
+	'version'     => '2.0.1',
+	'namespace'   => 'EllisLab\Addons\Channel',
 	'settings_exist' => FALSE,
 );

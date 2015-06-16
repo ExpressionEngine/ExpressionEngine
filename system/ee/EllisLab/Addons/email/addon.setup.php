@@ -1,11 +1,11 @@
 <?php
 
 return array(
-    'author'      => 'EllisLab',
+	'author'      => 'EllisLab',
 	'author_url'  => 'http://ellislab.com/',
-    'name'        => 'Email',
+	'name'        => 'Email',
 	'description' => '',
-    'version'     => '2.1',
-    'namespace'   => 'EllisLab\Addons\Email',
+	'version'     => '2.1',
+	'namespace'   => 'EllisLab\Addons\Email',
 	'settings_exist' => FALSE,
 );

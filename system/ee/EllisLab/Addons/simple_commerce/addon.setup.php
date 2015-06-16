@@ -1,11 +1,11 @@
 <?php
 
 return array(
-    'author'      => 'EllisLab',
+	'author'      => 'EllisLab',
 	'author_url'  => 'http://ellislab.com/',
-    'name'        => 'Simple Commerce',
+	'name'        => 'Simple Commerce',
 	'description' => '',
-    'version'     => '2.2',
-    'namespace'   => 'EllisLab\Addons\SimpleCommerce',
+	'version'     => '2.2',
+	'namespace'   => 'EllisLab\Addons\SimpleCommerce',
 	'settings_exist' => FALSE,
 );
