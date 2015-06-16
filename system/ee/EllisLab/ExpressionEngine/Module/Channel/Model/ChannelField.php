@@ -19,7 +19,7 @@ use EllisLab\ExpressionEngine\Model\Content\FieldModel;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Category Field Model
+ * ExpressionEngine Channel Field Model
  *
  * @package		ExpressionEngine
  * @subpackage	Category
@@ -60,6 +60,11 @@ class ChannelField extends FieldModel {
 	protected $field_order;
 	protected $field_content_type;
 	protected $field_settings;
+
+	public function getStructure()
+	{
+		return $this->getChannelFieldGroup();
+	}
 
 	public function getDataTable()
 	{
