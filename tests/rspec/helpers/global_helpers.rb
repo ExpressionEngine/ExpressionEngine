@@ -46,6 +46,13 @@ def should_have_no_form_errors(page_obj)
   should_have_form_errors(page_obj, false)
 end
 
+# Checks for show_error()
+def should_have_show_error(message)
+  page.has_content?('An Error Was Encountered').should == true
+  page.has_content?(message).should == true
+  page.status_code.should == 500
+end
+
 def should_have_error_text(node, text)
   node.first(:xpath, ".//ancestor::fieldset[1]")[:class].should include 'invalid'
   node.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
