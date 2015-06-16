@@ -1,12 +1,12 @@
 <input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
-<?php if ($file): ?>
-<figure class="file-chosen">
-	<img src="<?=$file['url']?>" alt="<?=$file['title']?>">
+<p class="solo-btn<?php if ($file) echo " hidden";?>"><a class="btn action m-link file-field-filepicker" href="<?=$fp_url?>" rel="modal-file" data-input-image="<?=$field_name?>" data-input-value="<?=$field_name?>"><?=lang('upload_file')?></a></p>
+<figure class="file-chosen<?php if ( ! $file) echo " hidden";?>">
+	<img id="<?=$field_name?>" src="<?=$thumbnail?>" alt="<?=($file) ? $file->title : ''?>">
 	<ul class="toolbar">
-		<li class="edit"><a href="" title="<?=lang('edit')?>"></a></li>
+		<li class="edit"><a class="m-link file-field-filepicker" href="<?=$fp_url?>" rel="modal-file" data-field-name="<?=$field_name?>" data-input-image="<?=$field_name?>" data-input-value="<?=$field_name?>" title="<?=lang('edit')?>"></a></li>
 		<li class="remove"><a href="" title="<?=lang('remove')?>"></a></li>
 	</ul>
 </figure>
-<?php else: ?>
-<p class="solo-btn"><a class="btn action m-link" href="#" rel="modal-file" data-field-name="<?=$field_name?>"><?=lang('upload_file')?></a></p>
+<?php if($file && ! $file->exists()): ?>
+<em><?=sprintf(lang('file_ft_cannot_find_file'), $file->file_name)?></em>
 <?php endif; ?>

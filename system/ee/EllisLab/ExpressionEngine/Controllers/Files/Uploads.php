@@ -331,10 +331,11 @@ class Uploads extends AbstractFilesController {
 	private function getImageSizesGrid($upload_destination = NULL)
 	{
 		// Image manipulations Grid
-		$grid = ee('Grid')->make(array(
+		$grid = ee('CP/GridInput', array(
 			'field_name' => 'image_manipulations',
 			'reorder'    => FALSE, // Order doesn't matter here
 		));
+		$grid->loadAssets();
 		$grid->setColumns(
 			array(
 				'image_manip_name' => array(
@@ -440,6 +441,7 @@ class Uploads extends AbstractFilesController {
 		);
 
 		$size = array_merge($defaults, $size);
+		$size = array_map('form_prep', $size);
 
 		return array(
 			array(
@@ -642,18 +644,6 @@ class Uploads extends AbstractFilesController {
 
 		foreach ($image_sizes as $image_size)
 		{
-			$image_size->upload_location_id = $upload_destination->id;
-			$image_size->save();
-		}
-
-		$image_manipulations = ee()->input->post('image_manipulations');
-
-		// Temporary workaround for models bug where it's not saving the
-		// first image manipulation if there are more than one
-		if (empty($this->upload_errors) && ! empty($image_manipulations))
-		{
-			$keys = array_keys($image_manipulations['rows']);
-			$image_size = ee('Model')->make('FileDimension', $image_manipulations['rows'][$keys[0]]);
 			$image_size->upload_location_id = $upload_destination->id;
 			$image_size->save();
 		}

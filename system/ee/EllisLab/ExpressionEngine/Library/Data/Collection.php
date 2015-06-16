@@ -70,6 +70,11 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 		}
 	}
 
+	public function __get($key)
+	{
+		return new static($this->pluck($key));
+	}
+
 	/**
 	 * Allow the calling of element methods by the collection.
 	 * First argument is assumed to be a callback to handle
@@ -121,7 +126,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	 */
 	public function first()
 	{
-		return $this->elements[0];
+		return $this->count() ? $this->elements[0] : NULL;
 	}
 
 	/**
@@ -131,7 +136,8 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	*/
 	public function last()
 	{
-		return $this->elements[$this->count() - 1];
+		$count = $this->count();
+		return $count ? $this->elements[$count - 1] : NULL;
 	}
 
 	/**
@@ -255,11 +261,11 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	 * of the results.
 	 *
 	 * @param Closure $callback Function to apply
-	 * @return array  results
+	 * @return Collection  results
 	 */
-	public function filter(Closure $callback)
+	public function filter($callback)
 	{
-		return array_values(array_filter($this->elements, $callback));
+		return new static(array_filter($this->elements, $callback));
 	}
 
 	/**

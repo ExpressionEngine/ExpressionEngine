@@ -48,9 +48,9 @@ class EE_Core {
 		}
 
 		// some path constants to simplify things
-		define('PATH_MOD',		APPPATH.'modules/');
-		define('PATH_PI',		APPPATH.'plugins/');
-		define('PATH_EXT',		APPPATH.'extensions/');
+		define('PATH_MOD',		SYSPATH . 'ee/EllisLab/Addons/');
+		define('PATH_PI',		SYSPATH . 'ee/EllisLab/Addons/');
+		define('PATH_EXT',		SYSPATH . 'ee/EllisLab/Addons/');
 		define('PATH_FT',		APPPATH.'fieldtypes/');
 		define('PATH_RTE',		APPPATH.'rte_tools/');
 
@@ -87,9 +87,6 @@ class EE_Core {
 		ee()->db->db_debug = FALSE;
 
 		// boot the addons
-		ee('App')->setupAddons(PATH_PI);
-		ee('App')->setupAddons(PATH_MOD);
-		ee('App')->setupAddons(PATH_EXT);
 		ee('App')->setupAddons(PATH_ADDONS);
 
 		// Set ->api on the legacy facade to the model factory
@@ -251,11 +248,11 @@ class EE_Core {
 			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon',
 			'file', 'forum', 'ip_to_nation', 'jquery', 'mailinglist', 'member',
 			'metaweblog_api', 'moblog', 'pages', 'query', 'referrer', 'rss', 'rte',
-			'search', 'simple_commerce', 'stats', 'wiki'
+			'search', 'simple_commerce', 'stats', 'wiki', 'filepicker'
 		);
 		$this->standard_modules = array(
 			'blacklist', 'email', 'forum', 'ip_to_nation', 'mailinglist',
-			'member', 'moblog', 'query', 'simple_commerce', 'wiki'
+			'member', 'moblog', 'query', 'simple_commerce', 'wiki', 'filepicker'
 		);
 
 		// Is this a stylesheet request?  If so, we're done.

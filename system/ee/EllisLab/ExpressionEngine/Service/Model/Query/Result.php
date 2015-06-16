@@ -199,7 +199,7 @@ class Result {
 			}
 
 			$name = $relation->getName();
-			$parent->{'fill'.$name}($collection);
+			$parent->$name->fill($collection);
 		}
 	}
 

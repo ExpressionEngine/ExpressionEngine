@@ -38,7 +38,7 @@ feature 'Add-On Manager' do
 
 		@page.perpage_filter.text.should eq "show (50)"
 		@page.should_not have_pagination
-		@page.should have(42).addons #41 'add-ons' + 1 for header
+		@page.should have(43).addons #42 'add-ons' + 1 for header
 	end
 
 	it 'can reverse sort by Add-On name' do
@@ -148,7 +148,7 @@ feature 'Add-On Manager' do
 		no_php_js_errors
 
 		@page.developer_filter.text.should eq 'developer (EllisLab)'
-		@page.should have(35).addons
+		@page.should have(36).addons
 
 		# Now by Third Party
 		@page.developer_filter.click

@@ -147,7 +147,7 @@ class Members extends AbstractDesignController {
 
 		$base_url = new URL('design/members/index/' . $theme, ee()->session->session_id());
 
-		$table = Table::create(array('autosort' => TRUE, 'subheadings' => TRUE));
+		$table = ee('CP/Table', array('autosort' => TRUE, 'subheadings' => TRUE));
 		$table->setColumns(
 			array(
 				'template',

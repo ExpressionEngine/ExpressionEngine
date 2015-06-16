@@ -2,7 +2,6 @@ class RTESettings < ControlPanelPage
 	set_url_matcher /addons\/settings\/rte/
 
 	elements :headings, 'div.box h1'
-	element :breadcrumb, 'ul.breadcrumb'
 
 	element :phrase_search, 'fieldset.tbl-search input[name=search]'
 	element :search_submit_button, 'fieldset.tbl-search input.submit'

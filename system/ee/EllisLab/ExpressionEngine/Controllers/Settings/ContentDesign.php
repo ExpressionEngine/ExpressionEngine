@@ -158,7 +158,7 @@ class ContentDesign extends Settings {
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_saving';
 
-		ee()->cp->set_breadcrumb(cp_url('channel'), lang('channel_manager'));
+		ee()->cp->set_breadcrumb(cp_url('channels'), lang('channel_manager'));
 
 		ee()->cp->render('settings/form', $vars);
 	}

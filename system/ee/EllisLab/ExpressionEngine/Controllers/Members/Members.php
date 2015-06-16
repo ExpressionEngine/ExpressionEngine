@@ -125,7 +125,7 @@ class Members extends CP_Controller {
 		// Add the group filter
 		$this->filter();
 
-		$table = Table::create(array(
+		$table = ee('CP/Table', array(
 			'sort_col' => $sort_col,
 			'sort_dir' => $sort_dir,
 			'limit' => $perpage
@@ -289,7 +289,7 @@ class Members extends CP_Controller {
 	/**
 	 * Sets up the display filters
 	 *
-	 * @param int	
+	 * @param int
 	 * @return void
 	 */
 	private function filter()
@@ -366,7 +366,7 @@ class Members extends CP_Controller {
 
 	/**
 	 * Generate post re-assignment view if applicable
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */

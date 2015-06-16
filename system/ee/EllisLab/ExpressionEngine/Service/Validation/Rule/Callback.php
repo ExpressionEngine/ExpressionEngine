@@ -39,11 +39,12 @@ class Callback extends ValidationRule {
 
 	public function validate($key, $value)
 	{
-		$result = call_user_func($this->callback, $key, $value, $this->parameters);
+		$result = call_user_func($this->callback, $key, $value, $this->parameters, $this);
 
 		if ($result !== TRUE)
 		{
 			$this->last_error = $result;
+
 			return FALSE;
 		}
 

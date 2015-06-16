@@ -580,7 +580,7 @@ class Members extends CP_Controller {
 			}
 			elseif ($_POST['return_destination'] == 'other' && isset($_POST['other_url']) && stristr($_POST['other_url'], 'http'))
 			{
-				$return_path = $this->security->xss_clean(strip_tags($_POST['other_url']));
+				$return_path = ee('Security/XSS')->clean(strip_tags($_POST['other_url']));
 			}
 		}
 

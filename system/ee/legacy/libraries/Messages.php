@@ -437,12 +437,12 @@ class EE_Messages {
 
 				if ($row['listed_type'] == 'buddy')
 				{
-					$this->buddies[] = array($row['listed_member'], $row['username'], $row['screen_name'], ee()->security->xss_clean($row['listed_description']), $row['listed_id'], $row['member_id']);
+					$this->buddies[] = array($row['listed_member'], $row['username'], $row['screen_name'], ee('Security/XSS')->clean($row['listed_description']), $row['listed_id'], $row['member_id']);
 					$this->goodies[] = $row['listed_member'];
 				}
 				else
 				{
-					$this->blocked[] = array($row['listed_member'], $row['username'], $row['screen_name'], ee()->security->xss_clean($row['listed_description']), $row['listed_id'], $row['member_id']);
+					$this->blocked[] = array($row['listed_member'], $row['username'], $row['screen_name'], ee('Security/XSS')->clean($row['listed_description']), $row['listed_id'], $row['member_id']);
 					$this->baddies[] = $row['listed_member'];
 				}
 			}
@@ -541,7 +541,7 @@ class EE_Messages {
 
 			$t++;
 			$this->single_parts['lang']['required']		= ($key < 3) ? ee()->lang->line('folder_required') : '';
-			$this->single_parts['input']['folder_name']	= ee()->security->xss_clean($value['0']);
+			$this->single_parts['input']['folder_name']	= ee('Security/XSS')->clean($value['0']);
 			$this->single_parts['input']['folder_id']	= $key;
 			$this->single_parts['style']				= ($t % 2) ? 'tableCellOne' : 'tableCellTwo';
 
@@ -3539,7 +3539,7 @@ DOH;
 			}
 
 			$data = array('member_id'			=> $this->member_id,
-						  'listed_description'	=> ee()->security->xss_clean(ee()->functions->char_limiter($_POST['description'], 50)),
+						  'listed_description'	=> ee('Security/XSS')->clean(ee()->functions->char_limiter($_POST['description'], 50)),
 						  'listed_type'			=> $which);
 
 			for ($i=0, $s = count($person); $i < $s; ++$i)

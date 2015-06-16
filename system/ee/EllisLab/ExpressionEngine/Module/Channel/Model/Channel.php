@@ -2,13 +2,9 @@
 
 namespace EllisLab\ExpressionEngine\Module\Channel\Model;
 
-use EllisLab\ExpressionEngine\Library\Data\Collection;
-use EllisLab\ExpressionEngine\Service\Model\Model as Model;
-use EllisLab\ExpressionEngine\Service\Model\Interfaces\Content\ContentStructure
-	as ContentStructure;
+use EllisLab\ExpressionEngine\Model\Content\StructureModel;
 
-
-class Channel extends Model implements ContentStructure {
+class Channel extends StructureModel {
 
 	protected static $_primary_key = 'channel_id';
 	protected static $_table_name = 'channels';
@@ -157,6 +153,11 @@ class Channel extends Model implements ContentStructure {
 	protected $live_look_template;
 
 
+	public function getContentType()
+	{
+		return 'channel';
+	}
+
 	/**
 	 * Display the CP entry form
 	 *
@@ -187,7 +188,7 @@ class Channel extends Model implements ContentStructure {
 		$exceptions = array('channel_id', 'site_id', 'channel_name', 'channel_title', 'total_entries',
 							'total_comments', 'last_entry_date', 'last_comment_date');
 
-		foreach(get_object_vars($this) as $property => $value)
+		foreach (get_object_vars($this) as $property => $value)
 		{
 			// don't duplicate fields that are unique to each channel
 			if ( in_array($property, $exceptions) || strpos($property, '_') === 0)
@@ -244,8 +245,10 @@ class Channel extends Model implements ContentStructure {
 
 	public function onBeforeSave()
 	{
-		foreach (array('channel_url', 'channel_lang') as $column) {
+		foreach (array('channel_url', 'channel_lang') as $column)
+		{
 			$value = $this->getProperty($column);
+
 			if (empty($value))
 			{
 				$this->setProperty($column, '');

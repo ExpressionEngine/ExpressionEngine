@@ -537,7 +537,7 @@ class EE_Output {
 			$data['rate'] = $this->refresh_time;
 		}
 
-		$data['meta_refresh']	= ($data['redirect'] != '') ? "<meta http-equiv='refresh' content='".$data['rate']."; url=".$EE->security->xss_clean($data['redirect'])."'>" : '';
+		$data['meta_refresh']	= ($data['redirect'] != '') ? "<meta http-equiv='refresh' content='".$data['rate']."; url=".ee('Security/XSS')->clean($data['redirect'])."'>" : '';
 		$data['charset']		= $EE->config->item('output_charset');
 
 		if (is_array($data['link']) AND count($data['link']) > 0)
@@ -546,7 +546,7 @@ class EE_Output {
 
 			$ltitle = ($refresh_msg == '') ? $data['link']['1'] : $refresh_msg;
 
-			$url = (strtolower($data['link']['0']) == 'javascript:history.go(-1)') ? $data['link']['0'] : $EE->security->xss_clean($data['link']['0']);
+			$url = (strtolower($data['link']['0']) == 'javascript:history.go(-1)') ? $data['link']['0'] : ee('Security/XSS')->clean($data['link']['0']);
 
 			$data['link'] = "<a href='".$url."'>".$ltitle."</a>";
 		}

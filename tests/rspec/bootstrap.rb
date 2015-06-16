@@ -26,6 +26,9 @@ Dir.glob(File.dirname(__FILE__) + '/helpers/*', &method(:require))
 require './pages/_section_menu.rb'
 require './pages/cp_page.rb'
 
+# Include parent pages for sections of the CP
+Dir.glob(File.dirname(__FILE__) + '/pages/sections/*.rb', &method(:require))
+
 # Include the rest of our pages
 Dir.glob(File.dirname(__FILE__) + '/pages/**/*.rb', &method(:require))
 

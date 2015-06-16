@@ -39,8 +39,7 @@ if ( ! function_exists('xss_clean'))
 {
 	function xss_clean($str, $is_image = FALSE)
 	{
-		$CI =& get_instance();
-		return $CI->security->xss_clean($str, $is_image);
+		return ee('Security/XSS')->clean($str, $is_image);
 	}
 }
 

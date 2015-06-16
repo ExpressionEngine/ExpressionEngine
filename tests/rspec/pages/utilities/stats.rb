@@ -3,8 +3,6 @@ class Stats < ControlPanelPage
 
 	element :heading, 'div.box form h1'
 
-	element :alert, 'div.alert'
-
 	element :content_table, 'div.box form table'
 	elements :rows, 'div.box form table tr'
 	elements :sources, 'div.box form table tr td:first-child'

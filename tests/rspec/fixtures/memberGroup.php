@@ -8,6 +8,7 @@ $longopts = array(
 	"title:",
 	"description:",
 	"site-id:",
+	"channel-id:",
 	"help"
 );
 
@@ -21,6 +22,7 @@ Usage: {$command} [options]
 	--title        <string> The title to use
 	--description  <string> The description to use
 	--site-id      <number> The site_id to use
+	--channel-id   <number> A channel to assign to this group
 EOF;
 	exit();
 }
@@ -28,6 +30,7 @@ EOF;
 $site_id = isset($options['site-id']) && is_numeric($options['site-id']) ? (int) $options['site-id'] : 1;
 $title = isset($options['title']) ? $options['title'] : 'Some Group';
 $description = isset($options['description']) ? $options['description'] : '';
+$channel_id = isset($options['channel-id']) && is_numeric($options['channel-id']) ? (int) $options['channel-id'] : NULL;
 
 $new_group_id = $api->get('MemberGroup')
 	->order('group_id', 'desc')
@@ -41,3 +44,9 @@ $group->site_id = $site_id;
 $group->group_title = $title;
 $group->group_description = $description;
 $group->save();
+
+if ($channel_id)
+{
+	$channels = $api->get('Channel', $channel_id)->all();
+	$group->setAssignedChannels($channels);
+}

@@ -41,7 +41,7 @@ class FileExists extends ValidationRule {
 
 		// STOP if not exists, there's no point in further validating an
 		// invalid file path
-		if ($value !== NULL)
+		if ($value !== NULL && $value !== '')
 		{
 			return $this->stop();
 		}

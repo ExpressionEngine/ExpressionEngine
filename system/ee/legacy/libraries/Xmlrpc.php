@@ -515,7 +515,7 @@ class XML_RPC_Response
 				}
 				else
 				{
-					$array[$key] = ($this->xss_clean) ? $CI->security->xss_clean($array[$key]) : $array[$key];
+					$array[$key] = ($this->xss_clean) ? ee('Security/XSS')->clean($array[$key]) : $array[$key];
 				}
 			}
 
@@ -531,7 +531,7 @@ class XML_RPC_Response
 			}
 			else
 			{
-				$result = ($this->xss_clean) ? $CI->security->xss_clean($result) : $result;
+				$result = ($this->xss_clean) ? ee('Security/XSS')->clean($result) : $result;
 			}
 		}
 
@@ -1131,7 +1131,7 @@ class XML_RPC_Message extends CI_Xmlrpc
 				{
 					// 'bits' is for the MetaWeblog API image bits
 					// @todo - this needs to be made more general purpose
-					$array[$key] = ($key == 'bits' OR $this->xss_clean == FALSE) ? $array[$key] : $CI->security->xss_clean($array[$key]);
+					$array[$key] = ($key == 'bits' OR $this->xss_clean == FALSE) ? $array[$key] : ee('Security/XSS')->clean($array[$key]);
 				}
 			}
 
@@ -1151,7 +1151,7 @@ class XML_RPC_Message extends CI_Xmlrpc
 				}
 				else
 				{
-					$parameters[] = ($this->xss_clean) ? $CI->security->xss_clean($a_param) : $a_param;
+					$parameters[] = ($this->xss_clean) ? ee('Security/XSS')->clean($a_param) : $a_param;
 				}
 			}
 		}

@@ -53,6 +53,8 @@ class Updater {
 				'_update_members_table',
 				'_update_html_buttons',
 				'_update_files_table',
+				'_update_upload_prefs_table',
+				'_update_upload_directories',
 			)
 		);
 
@@ -493,6 +495,22 @@ class Updater {
 	 */
 	private function _update_entry_edit_date_format()
 	{
+		$fields = ee()->db->field_data('channel_titles');
+		foreach ($fields as $field)
+		{
+			if ($field->name == 'edit_date')
+			{
+				// Prior to 3.0.0 this column is a bigint if it is now an int
+				// then this method has already run and we need to return
+				if ($field->type == 'int')
+				{
+					return;
+				}
+
+				break;
+			}
+		}
+
 		ee()->db->query("SET time_zone = '+0:00';");
 		ee()->db->query("UPDATE exp_channel_titles SET edit_date=UNIX_TIMESTAMP(edit_date);");
 		ee()->db->query("SET time_zone = @@global.time_zone;");
@@ -677,6 +695,144 @@ class Updater {
 	private function _update_files_table()
 	{
 		ee()->smartforge->drop_column('files', 'rel_path');
+	}
+
+	/**
+	 * Adds columns to the upload prefs table as needed
+	 *
+	 * @return void
+	 */
+	private function _update_upload_prefs_table()
+	{
+		if ( ! ee()->db->field_exists('module_id', 'upload_prefs'))
+		{
+			ee()->smartforge->add_column(
+				'upload_prefs',
+				array(
+					'module_id' => array(
+						'type'    => 'INT(4)',
+						'null'    => TRUE,
+					)
+				)
+			);
+		}
+	}
+
+	/**
+	 * Adds member image directories (avatars, photos, etc...) as upload 
+	 * directories
+	 * 
+	 * @access private
+	 * @return void
+	 */
+	private function _update_upload_directories()
+	{
+		$module = ee('Model')->get('Module')->filter('module_name', 'Member')->first();
+
+		// Bail if the member module isn't installed
+		if (empty($module))
+		{
+			return TRUE;
+		}
+
+		// Install member upload directories
+		$site_id = ee()->config->item('site_id');
+		$member_directories = array();
+
+		if (ee()->config->item('enable_avatars') == 'y'
+			&& empty(ee('Model')->get('UploadDestination')->filter('name', 'Avatars')->first()))
+		{
+			$member_directories['Avatars'] = array(
+				'server_path' => ee()->config->item('avatar_path'),
+				'url' => ee()->config->item('avatar_url'),
+				'allowed_types' => 'img',
+				'max_width' => ee()->config->item('avatar_max_width'),
+				'max_height' => ee()->config->item('avatar_max_height'),
+				'max_size' => ee()->config->item('avatar_max_kb'),
+			);
+		}
+
+		if (ee()->config->item('enable_photos') == 'y'
+			&& empty(ee('Model')->get('UploadDestination')->filter('name', 'Member Photos')->first()))
+		{
+			$member_directories['Member Photos'] = array(
+				'server_path' => ee()->config->item('photo_path'),
+				'url' => ee()->config->item('photo_url'),
+				'allowed_types' => 'img',
+				'max_width' => ee()->config->item('photo_max_width'),
+				'max_height' => ee()->config->item('photo_max_height'),
+				'max_size' => ee()->config->item('photo_max_kb'),
+			);
+		}
+
+		if (ee()->config->item('allow_signatures') == 'y'
+			&& empty(ee('Model')->get('UploadDestination')->filter('name', 'Signature Attachments')->first()))
+		{
+			$member_directories['Signature Attachments'] = array(
+				'server_path' => ee()->config->item('sig_img_path'),
+				'url' => ee()->config->item('sig_img_url'),
+				'allowed_types' => 'img',
+				'max_width' => ee()->config->item('sig_img_max_width'),
+				'max_height' => ee()->config->item('sig_img_max_height'),
+				'max_size' => ee()->config->item('sig_img_max_kb'),
+			);
+		}
+
+		if (empty(ee('Model')->get('UploadDestination')->filter('name', 'Signature Attachments')->first()))
+		{
+			$member_directories['PM Attachments'] = array(
+				'server_path' => ee()->config->item('prv_msg_upload_path'),
+				'url' => str_replace('avatars', 'pm_attachments', ee()->config->item('avatar_url')),
+				'allowed_types' => 'img',
+				'max_size' => ee()->config->item('prv_msg_attach_maxsize')
+			);
+		}
+
+		foreach ($member_directories as $name => $dir)
+		{
+			$directory = ee('Model')->make('UploadDestination');
+			$directory->site_id = $site_id;
+			$directory->name = $name;
+			$directory->removeNoAccess();
+			$directory->setModule($module);
+
+			foreach ($dir as $property => $value)
+			{
+				$directory->$property = $value;
+			}
+
+			$directory->save();
+
+			if (is_readable($dir['server_path']))
+			{
+				// Insert Files
+				$files = scandir($dir['server_path']); 
+
+				foreach ($files as $filename)
+				{
+					$path = $dir['server_path'] . $filename;
+					
+					if ($filename != 'index.html' && is_file($path))
+					{
+						$time = time();
+						$file = ee('Model')->make('File');
+						$file->site_id = $site_id;
+						$file->upload_location_id = $directory->id;
+						$file->uploaded_by_member_id = 1;
+						$file->modified_by_member_id = 1;
+						$file->title = $filename;
+						$file->file_name = $filename;
+						$file->upload_date = $time;
+						$file->modified_date = $time;
+						$file->mime_type = mime_content_type($path);
+						$file->file_size = filesize($path);
+						$file->save();
+					}
+				}
+			}
+		}
+
+		return TRUE;
 	}
 }
 /* END CLASS */

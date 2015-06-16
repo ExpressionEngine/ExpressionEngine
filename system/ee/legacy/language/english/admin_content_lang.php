@@ -2,6 +2,86 @@
 
 $lang = array(
 
+// @since 3.0
+
+'custom_fields' =>
+'Custom Fields',
+
+'field' =>
+'Field',
+
+'fields' =>
+'Fields',
+
+'field_groups' =>
+'Field Groups',
+
+'field_groups_desc' =>
+'Used to group together related custom fields.',
+
+'id' =>
+'ID#',
+
+'create_field_group_warning' =>
+'<b>Warning</b>: Field groups require custom fields to be created.',
+
+'create_field_group_warning2' =>
+'It\'s best practice to create any <a href="%s">custom fields</a>, first.',
+
+'create_field_group' =>
+'Create Field Group',
+
+'custom_fields_desc' =>
+'Choose the fields you would like to include in this field group.',
+
+'custom_fields_not_found' =>
+'Zero <b>custom fields</b> found',
+
+'create_new_field' =>
+'Create New Field',
+
+'btn_create_field_group' =>
+'Create Field Group',
+
+'edit_field_group' =>
+'Edit Field Group',
+
+'btn_edit_field_group' =>
+'Edit Field Group',
+
+'create_field_group_success' =>
+'Field Group Created',
+
+'create_field_group_success_desc' =>
+'The field group <b>%s</b> has been created.',
+
+'create_field_group_error' =>
+'Cannot Create Field Group',
+
+'create_field_group_error_desc' =>
+'We were unable to create this field group, please review and fix errors below.',
+
+'edit_field_group_success' =>
+'Field Group Updated',
+
+'edit_field_group_success_desc' =>
+'The field group <b>%s</b> has been updated.',
+
+'edit_field_group_error' =>
+'Cannot Update Field Group',
+
+'edit_field_group_error_desc' =>
+'We were unable to update this field group, please review and fix errors below.',
+
+'success' =>
+'Success',
+
+'field_groups_removed_desc' =>
+'The following field groups were removed',
+
+
+// @since 2.x
+
 'reserved_word' =>
 'The field name you have chosen is a reserved word and cannot be used.  Please see the user guide for more information.',
 
@@ -151,9 +231,6 @@ $lang = array(
 
 'alpha' =>
 'Alphabetical',
-
-'id' =>
-'ID',
 
 'channel_id' =>
 'ID',
@@ -692,9 +769,6 @@ $lang = array(
 
 'field_groups' =>
 'Field Groups',
-
-'custom_fields' =>
-'Channel Field Groups',
 
 'no_field_group_message' =>
 'There are currently no channel fields',

@@ -3,7 +3,6 @@
 namespace EllisLab\ExpressionEngine\Model\File;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Service\Validation\Validator;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -36,6 +35,11 @@ class FileDimension extends Model {
 	protected static $_primary_key = 'id';
 	protected static $_gateway_names = array('FileDimensionGateway');
 
+	protected static $_typed_columns = array(
+		//'width'  => 'int',
+		//'height' => 'int'
+	);
+
 	protected static $_relationships = array(
 		'UploadDestination' => array(
 			'type' => 'belongsTo',
@@ -49,7 +53,7 @@ class FileDimension extends Model {
 	);
 
 	protected static $_validation_rules = array(
-		'short_name'  => 'required|alphaDash|uniqueWithinSiblings[UploadDestination,FileDimensions]',
+		'short_name'  => 'required|xss|alphaDash|uniqueWithinSiblings[UploadDestination,FileDimensions]',
 		'resize_type' => 'enum[crop,constrain]',
 		'width'       => 'isNatural|validateDimension|required',
 		'height'      => 'isNatural|validateDimension|required'
@@ -65,8 +69,11 @@ class FileDimension extends Model {
 	protected $height;
 	protected $watermark_id;
 
-	public function validateDimension()
+	/**
+	 * Require dimensions only if no watermark is set
+	 */
+	public function validateDimension($key, $value, $params, $rule)
 	{
-		return empty($this->watermark_id) ? TRUE : Validator::SKIP;
+		return empty($this->watermark_id) ? TRUE : $rule->skip();
 	}
 }

@@ -497,7 +497,7 @@ class EE_Messages_send extends EE_Messages {
 			$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_message_data d
 								 WHERE d.sender_id = '".ee()->db->escape_str($this->member_id)."'
 								 AND d.message_status = 'sent'
-								 AND d.message_body = '".ee()->db->escape_str(ee()->security->xss_clean(ee()->input->get_post('body')))."'");
+								 AND d.message_body = '".ee()->db->escape_str(ee('Security/XSS')->clean(ee()->input->get_post('body')))."'");
 
 			if ($query->row('count')  > 0)
 			{
@@ -878,14 +878,14 @@ class EE_Messages_send extends EE_Messages {
 
 				if (ee()->config->item('enable_censoring') == 'y' AND ee()->config->item('censored_words') != '')
         		{
-					$subject = ee()->typography->filter_censored_words(ee()->security->xss_clean(ee()->input->get_post('subject')));
+					$subject = ee()->typography->filter_censored_words(ee('Security/XSS')->clean(ee()->input->get_post('subject')));
 				}
 				else
 				{
-					$subject = ee()->security->xss_clean(ee()->input->get_post('subject'));
+					$subject = ee('Security/XSS')->clean(ee()->input->get_post('subject'));
 				}
 
-				$body = ee()->typography->parse_type(stripslashes(ee()->security->xss_clean(ee()->input->get_post('body'))),
+				$body = ee()->typography->parse_type(stripslashes(ee('Security/XSS')->clean(ee()->input->get_post('body'))),
 														array('text_format'	=> 'none',
 																 'html_format'	=> 'none',
 																 'auto_links'	=> 'n',

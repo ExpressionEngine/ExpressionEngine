@@ -11,17 +11,43 @@ use EllisLab\ExpressionEngine\Service\Grid;
 use EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Validation;
 use EllisLab\ExpressionEngine\Service\View;
+use EllisLab\ExpressionEngine\Service\Thumbnail;
 
 // TODO should put the version in here at some point ...
 return array(
 
-	'vendor' => 'EllisLab',
-	'product' => 'ExpressionEngine',
+	'author' => 'EllisLab',
+	'name' => 'ExpressionEngine',
 	'description' => 'The worlds most flexible content management system.',
 
 	'namespace' => 'EllisLab\ExpressionEngine',
 
 	'services' => array(
+
+		'CP/GridInput' => function($ee, $config = array())
+		{
+			$grid = new Library\CP\GridInput(
+				$config,
+				ee()->view,
+				ee()->cp,
+				ee()->config,
+				ee()->javascript
+			);
+
+			return $grid;
+		},
+
+		'CP/Table' => function($ee, $config = array())
+		{
+			return Library\CP\Table::fromGlobals($config);
+		},
+
+		'CP/URL' => function($ee, $path, $qs = array(), $cp_url = '', $session_id = NULL)
+		{
+			$session_id = $session_id ?: ee()->session->session_id();
+
+			return new Library\CP\URL($path, $session_id, $qs, $cp_url);
+		},
 
 		'db' => function($ee)
 		{
@@ -52,10 +78,15 @@ return array(
 
 		'Model' => function($ee)
 		{
-			$frontend = new Model\Frontend($ee->make('Model.Datastore'));
+			$frontend = new Model\Frontend($ee->make('Model/Datastore'));
 			$frontend->setValidationFactory($ee->make('Validation'));
 
 			return $frontend;
+		},
+
+		'Thumbnail' => function($ee)
+		{
+			return new Thumbnail\ThumbnailFactory();
 		}
 
 	),
@@ -87,12 +118,7 @@ return array(
 			return new Database\Database($db_config);
 		},
 
-		'Grid' => function($ee)
-		{
-			return new Grid\Grid();
-		},
-
-		'Model.Datastore' => function($ee)
+		'Model/Datastore' => function($ee)
 		{
 			$app = $ee->make('App');
 
@@ -113,6 +139,11 @@ return array(
 			return $ee->make('App')->getResponse();
 		},
 
+		'Security/XSS' => function($ee)
+		{
+			return new Library\Security\XSS();
+		},
+
 		'Validation' => function($ee)
 		{
 			return new Validation\Factory();
@@ -128,6 +159,7 @@ return array(
 			'Extension' => 'Model\Addon\Extension',
 			'Module' => 'Model\Addon\Module',
 			'Plugin' => 'Model\Addon\Plugin',
+			'Fieldtype' => 'Model\Addon\Fieldtype',
 
 			// ..\Category
 			'Category' => 'Model\Category\Category',

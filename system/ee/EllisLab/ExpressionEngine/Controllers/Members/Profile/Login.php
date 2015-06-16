@@ -188,7 +188,7 @@ class Login extends Profile {
 			}
 			elseif ($redirect == 'other' && ! empty($url = ee()->input->post('other')))
 			{
-				$return_path = ee()->security->xss_clean(strip_tags($url));
+				$return_path = ee('Security/XSS')->clean(strip_tags($url));
 			}
 		}
 
