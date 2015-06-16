@@ -20,6 +20,10 @@ abstract class FieldModel extends Model {
 	abstract public function getDataTable();
 
 	/**
+	 *
+	 */
+	abstract public function getStructure();
+
 	 * After inserting, add the columns to the data table
 	 */
 	public function onAfterInsert()
