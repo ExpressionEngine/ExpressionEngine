@@ -37,7 +37,7 @@ $this->table->add_row(array(
 			'id'	=> 'password',
 			'name'	=> 'password',
 			'class' => 'field',
-			'maxlength' => 40,
+			'maxlength' => PASSWORD_MAX_LENGTH,
 			'value' => set_value('password'),
 			'auto_complete' => 'off'
 			)
@@ -52,7 +52,7 @@ $this->table->add_row(array(
 			'id'	=> 'password_confirm',
 			'name'	=> 'password_confirm',
 			'class' => 'field',
-			'maxlength' => 40,
+			'maxlength' => PASSWORD_MAX_LENGTH,
 			'value' => set_value('password_confirm'),
 			'auto_complete' => 'off'
 			)
@@ -193,7 +193,7 @@ $this->table->add_row(array(
 		'rows'=> 12,
 		'name'=>'bio',
 		'value'=>$bio))
-	));			
+	));
 
 
 // Custom Fields
@@ -201,20 +201,20 @@ $this->table->add_row(array(
 foreach($custom_profile_fields as $row)
 {
 	$required  = ($row['m_field_required'] == 'n') ? '' : required();
-	
+
 	if ($row['m_field_type'] == 'textarea') // Textarea fieled types
 	{
 		$rows = ( ! isset($row['m_field_ta_rows'])) ? '10' : $row['m_field_ta_rows'];
 
 		$this->table->add_row(array(
 			form_label($required.$row['m_field_label'], 'm_field_id_'.$row['m_field_id']).
-			NBS.form_error('m_field_id_'.$row['m_field_id']).BR.$row['m_field_description'], 
+			NBS.form_error('m_field_id_'.$row['m_field_id']).BR.$row['m_field_description'],
 			form_textarea(array(
 				'name'	=>	'm_field_id_'.$row['m_field_id'],
 				'class'	=>	'field',
-				'id'	=>	'm_field_id_'.$row['m_field_id'], 
-				'rows'	=>	$rows, 
-				'style'=>'width:99%;', 
+				'id'	=>	'm_field_id_'.$row['m_field_id'],
+				'rows'	=>	$rows,
+				'style'=>'width:99%;',
 				'value'	=> 	set_value('m_field_id_'.$row['m_field_id']))
 				)
 			)
@@ -240,10 +240,10 @@ foreach($custom_profile_fields as $row)
 			form_label($required.$row['m_field_label'], 'm_field_id_'.$row['m_field_id']).
 			NBS.form_error('m_field_id_'.$row['m_field_id']).BR.$row['m_field_description'],
 			form_input(array(
-				'name'		=>	'm_field_id_'.$row['m_field_id'], 
-				'id'		=>	'm_field_id_'.$row['m_field_id'], 
-				'class'		=>	'field', 
-				'value'		=>	set_value('m_field_id_'.$row['m_field_id']), 
+				'name'		=>	'm_field_id_'.$row['m_field_id'],
+				'id'		=>	'm_field_id_'.$row['m_field_id'],
+				'class'		=>	'field',
+				'value'		=>	set_value('m_field_id_'.$row['m_field_id']),
 				'maxlength'	=>	$row['m_field_maxl'])))
 				);
 	}
@@ -255,5 +255,5 @@ echo $this->table->generate();
 	<p><?=form_submit('members', lang('register_member'), 'class="submit"')?></p>
 
 	<?=form_close()?>
-	
+
 <?php endif ?>

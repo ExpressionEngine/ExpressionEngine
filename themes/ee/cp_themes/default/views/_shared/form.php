@@ -128,6 +128,10 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 							$attrs .= " data-group-toggle='".json_encode($field['group_toggle'])."'";;
 							$attrs .= ' onchange="EE.cp.form_group_toggle(this)"';
 						}
+						if (isset($field['maxlength']))
+						{
+							$attrs .= ' maxlength="'.(int) $field['maxlength'].'"';
+						}
 						$has_note = isset($field['note']);
 
 						$no_results = (in_array($field['type'], array('checkbox', 'radio', 'dropdown')) &&

@@ -2319,30 +2319,32 @@ class Member {
 		// Finalize the output
 		$str = ee()->functions->prep_conditionals($str, array('current_request' => $this->request));
 
-		$str = $this->_var_swap($str,
-								array(
-										'lang'						=> ee()->config->item('xml_lang'),
-										'charset'					=> ee()->config->item('output_charset'),
-										'path:image_url'			=> ($this->image_url == '') ? $theme_images : $this->image_url,
-										'path:your_control_panel'	=> $this->_member_path('profile'),
-										'path:your_profile'			=> $this->_member_path(ee()->session->userdata('member_id')),
-										'path:edit_preferences'		=> $this->_member_path('edit_preferences'),
-										'path:register'				=> $this->_member_path('register'.$simple),
-										'path:private_messages'		=> $this->_member_path('messages'),
-										'path:memberlist'			=> $this->_member_path('memberlist'),
-										'path:signature'			=> $this->_member_path('edit_signature'),
-										'path:avatar'				=> $this->_member_path('edit_avatar'),
-										'path:photo'				=> $this->_member_path('edit_photo'),
-										'path:smileys'				=> $this->_member_path('smileys'),
-										'path:forgot'				=> $this->_member_path('forgot_password'.$simple),
-										'path:login'				=> $this->_member_path('login'.$simple),
-										'path:delete'				=> $this->_member_path('delete'),
-										'page_title'				=> $this->page_title,
-										'site_name'					=> stripslashes(ee()->config->item('site_name')),
-										'path:theme_css'			=> $this->css_file_path,
-										'current_request'			=> $this->request
-									)
-								 );
+		$str = $this->_var_swap(
+			$str,
+			array(
+				'lang'                    => ee()->config->item('xml_lang'),
+				'charset'                 => ee()->config->item('output_charset'),
+				'path:image_url'          => ($this->image_url == '') ? $theme_images : $this->image_url,
+				'path:your_control_panel' => $this->_member_path('profile'),
+				'path:your_profile'       => $this->_member_path(ee()->session->userdata('member_id')),
+				'path:edit_preferences'   => $this->_member_path('edit_preferences'),
+				'path:register'           => $this->_member_path('register'.$simple),
+				'path:private_messages'   => $this->_member_path('messages'),
+				'path:memberlist'         => $this->_member_path('memberlist'),
+				'path:signature'          => $this->_member_path('edit_signature'),
+				'path:avatar'             => $this->_member_path('edit_avatar'),
+				'path:photo'              => $this->_member_path('edit_photo'),
+				'path:smileys'            => $this->_member_path('smileys'),
+				'path:forgot'             => $this->_member_path('forgot_password'.$simple),
+				'path:login'              => $this->_member_path('login'.$simple),
+				'path:delete'             => $this->_member_path('delete'),
+				'page_title'              => $this->page_title,
+				'site_name'               => stripslashes(ee()->config->item('site_name')),
+				'path:theme_css'          => $this->css_file_path,
+				'current_request'         => $this->request,
+				'password_max_length'     => PASSWORD_MAX_LENGTH
+			)
+		);
 
 		// parse regular global vars
 		ee()->load->library('template', NULL, 'TMPL');

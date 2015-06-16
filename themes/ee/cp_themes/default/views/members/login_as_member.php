@@ -18,14 +18,14 @@
 	<?php endif;?>
 	<div>
 		<?=form_radio(array('name'=>'return_destination','id'=>'other', 'value'=>'other'))?>
-		<?=lang('other', 'other')?> 
+		<?=lang('other', 'other')?>
 		<?=form_input(array('id'=>'other_url','name'=>'other_url','size'=>50,'value'=>$this->functions->fetch_site_index()))?>
 	</div>
 
 	<br />
 	<p>
 		<span class="notice"><?=lang('password_auth', 'password_auth')?></span>
-		<?=form_password(array('id' => 'password_auth', 'name' => 'password_auth', 'maxlength' => 40, 'autofocus' => 'autofocus'))?>
+		<?=form_password(array('id' => 'password_auth', 'name' => 'password_auth', 'maxlength' => PASSWORD_MAX_LENGTH, 'autofocus' => 'autofocus'))?>
 	</p>
 
 	<p>

@@ -14,7 +14,7 @@
 		</fieldset>
 		<fieldset class="last">
 			<?=lang('password', 'password')?>
-			<?=form_password(array('dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => 40, 'autocomplete' => 'off'))?>
+			<?=form_password(array('dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
 			<em><a href="<?=cp_url('/login/forgotten_password_form')?>"><?=lang('forgotten_password')?></a></em>
 		</fieldset>
 		<?php if ($cp_session_type == 'c'):?>

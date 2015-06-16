@@ -3136,6 +3136,9 @@ class EE_Template {
 		// {doc_url}
 		$str = str_replace(LD.'doc_url'.RD, ee()->config->item('doc_url'), $str);
 
+		// {password_max_length}
+		$str = str_replace(LD.'password_max_length'.RD, PASSWORD_MAX_LENGTH, $str);
+
 		// {theme_folder_url}
 		$str = str_replace(LD.'theme_folder_url'.RD, URL_THEMES, $str);
 

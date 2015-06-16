@@ -105,6 +105,7 @@ class Member_auth extends Member {
 		}
 
 		ee()->load->library('auth');
+		ee()->lang->loadfile('login');
 
 		/* -------------------------------------------
 		/* 'member_member_login_start' hook.
@@ -132,6 +133,11 @@ class Member_auth extends Member {
 			return ee()->output->show_user_error('general', lang('mbr_form_empty'));
 		}
 
+		if (strlen($password) > PASSWORD_MAX_LENGTH)
+		{
+			return ee()->output->show_user_error('general', lang('credential_missmatch'));
+		}
+
 		// This should go in the auth lib.
 		if ( ! ee()->auth->check_require_ip())
 		{
@@ -141,8 +147,6 @@ class Member_auth extends Member {
 		// Check password lockout status
 		if (TRUE === ee()->session->check_password_lockout($username))
 		{
-			ee()->lang->loadfile('login');
-
 			$line = lang('password_lockout_in_effect');
 			$line = sprintf($line, ee()->config->item('password_lockout_interval'));
 
