@@ -7,5 +7,5 @@ return array(
 	'description' => '',
 	'version'     => '3.0.1',
 	'namespace'   => 'EllisLab\Addons\Blacklist',
-	'settings_exist' => FALSE,
+	'settings_exist' => TRUE,
 );

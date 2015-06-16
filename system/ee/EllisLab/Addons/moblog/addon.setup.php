@@ -7,5 +7,5 @@ return array(
 	'description' => '',
     'version'     => '3.2',
     'namespace'   => 'EllisLab\Addons\Moblog',
-	'settings_exist' => FALSE,
+	'settings_exist' => TRUE,
 );

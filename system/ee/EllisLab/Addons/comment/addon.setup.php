@@ -7,5 +7,5 @@ return array(
 	'description' => '',
 	'version'     => '2.3.2',
 	'namespace'   => 'EllisLab\Addons\Comment',
-	'settings_exist' => FALSE,
+	'settings_exist' => TRUE,
 );

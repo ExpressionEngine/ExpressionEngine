@@ -7,5 +7,5 @@ return array(
 	'description' => '',
 	'version'     => '2.2',
 	'namespace'   => 'EllisLab\Addons\SimpleCommerce',
-	'settings_exist' => FALSE,
+	'settings_exist' => TRUE,
 );

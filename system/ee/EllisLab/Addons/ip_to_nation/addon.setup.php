@@ -7,5 +7,5 @@ return array(
 	'description' => '',
 	'version'     => '3.0',
 	'namespace'   => 'EllisLab\Addons\IpToNation',
-	'settings_exist' => FALSE,
+	'settings_exist' => TRUE,
 );

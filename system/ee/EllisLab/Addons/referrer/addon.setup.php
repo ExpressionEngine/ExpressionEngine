@@ -7,5 +7,5 @@ return array(
 	'description' => '',
 	'version'     => '2.1.1',
 	'namespace'   => 'EllisLab\Addons\Referrer',
-	'settings_exist' => FALSE,
+	'settings_exist' => TRUE,
 );

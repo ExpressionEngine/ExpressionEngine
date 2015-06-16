@@ -7,5 +7,5 @@ return array(
 	'description' => "The world's most flexible file picker.",
 	'version'     => '1.0',
 	'namespace'   => 'EllisLab\Addons\FilePicker',
-	'settings_exist' => FALSE,
+	'settings_exist' => TRUE,
 );

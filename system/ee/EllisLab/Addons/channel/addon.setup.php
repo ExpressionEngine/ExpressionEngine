@@ -7,5 +7,5 @@ return array(
 	'description' => '',
 	'version'     => '2.0.1',
 	'namespace'   => 'EllisLab\Addons\Channel',
-	'settings_exist' => FALSE,
+	'settings_exist' => TRUE,
 );

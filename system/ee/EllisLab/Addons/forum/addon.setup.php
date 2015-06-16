@@ -7,5 +7,5 @@ return array(
 	'description' => '',
 	'version'     => '3.1.19',
 	'namespace'   => 'EllisLab\Addons\Forum',
-	'settings_exist' => FALSE,
+	'settings_exist' => TRUE,
 );
