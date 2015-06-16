@@ -324,6 +324,7 @@ abstract class ContentModel extends Model {
 		$facade = new FieldFacade($id, $info);
 		$facade->setName($name);
 		$facade->setContentId($this->getId());
+		$facade->setContentType($this->getStructure()->getContentType());
 
 		$this->_field_facades[$name] = $facade;
 	}
