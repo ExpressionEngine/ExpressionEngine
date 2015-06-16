@@ -79,6 +79,11 @@ class CategoryField extends FieldModel {
 		}
 	}
 
+	public function getStructure()
+	{
+		return $this->getCategoryGroup();
+	}
+
 	public function getDataTable()
 	{
 		return 'category_field_data';
