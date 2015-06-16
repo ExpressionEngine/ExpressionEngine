@@ -2892,7 +2892,19 @@ class EE_Template {
 					{
 						continue;
 					}
-					$this->modules[] = $file;
+
+					try
+					{
+						$info = ee('App')->get($file);
+						if (file_exists($info->getPath() . '/mod.' . $file . '.php'))
+						{
+							$this->modules[] = $file;
+						}
+					}
+					catch (\Exception $e)
+					{
+						continue;
+					}
 				}
 			}
 		}
