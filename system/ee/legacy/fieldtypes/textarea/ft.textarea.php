@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-use EllisLab\ExpressionEngine\Module\FilePicker\FilePicker;
+use EllisLab\Addons\FilePicker\FilePicker;
 
 /**
  * ExpressionEngine - by EllisLab
