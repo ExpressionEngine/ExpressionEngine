@@ -63,6 +63,21 @@ class CategoryField extends FieldModel {
 	protected $field_required;
 	protected $field_order;
 
+
+	public function getSettingsValues()
+	{
+		$values = parent::getValues();
+
+		$values['edit_format_link'] = 'boo';
+		$values['field_show_fmt_y'] = 'boo';
+		$values['field_show_fmt_options'] = 'boo';
+		$values['field_fmt_options'] = 'boo';
+		$values['field_text_direction_ltr'] = 'boo';
+		$values['field_content_type'] = 'boo';
+
+		return $values;
+	}
+
 	/**
 	 * New fields get appended
 	 */

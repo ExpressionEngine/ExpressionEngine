@@ -31,7 +31,7 @@ abstract class FieldModel extends Model {
 	/**
 	 *
 	 */
-	public function getField()
+	public function getField($override = array())
 	{
 		if ( ! isset($this->field_type))
 		{
@@ -40,7 +40,10 @@ abstract class FieldModel extends Model {
 
 		if ( ! isset($this->_facade) || $this->_facade->getType() != $this->field_type)
 		{
-			$this->_facade = new FieldFacade($this->getId(), $this->getValues());
+			$default_values = $this->getValues();
+			$values = array_merge($this->getValues(), $override);
+
+			$this->_facade = new FieldFacade($this->getId(), $values);
 			$this->_facade->setContentType($this->getStructure()->getContentType());
 		}
 
@@ -49,7 +52,12 @@ abstract class FieldModel extends Model {
 
 	public function getSettingsForm()
 	{
-		return $this->getField()->getSettingsForm();
+		return $this->getField($this->getSettingsValues())->getSettingsForm();
+	}
+
+	public function getSettingsValues()
+	{
+		return array();
 	}
 
 	/**
