@@ -12,6 +12,7 @@ class FieldFacade {
 	private $required;
 	private $field_name;
 	private $content_id;
+	private $content_type;
 	private $value;
 
 	public function __construct($field_id, array $metadata)
@@ -43,6 +44,16 @@ class FieldFacade {
 	public function getContentId()
 	{
 		return $this->content_id;
+	}
+
+	public function setContentType($type)
+	{
+		$this->content_type = $type;
+	}
+
+	public function getContentType($type)
+	{
+		return $this->content_type;
 	}
 
 	public function setTimezone($tz)
@@ -189,7 +200,8 @@ class FieldFacade {
 
 		ee()->api_channel_fields->setup_handler($data['field_id']);
 		ee()->api_channel_fields->apply('_init', array(array(
-			'content_id' => $this->content_id
+			'content_id' => $this->content_id,
+			'content_type' => $this->content_type
 		)));
 
 		return $data;
