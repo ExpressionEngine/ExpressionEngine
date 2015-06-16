@@ -71,4 +71,14 @@ class ChannelField extends FieldModel {
 		return 'channel_data';
 	}
 
+	public function set__field_settings($settings)
+	{
+		$this->setRawProperty('settings', base64_encode(serialize($settings)));
+	}
+
+	public function get__field_settings()
+	{
+		return unserialize(base64_decode($this->settings));
+	}
+
 }
