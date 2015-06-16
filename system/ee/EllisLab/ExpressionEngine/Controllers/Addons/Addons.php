@@ -299,8 +299,16 @@ class Addons extends CP_Controller {
 
 		$addons = array();
 
+		// @TODO move these 2 things out of "add-ons" entirely
+		$uninstallable = array('channel', 'comment');
+
 		foreach (array_keys($providers) as $name)
 		{
+			if (in_array($name, $uninstallable))
+			{
+				continue;
+			}
+
 			$addon = $this->getExtension($name);
 			$addon = array_merge($addon, $this->getFieldType($name));
 			$addon = array_merge($addon, $this->getPlugin($name));
