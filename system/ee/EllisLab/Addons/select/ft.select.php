@@ -117,10 +117,45 @@ class Select_ft extends EE_Fieldtype {
 
 	function display_settings($data)
 	{
-		$prefix = 'select';
+		$settings = array(
+			array(
+				'title' => 'select_menu_options',
+				'desc' => 'select_menu_options_desc',
+				'fields' => array(
+					'field_list_items' => array(
+						'type' => 'textarea',
+						'value' => $data['field_list_items']
+					)
+				)
+			),
+			array(
+				'title' => 'field_fmt',
+				'desc' => 'field_fmt_desc',
+				'fields' => array(
+					'field_fmt' => array(
+						'type' => 'dropdown',
+						'choices' => array(
+							'none'	=> lang('none'),
+							'xhtml'	=> lang('xhtml'),
+							'br'	=> lang('auto_br')
+						),
+						'value' => $data['field_fmt'],
+					)
+				)
+			),
+			array(
+				'title' => 'field_show_fmt',
+				'desc' => 'field_show_fmt_desc',
+				'fields' => array(
+					'field_show_fmt' => array(
+						'type' => 'yes_no',
+						'value' => $data['field_show_fmt'] ?: 'n'
+					)
+				)
+			)
+		);
 
- 		$this->field_formatting_row($data, $prefix);
-		$this->multi_item_row($data, $prefix);
+		return $settings;
 	}
 
 	function grid_display_settings($data)

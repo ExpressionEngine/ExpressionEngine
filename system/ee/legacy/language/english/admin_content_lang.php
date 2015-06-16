@@ -1119,6 +1119,52 @@ $lang = array(
 'unauthorized_for_this_channel' =>
 'You are not authorized to post in this channel',  // Allard says he rules
 
+/**
+ * 3.0
+ */
+
+'field_max_length' =>
+'Maximum characters',
+
+'field_max_length_desc' =>
+'Maximum number of characters allowed in this field.',
+
+'field_fmt' =>
+'Text formatting',
+
+'field_fmt_desc' =>
+'Default text formatting for this field.',
+
+'field_show_fmt' =>
+'Allow override?',
+
+'field_show_fmt_desc' =>
+'When set to <b>yes</b>, authors can override the default text formatting for this field from the publish form.',
+
+'field_text_direction' =>
+'Text direction',
+
+'field_text_direction_desc' =>
+'Default text direction for output.',
+
+'field_text_direction_ltr' =>
+'Left to right',
+
+'field_text_direction_rtl' =>
+'Right to left',
+
+'textarea_height' =>
+'Textarea row height',
+
+'textarea_height_desc' =>
+'Height of this field in rows.',
+
+'select_menu_options' =>
+'Select menu options',
+
+'select_menu_options_desc' =>
+'Choose how to create the options for this field.',
+
 ''=>''
 );
 

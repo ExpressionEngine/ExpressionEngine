@@ -154,6 +154,66 @@ class Text_ft extends EE_Fieldtype {
 
 	function display_settings($data)
 	{
+		$settings = array(
+			array(
+				'title' => 'field_max_length',
+				'desc' => 'field_max_length',
+				'fields' => array(
+					'field_maxl' => array(
+						'type' => 'text',
+						'value' => ($data['field_maxl'] == '') ? 256 : $data['field_maxl']
+					)
+				)
+			),
+			array(
+				'title' => 'field_fmt',
+				'desc' => 'field_fmt_desc',
+				'fields' => array(
+					'field_fmt' => array(
+						'type' => 'dropdown',
+						'choices' => array(
+							'none'	=> lang('none'),
+							'xhtml'	=> lang('xhtml'),
+							'br'	=> lang('auto_br')
+						),
+						'value' => $data['field_fmt'],
+					)
+				)
+			),
+			array(
+				'title' => 'field_show_fmt',
+				'desc' => 'field_show_fmt_desc',
+				'fields' => array(
+					'field_show_fmt' => array(
+						'type' => 'yes_no',
+						'value' => $data['field_show_fmt'] ?: 'n'
+					)
+				)
+			),
+			array(
+				'title' => 'field_text_direction',
+				'desc' => 'field_text_direction_desc',
+				'fields' => array(
+					'field_text_direction' => array(
+						'type' => 'dropdown',
+						'choices' => array(
+							'ltr' => lang('field_text_direction_ltr'),
+							'rtl' => lang('field_text_direction_rtl')
+						),
+						'value' => $data['field_text_direction'],
+					)
+				)
+			)
+		);
+
+		// Return a subset of the text settings for category content type
+		if ($this->content_type() == 'category')
+		{
+			return $settings;
+		}
+
+		// Construct the rest of the settings form for Channel...
+
 		$prefix = 'text';
 		$extra = '';
 
