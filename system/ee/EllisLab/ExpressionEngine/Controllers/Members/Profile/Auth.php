@@ -220,19 +220,11 @@ class Auth extends Profile {
 			$data['username'] = $_POST['username'];
 		}
 
-		// Was a password submitted?
-		$pw_change = FALSE;
-
 		if ($_POST['password'] != '')
 		{
 			$this->load->library('auth');
 
 			$this->auth->update_password($this->member->member_id, $this->input->post('password'));
-
-			if ($this->self_edit)
-			{
-				$pw_change = TRUE;
-			}
 		}
 
 		$this->member_model->update_member($this->member->member_id, $data);
