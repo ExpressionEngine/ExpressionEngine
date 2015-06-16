@@ -82,26 +82,55 @@ class CI_DB_mysqli_result extends CI_DB_result {
 	 *
 	 * Generates an array of objects containing field meta-data
 	 *
+	 * PDO can do this just fine except for the type and default. The
+	 * default is not reported and the type is all wrong (e.g. LONG for
+	 * int fields) due to a complete lack of specification. So we do those
+	 * with an EXPLAIN. Highly recommend just using EXPLAIN directly if it
+	 * suits.
+	 *
 	 * @access	public
 	 * @return	array
 	 */
 	function field_data()
 	{
-		$retval = array();
+		$total = $this->pdo_statement->columnCount();
 
-		while ($field = mysqli_fetch_field($this->result_id))
+		$tables = array();
+		$column_data = array();
+
+ 		for ($i = 0; $i < $total; $i++)
 		{
-			$F				= new stdClass();
-			$F->name		= $field->name;
-			$F->type		= $field->type;
-			$F->default		= $field->def;
-			$F->max_length	= $field->max_length;
-			$F->primary_key = ($field->flags & MYSQLI_PRI_KEY_FLAG) ? 1 : 0;
+			$column = $this->pdo_statement->getColumnMeta($i);
 
-			$retval[] = $F;
+			$name = $column['name'];
+			$table = $column['table'];
+
+			$field = new stdClass();
+			$field->name = $name;
+			$field->max_length = $column['len'];
+			$field->primary_key = in_array('primary_key', $column['flags']);
+
+			$tables[] = $table;
+			$column_data[$table.'.'.$name] = $field;
 		}
 
-		return $retval;
+		// Now desribe the involved tables and grab the mysql type and default
+		$tables = array_unique($tables);
+
+		foreach ($tables as $table)
+		{
+			$fields = ee('db')->query('DESCRIBE '.$table)->result_array();
+
+			foreach ($fields as $field)
+			{
+				$F = $column_data[$table.'.'.$field['Field']];
+
+				$F->type = strstr($field['Type'].'(', '(', TRUE);
+				$F->default = $field['Default'];
+			}
+		}
+
+		return array_values($column_data);
 	}
 
 	// --------------------------------------------------------------------

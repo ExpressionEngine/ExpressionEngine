@@ -178,6 +178,12 @@ feature 'Upload Destination Create/Edit' do
   end
 
   it 'should validate image manipulation data' do
+    watermark = WatermarkEdit.new
+    watermark.load
+    watermark.wm_name.set 'Test'
+    watermark.submit
+
+    @page.load
     @page.should have_text 'No manipulations created'
     @page.should have_grid_add_no_results
     @page.should have_no_grid_add
@@ -188,6 +194,11 @@ feature 'Upload Destination Create/Edit' do
     @page.should have_no_grid_add_no_results
     @page.should have_grid_add
     @page.grid_rows.size.should == 2 # Includes header
+
+    # Make sure watermarks are available
+    within @page.watermark_for_row(1) do
+        all('option').map(&:value).should == ['0','1']
+    end
 
     # Should remove row and show "no manipulations" message
     @page.delete_for_row(1).click
@@ -241,6 +252,16 @@ feature 'Upload Destination Create/Edit' do
     @page.wait_for_error_message_count(1)
     grid_cell_should_have_error_text(width_cell, $required_error)
 
+    # Not required when a watermark is selected
+    @page.watermark_for_row(1).select('Test')
+    width_cell.trigger 'blur'
+    @page.wait_for_error_message_count(0)
+    grid_cell_should_have_no_error_text(width_cell)
+
+    @page.watermark_for_row(1).select('No watermark')
+    width_cell.trigger 'blur'
+    @page.wait_for_error_message_count(1)
+
     width_cell.set '4'
     width_cell.trigger 'blur'
     @page.wait_for_error_message_count(0)
@@ -256,6 +277,16 @@ feature 'Upload Destination Create/Edit' do
     height_cell.trigger 'blur'
     @page.wait_for_error_message_count(2)
     grid_cell_should_have_error_text(height_cell, $required_error)
+
+    # Not required when a watermark is selected
+    @page.watermark_for_row(1).select('Test')
+    height_cell.trigger 'blur'
+    @page.wait_for_error_message_count(1)
+    grid_cell_should_have_no_error_text(height_cell)
+
+    @page.watermark_for_row(1).select('No watermark')
+    height_cell.trigger 'blur'
+    @page.wait_for_error_message_count(2)
 
     height_cell.set '4'
     height_cell.trigger 'blur'
@@ -451,19 +482,11 @@ feature 'Upload Destination Create/Edit' do
     @page.name.value.should == 'New name upload dir'
   end
 
-  #it 'should reject XSS' do
-  #  # These are really the only fields we allow free form entry into
-  #  @page.name.set $xss_vector
-  #  @page.name.trigger 'blur'
-  #  @page.wait_for_error_message_count(1)
-  #  should_have_error_text(@page.name, $xss_error)
-  #  should_have_form_errors(@page)
-
-  #  @page.url.set $xss_vector
-  #  @page.url.trigger 'blur'
-  #  @page.wait_for_error_message_count(2)
-  #  should_have_error_text(@page.name, $xss_error)
-  #  should_have_error_text(@page.url, $xss_error)
-  #  should_have_form_errors(@page)
-  #end
+  it 'should reject XSS' do
+    @page.name.set $xss_vector
+    @page.name.trigger 'blur'
+    @page.wait_for_error_message_count(1)
+    should_have_error_text(@page.name, $xss_error)
+    should_have_form_errors(@page)
+  end
 end

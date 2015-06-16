@@ -57,7 +57,7 @@ class Ignore extends Profile {
 		$sort_dir = ee()->input->get('sort_dir') ?: $sort;
 		$page = ee()->input->get('page') > 0 ? ee()->input->get('page') : 1;
 
-		$table = Table::create(array(
+		$table = ee('CP/Table', array(
 			'sort_col' => $sort_col,
 			'sort_dir' => $sort_dir,
 			'limit' => $perpage
@@ -155,8 +155,8 @@ class Ignore extends Profile {
 	}
 
 	/**
-	 * Remove users from ignore list 
-	 * 
+	 * Remove users from ignore list
+	 *
 	 * @access public
 	 * @return void
 	 */

@@ -794,7 +794,7 @@ class EE_Upload {
 		}
 
 		$CI =& get_instance();
-		return $CI->security->xss_clean($data, TRUE);
+		return ee('Security/XSS')->clean($data, TRUE);
 	}
 
 	// --------------------------------------------------------------------

@@ -94,7 +94,7 @@ class Publish extends AbstractPublishController {
 		}
 
 		$entry = ee('Model')->make('ChannelEntry');
-		$entry->channel_id = $channel_id;
+		$entry->setChannel($channel);
 		$entry->site_id =  ee()->config->item('site_id');
 		$entry->author_id = ee()->session->userdata('member_id');
 		$entry->ip_address = ee()->session->userdata['ip_address'];

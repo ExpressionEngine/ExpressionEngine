@@ -657,7 +657,7 @@ class Communicate extends Utilities {
 			ee()->view->set_message('success', lang('emails_removed'), '');
 		}
 
-		$table = Table::create();
+		$table = ee('CP/Table');
 		$table->setColumns(
 			array(
 				'subject',

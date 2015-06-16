@@ -185,7 +185,7 @@ class Query extends Utilities {
 			$table_config['autosearch'] = TRUE;
 		}
 
-		$table = CP\Table::create($table_config);
+		$table = ee('CP/Table', $table_config);
 		$table->setColumns($columns);
 
 		$search = $table->search; // PHP 5.3
@@ -266,7 +266,7 @@ class Query extends Utilities {
 		$data = $view_data['data'];
 		$vars['table'] = $view_data;
 
-		$vars['thequery'] = ee()->security->xss_clean($sql);
+		$vars['thequery'] = ee('Security/XSS')->clean($sql);
 		$vars['total_results'] = (isset($total_results)) ? $total_results : 0;
 		$vars['total_results'] = ($show_query) ? $vars['table']['total_rows'] : $vars['total_results'];
 

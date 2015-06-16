@@ -12,6 +12,7 @@ class FieldFacade {
 	private $required;
 	private $field_name;
 	private $content_id;
+	private $content_type;
 	private $value;
 
 	public function __construct($field_id, array $metadata)
@@ -43,6 +44,16 @@ class FieldFacade {
 	public function getContentId()
 	{
 		return $this->content_id;
+	}
+
+	public function setContentType($type)
+	{
+		$this->content_type = $type;
+	}
+
+	public function getContentType($type)
+	{
+		return $this->content_type;
 	}
 
 	public function setTimezone($tz)
@@ -155,6 +166,40 @@ class FieldFacade {
 		return ee()->api_channel_fields->apply('display_publish_field', array($field_value));
 	}
 
+	public function getSettingsForm()
+	{
+		ee()->load->library('table');
+		$data = $this->initField();
+		$out = ee()->api_channel_fields->apply('display_settings', array($data));
+
+		if ($out == '')
+		{
+			return ee()->table->rows;
+		}
+
+		return $out;
+	}
+
+	public function saveSettingsForm($data)
+	{
+		$this->initField();
+		return ee()->api_channel_fields->apply('save_settings', array($data));
+	}
+
+	public function getStatus()
+	{
+		$data = $this->initField();
+		// initField can sometimes return a string if the field has a
+		// string_override key.
+
+		$field_value = set_value(
+			$this->getName(),
+			is_string($data) ? $data : $data['field_data']
+		);
+
+		return ee()->api_channel_fields->apply('get_field_status', array($field_value));
+	}
+
 
 	// TODO THIS WILL MOST DEFINITELY GO AWAY! BAD DEVELOPER!
 	public function getNativeField()
@@ -175,7 +220,8 @@ class FieldFacade {
 
 		ee()->api_channel_fields->setup_handler($data['field_id']);
 		ee()->api_channel_fields->apply('_init', array(array(
-			'content_id' => $this->content_id
+			'content_id' => $this->content_id,
+			'content_type' => $this->content_type
 		)));
 
 		return $data;

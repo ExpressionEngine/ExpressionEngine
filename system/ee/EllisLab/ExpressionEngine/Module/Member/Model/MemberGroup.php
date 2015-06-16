@@ -9,6 +9,76 @@ class MemberGroup extends Model {
 	protected static $_primary_key = 'group_id';
 	protected static $_table_name = 'member_groups';
 
+	protected static $_typed_columns = array(
+		'group_id'                       => 'int',
+		'site_id'                        => 'int',
+		'is_locked'                      => 'boolString',
+		'can_view_offline_system'        => 'boolString',
+		'can_view_online_system'         => 'boolString',
+		'can_access_cp'                  => 'boolString',
+		'can_access_content'             => 'boolString',
+		'can_access_publish'             => 'boolString',
+		'can_access_edit'                => 'boolString',
+		'can_access_files'               => 'boolString',
+		'can_access_fieldtypes'          => 'boolString',
+		'can_access_design'              => 'boolString',
+		'can_access_addons'              => 'boolString',
+		'can_access_modules'             => 'boolString',
+		'can_access_extensions'          => 'boolString',
+		'can_access_plugins'             => 'boolString',
+		'can_access_members'             => 'boolString',
+		'can_access_admin'               => 'boolString',
+		'can_access_sys_prefs'           => 'boolString',
+		'can_access_content_prefs'       => 'boolString',
+		'can_access_tools'               => 'boolString',
+		'can_access_comm'                => 'boolString',
+		'can_access_utilities'           => 'boolString',
+		'can_access_data'                => 'boolString',
+		'can_access_logs'                => 'boolString',
+		'can_admin_channels'             => 'boolString',
+		'can_admin_upload_prefs'         => 'boolString',
+		'can_admin_design'               => 'boolString',
+		'can_admin_members'              => 'boolString',
+		'can_delete_members'             => 'boolString',
+		'can_admin_mbr_groups'           => 'boolString',
+		'can_admin_mbr_templates'        => 'boolString',
+		'can_ban_users'                  => 'boolString',
+		'can_admin_modules'              => 'boolString',
+		'can_admin_templates'            => 'boolString',
+		'can_edit_categories'            => 'boolString',
+		'can_delete_categories'          => 'boolString',
+		'can_view_other_entries'         => 'boolString',
+		'can_edit_other_entries'         => 'boolString',
+		'can_assign_post_authors'        => 'boolString',
+		'can_delete_self_entries'        => 'boolString',
+		'can_delete_all_entries'         => 'boolString',
+		'can_view_other_comments'        => 'boolString',
+		'can_edit_own_comments'          => 'boolString',
+		'can_delete_own_comments'        => 'boolString',
+		'can_edit_all_comments'          => 'boolString',
+		'can_delete_all_comments'        => 'boolString',
+		'can_moderate_comments'          => 'boolString',
+		'can_send_email'                 => 'boolString',
+		'can_send_cached_email'          => 'boolString',
+		'can_email_member_groups'        => 'boolString',
+		'can_email_from_profile'         => 'boolString',
+		'can_view_profiles'              => 'boolString',
+		'can_edit_html_buttons'          => 'boolString',
+		'can_delete_self'                => 'boolString',
+		'mbr_delete_notify_emails'       => 'boolString',
+		'can_post_comments'              => 'boolString',
+		'exclude_from_moderation'        => 'boolString',
+		'can_search'                     => 'boolString',
+		'search_flood_control'           => 'boolString',
+		'can_send_private_messages'      => 'boolString',
+		'prv_msg_send_limit'             => 'boolString',
+		'prv_msg_storage_limit'          => 'boolString',
+		'can_attach_in_private_messages' => 'boolString',
+		'can_send_bulletins'             => 'boolString',
+		'include_in_authorlist'          => 'boolString',
+		'include_in_memberlist'          => 'boolString',
+	);
+
 	protected static $_relationships = array(
 		'Site' => array(
 			'type' => 'belongsTo'
@@ -24,6 +94,11 @@ class MemberGroup extends Model {
 				'table' => 'channel_member_groups'
 			)
 		)
+	);
+
+	protected static $_validation_rules = array(
+		'group_id' => 'required|integer',
+		'site_id'  => 'required|integer',
 	);
 
 	// Properties

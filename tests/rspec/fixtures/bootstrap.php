@@ -89,7 +89,7 @@ function is_loaded($class = '')
 	return $_is_loaded;
 }
 
-function load_class($class, $directory = 'libraries', $prefix = 'CI_')
+function load_class($class, $directory = 'libraries', $prefix = 'EE_')
 {
 	static $_classes = array();
 

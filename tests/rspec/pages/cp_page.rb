@@ -29,6 +29,16 @@ class ControlPanelPage < SitePrism::Page
 	element :grid_add_no_results, 'tr.no-results a.btn'
 	element :grid_add, 'ul.toolbar li.add a'
 
+	# Breadcrumb
+	element :breadcrumb, 'ul.breadcrumb'
+
+	# Sidebar
+	element :sidebar, 'div.sidebar'
+
+	# Tabs
+	element :tab_bar, 'div.tab-wrap'
+	elements :tabs, 'div.tab-wrap ul.tabs li'
+
 	def open_dev_menu
 		main_menu.dev_menu.click
 	end
@@ -46,6 +56,13 @@ class ControlPanelPage < SitePrism::Page
 	# if we just check for invisible but it's already gone,
 	# Capybara will complain, so we must do this
 	def wait_for_error_message_count(count)
+
+		# Wait for any AJAX requests or other scripts that have backed up
+		ajax = false
+		while ajax == false do
+			ajax = (self.evaluate_script('$.active') == 0)
+		end
+
 		i = 0;
 		element_count = nil;
 		# This is essentially our own version of wait_until_x_invisible/visible,

@@ -449,7 +449,7 @@ class Comments extends AbstractPublishController {
 	private function buildTableFromCommentQuery(Builder $comments)
 	{
 		ee()->load->helper('text');
-		$table = Table::create();
+		$table = ee('CP/Table');
 
 		$table->setColumns(
 			array(

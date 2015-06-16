@@ -2446,7 +2446,7 @@ class Content_publish extends CP_Controller {
 			$str
 		);
 
-		$str = $this->security->xss_clean(stripslashes(urldecode($str)));
+		$str = ee('Security/XSS')->clean(stripslashes(urldecode($str)));
 
 		return $str;
 	}

@@ -1339,7 +1339,7 @@ class EE_Template {
 			{
 				if (in_array($plugin ,ee()->core->native_plugins))
 				{
-					require_once PATH_PI."pi.{$plugin}.php";
+					require_once PATH_PI."{$plugin}/pi.{$plugin}.php";
 				}
 				else
 				{
@@ -2892,7 +2892,19 @@ class EE_Template {
 					{
 						continue;
 					}
-					$this->modules[] = $file;
+
+					try
+					{
+						$info = ee('App')->get($file);
+						if (file_exists($info->getPath() . '/mod.' . $file . '.php'))
+						{
+							$this->modules[] = $file;
+						}
+					}
+					catch (\Exception $e)
+					{
+						continue;
+					}
 				}
 			}
 		}

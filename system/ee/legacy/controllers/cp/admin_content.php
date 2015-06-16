@@ -2990,7 +2990,7 @@ class Admin_content extends CP_Controller {
 			$error[] = lang('invalid_characters');
 		}
 
-		if ($_POST['field_label'] != ee()->security->xss_clean($_POST['field_label']))
+		if ($_POST['field_label'] != ee('Security/XSS')->clean($_POST['field_label']))
 		{
 			ee()->lang->loadfile('admin');
 			$error[] = sprintf(lang('invalid_xss_check'), cp_url('homepage'));

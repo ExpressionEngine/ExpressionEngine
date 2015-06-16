@@ -96,6 +96,16 @@ class Provider extends InjectionBindingDecorator {
 	}
 
 	/**
+	 * Get the registered path
+	 *
+	 * @return String Path in use
+	 */
+	public function getPath()
+	{
+		return $this->path;
+	}
+
+	/**
 	 * Get the registered prefix
 	 *
 	 * @return String Prefix in use
@@ -106,23 +116,23 @@ class Provider extends InjectionBindingDecorator {
 	}
 
 	/**
-	 * Get the 'vendor' key
+	 * Get the 'author' key
 	 *
 	 * @return String vendor name
 	 */
-	public function getVendor()
+	public function getAuthor()
 	{
-		return $this->get('vendor');
+		return $this->get('author');
 	}
 
 	/**
-	 * Get the 'product' key
+	 * Get the 'name' key
 	 *
 	 * @return String product name
 	 */
-	public function getProduct()
+	public function getName()
 	{
-		return $this->get('product');
+		return $this->get('name');
 	}
 
 	/**

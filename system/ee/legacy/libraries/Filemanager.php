@@ -50,6 +50,9 @@ class Filemanager {
 		ee()->load->library('javascript');
 		ee()->lang->loadfile('filemanager');
 
+		ee()->router->set_class('cp');
+		ee()->load->library('cp');
+		ee()->router->set_class('ee');
 		$this->theme_url = ee()->cp->cp_theme_url;
 	}
 
@@ -273,7 +276,7 @@ class Filemanager {
 		//Apply XSS Filtering to uploaded files?
 		if ($this->_xss_on AND
 			xss_check() AND
-			! ee()->security->xss_clean($file_path, $is_image))
+			! ee('Security/XSS')->clean($file_path, $is_image))
 		{
 			return FALSE;
 		}

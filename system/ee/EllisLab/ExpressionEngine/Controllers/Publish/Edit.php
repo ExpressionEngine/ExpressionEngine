@@ -140,7 +140,7 @@ class Edit extends AbstractPublishController {
 		$filter_values = $filters->values();
 		$base_url->addQueryStringVariables($filter_values);
 
-		$table = Table::create();
+		$table = ee('CP/Table');
 
 		$table->setColumns(
 			array(

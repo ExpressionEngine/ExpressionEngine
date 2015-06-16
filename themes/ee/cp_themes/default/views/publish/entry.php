@@ -85,7 +85,7 @@
 				<?php if ($field->getType() == 'grid'): ?>
 				<div class="grid-publish <?=$field_class?>">
 				<?php else: ?>
-				<fieldset class="<?=$field_class?><?php if ($errors->hasErrors($field->getName())) echo ' invalid'; ?><?php if ($field->isRequired()) echo ' required'; ?>">
+				<fieldset class="<?=$field_class?><?php if ($field->getStatus() == 'warning') echo ' warned'; ?><?php if ($errors->hasErrors($field->getName())) echo ' invalid'; ?><?php if ($field->isRequired()) echo ' required'; ?>">
 				<?php endif; ?>
 					<div class="setting-txt col <?=$width?>">
 						<h3><span class="ico sub-arrow"></span><?=$field->getLabel()?></h3>

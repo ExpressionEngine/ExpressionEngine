@@ -360,7 +360,7 @@ class Api_channel_fields extends Api {
 		$class		= $this->field_types[$field_type];
 		$_ft_path	= $this->ft_paths[$field_type];
 
-		ee()->load->add_package_path($_ft_path, FALSE);
+		ee()->load->add_package_path($_ft_path);
 
 		$obj = new $class();
 
@@ -1239,8 +1239,8 @@ class Api_channel_fields extends Api {
 			$this->errors[] = lang('invalid_characters').': '.$field_data['field_name'];
 		}
 
-		if ($field_data['field_label'] != ee()->security->xss_clean($field_data['field_label'])
-			OR $field_data['field_instructions'] != ee()->security->xss_clean($field_data['field_instructions']))
+		if ($field_data['field_label'] != ee('Security/XSS')->clean($field_data['field_label'])
+			OR $field_data['field_instructions'] != ee('Security/XSS')->clean($field_data['field_instructions']))
 		{
 			ee()->lang->loadfile('admin');
 			$this->errors[] = sprintf(lang('invalid_xss_check'), cp_url('homepage'));

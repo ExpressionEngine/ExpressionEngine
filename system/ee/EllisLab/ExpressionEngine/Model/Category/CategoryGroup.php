@@ -3,7 +3,7 @@
 namespace EllisLab\ExpressionEngine\Model\Category;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Service\Model\Interfaces\Content\ContentStructure;
+use EllisLab\ExpressionEngine\Model\Content\StructureModel;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -28,7 +28,7 @@ use EllisLab\ExpressionEngine\Service\Model\Interfaces\Content\ContentStructure;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class CategoryGroup extends Model implements ContentStructure {
+class CategoryGroup extends StructureModel {
 
 	protected static $_primary_key = 'group_id';
 	protected static $_gateway_names = array('CategoryGroupGateway');
@@ -73,8 +73,10 @@ class CategoryGroup extends Model implements ContentStructure {
 	}
 
 
-	public function getPublishForm($content = NULL)
-	{}
+	public function getContentType()
+	{
+		return 'category';
+	}
 
 	/**
 	 * Returns the category tree for this category group

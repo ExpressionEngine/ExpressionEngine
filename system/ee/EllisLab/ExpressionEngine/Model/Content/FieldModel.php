@@ -6,18 +6,67 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 
 abstract class FieldModel extends Model {
 
-	protected $field_type;
-
 	protected static $_events = array(
 		'afterInsert',
 		'afterUpdate',
 		'afterDelete'
 	);
 
+
+	protected $_facade;
+
+	// One property everyone needs to declare is the fieldtype name
+	protected $field_type;
+
 	/**
 	 * Return the storing table
 	 */
 	abstract public function getDataTable();
+
+	/**
+	 *
+	 */
+	abstract public function getStructure();
+
+	/**
+	 *
+	 */
+	public function getField($override = array())
+	{
+		if ( ! isset($this->field_type))
+		{
+			throw new \Exception('Cannot get field of unknown type.');
+		}
+
+//		if ( ! isset($this->_facade) || $this->_facade->getType() != $this->field_type)
+//		{
+			$default_values = $this->getValues();
+			$values = array_merge($this->getValues(), $override);
+
+			$this->_facade = new FieldFacade($this->getId(), $values);
+			$this->_facade->setContentType($this->getStructure()->getContentType());
+//		}
+
+		return $this->_facade;
+	}
+
+	public function getSettingsForm()
+	{
+		return $this->getField($this->getSettingsValues())->getSettingsForm();
+	}
+
+	public function getSettingsValues()
+	{
+		return array();
+	}
+
+	public function set(array $data = array())
+	{
+		$field = $this->getField($this->getSettingsValues());
+		$data = $field->saveSettingsForm($data);
+
+		return parent::set($data);
+	}
 
 	/**
 	 * After inserting, add the columns to the data table

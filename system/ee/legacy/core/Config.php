@@ -840,7 +840,7 @@ class EE_Config {
 					$site_prefs[$val] .= '/';
 				}
 
-				$fp = ($val == 'avatar_path') ? $site_prefs[$val].'uploads/' : $site_prefs[$val];
+				$fp = $site_prefs[$val];
 
 				if ( ! @is_dir($fp))
 				{

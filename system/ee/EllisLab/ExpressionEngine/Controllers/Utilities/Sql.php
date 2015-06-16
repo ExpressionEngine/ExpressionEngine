@@ -92,7 +92,7 @@ class Sql extends Utilities {
 			);
 		}
 
-		$table = CP\Table::create(array('autosort' => TRUE, 'autosearch' => TRUE));
+		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => TRUE));
 		$table->setColumns(
 			array(
 				'table_name',
@@ -193,7 +193,7 @@ class Sql extends Utilities {
 		$base_url = new CP\URL('utilities/sql/op-results', ee()->session->session_id());
 
 		// Set up our table with automatic sorting and search capability
-		$table = CP\Table::create(array('autosort' => TRUE, 'autosearch' => TRUE));
+		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => TRUE));
 		$table->setColumns(array(
 			'table',
 			'status' => array(

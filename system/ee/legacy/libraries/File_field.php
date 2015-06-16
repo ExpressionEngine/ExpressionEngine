@@ -164,7 +164,8 @@ class File_field {
 
 		$vars['existing_files'] = $existing_files;
 
-		return ee()->load->ee_view('_shared/file/field', $vars, TRUE);
+		ee()->load->add_package_path(PATH_THEMES . 'cp_themes/default');
+		return ee()->load->view('_shared/file/field', $vars, TRUE);
 	}
 
 	// ------------------------------------------------------------------------
@@ -186,7 +187,7 @@ class File_field {
 	 * 			jQuery object representing the field from the field_name given
 	 * @param string $endpoint_url The URL the file browser will hit
 	 */
-	public function browser($config = array(), $endpoint_url = 'C=content_publish&M=filemanager_actions')
+	public function browser($config = array(), $endpoint_url = 'addons/settings/filepicker/modal')
 	{
 		ee()->lang->loadfile('content');
 

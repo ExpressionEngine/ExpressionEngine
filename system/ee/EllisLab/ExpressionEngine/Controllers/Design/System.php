@@ -57,7 +57,7 @@ class System extends AbstractDesignController {
 
 		$base_url = new URL('design/system/', ee()->session->session_id());
 
-		$table = Table::create(array('autosort' => TRUE, 'limit' => 1024));
+		$table = ee('CP/Table', array('autosort' => TRUE, 'limit' => 1024));
 		$table->setColumns(
 			array(
 				'template',

@@ -152,7 +152,7 @@ class Application {
 	 */
 	public function getPrefixes()
 	{
-		return $this->registry->getPrefixes();
+		return array_keys($this->registry->all());
 	}
 
 	/**
@@ -183,6 +183,16 @@ class Application {
 	public function getVendors()
 	{
 		return array_unique(array_keys($this->forward('getVendor')));
+	}
+
+	/**
+	* Get all providers
+	*
+	* @return Array of all providers [prefix => object]
+	*/
+	public function getProviders()
+	{
+		return $this->registry->all();
 	}
 
 	/**

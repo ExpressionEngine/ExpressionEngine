@@ -82,7 +82,7 @@ class Subscriptions extends Profile {
 			}
 		}
 
-		$table = Table::create();
+		$table = ee('CP/Table');
 		$table->setColumns(
 			array(
 				'title',
@@ -111,7 +111,7 @@ class Subscriptions extends Profile {
 
 	/**
 	 * Delete Subscriptions
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */
@@ -128,7 +128,7 @@ class Subscriptions extends Profile {
 		);
 
 		$delete = array();
-		
+
 		foreach ($selection as $id)
 		{
 			$char = $id[0];

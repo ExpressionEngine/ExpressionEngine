@@ -81,11 +81,11 @@ abstract class Core {
 
 		$this->running = TRUE;
 
+		$application = $this->loadApplicationCore();
+
 		$routing = $this->getRouting($request);
 		$routing = $this->loadController($routing);
 		$routing = $this->validateRequest($routing);
-
-		$application = $this->loadApplicationCore();
 
 		$application->setRequest($request);
 		$application->setResponse(new Response());
@@ -153,8 +153,8 @@ abstract class Core {
 			'strtolower', get_class_methods($class)
 		);
 
-		// This allows for routes of 'cp/channel/layout/1' to end up calling
-		// \EllisLab\ExpressionEngine\Controllers\Channel\Layout::layout(1)
+		// This allows for routes of 'cp/channels/layout/1' to end up calling
+		// \EllisLab\ExpressionEngine\Controllers\Channels\Layout::layout(1)
 		if ( ! in_array($method, $controller_methods)
 			&& in_array($RTR->fetch_class(), $controller_methods))
 		{
@@ -240,6 +240,11 @@ abstract class Core {
 		});
 
 		$this->legacy->getFacade()->set('di', $dependencies);
+
+		// This is potentially where we'll consolidate the first party stuff,
+		// not sure where the best place to load this in is
+		$application->setupAddons(SYSPATH . 'ee/EllisLab/ExpressionEngine/Module/');
+		$application->setupAddons(SYSPATH . 'ee/EllisLab/Addons/');
 
 		return $application;
 	}

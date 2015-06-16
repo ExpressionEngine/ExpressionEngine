@@ -42,6 +42,12 @@ class CategoryField extends FieldModel {
 		'beforeInsert'
 	);
 
+	protected static $_validation_rules = array(
+		'field_type'  => 'required|enum[text,textarea,select]',
+		'field_label' => 'required|xss|noHtml',
+		'field_name'  => 'required|alphaDash|unique[site_id]'
+	);
+
 	protected $field_id;
 	protected $site_id;
 	protected $group_id;
@@ -57,6 +63,21 @@ class CategoryField extends FieldModel {
 	protected $field_required;
 	protected $field_order;
 
+
+	public function getSettingsValues()
+	{
+		$values = parent::getValues();
+
+		$values['edit_format_link'] = 'boo';
+		$values['field_show_fmt_y'] = 'boo';
+		$values['field_show_fmt_options'] = 'boo';
+		$values['field_fmt_options'] = 'boo';
+		$values['field_text_direction_ltr'] = 'boo';
+		$values['field_content_type'] = 'boo';
+
+		return $values;
+	}
+
 	/**
 	 * New fields get appended
 	 */
@@ -71,6 +92,11 @@ class CategoryField extends FieldModel {
 				->count();
 			$this->setProperty('field_order', $count + 1);
 		}
+	}
+
+	public function getStructure()
+	{
+		return $this->getCategoryGroup();
 	}
 
 	public function getDataTable()

@@ -5,6 +5,11 @@ foreach ($sections as $name => $settings)
 {
 	foreach ($settings as $setting)
 	{
+		if ( ! is_array($setting))
+		{
+			continue;
+		}
+
 		foreach ($setting['fields'] as $field_name => $field)
 		{
 			if ($required = (isset($field['required']) && $field['required'] == TRUE))
@@ -104,6 +109,11 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 						{
 							$value = isset($field['value']) ? $field['value'] : ee()->config->item($field_name);
 						}
+						// Escape output
+						if (is_string($value))
+						{
+							$value = form_prep($value, $field_name);
+						}
 						$attrs = '';
 						if (isset($field['disabled']) && $field['disabled'] == TRUE)
 						{
@@ -148,6 +158,15 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 							<input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
 						<?php break;
 
+						case 'radio_block': ?>
+							<?php foreach ($field['choices'] as $key => $choice):
+								$label = $choice['label'];
+								$checked = ($key == $value); ?>
+								<label class="choice mr block <?=($checked) ? 'chosen' : ''?>"><input type="radio" name="<?=$field_name?>" value="<?=$key?>"<?php if ($checked):?> checked="checked"<?php endif ?><?=$attrs?>> <?=lang($label)?></label>
+								<?php if ( ! empty($choice['html'])): ?><?=$choice['html']?><?php endif ?>
+							<?php endforeach ?>
+						<?php break;
+
 						case 'radio': ?>
 							<?php foreach ($field['choices'] as $key => $label):
 								$checked = ($key == $value); ?>
@@ -184,9 +203,15 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 									{
 										$selected = ($value == $key);
 									}
+
+									$disabled = FALSE;
+									if (isset($field['disabled_choices']))
+									{
+										$disabled = in_array($key, $field['disabled_choices']);
+									}
 								?>
 									<label class="choice block<?php if ($selected):?> chosen<?php endif ?>">
-										<input type="checkbox" name="<?=$field_name?>[]" value="<?=$key?>"<?php if ($selected):?> checked="checked"<?php endif ?><?=$attrs?>> <?=$label?>
+										<input type="checkbox" name="<?=$field_name?>[]" value="<?=$key?>"<?php if ($selected):?> checked="checked"<?php endif ?><?php if ($disabled):?> disabled="disabled"<?php endif ?><?=$attrs?>> <?=$label?>
 									</label>
 								<?php endforeach ?>
 							<?php if (isset($field['wrap']) && $field['wrap']): ?>
@@ -208,6 +233,17 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 									</label>
 								<?php endforeach ?>
 							</div>
+						<?php break;
+
+						case 'image': ?>
+							<figure class="file-chosen">
+								<div id="<?=$field['id']?>"><img src="<?=$field['image']?>"></div>
+								<ul class="toolbar">
+									<li class="edit"><a href="" title="edit"></a></li>
+									<li class="remove"><a href="" title="remove"></a></li>
+								</ul>
+								<input type="hidden" name="<?=$field_name?>" value="<?=$value?>">
+							</figure>
 						<?php break;
 
 						case 'html': ?>

@@ -136,7 +136,7 @@ class Extensions extends Utilities {
 			);
 		}
 
-		$table = Table::create(array('autosort' => TRUE, 'autosearch' => TRUE, 'limit' => $this->params['perpage']));
+		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => TRUE, 'limit' => $this->params['perpage']));
 		$table->setColumns(
 			array(
 				'name',
