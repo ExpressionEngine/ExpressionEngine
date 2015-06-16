@@ -180,6 +180,12 @@ class FieldFacade {
 		return $out;
 	}
 
+	public function saveSettingsForm($data)
+	{
+		$this->initField();
+		return ee()->api_channel_fields->apply('save_settings', array($data));
+	}
+
 	public function getStatus()
 	{
 		$data = $this->initField();

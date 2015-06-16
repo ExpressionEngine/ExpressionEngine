@@ -38,14 +38,14 @@ abstract class FieldModel extends Model {
 			throw new \Exception('Cannot get field of unknown type.');
 		}
 
-		if ( ! isset($this->_facade) || $this->_facade->getType() != $this->field_type)
-		{
+//		if ( ! isset($this->_facade) || $this->_facade->getType() != $this->field_type)
+//		{
 			$default_values = $this->getValues();
 			$values = array_merge($this->getValues(), $override);
 
 			$this->_facade = new FieldFacade($this->getId(), $values);
 			$this->_facade->setContentType($this->getStructure()->getContentType());
-		}
+//		}
 
 		return $this->_facade;
 	}
@@ -58,6 +58,14 @@ abstract class FieldModel extends Model {
 	public function getSettingsValues()
 	{
 		return array();
+	}
+
+	public function set(array $data = array())
+	{
+		$field = $this->getField($this->getSettingsValues());
+		$data = $field->saveSettingsForm($data);
+
+		return parent::set($data);
 	}
 
 	/**
