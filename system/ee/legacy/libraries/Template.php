@@ -1339,7 +1339,7 @@ class EE_Template {
 			{
 				if (in_array($plugin ,ee()->core->native_plugins))
 				{
-					require_once PATH_PI."pi.{$plugin}.php";
+					require_once PATH_PI."{$plugin}/pi.{$plugin}.php";
 				}
 				else
 				{
