@@ -985,6 +985,8 @@ class Addons extends CP_Controller {
 			return array();
 		}
 
+		$class_name =ucfirst($name) . '_ext';
+
 		$data = array(
 			'developer'		=> $info->getAuthor(),
 			'version'		=> '--',
@@ -992,11 +994,11 @@ class Addons extends CP_Controller {
 			'enabled'		=> NULL,
 			'name'			=> $info->getName(),
 			'package'		=> $name,
-			'class'			=> ucfirst($name) . '_ext',
+			'class'			=> $class_name,
 		);
 
 		$extension = ee('Model')->get('Extension')
-			->filter('class', $data['class'])
+			->filter('class', $class_name)
 			->first();
 
 		if ($extension)
@@ -1007,7 +1009,7 @@ class Addons extends CP_Controller {
 
 			ee()->load->add_package_path($info->getPath());
 
-			if ( ! class_exists($data['class']))
+			if ( ! class_exists($class_name))
 			{
 				$file = $info->getPath() . '/ext.' . $name . '.php';
 				if (ee()->config->item('debug') == 2
