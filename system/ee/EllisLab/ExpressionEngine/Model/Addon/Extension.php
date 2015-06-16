@@ -65,4 +65,14 @@ class Extension extends Model {
 	{
 		$this->setProperty('enabled', 'n');
 	}
+
+	public function set__settings($settings)
+	{
+		$this->setRawProperty('settings', serialize($settings));
+	}
+
+	public function get__settings()
+	{
+		return unserialize($this->settings);
+	}
 }
