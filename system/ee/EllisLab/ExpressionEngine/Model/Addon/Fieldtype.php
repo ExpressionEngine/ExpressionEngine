@@ -42,4 +42,13 @@ class Fieldtype extends Model {
 	protected $settings;
 	protected $has_global_settings;
 
+	public function set__settings($settings)
+	{
+		$this->setRawProperty('settings', base64_encode(serialize($settings)));
+	}
+
+	public function get__settings()
+	{
+		return unserialize(base64_decode($this->settings));
+	}
 }
