@@ -269,7 +269,7 @@ class EE_Validate {
 		/** -------------------------------------
 		/**  Is password max length correct?
 		/** -------------------------------------*/
-		if (strlen($this->password) > 250)
+		if (strlen($this->password) > PASSWORD_MAX_LENGTH)
 		{
 			return $this->errors[] = ee()->lang->line('password_too_long');
 		}

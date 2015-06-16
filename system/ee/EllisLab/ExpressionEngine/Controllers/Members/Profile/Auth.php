@@ -62,21 +62,30 @@ class Auth extends Profile {
 					'title' => 'new_password',
 					'desc' => 'new_password_desc',
 					'fields' => array(
-						'password' => array('type' => 'password')
+						'password' => array(
+							'type'      => 'password',
+							'maxlength' => PASSWORD_MAX_LENGTH
+						)
 					)
 				),
 				array(
 					'title' => 'confirm_password',
 					'desc' => 'confirm_password_desc',
 					'fields' => array(
-						'confirm_password' => array('type' => 'password')
+						'confirm_password' => array(
+							'type'      => 'password',
+							'maxlength' => PASSWORD_MAX_LENGTH
+						)
 					)
 				),
 				array(
 					'title' => 'current_password',
 					'desc' => 'current_password',
 					'fields' => array(
-						'current_password' => array('type' => 'password')
+						'current_password' => array(
+							'type'      => 'password',
+							'maxlength' => PASSWORD_MAX_LENGTH
+						)
 					)
 				)
 			)
