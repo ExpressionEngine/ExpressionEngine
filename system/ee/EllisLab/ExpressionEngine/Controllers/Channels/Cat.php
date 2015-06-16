@@ -1055,6 +1055,8 @@ class Cat extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'));
 		}
 
+		$cat_group = ee('Model')->get('CategoryGroup', $group_id)->first();
+
 		if ($field_id)
 		{
 			$cat_field = ee('Model')->get('CategoryField')
@@ -1076,6 +1078,8 @@ class Cat extends AbstractChannelsController {
 			');
 
 			$cat_field = ee('Model')->make('CategoryField');
+			$cat_field->setCategoryGroup($cat_group);
+			$cat_field->field_type = 'text';
 
 			ee()->view->save_btn_text = 'btn_create_field';
 			ee()->view->cp_page_title = lang('create_category_field');
@@ -1086,6 +1090,8 @@ class Cat extends AbstractChannelsController {
 		{
 			show_error(lang('unauthorized_access'));
 		}
+
+		ee()->lang->loadfile('admin_content');
 
 		$vars['sections'] = array(
 			array(
@@ -1099,6 +1105,11 @@ class Cat extends AbstractChannelsController {
 								'text'     => lang('text_input'),
 								'textarea' => lang('textarea'),
 								'select'   => lang('select_dropdown')
+							),
+							'group_toggle' => array(
+								'text' => 'text',
+								'textarea' => 'textarea',
+								'select' => 'select'
 							),
 							'value' => $cat_field->field_type
 						)
@@ -1136,14 +1147,34 @@ class Cat extends AbstractChannelsController {
 						)
 					)
 				)
+			),
+			'field_options_'.$cat_field->field_type => array(
+				'label' => 'field_options',
+				'group' => $cat_field->field_type,
+				'settings' => $cat_field->getSettingsForm()
 			)
 		);
 
+		// These are currently the only fieldtypes we allow; get their settings forms
+		foreach (array('text', 'textarea', 'select') as $fieldtype)
+		{
+			if ($cat_field->field_type != $fieldtype)
+			{
+				$dummy_field = ee('Model')->make('CategoryField');
+				$dummy_field->setCategoryGroup($cat_group);
+				$dummy_field->field_type = $fieldtype;
+				$vars['sections']['field_options_'.$fieldtype] = array(
+					'label' => 'field_options',
+					'group' => $fieldtype,
+					'settings' => $dummy_field->getSettingsForm()
+				);
+			}
+		}
+
 		if ( ! empty($_POST))
 		{
-			$cat_field->group_id = $group_id;
-			$cat_field->field_list_items = '';
 			$cat_field->set($_POST);
+			$cat_field->field_default_fmt = isset($_POST['field_fmt']) ? $_POST['field_fmt'] : NULL;
 			$result = $cat_field->validate();
 
 			if (AJAX_REQUEST)
@@ -1190,6 +1221,10 @@ class Cat extends AbstractChannelsController {
 
 		ee()->cp->set_breadcrumb(cp_url('channels/cat'), lang('category_groups'));
 		ee()->cp->set_breadcrumb(cp_url('channels/cat/field/'.$group_id), lang('category_fields'));
+
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/form_group'),
+		));
 
 		ee()->cp->render('settings/form', $vars);
 	}

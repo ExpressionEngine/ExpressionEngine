@@ -44,6 +44,10 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 		$group = FALSE;
 		if (isset($settings['group']))
 		{
+			if (isset($settings['label']))
+			{
+				$name = $settings['label'];
+			}
 			$group = $settings['group'];
 			$settings = $settings['settings'];
 		}?>

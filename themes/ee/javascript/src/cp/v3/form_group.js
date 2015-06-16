@@ -28,7 +28,10 @@ EE.cp.form_group_toggle = function(element) {
 		value  = $(element).val();
 
 	$.each(config, function (key, data) {
-		$('*[data-group="'+data+'"]').toggle(key == value);
+		$('*[data-group="'+data+'"]')
+			.toggle(key == value)
+			.find(':input')
+				.attr('disabled', key != value);
 	})
 }
 

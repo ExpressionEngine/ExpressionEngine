@@ -68,12 +68,7 @@ class CategoryField extends FieldModel {
 	{
 		$values = parent::getValues();
 
-		$values['edit_format_link'] = 'boo';
-		$values['field_show_fmt_y'] = 'boo';
-		$values['field_show_fmt_options'] = 'boo';
-		$values['field_fmt_options'] = 'boo';
-		$values['field_text_direction_ltr'] = 'boo';
-		$values['field_content_type'] = 'boo';
+		$values['field_fmt'] = $this->getProperty('field_default_fmt');
 
 		return $values;
 	}
@@ -83,6 +78,11 @@ class CategoryField extends FieldModel {
 	 */
 	public function onBeforeInsert()
 	{
+		if ($this->getProperty('field_list_items') == NULL)
+		{
+			$this->setProperty('field_list_items', '');
+		}
+
 		$field_order = $this->getProperty('field_order');
 
 		if (empty($field_order))
