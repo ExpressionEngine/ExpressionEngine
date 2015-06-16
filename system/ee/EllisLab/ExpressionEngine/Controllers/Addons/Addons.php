@@ -403,10 +403,10 @@ class Addons extends CP_Controller {
 				&& array_key_exists('update', $plugin))
 			{
 
-				$info = $plugin['info'];
+				$info = ee('App')->get($addon);
 
 				$typography = 'n';
-				if (array_key_exists('pi_typography', $info) && $info['pi_typography'] == TRUE)
+				if ($info->get('plugin.typography'))
 				{
 					$typography = 'y';
 				}
@@ -416,7 +416,7 @@ class Addons extends CP_Controller {
 					->first();
 				$model->plugin_name = $plugin['name'];
 				$model->plugin_package = $plugin['package'];
-				$model->plugin_version = $info['pi_version'];
+				$model->plugin_version = $info->getVersion();
 				$model->is_typography_related = $typography;
 				$model->save();
 
@@ -497,10 +497,10 @@ class Addons extends CP_Controller {
 			$plugin = $this->getPlugin($addon);
 			if ( ! empty($plugin) && $plugin['installed'] === FALSE)
 			{
-				$info = $plugin['info'];
+				$info = ee('App')->get($addon);
 
 				$typography = 'n';
-				if (array_key_exists('pi_typography', $info) && $info['pi_typography'] == TRUE)
+				if ($info->get('plugin.typography'))
 				{
 					$typography = 'y';
 				}
@@ -508,7 +508,7 @@ class Addons extends CP_Controller {
 				$model = ee('Model')->make('Plugin');
 				$model->plugin_name = $plugin['name'];
 				$model->plugin_package = $plugin['package'];
-				$model->plugin_version = $info['pi_version'];
+				$model->plugin_version = $info->getVersion();
 				$model->is_typography_related = $typography;
 				$model->save();
 
