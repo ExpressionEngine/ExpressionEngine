@@ -7,7 +7,11 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class ChannelFieldGroup extends Model {
 
 	protected static $_primary_key 	= 'group_id';
-	protected static $_gateway_names 	= array('ChannelFieldGroupGateway');
+	protected static $_gateway_names = array('ChannelFieldGroupGateway');
+
+	protected $group_id;
+	protected $site_id;
+	protected $group_name;
 
 	protected static $_relationships = array(
 		'ChannelFields' => array(
@@ -27,10 +31,6 @@ class ChannelFieldGroup extends Model {
 	{
 		return $this->createChannelFields($data);
 	}
-
-	protected $group_id;
-	protected $site_id;
-	protected $group_name;
 
 	public function validateName($key, $value, $params, $rule)
 	{
