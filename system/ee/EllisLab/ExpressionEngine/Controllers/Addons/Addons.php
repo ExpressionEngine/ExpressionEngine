@@ -807,7 +807,7 @@ class Addons extends CP_Controller {
 			$data['installed'] = TRUE;
 			$data['version'] = $module->module_version;
 
-			if ($module->has_cp_backend)
+			if ($info->get('settings_exist'))
 			{
 				$data['settings_url'] = ee('CP/URL', 'addons/settings/' . $name);
 			}
@@ -944,7 +944,7 @@ class Addons extends CP_Controller {
 				$data['update'] = $info->getVersion();
 			}
 
-			if ($model->has_global_settings)
+			if ($info->get('settings_exist'))
 			{
 				$data['settings'] = unserialize($model->settings);
 				$data['settings_url'] = ee('CP/URL', 'addons/settings/' . $fieldtype);
