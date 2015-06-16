@@ -1290,7 +1290,7 @@ class Addons extends CP_Controller {
 			->filter('class', $extension['class'])
 			->first();
 
-		$current = strip_slashes(unserialize($extension_model->settings));
+		$current = strip_slashes($extension_model->settings);
 
 		$class_name = $extension['class'];
 		$OBJ = new $class_name();
@@ -1496,7 +1496,7 @@ class Addons extends CP_Controller {
 			->filter('class', $extension['class'])
 			->first();
 
-		$extension_model->settings = serialize($settings);
+		$extension_model->settings = $settings;
 		$extension_model->save();
 
 		ee('Alert')->makeInline('shared-form')
@@ -1559,7 +1559,6 @@ class Addons extends CP_Controller {
 		$FT->settings = $fieldtype['settings'];
 
 		$settings = ee()->api_channel_fields->apply('save_global_settings');
-		$settings = base64_encode(serialize($settings));
 
 		$fieldtype_model = ee('Model')->get('ChannelField')
 			->filter('site_id', ee()->config->item('site_id'))
