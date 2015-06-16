@@ -1,11 +1,11 @@
 <?php
 
 return array(
-    'author'      => 'EllisLab',
+	'author'      => 'EllisLab',
 	'author_url'  => 'http://ellislab.com/',
-    'name'        => 'RSS Parser',
+	'name'        => 'RSS Parser',
 	'description' => 'Retrieves and Parses RSS/Atom Feeds',
-    'version'     => '1.0',
-    'namespace'   => 'EllisLab\Addons\RssParser',
+	'version'     => '1.0',
+	'namespace'   => 'EllisLab\Addons\RssParser',
 	'settings_exist' => FALSE,
 );

@@ -1,11 +1,11 @@
 <?php
 
 return array(
-    'author'      => 'EllisLab',
+	'author'      => 'EllisLab',
 	'author_url'  => 'http://ellislab.com/',
-    'name'        => 'ExpressionEngine FilePicker',
+	'name'        => 'ExpressionEngine FilePicker',
 	'description' => "The world's most flexible file picker.",
-    'version'     => '1.0',
-    'namespace'   => 'EllisLab\Addons\FilePicker',
+	'version'     => '1.0',
+	'namespace'   => 'EllisLab\Addons\FilePicker',
 	'settings_exist' => FALSE,
 );

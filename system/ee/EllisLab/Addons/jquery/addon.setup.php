@@ -1,11 +1,11 @@
 <?php
 
 return array(
-    'author'      => 'EllisLab',
+	'author'      => 'EllisLab',
 	'author_url'  => 'http://ellislab.com/',
-    'name'        => 'Jquery',
+	'name'        => 'Jquery',
 	'description' => '',
-    'version'     => '1.0',
-    'namespace'   => 'EllisLab\Addons\Jquery',
+	'version'     => '1.0',
+	'namespace'   => 'EllisLab\Addons\Jquery',
 	'settings_exist' => FALSE,
 );

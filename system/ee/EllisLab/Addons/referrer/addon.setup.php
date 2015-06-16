@@ -1,11 +1,11 @@
 <?php
 
 return array(
-    'author'      => 'EllisLab',
+	'author'      => 'EllisLab',
 	'author_url'  => 'http://ellislab.com/',
-    'name'        => 'Referrer',
+	'name'        => 'Referrer',
 	'description' => '',
-    'version'     => '2.1.1',
-    'namespace'   => 'EllisLab\Addons\Referrer',
+	'version'     => '2.1.1',
+	'namespace'   => 'EllisLab\Addons\Referrer',
 	'settings_exist' => FALSE,
 );
