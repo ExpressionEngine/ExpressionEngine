@@ -170,7 +170,14 @@ class FieldFacade {
 	{
 		ee()->load->library('table');
 		$data = $this->initField();
-		return ee()->api_channel_fields->apply('display_settings', array($data));
+		$out = ee()->api_channel_fields->apply('display_settings', array($data));
+
+		if ($out == '')
+		{
+			return ee()->table->rows;
+		}
+
+		return $out;
 	}
 
 	public function getStatus()
