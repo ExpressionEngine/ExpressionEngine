@@ -370,8 +370,12 @@ class Addons extends CP_Controller {
 				{
 					if (ee()->api_channel_fields->apply('update', array($fieldtype['version'])) !== FALSE)
 					{
-						// @TODO replace this with an ee('Model') implementation
-						ee()->db->update('fieldtypes', array('version' => $FT->info['version']), array('name' => $addon));
+						$model = ee('Model')->get('Fieldtype')
+							->filter('name', $addon)
+							->first();
+
+						$model->version = $FT->info['version'];
+						$model->save();
 
 						if ( ! isset($updated[$addon]))
 						{
