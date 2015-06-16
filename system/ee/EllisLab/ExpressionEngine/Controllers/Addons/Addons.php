@@ -946,7 +946,10 @@ class Addons extends CP_Controller {
 
 			if ($info->get('settings_exist'))
 			{
-				$data['settings'] = unserialize($model->settings);
+				if ($model->settings)
+				{
+					$data['settings'] = $model->settings;
+				}
 				$data['settings_url'] = ee('CP/URL', 'addons/settings/' . $name);
 			}
 		}
