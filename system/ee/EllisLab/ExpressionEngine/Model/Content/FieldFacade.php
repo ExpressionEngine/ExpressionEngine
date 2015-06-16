@@ -166,6 +166,13 @@ class FieldFacade {
 		return ee()->api_channel_fields->apply('display_publish_field', array($field_value));
 	}
 
+	public function getSettingsForm()
+	{
+		ee()->load->library('table');
+		$data = $this->initField();
+		return ee()->api_channel_fields->apply('display_settings', array($data));
+	}
+
 	public function getStatus()
 	{
 		$data = $this->initField();
