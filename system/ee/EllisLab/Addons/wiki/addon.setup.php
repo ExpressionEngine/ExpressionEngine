@@ -8,4 +8,5 @@ return array(
 	'version'     => '2.3',
 	'namespace'   => 'EllisLab\Addons\Wiki',
 	'settings_exist' => FALSE,
+	'docs_url'    => 'http://ellislab.com/expressionengine/user-guide/modules/wiki/index.html'
 );
