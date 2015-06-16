@@ -918,23 +918,23 @@ class Addons extends CP_Controller {
 			'type'			=> 'fieldtype',
 		);
 
-		ee()->legacy_api->instantiate('channel_fields');
+		$model = ee('Model')->get('Fieldtype')
+			->filter('name', $name)
+			->first();
 
-		$installed = ee()->addons->get_installed('fieldtypes', TRUE);
-
-		if (isset($installed[$name]))
+		if ($model)
 		{
 			$data['installed'] = TRUE;
-			$data['version'] = $installed[$name]['version'];
+			$data['version'] = $model->version;
 
-			if (version_compare($info->getVersion(), $installed[$name]['version'], '>'))
+			if (version_compare($info->getVersion(), $model->version, '>'))
 			{
 				$data['update'] = $info->getVersion();
 			}
 
-			if ($installed[$name]['has_global_settings'] == 'y')
+			if ($model->has_global_settings)
 			{
-				$data['settings'] = unserialize(base64_decode($installed[$name]['settings']));
+				$data['settings'] = unserialize($model->settings);
 				$data['settings_url'] = ee('CP/URL', 'addons/settings/' . $fieldtype);
 			}
 		}
