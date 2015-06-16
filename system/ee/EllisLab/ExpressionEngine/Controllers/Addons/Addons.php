@@ -370,8 +370,12 @@ class Addons extends CP_Controller {
 				{
 					if (ee()->api_channel_fields->apply('update', array($fieldtype['version'])) !== FALSE)
 					{
-						// @TODO replace this with an ee('Model') implementation
-						ee()->db->update('fieldtypes', array('version' => $FT->info['version']), array('name' => $addon));
+						$model = ee('Model')->get('Fieldtype')
+							->filter('name', $addon)
+							->first();
+
+						$model->version = $FT->info['version'];
+						$model->save();
 
 						if ( ! isset($updated[$addon]))
 						{
@@ -403,10 +407,10 @@ class Addons extends CP_Controller {
 				&& array_key_exists('update', $plugin))
 			{
 
-				$info = $plugin['info'];
+				$info = ee('App')->get($addon);
 
 				$typography = 'n';
-				if (array_key_exists('pi_typography', $info) && $info['pi_typography'] == TRUE)
+				if ($info->get('plugin.typography'))
 				{
 					$typography = 'y';
 				}
@@ -416,7 +420,7 @@ class Addons extends CP_Controller {
 					->first();
 				$model->plugin_name = $plugin['name'];
 				$model->plugin_package = $plugin['package'];
-				$model->plugin_version = $info['pi_version'];
+				$model->plugin_version = $info->getVersion();
 				$model->is_typography_related = $typography;
 				$model->save();
 
@@ -497,10 +501,10 @@ class Addons extends CP_Controller {
 			$plugin = $this->getPlugin($addon);
 			if ( ! empty($plugin) && $plugin['installed'] === FALSE)
 			{
-				$info = $plugin['info'];
+				$info = ee('App')->get($addon);
 
 				$typography = 'n';
-				if (array_key_exists('pi_typography', $info) && $info['pi_typography'] == TRUE)
+				if ($info->get('plugin.typography'))
 				{
 					$typography = 'y';
 				}
@@ -508,7 +512,7 @@ class Addons extends CP_Controller {
 				$model = ee('Model')->make('Plugin');
 				$model->plugin_name = $plugin['name'];
 				$model->plugin_package = $plugin['package'];
-				$model->plugin_version = $info['pi_version'];
+				$model->plugin_version = $info->getVersion();
 				$model->is_typography_related = $typography;
 				$model->save();
 
@@ -918,23 +922,23 @@ class Addons extends CP_Controller {
 			'type'			=> 'fieldtype',
 		);
 
-		ee()->legacy_api->instantiate('channel_fields');
+		$model = ee('Model')->get('Fieldtype')
+			->filter('name', $name)
+			->first();
 
-		$installed = ee()->addons->get_installed('fieldtypes', TRUE);
-
-		if (isset($installed[$name]))
+		if ($model)
 		{
 			$data['installed'] = TRUE;
-			$data['version'] = $installed[$name]['version'];
+			$data['version'] = $model->version;
 
-			if (version_compare($info->getVersion(), $installed[$name]['version'], '>'))
+			if (version_compare($info->getVersion(), $model->version, '>'))
 			{
 				$data['update'] = $info->getVersion();
 			}
 
-			if ($installed[$name]['has_global_settings'] == 'y')
+			if ($model->has_global_settings)
 			{
-				$data['settings'] = unserialize(base64_decode($installed[$name]['settings']));
+				$data['settings'] = unserialize($model->settings);
 				$data['settings_url'] = ee('CP/URL', 'addons/settings/' . $fieldtype);
 			}
 		}
@@ -981,6 +985,8 @@ class Addons extends CP_Controller {
 			return array();
 		}
 
+		$class_name =ucfirst($name) . '_ext';
+
 		$data = array(
 			'developer'		=> $info->getAuthor(),
 			'version'		=> '--',
@@ -988,11 +994,11 @@ class Addons extends CP_Controller {
 			'enabled'		=> NULL,
 			'name'			=> $info->getName(),
 			'package'		=> $name,
-			'class'			=> ucfirst($name) . '_ext',
+			'class'			=> $class_name,
 		);
 
 		$extension = ee('Model')->get('Extension')
-			->filter('class', $data['class'])
+			->filter('class', $class_name)
 			->first();
 
 		if ($extension)
@@ -1003,7 +1009,7 @@ class Addons extends CP_Controller {
 
 			ee()->load->add_package_path($info->getPath());
 
-			if ( ! class_exists($data['class']))
+			if ( ! class_exists($class_name))
 			{
 				$file = $info->getPath() . '/ext.' . $name . '.php';
 				if (ee()->config->item('debug') == 2

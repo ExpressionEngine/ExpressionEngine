@@ -5,7 +5,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Members\Profile;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
-use EllisLab\ExpressionEngine\Module\FilePicker\FilePicker as FilePicker;
+use EllisLab\Addons\FilePicker\FilePicker as FilePicker;
 
 /**
  * ExpressionEngine - by EllisLab

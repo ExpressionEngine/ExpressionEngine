@@ -31,25 +31,41 @@ abstract class FieldModel extends Model {
 	/**
 	 *
 	 */
-	public function getField()
+	public function getField($override = array())
 	{
 		if ( ! isset($this->field_type))
 		{
 			throw new \Exception('Cannot get field of unknown type.');
 		}
 
-		if ( ! isset($this->_facade) || $this->_facade->getType() != $this->field_type)
-		{
-			$this->_facade = new FieldFacade($this->getId(), $this->getValues());
+//		if ( ! isset($this->_facade) || $this->_facade->getType() != $this->field_type)
+//		{
+			$default_values = $this->getValues();
+			$values = array_merge($this->getValues(), $override);
+
+			$this->_facade = new FieldFacade($this->getId(), $values);
 			$this->_facade->setContentType($this->getStructure()->getContentType());
-		}
+//		}
 
 		return $this->_facade;
 	}
 
 	public function getSettingsForm()
 	{
-		return $this->getField()->getSettingsForm();
+		return $this->getField($this->getSettingsValues())->getSettingsForm();
+	}
+
+	public function getSettingsValues()
+	{
+		return array();
+	}
+
+	public function set(array $data = array())
+	{
+		$field = $this->getField($this->getSettingsValues());
+		$data = $field->saveSettingsForm($data);
+
+		return parent::set($data);
 	}
 
 	/**
