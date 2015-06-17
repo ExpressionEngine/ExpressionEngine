@@ -37,8 +37,11 @@ use EllisLab\ExpressionEngine\Controllers\Members;
 class Groups extends Members\Members {
 
 	private $base_url;
+	private $index_url;
 	private $site_id;
 	private $super_admin;
+	private $group;
+	private $query_string = array();
 
 	/**
 	 * Constructor
@@ -183,8 +186,11 @@ class Groups extends Members\Members {
 			'save_btn_text' => lang('save_member_group')
 		);
 
-		$group = ee()->api->get('MemberGroup', array(ee()->input->get('group')))->first();
-		$current = $this->groupData($group);
+		$group = ee()->input->get('group');
+		$this->group = ee()->api->get('MemberGroup', array($group))->first();
+		$this->query_string['group'] = $group;
+		$this->base_url = cp_url('members/groups/edit/', $this->query_string);
+		$current = $this->groupData($this->group);
 
 		$this->form($vars, $current);
 	}
@@ -244,7 +250,7 @@ class Groups extends Members\Members {
 					'title' => 'security_lock',
 					'desc' => 'lock_description',
 					'fields' => array(
-						'require_field' => array(
+						'is_locked' => array(
 							'type' => 'inline_radio',
 							'choices' => array(
 								'y' => 'enable',
@@ -275,11 +281,7 @@ class Groups extends Members\Members {
 					'desc' => 'can_view_profiles_desc',
 					'fields' => array(
 						'can_view_profiles' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'yes',
-								'n' => 'no'
-							),
+							'type' => 'yes_no',
 							'value' => element('can_view_profiles', $values)
 						)
 					)
@@ -289,11 +291,7 @@ class Groups extends Members\Members {
 					'desc' => 'can_send_email_desc',
 					'fields' => array(
 						'can_send_email' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'yes',
-								'n' => 'no'
-							),
+							'type' => 'yes_no',
 							'value' => element('can_send_email', $values)
 						)
 					)
@@ -303,11 +301,7 @@ class Groups extends Members\Members {
 					'desc' => 'can_delete_self_desc',
 					'fields' => array(
 						'can_delete_self' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'yes',
-								'n' => 'no'
-							),
+							'type' => 'yes_no',
 							'value' => element('can_delete_self', $values)
 						)
 					)
@@ -344,11 +338,7 @@ class Groups extends Members\Members {
 					'desc' => 'can_post_comments_desc',
 					'fields' => array(
 						'can_post_comments' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'yes',
-								'n' => 'no'
-							),
+							'type' => 'yes_no',
 							'value' => element('can_post_comments', $values)
 						)
 					)
@@ -358,11 +348,7 @@ class Groups extends Members\Members {
 					'desc' => 'exclude_from_moderation_desc',
 					'fields' => array(
 						'exclude_from_moderation' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'yes',
-								'n' => 'no'
-							),
+							'type' => 'yes_no',
 							'value' => element('exclude_from_moderation', $values)
 						)
 					)
@@ -391,11 +377,7 @@ class Groups extends Members\Members {
 					'desc' => 'can_search_desc',
 					'fields' => array(
 						'can_search' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'yes',
-								'n' => 'no'
-							),
+							'type' => 'yes_no',
 							'value' => element('can_search', $values)
 						)
 					)
@@ -417,11 +399,7 @@ class Groups extends Members\Members {
 					'desc' => 'can_send_private_messages_desc',
 					'fields' => array(
 						'can_send_private_messages' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'yes',
-								'n' => 'no'
-							),
+							'type' => 'yes_no',
 							'value' => element('can_send_private_messages', $values)
 						)
 					)
@@ -451,11 +429,7 @@ class Groups extends Members\Members {
 					'desc' => 'can_attach_in_private_messages_desc',
 					'fields' => array(
 						'can_attach_in_private_messages' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'yes',
-								'n' => 'no'
-							),
+							'type' => 'yes_no',
 							'value' => element('can_attach_in_private_messages', $values)
 						)
 					)
@@ -465,11 +439,7 @@ class Groups extends Members\Members {
 					'desc' => 'can_send_bulletins_desc',
 					'fields' => array(
 						'can_send_bulletins' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'yes',
-								'n' => 'no'
-							),
+							'type' => 'yes_no',
 							'value' => element('can_send_bulletins', $values)
 						)
 					)
@@ -481,11 +451,7 @@ class Groups extends Members\Members {
 					'desc' => 'can_access_cp_desc',
 					'fields' => array(
 						'can_access_cp' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'yes',
-								'n' => 'no'
-							),
+							'type' => 'yes_no',
 							'value' => element('can_access_cp', $values)
 						)
 					)
@@ -497,11 +463,7 @@ class Groups extends Members\Members {
 					'desc' => 'can_admin_channels_desc',
 					'fields' => array(
 						'can_admin_channels' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'yes',
-								'n' => 'no'
-							),
+							'type' => 'yes_no',
 							'value' => element('can_admin_channels', $values)
 						)
 					)
@@ -529,8 +491,6 @@ class Groups extends Members\Members {
 						'channel_entry_actions' => array(
 							'type' => 'checkbox',
 							'choices' => array(
-								'create_entries' => 'create_entries',
-								'edit_own_entries' => 'edit_own_entries',
 								'can_delete_self_entries' => 'can_delete_self_entries',
 								'can_edit_other_entries' => 'can_edit_other_entries',
 								'can_delete_all_entries' => 'can_delete_all_entries',
@@ -561,10 +521,8 @@ class Groups extends Members\Members {
 							'type' => 'checkbox',
 							'choices' => array(
 								'can_admin_members' => 'can_admin_members',
-								'edit_members' => 'edit_members',
 								'can_delete_members' => 'can_delete_members',
 								'can_ban_users' => 'can_ban_users',
-								'change_groups' => 'change_groups'
 							),
 							'value' => element('member_actions', $values)
 						)
@@ -664,6 +622,11 @@ class Groups extends Members\Members {
 			->addToBody(lang('access_privilege_caution'), 'caution');
 
 		ee()->form_validation->set_rules(array(
+			array(
+				 'field'   => 'group_title',
+				 'label'   => 'lang:group_title',
+				 'rules'   => 'valid_xss_check'
+			)
 		));
 
 		if (AJAX_REQUEST)
