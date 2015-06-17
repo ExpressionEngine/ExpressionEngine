@@ -636,10 +636,12 @@ class Groups extends Members\Members {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			if ($this->saveQuicklinks())
+			if ($this->save($vars['sections']))
 			{
-				ee()->functions->redirect(cp_url($this->index_url, $this->query_string));
+				ee()->view->set_message('success', lang('member_group_updated'), lang('member_group_updated_desc'), TRUE);
 			}
+
+			ee()->functions->redirect(cp_url($this->index_url, $this->query_string));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -773,6 +775,63 @@ class Groups extends Members\Members {
 	private function defaults()
 	{
 		return $defaults;
+	}
+
+	private function save($sections)
+	{
+		$this->index_url = 'members/groups/edit';
+		$allowed_channels = ee()->input->post('allowed_channels');
+		$allowed_template_groups = ee()->input->post('allowed_template_groups');
+		$ignore = array('allowed_template_groups', 'allowed_channels');
+
+		if ( ! empty($this->group))
+		{
+			$group = $this->group;
+		}
+		else
+		{
+			$group = ee('Model')->make('MemberGroup');
+		}
+
+		foreach ($sections as $section)
+		{
+			foreach ($section as $item)
+			{
+				foreach ($item['fields'] as $field => $options)
+				{
+					if ( ! in_array($field, $ignore))
+					{
+						$submitted = ee()->input->post($field);
+						$submitted = $submitted === FALSE ? array() : $submitted;
+
+						if (is_array($submitted))
+						{
+							$choices = array_keys($options['choices']);
+							$deselected = array_diff($choices, $submitted);
+
+							foreach ($submitted as $item)
+							{
+								$group->$item = 'y';
+							}
+
+							foreach ($deselected as $item)
+							{
+								$group->$item = 'n';
+							}
+						}
+						else
+						{
+							$group->$field = $submitted;
+						}
+					}
+				}
+			}
+		}
+
+		$group->save();
+		$this->query_string['group'] = $group->group_id;
+
+		return TRUE;
 	}
 }
 // END CLASS
