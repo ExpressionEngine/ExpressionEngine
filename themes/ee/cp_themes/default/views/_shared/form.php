@@ -123,6 +123,8 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 						{
 							$attrs = ' disabled="disabled"';
 						}
+						// This is to handle showing and hiding certain parts
+						// of the form when a form element changes
 						if (isset($field['group_toggle']))
 						{
 							$attrs .= " data-group-toggle='".json_encode($field['group_toggle'])."'";;
