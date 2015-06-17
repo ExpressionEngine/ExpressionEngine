@@ -912,7 +912,7 @@ class Api_channel_fields extends Api {
 			$class_name = ucfirst($name).'_tab';
 
 			// First or third party?
-			foreach(array(APPPATH.'modules/', PATH_ADDONS) as $tmp_path)
+			foreach(array(PATH_MOD, PATH_ADDONS) as $tmp_path)
 			{
 				if (file_exists($tmp_path.$name.'/tab.'.$name.'.php'))
 				{
