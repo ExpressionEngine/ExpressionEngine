@@ -624,13 +624,25 @@ class Cat extends AbstractChannelsController {
 			}
 		}
 
-		if ($category_id)
+		if (is_null($category_id))
 		{
-			$category = ee('Model')->get('Category')->filter('cat_id', (int) $category_id)->first();
+			ee()->view->cp_page_title = lang('create_category');
+			ee()->view->base_url = cp_url('channel/cat/create-cat');
+			ee()->view->save_btn_text = 'create_category';
+			$category = ee('Model')->make('Category');
 		}
 		else
 		{
-			$category = ee('Model')->make('Category');
+			$category = ee('Model')->get('Category')->filter('cat_id', (int) $category_id)->first();
+
+			if ( ! $category)
+			{
+				show_error(lang('unauthorized_access'));
+			}
+
+			ee()->view->cp_page_title = lang('edit_category');
+			ee()->view->base_url = cp_url('channel/cat/create-cat/'.$group_id.'/'.$category_id);
+			ee()->view->save_btn_text = 'edit_category';
 		}
 
 		ee()->load->library('api');
@@ -728,91 +740,76 @@ class Cat extends AbstractChannelsController {
 			)
 		);
 
-		ee()->db->where('group_id', $group_id);
-		ee()->db->order_by('field_order');
-		$field_query = ee()->db->get('category_fields');
+		$cat_fields = $cat_group->getCategoryFields()->sortBy('field_order');
 
-		ee()->db->where('cat_id', $category_id);
-		$data_query = ee()->db->get('category_field_data');
-
-		if ($field_query->num_rows() > 0)
+		if (count($cat_fields))
 		{
-			$dq_row = $data_query->row_array();
-			ee()->load->model('addons_model');
+			/*ee()->load->model('addons_model');
 			$plugins = ee()->addons_model->get_plugin_formatting();
 
 			$vars['custom_format_options']['none'] = 'None';
 			foreach ($plugins as $k=>$v)
 			{
 				$vars['custom_format_options'][$k] = $v;
-			}
-			foreach ($field_query->result_array() as $row)
+			}*/
+			foreach ($cat_fields as $field)
 			{
 				$vars['sections']['custom_fields'][] = array(
-					'title' => $row['field_label'],
+					'title' => $field->field_label,
 					'desc' => '',
 					'fields' => array(
-						'parent_id' => array(
-							'type' => $row['field_type'],
-							'value' => $category->parent_id,
-							'choices' => array(),
-							'required' => $row['field_required'],
-							'text_direction' => ($row['field_text_direction'] == 'rtl') ? 'rtl' : 'ltr'
+						$field->field_name => array(
+							'type' => 'html',
+							'content' => $field->getField()->getForm(),
+							'required' => $field->field_required,
 						)
 					)
 				);
 			}
 		}
 
-		ee()->form_validation->set_rules(array(
-			array(
-				'field' => 'cat_name',
-				'label' => 'lang:name',
-				'rules' => 'required|strip_tags|trim|valid_xss_check'
-			),
-			array(
-				'field' => 'cat_url_title',
-				'label' => 'lang:url_title',
-				'rules' => 'required|strip_tags|trim|valid_xss_check|alpha_dash'
-			),
-			array(
-				'field' => 'cat_description',
-				'label' => 'lang:description',
-				'rules' => 'trim|valid_xss_check'
-			),
-			array(
-				'field' => 'cat_description',
-				'label' => 'lang:description',
-				'rules' => 'enum[' . implode(array_keys($parent_id_options), ',') . ']'
-			)
-		));
-
-		ee()->form_validation->validateNonTextInputs($vars['sections']);
-
-		if (AJAX_REQUEST)
+		if ( ! empty($_POST))
 		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			$category_id = $this->saveCategory($group_id, $category_id);
+			$category->set($_POST);
+			$result = $category->validate();
+var_dump($category->test);exit;
+			if (AJAX_REQUEST)
+			{
+				$field = ee()->input->post('ee_fv_field');
 
-			ee('Alert')->makeInline('shared-form')
-				->asSuccess()
-				->withTitle(lang('category_saved'))
-				->addToBody(lang('category_saved_desc'))
-				->defer();
+				if ($result->hasErrors($field))
+				{
+					ee()->output->send_ajax_response(array('error' => $result->renderError($field)));
+				}
+				else
+				{
+					ee()->output->send_ajax_response('success');
+				}
+				exit;
+			}
 
-			ee()->functions->redirect(cp_url('channels/cat/cat-edit/'.$group_id.'/'.$category_id));
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee('Alert')->makeInline('shared-form')
-				->asIssue()
-				->withTitle(lang('category_not_saved'))
-				->addToBody(lang('category_not_saved_desc'))
-				->now();
+			if ($result->isValid())
+			{
+				$category_id = $this->saveCategory($group_id, $category_id);
+
+				ee('Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('category_saved'))
+					->addToBody(lang('category_saved_desc'))
+					->defer();
+
+				ee()->functions->redirect(cp_url('channels/cat/edit-cat/'.$group_id.'/'.$category_id));
+			}
+			else
+			{
+				ee()->load->library('form_validation');
+				ee()->form_validation->_error_array = $result->renderErrors();
+				ee('Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('category_not_saved'))
+					->addToBody(lang('category_not_saved_desc'))
+					->now();
+			}
 		}
 
 		ee()->view->ajax_validate = TRUE;
