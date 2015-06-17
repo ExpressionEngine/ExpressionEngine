@@ -541,6 +541,12 @@ $lang = array(
 // Member group settings
 //----------------------------
 
+"access_privilege_warning" =>
+"<b>Warning</b>: Please be very careful with the access privileges you grant.",
+
+"access_privilege_caution" =>
+"Any setting marked with <span title='excercise caution'></span> should only be granted to people you trust implicitly.",
+
 "only_superadmins_can_admin_groups" =>
 "Only Super Admins can access the Member Groups page",
 
@@ -566,10 +572,10 @@ $lang = array(
 "Users in this group will be allowed access to the website for each status mode selected.",
 
 "can_view_online_system" =>
-"Can view site when it is online",
+"Online",
 
 "can_view_offline_system" =>
-"Can view site when it is offline",
+"Offline - Not recommended",
 
 "mbr_account_privs" =>
 "Member Account Privileges",
