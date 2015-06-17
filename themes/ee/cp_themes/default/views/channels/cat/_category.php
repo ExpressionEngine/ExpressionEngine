@@ -17,7 +17,7 @@
 	<?php if (count($category->children())): ?>
 		<ul class="tbl-list">
 			<?php foreach ($category->children() as $child): ?>
-				<?php $this->view('channel/cat/_category', array('category' => $child)); ?>
+				<?php $this->view('channels/cat/_category', array('category' => $child)); ?>
 			<?php endforeach ?>
 		</ul>
 	<?php endif ?>
