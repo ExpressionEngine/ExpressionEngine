@@ -1,4 +1,4 @@
-<div class="modal-wrap <?=$name?>">
+<div class="modal-wrap <?=$name?> hidden">
 	<div class="modal">
 		<div class="col-group">
 			<div class="col w-16">

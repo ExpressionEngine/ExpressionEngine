@@ -52,11 +52,13 @@ class Installer_Logger extends EE_Logger {
 		// Keep installer config around so we can restore it after the
 		// parent class is called
 		$installer_config = ee()->config;
-		ee()->config = new MSM_Config();
+		ee()->remove('config');
+		ee()->set('config', new MSM_Config());
 
 		parent::deprecate_template_tag($message, $regex, $replacement);
 
-		ee()->config = $installer_config;
+		ee()->remove('config');
+		ee()->set('config', $installer_config);
 	}
 }
 // END CLASS

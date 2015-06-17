@@ -92,4 +92,14 @@ class Validation implements MixinInterface {
 
 		return $this->scope;
 	}
+
+	/**
+	 * Get the validator
+	 *
+	 * @return Validator object
+	 */
+	public function getValidator()
+	{
+		return $this->validator;
+	}
 }

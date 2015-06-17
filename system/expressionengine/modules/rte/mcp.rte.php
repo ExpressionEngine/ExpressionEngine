@@ -134,7 +134,7 @@ class Rte_mcp {
 		$vars = array(
 			'cp_page_title' => lang('rte_module_name') . ' ' . lang('configuration'),
 			'save_btn_text' => 'btn_save_settings',
-			'save_btn_text_working' => 'btn_save_settings_working',
+			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
 					array(
@@ -242,14 +242,16 @@ class Rte_mcp {
 			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('settings_saved'))
-				->addToBody(lang('settings_saved_desc'));
+				->addToBody(lang('settings_saved_desc'))
+				->now();
 		}
 		else
 		{
 			ee('Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('settings_error'))
-				->addToBody(lang('settings_error_desc'));
+				->addToBody(lang('settings_error_desc'))
+				->now();
 		}
 	}
 

@@ -2,167 +2,86 @@
 
 $lang = array(
 
-//----------------------------
-// Home page
-//----------------------------
+'type_phrase' =>
+'type phrase...',
 
-'checksum_changed_warning' =>
-'One or more core files have been altered:',
+'search_content' =>
+'search content',
 
-'checksum_changed_accept' =>
-'Accept Changes',
+'settings' =>
+'settings',
 
-'checksum_email_subject' =>
-'A core file was modified on your site.',
-
-'checksum_email_message' => 'ExpressionEngine has detected the modification of a core file on: {url}
-
-The following files are affected:
-{changed}
-
-If you made these changes, please accept the modifications on the control panel homepage.  If you did not alter these files it may indicate a hacking attempt. Check the files for any suspicious contents (JavaScript or iFrames) and contact ExpressionEngine support:
-https://support.ellislab.com/',
-
-'new_version_notice' =>
-'ExpressionEngine version %s is now available.'."\n".'
-Download <a href=\'%s\' title=\'Download Here\'>here</a> and follow the <a href=\'%s\' title=\'Version Update Docs\'>Version Update Docs</a>.',
-
-'new_version_notice_high_priority' =>
-'<span style="font-size:18px;color:#3BA1DB;font-weight:bold">Security Update Release</span><br />
-An ExpressionEngine version %s, build %s has been released as a security release.  The latest version is: %s, and the latest build is: %s.<br /><br />
-Please download <a href="%s" title="Download Here">here</a> and follow the <a href="%s" title="Update Docs">update docs</a> to ensure you are running on the most up-to-date version.',
-
-'new_version_error' =>
-'An unexpected error occurred attempting to download the current ExpressionEngine version number.  Please visit your <a href=\'%s\' title=\'download account\'>Download Account</a> to verify you are on the current version.  If this error persists, please contact your system administrator',
-
-'important_messages' =>
-'Notice',
-
-'cp_home' =>
-'My Home Page',
-
-'current_user' =>
-'Current User:',
-
-'system_status' =>
-'System Status',
-
-'offline' =>
-'Offline',
-
-'online' =>
-'Online',
-
-'member_search' =>
-'Member Search',
-
-'search_instructions' =>
-'Submit full or partial words',
-
-'member_group' =>
-'Member Group',
-
-'search_by' =>
-'Search Field',
-
-'screen_name' =>
-'Screen Name',
-
-'email_address' =>
-'Email Address',
-
-'url' =>
-'URL',
-
-'site_statistics' =>
-'Site Statistics',
-
-'value' =>
-'Value',
-
-'total_members' =>
-'Total Members',
-
-'total_validating_members' =>
-'Members Awaiting Activation',
-
-'total_validating_comments' =>
-'Pending Comments',
-
-'total_entries' =>
-'Total Channel Entries',
-
-'total_comments' =>
-'Total Comments',
-
-'most_recent_entries' =>
-'Most Recent Channel Entries',
-
-'most_recent_comments' =>
-'Most Recent Comments',
-
-'no_comments' =>
-'There are currently no comments',
-
-'no_entries' =>
-'There are currently no channel entries',
-
-'entry_title' =>
-'Channel Entry Title',
+'overview' =>
+'Overview',
 
 'comments' =>
 'Comments',
 
-'no_channels_exist' =>
-'There are currently no channels',
+'review_all_new' =>
+'Review All New',
 
-'no_templates_available' =>
-'No Template Groups exist.  <a href=\'%s\' title=\'Create a template group\'>Create a Template Group</a>',
+'there_were' =>
+'There were',
 
-'select_channel_to_post_in' =>
-'Choose a channel to post in',
+'new_comments' =>
+'<em>new</em> comments',
 
-'recent_members' =>
-'Most Recent New Members',
+'since_last_login' =>
+'since your last login',
 
-'join_date' =>
-'Join Date',
+'are' =>
+'are',
 
-'total_hits' =>
-'Total Combined Page Hits',
+'awaiting_moderation' =>
+'awaiting moderation',
 
-'demo_expiration' =>
-'Your demo account will expire in:',
+'and' =>
+'and',
 
-'bulletin_board' =>
-'Bulletin Board',
+'have_been' =>
+'have been',
 
-'no_bulletins' =>
-'No Bulletins',
+'flagged_as_spam' =>
+'flagged as potential spam',
 
-'bulletin_sender' =>
-'Bulletin Sender',
+'channels' =>
+'Channels',
 
-'bulletin_date' =>
-'Bulletin Date',
+'create_new' =>
+'Create New',
 
-'exact_match' =>
-'Exact Match',
+'channels_desc' =>
+'Channels are used to store content for your website. For example, if you want a Blog. You would first need to create a Channel to store the entries. Think of them as folders, or directories.',
 
-'no_news' =>
-'No News Available',
+'has' =>
+'has',
 
-'more_news' =>
-'More News...',
+'channel_fields' =>
+'Channel Fields',
 
-'site_status' =>
-'Site Status',
+'members' =>
+'Members',
 
-'close' =>
-'Close',
+'register_new' =>
+'Register New',
 
-'version_mismatch' =>
-'Your ExpressionEngine installation&rsquo;s version (%s) is not consistent with the reported version (%s). <a href="http://ellislab.com/expressionengine/user-guide/installation/update.html">Please update your installation of ExpressionEngine again</a>.',
+'members_desc' =>
+'Members are registered users of your site. You <em>must</em> have at least one member, an administrator. You may <a href="%s">change the settings</a> to allow or disallow, new member registrations.',
+
+'banned_members' =>
+'Banned Members',
+
+'content' =>
+'Content',
+
+'content_desc' =>
+'Entries in channels, this is what folks visit to experience.',
+
+'entries_with_comments' =>
+'Entries with %d comments',
+
+'closed_entries_with_comments' =>
+'Closed entries with %d comments.',
 
 ''=>''
 );

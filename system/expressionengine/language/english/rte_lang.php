@@ -5,7 +5,6 @@ $lang = array(
 'rte_module_name' => 'Rich Text Editor',
 'rte_module_description' => 'Enables rich text editing in text areas',
 'btn_save_settings' => 'Save Settings',
-'btn_save_settings_working' => 'Saving...',
 'configuration' => 'Configuration',
 'available_tool_sets' => 'Available Tool Sets',
 'create_new' => 'create new',
@@ -136,24 +135,41 @@ $lang = array(
 // Tool misc
 'make_bold' => 'Bold',
 'remove_bold' => 'Unbold',
+'title_bold' => 'make bold',
+
 'make_italics' => 'Italicize',
 'remove_italics' => 'Remove Italics',
+'title_italics' => 'make italic',
+
 'make_underline' => 'Underline',
 'remove_underline' => 'Remove Underline',
+'title_underline' => 'make underline',
+
 'make_ul' => 'Bulleted List',
 'remove_ul' => 'Remove Bulleted List',
+'title_ul' => 'create unordered list',
+
 'make_ol' => 'Numbered List',
 'remove_ol' => 'Remove Numbered List',
+'title_ol' => 'create ordered list',
+
 'make_blockquote' => 'Quote',
 'remove_blockquote' => 'Remove Quote',
+'title_blockquote' => 'create blockquote',
+
 'link' => 'Link',
 'add_link' => 'Add Link',
 'update_link' => 'Update Link',
 'remove_link' => 'Remove Link',
 'external_link' => 'External Link',
+'title_link' => 'create hyperlink',
+
 'view_code' => 'View Code',
 'view_content' => 'View Content',
+'title_view' => 'view code',
+
 'strip_tags' => 'Clear Formatting',
+
 'paragraph' => 'paragraph',
 'heading_1' => 'heading 1',
 'heading_2' => 'heading 2',
@@ -161,6 +177,7 @@ $lang = array(
 'heading_4' => 'heading 4',
 'heading_5' => 'heading 5',
 'heading_6' => 'heading 6',
+
 'img_add' => 'Image',
 'img_remove' => 'Remove Image',
 'img_align_left' => 'Align Left',
@@ -169,6 +186,7 @@ $lang = array(
 'img_wrap_left' => 'Wrap Left',
 'img_wrap_none' => 'Separate Text',
 'img_wrap_right' => 'Wrap Right',
+'img_title' => 'upload file',
 
 ''=>''
 );

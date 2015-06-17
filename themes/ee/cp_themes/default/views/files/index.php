@@ -43,7 +43,7 @@
 
 <?php $this->startOrAppendBlock('modals'); ?>
 
-<div class="modal-wrap modal-view-file">
+<div class="modal-wrap modal-view-file hidden">
 	<div class="modal">
 		<div class="col-group">
 			<div class="col w-16">

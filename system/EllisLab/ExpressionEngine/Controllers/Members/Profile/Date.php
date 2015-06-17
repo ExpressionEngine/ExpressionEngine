@@ -133,7 +133,7 @@ class Date extends Profile {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('email_settings');
 		ee()->view->save_btn_text = 'btn_save_settings';
-		ee()->view->save_btn_text_working = 'btn_save_settings_working';
+		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->render('settings/form', $vars);
 	}
 }

@@ -73,15 +73,9 @@ class Utf8_db_convert {
 			{
 				for ($i = 0; $i < $count; $i = $i + $batch)
 				{
-					// set charset to latin1 to read 1.x's written values properly
-					ee()->db->db_set_charset('latin1', 'latin1_swedish_ci');
-
 					$query = ee()->db->get($table, $offset, $batch);
 					$data = $query->result_array();
 					$query->free_result();
-
-					// set charset to utf8 to write them back to the database properly
-					ee()->db->db_set_charset('utf8', 'utf8_general_ci');
 
 					foreach ($data as $row)
 					{

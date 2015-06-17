@@ -36,11 +36,15 @@ abstract class AbstractChannel extends CP_Controller {
 	{
 		parent::__construct();
 
-		if ( ! ee()->cp->allowed_group(
-			'can_access_admin',
-			'can_admin_channels',
-			'can_access_content_prefs'
-		))
+		// Allow AJAX requests for category editing
+		if (AJAX_REQUEST && in_array(ee()->router->method, array('createCat', 'editCat')))
+		{
+			if ( ! $this->cp->allowed_group('can_edit_categories'))
+			{
+				show_error(lang('unauthorized_access'));
+			}
+		}
+		elseif ( ! ee()->cp->allowed_group('can_access_admin', 'can_admin_channels', 'can_access_content_prefs'))
 		{
 			show_error(lang('unauthorized_access'));
 		}

@@ -66,4 +66,9 @@ class Token {
 			$this->lexeme
 		);
 	}
+
+	public function debug()
+	{
+		return htmlentities($this->type.' ('.$this->__toString().')');
+	}
 }

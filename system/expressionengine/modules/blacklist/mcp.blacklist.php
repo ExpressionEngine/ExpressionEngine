@@ -98,7 +98,7 @@ class Blacklist_mcp {
 			'base_url' => cp_url('addons/settings/blacklist/save_htaccess_path'),
 			'cp_page_title' => lang('blacklist_module_name') . ' ' . lang('settings'),
 			'save_btn_text' => 'btn_save_settings',
-			'save_btn_text_working' => 'btn_save_settings_working',
+			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
 					array(

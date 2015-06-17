@@ -195,7 +195,8 @@ class Template extends AbstractDesignController {
 			ee('Alert')->makeInline('settings-form')
 				->asIssue()
 				->withTitle(lang('create_template_error'))
-				->addToBody(lang('create_template_error_desc'));
+				->addToBody(lang('create_template_error_desc'))
+				->now();
 		}
 
 		$this->sidebarMenu($group->group_id);
@@ -293,13 +294,16 @@ class Template extends AbstractDesignController {
 				ee()->session->set_flashdata('template_id', $template->template_id);
 				ee()->functions->redirect(cp_url('design/manager/' . $group->group_name));
 			}
+
+			$alert->now();
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
 			ee('Alert')->makeInline('template-form')
 				->asIssue()
 				->withTitle(lang('update_template_error'))
-				->addToBody(lang('update_template_error_desc'));
+				->addToBody(lang('update_template_error_desc'))
+				->now();
 		}
 
 		$author = $template->getLastAuthor();
@@ -418,7 +422,7 @@ class Template extends AbstractDesignController {
 			$alert = ee('Alert')->makeInline('settings-form')
 				->asSuccess()
 				->withTitle(lang('update_template_success'))
-				->addToBody(sprintf(lang('eupdate_template_success_desc'), $group->group_name, $template->template_name))
+				->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name.'/'.$template->template_name))
 				->defer();
 
 			ee()->session->set_flashdata('template_id', $template->template_id);

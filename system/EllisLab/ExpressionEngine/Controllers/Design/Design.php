@@ -64,6 +64,11 @@ class Design extends AbstractDesignController {
 				->filter('is_site_default', 'y')
 				->filter('site_id', ee()->config->item('site_id'))
 				->first();
+
+			if ( ! $group)
+			{
+				ee()->functions->redirect(cp_url('design/system'));
+			}
 		}
 		else
 		{
@@ -88,6 +93,7 @@ class Design extends AbstractDesignController {
 			if ($this->hasEditTemplatePrivileges($group->group_id))
 			{
 				$this->remove(ee()->input->post('selection'));
+				ee()->functions->redirect(cp_url('design/manager/' . $group_name, ee()->cp->get_url_state()));
 			}
 			else
 			{
@@ -162,7 +168,8 @@ class Design extends AbstractDesignController {
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('templates_removed_desc'))
-			->addToBody($template_names);
+			->addToBody($template_names)
+			->defer();
 	}
 
 }

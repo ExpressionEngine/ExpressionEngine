@@ -140,13 +140,16 @@ class Email extends AbstractDesignController {
 				$alert->defer();
 				ee()->functions->redirect(cp_url('design/email'));
 			}
+
+			$alert->now();
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
 			ee('Alert')->makeInline('template-form')
 				->asIssue()
 				->withTitle(lang('update_template_error'))
-				->addToBody(lang('update_template_error_desc'));
+				->addToBody(lang('update_template_error_desc'))
+				->now();
 		}
 
 		$author = $template->getLastAuthor();

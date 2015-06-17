@@ -957,7 +957,7 @@ class EE_Jquery extends EE_Javascript {
 		$output = ($script_tags === FALSE) ? $script : $this->inline($script);
 
 		$this->CI->load->vars(array($view_var => $output));
-
+		return $output;
 	}
 
 	// --------------------------------------------------------------------

@@ -51,8 +51,8 @@ abstract class MixableImpl implements Mixable {
 	 */
 	public function setMixinManager($manager)
 	{
-		$manager->setMixins($this->getMixinClasses());
 		$this->_mixin_manager = $manager;
+		$manager->setMixins($this->getMixinClasses());
 	}
 
 	/**

@@ -38,11 +38,23 @@ class Layout extends AbstractChannelController {
 	public function __construct()
 	{
 		parent::__construct();
+
+		if ( ! ee()->cp->allowed_group('can_admin_channels'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		ee()->lang->loadfile('content');
 	}
 
 	public function layout($channel_id)
 	{
+		if (ee()->input->post('bulk_action') == 'remove')
+		{
+			$this->remove(ee()->input->post('selection'));
+			ee()->functions->redirect(cp_url('channel/layout/' . $channel_id));
+		}
+
 		$channel = ee('Model')->get('Channel', $channel_id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
@@ -52,6 +64,7 @@ class Layout extends AbstractChannelController {
 			show_error(lang('unauthorized_access'));
 		}
 
+		$vars['channel_id'] = $channel_id;
 		$vars['create_url'] = cp_url('channel/layout/create/' . $channel_id);
 
 		$table = Table::create();
@@ -72,13 +85,13 @@ class Layout extends AbstractChannelController {
 
 		$data = array();
 
-		$layout_ids = ee()->session->flashdata('layout_ids');
+		$layout_id = ee()->session->flashdata('layout_id');
 
 		foreach ($channel->getChannelLayouts() as $layout)
 		{
 			$column = array(
-				$layout->layout_name,
-				$layout->getMemberGroup()->group_title,
+				htmlentities($layout->layout_name, ENT_QUOTES),
+				implode(',', $layout->getMemberGroups()->pluck('group_title')),
 				array('toolbar_items' => array(
 					'edit' => array(
 						'href' => cp_url('channel/layout/edit/' . $layout->layout_id),
@@ -89,14 +102,14 @@ class Layout extends AbstractChannelController {
 					'name' => 'selection[]',
 					'value' => $layout->layout_id,
 					'data' => array(
-						'confirm' => lang('layout') . ': <b>' . htmlentities('A Layout', ENT_QUOTES) . '</b>'
+						'confirm' => lang('layout') . ': <b>' . htmlentities($layout->layout_name, ENT_QUOTES) . '</b>'
 					)
 				)
 			);
 
 			$attrs = array();
 
-			if ($layout_ids && in_array($layout->layout_id, $layout_ids))
+			if ($layout_id && $layout->layout_id == $layout_id)
 			{
 				$attrs = array('class' => 'selected');
 			}
@@ -110,7 +123,7 @@ class Layout extends AbstractChannelController {
 
 		$table->setData($data);
 
-		$base_url = new URL('channel', ee()->session->session_id());
+		$base_url = new URL('channel/layout/' . $channel_id, ee()->session->session_id());
 		$vars['table'] = $table->viewData($base_url);
 
 		$pagination = new Pagination(
@@ -120,6 +133,13 @@ class Layout extends AbstractChannelController {
 		);
 		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
 
+		ee()->javascript->set_global('lang.remove_confirm', lang('layout') . ': <b>### ' . lang('layouts') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/v3/confirm_remove',
+			),
+		));
+
 		ee()->view->cp_page_title = sprintf(lang('channel_form_layouts'), $channel->channel_title);
 		ee()->cp->set_breadcrumb(cp_url('channel'), lang('channels'));
 
@@ -128,6 +148,9 @@ class Layout extends AbstractChannelController {
 
 	public function create($channel_id)
 	{
+		ee()->view->header = NULL;
+		ee()->view->left_nav = NULL;
+
 		$channel = ee('Model')->get('Channel', $channel_id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
@@ -139,7 +162,7 @@ class Layout extends AbstractChannelController {
 
 		$entry = ee('Model')->make('ChannelEntry')->setChannel($channel);
 
-		$default_layout = new DefaultLayout();
+		$default_layout = new DefaultLayout($channel_id);
 		$channel_layout = ee('Model')->make('ChannelLayout');
 		$field_layout = $default_layout->getLayout();
 
@@ -154,13 +177,27 @@ class Layout extends AbstractChannelController {
 
 		$channel_layout->field_layout = $field_layout;
 
+		$assigned_member_groups = array();
+
+		ee('Model')->get('ChannelLayout')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('channel_id', $channel_id)
+			->all()
+			->each(function($layout) use (&$assigned_member_groups) {
+				foreach ($layout->getMemberGroups()->pluck('group_id') as $group_id)
+				{
+					$assigned_member_groups[$group_id] = $layout;
+				}
+			});
+
 		$vars = array(
 			'channel' => $channel,
 			'form_url' => cp_url('channel/layout/create/' . $channel_id),
 			'layout' => $entry->getDisplay(),
 			'channel_layout' => $channel_layout,
-			'selected_member_groups' => array(),
 			'member_groups' => $this->getEligibleMemberGroups($channel),
+			'selected_member_groups' => array(),
+			'assigned_member_groups' => $assigned_member_groups,
 			'submit_button_text' => lang('btn_create_layout')
 		);
 
@@ -185,54 +222,35 @@ class Layout extends AbstractChannelController {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			if (ee()->input->post('submit') == 'create')
-			{
-				$ids = array();
-				foreach (ee()->input->post('member_groups') as $group_id)
-				{
-					$layout = ee('Model')->get('ChannelLayout')
-						->filter('site_id', ee()->config->item('site_id'))
-						->filter('channel_id', $channel_id)
-						->filter('member_group', $group_id)
-						->first();
+			$layout = ee('Model')->make('ChannelLayout');
+			$layout->setChannel($channel);
+			$layout->site_id = ee()->config->item('site_id');
+			$layout->layout_name = ee()->input->post('layout_name');
+			$layout->field_layout = json_decode(ee()->input->post('field_layout'), TRUE);
 
-					if ( ! $layout)
-					{
-						$layout = ee('Model')->make('ChannelLayout');
-						$layout->setChannel($channel);
-						$layout->site_id = ee()->config->item('site_id');
-						$layout->member_group = $group_id;
-					}
+			$member_groups = ee('Model')->get('MemberGroup', ee()->input->post('member_groups'))
+				->filter('site_id', ee()->config->item('site_id'))
+				->all();
 
-					$layout->layout_name = ee()->input->post('layout_name');
-					$layout->field_layout = json_decode(ee()->input->post('field_layout'), TRUE);
+			$layout->setMemberGroups($member_groups);
 
-					$layout->save();
+			$layout->save();
 
-					$ids[] = $layout->layout_id;
-				}
+			ee('Alert')->makeInline('layouts')
+				->asSuccess()
+				->withTitle(lang('create_layout_success'))
+				->addToBody(sprintf(lang('create_layout_success_desc'), ee()->input->post('layout_name')))
+				->defer();
 
-				ee()->session->set_flashdata('layout_ids', $ids);
-
-				ee('Alert')->makeInline('layouts')
-					->asSuccess()
-					->withTitle(lang('create_layout_success'))
-					->addToBody(sprintf(lang('create_layout_success_desc'), ee()->input->post('layout_name')))
-					->defer();
-
-				ee()->functions->redirect(cp_url('channel/layout/' . $channel_id));
-			}
-			else
-			{
-				// Preview it...somehow
-			}
+			ee()->functions->redirect(cp_url('channel/layout/edit/' . $layout->layout_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
 			ee('Alert')->makeInline('layout-form')
 				->asIssue()
 				->withTitle(lang('create_layout_error'))
-				->addToBody(lang('create_layout_error_desc'));
+				->addToBody(lang('create_layout_error_desc'))
+				->now();
 		}
 
 		ee()->view->cp_breadcrumbs = array(
@@ -242,11 +260,8 @@ class Layout extends AbstractChannelController {
 
 		ee()->view->cp_page_title = lang('create_form_layout');
 
-		ee()->view->header = NULL;
-		ee()->view->left_nav = NULL;
-
 		ee()->javascript->set_global('publish_layout', $channel_layout->field_layout);
-		ee()->cp->add_js_script('ui', 'sortable');
+		ee()->cp->add_js_script('ui', array('droppable', 'sortable'));
 		ee()->cp->add_js_script('file', 'cp/channel/layout');
 
 		ee()->cp->render('channel/layout/form', $vars);
@@ -254,6 +269,9 @@ class Layout extends AbstractChannelController {
 
 	public function edit($layout_id)
 	{
+		ee()->view->header = NULL;
+		ee()->view->left_nav = NULL;
+
 		$channel_layout = ee('Model')->get('ChannelLayout', $layout_id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
@@ -267,13 +285,28 @@ class Layout extends AbstractChannelController {
 
 		$entry = ee('Model')->make('ChannelEntry')->setChannel($channel);
 
+		$assigned_member_groups = array();
+
+		ee('Model')->get('ChannelLayout')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('channel_id', $channel->channel_id)
+			->filter('layout_id', '!=', $layout_id) // Exclude this layout
+			->all()
+			->each(function($layout) use (&$assigned_member_groups) {
+				foreach ($layout->getMemberGroups()->pluck('group_id') as $group_id)
+				{
+					$assigned_member_groups[$group_id] = $layout;
+				}
+			});
+
 		$vars = array(
 			'channel' => $channel,
 			'form_url' => cp_url('channel/layout/edit/' . $layout_id),
 			'layout' => $entry->getDisplay($channel_layout),
 			'channel_layout' => $channel_layout,
-			'selected_member_groups' => array($channel_layout->member_group),
 			'member_groups' => $this->getEligibleMemberGroups($channel),
+			'selected_member_groups' => $channel_layout->getMemberGroups()->pluck('group_id'),
+			'assigned_member_groups' => $assigned_member_groups,
 			'submit_button_text' => lang('btn_edit_layout')
 		);
 
@@ -298,55 +331,32 @@ class Layout extends AbstractChannelController {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			if (ee()->input->post('submit') == 'create')
-			{
-				$ids = array();
-				foreach (ee()->input->post('member_groups') as $group_id)
-				{
-					$layout = ee('Model')->get('ChannelLayout')
-						->filter('site_id', ee()->config->item('site_id'))
-						->filter('channel_id', $channel_layout->channel_id)
-						->filter('member_group', $group_id)
-						->first();
+			$channel_layout->layout_name = ee()->input->post('layout_name');
+			$channel_layout->field_layout = json_decode(ee()->input->post('field_layout'), TRUE);
 
-					if ( ! $layout)
-					{
-						$layout = ee('Model')->make('ChannelLayout');
-						$layout->setChannel($channel);
-						$layout->site_id = ee()->config->item('site_id');
-						$layout->member_group = $group_id;
-					}
+			$member_groups = ee('Model')->get('MemberGroup', ee()->input->post('member_groups'))
+				->filter('site_id', ee()->config->item('site_id'))
+				->all();
 
-					$layout->layout_name = ee()->input->post('layout_name');
-					$layout->field_layout = json_decode(ee()->input->post('field_layout'), TRUE);
+			$channel_layout->setMemberGroups($member_groups);
 
-					$layout->save();
+			$channel_layout->save();
 
-					$ids[] = $layout->layout_id;
-				}
+			ee('Alert')->makeInline('layout-form')
+				->asSuccess()
+				->withTitle(lang('edit_layout_success'))
+				->addToBody(sprintf(lang('edit_layout_success_desc'), ee()->input->post('layout_name')))
+				->defer();
 
-				ee()->session->set_flashdata('layout_ids', $ids);
-
-				// @TODO need to have an edited alert with an added subalert
-				ee('Alert')->makeInline('layout-form')
-					->asSuccess()
-					->withTitle(lang('edit_layout_success'))
-					->addToBody(sprintf(lang('edit_layout_success_desc'), ee()->input->post('layout_name')))
-					->defer();
-
-				ee()->functions->redirect(cp_url('channel/layout/edit/' . $layout_id));
-			}
-			else
-			{
-				// Preview it...somehow
-			}
+			ee()->functions->redirect(cp_url('channel/layout/edit/' . $layout_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
 			ee('Alert')->makeInline('layout-form')
 				->asIssue()
 				->withTitle(lang('edit_layout_error'))
-				->addToBody(lang('edit_layout_error_desc'));
+				->addToBody(lang('edit_layout_error_desc'))
+				->now();
 		}
 
 		ee()->view->cp_breadcrumbs = array(
@@ -354,13 +364,25 @@ class Layout extends AbstractChannelController {
 			cp_url('channel/layout/' . $channel_layout->channel_id) => lang('form_layouts')
 		);
 
+		$alert_required = ee('Alert')->makeBanner('tab-has-required-fields')
+			->asIssue()
+			->canClose()
+			->withTitle(lang('error_cannot_hide_tab'))
+			->addToBody(lang('error_tab_has_required_fields'));
+
+		$alert_not_empty = ee('Alert')->makeBanner('tab-has-fields')
+			->asIssue()
+			->canClose()
+			->withTitle(lang('error_cannot_remove_tab'))
+			->addToBody(lang('error_tab_has_fields'));
+
 		ee()->view->cp_page_title = sprintf(lang('edit_form_layout'), $channel_layout->layout_name);
 
-		ee()->view->header = NULL;
-		ee()->view->left_nav = NULL;
-
 		ee()->javascript->set_global('publish_layout', $channel_layout->field_layout);
-		ee()->cp->add_js_script('ui', 'sortable');
+		ee()->javascript->set_global('alert.required', $alert_required->render());
+		ee()->javascript->set_global('alert.not_empty', $alert_not_empty->render());
+
+		ee()->cp->add_js_script('ui', array('droppable', 'sortable'));
 		ee()->cp->add_js_script('file', 'cp/channel/layout');
 
 		ee()->cp->render('channel/layout/form', $vars);
@@ -375,6 +397,33 @@ class Layout extends AbstractChannelController {
 		$member_groups = array_merge($super_admins->asArray(), $channel->getAssignedMemberGroups()->asArray());
 
 		return new Collection($member_groups);
+	}
+
+	private function remove($layout_ids)
+	{
+		if ( ! is_array($layout_ids))
+		{
+			$layout_ids = array($layout_ids);
+		}
+
+		$channel_layouts = ee('Model')->get('ChannelLayout', $layout_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		$layout_names = array();
+
+		foreach ($channel_layouts as $layout)
+		{
+			$layout_names[] = $layout->layout_name;
+		}
+
+		$channel_layouts->delete();
+		ee('Alert')->makeInline('layouts')
+			->asSuccess()
+			->withTitle(lang('success'))
+			->addToBody(lang('layouts_removed_desc'))
+			->addToBody($layout_names)
+			->defer();
 	}
 
 }

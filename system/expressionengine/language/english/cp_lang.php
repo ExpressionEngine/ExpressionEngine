@@ -551,6 +551,18 @@ $lang = array(
 'new_channel' =>
 'New Channel',
 
+'new_site' =>
+'New Site',
+
+'name_your_site' =>
+'Name your site',
+
+'my_profile' =>
+'My Profile',
+
+'new_link' =>
+'New Link',
+
 'menu_edit' =>
 'Edit',
 
@@ -598,6 +610,15 @@ $lang = array(
 
 'url_title' =>
 'URL Title',
+
+'url_title_desc' =>
+'<i>No spaces. Underscores and dashes are allowed.</i>',
+
+'description' =>
+'Description',
+
+'image' =>
+'Image',
 
 'license_no' =>
 'License #',

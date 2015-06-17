@@ -183,7 +183,16 @@ class Edit extends AbstractPublishController {
 
 		foreach ($entries->all() as $entry)
 		{
-			$title = $entry->title . '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . $entry->getAuthor()->getMemberName() . ', ' . lang('in') . ': ' . $entry->getChannel()->channel_title . '</span>';
+			$autosaves = $entry->getAutosaves()->count();
+
+			$title = $entry->title;
+
+			if ($autosaves)
+			{
+				$title .= ' <span class="auto-save" title="' . lang('auto_saved') . '">&#10033;</span>';
+			}
+
+			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . $entry->getAuthor()->getMemberName() . ', ' . lang('in') . ': ' . $entry->getChannel()->channel_title . '</span>';
 
 			if ($entry->comment_total > 1)
 			{
@@ -235,6 +244,11 @@ class Edit extends AbstractPublishController {
 				$attrs = array('class' => 'selected');
 			}
 
+			if ($autosaves)
+			{
+				$attrs = array('class' => 'auto-saved');
+			}
+
 			$data[] = array(
 				'attrs'		=> $attrs,
 				'columns'	=> $column
@@ -269,7 +283,7 @@ class Edit extends AbstractPublishController {
 		ee()->cp->render('publish/edit/index', $vars);
 	}
 
-	public function entry($id)
+	public function entry($id, $autosave_id = NULL)
 	{
 		$entry = ee('Model')->get('ChannelEntry', $id)
 			->filter('site_id', ee()->config->item('site_id'))
@@ -280,22 +294,117 @@ class Edit extends AbstractPublishController {
 			show_error(lang('no_entries_matching_that_criteria'));
 		}
 
+		// -------------------------------------------
+		// 'publish_form_entry_data' hook.
+		//  - Modify entry's data
+		//  - Added: 1.4.1
+			if (ee()->extensions->active_hook('publish_form_entry_data') === TRUE)
+			{
+				$result = ee()->extensions->call('publish_form_entry_data', $entry->getValues());
+				$entry->set($result);
+			}
+		// -------------------------------------------
+
+		ee()->view->cp_page_title = sprintf(lang('edit_entry_with_title'), $entry->title);
+
 		$form_attributes = array(
 			'class' => 'settings ajax-validate',
 		);
 
 		$vars = array(
-			'entry' => $entry,
 			'form_url' => cp_url('publish/edit/entry/' . $id),
 			'form_attributes' => $form_attributes,
-			'layout' => $entry->getDisplay()
+			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
+			'button_text' => lang('btn_edit_entry')
 		);
+
+		if ($autosave_id)
+		{
+			$autosaved = ee('Model')->get('ChannelEntryAutosave', $autosave_id)
+				->filter('site_id', ee()->config->item('site_id'))
+				->first();
+
+			if ($autosaved)
+			{
+				$entry->set($autosaved->entry_data);
+			}
+		}
+
+		if (count($_POST))
+		{
+			$entry->set($_POST);
+			$result = $entry->validate();
+
+			if (AJAX_REQUEST)
+			{
+				$field = ee()->input->post('ee_fv_field');
+				// Remove any namespacing to run validation for the parent field
+				$field = preg_replace('/\[.+?\]/', '', $field);
+
+				if ($result->hasErrors($field))
+				{
+					ee()->output->send_ajax_response(array('error' => $result->renderError($field)));
+				}
+				else
+				{
+					ee()->output->send_ajax_response('success');
+				}
+				exit;
+			}
+
+			if ($result->isValid())
+			{
+				$entry->edit_date = ee()->localize->now;
+				$entry->save();
+
+				ee('Alert')->makeInline('entry-form')
+					->asSuccess()
+					->withTitle(lang('edit_entry_success'))
+					->addToBody(sprintf(lang('edit_entry_success_desc'), $entry->title))
+					->defer();
+
+				ee()->functions->redirect(cp_url('publish/edit/entry/' . $id, ee()->cp->get_url_state()));
+			}
+			else
+			{
+				$vars['errors'] = $result;
+				// Hacking
+				ee()->load->library('form_validation');
+				ee()->form_validation->_error_array = $result->renderErrors();
+				ee('Alert')->makeInline('entry-form')
+					->asIssue()
+					->withTitle(lang('edit_entry_error'))
+					->addToBody(lang('edit_entry_error_desc'))
+					->now();
+			}
+		}
+
+		$channel_layout = ee('Model')->get('ChannelLayout')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('channel_id', $entry->channel_id)
+			->with('MemberGroups')
+			->filter('MemberGroups.group_id', ee()->session->userdata['group_id'])
+			->first();
+
+		$vars = array_merge($vars, array(
+			'entry' => $entry,
+			'layout' => $entry->getDisplay($channel_layout),
+		));
+
+		$this->setGlobalJs($entry, TRUE);
+
+		ee()->cp->add_js_script(array(
+			'plugin' => array(
+				'ee_url_title',
+				'ee_filebrowser',
+				'ee_fileuploader',
+			),
+			'file' => array('cp/v3/publish')
+		));
 
 		ee()->view->cp_breadcrumbs = array(
 			cp_url('publish/edit', array('filter_by_channel' => $entry->channel_id)) => $entry->getChannel()->channel_title,
 		);
-
-		ee()->view->cp_page_title = sprintf(lang('edit_entry_with_title'), $entry->title);
 
 		ee()->cp->render('publish/edit/entry', $vars);
 	}

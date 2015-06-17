@@ -6,6 +6,7 @@ class FieldDisplay {
 
 	protected $field;
 	protected $collapsed = FALSE;
+	protected $visible = TRUE;
 
 	public function __construct($field)
 	{
@@ -15,6 +16,11 @@ class FieldDisplay {
 	public function getType()
 	{
 		return $this->field->getItem('field_type');
+	}
+
+	public function getTypeName()
+	{
+		return $this->field->getTypeName();
 	}
 
 	public function getName()
@@ -61,4 +67,27 @@ class FieldDisplay {
 	{
 		return $this->collapsed;
 	}
+	public function hide()
+	{
+		$this->visible = FALSE;
+		return $this;
+	}
+
+	public function show()
+	{
+		$this->visible = TRUE;
+		return $this;
+	}
+
+	public function isVisible()
+	{
+		return $this->visible;
+	}
+
+	public function getSetting($item)
+	{
+		$settings = $this->field->initField();
+		return $settings[$item];
+	}
+
 }

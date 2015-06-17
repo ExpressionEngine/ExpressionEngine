@@ -58,6 +58,7 @@ class Snippets extends AbstractDesignController {
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
+			ee()->functions->redirect(cp_url('design/snippets', ee()->cp->get_url_state()));
 		}
 		elseif (ee()->input->post('bulk_action') == 'export')
 		{
@@ -176,7 +177,7 @@ class Snippets extends AbstractDesignController {
 			'ajax_validate' => TRUE,
 			'base_url' => cp_url('design/snippets/create'),
 			'save_btn_text' => 'btn_create_partial',
-			'save_btn_text_working' => 'btn_create_partial_working',
+			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
 					array(
@@ -269,7 +270,8 @@ class Snippets extends AbstractDesignController {
 			ee('Alert')->makeInline('settings-form')
 				->asIssue()
 				->withTitle(lang('create_template_partial_error'))
-				->addToBody(lang('create_template_partial_error_desc'));
+				->addToBody(lang('create_template_partial_error_desc'))
+				->now();
 		}
 
 		ee()->view->cp_page_title = lang('create_partial');
@@ -393,7 +395,8 @@ class Snippets extends AbstractDesignController {
 			ee('Alert')->makeInline('settings-form')
 				->asIssue()
 				->withTitle(lang('edit_template_partial_error'))
-				->addToBody(lang('edit_template_partial_error_desc'));
+				->addToBody(lang('edit_template_partial_error_desc'))
+				->now();
 		}
 
 		ee()->view->cp_page_title = lang('edit_partial');
@@ -431,7 +434,8 @@ class Snippets extends AbstractDesignController {
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('snippets_removed_desc'))
-			->addToBody($names);
+			->addToBody($names)
+			->defer();
 	}
 
 	/**
@@ -455,7 +459,8 @@ class Snippets extends AbstractDesignController {
 			ee('Alert')->makeInline('settings-form')
 				->asIssue()
 				->withTitle(lang('error_export'))
-				->addToBody(lang('error_cannot_create_zip'));
+				->addToBody(lang('error_cannot_create_zip'))
+				->now();
 			return;
 		}
 

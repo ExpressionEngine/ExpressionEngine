@@ -1,74 +1,91 @@
-<table id="<?=$field_id?>" class="grid_field_container" cellspacing="0" cellpadding="0">
-	<tr>
-		<td class="grid_field_container_cell">
-			<table class="grid_field" cellspacing="0" cellpadding="0">
-				<thead>
-					<th class="grid_handle">&nbsp;</th>
-					<?php foreach ($columns as $column): ?>
-						<th width="<?=$column['col_width']?>%">
-							<b><?=$column['col_label']?></b>
-							<?php if ( ! empty($column['col_instructions'])): ?>
-								<span class="instruction_text">
-									<b><?=lang('instructions')?></b> <?=$column['col_instructions']?>
-								</span>
-							<?php endif ?>
-						</th>
-					<?php endforeach ?>
-				</thead>
-				<tbody class="grid_row_container">
-					<?php foreach ($rows as $row): ?>
-						<tr class="grid_row">
-							<td class="grid_handle">&nbsp;</td>
-							<?php foreach ($columns as $column): ?>
-								<td width="<?=$column['col_width']?>%"
-									data-fieldtype="<?=$column['col_type']?>"
-									data-column-id="<?=$column['col_id']?>"
-									data-row-id="<?=$row['row_id']?>">
+<div class="tbl-wrap">
+	<table id="<?=$field_id?>" class="grid-input-form" cellespacing="0">
+		<tr>
+			<th class="first reorder-col"<?php if (empty($rows)) echo $hide?>></th>
+			<?php
+			$first = current($columns);
+			$last = end($columns);
+			reset($columns);
+			foreach ($columns as $column):
+				$class = '';
 
-									<div class="grid_cell">
-										<?php if ($column == end($columns)):?>
-											<a href="#" class="grid_button_delete" tabindex="-1" title="<?=lang('grid_delete_row')?>"><?=lang('grid_delete_row')?></a>
-										<?php endif ?>
-										<?=$row['col_id_'.$column['col_id']]?>
-										<?php if (isset($row['col_id_'.$column['col_id'].'_error'])): ?>
-											<p class="grid_error"><?=$row['col_id_'.$column['col_id'].'_error']?></p>
-										<?php endif ?>
-									</div>
+				if (empty($rows))
+				{
+					if ($column == $first)
+					{
+						$class = 'first';
+					}
+					elseif ($column == $last)
+					{
+						$class = 'last';
+					}
+				}
 
-								</td>
-							<?php endforeach ?>
-						</tr>
-					<?php endforeach ?>
-					<tr class="grid_row blank_row">
-						<td class="grid_handle">&nbsp;</td>
-						<?php foreach ($columns as $column): ?>
-							<td width="<?=$column['col_width']?>%"
-								data-fieldtype="<?=$column['col_type']?>"
-								data-column-id="<?=$column['col_id']?>">
+				if ($column['col_type'] == 'rte')
+				{
+					$class .= ' grid-rte';
+				}
 
-								<div class="grid_cell">
-									<?php if ($column == end($columns)):?>
-										<a href="#" class="grid_button_delete" tabindex="-1" title="<?=lang('grid_delete_row')?>"><?=lang('grid_delete_row')?></a>
-									<?php endif ?>
-									<?=$blank_row['col_id_'.$column['col_id']]?>
-								</div>
+				if ($column['col_type'] == 'relationship'
+					&& $column['col_settings']['allow_multiple'])
+				{
+					$class .= ' grid-mr';
+				}
 
-							</td>
-						<?php endforeach ?>
-					</tr>
-					<tr class="empty_field">
-						<td colspan="<?=count($columns) + 1 ?>" class="empty_field first">
-							<?=lang('grid_add_some_data')?>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</td>
-		<td class="grid_delete_row_gutter">&nbsp;</td>
-	</tr>
-	<tr>
-		<td>
-			<a class="grid_button_add" href="#" title="<?=lang('grid_add_row')?>"><?=lang('grid_add_row')?></a>
-		</td>
-	</tr>
-</table>
+				if ($class)
+				{
+					$class = ' class="' . trim($class) . '"';
+				}
+			?>
+			<th<?=$class?>><?=$column['col_label']?><?php if ( ! empty($column['col_instructions'])): ?> <em class="grid-instruct"><?=$column['col_instructions']?></em><?php endif; ?></th>
+			<?php endforeach ?>
+			<th class="last grid-remove<?php if (empty($rows)) echo ' hidden'?>"></th>
+		</tr>
+		<?php
+		$last = end($rows);
+		reset($rows);
+		foreach ($rows as $row):
+			$class = '';
+			if ($row == $last)
+			{
+				$class = ' class="last"';
+			}
+		?>
+		<tr<?=$class?>>
+			<td class="reorder-col"><span class="ico reorder"></span></td>
+			<?php foreach ($columns as $column): ?>
+			<td	data-fieldtype="<?=$column['col_type']?>"
+				data-column-id="<?=$column['col_id']?>"
+				data-row-id="<?=$row['row_id']?>">
+				<?=$row['col_id_'.$column['col_id']]?>
+			</td>
+			<?php endforeach ?>
+			<td>
+				<ul class="toolbar">
+					<li class="remove"><a href="#" title="<?=lang('remove_row')?>"></a></li>
+				</ul>
+			</td>
+		</tr>
+		<?php endforeach ?>
+		<tr class="grid-blank-row hidden">
+			<td class="reorder-col"><span class="ico reorder"></span></td>
+			<?php foreach ($columns as $column): ?>
+			<td	data-fieldtype="<?=$column['col_type']?>"
+				data-column-id="<?=$column['col_id']?>">
+				<?=$blank_row['col_id_'.$column['col_id']]?>
+			</td>
+			<?php endforeach ?>
+			<td>
+				<ul class="toolbar">
+					<li class="remove"><a href="#" title="<?=lang('remove_row')?>"></a></li>
+				</ul>
+			</td>
+		</tr>
+		<tr class="no-results<?php if ( ! empty($rows)) echo ' hidden'?>">
+			<td class="solo" colspan="<?=count($columns)?>"><?=lang('no_rows_created')?> <a class="btn" href=""><?=lang('add_new_row')?></a></td>
+		</tr>
+	</table>
+</div>
+<ul class="toolbar<?php if (empty($rows)) echo ' hidden'?>">
+	<li class="add"><a href="#" title="<?=lang('add_new_row')?>"></a></li>
+</ul>

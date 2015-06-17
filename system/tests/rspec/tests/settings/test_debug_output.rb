@@ -36,6 +36,7 @@ feature 'Debugging & Output Settings' do
     @page.send_headers_n.checked?.should == (send_headers == 'n')
 
     @page.redirect_method.value.should == ee_config(item: 'redirect_method')
+    @page.cache_driver.value.should == ee_config(item: 'cache_driver')
     @page.max_caches.value.should == ee_config(item: 'max_caches')
   end
 
@@ -71,6 +72,7 @@ feature 'Debugging & Output Settings' do
     @page.gzip_output_y.click
     @page.force_query_string_y.click
     @page.send_headers_y.click
+    @page.cache_driver.select 'Memcached'
     @page.max_caches.set '300'
     @page.submit
 
@@ -81,9 +83,15 @@ feature 'Debugging & Output Settings' do
     @page.gzip_output_y.checked?.should == true
     @page.force_query_string_y.checked?.should == true
     @page.send_headers_y.checked?.should == true
+    @page.cache_driver.value.should == 'memcached'
     @page.max_caches.value.should == '300'
 
-    # Reset debug since it's only stored in config.php
+    # Should show a message when the selected caching driver
+    # cannot be initialized
+    @page.should have_text 'Cannot connect to Memcached, using File driver instead.'
+
+    # Reset debug and cache_driver since they're only stored in config.php
+    ee_config(item: 'cache_driver', value: 'file')
     ee_config(item: 'debug', value: '1')
   end
 end

@@ -36,6 +36,7 @@ class DataStore {
 	protected $db;
 	protected $aliases;
 	protected $default_prefix;
+	protected $metadata = array();
 
 	/**
 	 * @param $db \CI_DB
@@ -124,7 +125,12 @@ class DataStore {
 	{
 		$class = $this->expandModelAlias($name);
 
-		return new MetaDataReader($name, $class);
+		if ( ! isset($this->metadata[$class]))
+		{
+			$this->metadata[$class] = new MetaDataReader($name, $class);
+		}
+
+		return $this->metadata[$class];
 	}
 
 	/**

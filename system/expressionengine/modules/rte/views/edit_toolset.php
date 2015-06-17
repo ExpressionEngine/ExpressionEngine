@@ -26,7 +26,7 @@
 			</div>
 		</fieldset>
 		<fieldset class="form-ctrls">
-			<?=cp_form_submit($btn_save_text, 'btn_save_settings_working')?>
+			<?=cp_form_submit($btn_save_text, 'btn_saving')?>
 		</fieldset>
 	<?=form_close();?>
 </div>

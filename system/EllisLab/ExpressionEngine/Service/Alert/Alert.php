@@ -42,7 +42,7 @@ class Alert {
 	private $collection;
 	private $view;
 
-	public function __construct($type = 'inline', $name = '', AlertCollection $collection, View $view)
+	public function __construct($type = 'standard', $name = '', AlertCollection $collection, View $view)
 	{
 		$this->type = $type;
 		$this->name = $name;
@@ -81,6 +81,12 @@ class Alert {
 		{
 			$this->body .= '<p' . $class . '>' . $item . '</p>';
 		}
+		return $this;
+	}
+
+	public function addSeparator()
+	{
+		$this->body .= '<hr>';
 		return $this;
 	}
 
@@ -131,14 +137,19 @@ class Alert {
 
 	public function render()
 	{
-		// @TODO post-merge of new-modals yank this line!
-		return ee()->load->ee_view('_shared/alert', array('alert' => $this), TRUE);
-		return $this->view->render(array('alert' => $this));
+		return $this->view->ee_view('_shared/alert', array('alert' => $this), TRUE);
 	}
 
 	public function defer()
 	{
 		$this->collection->defer($this);
+		return $this;
+	}
+
+	public function now()
+	{
+		$this->collection->save($this);
+		return $this;
 	}
 }
 // EOF

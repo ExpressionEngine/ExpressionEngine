@@ -4,28 +4,29 @@
 	<div class="col-group snap mb">
 		<div class="col w-16 last">
 			<div class="box full">
-				<form class="tbl-ctrls">
-					<fieldset class="tbl-search right">
-						<input placeholder="type phrase..." type="text" value="">
-						<input class="btn submit" type="submit" value="search content">
-					</fieldset>
+				<?php if (isset($form_url)): ?>
+					<?=form_open($form_url)?>
+						<fieldset class="tbl-search right">
+							<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=ee()->input->get_post('search')?>">
+							<input class="btn submit" type="submit" value="<?=lang('search_content')?>">
+						</fieldset>
+				<?php endif ?>
 					<h1>
-						<?=ee()->config->item('site_name')?> Overview
-						<ul class="toolbar">
-							<li class="solo settings"><a href="http://localhost/el-projects/ee-cp/views/settings-general.php" title="Settings"></a></li>
-						</ul>
+						<?=$cp_page_title?>
 					</h1>
+				<?php if (isset($form_url)): ?>
 				</form>
+				<?php endif ?>
 			</div>
 		</div>
 	</div>
 	<div class="col-group snap mb">
 		<div class="col w-16 last">
 			<div class="box">
-				<h1>Comments <a class="btn action" href="http://localhost/el-projects/ee-cp/views/publish-comments.php">Review All New</a></h1>
+				<h1><?=lang('comments')?> <a class="btn action" href="<?=cp_url('publish/comments')?>"><?=lang('review_all_new')?></a></h1>
 				<div class="info">
-					<p>There were <b>27</b> <a href="http://localhost/el-projects/ee-cp/views/publish-comments.php"><em>new</em> comments</a> since your last login (March, 19th 2014)</p>
-					<p class="last"><b><?=$comment_validation_count?></b> are <a href="http://localhost/el-projects/ee-cp/views/publish-comments-pending.php">awaiting moderation</a>, and <b>7</b> have been <a href="http://localhost/el-projects/ee-cp/views/publish-comments-spam.php">flagged as potential spam</a>.</p>
+					<p><?=lang('there_were')?> <b><?=$number_of_new_comments?></b> <a href="<?=cp_url('publish/comments')?>"><?=lang('new_comments')?></a> <?=lang('since_last_login')?> (<?=$last_visit?>)</p>
+					<p class="last"><b><?=$number_of_pending_comments?></b> <?=lang('are')?> <a href="<?=cp_url('publish/comments', array('filter_by_status' => 'p'))?>"><?=lang('awaiting_moderation')?></a>, <?=lang('and')?> <b><?=$number_of_spam_comments?></b> <?=lang('have_been')?> <a href="<?=cp_url('publish/comments', array('filter_by_status' => 's'))?>"><?=lang('flagged_as_spam')?></a>.</p>
 				</div>
 			</div>
 		</div>
@@ -33,26 +34,26 @@
 	<div class="col-group snap mb">
 		<div class="col w-8">
 			<div class="box">
-				<h1>Channels <a class="btn action" href="http://localhost/el-projects/ee-cp/views/channel-new.php">Create New</a></h1>
+				<h1><?=lang('channels')?> <a class="btn action" href="<?=cp_url('channel/create')?>"><?=lang('create_new')?></a></h1>
 				<div class="info">
-					<p>Channels are used to store content for your website. For example, if you want a Blog. You would first need to create a Channel to store the entries. Think of them as folders, or directories.</p>
-					<h2><?=ee()->config->item('site_name')?> has:</h2>
+					<p><?=lang('channels_desc')?></p>
+					<h2><?=ee()->config->item('site_name')?> <?=lang('has')?>:</h2>
 					<ul class="arrow-list">
-						<li><a href="http://localhost/el-projects/ee-cp/views/channel.php"><b>15</b> Channels</a></li>
-						<li><a href="http://localhost/el-projects/ee-cp/views/channel-field.php"><b>200</b> Channel Fields</a></li>
+						<li><a href="<?=cp_url('channel')?>"><b><?=$number_of_channels?></b> <?=lang('channels')?></a></li>
+						<li><a href="<?=cp_url('channel/field')?>"><b><?=$number_of_channel_fields?></b> <?=lang('channel_fields')?></a></li>
 					</ul>
 				</div>
 			</div>
 		</div>
 		<div class="col w-8 last">
 			<div class="box">
-				<h1>Members <a class="btn action" href="http://localhost/el-projects/ee-cp/views/members-new.php">Register New</a></h1>
+				<h1><?=lang('members')?> <a class="btn action" href="<?=cp_url('members/create')?>"><?=lang('register_new')?></a></h1>
 				<div class="info">
-					<p>Members are registered users of your site. You <em>must</em> have at least one member, an administrator. You may <a href="http://localhost/el-projects/ee-cp/views/settings-members.php">change the settings</a> to allow or disallow, new member registrations.</p>
-					<h2><?=ee()->config->item('site_name')?> has:</h2>
+					<p><?=sprintf(lang('members_desc'), cp_url('settings/members'))?></p>
+					<h2><?=ee()->config->item('site_name')?> <?=lang('has')?>:</h2>
 					<ul class="arrow-list">
-						<li><a href="http://localhost/el-projects/ee-cp/views/members.php"><b>10</b> Members</a></li>
-						<li><a href="http://localhost/el-projects/ee-cp/views/members-ban.php"><b>5</b> Banned Members</a></li>
+						<li><a href="<?=cp_url('members')?>"><b><?=$number_of_members?></b> <?=lang('members')?></a></li>
+						<li><a href="<?=cp_url('members', array('group' => 2))?>"><b><?=$number_of_banned_members?></b> <?=lang('banned_members')?></a></li>
 					</ul>
 				</div>
 			</div>
@@ -61,13 +62,29 @@
 	<div class="col-group snap">
 		<div class="col w-16 last">
 			<div class="box">
-				<h1>Content <a class="btn action" href="http://localhost/el-projects/ee-cp/views/publish.php">Create New</a></h1>
+				<h1 class="btn-right"><?=lang('content')?>
+					<div class="filters">
+						<ul>
+							<li>
+								<a class="has-sub" href=""><?=lang('create_new')?></a>
+								<div class="sub-menu">
+									<ul>
+										<?php $menu = ee()->menu->generate_menu();
+										foreach ($menu['channels']['create'] as $channel_name => $link): ?>
+											<li><a href="<?=$link?>"><?=$channel_name?></a></li>
+										<?php endforeach ?>
+									</ul>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</h1>
 				<div class="info">
-					<p>Entries in channels, this is what folks visit to experience.</p>
-					<h2><?=ee()->config->item('site_name')?> has:</h2>
+					<p><?=lang('content_desc')?></p>
+					<h2><?=ee()->config->item('site_name')?> <?=lang('has')?>:</h2>
 					<ul class="arrow-list">
-						<li><a href="http://localhost/el-projects/ee-cp/views/publish-edit.php"><b>7589</b> Entries with 20,000 comments</a></li>
-						<li><a href="http://localhost/el-projects/ee-cp/views/publish-edit-closed.php"><b>10</b> Closed entries with 213 comments.</a></li>
+						<li><a href="<?=cp_url('publish/edit')?>"><b><?=$number_of_entries?></b> <?=sprintf(lang('entries_with_comments'), $number_of_comments)?></a></li>
+						<li><a href="<?=cp_url('publish/edit', array('filter_by_status' => 'closed'))?>"><b><?=$number_of_closed_entries?></b> <?=sprintf(lang('closed_entries_with_comments'), $number_of_comments_on_closed_entries)?></a></li>
 					</ul>
 				</div>
 			</div>

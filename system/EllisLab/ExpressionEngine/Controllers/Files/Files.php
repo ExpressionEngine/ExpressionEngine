@@ -213,7 +213,7 @@ class Files extends AbstractFilesController {
 			'has_file_input' => TRUE,
 			'base_url' => cp_url('files/upload/' . $dir_id),
 			'save_btn_text' => 'btn_upload_file',
-			'save_btn_text_working' => 'btn_upload_file_working',
+			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
 					array(
@@ -305,7 +305,8 @@ class Files extends AbstractFilesController {
 				ee('Alert')->makeInline('settings-form')
 					->asIssue()
 					->withTitle(lang('upload_filedata_error'))
-					->addToBody($upload_response['error']);
+					->addToBody($upload_response['error'])
+					->now();
 				break 2;
 			}
 
@@ -345,7 +346,8 @@ class Files extends AbstractFilesController {
 			ee('Alert')->makeInline('settings-form')
 				->asIssue()
 				->withTitle(lang('upload_filedata_error'))
-				->addToBody(lang('upload_filedata_error_desc'));
+				->addToBody(lang('upload_filedata_error_desc'))
+				->now();
 		}
 
 		$this->sidebarMenu($dir_id);
@@ -411,7 +413,8 @@ class Files extends AbstractFilesController {
 			ee('Alert')->makeInline('settings-form')
 				->asIssue()
 				->withTitle(lang('error_export'))
-				->addToBody(lang('error_cannot_create_zip'));
+				->addToBody(lang('error_cannot_create_zip'))
+				->now();
 			return;
 		}
 
@@ -431,7 +434,8 @@ class Files extends AbstractFilesController {
 					ee('Alert')->makeInline('settings-form')
 						->asIssue()
 						->withTitle(lang('error_export'))
-						->addToBody(sprintf(lang('error_cannot_add_file_to_zip'), $file->title));
+						->addToBody(sprintf(lang('error_cannot_add_file_to_zip'), $file->title))
+						->now();
 					return;
 
 					$zip->close();

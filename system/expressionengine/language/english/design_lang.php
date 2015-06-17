@@ -57,9 +57,6 @@ $lang = array(
 'btn_create_template_group' =>
 'Create Template Group',
 
-'btn_create_template_group_working' =>
-'Saving...',
-
 'name' =>
 'Name',
 
@@ -156,14 +153,8 @@ $lang = array(
 'btn_create_partial' =>
 'Create Partial',
 
-'btn_create_partial_working' =>
-'Saving...',
-
 'btn_edit_partial' =>
 'Edit Partial',
-
-'btn_edit_partial_working' =>
-'Saving...',
 
 'snippet_name' =>
 'Name',
@@ -252,14 +243,8 @@ $lang = array(
 'btn_create_template_variable' =>
 'Create Template Variable',
 
-'btn_create_template_variable_working' =>
-'Saving...',
-
 'btn_edit_template_variable' =>
 'Edit Template Variable',
-
-'btn_edit_template_variable_working' =>
-'Saving...',
 
 'create_template_variable_success' =>
 'Template Partial Created',
@@ -335,9 +320,6 @@ $lang = array(
 
 'btn_create_and_edit_template' =>
 'Create &amp; Edit Template',
-
-'btn_create_template_working' =>
-'Saving...',
 
 'create_template_success' =>
 'Template Created',
@@ -441,9 +423,6 @@ $lang = array(
 'btn_update_and_finish_editing' =>
 'Update &amp; Finish Editing',
 
-'btn_update_template_working' =>
-'Saving...',
-
 'update_template_error' =>
 'Cannot Update Template',
 
@@ -462,9 +441,6 @@ $lang = array(
 'btn_save_settings' =>
 'Save Settings',
 
-'btn_save_settings_working' =>
-'Saving...',
-
 'templates_removed_desc' =>
 'The following templates were removed',
 
@@ -473,6 +449,9 @@ $lang = array(
 
 'error_cannot_create_zip' =>
 'Cannot create a .zip file',
+
+'group_not_found' =>
+'No template group found',
 
 // System Templates -> Messages
 

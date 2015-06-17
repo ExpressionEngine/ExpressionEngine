@@ -24,10 +24,8 @@ var Grid = window.Grid = {
 	 * @param	{string}	action			Name of action
 	 * @param	{func}		func			Callback function for event
 	 */
-	bind: function(fieldtypeName, action, func)
-	{
-		if (this._eventHandlers[action] == undefined)
-		{
+	bind: function(fieldtypeName, action, func) {
+		if (this._eventHandlers[action] == undefined) {
 			this._eventHandlers[action] = [];
 		}
 
@@ -41,8 +39,7 @@ var Grid = window.Grid = {
  *
  * @param	{string}	field		Selector of table to instantiate as a Grid
  */
-Grid.Publish = function(field, settings)
-{
+Grid.Publish = function(field, settings) {
 	this.root = $(field);
 	this.blankRow = $('tr.grid-blank-row', this.root);
 	this.emptyField = $('tr.no-results', this.root);
@@ -55,8 +52,7 @@ Grid.Publish = function(field, settings)
 
 Grid.Publish.prototype = {
 
-	init: function()
-	{
+	init: function() {
 		this._bindSortable();
 		this._bindAddButton();
 		this._bindDeleteButton();
@@ -75,19 +71,16 @@ Grid.Publish.prototype = {
 	/**
 	 * Allows rows to be reordered
 	 */
-	_bindSortable: function()
-	{
+	_bindSortable: function() {
 		var that = this;
 
 		this.rowContainer.eeTableReorder({
 			// Fire 'beforeSort' event on sort start
-			beforeSort: function(event, row)
-			{
+			beforeSort: function(event, row) {
 				that._fireEvent('beforeSort', row.item);
 			},
 			// Fire 'afterSort' event on sort stop
-			afterSort: function(event, row)
-			{
+			afterSort: function(event, row) {
 				that._fireEvent('afterSort', row.item);
 			}
 		});
@@ -97,21 +90,18 @@ Grid.Publish.prototype = {
 	 * Adds rows to a Grid field based on the fields minimum rows setting
 	 * and how many rows already exist
 	 */
-	_addMinimumRows: function()
-	{
+	_addMinimumRows: function() {
 		// Figure out how many rows we need to add
 		var rowsCount = this._getRows().size(),
 			neededRows = this.settings.grid_min_rows - rowsCount;
 
 		// Show empty field message if field is empty and no rows are needed
-		if (rowsCount == 0 && neededRows == 0)
-		{
+		if (rowsCount == 0 && neededRows == 0) {
 			this.emptyField.show();
 		}
 
 		// Add the needed rows
-		while (neededRows > 0)
-		{
+		while (neededRows > 0) {
 			this._addRow();
 
 			neededRows--;
@@ -122,22 +112,31 @@ Grid.Publish.prototype = {
 	 * Toggles the visibility of the Add button and Delete buttons for rows
 	 * based on the number of rows present and the max and min rows settings
 	 */
-	_toggleRowManipulationButtons: function()
-	{
+	_toggleRowManipulationButtons: function() {
 		var rowCount = this._getRows().size(),
-			addButton = this.root.parents('.grid-publish').find('.toolbar .add a');
+			addButton = this.root.parents('.grid-publish').find('.toolbar .add a').parents('ul.toolbar'),
+			reorderCol = this.root.find('th.reorder-col'),
+			gridRemove = this.root.find('th.grid-remove');
 
 		// Show add button below field when there are more than zero rows
 		addButton.toggle(rowCount > 0);
+		reorderCol.toggle(rowCount > 0);
+		gridRemove.toggle(rowCount > 0);
 
-		if (this.settings.grid_max_rows !== '')
-		{
+		if (rowCount > 0) {
+			reorderCol.next().removeClass('first');
+			gridRemove.prev().removeClass('last');
+		} else {
+			reorderCol.next().addClass('first');
+			gridRemove.prev().addClass('last');
+		}
+
+		if (this.settings.grid_max_rows !== '') {
 			// Show add button if row count is below the max rows setting
 			addButton.toggle(rowCount < this.settings.grid_max_rows);
 		}
 
-		if (this.settings.grid_min_rows !== '')
-		{
+		if (this.settings.grid_min_rows !== '') {
 			var deleteButtons = this.root.find('.toolbar .remove');
 
 			// Show delete buttons if the row count is above the min rows setting
@@ -147,7 +146,7 @@ Grid.Publish.prototype = {
 		// Do not allow sortable to run when there is only one row, otherwise
 		// the row becomes detached from the table and column headers change
 		// width in a fluid-column-width table
-		this.rowContainer.find('td.grid_handle').toggleClass('sort-cancel', rowCount == 1);
+		this.rowContainer.find('td.reorder-col').toggleClass('sort-cancel', rowCount == 1);
 	},
 
 	/**
@@ -156,8 +155,7 @@ Grid.Publish.prototype = {
 	 *
 	 * @return	{int}	Number of rows
 	 */
-	_getRows: function()
-	{
+	_getRows: function() {
 		return $('tr', this.rowContainer).not(this.blankRow.add(this.emptyField).add($('tr', this.root).has('th')));
 	},
 
@@ -165,28 +163,29 @@ Grid.Publish.prototype = {
 	 * Binds click listener to Add button to insert a new row at the bottom
 	 * of the field
 	 */
-	_bindAddButton: function()
-	{
+	_bindAddButton: function() {
 		var that = this;
 
-		this.root.parents('.grid-publish').find('.toolbar .add a')
-			.add('.no-results .btn', this.root).on('click', function(event)
-		{
-			event.preventDefault();
+		this.root.parents('.grid-publish')
+			.find('.toolbar .add a')
+			.add('.no-results .btn', this.root)
+			.on('click', function(event) {
+				event.preventDefault();
 
-			that._addRow();
-		});
+				that._addRow();
+			}
+		);
 	},
 
 	/**
 	 * Inserts new row at the bottom of our field
 	 */
-	_addRow: function()
-	{
+	_addRow: function() {
 		// Clone our blank row
 		el = this.blankRow.clone();
 
 		el.removeClass('grid-blank-row');
+		el.show();
 
 		// Increment namespacing on inputs
 		this.original_row_count++;
@@ -213,8 +212,7 @@ Grid.Publish.prototype = {
 		this._fireEvent('display', el);
 
 		// Bind the new row's inputs to AJAX form validation
-		if (EE.cp.formValidation !== undefined)
-		{
+		if (EE.cp.formValidation !== undefined) {
 			EE.cp.formValidation.bindInputs(el);
 		}
 
@@ -225,12 +223,10 @@ Grid.Publish.prototype = {
 	/**
 	 * Binds click listener to Delete button in row column to delete the row
 	 */
-	_bindDeleteButton: function()
-	{
+	_bindDeleteButton: function() {
 		var that = this;
 
-		this.root.on('click', '.toolbar .remove a', function(event)
-		{
+		this.root.on('click', '.toolbar .remove a', function(event) {
 			event.preventDefault();
 
 			row = $(this).parents('tr');
@@ -244,8 +240,7 @@ Grid.Publish.prototype = {
 			that._toggleRowManipulationButtons();
 
 			// Show our empty field message if we have no rows left
-			if (that._getRows().size() == 0)
-			{
+			if (that._getRows().size() == 0) {
 				that.emptyField.show();
 			}
 
@@ -258,13 +253,11 @@ Grid.Publish.prototype = {
 	 * Called after main initialization to fire the 'display' event
 	 * on pre-exising rows
 	 */
-	_fieldDisplay: function()
-	{
+	_fieldDisplay: function() {
 		var that = this;
 
 		setTimeout(function(){
-			that._getRows().each(function()
-			{
+			that._getRows().each(function() {
 				that._fireEvent('display', $(this));
 			});
 
@@ -278,21 +271,17 @@ Grid.Publish.prototype = {
 	 * @param	{string}		action	Action name
 	 * @param	{jQuery object}	row		jQuery object of affected row
 	 */
-	_fireEvent: function(action, row)
-	{
+	_fireEvent: function(action, row) {
 		// If no events regsitered, don't bother
-		if (Grid._eventHandlers[action] === undefined)
-		{
+		if (Grid._eventHandlers[action] === undefined) {
 			return;
 		}
 
 		// For each fieldtype binded to this action
-		for (var fieldtype in Grid._eventHandlers[action])
-		{
+		for (var fieldtype in Grid._eventHandlers[action]) {
 			// Find the sepecic cell(s) for this fieldtype and send each
 			// to the fieldtype's event hander
-			row.find('td[data-fieldtype="'+fieldtype+'"]').each(function()
-			{
+			row.find('td[data-fieldtype="'+fieldtype+'"]').each(function() {
 				Grid._eventHandlers[action][fieldtype]($(this));
 			});
 		}
@@ -302,10 +291,8 @@ Grid.Publish.prototype = {
 	 * When we manipulate the table, we need to re-zebra-stripe it to
 	 * conform to CP styles
 	 */
-	_zebraStripe: function()
-	{
-		if (EE.cp !== undefined)
-		{
+	_zebraStripe: function() {
+		if (EE.cp !== undefined) {
 			EE.cp.zebra_tables(this.root);
 		}
 	}
@@ -314,8 +301,7 @@ Grid.Publish.prototype = {
 /**
  * Grid Settings class
  */
-Grid.Settings = function(settings)
-{
+Grid.Settings = function(settings) {
 	this.root = $('#grid_settings');
 	this.settingsScroller = this.root.find('#grid_col_settings_container');
 	this.settingsContainer = this.root.find('#grid_col_settings_container_inner');
@@ -328,8 +314,7 @@ Grid.Settings = function(settings)
 
 Grid.Settings.prototype = {
 
-	init: function()
-	{
+	init: function() {
 		this._bindResize();
 		this._bindSortable();
 		this._bindAddButton();
@@ -358,25 +343,20 @@ Grid.Settings.prototype = {
 	 * width of the page, minus the width of the labels on the left, and also
 	 * need to resize the column container to fit the number of columns we have
 	 */
-	_bindResize: function()
-	{
+	_bindResize: function() {
 		var that = this;
 
-		$(document).ready(function()
-		{
+		$(document).ready(function() {
 			that._resizeSettingsContainer();
 
 			// Resize settings container on window resize
-			$(window).resize(function()
-			{
+			$(window).resize(function() {
 				that._resizeSettingsContainer();
 			});
 
 			// Resize when Grid is selected from field type dropdown
-			$('#field_type').change(function()
-			{
-				if ($(this).val() == 'grid')
-				{
+			$('#field_type').change(function() {
+				if ($(this).val() == 'grid') {
 					that._resizeSettingsContainer();
 				}
 			});
@@ -391,8 +371,7 @@ Grid.Settings.prototype = {
 	 * Resizes the scrollable settings container to fit within EE's settings
 	 * table; this is called on page load and window resize
 	 */
-	_resizeSettingsContainer: function()
-	{
+	_resizeSettingsContainer: function() {
 		// First need to set container smaller so that it's not affecting the
 		// root with; for example, if the user makes the window width smaller,
 		// the root with won't change if the settings scroller container doesn't
@@ -409,10 +388,8 @@ Grid.Settings.prototype = {
 	 *
 	 * @param	{boolean}	animated	Whether or not to animate the resize
 	 */
-	_resizeColContainer: function(animated)
-	{
-		this.settingsContainer.animate(
-		{
+	_resizeColContainer: function(animated) {
+		this.settingsContainer.animate( {
 			width: this._getColumnsWidth()
 		},
 		(animated == true) ? 400 : 0);
@@ -424,8 +401,7 @@ Grid.Settings.prototype = {
 	 *
 	 * @return	{int}	Calculated width
 	 */
-	_getColumnsWidth: function()
-	{
+	_getColumnsWidth: function() {
 		var columns = this.root.find('.grid_col_settings');
 
 		// 75px of extra room for the add button
@@ -435,8 +411,7 @@ Grid.Settings.prototype = {
 	/**
 	 * Allows columns to be reordered
 	 */
-	_bindSortable: function()
-	{
+	_bindSortable: function() {
 		this.settingsContainer.sortable({
 			axis: 'x',						// Only allow horizontal dragging
 			containment: 'parent',			// Contain to parent
@@ -450,12 +425,10 @@ Grid.Settings.prototype = {
 	 * Binds click listener to Add button to insert a new column at the end
 	 * of the columns
 	 */
-	_bindAddButton: function()
-	{
+	_bindAddButton: function() {
 		var that = this;
 
-		this.root.find('.grid_button_add').on('click', function(event)
-		{
+		this.root.find('.grid_button_add').on('click', function(event) {
 			event.preventDefault();
 
 			that._insertColumn(that._buildNewColumn());
@@ -466,12 +439,10 @@ Grid.Settings.prototype = {
 	 * Binds click listener to Copy button in each column to clone the column
 	 * and insert it after the column being cloned
 	 */
-	_bindCopyButton: function()
-	{
+	_bindCopyButton: function() {
 		var that = this;
 
-		this.root.on('click', 'a.grid_col_copy', function(event)
-		{
+		this.root.on('click', 'a.grid_col_copy', function(event) {
 			event.preventDefault();
 
 			var parentCol = $(this).parents('.grid_col_settings');
@@ -488,37 +459,30 @@ Grid.Settings.prototype = {
 	/**
 	 * Binds click listener to Delete button in each column to delete the column
 	 */
-	_bindDeleteButton: function()
-	{
+	_bindDeleteButton: function() {
 		var that = this;
 
-		this.root.on('click', '.grid_button_delete', function(event)
-		{
+		this.root.on('click', '.grid_button_delete', function(event) {
 			event.preventDefault();
 
 			var settings = $(this).parents('.grid_col_settings');
 
 			// Only animate column deletion if we're not deleting the last column
-			if (settings.index() == $('#grid_settings .grid_col_settings:last').index())
-			{
+			if (settings.index() == $('#grid_settings .grid_col_settings:last').index()) {
 				settings.remove();
 				that._resizeColContainer(true);
 				that._toggleDeleteButtons();
-			}
-			else
-			{
+			} else {
 				settings.animate({
 					opacity: 0
-				}, 200, function()
-				{
+				}, 200, function() {
 					// Clear HTML before resize animation so contents don't
 					// push down bottom of column container while resizing
 					settings.html('');
 
 					settings.animate({
 						width: 0
-					}, 200, function()
-					{
+					}, 200, function() {
 						settings.remove();
 						that._resizeColContainer(true);
 						that._toggleDeleteButtons();
@@ -533,8 +497,7 @@ Grid.Settings.prototype = {
 	 * shows the delete buttons; otherwise, hides delete buttons if there is
 	 * only one column
 	 */
-	_toggleDeleteButtons: function()
-	{
+	_toggleDeleteButtons: function() {
 		var colCount = this.root.find('.grid_col_settings').size(),
 			deleteButtons = this.root.find('.grid_button_delete');
 
@@ -548,20 +511,17 @@ Grid.Settings.prototype = {
 	 * @param	{jQuery Object}	insertAfter	Element to insert the column
 	 *				after; if left blank, defaults to last column
 	 */
-	_insertColumn: function(column, insertAfter)
-	{
+	_insertColumn: function(column, insertAfter) {
 		var lastColumn = $('#grid_settings .grid_col_settings:last');
 
 		// Default to inserting after the last column
-		if (insertAfter == undefined)
-		{
+		if (insertAfter == undefined) {
 			insertAfter = lastColumn;
 		}
 
 		// If we're inserting a column in the middle of other columns,
 		// animate the insertion so it's clear where the new column is
-		if (insertAfter.index() != lastColumn.index())
-		{
+		if (insertAfter.index() != lastColumn.index()) {
 			column.css({ opacity: 0 })
 		}
 
@@ -572,8 +532,7 @@ Grid.Settings.prototype = {
 
 		// If we are inserting a column after the last column, scroll to
 		// the end of the column container
-		if (insertAfter.index() == lastColumn.index())
-		{
+		if (insertAfter.index() == lastColumn.index()) {
 			// Scroll container to the very end
 			this.settingsScroller.animate({
 				scrollLeft: this._getColumnsWidth()
@@ -597,12 +556,9 @@ Grid.Settings.prototype = {
 	 *
 	 * @param	{jQuery Object}	el	Column to bind ee_url_title to
 	 */
-	_bindAutoColName: function(columns)
-	{
-		columns.each(function(index, column)
-		{
-			$('input.grid_col_field_label', column).bind("keyup keydown", function()
-			{
+	_bindAutoColName: function(columns) {
+		columns.each(function(index, column) {
+			$('input.grid_col_field_label', column).bind("keyup keydown", function() {
 				$(this).ee_url_title($(column).find('input.grid_col_field_name'), true);
 			});
 		});
@@ -616,14 +572,10 @@ Grid.Settings.prototype = {
 	 *				defaults to blank column
 	 * @return	{jQuery Object}	New column element
 	 */
-	_buildNewColumn: function(el)
-	{
-		if (el == undefined)
-		{
+	_buildNewColumn: function(el) {
+		if (el == undefined) {
 			el = this.blankColumn.clone();
-		}
-		else
-		{
+		} else {
 			// Clone our example column
 			el = this._cloneWithFormValues(el);
 		}
@@ -653,12 +605,10 @@ Grid.Settings.prototype = {
 	 * Binds change listener to the data type columns dropdowns of each column
 	 * so we can load the correct settings form for the selected fieldtype
 	 */
-	_bindColTypeChange: function()
-	{
+	_bindColTypeChange: function() {
 		var that = this;
 
-		this.root.on('change', '.grid_data_type .grid_col_select', function(event)
-		{
+		this.root.on('change', '.grid_data_type .grid_col_select', function(event) {
 			// New, fresh settings form
 			var settings = that.colTemplateContainer
 				.find('.grid_col_settings_custom_field_'+$(this).val()+':last')
@@ -692,12 +642,10 @@ Grid.Settings.prototype = {
 	 * row in the Grid settings table for easy repopulated upon form
 	 * validation failing
 	 */
-	_bindSubmit: function()
-	{
+	_bindSubmit: function() {
 		var that = this;
 
-		this.root.parents('form').submit(function()
-		{
+		this.root.parents('form').submit(function() {
 			// Remove existing validation error classes
 			$('.grid_col_settings_section input[type=text]').removeClass('grid_settings_error');
 
@@ -718,17 +666,14 @@ Grid.Settings.prototype = {
 	 * @param	{jQuery Object}	el	Element to clone
 	 * @return	{jQuery Object}	Cloned element with form fields populated
 	 */
-	_cloneWithFormValues: function(el)
-	{
+	_cloneWithFormValues: function(el) {
 		var cloned = el.clone();
 
-		el.find(":input:enabled").each(function()
-		{
+		el.find(":input:enabled").each(function() {
 			// Find the new input in the cloned column for editing
 			var new_input = cloned.find(":input[name='"+$(this).attr('name')+"']:enabled");
 
-			if ($(this).is("select"))
-			{
+			if ($(this).is("select")) {
 				new_input
 					.find('option')
 					.removeAttr('selected')
@@ -736,27 +681,23 @@ Grid.Settings.prototype = {
 					.attr('selected', 'selected');
 			}
 			// Handle checkboxes
-			else if ($(this).attr('type') == 'checkbox')
-			{
+			else if ($(this).attr('type') == 'checkbox') {
 				// .prop('checked', true) doesn't work, must set the attribute
 				new_input.attr('checked', $(this).attr('checked'));
 			}
 			// Handle radio buttons
-			else if ($(this).attr('type') == 'radio')
-			{
+			else if ($(this).attr('type') == 'radio') {
 				new_input
 					.removeAttr('selected')
 					.filter("[value='"+$(this).val()+"']")
 					.attr('checked', $(this).attr('checked'));
 			}
 			// Handle textareas
-			else if ($(this).is("textarea"))
-			{
+			else if ($(this).is("textarea")) {
 				new_input.html($(this).val());
 			}
 			// Everything else should handle the value attribute
-			else
-			{
+			else {
 				// .val('new val') doesn't work, must set the attribute
 				new_input.attr('value', $(this).val());
 			}
@@ -769,11 +710,9 @@ Grid.Settings.prototype = {
 	 * Called after main initialization to fire the 'display' event
 	 * on pre-exising columns
 	 */
-	_settingsDisplay: function()
-	{
+	_settingsDisplay: function() {
 		var that = this;
-		this.root.find('.grid_col_settings').each(function()
-		{
+		this.root.find('.grid_col_settings').each(function() {
 			// Fire displaySettings event
 			that._fireEvent('displaySettings', $('.grid_col_settings_custom > div', this));
 		});
@@ -785,14 +724,12 @@ Grid.Settings.prototype = {
 	 * @param	{string}		action	Action name
 	 * @param	{jQuery object}	el		jQuery object of affected element
 	 */
-	_fireEvent: function(action, el)
-	{
+	_fireEvent: function(action, el) {
 		var fieldtype = el.data('fieldtype');
 
 		// If no events regsitered, don't bother
 		if (Grid._eventHandlers[action] === undefined ||
-			Grid._eventHandlers[action][fieldtype] == undefined)
-		{
+			Grid._eventHandlers[action][fieldtype] == undefined) {
 			return;
 		}
 
@@ -803,12 +740,9 @@ Grid.Settings.prototype = {
 	 * If there are fields with form validation errors in our settings
 	 * object, highlight them
 	 */
-	_highlightErrors: function()
-	{
-		if (this.settings.error_fields != undefined)
-		{
-			$.each(this.settings.error_fields, function(index, val)
-			{
+	_highlightErrors: function() {
+		if (this.settings.error_fields != undefined) {
+			$.each(this.settings.error_fields, function(index, val) {
 				 $('input[name="'+val+'"]').addClass('grid_settings_error');
 			});
 		}
@@ -818,23 +752,19 @@ Grid.Settings.prototype = {
 /**
  * Public method to instantiate Grid field
  */
-EE.grid = function(field, settings)
-{
+EE.grid = function(field, settings) {
 	return new Grid.Publish(field, settings);
 };
 
 /**
  * Public method to instantiate Grid settings
  */
-EE.grid_settings = function(settings)
-{
+EE.grid_settings = function(settings) {
 	return new Grid.Settings(settings);
 };
 
-if (typeof _ !== 'undefined' && EE.grid_cache !== 'undefined')
-{
-	_.each(EE.grid_cache, function(args)
-	{
+if (typeof _ !== 'undefined' && EE.grid_cache !== 'undefined') {
+	_.each(EE.grid_cache, function(args) {
 		Grid.bind.apply(Grid, args);
 	});
 }

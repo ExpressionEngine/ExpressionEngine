@@ -134,7 +134,7 @@ class Template extends Settings {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('template_settings');
 		ee()->view->save_btn_text = 'btn_save_settings';
-		ee()->view->save_btn_text_working = 'btn_save_settings_working';
+		ee()->view->save_btn_text_working = 'btn_saving';
 
 		ee()->cp->set_breadcrumb(cp_url('design'), lang('template_manager'));
 

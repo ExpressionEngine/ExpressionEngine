@@ -362,21 +362,11 @@ class EE_Config {
 		}
 
 		// If we just reloaded, then we reset a few things automatically
-		ee()->db->save_queries = (ee()->config->item('show_profiler') == 'y' OR DEBUG == 1) ? TRUE : FALSE;
+		$save_queries = (ee()->config->item('show_profiler') == 'y' OR DEBUG == 1) ? TRUE : FALSE;
+		ee('Database')->getLog()->saveQueries($save_queries);
 
 		// lowercase version charset to use in HTML output
 		$this->config['output_charset'] = strtolower($this->config['charset']);
-
-		//  Set up DB caching prefs
-
-		if ($this->item('enable_db_caching') == 'y' AND REQ == 'PAGE')
-		{
-			ee()->db->cache_on();
-		}
-		else
-		{
-			ee()->db->cache_off();
-		}
 	}
 
 	// --------------------------------------------------------------------

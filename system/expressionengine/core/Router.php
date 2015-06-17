@@ -70,7 +70,7 @@ class EE_Router {
 			if (isset($_GET[$this->config->item('directory_trigger')]))
 			{
 				$this->set_directory(trim($this->uri->_filter_uri($_GET[$this->config->item('directory_trigger')])));
-				$segments[] = $this->fetch_directory();
+				$segments[] = rtrim($this->fetch_directory(), '/');
 			}
 
 			if (isset($_GET[$this->config->item('controller_trigger')]))
@@ -215,12 +215,6 @@ class EE_Router {
 	function _validate_request($segments, $override = TRUE)
 	{
 		if (count($segments) == 0)
-		{
-			return $segments;
-		}
-
-		// Does the requested controller exist in the root folder?
-		if (file_exists(APPPATH.'controllers/'.$segments[0].'.php'))
 		{
 			return $segments;
 		}

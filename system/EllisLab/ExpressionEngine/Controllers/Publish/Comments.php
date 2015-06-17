@@ -324,7 +324,7 @@ class Comments extends AbstractPublishController {
 			'ajax_validate' => TRUE,
 			'base_url' => cp_url('publish/comments/edit/' . $comment_id),
 			'save_btn_text' => 'btn_edit_comment',
-			'save_btn_text_working' => 'btn_edit_comment_working',
+			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
 					array(
@@ -347,7 +347,8 @@ class Comments extends AbstractPublishController {
 								'choices' => array(
 									'o' => lang('open'),
 									'c' => lang('closed'),
-									'p' => lang('pending')
+									'p' => lang('pending'),
+									's' => lang('spam')
 								),
 								'value' => $comment->status
 							)
@@ -387,7 +388,7 @@ class Comments extends AbstractPublishController {
 			array(
 				'field' => 'status',
 				'label' => 'lang:status',
-				'rules' => 'enum[o,c,p]'
+				'rules' => 'enum[o,c,p,s]'
 			),
 			array(
 				'field' => 'move',
@@ -426,7 +427,8 @@ class Comments extends AbstractPublishController {
 			ee('Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('edit_comment_error'))
-				->addToBody(lang('edit_comment_error_desc'));
+				->addToBody(lang('edit_comment_error_desc'))
+				->now();
 		}
 
 		ee()->view->cp_page_title = lang('edit_comment');
@@ -482,6 +484,9 @@ class Comments extends AbstractPublishController {
 					break;
 				case 'c':
 					$status = lang('closed');
+					break;
+				case 's':
+					$status = lang('spam');
 					break;
 				default:
 					$status = lang("pending");
@@ -540,7 +545,8 @@ class Comments extends AbstractPublishController {
 		$status = ee('Filter')->make('filter_by_status', 'filter_by_status', array(
 			'o' => lang('open'),
 			'c' => lang('closed'),
-			'p' => lang('pending')
+			'p' => lang('pending'),
+			's' => lang('spam')
 		));
 		$status->disableCustomValue();
 		return $status;
@@ -554,7 +560,7 @@ class Comments extends AbstractPublishController {
 				$this->remove(ee()->input->post('selection'));
 				break;
 
-			case 'remove':
+			case 'open':
 				$this->setStatus(ee()->input->post('selection'), 'o');
 				break;
 

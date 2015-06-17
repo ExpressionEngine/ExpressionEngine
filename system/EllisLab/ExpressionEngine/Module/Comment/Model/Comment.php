@@ -55,7 +55,7 @@ class Comment extends Model {
 		'entry_id'   => 'required|isNatural',
 		'channel_id' => 'required|isNatural',
 		'author_id'  => 'required|isNatural',
-		'status'     => 'enum[o,c,p]',
+		'status'     => 'enum[o,c,p,s]',
 		'ip_address' => 'ip_address',
 		'comment'    => 'required',
 	);

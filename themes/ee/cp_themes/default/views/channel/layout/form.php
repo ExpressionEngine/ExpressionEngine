@@ -7,10 +7,28 @@
 	<div class="tab-bar layout">
 		<ul>
 			<?php foreach ($layout->getTabs() as $index => $tab): ?>
-			<li><a<?php if ($index == 0): ?> class="act"<?php endif; ?> href="" rel="t-<?=$index?>"><?=lang($tab->title)?></a> <?php if ($tab->title != 'publish'): ?><span class="tab-remove"></span><?php endif; ?></li>
+				<?php
+				$icon = '';
+				if (strpos($tab->id, 'custom_') !== FALSE)
+				{
+					$icon = '<span class="tab-remove">';
+				}
+				else
+				{
+					if ($tab->isVisible())
+					{
+						$icon = '<span class="tab-on">';
+					}
+					else
+					{
+						$icon = '<span class="tab-off">';
+					}
+				}
+				?>
+			<li><a<?php if ($index == 0): ?> class="act"<?php endif; ?> href="" rel="t-<?=$index?>"><?=lang($tab->title)?></a> <?php if ($tab->title != 'publish'): ?><?=$icon?></span><?php endif; ?></li>
 			<?php endforeach; ?>
 		</ul>
-		<a class="btn action add-tab" href="#"><?=lang('add_tab')?></a>
+		<a class="btn action add-tab m-link" rel="modal-add-new-tab" href="#"><?=lang('add_tab')?></a>
 	</div>
 	<?=form_open($form_url, 'class="settings ajax-validate"')?>
 		<input type="hidden" name="field_layout" value="<?=json_encode($channel_layout->field_layout)?>">
@@ -23,13 +41,17 @@
 					<ul class="toolbar vertical">
 						<li class="move"><a href=""></a></li>
 						<?php if ( ! $field->isRequired()): ?>
-						<li class="hide"><a href=""></a></li>
+							<?php if ($field->isVisible()): ?>
+								<li class="hide"><a href=""></a></li>
+							<?php else: ?>
+								<li class="unhide"><a href=""></a></li>
+							<?php endif; ?>
 						<?php endif; ?>
 					</ul>
 				</div>
 				<div class="setting-txt col w-14">
-					<h3<?php if ($field->isCollapsed()): ?> class="field-closed"<?php endif; ?>><span class="ico sub-arrow"></span><?=$field->getLabel()?><?php if ($field->isRequired()): ?> <span class="required" title="required field">&#10033;</span><?php endif; ?></h3>
-					<em<?php if ($field->isCollapsed()): ?> style="display: none"<?php endif; ?>><?=$field->getType()?></em>
+					<h3<?php if ($field->isCollapsed()): ?> class="field-closed"<?php endif; ?>><span class="ico sub-arrow"></span><?=$field->getLabel()?><?php if ($field->isRequired()): ?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span><?php endif; ?></h3>
+					<em<?php if ($field->isCollapsed()): ?> style="display: none"<?php endif; ?>><?=$field->getTypeName()?></em>
 				</div>
 			</fieldset>
 		<?php endforeach; ?>
@@ -54,21 +76,28 @@
 			</div>
 			<div class="setting-field col w-8 last">
 				<div class="scroll-wrap">
-				<?php foreach ($member_groups as $member_group):?>
+				<?php foreach ($member_groups as $member_group): ?>
 					<?php
+					$checked = '';
+					$class = 'choice block';
+					$disabled = '';
+					$display = $member_group->group_title;
+
 					if (in_array($member_group->group_id, $selected_member_groups))
 					{
 						$checked = ' checked="checked"';
 						$class = 'choice block chosen';
 					}
-					else
+
+					if (isset($assigned_member_groups[$member_group->group_id]))
 					{
-						$checked = '';
-						$class = 'choice block';
+						$layout = $assigned_member_groups[$member_group->group_id];
+						$disabled = ' disabled="disabled"';
+						$display = '<s>' . $display . '</s> <i>&mdash; ' . lang('assigned_to') . ' <a href="' . cp_url('channel/layout/edit/' . $layout->layout_id) . '">' . $layout->layout_name . '</a></i>';
 					}
 					?>
 					<label class="<?=$class?>">
-						<input type="checkbox" name="member_groups[]" value="<?=$member_group->group_id?>"<?=$checked?> class="required"> <?=$member_group->group_title?>
+						<input type="checkbox" name="member_groups[]" value="<?=$member_group->group_id?>"<?=$checked?><?=$disabled?> class="required"> <?=$display?>
 					</label>
 				<?php endforeach; ?>
 			</div>
@@ -77,13 +106,36 @@
 		</fieldset>
 
 		<fieldset class="form-ctrls">
-			<?php if (ee()->form_validation->errors_exist()): ?>
-			<button class="btn disable" disabled="disabled" name="submit" type="submit" value="create" data-submit-text="<?=$submit_button_text?>" data-work-text="<?=lang('btn_saving')?>"><?=lang('btn_fix_errors')?></button>
-			<button class="btn disable" disabled="disabled" name="submit" type="submit" value="preview" data-submit-text="<?=lang('btn_preview_layout')?>" data-work-text="<?=lang('btn_saving')?>"><?=lang('btn_fix_errors')?></button>
-			<?php else: ?>
-			<button class="btn" name="submit" type="submit" value="create" data-submit-text="<?=$submit_button_text?>" data-work-text="<?=lang('btn_saving')?>"><?=$submit_button_text?></button>
-			<button class="btn" name="submit" type="submit" value="preview" data-submit-text="<?=lang('btn_preview_layout')?>" data-work-text="<?=lang('btn_saving')?>"><?=lang('btn_preview_layout')?></button>
-			<?php endif;?>
+			<?=cp_form_submit($submit_button_text, lang('btn_saving'))?>
 		</fieldset>
 	</form>
 </div>
+
+<?php $this->startOrAppendBlock('modals'); ?>
+<div class="modal-wrap modal-add-new-tab hidden">
+	<div class="modal">
+		<div class="col-group">
+			<div class="col w-16">
+				<a class="m-close" href="#"></a>
+				<div class="box">
+					<h1><?=lang('add_tab')?> <span class="required intitle">&#10033; <?=lang('required_fields')?></h1>
+					<form class="settings">
+						<fieldset class="col-group last">
+							<div class="setting-txt col w-8">
+								<h3><?=lang('tab_name')?> <span class="required" title="<?=lang('required_field')?>">&#10033;</span></h3>
+								<em><?=lang('tab_name_desc')?></em>
+							</div>
+							<div class="setting-field col w-8 last">
+								<input type="text" name="tab_name" data-illegal="<?=lang('illegal_tab_name')?>" data-required="<?=lang('tab_name_required')?>" data-duplicate="<?=lang('duplicate_tab_name')?>">
+							</div>
+						</fieldset>
+						<fieldset class="form-ctrls">
+							<button class="btn"><?=lang('add_tab')?></button>
+						</fieldset>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<?php $this->endBlock(); ?>

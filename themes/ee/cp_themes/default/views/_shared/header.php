@@ -17,7 +17,7 @@
 		<link href="touch-icon-ipad.png" rel="apple-touch-icon-precomposed" sizes="144x144"> -->
 
 		<?php
-		foreach ($cp_its_all_in_your_head as $item)
+		foreach (ee()->cp->get_head() as $item)
 		{
 			echo $item."\n";
 		}
@@ -28,6 +28,7 @@
 		<section class="bar info-wrap">
 			<nav class="snap">
 				<div class="site">
+					<a class="home" href="<?=cp_url('homepage')?>"></a>
 					<?php if (ee()->config->item('multiple_sites_enabled') === 'y'): ?>
 						<a class="has-sub" href=""><?=ee()->config->item('site_name')?> <span class="ico sub-arrow"></span></a> <a href="<?=ee()->config->item('base_url').ee()->config->item('site_index')?>">view</a>
 						<ul class="sites-list sub-menu">
@@ -35,9 +36,11 @@
 								<a href="<?=$link?>"><?=$site_name?></a>
 							<?php endforeach ?>
 							<?php if (ee()->cp->allowed_group('can_admin_sites')): ?>
-								<a class="last add" href="http://localhost/el-projects/ee-cp/views/msm-new.php">&#10010; New Site</a>
+								<a class="last add" href="http://localhost/el-projects/ee-cp/views/msm-new.php">&#10010; <?=lang('new_site')?></a>
 							<?php endif ?>
 						</ul>
+					<?php elseif ( ! ($site_name = ee()->config->item('site_name')) OR empty($site_name)): ?>
+						<a href="<?=cp_url('settings/general')?>" class="no-name"><?=lang('name_your_site')?></a>
 					<?php else: ?>
 						<a href=""><?=ee()->config->item('site_name')?></a>
 					<?php endif ?>
@@ -45,11 +48,11 @@
 				<div class="user">
 					<a href="<?=cp_url('login/logout')?>"><?=lang('log_out')?></a> <a class="has-sub" href=""><?=$cp_screen_name?> <span class="ico sub-arrow"></span></a>
 					<ul class="quick-links sub-menu">
-						<a href="http://localhost/el-projects/ee-cp/views/members-profile.php">My Profile</a>
+						<a href="<?=cp_url('members/profile', array('id' => ee()->session->userdata('member_id')))?>"><?=lang('my_profile')?></a>
 						<a href="">Quick Link</a>
 						<a href="">Another Quick Link</a>
 						<a href="">One More Quick Link</a>
-						<a class="last add" href="http://localhost/el-projects/ee-cp/views/members-profile-quicklinks.php">&#10010; New Link</a>
+						<a class="last add" href="<?=cp_url('members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id')))?>">&#10010; <?=lang('new_link')?></a>
 					</ul>
 				</div>
 			</nav>
@@ -64,7 +67,7 @@
 								<?php foreach ($cp_main_menu['channels']['create'] as $channel_name => $link): ?>
 									<li><a href="<?=$link?>"><?=$channel_name?></a></li>
 								<?php endforeach ?>
-								<li class="last"><a class="add" href="http://localhost/el-projects/ee-cp/views/channel-new.php">&#10010; <?=lang('new_channel')?></a></li>
+								<li class="last"><a class="add" href="<?=cp_url('channel/create')?>">&#10010; <?=lang('new_channel')?></a></li>
 							</ul>
 						</div>
 					</li>
@@ -82,7 +85,6 @@
 					<li><a href="<?=cp_url('members')?>"><?=lang('menu_members')?></a></li>
 				</ul>
 				<ul class="dev-menu">
-					<!-- <li><a href="http://localhost/el-projects/ee-cp/views/design.php">Design</a></li> -->
 					<li class="develop">
 						<a class="has-sub" href=""><b class="ico develop"></b> <span class="ico sub-arrow"></span> <!-- Develop --></a>
 						<div class="sub-menu">

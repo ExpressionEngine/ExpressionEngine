@@ -22,6 +22,19 @@ abstract class ContentModel extends Model {
 
 	abstract public function getCustomFieldPrefix();
 
+	public function save()
+	{
+		foreach ($this->_field_facades as $name => $field)
+		{
+			if (isset($this->_dirty[$name]))
+			{
+				$field->save();
+			}
+		}
+
+		return parent::save();
+	}
+
 	/**
 	 * Optional
 	 */
@@ -39,6 +52,23 @@ abstract class ContentModel extends Model {
 	}
 
 	/**
+	 * Get a list of fields
+	 *
+	 * @return array field names
+	 */
+	public function getFields()
+	{
+		$fields = parent::getFields();
+
+		foreach ($this->_field_facades as $field_facade)
+		{
+			$fields[] = $field_facade->getName();
+		}
+
+		return $fields;
+	}
+
+	/**
 	 *
 	 */
 	public function getDisplay(LayoutInterface $layout = NULL)
@@ -50,7 +80,7 @@ abstract class ContentModel extends Model {
 			$this->_field_facades
 		);
 
-		$layout = $layout ?: new DefaultLayout();
+		$layout = $layout ?: new DefaultLayout($this->channel_id, $this->entry_id);
 		return $layout->transform($fields);
 	}
 
@@ -69,7 +99,7 @@ abstract class ContentModel extends Model {
 	/**
 	 *
 	 */
-	protected function fillCustomFields($data)
+	protected function fillCustomFields(array $data = array())
 	{
 		$this->usesCustomFields();
 
@@ -118,6 +148,7 @@ abstract class ContentModel extends Model {
 
 		$facade = new FieldFacade($id, $info);
 		$facade->setName($name);
+		$facade->setContentId($this->getId());
 
 		$this->_field_facades[$name] = $facade;
 	}
@@ -144,11 +175,10 @@ abstract class ContentModel extends Model {
 		return $this->_field_facades[$name];
 	}
 
-
 	/**
 	 *
 	 */
-	public function fill($data)
+	public function fill(array $data = array())
 	{
 		parent::fill($data);
 
@@ -194,11 +224,18 @@ abstract class ContentModel extends Model {
 
 			if ( ! parent::hasProperty($name))
 			{
+				$this->markAsDirty($name);
 				return $this;
 			}
 		}
 
 		return parent::setProperty($name, $value);
+	}
+
+	public function set(array $data = array())
+	{
+		$this->usesCustomFields();
+		return parent::set($data);
 	}
 
 }

@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Library\Mixin;
 
 use BadMethodCallException;
+use EllisLab\ExpressionEngine\Service\Event\Publisher;
 
 class Manager {
 
@@ -35,9 +36,25 @@ class Manager {
 	 */
 	public function mountMixins()
 	{
+		// first the publishers
+		$done = array();
+
 		foreach ($this->mixins as $class)
 		{
-			$this->createMixinObject($class);
+			if ($class instanceOf Publisher)
+			{
+				$this->createMixinObject($class);
+				$done[] = $class;
+			}
+		}
+
+		// then the subscribers and everyone else
+		foreach ($this->mixins as $class)
+		{
+			if ( ! in_array($class, $done))
+			{
+				$this->createMixinObject($class);
+			}
 		}
 
 		$this->mounted = TRUE;

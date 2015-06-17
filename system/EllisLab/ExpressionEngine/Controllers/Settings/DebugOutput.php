@@ -102,6 +102,13 @@ class DebugOutput extends Settings {
 					)
 				),
 				array(
+					'title' => 'caching_driver',
+					'desc' => 'caching_driver_desc',
+					'fields' => array(
+						'cache_driver' => ee()->cache->admin_setting()
+					)
+				),
+				array(
 					'title' => 'max_caches',
 					'desc' => 'max_caches_desc',
 					'fields' => array(
@@ -146,7 +153,7 @@ class DebugOutput extends Settings {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('debugging_output');
 		ee()->view->save_btn_text = 'btn_save_settings';
-		ee()->view->save_btn_text_working = 'btn_save_settings_working';
+		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->render('settings/form', $vars);
 	}
 }

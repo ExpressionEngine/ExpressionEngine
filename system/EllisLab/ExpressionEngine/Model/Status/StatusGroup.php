@@ -31,6 +31,7 @@ class StatusGroup extends Model {
 
 	protected static $_primary_key = 'group_id';
 	protected static $_table_name = 'status_groups';
+	protected static $_events = array('afterInsert');
 
 	protected static $_relationships = array(
 		'Site' => array(
@@ -45,4 +46,26 @@ class StatusGroup extends Model {
 	protected $group_id;
 	protected $site_id;
 	protected $group_name;
+
+	/**
+	 * On save, make sure default statuses exist
+	 */
+	public function onAfterInsert()
+	{
+		$open = $this->getFrontend()->make('Status');
+		$open->group_id = $this->getId();
+		$open->site_id = $this->site_id;
+		$open->status = 'open';
+		$open->status_order = 1;
+		$open->highlight = '009933';
+		$open->save();
+
+		$closed = $this->getFrontend()->make('Status');
+		$closed->group_id = $this->getId();
+		$closed->site_id = $this->site_id;
+		$closed->status = 'closed';
+		$closed->status_order = 2;
+		$closed->highlight = '990000';
+		$closed->save();
+	}
 }

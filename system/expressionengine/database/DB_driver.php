@@ -34,7 +34,7 @@ class CI_DB_driver {
 	var $password;
 	var $hostname;
 	var $database;
-	var $dbdriver		= 'mysql';
+	var $dbdriver		= 'mysqli';
 	var $dbprefix		= '';
 	var $char_set		= 'utf8';
 	var $dbcollat		= 'utf8_general_ci';
@@ -49,9 +49,7 @@ class CI_DB_driver {
 	var $benchmark		= 0;
 	var $query_count	= 0;
 	var $bind_marker	= '?';
-	var $save_queries	= TRUE;
-	var $queries		= array();
-	var $query_times	= array();
+	var $last_query		= NULL;
 	var $data_cache		= array();
 	var $trans_enabled	= TRUE;
 	var $trans_strict	= TRUE;
@@ -97,62 +95,12 @@ class CI_DB_driver {
 	/**
 	 * Initialize Database Settings
 	 *
-	 * @access	private Called by the constructor
 	 * @param	mixed
 	 * @return	void
 	 */
 	function initialize()
 	{
-		// If an existing connection resource is available
-		// there is no need to connect and select the database
-		if (is_resource($this->conn_id) OR is_object($this->conn_id))
-		{
-			return TRUE;
-		}
-
-		// ----------------------------------------------------------------
-
-		// Connect to the database and set the connection ID
-		$this->conn_id = ($this->pconnect == FALSE) ? $this->db_connect() : $this->db_pconnect();
-
-		// No connection resource?  Throw an error
-		if ( ! $this->conn_id)
-		{
-			log_message('error', 'Unable to connect to the database');
-
-			if ($this->db_debug)
-			{
-				$this->display_error('db_unable_to_connect');
-			}
-			return FALSE;
-		}
-
-		// ----------------------------------------------------------------
-
-		// Select the DB... assuming a database name is specified in the config file
-		if ($this->database != '')
-		{
-			if ( ! $this->db_select())
-			{
-				log_message('error', 'Unable to select database: '.$this->database);
-
-				if ($this->db_debug)
-				{
-					$this->display_error('db_unable_to_select', $this->database);
-				}
-				return FALSE;
-			}
-			else
-			{
-				// We've selected the DB. Now we set the character set
-				if ( ! $this->db_set_charset($this->char_set, $this->dbcollat))
-				{
-					return FALSE;
-				}
-
-				return TRUE;
-			}
-		}
+		$this->connection->open();
 
 		return TRUE;
 	}
@@ -169,17 +117,8 @@ class CI_DB_driver {
 	 */
 	function db_set_charset($charset, $collation)
 	{
-		if ( ! $this->_db_set_charset($this->char_set, $this->dbcollat))
-		{
-			log_message('error', 'Unable to set database connection charset: '.$this->char_set);
-
-			if ($this->db_debug)
-			{
-				$this->display_error('db_unable_to_set_charset', $this->char_set);
-			}
-
-			return FALSE;
-		}
+		ee()->load->library('logger');
+		ee()->logger->deprecated('3.0');
 
 		return TRUE;
 	}
@@ -217,19 +156,7 @@ class CI_DB_driver {
 			return FALSE;
 		}
 
-		// Some DBs have functions that return the version, and don't run special
-		// SQL queries per se. In these instances, just return the result.
-		$driver_version_exceptions = array('oci8', 'sqlite');
-
-		if (in_array($this->dbdriver, $driver_version_exceptions))
-		{
-			return $sql;
-		}
-		else
-		{
-			$query = $this->query($sql);
-			return $query->row('ver');
-		}
+		return $this->query($sql)->row('ver');
 	}
 
 	// --------------------------------------------------------------------
@@ -266,97 +193,15 @@ class CI_DB_driver {
 			$sql = preg_replace("/(\W)".$this->swap_pre."(\S+?)/", "\${1}".$this->dbprefix."\${2}", $sql);
 		}
 
-		// Is query caching enabled?  If the query is a "read type"
-		// we will load the caching class and return the previously
-		// cached query if it exists
-		if ($this->cache_on == TRUE AND stristr($sql, 'SELECT'))
-		{
-			if ($this->_cache_init())
-			{
-				$this->load_rdriver();
-				if (FALSE !== ($cache = $this->CACHE->read($sql)))
-				{
-					return $cache;
-				}
-			}
-		}
-
 		// Compile binds if needed
 		if ($binds !== FALSE)
 		{
 			$sql = $this->compile_binds($sql, $binds);
 		}
 
-		// Save the  query for debugging
-		if ($this->save_queries == TRUE)
-		{
-			$source = '';
-			$trace = debug_backtrace();
-
-			// Log file the query came from
-			if (count($trace) >= 2)
-			{
-				$path = (defined('EE_APPPATH')) ? EE_APPPATH : APPPATH;
-				require_once $path.'helpers/array_helper.php';
-
-				// Get file and line in which query method was called
-				$file = element('file', $trace[1], '');
-				$line = element('line', $trace[1], '');
-
-				$func = '';
-				$class = '';
-
-				if (isset($trace[1]['class']))
-				{
-					$frame = 1;
-
-					// Skip calls to get() or get_where(), get the next stack frame
-					if ($trace[1]['class'] == 'CI_DB_active_record')
-					{
-						$frame = 2;
-					}
-
-					$func = element('function', $trace[$frame], '');
-					$class = element('class', $trace[$frame], '');
-				}
-
-				// Replace path with APP or CI to shorten the string
-				if ($file != '')
-				{
-					if (strpos($file, BASEPATH) === 0)
-					{
-						$file = 'CI/' . str_replace(BASEPATH, '', $file);
-					}
-					elseif (strpos($file, APPPATH) === 0)
-					{
-						$file = 'APP/' . str_replace(APPPATH,'',$file);
-					}
-					else
-					{
-						$file = basename($file);
-					}
-				}
-
-				// Build the caller source info
-				$source = "\n#".$file . ' L:' . $line . '  ';
-				$source .= ($class != '') ? $class . '::' : '';
-				$source .= ($func != '') ? $func . '() ' : '';
-			}
-
-			$this->queries[] = $sql . $source;
-		}
-
-		// Start the Query Timer
-		$time_start = list($sm, $ss) = explode(' ', microtime());
-
 		// Run the Query
 		if (FALSE === ($this->result_id = $this->simple_query($sql)))
 		{
-			if ($this->save_queries == TRUE)
-			{
-				$this->query_times[] = 0;
-			}
-
 			// This will trigger a rollback if transactions are being used
 			$this->_trans_status = FALSE;
 
@@ -375,25 +220,15 @@ class CI_DB_driver {
 
 				// Log and display errors
 				log_message('error', 'Query error: '.$error_msg);
-				return $this->display_error(
-										array(
-												'<b>Error number</b>: '.$error_no,
-												$error_msg,
-												$sql
-											)
-										);
+
+				return $this->display_error(array(
+					'<b>Error number</b>: '.$error_no,
+					$error_msg,
+					$sql
+				));
 			}
 
 			return FALSE;
-		}
-
-		// Stop and aggregate the query time results
-		$time_end = list($em, $es) = explode(' ', microtime());
-		$this->benchmark += ($em + $es) - ($sm + $ss);
-
-		if ($this->save_queries == TRUE)
-		{
-			$this->query_times[] = ($em + $es) - ($sm + $ss);
 		}
 
 		// Increment the query counter
@@ -403,65 +238,15 @@ class CI_DB_driver {
 		// If so we'll simply return true
 		if ($this->is_write_type($sql) === TRUE)
 		{
-			// If caching is enabled we'll auto-cleanup any
-			// existing files related to this particular URI
-			if ($this->cache_on == TRUE AND $this->cache_autodel == TRUE AND $this->_cache_init())
-			{
-				$this->CACHE->delete();
-			}
-
-			return TRUE;
-		}
-
-		// Return TRUE if we don't need to create a result object
-		// Currently only the Oracle driver uses this when stored
-		// procedures are used
-		if ($return_object !== TRUE)
-		{
 			return TRUE;
 		}
 
 		// Load and instantiate the result driver
+		$class = $this->load_rdriver();
+		$result = new $class($this->result_id);
+		$result->num_rows = $result->num_rows();
 
-		$driver			= $this->load_rdriver();
-		$RES			= new $driver();
-		$RES->conn_id	= $this->conn_id;
-		$RES->result_id	= $this->result_id;
-
-		if ($this->dbdriver == 'oci8')
-		{
-			$RES->stmt_id		= $this->stmt_id;
-			$RES->curs_id		= NULL;
-			$RES->limit_used	= $this->limit_used;
-			$this->stmt_id		= FALSE;
-		}
-
-		// oci8 vars must be set before calling this
-		$RES->num_rows	= $RES->num_rows();
-
-		// Is query caching enabled?  If so, we'll serialize the
-		// result object and save it to a cache file.
-		if ($this->cache_on == TRUE AND $this->_cache_init())
-		{
-			// We'll create a new instance of the result object
-			// only without the platform specific driver since
-			// we can't use it with cached data (the query result
-			// resource ID won't be any good once we've cached the
-			// result object, so we'll have to compile the data
-			// and save it)
-			$CR = new CI_DB_result();
-			$CR->num_rows		= $RES->num_rows();
-			$CR->result_object	= $RES->result_object();
-			$CR->result_array	= $RES->result_array();
-
-			// Reset these since cached objects can not utilize resource IDs.
-			$CR->conn_id		= NULL;
-			$CR->result_id		= NULL;
-
-			$this->CACHE->write($sql, $CR);
-		}
-
-		return $RES;
+		return $result;
 	}
 
 	// --------------------------------------------------------------------
@@ -474,11 +259,13 @@ class CI_DB_driver {
 	 */
 	function load_rdriver()
 	{
+		$this->dbdriver = 'mysqli';
+
 		$driver = 'CI_DB_'.$this->dbdriver.'_result';
 
 		if ( ! class_exists($driver))
 		{
-			$path = (defined('EE_APPPATH')) ? EE_APPPATH : APPPATH;
+			$path = BASEPATH;
 			include_once($path.'database/DB_result.php');
 			include_once($path.'database/drivers/'.$this->dbdriver.'/'.$this->dbdriver.'_result.php');
 		}
@@ -500,10 +287,12 @@ class CI_DB_driver {
 	 */
 	function simple_query($sql)
 	{
-		if ( ! $this->conn_id)
+		if ( ! $this->connection->isOpen())
 		{
 			$this->initialize();
 		}
+
+		$this->last_query = $sql;
 
 		return $this->_execute($sql);
 	}
@@ -718,7 +507,7 @@ class CI_DB_driver {
 	 */
 	function last_query()
 	{
-		return end($this->queries);
+		return $this->last_query;
 	}
 
 	// --------------------------------------------------------------------
@@ -1093,7 +882,7 @@ class CI_DB_driver {
 	 */
 	function call_function($function)
 	{
-		$driver = ($this->dbdriver == 'postgre') ? 'pg_' : $this->dbdriver.'_';
+		$driver = $this->dbdriver.'_';
 
 		if (FALSE === strpos($driver, $function))
 		{
@@ -1119,24 +908,6 @@ class CI_DB_driver {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Set Cache Directory Path
-	 *
-	 * @access	public
-	 * @param	string	the path to the cache directory
-	 * @return	void
-	 */
-	function cache_set_path($path = '')
-	{
-		// Query caching now uses caching drivers
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.8');
-
-		$this->cachedir = $path;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Enable Query Caching
 	 *
 	 * @access	public
@@ -1144,7 +915,9 @@ class CI_DB_driver {
 	 */
 	function cache_on()
 	{
-		$this->cache_on = TRUE;
+		ee()->load->library('logger');
+		ee()->logger->deprecated('3.0');
+
 		return TRUE;
 	}
 
@@ -1158,72 +931,12 @@ class CI_DB_driver {
 	 */
 	function cache_off()
 	{
-		$this->cache_on = FALSE;
+		ee()->load->library('logger');
+		ee()->logger->deprecated('3.0');
+
 		return FALSE;
 	}
 
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Delete the cache files associated with a particular URI
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function cache_delete($segment_one = '', $segment_two = '')
-	{
-		if ( ! $this->_cache_init())
-		{
-			return FALSE;
-		}
-		return $this->CACHE->delete($segment_one, $segment_two);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Delete All cache files
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function cache_delete_all()
-	{
-		if ( ! $this->_cache_init())
-		{
-			return FALSE;
-		}
-
-		return $this->CACHE->delete_all();
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Initialize the Cache Class
-	 *
-	 * @access	private
-	 * @return	void
-	 */
-	function _cache_init()
-	{
-		if (is_object($this->CACHE) AND class_exists('CI_DB_Cache'))
-		{
-			return TRUE;
-		}
-
-		if ( ! class_exists('CI_DB_Cache'))
-		{
-			if ( ! @include(APPPATH.'database/DB_cache.php'))
-			{
-				return $this->cache_off();
-			}
-		}
-
-		$this->CACHE = new CI_DB_Cache(); // pass db object to support multiple db connections and returned db objects
-		return TRUE;
-	}
 
 	// --------------------------------------------------------------------
 
@@ -1235,11 +948,7 @@ class CI_DB_driver {
 	 */
 	function close()
 	{
-		if (is_resource($this->conn_id) OR is_object($this->conn_id))
-		{
-			$this->_close($this->conn_id);
-		}
-		$this->conn_id = FALSE;
+		$this->connection->close();
 	}
 
 	// --------------------------------------------------------------------

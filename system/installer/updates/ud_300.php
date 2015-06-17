@@ -218,8 +218,8 @@ class Updater {
 	 */
 	private function _remove_accessories_table()
 	{
-		ee()->dbforge->drop_table('accessories');
-		ee()->dbforge->drop_column('member_groups', 'can_access_accessories');
+		ee()->smartforge->drop_table('accessories');
+		ee()->smartforge->drop_column('member_groups', 'can_access_accessories');
 	}
 
 	/**
@@ -314,8 +314,8 @@ class Updater {
 	 */
 	private function _remove_watermarks_table()
 	{
-		ee()->dbforge->drop_table('file_watermarks');
-		ee()->dbforge->drop_column('file_dimensions', 'watermark_id');
+		ee()->smartforge->drop_table('file_watermarks');
+		ee()->smartforge->drop_column('file_dimensions', 'watermark_id');
 	}
 
 	// -------------------------------------------------------------------
@@ -332,7 +332,7 @@ class Updater {
 		$installer_config = ee()->config;
 
 		require_once(APPPATH . 'libraries/Extensions.php');
-		ee()->extensions = new Installer_Extensions();
+		ee()->set('extensions', new Installer_Extensions());
 		ee()->load->model('template_model');
 
 		$sites = ee()->db->select('site_id')
@@ -343,7 +343,9 @@ class Updater {
 		// in the database
 		foreach ($sites as $site)
 		{
-			ee()->config = new MSM_Config();
+			ee()->remove('config');
+			ee()->set('config', new MSM_Config());
+
 			ee()->config->site_prefs('', $site['site_id']);
 
 			if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '') {
@@ -359,7 +361,9 @@ class Updater {
 			}
 
 		}
-		ee()->config = $installer_config;
+
+		ee()->remove('config');
+		ee()->set('config', $installer_config);
 	}
 
 	/**
@@ -368,31 +372,115 @@ class Updater {
 	 */
 	private function _update_layout_publish_table()
 	{
+		ee()->dbforge->add_field(
+			array(
+				'layout_id' => array(
+					'type'       => 'int',
+					'constraint' => 10,
+					'null'       => FALSE,
+					'unsigned'   => TRUE
+				),
+				'group_id' => array(
+					'type'       => 'int',
+					'constraint' => 4,
+					'null'       => FALSE,
+					'unsigned'   => TRUE
+				)
+			)
+		);
+		ee()->dbforge->add_key(array('layout_id', 'group_id'), TRUE);
+		ee()->smartforge->create_table('layout_publish_member_groups');
+
 		ee()->smartforge->add_column(
 			'layout_publish',
 			array(
-				'layout_name'    => array(
-					'type'         => 'varchar',
-					'constraint'   => 50,
-					'null'         => FALSE
+				'layout_name' => array(
+					'type'       => 'varchar',
+					'constraint' => 50,
+					'null'       => FALSE
 				),
 			)
 		);
 
-		$layouts = ee()->db->select('layout_id, layout_name, field_layout')
+		$layouts = ee()->db->select('layout_id, member_group, layout_name, field_layout')
 			->get('layout_publish')
 			->result_array();
 
-		if ( ! empty($layotus))
+		if ( ! empty($layouts))
 		{
 			foreach ($layouts as $index => $layout)
 			{
+				ee()->db->insert('layout_publish_member_groups', array(
+					'layout_id' => $layout['layout_id'],
+					'group_id' => $layout['member_group']
+				));
+
 				$layouts[$index]['layout_name'] = 'Layout ' . $layout['layout_id'];
-				// @TODO update the filed_layout column
+
+				$old_field_layout = unserialize($layout['field_layout']);
+				$new_field_layout = array();
+
+				foreach ($old_field_layout as $tab_id => $old_tab)
+				{
+					$tab = array(
+						'id' => $tab_id,
+						'name' => $old_tab['_tab_label'],
+						'visible' => TRUE,
+						'fields' => array()
+					);
+
+					unset($old_tab['_tab_label']);
+
+					foreach ($old_tab as $field => $info)
+					{
+						if (is_numeric($field))
+						{
+							$field = 'field_id_' . $field;
+						}
+						elseif ($field == 'category')
+						{
+							$field = 'categories';
+						}
+						elseif ($field == 'new_channel')
+						{
+							$field = 'channel_id';
+						}
+						elseif ($field == 'author')
+						{
+							$field = 'author_id';
+						}
+						elseif ($field == 'options')
+						{
+							$tab['fields'][] = array(
+								'field' => 'sticky',
+								'visible' => $info['visible'],
+								'collapsed' => $info['collapse']
+							);
+							$tab['fields'][] = array(
+								'field' => 'allow_comments',
+								'visible' => $info['visible'],
+								'collapsed' => $info['collapse']
+							);
+							continue;
+						}
+
+						$tab['fields'][] = array(
+							'field' => $field,
+							'visible' => $info['visible'],
+							'collapsed' => $info['collapse']
+						);
+					}
+
+					$new_field_layout[] = $tab;
+				}
+
+				$layouts[$index]['field_layout'] = serialize($new_field_layout);
 			}
 
 			ee()->db->update_batch('layout_publish', $layouts, 'layout_id');
 		}
+
+		ee()->smartforge->drop_column('layout_publish', 'member_group');
 	}
 
 }

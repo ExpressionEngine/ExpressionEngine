@@ -30,7 +30,6 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
 class Callback extends ValidationRule {
 
 	protected $callback = NULL;
-	protected $parameters = array();
 
 	public function __construct($callback)
 	{
@@ -41,10 +40,4 @@ class Callback extends ValidationRule {
 	{
 		return call_user_func($this->callback, $value, $this->parameters);
 	}
-
-	public function setParameters($parameters = array())
-	{
-		$this->parameters = $parameters;
-	}
-
 }

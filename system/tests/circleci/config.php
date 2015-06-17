@@ -19,7 +19,7 @@ if (function_exists('opcache_reset'))
 }
 
 $config['site_url'] = 'http://ee2.test:8080/';
-$config['app_version'] = '280';
+$config['app_version'] = '300';
 $config['license_contact'] = 'ellislab.devleopers@gmail.com';
 $config['license_number'] = '1234-1234-1234-1234';
 $config['debug'] = '1';
@@ -31,10 +31,11 @@ $config['is_system_on'] = 'y';
 $config['allow_extensions'] = 'y';
 $config['cookie_prefix'] = '';
 $config['use_compressed_js'] = 'n';
+$config['cache_driver'] = 'file';
 $config['database'] = array(
 	'expressionengine' => array(
 		'database' => 'circle_test',
-		'username' => 'ubuntu',
+		'username' => 'ubuntu'
 	),
 );
 

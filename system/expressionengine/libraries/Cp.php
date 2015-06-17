@@ -26,13 +26,12 @@ class Cp {
 
 	private $view;
 
+	protected $its_all_in_your_head = array();
+	protected $footer_item          = array();
+
 	public $cp_theme             = '';
 	public $cp_theme_url         = '';	// base URL to the CP theme folder
-
 	public $installed_modules    = FALSE;
-
-	public $its_all_in_your_head = array();
-	public $footer_item          = array();
 	public $requests             = array();
 	public $loaded               = array();
 
@@ -43,7 +42,6 @@ class Cp {
 		'package'   => array(),
 		'fp_module' => array()
 	);
-
 
 	/**
 	 * Constructor
@@ -75,16 +73,14 @@ class Cp {
 		ee()->output->set_header('X-Frame-Options: SameOrigin');
 	}
 
-
 	// --------------------------------------------------------------------
 
 	/**
 	 * Set Certain Default Control Panel View Variables
 	 *
-	 * @access	public
 	 * @return	void
 	 */
-	function set_default_view_variables()
+	public function set_default_view_variables()
 	{
 		$js_folder = (ee()->config->item('use_compressed_js') == 'n') ? 'src' : 'compressed';
 		$langfile  = substr(ee()->router->class, 0, strcspn(ee()->router->class, '_'));
@@ -224,7 +220,8 @@ class Cp {
 	public function render($view, $data = array(), $return = FALSE)
 	{
 		$this->_menu();
-		//$this->_sidebar();
+
+		$this->_notices();
 
 		ee()->view->formatted_version = $this->formatted_version(APP_VER);
 
@@ -243,11 +240,27 @@ class Cp {
 		$this->_seal_combo_loader();
 		$this->add_js_script('file', 'cp/global_end');
 
-		ee()->view->cp_footer_js = $this->render_footer_js();
-		ee()->view->cp_footer_items = $this->footer_item;
-		ee()->view->cp_its_all_in_your_head = $this->its_all_in_your_head;
+		$date_format = ee()->session->userdata('date_format', ee()->config->item('date_format'));
+		ee()->view->ee_build_date = ee()->localize->format_date($date_format, $this->_parse_build_date(), TRUE);
 
 		return ee()->view->render($view, $data, $return);
+	}
+
+	/**
+	 * Converts our build date constant into a timestamp so we can format it
+	 * for display
+	 *
+	 * @return int Timestamp representing the build date
+	 */
+	protected function _parse_build_date()
+	{
+		$year = substr(APP_BUILD, 0, 4);
+		$month = substr(APP_BUILD, 4, 2);
+		$day = substr(APP_BUILD, 6, 2);
+
+		$string = $year . '-' . $month . '-' . $day;
+
+		return ee()->localize->string_to_timestamp($string, TRUE, '%Y-%m-%d');
 	}
 
 	// --------------------------------------------------------------------
@@ -295,29 +308,215 @@ class Cp {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Load up the sidebar for our view
+	 * Run a number of checks/tests and display any notices
 	 *
-	 * @access public
 	 * @return void
 	 */
-	protected function _sidebar()
+	protected function _notices()
 	{
-		ee()->view->sidebar_state = '';
-		ee()->view->maincontent_state = '';
+		$alert = $this->_checksum_bootstrap_files();
 
-		if (ee()->session->userdata('show_sidebar') == 'n')
-		{
-			ee()->view->sidebar_state = ' style="display:none"';
-			ee()->view->maincontent_state = ' style="width:100%; display:block"';
-		}
-
-		if (ee()->view->disabled('ee_sidebar'))
+		// These are only displayed to Super Admins
+		if (ee()->session->userdata['group_id'] != 1)
 		{
 			return;
 		}
 
-		// @todo move over sidebar content from set_default_view_vars
-		// has a member query & session cache dependency
+		$notices = array();
+
+		// Show a notice if the cache folder is not writeable
+		if ( ! ee()->cache->file->is_supported())
+		{
+			$notices[] = lang('unwritable_cache_folder');
+		}
+
+		// Show a notice if the config file is not writeable
+		if ( ! is_really_writable(ee()->config->config_path))
+		{
+			$notices[] = lang('unwritable_config_file');
+		}
+
+		if (ee()->config->item('new_version_check') == 'y')
+		{
+			$check = $this->_version_check();
+			if ($check !== FALSE)
+			{
+				$notices[] = $check;
+			}
+		}
+
+		// Check to see if the config file matches the Core version constant
+		if (str_replace('.', '', APP_VER) !== ee()->config->item('app_version'))
+		{
+			$config_version = substr(ee()->config->item('app_version'), 0, 1).'.'.substr(ee()->config->item('app_version'), 1, 1).'.'.substr(ee()->config->item('app_version'), 2);
+			$notices[] = sprintf(lang('version_mismatch'), $config_version, APP_VER);
+		}
+
+		if ( ! empty($notices))
+		{
+			if ( ! $alert)
+			{
+				$alert = ee('Alert')->makeStandard('notices')
+					->asWarning()
+					->withTitle(lang('cp_message_warn'))
+					->now();
+			}
+			else
+			{
+				$alert->addSeparator();
+			}
+
+			$last = end($notices);
+			reset($notices);
+			foreach ($notices as $notice)
+			{
+				$alert->addToBody($notice);
+
+				if ($notice != $last)
+				{
+					$alert->addSeparator();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Bootstrap Checksum Validation
+	 *
+	 * Creates a checksum for our bootstrap files and checks their
+	 * validity with the database
+	 *
+	 * @return Alert|null NULL if everything is alright, otherwise an Alert object
+	 */
+	protected function _checksum_bootstrap_files()
+	{
+		// Checksum Validation
+		ee()->load->library('file_integrity');
+		$changed = ee()->file_integrity->check_bootstrap_files();
+		$checksum_alert = NULL;
+
+		if ($changed)
+		{
+			// Email the webmaster - if he isn't already looking at the message
+			if (ee()->session->userdata('email') != ee()->config->item('webmaster_email'))
+			{
+				ee()->file_integrity->send_site_admin_warning($changed);
+			}
+
+			if (ee()->session->userdata('group_id') == 1)
+			{
+				$alert = ee('Alert')->makeStandard('notices')
+					->asWarning()
+					->withTitle(lang('cp_message_warn'))
+					->addToBody(lang('checksum_changed_warning'))
+					->addToBody($changed);
+
+				$button = form_open(cp_url('homepage/accept_checksums'), '', array('return' => base64_encode(ee()->cp->get_safe_refresh())));
+				$button .= '<input class="btn submit" type="submit" value="' . lang('checksum_changed_accept') . '">';
+				$button .= form_close();
+
+				$alert->addToBody($button);
+
+				return $alert->now();
+			}
+		}
+
+		return NULL;
+	}
+
+
+	/**
+	 * EE Version Check function
+	 *
+	 * Requests a file from ExpressionEngine.com that informs us what the current available version
+	 * of ExpressionEngine.
+	 *
+	 * @return	bool|string
+	 */
+	protected function _version_check()
+	{
+		$download_url = ee()->cp->masked_url('https://store.ellislab.com/manage');
+
+		ee()->load->library('el_pings');
+		$version_file = ee()->el_pings->get_version_info();
+
+		if ( ! $version_file)
+		{
+			return sprintf(
+				lang('new_version_error'),
+				$download_url
+			);
+		}
+
+		$new_release = FALSE;
+		$high_priority = FALSE;
+
+		// Do we have a newer version out?
+		foreach ($version_file as $app_data)
+		{
+			if ($app_data[0] > APP_VER && $app_data[2] == 'high')
+			{
+				$new_release = TRUE;
+				$high_priority = TRUE;
+				$high_priority_release = array(
+					'version'	=> $app_data[0],
+					'build'		=> $app_data[1]
+				);
+
+				continue;
+			}
+			elseif ($app_data[1] > APP_BUILD && $app_data[2] == 'high')
+			{
+				// A build could sometimes be a security release.  So we can plan for it here.
+				$new_release = TRUE;
+				$high_priority = TRUE;
+				$high_priority_release = array(
+					'version'	=> $app_data[0],
+					'build'		=> $app_data[1]
+				);
+
+				continue;
+			}
+		}
+
+		if ( ! $new_release)
+		{
+			return FALSE;
+		}
+
+		$cur_ver = end($version_file);
+
+		// Extracting the date the build was released.  IF the build was
+		// released in the past 2 calendar days, we don't show anything
+		// on the control panel home page unless it was a security release
+		$date_threshold = mktime(0, 0, 0,
+			substr($cur_ver[1], 4, -2), // Month
+			(substr($cur_ver[1], -2) + 2), // Day + 2
+			substr($cur_ver[1], 0, 4) // Year
+		);
+
+		if ((ee()->localize->now < $date_threshold) && $high_priority != TRUE)
+		{
+			return FALSE;
+		}
+
+		if ($high_priority)
+		{
+			return sprintf(lang('new_version_notice_high_priority'),
+				$high_priority_release['version'],
+				$high_priority_release['build'],
+				$cur_ver[0],
+				$cur_ver[1],
+				$download_url,
+				ee()->cp->masked_url(ee()->config->item('doc_url').'installation/update.html')
+			);
+		}
+
+		return sprintf(lang('new_version_notice'),
+			$details['version'],
+			$download_url,
+			ee()->cp->masked_url(ee()->config->item('doc_url').'installation/update.html')
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -328,11 +527,10 @@ class Cp {
 	 * To be used to create url's that "mask" the real location of the
 	 * users control panel.  Eg:  http://example.com/index.php?URL=http://example2.com
 	 *
-	 * @access public
 	 * @param string	URL
 	 * @return string	Masked URL
 	 */
-	function masked_url($url)
+	public function masked_url($url)
 	{
 		return ee()->functions->fetch_site_index(0,0).QUERY_MARKER.'URL='.urlencode($url);
 	}
@@ -344,10 +542,9 @@ class Cp {
 	 *
 	 * Adds a javascript file to the javascript combo loader
 	 *
-	 * @access public
 	 * @param array - associative array of
 	 */
-	function add_js_script($script = array(), $in_footer = TRUE)
+	public function add_js_script($script = array(), $in_footer = TRUE)
 	{
 		if ( ! is_array($script))
 		{
@@ -390,10 +587,9 @@ class Cp {
 	/**
 	 * Render Footer Javascript
 	 *
-	 * @access public
 	 * @return string
 	 */
-	function render_footer_js()
+	public function render_footer_js()
 	{
 		$str = '';
 		$requests = $this->_seal_combo_loader();
@@ -464,12 +660,11 @@ class Cp {
 	 * Get last modification time of a js file.
 	 * Returns highest if passed an array.
 	 *
-	 * @access	private
 	 * @param	string
 	 * @param	mixed
 	 * @return	int
 	 */
-	function _get_js_mtime($type, $name)
+	private function _get_js_mtime($type, $name)
 	{
 		if (is_array($name))
 		{
@@ -509,12 +704,11 @@ class Cp {
 	/**
 	 * Set the right navigation
 	 *
-	 * @access	public
 	 * @param	array
 	 * @param	string
 	 * @return	int
 	 */
-	function set_right_nav($nav = array())
+	public function set_right_nav($nav = array())
 	{
 		ee()->view->cp_right_nav = array_reverse($nav);
 	}
@@ -524,12 +718,11 @@ class Cp {
 	/**
 	 * Set the in-header navigation
 	 *
-	 * @access	public
 	 * @param	array
 	 * @param	string
 	 * @return	int
 	 */
-	function set_action_nav($nav = array())
+	public function set_action_nav($nav = array())
 	{
 		ee()->view->cp_action_nav = array_reverse($nav);
 	}
@@ -540,10 +733,9 @@ class Cp {
 	 * URL to the current page unless POST data exists - in which case it
 	 * goes to the root controller.  To use the result, prefix it with BASE.AMP
 	 *
-	 * @access	public
 	 * @return	string
 	 */
-	function get_safe_refresh()
+	public function get_safe_refresh()
 	{
 		static $url = '';
 
@@ -627,10 +819,9 @@ class Cp {
 	 *
 	 * 	Does a lookup for quick links.  Based on the URL we determine if it is external or not
 	 *
-	 * 	@access private
 	 * 	@return array
 	 */
-	function _get_quicklinks($quick_links)
+	private function _get_quicklinks($quick_links)
 	{
 		$i = 1;
 
@@ -691,10 +882,9 @@ class Cp {
 	/**
 	 * Abstracted Way to Add a Breadcrumb Links
 	 *
-	 * @access	public
 	 * @return	void
 	 */
-	function set_breadcrumb($link, $title)
+	public function set_breadcrumb($link, $title)
 	{
 		static $_crumbs = array();
 
@@ -709,11 +899,10 @@ class Cp {
 	 *
 	 * Load a javascript file from a package
 	 *
-	 * @access	public
 	 * @param	string
 	 * @return	void
 	 */
-	function load_package_js($file)
+	public function load_package_js($file)
 	{
 		$current_top_path = ee()->load->first_package_path();
 		$package = trim(str_replace(array(PATH_ADDONS, 'views'), '', $current_top_path), '/');
@@ -727,11 +916,10 @@ class Cp {
 	 *
 	 * Load a stylesheet from a package
 	 *
-	 * @access	public
 	 * @param	string
 	 * @return	void
 	 */
-	function load_package_css($file)
+	public function load_package_css($file)
 	{
 		$current_top_path = ee()->load->first_package_path();
 		$package = trim(str_replace(array(PATH_ADDONS, 'views'), '', $current_top_path), '/');
@@ -747,11 +935,10 @@ class Cp {
 	 *
 	 * Add any string to the <head> tag
 	 *
-	 * @access	public
 	 * @param	string
 	 * @return	string
 	 */
-	function add_to_head($data)
+	public function add_to_head($data)
 	{
 		// Deprecated for scripts. Let's encourage good practices. This will
 		// also let us move jquery in the future.
@@ -767,17 +954,40 @@ class Cp {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Returns the array of items to be added in the header
+	 *
+	 * @return array The array of items to be added in the header
+	 */
+	public function get_head()
+	{
+		return $this->its_all_in_your_head;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Add Footer Data
 	 *
 	 * Add any string above the </body> tag
 	 *
-	 * @access	public
 	 * @param	string
 	 * @return	string
 	 */
-	function add_to_foot($data)
+	public function add_to_foot($data)
 	{
 		$this->footer_item[] = $data;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Returns the array of items to be added in the footer
+	 *
+	 * @return array The array of items to be added in the footer
+	 */
+	public function get_foot()
+	{
+		return $this->footer_item;
 	}
 
 	// --------------------------------------------------------------------
@@ -787,11 +997,10 @@ class Cp {
 	 *
 	 * Member access validation
 	 *
-	 * @access	public
 	 * @param	string  any number of permission names
 	 * @return	bool    TRUE if member has all permissions
 	 */
-	function allowed_group()
+	public function allowed_group()
 	{
 		$which = func_get_args();
 
@@ -826,10 +1035,9 @@ class Cp {
 	 *
 	 * Returns array of installed modules.
 	 *
-	 * @access public
 	 * @return array
 	 */
-	function get_installed_modules()
+	public function get_installed_modules()
 	{
 		if ( ! is_array($this->installed_modules))
 		{
@@ -858,10 +1066,9 @@ class Cp {
 	 *
 	 * Tracks "reserved" words to avoid variable name collision
 	 *
-	 * @access	public
 	 * @return	array
 	 */
-	function invalid_custom_field_names()
+	public function invalid_custom_field_names()
 	{
 		static $invalid_fields = array();
 
@@ -932,12 +1139,11 @@ class Cp {
 	/**
 	 * 	Fetch Action IDs
 	 *
-	 * 	@access public
 	 *	@param string
 	 * 	@param string
 	 *	@return mixed
 	 */
-	function fetch_action_id($class, $method)
+	public function fetch_action_id($class, $method)
 	{
 		ee()->db->select('action_id');
 		ee()->db->where('class', $class);

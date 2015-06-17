@@ -172,7 +172,7 @@ class MemberImport extends Utilities {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('member_import');
 		ee()->view->save_btn_text = 'mbr_import_btn';
-		ee()->view->save_btn_text_working = 'mbr_import_btn_working';
+		ee()->view->save_btn_text_working = 'mbr_import_btn_saving';
 		ee()->cp->render('settings/form', $vars);
 	}
 

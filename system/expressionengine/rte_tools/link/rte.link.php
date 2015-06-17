@@ -43,6 +43,7 @@ class Link_rte {
 		return array(
 			'rte.link'	=> array(
 				'add'		=> lang('link'),
+				'title'		=> lang('title_link'),
 				'dialog'	=> array(
 						'title'				=> lang('link'),
 						'url_field_label'	=> lang('rte_url'),

@@ -119,7 +119,6 @@ $lang = array(
 'create_layout_error_desc' =>
 'We were unable to update this group, please review and fix errors below.',
 
-
 'btn_edit_layout' =>
 'Edit Layout',
 
@@ -130,7 +129,7 @@ $lang = array(
 'Form Layouts',
 
 'edit_form_layout' =>
-'Edit From Layout &ndash; %s',
+'Edit Form Layout &ndash; %s',
 
 'edit_layout_success' =>
 'Form Layout Updated',
@@ -143,6 +142,45 @@ $lang = array(
 
 'edit_layout_error_desc' =>
 'We were unable to update this group, please review and fix errors below.',
+
+'success' =>
+'Success',
+
+'layouts_removed_desc' =>
+'The following form layouts were removed',
+
+'add_tab' =>
+'Add Tab',
+
+'tab_name' =>
+'Tab Name',
+
+'tab_name_desc' =>
+'Short name for this tab.',
+
+'tab_name_required'	=>
+'Please choose a name for your tab.',
+
+'duplicate_tab_name' =>
+'A tab with this name already exists.',
+
+'illegal_tab_name' =>
+'Tab names may not contain the following characters: *, >, :, +, (, ), [, ], =, |, ", \', ., #, or $',
+
+'error_cannot_hide_tab' =>
+'Cannot Hide Tab',
+
+'error_tab_has_required_fields' =>
+'<b>%s</b> contains at least one required field and cannot be hidden. Plese move the required field(s) to another tab.',
+
+'error_cannot_remove_tab' =>
+'Cannot Remove Tab',
+
+'error_tab_has_fields' =>
+'<b>%s</b> contains at least one field and cannot be removed. Plese move all fields to another tab.',
+
+'assigned_to' =>
+'assigned to',
 
 /**
  * Channel Create/Edit
@@ -173,8 +211,10 @@ $lang = array(
 'Publishing Options',
 
 'channel_publishing_options_warning' =>
-'<p><b>Warning</b>: Channels require custom fields to collect any data other than title, and date.</p>
-<p>If you need to collect additional data for this channel, it\'s best practice to create any <a href="%s">custom fields</a>, first.</p>',
+'<b>Warning</b>: Channels require custom fields to collect any data other than title, and date.',
+
+'channel_publishing_options_warning2' =>
+'If you need to collect additional data for this channel, it\'s best practice to create any <a href="%s">custom fields</a>, first.',
 
 'status_groups_desc' =>
 'Choose the status group you want for this channel.',
@@ -478,9 +518,6 @@ $lang = array(
 'btn_save_settings' =>
 'Save Settings',
 
-'btn_saving' =>
-'Saving...',
-
 'convert_to_entities' =>
 'Convert to HTML entities',
 
@@ -545,11 +582,228 @@ $lang = array(
 'create_category_group' =>
 'Create Category Group',
 
+'edit_category_group' =>
+'Edit Category Group',
+
 'category_groups_removed' =>
 'Category groups removed',
 
 'category_groups_removed_desc' =>
 '%d category groups were removed.',
+
+'categories_removed' =>
+'Categories removed',
+
+'categories_removed_desc' =>
+'%d categories were removed.',
+
+'fields' =>
+'Fields',
+
+'edit_category_group' =>
+'Edit Category Group',
+
+'group_name_desc' =>
+'Descriptive name of this category group.',
+
+'create_category' =>
+'Create Category',
+
+'edit_category' =>
+'Edit Category',
+
+'files' =>
+'Files',
+
+'cat_description_desc' =>
+'A brief description of this category.',
+
+'cat_image_desc' =>
+'Image representation of this category.',
+
+'html_formatting' =>
+'HTML formatting',
+
+'html_formatting_desc' =>
+'Level of HTML allowed in custom category fields.',
+
+'permissions' =>
+'Permissions',
+
+'category_permissions_warning' =>
+'<b>Warning</b>: Please be very careful with the access privileges you grant.',
+
+'category_permissions_warning2' =>
+'Any setting marked with %s should only be granted to people you trust implicitly.',
+
+'edit_categories' =>
+'Edit Categories',
+
+'edit_categories_desc' =>
+'Users in selected groups will be allowed to edit categories in this category group.</em><em>Super Administrators are <b>always</b> allowed.',
+
+'delete_categories' =>
+'Delete Categories',
+
+'delete_categories_desc' =>
+'Users in selected groups will be allowed to delete categories in this category group.</em><em>Super Administrators are <b>always</b> allowed.',
+
+'cat_group_no_member_groups_found' =>
+'Zero <b>member groups</b> with permissions found',
+
+'edit_member_groups' =>
+'Edit Member Groups',
+
+'exclude_group_form' =>
+'Exclude group from?',
+
+'exclude_group_form_desc' =>
+'Prevent this category group from being offered as choice for assignment to channels and file directories.',
+
+'category_group_saved' =>
+'Category group saved',
+
+'category_group_saved_desc' =>
+'Your category group has been saved successfully.',
+
+'category_group_not_saved' =>
+'Attention: Category group not saved',
+
+'category_group_not_saved_desc' =>
+'We were unable to save your category group, please review and fix errors below.',
+
+'parent_category' =>
+'Parent category',
+
+'parent_category_desc' =>
+'You may make this category a sub-category of another.',
+
+'category_saved' =>
+'Category saved',
+
+'category_saved_desc' =>
+'Your category has been saved successfully.',
+
+'category_not_saved' =>
+'Attention: Category not saved',
+
+'category_not_saved_desc' =>
+'We were unable to save your category, please review and fix errors below.',
+
+'category_field' =>
+'Category Field',
+
+'category_fields' =>
+'Category Fields',
+
+'no_category_fields' =>
+'No Category Fields',
+
+'create_category_field' =>
+'Create Category Field',
+
+'category_fields_removed' =>
+'Category fields removed',
+
+'category_fields_removed_desc' =>
+'%d category fields were removed.',
+
+'category_ajax_reorder_fail' =>
+'Attention: Failed to save category order',
+
+'category_ajax_reorder_fail_desc' =>
+'We failed to save your new categories order. Refresh the page and make sure you\'re logged in.',
+
+/**
+ * Status Groups
+ */
+
+'status_groups' =>
+'Status Groups',
+
+'status_group' =>
+'Status Group',
+
+'status_groups_removed' =>
+'Status groups removed',
+
+'status_groups_removed_desc' =>
+'%d status groups were removed.',
+
+'create_status_group' =>
+'Create Status Group',
+
+'edit_status_group' =>
+'Edit Status Group',
+
+'status_group_name_desc' =>
+'Descriptive name of this status group.',
+
+'status_group_saved' =>
+'Status group saved',
+
+'status_group_saved_desc' =>
+'Your status group has been saved successfully.',
+
+'status_group_not_saved' =>
+'Attention: Status group not saved',
+
+'status_group_not_saved_desc' =>
+'We were unable to save your status group, please review and fix errors below.',
+
+'status_name' =>
+'Status Name',
+
+'statuses' =>
+'Statuses',
+
+'status' =>
+'Status',
+
+'status_ajax_reorder_fail' =>
+'Attention: Failed to save status order',
+
+'status_ajax_reorder_fail_desc' =>
+'We failed to save your new statuses order. Refresh the page and make sure you\'re logged in.',
+
+'statuses_removed' =>
+'Statuses removed',
+
+'statuses_removed_desc' =>
+'%d statuses were removed.',
+
+'create_status' =>
+'Create Status',
+
+'edit_status' =>
+'Edit Status',
+
+'status_name_desc' =>
+'Descriptive name of this status.',
+
+'highlight_color' =>
+'Highlight color',
+
+'highlight_color_desc' =>
+'Text color for this status. Accepts HEX codes.',
+
+'status_access' =>
+'Status access',
+
+'status_access_desc' =>
+'Users in selected groups will be allowed to access this status.</em><em>Super Administrators are <b>always</b> allowed.',
+
+'status_saved' =>
+'Status saved',
+
+'status_saved_desc' =>
+'Your status has been saved successfully.',
+
+'status_not_saved' =>
+'Attention: Status not saved',
+
+'status_not_saved_desc' =>
+'We were unable to save your status, please review and fix errors below.',
 
 ''=>''
 );

@@ -32,9 +32,6 @@ $lang = array(
 'btn_save_settings' =>
 'Save Settings',
 
-'btn_save_settings_working' =>
-'Saving...',
-
 'settings' =>
 'Settings',
 

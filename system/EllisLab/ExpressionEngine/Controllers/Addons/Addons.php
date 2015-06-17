@@ -356,7 +356,7 @@ class Addons extends CP_Controller {
 				$class = ucfirst($addon).'_upd';
 				$version = $installed[$addon]['module_version'];
 
-				$this->load->add_package_path($installed[$addon]['path']);
+				ee()->load->add_package_path($installed[$addon]['path']);
 
 				$UPD = new $class;
 				$UPD->_ee_path = APPPATH;
@@ -472,7 +472,7 @@ class Addons extends CP_Controller {
 			$addons = array($addons);
 		}
 
-		$this->load->library('addons/addons_installer');
+		ee()->load->library('addons/addons_installer');
 
 		$installed = array();
 
@@ -564,7 +564,7 @@ class Addons extends CP_Controller {
 			$addons = array($addons);
 		}
 
-		$this->load->library('addons/addons_installer');
+		ee()->load->library('addons/addons_installer');
 
 		$uninstalled = array();
 
@@ -1352,7 +1352,7 @@ class Addons extends CP_Controller {
 			'base_url' => cp_url('addons/settings/' . $name . '/save'),
 			'cp_page_title' => $extension['name'] . ' ' . lang('configuration'),
 			'save_btn_text' => 'btn_save_settings',
-			'save_btn_text_working' => 'btn_save_settings_working',
+			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(array())
 		);
 
@@ -1573,7 +1573,7 @@ class Addons extends CP_Controller {
 				'base_url' => cp_url('addons/settings/' . $fieldtype['package'] . '/save'),
 				'cp_page_title' => $fieldtype['name'] . ' ' . lang('configuration'),
 				'save_btn_text' => 'btn_save_settings',
-				'save_btn_text_working' => 'btn_save_settings_working',
+				'save_btn_text_working' => 'btn_saving',
 				'sections' => array(array($fieldtype_settings))
 			);
 			return ee('View')->make('_shared/form')->render($vars);
@@ -1586,7 +1586,7 @@ class Addons extends CP_Controller {
 			$html .= ee('Alert')->get('shared-form');
 			$html .= $fieldtype_settings;
 			$html .= '<fieldset class="form-ctrls">';
-			$html .= cp_form_submit('btn_save_settings', 'btn_save_settings_working');
+			$html .= cp_form_submit('btn_save_settings', 'btn_saving');
 			$html .= '</fieldset>';
 			$html .= form_close();
 			$html .= '</div>';

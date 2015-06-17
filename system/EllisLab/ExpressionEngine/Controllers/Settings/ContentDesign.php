@@ -85,7 +85,7 @@ class ContentDesign extends Settings {
 		ee()->view->base_url = $base_url;
 		ee()->view->cp_page_title = lang('content_and_design');
 		ee()->view->save_btn_text = 'btn_save_settings';
-		ee()->view->save_btn_text_working = 'btn_save_settings_working';
+		ee()->view->save_btn_text_working = 'btn_saving';
 
 		ee()->cp->set_breadcrumb(cp_url('channel'), lang('channel_manager'));
 

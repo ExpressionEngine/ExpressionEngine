@@ -591,4 +591,27 @@ class RunnerTest extends \PHPUnit_Framework_TestCase {
 			array('Variable in string',		'{if "Test with long caption title to test layout" == "' . $vars['value'] . '"}yes{if:else}no{/if}',	'yes',	$vars),
 		);
 	}
+
+	// See: https://support.ellislab.com/bugs/detail/20767
+	public function testBug20767_automatic_brace_encoding()
+	{
+		$runner = new Runner();
+
+		// helper to force a rewrite to the safety pass
+		$force_defer = '{unparsable} string';
+
+		// test value and its correct encoding
+		$value = 'Unparsed {variable}';
+		$encoded = 'Unparsed &#123;variable&#125;';
+
+		$template = "{if '{$force_defer}' || value == '{$encoded}'}yes{if:else}no{/if}";
+
+		$out = $this->runConditionWithoutAnnotations($template, compact('value'), $runner);
+
+		$this->assertEquals(
+			"{if '{$force_defer}' || '{$encoded}' == '{$encoded}'}yes{if:else}no{/if}",
+			$out,
+			'Braced string encoded rewrite'
+		);
+	}
 }

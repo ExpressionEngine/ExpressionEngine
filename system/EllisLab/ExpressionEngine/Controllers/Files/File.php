@@ -87,7 +87,7 @@ class File extends AbstractFilesController {
 			'ajax_validate' => TRUE,
 			'base_url' => cp_url('files/file/edit/' . $id),
 			'save_btn_text' => 'btn_edit_file_meta',
-			'save_btn_text_working' => 'btn_edit_file_meta_working',
+			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
 					array(
@@ -187,7 +187,8 @@ class File extends AbstractFilesController {
 			ee('Alert')->makeInline('settings-form')
 				->asIssue()
 				->withTitle(lang('edit_file_metadata_error'))
-				->addToBody(lang('edit_file_metadata_error_desc'));
+				->addToBody(lang('edit_file_metadata_error_desc'))
+				->now();
 		}
 
 		$this->sidebarMenu($file->upload_location_id);
@@ -303,7 +304,8 @@ class File extends AbstractFilesController {
 				ee('Alert')->makeInline('crop-form')
 					->asIssue()
 					->withTitle(sprintf(lang('crop_file_error'), lang($action)))
-					->addToBody($response['errors']);
+					->addToBody($response['errors'])
+					->now();
 				break 2;
 			}
 
@@ -329,14 +331,16 @@ class File extends AbstractFilesController {
 			ee('Alert')->makeInline('crop-form')
 				->asSuccess()
 				->withTitle(sprintf(lang('crop_file_success'), lang($action)))
-				->addToBody(sprintf(lang('crop_file_success_desc'), $file->title, lang($action_desc)));
+				->addToBody(sprintf(lang('crop_file_success_desc'), $file->title, lang($action_desc)))
+				->now();
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
 			ee('Alert')->makeInline('crop-form')
 				->asIssue()
 				->withTitle(sprintf(lang('crop_file_error'), lang($action)))
-				->addToBody(sprintf(lang('crop_file_error_desc'), strtolower(lang($action))));
+				->addToBody(sprintf(lang('crop_file_error_desc'), strtolower(lang($action))))
+				->now();
 		}
 
 		ee()->view->cp_page_title = sprintf(lang('crop_file'), $file->file_name);

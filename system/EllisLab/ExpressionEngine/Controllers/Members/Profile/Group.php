@@ -74,7 +74,8 @@ class Group extends Profile {
 			->asWarning()
 			->cannotClose()
 			->withTitle(lang('access_privilege_warning'))
-			->addToBody(lang('access_privilege_caution'), 'caution');
+			->addToBody(lang('access_privilege_caution'), 'caution')
+			->now();
 
 		ee()->form_validation->set_rules(array(
 			array(
@@ -112,7 +113,7 @@ class Group extends Profile {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('member_group_assignment');
 		ee()->view->save_btn_text = 'btn_save_settings';
-		ee()->view->save_btn_text_working = 'btn_save_settings_working';
+		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->render('settings/form', $vars);
 	}
 

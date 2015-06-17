@@ -2,6 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Model\Content\Display;
 
+use InvalidArgumentException;
+
 class LayoutDisplay {
 
 	protected $tabs = array();

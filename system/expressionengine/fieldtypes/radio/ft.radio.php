@@ -101,6 +101,15 @@ class Radio_ft extends EE_Fieldtype {
 
 		$field_options = $this->_get_field_options($data);
 
+		if (REQ == 'CP')
+		{
+			return ee('View')->make('publish')->render(array(
+				'field_name' => $this->field_name,
+				'selected' => $data,
+				'options' => $field_options
+			));
+		}
+
 		$selected = $data;
 
 		$r = '';
@@ -110,30 +119,7 @@ class Radio_ft extends EE_Fieldtype {
 		{
 			$selected = ($key == $data);
 
-			if (REQ == 'CP')
-			{
-				if ($selected)
-				{
-					$class .= ' chosen';
-				}
-
-				if ($key == 'y' && $value == lang('yes'))
-				{
-					$class .= ' yes';
-				}
-				elseif ($key == 'n' && $value == lang('no'))
-				{
-					$class .= ' no';
-				}
-
-				$r .= '<label class="' . $class . '">' . form_radio($this->field_name, $key, $selected) . $value . '</label>';
-			}
-			else
-			{
-				$r .= '<label>'.form_radio($this->field_name, $value, $selected).NBS.$key.'</label>';
-			}
-
-			$class = 'choice';
+			$r .= '<label>'.form_radio($this->field_name, $value, $selected).NBS.$key.'</label>';
 		}
 
 		switch ($container)

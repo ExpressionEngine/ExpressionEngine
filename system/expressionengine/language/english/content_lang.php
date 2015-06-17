@@ -69,9 +69,6 @@ $lang = array(
 'btn_edit_comment' =>
 'Edit Comment',
 
-'btn_edit_comment_working' =>
-'Saving...',
-
 'author_information' =>
 'Author information',
 
@@ -111,11 +108,38 @@ $lang = array(
 'btn_edit_entry' =>
 'Edit Entry',
 
-'btn_edit_entry_working' =>
-'Saving...',
+'btn_publish' =>
+'Publish',
 
 'edit_entry_with_title' =>
 'Edit Entry: %s',
+
+'create_entry_with_channel_name' =>
+'New Entry: %s',
+
+'create_entry_success' =>
+'Entry Created',
+
+'create_entry_success_desc' =>
+'The entry <b>%s</b> has been created.',
+
+'create_entry_error' =>
+'Cannot Create Entry',
+
+'create_entry_error_desc' =>
+'We were unable to create this entry, please review and fix errors below.',
+
+'edit_entry_success' =>
+'Entry Updated',
+
+'edit_entry_success_desc' =>
+'The entry <b>%s</b> has been updated.',
+
+'edit_entry_error' =>
+'Cannot Update Entry',
+
+'edit_entry_error_desc' =>
+'We were unable to update this entry, please review and fix errors below.',
 
 'url_title' =>
 '<abbr title="Unified Resource Locator">URL</abbr> title',
@@ -179,6 +203,15 @@ $lang = array(
 
 'btn_add_category' =>
 'Add Category',
+
+'auto_saved_entries' =>
+'Auto Saved Entries',
+
+'auto_saved' =>
+'auto saved',
+
+'filter_autosaves' =>
+'filter auto saves',
 
 //----------------------------
 // Publish page
@@ -514,13 +547,6 @@ $lang = array(
 
 'tabs' 				=> 'Tabs',
 
-'add_tab' 			=> 'Add Tab',
-
-'tab_name' 			=> 'Tab Name',
-'tab_name_required'	=> 'Please choose a name for your tab.',
-'duplicate_tab_name'	=> 'A tab with this name already exists.',
-'illegal_characters'	=> 'Tab names may only contain alpha-numeric characters, underscores, dashes, and spaces',
-
 'authors' 			=> 'Authors',
 
 'fields' 			=> 'Fields',
@@ -541,7 +567,7 @@ $lang = array(
 'choose_layout_group_preview' => 'Select the group layout you wish to preview.',
 'layout_save_warning' => 'If you have altered your layout, the changes will not be saved.',
 
-'autosave_success'	=> 'Autosaved at ',
+'autosave_success'	=> '<b>Auto saved</b> at ',
 'autosave_title'	=> 'Saved data available',
 'autosave_warning_1'	=> 'ExpressionEngine has saved data from this entry since it was last saved.',
 'autosave_warning_2'	=> 'Saved data is removed when an entry is saved or re-saved.',
@@ -702,16 +728,16 @@ $lang = array(
 'Publish Another Entry',
 
 'autosaved_entries' =>
-'Autosaved Entries',
+'Auto saved Entries',
 
 'autosaved' =>
-'Autosaved',
+'Auto saved',
 
 'original' =>
 'Original',
 
 'discard_autosave' =>
-'Discard Autosaved Data',
+'Discard Auto saved Data',
 
 'date_range' =>
 'Date Range',
@@ -987,10 +1013,10 @@ $lang = array(
 'Remove Categories',
 
 'no_autosave_data' =>
-'No Autosaved Entries',
+'No Auto saved Entries',
 
-'autosave_data_available' => 'autosaved data available',
-'autosaved_entries' => 'Autosaved Entries',
+'autosave_data_available' => 'auto saved data available',
+'autosaved_entries' => 'Auto saved Entries',
 
 'no_category_group_match' =>
 'No Category Group Match was found for all of the entries.  Please choose entries that have at least one category group in common.',
@@ -1022,12 +1048,39 @@ $lang = array(
 'show_all' =>
 'Show All',
 
+// Textarea Buttons
+'make_bold' => 'make bold',
+'make_italic' => 'make italic',
+'create_blockquote' => 'create blockquote',
+'create_unordered_list' => 'create unordered list',
+'create_ordered_list' => 'create ordered list',
+'create_hyperlink' => 'create hyperlink',
+'upload_file' => 'upload file',
+'view_code' => 'view code',
+
+'launch_writemode' => 'launch writemode',
+'upload_file' => 'upload file',
+'open_spellcheck' => 'open spellcheck',
+'open_glossary' => 'open glossary',
+'open_emoji' => 'open emoji',
+
+// Relationships
+'search_avilable_entries' => 'Search available entries',
+'search_related_entries' => 'Search related entries',
+'items_to_relate_with' => 'Items to <strong>relate with</strong> this entry.',
+'items_related_to' => 'Items <strong>related to</strong> this entry.',
+
+'upload_file' => 'upload file',
+
+'no_rows_created' => 'No rows created',
+'add_new_row' => 'add new row',
+'remove_row' => 'remove row',
+
 'add_new_html_button' =>
 'Add New HTML button',
 
 'show' => 'Show',
 'hide' => 'Hide',
-'write_mode' => 'Write Mode',
 'show_tools' => 'Show Tools',
 
 // writemode

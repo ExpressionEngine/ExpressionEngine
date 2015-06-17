@@ -116,7 +116,7 @@ class Captcha extends Settings {
 		ee()->view->cp_page_title = lang('captcha_settings');
 		ee()->view->cp_page_title_alt = lang('captcha_settings_title');
 		ee()->view->save_btn_text = 'btn_save_settings';
-		ee()->view->save_btn_text_working = 'btn_save_settings_working';
+		ee()->view->save_btn_text_working = 'btn_saving';
 
 		ee()->cp->render('settings/form', $vars);
 	}

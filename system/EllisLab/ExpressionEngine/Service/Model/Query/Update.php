@@ -30,25 +30,40 @@ class Update extends Query {
 	public function run()
 	{
 		$builder = $this->builder;
+		$object  = $builder->getExisting();
 
-		$object = $builder->getExisting();
-		$object = $object ?: $this->store->make($builder->getFrom(), $builder->getFrontend());
+		if ( ! $object)
+		{
+			$object = $this->store->make(
+				$builder->getFrom(),
+				$builder->getFrontend()
+			);
+		}
 
-		foreach ($builder->getSet() as $field => $value)
+		$object->emit('beforeUpdate');
+		$object->emit('beforeSave');
+
+		$this->doWork($object);
+
+		$object->emit('afterSave');
+		$object->emit('afterUpdate');
+	}
+
+	protected function doWork($object)
+	{
+		foreach ($this->builder->getSet() as $field => $value)
 		{
 			$object->$field = $value;
 		}
 
-/*
+		/*
 		$result = $object->validate();
 
 		if ( ! $result->isValid())
 		{
 			throw new \Exception('Validation failed');
 		}
-*/
-
-		$object->emit('beforeSave');
+		*/
 
 		// todo this is yucky
 		$gateways = $this->store->getMetaDataReader($object->getName())->getGateways();
@@ -60,23 +75,26 @@ class Update extends Query {
 			return;
 		}
 
-		$results[] = array();
-
 		foreach ($gateways as $gateway)
 		{
 			$gateway->fill($dirty);
 
-			$results[] = $this->actOnGateway($gateway, $object);
+			$this->actOnGateway($gateway, $object);
 		}
-
-		$object->emit('afterSave');
 	}
 
 	protected function actOnGateway($gateway, $object)
 	{
+		$values = $gateway->getValues();
+
+		if (empty($values))
+		{
+			return;
+		}
+
 		$query = $this->store
 			->rawQuery()
-			->set($gateway->getValues());
+			->set($values);
 
 		if ( ! $object->isNew())
 		{

@@ -158,7 +158,6 @@ $lang = array(
 'file_saved'			=> 'The translation file has been saved to <b>system/expressionengine/translations/%s</b>',
 'trans_file_not_writable'=> 'Translation file is not writeable.',
 'translate_btn' 		=>	'Save Translations',
-'translate_btn_working' =>	'Saving...',
 'translations_saved'	=>	'Translations Saved',
 'translate_error'		=> 'Attention: translation not saved',
 'translate_error_desc'	=> 'We were unable to save the translation, pelase review and fix errors below.',
@@ -298,7 +297,7 @@ $lang = array(
 'import_convert_btn' =>
 'Convert File',
 
-'import_convert_btn_working' =>
+'import_convert_btn_saving' =>
 'Converting...',
 
 'assign_fields' =>
@@ -315,9 +314,6 @@ $lang = array(
 
 'btn_assign_fields' =>
 'Assign Fields',
-
-'btn_assign_fields_working' =>
-'Saving...',
 
 'duplicate_field_assignment' =>
 'Duplicate field assignment: %x',
@@ -422,7 +418,7 @@ $lang = array(
 'mbr_import_btn' =>
 'Import Members',
 
-'mbr_import_btn_working' =>
+'mbr_import_btn_saving' =>
 'Importing...',
 
 'confirm_import' =>
@@ -530,7 +526,7 @@ $lang = array(
 'query_btn' =>
 'Run Query',
 
-'query_btn_working' =>
+'query_btn_saving' =>
 'Running...',
 
 'query_results' =>

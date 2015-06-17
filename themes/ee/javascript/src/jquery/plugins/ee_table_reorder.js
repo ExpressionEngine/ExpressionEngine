@@ -64,19 +64,19 @@ $.fn.eeTableReorder = function(params) {
 				return $helper;
 			},
 			// Before sort starts
-			start: function(event, row)
+			start: function(event, ui)
 			{
 				if (params.beforeSort !== undefined)
 				{
-					params.beforeSort(row);
+					params.beforeSort(ui.item);
 				}
 			},
 			// After sort finishes
-			stop: function(event, row)
+			stop: function(event, ui)
 			{
 				if (params.afterSort !== undefined)
 				{
-					params.afterSort(row);
+					params.afterSort(ui.item);
 				}
 				
 				// Re-zebra-stripe the table

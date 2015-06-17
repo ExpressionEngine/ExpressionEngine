@@ -38,13 +38,22 @@ class Status extends Model {
 		),
 		'Site' => array(
 			'type' => 'BelongsTo'
+		),
+		'NoAccess' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'MemberGroup',
+			'pivot' => array(
+				'table' => 'status_no_access',
+				'left' => 'status_id',
+				'right' => 'member_group'
+			)
 		)
 	);
 
-	public $status_id;
-	public $site_id;
-	public $group_id;
-	public $status;
-	public $status_order;
-	public $highlight;
+	protected $status_id;
+	protected $site_id;
+	protected $group_id;
+	protected $status;
+	protected $status_order;
+	protected $highlight;
 }

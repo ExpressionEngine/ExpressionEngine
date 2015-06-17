@@ -63,7 +63,7 @@ class Group extends AbstractDesignController {
 			'ajax_validate' => TRUE,
 			'base_url' => cp_url('design/group/create'),
 			'save_btn_text' => 'btn_create_template_group',
-			'save_btn_text_working' => 'btn_create_template_group_working',
+			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
 					array(
@@ -190,7 +190,8 @@ class Group extends AbstractDesignController {
 			ee('Alert')->makeInline('settings-form')
 				->asIssue()
 				->withTitle(lang('create_template_group_error'))
-				->addToBody(lang('create_template_group_error_desc'));
+				->addToBody(lang('create_template_group_error_desc'))
+				->now();
 		}
 
 		$this->sidebarMenu();
@@ -223,7 +224,7 @@ class Group extends AbstractDesignController {
 				'old_name' => $group->group_name
 			),
 			'save_btn_text' => 'btn_create_template_group',
-			'save_btn_text_working' => 'btn_create_template_group_working',
+			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
 					array(
@@ -297,7 +298,8 @@ class Group extends AbstractDesignController {
 			ee('Alert')->makeInline('settings-form')
 				->asIssue()
 				->withTitle(lang('edit_template_group_error'))
-				->addToBody(lang('edit_template_group_error_desc'));
+				->addToBody(lang('edit_template_group_error_desc'))
+				->now();
 		}
 
 		$this->sidebarMenu($group->group_id);
@@ -315,7 +317,7 @@ class Group extends AbstractDesignController {
 
 		if ( ! $group)
 		{
-			show_error('id_not_found');
+			show_error(lang('group_not_found'));
 		}
 		else
 		{

@@ -175,7 +175,8 @@ class Pages_mcp {
 				->asSuccess()
 				->withTitle(lang('success'))
 				->addToBody(lang('pages_deleted_desc'))
-				->addToBody($urls);
+				->addToBody($urls)
+				->now();
 		}
 	}
 }

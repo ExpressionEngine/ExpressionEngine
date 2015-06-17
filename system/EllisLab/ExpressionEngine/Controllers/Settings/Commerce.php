@@ -158,11 +158,12 @@ class Commerce extends Settings {
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
 		$base_url = cp_url('settings/commerce');
-		
+
 		ee('Alert')->makeInline('ipn-notice')
 			->asWarning()
 			->cannotClose()
-			->addToBody(sprintf(lang('commerce_ipn_notice'), 'https://cms.paypal.com/us/cgi-bin/?cmd=_render-content&content_ID=developer/e_howto_admin_IPNIntro'));
+			->addToBody(sprintf(lang('commerce_ipn_notice'), 'https://cms.paypal.com/us/cgi-bin/?cmd=_render-content&content_ID=developer/e_howto_admin_IPNIntro'))
+			->now();
 
 		ee()->view->extra_alerts = array('ipn-notice');
 
@@ -189,7 +190,7 @@ class Commerce extends Settings {
 		ee()->view->base_url = $base_url;
 		ee()->view->cp_page_title = lang('commerce_settings');
 		ee()->view->save_btn_text = 'btn_save_settings';
-		ee()->view->save_btn_text_working = 'btn_save_settings_working';
+		ee()->view->save_btn_text_working = 'btn_saving';
 
 		ee()->lang->loadfile('addons');
 		ee()->cp->set_breadcrumb(cp_url('addons'), lang('addon_manager'));

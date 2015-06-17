@@ -15,7 +15,7 @@
 					</div> -->
 					<div class="version-info">
 						<h3>Installed</h3>
-						<p>ExpressionEngine <?=$formatted_version?><br><em><?=lang('build').' '.APP_BUILD?></em></p>
+						<p>ExpressionEngine <?=$formatted_version?><br><em><?=lang('build') . ' ' . $ee_build_date?></em></p>
 						<a href="" class="close">&#10006;</a>
 						<div class="status">current</div>
 					</div>
@@ -48,57 +48,22 @@
 		</section>
 		<div class="overlay"></div>
 
-		<?php if ( ! empty($cp_messages) OR isset($new_checksums)):
-			$class = array_keys($cp_messages);
-			$class = $class[0]; ?>
-			<div class="alert <?=$class?>">
-				<h3><?=lang('cp_message_'.$class);?></h3> <!-- Need to make this dynamic -->
-				<?php foreach ($cp_messages as $key => $message): ?>
-					<p><?=$message?></p>
-					<?php if ($message != end($cp_messages)): ?>
-						<hr>
-					<?php endif;
-				endforeach ?>
-				<?php // Bootstrap Checksum Failure Notice - this probably needs styles from james?>
-				<?php if (isset($new_checksums)):?>
-					<ul id="checksumFailure">
-						<li><?=lang('checksum_changed_warning')?>
-							<ul>
-								<?php foreach($new_checksums as $path): ?>
-								<li><?=$path; ?></li>
-								<?php endforeach; ?>
-							</ul>
-						</li>
-					</ul>
-					<?php if (ee()->session->userdata('group_id') == 1): ?>
-						<a class="submit" href="<?=BASE.AMP.'C=homepage'.AMP.'M=accept_checksums'?>"><?=lang('checksum_changed_accept')?></a>
-					<?php endif; ?>
-				<?php endif; ?>
-				<a class="close" href=""></a>
-			</div>
-		<?php endif ?>
-
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
 		<?=ee()->view->script_tag('v3/common.js')?>
 		<?php
-		if (isset($cp_global_js))
-		{
-			echo $cp_global_js;
-		}
 
-		echo $cp_footer_js;
+		echo ee()->javascript->get_global();
+
+		echo ee()->cp->render_footer_js();
 
 		if (isset($library_src))
 		{
 			echo $library_src;
 		}
 
-		if (isset($script_foot))
-		{
-			echo $script_foot;
-		}
+		echo ee()->javascript->script_foot();
 
-		foreach ($cp_footer_items as $item)
+		foreach (ee()->cp->get_foot() as $item)
 		{
 			echo $item."\n";
 		}
