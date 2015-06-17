@@ -772,7 +772,7 @@ class Cat extends AbstractChannelsController {
 		{
 			$category->set($_POST);
 			$result = $category->validate();
-var_dump($category->test);exit;
+
 			if (AJAX_REQUEST)
 			{
 				$field = ee()->input->post('ee_fv_field');
