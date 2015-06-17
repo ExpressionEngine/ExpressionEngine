@@ -57,6 +57,13 @@ class Category extends ContentModel {
 		)
 	);
 
+	protected static $_validation_rules = array(
+		'cat_name'			=> 'required|noHtml|xss',
+		'cat_url_title'		=> 'required|alphaDash',
+		'cat_description'	=> 'xss',
+		'cat_order'			=> 'isNaturalNoZero'
+	);
+
 	// Properties
 	protected $cat_id;
 	protected $site_id;
