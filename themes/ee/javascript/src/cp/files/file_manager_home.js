@@ -3,7 +3,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -25,7 +25,6 @@ $(document).ready(function () {
 	$.ee_filemanager.datatables();
 	$.ee_filemanager.image_overlay();
 	$.ee_filemanager.date_range();
-	$.ee_filemanager.toggle_all();
 	$.ee_filemanager.directory_change();
 
 	// Hide first and previous pagination
@@ -213,21 +212,6 @@ $.ee_filemanager.date_range = function() {
 			$('#custom_date_picker').hide();
 		}
 	});
-};
-
-$.ee_filemanager.toggle_all = function() {
-	$(".toggle_all").toggle(
-		function(){
-			$("input.toggle").each(function() {
-				this.checked = true;
-			});
-		}, function (){
-			var checked_status = this.checked;
-			$("input.toggle").each(function() {
-				this.checked = false;
-			});
-		}
-	);
 };
 
 $.ee_filemanager.image_overlay = function() {

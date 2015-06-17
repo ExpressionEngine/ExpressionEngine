@@ -1,12 +1,13 @@
 <div class="col w-4">
 	<div class="box sidebar">
-		<?php if ($can_admin_upload_prefs): ?>
-		<h2><a href="<?=cp_url('settings/uploads')?>"><?=lang('upload_directories')?> <a class="btn action" href="<?=cp_url('settings/uploads/new-upload')?>"><?=lang('new')?></a></h2>
-		<?php else: ?>
-		<h2><?=lang('upload_directories')?></h2>
-		<?php endif; ?>
+		<h2><?=lang('upload_directories')?>
+			<?php if ($can_admin_upload_prefs): ?><a class="btn action" href="<?=cp_url('files/uploads/create')?>"><?=lang('new')?></a><?php endif; ?>
+		</h2>
 		<div class="scroll-wrap">
 			<ul class="folder-list">
+				<?php if (empty($upload_directories)): ?>
+					<li class="no-results"><?=lang('zero_directories_found')?></li>
+				<?php endif ?>
 				<?php foreach ($upload_directories as $dir): ?>
 				<li<?php if (isset($dir['class'])): ?> class="<?=$dir['class']?>"<?php endif; ?>>
 					<a href="<?=$dir['url']?>"><?=$dir['name']?></a>
@@ -20,6 +21,9 @@
 				<?php endforeach; ?>
 			</ul>
 		</div>
+		<?php if ($can_admin_upload_prefs): ?>
+			<h2><a href="<?=cp_url('files/watermarks')?>"><?=lang('watermarks')?></a> <a class="btn action" href="<?=cp_url('files/watermarks/create')?>"><?=lang('new')?></a></h2>
+		<?php endif; ?>
 	</div>
 </div>
 

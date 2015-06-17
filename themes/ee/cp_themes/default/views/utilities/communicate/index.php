@@ -1,20 +1,20 @@
 <?php extend_template('default-nav'); ?>
 
-<h1><?=$cp_page_title?> <span class="required intitle">&#10033; <?=lang('required_fields')?></span></h1>
+<h1><?=$cp_page_title?> <span class="req-title"><?=lang('required_fields')?></span></h1>
 <?=form_open_multipart(cp_url('utilities/communicate/send'), 'class="settings"')?>
 	<?=ee('Alert')->getAllInlines()?>
-	<fieldset class="col-group <?=form_error_class('subject')?>">
+	<fieldset class="col-group required <?=form_error_class('subject')?>">
 		<div class="setting-txt col w-16">
-			<h3><?=lang('email_subject')?> <span class="required" title="required field">&#10033;</span></h3>
+			<h3><?=lang('email_subject')?></h3>
 		</div>
 		<div class="setting-field col w-16 last">
-			<input class="required" type="text" name="subject" value="<?=set_value('subject', $subject)?>">
+			<input type="text" name="subject" value="<?=set_value('subject', $subject)?>">
 			<?=form_error('subject')?>
 		</div>
 	</fieldset>
-	<fieldset class="col-group <?=form_error_class('message')?>">
+	<fieldset class="col-group required <?=form_error_class('message')?>">
 		<div class="setting-txt col w-16">
-			<h3><?=lang('email_body')?> <span class="required" title="required field">&#10033;</span></h3>
+			<h3><?=lang('email_body')?></h3>
 		</div>
 		<div class="setting-field col w-16 last">
 			<textarea class="has-format-options required" name="message" cols="" rows=""><?=set_value('message', $message)?></textarea>
@@ -27,22 +27,22 @@
 			</div>
 		</div>
 	</fieldset>
-	<fieldset class="col-group">
+	<fieldset class="col-group required">
 		<div class="setting-txt col w-16">
-			<h3><?=lang('plaintext_body')?> <span class="required" title="required field">&#10033;</span></h3>
+			<h3><?=lang('plaintext_body')?></h3>
 			<em><?=lang('plaintext_alt')?></em>
 		</div>
 		<div class="setting-field col w-16 last">
-			<textarea class="required" name="plaintext_alt" cols="" rows=""><?=set_value('plaintext_alt', $plaintext_alt)?></textarea>
+			<textarea name="plaintext_alt" cols="" rows=""><?=set_value('plaintext_alt', $plaintext_alt)?></textarea>
 		</div>
 	</fieldset>
-	<fieldset class="col-group <?=form_error_class('from')?>">
+	<fieldset class="col-group required <?=form_error_class('from')?>">
 		<div class="setting-txt col w-8">
-			<h3><?=lang('your_email')?> <span class="required" title="required field">&#10033;</span></h3>
+			<h3><?=lang('your_email')?></h3>
 			<em><?=lang('from_email')?>.</em>
 		</div>
 		<div class="setting-field col w-8 last">
-			<input class="required" type="text" name="from" value="<?=set_value('from', $from)?>">
+			<input type="text" name="from" value="<?=set_value('from', $from)?>">
 			<?=form_error('from')?>
 		</div>
 	</fieldset>

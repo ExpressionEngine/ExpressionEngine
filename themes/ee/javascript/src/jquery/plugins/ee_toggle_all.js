@@ -3,7 +3,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.3
@@ -30,14 +30,18 @@
 			if ($table.data('table_config')) {
 				$table.bind('tableupdate', function() {
 					rows = $table.table('get_current_data').html_rows;
-					$table.find('input:checkbox').prop('checked', false);
+					$table.find('input:checkbox')
+						.prop('checked', false)
+						.trigger('change');
 				});
 			}
 
 			// we always need columns ...
 			this.getColumn = function(column) {
 				return $.map(rows, function(v, i) {
-					return v.cells[column];
+					if ($(v.cells[column]).has('input[type=checkbox]').size()) {
+						return v.cells[column];
+					};
 				});
 			};
 		}
@@ -72,7 +76,9 @@
 						if (that.shift && currentlyChecked !== false) {
 							var low  = (currentlyChecked > index) ? index : currentlyChecked,
 								high = (currentlyChecked > index) ? currentlyChecked : index;
-							$(that.tableCells).slice(low, high).find('input[type=checkbox]').attr('checked', true);
+							$(that.tableCells).slice(low, high).find('input[type=checkbox]')
+								.attr('checked', true)
+								.trigger('change');
 						}
 					});
 				});
@@ -132,8 +138,34 @@
 
 		return this.each(function() {
 
+			// Simple object to hold header objects
+			var headerCheckboxes = {
+				checkboxes: {},
+				// Add a checkbox, no way to overwrite
+				add: function(column_number, checkbox){
+					// Make sure an array exists
+					if (typeof this.checkboxes[column_number] == 'undefined') {
+						this.checkboxes[column_number] = [];
+					}
+
+					this.checkboxes[column_number].push(checkbox);
+					return true;
+				},
+
+				// Get an array of checkboxes for a given column
+				get: function(column_number){
+					return this.checkboxes[column_number];
+				},
+
+				// Iterate over a column of checkboxes
+				each: function(column_number, callback){
+					$.each(this.checkboxes[column_number], function(index, value) {
+						callback.call($(value), index, value);
+					});
+				},
+			};
+
 			var $table = $(this),
-				header_checkboxes = {},
 				row_cache = new Cache($table);
 
 			// STEP 1:
@@ -142,28 +174,37 @@
 			// row below to match its state.
 
 			$table.find('th').has('input:checkbox').each(function(index, val) {
-
 				// Name the table header, figure out it's index, get the header
 				// checkbox, and select all the data
 				var column = this.cellIndex,
 					$header_checkbox = $(this).find(':checkbox');
 
 				// Listen for clicks to the header checkbox
-				$(this).click(function(event) {
+				$(this).on('click', 'input[type=checkbox]', function(event) {
 					var checked = $header_checkbox.prop('checked');
 
 					if (event.target != $header_checkbox.get(0)) {
 						checked = ! checked;
-						$header_checkbox.prop('checked', checked);
+						$header_checkbox
+							.prop('checked', checked)
+							.trigger('change');
 					}
 
-					var cells = row_cache.getColumn(column);
-					$(cells).find(':checkbox:enabled').prop('checked', checked);
+					// Check all normal checkboxes
+					$(row_cache.getColumn(column)).find(':checkbox:enabled')
+						.prop('checked', checked)
+						.trigger('change');
+
+					// Check all header checkboxes
+					headerCheckboxes.each(column, function() {
+						$(this)
+							.prop('checked', checked)
+							.trigger('change');
+					});
 				});
 
 				// remember the headers
-				header_checkboxes[column] = $header_checkbox;
-
+				headerCheckboxes.add(column, $header_checkbox);
 				shiftClick.init($table, row_cache, column);
 			});
 
@@ -180,13 +221,17 @@
 
 				// does this column even have a header checkbox?
 				// was the click on a checkbox?
-				if ( ! header_checkboxes[column] || ! $(event.target).is(':checkbox')) {
+				if ( ! headerCheckboxes.get(column) || ! $(event.target).is(':checkbox')) {
 					return true;
 				}
 
 				if ( ! event.target.checked) {
 					// unchecked one, definitely not all checked
-					header_checkboxes[column].prop('checked', false);
+					headerCheckboxes.each(column, function(index, element) {
+						$(this)
+							.prop('checked', false)
+							.trigger('change');
+					});
 					return true;
 				}
 
@@ -200,7 +245,11 @@
 				});
 
 				// set the header checkbox
-				header_checkboxes[column].prop('checked', all_checked);
+				headerCheckboxes.each(column, function(index, element) {
+					$(this)
+						.prop('checked', all_checked)
+						.trigger('change');
+				});
 			});
 		});
 	};

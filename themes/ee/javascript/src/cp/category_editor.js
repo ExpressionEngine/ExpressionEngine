@@ -3,7 +3,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -236,7 +236,7 @@ EE.publish.category_editor = function() {
 			},
 			error: function(response) {
 				response = $.parseJSON(response.responseText);
-				$editor_container.text(response.error);
+				$editor_container.html(response.error);
 				setup_page.call(cat_groups_containers[gid], response.error, true);
 			}
 		});

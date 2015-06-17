@@ -99,7 +99,7 @@ EE.cp.formValidation = {
 
 		if (inputContainer.parents('.grid-publish').size() > 0)
 		{
-			var position = inputContainer.position();console.log(position);
+			var position = inputContainer.position();
 			inputContainer.parents('.tbl-wrap').scrollLeft(position.left);
 		}
 	},

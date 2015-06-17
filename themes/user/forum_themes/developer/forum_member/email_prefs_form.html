@@ -1,0 +1,53 @@
+
+<form method="post" action="{path:update_email_settings}">
+<input type="hidden" name="XID" value="{XID_HASH}" />
+
+<table border='0' cellspacing='0' cellpadding='0' style='width:100%'>
+<tr>
+<td class='profileHeadingBG' colspan='2'><div class="tableHeading">{lang:email_settings}</div></td>
+
+</tr><tr>
+
+<td class='tableCellTwo' style="width:30%;"><div class='itempadbig'><b>{lang:email}</b></div></td>
+<td class='tableCellTwo' style="width:70%;"><input type='text' class='input' name='email' value='{email}' maxlength='72' style='width:100%'/></td>
+
+</tr><tr>
+<td class='tableCellOne' colspan='2'><div class='defaultBold'><input type='checkbox' name='accept_admin_email' value='y' {state:accept_admin_email} />&nbsp;&nbsp;{lang:accept_admin_email}</div></td>
+
+</tr><tr>
+<td class='tableCellOne' colspan='2'><div class='defaultBold'><input type='checkbox' name='accept_user_email' value='y' {state:accept_user_email} />&nbsp;&nbsp;{lang:accept_user_email}</div></td>
+
+</tr><tr>
+<td class='tableCellOne' colspan='2'><div class='defaultBold'><input type='checkbox' name='notify_by_default' value='y' {state:notify_by_default} />&nbsp;&nbsp;{lang:notify_by_default}</div></td>
+
+</tr><tr>
+<td class='tableCellOne' colspan='2'><div class='defaultBold'><input type='checkbox' name='notify_of_pm' value='y' {state:notify_of_pm} />&nbsp;&nbsp;{lang:notify_of_pm}</div></td>
+
+</tr><tr>
+<td class='tableCellOne' colspan='2'><div class='defaultBold'><input type='checkbox' name='smart_notifications' value='y' {state:smart_notifications} />&nbsp;&nbsp;{lang:enable_smart_notifications}</div></td>
+
+</tr><tr>
+
+<td class='tableCellOne' colspan='2'>
+<div class='marginpad'>
+<div class='defaultBold'><div class="itempad"><span class='alert'>*</span>&nbsp; {lang:existing_password}</div></div>
+<div class='default'><div class="itempad"><span class='highlight'>{lang:existing_password_email}</span></div></div>
+<input type='password' class='input' name='password' value='' maxlength='{password_max_length}' style='width:300px'/>
+</div>
+</td>
+
+</tr><tr>
+
+<td class='tableCellOne' colspan='2'>
+
+<div class='marginpad'>
+<input type='submit' class='submit' value='{lang:update}' />
+<br /><br />
+<span class="alert">*</span> {lang:required}
+</div>
+
+</td>
+</tr>
+</table>
+
+</form>

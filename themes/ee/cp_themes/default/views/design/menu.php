@@ -3,6 +3,9 @@
 		<h2><?=lang('template_groups')?> <a class="btn action" href="<?=cp_url('design/group/create')?>"><?=lang('new')?></a></h2>
 		<div class="scroll-wrap">
 			<ul class="folder-list">
+				<?php if (empty($template_groups)): ?>
+					<li class="no-results"><?=lang('zero_template_groups_found')?></li>
+				<?php endif ?>
 				<?php foreach ($template_groups as $group): ?>
 				<li<?php if (isset($group['class'])): ?> class="<?=$group['class']?>"<?php endif; ?>>
 					<a href="<?=$group['url']?>"><?=$group['name']?></a>

@@ -67,7 +67,7 @@
 								<?php foreach ($cp_main_menu['channels']['create'] as $channel_name => $link): ?>
 									<li><a href="<?=$link?>"><?=$channel_name?></a></li>
 								<?php endforeach ?>
-								<li class="last"><a class="add" href="<?=cp_url('channel/create')?>">&#10010; <?=lang('new_channel')?></a></li>
+								<li class="last"><a class="add" href="<?=cp_url('channels/create')?>">&#10010; <?=lang('new_channel')?></a></li>
 							</ul>
 						</div>
 					</li>

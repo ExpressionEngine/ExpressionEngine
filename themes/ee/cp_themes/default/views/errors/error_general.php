@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Error</title>
-	
+
 	<style type="text/css" media="screen">
 		html, body, h1, div {
 			margin:				0;
@@ -16,7 +16,7 @@
 			text-align:			center;
 			font-size:			12px;
 		}
-		
+
 		#branding {
 			background:			#27343c url('../images/branding_bg.gif') top left repeat-x;
 			text-align:			right;
@@ -89,8 +89,8 @@
 <div id="branding"><a href="http://ellislab.com/"><img src="<?=PATH_CP_GBL_IMG?>ee_logo_branding.gif" width="250" height="28" alt="<?=lang('powered_by')?> ExpressionEngine" /></a></div>
 
 <div id="content">
-	<div id="error">	
-		<h1><?=$heading?><?=$homepage?></h1>
+	<div id="error">
+		<h1><?=$heading?></h1>
 
 		<div id="message">
 			<?=$message?>
