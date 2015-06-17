@@ -47,6 +47,9 @@ $lang = array(
 'short_name' =>
 'Short name',
 
+'short_name_col' =>
+'Short Name',
+
 'custom_fields' =>
 'Custom Fields',
 

@@ -867,7 +867,7 @@ class Cat extends AbstractChannelsController {
 			array(
 				'col_id',
 				'label',
-				'short_name',
+				'short_name_col',
 				'type',
 				'manage' => array(
 					'type'	=> CP\Table::COL_TOOLBAR
@@ -904,7 +904,7 @@ class Cat extends AbstractChannelsController {
 			$data[] = array(
 				$field->getId().form_hidden('order[]', $field->getId()),
 				$field->field_label,
-				LD.$field->field_name.RD,
+				'<var>'.LD.$field->field_name.RD.'</var>',
 				strtolower($type_map[$field->field_type]),
 				array('toolbar_items' => array(
 					'edit' => array(
