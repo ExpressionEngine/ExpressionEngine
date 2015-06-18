@@ -237,7 +237,8 @@ class FieldFacade {
 		// not all custom field tables will specify all of these things
 		$defaults = array(
 			'field_instructions' => '',
-			'field_text_direction' => 'rtl'
+			'field_text_direction' => 'rtl',
+			'field_settings' => array()
 		);
 
 		$info = $this->metadata;
@@ -252,18 +253,7 @@ class FieldFacade {
 			'field_name'			=> $field_name
 		);
 
-		$ft_settings = array();
-
-		if (isset($info['field_settings']) && is_array($info['field_settings']))
-		{
-			$ft_settings = $info['field_settings'];
-		}
-		else
-		{
-			$info['field_settings'] = array();
-		}
-
-		$settings = array_merge($settings, $info, $info['field_settings']);
+		$settings = array_merge($info, $settings, $info['field_settings']);
 
 		ee()->legacy_api->instantiate('channel_fields');
 		ee()->api_channel_fields->set_settings($info['field_id'], $settings);
