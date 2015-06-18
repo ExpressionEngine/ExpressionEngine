@@ -253,7 +253,7 @@ abstract class Entity extends MixableImpl {
 
 		foreach (array_keys($this->_clean_backups) as $key)
 		{
-			$dirty[$key] = $this->$key;
+			$dirty[$key] = $this->getRawProperty($key);
 		}
 
 		return $dirty;
