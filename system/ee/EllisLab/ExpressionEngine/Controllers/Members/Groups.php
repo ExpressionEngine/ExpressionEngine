@@ -188,6 +188,7 @@ class Groups extends Members\Members {
 
 		$group = ee()->input->get('group');
 		$this->group = ee()->api->get('MemberGroup', array($group))->first();
+		$this->group_id = (int) $this->group->group_id;
 		$this->query_string['group'] = $group;
 		$this->base_url = cp_url('members/groups/edit/', $this->query_string);
 		$current = $this->groupData($this->group);
@@ -206,21 +207,9 @@ class Groups extends Members\Members {
 			show_error(lang('only_superadmins_can_admin_groups'));
 		}
 
-		$template_groups = array();
-		$groups = ee()->api->get('TemplateGroup')->all();
-
-		foreach ($groups as $group)
-		{
-			$template_groups[$group->group_id] = $group->group_name;
-		}
-
-		$allowed_channels = array();
-		$channels = ee()->api->get('Channel')->all();
-
-		foreach ($channels as $channel)
-		{
-			$allowed_channels[$channel->channel_id] = $channel->channel_name;
-		}
+		list($template_groups, $template_group_permissions) = $this->_setup_template_names($this->site_id, $this->group_id);
+		list($addons, $addons_permissions) = $this->_setup_module_names($this->group_id);
+		list($allowed_channels, $channel_permissions) = $this->_setup_channel_names($this->site_id, $this->group_id);
 
 		$vars['sections'] = array(
 			array(
@@ -833,6 +822,191 @@ class Groups extends Members\Members {
 
 		return TRUE;
 	}
+
+	/**
+	 * Setup Module Names
+	 *
+	 * Sets up module names for use in the edit_member_group data array.
+	 *
+	 * @param 	int 	member group id
+	 * @return 	array 	array of module names and associated permissions.
+	 */
+	private function _setup_module_names($id)
+	{
+		// Load Module Language Files.
+		ee()->load->library('addons');
+		$mod_lang_files = ee()->addons->get_files('modules');
+
+		foreach ($mod_lang_files as $m => $i)
+		{
+			ee()->lang->loadfile($m);
+		}
+
+		$module_names = array();
+		$module_perms = array();
+		$module_ids   = array();
+
+		$modules = ee()->db->select('module_id, module_name')
+							->where('has_cp_backend', 'y')
+							->order_by('module_name')
+							->get('modules');
+
+		if ($id === 1)
+		{
+			// Super admins get it all
+			foreach ($modules->result() as $row)
+			{
+				$name = lang(strtolower($row->module_name . '_module_name'));
+				$name = ucwords(str_replace('_', ' ', $name));
+
+				$module_names[$row->module_id] = $name;
+				$module_perms[$row->module_id] = 'y';
+			}
+
+			$modules->free_result();
+
+			return array($module_names, $module_perms);
+		}
+
+		$qry = ee()->db->select('module_id')
+						->get_where('module_member_groups', array(
+							'group_id' => $id
+						));
+
+		foreach ($qry->result() as $row)
+		{
+			$module_ids[$row->module_id] = TRUE;
+		}
+
+		$qry->free_result();
+
+		foreach ($modules->result() as $row)
+		{
+			$name = lang(strtolower($row->module_name . '_module_name'));
+			$name = ucwords(str_replace('_', ' ', $name));
+
+			$module_names[$row->module_id] = $name;
+			$module_perms[$row->module_id] = isset($module_ids[$row->module_id]) ? 'y' : 'n';
+		}
+
+		$modules->free_result();
+
+		return array($module_names, $module_perms);
+	}
+
+	/**
+	 * Setup channel names
+	 *
+	 * Gets channel names from the database and processes permissions,
+	 * based on member group id
+	 *
+	 * @param 	int 	Site ID
+	 * @param 	int 	Member Group ID
+	 * @return 	array 	Array of channel names and associated permissions.
+	 */
+	private function _setup_channel_names($site_id, $id)
+	{
+		$channel_names = array();
+		$channel_perms = array();
+		$channel_ids   = array();
+
+		$channels = $this->db->select('channel_id, site_id, channel_title')
+			->where('site_id', $site_id)
+			->order_by('channel_title')
+			->get('channels');
+
+		// Super Admins get everything
+		if ($id === 1)
+		{
+			foreach ($channels->result() as $row)
+			{
+				$channel_names[$row->channel_id] = $row->channel_title;
+				$channel_perms[$row->site_id][$row->channel_id] = 'y';
+			}
+
+			return array($channel_names, $channel_perms);
+		}
+
+		$qry = $this->db->select('channel_id')
+						->get_where('channel_member_groups', array(
+							'group_id'	=> $id
+						));
+
+		// Let's see what the members have access to.
+		foreach ($qry->result() as $row)
+		{
+			$channel_ids[$row->channel_id] = TRUE;
+		}
+
+		$qry->free_result();
+
+		foreach ($channels->result() as $row)
+		{
+			$channel_names[$row->channel_id] = $row->channel_title;
+			$channel_perms[$row->site_id][$row->channel_id] = (isset($channel_ids[$row->channel_id])) ? 'y' : 'n';
+		}
+
+		$channels->free_result();
+
+		return array($channel_names, $channel_perms);
+	}
+
+	/**
+	 * Setup template names
+	 *
+	 * Assembles template names from the database for use in the group_data array
+	 *
+	 * @param 	int 	Site ID
+	 * @param 	int 	Member group ID used for permissions checking
+	 * @return 	array 	Array of template names and associated permissions
+	 */
+	private function _setup_template_names($site_id, $id)
+	{
+		$template_names = array();
+		$template_perms = array();
+		$template_ids   = array();
+
+		$templates = $this->db->select('group_id, group_name, site_id')
+			->where('site_id', $site_id)
+			->order_by('group_name')
+			->get('template_groups');
+
+		if ($id === 1)
+		{
+			foreach ($templates->result() as $row)
+			{
+				$template_names[$row->group_id] = $row->group_name;
+				$template_perms[$row->site_id][$row->group_id] = 'y';
+			}
+
+			$templates->free_result();
+
+			return array($template_names, $template_perms);
+		}
+
+		$qry = $this->db->select('template_group_id')
+						->get_where('template_member_groups', array(
+							'group_id' => $id
+						));
+
+		foreach ($qry->result() as $row)
+		{
+			$template_ids[$row->template_group_id] = TRUE;
+		}
+
+		$qry->free_result();
+
+		foreach ($templates->result() as $row)
+		{
+			$template_names[$row->group_id] = $row->group_name;
+			$template_perms[$row->site_id][$row->group_id] = isset($template_ids[$row->group_id]) ? 'y' : 'n';
+		}
+
+		$templates->free_result();
+
+		return array($template_names, $template_perms);
+	}
+
 }
 // END CLASS
 
