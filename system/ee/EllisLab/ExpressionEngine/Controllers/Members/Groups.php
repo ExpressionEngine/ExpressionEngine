@@ -51,10 +51,10 @@ class Groups extends Members\Members {
 		parent::__construct();
 
 		$this->base_url = new URL('members/groups', ee()->session->session_id());
-		$this->site_id = ee()->config->item('site_id');
+		$this->site_id = (int) ee()->config->item('site_id');
 		$this->super_admin = $this->session->userdata('group_id') == 1;
-	}
-
+	}   
+        
 	/**
 	 * Group List Index
 	 */
