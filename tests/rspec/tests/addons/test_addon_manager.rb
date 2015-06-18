@@ -151,20 +151,20 @@ feature 'Add-On Manager' do
 		@page.should have(36).addons
 
 		# Now by Third Party
-		@page.developer_filter.click
-		@page.wait_until_developer_filter_menu_visible
-		@page.developer_filter_menu.click_link "Third Party"
-		no_php_js_errors
-
-		@page.developer_filter.text.should eq 'developer (Third Party)'
-		@page.should have(8).addons
+		# @page.developer_filter.click
+		# @page.wait_until_developer_filter_menu_visible
+		# @page.developer_filter_menu.click_link "Third Party"
+		# no_php_js_errors
+		#
+		# @page.developer_filter.text.should eq 'developer (Third Party)'
+		# @page.should have(8).addons
 	end
 
 	it 'retains filters on sort' do
 		# Filter by Third Party
 		@page.developer_filter.click
 		@page.wait_until_developer_filter_menu_visible
-		@page.developer_filter_menu.click_link "Third Party"
+		@page.developer_filter_menu.click_link "EllisLab"
 		no_php_js_errors
 
 		versions = @page.versions.map {|version| version.text}
@@ -173,6 +173,7 @@ feature 'Add-On Manager' do
 		@page.version_header.find('a.sort').click
 		no_php_js_errors
 
+		@page.developer_filter.text.should eq 'developer (EllisLab)'
 		@page.version_header[:class].should eq 'highlight'
 		sorted_versions = @page.versions.map {|version| version.text}
 		sorted_versions.should_not == versions
@@ -268,10 +269,10 @@ feature 'Add-On Manager' do
 		@page.should_not have_css 'tr.not-installed'
 		@page.should_not have_pagination
 
-		# Now by Third Party
+		# Now by EllisLab
 		@page.developer_filter.click
 		@page.wait_until_developer_filter_menu_visible
-		@page.developer_filter_menu.click_link "Third Party"
+		@page.developer_filter_menu.click_link "EllisLab"
 		no_php_js_errors
 
 		@page.should have_no_results
