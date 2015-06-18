@@ -1508,34 +1508,6 @@ class Member_model extends CI_Model {
 
 	// --------------------------------------------------------------------
 
-
-	/**
-	 * Localization Default
-	 *
-	 * This function retuns author data for a single member
-	 *
-	 * @access	public
-	 * @return	array
-	 */
-	function get_localization_default($get_id = FALSE)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.7');
-
-		$config = array(
-			'default_site_timezone' => ee()->config->item('default_site_timezone')
-		);
-
-		if ($get_id)
-		{
-			$config['member_id'] = 1; // basically? ick. but probably a super admin
-		}
-
-		return $config;
-	}
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Get Notepad Content
 	 *

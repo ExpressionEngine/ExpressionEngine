@@ -61,20 +61,6 @@ class CI_DB_Cache {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Delete cache files within a particular directory
-	 *
-	 * @deprecated
-	 */
-	public function delete($segment_one = '', $segment_two = '')
-	{
-		// Can't delete a sub-namespace of a namespace
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.8');
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Delete all existing cache files
 	 *
 	 * @return	bool	Success or failure

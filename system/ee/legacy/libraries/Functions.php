@@ -719,45 +719,6 @@ class EE_Functions {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Delete spam prevention hashes
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	public function clear_spam_hashes()
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.8');
-
-		// if (ee()->config->item('secure_forms') == 'y')
-		// {
-		// 	ee()->security->garbage_collect_xids();
-		// }
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Set Cookie
-	 *
-	 * @access	public
-	 * @deprecated 2.8
-	 * @param	string
-	 * @param	string
-	 * @param	string
-	 * @return	void
-	 */
-	public function set_cookie($name = '', $value = '', $expire = '')
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.8', 'EE_Input::set_cookie()');
-
-		return ee()->input->set_cookie($name, $value, $expire);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Character limiter
 	 *
 	 * @access	public
