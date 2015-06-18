@@ -305,13 +305,15 @@ abstract class ContentModel extends Model {
 		$native_prefix = $this->getCustomFieldPrefix();
 
 		foreach ($native_fields as $field)
-		{
-			$this->addFacade(
-				$field->getId(),
-				$field->toArray(),
-				$native_prefix
-			);
-		}
+        {
+            $settings = array_merge($field->getSettingsValues(), $field->toArray());
+
+            $this->addFacade(
+                $field->getId(),
+                $settings,
+                $native_prefix
+            );
+        }
 	}
 
 	/**
