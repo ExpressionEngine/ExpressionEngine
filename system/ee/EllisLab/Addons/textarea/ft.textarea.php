@@ -245,6 +245,15 @@ class Textarea_ft extends EE_Fieldtype {
 
 	function display_settings($data)
 	{
+		ee()->load->model('addons_model');
+		$plugins = ee()->addons_model->get_plugin_formatting();
+
+		$custom_format_options['none'] = 'None';
+		foreach ($plugins as $k=>$v)
+		{
+			$custom_format_options[$k] = $v;
+		}
+
 		$settings = array(
 			array(
 				'title' => 'textarea_height',
@@ -262,11 +271,7 @@ class Textarea_ft extends EE_Fieldtype {
 				'fields' => array(
 					'field_fmt' => array(
 						'type' => 'dropdown',
-						'choices' => array(
-							'none'	=> lang('none'),
-							'xhtml'	=> lang('xhtml'),
-							'br'	=> lang('auto_br')
-						),
+						'choices' => $custom_format_options,
 						'value' => $data['field_fmt'],
 					)
 				)
