@@ -17,11 +17,10 @@ feature 'Installer' do
       "if (defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'ee/installer/'))"
     )
 
-    # Rename config.php temporarily
+    # Backup config.php
     @config = File.expand_path('../../system/user/config/config.php')
     @config_temp = File.expand_path('../../system/user/config/config.php.tmp')
     File.rename(@config, @config_temp)
-    File.open(@config, 'w')
 
     # Disable directory renaming
     @wizard = File.expand_path('../../system/ee/installer/controllers/wizard.php')
@@ -31,10 +30,14 @@ feature 'Installer' do
       '// return rename(APPPATH, $new_path);'
     )
 
-    @page = Installer::Base.new
   end
 
   before :each do
+    # Delete existing config and create a new one
+    File.delete(@config) if File.exist?(@config)
+    File.open(@config, 'w')
+
+    @page = Installer::Base.new
     @page.load
     no_php_js_errors
   end
@@ -76,5 +79,29 @@ feature 'Installer' do
     @page.req_title.text.should eq 'Completed'
     @page.install_success.success_header.text.should match /ExpressionEngine (\d+\.\d+\.\d+) is now installed/
     @page.install_success.all_there?.should == true
+  end
+
+  it 'should show errors with missing database credentials' do
+    @page.install_form.install_submit.click
+
+    no_php_js_errors
+    @page.install_form.all_there?.should == true
+    @page.should have(5).required_errors
+  end
+
+  it 'should show errors with invalid database credentials' do
+    @page.install_form.db_hostname.set 'nonsense'
+    @page.install_form.db_name.set 'nonsense'
+    @page.install_form.db_username.set 'nonsense'
+    @page.install_form.username.set 'admin'
+    @page.install_form.email_address.set 'hello@ellislab.com'
+    @page.install_form.password.set 'password'
+    @page.install_form.install_submit.click
+
+    no_php_js_errors
+    @page.install_form.all_there?.should == true
+    @page.should have_error
+    @page.error.should include 'Oops, there was an error'
+    @page.error.should include 'Unable to connect to your database using the configuration settings you submitted.'
   end
 end
