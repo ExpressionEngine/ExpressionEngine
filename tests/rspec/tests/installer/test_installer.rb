@@ -104,4 +104,16 @@ feature 'Installer' do
     @page.error.should include 'Oops, there was an error'
     @page.error.should include 'Unable to connect to your database using the configuration settings you submitted.'
   end
+
+  it 'should show errors with unreadable config'
+  it 'should show errors with unwriteable config'
+  it 'should show errors with an unsupported version of PHP'
+  it 'should show errors when PDO is disabled'
+  it 'should show errors when JSON is disabled'
+  it 'should show errors with unwriteable cache directory'
+  it 'should show errors when no database schemas are available'
+  it 'should show errors with invalid database prefix'
+  it 'should show errors with invalid username'
+  it 'should show errors with invalid email address'
+  it 'should show errors with invalid password'
 end
