@@ -90,6 +90,8 @@ class CI_DB_mysqli_connection {
 		}
 		catch (\Exception $e)
 		{
+			throw $e;
+
 			$message = $e->getMessage();
 
 			if ($this->testBadSocket($message))
