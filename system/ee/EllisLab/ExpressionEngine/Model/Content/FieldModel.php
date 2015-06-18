@@ -124,7 +124,7 @@ abstract class FieldModel extends Model {
 
 		if ( ! isset($data['field_settings']))
 		{
-			$data['field_settings'] = base64_encode(serialize(array()));
+			$data['field_settings'] = array();
 		}
 
 		$data['ee_action'] = $action;

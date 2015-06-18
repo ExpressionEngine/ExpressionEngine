@@ -254,16 +254,16 @@ class FieldFacade {
 
 		$ft_settings = array();
 
-		if (isset($info['field_settings']) && strlen($info['field_settings']))
+		if (isset($info['field_settings']) && is_array($info['field_settings']))
 		{
-			$ft_settings = unserialize(base64_decode($info['field_settings']));
+			$ft_settings = $info['field_settings'];
 		}
 		else
 		{
 			$info['field_settings'] = array();
 		}
 
-		$settings = array_merge($settings, $info, $ft_settings);
+		$settings = array_merge($settings, $info, $info['field_settings']);
 
 		ee()->legacy_api->instantiate('channel_fields');
 		ee()->api_channel_fields->set_settings($info['field_id'], $settings);
