@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Model\Category;
 
 use EllisLab\ExpressionEngine\Model\Content\ContentModel;
+use EllisLab\ExpressionEngine\Model\Category\Display\CategoryFieldLayout;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -84,6 +85,16 @@ class Category extends ContentModel {
 	public function getStructure()
 	{
 		return $this->getCategoryGroup();
+	}
+
+	/**
+	 * Modify the default layout for channels
+	 */
+	public function getDisplay(LayoutInterface $layout = NULL)
+	{
+		$layout = $layout ?: new CategoryFieldLayout();
+
+		return parent::getDisplay($layout);
 	}
 
 }
