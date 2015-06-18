@@ -69,6 +69,7 @@ class CategoryField extends FieldModel {
 		$values = parent::getValues();
 
 		$values['field_fmt'] = $this->getProperty('field_default_fmt');
+		$values['field_settings']['field_show_file_selector'] = 'n';
 
 		return $values;
 	}
