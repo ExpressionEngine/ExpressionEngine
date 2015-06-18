@@ -313,7 +313,11 @@ class Addons extends CP_Controller {
 			$addon = array_merge($addon, $this->getFieldType($name));
 			$addon = array_merge($addon, $this->getPlugin($name));
 			$addon = array_merge($addon, $this->getModule($name));
-			$addons[$name] = $addon;
+
+			if ( ! empty($addon))
+			{
+				$addons[$name] = $addon;
+			}
 		}
 
 		return $addons;
