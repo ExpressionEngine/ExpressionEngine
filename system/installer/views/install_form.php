@@ -40,7 +40,7 @@
 		<?=form_error('db_username');?>
 	</div>
 </fieldset>
-<fieldset class="col-group required <?=form_error_class('db_password')?>">
+<fieldset class="col-group <?=form_error_class('db_password')?>">
 	<div class="setting-txt col w-8">
 		<h3><?=lang('db_password')?></h3>
 		<em><?=lang('db_password_note')?></em>
