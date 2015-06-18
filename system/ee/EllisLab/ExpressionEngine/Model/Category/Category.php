@@ -65,6 +65,10 @@ class Category extends ContentModel {
 		'cat_order'			=> 'isNaturalNoZero'
 	);
 
+	protected static $_events = array(
+		'beforeInsert'
+	);
+
 	// Properties
 	protected $cat_id;
 	protected $site_id;
@@ -88,13 +92,29 @@ class Category extends ContentModel {
 	}
 
 	/**
-	 * Modify the default layout for channels
+	 * Modify the default layout for category fields
 	 */
 	public function getDisplay(LayoutInterface $layout = NULL)
 	{
 		$layout = $layout ?: new CategoryFieldLayout();
 
 		return parent::getDisplay($layout);
+	}
+
+	/**
+	 * New statuses get appended
+	 */
+	public function onBeforeInsert()
+	{
+		$cat_order = $this->getProperty('cat_order');
+
+		if (empty($cat_order))
+		{
+			$count = $this->getFrontend()->get('Category')
+				->filter('group_id', $this->getProperty('group_id'))
+				->count();
+			$this->setProperty('cat_order', $count + 1);
+		}
 	}
 
 }
