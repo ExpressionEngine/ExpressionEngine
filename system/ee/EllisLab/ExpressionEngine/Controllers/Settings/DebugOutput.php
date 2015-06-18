@@ -118,6 +118,26 @@ class DebugOutput extends Settings {
 			)
 		);
 
+		if ( ! extension_loaded('newrelic'))
+		{
+			$vars['sections']['new_relic'] = array(
+				array(
+					'title' => 'use_newrelic',
+					'desc' => 'use_newrelic_desc',
+					'fields' => array(
+						'use_newrelic' => array('type' => 'yes_no')
+					)
+				),
+				array(
+					'title' => 'newrelic_app_name',
+					'desc' => 'newrelic_app_name_desc',
+					'fields' => array(
+						'newrelic_app_name' => array('type' => 'text')
+					)
+				)
+			);
+		}
+
 		ee()->form_validation->set_rules(array(
 			array(
 				'field' => 'max_caches',
