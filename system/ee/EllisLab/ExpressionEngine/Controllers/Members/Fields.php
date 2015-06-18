@@ -53,7 +53,7 @@ class Fields extends Members\Members {
 	 */
 	public function index()
 	{
-		$table = ee('Grid')->make(array(
+		$table = ee('CP/GridInput', array(
 			'sortable' => FALSE,
 			'reorder' => TRUE,
 			'namespace' => FALSE,
@@ -191,7 +191,7 @@ class Fields extends Members\Members {
 						'type' => array(
 							'type' => 'dropdown',
 							'choices' => $field_types,
-							'value' => element('type', $values) 
+							'value' => element('type', $values)
 						)
 					)
 				),
