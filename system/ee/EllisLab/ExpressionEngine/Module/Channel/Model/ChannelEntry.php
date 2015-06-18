@@ -181,24 +181,6 @@ class ChannelEntry extends ContentModel {
 		}
 	}
 
-	protected function fillCustomFields($data)
-	{
-		parent::fillCustomFields($data);
-
-		foreach ($data as $name => $value)
-		{
-			if (strpos($name, 'field_ft_') === 0)
-			{
-				$name = str_replace('field_ft_', 'field_id_', $name);
-
-				if ($this->hasCustomField($name))
-				{
-					$this->getCustomField($name)->setFormat($value);
-				}
-			}
-		}
-	}
-
 	/* HACK ALERT! @TODO */
 
 	protected function populateDefaultFields()

@@ -280,6 +280,18 @@ abstract class ContentModel extends Model {
 
 		foreach ($data as $name => $value)
 		{
+			if (strpos($name, 'field_ft_') === 0)
+			{
+				$name = str_replace('field_ft_', 'field_id_', $name);
+
+				if ($this->hasCustomField($name))
+				{
+					$this->getCustomField($name)->setFormat($value);
+				}
+
+				continue;
+			}
+
 			if ($this->hasCustomField($name))
 			{
 				$this->getCustomField($name)->setData($value);
