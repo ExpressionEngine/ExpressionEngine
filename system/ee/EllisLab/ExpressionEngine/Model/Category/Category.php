@@ -102,7 +102,7 @@ class Category extends ContentModel {
 	}
 
 	/**
-	 * New statuses get appended
+	 * New categories get appended
 	 */
 	public function onBeforeInsert()
 	{
