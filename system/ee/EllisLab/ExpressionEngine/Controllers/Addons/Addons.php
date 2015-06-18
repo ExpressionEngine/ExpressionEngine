@@ -176,7 +176,8 @@ class Addons extends CP_Controller {
 				     ||	(strtolower($this->params['filter_by_status']) == 'uninstalled'
 						 && $info['installed'] == TRUE)
 				     ||	(strtolower($this->params['filter_by_status']) == 'updates'
-						 && ! isset($info['update'])))
+						 && ! isset($info['update'])
+						 || $info['installed'] !== TRUE))
 				{
 					continue;
 				}
