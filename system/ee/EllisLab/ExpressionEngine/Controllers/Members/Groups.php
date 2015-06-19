@@ -556,7 +556,7 @@ class Groups extends Members\Members {
 						'allowed_template_groups' => array(
 							'type' => 'checkbox',
 							'choices' => $template_groups,
-							'value' => element('allowed_template_groups', $values)
+							'value' => element('template_groups', $values)
 						),
 					)
 				)
@@ -581,7 +581,13 @@ class Groups extends Members\Members {
 				array(
 					'title' => 'addon_access',
 					'desc' => 'addons_access_desc',
-					'fields' => array()
+					'fields' => array(
+						'addons_access' => array(
+							'type' => 'checkbox',
+							'choices' => $addons,
+							'value' => element('addons_access', $values)
+						),
+					)
 				)
 			),
 			'tools' => array(
