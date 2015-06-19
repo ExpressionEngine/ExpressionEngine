@@ -11,7 +11,7 @@
 
 	<?php $this->view('_shared/table', $table); ?>
 
-	<?php $this->view('_shared/pagination'); ?>
+	<?=$pagination?>
 
 	<?php if ( ! empty($table['data'])): ?>
 	<fieldset class="tbl-bulk-act">
