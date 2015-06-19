@@ -448,6 +448,66 @@ class OneToManyModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(array('parent_id' => 5), $child4->getDirty());
     }
 
+
+    public function testAddingParentToManyChildren()
+    {
+        $parent = new $this->parentClass;
+        $child1 = new $this->childClass;
+        $child2 = new $this->childClass;
+        $child3 = new $this->childClass;
+        $child4 = new $this->childClass;
+
+        $collection = new Collection(array($child1, $child2));
+
+        $parent->setId(5);
+
+        $this->addAssociation(
+            $parent,
+            array($this->has_many_relation, 'SetChild'),
+            array($this->belongs_to_relation, 'SetParent')
+        );
+
+        $this->addAssociation(
+            $child1,
+            array($this->belongs_to_relation, 'SetParent'),
+            array($this->has_many_relation, 'SetChild')
+        );
+
+        $this->addAssociation(
+            $child2,
+            array($this->belongs_to_relation, 'SetParent'),
+            array($this->has_many_relation, 'SetChild')
+        );
+
+        $this->addAssociation(
+            $child3,
+            array($this->belongs_to_relation, 'SetParent'),
+            array($this->has_many_relation, 'SetChild')
+        );
+
+        $this->addAssociation(
+            $child4,
+            array($this->belongs_to_relation, 'SetParent'),
+            array($this->has_many_relation, 'SetChild')
+        );
+
+        $child1->SetParent = $parent;
+        $child2->SetParent = $parent;
+        $child3->SetParent = $parent;
+        $child4->SetParent = $parent;
+
+        $this->assertEquals(4, count($parent->SetChild));
+        $this->assertEquals($parent, $child1->SetParent);
+        $this->assertEquals($parent, $child2->SetParent);
+        $this->assertEquals($parent, $child3->SetParent);
+        $this->assertEquals($parent, $child4->SetParent);
+
+        $this->assertEquals(array('parent_id' => 5), $child1->getDirty());
+        $this->assertEquals(array('parent_id' => 5), $child2->getDirty());
+        $this->assertEquals(array('parent_id' => 5), $child3->getDirty());
+        $this->assertEquals(array('parent_id' => 5), $child4->getDirty());
+    }
+
     protected function addAssociation($model, $relation, $inverse = NULL)
     {
         if ($inverse)

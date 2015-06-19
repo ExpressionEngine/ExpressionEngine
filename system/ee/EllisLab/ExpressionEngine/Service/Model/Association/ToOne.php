@@ -18,7 +18,7 @@ class ToOne extends Association {
 
 	protected function ensureExists($model)
 	{
-		if ($this->related != $model)
+		if ($this->related !== $model)
 		{
 			$this->related = $model;
 			parent::ensureExists($model);

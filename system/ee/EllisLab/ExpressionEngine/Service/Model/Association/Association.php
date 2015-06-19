@@ -50,7 +50,13 @@ class Association {
 
         foreach ($items as $model)
         {
-            $this->getInverse($model)->remove(); // TODO we don't know the old value, but we know we want to clear the whole thing?
+            $inverse = $this->getInverse($model);
+
+            if ($inverse instanceOf ToOne)
+            {
+                $inverse->remove();
+            }
+
             $this->addToRelated($model);
         }
     }
