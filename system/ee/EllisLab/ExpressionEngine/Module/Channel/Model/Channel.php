@@ -36,7 +36,6 @@ class Channel extends StructureModel {
 		),
 		'StatusGroup' => array(
 			'type' => 'belongsTo',
-			'model' => 'StatusGroup',
 			'from_key' => 'status_group',
 			'to_key' => 'group_id'
 		),
@@ -48,7 +47,6 @@ class Channel extends StructureModel {
 		),
 		'Entries' => array(
 			'type' => 'hasMany',
-			'model' => 'ChannelEntries',
 			'model' => 'ChannelEntry'
 		),
 		'ChannelFormSettings' => array(
