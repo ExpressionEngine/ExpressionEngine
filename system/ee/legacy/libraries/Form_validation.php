@@ -1114,7 +1114,7 @@ class EE_Form_validation {
 				}
 
 				// Build the error message
-				$message = sprintf($line, $this->_translate_fieldname($row['label']), $param);
+				$message = sprintf($line, $param);
 
 				// Save the error message
 				$this->_field_data[$row['field']]['error'] = $message;
