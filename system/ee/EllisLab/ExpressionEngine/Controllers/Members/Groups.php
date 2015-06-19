@@ -6,7 +6,6 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Controllers\Members;
@@ -140,12 +139,10 @@ class Groups extends Members\Members {
 
 		if ( ! empty($data['table']['data']))
 		{
-			$pagination = new Pagination(
-				$perpage,
-				$total,
-				$page
-			);
-			$data['pagination'] = $pagination->cp_links($base_url);
+			$data['pagination'] = ee('CP/Pagination', $total)
+				->perPage($perpage)
+				->currentPage($page)
+				->render($base_url);
 		}
 
 		// Set search results heading
@@ -745,7 +742,7 @@ class Groups extends Members\Members {
 		}
 
 		// Access tools checkbox group
-		
+
 		$result['access_tools'] = array();
 
 
