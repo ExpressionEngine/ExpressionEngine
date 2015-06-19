@@ -771,7 +771,16 @@ class Groups extends Members\Members {
 		$this->index_url = 'members/groups/edit';
 		$allowed_channels = ee()->input->post('allowed_channels');
 		$allowed_template_groups = ee()->input->post('allowed_template_groups');
-		$ignore = array('allowed_template_groups', 'allowed_channels');
+		$allowed_addons = ee()->input->post('addons_access');
+		$ignore = array('allowed_template_groups', 'allowed_channels', 'addons_access');
+
+		// Set our various permissions if we're not editing the Super Admin
+		if ($this->group->group_id !== 1)
+		{
+			$this->group->setAssignedModules(ee()->api->get('Module', $allowed_addons)->all());
+			$this->group->setAssignedTemplateGroups(ee()->api->get('TemplateGroup', $allowed_template_groups)->all());
+			$this->group->setAssignedChannels(ee()->api->get('Channel', $allowed_channels)->all());
+		}
 
 		if ( ! empty($this->group))
 		{
