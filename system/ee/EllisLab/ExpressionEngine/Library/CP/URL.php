@@ -28,9 +28,25 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  */
 
 class URL {
+
+	/**
+	 * @var string $path The path (i.e. 'logs/cp')
+	 */
 	public $path;
+
+	/**
+	 * @var string $session_id The session id
+	 */
 	public $session_id;
+
+	/**
+	 * @var array $qs An associative array of query string parameters
+	 */
 	public $qs = array();
+
+	/**
+	 * @var string $base The base part of the url which preceeds the path.
+	 */
 	public $base;
 
 	/**
