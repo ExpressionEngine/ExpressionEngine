@@ -74,8 +74,17 @@ abstract class Relation {
 	/**
 	 *
 	 */
-	abstract protected function deriveKeys();
+	abstract public function markLinkAsClean(Model $source, Model $target);
 
+	/**
+	 *
+	 */
+	abstract public function canSaveAcross();
+
+	/**
+	 *
+	 */
+	abstract protected function deriveKeys();
 
 	/**
 	 * TODO this is a pretty slow way to do this
@@ -89,7 +98,7 @@ abstract class Relation {
 			if ($relation->getTargetModel() == $this->getSourceModel())
 			{
 				// todo also check if reverse type
-				if ($relation->getKeys() == $this->getKeys())
+				if (array_reverse($relation->getKeys()) == $this->getKeys())
 				{
 					return $relation;
 				}

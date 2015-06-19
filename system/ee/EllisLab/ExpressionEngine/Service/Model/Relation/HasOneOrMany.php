@@ -30,6 +30,14 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 abstract class HasOneOrMany extends Relation {
 
 	/**
+	*
+	*/
+	public function canSaveAcross()
+	{
+		return TRUE;
+	}
+
+	/**
 	 *
 	 */
 	public function linkIds(Model $source, Model $target)
@@ -47,6 +55,16 @@ abstract class HasOneOrMany extends Relation {
 		list($_, $to) = $this->getKeys();
 
 		$target->$to = NULL;
+	}
+
+	/**
+	*
+	*/
+	public function markLinkAsClean(Model $source, Model $target)
+	{
+		list($_, $to) = $this->getKeys();
+
+		$target->markAsClean($to);
 	}
 
 	/**
