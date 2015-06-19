@@ -124,6 +124,14 @@ class HasAndBelongsToMany extends Relation {
 	}
 
 	/**
+	*
+	*/
+	public function fillLinkIds(Model $source, Model $target)
+	{
+		return; // nada
+	}
+
+	/**
 	 *
 	 */
 	public function linkIds(Model $source, Model $target)

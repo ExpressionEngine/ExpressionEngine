@@ -50,6 +50,16 @@ class BelongsTo extends Relation {
 	/**
 	 *
 	 */
+	public function fillLinkIds(Model $source, Model $target)
+	{
+		list($from, $to) = $this->getKeys();
+
+		$source->fill(array($from => $target->$to));
+	}
+
+	/**
+	 *
+	 */
 	public function linkIds(Model $source, Model $target)
 	{
 		list($from, $to) = $this->getKeys();

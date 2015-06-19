@@ -40,6 +40,16 @@ abstract class HasOneOrMany extends Relation {
 	/**
 	 *
 	 */
+	public function fillLinkIds(Model $source, Model $target)
+	{
+		list($from, $to) = $this->getKeys();
+
+		$target->fill(array($to => $source->$from));
+	}
+
+	/**
+	 *
+	 */
 	public function linkIds(Model $source, Model $target)
 	{
 		list($from, $to) = $this->getKeys();

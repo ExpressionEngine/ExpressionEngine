@@ -35,10 +35,8 @@ class Association {
 
             foreach ($related as $to)
             {
+                $this->relation->fillLinkIds($this->model, $to);
                 $this->getInverse($to)->fill($this->model, TRUE);
-
-                $this->relation->linkIds($this->model, $to);
-                $this->relation->markLinkAsClean($this->model, $to);
             }
         }
     }

@@ -64,6 +64,12 @@ abstract class Relation {
 	/**
 	 *
 	 */
+	abstract public function fillLinkIds(Model $source, Model $target);
+
+
+	/**
+	 *
+	 */
 	abstract public function linkIds(Model $source, Model $target);
 
 	/**
