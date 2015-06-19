@@ -115,7 +115,7 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	 */
 	public function __get($key)
 	{
-		if (strtoupper($key[0]) == $key[0])
+		if ($key && strtoupper($key[0]) == $key[0])
 		{
 			if ($this->hasAssociation($key))
 			{
@@ -134,7 +134,7 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	 */
 	public function __set($key, $value)
 	{
-		if (strtoupper($key[0]) == $key[0])
+		if ($key && strtoupper($key[0]) == $key[0])
 		{
 			if ($this->hasAssociation($key))
 			{
