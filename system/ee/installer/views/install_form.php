@@ -56,7 +56,7 @@
 		<em><?=lang('db_prefix_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
-		<input name="db_prefix" type="text" value="<?=set_value('db_prefix', 'exp')?>">
+		<input name="db_prefix" type="text" value="<?=set_value('db_prefix', 'exp')?>" maxlength="30">
 		<?=form_error('db_prefix');?>
 	</div>
 </fieldset>
@@ -78,7 +78,7 @@
 		<em><?=lang('username_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
-		<input name="username" type="text" value="<?=set_value('username')?>">
+		<input name="username" type="text" value="<?=set_value('username')?>" maxlength="50">
 		<?=form_error('username');?>
 	</div>
 </fieldset>
