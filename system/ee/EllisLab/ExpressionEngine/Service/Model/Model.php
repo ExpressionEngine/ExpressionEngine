@@ -119,7 +119,7 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		{
 			if ($this->hasAssociation($key))
 			{
-				return $this->getAssociation($key);
+				return $this->getAssociation($key)->get();
 			}
 		}
 
