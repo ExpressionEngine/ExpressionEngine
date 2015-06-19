@@ -456,11 +456,10 @@ class OneToOneModelTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals(array(), $child->getDirty());
     }
 
-    public function testSetChildOnUnsavedParentAndPropagateIdOnSave()
+    public function testSetChildOnUnsavedParentAndPropagateIdOn()
     {
         $parent = new $this->parentClass;
         $child = new $this->childClass;
-
 
         $this->addAssociation(
             $parent,

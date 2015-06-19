@@ -7,8 +7,6 @@ use EllisLab\ExpressionEngine\Service\Model\Association;
 use EllisLab\ExpressionEngine\Service\Model\Model;
 use EllisLab\ExpressionEngine\Service\Model\Collection;
 
-
-
 class OneToManyModelTest extends \PHPUnit_Framework_TestCase {
 
     public function setUp()
@@ -32,7 +30,7 @@ class OneToManyModelTest extends \PHPUnit_Framework_TestCase {
         $child1 = new $this->childClass;
         $child2 = new $this->childClass;
 
-		$collection = new Collection(array($child1, $child2);
+		$collection = new Collection(array($child1, $child2));
 
         $parent->setId(5);
 
@@ -52,62 +50,35 @@ class OneToManyModelTest extends \PHPUnit_Framework_TestCase {
 			array($this->belongs_to_relation, 'FillParent')
 		);
 
-        $this->assertNull($parent->FillChild);
+        $this->assertEquals(0, count($parent->FillChild));
         $this->assertNull($child1->FillParent);
         $this->assertNull($child2->FillParent);
+        $this->assertNull($child1->parent_id);
+        $this->assertNull($child2->parent_id);
 
         $assoc->fill($collection);
 
         // check that both were filled
-        $this->assertSame($parent->FillChild, $child);
+        $this->assertSame($parent->FillChild, $collection);
         $this->assertSame($child1->FillParent, $parent);
         $this->assertSame($child2->FillParent, $parent);
 
         // check that the key was linked
-        $this->assertEquals(5, $child->parent_id);
+        $this->assertEquals(5, $child1->parent_id);
+        $this->assertEquals(5, $child2->parent_id);
 
         // it's a fill, so nothing should be marked as dirty
-        $this->assertEquals(array(), $child->getDirty());
-    }
-
-    public function testFillChildWithParent()
-    {
-        $parent = new $this->parentClass;
-        $child = new $this->childClass;
-
-        $parent->setId(5);
-
-        $assoc = $this->addAssociation(
-            $child,
-            array($this->belongs_to_relation, 'FillParent'),
-            array($this->has_many_relation, 'FillChild')
-        );
-
-        $this->addAssociation(
-            $parent,
-            array($this->has_many_relation, 'FillChild')
-        );
-
-        $this->assertNull($child->FillParent);
-        $this->assertNull($parent->FillChild);
-
-        $assoc->fill($parent);
-
-        // check that both were filled
-        $this->assertSame($parent->FillChild, $child);
-        $this->assertSame($child->FillParent, $parent);
-
-        // check that the key was linked
-        $this->assertEquals(5, $child->parent_id);
-
-        // it's a fill, so nothing should be marked as dirty
-        $this->assertEquals(array(), $child->getDirty());
+        $this->assertEquals(array(), $child1->getDirty());
+        $this->assertEquals(array(), $child2->getDirty());
     }
 
     public function testSetParentWithChild()
     {
         $parent = new $this->parentClass;
-        $child = new $this->childClass;
+        $child1 = new $this->childClass;
+        $child2 = new $this->childClass;
+
+		$collection = new Collection(array($child1, $child2));
 
         $parent->setId(5);
 
@@ -118,31 +89,298 @@ class OneToManyModelTest extends \PHPUnit_Framework_TestCase {
         );
 
         $this->addAssociation(
-            $child,
+            $child1,
             array($this->belongs_to_relation, 'SetParent'),
             array($this->has_many_relation, 'SetChild')
         );
 
-        $this->assertNull($parent->SetChild);
-        $this->assertNull($child->SetParent);
+        $this->addAssociation(
+            $child2,
+            array($this->belongs_to_relation, 'SetParent'),
+            array($this->has_many_relation, 'SetChild')
+        );
 
-        $parent->SetChild = $child;
+        $this->assertEquals(0, count($parent->SetChild));
+        $this->assertNull($child1->SetParent);
+        $this->assertNull($child2->SetParent);
+
+        $parent->SetChild = $collection;
 
         // check that both were filled
-        $this->assertSame($child, $parent->SetChild);
-        $this->assertSame($parent, $child->SetParent);
+        $this->assertSame($parent, $child1->SetParent);
+        $this->assertSame($parent, $child2->SetParent);
 
         // check that the key was linked
-        $this->assertEquals(5, $child->parent_id);
+        $this->assertEquals(5, $child1->parent_id);
+        $this->assertEquals(5, $child2->parent_id);
 
         // setting should mark the foreign key as dirty
-        $this->assertEquals(array('parent_id' => 5), $child->getDirty());
+        $this->assertEquals(array('parent_id' => 5), $child1->getDirty());
+        $this->assertEquals(array('parent_id' => 5), $child2->getDirty());
     }
 
-    public function testSetChildWithParent()
+	public function testAddChildrenToBlankParent()
+	{
+		$parent = new $this->parentClass;
+		$child1 = new $this->childClass;
+		$child2 = new $this->childClass;
+
+		$parent->setId(5);
+
+		$this->addAssociation(
+			$parent,
+			array($this->has_many_relation, 'SetChild'),
+			array($this->belongs_to_relation, 'SetParent')
+		);
+
+		$this->addAssociation(
+			$child1,
+			array($this->belongs_to_relation, 'SetParent'),
+			array($this->has_many_relation, 'SetChild')
+		);
+
+		$this->addAssociation(
+			$child2,
+			array($this->belongs_to_relation, 'SetParent'),
+			array($this->has_many_relation, 'SetChild')
+		);
+
+		$this->assertEquals(0, count($parent->SetChild));
+		$this->assertNull($child1->SetParent);
+		$this->assertNull($child2->SetParent);
+
+		$parent->SetChild[] = $child1;
+		$parent->SetChild[] = $child2;
+
+		// check that both were filled
+		$this->assertSame($parent, $child1->SetParent);
+		$this->assertSame($parent, $child2->SetParent);
+
+		// check that the key was linked
+		$this->assertEquals(5, $child1->parent_id);
+		$this->assertEquals(5, $child2->parent_id);
+
+		// setting should mark the foreign key as dirty
+		$this->assertEquals(array('parent_id' => 5), $child1->getDirty());
+		$this->assertEquals(array('parent_id' => 5), $child2->getDirty());
+	}
+
+	public function testAddChildToFilledParent()
+	{
+		$parent = new $this->parentClass;
+		$child1 = new $this->childClass;
+		$child2 = new $this->childClass;
+
+		$parent->setId(5);
+
+		$this->addAssociation(
+			$parent,
+			array($this->has_many_relation, 'SetChild'),
+			array($this->belongs_to_relation, 'SetParent')
+		);
+
+		$this->addAssociation(
+			$child1,
+			array($this->belongs_to_relation, 'SetParent')
+		);
+
+		$this->addAssociation(
+			$child2,
+			array($this->belongs_to_relation, 'SetParent'),
+			array($this->has_many_relation, 'SetChild')
+		);
+
+		$this->assertEquals(0, count($parent->SetChild));
+		$this->assertNull($child1->SetParent);
+		$this->assertNull($child2->SetParent);
+
+		$assoc = $parent->getAssociation('SetChild');
+
+		$assoc->fill(new Collection(array($child1)));
+		$parent->SetChild[] = $child2;
+
+		// check that both were filled
+		$this->assertSame($parent, $child1->SetParent);
+		$this->assertSame($parent, $child2->SetParent);
+
+		// check that the key was linked
+		$this->assertEquals(5, $child1->parent_id);
+		$this->assertEquals(5, $child2->parent_id);
+
+		// setting should mark the foreign key as dirty, filling does not
+		$this->assertEquals(array(), $child1->getDirty());
+		$this->assertEquals(array('parent_id' => 5), $child2->getDirty());
+	}
+
+	public function testNullCollection()
+	{
+		$parent = new $this->parentClass;
+		$child1 = new $this->childClass;
+		$child2 = new $this->childClass;
+
+		$collection = new Collection(array($child1, $child2));
+
+		$parent->setId(5);
+
+		$this->addAssociation(
+			$parent,
+			array($this->has_many_relation, 'SetChild'),
+			array($this->belongs_to_relation, 'SetParent')
+		);
+
+		$this->addAssociation(
+			$child1,
+			array($this->belongs_to_relation, 'SetParent')
+		);
+
+		$this->addAssociation(
+			$child2,
+			array($this->belongs_to_relation, 'SetParent'),
+			array($this->has_many_relation, 'SetChild')
+		);
+
+		$this->assertEquals(0, count($parent->SetChild));
+		$this->assertNull($child1->SetParent);
+		$this->assertNull($child2->SetParent);
+
+		$assoc = $parent->getAssociation('SetChild');
+
+		$assoc->fill($collection);
+
+		// check that both were filled
+		$this->assertSame(2, count($parent->SetChild));
+		$this->assertSame($parent, $child1->SetParent);
+		$this->assertSame($parent, $child2->SetParent);
+
+		// Null it
+		$parent->SetChild = NULL;
+
+		// check that the key was linked
+		$this->assertNull($child1->parent_id);
+		$this->assertNull($child2->parent_id);
+
+		// null means our foreign key has disappeared
+		$this->assertEquals(array('parent_id' => NULL), $child1->getDirty());
+		$this->assertEquals(array('parent_id' => NULL), $child2->getDirty());
+	}
+
+	public function testAddChildrenToUnsavedParentAndPropagateIdOn()
+	{
+		$parent = new $this->parentClass;
+		$child1 = new $this->childClass;
+		$child2 = new $this->childClass;
+
+		$this->addAssociation(
+			$parent,
+			array($this->has_many_relation, 'SetChild'),
+			array($this->belongs_to_relation, 'SetParent')
+		);
+
+		$this->addAssociation(
+			$child1,
+			array($this->belongs_to_relation, 'SetParent'),
+			array($this->has_many_relation, 'SetChild')
+		);
+
+		$this->addAssociation(
+			$child2,
+			array($this->belongs_to_relation, 'SetParent'),
+			array($this->has_many_relation, 'SetChild')
+		);
+
+		$this->assertEquals(0, count($parent->SetChild));
+		$this->assertNull($child1->SetParent);
+		$this->assertNull($child2->SetParent);
+
+		$parent->SetChild[] = $child1;
+		$parent->SetChild[] = $child2;
+
+		// check that both were filled
+		$this->assertSame(2, count($parent->SetChild));
+		$this->assertSame($parent, $child1->SetParent);
+		$this->assertSame($parent, $child2->SetParent);
+
+		$this->assertEquals(array(), $child1->getDirty());
+		$this->assertEquals(array(), $child2->getDirty());
+
+		// Now save it
+		$parent->setId(10);
+
+		// check that the key was linked
+		$this->assertEquals(10, $child1->parent_id);
+		$this->assertEquals(10, $child2->parent_id);
+
+		// null means our foreign key has disappeared
+		$this->assertEquals(array('parent_id' => 10), $child1->getDirty());
+		$this->assertEquals(array('parent_id' => 10), $child2->getDirty());
+	}
+
+	public function testRemovingModelDissociates()
+	{
+		$parent = new $this->parentClass;
+		$child1 = new $this->childClass;
+		$child2 = new $this->childClass;
+
+		$collection = new Collection(array($child1, $child2));
+
+		$parent->setId(5);
+
+		$this->addAssociation(
+			$parent,
+			array($this->has_many_relation, 'SetChild'),
+			array($this->belongs_to_relation, 'SetParent')
+		);
+
+		$this->addAssociation(
+			$child1,
+			array($this->belongs_to_relation, 'SetParent')
+		);
+
+		$this->addAssociation(
+			$child2,
+			array($this->belongs_to_relation, 'SetParent'),
+			array($this->has_many_relation, 'SetChild')
+		);
+
+		$this->assertEquals(0, count($parent->SetChild));
+		$this->assertNull($child1->SetParent);
+		$this->assertNull($child2->SetParent);
+
+		$assoc = $parent->getAssociation('SetChild');
+
+		$assoc->fill($collection);
+
+		// check that both were filled
+		$this->assertSame(2, count($parent->SetChild));
+		$this->assertSame($parent, $child1->SetParent);
+		$this->assertSame($parent, $child2->SetParent);
+		$this->assertEquals(5, $child1->parent_id);
+		$this->assertEquals(5, $child2->parent_id);
+
+		// Null it
+		$parent->SetChild->remove($child2);
+
+		// check that the key was unlinked
+		$this->assertEquals(5, $child1->parent_id);
+		$this->assertEquals(NULL, $child2->parent_id);
+		$this->assertSame($parent, $child1->SetParent);
+		$this->assertSame(NULL, $child2->SetParent);
+
+		// null means our foreign key has disappeared
+		$this->assertEquals(array(), $child1->getDirty());
+		$this->assertEquals(array('parent_id' => NULL), $child2->getDirty());
+	}
+
+    public function testReplaceExistingCollection()
     {
         $parent = new $this->parentClass;
-        $child = new $this->childClass;
+        $child1 = new $this->childClass;
+        $child2 = new $this->childClass;
+        $child3 = new $this->childClass;
+        $child4 = new $this->childClass;
+
+        $collection = new Collection(array($child1, $child2));
+        $new_collection = new Collection(array($child3, $child4));
 
         $parent->setId(5);
 
@@ -153,349 +391,61 @@ class OneToManyModelTest extends \PHPUnit_Framework_TestCase {
         );
 
         $this->addAssociation(
-            $child,
-            array($this->belongs_to_relation, 'SetParent'),
-            array($this->has_many_relation, 'SetChild')
-        );
-
-        $this->assertNull($parent->SetChild);
-        $this->assertNull($child->SetParent);
-
-        $child->SetParent = $parent;
-
-        // check that both were filled
-        $this->assertSame($child, $parent->SetChild);
-        $this->assertSame($parent, $child->SetParent);
-
-        // check that the key was linked
-        $this->assertEquals(5, $child->parent_id);
-
-        // setting should mark the foreign key as dirty
-        $this->assertEquals(array('parent_id' => 5), $child->getDirty());
-    }
-
-    public function testSetParentWithChildShouldDisassociateExisting()
-    {
-        $parent = new $this->parentClass;
-        $child = new $this->childClass;
-        $new_child = new $this->childClass;
-
-        $parent->setId(5);
-
-        $this->addAssociation(
-            $parent,
-            array($this->has_many_relation, 'SetChild'),
+            $child1,
             array($this->belongs_to_relation, 'SetParent')
         );
 
         $this->addAssociation(
-            $child,
+            $child2,
             array($this->belongs_to_relation, 'SetParent'),
             array($this->has_many_relation, 'SetChild')
         );
 
         $this->addAssociation(
-            $new_child,
-            array($this->belongs_to_relation, 'SetParent'),
-            array($this->has_many_relation, 'SetChild')
-        );
-
-        $parent->SetChild = $child;
-
-        $this->assertEquals(5, $child->parent_id);
-        $this->assertEquals(NULL, $new_child->parent_id);
-        $this->assertSame($child, $parent->SetChild);
-        $this->assertSame($parent, $child->SetParent);
-        $this->assertSame(NULL, $new_child->SetParent);
-
-        $this->assertEquals(array('parent_id' => 5), $child->getDirty());
-        $this->assertEquals(array(), $new_child->getDirty());
-
-        $parent->SetChild = $new_child;
-
-        $this->assertEquals(NULL, $child->parent_id);
-        $this->assertEquals(5, $new_child->parent_id);
-        $this->assertSame($new_child, $parent->SetChild);
-        $this->assertSame($parent, $new_child->SetParent);
-        $this->assertSame(NULL, $child->SetParent);
-
-        $this->assertEquals(array(), $child->getDirty());
-        $this->assertEquals(array('parent_id' => 5), $new_child->getDirty());
-    }
-
-    public function testSetChildWithParentShouldDisassociateExisting()
-    {
-        $parent = new $this->parentClass;
-        $child = new $this->childClass;
-        $new_child = new $this->childClass;
-
-        $parent->setId(5);
-
-        $this->addAssociation(
-            $parent,
-            array($this->has_many_relation, 'SetChild'),
-            array($this->belongs_to_relation, 'SetParent')
-        );
-
-        $this->addAssociation(
-            $child,
+            $child3,
             array($this->belongs_to_relation, 'SetParent'),
             array($this->has_many_relation, 'SetChild')
         );
 
         $this->addAssociation(
-            $new_child,
+            $child4,
             array($this->belongs_to_relation, 'SetParent'),
             array($this->has_many_relation, 'SetChild')
         );
 
-        $this->assertNull($parent->SetChild);
-        $this->assertNull($child->SetParent);
-
-        $child->SetParent = $parent;
-
-        $this->assertEquals(5, $child->parent_id);
-        $this->assertEquals(NULL, $new_child->parent_id);
-        $this->assertSame($child, $parent->SetChild);
-        $this->assertSame($parent, $child->SetParent);
-        $this->assertSame(NULL, $new_child->SetParent);
-
-        $this->assertEquals(array('parent_id' => 5), $child->getDirty());
-        $this->assertEquals(array(), $new_child->getDirty());
-
-        $new_child->SetParent = $parent;
-
-        $this->assertEquals(NULL, $child->parent_id);
-        $this->assertEquals(5, $new_child->parent_id);
-        $this->assertSame($new_child, $parent->SetChild);
-        $this->assertSame($parent, $new_child->SetParent);
-        $this->assertSame(NULL, $child->SetParent);
-
-        $this->assertEquals(array(), $child->getDirty());
-        $this->assertEquals(array('parent_id' => 5), $new_child->getDirty());
-    }
-
-    public function testMoveChildToDifferentParent()
-    {
-        $parent = new $this->parentClass;
-        $new_parent = new $this->parentClass;
-        $child = new $this->childClass;
-
-        $parent->setId(5);
-        $new_parent->setId(10);
-
-        $assoc = $this->addAssociation(
-            $parent,
-            array($this->has_many_relation, 'SetChild')
-            // we fill this so the reverse is not important
-        );
-
-        $this->addAssociation(
-            $new_parent,
-            array($this->has_many_relation, 'SetChild'),
-            array($this->belongs_to_relation, 'SetParent')
-        );
-
-        $this->addAssociation(
-            $child,
-            array($this->belongs_to_relation, 'SetParent'),
-            array($this->has_many_relation, 'SetChild')
-        );
-
-        $this->assertNull($parent->SetChild);
-        $this->assertNull($new_parent->SetChild);
-        $this->assertNull($child->SetParent);
-
-        $assoc->fill($child);
-
-        $this->assertEquals(5, $child->parent_id);
-        $this->assertNull($new_parent->SetChild);
-        $this->assertEquals($parent, $child->SetParent);
-        $this->assertSame($child, $parent->SetChild);
-        $this->assertEquals(array(), $child->getDirty());
-
-        $new_parent->SetChild = $child;
-
-        $this->assertEquals(10, $child->parent_id);
-        $this->assertNull($parent->SetChild);
-        $this->assertEquals($new_parent, $child->SetParent);
-        $this->assertSame($child, $new_parent->SetChild);
-        $this->assertEquals(array('parent_id' => 10), $child->getDirty());
-    }
-
-    public function testSetParentWithChildToNull()
-    {
-        $parent = new $this->parentClass;
-        $child = new $this->childClass;
-
-        $parent->setId(5);
-
-        $assoc = $this->addAssociation(
-            $parent,
-            array($this->has_many_relation, 'SetChild'),
-            array($this->belongs_to_relation, 'SetParent')
-        );
-
-        $this->addAssociation(
-            $child,
-            array($this->belongs_to_relation, 'SetParent'),
-            array($this->has_many_relation, 'SetChild')
-        );
-
-        $assoc->fill($child);
-
-        $this->assertEquals(5, $child->parent_id);
-        $this->assertSame($child, $parent->SetChild);
-        $this->assertSame($parent, $child->SetParent);
-
-        $this->assertEquals(array(), $child->getDirty());
-
-        $parent->SetChild = NULL;
-
-        $this->assertEquals(NULL, $child->parent_id);
-        $this->assertSame(NULL, $parent->SetChild);
-        $this->assertSame(NULL, $child->SetParent);
-
-        $this->assertEquals(array('parent_id' => NULL), $child->getDirty());
-    }
-
-    public function testSetParentWithChildAndBackToNull()
-    {
-        $parent = new $this->parentClass;
-        $child = new $this->childClass;
-
-        $parent->setId(5);
-
-        $this->addAssociation(
-            $parent,
-            array($this->has_many_relation, 'SetChild'),
-            array($this->belongs_to_relation, 'SetParent')
-        );
-
-        $this->addAssociation(
-            $child,
-            array($this->belongs_to_relation, 'SetParent'),
-            array($this->has_many_relation, 'SetChild')
-        );
-
-        $parent->SetChild = $child;
-
-        $this->assertEquals(5, $child->parent_id);
-        $this->assertSame($child, $parent->SetChild);
-        $this->assertSame($parent, $child->SetParent);
-
-        $this->assertEquals(array('parent_id' => 5), $child->getDirty());
-
-        $parent->SetChild = NULL;
-
-        $this->assertEquals(NULL, $child->parent_id);
-        $this->assertSame(NULL, $parent->SetChild);
-        $this->assertSame(NULL, $child->SetParent);
-
-        $this->assertEquals(array(), $child->getDirty());
-    }
-
-    public function testSetChildWithParentToNull()
-    {
-        $parent = new $this->parentClass;
-        $child = new $this->childClass;
-
-        $parent->setId(5);
-
-        $this->addAssociation(
-            $parent,
-            array($this->has_many_relation, 'SetChild'),
-            array($this->belongs_to_relation, 'SetParent')
-        );
-
-        $assoc = $this->addAssociation(
-            $child,
-            array($this->belongs_to_relation, 'SetParent'),
-            array($this->has_many_relation, 'SetChild')
-        );
-
-        $assoc->fill($parent);
-
-        $this->assertEquals(5, $child->parent_id);
-        $this->assertSame($child, $parent->SetChild);
-        $this->assertSame($parent, $child->SetParent);
-
-        $this->assertEquals(array(), $child->getDirty());
-
-        $child->SetParent = NULL;
-
-        $this->assertEquals(NULL, $child->parent_id);
-        $this->assertSame(NULL, $parent->SetChild);
-        $this->assertSame(NULL, $child->SetParent);
-
-        $this->assertEquals(array('parent_id' => NULL), $child->getDirty());
-    }
-
-    public function testSetChildWithParentAndBackToNull()
-    {
-        $parent = new $this->parentClass;
-        $child = new $this->childClass;
-
-        $parent->setId(5);
-
-        $this->addAssociation(
-            $parent,
-            array($this->has_many_relation, 'SetChild'),
-            array($this->belongs_to_relation, 'SetParent')
-        );
-
-        $this->addAssociation(
-            $child,
-            array($this->belongs_to_relation, 'SetParent'),
-            array($this->has_many_relation, 'SetChild')
-        );
-
-        $child->SetParent = $parent;
-
-        $this->assertEquals(5, $child->parent_id);
-        $this->assertSame($child, $parent->SetChild);
-        $this->assertSame($parent, $child->SetParent);
-
-        $this->assertEquals(array('parent_id' => 5), $child->getDirty());
-
-        $child->SetParent = NULL;
-
-        $this->assertEquals(NULL, $child->parent_id);
-        $this->assertSame(NULL, $parent->SetChild);
-        $this->assertSame(NULL, $child->SetParent);
-
-        $this->assertEquals(array(), $child->getDirty());
-    }
-
-    public function testSetChildOnUnsavedParentAndPropagateIdOnSave()
-    {
-        $parent = new $this->parentClass;
-        $child = new $this->childClass;
-
-
-        $this->addAssociation(
-            $parent,
-            array($this->has_many_relation, 'SetChild'),
-            array($this->belongs_to_relation, 'SetParent')
-        );
-
-        $this->addAssociation(
-            $child,
-            array($this->belongs_to_relation, 'SetParent'),
-            array($this->has_many_relation, 'SetChild')
-        );
-
-        $parent->SetChild = $child;
-
-        $this->assertEquals(NULL, $child->parent_id);
-        $this->assertSame($child, $parent->SetChild);
-        $this->assertSame($parent, $child->SetParent);
-        $this->assertEquals(array(), $child->getDirty());
-
-        $parent->setId(5);
-
-        $this->assertEquals(5, $child->parent_id);
-        $this->assertEquals(array('parent_id' => 5), $child->getDirty());
+        $this->assertEquals(0, count($parent->SetChild));
+        $this->assertNull($child1->SetParent);
+        $this->assertNull($child2->SetParent);
+
+        $assoc = $parent->getAssociation('SetChild');
+        $assoc->fill($collection);
+
+        $this->assertSame(2, count($parent->SetChild));
+
+        $this->assertEquals(5, $child1->parent_id);
+        $this->assertEquals(5, $child2->parent_id);
+        $this->assertSame($parent, $child1->SetParent);
+        $this->assertSame($parent, $child2->SetParent);
+        $this->assertNull($child3->parent_id);
+        $this->assertNull($child4->parent_id);
+        $this->assertSame(NULL, $child3->SetParent);
+        $this->assertSame(NULL, $child4->SetParent);
+
+        $parent->SetChild = $new_collection;
+
+        $this->assertNull($child1->parent_id);
+        $this->assertNull($child2->parent_id);
+        $this->assertSame(NULL, $child1->SetParent);
+        $this->assertSame(NULL, $child2->SetParent);
+        $this->assertEquals(5, $child3->parent_id);
+        $this->assertEquals(5, $child4->parent_id);
+        $this->assertSame($parent, $child3->SetParent);
+        $this->assertSame($parent, $child4->SetParent);
+
+        $this->assertEquals(array('parent_id' => NULL), $child1->getDirty());
+        $this->assertEquals(array('parent_id' => NULL), $child2->getDirty());
+        $this->assertEquals(array('parent_id' => 5), $child3->getDirty());
+        $this->assertEquals(array('parent_id' => 5), $child4->getDirty());
     }
 
     protected function addAssociation($model, $relation, $inverse = NULL)
