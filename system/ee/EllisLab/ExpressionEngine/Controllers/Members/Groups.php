@@ -758,6 +758,37 @@ class Groups extends Members\Members {
 			$result['access_tools'][] = 'can_access_comm';
 		}
 
+		// Addons permissions
+		list($addons, $addons_permissions) = $this->_setup_module_names($this->group_id);
+
+		foreach ($addons_permissions as $permission => $value)
+		{
+			if ($value == 'y')
+			{
+				$result['addons_access'][] = $permission;
+			}
+		}
+
+		list($template_groups, $template_group_permissions) = $this->_setup_template_names($this->site_id, $this->group_id);
+
+		foreach ($template_group_permissions[$this->site_id] as $permission => $value)
+		{
+			if ($value == 'y')
+			{
+				$result['template_groups'][] = $permission;
+			}
+		}
+
+		list($channels, $channel_permissions) = $this->_setup_channel_names($this->site_id, $this->group_id);
+
+		foreach ($channel_permissions[$this->site_id] as $permission => $value)
+		{
+			if ($value == 'y')
+			{
+				$result['allowed_channels'][] = $permission;
+			}
+		}
+
 		return $result;
 	}
 
