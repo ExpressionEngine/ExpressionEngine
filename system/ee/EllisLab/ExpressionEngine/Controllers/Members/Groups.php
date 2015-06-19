@@ -66,7 +66,7 @@ class Groups extends Members\Members {
 		$page = ee()->input->get('page') > 0 ? ee()->input->get('page') : 1;
 		$offset = ! empty($page) ? ($page - 1) * $perpage : 0;
 
-		$table = Table::create(array(
+		$table = ee('CP/Table', array(
 			'sort_col' => $sort_col,
 			'sort_dir' => $sort_dir,
 			'limit' => $perpage
