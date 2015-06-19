@@ -91,10 +91,12 @@ class URL {
 	 *
 	 * @param string $key   The name of the query string variable
 	 * @param string $value	The value of the query string variable
+	 * @return self This returns a reference to itself
 	 */
 	public function setQueryStringVariable($key, $value)
 	{
 		$this->qs[$key] = $value;
+		return $this;
 	}
 
 	/**
@@ -102,6 +104,7 @@ class URL {
 	 * of the request
 	 *
 	 * @param array $values An associative array of keys and values
+	 * @return self This returns a reference to itself
 	 */
 	public function addQueryStringVariables(array $values)
 	{
@@ -109,6 +112,7 @@ class URL {
 		{
 			$this->setQueryStringVariable($key, $value);
 		}
+		return $this;
 	}
 
 	/**
