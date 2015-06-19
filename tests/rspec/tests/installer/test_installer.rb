@@ -102,7 +102,7 @@ feature 'Installer' do
     no_php_js_errors
     @page.install_form.all_there?.should == true
     @page.should have_error
-    @page.error.should include 'Unable to connect to your database using the configuration settings you submitted.'
+    @page.error.text.should include 'Unable to connect to your database using the configuration settings you submitted.'
   end
 
   it 'should show errors with invalid database prefix' do
