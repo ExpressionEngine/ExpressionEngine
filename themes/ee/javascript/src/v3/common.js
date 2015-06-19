@@ -128,6 +128,10 @@ $(document).ready(function(){
 			// stop THIS from reloading
 			// the source window and appending to the URI
 			// and stop propagation up to document
+
+			// Give filter text boxes focus on open
+			$(this).siblings('.sub-menu').find('input[type=text]').focus();
+
 			return false;
 		});
 
