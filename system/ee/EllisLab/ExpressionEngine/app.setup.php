@@ -50,6 +50,11 @@ return array(
 			return new Library\CP\URL($path, $session_id, $qs, $cp_url);
 		},
 
+		'CP/Pagination' => function($ee, $per_page, $total_count, $current_page = 1)
+		{
+			return new Library\CP\Pagination($per_page, $total_count, $current_page);
+		},
+
 		'db' => function($ee)
 		{
 			return $ee->make('Database')->newQuery();
