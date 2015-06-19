@@ -77,11 +77,12 @@ class CI_DB_mysqli_connection {
 		$dsn = "mysql:dbname={$database};host={$hostname};charset={$char_set}";
 
 		$options = array(
-			PDO::ATTR_PERSISTENT => $pconnect
+			PDO::ATTR_PERSISTENT => $pconnect,
+			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
 		);
 
 		try {
-			$this->connection = new PDO(
+			$this->connection = @new PDO(
 				$dsn,
 				$username,
 				$password,
