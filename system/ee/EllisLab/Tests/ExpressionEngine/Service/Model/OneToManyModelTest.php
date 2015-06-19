@@ -460,6 +460,7 @@ class OneToManyModelTest extends \PHPUnit_Framework_TestCase {
         $relation[0]->shouldDeferMissing();
 
         $assoc = $relation[0]->createAssociation($model);
+        $assoc->markAsLoaded();
 
         $model->setAssociation($relation[1], $assoc);
 
