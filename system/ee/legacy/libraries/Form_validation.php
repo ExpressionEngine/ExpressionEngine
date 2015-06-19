@@ -517,6 +517,7 @@ class EE_Form_validation {
 		if (strlen($str) > PASSWORD_MAX_LENGTH)
 		{
 			$this->set_message('valid_password', $this->CI->lang->line('password_too_long'));
+			return FALSE;
 		}
 
 
