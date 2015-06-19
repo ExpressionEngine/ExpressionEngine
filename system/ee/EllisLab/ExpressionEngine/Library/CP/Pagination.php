@@ -28,12 +28,40 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  */
 
 class Pagination {
+
+	/**
+	 * @var int $current_page The page number being displayed
+	 */
 	private $current_page;
+
+	/**
+	 * @var int $first The page number of the first page
+	 */
 	private $first = 1;
+
+	/**
+	 * @var int $prev The page number for the previous page
+	 */
 	private $prev;
+
+	/**
+	 * @var int $pages The total number of pages
+	 */
 	private $pages;
+
+	/**
+	 * @var int $next The page number for the next page
+	 */
 	private $next;
+
+	/**
+	 * @var int $last The page number of the last page
+	 */
 	private $last;
+
+	/**
+	 * @var int $total_count The total number of itmes being paginated
+	 */
 	private $total_count;
 
 	/**
@@ -79,14 +107,6 @@ class Pagination {
 		$this->pages        = (int) ceil($this->total_count / $per_page);
 		$this->next         = ($current_page + 1 <= $this->pages) ? ($current_page + 1) : NULL;
 		$this->last         = $this->pages;
-	}
-
-	/**
-	 * This allows us to do Pagination::create(...)->cp_links(...)
-	 */
-	public static function create($per_page, $total_count, $current_page = 1)
-	{
-		return new static($per_page, $total_count, $current_page);
 	}
 
 	/**

@@ -16,17 +16,6 @@ class PaginationTest extends \PHPUnit_Framework_TestCase {
 		new Pagination($per_page, $total_count, $current_page);
 	}
 
-	/**
-	 * Test the create method for things that should fail
-	 *
-	 * @dataProvider badConstructorDataProvider
-	 * @expectedException \InvalidArgumentException
-	 */
-	public function testCreate($description, $per_page, $total_count, $current_page)
-	{
-		Pagination::create($per_page, $total_count, $current_page);
-	}
-
 	public function badConstructorDataProvider()
 	{
 		$obj = new \stdClass;
@@ -93,12 +82,6 @@ class PaginationTest extends \PHPUnit_Framework_TestCase {
 	public function testNothingToPaginate()
 	{
 		$url = new \EllisLab\ExpressionEngine\Library\CP\URL('foo/bar');
-
-		$links = Pagination::create(10, 10, 1)->cp_links($url);
-		$this->assertEquals(array(), $links, "1 Page creates no links");
-
-		$links = Pagination::create(10, 0, 1)->cp_links($url);
-		$this->assertEquals(array(), $links, "0 Pages creates no links");
 	}
 
 	/**
@@ -111,10 +94,6 @@ class PaginationTest extends \PHPUnit_Framework_TestCase {
 		// First with the constructor
 		$pagination = new Pagination($per_page, $total_count, $current_page);
 		$links = $pagination->cp_links($url, $pages, $page_variable);
-		$this->assertEquals($expected, $links, $description);
-
-		// Now with the create() method
-		$links = Pagination::create($per_page, $total_count, $current_page)->cp_links($url, $pages, $page_variable);
 		$this->assertEquals($expected, $links, $description);
 	}
 
