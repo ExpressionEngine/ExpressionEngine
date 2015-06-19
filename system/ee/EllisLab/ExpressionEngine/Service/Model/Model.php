@@ -598,13 +598,9 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	*/
 	public function setAssociation($name, Association $association)
 	{
-		$this->emit('beforeSetAssociation', $name, $association);
-
 		$association->setFrontend($this->getFrontend());
 
 		$this->_associations[$name] = $association;
-
-		$this->emit('afterSetAssociation', $name, $association);
 
 		return $this;
 	}
