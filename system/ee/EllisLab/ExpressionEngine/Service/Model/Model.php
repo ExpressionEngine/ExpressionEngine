@@ -661,4 +661,9 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		return compact('name', 'values', 'related_to');
 	}
 
+
+	public function __toString()
+	{
+		return spl_object_hash($this).':'.$this->getName().':'.$this->getId();
+	}
 }
