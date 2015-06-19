@@ -209,6 +209,8 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 
 		$this->_new = is_null($id);
 
+		$this->emit('setId', $id);
+
 		return $this;
 	}
 
