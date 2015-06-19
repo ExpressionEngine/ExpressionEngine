@@ -240,7 +240,7 @@ abstract class FieldModel extends Model {
 		$data_table = $this->getDataTable();
 
 		ee()->load->dbforge();
-		ee()->dbforge->drop_column($columns, $column);
+		ee()->dbforge->drop_column($data_table, $columns);
 	}
 
 	/**
