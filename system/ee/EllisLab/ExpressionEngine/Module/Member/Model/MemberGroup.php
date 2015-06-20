@@ -102,6 +102,15 @@ class MemberGroup extends Model {
 				'right'  => 'template_id',
 				'left' => 'member_group'
 			)
+		),
+		'NoUploadAccess' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'UploadDestination',
+			'pivot' => array(
+				'table' => 'upload_no_access',
+				'left' => 'member_group',
+				'right' => 'upload_id'
+			)
 		)
 	);
 
