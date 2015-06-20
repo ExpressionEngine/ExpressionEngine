@@ -82,7 +82,7 @@ class Association {
 
     public function get()
     {
-        if ( ! $this->isLoaded())
+        if ( ! isset($this->related) && ! $this->isLoaded())
         {
             $this->reload();
         }

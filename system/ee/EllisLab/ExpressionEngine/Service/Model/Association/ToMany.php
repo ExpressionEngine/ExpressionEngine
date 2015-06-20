@@ -8,8 +8,15 @@ class ToMany extends Association {
 
 	public function get()
 	{
-		$this->ensureCollection();
-		return parent::get();
+		$result = parent::get();
+
+		if ( ! isset($result))
+		{
+			$this->ensureCollection();
+			return $this->related;
+		}
+
+		return $result;
 	}
 
 	protected function ensureExists($model)
