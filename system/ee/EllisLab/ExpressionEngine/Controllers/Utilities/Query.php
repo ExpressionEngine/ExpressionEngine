@@ -5,7 +5,6 @@ namespace EllisLab\ExpressionEngine\Controllers\Utilities;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -281,8 +280,11 @@ class Query extends Utilities {
 		}
 
 		$row_limit = ($limited_query) ? $vars['total_results'] : $row_limit;
-		$pagination = new Pagination($row_limit, $vars['total_results'], $page);
-		$vars['pagination'] = $pagination->cp_links($view_data['base_url']);
+
+		$vars['pagination'] = ee('CP/Pagination', $vars['total_results'])
+			->perPage($row_limit)
+			->currentPage($page)
+			->render($view_data['base_url']);
 
 		// If no table, keep query form labeling
 		if (empty($table_name))

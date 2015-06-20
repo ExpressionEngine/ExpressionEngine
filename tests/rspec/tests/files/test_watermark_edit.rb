@@ -10,7 +10,6 @@ feature 'Watermark Create/Edit' do
   end
 
   it 'shows the Watermark Create/Edit page' do
-    @page.all_there?.should == true
     @page.should have_text 'Create Watermark'
   end
 

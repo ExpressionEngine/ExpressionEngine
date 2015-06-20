@@ -24,7 +24,7 @@
 		<?=ee('Alert')->get('pages-form')?>
 
 		<?php $this->ee_view('_shared/table', $table); ?>
-		<?php $this->ee_view('_shared/pagination'); ?>
+		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
 		<fieldset class="tbl-bulk-act">
 			<select name="bulk_action">

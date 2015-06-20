@@ -573,27 +573,6 @@ class Api_channel_entries extends Api {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Send Pings
-	 *
-	 * Send xml-rpc pings
-	 *
-	 * @access	public
-	 * @param	string
-	 * @param	int
-	 * @param	bool
-	 * @return	void
-	 */
-	function send_pings($ping_servers, $channel_id, $entry_id, $send_now = TRUE)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.7');
-
-		return FALSE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Get errors
 	 *
 	 * Convenience function to access errors

@@ -747,7 +747,7 @@ class Cat extends AbstractChannelsController {
 				$form .= form_dropdown(
 					str_replace('_id_', '_ft_', $field->getName()),
 					$custom_format_options,
-					$field->get('field_show_fmt')
+					$field->getFormat()
 				);
 			}
 			$vars['sections']['custom_fields'][] = array(

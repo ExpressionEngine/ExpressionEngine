@@ -587,13 +587,6 @@ class EE_Output {
 	 */
 	function show_user_error($type = 'submission', $errors, $heading = '')
 	{
-		if (defined('REQ') && REQ == 'CP')
-		{
-		// Deprecation temporarily removed due to some lingering complex use cases in the CP.
-		//	ee()->load->library('logger');
-		//	ee()->logger->deprecated('2.6', 'show_error()');
-		}
-
 		$this->set_header("Content-Type: text/html; charset=".ee()->config->item('charset'));
 
 		if ($type != 'off')

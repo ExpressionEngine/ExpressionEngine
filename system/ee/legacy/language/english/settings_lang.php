@@ -442,6 +442,21 @@ $lang = array(
 'max_caches_desc' =>
 'If you cache your pages or database, this limits the number of cache instances. We recommend 150 for small sites and 300 for large sites. The allowed maximum is 1000.',
 
+'new_relic' =>
+'New Relic Options',
+
+'use_newrelic' =>
+'Enable New Relic RUM JavaScript?',
+
+'use_newrelic_desc' =>
+'When set to <b>yes</b>, New Relic will add <a href="https://docs.newrelic.com/docs/browser/new-relic-browser/page-load-timing-resources/instrumentation-browser-monitoring" rel="external">Real User Monitoring JavaScript</a> to all of your web pages.',
+
+'newrelic_app_name' =>
+'New Relic application name',
+
+'newrelic_app_name_desc' =>
+'Changes the name of the application that appears in the New Relic dashboard for this installation of ExpressionEngine.',
+
 /**
  * Content & Design
  */

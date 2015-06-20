@@ -45,8 +45,15 @@ return array(
 		'CP/URL' => function($ee, $path, $qs = array(), $cp_url = '', $session_id = NULL)
 		{
 			$session_id = $session_id ?: ee()->session->session_id();
+			$cp_url = (empty($cp_url)) ? SELF : (string) $cp_url;
 
 			return new Library\CP\URL($path, $session_id, $qs, $cp_url);
+		},
+
+		'CP/Pagination' => function($ee, $total_count)
+		{
+			$view = $ee->make('View')->make('_shared/pagination');
+			return new Library\CP\Pagination($total_count, $view);
 		},
 
 		'db' => function($ee)

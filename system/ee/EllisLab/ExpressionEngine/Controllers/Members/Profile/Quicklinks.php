@@ -7,7 +7,6 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 
 /**
  * ExpressionEngine - by EllisLab

@@ -2,7 +2,6 @@
 
 namespace EllisLab\ExpressionEngine\Controllers\Publish;
 
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Controllers\Publish\AbstractPublish as AbstractPublishController;
@@ -126,8 +125,10 @@ class Comments extends AbstractPublishController {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 
-		$pagination = new Pagination($filter_values['perpage'], $count, $page);
-		$vars['pagination'] = $pagination->cp_links($base_url);
+		$vars['pagination'] = ee('CP/Pagination', $count)
+			->perPage($filter_values['perpage'])
+			->currentPage($page)
+			->render($base_url);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('comment') . ': <b>### ' . lang('comments') . '</b>');
 		ee()->cp->add_js_script(array(
@@ -247,8 +248,10 @@ class Comments extends AbstractPublishController {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 
-		$pagination = new Pagination($filter_values['perpage'], $count, $page);
-		$vars['pagination'] = $pagination->cp_links($base_url);
+		$vars['pagination'] = ee('CP/Pagination', $count)
+			->perPage($filter_values['perpage'])
+			->currentPage($page)
+			->render($base_url);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('comment') . ': <b>### ' . lang('comments') . '</b>');
 		ee()->cp->add_js_script(array(

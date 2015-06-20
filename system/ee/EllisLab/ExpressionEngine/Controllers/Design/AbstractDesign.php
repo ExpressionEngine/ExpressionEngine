@@ -4,7 +4,6 @@ namespace EllisLab\ExpressionEngine\Controllers\Design;
 
 use CP_Controller;
 use ZipArchive;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Library\Data\Collection;

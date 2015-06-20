@@ -2,7 +2,6 @@
 
 namespace EllisLab\ExpressionEngine\Controllers\Channels\Fields;
 
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Controllers\Channels\AbstractChannels as AbstractChannelsController;
 use EllisLab\ExpressionEngine\Module\Channel\Model\ChannelFieldGroup;
@@ -120,12 +119,10 @@ class Groups extends AbstractChannelsController {
 
 		$vars['table'] = $table->viewData(ee('CP/URL', 'channels/fields/groups'));
 
-		$pagination = new Pagination(
-			$vars['table']['limit'],
-			$vars['table']['total_rows'],
-			$vars['table']['page']
-		);
-		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
+		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($vars['table']['base_url']);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('group') . ': <b>### ' . lang('groups') . '</b>');
 		ee()->cp->add_js_script(array(

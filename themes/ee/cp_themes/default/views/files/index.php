@@ -27,7 +27,7 @@
 		<?=ee('Alert')->getAllInlines()?>
 		<?php if (isset($filters)) echo $filters; ?>
 		<?php $this->view('_shared/table', $table); ?>
-		<?php $this->view('_shared/pagination'); ?>
+		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
 		<fieldset class="tbl-bulk-act">
 			<select name="bulk_action">
