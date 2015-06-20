@@ -3,7 +3,7 @@
 namespace EllisLab\ExpressionEngine\Service\Model\Relation;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Service\Model\Association\ToMany;
+use EllisLab\ExpressionEngine\Service\Model\Association\ManyToMany;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -45,7 +45,7 @@ class HasAndBelongsToMany extends Relation {
 	 */
 	public function createAssociation(Model $source)
 	{
-		return new ToMany($source, $this);
+		return new ManyToMany($source, $this);
 		return new Association\HasAndBelongsToMany($source, $this->name);
 	}
 

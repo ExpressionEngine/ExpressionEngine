@@ -8,14 +8,12 @@ use EllisLab\ExpressionEngine\Service\Model\Relation\Relation;
 
 class Association {
 
-    private $model;
-    private $relation;
-
-//    private $tracker;
     private $loaded = FALSE;
     private $inverse_name;
 
+    protected $model;
     protected $related;
+    protected $relation;
 
     public function __construct(Model $model, Relation $relation)
     {
@@ -89,7 +87,6 @@ class Association {
             $this->reload();
         }
 
-        // todo lazy load
         return $this->related;
     }
 
@@ -130,19 +127,6 @@ class Association {
      */
     public function save()
     {
-        /*
-        foreach ($this->tracker->getRemoved() as $model)
-        {
-            $this->dropRelationship($this->source, $model);
-        }
-
-        foreach ($this->tracker->getAdded() as $model)
-        {
-            $this->insertRelationship($this->source, $model);
-        }
-
-        $this->tracker->reset();
-*/
         if ($this->relation->canSaveAcross())
         {
             if (isset($this->related))
@@ -195,14 +179,12 @@ class Association {
 
     protected function ensureExists($model)
     {
-    //    $this->tracker->add($model);
         $this->relation->linkIds($this->model, $model);
     }
 
 
     protected function ensureDoesNotExist($model)
     {
-    //    $this->tracker->remove($model);
         $this->relation->unlinkIds($this->model, $model);
     }
 
@@ -248,8 +230,6 @@ class Association {
      */
     protected function bootAssociation()
     {
-    //    $this->tracker = new Tracker\Staged();
-
         $that = $this;
         $this->model->on('setId', function() use ($that)
         {

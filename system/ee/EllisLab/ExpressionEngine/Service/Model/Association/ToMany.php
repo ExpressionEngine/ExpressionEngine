@@ -32,7 +32,7 @@ class ToMany extends Association {
 		}
 	}
 
-	private function has($model)
+	protected function has($model)
 	{
 		if (is_null($this->related))
 		{
@@ -50,7 +50,7 @@ class ToMany extends Association {
 		return FALSE;
 	}
 
-	private function ensureCollection()
+	protected function ensureCollection()
 	{
 		if (is_null($this->related))
 		{
