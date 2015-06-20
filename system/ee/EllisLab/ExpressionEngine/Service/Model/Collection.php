@@ -126,7 +126,7 @@ class Collection extends CoreCollection {
 		$this->association = $association;
 	}
 
-	public function offsetSet($offset, $value)
+	public function offsetSet($offset, $value = NULL)
 	{
 		parent::offsetSet($offset, $value);
 
@@ -141,9 +141,9 @@ class Collection extends CoreCollection {
      */
     protected function getOperatorCallback($k, $v, $operator)
     {
-        if (is_null($value))
+        if (is_null($v))
         {
-            $value = $operator;
+            $v = $operator;
             $operator = '==';
         }
 
