@@ -308,6 +308,23 @@ class ChannelEntry extends ContentModel {
 		);
 	}
 
+	public function set__categories($categories)
+	{
+		if (empty($categories))
+		{
+			$this->Categories = NULL;
+			return;
+		}
+
+		$this->Categories = $this
+			->getFrontend()
+			->get('Category')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('cat_id', 'IN', $categories)
+			->all();
+	}
+
+
 	protected function getDefaultFields()
 	{
 		return array(
