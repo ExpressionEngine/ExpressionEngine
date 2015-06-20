@@ -155,6 +155,12 @@ class Association {
 		$query->setLazyConstraint($this->relation, $this->model);
 
 		$result = $query->all();
+
+        if ($result instanceOf Collection)
+        {
+            $result->setAssociation($this);
+        }
+
 		$this->fill($result);
 
 		$this->markAsLoaded();
