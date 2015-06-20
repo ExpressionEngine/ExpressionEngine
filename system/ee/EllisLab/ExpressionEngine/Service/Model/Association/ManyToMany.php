@@ -63,6 +63,11 @@ class ManyToMany extends ToMany {
 
 	protected function replaceKnown($new_known)
 	{
+		if ($new_known instanceOf Model)
+		{
+			$new_known = array($new_known);
+		}
+
 		foreach ($this->known as $model)
 		{
 			$this->removeFromKnown($model);
@@ -73,7 +78,12 @@ class ManyToMany extends ToMany {
 			$this->addToKnown($model);
 		}
 
-		$this->known = $new_known;
+		if ( ! is_array($new_known))
+		{
+			$new_known = $new_known->asArray();
+		}
+
+		$this->known = $new_known ?: array();
 	}
 
 	protected function removeFromKnown($model)
