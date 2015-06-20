@@ -276,7 +276,7 @@ class ChannelEntry extends ContentModel {
 			}
 
 			$category_string_override .= '<label class="' . $class . '">';
-			$category_string_override .= '<input type="checkbox" name="categories[]" vlaue="' . $category->cat_id .'"' . $checked . '>' . $category->cat_name;
+			$category_string_override .= '<input type="checkbox" name="categories[]" value="' . $category->cat_id .'"' . $checked . '>' . $category->cat_name;
 			$category_string_override .= '</label>';
 
 			// Recursion would be much better
@@ -291,7 +291,7 @@ class ChannelEntry extends ContentModel {
 				}
 
 				$category_string_override .= '<label class="' . $class . '">';
-				$category_string_override .= '<input type="checkbox" name="categories[]" vlaue="' . $child_category->cat_id .'"' . $checked . '>' . $child_category->cat_name;
+				$category_string_override .= '<input type="checkbox" name="categories[]" value="' . $child_category->cat_id .'"' . $checked . '>' . $child_category->cat_name;
 				$category_string_override .= '</label>';
 			}
 		}
