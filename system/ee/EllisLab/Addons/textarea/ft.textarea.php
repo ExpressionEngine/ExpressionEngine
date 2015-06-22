@@ -107,8 +107,7 @@ class Textarea_ft extends EE_Fieldtype {
 
 			$format_options = array(
 				'field_show_smileys',
-				'field_show_file_selector',
-				'field_show_fmt',
+				'field_show_file_selector'
 			);
 
 			foreach ($format_options as $option)
