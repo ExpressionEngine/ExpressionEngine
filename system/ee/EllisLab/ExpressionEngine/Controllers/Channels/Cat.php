@@ -738,23 +738,13 @@ class Cat extends AbstractChannelsController {
 
 		foreach ($display->getFields() as $field)
 		{
-			$form = $field->getForm();
-
-			if (get_bool_from_string($field->get('field_show_fmt')))
-			{
-				$form .= form_dropdown(
-					str_replace('_id_', '_ft_', $field->getName()),
-					$custom_format_options,
-					$field->getFormat()
-				);
-			}
 			$vars['sections']['custom_fields'][] = array(
 				'title' => $field->getLabel(),
 				'desc' => '',
 				'fields' => array(
 					$field->getName() => array(
 						'type' => 'html',
-						'content' => $form,
+						'content' => $field->getForm(),
 						'required' => $field->isRequired(),
 					)
 				)
