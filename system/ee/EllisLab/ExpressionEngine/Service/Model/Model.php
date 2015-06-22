@@ -344,8 +344,10 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		// clear relationships
 		foreach ($this->getAllAssociations() as $name => $assoc)
 		{
-			$assoc->clear();
-			$assoc->save();
+			if (isset($assoc))
+			{
+				$this->$name = NULL;
+			}
 		}
 
 		return $this;

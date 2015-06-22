@@ -213,11 +213,6 @@ class FieldFacade {
 	{
 		$data = $this->setupField();
 
-		if (isset($data['string_override']))
-		{
-			return $data['string_override'];
-		}
-
 		ee()->api_channel_fields->setup_handler($data['field_id']);
 		ee()->api_channel_fields->apply('_init', array(array(
 			'content_id' => $this->content_id,
