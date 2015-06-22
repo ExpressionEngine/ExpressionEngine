@@ -29,29 +29,7 @@
 		<div class="box">
 			<h1><?=$name?> <?=$version?><br><i><?=lang('author')?>: <a href="<?=$author_url?>" rel="external"><?=$author?></a><br><?=$description?></i></h1>
 			<form class="settings">
-				<fieldset class="col-group last">
-					<div class="setting-txt col w-16">
-						<h3><?=lang('example_usage')?></h3>
-						<em><?=$usage['description']?></em>
-					</div>
-					<div class="setting-field col w-16 last">
-						<textarea cols="" rows=""><?=$usage['example']?></textarea>
-					</div>
-				</fieldset>
-				<?php if (isset($parameters)): ?>
-				<h2><?=lang('available_parameters')?></h2>
-				<?php foreach ($parameters as $name => $details): ?>
-				<fieldset class="col-group">
-					<div class="setting-txt col w-8">
-						<h3><mark><?=$name?></mark></h3>
-						<em><?=$details['description']?></em>
-					</div>
-					<div class="setting-field col w-8 last">
-						<textarea cols="" rows=""><?=$details['example']?></textarea>
-					</div>
-				</fieldset>
-				<?php endforeach;?>
-			<?php endif; ?>
+				<?=$readme?>
 			</form>
 		</div>
 	</div>

@@ -317,6 +317,16 @@ class Addons extends CP_Controller {
 
 			if ( ! empty($addon))
 			{
+				$info = ee('App')->get($name);
+				if (file_exists($info->getPath() . '/README.md'))
+				{
+					$addon['manual_url'] = ee('CP/URL', 'addons/manual/' . $name);
+				}
+				elseif ($info->get('docs_url'))
+				{
+					$addon['manual_url'] = ee()->cp->masked_url($info->get('docs_url'));
+				}
+
 				$addons[$name] = $addon;
 			}
 		}
@@ -716,39 +726,46 @@ class Addons extends CP_Controller {
 	 */
 	public function manual($addon)
 	{
-		ee()->view->cp_page_title = lang('addon_manager');
-
-		$vars = array();
-
-		$plugin = $this->getPlugin($addon);
-		if (empty($plugin))
+		try
+		{
+			$info = ee('App')->get($addon);
+		}
+		catch (\Exception $e)
 		{
 			show_error(lang('requested_module_not_installed').NBS.$addon);
 		}
 
-		$info = ee('App')->get($addon);
+		$readme_file = $info->getPath() . '/README.md';
+
+		if ( ! file_exists($readme_file))
+		{
+			show_404();
+		}
+
+		ee()->view->cp_page_title = lang('addon_manager');
 
 		$vars = array(
-			'name'			=> $info->getName(),
-			'version'		=> $this->formatVersionNumber($info->getVersion()),
-			'author'		=> $info->getAuthor(),
-			'author_url'	=> $info->get('author_url'),
-			'description'	=> $info->get('description')
+			'name'        => $info->getName(),
+			'version'     => $this->formatVersionNumber($info->getVersion()),
+			'author'      => $info->getAuthor(),
+			'author_url'  => $info->get('author_url'),
+			'docs_url'    => $info->get('docs_url'),
+			'description' => $info->get('description')
 		);
 
-		$usage = $info->get('plugin.usage');
+		ee()->load->library('typography');
+		ee()->typography->initialize(array(
+			'bbencode_links' => FALSE,
+			'parse_images'	=> FALSE,
+			'parse_smileys'	=> FALSE
+		));
 
-		$vars['usage'] = array(
-			'description' => '',
-			'example' => $usage
-		);
-
-		if (is_array($usage))
-		{
-			$vars['usage']['description'] = $usage['description'];
-			$vars['usage']['example'] = $usage['example'];
-			$vars['parameters'] = $usage['parameters'];
-		}
+		$vars['readme'] = ee()->typography->parse_type(file_get_contents($readme_file), array(
+			'text_format'    => 'markdown',
+			'html_format'    => 'all',
+			'auto_links'	 => 'n',
+			'allow_img_url'  => 'y'
+		));
 
 		ee()->view->cp_heading = $vars['name'] . ' ' . lang('manual');
 
@@ -875,7 +892,6 @@ class Addons extends CP_Controller {
 			'name'			=> $info->getName(),
 			'package'		=> $name,
 			'type'			=> 'plugin',
-			'manual_url'	=> ee('CP/URL', 'addons/manual/' . $name),
 		);
 
 		$model = ee('Model')->get('Plugin')
@@ -977,7 +993,6 @@ class Addons extends CP_Controller {
 	 *        'package'		 => 'foobar',
 	 *        'class'        => 'Foobar_ext',
 	 *        'enabled'		 => NULL|TRUE|FALSE
-	 *        'manual_url'	 => '' (optional),
 	 *        'settings_url' => '' (optional)
 	 */
 	private function getExtension($name)
@@ -1057,11 +1072,6 @@ class Addons extends CP_Controller {
 			if ($info->get('settings_exist'))
 			{
 				$data['settings_url'] = ee('CP/URL', 'addons/settings/' . $name);
-			}
-
-			if ($info->get('docs_url'))
-			{
-				$data['manual_url'] = ee()->cp->masked_url($info->get('docs_url'));
 			}
 		}
 
