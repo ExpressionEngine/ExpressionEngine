@@ -63,9 +63,14 @@
 					<li>
 						<a class="has-sub" href=""><?=lang('menu_create')?> <span class="ico sub-arrow"></span></a>
 						<div class="sub-menu">
-							<ul>
+							<?php if (count($cp_main_menu['channels']['create']) >= 10): ?>
+								<form class="filter">
+									<input type="text" value="" placeholder="filter channels">
+								</form>
+							<?php endif ?>
+							<ul class="channels-create">
 								<?php foreach ($cp_main_menu['channels']['create'] as $channel_name => $link): ?>
-									<li><a href="<?=$link?>"><?=$channel_name?></a></li>
+									<li class="search-channel" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
 								<?php endforeach ?>
 								<li class="last"><a class="add" href="<?=cp_url('channels/create')?>">&#10010; <?=lang('new_channel')?></a></li>
 							</ul>
@@ -74,9 +79,14 @@
 					<li>
 						<a class="has-sub" href=""><?=lang('menu_edit')?> <span class="ico sub-arrow"></span></a>
 						<div class="sub-menu">
-							<ul>
+							<?php if (count($cp_main_menu['channels']['edit']) >= 10): ?>
+								<form class="filter">
+									<input type="text" value="" placeholder="filter channels">
+								</form>
+							<?php endif ?>
+							<ul class="channels-edit">
 								<?php foreach ($cp_main_menu['channels']['edit'] as $channel_name => $link): ?>
-									<li><a href="<?=$link?>"><?=$channel_name?></a></li>
+									<li class="search-channel" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
 								<?php endforeach ?>
 							</ul>
 						</div>

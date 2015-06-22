@@ -121,12 +121,10 @@ class Cat extends AbstractChannelsController {
 		$base_url = new CP\URL('channels/cat', ee()->session->session_id());
 		$vars['table'] = $table->viewData($base_url);
 
-		$pagination = new CP\Pagination(
-			$vars['table']['limit'],
-			$total_rows,
-			$vars['table']['page']
-		);
-		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
+		$vars['pagination'] = ee('CP/Pagination', $total_rows)
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($vars['table']['base_url']);
 
 		ee()->view->cp_page_title = lang('category_groups');
 
@@ -627,9 +625,19 @@ class Cat extends AbstractChannelsController {
 		if (is_null($category_id))
 		{
 			ee()->view->cp_page_title = lang('create_category');
-			ee()->view->base_url = cp_url('channel/cat/create-cat');
+			ee()->view->base_url = cp_url('channels/cat/create-cat/'.$group_id);
 			ee()->view->save_btn_text = 'create_category';
+
 			$category = ee('Model')->make('Category');
+			$category->setCategoryGroup($cat_group);
+
+			// Only auto-complete channel short name for new channels
+			ee()->cp->add_js_script('plugin', 'ee_url_title');
+			ee()->javascript->output('
+				$("input[name=cat_name]").bind("keyup keydown", function() {
+					$(this).ee_url_title("input[name=cat_url_title]");
+				});
+			');
 		}
 		else
 		{
@@ -641,7 +649,7 @@ class Cat extends AbstractChannelsController {
 			}
 
 			ee()->view->cp_page_title = lang('edit_category');
-			ee()->view->base_url = cp_url('channel/cat/create-cat/'.$group_id.'/'.$category_id);
+			ee()->view->base_url = cp_url('channels/cat/edit-cat/'.$group_id.'/'.$category_id);
 			ee()->view->save_btn_text = 'edit_category';
 		}
 
@@ -654,29 +662,6 @@ class Cat extends AbstractChannelsController {
 		{
 			$indent = ($cat[5] != 1) ? str_repeat(NBS.NBS.NBS.NBS, $cat[5]) : '';
 			$parent_id_options[$cat[0]] = $indent.$cat[1];
-		}
-
-		// New categories get URL title JS
-		if (is_null($category_id))
-		{
-			// Only auto-complete channel short name for new channels
-			ee()->cp->add_js_script('plugin', 'ee_url_title');
-			ee()->javascript->output('
-				$("input[name=cat_name]").bind("keyup keydown", function() {
-					$(this).ee_url_title("input[name=cat_url_title]");
-				});
-			');
-
-			ee()->view->cp_page_title = lang('create_category');
-			ee()->view->save_btn_text = 'create_category';
-			ee()->view->base_url = cp_url('channels/cat/create-cat/'.$group_id);
-			$channel = ee('Model')->make('Channel');
-		}
-		else
-		{
-			ee()->view->cp_page_title = lang('edit_category');
-			ee()->view->save_btn_text = 'edit_category';
-			ee()->view->base_url = cp_url('channels/cat/edit-cat/'.$group_id.'/'.$category_id);
 		}
 
 		// TODO: file field stuff?
@@ -740,32 +725,30 @@ class Cat extends AbstractChannelsController {
 			)
 		);
 
-		$cat_fields = $cat_group->getCategoryFields()->sortBy('field_order');
+		$display = $category->getDisplay();
 
-		if (count($cat_fields))
+		ee()->load->model('addons_model');
+		$plugins = ee()->addons_model->get_plugin_formatting();
+
+		$custom_format_options['none'] = 'None';
+		foreach ($plugins as $k=>$v)
 		{
-			/*ee()->load->model('addons_model');
-			$plugins = ee()->addons_model->get_plugin_formatting();
+			$custom_format_options[$k] = $v;
+		}
 
-			$vars['custom_format_options']['none'] = 'None';
-			foreach ($plugins as $k=>$v)
-			{
-				$vars['custom_format_options'][$k] = $v;
-			}*/
-			foreach ($cat_fields as $field)
-			{
-				$vars['sections']['custom_fields'][] = array(
-					'title' => $field->field_label,
-					'desc' => '',
-					'fields' => array(
-						$field->field_name => array(
-							'type' => 'html',
-							'content' => $field->getField()->getForm(),
-							'required' => $field->field_required,
-						)
+		foreach ($display->getFields() as $field)
+		{
+			$vars['sections']['custom_fields'][] = array(
+				'title' => $field->getLabel(),
+				'desc' => '',
+				'fields' => array(
+					$field->getName() => array(
+						'type' => 'html',
+						'content' => $field->getForm(),
+						'required' => $field->isRequired(),
 					)
-				);
-			}
+				)
+			);
 		}
 
 		if ( ! empty($_POST))
@@ -790,7 +773,7 @@ class Cat extends AbstractChannelsController {
 
 			if ($result->isValid())
 			{
-				$category_id = $this->saveCategory($group_id, $category_id);
+				$category_id = $category->save()->getId();
 
 				ee('Alert')->makeInline('shared-form')
 					->asSuccess()

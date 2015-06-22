@@ -153,9 +153,6 @@ class DataStore {
 		foreach ($relations as $name => $relation)
 		{
 			$assoc = $relation->createAssociation($model);
-
-			// todo move these into relation?
-			$assoc->setRelation($relation);
 			$model->setAssociation($name, $assoc);
 		}
 	}

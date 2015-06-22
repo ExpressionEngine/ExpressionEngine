@@ -621,63 +621,6 @@ class Filemanager {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Filebrowser (Frontend)
-	 *
-	 * Same as filebrowser(), but with additional considerations for the frontend
-	 *
-	 * @access	public
-	 * @param	string	the endpoint url
-	 * @param	bool	include jquery core?
-	 * @return	void
-	 */
-	function frontend_filebrowser($endpoint_url, $include_jquery_base = TRUE)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.7');
-
-		ee()->lang->loadfile('filebrowser');
-
-		$ret = array();
-
-		$ret['str'] = '';
-
-		$ret['json'] = array(
-			'BASE'			=> ee()->functions->fetch_site_index(0,0).QUERY_MARKER,
-			'THEME_URL'		=> $this->theme_url,
-			'PATH_CP_GBL_IMG'	=> URL_THEMES.'cp_global_images/',
-			'filebrowser' => array(
-				'endpoint_url'	=> $endpoint_url,
-				'window_title'	=> lang('file_manager'),
-				'theme_url'		=> $this->theme_url
-			),
-			'fileuploader' => array(
-				'window_title'		=> lang('file_upload'),
-				'delete_url'		=> 'C=content_files&M=delete_files'
-			),
-			'lang' => array(
-				'or'				=> ee()->lang->line('or'),
-				'resize_image' 		=> ee()->lang->line('resize_image'),
-				'return_to_publish' => ee()->lang->line('return_to_publish')
-			)
-		);
-
-		$script_base = ee()->functions->fetch_site_index(0,0).QUERY_MARKER.'ACT=jquery';
-
-		if ($include_jquery_base)
-		{
-			$ret['str'] .= '<script type="text/javascript" charset="utf-8" src="'.$script_base.'"></script>';
-		}
-
-	//	$live_url =  (ee()->TMPL->fetch_param('use_live_url') != 'no') ? AMP.'use_live_url=y' : '';
-
-	//	$ret['str'] .= '<script type="text/javascript" charset="utf-8" src="'.ee()->functions->fetch_site_index(0,0).QUERY_MARKER.'ACT=saef'.$live_url.'"></script>';
-
-		return $ret;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Process Request
 	 *
 	 * Main Backend Handler

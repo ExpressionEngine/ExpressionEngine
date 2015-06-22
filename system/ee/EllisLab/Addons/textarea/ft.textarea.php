@@ -107,8 +107,7 @@ class Textarea_ft extends EE_Fieldtype {
 
 			$format_options = array(
 				'field_show_smileys',
-				'field_show_file_selector',
-				'field_show_fmt',
+				'field_show_file_selector'
 			);
 
 			foreach ($format_options as $option)
@@ -127,29 +126,8 @@ class Textarea_ft extends EE_Fieldtype {
 			if (isset($this->settings['field_show_fmt'])
 				&& $this->settings['field_show_fmt'] == 'y')
 			{
-				// @TODO I should be shot for using ee()->db -sb
-				ee()->db->select('field_fmt');
-				ee()->db->where('field_id', $this->field_id);
-				ee()->db->order_by('field_fmt');
-				$query = ee()->db->get('field_formatting');
-
-				if ($query->num_rows() > 0)
-				{
-					foreach ($query->result_array() as $row)
-					{
-						$name = ucwords(str_replace('_', ' ', $row['field_fmt']));
-
-						if ($name == 'Br')
-						{
-							$name = lang('auto_br');
-						}
-						elseif ($name == 'Xhtml')
-						{
-							$name = lang('xhtml');
-						}
-						$format_options[$row['field_fmt']] = $name;
-					}
-				}
+				ee()->load->model('addons_model');
+				$format_options = ee()->addons_model->get_plugin_formatting(TRUE);
 			}
 
 			ee()->cp->get_installed_modules();
@@ -245,6 +223,9 @@ class Textarea_ft extends EE_Fieldtype {
 
 	function display_settings($data)
 	{
+		ee()->load->model('addons_model');
+		$format_options = ee()->addons_model->get_plugin_formatting(TRUE);
+
 		$settings = array(
 			array(
 				'title' => 'textarea_height',
@@ -262,11 +243,7 @@ class Textarea_ft extends EE_Fieldtype {
 				'fields' => array(
 					'field_fmt' => array(
 						'type' => 'dropdown',
-						'choices' => array(
-							'none'	=> lang('none'),
-							'xhtml'	=> lang('xhtml'),
-							'br'	=> lang('auto_br')
-						),
+						'choices' => $format_options,
 						'value' => $data['field_fmt'],
 					)
 				)

@@ -70,11 +70,6 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 		}
 	}
 
-	public function __get($key)
-	{
-		return new static($this->pluck($key));
-	}
-
 	/**
 	 * Allow the calling of element methods by the collection.
 	 * First argument is assumed to be a callback to handle

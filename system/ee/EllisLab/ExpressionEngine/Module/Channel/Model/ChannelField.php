@@ -35,7 +35,12 @@ class ChannelField extends FieldModel {
 	protected static $_relationships = array(
 		'ChannelFieldGroup' => array(
 			'type' => 'belongsTo'
-		)
+		),
+		'Channel' => array(
+			'type' => 'belongsTo',
+			'from_key' => 'group_id',
+			'to_key' => 'field_group'
+		),
 	);
 
 	protected $field_id;

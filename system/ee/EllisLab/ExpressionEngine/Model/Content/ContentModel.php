@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Model\Content;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Service\Model\VariableColumnModel;
 use EllisLab\ExpressionEngine\Model\Content\Display\DefaultLayout;
 use EllisLab\ExpressionEngine\Model\Content\Display\FieldDisplay;
 use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
@@ -14,7 +15,7 @@ use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
  * mass set: $entry->set(array); $entry->getForm();
  */
 
-abstract class ContentModel extends Model {
+abstract class ContentModel extends VariableColumnModel {
 
 	protected static $_events = array(
 		'afterSetCustomField'
@@ -136,13 +137,13 @@ abstract class ContentModel extends Model {
 	}
 
 	/**
-	 * Custom fields coutn as a valid property
+	 * Custom fields count as a valid property
 	 */
 	public function hasProperty($name)
 	{
 		if ( ! parent::hasProperty($name))
 		{
-			return $this->hasCustomField($name);
+			return $this->hasCustomField($name) || (strpos($name, 'field_ft_') == 0);
 		}
 
 		return TRUE;
@@ -280,6 +281,18 @@ abstract class ContentModel extends Model {
 
 		foreach ($data as $name => $value)
 		{
+			if (strpos($name, 'field_ft_') === 0)
+			{
+				$name = str_replace('field_ft_', 'field_id_', $name);
+
+				if ($this->hasCustomField($name))
+				{
+					$this->getCustomField($name)->setFormat($value);
+				}
+
+				continue;
+			}
+
 			if ($this->hasCustomField($name))
 			{
 				$this->getCustomField($name)->setData($value);
@@ -305,13 +318,15 @@ abstract class ContentModel extends Model {
 		$native_prefix = $this->getCustomFieldPrefix();
 
 		foreach ($native_fields as $field)
-		{
-			$this->addFacade(
-				$field->getId(),
-				$field->toArray(),
-				$native_prefix
-			);
-		}
+        {
+            $settings = array_merge($field->getSettingsValues(), $field->toArray());
+
+            $this->addFacade(
+                $field->getId(),
+                $settings,
+                $native_prefix
+            );
+        }
 	}
 
 	/**

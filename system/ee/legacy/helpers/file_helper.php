@@ -334,32 +334,6 @@ if ( ! function_exists('get_file_info'))
 // --------------------------------------------------------------------
 
 /**
- * Determines the MIME type of a file
- *
- * @deprecated 2.10.0 No longer used; please use the Mime_type library instead
- * @access	public
- * @param	string	path to file
- * @return	string The MIME type of the file
- */
-if ( ! function_exists('get_mime_by_extension'))
-{
-	function get_mime_by_extension($file)
-	{
-		// Deprecate
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.10', 'ee()->mime_type->ofFile($filepath)');
-
-		// This is not 1:1 parity with the old code as this does more than
-		// examine the extension
-		ee()->load->library('mime_type');
-		$mime = ee()->mime_type->ofFile($file);
-		return $mime;
-	}
-}
-
-// --------------------------------------------------------------------
-
-/**
  * Symbolic Permissions
  *
  * Takes a numeric value representing a file's permissions and returns

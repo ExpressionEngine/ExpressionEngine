@@ -5,7 +5,6 @@ namespace EllisLab\ExpressionEngine\Controllers\Design;
 use \EE_Route;
 use ZipArchive;
 use EllisLab\ExpressionEngine\Controllers\Design\AbstractDesign as AbstractDesignController;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Model\Template\Template as TemplateModel;
@@ -471,12 +470,10 @@ class Template extends AbstractDesignController {
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
-			$pagination = new Pagination(
-				$vars['table']['limit'],
-				$vars['table']['total_rows'],
-				$vars['table']['page']
-			);
-			$vars['pagination'] = $pagination->cp_links($base_url);
+			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+				->perPage($vars['table']['limit'])
+				->currentPage($vars['table']['page'])
+				->render($base_url);
 		}
 
 		ee()->view->cp_heading = sprintf(

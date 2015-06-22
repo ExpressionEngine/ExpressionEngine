@@ -748,15 +748,6 @@ class EE_Schema {
 			KEY `grid_row_id` (`grid_row_id`)
 		)";
 
-
-		// Field formatting definitions
-		$Q[] = "CREATE TABLE exp_field_formatting (
-			formatting_id int(10) unsigned NOT NULL auto_increment,
-			field_id int(10) unsigned NOT NULL,
-			field_fmt varchar(40) NOT NULL,
-			PRIMARY KEY `formatting_id` (`formatting_id`)
-		)";
-
 		// Channel data
 		$Q[] = "CREATE TABLE exp_channel_data (
 			entry_id int(10) unsigned NOT NULL,

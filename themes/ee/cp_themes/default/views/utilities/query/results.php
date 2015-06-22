@@ -26,7 +26,7 @@
 			<?php endif ?>
 			<h1><?=(isset($table_heading)) ? $table_heading : $cp_page_title?></h1>
 			<?php $this->view('_shared/table', $table); ?>
-			<?php $this->view('_shared/pagination'); ?>
+			<?=$pagination?>
 		</form>
 	</div>
 </div>

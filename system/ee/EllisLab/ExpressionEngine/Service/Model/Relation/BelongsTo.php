@@ -3,7 +3,7 @@
 namespace EllisLab\ExpressionEngine\Service\Model\Relation;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Service\Model\Association;
+use EllisLab\ExpressionEngine\Service\Model\Association\ToOne;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -35,7 +35,26 @@ class BelongsTo extends Relation {
 	 */
 	public function createAssociation(Model $source)
 	{
-		return new Association\BelongsTo($source, $this->name);
+		return new ToOne($source, $this);
+		//return new Association\BelongsTo($source, $this);
+	}
+
+	/**
+	 *
+	 */
+	public function canSaveAcross()
+	{
+		return FALSE;
+	}
+
+	/**
+	 *
+	 */
+	public function fillLinkIds(Model $source, Model $target)
+	{
+		list($from, $to) = $this->getKeys();
+
+		$source->fill(array($from => $target->$to));
 	}
 
 	/**
@@ -56,6 +75,16 @@ class BelongsTo extends Relation {
 		list($from, $_) = $this->getKeys();
 
 		$source->$from = NULL;
+	}
+
+	/**
+	 *
+	 */
+	public function markLinkAsClean(Model $source, Model $target)
+	{
+		list($from, $_) = $this->getKeys();
+
+		$source->markAsClean($from);
 	}
 
 	/**

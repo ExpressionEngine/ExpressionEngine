@@ -1,7 +1,6 @@
 <?php
 
 use EllisLab\ExpressionEngine\Library\CP\URL;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
 use EllisLab\Addons\FilePicker\FilePicker as Picker;
 
@@ -90,12 +89,10 @@ class Filepicker_mcp {
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
-			$pagination = new Pagination(
-				$vars['table']['limit'],
-				$vars['table']['total_rows'],
-				$vars['table']['page']
-			);
-			$vars['pagination'] = $pagination->cp_links($base_url);
+			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+				->perPage($vars['table']['limit'])
+				->currentPage($vars['table']['page'])
+				->render($base_url);
 		}
 
 		ee()->view->cp_heading = $id == 'all' ? lang('all_files') : sprintf(lang('files_in_directory'), $dir->name);

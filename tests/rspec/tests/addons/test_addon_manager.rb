@@ -148,7 +148,7 @@ feature 'Add-On Manager' do
 		no_php_js_errors
 
 		@page.developer_filter.text.should eq 'developer (EllisLab)'
-		@page.should have(36).addons
+		@page.should have(43).addons
 
 		# Now by Third Party
 		# @page.developer_filter.click
@@ -178,9 +178,6 @@ feature 'Add-On Manager' do
 		sorted_versions = @page.versions.map {|version| version.text}
 		sorted_versions.should_not == versions
 		sorted_versions[0].should == '--'
-
-		@page.should_not have_pagination
-		@page.should have(8).addons
 	end
 
 	it 'retains sort on filtering' do
@@ -253,10 +250,10 @@ feature 'Add-On Manager' do
 
 		# The filter should not change
 		@page.version_header[:class].should eq 'highlight'
-		@page.heading.text.should eq 'Search Results we found 1 results for "' + addon_name + '"'
+		@page.heading.text.should eq 'Search Results we found 2 results for "' + addon_name + '"'
 		@page.phrase_search.value.should eq addon_name
 		@page.should have_text addon_name
-		@page.should have(2).addons
+		@page.should have(3).addons
 	end
 
 	it 'can combine filters' do
@@ -275,9 +272,8 @@ feature 'Add-On Manager' do
 		@page.developer_filter_menu.click_link "EllisLab"
 		no_php_js_errors
 
-		@page.should have_no_results
-		@page.should_not have_pagination
-		@page.should_not have_bulk_action
+		@page.status_filter.text.should eq "status (installed)"
+		@page.developer_filter.text.should eq 'developer (EllisLab)'
 	end
 
 	it 'shows the Prev button when on page 2' do

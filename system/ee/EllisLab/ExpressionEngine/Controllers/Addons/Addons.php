@@ -5,7 +5,6 @@ namespace EllisLab\ExpressionEngine\Controllers\Addons;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
 
@@ -176,7 +175,8 @@ class Addons extends CP_Controller {
 				     ||	(strtolower($this->params['filter_by_status']) == 'uninstalled'
 						 && $info['installed'] == TRUE)
 				     ||	(strtolower($this->params['filter_by_status']) == 'updates'
-						 && ! isset($info['update'])))
+						 && (! isset($info['update'])
+						     || $info['installed'] == FALSE)))
 				{
 					continue;
 				}
@@ -260,12 +260,10 @@ class Addons extends CP_Controller {
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
-			$pagination = new Pagination(
-				$vars['table']['limit'],
-				$vars['table']['total_rows'],
-				$vars['table']['page']
-			);
-			$vars['pagination'] = $pagination->cp_links($this->base_url);
+			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+				->perPage($vars['table']['limit'])
+				->currentPage($vars['table']['page'])
+				->render($this->base_url);
 		}
 
 		// Set search results heading

@@ -93,6 +93,24 @@ class MemberGroup extends Model {
 			'pivot' => array(
 				'table' => 'channel_member_groups'
 			)
+		),
+		'NoTemplateAccess' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'Template',
+			'pivot' => array(
+				'table' => 'template_no_access',
+				'right'  => 'template_id',
+				'left' => 'member_group'
+			)
+		),
+		'NoUploadAccess' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'UploadDestination',
+			'pivot' => array(
+				'table' => 'upload_no_access',
+				'left' => 'member_group',
+				'right' => 'upload_id'
+			)
 		)
 	);
 

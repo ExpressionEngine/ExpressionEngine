@@ -20,6 +20,16 @@ class Member extends Model {
 		'MemberGroup' => array(
 			'type' => 'belongsTo'
 		),
+		'LastAuthoredTemplates' => array(
+			'type' => 'hasMany',
+			'model' => 'Template',
+			'to_key' => 'last_author_id'
+		),
+		'AuthoredChannelEntries' => array(
+			'type' => 'hasMany',
+			'model' => 'ChannelEntry',
+			'to_key' => 'author_id'
+		)
 	//	'ResetPassword'	=> array(
 	//		'type' => 'one_to_one'
 	//	),

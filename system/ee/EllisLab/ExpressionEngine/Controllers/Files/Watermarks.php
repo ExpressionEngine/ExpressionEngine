@@ -112,12 +112,10 @@ class Watermarks extends AbstractFilesController {
 		$base_url = new CP\URL('files/watermarks', ee()->session->session_id());
 		$vars['table'] = $table->viewData($base_url);
 
-		$pagination = new CP\Pagination(
-			$vars['table']['limit'],
-			$total_rows,
-			$vars['table']['page']
-		);
-		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
+		$vars['pagination'] = ee('CP/Pagination', $total_rows)
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($vars['table']['base_url']);
 
 		ee()->view->cp_page_title = lang('watermarks');
 

@@ -117,6 +117,9 @@ class Select_ft extends EE_Fieldtype {
 
 	function display_settings($data)
 	{
+		ee()->load->model('addons_model');
+		$format_options = ee()->addons_model->get_plugin_formatting(TRUE);
+
 		$settings = array(
 			array(
 				'title' => 'select_menu_options',
@@ -134,22 +137,8 @@ class Select_ft extends EE_Fieldtype {
 				'fields' => array(
 					'field_fmt' => array(
 						'type' => 'dropdown',
-						'choices' => array(
-							'none'	=> lang('none'),
-							'xhtml'	=> lang('xhtml'),
-							'br'	=> lang('auto_br')
-						),
+						'choices' => $format_options,
 						'value' => $data['field_fmt'],
-					)
-				)
-			),
-			array(
-				'title' => 'field_show_fmt',
-				'desc' => 'field_show_fmt_desc',
-				'fields' => array(
-					'field_show_fmt' => array(
-						'type' => 'yes_no',
-						'value' => $data['field_show_fmt'] ?: 'n'
 					)
 				)
 			)

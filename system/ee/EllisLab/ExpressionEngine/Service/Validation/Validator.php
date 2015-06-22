@@ -280,7 +280,7 @@ class Validator {
 
 		if (isset($this->custom[$name]))
 		{
-			$object = $this->custom[$name];
+			$object = clone $this->custom[$name];
 		}
 		else
 		{
