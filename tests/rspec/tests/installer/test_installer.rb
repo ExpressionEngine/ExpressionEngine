@@ -9,7 +9,7 @@ feature 'Installer' do
 
   before :all do
     # Set the environment variable so reset_db does not import the database
-    ENV['installer'] = true
+    ENV['installer'] = 'true'
 
     # Make sure boot.php does not have the FALSE &&
     @boot = File.expand_path('../../system/ee/EllisLab/ExpressionEngine/Boot/boot.php')
