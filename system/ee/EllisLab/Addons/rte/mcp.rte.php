@@ -189,7 +189,7 @@ class Rte_mcp {
 			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
 				->perPage($vars['table']['limit'])
 				->currentPage($vars['table']['page'])
-				->render($this->base_url);
+				->render($vars['base_url']);
 		}
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('toolset') . ': <b>### ' . lang('toolsets') . '</b>');
