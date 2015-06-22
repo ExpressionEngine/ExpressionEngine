@@ -55,6 +55,7 @@ class Updater {
 				'_update_files_table',
 				'_update_upload_prefs_table',
 				'_update_upload_directories',
+				'_drop_field_formatting_table'
 			)
 		);
 
@@ -719,9 +720,9 @@ class Updater {
 	}
 
 	/**
-	 * Adds member image directories (avatars, photos, etc...) as upload 
+	 * Adds member image directories (avatars, photos, etc...) as upload
 	 * directories
-	 * 
+	 *
 	 * @access private
 	 * @return void
 	 */
@@ -806,12 +807,12 @@ class Updater {
 			if (is_readable($dir['server_path']))
 			{
 				// Insert Files
-				$files = scandir($dir['server_path']); 
+				$files = scandir($dir['server_path']);
 
 				foreach ($files as $filename)
 				{
 					$path = $dir['server_path'] . $filename;
-					
+
 					if ($filename != 'index.html' && is_file($path))
 					{
 						$time = time();
@@ -833,6 +834,15 @@ class Updater {
 		}
 
 		return TRUE;
+	}
+
+	/**
+	 * Plugins that affect text formatting must now denote they do so,
+	 * ergo the field_formatting table is no longer needed
+	 */
+	private function _drop_field_formatting_table()
+	{
+		ee()->smartforge->drop_table('field_formatting');
 	}
 }
 /* END CLASS */

@@ -252,7 +252,7 @@ class Addons_installer {
 				ee()->layout->delete_layout_fields($ids, $c_ids);
 
 				ee()->db->where_in('field_id', $ids);
-				ee()->db->delete(array('channel_fields', 'field_formatting'));
+				ee()->db->delete(array('channel_fields'));
 			}
 
 			// Uninstall
