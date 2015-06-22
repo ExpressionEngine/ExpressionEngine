@@ -159,10 +159,10 @@ class Extensions extends Utilities {
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
-			$vars['pagination'] = ee('CP/Pagination', $total)
-				->perPage($perpage)
-				->currentPage($page)
-				->render($this->base_url);
+			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+				->perPage($vars['table']['limit'])
+				->currentPage($vars['table']['page'])
+				->render($vars['table']['base_url']);
 		}
 
 		// Set search results heading

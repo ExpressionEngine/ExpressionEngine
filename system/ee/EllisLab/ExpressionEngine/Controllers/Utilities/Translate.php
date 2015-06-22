@@ -167,9 +167,9 @@ class Translate extends Utilities {
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
-			$vars['pagination'] = ee('CP/Pagination', $total)
-				->perPage($perpage)
-				->currentPage($page)
+			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+				->perPage($vars['table']['limit'])
+				->currentPage($vars['table']['page'])
 				->render($base_url);
 		}
 
