@@ -1,4 +1,3 @@
-ENV['area'] = 'installer'
 require './bootstrap.rb'
 
 feature 'Installer' do
@@ -9,6 +8,9 @@ feature 'Installer' do
   end
 
   before :all do
+    # Set the environment variable so reset_db does not import the database
+    ENV['installer'] = true
+
     # Make sure boot.php does not have the FALSE &&
     @boot = File.expand_path('../../system/ee/EllisLab/ExpressionEngine/Boot/boot.php')
     swap(
@@ -43,6 +45,9 @@ feature 'Installer' do
   end
 
   after :all do
+    # Delete the environment variable that overrode reset_db
+    ENV.delete('installer')
+
     # Add the FALSE && back into boot.php
     swap(
       @boot,

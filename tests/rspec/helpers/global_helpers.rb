@@ -110,7 +110,7 @@ def reset_db
   clear_db_result
 
   # Installer should not drop in database
-  unless ENV.fetch('area') == 'installer'
+  unless ENV.key?('installer')
     $db.query(IO.read('sql/database.sql'))
     clear_db_result
   end
