@@ -6,7 +6,6 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -56,7 +55,7 @@ class Addons extends CP_Controller {
 		// Add in any submitted search phrase
 		ee()->view->search_value = ee()->input->get_post('search');
 
-		$this->base_url = new URL('addons', ee()->session->session_id());
+		$this->base_url = ee('CP/URL', 'addons');
 
 		ee()->load->library('addons');
 		ee()->load->helper(array('file', 'directory'));
