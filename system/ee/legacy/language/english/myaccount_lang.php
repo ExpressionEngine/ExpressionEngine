@@ -442,7 +442,7 @@ Used in the control panel only.',
 'You must submit a username',
 
 'invalid_characters_in_username' =>
-'Username contains illegal characters.',
+'Your username cannot use the following characters: | " \' ! < > { }',
 
 'missing_password' =>
 'You must submit a password',

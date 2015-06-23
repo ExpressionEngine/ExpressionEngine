@@ -597,7 +597,7 @@ class Wizard extends CI_Controller {
 			array(
 				'field' => 'password',
 				'label' => 'lang:password',
-				'rules' => 'required|valid_password[username]|max_length['.PASSWORD_MAX_LENGTH.']'
+				'rules' => 'required|valid_password[username]'
 			),
 			array(
 				'field' => 'email_address',
