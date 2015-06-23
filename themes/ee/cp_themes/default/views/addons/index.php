@@ -30,7 +30,7 @@
 				<div class="tbl-ctrls">
 					<?=form_open($form_url)?>
 						<h1><?=$cp_heading['first']?></h1>
-						<?=ee('Alert')->getAllInlines()?>
+						<?=ee('Alert')->get('first-party')?>
 						<?php if (isset($filters['first'])) echo $filters['first']; ?>
 						<?php $this->view('_shared/table', $tables['first']); ?>
 						<?=$pagination['first']?>
@@ -53,7 +53,7 @@
 				<div class="tbl-ctrls">
 					<?=form_open($form_url)?>
 						<h1><?=$cp_heading['third']?></h1>
-						<?=ee('Alert')->getAllInlines()?>
+						<?=ee('Alert')->get('third-party')?>
 						<?php if (isset($filters['third'])) echo $filters['third']; ?>
 						<?php $this->view('_shared/table', $tables['third']); ?>
 						<?=$pagination['third']?>

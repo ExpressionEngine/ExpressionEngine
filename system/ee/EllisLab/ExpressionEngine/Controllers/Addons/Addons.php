@@ -562,17 +562,23 @@ class Addons extends CP_Controller {
 
 		ee()->load->library('addons/addons_installer');
 
-		$installed = array();
+		$installed = array(
+			'first' => array(),
+			'third' => array()
+		);
 
 		foreach ($addons as $addon)
 		{
+			$info = ee('App')->get($addon);
+			$party = ($info->getAuthor() == 'EllisLab') ? 'first' : 'third';
+
 			$module = $this->getModule($addon);
 			if ( ! empty($module) && $module['installed'] === FALSE)
 			{
 				$name = $this->installModule($addon);
 				if ($name)
 				{
-					$installed[$addon] = $name;
+					$installed[$party][$addon] = $name;
 				}
 			}
 
@@ -582,7 +588,7 @@ class Addons extends CP_Controller {
 				$name = $this->installFieldtype($addon);
 				if ($name && ! isset($installed[$addon]))
 				{
-					$installed[$addon] = $name;
+					$installed[$party][$addon] = $name;
 				}
 			}
 
@@ -592,15 +598,13 @@ class Addons extends CP_Controller {
 				$name = $this->installExtension($addon);
 				if ($name && ! isset($installed[$addon]))
 				{
-					$installed[$addon] = $name;
+					$installed[$party][$addon] = $name;
 				}
 			}
 
 			$plugin = $this->getPlugin($addon);
 			if ( ! empty($plugin) && $plugin['installed'] === FALSE)
 			{
-				$info = ee('App')->get($addon);
-
 				$typography = 'n';
 				if ($info->get('plugin.typography'))
 				{
@@ -616,15 +620,30 @@ class Addons extends CP_Controller {
 
 				if ( ! isset($installed[$addon]))
 				{
-					$installed[$addon] = $plugin['name'];
+					$installed[$party][$addon] = $plugin['name'];
 				}
 			}
 		}
 
-		if ( ! empty($installed))
+		foreach (array('first', 'third') as $party)
 		{
-			$flashdata = (ee()->input->get('return')) ? TRUE : FALSE;
-			ee()->view->set_message('success', lang('addons_installed'), lang('addons_installed_desc') . implode(', ', $installed), $flashdata);
+			if ( ! empty($installed[$party]))
+			{
+				$alert = ee('Alert')->makeInline($party . '-party')
+					->asSuccess()
+					->withTitle(lang('addons_installed'))
+					->addToBody(lang('addons_installed_desc'))
+					->addToBody(array_values($installed[$party]));
+
+				if (ee()->input->get('return'))
+				{
+					$alert->defer();
+				}
+				else
+				{
+					$alert->now();
+				}
+			}
 		}
 
 		if (ee()->input->get('return'))
@@ -654,17 +673,23 @@ class Addons extends CP_Controller {
 
 		ee()->load->library('addons/addons_installer');
 
-		$uninstalled = array();
+		$uninstalled = array(
+			'first' => array(),
+			'third' => array()
+		);
 
 		foreach ($addons as $addon)
 		{
+			$info = ee('App')->get($addon);
+			$party = ($info->getAuthor() == 'EllisLab') ? 'first' : 'third';
+
 			$module = $this->getModule($addon);
 			if ( ! empty($module) && $module['installed'] === TRUE)
 			{
 				$name = $this->uninstallModule($addon);
 				if ($name)
 				{
-					$uninstalled[$addon] = $name;
+					$uninstalled[$party][$addon] = $name;
 				}
 			}
 
@@ -674,7 +699,7 @@ class Addons extends CP_Controller {
 				$name = $this->uninstallFieldtype($addon);
 				if ($name && ! isset($uninstalled[$addon]))
 				{
-					$uninstalled[$addon] = $name;
+					$uninstalled[$party][$addon] = $name;
 				}
 			}
 
@@ -684,7 +709,7 @@ class Addons extends CP_Controller {
 				$name = $this->uninstallExtension($addon);
 				if ($name && ! isset($uninstalled[$addon]))
 				{
-					$uninstalled[$addon] = $name;
+					$uninstalled[$party][$addon] = $name;
 				}
 			}
 
@@ -697,14 +722,22 @@ class Addons extends CP_Controller {
 
 				if ( ! isset($uninstalled[$addon]))
 				{
-					$uninstalled[$addon] = $plugin['name'];
+					$uninstalled[$party][$addon] = $plugin['name'];
 				}
 			}
 		}
 
-		if ( ! empty($uninstalled))
+		foreach (array('first', 'third') as $party)
 		{
-			ee()->view->set_message('success', lang('addons_uninstalled'), lang('addons_uninstalled_desc') . implode(', ', $uninstalled));
+			if ( ! empty($uninstalled[$party]))
+			{
+				$alert = ee('Alert')->makeInline($party . '-party')
+					->asSuccess()
+					->withTitle(lang('addons_uninstalled'))
+					->addToBody(lang('addons_uninstalled_desc'))
+					->addToBody(array_values($uninstalled[$party]))
+					->now();
+			}
 		}
 	}
 
