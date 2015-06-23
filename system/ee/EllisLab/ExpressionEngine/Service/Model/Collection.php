@@ -17,7 +17,7 @@ class Collection extends CoreCollection {
 	 */
 	public function __get($key)
 	{
-        if (strtoupper($key) != $key)
+        if (ucfirst($key) != $key)
         {
             throw new InvalidArgumentException('Can only access relationships directly on a collection. Did you mean `pluck()`?');
         }
