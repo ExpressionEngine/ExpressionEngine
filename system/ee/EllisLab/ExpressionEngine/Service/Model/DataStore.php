@@ -220,11 +220,8 @@ class DataStore {
 
 			if ( ! is_array($pivot))
 			{
-				$gateway_tables = $from_reader->getTableNamesByGateway();
-				$table = $gateway_tables[$pivot];
-
 				$options['pivot'] = array(
-					'table' => $table
+					'table' => $pivot
 				);
 			}
 		}
