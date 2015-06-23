@@ -194,7 +194,9 @@ class Addons extends CP_Controller {
 				'autosort' => TRUE,
 				'autosearch' => TRUE,
 				'sort_col' => ee()->input->get($party . '_sort_col') ?: NULL,
+				'sort_col_qs_var' => $party . '_sort_col',
 				'sort_dir' => ee()->input->get($party . '_sort_dir') ?: 'asc',
+				'sort_dir_qs_var' => $party . '_sort_dir',
 				'page' => ee()->input->get($party . '_page') ?: 1,
 				'limit' => $this->params[$party . '_perpage']
 			);
@@ -214,8 +216,6 @@ class Addons extends CP_Controller {
 			);
 			$table->setNoResultsText('no_addon_search_results');
 
-			$this->base_url->setQueryStringVariable($party . '_sort_col', $table->sort_col);
-			$this->base_url->setQueryStringVariable($party . '_sort_dir', $table->sort_dir);
 			$this->base_url->setQueryStringVariable($party . '_page', $table->config['page']);
 
 			foreach($addons[$party] as $addon => $info)
