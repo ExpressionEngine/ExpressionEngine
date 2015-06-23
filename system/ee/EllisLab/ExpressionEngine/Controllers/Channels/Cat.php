@@ -665,6 +665,8 @@ class Cat extends AbstractChannelsController {
 			$parent_id_options[$cat[0]] = $indent.$cat[1];
 		}
 
+		ee()->load->library('file_field');
+
 		$vars['sections'] = array(
 			array(
 				array(
@@ -714,7 +716,8 @@ class Cat extends AbstractChannelsController {
 						'cat_image' => array(
 							'type' => 'image',
 							'id' => 'cat_image',
-							'image' => $category->cat_image
+							'image' => ee()->file_field->parse_string($category->cat_image),
+							'value' => $category->cat_image
 						)
 					)
 				),
