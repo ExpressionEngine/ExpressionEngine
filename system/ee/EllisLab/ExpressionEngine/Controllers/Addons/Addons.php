@@ -332,7 +332,7 @@ class Addons extends CP_Controller {
 			);
 
 			ee()->view->cp_heading = array(
-				'first' => $serach_header,
+				'first' => $search_header,
 				'third' => $search_header
 			);
 		}
