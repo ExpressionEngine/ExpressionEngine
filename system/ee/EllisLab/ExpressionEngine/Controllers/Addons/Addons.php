@@ -180,6 +180,22 @@ class Addons extends CP_Controller {
 		$developers = array_map(function($addon) { return $addon['developer']; }, $addons['third']);
 		array_unique($developers);
 
+		// Retain column sorting when filtering
+		foreach (array('first', 'third') as $party)
+		{
+			$sort_col = $party . '_sort_col';
+			if (ee()->input->get($sort_col))
+			{
+				$this->base_url->setQueryStringVariable($sort_col, ee()->input->get($sort_col));
+			}
+
+			$sort_dir = $party . '_sort_dir';
+			if (ee()->input->get($sort_dir))
+			{
+				$this->base_url->setQueryStringVariable($sort_dir, ee()->input->get($sort_dir));
+			}
+		}
+
 		$this->filters(array(
 			'first' => count($addons['first']),
 			'third' => count($addons['third'])
