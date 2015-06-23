@@ -38,7 +38,7 @@ feature 'Installer' do
     # Delete existing config and create a new one
     File.delete(@config) if File.exist?(@config)
     File.new(@config, 'w')
-    FileUtils.chmod 0666, @config
+    FileUtils.chmod(0666, @config)
 
     @page = Installer::Base.new
     @page.load
