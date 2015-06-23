@@ -187,23 +187,19 @@ class ChannelEntry extends ContentModel {
 	{
 		// Channels
 		$allowed_channel_ids = (ee()->session->userdata['group_id'] == 1) ? NULL : array_keys(ee()->session->userdata['assigned_channels']);
-		$channels = ee('Model')->get('Channel', $allowed_channel_ids)
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('field_group', $this->getChannel()->field_group)
-			->all();
 
-		$channel_filter_options = array();
-		foreach ($channels as $channel)
-		{
-			$channel_filter_options[$channel->channel_id] = $channel->channel_title;
-		}
+		$channel_filter_options = ee('Model')->get('Channel', $allowed_channel_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('field_group', $this->Channel->field_group)
+			->all()
+			->getDictionary('channel_id', 'channel_title');
 
 		$this->getCustomField('channel_id')->setItem('field_list_items', $channel_filter_options);
 
 		// Statuses
 		$statuses = ee('Model')->get('Status')
 			->filter('site_id', ee()->config->item('site_id'))
-			->filter('group_id', $this->getChannel()->status_group);
+			->filter('group_id', $this->Channel->status_group);
 
 		$status_options = array();
 
@@ -261,6 +257,9 @@ class ChannelEntry extends ContentModel {
 		);
 	}
 
+	/**
+	 * Turn the categories collection into a nested array of ids => names
+	 */
 	protected function buildCategoryList($categories)
 	{
 		$list = array();
@@ -285,6 +284,10 @@ class ChannelEntry extends ContentModel {
 		return $list;
 	}
 
+	/**
+	 * Category setter for convenience to intercept the
+	 * 'categories' post array.
+	 */
 	public function set__categories($categories)
 	{
 		// annoyingly needed to trigger validation on the field
@@ -307,7 +310,9 @@ class ChannelEntry extends ContentModel {
 		$this->getCustomField('categories')->setData(implode('|', $this->Categories->pluck('cat_name')));
 	}
 
-
+	/**
+	 * Create a list of default fields to simplify rendering
+	 */
 	protected function getDefaultFields()
 	{
 		return array(
