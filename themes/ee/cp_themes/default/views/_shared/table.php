@@ -52,8 +52,8 @@ if ($wrap): ?>
 								$url = clone $base_url;
 								$arrow_dir = ($sort_col == $label) ? $sort_dir : 'desc';
 								$link_dir = ($arrow_dir == 'asc') ? 'desc' : 'asc';
-								$url->setQueryStringVariable('sort_col', $label);
-								$url->setQueryStringVariable('sort_dir', $link_dir);
+								$url->setQueryStringVariable($sort_col_qs_var, $label);
+								$url->setQueryStringVariable($sort_dir_qs_var, $link_dir);
 								?>
 								<a href="<?=$url?>" class="ico sort <?=$arrow_dir?> right"></a>
 							<?php endif ?>
