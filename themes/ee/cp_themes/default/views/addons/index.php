@@ -48,7 +48,7 @@
 					<?=form_close()?>
 				</div>
 			</div>
-			<?php if ($tables['third']['total_rows']): ?>
+			<?php if (isset($tables['third'])): ?>
 			<div class="box">
 				<div class="tbl-ctrls">
 					<?=form_open($form_url)?>

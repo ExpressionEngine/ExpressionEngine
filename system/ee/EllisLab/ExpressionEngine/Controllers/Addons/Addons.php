@@ -203,6 +203,11 @@ class Addons extends CP_Controller {
 
 		foreach (array('first', 'third') as $party)
 		{
+			if ( ! count($addons[$party]))
+			{
+				continue;
+			}
+
 			$data = array();
 
 			// Setup the Table
