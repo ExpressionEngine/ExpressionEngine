@@ -37,7 +37,7 @@ feature 'Installer' do
   before :each do
     # Delete existing config and create a new one
     File.delete(@config) if File.exist?(@config)
-    File.open(@config, 'w')
+    File.new(@config, 'w', 0777)
 
     @page = Installer::Base.new
     @page.load
