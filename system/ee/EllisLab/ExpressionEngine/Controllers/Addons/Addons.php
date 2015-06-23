@@ -343,18 +343,20 @@ class Addons extends CP_Controller {
 
 		$vars['form_url'] = $this->base_url;
 
-		// Set search results heading
-		if ( ! empty($vars['tables']['first']['search']))
+		// Set search results heading (first and third)
+		if (ee()->input->get_post('search'))
 		{
-			$search_header = sprintf(
-				lang('search_results_heading'),
-				$vars['tables']['first']['total_rows'],
-				$vars['tables']['first']['search']
-			);
-
 			ee()->view->cp_heading = array(
-				'first' => $search_header,
-				'third' => $search_header
+				'first' => sprintf(
+					lang('search_results_heading'),
+					$vars['tables']['first']['total_rows'],
+					$vars['tables']['first']['search']
+				),
+				'third' => sprintf(
+				lang('search_results_heading'),
+				$vars['tables']['third']['total_rows'],
+				$vars['tables']['third']['search']
+			)
 			);
 		}
 
