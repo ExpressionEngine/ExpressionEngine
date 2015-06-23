@@ -8,7 +8,7 @@ $test_config = {
   app_host:    'http://ee2.test:8080/',
 
   # DB settings for resetting your database
-  db_host:     'localhost',
+  db_host:     '127.0.0.1',
   db_name:     'circle_test',
   db_username: 'ubuntu',
   db_password: ''

@@ -15,7 +15,7 @@
 		<em><?=lang('db_hostname_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
-		<input name="db_hostname" type="text" value="<?=set_value('db_hostname', 'localhost')?>">
+		<input name="db_hostname" type="text" value="<?=set_value('db_hostname', '127.0.0.1')?>">
 		<?=form_error('db_hostname');?>
 	</div>
 </fieldset>
