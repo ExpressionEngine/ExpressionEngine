@@ -9,6 +9,7 @@ class ManyToMany extends ToMany {
 	private $known = array();
 	private $added = array();
 	private $removed = array();
+	private $remove_all = FALSE;
 
 	public function fill($related, $_skip_inverse = FALSE)
 	{
@@ -24,7 +25,7 @@ class ManyToMany extends ToMany {
 	{
 		if (is_null($items))
 		{
-			$this->removed[] = '*';
+			$this->remove_all = TRUE;
 		}
 
 		return parent::remove($items);
@@ -32,10 +33,21 @@ class ManyToMany extends ToMany {
 
 	public function save()
 	{
+		if ($this->remove_all)
+		{
+			$this->relation->dropRelation($this->model);
+			$this->removed = array();
+		}
+		else
+		{
+			// TODO only do this if not loaded
+			// If this isn't loaded, we can't guarantee that they just added a
+			// duplicate, so drop the ones we're going to add.
+			$this->removed = array_merge($this->removed, $this->added);
+		}
+
 		foreach ($this->removed as $model)
 		{
-			$model = ($model == '*') ? NULL : $model;
-
 			$this->relation->dropRelation($this->model, $model);
 		}
 
@@ -120,6 +132,7 @@ class ManyToMany extends ToMany {
 
 	protected function reset()
 	{
+		$this->remove_all = FALSE;
 		$this->added = array();
 		$this->removed = array();
 	}
