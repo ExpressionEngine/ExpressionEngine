@@ -1,41 +1,51 @@
-<?php if (count($options) > 5): ?>
-<div class="scroll-wrap">
-<?php endif; ?>
+<div class="scroll-wrap pr">
 <?php
-	$default_class = 'choice';
 
-	if (count($options) > 2)
-	{
-		$default_class .= ' block';
-		$class = $default_class;
-	}
-	else
-	{
-		$class = $default_class . ' mr';
-	}
+	$depth = 0;
+	$queue = array_map(NULL, array_keys($options), $options);
 
-	foreach ($options as $key => $value):
-		$checked = (in_array(form_prep($key), $values)) ? TRUE : FALSE;
+	while ($item = array_shift($queue)):
+
+		if (is_int($item))
+		{
+			$depth += $item;
+			continue;
+		}
+
+		list($key, $value) = $item;
+
+		// If the value is an array, then we have children. Add them to the
+		// queue with depth markers and set the real value to render the parent.
+		if (is_array($value))
+		{
+			$children = $value['children'];
+			$children = array_map(NULL, array_keys($children), $children);
+
+			// $children = [+1, ...$children, -1];
+			array_unshift($children, +1);
+			array_push($children, -1);
+
+			$queue = array_merge($children, $queue);
+			$value = $value['name'];
+		}
+
+		$checked = (in_array(form_prep($value), $values)) ? TRUE : FALSE;
+
+		$class = 'choice block';
 
 		if ($checked)
 		{
 			$class .= ' chosen';
 		}
 
-		if ($key == 'y' && $value == lang('yes'))
+		if ($depth)
 		{
-			$class .= ' yes';
+			$class .= ' child';
 		}
-		elseif ($key == 'n' && $value == lang('no'))
-		{
-			$class .= ' no';
-		}
+
 ?>
-	<label class="<?=$class?>">
-		<?=form_checkbox($field_name . '[]', $key, $checked)?> <?=$value?>
-	</label>
-	<?php $class = $default_class; ?>
-<?php endforeach; ?>
-<?php if (count($options) > 2): ?>
+		<label class="<?=$class?>"><?=form_checkbox($field_name.'[]', $key, $checked)?> <?=$value?></label>
+<?php
+	endwhile;
+?>
 </div>
-<?php endif; ?>
