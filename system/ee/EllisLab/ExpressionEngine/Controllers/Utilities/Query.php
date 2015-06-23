@@ -92,7 +92,6 @@ class Query extends Utilities {
 		$row_limit	= 20;
 		$title		= lang('query_result');
 		$vars['write'] = FALSE;
-		ee()->db->db_debug = (ee()->input->post('debug') !== FALSE OR empty($_POST));
 
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
 		$page = ($page > 0) ? $page : 1;
@@ -145,8 +144,8 @@ class Query extends Utilities {
 		}
 		catch (\Exception $e)
 		{
-			ee()->view->invalid_query = explode('<br>', $e->getMessage());
-		    return $this->index(FALSE);
+			ee()->view->invalid_query = $e->getMessage();
+			return $this->index(FALSE);
 		}
 
 		ee()->db->db_exception = FALSE;
