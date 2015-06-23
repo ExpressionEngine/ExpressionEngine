@@ -132,12 +132,12 @@ class ChannelEntry extends ContentModel {
 
 	public function onAfterSave()
 	{
-		$this->getAutosaves()->delete();
+		$this->Autosaves->delete();
 	}
 
 	public function onAfterDelete()
 	{
-		$this->getAutosaves()->delete();
+		$this->Autosaves->delete();
 	}
 
 	/**
@@ -148,7 +148,7 @@ class ChannelEntry extends ContentModel {
 	 */
 	public function getStructure()
 	{
-		return $this->getChannel();
+		return $this->Channel;
 	}
 
 	/**
@@ -226,9 +226,9 @@ class ChannelEntry extends ContentModel {
 		}
 
 		// Get all members assigned to this channel
-		foreach ($this->getChannel()->getAssignedMemberGroups() as $group)
+		foreach ($this->Channel->AssignedMemberGroups as $group)
 		{
-			foreach ($group->getMembers() as $member)
+			foreach ($group->Members as $member)
 			{
 				$author_options[$member->member_id] = $member->getMemberName();
 			}
@@ -239,13 +239,13 @@ class ChannelEntry extends ContentModel {
 		// Categories
 		$categories = ee('Model')->get('Category')
 			->with('CategoryGroup')
-			->filter('CategoryGroup.group_id', 'IN', explode('|', $this->getChannel()->cat_group))
+			->filter('CategoryGroup.group_id', 'IN', explode('|', $this->Channel->cat_group))
 			->filter('CategoryGroup.site_id', ee()->config->item('site_id'))
 			->filter('Category.parent_id', 0)
 			->all();
 
 		$category_list = $this->buildCategoryList($categories);
-		$set_categories = $this->getCategories()->pluck('cat_name');
+		$set_categories = $this->Categories->pluck('cat_name');
 
 		$this->getCustomField('categories')->setItem('field_list_items', $category_list);
 		$this->getCustomField('categories')->setData(implode('|', $set_categories));
@@ -253,7 +253,7 @@ class ChannelEntry extends ContentModel {
 		// Comment expiration date
 		$this->getCustomField('comment_expiration_date')->setItem(
 			'default_offset',
-			$this->getChannel()->comment_expiration * 86400
+			$this->Channel->comment_expiration * 86400
 		);
 	}
 
@@ -266,7 +266,7 @@ class ChannelEntry extends ContentModel {
 
 		foreach ($categories as $category)
 		{
-			$children = $category->getChildren();
+			$children = $category->Children;
 
 			if (count($children))
 			{
