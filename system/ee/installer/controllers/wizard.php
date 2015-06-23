@@ -1762,7 +1762,6 @@ class Wizard extends CI_Controller {
 			'new_member_notification'   => 'n',
 			'mbr_notification_emails'   => '',
 			'require_terms_of_service'  => 'y',
-			'use_membership_captcha'    => 'n',
 			'default_member_group'      => '5',
 			'profile_trigger'           => 'member',
 			'member_theme'              => 'default',

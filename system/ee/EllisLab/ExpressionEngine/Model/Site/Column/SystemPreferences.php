@@ -114,7 +114,6 @@ class SystemPreferences extends Base64SerializedComposite {
 	protected $email_console_timelock;
 	protected $log_email_console_msgs;
 	protected $cp_theme;
-	protected $email_module_captchas;
 	protected $log_search_terms;
 	protected $deny_duplicate_data;
 	protected $redirect_submitted_links;
