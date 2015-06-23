@@ -805,27 +805,6 @@ class Cat extends AbstractChannelsController {
 	}
 
 	/**
-	 * Save routine for categories
-	 *
-	 * @param	int	$group_id		ID of category group category is (to be) in
-	 * @param	int	$category_id	ID of category to edit
-	 */
-	private function saveCategory($group_id, $category_id)
-	{
-		// -------------------------------------------
-		// 'category_save' hook.
-		//
-		if (ee()->extensions->active_hook('category_save') === TRUE)
-		{
-			ee()->extensions->call('category_save', $cat_id, $category_data);
-		}
-		//
-		// -------------------------------------------
-
-		return $category_id;
-	}
-
-	/**
 	 * Category group custom fields listing
 	 */
 	public function field($group_id)
