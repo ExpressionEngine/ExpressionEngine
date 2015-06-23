@@ -241,65 +241,18 @@ class ChannelEntry extends ContentModel {
 		$this->getCustomField('author_id')->setItem('field_list_items', $author_options);
 
 		// Categories
-		$category_group_ids = ee('Model')->get('CategoryGroup', explode('|', $this->getChannel()->cat_group))
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('exclude_group', '!=', 1)
-			->all()
-			->pluck('group_id');
+		$categories = ee('Model')->get('Category')
+			->with('CategoryGroup')
+			->filter('CategoryGroup.group_id', 'IN', explode('|', $this->getChannel()->cat_group))
+			->filter('CategoryGroup.site_id', ee()->config->item('site_id'))
+			->filter('Category.parent_id', 0)
+			->all();
 
-		if (empty($category_group_ids))
-		{
-			$categories = array();
-		}
-		else
-		{
-			$categories = ee('Model')->get('Category')
-				->filter('site_id', ee()->config->item('site_id'))
-				->filter('group_id', 'IN', $category_group_ids)
-				->filter('parent_id', 0)
-				->all();
-		}
+		$category_list = $this->buildCategoryList($categories);
+		$set_categories = $this->getCategories()->pluck('cat_name');
 
-		$category_string_override = '<div class="scroll-wrap pr">';
-		$set_categories = $this->getCategories()->pluck('cat_id');
-
-		// If this doesn't make Pascal angry I need to try harder!
-		// @TODO Make Pascal happy
-		foreach ($categories as $category)
-		{
-			$class = 'choice block';
-			$checked = '';
-			if (in_array($category->cat_id, $set_categories))
-			{
-				$class .= ' chosen';
-				$checked = ' checked="checked"';
-			}
-
-			$category_string_override .= '<label class="' . $class . '">';
-			$category_string_override .= '<input type="checkbox" name="categories[]" value="' . $category->cat_id .'"' . $checked . '>' . $category->cat_name;
-			$category_string_override .= '</label>';
-
-			// Recursion would be much better
-			foreach ($category->getChildren() as $child_category)
-			{
-				$class = 'choice block child';
-				$checked = '';
-				if (in_array($child_category->cat_id, $set_categories))
-				{
-					$class .= ' chosen';
-					$checked = ' checked="checked"';
-				}
-
-				$category_string_override .= '<label class="' . $class . '">';
-				$category_string_override .= '<input type="checkbox" name="categories[]" value="' . $child_category->cat_id .'"' . $checked . '>' . $child_category->cat_name;
-				$category_string_override .= '</label>';
-			}
-		}
-
-		$category_string_override .= '</div>';
-
-		$this->getCustomField('categories')->setItem('string_override', $category_string_override);
-
+		$this->getCustomField('categories')->setItem('field_list_items', $category_list);
+		$this->getCustomField('categories')->setData(implode('|', $set_categories));
 
 		// Comment expiration date
 		$this->getCustomField('comment_expiration_date')->setItem(
@@ -308,10 +261,38 @@ class ChannelEntry extends ContentModel {
 		);
 	}
 
+	protected function buildCategoryList($categories)
+	{
+		$list = array();
+
+		foreach ($categories as $category)
+		{
+			$children = $category->getChildren();
+
+			if (count($children))
+			{
+				$list[$category->cat_id] = array(
+					'name' => $category->cat_name,
+					'children' => $this->buildCategoryList($children)
+				);
+
+				continue;
+			}
+
+			$list[$category->cat_id] = $category->cat_name;
+		}
+
+		return $list;
+	}
+
 	public function set__categories($categories)
 	{
+		// annoyingly needed to trigger validation on the field
+		$this->setRawProperty('categories', implode('|', $categories));
+
 		if (empty($categories))
 		{
+			$this->getCustomField('categories')->setData('');
 			$this->Categories = NULL;
 			return;
 		}
@@ -322,6 +303,8 @@ class ChannelEntry extends ContentModel {
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('cat_id', 'IN', $categories)
 			->all();
+
+		$this->getCustomField('categories')->setData(implode('|', $this->Categories->pluck('cat_name')));
 	}
 
 
