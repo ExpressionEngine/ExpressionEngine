@@ -5,7 +5,7 @@ return array(
 	'author_url'  => 'http://example.com/',
 	'name'        => 'Test Two',
 	'description' => '',
-	'version'     => '1.0',
+	'version'     => '1.2',
 	'namespace'   => 'Example\Test\Two',
 	'settings_exist' => FALSE,
 
