@@ -111,6 +111,15 @@ class MemberGroup extends Model {
 				'left' => 'member_group',
 				'right' => 'upload_id'
 			)
+		),
+		'NoStatusAccess' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'Status',
+			'pivot' => array(
+				'table' => 'status_no_access',
+				'left' => 'member_group',
+				'right' => 'status_id'
+			)
 		)
 	);
 
