@@ -64,14 +64,10 @@ class Files extends AbstractFilesController {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 
-		if ( ! empty($vars['table']['data']))
-		{
-			// Paginate!
-			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
-				->perPage($vars['table']['limit'])
-				->currentPage($vars['table']['page'])
-				->render($base_url);
-		}
+		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($base_url);
 
 		$upload_destinations = ee('Model')->get('UploadDestination')
 			->fields('id', 'name')
@@ -154,14 +150,10 @@ class Files extends AbstractFilesController {
 		$vars['form_url'] = $vars['table']['base_url'];
 		$vars['dir_id'] = $id;
 
-		if ( ! empty($vars['table']['data']))
-		{
-			// Paginate!
-			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
-				->perPage($vars['table']['limit'])
-				->currentPage($vars['table']['page'])
-				->render($base_url);
-		}
+		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($base_url);
 
 		ee()->javascript->set_global('file_view_url', cp_url('files/file/view/###'));
 		ee()->javascript->set_global('lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>');
