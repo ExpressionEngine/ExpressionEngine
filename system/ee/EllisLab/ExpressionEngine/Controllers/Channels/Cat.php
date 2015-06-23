@@ -6,6 +6,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Controllers\Channels\AbstractChannels as AbstractChannelsController;
+use EllisLab\Addons\FilePicker\FilePicker as FilePicker;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -664,8 +665,6 @@ class Cat extends AbstractChannelsController {
 			$parent_id_options[$cat[0]] = $indent.$cat[1];
 		}
 
-		// TODO: file field stuff?
-
 		$vars['sections'] = array(
 			array(
 				array(
@@ -680,7 +679,7 @@ class Cat extends AbstractChannelsController {
 					)
 				),
 				array(
-					'title' => 'url_title',
+					'title' => 'url_title_lc',
 					'desc' => 'url_title_desc',
 					'fields' => array(
 						'cat_url_title' => array(
@@ -704,10 +703,18 @@ class Cat extends AbstractChannelsController {
 					'title' => 'image',
 					'desc' => 'cat_image_desc',
 					'fields' => array(
-						'cat_image' => array(
+						'cat_image_select' => array(
 							'type' => 'radio',
-							'value' => $category->cat_image,
-							'choices' => array()
+							'choices' => array(
+								'none' => 'cat_image_none',
+								'choose' => 'cat_image_choose'
+							),
+							'value' => 'none'
+						),
+						'cat_image' => array(
+							'type' => 'image',
+							'id' => 'cat_image',
+							'image' => $category->cat_image
 						)
 					)
 				),
@@ -725,18 +732,7 @@ class Cat extends AbstractChannelsController {
 			)
 		);
 
-		$display = $category->getDisplay();
-
-		ee()->load->model('addons_model');
-		$plugins = ee()->addons_model->get_plugin_formatting();
-
-		$custom_format_options['none'] = 'None';
-		foreach ($plugins as $k=>$v)
-		{
-			$custom_format_options[$k] = $v;
-		}
-
-		foreach ($display->getFields() as $field)
+		foreach ($category->getDisplay()->getFields() as $field)
 		{
 			$vars['sections']['custom_fields'][] = array(
 				'title' => $field->getLabel(),
@@ -797,6 +793,11 @@ class Cat extends AbstractChannelsController {
 
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text_working = 'btn_saving';
+
+		$filepicker = new FilePicker();
+		$filepicker->inject(ee()->view);
+		ee()->cp->add_js_script('file', 'cp/channel/category_edit');
+		ee()->javascript->set_global('category_edit.filepicker_url', cp_url($filepicker->controller, array('directory' => 'all')));
 
 		ee()->cp->set_breadcrumb(cp_url('channels/cat'), lang('category_groups'));
 		ee()->cp->set_breadcrumb(cp_url('channels/cat/cat-list/'.$cat_group->group_id), $cat_group->group_name . ' &mdash; ' . lang('categories'));

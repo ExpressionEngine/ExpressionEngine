@@ -23,6 +23,8 @@
 
 (function ($) {
 
+	var modal;
+
 	var bind_modal = function(options) {
 		$('.modal-file').off('click', 'tbody > tr');
 		$('.modal-file').on('click', 'tbody > tr', function(e) {
