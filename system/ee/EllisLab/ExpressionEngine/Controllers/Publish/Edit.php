@@ -334,6 +334,14 @@ class Edit extends AbstractPublishController {
 		if (count($_POST))
 		{
 			$entry->set($_POST);
+
+			// if categories are not in POST, then they've unchecked everything
+			// and we need to clear them out
+			if ( ! isset($_POST['categories']))
+			{
+				$entry->Categories = NULL;
+			}
+
 			$result = $entry->validate();
 
 			if (AJAX_REQUEST)
