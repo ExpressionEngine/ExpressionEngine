@@ -197,9 +197,8 @@ class Result {
 			{
 				$collection[] = $kids[$id];
 			}
-
 			$name = $relation->getName();
-			$parent->$name->fill($collection);
+			$parent->getAssociation($name)->fill($collection);
 		}
 	}
 
