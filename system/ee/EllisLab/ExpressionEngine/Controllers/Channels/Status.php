@@ -68,28 +68,39 @@ class Status extends AbstractChannelsController {
 		$data = array();
 		foreach ($status_groups as $group)
 		{
-			$data[] = array(
-				$group->group_id,
+			$columns = array(
+				$group->getId(),
 				htmlentities($group->group_name, ENT_QUOTES),
 				array('toolbar_items' => array(
 					'view' => array(
-						'href' => cp_url('channels/status/status-list/'.$group->group_id),
+						'href' => cp_url('channels/status/status-list/'.$group->getId()),
 						'title' => lang('view')
 					),
 					'edit' => array(
-						'href' => cp_url('channels/status/edit/'.$group->group_id),
+						'href' => cp_url('channels/status/edit/'.$group->getId()),
 						'title' => lang('edit')
 					)
 				)),
 				array(
 					'name' => 'status_groups[]',
-					'value' => $group->group_id,
+					'value' => $group->getId(),
 					'data'	=> array(
 						'confirm' => lang('status_group') . ': <b>' . htmlentities($group->group_name, ENT_QUOTES) . '</b>'
 					),
 					// Cannot delete default group
 					'disabled' => ($group->group_name == 'Default') ? 'disabled' : NULL
 				)
+			);
+
+			$attrs = array();
+			if (ee()->session->flashdata('highlight_id') == $group->getId())
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs' => $attrs,
+				'columns' => $columns
 			);
 		}
 
@@ -226,13 +237,15 @@ class Status extends AbstractChannelsController {
 		{
 			$group_id = $this->saveStatusGroup($group_id);
 
+			ee()->session->set_flashdata('highlight_id', $group_id);
+
 			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('status_group_saved'))
 				->addToBody(lang('status_group_saved_desc'))
 				->defer();
 
-			ee()->functions->redirect(cp_url('channels/status/edit/'.$group_id));
+			ee()->functions->redirect(cp_url('channels/status'));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
