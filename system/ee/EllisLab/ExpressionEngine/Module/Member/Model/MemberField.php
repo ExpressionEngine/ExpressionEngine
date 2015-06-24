@@ -113,4 +113,39 @@ class MemberField extends FieldModel {
 		return $this->m_field_type;
 	}
 
+	/**
+	 * Override the set method so we can auto-prefix our properties
+	 * 
+	 * @param mixed $key 
+	 * @param mixed $value 
+	 * @access public
+	 * @return void
+	 */
+	public function __set($key, $value)
+	{
+		parent::__set($this->prefix($key), $value);
+	}
+
+	/**
+	 * Override the get method so we can auto-prefix our properties
+	 * 
+	 * @param mixed $key 
+	 * @param mixed $value 
+	 * @access public
+	 * @return void
+	 */
+	public function __get($key)
+	{
+		return parent::__get($this->prefix($key));
+	}
+
+	public function __isset($key)
+	{
+		return property_exists($this, $this->prefix($key));
+	}
+
+	private function prefix($key)
+	{
+		return "m_" . $key;
+	}
 }
