@@ -352,7 +352,7 @@ class Status extends AbstractChannelsController {
 		$data = array();
 		foreach ($statuses as $status)
 		{
-			$data[] = array(
+			$columns = array(
 				$status->getId(),
 				htmlentities($status->status, ENT_QUOTES).form_hidden('order[]', $status->getId()),
 				array('toolbar_items' => array(
@@ -370,6 +370,17 @@ class Status extends AbstractChannelsController {
 					// Cannot delete default statuses
 					'disabled' => ($status->status == 'open' OR $status->status == 'closed') ? 'disabled' : NULL
 				)
+			);
+
+			$attrs = array();
+			if (ee()->session->flashdata('highlight_id') == $status->getId())
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs' => $attrs,
+				'columns' => $columns
 			);
 		}
 
@@ -605,13 +616,15 @@ class Status extends AbstractChannelsController {
 		{
 			$status_id = $this->saveStatus($group_id, $status_id);
 
+			ee()->session->set_flashdata('highlight_id', $status_id);
+
 			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('status_saved'))
 				->addToBody(lang('status_saved_desc'))
 				->defer();
 
-			ee()->functions->redirect(cp_url('channels/status/edit-status/'.$group_id.'/'.$status_id));
+			ee()->functions->redirect(cp_url('channels/status/status-list/'.$group_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
