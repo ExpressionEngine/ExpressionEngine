@@ -39,10 +39,10 @@
 							<select name="bulk_action">
 								<option value="">-- <?=lang('with_selected')?> --</option>
 								<option value="install"><?=lang('install')?></option>
-								<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
+								<option value="remove" data-confirm-trigger-first="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
 								<option value="update"><?=lang('update')?></option>
 							</select>
-							<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
+							<button class="btn submit" data-conditional-modal="confirm-trigger-first"><?=lang('submit')?></button>
 						</fieldset>
 						<?php endif; ?>
 					<?=form_close()?>
@@ -62,10 +62,10 @@
 							<select name="bulk_action">
 								<option value="">-- <?=lang('with_selected')?> --</option>
 								<option value="install"><?=lang('install')?></option>
-								<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
+								<option value="remove" data-confirm-trigger-third="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
 								<option value="update"><?=lang('update')?></option>
 							</select>
-							<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
+							<button class="btn submit" data-conditional-modal="confirm-trigger-third"><?=lang('submit')?></button>
 						</fieldset>
 						<?php endif; ?>
 					<?=form_close()?>
