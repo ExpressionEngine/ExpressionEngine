@@ -71,32 +71,43 @@ class Channels extends AbstractChannelsController {
 		$data = array();
 		foreach ($channels as $channel)
 		{
-			$data[] = array(
-				$channel->channel_id,
+			$columns = array(
+				$channel->getId(),
 				htmlentities($channel->channel_title, ENT_QUOTES),
 				htmlentities($channel->channel_name, ENT_QUOTES),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => cp_url('channels/edit/'.$channel->channel_id),
+						'href' => cp_url('channels/edit/'.$channel->getId()),
 						'title' => lang('edit')
 					),
 					'settings' => array(
-						'href' => cp_url('channels/settings/'.$channel->channel_id),
+						'href' => cp_url('channels/settings/'.$channel->getId()),
 						'title' => lang('settings')
 					),
 					'txt-only' => array(
-						'href' => cp_url('channels/layouts/'.$channel->channel_id),
+						'href' => cp_url('channels/layouts/'.$channel->getId()),
 						'title' => (lang('layouts')),
 						'content' => strtolower(lang('layouts'))
 					)
 				)),
 				array(
 					'name' => 'channels[]',
-					'value' => $channel->channel_id,
+					'value' => $channel->getId(),
 					'data'	=> array(
 						'confirm' => lang('channel') . ': <b>' . htmlentities($channel->channel_title, ENT_QUOTES) . '</b>'
 					)
 				)
+			);
+
+			$attrs = array();
+			if (ee()->session->flashdata('highlight_id') == $channel->getId())
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs' => $attrs,
+				'columns' => $columns
 			);
 		}
 
@@ -385,13 +396,15 @@ class Channels extends AbstractChannelsController {
 		{
 			$channel_id = $this->saveChannel($channel);
 
+			ee()->session->set_flashdata('highlight_id', $channel_id);
+
 			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('channel_saved'))
 				->addToBody(lang('channel_saved_desc'))
 				->defer();
 
-			ee()->functions->redirect(cp_url('channels/edit/' . $channel_id));
+			ee()->functions->redirect(cp_url('channels'));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -1186,9 +1199,11 @@ class Channels extends AbstractChannelsController {
 		{
 			$this->saveChannelSettings($channel_id, $vars['sections']);
 
+			ee()->session->set_flashdata('highlight_id', $channel_id);
+
 			ee()->view->set_message('success', lang('channel_saved'), lang('channel_saved_desc'), TRUE);
 
-			ee()->functions->redirect(cp_url('channels/settings/' . $channel_id));
+			ee()->functions->redirect(cp_url('channels'));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
