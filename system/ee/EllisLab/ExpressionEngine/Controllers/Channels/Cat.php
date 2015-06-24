@@ -787,13 +787,15 @@ class Cat extends AbstractChannelsController {
 			{
 				$category_id = $category->save()->getId();
 
+				ee()->session->set_flashdata('highlight_id', $category_id);
+
 				ee('Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('category_saved'))
 					->addToBody(lang('category_saved_desc'))
 					->defer();
 
-				ee()->functions->redirect(cp_url('channels/cat/edit-cat/'.$group_id.'/'.$category_id));
+				ee()->functions->redirect(cp_url('channels/cat/cat-list/'.$cat_group->group_id));
 			}
 			else
 			{
