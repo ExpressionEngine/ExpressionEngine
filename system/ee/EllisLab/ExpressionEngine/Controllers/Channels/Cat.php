@@ -89,31 +89,42 @@ class Cat extends AbstractChannelsController {
 		$data = array();
 		foreach ($cat_groups as $group)
 		{
-			$data[] = array(
-				$group->group_id,
+			$columns = array(
+				$group->getId(),
 				htmlentities($group->group_name, ENT_QUOTES) . ' ('.count($group->getCategories()).')',
 				array('toolbar_items' => array(
 					'view' => array(
-						'href' => cp_url('channels/cat/cat-list/'.$group->group_id),
+						'href' => cp_url('channels/cat/cat-list/'.$group->getId()),
 						'title' => lang('view')
 					),
 					'edit' => array(
-						'href' => cp_url('channels/cat/edit/'.$group->group_id),
+						'href' => cp_url('channels/cat/edit/'.$group->getId()),
 						'title' => lang('edit')
 					),
 					'txt-only' => array(
-						'href' => cp_url('channels/cat/field/'.$group->group_id),
+						'href' => cp_url('channels/cat/field/'.$group->getId()),
 						'title' => strtolower(lang('custom_fields')),
 						'content' => strtolower(lang('fields'))
 					)
 				)),
 				array(
 					'name' => 'cat_groups[]',
-					'value' => $group->group_id,
+					'value' => $group->getId(),
 					'data'	=> array(
 						'confirm' => lang('category_group') . ': <b>' . htmlentities($group->group_name, ENT_QUOTES) . '</b>'
 					)
 				)
+			);
+
+			$attrs = array();
+			if (ee()->session->flashdata('highlight_id') == $group->getId())
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs' => $attrs,
+				'columns' => $columns
 			);
 		}
 
@@ -347,13 +358,15 @@ class Cat extends AbstractChannelsController {
 		{
 			$group_id = $this->saveCategoryGroup($group_id);
 
+			ee()->session->set_flashdata('highlight_id', $group_id);
+
 			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('category_group_saved'))
 				->addToBody(lang('category_group_saved_desc'))
 				->defer();
 
-			ee()->functions->redirect(cp_url('channels/cat/edit/'.$group_id));
+			ee()->functions->redirect(cp_url('channels/cat'));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
