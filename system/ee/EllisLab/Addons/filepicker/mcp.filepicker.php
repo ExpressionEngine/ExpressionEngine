@@ -33,15 +33,11 @@ class Filepicker_mcp {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$directories = array();
 		$dirs = ee()->api->get('UploadDestination')
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
-		foreach($dirs as $dir)
-		{
-			$directories[$dir->id] = $dir;
-		}
+		$directories = $dirs->indexBy('id');
 
 		if ( ! empty(ee()->input->get('directory')))
 		{
@@ -58,6 +54,16 @@ class Filepicker_mcp {
 		{
 			$dir = $directories[$id];
 			$files = $dir->getFiles();
+		}
+
+		$type = ee()->input->get('type') ?: 'all';
+
+		if ($type == 'img')
+		{
+			$files = $files->filter(function($file)
+			{
+				return $file->isImage();
+			});
 		}
 
 		// Filter out any files that are no longer on disk
@@ -79,6 +85,7 @@ class Filepicker_mcp {
 		$base_url->setQueryStringVariable('sort_col', $table->sort_col);
 		$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
 		$base_url->setQueryStringVariable('directory', $id);
+		$base_url->setQueryStringVariable('type', $type);
 
 		ee()->view->filters = $filters->render($base_url);
 
