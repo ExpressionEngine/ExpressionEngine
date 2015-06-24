@@ -278,7 +278,7 @@ class Status extends AbstractChannelsController {
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('group_name', $name);
 
-		if ( ! empty($status_id))
+		if ( ! empty($group_id))
 		{
 			$status_group->filter('group_id', '!=', $group_id);
 		}
@@ -300,13 +300,20 @@ class Status extends AbstractChannelsController {
 	 */
 	private function saveStatusGroup($group_id = NULL)
 	{
-		$status_group = ee('Model')->make('StatusGroup');
-		$status_group->group_id = $group_id;
+		if ($group_id)
+		{
+			$status_group = ee('Model')->get('StatusGroup', $group_id)->first();
+		}
+		else
+		{
+			$status_group = ee('Model')->make('StatusGroup');
+		}
+
 		$status_group->site_id = ee()->config->item('site_id');
 		$status_group->group_name = ee()->input->post('group_name');
 		$status_group->save();
 
-		return $status_group->group_id;
+		return $status_group->getId();
 	}
 
 	/**
