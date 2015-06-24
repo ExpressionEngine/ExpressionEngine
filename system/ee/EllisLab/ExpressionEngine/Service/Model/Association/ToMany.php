@@ -6,6 +6,16 @@ use EllisLab\ExpressionEngine\Service\Model\Collection;
 
 class ToMany extends Association {
 
+	public function fill($related, $_skip_inverse = FALSE)
+	{
+		if (is_array($related))
+		{
+			$related = new Collection($related);
+		}
+
+		return parent::fill($related, $_skip_inverse);
+	}
+
 	public function get()
 	{
 		$result = parent::get();

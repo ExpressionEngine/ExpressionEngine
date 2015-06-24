@@ -37,6 +37,8 @@ class Association {
                 $this->getInverse($to)->fill($this->model, TRUE);
             }
         }
+
+        $this->loaded = TRUE;
     }
 
     public function set($item)
