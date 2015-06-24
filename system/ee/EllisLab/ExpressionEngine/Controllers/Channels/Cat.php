@@ -882,7 +882,7 @@ class Cat extends AbstractChannelsController {
 		$data = array();
 		foreach ($cat_fields as $field)
 		{
-			$data[] = array(
+			$columns = array(
 				$field->getId().form_hidden('order[]', $field->getId()),
 				$field->field_label,
 				'<var>'.LD.$field->field_name.RD.'</var>',
@@ -900,6 +900,17 @@ class Cat extends AbstractChannelsController {
 						'confirm' => lang('category_field') . ': <b>' . htmlentities($field->field_label, ENT_QUOTES) . '</b>'
 					)
 				)
+			);
+
+			$attrs = array();
+			if (ee()->session->flashdata('highlight_id') == $field->getId())
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs' => $attrs,
+				'columns' => $columns
 			);
 		}
 
@@ -1177,13 +1188,15 @@ class Cat extends AbstractChannelsController {
 			{
 				$field_id = $cat_field->save()->getId();
 
+				ee()->session->set_flashdata('highlight_id', $field_id);
+
 				ee('Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('category_field_saved'))
 					->addToBody(lang('category_field_saved_desc'))
 					->defer();
 
-				ee()->functions->redirect(cp_url('channels/cat/edit-field/' . $group_id . '/' . $field_id));
+				ee()->functions->redirect(cp_url('channels/cat/field/'.$group_id));
 			}
 			else
 			{
