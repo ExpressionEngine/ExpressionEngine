@@ -25,7 +25,7 @@
 			radios.hide();
 		}
 
-		$('input[value=choose]')
+		$('input[value=choose], li.edit a')
 			.addClass('m-link')
 			.attr('rel', 'modal-file')
 			.attr('href', EE.category_edit.filepicker_url)
@@ -55,9 +55,11 @@
 			var figure = $(this).parents('figure');
 			figure.hide();
 			figure.siblings('em').hide(); // Hide the "missing file" erorr
-			figure.siblings('input[type="hidden"]').val('');
-			figure.siblings('p.solo-btn').show();
+			figure.find('input[type="hidden"]').val('');
 			e.preventDefault();
+
+			// Return radio selection back to none
+			$('input[value=none]').click();
 
 			radios.show();
 		});
