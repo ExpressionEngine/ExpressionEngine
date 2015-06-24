@@ -103,7 +103,11 @@ class Translate extends Utilities {
 		}
 
 		ee()->view->cp_page_title = ucfirst($language) . ' ' . lang('language_files');
-		$vars['language'] = $language;
+
+		$vars = array(
+			'language' => $language,
+			'pagination' => ''
+		);
 
 		$base_url = new URL('utilities/translate/' . $language, ee()->session->session_id());
 
