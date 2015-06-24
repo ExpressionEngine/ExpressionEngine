@@ -1002,10 +1002,10 @@ class Addons extends CP_Controller {
 		if ( ! is_null($model))
 		{
 			$data['installed'] = TRUE;
+			$data['version'] = $model->plugin_version;
 			if (version_compare($info->getVersion(), $model->plugin_version, '>'))
 			{
 				$data['update'] = $info->getVersion();
-				$data['version'] = $model->plugin_version;
 			}
 		}
 
