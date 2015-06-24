@@ -265,7 +265,7 @@ class Groups extends AbstractChannelsController {
 		{
 			$display = $field->field_label;
 
-			$assigned_to = $field->ChannelFieldGroup->first();
+			$assigned_to = $field->ChannelFieldGroup;
 
 			if ($assigned_to
 				&& $assigned_to->group_id != $field_group->group_id)
@@ -282,7 +282,7 @@ class Groups extends AbstractChannelsController {
 
 		$custom_fields_value = array();
 
-		$selected_fields = $field_group->ChannelFields->all();
+		$selected_fields = $field_group->ChannelFields;
 		$custom_fields_value = ($selected_fields) ? $selected_fields->pluck('field_id') : array();
 
 		// Alert to show only for new channels
