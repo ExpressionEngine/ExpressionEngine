@@ -1194,53 +1194,5 @@ class Cat extends AbstractChannelsController {
 
 		ee()->cp->render('settings/form', $vars);
 	}
-
-	/**
-	 * Custom validator for category field name to check for duplicate
-	 * category field names
-	 *
-	 * @param	model	$name		Category field name
-	 * @param	model	$field_id	Field ID for category field
-	 * @return	bool	Valid category field name or not
-	 */
-	public function validCategoryFieldName($name, $field_id)
-	{
-		$cat_field = ee('Model')->get('CategoryField')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('field_name', $name);
-
-		if ( ! empty($field_id))
-		{
-			$cat_field->filter('field_id', '!=', $field_id);
-		}
-
-		if ($cat_field->all()->count() > 0)
-		{
-			ee()->form_validation->set_message('validCategoryFieldName', lang('duplicate_field_name'));
-			return FALSE;
-		}
-
-		return TRUE;
-	}
-
-	/**
-	 * Save routine for category fields
-	 *
-	 * @param	Model	$cat_field	Model object of category field
-	 */
-	private function saveCategoryField($cat_field)
-	{
-		$cat_field->set($_POST);
-
-		if ($cat_field->isNew())
-		{
-			$cat_field->site_id = ee()->config->item('site_id');
-			$cat_field->field_list_items = '';
-		}
-
-		$cat_field->save();
-
-		return $cat_field->getID();
-	}
 }
 // EOF
