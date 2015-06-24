@@ -23,15 +23,15 @@ class AddonManager < ControlPanelPage
 
 	element :first_party_no_results, first_party_prefix + 'tr.no-results'
 
-	elements :first_party_addons, first_party_prefix + 'form div.tbl-wrap table tr'
+	elements :first_party_addons, first_party_prefix + 'form div.tbl-wrap table tbody tr'
 
-	element :first_party_addon_name_header, first_party_prefix + 'form div.tbl-wrap table tr th:first-child'
-	element :first_party_version_header, first_party_prefix + 'form div.tbl-wrap table tr th:nth-child(2)'
-	element :first_party_manage_header, first_party_prefix + 'form div.tbl-wrap table tr th:nth-child(3)'
-	element :first_party_checkbox_header, first_party_prefix + 'form div.tbl-wrap table tr th:nth-child(4)'
+	element :first_party_addon_name_header, first_party_prefix + 'form div.tbl-wrap table thead tr th:first-child'
+	element :first_party_version_header, first_party_prefix + 'form div.tbl-wrap table thead tr th:nth-child(2)'
+	element :first_party_manage_header, first_party_prefix + 'form div.tbl-wrap table thead tr th:nth-child(3)'
+	element :first_party_checkbox_header, first_party_prefix + 'form div.tbl-wrap table thead tr th:nth-child(4)'
 
-	elements :first_party_addon_names, first_party_prefix + 'form div.tbl-wrap table tr td:first-child'
-	elements :first_party_versions, first_party_prefix + 'form div.tbl-wrap table tr td:nth-child(2)'
+	elements :first_party_addon_names, first_party_prefix + 'form div.tbl-wrap table tbody tr td:first-child'
+	elements :first_party_versions, first_party_prefix + 'form div.tbl-wrap table tbody tr td:nth-child(2)'
 
 	element :first_party_pagination, first_party_prefix + 'div.paginate'
 	elements :first_party_pages, first_party_prefix + 'div.paginate ul li a'
@@ -59,15 +59,15 @@ class AddonManager < ControlPanelPage
 
 	element :third_party_no_results, third_party_prefix + 'tr.no-results'
 
-	elements :third_party_addons, third_party_prefix + 'form div.tbl-wrap table tr'
+	elements :third_party_addons, third_party_prefix + 'form div.tbl-wrap table tbody tr'
 
-	element :third_party_addon_name_header, third_party_prefix + 'form div.tbl-wrap table tr th:first-child'
-	element :third_party_version_header, third_party_prefix + 'form div.tbl-wrap table tr th:nth-child(2)'
-	element :third_party_manage_header, third_party_prefix + 'form div.tbl-wrap table tr th:nth-child(3)'
-	element :third_party_checkbox_header, third_party_prefix + 'form div.tbl-wrap table tr th:nth-child(4)'
+	element :third_party_addon_name_header, third_party_prefix + 'form div.tbl-wrap table thead tr th:first-child'
+	element :third_party_version_header, third_party_prefix + 'form div.tbl-wrap table thead tr th:nth-child(2)'
+	element :third_party_manage_header, third_party_prefix + 'form div.tbl-wrap table thead tr th:nth-child(3)'
+	element :third_party_checkbox_header, third_party_prefix + 'form div.tbl-wrap table thead tr th:nth-child(4)'
 
-	elements :third_party_addon_names, third_party_prefix + 'form div.tbl-wrap table tr td:first-child'
-	elements :third_party_versions, third_party_prefix + 'form div.tbl-wrap table tr td:nth-child(2)'
+	elements :third_party_addon_names, third_party_prefix + 'form div.tbl-wrap table tbody tr td:first-child'
+	elements :third_party_versions, third_party_prefix + 'form div.tbl-wrap table tbody tr td:nth-child(2)'
 
 	element :third_party_pagination, third_party_prefix + 'div.paginate'
 	elements :third_party_pages, third_party_prefix + 'div.paginate ul li a'
