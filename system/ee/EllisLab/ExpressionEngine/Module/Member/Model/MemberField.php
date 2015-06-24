@@ -107,4 +107,10 @@ class MemberField extends FieldModel {
 	{
 		return 'member_data';
 	}
+
+	protected function getFieldType()
+	{
+		return $this->m_field_type;
+	}
+
 }

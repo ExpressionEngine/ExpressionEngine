@@ -15,9 +15,6 @@ abstract class FieldModel extends Model {
 
 	protected $_facade;
 
-	// One property everyone needs to declare is the fieldtype name
-	protected $field_type;
-
 	/**
 	 * Return the storing table
 	 */
@@ -33,12 +30,14 @@ abstract class FieldModel extends Model {
 	 */
 	public function getField($override = array())
 	{
-		if ( ! isset($this->field_type))
+		$field_type = $this->getFieldType();
+
+		if (empty($field_type))
 		{
 			throw new \Exception('Cannot get field of unknown type.');
 		}
 
-		if ( ! isset($this->_facade) || $this->_facade->getType() != $this->field_type)
+		if ( ! isset($this->_facade) || $this->_facade->getType() != $this->getFieldType())
 		{
 			$values = array_merge($this->getValues(), $override);
 
@@ -137,11 +136,23 @@ abstract class FieldModel extends Model {
 	 */
 	protected function getFieldtypeInstance($field_type = NULL, $changed = array())
 	{
-		$field_type = $field_type ?: $this->field_type;
+		$field_type = $field_type ?: $this->getFieldType();
 		$values = array_merge($this->getValues(), $changed);
 
 		$facade = new FieldFacade($this->getId(), $values);
 		return $facade->getNativeField();
+	}
+
+	/**
+	 * Simple getter for field type, override if your field type property has a 
+	 * different name.
+	 * 
+	 * @access protected
+	 * @return string The field type.
+	 */
+	protected function getFieldType()
+	{
+		return $this->field_type;
 	}
 
 	/**
