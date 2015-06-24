@@ -115,9 +115,21 @@ class Addons extends CP_Controller {
 		$filter_base_url['first'] = clone $this->base_url;
 		$filter_base_url['first']->addQueryStringVariables($third_filters->values());
 
+		// Retain the third party page
+		if (ee()->input->get('third_page'))
+		{
+			$filter_base_url['first']->setQueryStringVariable('third_page', ee()->input->get('third_page'));
+		}
+
 		// When filtering the third party table keep the first party filter values
 		$filter_base_url['third'] = clone $this->base_url;
 		$filter_base_url['third']->addQueryStringVariables($first_filters->values());
+
+		// Retain the third party page
+		if (ee()->input->get('first_page'))
+		{
+			$filter_base_url['third']->setQueryStringVariable('first_page', ee()->input->get('first_page'));
+		}
 
 		ee()->view->filters = array(
 			'first' => $first_filters->render($filter_base_url['first']),
