@@ -800,7 +800,10 @@ class Cat extends AbstractChannelsController {
 		$filepicker = new FilePicker();
 		$filepicker->inject(ee()->view);
 		ee()->cp->add_js_script('file', 'cp/channel/category_edit');
-		ee()->javascript->set_global('category_edit.filepicker_url', cp_url($filepicker->controller, array('directory' => 'all')));
+		ee()->javascript->set_global(
+			'category_edit.filepicker_url',
+			cp_url($filepicker->controller, array('directory' => 'all', 'type' => 'img'))
+		);
 
 		ee()->cp->set_breadcrumb(cp_url('channels/cat'), lang('category_groups'));
 		ee()->cp->set_breadcrumb(cp_url('channels/cat/cat-list/'.$cat_group->group_id), $cat_group->group_name . ' &mdash; ' . lang('categories'));
