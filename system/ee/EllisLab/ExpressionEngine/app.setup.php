@@ -224,6 +224,7 @@ return array(
 			// ..\Member
 			'HTMLButton' => 'Module\Member\Model\HTMLButton',
 			'Member' => 'Module\Member\Model\Member',
+			'MemberField' => 'Module\Member\Model\MemberField',
 			'MemberGroup' => 'Module\Member\Model\MemberGroup',
 
 			// ..\RichTextEditor
