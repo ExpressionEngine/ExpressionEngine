@@ -76,6 +76,11 @@ class ChannelField extends FieldModel {
 		return 'channel_data';
 	}
 
+	public function getContentType()
+	{
+		return 'channel';
+	}
+
 	public function set__field_settings($settings)
 	{
 		$this->setRawProperty('field_settings', base64_encode(serialize($settings)));

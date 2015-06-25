@@ -43,7 +43,7 @@ abstract class FieldModel extends Model {
 			$values = array_merge($this->getValues(), $override);
 
 			$this->_facade = new FieldFacade($this->getId(), $values);
-			$this->_facade->setContentType($this->getStructure()->getContentType());
+			$this->_facade->setContentType($this->getContentType());
 		}
 
 		return $this->_facade;
@@ -57,6 +57,11 @@ abstract class FieldModel extends Model {
 	public function getSettingsValues()
 	{
 		return array();
+	}
+
+	protected function getContentType()
+	{
+		return $this->getStructure()->getContentType();
 	}
 
 	public function set(array $data = array())
