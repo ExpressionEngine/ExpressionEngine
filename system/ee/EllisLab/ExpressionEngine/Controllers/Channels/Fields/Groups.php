@@ -368,7 +368,6 @@ class Groups extends AbstractChannelsController {
 		return TRUE;
 	}
 
-
 	private function remove($group_ids)
 	{
 		if ( ! is_array($group_ids))
