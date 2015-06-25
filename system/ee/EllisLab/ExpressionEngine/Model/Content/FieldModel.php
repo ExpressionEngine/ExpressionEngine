@@ -56,7 +56,7 @@ abstract class FieldModel extends Model {
 
 	public function getSettingsValues()
 	{
-		return array();
+		return $this->getValues();
 	}
 
 	protected function getContentType()
