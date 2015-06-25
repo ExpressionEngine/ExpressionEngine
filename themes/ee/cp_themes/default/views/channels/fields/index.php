@@ -7,6 +7,7 @@
 		</fieldset>
 		<h1><?=$cp_page_title?></h1>
 		<?=ee('Alert')->getAllInlines()?>
+		<?=$filters?>
 		<?php $this->view('_shared/table', $table); ?>
 		<?=$pagination?>
 		<fieldset class="tbl-bulk-act">

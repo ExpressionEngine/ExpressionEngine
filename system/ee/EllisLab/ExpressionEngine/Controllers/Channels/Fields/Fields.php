@@ -55,13 +55,32 @@ class Fields extends AbstractChannelsController {
 			ee()->functions->redirect(ee('CP/URL', 'channels/fields'));
 		}
 
-		$fields = ee('Model')->get('ChannelField')
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
+		$base_url = ee('CP/URL', 'channels/fields');
 
 		$vars = array(
 			'create_url' => ee('CP/URL', 'channels/fields/create')
 		);
+
+		$groups = ee('Model')->get('ChannelFieldGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		$group_filter = ee('Filter')->make('filter_by_group', 'filter_by_group', $groups->getDictionary('group_id', 'group_name'))
+			->disableCustomValue();
+
+		$filters = ee('Filter')->add($group_filter);
+
+		$fields = ee('Model')->get('ChannelField')
+			->filter('site_id', ee()->config->item('site_id'));
+
+		if ( ! is_null($group_filter->value()))
+		{
+			$fields->filter('group_id', $group_filter->value());
+		}
+
+		$vars['filters'] = $filters->render($base_url);
+
+		$base_url->addQueryStringVariables($filters->values());
 
 		$table = ee('CP/Table');
 		$table->setColumns(
@@ -85,7 +104,7 @@ class Fields extends AbstractChannelsController {
 
 		$field_id = ee()->session->flashdata('field_id');
 
-		foreach ($fields as $field)
+		foreach ($fields->all() as $field)
 		{
 			$column = array(
 				$field->field_id,
@@ -122,7 +141,7 @@ class Fields extends AbstractChannelsController {
 
 		$table->setData($data);
 
-		$vars['table'] = $table->viewData(ee('CP/URL', 'channels/fields'));
+		$vars['table'] = $table->viewData($base_url);
 
 		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
 			->perPage($vars['table']['limit'])

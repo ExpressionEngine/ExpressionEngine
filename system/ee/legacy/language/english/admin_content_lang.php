@@ -13,6 +13,9 @@ $lang = array(
 'fields' =>
 'Fields',
 
+'filter_by_group' =>
+'field group',
+
 'field_groups' =>
 'Field Groups',
 
