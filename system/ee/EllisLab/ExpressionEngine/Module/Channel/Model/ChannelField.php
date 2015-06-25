@@ -76,9 +76,18 @@ class ChannelField extends FieldModel {
 		return 'channel_data';
 	}
 
-	public function getContentType()
+	protected function getContentType()
 	{
 		return 'channel';
+	}
+
+	public function getSettingsValues()
+	{
+		$values = parent::getSettingsValues();
+
+		$values['field_settings'] = $this->getProperty('field_settings') ?: array();
+
+		return $values;
 	}
 
 	public function set__field_settings($settings)
