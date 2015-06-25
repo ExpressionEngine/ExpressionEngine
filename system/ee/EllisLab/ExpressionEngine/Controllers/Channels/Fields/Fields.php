@@ -225,7 +225,7 @@ class Fields extends AbstractChannelsController {
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL', 'channels/fields/edit/' . $id),
 			'sections' => $this->form($field),
-			'save_btn_text' => 'btn_create_field',
+			'save_btn_text' => 'btn_edit_field',
 			'save_btn_text_working' => 'btn_saving'
 		);
 
