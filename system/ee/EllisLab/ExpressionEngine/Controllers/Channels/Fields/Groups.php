@@ -190,7 +190,7 @@ class Groups extends AbstractChannelsController {
 
 		if ( ! $field_group)
 		{
-			show_error(lang('unauthorized_access'));
+			show_404();
 		}
 
 		ee()->view->cp_breadcrumbs = array(
