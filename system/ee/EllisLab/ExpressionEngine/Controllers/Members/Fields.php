@@ -53,13 +53,9 @@ class Fields extends Members\Members {
 	 */
 	public function index()
 	{
-		$table = ee('CP/GridInput', array(
+		$table = ee('CP/Table', array(
 			'sortable' => FALSE,
 			'reorder' => TRUE,
-			'namespace' => FALSE,
-			'input' => FALSE,
-			'grid_remove' => FALSE,
-			'grid_add' => FALSE,
 			'save' => cp_url("members/fields/order")
 		));
 
@@ -141,22 +137,12 @@ class Fields extends Members\Members {
 
 	public function create()
 	{
-		$vars = array(
-			'cp_page_title' => lang('create_member_field'),
-			'save_btn_text' => lang('save_member_field')
-		);
-
-		$this->form($vars);
+		$this->form();
 	}
 
-	public function edit()
+	public function edit($id)
 	{
-		$vars = array(
-			'cp_page_title' => lang('create_member_field'),
-			'save_btn_text' => lang('save_member_field')
-		);
-
-		$this->form($vars);
+		$this->form($id);
 	}
 
 	public function delete()
@@ -180,192 +166,172 @@ class Fields extends Members\Members {
 		}
 	}
 
-	private function form($vars = array(), $values = array())
+	private function form($field_id = NULL)
 	{
+		if ($field_id)
+		{
+			$field = ee('Model')->get('MemberField', array($field_id))->first();
+
+			ee()->view->save_btn_text = 'btn_edit_field';
+			ee()->view->cp_page_title = lang('edit_member_field');
+			ee()->view->base_url = cp_url('members/fields/edit/' . $field_id);
+		}
+		else
+		{
+			// Only auto-complete field short name for new fields
+			ee()->cp->add_js_script('plugin', 'ee_url_title');
+			ee()->javascript->output('
+				$("input[name=field_label]").bind("keyup keydown", function() {
+					$(this).ee_url_title("input[name=field_name]");
+				});
+			');
+
+			$field = ee('Model')->make('MemberField');
+			$field->field_type = 'text';
+
+			ee()->view->save_btn_text = 'btn_create_field';
+			ee()->view->cp_page_title = lang('create_member_field');
+			ee()->view->base_url = cp_url('members/fields/create');
+		}
+
+		if ( ! $field)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		ee()->lang->loadfile('admin_content');
+
 		$vars['sections'] = array(
 			array(
 				array(
 					'title' => 'type',
-					'desc' => 'type_desc',
+					'desc' => '',
 					'fields' => array(
-						'type' => array(
+						'm_field_type' => array(
 							'type' => 'dropdown',
-							'choices' => $field_types,
-							'value' => element('type', $values)
+							'choices' => array(
+								'text'     => lang('text_input'),
+								'textarea' => lang('textarea'),
+								'select'   => lang('select_dropdown')
+							),
+							'group_toggle' => array(
+								'text' => 'text',
+								'textarea' => 'textarea',
+								'select' => 'select'
+							),
+							'value' => $field->field_type
 						)
 					)
 				),
 				array(
 					'title' => 'label',
-					'desc' => 'label_desc',
+					'desc' => 'field_label_desc',
 					'fields' => array(
-						'label' => array('type' => 'text', 'value' => element('label', $values))
+						'm_field_label' => array(
+							'type' => 'text',
+							'value' => $field->field_label,
+							'required' => TRUE
+						)
 					)
 				),
 				array(
 					'title' => 'short_name',
-					'desc' => 'short_name_desc',
+					'desc' => 'field_short_name_desc',
 					'fields' => array(
-						'short_name' => array('type' => 'text', 'value' => element('short_name', $values))
-					)
-				),
-				array(
-					'title' => 'instructions',
-					'desc' => 'instructions_desc',
-					'fields' => array(
-						'instructions' => array('type' => 'textarea', 'value' => element('instructions', $values))
+						'm_field_name' => array(
+							'type' => 'text',
+							'value' => $field->field_name,
+							'required' => TRUE
+						)
 					)
 				),
 				array(
 					'title' => 'require_field',
-					'desc' => 'require_field_desc',
+					'desc' => 'cat_require_field_desc',
 					'fields' => array(
-						'require_field' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'yes',
-								'n' => 'no'
-							),
-							'value' => element('require_field', $values)
-						)
-					)
-				),
-				array(
-					'title' => 'include_in_search',
-					'desc' => 'include_in_search_desc',
-					'fields' => array(
-						'include_in_search' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'yes',
-								'n' => 'no'
-							),
-							'value' => element('include_in_search', $values)
-						)
-					)
-				),
-				array(
-					'title' => 'hide_field',
-					'desc' => 'hide_field_desc',
-					'fields' => array(
-						'hide_field' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'yes',
-								'n' => 'no'
-							),
-							'value' => element('hide_field', $values)
+						'm_field_required' => array(
+							'type' => 'yes_no',
+							'value' => $field->field_required
 						)
 					)
 				)
 			),
-			'field_options' => array(
-				array(
-					'title' => 'maximum_characters',
-					'desc' => 'maximum_characters_desc',
-					'fields' => array(
-						'maximum_characters' => array('type' => 'text', 'value' => element('maximum_characters', $values))
-					)
-				),
-				array(
-					'title' => 'text_formatting',
-					'desc' => 'text_formatting_desc',
-					'fields' => array(
-						'text_formatting' => array(
-							'type' => 'dropdown',
-							'choices' => $text_formatting,
-							'value' => element('text_formatting', $values)
-						)
-					)
-				),
-				array(
-					'title' => 'allow_override',
-					'desc' => 'allow_override_desc',
-					'fields' => array(
-						'allow_override' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'yes',
-								'n' => 'no'
-							),
-							'value' => element('allow_override', $values)
-						)
-					)
-				),
-				array(
-					'title' => 'text_direction',
-					'desc' => 'text_direction_desc',
-					'fields' => array(
-						'text_direction' => array(
-							'type' => 'dropdown',
-							'choices' => $text_direction,
-							'value' => element('text_direction', $values)
-						)
-					)
-				),
-				array(
-					'title' => 'allowed_content',
-					'desc' => 'allowed_content_desc',
-					'fields' => array(
-						'allowed_content' => array(
-							'type' => 'dropdown',
-							'choices' => $allowed_content,
-							'value' => element('allowed_content', $values)
-						)
-					)
-				),
-				array(
-					'title' => 'field_tools',
-					'desc' => 'field_tools_desc',
-					'fields' => array(
-						'field_tools' => array(
-							'type' => 'checkbox',
-							'choices' => array(
-								'emoji' => 'emoji',
-								'glossary' => 'glossary',
-								'spellcheck' => 'spellcheck',
-								'asset_manager' => 'asset_manager'
-							),
-							'value' => $settings
-						),
-					)
-				),
+			'field_options_'.$field->field_type => array(
+				'label' => 'field_options',
+				'group' => $field->field_type,
+				'settings' => $field->getSettingsForm()
 			)
 		);
 
-		ee()->form_validation->set_rules(array(
-			array(
-				 'field'   => 'name',
-				 'label'   => 'lang:quicklink_name',
-				 'rules'   => 'required|valid_xss_check'
-			),
-			array(
-				 'field'   => 'url',
-				 'label'   => 'lang:quicklink_url',
-				 'rules'   => 'required|valid_xss_check'
-			)
-		));
-
-		if (AJAX_REQUEST)
+		// These are currently the only fieldtypes we allow; get their settings forms
+		foreach (array('text', 'textarea', 'select') as $fieldtype)
 		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			if ($this->saveQuicklinks())
+			if ($field->field_type != $fieldtype)
 			{
-				ee()->functions->redirect(cp_url($this->index_url, $this->query_string));
+				$dummy_field = ee('Model')->make('MemberField');
+				$dummy_field->field_type = $fieldtype;
+				$vars['sections']['field_options_'.$fieldtype] = array(
+					'label' => 'field_options',
+					'group' => $fieldtype,
+					'settings' => $dummy_field->getSettingsForm()
+				);
 			}
 		}
-		elseif (ee()->form_validation->errors_exist())
+
+		if ( ! empty($_POST))
 		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+			$field->set($_POST);
+			$field->field_fmt = isset($_POST['field_fmt']) ? $_POST['field_fmt'] : NULL;
+			$result = $field->validate();
+
+			if (AJAX_REQUEST)
+			{
+				$field = ee()->input->post('ee_fv_field');
+
+				if ($result->hasErrors($field))
+				{
+					ee()->output->send_ajax_response(array('error' => $result->renderError($field)));
+				}
+				else
+				{
+					ee()->output->send_ajax_response('success');
+				}
+				exit;
+			}
+
+			if ($result->isValid())
+			{
+				$field_id = $field->save()->getId();
+
+				ee('Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('member_field_saved'))
+					->addToBody(lang('member_field_saved_desc'))
+					->defer();
+
+				ee()->functions->redirect(cp_url('/members/fields/edit/' . $field_id));
+			}
+			else
+			{
+				ee()->load->library('form_validation');
+				ee()->form_validation->_error_array = $result->renderErrors();
+				ee('Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('member_field_not_saved'))
+					->addToBody(lang('member_field_not_saved_desc'))
+					->now();
+			}
 		}
 
-		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
-		ee()->view->save_btn_text_working = 'btn_save_working';
+		ee()->view->save_btn_text_working = 'btn_saving';
+
+		ee()->cp->set_breadcrumb(cp_url('members/fields/edit'), lang('member_fields'));
+
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/form_group'),
+		));
+
 		ee()->cp->render('settings/form', $vars);
 	}
 }
