@@ -363,7 +363,7 @@ class Fields extends AbstractChannelsController {
 					)
 				),
 			),
-			'field_options' => array()
+			'field_options' => $field->getSettingsForm()
 		);
 
 		ee()->form_validation->set_rules(array(
