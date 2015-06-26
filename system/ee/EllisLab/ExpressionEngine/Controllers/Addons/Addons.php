@@ -220,6 +220,10 @@ class Addons extends CP_Controller {
 						'href' => $info['manual_url'],
 						'title' => lang('manual'),
 					);
+					if ($info['manual_external'])
+					{
+						$toolbar['manual']['target'] = '_external';
+					}
 				}
 
 				if (isset($info['update']))
@@ -321,10 +325,12 @@ class Addons extends CP_Controller {
 				if (file_exists($info->getPath() . '/README.md'))
 				{
 					$addon['manual_url'] = ee('CP/URL', 'addons/manual/' . $name);
+					$addon['manual_external'] = FALSE;
 				}
 				elseif ($info->get('docs_url'))
 				{
 					$addon['manual_url'] = ee()->cp->masked_url($info->get('docs_url'));
+					$addon['manual_external'] = TRUE;
 				}
 
 				$addons[$name] = $addon;
