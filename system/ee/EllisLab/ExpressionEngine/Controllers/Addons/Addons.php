@@ -755,6 +755,7 @@ class Addons extends CP_Controller {
 
 		ee()->load->library('typography');
 		ee()->typography->initialize(array(
+			'highlight_code' => FALSE,
 			'bbencode_links' => FALSE,
 			'parse_images'	=> FALSE,
 			'parse_smileys'	=> FALSE
