@@ -139,6 +139,27 @@ $lang = array(
 'edit_field_error_desc' =>
 'We were unable to update this field, please review and fix errors below.',
 
+'field_content_text' =>
+'Allowed content',
+
+'field_content_text_desc' =>
+'Type of content this field can contain.',
+
+'field_tools' =>
+'Field tools',
+
+'field_tools_desc' =>
+'Choose field tools to include with this field in the publish form.',
+
+'show_smileys' =>
+'Emoji <i>&mdash; Image based conveyances of emotion.</i>',
+
+'show_file_selector' =>
+'Asset Manager <i>&mdash; Launches asset manager.</i>',
+
+'show_formatting_btns' =>
+'Formatting Buttons <i>&mdash; Buttons for formatting your text.</i>',
+
 // @since 2.x
 
 'reserved_word' =>
@@ -889,9 +910,6 @@ $lang = array(
 'field_type' =>
 'Type',
 
-'field_max_length' =>
-'Maxlength',
-
 'field_max_length_cont' =>
 'If you are using a \'text\' field type',
 
@@ -942,15 +960,6 @@ $lang = array(
 
 'is_field_required' =>
 'Is this a required field?',
-
-'show_smileys' =>
-'Show Smileys',
-
-'show_file_selector' =>
-'Show File Chooser',
-
-'show_formatting_btns' =>
-'Show Formatting Buttons',
 
 'text_input' =>
 'Text Input',
@@ -1005,9 +1014,6 @@ $lang = array(
 
 'channel_entries_will_be_deleted' =>
 'All channel entries containing the above field(s) will be permanently deleted.',
-
-'field_content_text' =>
-'Field Content',
 
 'type_numeric' =>
 'Number',
