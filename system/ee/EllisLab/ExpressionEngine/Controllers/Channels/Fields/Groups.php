@@ -2,7 +2,6 @@
 
 namespace EllisLab\ExpressionEngine\Controllers\Channels\Fields;
 
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Controllers\Channels\AbstractChannels as AbstractChannelsController;
 use EllisLab\ExpressionEngine\Module\Channel\Model\ChannelFieldGroup;
@@ -120,12 +119,10 @@ class Groups extends AbstractChannelsController {
 
 		$vars['table'] = $table->viewData(ee('CP/URL', 'channels/fields/groups'));
 
-		$pagination = new Pagination(
-			$vars['table']['limit'],
-			$vars['table']['total_rows'],
-			$vars['table']['page']
-		);
-		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
+		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($vars['table']['base_url']);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('group') . ': <b>### ' . lang('groups') . '</b>');
 		ee()->cp->add_js_script(array(
@@ -193,7 +190,7 @@ class Groups extends AbstractChannelsController {
 
 		if ( ! $field_group)
 		{
-			show_error(lang('unauthorized_access'));
+			show_404();
 		}
 
 		ee()->view->cp_breadcrumbs = array(
@@ -268,7 +265,7 @@ class Groups extends AbstractChannelsController {
 		{
 			$display = $field->field_label;
 
-			$assigned_to = $field->ChannelFieldGroup->first();
+			$assigned_to = $field->ChannelFieldGroup;
 
 			if ($assigned_to
 				&& $assigned_to->group_id != $field_group->group_id)
@@ -285,7 +282,7 @@ class Groups extends AbstractChannelsController {
 
 		$custom_fields_value = array();
 
-		$selected_fields = $field_group->ChannelFields->all();
+		$selected_fields = $field_group->ChannelFields;
 		$custom_fields_value = ($selected_fields) ? $selected_fields->pluck('field_id') : array();
 
 		// Alert to show only for new channels
@@ -370,7 +367,6 @@ class Groups extends AbstractChannelsController {
 
 		return TRUE;
 	}
-
 
 	private function remove($group_ids)
 	{

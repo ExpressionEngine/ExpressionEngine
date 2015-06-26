@@ -599,8 +599,7 @@ class Uploads extends AbstractFilesController {
 				else
 				{
 					$image_size = ee('Model')->make('FileDimension');
-					$upload_destination->createFileDimensions($image_size);
-					$image_size->setUploadDestination($upload_destination);
+					$upload_destination->FileDimensions[] = $image_size;
 				}
 
 				$image_size->set($columns);
@@ -635,18 +634,6 @@ class Uploads extends AbstractFilesController {
 		//}
 
 		//$image_sizes->filter('upload_location_id', $upload_destination->id)->delete();
-
-		// Temporary workaround for models bug where the upload_location_id is not
-		// filled in if you save image sizes with a new upload destination
-		$image_sizes = ee('Model')->get('FileDimension')
-			->filter('upload_location_id', NULL)
-			->all();
-
-		foreach ($image_sizes as $image_size)
-		{
-			$image_size->upload_location_id = $upload_destination->id;
-			$image_size->save();
-		}
 
 		return $upload_destination->id;
 	}

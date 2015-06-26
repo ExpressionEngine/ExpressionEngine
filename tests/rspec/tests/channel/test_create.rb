@@ -121,6 +121,10 @@ feature 'Channel Create/Edit' do
     no_php_js_errors
 
     @page.should have_text 'Channel saved'
+
+    @page.load_edit_for_channel(3)
+    no_php_js_errors
+
     @page.should have_text 'Edit Channel'
 
     # These should be gone on edit
@@ -154,8 +158,13 @@ feature 'Channel Create/Edit' do
     @page.channel_name.value.should == old_channel_name
 
     @page.submit
+    no_php_js_errors
 
     @page.should have_text 'Channel saved'
+
+    @page.load_edit_for_channel(1)
+    no_php_js_errors
+
     @page.channel_title.value.should == 'New channel'
   end
 
@@ -217,8 +226,13 @@ feature 'Channel Create/Edit' do
     @page.channel_title.set 'Test'
     @page.duplicate_channel_prefs.select 'News'
     @page.submit
+    no_php_js_errors
 
     @page.should have_text 'Channel saved'
+
+    @page.load_edit_for_channel(3)
+    no_php_js_errors
+
     @page.channel_title.value.should == 'Test'
     @page.channel_name.value.should == 'test'
 

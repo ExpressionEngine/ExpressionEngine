@@ -48,21 +48,23 @@ class Custom extends Filter {
 	 * Sets the placeholder value for this filter
 	 *
 	 * @param string $placeholder The value to use for the placeholder
-	 * @return void
+	 * @return self This returns a reference to itself
 	 */
 	public function setPlaceholder($placeholder)
 	{
 		$this->placeholder = $placeholder;
+		return $this;
 	}
 
 	/**
 	 * Disables the custom value by setting has_custom_value to False.
 	 * @see Filter::has_custom_value
-	 * @return void
+	 * @return self This returns a reference to itself
 	 */
 	public function disableCustomValue()
 	{
 		$this->has_custom_value = FALSE;
+		return $this;
 	}
 
 }

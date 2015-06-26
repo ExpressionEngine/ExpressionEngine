@@ -30,7 +30,7 @@
 
 				<?php endforeach; ?>
 
-				<?php $this->view('_shared/pagination'); ?>
+				<?=$pagination?>
 
 				<fieldset class="tbl-bulk-act">
 				<button class="btn remove m-link" rel="modal-confirm-all"><?=lang('clear_throttle_logs')?></button>

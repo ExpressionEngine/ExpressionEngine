@@ -12,7 +12,6 @@ feature 'Query Form' do
   it 'shows the Query Form' do
     @page.should have_text 'Query to run'
     @page.should have_query_form
-    @page.should have_show_errors
     @page.should have_password
   end
 
@@ -138,7 +137,7 @@ feature 'Query Form' do
     @page.should have_no_text not_allowed
   end
 
-  it 'should conditionally show MySQL errors' do
+  it 'should show MySQL errors' do
     error_text = 'You have an error in your SQL syntax'
 
     # Invalid query with errors on
@@ -146,19 +145,9 @@ feature 'Query Form' do
     @page.password.set 'password'
     @page.submit
 
+    no_php_js_errors
     @page.should have_text 'Attention: Query not run'
-    @page.should have_text error_text
-
-    cp_session
-    @page.load
-    @page.query_form.set "SELECT FROM exp_channels"
-    @page.show_errors.click # Uncheck error showing
-    @page.password.set 'password'
-    @page.submit
-
-    @page.should have_no_text error_text
-    @page.should have_text 'Total Results: 0'
-    @page.should have_text 'No rows returned'
+    @page.should have_text 'You have an error in your SQL syntax'
   end
 
   it 'should show query results' do

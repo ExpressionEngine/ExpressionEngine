@@ -3,7 +3,7 @@
 namespace EllisLab\ExpressionEngine\Service\Model\Relation;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Service\Model\Association;
+use EllisLab\ExpressionEngine\Service\Model\Association\ManyToMany;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -35,8 +35,17 @@ class HasAndBelongsToMany extends Relation {
 	/**
 	 *
 	 */
+	public function canSaveAcross()
+	{
+		return FALSE;
+	}
+
+	/**
+	 *
+	 */
 	public function createAssociation(Model $source)
 	{
+		return new ManyToMany($source, $this);
 		return new Association\HasAndBelongsToMany($source, $this->name);
 	}
 
@@ -115,6 +124,14 @@ class HasAndBelongsToMany extends Relation {
 	}
 
 	/**
+	*
+	*/
+	public function fillLinkIds(Model $source, Model $target)
+	{
+		return; // nada
+	}
+
+	/**
 	 *
 	 */
 	public function linkIds(Model $source, Model $target)
@@ -126,6 +143,14 @@ class HasAndBelongsToMany extends Relation {
 	 *
 	 */
 	public function unlinkIds(Model $source, Model $target)
+	{
+		return; // nada
+	}
+
+	/**
+	*
+	*/
+	public function markLinkAsClean(Model $source, Model $target)
 	{
 		return; // nada
 	}

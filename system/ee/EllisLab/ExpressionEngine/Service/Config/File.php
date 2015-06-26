@@ -27,7 +27,7 @@ namespace EllisLab\ExpressionEngine\Service\Config;
  */
 class File implements Config
 {
-	protected $config;
+	protected $config = array();
 	protected $defaults = array(
 		'database' => array(
 			'active_group'     => 'expressionengine',
@@ -62,7 +62,11 @@ class File implements Config
 
 		// Load in config
 		require($path);
-		$this->config = (isset($config)) ? $config : array();
+
+		if (isset($config))
+		{
+			$this->config = $config;
+		}
 	}
 
 	/**

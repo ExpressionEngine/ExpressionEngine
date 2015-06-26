@@ -2,9 +2,9 @@
 
 namespace EllisLab\ExpressionEngine\Controllers\Channels\Fields;
 
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Controllers\Channels\AbstractChannels as AbstractChannelsController;
+use EllisLab\ExpressionEngine\Module\Channel\Model\ChannelField;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -56,13 +56,32 @@ class Fields extends AbstractChannelsController {
 			ee()->functions->redirect(ee('CP/URL', 'channels/fields'));
 		}
 
-		$fields = ee('Model')->get('ChannelField')
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
+		$base_url = ee('CP/URL', 'channels/fields');
 
 		$vars = array(
 			'create_url' => ee('CP/URL', 'channels/fields/create')
 		);
+
+		$groups = ee('Model')->get('ChannelFieldGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		$group_filter = ee('Filter')->make('filter_by_group', 'filter_by_group', $groups->getDictionary('group_id', 'group_name'))
+			->disableCustomValue();
+
+		$filters = ee('Filter')->add($group_filter);
+
+		$fields = ee('Model')->get('ChannelField')
+			->filter('site_id', ee()->config->item('site_id'));
+
+		if ( ! is_null($group_filter->value()))
+		{
+			$fields->filter('group_id', $group_filter->value());
+		}
+
+		$vars['filters'] = $filters->render($base_url);
+
+		$base_url->addQueryStringVariables($filters->values());
 
 		$table = ee('CP/Table');
 		$table->setColumns(
@@ -86,7 +105,7 @@ class Fields extends AbstractChannelsController {
 
 		$field_id = ee()->session->flashdata('field_id');
 
-		foreach ($fields as $field)
+		foreach ($fields->all() as $field)
 		{
 			$column = array(
 				$field->field_id,
@@ -123,14 +142,12 @@ class Fields extends AbstractChannelsController {
 
 		$table->setData($data);
 
-		$vars['table'] = $table->viewData(ee('CP/URL', 'channels/fields'));
+		$vars['table'] = $table->viewData($base_url);
 
-		$pagination = new Pagination(
-			$vars['table']['limit'],
-			$vars['table']['total_rows'],
-			$vars['table']['page']
-		);
-		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
+		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($vars['table']['base_url']);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('field') . ': <b>### ' . lang('fields') . '</b>');
 		ee()->cp->add_js_script(array(
@@ -142,6 +159,249 @@ class Fields extends AbstractChannelsController {
 		ee()->view->cp_page_title = lang('custom_fields');
 
 		ee()->cp->render('channels/fields/index', $vars);
+	}
+
+	public function create()
+	{
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL', 'channels/fields')->compile() => lang('custom_fields'),
+		);
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'base_url' => ee('CP/URL', 'channels/fields/create'),
+			'sections' => $this->form(),
+			'save_btn_text' => 'btn_create_field',
+			'save_btn_text_working' => 'btn_saving'
+		);
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			$field = $this->saveWithPost(ee('Model')->make('ChannelField'));
+
+			ee()->session->set_flashdata('field_id', $field->field_id);
+
+			ee('Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('create_field_success'))
+				->addToBody(sprintf(lang('create_field_success_desc'), $field->field_label))
+				->defer();
+
+			ee()->functions->redirect(ee('CP/URL', 'channels/fields'));
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('create_field_error'))
+				->addToBody(lang('create_field_error_desc'))
+				->now();
+		}
+
+		ee()->view->cp_page_title = lang('create_field');
+
+		ee()->cp->render('settings/form', $vars);
+	}
+
+	public function edit($id)
+	{
+		$field = ee('Model')->get('ChannelField', $id)->first();
+
+		if ( ! $field)
+		{
+			show_404();
+		}
+
+		ee()->view->cp_breadcrumbs = array(
+			ee('CP/URL', 'channels/fields')->compile() => lang('custom_fields'),
+		);
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'base_url' => ee('CP/URL', 'channels/fields/edit/' . $id),
+			'sections' => $this->form($field),
+			'save_btn_text' => 'btn_edit_field',
+			'save_btn_text_working' => 'btn_saving'
+		);
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			$field = $this->saveWithPost($field);
+
+			ee('Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('edit_field_success'))
+				->addToBody(sprintf(lang('edit_field_success_desc'), $field->field_label))
+				->defer();
+
+			ee()->functions->redirect(ee('CP/URL', 'channels/fields/edit/' . $id));
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('edit_field_error'))
+				->addToBody(lang('edit_field_error_desc'))
+				->now();
+		}
+
+		ee()->view->cp_page_title = lang('edit_field');
+
+		ee()->cp->render('settings/form', $vars);
+	}
+
+	private function saveWithPost(ChannelField $field)
+	{
+		$field->set($_POST);
+		$field->save();
+	}
+
+	private function form(ChannelField $field = NULL)
+	{
+		if ( ! $field)
+		{
+			$field = ee('Model')->make('ChannelField');
+		}
+
+		$fieldtypes = ee('Model')->get('Fieldtype')
+			->order('name')
+			->all();
+
+		$fieldtype_choices = array();
+
+		foreach ($fieldtypes as $fieldtype)
+		{
+			$info = ee('App')->get($fieldtype->name);
+			$fieldtype_choices[$fieldtype->name] = $info->getName();
+		}
+
+		$field->field_type = ($field->field_type) ?: 'text';
+
+		$sections = array(
+			array(
+				array(
+					'title' => 'type',
+					'desc' => '',
+					'fields' => array(
+						'field_type' => array(
+							'type' => 'dropdown',
+							'choices' => $fieldtype_choices,
+							'value' => $field->field_type
+						)
+					)
+				),
+				array(
+					'title' => 'label',
+					'desc' => 'label_desc',
+					'fields' => array(
+						'field_label' => array(
+							'type' => 'text',
+							'value' => $field->field_label,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'short_name',
+					'desc' => 'short_name_desc',
+					'fields' => array(
+						'field_name' => array(
+							'type' => 'text',
+							'value' => $field->field_name,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'instructions',
+					'desc' => 'instructions_desc',
+					'fields' => array(
+						'field_instructions' => array(
+							'type' => 'textarea',
+							'value' => $field->field_instructions,
+						)
+					)
+				),
+				array(
+					'title' => 'require_field',
+					'desc' => 'require_field_desc',
+					'fields' => array(
+						'field_required' => array(
+							'type' => 'yes_no',
+							'value' => $field->field_required,
+						)
+					)
+				),
+				array(
+					'title' => 'include_in_search',
+					'desc' => 'include_in_search_desc',
+					'fields' => array(
+						'field_search' => array(
+							'type' => 'yes_no',
+							'value' => $field->field_search,
+						)
+					)
+				),
+				array(
+					'title' => 'hide_field',
+					'desc' => 'hide_field_desc',
+					'fields' => array(
+						'field_is_hidden' => array(
+							'type' => 'yes_no',
+							'value' => $field->field_is_hidden,
+						)
+					)
+				),
+			),
+			'field_options' => array()
+		);
+
+		ee()->form_validation->set_rules(array(
+			array(
+				'field' => 'field_label',
+				'label' => 'lang:label',
+				'rules' => 'required'
+			),
+			array(
+				'field' => 'short_name',
+				'label' => 'lang:name',
+				'rules' => 'required'
+			),
+		));
+
+		return $sections;
+	}
+
+	private function remove($field_ids)
+	{
+		if ( ! is_array($field_ids))
+		{
+			$field_ids = array($field_ids);
+		}
+
+		$fields = ee('Model')->get('ChannelField', $field_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		$field_names = $fields->pluck('field_label');
+
+		$fields->delete();
+		ee('Alert')->makeInline('fields')
+			->asSuccess()
+			->withTitle(lang('success'))
+			->addToBody(lang('fields_removed_desc'))
+			->addToBody($field_names)
+			->defer();
 	}
 
 }

@@ -2,7 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Service\Model\Query;
 
-use EllisLab\ExpressionEngine\Library\Data\Collection;
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -197,9 +197,8 @@ class Result {
 			{
 				$collection[] = $kids[$id];
 			}
-
 			$name = $relation->getName();
-			$parent->$name->fill($collection);
+			$parent->getAssociation($name)->fill($collection);
 		}
 	}
 

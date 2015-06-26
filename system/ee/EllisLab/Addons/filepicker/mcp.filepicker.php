@@ -1,7 +1,6 @@
 <?php
 
 use EllisLab\ExpressionEngine\Library\CP\URL;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
 use EllisLab\Addons\FilePicker\FilePicker as Picker;
 
@@ -34,15 +33,11 @@ class Filepicker_mcp {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$directories = array();
 		$dirs = ee()->api->get('UploadDestination')
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
-		foreach($dirs as $dir)
-		{
-			$directories[$dir->id] = $dir;
-		}
+		$directories = $dirs->indexBy('id');
 
 		if ( ! empty(ee()->input->get('directory')))
 		{
@@ -59,6 +54,16 @@ class Filepicker_mcp {
 		{
 			$dir = $directories[$id];
 			$files = $dir->getFiles();
+		}
+
+		$type = ee()->input->get('type') ?: 'all';
+
+		if ($type == 'img')
+		{
+			$files = $files->filter(function($file)
+			{
+				return $file->isImage();
+			});
 		}
 
 		// Filter out any files that are no longer on disk
@@ -80,6 +85,7 @@ class Filepicker_mcp {
 		$base_url->setQueryStringVariable('sort_col', $table->sort_col);
 		$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
 		$base_url->setQueryStringVariable('directory', $id);
+		$base_url->setQueryStringVariable('type', $type);
 
 		ee()->view->filters = $filters->render($base_url);
 
@@ -90,12 +96,10 @@ class Filepicker_mcp {
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
-			$pagination = new Pagination(
-				$vars['table']['limit'],
-				$vars['table']['total_rows'],
-				$vars['table']['page']
-			);
-			$vars['pagination'] = $pagination->cp_links($base_url);
+			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+				->perPage($vars['table']['limit'])
+				->currentPage($vars['table']['page'])
+				->render($base_url);
 		}
 
 		ee()->view->cp_heading = $id == 'all' ? lang('all_files') : sprintf(lang('files_in_directory'), $dir->name);

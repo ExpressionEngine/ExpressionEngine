@@ -116,6 +116,27 @@ class Text_ft extends EE_Fieldtype {
 			$field['maxlength'] = $this->settings['field_maxl'];
 		}
 
+		if (REQ == 'CP')
+		{
+			$format_options = array();
+
+			if (isset($this->settings['field_show_fmt'])
+				&& $this->settings['field_show_fmt'] == 'y')
+			{
+				ee()->load->model('addons_model');
+				$format_options = ee()->addons_model->get_plugin_formatting(TRUE);
+			}
+
+			$vars = array(
+				'name'            => $this->name(),
+				'field'           => $field,
+				'settings'        => $this->settings,
+				'format_options'  => $format_options,
+			);
+
+			return ee('View')->make('publish')->render($vars);
+		}
+
 		return form_input($field);
 	}
 
@@ -155,13 +176,7 @@ class Text_ft extends EE_Fieldtype {
 	function display_settings($data)
 	{
 		ee()->load->model('addons_model');
-		$plugins = ee()->addons_model->get_plugin_formatting();
-
-		$custom_format_options['none'] = 'None';
-		foreach ($plugins as $k=>$v)
-		{
-			$custom_format_options[$k] = $v;
-		}
+		$format_options = ee()->addons_model->get_plugin_formatting(TRUE);
 
 		$settings = array(
 			array(
@@ -180,7 +195,7 @@ class Text_ft extends EE_Fieldtype {
 				'fields' => array(
 					'field_fmt' => array(
 						'type' => 'dropdown',
-						'choices' => $custom_format_options,
+						'choices' => $format_options,
 						'value' => $data['field_fmt'],
 					)
 				)

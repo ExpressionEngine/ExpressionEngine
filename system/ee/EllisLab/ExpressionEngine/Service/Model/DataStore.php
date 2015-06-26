@@ -153,9 +153,6 @@ class DataStore {
 		foreach ($relations as $name => $relation)
 		{
 			$assoc = $relation->createAssociation($model);
-
-			// todo move these into relation?
-			$assoc->setRelation($relation);
 			$model->setAssociation($name, $assoc);
 		}
 	}
@@ -223,11 +220,8 @@ class DataStore {
 
 			if ( ! is_array($pivot))
 			{
-				$gateway_tables = $from_reader->getTableNamesByGateway();
-				$table = $gateway_tables[$pivot];
-
 				$options['pivot'] = array(
-					'table' => $table
+					'table' => $pivot
 				);
 			}
 		}

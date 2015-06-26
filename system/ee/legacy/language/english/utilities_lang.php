@@ -517,9 +517,6 @@ $lang = array(
 'sql_query_to_run' =>
 'Query to run',
 
-'enable_sql_errors' =>
-'Enable My<abbr title="Structured Query Language">SQL</abbr> errors',
-
 'sql_password_desc' =>
 'You <b>must</b> enter your password to run queries.',
 

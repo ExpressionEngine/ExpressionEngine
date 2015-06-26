@@ -56,13 +56,12 @@ class Checkboxes_ft extends EE_Fieldtype {
 
 	function validate($data)
 	{
-		$this->settings['selected'] = $data;
+		$selected = decode_multi_field($data);
+		$selected = empty($selected) ? array() : (array) $selected;
 
 		// in case another field type was here
-		$field_options	= $this->_get_field_options($data);
-
-		// If they've selected something we'll make sure that it's a valid choice
-		$selected = ee()->input->post($this->field_name);
+		$field_options = $this->_get_field_options($data);
+		$field_options = $this->_flatten($field_options);
 
 		if ($selected)
 		{
@@ -76,17 +75,37 @@ class Checkboxes_ft extends EE_Fieldtype {
 
 			if (count($unknown) > 0)
 			{
-				// They tampered with the array, we'll drop the illegal values
-				foreach($_POST['field_id_'.$this->settings['field_id']] as $idx => $validate)
+				return 'Invalid Selection';
+			}
+		}
+
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	protected function _flatten($options)
+	{
+		$out = array();
+
+		foreach ($options as $key => $item)
+		{
+			if (is_array($item))
+			{
+				$out[$key] = $item['name'];
+
+				foreach ($this->_flatten($item['children']) as $k => $v)
 				{
-					if (in_array($validate, $unknown))
-					{
-						unset($_POST['field_id_'.$this->settings['field_id']][$idx]);
-					}
+					$out[$k] = $v;
 				}
 			}
-			unset($unknown);
+			else
+			{
+				$out[$key] = $item;
+			}
 		}
+
+		return $out;
 	}
 
 	// --------------------------------------------------------------------
@@ -111,19 +130,13 @@ class Checkboxes_ft extends EE_Fieldtype {
 
 		$values = decode_multi_field($data);
 
-		if (is_string($data) && $data != '' && $data[0] == '<')
-		{
-			return $data;
-		}
-
 		if (isset($this->settings['string_override']) && $this->settings['string_override'] != '')
 		{
 			return $this->settings['string_override'];
 		}
 
-		$field_options	= $this->_get_field_options($data);
-
 		$values = decode_multi_field($data);
+		$field_options = $this->_get_field_options($data);
 
 		if (REQ == 'CP')
 		{
@@ -134,13 +147,11 @@ class Checkboxes_ft extends EE_Fieldtype {
 			));
 		}
 
-		$r = '';
+		$r = '<div class="scroll-wrap pr">';
 
-		foreach($field_options as $key => $option)
-		{
-			$checked = (in_array(form_prep($option), $values)) ? TRUE : FALSE;
-			$r .= '<label>'.form_checkbox($this->field_name.'[]', $option, $checked).NBS.$option.'</label>';
-		}
+		$r .= $this->_display_nested_form($field_options, $values);
+
+		$r .= '</div>';
 
 		switch ($container)
 		{
@@ -154,6 +165,28 @@ class Checkboxes_ft extends EE_Fieldtype {
 		}
 
 		return $r;
+	}
+
+	protected function _display_nested_form($fields, $values, $child = FALSE)
+	{
+		$out = '';
+
+		foreach ($fields as $id => $option)
+		{
+			$checked = (in_array(form_prep($option), $values)) ? TRUE : FALSE;
+
+			if (is_array($option))
+			{
+				$out .= '<label>'.form_checkbox($this->field_name.'[]', $id, $checked).NBS.$option['name'].'</label>';
+				$out .= $this->_display_form($option['children'], $values, TRUE);
+			}
+			else
+			{
+				$out .= '<label>'.form_checkbox($this->field_name.'[]', $id, $checked).NBS.$option.'</label>';
+			}
+		}
+
+		return $out;
 	}
 
 	// --------------------------------------------------------------------

@@ -231,10 +231,6 @@ class Field_model extends CI_Model {
 			$this->db->where_in('search_excerpt', $deleted_fields['field_ids']);
 			$this->db->update('channels', array('search_excerpt' => NULL));
 
-			// Remove from field formatting
-				$this->db->where_in('field_id', $deleted_fields['field_ids']);
-				$this->db->delete('field_formatting');
-
 			//  Get rid of any stray relationship data
 			if (count($rel_ids) > 0)
 			{

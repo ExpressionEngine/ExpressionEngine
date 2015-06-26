@@ -12,7 +12,7 @@ class ChannelEntryAutosave extends Model {
 	protected static $_relationships = array(
 		'ChannelEntry' => array(
 			'type' => 'belongsTo',
-			'key' => 'original_entry_id'
+			'from_key' => 'original_entry_id'
 		),
 		'Channel' => array(
 			'type' => 'belongsTo',

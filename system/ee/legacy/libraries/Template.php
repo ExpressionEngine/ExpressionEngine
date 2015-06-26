@@ -1962,13 +1962,13 @@ class EE_Template {
 			$cache_path .= ee()->config->item('site_short_name') . DIRECTORY_SEPARATOR;
 			$cache_path .= 'page_cache' . DIRECTORY_SEPARATOR;
 
-			try
+			if (file_exists($cache_path))
 			{
 				$fi = new FilesystemIterator($cache_path, FilesystemIterator::SKIP_DOTS);
 			}
-			catch (Exception $e)
+			else
 			{
-				return $this->log_item(" - End Page Cache Garbage Collection - " . $e->getMessage());
+				return $this->log_item(" - End Page Cache Garbage Collection - Page cache directory not found");
 			}
 
 			// Count files in the directory

@@ -13,6 +13,9 @@ $lang = array(
 'fields' =>
 'Fields',
 
+'filter_by_group' =>
+'field group',
+
 'field_groups' =>
 'Field Groups',
 
@@ -79,6 +82,62 @@ $lang = array(
 'field_groups_removed_desc' =>
 'The following field groups were removed',
 
+'fields_removed_desc' =>
+'The following fields were removed',
+
+'create_field' =>
+'Create Field',
+
+'label_desc' =>
+'Name of field that appears in the publish form.',
+
+'short_name_desc' =>
+'Short name for this field.<br><i>No spaces. Underscores and dashes are allowed.</i>',
+
+'instructions' =>
+'Instructions',
+
+'instructions_desc' =>
+'Field instructions that appear in the publish form.',
+
+'require_field_desc' =>
+'When set to <b>yes</b>, this field will be required to submit the publish form.',
+
+'include_in_search' =>
+'Include in search?',
+
+'include_in_search_desc' =>
+'When set to <b>yes</b>, this field will be included in searches.',
+
+'hide_field' =>
+'Hide field?',
+
+'hide_field_desc' =>
+'When set to <b>yes</b>, this field will be hidden on the publish form, with a link to show.',
+
+'create_field_success' =>
+'Field Created',
+
+'create_field_success_desc' =>
+'The field group <b>%s</b> has been created.',
+
+'create_field_error' =>
+'Cannot Create Field',
+
+'create_field_error_desc' =>
+'We were unable to create this field, please review and fix errors below.',
+
+'edit_field_success' =>
+'Field Updated',
+
+'edit_field_success_desc' =>
+'The field <b>%s</b> has been updated.',
+
+'edit_field_error' =>
+'Cannot Update Field',
+
+'edit_field_error_desc' =>
+'We were unable to update this field, please review and fix errors below.',
 
 // @since 2.x
 

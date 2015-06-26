@@ -8,13 +8,7 @@
 	<?php if (isset($invalid_query)): ?>
 		<div class="alert inline issue">
 			<h3><?=lang('query_form_error')?></h3>
-			<p><?=$invalid_query[0]?></p>
-			<p><b><?=$invalid_query[1]?></b></p>
-			<ul>
-				<li><?=$invalid_query[2]?></li>
-				<li><?=$invalid_query[3]?></li>
-				<li><?=$invalid_query[4]?></li>
-			</ul>
+			<p><?=$invalid_query?></p>
 		</div>
 	<?php endif ?>
 	<?=ee('Alert')->getAllInlines()?>
@@ -33,10 +27,6 @@
 		</div>
 		<div class="setting-field col w-16 last">
 			<textarea class="has-format-options" name="thequery" cols="" rows=""><?=set_value('thequery')?></textarea>
-			<div class="format-options txt-left">
-				<input type="checkbox" checked="checked" name="debug" value="y">
-				<label><?=lang('enable_sql_errors')?></label>
-			</div>
 			<?=form_error('thequery')?>
 		</div>
 	</fieldset>

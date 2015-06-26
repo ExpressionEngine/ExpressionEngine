@@ -18,10 +18,6 @@ foreach (array(1,2,3) as $id)
 {
 	$Q[] = "ALTER TABLE `exp_channel_data` ADD COLUMN `field_id_{$id}` text NULL";
 	$Q[] = "ALTER TABLE `exp_channel_data` ADD COLUMN `field_ft_{$id}` tinytext NULL";
-	$Q[] = "INSERT INTO exp_field_formatting (field_id, field_fmt) VALUES ({$id}, 'none')";
-	$Q[] = "INSERT INTO exp_field_formatting (field_id, field_fmt) VALUES ({$id}, 'br')";
-	$Q[] = "INSERT INTO exp_field_formatting (field_id, field_fmt) VALUES ({$id}, 'xhtml')";
-	$Q[] = "INSERT INTO exp_field_formatting (field_id, field_fmt) VALUES ({$id}, 'markdown')";
 }
 
 // categories

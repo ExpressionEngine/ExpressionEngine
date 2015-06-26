@@ -28,9 +28,25 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  */
 
 class URL {
+
+	/**
+	 * @var string $path The path (i.e. 'logs/cp')
+	 */
 	public $path;
+
+	/**
+	 * @var string $session_id The session id
+	 */
 	public $session_id;
+
+	/**
+	 * @var array $qs An associative array of query string parameters
+	 */
 	public $qs = array();
+
+	/**
+	 * @var string $base The base part of the url which preceeds the path.
+	 */
 	public $base;
 
 	/**
@@ -75,10 +91,12 @@ class URL {
 	 *
 	 * @param string $key   The name of the query string variable
 	 * @param string $value	The value of the query string variable
+	 * @return self This returns a reference to itself
 	 */
 	public function setQueryStringVariable($key, $value)
 	{
 		$this->qs[$key] = $value;
+		return $this;
 	}
 
 	/**
@@ -86,6 +104,7 @@ class URL {
 	 * of the request
 	 *
 	 * @param array $values An associative array of keys and values
+	 * @return self This returns a reference to itself
 	 */
 	public function addQueryStringVariables(array $values)
 	{
@@ -93,6 +112,7 @@ class URL {
 		{
 			$this->setQueryStringVariable($key, $value);
 		}
+		return $this;
 	}
 
 	/**

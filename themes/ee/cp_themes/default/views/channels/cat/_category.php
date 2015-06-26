@@ -1,5 +1,5 @@
 <li class="tbl-list-item" data-id="<?=$category->data->cat_id?>">
-	<div class="tbl-row">
+	<div class="tbl-row<?php if (ee()->session->flashdata('highlight_id') == $category->data->cat_id): ?> selected<?php endif ?>">
 		<div class="reorder"></div>
 		<div class="txt">
 			<div class="main">
