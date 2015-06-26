@@ -303,7 +303,7 @@ class Textarea_ft extends EE_Fieldtype {
 		);
 
 		// Return a subset of the text settings for category content type
-		if ($this->content_type() == 'category')
+		if ($this->content_type() == 'category' || $this->content_type() == 'member')
 		{
 			return $settings;
 		}
