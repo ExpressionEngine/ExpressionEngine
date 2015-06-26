@@ -764,7 +764,7 @@ class Addons extends CP_Controller {
 		$vars['readme'] = ee()->typography->parse_type(file_get_contents($readme_file), array(
 			'text_format'    => 'markdown',
 			'html_format'    => 'all',
-			'auto_links'	 => 'n',
+			'auto_links'	 => 'y',
 			'allow_img_url'  => 'y'
 		));
 
