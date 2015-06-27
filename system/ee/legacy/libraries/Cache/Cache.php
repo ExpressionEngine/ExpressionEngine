@@ -275,7 +275,9 @@ class Cache extends EE_Driver_Library {
 	 */
 	public function unique_key($key, $scope = Cache::LOCAL_SCOPE)
 	{
-		$prefix = ee()->config->item('site_url');
+		// Using base_url here because some add-ons dynamically change site_url,
+		// for multilingual sites for example
+		$prefix = ee()->config->item('base_url');
 
 		if ($scope == Cache::GLOBAL_SCOPE)
 		{
