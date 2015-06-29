@@ -63,6 +63,10 @@ class Site extends Model {
 		'CpLogs' => array(
 			'model' => 'CpLog',
 			'type' => 'hasMany'
+		),
+		'Channels' => array(
+			'model' => 'Channel',
+			'type' => 'hasMany'
 		)
 	);
 
