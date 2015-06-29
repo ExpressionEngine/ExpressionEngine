@@ -75,18 +75,11 @@ class EE_Addons {
 				'rte_tools'		=> array()
 			);
 
-			if (($map = directory_map(PATH_ADDONS, 2)) !== FALSE)
+			foreach (array(PATH_ADDONS, PATH_MOD) as $path)
 			{
-				$this->package_list($map);
-
-			}
-
-			// Run through extensions, modules, fieldtypes and rte_tools
-			foreach (array('extensions', 'modules', 'fieldtypes', 'rte_tools') as $val)
-			{
-				if (($map = directory_map(APPPATH.$val.'/', 2)) !== FALSE)
+				if (($map = directory_map($path, 2)) !== FALSE)
 				{
-					$this->package_list($map, $val, TRUE);
+					$this->package_list($map);
 
 				}
 			}
