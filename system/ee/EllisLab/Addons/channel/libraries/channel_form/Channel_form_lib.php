@@ -15,7 +15,7 @@
 
 // ------------------------------------------------------------------------
 
-require_once PATH_MOD.'channel/libraries/channel_form/Channel_form_exception.php';
+require_once PATH_ADDONS.'channel/libraries/channel_form/Channel_form_exception.php';
 
 /**
  * ExpressionEngine Channel From Module Library
@@ -3148,7 +3148,7 @@ GRID_FALLBACK;
 
 		if ( ! class_exists('Channel_from_session'))
 		{
-			require_once PATH_MOD.'channel/libraries/channel_form/Channel_form_session.php';
+			require_once PATH_ADDONS.'channel/libraries/channel_form/Channel_form_session.php';
 		}
 
 		ee()->session = new Channel_form_session(array(

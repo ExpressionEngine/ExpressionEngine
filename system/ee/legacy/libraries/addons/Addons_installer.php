@@ -273,7 +273,7 @@ class Addons_installer {
 	 */
 	function install_rte_tool($tool)
 	{
-		ee()->load->add_package_path(PATH_MOD.'rte', FALSE);
+		ee()->load->add_package_path(PATH_ADDONS.'rte', FALSE);
 		ee()->load->model('rte_tool_model');
 		ee()->rte_tool_model->add($tool);
 	}
@@ -289,7 +289,7 @@ class Addons_installer {
 	 */
 	function uninstall_rte_tool($tool)
 	{
-		ee()->load->add_package_path(PATH_MOD.'rte', FALSE);
+		ee()->load->add_package_path(PATH_ADDONS.'rte', FALSE);
 		ee()->load->model('rte_tool_model');
 		ee()->rte_tool_model->delete($tool);
 	}
@@ -319,7 +319,7 @@ class Addons_installer {
 
 		if (in_array($module, ee()->core->native_modules))
 		{
-			$path = PATH_MOD.$module.'/upd.'.$module.'.php';
+			$path = PATH_ADDONS.$module.'/upd.'.$module.'.php';
 		}
 		else
 		{

@@ -64,7 +64,7 @@ class Pages extends Settings {
 			$templates_dropdown[$template['template_id']] = $template['group_name'].'/'.$template['template_name'];
 		}
 
-		ee()->load->add_package_path(PATH_MOD.'pages');
+		ee()->load->add_package_path(PATH_ADDONS.'pages');
 		ee()->load->model('pages_model');
 		$pages_config = ee()->pages_model->fetch_site_pages_config();
 
@@ -175,7 +175,7 @@ class Pages extends Settings {
 	  */
 	function saveSettings()
 	{
-		ee()->load->add_package_path(PATH_MOD.'pages');
+		ee()->load->add_package_path(PATH_ADDONS.'pages');
 		ee()->load->model('pages_model');
 
 		$data = array();

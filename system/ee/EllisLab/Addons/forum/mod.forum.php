@@ -127,7 +127,7 @@ class Forum {
 		}
 		else
 		{
-			require_once PATH_MOD.'forum/mod.forum_core.php';
+			require_once PATH_ADDONS.'forum/mod.forum_core.php';
 
 			ee()->FRM_CORE = new Forum_Core();
 
@@ -789,7 +789,7 @@ class Forum {
 		$template = $this->load_element('member_page');
 
 		$this->mbr_class_loaded = TRUE;
-		include_once PATH_MOD.'member/mod.member.php';
+		include_once PATH_ADDONS.'member/mod.member.php';
 
 		ee()->MBR = new Member();
 

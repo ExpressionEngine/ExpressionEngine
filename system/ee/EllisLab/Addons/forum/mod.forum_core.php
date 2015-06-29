@@ -10290,7 +10290,7 @@ class Forum_Core extends Forum {
 			return ee()->output->fatal_error(lang('must_be_logged_in'));
 		}
 
-		$class_path = PATH_MOD.'emoticon/emoticons.php';
+		$class_path = PATH_ADDONS.'emoticon/emoticons.php';
 
 		if ( ! is_file($class_path) OR ! @include_once($class_path))
 		{

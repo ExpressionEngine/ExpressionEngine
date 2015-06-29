@@ -2040,9 +2040,9 @@ while (--j >= 0)
 	 */
 	private function _fetch_emotions_prefs()
 	{
-		if (is_file(PATH_MOD.'emoticon/emoticons.php'))
+		if (is_file(PATH_ADDONS.'emoticon/emoticons.php'))
 		{
-			require PATH_MOD.'emoticon/emoticons.php';
+			require PATH_ADDONS.'emoticon/emoticons.php';
 
 			if (is_array($smileys))
 			{

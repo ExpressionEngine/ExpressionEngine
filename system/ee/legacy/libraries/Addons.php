@@ -112,7 +112,7 @@ class EE_Addons {
 
 			$abbr = $type_ident[$type];
 
-			$root_path = ($abbr == 'mcp') ? PATH_MOD : constant('PATH_'.strtoupper($abbr));
+			$root_path = ($abbr == 'mcp') ? PATH_ADDONS : constant('PATH_'.strtoupper($abbr));
 
 			$list = get_filenames($root_path);
 

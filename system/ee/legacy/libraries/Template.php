@@ -1355,7 +1355,7 @@ class EE_Template {
 			{
 				if (in_array($module, ee()->core->native_modules))
 				{
-					require_once PATH_MOD."{$module}/mod.{$module}.php";
+					require_once PATH_ADDONS."{$module}/mod.{$module}.php";
 				}
 				else
 				{
@@ -1533,7 +1533,7 @@ class EE_Template {
 
 				if ( ! in_array($this->tag_data[$i]['class'], ee()->core->native_plugins))
 				{
-					$package_path = in_array($this->tag_data[$i]['class'], ee()->core->native_modules) ? PATH_MOD : PATH_THIRD;
+					$package_path = in_array($this->tag_data[$i]['class'], ee()->core->native_modules) ? PATH_ADDONS : PATH_THIRD;
 					$package_path .= strtolower($this->tag_data[$i]['class'].'/');
 
 					ee()->load->add_package_path($package_path, FALSE);
@@ -2882,7 +2882,7 @@ class EE_Template {
 		$ext_len = strlen('.php');
 
 		// first get first party modules
-		if (($map = directory_map(PATH_MOD, TRUE)) !== FALSE)
+		if (($map = directory_map(PATH_ADDONS, TRUE)) !== FALSE)
 		{
 			foreach ($map as $file)
 			{
@@ -3232,7 +3232,7 @@ class EE_Template {
 
 				if ( ! class_exists($class))
 				{
-					require PATH_MOD.$class.'/mod.'.$class.'.php';
+					require PATH_ADDONS.$class.'/mod.'.$class.'.php';
 				}
 
 				$this->tagdata = $match[3][$i];
@@ -3271,7 +3271,7 @@ class EE_Template {
 			{
 				if ( ! class_exists('Channel'))
 				{
-					require PATH_MOD.'channel/mod.channel.php';
+					require PATH_ADDONS.'channel/mod.channel.php';
 				}
 
 				$this->tagdata = $match[2][$i];

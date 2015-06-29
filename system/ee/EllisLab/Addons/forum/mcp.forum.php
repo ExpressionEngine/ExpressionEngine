@@ -1539,7 +1539,7 @@ class Forum_mcp {
 	{
 		if (is_null($this->UPD))
 		{
-			require_once PATH_MOD.'forum/upd.forum.php';
+			require_once PATH_ADDONS.'forum/upd.forum.php';
 
 			$this->UPD = new Forum_upd();
 		}

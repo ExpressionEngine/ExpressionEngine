@@ -54,7 +54,7 @@ class Javascript_loader {
 			'plugin'	=> PATH_JAVASCRIPT.'jquery/plugins/',
 			'file'		=> PATH_JAVASCRIPT,
 			'package'	=> PATH_THIRD,
-			'fp_module'	=> PATH_MOD
+			'fp_module'	=> PATH_ADDONS
 		);
 
 		$mock_name = '';

@@ -353,7 +353,7 @@ class Email {
 				// Fetch the channel entry
 				if ( ! class_exists('Channel'))
 				{
-					require PATH_MOD.'channel/mod.channel.php';
+					require PATH_ADDONS.'channel/mod.channel.php';
 				}
 
 				$channel = new Channel;

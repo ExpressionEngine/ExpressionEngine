@@ -1163,7 +1163,7 @@ MAGIC;
 
 		if ( ! class_exists('Moblog'))
 		{
-			require PATH_MOD.'moblog/mod.moblog.php';
+			require PATH_ADDONS.'moblog/mod.moblog.php';
 		}
 
 		$MP = new Moblog();

@@ -630,7 +630,7 @@ class Cp {
 				break;
 			case 'package':		$file = PATH_THIRD.$name.'/javascript/'.$name.'.js';
 				break;
-			case 'fp_module':	$file = PATH_MOD.$name.'/javascript/'.$name.'.js';
+			case 'fp_module':	$file = PATH_ADDONS.$name.'/javascript/'.$name.'.js';
 				break;
 			default:
 				return 0;
