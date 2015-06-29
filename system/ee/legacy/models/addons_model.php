@@ -83,7 +83,7 @@ class Addons_model extends CI_Model {
 		$plugins = array();
 
 		// first party plugins
-		if (($map = directory_map(PATH_PI, TRUE)) !== FALSE)
+		if (($map = directory_map(PATH_ADDONS, TRUE)) !== FALSE)
 		{
 			foreach ($map as $file)
 			{
@@ -98,7 +98,7 @@ class Addons_model extends CI_Model {
 
 					$plugins[] = array(
 						'name' => $name,
-						'path' => PATH_PI.$file
+						'path' => PATH_ADDONS.$file
 					);
 				}
 			}
