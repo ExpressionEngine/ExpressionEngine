@@ -2217,7 +2217,7 @@ class Wizard extends CI_Controller {
 			}
 			else
 			{
-				$path = PATH_ADDONS.$module.'/';
+				$path = PATH_THIRD.$module.'/';
 			}
 
 			if (file_exists($path.'upd.'.$module.'.php'))

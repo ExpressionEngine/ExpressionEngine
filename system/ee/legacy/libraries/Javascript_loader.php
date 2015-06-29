@@ -53,7 +53,7 @@ class Javascript_loader {
 			'ui'		=> PATH_JAVASCRIPT.'jquery/ui/jquery.ui.',
 			'plugin'	=> PATH_JAVASCRIPT.'jquery/plugins/',
 			'file'		=> PATH_JAVASCRIPT,
-			'package'	=> PATH_ADDONS,
+			'package'	=> PATH_THIRD,
 			'fp_module'	=> PATH_MOD
 		);
 

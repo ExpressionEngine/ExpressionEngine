@@ -75,7 +75,7 @@ class EE_Addons {
 				'rte_tools'		=> array()
 			);
 
-			foreach (array(PATH_ADDONS, PATH_MOD) as $path)
+			foreach (array(PATH_THIRD, PATH_ADDONS) as $path)
 			{
 				if (($map = directory_map($path, 2)) !== FALSE)
 				{
@@ -212,7 +212,7 @@ class EE_Addons {
 
 						// Plugin classes don't have a suffix
 						$class = ($ident == 'pi') ? ucfirst($name) : ucfirst($name).'_'.$ident;
-						$path = ($native) ? APPPATH.$type.$pkg_name.'/' : PATH_ADDONS.$pkg_name.'/';
+						$path = ($native) ? APPPATH.$type.$pkg_name.'/' : PATH_THIRD.$pkg_name.'/';
 						$author = ($native) ? 'native' : 'third_party';
 
 						$this->_map[$addon_type][$name] = array(

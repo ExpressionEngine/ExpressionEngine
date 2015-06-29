@@ -48,16 +48,16 @@ class EE_Core {
 		}
 
 		// some path constants to simplify things
-		define('PATH_MOD',		SYSPATH . 'ee/EllisLab/Addons/');
-		define('PATH_PI',		SYSPATH . 'ee/EllisLab/Addons/');
-		define('PATH_EXT',		SYSPATH . 'ee/EllisLab/Addons/');
-		define('PATH_FT',		SYSPATH . 'ee/EllisLab/Addons/');
-		define('PATH_RTE',		APPPATH.'rte_tools/');
+		define('PATH_ADDONS', SYSPATH . 'ee/EllisLab/Addons/');
+		define('PATH_MOD',    SYSPATH . 'ee/EllisLab/Addons/');
+		define('PATH_PI',     SYSPATH . 'ee/EllisLab/Addons/');
+		define('PATH_EXT',    SYSPATH . 'ee/EllisLab/Addons/');
+		define('PATH_FT',     SYSPATH . 'ee/EllisLab/Addons/');
+		define('PATH_RTE',    APPPATH.'rte_tools/');
 
 		$addon_path = (ee()->config->item('addons_path'))
 			? rtrim(realpath(ee()->config->item('addons_path')), '/').'/'
 			: SYSPATH.'user/addons/';
-		define('PATH_ADDONS', $addon_path);
 		define('PATH_THIRD', $addon_path);
 
 		// application constants
@@ -87,7 +87,7 @@ class EE_Core {
 		ee()->db->db_debug = FALSE;
 
 		// boot the addons
-		ee('App')->setupAddons(PATH_ADDONS);
+		ee('App')->setupAddons(PATH_THIRD);
 
 		// Set ->api on the legacy facade to the model factory
 		ee()->set('api', ee()->di->make('Model'));

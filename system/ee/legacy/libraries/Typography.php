@@ -817,7 +817,7 @@ class EE_Typography {
 					{
 						if (isset($this->text_fmt_plugins[$prefs['text_format']]) &&
 							(file_exists(PATH_PI.'pi.'.$prefs['text_format'].'.php') OR
-							file_exists(PATH_ADDONS.$prefs['text_format'].'/pi.'.$prefs['text_format'].'.php')))
+							file_exists(PATH_THIRD.$prefs['text_format'].'/pi.'.$prefs['text_format'].'.php')))
 						{
 							$this->text_format = $prefs['text_format'];
 						}
@@ -869,7 +869,7 @@ class EE_Typography {
 			}
 			else
 			{
-				require_once PATH_ADDONS.$this->text_format.'/pi.'.$this->text_format.'.php';
+				require_once PATH_THIRD.$this->text_format.'/pi.'.$this->text_format.'.php';
 			}
 		}
 

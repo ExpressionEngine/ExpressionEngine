@@ -239,7 +239,7 @@ class Api_channel_fields extends Api {
 
 			if (isset($fts[$field_type]))
 			{
-				$paths[] = PATH_ADDONS.$fts[$field_type]['package'].'/';
+				$paths[] = PATH_THIRD.$fts[$field_type]['package'].'/';
 			}
 
 			$paths[] = PATH_MOD.$field_type.'/';
@@ -912,7 +912,7 @@ class Api_channel_fields extends Api {
 			$class_name = ucfirst($name).'_tab';
 
 			// First or third party?
-			foreach(array(PATH_MOD, PATH_ADDONS) as $tmp_path)
+			foreach(array(PATH_MOD, PATH_THIRD) as $tmp_path)
 			{
 				if (file_exists($tmp_path.$name.'/tab.'.$name.'.php'))
 				{

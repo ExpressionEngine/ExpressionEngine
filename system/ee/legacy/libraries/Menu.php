@@ -1206,9 +1206,9 @@ class EE_Menu {
 			{
 				$module = ee()->security->sanitize_filename($module);
 
-				if (file_exists(PATH_ADDONS.$module.'/config/help_menu.php'))
+				if (file_exists(PATH_THIRD.$module.'/config/help_menu.php'))
 				{
-					require_once PATH_ADDONS.$module.'/config/help_menu.php';
+					require_once PATH_THIRD.$module.'/config/help_menu.php';
 					$method = (ee()->input->get('method') !== FALSE) ? ee()->input->get('method') : 'index';
 					$page = (isset($help_menu[$method])) ? $help_menu[$method] : $page.$help_map['addons_modules'];
 				}

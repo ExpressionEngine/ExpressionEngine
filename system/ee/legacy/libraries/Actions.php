@@ -153,7 +153,7 @@ class EE_Actions {
 		// Third parties have a different package and view path
 		if ( ! in_array($base_class, ee()->core->native_modules))
 		{
-			$package_path = PATH_ADDONS.$base_class.'/';
+			$package_path = PATH_THIRD.$base_class.'/';
 		}
 
 		ee()->load->add_package_path($package_path, FALSE);

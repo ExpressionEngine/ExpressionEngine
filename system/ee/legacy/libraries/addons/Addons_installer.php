@@ -323,7 +323,7 @@ class Addons_installer {
 		}
 		else
 		{
-			$path = PATH_ADDONS.$module.'/upd.'.$module.'.php';
+			$path = PATH_THIRD.$module.'/upd.'.$module.'.php';
 		}
 
 		if ( ! is_file($path))

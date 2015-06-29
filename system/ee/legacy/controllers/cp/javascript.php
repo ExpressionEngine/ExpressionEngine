@@ -125,7 +125,7 @@ class Javascript extends CI_Controller {
 
 		if ($package && $loadfile)
 		{
-			$file = PATH_ADDONS.$package.'/javascript/'.$loadfile.'.js';
+			$file = PATH_THIRD.$package.'/javascript/'.$loadfile.'.js';
 		}
 		elseif ($loadfile == '')
 		{
