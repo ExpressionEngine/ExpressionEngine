@@ -231,7 +231,7 @@ class Api_channel_fields extends Api {
 		if ( ! isset($this->field_types[$field_type]))
 		{
 			$file = 'ft.'.$field_type.'.php';
-			$paths = array(PATH_FT.$field_type.'/');
+			$paths = array(PATH_ADDONS.$field_type.'/');
 
 			ee()->load->library('addons');
 
