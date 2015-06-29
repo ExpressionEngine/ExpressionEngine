@@ -665,7 +665,7 @@ class Rte_lib {
 			'plugin'	=> PATH_JQUERY.'plugins/',
 			'file'		=> PATH_THEMES.'javascript/'.$folder.'/',
 			'package'	=> PATH_THIRD,
-			'fp_module'	=> PATH_MOD
+			'fp_module'	=> PATH_ADDONS
 		);
 
 		$contents = '';
