@@ -389,8 +389,14 @@ class Fields extends AbstractChannelsController {
 					)
 				),
 			),
-			'field_options' => $field->getSettingsForm()
 		);
+
+		$field_options = $field->getSettingsForm();
+		if ( ! empty($field_options))
+		{
+			$sections = array_merge($sections, $field_options);
+		}
+
 
 		ee()->form_validation->set_rules(array(
 			array(

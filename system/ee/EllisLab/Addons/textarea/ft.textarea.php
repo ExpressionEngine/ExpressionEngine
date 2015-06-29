@@ -309,7 +309,7 @@ class Textarea_ft extends EE_Fieldtype {
 			)
 		);
 
-		return $settings;
+		return array('field_options' => $settings);
 	}
 
 	// --------------------------------------------------------------------

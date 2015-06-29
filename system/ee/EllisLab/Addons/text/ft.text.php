@@ -266,7 +266,7 @@ class Text_ft extends EE_Fieldtype {
 			)
 		);
 
-		return $settings;
+		return array('field_options' => $settings);
 	}
 
 	// --------------------------------------------------------------------
@@ -324,7 +324,7 @@ class Text_ft extends EE_Fieldtype {
 
 	function settings_modify_column($data)
 	{
-		$settings = unserialize(base64_decode($data['field_settings']));
+		$settings = $data['field_settings'];
 		$field_content_type = isset($settings['field_content_type']) ? $settings['field_content_type'] : 'all';
 
 		return $this->_get_column_settings($field_content_type, $data['field_id']);
