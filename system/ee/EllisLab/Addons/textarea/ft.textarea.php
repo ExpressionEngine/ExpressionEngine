@@ -281,21 +281,35 @@ class Textarea_ft extends EE_Fieldtype {
 		}
 
 		// Construct the rest of the settings form for Channel...
-
-		$prefix = 'textarea';
-
-		$field_rows	= ($data['field_ta_rows'] == '') ? 6 : $data['field_ta_rows'];
-
-		ee()->table->add_row(
-			lang('textarea_rows', 'field_ta_rows'),
-			form_input(array('id'=>'field_ta_rows','name'=>'field_ta_rows', 'size'=>4,'value'=>set_value('field_ta_rows', $field_rows)))
+		$settings[] = array(
+			'title' => 'field_tools',
+			'desc' => 'field_tools_desc',
+			'fields' => array(
+				'field_show_formatting_btns' => array(
+					'type' => 'checkbox',
+					'choices' => array(
+						'y' => lang('show_formatting_btns'),
+					),
+					'value' => isset($data['field_show_formatting_btns']) ? $data['field_show_formatting_btns'] : 'n'
+				),
+				'field_show_smileys' => array(
+					'type' => 'checkbox',
+					'choices' => array(
+						'y' => lang('show_smileys'),
+					),
+					'value' => isset($data['field_show_smileys']) ? $data['field_show_smileys'] : 'n'
+				),
+				'field_show_file_selector' => array(
+					'type' => 'checkbox',
+					'choices' => array(
+						'y' => lang('show_file_selector')
+					),
+					'value' => isset($data['field_show_file_selector']) ? $data['field_show_file_selector'] : 'n'
+				)
+			)
 		);
 
-		$this->field_formatting_row($data, $prefix);
-		$this->text_direction_row($data, $prefix);
-		$this->field_show_formatting_btns_row($data, $prefix);
-		$this->field_show_smileys_row($data, $prefix);
-		$this->field_show_file_selector_row($data, $prefix);
+		return $settings;
 	}
 
 	// --------------------------------------------------------------------
