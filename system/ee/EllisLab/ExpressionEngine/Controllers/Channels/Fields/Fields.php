@@ -273,11 +273,17 @@ class Fields extends AbstractChannelsController {
 	private function saveWithPost(ChannelField $field)
 	{
 		$field->site_id = ee()->config->item('site_id');
+		$field->field_type = $_POST['field_type'];
+		$field->group_id = ($field->group_id) ?: 0;
+		$field->field_list_items = ($field->field_list_items) ?: '';
+		$field->field_order = ($field->field_order) ?: 0;
+
 		$field->set($_POST);
 		$field->save();
 
 		$field_data = $_POST;
-		$field_data['group_id'] = ($field->group_id) ?: 0;
+		$field_data['field_id'] = $field->field_id;
+		$field_data['group_id'] = $field->group_id;
 
 		ee()->load->library('api');
 		ee()->legacy_api->instantiate('channel_fields');
