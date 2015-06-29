@@ -204,6 +204,7 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 							<?php if (isset($field['wrap']) && $field['wrap']): ?>
 								<div class="scroll-wrap">
 							<?php endif ?>
+							<?php if (count($field['choices']) > 1) $field_name .= '[]'; ?>
 								<?php foreach ($field['choices'] as $key => $label):
 									if (is_array($value))
 									{
@@ -221,7 +222,7 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 									}
 								?>
 									<label class="choice block<?php if ($selected):?> chosen<?php endif ?>">
-										<input type="checkbox" name="<?=$field_name?>[]" value="<?=$key?>"<?php if ($selected):?> checked="checked"<?php endif ?><?php if ($disabled):?> disabled="disabled"<?php endif ?><?=$attrs?>> <?=$label?>
+										<input type="checkbox" name="<?=$field_name?>" value="<?=$key?>"<?php if ($selected):?> checked="checked"<?php endif ?><?php if ($disabled):?> disabled="disabled"<?php endif ?><?=$attrs?>> <?=$label?>
 									</label>
 								<?php endforeach ?>
 							<?php if (isset($field['wrap']) && $field['wrap']): ?>
