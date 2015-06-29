@@ -488,8 +488,6 @@ CSS;
 	 */
 	function display_settings($data)
 	{
-		$prefix = 'file';
-
 		ee()->lang->loadfile('fieldtypes');
 		ee()->load->model('file_upload_preferences_model');
 
@@ -497,55 +495,61 @@ CSS;
 		$allowed_directories = ( ! isset($data['allowed_directories'])) ? 'all' : $data['allowed_directories'];
 
 		// Show existing files? checkbox, default to yes
-		$show_existing = ( ! isset($data['show_existing'])) ? 'y' :$data['show_existing'];
+		$show_existing = ( ! isset($data['show_existing'])) ? 'y' : $data['show_existing'];
 
 		// Number of existing files to show? 0 means all
 		$num_existing = ( ! isset($data['num_existing'])) ? 50 : $data['num_existing'];
 
-
-		ee()->table->set_heading(array(
-			'data' => lang('file_ft_options'),
-			'colspan' => 2
-		));
-
-		$this->_row(
-			lang('file_ft_content_type', $prefix.'field_content_type'),
-			form_dropdown('file_field_content_type', $this->_field_content_options(), $data['field_content_type'], 'id="'.$prefix.'field_content_type"')
+		$settings = array(
+			'field_options' => array(
+				array(
+					'title' => 'file_ft_content_type',
+					'desc' => 'file_ft_content_type_desc',
+					'fields' => array(
+						'field_content_type' => array(
+							'type' => 'radio',
+							'choices' => $this->_field_content_options(),
+							'value' => $data['field_content_type']
+						)
+					)
+				),
+				array(
+					'title' => 'file_ft_allowed_dirs',
+					'desc' => 'file_ft_allowed_dirs_desc',
+					'fields' => array(
+						'file_allowed_directories' => array(
+							'type' => 'dropdown',
+							'choices' => $this->_allowed_directories_options(),
+							'value' => $allowed_directories
+						)
+					)
+				)
+			),
+			'channel_form_settings' => array(
+				array(
+					'title' => 'file_ft_show_files',
+					'desc' => 'file_ft_show_files_desc',
+					'fields' => array(
+						'file_show_existing' => array(
+							'type' => 'yes_no',
+							'value' => $show_existing
+						)
+					)
+				),
+				array(
+					'title' => 'file_ft_limit',
+					'desc' => 'file_ft_limit_desc',
+					'fields' => array(
+						'file_num_existing' => array(
+							'type' => 'text',
+							'value' => $num_existing
+						)
+					)
+				)
+			)
 		);
 
-		$this->_row(
-			lang('file_ft_allowed_dirs', $prefix.'field_allowed_dirs').form_error('file_allowed_directories'),
-			form_dropdown('file_allowed_directories', $this->_allowed_directories_options(), $allowed_directories, 'id="'.$prefix.'field_allowed_dirs"')
-		);
-
-		$this->_row(
-			'<strong>'.lang('file_ft_configure_frontend').'</strong><br><i class="instruction_text">'.lang('file_ft_configure_frontend_subtext').'</i>'
-		);
-
-		$this->_row(
-			lang('file_ft_show_files'),
-			'<label>'.form_checkbox('file_show_existing', 'y', ($show_existing == 'y')).' '.lang('yes').' </label> <i class="instruction_text">('.lang('file_ft_show_files_subtext').')</i>'
-		);
-
-		$this->_row(
-			lang('file_ft_limit_left'),
-			form_input('file_num_existing', $num_existing, 'class="center" id="'.$prefix.'num_existing" style="width: 55px;"').
-			NBS.' <strong>'.lang('file_ft_limit_right').'</strong> <i class="instruction_text">('.lang('file_ft_limit_files_subtext').')</i>'
-		);
-
-		$script = <<<JSC
-		$(document).ready(function() {
-			$('[name="file_allowed_directories"]').change(function() {
-				var disabled = (this.value == 'all');
-
-				$('[name="file_show_existing"]').attr('disabled', disabled);
-				$('[name="file_num_existing"]').attr('disabled', disabled);
-			}).trigger('change');
-		});
-JSC;
-		ee()->javascript->output($script);
-
-		return ee()->table->generate();
+		return $settings;
 	}
 
 	// --------------------------------------------------------------------
