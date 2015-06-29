@@ -172,7 +172,11 @@ class Fields extends AbstractChannelsController {
 			'base_url' => ee('CP/URL', 'channels/fields/create'),
 			'sections' => $this->form(),
 			'save_btn_text' => 'btn_create_field',
-			'save_btn_text_working' => 'btn_saving'
+			'save_btn_text_working' => 'btn_saving',
+			'form_hidden' => array(
+				'field_id' => NULL,
+				'site_id' => ee()->config->item('site_id')
+			),
 		);
 
 		if (AJAX_REQUEST)
@@ -210,7 +214,9 @@ class Fields extends AbstractChannelsController {
 
 	public function edit($id)
 	{
-		$field = ee('Model')->get('ChannelField', $id)->first();
+		$field = ee('Model')->get('ChannelField', $id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
 
 		if ( ! $field)
 		{
@@ -226,7 +232,11 @@ class Fields extends AbstractChannelsController {
 			'base_url' => ee('CP/URL', 'channels/fields/edit/' . $id),
 			'sections' => $this->form($field),
 			'save_btn_text' => 'btn_edit_field',
-			'save_btn_text_working' => 'btn_saving'
+			'save_btn_text_working' => 'btn_saving',
+			'form_hidden' => array(
+				'field_id' => $id,
+				'site_id' => ee()->config->item('site_id')
+			),
 		);
 
 		if (AJAX_REQUEST)
@@ -262,8 +272,18 @@ class Fields extends AbstractChannelsController {
 
 	private function saveWithPost(ChannelField $field)
 	{
+		$field->site_id = ee()->config->item('site_id');
 		$field->set($_POST);
 		$field->save();
+
+		$field_data = $_POST;
+		$field_data['group_id'] = ($field->group_id) ?: 0;
+
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_fields');
+		ee()->api_channel_fields->update_field($field_data);
+
+		return $field;
 	}
 
 	private function form(ChannelField $field = NULL)
@@ -373,7 +393,7 @@ class Fields extends AbstractChannelsController {
 				'rules' => 'required'
 			),
 			array(
-				'field' => 'short_name',
+				'field' => 'field_name',
 				'label' => 'lang:name',
 				'rules' => 'required'
 			),
