@@ -1301,10 +1301,10 @@ class Api_channel_fields extends Api {
 		$ft_settings = $this->apply('save_settings', array($this->get_posted_field_settings($field_type)));
 
 		// Default display options
-		foreach(array('smileys', 'glossary', 'formatting_btns', 'file_selector', 'writemode') as $key)
+		foreach(array('smileys', 'formatting_btns', 'file_selector') as $key)
 		{
 			$tmp = $this->_get_ft_data($field_type, 'field_show_'.$key, $field_data);
-			$ft_settings['field_show_'.$key] = $tmp ? $tmp : 'n';
+			$ft_settings['field_show_'.$key] = $tmp ? 'y' : 'n';
 		}
 
 		// Now that they've had a chance to mess with the POST array,
