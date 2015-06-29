@@ -181,7 +181,7 @@ class Text_ft extends EE_Fieldtype {
 		$settings = array(
 			array(
 				'title' => 'field_max_length',
-				'desc' => 'field_max_length',
+				'desc' => 'field_max_length_desc',
 				'fields' => array(
 					'field_maxl' => array(
 						'type' => 'text',
@@ -233,42 +233,40 @@ class Text_ft extends EE_Fieldtype {
 		}
 
 		// Construct the rest of the settings form for Channel...
-
-		$prefix = 'text';
-		$extra = '';
-
-		if ($data['field_id'] != '')
-		{
-			$extra .= '<div class="notice update_content_type js_hide">';
-			$extra .= '<p>'.sprintf(
-								lang('content_type_changed'),
-								$data['field_content_type']).'</p></div>';
-		}
-
-
-		$field_maxl = ($data['field_maxl'] == '') ? 128 : $data['field_maxl'];
-
-		ee()->table->add_row(
-			lang('field_max_length', $prefix.'field_max_length'),
-			form_input(array('id'=>$prefix.'field_max_length','name'=>'field_maxl', 'size'=>4,'value'=>set_value('field_maxl', $field_maxl)))
+		$settings[] = array(
+			'title' => 'field_content_text',
+			'desc' => 'field_content_text_desc',
+			'fields' => array(
+				'field_content_type' => array(
+					'type' => 'dropdown',
+					'choices' => $this->_get_content_options(),
+					'value' => $data['field_content_type']
+				)
+			)
 		);
 
-		$this->field_formatting_row($data, $prefix);
-		$this->text_direction_row($data, $prefix);
-
-		ee()->table->add_row(
-			lang('field_content_text', $prefix.'field_content_type'),
-			form_dropdown('text_field_content_type', $this->_get_content_options(), set_value('text_field_content_type', $data['field_content_type']), 'id="'.$prefix.'field_content_type"').$extra
+		$settings[] = array(
+			'title' => 'field_tools',
+			'desc' => 'field_tools_desc',
+			'fields' => array(
+				'field_show_smileys' => array(
+					'type' => 'checkbox',
+					'choices' => array(
+						'y' => lang('show_smileys'),
+					),
+					'value' => isset($data['field_show_smileys']) ? $data['field_show_smileys'] : 'n'
+				),
+				'field_show_file_selector' => array(
+					'type' => 'checkbox',
+					'choices' => array(
+						'y' => lang('show_file_selector')
+					),
+					'value' => isset($data['field_show_file_selector']) ? $data['field_show_file_selector'] : 'n'
+				)
+			)
 		);
 
-		$this->field_show_smileys_row($data, $prefix);
-		$this->field_show_file_selector_row($data, $prefix);
-
-		ee()->javascript->output('
-		$("#text_field_content_type").change(function() {
-			$(this).nextAll(".update_content_type").show();
-		});
-		');
+		return $settings;
 	}
 
 	// --------------------------------------------------------------------
