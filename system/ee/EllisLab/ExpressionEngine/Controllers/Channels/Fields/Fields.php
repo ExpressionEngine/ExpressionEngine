@@ -88,7 +88,9 @@ class Fields extends AbstractChannelsController {
 			array(
 				'id',
 				'name',
-				'short_name',
+				'short_name' => array(
+					'encode' => FALSE
+				),
 				'type',
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
@@ -110,7 +112,7 @@ class Fields extends AbstractChannelsController {
 			$column = array(
 				$field->field_id,
 				$field->field_label,
-				'<var>{' . $field->field_name . '}</var>',
+				'<var>{' . htmlentities($field->field_name, ENT_QUOTES) . '}</var>',
 				$field->field_type,
 				array('toolbar_items' => array(
 					'edit' => array(
