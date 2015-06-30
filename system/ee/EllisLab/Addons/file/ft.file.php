@@ -507,7 +507,7 @@ CSS;
 					'desc' => 'file_ft_content_type_desc',
 					'fields' => array(
 						'field_content_type' => array(
-							'type' => 'radio',
+							'type' => 'dropdown',
 							'choices' => $this->_field_content_options(),
 							'value' => $data['field_content_type']
 						)
