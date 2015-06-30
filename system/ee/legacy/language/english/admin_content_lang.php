@@ -178,6 +178,11 @@ $lang = array(
 'select_options_desc' =>
 'Choose how to create the options for this field.</em><em><i>Each item will be included in a select drop down menu in the publish form.</i>',
 
+'multiselect_options' =>
+'Multi-Select options',
+
+'multiselect_options_desc' =>
+'Choose how to create the options for this field.</em><em><i>Each item will be included in a multi-select in the publish form.</i>',
 
 // @since 2.x
 
