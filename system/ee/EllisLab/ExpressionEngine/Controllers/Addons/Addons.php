@@ -1707,12 +1707,11 @@ class Addons extends CP_Controller {
 
 		$settings = ee()->api_channel_fields->apply('save_global_settings');
 
-		$fieldtype_model = ee('Model')->get('ChannelField')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('field_name', $fieldtype['package'])
+		$fieldtype_model = ee('Model')->get('Fieldtype')
+			->filter('name', $fieldtype['package'])
 			->first();
 
-		$fieldtype_model->field_settings = $settings;
+		$fieldtype_model->settings = $settings;
 		$fieldtype_model->save();
 
 		ee('Alert')->makeInline('shared-form')
