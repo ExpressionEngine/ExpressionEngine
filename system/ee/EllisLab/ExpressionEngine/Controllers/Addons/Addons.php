@@ -59,6 +59,7 @@ class Addons extends CP_Controller {
 
 		ee()->load->library('addons');
 		ee()->load->helper(array('file', 'directory'));
+		ee()->legacy_api->instantiate('channel_fields');
 	}
 
 	// --------------------------------------------------------------------
