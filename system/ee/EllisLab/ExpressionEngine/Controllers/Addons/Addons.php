@@ -584,6 +584,8 @@ class Addons extends CP_Controller {
 		foreach ($addons as $addon)
 		{
 			$info = ee('App')->get($addon);
+			ee()->load->add_package_path($info->getPath());
+
 			$party = ($info->getAuthor() == 'EllisLab') ? 'first' : 'third';
 
 			$module = $this->getModule($addon);
@@ -637,6 +639,8 @@ class Addons extends CP_Controller {
 					$installed[$party][$addon] = $plugin['name'];
 				}
 			}
+
+			ee()->load->remove_package_path($info->getPath());
 		}
 
 		foreach (array('first', 'third') as $party)
