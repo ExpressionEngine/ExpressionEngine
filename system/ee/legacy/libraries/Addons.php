@@ -75,7 +75,7 @@ class EE_Addons {
 				'rte_tools'		=> array()
 			);
 
-			foreach (array(PATH_THIRD, PATH_ADDONS) as $path)
+			foreach (array(PATH_THIRD, PATH_ADDONS, PATH_RTE) as $path)
 			{
 				if (($map = directory_map($path, 2)) !== FALSE)
 				{
