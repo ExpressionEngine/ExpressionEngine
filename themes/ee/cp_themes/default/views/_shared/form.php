@@ -107,6 +107,11 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 				</div>
 				<div class="setting-field col <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?> last">
 					<?php foreach ($setting['fields'] as $field_name => $field):
+						// Check for a field name override
+						if (isset($field['name']))
+						{
+							$field_name = $field['name'];
+						}
 						// Get the value of the field
 						$value = set_value($field_name);
 						if ($value == '')
