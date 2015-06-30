@@ -184,6 +184,12 @@ $lang = array(
 'multiselect_options_desc' =>
 'Choose how to create the options for this field.</em><em><i>Each item will be included in a multi-select in the publish form.</i>',
 
+'radio_options' =>
+'Radio options',
+
+'radio_options_desc' =>
+'Choose how to create the options for this field.</em><em><i>Each item will generate a single radio button and label pair in the publish form.</i>',
+
 // @since 2.x
 
 'reserved_word' =>
