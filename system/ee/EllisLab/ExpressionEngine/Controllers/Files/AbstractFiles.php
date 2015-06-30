@@ -117,7 +117,9 @@ abstract class AbstractFiles extends CP_Controller {
 		$table = ee('CP/Table', array('autosort' => TRUE, 'limit' => $limit, 'autosearch' => TRUE));
 		$table->setColumns(
 			array(
-				'title_or_name',
+				'title_or_name' => array(
+					'encode' => FALSE
+				),
 				'file_type',
 				'date_added',
 				'manage' => array(

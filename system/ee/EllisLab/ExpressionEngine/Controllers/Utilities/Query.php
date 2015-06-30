@@ -174,6 +174,12 @@ class Query extends Utilities {
 			$table_config['autosearch'] = TRUE;
 		}
 
+		$columns = array();
+		if ($query && $vars['write'] == FALSE)
+		{
+			$columns = array_keys($query->row_array());
+		}
+
 		$table = ee('CP/Table', $table_config);
 		$table->setColumns($columns);
 

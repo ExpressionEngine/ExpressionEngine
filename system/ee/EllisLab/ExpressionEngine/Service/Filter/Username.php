@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Service\Filter;
 
-
+use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
 use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 
