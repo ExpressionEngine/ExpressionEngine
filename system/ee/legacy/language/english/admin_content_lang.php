@@ -172,6 +172,13 @@ $lang = array(
 'checkbox_options_desc' =>
 'Choose how to create the options for this field.</em><em><i>Each item will generate a single checkbox and label pair in the publish form.</i>',
 
+'select_options' =>
+'Select menu options',
+
+'select_options_desc' =>
+'Choose how to create the options for this field.</em><em><i>Each item will be included in a select drop down menu in the publish form.</i>',
+
+
 // @since 2.x
 
 'reserved_word' =>

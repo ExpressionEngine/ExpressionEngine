@@ -117,20 +117,9 @@ class Select_ft extends EE_Fieldtype {
 
 	function display_settings($data)
 	{
-		ee()->load->model('addons_model');
 		$format_options = ee()->addons_model->get_plugin_formatting(TRUE);
 
 		$settings = array(
-			array(
-				'title' => 'select_menu_options',
-				'desc' => 'select_menu_options_desc',
-				'fields' => array(
-					'field_list_items' => array(
-						'type' => 'textarea',
-						'value' => $data['field_list_items']
-					)
-				)
-			),
 			array(
 				'title' => 'field_fmt',
 				'desc' => 'field_fmt_desc',
@@ -141,10 +130,41 @@ class Select_ft extends EE_Fieldtype {
 						'value' => $data['field_fmt'],
 					)
 				)
+			),
+			array(
+				'title' => 'select_options',
+				'desc' => 'select_options_desc',
+				'fields' => array(
+					'field_pre_populate_n' => array(
+						'type' => 'radio',
+						'name' => 'field_pre_populate',
+						'choices' => array(
+							'n' => lang('field_populate_manually'),
+						),
+						'value' => ($data['field_pre_populate']) ? 'y' : 'n'
+					),
+					'field_list_items' => array(
+						'type' => 'textarea',
+						'value' => $data['field_list_items']
+					),
+					'field_pre_populate_y' => array(
+						'type' => 'radio',
+						'name' => 'field_pre_populate',
+						'choices' => array(
+							'y' => lang('field_populate_from_channel'),
+						),
+						'value' => ($data['field_pre_populate']) ? 'y' : 'n'
+					),
+					'field_pre_populate_id' => array(
+						'type' => 'dropdown',
+						'choices' => $this->get_channel_field_list(),
+						'value' => $data['field_pre_channel_id'] . '_' . $data['field_pre_field_id']
+					)
+				)
 			)
 		);
 
-		return $settings;
+		return array('field_options' => $settings);
 	}
 
 	function grid_display_settings($data)
