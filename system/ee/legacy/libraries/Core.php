@@ -92,7 +92,6 @@ class EE_Core {
 		// Set ->api on the legacy facade to the model factory
 		ee()->set('api', ee()->di->make('Model'));
 
-		// Note enable_db_caching is a per site setting specified in EE_Config.php
 		// If debug is on we enable the profiler and DB debug
 		if (DEBUG == 1 OR ee()->config->item('debug') == 2)
 		{
