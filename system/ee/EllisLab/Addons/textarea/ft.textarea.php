@@ -287,6 +287,7 @@ class Textarea_ft extends EE_Fieldtype {
 			'fields' => array(
 				'field_show_formatting_btns' => array(
 					'type' => 'checkbox',
+					'scalar' => TRUE,
 					'choices' => array(
 						'y' => lang('show_formatting_btns'),
 					),
@@ -294,6 +295,7 @@ class Textarea_ft extends EE_Fieldtype {
 				),
 				'field_show_smileys' => array(
 					'type' => 'checkbox',
+					'scalar' => TRUE,
 					'choices' => array(
 						'y' => lang('show_smileys'),
 					),
@@ -301,6 +303,7 @@ class Textarea_ft extends EE_Fieldtype {
 				),
 				'field_show_file_selector' => array(
 					'type' => 'checkbox',
+					'scalar' => TRUE,
 					'choices' => array(
 						'y' => lang('show_file_selector')
 					),

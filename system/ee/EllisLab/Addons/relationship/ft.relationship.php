@@ -548,6 +548,7 @@ class Relationship_ft extends EE_Fieldtype {
 				'fields' => array(
 					'relationship_expired' => array(
 						'type' => 'checkbox',
+						'scalar' => TRUE,
 						'choices' => array(
 							'1' => lang('rel_ft_include_expired')
 						),
@@ -555,6 +556,7 @@ class Relationship_ft extends EE_Fieldtype {
 					),
 					'relationship_future' => array(
 						'type' => 'checkbox',
+						'scalar' => TRUE,
 						'choices' => array(
  							'1' => lang('rel_ft_include_future')
 						),

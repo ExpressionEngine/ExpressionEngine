@@ -204,7 +204,7 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 							<?php if (isset($field['wrap']) && $field['wrap']): ?>
 								<div class="scroll-wrap">
 							<?php endif ?>
-							<?php if (count($field['choices']) > 1) $field_name .= '[]'; ?>
+							<?php if ( ! isset($field['scalar'])) $field_name .= '[]'; ?>
 								<?php foreach ($field['choices'] as $key => $label):
 									if (is_array($value))
 									{
