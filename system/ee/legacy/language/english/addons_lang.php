@@ -56,8 +56,11 @@ $lang = array(
 'default_map'					=>		'Default Map',
 'manual_override'				=>		'Manual Override',
 'latitude'						=>		'Latitude',
+'latitude_desc'					=>		'',
 'longitude'						=>		'Longitude',
+'longitude_desc'				=>		'',
 'zoom'							=>		'Zoom',
+'zoom_desc'						=>		'',
 
 // 2.x
 
