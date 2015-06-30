@@ -317,14 +317,16 @@ class Addons_installer {
 			show_error(lang('module_can_not_be_found'));
 		}
 
-		if (in_array($module, ee()->core->native_modules))
+		try
 		{
-			$path = PATH_ADDONS.$module.'/upd.'.$module.'.php';
+			$info = ee('App')->get($module);
 		}
-		else
+		catch (\Exception $e)
 		{
-			$path = PATH_THIRD.$module.'/upd.'.$module.'.php';
+			show_error(lang('module_can_not_be_found'));
 		}
+
+		$path = $info->getPath() . '/upd.'.$module.'.php';
 
 		if ( ! is_file($path))
 		{
