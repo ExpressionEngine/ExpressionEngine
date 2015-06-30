@@ -1,7 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 
 /**
  * ExpressionEngine - by EllisLab
@@ -68,7 +68,7 @@ class Pages_mcp {
 			$this->delete();
 		}
 
-		$base_url = ee('CP/URL', 'addons/settings/pages', ee()->session->session_id());
+		$base_url = ee('CP/URL', 'addons/settings/pages');
 
 		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => FALSE, 'limit' => 20));
 		$table->setColumns(

@@ -2,7 +2,7 @@
 namespace EllisLab\ExpressionEngine\Service\Filter;
 
 use InvalidArgumentException;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 
 /**

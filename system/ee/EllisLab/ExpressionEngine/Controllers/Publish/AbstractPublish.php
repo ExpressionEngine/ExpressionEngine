@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Publish;
 
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Module\Channel\Model\ChannelEntry;
 /**
  * ExpressionEngine - by EllisLab

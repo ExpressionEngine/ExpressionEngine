@@ -1,7 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 
 /**
  * ExpressionEngine - by EllisLab
@@ -51,7 +51,7 @@ class Metaweblog_api_mcp {
 	 */
 	function index()
 	{
-		$base_url = new URL('addons/settings/metaweblog_api', ee()->session->session_id());
+		$base_url = ee('CP/URL', 'addons/settings/metaweblog_api');
 
 		$api_url = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->cp->fetch_action_id('Metaweblog_api', 'incoming');
 

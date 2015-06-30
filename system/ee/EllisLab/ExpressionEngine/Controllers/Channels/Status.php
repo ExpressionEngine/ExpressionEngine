@@ -106,8 +106,7 @@ class Status extends AbstractChannelsController {
 
 		$table->setData($data);
 
-		$base_url = new CP\URL('channels/status', ee()->session->session_id());
-		$vars['table'] = $table->viewData($base_url);
+		$vars['table'] = $table->viewData(ee('CP/URL', 'channels/status'));
 
 		$vars['pagination'] = ee('CP/Pagination', $total_rows)
 			->perPage($vars['table']['limit'])
@@ -386,8 +385,7 @@ class Status extends AbstractChannelsController {
 
 		$table->setData($data);
 
-		$base_url = new CP\URL('channels/status/status-list/'.$group_id, ee()->session->session_id());
-		$vars['table'] = $table->viewData($base_url);
+		$vars['table'] = $table->viewData(ee('CP/URL', 'channels/status/status-list/'.$group_id));
 
 		ee()->view->group_id = $group_id;
 

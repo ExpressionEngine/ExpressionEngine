@@ -255,9 +255,8 @@ class Query extends Utilities {
 
 		$table->setData($data);
 
-		$base_url = new CP\URL(
+		$base_url = ee('CP/URL',
 			'utilities/query/run-query/'.$table_name,
-			ee()->session->session_id(),
 			array('thequery' => rawurlencode(base64_encode($sql)))
 		);
 		$view_data = $table->viewData($base_url);

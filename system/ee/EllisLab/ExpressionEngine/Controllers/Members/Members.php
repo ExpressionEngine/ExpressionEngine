@@ -7,7 +7,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Service\CP\Filter\Filter;
 use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 
@@ -82,7 +82,7 @@ class Members extends CP_Controller {
 			)
 		));
 
-		$this->base_url = new URL('members', ee()->session->session_id());
+		$this->base_url = ee('CP/URL', 'members');
 	}
 
 	// --------------------------------------------------------------------

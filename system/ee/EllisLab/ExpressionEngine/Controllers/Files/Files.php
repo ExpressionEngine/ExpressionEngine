@@ -5,7 +5,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Files;
 use ZipArchive;
 use EllisLab\ExpressionEngine\Controllers\Files\AbstractFiles as AbstractFilesController;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
 
@@ -38,7 +38,7 @@ class Files extends AbstractFilesController {
 	{
 		$this->handleBulkActions(cp_url('files', ee()->cp->get_url_state()));
 
-		$base_url = new URL('files', ee()->session->session_id());
+		$base_url = ee('CP/URL', 'files');
 
 		$search_terms = ee()->input->get_post('search');
 		if ($search_terms)
@@ -133,7 +133,7 @@ class Files extends AbstractFilesController {
 
 		$this->handleBulkActions(cp_url('files/directory/' . $id, ee()->cp->get_url_state()));
 
-		$base_url = new URL('files/directory/' . $id, ee()->session->session_id());
+		$base_url = ee('CP/URL', 'files/directory/' . $id);
 
 		$filters = ee('Filter')
 			->add('Perpage', $dir->getFiles()->count(), 'show_all_files');

@@ -130,8 +130,7 @@ class Cat extends AbstractChannelsController {
 
 		$table->setData($data);
 
-		$base_url = new CP\URL('channels/cat', ee()->session->session_id());
-		$vars['table'] = $table->viewData($base_url);
+		$vars['table'] = $table->viewData(ee('CP/URL', 'channels/cat'));
 
 		$vars['pagination'] = ee('CP/Pagination', $total_rows)
 			->perPage($vars['table']['limit'])
@@ -916,8 +915,7 @@ class Cat extends AbstractChannelsController {
 
 		$table->setData($data);
 
-		$base_url = new CP\URL('channels/cat/field/'.$group_id, ee()->session->session_id());
-		$vars['table'] = $table->viewData($base_url);
+		$vars['table'] = $table->viewData(ee('CP/URL', 'channels/cat/field/'.$group_id));
 		$vars['group_id'] = $group_id;
 
 		ee()->cp->set_breadcrumb(cp_url('channels/cat'), lang('category_groups'));

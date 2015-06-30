@@ -113,8 +113,7 @@ class Channels extends AbstractChannelsController {
 
 		$table->setData($data);
 
-		$base_url = new CP\URL('channels', ee()->session->session_id());
-		$vars['table'] = $table->viewData($base_url);
+		$vars['table'] = $table->viewData(ee('CP/URL', 'channels'));
 
 		$vars['pagination'] = ee('CP/Pagination', $total_rows)
 			->perPage($vars['table']['limit'])

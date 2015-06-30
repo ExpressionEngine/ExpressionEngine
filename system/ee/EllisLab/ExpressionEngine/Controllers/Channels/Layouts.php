@@ -3,7 +3,7 @@
 namespace EllisLab\ExpressionEngine\Controllers\Channels;
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Module\Channel\Model\Display\DefaultChannelLayout;
 use EllisLab\ExpressionEngine\Controllers\Channels\AbstractChannels as AbstractChannelsController;
 use EllisLab\ExpressionEngine\Module\Channel\Model\Channel;

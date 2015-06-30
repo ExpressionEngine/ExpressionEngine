@@ -6,7 +6,7 @@ use \EE_Route;
 use ZipArchive;
 use EllisLab\ExpressionEngine\Controllers\Design\AbstractDesign as AbstractDesignController;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Model\Template\Template as TemplateModel;
 
 /**
@@ -459,7 +459,7 @@ class Template extends AbstractDesignController {
 			->filter('template_data', 'LIKE', '%' . $search_terms . '%')
 			->all();
 
-		$base_url = new URL('design/template/search', ee()->session->session_id());
+		$base_url = ee('CP/URL', 'design/template/search');
 
 		$table = $this->buildTableFromTemplateCollection($templates, TRUE);
 

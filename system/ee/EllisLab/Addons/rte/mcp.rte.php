@@ -1,7 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 
 /**
  * ExpressionEngine - by EllisLab
@@ -46,7 +46,7 @@ class Rte_mcp {
 		ee()->load->model('rte_tool_model');
 
 		// set some properties
-		$this->_base_url = new URL('addons/settings/rte', ee()->session->session_id());
+		$this->_base_url = ee('CP/URL', 'addons/settings/rte');
 		ee()->rte_lib->form_url = 'addons/settings/rte';
 
 		// Delete missing tools

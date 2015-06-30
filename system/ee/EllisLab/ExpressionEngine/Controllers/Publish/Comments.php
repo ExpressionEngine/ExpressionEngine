@@ -3,7 +3,7 @@
 namespace EllisLab\ExpressionEngine\Controllers\Publish;
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Controllers\Publish\AbstractPublish as AbstractPublishController;
 use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
 
@@ -59,7 +59,7 @@ class Comments extends AbstractPublishController {
 
 		$vars = array();
 		$channel = NULL;
-		$base_url = new URL('publish/comments', ee()->session->session_id());
+		$base_url = ee('CP/URL', 'publish/comments');
 
 		$comments = ee('Model')->get('Comment')
 			->filter('site_id', ee()->config->item('site_id'));
@@ -180,7 +180,7 @@ class Comments extends AbstractPublishController {
 		}
 
 		$vars = array();
-		$base_url = new URL('publish/comments/entry/' . $entry_id, ee()->session->session_id());
+		$base_url = ee('CP/URL', 'publish/comments/entry/' . $entry_id);
 
 		$entry = ee('Model')->get('ChannelEntry', $entry_id)
 			->filter('site_id', ee()->config->item('site_id'))

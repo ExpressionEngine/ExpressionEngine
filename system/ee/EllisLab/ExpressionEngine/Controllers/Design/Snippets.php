@@ -5,7 +5,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Design;
 use ZipArchive;
 use EllisLab\ExpressionEngine\Controllers\Design\AbstractDesign as AbstractDesignController;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 
 /**
  * ExpressionEngine - by EllisLab
@@ -91,7 +91,7 @@ class Snippets extends AbstractDesignController {
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
-		$base_url = new URL('design/snippets', ee()->session->session_id());
+		$base_url = ee('CP/URL', 'design/snippets');
 
 		foreach($snippets as $snippet)
 		{

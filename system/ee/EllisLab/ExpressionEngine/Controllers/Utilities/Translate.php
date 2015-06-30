@@ -6,7 +6,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use ZipArchive;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 
 /**
  * ExpressionEngine - by EllisLab
@@ -109,7 +109,7 @@ class Translate extends Utilities {
 			'pagination' => ''
 		);
 
-		$base_url = new URL('utilities/translate/' . $language, ee()->session->session_id());
+		$base_url = ee('CP/URL', 'utilities/translate/' . $language);
 
 		$data = array();
 
