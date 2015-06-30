@@ -109,9 +109,9 @@ class Fields extends AbstractChannelsController {
 		{
 			$column = array(
 				$field->field_id,
-				htmlentities($field->field_label, ENT_QUOTES),
+				$field->field_label,
 				'<var>{' . $field->field_name . '}</var>',
-				htmlentities($field->field_type, ENT_QUOTES),
+				$field->field_type,
 				array('toolbar_items' => array(
 					'edit' => array(
 						'href' => cp_url('channels/fields/edit/' . $field->field_id),

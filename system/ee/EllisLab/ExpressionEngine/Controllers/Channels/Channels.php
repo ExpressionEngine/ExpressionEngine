@@ -73,8 +73,8 @@ class Channels extends AbstractChannelsController {
 		{
 			$columns = array(
 				$channel->getId(),
-				htmlentities($channel->channel_title, ENT_QUOTES),
-				htmlentities($channel->channel_name, ENT_QUOTES),
+				$channel->channel_title,
+				$channel->channel_name,
 				array('toolbar_items' => array(
 					'edit' => array(
 						'href' => cp_url('channels/edit/'.$channel->getId()),

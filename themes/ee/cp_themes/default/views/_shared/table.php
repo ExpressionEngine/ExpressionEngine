@@ -93,7 +93,7 @@ if ($wrap): ?>
 						<?php endif ?>
 						<?php foreach ($row['columns'] as $column): ?>
 							<?php if ($column['encode'] == TRUE): ?>
-								<td><?=htmlspecialchars($column['content'])?></td>
+								<td><?=htmlentities($column['content'], ENT_QUOTES)?></td>
 							<?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
 								<td>
 									<?=ee()->load->view('_shared/toolbar', $column, TRUE)?>

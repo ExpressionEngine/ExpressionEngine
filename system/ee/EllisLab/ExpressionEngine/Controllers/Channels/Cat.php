@@ -91,7 +91,7 @@ class Cat extends AbstractChannelsController {
 		{
 			$columns = array(
 				$group->getId(),
-				htmlentities($group->group_name, ENT_QUOTES) . ' ('.count($group->getCategories()).')',
+				$group->group_name . ' ('.count($group->getCategories()).')',
 				array('toolbar_items' => array(
 					'view' => array(
 						'href' => cp_url('channels/cat/cat-list/'.$group->getId()),
@@ -845,7 +845,9 @@ class Cat extends AbstractChannelsController {
 		));
 		$table->setColumns(
 			array(
-				'col_id',
+				'col_id' => array(
+					'encode' => FALSE
+				),
 				'label',
 				'short_name_col',
 				'type',

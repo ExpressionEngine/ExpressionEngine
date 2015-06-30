@@ -163,15 +163,6 @@ class Query extends Utilities {
 			}
 		}
 
-		$columns = array();
-		if ($query && $vars['write'] == FALSE)
-		{
-			foreach ($query->row_array() as $col_name => $value)
-			{
-				$columns[$col_name] = array('encode' => TRUE);
-			}
-		}
-
 		// Don't run column names though lang()
 		$table_config = array('lang_cols' => FALSE);
 

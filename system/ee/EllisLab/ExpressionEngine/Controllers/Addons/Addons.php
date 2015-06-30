@@ -238,7 +238,9 @@ class Addons extends CP_Controller {
 			$table->setColumns(
 				array(
 					'addon',
-					'version',
+					'version' => array(
+						'encode' => FALSE
+					),
 					'manage' => array(
 						'type'	=> Table::COL_TOOLBAR
 					),

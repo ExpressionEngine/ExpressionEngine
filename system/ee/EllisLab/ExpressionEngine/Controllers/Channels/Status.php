@@ -70,7 +70,7 @@ class Status extends AbstractChannelsController {
 		{
 			$columns = array(
 				$group->getId(),
-				htmlentities($group->group_name, ENT_QUOTES),
+				$group->group_name,
 				array('toolbar_items' => array(
 					'view' => array(
 						'href' => cp_url('channels/status/status-list/'.$group->getId()),
@@ -335,7 +335,9 @@ class Status extends AbstractChannelsController {
 		));
 		$table->setColumns(
 			array(
-				'col_id',
+				'col_id' => array(
+					'encode' => FALSE
+				),
 				'status_name',
 				'manage' => array(
 					'type'	=> CP\Table::COL_TOOLBAR
@@ -352,8 +354,8 @@ class Status extends AbstractChannelsController {
 		foreach ($statuses as $status)
 		{
 			$columns = array(
-				$status->getId(),
-				htmlentities($status->status, ENT_QUOTES).form_hidden('order[]', $status->getId()),
+				$status->getId().form_hidden('order[]', $status->getId()),
+				$status->status,
 				array('toolbar_items' => array(
 					'edit' => array(
 						'href' => cp_url('channels/status/edit-status/'.$group_id.'/'.$status->getId()),

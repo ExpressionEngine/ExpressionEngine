@@ -89,7 +89,7 @@ class Layouts extends AbstractChannelsController {
 		foreach ($channel->ChannelLayouts as $layout)
 		{
 			$column = array(
-				htmlentities($layout->layout_name, ENT_QUOTES),
+				$layout->layout_name,
 				implode(',', $layout->MemberGroups->pluck('group_title')),
 				array('toolbar_items' => array(
 					'edit' => array(
