@@ -673,8 +673,6 @@ class EE_Core {
 	 */
 	function _garbage_collection()
 	{
-		ee()->db->cache_off();
-
 		if (class_exists('Stats'))
 		{
 			if (ee()->stats->statdata('last_cache_clear')

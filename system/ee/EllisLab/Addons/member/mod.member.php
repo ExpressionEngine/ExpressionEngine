@@ -157,7 +157,6 @@ class Member {
 		ee()->lang->loadfile('myaccount');
 		ee()->lang->loadfile('member');
 		ee()->functions->template_type = 'webpage';
-		ee()->db->cache_off();
 		$this->trigger = ee()->config->item('profile_trigger');
 	}
 

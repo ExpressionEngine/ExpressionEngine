@@ -100,8 +100,6 @@ class Forum {
 	 */
 	public function __construct()
 	{
-		ee()->db->cache_off();
-
 		// Load Base Forum Variables
 		$this->_load_base();
 
