@@ -160,6 +160,18 @@ $lang = array(
 'show_formatting_btns' =>
 'Formatting Buttons <i>&mdash; Buttons for formatting your text.</i>',
 
+'field_populate_manually' =>
+'Manually <i>&mdash; Each item on a single line.',
+
+'field_populate_from_channel' =>
+'From channel <i>&mdash; Choose a field.',
+
+'checkbox_options' =>
+'Checkbox options',
+
+'checkbox_options_desc' =>
+'Choose how to create the options for this field.</em><em><i>Each item will generate a single checkbox and label pair in the publish form.</i>',
+
 // @since 2.x
 
 'reserved_word' =>
@@ -251,12 +263,6 @@ $lang = array(
 
 'max_revisions_note' =>
 'Versioning can use up a lot of database space so it is recommended that you limit the number of revisions.',
-
-'field_populate_manually' =>
-'Populate the menu manually',
-
-'field_populate_from_channel' =>
-'Populate the menu from another channel field',
 
 'select_channel_for_field' =>
 'Select the field you wish to pre-populate from:',
