@@ -166,7 +166,9 @@ class Rte_mcp {
 		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => FALSE, 'limit' => 20));
 		$table->setColumns(
 			array(
-				'tool_set',
+				'tool_set' => array(
+					'encode' => FALSE
+				),
 				'status',
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
