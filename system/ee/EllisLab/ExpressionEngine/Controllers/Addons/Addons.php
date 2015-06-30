@@ -1658,6 +1658,7 @@ class Addons extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		ee()->api_channel_fields->fetch_custom_channel_fields();
 		$FT = ee()->api_channel_fields->setup_handler($fieldtype['package'], TRUE);
 
 		$FT->settings = $fieldtype['settings'];
@@ -1699,6 +1700,7 @@ class Addons extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		ee()->api_channel_fields->fetch_custom_channel_fields();
 		$FT = ee()->api_channel_fields->setup_handler($fieldtype['package'], TRUE);
 
 		$FT->settings = $fieldtype['settings'];
