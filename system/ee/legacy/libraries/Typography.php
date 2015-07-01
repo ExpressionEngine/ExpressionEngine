@@ -92,7 +92,6 @@ class EE_Typography {
 	public function __construct()
 	{
 		$this->initialize();
-		Autoloader::getInstance()->addPrefix('Michelf', APPPATH.'libraries/typography/Markdown/Michelf/');
 	}
 
 	// --------------------------------------------------------------------
