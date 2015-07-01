@@ -281,16 +281,17 @@ class Fields extends AbstractChannelsController {
 		$field->field_order = ($field->field_order) ?: 0;
 
 		$field->set($_POST);
-		$field->save();
+		// $field->save();
 
 		$field_data = $_POST;
-		$field_data['field_id'] = $field->field_id;
+		// $field_data['field_id'] = $field->field_id;
 		$field_data['group_id'] = $field->group_id;
 
 		ee()->load->library('api');
 		ee()->legacy_api->instantiate('channel_fields');
-		ee()->api_channel_fields->update_field($field_data);
+		$field_id = ee()->api_channel_fields->update_field($field_data);
 
+		$field->field_id = $field_id;
 		return $field;
 	}
 
