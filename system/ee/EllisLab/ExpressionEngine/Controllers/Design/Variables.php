@@ -276,7 +276,7 @@ class Variables extends AbstractDesignController {
 
 		ee()->view->cp_page_title = lang('create_template_variable');
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'design/variables') => lang('template_variables'),
+			ee('CP/URL', 'design/variables')->compile() => lang('template_variables'),
 		);
 
 		ee()->cp->render('settings/form', $vars);
@@ -401,7 +401,7 @@ class Variables extends AbstractDesignController {
 
 		ee()->view->cp_page_title = lang('edit_template_variable');
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'design/variables') => lang('template_variables'),
+			ee('CP/URL', 'design/variables')->compile() => lang('template_variables'),
 		);
 
 		ee()->cp->render('settings/form', $vars);

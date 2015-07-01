@@ -140,13 +140,13 @@ class Comments extends AbstractPublishController {
 		if ($channel)
 		{
 			ee()->view->cp_breadcrumbs = array(
-				ee('CP/URL', 'publish/edit', array('filter_by_channel' => $channel->channel_id)) => sprintf(lang('all_channel_entries'), $channel->channel_title),
+				ee('CP/URL', 'publish/edit', array('filter_by_channel' => $channel->channel_id))->compile() => sprintf(lang('all_channel_entries'), $channel->channel_title),
 			);
 		}
 		else
 		{
 			ee()->view->cp_breadcrumbs = array(
-				ee('CP/URL', 'publish/edit') => sprintf(lang('all_channel_entries'), $channel),
+				ee('CP/URL', 'publish/edit')->compile() => sprintf(lang('all_channel_entries'), $channel),
 			);
 		}
 
@@ -261,7 +261,7 @@ class Comments extends AbstractPublishController {
 		));
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'publish/edit', array('filter_by_channel' => $entry->channel_id)) => sprintf(lang('all_channel_entries'), $entry->getChannel()->channel_title),
+			ee('CP/URL', 'publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => sprintf(lang('all_channel_entries'), $entry->getChannel()->channel_title),
 		);
 
 		ee()->view->cp_page_title = sprintf(lang('all_comments_for_entry'), $entry->title);
@@ -437,7 +437,7 @@ class Comments extends AbstractPublishController {
 		ee()->view->cp_page_title = lang('edit_comment');
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'publish/comments') => lang('all_comments'),
+			ee('CP/URL', 'publish/comments')->compile() => lang('all_comments'),
 		);
 
 		ee()->cp->render('settings/form', $vars);

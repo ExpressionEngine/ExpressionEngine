@@ -127,7 +127,7 @@ class Forums extends AbstractDesignController {
 		ee()->javascript->change("select[name=\'theme\']", 'window.location.href = $(this).val()');
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'addons/settings/forum') => lang('forum_manager'),
+			ee('CP/URL', 'addons/settings/forum')->compile() => lang('forum_manager'),
 		);
 
 		ee()->cp->render('design/forums/index', $vars);
@@ -198,8 +198,8 @@ class Forums extends AbstractDesignController {
 
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), $template_name);
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'design') => lang('template_manager'),
-			ee('CP/URL', 'design/forums/') => sprintf(lang('breadcrumb_group'), lang('forums'))
+			ee('CP/URL', 'design')->compile() => lang('template_manager'),
+			ee('CP/URL', 'design/forums/')->compile() => sprintf(lang('breadcrumb_group'), lang('forums'))
 		);
 
 		ee()->cp->render('design/forums/edit', $vars);

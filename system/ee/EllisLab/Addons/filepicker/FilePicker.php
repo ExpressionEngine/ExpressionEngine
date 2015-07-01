@@ -66,7 +66,9 @@ class FilePicker {
 		$table = new Table(array('autosort' => TRUE, 'limit' => $limit));
 		$table->setColumns(
 			array(
-				'title_or_name',
+				'title_or_name' => array(
+					'encode' => FALSE
+				),
 				'file_type',
 				'date_added',
 				'manage' => array(

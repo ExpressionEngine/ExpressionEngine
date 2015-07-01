@@ -147,8 +147,8 @@ class System extends AbstractDesignController {
 
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), lang($template->template_name));
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'design') => lang('template_manager'),
-			ee('CP/URL', 'design/system/') => sprintf(lang('breadcrumb_group'), lang('system'))
+			ee('CP/URL', 'design')->compile() => lang('template_manager'),
+			ee('CP/URL', 'design/system/')->compile() => sprintf(lang('breadcrumb_group'), lang('system'))
 		);
 
 		// Supress browser XSS check that could cause obscure bug after saving

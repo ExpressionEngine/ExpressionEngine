@@ -250,8 +250,8 @@ class Layouts extends AbstractChannelsController {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'channels') => lang('channels'),
-			ee('CP/URL', 'channels/layouts/' . $channel_id) => lang('form_layouts')
+			ee('CP/URL', 'channels')->compile() => lang('channels'),
+			ee('CP/URL', 'channels/layouts/' . $channel_id)->compile() => lang('form_layouts')
 		);
 
 		ee()->view->cp_page_title = lang('create_form_layout');
@@ -357,8 +357,8 @@ class Layouts extends AbstractChannelsController {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'channels') => lang('channels'),
-			ee('CP/URL', 'channels/layouts/' . $channel_layout->channel_id) => lang('form_layouts')
+			ee('CP/URL', 'channels')->compile() => lang('channels'),
+			ee('CP/URL', 'channels/layouts/' . $channel_layout->channel_id)->compile() => lang('form_layouts')
 		);
 
 		$alert_required = ee('Alert')->makeBanner('tab-has-required-fields')

@@ -412,7 +412,7 @@ class Edit extends AbstractPublishController {
 		));
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'publish/edit', array('filter_by_channel' => $entry->channel_id)) => $entry->getChannel()->channel_title,
+			ee('CP/URL', 'publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => $entry->getChannel()->channel_title,
 		);
 
 		ee()->cp->render('publish/entry', $vars);

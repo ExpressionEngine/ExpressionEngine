@@ -313,7 +313,7 @@ class Translate extends Utilities {
 		);
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'utilities/translate/' . $language) => ucfirst($language) . ' ' . lang('language_files')
+			ee('CP/URL', 'utilities/translate/' . $language)->compile() => ucfirst($language) . ' ' . lang('language_files')
 		);
 
 		ee()->cp->render('utilities/translate/edit', $vars);

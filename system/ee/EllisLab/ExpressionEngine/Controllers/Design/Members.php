@@ -264,8 +264,8 @@ class Members extends AbstractDesignController {
 
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), $template_name);
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'design') => lang('template_manager'),
-			ee('CP/URL', 'design/members/') => sprintf(lang('breadcrumb_group'), lang('members'))
+			ee('CP/URL', 'design')->compile() => lang('template_manager'),
+			ee('CP/URL', 'design/members/')->compile() => sprintf(lang('breadcrumb_group'), lang('members'))
 		);
 
 		ee()->cp->render('design/members/edit', $vars);

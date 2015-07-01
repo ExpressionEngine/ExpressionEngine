@@ -774,7 +774,7 @@ class Addons extends CP_Controller {
 
 		$vars = array();
 		$breadcrumb = array(
-			ee('CP/URL', 'addons') => lang('addon_manager')
+			ee('CP/URL', 'addons')->compile() => lang('addon_manager')
 		);
 
 		if (is_null($method))
@@ -890,7 +890,7 @@ class Addons extends CP_Controller {
 		ee()->view->cp_heading = $vars['name'] . ' ' . lang('manual');
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'addons') => lang('addon_manager')
+			ee('CP/URL', 'addons')->compile() => lang('addon_manager')
 		);
 
 		ee()->cp->render('addons/manual', $vars);

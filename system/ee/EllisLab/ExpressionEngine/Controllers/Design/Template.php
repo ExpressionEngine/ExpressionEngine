@@ -335,8 +335,8 @@ class Template extends AbstractDesignController {
 
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), $group->group_name . '/' . $template->template_name);
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'design') => lang('template_manager'),
-			ee('CP/URL', 'design/manager/' . $group->group_name) => sprintf(lang('breadcrumb_group'), $group->group_name)
+			ee('CP/URL', 'design')->compile() => lang('template_manager'),
+			ee('CP/URL', 'design/manager/' . $group->group_name)->compile() => sprintf(lang('breadcrumb_group'), $group->group_name)
 		);
 
 		// Supress browser XSS check that could cause obscure bug after saving

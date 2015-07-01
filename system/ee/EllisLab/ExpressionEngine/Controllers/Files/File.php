@@ -379,8 +379,8 @@ class File extends AbstractFilesController {
 		ee()->view->cp_page_title = sprintf(lang('crop_file'), $file->file_name);
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'files') => lang('file_manager'),
-			ee('CP/URL', 'files/file/edit/' . $id) => sprintf(lang('edit_file_name'), $file->file_name)
+			ee('CP/URL', 'files')->compile() => lang('file_manager'),
+			ee('CP/URL', 'files/file/edit/' . $id)->compile() => sprintf(lang('edit_file_name'), $file->file_name)
 		);
 
 		ee()->cp->render('files/crop', $vars);
