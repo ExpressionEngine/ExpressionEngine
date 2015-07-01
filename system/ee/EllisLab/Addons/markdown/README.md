@@ -1,18 +1,41 @@
-This plugin parses text using Markdown and Smartypants. To use this plugin wrap any text in this tag pair:
+# My Addon
 
-	{exp:markdown}
-		Text to be **parsed**.
-	{/exp:markdown}
+An add-on that does such and such.
 
-There are two parameters you can set:
+## Example Usage
 
-- convert_curly - ('yes'/'no') defaults to 'yes', when set to 'no' will not
-  convert all curly brackets to entities, which can be useful to display
-  variables
-- smartypants - ('yes'/'no') defaults to 'yes', when set to 'no' stops
-  SmartyPants from running which leaves your quotes and hyphens alone
+This plugin parses text using Markdown and Smartypants. To use this plugin warp any text in this text pair.
 
-## Change Log
+```
+{exp:markdown}
+	Text to be **parsed**.
+{/exp:markdown}
+```
 
-- 1.1
-	- Updated plugin to be 3.0 compatible
+## Available Parameters
+
+### encode_ee_tags
+
+Defaults to **yes**. When set to **no** allows EE code to be rendered.
+
+```
+{exp:markdown encode_ee_tags="no"}
+	Text to be **parsed**.
+{/exp:markdown}
+```
+
+### smartypants
+
+Defaults to **yes**. When set to *no* stops SmartyPants from running which leaves your quotes and hyphens alone.
+
+Here are three reasons why you want to keep SmartyPants enabled:
+
+* Smart quotes
+* Dash conversion to en- and em-dashes
+* Three dots (`...`) conversion to an ellipsis
+
+```
+{exp:markdown smartypants="no"}
+	Text to be **parsed**.
+{/exp:markdown}
+```
