@@ -161,10 +161,10 @@ $lang = array(
 'Formatting Buttons <i>&mdash; Buttons for formatting your text.</i>',
 
 'field_populate_manually' =>
-'Manually <i>&mdash; Each item on a single line.',
+'Manually <i>&mdash; Each item on a single line.</i>',
 
 'field_populate_from_channel' =>
-'From channel <i>&mdash; Choose a field.',
+'From channel <i>&mdash; Choose a field.</i>',
 
 'checkbox_options' =>
 'Checkbox options',
