@@ -898,7 +898,28 @@ class Addons extends CP_Controller {
 			'description' => $info->get('description')
 		);
 
-		$readme = file_get_contents($readme_file);
+		$readme_array = explode("\n", file_get_contents($readme_file));
+		// Some pre-processing:
+		//   1. Remove everything up to the first ## header
+
+		$readme = '';
+		$skip = TRUE;
+
+		foreach ($readme_array as $line)
+		{
+			// #1 - Removing everything up to the first ## header
+			if ($skip && strpos($line, '##') !== FALSE)
+			{
+				$skip = FALSE;
+			}
+
+			if ($skip)
+			{
+				continue;
+			}
+
+			$readme .= $line . "\n";
+		}
 
 		$parser = new MarkdownExtra;
 		$readme = $parser->transform($readme);
