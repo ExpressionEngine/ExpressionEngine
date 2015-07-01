@@ -221,7 +221,7 @@ class Watermarks extends AbstractFilesController {
 					'desc' => 'watermark_type_desc',
 					'fields' => array(
 						'wm_type' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'text' => lang('text'),
 								'image' => lang('image')
@@ -240,7 +240,7 @@ class Watermarks extends AbstractFilesController {
 					'desc' => 'watermark_alignment_desc',
 					'fields' => array(
 						'wm_vrt_alignment' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'top' => lang('top'),
 								'middle' => lang('middle'),
@@ -249,7 +249,7 @@ class Watermarks extends AbstractFilesController {
 							'value' => $watermark->wm_vrt_alignment,
 						),
 						'wm_hor_alignment' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'left' => lang('left'),
 								'center' => lang('center'),
@@ -314,7 +314,7 @@ class Watermarks extends AbstractFilesController {
 						'desc' => 'watermark_text_font_desc',
 						'fields' => array(
 							'wm_font' => array(
-								'type' => 'dropdown',
+								'type' => 'select',
 								'choices' => ee()->filemanager->fetch_fontlist(),
 								'value' => $watermark->wm_font ?: 'texb.ttf'
 							)

@@ -174,7 +174,7 @@ class Radio_ft extends EE_Fieldtype {
 				'desc' => 'field_fmt_desc',
 				'fields' => array(
 					'field_fmt' => array(
-						'type' => 'dropdown',
+						'type' => 'select',
 						'choices' => $format_options,
 						'value' => $data['field_fmt'],
 					)
@@ -205,7 +205,7 @@ class Radio_ft extends EE_Fieldtype {
 						'value' => ($data['field_pre_populate']) ? 'y' : 'n'
 					),
 					'field_pre_populate_id' => array(
-						'type' => 'dropdown',
+						'type' => 'select',
 						'choices' => $this->get_channel_field_list(),
 						'value' => $data['field_pre_channel_id'] . '_' . $data['field_pre_field_id']
 					)

@@ -104,7 +104,7 @@ class General extends Settings {
 					'desc' => '',
 					'fields' => array(
 						'cp_theme' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => ee()->admin_model->get_cp_theme_list()
 						)
 					)
@@ -114,7 +114,7 @@ class General extends Settings {
 					'desc' => 'language_desc',
 					'fields' => array(
 						'deft_lang' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => ee()->lang->language_pack_names(),
 							'value' => ee()->config->item('deft_lang') ?: 'english'
 						)
@@ -137,7 +137,7 @@ class General extends Settings {
 					'desc' => 'date_time_fmt_desc',
 					'fields' => array(
 						'date_format' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'%n/%j/%y' => 'mm/dd/yy',
 								'%j-%n-%y' => 'dd-mm-yy',
@@ -145,7 +145,7 @@ class General extends Settings {
 							)
 						),
 						'time_format' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'24' => lang('24_hour'),
 								'12' => lang('12_hour')

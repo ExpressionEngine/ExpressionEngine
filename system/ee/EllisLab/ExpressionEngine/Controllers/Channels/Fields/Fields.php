@@ -322,7 +322,7 @@ class Fields extends AbstractChannelsController {
 					'desc' => '',
 					'fields' => array(
 						'field_type' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $fieldtype_choices,
 							'value' => $field->field_type
 						)

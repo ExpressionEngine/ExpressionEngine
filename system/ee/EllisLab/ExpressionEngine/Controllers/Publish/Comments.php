@@ -346,7 +346,7 @@ class Comments extends AbstractPublishController {
 						'desc' => 'comment_status_desc',
 						'fields' => array(
 							'status' => array(
-								'type' => 'dropdown',
+								'type' => 'select',
 								'choices' => array(
 									'o' => lang('open'),
 									'c' => lang('closed'),

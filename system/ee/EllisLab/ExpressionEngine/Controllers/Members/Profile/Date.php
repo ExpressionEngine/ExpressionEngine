@@ -60,14 +60,14 @@ class Date extends Profile {
 					'desc' => 'date_format_desc',
 					'fields' => array(
 						'date_format' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $fields['date_format']['value'],
 							'value' => $this->member->date_format
 						),
 						'time_format' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(12 => '12 hour', 24 => '24 hour'),
-							'value' => $this->member->time_format 
+							'value' => $this->member->time_format
 						)
 					)
 				),

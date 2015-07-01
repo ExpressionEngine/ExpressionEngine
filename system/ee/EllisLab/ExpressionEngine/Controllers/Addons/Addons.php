@@ -1515,7 +1515,7 @@ class Addons extends CP_Controller {
 					}
 
 					$element['fields'][$key] = array(
-						'type' => 'dropdown',
+						'type' => 'select',
 						'value' => $value,
 						'choices' => $choices
 					);

@@ -78,7 +78,7 @@ class Publishing extends Profile {
 					'desc' => 'rte_toolset_desc',
 					'fields' => array(
 						'rte_toolset_id' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								0 => 'default'
 							),

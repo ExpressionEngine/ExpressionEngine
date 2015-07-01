@@ -115,7 +115,7 @@ class Template extends AbstractDesignController {
 						'desc' => 'template_type_desc',
 						'fields' => array(
 							'template_type' => array(
-								'type' => 'dropdown',
+								'type' => 'select',
 								'choices' => $this->getTemplateTypes()
 							)
 						)
@@ -125,7 +125,7 @@ class Template extends AbstractDesignController {
 						'desc' => 'duplicate_existing_template_desc',
 						'fields' => array(
 							'template_id' => array(
-								'type' => 'dropdown',
+								'type' => 'select',
 								'choices' => $existing_templates
 							)
 						)

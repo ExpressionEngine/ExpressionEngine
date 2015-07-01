@@ -154,7 +154,7 @@ class Rte_mcp {
 						'desc' => '',
 						'fields' => array(
 							'rte_default_toolset_id' => array(
-								'type' => 'dropdown',
+								'type' => 'select',
 								'choices' => $toolset_opts
 							)
 						)

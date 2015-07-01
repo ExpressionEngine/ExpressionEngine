@@ -306,7 +306,7 @@ class Cache extends EE_Driver_Library {
 			$adapter = 'file';
 		}
 
-		$field = array('type' => 'dropdown');
+		$field = array('type' => 'select');
 
 		// Create options array fit for a dropdown
 		foreach ($this->valid_drivers as $driver)

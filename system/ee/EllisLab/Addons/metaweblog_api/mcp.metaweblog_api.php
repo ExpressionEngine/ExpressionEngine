@@ -281,7 +281,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_entry_status_desc',
 			'fields' => array(
 				'entry_status' => array(
-					'type' => 'dropdown',
+					'type' => 'select',
 					'choices' => array(
 						'null' => lang('do_not_set'),
 						'open' => lang('open'),
@@ -301,7 +301,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_channel_desc',
 			'fields' => array(
 				'channel_id' => array(
-					'type' => 'dropdown',
+					'type' => 'select',
 					'choices' => $channels
 				)
 			)
@@ -317,7 +317,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_excerpt_field_desc',
 			'fields' => array(
 				'excerpt_field_id' => array(
-					'type' => 'dropdown',
+					'type' => 'select',
 					'choices' => array(
 						'0' => lang('none'),
 					)
@@ -335,7 +335,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_content_field_desc',
 			'fields' => array(
 				'content_field_id' => array(
-					'type' => 'dropdown',
+					'type' => 'select',
 					'choices' => array(
 						'0' => lang('none'),
 					)
@@ -353,7 +353,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_more_field_desc',
 			'fields' => array(
 				'more_field_id' => array(
-					'type' => 'dropdown',
+					'type' => 'select',
 					'choices' => array(
 						'0' => lang('none'),
 					)
@@ -371,7 +371,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_keywords_field_desc',
 			'fields' => array(
 				'keywords_field_id' => array(
-					'type' => 'dropdown',
+					'type' => 'select',
 					'choices' => array(
 						'0' => lang('none'),
 					)
@@ -389,7 +389,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_upload_dir_desc',
 			'fields' => array(
 				'upload_dir' => array(
-					'type' => 'dropdown',
+					'type' => 'select',
 					'choices' => $upload_directories
 				)
 			)

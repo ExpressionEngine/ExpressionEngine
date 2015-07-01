@@ -120,7 +120,7 @@ class Pages extends Settings {
 					'desc' => 'pages_channel_desc',
 					'fields' => array(
 						'default_channel' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $channels_dropdown,
 							'value' => (int) $config['default_channel']
 						)
@@ -131,7 +131,7 @@ class Pages extends Settings {
 					'desc' => 'pages_templates_desc',
 					'fields' => array(
 						'pages_templates' => array(
-							'type' => 'multi_dropdown',
+							'type' => 'multiselect',
 							'choices' => $template_for_channel
 						)
 					)

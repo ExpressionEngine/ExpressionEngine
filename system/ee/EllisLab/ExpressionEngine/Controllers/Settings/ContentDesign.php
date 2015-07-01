@@ -68,7 +68,7 @@ class ContentDesign extends Settings {
 					'desc' => 'image_resize_protocol_desc',
 					'fields' => array(
 						'image_resize_protocol' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'gd' => lang('gd'),
 								'gd2' => lang('gd2'),

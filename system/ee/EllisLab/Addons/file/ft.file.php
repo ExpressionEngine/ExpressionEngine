@@ -507,7 +507,7 @@ CSS;
 					'desc' => 'file_ft_content_type_desc',
 					'fields' => array(
 						'field_content_type' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $this->_field_content_options(),
 							'value' => $data['field_content_type']
 						)
@@ -518,7 +518,7 @@ CSS;
 					'desc' => 'file_ft_allowed_dirs_desc',
 					'fields' => array(
 						'file_allowed_directories' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $this->_allowed_directories_options(),
 							'value' => $allowed_directories
 						)

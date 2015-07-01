@@ -141,7 +141,7 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 						}
 						$has_note = isset($field['note']);
 
-						$no_results = (in_array($field['type'], array('checkbox', 'radio', 'dropdown')) &&
+						$no_results = (in_array($field['type'], array('checkbox', 'radio', 'select')) &&
 							isset($field['no_results']) &&
 							count($field['choices']) == 0);
 						?>
@@ -201,7 +201,7 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 							<label class="choice <?php if (get_bool_from_string($value) === FALSE):?> chosen<?php endif ?> no"><input type="radio" name="<?=$field_name?>" value="n"<?php if (get_bool_from_string($value) === FALSE):?> checked="checked"<?php endif ?><?=$attrs?>> no</label>
 						<?php break;
 
-						case 'dropdown': ?>
+						case 'select': ?>
 							<?=form_dropdown($field_name, $field['choices'], $value, $attrs)?>
 						<?php break;
 
@@ -241,7 +241,7 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 </textarea>
 						<?php break;
 
-						case 'multi_dropdown': ?>
+						case 'multiselect': ?>
 							<div class="scroll-wrap">
 								<?php foreach ($field['choices'] as $field_name => $options): ?>
 									<label class="choice block chosen"><?=$options['label']?>

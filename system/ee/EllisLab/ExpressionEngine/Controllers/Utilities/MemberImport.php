@@ -71,7 +71,7 @@ class MemberImport extends Utilities {
 					'desc' => '',
 					'fields' => array(
 						'group_id' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $member_groups
 						)
 					)
@@ -81,7 +81,7 @@ class MemberImport extends Utilities {
 					'desc' => '',
 					'fields' => array(
 						'language' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => ee()->lang->language_pack_names(),
 							'value' => ee()->config->item('deft_lang') ?: 'english'
 						)
@@ -102,7 +102,7 @@ class MemberImport extends Utilities {
 					'desc' => 'mbr_datetime_fmt_desc',
 					'fields' => array(
 						'date_format' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'%n/%j/%Y' => 'mm/dd/yyyy',
 								'%j/%n/%Y' => 'dd/mm/yyyy',
@@ -111,7 +111,7 @@ class MemberImport extends Utilities {
 							)
 						),
 						'time_format' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'24' => lang('24_hour'),
 								'12' => lang('12_hour')

@@ -207,7 +207,7 @@ class Fields extends Members\Members {
 					'desc' => '',
 					'fields' => array(
 						'm_field_type' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'text'     => lang('text_input'),
 								'textarea' => lang('textarea'),
