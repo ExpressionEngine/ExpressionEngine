@@ -82,6 +82,8 @@ $lang = array(
 'extension_disabled'			=>		'Extension Disabled',
 'extensions_enabled'			=>		'Extensions Enabled',
 'extensions_disabled'			=>		'Extensions Disabled',
+'extensions_enabled_desc'		=>		'Extensions have been enabled.',
+'extensions_disabled_desc'		=>		'Extensions have been disabled.',
 'ext_enabled_short'				=>		'enabled',
 'ext_disabled_short'			=>		'disabled',
 

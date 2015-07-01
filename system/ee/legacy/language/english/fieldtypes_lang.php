@@ -5,17 +5,13 @@ $lang = array(
 'add_file'	=>
 'Add File',
 
-'remove_file' =>
-'Remove File',
+'remove_file' => 'Remove File',
 
-'file_undo_remove' =>
-'Undo Remove',
+'file_undo_remove' => 'Undo Remove',
 
-'directory_no_access' =>
-'You do not have access to the directory specified for this field',
+'directory_no_access' => 'You do not have access to the directory specified for this field',
 
-'directory' =>
-'Directory:',
+'directory' => 'Directory:',
 
 // Relationships
 'rel_ft_options'			=> 'Relationship Field Options',

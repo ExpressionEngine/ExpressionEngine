@@ -6,44 +6,31 @@ $lang = array(
 // Email
 //----------------------------
 
-'email_module_name' =>
-'Email',
+'email_module_name' => 'Email',
 
-'email_module_description' =>
-'User Email Module',
+'email_module_description' => 'User Email Module',
 
-'message_required' =>
-'Email Message is Required',
+'message_required' => 'Email Message is Required',
 
-'em_banned_from_email' =>
-'The sender email address you submitted is banned.',
+'em_banned_from_email' => 'The sender email address you submitted is banned.',
 
-'em_banned_recipient' =>
-'One or more of your recipient emails is banned.',
+'em_banned_recipient' => 'One or more of your recipient emails is banned.',
 
-'em_invalid_recipient' =>
-'One or more of your recipient emails is invalid.',
+'em_invalid_recipient' => 'One or more of your recipient emails is invalid.',
 
-'em_no_valid_recipients' =>
-'Your email had no valid recipients.',
+'em_no_valid_recipients' => 'Your email had no valid recipients.',
 
-'em_sender_required' =>
-'A valid sender email is required',
+'em_sender_required' => 'A valid sender email is required',
 
-'em_unauthorized_request' =>
-'You are not authorized to perform this action',
+'em_unauthorized_request' => 'You are not authorized to perform this action',
 
-'em_limit_exceeded' =>
-'You have exceeded the number of emails allowed to be sent per day.',
+'em_limit_exceeded' => 'You have exceeded the number of emails allowed to be sent per day.',
 
-'em_interval_warning' =>
-'You are only allowed to submit email forms every %s seconds',
+'em_interval_warning' => 'You are only allowed to submit email forms every %s seconds',
 
-'em_email_sent' =>
-'Your email message has been sent.',
+'em_email_sent' => 'Your email message has been sent.',
 
-'em_no_preview_template_specified' =>
-'The email tag does not contain the location of your preview template.',
+'em_no_preview_template_specified' => 'The email tag does not contain the location of your preview template.',
 
 'email_must_be_array' => "The email validation method must be passed an array.",
 'email_invalid_address' => "Invalid email address: %s",
