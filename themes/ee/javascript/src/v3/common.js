@@ -130,7 +130,7 @@ $(document).ready(function(){
 			// and stop propagation up to document
 
 			// Give filter text boxes focus on open
-			$(this).siblings('.sub-menu').find('input[type=text]').focus();
+			$(this).siblings('.sub-menu').find('input.autofocus').focus();
 
 			return false;
 		});

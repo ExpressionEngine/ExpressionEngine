@@ -6,9 +6,8 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Service\CP\Filter\Filter;
 use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 
@@ -83,7 +82,7 @@ class Members extends CP_Controller {
 			)
 		));
 
-		$this->base_url = new URL('members', ee()->session->session_id());
+		$this->base_url = ee('CP/URL', 'members');
 	}
 
 	// --------------------------------------------------------------------
@@ -168,12 +167,10 @@ class Members extends CP_Controller {
 
 		if ( ! empty($data['table']['data']))
 		{
-			$pagination = new Pagination(
-				$data['per_page'],
-				$data['total_rows'],
-				$page
-			);
-			$data['pagination'] = $pagination->cp_links($base_url);
+			$data['pagination'] = ee('CP/Pagination', $data['total_rows'])
+				->perPage($data['per_page'])
+				->currentPage($page)
+				->render($base_url);
 		}
 
 		// Set search results heading

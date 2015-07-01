@@ -70,7 +70,9 @@ class Table {
 		$defaults = array(
 			'wrap'		  => TRUE,
 			'sort_col'	  => NULL,
+			'sort_col_qs_var' => 'sort_col',
 			'sort_dir'	  => 'asc',
+			'sort_dir_qs_var' => 'sort_dir',
 			'limit'		  => 20,
 			'page'		  => 1,
 			'total_rows'  => 0,
@@ -129,6 +131,8 @@ class Table {
 	 */
 	public static function fromGlobals($config = array())
 	{
+		$sort_col = (isset($config['sort_col_qs_var'])) ? $config['sort_col_qs_var'] : 'sort_col';
+		$sort_dir = (isset($config['sort_dir_qs_var'])) ? $config['sort_dir_qs_var'] : 'sort_dir';
 		// We'll only place in here what needs overriding
 		$defaults = array();
 
@@ -143,14 +147,14 @@ class Table {
 			$defaults['search'] = $_GET['search'];
 		}
 
-		if (isset($_GET['sort_col']))
+		if (isset($_GET[$sort_col]))
 		{
-			$defaults['sort_col'] = $_GET['sort_col'];
+			$defaults['sort_col'] = $_GET[$sort_col];
 		}
 
-		if (isset($_GET['sort_dir']))
+		if (isset($_GET[$sort_dir]))
 		{
-			$defaults['sort_dir'] = $_GET['sort_dir'];
+			$defaults['sort_dir'] = $_GET[$sort_dir];
 		}
 
 		if (isset($_GET['page']) && $_GET['page'] > 0)
@@ -180,7 +184,8 @@ class Table {
 	 * It's an array of column names, with optional settings for each
 	 * column. Right now, the current options are
 	 *
-	 * 	'encode': Whether or not run column contents through htmlspecialchars()
+	 * 	'encode': Whether or not run column contents through htmlentities(),
+	 *		helps protect against XSS
 	 *	'sort': Whether or not the column can be sortable
 	 *	'type': The type of column, derived from the constants above
 	 *
@@ -195,7 +200,7 @@ class Table {
 
 		// Default settings for columns
 		$defaults = array(
-			'encode'	=> FALSE,
+			'encode'	=> ! $this->config['grid_input'], // Default to encoding if this isn't a Grid input
 			'sort'		=> TRUE,
 			'type'		=> self::COL_TEXT
 		);
@@ -606,8 +611,8 @@ class Table {
 			}
 
 			$base_url->setQueryStringVariable('search', $this->config['search']);
-			$base_url->setQueryStringVariable('sort_col', $this->getSortCol());
-			$base_url->setQueryStringVariable('sort_dir', $this->getSortDir());
+			$base_url->setQueryStringVariable($this->config['sort_col_qs_var'], $this->getSortCol());
+			$base_url->setQueryStringVariable($this->config['sort_dir_qs_var'], $this->getSortDir());
 		}
 
 		return array(
@@ -624,7 +629,9 @@ class Table {
 			'sortable'		=> $this->config['sortable'],
 			'subheadings'	=> ($this->config['subheadings'] && empty($this->config['search'])),
 			'sort_col'		=> $this->getSortCol(),
+			'sort_col_qs_var' => $this->config['sort_col_qs_var'],
 			'sort_dir'		=> $this->getSortDir(),
+			'sort_dir_qs_var' => $this->config['sort_dir_qs_var'],
 			'columns'		=> $this->columns,
 			'data'			=> $this->data,
 			'action_buttons' => $this->action_buttons,

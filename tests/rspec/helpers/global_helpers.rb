@@ -109,8 +109,11 @@ def reset_db
   $db.query(IO.read('sql/truncate_db.sql'))
   clear_db_result
 
-  $db.query(IO.read('sql/database.sql'))
-  clear_db_result
+  # Installer should not drop in database
+  unless ENV.key?('installer')
+    $db.query(IO.read('sql/database.sql'))
+    clear_db_result
+  end
 
   # Reset sessions
   Capybara.reset_sessions!

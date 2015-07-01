@@ -5,9 +5,8 @@ namespace EllisLab\ExpressionEngine\Controllers\Members\Profile;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -42,7 +41,7 @@ class Quicklinks extends Profile {
 		ee()->load->model('member_model');
 		$this->quicklinks = ee()->member_model->get_member_quicklinks($this->member->member_id);
 		$this->index_url = $this->base_url;
-		$this->base_url = new URL($this->base_url, ee()->session->session_id(), $this->query_string);
+		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
 	}
 
 	/**
@@ -114,7 +113,7 @@ class Quicklinks extends Profile {
 	 */
 	public function create()
 	{
-		$this->base_url = new URL($this->index_url . '/create', ee()->session->session_id(), $this->query_string);
+		$this->base_url = ee('CP/URL', $this->index_url . '/create', $this->query_string);
 
 		$vars = array(
 			'cp_page_title' => lang('create_quick_link'),
@@ -144,7 +143,7 @@ class Quicklinks extends Profile {
 	 */
 	public function edit($id)
 	{
-		$this->base_url = new URL($this->index_url . "/edit/$id", ee()->session->session_id(), $this->query_string);
+		$this->base_url = ee('CP/URL', $this->index_url . "/edit/$id", $this->query_string);
 
 		$vars = array(
 			'cp_page_title' => lang('edit_quick_link'),

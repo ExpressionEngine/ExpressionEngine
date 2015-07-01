@@ -2,9 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Controllers\Publish;
 
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Controllers\Publish\AbstractPublish as AbstractPublishController;
 
 /**
@@ -45,7 +44,7 @@ class Edit extends AbstractPublishController {
 		}
 
 		$vars = array();
-		$base_url = new URL('publish/edit', ee()->session->session_id());
+		$base_url = ee('CP/URL', 'publish/edit');
 		$channel = NULL;
 		$channel_name = '';
 
@@ -260,8 +259,10 @@ class Edit extends AbstractPublishController {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 
-		$pagination = new Pagination($filter_values['perpage'], $count, $page);
-		$vars['pagination'] = $pagination->cp_links($base_url);
+		$vars['pagination'] = ee('CP/Pagination', $count)
+			->perPage($filter_values['perpage'])
+			->currentPage($page)
+			->render($base_url);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('entry') . ': <b>### ' . lang('entries') . '</b>');
 		ee()->cp->add_js_script(array(
@@ -333,6 +334,14 @@ class Edit extends AbstractPublishController {
 		if (count($_POST))
 		{
 			$entry->set($_POST);
+
+			// if categories are not in POST, then they've unchecked everything
+			// and we need to clear them out
+			if ( ! isset($_POST['categories']))
+			{
+				$entry->Categories = NULL;
+			}
+
 			$result = $entry->validate();
 
 			if (AJAX_REQUEST)

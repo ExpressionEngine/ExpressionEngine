@@ -628,9 +628,9 @@ class Cp {
 				break;
 			case 'file':		$file = PATH_THEMES.'javascript/'.$folder.'/'.$name.'.js';
 				break;
-			case 'package':		$file = PATH_ADDONS.$name.'/javascript/'.$name.'.js';
+			case 'package':		$file = PATH_THIRD.$name.'/javascript/'.$name.'.js';
 				break;
-			case 'fp_module':	$file = PATH_MOD.$name.'/javascript/'.$name.'.js';
+			case 'fp_module':	$file = PATH_ADDONS.$name.'/javascript/'.$name.'.js';
 				break;
 			default:
 				return 0;
@@ -845,7 +845,7 @@ class Cp {
 	public function load_package_js($file)
 	{
 		$current_top_path = ee()->load->first_package_path();
-		$package = trim(str_replace(array(PATH_ADDONS, 'views'), '', $current_top_path), '/');
+		$package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
 		ee()->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'package='.$package.AMP.'file='.$file, TRUE);
 	}
 
@@ -862,7 +862,7 @@ class Cp {
 	public function load_package_css($file)
 	{
 		$current_top_path = ee()->load->first_package_path();
-		$package = trim(str_replace(array(PATH_ADDONS, 'views'), '', $current_top_path), '/');
+		$package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
 		$url = BASE.AMP.'C=css'.AMP.'M=third_party'.AMP.'package='.$package.AMP.'theme='.$this->cp_theme.AMP.'file='.$file;
 
 		$this->add_to_head('<link type="text/css" rel="stylesheet" href="'.$url.'" />');

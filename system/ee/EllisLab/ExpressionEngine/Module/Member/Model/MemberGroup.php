@@ -93,6 +93,49 @@ class MemberGroup extends Model {
 			'pivot' => array(
 				'table' => 'channel_member_groups'
 			)
+		),
+		'AssignedTemplateGroups' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'TemplateGroup',
+			'pivot' => array(
+				'table' => 'template_member_groups',
+				'left'  => 'group_id',
+				'right' => 'template_group_id'
+			)
+		),
+		'AssignedModules' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'Module',
+			'pivot' => array(
+				'table' => 'module_member_groups'
+			)
+		),
+		'NoTemplateAccess' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'Template',
+			'pivot' => array(
+				'table' => 'template_no_access',
+				'right'  => 'template_id',
+				'left' => 'member_group'
+			)
+		),
+		'NoUploadAccess' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'UploadDestination',
+			'pivot' => array(
+				'table' => 'upload_no_access',
+				'left' => 'member_group',
+				'right' => 'upload_id'
+			)
+		),
+		'NoStatusAccess' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'Status',
+			'pivot' => array(
+				'table' => 'status_no_access',
+				'left' => 'member_group',
+				'right' => 'status_id'
+			)
 		)
 	);
 

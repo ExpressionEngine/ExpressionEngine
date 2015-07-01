@@ -1,33 +1,45 @@
-<?php extend_template('default') ?>
+<?php extend_template('default-nav'); ?>
 
-<?php if ($fields->num_rows() > 0):
+<div class="tbl-ctrls">
+<?=form_open($table['base_url'])?>
+	<fieldset class="tbl-search right">
+        <a class="btn tn action" href="<?=$new?>">create new</a>
+	</fieldset>
+	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
 
-	$this->table->set_heading(
-		lang('field_id'),
-		lang('fieldlabel'),
-		lang('fieldname'),
-		lang('order'),
-		'',
-		''
-	);
+	<?=ee('Alert')->getAllInlines()?>
 
-	foreach ($fields->result() as $field)
-	{
-		$this->table->add_row(
-			$field->m_field_id,
-			htmlentities($field->m_field_label, ENT_QUOTES),
-			$field->m_field_name,
-			$field->m_field_order,
-			'<a href="'.BASE.AMP.'C=members'.AMP.'M=edit_profile_field'.AMP.'m_field_id='.$field->m_field_id.'">'.lang('edit').'</a>',
-			'<a href="'.BASE.AMP.'C=members'.AMP.'M=delete_profile_field_conf'.AMP.'m_field_id='.$field->m_field_id.'">'.lang('delete').'</a>'
-		);
-	}
+	<?php if (isset($filters)) echo $filters; ?>
 
-	echo $this->table->generate();
+	<?php $this->view('_shared/table', $table); ?>
+
+	<?php if ( ! empty($pagination)) $this->view('_shared/pagination', $pagination); ?>
+
+	<?php if ( ! empty($table['data'])): ?>
+	<fieldset class="tbl-bulk-act">
+		<select name="bulk_action">
+			<option value="">-- <?=lang('with_selected')?> --</option>
+			<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
+		</select>
+		<button class="btn submit" data-conditional-modal="confirm-trigger" data-confirm-ajax="<?=cp_url('/members/confirm')?>"><?=lang('submit')?></button>
+	</fieldset>
+	<?php endif; ?>
+<?=form_close()?>
+</div>
+
+<?php $this->startOrAppendBlock('modals'); ?>
+
+<?php
+
+$modal_vars = array(
+	'name'		=> 'modal-confirm-remove',
+	'form_url'	=> $form_url,
+	'hidden'	=> array(
+		'bulk_action'	=> 'remove'
+	)
+);
+
+$this->ee_view('_shared/modal_confirm_remove', $modal_vars);
 ?>
 
-	<p class="shun"><a href="<?=BASE.AMP.'C=members'.AMP.'M=edit_field_order'?>"><?=lang('edit_field_order')?></a></p>
-
-<?php else:?>
-	<p class="notice"><?=lang('no_custom_profile_fields')?></p>
-<?php endif;?>
+<?php $this->endBlock(); ?>

@@ -69,8 +69,6 @@ class Perpage extends Filter {
 			$total => sprintf(lang($all_lang_key), $total)
 		);
 		$this->default_value = 20;
-
-		$this->display_value = $this->value();
 	}
 
 	/**
@@ -117,7 +115,7 @@ class Perpage extends Filter {
 	 */
 	public function render(ViewFactory $view, URL $url)
 	{
-		$value = $this->display_value;
+		$value = $this->value();
 		if (is_null($value))
 		{
 			$value = (array_key_exists($this->value(), $this->options)) ?

@@ -5,9 +5,8 @@ namespace EllisLab\ExpressionEngine\Controllers\Members\Profile;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -41,7 +40,7 @@ class Subscriptions extends Profile {
 		parent::__construct();
 		ee()->load->library('members');
 		$this->index_url = $this->base_url;
-		$this->base_url = new URL($this->base_url, ee()->session->session_id(), $this->query_string);
+		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
 	}
 
 	/**

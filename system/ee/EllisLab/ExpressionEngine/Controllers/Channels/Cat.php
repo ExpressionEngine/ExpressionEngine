@@ -6,6 +6,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Controllers\Channels\AbstractChannels as AbstractChannelsController;
+use EllisLab\Addons\FilePicker\FilePicker as FilePicker;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -88,45 +89,53 @@ class Cat extends AbstractChannelsController {
 		$data = array();
 		foreach ($cat_groups as $group)
 		{
-			$data[] = array(
-				$group->group_id,
-				htmlentities($group->group_name, ENT_QUOTES) . ' ('.count($group->getCategories()).')',
+			$columns = array(
+				$group->getId(),
+				$group->group_name . ' ('.count($group->getCategories()).')',
 				array('toolbar_items' => array(
 					'view' => array(
-						'href' => cp_url('channels/cat/cat-list/'.$group->group_id),
+						'href' => cp_url('channels/cat/cat-list/'.$group->getId()),
 						'title' => lang('view')
 					),
 					'edit' => array(
-						'href' => cp_url('channels/cat/edit/'.$group->group_id),
+						'href' => cp_url('channels/cat/edit/'.$group->getId()),
 						'title' => lang('edit')
 					),
 					'txt-only' => array(
-						'href' => cp_url('channels/cat/field/'.$group->group_id),
+						'href' => cp_url('channels/cat/field/'.$group->getId()),
 						'title' => strtolower(lang('custom_fields')),
 						'content' => strtolower(lang('fields'))
 					)
 				)),
 				array(
 					'name' => 'cat_groups[]',
-					'value' => $group->group_id,
+					'value' => $group->getId(),
 					'data'	=> array(
 						'confirm' => lang('category_group') . ': <b>' . htmlentities($group->group_name, ENT_QUOTES) . '</b>'
 					)
 				)
 			);
+
+			$attrs = array();
+			if (ee()->session->flashdata('highlight_id') == $group->getId())
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs' => $attrs,
+				'columns' => $columns
+			);
 		}
 
 		$table->setData($data);
 
-		$base_url = new CP\URL('channels/cat', ee()->session->session_id());
-		$vars['table'] = $table->viewData($base_url);
+		$vars['table'] = $table->viewData(ee('CP/URL', 'channels/cat'));
 
-		$pagination = new CP\Pagination(
-			$vars['table']['limit'],
-			$total_rows,
-			$vars['table']['page']
-		);
-		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
+		$vars['pagination'] = ee('CP/Pagination', $total_rows)
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($vars['table']['base_url']);
 
 		ee()->view->cp_page_title = lang('category_groups');
 
@@ -256,7 +265,7 @@ class Cat extends AbstractChannelsController {
 					'desc' => 'html_formatting_desc',
 					'fields' => array(
 						'field_html_formatting' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'all'	=> lang('allow_all_html'),
 								'safe'	=> lang('allow_safe_html'),
@@ -316,7 +325,7 @@ class Cat extends AbstractChannelsController {
 					'desc' => 'exclude_group_form_desc',
 					'fields' => array(
 						'exclude_group' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								0 => lang('none'),
 								1 => lang('channels'),
@@ -348,13 +357,15 @@ class Cat extends AbstractChannelsController {
 		{
 			$group_id = $this->saveCategoryGroup($group_id);
 
+			ee()->session->set_flashdata('highlight_id', $group_id);
+
 			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('category_group_saved'))
 				->addToBody(lang('category_group_saved_desc'))
 				->defer();
 
-			ee()->functions->redirect(cp_url('channels/cat/edit/'.$group_id));
+			ee()->functions->redirect(cp_url('channels/cat'));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -666,7 +677,7 @@ class Cat extends AbstractChannelsController {
 			$parent_id_options[$cat[0]] = $indent.$cat[1];
 		}
 
-		// TODO: file field stuff?
+		ee()->load->library('file_field');
 
 		$vars['sections'] = array(
 			array(
@@ -682,7 +693,7 @@ class Cat extends AbstractChannelsController {
 					)
 				),
 				array(
-					'title' => 'url_title',
+					'title' => 'url_title_lc',
 					'desc' => 'url_title_desc',
 					'fields' => array(
 						'cat_url_title' => array(
@@ -706,10 +717,19 @@ class Cat extends AbstractChannelsController {
 					'title' => 'image',
 					'desc' => 'cat_image_desc',
 					'fields' => array(
-						'cat_image' => array(
+						'cat_image_select' => array(
 							'type' => 'radio',
-							'value' => $category->cat_image,
-							'choices' => array()
+							'choices' => array(
+								'none' => 'cat_image_none',
+								'choose' => 'cat_image_choose'
+							),
+							'value' => 'none'
+						),
+						'cat_image' => array(
+							'type' => 'image',
+							'id' => 'cat_image',
+							'image' => ee()->file_field->parse_string($category->cat_image),
+							'value' => $category->cat_image
 						)
 					)
 				),
@@ -718,7 +738,7 @@ class Cat extends AbstractChannelsController {
 					'desc' => 'parent_category_desc',
 					'fields' => array(
 						'parent_id' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'value' => $category->parent_id,
 							'choices' => $parent_id_options
 						)
@@ -727,36 +747,15 @@ class Cat extends AbstractChannelsController {
 			)
 		);
 
-		$display = $category->getDisplay();
-
-		ee()->load->model('addons_model');
-		$plugins = ee()->addons_model->get_plugin_formatting();
-
-		$custom_format_options['none'] = 'None';
-		foreach ($plugins as $k=>$v)
+		foreach ($category->getDisplay()->getFields() as $field)
 		{
-			$custom_format_options[$k] = $v;
-		}
-
-		foreach ($display->getFields() as $field)
-		{
-			$form = $field->getForm();
-
-			if (get_bool_from_string($field->get('field_show_fmt')))
-			{
-				$form .= form_dropdown(
-					str_replace('_id_', '_ft_', $field->getName()),
-					$custom_format_options,
-					$field->getFormat()
-				);
-			}
 			$vars['sections']['custom_fields'][] = array(
 				'title' => $field->getLabel(),
 				'desc' => '',
 				'fields' => array(
 					$field->getName() => array(
 						'type' => 'html',
-						'content' => $form,
+						'content' => $field->getForm(),
 						'required' => $field->isRequired(),
 					)
 				)
@@ -787,13 +786,15 @@ class Cat extends AbstractChannelsController {
 			{
 				$category_id = $category->save()->getId();
 
+				ee()->session->set_flashdata('highlight_id', $category_id);
+
 				ee('Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('category_saved'))
 					->addToBody(lang('category_saved_desc'))
 					->defer();
 
-				ee()->functions->redirect(cp_url('channels/cat/edit-cat/'.$group_id.'/'.$category_id));
+				ee()->functions->redirect(cp_url('channels/cat/cat-list/'.$cat_group->group_id));
 			}
 			else
 			{
@@ -810,31 +811,18 @@ class Cat extends AbstractChannelsController {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text_working = 'btn_saving';
 
+		$filepicker = new FilePicker();
+		$filepicker->inject(ee()->view);
+		ee()->cp->add_js_script('file', 'cp/channel/category_edit');
+		ee()->javascript->set_global(
+			'category_edit.filepicker_url',
+			cp_url($filepicker->controller, array('directory' => 'all', 'type' => 'img'))
+		);
+
 		ee()->cp->set_breadcrumb(cp_url('channels/cat'), lang('category_groups'));
 		ee()->cp->set_breadcrumb(cp_url('channels/cat/cat-list/'.$cat_group->group_id), $cat_group->group_name . ' &mdash; ' . lang('categories'));
 
 		ee()->cp->render('settings/form', $vars);
-	}
-
-	/**
-	 * Save routine for categories
-	 *
-	 * @param	int	$group_id		ID of category group category is (to be) in
-	 * @param	int	$category_id	ID of category to edit
-	 */
-	private function saveCategory($group_id, $category_id)
-	{
-		// -------------------------------------------
-		// 'category_save' hook.
-		//
-		if (ee()->extensions->active_hook('category_save') === TRUE)
-		{
-			ee()->extensions->call('category_save', $cat_id, $category_data);
-		}
-		//
-		// -------------------------------------------
-
-		return $category_id;
 	}
 
 	/**
@@ -857,7 +845,9 @@ class Cat extends AbstractChannelsController {
 		));
 		$table->setColumns(
 			array(
-				'col_id',
+				'col_id' => array(
+					'encode' => FALSE
+				),
 				'label',
 				'short_name_col',
 				'type',
@@ -893,7 +883,7 @@ class Cat extends AbstractChannelsController {
 		$data = array();
 		foreach ($cat_fields as $field)
 		{
-			$data[] = array(
+			$columns = array(
 				$field->getId().form_hidden('order[]', $field->getId()),
 				$field->field_label,
 				'<var>'.LD.$field->field_name.RD.'</var>',
@@ -912,12 +902,22 @@ class Cat extends AbstractChannelsController {
 					)
 				)
 			);
+
+			$attrs = array();
+			if (ee()->session->flashdata('highlight_id') == $field->getId())
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs' => $attrs,
+				'columns' => $columns
+			);
 		}
 
 		$table->setData($data);
 
-		$base_url = new CP\URL('channels/cat/field/'.$group_id, ee()->session->session_id());
-		$vars['table'] = $table->viewData($base_url);
+		$vars['table'] = $table->viewData(ee('CP/URL', 'channels/cat/field/'.$group_id));
 		$vars['group_id'] = $group_id;
 
 		ee()->cp->set_breadcrumb(cp_url('channels/cat'), lang('category_groups'));
@@ -1092,7 +1092,7 @@ class Cat extends AbstractChannelsController {
 					'desc' => '',
 					'fields' => array(
 						'field_type' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'text'     => lang('text_input'),
 								'textarea' => lang('textarea'),
@@ -1188,13 +1188,15 @@ class Cat extends AbstractChannelsController {
 			{
 				$field_id = $cat_field->save()->getId();
 
+				ee()->session->set_flashdata('highlight_id', $field_id);
+
 				ee('Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('category_field_saved'))
 					->addToBody(lang('category_field_saved_desc'))
 					->defer();
 
-				ee()->functions->redirect(cp_url('channels/cat/edit-field/' . $group_id . '/' . $field_id));
+				ee()->functions->redirect(cp_url('channels/cat/field/'.$group_id));
 			}
 			else
 			{
@@ -1219,54 +1221,6 @@ class Cat extends AbstractChannelsController {
 		));
 
 		ee()->cp->render('settings/form', $vars);
-	}
-
-	/**
-	 * Custom validator for category field name to check for duplicate
-	 * category field names
-	 *
-	 * @param	model	$name		Category field name
-	 * @param	model	$field_id	Field ID for category field
-	 * @return	bool	Valid category field name or not
-	 */
-	public function validCategoryFieldName($name, $field_id)
-	{
-		$cat_field = ee('Model')->get('CategoryField')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('field_name', $name);
-
-		if ( ! empty($field_id))
-		{
-			$cat_field->filter('field_id', '!=', $field_id);
-		}
-
-		if ($cat_field->all()->count() > 0)
-		{
-			ee()->form_validation->set_message('validCategoryFieldName', lang('duplicate_field_name'));
-			return FALSE;
-		}
-
-		return TRUE;
-	}
-
-	/**
-	 * Save routine for category fields
-	 *
-	 * @param	Model	$cat_field	Model object of category field
-	 */
-	private function saveCategoryField($cat_field)
-	{
-		$cat_field->set($_POST);
-
-		if ($cat_field->isNew())
-		{
-			$cat_field->site_id = ee()->config->item('site_id');
-			$cat_field->field_list_items = '';
-		}
-
-		$cat_field->save();
-
-		return $cat_field->getID();
 	}
 }
 // EOF

@@ -1045,6 +1045,35 @@ abstract class EE_Fieldtype {
 	{
 		return '<div class="grid_full_cell_container">'.$string.'</div>';
 	}
+
+	/**
+	 * Returns an associative array of channels with their fields
+	 *
+	 * @return array An array in the following form:
+	 *   'channel_title' => array (
+	 *     '1_1' => 'field_label'
+	 *   )
+	 */
+	public function get_channel_field_list()
+	{
+		$channels_options = array();
+		$channels = ee('Model')->get('Channel')
+			->with('CustomFields')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('channel_title', 'asc')
+			->all();
+
+		foreach ($channels as $channel)
+		{
+			$channels_options[$channel->channel_title] = array();
+
+			foreach ($channel->CustomFields as $field)
+			{
+				$channels_options[$channel->channel_title][$channel->channel_id . '_' . $field->field_id] = htmlentities($field->field_label, ENT_QUOTES, 'UTF-8');
+			}
+		}
+		return $channels_options;
+	}
 }
 // END EE_Fieldtype class
 

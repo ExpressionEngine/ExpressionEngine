@@ -50,7 +50,7 @@ class Logs extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->base_url = new CP\URL('logs', ee()->session->session_id());
+		$this->base_url = ee('CP/URL', 'logs');
 
 		// Sidebar Menu
 		$menu = array(

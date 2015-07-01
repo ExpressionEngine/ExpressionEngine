@@ -58,7 +58,7 @@ class Template extends Settings {
 					'desc' => 'site_404_desc',
 					'fields' => array(
 						'site_404' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => ee()->admin_model->get_template_list()
 						)
 					),

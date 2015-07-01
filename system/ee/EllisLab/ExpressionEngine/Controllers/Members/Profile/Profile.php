@@ -6,9 +6,8 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 
 /**
  * ExpressionEngine - by EllisLab
@@ -60,7 +59,7 @@ class Profile extends CP_Controller {
 
 		$qs = array('id' => $id);
 		$this->query_string = $qs;
-		$this->base_url = new URL('members/profile/settings', ee()->session->session_id());
+		$this->base_url = ee('CP/URL', 'members/profile/settings');
 		$this->base_url->setQueryStringVariable('id', $id);
 		$this->member = ee()->api->get('Member')->filter('member_id', $id)->first();
 

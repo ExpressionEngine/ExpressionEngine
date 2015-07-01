@@ -81,7 +81,7 @@ class Group extends AbstractDesignController {
 						'desc' => 'duplicate_group_desc',
 						'fields' => array(
 							'duplicate_group' => array(
-								'type' => 'dropdown',
+								'type' => 'select',
 								'choices' => $groups
 							)
 						)

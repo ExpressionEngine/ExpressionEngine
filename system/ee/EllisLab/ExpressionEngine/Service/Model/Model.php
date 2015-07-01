@@ -115,11 +115,11 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	 */
 	public function __get($key)
 	{
-		if (strtoupper($key[0]) == $key[0])
+		if ($key && strtoupper($key[0]) == $key[0])
 		{
 			if ($this->hasAssociation($key))
 			{
-				return $this->getAssociation($key);
+				return $this->getAssociation($key)->get();
 			}
 		}
 
@@ -134,7 +134,7 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	 */
 	public function __set($key, $value)
 	{
-		if (strtoupper($key[0]) == $key[0])
+		if ($key && strtoupper($key[0]) == $key[0])
 		{
 			if ($this->hasAssociation($key))
 			{
@@ -208,6 +208,8 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		$this->$pk = $id;
 
 		$this->_new = is_null($id);
+
+		$this->emit('setId', $id);
 
 		return $this;
 	}
@@ -342,8 +344,10 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		// clear relationships
 		foreach ($this->getAllAssociations() as $name => $assoc)
 		{
-			$assoc->clear();
-			$assoc->save();
+			if (isset($assoc))
+			{
+				$this->$name = NULL;
+			}
 		}
 
 		return $this;
@@ -596,13 +600,9 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	*/
 	public function setAssociation($name, Association $association)
 	{
-		$this->emit('beforeSetAssociation', $name, $association);
-
 		$association->setFrontend($this->getFrontend());
 
 		$this->_associations[$name] = $association;
-
-		$this->emit('afterSetAssociation', $name, $association);
 
 		return $this;
 	}
@@ -663,4 +663,9 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		return compact('name', 'values', 'related_to');
 	}
 
+
+	public function __toString()
+	{
+		return spl_object_hash($this).':'.$this->getName().':'.$this->getId();
+	}
 }

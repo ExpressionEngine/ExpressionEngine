@@ -50,9 +50,10 @@ return array(
 			return new Library\CP\URL($path, $session_id, $qs, $cp_url);
 		},
 
-		'CP/Pagination' => function($ee, $per_page, $total_count, $current_page = 1)
+		'CP/Pagination' => function($ee, $total_count)
 		{
-			return new Library\CP\Pagination($per_page, $total_count, $current_page);
+			$view = $ee->make('View')->make('_shared/pagination');
+			return new Library\CP\Pagination($total_count, $view);
 		},
 
 		'db' => function($ee)
@@ -230,6 +231,7 @@ return array(
 			// ..\Member
 			'HTMLButton' => 'Module\Member\Model\HTMLButton',
 			'Member' => 'Module\Member\Model\Member',
+			'MemberField' => 'Module\Member\Model\MemberField',
 			'MemberGroup' => 'Module\Member\Model\MemberGroup',
 
 			// ..\RichTextEditor

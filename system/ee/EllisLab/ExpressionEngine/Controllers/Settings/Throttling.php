@@ -83,7 +83,7 @@ class Throttling extends Settings {
 					'desc' => 'banishment_type_desc',
 					'fields' => array(
 						'banishment_type' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'404' => lang('banish_404'),
 								'redirect' => lang('banish_redirect'),

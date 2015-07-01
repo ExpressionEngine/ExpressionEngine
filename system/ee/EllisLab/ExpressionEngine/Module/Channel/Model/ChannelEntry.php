@@ -132,12 +132,12 @@ class ChannelEntry extends ContentModel {
 
 	public function onAfterSave()
 	{
-		$this->getAutosaves()->delete();
+		$this->Autosaves->delete();
 	}
 
 	public function onAfterDelete()
 	{
-		$this->getAutosaves()->delete();
+		$this->Autosaves->delete();
 	}
 
 	/**
@@ -148,7 +148,7 @@ class ChannelEntry extends ContentModel {
 	 */
 	public function getStructure()
 	{
-		return $this->getChannel();
+		return $this->Channel;
 	}
 
 	/**
@@ -187,23 +187,19 @@ class ChannelEntry extends ContentModel {
 	{
 		// Channels
 		$allowed_channel_ids = (ee()->session->userdata['group_id'] == 1) ? NULL : array_keys(ee()->session->userdata['assigned_channels']);
-		$channels = ee('Model')->get('Channel', $allowed_channel_ids)
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('field_group', $this->getChannel()->field_group)
-			->all();
 
-		$channel_filter_options = array();
-		foreach ($channels as $channel)
-		{
-			$channel_filter_options[$channel->channel_id] = $channel->channel_title;
-		}
+		$channel_filter_options = ee('Model')->get('Channel', $allowed_channel_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('field_group', $this->Channel->field_group)
+			->all()
+			->getDictionary('channel_id', 'channel_title');
 
 		$this->getCustomField('channel_id')->setItem('field_list_items', $channel_filter_options);
 
 		// Statuses
 		$statuses = ee('Model')->get('Status')
 			->filter('site_id', ee()->config->item('site_id'))
-			->filter('group_id', $this->getChannel()->status_group);
+			->filter('group_id', $this->Channel->status_group);
 
 		$status_options = array();
 
@@ -230,9 +226,9 @@ class ChannelEntry extends ContentModel {
 		}
 
 		// Get all members assigned to this channel
-		foreach ($this->getChannel()->getAssignedMemberGroups() as $group)
+		foreach ($this->Channel->AssignedMemberGroups as $group)
 		{
-			foreach ($group->getMembers() as $member)
+			foreach ($group->Members as $member)
 			{
 				$author_options[$member->member_id] = $member->getMemberName();
 			}
@@ -241,73 +237,82 @@ class ChannelEntry extends ContentModel {
 		$this->getCustomField('author_id')->setItem('field_list_items', $author_options);
 
 		// Categories
-		$category_group_ids = ee('Model')->get('CategoryGroup', explode('|', $this->getChannel()->cat_group))
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('exclude_group', '!=', 1)
-			->all()
-			->pluck('group_id');
+		$categories = ee('Model')->get('Category')
+			->with('CategoryGroup')
+			->filter('CategoryGroup.group_id', 'IN', explode('|', $this->Channel->cat_group))
+			->filter('CategoryGroup.site_id', ee()->config->item('site_id'))
+			->filter('Category.parent_id', 0)
+			->all();
 
-		if (empty($category_group_ids))
-		{
-			$categories = array();
-		}
-		else
-		{
-			$categories = ee('Model')->get('Category')
-				->filter('site_id', ee()->config->item('site_id'))
-				->filter('group_id', 'IN', $category_group_ids)
-				->filter('parent_id', 0)
-				->all();
-		}
+		$category_list = $this->buildCategoryList($categories);
+		$set_categories = $this->Categories->pluck('cat_name');
 
-		$category_string_override = '<div class="scroll-wrap pr">';
-		$set_categories = $this->getCategories()->pluck('cat_id');
-
-		// If this doesn't make Pascal angry I need to try harder!
-		// @TODO Make Pascal happy
-		foreach ($categories as $category)
-		{
-			$class = 'choice block';
-			$checked = '';
-			if (in_array($category->cat_id, $set_categories))
-			{
-				$class .= ' chosen';
-				$checked = ' checked="checked"';
-			}
-
-			$category_string_override .= '<label class="' . $class . '">';
-			$category_string_override .= '<input type="checkbox" name="categories[]" vlaue="' . $category->cat_id .'"' . $checked . '>' . $category->cat_name;
-			$category_string_override .= '</label>';
-
-			// Recursion would be much better
-			foreach ($category->getChildren() as $child_category)
-			{
-				$class = 'choice block child';
-				$checked = '';
-				if (in_array($child_category->cat_id, $set_categories))
-				{
-					$class .= ' chosen';
-					$checked = ' checked="checked"';
-				}
-
-				$category_string_override .= '<label class="' . $class . '">';
-				$category_string_override .= '<input type="checkbox" name="categories[]" vlaue="' . $child_category->cat_id .'"' . $checked . '>' . $child_category->cat_name;
-				$category_string_override .= '</label>';
-			}
-		}
-
-		$category_string_override .= '</div>';
-
-		$this->getCustomField('categories')->setItem('string_override', $category_string_override);
-
+		$this->getCustomField('categories')->setItem('field_list_items', $category_list);
+		$this->getCustomField('categories')->setData(implode('|', $set_categories));
 
 		// Comment expiration date
 		$this->getCustomField('comment_expiration_date')->setItem(
 			'default_offset',
-			$this->getChannel()->comment_expiration * 86400
+			$this->Channel->comment_expiration * 86400
 		);
 	}
 
+	/**
+	 * Turn the categories collection into a nested array of ids => names
+	 */
+	protected function buildCategoryList($categories)
+	{
+		$list = array();
+
+		foreach ($categories as $category)
+		{
+			$children = $category->Children;
+
+			if (count($children))
+			{
+				$list[$category->cat_id] = array(
+					'name' => $category->cat_name,
+					'children' => $this->buildCategoryList($children)
+				);
+
+				continue;
+			}
+
+			$list[$category->cat_id] = $category->cat_name;
+		}
+
+		return $list;
+	}
+
+	/**
+	 * Category setter for convenience to intercept the
+	 * 'categories' post array.
+	 */
+	public function set__categories($categories)
+	{
+		// annoyingly needed to trigger validation on the field
+		$this->setRawProperty('categories', implode('|', $categories));
+
+		if (empty($categories))
+		{
+			$this->getCustomField('categories')->setData('');
+			$this->Categories = NULL;
+			return;
+		}
+
+		$this->Categories = $this
+			->getFrontend()
+			->get('Category')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('cat_id', 'IN', $categories)
+			->all();
+
+		$this->getCustomField('categories')->setData(implode('|', $this->Categories->pluck('cat_name')));
+	}
+
+	/**
+	 * Create a list of default fields to simplify rendering
+	 */
 	protected function getDefaultFields()
 	{
 		return array(

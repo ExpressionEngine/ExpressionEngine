@@ -54,7 +54,7 @@ class Create extends Members {
 					'desc' => 'member_group_desc',
 					'fields' => array(
 						'group_id' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $choices,
 							'required' => TRUE
 						)

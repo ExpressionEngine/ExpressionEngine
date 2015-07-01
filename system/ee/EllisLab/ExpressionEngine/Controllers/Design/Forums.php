@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Design;
 
 use EllisLab\ExpressionEngine\Controllers\Design\AbstractDesign as AbstractDesignController;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 
 /**
  * ExpressionEngine - by EllisLab
@@ -66,7 +66,7 @@ class Forums extends AbstractDesignController {
 
 		$vars = array();
 
-		$base_url = new URL('design/forums/index/' . $theme, ee()->session->session_id());
+		$base_url = ee('CP/URL', 'design/forums/index/' . $theme);
 
 		$table = ee('CP/Table', array('autosort' => TRUE, 'subheadings' => TRUE));
 		$table->setColumns(

@@ -70,7 +70,7 @@ class EE_Lang {
 			oIk11bHRpcGxlIFNpdGUgTWFuYWdlciBFcnJvciAtIFNpdGUgTGltaXQgUmVhY2hlZCIpOyB9IH0="))); return;
 		}
 
-		$this->load($which, $idiom, FALSE, TRUE, PATH_ADDONS.$package.'/', $show_errors);
+		$this->load($which, $idiom, FALSE, TRUE, PATH_THIRD.$package.'/', $show_errors);
 	}
 
 	// --------------------------------------------------------------------

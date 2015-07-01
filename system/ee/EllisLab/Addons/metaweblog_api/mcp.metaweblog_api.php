@@ -1,8 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 
 /**
  * ExpressionEngine - by EllisLab
@@ -52,7 +51,7 @@ class Metaweblog_api_mcp {
 	 */
 	function index()
 	{
-		$base_url = new URL('addons/settings/metaweblog_api', ee()->session->session_id());
+		$base_url = ee('CP/URL', 'addons/settings/metaweblog_api');
 
 		$api_url = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->cp->fetch_action_id('Metaweblog_api', 'incoming');
 
@@ -116,12 +115,10 @@ class Metaweblog_api_mcp {
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
-			$pagination = new Pagination(
-				$vars['table']['limit'],
-				$vars['table']['total_rows'],
-				$vars['table']['page']
-			);
-			$vars['pagination'] = $pagination->cp_links($base_url);
+			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+				->perPage($vars['table']['limit'])
+				->currentPage($vars['table']['page'])
+				->render($base_url);
 		}
 
 		return ee()->load->view('index', $vars, TRUE);
@@ -284,7 +281,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_entry_status_desc',
 			'fields' => array(
 				'entry_status' => array(
-					'type' => 'dropdown',
+					'type' => 'select',
 					'choices' => array(
 						'null' => lang('do_not_set'),
 						'open' => lang('open'),
@@ -304,7 +301,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_channel_desc',
 			'fields' => array(
 				'channel_id' => array(
-					'type' => 'dropdown',
+					'type' => 'select',
 					'choices' => $channels
 				)
 			)
@@ -320,7 +317,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_excerpt_field_desc',
 			'fields' => array(
 				'excerpt_field_id' => array(
-					'type' => 'dropdown',
+					'type' => 'select',
 					'choices' => array(
 						'0' => lang('none'),
 					)
@@ -338,7 +335,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_content_field_desc',
 			'fields' => array(
 				'content_field_id' => array(
-					'type' => 'dropdown',
+					'type' => 'select',
 					'choices' => array(
 						'0' => lang('none'),
 					)
@@ -356,7 +353,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_more_field_desc',
 			'fields' => array(
 				'more_field_id' => array(
-					'type' => 'dropdown',
+					'type' => 'select',
 					'choices' => array(
 						'0' => lang('none'),
 					)
@@ -374,7 +371,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_keywords_field_desc',
 			'fields' => array(
 				'keywords_field_id' => array(
-					'type' => 'dropdown',
+					'type' => 'select',
 					'choices' => array(
 						'0' => lang('none'),
 					)
@@ -392,7 +389,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_upload_dir_desc',
 			'fields' => array(
 				'upload_dir' => array(
-					'type' => 'dropdown',
+					'type' => 'select',
 					'choices' => $upload_directories
 				)
 			)

@@ -56,7 +56,6 @@ DROP TABLE IF EXISTS `exp_file_dimensions`;
 DROP TABLE IF EXISTS `exp_file_categories`;
 DROP TABLE IF EXISTS `exp_fieldtypes`;
 DROP TABLE IF EXISTS `exp_field_groups`;
-DROP TABLE IF EXISTS `exp_field_formatting`;
 DROP TABLE IF EXISTS `exp_extensions`;
 DROP TABLE IF EXISTS `exp_entry_versioning`;
 DROP TABLE IF EXISTS `exp_email_tracker`;
@@ -569,14 +568,6 @@ CREATE TABLE `exp_extensions` (
   `enabled` char(1) NOT NULL DEFAULT 'y',
   PRIMARY KEY (`extension_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
-
-
-CREATE TABLE `exp_field_formatting` (
-  `formatting_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `field_id` int(10) unsigned NOT NULL,
-  `field_fmt` varchar(40) NOT NULL,
-  PRIMARY KEY (`formatting_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
 
 
 CREATE TABLE `exp_field_groups` (
@@ -1642,39 +1633,6 @@ LOCK TABLES `exp_extensions` WRITE;
 INSERT INTO `exp_extensions` (`extension_id`, `class`, `method`, `hook`, `settings`, `priority`, `version`, `enabled`) VALUES
 	(1,'Rte_ext','myaccount_nav_setup','myaccount_nav_setup','',10,'1.0.1','y'),
 	(2,'Rte_ext','cp_menu_array','cp_menu_array','',10,'1.0.1','y');
-UNLOCK TABLES;
-
-
-LOCK TABLES `exp_field_formatting` WRITE;
-INSERT INTO `exp_field_formatting` (`formatting_id`, `field_id`, `field_fmt`) VALUES
-	(1,1,'none'),
-	(2,1,'br'),
-	(3,1,'xhtml'),
-	(4,1,'markdown'),
-	(5,2,'none'),
-	(6,2,'br'),
-	(7,2,'xhtml'),
-	(8,2,'markdown'),
-	(9,3,'none'),
-	(10,3,'br'),
-	(11,3,'xhtml'),
-	(12,3,'markdown'),
-	(13,4,'none'),
-	(14,4,'br'),
-	(15,4,'xhtml'),
-	(16,4,'markdown'),
-	(17,5,'none'),
-	(18,5,'br'),
-	(19,5,'xhtml'),
-	(20,5,'markdown'),
-	(21,6,'none'),
-	(22,6,'br'),
-	(23,6,'xhtml'),
-	(24,6,'markdown'),
-	(25,7,'none'),
-	(26,7,'br'),
-	(27,7,'xhtml'),
-	(28,7,'markdown');
 UNLOCK TABLES;
 
 

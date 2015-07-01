@@ -107,8 +107,7 @@ class Textarea_ft extends EE_Fieldtype {
 
 			$format_options = array(
 				'field_show_smileys',
-				'field_show_file_selector',
-				'field_show_fmt',
+				'field_show_file_selector'
 			);
 
 			foreach ($format_options as $option)
@@ -127,29 +126,8 @@ class Textarea_ft extends EE_Fieldtype {
 			if (isset($this->settings['field_show_fmt'])
 				&& $this->settings['field_show_fmt'] == 'y')
 			{
-				// @TODO I should be shot for using ee()->db -sb
-				ee()->db->select('field_fmt');
-				ee()->db->where('field_id', $this->field_id);
-				ee()->db->order_by('field_fmt');
-				$query = ee()->db->get('field_formatting');
-
-				if ($query->num_rows() > 0)
-				{
-					foreach ($query->result_array() as $row)
-					{
-						$name = ucwords(str_replace('_', ' ', $row['field_fmt']));
-
-						if ($name == 'Br')
-						{
-							$name = lang('auto_br');
-						}
-						elseif ($name == 'Xhtml')
-						{
-							$name = lang('xhtml');
-						}
-						$format_options[$row['field_fmt']] = $name;
-					}
-				}
+				ee()->load->model('addons_model');
+				$format_options = ee()->addons_model->get_plugin_formatting(TRUE);
 			}
 
 			ee()->cp->get_installed_modules();
@@ -246,13 +224,7 @@ class Textarea_ft extends EE_Fieldtype {
 	function display_settings($data)
 	{
 		ee()->load->model('addons_model');
-		$plugins = ee()->addons_model->get_plugin_formatting();
-
-		$custom_format_options['none'] = 'None';
-		foreach ($plugins as $k=>$v)
-		{
-			$custom_format_options[$k] = $v;
-		}
+		$format_options = ee()->addons_model->get_plugin_formatting(TRUE);
 
 		$settings = array(
 			array(
@@ -270,8 +242,8 @@ class Textarea_ft extends EE_Fieldtype {
 				'desc' => 'field_fmt_desc',
 				'fields' => array(
 					'field_fmt' => array(
-						'type' => 'dropdown',
-						'choices' => $custom_format_options,
+						'type' => 'select',
+						'choices' => $format_options,
 						'value' => $data['field_fmt'],
 					)
 				)
@@ -291,7 +263,7 @@ class Textarea_ft extends EE_Fieldtype {
 				'desc' => 'field_text_direction_desc',
 				'fields' => array(
 					'field_text_direction' => array(
-						'type' => 'dropdown',
+						'type' => 'select',
 						'choices' => array(
 							'ltr' => lang('field_text_direction_ltr'),
 							'rtl' => lang('field_text_direction_rtl')
@@ -303,27 +275,44 @@ class Textarea_ft extends EE_Fieldtype {
 		);
 
 		// Return a subset of the text settings for category content type
-		if ($this->content_type() == 'category')
+		if ($this->content_type() == 'category' || $this->content_type() == 'member')
 		{
 			return $settings;
 		}
 
 		// Construct the rest of the settings form for Channel...
-
-		$prefix = 'textarea';
-
-		$field_rows	= ($data['field_ta_rows'] == '') ? 6 : $data['field_ta_rows'];
-
-		ee()->table->add_row(
-			lang('textarea_rows', 'field_ta_rows'),
-			form_input(array('id'=>'field_ta_rows','name'=>'field_ta_rows', 'size'=>4,'value'=>set_value('field_ta_rows', $field_rows)))
+		$settings[] = array(
+			'title' => 'field_tools',
+			'desc' => 'field_tools_desc',
+			'fields' => array(
+				'field_show_formatting_btns' => array(
+					'type' => 'checkbox',
+					'scalar' => TRUE,
+					'choices' => array(
+						'y' => lang('show_formatting_btns'),
+					),
+					'value' => isset($data['field_show_formatting_btns']) ? $data['field_show_formatting_btns'] : 'n'
+				),
+				'field_show_smileys' => array(
+					'type' => 'checkbox',
+					'scalar' => TRUE,
+					'choices' => array(
+						'y' => lang('show_smileys'),
+					),
+					'value' => isset($data['field_show_smileys']) ? $data['field_show_smileys'] : 'n'
+				),
+				'field_show_file_selector' => array(
+					'type' => 'checkbox',
+					'scalar' => TRUE,
+					'choices' => array(
+						'y' => lang('show_file_selector')
+					),
+					'value' => isset($data['field_show_file_selector']) ? $data['field_show_file_selector'] : 'n'
+				)
+			)
 		);
 
-		$this->field_formatting_row($data, $prefix);
-		$this->text_direction_row($data, $prefix);
-		$this->field_show_formatting_btns_row($data, $prefix);
-		$this->field_show_smileys_row($data, $prefix);
-		$this->field_show_file_selector_row($data, $prefix);
+		return array('field_options' => $settings);
 	}
 
 	// --------------------------------------------------------------------

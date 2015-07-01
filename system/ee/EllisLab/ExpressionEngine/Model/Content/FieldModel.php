@@ -15,9 +15,6 @@ abstract class FieldModel extends Model {
 
 	protected $_facade;
 
-	// One property everyone needs to declare is the fieldtype name
-	protected $field_type;
-
 	/**
 	 * Return the storing table
 	 */
@@ -33,17 +30,19 @@ abstract class FieldModel extends Model {
 	 */
 	public function getField($override = array())
 	{
-		if ( ! isset($this->field_type))
+		$field_type = $this->getFieldType();
+
+		if (empty($field_type))
 		{
 			throw new \Exception('Cannot get field of unknown type.');
 		}
 
-		if ( ! isset($this->_facade) || $this->_facade->getType() != $this->field_type)
+		if ( ! isset($this->_facade) || $this->_facade->getType() != $this->getFieldType())
 		{
 			$values = array_merge($this->getValues(), $override);
 
 			$this->_facade = new FieldFacade($this->getId(), $values);
-			$this->_facade->setContentType($this->getStructure()->getContentType());
+			$this->_facade->setContentType($this->getContentType());
 		}
 
 		return $this->_facade;
@@ -56,7 +55,12 @@ abstract class FieldModel extends Model {
 
 	public function getSettingsValues()
 	{
-		return array();
+		return $this->getValues();
+	}
+
+	protected function getContentType()
+	{
+		return $this->getStructure()->getContentType();
 	}
 
 	public function set(array $data = array())
@@ -137,11 +141,23 @@ abstract class FieldModel extends Model {
 	 */
 	protected function getFieldtypeInstance($field_type = NULL, $changed = array())
 	{
-		$field_type = $field_type ?: $this->field_type;
+		$field_type = $field_type ?: $this->getFieldType();
 		$values = array_merge($this->getValues(), $changed);
 
 		$facade = new FieldFacade($this->getId(), $values);
 		return $facade->getNativeField();
+	}
+
+	/**
+	 * Simple getter for field type, override if your field type property has a 
+	 * different name.
+	 * 
+	 * @access protected
+	 * @return string The field type.
+	 */
+	protected function getFieldType()
+	{
+		return $this->field_type;
 	}
 
 	/**
@@ -240,7 +256,11 @@ abstract class FieldModel extends Model {
 		$data_table = $this->getDataTable();
 
 		ee()->load->dbforge();
-		ee()->dbforge->drop_column($columns, $column);
+
+		foreach ($columns as $column)
+		{
+			ee()->dbforge->drop_column($data_table, $column);
+		}
 	}
 
 	/**

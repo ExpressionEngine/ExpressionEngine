@@ -4,6 +4,7 @@ $lang = array(
 
 /* Sidebar Menu */
 'all_addons'					=>		'All Add-Ons',
+'third_party_addons'			=>		'Third Party Add-Ons',
 'show_all_addons'				=>		'All %d Add-Ons',
 'manage_extensions'				=>		'Manage Extensions',
 'manage_addon_extensions'		=>		'Manage Add-on Extensions',
@@ -55,8 +56,11 @@ $lang = array(
 'default_map'					=>		'Default Map',
 'manual_override'				=>		'Manual Override',
 'latitude'						=>		'Latitude',
+'latitude_desc'					=>		'',
 'longitude'						=>		'Longitude',
+'longitude_desc'				=>		'',
 'zoom'							=>		'Zoom',
+'zoom_desc'						=>		'',
 
 // 2.x
 

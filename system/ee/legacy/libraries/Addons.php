@@ -75,18 +75,11 @@ class EE_Addons {
 				'rte_tools'		=> array()
 			);
 
-			if (($map = directory_map(PATH_ADDONS, 2)) !== FALSE)
+			foreach (array(PATH_THIRD, PATH_ADDONS, PATH_RTE) as $path)
 			{
-				$this->package_list($map);
-
-			}
-
-			// Run through extensions, modules, fieldtypes and rte_tools
-			foreach (array('extensions', 'modules', 'fieldtypes', 'rte_tools') as $val)
-			{
-				if (($map = directory_map(APPPATH.$val.'/', 2)) !== FALSE)
+				if (($map = directory_map($path, 2)) !== FALSE)
 				{
-					$this->package_list($map, $val, TRUE);
+					$this->package_list($map);
 
 				}
 			}
@@ -119,7 +112,7 @@ class EE_Addons {
 
 			$abbr = $type_ident[$type];
 
-			$root_path = ($abbr == 'mcp') ? PATH_MOD : constant('PATH_'.strtoupper($abbr));
+			$root_path = ($abbr == 'mcp') ? PATH_ADDONS : constant('PATH_'.strtoupper($abbr));
 
 			$list = get_filenames($root_path);
 
@@ -219,7 +212,7 @@ class EE_Addons {
 
 						// Plugin classes don't have a suffix
 						$class = ($ident == 'pi') ? ucfirst($name) : ucfirst($name).'_'.$ident;
-						$path = ($native) ? APPPATH.$type.$pkg_name.'/' : PATH_ADDONS.$pkg_name.'/';
+						$path = ($native) ? APPPATH.$type.$pkg_name.'/' : PATH_THIRD.$pkg_name.'/';
 						$author = ($native) ? 'native' : 'third_party';
 
 						$this->_map[$addon_type][$name] = array(

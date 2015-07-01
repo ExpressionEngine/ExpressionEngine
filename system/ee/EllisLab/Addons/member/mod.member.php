@@ -157,7 +157,6 @@ class Member {
 		ee()->lang->loadfile('myaccount');
 		ee()->lang->loadfile('member');
 		ee()->functions->template_type = 'webpage';
-		ee()->db->cache_off();
 		$this->trigger = ee()->config->item('profile_trigger');
 	}
 
@@ -370,7 +369,7 @@ class Member {
 
 		if (in_array($function, array('upload_photo', 'upload_avatar', 'upload_signature_image', '_upload_image')))
 		{
-			require_once PATH_MOD.'member/mod.member_images.php';
+			require_once PATH_ADDONS.'member/mod.member_images.php';
 
 			$MI = new Member_images();
 
@@ -452,7 +451,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_MOD.'member/mod.member_settings.php';
+			require PATH_ADDONS.'member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -501,7 +500,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_MOD.'member/mod.member_settings.php';
+			require PATH_ADDONS.'member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -523,7 +522,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_MOD.'member/mod.member_settings.php';
+			require PATH_ADDONS.'member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -545,7 +544,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_auth'))
 		{
-			require PATH_MOD.'member/mod.member_auth.php';
+			require PATH_ADDONS.'member/mod.member_auth.php';
 		}
 
 		$MA = new Member_auth();
@@ -567,7 +566,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_MOD.'member/mod.member_settings.php';
+			require PATH_ADDONS.'member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -589,7 +588,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_MOD.'member/mod.member_settings.php';
+			require PATH_ADDONS.'member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -611,7 +610,7 @@ class Member {
 	{
 	 	if ( ! class_exists('Member_settings'))
 		{
-			require PATH_MOD.'member/mod.member_settings.php';
+			require PATH_ADDONS.'member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -633,7 +632,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_MOD.'member/mod.member_settings.php';
+			require PATH_ADDONS.'member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -655,7 +654,7 @@ class Member {
 	{
 	 	if ( ! class_exists('Member_settings'))
 		{
-			require PATH_MOD.'member/mod.member_settings.php';
+			require PATH_ADDONS.'member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -677,7 +676,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_MOD.'member/mod.member_settings.php';
+			require PATH_ADDONS.'member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -699,7 +698,7 @@ class Member {
 	{
 	 	if ( ! class_exists('Member_settings'))
 		{
-			require PATH_MOD.'member/mod.member_settings.php';
+			require PATH_ADDONS.'member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -721,7 +720,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_MOD.'member/mod.member_settings.php';
+			require PATH_ADDONS.'member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -743,7 +742,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_MOD.'member/mod.member_settings.php';
+			require PATH_ADDONS.'member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -765,7 +764,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_MOD.'member/mod.member_settings.php';
+			require PATH_ADDONS.'member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -787,7 +786,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_images'))
 		{
-			require PATH_MOD.'member/mod.member_images.php';
+			require PATH_ADDONS.'member/mod.member_images.php';
 		}
 
 		$MI = new Member_images();
@@ -809,7 +808,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_images'))
 		{
-			require PATH_MOD.'member/mod.member_images.php';
+			require PATH_ADDONS.'member/mod.member_images.php';
 		}
 
 		$MI = new Member_images();
@@ -831,7 +830,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_images'))
 		{
-			require PATH_MOD.'member/mod.member_images.php';
+			require PATH_ADDONS.'member/mod.member_images.php';
 		}
 
 		$MI = new Member_images();
@@ -853,7 +852,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_images'))
 		{
-			require PATH_MOD.'member/mod.member_images.php';
+			require PATH_ADDONS.'member/mod.member_images.php';
 		}
 
 		$MI = new Member_images();
@@ -875,7 +874,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_images'))
 		{
-			require PATH_MOD.'member/mod.member_images.php';
+			require PATH_ADDONS.'member/mod.member_images.php';
 		}
 
 		$MI = new Member_images();
@@ -897,7 +896,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_images'))
 		{
-			require PATH_MOD.'member/mod.member_images.php';
+			require PATH_ADDONS.'member/mod.member_images.php';
 		}
 
 		$MI = new Member_images();
@@ -919,7 +918,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_MOD.'member/mod.member_settings.php';
+			require PATH_ADDONS.'member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -941,7 +940,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_MOD.'member/mod.member_settings.php';
+			require PATH_ADDONS.'member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -963,7 +962,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_auth'))
 		{
-			require PATH_MOD.'member/mod.member_auth.php';
+			require PATH_ADDONS.'member/mod.member_auth.php';
 		}
 
 		$MA = new Member_auth();
@@ -985,7 +984,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_auth'))
 		{
-			require PATH_MOD.'member/mod.member_auth.php';
+			require PATH_ADDONS.'member/mod.member_auth.php';
 		}
 
 		$MA = new Member_auth();
@@ -1007,7 +1006,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_auth'))
 		{
-			require PATH_MOD.'member/mod.member_auth.php';
+			require PATH_ADDONS.'member/mod.member_auth.php';
 		}
 
 		$MA = new Member_auth();
@@ -1029,7 +1028,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_auth'))
 		{
-			require PATH_MOD.'member/mod.member_auth.php';
+			require PATH_ADDONS.'member/mod.member_auth.php';
 		}
 
 		$MA = new Member_auth();
@@ -1051,7 +1050,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_auth'))
 		{
-			require PATH_MOD.'member/mod.member_auth.php';
+			require PATH_ADDONS.'member/mod.member_auth.php';
 		}
 
 		$MA = new Member_auth();
@@ -1073,7 +1072,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_auth'))
 		{
-			require PATH_MOD.'member/mod.member_auth.php';
+			require PATH_ADDONS.'member/mod.member_auth.php';
 		}
 
 		$MA = new Member_auth();
@@ -1095,7 +1094,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_subscriptions'))
 		{
-			require PATH_MOD.'member/mod.member_subscriptions.php';
+			require PATH_ADDONS.'member/mod.member_subscriptions.php';
 		}
 
 		$MS = new Member_subscriptions();
@@ -1117,7 +1116,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_subscriptions'))
 		{
-			require PATH_MOD.'member/mod.member_subscriptions.php';
+			require PATH_ADDONS.'member/mod.member_subscriptions.php';
 		}
 
 		$MS = new Member_subscriptions();
@@ -1139,7 +1138,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_MOD.'member/mod.member_settings.php';
+			require PATH_ADDONS.'member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -1161,7 +1160,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_MOD.'member/mod.member_settings.php';
+			require PATH_ADDONS.'member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -1183,7 +1182,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_MOD.'member/mod.member_settings.php';
+			require PATH_ADDONS.'member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -1206,7 +1205,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_MOD.'member/mod.member_settings.php';
+			require PATH_ADDONS.'member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -1229,7 +1228,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_register'))
 		{
-			require PATH_MOD.'member/mod.member_register.php';
+			require PATH_ADDONS.'member/mod.member_register.php';
 		}
 
 		$MR = new Member_register();
@@ -1251,7 +1250,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_register'))
 		{
-			require PATH_MOD.'member/mod.member_register.php';
+			require PATH_ADDONS.'member/mod.member_register.php';
 		}
 
 		$MR = new Member_register();
@@ -1273,7 +1272,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_register'))
 		{
-			require PATH_MOD.'member/mod.member_register.php';
+			require PATH_ADDONS.'member/mod.member_register.php';
 		}
 
 		$MR = new Member_register();
@@ -1538,7 +1537,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_MOD.'member/mod.member_settings.php';
+			require PATH_ADDONS.'member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -1560,7 +1559,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_settings'))
 		{
-			require PATH_MOD.'member/mod.member_settings.php';
+			require PATH_ADDONS.'member/mod.member_settings.php';
 		}
 
 		$MS = new Member_settings();
@@ -1582,7 +1581,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_memberlist'))
 		{
-			require PATH_MOD.'member/mod.member_memberlist.php';
+			require PATH_ADDONS.'member/mod.member_memberlist.php';
 		}
 
 		$MM = new Member_memberlist();
@@ -1604,7 +1603,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_memberlist'))
 		{
-			require PATH_MOD.'member/mod.member_memberlist.php';
+			require PATH_ADDONS.'member/mod.member_memberlist.php';
 		}
 
 		$MM = new Member_memberlist();
@@ -1626,7 +1625,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_memberlist'))
 		{
-			require PATH_MOD.'member/mod.member_memberlist.php';
+			require PATH_ADDONS.'member/mod.member_memberlist.php';
 		}
 
 		$MM = new Member_memberlist();
@@ -1648,7 +1647,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_memberlist'))
 		{
-			require PATH_MOD.'member/mod.member_memberlist.php';
+			require PATH_ADDONS.'member/mod.member_memberlist.php';
 		}
 
 		$MM = new Member_memberlist();
@@ -1670,7 +1669,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_memberlist'))
 		{
-			require PATH_MOD.'member/mod.member_memberlist.php';
+			require PATH_ADDONS.'member/mod.member_memberlist.php';
 		}
 
 		$MM = new Member_memberlist();
@@ -1692,7 +1691,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_memberlist'))
 		{
-			require PATH_MOD.'member/mod.member_memberlist.php';
+			require PATH_ADDONS.'member/mod.member_memberlist.php';
 		}
 
 		$MM = new Member_memberlist();
@@ -1714,7 +1713,7 @@ class Member {
 	{
 		if ( ! class_exists('Member_memberlist'))
 		{
-			require PATH_MOD.'member/mod.member_memberlist.php';
+			require PATH_ADDONS.'member/mod.member_memberlist.php';
 		}
 
 		$MM = new Member_memberlist();
@@ -1739,7 +1738,7 @@ class Member {
 			return ee()->output->fatal_error(ee()->lang->line('must_be_logged_in'));
 		}
 
-		$class_path = PATH_MOD.'emoticon/emoticons.php';
+		$class_path = PATH_ADDONS.'emoticon/emoticons.php';
 
 		if ( ! is_file($class_path) OR ! @include_once($class_path))
 		{

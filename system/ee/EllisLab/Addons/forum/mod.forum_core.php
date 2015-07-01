@@ -981,14 +981,6 @@ class Forum_Core extends Forum {
 	 */
 	function _update_post_stats($forum_id)
 	{
-		$cache_off = FALSE;
-
-		if (ee()->db->cache_on === TRUE)
-		{
-			ee()->db->cache_off();
-			$cache_off = TRUE;
-		}
-
 		$data = array(
 						'forum_last_post_id' 		=> 0,
 						'forum_last_post_type'		=> 'p',
@@ -1063,11 +1055,6 @@ class Forum_Core extends Forum {
 				);
 		ee()->db->where('member_id', ee()->session->userdata('member_id'));
 		ee()->db->update('members', $d);
-
-		if ($cache_off)
-		{
-			ee()->db->cache_on();
-		}
 	}
 
 	// --------------------------------------------------------------------
@@ -1077,25 +1064,12 @@ class Forum_Core extends Forum {
 	 */
 	function _update_global_stats()
 	{
-		$cache_off = FALSE;
-
-		if (ee()->db->cache_on === TRUE)
-		{
-			ee()->db->cache_off();
-			$cache_off = TRUE;
-		}
-
 		$total_topics = ee()->db->count_all('forum_topics');
 		$total_posts  = ee()->db->count_all('forum_posts');
 
 		ee()->db->update('stats', array(
 										'total_forum_topics'	=> $total_topics,
 										'total_forum_posts'		=> $total_posts));
-
-		if ($cache_off)
-		{
-			ee()->db->cache_on();
-		}
 	}
 
 	// --------------------------------------------------------------------
@@ -1105,14 +1079,6 @@ class Forum_Core extends Forum {
 	 */
 	function _update_topic_stats($topic_id)
 	{
-		$cache_off = FALSE;
-
-		if (ee()->db->cache_on === TRUE)
-		{
-			ee()->db->cache_off();
-			$cache_off = TRUE;
-		}
-
 		// Update the thread count and last post date
 		ee()->db->select('COUNT(*) as count, MAX(post_date) as last_post');
 		$query = ee()->db->get_where('forum_posts', array('topic_id' => $topic_id));
@@ -1162,11 +1128,6 @@ class Forum_Core extends Forum {
 			ee()->db->where('topic_id', $topic_id);
 			ee()->db->update('forum_topics');
 		}
-
-		if ($cache_off)
-		{
-			ee()->db->cache_on();
-		}
 	}
 
 	// --------------------------------------------------------------------
@@ -1176,14 +1137,6 @@ class Forum_Core extends Forum {
 	 */
 	function _update_member_stats($member_ids = array())
 	{
-		$cache_off = FALSE;
-
-		if (ee()->db->cache_on === TRUE)
-		{
-			ee()->db->cache_off();
-			$cache_off = TRUE;
-		}
-
 		if ( ! is_array($member_ids))
 		{
 			$member_ids[$member_ids] = $member_ids;
@@ -1200,11 +1153,6 @@ class Forum_Core extends Forum {
 			$total_forum_posts = $res->row('count');
 
 			ee()->db->query(ee()->db->update_string('exp_members', array('total_forum_topics' => $total_forum_topics, 'total_forum_posts' => $total_forum_posts), "member_id = '{$member_id}'"));
-		}
-
-		if ($cache_off)
-		{
-			ee()->db->cache_on();
 		}
 	}
 
@@ -10290,7 +10238,7 @@ class Forum_Core extends Forum {
 			return ee()->output->fatal_error(lang('must_be_logged_in'));
 		}
 
-		$class_path = PATH_MOD.'emoticon/emoticons.php';
+		$class_path = PATH_ADDONS.'emoticon/emoticons.php';
 
 		if ( ! is_file($class_path) OR ! @include_once($class_path))
 		{

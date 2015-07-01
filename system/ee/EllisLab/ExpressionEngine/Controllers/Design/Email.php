@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Design;
 
 use EllisLab\ExpressionEngine\Controllers\Design\AbstractDesign as AbstractDesignController;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 
 /**
  * ExpressionEngine - by EllisLab
@@ -57,7 +57,7 @@ class Email extends AbstractDesignController {
 
 		$vars = array();
 
-		$base_url = new URL('design/email/', ee()->session->session_id());
+		$base_url = ee('CP/URL', 'design/email/');
 
 		$table = ee('CP/Table', array('autosort' => TRUE, 'subheadings' => TRUE));
 		$table->setColumns(

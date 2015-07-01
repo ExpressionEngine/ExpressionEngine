@@ -93,7 +93,7 @@ class DebugOutput extends Settings {
 					'desc' => 'redirect_method_desc',
 					'fields' => array(
 						'redirect_method' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'redirect' => lang('redirect_method_opt_location'),
 								'refresh' => lang('redirect_method_opt_refresh')

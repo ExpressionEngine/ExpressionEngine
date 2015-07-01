@@ -4,7 +4,6 @@ namespace EllisLab\ExpressionEngine\Controllers\Logs;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Service\CP\Filter\FilterFactory;
 use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 
@@ -60,8 +59,8 @@ class Throttle extends Logs {
 		$this->base_url->path = 'logs/throttle';
 		ee()->view->cp_page_title = lang('view_throttle_log');
 
-		$logs   = array();
-		$links  = array();
+		$logs = array();
+		$pagination = '';
 		$throttling_disabled = TRUE;
 
 		if (ee()->config->item('enable_throttling') == 'y')
@@ -122,13 +121,15 @@ class Throttle extends Logs {
 				->offset($offset)
 				->all();
 
-			$pagination = new Pagination($this->params['perpage'], $count, $page);
-			$links = $pagination->cp_links($this->base_url);
+			$pagination = ee('CP/Pagination', $count)
+				->perPage($this->params['perpage'])
+				->currentPage($page)
+				->render($this->base_url);
 		}
 
 		$vars = array(
 			'logs' => $logs,
-			'pagination' => $links,
+			'pagination' => $pagination,
 			'disabled' => $throttling_disabled,
 			'form_url' => $this->base_url->compile(),
 		);

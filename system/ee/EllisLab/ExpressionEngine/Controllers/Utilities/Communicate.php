@@ -4,8 +4,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Utilities;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-use EllisLab\ExpressionEngine\Library\CP\URL;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
+
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Model\EmailCache;
 
@@ -750,11 +749,12 @@ class Communicate extends Utilities {
 
 		$table->setData($data);
 
-		$base_url = new URL('utilities/communicate/sent', ee()->session->session_id());
+		$base_url = ee('CP/URL', 'utilities/communicate/sent');
 		$vars['table'] = $table->viewData($base_url);
 
-		$pagination = new Pagination(20, $count, $page);
-		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
+		$vars['pagination'] = ee('CP/Pagination', $count)
+			->currentPage($page)
+			->render($vars['table']['base_url']);
 
 		ee()->view->cp_page_title = lang('view_email_cache');
 

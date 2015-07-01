@@ -52,8 +52,8 @@ if ($wrap): ?>
 								$url = clone $base_url;
 								$arrow_dir = ($sort_col == $label) ? $sort_dir : 'desc';
 								$link_dir = ($arrow_dir == 'asc') ? 'desc' : 'asc';
-								$url->setQueryStringVariable('sort_col', $label);
-								$url->setQueryStringVariable('sort_dir', $link_dir);
+								$url->setQueryStringVariable($sort_col_qs_var, $label);
+								$url->setQueryStringVariable($sort_dir_qs_var, $link_dir);
 								?>
 								<a href="<?=$url?>" class="ico sort <?=$arrow_dir?> right"></a>
 							<?php endif ?>
@@ -93,7 +93,7 @@ if ($wrap): ?>
 						<?php endif ?>
 						<?php foreach ($row['columns'] as $column): ?>
 							<?php if ($column['encode'] == TRUE): ?>
-								<td><?=htmlspecialchars($column['content'])?></td>
+								<td><?=htmlentities($column['content'], ENT_QUOTES)?></td>
 							<?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
 								<td>
 									<?=ee()->load->view('_shared/toolbar', $column, TRUE)?>

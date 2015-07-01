@@ -4,9 +4,8 @@ namespace EllisLab\ExpressionEngine\Controllers\Files;
 
 use ZipArchive;
 use EllisLab\ExpressionEngine\Controllers\Files\AbstractFiles as AbstractFilesController;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
 
@@ -39,7 +38,7 @@ class Files extends AbstractFilesController {
 	{
 		$this->handleBulkActions(cp_url('files', ee()->cp->get_url_state()));
 
-		$base_url = new URL('files', ee()->session->session_id());
+		$base_url = ee('CP/URL', 'files');
 
 		$search_terms = ee()->input->get_post('search');
 		if ($search_terms)
@@ -65,16 +64,10 @@ class Files extends AbstractFilesController {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 
-		if ( ! empty($vars['table']['data']))
-		{
-			// Paginate!
-			$pagination = new Pagination(
-				$vars['table']['limit'],
-				$vars['table']['total_rows'],
-				$vars['table']['page']
-			);
-			$vars['pagination'] = $pagination->cp_links($base_url);
-		}
+		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($base_url);
 
 		$upload_destinations = ee('Model')->get('UploadDestination')
 			->fields('id', 'name')
@@ -140,7 +133,7 @@ class Files extends AbstractFilesController {
 
 		$this->handleBulkActions(cp_url('files/directory/' . $id, ee()->cp->get_url_state()));
 
-		$base_url = new URL('files/directory/' . $id, ee()->session->session_id());
+		$base_url = ee('CP/URL', 'files/directory/' . $id);
 
 		$filters = ee('Filter')
 			->add('Perpage', $dir->getFiles()->count(), 'show_all_files');
@@ -157,16 +150,10 @@ class Files extends AbstractFilesController {
 		$vars['form_url'] = $vars['table']['base_url'];
 		$vars['dir_id'] = $id;
 
-		if ( ! empty($vars['table']['data']))
-		{
-			// Paginate!
-			$pagination = new Pagination(
-				$vars['table']['limit'],
-				$vars['table']['total_rows'],
-				$vars['table']['page']
-			);
-			$vars['pagination'] = $pagination->cp_links($base_url);
-		}
+		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($base_url);
 
 		ee()->javascript->set_global('file_view_url', cp_url('files/file/view/###'));
 		ee()->javascript->set_global('lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>');

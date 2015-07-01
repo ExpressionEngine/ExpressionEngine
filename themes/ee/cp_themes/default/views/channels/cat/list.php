@@ -8,14 +8,25 @@
 		<h1><?=$cp_page_title?></h1>
 		<?=ee('Alert')->getAllInlines()?>
 		<div class="tbl-list-wrap">
-			<div class="tbl-list-ctrl">
-				<label class="ctrl-all"><span>select all</span> <input type="checkbox"></label>
-			</div>
+			<?php if (count($categories->children()) != 0): ?>
+				<div class="tbl-list-ctrl">
+					<label class="ctrl-all"><span>select all</span> <input type="checkbox"></label>
+				</div>
+			<?php endif ?>
 			<div class="nestable">
 				<ul class="tbl-list">
 					<?php foreach ($categories->children() as $category): ?>
 						<?php $this->view('channels/cat/_category', array('category' => $category)); ?>
 					<?php endforeach ?>
+					<?php if (count($categories->children()) == 0): ?>
+						<li>
+							<div class="tbl-row no-results">
+								<div class="none">
+									<p><?=lang('categories_not_found')?> <a class="btn action" href="<?=cp_url('channels/cat/create-cat/'.$cat_group->group_id)?>"><?=lang('create_category_btn')?></a></p>
+								</div>
+							</div>
+						</li>
+					<?php endif ?>
 				</ul>
 			</div>
 		</div>

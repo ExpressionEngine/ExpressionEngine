@@ -181,7 +181,7 @@ class InjectionContainer implements ServiceProvider {
 
 		if ( ! isset($this->registry[$name]))
 		{
-			throw new \RuntimeException('Attempt to access unregistered service ' . $name . ' in the DIC.');
+			throw new \RuntimeException('Dependency Injection: Unregistered service "' . $name . '"');
 		}
 		else
 		{

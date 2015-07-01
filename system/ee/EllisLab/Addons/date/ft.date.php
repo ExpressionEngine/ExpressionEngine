@@ -388,11 +388,7 @@ class Date_ft extends EE_Fieldtype {
 				$localize = $date[1];
 			}
 
-			return ee()->localize->format_date(
-				$params['format'],
-				$date[0],
-				$localize
-			);
+			return ee()->TMPL->process_date($date[0], $params, FALSE, $localize);
 		}
 
 		return $date[0];

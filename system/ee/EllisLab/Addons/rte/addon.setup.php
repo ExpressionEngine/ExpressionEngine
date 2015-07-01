@@ -3,7 +3,7 @@
 return array(
 	'author'      => 'EllisLab',
 	'author_url'  => 'http://ellislab.com/',
-	'name'        => 'Rte',
+	'name'        => 'Rich Text Editor',
 	'description' => '',
 	'version'     => '1.0.1',
 	'namespace'   => 'EllisLab\Addons\Rte',

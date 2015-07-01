@@ -211,7 +211,8 @@ class Validator {
 				//
 				// This means we have an incorrect optional value. Accordingly,
 				// empty values are ok (because optional) anything else is not.
-				if (is_string($value) && trim($value) !== '')
+				if (is_string($value) && trim($value) !== '' ||
+					(is_array($value) && ! empty($value)))
 				{
 					$result->addFailed($key, $rule);
 				}
@@ -280,7 +281,7 @@ class Validator {
 
 		if (isset($this->custom[$name]))
 		{
-			$object = $this->custom[$name];
+			$object = clone $this->custom[$name];
 		}
 		else
 		{

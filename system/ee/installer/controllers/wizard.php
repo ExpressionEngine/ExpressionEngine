@@ -597,7 +597,7 @@ class Wizard extends CI_Controller {
 			array(
 				'field' => 'password',
 				'label' => 'lang:password',
-				'rules' => 'required|valid_password[username]|max_length['.PASSWORD_MAX_LENGTH.']'
+				'rules' => 'required|valid_password[username]'
 			),
 			array(
 				'field' => 'email_address',
@@ -1704,7 +1704,6 @@ class Wizard extends CI_Controller {
 			'captcha_rand'              => 'y',
 			'captcha_require_members'   => 'n',
 			'require_captcha'           => 'n',
-			'enable_db_caching'         => 'n',
 			'enable_sql_caching'        => 'n',
 			'force_query_string'        => 'n',
 			'show_profiler'             => 'n',
@@ -1762,7 +1761,6 @@ class Wizard extends CI_Controller {
 			'new_member_notification'   => 'n',
 			'mbr_notification_emails'   => '',
 			'require_terms_of_service'  => 'y',
-			'use_membership_captcha'    => 'n',
 			'default_member_group'      => '5',
 			'profile_trigger'           => 'member',
 			'member_theme'              => 'default',
@@ -1864,7 +1862,6 @@ class Wizard extends CI_Controller {
 			'captcha_rand',
 			'captcha_require_members',
 			'require_captcha',
-			'enable_db_caching',
 			'enable_sql_caching',
 			'force_query_string',
 			'show_profiler',
@@ -2218,7 +2215,7 @@ class Wizard extends CI_Controller {
 			}
 			else
 			{
-				$path = PATH_ADDONS.$module.'/';
+				$path = PATH_THIRD.$module.'/';
 			}
 
 			if (file_exists($path.'upd.'.$module.'.php'))

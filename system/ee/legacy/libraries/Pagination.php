@@ -559,23 +559,6 @@ class Pagination_object {
 			}
 
 			// -------------------------------------------
-			// 'channel_module_fetch_pagination_data' hook.
-			//  - Works with the 'channel_module_create_pagination' hook
-			//  - Developers, if you want to modify the $this object remember
-			//	to use a reference on function call.
-			//
-				if (ee()->extensions->active_hook('channel_module_fetch_pagination_data') === TRUE)
-				{
-					ee()->load->library('logger');
-					ee()->logger->deprecated_hook('channel_module_fetch_pagination_data', '2.8', 'pagination_fetch_data');
-
-					ee()->extensions->universal_call('channel_module_fetch_pagination_data', $this);
-					if (ee()->extensions->end_script === TRUE) return;
-				}
-			//
-			// -------------------------------------------
-
-			// -------------------------------------------
 			// 'pagination_fetch_data' hook.
 			//  - Works with the 'create_pagination' hook
 			//  - Developers, if you want to modify the $this object remember
@@ -631,23 +614,6 @@ class Pagination_object {
 	{
 		$this->total_items = $total_items;
 		$this->per_page = $per_page;
-
-		// -------------------------------------------
-		// 'channel_module_create_pagination' hook.
-		//  - Rewrite the pagination function in the Channel module
-		//  - Could be used to expand the kind of pagination available
-		//  - Paginate via field length, for example
-		//
-			if (ee()->extensions->active_hook('channel_module_create_pagination') === TRUE)
-			{
-				ee()->load->library('logger');
-				ee()->logger->deprecated_hook('channel_module_create_pagination', '2.8', 'pagination_create');
-
-				ee()->extensions->universal_call('channel_module_create_pagination', $this, $this->total_items);
-				if (ee()->extensions->end_script === TRUE) return;
-			}
-		//
-		// -------------------------------------------
 
 		// -------------------------------------------
 		// 'pagination_create' hook.

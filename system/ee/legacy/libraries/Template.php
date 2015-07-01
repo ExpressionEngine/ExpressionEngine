@@ -1339,11 +1339,11 @@ class EE_Template {
 			{
 				if (in_array($plugin ,ee()->core->native_plugins))
 				{
-					require_once PATH_PI."{$plugin}/pi.{$plugin}.php";
+					require_once PATH_ADDONS."{$plugin}/pi.{$plugin}.php";
 				}
 				else
 				{
-					require_once PATH_ADDONS."{$plugin}/pi.{$plugin}.php";
+					require_once PATH_THIRD."{$plugin}/pi.{$plugin}.php";
 				}
 			}
 		}
@@ -1355,11 +1355,11 @@ class EE_Template {
 			{
 				if (in_array($module, ee()->core->native_modules))
 				{
-					require_once PATH_MOD."{$module}/mod.{$module}.php";
+					require_once PATH_ADDONS."{$module}/mod.{$module}.php";
 				}
 				else
 				{
-					require_once PATH_ADDONS."{$module}/mod.{$module}.php";
+					require_once PATH_THIRD."{$module}/mod.{$module}.php";
 				}
 			}
 		}
@@ -1533,7 +1533,7 @@ class EE_Template {
 
 				if ( ! in_array($this->tag_data[$i]['class'], ee()->core->native_plugins))
 				{
-					$package_path = in_array($this->tag_data[$i]['class'], ee()->core->native_modules) ? PATH_MOD : PATH_ADDONS;
+					$package_path = in_array($this->tag_data[$i]['class'], ee()->core->native_modules) ? PATH_ADDONS : PATH_THIRD;
 					$package_path .= strtolower($this->tag_data[$i]['class'].'/');
 
 					ee()->load->add_package_path($package_path, FALSE);
@@ -1962,13 +1962,13 @@ class EE_Template {
 			$cache_path .= ee()->config->item('site_short_name') . DIRECTORY_SEPARATOR;
 			$cache_path .= 'page_cache' . DIRECTORY_SEPARATOR;
 
-			try
+			if (file_exists($cache_path))
 			{
 				$fi = new FilesystemIterator($cache_path, FilesystemIterator::SKIP_DOTS);
 			}
-			catch (Exception $e)
+			else
 			{
-				return $this->log_item(" - End Page Cache Garbage Collection - " . $e->getMessage());
+				return $this->log_item(" - End Page Cache Garbage Collection - Page cache directory not found");
 			}
 
 			// Count files in the directory
@@ -2882,7 +2882,7 @@ class EE_Template {
 		$ext_len = strlen('.php');
 
 		// first get first party modules
-		if (($map = directory_map(PATH_MOD, TRUE)) !== FALSE)
+		if (($map = directory_map(PATH_ADDONS, TRUE)) !== FALSE)
 		{
 			foreach ($map as $file)
 			{
@@ -3232,7 +3232,7 @@ class EE_Template {
 
 				if ( ! class_exists($class))
 				{
-					require PATH_MOD.$class.'/mod.'.$class.'.php';
+					require PATH_ADDONS.$class.'/mod.'.$class.'.php';
 				}
 
 				$this->tagdata = $match[3][$i];
@@ -3271,7 +3271,7 @@ class EE_Template {
 			{
 				if ( ! class_exists('Channel'))
 				{
-					require PATH_MOD.'channel/mod.channel.php';
+					require PATH_ADDONS.'channel/mod.channel.php';
 				}
 
 				$this->tagdata = $match[2][$i];

@@ -83,6 +83,9 @@ $lang = array(
 'layout' =>
 'Layout',
 
+'layouts' =>
+'Layouts',
+
 'channel_form_layouts' =>
 '%s &ndash; Form Layouts',
 
@@ -597,8 +600,14 @@ $lang = array(
 'group_name_desc' =>
 'Descriptive name of this category group.',
 
+'categories_not_found' =>
+'Zero <b>category groups</b> found',
+
 'create_category' =>
 'Create Category',
+
+'create_category_btn' =>
+'Create New Category',
 
 'edit_category' =>
 'Edit Category',
@@ -662,6 +671,12 @@ $lang = array(
 
 'category_group_not_saved_desc' =>
 'We were unable to save your category group, please review and fix errors below.',
+
+'cat_image_none' =>
+'None <i>&mdash; no image</i>',
+
+'cat_image_choose' =>
+'Choose from directory',
 
 'parent_category' =>
 'Parent category',

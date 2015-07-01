@@ -520,61 +520,131 @@ class Relationship_ft extends EE_Fieldtype {
 	public function display_settings($data)
 	{
 		ee()->lang->loadfile('fieldtypes');
+		ee()->load->library('Relationships_ft_cp');
+		$util = ee()->relationships_ft_cp;
 
 		$form = $this->_form();
 		$form->populate($data);
+		$values = $form->values();
 
-		ee()->table->set_heading(array(
-			'data' => lang('rel_ft_options'),
-			'colspan' => 2
-		));
+		// var_dump($data, $form->values()); die();
 
-		$this->_row(
-			'<strong>'.lang('rel_ft_configure').'</strong><br><i class="instruction_text">'.lang('rel_ft_configure_subtext').'</i>'
+		$settings = array(
+			array(
+				'title' => 'rel_ft_channels',
+				'desc' => 'rel_ft_channels_desc',
+				'fields' => array(
+					'relationship_channels' => array(
+						'type' => 'checkbox',
+						'wrap' => TRUE,
+						'choices' => $util->all_channels(),
+						'value' => $values['channels']
+					)
+				)
+			),
+			array(
+				'title' => 'rel_ft_include',
+				'desc' => 'rel_ft_include_desc',
+				'fields' => array(
+					'relationship_expired' => array(
+						'type' => 'checkbox',
+						'scalar' => TRUE,
+						'choices' => array(
+							'1' => lang('rel_ft_include_expired')
+						),
+						'value' => $values['expired']
+					),
+					'relationship_future' => array(
+						'type' => 'checkbox',
+						'scalar' => TRUE,
+						'choices' => array(
+ 							'1' => lang('rel_ft_include_future')
+						),
+						'value' => $values['future']
+					)
+				)
+			),
+			array(
+				'title' => 'rel_ft_categories',
+				'desc' => 'rel_ft_categories_desc',
+				'fields' => array(
+					'relationship_categories' => array(
+						'type' => 'checkbox',
+						'wrap' => TRUE,
+						'choices' => $util->all_categories(),
+						'value' => $values['categories']
+					)
+				)
+			),
+			array(
+				'title' => 'rel_ft_authors',
+				'desc' => 'rel_ft_authors_desc',
+				'fields' => array(
+					'relationship_authors' => array(
+						'type' => 'checkbox',
+						'wrap' => TRUE,
+						'choices' => $util->all_authors(),
+						'value' => $values['authors']
+					)
+				)
+			),
+			array(
+				'title' => 'rel_ft_statuses',
+				'desc' => 'rel_ft_statuses_desc',
+				'fields' => array(
+					'relationship_statuses' => array(
+						'type' => 'checkbox',
+						'wrap' => TRUE,
+						'choices' => $util->all_statuses(),
+						'value' => $values['statuses']
+					)
+				)
+			),
+			array(
+				'title' => 'rel_ft_limit',
+				'desc' => 'rel_ft_limit_desc',
+				'fields' => array(
+					'limit' => array(
+						'type' => 'text',
+						'value' => $values['limit']
+					)
+				)
+			),
+			array(
+				'title' => 'rel_ft_order',
+				'desc' => 'rel_ft_order_desc',
+				'fields' => array(
+					'relationship_order_field' => array(
+						'type' => 'select',
+						'choices' => array(
+							'title' 	 => lang('rel_ft_order_title'),
+							'entry_date' => lang('rel_ft_order_date')
+						),
+						'value' => $values['order_field']
+					),
+					'relationship_order_dir' => array(
+						'type' => 'select',
+						'choices' => array(
+							'asc' => lang('rel_ft_order_ascending'),
+							'desc'	=> lang('rel_ft_order_descending'),
+						),
+						'value' => $values['order_dir']
+					)
+				)
+			),
+			array(
+				'title' => 'rel_ft_allow_multi',
+				'desc' => 'rel_ft_allow_multi_desc',
+				'fields' => array(
+					'relationship_allow_multiple' => array(
+						'type' => 'yes_no',
+						'value' => $values['allow_multiple']
+					)
+				)
+			)
 		);
 
-		$this->_row(
-			lang('rel_ft_channels'),
-			$form->multiselect('channels', 'style="min-width: 225px; height: 140px;"'),
-			'top'
-		);
-
-		$this->_row(
-			lang('rel_ft_include'),
-			'<label>'.$form->checkbox('expired').' '.lang('rel_ft_include_expired').'</label>'.
-				NBS.NBS.' <label>'.$form->checkbox('future').' '.lang('rel_ft_include_future').'</label>'
-		);
-		$this->_row(
-			lang('rel_ft_categories'),
-			$form->multiselect('categories', 'style="min-width: 225px; height: 140px;"'),
-			'top'
-		);
-
-		$this->_row(
-			lang('rel_ft_authors'),
-			$form->multiselect('authors', 'style="min-width: 225px; height: 57px;"'),
-			'top'
-		);
-		$this->_row(
-			lang('rel_ft_statuses'),
-			$form->multiselect('statuses', 'style="min-width: 225px; height: 43px;"'),
-			'top'
-		);
-		$this->_row(
-			lang('rel_ft_limit_left'),
-			$form->input('limit', 'class="center" style="width: 55px;"').NBS.
-				' <strong>'.lang('rel_ft_limit_right').'</strong> <i class="instruction_text">('.lang('rel_ft_limit_subtext').')</i>'
-		);
-		$this->_row(
-			lang('rel_ft_order'),
-			$form->dropdown('order_field').' &nbsp; <strong>'.lang('rel_ft_order_in').'</strong> &nbsp; '.$form->dropdown('order_dir')
-		);
-		$this->_row(
-			lang('rel_ft_allow_multi'),
-			'<label>'.$form->checkbox('allow_multiple').' '.lang('yes').' </label> <i class="instruction_text">('.lang('rel_ft_allow_multi_subtext').')</i>'
-		);
-
-		return ee()->table->generate();
+		return array('field_options' => $settings);
 	}
 
 	// --------------------------------------------------------------------
@@ -669,37 +739,6 @@ class Relationship_ft extends EE_Fieldtype {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Table row helper
-	 *
-	 * Help simplify the form building and enforces a strict layout. If
-	 * you think this table needs to look different, go bug James.
-	 *
-	 * @param	left cell content
-	 * @param	right cell content
-	 * @param	vertical alignment of left column
-	 *
-	 * @return	void - adds a row to the EE table class
-	 */
-	protected function _row($cell1, $cell2 = '', $valign = 'center')
-	{
-		if ( ! $cell2)
-		{
-			ee()->table->add_row(
-				array('data' => $cell1, 'colspan' => 2)
-			);
-		}
-		else
-		{
-			ee()->table->add_row(
-				array('data' => '<strong>'.$cell1.'</strong>', 'width' => '170px', 'valign' => $valign),
-				array('data' => $cell2, 'class' => 'id')
-			);
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Save Settings
 	 *
 	 * Save the settings page. Populates the defaults, adds the user
@@ -744,16 +783,16 @@ class Relationship_ft extends EE_Fieldtype {
 		$util = ee()->relationships_ft_cp;
 
 		$field_empty_values = array(
-			'channels'		=> array(),
+			'channels'		=> '--',
 			'expired'		=> 0,
 			'future'		=> 0,
-			'categories'	=> array(),
-			'authors'		=> array(),
-			'statuses'		=> array(),
+			'categories'	=> '--',
+			'authors'		=> '--',
+			'statuses'		=> '--',
 			'limit'			=> 100,
 			'order_field'	=> 'title',
 			'order_dir'		=> 'asc',
-			'allow_multiple'	=> 0
+			'allow_multiple'	=> 'n'
 		);
 
 		$field_options = array(

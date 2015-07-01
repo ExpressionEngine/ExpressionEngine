@@ -89,7 +89,7 @@ class Relationship implements Mixin {
 		if ($this->scope->hasAssociation($name))
 		{
 			$assoc = $this->scope->getAssociation($name);
-			return array($assoc, $action);
+			return array($assoc, $name, $action);
 		}
 	}
 
@@ -100,15 +100,31 @@ class Relationship implements Mixin {
 	 * @param Mixed $args Additional arguments to pass to the action
 	 * @return Action result or current scope
 	 */
-	public function runAssociationAction($action, $args)
+	public function runAssociationAction($which, $args)
 	{
-		$result = call_user_func_array($action, $args);
+		list($assoc, $name, $action) = $which;
 
-		if ($action[1] == 'has' || $action[1] == 'get' || $action[1] == 'create')
+		switch ($action)
 		{
-			return $result;
+			case 'get':
+				return $this->scope->$name;
+			case 'fill':
+				return $assoc->fill($args[0]);
+			case 'set':
+				$this->scope->$name = $args[0];
+				return $this->scope;
+			case 'add':
+				$which = $this->scope->$name;
+				$which[] = $args[0];
+				return $this->scope;
+			case 'remove':
+				return call_user_func_array(array($assoc, 'remove'), $args);
+			case 'create':
+				throw new \Exception('Can no longer create relationships, just create the model directly and assign.');
+			case 'delete':
+				throw new \Exception('Can no longer delete relationships, just delete the model directly.');
 		}
 
-		return $this->scope;
+		throw new \Exception('Illegal Relationship action: '.$action);
 	}
 }

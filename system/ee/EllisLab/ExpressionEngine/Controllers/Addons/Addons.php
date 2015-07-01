@@ -5,9 +5,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Addons;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -57,10 +55,11 @@ class Addons extends CP_Controller {
 		// Add in any submitted search phrase
 		ee()->view->search_value = ee()->input->get_post('search');
 
-		$this->base_url = new URL('addons', ee()->session->session_id());
+		$this->base_url = ee('CP/URL', 'addons');
 
 		ee()->load->library('addons');
 		ee()->load->helper(array('file', 'directory'));
+		ee()->legacy_api->instantiate('channel_fields');
 	}
 
 	// --------------------------------------------------------------------
@@ -73,8 +72,25 @@ class Addons extends CP_Controller {
 	 */
 	private function filters($total, $developers)
 	{
+		// First Party Add-on Filters
+
 		// Status
-		$status = ee('Filter')->make('filter_by_status', 'filter_by_status', array(
+		$status = ee('Filter')->make('filter_by_first_status', 'filter_by_status', array(
+			'installed'   => strtolower(lang('installed')),
+			'uninstalled' => strtolower(lang('uninstalled')),
+			'updates'     => strtolower(lang('needs_updates'))
+		));
+		$status->disableCustomValue();
+
+		$first_filters = ee('Filter')
+			->add($status)
+			->add('Perpage', $total['first'], 'show_all_addons')
+				->withName('first_perpage');
+
+		// Third Party Add-on Filters
+
+		// Status
+		$status = ee('Filter')->make('filter_by_third_status', 'filter_by_status', array(
 			'installed'   => strtolower(lang('installed')),
 			'uninstalled' => strtolower(lang('uninstalled')),
 			'updates'     => strtolower(lang('needs_updates'))
@@ -90,13 +106,37 @@ class Addons extends CP_Controller {
 		$developer = ee('Filter')->make('filter_by_developer', 'developer', $developer_options);
 		$developer->disableCustomValue();
 
-		$filters = ee('Filter')
+		$third_filters = ee('Filter')
 			->add($status)
 			->add($developer)
-			->add('Perpage', $total, 'show_all_addons');
+			->add('Perpage', $total['third'], 'show_all_addons')
+				->withName('third_perpage');
 
-		ee()->view->filters = $filters->render($this->base_url);
-		$this->params = $filters->values();
+		// When filtering the first party table keep the third party filter values
+		$filter_base_url['first'] = clone $this->base_url;
+		$filter_base_url['first']->addQueryStringVariables($third_filters->values());
+
+		// Retain the third party page
+		if (ee()->input->get('third_page'))
+		{
+			$filter_base_url['first']->setQueryStringVariable('third_page', ee()->input->get('third_page'));
+		}
+
+		// When filtering the third party table keep the first party filter values
+		$filter_base_url['third'] = clone $this->base_url;
+		$filter_base_url['third']->addQueryStringVariables($first_filters->values());
+
+		// Retain the third party page
+		if (ee()->input->get('first_page'))
+		{
+			$filter_base_url['third']->setQueryStringVariable('first_page', ee()->input->get('first_page'));
+		}
+
+		ee()->view->filters = array(
+			'first' => $first_filters->render($filter_base_url['first']),
+			'third' => $third_filters->render($filter_base_url['third'])
+		);
+		$this->params = array_merge($first_filters->values(), $third_filters->values());
 		$this->base_url->addQueryStringVariables($this->params);
 	}
 
@@ -128,158 +168,215 @@ class Addons extends CP_Controller {
 		}
 
 		ee()->view->cp_page_title = lang('addon_manager');
-		ee()->view->cp_heading = lang('all_addons');
+		ee()->view->cp_heading = array(
+			'first' => lang('addons'),
+			'third' => lang('third_party_addons')
+		);
 
-		$vars = array();
+		$vars = array(
+			'pagination' => array(
+				'first' => '',
+				'third' => '',
+			),
+			'tables' => array(
+				'first' => NULL,
+				'third' => NULL
+			)
+		);
 
 		if ( ! empty(ee()->view->search_value))
 		{
 			$this->base_url->setQueryStringVariable('search', ee()->view->search_value);
 		}
 
-		$data = array();
-
 		$addons = $this->getAllAddons();
-		$developers = array_map(function($addon) { return $addon['developer']; }, $addons);
+		$developers = array_map(function($addon) { return $addon['developer']; }, $addons['third']);
 		array_unique($developers);
 
-		// Setup the Table
-		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => TRUE));
-		$table->setColumns(
-			array(
-				'addon',
-				'version',
-				'manage' => array(
-					'type'	=> Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=> Table::COL_CHECKBOX
-				)
-			)
-		);
-
-		$this->base_url->setQueryStringVariable('sort_col', $table->sort_col);
-		$this->base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
-
-		$this->filters(count($addons), $developers);
-
-		// [Re]set the table's limit
-		$table->config['limit'] = $this->params['perpage'];
-
-		foreach($addons as $addon => $info)
+		// Retain column sorting when filtering
+		foreach (array('first', 'third') as $party)
 		{
-			// Filter based on status
-			if (isset($this->params['filter_by_status']))
+			$sort_col = $party . '_sort_col';
+			if (ee()->input->get($sort_col))
 			{
-				if ((strtolower($this->params['filter_by_status']) == 'installed'
-					 && $info['installed'] == FALSE)
-				     ||	(strtolower($this->params['filter_by_status']) == 'uninstalled'
-						 && $info['installed'] == TRUE)
-				     ||	(strtolower($this->params['filter_by_status']) == 'updates'
-						 && (! isset($info['update'])
-						     || $info['installed'] == FALSE)))
-				{
-					continue;
-				}
+				$this->base_url->setQueryStringVariable($sort_col, ee()->input->get($sort_col));
 			}
 
-			// Filter based on developer
-			if (isset($this->params['filter_by_developer']))
+			$sort_dir = $party . '_sort_dir';
+			if (ee()->input->get($sort_dir))
 			{
-				if ($this->params['filter_by_developer'] != $this->makeDeveloperKey($info['developer']))
-				{
-					continue;
-				}
+				$this->base_url->setQueryStringVariable($sort_dir, ee()->input->get($sort_dir));
+			}
+		}
+
+		$this->filters(array(
+			'first' => count($addons['first']),
+			'third' => count($addons['third'])
+		), $developers);
+
+		foreach (array('first', 'third') as $party)
+		{
+			if ( ! count($addons[$party]))
+			{
+				continue;
 			}
 
-			$toolbar = array(
-				'install' => array(
-					'href' => cp_url('addons/install/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
-					'title' => lang('install'),
-					'class' => 'add'
-				)
+			$data = array();
+
+			// Setup the Table
+			$config = array(
+				'autosort' => TRUE,
+				'autosearch' => TRUE,
+				'sort_col' => ee()->input->get($party . '_sort_col') ?: NULL,
+				'sort_col_qs_var' => $party . '_sort_col',
+				'sort_dir' => ee()->input->get($party . '_sort_dir') ?: 'asc',
+				'sort_dir_qs_var' => $party . '_sort_dir',
+				'page' => ee()->input->get($party . '_page') ?: 1,
+				'limit' => $this->params[$party . '_perpage']
 			);
 
-			$attrs = array('class' => 'not-installed');
-
-			if ($info['installed'])
-			{
-				$toolbar = array();
-
-				if (isset($info['settings_url']))
-				{
-					$toolbar['settings'] = array(
-						'href' => $info['settings_url'],
-						'title' => lang('settings'),
-					);
-				}
-
-				if (isset($info['manual_url']))
-				{
-					$toolbar['manual'] = array(
-						'href' => $info['manual_url'],
-						'title' => lang('manual'),
-					);
-					if ($info['manual_external'])
-					{
-						$toolbar['manual']['target'] = '_external';
-					}
-				}
-
-				if (isset($info['update']))
-				{
-					$toolbar['txt-only'] = array(
-						'href' => cp_url('addons/update/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
-						'title' => strtolower(lang('update')),
-						'class' => 'add',
-						'content' => sprintf(lang('update_to_version'), $this->formatVersionNumber($info['update']))
-					);
-				}
-
-				$attrs = array();
-			}
-
-			$data[] = array(
-				'attrs' => $attrs,
-				'columns' => array(
-					'addon' => $info['name'],
-					'version' => $this->formatVersionNumber($info['version']),
-					array('toolbar_items' => $toolbar),
+			$table = ee('CP/Table', $config);
+			$table->setColumns(
+				array(
+					'addon',
+					'version' => array(
+						'encode' => FALSE
+					),
+					'manage' => array(
+						'type'	=> Table::COL_TOOLBAR
+					),
 					array(
-						'name' => 'selection[]',
-						'value' => $info['package'],
-						'data'	=> array(
-							'confirm' => lang('addon') . ': <b>' . $info['name'] . '</b>'
-						)
+						'type'	=> Table::COL_CHECKBOX
 					)
 				)
 			);
+			$table->setNoResultsText('no_addon_search_results');
+
+			$this->base_url->setQueryStringVariable($party . '_page', $table->config['page']);
+
+			foreach($addons[$party] as $addon => $info)
+			{
+				// Filter based on status
+				$status_key = 'filter_by_' . $party . '_status';
+				if (isset($this->params[$status_key]))
+				{
+					if ((strtolower($this->params[$status_key]) == 'installed'
+						 && $info['installed'] == FALSE)
+					     ||	(strtolower($this->params[$status_key]) == 'uninstalled'
+							 && $info['installed'] == TRUE)
+					     ||	(strtolower($this->params[$status_key]) == 'updates'
+							 && (! isset($info['update'])
+							     || $info['installed'] == FALSE)))
+					{
+						continue;
+					}
+				}
+
+				// Filter based on developer
+				if ($party == 'third'
+					&& isset($this->params['filter_by_developer']))
+				{
+					if ($this->params['filter_by_developer'] != $this->makeDeveloperKey($info['developer']))
+					{
+						continue;
+					}
+				}
+
+				$toolbar = array(
+					'install' => array(
+						'href' => cp_url('addons/install/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
+						'title' => lang('install'),
+						'class' => 'add'
+					)
+				);
+
+				$attrs = array('class' => 'not-installed');
+
+				if ($info['installed'])
+				{
+					$toolbar = array();
+
+					if (isset($info['settings_url']))
+					{
+						$toolbar['settings'] = array(
+							'href' => $info['settings_url'],
+							'title' => lang('settings'),
+						);
+					}
+
+					if (isset($info['manual_url']))
+					{
+						$toolbar['manual'] = array(
+							'href' => $info['manual_url'],
+							'title' => lang('manual'),
+						);
+
+						if ($info['manual_external'])
+						{
+							$toolbar['manual']['target'] = '_external';
+						}
+					}
+
+					if (isset($info['update']))
+					{
+						$toolbar['txt-only'] = array(
+							'href' => cp_url('addons/update/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
+							'title' => strtolower(lang('update')),
+							'class' => 'add',
+							'content' => sprintf(lang('update_to_version'), $this->formatVersionNumber($info['update']))
+						);
+					}
+
+					$attrs = array();
+				}
+
+				$data[] = array(
+					'attrs' => $attrs,
+					'columns' => array(
+						'addon' => $info['name'],
+						'version' => $this->formatVersionNumber($info['version']),
+						array('toolbar_items' => $toolbar),
+						array(
+							'name' => 'selection[]',
+							'value' => $info['package'],
+							'data'	=> array(
+								'confirm' => lang('addon') . ': <b>' . $info['name'] . '</b>'
+							)
+						)
+					)
+				);
+			}
+
+			$table->setData($data);
+			$vars['tables'][$party] = $table->viewData($this->base_url);
+
+			if ( ! empty($vars['tables'][$party]['data']))
+			{
+				// Paginate!
+				$vars['pagination'][$party] = ee('CP/Pagination', $vars['tables'][$party]['total_rows'])
+					->perPage($vars['tables'][$party]['limit'])
+					->currentPage($vars['tables'][$party]['page'])
+					->queryStringVariable($party . '_page')
+					->render($this->base_url);
+			}
 		}
 
-		$table->setNoResultsText('no_addon_search_results');
-		$table->setData($data);
+		$vars['form_url'] = $this->base_url;
 
-		$vars['table'] = $table->viewData($this->base_url);
-		$vars['form_url'] = $vars['table']['base_url'];
-
-		if ( ! empty($vars['table']['data']))
+		// Set search results heading (first and third)
+		if (ee()->input->get_post('search'))
 		{
-			// Paginate!
-			$pagination = new Pagination(
-				$vars['table']['limit'],
-				$vars['table']['total_rows'],
-				$vars['table']['page']
-			);
-			$vars['pagination'] = $pagination->cp_links($this->base_url);
-		}
-
-		// Set search results heading
-		if ( ! empty($vars['table']['search']))
-		{
-			ee()->view->cp_heading = sprintf(
+			ee()->view->cp_heading = array(
+				'first' => sprintf(
+					lang('search_results_heading'),
+					$vars['tables']['first']['total_rows'],
+					$vars['tables']['first']['search']
+				),
+				'third' => sprintf(
 				lang('search_results_heading'),
-				$vars['table']['total_rows'],
-				$vars['table']['search']
+				$vars['tables']['third']['total_rows'],
+				$vars['tables']['third']['search']
+			)
 			);
 		}
 
@@ -302,7 +399,10 @@ class Addons extends CP_Controller {
 		// Remove non-add-on providers from the list
 		unset($providers['ee']);
 
-		$addons = array();
+		$addons = array(
+			'first' => array(),
+			'third' => array()
+		);
 
 		// @TODO move these 2 things out of "add-ons" entirely
 		$uninstallable = array('channel', 'comment');
@@ -333,7 +433,8 @@ class Addons extends CP_Controller {
 					$addon['manual_external'] = TRUE;
 				}
 
-				$addons[$name] = $addon;
+				$party = ($addon['developer'] == 'EllisLab') ? 'first' : 'third';
+				$addons[$party][$name] = $addon;
 			}
 		}
 
@@ -493,17 +594,25 @@ class Addons extends CP_Controller {
 
 		ee()->load->library('addons/addons_installer');
 
-		$installed = array();
+		$installed = array(
+			'first' => array(),
+			'third' => array()
+		);
 
 		foreach ($addons as $addon)
 		{
+			$info = ee('App')->get($addon);
+			ee()->load->add_package_path($info->getPath());
+
+			$party = ($info->getAuthor() == 'EllisLab') ? 'first' : 'third';
+
 			$module = $this->getModule($addon);
 			if ( ! empty($module) && $module['installed'] === FALSE)
 			{
 				$name = $this->installModule($addon);
 				if ($name)
 				{
-					$installed[$addon] = $name;
+					$installed[$party][$addon] = $name;
 				}
 			}
 
@@ -513,7 +622,7 @@ class Addons extends CP_Controller {
 				$name = $this->installFieldtype($addon);
 				if ($name && ! isset($installed[$addon]))
 				{
-					$installed[$addon] = $name;
+					$installed[$party][$addon] = $name;
 				}
 			}
 
@@ -523,15 +632,13 @@ class Addons extends CP_Controller {
 				$name = $this->installExtension($addon);
 				if ($name && ! isset($installed[$addon]))
 				{
-					$installed[$addon] = $name;
+					$installed[$party][$addon] = $name;
 				}
 			}
 
 			$plugin = $this->getPlugin($addon);
 			if ( ! empty($plugin) && $plugin['installed'] === FALSE)
 			{
-				$info = ee('App')->get($addon);
-
 				$typography = 'n';
 				if ($info->get('plugin.typography'))
 				{
@@ -547,15 +654,32 @@ class Addons extends CP_Controller {
 
 				if ( ! isset($installed[$addon]))
 				{
-					$installed[$addon] = $plugin['name'];
+					$installed[$party][$addon] = $plugin['name'];
 				}
 			}
+
+			ee()->load->remove_package_path($info->getPath());
 		}
 
-		if ( ! empty($installed))
+		foreach (array('first', 'third') as $party)
 		{
-			$flashdata = (ee()->input->get('return')) ? TRUE : FALSE;
-			ee()->view->set_message('success', lang('addons_installed'), lang('addons_installed_desc') . implode(', ', $installed), $flashdata);
+			if ( ! empty($installed[$party]))
+			{
+				$alert = ee('Alert')->makeInline($party . '-party')
+					->asSuccess()
+					->withTitle(lang('addons_installed'))
+					->addToBody(lang('addons_installed_desc'))
+					->addToBody(array_values($installed[$party]));
+
+				if (ee()->input->get('return'))
+				{
+					$alert->defer();
+				}
+				else
+				{
+					$alert->now();
+				}
+			}
 		}
 
 		if (ee()->input->get('return'))
@@ -585,17 +709,23 @@ class Addons extends CP_Controller {
 
 		ee()->load->library('addons/addons_installer');
 
-		$uninstalled = array();
+		$uninstalled = array(
+			'first' => array(),
+			'third' => array()
+		);
 
 		foreach ($addons as $addon)
 		{
+			$info = ee('App')->get($addon);
+			$party = ($info->getAuthor() == 'EllisLab') ? 'first' : 'third';
+
 			$module = $this->getModule($addon);
 			if ( ! empty($module) && $module['installed'] === TRUE)
 			{
 				$name = $this->uninstallModule($addon);
 				if ($name)
 				{
-					$uninstalled[$addon] = $name;
+					$uninstalled[$party][$addon] = $name;
 				}
 			}
 
@@ -605,7 +735,7 @@ class Addons extends CP_Controller {
 				$name = $this->uninstallFieldtype($addon);
 				if ($name && ! isset($uninstalled[$addon]))
 				{
-					$uninstalled[$addon] = $name;
+					$uninstalled[$party][$addon] = $name;
 				}
 			}
 
@@ -615,7 +745,7 @@ class Addons extends CP_Controller {
 				$name = $this->uninstallExtension($addon);
 				if ($name && ! isset($uninstalled[$addon]))
 				{
-					$uninstalled[$addon] = $name;
+					$uninstalled[$party][$addon] = $name;
 				}
 			}
 
@@ -628,14 +758,22 @@ class Addons extends CP_Controller {
 
 				if ( ! isset($uninstalled[$addon]))
 				{
-					$uninstalled[$addon] = $plugin['name'];
+					$uninstalled[$party][$addon] = $plugin['name'];
 				}
 			}
 		}
 
-		if ( ! empty($uninstalled))
+		foreach (array('first', 'third') as $party)
 		{
-			ee()->view->set_message('success', lang('addons_uninstalled'), lang('addons_uninstalled_desc') . implode(', ', $uninstalled));
+			if ( ! empty($uninstalled[$party]))
+			{
+				$alert = ee('Alert')->makeInline($party . '-party')
+					->asSuccess()
+					->withTitle(lang('addons_uninstalled'))
+					->addToBody(lang('addons_uninstalled_desc'))
+					->addToBody(array_values($uninstalled[$party]))
+					->now();
+			}
 		}
 	}
 
@@ -907,10 +1045,10 @@ class Addons extends CP_Controller {
 		if ( ! is_null($model))
 		{
 			$data['installed'] = TRUE;
+			$data['version'] = $model->plugin_version;
 			if (version_compare($info->getVersion(), $model->plugin_version, '>'))
 			{
 				$data['update'] = $info->getVersion();
-				$data['version'] = $model->plugin_version;
 			}
 		}
 
@@ -1395,7 +1533,7 @@ class Addons extends CP_Controller {
 					}
 
 					$element['fields'][$key] = array(
-						'type' => 'dropdown',
+						'type' => 'select',
 						'value' => $value,
 						'choices' => $choices
 					);
@@ -1538,6 +1676,7 @@ class Addons extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		ee()->api_channel_fields->fetch_custom_channel_fields();
 		$FT = ee()->api_channel_fields->setup_handler($fieldtype['package'], TRUE);
 
 		$FT->settings = $fieldtype['settings'];
@@ -1579,18 +1718,18 @@ class Addons extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		ee()->api_channel_fields->fetch_custom_channel_fields();
 		$FT = ee()->api_channel_fields->setup_handler($fieldtype['package'], TRUE);
 
 		$FT->settings = $fieldtype['settings'];
 
 		$settings = ee()->api_channel_fields->apply('save_global_settings');
 
-		$fieldtype_model = ee('Model')->get('ChannelField')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('field_name', $fieldtype['package'])
+		$fieldtype_model = ee('Model')->get('Fieldtype')
+			->filter('name', $fieldtype['package'])
 			->first();
 
-		$fieldtype_model->field_settings = $settings;
+		$fieldtype_model->settings = $settings;
 		$fieldtype_model->save();
 
 		ee('Alert')->makeInline('shared-form')

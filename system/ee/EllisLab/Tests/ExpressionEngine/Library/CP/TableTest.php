@@ -54,22 +54,22 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 		// We should get this on output
 		$expected_cols = array(
 			'Name' => array(
-				'encode'	=> FALSE,
+				'encode'	=> TRUE,
 				'sort'		=> TRUE,
 				'type'		=> Table::COL_TEXT
 			),
 			'Records' => array(
-				'encode'	=> FALSE,
+				'encode'	=> TRUE,
 				'sort'		=> TRUE,
 				'type'		=> Table::COL_TEXT
 			),
 			'Size' => array(
-				'encode'	=> FALSE,
+				'encode'	=> TRUE,
 				'sort'		=> TRUE,
 				'type'		=> Table::COL_TEXT
 			),
 			'Manage' => array(
-				'encode'	=> FALSE,
+				'encode'	=> TRUE,
 				'sort'		=> FALSE,
 				'type'		=> Table::COL_TOOLBAR
 			),
@@ -79,7 +79,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 				'type'		=> Table::COL_STATUS
 			),
 			array(
-				'encode'	=> FALSE,
+				'encode'	=> TRUE,
 				'sort'		=> FALSE,
 				'type'		=> Table::COL_CHECKBOX
 			)
@@ -126,7 +126,9 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'subheadings'	=> FALSE,
 			'columns'		=> $expected_cols,
 			'action_buttons' => array(),
-			'action_content' => NULL
+			'action_content' => NULL,
+			'sort_col_qs_var' => 'sort_col',
+			'sort_dir_qs_var' => 'sort_dir'
 		);
 
 		// We should get this entire array back when we ask for
@@ -141,17 +143,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 							array(
 								'content' 	=> 'col 1 data',
 								'type'		=> Table::COL_TEXT,
-								'encode'	=> FALSE
+								'encode'	=> TRUE
 							),
 							array(
 								'content' 	=> 'col 2 data',
 								'type'		=> Table::COL_TEXT,
-								'encode'	=> FALSE
+								'encode'	=> TRUE
 							),
 							array(
 								'content' 	=> 'col 3 data',
 								'type'		=> Table::COL_TEXT,
-								'encode'	=> FALSE
+								'encode'	=> TRUE
 							),
 							array(
 								'content' 	=> '',
@@ -179,17 +181,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 							array(
 								'content' 	=> 'col 1 data 2',
 								'type'		=> Table::COL_TEXT,
-								'encode'	=> FALSE
+								'encode'	=> TRUE
 							),
 							array(
 								'content' 	=> 'col 2 data 2',
 								'type'		=> Table::COL_TEXT,
-								'encode'	=> FALSE
+								'encode'	=> TRUE
 							),
 							array(
 								'content' 	=> NULL,
 								'type'		=> Table::COL_TEXT,
-								'encode'	=> FALSE
+								'encode'	=> TRUE
 							),
 							array(
 								'content' 	=> '',
@@ -283,17 +285,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 							array(
 								'content' 	=> 'col 1 data',
 								'type'		=> Table::COL_TEXT,
-								'encode'	=> FALSE
+								'encode'	=> TRUE
 							),
 							array(
 								'content' 	=> 'col 2 data',
 								'type'		=> Table::COL_TEXT,
-								'encode'	=> FALSE
+								'encode'	=> TRUE
 							),
 							array(
 								'content' 	=> 'col 3 data',
 								'type'		=> Table::COL_TEXT,
-								'encode'	=> FALSE
+								'encode'	=> TRUE
 							),
 							array(
 								'content' 	=> '',
@@ -321,17 +323,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 							array(
 								'content' 	=> 'col 1 data 2',
 								'type'		=> Table::COL_TEXT,
-								'encode'	=> FALSE
+								'encode'	=> TRUE
 							),
 							array(
 								'content' 	=> 'col 2 data 2',
 								'type'		=> Table::COL_TEXT,
-								'encode'	=> FALSE
+								'encode'	=> TRUE
 							),
 							array(
 								'content' 	=> NULL,
 								'type'		=> Table::COL_TEXT,
-								'encode'	=> FALSE
+								'encode'	=> TRUE
 							),
 							array(
 								'content' 	=> '',
@@ -379,6 +381,8 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'columns'		=> $expected_cols,
 			'action_buttons' => array(),
 			'action_content' => NULL,
+			'sort_col_qs_var' => 'sort_col',
+			'sort_dir_qs_var' => 'sort_dir',
 			'data'		=> array(
 				array(
 					'attrs' => array(),
@@ -386,17 +390,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 						array(
 							'content' 	=> 'col 1 data 2',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> 'col 2 data 2',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> NULL,
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> '',
@@ -424,17 +428,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 						array(
 							'content' 	=> 'col 1 data',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> 'col 2 data',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> 'col 3 data',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> '',
@@ -482,6 +486,8 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'columns'		=> $expected_cols,
 			'action_buttons' => array(),
 			'action_content' => NULL,
+			'sort_col_qs_var' => 'sort_col',
+			'sort_dir_qs_var' => 'sort_dir',
 			'data'			=> array(
 				array(
 					'attrs' => array(),
@@ -489,17 +495,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 						array(
 							'content' 	=> 'col 1 data 2',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> 'col 2 data 2',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> NULL,
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> '',
@@ -545,17 +551,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 					array(
 						'content' 	=> 'col 1 data 2',
 						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
+						'encode'	=> TRUE
 					),
 					array(
 						'content' 	=> 'col 2 data 2',
 						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
+						'encode'	=> TRUE
 					),
 					array(
 						'content' 	=> NULL,
 						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
+						'encode'	=> TRUE
 					),
 					array(
 						'content' 	=> '',
@@ -592,17 +598,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 					array(
 						'content' 	=> 'col 1 data',
 						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
+						'encode'	=> TRUE
 					),
 					array(
 						'content' 	=> 'col 2 data',
 						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
+						'encode'	=> TRUE
 					),
 					array(
 						'content' 	=> 'col 3 data',
 						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
+						'encode'	=> TRUE
 					),
 					array(
 						'content' 	=> '',
@@ -715,17 +721,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 						array(
 							'content' 	=> 'col 1 data',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> 'col 2 data',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> 'col 3 data',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> '',
@@ -753,17 +759,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 						array(
 							'content' 	=> 'col 1 data 2',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> 'col 2 data 2',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> NULL,
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> '',
@@ -793,17 +799,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 						array(
 							'content' 	=> 'col 2 data',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> 'col 3 data',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> 'col 1 data',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> '',
@@ -831,17 +837,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 						array(
 							'content' 	=> 'col 1 data 2',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> 'col 2 data 2',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> NULL,
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> '',
@@ -869,17 +875,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 						array(
 							'content' 	=> 'col 3 data 3',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> 'col 2 data 3',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> NULL,
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> '',
@@ -909,17 +915,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 						array(
 							'content' 	=> 'col 3 data',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> 'col 2 data',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> 'col 1 data',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> '',
@@ -955,17 +961,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 						array(
 							'content' 	=> 'col 1 data 2',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> 'col 2 data 2',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> NULL,
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> '',
@@ -993,17 +999,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 						array(
 							'content' 	=> 'col 2 data',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> 'col 3 data',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> 'col 1 data',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> '',
@@ -1031,17 +1037,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 						array(
 							'content' 	=> 'col 3 data 3',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> 'col 2 data 3',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> NULL,
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> '',
@@ -1071,17 +1077,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 						array(
 							'content' 	=> 'col 3 data',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> 'col 2 data',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> 'col 1 data',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> '',
@@ -1111,17 +1117,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 						array(
 							'content' 	=> 'col 1 data',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> 'col 2 data',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> 'col 3 data',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> '',
@@ -1149,17 +1155,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 						array(
 							'content' 	=> 'col 1 data 2',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> 'col 2 data 2',
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> NULL,
 							'type'		=> Table::COL_TEXT,
-							'encode'	=> FALSE
+							'encode'	=> TRUE
 						),
 						array(
 							'content' 	=> '',
@@ -1198,17 +1204,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 					array(
 						'content' 	=> 'col 1 data',
 						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
+						'encode'	=> TRUE
 					),
 					array(
 						'content' 	=> 'col 2 data',
 						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
+						'encode'	=> TRUE
 					),
 					array(
 						'content' 	=> 'col 3 data',
 						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
+						'encode'	=> TRUE
 					),
 					array(
 						'content' 	=> '',
@@ -1236,17 +1242,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 					array(
 						'content' 	=> 'col 1 data 2',
 						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
+						'encode'	=> TRUE
 					),
 					array(
 						'content' 	=> 'col 2 data 2',
 						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
+						'encode'	=> TRUE
 					),
 					array(
 						'content' 	=> NULL,
 						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
+						'encode'	=> TRUE
 					),
 					array(
 						'content' 	=> '',
@@ -1274,17 +1280,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 					array(
 						'content' 	=> 'col 1 data 2',
 						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
+						'encode'	=> TRUE
 					),
 					array(
 						'content' 	=> 'col 2 data 2',
 						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
+						'encode'	=> TRUE
 					),
 					array(
 						'content' 	=> NULL,
 						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
+						'encode'	=> TRUE
 					),
 					array(
 						'content' 	=> '',
@@ -1312,17 +1318,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 					array(
 						'content' 	=> 'col 2 data',
 						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
+						'encode'	=> TRUE
 					),
 					array(
 						'content' 	=> 'col 3 data',
 						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
+						'encode'	=> TRUE
 					),
 					array(
 						'content' 	=> 'col 1 data',
 						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
+						'encode'	=> TRUE
 					),
 					array(
 						'content' 	=> '',
@@ -1350,17 +1356,17 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 					array(
 						'content' 	=> 'col 3 data',
 						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
+						'encode'	=> TRUE
 					),
 					array(
 						'content' 	=> 'col 2 data',
 						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
+						'encode'	=> TRUE
 					),
 					array(
 						'content' 	=> 'col 1 data',
 						'type'		=> Table::COL_TEXT,
-						'encode'	=> FALSE
+						'encode'	=> TRUE
 					),
 					array(
 						'content' 	=> '',

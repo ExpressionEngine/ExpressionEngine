@@ -782,8 +782,8 @@ class Member_model extends CI_Model {
 			// Load forum class
 			if ( ! class_exists('Forum'))
 			{
-				require PATH_MOD.'forum/mod.forum.php';
-				require PATH_MOD.'forum/mod.forum_core.php';
+				require PATH_ADDONS.'forum/mod.forum.php';
+				require PATH_ADDONS.'forum/mod.forum_core.php';
 			}
 
 			$forum_core = new Forum_Core;

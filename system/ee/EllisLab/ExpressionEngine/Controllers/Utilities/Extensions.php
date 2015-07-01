@@ -5,9 +5,8 @@ namespace EllisLab\ExpressionEngine\Controllers\Utilities;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 
 /**
  * ExpressionEngine - by EllisLab
@@ -57,7 +56,7 @@ class Extensions extends Utilities {
 		// Add in any submitted search phrase
 		ee()->view->search_value = ee()->input->get_post('search');
 
-		$this->base_url = new URL('utilities/extensions', ee()->session->session_id());
+		$this->base_url = ee('CP/URL', 'utilities/extensions');
 
 		ee()->load->library('addons');
 		ee()->load->helper(array('file', 'directory'));
@@ -160,12 +159,10 @@ class Extensions extends Utilities {
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
-			$pagination = new Pagination(
-				$vars['table']['limit'],
-				$vars['table']['total_rows'],
-				$vars['table']['page']
-			);
-			$vars['pagination'] = $pagination->cp_links($this->base_url);
+			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+				->perPage($vars['table']['limit'])
+				->currentPage($vars['table']['page'])
+				->render($vars['table']['base_url']);
 		}
 
 		// Set search results heading

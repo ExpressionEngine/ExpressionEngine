@@ -5,9 +5,8 @@ namespace EllisLab\ExpressionEngine\Controllers\Design;
 use \EE_Route;
 use ZipArchive;
 use EllisLab\ExpressionEngine\Controllers\Design\AbstractDesign as AbstractDesignController;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Model\Template\Template as TemplateModel;
 
 /**
@@ -116,7 +115,7 @@ class Template extends AbstractDesignController {
 						'desc' => 'template_type_desc',
 						'fields' => array(
 							'template_type' => array(
-								'type' => 'dropdown',
+								'type' => 'select',
 								'choices' => $this->getTemplateTypes()
 							)
 						)
@@ -126,7 +125,7 @@ class Template extends AbstractDesignController {
 						'desc' => 'duplicate_existing_template_desc',
 						'fields' => array(
 							'template_id' => array(
-								'type' => 'dropdown',
+								'type' => 'select',
 								'choices' => $existing_templates
 							)
 						)
@@ -460,7 +459,7 @@ class Template extends AbstractDesignController {
 			->filter('template_data', 'LIKE', '%' . $search_terms . '%')
 			->all();
 
-		$base_url = new URL('design/template/search', ee()->session->session_id());
+		$base_url = ee('CP/URL', 'design/template/search');
 
 		$table = $this->buildTableFromTemplateCollection($templates, TRUE);
 
@@ -471,12 +470,10 @@ class Template extends AbstractDesignController {
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
-			$pagination = new Pagination(
-				$vars['table']['limit'],
-				$vars['table']['total_rows'],
-				$vars['table']['page']
-			);
-			$vars['pagination'] = $pagination->cp_links($base_url);
+			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+				->perPage($vars['table']['limit'])
+				->currentPage($vars['table']['page'])
+				->render($base_url);
 		}
 
 		ee()->view->cp_heading = sprintf(

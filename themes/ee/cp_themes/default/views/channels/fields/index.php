@@ -7,8 +7,9 @@
 		</fieldset>
 		<h1><?=$cp_page_title?></h1>
 		<?=ee('Alert')->getAllInlines()?>
+		<?=$filters?>
 		<?php $this->view('_shared/table', $table); ?>
-		<?php $this->view('_shared/pagination'); ?>
+		<?=$pagination?>
 		<fieldset class="tbl-bulk-act">
 			<select name="bulk_action">
 				<option>-- <?=lang('with_selected')?> --</option>

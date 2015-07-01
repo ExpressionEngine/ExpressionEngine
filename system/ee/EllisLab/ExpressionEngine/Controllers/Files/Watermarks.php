@@ -87,8 +87,8 @@ class Watermarks extends AbstractFilesController {
 		foreach ($watermarks as $watermark)
 		{
 			$data[] = array(
-				htmlentities($watermark->wm_name, ENT_QUOTES),
-				htmlentities($watermark->wm_type, ENT_QUOTES),
+				$watermark->wm_name,
+				$watermark->wm_type,
 				array('toolbar_items' => array(
 					'edit' => array(
 						'href' => cp_url('files/watermarks/edit/'.$watermark->getId()),
@@ -109,15 +109,12 @@ class Watermarks extends AbstractFilesController {
 
 		$table->setData($data);
 
-		$base_url = new CP\URL('files/watermarks', ee()->session->session_id());
-		$vars['table'] = $table->viewData($base_url);
+		$vars['table'] = $table->viewData(ee('CP/URL', 'files/watermarks'));
 
-		$pagination = new CP\Pagination(
-			$vars['table']['limit'],
-			$total_rows,
-			$vars['table']['page']
-		);
-		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
+		$vars['pagination'] = ee('CP/Pagination', $total_rows)
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($vars['table']['base_url']);
 
 		ee()->view->cp_page_title = lang('watermarks');
 
@@ -224,7 +221,7 @@ class Watermarks extends AbstractFilesController {
 					'desc' => 'watermark_type_desc',
 					'fields' => array(
 						'wm_type' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'text' => lang('text'),
 								'image' => lang('image')
@@ -243,7 +240,7 @@ class Watermarks extends AbstractFilesController {
 					'desc' => 'watermark_alignment_desc',
 					'fields' => array(
 						'wm_vrt_alignment' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'top' => lang('top'),
 								'middle' => lang('middle'),
@@ -252,7 +249,7 @@ class Watermarks extends AbstractFilesController {
 							'value' => $watermark->wm_vrt_alignment,
 						),
 						'wm_hor_alignment' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'left' => lang('left'),
 								'center' => lang('center'),
@@ -317,7 +314,7 @@ class Watermarks extends AbstractFilesController {
 						'desc' => 'watermark_text_font_desc',
 						'fields' => array(
 							'wm_font' => array(
-								'type' => 'dropdown',
+								'type' => 'select',
 								'choices' => ee()->filemanager->fetch_fontlist(),
 								'value' => $watermark->wm_font ?: 'texb.ttf'
 							)

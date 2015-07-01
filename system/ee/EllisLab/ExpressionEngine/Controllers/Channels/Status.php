@@ -68,22 +68,22 @@ class Status extends AbstractChannelsController {
 		$data = array();
 		foreach ($status_groups as $group)
 		{
-			$data[] = array(
-				$group->group_id,
-				htmlentities($group->group_name, ENT_QUOTES),
+			$columns = array(
+				$group->getId(),
+				$group->group_name,
 				array('toolbar_items' => array(
 					'view' => array(
-						'href' => cp_url('channels/status/status-list/'.$group->group_id),
+						'href' => cp_url('channels/status/status-list/'.$group->getId()),
 						'title' => lang('view')
 					),
 					'edit' => array(
-						'href' => cp_url('channels/status/edit/'.$group->group_id),
+						'href' => cp_url('channels/status/edit/'.$group->getId()),
 						'title' => lang('edit')
 					)
 				)),
 				array(
 					'name' => 'status_groups[]',
-					'value' => $group->group_id,
+					'value' => $group->getId(),
 					'data'	=> array(
 						'confirm' => lang('status_group') . ': <b>' . htmlentities($group->group_name, ENT_QUOTES) . '</b>'
 					),
@@ -91,19 +91,27 @@ class Status extends AbstractChannelsController {
 					'disabled' => ($group->group_name == 'Default') ? 'disabled' : NULL
 				)
 			);
+
+			$attrs = array();
+			if (ee()->session->flashdata('highlight_id') == $group->getId())
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs' => $attrs,
+				'columns' => $columns
+			);
 		}
 
 		$table->setData($data);
 
-		$base_url = new CP\URL('channels/status', ee()->session->session_id());
-		$vars['table'] = $table->viewData($base_url);
+		$vars['table'] = $table->viewData(ee('CP/URL', 'channels/status'));
 
-		$pagination = new CP\Pagination(
-			$vars['table']['limit'],
-			$total_rows,
-			$vars['table']['page']
-		);
-		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
+		$vars['pagination'] = ee('CP/Pagination', $total_rows)
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($vars['table']['base_url']);
 
 		ee()->view->cp_page_title = lang('status_groups');
 
@@ -228,13 +236,15 @@ class Status extends AbstractChannelsController {
 		{
 			$group_id = $this->saveStatusGroup($group_id);
 
+			ee()->session->set_flashdata('highlight_id', $group_id);
+
 			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('status_group_saved'))
 				->addToBody(lang('status_group_saved_desc'))
 				->defer();
 
-			ee()->functions->redirect(cp_url('channels/status/edit/'.$group_id));
+			ee()->functions->redirect(cp_url('channels/status'));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -267,7 +277,7 @@ class Status extends AbstractChannelsController {
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('group_name', $name);
 
-		if ( ! empty($status_id))
+		if ( ! empty($group_id))
 		{
 			$status_group->filter('group_id', '!=', $group_id);
 		}
@@ -289,13 +299,20 @@ class Status extends AbstractChannelsController {
 	 */
 	private function saveStatusGroup($group_id = NULL)
 	{
-		$status_group = ee('Model')->make('StatusGroup');
-		$status_group->group_id = $group_id;
+		if ($group_id)
+		{
+			$status_group = ee('Model')->get('StatusGroup', $group_id)->first();
+		}
+		else
+		{
+			$status_group = ee('Model')->make('StatusGroup');
+		}
+
 		$status_group->site_id = ee()->config->item('site_id');
 		$status_group->group_name = ee()->input->post('group_name');
 		$status_group->save();
 
-		return $status_group->group_id;
+		return $status_group->getId();
 	}
 
 	/**
@@ -318,7 +335,9 @@ class Status extends AbstractChannelsController {
 		));
 		$table->setColumns(
 			array(
-				'col_id',
+				'col_id' => array(
+					'encode' => FALSE
+				),
 				'status_name',
 				'manage' => array(
 					'type'	=> CP\Table::COL_TOOLBAR
@@ -334,9 +353,9 @@ class Status extends AbstractChannelsController {
 		$data = array();
 		foreach ($statuses as $status)
 		{
-			$data[] = array(
-				$status->getId(),
-				htmlentities($status->status, ENT_QUOTES).form_hidden('order[]', $status->getId()),
+			$columns = array(
+				$status->getId().form_hidden('order[]', $status->getId()),
+				$status->status,
 				array('toolbar_items' => array(
 					'edit' => array(
 						'href' => cp_url('channels/status/edit-status/'.$group_id.'/'.$status->getId()),
@@ -353,12 +372,22 @@ class Status extends AbstractChannelsController {
 					'disabled' => ($status->status == 'open' OR $status->status == 'closed') ? 'disabled' : NULL
 				)
 			);
+
+			$attrs = array();
+			if (ee()->session->flashdata('highlight_id') == $status->getId())
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs' => $attrs,
+				'columns' => $columns
+			);
 		}
 
 		$table->setData($data);
 
-		$base_url = new CP\URL('channels/status/status-list/'.$group_id, ee()->session->session_id());
-		$vars['table'] = $table->viewData($base_url);
+		$vars['table'] = $table->viewData(ee('CP/URL', 'channels/status/status-list/'.$group_id));
 
 		ee()->view->group_id = $group_id;
 
@@ -587,13 +616,15 @@ class Status extends AbstractChannelsController {
 		{
 			$status_id = $this->saveStatus($group_id, $status_id);
 
+			ee()->session->set_flashdata('highlight_id', $status_id);
+
 			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('status_saved'))
 				->addToBody(lang('status_saved_desc'))
 				->defer();
 
-			ee()->functions->redirect(cp_url('channels/status/edit-status/'.$group_id.'/'.$status_id));
+			ee()->functions->redirect(cp_url('channels/status/status-list/'.$group_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{

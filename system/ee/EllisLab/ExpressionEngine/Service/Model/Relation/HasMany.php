@@ -3,7 +3,7 @@
 namespace EllisLab\ExpressionEngine\Service\Model\Relation;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Service\Model\Association;
+use EllisLab\ExpressionEngine\Service\Model\Association\ToMany;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -35,6 +35,7 @@ class HasMany extends HasOneOrMany {
 	 */
 	public function createAssociation(Model $source)
 	{
+		return new ToMany($source, $this);
 		return new Association\HasMany($source, $this->name);
 	}
 }

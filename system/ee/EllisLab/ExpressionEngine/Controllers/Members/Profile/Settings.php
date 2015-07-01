@@ -124,17 +124,17 @@ class Settings extends Profile {
 					'desc' => 'birthday_desc',
 					'fields' => array(
 						'bday_d' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $birthday['days'],
 							'value' => $this->member->bday_d
 						),
 						'bday_m' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $birthday['months'],
 							'value' => $this->member->bday_m
 						),
 						'bday_y' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $birthday['years'],
 							'value' => $this->member->bday_y
 						)
@@ -152,7 +152,7 @@ class Settings extends Profile {
 					'desc' => 'language_desc',
 					'fields' => array(
 						'language' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => ee()->lang->language_pack_names(),
 							'value' => $this->member->language ?: ee()->config->item('deft_lang')
 						)
@@ -264,7 +264,7 @@ class Settings extends Profile {
 	protected function saveSettings($settings)
 	{
 		unset($settings['avatar_settings']);
-	
+
 		switch (ee()->input->post('avatar_picker')) {
 			case "upload":
 				$this->member->avatar_filename = $this->uploadAvatar();

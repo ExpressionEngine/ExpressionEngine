@@ -64,7 +64,7 @@ class Pages extends Settings {
 			$templates_dropdown[$template['template_id']] = $template['group_name'].'/'.$template['template_name'];
 		}
 
-		ee()->load->add_package_path(PATH_MOD.'pages');
+		ee()->load->add_package_path(PATH_ADDONS.'pages');
 		ee()->load->model('pages_model');
 		$pages_config = ee()->pages_model->fetch_site_pages_config();
 
@@ -120,7 +120,7 @@ class Pages extends Settings {
 					'desc' => 'pages_channel_desc',
 					'fields' => array(
 						'default_channel' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $channels_dropdown,
 							'value' => (int) $config['default_channel']
 						)
@@ -131,7 +131,7 @@ class Pages extends Settings {
 					'desc' => 'pages_templates_desc',
 					'fields' => array(
 						'pages_templates' => array(
-							'type' => 'multi_dropdown',
+							'type' => 'multiselect',
 							'choices' => $template_for_channel
 						)
 					)
@@ -175,7 +175,7 @@ class Pages extends Settings {
 	  */
 	function saveSettings()
 	{
-		ee()->load->add_package_path(PATH_MOD.'pages');
+		ee()->load->add_package_path(PATH_ADDONS.'pages');
 		ee()->load->model('pages_model');
 
 		$data = array();

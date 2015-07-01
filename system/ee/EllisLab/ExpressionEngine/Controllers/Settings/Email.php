@@ -64,7 +64,7 @@ class Email extends Settings {
 					'desc' => 'mail_protocol_desc',
 					'fields' => array(
 						'mail_protocol' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'mail' => lang('php_mail'),
 								'sendmail' => lang('sendmail'),
@@ -103,7 +103,7 @@ class Email extends Settings {
 					'desc' => 'mail_format_desc',
 					'fields' => array(
 						'mail_format' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'plain' => lang('plain_text'),
 								'html' => lang('html')

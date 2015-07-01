@@ -5,9 +5,8 @@ namespace EllisLab\ExpressionEngine\Controllers\Utilities;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use ZipArchive;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 
 /**
  * ExpressionEngine - by EllisLab
@@ -104,9 +103,13 @@ class Translate extends Utilities {
 		}
 
 		ee()->view->cp_page_title = ucfirst($language) . ' ' . lang('language_files');
-		$vars['language'] = $language;
 
-		$base_url = new URL('utilities/translate/' . $language, ee()->session->session_id());
+		$vars = array(
+			'language' => $language,
+			'pagination' => ''
+		);
+
+		$base_url = ee('CP/URL', 'utilities/translate/' . $language);
 
 		$data = array();
 
@@ -168,12 +171,10 @@ class Translate extends Utilities {
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
-			$pagination = new Pagination(
-				$vars['table']['limit'],
-				$vars['table']['total_rows'],
-				$vars['table']['page']
-			);
-			$vars['pagination'] = $pagination->cp_links($base_url);
+			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+				->perPage($vars['table']['limit'])
+				->currentPage($vars['table']['page'])
+				->render($base_url);
 		}
 
 		// Set search results heading

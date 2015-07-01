@@ -231,7 +231,7 @@ class Api_channel_fields extends Api {
 		if ( ! isset($this->field_types[$field_type]))
 		{
 			$file = 'ft.'.$field_type.'.php';
-			$paths = array(PATH_FT.$field_type.'/');
+			$paths = array(PATH_ADDONS.$field_type.'/');
 
 			ee()->load->library('addons');
 
@@ -239,10 +239,10 @@ class Api_channel_fields extends Api {
 
 			if (isset($fts[$field_type]))
 			{
-				$paths[] = PATH_ADDONS.$fts[$field_type]['package'].'/';
+				$paths[] = PATH_THIRD.$fts[$field_type]['package'].'/';
 			}
 
-			$paths[] = PATH_MOD.$field_type.'/';
+			$paths[] = PATH_ADDONS.$field_type.'/';
 
 			$found_path = FALSE;
 
@@ -912,7 +912,7 @@ class Api_channel_fields extends Api {
 			$class_name = ucfirst($name).'_tab';
 
 			// First or third party?
-			foreach(array(PATH_MOD, PATH_ADDONS) as $tmp_path)
+			foreach(array(PATH_ADDONS, PATH_THIRD) as $tmp_path)
 			{
 				if (file_exists($tmp_path.$name.'/tab.'.$name.'.php'))
 				{
@@ -1301,10 +1301,10 @@ class Api_channel_fields extends Api {
 		$ft_settings = $this->apply('save_settings', array($this->get_posted_field_settings($field_type)));
 
 		// Default display options
-		foreach(array('smileys', 'glossary', 'formatting_btns', 'file_selector', 'writemode') as $key)
+		foreach(array('smileys', 'formatting_btns', 'file_selector') as $key)
 		{
 			$tmp = $this->_get_ft_data($field_type, 'field_show_'.$key, $field_data);
-			$ft_settings['field_show_'.$key] = $tmp ? $tmp : 'n';
+			$ft_settings['field_show_'.$key] = $tmp ? 'y' : 'n';
 		}
 
 		// Now that they've had a chance to mess with the POST array,
@@ -1465,20 +1465,6 @@ class Api_channel_fields extends Api {
 				$insert_id,
 				$native_settings
 			);
-
-			$field_formatting = array('none', 'br', 'markdown', 'xhtml');
-
-			//if the selected field formatting is not one of the native formats, make sure it gets added to exp_field_formatting for this field
-			if ( ! in_array($native_settings['field_fmt'], $field_formatting))
-			{
-				$field_formatting[] = $native_settings['field_fmt'];
-			}
-
-			foreach ($field_formatting as $val)
-			{
-				$f_data = array('field_id' => $insert_id, 'field_fmt' => $val);
-				ee()->db->insert('field_formatting', $f_data);
-			}
 
 			$collapse = ($native_settings['field_is_hidden'] == 'y') ? TRUE : FALSE;
 			$buttons = ($ft_settings['field_show_formatting_btns'] == 'y') ? TRUE : FALSE;
@@ -1705,43 +1691,8 @@ class Api_channel_fields extends Api {
 
 		$vars['field_pre_populate_id_select'] = $field_pre_channel_id.'_'.$field_pre_field_id;
 
-		// build list of formatting options
-		if ($type == 'new')
-		{
-			$vars['edit_format_link'] = '';
-
-			ee()->load->model('addons_model');
-
-			$vars['field_fmt_options'] = ee()->addons_model->get_plugin_formatting(TRUE);
-		}
-		else
-		{
-			$confirm = "onclick=\"if( !confirm('".lang('list_edit_warning')."')) return false;\"";
-			$vars['edit_format_link'] = '<strong><a '.$confirm.' href="'.BASE.AMP.'C=admin_content'.AMP.'M=edit_formatting_options'.AMP.'id='.$field_id.'" title="'.lang('edit_list').'">'.lang('edit_list').'</a></strong>';
-
-			ee()->db->select('field_fmt');
-			ee()->db->where('field_id', $field_id);
-			ee()->db->order_by('field_fmt');
-			$query = ee()->db->get('field_formatting');
-
-			if ($query->num_rows() > 0)
-			{
-				foreach ($query->result_array() as $row)
-				{
-					$name = ucwords(str_replace('_', ' ', $row['field_fmt']));
-
-					if ($name == 'Br')
-					{
-						$name = lang('auto_br');
-					}
-					elseif ($name == 'Xhtml')
-					{
-						$name = lang('xhtml');
-					}
-					$vars['field_fmt_options'][$row['field_fmt']] = $name;
-				}
-			}
-		}
+		ee()->load->model('addons_model');
+		$vars['field_fmt_options'] = ee()->addons_model->get_plugin_formatting(TRUE);
 
 		$vars['field_fmt'] = (isset($field_fmt) && $field_fmt != '') ? $field_fmt : 'none';
 

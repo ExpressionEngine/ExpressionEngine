@@ -71,45 +71,54 @@ class Channels extends AbstractChannelsController {
 		$data = array();
 		foreach ($channels as $channel)
 		{
-			$data[] = array(
-				$channel->channel_id,
-				htmlentities($channel->channel_title, ENT_QUOTES),
-				htmlentities($channel->channel_name, ENT_QUOTES),
+			$columns = array(
+				$channel->getId(),
+				$channel->channel_title,
+				$channel->channel_name,
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => cp_url('channels/edit/'.$channel->channel_id),
+						'href' => cp_url('channels/edit/'.$channel->getId()),
 						'title' => lang('edit')
 					),
 					'settings' => array(
-						'href' => cp_url('channels/settings/'.$channel->channel_id),
+						'href' => cp_url('channels/settings/'.$channel->getId()),
 						'title' => lang('settings')
 					),
-					'layout' => array(
-						'href' => cp_url('channels/layouts/'.$channel->channel_id),
-						'title' => lang('layout')
+					'txt-only' => array(
+						'href' => cp_url('channels/layouts/'.$channel->getId()),
+						'title' => (lang('layouts')),
+						'content' => strtolower(lang('layouts'))
 					)
 				)),
 				array(
 					'name' => 'channels[]',
-					'value' => $channel->channel_id,
+					'value' => $channel->getId(),
 					'data'	=> array(
 						'confirm' => lang('channel') . ': <b>' . htmlentities($channel->channel_title, ENT_QUOTES) . '</b>'
 					)
 				)
 			);
+
+			$attrs = array();
+			if (ee()->session->flashdata('highlight_id') == $channel->getId())
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs' => $attrs,
+				'columns' => $columns
+			);
 		}
 
 		$table->setData($data);
 
-		$base_url = new CP\URL('channels', ee()->session->session_id());
-		$vars['table'] = $table->viewData($base_url);
+		$vars['table'] = $table->viewData(ee('CP/URL', 'channels'));
 
-		$pagination = new CP\Pagination(
-			$vars['table']['limit'],
-			$total_rows,
-			$vars['table']['page']
-		);
-		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
+		$vars['pagination'] = ee('CP/Pagination', $total_rows)
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($vars['table']['base_url']);
 
 		ee()->view->cp_page_title = lang('manage_channels');
 
@@ -303,7 +312,7 @@ class Channels extends AbstractChannelsController {
 				'desc' => 'channel_duplicate_desc',
 				'fields' => array(
 					'duplicate_channel_prefs' => array(
-						'type' => 'dropdown',
+						'type' => 'select',
 						'choices' => $duplicate_channel_prefs_options
 					)
 				)
@@ -317,7 +326,7 @@ class Channels extends AbstractChannelsController {
 				'desc' => 'status_groups_desc',
 				'fields' => array(
 					'status_group' => array(
-						'type' => 'dropdown',
+						'type' => 'select',
 						'choices' => $status_group_options,
 						'value' => $channel->status_group,
 						'no_results' => array(
@@ -333,7 +342,7 @@ class Channels extends AbstractChannelsController {
 				'desc' => 'custom_field_group_desc',
 				'fields' => array(
 					'field_group' => array(
-						'type' => 'dropdown',
+						'type' => 'select',
 						'choices' => $field_group_options,
 						'value' => $channel->field_group,
 						'no_results' => array(
@@ -386,13 +395,15 @@ class Channels extends AbstractChannelsController {
 		{
 			$channel_id = $this->saveChannel($channel);
 
+			ee()->session->set_flashdata('highlight_id', $channel_id);
+
 			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('channel_saved'))
 				->addToBody(lang('channel_saved_desc'))
 				->defer();
 
-			ee()->functions->redirect(cp_url('channels/edit/' . $channel_id));
+			ee()->functions->redirect(cp_url('channels'));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -698,7 +709,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'xml_language_desc',
 					'fields' => array(
 						'channel_lang' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => ee()->lang->language_pack_names(),
 							'value' => $channel->channel_lang ?: 'english'
 						)
@@ -751,7 +762,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'live_look_template_desc',
 					'fields' => array(
 						'live_look_template' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $live_look_template_options,
 							'value' => $channel->live_look_template
 						)
@@ -784,7 +795,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'default_status_desc',
 					'fields' => array(
 						'deft_status' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $deft_status_options,
 							'value' => $channel->deft_status
 						)
@@ -795,7 +806,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'default_category_desc',
 					'fields' => array(
 						'deft_category' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $deft_category_options,
 							'value' => $channel->deft_category
 						)
@@ -806,7 +817,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'search_excerpt_desc',
 					'fields' => array(
 						'search_excerpt' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $search_excerpt_options,
 							'value' => $channel->search_excerpt
 						)
@@ -819,7 +830,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'html_formatting_desc',
 					'fields' => array(
 						'channel_html_formatting' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $channel_html_formatting_options,
 							'value' => $channel->channel_html_formatting
 						)
@@ -862,7 +873,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'channel_form_status_desc',
 					'fields' => array(
 						'default_status' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $channel_form_statuses,
 							'value' => $channel_form->default_status
 						)
@@ -873,7 +884,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'channel_form_default_author_desc',
 					'fields' => array(
 						'default_author' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $all_authors,
 							'value' => $channel_form->default_author
 						)
@@ -1066,7 +1077,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'text_formatting_desc',
 					'fields' => array(
 						'comment_text_formatting' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $comment_text_formatting_options,
 							'value' => $channel->comment_text_formatting
 						)
@@ -1077,7 +1088,7 @@ class Channels extends AbstractChannelsController {
 					'desc' => 'html_formatting_desc',
 					'fields' => array(
 						'comment_html_formatting' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $comment_html_formatting_options,
 							'value' => $channel->comment_html_formatting
 						)
@@ -1187,9 +1198,11 @@ class Channels extends AbstractChannelsController {
 		{
 			$this->saveChannelSettings($channel_id, $vars['sections']);
 
+			ee()->session->set_flashdata('highlight_id', $channel_id);
+
 			ee()->view->set_message('success', lang('channel_saved'), lang('channel_saved_desc'), TRUE);
 
-			ee()->functions->redirect(cp_url('channels/settings/' . $channel_id));
+			ee()->functions->redirect(cp_url('channels'));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{

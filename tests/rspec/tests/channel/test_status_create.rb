@@ -135,6 +135,11 @@ feature 'Status Create/Edit' do
     no_php_js_errors
 
     @page.should have_text 'Status saved'
+
+    @page.load_view_for_status_group(1)
+    @page.load_edit_for_status(4)
+    no_php_js_errors
+
     @page.should have_text 'Edit Status'
     should_have_no_form_errors(@page)
 
@@ -150,6 +155,10 @@ feature 'Status Create/Edit' do
     no_php_js_errors
 
     @page.should have_text 'Status saved'
+
+    @page.load_view_for_status_group(1)
+    @page.load_edit_for_status(4)
+
     @page.should have_text 'Edit Status'
     should_have_no_form_errors(@page)
 

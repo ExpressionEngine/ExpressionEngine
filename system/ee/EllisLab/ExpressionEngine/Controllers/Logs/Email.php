@@ -4,7 +4,6 @@ namespace EllisLab\ExpressionEngine\Controllers\Logs;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Service\CP\Filter\FilterFactory;
 use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 
@@ -119,12 +118,14 @@ class Email extends Logs {
 			->offset($offset)
 			->all();
 
-		$pagination = new Pagination($this->params['perpage'], $count, $page);
-		$links = $pagination->cp_links($this->base_url);
+		$pagination = ee('CP/Pagination', $count)
+			->perPage($this->params['perpage'])
+			->currentPage($page)
+			->render($this->base_url);
 
 		$vars = array(
 			'logs' => $logs,
-			'pagination' => $links,
+			'pagination' => $pagination,
 			'form_url' => $this->base_url->compile(),
 		);
 

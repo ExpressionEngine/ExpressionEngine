@@ -1,8 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 
 /**
  * ExpressionEngine - by EllisLab
@@ -47,7 +46,7 @@ class Rte_mcp {
 		ee()->load->model('rte_tool_model');
 
 		// set some properties
-		$this->_base_url = new URL('addons/settings/rte', ee()->session->session_id());
+		$this->_base_url = ee('CP/URL', 'addons/settings/rte');
 		ee()->rte_lib->form_url = 'addons/settings/rte';
 
 		// Delete missing tools
@@ -155,7 +154,7 @@ class Rte_mcp {
 						'desc' => '',
 						'fields' => array(
 							'rte_default_toolset_id' => array(
-								'type' => 'dropdown',
+								'type' => 'select',
 								'choices' => $toolset_opts
 							)
 						)
@@ -167,7 +166,9 @@ class Rte_mcp {
 		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => FALSE, 'limit' => 20));
 		$table->setColumns(
 			array(
-				'tool_set',
+				'tool_set' => array(
+					'encode' => FALSE
+				),
 				'status',
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
@@ -187,12 +188,10 @@ class Rte_mcp {
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
-			$pagination = new Pagination(
-				$vars['table']['limit'],
-				$vars['table']['total_rows'],
-				$vars['table']['page']
-			);
-			$vars['pagination'] = $pagination->cp_links($this->_base_url);
+			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+				->perPage($vars['table']['limit'])
+				->currentPage($vars['table']['page'])
+				->render($vars['base_url']);
 		}
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('toolset') . ': <b>### ' . lang('toolsets') . '</b>');
