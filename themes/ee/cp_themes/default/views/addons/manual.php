@@ -28,9 +28,9 @@
 		<?php endif ?>
 		<div class="box">
 			<h1><?=$name?> <?=$version?><br><i><?=lang('author')?>: <a href="<?=$author_url?>" rel="external"><?=$author?></a><br><?=$description?></i></h1>
-			<form class="settings">
+			<div class="md-wrap">
 				<?=$readme?>
-			</form>
+			</div>
 		</div>
 	</div>
 </div>
