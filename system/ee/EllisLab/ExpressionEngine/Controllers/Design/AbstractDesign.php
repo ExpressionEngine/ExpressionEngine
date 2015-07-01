@@ -332,7 +332,7 @@ abstract class AbstractDesign extends CP_Controller {
 					'name' => 'selection[]',
 					'value' => $template->template_id,
 					'data' => array(
-						'confirm' => lang('temlate') . ': <b>' . htmlentities($template->template_name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('template') . ': <b>' . htmlentities($template->template_name, ENT_QUOTES) . '</b>'
 					)
 				)
 			);
