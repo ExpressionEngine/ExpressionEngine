@@ -44,7 +44,7 @@
 						<?php if (ee()->config->item('license_number')): ?>
 							<?=ee()->config->item('license_number')?>
 						<?php elseif (ee()->cp->allowed_group('can_access_admin', 'can_access_sys_prefs')): ?>
-							<a href="<?=cp_url('settings/license')?>"><?=lang('register_now')?></a>
+							<a href="<?=ee('CP/URL', 'settings/license')?>"><?=lang('register_now')?></a>
 						<?php else: ?>
 							<?=lang('not_entered')?>
 						<?php endif ?>

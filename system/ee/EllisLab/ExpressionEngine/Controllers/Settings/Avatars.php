@@ -121,7 +121,7 @@ class Avatars extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = cp_url('settings/avatars');
+		$base_url = ee('CP/URL', 'settings/avatars');
 
 		if (AJAX_REQUEST)
 		{
@@ -161,8 +161,8 @@ class Avatars extends Settings {
 
 	/**
 	 * Update the upload preferences for the associated upload directory
-	 * 
-	 * @param mixed $data 
+	 *
+	 * @param mixed $data
 	 * @access private
 	 * @return void
 	 */

@@ -69,7 +69,7 @@ class Search extends CP_Controller {
 			if (AJAX_REQUEST)
 			{
 				// Force a js redirect
-				$url = cp_url('search/build_index', array(
+				$url = ee('CP/URL', 'search/build_index', array(
 					'saved' => $search
 				));
 				$url = str_replace('&amp;', '&', $url);
@@ -78,7 +78,7 @@ class Search extends CP_Controller {
 			}
 
 			// Degrade 'nicely'
-			ee()->functions->redirect(cp_url('search/build_index', array(
+			ee()->functions->redirect(ee('CP/URL', 'search/build_index', array(
 					'saved' => $search
 				)));
 		}
@@ -123,7 +123,7 @@ class Search extends CP_Controller {
 			ee()->view->cp_page_title = $vars['cp_page_title'];
 
 			// Meta refresh to start the process
-			$refresh_url = cp_url('search/build_index', array(
+			$refresh_url = ee('CP/URL', 'search/build_index', array(
 				'language' => $language,
 				'working'  => 'y',
 				'saved'    => $saved
@@ -141,7 +141,7 @@ class Search extends CP_Controller {
 			// And we're on our way
 			ee()->cp_search->_build_index($language);
 			ee()->functions->redirect(
-				cp_url('search/build_index', array(
+				ee('CP/URL', 'search/build_index', array(
 					'working' => 'n',
 					'saved'   => $saved
 				))
@@ -151,12 +151,12 @@ class Search extends CP_Controller {
 		{
 			if ( ! empty($saved))
 			{
-				ee()->functions->redirect(cp_url('search', array(
+				ee()->functions->redirect(ee('CP/URL', 'search', array(
 					'saved' => $saved
 				)));
 			}
 
-			ee()->functions->redirect(cp_url('homepage'));
+			ee()->functions->redirect(ee('CP/URL', 'homepage'));
 		}
 	}
 

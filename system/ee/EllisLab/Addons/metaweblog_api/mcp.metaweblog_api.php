@@ -98,7 +98,7 @@ class Metaweblog_api_mcp {
 				array(
 					'toolbar_items' => array(
 						'edit' => array(
-							'href' => cp_url('addons/settings/metaweblog_api/modify', array('id' => $metaweblog->metaweblog_id)),
+							'href' => ee('CP/URL', 'addons/settings/metaweblog_api/modify', array('id' => $metaweblog->metaweblog_id)),
 							'title' => lang('edit')
 						)
 					)
@@ -150,7 +150,7 @@ class Metaweblog_api_mcp {
 
 		if ($id == '')
 		{
-			ee()->functions->redirect(cp_url('addons/settings/metaweblog_api'));
+			ee()->functions->redirect(ee('CP/URL', 'addons/settings/metaweblog_api'));
 		}
 
 		$channels = array();
@@ -171,18 +171,18 @@ class Metaweblog_api_mcp {
 		if ($id == 'new')
 		{
 			$create = TRUE;
-			$base_url = cp_url('addons/settings/metaweblog_api/create');
+			$base_url = ee('CP/URL', 'addons/settings/metaweblog_api/create');
 		}
 		else
 		{
 			$create = FALSE;
-			$base_url = cp_url('addons/settings/metaweblog_api/modify/' . $id);
+			$base_url = ee('CP/URL', 'addons/settings/metaweblog_api/modify/' . $id);
 
 			$query = ee()->db->get_where('metaweblog_api', array('metaweblog_id' => $id));
 
 			if ($query->num_rows() == 0)
 			{
-				ee()->functions->redirect(cp_url('addons/settings/metaweblog_api'));
+				ee()->functions->redirect(ee('CP/URL', 'addons/settings/metaweblog_api'));
 			}
 
 			foreach($query->row_array() as $name => $value)
@@ -498,7 +498,7 @@ class Metaweblog_api_mcp {
 				->addToBody($message)
 				->defer();
 
-			ee()->functions->redirect(cp_url('addons/settings/metaweblog_api'));
+			ee()->functions->redirect(ee('CP/URL', 'addons/settings/metaweblog_api'));
 		}
 	}
 

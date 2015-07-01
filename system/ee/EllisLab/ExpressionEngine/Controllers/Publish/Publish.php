@@ -106,7 +106,7 @@ class Publish extends AbstractPublishController {
 		);
 
 		$vars = array(
-			'form_url' => cp_url('publish/create/' . $channel_id),
+			'form_url' => ee('CP/URL', 'publish/create/' . $channel_id),
 			'form_attributes' => $form_attributes,
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
 			'button_text' => lang('btn_publish')
@@ -156,7 +156,7 @@ class Publish extends AbstractPublishController {
 					->addToBody(sprintf(lang('create_entry_success_desc'), $entry->title))
 					->defer();
 
-				ee()->functions->redirect(cp_url('publish/edit/entry/' . $entry->entry_id, ee()->cp->get_url_state()));
+				ee()->functions->redirect(ee('CP/URL', 'publish/edit/entry/' . $entry->entry_id, ee()->cp->get_url_state()));
 			}
 			else
 			{

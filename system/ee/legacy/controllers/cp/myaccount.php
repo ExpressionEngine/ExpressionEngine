@@ -1361,7 +1361,7 @@ class MyAccount extends CP_Controller {
 			&& (empty($_FILES) && ee()->config->item('sig_allow_img_upload') == 'y'))
 		{
 			return ee()->functions->redirect(
-				cp_url('myaccount/edit_signature', $params)
+				ee('CP/URL', 'myaccount/edit_signature', $params)
 			);
 		}
 
@@ -1387,7 +1387,7 @@ class MyAccount extends CP_Controller {
 		}
 
 		$this->session->set_flashdata('message_success', lang('signature_updated'));
-		$this->functions->redirect(cp_url('myaccount/edit_signature', $params));
+		$this->functions->redirect(ee('CP/URL', 'myaccount/edit_signature', $params));
 	}
 
 	// --------------------------------------------------------------------
@@ -2326,7 +2326,7 @@ class MyAccount extends CP_Controller {
 			$channel_id = $this->input->post('channel_id');
 			$field_id = 'field_id_'.$this->input->post('field_id');
 
-			$path = cp_url(
+			$path = ee('CP/URL',
 				'content_publish/entry_form',
 				array(
 					'Z'          => 1,

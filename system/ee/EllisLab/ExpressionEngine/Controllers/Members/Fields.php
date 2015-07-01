@@ -55,7 +55,7 @@ class Fields extends Members\Members {
 		$table = ee('CP/Table', array(
 			'sortable' => FALSE,
 			'reorder' => TRUE,
-			'save' => cp_url("members/fields/order")
+			'save' => ee('CP/URL', "members/fields/order")
 		));
 
 		$table->setColumns(
@@ -84,7 +84,7 @@ class Fields extends Members\Members {
 		{
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
-					'href' => cp_url('members/fields/edit/', array('field' => $field->m_field_id)),
+					'href' => ee('CP/URL', 'members/fields/edit/', array('field' => $field->m_field_id)),
 					'title' => strtolower(lang('edit'))
 				)
 			));
@@ -108,8 +108,8 @@ class Fields extends Members\Members {
 		$table->setNoResultsText('no_search_results');
 		$table->setData($fieldData);
 		$data['table'] = $table->viewData($this->base_url);
-		$data['form_url'] = cp_url('members/fields/delete');
-		$data['new'] = cp_url('members/fields/create');
+		$data['form_url'] = ee('CP/URL', 'members/fields/delete');
+		$data['new'] = ee('CP/URL', 'members/fields/create');
 
 		$base_url = $data['table']['base_url'];
 
@@ -173,7 +173,7 @@ class Fields extends Members\Members {
 
 			ee()->view->save_btn_text = 'btn_edit_field';
 			ee()->view->cp_page_title = lang('edit_member_field');
-			ee()->view->base_url = cp_url('members/fields/edit/' . $field_id);
+			ee()->view->base_url = ee('CP/URL', 'members/fields/edit/' . $field_id);
 		}
 		else
 		{
@@ -190,7 +190,7 @@ class Fields extends Members\Members {
 
 			ee()->view->save_btn_text = 'btn_create_field';
 			ee()->view->cp_page_title = lang('create_member_field');
-			ee()->view->base_url = cp_url('members/fields/create');
+			ee()->view->base_url = ee('CP/URL', 'members/fields/create');
 		}
 
 		if ( ! $field)
@@ -308,7 +308,7 @@ class Fields extends Members\Members {
 					->addToBody(lang('member_field_saved_desc'))
 					->defer();
 
-				ee()->functions->redirect(cp_url('/members/fields/edit/' . $field_id));
+				ee()->functions->redirect(ee('CP/URL', '/members/fields/edit/' . $field_id));
 			}
 			else
 			{
@@ -325,7 +325,7 @@ class Fields extends Members\Members {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text_working = 'btn_saving';
 
-		ee()->cp->set_breadcrumb(cp_url('members/fields/edit'), lang('member_fields'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'members/fields/edit'), lang('member_fields'));
 
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/v3/form_group'),

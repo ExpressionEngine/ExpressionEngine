@@ -38,7 +38,7 @@ class Create extends Members {
 	 */
 	public function index()
 	{
-		$this->base_url = cp_url($this->base_url);
+		$this->base_url = ee('CP/URL', $this->base_url);
 		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
 		$choices = array();
 
@@ -273,7 +273,7 @@ class Create extends Members {
 		));
 		ee()->view->set_message('success', lang('member_updated'), lang('member_updated_desc'), TRUE);
 
-		$this->functions->redirect(cp_url('members'));
+		$this->functions->redirect(ee('CP/URL', 'members'));
 	}
 }
 // END CLASS

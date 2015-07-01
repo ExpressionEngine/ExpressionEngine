@@ -57,7 +57,7 @@ class Quicklinks extends Profile {
 		{
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
-					'href' => cp_url('members/profile/quicklinks/edit/' . ($quicklink['order'] ?: 1), $this->query_string),
+					'href' => ee('CP/URL', 'members/profile/quicklinks/edit/' . ($quicklink['order'] ?: 1), $this->query_string),
 					'title' => strtolower(lang('edit'))
 				)
 			));
@@ -91,8 +91,8 @@ class Quicklinks extends Profile {
 		$table->setData($links);
 
 		$data['table'] = $table->viewData($this->base_url);
-		$data['new'] = cp_url('members/profile/quicklinks/create', $this->query_string);
-		$data['form_url'] = cp_url('members/profile/quicklinks/delete', $this->query_string);
+		$data['new'] = ee('CP/URL', 'members/profile/quicklinks/create', $this->query_string);
+		$data['form_url'] = ee('CP/URL', 'members/profile/quicklinks/delete', $this->query_string);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('quick_links') . ': <b>### ' . lang('quick_links') . '</b>');
 		ee()->cp->add_js_script(array(
@@ -183,7 +183,7 @@ class Quicklinks extends Profile {
 		$this->quicklinks = array_diff_key($this->quicklinks, array_flip($selection));
 		$this->saveQuicklinks();
 
-		ee()->functions->redirect(cp_url($this->index_url, $this->query_string));
+		ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
 	}
 
 	/**
@@ -272,7 +272,7 @@ class Quicklinks extends Profile {
 		{
 			if ($this->saveQuicklinks())
 			{
-				ee()->functions->redirect(cp_url($this->index_url, $this->query_string));
+				ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())

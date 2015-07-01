@@ -86,7 +86,7 @@ class Ignore extends Profile {
 					$attributes['class'] = 'alt banned';
 				}
 
-				$email = "<a href = '" . cp_url('utilities/communicate') . "'>e-mail</a>";
+				$email = "<a href = '" . ee('CP/URL', 'utilities/communicate') . "'>e-mail</a>";
 				$ignored[] = array(
 					'columns' => array(
 						'id' => $member->member_id,
@@ -139,7 +139,7 @@ class Ignore extends Profile {
 				->render($this->base_url);
 		}
 
-		$data['form_url'] = cp_url('members/profile/ignore/delete', $this->query_string);
+		$data['form_url'] = ee('CP/URL', 'members/profile/ignore/delete', $this->query_string);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
 		ee()->cp->add_js_script(array(
@@ -164,7 +164,7 @@ class Ignore extends Profile {
 		$this->member->ignore_list = $ignore;
 		$this->member->save();
 
-		ee()->functions->redirect(cp_url($this->index_url, $this->query_string));
+		ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
 	}
 
 }

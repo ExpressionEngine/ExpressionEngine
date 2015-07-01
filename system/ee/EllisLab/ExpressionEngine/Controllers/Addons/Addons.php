@@ -284,7 +284,7 @@ class Addons extends CP_Controller {
 
 				$toolbar = array(
 					'install' => array(
-						'href' => cp_url('addons/install/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
+						'href' => ee('CP/URL', 'addons/install/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
 						'title' => lang('install'),
 						'class' => 'add'
 					)
@@ -315,7 +315,7 @@ class Addons extends CP_Controller {
 					if (isset($info['update']))
 					{
 						$toolbar['txt-only'] = array(
-							'href' => cp_url('addons/update/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
+							'href' => ee('CP/URL', 'addons/update/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
 							'title' => strtolower(lang('update')),
 							'class' => 'add',
 							'content' => sprintf(lang('update_to_version'), $this->formatVersionNumber($info['update']))
@@ -554,7 +554,7 @@ class Addons extends CP_Controller {
 		{
 			$return = base64_decode(ee()->input->get('return'));
 			$uri_elements = json_decode($return, TRUE);
-			$return = cp_url($uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
 
 			ee()->functions->redirect($return);
 		}
@@ -669,7 +669,7 @@ class Addons extends CP_Controller {
 		{
 			$return = base64_decode(ee()->input->get('return'));
 			$uri_elements = json_decode($return, TRUE);
-			$return = cp_url($uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
 
 			ee()->functions->redirect($return);
 		}
@@ -774,7 +774,7 @@ class Addons extends CP_Controller {
 
 		$vars = array();
 		$breadcrumb = array(
-			cp_url('addons') => lang('addon_manager')
+			ee('CP/URL', 'addons') => lang('addon_manager')
 		);
 
 		if (is_null($method))
@@ -809,7 +809,7 @@ class Addons extends CP_Controller {
 				if ($method == 'save')
 				{
 					$this->saveFieldtypeSettings($fieldtype);
-					ee()->functions->redirect(cp_url('addons/settings/' . $addon));
+					ee()->functions->redirect(ee('CP/URL', 'addons/settings/' . $addon));
 				}
 
 				$vars['_module_cp_body'] = $this->getFieldtypeSettings($fieldtype);
@@ -824,7 +824,7 @@ class Addons extends CP_Controller {
 					if ($method == 'save')
 					{
 						$this->saveExtensionSettings($addon);
-						ee()->functions->redirect(cp_url('addons/settings/' . $addon));
+						ee()->functions->redirect(ee('CP/URL', 'addons/settings/' . $addon));
 					}
 
 					$vars['_module_cp_body'] = $this->getExtensionSettings($addon);
@@ -890,7 +890,7 @@ class Addons extends CP_Controller {
 		ee()->view->cp_heading = $vars['name'] . ' ' . lang('manual');
 
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('addons') => lang('addon_manager')
+			ee('CP/URL', 'addons') => lang('addon_manager')
 		);
 
 		ee()->cp->render('addons/manual', $vars);
@@ -1446,7 +1446,7 @@ class Addons extends CP_Controller {
 		}
 
 		$vars = array(
-			'base_url' => cp_url('addons/settings/' . $name . '/save'),
+			'base_url' => ee('CP/URL', 'addons/settings/' . $name . '/save'),
 			'cp_page_title' => $extension['name'] . ' ' . lang('configuration'),
 			'save_btn_text' => 'btn_save_settings',
 			'save_btn_text_working' => 'btn_saving',
@@ -1668,7 +1668,7 @@ class Addons extends CP_Controller {
 		if (is_array($fieldtype_settings))
 		{
 			$vars = array(
-				'base_url' => cp_url('addons/settings/' . $fieldtype['package'] . '/save'),
+				'base_url' => ee('CP/URL', 'addons/settings/' . $fieldtype['package'] . '/save'),
 				'cp_page_title' => $fieldtype['name'] . ' ' . lang('configuration'),
 				'save_btn_text' => 'btn_save_settings',
 				'save_btn_text_working' => 'btn_saving',
@@ -1680,7 +1680,7 @@ class Addons extends CP_Controller {
 		{
 			$html = '<div class="box">';
 			$html .= '<h1>' . $fieldtype['name'] . ' ' . lang('configuration') . '</h1>';
-			$html .= form_open(cp_url('addons/settings/' . $fieldtype['package'] . '/save'), 'class="settings"');
+			$html .= form_open(ee('CP/URL', 'addons/settings/' . $fieldtype['package'] . '/save'), 'class="settings"');
 			$html .= ee('Alert')->get('shared-form');
 			$html .= $fieldtype_settings;
 			$html .= '<fieldset class="form-ctrls">';

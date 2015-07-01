@@ -104,7 +104,7 @@ class Groups extends Members\Members {
 		{
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
-					'href' => cp_url('members/groups/edit/', array('group' => $group->group_id)),
+					'href' => ee('CP/URL', 'members/groups/edit/', array('group' => $group->group_id)),
 					'title' => strtolower(lang('edit'))
 				)
 			));
@@ -112,7 +112,7 @@ class Groups extends Members\Members {
 			$status = ($group->is_locked == 'y') ? 'locked' : 'unlocked';
 			$status = "<span class='st-$status'>" . lang($status) . "</span>";
 			$count = $group->getMembers()->count();
-			$href = cp_url('members', array('group' => $group->group_id));
+			$href = ee('CP/URL', 'members', array('group' => $group->group_id));
 			$title = "$group->group_title <a href='$href' alt='" . lang('view_members') . $group->group_title ."'>($count)</a>";
 
 			$groupData[] = array(
@@ -133,7 +133,7 @@ class Groups extends Members\Members {
 		$table->setNoResultsText('no_search_results');
 		$table->setData($groupData);
 		$data['table'] = $table->viewData($this->base_url);
-		$data['form_url'] = cp_url('members/groups/delete');
+		$data['form_url'] = ee('CP/URL', 'members/groups/delete');
 
 		$base_url = $data['table']['base_url'];
 
@@ -187,7 +187,7 @@ class Groups extends Members\Members {
 		$this->group = ee()->api->get('MemberGroup', array($group))->first();
 		$this->group_id = (int) $this->group->group_id;
 		$this->query_string['group'] = $group;
-		$this->base_url = cp_url('members/groups/edit/', $this->query_string);
+		$this->base_url = ee('CP/URL', 'members/groups/edit/', $this->query_string);
 		$current = $this->groupData($this->group);
 
 		$this->form($vars, $current);
@@ -633,7 +633,7 @@ class Groups extends Members\Members {
 				ee()->view->set_message('success', lang('member_group_updated'), lang('member_group_updated_desc'), TRUE);
 			}
 
-			ee()->functions->redirect(cp_url($this->index_url, $this->query_string));
+			ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{

@@ -55,33 +55,33 @@ abstract class AbstractChannels extends CP_Controller {
 		// Register our menu
 		ee()->menu->register_left_nav(array(
 			'channels' => array(
-				'href' => cp_url('channels'),
+				'href' => ee('CP/URL', 'channels'),
 				'button' => array(
-					'href' => cp_url('channels/create'),
+					'href' => ee('CP/URL', 'channels/create'),
 					'text' => 'new'
 				)
 			),
 			'custom_fields' => array(
-				'href' => cp_url('channels/fields'),
+				'href' => ee('CP/URL', 'channels/fields'),
 				'button' => array(
-					'href' => cp_url('channels/fields/create'),
+					'href' => ee('CP/URL', 'channels/fields/create'),
 					'text' => 'new'
 				)
 			),
 			array(
-				'field_groups' => cp_url('channels/fields/groups')
+				'field_groups' => ee('CP/URL', 'channels/fields/groups')
 			),
 			'category_groups' => array(
-				'href' => cp_url('channels/cat'),
+				'href' => ee('CP/URL', 'channels/cat'),
 				'button' => array(
-					'href' => cp_url('channels/cat/create'),
+					'href' => ee('CP/URL', 'channels/cat/create'),
 					'text' => 'new'
 				)
 			),
 			'status_groups' => array(
-				'href' => cp_url('channels/status'),
+				'href' => ee('CP/URL', 'channels/status'),
 				'button' => array(
-					'href' => cp_url('channels/status/create'),
+					'href' => ee('CP/URL', 'channels/status/create'),
 					'text' => 'new'
 				)
 			)
@@ -90,10 +90,10 @@ abstract class AbstractChannels extends CP_Controller {
 		// This header is section-wide
 		ee()->view->header = array(
 			'title' => lang('channel_manager'),
-			'form_url' => cp_url('channels/search'),
+			'form_url' => ee('CP/URL', 'channels/search'),
 			'toolbar_items' => array(
 				'settings' => array(
-					'href' => cp_url('settings/content-design'),
+					'href' => ee('CP/URL', 'settings/content-design'),
 					'title' => lang('settings')
 				)
 			)

@@ -114,7 +114,7 @@ class Pages_mcp {
 					array(
 						'toolbar_items' => array(
 							'edit' => array(
-								'href' => cp_url('publish/edit/' . $entry_id),
+								'href' => ee('CP/URL', 'publish/edit/' . $entry_id),
 								'title' => lang('edit')
 							)
 						)

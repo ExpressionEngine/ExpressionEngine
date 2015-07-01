@@ -405,7 +405,7 @@ class Cp {
 					->addToBody(lang('checksum_changed_warning'))
 					->addToBody($changed);
 
-				$button = form_open(cp_url('homepage/accept_checksums'), '', array('return' => base64_encode(ee()->cp->get_safe_refresh())));
+				$button = form_open(ee('CP/URL', 'homepage/accept_checksums'), '', array('return' => base64_encode(ee()->cp->get_safe_refresh())));
 				$button .= '<input class="btn submit" type="submit" value="' . lang('checksum_changed_accept') . '">';
 				$button .= form_close();
 
@@ -685,7 +685,7 @@ class Cp {
 			//   1. index.php?/cp/path/to/controller/with/arugments
 			//   2. index.php?D=cp&C=cp&M=homepage
 			//
-			// In the case of #1 we likely built it with cp_url() thus
+			// In the case of #1 we likely built it with ee('CP/URL', ) thus
 			// we will store the needed parts to rebuild it.
 			//
 			// In the case of #2 we will build out a string to return
@@ -827,6 +827,11 @@ class Cp {
 	public function set_breadcrumb($link, $title)
 	{
 		static $_crumbs = array();
+
+		if (is_object($link))
+		{
+			$link = $link->compile();
+		}
 
 		$_crumbs[$link] = $title;
 		ee()->view->cp_breadcrumbs = $_crumbs;
@@ -1126,7 +1131,7 @@ class Cp {
 
 		if (empty($redirect))
 		{
-			$redirect = cp_url('homepage');
+			$redirect = ee('CP/URL', 'homepage');
 		}
 
 		// We set the cookie before switching prefs to ensure it uses current settings

@@ -129,7 +129,7 @@ class Messages extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = cp_url('settings/messages');
+		$base_url = ee('CP/URL', 'settings/messages');
 
 		if (AJAX_REQUEST)
 		{

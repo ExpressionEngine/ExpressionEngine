@@ -439,7 +439,7 @@ class Stats extends Utilities {
 		}
 
 		ee()->view->set_message('success', lang('sync_completed'), '', TRUE);
-		ee()->functions->redirect(cp_url('utilities/stats'));
+		ee()->functions->redirect(ee('CP/URL', 'utilities/stats'));
 	}
 }
 // END CLASS

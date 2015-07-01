@@ -93,7 +93,7 @@ class General extends Settings {
 					),
 					'action_button' => array(
 						'text' => 'check_now',
-						'link' => cp_url('settings/general/version-check'),
+						'link' => ee('CP/URL', 'settings/general/version-check'),
 						'class' => 'version-check'
 					)
 				),
@@ -163,7 +163,7 @@ class General extends Settings {
 			)
 		);
 
-		$base_url = cp_url('settings/general');
+		$base_url = ee('CP/URL', 'settings/general');
 
 		ee()->form_validation->set_rules('site_name', 'lang:site_name', 'required|strip_tags|valid_xss_check');
 		ee()->form_validation->set_rules('site_short_name', 'lang:site_short_name', 'required|alpha_dash|strip_tags|callback__validShortName|valid_xss_check');
@@ -319,7 +319,7 @@ class General extends Settings {
 			}
 		}
 
-		ee()->functions->redirect(cp_url('settings/general'));
+		ee()->functions->redirect(ee('CP/URL', 'settings/general'));
 	}
 }
 // END CLASS

@@ -1,7 +1,7 @@
 <?php extend_template('default-nav'); ?>
 
 <h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?> <span class="req-title"><?=lang('required_fields')?></span></h1>
-<?=form_open(cp_url('utilities/translate/' . $language . '/save/' . $file), 'class="settings"')?>
+<?=form_open(ee('CP/URL', 'utilities/translate/' . $language . '/save/' . $file), 'class="settings"')?>
 <?=ee('Alert')->getAllInlines()?>
 <?php foreach ($keys as $key => $value):?>
 	<fieldset class="col-group required <?=form_error_class($key)?>">

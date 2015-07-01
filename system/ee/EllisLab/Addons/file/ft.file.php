@@ -122,7 +122,7 @@ class File_ft extends EE_Fieldtype {
 				'value' => $data,
 				'file' => $file,
 				'thumbnail' => ee('Thumbnail')->get($file)->url,
-				'fp_url' => cp_url($fp->controller, array('directory' => $allowed_file_dirs))
+				'fp_url' => ee('CP/URL', $fp->controller, array('directory' => $allowed_file_dirs))
 			));
 		}
 

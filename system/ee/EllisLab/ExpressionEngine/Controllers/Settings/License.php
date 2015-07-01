@@ -80,7 +80,7 @@ class License extends Settings {
 			)
 		));
 
-		$base_url = cp_url('settings/license');
+		$base_url = ee('CP/URL', 'settings/license');
 
 		if (AJAX_REQUEST)
 		{

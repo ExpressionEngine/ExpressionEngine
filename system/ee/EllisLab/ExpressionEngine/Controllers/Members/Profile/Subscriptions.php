@@ -145,7 +145,7 @@ class Subscriptions extends Profile {
 			}
 		}
 
-		ee()->functions->redirect(cp_url($this->index_url, $this->query_string));
+		ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
 	}
 
 }

@@ -82,7 +82,7 @@ class Rte_mcp {
 
 		foreach ($toolsets as $t)
 		{
-			$url = cp_url('addons/settings/rte/edit_toolset', array('toolset_id' => $t['toolset_id']));
+			$url = ee('CP/URL', 'addons/settings/rte/edit_toolset', array('toolset_id' => $t['toolset_id']));
 			$toolset_name = htmlentities($t['name'], ENT_QUOTES);
 			$checkbox = array(
 				'name' => 'selection[]',
@@ -269,8 +269,8 @@ class Rte_mcp {
 			'body'			=> ee()->rte_lib->edit_toolset(0),
 			'heading'		=> lang('create_tool_set_header'),
 			'breadcrumb' 	=> array(
-				cp_url('addons') => lang('addon_manager'),
-				cp_url('addons/settings/rte') => lang('rte_module_name') . ' ' . lang('configuration')
+				ee('CP/URL', 'addons') => lang('addon_manager'),
+				ee('CP/URL', 'addons/settings/rte') => lang('rte_module_name') . ' ' . lang('configuration')
 			)
 		);
 	}
@@ -290,8 +290,8 @@ class Rte_mcp {
 			'body'			=> ee()->rte_lib->edit_toolset($toolset_id),
 			'heading'		=> lang('edit_tool_set_header'),
 			'breadcrumb' 	=> array(
-				cp_url('addons') => lang('addon_manager'),
-				cp_url('addons/settings/rte') => lang('rte_module_name') . ' ' . lang('configuration')
+				ee('CP/URL', 'addons') => lang('addon_manager'),
+				ee('CP/URL', 'addons/settings/rte') => lang('rte_module_name') . ' ' . lang('configuration')
 			)
 		);
 	}

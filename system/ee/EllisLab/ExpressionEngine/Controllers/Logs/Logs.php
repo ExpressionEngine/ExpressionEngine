@@ -56,11 +56,11 @@ class Logs extends CP_Controller {
 		$menu = array(
 			'logs',
 			array(
-				'developer_log' => cp_url('logs/developer'),
-				'cp_log'        => cp_url('logs/cp'),
-				'throttle_log'  => cp_url('logs/throttle'),
-				'email_log'     => cp_url('logs/email'),
-				'search_log'    => cp_url('logs/search'),
+				'developer_log' => ee('CP/URL', 'logs/developer'),
+				'cp_log'        => ee('CP/URL', 'logs/cp'),
+				'throttle_log'  => ee('CP/URL', 'logs/throttle'),
+				'email_log'     => ee('CP/URL', 'logs/email'),
+				'search_log'    => ee('CP/URL', 'logs/search'),
 			)
 		);
 
@@ -93,11 +93,11 @@ class Logs extends CP_Controller {
 	{
 		if (ee()->session->userdata('group_id') == 1)
 		{
-			ee()->functions->redirect(cp_url('logs/developer'));
+			ee()->functions->redirect(ee('CP/URL', 'logs/developer'));
 		}
 		else
 		{
-			ee()->functions->redirect(cp_url('logs/cp'));
+			ee()->functions->redirect(ee('CP/URL', 'logs/cp'));
 		}
 	}
 

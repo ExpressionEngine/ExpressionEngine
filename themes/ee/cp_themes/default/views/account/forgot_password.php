@@ -7,7 +7,7 @@
 			<p><?php if ($message_status != 'success'): ?><b>!!</b> <?php endif ?><?=$message?></p>
 		</div>
 	<?php endif;?>
-	<?=form_open(cp_url('/cp/login/send_reset_token'))?>
+	<?=form_open(ee('CP/URL', '/cp/login/send_reset_token'))?>
 		<fieldset class="last">
 			<?=lang('email_address', 'email')?>
 			<?=form_input(array('dir' => 'ltr', 'name' => "email", 'id' => "email", 'maxlength' => 80, 'autocomplete' => 'off'))?>

@@ -1243,7 +1243,7 @@ class Api_channel_fields extends Api {
 			OR $field_data['field_instructions'] != ee('Security/XSS')->clean($field_data['field_instructions']))
 		{
 			ee()->lang->loadfile('admin');
-			$this->errors[] = sprintf(lang('invalid_xss_check'), cp_url('homepage'));
+			$this->errors[] = sprintf(lang('invalid_xss_check'), ee('CP/URL', 'homepage'));
 		}
 
 		// Truncated field name to test against duplicates

@@ -138,7 +138,7 @@ class Translate extends Utilities {
 					'filename'	=> $file,
 					array('toolbar_items' => array(
 						'edit' => array(
-							'href' => cp_url('utilities/translate/' . $language . '/edit/' . $name),
+							'href' => ee('CP/URL', 'utilities/translate/' . $language . '/edit/' . $name),
 							'title' => strtolower(lang('edit'))
 						)
 					)),
@@ -269,7 +269,7 @@ class Translate extends Utilities {
 		{
 			$message = $path . $file . '_lang.php ' . lang('cannot_access') . '.';
 			ee()->view->set_message('issue', $message, '', TRUE);
-			ee()->functions->redirect(cp_url('utilities/translate/' . $language));
+			ee()->functions->redirect(ee('CP/URL', 'utilities/translate/' . $language));
 		}
 
 		ee()->view->cp_page_title = $filename . ' ' . ucfirst(lang('translation'));
@@ -313,7 +313,7 @@ class Translate extends Utilities {
 		);
 
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('utilities/translate/' . $language) => ucfirst($language) . ' ' . lang('language_files')
+			ee('CP/URL', 'utilities/translate/' . $language) => ucfirst($language) . ' ' . lang('language_files')
 		);
 
 		ee()->cp->render('utilities/translate/edit', $vars);
@@ -360,7 +360,7 @@ class Translate extends Utilities {
 			{
 				exit($dest_loc);
 				ee()->view->set_message('issue', lang('trans_file_not_writable'), '', TRUE);
-				ee()->functions->redirect(cp_url('utilities/translate/' . $language . '/edit/' . $file));
+				ee()->functions->redirect(ee('CP/URL', 'utilities/translate/' . $language . '/edit/' . $file));
 			}
 		}
 
@@ -374,7 +374,7 @@ class Translate extends Utilities {
 		{
 			ee()->view->set_message('issue', lang('invalid_path'), '', TRUE);
 		}
-		ee()->functions->redirect(cp_url('utilities/translate/' . $language . '/edit/' . $file));
+		ee()->functions->redirect(ee('CP/URL', 'utilities/translate/' . $language . '/edit/' . $file));
 	}
 }
 // END CLASS

@@ -148,7 +148,7 @@ class DebugOutput extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = cp_url('settings/debug-output');
+		$base_url = ee('CP/URL', 'settings/debug-output');
 
 		if (AJAX_REQUEST)
 		{

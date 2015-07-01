@@ -89,7 +89,7 @@ class Groups extends AbstractChannelsController {
 				$group->group_name,
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => cp_url('channels/fields/groups/edit/' . $group->group_id),
+						'href' => ee('CP/URL', 'channels/fields/groups/edit/' . $group->group_id),
 						'title' => lang('edit')
 					)
 				)),

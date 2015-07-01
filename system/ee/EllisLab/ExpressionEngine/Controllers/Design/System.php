@@ -74,7 +74,7 @@ class System extends AbstractDesignController {
 				lang($template->template_name),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => cp_url('design/system/edit/' . $template->template_id),
+						'href' => ee('CP/URL', 'design/system/edit/' . $template->template_id),
 						'title' => lang('edit')
 					),
 				))
@@ -129,7 +129,7 @@ class System extends AbstractDesignController {
 			if (ee()->input->post('submit') == 'finish')
 			{
 				$alert->defer();
-				ee()->functions->redirect(cp_url('design/system'));
+				ee()->functions->redirect(ee('CP/URL', 'design/system'));
 			}
 
 			$alert->now();
@@ -138,7 +138,7 @@ class System extends AbstractDesignController {
 		$author = $template->getLastAuthor();
 
 		$vars = array(
-			'form_url' => cp_url('design/system/edit/' . $template->template_id),
+			'form_url' => ee('CP/URL', 'design/system/edit/' . $template->template_id),
 			'template' => $template,
 			'author' => (empty($author)) ? '-' : $author->getMemberName(),
 		);
@@ -147,8 +147,8 @@ class System extends AbstractDesignController {
 
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), lang($template->template_name));
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('design') => lang('template_manager'),
-			cp_url('design/system/') => sprintf(lang('breadcrumb_group'), lang('system'))
+			ee('CP/URL', 'design') => lang('template_manager'),
+			ee('CP/URL', 'design/system/') => sprintf(lang('breadcrumb_group'), lang('system'))
 		);
 
 		// Supress browser XSS check that could cause obscure bug after saving

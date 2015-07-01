@@ -51,7 +51,7 @@ class Layouts extends AbstractChannelsController {
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
-			ee()->functions->redirect(cp_url('channels/layouts/' . $channel_id));
+			ee()->functions->redirect(ee('CP/URL', 'channels/layouts/' . $channel_id));
 		}
 
 		$channel = ee('Model')->get('Channel', $channel_id)
@@ -64,7 +64,7 @@ class Layouts extends AbstractChannelsController {
 		}
 
 		$vars['channel_id'] = $channel_id;
-		$vars['create_url'] = cp_url('channels/layouts/create/' . $channel_id);
+		$vars['create_url'] = ee('CP/URL', 'channels/layouts/create/' . $channel_id);
 
 		$table = ee('CP/Table');
 		$table->setColumns(
@@ -93,7 +93,7 @@ class Layouts extends AbstractChannelsController {
 				implode(',', $layout->MemberGroups->pluck('group_title')),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => cp_url('channels/layouts/edit/' . $layout->layout_id),
+						'href' => ee('CP/URL', 'channels/layouts/edit/' . $layout->layout_id),
 						'title' => lang('edit')
 					)
 				)),
@@ -136,7 +136,7 @@ class Layouts extends AbstractChannelsController {
 		));
 
 		ee()->view->cp_page_title = sprintf(lang('channel_form_layouts'), $channel->channel_title);
-		ee()->cp->set_breadcrumb(cp_url('channels'), lang('channels'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels'), lang('channels'));
 
 		ee()->cp->render('channels/layout/index', $vars);
 	}
@@ -188,7 +188,7 @@ class Layouts extends AbstractChannelsController {
 
 		$vars = array(
 			'channel' => $channel,
-			'form_url' => cp_url('channels/layouts/create/' . $channel_id),
+			'form_url' => ee('CP/URL', 'channels/layouts/create/' . $channel_id),
 			'layout' => $entry->getDisplay(),
 			'channel_layout' => $channel_layout,
 			'member_groups' => $this->getEligibleMemberGroups($channel),
@@ -238,7 +238,7 @@ class Layouts extends AbstractChannelsController {
 				->addToBody(sprintf(lang('create_layout_success_desc'), ee()->input->post('layout_name')))
 				->defer();
 
-			ee()->functions->redirect(cp_url('channels/layouts/edit/' . $layout->layout_id));
+			ee()->functions->redirect(ee('CP/URL', 'channels/layouts/edit/' . $layout->layout_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -250,8 +250,8 @@ class Layouts extends AbstractChannelsController {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('channels') => lang('channels'),
-			cp_url('channels/layouts/' . $channel_id) => lang('form_layouts')
+			ee('CP/URL', 'channels') => lang('channels'),
+			ee('CP/URL', 'channels/layouts/' . $channel_id) => lang('form_layouts')
 		);
 
 		ee()->view->cp_page_title = lang('create_form_layout');
@@ -298,7 +298,7 @@ class Layouts extends AbstractChannelsController {
 
 		$vars = array(
 			'channel' => $channel,
-			'form_url' => cp_url('channels/layouts/edit/' . $layout_id),
+			'form_url' => ee('CP/URL', 'channels/layouts/edit/' . $layout_id),
 			'layout' => $entry->getDisplay($channel_layout),
 			'channel_layout' => $channel_layout,
 			'member_groups' => $this->getEligibleMemberGroups($channel),
@@ -345,7 +345,7 @@ class Layouts extends AbstractChannelsController {
 				->addToBody(sprintf(lang('edit_layout_success_desc'), ee()->input->post('layout_name')))
 				->defer();
 
-			ee()->functions->redirect(cp_url('channels/layouts/edit/' . $layout_id));
+			ee()->functions->redirect(ee('CP/URL', 'channels/layouts/edit/' . $layout_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -357,8 +357,8 @@ class Layouts extends AbstractChannelsController {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('channels') => lang('channels'),
-			cp_url('channels/layouts/' . $channel_layout->channel_id) => lang('form_layouts')
+			ee('CP/URL', 'channels') => lang('channels'),
+			ee('CP/URL', 'channels/layouts/' . $channel_layout->channel_id) => lang('form_layouts')
 		);
 
 		$alert_required = ee('Alert')->makeBanner('tab-has-required-fields')

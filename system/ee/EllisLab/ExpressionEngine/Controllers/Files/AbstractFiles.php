@@ -79,8 +79,8 @@ abstract class AbstractFiles extends CP_Controller {
 			$data = array(
 				'name' => $destination->name,
 				'id' => $destination->id,
-				'url' => cp_url('files/directory/' . $destination->id),
-				'edit_url' => cp_url('files/uploads/edit/' . $destination->id),
+				'url' => ee('CP/URL', 'files/directory/' . $destination->id),
+				'edit_url' => ee('CP/URL', 'files/uploads/edit/' . $destination->id),
 			);
 
 			if ( ! empty($class))
@@ -101,10 +101,10 @@ abstract class AbstractFiles extends CP_Controller {
 	{
 		ee()->view->header = array(
 			'title' => lang('file_manager'),
-			'form_url' => cp_url('files'),
+			'form_url' => ee('CP/URL', 'files'),
 			'toolbar_items' => array(
 				'download' => array(
-					'href' => cp_url('files/export'),
+					'href' => ee('CP/URL', 'files/export'),
 					'title' => lang('export_all')
 				)
 			),
@@ -154,15 +154,15 @@ abstract class AbstractFiles extends CP_Controller {
 					'data-file-id' => $file->file_id
 				),
 				'edit' => array(
-					'href' => cp_url('files/file/edit/' . $file->file_id),
+					'href' => ee('CP/URL', 'files/file/edit/' . $file->file_id),
 					'title' => lang('edit')
 				),
 				'crop' => array(
-					'href' => cp_url('files/file/crop/' . $file->file_id),
+					'href' => ee('CP/URL', 'files/file/crop/' . $file->file_id),
 					'title' => lang('crop'),
 				),
 				'download' => array(
-					'href' => cp_url('files/file/download/' . $file->file_id),
+					'href' => ee('CP/URL', 'files/file/download/' . $file->file_id),
 					'title' => lang('download'),
 				),
 			);

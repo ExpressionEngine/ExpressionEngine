@@ -39,7 +39,7 @@ class Pages extends Settings {
 		// Make sure this page can't load without Pages installed
 		if ( ! ee()->addons_model->module_installed('pages'))
 		{
-			ee()->functions->redirect(cp_url('settings'));
+			ee()->functions->redirect(ee('CP/URL', 'settings'));
 		}
 
 		// Create channels dropdown
@@ -141,7 +141,7 @@ class Pages extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = cp_url('settings/pages');
+		$base_url = ee('CP/URL', 'settings/pages');
 
 		if (ee()->form_validation->run() !== FALSE)
 		{
@@ -164,8 +164,8 @@ class Pages extends Settings {
 
 		ee()->lang->loadfile('addons');
 		ee()->lang->loadfile('pages');
-		ee()->cp->set_breadcrumb(cp_url('addons'), lang('addon_manager'));
-		ee()->cp->set_breadcrumb(cp_url('pages'), lang('pages_manager'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'addons'), lang('addon_manager'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'pages'), lang('pages_manager'));
 
 		ee()->cp->render('settings/form', $vars);
 	}

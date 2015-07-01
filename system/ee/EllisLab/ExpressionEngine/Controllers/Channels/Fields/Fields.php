@@ -116,7 +116,7 @@ class Fields extends AbstractChannelsController {
 				$field->field_type,
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => cp_url('channels/fields/edit/' . $field->field_id),
+						'href' => ee('CP/URL', 'channels/fields/edit/' . $field->field_id),
 						'title' => lang('edit')
 					)
 				)),

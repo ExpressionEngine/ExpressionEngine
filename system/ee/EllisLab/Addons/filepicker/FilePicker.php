@@ -35,7 +35,7 @@ class FilePicker {
 
 	public function link($text, $dir = 'all', $data = array())
 	{
-		$href = cp_url($this->controller, array('directory' => $dir));
+		$href = ee('CP/URL', $this->controller, array('directory' => $dir));
 		$extra = "";
 
 		if ( ! empty($data['image']))
@@ -94,15 +94,15 @@ class FilePicker {
 
 			$toolbar = array(
 				'edit' => array(
-					'href' => cp_url('files/file/edit/' . $file->file_id),
+					'href' => ee('CP/URL', 'files/file/edit/' . $file->file_id),
 					'title' => lang('edit')
 				),
 				'crop' => array(
-					'href' => cp_url('files/file/crop/' . $file->file_id),
+					'href' => ee('CP/URL', 'files/file/crop/' . $file->file_id),
 					'title' => lang('crop'),
 				),
 				'download' => array(
-					'href' => cp_url('files/file/download/' . $file->file_id),
+					'href' => ee('CP/URL', 'files/file/download/' . $file->file_id),
 					'title' => lang('download'),
 				),
 			);

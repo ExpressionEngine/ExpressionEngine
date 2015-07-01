@@ -54,7 +54,7 @@ class Comments extends AbstractPublishController {
 		if (ee()->input->post('bulk_action'))
 		{
 			$this->performBulkActions();
-			ee()->functions->redirect(cp_url('publish/comments', ee()->cp->get_url_state()));
+			ee()->functions->redirect(ee('CP/URL', 'publish/comments', ee()->cp->get_url_state()));
 		}
 
 		$vars = array();
@@ -140,13 +140,13 @@ class Comments extends AbstractPublishController {
 		if ($channel)
 		{
 			ee()->view->cp_breadcrumbs = array(
-				cp_url('publish/edit', array('filter_by_channel' => $channel->channel_id)) => sprintf(lang('all_channel_entries'), $channel->channel_title),
+				ee('CP/URL', 'publish/edit', array('filter_by_channel' => $channel->channel_id)) => sprintf(lang('all_channel_entries'), $channel->channel_title),
 			);
 		}
 		else
 		{
 			ee()->view->cp_breadcrumbs = array(
-				cp_url('publish/edit') => sprintf(lang('all_channel_entries'), $channel),
+				ee('CP/URL', 'publish/edit') => sprintf(lang('all_channel_entries'), $channel),
 			);
 		}
 
@@ -176,7 +176,7 @@ class Comments extends AbstractPublishController {
 		if (ee()->input->post('bulk_action'))
 		{
 			$this->performBulkActions();
-			ee()->functions->redirect(cp_url('publish/comments/entry/' . $entry_id, ee()->cp->get_url_state()));
+			ee()->functions->redirect(ee('CP/URL', 'publish/comments/entry/' . $entry_id, ee()->cp->get_url_state()));
 		}
 
 		$vars = array();
@@ -261,7 +261,7 @@ class Comments extends AbstractPublishController {
 		));
 
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('publish/edit', array('filter_by_channel' => $entry->channel_id)) => sprintf(lang('all_channel_entries'), $entry->getChannel()->channel_title),
+			ee('CP/URL', 'publish/edit', array('filter_by_channel' => $entry->channel_id)) => sprintf(lang('all_channel_entries'), $entry->getChannel()->channel_title),
 		);
 
 		ee()->view->cp_page_title = sprintf(lang('all_comments_for_entry'), $entry->title);
@@ -325,7 +325,7 @@ class Comments extends AbstractPublishController {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => cp_url('publish/comments/edit/' . $comment_id),
+			'base_url' => ee('CP/URL', 'publish/comments/edit/' . $comment_id),
 			'save_btn_text' => 'btn_edit_comment',
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
@@ -423,7 +423,7 @@ class Comments extends AbstractPublishController {
 				->addToBody(lang('edit_comment_success_desc'))
 				->defer();
 
-			ee()->functions->redirect(cp_url('publish/comments/edit/' . $comment_id));
+			ee()->functions->redirect(ee('CP/URL', 'publish/comments/edit/' . $comment_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -437,7 +437,7 @@ class Comments extends AbstractPublishController {
 		ee()->view->cp_page_title = lang('edit_comment');
 
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('publish/comments') => lang('all_comments'),
+			ee('CP/URL', 'publish/comments') => lang('all_comments'),
 		);
 
 		ee()->cp->render('settings/form', $vars);
@@ -505,7 +505,7 @@ class Comments extends AbstractPublishController {
 			{
 				$toolbar = array(
 					'edit' => array(
-						'href' => cp_url('publish/comments/edit/' . $comment->comment_id),
+						'href' => ee('CP/URL', 'publish/comments/edit/' . $comment->comment_id),
 						'title' => lang('edit')
 					)
 				);

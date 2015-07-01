@@ -78,7 +78,7 @@ class Sql extends Utilities {
 				$table['size'],
 				array('toolbar_items' => array(
 					'view' => array(
-						'href' => cp_url(
+						'href' => ee('CP/URL',
 							'utilities/query/run-query/'.$table['name'],
 							array('thequery' => rawurlencode(base64_encode('SELECT * FROM '.$table['name'])))
 						),
@@ -205,7 +205,7 @@ class Sql extends Utilities {
 			->render($vars['table']['base_url']);
 
 		ee()->view->cp_page_title = lang(strtolower($action).'_tables_results');
-		ee()->cp->set_breadcrumb(cp_url('utilities/sql'), lang('sql_manager'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'utilities/sql'), lang('sql_manager'));
 		return ee()->cp->render('utilities/sql/ops', $vars);
 	}
 }
