@@ -5,6 +5,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Addons;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
+use Michelf\MarkdownExtra;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
 /**
@@ -897,20 +898,17 @@ class Addons extends CP_Controller {
 			'description' => $info->get('description')
 		);
 
-		ee()->load->library('typography');
-		ee()->typography->initialize(array(
-			'highlight_code' => FALSE,
-			'bbencode_links' => FALSE,
-			'parse_images'	=> FALSE,
-			'parse_smileys'	=> FALSE
-		));
+		$readme = file_get_contents($readme_file);
 
-		$vars['readme'] = ee()->typography->parse_type(file_get_contents($readme_file), array(
-			'text_format'    => 'markdown',
-			'html_format'    => 'all',
-			'auto_links'	 => 'y',
-			'allow_img_url'  => 'y'
-		));
+		$parser = new MarkdownExtra;
+		$readme = $parser->transform($readme);
+
+		$pre_tags = array('<pre><code>', '</code></pre>', '<h3>', '</h3>');
+		$post_tags = array('<textarea>', '</textarea>', '<h3><mark>', '</mark></h3>');
+
+		$readme = str_replace($pre_tags, $post_tags, $readme);
+
+		$vars['readme'] = $readme;
 
 		ee()->view->cp_heading = $vars['name'] . ' ' . lang('manual');
 
