@@ -324,6 +324,7 @@ class Fields extends AbstractChannelsController {
 						'field_type' => array(
 							'type' => 'select',
 							'choices' => $fieldtype_choices,
+							'group_toggle' => $fieldtypes->getDictionary('name', 'name'),
 							'value' => $field->field_type
 						)
 					)
@@ -394,11 +395,27 @@ class Fields extends AbstractChannelsController {
 		);
 
 		$field_options = $field->getSettingsForm();
-		if ( ! empty($field_options))
+		if (is_array($field_options) && ! empty($field_options))
 		{
 			$sections = array_merge($sections, $field_options);
 		}
 
+		foreach ($fieldtypes as $fieldtype)
+		{
+			if ($fieldtype->name == $field->field_type)
+			{
+				continue;
+			}
+
+			$dummy_field = ee('Model')->make('ChannelField');
+			$dummy_field->field_type = $fieldtype->name;
+			$field_options = $dummy_field->getSettingsForm();
+
+			if (is_array($field_options) && ! empty($field_options))
+			{
+				$sections = array_merge($sections, $field_options);
+			}
+		}
 
 		ee()->form_validation->set_rules(array(
 			array(
@@ -412,6 +429,12 @@ class Fields extends AbstractChannelsController {
 				'rules' => 'required'
 			),
 		));
+
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/form_group'),
+		));
+
+		// var_dump($sections); die();
 
 		return $sections;
 	}
