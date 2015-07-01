@@ -211,6 +211,14 @@ class Fields extends AbstractChannelsController {
 
 		ee()->view->cp_page_title = lang('create_field');
 
+		$this->cp->add_js_script('plugin', 'ee_url_title');
+
+		$this->javascript->output('
+			$("input[name=field_label]").bind("keyup keydown", function() {
+				$(this).ee_url_title("input[name=field_name]", true);
+			});
+		');
+
 		ee()->cp->render('settings/form', $vars);
 	}
 
