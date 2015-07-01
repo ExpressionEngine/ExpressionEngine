@@ -6,32 +6,23 @@ $lang = array(
 // Publish page
 //----------------------------
 
-'spell_check' =>
-'Spell Check',
+'spell_check' => 'Spell Check',
 
-'check_spelling' =>
-'Check Spelling',
+'check_spelling' => 'Check Spelling',
 
-'save_spellcheck' =>
-'Save Changes',
+'save_spellcheck' => 'Save Changes',
 
-'revert_spellcheck' =>
-'Revert to Original',
+'revert_spellcheck' => 'Revert to Original',
 
-'spell_save_edit' =>
-'Save Edit',
+'spell_save_edit' => 'Save Edit',
 
-'spell_edit_word' =>
-'Edit Word',
+'spell_edit_word' => 'Edit Word',
 
-'unsupported_browser' =>
-'Unsupported Browser',
+'unsupported_browser' => 'Unsupported Browser',
 
-'no_spelling_errors' =>
-'No Errors Found',
+'no_spelling_errors' => 'No Errors Found',
 
-'spellcheck_in_progress' =>
-'Check In Progress...',
+'spellcheck_in_progress' => 'Check In Progress...',
 
 
 ''=>''
