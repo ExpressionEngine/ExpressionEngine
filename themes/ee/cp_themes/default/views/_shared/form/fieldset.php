@@ -4,7 +4,7 @@
 if (is_string($setting))
 {
 	echo $setting;
-	continue;
+	return;
 }
 
 // Gather classes needed to set on the fieldset
