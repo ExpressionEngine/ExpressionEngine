@@ -241,7 +241,11 @@ class Multi_select_ft extends EE_Fieldtype {
 			)
 		);
 
-		return array('field_options' => $settings);
+		return array('field_options_multi_select' => array(
+			'label' => 'field_options',
+			'group' => 'multi_select',
+			'settings' => $settings
+		));
 	}
 
 	function grid_display_settings($data)

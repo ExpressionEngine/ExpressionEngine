@@ -213,7 +213,11 @@ class Radio_ft extends EE_Fieldtype {
 			)
 		);
 
-		return array('field_options' => $settings);
+		return array('field_options_radio' => array(
+			'label' => 'field_options',
+			'group' => 'radio',
+			'settings' => $settings
+		));
 	}
 
 	public function grid_display_settings($data)

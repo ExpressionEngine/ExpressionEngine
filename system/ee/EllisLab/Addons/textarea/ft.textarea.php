@@ -312,7 +312,11 @@ class Textarea_ft extends EE_Fieldtype {
 			)
 		);
 
-		return array('field_options' => $settings);
+		return array('field_options_textarea' => array(
+			'label' => 'field_options',
+			'group' => 'textarea',
+			'settings' => $settings
+		));
 	}
 
 	// --------------------------------------------------------------------

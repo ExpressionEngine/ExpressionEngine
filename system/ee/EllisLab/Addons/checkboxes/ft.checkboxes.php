@@ -370,7 +370,11 @@ class Checkboxes_ft extends EE_Fieldtype {
 			)
 		);
 
-		return array('field_options' => $settings);
+		return array('field_options_checkboxes' => array(
+			'label' => 'field_options',
+			'group' => 'checkboxes',
+			'settings' => $settings
+		));
 	}
 
 	public function grid_display_settings($data)

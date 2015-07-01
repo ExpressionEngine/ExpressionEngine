@@ -61,6 +61,8 @@ $lang = array(
 'longitude_desc'				=>		'',
 'zoom'							=>		'Zoom',
 'zoom_desc'						=>		'',
+'preview'						=>		'Preview',
+'preview_desc'					=>		'',
 
 // 2.x
 

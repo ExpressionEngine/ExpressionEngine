@@ -268,7 +268,11 @@ class Text_ft extends EE_Fieldtype {
 			)
 		);
 
-		return array('field_options' => $settings);
+		return array('field_options_text' => array(
+			'label' => 'field_options',
+			'group' => 'text',
+			'settings' => $settings
+		));
 	}
 
 	// --------------------------------------------------------------------

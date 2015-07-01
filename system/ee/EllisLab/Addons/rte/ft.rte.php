@@ -143,7 +143,11 @@ class Rte_ft extends EE_Fieldtype {
 			)
 		);
 
-		return array('field_options' => $settings);
+		return array('field_options_rte' => array(
+			'label' => 'field_options',
+			'group' => 'rte',
+			'settings' => $settings
+		));
 	}
 
 	// --------------------------------------------------------------------

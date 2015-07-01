@@ -501,48 +501,56 @@ CSS;
 		$num_existing = ( ! isset($data['num_existing'])) ? 50 : $data['num_existing'];
 
 		$settings = array(
-			'field_options' => array(
-				array(
-					'title' => 'file_ft_content_type',
-					'desc' => 'file_ft_content_type_desc',
-					'fields' => array(
-						'field_content_type' => array(
-							'type' => 'select',
-							'choices' => $this->_field_content_options(),
-							'value' => $data['field_content_type']
+			'field_options_file' => array(
+				'label' => 'field_options',
+				'group' => 'file',
+				'settings' => array(
+					array(
+						'title' => 'file_ft_content_type',
+						'desc' => 'file_ft_content_type_desc',
+						'fields' => array(
+							'field_content_type' => array(
+								'type' => 'select',
+								'choices' => $this->_field_content_options(),
+								'value' => $data['field_content_type']
+							)
 						)
-					)
-				),
-				array(
-					'title' => 'file_ft_allowed_dirs',
-					'desc' => 'file_ft_allowed_dirs_desc',
-					'fields' => array(
-						'file_allowed_directories' => array(
-							'type' => 'select',
-							'choices' => $this->_allowed_directories_options(),
-							'value' => $allowed_directories
+					),
+					array(
+						'title' => 'file_ft_allowed_dirs',
+						'desc' => 'file_ft_allowed_dirs_desc',
+						'fields' => array(
+							'file_allowed_directories' => array(
+								'type' => 'select',
+								'choices' => $this->_allowed_directories_options(),
+								'value' => $allowed_directories
+							)
 						)
 					)
 				)
 			),
-			'channel_form_settings' => array(
-				array(
-					'title' => 'file_ft_show_files',
-					'desc' => 'file_ft_show_files_desc',
-					'fields' => array(
-						'file_show_existing' => array(
-							'type' => 'yes_no',
-							'value' => $show_existing
+			'channel_form_settings_file' => array(
+				'label' => 'channel_form_settings',
+				'group' => 'file',
+				'settings' => array(
+					array(
+						'title' => 'file_ft_show_files',
+						'desc' => 'file_ft_show_files_desc',
+						'fields' => array(
+							'file_show_existing' => array(
+								'type' => 'yes_no',
+								'value' => $show_existing
+							)
 						)
-					)
-				),
-				array(
-					'title' => 'file_ft_limit',
-					'desc' => 'file_ft_limit_desc',
-					'fields' => array(
-						'file_num_existing' => array(
-							'type' => 'text',
-							'value' => $num_existing
+					),
+					array(
+						'title' => 'file_ft_limit',
+						'desc' => 'file_ft_limit_desc',
+						'fields' => array(
+							'file_num_existing' => array(
+								'type' => 'text',
+								'value' => $num_existing
+							)
 						)
 					)
 				)

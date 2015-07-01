@@ -644,7 +644,11 @@ class Relationship_ft extends EE_Fieldtype {
 			)
 		);
 
-		return array('field_options' => $settings);
+		return array('field_options_relationship' => array(
+			'label' => 'field_options',
+			'group' => 'relationship',
+			'settings' => $settings
+		));
 	}
 
 	// --------------------------------------------------------------------
