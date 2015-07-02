@@ -527,8 +527,6 @@ class Relationship_ft extends EE_Fieldtype {
 		$form->populate($data);
 		$values = $form->values();
 
-		// var_dump($data, $form->values()); die();
-
 		$settings = array(
 			array(
 				'title' => 'rel_ft_channels',
