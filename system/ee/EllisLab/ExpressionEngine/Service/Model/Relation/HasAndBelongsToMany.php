@@ -3,7 +3,7 @@
 namespace EllisLab\ExpressionEngine\Service\Model\Relation;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Service\Model\Association\ManyToMany;
+use EllisLab\ExpressionEngine\Service\Model\Association\ToMany;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -45,8 +45,7 @@ class HasAndBelongsToMany extends Relation {
 	 */
 	public function createAssociation(Model $source)
 	{
-		return new ManyToMany($source, $this);
-		return new Association\HasAndBelongsToMany($source, $this->name);
+		return new ToMany($source, $this);
 	}
 
 	/**
@@ -98,29 +97,55 @@ class HasAndBelongsToMany extends Relation {
 	/**
 	 *
 	 */
-	public function insertRelation($source, $target)
+	public function insert(Model $source, $targets)
 	{
-		$this->datastore->rawQuery()
-			->set($this->pivot['left'], $source->{$this->from_key})
-			->set($this->pivot['right'], $target->{$this->to_key})
-			->insert($this->pivot['table']);
+		if (empty($targets))
+		{
+			return;
+		}
+
+		foreach ($targets as $target)
+		{
+			$this->datastore->rawQuery()
+				->set($this->pivot['left'], $source->{$this->from_key})
+				->set($this->pivot['right'], $target->{$this->to_key})
+				->insert($this->pivot['table']);
+		}
 	}
 
 	/**
 	 *
 	 */
-	public function dropRelation($source, $target = NULL)
+	public function drop(Model $source, $targets = NULL)
 	{
 		$query = $this->datastore
 			->rawQuery()
 			->where($this->pivot['left'], $source->{$this->from_key});
 
-		if (isset($target))
+		if ( ! empty($targets))
 		{
-			$query->where($this->pivot['right'], $target->{$this->to_key});
+			$ids = array();
+
+			foreach ($targets as $target)
+			{
+				$ids[] = $target->{$this->to_key};
+			}
+
+			if (empty($ids))
+			{
+				return;
+			}
+
+			$query->where_in($this->pivot['right'], $ids);
 		}
 
 		$query->delete($this->pivot['table']);
+	}
+
+	public function set(Model $source, $targets)
+	{
+		$this->drop($source, $targets);
+		$this->insert($source, $targets);
 	}
 
 	/**

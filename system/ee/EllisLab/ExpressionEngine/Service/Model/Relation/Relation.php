@@ -36,7 +36,7 @@ abstract class Relation {
 	protected $from;
 	protected $to;
 	protected $name;
-	protected $options;
+	protected $is_weak;
 
 	protected $from_key;
 	protected $to_key;
@@ -53,6 +53,7 @@ abstract class Relation {
 		$this->to = $to;
 		$this->name = $name;
 
+		$this->is_weak = FALSE;
 		$this->processOptions($options);
 	}
 
@@ -86,6 +87,24 @@ abstract class Relation {
 	 *
 	 */
 	abstract public function canSaveAcross();
+
+	/**
+	 * Insert a database link between the model and targets
+	 */
+	abstract public function insert(Model $source, $targets);
+
+	/**
+	 * Drop the database link between the model and targets, potentially
+	 * triggering a soft delete.
+	 */
+	abstract public function drop(Model $source, $targets = NULL);
+
+	/**
+	 * Set the relation. Should do the minimum viable sql modifications required
+	 * to maintain consistency.
+	 */
+	abstract public function set(Model $source, $targets);
+
 
 	/**
 	 *
@@ -181,6 +200,11 @@ abstract class Relation {
 	 */
 	protected function processOptions($options)
 	{
+		if (isset($options['weak']))
+		{
+			$this->is_weak = (bool) $options['weak'];
+		}
+
 		if (isset($options['from_key']))
 		{
 			$this->from_key = $options['from_key'];
