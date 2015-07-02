@@ -591,15 +591,18 @@ class Uploads extends AbstractFilesController {
 		$new_sizes = array();
 
 		// collect existing to keep, and new ones to add
-		foreach ($image_sizes['rows'] as $row_id => $columns)
+		if (isset($image_sizes['rows']))
 		{
-			if (strpos($row_id, 'row_id_') !== FALSE)
+			foreach ($image_sizes['rows'] as $row_id => $columns)
 			{
-				$existing_ids[] = str_replace('row_id_', '', $row_id);
-			}
-			else
-			{
-				$new_sizes[$row_id] = $columns;
+				if (strpos($row_id, 'row_id_') !== FALSE)
+				{
+					$existing_ids[] = str_replace('row_id_', '', $row_id);
+				}
+				else
+				{
+					$new_sizes[$row_id] = $columns;
+				}
 			}
 		}
 
