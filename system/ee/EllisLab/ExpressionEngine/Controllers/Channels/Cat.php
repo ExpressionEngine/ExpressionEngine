@@ -849,7 +849,9 @@ class Cat extends AbstractChannelsController {
 					'encode' => FALSE
 				),
 				'label',
-				'short_name_col',
+				'short_name_col' => array(
+					'encode' => FALSE
+				),
 				'type',
 				'manage' => array(
 					'type'	=> CP\Table::COL_TOOLBAR
