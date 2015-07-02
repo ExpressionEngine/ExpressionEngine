@@ -144,7 +144,9 @@ class Edit extends AbstractPublishController {
 		$table->setColumns(
 			array(
 				'column_entry_id',
-				'column_title',
+				'column_title' => array(
+					'encode' => FALSE
+				),
 				'column_comment_total',
 				'column_entry_date',
 				'column_status' => array(
@@ -184,14 +186,14 @@ class Edit extends AbstractPublishController {
 		{
 			$autosaves = $entry->getAutosaves()->count();
 
-			$title = $entry->title;
+			$title = htmlentities($entry->title, ENT_QUOTES);
 
 			if ($autosaves)
 			{
 				$title .= ' <span class="auto-save" title="' . lang('auto_saved') . '">&#10033;</span>';
 			}
 
-			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . $entry->getAuthor()->getMemberName() . ', ' . lang('in') . ': ' . $entry->getChannel()->channel_title . '</span>';
+			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->getAuthor()->getMemberName(), ENT_QUOTES) . ', ' . lang('in') . ': ' . htmlentities($entry->getChannel()->channel_title, ENT_QUOTES) . '</span>';
 
 			if ($entry->comment_total > 1)
 			{
