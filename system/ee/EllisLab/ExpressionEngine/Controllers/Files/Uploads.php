@@ -7,6 +7,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 use CP_Controller;
 
 use EllisLab\ExpressionEngine\Library\CP;
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 use EllisLab\ExpressionEngine\Controllers\Files\AbstractFiles as AbstractFilesController;
 
 /**
@@ -586,29 +587,56 @@ class Uploads extends AbstractFilesController {
 
 		$image_sizes = ee()->input->post('image_manipulations');
 
-		if ( ! empty($image_sizes))
+		$existing_ids = array();
+		$new_sizes = array();
+
+		// collect existing to keep, and new ones to add
+		foreach ($image_sizes['rows'] as $row_id => $columns)
 		{
-			foreach ($image_sizes['rows'] as $row_id => $columns)
+			if (strpos($row_id, 'row_id_') !== FALSE)
 			{
-				// Existing rows
-				if (strpos($row_id, 'row_id_') !== FALSE)
-				{
-					$image_size = ee('Model')->get('FileDimension', str_replace('row_id_', '', $row_id))
-						->first();
-				}
-				else
-				{
-					$image_size = ee('Model')->make('FileDimension');
-					$upload_destination->FileDimensions[] = $image_size;
-				}
+				$existing_ids[] = str_replace('row_id_', '', $row_id);
+			}
+			else
+			{
+				$new_sizes[$row_id] = $columns;
+			}
+		}
 
-				$image_size->set($columns);
-				$result = $image_size->validate();
+		if (empty($existing_ids))
+		{
+			$upload_destination->FileDimensions = new Collection();
+		}
+		else
+		{
+			$upload_destination->FileDimensions = ee('Model')->get('FileDimension', $existing_ids)->all();
+		}
 
-				if ( ! $result->isValid())
-				{
-					$this->upload_errors['image_sizes'][$row_id] = $result->renderErrors();
-				}
+		$validate = array();
+
+		foreach ($upload_destination->FileDimensions as $model)
+		{
+			$row_id = 'row_id_'.$model->getId();
+			$model->set($image_sizes['rows'][$row_id]);
+
+			$validate[$row_id] = $model;
+		}
+
+		foreach ($new_sizes as $row_id => $columns)
+		{
+			$model = ee('Model')->make('FileDimension', $columns);
+			$upload_destination->FileDimensions[] = $model;
+
+			$validate[$row_id] = $model;
+		}
+
+		foreach ($validate as $row_id => $model)
+		{
+			$result = $model->validate();
+
+			if ( ! $result->isValid())
+			{
+				$this->upload_errors['image_sizes'][$row_id] = $result->renderErrors();
 			}
 		}
 
