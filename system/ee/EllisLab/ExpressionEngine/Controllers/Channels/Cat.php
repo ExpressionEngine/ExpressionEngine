@@ -466,7 +466,7 @@ class Cat extends AbstractChannelsController {
 			->withTitle(lang('category_ajax_reorder_fail'))
 			->addToBody(lang('category_ajax_reorder_fail_desc'));
 
-		ee()->javascript->set_global('cat.reorder_url', ee('CP/URL', 'channels/cat/cat-reorder/'.$group_id));
+		ee()->javascript->set_global('cat.reorder_url', ee('CP/URL', 'channels/cat/cat-reorder/'.$group_id)->compile());
 		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/cat'), lang('category_groups'));
@@ -816,7 +816,7 @@ class Cat extends AbstractChannelsController {
 		ee()->cp->add_js_script('file', 'cp/channel/category_edit');
 		ee()->javascript->set_global(
 			'category_edit.filepicker_url',
-			ee('CP/URL', $filepicker->controller, array('directory' => 'all', 'type' => 'img'))
+			ee('CP/URL', $filepicker->controller, array('directory' => 'all', 'type' => 'img'))->compile()
 		);
 
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/cat'), lang('category_groups'));
@@ -935,7 +935,7 @@ class Cat extends AbstractChannelsController {
 			->withTitle(lang('cat_field_ajax_reorder_fail'))
 			->addToBody(lang('cat_field_ajax_reorder_fail_desc'));
 
-		ee()->javascript->set_global('cat_fields.reorder_url', ee('CP/URL', 'channels/cat/cat-field-reorder/'.$group_id));
+		ee()->javascript->set_global('cat_fields.reorder_url', ee('CP/URL', 'channels/cat/cat-field-reorder/'.$group_id)->compile());
 		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
 		ee()->cp->render('channels/cat/field', $vars);

@@ -197,7 +197,7 @@ class File extends AbstractFilesController {
 		ee()->view->cp_page_title_alt = ee()->view->cp_page_title . '<a class="btn action ta" href="' . ee('CP/URL', 'files/file/crop/' . $id) . '">' . lang('btn_crop') . '</a>';
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'files') => lang('file_manager'),
+			ee('CP/URL', 'files')->compile() => lang('file_manager'),
 		);
 
 		ee()->cp->render('settings/form', $vars);

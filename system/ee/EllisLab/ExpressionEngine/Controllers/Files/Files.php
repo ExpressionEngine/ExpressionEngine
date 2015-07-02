@@ -85,7 +85,7 @@ class Files extends AbstractFilesController {
 
 		$vars['directories'] = $upload_destinations;
 
-		ee()->javascript->set_global('file_view_url', ee('CP/URL', 'files/file/view/###'));
+		ee()->javascript->set_global('file_view_url', ee('CP/URL', 'files/file/view/###')->compile());
 		ee()->javascript->set_global('lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
@@ -155,7 +155,7 @@ class Files extends AbstractFilesController {
 			->currentPage($vars['table']['page'])
 			->render($base_url);
 
-		ee()->javascript->set_global('file_view_url', ee('CP/URL', 'files/file/view/###'));
+		ee()->javascript->set_global('file_view_url', ee('CP/URL', 'files/file/view/###')->compile());
 		ee()->javascript->set_global('lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(

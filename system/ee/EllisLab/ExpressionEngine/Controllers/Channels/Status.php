@@ -406,7 +406,7 @@ class Status extends AbstractChannelsController {
 			->withTitle(lang('status_ajax_reorder_fail'))
 			->addToBody(lang('status_ajax_reorder_fail_desc'));
 
-		ee()->javascript->set_global('statuses.reorder_url', ee('CP/URL', 'channels/status/status-reorder/'.$group_id));
+		ee()->javascript->set_global('statuses.reorder_url', ee('CP/URL', 'channels/status/status-reorder/'.$group_id)->compile());
 		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
 		ee()->cp->render('channels/status/list', $vars);
