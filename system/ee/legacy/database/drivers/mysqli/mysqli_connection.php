@@ -122,7 +122,15 @@ class CI_DB_mysqli_connection {
 	{
 		$time_start = microtime(TRUE);
 
-		$result = $this->connection->query($query);
+		try
+		{
+			$result = $this->connection->query($query);
+		}
+		catch (Exception $e)
+		{
+			echo $e->getMessage().":<br>\n".$query;
+			exit;
+		}
 
 		$time_end = microtime(TRUE);
 
