@@ -728,7 +728,7 @@ class Uploads extends AbstractFilesController {
 				'sync_files'      => $files,
 				'sync_file_count' => $files_count,
 				'sync_sizes'      => $js_size,
-				'sync_baseurl'    => $base_url,
+				'sync_baseurl'    => $base_url->compile(),
 				'sync_endpoint'   => ee('CP/URL', 'files/uploads/do_sync_files')->compile(),
 				'sync_dir_name'   => $upload_destination['name'],
 			)

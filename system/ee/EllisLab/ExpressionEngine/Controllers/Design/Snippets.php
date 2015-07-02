@@ -273,7 +273,7 @@ class Snippets extends AbstractDesignController {
 
 		ee()->view->cp_page_title = lang('create_partial');
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'design/snippets') => lang('template_partials'),
+			ee('CP/URL', 'design/snippets')->compile() => lang('template_partials'),
 		);
 
 		$this->loadCodeMirrorAssets('snippet_contents');
@@ -398,7 +398,7 @@ class Snippets extends AbstractDesignController {
 
 		ee()->view->cp_page_title = lang('edit_partial');
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'design/snippets') => lang('template_partials'),
+			ee('CP/URL', 'design/snippets')->compile() => lang('template_partials'),
 		);
 
 		$this->loadCodeMirrorAssets('snippet_contents');
