@@ -849,7 +849,9 @@ class Cat extends AbstractChannelsController {
 					'encode' => FALSE
 				),
 				'label',
-				'short_name_col',
+				'short_name_col' => array(
+					'encode' => FALSE
+				),
 				'type',
 				'manage' => array(
 					'type'	=> CP\Table::COL_TOOLBAR
@@ -1139,13 +1141,10 @@ class Cat extends AbstractChannelsController {
 						)
 					)
 				)
-			),
-			'field_options_'.$cat_field->field_type => array(
-				'label' => 'field_options',
-				'group' => $cat_field->field_type,
-				'settings' => $cat_field->getSettingsForm()
 			)
 		);
+
+		$vars['sections'] += $cat_field->getSettingsForm();
 
 		// These are currently the only fieldtypes we allow; get their settings forms
 		foreach (array('text', 'textarea', 'select') as $fieldtype)
@@ -1155,11 +1154,7 @@ class Cat extends AbstractChannelsController {
 				$dummy_field = ee('Model')->make('CategoryField');
 				$dummy_field->setCategoryGroup($cat_group);
 				$dummy_field->field_type = $fieldtype;
-				$vars['sections']['field_options_'.$fieldtype] = array(
-					'label' => 'field_options',
-					'group' => $fieldtype,
-					'settings' => $dummy_field->getSettingsForm()
-				);
+				$vars['sections'] += $dummy_field->getSettingsForm();
 			}
 		}
 

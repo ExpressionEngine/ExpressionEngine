@@ -275,42 +275,40 @@ class Textarea_ft extends EE_Fieldtype {
 		);
 
 		// Return a subset of the text settings for category content type
-		if ($this->content_type() == 'category' || $this->content_type() == 'member')
+		if ($this->content_type() != 'category' && $this->content_type() != 'member')
 		{
-			return $settings;
-		}
-
-		// Construct the rest of the settings form for Channel...
-		$settings[] = array(
-			'title' => 'field_tools',
-			'desc' => 'field_tools_desc',
-			'fields' => array(
-				'field_show_formatting_btns' => array(
-					'type' => 'checkbox',
-					'scalar' => TRUE,
-					'choices' => array(
-						'y' => lang('show_formatting_btns'),
+			// Construct the rest of the settings form for Channel...
+			$settings[] = array(
+				'title' => 'field_tools',
+				'desc' => 'field_tools_desc',
+				'fields' => array(
+					'field_show_formatting_btns' => array(
+						'type' => 'checkbox',
+						'scalar' => TRUE,
+						'choices' => array(
+							'y' => lang('show_formatting_btns'),
+						),
+						'value' => isset($data['field_show_formatting_btns']) ? $data['field_show_formatting_btns'] : 'n'
 					),
-					'value' => isset($data['field_show_formatting_btns']) ? $data['field_show_formatting_btns'] : 'n'
-				),
-				'field_show_smileys' => array(
-					'type' => 'checkbox',
-					'scalar' => TRUE,
-					'choices' => array(
-						'y' => lang('show_smileys'),
+					'field_show_smileys' => array(
+						'type' => 'checkbox',
+						'scalar' => TRUE,
+						'choices' => array(
+							'y' => lang('show_smileys'),
+						),
+						'value' => isset($data['field_show_smileys']) ? $data['field_show_smileys'] : 'n'
 					),
-					'value' => isset($data['field_show_smileys']) ? $data['field_show_smileys'] : 'n'
-				),
-				'field_show_file_selector' => array(
-					'type' => 'checkbox',
-					'scalar' => TRUE,
-					'choices' => array(
-						'y' => lang('show_file_selector')
-					),
-					'value' => isset($data['field_show_file_selector']) ? $data['field_show_file_selector'] : 'n'
+					'field_show_file_selector' => array(
+						'type' => 'checkbox',
+						'scalar' => TRUE,
+						'choices' => array(
+							'y' => lang('show_file_selector')
+						),
+						'value' => isset($data['field_show_file_selector']) ? $data['field_show_file_selector'] : 'n'
+					)
 				)
-			)
-		);
+			);
+		}
 
 		return array('field_options_textarea' => array(
 			'label' => 'field_options',

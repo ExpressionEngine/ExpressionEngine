@@ -134,35 +134,44 @@ class Select_ft extends EE_Fieldtype {
 			array(
 				'title' => 'select_options',
 				'desc' => 'select_options_desc',
-				'fields' => array(
-					'field_pre_populate_n' => array(
-						'type' => 'radio',
-						'name' => 'field_pre_populate',
-						'choices' => array(
-							'n' => lang('field_populate_manually'),
-						),
-						'value' => ($data['field_pre_populate']) ? 'y' : 'n'
-					),
-					'field_list_items' => array(
-						'type' => 'textarea',
-						'value' => $data['field_list_items']
-					),
-					'field_pre_populate_y' => array(
-						'type' => 'radio',
-						'name' => 'field_pre_populate',
-						'choices' => array(
-							'y' => lang('field_populate_from_channel'),
-						),
-						'value' => ($data['field_pre_populate']) ? 'y' : 'n'
-					),
-					'field_pre_populate_id' => array(
-						'type' => 'select',
-						'choices' => $this->get_channel_field_list(),
-						'value' => $data['field_pre_channel_id'] . '_' . $data['field_pre_field_id']
-					)
-				)
+				'fields' => array()
 			)
 		);
+
+		if ($this->content_type() == 'channel')
+		{
+			$settings[1]['fields']['field_pre_populate_n'] = array(
+				'type' => 'radio',
+				'name' => 'field_pre_populate',
+				'choices' => array(
+					'n' => lang('field_populate_manually'),
+				),
+				'value' => ($data['field_pre_populate']) ? 'y' : 'n'
+			);
+		}
+
+		$settings[1]['fields']['field_list_items'] = array(
+			'type' => 'textarea',
+			'value' => $data['field_list_items']
+		);
+
+		if ($this->content_type() == 'channel')
+		{
+			$settings[1]['fields']['field_pre_populate_y'] = array(
+				'type' => 'radio',
+				'name' => 'field_pre_populate',
+				'choices' => array(
+					'y' => lang('field_populate_from_channel'),
+				),
+				'value' => ($data['field_pre_populate']) ? 'y' : 'n'
+			);
+
+			$settings[1]['fields']['field_pre_populate_id'] = array(
+				'type' => 'select',
+				'choices' => $this->get_channel_field_list(),
+				'value' => $data['field_pre_channel_id'] . '_' . $data['field_pre_field_id']
+			);
+		}
 
 		return array('field_options_select' => array(
 			'label' => 'field_options',

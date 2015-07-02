@@ -254,13 +254,10 @@ class Fields extends Members\Members {
 						)
 					)
 				)
-			),
-			'field_options_'.$field->field_type => array(
-				'label' => 'field_options',
-				'group' => $field->field_type,
-				'settings' => $field->getSettingsForm()
 			)
 		);
+
+		$vars['sections'] += $field->getSettingsForm();
 
 		// These are currently the only fieldtypes we allow; get their settings forms
 		foreach (array('text', 'textarea', 'select') as $fieldtype)
@@ -269,11 +266,7 @@ class Fields extends Members\Members {
 			{
 				$dummy_field = ee('Model')->make('MemberField');
 				$dummy_field->field_type = $fieldtype;
-				$vars['sections']['field_options_'.$fieldtype] = array(
-					'label' => 'field_options',
-					'group' => $fieldtype,
-					'settings' => $dummy_field->getSettingsForm()
-				);
+				$vars['sections'] += $dummy_field->getSettingsForm();
 			}
 		}
 
