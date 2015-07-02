@@ -181,32 +181,38 @@ class Fields extends AbstractChannelsController {
 			),
 		);
 
-		if (AJAX_REQUEST)
+		if ( ! empty($_POST))
 		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			$field = $this->saveWithPost(ee('Model')->make('ChannelField'));
+			$field = $this->setWithPost(ee('Model')->make('ChannelField'));
+			$result = $field->validate();
 
-			ee()->session->set_flashdata('field_id', $field->field_id);
+			if ($response = $this->ajaxValidation($result))
+			{
+			    return $response;
+			}
 
-			ee('Alert')->makeInline('shared-form')
-				->asSuccess()
-				->withTitle(lang('create_field_success'))
-				->addToBody(sprintf(lang('create_field_success_desc'), $field->field_label))
-				->defer();
+			if ($result->isValid())
+			{
+				$field = $this->saveWithPost($field);
 
-			ee()->functions->redirect(ee('CP/URL', 'channels/fields'));
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee('Alert')->makeInline('shared-form')
-				->asIssue()
-				->withTitle(lang('create_field_error'))
-				->addToBody(lang('create_field_error_desc'))
-				->now();
+				ee()->session->set_flashdata('field_id', $field->field_id);
+
+				ee('Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('create_field_success'))
+					->addToBody(sprintf(lang('create_field_success_desc'), $field->field_label))
+					->defer();
+
+				ee()->functions->redirect(ee('CP/URL', 'channels/fields'));
+			}
+			else
+			{
+				ee('Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('create_field_error'))
+					->addToBody(lang('create_field_error_desc'))
+					->now();
+			}
 		}
 
 		ee()->view->cp_page_title = lang('create_field');
@@ -249,35 +255,53 @@ class Fields extends AbstractChannelsController {
 			),
 		);
 
-		if (AJAX_REQUEST)
+		if ( ! empty($_POST))
 		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			$field = $this->saveWithPost($field);
+			$field = $this->setWithPost($field);
+			$result = $field->validate();
 
-			ee('Alert')->makeInline('shared-form')
-				->asSuccess()
-				->withTitle(lang('edit_field_success'))
-				->addToBody(sprintf(lang('edit_field_success_desc'), $field->field_label))
-				->defer();
+			if ($response = $this->ajaxValidation($result))
+			{
+			    return $response;
+			}
 
-			ee()->functions->redirect(ee('CP/URL', 'channels/fields/edit/' . $id));
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee('Alert')->makeInline('shared-form')
-				->asIssue()
-				->withTitle(lang('edit_field_error'))
-				->addToBody(lang('edit_field_error_desc'))
-				->now();
+			if ($result->isValid())
+			{
+				$field = $this->saveWithPost($field);
+
+				ee('Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('edit_field_success'))
+					->addToBody(sprintf(lang('edit_field_success_desc'), $field->field_label))
+					->defer();
+
+				ee()->functions->redirect(ee('CP/URL', 'channels/fields/edit/' . $id));
+			}
+			else
+			{
+				ee('Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('edit_field_error'))
+					->addToBody(lang('edit_field_error_desc'))
+					->now();
+			}
 		}
 
 		ee()->view->cp_page_title = lang('edit_field');
 
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	private function setWithPost(ChannelField $field)
+	{
+		$field->site_id = ee()->config->item('site_id');
+		$field->field_type = $_POST['field_type'];
+		$field->group_id = ($field->group_id) ?: 0;
+		$field->field_list_items = ($field->field_list_items) ?: '';
+		$field->field_order = ($field->field_order) ?: 0;
+
+		$field->set($_POST);
+		return $field;
 	}
 
 	private function saveWithPost(ChannelField $field)
@@ -426,24 +450,9 @@ class Fields extends AbstractChannelsController {
 			}
 		}
 
-		ee()->form_validation->set_rules(array(
-			array(
-				'field' => 'field_label',
-				'label' => 'lang:label',
-				'rules' => 'required'
-			),
-			array(
-				'field' => 'field_name',
-				'label' => 'lang:name',
-				'rules' => 'required'
-			),
-		));
-
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/v3/form_group'),
 		));
-
-		// var_dump($sections); die();
 
 		return $sections;
 	}
