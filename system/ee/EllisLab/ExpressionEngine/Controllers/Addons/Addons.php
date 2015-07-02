@@ -933,11 +933,16 @@ class Addons extends CP_Controller {
 		$child = array();
 		foreach($matches as $key => $match)
 		{
+			// give 'em id's so they are linkable
 			$new_header = "<h{$match[1]} id=\"ref{$key}\">{$match[2]}</h{$match[1]}>";
+
+			// just in case they use the same name in multiple headers, we need to id separately
+			// hence preg_replace() with a limit instead of str_replace()
 			$readme = preg_replace('/'.preg_quote($match[0], '/').'/', $new_header, $readme, 1);
 
 			if ($match[1] == 1)
 			{
+				// append any children (h2's) if they exist
 				if ( ! empty($child))
 				{
 					$nav[] = $child;
@@ -948,6 +953,7 @@ class Addons extends CP_Controller {
 			}
 			else
 			{
+				// save the children for later. SAVE THE CHILDREN!
 				$child[$match[2]] = "#ref{$key}";
 			}
 		}
