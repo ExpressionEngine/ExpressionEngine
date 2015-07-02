@@ -98,10 +98,23 @@ case 'select': ?>
 <?php break;
 
 case 'checkbox': ?>
+	<?php if ( ! isset($field['scalar'])) $field_name .= '[]'; ?>
+	<?php if (isset($field['nested']) && $field['nested']): ?>
+		<div class="scroll-wrap pr">
+			<ul class="nested-list">
+				<?php $this->ee_view('_shared/form/nested_checkbox', array(
+					'field_name' => $field_name,
+					'attrs' => $attrs,
+					'choices' => $field['choices'],
+					'disabled_choices' => (isset($field['disabled_choices'])) ? $field['disabled_choices'] : array(),
+					'value' => $value,
+				)); ?>
+			</ul>
+		</div>
+	<?php else: ?>
 	<?php if (isset($field['wrap']) && $field['wrap']): ?>
 		<div class="scroll-wrap">
 	<?php endif ?>
-	<?php if ( ! isset($field['scalar'])) $field_name .= '[]'; ?>
 		<?php foreach ($field['choices'] as $key => $label):
 			if (is_array($value))
 			{
@@ -124,6 +137,7 @@ case 'checkbox': ?>
 		<?php endforeach ?>
 	<?php if (isset($field['wrap']) && $field['wrap']): ?>
 		</div>
+	<?php endif ?>
 	<?php endif ?>
 <?php break;
 
