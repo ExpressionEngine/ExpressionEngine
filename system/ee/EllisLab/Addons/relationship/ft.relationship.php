@@ -568,7 +568,7 @@ class Relationship_ft extends EE_Fieldtype {
 				'fields' => array(
 					'relationship_categories' => array(
 						'type' => 'checkbox',
-						'wrap' => TRUE,
+						'nested' => TRUE,
 						'choices' => $util->all_categories(),
 						'value' => $values['categories']
 					)
@@ -580,7 +580,7 @@ class Relationship_ft extends EE_Fieldtype {
 				'fields' => array(
 					'relationship_authors' => array(
 						'type' => 'checkbox',
-						'wrap' => TRUE,
+						'nested' => TRUE,
 						'choices' => $util->all_authors(),
 						'value' => $values['authors']
 					)
@@ -678,24 +678,25 @@ class Relationship_ft extends EE_Fieldtype {
 				TRUE, // Wide select box
 				'style="height: 140px"'
 			),
-			$this->grid_dropdown_row(
-				lang('categories'),
-				'categories[]',
-				$util->all_categories(),
-				isset($data['categories']) ? $data['categories'] : NULL,
-				TRUE,
-				TRUE,
-				'style="height: 140px"'
-			),
-			$this->grid_dropdown_row(
-				lang('rel_ft_authors'),
-				'authors[]',
-				$util->all_authors(),
-				isset($data['authors']) ? $data['authors'] : NULL,
-				TRUE,
-				TRUE,
-				'style="height: 57px"'
-			),
+			// This broke when I nested the categories and authors. -sb
+			// $this->grid_dropdown_row(
+			// 	lang('categories'),
+			// 	'categories[]',
+			// 	$util->all_categories(),
+			// 	isset($data['categories']) ? $data['categories'] : NULL,
+			// 	TRUE,
+			// 	TRUE,
+			// 	'style="height: 140px"'
+			// ),
+			// $this->grid_dropdown_row(
+			// 	lang('rel_ft_authors'),
+			// 	'authors[]',
+			// 	$util->all_authors(),
+			// 	isset($data['authors']) ? $data['authors'] : NULL,
+			// 	TRUE,
+			// 	TRUE,
+			// 	'style="height: 57px"'
+			// ),
 			$this->grid_dropdown_row(
 				lang('statuses'),
 				'statuses[]',

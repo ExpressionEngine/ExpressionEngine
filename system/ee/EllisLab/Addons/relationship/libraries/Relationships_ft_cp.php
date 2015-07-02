@@ -86,6 +86,7 @@ class Relationships_ft_cp {
 		$from_all_sites = (ee()->config->item('multiple_sites_enabled') == 'y');
 
 		$categories = ee('Model')->get('Category')
+			->filter('parent_id', 0)
 			->order('group_id', 'asc')
 			->order('parent_id', 'asc')
 			->order('cat_name', 'asc');
@@ -95,7 +96,29 @@ class Relationships_ft_cp {
 			$categories->filter('site_id', 1);
 		}
 
-		return array_merge($this->_form_any(), $categories->all()->getDictionary('cat_id', 'cat_name'));
+		return array_merge($this->_form_any(), $this->buildNestedCategoryArray($categories->all()));
+	}
+
+	private function buildNestedCategoryArray($categories)
+	{
+		$choices = array();
+
+		foreach ($categories as $category)
+		{
+			if (count($category->Children))
+			{
+				$choices[$category->cat_id] = array(
+					'name' => $category->cat_name,
+					'children' => $this->buildNestedCategoryArray($category->Children)
+				);
+			}
+			else
+			{
+				$choices[$category->cat_id] = $category->cat_name;
+			}
+		}
+
+		return $choices;
 	}
 
 	// --------------------------------------------------------------------
@@ -150,18 +173,19 @@ class Relationships_ft_cp {
 			$group_to_member[$m->group_id][] = $m;
 		}
 
-		$indent = str_repeat(NBS, 4);
-
 		$authors = $this->_form_any();
 
 		// Reoder by groups with subitems for authors
 		foreach ($groups as $group)
 		{
-			$authors['g_'.$group->group_id] = $group->group_title;
+			$authors['g_'.$group->group_id] = array(
+				'name' => $group->group_title,
+				'children' => array()
+			);
 
 			foreach ($group_to_member[$group->group_id] as $m)
 			{
-				$authors['m_'.$m->member_id] = $indent.(($m->screen_name == '') ? $m->username : $m->screen_name);
+				$authors['g_'.$group->group_id]['children']['m_'.$m->member_id] = (($m->screen_name == '') ? $m->username : $m->screen_name);
 			}
 		}
 
