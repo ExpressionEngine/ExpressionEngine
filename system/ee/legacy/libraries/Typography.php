@@ -816,8 +816,8 @@ class EE_Typography {
 					else
 					{
 						if (isset($this->text_fmt_plugins[$prefs['text_format']]) &&
-							(file_exists(PATH_PI.'pi.'.$prefs['text_format'].'.php') OR
-							file_exists(PATH_ADDONS.$prefs['text_format'].'/pi.'.$prefs['text_format'].'.php')))
+							(file_exists(PATH_ADDONS.'pi.'.$prefs['text_format'].'.php') OR
+							file_exists(PATH_THIRD.$prefs['text_format'].'/pi.'.$prefs['text_format'].'.php')))
 						{
 							$this->text_format = $prefs['text_format'];
 						}
@@ -865,11 +865,11 @@ class EE_Typography {
 		{
 			if (in_array($this->text_format, ee()->core->native_plugins))
 			{
-				require_once PATH_PI.'pi.'.$this->text_format.'.php';
+				require_once PATH_ADDONS.'pi.'.$this->text_format.'.php';
 			}
 			else
 			{
-				require_once PATH_ADDONS.$this->text_format.'/pi.'.$this->text_format.'.php';
+				require_once PATH_THIRD.$this->text_format.'/pi.'.$this->text_format.'.php';
 			}
 		}
 
@@ -2040,9 +2040,9 @@ while (--j >= 0)
 	 */
 	private function _fetch_emotions_prefs()
 	{
-		if (is_file(PATH_MOD.'emoticon/emoticons.php'))
+		if (is_file(PATH_ADDONS.'emoticon/emoticons.php'))
 		{
-			require PATH_MOD.'emoticon/emoticons.php';
+			require PATH_ADDONS.'emoticon/emoticons.php';
 
 			if (is_array($smileys))
 			{

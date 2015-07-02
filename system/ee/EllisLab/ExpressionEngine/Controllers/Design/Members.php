@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Design;
 
 use EllisLab\ExpressionEngine\Controllers\Design\AbstractDesign as AbstractDesignController;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 
 /**
  * ExpressionEngine - by EllisLab
@@ -145,7 +145,7 @@ class Members extends AbstractDesignController {
 
 		$vars = array();
 
-		$base_url = new URL('design/members/index/' . $theme, ee()->session->session_id());
+		$base_url = ee('CP/URL', 'design/members/index/' . $theme);
 
 		$table = ee('CP/Table', array('autosort' => TRUE, 'subheadings' => TRUE));
 		$table->setColumns(
@@ -171,7 +171,7 @@ class Members extends AbstractDesignController {
 				(lang($human) == FALSE) ? $human : lang($human),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => cp_url('design/members/edit/' . $theme . '/' . $human),
+						'href' => ee('CP/URL', 'design/members/edit/' . $theme . '/' . $human),
 						'title' => lang('edit')
 					),
 				))
@@ -188,10 +188,10 @@ class Members extends AbstractDesignController {
 		$themes = array();
 		foreach (ee()->member_model->get_profile_templates() as $dir => $name)
 		{
-			$themes[cp_url('design/members/index/' . $dir)] = $name;
+			$themes[ee('CP/URL', 'design/members/index/' . $dir)] = $name;
 		}
 
-		$vars['themes'] = form_dropdown('theme', $themes, cp_url('design/members/index/' . $theme));
+		$vars['themes'] = form_dropdown('theme', $themes, ee('CP/URL', 'design/members/index/' . $theme));
 
 		$this->sidebarMenu('members');
 		ee()->view->cp_page_title = lang('template_manager');
@@ -233,7 +233,7 @@ class Members extends AbstractDesignController {
 				if (ee()->input->post('submit') == 'finish')
 				{
 					$alert->defer();
-					ee()->functions->redirect(cp_url('design/members'));
+					ee()->functions->redirect(ee('CP/URL', 'design/members'));
 				}
 
 				$alert->now();
@@ -255,7 +255,7 @@ class Members extends AbstractDesignController {
 		fclose($fp);
 
 		$vars = array(
-			'form_url'      => cp_url('design/members/edit/' . $theme . '/' . $file),
+			'form_url'      => ee('CP/URL', 'design/members/edit/' . $theme . '/' . $file),
 			'edit_date'     => ee()->localize->human_time($fstat['mtime']),
 			'template_data' => file_get_contents($path),
 		);
@@ -264,8 +264,8 @@ class Members extends AbstractDesignController {
 
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), $template_name);
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('design') => lang('template_manager'),
-			cp_url('design/members/') => sprintf(lang('breadcrumb_group'), lang('members'))
+			ee('CP/URL', 'design')->compile() => lang('template_manager'),
+			ee('CP/URL', 'design/members/')->compile() => sprintf(lang('breadcrumb_group'), lang('members'))
 		);
 
 		ee()->cp->render('design/members/edit', $vars);

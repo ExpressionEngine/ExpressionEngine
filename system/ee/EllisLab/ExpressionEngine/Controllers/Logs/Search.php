@@ -52,7 +52,7 @@ class Search extends Logs {
 			$this->delete('SearchLog', lang('search_log'));
 			if (strtolower(ee()->input->post('delete')) == 'all')
 			{
-				return ee()->functions->redirect(cp_url('logs/search'));
+				return ee()->functions->redirect(ee('CP/URL', 'logs/search'));
 			}
 		}
 

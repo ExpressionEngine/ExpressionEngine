@@ -40,7 +40,7 @@ class SecurityPrivacy extends Settings {
 					'desc' => '',
 					'fields' => array(
 						'cp_session_type' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'cs' => lang('cs_session'),
 								'c' => lang('c_session'),
@@ -54,7 +54,7 @@ class SecurityPrivacy extends Settings {
 					'desc' => '',
 					'fields' => array(
 						'website_session_type' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'cs' => lang('cs_session'),
 								'c' => lang('c_session'),
@@ -226,7 +226,7 @@ class SecurityPrivacy extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = cp_url('settings/security-privacy');
+		$base_url = ee('CP/URL', 'settings/security-privacy');
 
 		ee('Alert')->makeInline('security-tip')
 			->asWarning()

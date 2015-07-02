@@ -1,7 +1,7 @@
 <?php extend_template('default-nav'); ?>
 
 <h1><?=$cp_page_title?></h1>
-<?=form_open(cp_url('utilities/import-converter/download-xml'), 'class="settings"')?>
+<?=form_open(ee('CP/URL', 'utilities/import-converter/download-xml'), 'class="settings"')?>
 	<fieldset class="col-group last">
 		<div class="setting-txt col w-16">
 			<em>Generated from file: <i>(<?=$generated?> by <?=$username?>)</i></em>

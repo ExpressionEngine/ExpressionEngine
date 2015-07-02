@@ -36,7 +36,7 @@ class Commerce extends Settings {
 		// Make sure this page can't load without Simple Commerce installed
 		if ( ! ee()->addons_model->module_installed('simple_commerce'))
 		{
-			ee()->functions->redirect(cp_url('settings'));
+			ee()->functions->redirect(ee('CP/URL', 'settings'));
 		}
 
 		$base = reduce_double_slashes(str_replace('/public_html', '', substr(BASEPATH, 0, - strlen(SYSDIR.'/'))).'/encryption/');
@@ -157,7 +157,7 @@ class Commerce extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = cp_url('settings/commerce');
+		$base_url = ee('CP/URL', 'settings/commerce');
 
 		ee('Alert')->makeInline('ipn-notice')
 			->asWarning()
@@ -193,8 +193,8 @@ class Commerce extends Settings {
 		ee()->view->save_btn_text_working = 'btn_saving';
 
 		ee()->lang->loadfile('addons');
-		ee()->cp->set_breadcrumb(cp_url('addons'), lang('addon_manager'));
-		ee()->cp->set_breadcrumb(cp_url(''), lang('simple_commerce'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'addons'), lang('addon_manager'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', ''), lang('simple_commerce'));
 
 		ee()->cp->render('settings/form', $vars);
 	}

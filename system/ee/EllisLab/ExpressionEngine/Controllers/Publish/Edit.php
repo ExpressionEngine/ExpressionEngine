@@ -3,7 +3,7 @@
 namespace EllisLab\ExpressionEngine\Controllers\Publish;
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Controllers\Publish\AbstractPublish as AbstractPublishController;
 
 /**
@@ -44,7 +44,7 @@ class Edit extends AbstractPublishController {
 		}
 
 		$vars = array();
-		$base_url = new URL('publish/edit', ee()->session->session_id());
+		$base_url = ee('CP/URL', 'publish/edit');
 		$channel = NULL;
 		$channel_name = '';
 
@@ -162,7 +162,7 @@ class Edit extends AbstractPublishController {
 
 		if ($channel_id)
 		{
-			$table->addActionButton(cp_url('publish/create/' . $channel_id), sprintf(lang('btn_create_new_entry_in_channel'), $channel_name));
+			$table->addActionButton(ee('CP/URL', 'publish/create/' . $channel_id), sprintf(lang('btn_create_new_entry_in_channel'), $channel_name));
 		}
 		else
 		{
@@ -195,7 +195,7 @@ class Edit extends AbstractPublishController {
 
 			if ($entry->comment_total > 1)
 			{
-				$comments = '(<a href="' . cp_url('publish/comments/entry/' . $entry->entry_id) . '">' . $entry->comment_total . '</a>)';
+				$comments = '(<a href="' . ee('CP/URL', 'publish/comments/entry/' . $entry->entry_id) . '">' . $entry->comment_total . '</a>)';
 			}
 			else
 			{
@@ -216,7 +216,7 @@ class Edit extends AbstractPublishController {
 			}
 
 			$toolbar['edit'] = array(
-				'href' => cp_url('publish/edit/entry/' . $entry->entry_id),
+				'href' => ee('CP/URL', 'publish/edit/entry/' . $entry->entry_id),
 				'title' => lang('edit')
 			);
 
@@ -313,7 +313,7 @@ class Edit extends AbstractPublishController {
 		);
 
 		$vars = array(
-			'form_url' => cp_url('publish/edit/entry/' . $id),
+			'form_url' => ee('CP/URL', 'publish/edit/entry/' . $id),
 			'form_attributes' => $form_attributes,
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
 			'button_text' => lang('btn_edit_entry')
@@ -372,7 +372,7 @@ class Edit extends AbstractPublishController {
 					->addToBody(sprintf(lang('edit_entry_success_desc'), $entry->title))
 					->defer();
 
-				ee()->functions->redirect(cp_url('publish/edit/entry/' . $id, ee()->cp->get_url_state()));
+				ee()->functions->redirect(ee('CP/URL', 'publish/edit/entry/' . $id, ee()->cp->get_url_state()));
 			}
 			else
 			{
@@ -412,7 +412,7 @@ class Edit extends AbstractPublishController {
 		));
 
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('publish/edit', array('filter_by_channel' => $entry->channel_id)) => $entry->getChannel()->channel_title,
+			ee('CP/URL', 'publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => $entry->getChannel()->channel_title,
 		);
 
 		ee()->cp->render('publish/entry', $vars);
@@ -495,7 +495,7 @@ class Edit extends AbstractPublishController {
 			->addToBody($entry_names)
 			->defer();
 
-		ee()->functions->redirect(cp_url('publish/edit', ee()->cp->get_url_state()));
+		ee()->functions->redirect(ee('CP/URL', 'publish/edit', ee()->cp->get_url_state()));
 	}
 
 }

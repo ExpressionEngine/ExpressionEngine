@@ -9,10 +9,6 @@ class ChannelFieldGroup extends Model {
 	protected static $_primary_key 	= 'group_id';
 	protected static $_gateway_names = array('ChannelFieldGroupGateway');
 
-	protected $group_id = 0;
-	protected $site_id;
-	protected $group_name;
-
 	protected static $_relationships = array(
 		'ChannelFields' => array(
 			'weak' => TRUE,
@@ -24,6 +20,10 @@ class ChannelFieldGroup extends Model {
 	protected static $_validation_rules = array(
 		'group_name' => 'required|unique[site_id]|validateName'
 	);
+
+	protected $group_id;
+	protected $site_id;
+	protected $group_name;
 
 	/**
 	 * Convenience method to fix inflection

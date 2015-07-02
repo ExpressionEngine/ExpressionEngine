@@ -85,7 +85,7 @@ class Uploads extends AbstractFilesController {
 		if (is_null($upload_id))
 		{
 			ee()->view->cp_page_title = lang('create_upload_directory');
-			ee()->view->base_url = cp_url('files/uploads/create');
+			ee()->view->base_url = ee('CP/URL', 'files/uploads/create');
 			ee()->view->save_btn_text = 'btn_create_directory';
 			ee()->view->save_btn_text_working = 'btn_create_directory_working';
 			$upload_destination = ee('Model')->make('UploadDestination');
@@ -101,7 +101,7 @@ class Uploads extends AbstractFilesController {
 			}
 
 			ee()->view->cp_page_title = lang('edit_upload_directory');
-			ee()->view->base_url = cp_url('files/uploads/edit/'.$upload_id);
+			ee()->view->base_url = ee('CP/URL', 'files/uploads/edit/'.$upload_id);
 			ee()->view->save_btn_text = 'btn_edit_directory';
 			ee()->view->save_btn_text_working = 'btn_saving';
 		}
@@ -143,7 +143,7 @@ class Uploads extends AbstractFilesController {
 					->addToBody(lang('directory_saved_desc'))
 					->defer();
 
-				ee()->functions->redirect(cp_url('files/uploads/edit/' . $new_upload_id));
+				ee()->functions->redirect(ee('CP/URL', 'files/uploads/edit/' . $new_upload_id));
 			}
 			else
 			{
@@ -208,7 +208,7 @@ class Uploads extends AbstractFilesController {
 					'desc' => '',
 					'fields' => array(
 						'allowed_types' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'img' => lang('upload_allowed_types_opt_images'),
 								'all' => lang('upload_allowed_types_opt_all')
@@ -317,7 +317,7 @@ class Uploads extends AbstractFilesController {
 
 		ee()->view->ajax_validate = TRUE;
 
-		ee()->cp->set_breadcrumb(cp_url('files'), lang('file_manager'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'files'), lang('file_manager'));
 
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -647,7 +647,7 @@ class Uploads extends AbstractFilesController {
 	{
 		if (empty($upload_id))
 		{
-			ee()->functions->redirect(cp_url('files/uploads'));
+			ee()->functions->redirect(ee('CP/URL', 'files/uploads'));
 		}
 
 		ee()->load->model('file_upload_preferences_model');
@@ -718,7 +718,7 @@ class Uploads extends AbstractFilesController {
 			);
 		}
 
-		$base_url = cp_url('files/uploads/sync/'.$upload_id);
+		$base_url = ee('CP/URL', 'files/uploads/sync/'.$upload_id);
 
 		ee()->cp->add_js_script('file', 'cp/files/synchronize');
 
@@ -728,8 +728,8 @@ class Uploads extends AbstractFilesController {
 				'sync_files'      => $files,
 				'sync_file_count' => $files_count,
 				'sync_sizes'      => $js_size,
-				'sync_baseurl'    => $base_url,
-				'sync_endpoint'   => cp_url('files/uploads/do_sync_files'),
+				'sync_baseurl'    => $base_url->compile(),
+				'sync_endpoint'   => ee('CP/URL', 'files/uploads/do_sync_files')->compile(),
 				'sync_dir_name'   => $upload_destination['name'],
 			)
 		));
@@ -740,7 +740,7 @@ class Uploads extends AbstractFilesController {
 		ee()->view->save_btn_text = 'btn_sync_directory';
 		ee()->view->save_btn_text_working = 'btn_sync_directory_working';
 
-		ee()->cp->set_breadcrumb(cp_url('files'), lang('file_manager'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'files'), lang('file_manager'));
 
 		// Errors are given through a POST to this same page
 		$errors = ee()->input->post('errors');

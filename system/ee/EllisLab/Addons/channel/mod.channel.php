@@ -5102,7 +5102,7 @@ class Channel {
 
 		if ( ! class_exists('Channel_calendar'))
 		{
-			require PATH_MOD.'channel/mod.channel_calendar.php';
+			require PATH_ADDONS.'channel/mod.channel_calendar.php';
 		}
 
 		$WC = new Channel_calendar();
@@ -5150,7 +5150,7 @@ class Channel {
 			return ee()->output->fatal_error(ee()->lang->line('must_be_logged_in'));
 		}
 
-		$class_path = PATH_MOD.'emoticon/emoticons.php';
+		$class_path = PATH_ADDONS.'emoticon/emoticons.php';
 
 		if ( ! is_file($class_path) OR ! @include_once($class_path))
 		{

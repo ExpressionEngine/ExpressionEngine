@@ -3,7 +3,7 @@
 <div class="tbl-ctrls">
 	<?=form_open($table['base_url'])?>
 		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=cp_url('channels/create')?>"><?=lang('create_new')?></a>
+			<a class="btn tn action" href="<?=ee('CP/URL', 'channels/create')?>"><?=lang('create_new')?></a>
 		</fieldset>
 		<h1><?=$cp_page_title?></h1>
 		<?=ee('Alert')->getAllInlines()?>
@@ -25,7 +25,7 @@
 
 $modal_vars = array(
 	'name'		=> 'modal-confirm-remove',
-	'form_url'	=> cp_url('channels/remove', ee()->cp->get_url_state()),
+	'form_url'	=> ee('CP/URL', 'channels/remove', ee()->cp->get_url_state()),
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
 	)

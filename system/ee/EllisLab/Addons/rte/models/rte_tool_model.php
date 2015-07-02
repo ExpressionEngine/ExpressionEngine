@@ -142,7 +142,7 @@ class Rte_tool_model extends CI_Model {
 			$base_name = str_replace('_rte', '', strtolower($t->class));
 
 			// find the tool file
-			foreach (array(PATH_RTE, PATH_ADDONS) as $tmp_path)
+			foreach (array(PATH_RTE, PATH_THIRD) as $tmp_path)
 			{
 				$file = $tmp_path.$base_name.'/rte.'.$base_name.'.php';
 

@@ -50,7 +50,7 @@ class Messages extends Settings {
 					'desc' => 'prv_msg_html_format_desc',
 					'fields' => array(
 						'prv_msg_html_format' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'safe' => lang('html_safe'),
 								'none' => lang('html_none'),
@@ -129,7 +129,7 @@ class Messages extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = cp_url('settings/messages');
+		$base_url = ee('CP/URL', 'settings/messages');
 
 		if (AJAX_REQUEST)
 		{
@@ -166,8 +166,8 @@ class Messages extends Settings {
 
 	/**
 	 * Update the upload preferences for the associated upload directory
-	 * 
-	 * @param mixed $data 
+	 *
+	 * @param mixed $data
 	 * @access private
 	 * @return void
 	 */

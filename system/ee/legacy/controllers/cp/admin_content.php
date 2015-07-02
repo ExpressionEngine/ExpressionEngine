@@ -2993,7 +2993,7 @@ class Admin_content extends CP_Controller {
 		if ($_POST['field_label'] != ee('Security/XSS')->clean($_POST['field_label']))
 		{
 			ee()->lang->loadfile('admin');
-			$error[] = sprintf(lang('invalid_xss_check'), cp_url('homepage'));
+			$error[] = sprintf(lang('invalid_xss_check'), ee('CP/URL', 'homepage'));
 		}
 
 		// Field name must be unique for across category groups

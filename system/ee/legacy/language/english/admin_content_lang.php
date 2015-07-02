@@ -13,6 +13,9 @@ $lang = array(
 'fields' =>
 'Fields',
 
+'filter_by_group' =>
+'field group',
+
 'field_groups' =>
 'Field Groups',
 
@@ -79,6 +82,113 @@ $lang = array(
 'field_groups_removed_desc' =>
 'The following field groups were removed',
 
+'fields_removed_desc' =>
+'The following fields were removed',
+
+'create_field' =>
+'Create Field',
+
+'label_desc' =>
+'Name of field that appears in the publish form.',
+
+'short_name_desc' =>
+'Short name for this field.<br><i>No spaces. Underscores and dashes are allowed.</i>',
+
+'instructions' =>
+'Instructions',
+
+'instructions_desc' =>
+'Field instructions that appear in the publish form.',
+
+'require_field_desc' =>
+'When set to <b>yes</b>, this field will be required to submit the publish form.',
+
+'include_in_search' =>
+'Include in search?',
+
+'include_in_search_desc' =>
+'When set to <b>yes</b>, this field will be included in searches.',
+
+'hide_field' =>
+'Hide field?',
+
+'hide_field_desc' =>
+'When set to <b>yes</b>, this field will be hidden on the publish form, with a link to show.',
+
+'create_field_success' =>
+'Field Created',
+
+'create_field_success_desc' =>
+'The field group <b>%s</b> has been created.',
+
+'create_field_error' =>
+'Cannot Create Field',
+
+'create_field_error_desc' =>
+'We were unable to create this field, please review and fix errors below.',
+
+'edit_field_success' =>
+'Field Updated',
+
+'edit_field_success_desc' =>
+'The field <b>%s</b> has been updated.',
+
+'edit_field_error' =>
+'Cannot Update Field',
+
+'edit_field_error_desc' =>
+'We were unable to update this field, please review and fix errors below.',
+
+'field_content_text' =>
+'Allowed content',
+
+'field_content_text_desc' =>
+'Type of content this field can contain.',
+
+'field_tools' =>
+'Field tools',
+
+'field_tools_desc' =>
+'Choose field tools to include with this field in the publish form.',
+
+'show_smileys' =>
+'Emoji <i>&mdash; Image based conveyances of emotion.</i>',
+
+'show_file_selector' =>
+'Asset Manager <i>&mdash; Launches asset manager.</i>',
+
+'show_formatting_btns' =>
+'Formatting Buttons <i>&mdash; Buttons for formatting your text.</i>',
+
+'field_populate_manually' =>
+'Manually <i>&mdash; Each item on a single line.</i>',
+
+'field_populate_from_channel' =>
+'From channel <i>&mdash; Choose a field.</i>',
+
+'checkbox_options' =>
+'Checkbox options',
+
+'checkbox_options_desc' =>
+'Choose how to create the options for this field.</em><em><i>Each item will generate a single checkbox and label pair in the publish form.</i>',
+
+'select_options' =>
+'Select menu options',
+
+'select_options_desc' =>
+'Choose how to create the options for this field.</em><em><i>Each item will be included in a select drop down menu in the publish form.</i>',
+
+'multiselect_options' =>
+'Multi-Select options',
+
+'multiselect_options_desc' =>
+'Choose how to create the options for this field.</em><em><i>Each item will be included in a multi-select in the publish form.</i>',
+
+'radio_options' =>
+'Radio options',
+
+'radio_options_desc' =>
+'Choose how to create the options for this field.</em><em><i>Each item will generate a single radio button and label pair in the publish form.</i>',
 
 // @since 2.x
 
@@ -171,12 +281,6 @@ $lang = array(
 
 'max_revisions_note' =>
 'Versioning can use up a lot of database space so it is recommended that you limit the number of revisions.',
-
-'field_populate_manually' =>
-'Populate the menu manually',
-
-'field_populate_from_channel' =>
-'Populate the menu from another channel field',
 
 'select_channel_for_field' =>
 'Select the field you wish to pre-populate from:',
@@ -830,9 +934,6 @@ $lang = array(
 'field_type' =>
 'Type',
 
-'field_max_length' =>
-'Maxlength',
-
 'field_max_length_cont' =>
 'If you are using a \'text\' field type',
 
@@ -883,15 +984,6 @@ $lang = array(
 
 'is_field_required' =>
 'Is this a required field?',
-
-'show_smileys' =>
-'Show Smileys',
-
-'show_file_selector' =>
-'Show File Chooser',
-
-'show_formatting_btns' =>
-'Show Formatting Buttons',
 
 'text_input' =>
 'Text Input',
@@ -946,9 +1038,6 @@ $lang = array(
 
 'channel_entries_will_be_deleted' =>
 'All channel entries containing the above field(s) will be permanently deleted.',
-
-'field_content_text' =>
-'Field Content',
 
 'type_numeric' =>
 'Number',

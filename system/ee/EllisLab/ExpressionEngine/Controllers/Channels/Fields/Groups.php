@@ -89,7 +89,7 @@ class Groups extends AbstractChannelsController {
 				$group->group_name,
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => cp_url('channels/fields/groups/edit/' . $group->group_id),
+						'href' => ee('CP/URL', 'channels/fields/groups/edit/' . $group->group_id),
 						'title' => lang('edit')
 					)
 				)),
@@ -190,7 +190,7 @@ class Groups extends AbstractChannelsController {
 
 		if ( ! $field_group)
 		{
-			show_error(lang('unauthorized_access'));
+			show_404();
 		}
 
 		ee()->view->cp_breadcrumbs = array(
@@ -378,7 +378,6 @@ class Groups extends AbstractChannelsController {
 
 		return TRUE;
 	}
-
 
 	private function remove($group_ids)
 	{

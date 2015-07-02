@@ -38,7 +38,7 @@ class Group extends Profile {
 	 */
 	public function index()
 	{
-		$this->base_url = cp_url($this->base_url, $this->query_string);
+		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
 		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
 		$choices = array();
 
@@ -54,7 +54,7 @@ class Group extends Profile {
 					'desc' => 'member_group_desc',
 					'fields' => array(
 						'group_id' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $choices,
 							'value' => $this->member->group_id
 						)

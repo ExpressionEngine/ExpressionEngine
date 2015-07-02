@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Utilities;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 
 /**
  * ExpressionEngine - by EllisLab
@@ -74,7 +74,7 @@ class Stats extends Utilities {
 		);
 
 		// Determine and set the source sort
-		$base_url = new URL('utilities/stats', ee()->session->session_id());
+		$base_url = ee('CP/URL', 'utilities/stats');
 		if (ee()->input->get('source_direction') == 'desc')
 		{
 			$base_url->setQueryStringVariable('source_direction', 'asc');
@@ -94,7 +94,7 @@ class Stats extends Utilities {
 		}
 
 		// Determine and set the record count sort
-		$base_url = new URL('utilities/stats', ee()->session->session_id());
+		$base_url = ee('CP/URL', 'utilities/stats');
 		$base_url->setQueryStringVariable('record_count_direction', 'desc');
 
 		if (ee()->input->get('record_count_direction'))
@@ -439,7 +439,7 @@ class Stats extends Utilities {
 		}
 
 		ee()->view->set_message('success', lang('sync_completed'), '', TRUE);
-		ee()->functions->redirect(cp_url('utilities/stats'));
+		ee()->functions->redirect(ee('CP/URL', 'utilities/stats'));
 	}
 }
 // END CLASS

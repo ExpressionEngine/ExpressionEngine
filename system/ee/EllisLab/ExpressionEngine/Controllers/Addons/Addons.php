@@ -59,6 +59,7 @@ class Addons extends CP_Controller {
 
 		ee()->load->library('addons');
 		ee()->load->helper(array('file', 'directory'));
+		ee()->legacy_api->instantiate('channel_fields');
 	}
 
 	// --------------------------------------------------------------------
@@ -238,7 +239,9 @@ class Addons extends CP_Controller {
 			$table->setColumns(
 				array(
 					'addon',
-					'version',
+					'version' => array(
+						'encode' => FALSE
+					),
 					'manage' => array(
 						'type'	=> Table::COL_TOOLBAR
 					),
@@ -281,7 +284,7 @@ class Addons extends CP_Controller {
 
 				$toolbar = array(
 					'install' => array(
-						'href' => cp_url('addons/install/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
+						'href' => ee('CP/URL', 'addons/install/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
 						'title' => lang('install'),
 						'class' => 'add'
 					)
@@ -312,7 +315,7 @@ class Addons extends CP_Controller {
 					if (isset($info['update']))
 					{
 						$toolbar['txt-only'] = array(
-							'href' => cp_url('addons/update/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
+							'href' => ee('CP/URL', 'addons/update/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
 							'title' => strtolower(lang('update')),
 							'class' => 'add',
 							'content' => sprintf(lang('update_to_version'), $this->formatVersionNumber($info['update']))
@@ -551,7 +554,7 @@ class Addons extends CP_Controller {
 		{
 			$return = base64_decode(ee()->input->get('return'));
 			$uri_elements = json_decode($return, TRUE);
-			$return = cp_url($uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
 
 			ee()->functions->redirect($return);
 		}
@@ -582,6 +585,8 @@ class Addons extends CP_Controller {
 		foreach ($addons as $addon)
 		{
 			$info = ee('App')->get($addon);
+			ee()->load->add_package_path($info->getPath());
+
 			$party = ($info->getAuthor() == 'EllisLab') ? 'first' : 'third';
 
 			$module = $this->getModule($addon);
@@ -635,6 +640,8 @@ class Addons extends CP_Controller {
 					$installed[$party][$addon] = $plugin['name'];
 				}
 			}
+
+			ee()->load->remove_package_path($info->getPath());
 		}
 
 		foreach (array('first', 'third') as $party)
@@ -662,7 +669,7 @@ class Addons extends CP_Controller {
 		{
 			$return = base64_decode(ee()->input->get('return'));
 			$uri_elements = json_decode($return, TRUE);
-			$return = cp_url($uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
 
 			ee()->functions->redirect($return);
 		}
@@ -767,7 +774,7 @@ class Addons extends CP_Controller {
 
 		$vars = array();
 		$breadcrumb = array(
-			cp_url('addons') => lang('addon_manager')
+			ee('CP/URL', 'addons')->compile() => lang('addon_manager')
 		);
 
 		if (is_null($method))
@@ -802,7 +809,7 @@ class Addons extends CP_Controller {
 				if ($method == 'save')
 				{
 					$this->saveFieldtypeSettings($fieldtype);
-					ee()->functions->redirect(cp_url('addons/settings/' . $addon));
+					ee()->functions->redirect(ee('CP/URL', 'addons/settings/' . $addon));
 				}
 
 				$vars['_module_cp_body'] = $this->getFieldtypeSettings($fieldtype);
@@ -817,7 +824,7 @@ class Addons extends CP_Controller {
 					if ($method == 'save')
 					{
 						$this->saveExtensionSettings($addon);
-						ee()->functions->redirect(cp_url('addons/settings/' . $addon));
+						ee()->functions->redirect(ee('CP/URL', 'addons/settings/' . $addon));
 					}
 
 					$vars['_module_cp_body'] = $this->getExtensionSettings($addon);
@@ -883,7 +890,7 @@ class Addons extends CP_Controller {
 		ee()->view->cp_heading = $vars['name'] . ' ' . lang('manual');
 
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('addons') => lang('addon_manager')
+			ee('CP/URL', 'addons')->compile() => lang('addon_manager')
 		);
 
 		ee()->cp->render('addons/manual', $vars);
@@ -1439,7 +1446,7 @@ class Addons extends CP_Controller {
 		}
 
 		$vars = array(
-			'base_url' => cp_url('addons/settings/' . $name . '/save'),
+			'base_url' => ee('CP/URL', 'addons/settings/' . $name . '/save'),
 			'cp_page_title' => $extension['name'] . ' ' . lang('configuration'),
 			'save_btn_text' => 'btn_save_settings',
 			'save_btn_text_working' => 'btn_saving',
@@ -1508,7 +1515,7 @@ class Addons extends CP_Controller {
 					}
 
 					$element['fields'][$key] = array(
-						'type' => 'dropdown',
+						'type' => 'select',
 						'value' => $value,
 						'choices' => $choices
 					);
@@ -1651,6 +1658,7 @@ class Addons extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		ee()->api_channel_fields->fetch_custom_channel_fields();
 		$FT = ee()->api_channel_fields->setup_handler($fieldtype['package'], TRUE);
 
 		$FT->settings = $fieldtype['settings'];
@@ -1660,7 +1668,7 @@ class Addons extends CP_Controller {
 		if (is_array($fieldtype_settings))
 		{
 			$vars = array(
-				'base_url' => cp_url('addons/settings/' . $fieldtype['package'] . '/save'),
+				'base_url' => ee('CP/URL', 'addons/settings/' . $fieldtype['package'] . '/save'),
 				'cp_page_title' => $fieldtype['name'] . ' ' . lang('configuration'),
 				'save_btn_text' => 'btn_save_settings',
 				'save_btn_text_working' => 'btn_saving',
@@ -1672,7 +1680,7 @@ class Addons extends CP_Controller {
 		{
 			$html = '<div class="box">';
 			$html .= '<h1>' . $fieldtype['name'] . ' ' . lang('configuration') . '</h1>';
-			$html .= form_open(cp_url('addons/settings/' . $fieldtype['package'] . '/save'), 'class="settings"');
+			$html .= form_open(ee('CP/URL', 'addons/settings/' . $fieldtype['package'] . '/save'), 'class="settings"');
 			$html .= ee('Alert')->get('shared-form');
 			$html .= $fieldtype_settings;
 			$html .= '<fieldset class="form-ctrls">';
@@ -1692,18 +1700,18 @@ class Addons extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		ee()->api_channel_fields->fetch_custom_channel_fields();
 		$FT = ee()->api_channel_fields->setup_handler($fieldtype['package'], TRUE);
 
 		$FT->settings = $fieldtype['settings'];
 
 		$settings = ee()->api_channel_fields->apply('save_global_settings');
 
-		$fieldtype_model = ee('Model')->get('ChannelField')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('field_name', $fieldtype['package'])
+		$fieldtype_model = ee('Model')->get('Fieldtype')
+			->filter('name', $fieldtype['package'])
 			->first();
 
-		$fieldtype_model->field_settings = $settings;
+		$fieldtype_model->settings = $settings;
 		$fieldtype_model->save();
 
 		ee('Alert')->makeInline('shared-form')

@@ -11,7 +11,7 @@
 			<li><a class="act" href="" rel="t-0"><?=lang('blacklist')?></a></li>
 			<li><a href="" rel="t-1"><?=lang('whitelist')?></a></li>
 		</ul>
-		<?=form_open(cp_url('addons/settings/blacklist/save_lists'), 'class="settings"')?>
+		<?=form_open(ee('CP/URL', 'addons/settings/blacklist/save_lists'), 'class="settings"')?>
 			<?=ee('Alert')->get('lists-form')?>
 			<div class="tab t-0 tab-open">
 				<div class="alert inline warn">
@@ -46,7 +46,7 @@
 				</fieldset>
 			<fieldset class="form-ctrls">
 				<?=cp_form_submit('btn_save_list', $save_btn_text_working)?>
-				<a class="btn" href="<?=cp_url('addons/settings/blacklist/ee_blacklist')?>"><?=lang('btn_download_blacklist')?></a>
+				<a class="btn" href="<?=ee('CP/URL', 'addons/settings/blacklist/ee_blacklist')?>"><?=lang('btn_download_blacklist')?></a>
 			</fieldset>
 			</div>
 			<div class="tab t-1">
@@ -82,7 +82,7 @@
 				</fieldset>
 			<fieldset class="form-ctrls">
 				<?=cp_form_submit('btn_save_list', $save_btn_text_working)?>
-				<a class="btn" href="<?=cp_url('addons/settings/blacklist/ee_whitelist')?>"><?=lang('btn_download_whitelist')?></a>
+				<a class="btn" href="<?=ee('CP/URL', 'addons/settings/blacklist/ee_whitelist')?>"><?=lang('btn_download_whitelist')?></a>
 			</fieldset>
 			</div>
 		<?=form_close();?>

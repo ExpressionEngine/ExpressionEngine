@@ -1345,7 +1345,7 @@ class Search {
 
 		if ( ! class_exists('Channel'))
 		{
-			require PATH_MOD.'channel/mod.channel.php';
+			require PATH_ADDONS.'channel/mod.channel.php';
 		}
 
 		unset(ee()->TMPL->var_single['auto_path']);

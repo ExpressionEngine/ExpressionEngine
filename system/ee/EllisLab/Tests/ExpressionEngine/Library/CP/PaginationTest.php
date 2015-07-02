@@ -5,6 +5,11 @@ use EllisLab\ExpressionEngine\Library\CP\Pagination;
 
 class PaginationTest extends \PHPUnit_Framework_TestCase {
 
+	public function testGreen()
+	{
+		$this->assertTrue(TRUE);
+	}
+
 	/**
 	 * Test the constructor for things that should fail
 	 *

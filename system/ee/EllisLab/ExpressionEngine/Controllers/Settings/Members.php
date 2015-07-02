@@ -67,7 +67,7 @@ class Members extends Settings {
 					'desc' => 'req_mbr_activation_desc',
 					'fields' => array(
 						'req_mbr_activation' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'none' => lang('req_mbr_activation_opt_none'),
 								'email' => lang('req_mbr_activation_opt_email'),
@@ -95,7 +95,7 @@ class Members extends Settings {
 					'desc' => 'default_member_group_desc',
 					'fields' => array(
 						'default_member_group' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $member_groups
 						)
 					)
@@ -105,7 +105,7 @@ class Members extends Settings {
 					'desc' => 'member_theme_desc',
 					'fields' => array(
 						'member_theme' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $member_themes
 						)
 					)
@@ -117,7 +117,7 @@ class Members extends Settings {
 					'desc' => 'memberlist_order_by_desc',
 					'fields' => array(
 						'memberlist_order_by' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'total_posts' => lang('memberlist_order_by_opt_posts'),
 								'screen_name' => lang('memberlist_order_by_opt_screenname'),
@@ -133,7 +133,7 @@ class Members extends Settings {
 					'desc' => 'memberlist_sort_order_desc',
 					'fields' => array(
 						'memberlist_sort_order' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'asc' => lang('memberlist_sort_order_opt_asc'),
 								'desc' => lang('memberlist_sort_order_opt_desc')
@@ -146,7 +146,7 @@ class Members extends Settings {
 					'desc' => 'memberlist_row_limit_desc',
 					'fields' => array(
 						'memberlist_row_limit' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array('10' => '10', '20' => '20',
 								'30' => '30', '40' => '40', '50' => '50',
 								'75' => '75', '100' => '100')
@@ -178,7 +178,7 @@ class Members extends Settings {
 			)
 		);
 
-		$base_url = cp_url('settings/members');
+		$base_url = ee('CP/URL', 'settings/members');
 
 		ee()->form_validation->set_rules(array(
 			array(

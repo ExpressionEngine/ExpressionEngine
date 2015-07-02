@@ -576,11 +576,6 @@ class EE_Session {
 	 */
 	public function fetch_member_data()
 	{
-		if (ee()->config->item('enable_db_caching') == 'y' AND REQ == 'PAGE')
-		{
-			ee()->db->cache_off();
-		}
-
 		$member_query = $this->_do_member_query();
 
 		if ($member_query->num_rows() == 0)
@@ -696,11 +691,6 @@ class EE_Session {
 		}
 
 		$member_query->free_result();
-
-		if (ee()->config->item('enable_db_caching') == 'y' AND REQ == 'PAGE')
-		{
-			ee()->db->cache_on();
-		}
 
 		return TRUE;
 	}

@@ -4,7 +4,7 @@
 	<div class="col w-16 last">
 		<div class="box full mb">
 			<div class="tbl-ctrls">
-				<?=form_open(cp_url('addons'))?>
+				<?=form_open(ee('CP/URL', 'addons'))?>
 					<fieldset class="tbl-search right">
 						<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="">
 						<input class="btn submit" type="submit" value="<?=lang('search_addons_button')?>">

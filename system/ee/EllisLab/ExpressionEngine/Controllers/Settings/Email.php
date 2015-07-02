@@ -64,7 +64,7 @@ class Email extends Settings {
 					'desc' => 'mail_protocol_desc',
 					'fields' => array(
 						'mail_protocol' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'mail' => lang('php_mail'),
 								'sendmail' => lang('sendmail'),
@@ -103,7 +103,7 @@ class Email extends Settings {
 					'desc' => 'mail_format_desc',
 					'fields' => array(
 						'mail_format' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'plain' => lang('plain_text'),
 								'html' => lang('html')
@@ -147,7 +147,7 @@ class Email extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = cp_url('settings/email');
+		$base_url = ee('CP/URL', 'settings/email');
 
 		if (AJAX_REQUEST)
 		{

@@ -275,7 +275,9 @@ class Cache extends EE_Driver_Library {
 	 */
 	public function unique_key($key, $scope = Cache::LOCAL_SCOPE)
 	{
-		$prefix = ee()->config->item('site_url');
+		// Using base_url here because some add-ons dynamically change site_url,
+		// for multilingual sites for example
+		$prefix = ee()->config->item('base_url');
 
 		if ($scope == Cache::GLOBAL_SCOPE)
 		{
@@ -304,7 +306,7 @@ class Cache extends EE_Driver_Library {
 			$adapter = 'file';
 		}
 
-		$field = array('type' => 'dropdown');
+		$field = array('type' => 'select');
 
 		// Create options array fit for a dropdown
 		foreach ($this->valid_drivers as $driver)

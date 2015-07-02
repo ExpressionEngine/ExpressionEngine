@@ -97,7 +97,7 @@ class Captcha extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = cp_url('settings/captcha');
+		$base_url = ee('CP/URL', 'settings/captcha');
 
 		if (AJAX_REQUEST)
 		{

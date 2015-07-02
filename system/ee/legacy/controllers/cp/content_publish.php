@@ -146,7 +146,7 @@ class Content_publish extends CP_Controller {
 		{
 			ee()->cp->switch_site(
 				$site_id,
-				cp_url(
+				ee('CP/URL',
 					'content_publish/entry_form',
 					array(
 						'channel_id'	=> $channel_id,
