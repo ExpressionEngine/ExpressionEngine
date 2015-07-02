@@ -129,14 +129,10 @@ class Pages_mcp {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['base_url'] = $vars['table']['base_url'];
 
-		if ( ! empty($vars['table']['data']))
-		{
-			// Paginate!
-			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
-				->perPage($vars['table']['limit'])
-				->currentPage($vars['table']['page'])
-				->render($base_url);
-		}
+		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($base_url);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('page') . ': <b>### ' . lang('pages') . '</b>');
 		ee()->cp->add_js_script(array(
