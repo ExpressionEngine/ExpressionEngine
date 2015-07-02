@@ -109,7 +109,7 @@ case 'checkbox': ?>
 			}
 			else
 			{
-				$selected = ($value == $key);
+				$selected = ((string) $value == (string) $key);
 			}
 
 			$disabled = FALSE;
