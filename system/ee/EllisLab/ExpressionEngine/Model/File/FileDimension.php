@@ -33,7 +33,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class FileDimension extends Model {
 
 	protected static $_primary_key = 'id';
-	protected static $_gateway_names = array('FileDimensionGateway');
+	protected static $_table_name = 'file_dimensions';
 
 	protected static $_typed_columns = array(
 		//'width'  => 'int',
@@ -43,12 +43,12 @@ class FileDimension extends Model {
 	protected static $_relationships = array(
 		'UploadDestination' => array(
 			'type' => 'belongsTo',
-			'to_key' => 'id',
 			'from_key' => 'upload_location_id'
 		),
 		'Watermark' => array(
 			'type' => 'hasOne',
-			'from_key' => 'watermark_id'
+			'from_key' => 'watermark_id',
+			'to_key' => 'wm_id'
 		)
 	);
 
