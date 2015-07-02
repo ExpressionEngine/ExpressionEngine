@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Service\Model\Association;
 
 use EllisLab\ExpressionEngine\Service\Model\Collection;
+use EllisLab\ExpressionEngine\Service\Model\Model;
 
 class ToMany extends Association {
 
@@ -13,10 +14,16 @@ class ToMany extends Association {
 			$related = new Collection($related);
 		}
 
+		if ($related instanceOf Model)
+		{
+			$related = new Collection(array($related));
+		}
+
 		if ($related instanceOf Collection)
 		{
 			$this->ensureAssociation($related);
 		}
+
 
 		return parent::fill($related, $_skip_inverse);
 	}
