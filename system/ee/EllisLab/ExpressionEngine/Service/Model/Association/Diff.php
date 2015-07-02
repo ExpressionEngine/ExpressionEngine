@@ -83,7 +83,11 @@ class Diff {
 		}
 		else
 		{
-			$this->relation->drop($this->parent, $this->removed);
+			if ( ! empty($this->removed))
+			{
+				$this->relation->drop($this->parent, $this->removed);
+			}
+			
 			$this->relation->insert($this->parent, $this->added);
 		}
 

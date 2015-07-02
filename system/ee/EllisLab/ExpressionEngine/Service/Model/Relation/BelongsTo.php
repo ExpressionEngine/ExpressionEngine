@@ -36,7 +36,6 @@ class BelongsTo extends Relation {
 	public function createAssociation(Model $source)
 	{
 		return new ToOne($source, $this);
-		//return new Association\BelongsTo($source, $this);
 	}
 
 	/**
