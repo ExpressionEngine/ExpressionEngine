@@ -34,6 +34,7 @@ class ChannelField extends FieldModel {
 
 	protected static $_relationships = array(
 		'ChannelFieldGroup' => array(
+			'weak' => TRUE,
 			'type' => 'belongsTo'
 		),
 		'Channel' => array(

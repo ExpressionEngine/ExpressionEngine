@@ -9,12 +9,13 @@ class ChannelFieldGroup extends Model {
 	protected static $_primary_key 	= 'group_id';
 	protected static $_gateway_names = array('ChannelFieldGroupGateway');
 
-	protected $group_id;
+	protected $group_id = 0;
 	protected $site_id;
 	protected $group_name;
 
 	protected static $_relationships = array(
 		'ChannelFields' => array(
+			'weak' => TRUE,
 			'type' => 'hasMany',
 			'model' => 'ChannelField'
 		)
