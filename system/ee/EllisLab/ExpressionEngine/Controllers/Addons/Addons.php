@@ -910,6 +910,7 @@ class Addons extends CP_Controller {
 		//   1. Step headers back (h2 becomes h1, h3 becomes, h2, etc.)
 		//   2. Change codeblocks to textareas
 		//   3. Add <mark> around h4's (params and variables)
+		//   4. Pull out header tree for sidebar nav (h1 and h2 only)
 
 		for ($i = 2, $j = 1; $i <=6; $i++, $j++)
 		{
@@ -920,6 +921,44 @@ class Addons extends CP_Controller {
 		$post_tags = array('<textarea>', '</textarea>', '<h4><mark>', '</mark></h4>');
 
 		$readme = str_replace($pre_tags, $post_tags, $readme);
+
+		// [
+		// 	[0] => <h1>full tag</h1>
+		// 	[1] => 1
+		// 	[2] => full tag
+		// ]
+		preg_match_all('|<h([12])>(.*?)</h\\1>|', $readme, $matches, PREG_SET_ORDER);
+
+		$nav = array();
+		$child = array();
+		foreach($matches as $key => $match)
+		{
+			$new_header = "<h{$match[1]} id=\"ref{$key}\">{$match[2]}</h{$match[1]}>";
+			$readme = preg_replace('/'.preg_quote($match[0], '/').'/', $new_header, $readme, 1);
+
+			if ($match[1] == 1)
+			{
+				if ( ! empty($child))
+				{
+					$nav[] = $child;
+					$child = array();
+				}
+
+				$nav[$match[2]] = "#ref{$key}";
+			}
+			else
+			{
+				$child[$match[2]] = "#ref{$key}";
+			}
+		}
+
+		// Register our menu and header
+		ee()->menu->register_left_nav($nav);
+		ee()->view->header = array(
+			'title' => lang('addon_manager'),
+			'form_url' => cp_url('addons'),
+			'search_button_value' => lang('search_addons_button')
+		);
 
 		$vars['readme'] = $readme;
 
