@@ -11,6 +11,7 @@ class Association {
     private $loaded = FALSE;
     private $inverse_name;
 
+    protected $diff;
     protected $model;
     protected $related;
     protected $relation;
@@ -43,6 +44,8 @@ class Association {
 
     public function set($item)
     {
+        $this->diff->reset();
+
         $this->remove();
         $items = $this->toModelArray($item);
 
@@ -57,6 +60,8 @@ class Association {
 
             $this->addToRelated($model);
         }
+
+        $this->diff->wasSet();
     }
 
     public function getInverseName()
@@ -129,6 +134,8 @@ class Association {
      */
     public function save()
     {
+        $this->diff->commit();
+
         if ($this->relation->canSaveAcross())
         {
             if (isset($this->related))
@@ -165,6 +172,7 @@ class Association {
 
 		$this->fill($result);
 
+        $this->diff->reset();
 		$this->markAsLoaded();
 	}
 
@@ -187,12 +195,13 @@ class Association {
 
     protected function ensureExists($model)
     {
+        $this->diff->add($model);
         $this->relation->linkIds($this->model, $model);
     }
 
-
     protected function ensureDoesNotExist($model)
     {
+        $this->diff->remove($model);
         $this->relation->unlinkIds($this->model, $model);
     }
 
@@ -238,6 +247,8 @@ class Association {
      */
     protected function bootAssociation()
     {
+        $this->diff = new Diff($this->model, $this->relation);
+
         $that = $this;
         $this->model->on('setId', function() use ($that)
         {

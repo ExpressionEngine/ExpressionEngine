@@ -13,6 +13,11 @@ class ToMany extends Association {
 			$related = new Collection($related);
 		}
 
+		if ($related instanceOf Collection)
+		{
+			$this->ensureAssociation($related);
+		}
+
 		return parent::fill($related, $_skip_inverse);
 	}
 
@@ -74,9 +79,14 @@ class ToMany extends Association {
 			$this->related = new Collection();
 		}
 
-		if ($this->related->getAssociation() !== $this)
+		$this->ensureAssociation($this->related);
+	}
+
+	protected function ensureAssociation(Collection $related)
+	{
+		if ($related->getAssociation() !== $this)
 		{
-			$this->related->setAssociation($this);
+			$related->setAssociation($this);
 		}
 	}
 }
