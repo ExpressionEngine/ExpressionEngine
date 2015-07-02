@@ -518,13 +518,16 @@ class Template extends AbstractDesignController {
 			->filter('group_id', '!=', 1)
 			->all();
 
-		$allowed_member_groups = ee()->input->post('allowed_member_groups');
+		$allowed_member_groups = ee()->input->post('allowed_member_groups') ?: array();
+
+
 		$no_access = $member_groups->filter(function($group) use ($allowed_member_groups)
 		{
 			return ! in_array($group->group_id, $allowed_member_groups);
 		});
 
-		$template->setNoAccess($no_access);
+		$template->NoAccess = $no_access;
+
 		// Route
 		$route = $template->getTemplateRoute();
 
