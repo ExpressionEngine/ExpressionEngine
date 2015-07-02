@@ -38,6 +38,9 @@ abstract class Relation {
 	protected $name;
 	protected $is_weak;
 
+	protected $to_table;
+	protected $from_table;
+
 	protected $from_key;
 	protected $to_key;
 	protected $key_tuple;
@@ -226,5 +229,15 @@ abstract class Relation {
 
 		$this->from_table = $this->from->getTableForField($from);
 		$this->to_table = $this->to->getTableForField($to);
+
+		if ( ! $this->from_table)
+		{
+			throw new \Exception('Cannot find table for field ' . $from . ' on '. $this->from->getClass());
+		}
+
+		if ( ! $this->to_table)
+		{
+			throw new \Exception('Cannot find table for field '.$to.' on '.$this->to->getClass(). ' from '.$this->from->getClass());
+		}
 	}
 }
