@@ -898,34 +898,26 @@ class Addons extends CP_Controller {
 			'description' => $info->get('description')
 		);
 
-		$readme_array = explode("\n", file_get_contents($readme_file));
 		// Some pre-processing:
-		//   1. Remove everything up to the first ## header
+		//   1. Remove any #'s at the start of the doc, since that will be redundant with the add-on info
 
-		$readme = '';
-		$skip = TRUE;
-
-		foreach ($readme_array as $line)
-		{
-			// #1 - Removing everything up to the first ## header
-			if ($skip && strpos($line, '##') !== FALSE)
-			{
-				$skip = FALSE;
-			}
-
-			if ($skip)
-			{
-				continue;
-			}
-
-			$readme .= $line . "\n";
-		}
+		$readme = preg_replace('/^\s*#.*?\n/s', '', file_get_contents($readme_file));
 
 		$parser = new MarkdownExtra;
 		$readme = $parser->transform($readme);
 
-		$pre_tags = array('<pre><code>', '</code></pre>', '<h3>', '</h3>');
-		$post_tags = array('<textarea>', '</textarea>', '<h3><mark>', '</mark></h3>');
+		// Some post-processing
+		//   1. Step headers back (h2 becomes h1, h3 becomes, h2, etc.)
+		//   2. Change codeblocks to textareas
+		//   3. Add <mark> around h4's (params and variables)
+
+		for ($i = 2, $j = 1; $i <=6; $i++, $j++)
+		{
+			$readme = str_replace(array("<h{$i}>", "</h{$i}>"), array("<h{$j}>", "</h{$j}>"), $readme);
+		}
+
+		$pre_tags = array('<pre><code>', '</code></pre>', '<h4>', '</h4>');
+		$post_tags = array('<textarea>', '</textarea>', '<h4><mark>', '</mark></h4>');
 
 		$readme = str_replace($pre_tags, $post_tags, $readme);
 
