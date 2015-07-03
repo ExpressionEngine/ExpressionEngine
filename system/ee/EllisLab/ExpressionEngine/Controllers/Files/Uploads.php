@@ -136,7 +136,7 @@ class Uploads extends AbstractFilesController {
 
 			if ($validate)
 			{
-				$new_upload_id = $this->saveUploadPreferences($upload_destination);
+				$new_upload_id = $upload_destination->save()->getId();
 
 				ee('Alert')->makeInline('shared-form')
 					->asSuccess()
@@ -644,29 +644,6 @@ class Uploads extends AbstractFilesController {
 		}
 
 		return empty($this->upload_errors);
-	}
-
-	/**
-	 * Saves the upload destination and its children
-	 *
-	 * @param	int		$id	ID of upload destination to save
-	 * @return	bool	Success or failure
-	 */
-	private function saveUploadPreferences($upload_destination)
-	{
-		$upload_destination->save();
-
-		// Delete deleted image size rows (uncomment when models are fixed)
-		//$image_sizes = $upload_destination->getFileDimensions();
-
-		//if ( ! empty($image_sizes))
-		//{
-		//	$image_sizes->filter('id', 'NOT IN', $image_sizes->pluck('id'));
-		//}
-
-		//$image_sizes->filter('upload_location_id', $upload_destination->id)->delete();
-
-		return $upload_destination->id;
 	}
 
 	/**
