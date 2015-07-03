@@ -1,10 +1,14 @@
 # My Addon
 
-An add-on that does such and such.
+An ExpressionEngine plugin to parse text using Markdown and Smartypants, with [Markdown Extra](https://michelf.ca/projects/php-markdown/extra/) support.
 
-## Example Usage
+## Usage
 
-This plugin parses text using Markdown and Smartypants. To use this plugin warp any text in this text pair.
+### {exp:markdown}
+
+To use this plugin wrap any text in this text pair. It can also be selected as a formatting option for custom fields.
+
+#### Example Usage
 
 ```
 {exp:markdown}
@@ -12,9 +16,9 @@ This plugin parses text using Markdown and Smartypants. To use this plugin warp 
 {/exp:markdown}
 ```
 
-## Available Parameters
+#### Available Parameters
 
-### encode_ee_tags
+##### encode_ee_tags
 
 Defaults to **yes**. When set to **no** allows EE code to be rendered.
 
@@ -24,7 +28,7 @@ Defaults to **yes**. When set to **no** allows EE code to be rendered.
 {/exp:markdown}
 ```
 
-### smartypants
+##### smartypants
 
 Defaults to **yes**. When set to *no* stops SmartyPants from running which leaves your quotes and hyphens alone.
 
