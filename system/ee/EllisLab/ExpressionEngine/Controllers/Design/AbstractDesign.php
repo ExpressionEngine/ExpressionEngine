@@ -257,7 +257,9 @@ abstract class AbstractDesign extends CP_Controller {
 		$table = ee('CP/Table', array('autosort' => TRUE));
 		$table->setColumns(
 			array(
-				'template',
+				'template' => array(
+					'encode' => FALSE
+				),
 				'hits',
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
