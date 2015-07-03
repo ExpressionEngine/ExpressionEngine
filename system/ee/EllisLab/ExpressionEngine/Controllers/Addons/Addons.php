@@ -958,6 +958,12 @@ class Addons extends CP_Controller {
 			}
 		}
 
+		// don't forget the youngest!
+		if ( ! empty($child))
+		{
+			$nav[] = $child;
+		}
+
 		// Register our menu and header
 		ee()->menu->register_left_nav($nav);
 		ee()->view->header = array(
