@@ -162,7 +162,7 @@ class Watermarks extends AbstractFilesController {
 	 */
 	public function create()
 	{
-		$this->form();
+		return $this->form();
 	}
 
 	/**
@@ -170,7 +170,7 @@ class Watermarks extends AbstractFilesController {
 	 */
 	public function edit($watermark_id)
 	{
-		$this->form($watermark_id);
+		return $this->form($watermark_id);
 	}
 
 	/**
@@ -420,19 +420,9 @@ class Watermarks extends AbstractFilesController {
 			$watermark->set($_POST);
 			$result = $watermark->validate();
 
-			if (AJAX_REQUEST)
+			if ($response = $this->ajaxValidation($result))
 			{
-				$field = ee()->input->post('ee_fv_field');
-
-				if ($result->hasErrors($field))
-				{
-					ee()->output->send_ajax_response(array('error' => $result->renderError($field)));
-				}
-				else
-				{
-					ee()->output->send_ajax_response('success');
-				}
-				exit;
+				return $response;
 			}
 
 			if ($result->isValid())

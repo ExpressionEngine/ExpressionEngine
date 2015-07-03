@@ -767,19 +767,9 @@ class Cat extends AbstractChannelsController {
 			$category->set($_POST);
 			$result = $category->validate();
 
-			if (AJAX_REQUEST)
+			if ($response = $this->ajaxValidation($result))
 			{
-				$field = ee()->input->post('ee_fv_field');
-
-				if ($result->hasErrors($field))
-				{
-					ee()->output->send_ajax_response(array('error' => $result->renderError($field)));
-				}
-				else
-				{
-					ee()->output->send_ajax_response('success');
-				}
-				exit;
+				return $response;
 			}
 
 			if ($result->isValid())
@@ -1022,7 +1012,7 @@ class Cat extends AbstractChannelsController {
 	 */
 	public function createField($group_id)
 	{
-		$this->categoryFieldForm($group_id);
+		return $this->categoryFieldForm($group_id);
 	}
 
 	/**
@@ -1033,7 +1023,7 @@ class Cat extends AbstractChannelsController {
 	 */
 	public function editField($group_id, $field_id)
 	{
-		$this->categoryFieldForm($group_id, $field_id);
+		return $this->categoryFieldForm($group_id, $field_id);
 	}
 
 	/**
@@ -1164,19 +1154,9 @@ class Cat extends AbstractChannelsController {
 			$cat_field->field_default_fmt = isset($_POST['field_fmt']) ? $_POST['field_fmt'] : NULL;
 			$result = $cat_field->validate();
 
-			if (AJAX_REQUEST)
+			if ($response = $this->ajaxValidation($result))
 			{
-				$field = ee()->input->post('ee_fv_field');
-
-				if ($result->hasErrors($field))
-				{
-					ee()->output->send_ajax_response(array('error' => $result->renderError($field)));
-				}
-				else
-				{
-					ee()->output->send_ajax_response('success');
-				}
-				exit;
+				return $response;
 			}
 
 			if ($result->isValid())
