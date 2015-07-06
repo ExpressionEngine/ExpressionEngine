@@ -88,7 +88,9 @@ class Fields extends AbstractChannelsController {
 			array(
 				'id',
 				'name',
-				'short_name',
+				'short_name' => array(
+					'encode' => FALSE
+				),
 				'type',
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
@@ -109,12 +111,12 @@ class Fields extends AbstractChannelsController {
 		{
 			$column = array(
 				$field->field_id,
-				htmlentities($field->field_label, ENT_QUOTES),
-				'<var>{' . $field->field_name . '}</var>',
-				htmlentities($field->field_type, ENT_QUOTES),
+				$field->field_label,
+				'<var>{' . htmlentities($field->field_name, ENT_QUOTES) . '}</var>',
+				$field->field_type,
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => cp_url('channels/fields/edit/' . $field->field_id),
+						'href' => ee('CP/URL', 'channels/fields/edit/' . $field->field_id),
 						'title' => lang('edit')
 					)
 				)),
@@ -172,45 +174,65 @@ class Fields extends AbstractChannelsController {
 			'base_url' => ee('CP/URL', 'channels/fields/create'),
 			'sections' => $this->form(),
 			'save_btn_text' => 'btn_create_field',
-			'save_btn_text_working' => 'btn_saving'
+			'save_btn_text_working' => 'btn_saving',
+			'form_hidden' => array(
+				'field_id' => NULL,
+				'site_id' => ee()->config->item('site_id')
+			),
 		);
 
-		if (AJAX_REQUEST)
+		if ( ! empty($_POST))
 		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			$field = $this->saveWithPost(ee('Model')->make('ChannelField'));
+			$field = $this->setWithPost(ee('Model')->make('ChannelField'));
+			$result = $field->validate();
 
-			ee()->session->set_flashdata('field_id', $field->field_id);
+			if ($response = $this->ajaxValidation($result))
+			{
+			    return $response;
+			}
 
-			ee('Alert')->makeInline('shared-form')
-				->asSuccess()
-				->withTitle(lang('create_field_success'))
-				->addToBody(sprintf(lang('create_field_success_desc'), $field->field_label))
-				->defer();
+			if ($result->isValid())
+			{
+				$field = $this->saveWithPost($field);
 
-			ee()->functions->redirect(ee('CP/URL', 'channels/fields'));
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee('Alert')->makeInline('shared-form')
-				->asIssue()
-				->withTitle(lang('create_field_error'))
-				->addToBody(lang('create_field_error_desc'))
-				->now();
+				ee()->session->set_flashdata('field_id', $field->field_id);
+
+				ee('Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('create_field_success'))
+					->addToBody(sprintf(lang('create_field_success_desc'), $field->field_label))
+					->defer();
+
+				ee()->functions->redirect(ee('CP/URL', 'channels/fields'));
+			}
+			else
+			{
+				ee('Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('create_field_error'))
+					->addToBody(lang('create_field_error_desc'))
+					->now();
+			}
 		}
 
 		ee()->view->cp_page_title = lang('create_field');
+
+		$this->cp->add_js_script('plugin', 'ee_url_title');
+
+		$this->javascript->output('
+			$("input[name=field_label]").bind("keyup keydown", function() {
+				$(this).ee_url_title("input[name=field_name]", true);
+			});
+		');
 
 		ee()->cp->render('settings/form', $vars);
 	}
 
 	public function edit($id)
 	{
-		$field = ee('Model')->get('ChannelField', $id)->first();
+		$field = ee('Model')->get('ChannelField', $id)
+			->filter('site_id', ee()->config->item('site_id'))
+			->first();
 
 		if ( ! $field)
 		{
@@ -226,33 +248,43 @@ class Fields extends AbstractChannelsController {
 			'base_url' => ee('CP/URL', 'channels/fields/edit/' . $id),
 			'sections' => $this->form($field),
 			'save_btn_text' => 'btn_edit_field',
-			'save_btn_text_working' => 'btn_saving'
+			'save_btn_text_working' => 'btn_saving',
+			'form_hidden' => array(
+				'field_id' => $id,
+				'site_id' => ee()->config->item('site_id')
+			),
 		);
 
-		if (AJAX_REQUEST)
+		if ( ! empty($_POST))
 		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			$field = $this->saveWithPost($field);
+			$field = $this->setWithPost($field);
+			$result = $field->validate();
 
-			ee('Alert')->makeInline('shared-form')
-				->asSuccess()
-				->withTitle(lang('edit_field_success'))
-				->addToBody(sprintf(lang('edit_field_success_desc'), $field->field_label))
-				->defer();
+			if ($response = $this->ajaxValidation($result))
+			{
+			    return $response;
+			}
 
-			ee()->functions->redirect(ee('CP/URL', 'channels/fields/edit/' . $id));
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee('Alert')->makeInline('shared-form')
-				->asIssue()
-				->withTitle(lang('edit_field_error'))
-				->addToBody(lang('edit_field_error_desc'))
-				->now();
+			if ($result->isValid())
+			{
+				$field = $this->saveWithPost($field);
+
+				ee('Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('edit_field_success'))
+					->addToBody(sprintf(lang('edit_field_success_desc'), $field->field_label))
+					->defer();
+
+				ee()->functions->redirect(ee('CP/URL', 'channels/fields/edit/' . $id));
+			}
+			else
+			{
+				ee('Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('edit_field_error'))
+					->addToBody(lang('edit_field_error_desc'))
+					->now();
+			}
 		}
 
 		ee()->view->cp_page_title = lang('edit_field');
@@ -260,10 +292,39 @@ class Fields extends AbstractChannelsController {
 		ee()->cp->render('settings/form', $vars);
 	}
 
+	private function setWithPost(ChannelField $field)
+	{
+		$field->site_id = ee()->config->item('site_id');
+		$field->field_type = $_POST['field_type'];
+		$field->group_id = ($field->group_id) ?: 0;
+		$field->field_list_items = ($field->field_list_items) ?: '';
+		$field->field_order = ($field->field_order) ?: 0;
+
+		$field->set($_POST);
+		return $field;
+	}
+
 	private function saveWithPost(ChannelField $field)
 	{
+		$field->site_id = ee()->config->item('site_id');
+		$field->field_type = $_POST['field_type'];
+		$field->group_id = ($field->group_id) ?: 0;
+		$field->field_list_items = ($field->field_list_items) ?: '';
+		$field->field_order = ($field->field_order) ?: 0;
+
 		$field->set($_POST);
-		$field->save();
+		// $field->save();
+
+		$field_data = $_POST;
+		// $field_data['field_id'] = $field->field_id;
+		$field_data['group_id'] = $field->group_id;
+
+		ee()->load->library('api');
+		ee()->legacy_api->instantiate('channel_fields');
+		$field_id = ee()->api_channel_fields->update_field($field_data);
+
+		$field->field_id = $field_id;
+		return $field;
 	}
 
 	private function form(ChannelField $field = NULL)
@@ -294,8 +355,9 @@ class Fields extends AbstractChannelsController {
 					'desc' => '',
 					'fields' => array(
 						'field_type' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $fieldtype_choices,
+							'group_toggle' => $fieldtypes->getDictionary('name', 'name'),
 							'value' => $field->field_type
 						)
 					)
@@ -363,20 +425,33 @@ class Fields extends AbstractChannelsController {
 					)
 				),
 			),
-			'field_options' => array()
 		);
 
-		ee()->form_validation->set_rules(array(
-			array(
-				'field' => 'field_label',
-				'label' => 'lang:label',
-				'rules' => 'required'
-			),
-			array(
-				'field' => 'short_name',
-				'label' => 'lang:name',
-				'rules' => 'required'
-			),
+		$field_options = $field->getSettingsForm();
+		if (is_array($field_options) && ! empty($field_options))
+		{
+			$sections = array_merge($sections, $field_options);
+		}
+
+		foreach ($fieldtypes as $fieldtype)
+		{
+			if ($fieldtype->name == $field->field_type)
+			{
+				continue;
+			}
+
+			$dummy_field = ee('Model')->make('ChannelField');
+			$dummy_field->field_type = $fieldtype->name;
+			$field_options = $dummy_field->getSettingsForm();
+
+			if (is_array($field_options) && ! empty($field_options))
+			{
+				$sections = array_merge($sections, $field_options);
+			}
+		}
+
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/form_group'),
 		));
 
 		return $sections;

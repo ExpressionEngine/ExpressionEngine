@@ -36,6 +36,5 @@ class HasOne extends HasOneOrMany {
 	public function createAssociation(Model $source)
 	{
 		return new ToOne($source, $this);
-		//return new Association\HasOne($source, $this->getName());
 	}
 }

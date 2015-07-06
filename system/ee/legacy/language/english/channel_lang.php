@@ -412,7 +412,11 @@ $lang = array(
 
 'group_name_desc' => 'Descriptive name of this category group.',
 
+'categories_not_found' => 'Zero <b>category groups</b> found',
+
 'create_category' => 'Create Category',
+
+'create_category_btn' => 'Create New Category',
 
 'edit_category' => 'Edit Category',
 

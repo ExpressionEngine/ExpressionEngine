@@ -7,7 +7,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Controllers\Members;
 
 /**
@@ -44,7 +44,7 @@ class Fields extends Members\Members {
 	{
 		parent::__construct();
 
-		$this->base_url = new URL('members/fields', ee()->session->session_id());
+		$this->base_url = ee('CP/URL', 'members/fields');
 	}
 
 	/**
@@ -54,7 +54,8 @@ class Fields extends Members\Members {
 	{
 		$table = ee('CP/Table', array(
 			'sortable' => FALSE,
-			'reorder' => TRUE
+			'reorder' => TRUE,
+			'save' => ee('CP/URL', "members/fields/order")
 		));
 
 		$table->setColumns(
@@ -83,7 +84,7 @@ class Fields extends Members\Members {
 		{
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
-					'href' => cp_url("members/fields/edit/{$field->m_field_id}"),
+					'href' => ee('CP/URL', 'members/fields/edit/', array('field' => $field->m_field_id)),
 					'title' => strtolower(lang('edit'))
 				)
 			));
@@ -107,8 +108,8 @@ class Fields extends Members\Members {
 		$table->setNoResultsText('no_search_results');
 		$table->setData($fieldData);
 		$data['table'] = $table->viewData($this->base_url);
-		$data['form_url'] = cp_url('members/fields/delete');
-		$data['new'] = cp_url('members/fields/create');
+		$data['form_url'] = ee('CP/URL', 'members/fields/delete');
+		$data['new'] = ee('CP/URL', 'members/fields/create');
 
 		$base_url = $data['table']['base_url'];
 
@@ -198,7 +199,7 @@ class Fields extends Members\Members {
 
 			ee()->view->save_btn_text = 'btn_edit_field';
 			ee()->view->cp_page_title = lang('edit_member_field');
-			ee()->view->base_url = cp_url('members/fields/edit/' . $field_id);
+			ee()->view->base_url = ee('CP/URL', 'members/fields/edit/' . $field_id);
 		}
 		else
 		{
@@ -215,7 +216,7 @@ class Fields extends Members\Members {
 
 			ee()->view->save_btn_text = 'btn_create_field';
 			ee()->view->cp_page_title = lang('create_member_field');
-			ee()->view->base_url = cp_url('members/fields/create');
+			ee()->view->base_url = ee('CP/URL', 'members/fields/create');
 		}
 
 		if ( ! $field)
@@ -232,7 +233,7 @@ class Fields extends Members\Members {
 					'desc' => '',
 					'fields' => array(
 						'm_field_type' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'text'     => lang('text_input'),
 								'textarea' => lang('textarea'),
@@ -279,15 +280,13 @@ class Fields extends Members\Members {
 						)
 					)
 				)
-			),
-			'field_options_'.$field->field_type => array(
-				'label' => 'field_options',
-				'group' => $field->field_type,
-				'settings' => $field->getSettingsForm()
 			)
 		);
 
-		if ( ! empty($_POST))
+		$vars['sections'] += $field->getSettingsForm();
+
+		// These are currently the only fieldtypes we allow; get their settings forms
+		foreach (array('text', 'textarea', 'select') as $fieldtype)
 		{
 			foreach (array_merge($vars['sections'][0], $field->getSettingsForm()) as $section)
 			{
@@ -295,6 +294,10 @@ class Fields extends Members\Members {
 				{
 					$field->$key = ee()->input->post($key);
 				}
+
+				$dummy_field = ee('Model')->make('MemberField');
+				$dummy_field->field_type = $fieldtype;
+				$vars['sections'] += $dummy_field->getSettingsForm();
 			}
 
 			$result = $field->validate();
@@ -324,7 +327,7 @@ class Fields extends Members\Members {
 					->addToBody(lang('member_field_saved_desc'))
 					->defer();
 
-				ee()->functions->redirect(cp_url('members/fields'));
+				ee()->functions->redirect(ee('CP/URL', '/members/fields/edit/' . $field_id));
 			}
 			else
 			{
@@ -355,8 +358,7 @@ class Fields extends Members\Members {
 
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text_working = 'btn_saving';
-
-		ee()->cp->set_breadcrumb(cp_url('members/fields'), lang('member_fields'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'members/fields/edit'), lang('member_fields'));
 
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/v3/form_group'),

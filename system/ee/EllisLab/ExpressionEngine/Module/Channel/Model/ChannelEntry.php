@@ -62,7 +62,7 @@ class ChannelEntry extends ContentModel {
 			'model' => 'ChannelEntry',
 			'pivot' => array(
 				'table' => 'relationships',
-				'left' => 'entry_id',
+				'left' => 'child_id',
 				'right' => 'parent_id'
 			)
 		),
@@ -71,7 +71,7 @@ class ChannelEntry extends ContentModel {
 			'model' => 'ChannelEntry',
 			'pivot' => array(
 				'table' => 'relationships',
-				'left' => 'entry_id',
+				'left' => 'parent_id',
 				'right' => 'child_id'
 			)
 		)

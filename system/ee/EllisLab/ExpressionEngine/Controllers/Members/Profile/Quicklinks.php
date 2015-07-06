@@ -5,7 +5,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Members\Profile;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
 /**
@@ -41,7 +41,7 @@ class Quicklinks extends Profile {
 		ee()->load->model('member_model');
 		$this->quicklinks = ee()->member_model->get_member_quicklinks($this->member->member_id);
 		$this->index_url = $this->base_url;
-		$this->base_url = new URL($this->base_url, ee()->session->session_id(), $this->query_string);
+		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
 	}
 
 	/**
@@ -57,7 +57,7 @@ class Quicklinks extends Profile {
 		{
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
-					'href' => cp_url('members/profile/quicklinks/edit/' . ($quicklink['order'] ?: 1), $this->query_string),
+					'href' => ee('CP/URL', 'members/profile/quicklinks/edit/' . ($quicklink['order'] ?: 1), $this->query_string),
 					'title' => strtolower(lang('edit'))
 				)
 			));
@@ -91,8 +91,8 @@ class Quicklinks extends Profile {
 		$table->setData($links);
 
 		$data['table'] = $table->viewData($this->base_url);
-		$data['new'] = cp_url('members/profile/quicklinks/create', $this->query_string);
-		$data['form_url'] = cp_url('members/profile/quicklinks/delete', $this->query_string);
+		$data['new'] = ee('CP/URL', 'members/profile/quicklinks/create', $this->query_string);
+		$data['form_url'] = ee('CP/URL', 'members/profile/quicklinks/delete', $this->query_string);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('quick_links') . ': <b>### ' . lang('quick_links') . '</b>');
 		ee()->cp->add_js_script(array(
@@ -113,7 +113,7 @@ class Quicklinks extends Profile {
 	 */
 	public function create()
 	{
-		$this->base_url = new URL($this->index_url . '/create', ee()->session->session_id(), $this->query_string);
+		$this->base_url = ee('CP/URL', $this->index_url . '/create', $this->query_string);
 
 		$vars = array(
 			'cp_page_title' => lang('create_quick_link'),
@@ -143,7 +143,7 @@ class Quicklinks extends Profile {
 	 */
 	public function edit($id)
 	{
-		$this->base_url = new URL($this->index_url . "/edit/$id", ee()->session->session_id(), $this->query_string);
+		$this->base_url = ee('CP/URL', $this->index_url . "/edit/$id", $this->query_string);
 
 		$vars = array(
 			'cp_page_title' => lang('edit_quick_link'),
@@ -183,7 +183,7 @@ class Quicklinks extends Profile {
 		$this->quicklinks = array_diff_key($this->quicklinks, array_flip($selection));
 		$this->saveQuicklinks();
 
-		ee()->functions->redirect(cp_url($this->index_url, $this->query_string));
+		ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
 	}
 
 	/**
@@ -262,7 +262,7 @@ class Quicklinks extends Profile {
 		{
 			if ($this->saveQuicklinks())
 			{
-				ee()->functions->redirect(cp_url($this->index_url, $this->query_string));
+				ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())

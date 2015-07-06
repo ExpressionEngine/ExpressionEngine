@@ -56,7 +56,7 @@ class Css extends CI_Controller {
 			$package = strtolower($package);
 
 			$file = $this->input->get_post('file');
-			$path = PATH_ADDONS.$package.'/';
+			$path = PATH_THIRD.$package.'/';
 
 			// There's a good chance we don't need ci_view_path
 			// So try this first

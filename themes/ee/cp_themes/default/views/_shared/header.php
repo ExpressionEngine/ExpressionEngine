@@ -11,7 +11,7 @@
 		<?=ee()->view->head_link('css/v3/common.min.css'); ?>
 		<?=ee()->view->head_link('css/jquery-ui-1.8.16.custom.css'); ?>
 		<?php if (ee()->extensions->active_hook('cp_css_end') === TRUE):?>
-		<link rel="stylesheet" href="<?=cp_url('css/cp_global_ext', array('theme' => ee()->cp->cp_theme))?>" type="text/css" />
+		<link rel="stylesheet" href="<?=ee('CP/URL', 'css/cp_global_ext', array('theme' => ee()->cp->cp_theme))?>" type="text/css" />
 		<?php endif;?>
 		<!-- <link href="touch-icon-iphone.png" rel="apple-touch-icon-precomposed" sizes="114x114">
 		<link href="touch-icon-ipad.png" rel="apple-touch-icon-precomposed" sizes="144x144"> -->
@@ -28,7 +28,7 @@
 		<section class="bar info-wrap">
 			<nav class="snap">
 				<div class="site">
-					<a class="home" href="<?=cp_url('homepage')?>"></a>
+					<a class="home" href="<?=ee('CP/URL', 'homepage')?>"></a>
 					<?php if (ee()->config->item('multiple_sites_enabled') === 'y'): ?>
 						<a class="has-sub" href=""><?=ee()->config->item('site_name')?> <span class="ico sub-arrow"></span></a> <a href="<?=ee()->config->item('base_url').ee()->config->item('site_index')?>">view</a>
 						<ul class="sites-list sub-menu">
@@ -40,19 +40,19 @@
 							<?php endif ?>
 						</ul>
 					<?php elseif ( ! ($site_name = ee()->config->item('site_name')) OR empty($site_name)): ?>
-						<a href="<?=cp_url('settings/general')?>" class="no-name"><?=lang('name_your_site')?></a>
+						<a href="<?=ee('CP/URL', 'settings/general')?>" class="no-name"><?=lang('name_your_site')?></a>
 					<?php else: ?>
 						<a href=""><?=ee()->config->item('site_name')?></a>
 					<?php endif ?>
 				</div>
 				<div class="user">
-					<a href="<?=cp_url('login/logout')?>"><?=lang('log_out')?></a> <a class="has-sub" href=""><?=$cp_screen_name?> <span class="ico sub-arrow"></span></a>
+					<a href="<?=ee('CP/URL', 'login/logout')?>"><?=lang('log_out')?></a> <a class="has-sub" href=""><?=$cp_screen_name?> <span class="ico sub-arrow"></span></a>
 					<ul class="quick-links sub-menu">
-						<a href="<?=cp_url('members/profile', array('id' => ee()->session->userdata('member_id')))?>"><?=lang('my_profile')?></a>
+						<a href="<?=ee('CP/URL', 'members/profile', array('id' => ee()->session->userdata('member_id')))?>"><?=lang('my_profile')?></a>
 						<a href="">Quick Link</a>
 						<a href="">Another Quick Link</a>
 						<a href="">One More Quick Link</a>
-						<a class="last add" href="<?=cp_url('members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id')))?>">&#10010; <?=lang('new_link')?></a>
+						<a class="last add" href="<?=ee('CP/URL', 'members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id')))?>">&#10010; <?=lang('new_link')?></a>
 					</ul>
 				</div>
 			</nav>
@@ -72,7 +72,7 @@
 								<?php foreach ($cp_main_menu['channels']['create'] as $channel_name => $link): ?>
 									<li class="search-channel" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
 								<?php endforeach ?>
-								<li class="last"><a class="add" href="<?=cp_url('channels/create')?>">&#10010; <?=lang('new_channel')?></a></li>
+								<li class="last"><a class="add" href="<?=ee('CP/URL', 'channels/create')?>">&#10010; <?=lang('new_channel')?></a></li>
 							</ul>
 						</div>
 					</li>
@@ -91,8 +91,8 @@
 							</ul>
 						</div>
 					</li>
-					<li><a href="<?=cp_url('files')?>"><?=lang('menu_files')?></a></li>
-					<li><a href="<?=cp_url('members')?>"><?=lang('menu_members')?></a></li>
+					<li><a href="<?=ee('CP/URL', 'files')?>"><?=lang('menu_files')?></a></li>
+					<li><a href="<?=ee('CP/URL', 'members')?>"><?=lang('menu_members')?></a></li>
 				</ul>
 				<ul class="dev-menu">
 					<li class="develop">
@@ -116,7 +116,7 @@
 							</ul>
 						</div>
 					</li>
-					<li class="settings"><a href="<?=cp_url('settings/general')?>"><b class="ico settings"></b> <!-- Settings --></a></li>
+					<li class="settings"><a href="<?=ee('CP/URL', 'settings/general')?>"><b class="ico settings"></b> <!-- Settings --></a></li>
 				</ul>
 			</nav>
 		</section>

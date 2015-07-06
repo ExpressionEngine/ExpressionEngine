@@ -61,7 +61,7 @@ class Notifications {
 						'entry_title'		=> $e->row('title'),
 						'entry_url'			=> reduce_double_slashes($c->row('channel_url').'/'.$e->row('url_title')),
 						'comment_url'		=> reduce_double_slashes($c->row('comment_url').'/'.$e->row('url_title')),
-						'cp_edit_entry_url'	=> cp_url(
+						'cp_edit_entry_url'	=> ee('CP/URL',
 												'content_publish/entry_form',
 												array(
 													'site_id'		=> $e->row('site_id'),

@@ -1,6 +1,6 @@
 <?php
 
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
 use EllisLab\Addons\FilePicker\FilePicker as Picker;
 
@@ -69,7 +69,7 @@ class Filepicker_mcp {
 		// Filter out any files that are no longer on disk
 		$files->filter(function($file) { return $file->exists(); });
 
-		$base_url = new URL($this->base_url, ee()->session->session_id());
+		$base_url = ee('CP/URL', $this->base_url);
 
 		$filters = ee('Filter')->add('Perpage', $files->count(), 'show_all_files');
 

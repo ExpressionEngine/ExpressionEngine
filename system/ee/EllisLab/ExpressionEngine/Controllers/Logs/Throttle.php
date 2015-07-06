@@ -52,7 +52,7 @@ class Throttle extends Logs {
 			$this->delete('Throttle', lang('throttle_log'));
 			if (strtolower(ee()->input->post('delete')) == 'all')
 			{
-				return ee()->functions->redirect(cp_url('logs/throttle'));
+				return ee()->functions->redirect(ee('CP/URL', 'logs/throttle'));
 			}
 		}
 

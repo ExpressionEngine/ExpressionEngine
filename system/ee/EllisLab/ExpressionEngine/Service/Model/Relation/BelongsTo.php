@@ -36,7 +36,6 @@ class BelongsTo extends Relation {
 	public function createAssociation(Model $source)
 	{
 		return new ToOne($source, $this);
-		//return new Association\BelongsTo($source, $this);
 	}
 
 	/**
@@ -58,6 +57,32 @@ class BelongsTo extends Relation {
 	}
 
 	/**
+	* Insert a database link between the model and targets
+	*/
+	public function insert(Model $source, $targets)
+	{
+		// nada;
+	}
+
+	/**
+	* Drop the database link between the model and targets, potentially
+	* triggering a soft delete.
+	*/
+	public function drop(Model $source, $targets = NULL)
+	{
+		// nada;
+	}
+
+	/**
+	* Set the relationship
+	*/
+	public function set(Model $source, $targets)
+	{
+		// nada;
+	}
+
+
+	/**
 	 *
 	 */
 	public function linkIds(Model $source, Model $target)
@@ -74,7 +99,14 @@ class BelongsTo extends Relation {
 	{
 		list($from, $_) = $this->getKeys();
 
-		$source->$from = NULL;
+		if ($this->is_weak)
+		{
+			$source->$from = 0;
+		}
+		else
+		{
+			$source->$from = NULL;
+		}
 	}
 
 	/**

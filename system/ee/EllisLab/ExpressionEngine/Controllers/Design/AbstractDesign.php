@@ -5,7 +5,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Design;
 use CP_Controller;
 use ZipArchive;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 
 /**
@@ -62,12 +62,12 @@ abstract class AbstractDesign extends CP_Controller {
 			'system_templates' => array(
 				array(
 					'name' => lang('messages'),
-					'url' => cp_url('design/system'),
+					'url' => ee('CP/URL', 'design/system'),
 					'class' => ($active == 'messages') ? 'act' : ''
 				),
 				array(
 					'name' => lang('email'),
-					'url' => cp_url('design/email'),
+					'url' => ee('CP/URL', 'design/email'),
 					'class' => ($active == 'email') ? 'act' : ''
 				)
 			)
@@ -87,8 +87,8 @@ abstract class AbstractDesign extends CP_Controller {
 
 			$data = array(
 				'name' => $group->group_name,
-				'url' => cp_url('design/manager/' . $group->group_name),
-				'edit_url' => cp_url('design/group/edit/' . $group->group_name),
+				'url' => ee('CP/URL', 'design/manager/' . $group->group_name),
+				'edit_url' => ee('CP/URL', 'design/group/edit/' . $group->group_name),
 			);
 
 			if ($group->is_site_default)
@@ -110,7 +110,7 @@ abstract class AbstractDesign extends CP_Controller {
 		{
 			$vars['system_templates'][] = array(
 				'name' => lang('members'),
-				'url' => cp_url('design/members'),
+				'url' => ee('CP/URL', 'design/members'),
 				'class' => ($active == 'members') ? 'act' : ''
 			);
 		}
@@ -119,7 +119,7 @@ abstract class AbstractDesign extends CP_Controller {
 		{
 			$vars['system_templates'][] = array(
 				'name' => lang('forums'),
-				'url' => cp_url('design/forums'),
+				'url' => ee('CP/URL', 'design/forums'),
 				'class' => ($active == 'forums') ? 'act' : ''
 			);
 		}
@@ -134,14 +134,14 @@ abstract class AbstractDesign extends CP_Controller {
 	{
 		ee()->view->header = array(
 			'title' => lang('template_manager'),
-			'form_url' => cp_url('design/template/search'),
+			'form_url' => ee('CP/URL', 'design/template/search'),
 			'toolbar_items' => array(
 				'settings' => array(
-					'href' => cp_url('settings/template'),
+					'href' => ee('CP/URL', 'settings/template'),
 					'title' => lang('settings')
 				),
 				'download' => array(
-					'href' => cp_url('design/export'),
+					'href' => ee('CP/URL', 'design/export'),
 					'title' => lang('export_all')
 				)
 			),
@@ -257,7 +257,9 @@ abstract class AbstractDesign extends CP_Controller {
 		$table = ee('CP/Table', array('autosort' => TRUE));
 		$table->setColumns(
 			array(
-				'template',
+				'template' => array(
+					'encode' => FALSE
+				),
 				'hits',
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
@@ -317,7 +319,7 @@ abstract class AbstractDesign extends CP_Controller {
 						'title' => lang('view')
 					),
 					'edit' => array(
-						'href' => cp_url('design/template/edit/' . $template->template_id),
+						'href' => ee('CP/URL', 'design/template/edit/' . $template->template_id),
 						'title' => lang('edit')
 					),
 					'settings' => array(

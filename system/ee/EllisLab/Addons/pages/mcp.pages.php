@@ -1,7 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 
 /**
  * ExpressionEngine - by EllisLab
@@ -68,7 +68,7 @@ class Pages_mcp {
 			$this->delete();
 		}
 
-		$base_url = ee('CP/URL', 'addons/settings/pages', ee()->session->session_id());
+		$base_url = ee('CP/URL', 'addons/settings/pages');
 
 		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => FALSE, 'limit' => 20));
 		$table->setColumns(
@@ -114,7 +114,7 @@ class Pages_mcp {
 					array(
 						'toolbar_items' => array(
 							'edit' => array(
-								'href' => cp_url('publish/edit/' . $entry_id),
+								'href' => ee('CP/URL', 'publish/edit/' . $entry_id),
 								'title' => lang('edit')
 							)
 						)
@@ -129,14 +129,10 @@ class Pages_mcp {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['base_url'] = $vars['table']['base_url'];
 
-		if ( ! empty($vars['table']['data']))
-		{
-			// Paginate!
-			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
-				->perPage($vars['table']['limit'])
-				->currentPage($vars['table']['page'])
-				->render($base_url);
-		}
+		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($base_url);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('page') . ': <b>### ' . lang('pages') . '</b>');
 		ee()->cp->add_js_script(array(

@@ -11,6 +11,7 @@ class ChannelFieldGroup extends Model {
 
 	protected static $_relationships = array(
 		'ChannelFields' => array(
+			'weak' => TRUE,
 			'type' => 'hasMany',
 			'model' => 'ChannelField'
 		)

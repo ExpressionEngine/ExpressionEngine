@@ -3,9 +3,9 @@
 </div>
 <div class="box snap">
 	<div class="tbl-ctrls">
-		<?=form_open(cp_url('addons/settings/rte/update_toolsets'))?>
+		<?=form_open(ee('CP/URL', 'addons/settings/rte/update_toolsets'))?>
 			<fieldset class="tbl-search right">
-				<a class="btn tn action" href="<?=cp_url('addons/settings/rte/new_toolset')?>"><?=lang('create_new')?></a>
+				<a class="btn tn action" href="<?=ee('CP/URL', 'addons/settings/rte/new_toolset')?>"><?=lang('create_new')?></a>
 			</fieldset>
 			<h1><?=lang('available_tool_sets')?></h1>
 
@@ -31,7 +31,7 @@
 <?php
 $modal_vars = array(
 	'name'      => 'modal-confirm-remove',
-	'form_url'	=> cp_url('addons/settings/rte/update_toolsets'),
+	'form_url'	=> ee('CP/URL', 'addons/settings/rte/update_toolsets'),
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
 	)

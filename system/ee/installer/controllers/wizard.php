@@ -1704,7 +1704,6 @@ class Wizard extends CI_Controller {
 			'captcha_rand'              => 'y',
 			'captcha_require_members'   => 'n',
 			'require_captcha'           => 'n',
-			'enable_db_caching'         => 'n',
 			'enable_sql_caching'        => 'n',
 			'force_query_string'        => 'n',
 			'show_profiler'             => 'n',
@@ -1863,7 +1862,6 @@ class Wizard extends CI_Controller {
 			'captcha_rand',
 			'captcha_require_members',
 			'require_captcha',
-			'enable_db_caching',
 			'enable_sql_caching',
 			'force_query_string',
 			'show_profiler',
@@ -2217,7 +2215,7 @@ class Wizard extends CI_Controller {
 			}
 			else
 			{
-				$path = PATH_ADDONS.$module.'/';
+				$path = PATH_THIRD.$module.'/';
 			}
 
 			if (file_exists($path.'upd.'.$module.'.php'))

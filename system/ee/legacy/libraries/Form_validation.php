@@ -708,7 +708,7 @@ class EE_Form_validation {
 			ee()->lang->loadfile('admin');
 			$this->set_message(
 				'valid_xss_check',
-				sprintf(lang('invalid_xss_check'), cp_url('homepage'))
+				sprintf(lang('invalid_xss_check'), ee('CP/URL', 'homepage'))
 			);
 		}
 

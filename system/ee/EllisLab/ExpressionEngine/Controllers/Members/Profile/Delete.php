@@ -43,7 +43,7 @@ class Delete extends Profile {
 			$this->deleteMember();
 		}
 
-		$this->base_url = cp_url($this->base_url, $this->query_string);
+		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
 
 		$vars['sections'] = array(
 			array(
@@ -77,7 +77,7 @@ class Delete extends Profile {
 	private function deleteMember()
 	{
 		$this->member->delete();
-		ee()->functions->redirect(cp_url('members'));
+		ee()->functions->redirect(ee('CP/URL', 'members'));
 	}
 }
 // END CLASS

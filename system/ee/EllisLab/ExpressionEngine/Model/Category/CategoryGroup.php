@@ -42,11 +42,6 @@ class CategoryGroup extends StructureModel {
 			'type' => 'hasMany',
 			'model' => 'Category'
 		),
-		'Parent' => array(
-			'type' => 'belongsTo',
-			'model' => 'Category',
-			'key' => 'parent_id'
-		),
 	);
 
 	// Properties

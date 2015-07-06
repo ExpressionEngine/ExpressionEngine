@@ -93,7 +93,7 @@ class DebugOutput extends Settings {
 					'desc' => 'redirect_method_desc',
 					'fields' => array(
 						'redirect_method' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'redirect' => lang('redirect_method_opt_location'),
 								'refresh' => lang('redirect_method_opt_refresh')
@@ -148,7 +148,7 @@ class DebugOutput extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = cp_url('settings/debug-output');
+		$base_url = ee('CP/URL', 'settings/debug-output');
 
 		if (AJAX_REQUEST)
 		{

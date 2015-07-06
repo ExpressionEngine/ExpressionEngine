@@ -1,6 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\Core\LoaderFacade;
+use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -107,6 +108,35 @@ class CP_Controller extends EE_Controller {
 		parent::__construct();
 		ee()->core->run_cp();
 	}
+
+	/**
+	 * Takes a model validation result object and checks for errors on the
+	 * posted 'ee_fv_field' and returns an error message, or success message
+	 * but only if the request was an AJAX request.
+	 *
+	 * @param EllisLab\ExpressionEngine\Service\Validation\Result $result A model validation result
+	 * @return array|NULL NULL if the request was not via AJAX, otherwise an
+	 *   an array with an error message or a success notification.
+	 */
+	protected function ajaxValidation(ValidationResult $result)
+	{
+		if (ee()->input->is_ajax_request())
+		{
+			$field = ee()->input->post('ee_fv_field');
+
+			if ($result->hasErrors($field))
+			{
+				return array('error' => $result->renderError($field));
+			}
+			else
+			{
+				return array('success');
+			}
+		}
+
+		return NULL;
+	}
+
 }
 
 

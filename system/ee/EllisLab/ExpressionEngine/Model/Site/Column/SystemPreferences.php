@@ -70,7 +70,6 @@ class SystemPreferences extends Base64SerializedComposite {
 	protected $captcha_font;
 	protected $captcha_rand;
 	protected $captcha_require_members;
-	protected $enable_db_caching;
 	protected $enable_sql_caching;
 	protected $force_query_string;
 	protected $show_profiler;

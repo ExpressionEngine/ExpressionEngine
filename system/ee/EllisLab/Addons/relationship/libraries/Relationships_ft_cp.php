@@ -49,27 +49,29 @@ class Relationships_ft_cp {
 	{
 		$from_all_sites = (ee()->config->item('multiple_sites_enabled') == 'y');
 
-		ee()->db
-			->from('channels c, sites s')
-			->select('channel_id, channel_title, site_label')
-			->where('c.site_id = s.site_id', NULL, FALSE)
-			->order_by('channel_title ASC');
+		$channels = ee('Model')->get('Channel')
+			->order('channel_title', 'asc');
 
 		if ( ! $from_all_sites)
 		{
-			ee()->db->where('c.site_id', '1');
+			$channels->filter('site_id', 1);
 		}
 
-		$cs = ee()->db->get()->result_array();
-
-		$channels = $this->_form_any();
-
-		foreach ($cs as $row)
+		if ($from_all_sites)
 		{
-			$channels[$row['channel_id']] = ($from_all_sites) ? $row['site_label'].NBS.'-'.NBS.$row['channel_title'] : $row['channel_title'];
+			$channel_choices = array();
+
+			foreach ($channels->all() as $channel)
+			{
+				$channel_choices[$channel->channel_id] = $channel->channel_title . '<i>&mdash; ' . $channel->Site->site_label . '</i>';
+			}
+		}
+		else
+		{
+			$channel_choices = $channels->getDictionary('channel_id', 'channel_title');
 		}
 
-		return $channels;
+		return array_merge($this->_form_any(), $channel_choices);
 	}
 
 	// --------------------------------------------------------------------
@@ -83,42 +85,40 @@ class Relationships_ft_cp {
 	{
 		$from_all_sites = (ee()->config->item('multiple_sites_enabled') == 'y');
 
-		ee()->db
-			->select('cat_id, cat_name, parent_id, g.group_id')
-			->from('category_groups g, categories c')
-			->where('g.group_id', 'c.group_id', FALSE)
-			->order_by('group_id, parent_id, cat_name ASC');
+		$categories = ee('Model')->get('Category')
+			->filter('parent_id', 0)
+			->order('group_id', 'asc')
+			->order('parent_id', 'asc')
+			->order('cat_name', 'asc');
 
 		if ( ! $from_all_sites)
 		{
-			ee()->db->where('c.site_id', '1');
+			$categories->filter('site_id', 1);
 		}
 
-		$cats = ee()->db->get()->result_array();
+		return array_merge($this->_form_any(), $this->buildNestedCategoryArray($categories->all()));
+	}
 
-		$categories = $this->_form_any();
+	private function buildNestedCategoryArray($categories)
+	{
+		$choices = array();
 
-		ee()->load->library('datastructures/tree');
-		$cat_tree = ee()->tree->from_list($cats, array('id' => 'cat_id'));
-
-		if ( ! $cat_tree->is_leaf())
+		foreach ($categories as $category)
 		{
-			$cat_it = $cat_tree->preorder_iterator();
-
-			$indent = str_repeat(NBS, 4);
-
-			foreach ($cat_it as $cat)
+			if (count($category->Children))
 			{
-				if ($cat->is_root())
-				{
-					continue;
-				}
-
-				$categories[$cat->cat_id] = str_repeat($indent, $cat_it->getDepth() - 1).$cat->cat_name;
+				$choices[$category->cat_id] = array(
+					'name' => $category->cat_name,
+					'children' => $this->buildNestedCategoryArray($category->Children)
+				);
+			}
+			else
+			{
+				$choices[$category->cat_id] = $category->cat_name;
 			}
 		}
 
-		return $categories;
+		return $choices;
 	}
 
 	// --------------------------------------------------------------------
@@ -141,50 +141,51 @@ class Relationships_ft_cp {
 		}
 
 		// First the author groups
-		$groups = ee()->db
-			->select('group_id, group_title')
-			->where('include_in_authorlist', 'y')
-			->order_by('group_title ASC')
-			->get('member_groups')->result();
+		$groups = ee('Model')->get('MemberGroup')
+			->fields('group_id', 'group_title')
+			->filter('include_in_authorlist', 'y')
+			->order('group_title', 'asc');
 
-		$group_ids = array();
-
-		foreach ($groups as $group)
+		if ( ! $from_all_sites)
 		{
-			$group_ids[] = $group->group_id;
+			$groups->filter('site_id', '1');
 		}
+
+		$groups = $groups->all();
+		$group_ids = $groups->pluck('group_id');
 
 		// Then all authors who are in those groups or who have author access
-		ee()->db->select('member_id, group_id, username, screen_name');
-		ee()->db->where('in_authorlist', 'y');
+		$members = ee('Model')->get('Member')
+			->fields('member_id', 'group_id', 'screen_name', 'username')
+			->filter('in_authorlist', 'y')
+			->order('screen_name', 'asc')
+			->order('username', 'asc');
 
-		if (count($groups))
+		if ($groups->count())
 		{
-			ee()->db->or_where_in('group_id', $group_ids);
+			$members->orFilter('group_id', 'IN', $group_ids);
 		}
-
-		ee()->db->order_by('screen_name, username', 'ASC');
-		$members = ee()->db->get('members')->result();
 
 		$group_to_member = array_fill_keys($group_ids, array());
 
-		foreach ($members as $m)
+		foreach ($members->all() as $m)
 		{
 			$group_to_member[$m->group_id][] = $m;
 		}
-
-		$indent = str_repeat(NBS, 4);
 
 		$authors = $this->_form_any();
 
 		// Reoder by groups with subitems for authors
 		foreach ($groups as $group)
 		{
-			$authors['g_'.$group->group_id] = $group->group_title;
+			$authors['g_'.$group->group_id] = array(
+				'name' => $group->group_title,
+				'children' => array()
+			);
 
 			foreach ($group_to_member[$group->group_id] as $m)
 			{
-				$authors['m_'.$m->member_id] = $indent.(($m->screen_name == '') ? $m->username : $m->screen_name);
+				$authors['g_'.$group->group_id]['children']['m_'.$m->member_id] = (($m->screen_name == '') ? $m->username : $m->screen_name);
 			}
 		}
 
@@ -203,38 +204,23 @@ class Relationships_ft_cp {
 	{
 		$from_all_sites = (ee()->config->item('multiple_sites_enabled') == 'y');
 
+		$statuses = ee('Model')->get('Status')
+			->order('status_id', 'asc');
+
 		if ( ! $from_all_sites)
 		{
-			ee()->db->where('site_id', '1');
+			$statuses->filter('site_id', 1);
 		}
 
-		$stats = ee()->db
-			->select('status_id, status')
-			->order_by('status_id') // puts open before closed
-			->get('statuses')->result();
+		$status_options = $this->_form_any();
 
-		// There is a bit of hackery here to get statuses to
-		// display in alphabetical order, but starting with:
-		// -- Any --, Open, Closed in that order.
-
-		$deft_statuses = $this->_form_any();
-
-		$statuses = array();
-
-		foreach ($stats as $s)
+		foreach ($statuses->all() as $status)
 		{
-			if (in_array($s->status, array('open', 'closed')))
-			{
-				$deft_statuses[$s->status] = lang($s->status);
-			}
-			else
-			{
-				$statuses[$s->status] = $s->status;
-			}
+			$status_name = ($status->status == 'closed' OR $status->status == 'open') ?  lang($status->status) : $status->status;
+			$status_options[$status->status] = $status_name;
 		}
 
-		asort($statuses);
-		return array_merge($deft_statuses, $statuses);
+		return $status_options;
 	}
 
 	// --------------------------------------------------------------------

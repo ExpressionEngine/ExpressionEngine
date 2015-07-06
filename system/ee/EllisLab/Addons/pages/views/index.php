@@ -42,7 +42,7 @@
 <?php
 $modal_vars = array(
 	'name'      => 'modal-confirm-remove',
-	'form_url'	=> cp_url('addons/settings/pages'),
+	'form_url'	=> ee('CP/URL', 'addons/settings/pages'),
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
 	)

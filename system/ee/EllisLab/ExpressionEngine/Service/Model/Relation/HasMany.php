@@ -36,6 +36,5 @@ class HasMany extends HasOneOrMany {
 	public function createAssociation(Model $source)
 	{
 		return new ToMany($source, $this);
-		return new Association\HasMany($source, $this->name);
 	}
 }

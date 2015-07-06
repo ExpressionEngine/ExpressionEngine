@@ -38,7 +38,7 @@ class Publishing extends Profile {
 	 */
 	public function index()
 	{
-		$this->base_url = cp_url($this->base_url, $this->query_string);
+		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
 
 
 		$vars['sections'] = array(
@@ -78,7 +78,7 @@ class Publishing extends Profile {
 					'desc' => 'rte_toolset_desc',
 					'fields' => array(
 						'rte_toolset_id' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								0 => 'default'
 							),

@@ -61,7 +61,7 @@ class Group extends AbstractDesignController {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => cp_url('design/group/create'),
+			'base_url' => ee('CP/URL', 'design/group/create'),
 			'save_btn_text' => 'btn_create_template_group',
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
@@ -81,7 +81,7 @@ class Group extends AbstractDesignController {
 						'desc' => 'duplicate_group_desc',
 						'fields' => array(
 							'duplicate_group' => array(
-								'type' => 'dropdown',
+								'type' => 'select',
 								'choices' => $groups
 							)
 						)
@@ -183,7 +183,7 @@ class Group extends AbstractDesignController {
 				->addToBody(sprintf(lang('create_template_group_success_desc'), $group->group_name))
 				->defer();
 
-			ee()->functions->redirect(cp_url('design/manager/' . $group->group_name));
+			ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -219,7 +219,7 @@ class Group extends AbstractDesignController {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => cp_url('design/group/edit/' . $group->group_name),
+			'base_url' => ee('CP/URL', 'design/group/edit/' . $group->group_name),
 			'form_hidden' => array(
 				'old_name' => $group->group_name
 			),
@@ -291,7 +291,7 @@ class Group extends AbstractDesignController {
 				->addToBody(sprintf(lang('edit_template_group_success_desc'), $group->group_name))
 				->defer();
 
-			ee()->functions->redirect(cp_url('design/manager/' . $group->group_name));
+			ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -345,7 +345,7 @@ class Group extends AbstractDesignController {
 				->defer();
 		}
 
-		ee()->functions->redirect(cp_url('design'));
+		ee()->functions->redirect(ee('CP/URL', 'design'));
 	}
 
 	/**

@@ -94,6 +94,57 @@ $lang = array(
 
 'edit_field_error_desc' => 'We were unable to update this field, please review and fix errors below.',
 
+'field_content_text' =>
+'Allowed content',
+
+'field_content_text_desc' =>
+'Type of content this field can contain.',
+
+'field_tools' =>
+'Field tools',
+
+'field_tools_desc' =>
+'Choose field tools to include with this field in the publish form.',
+
+'show_smileys' =>
+'Emoji <i>&mdash; Image based conveyances of emotion.</i>',
+
+'show_file_selector' =>
+'Asset Manager <i>&mdash; Launches asset manager.</i>',
+
+'show_formatting_btns' =>
+'Formatting Buttons <i>&mdash; Buttons for formatting your text.</i>',
+
+'field_populate_manually' =>
+'Manually <i>&mdash; Each item on a single line.</i>',
+
+'field_populate_from_channel' =>
+'From channel <i>&mdash; Choose a field.</i>',
+
+'checkbox_options' =>
+'Checkbox options',
+
+'checkbox_options_desc' =>
+'Choose how to create the options for this field.</em><em><i>Each item will generate a single checkbox and label pair in the publish form.</i>',
+
+'select_options' =>
+'Select menu options',
+
+'select_options_desc' =>
+'Choose how to create the options for this field.</em><em><i>Each item will be included in a select drop down menu in the publish form.</i>',
+
+'multiselect_options' =>
+'Multi-Select options',
+
+'multiselect_options_desc' =>
+'Choose how to create the options for this field.</em><em><i>Each item will be included in a multi-select in the publish form.</i>',
+
+'radio_options' =>
+'Radio options',
+
+'radio_options_desc' =>
+'Choose how to create the options for this field.</em><em><i>Each item will generate a single radio button and label pair in the publish form.</i>',
+
 // @since 2.x
 
 'reserved_word' => 'The field name you have chosen is a reserved word and cannot be used.  Please see the user guide for more information.',

@@ -38,7 +38,7 @@ class Email extends Profile {
 	 */
 	public function index()
 	{
-		$this->base_url = cp_url($this->base_url, $this->query_string);
+		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
 
 		$settings = array();
 

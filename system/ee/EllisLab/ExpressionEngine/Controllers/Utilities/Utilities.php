@@ -47,7 +47,7 @@ class Utilities extends CP_Controller {
 		foreach (ee()->lang->language_pack_names() as $key => $value)
 		{
 			$menu_title = $value;
-			$url = cp_url('utilities/translate/' . $key);
+			$url = ee('CP/URL', 'utilities/translate/' . $key);
 
 			if ($key == $default_language)
 			{
@@ -63,28 +63,28 @@ class Utilities extends CP_Controller {
 
 		// Register our menu
 		ee()->menu->register_left_nav(array(
-			'communicate' => cp_url('utilities/communicate'),
+			'communicate' => ee('CP/URL', 'utilities/communicate'),
 			array(
-				'sent' => cp_url('utilities/communicate/sent')
+				'sent' => ee('CP/URL', 'utilities/communicate/sent')
 			),
 			'cp_translation',
 			$languages,
-			'php_info' => array('href' => cp_url('utilities/php'), 'rel' => 'external'),
-			'debug_extensions' => array('href' => cp_url('utilities/extensions')),
+			'php_info' => array('href' => ee('CP/URL', 'utilities/php'), 'rel' => 'external'),
+			'debug_extensions' => array('href' => ee('CP/URL', 'utilities/extensions')),
 			'import_tools',
 			array(
-				'file_converter' => cp_url('utilities/import-converter'),
-				'member_import' => cp_url('utilities/member-import')
+				'file_converter' => ee('CP/URL', 'utilities/import-converter'),
+				'member_import' => ee('CP/URL', 'utilities/member-import')
 			),
-			'sql_manager_abbr' => cp_url('utilities/sql'),
+			'sql_manager_abbr' => ee('CP/URL', 'utilities/sql'),
 			array(
-				'query_form' => cp_url('utilities/query')
+				'query_form' => ee('CP/URL', 'utilities/query')
 			),
 			'data_operations',
 			array(
-				'cache_manager' => cp_url('utilities/cache'),
-				'statistics' => cp_url('utilities/stats'),
-				'search_and_replace' => cp_url('utilities/sandr')
+				'cache_manager' => ee('CP/URL', 'utilities/cache'),
+				'statistics' => ee('CP/URL', 'utilities/stats'),
+				'search_and_replace' => ee('CP/URL', 'utilities/sandr')
 			)
 		));
 	}
@@ -100,7 +100,7 @@ class Utilities extends CP_Controller {
 	public function index()
 	{
 		// Will redirect based on permissions later
-		ee()->functions->redirect(cp_url('utilities/communicate'));
+		ee()->functions->redirect(ee('CP/URL', 'utilities/communicate'));
 	}
 }
 // END CLASS

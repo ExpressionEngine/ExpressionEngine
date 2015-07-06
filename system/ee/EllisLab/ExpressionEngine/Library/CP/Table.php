@@ -184,7 +184,8 @@ class Table {
 	 * It's an array of column names, with optional settings for each
 	 * column. Right now, the current options are
 	 *
-	 * 	'encode': Whether or not run column contents through htmlspecialchars()
+	 * 	'encode': Whether or not run column contents through htmlentities(),
+	 *		helps protect against XSS
 	 *	'sort': Whether or not the column can be sortable
 	 *	'type': The type of column, derived from the constants above
 	 *
@@ -199,7 +200,7 @@ class Table {
 
 		// Default settings for columns
 		$defaults = array(
-			'encode'	=> FALSE,
+			'encode'	=> ! $this->config['grid_input'], // Default to encoding if this isn't a Grid input
 			'sort'		=> TRUE,
 			'type'		=> self::COL_TEXT
 		);

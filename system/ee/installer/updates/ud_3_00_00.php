@@ -194,8 +194,6 @@ class Updater {
 		ee()->dbforge->add_key('plugin_id', TRUE);
 		ee()->smartforge->create_table('plugins');
 
-		define('PATH_PI', EE_APPPATH.'plugins/');
-
 		ee()->load->model('addons_model');
 		$plugins = ee()->addons_model->get_plugins();
 

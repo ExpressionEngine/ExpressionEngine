@@ -88,7 +88,7 @@ class Category extends ContentModel {
 	 */
 	public function getStructure()
 	{
-		return $this->getCategoryGroup();
+		return $this->CategoryGroup;
 	}
 
 	/**

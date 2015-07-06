@@ -143,7 +143,7 @@ class GridInput extends Table {
 		{
 			$row['columns'] = array_map(function($field) use ($grid, $row)
 			{
-				if (isset($row['attrs']['row_id']) && is_numeric(isset($row['attrs']['row_id'])))
+				if (isset($row['attrs']['row_id']) && is_numeric($row['attrs']['row_id']))
 				{
 					$row_id = 'row_id_'.$row['attrs']['row_id'];
 				}
