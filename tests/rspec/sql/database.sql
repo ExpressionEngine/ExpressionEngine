@@ -952,6 +952,7 @@ CREATE TABLE `exp_members` (
   `template_size` varchar(2) NOT NULL DEFAULT '28',
   `notepad` text,
   `notepad_size` varchar(2) NOT NULL DEFAULT '18',
+  `bookmarklets` text,
   `quick_links` text,
   `quick_tabs` text,
   `show_sidebar` char(1) NOT NULL DEFAULT 'n',
