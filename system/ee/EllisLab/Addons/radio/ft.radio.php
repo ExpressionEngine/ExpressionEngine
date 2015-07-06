@@ -232,7 +232,9 @@ class Radio_ft extends EE_Fieldtype {
 	{
 		$field_options = array();
 
-		if ((isset($this->settings['field_pre_populate']) && $this->settings['field_pre_populate'] == 'n')
+		if ((isset($this->settings['field_pre_populate'])
+			&& ($this->settings['field_pre_populate'] == 'n')
+				OR $this->settings['field_pre_populate'] == FALSE)
 			OR ! isset($this->settings['field_pre_populate']))
 		{
 			if ( ! is_array($this->settings['field_list_items']))
