@@ -57,9 +57,20 @@ class MemberField extends FieldModel {
 	protected $m_field_reg;
 	protected $m_field_cp_reg;
 	protected $m_field_fmt;
+	protected $m_field_show_fmt;
 	protected $m_field_order;
+	protected $m_field_text_direction;
 
 	public function getSettingsValues()
+	{
+		$values = parent::getSettingsValues();
+		$values['field_settings']['field_show_file_selector'] = 'n';
+		$this->getField()->setFormat($this->getProperty('m_field_fmt'));
+
+		return $values;
+	}
+
+	public function getValues()
 	{
 		$values = parent::getValues();
 
@@ -67,9 +78,6 @@ class MemberField extends FieldModel {
 		{
 			$values[str_replace('m_', '', $key)] =& $values[$key];
 		}
-
-		$values['field_show_fmt'] = $this->getProperty('m_field_fmt');
-		$values['field_settings']['field_show_file_selector'] = 'n';
 
 		return $values;
 	}
@@ -146,6 +154,11 @@ class MemberField extends FieldModel {
 
 	private function prefix($key)
 	{
-		return "m_" . $key;
+		if (substr($key, 0, 2) !== 'm_')
+		{
+			$key = "m_" . $key;
+		}
+
+		return $key;
 	}
 }
