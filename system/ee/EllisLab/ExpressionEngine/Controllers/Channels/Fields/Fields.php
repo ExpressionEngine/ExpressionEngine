@@ -64,6 +64,7 @@ class Fields extends AbstractChannelsController {
 
 		$groups = ee('Model')->get('ChannelFieldGroup')
 			->filter('site_id', ee()->config->item('site_id'))
+			->order('group_name')
 			->all();
 
 		$group_filter = ee('Filter')->make('filter_by_group', 'filter_by_group', $groups->getDictionary('group_id', 'group_name'))
