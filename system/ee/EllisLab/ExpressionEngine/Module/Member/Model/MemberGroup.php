@@ -136,6 +136,14 @@ class MemberGroup extends Model {
 				'left' => 'member_group',
 				'right' => 'status_id'
 			)
+		),
+		'ChannelLayouts' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'ChannelLayout',
+			'pivot' => array(
+				'table' => 'layout_publish_member_groups',
+				'key' => 'layout_id',
+			)
 		)
 	);
 
