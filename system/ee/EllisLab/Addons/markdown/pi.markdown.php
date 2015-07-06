@@ -26,13 +26,6 @@
 
 class Markdown {
 
-	public static $name        = 'Markdown';
-	public static $version     = '1.0';
-	public static $author      = 'EllisLab';
-	public static $author_url  = 'http://ellislab.com/';
-	public static $description = 'Parse text using Markdown and Smartypants';
-	public static $typography  = TRUE;
-
 	public $return_data;
 
 	public function __construct($tagdata = '')
@@ -53,50 +46,6 @@ class Markdown {
 
 	// -------------------------------------------------------------------------
 
-	/**
-	 * Plugin Usage
-	 *
-	 * @return string Usage documentation
-	 */
-	public static function usage()
-	{
-		$usage = array(
-			'description'	=> 'This plugin parses text using Markdown and Smartypants. To use this plugin wrap any text in this tag pair.',
-			'example'		=> '',
-			'parameters'	=> array(
-				'convert_curly'	=> array(
-					'description'	=> "Defaults to <b>yes</b>. When set to <b>no</b> will not convert all curly brackets to entities, which can be useful to display variables.",
-					'example'		=> ''
-				),
-				'smartypants'	=> array(
-					'description'	=> "Defaults to <b>yes</b>. When set to <b>no</b> stops SmartyPants from running which leaves your quotes and hyphens alone.",
-					'example'		=> ''
-				)
-			)
-		);
-
-		// Usage Example
-		$usage['example'] = <<<'EXAMPLE'
-{exp:markdown}
-	Text to be **parsed**.
-{/exp:markdown}
-EXAMPLE;
-
-		// convert_curly Example
-		$usage['parameters']['convert_curly']['example'] = <<<'EXAMPLE'
-{exp:markdown convert_curly="no"}
-	Text to be **parsed**.
-{/exp:markdown}
-EXAMPLE;
-
-		// smartypants Example
-		$usage['parameters']['smartypants']['example'] = <<<'EXAMPLE'
-{exp:markdown smartypants="no"}
-	Text to be **parsed**.
-{/exp:markdown}
-EXAMPLE;
-		return $usage;
-	}
 }
 
 

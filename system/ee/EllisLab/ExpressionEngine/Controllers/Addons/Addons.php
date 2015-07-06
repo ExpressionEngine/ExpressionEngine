@@ -5,6 +5,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Addons;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
+use Michelf\MarkdownExtra;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
 /**
@@ -310,6 +311,11 @@ class Addons extends CP_Controller {
 							'href' => $info['manual_url'],
 							'title' => lang('manual'),
 						);
+
+						if ($info['manual_external'])
+						{
+							$toolbar['manual']['target'] = '_external';
+						}
 					}
 
 					if (isset($info['update']))
@@ -416,6 +422,18 @@ class Addons extends CP_Controller {
 
 			if ( ! empty($addon))
 			{
+				$info = ee('App')->get($name);
+				if (file_exists($info->getPath() . '/README.md'))
+				{
+					$addon['manual_url'] = ee('CP/URL', 'addons/manual/' . $name);
+					$addon['manual_external'] = FALSE;
+				}
+				elseif ($info->get('docs_url'))
+				{
+					$addon['manual_url'] = ee()->cp->masked_url($info->get('docs_url'));
+					$addon['manual_external'] = TRUE;
+				}
+
 				$party = ($addon['developer'] == 'EllisLab') ? 'first' : 'third';
 				$addons[$party][$name] = $addon;
 			}
@@ -853,39 +871,108 @@ class Addons extends CP_Controller {
 	 */
 	public function manual($addon)
 	{
-		ee()->view->cp_page_title = lang('addon_manager');
-
-		$vars = array();
-
-		$plugin = $this->getPlugin($addon);
-		if (empty($plugin))
+		try
+		{
+			$info = ee('App')->get($addon);
+		}
+		catch (\Exception $e)
 		{
 			show_error(lang('requested_module_not_installed').NBS.$addon);
 		}
 
-		$info = ee('App')->get($addon);
+		$readme_file = $info->getPath() . '/README.md';
+
+		if ( ! file_exists($readme_file))
+		{
+			show_404();
+		}
+
+		ee()->view->cp_page_title = $info->getName() . ' ' . lang('manual');
 
 		$vars = array(
-			'name'			=> $info->getName(),
-			'version'		=> $this->formatVersionNumber($info->getVersion()),
-			'author'		=> $info->getAuthor(),
-			'author_url'	=> $info->get('author_url'),
-			'description'	=> $info->get('description')
+			'name'        => $info->getName(),
+			'version'     => $this->formatVersionNumber($info->getVersion()),
+			'author'      => $info->getAuthor(),
+			'author_url'  => $info->get('author_url'),
+			'docs_url'    => $info->get('docs_url'),
+			'description' => $info->get('description')
 		);
 
-		$usage = $info->get('plugin.usage');
+		// Some pre-processing:
+		//   1. Remove any #'s at the start of the doc, since that will be redundant with the add-on info
 
-		$vars['usage'] = array(
-			'description' => '',
-			'example' => $usage
-		);
+		$readme = preg_replace('/^\s*#.*?\n/s', '', file_get_contents($readme_file));
 
-		if (is_array($usage))
+		$parser = new MarkdownExtra;
+		$readme = $parser->transform($readme);
+
+		// Some post-processing
+		//   1. Step headers back (h2 becomes h1, h3 becomes, h2, etc.)
+		//   2. Change codeblocks to textareas
+		//   3. Add <mark> around h4's (params and variables)
+		//   4. Pull out header tree for sidebar nav (h1 and h2 only)
+
+		for ($i = 2, $j = 1; $i <=6; $i++, $j++)
 		{
-			$vars['usage']['description'] = $usage['description'];
-			$vars['usage']['example'] = $usage['example'];
-			$vars['parameters'] = $usage['parameters'];
+			$readme = str_replace(array("<h{$i}>", "</h{$i}>"), array("<h{$j}>", "</h{$j}>"), $readme);
 		}
+
+		$pre_tags = array('<pre><code>', '</code></pre>', '<h4>', '</h4>');
+		$post_tags = array('<textarea>', '</textarea>', '<h4><mark>', '</mark></h4>');
+
+		$readme = str_replace($pre_tags, $post_tags, $readme);
+
+		// [
+		// 	[0] => <h1>full tag</h1>
+		// 	[1] => 1
+		// 	[2] => full tag
+		// ]
+		preg_match_all('|<h([12])>(.*?)</h\\1>|', $readme, $matches, PREG_SET_ORDER);
+
+		$nav = array();
+		$child = array();
+		foreach($matches as $key => $match)
+		{
+			// give 'em id's so they are linkable
+			$new_header = "<h{$match[1]} id=\"ref{$key}\">{$match[2]}</h{$match[1]}>";
+
+			// just in case they use the same name in multiple headers, we need to id separately
+			// hence preg_replace() with a limit instead of str_replace()
+			$readme = preg_replace('/'.preg_quote($match[0], '/').'/', $new_header, $readme, 1);
+
+			if ($match[1] == 1)
+			{
+				// append any children (h2's) if they exist
+				if ( ! empty($child))
+				{
+					$nav[] = $child;
+					$child = array();
+				}
+
+				$nav[$match[2]] = "#ref{$key}";
+			}
+			else
+			{
+				// save the children for later. SAVE THE CHILDREN!
+				$child[$match[2]] = "#ref{$key}";
+			}
+		}
+
+		// don't forget the youngest!
+		if ( ! empty($child))
+		{
+			$nav[] = $child;
+		}
+
+		// Register our menu and header
+		ee()->menu->register_left_nav($nav);
+		ee()->view->header = array(
+			'title' => lang('addon_manager'),
+			'form_url' => ee('CP/URL', 'addons'),
+			'search_button_value' => lang('search_addons_button')
+		);
+
+		$vars['readme'] = $readme;
 
 		ee()->view->cp_heading = $vars['name'] . ' ' . lang('manual');
 
@@ -1012,7 +1099,6 @@ class Addons extends CP_Controller {
 			'name'			=> $info->getName(),
 			'package'		=> $name,
 			'type'			=> 'plugin',
-			'manual_url'	=> ee('CP/URL', 'addons/manual/' . $name),
 		);
 
 		$model = ee('Model')->get('Plugin')
@@ -1114,7 +1200,6 @@ class Addons extends CP_Controller {
 	 *        'package'		 => 'foobar',
 	 *        'class'        => 'Foobar_ext',
 	 *        'enabled'		 => NULL|TRUE|FALSE
-	 *        'manual_url'	 => '' (optional),
 	 *        'settings_url' => '' (optional)
 	 */
 	private function getExtension($name)
@@ -1194,11 +1279,6 @@ class Addons extends CP_Controller {
 			if ($info->get('settings_exist'))
 			{
 				$data['settings_url'] = ee('CP/URL', 'addons/settings/' . $name);
-			}
-
-			if ($info->get('docs_url'))
-			{
-				$data['manual_url'] = ee()->cp->masked_url($info->get('docs_url'));
 			}
 		}
 
