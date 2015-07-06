@@ -139,7 +139,7 @@ class Edit extends AbstractPublishController {
 		$filter_values = $filters->values();
 		$base_url->addQueryStringVariables($filter_values);
 
-		$table = ee('CP/Table');
+		$table = ee('CP/Table', array('autosort' => TRUE));
 
 		$table->setColumns(
 			array(
