@@ -203,16 +203,6 @@ class Quicklinks extends Profile {
 
 		$compiled = implode("\n", $compiled);
 		$this->member->quick_links = $compiled;
-		$validated = $this->member->validate();
-
-		if ($validated !== TRUE)
-		{
-			ee()->load->helper('html_helper');
-			ee()->view->set_message('issue', lang('cp_message_issue'), ul($validated), TRUE);
-
-			return FALSE;
-		}
-
 		$this->member->save();
 
 		return TRUE;
