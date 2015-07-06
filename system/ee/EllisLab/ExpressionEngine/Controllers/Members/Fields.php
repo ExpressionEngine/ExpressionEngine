@@ -54,8 +54,7 @@ class Fields extends Members\Members {
 	{
 		$table = ee('CP/Table', array(
 			'sortable' => FALSE,
-			'reorder' => TRUE,
-			'save' => cp_url("members/fields/order")
+			'reorder' => TRUE
 		));
 
 		$table->setColumns(
@@ -84,13 +83,13 @@ class Fields extends Members\Members {
 		{
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
-					'href' => cp_url('members/fields/edit/', array('field' => $field->m_field_id)),
+					'href' => cp_url("members/fields/edit/{$field->m_field_id}"),
 					'title' => strtolower(lang('edit'))
 				)
 			));
 
 			$fieldData[] = array(
-				'id' => $field->m_field_id,
+				'id' => $field->getId().form_hidden('order[]', $field->getId()),
 				'm_field_name' => $field->m_field_name,
 				'm_field_label' => "<var>{{$field->m_field_label}}</var>",
 				'm_field_type' => $field->m_field_type,
@@ -123,10 +122,20 @@ class Fields extends Members\Members {
 			);
 		}
 
-		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
-		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
-		));
+		ee()->javascript->set_global('lang.remove_confirm', lang('member_fields') . ': <b>### ' . lang('member_fields') . '</b>');
+		ee()->cp->add_js_script('file', 'cp/v3/confirm_remove');
+		ee()->cp->add_js_script('file', 'cp/v3/member_field_reorder');
+		ee()->cp->add_js_script('file', 'cp/sort_helper');
+		ee()->cp->add_js_script('plugin', 'ee_table_reorder');
+
+		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
+			->asIssue()
+			->canClose()
+			->withTitle(lang('member_field_ajax_reorder_fail'))
+			->addToBody(lang('member_field_ajax_reorder_fail_desc'));
+
+		ee()->javascript->set_global('member_fields.reorder_url', cp_url('members/fields/order/'));
+		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
@@ -154,15 +163,31 @@ class Fields extends Members\Members {
 
 	public function order()
 	{
-		$order = array_flip(ee()->input->post('order'));
-		$ids = array_keys($order);
-		$fields = ee()->api->get('MemberField', $ids)->all();
+		// Parse out the serialized inputs sent by the JavaScript
+		$new_order = array();
+		parse_str(ee()->input->post('order'), $new_order);
 
-		foreach($fields as $field)
+		if ( ! AJAX_REQUEST OR empty($new_order['order']))
 		{
-			$field->m_field_order = $order[$field->m_field_id];
-			$field->save();
+			show_error(lang('unauthorized_access'));
 		}
+
+		$fields = ee()->api->get('MemberField')->order('m_field_order', 'asc')->all()->indexBy('m_field_id');
+
+		$order = 1;
+		foreach ($new_order['order'] as $field_id)
+		{
+			if (isset($fields[$field_id]) && $fields[$field_id]->m_field_order != $order)
+			{
+				$fields[$field_id]->m_field_order = $order;
+				$fields[$field_id]->save();
+			}
+
+			$order++;
+		}
+
+		ee()->output->send_ajax_response(NULL);
+		exit;
 	}
 
 	private function form($field_id = NULL)
@@ -180,8 +205,8 @@ class Fields extends Members\Members {
 			// Only auto-complete field short name for new fields
 			ee()->cp->add_js_script('plugin', 'ee_url_title');
 			ee()->javascript->output('
-				$("input[name=field_label]").bind("keyup keydown", function() {
-					$(this).ee_url_title("input[name=field_name]");
+				$("input[name=m_field_label]").bind("keyup keydown", function() {
+					$(this).ee_url_title("input[name=m_field_name]");
 				});
 			');
 
@@ -262,25 +287,16 @@ class Fields extends Members\Members {
 			)
 		);
 
-		// These are currently the only fieldtypes we allow; get their settings forms
-		foreach (array('text', 'textarea', 'select') as $fieldtype)
-		{
-			if ($field->field_type != $fieldtype)
-			{
-				$dummy_field = ee('Model')->make('MemberField');
-				$dummy_field->field_type = $fieldtype;
-				$vars['sections']['field_options_'.$fieldtype] = array(
-					'label' => 'field_options',
-					'group' => $fieldtype,
-					'settings' => $dummy_field->getSettingsForm()
-				);
-			}
-		}
-
 		if ( ! empty($_POST))
 		{
-			$field->set($_POST);
-			$field->field_fmt = isset($_POST['field_fmt']) ? $_POST['field_fmt'] : NULL;
+			foreach (array_merge($vars['sections'][0], $field->getSettingsForm()) as $section)
+			{
+				foreach ($section['fields'] as $key => $val)
+				{
+					$field->$key = ee()->input->post($key);
+				}
+			}
+
 			$result = $field->validate();
 
 			if (AJAX_REQUEST)
@@ -308,7 +324,7 @@ class Fields extends Members\Members {
 					->addToBody(lang('member_field_saved_desc'))
 					->defer();
 
-				ee()->functions->redirect(cp_url('/members/fields/edit/' . $field_id));
+				ee()->functions->redirect(cp_url('members/fields'));
 			}
 			else
 			{
@@ -322,10 +338,25 @@ class Fields extends Members\Members {
 			}
 		}
 
+		// These are currently the only fieldtypes we allow; get their settings forms
+		foreach (array('text', 'textarea', 'select') as $fieldtype)
+		{
+			if ($field->field_type != $fieldtype)
+			{
+				$dummy_field = ee('Model')->make('MemberField');
+				$dummy_field->field_type = $fieldtype;
+				$vars['sections']['field_options_'.$fieldtype] = array(
+					'label' => 'field_options',
+					'group' => $fieldtype,
+					'settings' => $dummy_field->getSettingsForm()
+				);
+			}
+		}
+
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text_working = 'btn_saving';
 
-		ee()->cp->set_breadcrumb(cp_url('members/fields/edit'), lang('member_fields'));
+		ee()->cp->set_breadcrumb(cp_url('members/fields'), lang('member_fields'));
 
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/v3/form_group'),
