@@ -36,6 +36,10 @@ $lang = array(
 'rel_ft_order_descending'	=> 'Descending (Z-A)',
 'rel_ft_allow_multi'		=> 'Allow multiple relationships?',
 'rel_ft_allow_multi_desc'	=> 'When set to <b>yes</b>, authors will be allowed to create multiple relationships.',
+'any_channel' 				=> 'Any channel',
+'any_category' 				=> 'Any category',
+'any_author' 				=> 'Any author',
+'any_status' 				=> 'Any status',
 
 // File
 'file_ft_configure'				=> 'General Field Options',

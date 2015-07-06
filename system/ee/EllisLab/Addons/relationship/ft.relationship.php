@@ -538,7 +538,7 @@ class Relationship_ft extends EE_Fieldtype {
 						'type' => 'checkbox',
 						'wrap' => TRUE,
 						'choices' => $util->all_channels(),
-						'value' => $values['channels']
+						'value' => ($values['channels']) ?: '--'
 					)
 				)
 			),
@@ -572,7 +572,7 @@ class Relationship_ft extends EE_Fieldtype {
 						'type' => 'checkbox',
 						'nested' => TRUE,
 						'choices' => $util->all_categories(),
-						'value' => $values['categories']
+						'value' => ($values['categories']) ?: '--'
 					)
 				)
 			),
@@ -584,7 +584,7 @@ class Relationship_ft extends EE_Fieldtype {
 						'type' => 'checkbox',
 						'nested' => TRUE,
 						'choices' => $util->all_authors(),
-						'value' => $values['authors']
+						'value' => ($values['authors']) ?: '--'
 					)
 				)
 			),
@@ -596,7 +596,7 @@ class Relationship_ft extends EE_Fieldtype {
 						'type' => 'checkbox',
 						'wrap' => TRUE,
 						'choices' => $util->all_statuses(),
-						'value' => $values['statuses']
+						'value' => ($values['statuses']) ?: '--'
 					)
 				)
 			),

@@ -71,7 +71,7 @@ class Relationships_ft_cp {
 			$channel_choices = $channels->getDictionary('channel_id', 'channel_title');
 		}
 
-		return array_merge($this->_form_any(), $channel_choices);
+		return array('--' => lang('any_channel')) + $channel_choices;
 	}
 
 	// --------------------------------------------------------------------
@@ -96,7 +96,7 @@ class Relationships_ft_cp {
 			$categories->filter('site_id', 1);
 		}
 
-		return array_merge($this->_form_any(), $this->buildNestedCategoryArray($categories->all()));
+		return array('--' => lang('any_category')) + $this->buildNestedCategoryArray($categories->all());
 	}
 
 	private function buildNestedCategoryArray($categories)
@@ -173,7 +173,7 @@ class Relationships_ft_cp {
 			$group_to_member[$m->group_id][] = $m;
 		}
 
-		$authors = $this->_form_any();
+		$authors = array('--' => lang('any_author'));
 
 		// Reoder by groups with subitems for authors
 		foreach ($groups as $group)
@@ -212,7 +212,7 @@ class Relationships_ft_cp {
 			$statuses->filter('site_id', 1);
 		}
 
-		$status_options = $this->_form_any();
+		$status_options = array('--' => lang('any_status'));
 
 		foreach ($statuses->all() as $status)
 		{
