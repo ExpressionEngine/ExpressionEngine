@@ -1,4 +1,4 @@
-# My Addon
+# Markdown
 
 An ExpressionEngine plugin to parse text using Markdown and Smartypants, with [Markdown Extra](https://michelf.ca/projects/php-markdown/extra/) support.
 
