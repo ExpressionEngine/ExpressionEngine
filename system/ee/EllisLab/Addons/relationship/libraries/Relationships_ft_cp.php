@@ -68,7 +68,7 @@ class Relationships_ft_cp {
 		}
 		else
 		{
-			$channel_choices = $channels->getDictionary('channel_id', 'channel_title');
+			$channel_choices = $channels->all()->getDictionary('channel_id', 'channel_title');
 		}
 
 		return array('--' => lang('any_channel')) + $channel_choices;
