@@ -887,7 +887,7 @@ class Addons extends CP_Controller {
 			show_404();
 		}
 
-		ee()->view->cp_page_title = lang('addon_manager');
+		ee()->view->cp_page_title = $info->getName() . ' ' . lang('manual');
 
 		$vars = array(
 			'name'        => $info->getName(),
@@ -968,7 +968,7 @@ class Addons extends CP_Controller {
 		ee()->menu->register_left_nav($nav);
 		ee()->view->header = array(
 			'title' => lang('addon_manager'),
-			'form_url' => cp_url('addons'),
+			'form_url' => ee('CP/URL', 'addons'),
 			'search_button_value' => lang('search_addons_button')
 		);
 
@@ -977,7 +977,7 @@ class Addons extends CP_Controller {
 		ee()->view->cp_heading = $vars['name'] . ' ' . lang('manual');
 
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('addons') => lang('addon_manager')
+			ee('CP/URL', 'addons')->compile() => lang('addon_manager')
 		);
 
 		ee()->cp->render('addons/manual', $vars);
