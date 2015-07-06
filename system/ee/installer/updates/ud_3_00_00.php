@@ -632,6 +632,19 @@ class Updater {
 	 */
 	private function _update_members_table()
 	{
+		if ( ! ee()->db->field_exists('bookmarklets', 'members'))
+		{
+			ee()->smartforge->add_column(
+				'members',
+				array(
+					'bookmarklets' => array(
+						'type'    => 'TEXT',
+						'null'    => TRUE
+					)
+				)
+			);
+		}
+
 		if ( ! ee()->db->field_exists('rte_enabled', 'members'))
 		{
 			ee()->smartforge->add_column(

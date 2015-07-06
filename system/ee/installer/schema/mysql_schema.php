@@ -344,6 +344,7 @@ class EE_Schema {
 			template_size varchar(2) NOT NULL default '28',
 			notepad text NULL,
 			notepad_size varchar(2) NOT NULL default '18',
+			bookmarklets text NULL,
 			quick_links text NULL,
 			quick_tabs text NULL,
 			show_sidebar char(1) NOT NULL default 'n',
