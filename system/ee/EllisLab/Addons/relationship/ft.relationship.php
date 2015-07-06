@@ -443,7 +443,7 @@ class Relationship_ft extends EE_Fieldtype {
 			$entries = $entries->all()->asArray();
 		}
 
-		if ($this->settings['allow_multiple'] == 0)
+		if (REQ != 'CP' && $this->settings['allow_multiple'] == 0)
 		{
 			$options[''] = '--';
 
@@ -484,7 +484,9 @@ class Relationship_ft extends EE_Fieldtype {
 
 		$related = array();
 
-		return ee('View')->make('publish')->render(compact('field_name', 'entries', 'selected', 'related'));
+		$multiple = (bool) $this->settings['allow_multiple'];
+
+		return ee('View')->make('publish')->render(compact('field_name', 'entries', 'selected', 'related', 'multiple'));
 	}
 
 	// --------------------------------------------------------------------

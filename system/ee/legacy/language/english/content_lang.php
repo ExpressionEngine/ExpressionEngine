@@ -755,8 +755,11 @@ $lang = array(
 // Relationships
 'search_avilable_entries' => 'Search available entries',
 'search_related_entries' => 'Search related entries',
+'item_to_relate_with' => 'Item to <strong>relate with</strong> this entry.',
 'items_to_relate_with' => 'Items to <strong>relate with</strong> this entry.',
 'items_related_to' => 'Items <strong>related to</strong> this entry.',
+'remove_relationship' => 'Remove Relationship',
+'no_entry_related' => 'No <b>entry</b> related.',
 
 'upload_file' => 'upload file',
 
