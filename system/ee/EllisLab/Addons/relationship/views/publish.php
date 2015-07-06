@@ -6,25 +6,22 @@
 	<h4><?=lang('item_to_relate_with')?></h4>
 	<?php endif; ?>
 	<div class="relate-actions">
+		<?php if (count($channels) > 1): ?>
 		<div class="filters">
 			<ul>
 				<li>
-					<a class="has-sub" href=""><?=lang('channel')?> <span class="faded">(Blog Entries)</span></a>
+					<a class="has-sub" href=""><?=lang('channel')?> <span class="faded"></span></a>
 					<div class="sub-menu">
-						<fieldset class="filter-search">
-							<input type="text" value="" placeholder="filter channels">
-						</fieldset>
 						<ul>
-							<li><a href="">[Allowed Channel]</a></li>
-							<li><a href="">[Allowed Channel]</a></li>
-							<li><a href="">[Allowed Channel]</a></li>
-							<li><a href="">[Allowed Channel]</a></li>
-							<li><a href="">[Allowed Channel]</a></li>
+							<?php foreach($channels as $channel): ?>
+								<li><a href=""><?=$channel->channel_title?></a></li>
+							<?php endforeach; ?>
 						</ul>
 					</div>
 				</li>
 			</ul>
 		</div>
+		<?php endif; ?>
 		<input class="relate-search" type="text" value="" placeholder="<?=lang('search_avilable_entries')?>">
 	</div>
 	<div class="scroll-wrap">

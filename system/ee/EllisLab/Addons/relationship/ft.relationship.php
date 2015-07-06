@@ -308,7 +308,7 @@ class Relationship_ft extends EE_Fieldtype {
 			}
 		}
 
-
+		$channels = array();
 		$limit_channels = $this->settings['channels'];
 		$limit_categories = $this->settings['categories'];
 		$limit_statuses = $this->settings['statuses'];
@@ -336,6 +336,11 @@ class Relationship_ft extends EE_Fieldtype {
 		if (count($limit_channels))
 		{
 			$entries->filter('channel_id', 'IN', $limit_channels);
+			$channels = ee('Model')->get('Channel', $limit_channels)->all();
+		}
+		else
+		{
+			$channels = ee('Model')->get('Channel')->all();
 		}
 
 		if (count($limit_categories))
@@ -486,7 +491,7 @@ class Relationship_ft extends EE_Fieldtype {
 
 		$multiple = (bool) $this->settings['allow_multiple'];
 
-		return ee('View')->make('publish')->render(compact('field_name', 'entries', 'selected', 'related', 'multiple'));
+		return ee('View')->make('publish')->render(compact('field_name', 'entries', 'selected', 'related', 'multiple', 'channels'));
 	}
 
 	// --------------------------------------------------------------------
