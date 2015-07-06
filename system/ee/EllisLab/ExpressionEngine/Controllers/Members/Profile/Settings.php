@@ -53,18 +53,18 @@ class Settings extends Profile {
 
 		$birthday['months'] = array(
 			''	 => lang('month'),
-			'01' => lang('cal_january'),
-			'02' => lang('cal_february'),
-			'03' => lang('cal_march'),
-			'04' => lang('cal_april'),
-			'05' => lang('cal_mayl'),
-			'06' => lang('cal_june'),
-			'07' => lang('cal_july'),
-			'08' => lang('cal_august'),
-			'09' => lang('cal_september'),
-			'10' => lang('cal_october'),
-			'11' => lang('cal_november'),
-			'12' => lang('cal_december')
+			'01' => lang('january'),
+			'02' => lang('february'),
+			'03' => lang('march'),
+			'04' => lang('april'),
+			'05' => lang('mayl'),
+			'06' => lang('june'),
+			'07' => lang('july'),
+			'08' => lang('august'),
+			'09' => lang('september'),
+			'10' => lang('october'),
+			'11' => lang('november'),
+			'12' => lang('december')
 		);
 
 		$birthday['days'][''] = lang('day');
