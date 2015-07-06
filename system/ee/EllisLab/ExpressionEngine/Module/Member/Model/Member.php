@@ -111,6 +111,7 @@ class Member extends Model {
 	protected $template_size;
 	protected $notepad;
 	protected $notepad_size;
+	protected $bookmarklets;
 	protected $quick_links;
 	protected $quick_tabs;
 	protected $show_sidebar;
