@@ -75,11 +75,8 @@ class FieldFacade {
 		}
 	}
 
-	// sets the raw values as in the db. data coming from
-	// the field post array should pass through setValue
 	public function setData($data)
 	{
-		$this->ensurePopulatedDefaults();
 		$this->data = $data;
 	}
 
