@@ -14,7 +14,7 @@
 					<div class="sub-menu">
 						<ul>
 							<?php foreach($channels as $channel): ?>
-								<li><a href=""><?=$channel->channel_title?></a></li>
+								<li><a href="" data-channel-id="<?=$channel->channel_id?>"><?=$channel->channel_title?></a></li>
 							<?php endforeach; ?>
 						</ul>
 					</div>
@@ -60,15 +60,16 @@
 				$chosen = $entry;
 			}
 		?>
-		<label class="<?=$class?>">
+		<label class="<?=$class?>" data-channel-title="<?=$entry->getChannel()->channel_title?>" data-entry-title="<?=$entry->title?>">
 			<?php
+				$extra = "data-template='<label class=\"choice block chosen relate-manage\"><a href=\"\" title=\"" . lang('remove_relationship') . "\" data-entry-id=\"{entry-id}\"></a> {entry-title} <i>&mdash; {channel-title}</i></label>'";
 				if ($multiple)
 				{
-					echo form_checkbox($field_name.'[]', $entry->entry_id, $checked);
+					echo form_checkbox($field_name.'[]', $entry->entry_id, $checked, $extra);
 				}
 				else
 				{
-					echo form_radio($field_name.'[]', $entry->entry_id, $checked);
+					echo form_radio($field_name.'[data][]', $entry->entry_id, $checked, $extra);
 				}
 			?>
 			<?=$entry->title?> <i>&mdash; <?=$entry->getChannel()->channel_title?></i>
@@ -78,15 +79,14 @@
 	</div>
 	<?php if ( ! $multiple): ?>
 		<div class="relate-wrap-chosen">
-			<?php if ($chosen): ?>
+			<?php if($chosen): ?>
 			<label class="choice block chosen relate-manage">
-				<a href="" title="<?=lang('remove_relationship')?>"></a> <?=$chosen->title?> <i>&mdash; <?=$chosen->getChannel()->channel_title?></i>
-			</label>
-			<?php else: ?>
-			<label class="choice block chosen no-results">
-				<?=lang('no_entry_related')?>
+				<a href="" title="<?=lang('remove_relationship')?>" data-entry-id="<?=$chosen->entry_id?>"></a> <?=$chosen->title?> <i>&mdash; <?=$chosen->getChannel()->channel_title?></i>
 			</label>
 			<?php endif; ?>
+			<label class="choice block chosen no-results<?php if ($chosen) echo " hidden" ?>">
+				<?=lang('no_entry_related')?>
+			</label>
 		</div>
 	<?php endif;?>
 </div>
@@ -101,7 +101,7 @@
 			<?php foreach ($related as $entry): ?>
 			<label class="choice block chosen relate-manage">
 				<span class="relate-reorder"></span>
-				<?=$entry->title?> <i>&mdash; <?=$entry->getChannel()->channel_title?></i>
+				<a href="" title="<?=lang('remove_relationship')?>" data-entry-id="<?=$chosen->entry_id?>"></a> <?=$entry->title?> <i>&mdash; <?=$entry->getChannel()->channel_title?></i>
 			</label>
 			<?php endforeach; ?>
 		<?php else: ?>

@@ -460,13 +460,10 @@ class Relationship_ft extends EE_Fieldtype {
 			return form_dropdown($field_name.'[data][]', $options, current($selected));
 		}
 
-		ee()->cp->add_js_script(array(
-			'plugin' => 'ee_interact.event',
-			'file' => 'cp/relationships',
-			'ui' => 'sortable'
-		));
-
-		if ( ! isset($this->settings['grid_row_id']) && substr($field_name, 7) != 'col_id_' && count($entries))
+		if ( ! isset($this->settings['grid_row_id'])
+			&& substr($field_name, 7) != 'col_id_'
+			&& count($entries)
+			&& REQ != 'CP')
 		{
 			ee()->javascript->output("EE.setup_relationship_field('".$this->field_name."');");
 		}
@@ -474,11 +471,19 @@ class Relationship_ft extends EE_Fieldtype {
 		if (REQ == 'CP')
 		{
 			$css_link = ee()->view->head_link('css/relationship.css');
+			ee()->cp->add_js_script(array(
+				'file' => 'fields/relationship/cp',
+			));
 		}
 		// Channel Form
 		else
 		{
 			$css_link = '<link rel="stylesheet" href="'.URL_THEMES.'cp_themes/default/css/relationship.css" type="text/css" media="screen" />'.PHP_EOL;
+			ee()->cp->add_js_script(array(
+				'plugin' => 'ee_interact.event',
+				'file' => 'cp/relationships',
+				'ui' => 'sortable'
+			));
 		}
 
 		ee()->cp->add_to_head($css_link);
