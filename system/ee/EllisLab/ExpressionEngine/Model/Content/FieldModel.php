@@ -149,9 +149,9 @@ abstract class FieldModel extends Model {
 	}
 
 	/**
-	 * Simple getter for field type, override if your field type property has a 
+	 * Simple getter for field type, override if your field type property has a
 	 * different name.
-	 * 
+	 *
 	 * @access protected
 	 * @return string The field type.
 	 */
