@@ -53,7 +53,11 @@
 			relationship.find('.scroll-wrap .no-results').hide();
 			relationship.removeClass('empty');
 			relationship.find('.scroll-wrap').first().append(chosen);
-			relationship.find('.scroll-wrap label').last().prepend('<span class="relate-reorder"></span>');
+			relationship.find('.scroll-wrap label')
+				.last()
+				.data('entry-title', label.data('entry-title'))
+				.data('channel-title', label.data('channel-title'))
+				.prepend('<span class="relate-reorder"></span>');
 		});
 
 		// Removing Relationships
@@ -80,6 +84,22 @@
 			}
 
 			e.preventDefault();
+		});
+
+		// Search Relationships
+		$('.relate-wrap .relate-actions .relate-search').on('interact', function (e) {
+			var searchText = $(this).val();
+
+			$(this).closest('.relate-wrap').find('.scroll-wrap label').each(function() {
+				if ($(this).data('entry-title').indexOf(searchText) > -1)
+				{
+					$(this).show();
+				}
+				else
+				{
+					$(this).hide();
+				}
+			});
 		});
 	});
 })(jQuery);

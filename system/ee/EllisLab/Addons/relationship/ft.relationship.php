@@ -472,6 +472,7 @@ class Relationship_ft extends EE_Fieldtype {
 		{
 			$css_link = ee()->view->head_link('css/relationship.css');
 			ee()->cp->add_js_script(array(
+				'plugin' => 'ee_interact.event',
 				'file' => 'fields/relationship/cp',
 			));
 		}
