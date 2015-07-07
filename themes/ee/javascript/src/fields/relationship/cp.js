@@ -90,11 +90,21 @@
 		// Filter by Channel
 		$('.relate-wrap .relate-actions .filters a[data-channel-id]').on('click', function (e) {
 			var channelId = $(this).data('channel-id');
+			var matchesSearchValue = true;
+			var searchText = $(this).closest('.relate-actions')
+				.find('.relate-search')
+				.first()
+				.data('channel-id', channelId)
+				.val();
 
 			$(this).closest('.filters').find('a.has-sub .faded').text('(' + $(this).text() + ')');
 
 			$(this).closest('.relate-wrap').find('.scroll-wrap label').each(function() {
-				if ($(this).data('channel-id') == channelId)
+				if (searchText) {
+					matchesSearchValue = ($(this).data('entry-title').indexOf(searchText) > -1);
+				}
+
+				if ($(this).data('channel-id') == channelId && matchesSearchValue)
 				{
 					$(this).show();
 				}
@@ -111,9 +121,16 @@
 		// Search Relationships
 		$('.relate-wrap .relate-actions .relate-search').on('interact', function (e) {
 			var searchText = $(this).val();
+			var matchesChannelFilter = true;
+			var channelId = $(this).data('channel-id');
 
 			$(this).closest('.relate-wrap').find('.scroll-wrap label').each(function() {
-				if ($(this).data('entry-title').indexOf(searchText) > -1)
+				if (channelId)
+				{
+					matchesChannelFilter = ($(this).data('channel-id') == channelId);
+				}
+
+				if ($(this).data('entry-title').indexOf(searchText) > -1 && matchesChannelFilter)
 				{
 					$(this).show();
 				}
