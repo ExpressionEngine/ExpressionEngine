@@ -304,6 +304,12 @@ class DataStore {
 		return $worker->run();
 	}
 
+	/**
+	 * Create a model instance from the di object
+	 *
+	 * @param String $name Model name
+	 * @return
+	 */
 	protected function newModelFromAlias($name)
 	{
 		$class = $this->expandModelAlias($name);
