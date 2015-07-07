@@ -474,6 +474,7 @@ class Relationship_ft extends EE_Fieldtype {
 			ee()->cp->add_js_script(array(
 				'plugin' => 'ee_interact.event',
 				'file' => 'fields/relationship/cp',
+				'ui' => 'sortable'
 			));
 		}
 		// Channel Form

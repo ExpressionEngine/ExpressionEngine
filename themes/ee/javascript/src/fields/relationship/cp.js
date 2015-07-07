@@ -140,5 +140,13 @@
 				}
 			});
 		});
+
+		// Sortable!
+		$('.relate-wrap .scroll-wrap').sortable({
+			axis: 'y',
+			cursor: 'move',
+			handle: '.relate-reorder',
+			items: 'label',
+		});
 	});
 })(jQuery);
