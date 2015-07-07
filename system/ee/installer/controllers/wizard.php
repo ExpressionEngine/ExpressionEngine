@@ -615,9 +615,13 @@ class Wizard extends CI_Controller {
 		// Start our error trapping
 		$errors = array();
 
+		// extract the port from the hostname if they specified one
+		$this->setupDatabasePort();
+
 		// Connect to the database.  We pass a multi-dimensional array since
 		// that's what is normally found in the database config file
 		$db = array(
+			'port'     => $this->userdata['db_port'],
 			'hostname' => $this->userdata['db_hostname'],
 			'username' => $this->userdata['db_username'],
 			'password' => $this->userdata['db_password'],
@@ -771,6 +775,24 @@ class Wizard extends CI_Controller {
 
 		// Woo hoo! Success!
 		$this->show_success('install', $vars);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Split off the port, if given one (e.g. 192.168.10.2:4055)
+	 */
+	private function setupDatabasePort()
+	{
+		$db_hostname = $this->userdata['db_hostname'];
+
+		if (strpos($db_hostname, ':') !== FALSE)
+		{
+			list($hostname, $port) = explode($db_hostname, ':');
+
+			$this->userdata['db_hostname'] = $hostname;
+			$this->userdata['db_port'] = $port;
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -1676,6 +1698,7 @@ class Wizard extends CI_Controller {
 		}
 
 		$config = array(
+			'db_port'                   => $this->userdata['db_port'],
 			'db_hostname'               => $this->userdata['db_hostname'],
 			'db_username'               => $this->userdata['db_username'],
 			'db_password'               => $this->userdata['db_password'],
