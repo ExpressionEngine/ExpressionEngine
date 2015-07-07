@@ -180,4 +180,5 @@ case 'html': ?>
 <?php endif ?>
 <?php if ( ! $grid): ?>
 	<?=form_error($field_name)?>
+	<?php if (isset($errors)) echo $errors->renderError($field_name); ?>
 <?php endif ?>

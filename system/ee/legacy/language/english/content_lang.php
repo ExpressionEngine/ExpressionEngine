@@ -760,6 +760,7 @@ $lang = array(
 'items_related_to' => 'Items <strong>related to</strong> this entry.',
 'remove_relationship' => 'Remove Relationship',
 'no_entry_related' => 'No <b>entry</b> related.',
+'no_entries_related' => 'No <b>entries</b> related.',
 
 'upload_file' => 'upload file',
 

@@ -73,11 +73,16 @@
 		<input class="relate-search" type="text" value="" placeholder="<?=lang('search_related_entries')?>">
 	</div>
 	<div class="scroll-wrap">
-		<?php foreach ($related as $entry): ?>
-		<label class="choice block chosen">
-			<?=$entry->title?> <i>&mdash; <?=$entry->getChannel()->channel_title?></i>
-		</label>
-		<?php endforeach; ?>
+		<?php if (count($related)): ?>
+			<?php foreach ($related as $entry): ?>
+			<label class="choice block chosen relate-manage">
+				<span class="relate-reorder"></span>
+				<?=$entry->title?> <i>&mdash; <?=$entry->getChannel()->channel_title?></i>
+			</label>
+			<?php endforeach; ?>
+		<?php else: ?>
+			<div class="no-results"><?=lang('no_entries_related')?></div>
+		<?php endif;?>
 	</div>
 </div>
 <?php endif; ?>

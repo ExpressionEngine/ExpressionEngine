@@ -43,11 +43,6 @@ class CI_DB_mysqli_connection {
 	 */
 	public function __construct($config)
 	{
-		if ( ! isset($config['port']))
-		{
-			$config['port'] = NULL;
-		}
-
 		$this->config = $config;
 	}
 
@@ -74,7 +69,7 @@ class CI_DB_mysqli_connection {
 		$pconnect = $this->config['pconnect'];
 		$port     = $this->config['port'];
 
-		$dsn = "mysql:dbname={$database};host={$hostname};charset={$char_set}";
+		$dsn = "mysql:dbname={$database};host={$hostname};port={$port};charset={$char_set}";
 
 		$options = array(
 			PDO::ATTR_PERSISTENT => $pconnect,
