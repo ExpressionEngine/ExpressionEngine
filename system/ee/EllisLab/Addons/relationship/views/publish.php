@@ -25,8 +25,31 @@
 		<input class="relate-search" type="text" value="" placeholder="<?=lang('search_avilable_entries')?>">
 	</div>
 	<div class="scroll-wrap">
+		<?php $chosen = NULL; ?>
+		<?php if (empty($entries)): ?>
+			<div class="no-results">
+				<?=lang('no_entries_found')?>
+				<?php if (count($channels) == 1): ?>
+				<a class="btn action" href="<?=ee('CP/URL', 'publish/create/' . $channels[0]->channel_id)?>"><?=lang('btn_create_new')?></a>
+				<?php else: ?>
+				<div class="filters">
+					<ul>
+						<li>
+							<a class="has-sub" href=""><?=lang('btn_create_new')?></a>
+							<div class="sub-menu">
+								<ul>
+									<?php foreach($channels as $channel): ?>
+										<li><a href="<?=ee('CP/URL', 'publish/create/' . $channel->channel_id)?>"><?=$channel->channel_title?></a></li>
+									<?php endforeach; ?>
+								</ul>
+							</div>
+						</li>
+					</ul>
+				</div>
+				<?php endif; ?>
+			</div>
+		<?php else: ?>
 		<?php
-		$chosen = NULL;
 		foreach ($entries as $entry):
 			$class = 'choice block';
 			$checked = FALSE;
@@ -51,6 +74,7 @@
 			<?=$entry->title?> <i>&mdash; <?=$entry->getChannel()->channel_title?></i>
 		</label>
 		<?php endforeach; ?>
+		<?php endif; ?>
 	</div>
 	<?php if ( ! $multiple): ?>
 		<div class="relate-wrap-chosen">

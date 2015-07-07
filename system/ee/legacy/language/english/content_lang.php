@@ -761,6 +761,7 @@ $lang = array(
 'remove_relationship' => 'Remove Relationship',
 'no_entry_related' => 'No <b>entry</b> related.',
 'no_entries_related' => 'No <b>entries</b> related.',
+'no_entries_found' => 'No <b>entries</b> found',
 
 'upload_file' => 'upload file',
 
