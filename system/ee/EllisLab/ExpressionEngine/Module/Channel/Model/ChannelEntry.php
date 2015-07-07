@@ -238,6 +238,7 @@ class ChannelEntry extends ContentModel {
 
 		// Categories
 		$categories = ee('Model')->get('Category')
+			->with(array('Children as C0' => array('Children as C1' => 'Children as C2')))
 			->with('CategoryGroup')
 			->filter('CategoryGroup.group_id', 'IN', explode('|', $this->Channel->cat_group))
 			->filter('CategoryGroup.site_id', ee()->config->item('site_id'))
