@@ -122,6 +122,17 @@ class ChannelField extends FieldModel {
 		return $values;
 	}
 
+	public function set(array $data = array())
+	{
+		parent::set($data);
+
+		$field = $this->getField($this->getSettingsValues());
+		$this->setProperty('field_settings', $field->saveSettingsForm($data));
+
+		return $this;
+	}
+
+
 	public function set__field_settings($settings)
 	{
 		$this->setRawProperty('field_settings', base64_encode(serialize($settings)));
