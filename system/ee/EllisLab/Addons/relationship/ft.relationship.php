@@ -483,9 +483,9 @@ class Relationship_ft extends EE_Fieldtype {
 
 		ee()->cp->add_to_head($css_link);
 
-		// $related = ee('Model')->get('ChannelEntry', $entry_id)
-		// 	->first()
-		// 	->getParents();
+		$related = ee('Model')->get('ChannelEntry', $entry_id)
+			->first()
+			->Parents;
 
 		$related = array();
 
