@@ -479,7 +479,7 @@ class Grid_ft extends EE_Fieldtype {
 
 		// Fresh settings forms ready to be used for added columns
 		$vars['settings_forms'] = array();
-		foreach (ee()->grid_lib->get_grid_fieldtypes() as $field_name => $data)
+		foreach (ee()->grid_lib->get_grid_fieldtypes() as $field_name => $fieldtype_data)
 		{
 			$vars['settings_forms'][$field_name] = ee()->grid_lib->get_settings_form($field_name);
 		}
@@ -544,12 +544,12 @@ class Grid_ft extends EE_Fieldtype {
 
 		ee()->cp->add_to_head(ee()->view->head_link('css/v3/grid.css'));
 
-		//ee()->cp->add_js_script('plugin', 'ee_url_title');
-		//ee()->cp->add_js_script('ui', 'sortable');
-		//ee()->cp->add_js_script('file', 'cp/sort_helper');
-		//ee()->cp->add_js_script('file', 'cp/grid');
+		ee()->cp->add_js_script('plugin', 'ee_url_title');
+		ee()->cp->add_js_script('ui', 'sortable');
+		ee()->cp->add_js_script('file', 'cp/sort_helper');
+		ee()->cp->add_js_script('file', 'cp/grid');
 
-		ee()->javascript->output('EE.grid_settings('.json_encode($field_settings).');');
+		ee()->javascript->output('EE.grid_settings();');
 
 		return $settings;
 	}

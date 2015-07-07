@@ -77,9 +77,11 @@
 			</div>
 		</fieldset>
 	</div>
-	<?php if (isset($column['settings_form'])): ?>
-		<?=$column['settings_form']?>
-	<?php endif ?>
+	<div class="grid-col-settings-custom">
+		<?php if (isset($column['settings_form'])): ?>
+			<?=$column['settings_form']?>
+		<?php endif ?>
+	</div>
 	<fieldset class="grid-tools">
 		<ul class="toolbar">
 			<li class="copy"><a href="" title="<?=lang('grid_copy_field')?>"></a></li>
