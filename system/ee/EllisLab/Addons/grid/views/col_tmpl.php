@@ -19,7 +19,7 @@
 				<em><?=lang('label_desc')?></em>
 			</div>
 			<div class="setting-field col w-16 last">
-				<?=form_input('grid[cols]['.$field_name.'][col_label]', isset($column['col_label']) ? $column['col_label'] : '')?>
+				<?=form_input('grid[cols]['.$field_name.'][col_label]', isset($column['col_label']) ? $column['col_label'] : '', ' class="grid_col_field_label"')?>
 			</div>
 		</fieldset>
 		<fieldset class="col-group">
@@ -28,7 +28,7 @@
 				<em><?=lang('short_name_desc')?></i></em>
 			</div>
 			<div class="setting-field col w-16 last">
-				<?=form_input('grid[cols]['.$field_name.'][col_name]', isset($column['col_name']) ? $column['col_name'] : '')?>
+				<?=form_input('grid[cols]['.$field_name.'][col_name]', isset($column['col_name']) ? $column['col_name'] : '', ' class="grid_col_field_name"')?>
 			</div>
 		</fieldset>
 		<fieldset class="col-group">
