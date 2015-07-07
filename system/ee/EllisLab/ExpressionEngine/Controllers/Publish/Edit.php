@@ -131,6 +131,9 @@ class Edit extends AbstractPublishController {
 
 		$count = $entries->count();
 
+
+		$entries->with('Autosaves', 'Categories', 'Author', 'Channel');
+
 		// Add this last to get the right $count
 		$filters->add('Perpage', $count, 'all_entries');
 
@@ -184,7 +187,7 @@ class Edit extends AbstractPublishController {
 
 		foreach ($entries->all() as $entry)
 		{
-			$autosaves = $entry->getAutosaves()->count();
+			$autosaves = $entry->Autosaves->count();
 
 			$title = htmlentities($entry->title, ENT_QUOTES);
 
@@ -193,7 +196,7 @@ class Edit extends AbstractPublishController {
 				$title .= ' <span class="auto-save" title="' . lang('auto_saved') . '">&#10033;</span>';
 			}
 
-			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->getAuthor()->getMemberName(), ENT_QUOTES) . ', ' . lang('in') . ': ' . htmlentities($entry->getChannel()->channel_title, ENT_QUOTES) . '</span>';
+			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->Author->getMemberName(), ENT_QUOTES) . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES) . '</span>';
 
 			if ($entry->comment_total > 1)
 			{
@@ -425,6 +428,7 @@ class Edit extends AbstractPublishController {
 		$cat_id = ($channel) ? explode('|', $channel->cat_group) : NULL;
 
 		$category_groups = ee('Model')->get('CategoryGroup', $cat_id)
+			->with('Categories')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('exclude_group', '!=', 1)
 			->all();
@@ -432,7 +436,7 @@ class Edit extends AbstractPublishController {
 		$category_options = array();
 		foreach ($category_groups as $group)
 		{
-			foreach ($group->getCategories() as $category)
+			foreach ($group->Categories as $category)
 			{
 				$category_options[$category->cat_id] = $category->cat_name;
 			}
