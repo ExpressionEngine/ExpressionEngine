@@ -2,7 +2,7 @@
 	<div class="grid-fields">
 		<fieldset class="col-group">
 			<div class="setting-txt col w-16">
-				<h3>Type</h3>
+				<h3><?=lang('type')?></h3>
 				<em></em>
 			</div>
 			<div class="setting-field col w-16 last">
@@ -15,8 +15,8 @@
 		</fieldset>
 		<fieldset class="col-group">
 			<div class="setting-txt col w-16">
-				<h3>Label</h3>
-				<em>Name of field that appears in the publish form.</em>
+				<h3><?=lang('label')?></h3>
+				<em><?=lang('label_desc')?></em>
 			</div>
 			<div class="setting-field col w-16 last">
 				<?=form_input('grid[cols]['.$field_name.'][col_label]', isset($column['col_label']) ? $column['col_label'] : '')?>
@@ -24,8 +24,8 @@
 		</fieldset>
 		<fieldset class="col-group">
 			<div class="setting-txt col w-16">
-				<h3>Short name</h3>
-				<em>Short name for this field.<br><i>No spaces. Underscores and dashes are allowed.</i></em>
+				<h3><?=lang('short_name')?></h3>
+				<em><?=lang('short_name_desc')?></i></em>
 			</div>
 			<div class="setting-field col w-16 last">
 				<?=form_input('grid[cols]['.$field_name.'][col_name]', isset($column['col_name']) ? $column['col_name'] : '')?>
@@ -33,8 +33,8 @@
 		</fieldset>
 		<fieldset class="col-group">
 			<div class="setting-txt col w-16">
-				<h3>Instructions</h3>
-				<em>Field instructions that appear in the publish form.</em>
+				<h3><?=lang('instructions')?></h3>
+				<em><?=lang('instructions_desc')?></em>
 			</div>
 			<div class="setting-field col w-16 last">
 				<?=form_input('grid[cols]['.$field_name.'][col_instructions]', isset($column['col_instructions']) ? $column['col_instructions'] : '')?>
@@ -42,8 +42,8 @@
 		</fieldset>
 		<fieldset class="col-group">
 			<div class="setting-txt col w-16">
-				<h3>Is this field</h3>
-				<em>Make this field required, or searchable.</em>
+				<h3><?=lang('grid_in_this_field')?></h3>
+				<em><?=lang('grid_in_this_field_desc')?></em>
 			</div>
 			<div class="setting-field col w-16 last">
 				<label class="choice block">
@@ -51,21 +51,21 @@
 						'grid[cols]['.$field_name.'][col_required]',
 						'column_required',
 						(isset($column['col_required']) && $column['col_required'] == 'y')
-					)?> Require field?
+					)?> <?=lang('require_field')?>
 				</label>
 				<label class="choice block">
 					<?=form_checkbox(
 						'grid[cols]['.$field_name.'][col_search]',
 						'column_searchable',
 						(isset($column['col_search']) && $column['col_search'] == 'y')
-					)?> Include in search?
+					)?> <?=lang('include_in_search')?>
 				</label>
 			</div>
 		</fieldset>
 		<fieldset class="col-group last">
 			<div class="setting-txt col w-16">
-				<h3>Column Width</h3>
-				<em>Set the width of this column in the publish form.</em>
+				<h3><?=lang('grid_col_width')?></h3>
+				<em><?=lang('grid_col_width_desc')?></em>
 			</div>
 			<div class="setting-field col w-16 last">
 				<?=form_input(array(
@@ -82,9 +82,9 @@
 	<?php endif ?>
 	<fieldset class="grid-tools">
 		<ul class="toolbar">
-			<li class="copy"><a href="" title="copy field"></a></li>
-			<li class="add"><a href="" title="add new field"></a></li>
-			<li class="remove"><a href="" title="remove field"></a></li>
+			<li class="copy"><a href="" title="<?=lang('grid_copy_field')?>"></a></li>
+			<li class="add"><a href="" title="<?=lang('grid_add_field')?>"></a></li>
+			<li class="remove"><a href="" title="<?=lang('grid_remove_field')?>"></a></li>
 		</ul>
 	</fieldset>
 </div><!-- /grid-item -->

@@ -68,9 +68,10 @@ $lang = array(
 'grid_col_instr'			=> 'Instructions',
 'grid_col_options'			=> 'Is this data',
 'grid_col_width'			=> 'Column width',
+'grid_col_width_desc'		=> 'Set the width of this column in the publish form.',
 'grid_col_width_percent'	=> 'Percentage.',
-'grid_col_required'			=> 'Required?',
-'grid_col_searchable'		=> 'Searchable?',
+'grid_in_this_field'		=> 'Is this field',
+'grid_in_this_field_desc'	=> 'Make this field required, or searchable.',
 'grid_show_fmt_btns'		=> 'Show formatting buttons?',
 'grid_output_format'		=> 'Output formatting?',
 'grid_text_direction'		=> 'Text direction?',
@@ -88,6 +89,9 @@ $lang = array(
 'grid_add_some_data'		=> 'You have not added any rows of data yet. <a href="#" class="grid_link_add">Add some data?</a>',
 'grid_validation_error'		=> 'There was a problem with one or more Grid fields',
 'grid_field_required'		=> 'This field is required',
+'grid_add_field'			=> 'add new field',
+'grid_copy_field'			=> 'copy field',
+'grid_remove_field'			=> 'remove field',
 
 // IGNORE
 ''=>'');
