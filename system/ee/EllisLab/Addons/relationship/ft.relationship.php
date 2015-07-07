@@ -238,6 +238,12 @@ class Relationship_ft extends EE_Fieldtype {
 	 */
 	public function display_field($data)
 	{
+		// Boolstring conversion
+		if ( ! is_numeric($this->settings['allow_multiple']))
+		{
+			$this->settings['allow_multiple'] = ($this->settings['allow_multiple'] == 'y') ? 1 : 0;
+		}
+
 		$field_name = $this->field_name;
 
 		$entry_id = ($this->content_id) ?: ee()->input->get('entry_id');
