@@ -808,14 +808,14 @@ class Grid_lib {
 		// Returns blank settings form for a specific fieldtype
 		if (empty($column))
 		{
-			$ft_api->setup_handler($type);
-
-			if ($ft_api->check_method_exists('grid_display_settings'))
-			{
-				$settings = $ft_api->apply('grid_display_settings', array(array()));
-			}
-
-			return $this->_view_for_col_settings($type, $settings);
+			$column = array(
+				'col_id' => NULL,
+				'col_type' => $type,
+				'col_label' => '',
+				'col_required' => 'n',
+				'col_name' => 'n',
+				'col_settings' => array()
+			);
 		}
 
 		ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0);
