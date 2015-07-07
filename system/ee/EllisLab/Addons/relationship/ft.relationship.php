@@ -238,12 +238,6 @@ class Relationship_ft extends EE_Fieldtype {
 	 */
 	public function display_field($data)
 	{
-		// Boolstring conversion
-		if ( ! is_numeric($this->settings['allow_multiple']))
-		{
-			$this->settings['allow_multiple'] = ($this->settings['allow_multiple'] == 'y') ? 1 : 0;
-		}
-
 		$field_name = $this->field_name;
 
 		$entry_id = ($this->content_id) ?: ee()->input->get('entry_id');
@@ -647,7 +641,7 @@ class Relationship_ft extends EE_Fieldtype {
 				'fields' => array(
 					'relationship_allow_multiple' => array(
 						'type' => 'yes_no',
-						'value' => $values['allow_multiple']
+						'value' => ($values['allow_multiple']) ? 'y' : 'n'
 					)
 				)
 			)
@@ -688,6 +682,9 @@ class Relationship_ft extends EE_Fieldtype {
 		$form->populate($data);
 
 		$save = $form->values();
+
+		// Boolstring conversion
+		$save['allow_multiple'] = ($save['allow_multiple'] == 'y') ? 1 : 0;
 
 		foreach ($save as $field => $value)
 		{
