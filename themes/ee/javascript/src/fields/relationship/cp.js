@@ -59,6 +59,9 @@
 				.data('channel-id', label.data('channel-id'))
 				.data('channel-title', label.data('channel-title'))
 				.prepend('<span class="relate-reorder"></span>');
+
+			$(this).siblings('input:hidden')
+				.val(relationship.find('.scroll-wrap label').length);
 		});
 
 		// Removing Relationships
@@ -71,7 +74,9 @@
 			}
 
 			relationship.find('.scroll-wrap :checked[value=' + $(this).data('entry-id') + ']')
-				.attr('checked', false);
+				.attr('checked', false)
+				.siblings('input:hidden')
+				.val(0);
 
 			$(this).closest('label').remove();
 
@@ -142,11 +147,23 @@
 		});
 
 		// Sortable!
-		$('.relate-wrap .scroll-wrap').sortable({
+		$('.w-8.relate-wrap .scroll-wrap').sortable({
 			axis: 'y',
 			cursor: 'move',
 			handle: '.relate-reorder',
 			items: 'label',
+			update: function (event, ui) {
+				var label;
+				var relationship = $(event.target).closest('.relate-wrap')
+					.siblings('.relate-wrap').first();
+
+				var i = 1;
+				$(event.target).find('label').each(function () {
+					label = relationship.find('input[name$="[data][]"][value=' + $(this).data('entry-id') + ']');
+					label.find('input:hidden[name$="[sort][]"]').val(i);
+					i++;
+				});
+			}
 		});
 	});
 })(jQuery);

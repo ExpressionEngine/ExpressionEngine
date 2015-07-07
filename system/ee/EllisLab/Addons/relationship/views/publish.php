@@ -65,11 +65,12 @@
 				$extra = "data-template='<label class=\"choice block chosen relate-manage\"><a href=\"\" title=\"" . lang('remove_relationship') . "\" data-entry-id=\"{entry-id}\"></a> {entry-title} <i>&mdash; {channel-title}</i></label>'";
 				if ($multiple)
 				{
-					echo form_checkbox($field_name.'[]', $entry->entry_id, $checked, $extra);
+					echo form_checkbox($field_name.'[data][]', $entry->entry_id, $checked, $extra);
+					echo form_hidden($field_name.'[sort][]', 0);
 				}
 				else
 				{
-					echo form_radio($field_name.'[data][]', $entry->entry_id, $checked, $extra);
+					echo form_radio($field_name.'[]', $entry->entry_id, $checked, $extra);
 				}
 			?>
 			<?=$entry->title?> <i>&mdash; <?=$entry->getChannel()->channel_title?></i>
