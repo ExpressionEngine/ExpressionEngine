@@ -1,8 +1,8 @@
 <?php if ($multiple): ?>
-<div class="col w-8 relate-wrap">
+<div class="col w-8 relate-wrap<?php if (empty($entries)) echo " empty"; ?>">
 	<h4><?=lang('items_to_relate_with')?></h4>
 	<?php else: ?>
-<div class="col w-16 relate-wrap">
+<div class="col w-16 relate-wrap<?php if (empty($entries)) echo " empty"; ?>">
 	<h4><?=lang('item_to_relate_with')?></h4>
 	<?php endif; ?>
 	<div class="relate-actions">
@@ -91,7 +91,7 @@
 	<?php endif;?>
 </div>
 <?php if ($multiple): ?>
-<div class="col w-8 relate-wrap last">
+<div class="col w-8 relate-wrap<?php if ( ! count($related)) echo " empty"; ?> last">
 	<h4><?=lang('items_related_to')?></h4>
 	<div class="relate-actions">
 		<input class="relate-search" type="text" value="" placeholder="<?=lang('search_related_entries')?>">
