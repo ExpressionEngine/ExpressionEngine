@@ -190,7 +190,7 @@ class DataStore {
 		{
 			// TODO use name as the model name and attempt to
 			// look it up in the other direction
-			throw new \Exception("Relationship {$name} not found in model definition.");
+			throw new \Exception("Relationship {$name} not found in model {$model_name}");
 		}
 
 		$options = array_merge(
