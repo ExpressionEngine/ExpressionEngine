@@ -208,6 +208,8 @@ class Fields extends AbstractChannelsController {
 			}
 			else
 			{
+				$vars['errors'] = $result;
+
 				ee('Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('create_field_error'))
@@ -280,6 +282,8 @@ class Fields extends AbstractChannelsController {
 			}
 			else
 			{
+				$vars['errors'] = $result;
+
 				ee('Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('edit_field_error'))
