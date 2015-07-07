@@ -84,7 +84,7 @@ class Fields extends AbstractChannelsController {
 
 		$base_url->addQueryStringVariables($filters->values());
 
-		$table = ee('CP/Table');
+		$table = ee('CP/Table', array('autosort' => TRUE));
 		$table->setColumns(
 			array(
 				'id',
