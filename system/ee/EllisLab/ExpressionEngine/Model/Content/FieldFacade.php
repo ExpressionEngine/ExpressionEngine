@@ -66,15 +66,26 @@ class FieldFacade {
 		return $this->timezone;
 	}
 
+	protected function ensurePopulatedDefaults()
+	{
+		if ($callback = $this->getItem('populateCallback'))
+		{
+			$this->setItem('populateCallback', NULL);
+			call_user_func($callback, $this);
+		}
+	}
+
 	// sets the raw values as in the db. data coming from
 	// the field post array should pass through setValue
 	public function setData($data)
 	{
+		$this->ensurePopulatedDefaults();
 		$this->data = $data;
 	}
 
 	public function getData()
 	{
+		$this->ensurePopulatedDefaults();
 		return $this->data;
 	}
 
@@ -95,7 +106,12 @@ class FieldFacade {
 
 	public function getItem($field)
 	{
-		return $this->metadata[$field];
+		if (array_key_exists($field, $this->metadata))
+		{
+			return $this->metadata[$field];
+		}
+
+		return NULL;
 	}
 
 	public function setItem($field, $value)
@@ -145,6 +161,8 @@ class FieldFacade {
 
 	public function save()
 	{
+		$this->ensurePopulatedDefaults();
+
 		$value = $this->data;
 		$this->initField();
 		return $this->data = ee()->api_channel_fields->apply('save', array($value));
@@ -204,6 +222,8 @@ class FieldFacade {
 
 	public function initField()
 	{
+		$this->ensurePopulatedDefaults();
+
 		$data = $this->setupField();
 
 		ee()->api_channel_fields->setup_handler($data['field_id']);

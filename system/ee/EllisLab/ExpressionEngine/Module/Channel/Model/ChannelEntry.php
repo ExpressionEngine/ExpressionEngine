@@ -181,110 +181,6 @@ class ChannelEntry extends ContentModel {
 		}
 	}
 
-	/* HACK ALERT! @TODO */
-
-	protected function populateDefaultFields()
-	{
-		// Channels
-		$allowed_channel_ids = (ee()->session->userdata['group_id'] == 1) ? NULL : array_keys(ee()->session->userdata['assigned_channels']);
-
-		$channel_filter_options = ee('Model')->get('Channel', $allowed_channel_ids)
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('field_group', $this->Channel->field_group)
-			->all()
-			->getDictionary('channel_id', 'channel_title');
-
-		$this->getCustomField('channel_id')->setItem('field_list_items', $channel_filter_options);
-
-		// Statuses
-		$statuses = ee('Model')->get('Status')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('group_id', $this->Channel->status_group);
-
-		$status_options = array();
-
-		foreach ($statuses->all() as $status)
-		{
-			$status_name = ($status->status == 'closed' OR $status->status == 'open') ?  lang($status->status) : $status->status;
-			$status_options[$status->status] = $status_name;
-		}
-
-		$this->getCustomField('status')->setItem('field_list_items', $status_options);
-
-
-		// Authors
-		$author_options = array();
-
-		// Get all admins
-		$authors = ee('Model')->get('Member')
-			->filter('group_id', 1)
-			->all();
-
-		foreach ($authors as $author)
-		{
-			$author_options[$author->member_id] = $author->getMemberName();
-		}
-
-		// Get all members assigned to this channel
-		foreach ($this->Channel->AssignedMemberGroups as $group)
-		{
-			foreach ($group->Members as $member)
-			{
-				$author_options[$member->member_id] = $member->getMemberName();
-			}
-		}
-
-		$this->getCustomField('author_id')->setItem('field_list_items', $author_options);
-
-		// Categories
-		$categories = ee('Model')->get('Category')
-			->with(array('Children as C0' => array('Children as C1' => 'Children as C2')))
-			->with('CategoryGroup')
-			->filter('CategoryGroup.group_id', 'IN', explode('|', $this->Channel->cat_group))
-			->filter('CategoryGroup.site_id', ee()->config->item('site_id'))
-			->filter('Category.parent_id', 0)
-			->all();
-
-		$category_list = $this->buildCategoryList($categories);
-		$set_categories = $this->Categories->pluck('cat_name');
-
-		$this->getCustomField('categories')->setItem('field_list_items', $category_list);
-		$this->getCustomField('categories')->setData(implode('|', $set_categories));
-
-		// Comment expiration date
-		$this->getCustomField('comment_expiration_date')->setItem(
-			'default_offset',
-			$this->Channel->comment_expiration * 86400
-		);
-	}
-
-	/**
-	 * Turn the categories collection into a nested array of ids => names
-	 */
-	protected function buildCategoryList($categories)
-	{
-		$list = array();
-
-		foreach ($categories as $category)
-		{
-			$children = $category->Children;
-
-			if (count($children))
-			{
-				$list[$category->cat_id] = array(
-					'name' => $category->cat_name,
-					'children' => $this->buildCategoryList($children)
-				);
-
-				continue;
-			}
-
-			$list[$category->cat_id] = $category->cat_name;
-		}
-
-		return $list;
-	}
-
 	/**
 	 * Category setter for convenience to intercept the
 	 * 'categories' post array.
@@ -372,8 +268,9 @@ class ChannelEntry extends ContentModel {
 				'field_fmt'				=> 'text',
 				'field_instructions'	=> lang('comment_expiration_date_desc'),
 				'field_show_fmt'		=> 'n',
-				'default_offset'		=> 0, // @see populateDefaultFields
+				'default_offset'		=> 0,
 				'selected'				=> 'y',
+				'populateCallback'		=> array($this, 'populateCommentExpiration')
 			),
 			'channel_id' => array(
 				'field_id'				=> 'channel_id',
@@ -383,8 +280,9 @@ class ChannelEntry extends ContentModel {
 				'field_instructions'	=> lang('channel_desc'),
 				'field_text_direction'	=> 'ltr',
 				'field_type'			=> 'select',
-				'field_list_items'      => array(), // @see populateDefaultFields
-				'field_maxl'			=> 100
+				'field_list_items'      => array(),
+				'field_maxl'			=> 100,
+				'populateCallback'		=> array($this, 'populateChannels')
 			),
 			'status' => array(
 				'field_id'				=> 'status',
@@ -394,8 +292,9 @@ class ChannelEntry extends ContentModel {
 				'field_instructions'	=> lang('entry_status_desc'),
 				'field_text_direction'	=> 'ltr',
 				'field_type'			=> 'select',
-				'field_list_items'      => array(), // @see populateDefaultFields
-				'field_maxl'			=> 100
+				'field_list_items'      => array(),
+				'field_maxl'			=> 100,
+				'populateCallback'		=> array($this, 'populateStatus')
 			),
 			'author_id' => array(
 				'field_id'				=> 'author_id',
@@ -405,8 +304,9 @@ class ChannelEntry extends ContentModel {
 				'field_instructions'	=> lang('author_desc'),
 				'field_text_direction'	=> 'ltr',
 				'field_type'			=> 'select',
-				'field_list_items'      => array(), // @see populateDefaultFields
-				'field_maxl'			=> 100
+				'field_list_items'      => array(),
+				'field_maxl'			=> 100,
+				'populateCallback'		=> array($this, 'populateAuthors')
 			),
 			'sticky' => array(
 				'field_id'				=> 'sticky',
@@ -438,10 +338,122 @@ class ChannelEntry extends ContentModel {
 				'field_instructions'	=> lang('categories_desc'),
 				'field_text_direction'	=> 'ltr',
 				'field_type'			=> 'checkboxes',
-				'string_override'		=> '', // @see populateDefaultFields
+				'string_override'		=> '',
 				'field_list_items'      => '',
-				'field_maxl'			=> 100
+				'field_maxl'			=> 100,
+				'populateCallback'		=> array($this, 'populateCategories')
 			),
 		);
+	}
+
+	public function populateChannels($field)
+	{
+		// Channels
+		$allowed_channel_ids = (ee()->session->userdata['group_id'] == 1) ? NULL : array_keys(ee()->session->userdata['assigned_channels']);
+
+		$channel_filter_options = ee('Model')->get('Channel', $allowed_channel_ids)
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('field_group', $this->Channel->field_group)
+			->all()
+			->getDictionary('channel_id', 'channel_title');
+
+		$field->setItem('field_list_items', $channel_filter_options);
+	}
+
+	public function populateAuthors($field)
+	{
+		// Authors
+		$author_options = array();
+
+		// Get all admins
+		$authors = ee('Model')->get('Member')
+			->filter('group_id', 1)
+			->all();
+
+		foreach ($authors as $author)
+		{
+			$author_options[$author->member_id] = $author->getMemberName();
+		}
+
+		// Get all members assigned to this channel
+		foreach ($this->Channel->AssignedMemberGroups as $group)
+		{
+			foreach ($group->Members as $member)
+			{
+				$author_options[$member->member_id] = $member->getMemberName();
+			}
+		}
+
+		$field->setItem('field_list_items', $author_options);
+	}
+
+	public function populateCommentExpiration($field)
+	{
+		// Comment expiration date
+		$field->setItem(
+			'default_offset',
+			$this->Channel->comment_expiration * 86400
+		);
+	}
+
+	public function populateStatus($field)
+	{
+		$statuses = ee('Model')->get('Status')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('group_id', $this->Channel->status_group);
+
+		$status_options = array();
+
+		foreach ($statuses->all() as $status)
+		{
+			$status_name = ($status->status == 'closed' OR $status->status == 'open') ?  lang($status->status) : $status->status;
+			$status_options[$status->status] = $status_name;
+		}
+
+		$field->setItem('field_list_items', $status_options);
+	}
+
+	public function populateCategories($field)
+	{
+		$categories = ee('Model')->get('Category')
+			->with(array('Children as C0' => array('Children as C1' => 'Children as C2')))
+			->with('CategoryGroup')
+			->filter('CategoryGroup.group_id', 'IN', explode('|', $this->Channel->cat_group))
+			->filter('CategoryGroup.site_id', ee()->config->item('site_id'))
+			->filter('Category.parent_id', 0)
+			->all();
+
+		$category_list = $this->buildCategoryList($categories);
+		$field->setItem('field_list_items', $category_list);
+
+		$set_categories = $this->Categories->pluck('cat_name');
+		$field->setData(implode('|', $set_categories));
+	}
+
+	/**
+	 * Turn the categories collection into a nested array of ids => names
+	 */
+	protected function buildCategoryList($categories)
+	{
+		$list = array();
+
+		foreach ($categories as $category)
+		{
+			$children = $category->Children;
+
+			if (count($children))
+			{
+				$list[$category->cat_id] = array(
+					'name' => $category->cat_name,
+					'children' => $this->buildCategoryList($children)
+				);
+
+				continue;
+			}
+
+			$list[$category->cat_id] = $category->cat_name;
+		}
+
+		return $list;
 	}
 }

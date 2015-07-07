@@ -41,22 +41,13 @@ abstract class ContentModel extends VariableColumnModel {
 	}
 
 	/**
-	 * Optionally return an array of default fields. If you override
-	 * this you may also want to override `populateDefaultFields()`.
+	 * Optionally return an array of default fields.
 	 *
 	 * @return Array of field definitions
 	 */
 	protected function getDefaultFields()
 	{
 		return array();
-	}
-
-	/**
-	 * Do any work needed to setup the default fields with data
-	 */
-	protected function populateDefaultFields()
-	{
-		return;
 	}
 
 	/**
@@ -79,6 +70,23 @@ abstract class ContentModel extends VariableColumnModel {
 	{
 		return $this->_field_facades[$name];
 	}
+
+	/**
+	 * Get a list of all custom field facades
+	 */
+	public function getCustomFields()
+	{
+		return $this->_field_facades;
+	}
+
+	/**
+	* Get a list of all custom field names
+	*/
+	public function getCustomFieldNames()
+	{
+		return array_keys($this->_field_facades);
+	}
+
 
 	/**
 	 * TODO This is messy. Some fields don't return their data on save()
@@ -116,7 +124,7 @@ abstract class ContentModel extends VariableColumnModel {
 	 */
 	public function save()
 	{
-		foreach ($this->_field_facades as $name => $field)
+		foreach ($this->getCustomFields() as $name => $field)
 		{
 			if ($this->isDirty($name))
 			{
@@ -200,7 +208,7 @@ abstract class ContentModel extends VariableColumnModel {
 
 		$rules = parent::getValidationRules();
 
-		$facades = $this->_field_facades;
+		$facades = $this->getCustomFields();
 
 		foreach ($facades as $name => $facade)
 		{
@@ -235,7 +243,7 @@ abstract class ContentModel extends VariableColumnModel {
 	{
 		$fields = parent::getFields();
 
-		foreach ($this->_field_facades as $field_facade)
+		foreach ($this->getCustomFields() as $field_facade)
 		{
 			$fields[] = $field_facade->getName();
 		}
@@ -252,7 +260,7 @@ abstract class ContentModel extends VariableColumnModel {
 
 		$fields = array_map(
 			function($field) { return new FieldDisplay($field); },
-			$this->_field_facades
+			$this->getCustomFields()
 		);
 
 		$layout = $layout ?: new DefaultLayout();
@@ -268,7 +276,6 @@ abstract class ContentModel extends VariableColumnModel {
 		if ( ! isset($this->_field_facades))
 		{
 			$this->initializeCustomFields();
-			$this->populateDefaultFields();
 		}
 	}
 
