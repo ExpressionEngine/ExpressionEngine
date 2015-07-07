@@ -8,7 +8,6 @@
     "gulp": "^3.9.0",
     "gulp-autoprefixer": "^2.3.1",
     "gulp-concat": "^2.6.0",
-    "gulp-data": "^1.2.0",
     "gulp-git": "^1.2.4",
     "gulp-less": "^3.0.3",
     "gulp-load-plugins": "^0.10.0",
@@ -16,6 +15,7 @@
     "gulp-replace": "^0.5.3",
     "gulp-uglify": "^1.2.0",
     "gulp-zip": "^3.0.2",
+    "mkdirp": "^0.5.1",
     "phplint": "^1.5.0"
   }
 }
