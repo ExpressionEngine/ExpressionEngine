@@ -62,7 +62,7 @@ class ChannelField extends FieldModel {
 		'group_id'             => 'required|integer',
 		'field_name'           => 'required|unique[site_id]',
 		'field_label'          => 'required',
-		'field_list_items'     => 'required',
+	//	'field_list_items'     => 'required',
 		'field_pre_populate'   => 'enum[y,n]',
 		'field_pre_channel_id' => 'integer',
 		'field_pre_field_id'   => 'integer',
