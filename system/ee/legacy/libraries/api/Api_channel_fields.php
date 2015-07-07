@@ -11,6 +11,8 @@ class Api_channel_fields extends Api {
 	var $ee_base_ft			= FALSE;
 	var $global_settings;
 
+	protected $custom_field_modules;
+
 	public function __construct()
 	{
 		parent::__construct();
@@ -984,6 +986,11 @@ class Api_channel_fields extends Api {
 
 	function get_modules()
 	{
+		if (isset($this->custom_field_modules))
+		{
+			return $this->custom_field_modules;
+		}
+
 		// Do we have modules in play
 		ee()->load->model('addons_model');
 		$custom_field_modules = FALSE;
@@ -998,6 +1005,7 @@ class Api_channel_fields extends Api {
 			}
 		}
 
+		$this->custom_field_modules = $custom_field_modules;
 		return $custom_field_modules;
 	}
 
