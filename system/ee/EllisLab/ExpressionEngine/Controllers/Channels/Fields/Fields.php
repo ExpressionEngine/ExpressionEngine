@@ -194,7 +194,7 @@ class Fields extends AbstractChannelsController {
 
 			if ($result->isValid())
 			{
-				$field = $this->saveWithPost($field);
+				$field->save();
 
 				ee()->session->set_flashdata('field_id', $field->field_id);
 
@@ -270,7 +270,7 @@ class Fields extends AbstractChannelsController {
 
 			if ($result->isValid())
 			{
-				$field = $this->saveWithPost($field);
+				$field->save();
 
 				ee('Alert')->makeInline('shared-form')
 					->asSuccess()
@@ -306,29 +306,6 @@ class Fields extends AbstractChannelsController {
 		$field->field_order = ($field->field_order) ?: 0;
 
 		$field->set($_POST);
-		return $field;
-	}
-
-	private function saveWithPost(ChannelField $field)
-	{
-		$field->site_id = ee()->config->item('site_id');
-		$field->field_type = $_POST['field_type'];
-		$field->group_id = ($field->group_id) ?: 0;
-		$field->field_list_items = ($field->field_list_items) ?: '';
-		$field->field_order = ($field->field_order) ?: 0;
-
-		$field->set($_POST);
-		// $field->save();
-
-		$field_data = $_POST;
-		// $field_data['field_id'] = $field->field_id;
-		$field_data['group_id'] = $field->group_id;
-
-		ee()->load->library('api');
-		ee()->legacy_api->instantiate('channel_fields');
-		$field_id = ee()->api_channel_fields->update_field($field_data);
-
-		$field->field_id = $field_id;
 		return $field;
 	}
 
