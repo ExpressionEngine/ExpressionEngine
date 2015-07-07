@@ -17,7 +17,7 @@
 		// Single Relationship:
 		//   When the radio button is clicked, copy the chosen data into the
 		//   div.relate-wrap-chosen area
-		$('.relate-wrap input:radio').click(function (e) {
+		$('.relate-wrap input:radio').on('click', function (e) {
 			var relationship = $(this).closest('.relate-wrap');
 			var label = $(this).closest('label');
 			var chosen = $(this).data('template')
@@ -33,7 +33,7 @@
 		// Multiple Relationships
 		//   When checkbox is clicked, copy the chosen data into the second
 		//   div.relate-wrap div.scroll-wrap area
-		$('.relate-wrap input:checkbox').click(function (e) {
+		$('.relate-wrap input:checkbox').on('click', function (e) {
 			var relationship = $(this).closest('.relate-wrap')
 				.siblings('.relate-wrap')
 				.first();
@@ -56,6 +56,7 @@
 			relationship.find('.scroll-wrap label')
 				.last()
 				.data('entry-title', label.data('entry-title'))
+				.data('channel-id', label.data('channel-id'))
 				.data('channel-title', label.data('channel-title'))
 				.prepend('<span class="relate-reorder"></span>');
 		});
@@ -83,6 +84,27 @@
 				}
 			}
 
+			e.preventDefault();
+		});
+
+		// Filter by Channel
+		$('.relate-wrap .relate-actions .filters a[data-channel-id]').on('click', function (e) {
+			var channelId = $(this).data('channel-id');
+
+			$(this).closest('.filters').find('a.has-sub .faded').text('(' + $(this).text() + ')');
+
+			$(this).closest('.relate-wrap').find('.scroll-wrap label').each(function() {
+				if ($(this).data('channel-id') == channelId)
+				{
+					$(this).show();
+				}
+				else
+				{
+					$(this).hide();
+				}
+			});
+
+			$(document).click(); // Trigger the code to close the menu
 			e.preventDefault();
 		});
 

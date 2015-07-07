@@ -60,7 +60,7 @@
 				$chosen = $entry;
 			}
 		?>
-		<label class="<?=$class?>" data-channel-title="<?=$entry->getChannel()->channel_title?>" data-entry-title="<?=$entry->title?>">
+		<label class="<?=$class?>" data-channel-id="<?=$entry->getChannel()->channel_id?>" data-channel-title="<?=$entry->getChannel()->channel_title?>" data-entry-title="<?=$entry->title?>">
 			<?php
 				$extra = "data-template='<label class=\"choice block chosen relate-manage\"><a href=\"\" title=\"" . lang('remove_relationship') . "\" data-entry-id=\"{entry-id}\"></a> {entry-title} <i>&mdash; {channel-title}</i></label>'";
 				if ($multiple)
