@@ -648,6 +648,7 @@ class Grid_model extends CI_Model {
 			$field_ids = array($field_ids);
 		}
 
+		ee()->db->_reset_select();
 		$columns = ee()->db->where_in('field_id', $field_ids)
 			->where('content_type', $content_type)
 			->order_by('col_order')
