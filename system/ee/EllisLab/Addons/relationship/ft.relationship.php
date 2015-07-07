@@ -649,6 +649,11 @@ class Relationship_ft extends EE_Fieldtype {
 			)
 		);
 
+		if ($this->content_type() == 'grid')
+		{
+			return array('field_options' => $settings);
+		}
+
 		return array('field_options_relationship' => array(
 			'label' => 'field_options',
 			'group' => 'relationship',
@@ -660,90 +665,7 @@ class Relationship_ft extends EE_Fieldtype {
 
 	public function grid_display_settings($data)
 	{
-		ee()->load->library('Relationships_ft_cp');
-		$util = ee()->relationships_ft_cp;
-
-		return array(
-			$this->grid_checkbox_row(
-				lang('rel_ft_include_expired'),
-				'expired',
-				1,
-				(isset($data['expired']) && $data['expired'] == 1)
-			),
-			$this->grid_checkbox_row(
-				lang('rel_ft_include_future'),
-				'future',
-				1,
-				(isset($data['future']) && $data['future'] == 1)
-			),
-			$this->grid_dropdown_row(
-				lang('channels'),
-				'channels[]',
-				$util->all_channels(),
-				isset($data['channels']) ? $data['channels'] : NULL,
-				TRUE, // Multiselect
-				TRUE, // Wide select box
-				'style="height: 140px"'
-			),
-			// This broke when I nested the categories and authors. -sb
-			// $this->grid_dropdown_row(
-			// 	lang('categories'),
-			// 	'categories[]',
-			// 	$util->all_categories(),
-			// 	isset($data['categories']) ? $data['categories'] : NULL,
-			// 	TRUE,
-			// 	TRUE,
-			// 	'style="height: 140px"'
-			// ),
-			// $this->grid_dropdown_row(
-			// 	lang('rel_ft_authors'),
-			// 	'authors[]',
-			// 	$util->all_authors(),
-			// 	isset($data['authors']) ? $data['authors'] : NULL,
-			// 	TRUE,
-			// 	TRUE,
-			// 	'style="height: 57px"'
-			// ),
-			$this->grid_dropdown_row(
-				lang('statuses'),
-				'statuses[]',
-				$util->all_statuses(),
-				isset($data['statuses']) ? $data['statuses'] : NULL,
-				TRUE,
-				TRUE,
-				'style="height: 43px"'
-			),
-			form_label(lang('grid_show')).NBS.NBS.NBS.
-			form_input(array(
-				'name'	=> 'limit',
-				'size'	=> 4,
-				'value'	=> isset($data['limit']) ? $data['limit'] : 100,
-				'class'	=> 'grid_input_text_small'
-			)).NBS.NBS.NBS.
-			form_label(lang('entries')),
-
-			// Order by row
-			form_label(lang('grid_order_by')).NBS.NBS.
-			form_dropdown(
-				'order_field',
-				$util->all_order_options(),
-				isset($data['order_field']) ? $data['order_field'] : NULL
-			).NBS.NBS.
-			form_label(lang('in')).NBS.NBS.
-			form_dropdown(
-				'order_dir',
-				$util->all_order_directions(),
-				isset($data['order_dir']) ? $data['order_dir'] : NULL
-			),
-
-			// Allow multiple
-			$this->grid_checkbox_row(
-				lang('rel_ft_allow_multi'),
-				'allow_multiple',
-				1,
-				(isset($data['allow_multiple']) && $data['allow_multiple'] == 1)
-			)
-		);
+		return $this->display_settings($data);
 	}
 
 	// --------------------------------------------------------------------

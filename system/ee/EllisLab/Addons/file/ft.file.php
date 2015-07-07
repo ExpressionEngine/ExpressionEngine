@@ -512,7 +512,7 @@ CSS;
 							'field_content_type' => array(
 								'type' => 'select',
 								'choices' => $this->_field_content_options(),
-								'value' => $data['field_content_type']
+								'value' => isset($data['field_content_type']) ? $data['field_content_type'] : 'all'
 							)
 						)
 					),
@@ -564,42 +564,15 @@ CSS;
 
 	public function grid_display_settings($data)
 	{
-		$allowed_directories = ( ! isset($data['allowed_directories'])) ? 'all' : $data['allowed_directories'];
+		$settings = $this->display_settings($data);
 
-		// Show existing files? checkbox, default to yes
-		$show_existing = ( ! isset($data['show_existing'])) ? 'y' : $data['show_existing'];
+		$grid_settings = array();
 
-		// Number of existing files to show? 0 means all
-		$num_existing = ( ! isset($data['num_existing'])) ? 50 : $data['num_existing'];
+		foreach ($settings as $value) {
+			$grid_settings[$value['label']] = $value['settings'];
+		}
 
-		return array(
-			$this->grid_dropdown_row(
-				lang('file_ft_content_type'),
-				'field_content_type',
-				$this->_field_content_options(),
-				isset($data['field_content_type']) ? $data['field_content_type'] : 'all'
-			),
-			$this->grid_dropdown_row(
-				lang('file_ft_allowed_dirs'),
-				'allowed_directories',
-				$this->_allowed_directories_options(),
-				$allowed_directories
-			),
-			$this->grid_padding_container('<strong>'.lang('file_ft_configure_frontend').'</strong><br><i class="instruction_text">'.lang('file_ft_configure_frontend_subtext').'</i>'),
-			$this->grid_checkbox_row(
-				lang('file_ft_show_files'),
-				'show_existing',
-				'y',
-				($show_existing == 'y')
-			),
-			form_label(lang('file_ft_limit_left')).NBS.NBS.NBS.
-				form_input(array(
-					'name'	=> 'num_existing',
-					'value'	=> $num_existing,
-					'class'	=> 'grid_input_text_small'
-				)).NBS.NBS.NBS.
-				'<strong>'.lang('file_ft_limit_right').'</strong>'
-		);
+		return $grid_settings;
 	}
 
 	// --------------------------------------------------------------------

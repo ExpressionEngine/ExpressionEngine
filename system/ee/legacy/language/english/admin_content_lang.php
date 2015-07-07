@@ -145,6 +145,24 @@ $lang = array(
 'radio_options_desc' =>
 'Choose how to create the options for this field.</em><em><i>Each item will generate a single radio button and label pair in the publish form.</i>',
 
+'grid_checkbox_options_desc' =>
+'Each item will generate a single checkbox and label pair in the publish form.',
+
+'grid_select_options_desc' =>
+'Each item will be included in a select drop down menu in the publish form.',
+
+'grid_multiselect_options_desc' =>
+'Each item will be included in a multi-select in the publish form.',
+
+'grid_radio_options_desc' =>
+'Each item will generate a single radio button and label pair in the publish form.',
+
+'localize_date' =>
+'Localize date?',
+
+'localize_date_desc' =>
+'When set to <b>yes</b>, dates will be based on <a href="%s">time settings</a>.',
+
 // @since 2.x
 
 'reserved_word' => 'The field name you have chosen is a reserved word and cannot be used.  Please see the user guide for more information.',
@@ -730,7 +748,7 @@ $lang = array(
 
 'channel_entries_will_be_deleted' => 'All channel entries containing the above field(s) will be permanently deleted.',
 
-'field_content_text' => 'Field Content',
+'field_content_text' => 'Allowed content',
 
 'type_numeric' => 'Number',
 

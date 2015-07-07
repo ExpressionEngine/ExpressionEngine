@@ -399,11 +399,17 @@ class Date_ft extends EE_Fieldtype {
 	public function grid_display_settings($data)
 	{
 		return array(
-			$this->grid_checkbox_row(
-				lang('grid_date_localized'),
-				'localize',
-				'localize',
-				isset($data['localize']) ? $data['localize'] : TRUE
+			'field_options' => array(
+				array(
+					'title' => 'localize_date',
+					'desc' => sprintf(lang('localize_date_desc'), ee('CP/URL', 'settings/general')),
+					'fields' => array(
+						'field_fmt' => array(
+							'type' => 'yes_no',
+							'value' => isset($data['localize']) ? $data['localize'] : TRUE,
+						)
+					)
+				)
 			)
 		);
 	}

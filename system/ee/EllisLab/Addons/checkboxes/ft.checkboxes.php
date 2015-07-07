@@ -379,9 +379,32 @@ class Checkboxes_ft extends EE_Fieldtype {
 
 	public function grid_display_settings($data)
 	{
+		$format_options = ee()->addons_model->get_plugin_formatting(TRUE);
+
 		return array(
-			$this->grid_field_formatting_row($data),
-			$this->grid_multi_item_row($data)
+			'field_options' => array(
+				array(
+					'title' => 'field_fmt',
+					'desc' => 'field_fmt_desc',
+					'fields' => array(
+						'field_fmt' => array(
+							'type' => 'select',
+							'choices' => $format_options,
+							'value' => isset($data['field_fmt']) ? $data['field_fmt'] : 'none',
+						)
+					)
+				),
+				array(
+					'title' => 'checkbox_options',
+					'desc' => 'grid_checkbox_options_desc',
+					'fields' => array(
+						'field_list_items' => array(
+							'type' => 'textarea',
+							'value' => isset($data['field_list_items']) ? $data['field_list_items'] : ''
+						)
+					)
+				)
+			)
 		);
 	}
 

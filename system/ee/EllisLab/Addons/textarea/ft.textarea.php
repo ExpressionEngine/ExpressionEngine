@@ -233,7 +233,7 @@ class Textarea_ft extends EE_Fieldtype {
 				'fields' => array(
 					'field_maxl' => array(
 						'type' => 'text',
-						'value' => ($data['field_ta_rows'] == '') ? 6 : $data['field_ta_rows']
+						'value' => ( ! isset($data['field_ta_rows']) OR $data['field_ta_rows'] == '') ? 6 : $data['field_ta_rows']
 					)
 				)
 			),
@@ -244,11 +244,15 @@ class Textarea_ft extends EE_Fieldtype {
 					'field_fmt' => array(
 						'type' => 'select',
 						'choices' => $format_options,
-						'value' => $data['field_fmt'],
+						'value' => isset($data['field_maxl']) ? $data['field_fmt'] : 'none',
 					)
 				)
-			),
-			array(
+			)
+		);
+
+		if ($this->content_type() != 'grid')
+		{
+			$settings[] = array(
 				'title' => 'field_show_fmt',
 				'desc' => 'field_show_fmt_desc',
 				'fields' => array(
@@ -257,19 +261,20 @@ class Textarea_ft extends EE_Fieldtype {
 						'value' => $data['field_show_fmt'] ?: 'n'
 					)
 				)
-			),
-			array(
-				'title' => 'field_text_direction',
-				'desc' => 'field_text_direction_desc',
-				'fields' => array(
-					'field_text_direction' => array(
-						'type' => 'select',
-						'choices' => array(
-							'ltr' => lang('field_text_direction_ltr'),
-							'rtl' => lang('field_text_direction_rtl')
-						),
-						'value' => $data['field_text_direction'],
-					)
+			);
+		}
+
+		$settings[] = array(
+			'title' => 'field_text_direction',
+			'desc' => 'field_text_direction_desc',
+			'fields' => array(
+				'field_text_direction' => array(
+					'type' => 'select',
+					'choices' => array(
+						'ltr' => lang('field_text_direction_ltr'),
+						'rtl' => lang('field_text_direction_rtl')
+					),
+					'value' => isset($data['field_text_direction']) ? $data['field_text_direction'] : 'ltr'
 				)
 			)
 		);
@@ -310,6 +315,11 @@ class Textarea_ft extends EE_Fieldtype {
 			);
 		}
 
+		if ($this->content_type() == 'grid')
+		{
+			return array('field_options' => $settings);
+		}
+
 		return array('field_options_textarea' => array(
 			'label' => 'field_options',
 			'group' => 'textarea',
@@ -321,17 +331,7 @@ class Textarea_ft extends EE_Fieldtype {
 
 	public function grid_display_settings($data)
 	{
-		return array(
-			$this->grid_field_formatting_row($data),
-			$this->grid_text_direction_row($data),
-			$this->grid_textarea_max_rows_row($data),
-			$this->grid_checkbox_row(
-				lang('grid_show_fmt_btns'),
-				'show_formatting_buttons',
-				1,
-				(isset($data['show_formatting_buttons']) && $data['show_formatting_buttons'] == 1)
-			),
-		);
+		return $this->display_settings($data);
 	}
 }
 

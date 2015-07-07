@@ -123,7 +123,7 @@ class Rte_ft extends EE_Fieldtype {
 				'fields' => array(
 					'field_maxl' => array(
 						'type' => 'text',
-						'value' => ($data['field_ta_rows'] == '') ? 6 : $data['field_ta_rows']
+						'value' => ( ! isset($data['field_ta_rows']) OR $data['field_ta_rows'] == '') ? 6 : $data['field_ta_rows']
 					)
 				)
 			),
@@ -137,11 +137,16 @@ class Rte_ft extends EE_Fieldtype {
 							'ltr' => lang('field_text_direction_ltr'),
 							'rtl' => lang('field_text_direction_rtl')
 						),
-						'value' => $data['field_text_direction'],
+						'value' => isset($data['field_text_direction']) ? $data['field_text_direction'] : 'ltr',
 					)
 				)
 			)
 		);
+
+		if ($this->content_type() == 'grid')
+		{
+			return array('field_options' => $settings);
+		}
 
 		return array('field_options_rte' => array(
 			'label' => 'field_options',
@@ -154,10 +159,7 @@ class Rte_ft extends EE_Fieldtype {
 
 	public function grid_display_settings($data)
 	{
-		return array(
-			$this->grid_textarea_max_rows_row($data, 10),
-			$this->grid_text_direction_row($data)
-		);
+		return $this->display_settings($data);
 	}
 
 	// --------------------------------------------------------------------
