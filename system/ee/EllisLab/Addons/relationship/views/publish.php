@@ -71,7 +71,7 @@
 				}
 				else
 				{
-					echo form_radio($field_name.'[]', $entry->entry_id, $checked);
+					echo form_radio($field_name.'[data][]', $entry->entry_id, $checked);
 				}
 			?>
 			<?=$entry->title?> <i>&mdash; <?=$entry->getChannel()->channel_title?></i>
