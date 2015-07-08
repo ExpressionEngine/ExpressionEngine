@@ -433,19 +433,22 @@ class Relationship_ft extends EE_Fieldtype {
 		{
 			$selected_entries = clone $entries;
 
-			$entries->filter('entry_id', 'NOT IN', $selected);
+			$entries = $entries->filter('entry_id', 'NOT IN', $selected)->all();
 
 			$selected_entries->limit(count($selected))
-				->filter('entry_id', 'IN', $selected);
+				->filter('entry_id', 'IN', $selected)
+				->all()
+				->map(function($entry) use(&$entries) { $entries[] = $entry; });
 
-			$entries = array_merge(
-				$entries->all()->asArray(),
-				$selected_entries->all()->asArray()
-			);
+			$entries = $entries->sortBy($order_field);
+			if (strtolower($this->settings['order_dir']) == 'desc')
+			{
+				$entries = $entries->reverse();
+			}
 		}
 		else
 		{
-			$entries = $entries->all()->asArray();
+			$entries = $entries->all();
 		}
 
 		if (REQ != 'CP' && $this->settings['allow_multiple'] == 0)
