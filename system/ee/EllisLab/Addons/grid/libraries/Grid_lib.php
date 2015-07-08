@@ -820,12 +820,8 @@ class Grid_lib {
 
 		ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0);
 
-		if ($ft_api->check_method_exists('grid_display_settings'))
-		{
-			$settings = $ft_api->apply('grid_display_settings', array($column['col_settings']));
-		}
+		$settings = ee()->grid_parser->call('display_settings', $column['col_settings']);
 
-		// Otherwise, return the prepopulated settings form based on column settings
 		return $this->_view_for_col_settings($type, $settings, $column['col_id']);
 	}
 

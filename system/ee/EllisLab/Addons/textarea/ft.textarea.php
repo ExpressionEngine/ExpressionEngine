@@ -326,13 +326,6 @@ class Textarea_ft extends EE_Fieldtype {
 			'settings' => $settings
 		));
 	}
-
-	// --------------------------------------------------------------------
-
-	public function grid_display_settings($data)
-	{
-		return $this->display_settings($data);
-	}
 }
 
 // END Textarea_ft class

@@ -301,13 +301,6 @@ class Text_ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
-	public function grid_display_settings($data)
-	{
-		return $this->display_settings($data);
-	}
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns allowed content types for the text fieldtype
 	 *
