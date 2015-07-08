@@ -234,6 +234,8 @@ class Grid_model extends CI_Model {
 	 */
 	public function save_col_settings($column, $col_id = FALSE, $content_type = 'channel')
 	{
+		ee()->db->_reset_select();
+
 		// Existing column
 		if ($col_id)
 		{
