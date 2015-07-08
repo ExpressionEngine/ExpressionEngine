@@ -490,9 +490,16 @@ class Relationship_ft extends EE_Fieldtype {
 
 		ee()->cp->add_to_head($css_link);
 
-		$related = ee('Model')->get('ChannelEntry', $entry_id)
-			->first()
-			->Parents;
+		if ($entry_id)
+		{
+			$related = ee('Model')->get('ChannelEntry', $entry_id)
+				->first()
+				->Parents;
+		}
+		else
+		{
+			$related = array();
+		}
 
 		$multiple = (bool) $this->settings['allow_multiple'];
 
