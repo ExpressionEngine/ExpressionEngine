@@ -194,6 +194,15 @@ class FieldFacade {
 		return ee()->api_channel_fields->apply('save_settings', array($data));
 	}
 
+	/**
+	 * Fires post_save_settings on the fieldtype
+	 */
+	public function postSaveSettings($data)
+	{
+		$this->initField();
+		return ee()->api_channel_fields->apply('post_save_settings', array($data));
+	}
+
 	public function getStatus()
 	{
 		$data = $this->initField();

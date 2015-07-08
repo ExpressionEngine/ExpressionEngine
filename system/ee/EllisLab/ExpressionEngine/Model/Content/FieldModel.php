@@ -85,6 +85,8 @@ abstract class FieldModel extends Model {
 		$columns = $this->ensureDefaultColumns($columns);
 
 		$this->createColumns($columns);
+
+		$this->callPostSaveSettings();
 	}
 
 	/**
@@ -119,6 +121,8 @@ abstract class FieldModel extends Model {
 
 			$this->diffColumns($old_columns, $new_columns);
 		}
+
+		$this->callPostSaveSettings();
 	}
 
 	protected function callSettingsModify($ft, $action, $changed = array())
@@ -134,6 +138,16 @@ abstract class FieldModel extends Model {
 		$data['ee_action'] = $action;
 
 		return $ft->settings_modify_column($data);
+	}
+
+	/**
+	 * Calls post_save_settings on the fieldtype
+	 */
+	protected function callPostSaveSettings()
+	{
+		$data = $this->getValues();
+		$field = $this->getField($this->getSettingsValues());
+		$field->postSaveSettings($data);
 	}
 
 	/**
