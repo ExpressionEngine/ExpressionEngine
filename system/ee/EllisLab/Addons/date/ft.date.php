@@ -404,7 +404,7 @@ class Date_ft extends EE_Fieldtype {
 					'title' => 'localize_date',
 					'desc' => sprintf(lang('localize_date_desc'), ee('CP/URL', 'settings/general')),
 					'fields' => array(
-						'field_fmt' => array(
+						'localize' => array(
 							'type' => 'yes_no',
 							'value' => isset($data['localize']) ? $data['localize'] : TRUE,
 						)
