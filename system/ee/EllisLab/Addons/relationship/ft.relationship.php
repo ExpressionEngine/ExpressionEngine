@@ -506,10 +506,13 @@ class Relationship_ft extends EE_Fieldtype {
 		}
 
 		$entries = $entries->indexBy('entry_id');
+		$parent_ids = array_keys($parents);
+		$entry_ids = array_keys($entries);
 
 		foreach ($selected as $chosen)
 		{
-			if ( ! in_array($chosen, array_keys($parents)))
+			if ( ! in_array($chosen, $parent_ids)
+				&& in_array($chosen, $entry_ids))
 			{
 				$parents[$chosen] = $entries[$chosen];
 			}
@@ -521,7 +524,10 @@ class Relationship_ft extends EE_Fieldtype {
 
 		foreach ($order as $key => $index)
 		{
-			$related[] = $parents[$key];
+			if (in_array($key, $parent_ids))
+			{
+				$related[] = $parents[$key];
+			}
 		}
 
 		$multiple = (bool) $this->settings['allow_multiple'];
