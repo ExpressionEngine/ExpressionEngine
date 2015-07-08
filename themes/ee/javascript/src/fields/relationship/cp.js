@@ -106,7 +106,7 @@
 
 			$(this).closest('.relate-wrap').find('.scroll-wrap label').each(function() {
 				if (searchText) {
-					matchesSearchValue = ($(this).data('entry-title').indexOf(searchText) > -1);
+					matchesSearchValue = ($(this).data('entry-title').toLowerCase().indexOf(searchText.toLowerCase()) > -1);
 				}
 
 				if ($(this).data('channel-id') == channelId && matchesSearchValue)
@@ -135,7 +135,7 @@
 					matchesChannelFilter = ($(this).data('channel-id') == channelId);
 				}
 
-				if ($(this).data('entry-title').indexOf(searchText) > -1 && matchesChannelFilter)
+				if ($(this).data('entry-title').toLowerCase().indexOf(searchText.toLowerCase()) > -1 && matchesChannelFilter)
 				{
 					$(this).show();
 				}
