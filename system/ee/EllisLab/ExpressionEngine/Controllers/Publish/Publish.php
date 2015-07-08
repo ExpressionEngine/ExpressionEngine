@@ -81,7 +81,6 @@ class Publish extends AbstractPublishController {
 		));
 	}
 
-
 	public function create($channel_id, $autosave_id = NULL)
 	{
 		$channel = ee('Model')->get('Channel', $channel_id)
