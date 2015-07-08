@@ -114,6 +114,7 @@ class Publish extends AbstractPublishController {
 		if ($autosave_id)
 		{
 			$autosaved = ee('Model')->get('ChannelEntryAutosave', $autosave_id)
+				->filter('channel_id', $channel_id)
 				->filter('site_id', ee()->config->item('site_id'))
 				->first();
 
@@ -177,6 +178,9 @@ class Publish extends AbstractPublishController {
 			->with('MemberGroups')
 			->filter('MemberGroups.group_id', ee()->session->userdata['group_id'])
 			->first();
+
+		// Auto-saving needs an entry_id...
+		$entry->entry_id = 0;
 
 		$vars = array_merge($vars, array(
 			'entry' => $entry,
