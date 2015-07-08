@@ -24,10 +24,9 @@
 		<?php endif; ?>
 		<input class="relate-search" type="text" value="" placeholder="<?=lang('search_avilable_entries')?>">
 	</div>
-	<div class="scroll-wrap">
+	<div class="scroll-wrap" data-template='<label class="choice block chosen relate-manage"><a href="" title="<?=lang('remove_relationship')?>" data-entry-id="{entry-id}"></a> {entry-title} <i>&mdash; {channel-title}</i></label>'>
 		<?php $chosen = NULL; ?>
-		<?php if (empty($entries)): ?>
-			<div class="no-results">
+			<div class="no-results<?php if ( ! empty($entries)) echo " hidden" ?>">
 				<?=lang('no_entries_found')?>
 				<?php if (count($channels) == 1): ?>
 				<a class="btn action" href="<?=ee('CP/URL', 'publish/create/' . $channels[0]->channel_id)?>"><?=lang('btn_create_new')?></a>
@@ -48,8 +47,7 @@
 				</div>
 				<?php endif; ?>
 			</div>
-		<?php else: ?>
-		<?php
+			<?php
 		foreach ($entries as $entry):
 			$class = 'choice block';
 			$checked = FALSE;
@@ -62,21 +60,19 @@
 		?>
 		<label class="<?=$class?>" data-channel-id="<?=$entry->getChannel()->channel_id?>" data-channel-title="<?=$entry->getChannel()->channel_title?>" data-entry-title="<?=$entry->title?>">
 			<?php
-				$extra = "data-template='<label class=\"choice block chosen relate-manage\"><a href=\"\" title=\"" . lang('remove_relationship') . "\" data-entry-id=\"{entry-id}\"></a> {entry-title} <i>&mdash; {channel-title}</i></label>'";
 				if ($multiple)
 				{
-					echo form_checkbox($field_name.'[data][]', $entry->entry_id, $checked, $extra);
+					echo form_checkbox($field_name.'[data][]', $entry->entry_id, $checked);
 					echo form_hidden($field_name.'[sort][]', 0);
 				}
 				else
 				{
-					echo form_radio($field_name.'[]', $entry->entry_id, $checked, $extra);
+					echo form_radio($field_name.'[]', $entry->entry_id, $checked);
 				}
 			?>
 			<?=$entry->title?> <i>&mdash; <?=$entry->getChannel()->channel_title?></i>
 		</label>
 		<?php endforeach; ?>
-		<?php endif; ?>
 	</div>
 	<?php if ( ! $multiple): ?>
 		<div class="relate-wrap-chosen">

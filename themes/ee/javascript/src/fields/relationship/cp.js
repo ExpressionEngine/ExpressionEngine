@@ -20,7 +20,8 @@
 		$('.relate-wrap input:radio').on('click', function (e) {
 			var relationship = $(this).closest('.relate-wrap');
 			var label = $(this).closest('label');
-			var chosen = $(this).data('template')
+			var chosen = $(this).closest('.scroll-wrap')
+				.data('template')
 				.replace('{entry-id}', $(this).val())
 				.replace('{entry-title}', label.data('entry-title'))
 				.replace('{channel-title}', label.data('channel-title'));
@@ -39,7 +40,8 @@
 				.first();
 
 			var label = $(this).closest('label');
-			var chosen = $(this).data('template')
+			var chosen = $(this).closest('.scroll-wrap')
+				.data('template')
 				.replace('{entry-id}', $(this).val())
 				.replace('{entry-title}', label.data('entry-title'))
 				.replace('{channel-title}', label.data('channel-title'));
@@ -94,6 +96,7 @@
 
 		// Filter by Channel
 		$('.relate-wrap .relate-actions .filters a[data-channel-id]').on('click', function (e) {
+			var empty = true;
 			var channelId = $(this).data('channel-id');
 			var matchesSearchValue = true;
 			var searchText = $(this).closest('.relate-actions')
@@ -109,15 +112,25 @@
 					matchesSearchValue = ($(this).data('entry-title').toLowerCase().indexOf(searchText.toLowerCase()) > -1);
 				}
 
-				if ($(this).data('channel-id') == channelId && matchesSearchValue)
-				{
+				if ($(this).data('channel-id') == channelId && matchesSearchValue) {
 					$(this).show();
-				}
-				else
-				{
+					empty = false;
+				} else {
 					$(this).hide();
 				}
 			});
+
+			if (empty) {
+				$(this).closest('.relate-wrap')
+					.addClass('empty')
+					.find('.no-results')
+					.show();
+			} else {
+				$(this).closest('.relate-wrap')
+					.removeClass('empty')
+					.find('.no-results')
+					.hide();
+			}
 
 			$(document).click(); // Trigger the code to close the menu
 			e.preventDefault();
@@ -125,25 +138,35 @@
 
 		// Search Relationships
 		$('.relate-wrap .relate-actions .relate-search').on('interact', function (e) {
+			var empty = true;
 			var searchText = $(this).val();
 			var matchesChannelFilter = true;
 			var channelId = $(this).data('channel-id');
 
 			$(this).closest('.relate-wrap').find('.scroll-wrap label').each(function() {
-				if (channelId)
-				{
+				if (channelId) {
 					matchesChannelFilter = ($(this).data('channel-id') == channelId);
 				}
 
-				if ($(this).data('entry-title').toLowerCase().indexOf(searchText.toLowerCase()) > -1 && matchesChannelFilter)
-				{
+				if ($(this).data('entry-title').toLowerCase().indexOf(searchText.toLowerCase()) > -1 && matchesChannelFilter) {
 					$(this).show();
-				}
-				else
-				{
+					empty = false;
+				} else {
 					$(this).hide();
 				}
 			});
+
+			if (empty) {
+				$(this).closest('.relate-wrap')
+					.addClass('empty')
+					.find('.no-results')
+					.show();
+			} else {
+				$(this).closest('.relate-wrap')
+					.removeClass('empty')
+					.find('.no-results')
+					.hide();
+			}
 		});
 
 		// Sortable!
