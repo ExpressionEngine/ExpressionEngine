@@ -41,10 +41,10 @@ feature 'Add-On Manager' do
 		it 'can change page size' do
 			@page.first_party_perpage_filter.click
 			@page.wait_until_first_party_perpage_filter_menu_visible
-			@page.first_party_perpage_filter_menu.click_link "50 results"
+			@page.first_party_perpage_filter_menu.click_link "100 results"
 			no_php_js_errors
 
-			@page.first_party_perpage_filter.text.should eq "show (50)"
+			@page.first_party_perpage_filter.text.should eq "show (100)"
 			@page.should_not have_first_party_pagination
 			@page.should have(41).first_party_addons
 		end
@@ -52,7 +52,7 @@ feature 'Add-On Manager' do
 		it 'can reverse sort by Add-On name' do
 			@page.first_party_perpage_filter.click
 			@page.wait_until_first_party_perpage_filter_menu_visible
-			@page.first_party_perpage_filter_menu.click_link "50 results"
+			@page.first_party_perpage_filter_menu.click_link "100 results"
 			no_php_js_errors
 
 			a_to_z_addons = @page.first_party_addon_names.map {|addon| addon.text}
@@ -69,7 +69,7 @@ feature 'Add-On Manager' do
 		it 'can sort by Version' do
 			@page.first_party_perpage_filter.click
 			@page.wait_until_first_party_perpage_filter_menu_visible
-			@page.first_party_perpage_filter_menu.click_link "50 results"
+			@page.first_party_perpage_filter_menu.click_link "100 results"
 			no_php_js_errors
 
 			versions = @page.first_party_versions.map {|version| version.text}
@@ -88,7 +88,7 @@ feature 'Add-On Manager' do
 		it 'can reverse sort by Version' do
 			@page.first_party_perpage_filter.click
 			@page.wait_until_first_party_perpage_filter_menu_visible
-			@page.first_party_perpage_filter_menu.click_link "50 results"
+			@page.first_party_perpage_filter_menu.click_link "100 results"
 			no_php_js_errors
 
 			versions = @page.first_party_versions.map {|version| version.text}
@@ -171,7 +171,7 @@ feature 'Add-On Manager' do
 			# Reverse sort by Version
 			@page.first_party_perpage_filter.click
 			@page.wait_until_first_party_perpage_filter_menu_visible
-			@page.first_party_perpage_filter_menu.click_link "50 results"
+			@page.first_party_perpage_filter_menu.click_link "100 results"
 			no_php_js_errors
 
 			versions = @page.first_party_versions.map {|version| version.text}
@@ -222,7 +222,7 @@ feature 'Add-On Manager' do
 			# Sort by Version
 			@page.first_party_perpage_filter.click
 			@page.wait_until_first_party_perpage_filter_menu_visible
-			@page.first_party_perpage_filter_menu.click_link "50 results"
+			@page.first_party_perpage_filter_menu.click_link "100 results"
 			no_php_js_errors
 
 			versions = @page.first_party_versions.map {|version| version.text}
@@ -343,10 +343,10 @@ feature 'Add-On Manager' do
 			@page.first_party_status_filter_menu.click_link "uninstalled"
 			no_php_js_errors
 
-			# Show 50 should show everything
+			# Show 100 should show everything
 			@page.first_party_perpage_filter.click
 			@page.wait_until_first_party_perpage_filter_menu_visible
-			@page.first_party_perpage_filter_menu.click_link "50 results"
+			@page.first_party_perpage_filter_menu.click_link "100 results"
 			no_php_js_errors
 
 			addons = @page.first_party_addon_names.map {|addon| addon.text}
