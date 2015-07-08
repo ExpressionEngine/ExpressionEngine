@@ -37,7 +37,9 @@ abstract class FieldModel extends Model {
 			throw new \Exception('Cannot get field of unknown type.');
 		}
 
-		if ( ! isset($this->_facade) || $this->_facade->getType() != $this->getFieldType())
+		if ( ! isset($this->_facade) ||
+			$this->_facade->getType() != $this->getFieldType() ||
+			$this->_facade->getId() != $this->getId())
 		{
 			$values = array_merge($this->getValues(), $override);
 
