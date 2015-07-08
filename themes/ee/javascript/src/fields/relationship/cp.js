@@ -105,14 +105,18 @@
 				.data('channel-id', channelId)
 				.val();
 
-			$(this).closest('.filters').find('a.has-sub .faded').text('(' + $(this).text() + ')');
+			if (channelId) {
+				$(this).closest('.filters').find('a.has-sub .faded').text('(' + $(this).text() + ')');
+			} else {
+				$(this).closest('.filters').find('a.has-sub .faded').text('');
+			}
 
 			$(this).closest('.relate-wrap').find('.scroll-wrap label').each(function() {
 				if (searchText) {
 					matchesSearchValue = ($(this).data('entry-title').toLowerCase().indexOf(searchText.toLowerCase()) > -1);
 				}
 
-				if ($(this).data('channel-id') == channelId && matchesSearchValue) {
+				if (($(this).data('channel-id') == channelId || ! channelId) && matchesSearchValue) {
 					$(this).show();
 					empty = false;
 				} else {
@@ -125,6 +129,24 @@
 					.addClass('empty')
 					.find('.no-results')
 					.show();
+
+				if (channelId) {
+					$(this).closest('.relate-wrap')
+						.find('.no-results a.btn, .no-results .filters')
+						.hide();
+
+					$(this).closest('.relate-wrap')
+						.find('.no-results a.btn[data-channel-id=' + channelId + ']')
+						.show();
+				} else {
+					$(this).closest('.relate-wrap')
+						.find('.no-results a.btn')
+						.hide();
+
+					$(this).closest('.relate-wrap')
+						.find('.no-results .filters')
+						.show();
+				}
 			} else {
 				$(this).closest('.relate-wrap')
 					.removeClass('empty')
@@ -161,6 +183,24 @@
 					.addClass('empty')
 					.find('.no-results')
 					.show();
+
+				if (channelId) {
+					$(this).closest('.relate-wrap')
+						.find('.no-results a.btn, .no-results .filters')
+						.hide();
+
+					$(this).closest('.relate-wrap')
+						.find('.no-results a.btn[data-channel-id=' + channelId + ']')
+						.show();
+				} else {
+					$(this).closest('.relate-wrap')
+						.find('.no-results a.btn')
+						.hide();
+
+					$(this).closest('.relate-wrap')
+						.find('.no-results .filters')
+						.show();
+				}
 			} else {
 				$(this).closest('.relate-wrap')
 					.removeClass('empty')

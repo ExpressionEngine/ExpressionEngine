@@ -371,6 +371,7 @@ $lang = array(
 'unauthorized_to_delete_self' => 'You are not authorized to delete your own channel entries',
 
 'channels' => 'Channels',
+'all_channels' => 'All Channels',
 
 'pages' => 'Pages',
 
