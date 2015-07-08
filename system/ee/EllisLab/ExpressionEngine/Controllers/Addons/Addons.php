@@ -949,12 +949,12 @@ class Addons extends CP_Controller {
 					$child = array();
 				}
 
-				$nav[$match[2]] = "#ref{$key}";
+				$nav[strip_tags($match[2])] = "#ref{$key}";
 			}
 			else
 			{
 				// save the children for later. SAVE THE CHILDREN!
-				$child[$match[2]] = "#ref{$key}";
+				$child[strip_tags($match[2])] = "#ref{$key}";
 			}
 		}
 
