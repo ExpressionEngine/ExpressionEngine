@@ -111,7 +111,7 @@ abstract class AbstractPublish extends CP_Controller {
 			'lang.confirm_exit'					=> lang('confirm_exit'),
 			'lang.loading'						=> lang('loading'),
 			'publish.autosave.interval'			=> (int) $autosave_interval_seconds,
-			'publish.autosave.URL'				=> ee('CP/URL', 'publish/autosave/' . $channel_id . '/' . $entry_id),
+			'publish.autosave.URL'				=> ee('CP/URL', 'publish/autosave/' . $channel_id . '/' . $entry_id)->compile(),
 			// 'publish.channel_id'				=> $this->_channel_data['channel_id'],
 			// 'publish.default_entry_title'		=> $this->_channel_data['default_entry_title'],
 			// 'publish.field_group'				=> $this->_channel_data['field_group'],
