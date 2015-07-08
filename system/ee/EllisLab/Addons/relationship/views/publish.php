@@ -25,7 +25,7 @@
 		<?php endif; ?>
 		<input class="relate-search" type="text" value="" placeholder="<?=lang('search_avilable_entries')?>">
 	</div>
-	<div class="scroll-wrap" data-template='<label class="choice block chosen relate-manage"><a href="" title="<?=lang('remove_relationship')?>" data-entry-id="{entry-id}"></a> {entry-title} <i>&mdash; {channel-title}</i></label>'>
+	<div class="scroll-wrap" data-template='<label class="choice block chosen relate-manage" data-entry-id="{entry-id}"><a href="" title="<?=lang('remove_relationship')?>" data-entry-id="{entry-id}"></a> {entry-title} <i>&mdash; {channel-title}</i></label>'>
 		<?php $chosen = NULL; ?>
 			<div class="no-results<?php if ( ! empty($entries)) echo " hidden" ?>">
 				<?=lang('no_entries_found')?>
@@ -100,9 +100,9 @@
 	<div class="scroll-wrap">
 		<?php if (count($related)): ?>
 			<?php foreach ($related as $entry): ?>
-			<label class="choice block chosen relate-manage">
+			<label class="choice block chosen relate-manage" data-entry-id="<?=$entry->entry_id?>">
 				<span class="relate-reorder"></span>
-				<a href="" title="<?=lang('remove_relationship')?>" data-entry-id="<?=$chosen->entry_id?>"></a> <?=$entry->title?> <i>&mdash; <?=$entry->getChannel()->channel_title?></i>
+				<a href="" title="<?=lang('remove_relationship')?>" data-entry-id="<?=$entry->entry_id?>"></a> <?=$entry->title?> <i>&mdash; <?=$entry->getChannel()->channel_title?></i>
 			</label>
 			<?php endforeach; ?>
 		<?php else: ?>

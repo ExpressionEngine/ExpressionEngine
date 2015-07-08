@@ -495,13 +495,33 @@ class Relationship_ft extends EE_Fieldtype {
 
 		if ($entry_id)
 		{
-			$related = ee('Model')->get('ChannelEntry', $entry_id)
+			$parents = ee('Model')->get('ChannelEntry', $entry_id)
 				->first()
-				->Parents;
+				->Parents
+				->indexBy('entry_id');
 		}
 		else
 		{
-			$related = array();
+			$parents = array();
+		}
+
+		$entries = $entries->indexBy('entry_id');
+
+		foreach ($selected as $chosen)
+		{
+			if ( ! in_array($chosen, array_keys($parents)))
+			{
+				$parents[$chosen] = $entries[$chosen];
+			}
+		}
+
+		asort($order);
+
+		$related = array();
+
+		foreach ($order as $key => $index)
+		{
+			$related[] = $parents[$key];
 		}
 
 		$multiple = (bool) $this->settings['allow_multiple'];

@@ -215,18 +215,21 @@
 			cursor: 'move',
 			handle: '.relate-reorder',
 			items: 'label',
-			update: function (event, ui) {
+		});
+
+		$('.publish form').on('submit', function (e) {
+			$('.w-8.relate-wrap .scroll-wrap').each(function() {
 				var label;
-				var relationship = $(event.target).closest('.relate-wrap')
+				var relationship = $(this).closest('.relate-wrap')
 					.siblings('.relate-wrap').first();
 
 				var i = 1;
-				$(event.target).find('label').each(function () {
-					label = relationship.find('input[name$="[data][]"][value=' + $(this).data('entry-id') + ']');
-					label.find('input:hidden[name$="[sort][]"]').val(i);
+				$(this).find('label.relate-manage').each(function () {
+					label = relationship.find('input[name$="[data][]"][value=' + $(this).data('entry-id') + ']').closest('label');
+					label.find('input:hidden[name$="[sort][]"]').first().val(i);
 					i++;
 				});
-			}
+			});
 		});
 	});
 })(jQuery);
