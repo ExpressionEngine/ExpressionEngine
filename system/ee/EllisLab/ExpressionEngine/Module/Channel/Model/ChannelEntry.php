@@ -132,6 +132,7 @@ class ChannelEntry extends ContentModel {
 
 	public function onAfterSave()
 	{
+		parent::onAfterSave();
 		$this->Autosaves->delete();
 	}
 
