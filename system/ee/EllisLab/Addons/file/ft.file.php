@@ -520,7 +520,7 @@ CSS;
 						'title' => 'file_ft_allowed_dirs',
 						'desc' => 'file_ft_allowed_dirs_desc',
 						'fields' => array(
-							'file_allowed_directories' => array(
+							'allowed_directories' => array(
 								'type' => 'select',
 								'choices' => $this->_allowed_directories_options(),
 								'value' => $allowed_directories
@@ -537,7 +537,7 @@ CSS;
 						'title' => 'file_ft_show_files',
 						'desc' => 'file_ft_show_files_desc',
 						'fields' => array(
-							'file_show_existing' => array(
+							'show_existing' => array(
 								'type' => 'yes_no',
 								'value' => $show_existing
 							)
@@ -547,7 +547,7 @@ CSS;
 						'title' => 'file_ft_limit',
 						'desc' => 'file_ft_limit_desc',
 						'fields' => array(
-							'file_num_existing' => array(
+							'num_existing' => array(
 								'type' => 'text',
 								'value' => $num_existing
 							)
@@ -679,19 +679,12 @@ CSS;
 	function save_settings($data)
 	{
 		return array(
-			'field_content_type'	=> $this->getWithPrefix($data, 'field_content_type', ''),
-			'allowed_directories'	=> $this->getWithPrefix($data, 'allowed_directories'),
-			'show_existing'			=> ($this->getWithPrefix($data, 'show_existing') == 'y') ? 'y': 'n',
-			'num_existing'			=> $this->getWithPrefix($data, 'num_existing'),
+			'field_content_type'	=> $data['field_content_type'],
+			'allowed_directories'	=> $data['allowed_directories'],
+			'show_existing'			=> ($data['show_existing'] == 'y') ? 'y': 'n',
+			'num_existing'			=> $data['num_existing'],
 			'field_fmt' 			=> 'none'
 		);
-	}
-
-	// --------------------------------------------------------------------
-
-	private function getWithPrefix($data, $key, $default = NULL)
-	{
-		return array_key_exists($key, $data) ? $data[$key] : $default;
 	}
 
 	// --------------------------------------------------------------------
@@ -708,15 +701,10 @@ CSS;
 		// count upload dirs
 		if ( ! $this->_check_directories())
 		{
-			ee()->lang->loadfile('filemanager');
-			ee()->form_validation->set_message(
-				'_validate_file_settings',
-				sprintf(
-					lang('no_upload_directories_for_fieldtype'),
-					BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
-				)
+			return sprintf(
+				lang('no_upload_directories_for_fieldtype'),
+				BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
 			);
-			return FALSE;
 		}
 
 		return TRUE;
