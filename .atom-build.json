@@ -1,0 +1,4 @@
+{
+  "cmd": "gulp",
+  "cwd": "{PROJECT_PATH}"
+}
