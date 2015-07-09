@@ -793,6 +793,10 @@ class Wizard extends CI_Controller {
 			$this->userdata['db_hostname'] = $hostname;
 			$this->userdata['db_port'] = $port;
 		}
+		else
+		{
+			$this->userdata['db_port'] = NULL;
+		}
 	}
 
 	// --------------------------------------------------------------------
