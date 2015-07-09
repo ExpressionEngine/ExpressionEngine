@@ -156,13 +156,20 @@ class FieldFacade {
 		return TRUE;
 	}
 
-	public function save()
+	public function save($model = NULL)
 	{
 		$this->ensurePopulatedDefaults();
 
 		$value = $this->data;
 		$this->initField();
-		return $this->data = ee()->api_channel_fields->apply('save', array($value));
+		return $this->data = ee()->api_channel_fields->apply('save', array($value, $model));
+	}
+
+	public function postSave()
+	{
+		$value = $this->data;
+		$this->initField();
+		return $this->data = ee()->api_channel_fields->apply('post_save', array($value));
 	}
 
 	public function getForm()

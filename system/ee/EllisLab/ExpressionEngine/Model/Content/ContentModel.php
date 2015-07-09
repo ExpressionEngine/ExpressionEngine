@@ -18,10 +18,12 @@ use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
 abstract class ContentModel extends VariableColumnModel {
 
 	protected static $_events = array(
-		'afterSetCustomField'
+		'afterSetCustomField',
+		'afterSave'
 	);
 
 	protected $_field_facades;
+	protected $_field_was_saved;
 
 	/**
 	 * Define a way to get the parent structure. For example,
@@ -106,6 +108,15 @@ abstract class ContentModel extends VariableColumnModel {
 		}
 	}
 
+	public function onAfterSave()
+	{
+		foreach ($this->_field_was_saved as $field)
+		{
+			$field->setContentId($this->getId());
+			$field->postSave();
+		}
+	}
+
 	/**
 	 * Make sure that calls to fill() also apply to custom fields
 	 */
@@ -124,11 +135,14 @@ abstract class ContentModel extends VariableColumnModel {
 	 */
 	public function save()
 	{
+		$this->_field_was_saved = array();
+
 		foreach ($this->getCustomFields() as $name => $field)
 		{
 			if ($this->isDirty($name))
 			{
-				$field->save();
+				$field->save($this);
+				$this->_field_was_saved[] = $field;
 			}
 		}
 
