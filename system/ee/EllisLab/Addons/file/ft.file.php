@@ -642,12 +642,12 @@ CSS;
 
 	// --------------------------------------------------------------------
 
-	function validate_settings($data)
+	function validate_settings($validator)
 	{
-		ee()->form_validation->set_rules(
-			'file_allowed_directories',
-			'lang:allowed_dirs_file',
-			'required|callback__validate_file_settings'
+		$validator->defineRule('allowedDirectories', array($this, '_validate_file_settings'));
+
+		return array(
+			'allowed_directories' => 'required|allowedDirectories'
 		);
 	}
 
@@ -679,12 +679,19 @@ CSS;
 	function save_settings($data)
 	{
 		return array(
-			'field_content_type'	=> ee()->input->post('file_field_content_type'),
-			'allowed_directories'	=> ee()->input->post('file_allowed_directories'),
-			'show_existing'			=> (ee()->input->post('file_show_existing') == 'y') ? 'y': 'n',
-			'num_existing'			=> ee()->input->post('file_num_existing'),
+			'field_content_type'	=> $this->getWithPrefix($data, 'field_content_type', ''),
+			'allowed_directories'	=> $this->getWithPrefix($data, 'allowed_directories'),
+			'show_existing'			=> ($this->getWithPrefix($data, 'show_existing') == 'y') ? 'y': 'n',
+			'num_existing'			=> $this->getWithPrefix($data, 'num_existing'),
 			'field_fmt' 			=> 'none'
 		);
+	}
+
+	// --------------------------------------------------------------------
+
+	private function getWithPrefix($data, $key, $default = NULL)
+	{
+		return array_key_exists($key, $data) ? $data[$key] : $default;
 	}
 
 	// --------------------------------------------------------------------
