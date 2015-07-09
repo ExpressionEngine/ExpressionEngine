@@ -90,6 +90,7 @@ feature 'Grid Field Settings' do
 
 	it 'should save column settings' do
 		populate_grid_settings
+		no_php_js_errors
 
 		# Save!
 		@page.submit
@@ -141,9 +142,9 @@ feature 'Grid Field Settings' do
 		column = GridSettings::column(1)
 		column.delete
 		no_php_js_errors
-		click_button 'Update'
+		@page.submit
 		no_php_js_errors
-		click_link 'Test Grid'
+		@page.load_edit_for_custom_field('Test Grid')
 		no_php_js_errors
 
 		grid_test_data = GridSettings::test_data
