@@ -642,13 +642,15 @@ CSS;
 
 	// --------------------------------------------------------------------
 
-	function validate_settings($validator)
+	function validate_settings($settings)
 	{
+		$validator = ee('Validation')->make(array(
+			'allowed_directories' => 'required|allowedDirectories'
+		));
+
 		$validator->defineRule('allowedDirectories', array($this, '_validate_file_settings'));
 
-		return array(
-			'allowed_directories' => 'required|allowedDirectories'
-		);
+		return $validator->validate($settings);
 	}
 
 	// --------------------------------------------------------------------

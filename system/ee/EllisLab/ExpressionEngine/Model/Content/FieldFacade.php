@@ -195,12 +195,10 @@ class FieldFacade {
 		return $out;
 	}
 
-	public function validateSettingsForm($validator)
+	public function validateSettingsForm($settings)
 	{
 		$this->initField();
-		$result = ee()->api_channel_fields->apply('validate_settings', array($validator));
-
-		return $result;
+		return ee()->api_channel_fields->apply('validate_settings', array($settings));
 	}
 
 	public function saveSettingsForm($data)

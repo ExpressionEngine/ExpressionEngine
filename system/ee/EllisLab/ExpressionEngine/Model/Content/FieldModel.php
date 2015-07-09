@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Model\Content;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 abstract class FieldModel extends Model {
 
@@ -73,22 +74,30 @@ abstract class FieldModel extends Model {
 		return parent::set($data);
 	}
 
-	public function getValidationData()
+	public function validate()
 	{
-		return array_merge($this->getSettingsValues(), parent::getDirty());
-	}
+		$result = parent::validate();
 
-	public function getValidationRules()
-	{
-		$validator = $this->getValidator();
+		$settings = $this->getSettingsValues();
 
-		$field = $this->getField($this->getSettingsValues());
-		$rules = $field->validateSettingsForm($validator);
+		if (isset($settings['field_settings']))
+		{
+			$field = $this->getField($this->getSettingsValues());
+			$settings_result = $field->validateSettingsForm($settings['field_settings']);
 
-		return array_merge(
-			parent::getValidationRules(),
-			$rules
-		);
+			if ($settings_result instanceOf ValidationResult && $settings_result->failed())
+			{
+				foreach ($settings_result->getFailed() as $name => $rules)
+				{
+					foreach ($rules as $rule)
+					{
+						$result->addFailed($name, $rule);
+					}
+				}
+			}
+		}
+
+		return $result;
 	}
 
 	/**
