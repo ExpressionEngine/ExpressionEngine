@@ -246,18 +246,6 @@ class Fields extends AbstractChannelsController {
 			ee('CP/URL', 'channels/fields')->compile() => lang('custom_fields'),
 		);
 
-		$vars = array(
-			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'channels/fields/edit/' . $id),
-			'sections' => $this->form($field),
-			'save_btn_text' => 'btn_edit_field',
-			'save_btn_text_working' => 'btn_saving',
-			'form_hidden' => array(
-				'field_id' => $id,
-				'site_id' => ee()->config->item('site_id')
-			),
-		);
-
 		if ( ! empty($_POST))
 		{
 			$field = $this->setWithPost($field);
@@ -291,6 +279,18 @@ class Fields extends AbstractChannelsController {
 					->now();
 			}
 		}
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'base_url' => ee('CP/URL', 'channels/fields/edit/' . $id),
+			'sections' => $this->form($field),
+			'save_btn_text' => 'btn_edit_field',
+			'save_btn_text_working' => 'btn_saving',
+			'form_hidden' => array(
+				'field_id' => $id,
+				'site_id' => ee()->config->item('site_id')
+			),
+		);
 
 		ee()->view->cp_page_title = lang('edit_field');
 
