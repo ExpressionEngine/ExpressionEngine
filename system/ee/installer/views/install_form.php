@@ -13,7 +13,7 @@
 	<div class="setting-txt col w-8">
 		<h3><?=lang('db_hostname')?></h3>
 		<em><?=lang('db_hostname_note')?></em>
-		<em><?=lang('db_hostname_port_note')?></em>
+		<em><?=lang('db_hostname_adv_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
 		<input name="db_hostname" type="text" value="<?=set_value('db_hostname', '127.0.0.1')?>">

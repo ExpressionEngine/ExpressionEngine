@@ -17,7 +17,7 @@ $lang = array(
 	// Database Server
 	'db_hostname'           => 'Database Server Address',
 	'db_hostname_note'      => 'Commonly <b>localhost</b>, but your host may require something else.',
-	'db_hostname_port_note' => 'If you have a port, add it to the end after a colon (defaults to <mark>:3306</mark>).',
+	'db_hostname_adv_note'  => 'For advanced setups see our <a href="https://ellislab.com/expressionengine/user-guide/installation/installation.html">user guide</a>',
 	'db_name'               => 'Database Name',
 	'db_name_note'          => 'Name of the database where you want ExpressionEngine installed.',
 	'db_name_warning'       => 'Make sure the database exists, the installer will <b>not</b> create it.',
