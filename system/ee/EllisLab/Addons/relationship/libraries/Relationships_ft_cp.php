@@ -85,7 +85,12 @@ class Relationships_ft_cp {
 	{
 		$from_all_sites = (ee()->config->item('multiple_sites_enabled') == 'y');
 
-		$categories = ee('Model')->get('Category')
+		$categories = ee('Model')->get('Category as C0')
+			->with(array('Children as C1' => array('Children as C2' => 'Children as C3')))
+			->fields('C0.cat_id', 'C0.cat_name')
+			->fields('C1.cat_id', 'C1.cat_name')
+			->fields('C2.cat_id', 'C2.cat_name')
+			->fields('C3.cat_id', 'C3.cat_name')
 			->filter('parent_id', 0)
 			->order('group_id', 'asc')
 			->order('parent_id', 'asc')
@@ -180,7 +185,7 @@ class Relationships_ft_cp {
 
 			foreach ($group_to_member[$group->group_id] as $m)
 			{
-				$authors['g_'.$group->group_id]['children']['m_'.$m->member_id] = (($m->screen_name == '') ? $m->username : $m->screen_name);
+				$authors['g_'.$group->group_id]['children']['m_'.$m->member_id] = $m->getMemberName();
 			}
 		}
 

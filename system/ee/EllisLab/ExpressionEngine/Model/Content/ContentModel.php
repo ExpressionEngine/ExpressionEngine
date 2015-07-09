@@ -57,6 +57,13 @@ abstract class ContentModel extends VariableColumnModel {
 	 */
 	public function hasCustomField($name)
 	{
+		if (strpos($name, $this->getCustomFieldPrefix()) !== 0)
+		{
+			return FALSE;
+		}
+
+		$this->usesCustomFields();
+
 		if ( ! isset($this->_field_facades))
 		{
 			return FALSE;
@@ -298,8 +305,6 @@ abstract class ContentModel extends VariableColumnModel {
 	 */
 	protected function fillCustomFields(array $data = array())
 	{
-		$this->usesCustomFields();
-
 		foreach ($data as $name => $value)
 		{
 			if (strpos($name, 'field_ft_') === 0)
