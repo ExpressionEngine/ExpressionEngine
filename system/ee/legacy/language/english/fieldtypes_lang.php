@@ -89,6 +89,7 @@ $lang = array(
 'grid_add_some_data'		=> 'You have not added any rows of data yet. <a href="#" class="grid_link_add">Add some data?</a>',
 'grid_validation_error'		=> 'There was a problem with one or more Grid fields',
 'grid_field_required'		=> 'This field is required',
+'grid_reorder_field'		=> 'reorder field',
 'grid_add_field'			=> 'add new field',
 'grid_copy_field'			=> 'copy field',
 'grid_remove_field'			=> 'remove field',

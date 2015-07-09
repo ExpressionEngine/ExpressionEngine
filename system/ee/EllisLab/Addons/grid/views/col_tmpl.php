@@ -84,6 +84,7 @@
 	</div>
 	<fieldset class="grid-tools">
 		<ul class="toolbar">
+			<li class="reorder"><a href="" title="<?=lang('grid_reorder_field')?>"></a></li>
 			<li class="copy"><a href="" title="<?=lang('grid_copy_field')?>"></a></li>
 			<li class="add"><a href="" title="<?=lang('grid_add_field')?>"></a></li>
 			<li class="remove"><a href="" title="<?=lang('grid_remove_field')?>"></a></li>

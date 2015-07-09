@@ -377,7 +377,7 @@ Grid.Settings.prototype = {
 		this.settingsContainer.sortable({
 			axis: 'x',						// Only allow horizontal dragging
 			containment: 'parent',			// Contain to parent
-			handle: 'fieldset.grid-tools',	// Set drag handle to the top box
+			handle: 'li.reorder',			// Set drag handle to the top box
 			items: '.grid-item',			// Only allow these to be sortable
 			sort: EE.sortable_sort_helper	// Custom sort handler
 		});
