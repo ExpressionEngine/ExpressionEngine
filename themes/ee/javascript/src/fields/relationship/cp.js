@@ -22,11 +22,14 @@
 			var label = $(this).closest('label');
 			var chosen = $(this).closest('.scroll-wrap')
 				.data('template')
-				.replace('{entry-id}', $(this).val())
-				.replace('{entry-title}', label.data('entry-title'))
-				.replace('{channel-title}', label.data('channel-title'));
+				.replace(/{entry-id}/g, $(this).val())
+				.replace(/{entry-title}/g, label.data('entry-title'))
+				.replace(/{channel-title}/g, label.data('channel-title'));
 
-			relationship.find('.relate-wrap-chosen .no-results').hide();
+			relationship.find('.relate-wrap-chosen .no-results')
+				.closest('label')
+				.hide()
+				.removeClass('block');
 			relationship.find('.relate-wrap-chosen .relate-manage').remove();
 			relationship.find('.relate-wrap-chosen').first().append(chosen);
 		});
@@ -42,9 +45,9 @@
 			var label = $(this).closest('label');
 			var chosen = $(this).closest('.scroll-wrap')
 				.data('template')
-				.replace('{entry-id}', $(this).val())
-				.replace('{entry-title}', label.data('entry-title'))
-				.replace('{channel-title}', label.data('channel-title'));
+			.replace(/{entry-id}/g, $(this).val())
+			.replace(/{entry-title}/g, label.data('entry-title'))
+			.replace(/{channel-title}/g, label.data('channel-title'));
 
 			// If the checkbox was unchecked run the remove event
 			if ($(this).prop('checked') == false) {
@@ -77,7 +80,9 @@
 
 			relationship.find('.scroll-wrap :checked[value=' + $(this).data('entry-id') + ']')
 				.attr('checked', false)
-				.siblings('input:hidden')
+				.parents('.choice')
+				.removeClass('chosen')
+				.find('input:hidden')
 				.val(0);
 
 			$(this).closest('label').remove();
@@ -87,7 +92,11 @@
 					relationship.find('.relate-wrap .no-results').show();
 					relationship.find('.relate-wrap').addClass('empty');
 				} else {
-					relationship.find('.relate-wrap-chosen .no-results').show();
+					relationship.find('.relate-wrap-chosen .no-results')
+						.closest('label')
+						.show()
+						.removeClass('hidden')
+						.addClass('block');
 				}
 			}
 
