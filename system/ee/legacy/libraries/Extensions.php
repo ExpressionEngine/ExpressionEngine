@@ -191,7 +191,7 @@ class EE_Extensions {
 				// Update Extension First?
 				if (version_compare($this->OBJ[$class_name]->version, $this->version_numbers[$class_name], '>') && method_exists($this->OBJ[$class_name], 'update_extension') === TRUE)
 				{
-					$update = call_user_func_array(array(&$this->OBJ[$class_name], 'update_extension'), array($this->version_numbers[$class_name]));
+					$update = call_user_func_array(array($this->OBJ[$class_name], 'update_extension'), array($this->version_numbers[$class_name]));
 
 					$this->version_numbers[$class_name] = $this->OBJ[$class_name]->version;  // reset master
 				}
@@ -207,7 +207,7 @@ class EE_Extensions {
 				}
 
 
-				$this->last_call = call_user_func_array(array(&$this->OBJ[$class_name], $method), $args);
+				$this->last_call = call_user_func_array(array($this->OBJ[$class_name], $method), $args);
 
 				if ($automatically_load_path)
 				{
