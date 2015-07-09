@@ -76,6 +76,21 @@ class EE_Extensions {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Universal caller, was used for php 4 compatibility
+	 *
+	 * @deprecated 3.0 Use call()
+	 */
+	function universal_call($which, &$parameter_one)
+	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('3.0', 'Use extensions->call');
+
+		return call_user_func_array(array($this, 'call'), func_get_args());
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Extension Hook Method
 	 *
 	 * Used in ExpressionEngine to call an extension based on whichever
@@ -86,82 +101,40 @@ class EE_Extensions {
 	 * @param	mixed
 	 * @return	mixed
 	 */
-	function call($which, $parameter_one='')
-	{
-		// Reset Our Variables
-		$this->end_script	= FALSE;
-		$this->last_call	= FALSE;
-
-		// A Few Checks
-		if ( ! isset($this->extensions[$which])) return;
-		if (ee()->config->item('allow_extensions') != 'y') return;
-		if ($this->in_progress == $which) return;
-
-		// Get Arguments, Call the New Universal Method
-		$args = func_get_args();
-
-		if (count($args) == 1)
-		{
-			$args = array($which, '');
-		}
-
-		foreach ($args as $k => $v)
-		{
-			$args[$k] =& $args[$k];
-		}
-
-		return call_user_func_array(array(&$this, 'universal_call'), $args);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * The Universal Caller (Added in EE 1.6)
-	 *
-	 * Originally, using call(), objects could not be called by reference in PHP
-	 * 4 and thus could not be directly modified. I found a clever way around
-	 * that restriction by always having the second argument gotten by
-	 * reference. The problem (and the reason there is a call() hook above) is
-	 * that not all extension hooks have a second argument and the PHP
-	 * developers in their infinite wisdom decided that only variables could be
-	 * passed by reference. So, call() does a little magic to make sure there is
-	 * always a second argument and universal_call() handles all of the object
-	 * and reference handling when needed. -Paul
-	 *
-	 * @access	public
-	 * @param	string	Name of the  extension hook
-	 * @param	mixed
-	 * @return	mixed
-	 */
-	function universal_call($which, &$parameter_one)
+	function call($which)
 	{
 		// Reset Our Variables
 		$this->end_script = FALSE;
 		$this->last_call  = FALSE;
-		$php5_args        = array();
 
 		// Anything to Do Here?
-		if ( ! isset($this->extensions[$which])) return;
-		if (ee()->config->item('allow_extensions') != 'y') return;
-		if ($this->in_progress == $which) return;
+		if ( ! isset($this->extensions[$which]))
+		{
+			return;
+		}
+
+		if (ee()->config->item('allow_extensions') != 'y')
+		{
+			return;
+		}
+
+		if ($this->in_progress == $which)
+		{
+			return;
+		}
 
 		$this->in_progress = $which;
+
 		ee()->load->library('addons');
 		ee()->addons->is_package('');
 
 		// Retrieve arguments for function
 		$args = array_slice(func_get_args(), 1);
 
-		// Pass all arguments by reference
-		foreach($args as $k => $v)
-		{
-			$args[$k] =& $args[$k];
-		}
-
 		// Go through all the calls for this hook
-		foreach($this->extensions[$which] as $priority => $calls)
+		foreach ($this->extensions[$which] as $priority => $calls)
 		{
-			foreach($calls as $class => $metadata)
+			foreach ($calls as $class => $metadata)
 			{
 				// Determine Path of Extension
 				$class_name = ucfirst($class);
