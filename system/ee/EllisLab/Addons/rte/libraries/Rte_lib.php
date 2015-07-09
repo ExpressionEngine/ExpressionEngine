@@ -384,7 +384,6 @@ class Rte_lib {
 		$jquery = URL_THEMES . 'javascript/' .
 				  (ee()->config->item('use_compressed_js') == 'n' ? 'src' : 'compressed') .
 				  '/jquery/jquery.js';
-		$rtecss	= URL_THEMES . 'cp_themes/default/css/rte.css';
 
 		ee()->load->library('javascript');
 
@@ -431,9 +430,8 @@ class Rte_lib {
 				' . $this->_load_js_files($bits['libraries']) . '
 
 				// RTE styles
-				$("<link rel=\"stylesheet\" href=\"' . $rtecss . '\"/>")
-					.add( $("<style>' . preg_replace( '/\\s+/', ' ', $bits['styles'] ) . '</style>"))
-					.appendTo("head");
+				$("head")
+					.append( $("<style>' . preg_replace( '/\\s+/', ' ', $bits['styles'] ) . '</style>"));
 
 				// RTE globals
 				' . $this->_set_globals($bits['globals']) . '
