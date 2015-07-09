@@ -123,8 +123,7 @@ class CI_DB_mysqli_connection {
 		}
 		catch (Exception $e)
 		{
-			echo $e->getMessage().":<br>\n".$query;
-			exit;
+			show_error($this->getQueryErrorString($e, $query));
 		}
 
 		$time_end = microtime(TRUE);
@@ -206,6 +205,70 @@ class CI_DB_mysqli_connection {
 	public function isOpen()
 	{
 		return isset($this->connection);
+	}
+
+	/**
+	 * Generate a useful query error
+	 *
+	 * @param  Exception $e     The PDO Exception
+	 * @param  String    $query The query
+	 * @return String           Human error message
+	 */
+	private function getQueryErrorString(Exception $e, $query)
+	{
+		$frames = $this->getLikelySourceFrames($e->getTrace());
+
+		$error = '<b>Database Error</b><br><br>';
+		$error .= $e->getMessage().'<br><br>';
+
+		$error .= '<b>Stack Trace</b><br>';
+
+		foreach ($frames as $frame)
+		{
+			$error .= '[line '.$frame['line'].'] :: '.$frame['file'].'<br>';
+		}
+
+		$error .= '<br><b>Query</b><br>';
+		$error .= htmlentities($query);
+
+		return $error;
+	}
+
+	/**
+	 * Find the most likely stack frame that caused the error and show
+	 * n additional frames below it
+	 *
+	 * @param  Array $trace Error backtrace
+	 * @param  Array $count Number of frames to show
+	 * @return Array        Single source frame
+	 */
+	private function getLikelySourceFrames($trace, $count = 3)
+	{
+		$frames = array();
+
+		foreach ($trace as $i => $frame)
+		{
+			if (isset($frame['file'])
+			 && strpos($frame['file'], 'ee/legacy/database/') === FALSE
+			 && strpos($frame['file'], 'ee/EllisLab/ExpressionEngine/Service/Model/') === FALSE)
+			{
+				$frames = array_slice($trace, $i, $count);
+
+				foreach ($frames as $i => &$frame)
+				{
+					if ( ! isset($frame['file']))
+					{
+						unset($frames[$i]);
+					}
+
+					$frame['file'] = str_replace(SYSPATH, '', $frame['file']);
+				}
+
+				break;
+			}
+		}
+
+		return $frames;
 	}
 
 	/**
