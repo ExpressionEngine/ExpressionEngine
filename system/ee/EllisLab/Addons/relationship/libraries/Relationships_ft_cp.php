@@ -135,11 +135,6 @@ class Relationships_ft_cp {
 
 		$prefix = ee()->db->dbprefix;
 
-		if ( ! $from_all_sites)
-		{
-			ee()->db->where('site_id', '1');
-		}
-
 		// First the author groups
 		$groups = ee('Model')->get('MemberGroup')
 			->fields('group_id', 'group_title')
