@@ -71,14 +71,15 @@
 
 		// Removing Relationships
 		$('.relate-wrap').on('click', '.relate-manage a', function (e) {
-			var relationship = $(this).closest('.relate-wrap');
+			var choices = $(this).closest('.relate-wrap');
+			var chosen = $(this).closest('.relate-wrap');
 
 			// Is this a multiple relationship?
-			if (relationship.hasClass('w-8')) {
-				relationship = relationship.siblings('.relate-wrap').first();
+			if (choices.hasClass('w-8')) {
+				choices = choices.siblings('.relate-wrap').first();
 			}
 
-			relationship.find('.scroll-wrap :checked[value=' + $(this).data('entry-id') + ']')
+			choices.find('.scroll-wrap :checked[value=' + $(this).data('entry-id') + ']')
 				.attr('checked', false)
 				.parents('.choice')
 				.removeClass('chosen')
@@ -87,12 +88,13 @@
 
 			$(this).closest('label').remove();
 
-			if (relationship.find('.relate-manage').length == 0) {
-				if (relationship.hasClass('w-8')) {
-					relationship.find('.relate-wrap .no-results').show();
-					relationship.find('.relate-wrap').addClass('empty');
+			if (chosen.find('.relate-manage').length == 0) {
+				if (chosen.hasClass('w-8')) {
+					chosen.addClass('empty')
+						.find('.no-results')
+						.show();
 				} else {
-					relationship.find('.relate-wrap-chosen .no-results')
+					chosen.find('.relate-wrap-chosen .no-results')
 						.closest('label')
 						.show()
 						.removeClass('hidden')
@@ -102,6 +104,38 @@
 
 			e.preventDefault();
 		});
+
+		function toggleNoResults(empty, channelId, element) {
+			if (empty) {
+				$(element).closest('.relate-wrap')
+					.addClass('empty')
+					.find('.no-results')
+					.show();
+
+				if (channelId) {
+					$(element).closest('.relate-wrap')
+						.find('.no-results a.btn, .no-results .filters')
+						.hide();
+
+					$(element).closest('.relate-wrap')
+						.find('.no-results a.btn[data-channel-id=' + channelId + ']')
+						.show();
+				} else {
+					$(element).closest('.relate-wrap')
+						.find('.no-results a.btn')
+						.hide();
+
+					$(element).closest('.relate-wrap')
+						.find('.no-results .filters')
+						.show();
+				}
+			} else {
+				$(element).closest('.relate-wrap')
+					.removeClass('empty')
+					.find('.no-results')
+					.hide();
+			}
+		}
 
 		// Filter by Channel
 		$('.relate-wrap .relate-actions .filters a[data-channel-id]').on('click', function (e) {
@@ -133,35 +167,7 @@
 				}
 			});
 
-			if (empty) {
-				$(this).closest('.relate-wrap')
-					.addClass('empty')
-					.find('.no-results')
-					.show();
-
-				if (channelId) {
-					$(this).closest('.relate-wrap')
-						.find('.no-results a.btn, .no-results .filters')
-						.hide();
-
-					$(this).closest('.relate-wrap')
-						.find('.no-results a.btn[data-channel-id=' + channelId + ']')
-						.show();
-				} else {
-					$(this).closest('.relate-wrap')
-						.find('.no-results a.btn')
-						.hide();
-
-					$(this).closest('.relate-wrap')
-						.find('.no-results .filters')
-						.show();
-				}
-			} else {
-				$(this).closest('.relate-wrap')
-					.removeClass('empty')
-					.find('.no-results')
-					.hide();
-			}
+			toggleNoResults(empty, channelId, this);
 
 			$(document).click(); // Trigger the code to close the menu
 			e.preventDefault();
@@ -187,35 +193,7 @@
 				}
 			});
 
-			if (empty) {
-				$(this).closest('.relate-wrap')
-					.addClass('empty')
-					.find('.no-results')
-					.show();
-
-				if (channelId) {
-					$(this).closest('.relate-wrap')
-						.find('.no-results a.btn, .no-results .filters')
-						.hide();
-
-					$(this).closest('.relate-wrap')
-						.find('.no-results a.btn[data-channel-id=' + channelId + ']')
-						.show();
-				} else {
-					$(this).closest('.relate-wrap')
-						.find('.no-results a.btn')
-						.hide();
-
-					$(this).closest('.relate-wrap')
-						.find('.no-results .filters')
-						.show();
-				}
-			} else {
-				$(this).closest('.relate-wrap')
-					.removeClass('empty')
-					.find('.no-results')
-					.hide();
-			}
+			toggleNoResults(empty, channelId, this);
 		});
 
 		// Sortable!
