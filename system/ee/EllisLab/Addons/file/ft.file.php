@@ -666,10 +666,10 @@ CSS;
 	{
 		if ( ! $this->_check_directories())
 		{
-			ee()->lang->loadfile('filemanager');
+			ee()->lang->load('fieldtypes');
 			return sprintf(
-				lang('no_upload_directories_for_fieldtype'),
-				BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
+				lang('file_ft_no_upload_directories'),
+				ee('CP/URL', 'files/uploads/create')
 			);
 		}
 
@@ -703,9 +703,10 @@ CSS;
 		// count upload dirs
 		if ( ! $this->_check_directories())
 		{
+			ee()->lang->load('fieldtypes');
 			return sprintf(
-				lang('no_upload_directories_for_fieldtype'),
-				BASE.AMP.'C=content_files'.AMP.'M=file_upload_preferences'
+				lang('file_ft_no_upload_directories'),
+				ee('CP/URL', 'files/uploads/create')
 			);
 		}
 

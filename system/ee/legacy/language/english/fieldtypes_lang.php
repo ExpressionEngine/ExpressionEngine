@@ -54,6 +54,7 @@ $lang = array(
 'file_ft_limit_desc'			=> 'Maximum number of files to show in the drop down.<br><i>Leave blank to show all files.</i>',
 'file_ft_select_existing'		=> 'Select an existing file',
 'file_ft_cannot_find_file'		=> '<b>File not found.</b> We could not locate %s on the server.',
+'file_ft_no_upload_directories' => 'There are currently no upload directories available. Please <a href="%s">add one or more upload directories</a> to use the File field type.',
 
 // Grid
 'grid_min_rows'				=> 'Minimum Rows',
