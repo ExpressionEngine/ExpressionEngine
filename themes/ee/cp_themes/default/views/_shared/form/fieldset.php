@@ -26,6 +26,18 @@ if (isset($setting['caution']) && $setting['caution'] == TRUE)
 {
 	$fieldset_classes .= ' security-caution';
 }
+// If a validation result object is set, see if any of our fields have errors
+if (isset($errors))
+{
+	foreach (array_keys($setting['fields']) as $field)
+	{
+		if ($errors->hasErrors($field))
+		{
+			$fieldset_classes .= ' invalid';
+			break;
+		}
+	}
+}
 if ($setting == end($settings))
 {
 	$fieldset_classes .= ' last';
