@@ -269,7 +269,6 @@ class Rte_mcp {
 			'body'			=> ee()->rte_lib->edit_toolset(0),
 			'heading'		=> lang('create_tool_set_header'),
 			'breadcrumb' 	=> array(
-				ee('CP/URL', 'addons')->compile() => lang('addon_manager'),
 				ee('CP/URL', 'addons/settings/rte')->compile() => lang('rte_module_name') . ' ' . lang('configuration')
 			)
 		);
@@ -290,7 +289,6 @@ class Rte_mcp {
 			'body'			=> ee()->rte_lib->edit_toolset($toolset_id),
 			'heading'		=> lang('edit_tool_set_header'),
 			'breadcrumb' 	=> array(
-				ee('CP/URL', 'addons')->compile() => lang('addon_manager'),
 				ee('CP/URL', 'addons/settings/rte')->compile() => lang('rte_module_name') . ' ' . lang('configuration')
 			)
 		);
