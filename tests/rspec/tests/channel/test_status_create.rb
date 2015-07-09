@@ -114,7 +114,7 @@ feature 'Status Create/Edit' do
 
     @page.status.set 'Test'
     @page.highlight.set 'ffff'
-    @page.status_access[0].click
+    @page.status_access[0].set false
     @page.submit
 
     @page.should have_text 'Attention: Status not saved'
@@ -130,7 +130,7 @@ feature 'Status Create/Edit' do
 
     @page.status.set 'Test'
     @page.highlight.set 'fff'
-    @page.status_access[0].click
+    @page.status_access[0].set false
     @page.submit
     no_php_js_errors
 
@@ -150,7 +150,7 @@ feature 'Status Create/Edit' do
     # Make sure we can edit
     @page.status.set 'Test2'
     @page.status.trigger 'change'
-    @page.status_access[0].click
+    @page.status_access[0].set true
     @page.submit
     no_php_js_errors
 
