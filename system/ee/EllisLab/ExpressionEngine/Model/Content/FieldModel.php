@@ -161,6 +161,7 @@ abstract class FieldModel extends Model {
 		$values = array_merge($this->getValues(), $changed);
 
 		$facade = new FieldFacade($this->getId(), $values);
+		$facade->setContentType($this->getContentType());
 		return $facade->getNativeField();
 	}
 
