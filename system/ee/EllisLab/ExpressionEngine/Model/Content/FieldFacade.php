@@ -195,6 +195,14 @@ class FieldFacade {
 		return $out;
 	}
 
+	public function validateSettingsForm($validator)
+	{
+		$this->initField();
+		$result = ee()->api_channel_fields->apply('validate_settings', array($validator));
+
+		return $result;
+	}
+
 	public function saveSettingsForm($data)
 	{
 		$this->initField();
@@ -213,12 +221,10 @@ class FieldFacade {
 	public function getStatus()
 	{
 		$data = $this->initField();
-		// initField can sometimes return a string if the field has a
-		// string_override key.
 
 		$field_value = set_value(
 			$this->getName(),
-			is_string($data) ? $data : $data['field_data']
+			$data['field_data']
 		);
 
 		return ee()->api_channel_fields->apply('get_field_status', array($field_value));
