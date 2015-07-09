@@ -566,7 +566,7 @@ class Pagination_object {
 			//
 				if (ee()->extensions->active_hook('pagination_fetch_data') === TRUE)
 				{
-					ee()->extensions->universal_call('pagination_fetch_data', $this);
+					ee()->extensions->call('pagination_fetch_data', $this);
 					if (ee()->extensions->end_script === TRUE) return;
 				}
 			//
@@ -623,7 +623,7 @@ class Pagination_object {
 		//
 			if (ee()->extensions->active_hook('pagination_create') === TRUE)
 			{
-				ee()->extensions->universal_call('pagination_create', $this, $this->total_items);
+				ee()->extensions->call('pagination_create', $this, $this->total_items);
 				if (ee()->extensions->end_script === TRUE) return;
 			}
 		//

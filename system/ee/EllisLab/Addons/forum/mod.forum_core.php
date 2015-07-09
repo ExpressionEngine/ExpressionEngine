@@ -1646,7 +1646,7 @@ class Forum_Core extends Forum {
         //
 			if (ee()->extensions->active_hook('main_forum_table_rows_template') === TRUE)
 			{
-				$table_rows = ee()->extensions->universal_call('main_forum_table_rows_template', $this, $table_rows, $row, $markers, $read_topics);
+				$table_rows = ee()->extensions->call('main_forum_table_rows_template', $this, $table_rows, $row, $markers, $read_topics);
 				if (ee()->extensions->end_script === TRUE) return $table_rows;
 			}
         //
@@ -2076,7 +2076,7 @@ class Forum_Core extends Forum {
 		//
 			if (ee()->extensions->active_hook('forum_topics_start') === TRUE)
 			{
-				$str = ee()->extensions->universal_call('forum_topics_start', $this, $str);
+				$str = ee()->extensions->call('forum_topics_start', $this, $str);
 				if (ee()->extensions->end_script === TRUE) return $str;
 			}
 		//
@@ -2201,7 +2201,7 @@ class Forum_Core extends Forum {
 			*/
 				if (ee()->extensions->active_hook('forum_topics_loop_start') === TRUE)
 				{
-					$temp = ee()->extensions->universal_call('forum_topics_loop_start', $this, $query->result(), $row, $temp);
+					$temp = ee()->extensions->call('forum_topics_loop_start', $this, $query->result(), $row, $temp);
 					if (ee()->extensions->end_script === TRUE) return;
 				}
 			/*
@@ -2419,7 +2419,7 @@ class Forum_Core extends Forum {
 			*/
 				if (ee()->extensions->active_hook('forum_topics_loop_end') === TRUE)
 				{
-					$temp = ee()->extensions->universal_call('forum_topics_loop_end', $this, $query->result(), $row, $temp);
+					$temp = ee()->extensions->call('forum_topics_loop_end', $this, $query->result(), $row, $temp);
 					if (ee()->extensions->end_script === TRUE) return;
 				}
 			/*
@@ -2459,7 +2459,7 @@ class Forum_Core extends Forum {
 		*/
 			if (ee()->extensions->active_hook('forum_topics_absolute_end') === TRUE)
 			{
-				$str = ee()->extensions->universal_call('forum_topics_absolute_end', $this, $query->result(), $str);
+				$str = ee()->extensions->call('forum_topics_absolute_end', $this, $query->result(), $str);
 				if (ee()->extensions->end_script === TRUE) return $str;
 			}
 		/*
@@ -2785,7 +2785,7 @@ class Forum_Core extends Forum {
 		//
 			if (ee()->extensions->active_hook('forum_threads_template') === TRUE)
 			{
-				$str = ee()->extensions->universal_call('forum_threads_template', $this, $str, $tquery);
+				$str = ee()->extensions->call('forum_threads_template', $this, $str, $tquery);
 				if (ee()->extensions->end_script === TRUE) return $str;
 			}
 		//
@@ -3316,7 +3316,7 @@ class Forum_Core extends Forum {
 		//
 			if (ee()->extensions->active_hook('forum_thread_rows_start') === TRUE)
 			{
-				$template = ee()->extensions->universal_call('forum_thread_rows_start', $this, $template, $data, $is_announcement, $thread_review);
+				$template = ee()->extensions->call('forum_thread_rows_start', $this, $template, $data, $is_announcement, $thread_review);
 				if (ee()->extensions->end_script === TRUE) return $template;
 			}
 		//
@@ -3363,7 +3363,7 @@ class Forum_Core extends Forum {
 			*/
 				if (ee()->extensions->active_hook('forum_thread_rows_loop_start') === TRUE)
 				{
-					$temp = ee()->extensions->universal_call('forum_thread_rows_loop_start', $this, $data, $row, $temp);
+					$temp = ee()->extensions->call('forum_thread_rows_loop_start', $this, $data, $row, $temp);
 					if (ee()->extensions->end_script === TRUE) return;
 				}
 			/*
@@ -3884,7 +3884,7 @@ class Forum_Core extends Forum {
 				*/
 					if (ee()->extensions->active_hook('forum_thread_rows_loop_end') === TRUE)
 					{
-						$temp = ee()->extensions->universal_call('forum_thread_rows_loop_end', $this, $data, $row, $temp);
+						$temp = ee()->extensions->call('forum_thread_rows_loop_end', $this, $data, $row, $temp);
 						if (ee()->extensions->end_script === TRUE) return;
 					}
 				/*
@@ -3902,7 +3902,7 @@ class Forum_Core extends Forum {
 		*/
 			if (ee()->extensions->active_hook('forum_thread_rows_absolute_end') === TRUE)
 			{
-				$thread_rows = ee()->extensions->universal_call('forum_thread_rows_absolute_end', $this, $data, $thread_rows);
+				$thread_rows = ee()->extensions->call('forum_thread_rows_absolute_end', $this, $data, $thread_rows);
 				if (ee()->extensions->end_script === TRUE) return $thread_rows;
 			}
 		/*
@@ -4146,7 +4146,7 @@ class Forum_Core extends Forum {
 		//  - Allows usurping of forum submission forms
 		//  - More error checking and permissions too
 		//
-			$edata = ee()->extensions->universal_call('forum_submission_page', $this, $type);
+			$edata = ee()->extensions->call('forum_submission_page', $this, $type);
 			if (ee()->extensions->end_script === TRUE) return $edata;
 		//
 		// -------------------------------------------
@@ -4392,7 +4392,7 @@ class Forum_Core extends Forum {
 		//
 			if (ee()->extensions->active_hook('forum_submission_form_start') === TRUE)
 			{
-				$str = ee()->extensions->universal_call('forum_submission_form_start', $this, $str);
+				$str = ee()->extensions->call('forum_submission_form_start', $this, $str);
 				if (ee()->extensions->end_script === TRUE) return $str;
 			}
 		//
@@ -4803,7 +4803,7 @@ class Forum_Core extends Forum {
 		//
 			if (ee()->extensions->active_hook('forum_submission_form_end') === TRUE)
 			{
-				$str = ee()->extensions->universal_call('forum_submission_form_end', $this, $str);
+				$str = ee()->extensions->call('forum_submission_form_end', $this, $str);
 				if (ee()->extensions->end_script === TRUE) return $str;
 			}
 		//
@@ -5471,7 +5471,7 @@ class Forum_Core extends Forum {
 		//  - Allows usurping of forum submission routine
 		//  - More error checking and permissions too
 		//
-			$edata = ee()->extensions->universal_call('forum_submit_post_start', $this);
+			$edata = ee()->extensions->call('forum_submit_post_start', $this);
 			if (ee()->extensions->end_script === TRUE) return $edata;
 		//
 		// -------------------------------------------
@@ -6215,7 +6215,7 @@ class Forum_Core extends Forum {
 		*/
 			if (ee()->extensions->active_hook('forum_submit_post_end') === TRUE)
 			{
-				$edata = ee()->extensions->universal_call('forum_submit_post_end', $this, $data);
+				$edata = ee()->extensions->call('forum_submit_post_end', $this, $data);
 				if (ee()->extensions->end_script === TRUE) return $edata;
 			}
 		/*

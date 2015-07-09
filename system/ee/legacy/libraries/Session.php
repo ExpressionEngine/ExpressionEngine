@@ -130,7 +130,7 @@ class EE_Session {
 		//  - Override the whole session check
 		//  - Modify default/guest settings
 		//
-			ee()->extensions->universal_call('sessions_start', $this);
+			ee()->extensions->call('sessions_start', $this);
 			if (ee()->extensions->end_script === TRUE) return;
 		//
 		// -------------------------------------------
@@ -222,7 +222,7 @@ class EE_Session {
 		//  - Modify the user's session/member data.
 		//  - Additional Session or Login methods (ex: log in to other system)
 		//
-			ee()->extensions->universal_call('sessions_end', $this);
+			ee()->extensions->call('sessions_end', $this);
 			if (ee()->extensions->end_script === TRUE) return;
 		//
 		// -------------------------------------------

@@ -1913,7 +1913,7 @@ class Api_channel_fields extends Api {
 		//
 			if (ee()->extensions->active_hook('custom_field_modify_data') === TRUE)
 			{
-				return ee()->extensions->universal_call('custom_field_modify_data', $obj, $method, $parameters);
+				return ee()->extensions->call('custom_field_modify_data', $obj, $method, $parameters);
 			}
 		//
 		// -------------------------------------------

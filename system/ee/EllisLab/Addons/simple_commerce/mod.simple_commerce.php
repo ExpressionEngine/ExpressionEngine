@@ -436,7 +436,7 @@ class Simple_commerce {
 		*/
 			if (ee()->extensions->active_hook('simple_commerce_evaluate_ipn_response') === TRUE)
 			{
-				$result = ee()->extensions->universal_call('simple_commerce_evaluate_ipn_response', $this, $result);
+				$result = ee()->extensions->call('simple_commerce_evaluate_ipn_response', $this, $result);
 				if (ee()->extensions->end_script === TRUE) return;
 			}
 		/*
@@ -732,7 +732,7 @@ class Simple_commerce {
 		*/
 			if (ee()->extensions->active_hook('simple_commerce_perform_actions_start') === TRUE)
 			{
-				ee()->extensions->universal_call('simple_commerce_perform_actions_start', $this, $query->row());
+				ee()->extensions->call('simple_commerce_perform_actions_start', $this, $query->row());
 				if (ee()->extensions->end_script === TRUE) return;
 			}
 		/*
@@ -873,7 +873,7 @@ class Simple_commerce {
 		*/
 			if (ee()->extensions->active_hook('simple_commerce_perform_actions_end') === TRUE)
 			{
-				ee()->extensions->universal_call('simple_commerce_perform_actions_end', $this, $query->row());
+				ee()->extensions->call('simple_commerce_perform_actions_end', $this, $query->row());
 				if (ee()->extensions->end_script === TRUE) return;
 			}
 		/*

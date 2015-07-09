@@ -287,7 +287,7 @@ class Member {
 		//
 			if (ee()->extensions->active_hook('member_manager') === TRUE)
 			{
-				$edata = ee()->extensions->universal_call('member_manager', $this);
+				$edata = ee()->extensions->call('member_manager', $this);
 				if (ee()->extensions->end_script === TRUE) return $edata;
 			}
 		//
