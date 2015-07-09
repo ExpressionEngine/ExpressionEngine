@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Design;
 
 use EllisLab\ExpressionEngine\Controllers\Design\AbstractDesign as AbstractDesignController;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 
 /**
  * ExpressionEngine - by EllisLab
@@ -12,7 +12,7 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -57,7 +57,7 @@ class Email extends AbstractDesignController {
 
 		$vars = array();
 
-		$base_url = new URL('design/email/', ee()->session->session_id());
+		$base_url = ee('CP/URL', 'design/email/');
 
 		$table = ee('CP/Table', array('autosort' => TRUE, 'subheadings' => TRUE));
 		$table->setColumns(
@@ -76,7 +76,7 @@ class Email extends AbstractDesignController {
 				lang($template->template_name),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => cp_url('design/email/edit/' . $template->template_id),
+						'href' => ee('CP/URL', 'design/email/edit/' . $template->template_id),
 						'title' => lang('edit')
 					),
 				))
@@ -138,7 +138,7 @@ class Email extends AbstractDesignController {
 			if (ee()->input->post('submit') == 'finish')
 			{
 				$alert->defer();
-				ee()->functions->redirect(cp_url('design/email'));
+				ee()->functions->redirect(ee('CP/URL', 'design/email'));
 			}
 
 			$alert->now();
@@ -155,7 +155,7 @@ class Email extends AbstractDesignController {
 		$author = $template->getLastAuthor();
 
 		$vars = array(
-			'form_url' => cp_url('design/email/edit/' . $template->template_id),
+			'form_url' => ee('CP/URL', 'design/email/edit/' . $template->template_id),
 			'template' => $template,
 			'author' => (empty($author)) ? '-' : $author->getMemberName(),
 		);
@@ -165,8 +165,8 @@ class Email extends AbstractDesignController {
 
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), lang($template->template_name));
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('design') => lang('template_manager'),
-			cp_url('design/email/') => sprintf(lang('breadcrumb_group'), lang('email'))
+			ee('CP/URL', 'design')->compile() => lang('template_manager'),
+			ee('CP/URL', 'design/email/')->compile() => sprintf(lang('breadcrumb_group'), lang('email'))
 		);
 
 		ee()->cp->render('design/email/edit', $vars);

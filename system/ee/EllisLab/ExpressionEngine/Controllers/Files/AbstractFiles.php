@@ -14,7 +14,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -79,8 +79,8 @@ abstract class AbstractFiles extends CP_Controller {
 			$data = array(
 				'name' => $destination->name,
 				'id' => $destination->id,
-				'url' => cp_url('files/directory/' . $destination->id),
-				'edit_url' => cp_url('files/uploads/edit/' . $destination->id),
+				'url' => ee('CP/URL', 'files/directory/' . $destination->id),
+				'edit_url' => ee('CP/URL', 'files/uploads/edit/' . $destination->id),
 			);
 
 			if ( ! empty($class))
@@ -101,10 +101,10 @@ abstract class AbstractFiles extends CP_Controller {
 	{
 		ee()->view->header = array(
 			'title' => lang('file_manager'),
-			'form_url' => cp_url('files'),
+			'form_url' => ee('CP/URL', 'files'),
 			'toolbar_items' => array(
 				'download' => array(
-					'href' => cp_url('files/export'),
+					'href' => ee('CP/URL', 'files/export'),
 					'title' => lang('export_all')
 				)
 			),
@@ -117,7 +117,9 @@ abstract class AbstractFiles extends CP_Controller {
 		$table = ee('CP/Table', array('autosort' => TRUE, 'limit' => $limit, 'autosearch' => TRUE));
 		$table->setColumns(
 			array(
-				'title_or_name',
+				'title_or_name' => array(
+					'encode' => FALSE
+				),
 				'file_type',
 				'date_added',
 				'manage' => array(
@@ -152,15 +154,15 @@ abstract class AbstractFiles extends CP_Controller {
 					'data-file-id' => $file->file_id
 				),
 				'edit' => array(
-					'href' => cp_url('files/file/edit/' . $file->file_id),
+					'href' => ee('CP/URL', 'files/file/edit/' . $file->file_id),
 					'title' => lang('edit')
 				),
 				'crop' => array(
-					'href' => cp_url('files/file/crop/' . $file->file_id),
+					'href' => ee('CP/URL', 'files/file/crop/' . $file->file_id),
 					'title' => lang('crop'),
 				),
 				'download' => array(
-					'href' => cp_url('files/file/download/' . $file->file_id),
+					'href' => ee('CP/URL', 'files/file/download/' . $file->file_id),
 					'title' => lang('download'),
 				),
 			);

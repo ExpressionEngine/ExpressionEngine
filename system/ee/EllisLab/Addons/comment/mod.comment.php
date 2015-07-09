@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -2121,7 +2121,7 @@ class Comment {
 /*
 		ee()->db->select('channel_titles.title, channel_titles.url_title, channel_titles.channel_id, channel_titles.author_id,
 						channel_titles.comment_total, channel_titles.allow_comments, channel_titles.entry_date, channel_titles.comment_expiration_date,
-						channels.channel_title, channels.comment_system_enabled, channels.comment_max_chars, channels.comment_use_captcha,
+						channels.channel_title, channels.comment_system_enabled, channels.comment_max_chars,
 						channels.comment_timelock, channels.comment_require_membership, channels.comment_moderate, channels.comment_require_email,
 						channels.comment_notify, channels.comment_notify_authors, channels.comment_notify_emails, channels.comment_expiration'
 		);
@@ -2142,7 +2142,6 @@ class Comment {
 				exp_channels.channel_title,
 				exp_channels.comment_system_enabled,
 				exp_channels.comment_max_chars,
-				exp_channels.comment_use_captcha,
 				exp_channels.comment_timelock,
 				exp_channels.comment_require_membership,
 				exp_channels.comment_moderate,

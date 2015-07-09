@@ -12,7 +12,7 @@ use CP_Controller;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -55,7 +55,7 @@ class Comments extends Settings {
 			'options' => array(
 				array(
 					'title' => 'comment_word_censoring',
-					'desc' => sprintf(lang('comment_word_censoring_desc'), cp_url('settings/word-censor')),
+					'desc' => sprintf(lang('comment_word_censoring_desc'), ee('CP/URL', 'settings/word-censor')),
 					'fields' => array(
 						'comment_word_censoring' => array(
 							'type' => 'inline_radio',
@@ -93,7 +93,7 @@ class Comments extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = cp_url('settings/comments');
+		$base_url = ee('CP/URL', 'settings/comments');
 
 		if (AJAX_REQUEST)
 		{
@@ -120,7 +120,7 @@ class Comments extends Settings {
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_saving';
 
-		ee()->cp->set_breadcrumb(cp_url('publish/comments'), lang('all_comments'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'publish/comments'), lang('all_comments'));
 
 		ee()->cp->render('settings/form', $vars);
 	}

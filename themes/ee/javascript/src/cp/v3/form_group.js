@@ -4,7 +4,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -27,9 +27,15 @@ $(document).ready(function() {
 		// in form_group_toggle and then tell the browser to populate
 		// the radio buttons with their default checked state
 		$.each(config, function (key, data) {
-			$('*[data-group="'+data+'"]').find(':radio').each(function() {
+
+			var elements = $('*[data-group="'+data+'"]');
+
+			elements.find(':radio').each(function() {
 				$(this).prop('checked', $(this).attr('checked') == 'checked');
 			});
+
+			// Add 'last' class to the last fieldset of each group
+			elements.last().addClass('last');
 		});
 	});
 

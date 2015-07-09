@@ -2,7 +2,7 @@
 
 return array(
 	'author'      => 'EllisLab',
-	'author_url'  => 'http://ellislab.com/',
+	'author_url'  => 'https://ellislab.com/',
 	'name'        => 'ExpressionEngine FilePicker',
 	'description' => "The world's most flexible file picker.",
 	'version'     => '1.0',

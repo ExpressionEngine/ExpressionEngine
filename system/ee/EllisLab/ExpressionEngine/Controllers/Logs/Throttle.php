@@ -13,7 +13,7 @@ use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -52,7 +52,7 @@ class Throttle extends Logs {
 			$this->delete('Throttle', lang('throttle_log'));
 			if (strtolower(ee()->input->post('delete')) == 'all')
 			{
-				return ee()->functions->redirect(cp_url('logs/throttle'));
+				return ee()->functions->redirect(ee('CP/URL', 'logs/throttle'));
 			}
 		}
 

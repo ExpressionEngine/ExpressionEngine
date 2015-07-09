@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -116,34 +116,43 @@ class Rte_ft extends EE_Fieldtype {
 
 	function display_settings($data)
 	{
-		$prefix = 'rte';
-
-		// Text direction
-		$this->text_direction_row($data, $prefix);
-
-		// Textarea rows
-		$field_rows	= ($data['field_ta_rows'] == '') ? 10 : $data['field_ta_rows'];
-
-		ee()->table->add_row(
-			lang('textarea_rows', $prefix.'_ta_rows'),
-			form_input(array(
-				'id'	=> $prefix.'_ta_rows',
-				'name'	=> $prefix.'_ta_rows',
-				'size'	=> 4,
-				'value'	=> set_value($prefix.'_ta_rows', $field_rows)
+		$settings = array(
+			array(
+				'title' => 'textarea_height',
+				'desc' => 'textarea_height_desc',
+				'fields' => array(
+					'field_maxl' => array(
+						'type' => 'text',
+						'value' => ( ! isset($data['field_ta_rows']) OR $data['field_ta_rows'] == '') ? 6 : $data['field_ta_rows']
+					)
+				)
+			),
+			array(
+				'title' => 'field_text_direction',
+				'desc' => 'field_text_direction_desc',
+				'fields' => array(
+					'field_text_direction' => array(
+						'type' => 'select',
+						'choices' => array(
+							'ltr' => lang('field_text_direction_ltr'),
+							'rtl' => lang('field_text_direction_rtl')
+						),
+						'value' => isset($data['field_text_direction']) ? $data['field_text_direction'] : 'ltr',
+					)
 				)
 			)
 		);
-	}
 
-	// --------------------------------------------------------------------
+		if ($this->content_type() == 'grid')
+		{
+			return array('field_options' => $settings);
+		}
 
-	public function grid_display_settings($data)
-	{
-		return array(
-			$this->grid_textarea_max_rows_row($data, 10),
-			$this->grid_text_direction_row($data)
-		);
+		return array('field_options_rte' => array(
+			'label' => 'field_options',
+			'group' => 'rte',
+			'settings' => $settings
+		));
 	}
 
 	// --------------------------------------------------------------------

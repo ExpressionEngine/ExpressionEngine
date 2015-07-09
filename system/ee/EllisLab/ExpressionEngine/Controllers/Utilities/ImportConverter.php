@@ -10,7 +10,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -120,7 +120,7 @@ class ImportConverter extends Utilities {
 
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('import_converter');
-		ee()->view->base_url = cp_url('utilities/import-converter');
+		ee()->view->base_url = ee('CP/URL', 'utilities/import-converter');
 		ee()->view->save_btn_text = 'import_convert_btn';
 		ee()->view->save_btn_text_working = 'import_convert_btn_saving';
 		ee()->cp->render('settings/form', $vars);
@@ -216,7 +216,7 @@ class ImportConverter extends Utilities {
 		{
 			// No point going further if there aren't even the minimum required
 			ee()->view->set_message('issue', lang('not_enough_fields'), lang('not_enough_fields_desc'), TRUE);
-			ee()->functions->redirect(cp_url('utilities/import_converter'));
+			ee()->functions->redirect(ee('CP/URL', 'utilities/import_converter'));
 		}
 
 		// Get member table fields
@@ -258,7 +258,7 @@ class ImportConverter extends Utilities {
 		$vars['encrypt'] = '';
 
 		ee()->view->cp_page_title = lang('import_converter') . ' - ' . lang('assign_fields');
-		ee()->cp->set_breadcrumb(cp_url('utilities/import_converter'), lang('import_converter'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'utilities/import_converter'), lang('import_converter'));
 		ee()->cp->render('utilities/import/fieldmap', $vars);
 	}
 
@@ -381,7 +381,7 @@ class ImportConverter extends Utilities {
 		$vars['form_hidden'] = array_merge($vars['form_hidden'], $paired);
 
 		ee()->view->cp_page_title = lang('confirm_assignments');
-		ee()->cp->set_breadcrumb(cp_url('utilities/import_converter'), lang('import_converter'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'utilities/import_converter'), lang('import_converter'));
 		ee()->cp->render('utilities/import/fieldmap-confirm', $vars);
 	}
 
@@ -466,7 +466,7 @@ class ImportConverter extends Utilities {
 		$vars['username'] = ee()->session->userdata('username');
 
 		ee()->view->cp_page_title = lang('xml_code');
-		ee()->cp->set_breadcrumb(cp_url('utilities/import_converter'), lang('import_converter'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'utilities/import_converter'), lang('import_converter'));
 		ee()->cp->render('utilities/import/code-output', $vars);
 	}
 

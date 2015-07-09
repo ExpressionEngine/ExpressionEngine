@@ -30,7 +30,7 @@
 				<div class="tbl-ctrls">
 					<?=form_open($form_url)?>
 						<h1><?=$cp_heading['first']?></h1>
-						<?=ee('Alert')->getAllInlines()?>
+						<?=ee('Alert')->get('first-party')?>
 						<?php if (isset($filters['first'])) echo $filters['first']; ?>
 						<?php $this->view('_shared/table', $tables['first']); ?>
 						<?=$pagination['first']?>
@@ -39,21 +39,21 @@
 							<select name="bulk_action">
 								<option value="">-- <?=lang('with_selected')?> --</option>
 								<option value="install"><?=lang('install')?></option>
-								<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
+								<option value="remove" data-confirm-trigger-first="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
 								<option value="update"><?=lang('update')?></option>
 							</select>
-							<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
+							<button class="btn submit" data-conditional-modal="confirm-trigger-first"><?=lang('submit')?></button>
 						</fieldset>
 						<?php endif; ?>
 					<?=form_close()?>
 				</div>
 			</div>
-			<?php if ($tables['third']['total_rows']): ?>
+			<?php if (isset($tables['third'])): ?>
 			<div class="box">
 				<div class="tbl-ctrls">
 					<?=form_open($form_url)?>
 						<h1><?=$cp_heading['third']?></h1>
-						<?=ee('Alert')->getAllInlines()?>
+						<?=ee('Alert')->get('third-party')?>
 						<?php if (isset($filters['third'])) echo $filters['third']; ?>
 						<?php $this->view('_shared/table', $tables['third']); ?>
 						<?=$pagination['third']?>
@@ -62,10 +62,10 @@
 							<select name="bulk_action">
 								<option value="">-- <?=lang('with_selected')?> --</option>
 								<option value="install"><?=lang('install')?></option>
-								<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
+								<option value="remove" data-confirm-trigger-third="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
 								<option value="update"><?=lang('update')?></option>
 							</select>
-							<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
+							<button class="btn submit" data-conditional-modal="confirm-trigger-third"><?=lang('submit')?></button>
 						</fieldset>
 						<?php endif; ?>
 					<?=form_close()?>

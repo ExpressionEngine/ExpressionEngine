@@ -10,7 +10,7 @@ use CP_Controller;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -91,7 +91,7 @@ class Homepage extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$return = cp_url('homepage');
+		$return = ee('CP/URL', 'homepage');
 
 		if (ee()->input->post('return'))
 		{
@@ -111,7 +111,7 @@ class Homepage extends CP_Controller {
 
 			$return = base64_decode(ee()->input->post('return'));
 			$uri_elements = json_decode($return, TRUE);
-			$return = cp_url($uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
 		}
 
 		ee()->functions->redirect($return);

@@ -18,10 +18,12 @@ use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
 abstract class ContentModel extends VariableColumnModel {
 
 	protected static $_events = array(
-		'afterSetCustomField'
+		'afterSetCustomField',
+		'afterSave'
 	);
 
 	protected $_field_facades;
+	protected $_field_was_saved;
 
 	/**
 	 * Define a way to get the parent structure. For example,
@@ -41,8 +43,7 @@ abstract class ContentModel extends VariableColumnModel {
 	}
 
 	/**
-	 * Optionally return an array of default fields. If you override
-	 * this you may also want to override `populateDefaultFields()`.
+	 * Optionally return an array of default fields.
 	 *
 	 * @return Array of field definitions
 	 */
@@ -52,18 +53,17 @@ abstract class ContentModel extends VariableColumnModel {
 	}
 
 	/**
-	 * Do any work needed to setup the default fields with data
-	 */
-	protected function populateDefaultFields()
-	{
-		return;
-	}
-
-	/**
 	 * Check if a custom field of $name exists
 	 */
 	public function hasCustomField($name)
 	{
+		if (strpos($name, $this->getCustomFieldPrefix()) !== 0)
+		{
+			return FALSE;
+		}
+
+		$this->usesCustomFields();
+
 		if ( ! isset($this->_field_facades))
 		{
 			return FALSE;
@@ -81,6 +81,23 @@ abstract class ContentModel extends VariableColumnModel {
 	}
 
 	/**
+	 * Get a list of all custom field facades
+	 */
+	public function getCustomFields()
+	{
+		return $this->_field_facades;
+	}
+
+	/**
+	* Get a list of all custom field names
+	*/
+	public function getCustomFieldNames()
+	{
+		return array_keys($this->_field_facades);
+	}
+
+
+	/**
 	 * TODO This is messy. Some fields don't return their data on save()
 	 * and some use it to prep the data. Date is one of the prep ones,
 	 * which we'll do here, but this definitely will need work. /TODO
@@ -95,6 +112,15 @@ abstract class ContentModel extends VariableColumnModel {
 			{
 				$field->save();
 			}
+		}
+	}
+
+	public function onAfterSave()
+	{
+		foreach ($this->_field_was_saved as $field)
+		{
+			$field->setContentId($this->getId());
+			$field->postSave();
 		}
 	}
 
@@ -116,11 +142,14 @@ abstract class ContentModel extends VariableColumnModel {
 	 */
 	public function save()
 	{
-		foreach ($this->_field_facades as $name => $field)
+		$this->_field_was_saved = array();
+
+		foreach ($this->getCustomFields() as $name => $field)
 		{
 			if ($this->isDirty($name))
 			{
-				$field->save();
+				$field->save($this);
+				$this->_field_was_saved[] = $field;
 			}
 		}
 
@@ -200,7 +229,7 @@ abstract class ContentModel extends VariableColumnModel {
 
 		$rules = parent::getValidationRules();
 
-		$facades = $this->_field_facades;
+		$facades = $this->getCustomFields();
 
 		foreach ($facades as $name => $facade)
 		{
@@ -235,7 +264,7 @@ abstract class ContentModel extends VariableColumnModel {
 	{
 		$fields = parent::getFields();
 
-		foreach ($this->_field_facades as $field_facade)
+		foreach ($this->getCustomFields() as $field_facade)
 		{
 			$fields[] = $field_facade->getName();
 		}
@@ -252,7 +281,7 @@ abstract class ContentModel extends VariableColumnModel {
 
 		$fields = array_map(
 			function($field) { return new FieldDisplay($field); },
-			$this->_field_facades
+			$this->getCustomFields()
 		);
 
 		$layout = $layout ?: new DefaultLayout();
@@ -268,7 +297,6 @@ abstract class ContentModel extends VariableColumnModel {
 		if ( ! isset($this->_field_facades))
 		{
 			$this->initializeCustomFields();
-			$this->populateDefaultFields();
 		}
 	}
 
@@ -277,8 +305,6 @@ abstract class ContentModel extends VariableColumnModel {
 	 */
 	protected function fillCustomFields(array $data = array())
 	{
-		$this->usesCustomFields();
-
 		foreach ($data as $name => $value)
 		{
 			if (strpos($name, 'field_ft_') === 0)

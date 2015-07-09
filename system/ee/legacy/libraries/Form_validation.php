@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -708,7 +708,7 @@ class EE_Form_validation {
 			ee()->lang->loadfile('admin');
 			$this->set_message(
 				'valid_xss_check',
-				sprintf(lang('invalid_xss_check'), cp_url('homepage'))
+				sprintf(lang('invalid_xss_check'), ee('CP/URL', 'homepage'))
 			);
 		}
 

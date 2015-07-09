@@ -12,7 +12,7 @@ use CP_Controller;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -39,7 +39,7 @@ class Pages extends Settings {
 		// Make sure this page can't load without Pages installed
 		if ( ! ee()->addons_model->module_installed('pages'))
 		{
-			ee()->functions->redirect(cp_url('settings'));
+			ee()->functions->redirect(ee('CP/URL', 'settings'));
 		}
 
 		// Create channels dropdown
@@ -64,7 +64,7 @@ class Pages extends Settings {
 			$templates_dropdown[$template['template_id']] = $template['group_name'].'/'.$template['template_name'];
 		}
 
-		ee()->load->add_package_path(PATH_MOD.'pages');
+		ee()->load->add_package_path(PATH_ADDONS.'pages');
 		ee()->load->model('pages_model');
 		$pages_config = ee()->pages_model->fetch_site_pages_config();
 
@@ -120,7 +120,7 @@ class Pages extends Settings {
 					'desc' => 'pages_channel_desc',
 					'fields' => array(
 						'default_channel' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $channels_dropdown,
 							'value' => (int) $config['default_channel']
 						)
@@ -131,7 +131,7 @@ class Pages extends Settings {
 					'desc' => 'pages_templates_desc',
 					'fields' => array(
 						'pages_templates' => array(
-							'type' => 'multi_dropdown',
+							'type' => 'multiselect',
 							'choices' => $template_for_channel
 						)
 					)
@@ -141,7 +141,7 @@ class Pages extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = cp_url('settings/pages');
+		$base_url = ee('CP/URL', 'settings/pages');
 
 		if (ee()->form_validation->run() !== FALSE)
 		{
@@ -164,8 +164,8 @@ class Pages extends Settings {
 
 		ee()->lang->loadfile('addons');
 		ee()->lang->loadfile('pages');
-		ee()->cp->set_breadcrumb(cp_url('addons'), lang('addon_manager'));
-		ee()->cp->set_breadcrumb(cp_url('pages'), lang('pages_manager'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'addons'), lang('addon_manager'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'pages'), lang('pages_manager'));
 
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -175,7 +175,7 @@ class Pages extends Settings {
 	  */
 	function saveSettings()
 	{
-		ee()->load->add_package_path(PATH_MOD.'pages');
+		ee()->load->add_package_path(PATH_ADDONS.'pages');
 		ee()->load->model('pages_model');
 
 		$data = array();

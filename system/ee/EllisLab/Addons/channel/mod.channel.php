@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -125,7 +125,7 @@ class Channel {
 		$tag = ($identifier == '') ? ee()->TMPL->tagproper : ee()->TMPL->tagproper.$identifier;
 
 		$tag .= $this->fetch_dynamic_params();
-		
+
 		return ee()->cache->get('/'.$this->_sql_cache_prefix.'/'.md5($tag.$this->uri));
 	}
 
@@ -525,8 +525,8 @@ class Channel {
 	 * Fetch dynamic parameters
 	 *
 	 * Processes dynamic parameters, setting values based on $_GET/$_POST
-	 * Returns a string formatted for use in a tag and sets adds them to 
-	 * TMPL->tagparams 
+	 * Returns a string formatted for use in a tag and sets adds them to
+	 * TMPL->tagparams
 	 *
 	 * @return	string	The dynamic parameters formatted for use in a tag
 	 */
@@ -538,11 +538,11 @@ class Channel {
 		{
 			return $tag;
 		}
-		
+
 		// Swap out a placeholder for [&] and [|]
 		$placeholders = array('[*PIPE*]', '[*AMP*]');
 		$dynamic_params = explode('|', str_replace(array('[|]', '[&]'), $placeholders, ee()->TMPL->fetch_param('dynamic_parameters')));
-		
+
 		foreach ($dynamic_params as $var)
 		{
 			// We default to pipes for joining arrays
@@ -554,7 +554,7 @@ class Channel {
 				if (substr($var, -8) == '[*PIPE*]')
 				{
 						$var = substr($var, 0, -8);
-						$modifier = '|';						
+						$modifier = '|';
 				}
 				elseif (substr($var, -7) == '[*AMP*]')
 				{
@@ -569,14 +569,14 @@ class Channel {
 				{
 					// Allow arrays
 					$param_value = $this->EE->input->get_post($var);
-				
+
 					if (is_array($param_value))
 					{
-						// Drop empty, leave 0 
+						// Drop empty, leave 0
 						$param_value = array_filter($param_value, 'strlen');
 						$param_value = rtrim(implode($param_value, $modifier), $modifier);
 					}
-		
+
 					$tag .= $var.'="'.$param_value.'"';
 					ee()->TMPL->tagparams[$var] = $param_value;
 				}
@@ -584,10 +584,10 @@ class Channel {
 				{
 					// Search uses double ampersands
 					$modifier = ($modifier == '&') ? '&&' : '|';
-					
+
 					// Allow arrays
 					$param_value = $this->EE->input->get_post($var);
-				
+
 					if (is_array($param_value))
 					{
 						$param_value = array_filter($param_value, 'strlen');
@@ -726,9 +726,9 @@ class Channel {
 		/**------
 		/**  Do we allow dynamic POST variables to set parameters?
 		/**------*/
-		
+
 		$this->fetch_dynamic_params();
-		
+
 		/**------
 		/**  Parse the URL query string
 		/**------*/
@@ -5102,7 +5102,7 @@ class Channel {
 
 		if ( ! class_exists('Channel_calendar'))
 		{
-			require PATH_MOD.'channel/mod.channel_calendar.php';
+			require PATH_ADDONS.'channel/mod.channel_calendar.php';
 		}
 
 		$WC = new Channel_calendar();
@@ -5150,7 +5150,7 @@ class Channel {
 			return ee()->output->fatal_error(ee()->lang->line('must_be_logged_in'));
 		}
 
-		$class_path = PATH_MOD.'emoticon/emoticons.php';
+		$class_path = PATH_ADDONS.'emoticon/emoticons.php';
 
 		if ( ! is_file($class_path) OR ! @include_once($class_path))
 		{

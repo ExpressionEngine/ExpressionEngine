@@ -1,7 +1,7 @@
 <?php extend_template('default-nav'); ?>
 
 <h1><?=lang('sql_query_form_abbr')?> <span class="req-title"><?=lang('required_fields')?></span></h1>
-<?=form_open(cp_url('utilities/query'), 'class="settings ajax-validate"')?>
+<?=form_open(ee('CP/URL', 'utilities/query'), 'class="settings ajax-validate"')?>
 	<div class="alert inline warn">
 		<?=lang('sql_warning')?>
 	</div>
@@ -16,9 +16,9 @@
 		<div class="setting-txt col w-16">
 			<h3><?=lang('common_queries')?></h3>
 			<em><?=lang('common_queries_desc')?><br>
-				<a href="<?=cp_url('utilities/query/run-query', array('thequery' => rawurlencode(base64_encode('SHOW STATUS'))))?>">SHOW STATUS</a>,
-				<a href="<?=cp_url('utilities/query/run-query', array('thequery' => rawurlencode(base64_encode('SHOW VARIABLES'))))?>">SHOW VARIABLES</a>,
-				<a href="<?=cp_url('utilities/query/run-query', array('thequery' => rawurlencode(base64_encode('SHOW PROCESSLIST'))))?>">SHOW PROCESSLIST</a></em>
+				<a href="<?=ee('CP/URL', 'utilities/query/run-query', array('thequery' => rawurlencode(base64_encode('SHOW STATUS'))))?>">SHOW STATUS</a>,
+				<a href="<?=ee('CP/URL', 'utilities/query/run-query', array('thequery' => rawurlencode(base64_encode('SHOW VARIABLES'))))?>">SHOW VARIABLES</a>,
+				<a href="<?=ee('CP/URL', 'utilities/query/run-query', array('thequery' => rawurlencode(base64_encode('SHOW PROCESSLIST'))))?>">SHOW PROCESSLIST</a></em>
 		</div>
 	</fieldset>
 	<fieldset class="col-group required <?=form_error_class('thequery')?>">

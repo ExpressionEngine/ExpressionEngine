@@ -13,7 +13,7 @@ use EllisLab\Addons\FilePicker\FilePicker as FilePicker;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -39,7 +39,7 @@ class Settings extends Profile {
 	 */
 	public function index()
 	{
-		$this->base_url = cp_url($this->base_url, $this->query_string);
+		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
 
 		// Birthday Options
 		$birthday['days'] = array();
@@ -53,18 +53,18 @@ class Settings extends Profile {
 
 		$birthday['months'] = array(
 			''	 => lang('month'),
-			'01' => lang('cal_january'),
-			'02' => lang('cal_february'),
-			'03' => lang('cal_march'),
-			'04' => lang('cal_april'),
-			'05' => lang('cal_mayl'),
-			'06' => lang('cal_june'),
-			'07' => lang('cal_july'),
-			'08' => lang('cal_august'),
-			'09' => lang('cal_september'),
-			'10' => lang('cal_october'),
-			'11' => lang('cal_november'),
-			'12' => lang('cal_december')
+			'01' => lang('january'),
+			'02' => lang('february'),
+			'03' => lang('march'),
+			'04' => lang('april'),
+			'05' => lang('mayl'),
+			'06' => lang('june'),
+			'07' => lang('july'),
+			'08' => lang('august'),
+			'09' => lang('september'),
+			'10' => lang('october'),
+			'11' => lang('november'),
+			'12' => lang('december')
 		);
 
 		$birthday['days'][''] = lang('day');
@@ -124,17 +124,17 @@ class Settings extends Profile {
 					'desc' => 'birthday_desc',
 					'fields' => array(
 						'bday_d' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $birthday['days'],
 							'value' => $this->member->bday_d
 						),
 						'bday_m' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $birthday['months'],
 							'value' => $this->member->bday_m
 						),
 						'bday_y' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $birthday['years'],
 							'value' => $this->member->bday_y
 						)
@@ -152,7 +152,7 @@ class Settings extends Profile {
 					'desc' => 'language_desc',
 					'fields' => array(
 						'language' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => ee()->lang->language_pack_names(),
 							'value' => $this->member->language ?: ee()->config->item('deft_lang')
 						)
@@ -264,7 +264,7 @@ class Settings extends Profile {
 	protected function saveSettings($settings)
 	{
 		unset($settings['avatar_settings']);
-	
+
 		switch (ee()->input->post('avatar_picker')) {
 			case "upload":
 				$this->member->avatar_filename = $this->uploadAvatar();

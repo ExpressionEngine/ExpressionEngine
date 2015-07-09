@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -181,11 +181,11 @@ class Text_ft extends EE_Fieldtype {
 		$settings = array(
 			array(
 				'title' => 'field_max_length',
-				'desc' => 'field_max_length',
+				'desc' => 'field_max_length_desc',
 				'fields' => array(
 					'field_maxl' => array(
 						'type' => 'text',
-						'value' => ($data['field_maxl'] == '') ? 256 : $data['field_maxl']
+						'value' => ( ! isset($data['field_maxl']) OR $data['field_maxl'] == '') ? 256 : $data['field_maxl']
 					)
 				)
 			),
@@ -194,98 +194,109 @@ class Text_ft extends EE_Fieldtype {
 				'desc' => 'field_fmt_desc',
 				'fields' => array(
 					'field_fmt' => array(
-						'type' => 'dropdown',
+						'type' => 'select',
 						'choices' => $format_options,
-						'value' => $data['field_fmt'],
-					)
-				)
-			),
-			array(
-				'title' => 'field_show_fmt',
-				'desc' => 'field_show_fmt_desc',
-				'fields' => array(
-					'field_show_fmt' => array(
-						'type' => 'yes_no',
-						'value' => $data['field_show_fmt'] ?: 'n'
-					)
-				)
-			),
-			array(
-				'title' => 'field_text_direction',
-				'desc' => 'field_text_direction_desc',
-				'fields' => array(
-					'field_text_direction' => array(
-						'type' => 'dropdown',
-						'choices' => array(
-							'ltr' => lang('field_text_direction_ltr'),
-							'rtl' => lang('field_text_direction_rtl')
-						),
-						'value' => $data['field_text_direction'],
+						'value' => isset($data['field_maxl']) ? $data['field_fmt'] : 'none',
 					)
 				)
 			)
 		);
 
-		// Return a subset of the text settings for category content type
-		if ($this->content_type() == 'category')
+		if ($this->content_type() != 'grid')
 		{
-			return $settings;
+			$settings[] = array(
+				'title' => 'field_show_fmt',
+				'desc' => 'field_show_fmt_desc',
+				'fields' => array(
+					'field_show_fmt' => array(
+						'type' => 'yes_no',
+						'value' => isset($data['field_show_fmt']) ? $data['field_show_fmt'] : 'n'
+					)
+				)
+			);
 		}
 
-		// Construct the rest of the settings form for Channel...
+		$settings[] = array(
+			'title' => 'field_text_direction',
+			'desc' => 'field_text_direction_desc',
+			'fields' => array(
+				'field_text_direction' => array(
+					'type' => 'select',
+					'choices' => array(
+						'ltr' => lang('field_text_direction_ltr'),
+						'rtl' => lang('field_text_direction_rtl')
+					),
+					'value' => isset($data['field_text_direction']) ? $data['field_text_direction'] : 'ltr'
+				)
+			)
+		);
 
-		$prefix = 'text';
-		$extra = '';
-
-		if ($data['field_id'] != '')
+		if ($this->content_type() != 'category' && $this->content_type() != 'member')
 		{
-			$extra .= '<div class="notice update_content_type js_hide">';
-			$extra .= '<p>'.sprintf(
-								lang('content_type_changed'),
-								$data['field_content_type']).'</p></div>';
+			$settings[] = array(
+				'title' => 'field_content_text',
+				'desc' => 'field_content_text_desc',
+				'fields' => array(
+					'field_content_type' => array(
+						'type' => 'select',
+						'choices' => $this->_get_content_options(),
+						'value' => isset($data['field_content_type']) ? $data['field_content_type'] : ''
+					)
+				)
+			);
+
+			if ($this->content_type() != 'grid')
+			{
+				$settings[] = array(
+					'title' => 'field_content_text',
+					'desc' => 'field_content_text_desc',
+					'fields' => array(
+						'field_content_type' => array(
+							'type' => 'select',
+							'choices' => $this->_get_content_options(),
+							'value' => isset($data['field_content_type']) ? $data['field_content_type'] : ''
+						)
+					)
+				);
+			}
+
+			if ($this->content_type() != 'grid')
+			{
+				$settings[] = array(
+					'title' => 'field_tools',
+					'desc' => 'field_tools_desc',
+					'fields' => array(
+						'field_show_smileys' => array(
+							'type' => 'checkbox',
+							'scalar' => TRUE,
+							'choices' => array(
+								'y' => lang('show_smileys'),
+							),
+							'value' => isset($data['field_show_smileys']) ? $data['field_show_smileys'] : 'n'
+						),
+						'field_show_file_selector' => array(
+							'type' => 'checkbox',
+							'scalar' => TRUE,
+							'choices' => array(
+								'y' => lang('show_file_selector')
+							),
+							'value' => isset($data['field_show_file_selector']) ? $data['field_show_file_selector'] : 'n'
+						)
+					)
+				);
+			}
 		}
 
+		if ($this->content_type() == 'grid')
+		{
+			return array('field_options' => $settings);
+		}
 
-		$field_maxl = ($data['field_maxl'] == '') ? 128 : $data['field_maxl'];
-
-		ee()->table->add_row(
-			lang('field_max_length', $prefix.'field_max_length'),
-			form_input(array('id'=>$prefix.'field_max_length','name'=>'field_maxl', 'size'=>4,'value'=>set_value('field_maxl', $field_maxl)))
-		);
-
-		$this->field_formatting_row($data, $prefix);
-		$this->text_direction_row($data, $prefix);
-
-		ee()->table->add_row(
-			lang('field_content_text', $prefix.'field_content_type'),
-			form_dropdown('text_field_content_type', $this->_get_content_options(), set_value('text_field_content_type', $data['field_content_type']), 'id="'.$prefix.'field_content_type"').$extra
-		);
-
-		$this->field_show_smileys_row($data, $prefix);
-		$this->field_show_file_selector_row($data, $prefix);
-
-		ee()->javascript->output('
-		$("#text_field_content_type").change(function() {
-			$(this).nextAll(".update_content_type").show();
-		});
-		');
-	}
-
-	// --------------------------------------------------------------------
-
-	public function grid_display_settings($data)
-	{
-		return array(
-			$this->grid_field_formatting_row($data),
-			$this->grid_dropdown_row(
-				lang('field_content_text'),
-				'field_content_type',
-				$this->_get_content_options(),
-				isset($data['field_content_type']) ? $data['field_content_type'] : NULL
-			),
-			$this->grid_text_direction_row($data),
-			$this->grid_max_length_row($data)
-		);
+		return array('field_options_text' => array(
+			'label' => 'field_options',
+			'group' => 'text',
+			'settings' => $settings
+		));
 	}
 
 	// --------------------------------------------------------------------
@@ -326,7 +337,7 @@ class Text_ft extends EE_Fieldtype {
 
 	function settings_modify_column($data)
 	{
-		$settings = unserialize(base64_decode($data['field_settings']));
+		$settings = $data['field_settings'];
 		$field_content_type = isset($settings['field_content_type']) ? $settings['field_content_type'] : 'all';
 
 		return $this->_get_column_settings($field_content_type, $data['field_id']);

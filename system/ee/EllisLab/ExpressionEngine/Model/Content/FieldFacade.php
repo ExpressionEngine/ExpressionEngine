@@ -66,8 +66,15 @@ class FieldFacade {
 		return $this->timezone;
 	}
 
-	// sets the raw values as in the db. data coming from
-	// the field post array should pass through setValue
+	protected function ensurePopulatedDefaults()
+	{
+		if ($callback = $this->getItem('populateCallback'))
+		{
+			$this->setItem('populateCallback', NULL);
+			call_user_func($callback, $this);
+		}
+	}
+
 	public function setData($data)
 	{
 		$this->data = $data;
@@ -75,6 +82,7 @@ class FieldFacade {
 
 	public function getData()
 	{
+		$this->ensurePopulatedDefaults();
 		return $this->data;
 	}
 
@@ -95,7 +103,12 @@ class FieldFacade {
 
 	public function getItem($field)
 	{
-		return $this->metadata[$field];
+		if (array_key_exists($field, $this->metadata))
+		{
+			return $this->metadata[$field];
+		}
+
+		return NULL;
 	}
 
 	public function setItem($field, $value)
@@ -143,11 +156,20 @@ class FieldFacade {
 		return TRUE;
 	}
 
-	public function save()
+	public function save($model = NULL)
+	{
+		$this->ensurePopulatedDefaults();
+
+		$value = $this->data;
+		$this->initField();
+		return $this->data = ee()->api_channel_fields->apply('save', array($value, $model));
+	}
+
+	public function postSave()
 	{
 		$value = $this->data;
 		$this->initField();
-		return $this->data = ee()->api_channel_fields->apply('save', array($value));
+		return $this->data = ee()->api_channel_fields->apply('post_save', array($value));
 	}
 
 	public function getForm()
@@ -173,21 +195,34 @@ class FieldFacade {
 		return $out;
 	}
 
+	public function validateSettingsForm($settings)
+	{
+		$this->initField();
+		return ee()->api_channel_fields->apply('validate_settings', array($settings));
+	}
+
 	public function saveSettingsForm($data)
 	{
 		$this->initField();
 		return ee()->api_channel_fields->apply('save_settings', array($data));
 	}
 
+	/**
+	 * Fires post_save_settings on the fieldtype
+	 */
+	public function postSaveSettings($data)
+	{
+		$this->initField();
+		return ee()->api_channel_fields->apply('post_save_settings', array($data));
+	}
+
 	public function getStatus()
 	{
 		$data = $this->initField();
-		// initField can sometimes return a string if the field has a
-		// string_override key.
 
 		$field_value = set_value(
 			$this->getName(),
-			is_string($data) ? $data : $data['field_data']
+			$data['field_data']
 		);
 
 		return ee()->api_channel_fields->apply('get_field_status', array($field_value));
@@ -204,6 +239,8 @@ class FieldFacade {
 
 	public function initField()
 	{
+		$this->ensurePopulatedDefaults();
+
 		$data = $this->setupField();
 
 		ee()->api_channel_fields->setup_handler($data['field_id']);

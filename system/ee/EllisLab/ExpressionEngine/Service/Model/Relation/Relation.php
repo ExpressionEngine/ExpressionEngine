@@ -11,7 +11,7 @@ use EllisLab\ExpressionEngine\Service\Model\MetaDataReader;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -36,7 +36,10 @@ abstract class Relation {
 	protected $from;
 	protected $to;
 	protected $name;
-	protected $options;
+	protected $is_weak;
+
+	protected $to_table;
+	protected $from_table;
 
 	protected $from_key;
 	protected $to_key;
@@ -53,6 +56,7 @@ abstract class Relation {
 		$this->to = $to;
 		$this->name = $name;
 
+		$this->is_weak = FALSE;
 		$this->processOptions($options);
 	}
 
@@ -86,6 +90,24 @@ abstract class Relation {
 	 *
 	 */
 	abstract public function canSaveAcross();
+
+	/**
+	 * Insert a database link between the model and targets
+	 */
+	abstract public function insert(Model $source, $targets);
+
+	/**
+	 * Drop the database link between the model and targets, potentially
+	 * triggering a soft delete.
+	 */
+	abstract public function drop(Model $source, $targets = NULL);
+
+	/**
+	 * Set the relation. Should do the minimum viable sql modifications required
+	 * to maintain consistency.
+	 */
+	abstract public function set(Model $source, $targets);
+
 
 	/**
 	 *
@@ -181,6 +203,11 @@ abstract class Relation {
 	 */
 	protected function processOptions($options)
 	{
+		if (isset($options['weak']))
+		{
+			$this->is_weak = (bool) $options['weak'];
+		}
+
 		if (isset($options['from_key']))
 		{
 			$this->from_key = $options['from_key'];
@@ -202,5 +229,15 @@ abstract class Relation {
 
 		$this->from_table = $this->from->getTableForField($from);
 		$this->to_table = $this->to->getTableForField($to);
+
+		if ( ! $this->from_table)
+		{
+			throw new \Exception('Cannot find table for field ' . $from . ' on '. $this->from->getClass());
+		}
+
+		if ( ! $this->to_table)
+		{
+			throw new \Exception('Cannot find table for field '.$to.' on '.$this->to->getClass(). ' from '.$this->from->getClass());
+		}
 	}
 }

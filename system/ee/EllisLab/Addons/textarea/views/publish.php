@@ -36,7 +36,7 @@ if (isset($settings['field_show_formatting_btns']) && $settings['field_show_form
 		<?php endif ?>
 
 		<?php if ($smileys_enabled && isset($settings['field_show_smileys']) && $settings['field_show_smileys'] == 'y'): ?>
-			<div class="emoji-wrap">
+			<div class="emoji-wrap hidden">
 				<?=$smileys?>
 			</div>
 		<?php endif; ?>

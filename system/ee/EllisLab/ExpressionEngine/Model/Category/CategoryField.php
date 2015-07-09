@@ -10,7 +10,7 @@ use EllisLab\ExpressionEngine\Model\Content\FieldModel;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -66,9 +66,9 @@ class CategoryField extends FieldModel {
 
 	public function getSettingsValues()
 	{
-		$values = parent::getValues();
+		$values = parent::getSettingsValues();
 
-		$values['field_fmt'] = $this->getProperty('field_default_fmt');
+		$this->getField()->setFormat($this->getProperty('field_default_fmt'));
 		$values['field_settings']['field_show_file_selector'] = 'n';
 
 		return $values;

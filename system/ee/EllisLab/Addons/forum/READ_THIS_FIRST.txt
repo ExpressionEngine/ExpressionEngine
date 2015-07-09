@@ -2,15 +2,15 @@ Welcome to the ExpressionEngine Discussion Forum Module
 
 
 Forum installation instructions can be found online by visiting this page:
-http://ellislab.com/expressionengine/user-guide/modules/forum/forum_installation.html
+https://ellislab.com/expressionengine/user-guide/modules/forum/forum_installation.html
 
 
 If you are upgrading from an older version please follow these instructions:
-http://ellislab.com/expressionengine/user-guide/modules/forum/forum_update.html
+https://ellislab.com/expressionengine/user-guide/modules/forum/forum_update.html
 
 
 The forum documentation can be found here:
-http://ellislab.com/expressionengine/user-guide/modules/forum/index.html
+https://ellislab.com/expressionengine/user-guide/modules/forum/index.html
 
 
 Enjoy...

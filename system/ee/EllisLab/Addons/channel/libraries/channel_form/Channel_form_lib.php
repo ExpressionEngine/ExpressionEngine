@@ -7,7 +7,7 @@
  * @author		EllisLab Dev Team,
  * 		- Original Development by Barrett Newton -- http://barrettnewton.com
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -15,7 +15,7 @@
 
 // ------------------------------------------------------------------------
 
-require_once PATH_MOD.'channel/libraries/channel_form/Channel_form_exception.php';
+require_once PATH_ADDONS.'channel/libraries/channel_form/Channel_form_exception.php';
 
 /**
  * ExpressionEngine Channel From Module Library
@@ -109,21 +109,6 @@ class Channel_form_lib
 	 */
 	public function entry_form()
 	{
-		// -------------------------------------------
-		// 'safecracker_entry_form_tagdata_start' hook.
-		//  - Developers, if you want to modify the $this object remember
-		//	to use a reference on func call.
-		// -------------------------------------------
-
-		if (ee()->extensions->active_hook('safecracker_entry_form_absolute_start') === TRUE)
-		{
-			ee()->load->library('logger');
-			ee()->logger->deprecated_hook('safecracker_entry_form_absolute_start', '2.7', 'channel_form_entry_form_absolute_start');
-
-			ee()->extensions->call('safecracker_entry_form_absolute_start');
-			if (ee()->extensions->end_script === TRUE) return;
-		}
-
 		// -------------------------------------------
 		// 'channel_form_entry_form_tagdata_start' hook.
 		//  - Developers, if you want to modify the $this object remember
@@ -280,21 +265,6 @@ class Channel_form_lib
 					}
 				}
 			}
-		}
-
-		// -------------------------------------------
-		// 'safecracker_entry_form_tagdata_start' hook.
-		//  - Developers, if you want to modify the $this object remember
-		//	to use a reference on func call.
-		// -------------------------------------------
-
-		if (ee()->extensions->active_hook('safecracker_entry_form_tagdata_start') === TRUE)
-		{
-			ee()->load->library('logger');
-			ee()->logger->deprecated_hook('safecracker_entry_form_tagdata_start', '2.7', 'channel_form_entry_form_tagdata_start');
-
-			ee()->TMPL->tagdata = ee()->extensions->call('safecracker_entry_form_tagdata_start', ee()->TMPL->tagdata, $this);
-			if (ee()->extensions->end_script === TRUE) return;
 		}
 
 		// -------------------------------------------
@@ -826,22 +796,6 @@ class Channel_form_lib
 
 		$return = ee()->functions->insert_action_ids($return);
 
-
-		// -------------------------------------------
-		// 'safecracker_entry_form_tagdata_end' hook.
-		//  - Developers, if you want to modify the $this object remember
-		//	to use a reference on func call.
-		// -------------------------------------------
-
-		if (ee()->extensions->active_hook('safecracker_entry_form_tagdata_end') === TRUE)
-		{
-			ee()->load->library('logger');
-			ee()->logger->deprecated_hook('safecracker_entry_form_tagdata_end', '2.7', 'channel_form_entry_form_tagdata_end');
-
-			$return = ee()->extensions->call('safecracker_entry_form_tagdata_end', $return, $this);
-			if (ee()->extensions->end_script === TRUE) return;
-		}
-
 		// -------------------------------------------
 		// 'channel_form_entry_form_tagdata_end' hook.
 		//  - Developers, if you want to modify the $this object remember
@@ -1370,21 +1324,6 @@ GRID_FALLBACK;
 		$this->error_handling = $this->_meta['error_handling'];
 
 		// -------------------------------------------
-		// 'safecracker_submit_entry_start' hook.
-		//  - Developers, if you want to modify the $this object remember
-		//	to use a reference on func call.
-		// -------------------------------------------
-
-		if (ee()->extensions->active_hook('safecracker_submit_entry_start') === TRUE)
-		{
-			ee()->load->library('logger');
-			ee()->logger->deprecated_hook('safecracker_submit_entry_start', '2.7', 'channel_form_submit_entry_start');
-
-			ee()->extensions->call('safecracker_submit_entry_start', $this);
-			if (ee()->extensions->end_script === TRUE) return;
-		}
-
-		// -------------------------------------------
 		// 'channel_form_submit_entry_start' hook.
 		//  - Developers, if you want to modify the $this object remember
 		//	to use a reference on func call.
@@ -1759,21 +1698,6 @@ GRID_FALLBACK;
 		}
 
 		$this->unload_session_override();
-
-		// -------------------------------------------
-		// 'safecracker_submit_entry_end' hook.
-		//  - Developers, if you want to modify the $this object remember
-		//	to use a reference on func call.
-		// -------------------------------------------
-
-		if (ee()->extensions->active_hook('safecracker_submit_entry_end') === TRUE)
-		{
-			ee()->load->library('logger');
-			ee()->logger->deprecated_hook('safecracker_submit_entry_end', '2.7', 'channel_form_submit_entry_end');
-
-			ee()->extensions->call('safecracker_submit_entry_end', $this);
-			if (ee()->extensions->end_script === TRUE) return;
-		}
 
 		// -------------------------------------------
 		// 'channel_form_submit_entry_end' hook.
@@ -3224,7 +3148,7 @@ GRID_FALLBACK;
 
 		if ( ! class_exists('Channel_from_session'))
 		{
-			require_once PATH_MOD.'channel/libraries/channel_form/Channel_form_session.php';
+			require_once PATH_ADDONS.'channel/libraries/channel_form/Channel_form_session.php';
 		}
 
 		ee()->session = new Channel_form_session(array(

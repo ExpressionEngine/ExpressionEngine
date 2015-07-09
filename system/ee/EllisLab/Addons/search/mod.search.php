@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -1345,7 +1345,7 @@ class Search {
 
 		if ( ! class_exists('Channel'))
 		{
-			require PATH_MOD.'channel/mod.channel.php';
+			require PATH_ADDONS.'channel/mod.channel.php';
 		}
 
 		unset(ee()->TMPL->var_single['auto_path']);

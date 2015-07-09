@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -61,7 +61,7 @@ class Notifications {
 						'entry_title'		=> $e->row('title'),
 						'entry_url'			=> reduce_double_slashes($c->row('channel_url').'/'.$e->row('url_title')),
 						'comment_url'		=> reduce_double_slashes($c->row('comment_url').'/'.$e->row('url_title')),
-						'cp_edit_entry_url'	=> cp_url(
+						'cp_edit_entry_url'	=> ee('CP/URL',
 												'content_publish/entry_form',
 												array(
 													'site_id'		=> $e->row('site_id'),

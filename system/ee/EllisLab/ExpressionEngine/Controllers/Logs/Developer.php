@@ -13,7 +13,7 @@ use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -50,7 +50,7 @@ class Developer extends Logs {
 			$this->delete('DeveloperLog', lang('developer_log'));
 			if (strtolower(ee()->input->post('delete')) == 'all')
 			{
-				return ee()->functions->redirect(cp_url('logs/developer'));
+				return ee()->functions->redirect(ee('CP/URL', 'logs/developer'));
 			}
 		}
 
@@ -189,7 +189,7 @@ class Developer extends Logs {
 					$description .= sprintf(
 						lang('deprecated_template'),
 						'<code>exp:'.strtolower($log->addon_module).':'.$log->addon_method.'</code>',
-						'<a href="'.cp_url('design/edit_template/'.$log->template_id).'">'.$log->template_group.'/'.$log->template_name.'</a>'
+						'<a href="'.ee('CP/URL', 'design/edit_template/'.$log->template_id).'">'.$log->template_group.'/'.$log->template_name.'</a>'
 					);
 
 					if ($log->snippets)
@@ -198,7 +198,7 @@ class Developer extends Logs {
 
 						foreach ($snippets as &$snip)
 						{
-							$snip = '<a href="'.cp_url('design/snippets_edit', array('snippet' => $snip)).'">{'.$snip.'}</a>';
+							$snip = '<a href="'.ee('CP/URL', 'design/snippets_edit', array('snippet' => $snip)).'">{'.$snip.'}</a>';
 						}
 
 						$description .= '<br>';

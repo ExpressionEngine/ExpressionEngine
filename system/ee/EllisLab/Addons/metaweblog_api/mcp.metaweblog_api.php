@@ -1,7 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 
 /**
  * ExpressionEngine - by EllisLab
@@ -9,7 +9,7 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -51,7 +51,7 @@ class Metaweblog_api_mcp {
 	 */
 	function index()
 	{
-		$base_url = new URL('addons/settings/metaweblog_api', ee()->session->session_id());
+		$base_url = ee('CP/URL', 'addons/settings/metaweblog_api');
 
 		$api_url = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->cp->fetch_action_id('Metaweblog_api', 'incoming');
 
@@ -98,7 +98,7 @@ class Metaweblog_api_mcp {
 				array(
 					'toolbar_items' => array(
 						'edit' => array(
-							'href' => cp_url('addons/settings/metaweblog_api/modify', array('id' => $metaweblog->metaweblog_id)),
+							'href' => ee('CP/URL', 'addons/settings/metaweblog_api/modify', array('id' => $metaweblog->metaweblog_id)),
 							'title' => lang('edit')
 						)
 					)
@@ -150,7 +150,7 @@ class Metaweblog_api_mcp {
 
 		if ($id == '')
 		{
-			ee()->functions->redirect(cp_url('addons/settings/metaweblog_api'));
+			ee()->functions->redirect(ee('CP/URL', 'addons/settings/metaweblog_api'));
 		}
 
 		$channels = array();
@@ -171,18 +171,18 @@ class Metaweblog_api_mcp {
 		if ($id == 'new')
 		{
 			$create = TRUE;
-			$base_url = cp_url('addons/settings/metaweblog_api/create');
+			$base_url = ee('CP/URL', 'addons/settings/metaweblog_api/create');
 		}
 		else
 		{
 			$create = FALSE;
-			$base_url = cp_url('addons/settings/metaweblog_api/modify/' . $id);
+			$base_url = ee('CP/URL', 'addons/settings/metaweblog_api/modify/' . $id);
 
 			$query = ee()->db->get_where('metaweblog_api', array('metaweblog_id' => $id));
 
 			if ($query->num_rows() == 0)
 			{
-				ee()->functions->redirect(cp_url('addons/settings/metaweblog_api'));
+				ee()->functions->redirect(ee('CP/URL', 'addons/settings/metaweblog_api'));
 			}
 
 			foreach($query->row_array() as $name => $value)
@@ -281,7 +281,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_entry_status_desc',
 			'fields' => array(
 				'entry_status' => array(
-					'type' => 'dropdown',
+					'type' => 'select',
 					'choices' => array(
 						'null' => lang('do_not_set'),
 						'open' => lang('open'),
@@ -301,7 +301,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_channel_desc',
 			'fields' => array(
 				'channel_id' => array(
-					'type' => 'dropdown',
+					'type' => 'select',
 					'choices' => $channels
 				)
 			)
@@ -317,7 +317,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_excerpt_field_desc',
 			'fields' => array(
 				'excerpt_field_id' => array(
-					'type' => 'dropdown',
+					'type' => 'select',
 					'choices' => array(
 						'0' => lang('none'),
 					)
@@ -335,7 +335,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_content_field_desc',
 			'fields' => array(
 				'content_field_id' => array(
-					'type' => 'dropdown',
+					'type' => 'select',
 					'choices' => array(
 						'0' => lang('none'),
 					)
@@ -353,7 +353,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_more_field_desc',
 			'fields' => array(
 				'more_field_id' => array(
-					'type' => 'dropdown',
+					'type' => 'select',
 					'choices' => array(
 						'0' => lang('none'),
 					)
@@ -371,7 +371,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_keywords_field_desc',
 			'fields' => array(
 				'keywords_field_id' => array(
-					'type' => 'dropdown',
+					'type' => 'select',
 					'choices' => array(
 						'0' => lang('none'),
 					)
@@ -389,7 +389,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_upload_dir_desc',
 			'fields' => array(
 				'upload_dir' => array(
-					'type' => 'dropdown',
+					'type' => 'select',
 					'choices' => $upload_directories
 				)
 			)
@@ -498,7 +498,7 @@ class Metaweblog_api_mcp {
 				->addToBody($message)
 				->defer();
 
-			ee()->functions->redirect(cp_url('addons/settings/metaweblog_api'));
+			ee()->functions->redirect(ee('CP/URL', 'addons/settings/metaweblog_api'));
 		}
 	}
 

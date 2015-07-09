@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -436,7 +436,7 @@ class Simple_commerce {
 		*/
 			if (ee()->extensions->active_hook('simple_commerce_evaluate_ipn_response') === TRUE)
 			{
-				$result = ee()->extensions->universal_call('simple_commerce_evaluate_ipn_response', $this, $result);
+				$result = ee()->extensions->call('simple_commerce_evaluate_ipn_response', $this, $result);
 				if (ee()->extensions->end_script === TRUE) return;
 			}
 		/*
@@ -732,7 +732,7 @@ class Simple_commerce {
 		*/
 			if (ee()->extensions->active_hook('simple_commerce_perform_actions_start') === TRUE)
 			{
-				ee()->extensions->universal_call('simple_commerce_perform_actions_start', $this, $query->row());
+				ee()->extensions->call('simple_commerce_perform_actions_start', $this, $query->row());
 				if (ee()->extensions->end_script === TRUE) return;
 			}
 		/*
@@ -873,7 +873,7 @@ class Simple_commerce {
 		*/
 			if (ee()->extensions->active_hook('simple_commerce_perform_actions_end') === TRUE)
 			{
-				ee()->extensions->universal_call('simple_commerce_perform_actions_end', $this, $query->row());
+				ee()->extensions->call('simple_commerce_perform_actions_end', $this, $query->row());
 				if (ee()->extensions->end_script === TRUE) return;
 			}
 		/*

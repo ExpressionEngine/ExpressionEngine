@@ -11,7 +11,7 @@ use EllisLab\ExpressionEngine\Service\Model\Association\ToOne;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -36,7 +36,6 @@ class BelongsTo extends Relation {
 	public function createAssociation(Model $source)
 	{
 		return new ToOne($source, $this);
-		//return new Association\BelongsTo($source, $this);
 	}
 
 	/**
@@ -58,6 +57,32 @@ class BelongsTo extends Relation {
 	}
 
 	/**
+	* Insert a database link between the model and targets
+	*/
+	public function insert(Model $source, $targets)
+	{
+		// nada;
+	}
+
+	/**
+	* Drop the database link between the model and targets, potentially
+	* triggering a soft delete.
+	*/
+	public function drop(Model $source, $targets = NULL)
+	{
+		// nada;
+	}
+
+	/**
+	* Set the relationship
+	*/
+	public function set(Model $source, $targets)
+	{
+		// nada;
+	}
+
+
+	/**
 	 *
 	 */
 	public function linkIds(Model $source, Model $target)
@@ -74,7 +99,14 @@ class BelongsTo extends Relation {
 	{
 		list($from, $_) = $this->getKeys();
 
-		$source->$from = NULL;
+		if ($this->is_weak)
+		{
+			$source->$from = 0;
+		}
+		else
+		{
+			$source->$from = NULL;
+		}
 	}
 
 	/**

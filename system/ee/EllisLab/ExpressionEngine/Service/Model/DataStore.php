@@ -13,7 +13,7 @@ use EllisLab\ExpressionEngine\Service\Database\Database;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -190,7 +190,7 @@ class DataStore {
 		{
 			// TODO use name as the model name and attempt to
 			// look it up in the other direction
-			throw new \Exception("Relationship {$name} not found in model definition.");
+			throw new \Exception("Relationship {$name} not found in model {$model_name}");
 		}
 
 		$options = array_merge(
@@ -304,6 +304,12 @@ class DataStore {
 		return $worker->run();
 	}
 
+	/**
+	 * Create a model instance from the di object
+	 *
+	 * @param String $name Model name
+	 * @return
+	 */
 	protected function newModelFromAlias($name)
 	{
 		$class = $this->expandModelAlias($name);

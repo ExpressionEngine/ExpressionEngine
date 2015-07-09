@@ -10,7 +10,7 @@ use EllisLab\ExpressionEngine\Model\Content\FieldModel;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -32,8 +32,22 @@ class ChannelField extends FieldModel {
 	protected static $_primary_key = 'field_id';
 	protected static $_table_name = 'channel_fields';
 
+	protected static $_typed_columns = array(
+		'field_pre_populate'   => 'boolString',
+		'field_pre_channel_id' => 'int',
+		'field_pre_field_id'   => 'int',
+		'field_ta_rows'        => 'int',
+		'field_maxl'           => 'int',
+		'field_required'       => 'boolString',
+		'field_search'         => 'boolString',
+		'field_is_hidden'      => 'boolString',
+		'field_show_fmt'       => 'boolString',
+		'field_order'          => 'int',
+	);
+
 	protected static $_relationships = array(
 		'ChannelFieldGroup' => array(
+			'weak' => TRUE,
 			'type' => 'belongsTo'
 		),
 		'Channel' => array(
@@ -41,6 +55,24 @@ class ChannelField extends FieldModel {
 			'from_key' => 'group_id',
 			'to_key' => 'field_group'
 		),
+	);
+
+	protected static $_validation_rules = array(
+		'site_id'              => 'required|integer',
+		'group_id'             => 'required|integer',
+		'field_name'           => 'required|unique[site_id]',
+		'field_label'          => 'required',
+	//	'field_list_items'     => 'required',
+		'field_pre_populate'   => 'enum[y,n]',
+		'field_pre_channel_id' => 'integer',
+		'field_pre_field_id'   => 'integer',
+		'field_ta_rows'        => 'integer',
+		'field_maxl'           => 'integer',
+		'field_required'       => 'enum[y,n]',
+		'field_search'         => 'enum[y,n]',
+		'field_is_hidden'      => 'enum[y,n]',
+		'field_show_fmt'       => 'enum[y,n]',
+		'field_order'          => 'integer',
 	);
 
 	protected $field_id;
@@ -75,6 +107,31 @@ class ChannelField extends FieldModel {
 	{
 		return 'channel_data';
 	}
+
+	protected function getContentType()
+	{
+		return 'channel';
+	}
+
+	public function getSettingsValues()
+	{
+		$values = parent::getSettingsValues();
+
+		$values['field_settings'] = $this->getProperty('field_settings') ?: array();
+
+		return $values;
+	}
+
+	public function set(array $data = array())
+	{
+		parent::set($data);
+
+		$field = $this->getField($this->getSettingsValues());
+		$this->setProperty('field_settings', $field->saveSettingsForm($data));
+
+		return $this;
+	}
+
 
 	public function set__field_settings($settings)
 	{

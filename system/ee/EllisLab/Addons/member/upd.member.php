@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -120,12 +120,12 @@ class Member_upd {
 			$directory->save();
 
 			// Insert Files
-			$files = scandir($dir['server_path']); 
+			$files = scandir($dir['server_path']);
 
 			foreach ($files as $filename)
 			{
 				$path = $dir['server_path'] . $filename;
-				
+
 				if ($file != 'index.html' && is_file($path))
 				{
 					$time = time();
@@ -206,7 +206,7 @@ class Member_upd {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Update Upload Directories 
+	 * Update Upload Directories
 	 *
 	 * @access	public
 	 * @return	bool

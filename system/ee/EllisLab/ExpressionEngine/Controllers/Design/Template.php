@@ -6,7 +6,7 @@ use \EE_Route;
 use ZipArchive;
 use EllisLab\ExpressionEngine\Controllers\Design\AbstractDesign as AbstractDesignController;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Model\Template\Template as TemplateModel;
 
 /**
@@ -15,7 +15,7 @@ use EllisLab\ExpressionEngine\Model\Template\Template as TemplateModel;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -81,7 +81,7 @@ class Template extends AbstractDesignController {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => cp_url('design/template/create/' . $group_name),
+			'base_url' => ee('CP/URL', 'design/template/create/' . $group_name),
 			'buttons' => array(
 				array(
 					'name' => 'submit',
@@ -115,7 +115,7 @@ class Template extends AbstractDesignController {
 						'desc' => 'template_type_desc',
 						'fields' => array(
 							'template_type' => array(
-								'type' => 'dropdown',
+								'type' => 'select',
 								'choices' => $this->getTemplateTypes()
 							)
 						)
@@ -125,7 +125,7 @@ class Template extends AbstractDesignController {
 						'desc' => 'duplicate_existing_template_desc',
 						'fields' => array(
 							'template_id' => array(
-								'type' => 'dropdown',
+								'type' => 'select',
 								'choices' => $existing_templates
 							)
 						)
@@ -182,11 +182,11 @@ class Template extends AbstractDesignController {
 
 			if (ee()->input->post('submit') == 'edit')
 			{
-				ee()->functions->redirect(cp_url('design/template/edit/' . $template->template_id));
+				ee()->functions->redirect(ee('CP/URL', 'design/template/edit/' . $template->template_id));
 			}
 			else
 			{
-				ee()->functions->redirect(cp_url('design/manager/' . $group->group_name));
+				ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())
@@ -291,10 +291,10 @@ class Template extends AbstractDesignController {
 			if (ee()->input->post('submit') == 'finish')
 			{
 				ee()->session->set_flashdata('template_id', $template->template_id);
-				ee()->functions->redirect(cp_url('design/manager/' . $group->group_name));
+				ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
 			}
 
-			ee()->functions->redirect(cp_url('design/template/edit/' . $template->template_id));
+			ee()->functions->redirect(ee('CP/URL', 'design/template/edit/' . $template->template_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -308,7 +308,7 @@ class Template extends AbstractDesignController {
 		$author = $template->getLastAuthor();
 
 		$vars = array(
-			'form_url' => cp_url('design/template/edit/' . $template_id),
+			'form_url' => ee('CP/URL', 'design/template/edit/' . $template_id),
 			'settings' => $this->renderSettingsPartial($template),
 			'access' => $this->renderAccessPartial($template),
 			'template' => $template,
@@ -335,8 +335,8 @@ class Template extends AbstractDesignController {
 
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), $group->group_name . '/' . $template->template_name);
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('design') => lang('template_manager'),
-			cp_url('design/manager/' . $group->group_name) => sprintf(lang('breadcrumb_group'), $group->group_name)
+			ee('CP/URL', 'design')->compile() => lang('template_manager'),
+			ee('CP/URL', 'design/manager/' . $group->group_name)->compile() => sprintf(lang('breadcrumb_group'), $group->group_name)
 		);
 
 		// Supress browser XSS check that could cause obscure bug after saving
@@ -425,7 +425,7 @@ class Template extends AbstractDesignController {
 				->defer();
 
 			ee()->session->set_flashdata('template_id', $template->template_id);
-			ee()->functions->redirect(cp_url('design/manager/' . $group->group_name));
+			ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -434,11 +434,11 @@ class Template extends AbstractDesignController {
 				->withTitle(lang('update_template_error'))
 				->addToBody(lang('update_template_error_desc'))
 				->defer();
-			ee()->functions->redirect(cp_url('design/template/edit/' . $template->template_id));
+			ee()->functions->redirect(ee('CP/URL', 'design/template/edit/' . $template->template_id));
 		}
 
 		$vars = array(
-			'form_url' => cp_url('design/template/settings/' . $template_id),
+			'form_url' => ee('CP/URL', 'design/template/settings/' . $template_id),
 			'settings' => $this->renderSettingsPartial($template),
 			'access' => $this->renderAccessPartial($template),
 		);
@@ -459,7 +459,7 @@ class Template extends AbstractDesignController {
 			->filter('template_data', 'LIKE', '%' . $search_terms . '%')
 			->all();
 
-		$base_url = new URL('design/template/search', ee()->session->session_id());
+		$base_url = ee('CP/URL', 'design/template/search');
 
 		$table = $this->buildTableFromTemplateCollection($templates, TRUE);
 
@@ -482,7 +482,7 @@ class Template extends AbstractDesignController {
 			$search_terms
 		);
 
-		ee()->javascript->set_global('template_settings_url', cp_url('design/template/settings/###'));
+		ee()->javascript->set_global('template_settings_url', ee('CP/URL', 'design/template/settings/###'));
 		ee()->javascript->set_global('lang.remove_confirm', lang('template') . ': <b>### ' . lang('templates') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
@@ -518,13 +518,16 @@ class Template extends AbstractDesignController {
 			->filter('group_id', '!=', 1)
 			->all();
 
-		$allowed_member_groups = ee()->input->post('allowed_member_groups');
+		$allowed_member_groups = ee()->input->post('allowed_member_groups') ?: array();
+
+
 		$no_access = $member_groups->filter(function($group) use ($allowed_member_groups)
 		{
 			return ! in_array($group->group_id, $allowed_member_groups);
 		});
 
-		$template->setNoAccess($no_access);
+		$template->NoAccess = $no_access;
+
 		// Route
 		$route = $template->getTemplateRoute();
 

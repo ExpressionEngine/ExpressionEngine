@@ -8,7 +8,7 @@ namespace EllisLab\ExpressionEngine\Library\CP;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -143,7 +143,7 @@ class GridInput extends Table {
 		{
 			$row['columns'] = array_map(function($field) use ($grid, $row)
 			{
-				if (isset($row['attrs']['row_id']) && is_numeric(isset($row['attrs']['row_id'])))
+				if (isset($row['attrs']['row_id']) && is_numeric($row['attrs']['row_id']))
 				{
 					$row_id = 'row_id_'.$row['attrs']['row_id'];
 				}

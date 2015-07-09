@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -388,11 +388,7 @@ class Date_ft extends EE_Fieldtype {
 				$localize = $date[1];
 			}
 
-			return ee()->localize->format_date(
-				$params['format'],
-				$date[0],
-				$localize
-			);
+			return ee()->TMPL->process_date($date[0], $params, FALSE, $localize);
 		}
 
 		return $date[0];
@@ -403,11 +399,17 @@ class Date_ft extends EE_Fieldtype {
 	public function grid_display_settings($data)
 	{
 		return array(
-			$this->grid_checkbox_row(
-				lang('grid_date_localized'),
-				'localize',
-				'localize',
-				isset($data['localize']) ? $data['localize'] : TRUE
+			'field_options' => array(
+				array(
+					'title' => 'localize_date',
+					'desc' => sprintf(lang('localize_date_desc'), ee('CP/URL', 'settings/general')),
+					'fields' => array(
+						'localize' => array(
+							'type' => 'yes_no',
+							'value' => isset($data['localize']) ? $data['localize'] : TRUE,
+						)
+					)
+				)
 			)
 		);
 	}

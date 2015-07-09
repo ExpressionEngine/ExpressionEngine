@@ -5,6 +5,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Addons;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
+use Michelf\MarkdownExtra;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
 /**
@@ -13,7 +14,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -59,6 +60,7 @@ class Addons extends CP_Controller {
 
 		ee()->load->library('addons');
 		ee()->load->helper(array('file', 'directory'));
+		ee()->legacy_api->instantiate('channel_fields');
 	}
 
 	// --------------------------------------------------------------------
@@ -115,9 +117,21 @@ class Addons extends CP_Controller {
 		$filter_base_url['first'] = clone $this->base_url;
 		$filter_base_url['first']->addQueryStringVariables($third_filters->values());
 
+		// Retain the third party page
+		if (ee()->input->get('third_page'))
+		{
+			$filter_base_url['first']->setQueryStringVariable('third_page', ee()->input->get('third_page'));
+		}
+
 		// When filtering the third party table keep the first party filter values
 		$filter_base_url['third'] = clone $this->base_url;
 		$filter_base_url['third']->addQueryStringVariables($first_filters->values());
+
+		// Retain the third party page
+		if (ee()->input->get('first_page'))
+		{
+			$filter_base_url['third']->setQueryStringVariable('first_page', ee()->input->get('first_page'));
+		}
 
 		ee()->view->filters = array(
 			'first' => $first_filters->render($filter_base_url['first']),
@@ -203,6 +217,11 @@ class Addons extends CP_Controller {
 
 		foreach (array('first', 'third') as $party)
 		{
+			if ( ! count($addons[$party]))
+			{
+				continue;
+			}
+
 			$data = array();
 
 			// Setup the Table
@@ -221,7 +240,9 @@ class Addons extends CP_Controller {
 			$table->setColumns(
 				array(
 					'addon',
-					'version',
+					'version' => array(
+						'encode' => FALSE
+					),
 					'manage' => array(
 						'type'	=> Table::COL_TOOLBAR
 					),
@@ -264,7 +285,7 @@ class Addons extends CP_Controller {
 
 				$toolbar = array(
 					'install' => array(
-						'href' => cp_url('addons/install/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
+						'href' => ee('CP/URL', 'addons/install/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
 						'title' => lang('install'),
 						'class' => 'add'
 					)
@@ -290,12 +311,17 @@ class Addons extends CP_Controller {
 							'href' => $info['manual_url'],
 							'title' => lang('manual'),
 						);
+
+						if ($info['manual_external'])
+						{
+							$toolbar['manual']['target'] = '_external';
+						}
 					}
 
 					if (isset($info['update']))
 					{
 						$toolbar['txt-only'] = array(
-							'href' => cp_url('addons/update/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
+							'href' => ee('CP/URL', 'addons/update/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
 							'title' => strtolower(lang('update')),
 							'class' => 'add',
 							'content' => sprintf(lang('update_to_version'), $this->formatVersionNumber($info['update']))
@@ -338,18 +364,20 @@ class Addons extends CP_Controller {
 
 		$vars['form_url'] = $this->base_url;
 
-		// Set search results heading
-		if ( ! empty($vars['tables']['first']['search']))
+		// Set search results heading (first and third)
+		if (ee()->input->get_post('search'))
 		{
-			$search_header = sprintf(
-				lang('search_results_heading'),
-				$vars['tables']['first']['total_rows'],
-				$vars['tables']['first']['search']
-			);
-
 			ee()->view->cp_heading = array(
-				'first' => $search_header,
-				'third' => $search_header
+				'first' => sprintf(
+					lang('search_results_heading'),
+					$vars['tables']['first']['total_rows'],
+					$vars['tables']['first']['search']
+				),
+				'third' => sprintf(
+				lang('search_results_heading'),
+				$vars['tables']['third']['total_rows'],
+				$vars['tables']['third']['search']
+			)
 			);
 		}
 
@@ -394,6 +422,18 @@ class Addons extends CP_Controller {
 
 			if ( ! empty($addon))
 			{
+				$info = ee('App')->get($name);
+				if (file_exists($info->getPath() . '/README.md'))
+				{
+					$addon['manual_url'] = ee('CP/URL', 'addons/manual/' . $name);
+					$addon['manual_external'] = FALSE;
+				}
+				elseif ($info->get('docs_url'))
+				{
+					$addon['manual_url'] = ee()->cp->masked_url($info->get('docs_url'));
+					$addon['manual_external'] = TRUE;
+				}
+
 				$party = ($addon['developer'] == 'EllisLab') ? 'first' : 'third';
 				$addons[$party][$name] = $addon;
 			}
@@ -532,7 +572,7 @@ class Addons extends CP_Controller {
 		{
 			$return = base64_decode(ee()->input->get('return'));
 			$uri_elements = json_decode($return, TRUE);
-			$return = cp_url($uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
 
 			ee()->functions->redirect($return);
 		}
@@ -555,17 +595,25 @@ class Addons extends CP_Controller {
 
 		ee()->load->library('addons/addons_installer');
 
-		$installed = array();
+		$installed = array(
+			'first' => array(),
+			'third' => array()
+		);
 
 		foreach ($addons as $addon)
 		{
+			$info = ee('App')->get($addon);
+			ee()->load->add_package_path($info->getPath());
+
+			$party = ($info->getAuthor() == 'EllisLab') ? 'first' : 'third';
+
 			$module = $this->getModule($addon);
 			if ( ! empty($module) && $module['installed'] === FALSE)
 			{
 				$name = $this->installModule($addon);
 				if ($name)
 				{
-					$installed[$addon] = $name;
+					$installed[$party][$addon] = $name;
 				}
 			}
 
@@ -575,7 +623,7 @@ class Addons extends CP_Controller {
 				$name = $this->installFieldtype($addon);
 				if ($name && ! isset($installed[$addon]))
 				{
-					$installed[$addon] = $name;
+					$installed[$party][$addon] = $name;
 				}
 			}
 
@@ -585,15 +633,13 @@ class Addons extends CP_Controller {
 				$name = $this->installExtension($addon);
 				if ($name && ! isset($installed[$addon]))
 				{
-					$installed[$addon] = $name;
+					$installed[$party][$addon] = $name;
 				}
 			}
 
 			$plugin = $this->getPlugin($addon);
 			if ( ! empty($plugin) && $plugin['installed'] === FALSE)
 			{
-				$info = ee('App')->get($addon);
-
 				$typography = 'n';
 				if ($info->get('plugin.typography'))
 				{
@@ -609,22 +655,39 @@ class Addons extends CP_Controller {
 
 				if ( ! isset($installed[$addon]))
 				{
-					$installed[$addon] = $plugin['name'];
+					$installed[$party][$addon] = $plugin['name'];
 				}
 			}
+
+			ee()->load->remove_package_path($info->getPath());
 		}
 
-		if ( ! empty($installed))
+		foreach (array('first', 'third') as $party)
 		{
-			$flashdata = (ee()->input->get('return')) ? TRUE : FALSE;
-			ee()->view->set_message('success', lang('addons_installed'), lang('addons_installed_desc') . implode(', ', $installed), $flashdata);
+			if ( ! empty($installed[$party]))
+			{
+				$alert = ee('Alert')->makeInline($party . '-party')
+					->asSuccess()
+					->withTitle(lang('addons_installed'))
+					->addToBody(lang('addons_installed_desc'))
+					->addToBody(array_values($installed[$party]));
+
+				if (ee()->input->get('return'))
+				{
+					$alert->defer();
+				}
+				else
+				{
+					$alert->now();
+				}
+			}
 		}
 
 		if (ee()->input->get('return'))
 		{
 			$return = base64_decode(ee()->input->get('return'));
 			$uri_elements = json_decode($return, TRUE);
-			$return = cp_url($uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
 
 			ee()->functions->redirect($return);
 		}
@@ -647,17 +710,23 @@ class Addons extends CP_Controller {
 
 		ee()->load->library('addons/addons_installer');
 
-		$uninstalled = array();
+		$uninstalled = array(
+			'first' => array(),
+			'third' => array()
+		);
 
 		foreach ($addons as $addon)
 		{
+			$info = ee('App')->get($addon);
+			$party = ($info->getAuthor() == 'EllisLab') ? 'first' : 'third';
+
 			$module = $this->getModule($addon);
 			if ( ! empty($module) && $module['installed'] === TRUE)
 			{
 				$name = $this->uninstallModule($addon);
 				if ($name)
 				{
-					$uninstalled[$addon] = $name;
+					$uninstalled[$party][$addon] = $name;
 				}
 			}
 
@@ -667,7 +736,7 @@ class Addons extends CP_Controller {
 				$name = $this->uninstallFieldtype($addon);
 				if ($name && ! isset($uninstalled[$addon]))
 				{
-					$uninstalled[$addon] = $name;
+					$uninstalled[$party][$addon] = $name;
 				}
 			}
 
@@ -677,7 +746,7 @@ class Addons extends CP_Controller {
 				$name = $this->uninstallExtension($addon);
 				if ($name && ! isset($uninstalled[$addon]))
 				{
-					$uninstalled[$addon] = $name;
+					$uninstalled[$party][$addon] = $name;
 				}
 			}
 
@@ -690,14 +759,22 @@ class Addons extends CP_Controller {
 
 				if ( ! isset($uninstalled[$addon]))
 				{
-					$uninstalled[$addon] = $plugin['name'];
+					$uninstalled[$party][$addon] = $plugin['name'];
 				}
 			}
 		}
 
-		if ( ! empty($uninstalled))
+		foreach (array('first', 'third') as $party)
 		{
-			ee()->view->set_message('success', lang('addons_uninstalled'), lang('addons_uninstalled_desc') . implode(', ', $uninstalled));
+			if ( ! empty($uninstalled[$party]))
+			{
+				$alert = ee('Alert')->makeInline($party . '-party')
+					->asSuccess()
+					->withTitle(lang('addons_uninstalled'))
+					->addToBody(lang('addons_uninstalled_desc'))
+					->addToBody(array_values($uninstalled[$party]))
+					->now();
+			}
 		}
 	}
 
@@ -715,7 +792,7 @@ class Addons extends CP_Controller {
 
 		$vars = array();
 		$breadcrumb = array(
-			cp_url('addons') => lang('addon_manager')
+			ee('CP/URL', 'addons')->compile() => lang('addon_manager')
 		);
 
 		if (is_null($method))
@@ -729,16 +806,30 @@ class Addons extends CP_Controller {
 		{
 			$data = $this->getModuleSettings($addon, $method);
 
+			ee()->view->cp_heading = $module['name'] . ' ' . lang('configuration');
+
 			if (is_array($data))
 			{
 				$vars['_module_cp_body'] = $data['body'];
-				ee()->view->cp_heading = $data['heading'];
-				$breadcrumb = $data['breadcrumb'];
+
+				if (isset($data['heading']))
+				{
+					ee()->view->cp_heading = $data['heading'];
+				}
+
+				if (isset($data['breadcrumb']))
+				{
+					$breadcrumb = array_merge($breadcrumb, $data['breadcrumb']);
+				}
+
+				if (isset($data['sidebar']))
+				{
+					ee()->menu->register_left_nav($data['sidebar']);
+				}
 			}
 			else
 			{
 				$vars['_module_cp_body'] = $data;
-				ee()->view->cp_heading = $module['name'] . ' ' . lang('configuration');
 			}
 		}
 		else
@@ -750,7 +841,7 @@ class Addons extends CP_Controller {
 				if ($method == 'save')
 				{
 					$this->saveFieldtypeSettings($fieldtype);
-					ee()->functions->redirect(cp_url('addons/settings/' . $addon));
+					ee()->functions->redirect(ee('CP/URL', 'addons/settings/' . $addon));
 				}
 
 				$vars['_module_cp_body'] = $this->getFieldtypeSettings($fieldtype);
@@ -765,7 +856,7 @@ class Addons extends CP_Controller {
 					if ($method == 'save')
 					{
 						$this->saveExtensionSettings($addon);
-						ee()->functions->redirect(cp_url('addons/settings/' . $addon));
+						ee()->functions->redirect(ee('CP/URL', 'addons/settings/' . $addon));
 					}
 
 					$vars['_module_cp_body'] = $this->getExtensionSettings($addon);
@@ -780,6 +871,13 @@ class Addons extends CP_Controller {
 		}
 
 		ee()->view->cp_breadcrumbs = $breadcrumb;
+		ee()->view->cp_page_title = ee()->view->cp_heading;
+		ee()->view->header = array(
+			'title' => lang('addon_manager'),
+			'form_url' => ee('CP/URL', 'addons'),
+			'search_button_value' => lang('search_addons_button')
+		);
+		ee()->view->disable('outer_box');
 
 		ee()->cp->render('addons/settings', $vars);
 	}
@@ -794,44 +892,113 @@ class Addons extends CP_Controller {
 	 */
 	public function manual($addon)
 	{
-		ee()->view->cp_page_title = lang('addon_manager');
-
-		$vars = array();
-
-		$plugin = $this->getPlugin($addon);
-		if (empty($plugin))
+		try
+		{
+			$info = ee('App')->get($addon);
+		}
+		catch (\Exception $e)
 		{
 			show_error(lang('requested_module_not_installed').NBS.$addon);
 		}
 
-		$info = ee('App')->get($addon);
+		$readme_file = $info->getPath() . '/README.md';
+
+		if ( ! file_exists($readme_file))
+		{
+			show_404();
+		}
+
+		ee()->view->cp_page_title = $info->getName() . ' ' . lang('manual');
 
 		$vars = array(
-			'name'			=> $info->getName(),
-			'version'		=> $this->formatVersionNumber($info->getVersion()),
-			'author'		=> $info->getAuthor(),
-			'author_url'	=> $info->get('author_url'),
-			'description'	=> $info->get('description')
+			'name'        => $info->getName(),
+			'version'     => $this->formatVersionNumber($info->getVersion()),
+			'author'      => $info->getAuthor(),
+			'author_url'  => $info->get('author_url'),
+			'docs_url'    => $info->get('docs_url'),
+			'description' => $info->get('description')
 		);
 
-		$usage = $info->get('plugin.usage');
+		// Some pre-processing:
+		//   1. Remove any #'s at the start of the doc, since that will be redundant with the add-on info
 
-		$vars['usage'] = array(
-			'description' => '',
-			'example' => $usage
-		);
+		$readme = preg_replace('/^\s*#.*?\n/s', '', file_get_contents($readme_file));
 
-		if (is_array($usage))
+		$parser = new MarkdownExtra;
+		$readme = $parser->transform($readme);
+
+		// Some post-processing
+		//   1. Step headers back (h2 becomes h1, h3 becomes, h2, etc.)
+		//   2. Change codeblocks to textareas
+		//   3. Add <mark> around h4's (params and variables)
+		//   4. Pull out header tree for sidebar nav (h1 and h2 only)
+
+		for ($i = 2, $j = 1; $i <=6; $i++, $j++)
 		{
-			$vars['usage']['description'] = $usage['description'];
-			$vars['usage']['example'] = $usage['example'];
-			$vars['parameters'] = $usage['parameters'];
+			$readme = str_replace(array("<h{$i}>", "</h{$i}>"), array("<h{$j}>", "</h{$j}>"), $readme);
 		}
+
+		$pre_tags = array('<pre><code>', '</code></pre>', '<h4>', '</h4>');
+		$post_tags = array('<textarea>', '</textarea>', '<h4><mark>', '</mark></h4>');
+
+		$readme = str_replace($pre_tags, $post_tags, $readme);
+
+		// [
+		// 	[0] => <h1>full tag</h1>
+		// 	[1] => 1
+		// 	[2] => full tag
+		// ]
+		preg_match_all('|<h([12])>(.*?)</h\\1>|', $readme, $matches, PREG_SET_ORDER);
+
+		$nav = array();
+		$child = array();
+		foreach($matches as $key => $match)
+		{
+			// give 'em id's so they are linkable
+			$new_header = "<h{$match[1]} id=\"ref{$key}\">{$match[2]}</h{$match[1]}>";
+
+			// just in case they use the same name in multiple headers, we need to id separately
+			// hence preg_replace() with a limit instead of str_replace()
+			$readme = preg_replace('/'.preg_quote($match[0], '/').'/', $new_header, $readme, 1);
+
+			if ($match[1] == 1)
+			{
+				// append any children (h2's) if they exist
+				if ( ! empty($child))
+				{
+					$nav[] = $child;
+					$child = array();
+				}
+
+				$nav[strip_tags($match[2])] = "#ref{$key}";
+			}
+			else
+			{
+				// save the children for later. SAVE THE CHILDREN!
+				$child[strip_tags($match[2])] = "#ref{$key}";
+			}
+		}
+
+		// don't forget the youngest!
+		if ( ! empty($child))
+		{
+			$nav[] = $child;
+		}
+
+		// Register our menu and header
+		ee()->menu->register_left_nav($nav);
+		ee()->view->header = array(
+			'title' => lang('addon_manager'),
+			'form_url' => ee('CP/URL', 'addons'),
+			'search_button_value' => lang('search_addons_button')
+		);
+
+		$vars['readme'] = $readme;
 
 		ee()->view->cp_heading = $vars['name'] . ' ' . lang('manual');
 
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('addons') => lang('addon_manager')
+			ee('CP/URL', 'addons')->compile() => lang('addon_manager')
 		);
 
 		ee()->cp->render('addons/manual', $vars);
@@ -953,7 +1120,6 @@ class Addons extends CP_Controller {
 			'name'			=> $info->getName(),
 			'package'		=> $name,
 			'type'			=> 'plugin',
-			'manual_url'	=> ee('CP/URL', 'addons/manual/' . $name),
 		);
 
 		$model = ee('Model')->get('Plugin')
@@ -962,10 +1128,10 @@ class Addons extends CP_Controller {
 		if ( ! is_null($model))
 		{
 			$data['installed'] = TRUE;
+			$data['version'] = $model->plugin_version;
 			if (version_compare($info->getVersion(), $model->plugin_version, '>'))
 			{
 				$data['update'] = $info->getVersion();
-				$data['version'] = $model->plugin_version;
 			}
 		}
 
@@ -1055,7 +1221,6 @@ class Addons extends CP_Controller {
 	 *        'package'		 => 'foobar',
 	 *        'class'        => 'Foobar_ext',
 	 *        'enabled'		 => NULL|TRUE|FALSE
-	 *        'manual_url'	 => '' (optional),
 	 *        'settings_url' => '' (optional)
 	 */
 	private function getExtension($name)
@@ -1135,11 +1300,6 @@ class Addons extends CP_Controller {
 			if ($info->get('settings_exist'))
 			{
 				$data['settings_url'] = ee('CP/URL', 'addons/settings/' . $name);
-			}
-
-			if ($info->get('docs_url'))
-			{
-				$data['manual_url'] = ee()->cp->masked_url($info->get('docs_url'));
 			}
 		}
 
@@ -1387,7 +1547,7 @@ class Addons extends CP_Controller {
 		}
 
 		$vars = array(
-			'base_url' => cp_url('addons/settings/' . $name . '/save'),
+			'base_url' => ee('CP/URL', 'addons/settings/' . $name . '/save'),
 			'cp_page_title' => $extension['name'] . ' ' . lang('configuration'),
 			'save_btn_text' => 'btn_save_settings',
 			'save_btn_text_working' => 'btn_saving',
@@ -1456,7 +1616,7 @@ class Addons extends CP_Controller {
 					}
 
 					$element['fields'][$key] = array(
-						'type' => 'dropdown',
+						'type' => 'select',
 						'value' => $value,
 						'choices' => $choices
 					);
@@ -1599,6 +1759,7 @@ class Addons extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		ee()->api_channel_fields->fetch_installed_fieldtypes();
 		$FT = ee()->api_channel_fields->setup_handler($fieldtype['package'], TRUE);
 
 		$FT->settings = $fieldtype['settings'];
@@ -1608,7 +1769,7 @@ class Addons extends CP_Controller {
 		if (is_array($fieldtype_settings))
 		{
 			$vars = array(
-				'base_url' => cp_url('addons/settings/' . $fieldtype['package'] . '/save'),
+				'base_url' => ee('CP/URL', 'addons/settings/' . $fieldtype['package'] . '/save'),
 				'cp_page_title' => $fieldtype['name'] . ' ' . lang('configuration'),
 				'save_btn_text' => 'btn_save_settings',
 				'save_btn_text_working' => 'btn_saving',
@@ -1620,7 +1781,7 @@ class Addons extends CP_Controller {
 		{
 			$html = '<div class="box">';
 			$html .= '<h1>' . $fieldtype['name'] . ' ' . lang('configuration') . '</h1>';
-			$html .= form_open(cp_url('addons/settings/' . $fieldtype['package'] . '/save'), 'class="settings"');
+			$html .= form_open(ee('CP/URL', 'addons/settings/' . $fieldtype['package'] . '/save'), 'class="settings"');
 			$html .= ee('Alert')->get('shared-form');
 			$html .= $fieldtype_settings;
 			$html .= '<fieldset class="form-ctrls">';
@@ -1640,18 +1801,18 @@ class Addons extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		ee()->api_channel_fields->fetch_installed_fieldtypes();
 		$FT = ee()->api_channel_fields->setup_handler($fieldtype['package'], TRUE);
 
 		$FT->settings = $fieldtype['settings'];
 
 		$settings = ee()->api_channel_fields->apply('save_global_settings');
 
-		$fieldtype_model = ee('Model')->get('ChannelField')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('field_name', $fieldtype['package'])
+		$fieldtype_model = ee('Model')->get('Fieldtype')
+			->filter('name', $fieldtype['package'])
 			->first();
 
-		$fieldtype_model->field_settings = $settings;
+		$fieldtype_model->settings = $settings;
 		$fieldtype_model->save();
 
 		ee('Alert')->makeInline('shared-form')

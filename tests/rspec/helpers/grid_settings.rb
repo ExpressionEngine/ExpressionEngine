@@ -139,23 +139,23 @@ module GridSettings
 
 	# Get nth column
 	def self.column(number)
-		node = find('#grid_settings_container .grid_col_settings:nth-child('+number.to_s+')')
+		node = find('.grid-wrap .grid-item:nth-child('+number.to_s+')')
 		GridSettingsColumn.new(node)
 	end
 
 	# Clicks the button to add a new column to the settings view, and
 	# returns a new GridSettingsColumn object representing the column
 	def self.add_column
-		click_link 'Add Column'
+		find('.grid-wrap .grid-item:last-child li.add a').click
 		sleep 0.1 # Wait for DOM
-		node = all('#grid_settings_container .grid_col_settings').last
+		node = find('.grid-wrap .grid-item:last-child')
 		GridSettingsColumn.new(node)
 	end
 
 	# Clicks the Copy button on a Grid settings column and returns the
 	# newly cloned column as a GridSettingsColumn object
 	def self.clone_column(number)
-		self::column(number).node.click_link 'Copy'
+		self::column(number).node.find('li.copy a').click
 		self::column(number + 1)
 	end
 end
@@ -172,7 +172,7 @@ class GridSettingsColumn
 	# Finds elements and assigns them to instance variables so we're
 	# not constantly finding them using selectors
 	def load_elements
-		@type = @node.find('.grid_col_select')
+		@type = @node.find('select.grid_col_select')
 		@label = @node.find('[name*="col_label"]')
 		@name = @node.find('[name*="col_name"]')
 		@instructions = @node.find('[name*="col_instructions"]')
@@ -234,7 +234,7 @@ class GridSettingsColumn
 
 	# Clicks the delete link on the current settings column
 	def delete
-		@node.find('.grid_button_delete').click
+		@node.find('li.remove a').click
 		sleep 0.5 # Wait for DOM animation
 	end
 end
@@ -247,15 +247,21 @@ class GridSettingsColumnTypeDate
 	end
 
 	def load_elements
-		@localized = @node.find('[name*="localize"]')
+		@localized_y = @node.find('[name*="localize"][value=y]')
+		@localized_n = @node.find('[name*="localize"][value=n]')
 	end
 
 	def fill_data(data)
-		@localized.set data[:localized]
+		if data[:localized]
+			@localized_y.click
+		else
+			@localized_n.click
+		end
 	end
 
 	def validate(data)
-		@localized.checked?.should == data[:localized]
+		@localized_y.checked?.should == data[:localized]
+		@localized_n.checked?.should == !data[:localized]
 	end
 end
 

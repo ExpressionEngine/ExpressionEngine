@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -782,8 +782,8 @@ class Member_model extends CI_Model {
 			// Load forum class
 			if ( ! class_exists('Forum'))
 			{
-				require PATH_MOD.'forum/mod.forum.php';
-				require PATH_MOD.'forum/mod.forum_core.php';
+				require PATH_ADDONS.'forum/mod.forum.php';
+				require PATH_ADDONS.'forum/mod.forum_core.php';
 			}
 
 			$forum_core = new Forum_Core;

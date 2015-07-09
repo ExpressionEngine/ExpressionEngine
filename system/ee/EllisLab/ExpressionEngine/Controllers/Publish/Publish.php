@@ -10,7 +10,7 @@ use EllisLab\ExpressionEngine\Controllers\Publish\AbstractPublish as AbstractPub
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -81,7 +81,6 @@ class Publish extends AbstractPublishController {
 		));
 	}
 
-
 	public function create($channel_id, $autosave_id = NULL)
 	{
 		$channel = ee('Model')->get('Channel', $channel_id)
@@ -106,7 +105,7 @@ class Publish extends AbstractPublishController {
 		);
 
 		$vars = array(
-			'form_url' => cp_url('publish/create/' . $channel_id),
+			'form_url' => ee('CP/URL', 'publish/create/' . $channel_id),
 			'form_attributes' => $form_attributes,
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
 			'button_text' => lang('btn_publish')
@@ -115,6 +114,7 @@ class Publish extends AbstractPublishController {
 		if ($autosave_id)
 		{
 			$autosaved = ee('Model')->get('ChannelEntryAutosave', $autosave_id)
+				->filter('channel_id', $channel_id)
 				->filter('site_id', ee()->config->item('site_id'))
 				->first();
 
@@ -156,7 +156,7 @@ class Publish extends AbstractPublishController {
 					->addToBody(sprintf(lang('create_entry_success_desc'), $entry->title))
 					->defer();
 
-				ee()->functions->redirect(cp_url('publish/edit/entry/' . $entry->entry_id, ee()->cp->get_url_state()));
+				ee()->functions->redirect(ee('CP/URL', 'publish/edit/entry/' . $entry->entry_id, ee()->cp->get_url_state()));
 			}
 			else
 			{
@@ -178,6 +178,9 @@ class Publish extends AbstractPublishController {
 			->with('MemberGroups')
 			->filter('MemberGroups.group_id', ee()->session->userdata['group_id'])
 			->first();
+
+		// Auto-saving needs an entry_id...
+		$entry->entry_id = 0;
 
 		$vars = array_merge($vars, array(
 			'entry' => $entry,

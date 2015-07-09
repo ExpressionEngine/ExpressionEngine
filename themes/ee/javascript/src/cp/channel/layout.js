@@ -4,7 +4,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -98,8 +98,7 @@ $(document).ready(function () {
 		helper: "clone",
 		items: "fieldset.sortable",
 		placeholder: "drag-placeholder",
-		start: function (event, ui)
-		{
+		start: function (event, ui) {
 			var fieldIndex = $('div.tab-open fieldset').index(ui.item[0]);
 			field = EE.publish_layout[getTabIndex()].fields.splice(fieldIndex, 1)[0];
 			ui.placeholder.append('<div class="none"></div>');
@@ -125,8 +124,7 @@ $(document).ready(function () {
 		var index = $('ul.tabs li').index(tab);
 		var tabContents = $('div.tab.' + $(tab).find('a').eq(0).attr('rel'));
 
-		if (tabContents.has('.required').length > 0)
-		{
+		if (tabContents.has('.required').length > 0) {
 			$('body').prepend(EE.alert.required.replace('%s', tab.text()));
 			return;
 		}
@@ -165,14 +163,11 @@ $(document).ready(function () {
 				}
 			}
 
-			if (duplicate)
-			{
+			if (duplicate) {
 				// Show the duplicate_tab_name alert
 				input.after($('<em></em>').append(input.data('duplicate')));
 				input.parents('fieldset').addClass('invalid');
-			}
-			else
-			{
+			} else {
 				var tab = {
 					fields: [],
 					id: tab_id,
@@ -210,8 +205,7 @@ $(document).ready(function () {
 		var index = $('ul.tabs li').index(tab);
 		var tabContents = $('div.tab.' + $(tab).find('a').eq(0).attr('rel'));
 
-		if (tabContents.html())
-		{
+		if (tabContents.html()) {
 			$('body').prepend(EE.alert.not_empty.replace('%s', tab.text()));
 			return;
 		}

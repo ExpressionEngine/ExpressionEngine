@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5
  * @filesource
@@ -142,7 +142,7 @@ class Rte_tool_model extends CI_Model {
 			$base_name = str_replace('_rte', '', strtolower($t->class));
 
 			// find the tool file
-			foreach (array(PATH_RTE, PATH_ADDONS) as $tmp_path)
+			foreach (array(PATH_RTE, PATH_THIRD) as $tmp_path)
 			{
 				$file = $tmp_path.$base_name.'/rte.'.$base_name.'.php';
 

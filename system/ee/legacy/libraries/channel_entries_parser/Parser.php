@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.6
  * @filesource
@@ -235,7 +235,7 @@ class EE_Channel_data_parser {
 			$row['absolute_count']		= $absolute_offset + $row['count'];
 			$row['absolute_results']	= ($absolute_results === NULL) ? $total_results : $absolute_results;
 			$row['comment_subscriber_total'] = (isset($subscriber_totals[$row['entry_id']])) ? $subscriber_totals[$row['entry_id']] : 0;
-			$row['cp_edit_entry_url']	= cp_url(
+			$row['cp_edit_entry_url']	= ee('CP/URL',
 				'content_publish/entry_form',
 				array(
 					'site_id'		=> $row['site_id'],

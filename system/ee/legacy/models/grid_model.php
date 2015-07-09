@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -245,14 +245,15 @@ class Grid_model extends CI_Model {
 				$this->_get_ft_api_settings($column['field_id'], $content_type)
 			);
 
-			ee()->db->where('col_id', $col_id);
-			ee()->db->update($this->_table, $column);
+			ee('db')->where('col_id', $col_id)
+				->update($this->_table, $column);
 		}
 		// New column
 		else
 		{
-			ee()->db->insert($this->_table, $column);
-			$col_id = ee()->db->insert_id();
+			$db = ee('db');
+			$db->insert($this->_table, $column);
+			$col_id = $db->insert_id();
 
 			// Add the fieldtype's columns to our data table
 			ee()->api_channel_fields->setup_handler($column['col_type']);
@@ -648,7 +649,7 @@ class Grid_model extends CI_Model {
 			$field_ids = array($field_ids);
 		}
 
-		$columns = ee()->db->where_in('field_id', $field_ids)
+		$columns = ee('db')->where_in('field_id', $field_ids)
 			->where('content_type', $content_type)
 			->order_by('col_order')
 			->get($this->_table)

@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -166,15 +166,88 @@ class Radio_ft extends EE_Fieldtype {
 
 	function display_settings($data)
 	{
-		$this->field_formatting_row($data, 'radio');
-		$this->multi_item_row($data, 'radio');
+		$format_options = ee()->addons_model->get_plugin_formatting(TRUE);
+
+		$settings = array(
+			array(
+				'title' => 'field_fmt',
+				'desc' => 'field_fmt_desc',
+				'fields' => array(
+					'field_fmt' => array(
+						'type' => 'select',
+						'choices' => $format_options,
+						'value' => $data['field_fmt'],
+					)
+				)
+			),
+			array(
+				'title' => 'radio_options',
+				'desc' => 'radio_options_desc',
+				'fields' => array(
+					'field_pre_populate_n' => array(
+						'type' => 'radio',
+						'name' => 'field_pre_populate',
+						'choices' => array(
+							'n' => lang('field_populate_manually'),
+						),
+						'value' => ($data['field_pre_populate']) ? 'y' : 'n'
+					),
+					'field_list_items' => array(
+						'type' => 'textarea',
+						'value' => $data['field_list_items']
+					),
+					'field_pre_populate_y' => array(
+						'type' => 'radio',
+						'name' => 'field_pre_populate',
+						'choices' => array(
+							'y' => lang('field_populate_from_channel'),
+						),
+						'value' => ($data['field_pre_populate']) ? 'y' : 'n'
+					),
+					'field_pre_populate_id' => array(
+						'type' => 'select',
+						'choices' => $this->get_channel_field_list(),
+						'value' => $data['field_pre_channel_id'] . '_' . $data['field_pre_field_id']
+					)
+				)
+			)
+		);
+
+		return array('field_options_radio' => array(
+			'label' => 'field_options',
+			'group' => 'radio',
+			'settings' => $settings
+		));
 	}
 
 	public function grid_display_settings($data)
 	{
+		$format_options = ee()->addons_model->get_plugin_formatting(TRUE);
+
 		return array(
-			$this->grid_field_formatting_row($data),
-			$this->grid_multi_item_row($data)
+			'field_options' => array(
+				array(
+					'title' => 'field_fmt',
+					'desc' => 'field_fmt_desc',
+					'fields' => array(
+						'field_fmt' => array(
+							'type' => 'select',
+							'choices' => $format_options,
+							'value' => isset($data['field_fmt']) ? $data['field_fmt'] : 'none',
+						)
+					)
+				),
+				array(
+					'title' => 'radio_options',
+					'desc' => 'grid_radio_options_desc',
+					'fields' => array(
+						'field_list_items' => array(
+							'type' => 'textarea',
+							'value' => isset($data['field_list_items']) ? $data['field_list_items'] : ''
+						)
+					)
+				)
+			)
 		);
 	}
 
@@ -182,8 +255,9 @@ class Radio_ft extends EE_Fieldtype {
 	{
 		$field_options = array();
 
-		if ((isset($this->settings['field_pre_populate']) && $this->settings['field_pre_populate'] == 'n')
-			OR ! isset($this->settings['field_pre_populate']))
+		if ( ! isset($this->settings['field_pre_populate'])
+			OR $this->settings['field_pre_populate'] == 'n'
+				OR $this->settings['field_pre_populate'] == FALSE)
 		{
 			if ( ! is_array($this->settings['field_list_items']))
 			{

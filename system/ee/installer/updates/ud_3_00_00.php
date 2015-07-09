@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0.0
  * @filesource
@@ -193,8 +193,6 @@ class Updater {
 		);
 		ee()->dbforge->add_key('plugin_id', TRUE);
 		ee()->smartforge->create_table('plugins');
-
-		define('PATH_PI', EE_APPPATH.'plugins/');
 
 		ee()->load->model('addons_model');
 		$plugins = ee()->addons_model->get_plugins();
@@ -634,6 +632,19 @@ class Updater {
 	 */
 	private function _update_members_table()
 	{
+		if ( ! ee()->db->field_exists('bookmarklets', 'members'))
+		{
+			ee()->smartforge->add_column(
+				'members',
+				array(
+					'bookmarklets' => array(
+						'type'    => 'TEXT',
+						'null'    => TRUE
+					)
+				)
+			);
+		}
+
 		if ( ! ee()->db->field_exists('rte_enabled', 'members'))
 		{
 			ee()->smartforge->add_column(

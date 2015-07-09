@@ -43,11 +43,6 @@ class CI_DB_mysqli_connection {
 	 */
 	public function __construct($config)
 	{
-		if ( ! isset($config['port']))
-		{
-			$config['port'] = NULL;
-		}
-
 		$this->config = $config;
 	}
 
@@ -74,7 +69,7 @@ class CI_DB_mysqli_connection {
 		$pconnect = $this->config['pconnect'];
 		$port     = $this->config['port'];
 
-		$dsn = "mysql:dbname={$database};host={$hostname};charset={$char_set}";
+		$dsn = "mysql:dbname={$database};host={$hostname};port={$port};charset={$char_set}";
 
 		$options = array(
 			PDO::ATTR_PERSISTENT => $pconnect,
@@ -122,7 +117,14 @@ class CI_DB_mysqli_connection {
 	{
 		$time_start = microtime(TRUE);
 
-		$result = $this->connection->query($query);
+		try
+		{
+			$result = $this->connection->query($query);
+		}
+		catch (Exception $e)
+		{
+			show_error($this->getQueryErrorString($e, $query));
+		}
 
 		$time_end = microtime(TRUE);
 
@@ -203,6 +205,70 @@ class CI_DB_mysqli_connection {
 	public function isOpen()
 	{
 		return isset($this->connection);
+	}
+
+	/**
+	 * Generate a useful query error
+	 *
+	 * @param  Exception $e     The PDO Exception
+	 * @param  String    $query The query
+	 * @return String           Human error message
+	 */
+	private function getQueryErrorString(Exception $e, $query)
+	{
+		$frames = $this->getLikelySourceFrames($e->getTrace());
+
+		$error = '<b>Database Error</b><br><br>';
+		$error .= $e->getMessage().'<br><br>';
+
+		$error .= '<b>Stack Trace</b><br>';
+
+		foreach ($frames as $frame)
+		{
+			$error .= '[line '.$frame['line'].'] :: '.$frame['file'].' &nbsp; <small>'.$frame['function'].'()</small>'.'<br>';
+		}
+
+		$error .= '<br><b>Query</b><br>';
+		$error .= htmlentities($query);
+
+		return $error;
+	}
+
+	/**
+	 * Find the most likely stack frame that caused the error and show
+	 * n additional frames below it
+	 *
+	 * @param  Array $trace Error backtrace
+	 * @param  Array $count Number of frames to show
+	 * @return Array        Single source frame
+	 */
+	private function getLikelySourceFrames($trace, $count = 3)
+	{
+		$frames = array();
+
+		foreach ($trace as $i => $frame)
+		{
+			if (isset($frame['file'])
+			 && strpos($frame['file'], 'ee/legacy/database/') === FALSE
+			 && strpos($frame['file'], 'ee/EllisLab/ExpressionEngine/Service/Model/') === FALSE)
+			{
+				$frames = array_slice($trace, $i, $count);
+
+				foreach ($frames as $i => &$frame)
+				{
+					if ( ! isset($frame['file']))
+					{
+						unset($frames[$i]);
+					}
+
+					$frame['file'] = str_replace(SYSPATH, '', $frame['file']);
+				}
+
+				break;
+			}
+		}
+
+		return $frames;
 	}
 
 	/**

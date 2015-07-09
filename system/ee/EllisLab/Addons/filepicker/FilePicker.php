@@ -2,7 +2,7 @@
 
 namespace EllisLab\Addons\FilePicker;
 
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
@@ -35,7 +35,7 @@ class FilePicker {
 
 	public function link($text, $dir = 'all', $data = array())
 	{
-		$href = cp_url($this->controller, array('directory' => $dir));
+		$href = ee('CP/URL', $this->controller, array('directory' => $dir));
 		$extra = "";
 
 		if ( ! empty($data['image']))
@@ -66,7 +66,9 @@ class FilePicker {
 		$table = new Table(array('autosort' => TRUE, 'limit' => $limit));
 		$table->setColumns(
 			array(
-				'title_or_name',
+				'title_or_name' => array(
+					'encode' => FALSE
+				),
 				'file_type',
 				'date_added',
 				'manage' => array(
@@ -94,15 +96,15 @@ class FilePicker {
 
 			$toolbar = array(
 				'edit' => array(
-					'href' => cp_url('files/file/edit/' . $file->file_id),
+					'href' => ee('CP/URL', 'files/file/edit/' . $file->file_id),
 					'title' => lang('edit')
 				),
 				'crop' => array(
-					'href' => cp_url('files/file/crop/' . $file->file_id),
+					'href' => ee('CP/URL', 'files/file/crop/' . $file->file_id),
 					'title' => lang('crop'),
 				),
 				'download' => array(
-					'href' => cp_url('files/file/download/' . $file->file_id),
+					'href' => ee('CP/URL', 'files/file/download/' . $file->file_id),
 					'title' => lang('download'),
 				),
 			);

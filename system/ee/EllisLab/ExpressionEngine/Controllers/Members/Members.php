@@ -7,7 +7,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Service\CP\Filter\Filter;
 use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 
@@ -17,7 +17,7 @@ use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -60,29 +60,29 @@ class Members extends CP_Controller {
 		// Register our menu
 		ee()->menu->register_left_nav(array(
 			'all_members' => array(
-				'href' => cp_url('members'),
+				'href' => ee('CP/URL', 'members'),
 				'button' => array(
-					'href' => cp_url('members/create'),
+					'href' => ee('CP/URL', 'members/create'),
 					'text' => 'new'
 				)
 			),
 			array(
-				'pending_activation' => cp_url('members', array('group' => 4)),
-				'manage_bans' => cp_url('members', array('group' => 2))
+				'pending_activation' => ee('CP/URL', 'members', array('group' => 4)),
+				'manage_bans' => ee('CP/URL', 'members', array('group' => 2))
 			),
 			'member_groups' => array(
-				'href' => cp_url('members/groups'),
+				'href' => ee('CP/URL', 'members/groups'),
 				'button' => array(
-					'href' => cp_url('members/groups/create'),
+					'href' => ee('CP/URL', 'members/groups/create'),
 					'text' => 'new'
 				)
 			),
 			array(
-				'custom_member_fields' => cp_url('members/fields')
+				'custom_member_fields' => ee('CP/URL', 'members/fields')
 			)
 		));
 
-		$this->base_url = new URL('members', ee()->session->session_id());
+		$this->base_url = ee('CP/URL', 'members');
 	}
 
 	// --------------------------------------------------------------------
@@ -147,7 +147,9 @@ class Members extends CP_Controller {
 				'member_id' => array(
 					'type'	=> Table::COL_ID
 				),
-				'username',
+				'username' => array(
+					'encode' => FALSE
+				),
 				'member_group',
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
@@ -161,7 +163,7 @@ class Members extends CP_Controller {
 		$table->setNoResultsText('no_search_results');
 		$table->setData($data['rows']);
 		$data['table'] = $table->viewData($this->base_url);
-		$data['form_url'] = cp_url('members/delete');
+		$data['form_url'] = ee('CP/URL', 'members/delete');
 
 		$base_url = $data['table']['base_url'];
 
@@ -230,7 +232,7 @@ class Members extends CP_Controller {
 			$attributes = array();
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
-					'href' => cp_url('members/profile/', array('id' => $member['member_id'])),
+					'href' => ee('CP/URL', 'members/profile/', array('id' => $member['member_id'])),
 					'title' => strtolower(lang('profile'))
 				)
 			));
@@ -245,7 +247,7 @@ class Members extends CP_Controller {
 					$group = "<span class='st-pending'>" . lang('pending') . "</span>";
 					$attributes['class'] = 'alt pending';
 					$toolbar['toolbar_items']['approve'] = array(
-						'href' => cp_url('members/approve/', array('id' => $member['member_id'])),
+						'href' => ee('CP/URL', 'members/approve/', array('id' => $member['member_id'])),
 						'title' => strtolower(lang('approve'))
 					);
 					break;
@@ -253,7 +255,7 @@ class Members extends CP_Controller {
 					$group = $groups[$member['group_id']];
 			}
 
-			$email = "<a href = '" . cp_url('utilities/communicate') . "'>e-mail</a>";
+			$email = "<a href = '" . ee('CP/URL', 'utilities/communicate') . "'>e-mail</a>";
 			$rows[] = array(
 				'columns' => array(
 					'id' => $member['member_id'],

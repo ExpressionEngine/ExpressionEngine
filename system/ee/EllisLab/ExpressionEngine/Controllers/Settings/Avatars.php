@@ -12,7 +12,7 @@ use CP_Controller;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -121,7 +121,7 @@ class Avatars extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = cp_url('settings/avatars');
+		$base_url = ee('CP/URL', 'settings/avatars');
 
 		if (AJAX_REQUEST)
 		{
@@ -161,8 +161,8 @@ class Avatars extends Settings {
 
 	/**
 	 * Update the upload preferences for the associated upload directory
-	 * 
-	 * @param mixed $data 
+	 *
+	 * @param mixed $data
 	 * @access private
 	 * @return void
 	 */

@@ -12,7 +12,7 @@ use CP_Controller;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -73,7 +73,7 @@ class WordCensor extends Settings {
 			)
 		);
 
-		$base_url = cp_url('settings/word-censor');
+		$base_url = ee('CP/URL', 'settings/word-censor');
 
 		ee()->form_validation->set_rules(array(
 			array(

@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -1539,7 +1539,7 @@ class Forum_mcp {
 	{
 		if (is_null($this->UPD))
 		{
-			require_once PATH_MOD.'forum/upd.forum.php';
+			require_once PATH_ADDONS.'forum/upd.forum.php';
 
 			$this->UPD = new Forum_upd();
 		}

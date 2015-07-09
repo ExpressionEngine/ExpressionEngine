@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -981,14 +981,6 @@ class Forum_Core extends Forum {
 	 */
 	function _update_post_stats($forum_id)
 	{
-		$cache_off = FALSE;
-
-		if (ee()->db->cache_on === TRUE)
-		{
-			ee()->db->cache_off();
-			$cache_off = TRUE;
-		}
-
 		$data = array(
 						'forum_last_post_id' 		=> 0,
 						'forum_last_post_type'		=> 'p',
@@ -1063,11 +1055,6 @@ class Forum_Core extends Forum {
 				);
 		ee()->db->where('member_id', ee()->session->userdata('member_id'));
 		ee()->db->update('members', $d);
-
-		if ($cache_off)
-		{
-			ee()->db->cache_on();
-		}
 	}
 
 	// --------------------------------------------------------------------
@@ -1077,25 +1064,12 @@ class Forum_Core extends Forum {
 	 */
 	function _update_global_stats()
 	{
-		$cache_off = FALSE;
-
-		if (ee()->db->cache_on === TRUE)
-		{
-			ee()->db->cache_off();
-			$cache_off = TRUE;
-		}
-
 		$total_topics = ee()->db->count_all('forum_topics');
 		$total_posts  = ee()->db->count_all('forum_posts');
 
 		ee()->db->update('stats', array(
 										'total_forum_topics'	=> $total_topics,
 										'total_forum_posts'		=> $total_posts));
-
-		if ($cache_off)
-		{
-			ee()->db->cache_on();
-		}
 	}
 
 	// --------------------------------------------------------------------
@@ -1105,14 +1079,6 @@ class Forum_Core extends Forum {
 	 */
 	function _update_topic_stats($topic_id)
 	{
-		$cache_off = FALSE;
-
-		if (ee()->db->cache_on === TRUE)
-		{
-			ee()->db->cache_off();
-			$cache_off = TRUE;
-		}
-
 		// Update the thread count and last post date
 		ee()->db->select('COUNT(*) as count, MAX(post_date) as last_post');
 		$query = ee()->db->get_where('forum_posts', array('topic_id' => $topic_id));
@@ -1162,11 +1128,6 @@ class Forum_Core extends Forum {
 			ee()->db->where('topic_id', $topic_id);
 			ee()->db->update('forum_topics');
 		}
-
-		if ($cache_off)
-		{
-			ee()->db->cache_on();
-		}
 	}
 
 	// --------------------------------------------------------------------
@@ -1176,14 +1137,6 @@ class Forum_Core extends Forum {
 	 */
 	function _update_member_stats($member_ids = array())
 	{
-		$cache_off = FALSE;
-
-		if (ee()->db->cache_on === TRUE)
-		{
-			ee()->db->cache_off();
-			$cache_off = TRUE;
-		}
-
 		if ( ! is_array($member_ids))
 		{
 			$member_ids[$member_ids] = $member_ids;
@@ -1200,11 +1153,6 @@ class Forum_Core extends Forum {
 			$total_forum_posts = $res->row('count');
 
 			ee()->db->query(ee()->db->update_string('exp_members', array('total_forum_topics' => $total_forum_topics, 'total_forum_posts' => $total_forum_posts), "member_id = '{$member_id}'"));
-		}
-
-		if ($cache_off)
-		{
-			ee()->db->cache_on();
 		}
 	}
 
@@ -1698,7 +1646,7 @@ class Forum_Core extends Forum {
         //
 			if (ee()->extensions->active_hook('main_forum_table_rows_template') === TRUE)
 			{
-				$table_rows = ee()->extensions->universal_call('main_forum_table_rows_template', $this, $table_rows, $row, $markers, $read_topics);
+				$table_rows = ee()->extensions->call('main_forum_table_rows_template', $this, $table_rows, $row, $markers, $read_topics);
 				if (ee()->extensions->end_script === TRUE) return $table_rows;
 			}
         //
@@ -2128,7 +2076,7 @@ class Forum_Core extends Forum {
 		//
 			if (ee()->extensions->active_hook('forum_topics_start') === TRUE)
 			{
-				$str = ee()->extensions->universal_call('forum_topics_start', $this, $str);
+				$str = ee()->extensions->call('forum_topics_start', $this, $str);
 				if (ee()->extensions->end_script === TRUE) return $str;
 			}
 		//
@@ -2253,7 +2201,7 @@ class Forum_Core extends Forum {
 			*/
 				if (ee()->extensions->active_hook('forum_topics_loop_start') === TRUE)
 				{
-					$temp = ee()->extensions->universal_call('forum_topics_loop_start', $this, $query->result(), $row, $temp);
+					$temp = ee()->extensions->call('forum_topics_loop_start', $this, $query->result(), $row, $temp);
 					if (ee()->extensions->end_script === TRUE) return;
 				}
 			/*
@@ -2471,7 +2419,7 @@ class Forum_Core extends Forum {
 			*/
 				if (ee()->extensions->active_hook('forum_topics_loop_end') === TRUE)
 				{
-					$temp = ee()->extensions->universal_call('forum_topics_loop_end', $this, $query->result(), $row, $temp);
+					$temp = ee()->extensions->call('forum_topics_loop_end', $this, $query->result(), $row, $temp);
 					if (ee()->extensions->end_script === TRUE) return;
 				}
 			/*
@@ -2511,7 +2459,7 @@ class Forum_Core extends Forum {
 		*/
 			if (ee()->extensions->active_hook('forum_topics_absolute_end') === TRUE)
 			{
-				$str = ee()->extensions->universal_call('forum_topics_absolute_end', $this, $query->result(), $str);
+				$str = ee()->extensions->call('forum_topics_absolute_end', $this, $query->result(), $str);
 				if (ee()->extensions->end_script === TRUE) return $str;
 			}
 		/*
@@ -2837,7 +2785,7 @@ class Forum_Core extends Forum {
 		//
 			if (ee()->extensions->active_hook('forum_threads_template') === TRUE)
 			{
-				$str = ee()->extensions->universal_call('forum_threads_template', $this, $str, $tquery);
+				$str = ee()->extensions->call('forum_threads_template', $this, $str, $tquery);
 				if (ee()->extensions->end_script === TRUE) return $str;
 			}
 		//
@@ -3368,7 +3316,7 @@ class Forum_Core extends Forum {
 		//
 			if (ee()->extensions->active_hook('forum_thread_rows_start') === TRUE)
 			{
-				$template = ee()->extensions->universal_call('forum_thread_rows_start', $this, $template, $data, $is_announcement, $thread_review);
+				$template = ee()->extensions->call('forum_thread_rows_start', $this, $template, $data, $is_announcement, $thread_review);
 				if (ee()->extensions->end_script === TRUE) return $template;
 			}
 		//
@@ -3415,7 +3363,7 @@ class Forum_Core extends Forum {
 			*/
 				if (ee()->extensions->active_hook('forum_thread_rows_loop_start') === TRUE)
 				{
-					$temp = ee()->extensions->universal_call('forum_thread_rows_loop_start', $this, $data, $row, $temp);
+					$temp = ee()->extensions->call('forum_thread_rows_loop_start', $this, $data, $row, $temp);
 					if (ee()->extensions->end_script === TRUE) return;
 				}
 			/*
@@ -3936,7 +3884,7 @@ class Forum_Core extends Forum {
 				*/
 					if (ee()->extensions->active_hook('forum_thread_rows_loop_end') === TRUE)
 					{
-						$temp = ee()->extensions->universal_call('forum_thread_rows_loop_end', $this, $data, $row, $temp);
+						$temp = ee()->extensions->call('forum_thread_rows_loop_end', $this, $data, $row, $temp);
 						if (ee()->extensions->end_script === TRUE) return;
 					}
 				/*
@@ -3954,7 +3902,7 @@ class Forum_Core extends Forum {
 		*/
 			if (ee()->extensions->active_hook('forum_thread_rows_absolute_end') === TRUE)
 			{
-				$thread_rows = ee()->extensions->universal_call('forum_thread_rows_absolute_end', $this, $data, $thread_rows);
+				$thread_rows = ee()->extensions->call('forum_thread_rows_absolute_end', $this, $data, $thread_rows);
 				if (ee()->extensions->end_script === TRUE) return $thread_rows;
 			}
 		/*
@@ -4198,7 +4146,7 @@ class Forum_Core extends Forum {
 		//  - Allows usurping of forum submission forms
 		//  - More error checking and permissions too
 		//
-			$edata = ee()->extensions->universal_call('forum_submission_page', $this, $type);
+			$edata = ee()->extensions->call('forum_submission_page', $this, $type);
 			if (ee()->extensions->end_script === TRUE) return $edata;
 		//
 		// -------------------------------------------
@@ -4444,7 +4392,7 @@ class Forum_Core extends Forum {
 		//
 			if (ee()->extensions->active_hook('forum_submission_form_start') === TRUE)
 			{
-				$str = ee()->extensions->universal_call('forum_submission_form_start', $this, $str);
+				$str = ee()->extensions->call('forum_submission_form_start', $this, $str);
 				if (ee()->extensions->end_script === TRUE) return $str;
 			}
 		//
@@ -4855,7 +4803,7 @@ class Forum_Core extends Forum {
 		//
 			if (ee()->extensions->active_hook('forum_submission_form_end') === TRUE)
 			{
-				$str = ee()->extensions->universal_call('forum_submission_form_end', $this, $str);
+				$str = ee()->extensions->call('forum_submission_form_end', $this, $str);
 				if (ee()->extensions->end_script === TRUE) return $str;
 			}
 		//
@@ -5523,7 +5471,7 @@ class Forum_Core extends Forum {
 		//  - Allows usurping of forum submission routine
 		//  - More error checking and permissions too
 		//
-			$edata = ee()->extensions->universal_call('forum_submit_post_start', $this);
+			$edata = ee()->extensions->call('forum_submit_post_start', $this);
 			if (ee()->extensions->end_script === TRUE) return $edata;
 		//
 		// -------------------------------------------
@@ -6267,7 +6215,7 @@ class Forum_Core extends Forum {
 		*/
 			if (ee()->extensions->active_hook('forum_submit_post_end') === TRUE)
 			{
-				$edata = ee()->extensions->universal_call('forum_submit_post_end', $this, $data);
+				$edata = ee()->extensions->call('forum_submit_post_end', $this, $data);
 				if (ee()->extensions->end_script === TRUE) return $edata;
 			}
 		/*
@@ -10290,7 +10238,7 @@ class Forum_Core extends Forum {
 			return ee()->output->fatal_error(lang('must_be_logged_in'));
 		}
 
-		$class_path = PATH_MOD.'emoticon/emoticons.php';
+		$class_path = PATH_ADDONS.'emoticon/emoticons.php';
 
 		if ( ! is_file($class_path) OR ! @include_once($class_path))
 		{

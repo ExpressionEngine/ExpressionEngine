@@ -12,7 +12,7 @@ use CP_Controller;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -38,7 +38,7 @@ class Date extends Profile {
 	 */
 	public function index()
 	{
-		$this->base_url = cp_url($this->base_url, $this->query_string);
+		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
 		$fields = ee()->config->prep_view_vars('localization_cfg');
 		$fields = $fields['fields'];
 		$timezone = ee()->localize->timezone_menu($this->member->timezone, 'timezone');
@@ -60,14 +60,14 @@ class Date extends Profile {
 					'desc' => 'date_format_desc',
 					'fields' => array(
 						'date_format' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $fields['date_format']['value'],
 							'value' => $this->member->date_format
 						),
 						'time_format' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(12 => '12 hour', 24 => '24 hour'),
-							'value' => $this->member->time_format 
+							'value' => $this->member->time_format
 						)
 					)
 				),

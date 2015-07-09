@@ -8,7 +8,7 @@ use EllisLab\Addons\FilePicker\FilePicker;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -162,7 +162,7 @@ class Textarea_ft extends EE_Fieldtype {
 			{
 				$fp = new FilePicker();
 				$fp->inject(ee()->view);
-				$vars['fp_url'] = cp_url($fp->controller, array('directory' => 'all'));
+				$vars['fp_url'] = ee('CP/URL', $fp->controller, array('directory' => 'all'));
 
 				ee()->cp->add_js_script(array(
 					'file' => array('fields/textarea/cp'),
@@ -233,7 +233,7 @@ class Textarea_ft extends EE_Fieldtype {
 				'fields' => array(
 					'field_maxl' => array(
 						'type' => 'text',
-						'value' => ($data['field_ta_rows'] == '') ? 6 : $data['field_ta_rows']
+						'value' => ( ! isset($data['field_ta_rows']) OR $data['field_ta_rows'] == '') ? 6 : $data['field_ta_rows']
 					)
 				)
 			),
@@ -242,13 +242,17 @@ class Textarea_ft extends EE_Fieldtype {
 				'desc' => 'field_fmt_desc',
 				'fields' => array(
 					'field_fmt' => array(
-						'type' => 'dropdown',
+						'type' => 'select',
 						'choices' => $format_options,
-						'value' => $data['field_fmt'],
+						'value' => isset($data['field_maxl']) ? $data['field_fmt'] : 'none',
 					)
 				)
-			),
-			array(
+			)
+		);
+
+		if ($this->content_type() != 'grid')
+		{
+			$settings[] = array(
 				'title' => 'field_show_fmt',
 				'desc' => 'field_show_fmt_desc',
 				'fields' => array(
@@ -257,62 +261,70 @@ class Textarea_ft extends EE_Fieldtype {
 						'value' => $data['field_show_fmt'] ?: 'n'
 					)
 				)
-			),
-			array(
-				'title' => 'field_text_direction',
-				'desc' => 'field_text_direction_desc',
-				'fields' => array(
-					'field_text_direction' => array(
-						'type' => 'dropdown',
-						'choices' => array(
-							'ltr' => lang('field_text_direction_ltr'),
-							'rtl' => lang('field_text_direction_rtl')
-						),
-						'value' => $data['field_text_direction'],
-					)
+			);
+		}
+
+		$settings[] = array(
+			'title' => 'field_text_direction',
+			'desc' => 'field_text_direction_desc',
+			'fields' => array(
+				'field_text_direction' => array(
+					'type' => 'select',
+					'choices' => array(
+						'ltr' => lang('field_text_direction_ltr'),
+						'rtl' => lang('field_text_direction_rtl')
+					),
+					'value' => isset($data['field_text_direction']) ? $data['field_text_direction'] : 'ltr'
 				)
 			)
 		);
 
 		// Return a subset of the text settings for category content type
-		if ($this->content_type() == 'category')
+		if ($this->content_type() != 'category' && $this->content_type() != 'member')
 		{
-			return $settings;
+			// Construct the rest of the settings form for Channel...
+			$settings[] = array(
+				'title' => 'field_tools',
+				'desc' => 'field_tools_desc',
+				'fields' => array(
+					'field_show_formatting_btns' => array(
+						'type' => 'checkbox',
+						'scalar' => TRUE,
+						'choices' => array(
+							'y' => lang('show_formatting_btns'),
+						),
+						'value' => isset($data['field_show_formatting_btns']) ? $data['field_show_formatting_btns'] : 'n'
+					),
+					'field_show_smileys' => array(
+						'type' => 'checkbox',
+						'scalar' => TRUE,
+						'choices' => array(
+							'y' => lang('show_smileys'),
+						),
+						'value' => isset($data['field_show_smileys']) ? $data['field_show_smileys'] : 'n'
+					),
+					'field_show_file_selector' => array(
+						'type' => 'checkbox',
+						'scalar' => TRUE,
+						'choices' => array(
+							'y' => lang('show_file_selector')
+						),
+						'value' => isset($data['field_show_file_selector']) ? $data['field_show_file_selector'] : 'n'
+					)
+				)
+			);
 		}
 
-		// Construct the rest of the settings form for Channel...
+		if ($this->content_type() == 'grid')
+		{
+			return array('field_options' => $settings);
+		}
 
-		$prefix = 'textarea';
-
-		$field_rows	= ($data['field_ta_rows'] == '') ? 6 : $data['field_ta_rows'];
-
-		ee()->table->add_row(
-			lang('textarea_rows', 'field_ta_rows'),
-			form_input(array('id'=>'field_ta_rows','name'=>'field_ta_rows', 'size'=>4,'value'=>set_value('field_ta_rows', $field_rows)))
-		);
-
-		$this->field_formatting_row($data, $prefix);
-		$this->text_direction_row($data, $prefix);
-		$this->field_show_formatting_btns_row($data, $prefix);
-		$this->field_show_smileys_row($data, $prefix);
-		$this->field_show_file_selector_row($data, $prefix);
-	}
-
-	// --------------------------------------------------------------------
-
-	public function grid_display_settings($data)
-	{
-		return array(
-			$this->grid_field_formatting_row($data),
-			$this->grid_text_direction_row($data),
-			$this->grid_textarea_max_rows_row($data),
-			$this->grid_checkbox_row(
-				lang('grid_show_fmt_btns'),
-				'show_formatting_buttons',
-				1,
-				(isset($data['show_formatting_buttons']) && $data['show_formatting_buttons'] == 1)
-			),
-		);
+		return array('field_options_textarea' => array(
+			'label' => 'field_options',
+			'group' => 'textarea',
+			'settings' => $settings
+		));
 	}
 }
 

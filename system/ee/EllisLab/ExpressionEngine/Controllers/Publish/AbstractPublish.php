@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Publish;
 
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Module\Channel\Model\ChannelEntry;
 /**
  * ExpressionEngine - by EllisLab
@@ -12,7 +12,7 @@ use EllisLab\ExpressionEngine\Module\Channel\Model\ChannelEntry;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -58,6 +58,7 @@ abstract class AbstractPublish extends CP_Controller {
 	{
 		$allowed_channel_ids = ($this->is_admin) ? NULL : $this->assigned_channel_ids;
 		$channels = ee('Model')->get('Channel', $allowed_channel_ids)
+			->fields('channel_id', 'channel_title')
 			->filter('site_id', ee()->config->item('site_id'))
 			->order('channel_title', 'asc')
 			->all();
@@ -110,7 +111,7 @@ abstract class AbstractPublish extends CP_Controller {
 			'lang.confirm_exit'					=> lang('confirm_exit'),
 			'lang.loading'						=> lang('loading'),
 			'publish.autosave.interval'			=> (int) $autosave_interval_seconds,
-			'publish.autosave.URL'				=> cp_url('publish/autosave/' . $channel_id . '/' . $entry_id),
+			'publish.autosave.URL'				=> ee('CP/URL', 'publish/autosave/' . $channel_id . '/' . $entry_id)->compile(),
 			// 'publish.channel_id'				=> $this->_channel_data['channel_id'],
 			// 'publish.default_entry_title'		=> $this->_channel_data['default_entry_title'],
 			// 'publish.field_group'				=> $this->_channel_data['field_group'],

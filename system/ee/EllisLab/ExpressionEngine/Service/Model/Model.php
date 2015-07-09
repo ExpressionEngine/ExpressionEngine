@@ -18,7 +18,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationAware;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -508,20 +508,17 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 			throw new InvalidArgumentException('uniqueWithinSiblings must have at least two arguments.');
 		}
 
-		$get_parent = 'get' . $params[0];
-		$get_siblings = 'get' . $params[1];
+		$parent = $params[0];
+		$siblings = $params[1];
 
-		$unique = $this->$get_parent()
-			->$get_siblings()
-			->filter(function ($element) use ($key, $value)
-			{
-				return $element->$key == $value;
-			});
-
-		// Greater than one to account for self
-		if (count($unique) > 1)
+		if ($this->$parent && $this->$parent->$siblings)
 		{
-			return 'unique';
+			$count = $this->$parent->$siblings->filter($key, $value)->count();
+
+			if ($count > 1)
+			{
+				return 'unique';
+			}
 		}
 
 		return TRUE;

@@ -9,7 +9,7 @@
 	xmlns:content="http://purl.org/rss/1.0/modules/content/">
 
 	<channel>
-	
+
 	<title>{exp:xml_encode}{channel_name}{/exp:xml_encode}</title>
 	<link>{channel_url}</link>
 	<description>{channel_description}</description>
@@ -17,20 +17,20 @@
 	<dc:creator>{email}</dc:creator>
 	<dc:rights>Copyright {gmt_date format="%Y"}</dc:rights>
 	<dc:date>{gmt_date format="%Y-%m-%dT%H:%i:%s%Q"}</dc:date>
-	<admin:generatorAgent rdf:resource="http://ellislab.com/" />
-	
+	<admin:generatorAgent rdf:resource="https://ellislab.com/" />
+
 {exp:channel:entries channel="news" limit="10" dynamic_start="on" disable="member_data"}
 	<item>
 	  <title>{exp:xml_encode}{title}{/exp:xml_encode}</title>
 	  <link>{comment_url_title_auto_path}</link>
 	  <guid>{comment_url_title_auto_path}#When:{gmt_entry_date format="%H:%i:%sZ"}</guid>
-	  <description><![CDATA[{news_body}]]></description> 
+	  <description><![CDATA[{news_body}]]></description>
 	  <dc:subject>{exp:xml_encode}{categories backspace="1"}{category_name}, {/categories}{/exp:xml_encode}</dc:subject>
 	  <dc:date>{gmt_entry_date format="%Y-%m-%dT%H:%i:%s%Q"}</dc:date>
 	</item>
 {/exp:channel:entries}
-	
+
 	</channel>
 </rss>
 
-{/exp:rss:feed}						
+{/exp:rss:feed}

@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -94,7 +94,7 @@ class Rte_lib {
 		// new toolset?
 		if ($toolset_id == 0)
 		{
-			$vars['base_url'] = cp_url('addons/settings/rte/new_toolset');
+			$vars['base_url'] = ee('CP/URL', 'addons/settings/rte/new_toolset');
 			$vars['cp_page_title_alt'] = lang('create_tool_set_header');
 			$vars['save_btn_text'] = 'create_tool_set';
 			$toolset['tools'] = array();
@@ -102,7 +102,7 @@ class Rte_lib {
 		}
 		else
 		{
-			$vars['base_url'] = cp_url('addons/settings/rte/edit_toolset', array('toolset_id' => $toolset_id));
+			$vars['base_url'] = ee('CP/URL', 'addons/settings/rte/edit_toolset', array('toolset_id' => $toolset_id));
 			$vars['cp_page_title_alt'] = lang('edit_tool_set_header');
 			$vars['save_btn_text'] = 'edit_tool_set';
 
@@ -185,13 +185,13 @@ class Rte_lib {
 
 		if ($toolset_id)
 		{
-			$error_url = cp_url('addons/settings/rte/edit_toolset', array('toolset_id' => $toolset_id));
+			$error_url = ee('CP/URL', 'addons/settings/rte/edit_toolset', array('toolset_id' => $toolset_id));
 			$success_url = $error_url;
 		}
 		else
 		{
-			$error_url = cp_url('addons/settings/rte/new_toolset');
-			$success_url = cp_url('addons/settings/rte');
+			$error_url = ee('CP/URL', 'addons/settings/rte/new_toolset');
+			$success_url = ee('CP/URL', 'addons/settings/rte');
 		}
 
 		$toolset = array(
@@ -664,8 +664,8 @@ class Rte_lib {
 			'ui'		=> PATH_JQUERY.'ui/jquery.ui.',
 			'plugin'	=> PATH_JQUERY.'plugins/',
 			'file'		=> PATH_THEMES.'javascript/'.$folder.'/',
-			'package'	=> PATH_ADDONS,
-			'fp_module'	=> PATH_MOD
+			'package'	=> PATH_THIRD,
+			'fp_module'	=> PATH_ADDONS
 		);
 
 		$contents = '';

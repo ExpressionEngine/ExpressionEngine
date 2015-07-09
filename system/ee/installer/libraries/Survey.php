@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -71,7 +71,7 @@ class Survey {
 			'php_extensions'	=> json_encode(get_loaded_extensions()),
 			'mysql_version'		=> preg_replace("/(.*?)\-.*/", "\\1", $mysql_info),
 			'path_info_support'	=> $path_info_support,
-			'addons'			=> json_encode(directory_map(PATH_ADDONS, 1)),
+			'addons'			=> json_encode(directory_map(PATH_THIRD, 1)),
 			'forums'			=> ($CI->config->item('forum_is_installed') == "y") ? 'y' : 'n',
 			'msm'				=> ($CI->config->item('multiple_sites_enabled') == "y") ? 'y' : 'n',
 		);

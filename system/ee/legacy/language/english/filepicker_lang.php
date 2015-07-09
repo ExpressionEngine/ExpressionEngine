@@ -2,8 +2,7 @@
 
 $lang = array(
 
-'filepicker_module_name' =>
-'FilePicker'
+'filepicker_module_name' => 'FilePicker'
 
 );
 

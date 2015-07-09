@@ -3,12 +3,12 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<meta http-equiv='refresh' content='<?=$refresh_rate?>; url=<?=$redirect_url?>'>
-	
+
 	<title><?=$cp_page_title?> | ExpressionEngine</title>
 
 	<?=$this->view->head_link('css/global.css'); ?>
 
-	<?php 
+	<?php
     if (isset($library_src))
     {
         echo $library_src;
@@ -31,7 +31,7 @@
 
 <body onload="<?=$cp_page_onload?>">
 
-<div id="branding"><a href="http://ellislab.com/"><img src="<?=PATH_CP_GBL_IMG?>ee_logo_branding.gif" width="250" height="28" alt="<?=lang('powered_by')?> ExpressionEngine" /></a></div>
+<div id="branding"><a href="https://ellislab.com/"><img src="<?=PATH_CP_GBL_IMG?>ee_logo_branding.gif" width="250" height="28" alt="<?=lang('powered_by')?> ExpressionEngine" /></a></div>
 
 <?php
 if ($EE_view_disable !== TRUE)
@@ -48,11 +48,11 @@ if ($EE_view_disable !== TRUE)
 	<div class="contents">
 		<div class="heading"><h2 class="edit"><?=$refresh_heading?></h2></div>
 		<div class="pageContents">
-			
+
 			<?php if (isset($refresh_notice)): ?>
 			<p class="notice"><?=$refresh_notice?></p>
 			<?php endif; ?>
-			
+
 			<p><?=$refresh_message?></p>
 		</div>
 	</div> <!-- contents -->

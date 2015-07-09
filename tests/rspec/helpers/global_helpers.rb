@@ -7,6 +7,7 @@ $invalid_path = 'The path you submitted is not valid.'
 $not_writable = 'The path you submitted is not writable.'
 $alpha_dash = 'This field may only contain alpha-numeric characters, underscores, and dashes.'
 $hex_color = 'This field must contain a valid hex color code.'
+$unique = 'This field must be unique.'
 
 $xss_error = 'The data you submitted did not pass our security check.'
 $xss_vector = '"><script>alert(\'stored xss\')<%2fscript>'

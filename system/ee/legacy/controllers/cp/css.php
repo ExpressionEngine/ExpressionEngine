@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -56,7 +56,7 @@ class Css extends CI_Controller {
 			$package = strtolower($package);
 
 			$file = $this->input->get_post('file');
-			$path = PATH_ADDONS.$package.'/';
+			$path = PATH_THIRD.$package.'/';
 
 			// There's a good chance we don't need ci_view_path
 			// So try this first

@@ -17,6 +17,12 @@ class Response {
 	 */
 	public function setBody($str)
 	{
+		if (is_array($str))
+		{
+			$str = json_encode($str);
+			$this->setHeader('Content-Type', 'application/json; charset=UTF-8');
+		}
+
 		$this->body = $str;
 	}
 
@@ -46,8 +52,11 @@ class Response {
 	 */
 	public function send()
 	{
-		// smoke and mirrors
-		return $GLOBALS['OUT']->_display();
+		if ( ! $this->body)
+		{
+			// smoke and mirrors to support the old style
+			return $GLOBALS['OUT']->_display();
+		}
 
 		$this->sendHeaders();
 		$this->sendBody();
@@ -98,7 +107,7 @@ class Response {
 	{
 		foreach ($this->headers as $name => $value)
 		{
-			@header($name, $value);
+			@header($name.': '.$value);
 		}
 	}
 

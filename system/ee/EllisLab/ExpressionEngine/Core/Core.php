@@ -188,12 +188,17 @@ abstract class Core {
 		{
 			$controller = new $class;
 
-			call_user_func_array(array($controller, $method), $params);
+			$result = call_user_func_array(array($controller, $method), $params);
 		}
 		catch (\Exception $ex)
 		{
 			echo $this->formatException($ex);
 			die('Fatal Error.');
+		}
+
+		if (isset($result))
+		{
+			ee('Response')->setBody($result);
 		}
 
 		$this->legacy->markBenchmark('controller_execution_time_( '.$class.' / '.$method.' )_end');

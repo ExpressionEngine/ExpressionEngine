@@ -7,6 +7,7 @@
 		</fieldset>
 		<h1><?=$cp_page_title?></h1>
 		<?=ee('Alert')->getAllInlines()?>
+		<?=$filters?>
 		<?php $this->view('_shared/table', $table); ?>
 		<?=$pagination?>
 		<fieldset class="tbl-bulk-act">
@@ -25,7 +26,7 @@
 
 $modal_vars = array(
 	'name'		=> 'modal-confirm-remove',
-	'form_url'	=> cp_url('channels/fields/', ee()->cp->get_url_state()),
+	'form_url'	=> ee('CP/URL', 'channels/fields/', ee()->cp->get_url_state()),
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
 	)

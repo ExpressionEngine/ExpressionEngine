@@ -13,7 +13,7 @@ use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -52,7 +52,7 @@ class Email extends Logs {
 			$this->delete('EmailConsoleCache', lang('email_log'));
 			if (strtolower(ee()->input->post('delete')) == 'all')
 			{
-				return ee()->functions->redirect(cp_url('logs/email'));
+				return ee()->functions->redirect(ee('CP/URL', 'logs/email'));
 			}
 		}
 
@@ -153,12 +153,12 @@ class Email extends Logs {
 		{
 			ee()->lang->load('communicate');
 			ee()->view->set_message('issue', lang('no_cached_email'), '', TRUE);
-			$this->functions->redirect(cp_url('logs/email'));
+			$this->functions->redirect(ee('CP/URL', 'logs/email'));
 		}
 
 		ee()->view->cp_page_title = lang('email_log') . ': ' . $email->subject;
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('logs/email') => lang('view_email_logs')
+			ee('CP/URL', 'logs/email')->compile() => lang('view_email_logs')
 		);
 		ee()->view->email = $email;
 		ee()->cp->render('logs/email/detail');

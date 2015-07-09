@@ -68,6 +68,9 @@ class Channel extends StructureModel {
 		'ChannelLayouts' => array(
 			'type' => 'hasMany',
 			'model' => 'ChannelLayout'
+		),
+		'Site' => array(
+			'type' => 'belongsTo'
 		)
 	);
 

@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -81,7 +81,7 @@ class Wizard extends CI_Controller {
 	// These are the values we need to set during a first time installation
 	public $userdata = array(
 		'app_version'           => '',
-		'doc_url'               => 'http://ellislab.com/expressionengine/user-guide/',
+		'doc_url'               => 'https://ellislab.com/expressionengine/user-guide/',
 		'ext'                   => '.php',
 		'ip'                    => '',
 		'database'              => 'mysql',
@@ -615,9 +615,13 @@ class Wizard extends CI_Controller {
 		// Start our error trapping
 		$errors = array();
 
+		// extract the port from the hostname if they specified one
+		$this->setupDatabasePort();
+
 		// Connect to the database.  We pass a multi-dimensional array since
 		// that's what is normally found in the database config file
 		$db = array(
+			'port'     => $this->userdata['db_port'],
 			'hostname' => $this->userdata['db_hostname'],
 			'username' => $this->userdata['db_username'],
 			'password' => $this->userdata['db_password'],
@@ -771,6 +775,28 @@ class Wizard extends CI_Controller {
 
 		// Woo hoo! Success!
 		$this->show_success('install', $vars);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Split off the port, if given one (e.g. 192.168.10.2:4055)
+	 */
+	private function setupDatabasePort()
+	{
+		$db_hostname = $this->userdata['db_hostname'];
+
+		if (strpos($db_hostname, ':') !== FALSE)
+		{
+			list($hostname, $port) = explode($db_hostname, ':');
+
+			$this->userdata['db_hostname'] = $hostname;
+			$this->userdata['db_port'] = $port;
+		}
+		else
+		{
+			$this->userdata['db_port'] = NULL;
+		}
 	}
 
 	// --------------------------------------------------------------------
@@ -1676,6 +1702,7 @@ class Wizard extends CI_Controller {
 		}
 
 		$config = array(
+			'db_port'                   => $this->userdata['db_port'],
 			'db_hostname'               => $this->userdata['db_hostname'],
 			'db_username'               => $this->userdata['db_username'],
 			'db_password'               => $this->userdata['db_password'],
@@ -1704,7 +1731,6 @@ class Wizard extends CI_Controller {
 			'captcha_rand'              => 'y',
 			'captcha_require_members'   => 'n',
 			'require_captcha'           => 'n',
-			'enable_db_caching'         => 'n',
 			'enable_sql_caching'        => 'n',
 			'force_query_string'        => 'n',
 			'show_profiler'             => 'n',
@@ -1762,7 +1788,6 @@ class Wizard extends CI_Controller {
 			'new_member_notification'   => 'n',
 			'mbr_notification_emails'   => '',
 			'require_terms_of_service'  => 'y',
-			'use_membership_captcha'    => 'n',
 			'default_member_group'      => '5',
 			'profile_trigger'           => 'member',
 			'member_theme'              => 'default',
@@ -1864,7 +1889,6 @@ class Wizard extends CI_Controller {
 			'captcha_rand',
 			'captcha_require_members',
 			'require_captcha',
-			'enable_db_caching',
 			'enable_sql_caching',
 			'force_query_string',
 			'show_profiler',
@@ -2218,7 +2242,7 @@ class Wizard extends CI_Controller {
 			}
 			else
 			{
-				$path = PATH_ADDONS.$module.'/';
+				$path = PATH_THIRD.$module.'/';
 			}
 
 			if (file_exists($path.'upd.'.$module.'.php'))

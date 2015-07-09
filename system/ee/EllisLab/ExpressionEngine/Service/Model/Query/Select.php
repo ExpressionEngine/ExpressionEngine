@@ -10,7 +10,7 @@ use LogicException;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -88,6 +88,12 @@ class Select extends Query {
 	 */
 	protected function selectModel($query, $model, $alias, $will_join = FALSE)
 	{
+		// CI ar workaround. Active record is too eager in its escaping and
+		// won't let us join on an aliased table that has not been created,
+		// so we queue up the secondary tables until the relation creates the
+		// alias for the primary one
+		$queued_joins = array();
+
 		$alias = $alias ?: $model;
 		$this->storeAlias($alias, $model);
 
@@ -100,6 +106,7 @@ class Select extends Query {
 			$this->model_fields[$alias] = array();
 		}
 
+		reset($tables);
 		$main_table = key($tables);
 		$primary_key = $meta->getPrimaryKey();
 
@@ -116,6 +123,14 @@ class Select extends Query {
 					$query->where("{$table_alias}.{$primary_key} = {$alias}_{$main_table}.{$primary_key}", NULL, FALSE);
 				}
 			}
+			elseif ($table != $main_table)
+			{
+				$queued_joins[] = array(
+					"{$table} as {$table_alias}",
+					"{$table_alias}.{$primary_key} = {$alias}_{$main_table}.{$primary_key}",
+					'LEFT'
+				);
+			}
 
 			foreach ($table_fields as $column)
 			{
@@ -126,10 +141,12 @@ class Select extends Query {
 				// or they specifically chose this one to be selected
 				if (empty($fields) OR in_array("{$alias}.{$column}", $fields) OR in_array("{$alias}.*", $fields))
 				{
-					$query->select("{$table_alias}.{$column} as {$alias}__{$column}");
+					$query->select("{$table_alias}.{$column} as {$alias}__{$column}", FALSE);
 				}
 			}
 		}
+
+		return $queued_joins;
 	}
 
 	/**
@@ -283,15 +300,20 @@ class Select extends Query {
 
 			$child_model = $relation->getTargetModel();
 
-			$this->selectModel($query, $child_model, $child_alias, TRUE);
+			$queued_joins = $this->selectModel($query, $child_model, $child_alias, TRUE);
 
 			$relation->modifyEagerQuery($query, $parent_alias, $child_alias);
+
+			foreach ($queued_joins as $join)
+			{
+				call_user_func_array(array($query, 'join'), $join);
+			}
 
 			$this->storeRelation($parent_alias, $child_alias, $relation);
 
 			if (count($grandkids))
 			{
-				$this->recurseWiths($query, $child, $child_alias, $grandkids);
+				$this->recurseWiths($query, $child_model, $child_alias, $grandkids);
 			}
 		}
 	}

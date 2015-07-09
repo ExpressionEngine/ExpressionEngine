@@ -2,7 +2,7 @@
 
 return array(
 	'author'      => 'EllisLab',
-	'author_url'  => 'http://ellislab.com/',
+	'author_url'  => 'https://ellislab.com/',
 	'name'        => 'File',
 	'description' => '',
 	'version'     => '1.0.0',

@@ -1,6 +1,6 @@
 <?php
 
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Model\File\UploadDestination;
 use EllisLab\Addons\FilePicker\FilePicker as Picker;
 
@@ -33,15 +33,11 @@ class Filepicker_mcp {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$directories = array();
 		$dirs = ee()->api->get('UploadDestination')
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
-		foreach($dirs as $dir)
-		{
-			$directories[$dir->id] = $dir;
-		}
+		$directories = $dirs->indexBy('id');
 
 		if ( ! empty(ee()->input->get('directory')))
 		{
@@ -60,10 +56,20 @@ class Filepicker_mcp {
 			$files = $dir->getFiles();
 		}
 
+		$type = ee()->input->get('type') ?: 'all';
+
+		if ($type == 'img')
+		{
+			$files = $files->filter(function($file)
+			{
+				return $file->isImage();
+			});
+		}
+
 		// Filter out any files that are no longer on disk
 		$files->filter(function($file) { return $file->exists(); });
 
-		$base_url = new URL($this->base_url, ee()->session->session_id());
+		$base_url = ee('CP/URL', $this->base_url);
 
 		$filters = ee('Filter')->add('Perpage', $files->count(), 'show_all_files');
 
@@ -79,6 +85,7 @@ class Filepicker_mcp {
 		$base_url->setQueryStringVariable('sort_col', $table->sort_col);
 		$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
 		$base_url->setQueryStringVariable('directory', $id);
+		$base_url->setQueryStringVariable('type', $type);
 
 		ee()->view->filters = $filters->render($base_url);
 

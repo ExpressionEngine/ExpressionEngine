@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.6
  * @filesource
@@ -79,7 +79,7 @@ class Relationship_ft extends EE_Fieldtype {
 	 * @param	field data
 	 * @return	column data
 	 */
-	public function save($data)
+	public function save($data, $model = NULl)
 	{
 		$sort = isset($data['sort']) ? $data['sort'] : array();
 		$data = isset($data['data']) ? $data['data'] : array();
@@ -91,6 +91,12 @@ class Relationship_ft extends EE_Fieldtype {
 		if (isset($this->settings['grid_row_name']))
 		{
 			$cache_name .= $this->settings['grid_row_name'];
+		}
+
+		if (isset($model))
+		{
+			$name = $this->field_name;
+			$model->$name = '';
 		}
 
 		ee()->session->set_cache(__CLASS__, $cache_name, array(
@@ -116,7 +122,7 @@ class Relationship_ft extends EE_Fieldtype {
 	public function post_save($data)
 	{
 		$field_id = $this->field_id;
-		$entry_id = $this->settings['entry_id'];
+		$entry_id = $this->content_id();
 
 		$cache_name = $this->field_name;
 
@@ -308,7 +314,7 @@ class Relationship_ft extends EE_Fieldtype {
 			}
 		}
 
-
+		$channels = array();
 		$limit_channels = $this->settings['channels'];
 		$limit_categories = $this->settings['categories'];
 		$limit_statuses = $this->settings['statuses'];
@@ -336,6 +342,11 @@ class Relationship_ft extends EE_Fieldtype {
 		if (count($limit_channels))
 		{
 			$entries->filter('channel_id', 'IN', $limit_channels);
+			$channels = ee('Model')->get('Channel', $limit_channels)->all();
+		}
+		else
+		{
+			$channels = ee('Model')->get('Channel')->all();
 		}
 
 		if (count($limit_categories))
@@ -428,22 +439,25 @@ class Relationship_ft extends EE_Fieldtype {
 		{
 			$selected_entries = clone $entries;
 
-			$entries->filter('entry_id', 'NOT IN', $selected);
+			$entries = $entries->filter('entry_id', 'NOT IN', $selected)->all();
 
 			$selected_entries->limit(count($selected))
-				->filter('entry_id', 'IN', $selected);
+				->filter('entry_id', 'IN', $selected)
+				->all()
+				->map(function($entry) use(&$entries) { $entries[] = $entry; });
 
-			$entries = array_merge(
-				$entries->all()->asArray(),
-				$selected_entries->all()->asArray()
-			);
+			$entries = $entries->sortBy($order_field);
+			if (strtolower($this->settings['order_dir']) == 'desc')
+			{
+				$entries = $entries->reverse();
+			}
 		}
 		else
 		{
-			$entries = $entries->all()->asArray();
+			$entries = $entries->all();
 		}
 
-		if ($this->settings['allow_multiple'] == 0)
+		if (REQ != 'CP' && $this->settings['allow_multiple'] == 0)
 		{
 			$options[''] = '--';
 
@@ -455,13 +469,10 @@ class Relationship_ft extends EE_Fieldtype {
 			return form_dropdown($field_name.'[data][]', $options, current($selected));
 		}
 
-		ee()->cp->add_js_script(array(
-			'plugin' => 'ee_interact.event',
-			'file' => 'cp/relationships',
-			'ui' => 'sortable'
-		));
-
-		if ( ! isset($this->settings['grid_row_id']) && substr($field_name, 7) != 'col_id_' && count($entries))
+		if ( ! isset($this->settings['grid_row_id'])
+			&& substr($field_name, 7) != 'col_id_'
+			&& count($entries)
+			&& REQ != 'CP')
 		{
 			ee()->javascript->output("EE.setup_relationship_field('".$this->field_name."');");
 		}
@@ -469,22 +480,65 @@ class Relationship_ft extends EE_Fieldtype {
 		if (REQ == 'CP')
 		{
 			$css_link = ee()->view->head_link('css/relationship.css');
+			ee()->cp->add_js_script(array(
+				'plugin' => 'ee_interact.event',
+				'file' => 'fields/relationship/cp',
+				'ui' => 'sortable'
+			));
 		}
 		// Channel Form
 		else
 		{
 			$css_link = '<link rel="stylesheet" href="'.URL_THEMES.'cp_themes/default/css/relationship.css" type="text/css" media="screen" />'.PHP_EOL;
+			ee()->cp->add_js_script(array(
+				'plugin' => 'ee_interact.event',
+				'file' => 'cp/relationships',
+				'ui' => 'sortable'
+			));
 		}
 
 		ee()->cp->add_to_head($css_link);
 
-		// $related = ee('Model')->get('ChannelEntry', $entry_id)
-		// 	->first()
-		// 	->getParents();
+		if ($entry_id)
+		{
+			$parents = ee('Model')->get('ChannelEntry', $entry_id)
+				->first()
+				->Parents
+				->indexBy('entry_id');
+		}
+		else
+		{
+			$parents = array();
+		}
+
+		$entries = $entries->indexBy('entry_id');
+		$parent_ids = array_keys($parents);
+		$entry_ids = array_keys($entries);
+
+		foreach ($selected as $chosen)
+		{
+			if ( ! in_array($chosen, $parent_ids)
+				&& in_array($chosen, $entry_ids))
+			{
+				$parents[$chosen] = $entries[$chosen];
+			}
+		}
+
+		asort($order);
 
 		$related = array();
 
-		return ee('View')->make('publish')->render(compact('field_name', 'entries', 'selected', 'related'));
+		foreach ($order as $key => $index)
+		{
+			if (in_array($key, $parent_ids))
+			{
+				$related[] = $parents[$key];
+			}
+		}
+
+		$multiple = (bool) $this->settings['allow_multiple'];
+
+		return ee('View')->make('publish')->render(compact('field_name', 'entries', 'selected', 'related', 'multiple', 'channels'));
 	}
 
 	// --------------------------------------------------------------------
@@ -520,181 +574,138 @@ class Relationship_ft extends EE_Fieldtype {
 	public function display_settings($data)
 	{
 		ee()->lang->loadfile('fieldtypes');
-
-		$form = $this->_form();
-		$form->populate($data);
-
-		ee()->table->set_heading(array(
-			'data' => lang('rel_ft_options'),
-			'colspan' => 2
-		));
-
-		$this->_row(
-			'<strong>'.lang('rel_ft_configure').'</strong><br><i class="instruction_text">'.lang('rel_ft_configure_subtext').'</i>'
-		);
-
-		$this->_row(
-			lang('rel_ft_channels'),
-			$form->multiselect('channels', 'style="min-width: 225px; height: 140px;"'),
-			'top'
-		);
-
-		$this->_row(
-			lang('rel_ft_include'),
-			'<label>'.$form->checkbox('expired').' '.lang('rel_ft_include_expired').'</label>'.
-				NBS.NBS.' <label>'.$form->checkbox('future').' '.lang('rel_ft_include_future').'</label>'
-		);
-		$this->_row(
-			lang('rel_ft_categories'),
-			$form->multiselect('categories', 'style="min-width: 225px; height: 140px;"'),
-			'top'
-		);
-
-		$this->_row(
-			lang('rel_ft_authors'),
-			$form->multiselect('authors', 'style="min-width: 225px; height: 57px;"'),
-			'top'
-		);
-		$this->_row(
-			lang('rel_ft_statuses'),
-			$form->multiselect('statuses', 'style="min-width: 225px; height: 43px;"'),
-			'top'
-		);
-		$this->_row(
-			lang('rel_ft_limit_left'),
-			$form->input('limit', 'class="center" style="width: 55px;"').NBS.
-				' <strong>'.lang('rel_ft_limit_right').'</strong> <i class="instruction_text">('.lang('rel_ft_limit_subtext').')</i>'
-		);
-		$this->_row(
-			lang('rel_ft_order'),
-			$form->dropdown('order_field').' &nbsp; <strong>'.lang('rel_ft_order_in').'</strong> &nbsp; '.$form->dropdown('order_dir')
-		);
-		$this->_row(
-			lang('rel_ft_allow_multi'),
-			'<label>'.$form->checkbox('allow_multiple').' '.lang('yes').' </label> <i class="instruction_text">('.lang('rel_ft_allow_multi_subtext').')</i>'
-		);
-
-		return ee()->table->generate();
-	}
-
-	// --------------------------------------------------------------------
-
-	public function grid_display_settings($data)
-	{
 		ee()->load->library('Relationships_ft_cp');
 		$util = ee()->relationships_ft_cp;
 
-		return array(
-			$this->grid_checkbox_row(
-				lang('rel_ft_include_expired'),
-				'expired',
-				1,
-				(isset($data['expired']) && $data['expired'] == 1)
-			),
-			$this->grid_checkbox_row(
-				lang('rel_ft_include_future'),
-				'future',
-				1,
-				(isset($data['future']) && $data['future'] == 1)
-			),
-			$this->grid_dropdown_row(
-				lang('channels'),
-				'channels[]',
-				$util->all_channels(),
-				isset($data['channels']) ? $data['channels'] : NULL,
-				TRUE, // Multiselect
-				TRUE, // Wide select box
-				'style="height: 140px"'
-			),
-			$this->grid_dropdown_row(
-				lang('categories'),
-				'categories[]',
-				$util->all_categories(),
-				isset($data['categories']) ? $data['categories'] : NULL,
-				TRUE,
-				TRUE,
-				'style="height: 140px"'
-			),
-			$this->grid_dropdown_row(
-				lang('rel_ft_authors'),
-				'authors[]',
-				$util->all_authors(),
-				isset($data['authors']) ? $data['authors'] : NULL,
-				TRUE,
-				TRUE,
-				'style="height: 57px"'
-			),
-			$this->grid_dropdown_row(
-				lang('statuses'),
-				'statuses[]',
-				$util->all_statuses(),
-				isset($data['statuses']) ? $data['statuses'] : NULL,
-				TRUE,
-				TRUE,
-				'style="height: 43px"'
-			),
-			form_label(lang('grid_show')).NBS.NBS.NBS.
-			form_input(array(
-				'name'	=> 'limit',
-				'size'	=> 4,
-				'value'	=> isset($data['limit']) ? $data['limit'] : 100,
-				'class'	=> 'grid_input_text_small'
-			)).NBS.NBS.NBS.
-			form_label(lang('entries')),
+		$form = $this->_form();
+		$form->populate($data);
+		$values = $form->values();
 
-			// Order by row
-			form_label(lang('grid_order_by')).NBS.NBS.
-			form_dropdown(
-				'order_field',
-				$util->all_order_options(),
-				isset($data['order_field']) ? $data['order_field'] : NULL
-			).NBS.NBS.
-			form_label(lang('in')).NBS.NBS.
-			form_dropdown(
-				'order_dir',
-				$util->all_order_directions(),
-				isset($data['order_dir']) ? $data['order_dir'] : NULL
+		$settings = array(
+			array(
+				'title' => 'rel_ft_channels',
+				'desc' => 'rel_ft_channels_desc',
+				'fields' => array(
+					'relationship_channels' => array(
+						'type' => 'checkbox',
+						'wrap' => TRUE,
+						'choices' => $util->all_channels(),
+						'value' => ($values['channels']) ?: '--'
+					)
+				)
 			),
-
-			// Allow multiple
-			$this->grid_checkbox_row(
-				lang('rel_ft_allow_multi'),
-				'allow_multiple',
-				1,
-				(isset($data['allow_multiple']) && $data['allow_multiple'] == 1)
+			array(
+				'title' => 'rel_ft_include',
+				'desc' => 'rel_ft_include_desc',
+				'fields' => array(
+					'relationship_expired' => array(
+						'type' => 'checkbox',
+						'scalar' => TRUE,
+						'choices' => array(
+							'1' => lang('rel_ft_include_expired')
+						),
+						'value' => $values['expired']
+					),
+					'relationship_future' => array(
+						'type' => 'checkbox',
+						'scalar' => TRUE,
+						'choices' => array(
+ 							'1' => lang('rel_ft_include_future')
+						),
+						'value' => $values['future']
+					)
+				)
+			),
+			array(
+				'title' => 'rel_ft_categories',
+				'desc' => 'rel_ft_categories_desc',
+				'fields' => array(
+					'relationship_categories' => array(
+						'type' => 'checkbox',
+						'nested' => TRUE,
+						'choices' => $util->all_categories(),
+						'value' => ($values['categories']) ?: '--'
+					)
+				)
+			),
+			array(
+				'title' => 'rel_ft_authors',
+				'desc' => 'rel_ft_authors_desc',
+				'fields' => array(
+					'relationship_authors' => array(
+						'type' => 'checkbox',
+						'nested' => TRUE,
+						'choices' => $util->all_authors(),
+						'value' => ($values['authors']) ?: '--'
+					)
+				)
+			),
+			array(
+				'title' => 'rel_ft_statuses',
+				'desc' => 'rel_ft_statuses_desc',
+				'fields' => array(
+					'relationship_statuses' => array(
+						'type' => 'checkbox',
+						'wrap' => TRUE,
+						'choices' => $util->all_statuses(),
+						'value' => ($values['statuses']) ?: '--'
+					)
+				)
+			),
+			array(
+				'title' => 'rel_ft_limit',
+				'desc' => 'rel_ft_limit_desc',
+				'fields' => array(
+					'limit' => array(
+						'type' => 'text',
+						'value' => $values['limit']
+					)
+				)
+			),
+			array(
+				'title' => 'rel_ft_order',
+				'desc' => 'rel_ft_order_desc',
+				'fields' => array(
+					'relationship_order_field' => array(
+						'type' => 'select',
+						'choices' => array(
+							'title' 	 => lang('rel_ft_order_title'),
+							'entry_date' => lang('rel_ft_order_date')
+						),
+						'value' => $values['order_field']
+					),
+					'relationship_order_dir' => array(
+						'type' => 'select',
+						'choices' => array(
+							'asc' => lang('rel_ft_order_ascending'),
+							'desc'	=> lang('rel_ft_order_descending'),
+						),
+						'value' => $values['order_dir']
+					)
+				)
+			),
+			array(
+				'title' => 'rel_ft_allow_multi',
+				'desc' => 'rel_ft_allow_multi_desc',
+				'fields' => array(
+					'relationship_allow_multiple' => array(
+						'type' => 'yes_no',
+						'value' => ($values['allow_multiple']) ? 'y' : 'n'
+					)
+				)
 			)
 		);
-	}
 
-	// --------------------------------------------------------------------
+		if ($this->content_type() == 'grid')
+		{
+			return array('field_options' => $settings);
+		}
 
-	/**
-	 * Table row helper
-	 *
-	 * Help simplify the form building and enforces a strict layout. If
-	 * you think this table needs to look different, go bug James.
-	 *
-	 * @param	left cell content
-	 * @param	right cell content
-	 * @param	vertical alignment of left column
-	 *
-	 * @return	void - adds a row to the EE table class
-	 */
-	protected function _row($cell1, $cell2 = '', $valign = 'center')
-	{
-		if ( ! $cell2)
-		{
-			ee()->table->add_row(
-				array('data' => $cell1, 'colspan' => 2)
-			);
-		}
-		else
-		{
-			ee()->table->add_row(
-				array('data' => '<strong>'.$cell1.'</strong>', 'width' => '170px', 'valign' => $valign),
-				array('data' => $cell2, 'class' => 'id')
-			);
-		}
+		return array('field_options_relationship' => array(
+			'label' => 'field_options',
+			'group' => 'relationship',
+			'settings' => $settings
+		));
 	}
 
 	// --------------------------------------------------------------------
@@ -713,6 +724,9 @@ class Relationship_ft extends EE_Fieldtype {
 		$form->populate($data);
 
 		$save = $form->values();
+
+		// Boolstring conversion
+		$save['allow_multiple'] = ($save['allow_multiple'] == 'y') ? 1 : 0;
 
 		foreach ($save as $field => $value)
 		{
@@ -744,16 +758,16 @@ class Relationship_ft extends EE_Fieldtype {
 		$util = ee()->relationships_ft_cp;
 
 		$field_empty_values = array(
-			'channels'		=> array(),
+			'channels'		=> '--',
 			'expired'		=> 0,
 			'future'		=> 0,
-			'categories'	=> array(),
-			'authors'		=> array(),
-			'statuses'		=> array(),
+			'categories'	=> '--',
+			'authors'		=> '--',
+			'statuses'		=> '--',
 			'limit'			=> 100,
 			'order_field'	=> 'title',
 			'order_dir'		=> 'asc',
-			'allow_multiple'	=> 0
+			'allow_multiple'	=> 'n'
 		);
 
 		$field_options = array(

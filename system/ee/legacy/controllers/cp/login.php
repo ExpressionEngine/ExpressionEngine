@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -218,7 +218,7 @@ class Login extends CP_Controller {
 			if (strpos($return_path, '{') === 0)
 			{
 				$uri_elements = json_decode($return_path, TRUE);
-				$return_path = cp_url($uri_elements['path'], $uri_elements['arguments']);
+				$return_path = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
 			}
 			else
 			{

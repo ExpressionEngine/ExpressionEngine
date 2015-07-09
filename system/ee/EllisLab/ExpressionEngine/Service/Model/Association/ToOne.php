@@ -13,6 +13,11 @@ class ToOne extends Association {
 			$related = $related->first();
 		}
 
+		if (is_array($related))
+		{
+			$related = array_shift($related);
+		}
+
 		return parent::fill($related, $_skip_inverse);
 	}
 

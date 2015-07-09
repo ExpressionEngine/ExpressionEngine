@@ -10,7 +10,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -64,8 +64,109 @@ abstract class HasOneOrMany extends Relation {
 	{
 		list($_, $to) = $this->getKeys();
 
-		$target->$to = NULL;
+		if ($this->is_weak)
+		{
+			$target->$to = 0;
+		}
+		else
+		{
+			$target->$to = NULL;
+		}
 	}
+
+	/**
+	* Insert a database link between the model and targets
+	*/
+	public function insert(Model $source, $targets)
+	{
+		// nada
+	}
+
+	/**
+	* Drop the database link between the model and targets, potentially
+	* triggering a soft delete.
+	*/
+	public function drop(Model $source, $targets = NULL)
+	{
+		list($from, $to) = $this->getKeys();
+
+		if (is_array($targets))
+		{
+			$ids = array();
+
+			foreach ($targets as $target)
+			{
+				$ids[] = $target->getId();
+			}
+		}
+		else
+		{
+			$ids = array($targets->getId());
+		}
+
+		$query = $this->datastore->rawQuery()
+			->where($to, $source->$from);
+
+		if ( ! empty($ids))
+		{
+			$query->where_in($this->to_primary_key, $ids);
+		}
+
+		if ($this->is_weak)
+		{
+			$query->set($to, 0)->update($this->to_table);
+		}
+		else
+		{
+			$query->delete($this->to_table);
+		}
+	}
+
+	public function set(Model $source, $targets)
+	{
+		$this->dropComplement($source, $targets);
+	}
+
+	/**
+	* Drop the set-theoretic complement, i.e. drop everything that's *not*
+	* in the second parameter set
+	*/
+	protected function dropComplement(Model $source, $targets)
+	{
+		list($from, $to) = $this->getKeys();
+
+		if (is_array($targets))
+		{
+			$ids = array();
+
+			foreach ($targets as $target)
+			{
+				$ids[] = $target->getId();
+			}
+		}
+		else
+		{
+			$ids = array($targets->getId());
+		}
+
+		$query = $this->datastore->rawQuery()
+			->where($to, $source->$from);
+
+		if ( ! empty($ids))
+		{
+			$query->where_not_in($this->to_primary_key, $ids);
+		}
+
+		if ($this->is_weak)
+		{
+			$query->set($to, 0)->update($this->to_table);
+		}
+		else
+		{
+			$query->delete($this->to_table);
+		}
+	}
+
 
 	/**
 	*

@@ -13,7 +13,7 @@ use EllisLab\ExpressionEngine\Library\CP;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -50,17 +50,17 @@ class Logs extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->base_url = new CP\URL('logs', ee()->session->session_id());
+		$this->base_url = ee('CP/URL', 'logs');
 
 		// Sidebar Menu
 		$menu = array(
 			'logs',
 			array(
-				'developer_log' => cp_url('logs/developer'),
-				'cp_log'        => cp_url('logs/cp'),
-				'throttle_log'  => cp_url('logs/throttle'),
-				'email_log'     => cp_url('logs/email'),
-				'search_log'    => cp_url('logs/search'),
+				'developer_log' => ee('CP/URL', 'logs/developer'),
+				'cp_log'        => ee('CP/URL', 'logs/cp'),
+				'throttle_log'  => ee('CP/URL', 'logs/throttle'),
+				'email_log'     => ee('CP/URL', 'logs/email'),
+				'search_log'    => ee('CP/URL', 'logs/search'),
 			)
 		);
 
@@ -93,11 +93,11 @@ class Logs extends CP_Controller {
 	{
 		if (ee()->session->userdata('group_id') == 1)
 		{
-			ee()->functions->redirect(cp_url('logs/developer'));
+			ee()->functions->redirect(ee('CP/URL', 'logs/developer'));
 		}
 		else
 		{
-			ee()->functions->redirect(cp_url('logs/cp'));
+			ee()->functions->redirect(ee('CP/URL', 'logs/cp'));
 		}
 	}
 

@@ -8,7 +8,7 @@ namespace EllisLab\ExpressionEngine\Service\Config;
  * @package   ExpressionEngine
  * @author    EllisLab Dev Team
  * @copyright Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license   http://ellislab.com/expressionengine/user-guide/license.html
+ * @license   https://ellislab.com/expressionengine/user-guide/license.html
  * @link      http://ellislab.com
  * @since     Version 3.0.0
  * @filesource
@@ -33,6 +33,7 @@ class File implements Config
 			'active_group'     => 'expressionengine',
 			'active_record'    => TRUE,
 			'expressionengine' => array(
+				'port'     => 3306,
 				'hostname' => '127.0.0.1',
 				'username' => 'root',
 				'password' => '',

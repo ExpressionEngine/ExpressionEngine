@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -91,7 +91,7 @@ class EE_Menu {
 			{
 				if ($site_id != ee()->config->item('site_id'))
 				{
-					$menu[$site_name] = cp_url('sites', array('site_id' => $site_id, 'page' => $site_backlink));
+					$menu[$site_name] = ee('CP/URL', 'sites', array('site_id' => $site_id, 'page' => $site_backlink));
 				}
 			}
 		}
@@ -121,10 +121,10 @@ class EE_Menu {
 			foreach($channels->result() as $channel)
 			{
 				// Create link
-				$menu['create'][$channel->channel_title] = cp_url('publish/create/' . $channel->channel_id);
+				$menu['create'][$channel->channel_title] = ee('CP/URL', 'publish/create/' . $channel->channel_id);
 
 				// Edit link
-				$menu['edit'][$channel->channel_title] = cp_url('publish/edit', array('filter_by_channel' => $channel->channel_id));
+				$menu['edit'][$channel->channel_title] = ee('CP/URL', 'publish/edit', array('filter_by_channel' => $channel->channel_id));
 			}
 		}
 
@@ -142,11 +142,11 @@ class EE_Menu {
 	private function _develop_menu()
 	{
 		$menu = array(
-			'channel_manager'  => cp_url('channels'),
-			'template_manager' => cp_url('design'),
-			'addon_manager'    => cp_url('addons'),
-			'utilities'        => cp_url('utilities'),
-			'logs'             => cp_url('logs')
+			'channel_manager'  => ee('CP/URL', 'channels'),
+			'template_manager' => ee('CP/URL', 'design'),
+			'addon_manager'    => ee('CP/URL', 'addons'),
+			'utilities'        => ee('CP/URL', 'utilities'),
+			'logs'             => ee('CP/URL', 'logs')
 		);
 
 		if ( ! ee()->cp->allowed_group('can_access_addons'))
@@ -216,10 +216,10 @@ class EE_Menu {
 	 * Sets up left sidebar navigation given an array of data like this:
 	 *
 	 * array(
-	 *     'key_of_heading' => cp_url('optional/link'),
+	 *     'key_of_heading' => ee('CP/URL', 'optional/link'),
 	 *     'heading_with_no_link',
 	 *     array(
-	 *         'item_in_subsection' => cp_url('sub/section')
+	 *         'item_in_subsection' => ee('CP/URL', 'sub/section')
 	 *     )
 	 * )
 	 *
@@ -254,13 +254,13 @@ class EE_Menu {
 
 		$menu = array();
 		$menu['content'] = array(
-			'publish'	=> cp_url('content_publish'),
-			'edit'		=> cp_url('content_edit'),
+			'publish'	=> ee('CP/URL', 'content_publish'),
+			'edit'		=> ee('CP/URL', 'content_edit'),
 			'files'		=> array(
-				'file_manager'					=> cp_url('content_files'),
+				'file_manager'					=> ee('CP/URL', 'content_files'),
 				'----',
-				'file_upload_preferences'		=> cp_url('content_files/file_upload_preferences'),
-				'file_watermark_preferences'	=> cp_url('content_files/watermark_preferences'),
+				'file_upload_preferences'		=> ee('CP/URL', 'content_files/file_upload_preferences'),
+				'file_watermark_preferences'	=> ee('CP/URL', 'content_files/watermark_preferences'),
 			)
 		);
 
@@ -268,127 +268,127 @@ class EE_Menu {
 
 		$template_menu = array(
 			'edit_templates'				=> array(),
-			'template_manager'				=> cp_url('design/manager')
+			'template_manager'				=> ee('CP/URL', 'design/manager')
 		);
 
 		if (ee()->config->item('enable_template_routes') == 'y')
 		{
-			$template_menu += array('template_route_manager' => cp_url('design/url_manager'));
+			$template_menu += array('template_route_manager' => ee('CP/URL', 'design/url_manager'));
 		}
 
 		$template_menu += array(
-			'sync_templates'				=> cp_url('design/sync_templates'),
+			'sync_templates'				=> ee('CP/URL', 'design/sync_templates'),
 			'----',
-			'snippets'						=> cp_url('design/snippets'),
-			'global_variables'				=> cp_url('design/global_variables'),
+			'snippets'						=> ee('CP/URL', 'design/snippets'),
+			'global_variables'				=> ee('CP/URL', 'design/global_variables'),
 			'----',
-			'template_preferences'			=> cp_url('design/template_preferences_manager'),
-			'global_preferences'			=> cp_url('design/global_template_preferences')
+			'template_preferences'			=> ee('CP/URL', 'design/template_preferences_manager'),
+			'global_preferences'			=> ee('CP/URL', 'design/global_template_preferences')
 		);
 
 		$menu['design'] = array(
 			'templates' => $template_menu,
 			'message_pages' => array(
-				'email_notification'			=> cp_url('design/email_notification'),
-				'user_message'					=> cp_url('design/user_message'),
-				'offline_template'				=> cp_url('design/system_offline')
+				'email_notification'			=> ee('CP/URL', 'design/email_notification'),
+				'user_message'					=> ee('CP/URL', 'design/user_message'),
+				'offline_template'				=> ee('CP/URL', 'design/system_offline')
 			),
 		);
 
 		$menu['addons'] = array(
-			'modules'							=> cp_url('addons_modules'),
-			'extensions'						=> cp_url('addons_extensions'),
-			'fieldtypes'						=> cp_url('addons_fieldtypes'),
-			'plugins'							=> cp_url('addons_plugins')
+			'modules'							=> ee('CP/URL', 'addons_modules'),
+			'extensions'						=> ee('CP/URL', 'addons_extensions'),
+			'fieldtypes'						=> ee('CP/URL', 'addons_fieldtypes'),
+			'plugins'							=> ee('CP/URL', 'addons_plugins')
 		);
 
 		$menu['members'] = array(
-			'view_all_members'					=> cp_url('members/view_all_members'),
-			'member_groups'						=> cp_url('members/member_group_manager'),
+			'view_all_members'					=> ee('CP/URL', 'members/view_all_members'),
+			'member_groups'						=> ee('CP/URL', 'members/member_group_manager'),
 			'----',
-			'ip_search'							=> cp_url('members/ip_search'),
+			'ip_search'							=> ee('CP/URL', 'members/ip_search'),
 			'----',
-			'register_member'					=> cp_url('members/new_member_form'),
-			'user_banning'						=> cp_url('members/member_banning'),
-			'activate_pending_members'			=> cp_url('members/member_validation'),
+			'register_member'					=> ee('CP/URL', 'members/new_member_form'),
+			'user_banning'						=> ee('CP/URL', 'members/member_banning'),
+			'activate_pending_members'			=> ee('CP/URL', 'members/member_validation'),
 			'----',
-			'custom_member_fields'				=> cp_url('members/custom_profile_fields'),
-			'member_config'						=> cp_url('members/member_config')
+			'custom_member_fields'				=> ee('CP/URL', 'members/custom_profile_fields'),
+			'member_config'						=> ee('CP/URL', 'members/member_config')
 		);
 
 		$menu['admin'] = array(
 			'channel_management' => array(
-				'channels'						=> cp_url('admin_content/channel_management'),
-				'field_group_management'		=> cp_url('admin_content/field_group_management'),
-				'channel_form_settings'			=> cp_url('admin_content/channel_form_settings'),
-				'status_group_management'		=> cp_url('admin_content/status_group_management'),
-				'category_management'			=> cp_url('admin_content/category_management'),
+				'channels'						=> ee('CP/URL', 'admin_content/channel_management'),
+				'field_group_management'		=> ee('CP/URL', 'admin_content/field_group_management'),
+				'channel_form_settings'			=> ee('CP/URL', 'admin_content/channel_form_settings'),
+				'status_group_management'		=> ee('CP/URL', 'admin_content/status_group_management'),
+				'category_management'			=> ee('CP/URL', 'admin_content/category_management'),
 				'----',
-				'global_channel_preferences'	=> cp_url('admin_content/global_channel_preferences')
+				'global_channel_preferences'	=> ee('CP/URL', 'admin_content/global_channel_preferences')
 			),
 			'----',
-			'general_configuration'			=> cp_url('admin_system/general_configuration'),
-			'localization_settings'			=> cp_url('admin_system/localization_settings'),
-			'email_configuration'			=> cp_url('admin_system/email_configuration'),
+			'general_configuration'			=> ee('CP/URL', 'admin_system/general_configuration'),
+			'localization_settings'			=> ee('CP/URL', 'admin_system/localization_settings'),
+			'email_configuration'			=> ee('CP/URL', 'admin_system/email_configuration'),
 			'----',
 			'admin_content'	=> array(
-				'default_html_buttons'			=> cp_url('admin_content/default_html_buttons')
+				'default_html_buttons'			=> ee('CP/URL', 'admin_content/default_html_buttons')
 			),
 			'admin_system'	=> array(
-				'database_settings'				=> cp_url('admin_system/database_settings'),
-				'output_debugging_preferences'	=> cp_url('admin_system/output_debugging_preferences'),
+				'database_settings'				=> ee('CP/URL', 'admin_system/database_settings'),
+				'output_debugging_preferences'	=> ee('CP/URL', 'admin_system/output_debugging_preferences'),
 				'----',
-				'image_resizing_preferences'	=> cp_url('admin_system/image_resizing_preferences'),
-				'emoticon_preferences'			=> cp_url('admin_system/emoticon_preferences'),
-				'search_log_configuration'		=> cp_url('admin_system/search_log_configuration'),
+				'image_resizing_preferences'	=> ee('CP/URL', 'admin_system/image_resizing_preferences'),
+				'emoticon_preferences'			=> ee('CP/URL', 'admin_system/emoticon_preferences'),
+				'search_log_configuration'		=> ee('CP/URL', 'admin_system/search_log_configuration'),
 				'----',
-				'config_editor'					=> cp_url('admin_system/config_editor'),
+				'config_editor'					=> ee('CP/URL', 'admin_system/config_editor'),
 			),
 			'security_and_privacy'		=> array(
-				'security_session_preferences'	=> cp_url('admin_system/security_session_preferences'),
-				'cookie_settings'				=> cp_url('admin_system/cookie_settings'),
+				'security_session_preferences'	=> ee('CP/URL', 'admin_system/security_session_preferences'),
+				'cookie_settings'				=> ee('CP/URL', 'admin_system/cookie_settings'),
 				'----',
-				'word_censoring'				=> cp_url('admin_system/word_censoring'),
-				'tracking_preferences'			=> cp_url('admin_system/tracking_preferences'),
-				'captcha_preferences'			=> cp_url('admin_system/captcha_preferences'),
-				'throttling_configuration'		=> cp_url('admin_system/throttling_configuration')
+				'word_censoring'				=> ee('CP/URL', 'admin_system/word_censoring'),
+				'tracking_preferences'			=> ee('CP/URL', 'admin_system/tracking_preferences'),
+				'captcha_preferences'			=> ee('CP/URL', 'admin_system/captcha_preferences'),
+				'throttling_configuration'		=> ee('CP/URL', 'admin_system/throttling_configuration')
 			),
 			'----',
-			'software_registration'			=>  cp_url('admin_system/software_registration')
+			'software_registration'			=>  ee('CP/URL', 'admin_system/software_registration')
 		);
 
 
 		$menu['tools'] = array(
-			'tools_communicate'					=> cp_url('tools_communicate'),
+			'tools_communicate'					=> ee('CP/URL', 'tools_communicate'),
 			'----',
 			'tools_utilities'	=> array(
-				'translation_tool'				=> cp_url('tools_utilities/translation_tool'),
-				'import_utilities'				=> cp_url('tools_utilities/import_utilities'),
-				'php_info'						=> cp_url('tools_utilities/php_info')
+				'translation_tool'				=> ee('CP/URL', 'tools_utilities/translation_tool'),
+				'import_utilities'				=> ee('CP/URL', 'tools_utilities/import_utilities'),
+				'php_info'						=> ee('CP/URL', 'tools_utilities/php_info')
 			),
 			'tools_data'		=> array(
-				'sql_manager'					=> cp_url('tools_data/sql_manager'),
-				'clear_caching'					=> cp_url('tools_data/clear_caching'),
-				'search_and_replace'			=> cp_url('tools_data/search_and_replace'),
-				'recount_stats'					=> cp_url('tools_data/recount_stats')
+				'sql_manager'					=> ee('CP/URL', 'tools_data/sql_manager'),
+				'clear_caching'					=> ee('CP/URL', 'tools_data/clear_caching'),
+				'search_and_replace'			=> ee('CP/URL', 'tools_data/search_and_replace'),
+				'recount_stats'					=> ee('CP/URL', 'tools_data/recount_stats')
 			),
 			'tools_logs'		=> array(
-				'view_cp_log'					=> cp_url('tools_logs/view_cp_log'),
-				'view_throttle_log'				=> cp_url('tools_logs/view_throttle_log'),
-				'view_email_log'				=> cp_url('tools_logs/view_email_log')
+				'view_cp_log'					=> ee('CP/URL', 'tools_logs/view_cp_log'),
+				'view_throttle_log'				=> ee('CP/URL', 'tools_logs/view_throttle_log'),
+				'view_email_log'				=> ee('CP/URL', 'tools_logs/view_email_log')
 			)
 		);
 
 		// Only show Search Log menu item if Search Module is installed
 		if (ee()->db->table_exists('search_log'))
 		{
-			$menu['tools']['tools_logs']['view_search_log'] = cp_url('tools_logs/view_search_log');
+			$menu['tools']['tools_logs']['view_search_log'] = ee('CP/URL', 'tools_logs/view_search_log');
 		}
 
 		// Show Developer Log for Super Admins only
 		if (ee()->session->userdata('group_id') == 1)
 		{
-			$menu['tools']['tools_logs']['view_developer_log'] = cp_url('tools_logs/view_developer_log');
+			$menu['tools']['tools_logs']['view_developer_log'] = ee('CP/URL', 'tools_logs/view_developer_log');
 		}
 
 		// Add channels
@@ -399,12 +399,12 @@ class EE_Menu {
 		if ($channels != FALSE AND $channels->num_rows() > 0)
 		{
 			$menu['content']['publish'] = array();
-			$menu['content']['edit'] = array('nav_edit_all' => cp_url('content_edit'));
+			$menu['content']['edit'] = array('nav_edit_all' => ee('CP/URL', 'content_edit'));
 
 			foreach($channels->result() as $channel)
 			{
-				$menu['content']['publish'][$channel->channel_title] = cp_url('content_publish/entry_form', array('channel_id' => $channel->channel_id));
-				$menu['content']['edit'][$channel->channel_title] = cp_url('content_edit', array('channel_id' => $channel->channel_id));
+				$menu['content']['publish'][$channel->channel_title] = ee('CP/URL', 'content_publish/entry_form', array('channel_id' => $channel->channel_id));
+				$menu['content']['edit'][$channel->channel_title] = ee('CP/URL', 'content_edit', array('channel_id' => $channel->channel_id));
 			}
 
 			if ($channels->num_rows() === 1)
@@ -458,21 +458,21 @@ class EE_Menu {
 
 					foreach($templates as $row)
 					{
-						$menu['design']['templates']['edit_templates'][$group_name][$row->template_name] = cp_url('design/edit_template', array('id' => $row->template_id));
+						$menu['design']['templates']['edit_templates'][$group_name][$row->template_name] = ee('CP/URL', 'design/edit_template', array('id' => $row->template_id));
 					}
 
 					// All groups have an index template, so row->group_id will always be set :)
-					$menu['design']['templates']['edit_templates'][$group_name][lang('nav_edit_template_group_more')] = cp_url('design/manager', array('tgpref' => $group_id));
+					$menu['design']['templates']['edit_templates'][$group_name][lang('nav_edit_template_group_more')] = ee('CP/URL', 'design/manager', array('tgpref' => $group_id));
 					$menu['design']['templates']['edit_templates'][$group_name][] = '----';
-					$menu['design']['templates']['edit_templates'][$group_name][lang('nav_edit_template_group')] = cp_url('design/manager', array('tgpref' => $group_id));
-					$menu['design']['templates']['edit_templates'][$group_name][lang('nav_create_template')] = cp_url('design/new_template', array('group_id' => $group_id));
+					$menu['design']['templates']['edit_templates'][$group_name][lang('nav_edit_template_group')] = ee('CP/URL', 'design/manager', array('tgpref' => $group_id));
+					$menu['design']['templates']['edit_templates'][$group_name][lang('nav_create_template')] = ee('CP/URL', 'design/new_template', array('group_id' => $group_id));
 				}
 
 				unset($by_group);
 				$menu['design']['templates']['edit_templates'][] = '----';
 			}
 
-			$menu['design']['templates']['edit_templates'][lang('nav_create_group')] = cp_url('design/new_template_group');
+			$menu['design']['templates']['edit_templates'][lang('nav_create_group')] = ee('CP/URL', 'design/new_template_group');
 		}
 		else
 		{
@@ -481,17 +481,17 @@ class EE_Menu {
 
 		if (ee()->db->table_exists('forums'))
 		{
-			$menu['design']['themes']['forum_themes'] = cp_url('addons_modules/show_module_cp', array('module' => 'forum', 'method' => 'forum_templates'));
+			$menu['design']['themes']['forum_themes'] = ee('CP/URL', 'addons_modules/show_module_cp', array('module' => 'forum', 'method' => 'forum_templates'));
 		}
 
 		if (ee()->db->table_exists('wikis'))
 		{
-			$menu['design']['themes']['wiki_themes'] = cp_url('addons_modules/show_module_cp', array('module' => 'wiki', 'method' => 'list_themes'));
+			$menu['design']['themes']['wiki_themes'] = ee('CP/URL', 'addons_modules/show_module_cp', array('module' => 'wiki', 'method' => 'list_themes'));
 		}
 
 		if ( ! IS_CORE)
 		{
-			$menu['design']['themes']['member_profile_templates'] = cp_url('design/member_profile_templates');
+			$menu['design']['themes']['member_profile_templates'] = ee('CP/URL', 'design/member_profile_templates');
 		}
 
 		$menu = $this->_remove_blocked_menu_items($menu);
@@ -1206,9 +1206,9 @@ class EE_Menu {
 			{
 				$module = ee()->security->sanitize_filename($module);
 
-				if (file_exists(PATH_ADDONS.$module.'/config/help_menu.php'))
+				if (file_exists(PATH_THIRD.$module.'/config/help_menu.php'))
 				{
-					require_once PATH_ADDONS.$module.'/config/help_menu.php';
+					require_once PATH_THIRD.$module.'/config/help_menu.php';
 					$method = (ee()->input->get('method') !== FALSE) ? ee()->input->get('method') : 'index';
 					$page = (isset($help_menu[$method])) ? $help_menu[$method] : $page.$help_map['addons_modules'];
 				}

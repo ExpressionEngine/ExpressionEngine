@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -273,7 +273,7 @@ class Addons_installer {
 	 */
 	function install_rte_tool($tool)
 	{
-		ee()->load->add_package_path(PATH_MOD.'rte', FALSE);
+		ee()->load->add_package_path(PATH_ADDONS.'rte', FALSE);
 		ee()->load->model('rte_tool_model');
 		ee()->rte_tool_model->add($tool);
 	}
@@ -289,7 +289,7 @@ class Addons_installer {
 	 */
 	function uninstall_rte_tool($tool)
 	{
-		ee()->load->add_package_path(PATH_MOD.'rte', FALSE);
+		ee()->load->add_package_path(PATH_ADDONS.'rte', FALSE);
 		ee()->load->model('rte_tool_model');
 		ee()->rte_tool_model->delete($tool);
 	}
@@ -317,14 +317,16 @@ class Addons_installer {
 			show_error(lang('module_can_not_be_found'));
 		}
 
-		if (in_array($module, ee()->core->native_modules))
+		try
 		{
-			$path = PATH_MOD.$module.'/upd.'.$module.'.php';
+			$info = ee('App')->get($module);
 		}
-		else
+		catch (\Exception $e)
 		{
-			$path = PATH_ADDONS.$module.'/upd.'.$module.'.php';
+			show_error(lang('module_can_not_be_found'));
 		}
+
+		$path = $info->getPath() . '/upd.'.$module.'.php';
 
 		if ( ! is_file($path))
 		{

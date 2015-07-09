@@ -5,7 +5,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Members\Profile;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
 /**
@@ -14,7 +14,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -40,7 +40,7 @@ class Ignore extends Profile {
 		parent::__construct();
 		ee()->load->model('member_model');
 		$this->index_url = $this->base_url;
-		$this->base_url = new URL($this->base_url, ee()->session->session_id(), $this->query_string);
+		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
 		$this->ignore_list = explode('|', $this->member->ignore_list);
 	}
 
@@ -86,7 +86,7 @@ class Ignore extends Profile {
 					$attributes['class'] = 'alt banned';
 				}
 
-				$email = "<a href = '" . cp_url('utilities/communicate') . "'>e-mail</a>";
+				$email = "<a href = '" . ee('CP/URL', 'utilities/communicate') . "'>e-mail</a>";
 				$ignored[] = array(
 					'columns' => array(
 						'id' => $member->member_id,
@@ -139,7 +139,7 @@ class Ignore extends Profile {
 				->render($this->base_url);
 		}
 
-		$data['form_url'] = cp_url('members/profile/ignore/delete', $this->query_string);
+		$data['form_url'] = ee('CP/URL', 'members/profile/ignore/delete', $this->query_string);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
 		ee()->cp->add_js_script(array(
@@ -164,7 +164,7 @@ class Ignore extends Profile {
 		$this->member->ignore_list = $ignore;
 		$this->member->save();
 
-		ee()->functions->redirect(cp_url($this->index_url, $this->query_string));
+		ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
 	}
 
 }

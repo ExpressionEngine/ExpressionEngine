@@ -1,7 +1,7 @@
 <?php extend_template('default-nav'); ?>
 
 <div class="tbl-ctrls">
-	<?=form_open(cp_url('utilities/stats/sync'))?>
+	<?=form_open(ee('CP/URL', 'utilities/stats/sync'))?>
 		<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
 		<?=ee('Alert')->getAllInlines()?>
 		<table cellspacing="0">
@@ -21,7 +21,7 @@
 						<td><?=$count?></td>
 						<td>
 							<ul class="toolbar">
-								<li class="sync"><a href="<?=cp_url('utilities/stats/sync/' . $source)?>" title="<?=strtolower(lang('sync'))?>"></a></li>
+								<li class="sync"><a href="<?=ee('CP/URL', 'utilities/stats/sync/' . $source)?>" title="<?=strtolower(lang('sync'))?>"></a></li>
 							</ul>
 						</td>
 						<td><input type="checkbox" name="selection[]" value="<?=$source?>"></td>
@@ -31,7 +31,6 @@
 
 		</table>
 
-		<?=$pagination?>
 		<fieldset class="tbl-bulk-act">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>

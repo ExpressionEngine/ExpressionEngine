@@ -10,7 +10,7 @@ use EllisLab\ExpressionEngine\Service\Validation\Factory as ValidationFactory;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -51,16 +51,28 @@ class Frontend {
 	 * Run a query
 	 *
 	 * @param String $name Model to run the query on
+	 * @param Mixed $default_ids One or more ids to prime the query with [optional]
 	 */
 	public function get($name, $default_ids = NULL)
 	{
 		$builder = $this->datastore->get($name);
 
-		if ( ! empty($default_ids))
+		if (isset($default_ids))
 		{
-			$operator = is_array($default_ids) ? 'IN' : '==';
 			$shortname = $this->removeAlias($name);
-			$builder->filter($name, $operator, $default_ids);
+
+			if (count($default_ids) == 0)
+			{
+				$builder->markAsFutile();
+			}
+			elseif (is_array($default_ids))
+			{
+				$builder->filter($shortname, 'IN', $default_ids);
+			}
+			else
+			{
+				$builder->filter($shortname, $default_ids);
+			}
 		}
 
 		$builder->setFrontend($this);
@@ -94,7 +106,10 @@ class Frontend {
 	}
 
 	/**
+	 * Remove any aliasing and return the shortname
 	 *
+	 * A rather naive function, but reliable unless given a completely
+	 * garbage model name.
 	 */
 	private function removeAlias($str)
 	{

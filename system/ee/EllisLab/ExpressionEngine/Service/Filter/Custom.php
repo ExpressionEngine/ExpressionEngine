@@ -7,7 +7,7 @@ namespace EllisLab\ExpressionEngine\Service\Filter;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -48,21 +48,23 @@ class Custom extends Filter {
 	 * Sets the placeholder value for this filter
 	 *
 	 * @param string $placeholder The value to use for the placeholder
-	 * @return void
+	 * @return self This returns a reference to itself
 	 */
 	public function setPlaceholder($placeholder)
 	{
 		$this->placeholder = $placeholder;
+		return $this;
 	}
 
 	/**
 	 * Disables the custom value by setting has_custom_value to False.
 	 * @see Filter::has_custom_value
-	 * @return void
+	 * @return self This returns a reference to itself
 	 */
 	public function disableCustomValue()
 	{
 		$this->has_custom_value = FALSE;
+		return $this;
 	}
 
 }

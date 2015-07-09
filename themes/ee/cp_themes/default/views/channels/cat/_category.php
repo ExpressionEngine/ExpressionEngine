@@ -1,5 +1,5 @@
 <li class="tbl-list-item" data-id="<?=$category->data->cat_id?>">
-	<div class="tbl-row">
+	<div class="tbl-row<?php if (ee()->session->flashdata('highlight_id') == $category->data->cat_id): ?> selected<?php endif ?>">
 		<div class="reorder"></div>
 		<div class="txt">
 			<div class="main">
@@ -10,7 +10,7 @@
 			</div>
 		</div>
 		<ul class="toolbar">
-			<li class="edit"><a href="<?=cp_url('channels/cat/edit-cat/'.$category->data->group_id.'/'.$category->data->cat_id)?>"></a></li>
+			<li class="edit"><a href="<?=ee('CP/URL', 'channels/cat/edit-cat/'.$category->data->group_id.'/'.$category->data->cat_id)?>"></a></li>
 		</ul>
 		<div class="check-ctrl"><input type="checkbox" name="categories[]" value="<?=$category->data->cat_id?>" data-confirm="<?=lang('category') . ': <b>' . htmlentities($category->data->cat_name, ENT_QUOTES) . '</b>'?>"></div>
 	</div>

@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5
  * @filesource
@@ -53,8 +53,8 @@ class Javascript_loader {
 			'ui'		=> PATH_JAVASCRIPT.'jquery/ui/jquery.ui.',
 			'plugin'	=> PATH_JAVASCRIPT.'jquery/plugins/',
 			'file'		=> PATH_JAVASCRIPT,
-			'package'	=> PATH_ADDONS,
-			'fp_module'	=> PATH_MOD
+			'package'	=> PATH_THIRD,
+			'fp_module'	=> PATH_ADDONS
 		);
 
 		$mock_name = '';

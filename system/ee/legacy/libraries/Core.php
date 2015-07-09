@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -48,16 +48,16 @@ class EE_Core {
 		}
 
 		// some path constants to simplify things
-		define('PATH_MOD',		SYSPATH . 'ee/EllisLab/Addons/');
-		define('PATH_PI',		SYSPATH . 'ee/EllisLab/Addons/');
-		define('PATH_EXT',		SYSPATH . 'ee/EllisLab/Addons/');
-		define('PATH_FT',		SYSPATH . 'ee/EllisLab/Addons/');
-		define('PATH_RTE',		APPPATH.'rte_tools/');
+		define('PATH_ADDONS', SYSPATH . 'ee/EllisLab/Addons/');
+		define('PATH_MOD',    SYSPATH . 'ee/EllisLab/Addons/');
+		define('PATH_PI',     SYSPATH . 'ee/EllisLab/Addons/');
+		define('PATH_EXT',    SYSPATH . 'ee/EllisLab/Addons/');
+		define('PATH_FT',     SYSPATH . 'ee/EllisLab/Addons/');
+		define('PATH_RTE',    APPPATH . 'rte_tools/');
 
 		$addon_path = (ee()->config->item('addons_path'))
 			? rtrim(realpath(ee()->config->item('addons_path')), '/').'/'
 			: SYSPATH.'user/addons/';
-		define('PATH_ADDONS', $addon_path);
 		define('PATH_THIRD', $addon_path);
 
 		// application constants
@@ -87,12 +87,11 @@ class EE_Core {
 		ee()->db->db_debug = FALSE;
 
 		// boot the addons
-		ee('App')->setupAddons(PATH_ADDONS);
+		ee('App')->setupAddons(PATH_THIRD);
 
 		// Set ->api on the legacy facade to the model factory
 		ee()->set('api', ee()->di->make('Model'));
 
-		// Note enable_db_caching is a per site setting specified in EE_Config.php
 		// If debug is on we enable the profiler and DB debug
 		if (DEBUG == 1 OR ee()->config->item('debug') == 2)
 		{
@@ -485,7 +484,7 @@ class EE_Core {
 		// @todo remove after 2.1.1's release, move to the update script
 		if (strncmp(ee()->config->item('doc_url'), 'http://expressionengine.com/docs', 32) == 0)
 		{
-			ee()->config->update_site_prefs(array('doc_url' => 'http://ellislab.com/expressionengine/user-guide/'));
+			ee()->config->update_site_prefs(array('doc_url' => 'https://ellislab.com/expressionengine/user-guide/'));
 		}
 	}
 
@@ -673,8 +672,6 @@ class EE_Core {
 	 */
 	function _garbage_collection()
 	{
-		ee()->db->cache_off();
-
 		if (class_exists('Stats'))
 		{
 			if (ee()->stats->statdata('last_cache_clear')

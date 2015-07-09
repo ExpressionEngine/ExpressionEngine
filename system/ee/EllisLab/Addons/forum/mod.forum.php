@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -100,8 +100,6 @@ class Forum {
 	 */
 	public function __construct()
 	{
-		ee()->db->cache_off();
-
 		// Load Base Forum Variables
 		$this->_load_base();
 
@@ -127,7 +125,7 @@ class Forum {
 		}
 		else
 		{
-			require_once PATH_MOD.'forum/mod.forum_core.php';
+			require_once PATH_ADDONS.'forum/mod.forum_core.php';
 
 			ee()->FRM_CORE = new Forum_Core();
 
@@ -789,7 +787,7 @@ class Forum {
 		$template = $this->load_element('member_page');
 
 		$this->mbr_class_loaded = TRUE;
-		include_once PATH_MOD.'member/mod.member.php';
+		include_once PATH_ADDONS.'member/mod.member.php';
 
 		ee()->MBR = new Member();
 

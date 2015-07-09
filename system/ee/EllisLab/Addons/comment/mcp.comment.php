@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -1417,7 +1417,7 @@ class Comment_mcp {
 		// If blacklist was checked- blacklist!
 		if ($blacklist_installed && ee()->input->post('add_to_blacklist') == 'y')
 		{
-			include_once PATH_MOD.'blacklist/mcp.blacklist.php';
+			include_once PATH_ADDONS.'blacklist/mcp.blacklist.php';
 
 			$bl = new Blacklist_mcp();
 

@@ -13,7 +13,7 @@
 							</fieldset>
 							<ul>
 								<?php foreach ($directories as $dir): ?>
-									<li><a href="<?=cp_url('files/upload/' . $dir->id)?>"><?=$dir->name?></a></li>
+									<li><a href="<?=ee('CP/URL', 'files/upload/' . $dir->id)?>"><?=$dir->name?></a></li>
 								<?php endforeach ?>
 							</ul>
 						</div>

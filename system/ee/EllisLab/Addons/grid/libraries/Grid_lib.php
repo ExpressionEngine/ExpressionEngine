@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.7
  * @filesource
@@ -808,24 +808,20 @@ class Grid_lib {
 		// Returns blank settings form for a specific fieldtype
 		if (empty($column))
 		{
-			$ft_api->setup_handler($type);
-
-			if ($ft_api->check_method_exists('grid_display_settings'))
-			{
-				$settings = $ft_api->apply('grid_display_settings', array(array()));
-			}
-
-			return $this->_view_for_col_settings($type, $settings);
+			$column = array(
+				'col_id' => NULL,
+				'col_type' => $type,
+				'col_label' => '',
+				'col_required' => 'n',
+				'col_name' => 'n',
+				'col_settings' => array()
+			);
 		}
 
 		ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0);
 
-		if ($ft_api->check_method_exists('grid_display_settings'))
-		{
-			$settings = $ft_api->apply('grid_display_settings', array($column['col_settings']));
-		}
+		$settings = ee()->grid_parser->call('display_settings', $column['col_settings']);
 
-		// Otherwise, return the prepopulated settings form based on column settings
 		return $this->_view_for_col_settings($type, $settings, $column['col_id']);
 	}
 

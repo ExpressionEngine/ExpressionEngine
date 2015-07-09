@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -25,7 +25,6 @@
 class EE_Extensions {
 
 	var $extensions 	= array();
-	var $OBJ			= array();	// Current Instantiated Object
 	var $end_script		= FALSE;	// To return or not to return
 	var $last_call		= FALSE;	// The data returned from the last called method for this hook
 	var $in_progress	= '';		// Last hook called.  Prevents loops.
@@ -76,6 +75,21 @@ class EE_Extensions {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Universal caller, was used for php 4 compatibility
+	 *
+	 * @deprecated 3.0 Use call()
+	 */
+	function universal_call($which, &$parameter_one)
+	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('3.0', 'Use extensions->call');
+
+		return call_user_func_array(array($this, 'call'), func_get_args());
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Extension Hook Method
 	 *
 	 * Used in ExpressionEngine to call an extension based on whichever
@@ -86,82 +100,40 @@ class EE_Extensions {
 	 * @param	mixed
 	 * @return	mixed
 	 */
-	function call($which, $parameter_one='')
-	{
-		// Reset Our Variables
-		$this->end_script	= FALSE;
-		$this->last_call	= FALSE;
-
-		// A Few Checks
-		if ( ! isset($this->extensions[$which])) return;
-		if (ee()->config->item('allow_extensions') != 'y') return;
-		if ($this->in_progress == $which) return;
-
-		// Get Arguments, Call the New Universal Method
-		$args = func_get_args();
-
-		if (count($args) == 1)
-		{
-			$args = array($which, '');
-		}
-
-		foreach ($args as $k => $v)
-		{
-			$args[$k] =& $args[$k];
-		}
-
-		return call_user_func_array(array(&$this, 'universal_call'), $args);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * The Universal Caller (Added in EE 1.6)
-	 *
-	 * Originally, using call(), objects could not be called by reference in PHP
-	 * 4 and thus could not be directly modified. I found a clever way around
-	 * that restriction by always having the second argument gotten by
-	 * reference. The problem (and the reason there is a call() hook above) is
-	 * that not all extension hooks have a second argument and the PHP
-	 * developers in their infinite wisdom decided that only variables could be
-	 * passed by reference. So, call() does a little magic to make sure there is
-	 * always a second argument and universal_call() handles all of the object
-	 * and reference handling when needed. -Paul
-	 *
-	 * @access	public
-	 * @param	string	Name of the  extension hook
-	 * @param	mixed
-	 * @return	mixed
-	 */
-	function universal_call($which, &$parameter_one)
+	function call($which)
 	{
 		// Reset Our Variables
 		$this->end_script = FALSE;
 		$this->last_call  = FALSE;
-		$php5_args        = array();
 
 		// Anything to Do Here?
-		if ( ! isset($this->extensions[$which])) return;
-		if (ee()->config->item('allow_extensions') != 'y') return;
-		if ($this->in_progress == $which) return;
+		if ( ! isset($this->extensions[$which]))
+		{
+			return;
+		}
+
+		if (ee()->config->item('allow_extensions') != 'y')
+		{
+			return;
+		}
+
+		if ($this->in_progress == $which)
+		{
+			return;
+		}
 
 		$this->in_progress = $which;
+
 		ee()->load->library('addons');
 		ee()->addons->is_package('');
 
 		// Retrieve arguments for function
 		$args = array_slice(func_get_args(), 1);
 
-		// Pass all arguments by reference
-		foreach($args as $k => $v)
-		{
-			$args[$k] =& $args[$k];
-		}
-
 		// Go through all the calls for this hook
-		foreach($this->extensions[$which] as $priority => $calls)
+		foreach ($this->extensions[$which] as $priority => $calls)
 		{
-			foreach($calls as $class => $metadata)
+			foreach ($calls as $class => $metadata)
 			{
 				// Determine Path of Extension
 				$class_name = ucfirst($class);
@@ -213,14 +185,14 @@ class EE_Extensions {
 				//  Call the class(s)
 				//  Each method could easily have its own settings,
 				//  so we have to send the settings each time
-				$this->OBJ[$class_name] = new $class_name($settings);
+				$obj = new $class_name($settings);
 
 				// Update Extension First?
-				if (version_compare($this->OBJ[$class_name]->version, $this->version_numbers[$class_name], '>') && method_exists($this->OBJ[$class_name], 'update_extension') === TRUE)
+				if (version_compare($obj->version, $this->version_numbers[$class_name], '>') && method_exists($obj, 'update_extension') === TRUE)
 				{
-					$update = call_user_func_array(array(&$this->OBJ[$class_name], 'update_extension'), array($this->version_numbers[$class_name]));
+					$update = call_user_func(array($obj, 'update_extension'), $this->version_numbers[$class_name]);
 
-					$this->version_numbers[$class_name] = $this->OBJ[$class_name]->version;  // reset master
+					$this->version_numbers[$class_name] = $obj->version;  // reset master
 				}
 
 				//  Call Method and Store Returned Data
@@ -234,7 +206,7 @@ class EE_Extensions {
 				}
 
 
-				$this->last_call = call_user_func_array(array(&$this->OBJ[$class_name], $method), $args);
+				$this->last_call = call_user_func_array(array($obj, $method), $args);
 
 				if ($automatically_load_path)
 				{
