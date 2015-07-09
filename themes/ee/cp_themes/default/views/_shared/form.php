@@ -56,7 +56,7 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 					$disabled = '';
 					$button_text = lang($button['text']);
 
-					if (ee()->form_validation->errors_exist())
+					if (ee()->form_validation->errors_exist() OR (isset($errors) && $errors->isNotValid()))
 					{
 						$class = 'btn disable';
 						$disabled = 'disabled="disabled"';
@@ -66,7 +66,7 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 				<button class="<?=$class?>" <?=$disabled?> name="<?=$button['name']?>" type="<?=$button['type']?>" value="<?=$button['value']?>" data-submit-text="<?=lang($button['text'])?>" data-work-text="<?=lang($button['working'])?>"><?=$button_text?></button>
 			<?php endforeach; ?>
 		<?php else: ?>
-		<?=cp_form_submit($save_btn_text, $save_btn_text_working)?>
+		<?=cp_form_submit($save_btn_text, $save_btn_text_working, NULL, (isset($errors) && $errors->isNotValid()))?>
 		<?php endif; ?>
 	</fieldset>
 </form>

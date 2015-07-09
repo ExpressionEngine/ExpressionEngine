@@ -248,9 +248,10 @@ function form_preference($name, $details)
  * @param	string	$value		Standard text for the button
  * @param	string	$work_text	Text to display when form is submitting
  * @param   string  $name       The value of a name="" attribute
+ * @param   string  $invalid    Force an invalid/disabled state on the button
  * @return	string	Button HTML
  */
-function cp_form_submit($value, $work_text, $name = NULL)
+function cp_form_submit($value, $work_text, $name = NULL, $invalid = FALSE)
 {
 	$class = 'btn';
 	$disable = '';
@@ -258,7 +259,7 @@ function cp_form_submit($value, $work_text, $name = NULL)
 	$validation_errors = validation_errors();
 
 	// Disabled state
-	if ( ! empty($validation_errors))
+	if ( ! empty($validation_errors) OR $invalid)
 	{
 		$class .= ' disable';
 		$disable = ' disabled="disabled"';
