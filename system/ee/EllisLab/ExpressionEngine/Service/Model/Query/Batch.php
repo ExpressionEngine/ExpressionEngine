@@ -85,7 +85,7 @@ class Batch {
 
 		do
 		{
-			if ( ! $limit = $this->clampToLimit($count))
+			if ( ! $limit = $this->clampToLimit($count, $limit))
 			{
 				break;
 			}
@@ -108,7 +108,7 @@ class Batch {
 
 			$count += $processed;
 
-			$offset += $this->batch_size;
+			$offset += $processed;
 		}
 		while ($processed == $limit);
 
@@ -121,11 +121,13 @@ class Batch {
 	 *
 	 * @param Int $count  Number of records processed so far.
 	 */
-	protected function clampToLimit($count)
+	protected function clampToLimit($count, $limit)
 	{
 		if ($count + $limit > $this->maximum_size)
 		{
-			$limit = $this->maximum_size - $count;
+			return $this->maximum_size - $count;
 		}
+
+		return $limit;
 	}
 }
