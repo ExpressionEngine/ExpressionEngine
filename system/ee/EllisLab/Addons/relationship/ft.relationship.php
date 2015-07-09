@@ -79,7 +79,7 @@ class Relationship_ft extends EE_Fieldtype {
 	 * @param	field data
 	 * @return	column data
 	 */
-	public function save($data)
+	public function save($data, $model = NULl)
 	{
 		$sort = isset($data['sort']) ? $data['sort'] : array();
 		$data = isset($data['data']) ? $data['data'] : array();
@@ -91,6 +91,12 @@ class Relationship_ft extends EE_Fieldtype {
 		if (isset($this->settings['grid_row_name']))
 		{
 			$cache_name .= $this->settings['grid_row_name'];
+		}
+
+		if (isset($model))
+		{
+			$name = $this->field_name;
+			$model->$name = '';
 		}
 
 		ee()->session->set_cache(__CLASS__, $cache_name, array(
@@ -116,7 +122,7 @@ class Relationship_ft extends EE_Fieldtype {
 	public function post_save($data)
 	{
 		$field_id = $this->field_id;
-		$entry_id = $this->settings['entry_id'];
+		$entry_id = $this->content_id();
 
 		$cache_name = $this->field_name;
 
