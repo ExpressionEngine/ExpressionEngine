@@ -94,7 +94,7 @@ class File extends Model {
 	 */
 	public function getAbsolutePath()
 	{
-		return rtrim($this->getUploadDestination()->server_path, '/') . '/' . $this->file_name;
+		return rtrim($this->UploadDestination->server_path, '/') . '/' . $this->file_name;
 	}
 
 	/**
@@ -105,7 +105,7 @@ class File extends Model {
 	 */
 	public function getAbsoluteURL()
 	{
-		return rtrim($this->getUploadDestination()->url, '/') . '/' . $this->file_name;
+		return rtrim($this->UploadDestination->url, '/') . '/' . $this->file_name;
 	}
 
 	public function onBeforeDelete()
@@ -124,7 +124,7 @@ class File extends Model {
 	*/
 	public function memberGroupHasAccess($group)
 	{
-		$dir = $this->getUploadDestination();
+		$dir = $this->UploadDestination;
 		if ( ! $dir)
 		{
 			return FALSE;
