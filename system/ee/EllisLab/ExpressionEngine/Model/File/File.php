@@ -119,7 +119,7 @@ class File extends Model {
 	* @see UploadDestination::memberGroupHasAccess
 	*
 	* @throws InvalidArgumentException
-	* @param int|MemberGroup $group_id The Meber Group ID
+	* @param int|MemberGroup $group_id The Member Group ID
 	* @return bool TRUE if access is granted; FALSE if access denied
 	*/
 	public function memberGroupHasAccess($group)
