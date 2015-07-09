@@ -231,7 +231,7 @@ class Textarea_ft extends EE_Fieldtype {
 				'title' => 'textarea_height',
 				'desc' => 'textarea_height_desc',
 				'fields' => array(
-					'field_maxl' => array(
+					'field_ta_rows' => array(
 						'type' => 'text',
 						'value' => ( ! isset($data['field_ta_rows']) OR $data['field_ta_rows'] == '') ? 6 : $data['field_ta_rows']
 					)
@@ -244,7 +244,7 @@ class Textarea_ft extends EE_Fieldtype {
 					'field_fmt' => array(
 						'type' => 'select',
 						'choices' => $format_options,
-						'value' => isset($data['field_maxl']) ? $data['field_fmt'] : 'none',
+						'value' => isset($data['field_fmt']) ? $data['field_fmt'] : 'none',
 					)
 				)
 			)
