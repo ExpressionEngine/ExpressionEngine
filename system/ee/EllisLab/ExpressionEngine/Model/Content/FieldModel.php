@@ -73,6 +73,24 @@ abstract class FieldModel extends Model {
 		return parent::set($data);
 	}
 
+	public function getValidationData()
+	{
+		return array_merge($this->getSettingsValues(), parent::getDirty());
+	}
+
+	public function getValidationRules()
+	{
+		$validator = $this->getValidator();
+
+		$field = $this->getField($this->getSettingsValues());
+		$rules = $field->validateSettingsForm($validator);
+
+		return array_merge(
+			parent::getValidationRules(),
+			$rules
+		);
+	}
+
 	/**
 	 * After inserting, add the columns to the data table
 	 */
