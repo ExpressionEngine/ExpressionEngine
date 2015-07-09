@@ -10,7 +10,7 @@ use EllisLab\ExpressionEngine\Model\Content\FieldModel;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -123,9 +123,9 @@ class MemberField extends FieldModel {
 
 	/**
 	 * Override the set method so we can auto-prefix our properties
-	 * 
-	 * @param mixed $key 
-	 * @param mixed $value 
+	 *
+	 * @param mixed $key
+	 * @param mixed $value
 	 * @access public
 	 * @return void
 	 */
@@ -136,9 +136,9 @@ class MemberField extends FieldModel {
 
 	/**
 	 * Override the get method so we can auto-prefix our properties
-	 * 
-	 * @param mixed $key 
-	 * @param mixed $value 
+	 *
+	 * @param mixed $key
+	 * @param mixed $value
 	 * @access public
 	 * @return void
 	 */

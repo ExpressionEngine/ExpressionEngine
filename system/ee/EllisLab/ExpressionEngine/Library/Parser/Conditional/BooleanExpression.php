@@ -10,7 +10,7 @@ use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\BooleanExpres
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.9.0
  * @filesource

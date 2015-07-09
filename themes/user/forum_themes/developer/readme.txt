@@ -1,13 +1,13 @@
 =====================================================
  ExpressionEngine - by EllisLab
 -----------------------------------------------------
- http://ellislab.com/
+ https://ellislab.com/
 -----------------------------------------------------
  Copyright (c) 2003 - 2015, EllisLab, Inc.
 =====================================================
  THIS IS COPYRIGHTED SOFTWARE
  PLEASE READ THE LICENSE AGREEMENT
- http://ellislab.com/expressionengine/user-guide/license.html
+ https://ellislab.com/expressionengine/user-guide/license.html
 =====================================================
  File: readme.txt
 -----------------------------------------------------

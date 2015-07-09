@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5
  * @filesource
@@ -29,7 +29,7 @@ class Rte_ext {
 	var $name			= 'Rich Text Editor';
 	var $version		= '1.0';
 	var $settings_exist	= 'n';
-	var $docs_url		= 'http://ellislab.com/expressionengine/user-guide/modules/rte/index.html';
+	var $docs_url		= 'https://ellislab.com/expressionengine/user-guide/modules/rte/index.html';
 	var $required_by	= array('module', 'fieldtype');
 
 	private $module = 'rte';

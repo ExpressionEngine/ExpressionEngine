@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -412,7 +412,7 @@ class Rss {
 	<link>{$link}</link>
 	<description></description>
 	<docs>http://www.rssboard.org/rss-specification</docs>
-	<generator>ExpressionEngine v{$version} http://ellislab.com/expressionengine</generator>
+	<generator>ExpressionEngine v{$version} https://ellislab.com/expressionengine</generator>
 
 	<item>
 		<title>{$content}</title>

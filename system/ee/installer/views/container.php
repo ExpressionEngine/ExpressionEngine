@@ -44,7 +44,7 @@
 		</section>
 		<section class="footer">
 			<div class="snap">
-				<div class="left"><p>&copy;2003&mdash;<?=date('Y')?> <a href="http://ellislab.com/expressionengine" rel="external">EllisLab</a>, Inc.</p></div>
+				<div class="left"><p>&copy;2003&mdash;<?=date('Y')?> <a href="https://ellislab.com/expressionengine" rel="external">EllisLab</a>, Inc.</p></div>
 				<div class="right"><p><a class="scroll" href="#top">scroll to top</a></p></div>
 			</div>
 		</section>

@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.5.4
  * @filesource
@@ -200,7 +200,7 @@ class Updater {
 		{
 			ee()->config->_update_config(
 				array(
-					'doc_url' => 'http://ellislab.com/expressionengine/user-guide/'
+					'doc_url' => 'https://ellislab.com/expressionengine/user-guide/'
 				)
 			);
 		}
