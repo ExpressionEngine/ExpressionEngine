@@ -610,7 +610,7 @@ Grid.Settings.prototype = {
 			settings.html(
 				settings.html().replace(
 					RegExp('(new_|col_id_)[0-9]{1,}', 'g'),
-					customSettingsContainer.data('fieldName')
+					customSettingsContainer.parents('.grid-item').data('fieldName')
 				)
 			);
 

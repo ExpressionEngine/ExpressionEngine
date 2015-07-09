@@ -85,8 +85,8 @@
 				<a href="" title="<?=lang('remove_relationship')?>" data-entry-id="<?=$chosen->entry_id?>"></a> <?=$chosen->title?> <i>&mdash; <?=$chosen->getChannel()->channel_title?></i>
 			</label>
 			<?php endif; ?>
-			<label class="choice block chosen no-results<?php if ($chosen) echo " hidden" ?>">
-				<?=lang('no_entry_related')?>
+			<label class="choice <?=($chosen) ? "hidden" : "block"?>">
+				<div class="no-results"><?=lang('no_entry_related')?></div>
 			</label>
 		</div>
 	<?php endif;?>

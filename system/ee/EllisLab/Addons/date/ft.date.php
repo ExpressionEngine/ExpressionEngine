@@ -431,7 +431,7 @@ class Date_ft extends EE_Fieldtype {
 	function grid_save_settings($data)
 	{
 		return array(
-			'localize' => isset($data['localize'])
+			'localize' => get_bool_from_string($data['localize'])
 		);
 	}
 

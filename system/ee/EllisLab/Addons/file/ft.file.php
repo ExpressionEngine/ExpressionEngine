@@ -683,7 +683,7 @@ CSS;
 		return array(
 			'field_content_type'	=> $data['field_content_type'],
 			'allowed_directories'	=> $data['allowed_directories'],
-			'show_existing'			=> ($data['show_existing'] == 'y') ? 'y': 'n',
+			'show_existing'			=> $data['show_existing'],
 			'num_existing'			=> $data['num_existing'],
 			'field_fmt' 			=> 'none'
 		);
@@ -729,18 +729,6 @@ CSS;
 
 		// count upload dirs
 		return (count($upload_dir_prefs) !== 0);
-	}
-
-	// --------------------------------------------------------------------
-
-	function grid_save_settings($data)
-	{
-		if ( ! isset($data['show_existing']))
-		{
-			$data['show_existing'] = 'n';
-		}
-
-		return $data;
 	}
 
 	// --------------------------------------------------------------------

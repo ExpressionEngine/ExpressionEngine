@@ -121,7 +121,7 @@ class Rte_ft extends EE_Fieldtype {
 				'title' => 'textarea_height',
 				'desc' => 'textarea_height_desc',
 				'fields' => array(
-					'field_maxl' => array(
+					'field_ta_rows' => array(
 						'type' => 'text',
 						'value' => ( ! isset($data['field_ta_rows']) OR $data['field_ta_rows'] == '') ? 6 : $data['field_ta_rows']
 					)

@@ -806,16 +806,30 @@ class Addons extends CP_Controller {
 		{
 			$data = $this->getModuleSettings($addon, $method);
 
+			ee()->view->cp_heading = $module['name'] . ' ' . lang('configuration');
+
 			if (is_array($data))
 			{
 				$vars['_module_cp_body'] = $data['body'];
-				ee()->view->cp_heading = $data['heading'];
-				$breadcrumb = $data['breadcrumb'];
+
+				if (isset($data['heading']))
+				{
+					ee()->view->cp_heading = $data['heading'];
+				}
+
+				if (isset($data['breadcrumb']))
+				{
+					$breadcrumb = array_merge($breadcrumb, $data['breadcrumb']);
+				}
+
+				if (isset($data['sidebar']))
+				{
+					ee()->menu->register_left_nav($data['sidebar']);
+				}
 			}
 			else
 			{
 				$vars['_module_cp_body'] = $data;
-				ee()->view->cp_heading = $module['name'] . ' ' . lang('configuration');
 			}
 		}
 		else
@@ -857,6 +871,13 @@ class Addons extends CP_Controller {
 		}
 
 		ee()->view->cp_breadcrumbs = $breadcrumb;
+		ee()->view->cp_page_title = ee()->view->cp_heading;
+		ee()->view->header = array(
+			'title' => lang('addon_manager'),
+			'form_url' => ee('CP/URL', 'addons'),
+			'search_button_value' => lang('search_addons_button')
+		);
+		ee()->view->disable('outer_box');
 
 		ee()->cp->render('addons/settings', $vars);
 	}
