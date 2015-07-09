@@ -25,7 +25,6 @@
 class EE_Extensions {
 
 	var $extensions 	= array();
-	var $OBJ			= array();	// Current Instantiated Object
 	var $end_script		= FALSE;	// To return or not to return
 	var $last_call		= FALSE;	// The data returned from the last called method for this hook
 	var $in_progress	= '';		// Last hook called.  Prevents loops.
@@ -186,14 +185,14 @@ class EE_Extensions {
 				//  Call the class(s)
 				//  Each method could easily have its own settings,
 				//  so we have to send the settings each time
-				$this->OBJ[$class_name] = new $class_name($settings);
+				$obj = new $class_name($settings);
 
 				// Update Extension First?
-				if (version_compare($this->OBJ[$class_name]->version, $this->version_numbers[$class_name], '>') && method_exists($this->OBJ[$class_name], 'update_extension') === TRUE)
+				if (version_compare($obj->version, $this->version_numbers[$class_name], '>') && method_exists($obj, 'update_extension') === TRUE)
 				{
-					$update = call_user_func_array(array($this->OBJ[$class_name], 'update_extension'), array($this->version_numbers[$class_name]));
+					$update = call_user_func(array($obj, 'update_extension'), $this->version_numbers[$class_name]);
 
-					$this->version_numbers[$class_name] = $this->OBJ[$class_name]->version;  // reset master
+					$this->version_numbers[$class_name] = $obj->version;  // reset master
 				}
 
 				//  Call Method and Store Returned Data
@@ -207,7 +206,7 @@ class EE_Extensions {
 				}
 
 
-				$this->last_call = call_user_func_array(array($this->OBJ[$class_name], $method), $args);
+				$this->last_call = call_user_func_array(array($obj, $method), $args);
 
 				if ($automatically_load_path)
 				{
