@@ -147,9 +147,6 @@ class Rte_ext {
 
 		ee()->javascript->compile();
 
-		// add the CSS
-		ee()->cp->add_to_head(ee()->view->head_link('css/rte.css'));
-
 		// return the page
 		return ee()->load->view('myaccount_settings', $vars, TRUE);
 	}

@@ -246,6 +246,8 @@ class Fields extends AbstractChannelsController {
 			ee('CP/URL', 'channels/fields')->compile() => lang('custom_fields'),
 		);
 
+		$errors = NULL;
+
 		if ( ! empty($_POST))
 		{
 			$field = $this->setWithPost($field);
@@ -270,7 +272,7 @@ class Fields extends AbstractChannelsController {
 			}
 			else
 			{
-				$vars['errors'] = $result;
+				$errors = $result;
 
 				ee('Alert')->makeInline('shared-form')
 					->asIssue()
@@ -281,6 +283,7 @@ class Fields extends AbstractChannelsController {
 		}
 
 		$vars = array(
+			'errors' => $errors,
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL', 'channels/fields/edit/' . $id),
 			'sections' => $this->form($field),
