@@ -384,6 +384,7 @@ class Files extends AbstractFilesController {
 			show_error(lang('unauthorized_access'));
 		}
 
+		$dir->Files->delete(); // @TODO Remove this once cascading works
 		$dir->delete();
 
 		ee('Alert')->makeInline('files-form')
