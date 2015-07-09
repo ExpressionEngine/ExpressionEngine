@@ -225,7 +225,7 @@ class CI_DB_mysqli_connection {
 
 		foreach ($frames as $frame)
 		{
-			$error .= '[line '.$frame['line'].'] :: '.$frame['file'].'<br>';
+			$error .= '[line '.$frame['line'].'] :: '.$frame['file'].' &nbsp; <small>'.$frame['function'].'()</small>'.'<br>';
 		}
 
 		$error .= '<br><b>Query</b><br>';
