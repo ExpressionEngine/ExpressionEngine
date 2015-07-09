@@ -252,7 +252,7 @@ class Grid_model extends CI_Model {
 		else
 		{
 			$db = ee('db');
-			$db->insert($this->_table, $column)->insert_id();
+			$db->insert($this->_table, $column);
 			$col_id = $db->insert_id();
 
 			// Add the fieldtype's columns to our data table
