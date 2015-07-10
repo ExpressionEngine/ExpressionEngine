@@ -87,7 +87,11 @@ class Communicate extends Utilities {
 			$default['plaintext_alt'] = $email->plaintext_alt;
 			$default['mailtype'] = $email->mailtype;
 			$default['wordwrap'] = $email->wordwrap;
-			$member_groups = $email->getMemberGroups()->pluck('group_id');
+
+			if ( ! isset($this->member))
+			{
+				$member_groups = $email->getMemberGroups()->pluck('group_id');
+			}
 		}
 
 		// Set up member group emailing options
@@ -133,6 +137,33 @@ class Communicate extends Utilities {
 		');
 
 		ee()->cp->render('utilities/communicate/index', $vars + $default);
+	}
+
+	/**
+	 * Prepopulate form to send to specific member
+	 * 
+	 * @param int $id 
+	 * @access public
+	 * @return void
+	 */
+	public function member($id)
+	{
+		$member = ee('Model')->get('Member', $id)->first();
+		$this->member = $member;
+
+		if (empty($member))
+		{
+			show_404();
+		}
+
+		$cache_data = array(
+			'recipient'	=> $member->email,
+			'from_email' => ee()->session->userdata('email')
+		);
+
+		$email = ee('Model')->make('EmailCache', $cache_data);
+		$email->removeMemberGroups();
+		$this->index($email);
 	}
 
 	/**
