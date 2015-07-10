@@ -90,7 +90,7 @@ abstract class AbstractChannels extends CP_Controller {
 		// This header is section-wide
 		ee()->view->header = array(
 			'title' => lang('channel_manager'),
-			'form_url' => ee('CP/URL', 'channels/search'),
+			//'form_url' => ee('CP/URL', 'channels/search'),
 			'toolbar_items' => array(
 				'settings' => array(
 					'href' => ee('CP/URL', 'settings/content-design'),
