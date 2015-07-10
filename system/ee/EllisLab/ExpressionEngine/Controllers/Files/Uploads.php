@@ -570,12 +570,12 @@ class Uploads extends AbstractFilesController {
 
 		if ($no_access->count() > 0)
 		{
-			$upload_destination->setNoAccess($no_access);
+			$upload_destination->NoAccess = $no_access;
 		}
 		else
 		{
 			// Remove all member groups from this upload destination
-			$upload_destination->removeNoAccess();
+			$upload_destination->NoAccess = NULL;
 		}
 
 		$result = $upload_destination->validate();

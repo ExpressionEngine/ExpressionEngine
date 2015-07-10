@@ -1,0 +1,23 @@
+{
+  "name": "ExpressionEngine, Core, and Documentation",
+  "cmd": "gulp",
+  "cwd": "{PROJECT_PATH}",
+  "targets": {
+    "Compress JavaScript": {
+      "cmd": "gulp compress_js",
+      "cwd": "{PROJECT_PATH}"
+    },
+    "Bump version numbers": {
+      "cmd": "gulp version_bump",
+      "cwd": "{PROJECT_PATH}"
+    },
+    "ExpressionEngine and Core": {
+      "cmd": "gulp app",
+      "cwd": "{PROJECT_PATH}"
+    },
+    "Documentation": {
+      "cmd": "gulp docs",
+      "cwd": "{PROJECT_PATH}"
+    }
+  }
+}

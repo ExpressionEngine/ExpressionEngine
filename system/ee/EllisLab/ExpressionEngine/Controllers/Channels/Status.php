@@ -752,9 +752,7 @@ class Status extends AbstractChannelsController {
 	{
 		if ($status_id)
 		{
-			$status = ee('Model')->get('Status')
-				->filter('status_id', $status_id)
-				->first();
+			$status = ee('Model')->get('Status', $status_id)->first();
 		}
 		else
 		{
@@ -775,12 +773,12 @@ class Status extends AbstractChannelsController {
 
 		if ($no_access->count() > 0)
 		{
-			$status->setNoAccess($no_access);
+			$status->NoAccess = $no_access;
 		}
 		else
 		{
 			// Remove all member groups from this status
-			$status->removeNoAccess();
+			$status->NoAccess = NULL;
 		}
 
 		$status->save();

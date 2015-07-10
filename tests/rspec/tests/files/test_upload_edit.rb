@@ -357,7 +357,7 @@ feature 'Upload Destination Create/Edit' do
     @page.height_for_row(2).set '40'
 
     # Uncheck Members
-    @page.upload_member_groups[0].click
+    @page.upload_member_groups[0].set false
 
     # Check both category groups
     @page.cat_group[0].click
@@ -438,7 +438,7 @@ feature 'Upload Destination Create/Edit' do
     @page.height_for_row(2).set '40'
 
     # Uncheck Members
-    @page.upload_member_groups[0].click
+    @page.upload_member_groups[0].set false
 
     # Check both category groups
     @page.cat_group[0].click
