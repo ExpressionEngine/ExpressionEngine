@@ -6,7 +6,8 @@ module Installer
     element :db_password, 'input[name=db_password]'
     element :db_prefix, 'input[name=db_prefix]'
 
-    elements :install_default_theme, 'input[name=install_default_theme]'
+    # TODO: Enable this when we add the default theme back
+    # elements :install_default_theme, 'input[name=install_default_theme]'
 
     element :username, 'input[name=username]'
     element :email_address, 'input[name=email_address]'

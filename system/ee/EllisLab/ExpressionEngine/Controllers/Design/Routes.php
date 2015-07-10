@@ -88,17 +88,17 @@ class Routes extends Design {
 
 		foreach($templates as $template)
 		{
-			$route = $template->getTemplateRoute();
+			$route = $template->TemplateRoute;
 
 			// create a route of the template doesn't have one yet
 			if (empty($route))
 			{
-				$template->createTemplateRoute(array());
+				$template->TemplateRoute = ee('Model')->make('TemplateRoute');
 				$template->save();
-				$route = $template->getTemplateRoute();
+				$route = $template->TemplateRoute;
 			}
 
-			$group = $template->getTemplateGroup();
+			$group = $template->TemplateGroup;
 			$id = $template->template_id;
 			$route_id = $route->getId();
 

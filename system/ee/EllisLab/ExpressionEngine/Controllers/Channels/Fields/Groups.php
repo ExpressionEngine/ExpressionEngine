@@ -77,7 +77,7 @@ class Groups extends AbstractChannelsController {
 				)
 			)
 		);
-		$table->setNoResultsText('no_group_groups', 'create_new', $vars['create_url']);
+		$table->setNoResultsText('no_field_groups', 'create_new', $vars['create_url']);
 
 		$data = array();
 
@@ -171,7 +171,9 @@ class Groups extends AbstractChannelsController {
 					->addToBody(sprintf(lang('create_field_group_success_desc'), $field_group->group_name))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'channels/fields/groups' . $id));
+				ee()->session->set_flashdata('group_id', $field_group->group_id);
+
+				ee()->functions->redirect(ee('CP/URL', 'channels/fields/groups'));
 			}
 			else
 			{

@@ -27,7 +27,7 @@
 class Rte_ext {
 
 	var $name			= 'Rich Text Editor';
-	var $version		= '1.0';
+	var $version		= '1.0.1';
 	var $settings_exist	= 'n';
 	var $docs_url		= 'https://ellislab.com/expressionengine/user-guide/modules/rte/index.html';
 	var $required_by	= array('module', 'fieldtype');

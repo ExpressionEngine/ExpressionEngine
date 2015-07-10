@@ -98,7 +98,8 @@ class FieldFacade {
 
 	public function isRequired()
 	{
-		return $this->getItem('field_required') === 'y';
+		$required = $this->getItem('field_required');
+		return ($required === TRUE || $required === 'y');
 	}
 
 	public function getItem($field)

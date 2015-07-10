@@ -405,7 +405,17 @@ class ChannelEntry extends ContentModel {
 
 		$status_options = array();
 
-		foreach ($statuses->all() as $status)
+		$all_statuses = $statuses->all();
+
+		if ( ! count($all_statuses))
+		{
+			$status_options = array(
+				'open' => lang('open'),
+				'closed' => lang('closed')
+			);
+		}
+
+		foreach ($all_statuses as $status)
 		{
 			$status_name = ($status->status == 'closed' OR $status->status == 'open') ?  lang($status->status) : $status->status;
 			$status_options[$status->status] = $status_name;

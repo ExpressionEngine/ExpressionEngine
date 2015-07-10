@@ -115,7 +115,7 @@ abstract class ContentModel extends VariableColumnModel {
 
 			if ($field->getType() == 'date')
 			{
-				$field->save();
+				$this->setRawProperty($name, $field->save());
 			}
 		}
 	}

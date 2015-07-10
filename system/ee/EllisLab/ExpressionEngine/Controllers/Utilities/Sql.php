@@ -97,7 +97,9 @@ class Sql extends Utilities {
 			array(
 				'table_name',
 				'records',
-				'size',
+				'size' => array(
+					'encode' => FALSE
+				),
 				'manage' => array(
 					'type'	=> CP\Table::COL_TOOLBAR
 				),

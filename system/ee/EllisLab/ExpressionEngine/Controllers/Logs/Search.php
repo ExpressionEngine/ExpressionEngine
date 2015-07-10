@@ -42,6 +42,11 @@ class Search extends Logs {
 	 */
 	public function index()
 	{
+		if ( ! $this->search_installed)
+		{
+			show_404();
+		}
+
 		if ( ! ee()->cp->allowed_group('can_access_tools', 'can_access_logs'))
 		{
 			show_error(lang('unauthorized_access'));
