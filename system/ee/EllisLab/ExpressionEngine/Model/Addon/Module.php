@@ -33,9 +33,16 @@ class Module extends Model {
 	protected static $_table_name = 'modules';
 
 	protected static $_relationships = array(
+		'AssignedModules' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'MemberGroup',
+			'pivot' => array(
+				'table' => 'module_member_groups'
+			)
+		),
 		'UploadDestination' => array(
 			'type' => 'hasMany'
-		),
+		)
 	);
 
 	protected static $_typed_columns = array(
@@ -46,16 +53,6 @@ class Module extends Model {
 	protected static $_validation_rules = array(
 		'has_cp_backend'     => 'enum[y,n]',
 		'has_publish_fields' => 'enum[y,n]'
-	);
-
-	protected static $_relationships = array(
-		'AssignedModules' => array(
-			'type' => 'hasAndBelongsToMany',
-			'model' => 'MemberGroup',
-			'pivot' => array(
-				'table' => 'module_member_groups'
-			)
-		)
 	);
 
 	protected $module_id;
