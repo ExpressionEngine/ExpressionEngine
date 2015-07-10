@@ -752,9 +752,7 @@ class Status extends AbstractChannelsController {
 	{
 		if ($status_id)
 		{
-			$status = ee('Model')->get('Status')
-				->filter('status_id', $status_id)
-				->first();
+			$status = ee('Model')->get('Status', $status_id)->first();
 		}
 		else
 		{
