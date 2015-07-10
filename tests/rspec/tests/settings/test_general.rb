@@ -23,7 +23,7 @@ feature 'General Settings' do
     @page.should have_is_system_on_n
     @page.should have_new_version_check_y
     @page.should have_new_version_check_n
-    @page.should have_cp_theme
+    # @page.should have_cp_theme
     @page.should have_language
     @page.should have_tz_country
     @page.should have_timezone

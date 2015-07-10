@@ -99,6 +99,7 @@ class General extends Settings {
 				),
 			),
 			'defaults' => array(
+				/*
 				array(
 					'title' => 'cp_theme',
 					'desc' => '',
@@ -109,6 +110,7 @@ class General extends Settings {
 						)
 					)
 				),
+				*/
 				array(
 					'title' => 'language',
 					'desc' => 'language_desc',
