@@ -83,13 +83,16 @@ class FilePicker {
 				'date_added',
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=> Table::COL_CHECKBOX
 				)
 			)
 		);
 		$table->setNoResultsText(lang('no_uploaded_files'));
+
+		if (empty($_GET['sort_col']))
+		{
+			$table->config['sort_col'] = 'date_added';
+			$table->config['sort_dir'] = 'desc';
+		}
 
 		$data = array();
 
