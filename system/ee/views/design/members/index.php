@@ -8,6 +8,6 @@
 		<h1><?=$cp_heading?></h1>
 		<?=ee('Alert')->getAllInlines()?>
 		<?php $this->view('_shared/table', $table); ?>
-		<?=$pagination?>
+		<?php if (isset($pagination)) echo $pagination; ?>
 	<?=form_close()?>
 </div>
