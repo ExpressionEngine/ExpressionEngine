@@ -19,7 +19,7 @@
 					<input type="text" name="data_title" value="<?=set_value('data_title', $template->data_title)?>">
 				</div>
 			</fieldset>
-			<fieldset class="col-group last">
+			<fieldset class="col-group">
 				<div class="setting-txt col w-16">
 					<em><?=sprintf(lang('last_edit'), ee()->localize->human_time($template->edit_date), $author)?></em>
 				</div>
