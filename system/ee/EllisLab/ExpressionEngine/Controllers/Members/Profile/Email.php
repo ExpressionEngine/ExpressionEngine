@@ -131,6 +131,9 @@ class Email extends Profile {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
+			// Don't save the password check to the model
+			unset($vars['sections'][0][count($vars['sections'][0]) - 1]);
+
 			if ($this->saveSettings($vars['sections']))
 			{
 				ee()->view->set_message('success', lang('member_updated'), lang('member_updated_desc'), TRUE);
