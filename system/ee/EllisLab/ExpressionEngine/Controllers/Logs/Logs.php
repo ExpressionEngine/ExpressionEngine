@@ -35,6 +35,7 @@ class Logs extends CP_Controller {
 	var $perpage		= 20;
 	var $params			= array();
 	var $base_url;
+	protected $search_installed = FALSE;
 
 	/**
 	 * Constructor
@@ -63,6 +64,17 @@ class Logs extends CP_Controller {
 				'search_log'    => ee('CP/URL', 'logs/search'),
 			)
 		);
+
+		$this->search_installed = ee('Model')->get('Module')
+			->filter('module_name', 'Search')
+			->first();
+
+		$this->search_installed = ! is_null($this->search_installed);
+
+		if ( ! $this->search_installed)
+		{
+			unset($menu[1]['search_log']);
+		}
 
 		if (ee()->session->userdata('group_id') != 1)
 		{
