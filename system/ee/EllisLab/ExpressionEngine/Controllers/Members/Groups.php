@@ -486,7 +486,7 @@ class Groups extends Members\Members {
 					'fields' => array(
 						'search_flood_control' => array(
 							'type' => 'text',
-							'value' => element('search_flood_control', $values)
+							'value' => element('search_flood_control', $values, 0)
 						)
 					)
 				)
@@ -508,7 +508,7 @@ class Groups extends Members\Members {
 					'fields' => array(
 						'prv_msg_send_limit' => array(
 							'type' => 'text',
-							'value' => element('prv_msg_send_limit', $values)
+							'value' => element('prv_msg_send_limit', $values, 0)
 						)
 					)
 				),
@@ -518,7 +518,7 @@ class Groups extends Members\Members {
 					'fields' => array(
 						'prv_msg_storage_limit' => array(
 							'type' => 'text',
-							'value' => element('prv_msg_storage_limit', $values)
+							'value' => element('prv_msg_storage_limit', $values, 0)
 						)
 					)
 				),
