@@ -49,7 +49,7 @@ class Ignore extends Profile {
 	 */
 	public function index()
 	{
-		$order_by = ($this->config->item('memberlist_order_by')) ? $this->config->item('memberlist_order_by') : 'member_id';
+		$order_by = 'screen_name';
 		$sort = ($this->config->item('memberlist_sort_order')) ? $this->config->item('memberlist_sort_order') : 'asc';
 		$perpage = $this->config->item('memberlist_row_limit');
 		$sort_col = ee()->input->get('sort_col') ?: $order_by;
