@@ -896,7 +896,7 @@ feature 'Add-On Manager' do
 				no_php_js_errors
 
 				@page.first_party_pages[3].text.should eq '2'
-				@page.first_party_pages[3[:class].should eq 'act'
+				@page.first_party_pages[3][:class].should eq 'act'
 				@page.third_party_pages[3].text.should eq '2'
 				@page.third_party_pages[3][:class].should eq 'act'
 			end
@@ -975,7 +975,7 @@ feature 'Add-On Manager' do
 					no_php_js_errors
 
 					@page.first_party_pages[3].text.should eq '2'
-					@page.first_party_pages[3[:class].should eq 'act'
+					@page.first_party_pages[3][:class].should eq 'act'
 					@page.third_party_version_header[:class].should eq 'highlight'
 				end
 			end
@@ -1018,13 +1018,13 @@ feature 'Add-On Manager' do
 					no_php_js_errors
 
 					@page.first_party_pages[3].text.should eq '2'
-					@page.first_party_pages[3[:class].should eq 'act'
+					@page.first_party_pages[3][:class].should eq 'act'
 
 					@page.third_party_version_header.find('a.sort').click
 					no_php_js_errors
 
 					@page.first_party_pages[3].text.should eq '2'
-					@page.first_party_pages[3[:class].should eq 'act'
+					@page.first_party_pages[3][:class].should eq 'act'
 					@page.third_party_version_header[:class].should eq 'highlight'
 				end
 
@@ -1050,7 +1050,7 @@ feature 'Add-On Manager' do
 					no_php_js_errors
 
 					@page.first_party_pages[3].text.should eq '2'
-					@page.first_party_pages[3[:class].should eq 'act'
+					@page.first_party_pages[3][:class].should eq 'act'
 
 					@page.third_party_status_filter.click
 					@page.wait_until_third_party_status_filter_menu_visible
@@ -1058,7 +1058,7 @@ feature 'Add-On Manager' do
 					no_php_js_errors
 
 					@page.first_party_pages[3].text.should eq '2'
-					@page.first_party_pages[3[:class].should eq 'act'
+					@page.first_party_pages[3][:class].should eq 'act'
 					@page.third_party_status_filter.text.should eq "status (uninstalled)"
 				end
 
@@ -1109,7 +1109,7 @@ feature 'Add-On Manager' do
 					no_php_js_errors
 
 					@page.first_party_pages[3].text.should eq '2'
-					@page.first_party_pages[3[:class].should eq 'act'
+					@page.first_party_pages[3][:class].should eq 'act'
 					@page.third_party_status_filter.text.should eq "status (uninstalled)"
 				end
 			end
