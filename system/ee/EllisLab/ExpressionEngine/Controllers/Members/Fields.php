@@ -312,21 +312,22 @@ class Fields extends Members\Members {
 			)
 		);
 
-		$vars['sections'] += $field->getSettingsForm();
+		$settingsForm = $field->getSettingsForm();
+		$vars['sections'] += $settingsForm;
+		$settingsFields = array_pop($settingsForm);
+		$settingsFields = $settingsFields['settings'];
 
-		// These are currently the only fieldtypes we allow; get their settings forms
-		foreach (array('text', 'textarea', 'select') as $fieldtype)
+		if ( ! empty($_POST))
 		{
-			foreach (array_merge($vars['sections'][0], $field->getSettingsForm()) as $section)
+			foreach (array_merge($vars['sections'][0], $settingsFields) as $section)
 			{
+				// We have to do this dance of explicitly setting each property 
+				// so that the MemberField model's magic set method will prefix 
+				// the properties for us
 				foreach ($section['fields'] as $key => $val)
 				{
 					$field->$key = ee()->input->post($key);
 				}
-
-				$dummy_field = ee('Model')->make('MemberField');
-				$dummy_field->field_type = $fieldtype;
-				$vars['sections'] += $dummy_field->getSettingsForm();
 			}
 
 			$result = $field->validate();
