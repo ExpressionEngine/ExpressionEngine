@@ -188,7 +188,7 @@ class Members extends AbstractDesignController {
 		$themes = array();
 		foreach (ee()->member_model->get_profile_templates() as $dir => $name)
 		{
-			$themes[ee('CP/URL', 'design/members/index/' . $dir)] = $name;
+			$themes[ee('CP/URL', 'design/members/index/' . $dir)->compile()] = $name;
 		}
 
 		$vars['themes'] = form_dropdown('theme', $themes, ee('CP/URL', 'design/members/index/' . $theme));

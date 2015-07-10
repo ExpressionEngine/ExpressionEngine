@@ -114,7 +114,7 @@ class Forums extends AbstractDesignController {
 		{
 			if (is_dir(PATH_ADDONS_THEMES . '/forum_themes/' . $dir))
 			{
-				$themes[ee('CP/URL', 'design/forums/index/' . $dir)] = ucfirst(str_replace("_", " ", $dir));
+				$themes[ee('CP/URL', 'design/forums/index/' . $dir)->compile()] = ucfirst(str_replace("_", " ", $dir));
 			}
 		}
 
