@@ -31,12 +31,12 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  */
 class RichTextEditorToolset extends Model {
 
-	static protected $_primary_key = 'toolset_id';
-	static protected $_gateway_names = array('RichTextEditorToolsetGateway');
+	protected static $_primary_key = 'toolset_id';
+	protected static $_table_name = 'rte_toolsets';
 
-	static protected $_relationships = array(
+	protected static $_relationships = array(
 		'Member' => array(
-			'type' => 'many_to_one'
+			'type' => 'belongsTo'
 		)
 	);
 

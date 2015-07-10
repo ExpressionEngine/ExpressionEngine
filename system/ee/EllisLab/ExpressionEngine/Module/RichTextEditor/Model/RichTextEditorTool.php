@@ -31,8 +31,8 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  */
 class RichTextEditorTool extends Model {
 
-	static protected $_primary_key = 'tool_id';
-	static protected $_gateway_names = array('RichTextEditorToolGateway');
+	protected static $_primary_key = 'tool_id';
+	protected static $_table_name = 'rte_tools';
 
 	protected $tool_id;
 	protected $name;
