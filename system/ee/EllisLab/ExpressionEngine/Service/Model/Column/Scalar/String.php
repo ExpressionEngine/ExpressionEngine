@@ -27,7 +27,7 @@ use EllisLab\ExpressionEngine\Service\Model\Column\StaticType;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Integer extends StaticType {
+class String extends StaticType {
 
 	/**
 	 * Called when the user gets the column
