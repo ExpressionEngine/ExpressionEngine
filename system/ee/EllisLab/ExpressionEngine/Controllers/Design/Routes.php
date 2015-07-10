@@ -60,6 +60,7 @@ class Routes extends Design {
 
 		$this->sidebarMenu();
 		$this->stdHeader();
+		ee()->lang->loadfile('template_router');
 
 		$this->base_url = new URL('design/routes', ee()->session->session_id());
 	}
@@ -71,8 +72,8 @@ class Routes extends Design {
 		$columns = array(
 			'group_name',
 			'template_name',
-			'route',
-			'segments_required'
+			'route' => array('encode' => FALSE),
+			'segments_required' => array('encode' => FALSE)
 		);
 
 		$table->setColumns($columns);

@@ -9,7 +9,10 @@ $lang = array(
 	'missing_segment_value' => 'Missing value for segment: ',
 	'route_not_found' => 'Template route not found.',
 	'validation_failed' => 'Validation failed.',
-	'variable_in_use' => 'Segment variable already in use: '
+	'variable_in_use' => 'Segment variable already in use: ',
+	'template_routes_header' => 'Template Routes',
+	'route' => 'Route',
+	'segments_required' => 'Requite all Segments?',
 );
 
 /* End of file template_router_lang.php */

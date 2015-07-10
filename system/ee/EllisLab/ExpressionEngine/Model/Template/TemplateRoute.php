@@ -99,14 +99,17 @@ class TemplateRoute extends Model {
 	{
 		$route = "";
 		$routes = self::getConfig();
+		$template = $this->Template;
 
-		$template = $this->getTemplate();
-		$group = $template->getTemplateGroup();
-		$name = "{$group->group_name}/{$template->template_name}";
-
-		if ( ! empty($routes[$name]))
+		if ( ! empty($this->Template))
 		{
-			$route = $routes[$name];
+			$group = $template->TemplateGroup;
+			$name = "{$group->group_name}/{$template->template_name}";
+
+			if ( ! empty($routes[$name]))
+			{
+				$route = $routes[$name];
+			}
 		}
 
 		if (empty($route))
