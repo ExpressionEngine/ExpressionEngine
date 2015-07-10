@@ -44,7 +44,7 @@ $no_results = (in_array($field['type'], array('checkbox', 'radio', 'select')) &&
 			<?=lang($field['no_results']['link_text'])?>
 		</a></p>
 	</div>
-<?php continue; endif ?>
+<?php endif ?>
 <?php if ($has_note): ?>
 	<div class="setting-note">
 <?php endif ?>
