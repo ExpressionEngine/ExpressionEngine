@@ -29,7 +29,9 @@
 		</div>
 		<h2><a href="<?=cp_url('design/snippets')?>"><?=lang('template_partials')?></a> <a class="btn action" href="<?=cp_url('design/snippets/create')?>"><?=lang('new')?></a></h2>
 		<h2><a href="<?=cp_url('design/variables')?>"><?=lang('template_variables')?></a> <a class="btn action" href="<?=cp_url('design/variables/create')?>"><?=lang('new')?></a></h2>
+		<?php if ($routes): ?>
 		<h2><a href="<?=cp_url('design/routes')?>"><?=lang('template_routes')?></a></h2>
+		<?php endif; ?>
 	</div>
 </div>
 

@@ -8,6 +8,7 @@ use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
+use EllisLab\ExpressionEngine\Model\Template\TemplateRoute;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -123,6 +124,13 @@ abstract class AbstractDesign extends CP_Controller {
 				'url' => cp_url('design/forums'),
 				'class' => ($active == 'forums') ? 'act' : ''
 			);
+		}
+
+		$vars['routes'] = TRUE;
+
+		if (TemplateRoute::getConfig())
+		{
+			$vars['routes'] = FALSE;
 		}
 
 		ee()->view->left_nav = ee('View')->make('design/menu')->render($vars);

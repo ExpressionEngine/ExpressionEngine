@@ -52,6 +52,71 @@ class TemplateRoute extends Model {
 	protected $route_parsed;
 	protected $route_required;
 
+	public static function getConfig()
+	{
+		$site_id = ee()->config->item('site_id');
+		$routes = ee()->config->item('routes:' . $site_id);
+
+		if (empty($routes))
+		{
+			$routes = ee()->config->item('routes');
+		}
+
+		if (empty($routes))
+		{
+			return FALSE;
+		}
+
+		return self::flatten($routes);
+	}
+
+	public static function flatten($array)
+	{
+   		$return = array();
+
+		foreach ($array as $key => $value)
+		{
+			if (is_array($value))
+			{
+				$return = array_merge($return, array_flatten($value));
+			}
+			else
+			{
+				$return[$key] = $value;
+			}
+   		}
+
+   		return $return;
+	}
+
+	/**
+	 * A getter for the route property. Will override with file based config if 
+	 * it exists.
+	 *
+	 * @return string Route
+	 */
+	protected function get__route()
+	{
+		$route = "";
+		$routes = self::getConfig();
+
+		$template = $this->getTemplate();
+		$group = $template->getTemplateGroup();
+		$name = "{$group->group_name}/{$template->template_name}";
+
+		if ( ! empty($routes[$name]))
+		{
+			$route = $routes[$name];
+		}
+
+		if (empty($route))
+		{
+			$route = $this->route;
+		}
+
+		return $route;
+	}
+
 	/**
 	 * A setter for the route_required property
 	 *

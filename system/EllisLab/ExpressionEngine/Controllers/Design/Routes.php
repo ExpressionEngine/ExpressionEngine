@@ -52,6 +52,12 @@ class Routes extends Design {
 			ee()->functions->redirect(cp_url('design'));
 		}
 
+		// Only show this page if we're not using a file based config
+		if ( ! empty(ee()->config->item('routes')))
+		{
+			ee()->functions->redirect(cp_url('design'));
+		}
+
 		$this->sidebarMenu();
 		$this->stdHeader();
 
@@ -172,7 +178,13 @@ RADIO;
 		{
 			$error = FALSE;
 			$id = $template->template_id;
-			$route_required = $submitted[$id]['required'];
+			$route_required = FALSE;
+
+			if ( ! empty($submitted[$id]['required']))
+			{
+				$route_required = $submitted[$id]['required'];
+			}
+
 			$route = $submitted[$id]['route'];
 			$ee_route = NULL;
 
