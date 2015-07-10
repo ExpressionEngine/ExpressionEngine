@@ -9,6 +9,7 @@ use EllisLab\ExpressionEngine\Library\Data\Entity;
 use EllisLab\ExpressionEngine\Service\Event\Publisher as EventPublisher;
 use EllisLab\ExpressionEngine\Service\Event\Subscriber as EventSubscriber;
 use EllisLab\ExpressionEngine\Service\Model\Association\Association;
+use EllisLab\ExpressionEngine\Service\Model\Column\StaticType;
 use EllisLab\ExpressionEngine\Service\Validation\Validator;
 use EllisLab\ExpressionEngine\Service\Validation\ValidationAware;
 
@@ -59,9 +60,45 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	protected $_validator = NULL;
 
 	/**
-	 *
+	 * @var Associated models
 	 */
 	protected $_associations = array();
+
+	/**
+	 * @var Cache of variable types - can be class names or objects
+	 */
+	protected $_property_types = array();
+
+	/**
+	 * @var Type names and their corresponding classes
+	 */
+	protected static $_type_classes = array(
+		'bool' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Boolean',
+		'boolean' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Boolean',
+
+		'float' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Float',
+		'double' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Float',
+
+		'int' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Integer',
+		'integer' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Integer',
+
+		'string' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\String',
+
+		'yesNo' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\YesNo',
+		'boolString' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\YesNo',
+
+		'timestamp' => 'EllisLab\ExpressionEngine\Service\Model\Column\Object\Timestamp',
+
+		'base64' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64',
+		'base64Serialized' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64Native',
+		'json' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Json',
+		'serialized' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Native',
+	);
+
+	/**
+	 * @var Typed columns must default to array
+	 */
+	protected static $_typed_columns = array();
 
 	/**
 	 * @var Relationships property must default to array
@@ -73,14 +110,19 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	 */
 	protected static $_mixins = array(
 		'EllisLab\ExpressionEngine\Service\Event\Mixin',
-		'EllisLab\ExpressionEngine\Service\Model\Mixin\TypedColumn',
-		'EllisLab\ExpressionEngine\Service\Model\Mixin\CompositeColumn',
 		'EllisLab\ExpressionEngine\Service\Model\Mixin\Relationship'
 	);
 
+	/**
+	 * Add some default filters that we need for models. Might hardcode some
+	 * of these in the long run.
+	 */
 	protected function initialize()
 	{
-		// Nothing. Use this for any setup work you need to do.
+		$this->addFilter('get', array($this, 'typedGet'));
+		$this->addFilter('set', array($this, 'typedSet'));
+		$this->addFilter('fill', array($this, 'typedLoad'));
+		$this->addFilter('store', array($this, 'typedStore'));
 	}
 
 	/**
@@ -92,11 +134,6 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	 */
 	public function __call($method, $args)
 	{
-		if ($column = $this->getMixin('Model:CompositeColumn')->getCompositeColumnNameFromMethod($method))
-		{
-			return $this->getMixin('Model:CompositeColumn')->getCompositeColumn($column);
-		}
-
 		if ($action = $this->getMixin('Model:Relationship')->getAssociationActionFromMethod($method))
 		{
 			return $this->getMixin('Model:Relationship')->runAssociationAction($action, $args);
@@ -267,18 +304,6 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	}
 
 	/**
-	 * Get all current values
-	 *
-	 * @return array Current values. Including null values - Beware.
-	 */
-	public function getValues()
-	{
-		$this->saveCompositeColumns();
-
-		return parent::getValues();
-	}
-
-	/**
 	 * Check if the model has been saved
 	 *
 	 * @return bool is new?
@@ -286,6 +311,14 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	public function isNew()
 	{
 		return $this->_new;
+	}
+
+	public function getModified()
+	{
+		return array_merge(
+			$this->getChangedTypeValues(),
+			parent::getModified()
+		);
 	}
 
 	/**
@@ -296,8 +329,6 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	public function save()
 	{
 		$qb = $this->newSelfReferentialQuery();
-
-		$this->saveCompositeColumns();
 
 		if ($this->isNew())
 		{
@@ -454,7 +485,7 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	 */
 	public function getValidationData()
 	{
-		return $this->getDirty();
+		return $this->getModified();
 	}
 
 	/**
@@ -522,6 +553,95 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		}
 
 		return TRUE;
+	}
+
+	public function typedLoad($value, $name)
+	{
+		if ($type = $this->getTypeFor($name))
+		{
+			return $type->load($value);
+		}
+
+		return $value;
+	}
+
+	public function typedStore($value, $name)
+	{
+		if ($type = $this->getTypeFor($name))
+		{
+			return $type->store($value);
+		}
+
+		return $value;
+	}
+
+	public function typedGet($value, $name)
+	{
+		if ($type = $this->getTypeFor($name))
+		{
+			return $type->get($value);
+		}
+
+		return $value;
+	}
+
+	public function typedSet($value, $name)
+	{
+		if ($type = $this->getTypeFor($name))
+		{
+			return $type->set($value);
+		}
+
+		return $value;
+	}
+
+	public function getTypeFor($name)
+	{
+		if ( ! array_key_exists($name, $this->_property_types))
+		{
+			$this->_property_types[$name] = $this->createTypeFor($name);
+		}
+
+		return $this->_property_types[$name];
+	}
+
+	public function createTypeFor($name)
+	{
+		$columns = $this->getMetadata('typed_columns') ?: array();
+		$types = $this->getMetadata('type_classes');
+
+		if ( ! array_key_exists($name, $columns))
+		{
+			return NULL;
+		}
+
+		$type = $columns[$name];
+		$class = $types[$type];
+
+		return $class::create();
+	}
+
+	/**
+	 * Sync up typed column values
+	 */
+	protected function getChangedTypeValues()
+	{
+		$changed = array();
+
+		foreach ($this->_property_types as $name => $type)
+		{
+			$set = $this->getRawProperty($name);
+
+			$value = $this->getBackup($name, $set);
+			$new_value = $this->typedStore($set, $name);
+
+			if ($new_value !== $value)
+			{
+				$changed[$name] = $set;
+			}
+		}
+
+		return $changed;
 	}
 
 	/**
@@ -604,40 +724,6 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		return $this;
 	}
 
-
-
-	/**
-	 * Support method for the typed columns mixin
-	 */
-	public function getTypedColumns()
-	{
-		return $this->getMetaData('typed_columns') ?: array();
-	}
-
-	/**
-	 * Support method for the composite column mixin
-	 */
-	public function getCompositeColumns()
-	{
-		$definitions = array();
-
-		$all = $this->getMetaDataByClass('composite_columns');
-
-		foreach ($all as $class => $columns)
-		{
-			$ns_prefix = substr($class, 0, strrpos($class, '\\'));
-
-			foreach ($columns as $property => $name)
-			{
-				$class = $ns_prefix.'\\Column\\'.$name;
-
-				$definitions[$name] = compact('class', 'property');
-			}
-		}
-
-		return $definitions;
-	}
-
 	/**
 	 * Create a new query tied to this object
 	 *
@@ -647,19 +733,6 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	{
 		return $this->_frontend->get($this);
 	}
-
-	/**
-	 * Clean up var_dump output for developers on PHP 5.6+
-	 */
-	public function __debugInfo()
-	{
-		$name = $this->_name;
-		$values = $this->getValues();
-		$related_to = array_keys($this->getAllAssociations());
-
-		return compact('name', 'values', 'related_to');
-	}
-
 
 	public function __toString()
 	{

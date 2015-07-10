@@ -17,7 +17,7 @@
 $(document).ready(function() {
 
 	$('table').eeTableReorder({
-		afterSort: function(event, row) {
+		afterSort: function(row) {
 			$.ajax({
 				url: EE.member_fields.reorder_url,
 				data: {'order': $('input[name="order[]"]').serialize() },

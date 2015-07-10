@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Module\Comment\Model;
+namespace EllisLab\Addons\Rte\Model;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
@@ -19,37 +19,30 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Comment Subscription Model
+ * ExpressionEngine Toolset Model for the Rich Text Editor
  *
- * A model representing user subscriptions to the comment thread on a particle
- * entry.
+ * A model representing a user toolset in the Rich Text Editor.
  *
  * @package		ExpressionEngine
- * @subpackage	Comment Module
+ * @subpackage	Rich Text Editor Module
  * @category	Model
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class CommentSubscription extends Model {
-	
-	protected static $_primary_key = 'subscription_id';
-	protected static $_table_name = 'comment_subscriptions';
+class Toolset extends Model {
+
+	protected static $_primary_key = 'toolset_id';
+	protected static $_table_name = 'rte_toolsets';
 
 	protected static $_relationships = array(
-		'Entry' => array(
-			'type' => 'many_to_one',
-			'model' => 'ChannelEntry'
-		),
 		'Member' => array(
-			'type' => 'many_to_one'
+			'type' => 'belongsTo'
 		)
 	);
 
-	protected $subscription_id;
-	protected $entry_id;
+	protected $toolset_id;
 	protected $member_id;
-	protected $email;
-	protected $subscription_date;
-	protected $notification_sent;
-	protected $hash;
+	protected $name;
+	protected $tools;
+	protected $enabled;
 }

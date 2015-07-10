@@ -43,11 +43,12 @@ class View {
 	{
 		$this->_theme = $cp_theme;
 		ee()->session->userdata['cp_theme'] = $cp_theme;
-
+/*
 		// root overrides deprecated in 2.9.1, view overrides should be in
 		// /views/ henceforth
 		ee()->load->add_theme_cascade(PATH_CP_THEME);
 		ee()->load->add_theme_cascade(PATH_CP_THEME.'views/');
+*/
 	}
 
 	// --------------------------------------------------------------------

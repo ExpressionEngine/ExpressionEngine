@@ -8,5 +8,10 @@ return array(
 	'version'     => '1.0.1',
 	'namespace'   => 'EllisLab\Addons\Rte',
 	'settings_exist' => TRUE,
-	'docs_url'    => 'https://ellislab.com/expressionengine/user-guide/modules/rte/index.html'
+	'docs_url'    => 'https://ellislab.com/expressionengine/user-guide/modules/rte/index.html',
+
+	'models' => array(
+		'Tool' => 'Model\Tool',
+		'Toolset' => 'Model\Toolset'
+	)
 );
