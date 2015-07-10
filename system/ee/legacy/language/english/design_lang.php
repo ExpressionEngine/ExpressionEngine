@@ -44,7 +44,7 @@ $lang = array(
 
 'name' => 'Name',
 
-'name_desc' => 'Short name for this group.<br><i>No spaces. Underscores and dashes are allowed.',
+'name_desc' => 'Short name for this group.<br><i>No spaces. Underscores and dashes are allowed.</i>',
 
 'duplicate_group' => 'Duplicate existing group?',
 
