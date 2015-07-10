@@ -26,6 +26,10 @@ if (isset($setting['caution']) && $setting['caution'] == TRUE)
 {
 	$fieldset_classes .= ' security-caution';
 }
+if (isset($setting['hide']) && $setting['hide'] == TRUE)
+{
+	$fieldset_classes .= ' hidden';
+}
 // If a validation result object is set, see if any of our fields have errors
 if (isset($errors))
 {
