@@ -1652,7 +1652,7 @@ class Wizard extends CI_Controller {
 		// Install required modules
 		foreach($this->required_modules as $module)
 		{
-			$path = SYSPATH.'ee/expressionengine/modules/'.$module.'/';
+			$path = SYSPATH.'ee/EllisLab/Addons/'.$module.'/';
 
 			if (file_exists($path.'upd.'.$module.'.php'))
 			{
