@@ -1,6 +1,8 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Service\Model\Column;
+namespace EllisLab\ExpressionEngine\Service\Model\Column\Serialized;
+
+use EllisLab\ExpressionEngine\Service\Model\Column\SerializedType;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -17,7 +19,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Column;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Column Interface
+ * ExpressionEngine Model Serialized Typed Column
  *
  * @package		ExpressionEngine
  * @subpackage	Model
@@ -25,9 +27,22 @@ namespace EllisLab\ExpressionEngine\Service\Model\Column;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-interface Column {
+class Native extends SerializedType {
 
-	public function fill($db_data);
-	public function getValue();
+	/**
+	 * Called when the column is fetched from db
+	 */
+	public static function unserialize($db_data)
+	{
+		return strlen($db_data) ? unserialize($db_data) : array();
+	}
+
+	/**
+	 * Called before the column is written to the db
+	 */
+	public static function serialize($data)
+	{
+		return serialize($data);
+	}
 
 }

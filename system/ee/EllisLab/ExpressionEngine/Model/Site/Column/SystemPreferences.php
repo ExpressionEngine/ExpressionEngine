@@ -2,7 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Model\Site\Column;
 
-use EllisLab\ExpressionEngine\Service\Model\Column\Base64SerializedComposite;
+use EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64Native;
+use EllisLab\ExpressionEngine\Service\Model\Column\CustomType;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -27,41 +28,12 @@ use EllisLab\ExpressionEngine\Service\Model\Column\Base64SerializedComposite;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class SystemPreferences extends Base64SerializedComposite {
+class SystemPreferences extends CustomType {
 
-	/**
-	 * The location of the index.php file for this site.
-	 *
-	 * @type	string
-	 */
 	protected $site_index;
-
-	/**
-	 * The base URL for this site.
-	 *
-	 * @type	string
-	 */
 	protected $site_url;
-
-	/**
-	 * The base URL of the theme folder for this site.
-	 *
-	 * @type	string
-	 */
 	protected $theme_folder_url;
-
-	/**
-	 * The email address of this site's webmaster.
-	 *
-	 * @type	string
-	 */
 	protected $webmaster_email;
-
-	/**
-	 * The name of this site's webmaster.
-	 *
-	 * @type	string
-	 */
 	protected $webmaster_name;
 	protected $channel_nomenclature;
 	protected $max_caches;
@@ -144,5 +116,21 @@ class SystemPreferences extends Base64SerializedComposite {
 	protected $is_site_on;
 	protected $rte_enabled;
 	protected $rte_default_toolset_id;
+
+	/**
+	* Called when the column is fetched from db
+	*/
+	public function unserialize($db_data)
+	{
+		return Base64Native::unserialize($db_data);
+	}
+
+	/**
+	* Called before the column is written to the db
+	*/
+	public function serialize($data)
+	{
+		return Base64Native::serialize($data);
+	}
 
 }

@@ -31,8 +31,9 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @link		http://ellislab.com
  */
 class CommentSubscription extends Model {
+	
 	protected static $_primary_key = 'subscription_id';
-	protected static $_gateway_names = array('CommentSubscriptionGateway');
+	protected static $_table_name = 'comment_subscriptions';
 
 	protected static $_relationships = array(
 		'Entry' => array(

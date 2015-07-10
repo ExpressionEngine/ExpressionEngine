@@ -2,10 +2,6 @@
 
 namespace EllisLab\ExpressionEngine\Service\Model\Column;
 
-use InvalidArgumentException;
-
-use EllisLab\ExpressionEngine\Library\Data\Entity;
-
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -21,7 +17,7 @@ use EllisLab\ExpressionEngine\Library\Data\Entity;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Composite Column
+ * ExpressionEngine Model Typed Column Interface
  *
  * @package		ExpressionEngine
  * @subpackage	Model
@@ -29,28 +25,8 @@ use EllisLab\ExpressionEngine\Library\Data\Entity;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-abstract class Composite extends Entity implements Column {
+interface Type {
 
-	abstract protected function serialize($data);
+	public static function create();
 
-	abstract protected function unserialize($data);
-
-
-	public function fill($db_data)
-	{
-		$data = $this->unserialize($db_data);
-
-		if ( ! empty($data))
-		{
-			foreach ($data as $key => $value)
-			{
-				$this->setRawProperty($key, $value);
-			}
-		}
-	}
-
-	public function getValue()
-	{
-		return $this->serialize($this->getRawValues());
-	}
 }

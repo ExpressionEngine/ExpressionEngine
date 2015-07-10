@@ -61,6 +61,12 @@ class URL {
 	 */
 	public function __construct($path, $session_id = NULL, $qs = array(), $cp_url = '')
 	{
+		// PHP 5.3 will not throw an error on array to string conversion
+		if (is_array($path) || is_array($session_id))
+		{
+			throw new \InvalidArgumentException("Invalid array to string conversion in " . get_called_class());
+		}
+
 		$this->path = (string) $path;
 		$this->session_id = (string) $session_id;
 		$this->base = (empty($cp_url)) ? SELF : (string) $cp_url;

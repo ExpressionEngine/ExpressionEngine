@@ -19,7 +19,7 @@ use EllisLab\ExpressionEngine\Library\Data\Entity;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Column Interface
+ * ExpressionEngine Model Custom Typed Column
  *
  * @package		ExpressionEngine
  * @subpackage	Model
@@ -27,17 +27,39 @@ use EllisLab\ExpressionEngine\Library\Data\Entity;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-abstract class CollectionRow extends Entity {
+abstract class CustomType extends Entity implements Type {
 
-	protected $_parent;
-
-	public function setParentColumn($parent)
+	public static function create()
 	{
-		$this->_parent = $parent;
+		return new static;
 	}
 
-	public function delete()
+	abstract public function unserialize($db_data);
+
+	abstract public function serialize($data);
+
+	public function load($db_data)
 	{
-		$this->_parent->deleteRow($this);
+		$data = $this->unserialize($db_data);
+
+		$this->fill($data);
+
+		return $db_data;
 	}
+
+	public function store($data)
+	{
+		return $this->serialize($this->getValues());
+	}
+
+	public function set($data)
+	{
+		return $data;
+	}
+
+	public function get()
+	{
+		return $this;
+	}
+
 }

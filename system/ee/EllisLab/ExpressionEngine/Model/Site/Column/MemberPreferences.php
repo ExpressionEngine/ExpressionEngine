@@ -2,7 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Model\Site\Column;
 
-use EllisLab\ExpressionEngine\Service\Model\Column\Base64SerializedComposite;
+use EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64Native;
+use EllisLab\ExpressionEngine\Service\Model\Column\CustomType;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -27,7 +28,7 @@ use EllisLab\ExpressionEngine\Service\Model\Column\Base64SerializedComposite;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class MemberPreferences extends Base64SerializedComposite {
+class MemberPreferences extends CustomType {
 
 	protected $un_min_len;
 	protected $pw_min_len;
@@ -72,5 +73,21 @@ class MemberPreferences extends Base64SerializedComposite {
 	protected $memberlist_order_by;
 	protected $memberlist_sort_order;
 	protected $memberlist_row_limit;
+
+	/**
+	* Called when the column is fetched from db
+	*/
+	public function unserialize($db_data)
+	{
+		return Base64Native::unserialize($db_data);
+	}
+
+	/**
+	* Called before the column is written to the db
+	*/
+	public function serialize($data)
+	{
+		return Base64Native::serialize($data);
+	}
 
 }
