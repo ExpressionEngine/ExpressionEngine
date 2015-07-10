@@ -29,6 +29,11 @@ class Member extends Model {
 			'type' => 'hasMany',
 			'model' => 'ChannelEntry',
 			'to_key' => 'author_id'
+		),
+		'LastAuthoredSpecialtyTemplates' => array(
+			'type' => 'hasMany',
+			'model' => 'SpecialtyTemplate',
+			'to_key' => 'last_author_id'
 		)
 	//	'ResetPassword'	=> array(
 	//		'type' => 'one_to_one'
