@@ -2,6 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Service\Model\Column;
 
+use EllisLab\ExpressionEngine\Library\Data\Entity;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -17,7 +19,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Column;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Column Interface
+ * ExpressionEngine Model Serialized Typed Column
  *
  * @package		ExpressionEngine
  * @subpackage	Model
@@ -25,9 +27,36 @@ namespace EllisLab\ExpressionEngine\Service\Model\Column;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-interface Column {
+abstract class SerializedType implements Type {
 
-	public function fill($db_data);
-	public function getValue();
+	protected $data = array();
+
+	public static function create()
+	{
+		return new static;
+	}
+
+	public function load($db_data)
+	{
+		$data = $this->unserialize($db_data);
+		$this->data = $data;
+
+		return $db_data;
+	}
+
+	public function store($data)
+	{
+		return $this->serialize($this->data);
+	}
+
+	public function set($data)
+	{
+		return $this->data = $data;
+	}
+
+	public function get()
+	{
+		return $this->data;
+	}
 
 }
