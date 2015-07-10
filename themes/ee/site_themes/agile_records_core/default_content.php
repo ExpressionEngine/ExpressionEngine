@@ -96,23 +96,42 @@ $agile_upload_path = addslashes(realpath($this->theme_path."agile_records/images
 // Add upload locations
 $Q[] = "INSERT INTO `exp_upload_prefs` (`id`, `site_id`, `name`, `server_path`, `url`, `allowed_types`, `max_size`, `max_height`, `max_width`, `properties`, `pre_format`, `post_format`, `file_properties`, `file_pre_format`, `file_post_format`) VALUES
 (1, 1, 'Main Upload Directory', '".$upload_path."', '".$this->userdata['site_url'].'images/'.$this->userdata['upload_folder']."', 'all', '', '', '', 'style=\"border: 0;\" alt=\"image\"', '', '', '', '', ''),
-(2, 1, 'About', '{$agile_upload_path}', '".$this->userdata['site_url']."themes/ee/site_themes/agile_records/images/uploads/', 'img', '', '', '', '', '', '', '', '', '')";
+(2, 1, 'About', '{$agile_upload_path}', '".$this->userdata['site_url']."themes/ee/site_themes/agile_records/images/uploads/', 'img', '', '', '', '', '', '', '', '', ''),
+(3,1,'Avatars','../images/avatars/','/images/avatars/','img','50','100','100',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
+(4,1,'Signature Attachments','../images/signature_attachments/','/images/signature_attachments/','img','30','80','480',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
+(5,1,'PM Attachments','../images/pm_attachments/','/images/pm_attachments/','img','250',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4);";
 
 @chmod($agile_upload_path, DIR_WRITE_MODE);
 
 // Add files
 
 $Q[] = "INSERT INTO `exp_files` (`file_id`, `site_id`, `title`, `upload_location_id`, `mime_type`, `file_name`, `file_size`, `uploaded_by_member_id`, `upload_date`, `modified_by_member_id`, `modified_date`, `file_hw_original`)
-VALUES(1, 1, 'staff_jane.png', 2, 'image/png', 'staff_jane.png', 51612, 1, 1302889304, 1, 1302889304, ''),
-(2, 1, 'staff_jason.png', 2, 'image/png', 'staff_jason.png', 51430, 1, 1302889304, 1, 1302889304, ''),
-(3, 1, 'staff_josh.png', 2, 'image/png', 'staff_josh.png', 50638, 1, 1302889304, 1, 1302889304, ''),
-(4, 1, 'staff_randell.png', 2, 'image/png', 'staff_randell.png', 51681, 1, 1302889304, 1, 1302889304, ''),
-(5, 1, 'ee_banner_120_240.gif', 2, 'image/gif', 'ee_banner_120_240.gif', 9257, 1, 1302889304, 1, 1302889304, ''),
-(6, 1, 'testband300.jpg', 2, 'image/jpeg', 'testband300.jpg', 23986, 1, 1302889304, 1, 1302889304, ''),
-(7, 1, 'map.jpg', 2, 'image/jpeg', 'map.jpg', 71299, 1, 1302889304, 1, 1302889304, ''),
-(8, 1, 'map2.jpg', 2, 'image/jpeg', 'map2.jpg', 49175, 1, 1302889304, 1, 1302889304, ''),
-(9, 1, 'staff_chloe.png', 2, 'image/png', 'staff_chloe.png', 50262, 1, 1302889304, 1, 1302889304, ''),
-(10, 1, 'staff_howard.png', 2, 'image/png', 'staff_howard.png', 51488, 1, 1302889304, 1, 1302889304, '')";
+VALUES
+(1,1,'staff_jane.png',2,'image/png','staff_jane.png',51612,NULL,NULL,NULL,1,1302889304,1,1302889304,''),
+(2,1,'staff_jason.png',2,'image/png','staff_jason.png',51430,NULL,NULL,NULL,1,1302889304,1,1302889304,'',
+(3,1,'staff_josh.png',2,'image/png','staff_josh.png',50638,NULL,NULL,NULL,1,1302889304,1,1302889304,'',
+(4,1,'staff_randell.png',2,'image/png','staff_randell.png',51681,NULL,NULL,NULL,1,1302889304,1,1302889304,'',
+(5,1,'ee_banner_120_240.gif',2,'image/gif','ee_banner_120_240.gif',9257,NULL,NULL,NULL,1,1302889304,1,1302889304,'',
+(6,1,'testband300.jpg',2,'image/jpeg','testband300.jpg',23986,NULL,NULL,NULL,1,1302889304,1,1302889304,'',
+(7,1,'map.jpg',2,'image/jpeg','map.jpg',71299,NULL,NULL,NULL,1,1302889304,1,1302889304,'',
+(8,1,'map2.jpg',2,'image/jpeg','map2.jpg',49175,NULL,NULL,NULL,1,1302889304,1,1302889304,'',
+(9,1,'staff_chloe.png',2,'image/png','staff_chloe.png',50262,NULL,NULL,NULL,1,1302889304,1,1302889304,'',
+(10,1,'staff_howard.png',2,'image/png','staff_howard.png',51488,NULL,NULL,NULL,1,1302889304,1,1302889304,'',
+(11,1,'avatar_tree_hugger_color.png',3,'image/png','avatar_tree_hugger_color.png',7529, NULL,'','',1,1302889304,1,1302889304,'',
+(12,1,'bad_fur_day.jpg',3,'image/jpeg','bad_fur_day.jpg',15766,NULL,NULL,NULL,1,1302889304,1,1302889304,'',
+(13,1,'big_horns.jpg',3,'image/jpeg','big_horns.jpg',20631,NULL,NULL,NULL,1,1302889304,1,1302889304,'',
+(14,1,'eat_it_up.jpg',3,'image/jpeg','eat_it_up.jpg',23085,NULL,NULL,NULL,1,1302889304,1,1302889304,'',
+(15,1,'ee_paint.jpg',3,'image/jpeg','ee_paint.jpg',24029,NULL,NULL,NULL,1,1302889304,1,1302889304,'',
+(16,1,'expression_radar.jpg',3,'image/jpeg','expression_radar.jpg',3692,NULL,NULL,NULL,1,1302889304,1,1302889304,'',
+(17,1,'flying_high.jpg',3,'image/jpeg','flying_high.jpg',13743,NULL,NULL,NULL,1,1302889304,1,1302889304,'',
+(18,1,'hair.png',3,'image/png','hair.png',4974,NULL,NULL,NULL,1,1302889304,1,1302889304,'',
+(19,1,'hanging_out.jpg',3,'image/jpeg','hanging_out.jpg',19150,NULL,NULL,NULL,1,1302889304,1,1302889304,'',
+(20,1,'hello_prey.jpg',3,'image/jpeg','hello_prey.jpg',14282,NULL,NULL,NULL,1,1302889304,1,1302889304,'',
+(21,1,'light_blur.jpg',3,'image/jpeg','light_blur.jpg',23949,NULL,NULL,NULL,1,1302889304,1,1302889304,'',
+(22,1,'ninjagirl.png',3,'image/png','ninjagirl.png',9756,NULL,NULL,NULL,1,1302889304,1,1302889304,'',
+(23,1,'procotopus.png',3,'image/png','procotopus.png',6456,NULL,NULL,NULL,1,1302889304,1,1302889304,'',
+(24,1,'sneak_squirrel.jpg',3,'image/jpeg','sneak_squirrel.jpg',19542,NULL,NULL,NULL,1,1302889304,1,1302889304,'',
+(25,1,'zombie_bunny.png',3,'image/png','zombie_bunny.png',6830,NULL,NULL,NULL,1,1302889304,1,1302889304,'')";
 
 $Q[] = "UPDATE exp_members SET total_entries = '10', last_entry_date = '$this->now'";
 
