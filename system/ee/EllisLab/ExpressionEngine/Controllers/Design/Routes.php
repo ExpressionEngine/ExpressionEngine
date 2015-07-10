@@ -93,7 +93,7 @@ class Routes extends Design {
 			// create a route of the template doesn't have one yet
 			if (empty($route))
 			{
-				$template->createTemplateRoute(array());
+				$template->TemplateRoute = ee('Model')->make('TemplateRoute');
 				$template->save();
 				$route = $template->getTemplateRoute();
 			}
