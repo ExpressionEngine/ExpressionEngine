@@ -381,10 +381,18 @@ class Addons extends CP_Controller {
 			);
 		}
 
+		$vars['header'] = array(
+			'search_button_value' => lang('search_addons_button'),
+			'title' => ee()->view->cp_page_title,
+			'form_url' => $vars['form_url']
+		);
+
 		ee()->javascript->set_global('lang.remove_confirm', lang('addon') . ': <b>### ' . lang('addons') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/v3/confirm_remove'),
 		));
+
+		ee()->view->disable('outer_box');
 
 		ee()->cp->render('addons/index', $vars);
 	}

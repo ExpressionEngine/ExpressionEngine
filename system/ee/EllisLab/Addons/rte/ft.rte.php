@@ -159,9 +159,10 @@ class Rte_ft extends EE_Fieldtype {
 
 	function save_settings($data)
 	{
-		$data['field_type'] = 'rte';
-		$data['field_show_fmt'] = 'n';
-		$data['field_ta_rows'] = ee()->input->post('rte_ta_rows');
+		return array(
+			'field_show_fmt' => 'n',
+			'field_ta_rows' => $data['ret_ta_rows']
+		);
 
 		return $data;
 	}
