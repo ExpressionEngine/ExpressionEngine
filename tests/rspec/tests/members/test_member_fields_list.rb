@@ -9,7 +9,8 @@ feature 'Member Field List' do
     #no_php_js_errors
   end
 
-  it 'shows the Member Field List page' do
-    #@page.all_there?.should == true
-  end
+  it 'shows the Member Field List page'
+  # do
+  #   @page.all_there?.should == true
+  # end
 end

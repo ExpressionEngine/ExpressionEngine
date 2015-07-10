@@ -6,6 +6,6 @@ class MemberFields < ControlPanelPage
 
 	def load
 		main_menu.members_btn.click
-		find('.sidebar h2:last-child a:last-child').click
+		find('.sidebar li a[href$=cp/members/fields]').click
 	end
 end
