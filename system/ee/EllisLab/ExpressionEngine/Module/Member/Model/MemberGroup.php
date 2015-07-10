@@ -9,6 +9,10 @@ class MemberGroup extends Model {
 	protected static $_primary_key = 'group_id';
 	protected static $_table_name = 'member_groups';
 
+	protected static $_events = array(
+		'beforeInsert'
+	);
+
 	protected static $_typed_columns = array(
 		'group_id'                       => 'int',
 		'site_id'                        => 'int',
@@ -230,4 +234,13 @@ class MemberGroup extends Model {
 	protected $include_in_authorlist;
 	protected $include_in_memberlist;
 
+
+	public function onBeforeInsert()
+	{
+		if ( ! $this->group_id)
+		{
+			$id = ee('db')->query('SELECT MAX(group_id) as id FROM exp_member_groups')->row('id');
+			$this->setRawProperty('group_id', $id + 1);
+		}
+	}
 }
