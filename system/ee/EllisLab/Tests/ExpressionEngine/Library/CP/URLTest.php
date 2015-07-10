@@ -25,8 +25,10 @@ class URLTest extends \PHPUnit_Framework_TestCase {
 	 * @dataProvider exceptionalDataProvider
 	 * @expectedException PHPUnit_Framework_Error
 	 */
-	public function testExceptions($path, $session_id, $qs)
+	public function testExceptions($path, $session_id, $qs, $exception)
 	{
+        $this->setExpectedException($exception);
+
 		new URL($path, $session_id, $qs);
 	}
 
@@ -45,11 +47,11 @@ class URLTest extends \PHPUnit_Framework_TestCase {
 	public function exceptionalDataProvider()
 	{
 		return array(
-			array(array('foo'), '', ''),
-			array(new \StdClass(), '', ''),
-			array('foo', array('foo'), ''),
-			array('foo', new \StdClass(), ''),
-			array('foo', '', new \StdClass()),
+			array(array('foo'), '', '', 'InvalidArgumentException'),
+			array(new \StdClass(), '', '', 'PHPUnit_Framework_Error'),
+			array('foo', array('foo'), '', 'InvalidArgumentException'),
+			array('foo', new \StdClass(), '', 'PHPUnit_Framework_Error'),
+			array('foo', '', new \StdClass(), 'PHPUnit_Framework_Error'),
 		);
 	}
 
