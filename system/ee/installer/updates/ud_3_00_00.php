@@ -626,6 +626,24 @@ class Updater {
 	}
 
 	/**
+	 * Updates the member groups table
+	 *
+	 * @return void
+	 */
+	private function _update_member_groups_table()
+	{
+		ee()->smartforge->modify_column('member_groups', array(
+			'group_id' => array(
+				'type'			 => 'int',
+				'constraint'     => 4,
+				'null'			 => FALSE,
+				'unsigned'		 => TRUE,
+				'auto_increment' => TRUE
+			)
+		));
+	}
+
+	/**
 	 * Adds columns to the members table as needed
 	 *
 	 * @return void

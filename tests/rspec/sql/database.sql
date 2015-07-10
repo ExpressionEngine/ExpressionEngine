@@ -768,7 +768,7 @@ CREATE TABLE `exp_member_fields` (
 
 
 CREATE TABLE `exp_member_groups` (
-  `group_id` smallint(4) unsigned NOT NULL,
+  `group_id` smallint(4) unsigned NOT NULL AUTO_INCREMENT,
   `site_id` int(4) unsigned NOT NULL DEFAULT '1',
   `group_title` varchar(100) NOT NULL,
   `group_description` text NOT NULL,
