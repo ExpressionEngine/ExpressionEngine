@@ -132,21 +132,10 @@ class FilePicker {
 				$file->mime_type,
 				ee()->localize->human_time($file->upload_date),
 				array('toolbar_items' => $toolbar),
-				array(
-					'name' => 'selection[]',
-					'value' => $file->file_id,
-					'data' => array(
-						'confirm' => lang('file') . ': <b>' . htmlentities($file->title, ENT_QUOTES) . '</b>'
-					)
-				)
 			);
 
 			$attrs = array();
-
-			if ($file_id && $file->file_id == $file_id)
-			{
-				$attrs = array('class' => 'selected');
-			}
+			$attrs = array('data-id' => $file->file_id);
 
 			$data[] = array(
 				'attrs'		=> $attrs,
