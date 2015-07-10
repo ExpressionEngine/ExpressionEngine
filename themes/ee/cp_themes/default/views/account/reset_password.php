@@ -12,11 +12,11 @@
 	<?=form_open('C=login'.AMP.'M=reset_password')?>
 		<fieldset>
 			<?=lang('new_password', 'password')?>
-			<?=form_password(array('dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => 80, 'autocomplete' => 'off'))?>
+			<?=form_password(array('dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
 		</fieldset>
 		<fieldset class="last">
 			<?=lang('new_password_confirm', 'password_confirm')?>
-			<?=form_password(array('dir' => 'ltr', 'name' => "password_confirm", 'id' => "password_confirm", 'maxlength' => 80, 'autocomplete' => 'off'))?>
+			<?=form_password(array('dir' => 'ltr', 'name' => "password_confirm", 'id' => "password_confirm", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
 		</fieldset>
 		<fieldset class="form-ctrls">
 			<?=form_hidden('resetcode', $resetcode)?>

@@ -19,17 +19,17 @@
 
 	<fieldset>
 		<legend><?=lang('password_change')?></legend>
-		
+
 		<div class="notice"><?=lang('password_change_exp')?></div>
 
 		<p>
 			<?=lang('new_password', 'password')?>
-			<?=form_password(array('id' => 'password', 'name' => 'password', 'class' => 'field', 'value' => '', 'maxlength' => 40, 'autocomplete' => 'off'))?>
+			<?=form_password(array('id' => 'password', 'name' => 'password', 'class' => 'field', 'value' => '', 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
 		</p>
 
 		<p>
 			<?=lang('new_password_confirm', 'password_confirm')?>
-			<?=form_password(array('id' => 'password_confirm', 'name' => 'password_confirm', 'class' => 'field', 'value' => '', 'maxlength' => 40, 'autocomplete' => 'off'))?>
+			<?=form_password(array('id' => 'password_confirm', 'name' => 'password_confirm', 'class' => 'field', 'value' => '', 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
 		</p>
 
 		<div class="notice">
@@ -42,7 +42,7 @@
 
 		<p>
 			<?=lang('existing_password', 'current_password')?>
-			<?=form_password(array('id' => 'current_password', 'name' => 'current_password', 'class' => 'field', 'value' => '', 'maxlength' => 40, 'autocomplete' => 'off'))?>
+			<?=form_password(array('id' => 'current_password', 'name' => 'current_password', 'class' => 'field', 'value' => '', 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
 		</p>
 
 	</fieldset>

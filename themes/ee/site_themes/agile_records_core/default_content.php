@@ -2,9 +2,9 @@
 
 // Add Channels
 $Q[] = "INSERT INTO `exp_channels`
-(`channel_id`, `channel_name`, `channel_title`, `channel_url`, `channel_lang`, `total_entries`, `total_comments`, `last_entry_date`, `last_comment_date`, `cat_group`, `status_group`, `deft_status`, `field_group`, `search_excerpt`, `deft_category`, `deft_comments`, `channel_require_membership`, `channel_max_chars`, `channel_html_formatting`, `channel_allow_img_urls`, `channel_auto_link_urls`, `channel_notify`, `channel_notify_emails`, `comment_url`, `comment_system_enabled`, `comment_require_membership`, `comment_use_captcha`, `comment_moderate`, `comment_max_chars`, `comment_timelock`, `comment_require_email`, `comment_text_formatting`, `comment_html_formatting`, `comment_allow_img_urls`, `comment_auto_link_urls`, `comment_notify`, `comment_notify_authors`, `comment_notify_emails`, `comment_expiration`, `search_results_url`, `show_button_cluster`, `rss_url`, `enable_versioning`, `max_revisions`, `default_entry_title`, `url_title_prefix`, `live_look_template`) VALUES
-('1', 'news', 'News', '".$this->userdata['site_url'].$this->userdata['site_index']."/news', 'en', 3, 0, '{$this->now}', 0, '1', 1, 'open', 1, 2, '', 'y', 'y', 0, 'all', 'y', 'y', 'n', '', '".$this->userdata['site_url'].$this->userdata['site_index']."/news/comments', 'y', 'n', 'y', 'n', 0, 0, 'y', 'xhtml', 'safe', 'n', 'y', 'n', 'n', '', 0, '".$this->userdata['site_url'].$this->userdata['site_index']."/news/comments', 'y', '', 'n', 10, '', '', 0),
-('2', 'about', 'Information Pages', '".$this->userdata['site_url'].$this->userdata['site_index']."/about', 'en', 7, 0, '{$this->now}', 0, '2', 1, 'open', 2, 7, '', 'y', 'y', 0, 'all', 'y', 'n', 'n', '', '".$this->userdata['site_url'].$this->userdata['site_index']."/news/comments', 'y', 'n', 'y', 'n', 0, 0, 'y', 'xhtml', 'safe', 'n', 'y', 'n', 'n', '', 0, '".$this->userdata['site_url'].$this->userdata['site_index']."/news/comments', 'y', '', 'n', 10, '', '', 0)";
+(`channel_id`, `channel_name`, `channel_title`, `channel_url`, `channel_lang`, `total_entries`, `total_comments`, `last_entry_date`, `last_comment_date`, `cat_group`, `status_group`, `deft_status`, `field_group`, `search_excerpt`, `deft_category`, `deft_comments`, `channel_require_membership`, `channel_max_chars`, `channel_html_formatting`, `channel_allow_img_urls`, `channel_auto_link_urls`, `channel_notify`, `channel_notify_emails`, `comment_url`, `comment_system_enabled`, `comment_require_membership`, `comment_moderate`, `comment_max_chars`, `comment_timelock`, `comment_require_email`, `comment_text_formatting`, `comment_html_formatting`, `comment_allow_img_urls`, `comment_auto_link_urls`, `comment_notify`, `comment_notify_authors`, `comment_notify_emails`, `comment_expiration`, `search_results_url`, `show_button_cluster`, `rss_url`, `enable_versioning`, `max_revisions`, `default_entry_title`, `url_title_prefix`, `live_look_template`) VALUES
+('1', 'news', 'News', '".$this->userdata['site_url'].$this->userdata['site_index']."/news', 'en', 3, 0, '{$this->now}', 0, '1', 1, 'open', 1, 2, '', 'y', 'y', 0, 'all', 'y', 'y', 'n', '', '".$this->userdata['site_url'].$this->userdata['site_index']."/news/comments', 'y', 'n', 'n', 0, 0, 'y', 'xhtml', 'safe', 'n', 'y', 'n', 'n', '', 0, '".$this->userdata['site_url'].$this->userdata['site_index']."/news/comments', 'y', '', 'n', 10, '', '', 0),
+('2', 'about', 'Information Pages', '".$this->userdata['site_url'].$this->userdata['site_index']."/about', 'en', 7, 0, '{$this->now}', 0, '2', 1, 'open', 2, 7, '', 'y', 'y', 0, 'all', 'y', 'n', 'n', '', '".$this->userdata['site_url'].$this->userdata['site_index']."/news/comments', 'y', 'n', 'n', 0, 0, 'y', 'xhtml', 'safe', 'n', 'y', 'n', 'n', '', 0, '".$this->userdata['site_url'].$this->userdata['site_index']."/news/comments', 'y', '', 'n', 10, '', '', 0)";
 
 // Add Field Groups
 $Q[] = "INSERT INTO `exp_field_groups` (`group_id`, `site_id`, `group_name`) VALUES
@@ -27,10 +27,6 @@ foreach (array(1,2,3,4,5,6,7) as $id)
 {
 	$Q[] = "ALTER TABLE `exp_channel_data` ADD COLUMN `field_id_{$id}` text NULL";
 	$Q[] = "ALTER TABLE `exp_channel_data` ADD COLUMN `field_ft_{$id}` tinytext NULL";
-	$Q[] = "INSERT INTO exp_field_formatting (field_id, field_fmt) VALUES ({$id}, 'none')";
-	$Q[] = "INSERT INTO exp_field_formatting (field_id, field_fmt) VALUES ({$id}, 'br')";
-	$Q[] = "INSERT INTO exp_field_formatting (field_id, field_fmt) VALUES ({$id}, 'xhtml')";
-	$Q[] = "INSERT INTO exp_field_formatting (field_id, field_fmt) VALUES ({$id}, 'markdown')";
 }
 
 // Create default categories
@@ -106,17 +102,17 @@ $Q[] = "INSERT INTO `exp_upload_prefs` (`id`, `site_id`, `name`, `server_path`, 
 
 // Add files
 
-$Q[] = "INSERT INTO `exp_files` (`file_id`, `site_id`, `title`, `upload_location_id`, `rel_path`, `mime_type`, `file_name`, `file_size`, `uploaded_by_member_id`, `upload_date`, `modified_by_member_id`, `modified_date`, `file_hw_original`)
-VALUES(1, 1, 'staff_jane.png', 2, 'staff_jane.png', 'image/png', 'staff_jane.png', 51612, 1, 1302889304, 1, 1302889304, ''),
-(2, 1, 'staff_jason.png', 2, 'staff_jason.png', 'image/png', 'staff_jason.png', 51430, 1, 1302889304, 1, 1302889304, ''),
-(3, 1, 'staff_josh.png', 2, 'staff_josh.png', 'image/png', 'staff_josh.png', 50638, 1, 1302889304, 1, 1302889304, ''),
-(4, 1, 'staff_randell.png', 2, 'staff_randell.png', 'image/png', 'staff_randell.png', 51681, 1, 1302889304, 1, 1302889304, ''),
-(5, 1, 'ee_banner_120_240.gif', 2, 'ee_banner_120_240.gif', 'image/gif', 'ee_banner_120_240.gif', 9257, 1, 1302889304, 1, 1302889304, ''),
-(6, 1, 'testband300.jpg', 2, 'testband300.jpg', 'image/jpeg', 'testband300.jpg', 23986, 1, 1302889304, 1, 1302889304, ''),
-(7, 1, 'map.jpg', 2, 'map.jpg', 'image/jpeg', 'map.jpg', 71299, 1, 1302889304, 1, 1302889304, ''),
-(8, 1, 'map2.jpg', 2, 'map2.jpg', 'image/jpeg', 'map2.jpg', 49175, 1, 1302889304, 1, 1302889304, ''),
-(9, 1, 'staff_chloe.png', 2, 'staff_chloe.png', 'image/png', 'staff_chloe.png', 50262, 1, 1302889304, 1, 1302889304, ''),
-(10, 1, 'staff_howard.png', 2, 'staff_howard.png', 'image/png', 'staff_howard.png', 51488, 1, 1302889304, 1, 1302889304, '')";
+$Q[] = "INSERT INTO `exp_files` (`file_id`, `site_id`, `title`, `upload_location_id`, `mime_type`, `file_name`, `file_size`, `uploaded_by_member_id`, `upload_date`, `modified_by_member_id`, `modified_date`, `file_hw_original`)
+VALUES(1, 1, 'staff_jane.png', 2, 'image/png', 'staff_jane.png', 51612, 1, 1302889304, 1, 1302889304, ''),
+(2, 1, 'staff_jason.png', 2, 'image/png', 'staff_jason.png', 51430, 1, 1302889304, 1, 1302889304, ''),
+(3, 1, 'staff_josh.png', 2, 'image/png', 'staff_josh.png', 50638, 1, 1302889304, 1, 1302889304, ''),
+(4, 1, 'staff_randell.png', 2, 'image/png', 'staff_randell.png', 51681, 1, 1302889304, 1, 1302889304, ''),
+(5, 1, 'ee_banner_120_240.gif', 2, 'image/gif', 'ee_banner_120_240.gif', 9257, 1, 1302889304, 1, 1302889304, ''),
+(6, 1, 'testband300.jpg', 2, 'image/jpeg', 'testband300.jpg', 23986, 1, 1302889304, 1, 1302889304, ''),
+(7, 1, 'map.jpg', 2, 'image/jpeg', 'map.jpg', 71299, 1, 1302889304, 1, 1302889304, ''),
+(8, 1, 'map2.jpg', 2, 'image/jpeg', 'map2.jpg', 49175, 1, 1302889304, 1, 1302889304, ''),
+(9, 1, 'staff_chloe.png', 2, 'image/png', 'staff_chloe.png', 50262, 1, 1302889304, 1, 1302889304, ''),
+(10, 1, 'staff_howard.png', 2, 'image/png', 'staff_howard.png', 51488, 1, 1302889304, 1, 1302889304, '')";
 
 $Q[] = "UPDATE exp_members SET total_entries = '10', last_entry_date = '$this->now'";
 

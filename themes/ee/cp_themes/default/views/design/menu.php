@@ -1,8 +1,11 @@
 <div class="col w-4">
 	<div class="box sidebar">
-		<h2><?=lang('template_groups')?> <a class="btn action" href="<?=cp_url('design/group/create')?>"><?=lang('new')?></a></h2>
+		<h2><?=lang('template_groups')?> <a class="btn action" href="<?=ee('CP/URL', 'design/group/create')?>"><?=lang('new')?></a></h2>
 		<div class="scroll-wrap">
 			<ul class="folder-list">
+				<?php if (empty($template_groups)): ?>
+					<li class="no-results"><?=lang('zero_template_groups_found')?></li>
+				<?php endif ?>
 				<?php foreach ($template_groups as $group): ?>
 				<li<?php if (isset($group['class'])): ?> class="<?=$group['class']?>"<?php endif; ?>>
 					<a href="<?=$group['url']?>"><?=$group['name']?></a>
@@ -27,10 +30,10 @@
 				<?php endforeach; ?>
 			</ul>
 		</div>
-		<h2><a href="<?=cp_url('design/snippets')?>"><?=lang('template_partials')?></a> <a class="btn action" href="<?=cp_url('design/snippets/create')?>"><?=lang('new')?></a></h2>
-		<h2><a href="<?=cp_url('design/variables')?>"><?=lang('template_variables')?></a> <a class="btn action" href="<?=cp_url('design/variables/create')?>"><?=lang('new')?></a></h2>
+		<h2><a href="<?=ee('CP/URL', 'design/snippets')?>"><?=lang('template_partials')?></a> <a class="btn action" href="<?=ee('CP/URL', 'design/snippets/create')?>"><?=lang('new')?></a></h2>
+		<h2><a href="<?=ee('CP/URL', 'design/variables')?>"><?=lang('template_variables')?></a> <a class="btn action" href="<?=ee('CP/URL', 'design/variables/create')?>"><?=lang('new')?></a></h2>
 		<?php if ($routes): ?>
-		<h2><a href="<?=cp_url('design/routes')?>"><?=lang('template_routes')?></a></h2>
+		<h2><a href="<?=ee('CP/URL', 'design/routes')?>"><?=lang('template_routes')?></a></h2>
 		<?php endif; ?>
 	</div>
 </div>
@@ -41,7 +44,7 @@
 
 $modal_vars = array(
 	'name'		=> 'modal-confirm-remove-template-group',
-	'form_url'	=> cp_url('design/group/remove'),
+	'form_url'	=> ee('CP/URL', 'design/group/remove'),
 	'hidden'	=> array(
 		'group_name'	=> ''
 	)

@@ -22,7 +22,7 @@
 				<h3>
 					<b><?=lang('date_logged')?>:</b> <?=$localize->human_time($log->act_date)?>,
 					<b><?=lang('site')?>:</b> <?=$log->getSite()->site_label?><br>
-					<b><?=lang('username')?>:</b> <a href="<?=cp_url('myaccount', array('id' => $log->member_id))?>"><?=$log->username?></a>,
+					<b><?=lang('username')?>:</b> <a href="<?=ee('CP/URL', 'myaccount', array('id' => $log->member_id))?>"><?=$log->username?></a>,
 					<b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$log->ip_address?>
 				</h3>
 				<div class="message">
@@ -32,7 +32,7 @@
 
 			<?php endforeach; ?>
 
-			<?php $this->view('_shared/pagination'); ?>
+			<?=$pagination?>
 
 			<fieldset class="tbl-bulk-act">
 				<button class="btn remove m-link" rel="modal-confirm-all"><?=lang('clear_cp_logs')?></button>

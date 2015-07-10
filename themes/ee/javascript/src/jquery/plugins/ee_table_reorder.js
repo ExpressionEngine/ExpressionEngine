@@ -4,7 +4,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -24,7 +24,7 @@
  *			// Do something after sort
  *		}
  * });
- * 
+ *
  * @param Object params An object literal containing key/value
  * pairs to provide optional settings.
  *
@@ -35,7 +35,7 @@
  * @option Function afterSort (optional) Callback function to be
  * called after sorting completes, accepts table row object as
  * parameter.
- * 
+ *
  */
 $.fn.eeTableReorder = function(params) {
 
@@ -78,7 +78,7 @@ $.fn.eeTableReorder = function(params) {
 				{
 					params.afterSort(ui.item);
 				}
-				
+
 				// Re-zebra-stripe the table
 				if (EE.cp !== undefined)
 				{

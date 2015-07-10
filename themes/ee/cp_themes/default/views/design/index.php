@@ -4,13 +4,13 @@
 	<?=form_open($form_url)?>
 		<?php if($show_new_template_button): ?>
 		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=cp_url('design/template/create/' . $group_id)?>"><?=lang('create_new_template')?></a>
+			<a class="btn tn action" href="<?=ee('CP/URL', 'design/template/create/' . $group_id)?>"><?=lang('create_new_template')?></a>
 		</fieldset>
 		<?php endif; ?>
 		<h1><?=$cp_heading?></h1>
 		<?=ee('Alert')->getAllInlines()?>
 		<?php $this->view('_shared/table', $table); ?>
-		<?php $this->view('_shared/pagination'); ?>
+		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
 		<fieldset class="tbl-bulk-act">
 			<select name="bulk_action">

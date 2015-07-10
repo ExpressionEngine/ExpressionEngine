@@ -4,7 +4,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -14,8 +14,8 @@ $(document).ready(function () {
 
 	function getTabIndex()
 	{
-		var tab = $('div.tab-bar a.act').parents('li').eq(0);
-		return $('div.tab-bar ul li').index(tab);
+		var tab = $('ul.tabs a.act').parents('li').eq(0);
+		return $('ul.tabs li').index(tab);
 	}
 
 	function getFieldIndex(elemnet)
@@ -27,15 +27,15 @@ $(document).ready(function () {
 	var field;
 
 	// Sorting the tabs
-	$('div.tab-bar').sortable({
+	$('ul.tabs').sortable({
 		cancel: "li:first-child",
 		items: "li",
 		start: function (event, ui)
 		{
-			tab_index_at_start = $('div.tab-bar ul li').index(ui.item[0]);
+			tab_index_at_start = $('ul.tabs li').index(ui.item[0]);
 		},
 		update: function (event, ui) {
-			var index_at_stop = $('div.tab-bar ul li').index(ui.item[0]);
+			var index_at_stop = $('ul.tabs li').index(ui.item[0]);
 
 			var tab = EE.publish_layout.splice(tab_index_at_start, 1);
 			EE.publish_layout.splice(index_at_stop, 0, tab[0]);
@@ -47,7 +47,7 @@ $(document).ready(function () {
 	var spring;
 	var spring_delay = 500;
 
-	$('div.tab-bar ul li a').droppable({
+	$('ul.tabs li a').droppable({
 		accept: "fieldset.sortable",
 		hoverClass: "highlight",
 		tolerance: "pointer",
@@ -98,8 +98,7 @@ $(document).ready(function () {
 		helper: "clone",
 		items: "fieldset.sortable",
 		placeholder: "drag-placeholder",
-		start: function (event, ui)
-		{
+		start: function (event, ui) {
 			var fieldIndex = $('div.tab-open fieldset').index(ui.item[0]);
 			field = EE.publish_layout[getTabIndex()].fields.splice(fieldIndex, 1)[0];
 			ui.placeholder.append('<div class="none"></div>');
@@ -122,11 +121,10 @@ $(document).ready(function () {
 	// Saving the on/off state of tabs
 	$('.tab-on, .tab-off').on('click', function(e) {
 		var tab = $(this).parents('li').eq(0);
-		var index = $('div.tab-bar ul li').index(tab);
+		var index = $('ul.tabs li').index(tab);
 		var tabContents = $('div.tab.' + $(tab).find('a').eq(0).attr('rel'));
 
-		if (tabContents.has('.required').length > 0)
-		{
+		if (tabContents.has('.required').length > 0) {
 			$('body').prepend(EE.alert.required.replace('%s', tab.text()));
 			return;
 		}
@@ -165,14 +163,11 @@ $(document).ready(function () {
 				}
 			}
 
-			if (duplicate)
-			{
+			if (duplicate) {
 				// Show the duplicate_tab_name alert
 				input.after($('<em></em>').append(input.data('duplicate')));
 				input.parents('fieldset').addClass('invalid');
-			}
-			else
-			{
+			} else {
 				var tab = {
 					fields: [],
 					id: tab_id,
@@ -181,8 +176,8 @@ $(document).ready(function () {
 				};
 				EE.publish_layout.push(tab);
 
-				var index = $('div.tab-bar ul li').length;
-				$('div.tab-bar ul').append('<li><a href="" rel="t-' + index + '">' + tab_name + '</a> <span class="tab-remove"></span></li>')
+				var index = $('ul.tabs li').length;
+				$('ul.tabs').append('<li><a href="" rel="t-' + index + '">' + tab_name + '</a> <span class="tab-remove"></span></li>')
 				$('div.tab.t-' + index - 1).after('<div class="tab t-' + index + '"></div>');
 
 				$('.modal-add-new-tab .m-close').trigger('click');
@@ -205,13 +200,12 @@ $(document).ready(function () {
 	});
 
 	// Removing a tab
-	$('div.tab-bar ul').on('click', '.tab-remove', function(e) {
+	$('ul.tabs').on('click', '.tab-remove', function(e) {
 		var tab = $(this).parents('li').eq(0);
-		var index = $('div.tab-bar ul li').index(tab);
+		var index = $('ul.tabs li').index(tab);
 		var tabContents = $('div.tab.' + $(tab).find('a').eq(0).attr('rel'));
 
-		if (tabContents.html())
-		{
+		if (tabContents.html()) {
 			$('body').prepend(EE.alert.not_empty.replace('%s', tab.text()));
 			return;
 		}

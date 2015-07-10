@@ -4,8 +4,8 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  */
@@ -19,7 +19,7 @@
  * ExpressionEngine "system" folder. This is blank by default,
  * meaning that this file resides in the "system" folder itself.
  *
- * http://ellislab.com/expressionengine/user-guide/installation/best_practices.html
+ * https://ellislab.com/expressionengine/user-guide/installation/best_practices.html
  *
  */
 	$system_path = "";
@@ -139,13 +139,13 @@
  *
  */
 	// Is the system path correct?
-	if ( ! file_exists(SYSPATH.'EllisLab/ExpressionEngine/Boot/boot.php'))
+	if ( ! file_exists(SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php'))
 	{
 		header('HTTP/1.1 503 Service Unavailable.', TRUE, '503');
 		exit("Your system folder path does not appear to be set correctly. Please open the following file and correct this: ".pathinfo(__FILE__, PATHINFO_BASENAME));
 	}
 
-	require_once SYSPATH.'EllisLab/ExpressionEngine/Boot/boot.php';
+	require_once SYSPATH.'ee/EllisLab/ExpressionEngine/Boot/boot.php';
 
 
 /* End of file index.php */

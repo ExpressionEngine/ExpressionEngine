@@ -3,12 +3,12 @@
 <div class="tbl-ctrls">
 	<?=form_open($form_url)?>
 		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=cp_url('design/snippets/create')?>"><?=lang('create_new')?></a>
+			<a class="btn tn action" href="<?=ee('CP/URL', 'design/snippets/create')?>"><?=lang('create_new')?></a>
 		</fieldset>
 		<h1><?=$cp_heading?></h1>
 		<?=ee('Alert')->getAllInlines()?>
 		<?php $this->view('_shared/table', $table); ?>
-		<?php $this->view('_shared/pagination'); ?>
+		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
 		<fieldset class="tbl-bulk-act">
 			<select name="bulk_action">

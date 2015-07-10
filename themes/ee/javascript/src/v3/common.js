@@ -105,7 +105,7 @@ $(document).ready(function(){
 	// =========
 
 		// listen for clicks on elements with a class of has-sub
-		$('.has-sub').on('click',function(){
+		$('body').on('click', '.has-sub', function(){
 			// close OTHER open sub menus
 			// when clicking THIS sub menu trigger
 			// thanks me :D
@@ -128,13 +128,17 @@ $(document).ready(function(){
 			// stop THIS from reloading
 			// the source window and appending to the URI
 			// and stop propagation up to document
+
+			// Give filter text boxes focus on open
+			$(this).siblings('.sub-menu').find('input.autofocus').focus();
+
 			return false;
 		});
 
 		// listen for clicks to the document
 		$(document).on('click',function(e){
 			// check to see if we are inside a sub-menu or not.
-			if(!$(e.target).closest('.sub-menu, .date-picker-wrap').length){
+			if( ! $(e.target).closest('.sub-menu, .date-picker-wrap').length){
 				// close OTHER open sub menus
 				// when clicking outside ANY sub menu trigger
 				// thanks me :D
@@ -151,20 +155,23 @@ $(document).ready(function(){
 	// ====
 
 		// listen for clicks on tabs
-		$('.tab-bar ul').on('click', 'a', function(){
+		$('.tab-wrap ul.tabs a').on('click',function(){
 			// set the tabClassIs variable
 			// tells us which .tab to control
 			var tabClassIs = $(this).attr('rel');
 
+			$('.tb-act').removeClass('tb-act');
+			$(this).parents('ul').parents('.tab-wrap').addClass('tb-act');
+
 			// close OTHER .tab(s), ignores the currently open tab
-			$('.tab-bar ul a').not(this).removeClass('act');
+			$('.tb-act ul a').not(this).removeClass('act');
 			// removes the .tab-open class from any open tabs, and hides them
-			$('.tab').not('.tab.'+tabClassIs+'.tab-open').removeClass('tab-open');
+			$('.tb-act .tab').not('.tab.'+tabClassIs+'.tab-open').removeClass('tab-open');
 
 			// add a class of .act to THIS tab
 			$(this).addClass('act');
 			// add a class of .open to the proper .tab
-			$('.tab.'+tabClassIs).addClass('tab-open');
+			$('.tb-act .tab.'+tabClassIs).addClass('tab-open');
 			// stop THIS from reloading
 			// the source window and appending to the URI
 			// and stop propagation up to document
@@ -211,31 +218,42 @@ $(document).ready(function(){
 			return false;
 		});
 
-		// listen for clicks to elements with a class of m-link
-		$('body').on('click','.m-link',function(e){
+		$('body').on('modal:open', '.modal-wrap', function(e) {
 			// set the heightIs variable
 			// this allows the overlay to be scrolled
 			var heightIs = $(document).height();
-			// set the modalIs variable
-			var modalIs = $(this).attr('rel');
 
 			// fade in the overlay
 			$('.overlay').fadeIn('slow').css('height',heightIs);
 			// fade in modal
-			$('.'+modalIs).fadeIn('slow');
-			// stop THIS href from loading
-			// in the source window
-			e.preventDefault();
+			$(this).fadeIn('slow');
+
 			// scroll up, if needed
 			$('#top').animate({ scrollTop: 0 }, 100);
 		});
 
-		// listen for clicks on the element with a class of overlay
-		$('.m-close').on('click',function(e){
+		$('body').on('modal:close', '.modal-wrap', function(e) {
 			// fade out the overlay
 			$('.overlay').fadeOut('slow');
 			// fade out the modal
 			$('.modal-wrap').fadeOut('slow');
+		});
+
+		// listen for clicks to elements with a class of m-link
+		$('body').on('click', '.m-link', function(e) {
+			// set the modalIs variable
+			var modalIs = $(this).attr('rel');
+			$('.'+modalIs).trigger('modal:open');
+
+			// stop THIS href from loading
+			// in the source window
+			e.preventDefault();
+		});
+
+		// listen for clicks on the element with a class of overlay
+		$('body').on('click', '.m-close', function(e) {
+			$(this).closest('.modal-wrap').trigger('modal:close');
+
 			// stop THIS from reloading the source window
 			e.preventDefault();
 		});
@@ -245,10 +263,15 @@ $(document).ready(function(){
 	// ==================================
 
 		// listen for clicks on inputs within a choice classed label
-		$('.choice input').on('click',function(){
+		$('body').on('click', '.choice input', function() {
 			$('.choice input[name="'+$(this).attr('name')+'"]').each(function(index, el) {
 				$(this).parents('.choice').toggleClass('chosen', $(this).is(':checked'));
 			});
+		});
+
+		// Highlight table rows when checked
+		$('table tr td:last-child input[type=checkbox]').on('change',function() {
+			$(this).parents('tr').toggleClass('selected', $(this).is(':checked'));
 		});
 
 		// Highlight selected row for table lists

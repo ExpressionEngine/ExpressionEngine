@@ -21,16 +21,16 @@
 				</ul>
 				<h3>
 					<b><?=lang('date_logged')?>:</b> <?=$localize->human_time($log->cache_date)?><br>
-					<b><?=lang('username')?>:</b> <a href="<?=cp_url('myaccount', array('id' => $log->member_id))?>"><?=$log->member_name?></a>,
+					<b><?=lang('username')?>:</b> <a href="<?=ee('CP/URL', 'myaccount', array('id' => $log->member_id))?>"><?=$log->member_name?></a>,
 					<b><abbr title="<?=lang('internet_protocol')?>"><?=lang('ip')?></abbr>:</b> <?=$log->ip_address?>
 				</h3>
 				<div class="message">
-					<p><?=lang('sent_to')?> <b><?=$log->recipient_name?></b>, <?=lang('subject')?>: <a href="<?=cp_url('logs/email/view/'.$log->cache_id)?>"><?=$log->subject?></a></p>
+					<p><?=lang('sent_to')?> <b><?=$log->recipient_name?></b>, <?=lang('subject')?>: <a href="<?=ee('CP/URL', 'logs/email/view/'.$log->cache_id)?>"><?=$log->subject?></a></p>
 				</div>
 			</div>
 			<?php endforeach; ?>
 
-			<?php $this->view('_shared/pagination'); ?>
+			<?=$pagination?>
 
 			<fieldset class="tbl-bulk-act">
 				<button class="btn remove m-link" rel="modal-confirm-all"><?=lang('clear_email_logs')?></button>

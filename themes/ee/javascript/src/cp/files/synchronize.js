@@ -4,7 +4,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -102,7 +102,7 @@ EE.file_manager.sync = function(upload_directory_id) {
 			var total_count       = EE.file_manager.sync_file_count,
 				current_count     = EE.file_manager.sync_files.length,
 				already_processed = total_count - current_count;
-			
+
 			EE.file_manager.update_progress(Math.round(already_processed / total_count * 100));
 
 			// Fire off another Ajax request
@@ -139,7 +139,7 @@ EE.file_manager.finish_sync = function(upload_directory_id) {
 			// If there are errors, pass them through POST, there may be too
 			// many to store in a flashdata cookie
 			var input = $('<input>', { type: 'hidden', name: 'errors', value: JSON.stringify(EE.file_manager.sync_errors) });
-			$('form.settings').append(input).submit();
+			$('.w-12 form.settings').append(input).submit();
 		}
 	};
 };

@@ -11,7 +11,7 @@
 	<?php if (isset($filters)) echo $filters; ?>
 	<section class="item-wrap log">
 		<?php if ($disabled): ?>
-			<p class="no-results"><?=lang('throttling_disabled')?> <a class="btn action" href="<?=cp_url('settings/throttling')?>"><?=lang('enable_throttling')?></a></p>
+			<p class="no-results"><?=lang('throttling_disabled')?> <a class="btn action" href="<?=ee('CP/URL', 'settings/throttling')?>"><?=lang('enable_throttling')?></a></p>
 		<?php else: ?>
 			<?php if (count($logs) == 0): ?>
 				<p class="no-results"><?=lang('no_throttling_logs_found')?></p>
@@ -30,7 +30,7 @@
 
 				<?php endforeach; ?>
 
-				<?php $this->view('_shared/pagination'); ?>
+				<?=$pagination?>
 
 				<fieldset class="tbl-bulk-act">
 				<button class="btn remove m-link" rel="modal-confirm-all"><?=lang('clear_throttle_logs')?></button>

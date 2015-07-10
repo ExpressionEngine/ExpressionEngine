@@ -9,13 +9,13 @@
 		<h1>
 			<?=$cp_heading?>
 			<ul class="toolbar">
-				<li class="settings"><a href="<?=cp_url('settings/comments')?>" title="<?=lang('comment_settings')?>"></a></li>
+				<li class="settings"><a href="<?=ee('CP/URL', 'settings/comments')?>" title="<?=lang('comment_settings')?>"></a></li>
 			</ul>
 		</h1>
 		<?=ee('Alert')->getAllInlines()?>
 		<?php if (isset($filters)) echo $filters; ?>
 		<?php $this->view('_shared/table', $table); ?>
-		<?php $this->view('_shared/pagination'); ?>
+		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
 		<fieldset class="tbl-bulk-act">
 			<select name="bulk_action">

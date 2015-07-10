@@ -2,38 +2,49 @@
 		<section class="product-bar">
 			<div class="snap">
 				<div class="left">
-					<p><b>ExpressionEngine</b> <span class="version" title="About ExpressionEngine"><?=$formatted_version?></span></p>
-					<!-- use class out-of-date on the version link. -->
-					<!-- Waiting to implement until new Pings library is merged -->
-					<!-- <div class="version-info">
-						<h3>Installed</h3>
-						<p>ExpressionEngine <b>3</b>.0<br><em>build date: 07.12.2014</em></p>
-						<h3>Latest Version (<a href="" rel="external">download</a>)</h3>
-						<p>ExpressionEngine <b>3</b>.0.1<br><em>build date: 09.16.2014</em></p>
-						<a href="" class="close">&#10006;</a>
-						<div class="status out">out of date</div>
-					</div> -->
+					<?php
+					$ver_title = lang('about_expressionengine');
+					if (isset($new_version))
+					{
+						$ver_title = lang('out_of_date_upgrade');
+						if ($new_version['security'])
+						{
+							$ver_title = lang('out_of_date_recommended');
+						}
+					}
+					?>
+					<p><b>ExpressionEngine</b> <span class="version<?php if (isset($new_version)): ?> out-of-date<?php if ($new_version['security']): ?>-vital<?php endif; endif ?>" title="<?=$ver_title?>"><?=$formatted_version?></span></p>
 					<div class="version-info">
-						<h3>Installed</h3>
+						<?php if (isset($new_version) && $new_version['security']): ?>
+							<p class="alert inline warn"><?=lang('recommended_upgrade')?></p>
+						<?php endif ?>
+						<h3><?=lang('installed')?></h3>
 						<p>ExpressionEngine <?=$formatted_version?><br><em><?=lang('build') . ' ' . $ee_build_date?></em></p>
-						<a href="" class="close">&#10006;</a>
-						<div class="status">current</div>
+						<?php if (isset($new_version)): ?>
+							<h3><?=lang('latest_version')?> (<a href="<?=ee()->cp->masked_url('https://store.ellislab.com/manage')?>" rel="external"><?=lang('download')?></a>)</h3>
+							<p>ExpressionEngine <?=$new_version['version']?><br><em><?=lang('build') . ' ' . $new_version['build']?></em></p>
+							<a href="" class="close">&#10006;</a>
+							<div class="status out"><?=lang('out_of_date')?></div>
+						<?php else: ?>
+							<a href="" class="close">&#10006;</a>
+							<div class="status"><?=lang('current')?></div>
+						<?php endif ?>
 					</div>
 				</div>
-				<div class="right"><p><a href="https://support.ellislab.com/bugs/submit" rel="external">Report Bug</a> <b class="sep">&middot;</b> <a href="https://support.ellislab.com" rel="external">New Ticket</a> <b class="sep">&middot;</b> <a href="http://ellislab.com/expressionengine/user-guide/" rel="external">Manual</a></p></div>
+				<div class="right"><p><a href="https://support.ellislab.com/bugs/submit" rel="external"><?=lang('report_bug')?></a> <b class="sep">&middot;</b> <a href="https://support.ellislab.com" rel="external"><?=lang('new_ticket')?></a> <b class="sep">&middot;</b> <a href="https://ellislab.com/expressionengine/user-guide/" rel="external"><?=lang('manual')?></a></p></div>
 			</div>
 		</section>
 		<section class="footer">
 			<div class="snap">
 				<div class="left">
-					<p>&copy;2003&mdash;<?=date('Y')?> <a href="<?=ee()->cp->masked_url('http://ellislab.com/expressionengine')?>" rel="external">EllisLab</a>, Inc.<br><a class="scroll" href="#top">scroll to top</a></p>
+					<p>&copy;2003&mdash;<?=date('Y')?> <a href="<?=ee()->cp->masked_url('https://ellislab.com/expressionengine')?>" rel="external">EllisLab</a>, Inc.<br><a class="scroll" href="#top"><?=lang('scroll_to_top')?></a></p>
 				</div>
 				<div class="right">
 					<p><?=lang('license_no')?>:
 						<?php if (ee()->config->item('license_number')): ?>
 							<?=ee()->config->item('license_number')?>
 						<?php elseif (ee()->cp->allowed_group('can_access_admin', 'can_access_sys_prefs')): ?>
-							<a href="<?=cp_url('settings/license')?>"><?=lang('register_now')?></a>
+							<a href="<?=ee('CP/URL', 'settings/license')?>"><?=lang('register_now')?></a>
 						<?php else: ?>
 							<?=lang('not_entered')?>
 						<?php endif ?>
@@ -74,28 +85,28 @@
 					<div class="col w-16 last">
 						<a class="m-close" href="#"></a>
 						<div class="box">
-							<h1>Log into <?=ee()->config->item('site_name')?> <span class="required intitle">&#10033; Required Fields</span></h1>
+							<h1>Log into <?=ee()->config->item('site_name')?> <span class="req-title"><?=lang('required_fields')?></span></h1>
 							<?=form_open('C=login&M=authenticate', array('class' => 'settings'))?>
 							<form class="settings" action="">
 								<div class="alert inline warn">
 									<p>Your administration access session has timed out. Please use the form below to log back into your control panel.</p>
 								</div>
-								<fieldset class="col-group">
+								<fieldset class="col-group required">
 									<div class="setting-txt col w-8">
-										<h3>Username <span class="required" title="required field">&#10033;</span></h3>
+										<h3>Username</h3>
 										<em></em>
 									</div>
 									<div class="setting-field col w-8 last">
-										<input class="required" type="text" value="<?=form_prep(ee()->session->userdata('username'))?>">
+										<input type="text" value="<?=form_prep(ee()->session->userdata('username'))?>">
 									</div>
 								</fieldset>
-								<fieldset class="col-group last">
+								<fieldset class="col-group required last">
 									<div class="setting-txt col w-8">
-										<h3>Password <span class="required" title="required field">&#10033;</span></h3>
+										<h3>Password</h3>
 										<em></em>
 									</div>
 									<div class="setting-field col w-8 last">
-										<input class="required" type="password" value="" id="logout-confirm-password">
+										<input type="password" value="" id="logout-confirm-password">
 									</div>
 								</fieldset>
 								<fieldset class="form-ctrls">

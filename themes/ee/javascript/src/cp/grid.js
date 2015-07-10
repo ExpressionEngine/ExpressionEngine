@@ -302,11 +302,11 @@ Grid.Publish.prototype = {
  * Grid Settings class
  */
 Grid.Settings = function(settings) {
-	this.root = $('#grid_settings');
-	this.settingsScroller = this.root.find('#grid_col_settings_container');
-	this.settingsContainer = this.root.find('#grid_col_settings_container_inner');
+	this.root = $('.grid-wrap');
+	this.settingsScroller = this.root.find('.grid-clip');
+	this.settingsContainer = this.root.find('.grid-clip-inner');
 	this.colTemplateContainer = $('#grid_col_settings_elements');
-	this.blankColumn = this.colTemplateContainer.find('.grid_col_settings');
+	this.blankColumn = this.colTemplateContainer.find('.grid-item');
 	this.settings = settings;
 
 	this.init();
@@ -317,18 +317,13 @@ Grid.Settings.prototype = {
 	init: function() {
 		this._bindResize();
 		this._bindSortable();
-		this._bindAddButton();
-		this._bindCopyButton();
-		this._bindDeleteButton();
-		this._bindDeleteButton();
+		this._bindActionButtons(this.root);
 		this._toggleDeleteButtons();
 		this._bindColTypeChange();
-		this._bindSubmit();
-		this._highlightErrors();
 
 		// If this is a new field, bind the automatic column title plugin
 		// to the first column
-		this._bindAutoColName(this.root.find('div.grid_col_settings[data-field-name^="new_"]'));
+		this._bindAutoColName(this.root.find('div.grid-item[data-field-name^="new_"]'));
 
 		// Fire displaySettings event
 		this._settingsDisplay();
@@ -339,48 +334,15 @@ Grid.Settings.prototype = {
 	},
 
 	/**
-	 * Upon page load, we need to resize the settings container to match the
-	 * width of the page, minus the width of the labels on the left, and also
-	 * need to resize the column container to fit the number of columns we have
+	 * Upon page load, we need to resize the column container to fit the number
+	 * of columns we have
 	 */
 	_bindResize: function() {
 		var that = this;
 
 		$(document).ready(function() {
-			that._resizeSettingsContainer();
-
-			// Resize settings container on window resize
-			$(window).resize(function() {
-				that._resizeSettingsContainer();
-			});
-
-			// Resize when Grid is selected from field type dropdown
-			$('#field_type').change(function() {
-				if ($(this).val() == 'grid') {
-					that._resizeSettingsContainer();
-				}
-			});
-
-			// Now, resize the inner container to fit the number of columns
-			// we have ready on page load
 			that._resizeColContainer();
 		});
-	},
-
-	/**
-	 * Resizes the scrollable settings container to fit within EE's settings
-	 * table; this is called on page load and window resize
-	 */
-	_resizeSettingsContainer: function() {
-		// First need to set container smaller so that it's not affecting the
-		// root with; for example, if the user makes the window width smaller,
-		// the root with won't change if the settings scroller container doesn't
-		// get smaller, thus the container runs off the page
-		this.settingsScroller.width(500);
-
-		this.settingsScroller.width(
-			this.root.width() - this.root.find('#grid_col_settings_labels').width()
-		);
 	},
 
 	/**
@@ -402,10 +364,10 @@ Grid.Settings.prototype = {
 	 * @return	{int}	Calculated width
 	 */
 	_getColumnsWidth: function() {
-		var columns = this.root.find('.grid_col_settings');
+		var columns = this.root.find('.grid-item');
 
-		// 75px of extra room for the add button
-		return columns.size() * columns.width() + 75;
+		// Actual width of column is width + 32
+		return columns.size() * (columns.width() + 32);
 	},
 
 	/**
@@ -415,37 +377,55 @@ Grid.Settings.prototype = {
 		this.settingsContainer.sortable({
 			axis: 'x',						// Only allow horizontal dragging
 			containment: 'parent',			// Contain to parent
-			handle: 'div.grid_data_type',	// Set drag handle to the top box
-			items: '.grid_col_settings',	// Only allow these to be sortable
+			handle: 'li.reorder',			// Set drag handle to the top box
+			items: '.grid-item',			// Only allow these to be sortable
 			sort: EE.sortable_sort_helper	// Custom sort handler
 		});
 	},
 
 	/**
+	 * Convenience method for binding column manipulation buttons (add, copy, remove)
+	 * for a given context
+	 *
+	 * @param	{jQuery Object}	context		Object to find action buttons in to bind
+	 */
+	_bindActionButtons: function(context) {
+		this._bindAddButton(context);
+		this._bindCopyButton(context);
+		this._bindDeleteButton(context);
+	},
+
+	/**
 	 * Binds click listener to Add button to insert a new column at the end
 	 * of the columns
+	 *
+	 * @param	{jQuery Object}	context		Object to find action buttons in to bind
 	 */
-	_bindAddButton: function() {
+	_bindAddButton: function(context) {
 		var that = this;
 
-		this.root.find('.grid_button_add').on('click', function(event) {
+		context.find('.grid-tools li.add a').on('click', function(event) {
 			event.preventDefault();
 
-			that._insertColumn(that._buildNewColumn());
+			var parentCol = $(this).parents('.grid-item');
+
+			that._insertColumn(that._buildNewColumn(), parentCol);
 		});
 	},
 
 	/**
 	 * Binds click listener to Copy button in each column to clone the column
 	 * and insert it after the column being cloned
+	 *
+	 * @param	{jQuery Object}	context		Object to find action buttons in to bind
 	 */
-	_bindCopyButton: function() {
+	_bindCopyButton: function(context) {
 		var that = this;
 
-		this.root.on('click', 'a.grid_col_copy', function(event) {
+		context.on('click', '.grid-tools li.copy a', function(event) {
 			event.preventDefault();
 
-			var parentCol = $(this).parents('.grid_col_settings');
+			var parentCol = $(this).parents('.grid-item');
 
 			that._insertColumn(
 				// Build new column based on current column
@@ -458,17 +438,19 @@ Grid.Settings.prototype = {
 
 	/**
 	 * Binds click listener to Delete button in each column to delete the column
+	 *
+	 * @param	{jQuery Object}	context		Object to find action buttons in to bind
 	 */
-	_bindDeleteButton: function() {
+	_bindDeleteButton: function(context) {
 		var that = this;
 
-		this.root.on('click', '.grid_button_delete', function(event) {
+		context.on('click', '.grid-tools li.remove a', function(event) {
 			event.preventDefault();
 
-			var settings = $(this).parents('.grid_col_settings');
+			var settings = $(this).parents('.grid-item');
 
 			// Only animate column deletion if we're not deleting the last column
-			if (settings.index() == $('#grid_settings .grid_col_settings:last').index()) {
+			if (settings.index() == $('.grid-item:last', that.root).index()) {
 				settings.remove();
 				that._resizeColContainer(true);
 				that._toggleDeleteButtons();
@@ -498,8 +480,8 @@ Grid.Settings.prototype = {
 	 * only one column
 	 */
 	_toggleDeleteButtons: function() {
-		var colCount = this.root.find('.grid_col_settings').size(),
-			deleteButtons = this.root.find('.grid_button_delete');
+		var colCount = this.root.find('.grid-item').size(),
+			deleteButtons = this.root.find('.grid-tools li.remove');
 
 		deleteButtons.toggle(colCount > 1);
 	},
@@ -512,7 +494,7 @@ Grid.Settings.prototype = {
 	 *				after; if left blank, defaults to last column
 	 */
 	_insertColumn: function(column, insertAfter) {
-		var lastColumn = $('#grid_settings .grid_col_settings:last');
+		var lastColumn = $('.grid-item:last', this.root);
 
 		// Default to inserting after the last column
 		if (insertAfter == undefined) {
@@ -546,8 +528,11 @@ Grid.Settings.prototype = {
 		// Bind automatic column name
 		this._bindAutoColName(column);
 
+		// Bind column manipulation buttons
+		this._bindActionButtons(column);
+
 		// Fire displaySettings event
-		this._fireEvent('displaySettings', $('.grid_col_settings_custom > div', column));
+		this._fireEvent('displaySettings', $('.grid-col-settings-custom > div', column));
 	},
 
 	/**
@@ -584,7 +569,7 @@ Grid.Settings.prototype = {
 		el.find('input[name$="\\[name\\]"]').attr('value', '');
 
 		// Need to make sure the new column's field names are unique
-		var new_namespace = 'new_' + $('.grid_col_settings', this.root).size();
+		var new_namespace = 'new_' + $('.grid-item', this.root).size();
 
 		el.html(
 			el.html().replace(
@@ -608,7 +593,7 @@ Grid.Settings.prototype = {
 	_bindColTypeChange: function() {
 		var that = this;
 
-		this.root.on('change', '.grid_data_type .grid_col_select', function(event) {
+		this.root.on('change', 'select.grid_col_select', function(event) {
 			// New, fresh settings form
 			var settings = that.colTemplateContainer
 				.find('.grid_col_settings_custom_field_'+$(this).val()+':last')
@@ -618,14 +603,14 @@ Grid.Settings.prototype = {
 			settings.find(':input').removeAttr('disabled');
 
 			var customSettingsContainer = $(this)
-				.parents('.grid_col_settings')
-				.find('.grid_col_settings_custom');
+				.parents('.grid-item')
+				.find('.grid-col-settings-custom');
 
 			// Namespace fieldnames for the current column
 			settings.html(
 				settings.html().replace(
 					RegExp('(new_|col_id_)[0-9]{1,}', 'g'),
-					customSettingsContainer.data('fieldName')
+					customSettingsContainer.parents('.grid-item').data('fieldName')
 				)
 			);
 
@@ -634,28 +619,6 @@ Grid.Settings.prototype = {
 
 			// Fire displaySettings event
 			that._fireEvent('displaySettings', settings);
-		});
-	},
-
-	/**
-	 * Binds to form submission to pass along the entire HTML for the last
-	 * row in the Grid settings table for easy repopulated upon form
-	 * validation failing
-	 */
-	_bindSubmit: function() {
-		var that = this;
-
-		this.root.parents('form').submit(function() {
-			// Remove existing validation error classes
-			$('.grid_col_settings_section input[type=text]').removeClass('grid_settings_error');
-
-			grid_html = that._cloneWithFormValues(that.root.parent('#grid_settings_container'));
-
-			$('<input/>', {
-				'type': 'hidden',
-				'name': 'grid_html',
-				'value': '<div id="grid_settings_container">'+grid_html.html()+'</div>'
-			}).appendTo(that.root);
 		});
 	},
 
@@ -712,9 +675,9 @@ Grid.Settings.prototype = {
 	 */
 	_settingsDisplay: function() {
 		var that = this;
-		this.root.find('.grid_col_settings').each(function() {
+		this.root.find('.grid-item').each(function() {
 			// Fire displaySettings event
-			that._fireEvent('displaySettings', $('.grid_col_settings_custom > div', this));
+			that._fireEvent('displaySettings', $('.grid-col-settings-custom > div', this));
 		});
 	},
 
@@ -734,18 +697,6 @@ Grid.Settings.prototype = {
 		}
 
 		Grid._eventHandlers[action][fieldtype]($(el));
-	},
-
-	/**
-	 * If there are fields with form validation errors in our settings
-	 * object, highlight them
-	 */
-	_highlightErrors: function() {
-		if (this.settings.error_fields != undefined) {
-			$.each(this.settings.error_fields, function(index, val) {
-				 $('input[name="'+val+'"]').addClass('grid_settings_error');
-			});
-		}
 	}
 };
 

@@ -1,0 +1,16 @@
+Welcome to the ExpressionEngine Discussion Forum Module
+
+
+Forum installation instructions can be found online by visiting this page:
+https://ellislab.com/expressionengine/user-guide/modules/forum/forum_installation.html
+
+
+If you are upgrading from an older version please follow these instructions:
+https://ellislab.com/expressionengine/user-guide/modules/forum/forum_update.html
+
+
+The forum documentation can be found here:
+https://ellislab.com/expressionengine/user-guide/modules/forum/index.html
+
+
+Enjoy...

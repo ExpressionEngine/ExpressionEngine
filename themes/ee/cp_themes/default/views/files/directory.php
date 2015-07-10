@@ -3,20 +3,20 @@
 <div class="tbl-ctrls">
 	<?=form_open($form_url)?>
 		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=cp_url('files/upload/' . $dir_id)?>"><?=lang('upload_new_file')?></a>
+			<a class="btn tn action" href="<?=ee('CP/URL', 'files/upload/' . $dir_id)?>"><?=lang('upload_new_file')?></a>
 		</fieldset>
 		<h1>
 			<?=$cp_heading?>
 			<?php if ($can_admin_upload_prefs): ?>
 			<ul class="toolbar">
-				<li class="sync"><a href="<?=cp_url('settings/upload/sync/' . $dir_id)?>" title="<?=lang('sync')?>"></a></li>
+				<li class="sync"><a href="<?=ee('CP/URL', 'files/uploads/sync/' . $dir_id)?>" title="<?=lang('sync')?>"></a></li>
 			</ul>
 			<?php endif; ?>
 		</h1>
 		<?=ee('Alert')->getAllInlines()?>
 		<?php if (isset($filters)) echo $filters; ?>
 		<?php $this->view('_shared/table', $table); ?>
-		<?php $this->view('_shared/pagination'); ?>
+		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
 		<fieldset class="tbl-bulk-act">
 			<select name="bulk_action">
