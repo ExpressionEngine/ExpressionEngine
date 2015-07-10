@@ -69,6 +69,31 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	 */
 	protected $_property_types = array();
 
+	/**
+	 * @var Type names and their corresponding classes
+	 */
+	protected static $_type_classes = array(
+		'bool' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Boolean',
+		'boolean' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Boolean',
+
+		'float' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Float',
+		'double' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Float',
+
+		'int' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Integer',
+		'integer' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Integer',
+
+		'string' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\String',
+
+		'yesNo' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\YesNo',
+		'boolString' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\YesNo',
+	);
+
+	/**
+	 * @var Typed columns must default to array
+	 */
+	protected static $_typed_columns = array();
+
+	/**
 	 * @var Relationships property must default to array
 	 */
 	protected static $_relationships = array();
