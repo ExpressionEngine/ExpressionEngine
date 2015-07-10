@@ -268,8 +268,8 @@ feature 'Add-On Manager' do
 			no_php_js_errors
 
 			@page.should have_first_party_pagination
-			@page.should have(6).first_party_pages
-			@page.first_party_pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "Next", "Last"]
+			@page.should have(5).first_party_pages
+			@page.first_party_pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "Last"]
 		end
 
 		it 'can search by phrases' do
@@ -887,16 +887,16 @@ feature 'Add-On Manager' do
 				@page.first_party_pagination.click_link "Last"
 				no_php_js_errors
 
-				@page.first_party_pages[4].text.should eq 'Last'
-				@page.first_party_pages[4][:class].should eq 'act'
+				@page.first_party_pages[3].text.should eq '2'
+				@page.first_party_pages[3][:class].should eq 'act'
 				@page.third_party_pages[1].text.should eq '1'
 				@page.third_party_pages[1][:class].should eq 'act'
 
 				@page.third_party_pagination.click_link "Next"
 				no_php_js_errors
 
-				@page.first_party_pages[4].text.should eq 'Last'
-				@page.first_party_pages[4][:class].should eq 'act'
+				@page.first_party_pages[3].text.should eq '2'
+				@page.first_party_pages[3[:class].should eq 'act'
 				@page.third_party_pages[3].text.should eq '2'
 				@page.third_party_pages[3][:class].should eq 'act'
 			end
@@ -974,8 +974,8 @@ feature 'Add-On Manager' do
 					@page.first_party_pagination.click_link "Last"
 					no_php_js_errors
 
-					@page.first_party_pages[4].text.should eq 'Last'
-					@page.first_party_pages[4][:class].should eq 'act'
+					@page.first_party_pages[3].text.should eq '2'
+					@page.first_party_pages[3[:class].should eq 'act'
 					@page.third_party_version_header[:class].should eq 'highlight'
 				end
 			end
@@ -1017,14 +1017,14 @@ feature 'Add-On Manager' do
 					@page.first_party_pagination.click_link "Last"
 					no_php_js_errors
 
-					@page.first_party_pages[4].text.should eq 'Last'
-					@page.first_party_pages[4][:class].should eq 'act'
+					@page.first_party_pages[3].text.should eq '2'
+					@page.first_party_pages[3[:class].should eq 'act'
 
 					@page.third_party_version_header.find('a.sort').click
 					no_php_js_errors
 
-					@page.first_party_pages[4].text.should eq 'Last'
-					@page.first_party_pages[4][:class].should eq 'act'
+					@page.first_party_pages[3].text.should eq '2'
+					@page.first_party_pages[3[:class].should eq 'act'
 					@page.third_party_version_header[:class].should eq 'highlight'
 				end
 
@@ -1049,16 +1049,16 @@ feature 'Add-On Manager' do
 					@page.first_party_pagination.click_link "Last"
 					no_php_js_errors
 
-					@page.first_party_pages[4].text.should eq 'Last'
-					@page.first_party_pages[4][:class].should eq 'act'
+					@page.first_party_pages[3].text.should eq '2'
+					@page.first_party_pages[3[:class].should eq 'act'
 
 					@page.third_party_status_filter.click
 					@page.wait_until_third_party_status_filter_menu_visible
 					@page.third_party_status_filter_menu.click_link "uninstalled"
 					no_php_js_errors
 
-					@page.first_party_pages[4].text.should eq 'Last'
-					@page.first_party_pages[4][:class].should eq 'act'
+					@page.first_party_pages[3].text.should eq '2'
+					@page.first_party_pages[3[:class].should eq 'act'
 					@page.third_party_status_filter.text.should eq "status (uninstalled)"
 				end
 
@@ -1108,8 +1108,8 @@ feature 'Add-On Manager' do
 					@page.first_party_pagination.click_link "Last"
 					no_php_js_errors
 
-					@page.first_party_pages[4].text.should eq 'Last'
-					@page.first_party_pages[4][:class].should eq 'act'
+					@page.first_party_pages[3].text.should eq '2'
+					@page.first_party_pages[3[:class].should eq 'act'
 					@page.third_party_status_filter.text.should eq "status (uninstalled)"
 				end
 			end
