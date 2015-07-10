@@ -71,28 +71,40 @@ class Filepicker_mcp {
 
 		$base_url = ee('CP/URL', $this->base_url);
 
-		$filters = ee('Filter')->add('Perpage', $files->count(), 'show_all_files');
-
 		$directories = array_map(function($dir) {return $dir->name;}, $directories);
 		$directories = array('all' => lang('all')) + $directories;
-		$dirFilter = ee('Filter')->make('directory', lang('directory'), $directories);
-		$dirFilter->disableCustomValue();
 
-		$filters = $filters->add($dirFilter);
+		if ($this->images)
+		{
+			$vars['images'] = TRUE;
+			$vars['data'] = array();
+			$perpage = 16;
 
-		$table = $this->picker->buildTableFromFileCollection($files, $filters->values()['perpage']);
+			foreach ($files as $file)
+			{
+				$vars['data'][$file->file_id] = $file->UploadDestination->server_path . $file->file_name;
+			}
+		}
+		else
+		{
+			$filters = ee('Filter')->add('Perpage', $files->count(), 'show_all_files');
+			$dirFilter = ee('Filter')->make('directory', lang('directory'), $directories);
+			$dirFilter->disableCustomValue();
+			$filters = $filters->add($dirFilter);
+			$perpage = $filters->values()['perpage'];
+			ee()->view->filters = $filters->render($base_url);
+		}
+
+		$table = $this->picker->buildTableFromFileCollection($files, $perpage);
 
 		$base_url->setQueryStringVariable('sort_col', $table->sort_col);
 		$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
 		$base_url->setQueryStringVariable('directory', $id);
 		$base_url->setQueryStringVariable('type', $type);
 
-		ee()->view->filters = $filters->render($base_url);
-
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 		$vars['dir'] = $id;
-
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
@@ -110,6 +122,14 @@ class Filepicker_mcp {
 	public function modal()
 	{
 		$this->base_url = $this->picker->controller;
+		ee()->output->_display($this->index());
+		exit();
+	}
+
+	public function images()
+	{
+		$this->images = TRUE;
+		$this->base_url = $this->picker->base_url . 'images';
 		ee()->output->_display($this->index());
 		exit();
 	}
@@ -147,7 +167,6 @@ class Filepicker_mcp {
 
 		ee()->output->send_ajax_response($result);
 	}
-	// }}}
 
 }
 ?>
