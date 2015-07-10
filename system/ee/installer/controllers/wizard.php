@@ -862,7 +862,7 @@ class Wizard extends CI_Controller {
 
 		// Since the CP access file can be inside or outside of the "system" folder
 		// we will do a little test to help us set the site_url item
-		$_selfloc = (is_dir('./installer/')) ? SELF.'/'.SYSDIR : SELF;
+		$_selfloc = (is_dir('./ee/installer/')) ? SELF.'/'.SYSDIR : SELF;
 
 		// Set the site URL
 		$this->userdata['site_url'] = $host.substr($self, 0, - strlen($_selfloc));
