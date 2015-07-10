@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Module\RichTextEditor\Model;
+namespace EllisLab\Addons\Rte\Model;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
@@ -19,9 +19,9 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Tool Model for the Rich Text Editor
+ * ExpressionEngine Toolset Model for the Rich Text Editor
  *
- * A model representing a tool in the Rich Text Editor.
+ * A model representing a user toolset in the Rich Text Editor.
  *
  * @package		ExpressionEngine
  * @subpackage	Rich Text Editor Module
@@ -29,13 +29,20 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class RichTextEditorTool extends Model {
+class Toolset extends Model {
 
-	protected static $_primary_key = 'tool_id';
-	protected static $_table_name = 'rte_tools';
+	protected static $_primary_key = 'toolset_id';
+	protected static $_table_name = 'rte_toolsets';
 
-	protected $tool_id;
+	protected static $_relationships = array(
+		'Member' => array(
+			'type' => 'belongsTo'
+		)
+	);
+
+	protected $toolset_id;
+	protected $member_id;
 	protected $name;
-	protected $class;
+	protected $tools;
 	protected $enabled;
 }
