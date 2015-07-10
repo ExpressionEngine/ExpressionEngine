@@ -38,6 +38,7 @@ class FilePicker {
 	{
 		$href = ee('CP/URL', $this->controller, array('directory' => $dir));
 		$extra = "";
+		$class = "";
 
 		if ( ! empty($data['image']))
 		{
@@ -59,12 +60,20 @@ class FilePicker {
 			$extra .= " data-callback='{$data['callback']}'";
 		}
 
-		return "<a class='m-link filepicker' rel='modal-file' href='$href' $extra>". $text ."</a>";
+		if ( ! empty($data['class']))
+		{
+			$class .= $data['class'];
+		}
+
+		return "<a class='m-link filepicker $class' rel='modal-file' href='$href' $extra>". $text ."</a>";
 	}
 
 	public function buildTableFromFileCollection(Collection $files, $limit = 20)
 	{
-		$table = new Table(array('autosort' => TRUE, 'limit' => $limit));
+		$table = Table::fromGlobals(array(
+			'autosort' => TRUE,
+			'limit' => $limit
+		));
 		$table->setColumns(
 			array(
 				'title_or_name' => array(
