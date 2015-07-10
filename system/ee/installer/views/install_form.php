@@ -61,7 +61,7 @@
 		<?=form_error('db_prefix');?>
 	</div>
 </fieldset>
-<h2><?=lang('default_theme')?></h2>
+<!-- <h2><?=lang('default_theme')?></h2>
 <fieldset class="col-group last">
 	<div class="setting-txt col w-8">
 		<h3><?=lang('install_default_theme')?></h3>
@@ -71,7 +71,7 @@
 		<label class="choice mr yes"><input name="install_default_theme" value="y" type="radio" <?=set_radio('install_default_theme', 'y');?>> <?=lang('yes')?></label>
 		<label class="choice chosen no"><input name="install_default_theme" value="n" type="radio" <?=set_radio('install_default_theme', 'n', TRUE);?>> <?=lang('no')?></label>
 	</div>
-</fieldset>
+</fieldset> -->
 <h2><?=lang('administrator_account')?></h2>
 <fieldset class="col-group required <?=form_error_class('username')?>">
 	<div class="setting-txt col w-8">
