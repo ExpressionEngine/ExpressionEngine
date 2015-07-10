@@ -278,6 +278,21 @@ abstract class EE_Fieldtype {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Validate the settings
+	 *
+	 * This is called before the settings are fully saved
+	 *
+	 * @param mixed   settings data
+	 * @return mixed  validation result
+	 */
+	public function validate_settings($data)
+	{
+		return;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Validate the field data
 	 *
 	 * This is called before the field is stored, so you can sanity check

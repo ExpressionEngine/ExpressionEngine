@@ -135,7 +135,6 @@ class Member_upd {
 					$file->uploaded_by_member_id = 1;
 					$file->modified_by_member_id = 1;
 					$file->title = $filename;
-					$file->rel_path = $filename;
 					$file->file_name = $filename;
 					$file->upload_date = $time;
 					$file->modified_date = $time;

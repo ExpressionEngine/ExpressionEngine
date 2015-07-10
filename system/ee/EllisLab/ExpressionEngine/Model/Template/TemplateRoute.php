@@ -90,7 +90,7 @@ class TemplateRoute extends Model {
 	}
 
 	/**
-	 * A getter for the route property. Will override with file based config if 
+	 * A getter for the route property. Will override with file based config if
 	 * it exists.
 	 *
 	 * @return string Route
@@ -99,9 +99,10 @@ class TemplateRoute extends Model {
 	{
 		$route = "";
 		$routes = self::getConfig();
+
 		$template = $this->Template;
 
-		if ( ! empty($this->Template))
+		if ( ! empty($template))
 		{
 			$group = $template->TemplateGroup;
 			$name = "{$group->group_name}/{$template->template_name}";

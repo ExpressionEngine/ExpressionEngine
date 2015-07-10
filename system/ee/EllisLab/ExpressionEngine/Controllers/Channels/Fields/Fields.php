@@ -44,7 +44,8 @@ class Fields extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		ee()->lang->loadfile('channel');
+		ee()->lang->loadfile('admin');
+		ee()->lang->loadfile('admin_content');
 	}
 
 	public function fields()
