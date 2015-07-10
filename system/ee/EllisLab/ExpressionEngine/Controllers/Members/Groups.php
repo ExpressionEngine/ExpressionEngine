@@ -201,7 +201,7 @@ class Groups extends Members\Members {
 
 	/**
 	 * Delete member group selection
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */
@@ -283,9 +283,9 @@ class Groups extends Members\Members {
 
 	/**
 	 * delete_member_group
-	 * 
-	 * @param mixed $group_id 
-	 * @param mixed $replacement 
+	 *
+	 * @param mixed $group_id
+	 * @param mixed $replacement
 	 * @access public
 	 * @return void
 	 */
@@ -776,7 +776,7 @@ class Groups extends Members\Members {
 		{
 			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
 		}
-		
+
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text_working = 'btn_save_working';
@@ -936,11 +936,16 @@ class Groups extends Members\Members {
 
 		list($channels, $channel_permissions) = $this->_setup_channel_names($this->site_id, $this->group_id);
 
-		foreach ($channel_permissions[$this->site_id] as $permission => $value)
+		$result['allowed_channels'] = array();
+
+		if (isset($channel_permissions[$this->site_id]))
 		{
-			if ($value == 'y')
+			foreach ($channel_permissions[$this->site_id] as $permission => $value)
 			{
-				$result['allowed_channels'][] = $permission;
+				if ($value == 'y')
+				{
+					$result['allowed_channels'][] = $permission;
+				}
 			}
 		}
 
