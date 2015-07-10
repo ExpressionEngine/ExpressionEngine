@@ -1,11 +1,14 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+use EllisLab\ExpressionEngine\Model\Template\TemplateRoute;
+
 /**
  * ExpressionEngine - by EllisLab
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -72,6 +75,21 @@ class EE_Template_Router extends CI_Router {
 	public function set_routes()
 	{
 		$site_id = ee()->config->item('site_id');
+		$config = TemplateRoute::getConfig();
+
+		if ( ! empty($config))
+		{
+			foreach ($config as $template => $route)
+			{
+				list($group_name, $template_name) = explode('/' , $template);
+				$route_parsed = new EE_Route($route);
+
+				$this->end_points[$route_parsed->compile()] = array(
+					"template" => $template_name,
+					"group"    => $group_name
+				);
+			}
+		}
 
 		ee()->db->select('route_parsed, template_name, group_name');
 		ee()->db->from('templates');
@@ -102,6 +120,13 @@ class EE_Template_Router extends CI_Router {
 	public function fetch_route($group, $template)
 	{
 		$site_id = ee()->config->item('site_id');
+		$config = TemplateRoute::getConfig();
+		$route = "$group/$template";
+
+		if ( ! empty($config[$route]))
+		{
+			return new EE_Route($config[$route]);
+		}
 
 		ee()->db->select('route, route_parsed, route_required, template_name, group_name');
 		ee()->db->from('templates');
