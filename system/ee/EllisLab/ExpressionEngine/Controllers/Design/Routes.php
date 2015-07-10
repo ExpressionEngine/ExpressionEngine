@@ -67,7 +67,7 @@ class Routes extends Design {
 	public function index()
 	{
 		$vars = array();
-		$table = Table::create(array('reorder' => TRUE, 'sortable' => FALSE));
+		$table = ee('CP/Table', array('reorder' => TRUE, 'sortable' => FALSE));
 		$columns = array(
 			'group_name',
 			'template_name',
