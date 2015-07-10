@@ -51,6 +51,7 @@ class Updater {
 				'_rename_default_status_groups',
 				'_centralize_captcha_settings',
 				'_update_members_table',
+				'_update_member_fields_table',
 				'_update_html_buttons',
 				'_update_files_table',
 				'_update_upload_prefs_table',
@@ -641,6 +642,29 @@ class Updater {
 				'auto_increment' => TRUE
 			)
 		));
+	}
+
+	/**
+	 * Adds columns to the members table as needed
+	 *
+	 * @return void
+	 */
+	private function _update_member_fields_table()
+	{
+		if ( ! ee()->db->field_exists('m_field_show_fmt', 'member_fields'))
+		{
+			ee()->smartforge->add_column(
+				'members',
+				array(
+					'm_field_show_fmt' => array(
+						'type'    => 'char',
+						'constraint' => 1,
+						'default' => 'n',
+						'null'    => FALSE
+					)
+				)
+			);
+		}
 	}
 
 	/**
