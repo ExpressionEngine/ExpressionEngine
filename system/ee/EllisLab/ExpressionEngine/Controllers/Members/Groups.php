@@ -77,8 +77,12 @@ class Groups extends Members\Members {
 				'id' => array(
 					'type'	=> Table::COL_ID
 				),
-				'group_title',
-				'is_locked',
+				'group_title' => array(
+					'encode' => FALSE
+				),
+				'status' => array(
+					'type' => Table::COL_STATUS
+				),
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
 				),
@@ -110,7 +114,6 @@ class Groups extends Members\Members {
 			));
 
 			$status = ($group->is_locked == 'y') ? 'locked' : 'unlocked';
-			$status = "<span class='st-$status'>" . lang($status) . "</span>";
 			$count = $group->getMembers()->count();
 			$href = ee('CP/URL', 'members', array('group' => $group->group_id));
 			$title = "$group->group_title <a href='$href' alt='" . lang('view_members') . $group->group_title ."'>($count)</a>";
@@ -118,7 +121,7 @@ class Groups extends Members\Members {
 			$groupData[] = array(
 				'id' => $group->group_id,
 				'title' => $title,
-				'is_locked' => $status,
+				'status' => array('class' => $status, 'content' => lang($status)),
 				$toolbar,
 				array(
 					'name' => 'selection[]',
