@@ -190,9 +190,11 @@ class Wizard extends CI_Controller {
 		// Update notices are used to print info at the end of
 		// the update
 		$this->load->library('update_notices');
+		$this->load->library('update_notices');
 
 		// Set the theme URLs
 		$this->image_path = $this->set_path('themes/ee/cp_global_images/');
+		$this->load->add_theme_cascade(APPPATH.'views/');
 
 		// First try the current directory, if they are running the system with an admin.php file
 		$this->theme_path = substr($_SERVER['SCRIPT_FILENAME'], 0, -strlen(SELF));
