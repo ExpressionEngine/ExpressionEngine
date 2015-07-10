@@ -27,8 +27,8 @@
 
 	var bind_modal = function(options) {
 		$('.modal-file').off('click', 'tbody > tr');
-		$('.modal-file').on('click', 'tbody > tr', function(e) {
-			var id = $(this).find("input[type='checkbox']").val();
+		$('.modal-file').on('click', 'tbody > tr, .filepicker-item', function(e) {
+			var id = $(this).data('id');
 			var file_url = options.url.replace(/directory=.+(?=&)/ig, 'file=' + id);
 
 			$.ajax({
@@ -80,7 +80,7 @@
 	};
 
 	$(document).ready(function () {
-		$('.modal-file').on('click', 'a:not([href=""])', function(e) {
+		$('.modal-file').on('click', '.filters a:not([href=""]), .paginate a:not([href=""]), thead a:not([href=""])', function(e) {
 			e.preventDefault();
 			$(this).parents('div.box').load($(this).attr('href'));
 		});
@@ -92,7 +92,7 @@
 			callback_name = $(this).data('callback');
 			picker_url = $(this).attr('href');
 
-			if (callback_name.length !== 0)	{
+			if (typeof callback_name != 'undefined' && callback_name.length !== 0)	{
 				callback = function(data, picker) {
 					var args = [data, picker];
 					var namespaces = callback_name.split(".");
