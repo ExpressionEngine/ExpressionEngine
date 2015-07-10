@@ -59,7 +59,12 @@ abstract class ContentModel extends VariableColumnModel {
 	{
 		if (strpos($name, $this->getCustomFieldPrefix()) !== 0)
 		{
-			return FALSE;
+			$default_fields = $this->getDefaultFields();
+
+			if ( ! isset($default_fields[$name]))
+			{
+				return FALSE;
+			}
 		}
 
 		$this->usesCustomFields();
