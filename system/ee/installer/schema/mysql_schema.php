@@ -1082,6 +1082,7 @@ class EE_Schema {
 			file_post_format varchar(120) NULL DEFAULT NULL,
 			cat_group varchar(255) NULL DEFAULT NULL,
 			batch_location varchar(255) NULL DEFAULT NULL,
+			module_id int(4) DEFAULT NULL,
 			PRIMARY KEY `id` (`id`),
 			KEY `site_id` (`site_id`)
 		)";
