@@ -62,7 +62,9 @@ class Email extends AbstractDesignController {
 		$table = ee('CP/Table', array('autosort' => TRUE, 'subheadings' => TRUE));
 		$table->setColumns(
 			array(
-				'template',
+				'template' => array(
+					'encode' => FALSE
+				),
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
 				),
