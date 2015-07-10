@@ -94,13 +94,20 @@ class Settings extends Profile {
 		$this->load->helper('html');
 		$this->load->helper('directory');
 
-		$current = ee()->config->item('avatar_path');
-		$directory = ee('Model')->get('UploadDestination')->first();
+		$path = ee()->config->item('avatar_path');
+		$directory = ee('Model')->get('UploadDestination')
+						->filter('server_path', $path)
+						->first();
 
 		$fp = new FilePicker();
+	 	$fp->controller = $fp->base_url . 'images';
 		$fp->inject(ee()->view);
 		$dirs = array();
-		$dirs[] = $fp->link('Default Set', $directory->id, array('input' => 'avatar', 'image' => 'avatar'));
+		$dirs[] = $fp->link('Avatars', $directory->id, array(
+			'image' => 'avatar',
+			'input' => 'avatar_filename',
+			'class' => 'avatarPicker'
+		));
 
 		$vars['has_file_input'] = TRUE;
 		$vars['sections'] = array(
@@ -188,7 +195,7 @@ class Settings extends Profile {
 				),
 				array(
 					'title' => 'change_avatar',
-					'desc' => 'current_avatar_desc',
+					'desc' => 'change_avatar_desc',
 					'fields' => array(
 						'avatar_picker' => array(
 							'type' => 'radio_block',
@@ -212,6 +219,11 @@ class Settings extends Profile {
 				)
 			)
 		);
+
+		if ($this->member->avatar_filename == "")
+		{
+			$vars['sections']['avatar_settings'][0]['hide'] = TRUE;
+		}
 
 		ee()->form_validation->set_rules(array(
 			array(
@@ -250,7 +262,9 @@ class Settings extends Profile {
 		}
 
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/members/avatars'),
+			'file' => array(
+				'cp/members/avatar'
+			),
 		));
 
 		ee()->view->base_url = $this->base_url;
@@ -270,8 +284,8 @@ class Settings extends Profile {
 				$this->member->avatar_filename = $this->uploadAvatar();
 				break;
 			case "choose":
-				$test = ee()->input->post('avatar_filename');
-				$this->member->avatar_filename = $test;
+				$choice = ee()->input->post('avatar_filename');
+				$this->member->avatar_filename = $choice;
 				break;
 			case "link":
 				$this->member->avatar_filename = $this->uploadRemoteAvatar();

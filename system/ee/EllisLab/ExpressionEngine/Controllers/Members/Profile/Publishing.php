@@ -44,15 +44,11 @@ class Publishing extends Profile {
 		$vars['sections'] = array(
 			array(
 				array(
-					'title' => 'in_authorlist',
-					'desc' => 'in_authorlist_desc',
+					'title' => 'include_in_author_list',
+					'desc' => 'include_in_author_list_desc',
 					'fields' => array(
 						'in_authorlist' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'yes',
-								'n' => 'no'
-							),
+							'type' => 'yes_no',
 							'value' => $this->member->in_authorlist
 						)
 					)
@@ -80,7 +76,7 @@ class Publishing extends Profile {
 						'rte_toolset_id' => array(
 							'type' => 'select',
 							'choices' => array(
-								0 => 'default'
+								0 => lang('default')
 							),
 							'value' => $this->member->rte_toolset_id
 						),
@@ -99,7 +95,7 @@ class Publishing extends Profile {
 		}
 
 		ee()->view->base_url = $this->base_url;
-		ee()->view->cp_page_title = lang('email_settings');
+		ee()->view->cp_page_title = lang('publishing_settings');
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->render('settings/form', $vars);

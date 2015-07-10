@@ -76,11 +76,11 @@ Grid.Publish.prototype = {
 
 		this.rowContainer.eeTableReorder({
 			// Fire 'beforeSort' event on sort start
-			beforeSort: function(event, row) {
+			beforeSort: function(row) {
 				that._fireEvent('beforeSort', row.item);
 			},
 			// Fire 'afterSort' event on sort stop
-			afterSort: function(event, row) {
+			afterSort: function(row) {
 				that._fireEvent('afterSort', row.item);
 			}
 		});

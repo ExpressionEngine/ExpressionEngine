@@ -122,7 +122,7 @@ class Subscriptions extends Profile {
 		);
 
 		$column = array(
-			'comment' => 'subscription_id',
+			'comment' => 'entry_id',
 			'forum' => 'topic_id'
 		);
 
@@ -135,6 +135,7 @@ class Subscriptions extends Profile {
 			$delete[$type[$char]][] = $id;
 		}
 
+
 		foreach ($delete as $type => $ids)
 		{
 			if (ee()->db->table_exists("exp_{$type}_subscriptions"))
@@ -145,6 +146,7 @@ class Subscriptions extends Profile {
 			}
 		}
 
+		ee()->view->set_message('success', lang('unsubscribe_success'), $cp_message, TRUE);
 		ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
 	}
 

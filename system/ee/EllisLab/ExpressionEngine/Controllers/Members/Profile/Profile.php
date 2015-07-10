@@ -86,7 +86,7 @@ class Profile extends CP_Controller {
 			array(
 				'blocked_members' => ee('CP/URL', 'members/profile/ignore', $qs),
 				'member_group' => ee('CP/URL', 'members/profile/group', $qs),
-				sprintf(lang('email_username'), $this->member->username) => ee('CP/URL', 'utilities/communicate'),
+				sprintf(lang('email_username'), $this->member->username) => ee('CP/URL', 'utilities/communicate/member/' . $this->member->member_id),
 				sprintf(lang('login_as'), $this->member->username) => ee('CP/URL', 'members/profile/login', $qs),
 				sprintf(lang('delete_username'), $this->member->username) => array(
 					'href' => ee('CP/URL', 'members/delete', $qs),

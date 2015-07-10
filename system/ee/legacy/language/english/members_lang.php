@@ -38,7 +38,9 @@ $lang = array(
 
 "manage_bans" => "Manage Bans",
 
-"custom_profile_fields" => "Member Fields",
+"custom_profile_fields" => "Custom Member Fields",
+
+"member_fields_removed_desc" => "The following Member Fields have been removed:",
 
 "member_cfg_existing" => "Member Group \"%s\" Settings",
 
@@ -72,7 +74,11 @@ $lang = array(
 
 "member_group_assignment" => "Member Group Assignment",
 
+"password_desc" => "Use lowercase and uppercase letters, numbers, and symbols for the strongest passwords.",
+
 "password_confirm" => "Confirm Password",
+
+"password_confirm_desc" => "Retype desired password, to confirm.",
 
 "email" => "Email",
 
@@ -209,7 +215,7 @@ $lang = array(
 
 "index" => "Main Index Page",
 
-"member_assignment_warning" => "%x member(s) are currently assigned to this group. What member group should they be re-assigned to?",
+"member_assignment_warning" => "Members are currently assigned to some of these groups. What member group should they be re-assigned to?",
 
 /* moved to design - DJ
 
@@ -272,13 +278,19 @@ $lang = array(
 
 "username_desc" => "Username - descending",
 
+"username_description" => "Used for signing into ExpressionEngine.",
+
 "screen_name" => "Screen Name",
+
+"screen_name_description" => "Used for alternate name display in website content",
 
 "screen_name_asc" => "Screen Name - ascending",
 
 "screen_name_desc" => "Screen Name - descending",
 
-"mbr_email_address" => "Email Address",
+"mbr_email_address" => "User's e-mail",
+
+"mbr_email_address_desc" => "Used for communicating with this user.",
 
 'email_address' => 'Email Address',
 
@@ -293,6 +305,8 @@ $lang = array(
 "last_visit" => "Last Visit",
 
 "member_group" => "Member Group",
+
+"member_group_desc" => "Assign this user access permissions.",
 
 "group_id" => "Group ID",
 
@@ -323,6 +337,8 @@ $lang = array(
 "locked" => "Locked",
 
 "unlocked" => "Unlocked",
+
+"create_member" => "Create Member",
 
 "create_new_member_group" => "Create a New Member Group",
 
@@ -712,6 +728,8 @@ $lang = array(
 "no_custom_profile_fields" => "There are currently no member fields.",
 
 "delete_profile_field_confirmation" => "Are you sure you want to permanently delete this Member Profile Field?",
+
+"search_member_groups_button" => "Search Member Groups",
 
 "member_search" => "Member Search",
 

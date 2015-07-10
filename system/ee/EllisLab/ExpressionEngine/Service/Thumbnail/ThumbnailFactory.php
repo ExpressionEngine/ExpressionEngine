@@ -51,8 +51,8 @@ class ThumbnailFactory {
 		if ($file->isImage())
 		{
 			ee()->load->library('filemanager');
-			$dir = $file->UploadDestination->first();
-			$dimensions = $dir->FileDimensions->all();
+			$dir = $file->UploadDestination;
+			$dimensions = $dir->FileDimensions;
 
 			$success = ee()->filemanager->create_thumb(
 				$file->getAbsolutePath(),

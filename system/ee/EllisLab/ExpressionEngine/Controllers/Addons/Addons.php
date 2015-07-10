@@ -406,7 +406,7 @@ class Addons extends CP_Controller {
 		);
 
 		// @TODO move these 2 things out of "add-ons" entirely
-		$uninstallable = array('channel', 'comment');
+		$uninstallable = array('channel', 'comment', 'filepicker');
 
 		foreach (array_keys($providers) as $name)
 		{

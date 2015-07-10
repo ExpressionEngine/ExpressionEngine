@@ -96,7 +96,9 @@ class Bookmarks extends Profile {
 
 		$table->setColumns(
 			array(
-				'name',
+				'name' => array(
+					'encode' => FALSE
+				),
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
 				),
@@ -260,13 +262,13 @@ class Bookmarks extends Profile {
 					'desc' => 'bookmarklet_field_desc',
 					'fields' => array(
 						'channel' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $channels,
 							'value' => $channel,
 							'required' => TRUE
 						),
 						'field' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $fields,
 							'value' => $field,
 							'required' => TRUE

@@ -150,7 +150,9 @@ class Members extends CP_Controller {
 				'username' => array(
 					'encode' => FALSE
 				),
-				'member_group',
+				'member_group' => array(
+					'encode' => FALSE
+				),
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
 				),
@@ -255,7 +257,7 @@ class Members extends CP_Controller {
 					$group = $groups[$member['group_id']];
 			}
 
-			$email = "<a href = '" . ee('CP/URL', 'utilities/communicate') . "'>e-mail</a>";
+			$email = "<a href = '" . ee('CP/URL', 'utilities/communicate/member/' . $member['member_id']) . "'>e-mail</a>";
 			$rows[] = array(
 				'columns' => array(
 					'id' => $member['member_id'],

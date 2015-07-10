@@ -341,7 +341,7 @@ class Select extends Query {
 
 		if ( ! isset($parts[1]))
 		{
-			return array($string, $string);
+			return array($string, str_replace(':', '_m_', $string));
 		}
 
 		return $parts;

@@ -65,14 +65,14 @@ class MemberGroup extends Model {
 		'can_view_profiles'              => 'boolString',
 		'can_edit_html_buttons'          => 'boolString',
 		'can_delete_self'                => 'boolString',
-		'mbr_delete_notify_emails'       => 'boolString',
+		'mbr_delete_notify_emails'       => 'string',
 		'can_post_comments'              => 'boolString',
 		'exclude_from_moderation'        => 'boolString',
 		'can_search'                     => 'boolString',
-		'search_flood_control'           => 'boolString',
+		'search_flood_control'           => 'int',
 		'can_send_private_messages'      => 'boolString',
-		'prv_msg_send_limit'             => 'boolString',
-		'prv_msg_storage_limit'          => 'boolString',
+		'prv_msg_send_limit'             => 'int',
+		'prv_msg_storage_limit'          => 'int',
 		'can_attach_in_private_messages' => 'boolString',
 		'can_send_bulletins'             => 'boolString',
 		'include_in_authorlist'          => 'boolString',
@@ -143,6 +143,13 @@ class MemberGroup extends Model {
 			'pivot' => array(
 				'table' => 'layout_publish_member_groups',
 				'key' => 'layout_id',
+			)
+		),
+		'EmailCache' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'EmailCache',
+			'pivot' => array(
+				'table' => 'email_cache_mg'
 			)
 		)
 	);

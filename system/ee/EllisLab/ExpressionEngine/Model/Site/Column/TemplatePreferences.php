@@ -2,7 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Model\Site\Column;
 
-use EllisLab\ExpressionEngine\Service\Model\Column\Base64SerializedComposite;
+use EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64Native;
+use EllisLab\ExpressionEngine\Service\Model\Column\CustomType;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -27,7 +28,7 @@ use EllisLab\ExpressionEngine\Service\Model\Column\Base64SerializedComposite;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class TemplatePreferences extends Base64SerializedComposite {
+class TemplatePreferences extends CustomType {
 
 	protected $enable_template_routes;
 	protected $strict_urls;
@@ -36,5 +37,21 @@ class TemplatePreferences extends Base64SerializedComposite {
 	protected $max_tmpl_revisions;
 	protected $save_tmpl_files;
 	protected $tmpl_file_basepath;
+
+	/**
+	* Called when the column is fetched from db
+	*/
+	public function unserialize($db_data)
+	{
+		return Base64Native::unserialize($db_data);
+	}
+
+	/**
+	* Called before the column is written to the db
+	*/
+	public function serialize($data)
+	{
+		return Base64Native::serialize($data);
+	}
 
 }

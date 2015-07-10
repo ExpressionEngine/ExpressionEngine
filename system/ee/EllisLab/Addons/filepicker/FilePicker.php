@@ -9,6 +9,7 @@ use EllisLab\ExpressionEngine\Model\File\UploadDestination;
 
 class FilePicker {
 
+	public $base_url = 'addons/settings/filepicker/';
 	public $controller = 'addons/settings/filepicker/modal';
 
 	public function inject($view)
@@ -37,6 +38,7 @@ class FilePicker {
 	{
 		$href = ee('CP/URL', $this->controller, array('directory' => $dir));
 		$extra = "";
+		$class = "";
 
 		if ( ! empty($data['image']))
 		{
@@ -58,12 +60,20 @@ class FilePicker {
 			$extra .= " data-callback='{$data['callback']}'";
 		}
 
-		return "<a class='m-link filepicker' rel='modal-file' href='$href' $extra>". $text ."</a>";
+		if ( ! empty($data['class']))
+		{
+			$class .= $data['class'];
+		}
+
+		return "<a class='m-link filepicker $class' rel='modal-file' href='$href' $extra>". $text ."</a>";
 	}
 
 	public function buildTableFromFileCollection(Collection $files, $limit = 20)
 	{
-		$table = new Table(array('autosort' => TRUE, 'limit' => $limit));
+		$table = Table::fromGlobals(array(
+			'autosort' => TRUE,
+			'limit' => $limit
+		));
 		$table->setColumns(
 			array(
 				'title_or_name' => array(
@@ -73,13 +83,16 @@ class FilePicker {
 				'date_added',
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=> Table::COL_CHECKBOX
 				)
 			)
 		);
 		$table->setNoResultsText(lang('no_uploaded_files'));
+
+		if (empty($_GET['sort_col']))
+		{
+			$table->config['sort_col'] = 'date_added';
+			$table->config['sort_dir'] = 'desc';
+		}
 
 		$data = array();
 
@@ -119,21 +132,10 @@ class FilePicker {
 				$file->mime_type,
 				ee()->localize->human_time($file->upload_date),
 				array('toolbar_items' => $toolbar),
-				array(
-					'name' => 'selection[]',
-					'value' => $file->file_id,
-					'data' => array(
-						'confirm' => lang('file') . ': <b>' . htmlentities($file->title, ENT_QUOTES) . '</b>'
-					)
-				)
 			);
 
 			$attrs = array();
-
-			if ($file_id && $file->file_id == $file_id)
-			{
-				$attrs = array('class' => 'selected');
-			}
+			$attrs = array('data-id' => $file->file_id);
 
 			$data[] = array(
 				'attrs'		=> $attrs,

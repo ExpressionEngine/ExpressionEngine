@@ -4,8 +4,8 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -24,74 +24,84 @@
  */
 class EE_Route_segment {
 
-	public function __construct($name, $rules = array())
+	public $static;
+	public $values;
+	public $parts;
+	public $isset = FALSE;
+
+	/**
+	 * __construct
+	 * 
+	 * @param string $segment The full segment string with {vars} replaced with the var hash
+	 * @param array $parts EE_Route_segment_part[]
+	 * @access public
+	 * @return void
+	 */
+	public function __construct($static, $parts)
 	{
-		$this->name = $name;
-		$this->rules = $rules;
+		$this->static = $static;
+		$this->parts = $parts;
 		ee()->lang->loadfile('template_router');
 	}
 
 	/**
-	 * Compile the segment down to a named regex
+	 * Compile the segment down to a regex
 	 *
 	 * @access public
 	 * @return string A regular expression for the segment
 	 */
 	public function regex()
 	{
-		return "(?P<{$this->name}>(" . $this->validator() . "))";
+		return "(" . $this->validator() . ")";
 	}
 
 	/**
 	 * Validate the provided value against the segment rules
 	 *
+	 * @param mixed $val The variable to be checked
 	 * @param mixed $val The value to be checked
 	 * @access public
 	 * @return bool
 	 */
-	public function validate($val)
+	public function validate($variable, $val)
 	{
-		$regex = "/" . $this->validator() . "/i";
-		$result = preg_match($regex, $val);
-
-		if ($result === FALSE)
-		{
-			throw new Exception(lang('validation_failed'));
-		}
-
-		return $result === 1;
+		return $this->parts[$variable]->validate($val);
 	}
 
 	/**
-	 * Run through all the rules and combine them into one validator
+	 * Run through all the parts and combine them into one validator
 	 *
 	 * @access public
 	 * @return A regular expression for all of the segment's validators
 	 */
 	public function validator()
 	{
-		$compiled_rules = "";
+		$compiled = $this->static;
 
-		foreach ($this->rules as $rule)
+		foreach ($this->parts as $part)
 		{
-			// Place each rule inside an anchored lookahead,
-			// this will match the entire string if the rule matches.
-			// This allows rules to work together without consuming the match.
-			$compiled_rules .= "((?=\b" . $rule->validator() . "\b)([^\/]*))";
+			$compiled = str_replace($part->name, $part->regex(), $compiled);
 		}
 
-		if (empty($this->rules))
-		{
-			// Default to a wildcard match if we have no rules
-			$compiled_rules = "([^\/]*)";
-		}
-
-		return $compiled_rules;
+		return $compiled;
 	}
 
-	public function set($val)
+	public function set($variable, $val)
 	{
-		$this->value = $val;
+		$this->parts[$variable]->set($val);
+		$this->isset = TRUE;
+	}
+
+	public function value()
+	{
+		$value = $this->static;
+
+		foreach ($this->parts as $part)
+		{
+			$value = str_replace($part->name, $part->value, $value);
+		}
+
+		return $value;
 	}
 
 }

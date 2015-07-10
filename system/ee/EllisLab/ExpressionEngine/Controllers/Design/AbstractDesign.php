@@ -4,9 +4,11 @@ namespace EllisLab\ExpressionEngine\Controllers\Design;
 
 use CP_Controller;
 use ZipArchive;
+use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-
+use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
+use EllisLab\ExpressionEngine\Model\Template\TemplateRoute;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -14,7 +16,7 @@ use EllisLab\ExpressionEngine\Library\Data\Collection;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -62,12 +64,12 @@ abstract class AbstractDesign extends CP_Controller {
 			'system_templates' => array(
 				array(
 					'name' => lang('messages'),
-					'url' => ee('CP/URL', 'design/system'),
+					'url' => cp_url('design/system'),
 					'class' => ($active == 'messages') ? 'act' : ''
 				),
 				array(
 					'name' => lang('email'),
-					'url' => ee('CP/URL', 'design/email'),
+					'url' => cp_url('design/email'),
 					'class' => ($active == 'email') ? 'act' : ''
 				)
 			)
@@ -87,8 +89,8 @@ abstract class AbstractDesign extends CP_Controller {
 
 			$data = array(
 				'name' => $group->group_name,
-				'url' => ee('CP/URL', 'design/manager/' . $group->group_name),
-				'edit_url' => ee('CP/URL', 'design/group/edit/' . $group->group_name),
+				'url' => cp_url('design/manager/' . $group->group_name),
+				'edit_url' => cp_url('design/group/edit/' . $group->group_name),
 			);
 
 			if ($group->is_site_default)
@@ -110,7 +112,7 @@ abstract class AbstractDesign extends CP_Controller {
 		{
 			$vars['system_templates'][] = array(
 				'name' => lang('members'),
-				'url' => ee('CP/URL', 'design/members'),
+				'url' => cp_url('design/members'),
 				'class' => ($active == 'members') ? 'act' : ''
 			);
 		}
@@ -119,9 +121,16 @@ abstract class AbstractDesign extends CP_Controller {
 		{
 			$vars['system_templates'][] = array(
 				'name' => lang('forums'),
-				'url' => ee('CP/URL', 'design/forums'),
+				'url' => cp_url('design/forums'),
 				'class' => ($active == 'forums') ? 'act' : ''
 			);
+		}
+
+		$vars['routes'] = TRUE;
+
+		if (TemplateRoute::getConfig())
+		{
+			$vars['routes'] = FALSE;
 		}
 
 		ee()->view->left_nav = ee('View')->make('design/menu')->render($vars);
@@ -134,14 +143,14 @@ abstract class AbstractDesign extends CP_Controller {
 	{
 		ee()->view->header = array(
 			'title' => lang('template_manager'),
-			'form_url' => ee('CP/URL', 'design/template/search'),
+			'form_url' => cp_url('design/template/search'),
 			'toolbar_items' => array(
 				'settings' => array(
-					'href' => ee('CP/URL', 'settings/template'),
+					'href' => cp_url('settings/template'),
 					'title' => lang('settings')
 				),
 				'download' => array(
-					'href' => ee('CP/URL', 'design/export'),
+					'href' => cp_url('design/export'),
 					'title' => lang('export_all')
 				)
 			),
@@ -226,7 +235,7 @@ abstract class AbstractDesign extends CP_Controller {
 		$zip = new ZipArchive();
 		if ($zip->open($zipfilename, ZipArchive::CREATE) !== TRUE)
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('Alert')->makeInline('settings-form')
 				->asIssue()
 				->withTitle(lang('error_export'))
 				->addToBody(lang('error_cannot_create_zip'))
@@ -239,7 +248,7 @@ abstract class AbstractDesign extends CP_Controller {
 			->filter('site_id', ee()->config->item('site_id'))
 			->all()
 			->each(function($template) use($zip) {
-				$filename = $template->getTemplateGroup()->group_name . 'group/' . $template->template_name . $template->getFileExtension();
+				$filename = $template->getTemplateGroup()->group_name . '/' . $template->template_name . '.html';
 				$zip->addFromString($filename, $template->template_data);
 			});
 
@@ -254,12 +263,10 @@ abstract class AbstractDesign extends CP_Controller {
 
 	protected function buildTableFromTemplateCollection(Collection $templates, $include_group_name = FALSE)
 	{
-		$table = ee('CP/Table', array('autosort' => TRUE));
+		$table = Table::create(array('autosort' => TRUE));
 		$table->setColumns(
 			array(
-				'template' => array(
-					'encode' => FALSE
-				),
+				'template',
 				'hits',
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
@@ -319,7 +326,7 @@ abstract class AbstractDesign extends CP_Controller {
 						'title' => lang('view')
 					),
 					'edit' => array(
-						'href' => ee('CP/URL', 'design/template/edit/' . $template->template_id),
+						'href' => cp_url('design/template/edit/' . $template->template_id),
 						'title' => lang('edit')
 					),
 					'settings' => array(
@@ -334,7 +341,7 @@ abstract class AbstractDesign extends CP_Controller {
 					'name' => 'selection[]',
 					'value' => $template->template_id,
 					'data' => array(
-						'confirm' => lang('template') . ': <b>' . htmlentities($template->template_name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('temlate') . ': <b>' . htmlentities($template->template_name, ENT_QUOTES) . '</b>'
 					)
 				)
 			);

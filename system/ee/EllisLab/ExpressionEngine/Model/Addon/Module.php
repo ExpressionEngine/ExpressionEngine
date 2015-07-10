@@ -42,6 +42,16 @@ class Module extends Model {
 		'has_publish_fields' => 'enum[y,n]'
 	);
 
+	protected static $_relationships = array(
+		'AssignedModules' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'MemberGroup',
+			'pivot' => array(
+				'table' => 'module_member_groups'
+			)
+		)
+	);
+
 	protected $module_id;
 	protected $module_name;
 	protected $module_version;

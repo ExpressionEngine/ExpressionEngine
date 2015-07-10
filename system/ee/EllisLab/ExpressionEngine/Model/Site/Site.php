@@ -36,7 +36,15 @@ class Site extends Model {
 	protected static $_primary_key = 'site_id';
 	protected static $_table_name = 'sites';
 
-	protected static $_composite_columns = array(
+	protected static $_type_classes = array(
+		'ChannelPreferences' => 'EllisLab\ExpressionEngine\Model\Site\Column\ChannelPreferences',
+		'MailingListPreferences' => 'EllisLab\ExpressionEngine\Model\Site\Column\MailingListPreferences',
+		'MemberPreferences' => 'EllisLab\ExpressionEngine\Model\Site\Column\MemberPreferences',
+		'SystemPreferences' => 'EllisLab\ExpressionEngine\Model\Site\Column\SystemPreferences',
+		'TemplatePreferences' => 'EllisLab\ExpressionEngine\Model\Site\Column\TemplatePreferences',
+	);
+
+	protected static $_typed_columns = array(
 		'site_channel_preferences' => 'ChannelPreferences',
 		'site_mailinglist_preferences' => 'MailingListPreferences',
 		'site_member_preferences' => 'MemberPreferences',

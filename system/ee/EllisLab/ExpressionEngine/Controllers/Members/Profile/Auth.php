@@ -44,20 +44,33 @@ class Auth extends Profile {
 			array(
 				array(
 					'title' => 'username',
-					'desc' => 'username_desc',
+					'desc' => 'username_description',
 					'fields' => array(
-						'username' => array('type' => 'text', 'value' => $this->member->username)
+						'username' => array(
+							'type' => 'text',
+							'required' => TRUE,
+							'value' => $this->member->username
+						)
 					)
 				),
 				array(
 					'title' => 'screen_name',
-					'desc' => 'screen_name_desc',
+					'desc' => 'screen_name_description',
 					'fields' => array(
-						'screen_name' => array('type' => 'text', 'value' => $this->member->screen_name)
+						'screen_name' => array(
+							'type' => 'text',
+							'required' => TRUE,
+							'value' => $this->member->screen_name
+						)
 					)
 				)
 			),
 			'change_password' => array(
+				ee('Alert')->makeInline('permissions-warn')
+					->asWarning()
+					->addToBody(lang('password_change_exp'))
+					->cannotClose()
+					->render(),
 				array(
 					'title' => 'new_password',
 					'desc' => 'new_password_desc',
@@ -69,8 +82,8 @@ class Auth extends Profile {
 					)
 				),
 				array(
-					'title' => 'confirm_password',
-					'desc' => 'confirm_password_desc',
+					'title' => 'new_password_confirm',
+					'desc' => 'new_password_confirm_desc',
 					'fields' => array(
 						'confirm_password' => array(
 							'type'      => 'password',
@@ -79,11 +92,12 @@ class Auth extends Profile {
 					)
 				),
 				array(
-					'title' => 'current_password',
-					'desc' => 'current_password',
+					'title' => 'existing_password',
+					'desc' => 'existing_password_exp',
 					'fields' => array(
 						'current_password' => array(
 							'type'      => 'password',
+							'required' => TRUE,
 							'maxlength' => PASSWORD_MAX_LENGTH
 						)
 					)

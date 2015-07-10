@@ -234,10 +234,6 @@ return array(
 			'MemberField' => 'Module\Member\Model\MemberField',
 			'MemberGroup' => 'Module\Member\Model\MemberGroup',
 
-			// ..\RichTextEditor
-			'RichTextEditorTool' => 'Module\RichTextEditor\Model\RichTextEditorTool',
-			'RichTextEditorToolset' => 'Module\RichTextEditor\Model\RichTextEditorToolset',
-
 			// ..\Search
 			'SearchLog' => 'Module\Search\Model\SearchLog',
 
