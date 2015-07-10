@@ -61,8 +61,8 @@ class Group extends Profile {
 					)
 				),
 				array(
-					'title' => 'current_password',
-					'desc' => 'current_password_desc',
+					'title' => 'existing_password',
+					'desc' => 'existing_password_exp',
 					'fields' => array(
 						'password' => array('type' => 'password')
 					)

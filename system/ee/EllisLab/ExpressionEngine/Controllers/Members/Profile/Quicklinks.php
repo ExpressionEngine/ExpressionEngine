@@ -224,17 +224,17 @@ class Quicklinks extends Profile {
 		$vars['sections'] = array(
 			array(
 				array(
-					'title' => 'quicklink_name',
-					'desc' => 'quicklink_name_desc',
+					'title' => 'link_title',
+					'desc' => 'link_title_desc',
 					'fields' => array(
-						'name' => array('type' => 'text', 'value' => $name)
+						'name' => array('type' => 'text', 'value' => $name, 'required' => TRUE)
 					)
 				),
 				array(
-					'title' => 'quicklink_url',
-					'desc' => 'quicklink_url_desc',
+					'title' => 'link_url',
+					'desc' => 'link_url_desc',
 					'fields' => array(
-						'url' => array('type' => 'text', 'value' => $url)
+						'url' => array('type' => 'text', 'value' => $url, 'required' => TRUE)
 					)
 				)
 			)

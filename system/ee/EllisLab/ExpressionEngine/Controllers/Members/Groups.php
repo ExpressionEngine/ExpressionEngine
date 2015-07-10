@@ -75,7 +75,7 @@ class Groups extends Members\Members {
 		$table->setColumns(
 			array(
 				'id' => array(
-					'type'	=> Table::COL_ID
+					'type'	=> Table::COL_ID,
 				),
 				'group_title' => array(
 					'encode' => FALSE
@@ -312,11 +312,10 @@ class Groups extends Members\Members {
 						'include_members_in' => array(
 							'type' => 'checkbox',
 							'choices' => array(
-								'include_in_authorlist' => 'include_in_authorlist',
-								'include_in_memberlist' => 'include_in_memberlist',
-								'include_in_mailinglists' => 'include_in_mailinglists'
+								'include_in_authorlist' => lang('include_in_authorlist'),
+								'include_in_memberlist' => lang('include_in_memberlist'),
 							),
-							'value' => element('include_members_in', $values)
+							'value' => element('include_member_in', $values)
 						),
 					)
 				)
@@ -350,10 +349,10 @@ class Groups extends Members\Members {
 						'comment_actions' => array(
 							'type' => 'checkbox',
 							'choices' => array(
-								'can_edit_own_comments' => 'can_edit_own_comments',
-								'can_delete_own_comments' => 'can_delete_own_comments',
-								'can_edit_all_comments' => 'can_edit_all_comments',
-								'can_delete_all_comments' => 'can_delete_all_comments'
+								'can_edit_own_comments' => lang('can_edit_own_comments'),
+								'can_delete_own_comments' => lang('can_delete_own_comments'),
+								'can_edit_all_comments' => lang('can_edit_all_comments'),
+								'can_delete_all_comments' => lang('can_delete_all_comments')
 							),
 							'value' => element('comment_actions', $values)
 						),
@@ -464,8 +463,8 @@ class Groups extends Members\Members {
 						'category_actions' => array(
 							'type' => 'checkbox',
 							'choices' => array(
-								'can_edit_categories' => 'can_edit_categories',
-								'can_delete_categories' => 'can_delete_categories'
+								'can_edit_categories' => lang('can_edit_categories'),
+								'can_delete_categories' => lang('can_delete_categories')
 							),
 							'value' => element('category_actions', $values)
 						),
@@ -480,10 +479,10 @@ class Groups extends Members\Members {
 						'channel_entry_actions' => array(
 							'type' => 'checkbox',
 							'choices' => array(
-								'can_delete_self_entries' => 'can_delete_self_entries',
-								'can_edit_other_entries' => 'can_edit_other_entries',
-								'can_delete_all_entries' => 'can_delete_all_entries',
-								'can_assign_post_authors' => 'can_assign_post_authors'
+								'can_delete_self_entries' => lang('can_delete_self_entries'),
+								'can_edit_other_entries' => lang('can_edit_other_entries'),
+								'can_delete_all_entries' => lang('can_delete_all_entries'),
+								'can_assign_post_authors' => lang('can_assign_post_authors')
 							),
 							'value' => element('channel_entry_actions', $values)
 						),
@@ -509,9 +508,9 @@ class Groups extends Members\Members {
 						'member_actions' => array(
 							'type' => 'checkbox',
 							'choices' => array(
-								'can_admin_members' => 'can_admin_members',
-								'can_delete_members' => 'can_delete_members',
-								'can_ban_users' => 'can_ban_users',
+								'can_admin_members' => lang('can_admin_members'),
+								'can_delete_members' => lang('can_delete_members'),
+								'can_ban_users' => lang('can_ban_users'),
 							),
 							'value' => element('member_actions', $values)
 						)
@@ -598,10 +597,10 @@ class Groups extends Members\Members {
 						'access_tools' => array(
 							'type' => 'checkbox',
 							'choices' => array(
-								'can_access_comm' => 'can_access_comm',
-								'can_access_utilities' => 'can_access_utilities',
-								'can_access_data' => 'can_access_data',
-								'can_access_logs' => 'can_access_logs'
+								'can_access_comm' => lang('can_access_comm'),
+								'can_access_utilities' => lang('can_access_utilities'),
+								'can_access_data' => lang('can_access_data'),
+								'can_access_logs' => lang('can_access_logs')
 							),
 							'value' => element('access_tools', $values)
 						),
@@ -618,10 +617,35 @@ class Groups extends Members\Members {
 
 		ee()->form_validation->set_rules(array(
 			array(
-				 'field'   => 'group_title',
-				 'label'   => 'lang:group_title',
-				 'rules'   => 'valid_xss_check'
-			)
+				 'field' => 'group_title',
+				 'label' => 'lang:group_title',
+				 'rules' => 'valid_xss_check|required|unique'
+			),
+			array(
+				 'field' => 'group_description',
+				 'label' => 'lang:group_description',
+				 'rules' => 'valid_xss_check|required'
+			),
+			array(
+				 'field' => 'mbr_delete_notify_emails',
+				 'label' => 'lang:mbr_delete_notify_emails',
+				 'rules' => 'valid_xss_check|valid_emails'
+			),
+			array(
+				 'field' => 'search_flood_control',
+				 'label' => 'lang:search_flood_control',
+				 'rules' => 'is_natural'
+			),
+			array(
+				 'field' => 'prv_msg_storage_limit',
+				 'label' => 'lang:prv_msg_storage_limit',
+				 'rules' => 'is_natural'
+			),
+			array(
+				 'field' => 'prv_msg_send_limit',
+				 'label' => 'lang:prv_msg_send_limit',
+				 'rules' => 'is_natural'
+			),
 		));
 
 		if (AJAX_REQUEST)
@@ -656,12 +680,12 @@ class Groups extends Members\Members {
 		// Site access checkbox group
 		$result['site_access'] = array();
 
-		if ($result['can_view_online_system'] == 'y')
+		if ($result['can_view_online_system'] === TRUE)
 		{
 			$result['site_access'][] = 'can_view_online_system';
 		}
 
-		if ($result['can_view_offline_system'] == 'y')
+		if ($result['can_view_offline_system'] === TRUE)
 		{
 			$result['site_access'][] = 'can_view_offline_system';
 		}
@@ -669,40 +693,35 @@ class Groups extends Members\Members {
 		// Include member in checkbox group
 		$result['include_member_in'] = array();
 
-		if ($result['include_in_authorlist'] == 'y')
+		if ($result['include_in_authorlist'] === TRUE)
 		{
 			$result['include_member_in'][] = 'include_in_authorlist';
 		}
 
-		if ($result['include_in_memberlist'] == 'y')
+		if ($result['include_in_memberlist'] === TRUE)
 		{
 			$result['include_member_in'][] = 'include_in_memberlist';
-		}
-
-		if ($result['include_in_mailinglists'] == 'y')
-		{
-			$result['include_member_in'][] = 'include_in_mailinglists';
 		}
 
 		// Comment moderation checkbox group
 		$result['comment_actions'] = array();
 
-		if ($result['can_edit_own_comments'] == 'y')
+		if ($result['can_edit_own_comments'] === TRUE)
 		{
 			$result['comment_actions'][] = 'can_edit_own_comments';
 		}
 
-		if ($result['can_delete_own_comments'] == 'y')
+		if ($result['can_delete_own_comments'] === TRUE)
 		{
 			$result['comment_actions'][] = 'can_delete_own_comments';
 		}
 
-		if ($result['can_edit_all_comments'] == 'y')
+		if ($result['can_edit_all_comments'] === TRUE)
 		{
 			$result['comment_actions'][] = 'can_edit_all_comments';
 		}
 
-		if ($result['can_delete_all_comments'] == 'y')
+		if ($result['can_delete_all_comments'] === TRUE)
 		{
 			$result['comment_actions'][] = 'can_delete_all_comments';
 		}
@@ -710,31 +729,51 @@ class Groups extends Members\Members {
 		// Channel category checkbox group
 		$result['category_actions'] = array();
 
-		if ($result['can_edit_categories'] == 'y')
+		if ($result['can_edit_categories'] === TRUE)
 		{
-			$result['site_access'][] = 'can_edit_categories';
+			$result['category_actions'][] = 'can_edit_categories';
 		}
 
-		if ($result['can_view_offline_system'] == 'y')
+		if ($result['can_delete_categories'] === TRUE)
 		{
-			$result['site_access'][] = 'can_view_offline_system';
+			$result['category_actions'][] = 'can_delete_categories';
+		}
+
+		// Channel entry actions
+		$result['channel_entry_actions'] = array();
+
+		if ( $result['can_delete_self_entries'] == TRUE)
+		{
+			$result['channel_entry_actions'][] = 'can_delete_self_entries';
+		}
+		if ( $result['can_edit_other_entries'] == TRUE)
+		{
+			$result['channel_entry_actions'][] = 'can_edit_other_entries';
+		}
+		if ( $result['can_delete_all_entries'] == TRUE)
+		{
+			$result['channel_entry_actions'][] = 'can_delete_all_entries';
+		}
+		if ( $result['can_assign_post_authors'] == TRUE)
+		{
+			$result['channel_entry_actions'][] = 'can_assign_post_authors';
 		}
 
 		// Member actions checkbox group
 
 		$result['member_actions'] = array();
 
-		if ($result['can_view_offline_system'] == 'y')
+		if ($result['can_admin_members'] === TRUE)
 		{
 			$result['member_actions'][] = 'can_admin_members';
 		}
 
-		if ($result['can_view_offline_system'] == 'y')
+		if ($result['can_delete_members'] === TRUE)
 		{
 			$result['member_actions'][] = 'can_delete_members';
 		}
 
-		if ($result['can_view_offline_system'] == 'y')
+		if ($result['can_ban_users'] === TRUE)
 		{
 			$result['member_actions'][] = 'can_ban_users';
 		}
@@ -744,22 +783,22 @@ class Groups extends Members\Members {
 		$result['access_tools'] = array();
 
 
-		if ($result['can_access_logs'] == 'y')
+		if ($result['can_access_logs'] === TRUE)
 		{
 			$result['access_tools'][] = 'can_access_logs';
 		}
 
-		if ($result['can_access_data'] == 'y')
+		if ($result['can_access_data'] === TRUE)
 		{
 			$result['access_tools'][] = 'can_access_data';
 		}
 
-		if ($result['can_access_utilities'] == 'y')
+		if ($result['can_access_utilities'] === TRUE)
 		{
 			$result['access_tools'][] = 'can_access_utilities';
 		}
 
-		if ($result['can_access_comm'] == 'y')
+		if ($result['can_access_comm'] === TRUE)
 		{
 			$result['access_tools'][] = 'can_access_comm';
 		}
@@ -805,18 +844,18 @@ class Groups extends Members\Members {
 
 	private function save($sections)
 	{
-		$this->index_url = 'members/groups/edit';
+		$this->index_url = 'members/groups';
 		$allowed_channels = ee()->input->post('allowed_channels');
 		$allowed_template_groups = ee()->input->post('allowed_template_groups');
 		$allowed_addons = ee()->input->post('addons_access');
 		$ignore = array('allowed_template_groups', 'allowed_channels', 'addons_access');
 
 		// Set our various permissions if we're not editing the Super Admin
-		if ($this->group->group_id !== 1)
+		if ( ! empty($this->group) && $this->group->group_id !== 1)
 		{
-			$this->group->setAssignedModules(ee()->api->get('Module', $allowed_addons)->all());
-			$this->group->setAssignedTemplateGroups(ee()->api->get('TemplateGroup', $allowed_template_groups)->all());
-			$this->group->setAssignedChannels(ee()->api->get('Channel', $allowed_channels)->all());
+			$this->group->AssignedModules = ee('Model')->get('Module', $allowed_addons)->all();
+			$this->group->AssignedTemplateGroups = ee('Model')->get('TemplateGroup', $allowed_template_groups)->all();
+			$this->group->AssignedChannels = ee('Model')->get('Channel', $allowed_channels)->all();
 		}
 
 		if ( ! empty($this->group))
@@ -863,7 +902,13 @@ class Groups extends Members\Members {
 			}
 		}
 
+		if ( empty($group->site_id))
+		{
+			$group->site_id = ee()->config->item('site_id');
+		}
+
 		$group->save();
+
 		$this->query_string['group'] = $group->group_id;
 
 		return TRUE;

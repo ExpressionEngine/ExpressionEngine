@@ -44,6 +44,7 @@ class Fields extends Members\Members {
 	{
 		parent::__construct();
 
+		ee()->lang->loadfile('channel');
 		$this->base_url = ee('CP/URL', 'members/fields');
 	}
 
@@ -140,7 +141,7 @@ class Fields extends Members\Members {
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
-		ee()->view->cp_page_title = lang('member_fields');
+		ee()->view->cp_page_title = lang('custom_profile_fields');
 		ee()->cp->render('members/custom_profile_fields', $data);
 	}
 
@@ -348,17 +349,13 @@ class Fields extends Members\Members {
 			{
 				$dummy_field = ee('Model')->make('MemberField');
 				$dummy_field->field_type = $fieldtype;
-				$vars['sections']['field_options_'.$fieldtype] = array(
-					'label' => 'field_options',
-					'group' => $fieldtype,
-					'settings' => $dummy_field->getSettingsForm()
-				);
+				$vars['sections'] += $dummy_field->getSettingsForm();
 			}
 		}
 
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text_working = 'btn_saving';
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'members/fields/edit'), lang('member_fields'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'members/fields/edit'), lang('custom_profile_fields'));
 
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/v3/form_group'),

@@ -66,7 +66,7 @@ class Email extends Profile {
 			array(
 				array(
 					'title' => 'email',
-					'desc' => 'email_desc',
+					'desc' => 'email_description',
 					'fields' => array(
 						'email' => array('type' => 'text', 'value' => $this->member->email, 'required' => TRUE)
 					)
@@ -86,24 +86,24 @@ class Email extends Profile {
 					)
 				),
 				array(
-					'title' => 'options',
-					'desc' => 'options_desc',
+					'title' => 'email_options',
+					'desc' => 'email_options_desc',
 					'fields' => array(
 						'preferences' => array(
 							'type' => 'checkbox',
 							'choices' => array(
-								'accept_admin_email' => 'accept_admin_email',
-								'accept_user_email' => 'accept_user_email',
-								'notify_by_default' => 'notify_by_default',
-								'notify_of_pm' => 'notify_of_pm'
+								'accept_admin_email' => lang('accept_admin_email'),
+								'accept_user_email' => lang('accept_user_email'),
+								'notify_by_default' => lang('notify_by_default'),
+								'notify_of_pm' => lang('notify_of_pm')
 							),
 							'value' => $settings
 						),
 					)
 				),
 				array(
-					'title' => 'current_password',
-					'desc' => 'current_password',
+					'title' => 'existing_password',
+					'desc' => 'existing_password_exp',
 					'fields' => array(
 						'current_password' => array('type' => 'password', 'required' => TRUE)
 					)
