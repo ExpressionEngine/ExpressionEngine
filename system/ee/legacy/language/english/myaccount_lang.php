@@ -6,7 +6,7 @@ $lang = array(
 
 'disallowed_screen_chars' => 'Screen Name contains illegal characters',
 
-'notify_of_pm' => 'Notify me via email when someone sends me a private message',
+'notify_of_pm' => 'When someone messages me',
 
 'channel_preferences' => 'Channel Settings',
 
@@ -14,9 +14,9 @@ $lang = array(
 
 'password_auth' => 'You must submit your current password to continue',
 
-'existing_password_exp' => 'You must submit the current password to update this page',
+'existing_password_exp' => 'You <b>must</b> enter your password to save.',
 
-'password_change_exp' => 'Leave blank if you do not wish to change it',
+'password_change_exp' => '<b>Warning</b>: Leave the following fields blank if you do <b>not</b> wish to change your password.',
 
 'language' => 'Language',
 
@@ -27,7 +27,10 @@ Used in the control panel only.',
 
 'administration' => 'Administration',
 
-'subscriptions' => 'Subscriptions',
+'subscriptions' => 'Current Subscriptions',
+
+'search_subscriptions' => 'Search Subscriptions',
+'unsubscribe_success' => 'You have been succesfully unsubscribed.',
 
 'utilities' => 'Utilities',
 
@@ -50,6 +53,12 @@ Used in the control panel only.',
 'main_menu_manager_description_more' => 'Note: You cannot make buttons for top-level pages since tabs already exist for them.',
 
 'main_menu_manager_instructions' => 'To add a new main menu button, first visit the destination page, then click the \'+ Add\' link at the top right of the main navigation.',
+
+'settings_save_error' => 'Error',
+
+'settings_save_error_desc' => 'Profile settings could not be saved.',
+
+'btn_save_settings' => 'Save Settings',
 
 'tab_manager_newlink' => 'Add a new Tab',
 
@@ -158,7 +167,9 @@ Used in the control panel only.',
 
 'localization_updated' => 'Localization Updated',
 
-'timezone' => 'Select Time Zone',
+'timezone' => 'Timezone',
+
+'timezone_desc' => 'Local timezone for any date and time displays.',
 
 'username_and_password' => 'Username and Password',
 
@@ -174,7 +185,9 @@ Used in the control panel only.',
 
 'localization' => 'Localization Settings',
 
-"date_format" => "Date Formatting",
+"date_format" => "Date & time format",
+
+"date_format_desc" => "Your preferred date and time formats.<br><i>Used in the control panel only.</i>",
 
 "time_format" => "Time Formatting",
 
@@ -182,7 +195,7 @@ Used in the control panel only.',
 
 "12_hour" => "12 Hour with AM/PM",
 
-"include_seconds" => "Include Seconds in the Time Format",
+"include_seconds" => "Show seconds?",
 
 'time_format' => 'Time Formatting',
 
@@ -194,11 +207,13 @@ Used in the control panel only.',
 
 'auth_settings' => 'Username & Password',
 
-'date_settings' => 'Date & Time',
+'date_settings' => 'Date & Time Settings',
 
 'publishing_settings' => 'Publishing Settings',
 
 'email_options' => 'Options',
+
+'email_options_desc' => 'Send me e-mails...',
 
 'edit_subscriptions' => 'View Subscriptions',
 
@@ -222,6 +237,8 @@ Used in the control panel only.',
 
 'email' => 'Email Address',
 
+'email_description' => 'Email address for this account.',
+
 'email_confirm' => 'Confirm Email Address',
 
 'url' => 'Personal website',
@@ -242,11 +259,11 @@ Used in the control panel only.',
 
 'day' => 'Day',
 
-'accept_admin_email' => 'Accept email from site administrators',
+'accept_admin_email' => 'From admins',
 
-'accept_user_email' => 'Accept email from other members of this site',
+'accept_user_email' => 'From other members',
 
-'notify_by_default' => 'Enable email notifications by default when you post messages',
+'notify_by_default' => 'When I post messages',
 
 'location' => 'Location',
 
@@ -270,7 +287,9 @@ Used in the control panel only.',
 
 'member_group_warning' => 'Be very careful assigning this',
 
-'include_in_multiauthor_list' => 'Include user in PUBLISH page multi-author list?',
+'include_in_author_list' => 'Include in author list?',
+
+'include_in_author_list_desc' => 'When set to <b>yes</b>, this user will appear in the author listing for channel entries.',
 
 'profile_updated' => 'Profile Updated',
 
@@ -286,9 +305,13 @@ Used in the control panel only.',
 
 'new_password' => 'New Password',
 
+'new_password_desc' => 'Use lowercase and uppercase letters, numbers, and symbols for the strongest passwords.',
+
 'password_confirm' => 'Confirm Password',
 
 'new_password_confirm' => 'Confirm New Password',
+
+'new_password_confirm_desc' => 'Retype desired password, to confirm.',
 
 'existing_password' => 'Current Password',
 
@@ -350,6 +373,10 @@ Used in the control panel only.',
 
 'only_self_qucklink_access' => 'You are not allowed to access another member\'s Quick Links',
 
+'quick_link' => 'Quick Link',
+
+'quick_links_removed_desc' => 'Quick Links have been removed.',
+
 'quicklinks_updated' => 'Quick Links Have Been Updated',
 
 'quick_link_description' => 'Use this form to add personal links to the sidebar.',
@@ -358,9 +385,17 @@ Used in the control panel only.',
 
 'quicklinks_delete_instructions' => 'To delete an item submit the form with the title blank.',
 
-'link_title' => 'Link Title',
+'create_quick_link' => 'Create Quick Link',
 
-'link_url' => 'Link URL',
+'edit_quick_link' => 'Edit Quick Link',
+
+'link_title' => 'Quick Link name',
+
+'link_title_desc' => 'Name this quick link.',
+
+'link_url' => 'Quick Link URL',
+
+'link_url_desc' => 'URL Location for this quick link.',
 
 'link_order' => 'Order',
 
@@ -404,7 +439,9 @@ Used in the control panel only.',
 
 'bookmarklet_instructions' => 'Drag links to your bookmarks bar to save them.',
 
-'smart_notifications' => 'Enable Smart Notification',
+'smart_notifications' => 'Enable smart notifications',
+
+'smart_notifications_desc' => 'When set to <b>enable</b>, smart notifications will be possible.',
 
 'existing_password_email' => 'You must submit the current password to update email address',
 
@@ -450,6 +487,26 @@ Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.
 'upload_avatar' => 'Upload — .gif, .jpg, .png (max 50kb)',
 
 'link_avatar' => ' Link to avatar',
+
+'rte_settings' => 'RTE Settings',
+
+'rte_enabled' => 'Enable Rich Text Editor?',
+
+'rte_enabled_desc' => 'When set to <b>enable</b>, the below chosen RTE will appear in publishing forms for this user.',
+
+'rte_toolset' => 'RTE tool set',
+
+'rte_toolset_desc' => 'Choose your preferred RTE tool set.',
+
+'login_as_warning' => "<b>Warning</b>: You will be logged in as the member '%s' and redirected to the page below.",
+
+'redirect_to' => 'Login and redirect to',
+
+'redirect_to_desc' => 'After you login as %s you will be sent to the chosen page.',
+
+'site_index' => 'Site Index',
+
+'btn_login' => 'Login',
 
 ''=>''
 );
