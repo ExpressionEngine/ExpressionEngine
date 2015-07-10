@@ -388,7 +388,7 @@ class EE_Core {
 	public function run_cp()
 	{
 		$this->_somebody_set_us_up_the_base();
-
+/*
 		// Define PATH_CP_THEME
 		$cp_theme = ee()->session->userdata('cp_theme')
 			?: ee()->config->item('cp_theme');
@@ -403,8 +403,9 @@ class EE_Core {
 		$path_cp_theme = ($cp_theme === 'default')
 			? PATH_THEMES.'cp_themes/default/'
 			: PATH_ADDONS_THEMES.'cp_themes/'.$cp_theme.'/';
-
-		define('PATH_CP_THEME', $path_cp_theme);
+*/
+		$cp_theme = 'default';
+		define('PATH_CP_THEME', PATH_THEMES.'cp_themes/default/');
 
 		// Show the control panel home page in the event that a
 		// controller class isn't found in the URL
