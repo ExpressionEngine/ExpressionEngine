@@ -49,9 +49,19 @@ class Group extends Profile {
 
 		$vars['sections'] = array(
 			array(
+				ee('Alert')->makeInline('permissions-warn')
+					->asWarning()
+					->addToBody(lang('access_privilege_warning'))
+					->addToBody(
+						sprintf(lang('access_privilege_caution'), '<span title="excercise caution"></span>'),
+						'caution'
+					)
+					->cannotClose()
+					->render(),
 				array(
 					'title' => 'member_group',
 					'desc' => 'member_group_desc',
+					'caution' => TRUE,
 					'fields' => array(
 						'group_id' => array(
 							'type' => 'select',
@@ -69,13 +79,6 @@ class Group extends Profile {
 				)
 			)
 		);
-
-		ee('Alert')->makeInline('shared-form')
-			->asWarning()
-			->cannotClose()
-			->withTitle(lang('access_privilege_warning'))
-			->addToBody(lang('access_privilege_caution'), 'caution')
-			->now();
 
 		ee()->form_validation->set_rules(array(
 			array(

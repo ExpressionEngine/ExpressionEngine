@@ -62,10 +62,12 @@ class Fields extends Members\Members {
 		$table->setColumns(
 			array(
 				'id' => array(
-					'type'	=> Table::COL_ID
+					'encode' => FALSE
 				),
-				'name',
-				'short_name',
+				'label',
+				'short_name' => array(
+					'encode' => FALSE
+				),
 				'type',
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
@@ -76,10 +78,21 @@ class Fields extends Members\Members {
 			)
 		);
 
+		$table->setNoResultsText(
+			'no_fields',
+			'create_new',
+			ee('CP/URL', 'members/fields/create')
+		);
+
 		$data = array();
 		$fieldData = array();
 		$total = ee()->api->get('MemberField')->count();
 		$fields = ee()->api->get('MemberField')->order('m_field_order', 'asc')->all();
+		$type_map = array(
+			'text' => lang('text_input'),
+			'textarea' => lang('textarea'),
+			'select' => lang('select_dropdown'),
+		);
 
 		foreach ($fields as $field)
 		{
@@ -90,11 +103,11 @@ class Fields extends Members\Members {
 				)
 			));
 
-			$fieldData[] = array(
+			$columns = array(
 				'id' => $field->getId().form_hidden('order[]', $field->getId()),
 				'm_field_name' => $field->m_field_name,
 				'm_field_label' => "<var>{{$field->m_field_label}}</var>",
-				'm_field_type' => $field->m_field_type,
+				'm_field_type' => $type_map[$field->m_field_type],
 				$toolbar,
 				array(
 					'name' => 'selection[]',
@@ -104,25 +117,25 @@ class Fields extends Members\Members {
 					)
 				)
 			);
+
+			$attrs = array();
+
+			if (ee()->session->flashdata('field_id') == $field->getId())
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$fieldData[] = array(
+				'attrs' => $attrs,
+				'columns' => $columns
+			);
 		}
 
-		$table->setNoResultsText('no_search_results');
 		$table->setData($fieldData);
 		$data['table'] = $table->viewData($this->base_url);
 		$data['form_url'] = ee('CP/URL', 'members/fields/delete');
 		$data['new'] = ee('CP/URL', 'members/fields/create');
-
 		$base_url = $data['table']['base_url'];
-
-		// Set search results heading
-		if ( ! empty($data['table']['search']))
-		{
-			ee()->view->cp_heading = sprintf(
-				lang('search_results_heading'),
-				$data['table']['total_rows'],
-				$data['table']['search']
-			);
-		}
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('member_fields') . ': <b>### ' . lang('member_fields') . '</b>');
 		ee()->cp->add_js_script('file', 'cp/v3/confirm_remove');
@@ -157,8 +170,23 @@ class Fields extends Members\Members {
 
 	public function delete()
 	{
-		$selected = ee()->input->post('selection');
-		ee()->api->get('MemberField', $selected)->delete();
+		$field_ids = ee()->input->post('selection');
+
+		if ( ! is_array($field_ids))
+		{
+			$field_ids = array($selected);
+		}
+
+		$fields = ee('Model')->get('MemberField', $field_ids)->all();
+		$field_names = $fields->pluck('field_label');
+		$fields->delete();
+
+		ee('Alert')->makeInline('fields')
+			->asSuccess()
+			->withTitle(lang('success'))
+			->addToBody(lang('member_fields_removed_desc'))
+			->addToBody($field_names)
+			->defer();
 
 		ee()->functions->redirect($this->base_url);
 	}
@@ -320,7 +348,8 @@ class Fields extends Members\Members {
 
 			if ($result->isValid())
 			{
-				$field_id = $field->save()->getId();
+				$field->save();
+				ee()->session->set_flashdata('field_id', $field->field_id);
 
 				ee('Alert')->makeInline('shared-form')
 					->asSuccess()
@@ -328,7 +357,7 @@ class Fields extends Members\Members {
 					->addToBody(lang('member_field_saved_desc'))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', '/members/fields/edit/' . $field_id));
+				ee()->functions->redirect(ee('CP/URL', '/members/fields'));
 			}
 			else
 			{

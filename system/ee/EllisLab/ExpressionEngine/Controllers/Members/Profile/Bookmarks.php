@@ -96,7 +96,9 @@ class Bookmarks extends Profile {
 
 		$table->setColumns(
 			array(
-				'name',
+				'name' => array(
+					'encode' => FALSE
+				),
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
 				),

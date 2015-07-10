@@ -135,6 +135,7 @@ class Subscriptions extends Profile {
 			$delete[$type[$char]][] = $id;
 		}
 
+
 		foreach ($delete as $type => $ids)
 		{
 			if (ee()->db->table_exists("exp_{$type}_subscriptions"))

@@ -136,7 +136,7 @@ class Groups extends Members\Members {
 		$table->setNoResultsText('no_search_results');
 		$table->setData($groupData);
 		$data['table'] = $table->viewData($this->base_url);
-		$data['form_url'] = ee('CP/URL', 'members/groups/delete');
+		$data['form_url'] = ee('CP/URL', 'members/groups/delete')->compile();
 
 		$base_url = $data['table']['base_url'];
 
@@ -175,6 +175,7 @@ class Groups extends Members\Members {
 			'cp_page_title' => lang('create_member_group'),
 			'save_btn_text' => lang('save_member_group')
 		);
+		$this->base_url = ee('CP/URL', 'members/groups/create/', $this->query_string);
 
 		$this->form($vars);
 	}
@@ -207,9 +208,19 @@ class Groups extends Members\Members {
 			show_error(lang('only_superadmins_can_admin_groups'));
 		}
 
-		list($template_groups, $template_group_permissions) = $this->_setup_template_names($this->site_id, $this->group_id);
-		list($addons, $addons_permissions) = $this->_setup_module_names($this->group_id);
-		list($allowed_channels, $channel_permissions) = $this->_setup_channel_names($this->site_id, $this->group_id);
+		$addons_permissions = $template_group_permissions = $channel_permissions = array();
+
+		$template_groups = ee('Model')->get('TemplateGroup')->all()->getDictionary('group_id', 'group_name');
+		$addons = ee('Model')->get('Module')->all()->getDictionary('module_id', 'module_name');
+		$allowed_channels = ee('Model')->get('Channel')->all()->getDictionary('channel_id', 'channel_name');
+
+		if ( ! empty($this->group_id))
+		{
+			list($null, $template_group_permissions) = $this->_setup_template_names($this->site_id, $this->group_id);
+			list($null, $addons_permissions) = $this->_setup_module_names($this->group_id);
+			list($null, $channel_permissions) = $this->_setup_channel_names($this->site_id, $this->group_id);
+		}
+
 
 		$vars['sections'] = array(
 			array(
@@ -258,8 +269,8 @@ class Groups extends Members\Members {
 						'website_access' => array(
 							'type' => 'checkbox',
 							'choices' => array(
-								'can_view_online_system' => 'can_view_online_system',
-								'can_view_offline_system' => 'can_view_offline_system'
+								'can_view_online_system' => lang('can_view_online_system'),
+								'can_view_offline_system' => lang('can_view_offline_system')
 							),
 							'value' => element('site_access', $values)
 						),
@@ -666,7 +677,7 @@ class Groups extends Members\Members {
 		{
 			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
 		}
-
+		
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text_working = 'btn_save_working';

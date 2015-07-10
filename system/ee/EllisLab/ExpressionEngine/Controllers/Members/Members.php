@@ -150,7 +150,9 @@ class Members extends CP_Controller {
 				'username' => array(
 					'encode' => FALSE
 				),
-				'member_group',
+				'member_group' => array(
+					'encode' => FALSE
+				),
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
 				),

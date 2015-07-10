@@ -108,8 +108,8 @@ class Ignore extends Profile {
 		$table->setColumns(
 			array(
 				'id',
-				'username',
-				'member_group',
+				'username' => array('encode' => FALSE),
+				'member_group' => array('encode' => FALSE),
 				array(
 					'type'	=> Table::COL_CHECKBOX
 				)
