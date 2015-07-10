@@ -17,6 +17,11 @@ use EllisLab\ExpressionEngine\Service\Model\Association\Association;
  * @filesource
  */
 
+/**
+ * This is NOT the class you're looking for. It will be removed before
+ * release. Pardon our dust.
+ */
+
 // ------------------------------------------------------------------------
 
 /**
