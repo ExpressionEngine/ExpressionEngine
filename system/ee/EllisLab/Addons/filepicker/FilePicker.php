@@ -9,6 +9,7 @@ use EllisLab\ExpressionEngine\Model\File\UploadDestination;
 
 class FilePicker {
 
+	public $base_url = 'addons/settings/filepicker/';
 	public $controller = 'addons/settings/filepicker/modal';
 
 	public function inject($view)
