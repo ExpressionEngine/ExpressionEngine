@@ -20,9 +20,21 @@
 
 	<?php if (isset($filters)) echo $filters; ?>
 
-	<?php $this->ee_view('_shared/table', $table); ?>
+	<?php if($images): ?>
+		<table class='img-grid'>
+		<?php foreach (array_chunk($table['data'], 4) as $row): ?>
+			<tr>
+				<?php foreach ($row as $column): ?>
+				<td><a data-id="<?=$column['attrs']['data-id']?>" class="filepicker-item" href="#"><img src="<?=$data[$column['attrs']['data-id']]?>" alt="avatar"></a></td>
+				<?php endforeach ?>
+			</tr>
+		<?php endforeach ?>
+		</table>
+	<?php else: ?>
+		<?$this->ee_view('_shared/table', $table); ?>
+	<?php endif; ?>
 
-	<?php if ( ! empty($pagination)) $this->ee_view('_shared/pagination', $pagination); ?>
+	<?php if ( ! empty($pagination)) echo $pagination; ?>
 
 <?=form_close()?>
 </div>
