@@ -77,7 +77,7 @@ class Groups extends AbstractChannelsController {
 				)
 			)
 		);
-		$table->setNoResultsText('no_group_groups', 'create_new', $vars['create_url']);
+		$table->setNoResultsText('no_field_groups', 'create_new', $vars['create_url']);
 
 		$data = array();
 
