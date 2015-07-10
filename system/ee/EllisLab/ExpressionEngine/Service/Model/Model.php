@@ -86,6 +86,11 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 
 		'yesNo' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\YesNo',
 		'boolString' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\YesNo',
+
+		'base64' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64',
+		'base64Serialized' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64Native',
+		'json' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Json',
+		'serialized' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Native',
 	);
 
 	/**

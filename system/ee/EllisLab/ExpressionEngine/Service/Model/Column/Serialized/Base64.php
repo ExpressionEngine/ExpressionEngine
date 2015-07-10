@@ -1,6 +1,8 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Service\Model\Column;
+namespace EllisLab\ExpressionEngine\Service\Model\Column\Serialized;
+
+use EllisLab\ExpressionEngine\Service\Model\Column\SerializedType;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -17,7 +19,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Column;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine JSON Encoded Composite Column
+ * ExpressionEngine Model Base64 Encoded Typed Column
  *
  * @package		ExpressionEngine
  * @subpackage	Model
@@ -25,16 +27,22 @@ namespace EllisLab\ExpressionEngine\Service\Model\Column;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-abstract class JsonComposite extends Composite {
+class Base64 extends SerializedType {
 
-	protected function serialize($data)
+	/**
+	 * Called when the column is fetched from db
+	 */
+	public static function unserialize($db_data)
 	{
-		return json_encode($data);
+		return strlen($db_data) ? base64_decode($db_data) : array();
 	}
 
-	protected function unserialize($data)
+	/**
+	 * Called before the column is written to the db
+	 */
+	public static function serialize($data)
 	{
-		return json_decode($data);
+		return base64_encode($data);
 	}
 
 }
