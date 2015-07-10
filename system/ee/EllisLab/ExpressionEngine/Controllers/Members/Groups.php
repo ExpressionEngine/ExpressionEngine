@@ -40,7 +40,9 @@ class Groups extends Members\Members {
 	private $site_id;
 	private $super_admin;
 	private $group;
+	private $group_id;
 	private $query_string = array();
+	private $no_delete		= array('1', '2', '3', '4'); // Member groups that can not be deleted
 
 	/**
 	 * Constructor
@@ -197,8 +199,105 @@ class Groups extends Members\Members {
 		$this->form($vars, $current);
 	}
 
+	/**
+	 * Delete member group selection
+	 * 
+	 * @access public
+	 * @return void
+	 */
 	public function delete()
 	{
+		// Only super admins can delete member groups
+		if ($this->session->userdata['group_id'] != 1)
+		{
+			show_error(lang('only_superadmins_can_admin_groups'));
+		}
+
+		$replacement = ee()->input->post('replacement');
+		$groups = ee()->input->post('selection');
+
+		if ($replacement == 'delete')
+		{
+			$replacement = NULL;
+		}
+
+		if (is_array($groups))
+		{
+			foreach ($groups as $group)
+			{
+				$this->delete_member_group($group, $replacement);
+			}
+		}
+
+		$group_names = ee('Model')->get('MemberGroup', $groups)->all()->pluck('group_title');
+
+		ee('Alert')->makeInline('member_groups')
+			->asSuccess()
+			->withTitle(lang('success'))
+			->addToBody(lang('member_groups_removed_desc'))
+			->addToBody($group_names)
+			->defer();
+
+		ee()->functions->redirect($this->base_url);
+	}
+
+	/**
+	 * Delete member group confirm
+	 *
+	 * Warning message shown when you try to delete a group
+	 *
+	 * @return	mixed
+	 */
+	public function confirm()
+	{
+		//  Only super admins can delete member groups
+		if ($this->session->userdata['group_id'] != 1)
+		{
+			show_error(lang('only_superadmins_can_admin_groups'));
+		}
+
+		$groups = ee()->input->post('selection');
+
+		// You can't delete these groups
+		if ( ! empty(array_intersect($groups, $this->no_delete)))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$vars['groups'] = ee('Model')->get('MemberGroup', $groups)
+					->all()
+					->filter(function($group) {
+						return count($group->Members) > 0;
+					});
+
+		$vars['new_groups'] = array('delete' => 'None');
+		$vars['new_groups'] += ee('Model')->get('MemberGroup')
+								->filter('group_id', 'NOT IN', $groups)
+								->all()
+								->getDictionary('group_id', 'group_title');
+
+		ee()->view->cp_page_title = lang('delete_member_group');
+		ee()->cp->render('members/delete_member_group_conf', $vars);
+
+	}
+
+	/**
+	 * delete_member_group
+	 * 
+	 * @param mixed $group_id 
+	 * @param mixed $replacement 
+	 * @access public
+	 * @return void
+	 */
+	private function delete_member_group($group_id, $replacement = null)
+	{
+		if (in_array($group_id, $this->no_delete))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$this->load->model('member_model');
+		$this->member_model->delete_member_group($group_id, $replacement);
 	}
 
 	private function form($vars = array(), $values = array())
