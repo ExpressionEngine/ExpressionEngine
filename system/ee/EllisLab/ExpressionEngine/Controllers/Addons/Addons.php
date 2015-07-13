@@ -505,7 +505,7 @@ class Addons extends CP_Controller {
 				&& array_key_exists('update', $fieldtype))
 			{
 				$FT = ee()->api_channel_fields->setup_handler($addon, TRUE);
-				if ($FT->update($fieldtype['version']) !== FALSE)
+				if (method_exists($FT, 'update') && $FT->update($fieldtype['version']) !== FALSE)
 				{
 					if (ee()->api_channel_fields->apply('update', array($fieldtype['version'])) !== FALSE)
 					{

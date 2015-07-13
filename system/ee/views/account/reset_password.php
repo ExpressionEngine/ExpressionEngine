@@ -9,7 +9,7 @@
 			<?php endforeach ?>
 		</div>
 	<?php endif;?>
-	<?=form_open('C=login'.AMP.'M=reset_password')?>
+	<?=form_open(ee('CP/URL', 'login/reset_password'))?>
 		<fieldset>
 			<?=lang('new_password', 'password')?>
 			<?=form_password(array('dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>

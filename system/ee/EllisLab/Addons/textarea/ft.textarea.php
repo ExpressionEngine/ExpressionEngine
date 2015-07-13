@@ -327,6 +327,20 @@ class Textarea_ft extends EE_Fieldtype {
 		));
 	}
 
+	// --------------------------------------------------------------------
+
+	function grid_save_settings($data)
+	{
+		$settings = $this->save_settings($data);
+
+		$settings['field_ta_rows'] = $data['field_ta_rows'];
+		$settings['field_fmt'] = $data['field_fmt'];
+
+		return $settings;
+	}
+
+	// --------------------------------------------------------------------
+
 	function save_settings($data)
 	{
 		$defaults = array(

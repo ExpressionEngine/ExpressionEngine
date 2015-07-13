@@ -318,19 +318,22 @@ class Text_ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
+	function grid_save_settings($data)
+	{
+		$settings = $this->save_settings($data);
+		$settings['field_fmt'] = $data['field_fmt'];
+
+		return $settings;
+	}
+
+	// --------------------------------------------------------------------
+
 	function save_settings($data)
 	{
 		return array(
 			'field_maxl'			=> ee()->input->post('field_maxl'),
 			'field_content_type'	=> ee()->input->post('text_field_content_type')
 		);
-	}
-
-	// --------------------------------------------------------------------
-
-	function grid_save_settings($data)
-	{
-		return $data;
 	}
 
 	// --------------------------------------------------------------------
