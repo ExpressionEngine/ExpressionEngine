@@ -18,7 +18,7 @@ use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
 abstract class ContentModel extends VariableColumnModel {
 
 	protected static $_events = array(
-		'afterSetCustomField',
+		'beforeValidate',
 		'afterSave'
 	);
 
@@ -101,25 +101,6 @@ abstract class ContentModel extends VariableColumnModel {
 		return array_keys($this->_field_facades);
 	}
 
-
-	/**
-	 * TODO This is messy. Some fields don't return their data on save()
-	 * and some use it to prep the data. Date is one of the prep ones,
-	 * which we'll do here, but this definitely will need work. /TODO
-	 */
-	public function onAfterSetCustomField($name, $value)
-	{
-		if ($this->hasCustomField($name))
-		{
-			$field = $this->getCustomField($name);
-
-			if ($field->getType() == 'date')
-			{
-				$this->setRawProperty($name, $field->save());
-			}
-		}
-	}
-
 	public function onAfterSave()
 	{
 		foreach ($this->_field_was_saved as $field)
@@ -153,7 +134,7 @@ abstract class ContentModel extends VariableColumnModel {
 		{
 			if ($this->isDirty($name))
 			{
-				$field->save($this);
+				$this->setRawProperty($name, $field->save($this));
 				$this->_field_was_saved[] = $field;
 			}
 		}
@@ -240,15 +221,28 @@ abstract class ContentModel extends VariableColumnModel {
 		{
 			$rules[$name] = '';
 
-			if ($facade->isRequired())
-			{
-				$rules[$name] .= 'required|';
-			}
+	//		if ($facade->isRequired())
+	//		{
+	//			$rules[$name] .= 'required|';
+	//		}
 
 			$rules[$name] .= "validateCustomField";
 		}
 
 		return $rules;
+	}
+
+	public function onBeforeValidate()
+	{
+		/*
+		foreach ($this->getCustomFields() as $name => $field)
+		{
+			if ($this->isDirty($name))
+			{
+				$this->setRawProperty($name, $field->save($this));
+			}
+		}
+		*/
 	}
 
 	/**
