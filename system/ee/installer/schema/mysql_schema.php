@@ -1569,7 +1569,7 @@ class EE_Schema {
 
 		foreach($default_fts as $name)
 		{
-			$fieldtype = require SYSDIR.'ee/EllisLab/Addons/'.$name.'/addon.setup.php';
+			$fieldtype = require SYSPATH.'/ee/EllisLab/Addons/'.$name.'/addon.setup.php';
 
 			$Q[] = "INSERT INTO `exp_fieldtypes`
 				(`name`,`version`,`settings`,`has_global_settings`)
