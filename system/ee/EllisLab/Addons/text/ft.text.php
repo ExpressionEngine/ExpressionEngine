@@ -320,10 +320,7 @@ class Text_ft extends EE_Fieldtype {
 
 	function grid_save_settings($data)
 	{
-		$settings = $this->save_settings($data);
-		$settings['field_fmt'] = $data['field_fmt'];
-
-		return $settings;
+		return $data;
 	}
 
 	// --------------------------------------------------------------------
