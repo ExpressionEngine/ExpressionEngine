@@ -296,6 +296,7 @@ class Uploads extends AbstractFilesController {
 		$this->load->model('category_model');
 		$query = $this->category_model->get_category_groups('', FALSE, 1);
 
+		$cat_group_options = array();
 		if ($query->num_rows() > 0)
 		{
 			foreach ($query->result() as $row)

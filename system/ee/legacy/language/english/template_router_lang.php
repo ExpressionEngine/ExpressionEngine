@@ -1,6 +1,6 @@
-<?php 
+<?php
 
-$lang = array( 
+$lang = array(
 	'duplicate_route' => 'Route already in use.',
 	'invalid_regex' => 'Invalid regular expression',
 	'invalid_route' => 'Invalid template route: ',
@@ -12,7 +12,7 @@ $lang = array(
 	'variable_in_use' => 'Segment variable already in use: ',
 	'template_routes_header' => 'Template Routes',
 	'route' => 'Route',
-	'segments_required' => 'Requite all Segments?',
+	'segments_required' => 'Require all Segments?',
 );
 
 /* End of file template_router_lang.php */
