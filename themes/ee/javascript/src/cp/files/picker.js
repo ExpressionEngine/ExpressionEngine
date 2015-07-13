@@ -29,7 +29,7 @@
 		$('.modal-file').off('click', 'tbody > tr');
 		$('.modal-file').on('click', 'tbody > tr, .filepicker-item', function(e) {
 			var id = $(this).data('id');
-			var file_url = options.url.replace(/directory=.+(?=&)/ig, 'file=' + id);
+			var file_url = options.url.replace(/directory=.+(?=&)?/ig, 'file=' + id);
 
 			$.ajax({
 				url: file_url,
