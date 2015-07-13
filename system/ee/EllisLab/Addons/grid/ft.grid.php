@@ -649,6 +649,11 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function post_save_settings($data)
 	{
+		if ( ! isset($_POST['grid']))
+		{
+			return;
+		}
+
 		// Need to get the field ID of the possibly newly-created field, so
 		// we'll actually re-save the field settings in the Grid library
 		$data['field_id'] = $this->id();

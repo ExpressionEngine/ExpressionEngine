@@ -33,7 +33,7 @@
 					<em><?=lang('enable_template_desc')?></em>
 				</div>
 				<div class="setting-field col w-8 last">
-					<?php $value = set_value('enable_template', $template->enable_template); ?>
+					<?php $value = (set_value('enable_template', $template->enable_template)) ?: 'y'; ?>
 					<label class="choice mr<?php if ($value == 'y' || $value === TRUE) echo ' chosen'?>"><input type="radio" name="enable_template" value="y"<?php if ($value == 'y' || $value === TRUE) echo ' checked="checked"'?>> <?=lang('enable')?></label>
 					<label class="choice<?php if ($value == 'n' || $value === FALSE) echo ' chosen'?>"><input type="radio" name="enable_template" value="n"<?php if ($value == 'n' || $value === FALSE) echo ' checked="checked"'?>> <?=lang('disable')?></label>
 					<?=form_error('cache')?>

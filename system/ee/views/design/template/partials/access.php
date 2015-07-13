@@ -43,7 +43,7 @@
 		<em><?=lang('enable_http_authentication_desc')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
-		<?php $value = set_value('enable_http_auth', $template->enable_http_auth); ?>
+		<?php $value = (set_value('enable_http_auth', $template->enable_http_auth)) ?: 'n'; ?>
 		<label class="choice mr<?php if ($value == 'y' || $value === TRUE) echo ' chosen'?>"><input type="radio" name="enable_http_auth" value="y"<?php if ($value == 'y' || $value === TRUE) echo ' checked="checked"'?>> <?=lang('enable')?></label>
 		<label class="choice<?php if ($value == 'n' || $value === FALSE) echo ' chosen'?>"><input type="radio" name="enable_http_auth" value="n"<?php if ($value == 'n' || $value === FALSE) echo ' checked="checked"'?>> <?=lang('disable')?></label>
 		<?=form_error('enable_http_auth')?>
@@ -65,7 +65,7 @@
 		<em><?=lang('require_all_segments_desc')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
-		<?php $value = set_value('route_required', $route->route_required); ?>
+		<?php $value = (set_value('route_required', $route->route_required)) ?: 'n'; ?>
 		<label class="choice mr<?php if ($value == 'y' || $value === TRUE) echo ' chosen'?> yes"><input type="radio" name="route_required" value="y"<?php if ($value == 'y' || $value === TRUE) echo ' checked="checked"'?>> <?=lang('yes')?></label>
 		<label class="choice<?php if ($value == 'n' || $value === FALSE) echo ' chosen'?> no"><input type="radio" name="route_required" value="n"<?php if ($value == 'n' || $value === FALSE) echo ' checked="checked"'?>> <?=lang('no')?></label>
 		<?=form_error('route_required')?>

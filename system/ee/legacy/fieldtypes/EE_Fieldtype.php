@@ -1080,13 +1080,18 @@ abstract class EE_Fieldtype {
 
 		foreach ($channels as $channel)
 		{
-			$channels_options[$channel->channel_title] = array();
-
 			foreach ($channel->CustomFields as $field)
 			{
 				$channels_options[$channel->channel_title][$channel->channel_id . '_' . $field->field_id] = htmlentities($field->field_label, ENT_QUOTES, 'UTF-8');
 			}
 		}
+
+		// No Channel fields available
+		if (empty($channels_options))
+		{
+			$channels_options[''] = lang('no_fields');
+		}
+
 		return $channels_options;
 	}
 }
