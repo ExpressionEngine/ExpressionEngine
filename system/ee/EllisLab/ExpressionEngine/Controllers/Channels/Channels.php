@@ -210,6 +210,17 @@ class Channels extends AbstractChannelsController {
 			ee()->view->base_url = ee('CP/URL', 'channels/create');
 			ee()->view->save_btn_text = 'create_channel';
 			$channel = ee('Model')->make('Channel');
+
+			$default_status_group = ee('Model')->get('StatusGroup')
+				->fields('group_id')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('group_name', 'Default')
+				->first();
+
+			if ($default_status_group)
+			{
+				$channel->status_group = $default_status_group->group_id;
+			}
 		}
 		else
 		{

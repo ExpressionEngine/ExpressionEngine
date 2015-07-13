@@ -5,7 +5,7 @@ return array(
 	'author_url'  => 'https://ellislab.com/',
 	'name'        => 'Grid',
 	'description' => '',
-	'version'     => '1.0',
+	'version'     => '1.0.0',
 	'namespace'   => 'EllisLab\Addons\Grid',
 	'settings_exist' => FALSE,
 );

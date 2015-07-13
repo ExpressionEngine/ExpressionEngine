@@ -1648,17 +1648,17 @@ UNLOCK TABLES;
 
 LOCK TABLES `exp_fieldtypes` WRITE;
 INSERT INTO `exp_fieldtypes` (`fieldtype_id`, `name`, `version`, `settings`, `has_global_settings`) VALUES
-	(1,'select','1.0','YTowOnt9','n'),
-	(2,'text','1.0','YTowOnt9','n'),
-	(3,'textarea','1.0','YTowOnt9','n'),
-	(4,'date','1.0','YTowOnt9','n'),
-	(5,'file','1.0','YTowOnt9','n'),
-	(6,'grid','1.0','YTowOnt9','n'),
-	(7,'multi_select','1.0','YTowOnt9','n'),
-	(8,'checkboxes','1.0','YTowOnt9','n'),
-	(9,'radio','1.0','YTowOnt9','n'),
-	(10,'relationship','1.0','YTowOnt9','n'),
-	(11,'rte','1.0','YTowOnt9','n');
+	(1,'select','1.0.0','YTowOnt9','n'),
+	(2,'text','1.0.0','YTowOnt9','n'),
+	(3,'textarea','1.0.0','YTowOnt9','n'),
+	(4,'date','1.0.0','YTowOnt9','n'),
+	(5,'file','1.0.0','YTowOnt9','n'),
+	(6,'grid','1.0.0','YTowOnt9','n'),
+	(7,'multi_select','1.0.0','YTowOnt9','n'),
+	(8,'checkboxes','1.0.0','YTowOnt9','n'),
+	(9,'radio','1.0.0','YTowOnt9','n'),
+	(10,'relationship','1.0.0','YTowOnt9','n'),
+	(11,'rte','1.0.1','YTowOnt9','n');
 UNLOCK TABLES;
 
 

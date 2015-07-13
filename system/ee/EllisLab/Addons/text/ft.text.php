@@ -248,21 +248,6 @@ class Text_ft extends EE_Fieldtype {
 			if ($this->content_type() != 'grid')
 			{
 				$settings[] = array(
-					'title' => 'field_content_text',
-					'desc' => 'field_content_text_desc',
-					'fields' => array(
-						'field_content_type' => array(
-							'type' => 'select',
-							'choices' => $this->_get_content_options(),
-							'value' => isset($data['field_content_type']) ? $data['field_content_type'] : ''
-						)
-					)
-				);
-			}
-
-			if ($this->content_type() != 'grid')
-			{
-				$settings[] = array(
 					'title' => 'field_tools',
 					'desc' => 'field_tools_desc',
 					'fields' => array(
@@ -320,10 +305,7 @@ class Text_ft extends EE_Fieldtype {
 
 	function grid_save_settings($data)
 	{
-		$settings = $this->save_settings($data);
-		$settings['field_fmt'] = $data['field_fmt'];
-
-		return $settings;
+		return $data;
 	}
 
 	// --------------------------------------------------------------------
@@ -332,7 +314,7 @@ class Text_ft extends EE_Fieldtype {
 	{
 		return array(
 			'field_maxl'			=> ee()->input->post('field_maxl'),
-			'field_content_type'	=> ee()->input->post('text_field_content_type')
+			'field_content_type'	=> ee()->input->post('field_content_type')
 		);
 	}
 

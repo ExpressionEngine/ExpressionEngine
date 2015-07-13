@@ -258,6 +258,16 @@ $(document).ready(function(){
 			e.preventDefault();
 		});
 
+		$('body').on('click', '.overlay', function() {
+			$('.modal-wrap').trigger('modal:close');
+		});
+
+		$(document).on('keypress', function(e) {
+			if (e.keyCode === 27) {
+				$('.modal-wrap').trigger('modal:close');
+			}
+		});
+
 	// ==================================
 	// highlight checks and radios -> WIP
 	// ==================================

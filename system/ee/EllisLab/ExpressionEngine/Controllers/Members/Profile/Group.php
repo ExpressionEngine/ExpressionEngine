@@ -74,7 +74,7 @@ class Group extends Profile {
 					'title' => 'existing_password',
 					'desc' => 'existing_password_exp',
 					'fields' => array(
-						'password' => array('type' => 'password')
+						'password_confirm' => array('type' => 'password')
 					)
 				)
 			)
@@ -87,7 +87,7 @@ class Group extends Profile {
 				 'rules'   => 'callback__valid_member_group'
 			),
 			array(
-				 'field'   => 'password',
+				 'field'   => 'password_confirm',
 				 'label'   => 'lang:password',
 				 'rules'   => 'required|auth_password'
 			)
@@ -101,7 +101,7 @@ class Group extends Profile {
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
 			// Don't try to save the password confirm
-			array_pop($vars['sections']);
+			array_pop($vars['sections'][0]);
 
 			if ($this->saveSettings($vars['sections']))
 			{
@@ -125,9 +125,9 @@ class Group extends Profile {
 
 	public function _valid_member_group($group)
 	{
-		$groups = ee()->api->get('MemberGroup')->filter('group_id', $group)->all();
+		$groups = ee()->api->get('MemberGroup')->filter('group_id', $group)->count();
 
-		if (empty($groups))
+		if ($groups == 0)
 		{
 			return FALSE;
 		}

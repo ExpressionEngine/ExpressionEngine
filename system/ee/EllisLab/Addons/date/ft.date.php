@@ -50,7 +50,7 @@ class Date_ft extends EE_Fieldtype {
 			$timestamp = ee()->localize->string_to_timestamp($date);
 		}
 
-		return $timestamp;
+		return $timestamp ?: NULL;
 	}
 
 	// --------------------------------------------------------------------
@@ -116,8 +116,6 @@ class Date_ft extends EE_Fieldtype {
 	function display_field($field_data)
 	{
 		$special = array('entry_date', 'expiration_date', 'comment_expiration_date');
-
-		$is_grid = isset($this->settings['grid_field_id']);
 
 		if ( ! is_numeric($field_data))
 		{
@@ -238,7 +236,7 @@ class Date_ft extends EE_Fieldtype {
 			$localized = ( ! isset($_POST[$date_local])) ? (($localize === TRUE) ? 'y' : 'n') : ee()->input->post($date_local, TRUE);
 
 			return ee('View')->make('publish')->render(array(
-				'has_localize_option' => ( ! in_array($this->field_name, $special)),
+				'has_localize_option' => ( ! in_array($this->field_name, $special) && $this->content_type() != 'grid'),
 				'field_name' => $this->field_name,
 				'value' => $custom_date,
 				'localize_option_name' => $date_local,
@@ -299,7 +297,7 @@ class Date_ft extends EE_Fieldtype {
 
 		$input_class = 'ee_datepicker text';
 
-		if ( ! $is_grid)
+		if ($this->content_type() != 'grid')
 		{
 			$input_class .= ' field';
 		}
@@ -317,7 +315,7 @@ class Date_ft extends EE_Fieldtype {
 
 			// We hide the dropdown in Grid because the localization setting is
 			// effectively global for that field
-			if ( ! $is_grid)
+			if ($this->content_type() != 'grid')
 			{
 				$localized = ( ! isset($_POST[$date_local])) ? (($localize === TRUE) ? 'y' : 'n') : ee()->input->post($date_local, TRUE);
 
