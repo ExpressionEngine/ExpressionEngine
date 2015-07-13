@@ -59,7 +59,7 @@ class Wizard extends CI_Controller {
 	public $allowed_methods = array('install_form', 'do_install', 'do_update');
 
 	// Absolutely, positively must always be installed
-	public $required_modules = array('channel', 'comment', 'member', 'stats', 'rte');
+	public $required_modules = array('channel', 'comment', 'member', 'stats', 'rte', 'filepicker');
 
 	public $theme_required_modules = array();
 
@@ -73,7 +73,7 @@ class Wizard extends CI_Controller {
 		'email', 'emoticon', 'file', 'forum', 'gallery', 'ip_to_nation',
 		'jquery', 'mailinglist', 'member', 'metaweblog_api', 'moblog', 'pages',
 		'query', 'referrer', 'rss', 'rte', 'search',
-		'simple_commerce', 'stats', 'wiki');
+		'simple_commerce', 'stats', 'wiki', 'filepicker');
 
 	// Third Party Modules may send error messages if something goes wrong.
 	public $module_install_errors = array(); // array that collects all error messages
@@ -1658,6 +1658,8 @@ class Wizard extends CI_Controller {
 		{
 			$this->config->config[$key] = $item;
 		}
+
+		$this->config->config['site_id'] = 1;
 
 		// Install required modules
 		foreach($this->required_modules as $module)

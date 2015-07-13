@@ -52,6 +52,11 @@ class Filepicker_mcp {
 		}
 		else
 		{
+			if (empty($directories[$id]))
+			{
+				show_error(lang('invalid_upload_destination'));
+			}
+
 			$dir = $directories[$id];
 			$files = $dir->getFiles();
 		}
@@ -82,7 +87,7 @@ class Filepicker_mcp {
 
 			foreach ($files as $file)
 			{
-				$vars['data'][$file->file_id] = $file->UploadDestination->server_path . $file->file_name;
+				$vars['data'][$file->file_id] = $file->UploadDestination->url . $file->file_name;
 			}
 		}
 		else
