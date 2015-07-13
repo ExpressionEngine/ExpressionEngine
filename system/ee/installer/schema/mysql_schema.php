@@ -1569,7 +1569,11 @@ class EE_Schema {
 
 		foreach($default_fts as $name)
 		{
-			$Q[] = "INSERT INTO `exp_fieldtypes` (`name`,`version`,`settings`,`has_global_settings`) VALUES ('".$name."','1.0','YTowOnt9','n')";
+			$fieldtype = require SYSDIR.'ee/EllisLab/Addons/'.$name.'/addon.setup.php';
+
+			$Q[] = "INSERT INTO `exp_fieldtypes`
+				(`name`,`version`,`settings`,`has_global_settings`)
+				VALUES ('" . $name . "','" . $fieldtype['version'] . "','YTowOnt9','n')";
 		}
 
 		// Add Grid as a content type
