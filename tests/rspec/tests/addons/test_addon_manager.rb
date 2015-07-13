@@ -140,6 +140,8 @@ feature 'Add-On Manager' do
 			@page.first_party_status_filter.text.should eq "status (needs updates)"
 			@page.should_not have_css 'tr.not-installed'
 			@page.should_not have_first_party_pagination
+
+			# RTE has the correct version number now
 			@page.should have(2).first_party_addons # Email + RTE
 		end
 
