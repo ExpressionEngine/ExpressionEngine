@@ -11,6 +11,7 @@ class Filepicker_mcp {
 		$this->picker = new Picker();
 		$this->base_url = 'addons/settings/filepicker';
 		$this->access = FALSE;
+		$this->images = FALSE;
 
 		if (ee()->cp->allowed_group('can_access_content', 'can_access_files'))
 		{
@@ -92,6 +93,7 @@ class Filepicker_mcp {
 		}
 		else
 		{
+			$vars['images'] = FALSE;
 			$filters = ee('Filter')->add('Perpage', $files->count(), 'show_all_files');
 			$dirFilter = ee('Filter')->make('directory', lang('directory'), $directories);
 			$dirFilter->disableCustomValue();

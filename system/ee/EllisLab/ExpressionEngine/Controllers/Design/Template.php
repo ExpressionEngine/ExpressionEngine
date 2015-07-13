@@ -483,7 +483,7 @@ class Template extends AbstractDesignController {
 			$search_terms
 		);
 
-		ee()->javascript->set_global('template_settings_url', ee('CP/URL', 'design/template/settings/###'));
+		ee()->javascript->set_global('template_settings_url', ee('CP/URL', 'design/template/settings/###')->compile());
 		ee()->javascript->set_global('lang.remove_confirm', lang('template') . ': <b>### ' . lang('templates') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
