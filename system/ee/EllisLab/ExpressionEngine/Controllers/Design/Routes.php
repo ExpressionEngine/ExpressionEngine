@@ -4,9 +4,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Design;
 
 use ZipArchive;
 use EllisLab\ExpressionEngine\Controllers\Design\Design;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -49,20 +47,20 @@ class Routes extends Design {
 
 		if (ee()->config->item('enable_template_routes') == 'n')
 		{
-			ee()->functions->redirect(cp_url('design'));
+			ee()->functions->redirect(ee('CP/URL', 'design'));
 		}
 
 		// Only show this page if we're not using a file based config
 		if ( ! empty(ee()->config->item('routes')))
 		{
-			ee()->functions->redirect(cp_url('design'));
+			ee()->functions->redirect(ee('CP/URL', 'design'));
 		}
 
 		$this->sidebarMenu();
 		$this->stdHeader();
 		ee()->lang->loadfile('template_router');
 
-		$this->base_url = new URL('design/routes', ee()->session->session_id());
+		$this->base_url = ee('CP/URL', 'design/routes');
 	}
 
 	public function index()
@@ -146,7 +144,7 @@ RADIO;
 		$table->setData($data);
 
 		$vars['table'] = $table->viewData($this->base_url);
-		$vars['form_url'] = cp_url('design/routes/update');
+		$vars['form_url'] = ee('CP/URL', 'design/routes/update');
 
 		$this->stdHeader();
 
