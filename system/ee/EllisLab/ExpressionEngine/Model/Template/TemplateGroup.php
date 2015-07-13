@@ -130,7 +130,7 @@ class TemplateGroup extends Model {
 		$fs = new Filesystem();
 		$path = $this->getFolderPath();
 
-		if (isset($path) && $fs->isDir($fs->dirname($path)) && ! $fs->isDir($path))
+		if (isset($path) && ! $fs->isDir($path))
 		{
 			$fs->mkDir($path);
 		}

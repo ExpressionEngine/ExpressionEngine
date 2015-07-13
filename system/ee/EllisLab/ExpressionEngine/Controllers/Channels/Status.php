@@ -607,6 +607,14 @@ class Status extends AbstractChannelsController {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
+		// Put status name back into POST if we're editing one of the default
+		// statuses, because the form input is disabled otherwise and it
+		// won't be included in POST
+		if ( ! empty($_POST) && ($status->status == 'open' OR $status->status == 'closed'))
+		{
+			$_POST['status'] = $status->status;
+		}
+
 		if (AJAX_REQUEST)
 		{
 			ee()->form_validation->run_ajax();
