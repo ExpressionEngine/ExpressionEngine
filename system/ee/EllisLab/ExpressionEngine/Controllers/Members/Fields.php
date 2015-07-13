@@ -98,7 +98,7 @@ class Fields extends Members\Members {
 		{
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
-					'href' => ee('CP/URL', 'members/fields/edit/', array('field' => $field->m_field_id)),
+					'href' => ee('CP/URL', 'members/fields/edit/' . $field->m_field_id),
 					'title' => strtolower(lang('edit'))
 				)
 			));
