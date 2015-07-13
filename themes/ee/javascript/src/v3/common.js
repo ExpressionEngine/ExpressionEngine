@@ -258,6 +258,10 @@ $(document).ready(function(){
 			e.preventDefault();
 		});
 
+		$('body').on('click', '.overlay', function() {
+			$('.modal-wrap').trigger('modal:close');
+		});
+
 	// ==================================
 	// highlight checks and radios -> WIP
 	// ==================================
