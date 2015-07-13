@@ -1,6 +1,6 @@
 <?php
 
-$Lang = array(
+$lang = array(
 	'date_year' => "Year",
 	'date_years' => "Years",
 	'date_month' => "Month",
