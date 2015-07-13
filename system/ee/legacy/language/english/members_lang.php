@@ -213,6 +213,10 @@ $lang = array(
 
 "fieldlabel" => "Field Label",
 
+"field_label_desc" => "Name of field that appears in the member form.",
+
+"field_short_name_desc" => "Short name for this field.<br><i>No spaces. Underscores and dashes are allowed.</i>",
+
 "index" => "Main Index Page",
 
 "member_assignment_warning" => "Members are currently assigned to some of these groups. What member group should they be re-assigned to?",
