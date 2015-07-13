@@ -140,7 +140,7 @@ RADIO;
 			$data[] = $row;
 		}
 
-		$table->setNoResultsText('no_template_variables');
+		$table->setNoResultsText('no_template_routes');
 		$table->setData($data);
 
 		$vars['table'] = $table->viewData($this->base_url);
