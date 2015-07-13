@@ -90,7 +90,7 @@ class Publishing extends Profile {
 			if ($this->saveSettings($vars['sections']))
 			{
 				ee()->view->set_message('success', lang('member_updated'), lang('member_updated_desc'), TRUE);
-				ee()->functions->redirect($base_url);
+				ee()->functions->redirect($this->base_url);
 			}
 		}
 
