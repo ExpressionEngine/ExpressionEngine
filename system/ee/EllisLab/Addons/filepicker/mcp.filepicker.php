@@ -93,6 +93,7 @@ class Filepicker_mcp {
 		}
 		else
 		{
+			$vars['images'] = FALSE;
 			$filters = ee('Filter')->add('Perpage', $files->count(), 'show_all_files');
 			$dirFilter = ee('Filter')->make('directory', lang('directory'), $directories);
 			$dirFilter->disableCustomValue();
