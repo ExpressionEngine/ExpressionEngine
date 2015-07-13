@@ -229,19 +229,25 @@ class Bookmarks extends Profile {
 	private function form($vars, $values = array())
 	{
 		$name = isset($values['name']) ? $values['name']: '';
-		$channel = isset($values['channel']) ? $values['channel']: '';
+		$channel_id = isset($values['channel']) ? $values['channel']: '';
 		$field = isset($values['field']) ? $values['field']: '';
+		$fields = array();
 
 		$channels = ee('Model')->get('Channel')->all()->getDictionary('channel_id', 'channel_title');
 		$filter = ee()->input->post('filter');
 
-		if ( ! empty($channel))
+		if (empty($channel_id))
 		{
-			$fields = ee('Model')->get('Channel', array($channel))->first()->getCustomFields()->getDictionary('field_id', 'field_label');
+			$channel = ee('Model')->get('Channel')->first();
 		}
 		else
 		{
-			$fields = ee('Model')->get('Channel')->first()->getCustomFields()->getDictionary('field_id', 'field_label');
+			$channel = ee('Model')->get('Channel', array($channel_id));
+		}
+
+		if ( ! empty($channel))
+		{
+			$fields = $channel->CustomFields->getDictionary('field_id', 'field_label');
 		}
 
 		$vars['sections'] = array(
