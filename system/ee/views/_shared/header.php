@@ -42,7 +42,7 @@
 					<?php elseif ( ! ($site_name = ee()->config->item('site_name')) OR empty($site_name)): ?>
 						<a href="<?=ee('CP/URL', 'settings/general')?>" class="no-name"><?=lang('name_your_site')?></a>
 					<?php else: ?>
-						<a href=""><?=ee()->config->item('site_name')?></a>
+						<a href="<?=ee()->config->item('site_url')?>" rel="external"><?=ee()->config->item('site_name')?></a>
 					<?php endif ?>
 				</div>
 				<div class="user">
