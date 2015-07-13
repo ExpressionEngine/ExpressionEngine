@@ -762,6 +762,7 @@ CREATE TABLE `exp_member_fields` (
   `m_field_reg` char(1) NOT NULL DEFAULT 'n',
   `m_field_cp_reg` char(1) NOT NULL DEFAULT 'n',
   `m_field_fmt` char(5) NOT NULL DEFAULT 'none',
+  `m_field_show_fmt` char(1) NOT NULL default 'y',
   `m_field_order` int(3) unsigned NOT NULL,
   PRIMARY KEY (`m_field_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
