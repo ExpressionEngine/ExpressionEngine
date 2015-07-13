@@ -311,6 +311,8 @@ class Groups extends Members\Members {
 		$addons = ee('Model')->get('Module')->all()->getDictionary('module_id', 'module_name');
 		$allowed_channels = ee('Model')->get('Channel')->all()->getDictionary('channel_id', 'channel_name');
 
+		ee()->load->helper('array');
+
 		$vars['sections'] = array(
 			array(
 				array(
