@@ -326,6 +326,19 @@ class Textarea_ft extends EE_Fieldtype {
 			'settings' => $settings
 		));
 	}
+
+	function save_settings($data)
+	{
+		$defaults = array(
+			'field_show_file_selector' => 'n',
+			'field_show_smileys' => 'n',
+			'field_show_formatting_btns' => 'n'
+		);
+
+		$all = array_merge($defaults, $data);
+
+		return array_intersect_key($all, $defaults);
+	}
 }
 
 // END Textarea_ft class
