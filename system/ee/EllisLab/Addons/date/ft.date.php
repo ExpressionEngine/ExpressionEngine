@@ -416,18 +416,6 @@ class Date_ft extends EE_Fieldtype {
 
 	// --------------------------------------------------------------------
 
-	function save_settings($data)
-	{
-		// Date or relationship types don't need formatting.
-		$data['field_fmt'] = 'none';
-		$data['field_show_fmt'] = 'n';
-		$_POST['update_formatting'] = 'y';
-
-		return $data;
-	}
-
-	// --------------------------------------------------------------------
-
 	function grid_save_settings($data)
 	{
 		return array(
