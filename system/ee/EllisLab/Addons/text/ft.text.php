@@ -337,6 +337,11 @@ class Text_ft extends EE_Fieldtype {
 
 	function settings_modify_column($data)
 	{
+		if (empty($data['field_settings']))
+		{
+			return array();
+		}
+
 		$settings = $data['field_settings'];
 		$field_content_type = isset($settings['field_content_type']) ? $settings['field_content_type'] : 'all';
 
