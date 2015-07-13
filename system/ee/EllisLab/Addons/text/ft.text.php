@@ -248,21 +248,6 @@ class Text_ft extends EE_Fieldtype {
 			if ($this->content_type() != 'grid')
 			{
 				$settings[] = array(
-					'title' => 'field_content_text',
-					'desc' => 'field_content_text_desc',
-					'fields' => array(
-						'field_content_type' => array(
-							'type' => 'select',
-							'choices' => $this->_get_content_options(),
-							'value' => isset($data['field_content_type']) ? $data['field_content_type'] : ''
-						)
-					)
-				);
-			}
-
-			if ($this->content_type() != 'grid')
-			{
-				$settings[] = array(
 					'title' => 'field_tools',
 					'desc' => 'field_tools_desc',
 					'fields' => array(
