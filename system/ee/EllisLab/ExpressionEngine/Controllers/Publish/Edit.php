@@ -165,6 +165,17 @@ class Edit extends AbstractPublishController {
 		);
 		$table->setNoResultsText(lang('no_entries_exist'));
 
+		$channels = ee('Model')->get('Channel')
+			->fields('channel_id', 'channel_name')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		if (count($channels) == 1)
+		{
+			$channel_id = $channels[0]->channel_id;
+			$channel_name = $channels[0]->channel_name;
+		}
+
 		if ($channel_id)
 		{
 			$table->addActionButton(ee('CP/URL', 'publish/create/' . $channel_id), sprintf(lang('btn_create_new_entry_in_channel'), $channel_name));
