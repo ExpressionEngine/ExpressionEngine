@@ -251,11 +251,11 @@ abstract class ContentModel extends VariableColumnModel {
 	public function validateCustomField($key, $value, $params, $rule)
 	{
 		$result = $this->getCustomField($key)->validate($value);
-
-		if ($result === 'required')
-		{
-			$rule->stop();
-		}
+		//
+		// if ($result === 'required')
+		// {
+		// 	$rule->stop();
+		// }
 
 		return $result;
 	}
