@@ -505,8 +505,8 @@ class EE_Schema {
 			m_field_type varchar(12) NOT NULL default 'text',
 			m_field_list_items text NOT NULL,
 			m_field_ta_rows tinyint(2) default '8',
-			m_field_maxl smallint(3) NOT NULL,
-			m_field_width varchar(6) NOT NULL,
+			m_field_maxl smallint(3) NULL DEFAULT NULL,
+			m_field_width varchar(6) NULL DEFAULT NULL,
 			m_field_search char(1) NOT NULL default 'y',
 			m_field_required char(1) NOT NULL default 'n',
 			m_field_public char(1) NOT NULL default 'y',
@@ -514,7 +514,7 @@ class EE_Schema {
 			m_field_cp_reg char(1) NOT NULL default 'n',
 			m_field_fmt char(5) NOT NULL default 'none',
 			m_field_show_fmt char(1) NOT NULL default 'y',
-			m_field_order int(3) unsigned NOT NULL,
+			m_field_order int(3) unsigned NULL DEFAULT NULL,
 			m_field_text_direction char(3) DEFAULT 'ltr',
 			PRIMARY KEY `m_field_id` (`m_field_id`)
 			)";
