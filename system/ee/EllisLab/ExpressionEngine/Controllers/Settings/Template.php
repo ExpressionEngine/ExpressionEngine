@@ -59,7 +59,7 @@ class Template extends Settings {
 					'fields' => array(
 						'site_404' => array(
 							'type' => 'select',
-							'choices' => ee()->admin_model->get_template_list()
+							'choices' => (ee()->admin_model->get_template_list()) ?: array()
 						)
 					),
 				),

@@ -73,16 +73,6 @@
 	</div>
 </fieldset> -->
 <h2><?=lang('administrator_account')?></h2>
-<fieldset class="col-group required <?=form_error_class('username')?>">
-	<div class="setting-txt col w-8">
-		<h3><?=lang('username')?></h3>
-		<em><?=lang('username_note')?></em>
-	</div>
-	<div class="setting-field col w-8 last">
-		<input name="username" type="text" value="<?=set_value('username')?>" maxlength="50">
-		<?=form_error('username');?>
-	</div>
-</fieldset>
 <fieldset class="col-group required <?=form_error_class('email_address')?>">
 	<div class="setting-txt col w-8">
 		<h3><?=lang('e_mail')?></h3>
@@ -91,6 +81,16 @@
 	<div class="setting-field col w-8 last">
 		<input name="email_address" type="text" value="<?=set_value('email_address')?>">
 		<?=form_error('email_address');?>
+	</div>
+</fieldset>
+<fieldset class="col-group required <?=form_error_class('username')?>">
+	<div class="setting-txt col w-8">
+		<h3><?=lang('username')?></h3>
+		<em><?=lang('username_note')?></em>
+	</div>
+	<div class="setting-field col w-8 last">
+		<input name="username" type="text" value="<?=set_value('username')?>" maxlength="50">
+		<?=form_error('username');?>
 	</div>
 </fieldset>
 <fieldset class="col-group required <?=form_error_class('password')?> last">

@@ -126,7 +126,7 @@ class Member_upd {
 			{
 				$path = $dir['server_path'] . $filename;
 
-				if ($file != 'index.html' && is_file($path))
+				if ($filename != 'index.html' && is_file($path))
 				{
 					$time = time();
 					$file = ee('Model')->make('File');

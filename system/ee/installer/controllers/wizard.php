@@ -1649,6 +1649,16 @@ class Wizard extends CI_Controller {
 	{
 		$this->load->library('layout');
 
+		// Member module needs to know the prefs of something that is technically
+		// a pref for a different app (Installer is technically a separate
+		// app from ExpressionEngine) - dj
+		$member_prefs = ee('Model')->get('Site', 1)->first()->site_member_preferences->getValues();
+
+		foreach ($member_prefs as $key => $item)
+		{
+			$this->config->config[$key] = $item;
+		}
+
 		// Install required modules
 		foreach($this->required_modules as $module)
 		{
