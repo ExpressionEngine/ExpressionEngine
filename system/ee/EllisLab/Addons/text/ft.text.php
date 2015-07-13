@@ -332,7 +332,7 @@ class Text_ft extends EE_Fieldtype {
 	{
 		return array(
 			'field_maxl'			=> ee()->input->post('field_maxl'),
-			'field_content_type'	=> ee()->input->post('text_field_content_type')
+			'field_content_type'	=> ee()->input->post('field_content_type')
 		);
 	}
 
