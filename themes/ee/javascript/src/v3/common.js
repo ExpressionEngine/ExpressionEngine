@@ -262,6 +262,12 @@ $(document).ready(function(){
 			$('.modal-wrap').trigger('modal:close');
 		});
 
+		$(document).on('keypress', function(e) {
+			if (e.keyCode === 27) {
+				$('.modal-wrap').trigger('modal:close');
+			}
+		});
+
 	// ==================================
 	// highlight checks and radios -> WIP
 	// ==================================
