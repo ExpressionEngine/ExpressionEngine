@@ -94,7 +94,7 @@
 					<div class="setting-txt col <?=$width?>">
 						<h3><span class="ico sub-arrow"></span><?=$field->getLabel()?></h3>
 						<em><?=$field->getInstructions()?></em>
-						<?php if ($field->getName() == 'categories'): ?>
+						<?php if ($field->getName() == 'categories' && $entry->Channel->cat_group): ?>
 						<p><a class="btn action submit m-link" rel="modal-cats" href="#"><?=lang('btn_add_category')?></a></p>
 						<?php endif; ?>
 					</div>
