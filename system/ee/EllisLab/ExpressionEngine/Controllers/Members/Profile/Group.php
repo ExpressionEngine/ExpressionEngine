@@ -100,10 +100,13 @@ class Group extends Profile {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
+			// Don't try to save the password confirm
+			array_pop($vars['sections']);
+
 			if ($this->saveSettings($vars['sections']))
 			{
 				ee()->view->set_message('success', lang('member_updated'), lang('member_updated_desc'), TRUE);
-				ee()->functions->redirect($base_url);
+				ee()->functions->redirect($this->base_url);
 			}
 
 		}

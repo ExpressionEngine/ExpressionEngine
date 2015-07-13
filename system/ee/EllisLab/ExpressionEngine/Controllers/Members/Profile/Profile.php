@@ -147,23 +147,26 @@ class Profile extends CP_Controller {
 		{
 			foreach ($settings as $setting)
 			{
-				foreach ($setting['fields'] as $field_name => $field)
+				if ( ! empty($setting['fields']))
 				{
-					$post = ee()->input->post($field_name);
+					foreach ($setting['fields'] as $field_name => $field)
+					{
+						$post = ee()->input->post($field_name);
 
-					// Handle arrays of checkboxes as a special case;
-					if ($field['type'] == 'checkbox' && is_array($post))
-					{
-						foreach ($field['choices']  as $property => $label)
+						// Handle arrays of checkboxes as a special case;
+						if ($field['type'] == 'checkbox' && is_array($post))
 						{
-							$this->member->$property = in_array($property, $post) ? 'y' : 'n';
+							foreach ($field['choices']  as $property => $label)
+							{
+								$this->member->$property = in_array($property, $post) ? 'y' : 'n';
+							}
 						}
-					}
-					else
-					{
-						if ($post !== FALSE)
+						else
 						{
-							$this->member->$field_name = $post;
+							if ($post !== FALSE)
+							{
+								$this->member->$field_name = $post;
+							}
 						}
 					}
 				}
