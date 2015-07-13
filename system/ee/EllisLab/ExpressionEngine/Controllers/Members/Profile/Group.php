@@ -125,9 +125,9 @@ class Group extends Profile {
 
 	public function _valid_member_group($group)
 	{
-		$groups = ee()->api->get('MemberGroup')->filter('group_id', $group)->all();
+		$groups = ee()->api->get('MemberGroup')->filter('group_id', $group)->count();
 
-		if (empty($groups))
+		if ($groups == 0)
 		{
 			return FALSE;
 		}
