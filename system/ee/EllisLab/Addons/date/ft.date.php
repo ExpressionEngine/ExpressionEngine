@@ -50,7 +50,7 @@ class Date_ft extends EE_Fieldtype {
 			$timestamp = ee()->localize->string_to_timestamp($date);
 		}
 
-		return $timestamp;
+		return $timestamp ?: NULL;
 	}
 
 	// --------------------------------------------------------------------
