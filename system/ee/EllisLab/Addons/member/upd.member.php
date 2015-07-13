@@ -56,50 +56,55 @@ class Member_upd {
 		}
 
 		// Install member upload directories
-		$site_id = ee()->config->item('site_id');
+		$site_id = 1;
 		$member_directories = array();
 
-		if (ee()->config->item('enable_avatars') == 'y')
+		// When installing, ee()->config will contain the installer app values,
+		// not the ExpressionEngine application values.
+		// So fetch them from the model - dj
+		$member_prefs = ee('Model')->get('Site', $site_id)->first()->site_member_preferences;
+
+		if ($member_prefs->enable_avatars == 'y')
 		{
 			$member_directories['Avatars'] = array(
-				'server_path' => ee()->config->item('avatar_path'),
-				'url' => ee()->config->item('avatar_url'),
+				'server_path' => $member_prefs->avatar_path,
+				'url' => $member_prefs->avatar_url,
 				'allowed_types' => 'img',
-				'max_width' => ee()->config->item('avatar_max_width'),
-				'max_height' => ee()->config->item('avatar_max_height'),
-				'max_size' => ee()->config->item('avatar_max_kb'),
+				'max_width' => $member_prefs->avatar_max_width,
+				'max_height' => $member_prefs->avatar_max_height,
+				'max_size' => $member_prefs->avatar_max_kb,
 			);
 		}
 
-		if (ee()->config->item('enable_photos') == 'y')
+		if ($member_prefs->enable_photos == 'y')
 		{
 			$member_directories['Member Photos'] = array(
-				'server_path' => ee()->config->item('photo_path'),
-				'url' => ee()->config->item('photo_url'),
+				'server_path' => $member_prefs->photo_path,
+				'url' => $member_prefs->photo_url,
 				'allowed_types' => 'img',
-				'max_width' => ee()->config->item('photo_max_width'),
-				'max_height' => ee()->config->item('photo_max_height'),
-				'max_size' => ee()->config->item('photo_max_kb'),
+				'max_width' => $member_prefs->photo_max_width,
+				'max_height' => $member_prefs->photo_max_height,
+				'max_size' => $member_prefs->photo_max_kb,
 			);
 		}
 
-		if (ee()->config->item('allow_signatures') == 'y')
+		if ($member_prefs->allow_signatures == 'y')
 		{
 			$member_directories['Signature Attachments'] = array(
-				'server_path' => ee()->config->item('sig_img_path'),
-				'url' => ee()->config->item('sig_img_url'),
+				'server_path' => $member_prefs->sig_img_path,
+				'url' => $member_prefs->sig_img_url,
 				'allowed_types' => 'img',
-				'max_width' => ee()->config->item('sig_img_max_width'),
-				'max_height' => ee()->config->item('sig_img_max_height'),
-				'max_size' => ee()->config->item('sig_img_max_kb'),
+				'max_width' => $member_prefs->sig_img_max_width,
+				'max_height' => $member_prefs->sig_img_max_height,
+				'max_size' => $member_prefs->sig_img_max_kb,
 			);
 		}
 
 		$member_directories['PM Attachments'] = array(
-			'server_path' => ee()->config->item('prv_msg_upload_path'),
-			'url' => str_replace('avatars', 'pm_attachments', ee()->config->item('avatar_url')),
+			'server_path' => $member_prefs->prv_msg_upload_path,
+			'url' => str_replace('avatars', 'pm_attachments', $member_prefs->avatar_url),
 			'allowed_types' => 'img',
-			'max_size' => ee()->config->item('prv_msg_attach_maxsize')
+			'max_size' => $member_prefs->prv_msg_attach_maxsize
 		);
 
 		$module = ee('Model')->get('Module', array($module_id))->first();

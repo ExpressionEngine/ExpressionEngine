@@ -137,20 +137,20 @@ feature 'Installer' do
     @page.install_form.install_submit.click
 
     @page.should have(5).inline_errors
-    @page.inline_errors[2].text.should include 'Your username cannot use the following characters:'
+    @page.inline_errors[3].text.should include 'Your username cannot use the following characters:'
 
     @page.install_form.username.set '123'
     @page.install_form.install_submit.click
 
     @page.should have(5).inline_errors
-    @page.inline_errors[2].text.should include 'Your username must be at least 4 characters long'
+    @page.inline_errors[3].text.should include 'Your username must be at least 4 characters long'
 
     @page.execute_script("$('input[maxlength=50]').prop('maxlength', 80);")
     @page.install_form.username.set '12345678901234567890123456789012345678901234567890123456789012345678901234567890'
     @page.install_form.install_submit.click
 
     @page.should have(5).inline_errors
-    @page.inline_errors[2].text.should include 'Your username cannot be over 50 characters in length'
+    @page.inline_errors[3].text.should include 'Your username cannot be over 50 characters in length'
   end
 
   it 'should show errors with invalid email address' do
@@ -158,19 +158,19 @@ feature 'Installer' do
     @page.install_form.install_submit.click
 
     @page.should have(5).inline_errors
-    @page.inline_errors[3].text.should include 'This field must contain a valid email address'
+    @page.inline_errors[2].text.should include 'This field must contain a valid email address'
 
     @page.install_form.email_address.set 'nonsense@example'
     @page.install_form.install_submit.click
 
     @page.should have(5).inline_errors
-    @page.inline_errors[3].text.should include 'This field must contain a valid email address'
+    @page.inline_errors[2].text.should include 'This field must contain a valid email address'
 
     @page.install_form.email_address.set 'example.com'
     @page.install_form.install_submit.click
 
     @page.should have(5).inline_errors
-    @page.inline_errors[3].text.should include 'This field must contain a valid email address'
+    @page.inline_errors[2].text.should include 'This field must contain a valid email address'
   end
 
   it 'should show errors with invalid password' do
