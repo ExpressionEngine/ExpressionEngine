@@ -11,6 +11,7 @@ class Filepicker_mcp {
 		$this->picker = new Picker();
 		$this->base_url = 'addons/settings/filepicker';
 		$this->access = FALSE;
+		$this->images = FALSE;
 
 		if (ee()->cp->allowed_group('can_access_content', 'can_access_files'))
 		{
