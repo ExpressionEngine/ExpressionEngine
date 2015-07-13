@@ -515,6 +515,7 @@ class EE_Schema {
 			m_field_fmt char(5) NOT NULL default 'none',
 			m_field_show_fmt char(1) NOT NULL default 'y',
 			m_field_order int(3) unsigned NOT NULL,
+			m_field_text_direction char(3) DEFAULT 'ltr',
 			PRIMARY KEY `m_field_id` (`m_field_id`)
 			)";
 

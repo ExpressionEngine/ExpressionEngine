@@ -645,7 +645,7 @@ class Updater {
 	}
 
 	/**
-	 * Adds columns to the members table as needed
+	 * Adds columns to the member fields table as needed
 	 *
 	 * @return void
 	 */
@@ -660,6 +660,20 @@ class Updater {
 						'type'    => 'char',
 						'constraint' => 1,
 						'default' => 'n',
+						'null'    => FALSE
+					)
+				)
+			);
+		}
+		if ( ! ee()->db->field_exists('m_field_show_fmt', 'member_fields'))
+		{
+			ee()->smartforge->add_column(
+				'members',
+				array(
+					'm_field_show_fmt' => array(
+						'type'    => 'char',
+						'constraint' => 3,
+						'default' => 'ltr',
 						'null'    => FALSE
 					)
 				)
