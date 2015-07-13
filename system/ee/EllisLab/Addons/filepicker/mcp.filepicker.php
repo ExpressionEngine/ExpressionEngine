@@ -6,12 +6,13 @@ use EllisLab\Addons\FilePicker\FilePicker as Picker;
 
 class Filepicker_mcp {
 
+	private $images = FALSE;
+
 	public function __construct()
 	{
 		$this->picker = new Picker();
 		$this->base_url = 'addons/settings/filepicker';
 		$this->access = FALSE;
-		$this->images = FALSE;
 
 		if (ee()->cp->allowed_group('can_access_content', 'can_access_files'))
 		{
