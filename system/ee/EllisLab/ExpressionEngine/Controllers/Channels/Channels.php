@@ -273,7 +273,7 @@ class Channels extends AbstractChannelsController {
 		$alert = (is_null($channel_id)) ? ee('Alert')->makeInline('permissions-warn')
 			->asWarning()
 			->addToBody(lang('channel_publishing_options_warning'))
-			->addToBody(sprintf(lang('channel_publishing_options_warning2'), ee('CP/URL', 'channels/field')))
+			->addToBody(sprintf(lang('channel_publishing_options_warning2'), ee('CP/URL', 'channels/fields')))
 			->cannotClose()
 			->render() : '';
 

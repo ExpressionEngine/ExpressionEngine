@@ -40,7 +40,7 @@
 					<h2><?=ee()->config->item('site_name')?> <?=lang('has')?>:</h2>
 					<ul class="arrow-list">
 						<li><a href="<?=ee('CP/URL', 'channels')?>"><b><?=$number_of_channels?></b> <?=lang('channels')?></a></li>
-						<li><a href="<?=ee('CP/URL', 'channels/field')?>"><b><?=$number_of_channel_fields?></b> <?=lang('channel_fields')?></a></li>
+						<li><a href="<?=ee('CP/URL', 'channels/fields')?>"><b><?=$number_of_channel_fields?></b> <?=lang('channel_fields')?></a></li>
 					</ul>
 				</div>
 			</div>
