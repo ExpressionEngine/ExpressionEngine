@@ -18,7 +18,6 @@ use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
 abstract class ContentModel extends VariableColumnModel {
 
 	protected static $_events = array(
-		'beforeValidate',
 		'afterSave'
 	);
 
@@ -221,10 +220,10 @@ abstract class ContentModel extends VariableColumnModel {
 		{
 			$rules[$name] = '';
 
-	//		if ($facade->isRequired())
-	//		{
-	//			$rules[$name] .= 'required|';
-	//		}
+			if ($facade->isRequired())
+			{
+				$rules[$name] .= 'required|';
+			}
 
 			$rules[$name] .= "validateCustomField";
 		}
@@ -232,30 +231,15 @@ abstract class ContentModel extends VariableColumnModel {
 		return $rules;
 	}
 
-	public function onBeforeValidate()
-	{
-		/*
-		foreach ($this->getCustomFields() as $name => $field)
-		{
-			if ($this->isDirty($name))
-			{
-				$this->setRawProperty($name, $field->save($this));
-			}
-		}
-		*/
-	}
-
 	/**
 	 * Callback to validate custom fields
 	 */
 	public function validateCustomField($key, $value, $params, $rule)
 	{
+		$field = $this->getCustomField($key);
 		$result = $this->getCustomField($key)->validate($value);
-		//
-		// if ($result === 'required')
-		// {
-		// 	$rule->stop();
-		// }
+
+		$this->setRawProperty($key, $field->getData());
 
 		return $result;
 	}

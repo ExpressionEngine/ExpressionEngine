@@ -134,14 +134,7 @@ class FieldFacade {
 	{
 		$this->initField();
 
-		if ($this->isRequired() && $value == '')
-		{
-			$result = 'required';
-		}
-		else
-		{
-			$result = ee()->api_channel_fields->apply('validate', array($value));
-		}
+		$result = ee()->api_channel_fields->apply('validate', array($value));
 
 		if (is_array($result))
 		{

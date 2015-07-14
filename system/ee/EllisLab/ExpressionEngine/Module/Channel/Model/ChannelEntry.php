@@ -123,6 +123,8 @@ class ChannelEntry extends ContentModel {
 
 	public function set__entry_date($entry_date)
 	{
+		$this->setRawProperty('entry_date', $entry_date);
+
 		// Day, Month, and Year Fields
 		// @TODO un-break these windows: inject this dependency
 		$this->setProperty('year', ee()->localize->format_date('%Y', $entry_date));
