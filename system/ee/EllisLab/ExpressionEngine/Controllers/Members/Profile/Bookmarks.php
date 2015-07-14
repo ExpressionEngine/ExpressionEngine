@@ -5,7 +5,6 @@ namespace EllisLab\ExpressionEngine\Controllers\Members\Profile;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
-use EllisLab\ExpressionEngine\Library\CP\URL;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
 /**
@@ -47,7 +46,7 @@ class Bookmarks extends Profile {
 		}
 
 		$this->index_url = $this->base_url;
-		$this->base_url = new URL($this->base_url, ee()->session->session_id(), $this->query_string);
+		$this->base_url = ee('CP/URL', $this->base_url, ee()->session->session_id(), $this->query_string);
 	}
 
 	/**
@@ -63,19 +62,19 @@ class Bookmarks extends Profile {
 		{
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
-					'href' => cp_url('members/profile/bookmarks/edit/' . $id, $this->query_string),
+					'href' => ee('CP/URL', 'members/profile/bookmarks/edit/' . $id, $this->query_string),
 					'title' => strtolower(lang('edit'))
 				)
 			));
 
-			$path = cp_url(
+			$path = ee('CP/URL',
 				'content_publish/entry_form',
 				array(
 					'Z'          => 1,
 					'BK'         => 1,
 					'channel_id' => $bookmark->channel
 				)
-			);
+			)->compile();
 
 			$type = (isset($_POST['safari'])) ? "window.getSelection()" : "document.selection?document.selection.createRange().text:document.getSelection()";
 			$link = "javascript:bm=$type;void(bmentry=window.open('".$path."title='+encodeURI(document.title)+'&tb_url='+encodeURI(window.location.href)+'&".$bookmark->field."='+encodeURI(bm),'bmentry',''))";
@@ -112,8 +111,8 @@ class Bookmarks extends Profile {
 		$table->setData($links);
 
 		$data['table'] = $table->viewData($this->base_url);
-		$data['new'] = cp_url('members/profile/bookmarks/create', $this->query_string);
-		$data['form_url'] = cp_url('members/profile/bookmarks/delete', $this->query_string);
+		$data['new'] = ee('CP/URL', 'members/profile/bookmarks/create', $this->query_string)->compile();
+		$data['form_url'] = ee('CP/URL', 'members/profile/bookmarks/delete', $this->query_string)->compile();
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('bookmarks') . ': <b>### ' . lang('bookmarks') . '</b>');
 		ee()->cp->add_js_script(array(
@@ -134,7 +133,7 @@ class Bookmarks extends Profile {
 	 */
 	public function create()
 	{
-		$this->base_url = new URL($this->index_url . '/create', ee()->session->session_id(), $this->query_string);
+		$this->base_url = ee('CP/URL', $this->index_url . '/create', ee()->session->session_id(), $this->query_string);
 
 		$vars = array(
 			'cp_page_title' => lang('create_bookmarklet'),
@@ -164,7 +163,7 @@ class Bookmarks extends Profile {
 	 */
 	public function edit($id)
 	{
-		$this->base_url = new URL($this->index_url . "/edit/$id", ee()->session->session_id(), $this->query_string);
+		$this->base_url = ee('CP/URL', $this->index_url . "/edit/$id", ee()->session->session_id(), $this->query_string);
 
 		$vars = array(
 			'cp_page_title' => lang('edit_bookmarklet'),
@@ -201,7 +200,7 @@ class Bookmarks extends Profile {
 		$this->bookmarks = array_diff_key($this->bookmarks, array_flip($selection));
 		$this->saveBookmarks();
 
-		ee()->functions->redirect(cp_url($this->index_url, $this->query_string));
+		ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
 	}
 
 	/**
@@ -303,7 +302,7 @@ class Bookmarks extends Profile {
 			{
 				if ($this->saveBookmarks())
 				{
-					ee()->functions->redirect(cp_url($this->index_url, $this->query_string));
+					ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
 				}
 			}
 			elseif (ee()->form_validation->errors_exist())

@@ -149,7 +149,7 @@ class Fields extends Members\Members {
 			->withTitle(lang('member_field_ajax_reorder_fail'))
 			->addToBody(lang('member_field_ajax_reorder_fail_desc'));
 
-		ee()->javascript->set_global('member_fields.reorder_url', cp_url('members/fields/order/'));
+		ee()->javascript->set_global('member_fields.reorder_url', ee('CP/URL', 'members/fields/order/')->compile());
 		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
 		ee()->view->base_url = $this->base_url;
@@ -321,8 +321,8 @@ class Fields extends Members\Members {
 		{
 			foreach (array_merge($vars['sections'][0], $settingsFields) as $section)
 			{
-				// We have to do this dance of explicitly setting each property 
-				// so that the MemberField model's magic set method will prefix 
+				// We have to do this dance of explicitly setting each property
+				// so that the MemberField model's magic set method will prefix
 				// the properties for us
 				foreach ($section['fields'] as $key => $val)
 				{
