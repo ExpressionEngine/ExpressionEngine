@@ -205,7 +205,6 @@ class Cp {
 
 		$this->add_js_script($js_scripts);
 		$this->_seal_combo_loader();
-
 		ee()->load->vars($vars);
 	}
 
@@ -651,20 +650,6 @@ class Cp {
 	public function set_right_nav($nav = array())
 	{
 		ee()->view->cp_right_nav = array_reverse($nav);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Set the in-header navigation
-	 *
-	 * @param	array
-	 * @param	string
-	 * @return	int
-	 */
-	public function set_action_nav($nav = array())
-	{
-		ee()->view->cp_action_nav = array_reverse($nav);
 	}
 
 	// --------------------------------------------------------------------
