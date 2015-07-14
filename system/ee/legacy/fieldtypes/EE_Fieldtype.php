@@ -356,9 +356,6 @@ abstract class EE_Fieldtype {
 	 */
 	public function display_publish_field($data)
 	{
-		$vars['glossary_items'] = ee()->load->ee_view('content/_assets/glossary_items', '', TRUE);
-
-		ee()->load->vars($vars);
 		return $this->display_field($data);
 	}
 
