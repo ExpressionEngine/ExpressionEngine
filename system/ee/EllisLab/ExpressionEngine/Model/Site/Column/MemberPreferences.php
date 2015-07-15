@@ -63,6 +63,8 @@ class MemberPreferences extends CustomType {
 	protected $sig_img_max_width;
 	protected $sig_img_max_height;
 	protected $sig_img_max_kb;
+	protected $prv_msg_enabled;
+	protected $prv_msg_allow_attachments;
 	protected $prv_msg_upload_path;
 	protected $prv_msg_max_attachments;
 	protected $prv_msg_attach_maxsize;
