@@ -205,7 +205,7 @@ class Members extends CP_Controller {
 	 *
 	 * @return void
 	 */
-	public function _member_search($state, $params)
+	private function _member_search($state, $params)
 	{
 		$search_value = $params['member_name'];
 		$group_id = $this->group ?: '';
