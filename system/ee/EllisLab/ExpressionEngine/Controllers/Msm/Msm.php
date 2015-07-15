@@ -53,11 +53,19 @@ class Msm extends CP_Controller {
 	{
 		$sites = array();
 
+		$site_backlink = ee()->cp->get_safe_refresh();
+
+		if ($site_backlink)
+		{
+			$site_backlink = implode('|', explode(AMP, $site_backlink));
+			$site_backlink = strtr(base64_encode($site_backlink), '+=', '-_');
+		}
+
 		$site_ids = array_keys(ee()->session->userdata('assigned_sites'));
 
 		foreach (ee('Model')->get('Site', $site_ids)->order('site_label', 'asc')->all() as $site)
 		{
-			$sites[$site->site_label] = ee('CP/URL', 'msm/switch_to/' . $site->site_id);
+			$sites[$site->site_label] = ee('CP/URL', 'msm/switch_to/' . $site->site_id, array('page' => $site_backlink));
 		}
 
 		$menu = array(
@@ -519,7 +527,17 @@ class Msm extends CP_Controller {
 			show_404();
 		}
 
-		ee()->cp->switch_site($site_id, ee()->input->get_post('page'));
+		$redirect = '';
+
+		$page = ee()->input->get_post('page');
+		if ($page)
+		{
+			$return_path = base64_decode($page);
+			$uri_elements = json_decode($return_path, TRUE);
+			$redirect = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
+		}
+
+		ee()->cp->switch_site($site_id, $redirect);
 	}
 
 	private function remove($site_ids)
