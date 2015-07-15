@@ -167,7 +167,7 @@ class Msm extends CP_Controller {
 				)
 			);
 
-			if (count($sites) == 1)
+			if ($site->site_id == 1)
 			{
 				$column[5]['disabled'] = TRUE;
 			}
@@ -386,9 +386,12 @@ class Msm extends CP_Controller {
 			$site_ids = array($site_ids);
 		}
 
-		if (ee('Model')->get('Sites')->all()->count() == count($site_ids))
+		if (in_array(1, $site_ids))
 		{
-			show_error(lang('cannot_remove_all_sites'));
+			$site = ee('Model')->get('Site', 1)
+				->fields('site_label')
+				->first();
+			show_error(sprintf(lang('cannot_remove_site_1'), $site->site_label));
 		}
 
 		$sites = ee('Model')->get('Site', $site_ids)->all();
