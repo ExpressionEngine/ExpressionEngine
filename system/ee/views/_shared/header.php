@@ -36,7 +36,7 @@
 								<a href="<?=$link?>"><?=$site_name?></a>
 							<?php endforeach ?>
 							<?php if (ee()->cp->allowed_group('can_admin_sites')): ?>
-								<a class="last add" href="http://localhost/el-projects/ee-cp/views/msm-new.php">&#10010; <?=lang('new_site')?></a>
+								<a class="last add" href="<?=ee('CP/URL', 'msm')?>">&#10010; <?=lang('new_site')?></a>
 							<?php endif ?>
 						</ul>
 					<?php elseif ( ! ($site_name = ee()->config->item('site_name')) OR empty($site_name)): ?>
