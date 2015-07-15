@@ -371,6 +371,13 @@ class Msm extends CP_Controller {
 
 		ee()->view->cp_page_title = lang('create_site');
 
+		ee()->cp->add_js_script('plugin', 'ee_url_title');
+		ee()->javascript->output('
+			$("input[name=site_label]").bind("keyup keydown", function() {
+				$(this).ee_url_title("input[name=site_name]");
+			});
+		');
+
 		ee()->cp->render('settings/form', $vars);
 	}
 
