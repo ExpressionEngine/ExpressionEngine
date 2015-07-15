@@ -2877,35 +2877,21 @@ class EE_Template {
 	 */
 	public function fetch_addons()
 	{
-		ee()->load->helper('file');
-		ee()->load->helper('directory');
-		$ext_len = strlen('.php');
+		$providers = ee('App')->getProviders();
 
-		// first get first party modules
-		if (($map = directory_map(PATH_ADDONS, TRUE)) !== FALSE)
+		foreach (array_keys($providers) as $name)
 		{
-			foreach ($map as $file)
+			try
 			{
-				if (strpos($file, '.') === FALSE)
+				$info = ee('App')->get($name);
+				if (file_exists($info->getPath() . '/mod.' . $name . '.php'))
 				{
-					if (IS_CORE && in_array($file, ee()->core->standard_modules))
-					{
-						continue;
-					}
-
-					try
-					{
-						$info = ee('App')->get($file);
-						if (file_exists($info->getPath() . '/mod.' . $file . '.php'))
-						{
-							$this->modules[] = $file;
-						}
-					}
-					catch (\Exception $e)
-					{
-						continue;
-					}
+					$this->modules[] = $name;
 				}
+			}
+			catch (\Exception $e)
+			{
+				continue;
 			}
 		}
 

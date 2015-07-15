@@ -201,9 +201,8 @@ class EE_Core {
 
 		define('PATH_THEMES', $theme_path.'ee/');
 		define('URL_THEMES', $theme_url.'ee/');
-		define('PATH_ADDONS_THEMES', $theme_path.'user/');
+
 		define('PATH_THIRD_THEMES', $theme_path.'user/');
-		define('URL_ADDONS_THEMES', $theme_url.'user/');
 		define('URL_THIRD_THEMES', $theme_url.'user/');
 
 		define('PATH_MBR_THEMES', PATH_THEMES.'profile_themes/');

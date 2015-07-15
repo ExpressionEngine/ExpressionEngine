@@ -137,46 +137,18 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function display_field($data)
 	{
-		if ( ! ee()->session->cache(__CLASS__, 'grid_assets_loaded'))
-		{
-			if (REQ != 'CP')
-			{
-				$css_link = '<link rel="stylesheet" href="'.URL_THEMES.'cp_themes/default/css/grid.css" type="text/css" media="screen" />'.PHP_EOL;
-				ee()->cp->add_to_head($css_link);
-			}
-
-			ee()->cp->add_js_script('ui', 'sortable');
-			ee()->cp->add_js_script('file', 'cp/sort_helper');
-			ee()->cp->add_js_script('plugin', 'ee_table_reorder');
-			ee()->cp->add_js_script('file', 'cp/grid');
-
-			ee()->session->set_cache(__CLASS__, 'grid_assets_loaded', TRUE);
-		}
-
-		$settings = array(
+		$grid = ee('CP/GridInput', array(
+			'field_name' 	=> $this->name(),
+			'lang_cols' 	=> FALSE,
 			'grid_min_rows' => $this->settings['grid_min_rows'],
 			'grid_max_rows' => $this->settings['grid_max_rows']
-		);
-
-		if (REQ == 'CP')
-		{
-			// Set settings as a global for easy reinstantiation of field
-			// by third parties
-			ee()->javascript->set_global('grid_field_settings.'.$this->name(), $settings);
-
-			// getElementById instead of $('#...') for field names that have
-			// brackets in them
-			ee()->javascript->output('EE.grid(document.getElementById("'.$this->name().'"));');
-		}
-		// Channel Form
-		else
-		{
-			ee()->javascript->output('EE.grid(document.getElementById("'.$this->name().'"), '.json_encode($settings).');');
-		}
+		));
+		$grid->loadAssets();
+		$grid->setNoResultsText('no_rows_created', 'add_new_row');
 
 		$this->_load_grid_lib();
 
-		return ee()->grid_lib->display_field($data);
+		return ee()->grid_lib->display_field($grid, $data);
 	}
 
 	// --------------------------------------------------------------------
