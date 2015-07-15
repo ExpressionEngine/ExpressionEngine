@@ -208,6 +208,11 @@ class Msm extends CP_Controller {
 
 	public function create()
 	{
+		if ( ! ee()->cp->allowed_group('can_admin_sites'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL', 'msm')->compile() => lang('msm_manager'),
 		);
@@ -262,6 +267,11 @@ class Msm extends CP_Controller {
 
 	public function edit($site_id)
 	{
+		if ( ! ee()->cp->allowed_group('can_admin_sites'))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		$site = ee('Model')->get('Site', $site_id)->first();
 
 		if ( ! $site)
