@@ -53,7 +53,9 @@ class Msm extends CP_Controller {
 	{
 		$sites = array();
 
-		foreach (ee('Model')->get('Site')->order('site_label', 'asc')->all() as $site)
+		$site_ids = array_keys(ee()->session->userdata('assigned_sites'));
+
+		foreach (ee('Model')->get('Site', $site_ids)->order('site_label', 'asc')->all() as $site)
 		{
 			$sites[$site->site_label] = ee('CP/URL', 'msm/switch/' . $site->site_id);
 		}
@@ -105,7 +107,7 @@ class Msm extends CP_Controller {
 
 		$vars['create_url'] = ee('CP/URL', 'msm/create');
 
-		$sites = ee('Model')->get('Site')->all();
+		$sites = ee('Model')->get('Site', array_keys(ee()->session->userdata('assigned_sites')))->all();
 
 		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => TRUE));
 		$table->setColumns(
