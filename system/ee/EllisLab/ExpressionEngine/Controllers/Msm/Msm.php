@@ -503,6 +503,11 @@ class Msm extends CP_Controller {
 
 		$site_names = $sites->pluck('site_label');
 
+		foreach ($site_names as $site_name)
+		{
+			ee()->logger->log_action(lang('site_deleted') . ': ' . $site_name);
+		}
+
 		$sites->delete();
 		ee('Alert')->makeInline('sites')
 			->asSuccess()
@@ -510,6 +515,32 @@ class Msm extends CP_Controller {
 			->addToBody(lang('sites_removed_desc'))
 			->addToBody($site_names)
 			->defer();
+
+		// Refresh Sites List
+		$assigned_sites = array();
+
+		if (ee()->session->userdata['group_id'] == 1)
+		{
+			$result = ee('Model')->get('Site')
+				->fields('site_id', 'site_label')
+				->order('site_label', 'asc')
+				->all();
+		}
+		elseif (ee()->session->userdata['assigned_sites'] != '')
+		{
+			$result = ee('Model')->get('Site')
+				->fields('site_id', 'site_label')
+				->filter('site_id', explode('|', ee()->session->userdata['assigned_sites']))
+				->order('site_label', 'asc')
+				->all();
+		}
+
+		if ((ee()->session->userdata['group_id'] == 1 OR ee()->session->userdata['assigned_sites'] != '') && count($result) > 0)
+		{
+			$assigned_sites = $result->getDictionary('site_id', 'site_label');
+		}
+
+		ee()->session->userdata['assigned_sites'] = $assigned_sites;
 	}
 }
 // EOF

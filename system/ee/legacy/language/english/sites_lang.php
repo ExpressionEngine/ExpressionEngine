@@ -30,6 +30,7 @@ $lang = array(
 'edit_site_error' => 'Cannot Update Site',
 'edit_site_error_desc' => 'We were unable to update this site, please review and fix errors below.',
 'invalid_short_name' => 'Your site name must contain only alpha-numeric characters, underscroes, dashes, and no spaces.',
+'site_deleted' => 'Site Deleted',
 
 /*
 'msm_version' => 'Version: ',
@@ -74,7 +75,6 @@ $lang = array(
 
 'delete_site_confirmation' => 'Are you sure you want to permanently delete this site?',
 
-'site_deleted' => 'Site Deleted',
 
 'set_management' => 'Set Management',
 
