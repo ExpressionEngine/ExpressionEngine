@@ -156,7 +156,11 @@ class GridInput extends Table {
 					$row_id = $row['attrs']['row_id'];
 				}
 
-				return $grid->namespaceForGrid($field, $row_id);
+				$field_content_key = isset($field['html']) ? 'html' : 'content';
+
+				$field[$field_content_key] = $grid->namespaceForGrid($field[$field_content_key], $row_id);
+
+				return $field;
 
 			}, $row['columns']);
 

@@ -33,18 +33,22 @@ if ($wrap): ?>
 						</th>
 					<?php else: ?>
 						<?php
-						$table_class = '';
+						$header_class = '';
 						if ($settings['type'] == Table::COL_ID)
 						{
-							$table_class .= ' id-col';
+							$header_class .= ' id-col';
 						}
 						if ($sortable && $settings['sort'] && $sort_col == $label)
 						{
-							$table_class .= ' highlight';
+							$header_class .= ' highlight';
+						}
+						if (isset($settings['class']))
+						{
+							$header_class .= ' '.$settings['class'];
 						} ?>
-						<th<?php if ( ! empty($table_class)): ?> class="<?=trim($table_class)?>"<?php endif ?>>
+						<th<?php if ( ! empty($header_class)): ?> class="<?=trim($header_class)?>"<?php endif ?>>
 							<?=($lang_cols) ? lang($label) : $label ?>
-							<?php if (isset($settings['desc'])): ?>
+							<?php if (isset($settings['desc']) && ! empty($settings['desc'])): ?>
 								<em class="grid-instruct"><?=lang($settings['desc'])?></em>
 							<?php endif ?>
 							<?php if ($sortable && $settings['sort'] && $base_url != NULL): ?>
@@ -118,7 +122,7 @@ if ($wrap): ?>
 								<?php $class = isset($column['class']) ? $column['class'] : $column['content']; ?>
 								<td><span class="status-tag st-<?=strtolower($class)?>"><?=$column['content']?></span></td>
 							<?php elseif (isset($column['html'])): ?>
-								<td<?php if (isset($column['error']) && ! empty($column['error'])): ?> class="invalid"<?php endif ?>>
+								<td<?php if (isset($column['error']) && ! empty($column['error'])): ?> class="invalid"<?php endif ?> <?php if (isset($column['attrs'])): foreach ($column['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; endif; ?>>
 									<?=$column['html']?>
 									<?php if (isset($column['error']) && ! empty($column['error'])): ?>
 										<em class="ee-form-error-message"><?=$column['error']?></em>
