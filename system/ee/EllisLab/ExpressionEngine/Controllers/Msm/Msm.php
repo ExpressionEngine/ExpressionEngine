@@ -219,7 +219,9 @@ class Msm extends CP_Controller {
 
 		if ( ! empty($_POST))
 		{
-			$site->set($_POST);
+			$site = ee('Model')->make('Site', $_POST);
+			$site->site_bootstrap_checksums = array();
+			$site->site_pages = array();
 			$result = $site->validate();
 
 			if ($response = $this->ajaxValidation($result))
