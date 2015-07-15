@@ -304,6 +304,21 @@ class Msm extends CP_Controller {
 				// 	ee('Model')->make('MemberGroup', $data)->save();
 				// }
 
+				// @TODO remove this once the above works
+				$query = ee()->db->get_where(
+					'member_groups',
+					array('site_id' => ee()->config->item('site_id'))
+				);
+
+				foreach ($query->result_array() as $row)
+				{
+					$data = $row;
+					$data['site_id'] = $site->site_id;
+
+					ee()->db->insert('member_groups', $data);
+				}
+
+
 				ee()->session->set_flashdata('site_id', $site->site_id);
 
 				ee()->logger->log_action(lang('site_created') . ': ' . $site->site_label);
