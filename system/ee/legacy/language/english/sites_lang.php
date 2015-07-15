@@ -31,6 +31,8 @@ $lang = array(
 'edit_site_error_desc' => 'We were unable to update this site, please review and fix errors below.',
 'invalid_short_name' => 'Your site name must contain only alpha-numeric characters, underscroes, dashes, and no spaces.',
 'site_deleted' => 'Site Deleted',
+'site_created' => 'Site Created',
+'site_updated' => 'Site Updated',
 
 /*
 'msm_version' => 'Version: ',
@@ -65,9 +67,6 @@ $lang = array(
 
 'new_set_missing_name' => 'Your are missing a name for one of your new Sets.',
 
-'site_created' => 'Site Created',
-
-'site_updated' => 'Site Updated',
 
 'unable_to_locate_specialty' => 'Unable to locate the specialty templates.  Make sure you have uploaded all language files.',
 

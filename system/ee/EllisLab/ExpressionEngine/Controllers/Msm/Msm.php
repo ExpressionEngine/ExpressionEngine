@@ -304,6 +304,8 @@ class Msm extends CP_Controller {
 
 				ee()->session->set_flashdata('site_id', $site->site_id);
 
+				ee()->logger->log_action(lang('site_created') . ': ' . $site->site_label);
+
 				ee('Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('create_site_success'))
@@ -408,6 +410,8 @@ class Msm extends CP_Controller {
 					->withTitle(lang('edit_site_success'))
 					->addToBody(sprintf(lang('edit_site_success_desc'), $site->site_label))
 					->defer();
+
+				ee()->logger->log_action(lang('site_updated') . ': ' . $site->site_label);
 
 				ee()->functions->redirect(ee('CP/URL', 'msm/edit/' . $site_id));
 			}
