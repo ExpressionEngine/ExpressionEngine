@@ -57,7 +57,7 @@ class Msm extends CP_Controller {
 
 		foreach (ee('Model')->get('Site', $site_ids)->order('site_label', 'asc')->all() as $site)
 		{
-			$sites[$site->site_label] = ee('CP/URL', 'msm/switch/' . $site->site_id);
+			$sites[$site->site_label] = ee('CP/URL', 'msm/switch_to/' . $site->site_id);
 		}
 
 		$menu = array(
@@ -510,6 +510,16 @@ class Msm extends CP_Controller {
 		ee()->view->cp_page_title = lang('edit_site');
 
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	public function switchTo($site_id)
+	{
+		if ( ! is_numeric($site_id))
+		{
+			show_404();
+		}
+
+		ee()->cp->switch_site($site_id, ee()->input->get_post('page'));
 	}
 
 	private function remove($site_ids)
