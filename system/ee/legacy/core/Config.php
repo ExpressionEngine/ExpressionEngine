@@ -556,7 +556,6 @@ class EE_Config {
 			'default_site_timezone',
 			'date_format',
 			'time_format',
-			'include_seconds',
 			'mail_protocol',
 			'smtp_server',
 			'smtp_port',
