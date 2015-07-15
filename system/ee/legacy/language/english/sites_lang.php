@@ -2,8 +2,27 @@
 
 $lang = array(
 
-'msm_product_name' => 'Multiple Site Manager',
+'site' => 'Site',
+'sites' => 'Sites',
+'switch_to' => 'Switch to',
+'short_name' => 'Short Name',
+'online' => 'online',
+'offline' => 'offline',
+'cannot_remove_all_sites' => 'You cannot remove all sites.',
+'sites_removed_desc' => 'The following sites were removed',
+'create_site' => 'Create Site',
+'edit_site' => 'Edit Site',
+'name_desc' => 'Full descriptive name of this site.',
+'short_name_desc' => 'Short name for this site.<br><i>No spaces. Underscores and dashes are allowed.</i>',
+'description_desc' => 'A brief description of this site.',
+'btn_create_site' => 'Create Site',
+'btn_edit_site' => 'Edit Site',
+'site_online' => 'Website online?',
+'site_online_desc' => 'When set to <b>offline</b>, only super admins and member groups with permissions will be able to browse this website.',
+'online' => 'Online',
+'offline' => 'Offline',
 
+/*
 'msm_version' => 'Version: ',
 
 'msm_build_number' => 'Build: ',
@@ -11,12 +30,6 @@ $lang = array(
 'sites_administration' => 'Sites Administration',
 
 'site_management' => 'Site Management',
-
-'site_id' => 'Site ID',
-
-'site_name' => 'Site Short Name',
-
-'site_label' => 'Site Label',
 
 'create_new_site' => 'Create New Site',
 
@@ -112,6 +125,7 @@ $lang = array(
 
 'timeout_warning' => 'Duplicating large amounts of data can be an intensive process, and may cause the action to exceed the server\'s limitations for script execution and memory, causing loss of data.<br /><br />Always
 backup your database before performing a duplication, and if you experience problems, check with your host to increase the server allowances to perform this action.',
+*/
 
 ''=>''
 );
