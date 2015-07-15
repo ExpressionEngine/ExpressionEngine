@@ -283,6 +283,39 @@ class Msm extends CP_Controller {
 			ee('CP/URL', 'msm')->compile() => lang('msm_manager'),
 		);
 
+		if ( ! empty($_POST))
+		{
+			$site->set($_POST);
+			$site->site_system_preferences->is_site_on = ee()->input->post('is_site_on');
+			$result = $site->validate();
+
+			if ($response = $this->ajaxValidation($result))
+			{
+			    return $response;
+			}
+
+			if ($result->isValid())
+			{
+				$site->save();
+
+				ee('Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('edit_site_success'))
+					->addToBody(sprintf(lang('edit_site_success_desc'), $site->site_label))
+					->defer();
+
+				ee()->functions->redirect(ee('CP/URL', 'msm/edit/' . $site_id));
+			}
+			else
+			{
+				ee('Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('edit_site_error'))
+					->addToBody(lang('edit_site_error_desc'))
+					->now();
+			}
+		}
+
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL', 'msm/edit/' . $site_id),
@@ -318,12 +351,13 @@ class Msm extends CP_Controller {
 					'title' => 'site_online',
 					'desc' => 'site_online_desc',
 					'fields' => array(
-						'is_system_on' => array(
+						'is_site_on' => array(
 							'type' => 'inline_radio',
 							'choices' => array(
 								'y' => 'online',
 								'n' => 'offline'
-							)
+							),
+							'value' => $site->site_system_preferences->is_site_on
 						)
 					)
 				),

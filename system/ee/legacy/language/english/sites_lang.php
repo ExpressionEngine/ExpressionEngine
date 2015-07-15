@@ -21,6 +21,11 @@ $lang = array(
 'site_online_desc' => 'When set to <b>offline</b>, only super admins and member groups with permissions will be able to browse this website.',
 'online' => 'Online',
 'offline' => 'Offline',
+'edit_site_success' => 'Site Updated',
+'edit_site_success_desc' => 'The site <b>%s</b> has been updated.',
+'edit_site_error' => 'Cannot Update Site',
+'edit_site_error_desc' => 'We were unable to update this site, please review and fix errors below.',
+'invalid_short_name' => 'Your site name must contain only alpha-numeric characters, underscroes, dashes, and no spaces.',
 
 /*
 'msm_version' => 'Version: ',
