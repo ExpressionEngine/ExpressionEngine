@@ -79,7 +79,7 @@ class Site extends Model {
 	);
 
 	protected static $_validation_rules = array(
-		'site_name'  => 'required|validShortName|unique',
+		'site_name'  => 'required|validateShortName|unique',
 		'site_label' => 'required',
 	);
 
@@ -95,7 +95,7 @@ class Site extends Model {
 	protected $site_channel_preferences;
 	protected $site_bootstrap_checksums;
 
-	public function validShortName($key, $value, $params, $rule)
+	public function validateShortName($key, $value, $params, $rule)
 	{
 		if (preg_match('/[^a-z0-9\-\_]/i', $value))
 		{
