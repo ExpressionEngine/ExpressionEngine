@@ -1244,6 +1244,7 @@ CREATE TABLE `exp_sites` (
   `site_template_preferences` text NOT NULL,
   `site_channel_preferences` text NOT NULL,
   `site_bootstrap_checksums` text NOT NULL,
+  `site_pages` TEXT NOT NULL ,
   PRIMARY KEY (`site_id`),
   KEY `site_name` (`site_name`)
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
