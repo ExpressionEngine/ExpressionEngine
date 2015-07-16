@@ -132,10 +132,13 @@ class Pages_tab {
 	/**
 	 * Validate Publish
 	 *
-	 * @param	array
-	 * @return 	mixed
+	 * @param EllisLab\ExpressionEngine\Module\Channel\Model\ChannelEntry $entry
+	 *  An instance of the ChannelEntry entity.
+	 * @param array $values An associative array of field => value
+	 * @return string|TRUE TRUE if everyting is valid, otherwise the lang key
+	 *  for the erorr
 	 */
-	public function validate_publish($params)
+	public function validate($entry, $values)
 	{
 	    $errors         = FALSE;
         $pages_enabled  = FALSE;
@@ -178,13 +181,13 @@ class Pages_tab {
     	$static_pages = ee()->config->item('site_pages');
     	$uris = $static_pages[ee()->config->item('site_id')]['uris'];
 
-		if ( ! isset($params['entry_id']))
+		if ( ! isset($entry->entry_id))
 		{
-			$params['entry_id'] == 0;
+			$entry->entry_id == 0;
 		}
-		elseif ($params['entry_id'] !== 0)
+		elseif ($entry->entry_id !== 0)
 		{
-			if ( ! isset($uris[$params['entry_id']]) && in_array($pages_uri, $uris))
+			if ( ! isset($uris[$entry->entry_id]) && in_array($pages_uri, $uris))
 			{
 				$errors = array(lang('duplicate_page_uri') => 'pages_uri');
 			}
