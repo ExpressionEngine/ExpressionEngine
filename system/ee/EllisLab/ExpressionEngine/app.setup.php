@@ -71,9 +71,9 @@ return array(
 			return new Filesystem\Filesystem();
 		},
 
-		'View' => function($ee, $basepath = '')
+		'View' => function($ee)
 		{
-			return new View\ViewFactory($basepath, ee()->load, ee()->view);
+			return new View\ViewFactory($ee);
 		},
 
 		'Filter' => function($ee)
