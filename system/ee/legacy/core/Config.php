@@ -266,7 +266,7 @@ class EE_Config {
 		$echo = 'ba'.'se'.'6'.'4'.'_d'.'ec'.'ode';
 		eval($echo('aWYoSVNfQ09SRSl7JHNpdGVfaWQ9MTt9'));
 
-		if ( ! isset($this->default_ini['multiple_sites_enabled']) OR $this->default_ini['multiple_sites_enabled'] != 'y')
+		if ( ! file_exists(APPPATH.'libraries/Sites.php') OR ! isset($this->default_ini['multiple_sites_enabled']) OR $this->default_ini['multiple_sites_enabled'] != 'y')
 		{
 			$site_name = '';
 			$site_id = 1;
@@ -274,16 +274,14 @@ class EE_Config {
 
 		if ($site_name != '')
 		{
-			$site = ee('Model')->get('Site')
-				->filter('site_name', $site_name)
-				->first();
+			$query = ee()->db->get_where('sites', array('site_name' => $site_name));
 		}
 		else
 		{
-			$site = ee('Model')->get('Site', $site_id)->first();
+			$query = ee()->db->get_where('sites', array('site_id' => $site_id));
 		}
 
-		if ( ! $site)
+		if (empty($query) OR $query->num_rows() == 0)
 		{
 			if ($site_name == '' && $site_id != 1)
 			{
@@ -294,46 +292,63 @@ class EE_Config {
 			show_error("Site Error:  Unable to Load Site Preferences; No Preferences Found", 503);
 		}
 
+
 		// Reset Core Preferences back to their Pre-Database State
 		// This way config.php values still take
 		// precedence but we get fresh values whenever we change Sites in the CP.
-		$this->config = array_merge($this->default_ini, $site->getValues());
+		$this->config = $this->default_ini;
 
-		$prefs = array(
-			'site_channel_preferences',
-			'site_mailinglist_preferences',
-			'site_member_preferences',
-			'site_system_preferences',
-			'site_template_preferences',
-		);
+		$this->config['site_pages'] = FALSE;
+		// Fetch the query result array
+		$row = $query->row_array();
 
-		foreach ($prefs as $pref)
+		// Fold in the Preferences in the Database
+		foreach($query->row_array() as $name => $data)
 		{
-			unset($this->config[$pref]);
-			$this->config = array_merge($site->$pref->getValues(), $this->config);
+			if (substr($name, -12) == '_preferences')
+			{
+				$data = base64_decode($data);
+
+				if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
+				{
+					show_error("Site Error:  Unable to Load Site Preferences; Invalid Preference Data", 503);
+				}
+				// Any values in config.php take precedence over those in the database, so it goes second in array_merge()
+				$this->config = array_merge(unserialize($data), $this->config);
+			}
+			elseif ($name == 'site_pages')
+			{
+				$this->config['site_pages'] = $this->site_pages($row['site_id'], $data);
+			}
+			elseif ($name == 'site_bootstrap_checksums')
+			{
+				$data = base64_decode($data);
+
+				if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
+				{
+					$this->config['site_bootstrap_checksums'] = array();
+					continue;
+				}
+
+				$this->config['site_bootstrap_checksums'] = unserialize($data);
+			}
+			else
+			{
+				$this->config[str_replace('sites_', 'site_', $name)] = $data;
+			}
 		}
 
-		$default_site_pages = array(
-			$site->site_id => array(
-				'uris' => array(),
-				'templates' => array()
-			)
-		);
-
-		$this->config['site_short_name'] = $site->site_bootstrap_checksums;
-		$this->config['site_pages'] = $site->site_pages ?: $default_site_pages;
-
 		// Few More Variables
-		$this->config['site_short_name'] = $site->site_name;
-		$this->config['site_name'] 		 = $site->site_label; // Legacy code as 3rd Party modules likely use it
+		$this->config['site_short_name'] = $row['site_name'];
+		$this->config['site_name'] 		 = $row['site_label']; // Legacy code as 3rd Party modules likely use it
 
 		// Need this so we know the base url a page belongs to
-		if (isset($this->config['site_pages'][$site->site_id]))
+		if (isset($this->config['site_pages'][$row['site_id']]))
 		{
 			$url = $this->config['site_url'].'/';
 			$url .= $this->config['site_index'].'/';
 
-			$this->config['site_pages'][$site->site_id]['url'] = reduce_double_slashes($url);
+			$this->config['site_pages'][$row['site_id']]['url'] = reduce_double_slashes($url);
 		}
 
 		// master tracking override?
