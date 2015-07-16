@@ -1,4 +1,4 @@
-<?php extend_template('default-nav'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
 <div class="box has-tabs">
 	<h1><?=$cp_page_title?> <a class="btn action ta" href="<?=$view_path?>"><?=lang('view_rendered')?></a></h1>

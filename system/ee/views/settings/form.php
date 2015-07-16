@@ -1,4 +1,4 @@
 <?php
-	extend_template('default-nav');
+	$this->extend('_templates/default-nav');
 	$this->view('_shared/form');
 ?>

@@ -1,4 +1,4 @@
-<?php extend_template('default-nav', 'outer_box'); ?>
+<?php $this->extend('_templates/default-nav', 'outer_box'); ?>
 
 <div class="box mb">
 	<h1><?=lang('sql_manager_abbr')?></h1>

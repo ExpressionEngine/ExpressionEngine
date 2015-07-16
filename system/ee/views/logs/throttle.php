@@ -1,4 +1,4 @@
-<?php extend_template('default-nav') ?>
+<?php $this->extend('_templates/default-nav') ?>
 
 <div class="tbl-ctrls">
 <?=form_open($form_url)?>

@@ -1,4 +1,4 @@
-<?php extend_template('default-nav'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
 <h1><?=$cp_page_title?></h1>
 <?=form_open(ee('CP/URL', 'utilities/import-converter/import-fieldmap-confirm'), 'class="settings"', $form_hidden)?>
