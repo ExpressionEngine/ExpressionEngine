@@ -117,7 +117,7 @@ class File_ft extends EE_Fieldtype {
 
 			$file = $this->_parse_field($data);
 
-			return ee('View')->make('publish')->render(array(
+			return ee('View')->make('file:publish')->render(array(
 				'field_name' => $this->field_name,
 				'value' => $data,
 				'file' => $file,

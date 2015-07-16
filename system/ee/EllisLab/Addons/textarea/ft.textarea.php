@@ -170,7 +170,7 @@ class Textarea_ft extends EE_Fieldtype {
 				));
 			}
 
-			return ee('View')->make('publish')->render($vars);
+			return ee('View')->make('textarea:publish')->render($vars);
 		}
 
 		return form_textarea(array(
