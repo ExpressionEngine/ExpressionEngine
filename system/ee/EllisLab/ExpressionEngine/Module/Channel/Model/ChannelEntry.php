@@ -136,11 +136,70 @@ class ChannelEntry extends ContentModel {
 	{
 		parent::onAfterSave();
 		$this->Autosaves->delete();
+
+		$providers = ee('App')->getProviders();
+
+		foreach (array_keys($providers) as $name)
+		{
+			try
+			{
+				$info = ee('App')->get($name);
+				if (file_exists($info->getPath() . '/tab.' . $name . '.php'))
+				{
+					include_once($info->getPath() . '/tab.' . $name . '.php');
+					$class_name = ucfirst($name) . '_tab';
+					$OBJ = new $class_name();
+
+					if (method_exists($OBJ, 'save') === TRUE)
+					{
+						$fields = $OBJ->display($this->channel_id, $this->entry_id);
+
+						$values = array();
+						foreach(array_keys($fields) as $field)
+						{
+							$property = $name . '__' . $field;
+							$values[$field] = $this->$property;
+						}
+
+						$OBJ->save($this, $values);
+					}
+				}
+			}
+			catch (\Exception $e)
+			{
+				continue;
+			}
+		}
 	}
 
 	public function onAfterDelete()
 	{
 		$this->Autosaves->delete();
+
+		$providers = ee('App')->getProviders();
+
+		foreach (array_keys($providers) as $name)
+		{
+			try
+			{
+				$info = ee('App')->get($name);
+				if (file_exists($info->getPath() . '/tab.' . $name . '.php'))
+				{
+					include_once($info->getPath() . '/tab.' . $name . '.php');
+					$class_name = ucfirst($name) . '_tab';
+					$OBJ = new $class_name();
+
+					if (method_exists($OBJ, 'delete') === TRUE)
+					{
+						$OBJ->delete(array($this->entry_id));
+					}
+				}
+			}
+			catch (\Exception $e)
+			{
+				continue;
+			}
+		}
 	}
 
 	/**
