@@ -77,7 +77,7 @@ class View {
 	}
 
 	/**
-	 * Renders a view template file
+	 * Renders the view
 	 *
 	 * @param Array $vars An associative array of variables to use inside the
 	 *   template. ex: "title" => "Hello World!"
