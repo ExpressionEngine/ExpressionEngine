@@ -25,7 +25,7 @@
  */
 class Pages_tab {
 
-	public function publish_tabs($channel_id, $entry_id = '')
+	public function display($channel_id, $entry_id = '')
 	{
 		ee()->lang->loadfile('pages');
 

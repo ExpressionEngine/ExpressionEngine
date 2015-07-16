@@ -783,10 +783,10 @@ class Api_channel_fields extends Api {
 
 			$OBJ = new $class_name();
 
-			if (method_exists($OBJ, 'publish_tabs') === TRUE)
+			if (method_exists($OBJ, 'display') === TRUE)
 			{
 				// fetch the content
-				$fields = $OBJ->publish_tabs($channel_id, $entry_id);
+				$fields = $OBJ->display($channel_id, $entry_id);
 
 				// There's basically no way this *won't* be set, but let's check it anyhow.
 				// When we find it, we'll append the module's classname to it to prevent
