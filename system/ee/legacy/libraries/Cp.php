@@ -205,6 +205,12 @@ class Cp {
 
 		$this->add_js_script($js_scripts);
 		$this->_seal_combo_loader();
+
+		foreach ($vars as $key => $value)
+		{
+			ee()->view->$key = $value;
+		}
+
 		ee()->load->vars($vars);
 	}
 
