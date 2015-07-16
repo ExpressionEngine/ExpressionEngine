@@ -200,46 +200,46 @@ class Pages_tab {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Publish Data.
+	 * Saves the page's publish form data. This function is called in the
+	 * ChannelEntry's afterSave() event.
 	 *
-	 * @param 	array
+	 * @param EllisLab\ExpressionEngine\Module\Channel\Model\ChannelEntry $entry
+	 *  An instance of the ChannelEntry entity.
+	 * @param array $values An associative array of field => value
 	 * @return 	void
 	 */
-	public function publish_data_db($params)
+	public function save($entry, $values)
 	{
 	    $site_id    = ee()->config->item('site_id');
-	    $mod_data   = (isset($params['mod_data'])) ? $params['mod_data'] : NULL;
 	    $site_pages = ee()->config->item('site_pages');
 
         if ($site_pages !== FALSE
-            && isset($mod_data['pages_uri'])
-            && $mod_data['pages_uri'] != lang('example_uri')
-   			&& $mod_data['pages_uri'] != '')
+            && isset($values['pages_uri'])
+            && $values['pages_uri'] != lang('example_uri')
+   			&& $values['pages_uri'] != '')
         {
-            if (isset($mod_data['pages_template_id'])
-                && is_numeric($mod_data['pages_template_id']))
+            if (isset($values['pages_template_id'])
+                && is_numeric($values['pages_template_id']))
             {
 				$page = preg_replace("#[^a-zA-Z0-9_\-/\.]+$#i", '',
 				                    str_replace(ee()->config->item('site_url'), '',
-				                                $mod_data['pages_uri']));
+				                                $values['pages_uri']));
 
 				$page = '/' . trim($page, '/');
 
-				$site_pages[$site_id]['uris'][$params['entry_id']] = $page;
-				$site_pages[$site_id]['templates'][$params['entry_id']] = preg_replace("#[^0-9]+$#i", '',
-		                                            						$mod_data['pages_template_id']);
+				$site_pages[$site_id]['uris'][$entry->entry_id] = $page;
+				$site_pages[$site_id]['templates'][$entry->entry_id] = preg_replace("#[^0-9]+$#i", '',
+		                                            						$values['pages_template_id']);
 
-				if ($site_pages[$site_id]['uris'][$params['entry_id']] == '//')
+				if ($site_pages[$site_id]['uris'][$entry->entry_id] == '//')
 				{
-					$site_pages[$site_id]['uris'][$params['entry_id']] = '/';
+					$site_pages[$site_id]['uris'][$entry->entry_id] = '/';
 				}
 
 				ee()->config->set_item('site_pages', $site_pages);
-				ee()->db->where('site_id', (int) $site_id)
-							->update('sites', array(
-								'site_pages' => base64_encode(serialize($site_pages))
-							)
-				);
+				$site = ee('Model')->get('Site', $site_id)->first();
+				$site->site_pages = $site_pages;
+				$site->save();
             }
         }
 	}
@@ -247,27 +247,26 @@ class Pages_tab {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Delete Actions
+	 * Removes pages from the site_pages structure. This function is called in the
+	 * ChannelEntry's afterDelete() event.
 	 *
-	 * @param 	array
+	 * @param int[] $entry_ids An array of entry IDs that were deleted
 	 * @return 	void
 	 */
-	public function publish_data_delete_db($params)
+	public function delete($entry_ids)
 	{
 		$site_pages = ee()->config->item('site_pages');
 		$site_id	= ee()->config->item('site_id');
 
-		foreach ($params['entry_ids'] as $entry_id)
+		foreach ($entry_ids as $entry_id)
 		{
 			unset($site_pages[$site_id]['uris'][$entry_id]);
 			unset($site_pages[$site_id]['templates'][$entry_id]);
 		}
 
-		ee()->db->where('site_id', (int) $site_id)
-					 ->update('sites', array(
-					 			'site_pages'	=>
-									base64_encode(serialize($site_pages))
-					 ));
+		$site = ee('Model')->get('Site', $site_id)->first();
+		$site->site_pages = $site_pages;
+		$site->save();
 	}
 
 	// --------------------------------------------------------------------
