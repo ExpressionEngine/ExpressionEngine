@@ -45,15 +45,14 @@ class Grid_lib {
 	/**
 	 * Handles EE_Fieldtype's display_field for displaying the Grid field
 	 *
+	 * @param	array	Grid input object
 	 * @param	array	Field data to display prepopulated in publish field
 	 * @return	string	HTML of publish field
 	 */
-	public function display_field($data)
+	public function display_field($grid, $data)
 	{
-		ee()->load->helper('form_helper');
-
 		// Get columns just for this field
-		$vars['columns'] = ee()->grid_model->get_columns_for_field($this->field_id, $this->content_type);
+		$columns = ee()->grid_model->get_columns_for_field($this->field_id, $this->content_type);
 
 		// If validation data is set, we're likely coming back to the form on a
 		// validation error
@@ -73,10 +72,30 @@ class Grid_lib {
 			$rows = (isset($rows[$this->entry_id])) ? $rows[$this->entry_id] : array();
 		}
 
-		$vars['rows'] = array();
+		$column_headings = array();
+		$blank_column = array();
+		foreach ($columns as $column)
+		{
+			$column_headings[$column['col_label']] = array('desc' => $column['col_instructions']);
 
-		// Loop through row data and construct an array of publish field HTML
-		// for the supplied field data
+			if ($column['col_type'] == 'rte')
+			{
+				$column_headings[$column['col_label']]['class'] = 'grid-rte';
+			}
+
+			if ($column['col_type'] == 'relationship'
+				&& $column['col_settings']['allow_multiple'])
+			{
+				$column_headings[$column['col_label']]['class'] = 'grid-mr';
+			}
+
+			$blank_column[] = $this->_publish_field_cell($column);
+		}
+		$grid->setColumns($column_headings);
+		$grid->setBlankRow($blank_column);
+
+		$data = array();
+
 		foreach ($rows as $row_id => $row)
 		{
 			if ( ! is_numeric($row_id))
@@ -84,34 +103,32 @@ class Grid_lib {
 				$row['row_id'] = $row_id;
 			}
 
-			foreach ($vars['columns'] as $column)
+			$field_columns = array();
+
+			foreach ($columns as $column)
 			{
-				// Construct the HTML for this particular row and column
-				$vars['rows'][$row['row_id']]['col_id_'.$column['col_id']] = $this->_publish_field_cell(
-					$column,
-					$row
+				$field_columns[] = array(
+					'html' => $this->_publish_field_cell($column, $row),
+					'error' => isset($row['col_id_'.$column['col_id'].'_error']) ? $row['col_id_'.$column['col_id'].'_error'] : NULL,
+					'attrs' => array(
+						'data-fieldtype' => $column['col_type'],
+						'data-column-id' => $column['col_id'],
+						'data-row-id' => $row_id,
+					)
 				);
-
-				$vars['rows'][$row['row_id']]['row_id'] = $row_id;
-
-				// If we're coming back from a validation error, make sure the
-				// error message is set
-				if (isset($row['col_id_'.$column['col_id'].'_error']))
-				{
-					$vars['rows'][$row['row_id']]['col_id_'.$column['col_id'].'_error'] = $row['col_id_'.$column['col_id'].'_error'];
-				}
 			}
+			$data[] = array(
+				'attrs' => array('row_id' => $row_id),
+				'columns' => $field_columns
+			);
 		}
 
-		// Create a blank row for cloning to enter more data
-		foreach ($vars['columns'] as $column)
-		{
-			$vars['blank_row']['col_id_'.$column['col_id']] = $this->_publish_field_cell($column);
-		}
+		$grid->setData($data);
 
-		$vars['field_id'] = $this->field_name;
+		// ಠ_ಠ
+		ee()->load->remove_package_path();
 
-		return ee()->load->view('publish', $vars, TRUE);
+		return ee()->load->view('_shared/table', $grid->viewData(), TRUE);
 	}
 
 	// ------------------------------------------------------------------------
@@ -155,10 +172,7 @@ class Grid_lib {
 		}
 
 		// Return the publish field HTML with namespaced form field names
-		return $this->_namespace_inputs(
-			$display_field,
-			'$1name="'.$this->field_name.'[rows]['.$row_id.'][$2]$3"'
-		);
+		return $display_field;
 	}
 
 	// ------------------------------------------------------------------------

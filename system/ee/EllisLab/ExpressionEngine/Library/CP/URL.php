@@ -122,9 +122,10 @@ class URL {
 	}
 
 	/**
-	 * Compiles and returns a URL
+	 * Compiles and returns the URL as a string. Typically this is used when you
+	 * need to use a URL as an array key, or want to json_encode() a URL.
 	 *
-	 * @return string	The URL
+	 * @return string The URL
 	 */
 	public function compile()
 	{

@@ -68,7 +68,9 @@ class Snippets extends AbstractDesignController {
 		$table = ee('CP/Table', array('autosort' => TRUE));
 		$columns = array(
 			'partial',
-			'all_sites',
+			'all_sites' => array(
+				'encode' => FALSE
+			),
 			'manage' => array(
 				'type'	=> Table::COL_TOOLBAR
 			),

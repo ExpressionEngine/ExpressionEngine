@@ -25,4 +25,4 @@ namespace EllisLab\ExpressionEngine\Library\Filesystem;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class FilesystemException extends Exception { }
+class FilesystemException extends \Exception { }

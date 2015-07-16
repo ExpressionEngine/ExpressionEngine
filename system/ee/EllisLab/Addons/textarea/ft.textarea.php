@@ -157,7 +157,7 @@ class Textarea_ft extends EE_Fieldtype {
 				'smileys'         => $smileys
 			);
 
-			if ($this->settings['field_show_file_selector']
+			if (isset($this->settings['field_show_file_selector'])
 				&& $this->settings['field_show_file_selector'] == 'y')
 			{
 				$fp = new FilePicker();
@@ -331,7 +331,7 @@ class Textarea_ft extends EE_Fieldtype {
 
 	function grid_save_settings($data)
 	{
-		return $data;
+		return array_merge($this->save_settings($data), $data);
 	}
 
 	// --------------------------------------------------------------------

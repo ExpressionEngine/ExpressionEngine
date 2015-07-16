@@ -170,18 +170,6 @@ class Fields extends AbstractChannelsController {
 			ee('CP/URL', 'channels/fields')->compile() => lang('custom_fields'),
 		);
 
-		$vars = array(
-			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'channels/fields/create'),
-			'sections' => $this->form(),
-			'save_btn_text' => 'btn_create_field',
-			'save_btn_text_working' => 'btn_saving',
-			'form_hidden' => array(
-				'field_id' => NULL,
-				'site_id' => ee()->config->item('site_id')
-			),
-		);
-
 		if ( ! empty($_POST))
 		{
 			$field = $this->setWithPost(ee('Model')->make('ChannelField'));
@@ -217,6 +205,18 @@ class Fields extends AbstractChannelsController {
 					->now();
 			}
 		}
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'base_url' => ee('CP/URL', 'channels/fields/create'),
+			'sections' => $this->form(),
+			'save_btn_text' => 'btn_create_field',
+			'save_btn_text_working' => 'btn_saving',
+			'form_hidden' => array(
+				'field_id' => NULL,
+				'site_id' => ee()->config->item('site_id')
+			),
+		);
 
 		ee()->view->cp_page_title = lang('create_field');
 

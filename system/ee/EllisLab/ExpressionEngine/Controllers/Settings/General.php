@@ -97,6 +97,19 @@ class General extends Settings {
 						'class' => 'version-check'
 					)
 				),
+				array(
+					'title' => 'enable_msm',
+					'desc' => 'enable_msm_desc',
+					'fields' => array(
+						'multiple_sites_enabled' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							)
+						)
+					)
+				),
 			),
 			'defaults' => array(
 				/*

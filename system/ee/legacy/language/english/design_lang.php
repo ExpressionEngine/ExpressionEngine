@@ -160,7 +160,9 @@ $lang = array(
 
 'variable' => 'Variable',
 
-'no_global_variables' => 'There are currently no Template Variables',
+'no_template_routes' => 'There are currently no Template Routes',
+
+'no_template_variables' => 'There are currently no Template Variables',
 
 'no_snippets' => 'There are currently no Template Partials',
 

@@ -56,7 +56,8 @@ class Updater {
 				'_update_files_table',
 				'_update_upload_prefs_table',
 				'_update_upload_directories',
-				'_drop_field_formatting_table'
+				'_drop_field_formatting_table',
+				'_update_sites_table'
 			)
 		);
 
@@ -910,6 +911,27 @@ class Updater {
 	private function _drop_field_formatting_table()
 	{
 		ee()->smartforge->drop_table('field_formatting');
+	}
+
+	/**
+	 * Adds columns to the sites table as needed
+	 *
+	 * @return void
+	 */
+	private function _update_sites_table()
+	{
+		if ( ! ee()->db->field_exists('site_pages', 'sites'))
+		{
+			ee()->smartforge->add_column(
+				'sites',
+				array(
+					'site_pages' => array(
+						'type'    => 'TEXT',
+						'null'    => FALSE
+					)
+				)
+			);
+		}
 	}
 }
 /* END CLASS */
