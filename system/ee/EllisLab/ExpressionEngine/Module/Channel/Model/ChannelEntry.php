@@ -223,13 +223,63 @@ class ChannelEntry extends ContentModel {
 		return parent::getDisplay($layout);
 	}
 
+	protected function getTabFields()
+	{
+		$module_tabs = array();
+
+		// Some Tabs might call ee()->api_channel_fields
+		ee()->legacy_api->instantiate('channel_fields');
+
+		$providers = ee('App')->getProviders();
+
+		foreach (array_keys($providers) as $name)
+		{
+			try
+			{
+				$info = ee('App')->get($name);
+				if (file_exists($info->getPath() . '/tab.' . $name . '.php'))
+				{
+					include_once($info->getPath() . '/tab.' . $name . '.php');
+					$class_name = ucfirst($name) . '_tab';
+					$OBJ = new $class_name();
+
+					if (method_exists($OBJ, 'display') === TRUE)
+					{
+						// fetch the content
+						$fields = $OBJ->display($this->channel_id, $this->entry_id);
+
+						// There's basically no way this *won't* be set, but let's check it anyhow.
+						// When we find it, we'll append the module's classname to it to prevent
+						// collission with other modules with similarly named fields. This namespacing
+						// gets stripped as needed when the module data is processed in get_module_methods()
+						// This function is called for insertion and editing of entries.
+
+						foreach ($fields as $key => $field)
+						{
+							if (isset($field['field_id']))
+							{
+								$fields[$key]['field_id'] = $name.'__'.$field['field_id']; // two underscores
+							}
+						}
+
+						$module_tabs[$name] = $fields;
+					}
+				}
+			}
+			catch (\Exception $e)
+			{
+				continue;
+			}
+		}
+
+		return $module_tabs;
+	}
+
 	protected function initializeCustomFields()
 	{
 		parent::initializeCustomFields();
 
-		// Here comes the ugly! @TODO don't do this
-		ee()->legacy_api->instantiate('channel_fields');
-		$module_tabs = ee()->api_channel_fields->get_module_fields($this->channel_id, $this->entry_id);
+		$module_tabs = $this->getTabFields();
 
 		if ($module_tabs)
 		{
@@ -411,9 +461,7 @@ class ChannelEntry extends ContentModel {
 				),
 			);
 
-			// Here comes the ugly! @TODO don't do this
-			ee()->legacy_api->instantiate('channel_fields');
-			$module_tabs = ee()->api_channel_fields->get_module_fields($this->channel_id, $this->entry_id);
+			$module_tabs = $this->getTabFields();
 
 			foreach ($module_tabs as $tab_id => $fields)
 			{
