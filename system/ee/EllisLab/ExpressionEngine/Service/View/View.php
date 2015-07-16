@@ -285,6 +285,15 @@ class View {
 	 * Create a new view object. Change to the requested provider scope
 	 * if required to speed up new sub-views.
 	 *
+	 * It's tempting to pass the factory to this class or to grab a factory
+	 * instance from the provider to avoid the duplication with the factory's
+	 * `make()` method, but you still end up having to compare prefixes to ensure
+	 * subviews are correctly scoped. Which is to say: it's not worth the law
+	 * of demeter violation to get this DRY as it will end up being the same
+	 * length again.
+	 *
+	 * If anything the solution will likely come from a change to the providers.
+	 *
 	 * @param  String $view Subview name, potentially with prefix
 	 * @return View         The subview instance
 	 */
