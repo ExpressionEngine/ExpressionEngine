@@ -1,5 +1,5 @@
 <?php
-	echo $this->cp->render_footer_js();
+	echo ee()->cp->render_footer_js();
 
 	if (isset($library_src))
 	{
@@ -11,7 +11,7 @@
 		echo $script_foot;
 	}
 
-	foreach ($this->cp->footer_item as $item)
+	foreach (ee()->cp->footer_item as $item)
 	{
 		echo $item."\n";
 	}

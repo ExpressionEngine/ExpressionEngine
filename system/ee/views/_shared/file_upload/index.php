@@ -1,4 +1,4 @@
-<?php $this->load->view('_shared/file_upload/iframe_header'); ?>
+<?php $this->view('_shared/file_upload/iframe_header'); ?>
 
 <?=form_open_multipart('C=content_files_modal'.AMP.'M=upload_file', array('id'=>'upload_form'), $hidden_vars)?>
 	<?php if (isset($error)): ?>
@@ -32,4 +32,4 @@
 	});
 </script>
 	
-<?php $this->load->view('_shared/file_upload/iframe_footer') ?>
+<?php $this->view('_shared/file_upload/iframe_footer') ?>

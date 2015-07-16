@@ -3,32 +3,32 @@
 <head>
 	<meta charset="utf-8">
 
-	<?=$this->view->head_title($cp_page_title)?>
-	<?=$this->view->head_link('css/jquery-ui-1.8.16.custom.css'); ?>
-	<?=$this->view->head_link('css/global.css'); ?>
-	<?=$this->view->head_link('css/file_browser.css'); ?>
-	<?=$this->view->head_link('css/override.css'); ?>
+	<?=ee()->view->head_title($cp_page_title)?>
+	<?=ee()->view->head_link('css/jquery-ui-1.8.16.custom.css'); ?>
+	<?=ee()->view->head_link('css/global.css'); ?>
+	<?=ee()->view->head_link('css/file_browser.css'); ?>
+	<?=ee()->view->head_link('css/override.css'); ?>
 
-	<?php if ($this->extensions->active_hook('cp_css_end') === TRUE):?>
+	<?php if (ee()->extensions->active_hook('cp_css_end') === TRUE):?>
 	<link rel="stylesheet" href="<?=BASE.AMP.'C=css'.AMP.'M=cp_global_ext';?>" type="text/css" />
 	<?php endif;?>
-	<!--[if lte IE 7]><?=$this->view->head_link('css/iefix.css')?><![endif]-->
+	<!--[if lte IE 7]><?=ee()->view->head_link('css/iefix.css')?><![endif]-->
 
-	<?php 
+	<?php
 	if (isset($cp_global_js))
 	{
 		echo $cp_global_js;
 	} ?>
-	
-	<?=$this->view->script_tag('jquery/jquery.js')?>
+
+	<?=ee()->view->script_tag('jquery/jquery.js')?>
 
 	<?php
-	if (isset($script_head)) 
+	if (isset($script_head))
 	{
 		echo $script_head;
 	}
 
-	foreach ($this->cp->its_all_in_your_head as $item)
+	foreach (ee()->cp->its_all_in_your_head as $item)
 	{
 		echo $item."\n";
 	}
