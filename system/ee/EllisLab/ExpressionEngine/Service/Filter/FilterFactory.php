@@ -169,7 +169,7 @@ class FilterFactory {
 			}
 		}
 
-		return $this->view->make('filters')->render(array('filters' => $filters));
+		return $this->view->make('_shared/filters/filters')->render(array('filters' => $filters));
 	}
 
 	/**

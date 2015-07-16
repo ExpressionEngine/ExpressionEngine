@@ -161,7 +161,7 @@ class Date extends Filter {
 			'options'		=> $this->prepareOptions($url),
 			'timestamp'		=> $this->timestamp
 		);
-		return $view->make('date')->render($filter);
+		return $view->make('_shared/filters/date')->render($filter);
 	}
 
 }
