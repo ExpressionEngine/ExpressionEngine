@@ -215,138 +215,155 @@ class ChannelEntry extends ContentModel {
 	 */
 	protected function getDefaultFields()
 	{
-		return array(
-			'title' => array(
-				'field_id'				=> 'title',
-				'field_label'			=> lang('title'),
-				'field_required'		=> 'y',
-				'field_show_fmt'		=> 'n',
-				'field_instructions'	=> '',
-				'field_text_direction'	=> 'ltr',
-				'field_type'			=> 'text',
-				'field_maxl'			=> 100
-			),
-			'url_title' => array(
-				'field_id'				=> 'url_title',
-				'field_label'			=> lang('url_title'),
-				'field_required'		=> 'n',
-				'field_fmt'				=> 'xhtml',
-				'field_instructions'	=> lang('url_title_desc'),
-				'field_show_fmt'		=> 'n',
-				'field_text_direction'	=> 'ltr',
-				'field_type'			=> 'text',
-				'field_maxl'			=> 75
-			),
-			'entry_date' => array(
-				'field_id'				=> 'entry_date',
-				'field_label'			=> lang('entry_date'),
-				'field_required'		=> 'y',
-				'field_type'			=> 'date',
-				'field_text_direction'	=> 'ltr',
-				'field_fmt'				=> 'text',
-				'field_instructions'	=> lang('entry_date_desc'),
-				'field_show_fmt'		=> 'n',
-				'always_show_date'		=> 'y',
-				'default_offset'		=> 0,
-				'selected'				=> 'y',
-			),
-			'expiration_date' => array(
-				'field_id'				=> 'expiration_date',
-				'field_label'			=> lang('expiration_date'),
-				'field_required'		=> 'n',
-				'field_type'			=> 'date',
-				'field_text_direction'	=> 'ltr',
-				'field_fmt'				=> 'text',
-				'field_instructions'	=> lang('expiration_date_desc'),
-				'field_show_fmt'		=> 'n',
-				'default_offset'		=> 0,
-				'selected'				=> 'y',
-			),
-			'comment_expiration_date' => array(
-				'field_id'				=> 'comment_expiration_date',
-				'field_label'			=> lang('comment_expiration_date'),
-				'field_required'		=> 'n',
-				'field_type'			=> 'date',
-				'field_text_direction'	=> 'ltr',
-				'field_fmt'				=> 'text',
-				'field_instructions'	=> lang('comment_expiration_date_desc'),
-				'field_show_fmt'		=> 'n',
-				'default_offset'		=> 0,
-				'selected'				=> 'y',
-				'populateCallback'		=> array($this, 'populateCommentExpiration')
-			),
-			'channel_id' => array(
-				'field_id'				=> 'channel_id',
-				'field_label'			=> lang('channel'),
-				'field_required'		=> 'n',
-				'field_show_fmt'		=> 'n',
-				'field_instructions'	=> lang('channel_desc'),
-				'field_text_direction'	=> 'ltr',
-				'field_type'			=> 'select',
-				'field_list_items'      => array(),
-				'field_maxl'			=> 100,
-				'populateCallback'		=> array($this, 'populateChannels')
-			),
-			'status' => array(
-				'field_id'				=> 'status',
-				'field_label'			=> lang('entry_status'),
-				'field_required'		=> 'n',
-				'field_show_fmt'		=> 'n',
-				'field_instructions'	=> lang('entry_status_desc'),
-				'field_text_direction'	=> 'ltr',
-				'field_type'			=> 'select',
-				'field_list_items'      => array(),
-				'field_maxl'			=> 100,
-				'populateCallback'		=> array($this, 'populateStatus')
-			),
-			'author_id' => array(
-				'field_id'				=> 'author_id',
-				'field_label'			=> lang('author'),
-				'field_required'		=> 'n',
-				'field_show_fmt'		=> 'n',
-				'field_instructions'	=> lang('author_desc'),
-				'field_text_direction'	=> 'ltr',
-				'field_type'			=> 'select',
-				'field_list_items'      => array(),
-				'field_maxl'			=> 100,
-				'populateCallback'		=> array($this, 'populateAuthors')
-			),
-			'sticky' => array(
-				'field_id'				=> 'sticky',
-				'field_label'			=> lang('sticky'),
-				'field_required'		=> 'n',
-				'field_show_fmt'		=> 'n',
-				'field_instructions'	=> lang('sticky_desc'),
-				'field_text_direction'	=> 'ltr',
-				'field_type'			=> 'radio',
-				'field_list_items'      => array('y' => lang('yes'), 'n' => lang('no')),
-				'field_maxl'			=> 100
-			),
-			'allow_comments' => array(
-				'field_id'				=> 'allow_comments',
-				'field_label'			=> lang('allow_comments'),
-				'field_required'		=> 'n',
-				'field_show_fmt'		=> 'n',
-				'field_instructions'	=> lang('allow_comments_desc'),
-				'field_text_direction'	=> 'ltr',
-				'field_type'			=> 'radio',
-				'field_list_items'      => array('y' => lang('yes'), 'n' => lang('no')),
-				'field_maxl'			=> 100
-			),
-			'categories' => array(
-				'field_id'				=> 'categories',
-				'field_label'			=> lang('categories'),
-				'field_required'		=> 'n',
-				'field_show_fmt'		=> 'n',
-				'field_instructions'	=> lang('categories_desc'),
-				'field_text_direction'	=> 'ltr',
-				'field_type'			=> 'checkboxes',
-				'string_override'		=> '',
-				'field_list_items'      => '',
-				'field_maxl'			=> 100,
-				'populateCallback'		=> array($this, 'populateCategories')
-			),
-		);
+		static $default_fields = array();
+
+		if (empty($default_fields))
+		{
+			$default_fields = array(
+				'title' => array(
+					'field_id'				=> 'title',
+					'field_label'			=> lang('title'),
+					'field_required'		=> 'y',
+					'field_show_fmt'		=> 'n',
+					'field_instructions'	=> '',
+					'field_text_direction'	=> 'ltr',
+					'field_type'			=> 'text',
+					'field_maxl'			=> 100
+				),
+				'url_title' => array(
+					'field_id'				=> 'url_title',
+					'field_label'			=> lang('url_title'),
+					'field_required'		=> 'n',
+					'field_fmt'				=> 'xhtml',
+					'field_instructions'	=> lang('url_title_desc'),
+					'field_show_fmt'		=> 'n',
+					'field_text_direction'	=> 'ltr',
+					'field_type'			=> 'text',
+					'field_maxl'			=> 75
+				),
+				'entry_date' => array(
+					'field_id'				=> 'entry_date',
+					'field_label'			=> lang('entry_date'),
+					'field_required'		=> 'y',
+					'field_type'			=> 'date',
+					'field_text_direction'	=> 'ltr',
+					'field_fmt'				=> 'text',
+					'field_instructions'	=> lang('entry_date_desc'),
+					'field_show_fmt'		=> 'n',
+					'always_show_date'		=> 'y',
+					'default_offset'		=> 0,
+					'selected'				=> 'y',
+				),
+				'expiration_date' => array(
+					'field_id'				=> 'expiration_date',
+					'field_label'			=> lang('expiration_date'),
+					'field_required'		=> 'n',
+					'field_type'			=> 'date',
+					'field_text_direction'	=> 'ltr',
+					'field_fmt'				=> 'text',
+					'field_instructions'	=> lang('expiration_date_desc'),
+					'field_show_fmt'		=> 'n',
+					'default_offset'		=> 0,
+					'selected'				=> 'y',
+				),
+				'comment_expiration_date' => array(
+					'field_id'				=> 'comment_expiration_date',
+					'field_label'			=> lang('comment_expiration_date'),
+					'field_required'		=> 'n',
+					'field_type'			=> 'date',
+					'field_text_direction'	=> 'ltr',
+					'field_fmt'				=> 'text',
+					'field_instructions'	=> lang('comment_expiration_date_desc'),
+					'field_show_fmt'		=> 'n',
+					'default_offset'		=> 0,
+					'selected'				=> 'y',
+					'populateCallback'		=> array($this, 'populateCommentExpiration')
+				),
+				'channel_id' => array(
+					'field_id'				=> 'channel_id',
+					'field_label'			=> lang('channel'),
+					'field_required'		=> 'n',
+					'field_show_fmt'		=> 'n',
+					'field_instructions'	=> lang('channel_desc'),
+					'field_text_direction'	=> 'ltr',
+					'field_type'			=> 'select',
+					'field_list_items'      => array(),
+					'field_maxl'			=> 100,
+					'populateCallback'		=> array($this, 'populateChannels')
+				),
+				'status' => array(
+					'field_id'				=> 'status',
+					'field_label'			=> lang('entry_status'),
+					'field_required'		=> 'n',
+					'field_show_fmt'		=> 'n',
+					'field_instructions'	=> lang('entry_status_desc'),
+					'field_text_direction'	=> 'ltr',
+					'field_type'			=> 'select',
+					'field_list_items'      => array(),
+					'field_maxl'			=> 100,
+					'populateCallback'		=> array($this, 'populateStatus')
+				),
+				'author_id' => array(
+					'field_id'				=> 'author_id',
+					'field_label'			=> lang('author'),
+					'field_required'		=> 'n',
+					'field_show_fmt'		=> 'n',
+					'field_instructions'	=> lang('author_desc'),
+					'field_text_direction'	=> 'ltr',
+					'field_type'			=> 'select',
+					'field_list_items'      => array(),
+					'field_maxl'			=> 100,
+					'populateCallback'		=> array($this, 'populateAuthors')
+				),
+				'sticky' => array(
+					'field_id'				=> 'sticky',
+					'field_label'			=> lang('sticky'),
+					'field_required'		=> 'n',
+					'field_show_fmt'		=> 'n',
+					'field_instructions'	=> lang('sticky_desc'),
+					'field_text_direction'	=> 'ltr',
+					'field_type'			=> 'radio',
+					'field_list_items'      => array('y' => lang('yes'), 'n' => lang('no')),
+					'field_maxl'			=> 100
+				),
+				'allow_comments' => array(
+					'field_id'				=> 'allow_comments',
+					'field_label'			=> lang('allow_comments'),
+					'field_required'		=> 'n',
+					'field_show_fmt'		=> 'n',
+					'field_instructions'	=> lang('allow_comments_desc'),
+					'field_text_direction'	=> 'ltr',
+					'field_type'			=> 'radio',
+					'field_list_items'      => array('y' => lang('yes'), 'n' => lang('no')),
+					'field_maxl'			=> 100
+				),
+				'categories' => array(
+					'field_id'				=> 'categories',
+					'field_label'			=> lang('categories'),
+					'field_required'		=> 'n',
+					'field_show_fmt'		=> 'n',
+					'field_instructions'	=> lang('categories_desc'),
+					'field_text_direction'	=> 'ltr',
+					'field_type'			=> 'checkboxes',
+					'string_override'		=> '',
+					'field_list_items'      => '',
+					'field_maxl'			=> 100,
+					'populateCallback'		=> array($this, 'populateCategories')
+				),
+			);
+
+			// Here comes the ugly! @TODO don't do this
+			ee()->legacy_api->instantiate('channel_fields');
+			$module_tabs = ee()->api_channel_fields->get_module_fields($this->channel_id, $this->entry_id);
+
+			foreach ($module_tabs as $tab_id => $fields)
+			{
+				foreach ($fields as $key => $field)
+					$default_fields[$tab_id . '__' . $key] = $field;
+			}
+		}
+
+		return $default_fields;
 	}
 
 	public function populateChannels($field)
