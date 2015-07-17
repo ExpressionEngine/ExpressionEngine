@@ -38,6 +38,7 @@ class Updater {
 
 		$steps = new ProgressIterator(
 			array(
+				'_move_database_information',
 				'_update_email_cache_table',
 				'_update_upload_no_access_table',
 				'_insert_comment_settings_into_db',
@@ -67,6 +68,19 @@ class Updater {
 		}
 
 		return TRUE;
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Migrate the database information from database.php to config.php
+	 *
+	 * @return void
+	 */
+	private function _move_database_information()
+	{
+		require SYSPATH.'/user/config/database.php';
+		ee()->config->_update_dbconfig($db[$active_group]);
 	}
 
 	// -------------------------------------------------------------------------
