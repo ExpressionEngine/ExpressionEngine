@@ -258,8 +258,8 @@ class Members extends CP_Controller {
 		$vars['sections'] = array(
 			array(
 				array(
-					'title' => 'banned_ips',
-					'desc' => 'banned_ips_desc',
+					'title' => 'ip_address_banning',
+					'desc' => 'ip_banning_instructions',
 					'fields' => array(
 						'banned_ips' => array(
 							'type' => 'textarea',
@@ -268,8 +268,8 @@ class Members extends CP_Controller {
 					)
 				),
 				array(
-					'title' => 'banned_emails',
-					'desc' => 'banned_emails_desc',
+					'title' => 'email_address_banning',
+					'desc' => 'email_banning_instructions',
 					'fields' => array(
 						'banned_emails' => array(
 							'type' => 'textarea',
@@ -278,8 +278,8 @@ class Members extends CP_Controller {
 					)
 				),
 				array(
-					'title' => 'banned_usernames',
-					'desc' => 'banned_usernames_desc',
+					'title' => 'username_banning',
+					'desc' => 'username_banning_instructions',
 					'fields' => array(
 						'banned_usernames' => array(
 							'type' => 'textarea',
@@ -288,8 +288,8 @@ class Members extends CP_Controller {
 					)
 				),
 				array(
-					'title' => 'banned_screen_names',
-					'desc' => 'banned_screen_names_desc',
+					'title' => 'screen_name_banning',
+					'desc' => 'screen_name_banning_instructions',
 					'fields' => array(
 						'banned_screen_names' => array(
 							'type' => 'textarea',
@@ -354,7 +354,7 @@ class Members extends CP_Controller {
 
 		ee()->view->cp_page_title = lang('banned_members');
 		$this->form = $vars;
-		$this->form['cp_page_title'] = lang('ban_settings');
+		$this->form['cp_page_title'] = lang('user_banning');
 		$this->form['ajax_validate'] = TRUE;
 		$this->form['save_btn_text'] = 'btn_save_settings';
 		$this->form['save_btn_text_working'] = 'btn_saving';
