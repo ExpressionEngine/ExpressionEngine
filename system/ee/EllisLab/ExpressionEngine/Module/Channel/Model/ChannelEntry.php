@@ -231,13 +231,17 @@ class ChannelEntry extends ContentModel {
 		ee()->legacy_api->instantiate('channel_fields');
 
 		$providers = ee('App')->getProviders();
+		$installed_modules = $this->getFrontend()->get('Module')
+			->all()
+			->pluck('module_name');
 
 		foreach (array_keys($providers) as $name)
 		{
 			try
 			{
 				$info = ee('App')->get($name);
-				if (file_exists($info->getPath() . '/tab.' . $name . '.php'))
+				if (file_exists($info->getPath() . '/tab.' . $name . '.php')
+					&& in_array(ucfirst($name), $installed_modules))
 				{
 					include_once($info->getPath() . '/tab.' . $name . '.php');
 					$class_name = ucfirst($name) . '_tab';
