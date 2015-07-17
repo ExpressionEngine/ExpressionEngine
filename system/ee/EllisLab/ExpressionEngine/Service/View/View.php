@@ -115,7 +115,7 @@ class View {
 	 */
 	protected function parse($path, $vars)
 	{
-		$rewrite = (version_compare(PHP_VERSION, '5.4.0') < 0 && @ini_get('short_open_tag') === FALSE);
+		$rewrite = (version_compare(PHP_VERSION, '5.4.0') < 0 && @ini_get('short_open_tag') == FALSE);
 
 		extract($vars);
 
