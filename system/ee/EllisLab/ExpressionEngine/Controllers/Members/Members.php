@@ -70,7 +70,7 @@ class Members extends CP_Controller {
 			),
 			array(
 				'pending_activation' => ee('CP/URL', 'members', array('group' => 4)),
-				'manage_bans' => ee('CP/URL', 'members', array('group' => 2))
+				'manage_bans' => ee('CP/URL', 'members/bans')
 			),
 			'member_groups' => array(
 				'href' => ee('CP/URL', 'members/groups'),
