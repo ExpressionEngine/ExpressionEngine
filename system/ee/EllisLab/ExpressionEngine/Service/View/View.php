@@ -144,34 +144,14 @@ class View {
 	 * @param bool  $return Whether to return a string or output the results
 	 * @return String The parsed sub-view
 	 */
-	public function view($view, $vars = array(), $return = FALSE)
+	public function embed($view, $vars = array(), $disable = array())
 	{
 		$vars = array_merge($this->processing, $vars);
+		$view = $this->make($view)->disable($disable);
 
-		$result = $this->makeView($view)->render($vars);
-
-		if ($return === FALSE)
-		{
-			ob_start();
-			echo $result;
-			ob_end_flush();
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Loads, renders, and (optionally) returns a sub-view. Basically the same
-	 * as `view()`, but automatically forces an ee:prefix.
-	 *
-	 * @param String $view The name of the sub-view
-	 * @param Array  $vars Additional variables to pass to the sub-view
-	 * @param bool  $return Whether to return a string or output the results
-	 * @return String The parsed sub-view
-	 */
-	public function ee_view($view, $vars = array(), $return = FALSE)
-	{
-		return $this->view('ee:'.$view, $vars, $return);
+		ob_start();
+		echo $view->render($vars);
+		ob_end_flush();
 	}
 
 	/**
@@ -181,9 +161,12 @@ class View {
 	 * @param  array  $disable Items to disable in the parent view
 	 * @return void
 	 */
-	public function extend($which, $disable = array())
+	public function extend($view, $vars = array(), $disable = array())
 	{
-		$this->parent = $this->makeView($which)->disable($disable);
+		$vars = array_merge($this->processing, $vars);
+		$this->parent = $this->make($view)->disable($disable);
+
+		return $this->parent;
 	}
 
 	/**
@@ -297,7 +280,7 @@ class View {
 	 * @param  String $view Subview name, potentially with prefix
 	 * @return View         The subview instance
 	 */
-	protected function makeView($view)
+	protected function make($view)
 	{
 		$provider = $this->provider;
 
