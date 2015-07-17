@@ -72,11 +72,8 @@ class Pages_model extends CI_Model {
 	 */
 	function fetch_site_pages()
 	{
-		$this->db->select('site_pages');
-		$this->db->where('site_id', $this->config->item('site_id'));
-        $query = $this->db->get('sites');
-
-		return unserialize(base64_decode($query->row('site_pages') ));
+		$site = ee('Model')->get('Site', $this->config->item('site_id'))->first();
+		return $site->site_pages;
 	}
 
 // ------------------------------------------------------------------------
@@ -138,9 +135,9 @@ class Pages_model extends CI_Model {
 
 		$this->config->set_item('site_pages', $pages);
 
-		$this->db->set('site_pages', base64_encode(serialize($pages)));
-		$this->db->where('site_id', $this->config->item('site_id'));
-		$this->db->update('sites');
+		$site = ee('Model')->get('Site', $this->config->item('site_id'))->first();
+		$site->site_pages = $pages;
+		$site->save();
 
 		return $num;
 	}
