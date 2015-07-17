@@ -655,7 +655,7 @@ class Updater {
 		if ( ! ee()->db->field_exists('m_field_show_fmt', 'member_fields'))
 		{
 			ee()->smartforge->add_column(
-				'members',
+				'member_fields',
 				array(
 					'm_field_show_fmt' => array(
 						'type'    => 'char',
@@ -666,12 +666,12 @@ class Updater {
 				)
 			);
 		}
-		if ( ! ee()->db->field_exists('m_field_show_fmt', 'member_fields'))
+		if ( ! ee()->db->field_exists('m_field_text_direction', 'member_fields'))
 		{
 			ee()->smartforge->add_column(
-				'members',
+				'member_fields',
 				array(
-					'm_field_show_fmt' => array(
+					'm_field_text_direction' => array(
 						'type'    => 'char',
 						'constraint' => 3,
 						'default' => 'ltr',

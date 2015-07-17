@@ -35,6 +35,13 @@
 <?=form_close()?>
 </div>
 
+<?php
+if ( ! empty($form))
+{
+	$this->view('_shared/form', $form);
+}
+?>
+
 <?php $this->startOrAppendBlock('modals'); ?>
 
 <?php

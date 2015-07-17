@@ -50,7 +50,7 @@ class General extends Settings {
 					'fields' => array(
 						'site_name' => array(
 							'type' => 'text',
-							'value' => set_value('site_name', $site->site_label),
+							'value' => $site->site_label,
 							'required' => TRUE
 						)
 					)
@@ -61,7 +61,7 @@ class General extends Settings {
 					'fields' => array(
 						'site_short_name' => array(
 							'type' => 'text',
-							'value' => set_value('site_short_name', $site->site_name),
+							'value' => $site->site_name,
 							'required' => TRUE
 						)
 					)
@@ -112,18 +112,6 @@ class General extends Settings {
 				),
 			),
 			'defaults' => array(
-				/*
-				array(
-					'title' => 'cp_theme',
-					'desc' => '',
-					'fields' => array(
-						'cp_theme' => array(
-							'type' => 'select',
-							'choices' => ee()->admin_model->get_cp_theme_list()
-						)
-					)
-				),
-				*/
 				array(
 					'title' => 'language',
 					'desc' => 'language_desc',
