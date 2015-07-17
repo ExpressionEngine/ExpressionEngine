@@ -284,7 +284,7 @@ class Channel extends StructureModel {
 		// Update author stats
 		foreach ($this->Entries->pluck('author_id') as $author_id)
 		{
-			$total_entries = $this->getFrontend->get('ChannelEntries')
+			$total_entries = $this->getFrontend->get('ChannelEntry')
 				->filter('author_id', $author_id)
 				->count();
 
@@ -297,5 +297,41 @@ class Channel extends StructureModel {
 			$author->total_comments = $total_comments;
 			$author->save();
 		}
+
+		// Reset stats
+		$now = ee()->localize->now;
+		$entries = $this->getFrontend->get('ChannelEntry')
+			->filer('site_id', $site_id)
+			->filter('entry_date', '<', $now)
+			->filter('status', '!=', 'closed')
+			->filterGroup()
+				->filter('expiration_date', 0)
+				->orFilter('expiration_date', '>', $now)
+			->endFilterGroup()
+			->order('entry_date', 'desc');
+
+		$total_entries = $entries->count();
+		$last_entry_date = ($entries->first()) ? $entries->first()->entry_date : 0;
+
+		$comments = $this->getFrontend->get('Comment')
+			->filer('site_id', $site_id);
+
+		$total_comments = $comments->count();
+
+		$comments->filter('status', 'o')
+			->order('comment_date', 'desc')
+			->first();
+
+		$last_comment_date = ($comments) ? $comments->comment_date : 0;
+
+		$stats = $this->getFrontend->get('Stats')
+			->filer('site_id', $site_id)
+			->first();
+
+		$stats->total_entries = $total_entries;
+		$stats->last_entry_date = $last_entry_date;
+		$stats->total_comments = $total_comments;
+		$stats->last_comment_date = $last_comment_date;
+		$stats->save();
 	}
 }
