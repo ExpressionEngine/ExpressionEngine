@@ -49,6 +49,9 @@
 					<a href="<?=ee('CP/URL', 'login/logout')?>"><?=lang('log_out')?></a> <a class="has-sub" href=""><?=$cp_screen_name?> <span class="ico sub-arrow"></span></a>
 					<ul class="quick-links sub-menu">
 						<a href="<?=ee('CP/URL', 'members/profile', array('id' => ee()->session->userdata('member_id')))?>"><?=lang('my_profile')?></a>
+						<?php foreach($cp_quicklinks as $link): ?>
+						<a href="<?=$link['link']?>"><?=$link['title']?></a>
+						<?php endforeach ?>
 						<a class="last add" href="<?=ee('CP/URL', 'members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id')))?>">&#10010; <?=lang('new_link')?></a>
 					</ul>
 				</div>
