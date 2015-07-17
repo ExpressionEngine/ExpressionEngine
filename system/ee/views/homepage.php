@@ -63,6 +63,11 @@
 		<div class="col w-16 last">
 			<div class="box">
 				<h1 class="btn-right"><?=lang('content')?>
+					<?php if ($number_of_channels == 0): ?>
+						<a class="btn action" href="<?=ee('CP/URL', 'channel/create')?>"><?=lang('create_new_channel')?></a>
+					<?php elseif ($number_of_channels == 1): ?>
+						<a class="btn action" href="<?=ee('CP/URL', 'publish/create/' . $channel_id)?>"><?=lang('create_new')?></a>
+					<?php else: ?>
 					<div class="filters">
 						<ul>
 							<li>
@@ -78,6 +83,7 @@
 							</li>
 						</ul>
 					</div>
+					<?php endif;?>
 				</h1>
 				<div class="info">
 					<p><?=lang('content_desc')?></p>
