@@ -94,7 +94,8 @@ class Channel extends StructureModel {
 	);
 
 	protected static $_events = array(
-		'beforeSave'
+		'beforeSave',
+		'beforeDelete'
 	);
 
 	// Properties
@@ -254,6 +255,47 @@ class Channel extends StructureModel {
 			{
 				$this->setProperty($column, '');
 			}
+		}
+	}
+
+	public function onBeforeDelete()
+	{
+		// Delete Pages URIs for this Channel
+		$site_pages = ee()->config->item('site_pages');
+		$site_id = $this->config->item('site_id');
+
+		if ($site_pages !== FALSE && count($this->Entries))
+		{
+			if (count($site_pages[$site_id]) > 0)
+			{
+				foreach ($this->Entries as $entry)
+				{
+					unset($site_pages[$site_id]['uris'][$entry->entry_id]);
+					unset($site_pages[$site_id]['templates'][$entry->entry_id]);
+				}
+
+				ee()->config->set_item('site_pages', $site_pages);
+
+				$this->Site->site_pages = $site_pages;
+				$this->Site->save();
+			}
+		}
+
+		// Update author stats
+		foreach ($this->Entries->pluck('author_id') as $author_id)
+		{
+			$total_entries = $this->getFrontend->get('ChannelEntries')
+				->filter('author_id', $author_id)
+				->count();
+
+			$total_comments = $this->getFrontend->get('Comment')
+				->filter('author_id', $author_id)
+				->count();
+
+			$author = $this->getFrontend->get('Member', $author_id)->first();
+			$author->total_entries = $entries;
+			$author->total_comments = $total_comments;
+			$author->save();
 		}
 	}
 }
