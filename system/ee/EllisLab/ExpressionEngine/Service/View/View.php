@@ -261,7 +261,10 @@ class View {
 		$buffer .= ob_get_contents();
 		ob_end_clean();
 
-		$this->blocks[$name] = $buffer;
+		if (isset($this->parent))
+		{
+			$this->parent->blocks[$name] = $buffer;
+		}
 	}
 
 	/**

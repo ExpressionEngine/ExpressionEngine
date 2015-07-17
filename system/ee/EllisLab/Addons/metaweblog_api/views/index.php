@@ -30,7 +30,7 @@ $modal_vars = array(
 	)
 );
 
-$this->ee_view('_shared/modal_confirm_remove', $modal_vars);
+$this->view('ee:_shared/modal_confirm_remove', $modal_vars);
 ?>
 
 <?php $this->endBlock(); ?>
