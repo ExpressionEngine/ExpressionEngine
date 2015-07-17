@@ -17,6 +17,6 @@ if (isset($settings['group']))
 <?php
 foreach ($settings as $setting)
 {
-	$this->ee_view('_shared/form/fieldset', array('setting' => $setting, 'group' => $group));
+	$this->embed('ee:_shared/form/fieldset', array('setting' => $setting, 'group' => $group));
 }
 ?>

@@ -6,7 +6,7 @@
 			<h1><?=$cp_heading['first']?></h1>
 			<?=ee('Alert')->get('first-party')?>
 			<?php if (isset($filters['first'])) echo $filters['first']; ?>
-			<?php $this->view('_shared/table', $tables['first']); ?>
+			<?php $this->embed('_shared/table', $tables['first']); ?>
 			<?=$pagination['first']?>
 			<?php if ( ! empty($tables['first']['columns']) && ! empty($tables['first']['data'])): ?>
 			<fieldset class="tbl-bulk-act">
@@ -29,7 +29,7 @@
 			<h1><?=$cp_heading['third']?></h1>
 			<?=ee('Alert')->get('third-party')?>
 			<?php if (isset($filters['third'])) echo $filters['third']; ?>
-			<?php $this->view('_shared/table', $tables['third']); ?>
+			<?php $this->embed('_shared/table', $tables['third']); ?>
 			<?=$pagination['third']?>
 			<?php if ( ! empty($tables['third']['columns']) && ! empty($tables['third']['data'])): ?>
 			<fieldset class="tbl-bulk-act">
@@ -57,5 +57,5 @@ $modal_vars = array(
 	)
 );
 
-$this->ee_view('_shared/modal_confirm_remove', $modal_vars);
+$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
 ?>

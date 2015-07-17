@@ -16,7 +16,7 @@
 			<div class="nestable">
 				<ul class="tbl-list">
 					<?php foreach ($categories->children() as $category): ?>
-						<?php $this->view('channels/cat/_category', array('category' => $category)); ?>
+						<?php $this->embed('channels/cat/_category', array('category' => $category)); ?>
 					<?php endforeach ?>
 					<?php if (count($categories->children()) == 0): ?>
 						<li>
@@ -53,7 +53,7 @@ $modal_vars = array(
 	)
 );
 
-$this->ee_view('_shared/modal_confirm_remove', $modal_vars);
+$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
 ?>
 
 <?php $this->endBlock(); ?>

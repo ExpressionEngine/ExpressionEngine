@@ -4,7 +4,7 @@
 	<?=form_open($form_url)?>
 		<h1><?=$cp_heading?></h1>
 		<?=ee('Alert')->getAllInlines()?>
-		<?php $this->view('_shared/table', $table); ?>
+		<?php $this->embed('_shared/table', $table); ?>
 		<?=$pagination?>
 		<?php if ($table['total_rows'] > 0): ?>
 		<fieldset class="tbl-bulk-act">

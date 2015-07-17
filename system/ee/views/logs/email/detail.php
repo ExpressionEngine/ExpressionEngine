@@ -33,7 +33,7 @@ $modal_vars = array(
 	)
 );
 
-$this->view('_shared/modal_confirm_remove', $modal_vars);
+$this->embed('_shared/modal_confirm_remove', $modal_vars);
 ?>
 
 <?php $this->endBlock(); ?>

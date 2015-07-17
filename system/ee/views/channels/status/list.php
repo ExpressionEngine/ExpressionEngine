@@ -7,7 +7,7 @@
 		</fieldset>
 		<h1><?=$cp_page_title?></h1>
 		<?=ee('Alert')->getAllInlines()?>
-		<?php $this->view('_shared/table', $table); ?>
+		<?php $this->embed('_shared/table', $table); ?>
 		<fieldset class="tbl-bulk-act">
 			<select name="bulk_action">
 				<option>-- <?=lang('with_selected')?> --</option>
@@ -31,7 +31,7 @@ $modal_vars = array(
 	)
 );
 
-$this->ee_view('_shared/modal_confirm_remove', $modal_vars);
+$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
 ?>
 
 <?php $this->endBlock(); ?>

@@ -102,7 +102,7 @@ case 'checkbox': ?>
 	<?php if (isset($field['nested']) && $field['nested']): ?>
 		<div class="scroll-wrap pr">
 			<ul class="nested-list">
-				<?php $this->ee_view('_shared/form/nested_checkbox', array(
+				<?php $this->embed('ee:_shared/form/nested_checkbox', array(
 					'field_name' => $field_name,
 					'attrs' => $attrs,
 					'choices' => $field['choices'],

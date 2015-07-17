@@ -1,4 +1,4 @@
-<?php $this->view('_shared/file_upload/iframe_header'); ?>
+<?php $this->embed('_shared/file_upload/iframe_header'); ?>
 
 <div class="upload_rename">
 	<h2><?= lang('upload_rename') ?>: <?= $original_name ?></h2>
@@ -14,4 +14,4 @@
 	parent.$.ee_fileuploader.file_exists(file);
 </script>
 
-<?php $this->view('_shared/file_upload/iframe_footer') ?>
+<?php $this->embed('_shared/file_upload/iframe_footer') ?>
