@@ -506,6 +506,7 @@ $lang = array(
 'remove' => 'Remove',
 
 'create_new' => 'Create New',
+'create_new_channel' => 'Create New Channel',
 
 'new' => 'New',
 
