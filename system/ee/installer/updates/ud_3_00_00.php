@@ -81,6 +81,7 @@ class Updater {
 	{
 		require SYSPATH.'/user/config/database.php';
 		ee()->config->_update_dbconfig($db[$active_group]);
+		unlink(SYSPATH.'/user/config/database.php');
 	}
 
 	// -------------------------------------------------------------------------
