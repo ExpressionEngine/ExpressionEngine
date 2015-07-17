@@ -50,7 +50,7 @@ class General extends Settings {
 					'fields' => array(
 						'site_name' => array(
 							'type' => 'text',
-							'value' => set_value('site_name', $site->site_label),
+							'value' => $site->site_label,
 							'required' => TRUE
 						)
 					)
@@ -61,7 +61,7 @@ class General extends Settings {
 					'fields' => array(
 						'site_short_name' => array(
 							'type' => 'text',
-							'value' => set_value('site_short_name', $site->site_name),
+							'value' => $site->site_name,
 							'required' => TRUE
 						)
 					)
@@ -97,20 +97,21 @@ class General extends Settings {
 						'class' => 'version-check'
 					)
 				),
-			),
-			'defaults' => array(
-				/*
 				array(
-					'title' => 'cp_theme',
-					'desc' => '',
+					'title' => 'enable_msm',
+					'desc' => 'enable_msm_desc',
 					'fields' => array(
-						'cp_theme' => array(
-							'type' => 'select',
-							'choices' => ee()->admin_model->get_cp_theme_list()
+						'multiple_sites_enabled' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							)
 						)
 					)
 				),
-				*/
+			),
+			'defaults' => array(
 				array(
 					'title' => 'language',
 					'desc' => 'language_desc',

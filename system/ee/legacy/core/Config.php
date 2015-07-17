@@ -452,7 +452,9 @@ class EE_Config {
 			$data = (isset($site['site_pages'])) ? base64_decode($site['site_pages']) : '';
 
 			// No Pages data
-			if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
+			if (! is_string($data)
+				OR substr($data, 0, 2) != 'a:'
+				OR $data = 'a:0:{}')
 			{
 				$site_pages[$site['site_id']] = array('uris' => array(), 'templates' => array());
 				continue;
@@ -556,7 +558,6 @@ class EE_Config {
 			'default_site_timezone',
 			'date_format',
 			'time_format',
-			'include_seconds',
 			'mail_protocol',
 			'smtp_server',
 			'smtp_port',

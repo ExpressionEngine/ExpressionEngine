@@ -49,7 +49,9 @@ class Site extends Model {
 		'site_mailinglist_preferences' => 'MailingListPreferences',
 		'site_member_preferences' => 'MemberPreferences',
 		'site_system_preferences' => 'SystemPreferences',
-		'site_template_preferences' => 'TemplatePreferences'
+		'site_template_preferences' => 'TemplatePreferences',
+		'site_bootstrap_checksums' => 'base64Serialized',
+		'site_pages' => 'base64Serialized',
 	);
 
 	protected static $_relationships = array(
@@ -78,6 +80,11 @@ class Site extends Model {
 		)
 	);
 
+	protected static $_validation_rules = array(
+		'site_name'  => 'required|validateShortName|unique',
+		'site_label' => 'required',
+	);
+
 	// Properties
 	protected $site_id;
 	protected $site_label;
@@ -89,4 +96,16 @@ class Site extends Model {
 	protected $site_template_preferences;
 	protected $site_channel_preferences;
 	protected $site_bootstrap_checksums;
+	protected $site_pages;
+
+	public function validateShortName($key, $value, $params, $rule)
+	{
+		if (preg_match('/[^a-z0-9\-\_]/i', $value))
+		{
+			return 'invalid_short_name';
+		}
+
+		return TRUE;
+	}
+
 }

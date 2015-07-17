@@ -197,6 +197,7 @@ $lang = array(
 
 'channel_manager'  => 'Channel Manager',
 'template_manager' => 'Template Manager',
+'msm_manager'      => 'Multi-Site Manager',
 'addon_manager'    => 'Add-On Manager',
 'utilities'        => 'Utilities',
 'logs'             => 'Logs',

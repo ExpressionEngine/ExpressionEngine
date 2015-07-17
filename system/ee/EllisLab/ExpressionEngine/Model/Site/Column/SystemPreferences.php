@@ -30,9 +30,12 @@ use EllisLab\ExpressionEngine\Service\Model\Column\CustomType;
  */
 class SystemPreferences extends CustomType {
 
+	protected $is_site_on;
 	protected $site_index;
 	protected $site_url;
+	protected $cp_url;
 	protected $theme_folder_url;
+	protected $theme_folder_path;
 	protected $webmaster_email;
 	protected $webmaster_name;
 	protected $channel_nomenclature;
@@ -42,6 +45,7 @@ class SystemPreferences extends CustomType {
 	protected $captcha_font;
 	protected $captcha_rand;
 	protected $captcha_require_members;
+	protected $require_captcha;
 	protected $enable_sql_caching;
 	protected $force_query_string;
 	protected $show_profiler;
@@ -49,6 +53,8 @@ class SystemPreferences extends CustomType {
 	protected $include_seconds;
 	protected $cookie_domain;
 	protected $cookie_path;
+	protected $cookie_httponly;
+	protected $cookie_secure;
 	protected $website_session_type;
 	protected $cp_session_type;
 	protected $allow_username_change;
@@ -68,12 +74,12 @@ class SystemPreferences extends CustomType {
 	protected $gzip_output;
 	protected $log_referrers;
 	protected $max_referrers;
+	protected $default_site_timezone;
 	protected $date_format;
 	protected $time_format;
-	protected $server_offset;
-	protected $default_site_timezone;
 	protected $mail_protocol;
 	protected $smtp_server;
+	protected $smtp_port;
 	protected $smtp_username;
 	protected $smtp_password;
 	protected $email_debug;
@@ -112,8 +118,6 @@ class SystemPreferences extends CustomType {
 	protected $banishment_message;
 	protected $enable_search_log;
 	protected $max_logged_searches;
-	protected $theme_folder_path;
-	protected $is_site_on;
 	protected $rte_enabled;
 	protected $rte_default_toolset_id;
 

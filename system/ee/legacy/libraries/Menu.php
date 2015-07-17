@@ -91,7 +91,7 @@ class EE_Menu {
 			{
 				if ($site_id != ee()->config->item('site_id'))
 				{
-					$menu[$site_name] = ee('CP/URL', 'sites', array('site_id' => $site_id, 'page' => $site_backlink));
+					$menu[$site_name] = ee('CP/URL', 'msm/switch_to/' . $site_id, array('page' => $site_backlink));
 				}
 			}
 		}
@@ -144,10 +144,16 @@ class EE_Menu {
 		$menu = array(
 			'channel_manager'  => ee('CP/URL', 'channels'),
 			'template_manager' => ee('CP/URL', 'design'),
+			'msm_manager'      => ee('CP/URL', 'msm'),
 			'addon_manager'    => ee('CP/URL', 'addons'),
 			'utilities'        => ee('CP/URL', 'utilities'),
 			'logs'             => ee('CP/URL', 'logs')
 		);
+
+		if (ee()->config->item('multiple_sites_enabled') !== 'y')
+		{
+			unset($menu['msm_manager']);
+		}
 
 		if ( ! ee()->cp->allowed_group('can_access_addons'))
 		{
