@@ -122,6 +122,18 @@ class DBConfig
 		return $database_config;
 	}
 
+
+	/**
+	 * Get the default values
+	 *
+	 * @return array Default values for config
+	 */
+	public function getDefaults()
+	{
+		$parent_defaults = $this->delegate->getDefaults();
+		return $parent_defaults['database'];
+	}
+
 	/**
 	 * Get the name of the active group
 	 *
