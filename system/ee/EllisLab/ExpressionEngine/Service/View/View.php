@@ -96,7 +96,7 @@ class View {
 
 		if ($this->parent)
 		{
-			$vars['EE_rendered_view'] = $output;
+			$vars['child_view'] = $output;
 
 			$output = $this->parent->render($vars);
 		}

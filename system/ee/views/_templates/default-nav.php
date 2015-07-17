@@ -49,7 +49,7 @@
 		<?php if ($this->enabled('outer_box')) :?>
 			<div class="box">
 		<?php endif ?>
-			<?=$EE_rendered_view?>
+			<?=$child_view?>
 		<?php if ($this->enabled('outer_box')) :?>
 			</div>
 		<?php endif ?>
