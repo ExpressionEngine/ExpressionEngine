@@ -144,7 +144,7 @@ if ($wrap): ?>
 			<?php endforeach ?>
 			<?php if ( ! empty($action_buttons) || ! empty($action_content)): ?>
 				<tr class="tbl-action">
-					<td colspan="<?=count($columns)?>" class="solo">
+					<td colspan="<?=count($columns) + (int)$reorder?>" class="solo">
 						<?php foreach ($action_buttons as $button): ?>
 							<a class="<?=$button['class']?>" href="<?=$button['url']?>"><?=$button['text']?></a></td>
 						<?php endforeach; ?>
