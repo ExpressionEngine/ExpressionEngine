@@ -262,7 +262,7 @@ class Channel extends StructureModel {
 	{
 		// Delete Pages URIs for this Channel
 		$site_pages = ee()->config->item('site_pages');
-		$site_id = $this->config->item('site_id');
+		$site_id = ee()->config->item('site_id');
 
 		if ($site_pages !== FALSE && count($this->Entries))
 		{
@@ -301,7 +301,7 @@ class Channel extends StructureModel {
 		// Reset stats
 		$now = ee()->localize->now;
 		$entries = $this->getFrontend()->get('ChannelEntry')
-			->filer('site_id', $site_id)
+			->filter('site_id', $site_id)
 			->filter('entry_date', '<', $now)
 			->filter('status', '!=', 'closed')
 			->filterGroup()
@@ -314,7 +314,7 @@ class Channel extends StructureModel {
 		$last_entry_date = ($entries->first()) ? $entries->first()->entry_date : 0;
 
 		$comments = $this->getFrontend()->get('Comment')
-			->filer('site_id', $site_id);
+			->filter('site_id', $site_id);
 
 		$total_comments = $comments->count();
 
@@ -325,7 +325,7 @@ class Channel extends StructureModel {
 		$last_comment_date = ($comments) ? $comments->comment_date : 0;
 
 		$stats = $this->getFrontend()->get('Stats')
-			->filer('site_id', $site_id)
+			->filter('site_id', $site_id)
 			->first();
 
 		$stats->total_entries = $total_entries;
