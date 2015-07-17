@@ -258,10 +258,10 @@ class Members extends CP_Controller {
 		$vars['sections'] = array(
 			array(
 				array(
-					'title' => 'banned_ip_addesses',
-					'desc' => 'banned_ip_addesses_desc',
+					'title' => 'banned_ips',
+					'desc' => 'banned_ips_desc',
 					'fields' => array(
-						'banned_ip_addresses' => array(
+						'banned_ips' => array(
 							'type' => 'textarea',
 							'value' => $ips
 						)
