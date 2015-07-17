@@ -50,6 +50,7 @@ $.fn.eeTableReorder = function(params) {
 			cancel: 'td.sort-cancel',		// Do not allow sort on this handle
 			items: 'tr',					// Only allow these to be sortable
 			sort: EE.sortable_sort_helper,	// Custom sort handler
+			forcePlaceholderSize: true,		// Custom sort handler
 			helper: function(event, row)	// Fix issue where cell widths collapse on drag
 			{
 				var $originals = row.children();

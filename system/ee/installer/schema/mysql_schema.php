@@ -47,6 +47,7 @@ class EE_Schema {
 			`site_template_preferences` TEXT NOT NULL ,
 			`site_channel_preferences` TEXT NOT NULL ,
 			`site_bootstrap_checksums` TEXT NOT NULL ,
+			`site_pages` TEXT NOT NULL ,
 			PRIMARY KEY `site_id` (`site_id`),
 			KEY `site_name` (`site_name`)
 		)";
@@ -1428,12 +1429,13 @@ class EE_Schema {
 			'site_id' 		=> 1,
 			'site_label'	=> $this->userdata['site_label'],
 			'site_name'		=> $this->userdata['site_name'],
-			'site_system_preferences'		=> '',
-			'site_mailinglist_preferences'	=> '',
-			'site_member_preferences'		=> '',
-			'site_template_preferences'		=> '',
-			'site_channel_preferences'		=> '',
-			'site_bootstrap_checksums'		=> ''
+			'site_system_preferences'      => '',
+			'site_mailinglist_preferences' => '',
+			'site_member_preferences'      => '',
+			'site_template_preferences'    => '',
+			'site_channel_preferences'     => '',
+			'site_bootstrap_checksums'     => '',
+			'site_pages'                   => '',
 		);
 
 		$Q[] = ee()->db->insert_string('sites', $site);

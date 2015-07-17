@@ -1,4 +1,4 @@
-<?php extend_template('default-nav'); ?>
+<?php extend_template('default-nav', 'outer_box'); ?>
 
 <div class="box has-tabs publish">
 	<h1>
