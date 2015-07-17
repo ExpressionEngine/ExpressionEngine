@@ -284,15 +284,15 @@ class Channel extends StructureModel {
 		// Update author stats
 		foreach ($this->Entries->pluck('author_id') as $author_id)
 		{
-			$total_entries = $this->getFrontend->get('ChannelEntry')
+			$total_entries = $this->getFrontend()->get('ChannelEntry')
 				->filter('author_id', $author_id)
 				->count();
 
-			$total_comments = $this->getFrontend->get('Comment')
+			$total_comments = $this->getFrontend()->get('Comment')
 				->filter('author_id', $author_id)
 				->count();
 
-			$author = $this->getFrontend->get('Member', $author_id)->first();
+			$author = $this->getFrontend()->get('Member', $author_id)->first();
 			$author->total_entries = $entries;
 			$author->total_comments = $total_comments;
 			$author->save();
@@ -300,7 +300,7 @@ class Channel extends StructureModel {
 
 		// Reset stats
 		$now = ee()->localize->now;
-		$entries = $this->getFrontend->get('ChannelEntry')
+		$entries = $this->getFrontend()->get('ChannelEntry')
 			->filer('site_id', $site_id)
 			->filter('entry_date', '<', $now)
 			->filter('status', '!=', 'closed')
@@ -313,7 +313,7 @@ class Channel extends StructureModel {
 		$total_entries = $entries->count();
 		$last_entry_date = ($entries->first()) ? $entries->first()->entry_date : 0;
 
-		$comments = $this->getFrontend->get('Comment')
+		$comments = $this->getFrontend()->get('Comment')
 			->filer('site_id', $site_id);
 
 		$total_comments = $comments->count();
@@ -324,7 +324,7 @@ class Channel extends StructureModel {
 
 		$last_comment_date = ($comments) ? $comments->comment_date : 0;
 
-		$stats = $this->getFrontend->get('Stats')
+		$stats = $this->getFrontend()->get('Stats')
 			->filer('site_id', $site_id)
 			->first();
 
