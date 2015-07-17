@@ -264,11 +264,16 @@ class Channel extends StructureModel {
 		$site_pages = ee()->config->item('site_pages');
 		$site_id = ee()->config->item('site_id');
 
-		if ($site_pages !== FALSE && count($this->Entries))
+		$entries = $this->getFrontend()->get('ChannelEntry')
+			->fields('entry_id', 'author_id')
+			->filter('channel_id', $this->channel_id)
+			->all();
+
+		if ($site_pages !== FALSE && $entries)
 		{
 			if (count($site_pages[$site_id]) > 0)
 			{
-				foreach ($this->Entries as $entry)
+				foreach ($entries as $entry)
 				{
 					unset($site_pages[$site_id]['uris'][$entry->entry_id]);
 					unset($site_pages[$site_id]['templates'][$entry->entry_id]);
@@ -282,7 +287,7 @@ class Channel extends StructureModel {
 		}
 
 		// Update author stats
-		foreach ($this->Entries->pluck('author_id') as $author_id)
+		foreach ($entries->pluck('author_id') as $author_id)
 		{
 			$total_entries = $this->getFrontend()->get('ChannelEntry')
 				->filter('author_id', $author_id)
@@ -301,6 +306,7 @@ class Channel extends StructureModel {
 		// Reset stats
 		$now = ee()->localize->now;
 		$entries = $this->getFrontend()->get('ChannelEntry')
+			->fields('entry_date', 'channel_id')
 			->filter('site_id', $site_id)
 			->filter('entry_date', '<', $now)
 			->filter('status', '!=', 'closed')
@@ -319,6 +325,7 @@ class Channel extends StructureModel {
 		$total_comments = $comments->count();
 
 		$comments->filter('status', 'o')
+			->fields('comment_date')
 			->order('comment_date', 'desc')
 			->first();
 
