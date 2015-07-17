@@ -91,6 +91,11 @@ class DBConfig
 	 */
 	public function getGroupConfig($group = '')
 	{
+		if ( ! empty($group))
+		{
+			$this->active_group = $group;
+		}
+
 		$database_config = $this->get();
 
 		if (empty($database_config))
@@ -115,5 +120,15 @@ class DBConfig
 		}
 
 		return $database_config;
+	}
+
+	/**
+	 * Get the name of the active group
+	 *
+	 * @return string Name of the active database group
+	 */
+	public function getActiveGroup()
+	{
+		return $this->active_group;
 	}
 }

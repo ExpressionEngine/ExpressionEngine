@@ -380,11 +380,8 @@ class Wizard extends CI_Controller {
 			return TRUE;
 		}
 
-		// Before we assume this is an update, let's see if we can connect to
-		// the DB. If they are running EE prior to 2.0 the database settings are
-		// found in the main config file, if they are running 2.0 or newer, the
-		// settings are found in the db file
-		$db = ee('Database')->getConfig()->getGroupConfig();
+		// Check for database.php, otherwise get normal config
+		$db = $this->getDbConfig();
 
 		if ( ! isset($db))
 		{
@@ -797,6 +794,34 @@ class Wizard extends CI_Controller {
 		else
 		{
 			$this->userdata['db_port'] = NULL;
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Get the DB Config, whether it's from database.php or config.php
+	 *
+	 * @return array Array of currently selected db group's db information. Must
+	 *               contain 'database', 'username', and 'hostname'.
+	 */
+	public function getDbConfig()
+	{
+		$dbConfig = ee('Database')->getConfig();
+
+		try
+		{
+			return $dbConfig->getGroupConfig();
+		}
+		catch (Exception $e)
+		{
+			// Suppress errors, if we can't find it, move along
+			if (@include_once(SYSPATH.'/user/config/database.php'))
+			{
+				return $db[$dbConfig->getActiveGroup()];
+			}
+
+			throw new \Exception(lang('database_no_data'));
 		}
 	}
 
