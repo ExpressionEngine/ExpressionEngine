@@ -505,9 +505,12 @@ class ChannelEntry extends ContentModel {
 		// Get all members assigned to this channel
 		foreach ($this->Channel->AssignedMemberGroups as $group)
 		{
-			foreach ($group->Members as $member)
+			if ($group->include_in_authorlist === TRUE)
 			{
-				$author_options[$member->member_id] = $member->getMemberName();
+				foreach ($group->Members as $member)
+				{
+					$author_options[$member->member_id] = $member->getMemberName();
+				}
 			}
 		}
 

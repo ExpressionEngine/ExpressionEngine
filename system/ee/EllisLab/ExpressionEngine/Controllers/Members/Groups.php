@@ -98,8 +98,9 @@ class Groups extends Members\Members {
 		$groupData = array();
 		$total = ee()->api->get('MemberGroup')->count();
 		$groups = ee()->api->get('MemberGroup')->order($sort_col, $sort_dir)->limit($perpage)->offset($offset);
+		$search = ee()->input->post('search');
 
-		if ( ! empty($search = ee()->input->post('search')))
+		if ( ! empty($search))
 		{
 			$groups = $groups->filter('group_title', 'LIKE', "%$search%");
 		}

@@ -74,7 +74,7 @@ Grid.Publish.prototype = {
 	_bindSortable: function() {
 		var that = this;
 
-		this.rowContainer.eeTableReorder({
+		this.root.eeTableReorder({
 			// Fire 'beforeSort' event on sort start
 			beforeSort: function(row) {
 				that._fireEvent('beforeSort', row.item);
