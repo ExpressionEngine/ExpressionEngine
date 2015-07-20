@@ -420,9 +420,18 @@ class Cat extends AbstractChannelsController {
 	 */
 	private function saveCategoryGroup($group_id = NULL)
 	{
-		$cat_group = ee('Model')->make('CategoryGroup', $_POST);
-		$cat_group->group_id = $group_id;
-		$cat_group->site_id = ee()->config->item('site_id');
+		if ($group_id)
+		{
+			$cat_group = ee('Model')->get('CategoryGroup', $group_id)->first();
+		}
+		else
+		{
+			$cat_group = ee('Model')->make('CategoryGroup');
+			$cat_group->group_id = $group_id;
+			$cat_group->site_id = ee()->config->item('site_id');
+		}
+
+		$cat_group->set($_POST);
 		$cat_group->can_edit_categories = (ee()->input->post('can_edit_categories'))
 			? implode('|', $_POST['can_edit_categories']) : '';
 		$cat_group->can_delete_categories = (ee()->input->post('can_delete_categories'))
