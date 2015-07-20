@@ -10,7 +10,7 @@ use EllisLab\ExpressionEngine\Service\View\ViewFactory;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -69,8 +69,6 @@ class Perpage extends Filter {
 			$total => sprintf(lang($all_lang_key), $total)
 		);
 		$this->default_value = 20;
-
-		$this->display_value = $this->value();
 	}
 
 	/**
@@ -117,7 +115,7 @@ class Perpage extends Filter {
 	 */
 	public function render(ViewFactory $view, URL $url)
 	{
-		$value = $this->display_value;
+		$value = $this->value();
 		if (is_null($value))
 		{
 			$value = (array_key_exists($this->value(), $this->options)) ?

@@ -114,7 +114,7 @@ feature 'Status Create/Edit' do
 
     @page.status.set 'Test'
     @page.highlight.set 'ffff'
-    @page.status_access[0].click
+    @page.status_access[0].set false
     @page.submit
 
     @page.should have_text 'Attention: Status not saved'
@@ -130,11 +130,16 @@ feature 'Status Create/Edit' do
 
     @page.status.set 'Test'
     @page.highlight.set 'fff'
-    @page.status_access[0].click
+    @page.status_access[0].set false
     @page.submit
     no_php_js_errors
 
     @page.should have_text 'Status saved'
+
+    @page.load_view_for_status_group(1)
+    @page.load_edit_for_status(4)
+    no_php_js_errors
+
     @page.should have_text 'Edit Status'
     should_have_no_form_errors(@page)
 
@@ -145,11 +150,15 @@ feature 'Status Create/Edit' do
     # Make sure we can edit
     @page.status.set 'Test2'
     @page.status.trigger 'change'
-    @page.status_access[0].click
+    @page.status_access[0].set true
     @page.submit
     no_php_js_errors
 
     @page.should have_text 'Status saved'
+
+    @page.load_view_for_status_group(1)
+    @page.load_edit_for_status(4)
+
     @page.should have_text 'Edit Status'
     should_have_no_form_errors(@page)
 

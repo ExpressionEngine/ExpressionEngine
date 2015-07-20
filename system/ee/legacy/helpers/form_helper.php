@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -220,7 +220,7 @@ function form_preference($name, $details)
 			break;
 		// Password
 		case 'p':
-			$pref = form_password(array_merge($details['value'], array('id' => $name, 'class' => 'input fullfield', 'size' => 20, 'maxlength' => 120)));
+			$pref = form_password(array_merge($details['value'], array('id' => $name, 'class' => 'input fullfield', 'size' => 20, 'maxlength' => PASSWORD_MAX_LENGTH)));
 			break;
 		// Checkbox
 		case 'c':
@@ -248,9 +248,10 @@ function form_preference($name, $details)
  * @param	string	$value		Standard text for the button
  * @param	string	$work_text	Text to display when form is submitting
  * @param   string  $name       The value of a name="" attribute
+ * @param   string  $invalid    Force an invalid/disabled state on the button
  * @return	string	Button HTML
  */
-function cp_form_submit($value, $work_text, $name = NULL)
+function cp_form_submit($value, $work_text, $name = NULL, $invalid = FALSE)
 {
 	$class = 'btn';
 	$disable = '';
@@ -258,7 +259,7 @@ function cp_form_submit($value, $work_text, $name = NULL)
 	$validation_errors = validation_errors();
 
 	// Disabled state
-	if ( ! empty($validation_errors))
+	if ( ! empty($validation_errors) OR $invalid)
 	{
 		$class .= ' disable';
 		$disable = ' disabled="disabled"';

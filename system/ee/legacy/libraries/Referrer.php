@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -48,7 +48,7 @@ class EE_Referrer {
 		ee()->load->helper('typography');
 
 		$site_url 	= ee()->config->item('site_url');
-		$ref 		= ( ! isset($_SERVER['HTTP_REFERER'])) ? '' : ee()->security->xss_clean(entity_decode($_SERVER['HTTP_REFERER']));
+		$ref 		= ( ! isset($_SERVER['HTTP_REFERER'])) ? '' : ee('Security/XSS')->clean(entity_decode($_SERVER['HTTP_REFERER']));
 		$test_ref	= strtolower($ref); // Yes, a copy, not a reference
 		$domain		= ( ! ee()->config->item('cookie_domain')) ? '' : ee()->config->item('cookie_domain');
 
@@ -92,7 +92,7 @@ class EE_Referrer {
 		{
 
 			// INSERT into database
-			$ref_to = ee()->security->xss_clean(ee()->functions->fetch_current_uri());
+			$ref_to = ee('Security/XSS')->clean(ee()->functions->fetch_current_uri());
 
 			if (stristr($ref_to, '{') !== FALSE OR stristr($ref_to, '}') !== FALSE)
 			{

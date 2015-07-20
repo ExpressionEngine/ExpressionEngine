@@ -12,7 +12,7 @@ use CP_Controller;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -48,18 +48,18 @@ class Login extends Profile {
 	 */
 	public function index()
 	{
-		$this->base_url = cp_url($this->base_url, $this->query_string);
+		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
 
 		$vars['sections'] = array(
 			array(
 				array(
 					'title' => 'redirect_to',
-					'desc' => 'redirect_to_desc',
+					'desc' => sprintf(lang('redirect_to_desc'), $this->member->screen_name),
 					'fields' => array(
 						'redirect' => array(
 							'type' => 'radio',
 							'choices' => array(
-								'site_index' => 'site_index',
+								'site_index' => lang('site_index'),
 								'other' => 'other'
 							),
 							'value' => 'site_index'
@@ -68,8 +68,8 @@ class Login extends Profile {
 					)
 				),
 				array(
-					'title' => 'current_password',
-					'desc' => 'current_password_desc',
+					'title' => 'existing_password',
+					'desc' => 'existing_password_exp',
 					'fields' => array(
 						'password' => array('type' => 'password')
 					)
@@ -115,7 +115,7 @@ class Login extends Profile {
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
-		ee()->view->cp_page_title = lang('login_as') . ' ' . $this->member->screen_name;
+		ee()->view->cp_page_title = sprintf(lang('login_as'), $this->member->screen_name);
 		ee()->view->save_btn_text = 'btn_login';
 		ee()->view->save_btn_text_working = 'btn_login_working';
 		ee()->cp->render('settings/form', $vars);
@@ -170,7 +170,7 @@ class Login extends Profile {
 		}
 
 		// Create a new session
-		$session_id = ee()->session->create_new_session(ee()->member->member_id , TRUE);
+		$session_id = ee()->session->create_new_session($this->member->member_id , TRUE);
 
 		// Delete old password lockouts
 		ee()->session->delete_password_lockout();
@@ -188,7 +188,7 @@ class Login extends Profile {
 			}
 			elseif ($redirect == 'other' && ! empty($url = ee()->input->post('other')))
 			{
-				$return_path = ee()->security->xss_clean(strip_tags($url));
+				$return_path = ee('Security/XSS')->clean(strip_tags($url));
 			}
 		}
 

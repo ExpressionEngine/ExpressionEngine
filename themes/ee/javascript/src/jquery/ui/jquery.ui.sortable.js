@@ -776,15 +776,16 @@ return $.widget("ui.sortable", $.ui.mouse, {
 	_createPlaceholder: function(that) {
 		that = that || this;
 		var className,
+			nodeName,
 			o = that.options;
 
 		if(!o.placeholder || o.placeholder.constructor === String) {
 			className = o.placeholder;
+			nodeName = that.currentItem[0].nodeName.toLowerCase();
 			o.placeholder = {
 				element: function() {
 
-					var nodeName = that.currentItem[0].nodeName.toLowerCase(),
-						element = $( "<" + nodeName + ">", that.document[0] )
+					var element = $( "<" + nodeName + ">", that.document[0] )
 							.addClass(className || that.currentItem[0].className+" ui-sortable-placeholder")
 							.removeClass("ui-sortable-helper");
 
@@ -813,8 +814,12 @@ return $.widget("ui.sortable", $.ui.mouse, {
 					}
 
 					//If the element doesn't have a actual height by itself (without styles coming from a stylesheet), it receives the inline height from the dragged item
-					if(!p.height()) { p.height(that.currentItem.innerHeight() - parseInt(that.currentItem.css("paddingTop")||0, 10) - parseInt(that.currentItem.css("paddingBottom")||0, 10)); }
-					if(!p.width()) { p.width(that.currentItem.innerWidth() - parseInt(that.currentItem.css("paddingLeft")||0, 10) - parseInt(that.currentItem.css("paddingRight")||0, 10)); }
+					if(!p.height() || (o.forcePlaceholderSize && (nodeName === "tbody" || nodeName === "tr"))) {
+						p.height(that.currentItem.innerHeight() - parseInt(that.currentItem.css("paddingTop")||0, 10) - parseInt(that.currentItem.css("paddingBottom")||0, 10));
+					}
+					if(!p.width()) {
+						p.width(that.currentItem.innerWidth() - parseInt(that.currentItem.css("paddingLeft")||0, 10) - parseInt(that.currentItem.css("paddingRight")||0, 10));
+					}
 				}
 			};
 		}

@@ -2,9 +2,12 @@
 $required_error = 'This field is required.'
 $integer_error = 'This field must contain an integer.'
 $natural_number = 'This field must contain only positive numbers.'
+$natural_number_not_zero = 'This field must contain a number greater than zero.'
 $invalid_path = 'The path you submitted is not valid.'
 $not_writable = 'The path you submitted is not writable.'
 $alpha_dash = 'This field may only contain alpha-numeric characters, underscores, and dashes.'
+$hex_color = 'This field must contain a valid hex color code.'
+$unique = 'This field must be unique.'
 
 $xss_error = 'The data you submitted did not pass our security check.'
 $xss_vector = '"><script>alert(\'stored xss\')<%2fscript>'
@@ -44,6 +47,13 @@ def should_have_no_form_errors(page_obj)
   should_have_form_errors(page_obj, false)
 end
 
+# Checks for show_error()
+def should_have_show_error(message)
+  page.has_content?('An Error Was Encountered').should == true
+  page.has_content?(message).should == true
+  page.status_code.should == 500
+end
+
 def should_have_error_text(node, text)
   node.first(:xpath, ".//ancestor::fieldset[1]")[:class].should include 'invalid'
   node.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
@@ -75,13 +85,36 @@ def grid_cell_should_have_no_error_text(node)
   node.first(:xpath, ".//..").should have_no_css 'em.ee-form-error-message'
 end
 
+# Wait for any pending AJAX requests
+def wait_for_ajax
+  ajax = false
+  while ajax == false do
+    ajax = (page.evaluate_script('$.active') == 0)
+  end
+end
+
+# Wait for DOM to be ready
+def wait_for_dom
+  uuid = SecureRandom.uuid
+  page.find("body")
+  page.evaluate_script <<-EOS
+    _.defer(function() {
+      $('body').append("<div id='#{uuid}'></div>");
+    });
+  EOS
+  page.find("##{uuid}")
+end
+
 # Reset the DB to a clean slate and reset sessions
 def reset_db
   $db.query(IO.read('sql/truncate_db.sql'))
   clear_db_result
 
-  $db.query(IO.read('sql/database.sql'))
-  clear_db_result
+  # Installer should not drop in database
+  unless ENV.key?('installer')
+    $db.query(IO.read('sql/database.sql'))
+    clear_db_result
+  end
 
   # Reset sessions
   Capybara.reset_sessions!

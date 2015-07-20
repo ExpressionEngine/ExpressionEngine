@@ -5,9 +5,8 @@ namespace EllisLab\ExpressionEngine\Controllers\Addons;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
+use Michelf\MarkdownExtra;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -15,7 +14,7 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -57,10 +56,11 @@ class Addons extends CP_Controller {
 		// Add in any submitted search phrase
 		ee()->view->search_value = ee()->input->get_post('search');
 
-		$this->base_url = new URL('addons', ee()->session->session_id());
+		$this->base_url = ee('CP/URL', 'addons');
 
 		ee()->load->library('addons');
 		ee()->load->helper(array('file', 'directory'));
+		ee()->legacy_api->instantiate('channel_fields');
 	}
 
 	// --------------------------------------------------------------------
@@ -71,10 +71,27 @@ class Addons extends CP_Controller {
 	 * @param int	$total	The total number of add-ons (used in the show filter)
 	 * @return	void
 	 */
-	private function filters($total)
+	private function filters($total, $developers)
 	{
+		// First Party Add-on Filters
+
 		// Status
-		$status = ee('Filter')->make('filter_by_status', 'filter_by_status', array(
+		$status = ee('Filter')->make('filter_by_first_status', 'filter_by_status', array(
+			'installed'   => strtolower(lang('installed')),
+			'uninstalled' => strtolower(lang('uninstalled')),
+			'updates'     => strtolower(lang('needs_updates'))
+		));
+		$status->disableCustomValue();
+
+		$first_filters = ee('Filter')
+			->add($status)
+			->add('Perpage', $total['first'], 'show_all_addons')
+				->withName('first_perpage');
+
+		// Third Party Add-on Filters
+
+		// Status
+		$status = ee('Filter')->make('filter_by_third_status', 'filter_by_status', array(
 			'installed'   => strtolower(lang('installed')),
 			'uninstalled' => strtolower(lang('uninstalled')),
 			'updates'     => strtolower(lang('needs_updates'))
@@ -82,20 +99,51 @@ class Addons extends CP_Controller {
 		$status->disableCustomValue();
 
 		// Developer
-		$developer = ee('Filter')->make('filter_by_developer', 'developer', array(
-			'native'		=> 'EllisLab',
-			'third_party'	=> 'Third Party',
-		));
+		$developer_options = array();
+		foreach ($developers as $developer)
+		{
+			$developer_options[$this->makeDeveloperKey($developer)] = $developer;
+		}
+		$developer = ee('Filter')->make('filter_by_developer', 'developer', $developer_options);
 		$developer->disableCustomValue();
 
-		$filters = ee('Filter')
+		$third_filters = ee('Filter')
 			->add($status)
 			->add($developer)
-			->add('Perpage', $total, 'show_all_addons');
+			->add('Perpage', $total['third'], 'show_all_addons')
+				->withName('third_perpage');
 
-		ee()->view->filters = $filters->render($this->base_url);
-		$this->params = $filters->values();
+		// When filtering the first party table keep the third party filter values
+		$filter_base_url['first'] = clone $this->base_url;
+		$filter_base_url['first']->addQueryStringVariables($third_filters->values());
+
+		// Retain the third party page
+		if (ee()->input->get('third_page'))
+		{
+			$filter_base_url['first']->setQueryStringVariable('third_page', ee()->input->get('third_page'));
+		}
+
+		// When filtering the third party table keep the first party filter values
+		$filter_base_url['third'] = clone $this->base_url;
+		$filter_base_url['third']->addQueryStringVariables($first_filters->values());
+
+		// Retain the third party page
+		if (ee()->input->get('first_page'))
+		{
+			$filter_base_url['third']->setQueryStringVariable('first_page', ee()->input->get('first_page'));
+		}
+
+		ee()->view->filters = array(
+			'first' => $first_filters->render($filter_base_url['first']),
+			'third' => $third_filters->render($filter_base_url['third'])
+		);
+		$this->params = array_merge($first_filters->values(), $third_filters->values());
 		$this->base_url->addQueryStringVariables($this->params);
+	}
+
+	private function makeDeveloperKey($str)
+	{
+		return strtolower(str_replace(' ', '_', $str));
 	}
 
 	// --------------------------------------------------------------------
@@ -121,158 +169,230 @@ class Addons extends CP_Controller {
 		}
 
 		ee()->view->cp_page_title = lang('addon_manager');
-		ee()->view->cp_heading = lang('all_addons');
+		ee()->view->cp_heading = array(
+			'first' => lang('addons'),
+			'third' => lang('third_party_addons')
+		);
 
-		$vars = array();
+		$vars = array(
+			'pagination' => array(
+				'first' => '',
+				'third' => '',
+			),
+			'tables' => array(
+				'first' => NULL,
+				'third' => NULL
+			)
+		);
 
 		if ( ! empty(ee()->view->search_value))
 		{
 			$this->base_url->setQueryStringVariable('search', ee()->view->search_value);
 		}
 
-		$data = array();
-
 		$addons = $this->getAllAddons();
+		$developers = array_map(function($addon) { return $addon['developer']; }, $addons['third']);
+		array_unique($developers);
 
-		// Setup the Table
-		$table = Table::create(array('autosort' => TRUE, 'autosearch' => TRUE));
-		$table->setColumns(
-			array(
-				'addon',
-				'version',
-				'manage' => array(
-					'type'	=> Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=> Table::COL_CHECKBOX
-				)
-			)
-		);
-
-		$this->base_url->setQueryStringVariable('sort_col', $table->sort_col);
-		$this->base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
-
-		$this->filters(count($addons));
-
-		// [Re]set the table's limit
-		$table->config['limit'] = $this->params['perpage'];
-
-		foreach($addons as $addon => $info)
+		// Retain column sorting when filtering
+		foreach (array('first', 'third') as $party)
 		{
-			// Filter based on status
-			if (isset($this->params['filter_by_status']))
+			$sort_col = $party . '_sort_col';
+			if (ee()->input->get($sort_col))
 			{
-				if ((strtolower($this->params['filter_by_status']) == 'installed'
-					 && $info['installed'] == FALSE)
-				     ||	(strtolower($this->params['filter_by_status']) == 'uninstalled'
-						 && $info['installed'] == TRUE)
-				     ||	(strtolower($this->params['filter_by_status']) == 'updates'
-						 && ! isset($info['update'])))
-				{
-					continue;
-				}
+				$this->base_url->setQueryStringVariable($sort_col, ee()->input->get($sort_col));
 			}
 
-			// Filter based on developer
-			if (isset($this->params['filter_by_developer']))
+			$sort_dir = $party . '_sort_dir';
+			if (ee()->input->get($sort_dir))
 			{
-				if (strtolower($this->params['filter_by_developer']) != strtolower($info['developer']))
-				{
-					continue;
-				}
+				$this->base_url->setQueryStringVariable($sort_dir, ee()->input->get($sort_dir));
+			}
+		}
+
+		$this->filters(array(
+			'first' => count($addons['first']),
+			'third' => count($addons['third'])
+		), $developers);
+
+		foreach (array('first', 'third') as $party)
+		{
+			if ( ! count($addons[$party]))
+			{
+				continue;
 			}
 
-			$toolbar = array(
-				'install' => array(
-					'href' => cp_url('addons/install/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
-					'title' => lang('install'),
-					'class' => 'add'
-				)
+			$data = array();
+
+			// Setup the Table
+			$config = array(
+				'autosort' => TRUE,
+				'autosearch' => TRUE,
+				'sort_col' => ee()->input->get($party . '_sort_col') ?: NULL,
+				'sort_col_qs_var' => $party . '_sort_col',
+				'sort_dir' => ee()->input->get($party . '_sort_dir') ?: 'asc',
+				'sort_dir_qs_var' => $party . '_sort_dir',
+				'page' => ee()->input->get($party . '_page') ?: 1,
+				'limit' => $this->params[$party . '_perpage']
 			);
 
-			$attrs = array('class' => 'not-installed');
-
-			if ($info['installed'])
-			{
-				$toolbar = array();
-
-				if (isset($info['settings_url']))
-				{
-					$toolbar['settings'] = array(
-						'href' => $info['settings_url'],
-						'title' => lang('settings'),
-					);
-				}
-
-				if (isset($info['manual_url']))
-				{
-					$toolbar['manual'] = array(
-						'href' => $info['manual_url'],
-						'title' => lang('manual'),
-					);
-				}
-
-				if (isset($info['update']))
-				{
-					$toolbar['txt-only'] = array(
-						'href' => cp_url('addons/update/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
-						'title' => strtolower(lang('update')),
-						'class' => 'add',
-						'content' => sprintf(lang('update_to_version'), $this->formatVersionNumber($info['update']))
-					);
-				}
-
-				$attrs = array();
-			}
-
-			$data[] = array(
-				'attrs' => $attrs,
-				'columns' => array(
-					'addon' => $info['name'],
-					'version' => $this->formatVersionNumber($info['version']),
-					array('toolbar_items' => $toolbar),
+			$table = ee('CP/Table', $config);
+			$table->setColumns(
+				array(
+					'addon',
+					'version' => array(
+						'encode' => FALSE
+					),
+					'manage' => array(
+						'type'	=> Table::COL_TOOLBAR
+					),
 					array(
-						'name' => 'selection[]',
-						'value' => $info['package'],
-						'data'	=> array(
-							'confirm' => lang('addon') . ': <b>' . $info['name'] . '</b>'
-						)
+						'type'	=> Table::COL_CHECKBOX
 					)
 				)
 			);
+			$table->setNoResultsText('no_addon_search_results');
+
+			$this->base_url->setQueryStringVariable($party . '_page', $table->config['page']);
+
+			foreach($addons[$party] as $addon => $info)
+			{
+				// Filter based on status
+				$status_key = 'filter_by_' . $party . '_status';
+				if (isset($this->params[$status_key]))
+				{
+					if ((strtolower($this->params[$status_key]) == 'installed'
+						 && $info['installed'] == FALSE)
+					     ||	(strtolower($this->params[$status_key]) == 'uninstalled'
+							 && $info['installed'] == TRUE)
+					     ||	(strtolower($this->params[$status_key]) == 'updates'
+							 && (! isset($info['update'])
+							     || $info['installed'] == FALSE)))
+					{
+						continue;
+					}
+				}
+
+				// Filter based on developer
+				if ($party == 'third'
+					&& isset($this->params['filter_by_developer']))
+				{
+					if ($this->params['filter_by_developer'] != $this->makeDeveloperKey($info['developer']))
+					{
+						continue;
+					}
+				}
+
+				$toolbar = array(
+					'install' => array(
+						'href' => ee('CP/URL', 'addons/install/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
+						'title' => lang('install'),
+						'class' => 'add'
+					)
+				);
+
+				$attrs = array('class' => 'not-installed');
+
+				if ($info['installed'])
+				{
+					$toolbar = array();
+
+					if (isset($info['settings_url']))
+					{
+						$toolbar['settings'] = array(
+							'href' => $info['settings_url'],
+							'title' => lang('settings'),
+						);
+					}
+
+					if (isset($info['manual_url']))
+					{
+						$toolbar['manual'] = array(
+							'href' => $info['manual_url'],
+							'title' => lang('manual'),
+						);
+
+						if ($info['manual_external'])
+						{
+							$toolbar['manual']['target'] = '_external';
+						}
+					}
+
+					if (isset($info['update']))
+					{
+						$toolbar['txt-only'] = array(
+							'href' => ee('CP/URL', 'addons/update/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
+							'title' => strtolower(lang('update')),
+							'class' => 'add',
+							'content' => sprintf(lang('update_to_version'), $this->formatVersionNumber($info['update']))
+						);
+					}
+
+					$attrs = array();
+				}
+
+				$data[] = array(
+					'attrs' => $attrs,
+					'columns' => array(
+						'addon' => $info['name'],
+						'version' => $this->formatVersionNumber($info['version']),
+						array('toolbar_items' => $toolbar),
+						array(
+							'name' => 'selection[]',
+							'value' => $info['package'],
+							'data'	=> array(
+								'confirm' => lang('addon') . ': <b>' . $info['name'] . '</b>'
+							)
+						)
+					)
+				);
+			}
+
+			$table->setData($data);
+			$vars['tables'][$party] = $table->viewData($this->base_url);
+
+			if ( ! empty($vars['tables'][$party]['data']))
+			{
+				// Paginate!
+				$vars['pagination'][$party] = ee('CP/Pagination', $vars['tables'][$party]['total_rows'])
+					->perPage($vars['tables'][$party]['limit'])
+					->currentPage($vars['tables'][$party]['page'])
+					->queryStringVariable($party . '_page')
+					->render($this->base_url);
+			}
 		}
 
-		$table->setNoResultsText('no_addon_search_results');
-		$table->setData($data);
+		$vars['form_url'] = $this->base_url;
 
-		$vars['table'] = $table->viewData($this->base_url);
-		$vars['form_url'] = $vars['table']['base_url'];
-
-		if ( ! empty($vars['table']['data']))
+		// Set search results heading (first and third)
+		if (ee()->input->get_post('search'))
 		{
-			// Paginate!
-			$pagination = new Pagination(
-				$vars['table']['limit'],
-				$vars['table']['total_rows'],
-				$vars['table']['page']
-			);
-			$vars['pagination'] = $pagination->cp_links($this->base_url);
-		}
-
-		// Set search results heading
-		if ( ! empty($vars['table']['search']))
-		{
-			ee()->view->cp_heading = sprintf(
+			ee()->view->cp_heading = array(
+				'first' => sprintf(
+					lang('search_results_heading'),
+					$vars['tables']['first']['total_rows'],
+					$vars['tables']['first']['search']
+				),
+				'third' => sprintf(
 				lang('search_results_heading'),
-				$vars['table']['total_rows'],
-				$vars['table']['search']
+				$vars['tables']['third']['total_rows'],
+				$vars['tables']['third']['search']
+			)
 			);
 		}
+
+		$vars['header'] = array(
+			'search_button_value' => lang('search_addons_button'),
+			'title' => ee()->view->cp_page_title,
+			'form_url' => $vars['form_url']
+		);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('addon') . ': <b>### ' . lang('addons') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/v3/confirm_remove'),
 		));
+
+		ee()->view->disable('outer_box');
 
 		ee()->cp->render('addons/index', $vars);
 	}
@@ -284,45 +404,50 @@ class Addons extends CP_Controller {
 	 */
 	private function getAllAddons()
 	{
-		$addons = array();
+		$providers = ee('App')->getProviders();
+		// Remove non-add-on providers from the list
+		unset($providers['ee']);
 
-		$addons = $this->mergeAddonData($addons, $this->getExtensions());
-		$addons = $this->mergeAddonData($addons, $this->getFieldtypes());
-		$addons = $this->mergeAddonData($addons, $this->getPlugins());
-		$addons = $this->mergeAddonData($addons, $this->getModules());
+		$addons = array(
+			'first' => array(),
+			'third' => array()
+		);
 
-		return $addons;
-	}
+		// @TODO move these 2 things out of "add-ons" entirely
+		$uninstallable = array('channel', 'comment', 'filepicker');
 
-	/**
-	 * Merges the data from one add-on array into another
-	 *
-	 * @param array $to   The addon array to merge into
-	 * @param array $from The addon array to merge from
-	 * @return array An associative array of add-on data
-	 */
-	private function mergeAddonData(array $to, array $from)
-	{
-		foreach ($from as $addon => $data)
+		foreach (array_keys($providers) as $name)
 		{
-			if ( ! isset($to[$addon]))
+			if (in_array($name, $uninstallable))
 			{
-				$to[$addon] = $data;
+				continue;
 			}
-			else
+
+			$addon = $this->getExtension($name);
+			$addon = array_merge($addon, $this->getFieldType($name));
+			$addon = array_merge($addon, $this->getPlugin($name));
+			$addon = array_merge($addon, $this->getModule($name));
+
+			if ( ! empty($addon))
 			{
-				foreach ($data as $key => $value)
+				$info = ee('App')->get($name);
+				if (file_exists($info->getPath() . '/README.md'))
 				{
-					if ( ! isset($to[$addon][$key])
-						 OR $to[$addon][$key] != $value)
-					{
-						$to[$addon][$key] = $value;
-					}
+					$addon['manual_url'] = ee('CP/URL', 'addons/manual/' . $name);
+					$addon['manual_external'] = FALSE;
 				}
+				elseif ($info->get('docs_url'))
+				{
+					$addon['manual_url'] = ee()->cp->masked_url($info->get('docs_url'));
+					$addon['manual_external'] = TRUE;
+				}
+
+				$party = ($addon['developer'] == 'EllisLab') ? 'first' : 'third';
+				$addons[$party][$name] = $addon;
 			}
 		}
 
-		return $to;
+		return $addons;
 	}
 
 	// --------------------------------------------------------------------
@@ -344,7 +469,7 @@ class Addons extends CP_Controller {
 
 		foreach ($addons as $addon)
 		{
-			$module = $this->getModules($addon);
+			$module = $this->getModule($addon);
 			if ( ! empty($module)
 				&& $module['installed'] === TRUE
 				&& array_key_exists('update', $module))
@@ -374,18 +499,22 @@ class Addons extends CP_Controller {
 				}
 			}
 
-			$fieldtype = $this->getFieldtypes($addon);
+			$fieldtype = $this->getFieldtype($addon);
 			if ( ! empty($fieldtype)
 				&& $fieldtype['installed'] === TRUE
 				&& array_key_exists('update', $fieldtype))
 			{
 				$FT = ee()->api_channel_fields->setup_handler($addon, TRUE);
-				if ($FT->update($fieldtype['version']) !== FALSE)
+				if (method_exists($FT, 'update') && $FT->update($fieldtype['version']) !== FALSE)
 				{
 					if (ee()->api_channel_fields->apply('update', array($fieldtype['version'])) !== FALSE)
 					{
-						// @TODO replace this with an ee('Model') implementation
-						ee()->db->update('fieldtypes', array('version' => $FT->info['version']), array('name' => $addon));
+						$model = ee('Model')->get('Fieldtype')
+							->filter('name', $addon)
+							->first();
+
+						$model->version = $FT->info['version'];
+						$model->save();
 
 						if ( ! isset($updated[$addon]))
 						{
@@ -395,7 +524,7 @@ class Addons extends CP_Controller {
 				}
 			}
 
-			$extension = $this->getExtensions($addon);
+			$extension = $this->getExtension($addon);
 			if ( ! empty($extension)
 				&& $extension['installed'] === TRUE
 				&& array_key_exists('update', $extension))
@@ -411,16 +540,16 @@ class Addons extends CP_Controller {
 				}
 			}
 
-			$plugin = $this->getPlugins($addon);
+			$plugin = $this->getPlugin($addon);
 			if ( ! empty($plugin)
 				&& $plugin['installed'] === TRUE
 				&& array_key_exists('update', $plugin))
 			{
 
-				$info = $plugin['info'];
+				$info = ee('App')->get($addon);
 
 				$typography = 'n';
-				if (array_key_exists('pi_typography', $info) && $info['pi_typography'] == TRUE)
+				if ($info->get('plugin.typography'))
 				{
 					$typography = 'y';
 				}
@@ -430,7 +559,7 @@ class Addons extends CP_Controller {
 					->first();
 				$model->plugin_name = $plugin['name'];
 				$model->plugin_package = $plugin['package'];
-				$model->plugin_version = $info['pi_version'];
+				$model->plugin_version = $info->getVersion();
 				$model->is_typography_related = $typography;
 				$model->save();
 
@@ -451,7 +580,7 @@ class Addons extends CP_Controller {
 		{
 			$return = base64_decode(ee()->input->get('return'));
 			$uri_elements = json_decode($return, TRUE);
-			$return = cp_url($uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
 
 			ee()->functions->redirect($return);
 		}
@@ -474,47 +603,53 @@ class Addons extends CP_Controller {
 
 		ee()->load->library('addons/addons_installer');
 
-		$installed = array();
+		$installed = array(
+			'first' => array(),
+			'third' => array()
+		);
 
 		foreach ($addons as $addon)
 		{
-			$module = $this->getModules($addon);
+			$info = ee('App')->get($addon);
+			ee()->load->add_package_path($info->getPath());
+
+			$party = ($info->getAuthor() == 'EllisLab') ? 'first' : 'third';
+
+			$module = $this->getModule($addon);
 			if ( ! empty($module) && $module['installed'] === FALSE)
 			{
 				$name = $this->installModule($addon);
 				if ($name)
 				{
-					$installed[$addon] = $name;
+					$installed[$party][$addon] = $name;
 				}
 			}
 
-			$fieldtype = $this->getFieldtypes($addon);
+			$fieldtype = $this->getFieldtype($addon);
 			if ( ! empty($fieldtype) && $fieldtype['installed'] === FALSE)
 			{
 				$name = $this->installFieldtype($addon);
 				if ($name && ! isset($installed[$addon]))
 				{
-					$installed[$addon] = $name;
+					$installed[$party][$addon] = $name;
 				}
 			}
 
-			$extension = $this->getExtensions($addon);
+			$extension = $this->getExtension($addon);
 			if ( ! empty($extension) && $extension['installed'] === FALSE)
 			{
 				$name = $this->installExtension($addon);
 				if ($name && ! isset($installed[$addon]))
 				{
-					$installed[$addon] = $name;
+					$installed[$party][$addon] = $name;
 				}
 			}
 
-			$plugin = $this->getPlugins($addon);
+			$plugin = $this->getPlugin($addon);
 			if ( ! empty($plugin) && $plugin['installed'] === FALSE)
 			{
-				$info = $plugin['info'];
-
 				$typography = 'n';
-				if (array_key_exists('pi_typography', $info) && $info['pi_typography'] == TRUE)
+				if ($info->get('plugin.typography'))
 				{
 					$typography = 'y';
 				}
@@ -522,28 +657,45 @@ class Addons extends CP_Controller {
 				$model = ee('Model')->make('Plugin');
 				$model->plugin_name = $plugin['name'];
 				$model->plugin_package = $plugin['package'];
-				$model->plugin_version = $info['pi_version'];
+				$model->plugin_version = $info->getVersion();
 				$model->is_typography_related = $typography;
 				$model->save();
 
 				if ( ! isset($installed[$addon]))
 				{
-					$installed[$addon] = $plugin['name'];
+					$installed[$party][$addon] = $plugin['name'];
 				}
 			}
+
+			ee()->load->remove_package_path($info->getPath());
 		}
 
-		if ( ! empty($installed))
+		foreach (array('first', 'third') as $party)
 		{
-			$flashdata = (ee()->input->get('return')) ? TRUE : FALSE;
-			ee()->view->set_message('success', lang('addons_installed'), lang('addons_installed_desc') . implode(', ', $installed), $flashdata);
+			if ( ! empty($installed[$party]))
+			{
+				$alert = ee('Alert')->makeInline($party . '-party')
+					->asSuccess()
+					->withTitle(lang('addons_installed'))
+					->addToBody(lang('addons_installed_desc'))
+					->addToBody(array_values($installed[$party]));
+
+				if (ee()->input->get('return'))
+				{
+					$alert->defer();
+				}
+				else
+				{
+					$alert->now();
+				}
+			}
 		}
 
 		if (ee()->input->get('return'))
 		{
 			$return = base64_decode(ee()->input->get('return'));
 			$uri_elements = json_decode($return, TRUE);
-			$return = cp_url($uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
 
 			ee()->functions->redirect($return);
 		}
@@ -566,41 +718,47 @@ class Addons extends CP_Controller {
 
 		ee()->load->library('addons/addons_installer');
 
-		$uninstalled = array();
+		$uninstalled = array(
+			'first' => array(),
+			'third' => array()
+		);
 
 		foreach ($addons as $addon)
 		{
-			$module = $this->getModules($addon);
+			$info = ee('App')->get($addon);
+			$party = ($info->getAuthor() == 'EllisLab') ? 'first' : 'third';
+
+			$module = $this->getModule($addon);
 			if ( ! empty($module) && $module['installed'] === TRUE)
 			{
 				$name = $this->uninstallModule($addon);
 				if ($name)
 				{
-					$uninstalled[$addon] = $name;
+					$uninstalled[$party][$addon] = $name;
 				}
 			}
 
-			$fieldtype = $this->getFieldtypes($addon);
+			$fieldtype = $this->getFieldtype($addon);
 			if ( ! empty($fieldtype) && $fieldtype['installed'] === TRUE)
 			{
 				$name = $this->uninstallFieldtype($addon);
 				if ($name && ! isset($uninstalled[$addon]))
 				{
-					$uninstalled[$addon] = $name;
+					$uninstalled[$party][$addon] = $name;
 				}
 			}
 
-			$extension = $this->getExtensions($addon);
+			$extension = $this->getExtension($addon);
 			if ( ! empty($extension) && $extension['installed'] === TRUE)
 			{
 				$name = $this->uninstallExtension($addon);
 				if ($name && ! isset($uninstalled[$addon]))
 				{
-					$uninstalled[$addon] = $name;
+					$uninstalled[$party][$addon] = $name;
 				}
 			}
 
-			$plugin = $this->getPlugins($addon);
+			$plugin = $this->getPlugin($addon);
 			if ( ! empty($plugin) && $plugin['installed'] === TRUE)
 			{
 				ee('Model')->get('Plugin')
@@ -609,14 +767,22 @@ class Addons extends CP_Controller {
 
 				if ( ! isset($uninstalled[$addon]))
 				{
-					$uninstalled[$addon] = $plugin['name'];
+					$uninstalled[$party][$addon] = $plugin['name'];
 				}
 			}
 		}
 
-		if ( ! empty($uninstalled))
+		foreach (array('first', 'third') as $party)
 		{
-			ee()->view->set_message('success', lang('addons_uninstalled'), lang('addons_uninstalled_desc') . implode(', ', $uninstalled));
+			if ( ! empty($uninstalled[$party]))
+			{
+				$alert = ee('Alert')->makeInline($party . '-party')
+					->asSuccess()
+					->withTitle(lang('addons_uninstalled'))
+					->addToBody(lang('addons_uninstalled_desc'))
+					->addToBody(array_values($uninstalled[$party]))
+					->now();
+			}
 		}
 	}
 
@@ -634,7 +800,7 @@ class Addons extends CP_Controller {
 
 		$vars = array();
 		$breadcrumb = array(
-			cp_url('addons') => lang('addon_manager')
+			ee('CP/URL', 'addons')->compile() => lang('addon_manager')
 		);
 
 		if (is_null($method))
@@ -643,33 +809,47 @@ class Addons extends CP_Controller {
 		}
 
 		// Module
-		$module = $this->getModules($addon);
+		$module = $this->getModule($addon);
 		if ( ! empty($module) && $module['installed'] === TRUE)
 		{
 			$data = $this->getModuleSettings($addon, $method);
 
+			ee()->view->cp_heading = $module['name'] . ' ' . lang('configuration');
+
 			if (is_array($data))
 			{
 				$vars['_module_cp_body'] = $data['body'];
-				ee()->view->cp_heading = $data['heading'];
-				$breadcrumb = $data['breadcrumb'];
+
+				if (isset($data['heading']))
+				{
+					ee()->view->cp_heading = $data['heading'];
+				}
+
+				if (isset($data['breadcrumb']))
+				{
+					$breadcrumb = array_merge($breadcrumb, $data['breadcrumb']);
+				}
+
+				if (isset($data['sidebar']))
+				{
+					ee()->menu->register_left_nav($data['sidebar']);
+				}
 			}
 			else
 			{
 				$vars['_module_cp_body'] = $data;
-				ee()->view->cp_heading = $module['name'] . ' ' . lang('configuration');
 			}
 		}
 		else
 		{
 			// Fieldtype
-			$fieldtype = $this->getFieldtypes($addon);
+			$fieldtype = $this->getFieldtype($addon);
 			if ( ! empty($fieldtype) && $fieldtype['installed'] === TRUE)
 			{
 				if ($method == 'save')
 				{
 					$this->saveFieldtypeSettings($fieldtype);
-					ee()->functions->redirect(cp_url('addons/settings/' . $addon));
+					ee()->functions->redirect(ee('CP/URL', 'addons/settings/' . $addon));
 				}
 
 				$vars['_module_cp_body'] = $this->getFieldtypeSettings($fieldtype);
@@ -678,13 +858,13 @@ class Addons extends CP_Controller {
 			else
 			{
 				// Extension
-				$extension = $this->getExtensions($addon);
+				$extension = $this->getExtension($addon);
 				if ( ! empty($extension) && $extension['installed'] === TRUE)
 				{
 					if ($method == 'save')
 					{
 						$this->saveExtensionSettings($addon);
-						ee()->functions->redirect(cp_url('addons/settings/' . $addon));
+						ee()->functions->redirect(ee('CP/URL', 'addons/settings/' . $addon));
 					}
 
 					$vars['_module_cp_body'] = $this->getExtensionSettings($addon);
@@ -699,6 +879,13 @@ class Addons extends CP_Controller {
 		}
 
 		ee()->view->cp_breadcrumbs = $breadcrumb;
+		ee()->view->cp_page_title = ee()->view->cp_heading;
+		ee()->view->header = array(
+			'title' => lang('addon_manager'),
+			'form_url' => ee('CP/URL', 'addons'),
+			'search_button_value' => lang('search_addons_button')
+		);
+		ee()->view->disable('outer_box');
 
 		ee()->cp->render('addons/settings', $vars);
 	}
@@ -713,40 +900,113 @@ class Addons extends CP_Controller {
 	 */
 	public function manual($addon)
 	{
-		ee()->view->cp_page_title = lang('addon_manager');
-
-		$vars = array();
-
-		$plugin = $this->getPlugins($addon);
-		if (empty($plugin))
+		try
+		{
+			$info = ee('App')->get($addon);
+		}
+		catch (\Exception $e)
 		{
 			show_error(lang('requested_module_not_installed').NBS.$addon);
 		}
 
-		$vars = array(
-			'name'			=> $plugin['info']['pi_name'],
-			'version'		=> $this->formatVersionNumber($plugin['info']['pi_version']),
-			'author'		=> $plugin['info']['pi_author'],
-			'author_url'	=> $plugin['info']['pi_author_url'],
-			'description'	=> $plugin['info']['pi_description'],
-		);
+		$readme_file = $info->getPath() . '/README.md';
 
-		$vars['usage'] = array(
-			'description' => '',
-			'example' => $plugin['info']['pi_usage']
-		);
-
-		if (is_array($plugin['info']['pi_usage']))
+		if ( ! file_exists($readme_file))
 		{
-			$vars['usage']['description'] = $plugin['info']['pi_usage']['description'];
-			$vars['usage']['example'] = $plugin['info']['pi_usage']['example'];
-			$vars['parameters'] = $plugin['info']['pi_usage']['parameters'];
+			show_404();
 		}
+
+		ee()->view->cp_page_title = $info->getName() . ' ' . lang('manual');
+
+		$vars = array(
+			'name'        => $info->getName(),
+			'version'     => $this->formatVersionNumber($info->getVersion()),
+			'author'      => $info->getAuthor(),
+			'author_url'  => $info->get('author_url'),
+			'docs_url'    => $info->get('docs_url'),
+			'description' => $info->get('description')
+		);
+
+		// Some pre-processing:
+		//   1. Remove any #'s at the start of the doc, since that will be redundant with the add-on info
+
+		$readme = preg_replace('/^\s*#.*?\n/s', '', file_get_contents($readme_file));
+
+		$parser = new MarkdownExtra;
+		$readme = $parser->transform($readme);
+
+		// Some post-processing
+		//   1. Step headers back (h2 becomes h1, h3 becomes, h2, etc.)
+		//   2. Change codeblocks to textareas
+		//   3. Add <mark> around h4's (params and variables)
+		//   4. Pull out header tree for sidebar nav (h1 and h2 only)
+
+		for ($i = 2, $j = 1; $i <=6; $i++, $j++)
+		{
+			$readme = str_replace(array("<h{$i}>", "</h{$i}>"), array("<h{$j}>", "</h{$j}>"), $readme);
+		}
+
+		$pre_tags = array('<pre><code>', '</code></pre>', '<h4>', '</h4>');
+		$post_tags = array('<textarea>', '</textarea>', '<h4><mark>', '</mark></h4>');
+
+		$readme = str_replace($pre_tags, $post_tags, $readme);
+
+		// [
+		// 	[0] => <h1>full tag</h1>
+		// 	[1] => 1
+		// 	[2] => full tag
+		// ]
+		preg_match_all('|<h([12])>(.*?)</h\\1>|', $readme, $matches, PREG_SET_ORDER);
+
+		$nav = array();
+		$child = array();
+		foreach($matches as $key => $match)
+		{
+			// give 'em id's so they are linkable
+			$new_header = "<h{$match[1]} id=\"ref{$key}\">{$match[2]}</h{$match[1]}>";
+
+			// just in case they use the same name in multiple headers, we need to id separately
+			// hence preg_replace() with a limit instead of str_replace()
+			$readme = preg_replace('/'.preg_quote($match[0], '/').'/', $new_header, $readme, 1);
+
+			if ($match[1] == 1)
+			{
+				// append any children (h2's) if they exist
+				if ( ! empty($child))
+				{
+					$nav[] = $child;
+					$child = array();
+				}
+
+				$nav[strip_tags($match[2])] = "#ref{$key}";
+			}
+			else
+			{
+				// save the children for later. SAVE THE CHILDREN!
+				$child[strip_tags($match[2])] = "#ref{$key}";
+			}
+		}
+
+		// don't forget the youngest!
+		if ( ! empty($child))
+		{
+			$nav[] = $child;
+		}
+
+		// Register our menu and header
+		ee()->menu->register_left_nav($nav);
+		ee()->view->header = array(
+			'title' => lang('addon_manager'),
+			'form_url' => ee('CP/URL', 'addons'),
+			'search_button_value' => lang('search_addons_button')
+		);
+
+		$vars['readme'] = $readme;
 
 		ee()->view->cp_heading = $vars['name'] . ' ' . lang('manual');
 
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('addons') => lang('addon_manager')
+			ee('CP/URL', 'addons')->compile() => lang('addon_manager')
 		);
 
 		ee()->cp->render('addons/manual', $vars);
@@ -755,9 +1015,9 @@ class Addons extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get a list of modules
+	 * Get data on a module
 	 *
-	 * @param	str	$name	(optional) Limit the return to this add-on
+	 * @param	str	$name	The add-on name
 	 * @return	array		Add-on data in the following format:
 	 *   e.g. 'developer'	 => 'native',
 	 *        'version'		 => '--',
@@ -768,75 +1028,74 @@ class Addons extends CP_Controller {
 	 *        'type'		 => 'module',
 	 *        'settings_url' => '' (optional)
 	 */
-	private function getModules($name = NULL)
+	private function getModule($name)
 	{
-		$modules = array();
-		$installed = ee()->addons->get_installed('modules', TRUE);
-
-		foreach(ee()->addons->get_files() as $module => $info)
+		try
 		{
-			if ($name && $name != $module)
+			$info = ee('App')->get($name);
+		}
+		catch (\Exception $e)
+		{
+			show_404();
+		}
+
+		if ( ! file_exists($info->getPath() . '/mod.' . $name . '.php'))
+		{
+			return array();
+		}
+
+		ee()->lang->loadfile($name);
+		$display_name = (lang(strtolower($name).'_module_name') != FALSE) ? lang(strtolower($name).'_module_name') : $info->getName();
+
+		$data = array(
+			'developer'		=> $info->getAuthor(),
+			'version'		=> '--',
+			'installed'		=> FALSE,
+			'name'			=> $display_name,
+			'package'		=> $name,
+			'type'			=> 'module',
+		);
+
+		$module = ee('Model')->get('Module')
+			->filter('module_name', $name)
+			->first();
+
+		if ($module)
+		{
+			$data['installed'] = TRUE;
+			$data['version'] = $module->module_version;
+
+			if ($info->get('settings_exist'))
 			{
-				continue;
+				$data['settings_url'] = ee('CP/URL', 'addons/settings/' . $name);
 			}
 
-			ee()->lang->loadfile($module);
-			$display_name = (lang(strtolower($module).'_module_name') != FALSE) ? lang(strtolower($module).'_module_name') : $info['name'];
-
-			$data = array(
-				'developer'		=> $info['type'],
-				'version'		=> '--',
-				'installed'		=> FALSE,
-				'name'			=> $display_name,
-				'package'		=> $module,
-				'type'			=> 'module',
-			);
-
-			if (isset($installed[$module]))
+			if (file_exists($info->getPath() . '/upd.' . $name . '.php'))
 			{
-				if (file_exists($installed[$module]['path'].'upd.'.$module.'.php'))
+				require_once $info->getPath() . '/upd.' . $name . '.php';
+				$class = ucfirst($name).'_upd';
+
+				ee()->load->add_package_path($info->getPath());
+
+				$UPD = new $class;
+
+				if (version_compare($info->getVersion(), $module->module_version, '>')
+					&& method_exists($UPD, 'update'))
 				{
-					require_once $installed[$module]['path'].'upd.'.$module.'.php';
-					$class = ucfirst($module).'_upd';
-
-					ee()->load->add_package_path($installed[$module]['path']);
-
-					$UPD = new $class;
-					$UPD->_ee_path = APPPATH;
-					if (version_compare($UPD->version, $installed[$module]['module_version'], '>')
-						&& method_exists($UPD, 'update'))
-					{
-						$data['update'] = $UPD->version;
-					}
+					$data['update'] = $info->getVersion();
 				}
-
-				$data['version'] = $installed[$module]['module_version'];
-				$data['installed'] = TRUE;
-				if ($installed[$module]['has_cp_backend'] == 'y')
-				{
-					$data['settings_url'] = cp_url('addons/settings/' . $module);
-				}
-			}
-
-			if (is_null($name))
-			{
-				$modules[$module] = $data;
-			}
-			elseif ($name == $module)
-			{
-				return $data;
 			}
 		}
 
-		return $modules;
+		return $data;
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get a list of plugins
+	 * Get data on a plugin
 	 *
-	 * @param	str	$name	(optional) Limit the return to this add-on
+	 * @param	str	$name	The add-on name
 	 * @return	array		Add-on data in the following format:
 	 *   e.g. 'developer'	 => 'native',
 	 *        'version'		 => '--',
@@ -846,63 +1105,53 @@ class Addons extends CP_Controller {
 	 *        'type'		 => 'plugin',
 	 *        'manual_url' => ''
 	 */
-	private function getPlugins($name = NULL)
+	private function getPlugin($name)
 	{
-		ee()->load->model('addons_model');
-		$plugins = array();
-
-		foreach (ee()->addons_model->get_plugins($name) as $plugin => $info)
+		try
 		{
-			if ($name && $name != $plugin)
-			{
-				continue;
-			}
+			$info = ee('App')->get($name);
+		}
+		catch (\Exception $e)
+		{
+			show_404();
+		}
 
-			$developer = (strpos($info['installed_path'], PATH_ADDONS) === FALSE) ? 'native' : 'third_party';
+		if ( ! file_exists($info->getPath() . '/pi.' . $name . '.php'))
+		{
+			return array();
+		}
 
-			$data = array(
-				'developer'		=> $developer,
-				'version'		=> $info['pi_version'],
-				'installed'		=> FALSE,
-				'name'			=> $info['pi_name'],
-				'package'		=> $plugin,
-				'type'			=> 'plugin',
-				'manual_url'	=> cp_url('addons/manual/' . $plugin),
-				'info'			=> $info // Cache this
-			);
+		$data = array(
+			'developer'		=> $info->getAuthor(),
+			'version'		=> '--',
+			'installed'		=> FALSE,
+			'name'			=> $info->getName(),
+			'package'		=> $name,
+			'type'			=> 'plugin',
+		);
 
-			$model = ee('Model')->get('Plugin')
-				->filter('plugin_package', $plugin)
-				->first();
-			if ( ! is_null($model))
+		$model = ee('Model')->get('Plugin')
+			->filter('plugin_package', $name)
+			->first();
+		if ( ! is_null($model))
+		{
+			$data['installed'] = TRUE;
+			$data['version'] = $model->plugin_version;
+			if (version_compare($info->getVersion(), $model->plugin_version, '>'))
 			{
-				$data['installed'] = TRUE;
-				if (version_compare($info['pi_version'], $model->plugin_version, '>'))
-				{
-					$data['update'] = $info['pi_version'];
-					$data['version'] = $model->plugin_version;
-				}
-			}
-
-			if (is_null($name))
-			{
-				$plugins[$plugin] = $data;
-			}
-			elseif ($name == $plugin)
-			{
-				return $data;
+				$data['update'] = $info->getVersion();
 			}
 		}
 
-		return $plugins;
+		return $data;
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get a list of fieldtypes
+	 * Get data on a fieldtype
 	 *
-	 * @param	str	$name	(optional) Limit the return to this add-on
+	 * @param	str	$name	The add-on name
 	 * @return	array		Add-on data in the following format:
 	 *   e.g. 'developer'	 => 'native',
 	 *        'version'		 => '--',
@@ -913,68 +1162,64 @@ class Addons extends CP_Controller {
 	 *        'settings'     => array(),
 	 *        'settings_url' => '' (optional)
 	 */
-	private function getFieldtypes($name = NULL)
+	private function getFieldtype($name)
 	{
-		ee()->legacy_api->instantiate('channel_fields');
-
-		$fieldtypes = array();
-		$installed = ee()->addons->get_installed('fieldtypes', TRUE);
-
-		foreach (ee()->api_channel_fields->fetch_all_fieldtypes() as $fieldtype => $info)
+		try
 		{
-			if ($name && $name != $fieldtype)
+			$info = ee('App')->get($name);
+		}
+		catch (\Exception $e)
+		{
+			show_404();
+		}
+
+		if ( ! file_exists($info->getPath() . '/ft.' . $name . '.php'))
+		{
+			return array();
+		}
+
+		$data = array(
+			'developer'		=> $info->getAuthor(),
+			'version'		=> '--',
+			'installed'		=> FALSE,
+			'name'			=> $info->getName(),
+			'package'		=> $name,
+			'type'			=> 'fieldtype',
+		);
+
+		$model = ee('Model')->get('Fieldtype')
+			->filter('name', $name)
+			->first();
+
+		if ($model)
+		{
+			$data['installed'] = TRUE;
+			$data['version'] = $model->version;
+
+			if (version_compare($info->getVersion(), $model->version, '>'))
 			{
-				continue;
+				$data['update'] = $info->getVersion();
 			}
 
-			$data = array(
-				'developer'		=> $info['type'],
-				'version'		=> $info['version'],
-				'installed'		=> FALSE,
-				'name'			=> $info['name'],
-				'package'		=> $fieldtype,
-				'type'			=> 'fieldtype',
-			);
-
-			if (isset($installed[$fieldtype]))
+			if ($info->get('settings_exist'))
 			{
-				$data['installed'] = TRUE;
-				$data['version'] = $installed[$fieldtype]['version'];
-
-				$FT = ee()->api_channel_fields->setup_handler($fieldtype, TRUE);
-
-				if (version_compare($FT->info['version'], $installed[$fieldtype]['version'], '>'))
+				if ($model->settings)
 				{
-					$data['update'] = $FT->info['version'];
+					$data['settings'] = $model->settings;
 				}
-
-				if ($installed[$fieldtype]['has_global_settings'] == 'y')
-				{
-					$data['settings'] = unserialize(base64_decode($installed[$fieldtype]['settings']));
-					$data['settings_url'] = cp_url('addons/settings/' . $fieldtype);
-				}
-
-			}
-
-			if (is_null($name))
-			{
-				$fieldtypes[$fieldtype] = $data;
-			}
-			elseif ($name == $fieldtype)
-			{
-				return $data;
+				$data['settings_url'] = ee('CP/URL', 'addons/settings/' . $name);
 			}
 		}
 
-		return $fieldtypes;
+		return $data;
 	}
 
 	// --------------------------------------------------------------------
 
 	/**
-	 * Get a list of extensions
+	 * Get data on an extension
 	 *
-	 * @param	str	$name	(optional) Limit the return to this add-on
+	 * @param	str	$name	The add-on name
 	 * @return	array		Add-on data in the following format:
 	 *   e.g. 'developer'	 => 'native',
 	 *        'version'		 => '--',
@@ -984,110 +1229,89 @@ class Addons extends CP_Controller {
 	 *        'package'		 => 'foobar',
 	 *        'class'        => 'Foobar_ext',
 	 *        'enabled'		 => NULL|TRUE|FALSE
-	 *        'manual_url'	 => '' (optional),
 	 *        'settings_url' => '' (optional)
 	 */
-	private function getExtensions($name = NULL)
+	private function getExtension($name)
 	{
 		if (ee()->config->item('allow_extensions') != 'y')
 		{
 			return array();
 		}
 
-		ee()->load->model('addons_model');
-
-		$extensions = array();
-
-		$installed_ext_q = ee()->addons_model->get_installed_extensions(FALSE);
-		foreach ($installed_ext_q->result_array() as $row)
+		try
 		{
-			// Check the meta data
-			$installed[$row['class']] = $row;
+			$info = ee('App')->get($name);
 		}
-		$installed_ext_q->free_result();
-
-		foreach(ee()->addons->get_files('extensions') as $ext_name => $ext)
+		catch (\Exception $e)
 		{
-			if ($name && $name != $ext_name)
-			{
-				continue;
-			}
+			show_404();
+		}
 
-			// Add the package path so things don't hork in the constructor
-			ee()->load->add_package_path($ext['path']);
+		if ( ! file_exists($info->getPath() . '/ext.' . $name . '.php'))
+		{
+			return array();
+		}
 
-			// Include the file so we can grab its meta data
-			$class_name = $ext['class'];
+		$class_name =ucfirst($name) . '_ext';
+
+		$data = array(
+			'developer'		=> $info->getAuthor(),
+			'version'		=> '--',
+			'installed'		=> FALSE,
+			'enabled'		=> NULL,
+			'name'			=> $info->getName(),
+			'package'		=> $name,
+			'class'			=> $class_name,
+		);
+
+		$extension = ee('Model')->get('Extension')
+			->filter('class', $class_name)
+			->first();
+
+		if ($extension)
+		{
+			$data['version'] = $extension->version;
+			$data['installed'] = TRUE;
+			$data['enabled'] = $extension->enabled;
+
+			ee()->load->add_package_path($info->getPath());
 
 			if ( ! class_exists($class_name))
 			{
+				$file = $info->getPath() . '/ext.' . $name . '.php';
 				if (ee()->config->item('debug') == 2
 					OR (ee()->config->item('debug') == 1
 						AND ee()->session->userdata('group_id') == 1))
 				{
-					include($ext['path'].$ext['file']);
+					include($file);
 				}
 				else
 				{
-					@include($ext['path'].$ext['file']);
+					@include($file);
 				}
 
 				if ( ! class_exists($class_name))
 				{
-					trigger_error(str_replace(array('%c', '%f'), array(htmlentities($class_name), htmlentities($ext['path'].$ext['file'])), lang('extension_class_does_not_exist')));
-					unset($extension_files[$ext_name]);
+					trigger_error(str_replace(array('%c', '%f'), array(htmlentities($class_name), htmlentities($file)), lang('extension_class_does_not_exist')));
 					continue;
 				}
 			}
 
 			// Get some details on the extension
 			$Extension = new $class_name();
-
-			$developer = (strpos($ext['path'], PATH_ADDONS) === FALSE) ? 'native' : 'third_party';
-
-			$data = array(
-				'developer'		=> $developer,
-				'version'		=> $Extension->version,
-				'installed'		=> FALSE,
-				'enabled'		=> NULL,
-				'name'			=> (isset($Extension->name)) ? $Extension->name : $ext['name'],
-				'package'		=> $ext_name,
-				'class'			=> $class_name,
-			);
-
-			if (isset($installed[$class_name]))
+			if (version_compare($info->getVersion(), $extension->version, '>')
+				&& method_exists($Extension, 'update_extension') === TRUE)
 			{
-				$data['version'] = $installed[$class_name]['version'];
-				$data['installed'] = TRUE;
-				$data['enabled'] = ($installed[$class_name]['enabled'] == 'y');
-
-				if ($Extension->settings_exist == 'y')
-				{
-					$data['settings_url'] = cp_url('addons/settings/' . $ext_name);
-				}
-
-				if ($Extension->docs_url)
-				{
-					$data['manual_url'] = ee()->cp->masked_url($Extension->docs_url);
-				}
-
-				if (version_compare($Extension->version, $installed[$class_name]['version'], '>') && method_exists($Extension, 'update_extension') === TRUE)
-				{
-					$data['update'] = $Extension->version;
-				}
+				$data['update'] = $info->getVersion();
 			}
 
-			if (is_null($name))
+			if ($info->get('settings_exist'))
 			{
-				$extensions[$ext_name] = $data;
-			}
-			elseif ($name == $ext_name)
-			{
-				return $data;
+				$data['settings_url'] = ee('CP/URL', 'addons/settings/' . $name);
 			}
 		}
 
-		return $extensions;
+		return $data;
 	}
 
 	// --------------------------------------------------------------------
@@ -1102,7 +1326,7 @@ class Addons extends CP_Controller {
 	{
 	 	$name = NULL;
 		$module = ee()->security->sanitize_filename(strtolower($addon));
-		$extension = $this->getExtensions($addon);
+		$extension = $this->getExtension($addon);
 
 		if (ee()->addons_installer->install($addon, 'extension', FALSE))
 		{
@@ -1124,7 +1348,7 @@ class Addons extends CP_Controller {
 	{
 		$name = NULL;
 		$module = ee()->security->sanitize_filename(strtolower($addon));
-		$extension = $this->getExtensions($addon);
+		$extension = $this->getExtension($addon);
 
 		if (ee()->addons_installer->uninstall($addon, 'extension', FALSE))
 		{
@@ -1135,30 +1359,6 @@ class Addons extends CP_Controller {
 	}
 
 	// -------------------------------------------------------------------------
-
-	/**
-	 * Check for usage of the magpie plugin and get the plugin_info manually
-	 *
-	 * @param  string $filename The filename to check
-	 * @param  String $path     Path where the file exists
-	 * @return Mixed            Returns $plugin_info if it's MagPie, otherwise
-	 *                          nothing
-	 */
-	private function magpieCheck($filename, $path)
-	{
-		// Magpie maight already be in use for an accessory or other function
-		// If so, we still need the $plugin_info, so we'll open it up and
-		// harvest what we need. This is a special exception for Magpie.
-		if ($filename == 'magpie' AND in_array($path, get_included_files()) AND class_exists('Magpie'))
-		{
-			$contents = file_get_contents($path);
-			$start = strpos($contents, '$plugin_info');
-			$length = strpos($contents, 'Class Magpie') - $start;
-			return eval(substr($contents, $start, $length));
-		}
-	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Installs a module
@@ -1217,7 +1417,7 @@ class Addons extends CP_Controller {
 
 		if (ee()->addons_installer->install($fieldtype, 'fieldtype', FALSE))
 		{
-			$data = $this->getFieldtypes($fieldtype);
+			$data = $this->getFieldtype($fieldtype);
 			$name = $data['name'];
 		}
 
@@ -1239,7 +1439,7 @@ class Addons extends CP_Controller {
 
 		if (ee()->addons_installer->uninstall($fieldtype, 'fieldtype', FALSE))
 		{
-			$data = $this->getFieldtypes($fieldtype);
+			$data = $this->getFieldtype($fieldtype);
 			$name = $data['name'];
 		}
 
@@ -1257,21 +1457,26 @@ class Addons extends CP_Controller {
 	private function getModuleSettings($name, $method = "index")
 	{
 		$addon = ee()->security->sanitize_filename(strtolower($name));
-		$installed = ee()->addons->get_installed('modules', TRUE);
+
+		$info = ee('App')->get($name);
+
+		$module = ee('Model')->get('Module')
+			->filter('module_name', $name)
+			->first();
 
 		if (ee()->session->userdata['group_id'] != 1)
 		{
 			// Do they have access to this module?
-			if ( ! isset($installed[$addon]) OR
-				 ! isset(ee()->session->userdata['assigned_modules'][$installed[$addon]['module_id']]) OR
-				ee()->session->userdata['assigned_modules'][$installed[$addon]['module_id']] !== TRUE)
+			if ( ! isset($module) OR
+				 ! isset(ee()->session->userdata['assigned_modules'][$module->module_id]) OR
+				ee()->session->userdata['assigned_modules'][$module->module_id] !== TRUE)
 			{
 				show_error(lang('unauthorized_access'));
 			}
 		}
 		else
 		{
-			if ( ! isset($installed[$addon]))
+			if ( ! isset($module))
 			{
 				show_error(lang('requested_module_not_installed').NBS.$addon);
 			}
@@ -1280,16 +1485,17 @@ class Addons extends CP_Controller {
 		$view_folder = 'views';
 
 		// set the view path
-		define('MODULE_VIEWS', $installed[$addon]['path'].$view_folder.'/');
+		define('MODULE_VIEWS', $info->getPath() . '/' . $view_folder . '/');
 
 		// Add the helper/library load path and temporarily
 		// switch the view path to the module's view folder
-		ee()->load->add_package_path($installed[$addon]['path']);
+		ee()->load->add_package_path($info->getPath());
 
-		require_once $installed[$addon]['path'].$installed[$addon]['file'];
+		require_once $info->getPath() . '/mcp.' . $name . '.php';
 
 		// instantiate the module cp class
-		$mod = new $installed[$addon]['class'];
+		$class = ucfirst($name) . '_mcp';
+		$mod = new $class;
 		$mod->_ee_path = APPPATH;
 
 		// add validation callback support to the mcp class (see EE_form_validation for more info)
@@ -1310,7 +1516,7 @@ class Addons extends CP_Controller {
 		ee()->remove('_mcp_reference');
 
 		// remove package paths
-		ee()->load->remove_package_path($installed[$addon]['path']);
+		ee()->load->remove_package_path($info->getPath());
 
 		return $_module_cp_body;
 	}
@@ -1324,7 +1530,7 @@ class Addons extends CP_Controller {
 
 		$addon = ee()->security->sanitize_filename(strtolower($name));
 
-		$extension = $this->getExtensions($addon);
+		$extension = $this->getExtension($addon);
 
 		if (empty($extension) || $extension['installed'] === FALSE)
 		{
@@ -1338,7 +1544,7 @@ class Addons extends CP_Controller {
 			->filter('class', $extension['class'])
 			->first();
 
-		$current = strip_slashes(unserialize($extension_model->settings));
+		$current = strip_slashes($extension_model->settings);
 
 		$class_name = $extension['class'];
 		$OBJ = new $class_name();
@@ -1349,7 +1555,7 @@ class Addons extends CP_Controller {
 		}
 
 		$vars = array(
-			'base_url' => cp_url('addons/settings/' . $name . '/save'),
+			'base_url' => ee('CP/URL', 'addons/settings/' . $name . '/save'),
 			'cp_page_title' => $extension['name'] . ' ' . lang('configuration'),
 			'save_btn_text' => 'btn_save_settings',
 			'save_btn_text_working' => 'btn_saving',
@@ -1418,7 +1624,7 @@ class Addons extends CP_Controller {
 					}
 
 					$element['fields'][$key] = array(
-						'type' => 'dropdown',
+						'type' => 'select',
 						'value' => $value,
 						'choices' => $choices
 					);
@@ -1486,7 +1692,7 @@ class Addons extends CP_Controller {
 
 		$addon = ee()->security->sanitize_filename(strtolower($name));
 
-		$extension = $this->getExtensions($addon);
+		$extension = $this->getExtension($addon);
 
 		if (empty($extension) || $extension['installed'] === FALSE)
 		{
@@ -1544,7 +1750,7 @@ class Addons extends CP_Controller {
 			->filter('class', $extension['class'])
 			->first();
 
-		$extension_model->settings = serialize($settings);
+		$extension_model->settings = $settings;
 		$extension_model->save();
 
 		ee('Alert')->makeInline('shared-form')
@@ -1561,6 +1767,7 @@ class Addons extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		ee()->api_channel_fields->fetch_installed_fieldtypes();
 		$FT = ee()->api_channel_fields->setup_handler($fieldtype['package'], TRUE);
 
 		$FT->settings = $fieldtype['settings'];
@@ -1570,7 +1777,7 @@ class Addons extends CP_Controller {
 		if (is_array($fieldtype_settings))
 		{
 			$vars = array(
-				'base_url' => cp_url('addons/settings/' . $fieldtype['package'] . '/save'),
+				'base_url' => ee('CP/URL', 'addons/settings/' . $fieldtype['package'] . '/save'),
 				'cp_page_title' => $fieldtype['name'] . ' ' . lang('configuration'),
 				'save_btn_text' => 'btn_save_settings',
 				'save_btn_text_working' => 'btn_saving',
@@ -1582,7 +1789,7 @@ class Addons extends CP_Controller {
 		{
 			$html = '<div class="box">';
 			$html .= '<h1>' . $fieldtype['name'] . ' ' . lang('configuration') . '</h1>';
-			$html .= form_open(cp_url('addons/settings/' . $fieldtype['package'] . '/save'), 'class="settings"');
+			$html .= form_open(ee('CP/URL', 'addons/settings/' . $fieldtype['package'] . '/save'), 'class="settings"');
 			$html .= ee('Alert')->get('shared-form');
 			$html .= $fieldtype_settings;
 			$html .= '<fieldset class="form-ctrls">';
@@ -1593,7 +1800,6 @@ class Addons extends CP_Controller {
 
 			return $html;
 		}
-
 	}
 
 	private function saveFieldtypeSettings($fieldtype)
@@ -1603,19 +1809,18 @@ class Addons extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		ee()->api_channel_fields->fetch_installed_fieldtypes();
 		$FT = ee()->api_channel_fields->setup_handler($fieldtype['package'], TRUE);
 
 		$FT->settings = $fieldtype['settings'];
 
 		$settings = ee()->api_channel_fields->apply('save_global_settings');
-		$settings = base64_encode(serialize($settings));
 
-		$fieldtype_model = ee('Model')->get('ChannelField')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('field_name', $fieldtype['package'])
+		$fieldtype_model = ee('Model')->get('Fieldtype')
+			->filter('name', $fieldtype['package'])
 			->first();
 
-		$fieldtype_model->field_settings = $settings;
+		$fieldtype_model->settings = $settings;
 		$fieldtype_model->save();
 
 		ee('Alert')->makeInline('shared-form')

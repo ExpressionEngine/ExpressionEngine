@@ -2,171 +2,138 @@
 
 $lang = array(
 
-'msm_product_name' =>
-'Multiple Site Manager',
+'site' => 'Site',
+'sites' => 'Sites',
+'switch_to' => 'Switch to',
+'short_name' => 'Short Name',
+'online' => 'online',
+'offline' => 'offline',
+'cannot_remove_site_1' => 'You cannot remove site <b>%s</b>.',
+'sites_removed_desc' => 'The following sites were removed',
+'create_site' => 'Create Site',
+'edit_site' => 'Edit Site',
+'name_desc' => 'Full descriptive name of this site.',
+'short_name_desc' => 'Short name for this site.<br><i>No spaces. Underscores and dashes are allowed.</i>',
+'description_desc' => 'A brief description of this site.',
+'btn_create_site' => 'Create Site',
+'btn_edit_site' => 'Edit Site',
+'site_online' => 'Website online?',
+'site_online_desc' => 'When set to <b>offline</b>, only super admins and member groups with permissions will be able to browse this website.',
+'online' => 'Online',
+'offline' => 'Offline',
+'create_site_success' => 'Site Created',
+'create_site_success_desc' => 'The site <b>%s</b> has been created.',
+'create_site_error' => 'Cannot Create Site',
+'create_site_error_desc' => 'We were unable to create this site, please review and fix errors below.',
+'edit_site_success' => 'Site Updated',
+'edit_site_success_desc' => 'The site <b>%s</b> has been updated.',
+'edit_site_error' => 'Cannot Update Site',
+'edit_site_error_desc' => 'We were unable to update this site, please review and fix errors below.',
+'invalid_short_name' => 'Your site name must contain only alpha-numeric characters, underscroes, dashes, and no spaces.',
+'site_deleted' => 'Site Deleted',
+'site_created' => 'Site Created',
+'site_updated' => 'Site Updated',
 
-'msm_version' =>
-'Version: ',
+/*
+'msm_version' => 'Version: ',
 
-'msm_build_number' =>
-'Build: ',
+'msm_build_number' => 'Build: ',
 
-'sites_administration' =>
-'Sites Administration',
+'sites_administration' => 'Sites Administration',
 
-'site_management' =>
-'Site Management',
+'site_management' => 'Site Management',
 
-'site_id' =>
-'Site ID',
+'create_new_site' => 'Create New Site',
 
-'site_name' =>
-'Site Short Name',
+'edit_site' => 'Edit Site',
 
-'site_label' =>
-'Site Label',
+'site_description' => 'Site Description',
 
-'create_new_site' =>
-'Create New Site',
+'site_administration_set' => 'Administration Set',
 
-'edit_site' =>
-'Edit Site',
+'site_mailinglists_set' => 'Mailing Lists Set',
 
-'site_description' =>
-'Site Description',
+'site_members_set' => 'Members Set',
 
-'site_administration_set' =>
-'Administration Set',
+'site_templates_set' => 'Templates Set',
 
-'site_mailinglists_set' =>
-'Mailing Lists Set',
+'site_channels_set' => 'Channels Set',
 
-'site_members_set' =>
-'Members Set',
+'no_site_name' => 'No Site Name',
 
-'site_templates_set' =>
-'Templates Set',
+'no_site_label' => 'No Site Label',
 
-'site_channels_set' =>
-'Channels Set',
+'site_name_taken' => 'Site Name Taken',
 
-'no_site_name' =>
-'No Site Name',
+'new_set_missing_name' => 'Your are missing a name for one of your new Sets.',
 
-'no_site_label' =>
-'No Site Label',
 
-'site_name_taken' =>
-'Site Name Taken',
+'unable_to_locate_specialty' => 'Unable to locate the specialty templates.  Make sure you have uploaded all language files.',
 
-'new_set_missing_name' =>
-'Your are missing a name for one of your new Sets.',
+'delete_site' => 'Delete Site',
 
-'site_created' =>
-'Site Created',
+'delete_site_confirmation' => 'Are you sure you want to permanently delete this site?',
 
-'site_updated' =>
-'Site Updated',
 
-'unable_to_locate_specialty' =>
-'Unable to locate the specialty templates.  Make sure you have uploaded all language files.',
+'set_management' => 'Set Management',
 
-'delete_site' =>
-'Delete Site',
+'new_set' => 'New Set',
 
-'delete_site_confirmation' =>
-'Are you sure you want to permanently delete this site?',
+'edit_set' => 'Edit Set',
 
-'site_deleted' =>
-'Site Deleted',
+'create_new_set' => 'Create New Set',
 
-'set_management' =>
-'Set Management',
+'set_created' => 'Set Created',
 
-'new_set' =>
-'New Set',
+'set_updated' => 'Set Updated',
 
-'edit_set' =>
-'Edit Set',
+'unable_to_locate_specialty' => 'Unable to locate the specialty templates.  Make sure you have uploaded all language files.',
 
-'create_new_set' =>
-'Create New Set',
+'delete_set' => 'Delete Set',
 
-'set_created' =>
-'Set Created',
+'delete_set_confirmation' => 'Are you sure you want to permanently delete this set?',
 
-'set_updated' =>
-'Set Updated',
+'set_deleted' => 'Set Deleted',
 
-'unable_to_locate_specialty' =>
-'Unable to locate the specialty templates.  Make sure you have uploaded all language files.',
+'site_set_id' => 'Set ID',
 
-'delete_set' =>
-'Delete Set',
+'site_set_name' => 'Set Name',
 
-'delete_set_confirmation' =>
-'Are you sure you want to permanently delete this set?',
+'site_set_type' => 'Set Type',
 
-'set_deleted' =>
-'Set Deleted',
+'site_set_name_taken' => 'Set Name Taken',
 
-'site_set_id' =>
-'Set ID',
+'move_data' => 'Move Data',
 
-'site_set_name' =>
-'Set Name',
+'do_nothing' => 'Do Nothing',
 
-'site_set_type' =>
-'Set Type',
+'move_options' => 'Move Options',
 
-'site_set_name_taken' =>
-'Set Name Taken',
+'move_channel_move_data' => 'Move Channel Data and Channel Entries',
 
-'move_data' =>
-'Move Data',
+'duplicate_channel_no_data' => 'Duplicate Channel, Do Not Duplicate Channel Entries',
 
-'do_nothing' =>
-'Do Nothing',
+'duplicate_channel_all_data' => 'Duplicate Channel, Duplicate Channel Entries',
 
-'move_options' =>
-'Move Options',
+'move_template_group' => 'Move Template Group',
 
-'move_channel_move_data' =>
-'Move Channel Data and Channel Entries',
+'duplicate_template_group' => 'Duplicate Template Group',
 
-'duplicate_channel_no_data' =>
-'Duplicate Channel, Do Not Duplicate Channel Entries',
+'move_global_variables' => 'Move Global Variables',
 
-'duplicate_channel_all_data' =>
-'Duplicate Channel, Duplicate Channel Entries',
+'duplicate_global_variables' => 'Duplicate Global Variables',
 
-'move_template_group' =>
-'Move Template Group',
+'move_upload_destination' => 'Move Upload Destination',
 
-'duplicate_template_group' =>
-'Duplicate Template Group',
+'duplicate_upload_destination' => 'Duplicate Upload Destination',
 
-'move_global_variables' =>
-'Move Global Variables',
+'choose_site' => 'Choose a Site to switch to',
 
-'duplicate_global_variables' =>
-'Duplicate Global Variables',
+'switch_site' => 'Switch Site',
 
-'move_upload_destination' =>
-'Move Upload Destination',
-
-'duplicate_upload_destination' =>
-'Duplicate Upload Destination',
-
-'choose_site' =>
-'Choose a Site to switch to',
-
-'switch_site' =>
-'Switch Site',
-
-'timeout_warning' =>
-'Duplicating large amounts of data can be an intensive process, and may cause the action to exceed the server\'s limitations for script execution and memory, causing loss of data.<br /><br />Always
+'timeout_warning' => 'Duplicating large amounts of data can be an intensive process, and may cause the action to exceed the server\'s limitations for script execution and memory, causing loss of data.<br /><br />Always
 backup your database before performing a duplication, and if you experience problems, check with your host to increase the server allowances to perform this action.',
+*/
 
 ''=>''
 );

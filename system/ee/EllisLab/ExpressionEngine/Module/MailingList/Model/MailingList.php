@@ -7,11 +7,14 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class MailingList extends Model
 {
 	protected static $_primary_key = 'list_id';
-	protected static $_gateway_names = array('MailingListGateway');
+	protected static $_table_name = 'mailing_lists';
 
 	protected static $_relationships = array(
 		'MailingListUser' => array(
-			'type' => 'one_to_many',
+			'type' => 'hasMany'
+		),
+		'MailingListQueue' => array(
+			'type' => 'hasMany'
 		)
 	);
 
@@ -19,16 +22,5 @@ class MailingList extends Model
 	protected $list_name;
 	protected $list_title;
 	protected $list_template;
-
-	public function getMailingListUsers()
-	{
-		return $this->getRelationship('MailingListUser');
-	}
-
-	public function setMailingListUsers(array $users)
-	{
-		return $this->setRelationship('MailingListUser', $users);
-	}
-
 
 }

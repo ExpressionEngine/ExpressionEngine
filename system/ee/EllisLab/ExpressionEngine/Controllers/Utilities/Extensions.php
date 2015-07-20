@@ -5,9 +5,8 @@ namespace EllisLab\ExpressionEngine\Controllers\Utilities;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 
 /**
  * ExpressionEngine - by EllisLab
@@ -15,7 +14,7 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -57,7 +56,7 @@ class Extensions extends Utilities {
 		// Add in any submitted search phrase
 		ee()->view->search_value = ee()->input->get_post('search');
 
-		$this->base_url = new URL('utilities/extensions', ee()->session->session_id());
+		$this->base_url = ee('CP/URL', 'utilities/extensions');
 
 		ee()->load->library('addons');
 		ee()->load->helper(array('file', 'directory'));
@@ -136,7 +135,7 @@ class Extensions extends Utilities {
 			);
 		}
 
-		$table = Table::create(array('autosort' => TRUE, 'autosearch' => TRUE, 'limit' => $this->params['perpage']));
+		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => TRUE, 'limit' => $this->params['perpage']));
 		$table->setColumns(
 			array(
 				'name',
@@ -160,12 +159,10 @@ class Extensions extends Utilities {
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
-			$pagination = new Pagination(
-				$vars['table']['limit'],
-				$vars['table']['total_rows'],
-				$vars['table']['page']
-			);
-			$vars['pagination'] = $pagination->cp_links($this->base_url);
+			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+				->perPage($vars['table']['limit'])
+				->currentPage($vars['table']['page'])
+				->render($vars['table']['base_url']);
 		}
 
 		// Set search results heading
@@ -284,89 +281,108 @@ class Extensions extends Utilities {
 	 *        'enabled'		 => NULL|TRUE|FALSE
 	 *        'manual_url'	 => '' (optional),
 	 *        'settings_url' => '' (optional)
+	 *
+	 * @todo This isn't DRY. See the addons controller. :( -scb
 	 */
-	private function getExtensions($name = NULL)
+	private function getExtensions($extension_name = NULL)
 	{
-		if (ee()->config->item('allow_extensions') != 'y')
-		{
-			return array();
-		}
-
-		ee()->load->model('addons_model');
-
 		$extensions = array();
 
-		$installed_ext_q = ee()->addons_model->get_installed_extensions(FALSE);
-		foreach ($installed_ext_q->result_array() as $row)
+		if (ee()->config->item('allow_extensions') != 'y')
 		{
-			// Check the meta data
-			$installed[$row['class']] = $row;
+			return $extensions;
 		}
-		$installed_ext_q->free_result();
 
-		foreach(ee()->addons->get_files('extensions') as $ext_name => $ext)
+		$providers = ee('App')->getProviders();
+		// Remove non-add-on providers from the list
+		unset($providers['ee'], $providers['channel'], $providers['comment']);
+
+		foreach (array_keys($providers) as $name)
 		{
-			// We only want installed extensions here; you cannot disable an
-			// uninstalled extension
-			if ( ! isset($installed[$ext['class']]))
+			try
+			{
+				$info = ee('App')->get($name);
+			}
+			catch (\Exception $e)
 			{
 				continue;
 			}
 
-			// Add the package path so things don't hork in the constructor
-			ee()->load->add_package_path($ext['path']);
+			if ( ! file_exists($info->getPath() . '/ext.' . $name . '.php'))
+			{
+				continue;
+			}
 
-			// Include the file so we can grab its meta data
-			$class_name = $ext['class'];
+			$class_name =ucfirst($name) . '_ext';
+
+			$data = array(
+				'developer'		=> $info->getAuthor(),
+				'version'		=> '--',
+				'installed'		=> FALSE,
+				'enabled'		=> NULL,
+				'name'			=> $info->getName(),
+				'package'		=> $name,
+				'class'			=> $class_name,
+			);
+
+			$extension = ee('Model')->get('Extension')
+				->filter('class', $class_name)
+				->first();
+
+			if ( ! $extension)
+			{
+				continue;
+			}
+
+			$data['version'] = $extension->version;
+			$data['installed'] = TRUE;
+			$data['enabled'] = $extension->enabled;
+
+			ee()->load->add_package_path($info->getPath());
 
 			if ( ! class_exists($class_name))
 			{
+				$file = $info->getPath() . '/ext.' . $name . '.php';
 				if (ee()->config->item('debug') == 2
 					OR (ee()->config->item('debug') == 1
 						AND ee()->session->userdata('group_id') == 1))
 				{
-					include($ext['path'].$ext['file']);
+					include($file);
 				}
 				else
 				{
-					@include($ext['path'].$ext['file']);
+					@include($file);
 				}
 
 				if ( ! class_exists($class_name))
 				{
-					trigger_error(str_replace(array('%c', '%f'), array(htmlentities($class_name), htmlentities($ext['path'].$ext['file'])), lang('extension_class_does_not_exist')));
-					unset($extension_files[$ext_name]);
+					trigger_error(str_replace(array('%c', '%f'), array(htmlentities($class_name), htmlentities($file)), lang('extension_class_does_not_exist')));
 					continue;
 				}
+
+				// Get some details on the extension
+				$Extension = new $class_name();
+				if (version_compare($info->getVersion(), $extension->version, '>')
+					&& method_exists($Extension, 'update_extension') === TRUE)
+				{
+					$data['update'] = $info->getVersion();
+				}
+
+				if ($info->get('settings_exist'))
+				{
+					$data['settings_url'] = ee('CP/URL', 'addons/settings/' . $name);
+				}
+
+				if ($info->get('docs_url'))
+				{
+					$data['manual_url'] = ee()->cp->masked_url($info->get('docs_url'));
+				}
 			}
-
-			// Get some details on the extension
-			$Extension = new $class_name();
-
-			$data = array(
-				'version'		=> $installed[$class_name]['version'],
-				'installed'		=> TRUE,
-				'enabled'		=> ($installed[$class_name]['enabled'] == 'y'),
-				'name'			=> (isset($Extension->name)) ? $Extension->name : $ext['name'],
-				'package'		=> $ext_name,
-				'class'			=> $class_name,
-			);
-
-			if ($Extension->settings_exist == 'y')
+			if (is_null($extension_name))
 			{
-				$data['settings_url'] = cp_url('addons/settings/' . $ext_name);
+				$extensions[$name] = $data;
 			}
-
-			if ($Extension->docs_url)
-			{
-				$data['manual_url'] = ee()->config->item('base_url') . ee()->config->item('index_page') . '?URL=' . urlencode($Extension->docs_url);
-			}
-
-			if (is_null($name))
-			{
-				$extensions[$ext_name] = $data;
-			}
-			elseif ($name == $ext_name)
+			elseif ($extension_name == $name)
 			{
 				return $data;
 			}

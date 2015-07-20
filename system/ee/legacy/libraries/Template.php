@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -1339,11 +1339,11 @@ class EE_Template {
 			{
 				if (in_array($plugin ,ee()->core->native_plugins))
 				{
-					require_once PATH_PI."pi.{$plugin}.php";
+					require_once PATH_ADDONS."{$plugin}/pi.{$plugin}.php";
 				}
 				else
 				{
-					require_once PATH_ADDONS."{$plugin}/pi.{$plugin}.php";
+					require_once PATH_THIRD."{$plugin}/pi.{$plugin}.php";
 				}
 			}
 		}
@@ -1355,11 +1355,11 @@ class EE_Template {
 			{
 				if (in_array($module, ee()->core->native_modules))
 				{
-					require_once PATH_MOD."{$module}/mod.{$module}.php";
+					require_once PATH_ADDONS."{$module}/mod.{$module}.php";
 				}
 				else
 				{
-					require_once PATH_ADDONS."{$module}/mod.{$module}.php";
+					require_once PATH_THIRD."{$module}/mod.{$module}.php";
 				}
 			}
 		}
@@ -1533,7 +1533,7 @@ class EE_Template {
 
 				if ( ! in_array($this->tag_data[$i]['class'], ee()->core->native_plugins))
 				{
-					$package_path = in_array($this->tag_data[$i]['class'], ee()->core->native_modules) ? PATH_MOD : PATH_ADDONS;
+					$package_path = in_array($this->tag_data[$i]['class'], ee()->core->native_modules) ? PATH_ADDONS : PATH_THIRD;
 					$package_path .= strtolower($this->tag_data[$i]['class'].'/');
 
 					ee()->load->add_package_path($package_path, FALSE);
@@ -1962,13 +1962,13 @@ class EE_Template {
 			$cache_path .= ee()->config->item('site_short_name') . DIRECTORY_SEPARATOR;
 			$cache_path .= 'page_cache' . DIRECTORY_SEPARATOR;
 
-			try
+			if (file_exists($cache_path))
 			{
 				$fi = new FilesystemIterator($cache_path, FilesystemIterator::SKIP_DOTS);
 			}
-			catch (Exception $e)
+			else
 			{
-				return $this->log_item(" - End Page Cache Garbage Collection - " . $e->getMessage());
+				return $this->log_item(" - End Page Cache Garbage Collection - Page cache directory not found");
 			}
 
 			// Count files in the directory
@@ -2877,23 +2877,21 @@ class EE_Template {
 	 */
 	public function fetch_addons()
 	{
-		ee()->load->helper('file');
-		ee()->load->helper('directory');
-		$ext_len = strlen('.php');
+		$providers = ee('App')->getProviders();
 
-		// first get first party modules
-		if (($map = directory_map(PATH_MOD, TRUE)) !== FALSE)
+		foreach (array_keys($providers) as $name)
 		{
-			foreach ($map as $file)
+			try
 			{
-				if (strpos($file, '.') === FALSE)
+				$info = ee('App')->get($name);
+				if (file_exists($info->getPath() . '/mod.' . $name . '.php'))
 				{
-					if (IS_CORE && in_array($file, ee()->core->standard_modules))
-					{
-						continue;
-					}
-					$this->modules[] = $file;
+					$this->modules[] = $name;
 				}
+			}
+			catch (\Exception $e)
+			{
+				continue;
 			}
 		}
 
@@ -3124,6 +3122,9 @@ class EE_Template {
 		// {doc_url}
 		$str = str_replace(LD.'doc_url'.RD, ee()->config->item('doc_url'), $str);
 
+		// {password_max_length}
+		$str = str_replace(LD.'password_max_length'.RD, PASSWORD_MAX_LENGTH, $str);
+
 		// {theme_folder_url}
 		$str = str_replace(LD.'theme_folder_url'.RD, URL_THEMES, $str);
 
@@ -3217,7 +3218,7 @@ class EE_Template {
 
 				if ( ! class_exists($class))
 				{
-					require PATH_MOD.$class.'/mod.'.$class.'.php';
+					require PATH_ADDONS.$class.'/mod.'.$class.'.php';
 				}
 
 				$this->tagdata = $match[3][$i];
@@ -3256,7 +3257,7 @@ class EE_Template {
 			{
 				if ( ! class_exists('Channel'))
 				{
-					require PATH_MOD.'channel/mod.channel.php';
+					require PATH_ADDONS.'channel/mod.channel.php';
 				}
 
 				$this->tagdata = $match[2][$i];

@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -134,7 +134,7 @@ class EE_Validate {
 		// Is username max length correct?
 		if (strlen($this->username) > 50)
 		{
-			$this->errors[] = ee()->lang->line('username_password_too_long');
+			$this->errors[] = ee()->lang->line('username_too_long');
 		}
 
 		// Set validation type
@@ -269,9 +269,9 @@ class EE_Validate {
 		/** -------------------------------------
 		/**  Is password max length correct?
 		/** -------------------------------------*/
-		if (strlen($this->password) > 40)
+		if (strlen($this->password) > PASSWORD_MAX_LENGTH)
 		{
-			return $this->errors[] = ee()->lang->line('username_password_too_long');
+			return $this->errors[] = ee()->lang->line('password_too_long');
 		}
 
 		/** -------------------------------------

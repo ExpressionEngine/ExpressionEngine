@@ -24,7 +24,6 @@ abstract class Entity extends MixableImpl {
 	{
 		$this->initialize();
 
-		//$this->fill($data);
 		foreach ($data as $k => $v)
 		{
 			if ($this->hasProperty($k))
@@ -34,7 +33,10 @@ abstract class Entity extends MixableImpl {
 		}
 	}
 
-	abstract protected function initialize();
+	protected function initialize()
+	{
+		// nothing here, this is for you.
+	}
 
 	/**
 	 *
@@ -163,7 +165,7 @@ abstract class Entity extends MixableImpl {
 	 */
 	protected function getFilters($type)
 	{
-		return $this->_filters[$type];
+		return isset($this->_filters[$type]) ? $this->_filters[$type] : array();
 	}
 
 	/**
@@ -174,9 +176,9 @@ abstract class Entity extends MixableImpl {
 	 * @param Array $args List of arguments
 	 * @return Filtered value
 	 */
-	protected function filter($type, $value, $args = array())
+	protected function filter($type)
 	{
-		array_unshift($args, $value);
+		$args = array_slice(func_get_args(), 1);
 
 		foreach ($this->getFilters($type) as $filter)
 		{
@@ -220,6 +222,7 @@ abstract class Entity extends MixableImpl {
 		{
 			if ($this->hasProperty($k))
 			{
+				$v = $this->filter('fill', $v, $k);
 				$this->$k = $v;
 			}
 		}
@@ -243,17 +246,32 @@ abstract class Entity extends MixableImpl {
 	}
 
 	/**
-	 * Get all dirty keys and values
+	 * Get all modified keys and values
+	 */
+	public function getModified()
+	{
+		$modified = array();
+
+		foreach (array_keys($this->_clean_backups) as $key)
+		{
+			$modified[$key] = $this->getRawProperty($key);
+		}
+
+		return $modified;
+	}
+
+	/**
+	 * Get all modified keys and values prepped for storage
 	 *
 	 * @return array Dirty properties and their values
 	 */
 	public function getDirty()
 	{
-		$dirty = array();
+		$dirty = $this->getModified();
 
-		foreach (array_keys($this->_clean_backups) as $key)
+		foreach ($dirty as $key => &$value)
 		{
-			$dirty[$key] = $this->$key;
+			$value = $this->filter('store', $value, $key);
 		}
 
 		return $dirty;
@@ -339,7 +357,7 @@ abstract class Entity extends MixableImpl {
 			$value = $this->getRawProperty($name);
 		}
 
-		return $this->filter('get', $value, array($name));
+		return $this->filter('get', $value, $name);
 	}
 
 	/**
@@ -351,7 +369,7 @@ abstract class Entity extends MixableImpl {
 	 */
 	public function setProperty($name, $value)
 	{
-		$value = $this->filter('set', $value, array($name));
+		$value = $this->filter('set', $value, $name);
 
 		if ($this->hasSetterFor($name))
 		{
@@ -558,7 +576,7 @@ abstract class Entity extends MixableImpl {
 			return $this->_clean_backups[$name];
 		}
 
-		return NULL;
+		return $default;
 	}
 
 	/**

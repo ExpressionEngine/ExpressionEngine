@@ -10,7 +10,7 @@ use Closure;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -85,7 +85,7 @@ class Batch {
 
 		do
 		{
-			if ( ! $limit = $this->clampToLimit($count))
+			if ( ! $limit = $this->clampToLimit($count, $limit))
 			{
 				break;
 			}
@@ -108,7 +108,7 @@ class Batch {
 
 			$count += $processed;
 
-			$offset += $this->batch_size;
+			$offset += $processed;
 		}
 		while ($processed == $limit);
 
@@ -121,11 +121,13 @@ class Batch {
 	 *
 	 * @param Int $count  Number of records processed so far.
 	 */
-	protected function clampToLimit($count)
+	protected function clampToLimit($count, $limit)
 	{
 		if ($count + $limit > $this->maximum_size)
 		{
-			$limit = $this->maximum_size - $count;
+			return $this->maximum_size - $count;
 		}
+
+		return $limit;
 	}
 }

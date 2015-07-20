@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  */
@@ -27,22 +27,6 @@ class EE_Stats {
 	protected $_statdata	= array();
 
 	var $stats_cache = array();
-
-	var $cache_off  = FALSE;
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Class Constructor
-	 */
-	function __construct()
-	{
-		if (ee()->db->cache_on === TRUE)
-		{
-			ee()->db->cache_off();
-			$this->cache_off = TRUE;
-		}
-	}
 
 	// --------------------------------------------------------------------
 
@@ -242,11 +226,6 @@ class EE_Stats {
 			ee()->db->where('date <', $cutoff);
 			ee()->db->delete('online_users');
 		}
-
-		if ($this->cache_off)
-		{
-			ee()->db->cache_on();
-		}
 	}
 
 	// --------------------------------------------------------------------
@@ -312,11 +291,6 @@ class EE_Stats {
 			);
 
 		ee()->db->update('stats', $data);
-
-		if ($this->cache_off)
-		{
-			ee()->db->cache_on();
-		}
 	}
 
 	// --------------------------------------------------------------------
@@ -408,11 +382,6 @@ class EE_Stats {
 						 ->where('channel_id', $channel_id)
 						 ->update('channels', $d);
 		}
-
-		if ($this->cache_off)
-		{
-			ee()->db->cache_on();
-		}
 	}
 
 	// --------------------------------------------------------------------
@@ -498,11 +467,6 @@ class EE_Stats {
 		if ($channel_id != '')
 		{
 			$this->update_channels_comment_stats($channel_id, $newtime);
-		}
-
-		if ($this->cache_off)
-		{
-			ee()->db->cache_on();
 		}
 	}
 
@@ -770,11 +734,6 @@ class EE_Stats {
 					'current_names'				=> $current_names
 				);
 		unset($query);
-
-		if ($this->cache_off)
-		{
-			ee()->db->cache_on();
-		}
 	}
 
 	// --------------------------------------------------------------------

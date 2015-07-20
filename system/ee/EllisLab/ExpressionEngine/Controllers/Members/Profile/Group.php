@@ -12,7 +12,7 @@ use CP_Controller;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -38,7 +38,7 @@ class Group extends Profile {
 	 */
 	public function index()
 	{
-		$this->base_url = cp_url($this->base_url, $this->query_string);
+		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
 		$groups = ee()->api->get('MemberGroup')->order('group_title', 'asc')->all();
 		$choices = array();
 
@@ -49,33 +49,36 @@ class Group extends Profile {
 
 		$vars['sections'] = array(
 			array(
+				ee('Alert')->makeInline('permissions-warn')
+					->asWarning()
+					->addToBody(lang('access_privilege_warning'))
+					->addToBody(
+						sprintf(lang('access_privilege_caution'), '<span title="excercise caution"></span>'),
+						'caution'
+					)
+					->cannotClose()
+					->render(),
 				array(
 					'title' => 'member_group',
 					'desc' => 'member_group_desc',
+					'caution' => TRUE,
 					'fields' => array(
 						'group_id' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $choices,
 							'value' => $this->member->group_id
 						)
 					)
 				),
 				array(
-					'title' => 'current_password',
-					'desc' => 'current_password_desc',
+					'title' => 'existing_password',
+					'desc' => 'existing_password_exp',
 					'fields' => array(
-						'password' => array('type' => 'password')
+						'password_confirm' => array('type' => 'password')
 					)
 				)
 			)
 		);
-
-		ee('Alert')->makeInline('shared-form')
-			->asWarning()
-			->cannotClose()
-			->withTitle(lang('access_privilege_warning'))
-			->addToBody(lang('access_privilege_caution'), 'caution')
-			->now();
 
 		ee()->form_validation->set_rules(array(
 			array(
@@ -84,7 +87,7 @@ class Group extends Profile {
 				 'rules'   => 'callback__valid_member_group'
 			),
 			array(
-				 'field'   => 'password',
+				 'field'   => 'password_confirm',
 				 'label'   => 'lang:password',
 				 'rules'   => 'required|auth_password'
 			)
@@ -97,10 +100,13 @@ class Group extends Profile {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
+			// Don't try to save the password confirm
+			array_pop($vars['sections'][0]);
+
 			if ($this->saveSettings($vars['sections']))
 			{
 				ee()->view->set_message('success', lang('member_updated'), lang('member_updated_desc'), TRUE);
-				ee()->functions->redirect($base_url);
+				ee()->functions->redirect($this->base_url);
 			}
 
 		}
@@ -119,9 +125,9 @@ class Group extends Profile {
 
 	public function _valid_member_group($group)
 	{
-		$groups = ee()->api->get('MemberGroup')->filter('group_id', $group)->all();
+		$groups = ee()->api->get('MemberGroup')->filter('group_id', $group)->count();
 
-		if (empty($groups))
+		if ($groups == 0)
 		{
 			return FALSE;
 		}

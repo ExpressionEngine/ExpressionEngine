@@ -105,7 +105,7 @@ $(document).ready(function(){
 	// =========
 
 		// listen for clicks on elements with a class of has-sub
-		$('.has-sub').on('click',function(){
+		$('body').on('click', '.has-sub', function(){
 			// close OTHER open sub menus
 			// when clicking THIS sub menu trigger
 			// thanks me :D
@@ -128,6 +128,10 @@ $(document).ready(function(){
 			// stop THIS from reloading
 			// the source window and appending to the URI
 			// and stop propagation up to document
+
+			// Give filter text boxes focus on open
+			$(this).siblings('.sub-menu').find('input.autofocus').focus();
+
 			return false;
 		});
 
@@ -252,6 +256,16 @@ $(document).ready(function(){
 
 			// stop THIS from reloading the source window
 			e.preventDefault();
+		});
+
+		$('body').on('click', '.overlay', function() {
+			$('.modal-wrap').trigger('modal:close');
+		});
+
+		$(document).on('keypress', function(e) {
+			if (e.keyCode === 27) {
+				$('.modal-wrap').trigger('modal:close');
+			}
 		});
 
 	// ==================================

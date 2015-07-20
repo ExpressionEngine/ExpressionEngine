@@ -11,7 +11,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -41,7 +41,7 @@ class FileExists extends ValidationRule {
 
 		// STOP if not exists, there's no point in further validating an
 		// invalid file path
-		if ($value !== NULL)
+		if ($value !== NULL && $value !== '')
 		{
 			return $this->stop();
 		}

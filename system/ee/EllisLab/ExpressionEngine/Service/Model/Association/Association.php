@@ -2,229 +2,158 @@
 
 namespace EllisLab\ExpressionEngine\Service\Model\Association;
 
-use EllisLab\ExpressionEngine\Library\Data\Collection;
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Service\Model\Relation;
+use EllisLab\ExpressionEngine\Service\Model\Relation\Relation;
 
-/**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
+class Association {
 
-// ------------------------------------------------------------------------
+    private $loaded = FALSE;
+    private $inverse_name;
 
-/**
- * ExpressionEngine Association
- *
- * Associations describe how two model instances are connected. For general
- * relationships between models, @see Relations.
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		http://ellislab.com
- */
-abstract class Association {
+    protected $diff;
+    protected $model;
+    protected $related;
+    protected $relation;
 
-	protected $source = NULL;
-	protected $related = NULL;
-	protected $tracker = NULL;
+    public function __construct(Model $model, Relation $relation)
+    {
+        $this->model = $model;
+        $this->relation = $relation;
 
-	protected $name = '';
-	protected $loaded = FALSE;
+        $this->bootAssociation();
+    }
 
-	protected $relation = NULL;
-	protected $frontend = NULL;
+    public function fill($related, $_skip_inverse = FALSE)
+    {
+        $this->related = $related;
 
-	public function __construct(Model $source, $name = '')
-	{
-		$this->name = $name;
-		$this->source = $source;
-		$this->bootAssociation();
-	}
+        if ( ! $_skip_inverse)
+        {
+            $related = $this->toModelArray($related);
 
-	/**
-	 *
-	 */
-	abstract protected function isStrongAssociation();
+            foreach ($related as $to)
+            {
+                $this->relation->fillLinkIds($this->model, $to);
+                $this->getInverse($to)->fill($this->model, TRUE);
+            }
+        }
 
-	/**
-	 *
-	 */
-	abstract protected function canSaveAcross();
+        $this->loaded = TRUE;
+    }
 
-	/**
-	 *
-	 */
-	abstract protected function hasRelated(Model $model);
+    public function set($item)
+    {
+        $this->diff->reset();
 
-	/**
-	 *
-	 */
-	abstract protected function saveAllRelated();
+        $this->remove();
+        $items = $this->toModelArray($item);
 
-	/**
-	 *
-	 */
-	public function clear()
-	{
-		$this->loaded = FALSE;
-	}
+        foreach ($items as $model)
+        {
+            $inverse = $this->getInverse($model);
 
-	/**
-	 *
-	 */
-	public function isLoaded()
-	{
-		return $this->loaded;
-	}
+            if ($inverse instanceOf ToOne)
+            {
+                $inverse->remove();
+            }
 
-	/**
-	 *
-	 */
-	public function markAsLoaded()
-	{
-		$this->loaded = TRUE;
-	}
+            $this->addToRelated($model);
+        }
 
-	/**
-	 *
-	 */
-	public function get()
-	{
-		if ( ! $this->isLoaded() && ! $this->source->isNew())
-		{
-			$this->reload();
-		}
+        $this->diff->wasSet();
+    }
 
-		return $this->related;
-	}
+    public function getInverseName()
+    {
+        if ( ! isset($this->inverse_name))
+        {
+            $inverse = $this->relation->getInverse();
 
-	/**
-	 *
-	 */
-	public function fill($related)
-	{
-		$this->related = $related;
-		$this->markAsLoaded(); // TODO this clashes with reload a little
-	}
+            if ( ! isset($inverse))
+            {
+                throw new \Exception('Cannot find inverse of the relationship '.$this->relation->getName().' in '.get_class($this->model));
+            }
 
-	/**
-	 *
-	 */
-	public function set($item)
-	{
-		$this->remove();
-		$this->add($item);
-	}
+            $this->inverse_name = $inverse->getName();
+        }
 
-	/**
-	 *
-	 */
-	public function add($item)
-	{
-		if ($item instanceOf Collection || is_array($item))
-		{
-			foreach ($item as $model)
-			{
-				$this->add($model);
-			}
+        return $this->inverse_name;
+    }
 
-			return;
-		}
+    public function getInverse(Model $model)
+    {
+        $inverse_name = $this->getInverseName();
+        return $model->getAssociation($inverse_name);
+    }
 
-		$this->addToRelated($item);
-	}
+    public function get()
+    {
+        if ( ! isset($this->related) && ! $this->isLoaded())
+        {
+            $this->reload();
+        }
 
-	/**
-	 *
-	 */
-	public function remove($item = NULL)
-	{
-		if ( ! isset($item))
-		{
-			if ( ! $this->isLoaded())
-			{
-				return $this->clear();
-			}
+        return $this->related;
+    }
 
-			$item = $this->related;
+    public function add($item)
+    {
+        $items = $this->toModelArray($item);
 
-			if ( ! isset($item))
-			{
-				return;
-			}
-		}
+        foreach ($items as $model)
+        {
+            $this->addToRelated($model);
+        }
+    }
 
-		if ($item instanceOf Collection || is_array($item))
-		{
-			foreach ($item as $model)
-			{
-				$this->remove($model);
-			}
+    public function remove($items = NULL)
+    {
+        $items = $items ?: $this->related;
+        $items = $this->toModelArray($items);
 
-			return;
-		}
+        foreach ($items as $model)
+        {
+            $this->removeFromRelated($model);
+        }
+    }
 
-		$this->removeFromRelated($item);
-	}
+    public function idHasChanged()
+    {
+        $new_id = $this->model->getId();
+        $items = $this->toModelArray($this->related);
 
-	/**
-	 *
-	 */
-	public function create($item)
-	{
-		if (is_array($item))
-		{
-			$item = $this->frontend->make(
-				$this->relation->getTargetModel(),
-				$item
-			);
-		}
+        foreach ($items as $to)
+        {
+            $this->relation->linkIds($this->model, $to);
+        }
+    }
 
-		$this->addToRelated($item);
+    /**
+     * Save any unsaved relations and then the related models.
+     */
+    public function save()
+    {
+        $this->diff->commit();
 
-		return $item;
-	}
+        if ($this->relation->canSaveAcross())
+        {
+            if (isset($this->related))
+            {
+                $this->related->save();
+            }
+        }
+    }
 
-	/**
-	 *
-	 */
-	public function delete($item)
-	{
-		$this->removeFromRelated($item);
-	}
+    public function markAsLoaded()
+    {
+        $this->loaded = TRUE;
+    }
 
-	/**
-	 * Save any unsaved relations and then the related models.
-	 */
-	public function save()
-	{
-		foreach ($this->tracker->getRemoved() as $model)
-		{
-			$this->dropRelationship($this->source, $model);
-		}
-
-		foreach ($this->tracker->getAdded() as $model)
-		{
-			$this->insertRelationship($this->source, $model);
-		}
-
-		$this->tracker->reset();
-
-		if ($this->canSaveAcross())
-		{
-			$this->saveAllRelated();
-		}
-	}
+    public function isLoaded()
+    {
+        return $this->loaded;
+    }
 
 	/**
 	 *
@@ -232,93 +161,98 @@ abstract class Association {
 	public function reload()
 	{
 		$query = $this->frontend->get($this->relation->getTargetModel());
-		$query->setLazyConstraint($this->relation, $this->source);
+		$query->setLazyConstraint($this->relation, $this->model);
 
 		$result = $query->all();
+
+        if ($result instanceOf Collection)
+        {
+            $result->setAssociation($this);
+        }
+
 		$this->fill($result);
 
-		// If we're a single owner, then we fill the inverse
-		// relationship, in essence caching the parent relation
-		$inverse = $this->relation->getInverse();
-
-		if ($inverse instanceOf Relation\BelongsTo)
-		{
-			$inverse_name = $inverse->getName();
-			$result->{'fill'.$inverse_name}($this->source);
-		}
-
+        $this->diff->reset();
 		$this->markAsLoaded();
 	}
 
-	/**
-	 *
-	 */
-	public function setFrontend($frontend)
-	{
-		$this->frontend = $frontend;
-	}
+    public function setFrontend($frontend)
+    {
+        $this->frontend = $frontend;
+    }
 
-	/**
-	 *
-	 */
-	public function setRelation($relation)
-	{
-		$this->relation = $relation;
-	}
+    protected function addToRelated(Model $model)
+    {
+        $this->ensureExists($model);
+        $this->ensureInverseExists($model);
+    }
 
-	/**
-	 * Persist the relation. Only many-to-many implements this
-	 * all others are stored directly on one of the models.
-	 */
-	protected function insertRelationship($source, $model)
-	{
-		// only exists on many-to-many
-	}
+    protected function removeFromRelated(Model $model)
+    {
+        $this->ensureDoesNotExist($model);
+        $this->ensureInverseDoesNotExist($model);
+    }
 
-	/**
-	 * Drop the relation. Only many-to-many implements this
-	 * all others are stored directly on one of the models.
-	 */
-	protected function dropRelationship($source, $model)
-	{
-		// only exists on many-to-many
-		// todo if not many to many, but still weak, then this
-		// is where we can zero out the field!
-	}
+    protected function ensureExists($model)
+    {
+        $this->diff->add($model);
+        $this->relation->linkIds($this->model, $model);
+    }
 
-	/**
-	 *
-	 */
-	protected function addToRelated(Model $model)
-	{
-		$this->tracker->add($model);
-		$this->relation->linkIds($this->source, $model);
-	}
+    protected function ensureDoesNotExist($model)
+    {
+        $this->diff->remove($model);
+        $this->relation->unlinkIds($this->model, $model);
+    }
 
-	/**
-	 *
-	 */
-	protected function removeFromRelated(Model $model)
-	{
-		if ($this->hasRelated($model))
-		{
-			$this->tracker->remove($model);
-			$this->relation->unlinkIds($this->source, $model);
-		}
-	}
+    protected function ensureInverseExists($model)
+    {
+        $assoc = $this->getInverse($model);
+        $assoc->ensureExists($this->model);
+    }
 
-	/**
-	 *
-	 */
-	protected function bootAssociation()
-	{
-		if ( ! $this->isStrongAssociation())
-		{
-			$this->tracker = new Tracker\Staged();
-		}
-		else
-		{
-			$this->tracker = new Tracker\Immediate();
-		}
-	}
+    protected function ensureInverseDoesNotExist($model)
+    {
+        $assoc = $this->getInverse($model);
+        $assoc->ensureDoesNotExist($this->model);
+    }
+
+    protected function toModelArray($item)
+    {
+        if (is_null($item))
+        {
+            return array();
+        }
+
+        if (is_array($item))
+        {
+            return $item;
+        }
+
+        if ($item instanceOf Model)
+        {
+            return array($item);
+        }
+
+        if ($item instanceOf Collection)
+        {
+            return $item->asArray();
+        }
+
+        throw new \InvalidArgumentException('Must be a model, collection, or array of models');
+    }
+
+    /**
+     *
+     */
+    protected function bootAssociation()
+    {
+        $this->diff = new Diff($this->model, $this->relation);
+
+        $that = $this;
+        $this->model->on('setId', function() use ($that)
+        {
+            $that->idHasChanged();
+        });
+    }
 }

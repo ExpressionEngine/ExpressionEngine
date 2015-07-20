@@ -43,11 +43,6 @@ class CI_DB_mysqli_connection {
 	 */
 	public function __construct($config)
 	{
-		if ( ! isset($config['port']))
-		{
-			$config['port'] = NULL;
-		}
-
 		$this->config = $config;
 	}
 
@@ -74,14 +69,15 @@ class CI_DB_mysqli_connection {
 		$pconnect = $this->config['pconnect'];
 		$port     = $this->config['port'];
 
-		$dsn = "mysql:dbname={$database};host={$hostname};charset={$char_set}";
+		$dsn = "mysql:dbname={$database};host={$hostname};port={$port};charset={$char_set}";
 
 		$options = array(
-			PDO::ATTR_PERSISTENT => $pconnect
+			PDO::ATTR_PERSISTENT => $pconnect,
+			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
 		);
 
 		try {
-			$this->connection = new PDO(
+			$this->connection = @new PDO(
 				$dsn,
 				$username,
 				$password,
@@ -90,6 +86,8 @@ class CI_DB_mysqli_connection {
 		}
 		catch (\Exception $e)
 		{
+			throw $e;
+
 			$message = $e->getMessage();
 
 			if ($this->testBadSocket($message))
@@ -119,7 +117,14 @@ class CI_DB_mysqli_connection {
 	{
 		$time_start = microtime(TRUE);
 
-		$result = $this->connection->query($query);
+		try
+		{
+			$result = $this->connection->query($query);
+		}
+		catch (Exception $e)
+		{
+			throw new \Exception($e->getMessage().":<br>\n".$query);
+		}
 
 		$time_end = microtime(TRUE);
 

@@ -5,7 +5,7 @@ require_once APPPATH.'helpers/string_helper.php';
 require_once APPPATH.'libraries/Typography.php';
 require_once APPPATH.'libraries/typography/Markdown/Michelf/MarkdownExtra.inc.php';
 
-define('PATH_MOD', APPPATH.'modules/');
+define('PATH_ADDONS', APPPATH.'modules/');
 
 class TypographyTest extends \PHPUnit_Framework_TestCase {
 

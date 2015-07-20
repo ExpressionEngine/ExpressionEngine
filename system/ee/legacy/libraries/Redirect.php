@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -46,7 +46,7 @@ $force_redirect = ($request_type != 'CP' && config_item('force_redirect') == TRU
 
 $link = "<a rel=\"nofollow\" href='".$_GET['URL']."'>".$_GET['URL']."</a>";
 
-if ( $link !== ee()->security->xss_clean($link) )
+if ( $link !== ee('Security/XSS')->clean($link) )
 {
 	ee()->load->library('typography');
 	show_error(sprintf(lang('redirect_xss_fail'), ee()->typography->encode_email(ee()->config->item('webmaster_email'))));

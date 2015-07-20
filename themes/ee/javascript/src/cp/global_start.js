@@ -4,7 +4,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -156,6 +156,7 @@ $(document).ready(function () {
 	EE.cp.accessory_toggle();
 	EE.cp.control_panel_search();
 	EE.cp.bindCpMessageClose();
+	EE.cp.channelMenuFilter();
 
 	// Setup sidebar hover descriptions
 	$('#quickLinks h4').click(function () {
@@ -169,6 +170,40 @@ $(document).ready(function () {
 	.css('cursor', 'pointer');
 
 });
+
+// Binds the channel filter text boxes in Create and Edit menus
+EE.cp.channelMenuFilter = function() {
+
+	var filters = $('.menu-wrap form.filter input');
+
+	// Bail if no filters
+	if (filters.size() == 0) {
+		return;
+	}
+
+	// Create a style element where we'll input the CSS needed
+	// to filter the table
+	var searchStyle = $('<style/>');
+	$('body').append(searchStyle);
+
+	// Watch the filter input on keyup and then filter the results
+	filters.bind('keyup', function()
+	{
+		// Text box blank? Reset table to show all results
+		if ( ! this.value)
+		{
+			searchStyle.html('');
+			return;
+		}
+
+		// Grab the class of the list to make sure we filter the right one
+		var listClass = $(this).parents('form').siblings('ul').attr('class');
+
+		// Data is indexed via a data attribute, create a CSS
+		// selector to filter the table
+		searchStyle.html('ul.'+listClass+' li.search-channel:not([data-search*="' + this.value.toLowerCase() + '"]) { display: none; }');
+	});
+}
 
 // Close alert modal when close button is clicked
 EE.cp.bindCpMessageClose = function() {

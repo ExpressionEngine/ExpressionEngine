@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -378,7 +378,7 @@ class EE_Form_validation {
 		// Is username max length correct?
 		if (strlen($str) > 50)
 		{
-			$this->set_message('valid_username', $this->CI->lang->line('username_password_too_long'));
+			$this->set_message('valid_username', $this->CI->lang->line('username_too_long'));
 			return FALSE;
 		}
 
@@ -514,9 +514,10 @@ class EE_Form_validation {
 
 		// Is password max length correct?
 
-		if (strlen($str) > 40)
+		if (strlen($str) > PASSWORD_MAX_LENGTH)
 		{
-			$this->set_message('valid_password', $this->CI->lang->line('username_password_too_long'));
+			$this->set_message('valid_password', $this->CI->lang->line('password_too_long'));
+			return FALSE;
 		}
 
 
@@ -700,14 +701,14 @@ class EE_Form_validation {
 	 */
 	public function valid_xss_check($string)
 	{
-		$valid = ($string == ee()->security->xss_clean($string));
+		$valid = ($string == ee('Security/XSS')->clean($string));
 
 		if ( ! $valid)
 		{
 			ee()->lang->loadfile('admin');
 			$this->set_message(
 				'valid_xss_check',
-				sprintf(lang('invalid_xss_check'), cp_url('homepage'))
+				sprintf(lang('invalid_xss_check'), ee('CP/URL', 'homepage'))
 			);
 		}
 
@@ -1113,7 +1114,7 @@ class EE_Form_validation {
 				}
 
 				// Build the error message
-				$message = sprintf($line, $this->_translate_fieldname($row['label']), $param);
+				$message = sprintf($line, $param);
 
 				// Save the error message
 				$this->_field_data[$row['field']]['error'] = $message;
@@ -2098,7 +2099,7 @@ class EE_Form_validation {
 	 */
 	function xss_clean($str)
 	{
-		return $this->CI->security->xss_clean($str);
+		return ee('Security/XSS')->clean($str);
 	}
 
 	// --------------------------------------------------------------------

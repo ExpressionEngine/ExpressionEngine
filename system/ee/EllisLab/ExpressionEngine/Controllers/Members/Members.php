@@ -6,9 +6,8 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Service\CP\Filter\Filter;
 use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 
@@ -18,7 +17,7 @@ use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -39,6 +38,8 @@ class Members extends CP_Controller {
 
 	private $base_url;
 	private $group;
+	private $form;
+	private $filter = TRUE;
 
 	/**
 	 * Constructor
@@ -61,29 +62,29 @@ class Members extends CP_Controller {
 		// Register our menu
 		ee()->menu->register_left_nav(array(
 			'all_members' => array(
-				'href' => cp_url('members'),
+				'href' => ee('CP/URL', 'members'),
 				'button' => array(
-					'href' => cp_url('members/create'),
+					'href' => ee('CP/URL', 'members/create'),
 					'text' => 'new'
 				)
 			),
 			array(
-				'pending_activation' => cp_url('members', array('group' => 4)),
-				'manage_bans' => cp_url('members', array('group' => 2))
+				'pending_activation' => ee('CP/URL', 'members', array('group' => 4)),
+				'manage_bans' => ee('CP/URL', 'members/bans')
 			),
 			'member_groups' => array(
-				'href' => cp_url('members/groups'),
+				'href' => ee('CP/URL', 'members/groups'),
 				'button' => array(
-					'href' => cp_url('members/groups/create'),
+					'href' => ee('CP/URL', 'members/groups/create'),
 					'text' => 'new'
 				)
 			),
 			array(
-				'custom_member_fields' => cp_url('members/fields')
+				'custom_member_fields' => ee('CP/URL', 'members/fields')
 			)
 		));
 
-		$this->base_url = new URL('members', ee()->session->session_id());
+		$this->base_url = ee('CP/URL', 'members');
 	}
 
 	// --------------------------------------------------------------------
@@ -123,9 +124,12 @@ class Members extends CP_Controller {
 		$page = ee()->input->get('page') > 0 ? ee()->input->get('page') : 1;
 
 		// Add the group filter
-		$this->filter();
+		if ($this->filter === TRUE)
+		{
+			$this->filter();
+		}
 
-		$table = Table::create(array(
+		$table = ee('CP/Table', array(
 			'sort_col' => $sort_col,
 			'sort_dir' => $sort_dir,
 			'limit' => $perpage
@@ -148,8 +152,12 @@ class Members extends CP_Controller {
 				'member_id' => array(
 					'type'	=> Table::COL_ID
 				),
-				'username',
-				'member_group',
+				'username' => array(
+					'encode' => FALSE
+				),
+				'member_group' => array(
+					'encode' => FALSE
+				),
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
 				),
@@ -162,18 +170,17 @@ class Members extends CP_Controller {
 		$table->setNoResultsText('no_search_results');
 		$table->setData($data['rows']);
 		$data['table'] = $table->viewData($this->base_url);
-		$data['form_url'] = cp_url('members/delete');
+		$data['form_url'] = ee('CP/URL', 'members/delete');
+		$data['form'] = $this->form;
 
 		$base_url = $data['table']['base_url'];
 
 		if ( ! empty($data['table']['data']))
 		{
-			$pagination = new Pagination(
-				$data['per_page'],
-				$data['total_rows'],
-				$page
-			);
-			$data['pagination'] = $pagination->cp_links($base_url);
+			$data['pagination'] = ee('CP/Pagination', $data['total_rows'])
+				->perPage($data['per_page'])
+				->currentPage($page)
+				->render($base_url);
 		}
 
 		// Set search results heading
@@ -193,8 +200,166 @@ class Members extends CP_Controller {
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
-		ee()->view->cp_page_title = lang('all_members');
+		ee()->view->cp_page_title = ee()->view->cp_page_title ?: lang('all_members');
 		ee()->cp->render('members/view_members', $data);
+	}
+
+	public function bans()
+	{
+		$this->base_url = ee('CP/URL', 'members/bans');
+		$this->group = 2;
+		$this->filter = FALSE;
+
+		$banned_ips	= $this->config->item('banned_ips');
+		$banned_emails  = $this->config->item('banned_emails');
+		$banned_usernames = $this->config->item('banned_usernames');
+		$banned_screen_names = $this->config->item('banned_screen_names');
+		$ban_action = $this->config->item('ban_action');
+		$ban_message = $this->config->item('ban_message');
+		$ban_destination = $this->config->item('ban_destination');
+
+		$ips		= '';
+		$emails  	= '';
+		$users  	= '';
+		$screens	= '';
+
+		if ($banned_ips != '')
+		{
+			foreach (explode('|', $banned_ips) as $val)
+			{
+				$ips .= $val.NL;
+			}
+		}
+
+		if ($banned_emails != '')
+		{
+			foreach (explode('|', $banned_emails) as $val)
+			{
+				$emails .= $val.NL;
+			}
+		}
+
+		if ($banned_usernames != '')
+		{
+			foreach (explode('|', $banned_usernames) as $val)
+			{
+				$users .= $val.NL;
+			}
+		}
+
+		if ($banned_screen_names != '')
+		{
+			foreach (explode('|', $banned_screen_names) as $val)
+			{
+				$screens .= $val.NL;
+			}
+		}
+
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'ip_address_banning',
+					'desc' => 'ip_banning_instructions',
+					'fields' => array(
+						'banned_ips' => array(
+							'type' => 'textarea',
+							'value' => $ips
+						)
+					)
+				),
+				array(
+					'title' => 'email_address_banning',
+					'desc' => 'email_banning_instructions',
+					'fields' => array(
+						'banned_emails' => array(
+							'type' => 'textarea',
+							'value' => $emails
+						)
+					)
+				),
+				array(
+					'title' => 'username_banning',
+					'desc' => 'username_banning_instructions',
+					'fields' => array(
+						'banned_usernames' => array(
+							'type' => 'textarea',
+							'value' => $users
+						)
+					)
+				),
+				array(
+					'title' => 'screen_name_banning',
+					'desc' => 'screen_name_banning_instructions',
+					'fields' => array(
+						'banned_screen_names' => array(
+							'type' => 'textarea',
+							'value' => $screens
+						)
+					)
+				)
+			)
+		);
+
+		ee()->form_validation->set_rules(array(
+			array(
+				 'field'   => 'banned_username',
+				 'label'   => 'lang:banned_usernames',
+				 'rules'   => 'valid_xss_check'
+			),
+			array(
+				 'field'   => 'banned_screen_names',
+				 'label'   => 'lang:banned_screen_names',
+				 'rules'   => 'valid_xss_check'
+			),
+			array(
+				 'field'   => 'banned_emails',
+				 'label'   => 'lang:banned_emails',
+				 'rules'   => 'valid_xss_check'
+			),
+			array(
+				 'field'   => 'banned_ips',
+				 'label'   => 'lang:banned_ips',
+				 'rules'   => 'valid_xss_check'
+			)
+		));
+
+		if (AJAX_REQUEST)
+		{
+			ee()->form_validation->run_ajax();
+			exit;
+		}
+		elseif (ee()->form_validation->run() !== FALSE)
+		{
+			$sections = $vars['sections'][0];
+			$data = array();
+
+			foreach ($sections as $section)
+			{
+				foreach ($section['fields'] as $field => $options)
+				{
+					$val = ee()->input->post($field);
+					$val = implode('|', explode(NL, $val));
+					$data[$field] = $val;
+				}
+			}
+
+			ee()->config->update_site_prefs($data);
+			ee()->view->set_message('success', lang('ban_settings_updated'), lang('ban_settings_updated_desc'), TRUE);
+			ee()->functions->redirect($this->base_url);
+		}
+		elseif (ee()->form_validation->errors_exist())
+		{
+			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+		}
+
+		ee()->view->cp_page_title = lang('banned_members');
+		$this->form = $vars;
+		$this->form['cp_page_title'] = lang('user_banning');
+		$this->form['ajax_validate'] = TRUE;
+		$this->form['save_btn_text'] = 'btn_save_settings';
+		$this->form['save_btn_text_working'] = 'btn_saving';
+
+		$this->index();
 	}
 
 	// ----------------------------------------------------------------
@@ -204,7 +369,7 @@ class Members extends CP_Controller {
 	 *
 	 * @return void
 	 */
-	public function _member_search($state, $params)
+	private function _member_search($state, $params)
 	{
 		$search_value = $params['member_name'];
 		$group_id = $this->group ?: '';
@@ -233,7 +398,7 @@ class Members extends CP_Controller {
 			$attributes = array();
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
-					'href' => cp_url('members/profile/', array('id' => $member['member_id'])),
+					'href' => ee('CP/URL', 'members/profile/', array('id' => $member['member_id'])),
 					'title' => strtolower(lang('profile'))
 				)
 			));
@@ -248,7 +413,7 @@ class Members extends CP_Controller {
 					$group = "<span class='st-pending'>" . lang('pending') . "</span>";
 					$attributes['class'] = 'alt pending';
 					$toolbar['toolbar_items']['approve'] = array(
-						'href' => cp_url('members/approve/', array('id' => $member['member_id'])),
+						'href' => ee('CP/URL', 'members/approve/', array('id' => $member['member_id'])),
 						'title' => strtolower(lang('approve'))
 					);
 					break;
@@ -256,7 +421,7 @@ class Members extends CP_Controller {
 					$group = $groups[$member['group_id']];
 			}
 
-			$email = "<a href = '" . cp_url('utilities/communicate') . "'>e-mail</a>";
+			$email = "<a href = '" . ee('CP/URL', 'utilities/communicate/member/' . $member['member_id']) . "'>e-mail</a>";
 			$rows[] = array(
 				'columns' => array(
 					'id' => $member['member_id'],
@@ -289,7 +454,7 @@ class Members extends CP_Controller {
 	/**
 	 * Sets up the display filters
 	 *
-	 * @param int	
+	 * @param int
 	 * @return void
 	 */
 	private function filter()
@@ -366,7 +531,7 @@ class Members extends CP_Controller {
 
 	/**
 	 * Generate post re-assignment view if applicable
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */

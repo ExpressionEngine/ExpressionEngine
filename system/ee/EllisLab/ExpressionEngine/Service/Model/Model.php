@@ -8,6 +8,8 @@ use OverflowException;
 use EllisLab\ExpressionEngine\Library\Data\Entity;
 use EllisLab\ExpressionEngine\Service\Event\Publisher as EventPublisher;
 use EllisLab\ExpressionEngine\Service\Event\Subscriber as EventSubscriber;
+use EllisLab\ExpressionEngine\Service\Model\Association\Association;
+use EllisLab\ExpressionEngine\Service\Model\Column\StaticType;
 use EllisLab\ExpressionEngine\Service\Validation\Validator;
 use EllisLab\ExpressionEngine\Service\Validation\ValidationAware;
 
@@ -17,7 +19,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationAware;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -58,6 +60,47 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	protected $_validator = NULL;
 
 	/**
+	 * @var Associated models
+	 */
+	protected $_associations = array();
+
+	/**
+	 * @var Cache of variable types - can be class names or objects
+	 */
+	protected $_property_types = array();
+
+	/**
+	 * @var Type names and their corresponding classes
+	 */
+	protected static $_type_classes = array(
+		'bool' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Boolean',
+		'boolean' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Boolean',
+
+		'float' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Float',
+		'double' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Float',
+
+		'int' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Integer',
+		'integer' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\Integer',
+
+		'string' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\String',
+
+		'yesNo' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\YesNo',
+		'boolString' => 'EllisLab\ExpressionEngine\Service\Model\Column\Scalar\YesNo',
+
+		'timestamp' => 'EllisLab\ExpressionEngine\Service\Model\Column\Object\Timestamp',
+
+		'base64' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64',
+		'base64Serialized' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64Native',
+		'json' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Json',
+		'serialized' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Native',
+	);
+
+	/**
+	 * @var Typed columns must default to array
+	 */
+	protected static $_typed_columns = array();
+
+	/**
 	 * @var Relationships property must default to array
 	 */
 	protected static $_relationships = array();
@@ -67,14 +110,19 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	 */
 	protected static $_mixins = array(
 		'EllisLab\ExpressionEngine\Service\Event\Mixin',
-		'EllisLab\ExpressionEngine\Service\Model\Mixin\TypedColumn',
-		'EllisLab\ExpressionEngine\Service\Model\Mixin\CompositeColumn',
-		'EllisLab\ExpressionEngine\Service\Model\Mixin\Relationship',
+		'EllisLab\ExpressionEngine\Service\Model\Mixin\Relationship'
 	);
 
+	/**
+	 * Add some default filters that we need for models. Might hardcode some
+	 * of these in the long run.
+	 */
 	protected function initialize()
 	{
-		// Nothing. Use this for any setup work you need to do.
+		$this->addFilter('get', array($this, 'typedGet'));
+		$this->addFilter('set', array($this, 'typedSet'));
+		$this->addFilter('fill', array($this, 'typedLoad'));
+		$this->addFilter('store', array($this, 'typedStore'));
 	}
 
 	/**
@@ -86,17 +134,52 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	 */
 	public function __call($method, $args)
 	{
-		if ($column = $this->getMixin('Model:CompositeColumn')->getCompositeColumnNameFromMethod($method))
-		{
-			return $this->getMixin('Model:CompositeColumn')->getCompositeColumn($column);
-		}
-
 		if ($action = $this->getMixin('Model:Relationship')->getAssociationActionFromMethod($method))
 		{
 			return $this->getMixin('Model:Relationship')->runAssociationAction($action, $args);
 		}
 
 		return parent::__call($method, $args);
+	}
+
+	/**
+	 * Extend __get to grant access to associated objects
+	 *
+	 * Associations must start with an uppercase letter
+	 *
+	 * @param String $key The property to access
+	 * @return Mixed The property value
+	 */
+	public function __get($key)
+	{
+		if ($key && strtoupper($key[0]) == $key[0])
+		{
+			if ($this->hasAssociation($key))
+			{
+				return $this->getAssociation($key)->get();
+			}
+		}
+
+		return parent::__get($key);
+	}
+
+	/**
+	 * Allow use of __set to set an association
+	 *
+	 * @param String $key The property to set
+	 * @param Mixed $value The property value
+	 */
+	public function __set($key, $value)
+	{
+		if ($key && strtoupper($key[0]) == $key[0])
+		{
+			if ($this->hasAssociation($key))
+			{
+				return $this->getAssociation($key)->set($value);
+			}
+		}
+
+		return parent::__set($key, $value);
 	}
 
 	/**
@@ -163,6 +246,8 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 
 		$this->_new = is_null($id);
 
+		$this->emit('setId', $id);
+
 		return $this;
 	}
 
@@ -219,18 +304,6 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	}
 
 	/**
-	 * Get all current values
-	 *
-	 * @return array Current values. Including null values - Beware.
-	 */
-	public function getValues()
-	{
-		$this->saveCompositeColumns();
-
-		return parent::getValues();
-	}
-
-	/**
 	 * Check if the model has been saved
 	 *
 	 * @return bool is new?
@@ -238,6 +311,14 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	public function isNew()
 	{
 		return $this->_new;
+	}
+
+	public function getModified()
+	{
+		return array_merge(
+			$this->getChangedTypeValues(),
+			parent::getModified()
+		);
 	}
 
 	/**
@@ -248,8 +329,6 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	public function save()
 	{
 		$qb = $this->newSelfReferentialQuery();
-
-		$this->saveCompositeColumns();
 
 		if ($this->isNew())
 		{
@@ -296,8 +375,10 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		// clear relationships
 		foreach ($this->getAllAssociations() as $name => $assoc)
 		{
-			$assoc->clear();
-			$assoc->save();
+			if (isset($assoc))
+			{
+				$this->$name = NULL;
+			}
 		}
 
 		return $this;
@@ -374,7 +455,7 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	 * Set the validator
 	 *
 	 * @param Validator $validator The validator to use
-	 * @return Current scope
+	 * @return $this
 	 */
 	public function setValidator(Validator $validator)
 	{
@@ -404,7 +485,7 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	 */
 	public function getValidationData()
 	{
-		return $this->getDirty();
+		return $this->getModified();
 	}
 
 	/**
@@ -458,23 +539,109 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 			throw new InvalidArgumentException('uniqueWithinSiblings must have at least two arguments.');
 		}
 
-		$get_parent = 'get' . $params[0];
-		$get_siblings = 'get' . $params[1];
+		$parent = $params[0];
+		$siblings = $params[1];
 
-		$unique = $this->$get_parent()
-			->$get_siblings()
-			->filter(function ($element) use ($key, $value)
-			{
-				return $element->$key == $value;
-			});
-
-		// Greater than one to account for self
-		if (count($unique) > 1)
+		if ($this->$parent && $this->$parent->$siblings)
 		{
-			return 'unique';
+			$count = $this->$parent->$siblings->filter($key, $value)->count();
+
+			if ($count > 1)
+			{
+				return 'unique';
+			}
 		}
 
 		return TRUE;
+	}
+
+	public function typedLoad($value, $name)
+	{
+		if ($type = $this->getTypeFor($name))
+		{
+			return $type->load($value);
+		}
+
+		return $value;
+	}
+
+	public function typedStore($value, $name)
+	{
+		if ($type = $this->getTypeFor($name))
+		{
+			return $type->store($value);
+		}
+
+		return $value;
+	}
+
+	public function typedGet($value, $name)
+	{
+		if ($type = $this->getTypeFor($name))
+		{
+			return $type->get($value);
+		}
+
+		return $value;
+	}
+
+	public function typedSet($value, $name)
+	{
+		if ($type = $this->getTypeFor($name))
+		{
+			return $type->set($value);
+		}
+
+		return $value;
+	}
+
+	public function getTypeFor($name)
+	{
+		if ( ! array_key_exists($name, $this->_property_types))
+		{
+			$this->_property_types[$name] = $this->createTypeFor($name);
+		}
+
+		return $this->_property_types[$name];
+	}
+
+	public function createTypeFor($name)
+	{
+		$columns = $this->getMetadata('typed_columns') ?: array();
+		$types = $this->getMetadata('type_classes');
+
+		if ( ! array_key_exists($name, $columns))
+		{
+			return NULL;
+		}
+
+		$type = $columns[$name];
+		$class = $types[$type];
+
+		return $class::create();
+	}
+
+	/**
+	 * Sync up typed column values
+	 */
+	protected function getChangedTypeValues()
+	{
+		$changed = array();
+
+		foreach ($this->_property_types as $name => $type)
+		{
+			$set = $this->getRawProperty($name);
+
+			$value = $this->getBackup($name, $set);
+			$new_value = $this->typedStore($set, $name);
+
+			if ($new_value !== $value)
+			{
+				$changed[$name] = $set;
+			}
+		}
+
+		return $changed;
 	}
 
 	/**
@@ -508,36 +675,53 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		return $this->getMixin('Event')->unsubscribe($subscriber);
 	}
 
+
 	/**
-	 * Support method for the typed columns mixin
-	 */
-	public function getTypedColumns()
+	* Get all associations
+	*
+	* @return array associations
+	*/
+	public function getAllAssociations()
 	{
-		return $this->getMetaData('typed_columns') ?: array();
+		return $this->_associations;
 	}
 
 	/**
-	 * Support method for the composite column mixin
-	 */
-	public function getCompositeColumns()
+	* Check if an association of a given name exists
+	*
+	* @param String $name Name of the association
+	* @return bool has association?
+	*/
+	public function hasAssociation($name)
 	{
-		$definitions = array();
+		return array_key_exists($name, $this->_associations);
+	}
 
-		$all = $this->getMetaDataByClass('composite_columns');
+	/**
+	* Get an association of a given name
+	*
+	* @param String $name Name of the association
+	* @return Mixed the association
+	*/
+	public function getAssociation($name)
+	{
+		return $this->_associations[$name];
+	}
 
-		foreach ($all as $class => $columns)
-		{
-			$ns_prefix = substr($class, 0, strrpos($class, '\\'));
+	/**
+	* Set a given association
+	*
+	* @param String $name Name of the association
+	* @param Association $association Association to set
+	* @return $this
+	*/
+	public function setAssociation($name, Association $association)
+	{
+		$association->setFrontend($this->getFrontend());
 
-			foreach ($columns as $property => $name)
-			{
-				$class = $ns_prefix.'\\Column\\'.$name;
+		$this->_associations[$name] = $association;
 
-				$definitions[$name] = compact('class', 'property');
-			}
-		}
-
-		return $definitions;
+		return $this;
 	}
 
 	/**
@@ -550,16 +734,8 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		return $this->_frontend->get($this);
 	}
 
-	/**
-	 * Clean up var_dump output for developers on PHP 5.6+
-	 */
-	public function __debugInfo()
+	public function __toString()
 	{
-		$name = $this->_name;
-		$values = $this->getValues();
-		$related_to = array_keys($this->getAllAssociations());
-
-		return compact('name', 'values', 'related_to');
+		return spl_object_hash($this).':'.$this->getName().':'.$this->getId();
 	}
-
 }

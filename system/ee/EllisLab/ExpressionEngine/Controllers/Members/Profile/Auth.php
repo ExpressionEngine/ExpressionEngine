@@ -12,7 +12,7 @@ use CP_Controller;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -38,45 +38,68 @@ class Auth extends Profile {
 	 */
 	public function index()
 	{
-		$this->base_url = cp_url($this->base_url, $this->query_string);
+		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
 
 		$vars['sections'] = array(
 			array(
 				array(
 					'title' => 'username',
-					'desc' => 'username_desc',
+					'desc' => 'username_description',
 					'fields' => array(
-						'username' => array('type' => 'text', 'value' => $this->member->username)
+						'username' => array(
+							'type' => 'text',
+							'required' => TRUE,
+							'value' => $this->member->username
+						)
 					)
 				),
 				array(
 					'title' => 'screen_name',
-					'desc' => 'screen_name_desc',
+					'desc' => 'screen_name_description',
 					'fields' => array(
-						'screen_name' => array('type' => 'text', 'value' => $this->member->screen_name)
+						'screen_name' => array(
+							'type' => 'text',
+							'required' => TRUE,
+							'value' => $this->member->screen_name
+						)
 					)
 				)
 			),
 			'change_password' => array(
+				ee('Alert')->makeInline('permissions-warn')
+					->asWarning()
+					->addToBody(lang('password_change_exp'))
+					->cannotClose()
+					->render(),
 				array(
 					'title' => 'new_password',
 					'desc' => 'new_password_desc',
 					'fields' => array(
-						'password' => array('type' => 'password')
+						'password' => array(
+							'type'      => 'password',
+							'maxlength' => PASSWORD_MAX_LENGTH
+						)
 					)
 				),
 				array(
-					'title' => 'confirm_password',
-					'desc' => 'confirm_password_desc',
+					'title' => 'new_password_confirm',
+					'desc' => 'new_password_confirm_desc',
 					'fields' => array(
-						'confirm_password' => array('type' => 'password')
+						'confirm_password' => array(
+							'type'      => 'password',
+							'maxlength' => PASSWORD_MAX_LENGTH
+						)
 					)
 				),
 				array(
-					'title' => 'current_password',
-					'desc' => 'current_password',
+					'title' => 'existing_password',
+					'desc' => 'existing_password_exp',
 					'fields' => array(
-						'current_password' => array('type' => 'password')
+						'current_password' => array(
+							'type'      => 'password',
+							'required' => TRUE,
+							'maxlength' => PASSWORD_MAX_LENGTH
+						)
 					)
 				)
 			)
@@ -220,19 +243,11 @@ class Auth extends Profile {
 			$data['username'] = $_POST['username'];
 		}
 
-		// Was a password submitted?
-		$pw_change = FALSE;
-
 		if ($_POST['password'] != '')
 		{
 			$this->load->library('auth');
 
 			$this->auth->update_password($this->member->member_id, $this->input->post('password'));
-
-			if ($this->self_edit)
-			{
-				$pw_change = TRUE;
-			}
 		}
 
 		$this->member_model->update_member($this->member->member_id, $data);

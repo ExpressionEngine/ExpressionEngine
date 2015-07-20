@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -148,12 +148,12 @@ class EE_Actions {
 		}
 
 		// Assign the path
-		$package_path = PATH_MOD.$base_class.'/';
+		$package_path = PATH_ADDONS.$base_class.'/';
 
 		// Third parties have a different package and view path
 		if ( ! in_array($base_class, ee()->core->native_modules))
 		{
-			$package_path = PATH_ADDONS.$base_class.'/';
+			$package_path = PATH_THIRD.$base_class.'/';
 		}
 
 		ee()->load->add_package_path($package_path, FALSE);

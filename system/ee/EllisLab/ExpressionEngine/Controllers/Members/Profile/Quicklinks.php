@@ -5,9 +5,8 @@ namespace EllisLab\ExpressionEngine\Controllers\Members\Profile;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -15,7 +14,7 @@ use EllisLab\ExpressionEngine\Library\CP\Pagination;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -42,7 +41,7 @@ class Quicklinks extends Profile {
 		ee()->load->model('member_model');
 		$this->quicklinks = ee()->member_model->get_member_quicklinks($this->member->member_id);
 		$this->index_url = $this->base_url;
-		$this->base_url = new URL($this->base_url, ee()->session->session_id(), $this->query_string);
+		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
 	}
 
 	/**
@@ -50,7 +49,7 @@ class Quicklinks extends Profile {
 	 */
 	public function index()
 	{
-		$table = Table::create();
+		$table = ee('CP/Table');
 		$links = array();
 		$data = array();
 
@@ -58,7 +57,7 @@ class Quicklinks extends Profile {
 		{
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
-					'href' => cp_url('members/profile/quicklinks/edit/' . ($quicklink['order'] ?: 1), $this->query_string),
+					'href' => ee('CP/URL', 'members/profile/quicklinks/edit/' . ($quicklink['order'] ?: 1), $this->query_string),
 					'title' => strtolower(lang('edit'))
 				)
 			));
@@ -92,8 +91,8 @@ class Quicklinks extends Profile {
 		$table->setData($links);
 
 		$data['table'] = $table->viewData($this->base_url);
-		$data['new'] = cp_url('members/profile/quicklinks/create', $this->query_string);
-		$data['form_url'] = cp_url('members/profile/quicklinks/delete', $this->query_string);
+		$data['new'] = ee('CP/URL', 'members/profile/quicklinks/create', $this->query_string);
+		$data['form_url'] = ee('CP/URL', 'members/profile/quicklinks/delete', $this->query_string);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('quick_links') . ': <b>### ' . lang('quick_links') . '</b>');
 		ee()->cp->add_js_script(array(
@@ -108,13 +107,13 @@ class Quicklinks extends Profile {
 
 	/**
 	 * Create new quicklink
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */
 	public function create()
 	{
-		$this->base_url = new URL($this->index_url . '/create', ee()->session->session_id(), $this->query_string);
+		$this->base_url = ee('CP/URL', $this->index_url . '/create', $this->query_string);
 
 		$vars = array(
 			'cp_page_title' => lang('create_quick_link'),
@@ -136,15 +135,15 @@ class Quicklinks extends Profile {
 	}
 
 	/**
-	 * Edit quicklink 
-	 * 
+	 * Edit quicklink
+	 *
 	 * @param int $id  The ID of the quicklink to be updated
 	 * @access public
 	 * @return void
 	 */
 	public function edit($id)
 	{
-		$this->base_url = new URL($this->index_url . "/edit/$id", ee()->session->session_id(), $this->query_string);
+		$this->base_url = ee('CP/URL', $this->index_url . "/edit/$id", $this->query_string);
 
 		$vars = array(
 			'cp_page_title' => lang('edit_quick_link'),
@@ -171,7 +170,7 @@ class Quicklinks extends Profile {
 
 	/**
 	 * Delete Quicklinks
-	 * 
+	 *
 	 * @access public
 	 * @return void
 	 */
@@ -184,12 +183,12 @@ class Quicklinks extends Profile {
 		$this->quicklinks = array_diff_key($this->quicklinks, array_flip($selection));
 		$this->saveQuicklinks();
 
-		ee()->functions->redirect(cp_url($this->index_url, $this->query_string));
+		ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
 	}
 
 	/**
 	 * saveQuicklinks compiles the links and saves them for the current member
-	 * 
+	 *
 	 * @access private
 	 * @return void
 	 */
@@ -204,16 +203,6 @@ class Quicklinks extends Profile {
 
 		$compiled = implode("\n", $compiled);
 		$this->member->quick_links = $compiled;
-		$validated = $this->member->validate();
-
-		if ($validated !== TRUE)
-		{
-			ee()->load->helper('html_helper');
-			ee()->view->set_message('issue', lang('cp_message_issue'), ul($validated), TRUE);
-
-			return FALSE;
-		}
-
 		$this->member->save();
 
 		return TRUE;
@@ -221,9 +210,9 @@ class Quicklinks extends Profile {
 
 	/**
 	 * Display a generic form for creating/editing a Quicklink
-	 * 
-	 * @param mixed $vars 
-	 * @param array $values 
+	 *
+	 * @param mixed $vars
+	 * @param array $values
 	 * @access private
 	 * @return void
 	 */
@@ -235,17 +224,17 @@ class Quicklinks extends Profile {
 		$vars['sections'] = array(
 			array(
 				array(
-					'title' => 'quicklink_name',
-					'desc' => 'quicklink_name_desc',
+					'title' => 'link_title',
+					'desc' => 'link_title_desc',
 					'fields' => array(
-						'name' => array('type' => 'text', 'value' => $name)
+						'name' => array('type' => 'text', 'value' => $name, 'required' => TRUE)
 					)
 				),
 				array(
-					'title' => 'quicklink_url',
-					'desc' => 'quicklink_url_desc',
+					'title' => 'link_url',
+					'desc' => 'link_url_desc',
 					'fields' => array(
-						'url' => array('type' => 'text', 'value' => $url)
+						'url' => array('type' => 'text', 'value' => $url, 'required' => TRUE)
 					)
 				)
 			)
@@ -273,7 +262,7 @@ class Quicklinks extends Profile {
 		{
 			if ($this->saveQuicklinks())
 			{
-				ee()->functions->redirect(cp_url($this->index_url, $this->query_string));
+				ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())

@@ -20,6 +20,26 @@ class Member extends Model {
 		'MemberGroup' => array(
 			'type' => 'belongsTo'
 		),
+		'HTMLButtons' => array(
+			'type' => 'hasMany',
+			'model' => 'HTMLButton',
+			'to_key' => 'member_id'
+		),
+		'LastAuthoredTemplates' => array(
+			'type' => 'hasMany',
+			'model' => 'Template',
+			'to_key' => 'last_author_id'
+		),
+		'AuthoredChannelEntries' => array(
+			'type' => 'hasMany',
+			'model' => 'ChannelEntry',
+			'to_key' => 'author_id'
+		),
+		'LastAuthoredSpecialtyTemplates' => array(
+			'type' => 'hasMany',
+			'model' => 'SpecialtyTemplate',
+			'to_key' => 'last_author_id'
+		)
 	//	'ResetPassword'	=> array(
 	//		'type' => 'one_to_one'
 	//	),
@@ -101,6 +121,7 @@ class Member extends Model {
 	protected $template_size;
 	protected $notepad;
 	protected $notepad_size;
+	protected $bookmarklets;
 	protected $quick_links;
 	protected $quick_tabs;
 	protected $show_sidebar;

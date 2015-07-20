@@ -12,7 +12,7 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -130,7 +130,7 @@ class TemplateGroup extends Model {
 		$fs = new Filesystem();
 		$path = $this->getFolderPath();
 
-		if (isset($path) && $fs->isDir($fs->dirname($path)) && ! $fs->isDir($path))
+		if (isset($path) && ! $fs->isDir($path))
 		{
 			$fs->mkDir($path);
 		}

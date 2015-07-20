@@ -4,7 +4,7 @@
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
  * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
@@ -29,14 +29,15 @@ class EE_Route {
 	public $subpatterns = array();
 
 	public $segment_regex = "
-		(?P<static>[^{]*)                         # static rule data
+		(\/|
+		(?P<static>[^{\/]*)                         # static rule data
 		({
 		(?P<variable>[^}:]*)                      # variable name
 		(?:
 			\:                                    # variable delimiter
 			(?P<rules>.*?(regex\[\(.*?\)\])?.*?)  # rules
 		)?
-		})?
+		})?)
 	";
 
 	public $rules_regex = "
@@ -59,17 +60,9 @@ class EE_Route {
 	 */
 	public function __construct($route, $required = FALSE)
 	{
-		if (defined('EE_APPPATH'))
-		{
-			$path = EE_APPPATH;
-		}
-		else
-		{
-			$path = APPPATH;
-		}
-
-		require_once $path.'libraries/template_router/Segment.php';
-		require_once $path.'libraries/template_router/Converters.php';
+		require_once APPPATH.'libraries/template_router/Part.php';
+		require_once APPPATH.'libraries/template_router/Segment.php';
+		require_once APPPATH.'libraries/template_router/Converters.php';
 		ee()->lang->loadfile('template_router');
 		$this->required = $required;
 		$this->rules = new EE_Template_router_converters();
@@ -91,24 +84,16 @@ class EE_Route {
 		foreach ($variables as $key => $val)
 		{
 			if( ! empty($map[$key])) {
-				$this->variables[$map[$key]]->set($val);
+				$hash = $map[$key];
+				$this->variables[$hash]->set($hash, $val);
 			}
 		}
 
 		foreach($this->segments as $segment)
 		{
-			if (is_string($segment) && $segment != '/')
+			if ($segment->isset)
 			{
-				$parts = explode("/", $segment);
-				$parts = array_map('urlencode', $parts);
-				$url[] = implode("/", $parts);
-			}
-			elseif($segment instanceof EE_Route_segment)
-			{
-				if ( ! empty($segment->value))
-				{
-					$url[] =  urlencode($segment->value);
-				}
+				$url[] =  urlencode($segment->value());
 			}
 		}
 
@@ -124,26 +109,26 @@ class EE_Route {
 	public function compile()
 	{
 		$url = array();
+		$index = 0;
 
 		foreach($this->segments as $segment)
 		{
-			if (is_string($segment))
-			{
-				$delimiter = $this->required ? '\/' : '\/?'; // backslash escaped for preg_match
-				$segment = str_replace('/', $delimiter, $segment);
-				$url[] = $segment;
-			}
-			else
-			{
-				$regex = $segment->regex();
+			$regex = $segment->regex();
+			$delimiter = '\/';
 
-				if ( ! $this->required)
-				{
-					$regex .= '?';
-				}
-
-				$url[] = $regex;
+			if ( ! $this->required)
+			{
+				$regex .= '?';
+				$delimiter = '\/?';
 			}
+
+			if ($index < count($this->segments) - 1)
+			{
+				$regex .= $delimiter;
+			}
+
+			$url[] = $regex;
+			$index++;
 		}
 
 		$parsed_route = implode('', $url);
@@ -170,24 +155,18 @@ class EE_Route {
 		{
 			$comparison = $route->segments[$index];
 
-			if (gettype($segment) !== gettype($comparison))
+			if ($segment->static !== $segment->static)
 			{
 				return FALSE;
 			}
 
-			if (is_string($segment))
+			foreach ($segment->parts as $part_index => $part)
 			{
-				if($segment !== $comparison)
-				{
-					return FALSE;
-				}
-			}
-			else
-			{
-				$segment_rules = array_map('serialize', $segment->rules);
-				$comparison_rules = array_map('serialize', $comparison->rules);
-				$diff = array_diff($segment_rules, $comparison_rules);
-				$comparison_diff = array_diff($comparison_rules, $segment_rules);
+				$comparison_part = $comparison->parts[$part_index];
+				$part_rules = array_map('serialize', $part->rules);
+				$comparison_rules = array_map('serialize', $comparison_part->rules);
+				$diff = array_diff($part_rules, $comparison_rules);
+				$comparison_diff = array_diff($comparison_rules, $part_rules);
 
 				if( ! (empty($diff) && empty($comparison_diff)))
 				{
@@ -208,7 +187,9 @@ class EE_Route {
 	 */
 	public function parse_route($route)
 	{
+		// Make sure we have a trailing slash so segments parse correctly
 		$route = trim($route, '/ ');
+		$route = $route . '/';
 
 		// Check for xss
 		if ($route !== ee()->security->xss_clean($route))
@@ -221,26 +202,11 @@ class EE_Route {
 
 		foreach ($segments as $segment)
 		{
-			if ( ! empty($segment['static']))
-			{
-				$this->segments[] = $segment['static'];
-			}
-			elseif ( ! empty($segment['variable']))
-			{
-				if (empty($segment['rules']))
-				{
-					// Segment variable with no rules should be equivalent to alpha-dash
-					$rule = $this->rules->load('alpha_dash');
-					$segment = new EE_Route_segment($segment['variable'], array($rule));
-				}
-				else
-				{
-					$rules = $this->parse_rules($segment['rules']);
-					$segment = new EE_Route_segment($segment['variable'], $rules);
-				}
+			$this->segments[$index] = $segment;
 
-				$this->segments[$index] = $segment;
-				$this->variables[$segment->name] =& $this->segments[$index];
+			foreach($segment->parts as $part)
+			{
+				$this->variables[$part->name] =& $this->segments[$index];
 			}
 
 			$index++;
@@ -262,94 +228,86 @@ class EE_Route {
 		$pos = 0;
 		$end = strlen($route);
 		$used_names = array();
+		$static = '';
+		$variables = array();
 
-		if (strpos($route, '{') !== FALSE)
+		while ($pos < $end)
 		{
-			while ($pos < $end)
+			$result = preg_match("/{$this->segment_regex}/ix", $route, $matches, 0, $pos);
+
+			if(empty($matches[0]))
 			{
-				$segment = array();
-				$result = preg_match("/{$this->segment_regex}/ix", $route, $matches, 0, $pos);
-
-				if(empty($matches[0]))
-				{
-					break;
-				}
-
-				if ($result == 0)
-				{
-					break;
-				}
-
-				if ( ! empty($matches['static']))
-				{
-					$segments[] = array('static' => $matches['static']);
-				}
-
-				if ( ! empty($matches['variable']))
-				{
-					$variable = $matches['variable'];
-
-					if (preg_match("/^[a-zA-Z0-9_\-]*$/ix", $variable))
-					{
-						// Subpattern names must be alpha numeric, start with a
-						// non-digit and be less than 32 character long.
-						// SHA1 in base36 = 31 characters + 1 character prefix
-						$hash = 'e' . base_convert(sha1($variable), 16, 36);
-						$this->subpatterns[$hash] = $variable;
-						$segment['variable'] = $hash;
-					}
-					else
-					{
-						throw new Exception(lang('invalid_variable') . $variable);
-					}
-
-					if ( ! empty($matches['rules']))
-					{
-						$segment['rules'] = $matches['rules'];
-					}
-
-					if (in_array($segment['variable'], $used_names))
-					{
-						throw new Exception(lang('variable_in_use') . $variable);
-					}
-
-					$used_names[] = $segment['variable'];
-				}
-
-				$segments[] = $segment;
-				$pos += strlen($matches[0]);
+				break;
 			}
-			if ($pos < $end)
+
+			if ($result == 0)
 			{
-				$remainder = substr($route, $pos);
+				break;
+			}
 
-				if ( (strpos($remainder, '{') === FALSE && strpos($remainder, '}')) === FALSE)
+			if ($matches[0] == '/')
+			{
+				$segments[] = new EE_Route_segment($static, $variables);
+				$static = '';
+				$variables = array();
+			};
+
+			if ( ! empty($matches['static']))
+			{
+				$static .= $matches['static'];
+			}
+
+			if ( ! empty($matches['variable']))
+			{
+				$variable = $matches['variable'];
+
+				if (preg_match("/^[a-zA-Z0-9_\-]*$/ix", $variable))
 				{
-					// Using entity so error msg displays correctly
-					$route = str_replace('/', '&#47;', $route);
-					throw new Exception(lang('invalid_route') . $route);
+					// Subpattern names must be alpha numeric, start with a 
+					// non-digit and be less than 32 character long.
+					// SHA1 in base36 = 31 characters + 1 character prefix
+					$hash = 'e' . base_convert(sha1($variable), 16, 36);
+					$this->subpatterns[$hash] = $variable;
+					$static .= $hash;
+				}
+				else
+				{
+					throw new Exception(lang('invalid_variable') . $variable);
 				}
 
-				$segments[] = array('static' => $remainder);
+				if (empty($matches['rules']))
+				{
+					// Segment variable with no rules should be equivalent to alpha-dash
+					$rules = array($this->rules->load('alpha_dash'));
+				}
+				else
+				{
+					$rules = $this->parse_rules($matches['rules']);
+				}
+
+				if (in_array($hash, $used_names))
+				{
+					throw new Exception(lang('variable_in_use') . $variable);
+				}
+
+				$used_names[] = $hash;
+				$variables[$hash] = new EE_Route_segment_part($hash, $rules);
 			}
+
+			$pos += strlen($matches[0]);
 		}
-		else
+		if ($pos < $end)
 		{
-			// We just have a static route with no variables
-			$parts = explode("/", $route);
+			$remainder = substr($route, $pos);
 
-			for ($i = 0; $i < count($parts); $i++)
+			if ( (strpos($remainder, '{') === FALSE && strpos($remainder, '}')) === FALSE)
 			{
-				$segment = $parts[$i];
-
-				// Don't add trailing slash to last segment
-				if ($i < count($parts) -1)
-				{
-					$segment .= '/';
-				}
-
-				$segments[] = array('static' => $segment);
+				// Using entity so error msg displays correctly
+				$route = str_replace('/', '&#47;', $route);
+				throw new Exception(lang('invalid_route') . $route);
 			}
+
+			$segments[] = array('static' => $remainder);
 		}
 
 		return $segments;

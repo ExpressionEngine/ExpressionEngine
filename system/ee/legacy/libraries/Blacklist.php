@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -45,7 +45,7 @@ class EE_Blacklist {
 		// below, we'll temporarily write our referrer to $_POST.
 		if (isset($_SERVER['HTTP_REFERER']) && $_SERVER['HTTP_REFERER'] != '')
 		{
-			$test_ref = ee()->security->xss_clean($_SERVER['HTTP_REFERER']);
+			$test_ref = ee('Security/XSS')->clean($_SERVER['HTTP_REFERER']);
 
 			if ( ! preg_match("#^http://\w+\.\w+\.\w*#", $test_ref))
 			{

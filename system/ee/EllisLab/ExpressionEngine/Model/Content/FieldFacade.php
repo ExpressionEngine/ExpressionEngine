@@ -12,6 +12,7 @@ class FieldFacade {
 	private $required;
 	private $field_name;
 	private $content_id;
+	private $content_type;
 	private $value;
 
 	public function __construct($field_id, array $metadata)
@@ -45,6 +46,16 @@ class FieldFacade {
 		return $this->content_id;
 	}
 
+	public function setContentType($type)
+	{
+		$this->content_type = $type;
+	}
+
+	public function getContentType($type)
+	{
+		return $this->content_type;
+	}
+
 	public function setTimezone($tz)
 	{
 		$this->timezone = $timezone;
@@ -55,8 +66,15 @@ class FieldFacade {
 		return $this->timezone;
 	}
 
-	// sets the raw values as in the db. data coming from
-	// the field post array should pass through setValue
+	protected function ensurePopulatedDefaults()
+	{
+		if ($callback = $this->getItem('populateCallback'))
+		{
+			$this->setItem('populateCallback', NULL);
+			call_user_func($callback, $this);
+		}
+	}
+
 	public function setData($data)
 	{
 		$this->data = $data;
@@ -64,6 +82,7 @@ class FieldFacade {
 
 	public function getData()
 	{
+		$this->ensurePopulatedDefaults();
 		return $this->data;
 	}
 
@@ -79,12 +98,18 @@ class FieldFacade {
 
 	public function isRequired()
 	{
-		return $this->getItem('field_required') === 'y';
+		$required = $this->getItem('field_required');
+		return ($required === TRUE || $required === 'y');
 	}
 
 	public function getItem($field)
 	{
-		return $this->metadata[$field];
+		if (array_key_exists($field, $this->metadata))
+		{
+			return $this->metadata[$field];
+		}
+
+		return NULL;
 	}
 
 	public function setItem($field, $value)
@@ -108,6 +133,7 @@ class FieldFacade {
 	public function validate($value)
 	{
 		$this->initField();
+
 		$result = ee()->api_channel_fields->apply('validate', array($value));
 
 		if (is_array($result))
@@ -132,27 +158,76 @@ class FieldFacade {
 		return TRUE;
 	}
 
-	public function save()
+	public function save($model = NULL)
+	{
+		$this->ensurePopulatedDefaults();
+
+		$value = $this->data;
+		$this->initField();
+		return $this->data = ee()->api_channel_fields->apply('save', array($value, $model));
+	}
+
+	public function postSave()
 	{
 		$value = $this->data;
 		$this->initField();
-		return $this->data = ee()->api_channel_fields->apply('save', array($value));
+		return $this->data = ee()->api_channel_fields->apply('post_save', array($value));
 	}
 
 	public function getForm()
 	{
 		$data = $this->initField();
 
-		// initField can sometimes return a string if the field has a
-		// string_override key.
-		if (is_string($data))
-		{
-			return $data;
-		}
-
-		$field_value = set_value($this->getName(), $data['field_data']);
+		$field_value = $data['field_data'];
 
 		return ee()->api_channel_fields->apply('display_publish_field', array($field_value));
+	}
+
+	public function getSettingsForm()
+	{
+		ee()->load->library('table');
+		$data = $this->initField();
+		$out = ee()->api_channel_fields->apply('display_settings', array($data));
+
+		if ($out == '')
+		{
+			return ee()->table->rows;
+		}
+
+		return $out;
+	}
+
+	public function validateSettingsForm($settings)
+	{
+		$this->initField();
+		return ee()->api_channel_fields->apply('validate_settings', array($settings));
+	}
+
+	public function saveSettingsForm($data)
+	{
+		$this->initField();
+		return ee()->api_channel_fields->apply('save_settings', array($data));
+	}
+
+	/**
+	 * Fires post_save_settings on the fieldtype
+	 */
+	public function postSaveSettings($data)
+	{
+		$this->initField();
+		return ee()->api_channel_fields->apply('post_save_settings', array($data));
+	}
+
+	public function getStatus()
+	{
+		$data = $this->initField();
+
+		$field_value = set_value(
+			$this->getName(),
+			$data['field_data']
+		);
+
+		return ee()->api_channel_fields->apply('get_field_status', array($field_value));
 	}
 
 
@@ -166,16 +241,14 @@ class FieldFacade {
 
 	public function initField()
 	{
-		$data = $this->setupField();
+		$this->ensurePopulatedDefaults();
 
-		if (isset($data['string_override']))
-		{
-			return $data['string_override'];
-		}
+		$data = $this->setupField();
 
 		ee()->api_channel_fields->setup_handler($data['field_id']);
 		ee()->api_channel_fields->apply('_init', array(array(
-			'content_id' => $this->content_id
+			'content_id' => $this->content_id,
+			'content_type' => $this->content_type
 		)));
 
 		return $data;
@@ -191,7 +264,8 @@ class FieldFacade {
 		// not all custom field tables will specify all of these things
 		$defaults = array(
 			'field_instructions' => '',
-			'field_text_direction' => 'rtl'
+			'field_text_direction' => 'rtl',
+			'field_settings' => array()
 		);
 
 		$info = $this->metadata;
@@ -206,18 +280,7 @@ class FieldFacade {
 			'field_name'			=> $field_name
 		);
 
-		$ft_settings = array();
-
-		if (isset($info['field_settings']) && strlen($info['field_settings']))
-		{
-			$ft_settings = unserialize(base64_decode($info['field_settings']));
-		}
-		else
-		{
-			$info['field_settings'] = array();
-		}
-
-		$settings = array_merge($info, $settings, $ft_settings);
+		$settings = array_merge($info, $settings, $info['field_settings']);
 
 		ee()->legacy_api->instantiate('channel_fields');
 		ee()->api_channel_fields->set_settings($info['field_id'], $settings);

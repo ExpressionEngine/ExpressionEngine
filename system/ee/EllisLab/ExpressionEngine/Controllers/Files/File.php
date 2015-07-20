@@ -10,7 +10,7 @@ use EllisLab\ExpressionEngine\Controllers\Files\AbstractFiles as AbstractFilesCo
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -85,7 +85,7 @@ class File extends AbstractFilesController {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => cp_url('files/file/edit/' . $id),
+			'base_url' => ee('CP/URL', 'files/file/edit/' . $id),
 			'save_btn_text' => 'btn_edit_file_meta',
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
@@ -180,7 +180,7 @@ class File extends AbstractFilesController {
 				->addToBody(sprintf(lang('edit_file_metadata_success_desc'), $file->title))
 				->defer();
 
-			ee()->functions->redirect(cp_url('files/directory/' . $file->upload_location_id));
+			ee()->functions->redirect(ee('CP/URL', 'files/directory/' . $file->upload_location_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -194,10 +194,10 @@ class File extends AbstractFilesController {
 		$this->sidebarMenu($file->upload_location_id);
 		$this->stdHeader();
 		ee()->view->cp_page_title = sprintf(lang('edit_file_metadata'), $file->title);
-		ee()->view->cp_page_title_alt = ee()->view->cp_page_title . '<a class="btn action ta" href="' . cp_url('files/file/crop/' . $id) . '">' . lang('btn_crop') . '</a>';
+		ee()->view->cp_page_title_alt = ee()->view->cp_page_title . '<a class="btn action ta" href="' . ee('CP/URL', 'files/file/crop/' . $id) . '">' . lang('btn_crop') . '</a>';
 
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('files') => lang('file_manager'),
+			ee('CP/URL', 'files')->compile() => lang('file_manager'),
 		);
 
 		ee()->cp->render('settings/form', $vars);
@@ -234,7 +234,7 @@ class File extends AbstractFilesController {
 			$dir = $file->getUploadDestination();
 			if ( ! $dir->exists())
 			{
-				$upload_edit_url = cp_url('files/uploads/edit/' . $dir->id);
+				$upload_edit_url = ee('CP/URL', 'files/uploads/edit/' . $dir->id);
 				$alert->addToBody(sprintf(lang('directory_not_found'), $dir->server_path))
 					->addToBody(sprintf(lang('check_upload_settings'), $upload_edit_url));
 			}
@@ -261,7 +261,7 @@ class File extends AbstractFilesController {
 
 		$vars = array(
 			'file' => $file,
-			'form_url' => cp_url('files/file/crop/' . $id),
+			'form_url' => ee('CP/URL', 'files/file/crop/' . $id),
 			'height' => $info['height'],
 			'width' => $info['width'],
 			'active_tab' => 0
@@ -270,8 +270,8 @@ class File extends AbstractFilesController {
 		ee()->load->library('form_validation');
 		if (isset($_POST['save_crop']))
 		{
-			ee()->form_validation->set_rules('crop_width', 'lang:width', 'trim|numeric|greater_than[0]|required');
-			ee()->form_validation->set_rules('crop_height', 'lang:height', 'trim|numeric|greater_than[0]|required');
+			ee()->form_validation->set_rules('crop_width', 'lang:width', 'trim|is_natural_no_zero|required');
+			ee()->form_validation->set_rules('crop_height', 'lang:height', 'trim|is_natural_no_zero|required');
 			ee()->form_validation->set_rules('crop_x', 'lang:x_axis', 'trim|numeric|required');
 			ee()->form_validation->set_rules('crop_y', 'lang:y_axis', 'trim|numeric|required');
 			$action = "crop";
@@ -286,8 +286,8 @@ class File extends AbstractFilesController {
 		}
 		else if (isset($_POST['save_resize']))
 		{
-			ee()->form_validation->set_rules('resize_width', 'lang:width', 'trim|numeric|greater_than[0]|required');
-			ee()->form_validation->set_rules('resize_height', 'lang:height', 'trim|numeric|greater_than[0]|required');
+			ee()->form_validation->set_rules('resize_width', 'lang:width', 'trim|is_natural_no_zero|required');
+			ee()->form_validation->set_rules('resize_height', 'lang:height', 'trim|is_natural_no_zero|required');
 			$action = "resize";
 			$action_desc = "resized";
 			$vars['active_tab'] = 2;
@@ -299,13 +299,13 @@ class File extends AbstractFilesController {
 			// specify the rules, so we'll do it here. Note: run_ajax() removes
 			// rules for all fields but the one submitted.
 
-			ee()->form_validation->set_rules('crop_width', 'lang:width', 'trim|numeric|greater_than[0]|required');
-			ee()->form_validation->set_rules('crop_height', 'lang:height', 'trim|numeric|greater_than[0]|required');
+			ee()->form_validation->set_rules('crop_width', 'lang:width', 'trim|is_natural_no_zero|required');
+			ee()->form_validation->set_rules('crop_height', 'lang:height', 'trim|is_natural_no_zero|required');
 			ee()->form_validation->set_rules('crop_x', 'lang:x_axis', 'trim|numeric|required');
 			ee()->form_validation->set_rules('crop_y', 'lang:y_axis', 'trim|numeric|required');
 			ee()->form_validation->set_rules('rotate', 'lang:rotate', 'required');
-			ee()->form_validation->set_rules('resize_width', 'lang:width', 'trim|numeric|greater_than[0]|required');
-			ee()->form_validation->set_rules('resize_height', 'lang:height', 'trim|numeric|greater_than[0]|required');
+			ee()->form_validation->set_rules('resize_width', 'lang:width', 'trim|is_natural_no_zero|required');
+			ee()->form_validation->set_rules('resize_height', 'lang:height', 'trim|is_natural_no_zero|required');
 
 			ee()->form_validation->run_ajax();
 			exit;
@@ -379,8 +379,8 @@ class File extends AbstractFilesController {
 		ee()->view->cp_page_title = sprintf(lang('crop_file'), $file->file_name);
 
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('files') => lang('file_manager'),
-			cp_url('files/file/edit/' . $id) => sprintf(lang('edit_file_name'), $file->file_name)
+			ee('CP/URL', 'files')->compile() => lang('file_manager'),
+			ee('CP/URL', 'files/file/edit/' . $id)->compile() => sprintf(lang('edit_file_name'), $file->file_name)
 		);
 
 		ee()->cp->render('files/crop', $vars);

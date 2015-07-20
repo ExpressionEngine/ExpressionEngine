@@ -197,6 +197,7 @@ $lang = array(
 
 'channel_manager'  => 'Channel Manager',
 'template_manager' => 'Template Manager',
+'msm_manager'      => 'Multi-Site Manager',
 'addon_manager'    => 'Add-On Manager',
 'utilities'        => 'Utilities',
 'logs'             => 'Logs',
@@ -205,238 +206,164 @@ $lang = array(
 // Control Panel
 //----------------------------
 
-'loading' =>
-'Loading',
+'loading' => 'Loading',
 
-'show_hide' =>
-'Show/Hide All',
+'show_hide' => 'Show/Hide All',
 
-'new_tab' =>
-'New Tab',
+'new_tab' => 'New Tab',
 
-'new_version_available' =>
-'ExpressionEngine Version %s is now available',
+'new_version_available' => 'ExpressionEngine Version %s is now available',
 
-'consult_user_guide' =>
-'Consult User Guide',
+'consult_user_guide' => 'Consult User Guide',
 
-'powered_by' =>
-'Powered By',
+'powered_by' => 'Powered By',
 
-'control_panel' =>
-'Control Panel',
+'control_panel' => 'Control Panel',
 
-'main_menu' =>
-'CP Home',
+'main_menu' => 'CP Home',
 
-'username' =>
-'Username',
+'username' => 'Username',
 
-'password' =>
-'Password',
+'password' => 'Password',
 
 'logged_back_in'	=>
 'You are now logged back in!',
 
-'my_account' =>
-'My Account',
+'my_account' => 'My Account',
 
-'myaccount' =>
-'My Account',
+'myaccount' => 'My Account',
 
-'user_account' =>
-'Member Account',
+'user_account' => 'Member Account',
 
-'user_guide' =>
-'User Guide',
+'user_guide' => 'User Guide',
 
-'logout' =>
-'Log-out',
+'logout' => 'Log-out',
 
-'session_idle' =>
-'Idle session detected',
+'session_idle' => 'Idle session detected',
 
-'session_idle_description' =>
-'You\'ve gone idle, please enter your password to continue.',
+'session_idle_description' => 'You\'ve gone idle, please enter your password to continue.',
 
-'session_idle_not_name' =>
-'Not %s?',
+'session_idle_not_name' => 'Not %s?',
 
-'password_label' =>
-'Password:',
+'password_label' => 'Password:',
 
-'user_label' =>
-'User:',
+'user_label' => 'User:',
 
-'user_avatar_alt' =>
-'User Avatar',
+'user_avatar_alt' => 'User Avatar',
 
-'login' =>
-'Log-in',
+'login' => 'Log-in',
 
-'copyright' =>
-'Copyright',
+'copyright' => 'Copyright',
 
-'rights_reserved' =>
-'All Rights Reserved',
+'rights_reserved' => 'All Rights Reserved',
 
-'page_rendered' =>
-'Script executed in %x seconds',
+'page_rendered' => 'Script executed in %x seconds',
 
-'queries_executed' =>
-'%x SQL queries used',
+'queries_executed' => '%x SQL queries used',
 
-'build' =>
-'build date:',
+'build' => 'build date:',
 
-'license_number' =>
-'License Number',
+'license_number' => 'License Number',
 
-'invalid_license' =>
-'INVALID LICENSE',
+'invalid_license' => 'INVALID LICENSE',
 
-'forgot_password' =>
-'Forgot your password?',
+'forgot_password' => 'Forgot your password?',
 
-'e_no_css' =>
-'The requested CSS file could not be opened.',
+'e_no_css' => 'The requested CSS file could not be opened.',
 
-'unauthorized' =>
-'Unauthorized',
+'unauthorized' => 'Unauthorized',
 
-'unauthorized_access' =>
-'You are not authorized to access this page',
+'unauthorized_access' => 'You are not authorized to access this page',
 
-'be_careful' =>
-'BE CAREFUL!',
+'be_careful' => 'BE CAREFUL!',
 
-'action_can_not_be_undone' =>
-'THIS ACTION CANNOT BE UNDONE',
+'action_can_not_be_undone' => 'THIS ACTION CANNOT BE UNDONE',
 
-'captcha_explanation' =>
-'A CAPTCHA is an image containing a security code that users have to submit.  Please consult the user guide for more info.',
+'captcha_explanation' => 'A CAPTCHA is an image containing a security code that users have to submit.  Please consult the user guide for more info.',
 
-'back' =>
-'Back',
+'back' => 'Back',
 
-'no' =>
-'no',
+'no' => 'no',
 
-'yes' =>
-'yes',
+'yes' => 'yes',
 
-'all' =>
-'All',
+'all' => 'All',
 
-'any' =>
-'Any',
+'any' => 'Any',
 
-'required_fields' =>
-'Required Fields',
+'required_fields' => 'Required Fields',
 
-'required_field' =>
-'required field',
+'required_field' => 'required field',
 
-'login' =>
-'Login',
+'login' => 'Login',
 
-'forgotten_password' =>
-'Forgotten password',
+'forgotten_password' => 'Forgotten password',
 
-'submit_email_address' =>
-'Submit your email address',
+'submit_email_address' => 'Submit your email address',
 
-'click_to_edit' =>
-'Click to Edit',
+'click_to_edit' => 'Click to Edit',
 
-'notepad' =>
-'Notepad',
+'notepad' => 'Notepad',
 
-'notepad_no_content' =>
-'No Notepad Entry. Click to create one.',
+'notepad_no_content' => 'No Notepad Entry. Click to create one.',
 
-'edit_quicklinks' =>
-'Edit Quick Links',
+'edit_quicklinks' => 'Edit Quick Links',
 
-'quick_links' =>
-'Quick Links',
+'quick_links' => 'Quick Links',
 
-'quicklinks_manager' =>
-'Quick Links Manager',
+'quicklinks_manager' => 'Quick Links Manager',
 
-'hide_sidebar' =>
-'hide sidebar',
+'hide_sidebar' => 'hide sidebar',
 
-'reveal_sidebar' =>
-'show sidebar',
+'reveal_sidebar' => 'show sidebar',
 
 //----------------------------
 // Buttons
 //----------------------------
 
-'submit' =>
-'Submit',
+'submit' => 'Submit',
 
-'preview' =>
-'Preview',
+'preview' => 'Preview',
 
-'update' =>
-'Update',
+'update' => 'Update',
 
-'edit' =>
-'Edit',
+'edit' => 'Edit',
 
-'delete' =>
-'Delete',
+'delete' => 'Delete',
 
-'save_changes' =>
-'Save changes',
+'save_changes' => 'Save changes',
 
-'save' =>
-'Save',
+'save' => 'Save',
 
-'sync' =>
-'Synchronize',
+'sync' => 'Synchronize',
 
-'cancel' =>
-'Cancel',
+'cancel' => 'Cancel',
 
-'done' =>
-'Done',
+'done' => 'Done',
 
 //----------------------------
 // Log
 //----------------------------
 
-'clear_logs' =>
-'Clear Log Files',
+'clear_logs' => 'Clear Log Files',
 
-'member_id' =>
-'Member ID',
+'member_id' => 'Member ID',
 
-'ip_address' =>
-'IP Address',
+'ip_address' => 'IP Address',
 
-'ip' =>
-'IP',
+'ip' => 'IP',
 
-'internet_protocol' =>
-'Internet Protocol',
+'internet_protocol' => 'Internet Protocol',
 
-'date' =>
-'Date',
+'date' => 'Date',
 
-'action' =>
-'Action',
+'action' => 'Action',
 
-'member_logged_in' =>
-'Logged in',
+'member_logged_in' => 'Logged in',
 
-'member_logged_out' =>
-'Logged out',
+'member_logged_out' => 'Logged out',
 
-'close' =>
-'Close',
+'close' => 'Close',
 
 //----------------------------
 // Common
@@ -534,191 +461,136 @@ $lang = array(
  * 3.0
  */
 
-'btn_fix_errors' =>
-'Fix Errors, Please',
+'btn_fix_errors' => 'Fix Errors, Please',
 
-'btn_saving' =>
-'Saving...',
+'btn_saving' => 'Saving...',
 
-'cp_message_success' =>
-'Action was a success',
+'cp_message_success' => 'Action was a success',
 
-'cp_message_warn' =>
-'Warning',
+'cp_message_warn' => 'Warning',
 
-'cp_message_issue' =>
-'An error occurred',
+'cp_message_issue' => 'An error occurred',
 
-'form_validation_error' =>
-'There was a problem processing your submission, please check below and fix all errors.',
+'form_validation_error' => 'There was a problem processing your submission, please check below and fix all errors.',
 
-'log_out' =>
-'log out',
+'log_out' => 'log out',
 
-'menu_create' =>
-'Create',
+'menu_create' => 'Create',
 
-'new_channel' =>
-'New Channel',
+'new_channel' => 'New Channel',
 
-'new_site' =>
-'New Site',
+'new_site' => 'New Site',
 
-'name_your_site' =>
-'Name your site',
+'name_your_site' => 'Name your site',
 
-'my_profile' =>
-'My Profile',
+'my_profile' => 'My Profile',
 
-'new_link' =>
-'New Link',
+'new_link' => 'New Link',
 
-'menu_edit' =>
-'Edit',
+'menu_edit' => 'Edit',
 
-'menu_files' =>
-'Files',
+'menu_files' => 'Files',
 
-'menu_members' =>
-'Members',
+'menu_members' => 'Members',
 
-'enable' =>
-'Enable',
+'enable' => 'Enable',
 
-'disable' =>
-'Disable',
+'disable' => 'Disable',
 
-'search_results_heading' =>
-'Search Results<br><i>we found %d results for "%s"</i>',
+'search_results_heading' => 'Search Results<br><i>we found %d results for "%s"</i>',
 
-'submit' =>
-'Submit',
+'submit' => 'Submit',
 
-'with_selected' =>
-'with selected',
+'with_selected' => 'with selected',
 
-'remove' =>
-'Remove',
+'remove' => 'Remove',
 
-'create_new' =>
-'Create New',
+'create_new' => 'Create New',
+'create_new_channel' => 'Create New Channel',
 
-'new' =>
-'New',
+'new' => 'New',
 
-'none' =>
-'None',
+'none' => 'None',
 
-'col_id' =>
-'ID#',
+'col_id' => 'ID#',
 
-'manage' =>
-'Manage',
+'manage' => 'Manage',
 
-'name' =>
-'Name',
+'name' => 'Name',
 
-'type' =>
-'Type',
+'type' => 'Type',
 
-'url_title' =>
-'URL Title',
+'url_title' => 'URL Title',
 
-'url_title_desc' =>
-'<i>No spaces. Underscores and dashes are allowed.</i>',
+'url_title_lc' => 'URL title',
 
-'description' =>
-'Description',
+'url_title_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
 
-'image' =>
-'Image',
+'description' => 'Description',
 
-'no_rows_returned' =>
-'No rows returned',
+'image' => 'Image',
+
+'no_rows_returned' => 'No rows returned',
 
 /**
  * Footer
  */
 
-'license_no' =>
-'License #',
+'license_no' => 'License #',
 
-'owned_by' =>
-'Owned by',
+'owned_by' => 'Owned by',
 
-'not_entered' =>
-'not entered',
+'not_entered' => 'not entered',
 
-'register_now' =>
-'Register Now',
+'register_now' => 'Register Now',
 
-'current' =>
-'current',
+'current' => 'current',
 
-'out_of_date' =>
-'out of date',
+'out_of_date' => 'out of date',
 
-'out_of_date_upgrade' =>
-'Out of date, please upgrade',
+'out_of_date_upgrade' => 'Out of date, please upgrade',
 
-'out_of_date_recommended' =>
-'Out of date, Recommended upgrade',
+'out_of_date_recommended' => 'Out of date, Recommended upgrade',
 
-'recommended_upgrade' =>
-'<b>Recommended</b> upgrade.',
+'recommended_upgrade' => '<b>Recommended</b> upgrade.',
 
-'installed' =>
-'Installed',
+'installed' => 'Installed',
 
-'latest_version' =>
-'Latest Version',
+'latest_version' => 'Latest Version',
 
-'download' =>
-'download',
+'download' => 'download',
 
-'report_bug' =>
-'Report Bug',
+'report_bug' => 'Report Bug',
 
-'new_ticket' =>
-'New Ticket',
+'new_ticket' => 'New Ticket',
 
-'scroll_to_top' =>
-'scroll to top',
+'scroll_to_top' => 'scroll to top',
 
-'about_expressionengine' =>
-'About ExpressionEngine',
+'about_expressionengine' => 'About ExpressionEngine',
 
-'manual' =>
-'Manual',
+'manual' => 'Manual',
 
 //----------------------------
 // confirm removal modal
 //----------------------------
 
-'confirm_removal' =>
-'Confirm Removal',
+'confirm_removal' => 'Confirm Removal',
 
-'confirm_removal_desc' =>
-'You are attempting to remove the following items, please confirm this action.',
+'confirm_removal_desc' => 'You are attempting to remove the following items, please confirm this action.',
 
-'btn_confirm_and_remove' =>
-'Confirm, and Remove',
+'btn_confirm_and_remove' => 'Confirm, and Remove',
 
-'btn_confirm_and_remove_working' =>
-'Removing...',
+'btn_confirm_and_remove_working' => 'Removing...',
 
 //----------------------------
 // confirm show all modal
 //----------------------------
 
-'confirm_show_all' =>
-'Danger, Will Robinson!',
+'confirm_show_all' => 'Danger, Will Robinson!',
 
-'confirm_show_all_desc' =>
-'Viewing more than %d items at a time may result in reduced performance.',
+'confirm_show_all_desc' => 'Viewing more than %d items at a time may result in reduced performance.',
 
-'confirm_show_all_btn' =>
-'Damn the torpedoes, full speed ahead!',
+'confirm_show_all_btn' => 'Damn the torpedoes, full speed ahead!',
 
 ''=>''
 );

@@ -1,7 +1,7 @@
 machine:
   timezone: America/New_York
   ruby:
-    version: 2.1.2
+    version: 2.2.0
   hosts:
     ee2.test: 127.0.0.1
   environment:
@@ -34,5 +34,5 @@ checkout:
 
 test:
   override:
-    - "rvm use 2.1.2 && ./tests/circleci/runtests.sh":
+    - "rvm use 2.2.0 && ./tests/circleci/runtests.sh":
         parallel: true

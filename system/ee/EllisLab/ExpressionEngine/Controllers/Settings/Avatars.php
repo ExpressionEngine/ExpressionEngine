@@ -12,7 +12,7 @@ use CP_Controller;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -121,7 +121,7 @@ class Avatars extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = cp_url('settings/avatars');
+		$base_url = ee('CP/URL', 'settings/avatars');
 
 		if (AJAX_REQUEST)
 		{
@@ -130,7 +130,15 @@ class Avatars extends Settings {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			if ($this->saveSettings($vars['sections']))
+			$directory_settings = array(
+				'avatar_path' => ee()->input->post('avatar_path'),
+				'avatar_url' => ee()->input->post('avatar_url'),
+				'avatar_max_kb' => ee()->input->post('avatar_max_kb'),
+				'avatar_max_width' => ee()->input->post('avatar_max_width'),
+				'avatar_max_height' => ee()->input->post('avatar_max_height')
+			);
+
+			if ($this->saveSettings($vars['sections']) && $this->updateUploadDirectory($directory_settings))
 			{
 				ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), TRUE);
 			}
@@ -149,6 +157,27 @@ class Avatars extends Settings {
 		ee()->view->save_btn_text_working = 'btn_saving';
 
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * Update the upload preferences for the associated upload directory
+	 *
+	 * @param mixed $data
+	 * @access private
+	 * @return void
+	 */
+	private function updateUploadDirectory($data)
+	{
+		$current = ee()->config->item('avatar_path');
+		$directory = ee('Model')->get('UploadDestination')->filter('server_path', $current)->first();
+		$directory->server_path = $data['avatar_path'];
+		$directory->url = $data['avatar_url'];
+		$directory->max_size = $data['avatar_max_kb'];
+		$directory->max_width = $data['avatar_max_width'];
+		$directory->max_height = $data['avatar_max_height'];
+		$directory->save();
+
+		return TRUE;
 	}
 }
 // END CLASS

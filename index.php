@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  */
@@ -21,7 +21,7 @@
  * Indicate the new name and/or path here. The path can be relative
  * or it can be a full server path.
  *
- * http://ellislab.com/expressionengine/user-guide/installation/best_practices.html
+ * https://ellislab.com/expressionengine/user-guide/installation/best_practices.html
  *
  */
 	$system_path = './system';
@@ -33,7 +33,7 @@
  * --------------------------------------------------------------------
  *
  * Uncomment the following variables if you are using the Multiple
- * Site Manager: http://ellislab.com/expressionengine/user-guide/cp/sites
+ * Site Manager: https://ellislab.com/expressionengine/user-guide/cp/sites
  *
  * Set the Short Name of the site this file will display, the URL of
  * this site's admin.php file, and the main URL of the site (without

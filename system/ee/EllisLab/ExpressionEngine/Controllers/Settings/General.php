@@ -12,7 +12,7 @@ use CP_Controller;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -50,7 +50,7 @@ class General extends Settings {
 					'fields' => array(
 						'site_name' => array(
 							'type' => 'text',
-							'value' => set_value('site_name', $site->site_label),
+							'value' => $site->site_label,
 							'required' => TRUE
 						)
 					)
@@ -61,7 +61,7 @@ class General extends Settings {
 					'fields' => array(
 						'site_short_name' => array(
 							'type' => 'text',
-							'value' => set_value('site_short_name', $site->site_name),
+							'value' => $site->site_name,
 							'required' => TRUE
 						)
 					)
@@ -93,28 +93,31 @@ class General extends Settings {
 					),
 					'action_button' => array(
 						'text' => 'check_now',
-						'link' => cp_url('settings/general/version-check'),
+						'link' => ee('CP/URL', 'settings/general/version-check'),
 						'class' => 'version-check'
+					)
+				),
+				array(
+					'title' => 'enable_msm',
+					'desc' => 'enable_msm_desc',
+					'fields' => array(
+						'multiple_sites_enabled' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							)
+						)
 					)
 				),
 			),
 			'defaults' => array(
 				array(
-					'title' => 'cp_theme',
-					'desc' => '',
-					'fields' => array(
-						'cp_theme' => array(
-							'type' => 'dropdown',
-							'choices' => ee()->admin_model->get_cp_theme_list()
-						)
-					)
-				),
-				array(
 					'title' => 'language',
 					'desc' => 'language_desc',
 					'fields' => array(
 						'deft_lang' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => ee()->lang->language_pack_names(),
 							'value' => ee()->config->item('deft_lang') ?: 'english'
 						)
@@ -137,7 +140,7 @@ class General extends Settings {
 					'desc' => 'date_time_fmt_desc',
 					'fields' => array(
 						'date_format' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'%n/%j/%y' => 'mm/dd/yy',
 								'%j-%n-%y' => 'dd-mm-yy',
@@ -145,7 +148,7 @@ class General extends Settings {
 							)
 						),
 						'time_format' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'24' => lang('24_hour'),
 								'12' => lang('12_hour')
@@ -163,7 +166,7 @@ class General extends Settings {
 			)
 		);
 
-		$base_url = cp_url('settings/general');
+		$base_url = ee('CP/URL', 'settings/general');
 
 		ee()->form_validation->set_rules('site_name', 'lang:site_name', 'required|strip_tags|valid_xss_check');
 		ee()->form_validation->set_rules('site_short_name', 'lang:site_short_name', 'required|alpha_dash|strip_tags|callback__validShortName|valid_xss_check');
@@ -319,7 +322,7 @@ class General extends Settings {
 			}
 		}
 
-		ee()->functions->redirect(cp_url('settings/general'));
+		ee()->functions->redirect(ee('CP/URL', 'settings/general'));
 	}
 }
 // END CLASS

@@ -2,646 +2,511 @@
 
 $lang = array(
 
-'delete_member' =>
-'Delete Member',
+'delete_member' => 'Delete Member',
 
-'disallowed_screen_chars' =>
-'Screen Name contains illegal characters',
+'disallowed_screen_chars' => 'Screen Name contains illegal characters',
 
-'notify_of_pm' =>
-'Notify me via email when someone sends me a private message',
+'notify_of_pm' => 'When someone messages me',
 
-'channel_preferences' =>
-'Channel Settings',
+'channel_preferences' => 'Channel Settings',
 
-'forum_post' =>
-'Forum Topic',
+'forum_post' => 'Forum Topic',
 
-'password_auth' =>
-'You must submit your current password to continue',
+'password_auth' => 'You must submit your current password to continue',
 
-'existing_password_exp' =>
-'You must submit the current password to update this page',
+'existing_password_exp' => 'You <b>must</b> enter your password to save.',
 
-'password_change_exp' =>
-'Leave blank if you do not wish to change it',
+'password_change_exp' => '<b>Warning</b>: Leave the following fields blank if you do <b>not</b> wish to change your password.',
 
-'language' =>
-'Language',
+'language' => 'Language',
 
-'language_desc' =>
-'Your preferred language.
+'language_desc' => 'Your preferred language.
 Used in the control panel only.',
 
-'notepad_blurb' =>
-'Use this form to store personal notes and information',
+'notepad_blurb' => 'Use this form to store personal notes and information',
 
-'administration' =>
-'Administration',
+'administration' => 'Administration',
 
-'subscriptions' =>
-'Subscriptions',
+'subscriptions' => 'Current Subscriptions',
 
-'utilities' =>
-'Utilities',
+'search_subscriptions' => 'Search Subscriptions',
+'unsubscribe_success' => 'You have been succesfully unsubscribed.',
 
-'total_forum_topics' =>
-'Total Forum Topics',
+'utilities' => 'Utilities',
 
-'total_forum_posts' =>
-'Total Forum Posts',
+'total_forum_topics' => 'Total Forum Topics',
 
-'total_forum_replies' =>
-'Total Forum Replies',
+'total_forum_posts' => 'Total Forum Posts',
 
-'last_forum_post_date' =>
-'Most Recent Forum Post',
+'total_forum_replies' => 'Total Forum Replies',
 
-'main_menu_manager' =>
-'Main Menu Manager',
+'last_forum_post_date' => 'Most Recent Forum Post',
 
-'only_self_main_menu_manager_access' =>
-'You are not allowed to access another member\'s main menu manager',
+'main_menu_manager' => 'Main Menu Manager',
 
-'main_menu_manager_updated' =>
-'Tab Manager has been updated',
+'only_self_main_menu_manager_access' => 'You are not allowed to access another member\'s main menu manager',
 
-'main_menu_manager_description' =>
-'This page lets you manage your custom main navigation buttons.  The buttons you add are viewable only by you.',
+'main_menu_manager_updated' => 'Tab Manager has been updated',
 
-'main_menu_manager_description_more' =>
-'Note: You cannot make buttons for top-level pages since tabs already exist for them.',
+'main_menu_manager_description' => 'This page lets you manage your custom main navigation buttons.  The buttons you add are viewable only by you.',
 
-'main_menu_manager_instructions' =>
-'To add a new main menu button, first visit the destination page, then click the \'+ Add\' link at the top right of the main navigation.',
+'main_menu_manager_description_more' => 'Note: You cannot make buttons for top-level pages since tabs already exist for them.',
 
-'tab_manager_newlink' =>
-'Add a new Tab',
+'main_menu_manager_instructions' => 'To add a new main menu button, first visit the destination page, then click the \'+ Add\' link at the top right of the main navigation.',
 
-'tab_manager_existing' =>
-'Current Custom Tabs',
+'settings_save_error' => 'Error',
 
-'tab_manager_newlink_title' =>
-'Name of your new Tab',
+'settings_save_error_desc' => 'Profile settings could not be saved.',
 
-'tab_title' =>
-'Current Tabs',
+'btn_save_settings' => 'Save Settings',
 
-'tab_manager_create_new' =>
-'Create a New Tab',
+'tab_manager_newlink' => 'Add a new Tab',
 
-'new_tab_title' =>
-'New Tab Title',
+'tab_manager_existing' => 'Current Custom Tabs',
 
-'tab_url' =>
-'Tab URL',
+'tab_manager_newlink_title' => 'Name of your new Tab',
 
-'can_not_edit' =>
-'(cannot be altered)',
+'tab_title' => 'Current Tabs',
 
-'new_tab_url' =>
-'New Tab URL',
+'tab_manager_create_new' => 'Create a New Tab',
 
-'tab_order' =>
-'Order',
+'new_tab_title' => 'New Tab Title',
 
-'preferences' =>
-'Preferences',
+'tab_url' => 'Tab URL',
 
-'preferences_desc' =>
-'Allow the following.',
+'can_not_edit' => '(cannot be altered)',
 
-'member_preferences' =>
-'Member Preferences',
+'new_tab_url' => 'New Tab URL',
 
-'member_email' =>
-'Email Member',
+'tab_order' => 'Order',
 
-'no_subscriptions' =>
-'You do not currently have any subscriptions',
+'preferences' => 'Preferences',
 
-'type' =>
-'Type',
+'preferences_desc' => 'Allow the following.',
 
-'title' =>
-'Title',
+'member_preferences' => 'Member Preferences',
+
+'member_email' => 'Email Member',
+
+'no_subscriptions' => 'You do not currently have any subscriptions',
+
+'type' => 'Type',
+
+'title' => 'Title',
 
 'unsubscribe'=>
 'Unsubscribe',
 
-'subscriptions_removed' =>
-'Subscriptions have been removed',
+'subscriptions_removed' => 'Subscriptions have been removed',
 
-'comment' =>
-'Comment',
+'comment' => 'Comment',
 
-'preferences_updated' =>
-'Preferences Updated',
+'preferences_updated' => 'Preferences Updated',
 
-'homepage_preferences' =>
-'Home Page Preferences',
+'homepage_preferences' => 'Home Page Preferences',
 
-'set_display_order' =>
-'Set Display Order',
+'set_display_order' => 'Set Display Order',
 
-'please_update_order' =>
-'Please set the item display order',
+'please_update_order' => 'Please set the item display order',
 
-'left_column' =>
-'Left Column',
+'left_column' => 'Left Column',
 
-'right_column' =>
-'Right Column',
+'right_column' => 'Right Column',
 
-'do_not_show' =>
-'Do Not Display',
+'do_not_show' => 'Do Not Display',
 
-'recent_entries' =>
-'Most recent channel entries',
+'recent_entries' => 'Most recent channel entries',
 
-'recent_comments' =>
-'Most recent comments',
+'recent_comments' => 'Most recent comments',
 
-'recent_members' =>
-'The ten most recent member registrations',
+'recent_members' => 'The ten most recent member registrations',
 
-'new_release_indicator' =>
-'New software release indicator',
+'new_release_indicator' => 'New software release indicator',
 
-'site_statistics' =>
-'Site statistics',
+'site_statistics' => 'Site statistics',
 
-'member_search_form' =>
-'Member search form',
+'member_search_form' => 'Member search form',
 
-'validating_members' =>
-'Members awaiting activation',
+'validating_members' => 'Members awaiting activation',
 
-'php_sql_versions' =>
-'PHP/SQL versions',
+'php_sql_versions' => 'PHP/SQL versions',
 
-'system_offline_indicator' =>
-'System offline indicator',
+'system_offline_indicator' => 'System offline indicator',
 
-'personal_settings' =>
-'Personal Settings',
+'personal_settings' => 'Personal Settings',
 
-'control_panel_settings' =>
-'CP Customization',
+'control_panel_settings' => 'CP Customization',
 
-'administrative_settings' =>
-'Admin Settings',
+'administrative_settings' => 'Admin Settings',
 
-'current_member' =>
-'Member:',
+'current_member' => 'Member:',
 
-'member_stats' =>
-'Account Statistics For:',
+'member_stats' => 'Account Statistics For:',
 
-'join_date' =>
-'Join Date',
+'join_date' => 'Join Date',
 
-'last_visit' =>
-'Last Visit',
+'last_visit' => 'Last Visit',
 
-'total_entries' =>
-'Total Channel Entries',
+'total_entries' => 'Total Channel Entries',
 
-'last_entry_date' =>
-'Date of Most Recent Entry',
+'last_entry_date' => 'Date of Most Recent Entry',
 
-'total_comments' =>
-'Total Comments',
+'total_comments' => 'Total Comments',
 
-'last_comment_date' =>
-'Date of Most Recent Comment',
+'last_comment_date' => 'Date of Most Recent Comment',
 
-'can_not_view_superadmin_profile' =>
-'You cannot view the profile of a Super Admin',
+'can_not_view_superadmin_profile' => 'You cannot view the profile of a Super Admin',
 
-'only_self_notpad_access' =>
-'You are not allowed to access another member\'s notepad',
+'only_self_notpad_access' => 'You are not allowed to access another member\'s notepad',
 
-'notepad_size' =>
-'Notepad Size',
+'notepad_size' => 'Notepad Size',
 
-'notepad_updated' =>
-'Notepad Updated',
+'notepad_updated' => 'Notepad Updated',
 
-'localization_settings' =>
-'Localization Settings',
+'localization_settings' => 'Localization Settings',
 
-'localization_updated' =>
-'Localization Updated',
+'localization_updated' => 'Localization Updated',
 
-'timezone' =>
-'Select Time Zone',
+'timezone' => 'Timezone',
 
-'username_and_password' =>
-'Username and Password',
+'timezone_desc' => 'Local timezone for any date and time displays.',
 
-'extras' =>
-'Extras',
+'username_and_password' => 'Username and Password',
 
-'edit_profile' =>
-'Edit Profile',
+'extras' => 'Extras',
 
-'profile_form' =>
-'Profile Form',
+'edit_profile' => 'Edit Profile',
 
-'base_profile' =>
-'Base Profile',
+'profile_form' => 'Profile Form',
 
-'extended_profile' =>
-'Extended Profile',
+'base_profile' => 'Base Profile',
 
-'localization' =>
-'Localization Settings',
+'extended_profile' => 'Extended Profile',
 
-"date_format" =>
-"Date Formatting",
+'localization' => 'Localization Settings',
 
-"time_format" =>
-"Time Formatting",
+"date_format" => "Date & time format",
 
-"24_hour" =>
-"24 Hour",
+"date_format_desc" => "Your preferred date and time formats.<br><i>Used in the control panel only.</i>",
 
-"12_hour" =>
-"12 Hour with AM/PM",
+"time_format" => "Time Formatting",
 
-"include_seconds" =>
-"Include Seconds in the Time Format",
+"24_hour" => "24 Hour",
 
-'time_format' =>
-'Time Formatting',
+"12_hour" => "12 Hour with AM/PM",
 
-'your_html_buttons' =>
-'HTML Formatting Buttons',
+"include_seconds" => "Show seconds?",
 
-'change_password' =>
-'Change Password',
+'time_format' => 'Time Formatting',
 
-'email_settings' =>
-'Email Settings',
+'your_html_buttons' => 'HTML Formatting Buttons',
 
-'auth_settings' =>
-'Username & Password',
+'change_password' => 'Change Password',
 
-'date_settings' =>
-'Date & Time',
+'email_settings' => 'Email Settings',
 
-'publishing_settings' =>
-'Publishing Settings',
+'auth_settings' => 'Username & Password',
 
-'email_options' =>
-'Options',
+'date_settings' => 'Date & Time Settings',
 
-'edit_subscriptions' =>
-'View Subscriptions',
+'publishing_settings' => 'Publishing Settings',
 
-'customize_homepage' =>
-'Customize Control Panel Homepage',
+'email_options' => 'Options',
 
-'customize_cp' =>
-'Customize Control Panel',
+'email_options_desc' => 'Send me e-mails...',
 
-'cp_homepage' =>
-'Control Panel Homepage',
+'edit_subscriptions' => 'View Subscriptions',
 
-'cp_theme' =>
-'Control Panel Theme',
+'customize_homepage' => 'Customize Control Panel Homepage',
 
-'myaccount_cp_theme' =>
-'Control Panel Theme',
+'customize_cp' => 'Customize Control Panel',
 
-'choose_theme' =>
-'Choose Control Panel Theme',
+'cp_homepage' => 'Control Panel Homepage',
 
-'administrative_options' =>
-'Member Administration',
+'cp_theme' => 'Control Panel Theme',
 
-'administrative_options_updated' =>
-'Administrative Options Updated',
+'myaccount_cp_theme' => 'Control Panel Theme',
 
-'screen_name' =>
-'Screen Name',
+'choose_theme' => 'Choose Control Panel Theme',
 
-'email' =>
-'Email Address',
+'administrative_options' => 'Member Administration',
 
-'email_confirm' =>
-'Confirm Email Address',
+'administrative_options_updated' => 'Administrative Options Updated',
 
-'url' =>
-'Personal website',
+'screen_name' => 'Screen Name',
 
-'url_desc' =>
-'URL location of your personal website',
+'email' => 'Email Address',
 
-'biography' =>
-'Biography',
+'email_description' => 'Email address for this account.',
 
-'biography_desc' =>
-'Your biography.',
+'email_confirm' => 'Confirm Email Address',
 
-'birthday' =>
-'Birthday',
+'url' => 'Personal website',
 
-'birthday_desc' =>
-'Your date of birth.',
+'url_desc' => 'URL location of your personal website',
 
-'year' =>
-'Year',
+'biography' => 'Biography',
 
-'month' =>
-'Month',
+'biography_desc' => 'Your biography.',
 
-'day' =>
-'Day',
+'birthday' => 'Birthday',
 
-'accept_admin_email' =>
-'Accept email from site administrators',
+'birthday_desc' => 'Your date of birth.',
 
-'accept_user_email' =>
-'Accept email from other members of this site',
+'year' => 'Year',
 
-'notify_by_default' =>
-'Enable email notifications by default when you post messages',
+'month' => 'Month',
 
-'location' =>
-'Location',
+'day' => 'Day',
 
-'location_desc' =>
-'Your physical location.',
+'accept_admin_email' => 'From admins',
 
-'occupation' =>
-'Occupation',
+'accept_user_email' => 'From other members',
 
-'interests' =>
-'Interests',
+'notify_by_default' => 'When I post messages',
 
-'icq' =>
-'ICQ',
+'location' => 'Location',
 
-'aol_im' =>
-'AOL IM',
+'location_desc' => 'Your physical location.',
 
-'yahoo_im' =>
-'Yahoo IM',
+'occupation' => 'Occupation',
 
-'msn_im' =>
-'MSN IM',
+'interests' => 'Interests',
 
-'user_ip_address' =>
-'IP Address',
+'icq' => 'ICQ',
 
-'member_group_assignment' =>
-'Member Group Assignment',
+'aol_im' => 'AOL IM',
 
-'member_group_warning' =>
-'Be very careful assigning this',
+'yahoo_im' => 'Yahoo IM',
 
-'include_in_multiauthor_list' =>
-'Include user in PUBLISH page multi-author list?',
+'msn_im' => 'MSN IM',
 
-'profile_updated' =>
-'Profile Updated',
+'user_ip_address' => 'IP Address',
 
-'super_admin_demotion_alert' =>
-'As a Super Admin, you are not allowed to change your member group assignment',
+'member_group_assignment' => 'Member Group Assignment',
 
-'username' =>
-'Username',
+'member_group_warning' => 'Be very careful assigning this',
 
-'username_change_not_allowed' =>
-'The administrators do not allow username changes',
+'include_in_author_list' => 'Include in author list?',
 
-'password' =>
-'Password',
+'include_in_author_list_desc' => 'When set to <b>yes</b>, this user will appear in the author listing for channel entries.',
 
-'password_change' =>
-'Password Change Form',
+'profile_updated' => 'Profile Updated',
 
-'new_password' =>
-'New Password',
+'super_admin_demotion_alert' => 'As a Super Admin, you are not allowed to change your member group assignment',
 
-'password_confirm' =>
-'Confirm Password',
+'username' => 'Username',
 
-'new_password_confirm' =>
-'Confirm New Password',
+'username_change_not_allowed' => 'The administrators do not allow username changes',
 
-'existing_password' =>
-'Current Password',
+'password' => 'Password',
 
-'invalid_email_address' =>
-'The email you submitted is not valid',
+'password_change' => 'Password Change Form',
 
-'missing_username' =>
-'You must submit a username',
+'new_password' => 'New Password',
 
-'invalid_characters_in_username' =>
-'Username contains illegal characters.',
+'new_password_desc' => 'Use lowercase and uppercase letters, numbers, and symbols for the strongest passwords.',
 
-'missing_password' =>
-'You must submit a password',
+'password_confirm' => 'Confirm Password',
 
-'missing_current_password' =>
-'In order to make changes you must submit the current password',
+'new_password_confirm' => 'Confirm New Password',
 
-'password_in_dictionary' =>
-'You are not allowed to use a word found in a dictionary as a password',
+'new_password_confirm_desc' => 'Retype desired password, to confirm.',
 
-'not_secure_password' =>
-'Password must contain at least one uppercase character, one lowercase character and one number',
+'existing_password' => 'Current Password',
 
-'invalid_password' =>
-'The password you submitted was not correct',
+'invalid_email_address' => 'The email you submitted is not valid',
 
-'missing_email' =>
-'You must submit an email address',
+'missing_username' => 'You must submit a username',
 
-'banned_email' =>
-'The email address you submitted is banned',
+'invalid_characters_in_username' => 'Your username cannot use the following characters: | " \' ! < > { }',
 
-'missmatched_passwords' =>
-'The password and password confirmation do not match',
+'missing_password' => 'You must submit a password',
 
-'username_too_short' =>
-'The username you submitted must be at least %x characters long',
+'missing_current_password' => 'In order to make changes you must submit the current password',
 
-'password_too_short' =>
-'The password you submitted must be at least %x characters long',
+'password_in_dictionary' => 'You are not allowed to use a word found in a dictionary as a password',
 
-'username_password_too_long' =>
-'Usernames and passwords cannot be over 32 characters in length',
+'not_secure_password' => 'Password must contain at least one uppercase character, one lowercase character and one number',
 
-'username_taken' =>
-'The username you chose is not available',
+'invalid_password' => 'The password you submitted was not correct',
 
-'screen_name_taken' =>
-'The screen name you chose is not available',
+'missing_email' => 'You must submit an email address',
 
-'email_taken' =>
-'The email you chose is not available',
+'banned_email' => 'The email address you submitted is banned',
 
-'valid_user_email' =>
-'The email you chose is not valid',
+'missmatched_passwords' => 'The password and password confirmation do not match',
 
-'password_based_on_username' =>
-'The password cannot be based on the username',
+'username_too_short' => 'Your username must be at least %x characters long',
 
-'username_changed' =>
-'Username was changed to:',
+'username_too_long' => 'Your username cannot be over 50 characters in length',
 
-'screen_name_changed' =>
-'Screen name was changed to:',
+'password_too_short' => 'Your password must be at least %x characters long',
 
-'email_changed' =>
-'Email was changed to:',
+'password_too_long' => 'Your password cannot be over '.PASSWORD_MAX_LENGTH.' characters in length',
 
-'settings_updated' =>
-'Settings Have Been Updated',
+'username_taken' => 'The username you chose is not available',
 
-'new_member_added' =>
-'Member profile created:',
+'screen_name_taken' => 'The screen name you chose is not available',
 
-'password_change_warning' =>
-'Note: You have changed your password so you will have to log back in.',
+'email_taken' => 'The email you chose is not available',
 
-'html_buttons' =>
-'HTML Formatting Buttons',
+'valid_user_email' => 'The email you chose is not valid',
 
-'html_buttons_updated' =>
-'HTML Buttons Updated',
+'password_based_on_username' => 'The password cannot be based on the username',
 
-'only_self_qucklink_access' =>
-'You are not allowed to access another member\'s Quick Links',
+'username_changed' => 'Username was changed to:',
 
-'quicklinks_updated' =>
-'Quick Links Have Been Updated',
+'screen_name_changed' => 'Screen name was changed to:',
 
-'quick_link_description' =>
-'Use this form to add personal links to the sidebar.',
+'email_changed' => 'Email was changed to:',
 
-'quick_link_description_more' =>
-'These links will be visible only to you.',
+'settings_updated' => 'Settings Have Been Updated',
 
-'quicklinks_delete_instructions' =>
-'To delete an item submit the form with the title blank.',
+'new_member_added' => 'Member profile created:',
 
-'link_title' =>
-'Link Title',
+'password_change_warning' => 'Note: You have changed your password so you will have to log back in.',
 
-'link_url' =>
-'Link URL',
+'html_buttons' => 'HTML Formatting Buttons',
 
-'link_order' =>
-'Order',
+'html_buttons_updated' => 'HTML Buttons Updated',
 
-'no_extended_fields' =>
-'There are currently no extended member profile fields',
+'only_self_qucklink_access' => 'You are not allowed to access another member\'s Quick Links',
 
-'bookmarklet' =>
-'Bookmarklet',
+'quick_link' => 'Quick Link',
 
-'bookmarklets' =>
-'Bookmarklets',
+'quick_links_removed_desc' => 'Quick Links have been removed.',
 
-'bookmarklet_created' =>
-'Bookmarklet Created',
+'quicklinks_updated' => 'Quick Links Have Been Updated',
 
-'bookmarklet_info' =>
-'A bookmarklet allows you to add entries to your channel without logging into the full control panel.',
+'quick_link_description' => 'Use this form to add personal links to the sidebar.',
 
-'bookmarklet_name' =>
-'Bookmarklet Name',
+'quick_link_description_more' => 'These links will be visible only to you.',
 
-'single_word_no_spaces' =>
-'single word, no spaces',
+'quicklinks_delete_instructions' => 'To delete an item submit the form with the title blank.',
 
-'channel_name' =>
-'Post entries to channel',
+'create_quick_link' => 'Create Quick Link',
 
-'no_channels_assigned_to_user' =>
-'There are no channels assigned to this account.',
+'edit_quick_link' => 'Edit Quick Link',
 
-'select_field' =>
-'Default field to post to',
+'link_title' => 'Quick Link name',
 
-'bookmarklet_next_step' =>
-'Next Step',
+'link_title_desc' => 'Name this quick link.',
 
-'create_the_bookmarklet' =>
-'Create the Bookmarklet',
+'link_url' => 'Quick Link URL',
 
-'no_fields_assigned_to_channel' =>
-'The channel you chose does not have a field group assigned to it',
+'link_url_desc' => 'URL Location for this quick link.',
 
-'bookmarklet_instructions' =>
-'Save this link to your favorites menu:',
+'link_order' => 'Order',
 
-'smart_notifications' =>
-'Enable Smart Notification',
+'no_extended_fields' => 'There are currently no extended member profile fields',
 
-'existing_password_email' =>
-'You must submit the current password to update email address',
+'bookmarklet' => 'Bookmarklet',
 
-'bulletin_board' =>
-'Bulletin Board',
+'save_bookmarklet' => 'Save Bookmarklet',
 
-'login_as_member' =>
-'Login as Member',
+'create_bookmarklet' => 'Create Bookmarklet',
 
-'html_buttons_updated' =>
-'HTML Buttons Updated',
+'edit_bookmarklet' => 'Edit Bookmarklet',
 
-'sidebar_updated' =>
-'Sidebar State Updated',
+'bookmarklets' => 'Bookmarklets',
 
-'no_unlocked_member_groups' =>
-'You do not have the required permissions to add new members to any group.<br />
+'bookmarklet_created' => 'Bookmarklet Created',
+
+'bookmarklet_info' => 'A bookmarklet allows you to add entries to your channel without logging into the full control panel.',
+
+'bookmarklet_name' => 'Bookmarklet Name',
+
+'bookmarklet_name_desc' => 'Name this bookmarklet, single word, no spaces.',
+
+'bookmarklet_field' => 'Channel & Channel Field',
+
+'bookmarklet_field_desc' => 'Choose your preferred channel and field for this bookmarklet to post entries to.',
+
+'single_word_no_spaces' => 'single word, no spaces',
+
+'channel_name' => 'Post entries to channel',
+
+'no_channels_assigned_to_user' => 'There are no channels assigned to this account.',
+
+'select_field' => 'Default field to post to',
+
+'bookmarklet_next_step' => 'Next Step',
+
+'create_the_bookmarklet' => 'Create the Bookmarklet',
+
+'no_fields_assigned_to_channel' => 'The channel you chose does not have a field group assigned to it',
+
+'bookmarklet_instructions' => 'Drag links to your bookmarks bar to save them.',
+
+'smart_notifications' => 'Enable smart notifications',
+
+'smart_notifications_desc' => 'When set to <b>enable</b>, smart notifications will be possible.',
+
+'existing_password_email' => 'You must submit the current password to update email address',
+
+'bulletin_board' => 'Bulletin Board',
+
+'login_as_member' => 'Login as Member',
+
+'html_buttons_updated' => 'HTML Buttons Updated',
+
+'sidebar_updated' => 'Sidebar State Updated',
+
+'no_unlocked_member_groups' => 'You do not have the required permissions to add new members to any group.<br />
 Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.',
 
-'invalid_group_id' =>
-'You must select a valid group.',
+'invalid_group_id' => 'You must select a valid group.',
 
-'allow_messages' =>
-'Allow messages from other members',
+'allow_messages' => 'Allow messages from other members',
 
-'display_avatars' =>
-"Display other member's avatars",
+'display_avatars' => "Display other member's avatars",
 
-'parse_smileys' =>
-'Display emoticon images in content ',
+'parse_smileys' => 'Display emoticon images in content ',
 
-'avatar_settings' =>
-'Avatar Settings',
+'avatar_settings' => 'Avatar Settings',
 
-'current_avatar' =>
-'Current avatar',
+'current_avatar' => 'Current avatar',
 
-'current_avatar_desc' =>
-'This is your avatar currently in use.',
+'current_avatar_desc' => 'This is your avatar currently in use.',
 
-'change_avatar' =>
-'Change avatar',
+'change_avatar' => 'Change avatar',
 
-'change_avatar_desc' =>
-'Add an avatar to your profile.',
+'change_avatar_desc' => 'Add an avatar to your profile.',
 
-'blocked_members' =>
-'Blocked Members',
+'blocked_members' => 'Blocked Members',
 
-'email_username' =>
-'Email %s',
+'email_username' => 'Email %s',
 
-'login_as' =>
-'Login as %s',
+'login_as' => 'Login as %s',
 
-'delete_username' =>
-'Delete %s',
+'delete_username' => 'Delete %s',
+
+'choose_avatar' => 'Choose from library',
+
+'upload_avatar' => 'Upload — .gif, .jpg, .png (max 50kb)',
+
+'link_avatar' => ' Link to avatar',
+
+'rte_settings' => 'RTE Settings',
+
+'rte_enabled' => 'Enable Rich Text Editor?',
+
+'rte_enabled_desc' => 'When set to <b>enable</b>, the below chosen RTE will appear in publishing forms for this user.',
+
+'rte_toolset' => 'RTE tool set',
+
+'rte_toolset_desc' => 'Choose your preferred RTE tool set.',
+
+'login_as_warning' => "<b>Warning</b>: You will be logged in as the member '%s' and redirected to the page below.",
+
+'redirect_to' => 'Login and redirect to',
+
+'redirect_to_desc' => 'After you login as %s you will be sent to the chosen page.',
+
+'site_index' => 'Site Index',
+
+'btn_login' => 'Login',
 
 ''=>''
 );

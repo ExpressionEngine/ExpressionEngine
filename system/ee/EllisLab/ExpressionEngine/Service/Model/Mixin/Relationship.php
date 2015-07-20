@@ -11,10 +11,15 @@ use EllisLab\ExpressionEngine\Service\Model\Association\Association;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
+ */
+
+/**
+ * This is NOT the class you're looking for. It will be removed before
+ * release. Pardon our dust.
  */
 
 // ------------------------------------------------------------------------
@@ -86,10 +91,10 @@ class Relationship implements Mixin {
 	 */
 	public function getAssociationAction($name, $action)
 	{
-		if ($this->hasAssociation($name))
+		if ($this->scope->hasAssociation($name))
 		{
-			$assoc = $this->getAssociation($name);
-			return array($assoc, $action);
+			$assoc = $this->scope->getAssociation($name);
+			return array($assoc, $name, $action);
 		}
 	}
 
@@ -100,67 +105,31 @@ class Relationship implements Mixin {
 	 * @param Mixed $args Additional arguments to pass to the action
 	 * @return Action result or current scope
 	 */
-	public function runAssociationAction($action, $args)
+	public function runAssociationAction($which, $args)
 	{
-		$result = call_user_func_array($action, $args);
+		list($assoc, $name, $action) = $which;
 
-		if ($action[1] == 'has' || $action[1] == 'get' || $action[1] == 'create')
+		switch ($action)
 		{
-			return $result;
+			case 'get':
+				return $this->scope->$name;
+			case 'fill':
+				return $assoc->fill($args[0]);
+			case 'set':
+				$this->scope->$name = $args[0];
+				return $this->scope;
+			case 'add':
+				$which = $this->scope->$name;
+				$which[] = $args[0];
+				return $this->scope;
+			case 'remove':
+				return call_user_func_array(array($assoc, 'remove'), $args);
+			case 'create':
+				throw new \Exception('Can no longer create relationships, just create the model directly and assign.');
+			case 'delete':
+				throw new \Exception('Can no longer delete relationships, just delete the model directly.');
 		}
 
-		return $this->scope;
-	}
-
-	/**
-	 * Get all associations
-	 *
-	 * @return array associations
-	 */
-	public function getAllAssociations()
-	{
-		return $this->associations;
-	}
-
-	/**
-	 * Check if an association of a given name exists
-	 *
-	 * @param String $name Name of the association
-	 * @return bool has association?
-	 */
-	public function hasAssociation($name)
-	{
-		return array_key_exists($name, $this->associations);
-	}
-
-	/**
-	 * Get an association of a given name
-	 *
-	 * @param String $name Name of the association
-	 * @return Mixed the association
-	 */
-	public function getAssociation($name)
-	{
-		return $this->associations[$name];
-	}
-
-	/**
-	 * Set a given association
-	 *
-	 * @param String $name Name of the association
-	 * @param Association $association Association to set
-	 * @return Current scope
-	 */
-	public function setAssociation($name, Association $association)
-	{
-		$this->scope->emit('beforeSetAssociation', $name, $association);
-
-		$association->setFrontend($this->scope->getFrontend());
-
-		$this->associations[$name] = $association;
-
-		$this->scope->emit('afterSetAssociation', $name, $association);
-
-		return $this->scope;
+		throw new \Exception('Illegal Relationship action: '.$action);
 	}
 }

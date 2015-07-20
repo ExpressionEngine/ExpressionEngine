@@ -3,7 +3,6 @@
 namespace EllisLab\ExpressionEngine\Model\File;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Service\Validation\Validator;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -11,7 +10,7 @@ use EllisLab\ExpressionEngine\Service\Validation\Validator;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -34,22 +33,27 @@ use EllisLab\ExpressionEngine\Service\Validation\Validator;
 class FileDimension extends Model {
 
 	protected static $_primary_key = 'id';
-	protected static $_gateway_names = array('FileDimensionGateway');
+	protected static $_table_name = 'file_dimensions';
+
+	protected static $_typed_columns = array(
+		//'width'  => 'int',
+		//'height' => 'int'
+	);
 
 	protected static $_relationships = array(
 		'UploadDestination' => array(
 			'type' => 'belongsTo',
-			'to_key' => 'id',
 			'from_key' => 'upload_location_id'
 		),
 		'Watermark' => array(
 			'type' => 'hasOne',
-			'from_key' => 'watermark_id'
+			'from_key' => 'watermark_id',
+			'to_key' => 'wm_id'
 		)
 	);
 
 	protected static $_validation_rules = array(
-		'short_name'  => 'required|alphaDash|uniqueWithinSiblings[UploadDestination,FileDimensions]',
+		'short_name'  => 'required|xss|alphaDash|uniqueWithinSiblings[UploadDestination,FileDimensions]',
 		'resize_type' => 'enum[crop,constrain]',
 		'width'       => 'isNatural|validateDimension|required',
 		'height'      => 'isNatural|validateDimension|required'
@@ -65,8 +69,11 @@ class FileDimension extends Model {
 	protected $height;
 	protected $watermark_id;
 
-	public function validateDimension()
+	/**
+	 * Require dimensions only if no watermark is set
+	 */
+	public function validateDimension($key, $value, $params, $rule)
 	{
-		return empty($this->watermark_id) ? TRUE : Validator::SKIP;
+		return empty($this->watermark_id) ? TRUE : $rule->skip();
 	}
 }

@@ -250,10 +250,13 @@ feature 'Channel Settings' do
     @page.comment_allow_img_urls[0].click
     @page.comment_auto_link_urls[1].click
 
-    no_php_js_errors
-
     @page.submit
+
+    no_php_js_errors
     @page.should have_text 'Channel saved'
+
+    @page.load_settings_for_channel(2)
+    no_php_js_errors
 
     @page.channel_description.value.should == 'Some description'
     @page.channel_lang.value.should == 'english'

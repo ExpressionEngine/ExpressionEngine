@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -719,45 +719,6 @@ class EE_Functions {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Delete spam prevention hashes
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	public function clear_spam_hashes()
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.8');
-
-		// if (ee()->config->item('secure_forms') == 'y')
-		// {
-		// 	ee()->security->garbage_collect_xids();
-		// }
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Set Cookie
-	 *
-	 * @access	public
-	 * @deprecated 2.8
-	 * @param	string
-	 * @param	string
-	 * @param	string
-	 * @return	void
-	 */
-	public function set_cookie($name = '', $value = '', $expire = '')
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.8', 'EE_Input::set_cookie()');
-
-		return ee()->input->set_cookie($name, $value, $expire);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Character limiter
 	 *
 	 * @access	public
@@ -1158,7 +1119,7 @@ class EE_Functions {
 								'ip_address'	=> ee()->input->ip_address(),
 								'search_date'	=> ee()->localize->now,
 								'search_type'	=> $type,
-								'search_terms'	=> xml_convert(ee()->functions->encode_ee_tags(ee()->security->xss_clean($terms), TRUE)),
+								'search_terms'	=> xml_convert(ee()->functions->encode_ee_tags(ee('Security/XSS')->clean($terms), TRUE)),
 								'site_id'		=> ee()->config->item('site_id')
 							);
 
@@ -2249,7 +2210,7 @@ class EE_Functions {
 
 		$str =	preg_replace("/\%u([0-9A-F]{4,4})/e","'&#'.base_convert('\\1',16,10).';'", $str);
 
-		$str = $this->security->xss_clean(stripslashes(urldecode($str)));
+		$str = ee('Security/XSS')->clean(stripslashes(urldecode($str)));
 
 		return $str;
 	}

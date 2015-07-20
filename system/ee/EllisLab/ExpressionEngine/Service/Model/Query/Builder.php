@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Service\Model\Query;
 
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 use EllisLab\ExpressionEngine\Service\Model\DataStore;
 
 /**
@@ -10,7 +11,7 @@ use EllisLab\ExpressionEngine\Service\Model\DataStore;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -43,6 +44,8 @@ class Builder {
 
 	protected $limit = '18446744073709551615'; // 2^64
 	protected $offset = 0;
+
+	protected $futile = FALSE;
 
 	/**
 	 *
@@ -128,7 +131,7 @@ class Builder {
 	}
 
 	/**
-	 *
+	 * Send a fetch to the datastore
 	 */
 	protected function fetch()
 	{
@@ -137,9 +140,35 @@ class Builder {
 			throw new \Exception('Unclosed filter group.');
 		}
 
+		if ($this->isFutile())
+		{
+			return new Collection();
+		}
+
 		return $this->datastore
 			->selectQuery($this)
 			->setFrontend($this->frontend);
+	}
+
+	/**
+	* Mark a fetch as futile
+	*
+	* Calling this will prevent any fetch from being sent on the wire.
+	* Use for impossible filters, such as IN array().
+	*/
+	public function markAsFutile()
+	{
+		$this->futile = TRUE;
+	}
+
+	/**
+	* Will fetching do anything?
+	*
+	* @return bool True if fetching will yield nothing
+	*/
+	protected function isFutile()
+	{
+		return $this->futile;
 	}
 
 	/**

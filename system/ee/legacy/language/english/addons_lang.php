@@ -4,6 +4,7 @@ $lang = array(
 
 /* Sidebar Menu */
 'all_addons'					=>		'All Add-Ons',
+'third_party_addons'			=>		'Third Party Add-Ons',
 'show_all_addons'				=>		'All %d Add-Ons',
 'manage_extensions'				=>		'Manage Extensions',
 'manage_addon_extensions'		=>		'Manage Add-on Extensions',
@@ -55,8 +56,13 @@ $lang = array(
 'default_map'					=>		'Default Map',
 'manual_override'				=>		'Manual Override',
 'latitude'						=>		'Latitude',
+'latitude_desc'					=>		'Default latitude for this field.',
 'longitude'						=>		'Longitude',
+'longitude_desc'				=>		'Default longitude for this field.',
 'zoom'							=>		'Zoom',
+'zoom_desc'						=>		'Default zoom level for this field.',
+'preview'						=>		'Preview',
+'preview_desc'					=>		'Default view of the map as it will appear for the field.',
 
 // 2.x
 
@@ -81,6 +87,8 @@ $lang = array(
 'extension_disabled'			=>		'Extension Disabled',
 'extensions_enabled'			=>		'Extensions Enabled',
 'extensions_disabled'			=>		'Extensions Disabled',
+'extensions_enabled_desc'		=>		'Extensions have been enabled.',
+'extensions_disabled_desc'		=>		'Extensions have been disabled.',
 'ext_enabled_short'				=>		'enabled',
 'ext_disabled_short'			=>		'disabled',
 

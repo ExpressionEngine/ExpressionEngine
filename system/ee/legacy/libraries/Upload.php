@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -794,7 +794,7 @@ class EE_Upload {
 		}
 
 		$CI =& get_instance();
-		return $CI->security->xss_clean($data, TRUE);
+		return ee('Security/XSS')->clean($data, TRUE);
 	}
 
 	// --------------------------------------------------------------------

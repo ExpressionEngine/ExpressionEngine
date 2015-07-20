@@ -188,4 +188,80 @@ class ValidatorTest extends \PHPUnit_Framework_TestCase {
 			array('0x24', FALSE)
 		);
 	}
+
+	/**
+	 * @dataProvider hexColorDataProvider
+	 */
+	public function testHexColor($value, $expected)
+	{
+		$this->validator->setRules(array(
+			'color' => 'hexColor'
+		));
+
+		$result = $this->validator->validate(array('color' => $value));
+		$this->assertEquals($expected, $result->isValid());
+	}
+
+	public function hexColorDataProvider()
+	{
+		return array(
+			// good!
+			array('000', TRUE),
+			array('fff', TRUE),
+			array('FFF', TRUE),
+			array('abc', TRUE),
+			array('123', TRUE),
+			array('000000', TRUE),
+			array('ffffff', TRUE),
+			array('FFFFFF', TRUE),
+			array('AABBCC', TRUE),
+			array('112233', TRUE),
+			array('ABCDEF', TRUE),
+			array('A1B2E3', TRUE),
+
+			// bad!
+			array('#fff', FALSE),
+			array('#FFFFFF', FALSE),
+			array('KEVIN', FALSE),
+			array('f', FALSE),
+			array('ff', FALSE),
+			array('ffff', FALSE),
+			array('fffff', FALSE)
+		);
+	}
+
+	/**
+	 * @dataProvider noHtmlDataProvider
+	 */
+	public function testNoHtml($value, $expected)
+	{
+		$this->validator->setRules(array(
+			'somefield' => 'noHtml'
+		));
+
+		$result = $this->validator->validate(array('somefield' => $value));
+		$this->assertEquals($expected, $result->isValid());
+	}
+
+	public function noHtmlDataProvider()
+	{
+		return array(
+			// good!
+			array('test', TRUE),
+			array('some text @##%#$$%&%^*', TRUE),
+			array('> some text <', TRUE),
+			array('tests > no tests', TRUE),
+			array('test < something', TRUE),
+
+			// bad!
+			array('<br>', FALSE),
+			array('test<br>', FALSE),
+			array('test <br>', FALSE),
+			array('test <br/>', FALSE),
+			array('test < br >', FALSE),
+			array('<br/>test', FALSE),
+			array('</br>test', FALSE),
+			array('<a href="test">test</a>', FALSE)
+		);
+	}
 }

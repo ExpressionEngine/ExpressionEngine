@@ -1,7 +1,7 @@
 <?php
 namespace EllisLab\ExpressionEngine\Library\CP;
 
-if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+use EllisLab\ExpressionEngine\Service\View\View;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -9,7 +9,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -28,40 +28,47 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  */
 
 class Pagination {
-	private $current_page;
-	private $first = 1;
-	private $prev;
-	private $pages;
-	private $next;
-	private $last;
+
+	/**
+	 * @var int $per_page The number of items per page
+	 */
+	private $per_page = 20;
+
+	/**
+	 * @var int $current_page The page number being displayed
+	 */
+	private $current_page = 1;
+
+	/**
+	 * @var int $total_count The total number of itmes being paginated
+	 */
 	private $total_count;
 
 	/**
-	 * Calculates pages based on number per page and total. This will also
-	 * provide the page location of current, firss, and last pages as well as
-	 * previous and next when available.
-	 *
-	 * @param int $per_page		The number of items per pages
-	 * @param int $total_count	The total number of itmes being paginated
-	 * @param int $current_page	The current page (defaults to 1)
+	 * @var string $page_variable The query string variable name
 	 */
-	public function __construct($per_page, $total_count, $current_page = 1)
-	{
-		foreach (array('per_page', 'total_count', 'current_page') as $param)
-		{
-			if ( ! is_numeric($$param))
-			{
-				throw new \InvalidArgumentException("The {$param} argument must be a number.");
-			}
-		}
+	private $page_variable = 'page';
 
-		foreach (array('per_page', 'current_page') as $param)
-		{
-			if ($$param < 1)
-			{
-				throw new \InvalidArgumentException("The {$param} argument must be greater than 0. \"{$$param}\" was passed.");
-			}
-		}
+	/**
+	 * @var int $pages_to_display The number of numbered pages to calculate
+	 */
+	private $pages_to_display = 3;
+
+	/**
+	 * @var View $view A View object for rendering this alert
+	 */
+	private $view;
+
+	/**
+	 * Constructor: sets the total number of items to be paginated and injects
+	 * a View object for rendering.
+	 *
+	 * @param int $total_count The total number of itmes being paginated
+	 * @param View $view A View object for rendering the pagination data
+	 */
+	public function __construct($total_count, View $view)
+	{
+		$total_count = (int) $total_count;
 
 		// Total count can be 0
 		if ($total_count < 0)
@@ -69,94 +76,115 @@ class Pagination {
 			throw new \InvalidArgumentException("The total_count argument must be greater than 0. \"{$total_count}\" was passed.");
 		}
 
-		// Cast any floats or numeric strings to integers
-		$per_page = (int) $per_page;
-		$this->total_count = (int) $total_count;
-		$current_page = (int) $current_page;
-
-		$this->current_page = $current_page;
-		$this->prev         = ($current_page - 1 >= 1) ? ($current_page - 1) : NULL;
-		$this->pages        = (int) ceil($this->total_count / $per_page);
-		$this->next         = ($current_page + 1 <= $this->pages) ? ($current_page + 1) : NULL;
-		$this->last         = $this->pages;
+		$this->total_count = $total_count;
+		$this->view = $view;
 	}
 
 	/**
-	 * This allows us to do Pagination::create(...)->cp_links(...)
-	 */
-	public static function create($per_page, $total_count, $current_page = 1)
-	{
-		return new static($per_page, $total_count, $current_page);
-	}
-
-	/**
-	 * Creates an array of URLs
+	 * Sets the number of items per page
 	 *
-	 * @param  object	$base_url		A CP\URL object
-	 * @param  int		$pages			The number of numbered pages to calculate
-	 * @param  string	$page_variable	The name of the page variable in the query string
-	 * @return array	Returns an associative array of URLs
-	 *   e.g. 'total_count' => 123,
-	 *        'current_page' => 2,
-	 *        'first' => 'http://ee3/admin.php?/cp/logs/cp',
-	 *        'prev'  => 'http://ee3/admin.php?/cp/logs/cp?page=1',
-	 *        'next'  => 'http://ee3/admin.php?/cp/logs/cp?page=3',
-	 *        'last'  => 'http://ee3/admin.php?/cp/logs/cp?page=4',
-	 *        'pages' =>
-	 *            '1'  => 'http://ee3/admin.php?/cp/logs/cp?page=1',
-	 *            '2'  => 'http://ee3/admin.php?/cp/logs/cp?page=2',
-	 *            '3'  => 'http://ee3/admin.php?/cp/logs/cp?page=3',
+	 * @param int $per_page The number of items per page
+	 * @return self This returns a reference to itself
 	 */
-	public function cp_links(Url $base_url, $pages = 3, $page_variable = 'page')
+	public function perPage($per_page)
 	{
+		$this->per_page = (int) $per_page;
+		if ($this->per_page < 1)
+		{
+			throw new \InvalidArgumentException("The arugment to perPage must be greater than 0. \"{$per_page}\" was passed.");
+		}
+		return $this;
+	}
+
+	/**
+	 * Sets page number being displayed
+	 *
+	 * @param int $current_page	The current page (defaults to 1)
+	 * @return self This returns a reference to itself
+	 */
+	public function currentPage($current_page)
+	{
+		$this->current_page = (int) $current_page;
+		if ($this->current_page < 1)
+		{
+			throw new \InvalidArgumentException("The arugment to currentPage must be greater than 0. \"{$current_page}\" was passed.");
+		}
+		return $this;
+	}
+
+	/**
+	 * Sets the query string variable name
+	 *
+	 * @param string $page_variable	The name of the page variable in the query string
+	 * @return self This returns a reference to itself
+	 */
+	public function queryStringVariable($page_variable)
+	{
+		$this->page_variable = (string) $page_variable;
+		return $this;
+	}
+
+	/**
+	 * Sets the number of numbered pages to calculate
+	 *
+	 * @param int $pages The number of numbered pages to calculate
+	 * @return self This returns a reference to itself
+	 */
+	public function displayPageLinks($pages_to_display)
+	{
+		$this->pages_to_display = (int) $pages_to_display;
+		if ($this->pages_to_display < 1)
+		{
+			throw new \InvalidArgumentException("The arugment to displayPageLinks must be greater than 0. \"{$pages_to_display}\" was passed.");
+		}
+		return $this;
+	}
+
+	/**
+	 * Renders the pagination to HTML
+	 *
+	 * @param object $base_url A CP\URL object
+	 * @return string The rendered HTML of the pagination
+	 */
+	public function render(Url $base_url)
+	{
+		$prev  = ($this->current_page - 1 >= 1) ? ($this->current_page - 1) : NULL;
+		$pages = (int) ceil($this->total_count / $this->per_page);
+		$next  = ($this->current_page + 1 <= $pages) ? ($this->current_page + 1) : NULL;
+		$last  = $pages;
+
 		// Show no pagination unless we have at least 2 pages
-		if ($this->pages < 2)
+		if ($pages < 2)
 		{
-			return array();
-		}
-
-		// Check for exceptions (i.e. invalid arguments)
-		if ( ! is_numeric($pages))
-		{
-			throw new \InvalidArgumentException('The pages argument must be a number.');
-		}
-
-		if ($pages < 1)
-		{
-			throw new \InvalidArgumentException("The pages argument must be greater than 0. \"{$pages}\" was passed.");
-		}
-
-		if (is_array($page_variable) || (is_object($page_variable) && ! method_exists($page_variable, '__toString')))
-		{
-			throw new \InvalidArgumentException('The page_variable argument must be a string.');
+			return;
 		}
 
 		// Remove the current page from the count and force an integer instead of a float.
-		$pages = (int) $pages - 1;
+		$pages_to_display = (int) $this->pages_to_display - 1;
 
 		$links['total_count'] = $this->total_count;
 		$links['current_page'] = $this->current_page;
 		$links['first'] = $base_url->compile();
 		foreach (array('prev', 'next', 'last') as $key)
 		{
-			if ($this->{$key} === NULL) continue;
+			if (${$key} === NULL) continue;
 
 			$url = clone $base_url;
-			$url->setQueryStringVariable((string) $page_variable, $this->{$key});
+			$url->setQueryStringVariable((string) $this->page_variable, ${$key});
 			$links[$key] = $url->compile();
 		}
 
 		$start = ($this->current_page - 1 > 1) ? $this->current_page - 1 : 1;
-		if ($start + $pages <= $this->pages)
+		if ($start + $pages_to_display <= $pages)
 		{
-			$end = $start + $pages;
+			$end = $start + $pages_to_display;
 		}
 		else
 		{
-			$end = $this->pages;
-			if ($end - $pages > 1)
+			$end = $pages;
+			if ($end - $pages_to_display > 1)
 			{
-				$start = $end - $pages;
+				$start = $end - $pages_to_display;
 			}
 			else
 			{
@@ -167,11 +195,11 @@ class Pagination {
 		for ($i = $start; $i <= $end; $i++)
 		{
 			$url = clone $base_url;
-			$url->setQueryStringVariable($page_variable, $i);
+			$url->setQueryStringVariable($this->page_variable, $i);
 			$links['pages'][$i] = $url->compile();
 		}
 
-		return $links;
+		return $this->view->ee_view('_shared/pagination', array('pagination' => $links), TRUE);
 	}
 }
 

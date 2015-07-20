@@ -8,7 +8,7 @@ namespace EllisLab\ExpressionEngine\Library\Filesystem;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -25,4 +25,4 @@ namespace EllisLab\ExpressionEngine\Library\Filesystem;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class FilesystemException extends Exception { }
+class FilesystemException extends \Exception { }

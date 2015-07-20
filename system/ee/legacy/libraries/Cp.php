@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -205,7 +205,6 @@ class Cp {
 
 		$this->add_js_script($js_scripts);
 		$this->_seal_combo_loader();
-
 		ee()->load->vars($vars);
 	}
 
@@ -405,7 +404,7 @@ class Cp {
 					->addToBody(lang('checksum_changed_warning'))
 					->addToBody($changed);
 
-				$button = form_open(cp_url('homepage/accept_checksums'), '', array('return' => base64_encode(ee()->cp->get_safe_refresh())));
+				$button = form_open(ee('CP/URL', 'homepage/accept_checksums'), '', array('return' => base64_encode(ee()->cp->get_safe_refresh())));
 				$button .= '<input class="btn submit" type="submit" value="' . lang('checksum_changed_accept') . '">';
 				$button .= form_close();
 
@@ -604,7 +603,7 @@ class Cp {
 	 * @param	mixed
 	 * @return	int
 	 */
-	private function _get_js_mtime($type, $name)
+	public function _get_js_mtime($type, $name)
 	{
 		if (is_array($name))
 		{
@@ -628,9 +627,9 @@ class Cp {
 				break;
 			case 'file':		$file = PATH_THEMES.'javascript/'.$folder.'/'.$name.'.js';
 				break;
-			case 'package':		$file = PATH_ADDONS.$name.'/javascript/'.$name.'.js';
+			case 'package':		$file = PATH_THIRD.$name.'/javascript/'.$name.'.js';
 				break;
-			case 'fp_module':	$file = PATH_MOD.$name.'/javascript/'.$name.'.js';
+			case 'fp_module':	$file = PATH_ADDONS.$name.'/javascript/'.$name.'.js';
 				break;
 			default:
 				return 0;
@@ -656,20 +655,6 @@ class Cp {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Set the in-header navigation
-	 *
-	 * @param	array
-	 * @param	string
-	 * @return	int
-	 */
-	public function set_action_nav($nav = array())
-	{
-		ee()->view->cp_action_nav = array_reverse($nav);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * URL to the current page unless POST data exists - in which case it
 	 * goes to the root controller.  To use the result, prefix it with BASE.AMP
 	 *
@@ -685,7 +670,7 @@ class Cp {
 			//   1. index.php?/cp/path/to/controller/with/arugments
 			//   2. index.php?D=cp&C=cp&M=homepage
 			//
-			// In the case of #1 we likely built it with cp_url() thus
+			// In the case of #1 we likely built it with ee('CP/URL', ) thus
 			// we will store the needed parts to rebuild it.
 			//
 			// In the case of #2 we will build out a string to return
@@ -828,6 +813,11 @@ class Cp {
 	{
 		static $_crumbs = array();
 
+		if (is_object($link))
+		{
+			$link = $link->compile();
+		}
+
 		$_crumbs[$link] = $title;
 		ee()->view->cp_breadcrumbs = $_crumbs;
 	}
@@ -845,7 +835,7 @@ class Cp {
 	public function load_package_js($file)
 	{
 		$current_top_path = ee()->load->first_package_path();
-		$package = trim(str_replace(array(PATH_ADDONS, 'views'), '', $current_top_path), '/');
+		$package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
 		ee()->jquery->plugin(BASE.AMP.'C=javascript'.AMP.'M=load'.AMP.'package='.$package.AMP.'file='.$file, TRUE);
 	}
 
@@ -862,7 +852,7 @@ class Cp {
 	public function load_package_css($file)
 	{
 		$current_top_path = ee()->load->first_package_path();
-		$package = trim(str_replace(array(PATH_ADDONS, 'views'), '', $current_top_path), '/');
+		$package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
 		$url = BASE.AMP.'C=css'.AMP.'M=third_party'.AMP.'package='.$package.AMP.'theme='.$this->cp_theme.AMP.'file='.$file;
 
 		$this->add_to_head('<link type="text/css" rel="stylesheet" href="'.$url.'" />');
@@ -1126,7 +1116,7 @@ class Cp {
 
 		if (empty($redirect))
 		{
-			$redirect = cp_url('homepage');
+			$redirect = ee('CP/URL', 'homepage');
 		}
 
 		// We set the cookie before switching prefs to ensure it uses current settings

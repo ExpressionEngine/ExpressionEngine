@@ -10,7 +10,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -80,7 +80,7 @@ class Sandr extends Utilities {
 			);
 
 			ee()->view->set_message('success', lang('cp_message_success'), sprintf(lang('rows_replaced'), (int)$replaced), TRUE);
-			ee()->functions->redirect(cp_url('utilities/sandr'));
+			ee()->functions->redirect(ee('CP/URL', 'utilities/sandr'));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{

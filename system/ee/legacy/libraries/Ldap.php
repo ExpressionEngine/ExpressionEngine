@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -273,8 +273,8 @@ class EE_LDAP {
 
 	function authenticate($username, $password)
 	{
-		$username = ee()->security->xss_clean($username);
-		$password = ee()->security->xss_clean($password);
+		$username = ee('Security/XSS')->clean($username);
+		$password = ee('Security/XSS')->clean($password);
 
 		/** -------------------------------------
 		/**  Make a LDAP (Love Da Paul) Connection

@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -50,6 +50,9 @@ class Filemanager {
 		ee()->load->library('javascript');
 		ee()->lang->loadfile('filemanager');
 
+		ee()->router->set_class('cp');
+		ee()->load->library('cp');
+		ee()->router->set_class('ee');
 		$this->theme_url = ee()->cp->cp_theme_url;
 	}
 
@@ -273,7 +276,7 @@ class Filemanager {
 		//Apply XSS Filtering to uploaded files?
 		if ($this->_xss_on AND
 			xss_check() AND
-			! ee()->security->xss_clean($file_path, $is_image))
+			! ee('Security/XSS')->clean($file_path, $is_image))
 		{
 			return FALSE;
 		}
@@ -618,63 +621,6 @@ class Filemanager {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Filebrowser (Frontend)
-	 *
-	 * Same as filebrowser(), but with additional considerations for the frontend
-	 *
-	 * @access	public
-	 * @param	string	the endpoint url
-	 * @param	bool	include jquery core?
-	 * @return	void
-	 */
-	function frontend_filebrowser($endpoint_url, $include_jquery_base = TRUE)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.7');
-
-		ee()->lang->loadfile('filebrowser');
-
-		$ret = array();
-
-		$ret['str'] = '';
-
-		$ret['json'] = array(
-			'BASE'			=> ee()->functions->fetch_site_index(0,0).QUERY_MARKER,
-			'THEME_URL'		=> $this->theme_url,
-			'PATH_CP_GBL_IMG'	=> URL_THEMES.'cp_global_images/',
-			'filebrowser' => array(
-				'endpoint_url'	=> $endpoint_url,
-				'window_title'	=> lang('file_manager'),
-				'theme_url'		=> $this->theme_url
-			),
-			'fileuploader' => array(
-				'window_title'		=> lang('file_upload'),
-				'delete_url'		=> 'C=content_files&M=delete_files'
-			),
-			'lang' => array(
-				'or'				=> ee()->lang->line('or'),
-				'resize_image' 		=> ee()->lang->line('resize_image'),
-				'return_to_publish' => ee()->lang->line('return_to_publish')
-			)
-		);
-
-		$script_base = ee()->functions->fetch_site_index(0,0).QUERY_MARKER.'ACT=jquery';
-
-		if ($include_jquery_base)
-		{
-			$ret['str'] .= '<script type="text/javascript" charset="utf-8" src="'.$script_base.'"></script>';
-		}
-
-	//	$live_url =  (ee()->TMPL->fetch_param('use_live_url') != 'no') ? AMP.'use_live_url=y' : '';
-
-	//	$ret['str'] .= '<script type="text/javascript" charset="utf-8" src="'.ee()->functions->fetch_site_index(0,0).QUERY_MARKER.'ACT=saef'.$live_url.'"></script>';
-
-		return $ret;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
 	 * Process Request
 	 *
 	 * Main Backend Handler
@@ -894,8 +840,8 @@ class Filemanager {
 
 		// Mask the URL if we're coming from the CP
 		$sync_files_url = (REQ == "CP") ?
-			ee()->cp->masked_url('http://ellislab.com/expressionengine/user-guide/cp/content/files/sync_files.html') :
-			'http://ellislab.com/expressionengine/user-guide/cp/content/files/sync_files.html';
+			ee()->cp->masked_url('https://ellislab.com/expressionengine/user-guide/cp/content/files/sync_files.html') :
+			'https://ellislab.com/expressionengine/user-guide/cp/content/files/sync_files.html';
 
 		return array(
 			'rows'			=> $this->_browser_get_files($dir, $file_params),

@@ -10,7 +10,7 @@ use CP_Controller;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -60,6 +60,14 @@ class Homepage extends CP_Controller {
 			->filter('site_id', ee()->config->item('site_id'))
 			->count();
 
+		if ($vars['number_of_channels'] == 1)
+		{
+			$vars['channel_id'] = ee('Model')->get('Channel')
+				->filter('site_id', ee()->config->item('site_id'))
+				->first()
+				->channel_id;
+		}
+
 		$vars['number_of_channel_fields'] = ee('Model')->get('ChannelField')
 			->filter('site_id', ee()->config->item('site_id'))
 			->count();
@@ -91,7 +99,7 @@ class Homepage extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$return = cp_url('homepage');
+		$return = ee('CP/URL', 'homepage');
 
 		if (ee()->input->post('return'))
 		{
@@ -111,7 +119,7 @@ class Homepage extends CP_Controller {
 
 			$return = base64_decode(ee()->input->post('return'));
 			$uri_elements = json_decode($return, TRUE);
-			$return = cp_url($uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
 		}
 
 		ee()->functions->redirect($return);

@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -727,7 +727,7 @@ class Member_model extends CI_Model {
 				}
 
 				ee()->load->library('api');
-				ee()->api->instantiate('channel_entries');
+				ee()->legacy_api->instantiate('channel_entries');
 				ee()->api_channel_entries->delete_entry($entry_ids);
 			}
 		}
@@ -782,8 +782,8 @@ class Member_model extends CI_Model {
 			// Load forum class
 			if ( ! class_exists('Forum'))
 			{
-				require PATH_MOD.'forum/mod.forum.php';
-				require PATH_MOD.'forum/mod.forum_core.php';
+				require PATH_ADDONS.'forum/mod.forum.php';
+				require PATH_ADDONS.'forum/mod.forum_core.php';
 			}
 
 			$forum_core = new Forum_Core;
@@ -1504,34 +1504,6 @@ class Member_model extends CI_Model {
 		}
 
 		return $returned_data;
-	}
-
-	// --------------------------------------------------------------------
-
-
-	/**
-	 * Localization Default
-	 *
-	 * This function retuns author data for a single member
-	 *
-	 * @access	public
-	 * @return	array
-	 */
-	function get_localization_default($get_id = FALSE)
-	{
-		ee()->load->library('logger');
-		ee()->logger->deprecated('2.7');
-
-		$config = array(
-			'default_site_timezone' => ee()->config->item('default_site_timezone')
-		);
-
-		if ($get_id)
-		{
-			$config['member_id'] = 1; // basically? ick. but probably a super admin
-		}
-
-		return $config;
 	}
 
 	// --------------------------------------------------------------------

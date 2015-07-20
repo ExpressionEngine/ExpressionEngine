@@ -4,7 +4,6 @@ namespace EllisLab\ExpressionEngine\Controllers\Logs;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Service\CP\Filter\FilterFactory;
 use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 
@@ -14,7 +13,7 @@ use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -53,15 +52,15 @@ class Throttle extends Logs {
 			$this->delete('Throttle', lang('throttle_log'));
 			if (strtolower(ee()->input->post('delete')) == 'all')
 			{
-				return ee()->functions->redirect(cp_url('logs/throttle'));
+				return ee()->functions->redirect(ee('CP/URL', 'logs/throttle'));
 			}
 		}
 
 		$this->base_url->path = 'logs/throttle';
 		ee()->view->cp_page_title = lang('view_throttle_log');
 
-		$logs   = array();
-		$links  = array();
+		$logs = array();
+		$pagination = '';
 		$throttling_disabled = TRUE;
 
 		if (ee()->config->item('enable_throttling') == 'y')
@@ -122,13 +121,15 @@ class Throttle extends Logs {
 				->offset($offset)
 				->all();
 
-			$pagination = new Pagination($this->params['perpage'], $count, $page);
-			$links = $pagination->cp_links($this->base_url);
+			$pagination = ee('CP/Pagination', $count)
+				->perPage($this->params['perpage'])
+				->currentPage($page)
+				->render($this->base_url);
 		}
 
 		$vars = array(
 			'logs' => $logs,
-			'pagination' => $links,
+			'pagination' => $pagination,
 			'disabled' => $throttling_disabled,
 			'form_url' => $this->base_url->compile(),
 		);

@@ -10,7 +10,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -31,6 +31,12 @@ class ChannelFormSettings extends Model {
 
 	protected static $_primary_key = 'channel_form_settings_id';
 	protected static $_table_name = 'channel_form_settings';
+
+	protected static $_relationships = array(
+		'Channel' => array(
+			'type' => 'belongsTo'
+		)
+	);
 
 	protected $channel_form_settings_id;
 	protected $site_id;

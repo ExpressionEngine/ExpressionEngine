@@ -6,7 +6,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -48,16 +48,16 @@ class EE_Core {
 		}
 
 		// some path constants to simplify things
-		define('PATH_MOD',		APPPATH.'modules/');
-		define('PATH_PI',		APPPATH.'plugins/');
-		define('PATH_EXT',		APPPATH.'extensions/');
-		define('PATH_FT',		APPPATH.'fieldtypes/');
-		define('PATH_RTE',		APPPATH.'rte_tools/');
+		define('PATH_ADDONS', SYSPATH . 'ee/EllisLab/Addons/');
+		define('PATH_MOD',    SYSPATH . 'ee/EllisLab/Addons/');
+		define('PATH_PI',     SYSPATH . 'ee/EllisLab/Addons/');
+		define('PATH_EXT',    SYSPATH . 'ee/EllisLab/Addons/');
+		define('PATH_FT',     SYSPATH . 'ee/EllisLab/Addons/');
+		define('PATH_RTE',    APPPATH . 'rte_tools/');
 
 		$addon_path = (ee()->config->item('addons_path'))
 			? rtrim(realpath(ee()->config->item('addons_path')), '/').'/'
 			: SYSPATH.'user/addons/';
-		define('PATH_ADDONS', $addon_path);
 		define('PATH_THIRD', $addon_path);
 
 		// application constants
@@ -74,6 +74,7 @@ class EE_Core {
 		define('NL',			"\n");
 		define('PATH_DICT', 	APPPATH.'config/');
 		define('AJAX_REQUEST',	ee()->input->is_ajax_request());
+		define('PASSWORD_MAX_LENGTH', 72);
 
 		ee()->load->helper('language');
 		ee()->load->helper('string');
@@ -86,15 +87,11 @@ class EE_Core {
 		ee()->db->db_debug = FALSE;
 
 		// boot the addons
-		ee('App')->setupAddons(PATH_PI);
-		ee('App')->setupAddons(PATH_MOD);
-		ee('App')->setupAddons(PATH_EXT);
-		ee('App')->setupAddons(PATH_ADDONS);
+		ee('App')->setupAddons(PATH_THIRD);
 
 		// Set ->api on the legacy facade to the model factory
 		ee()->set('api', ee()->di->make('Model'));
 
-		// Note enable_db_caching is a per site setting specified in EE_Config.php
 		// If debug is on we enable the profiler and DB debug
 		if (DEBUG == 1 OR ee()->config->item('debug') == 2)
 		{
@@ -204,9 +201,8 @@ class EE_Core {
 
 		define('PATH_THEMES', $theme_path.'ee/');
 		define('URL_THEMES', $theme_url.'ee/');
-		define('PATH_ADDONS_THEMES', $theme_path.'user/');
+
 		define('PATH_THIRD_THEMES', $theme_path.'user/');
-		define('URL_ADDONS_THEMES', $theme_url.'user/');
 		define('URL_THIRD_THEMES', $theme_url.'user/');
 
 		define('PATH_MBR_THEMES', PATH_THEMES.'profile_themes/');
@@ -250,11 +246,11 @@ class EE_Core {
 			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon',
 			'file', 'forum', 'ip_to_nation', 'jquery', 'mailinglist', 'member',
 			'metaweblog_api', 'moblog', 'pages', 'query', 'referrer', 'rss', 'rte',
-			'search', 'simple_commerce', 'spam', 'stats', 'wiki'
+			'search', 'simple_commerce', 'spam', 'stats', 'wiki', 'filepicker'
 		);
 		$this->standard_modules = array(
 			'blacklist', 'email', 'forum', 'ip_to_nation', 'mailinglist',
-			'member', 'moblog', 'query', 'simple_commerce', 'wiki'
+			'member', 'moblog', 'query', 'simple_commerce', 'wiki', 'filepicker'
 		);
 
 		// Is this a stylesheet request?  If so, we're done.
@@ -391,7 +387,7 @@ class EE_Core {
 	public function run_cp()
 	{
 		$this->_somebody_set_us_up_the_base();
-
+/*
 		// Define PATH_CP_THEME
 		$cp_theme = ee()->session->userdata('cp_theme')
 			?: ee()->config->item('cp_theme');
@@ -406,8 +402,9 @@ class EE_Core {
 		$path_cp_theme = ($cp_theme === 'default')
 			? PATH_THEMES.'cp_themes/default/'
 			: PATH_ADDONS_THEMES.'cp_themes/'.$cp_theme.'/';
-
-		define('PATH_CP_THEME', $path_cp_theme);
+*/
+		$cp_theme = 'default';
+		define('PATH_CP_THEME', PATH_THEMES.'cp_themes/default/');
 
 		// Show the control panel home page in the event that a
 		// controller class isn't found in the URL
@@ -487,7 +484,7 @@ class EE_Core {
 		// @todo remove after 2.1.1's release, move to the update script
 		if (strncmp(ee()->config->item('doc_url'), 'http://expressionengine.com/docs', 32) == 0)
 		{
-			ee()->config->update_site_prefs(array('doc_url' => 'http://ellislab.com/expressionengine/user-guide/'));
+			ee()->config->update_site_prefs(array('doc_url' => 'https://ellislab.com/expressionengine/user-guide/'));
 		}
 	}
 
@@ -675,8 +672,6 @@ class EE_Core {
 	 */
 	function _garbage_collection()
 	{
-		ee()->db->cache_off();
-
 		if (class_exists('Stats'))
 		{
 			if (ee()->stats->statdata('last_cache_clear')

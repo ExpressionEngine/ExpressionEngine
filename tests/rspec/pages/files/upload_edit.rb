@@ -1,4 +1,4 @@
-class UploadEdit < ControlPanelPage
+class UploadEdit < FileManagerPage
 
 	element :name, 'input[name=name]'
 	element :url, 'input[name=url]'

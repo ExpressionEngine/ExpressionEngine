@@ -12,7 +12,7 @@ use CP_Controller;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -68,7 +68,7 @@ class ContentDesign extends Settings {
 					'desc' => 'image_resize_protocol_desc',
 					'fields' => array(
 						'image_resize_protocol' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'gd' => lang('gd'),
 								'gd2' => lang('gd2'),
@@ -131,7 +131,7 @@ class ContentDesign extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = cp_url('settings/content-design');
+		$base_url = ee('CP/URL', 'settings/content-design');
 
 		if (AJAX_REQUEST)
 		{
@@ -158,7 +158,7 @@ class ContentDesign extends Settings {
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_saving';
 
-		ee()->cp->set_breadcrumb(cp_url('channel'), lang('channel_manager'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels'), lang('channel_manager'));
 
 		ee()->cp->render('settings/form', $vars);
 	}

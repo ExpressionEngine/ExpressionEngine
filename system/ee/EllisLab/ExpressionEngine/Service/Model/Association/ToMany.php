@@ -2,143 +2,98 @@
 
 namespace EllisLab\ExpressionEngine\Service\Model\Association;
 
-use LogicException;
-use InvalidArgumentException;
-
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Library\Data\Collection;
 
-/**
- * ExpressionEngine - by EllisLab
- *
- * @package		ExpressionEngine
- * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
- * @link		http://ellislab.com
- * @since		Version 3.0
- * @filesource
- */
+class ToMany extends Association {
 
-// ------------------------------------------------------------------------
+	public function fill($related, $_skip_inverse = FALSE)
+	{
+		if (is_array($related))
+		{
+			$related = new Collection($related);
+		}
 
-/**
- * ExpressionEngine ToMany Association
- *
- * Associations that point to a collection of models.
- *
- * @package		ExpressionEngine
- * @subpackage	Model
- * @category	Service
- * @author		EllisLab Dev Team
- * @link		http://ellislab.com
- */
-abstract class ToMany extends Association {
+		if ($related instanceOf Model)
+		{
+			$related = new Collection(array($related));
+		}
 
-	protected $related = array();
-	protected $collection = NULL;
+		if ($related instanceOf Collection)
+		{
+			$this->ensureAssociation($related);
+		}
 
-	/**
-	 *
-	 */
+
+		return parent::fill($related, $_skip_inverse);
+	}
+
 	public function get()
 	{
-		$items = parent::get();
+		$result = parent::get();
 
-		return $this->getCollection();
+		if ( ! isset($result))
+		{
+			$this->ensureCollection();
+			return $this->related;
+		}
+
+		return $result;
 	}
 
-	/**
-	 *
-	 */
-	public function fill($related)
+	protected function ensureExists($model)
 	{
-		$this->related = array();
-		$this->collection = NULL;
+		$this->ensureCollection();
 
-		$this->markAsLoaded();
-
-		if ( ! isset($related))
+		if ( ! $this->has($model))
 		{
-			return;
-		}
-
-		if ( ! (is_array($related) || $related instanceOf Collection))
-		{
-			throw new InvalidArgumentException('Invalid fill(), must be collection or array.');
-		}
-
-		foreach ($related as $model)
-		{
-			$this->related[spl_object_hash($model)] = $model;
+			$this->related->add($model);
+			parent::ensureExists($model);
 		}
 	}
 
-	/**
-	 *
-	 */
-	public function clear()
+	protected function ensureDoesNotExist($model)
 	{
-		parent::clear();
-		$this->related = array();
-		$this->collection = NULL;
-	}
-
-	/**
-	 *
-	 */
-	protected function hasRelated(Model $model)
-	{
-		$hash = spl_object_hash($model);
-
-		return array_key_exists($hash, $this->related);
-	}
-
-	/**
-	 *
-	 */
-	protected function addToRelated(Model $model)
-	{
-		parent::addToRelated($model);
-
-		if ( ! $this->hasRelated($model))
+		if ($this->has($model))
 		{
-			$collection = $this->getCollection();
-			$collection[] = $model;
-
-			$this->related[spl_object_hash($model)] = $model;
+			$this->related->remove($model);
+			parent::ensureDoesNotExist($model);
 		}
 	}
 
-	/**
-	 *
-	 */
-	protected function removeFromRelated(Model $model)
+	protected function has($model)
 	{
-		parent::removeFromRelated($model);
-
-		$this->collection = NULL;
-		unset($this->related[spl_object_hash($model)]);
-	}
-
-	/**
-	 *
-	 */
-	protected function saveAllRelated()
-	{
-		$this->getCollection()->save();
-	}
-
-	/**
-	 *
-	 */
-	protected function getCollection()
-	{
-		if ( ! isset($this->collection))
+		if (is_null($this->related))
 		{
-			$this->collection = new Collection(array_values($this->related));
+			return FALSE;
 		}
 
-		return $this->collection;
+		foreach ($this->related as $m)
+		{
+			if ($m === $model)
+			{
+				return TRUE;
+			}
+		}
+
+		return FALSE;
+	}
+
+	protected function ensureCollection()
+	{
+		if (is_null($this->related))
+		{
+			$this->related = new Collection();
+		}
+
+		$this->ensureAssociation($this->related);
+	}
+
+	protected function ensureAssociation(Collection $related)
+	{
+		if ($related->getAssociation() !== $this)
+		{
+			$related->setAssociation($this);
+		}
 	}
 }

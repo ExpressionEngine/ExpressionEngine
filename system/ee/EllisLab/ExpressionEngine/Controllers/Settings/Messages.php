@@ -12,7 +12,7 @@ use CP_Controller;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -50,7 +50,7 @@ class Messages extends Settings {
 					'desc' => 'prv_msg_html_format_desc',
 					'fields' => array(
 						'prv_msg_html_format' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'safe' => lang('html_safe'),
 								'none' => lang('html_none'),
@@ -129,7 +129,7 @@ class Messages extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = cp_url('settings/messages');
+		$base_url = ee('CP/URL', 'settings/messages');
 
 		if (AJAX_REQUEST)
 		{
@@ -138,7 +138,12 @@ class Messages extends Settings {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			if ($this->saveSettings($vars['sections']))
+			$directory_settings = array(
+				'prv_msg_upload_path' => ee()->input->post('prv_msg_upload_path'),
+				'prv_msg_attach_maxsize' => ee()->input->post('prv_msg_attach_maxsize'),
+			);
+
+			if ($this->saveSettings($vars['sections']) && $this->updateUploadDirectory($directory_settings))
 			{
 				ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), TRUE);
 			}
@@ -157,6 +162,24 @@ class Messages extends Settings {
 		ee()->view->save_btn_text_working = 'btn_saving';
 
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * Update the upload preferences for the associated upload directory
+	 *
+	 * @param mixed $data
+	 * @access private
+	 * @return void
+	 */
+	private function updateUploadDirectory($data)
+	{
+		$current = ee()->config->item('prv_msg_upload_path');
+		$directory = ee('Model')->get('UploadDestination')->filter('server_path', $current)->first();
+		$directory->server_path = $data['prv_msg_upload_path'];
+		$directory->max_size = $data['prv_msg_attach_maxsize'];
+		$directory->save();
+
+		return TRUE;
 	}
 }
 // END CLASS

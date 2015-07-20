@@ -4,7 +4,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -17,7 +17,7 @@
 $(document).ready(function() {
 
 	$('table').eeTableReorder({
-		afterSort: function(event, row) {
+		afterSort: function(row) {
 			$.ajax({
 				url: EE.cat_fields.reorder_url,
 				data: {'order': $('input[name="order[]"]').serialize() },

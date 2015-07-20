@@ -5,9 +5,8 @@ namespace EllisLab\ExpressionEngine\Controllers\Utilities;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use ZipArchive;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 
 /**
  * ExpressionEngine - by EllisLab
@@ -15,7 +14,7 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -104,9 +103,13 @@ class Translate extends Utilities {
 		}
 
 		ee()->view->cp_page_title = ucfirst($language) . ' ' . lang('language_files');
-		$vars['language'] = $language;
 
-		$base_url = new URL('utilities/translate/' . $language, ee()->session->session_id());
+		$vars = array(
+			'language' => $language,
+			'pagination' => ''
+		);
+
+		$base_url = ee('CP/URL', 'utilities/translate/' . $language);
 
 		$data = array();
 
@@ -135,7 +138,7 @@ class Translate extends Utilities {
 					'filename'	=> $file,
 					array('toolbar_items' => array(
 						'edit' => array(
-							'href' => cp_url('utilities/translate/' . $language . '/edit/' . $name),
+							'href' => ee('CP/URL', 'utilities/translate/' . $language . '/edit/' . $name),
 							'title' => strtolower(lang('edit'))
 						)
 					)),
@@ -147,7 +150,7 @@ class Translate extends Utilities {
 			}
 		}
 
-		$table = Table::create(array('autosort' => TRUE, 'autosearch' => TRUE));
+		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => TRUE));
 		$table->setColumns(
 			array(
 				'file_name',
@@ -168,12 +171,10 @@ class Translate extends Utilities {
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
-			$pagination = new Pagination(
-				$vars['table']['limit'],
-				$vars['table']['total_rows'],
-				$vars['table']['page']
-			);
-			$vars['pagination'] = $pagination->cp_links($base_url);
+			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+				->perPage($vars['table']['limit'])
+				->currentPage($vars['table']['page'])
+				->render($base_url);
 		}
 
 		// Set search results heading
@@ -268,7 +269,7 @@ class Translate extends Utilities {
 		{
 			$message = $path . $file . '_lang.php ' . lang('cannot_access') . '.';
 			ee()->view->set_message('issue', $message, '', TRUE);
-			ee()->functions->redirect(cp_url('utilities/translate/' . $language));
+			ee()->functions->redirect(ee('CP/URL', 'utilities/translate/' . $language));
 		}
 
 		ee()->view->cp_page_title = $filename . ' ' . ucfirst(lang('translation'));
@@ -312,7 +313,7 @@ class Translate extends Utilities {
 		);
 
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('utilities/translate/' . $language) => ucfirst($language) . ' ' . lang('language_files')
+			ee('CP/URL', 'utilities/translate/' . $language)->compile() => ucfirst($language) . ' ' . lang('language_files')
 		);
 
 		ee()->cp->render('utilities/translate/edit', $vars);
@@ -359,7 +360,7 @@ class Translate extends Utilities {
 			{
 				exit($dest_loc);
 				ee()->view->set_message('issue', lang('trans_file_not_writable'), '', TRUE);
-				ee()->functions->redirect(cp_url('utilities/translate/' . $language . '/edit/' . $file));
+				ee()->functions->redirect(ee('CP/URL', 'utilities/translate/' . $language . '/edit/' . $file));
 			}
 		}
 
@@ -373,7 +374,7 @@ class Translate extends Utilities {
 		{
 			ee()->view->set_message('issue', lang('invalid_path'), '', TRUE);
 		}
-		ee()->functions->redirect(cp_url('utilities/translate/' . $language . '/edit/' . $file));
+		ee()->functions->redirect(ee('CP/URL', 'utilities/translate/' . $language . '/edit/' . $file));
 	}
 }
 // END CLASS

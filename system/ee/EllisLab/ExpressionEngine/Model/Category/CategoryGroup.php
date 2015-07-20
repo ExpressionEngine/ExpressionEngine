@@ -3,7 +3,7 @@
 namespace EllisLab\ExpressionEngine\Model\Category;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Service\Model\Interfaces\Content\ContentStructure;
+use EllisLab\ExpressionEngine\Model\Content\StructureModel;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -11,7 +11,7 @@ use EllisLab\ExpressionEngine\Service\Model\Interfaces\Content\ContentStructure;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -28,7 +28,7 @@ use EllisLab\ExpressionEngine\Service\Model\Interfaces\Content\ContentStructure;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class CategoryGroup extends Model implements ContentStructure {
+class CategoryGroup extends StructureModel {
 
 	protected static $_primary_key = 'group_id';
 	protected static $_gateway_names = array('CategoryGroupGateway');
@@ -41,11 +41,6 @@ class CategoryGroup extends Model implements ContentStructure {
 		'Categories' => array(
 			'type' => 'hasMany',
 			'model' => 'Category'
-		),
-		'Parent' => array(
-			'type' => 'belongsTo',
-			'model' => 'Category',
-			'key' => 'parent_id'
 		),
 	);
 
@@ -73,8 +68,10 @@ class CategoryGroup extends Model implements ContentStructure {
 	}
 
 
-	public function getPublishForm($content = NULL)
-	{}
+	public function getContentType()
+	{
+		return 'category';
+	}
 
 	/**
 	 * Returns the category tree for this category group

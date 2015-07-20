@@ -4,8 +4,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Utilities;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-use EllisLab\ExpressionEngine\Library\CP\URL;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
+
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Model\EmailCache;
 
@@ -15,7 +14,7 @@ use EllisLab\ExpressionEngine\Model\EmailCache;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -88,7 +87,11 @@ class Communicate extends Utilities {
 			$default['plaintext_alt'] = $email->plaintext_alt;
 			$default['mailtype'] = $email->mailtype;
 			$default['wordwrap'] = $email->wordwrap;
-			$member_groups = $email->getMemberGroups()->pluck('group_id');
+
+			if ( ! isset($this->member))
+			{
+				$member_groups = $email->getMemberGroups()->pluck('group_id');
+			}
 		}
 
 		// Set up member group emailing options
@@ -134,6 +137,33 @@ class Communicate extends Utilities {
 		');
 
 		ee()->cp->render('utilities/communicate/index', $vars + $default);
+	}
+
+	/**
+	 * Prepopulate form to send to specific member
+	 * 
+	 * @param int $id 
+	 * @access public
+	 * @return void
+	 */
+	public function member($id)
+	{
+		$member = ee('Model')->get('Member', $id)->first();
+		$this->member = $member;
+
+		if (empty($member))
+		{
+			show_404();
+		}
+
+		$cache_data = array(
+			'recipient'	=> $member->email,
+			'from_email' => ee()->session->userdata('email')
+		);
+
+		$email = ee('Model')->make('EmailCache', $cache_data);
+		$email->removeMemberGroups();
+		$this->index($email);
 	}
 
 	/**
@@ -252,7 +282,7 @@ class Communicate extends Utilities {
 			$debug_msg = $this->deliverOneEmail($email, $recipient);
 
 			ee()->view->set_message('success', lang('email_sent_message'), $debug_msg, TRUE);
-			ee()->functions->redirect(cp_url('utilities/communicate'));
+			ee()->functions->redirect(ee('CP/URL', 'utilities/communicate'));
 		}
 
 		// Get member group emails
@@ -336,14 +366,14 @@ class Communicate extends Utilities {
 			$this->deleteAttachments($email); // Remove attachments now
 
 			ee()->view->set_message('success', lang('total_emails_sent') . ' ' . $total_sent, $debug_msg, TRUE);
-			ee()->functions->redirect(cp_url('utilities/communicate'));
+			ee()->functions->redirect(ee('CP/URL', 'utilities/communicate'));
 		}
 
 		/** ----------------------------------------
 		/**  Start Batch-Mode
 		/** ----------------------------------------*/
 
-		ee()->view->set_refresh(cp_url('utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
+		ee()->view->set_refresh(ee('CP/URL', 'utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
 
 		ee('Alert')->makeStandard('batchmode')
 			->asWarning()
@@ -351,7 +381,7 @@ class Communicate extends Utilities {
 			->addToBody(lang('batchmode_warning'))
 			->defer();
 
-		ee()->functions->redirect(cp_url('utilities/communicate'));
+		ee()->functions->redirect(ee('CP/URL', 'utilities/communicate'));
 	}
 
 	// --------------------------------------------------------------------
@@ -395,7 +425,7 @@ class Communicate extends Utilities {
 			$this->deleteAttachments($email); // Remove attachments now
 
 			ee()->view->set_message('success', lang('total_emails_sent') . ' ' . $email->total_sent, $debug_msg, TRUE);
-			ee()->functions->redirect(cp_url('utilities/communicate'));
+			ee()->functions->redirect(ee('CP/URL', 'utilities/communicate'));
 		}
 		else
 		{
@@ -404,7 +434,7 @@ class Communicate extends Utilities {
 
 			$message = $stats.BR.BR.lang('emails_remaining').NBS.NBS.count($email->recipient_array);
 
-			ee()->view->set_refresh(cp_url('utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
+			ee()->view->set_refresh(ee('CP/URL', 'utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
 
 			ee('Alert')->makeStandard('batchmode')
 				->asWarning()
@@ -412,7 +442,7 @@ class Communicate extends Utilities {
 				->addToBody(lang('batchmode_warning'))
 				->defer();
 
-			ee()->functions->redirect(cp_url('utilities/communicate'));
+			ee()->functions->redirect(ee('CP/URL', 'utilities/communicate'));
 		}
 	}
 
@@ -657,7 +687,7 @@ class Communicate extends Utilities {
 			ee()->view->set_message('success', lang('emails_removed'), '');
 		}
 
-		$table = Table::create();
+		$table = ee('CP/Table');
 		$table->setColumns(
 			array(
 				'subject',
@@ -672,7 +702,7 @@ class Communicate extends Utilities {
 			)
 		);
 
-		$table->setNoResultsText('no_cached_emails', 'create_new_email', cp_url('utilities/communicate'));
+		$table->setNoResultsText('no_cached_emails', 'create_new_email', ee('CP/URL', 'utilities/communicate'));
 
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
 		$page = ($page > 0) ? $page : 1;
@@ -728,7 +758,7 @@ class Communicate extends Utilities {
 					),
 					'sync' => array(
 						'title' => lang('resend'),
-						'href' => cp_url('utilities/communicate/resend/' . $email->cache_id)
+						'href' => ee('CP/URL', 'utilities/communicate/resend/' . $email->cache_id)
 					)
 				)),
 				array(
@@ -750,11 +780,12 @@ class Communicate extends Utilities {
 
 		$table->setData($data);
 
-		$base_url = new URL('utilities/communicate/sent', ee()->session->session_id());
+		$base_url = ee('CP/URL', 'utilities/communicate/sent');
 		$vars['table'] = $table->viewData($base_url);
 
-		$pagination = new Pagination(20, $count, $page);
-		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
+		$vars['pagination'] = ee('CP/Pagination', $count)
+			->currentPage($page)
+			->render($vars['table']['base_url']);
 
 		ee()->view->cp_page_title = lang('view_email_cache');
 

@@ -13,7 +13,7 @@ use EllisLab\ExpressionEngine\Controllers\Files\AbstractFiles as AbstractFilesCo
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -55,7 +55,7 @@ class Watermarks extends AbstractFilesController {
 	 */
 	public function index()
 	{
-		$table = CP\Table::create();
+		$table = ee('CP/Table');
 		$table->setColumns(
 			array(
 				'name',
@@ -68,7 +68,7 @@ class Watermarks extends AbstractFilesController {
 				)
 			)
 		);
-		$table->setNoResultsText('no_watermarks', 'create_watermark', cp_url('files/watermarks/create'));
+		$table->setNoResultsText('no_watermarks', 'create_watermark', ee('CP/URL', 'files/watermarks/create'));
 
 		$watermarks = ee('Model')->get('Watermark');
 		$total_rows = $watermarks->all()->count();
@@ -87,11 +87,11 @@ class Watermarks extends AbstractFilesController {
 		foreach ($watermarks as $watermark)
 		{
 			$data[] = array(
-				htmlentities($watermark->wm_name, ENT_QUOTES),
-				htmlentities($watermark->wm_type, ENT_QUOTES),
+				$watermark->wm_name,
+				$watermark->wm_type,
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => cp_url('files/watermarks/edit/'.$watermark->getId()),
+						'href' => ee('CP/URL', 'files/watermarks/edit/'.$watermark->getId()),
 						'title' => lang('edit')
 					)
 				)),
@@ -109,15 +109,12 @@ class Watermarks extends AbstractFilesController {
 
 		$table->setData($data);
 
-		$base_url = new CP\URL('files/watermarks', ee()->session->session_id());
-		$vars['table'] = $table->viewData($base_url);
+		$vars['table'] = $table->viewData(ee('CP/URL', 'files/watermarks'));
 
-		$pagination = new CP\Pagination(
-			$vars['table']['limit'],
-			$total_rows,
-			$vars['table']['page']
-		);
-		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
+		$vars['pagination'] = ee('CP/Pagination', $total_rows)
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($vars['table']['base_url']);
 
 		ee()->view->cp_page_title = lang('watermarks');
 
@@ -157,7 +154,7 @@ class Watermarks extends AbstractFilesController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		ee()->functions->redirect(cp_url('files/watermarks', ee()->cp->get_url_state()));
+		ee()->functions->redirect(ee('CP/URL', 'files/watermarks', ee()->cp->get_url_state()));
 	}
 
 	/**
@@ -165,7 +162,7 @@ class Watermarks extends AbstractFilesController {
 	 */
 	public function create()
 	{
-		$this->form();
+		return $this->form();
 	}
 
 	/**
@@ -173,7 +170,7 @@ class Watermarks extends AbstractFilesController {
 	 */
 	public function edit($watermark_id)
 	{
-		$this->form($watermark_id);
+		return $this->form($watermark_id);
 	}
 
 	/**
@@ -186,7 +183,7 @@ class Watermarks extends AbstractFilesController {
 		if (is_null($watermark_id))
 		{
 			ee()->view->cp_page_title = lang('create_watermark');
-			ee()->view->base_url = cp_url('files/watermarks/create');
+			ee()->view->base_url = ee('CP/URL', 'files/watermarks/create');
 			ee()->view->save_btn_text = 'create_watermark';
 			$watermark = ee('Model')->make('Watermark');
 		}
@@ -200,7 +197,7 @@ class Watermarks extends AbstractFilesController {
 			}
 
 			ee()->view->cp_page_title = lang('edit_watermark');
-			ee()->view->base_url = cp_url('files/watermarks/edit/'.$watermark_id);
+			ee()->view->base_url = ee('CP/URL', 'files/watermarks/edit/'.$watermark_id);
 			ee()->view->save_btn_text = 'edit_watermark';
 		}
 
@@ -224,7 +221,7 @@ class Watermarks extends AbstractFilesController {
 					'desc' => 'watermark_type_desc',
 					'fields' => array(
 						'wm_type' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'text' => lang('text'),
 								'image' => lang('image')
@@ -243,7 +240,7 @@ class Watermarks extends AbstractFilesController {
 					'desc' => 'watermark_alignment_desc',
 					'fields' => array(
 						'wm_vrt_alignment' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'top' => lang('top'),
 								'middle' => lang('middle'),
@@ -252,7 +249,7 @@ class Watermarks extends AbstractFilesController {
 							'value' => $watermark->wm_vrt_alignment,
 						),
 						'wm_hor_alignment' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'left' => lang('left'),
 								'center' => lang('center'),
@@ -298,7 +295,7 @@ class Watermarks extends AbstractFilesController {
 						'fields' => array(
 							'wm_use_font' => array(
 								'type' => 'yes_no',
-								'value' => $watermark->wm_use_font ?: 'y'
+								'value' => ! is_null($watermark->wm_use_font) ? $watermark->wm_use_font : 'y'
 							)
 						)
 					),
@@ -317,7 +314,7 @@ class Watermarks extends AbstractFilesController {
 						'desc' => 'watermark_text_font_desc',
 						'fields' => array(
 							'wm_font' => array(
-								'type' => 'dropdown',
+								'type' => 'select',
 								'choices' => ee()->filemanager->fetch_fontlist(),
 								'value' => $watermark->wm_font ?: 'texb.ttf'
 							)
@@ -339,7 +336,7 @@ class Watermarks extends AbstractFilesController {
 						'fields' => array(
 							'wm_font_color' => array(
 								'type' => 'text',
-								'value' => $watermark->wm_font_color ?: '#FFFF00'
+								'value' => $watermark->wm_font_color ?: 'FFFF00'
 							)
 						)
 					),
@@ -349,7 +346,7 @@ class Watermarks extends AbstractFilesController {
 						'fields' => array(
 							'wm_use_drop_shadow' => array(
 								'type' => 'yes_no',
-								'value' => $watermark->wm_use_drop_shadow ?: 'y'
+								'value' => ! is_null($watermark->wm_use_drop_shadow) ? $watermark->wm_use_drop_shadow : 'y'
 							)
 						)
 					),
@@ -369,7 +366,7 @@ class Watermarks extends AbstractFilesController {
 						'fields' => array(
 							'wm_shadow_color' => array(
 								'type' => 'text',
-								'value' => $watermark->wm_shadow_color ?: '#999999'
+								'value' => $watermark->wm_shadow_color ?: '999999'
 							)
 						)
 					)
@@ -423,19 +420,9 @@ class Watermarks extends AbstractFilesController {
 			$watermark->set($_POST);
 			$result = $watermark->validate();
 
-			if (AJAX_REQUEST)
+			if ($response = $this->ajaxValidation($result))
 			{
-				$field = ee()->input->post('ee_fv_field');
-
-				if ($result->hasErrors($field))
-				{
-					ee()->output->send_ajax_response(array('error' => $result->renderError($field)));
-				}
-				else
-				{
-					ee()->output->send_ajax_response('success');
-				}
-				exit;
+				return $response;
 			}
 
 			if ($result->isValid())
@@ -448,7 +435,7 @@ class Watermarks extends AbstractFilesController {
 					->addToBody(lang('watermark_saved_desc'))
 					->defer();
 
-				ee()->functions->redirect(cp_url('files/watermarks/edit/' . $watermark_id));
+				ee()->functions->redirect(ee('CP/URL', 'files/watermarks/edit/' . $watermark_id));
 			}
 			else
 			{
@@ -465,8 +452,8 @@ class Watermarks extends AbstractFilesController {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text_working = 'btn_saving';
 
-		ee()->cp->set_breadcrumb(cp_url('files'), lang('file_manager'));
-		ee()->cp->set_breadcrumb(cp_url('files/watermarks'), lang('watermarks'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'files'), lang('file_manager'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'files/watermarks'), lang('watermarks'));
 
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/v3/form_group'),

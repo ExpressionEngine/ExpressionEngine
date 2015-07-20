@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -253,13 +253,21 @@ class Auth {
 		// ----------------------------------------------------------------
 		$password = (string) ee()->input->post('password');
 
+		// Ensure password is not too long
+		if (strlen($password) > PASSWORD_MAX_LENGTH)
+		{
+			$this->errors[] = 'credential_missmatch';
+			return FALSE;
+		}
+
 		// Allow users to register with Username
 		// ----------------------------------------------------------------
 		$incoming = ee()->auth->authenticate_username($username, $password);
 
 		// Allow users to register with Email
 		// ----------------------------------------------------------------
-		if( ! $incoming) {
+		if ( ! $incoming)
+		{
 			$incoming = ee()->auth->authenticate_email($username, $password);
 		}
 
@@ -335,7 +343,7 @@ class Auth {
 	{
 		// Even for md5, collisions usually happen above 1024 bits, so
 		// we artifically limit their password to reasonable size.
-		if ( ! $password OR strlen($password) > 250)
+		if ( ! $password OR strlen($password) > PASSWORD_MAX_LENGTH)
 		{
 			return FALSE;
 		}

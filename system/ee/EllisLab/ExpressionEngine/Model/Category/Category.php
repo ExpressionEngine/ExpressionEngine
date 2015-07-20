@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Model\Category;
 
 use EllisLab\ExpressionEngine\Model\Content\ContentModel;
+use EllisLab\ExpressionEngine\Model\Category\Display\CategoryFieldLayout;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -10,7 +11,7 @@ use EllisLab\ExpressionEngine\Model\Content\ContentModel;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -57,6 +58,17 @@ class Category extends ContentModel {
 		)
 	);
 
+	protected static $_validation_rules = array(
+		'cat_name'			=> 'required|noHtml|xss',
+		'cat_url_title'		=> 'required|alphaDash',
+		'cat_description'	=> 'xss',
+		'cat_order'			=> 'isNaturalNoZero'
+	);
+
+	protected static $_events = array(
+		'beforeInsert'
+	);
+
 	// Properties
 	protected $cat_id;
 	protected $site_id;
@@ -76,7 +88,33 @@ class Category extends ContentModel {
 	 */
 	public function getStructure()
 	{
-		return $this->getCategoryGroup();
+		return $this->CategoryGroup;
+	}
+
+	/**
+	 * Modify the default layout for category fields
+	 */
+	public function getDisplay(LayoutInterface $layout = NULL)
+	{
+		$layout = $layout ?: new CategoryFieldLayout();
+
+		return parent::getDisplay($layout);
+	}
+
+	/**
+	 * New categories get appended
+	 */
+	public function onBeforeInsert()
+	{
+		$cat_order = $this->getProperty('cat_order');
+
+		if (empty($cat_order))
+		{
+			$count = $this->getFrontend()->get('Category')
+				->filter('group_id', $this->getProperty('group_id'))
+				->count();
+			$this->setProperty('cat_order', $count + 1);
+		}
 	}
 
 }

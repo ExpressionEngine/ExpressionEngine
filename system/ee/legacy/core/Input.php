@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -271,7 +271,7 @@ class EE_Input {
 
 		if ($xss_clean === TRUE)
 		{
-			return $this->security->xss_clean($array[$index]);
+			return ee('Security/XSS')->clean($array[$index]);
 		}
 
 		return $array[$index];
@@ -720,7 +720,7 @@ class EE_Input {
 
 		if ($xss_clean === TRUE)
 		{
-			return $this->security->xss_clean($this->headers[$index]);
+			return ee('Security/XSS')->clean($this->headers[$index]);
 		}
 
 		return $this->headers[$index];
@@ -1057,7 +1057,7 @@ class EE_Input {
 		// Should we filter the input data?
 		if ($this->_enable_xss === TRUE)
 		{
-			$str = $this->security->xss_clean($str);
+			$str = ee('Security/XSS')->clean($str);
 		}
 
 		// Standardize newlines if needed

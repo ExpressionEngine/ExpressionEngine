@@ -337,14 +337,26 @@ $(document).ready(function(){
 		}
 	};
 
-	// listen for clicks on inputs with rel date-picker
-	$('input[rel="date-picker"]').on('focus', function() {
-		// find the position of the input clicked
-		var pos = $(this).offset();
-		Calendar.init(this);
-		// position and toggle the .date-picker-wrap relative to the input clicked
-		$('.date-picker-wrap').css({ 'top': pos.top + 30, 'left': pos.left }).show();
-	});
+	bind_date_picker($('input[rel="date-picker"]').not('.grid-input-form input'));
+
+	// Date fields inside a Grid need to be bound when a new row is added
+	if (Grid !== undefined)
+	{
+		Grid.bind('date', 'display', function(cell)
+		{
+			bind_date_picker($('input[rel="date-picker"]', cell));
+		});
+	}
+
+	function bind_date_picker(elements) {
+		$('input[rel="date-picker"]').on('focus', function() {
+			// find the position of the input clicked
+			var pos = $(this).offset();
+			Calendar.init(this);
+			// position and toggle the .date-picker-wrap relative to the input clicked
+			$('.date-picker-wrap').css({ 'top': pos.top + 30, 'left': pos.left }).show();
+		});
+	}
 
 	$(document).on('focus', 'input,select,button', function(e) {
 		if ( ! ($(e.target).attr('rel') == 'date-picker')

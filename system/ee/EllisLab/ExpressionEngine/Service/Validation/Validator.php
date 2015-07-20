@@ -10,7 +10,7 @@ use InvalidArgumentException;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -40,9 +40,6 @@ use InvalidArgumentException;
  * @link		http://ellislab.com
  */
 class Validator {
-
-	const STOP = 'STOP';
-	const SKIP = 'SKIP';
 
 	protected $rules = array();
 	protected $custom = array();
@@ -186,25 +183,25 @@ class Validator {
 
 				$rule_return = $rule->validate($key, $value);
 
-				// Passed? Move on to the next rule
-				if ($rule_return === TRUE)
-				{
-					continue;
-				}
-
 				// Skip the rest of the rules?
 				// e.g. Presence failed
-				if ($rule_return === self::SKIP)
+				if ($rule->isFailed())
 				{
 					break;
 				}
 
 				// Hard stopping rule? Record the error and move on.
 				// e.g. Required failed
-				if ($rule_return === self::STOP)
+				if ($rule->isStopped())
 				{
 					$result->addFailed($key, $rule);
 					break;
+				}
+
+				// Passed? Move on to the next rule
+				if ($rule_return === TRUE)
+				{
+					continue;
 				}
 
 				// At this point:
@@ -214,7 +211,8 @@ class Validator {
 				//
 				// This means we have an incorrect optional value. Accordingly,
 				// empty values are ok (because optional) anything else is not.
-				if (is_string($value) && trim($value) !== '')
+				if (is_string($value) && trim($value) !== '' ||
+					(is_array($value) && ! empty($value)))
 				{
 					$result->addFailed($key, $rule);
 				}
@@ -243,9 +241,9 @@ class Validator {
 
 		foreach ($callbacks as $name)
 		{
-			$this->defineRule($name, function($key, $value, $params) use ($object, $name)
+			$this->defineRule($name, function($key, $value, $params, $rule) use ($object, $name)
 			{
-				return $object->$name($key, $value, $params);
+				return $object->$name($key, $value, $params, $rule);
 			});
 		}
 
@@ -283,7 +281,7 @@ class Validator {
 
 		if (isset($this->custom[$name]))
 		{
-			$object = $this->custom[$name];
+			$object = clone $this->custom[$name];
 		}
 		else
 		{

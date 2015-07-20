@@ -2,7 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Model\Site\Column;
 
-use EllisLab\ExpressionEngine\Service\Model\Column\Base64SerializedComposite;
+use EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64Native;
+use EllisLab\ExpressionEngine\Service\Model\Column\CustomType;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -10,7 +11,7 @@ use EllisLab\ExpressionEngine\Service\Model\Column\Base64SerializedComposite;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -27,7 +28,7 @@ use EllisLab\ExpressionEngine\Service\Model\Column\Base64SerializedComposite;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class MemberPreferences extends Base64SerializedComposite {
+class MemberPreferences extends CustomType {
 
 	protected $un_min_len;
 	protected $pw_min_len;
@@ -62,6 +63,8 @@ class MemberPreferences extends Base64SerializedComposite {
 	protected $sig_img_max_width;
 	protected $sig_img_max_height;
 	protected $sig_img_max_kb;
+	protected $prv_msg_enabled;
+	protected $prv_msg_allow_attachments;
 	protected $prv_msg_upload_path;
 	protected $prv_msg_max_attachments;
 	protected $prv_msg_attach_maxsize;
@@ -72,5 +75,21 @@ class MemberPreferences extends Base64SerializedComposite {
 	protected $memberlist_order_by;
 	protected $memberlist_sort_order;
 	protected $memberlist_row_limit;
+
+	/**
+	* Called when the column is fetched from db
+	*/
+	public function unserialize($db_data)
+	{
+		return Base64Native::unserialize($db_data);
+	}
+
+	/**
+	* Called before the column is written to the db
+	*/
+	public function serialize($data)
+	{
+		return Base64Native::serialize($data);
+	}
 
 }

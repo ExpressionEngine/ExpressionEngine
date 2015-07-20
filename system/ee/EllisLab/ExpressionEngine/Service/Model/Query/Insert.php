@@ -8,7 +8,7 @@ namespace EllisLab\ExpressionEngine\Service\Model\Query;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -75,7 +75,7 @@ class Insert extends Update {
 		{
 			$values[$primary_key] = $this->insert_id;
 		}
-		else
+		elseif ($object->getName() != 'MemberGroup') // TODO MSM this needs to change with msm
 		{
 			unset($values[$primary_key]);
 		}

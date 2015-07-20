@@ -5,6 +5,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Members\Profile;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
+use EllisLab\Addons\FilePicker\FilePicker as FilePicker;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -12,7 +13,7 @@ use CP_Controller;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -38,7 +39,7 @@ class Settings extends Profile {
 	 */
 	public function index()
 	{
-		$this->base_url = cp_url($this->base_url, $this->query_string);
+		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
 
 		// Birthday Options
 		$birthday['days'] = array();
@@ -52,18 +53,18 @@ class Settings extends Profile {
 
 		$birthday['months'] = array(
 			''	 => lang('month'),
-			'01' => lang('cal_january'),
-			'02' => lang('cal_february'),
-			'03' => lang('cal_march'),
-			'04' => lang('cal_april'),
-			'05' => lang('cal_mayl'),
-			'06' => lang('cal_june'),
-			'07' => lang('cal_july'),
-			'08' => lang('cal_august'),
-			'09' => lang('cal_september'),
-			'10' => lang('cal_october'),
-			'11' => lang('cal_november'),
-			'12' => lang('cal_december')
+			'01' => lang('january'),
+			'02' => lang('february'),
+			'03' => lang('march'),
+			'04' => lang('april'),
+			'05' => lang('mayl'),
+			'06' => lang('june'),
+			'07' => lang('july'),
+			'08' => lang('august'),
+			'09' => lang('september'),
+			'10' => lang('october'),
+			'11' => lang('november'),
+			'12' => lang('december')
 		);
 
 		$birthday['days'][''] = lang('day');
@@ -90,6 +91,25 @@ class Settings extends Profile {
 			$settings[] = 'allow_messages';
 		}
 
+		$this->load->helper('html');
+		$this->load->helper('directory');
+
+		$path = ee()->config->item('avatar_path');
+		$directory = ee('Model')->get('UploadDestination')
+						->filter('server_path', $path)
+						->first();
+
+		$fp = new FilePicker();
+	 	$fp->controller = $fp->base_url . 'images';
+		$fp->inject(ee()->view);
+		$dirs = array();
+		$dirs[] = $fp->link('Avatars', $directory->id, array(
+			'image' => 'avatar',
+			'input' => 'avatar_filename',
+			'class' => 'avatarPicker'
+		));
+
+		$vars['has_file_input'] = TRUE;
 		$vars['sections'] = array(
 			array(
 				array(
@@ -111,17 +131,17 @@ class Settings extends Profile {
 					'desc' => 'birthday_desc',
 					'fields' => array(
 						'bday_d' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $birthday['days'],
 							'value' => $this->member->bday_d
 						),
 						'bday_m' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $birthday['months'],
 							'value' => $this->member->bday_m
 						),
 						'bday_y' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => $birthday['years'],
 							'value' => $this->member->bday_y
 						)
@@ -139,7 +159,7 @@ class Settings extends Profile {
 					'desc' => 'language_desc',
 					'fields' => array(
 						'language' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => ee()->lang->language_pack_names(),
 							'value' => $this->member->language ?: ee()->config->item('deft_lang')
 						)
@@ -152,7 +172,7 @@ class Settings extends Profile {
 						'preferences' => array(
 							'type' => 'checkbox',
 							'choices' => array(
-								'allow_messages' => lang('allow_messages'),
+								'accept_messages' => lang('allow_messages'),
 								'display_avatars' => lang('display_avatars'),
 								'parse_smileys' => lang('parse_smileys')
 							),
@@ -166,38 +186,44 @@ class Settings extends Profile {
 					'title' => 'current_avatar',
 					'desc' => 'current_avatar_desc',
 					'fields' => array(
-						'avatar' => array(
-							'type' => 'html',
-							'content' => ''
+						'avatar_filename' => array(
+							'type' => 'image',
+							'id' => 'avatar',
+							'image' => $directory->url . $this->member->avatar_filename
 						)
 					)
 				),
 				array(
 					'title' => 'change_avatar',
-					'desc' => 'current_avatar_desc',
+					'desc' => 'change_avatar_desc',
 					'fields' => array(
-						'avatar' => array(
-							'type' => 'radio',
+						'avatar_picker' => array(
+							'type' => 'radio_block',
 							'choices' => array(
-								'upload' => 'upload'
-							)
-						),
-						'avatar' => array(
-							'type' => 'radio',
-							'choices' => array(
-								'choose' => 'choose'
-							)
-						),
-						'avatar' => array(
-							'type' => 'radio',
-							'choices' => array(
-								'link' => 'link'
-							)
-						),
+								'upload' => array(
+									'label' => 'upload_avatar',
+									'html' => form_upload('upload_avatar')
+								),
+								'choose' => array(
+									'label' => 'choose_avatar',
+									'html' => ul($dirs, array('class' => 'arrow-list'))
+								),
+								'link' => array(
+									'label' => 'link_avatar',
+									'html' => form_input('link_avatar', 'http://')
+								)
+							),
+							'value' => 'choose'
+						)
 					)
 				)
 			)
 		);
+
+		if ($this->member->avatar_filename == "")
+		{
+			$vars['sections']['avatar_settings'][0]['hide'] = TRUE;
+		}
 
 		ee()->form_validation->set_rules(array(
 			array(
@@ -235,13 +261,101 @@ class Settings extends Profile {
 			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
 		}
 
-		ee()->view->base_url = $this->base_url;
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/members/avatar'
+			),
+		));
+
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('personal_settings');
 		ee()->view->save_btn_text = 'btn_save_settings';
-		ee()->view->save_btn_text_working = 'btn_saving';
+		ee()->view->save_btn_text_working = 'btn_save_settings_working';
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	protected function saveSettings($settings)
+	{
+		unset($settings['avatar_settings']);
+
+		switch (ee()->input->post('avatar_picker')) {
+			case "upload":
+				$this->member->avatar_filename = $this->uploadAvatar();
+				break;
+			case "choose":
+				$choice = ee()->input->post('avatar_filename');
+				$this->member->avatar_filename = $choice;
+				break;
+			case "link":
+				$this->member->avatar_filename = $this->uploadRemoteAvatar();
+				break;
+		}
+
+		parent::saveSettings($settings);
+	}
+
+	private function uploadAvatar()
+	{
+		ee()->load->library('filemanager');
+		$current = ee()->config->item('avatar_path');
+		$directory = ee('Model')->get('UploadDestination')->first();
+		$upload_response = ee()->filemanager->upload_file($directory->id, 'upload_avatar');
+
+		if (isset($upload_response['error']))
+		{
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('upload_filedata_error'))
+				->addToBody($upload_response['error'])
+				->now();
+		}
+
+		return $upload_response->file_name;
+	}
+
+	private function uploadRemoteAvatar()
+	{
+		$url = ee()->input->post('link_avatar');
+		$current = ee()->config->item('avatar_path');
+		$directory = ee('Model')->get('UploadDestination')->first();
+
+    	$ch = curl_init($url);
+    	curl_setopt($ch, CURLOPT_HEADER, 0);
+    	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    	curl_setopt($ch, CURLOPT_BINARYTRANSFER,1);
+    	$file = curl_exec($ch);
+    	curl_close($ch);
+
+		ee()->load->library('filemanager');
+		ee()->load->library('upload', $config);
+
+		$file_path = ee()->filemanager->clean_filename(
+			$filename,
+			$directory_id,
+			array('ignore_dupes' => FALSE)
+		);
+		$filename = basename($file_path);
+
+		// Upload the file
+		$config = array('upload_path' => dirname($file_path));
+
+		if (ee()->upload->raw_upload($filename, $file) === FALSE)
+		{
+			return FALSE;
+		}
+
+		$result = ee()->filemanager->save_file(
+			$file_path,
+			$directory->id,
+			array(
+				'title'     => $filename,
+				'rel_path'  => dirname($file_path),
+				'file_name' => $filename
+			)
+		);
+
+		return $filename;
 	}
 }
 // END CLASS

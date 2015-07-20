@@ -6,9 +6,8 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 
 /**
  * ExpressionEngine - by EllisLab
@@ -16,7 +15,7 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -60,42 +59,44 @@ class Profile extends CP_Controller {
 
 		$qs = array('id' => $id);
 		$this->query_string = $qs;
-		$this->base_url = new URL('members/profile/settings', ee()->session->session_id());
+		$this->base_url = ee('CP/URL', 'members/profile/settings');
 		$this->base_url->setQueryStringVariable('id', $id);
 		$this->member = ee()->api->get('Member')->filter('member_id', $id)->first();
 
 		ee()->lang->loadfile('members');
+		ee()->lang->loadfile('myaccount');
 		ee()->load->model('member_model');
 		ee()->load->library('form_validation');
 
 		// Register our menu
 		ee()->menu->register_left_nav(array(
-			'personal_settings' => cp_url('members/profile', $qs),
+			'personal_settings' => ee('CP/URL', 'members/profile', $qs),
 			array(
-				'email_settings' => cp_url('members/profile/email', $qs),
-				'auth_settings' => cp_url('members/profile/auth', $qs),
-				'date_settings' => cp_url('members/profile/date', $qs)
+				'email_settings' => ee('CP/URL', 'members/profile/email', $qs),
+				'auth_settings' => ee('CP/URL', 'members/profile/auth', $qs),
+				'date_settings' => ee('CP/URL', 'members/profile/date', $qs)
 			),
-			'publishing_settings' => cp_url('members/profile/publishing', $qs),
+			'publishing_settings' => ee('CP/URL', 'members/profile/publishing', $qs),
 			array(
-				'quick_links' => cp_url('members/profile/quicklinks', $qs),
-				'bookmarklets' => cp_url('members/profile/bookmarks', $qs),
-				'subscriptions' => cp_url('members/profile/subscriptions', $qs)
+				'html_buttons' => ee('CP/URL', 'members/profile/buttons', $qs),
+				'quick_links' => ee('CP/URL', 'members/profile/quicklinks', $qs),
+				'bookmarklets' => ee('CP/URL', 'members/profile/bookmarks', $qs),
+				'subscriptions' => ee('CP/URL', 'members/profile/subscriptions', $qs)
 			),
 			'administration',
 			array(
-				'blocked_members' => cp_url('members/profile/ignore', $qs),
-				'member_group' => cp_url('members/profile/group', $qs),
-				sprintf(lang('email_username'), $this->member->username) => cp_url('utilities/communicate'),
-				sprintf(lang('login_as'), $this->member->username) => cp_url('members/profile/login', $qs),
+				'blocked_members' => ee('CP/URL', 'members/profile/ignore', $qs),
+				'member_group' => ee('CP/URL', 'members/profile/group', $qs),
+				sprintf(lang('email_username'), $this->member->username) => ee('CP/URL', 'utilities/communicate/member/' . $this->member->member_id),
+				sprintf(lang('login_as'), $this->member->username) => ee('CP/URL', 'members/profile/login', $qs),
 				sprintf(lang('delete_username'), $this->member->username) => array(
-					'href' => cp_url('members/delete', $qs),
+					'href' => ee('CP/URL', 'members/delete', $qs),
 					'class' => 'remove',
 					'attrs' => array(
 						'rel' => "modal-confirm-remove",
 						'data-confirm-trigger' => "nodeName",
 						'data-conditional-modal' => "confirm-trigger",
-						'data-confirm-ajax' => cp_url('/members/confirm'),
+						'data-confirm-ajax' => ee('CP/URL', '/members/confirm'),
 						'data-confirm-input' => 'selection',
 						'data-confirm-text' =>  lang('member') . ': <b>' . htmlentities($this->member->screen_name, ENT_QUOTES) . '</b>'
 					)
@@ -105,7 +106,7 @@ class Profile extends CP_Controller {
 
 		$modal_vars = array(
 			'name'		=> 'modal-confirm-remove',
-			'form_url'	=> cp_url('members/delete'),
+			'form_url'	=> ee('CP/URL', 'members/delete'),
 			'hidden'	=> array(
 				'bulk_action'	=> 'remove'
 			)
@@ -120,8 +121,8 @@ class Profile extends CP_Controller {
 			'file' => array('cp/v3/confirm_remove'),
 		));
 
-		ee()->cp->set_breadcrumb(cp_url('members'), lang('members'));
-		ee()->cp->set_breadcrumb(cp_url('members/profile', $this->query_string), $this->member->screen_name);
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'members'), lang('members'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'members/profile', $this->query_string), $this->member->screen_name);
 	}
 
 	// --------------------------------------------------------------------
@@ -147,23 +148,26 @@ class Profile extends CP_Controller {
 		{
 			foreach ($settings as $setting)
 			{
-				foreach ($setting['fields'] as $field_name => $field)
+				if ( ! empty($setting['fields']))
 				{
-					$post = ee()->input->post($field_name);
+					foreach ($setting['fields'] as $field_name => $field)
+					{
+						$post = ee()->input->post($field_name);
 
-					// Handle arrays of checkboxes as a special case;
-					if ($field['type'] == 'checkbox' && is_array($post))
-					{
-						foreach ($field['choices']  as $property)
+						// Handle arrays of checkboxes as a special case;
+						if ($field['type'] == 'checkbox' && is_array($post))
 						{
-							$this->member->$property = in_array($property, $post) ? 'y' : 'n';
+							foreach ($field['choices']  as $property => $label)
+							{
+								$this->member->$property = in_array($property, $post) ? 'y' : 'n';
+							}
 						}
-					}
-					else
-					{
-						if ($post !== FALSE)
+						else
 						{
-							$this->member->$field_name = $post;
+							if ($post !== FALSE)
+							{
+								$this->member->$field_name = $post;
+							}
 						}
 					}
 				}
@@ -172,10 +176,10 @@ class Profile extends CP_Controller {
 
 		$validated = $this->member->validate();
 
-		if ($validated !== TRUE)
+		if ($validated->isNotValid())
 		{
 			ee()->load->helper('html_helper');
-			ee()->view->set_message('issue', lang('cp_message_issue'), ul($validated), TRUE);
+			ee()->view->set_message('issue', lang('cp_message_issue'), ul($validated->getAllErrors()), TRUE);
 
 			return FALSE;
 		}

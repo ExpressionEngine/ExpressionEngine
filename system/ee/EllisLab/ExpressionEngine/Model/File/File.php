@@ -10,7 +10,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -94,7 +94,7 @@ class File extends Model {
 	 */
 	public function getAbsolutePath()
 	{
-		return rtrim($this->getUploadDestination()->server_path, '/') . '/' . $this->file_name;
+		return rtrim($this->UploadDestination->server_path, '/') . '/' . $this->file_name;
 	}
 
 	/**
@@ -105,7 +105,7 @@ class File extends Model {
 	 */
 	public function getAbsoluteURL()
 	{
-		return rtrim($this->getUploadDestination()->url, '/') . '/' . $this->file_name;
+		return rtrim($this->UploadDestination->url, '/') . '/' . $this->file_name;
 	}
 
 	public function onBeforeDelete()
@@ -119,12 +119,12 @@ class File extends Model {
 	* @see UploadDestination::memberGroupHasAccess
 	*
 	* @throws InvalidArgumentException
-	* @param int|MemberGroup $group_id The Meber Group ID
+	* @param int|MemberGroup $group_id The Member Group ID
 	* @return bool TRUE if access is granted; FALSE if access denied
 	*/
 	public function memberGroupHasAccess($group)
 	{
-		$dir = $this->getUploadDestination();
+		$dir = $this->UploadDestination;
 		if ( ! $dir)
 		{
 			return FALSE;

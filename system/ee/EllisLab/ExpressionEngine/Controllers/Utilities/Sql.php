@@ -12,7 +12,7 @@ use EllisLab\ExpressionEngine\Library\CP;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -78,7 +78,7 @@ class Sql extends Utilities {
 				$table['size'],
 				array('toolbar_items' => array(
 					'view' => array(
-						'href' => cp_url(
+						'href' => ee('CP/URL',
 							'utilities/query/run-query/'.$table['name'],
 							array('thequery' => rawurlencode(base64_encode('SELECT * FROM '.$table['name'])))
 						),
@@ -92,12 +92,14 @@ class Sql extends Utilities {
 			);
 		}
 
-		$table = CP\Table::create(array('autosort' => TRUE, 'autosearch' => TRUE));
+		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => TRUE));
 		$table->setColumns(
 			array(
 				'table_name',
 				'records',
-				'size',
+				'size' => array(
+					'encode' => FALSE
+				),
 				'manage' => array(
 					'type'	=> CP\Table::COL_TOOLBAR
 				),
@@ -109,15 +111,12 @@ class Sql extends Utilities {
 		$table->setNoResultsText('no_tables_match');
 		$table->setData($data);
 
-		$base_url = new CP\URL('utilities/sql', ee()->session->session_id());
-		$vars['table'] = $table->viewData($base_url);
+		$vars['table'] = $table->viewData(ee('CP/URL', 'utilities/sql'));
 
-		$pagination = new CP\Pagination(
-			$vars['table']['limit'],
-			$vars['table']['total_rows'],
-			$vars['table']['page']
-		);
-		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
+		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($vars['table']['base_url']);
 
 		ee()->view->cp_page_title = lang('sql_manager');
 		ee()->view->table_heading = lang('database_tables');
@@ -189,11 +188,8 @@ class Sql extends Utilities {
 			ee()->cache->save('sql-op-results', $cache, 3600, \Cache::GLOBAL_SCOPE);
 		}
 
-		// Base URL for filtering
-		$base_url = new CP\URL('utilities/sql/op-results', ee()->session->session_id());
-
 		// Set up our table with automatic sorting and search capability
-		$table = CP\Table::create(array('autosort' => TRUE, 'autosearch' => TRUE));
+		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => TRUE));
 		$table->setColumns(array(
 			'table',
 			'status' => array(
@@ -203,17 +199,15 @@ class Sql extends Utilities {
 		));
 		$table->setData($data);
 		$table->setNoResultsText('no_tables_match');
-		$vars['table'] = $table->viewData($base_url);
+		$vars['table'] = $table->viewData(ee('CP/URL', 'utilities/sql/op-results'));
 
-		$pagination = new CP\Pagination(
-			$vars['table']['limit'],
-			$vars['table']['total_rows'],
-			$vars['table']['page']
-		);
-		$vars['pagination'] = $pagination->cp_links($vars['table']['base_url']);
+		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($vars['table']['base_url']);
 
 		ee()->view->cp_page_title = lang(strtolower($action).'_tables_results');
-		ee()->cp->set_breadcrumb(cp_url('utilities/sql'), lang('sql_manager'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'utilities/sql'), lang('sql_manager'));
 		return ee()->cp->render('utilities/sql/ops', $vars);
 	}
 }

@@ -13,7 +13,7 @@ use EllisLab\ExpressionEngine\Library\CP;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -51,40 +51,40 @@ class Settings extends CP_Controller {
 		// Build Content & Design here so we can conditionally insert
 		// Pages Settings link
 		$content_design = array(
-			'comment_settings' => cp_url('settings/comments'),
-			'template_settings' => cp_url('settings/template')
+			'comment_settings' => ee('CP/URL', 'settings/comments'),
+			'template_settings' => ee('CP/URL', 'settings/template')
 		);
 
 		// Insert the Pages Settings here if Pages module is installed
 		if (ee()->addons_model->module_installed('pages'))
 		{
-			$content_design['pages_settings'] = cp_url('settings/pages');
+			$content_design['pages_settings'] = ee('CP/URL', 'settings/pages');
 		}
 
 		$content_design += array(
-			'word_censoring' => cp_url('settings/word-censor')
+			'word_censoring' => ee('CP/URL', 'settings/word-censor')
 		);
 
 		// Register our menu
 		ee()->menu->register_left_nav(array(
-			'general_settings' => cp_url('settings/general'),
+			'general_settings' => ee('CP/URL', 'settings/general'),
 			array(
-				'license_and_reg' => cp_url('settings/license'),
-				'url_path_settings' => cp_url('settings/urls'),
-				'outgoing_email' => cp_url('settings/email'),
-				'debugging_output' => cp_url('settings/debug-output')
+				'license_and_reg' => ee('CP/URL', 'settings/license'),
+				'url_path_settings' => ee('CP/URL', 'settings/urls'),
+				'outgoing_email' => ee('CP/URL', 'settings/email'),
+				'debugging_output' => ee('CP/URL', 'settings/debug-output')
 			),
-			'content_and_design' => cp_url('settings/content-design'),
+			'content_and_design' => ee('CP/URL', 'settings/content-design'),
 			$content_design,
-			'members' => cp_url('settings/members'),
+			'members' => ee('CP/URL', 'settings/members'),
 			array(
-				'messages' => cp_url('settings/messages'),
-				'avatars' => cp_url('settings/avatars')
+				'messages' => ee('CP/URL', 'settings/messages'),
+				'avatars' => ee('CP/URL', 'settings/avatars')
 			),
-			'security_privacy' => cp_url('settings/security-privacy'),
+			'security_privacy' => ee('CP/URL', 'settings/security-privacy'),
 			array(
-				'access_throttling' => cp_url('settings/throttling'),
-				'captcha' => cp_url('settings/captcha')
+				'access_throttling' => ee('CP/URL', 'settings/throttling'),
+				'captcha' => ee('CP/URL', 'settings/captcha')
 			),
 		));
 	}
@@ -94,7 +94,7 @@ class Settings extends CP_Controller {
 	 */
 	public function index()
 	{
-		ee()->functions->redirect(cp_url('settings/general'));
+		ee()->functions->redirect(ee('CP/URL', 'settings/general'));
 	}
 
 	/**

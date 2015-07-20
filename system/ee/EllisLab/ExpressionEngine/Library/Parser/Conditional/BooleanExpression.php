@@ -10,7 +10,7 @@ use EllisLab\ExpressionEngine\Library\Parser\Conditional\Exception\BooleanExpres
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.9.0
  * @filesource
@@ -320,12 +320,13 @@ class BooleanExpression {
 			return $left;
 		}
 
-		// 5 == "5anything" is definitely not true
-		if (is_numeric($left) && is_string($right))
+		// 5 == "5anything" is definitely not true, but only fix it
+		// if the string has contents so that we're not breaking 0 == ''
+		if (is_numeric($left) && is_string($right) && $right != '')
 		{
 			$left = (string) $left;
 		}
-		elseif (is_numeric($right) && is_string($left))
+		elseif (is_numeric($right) && is_string($left) && $left != '')
 		{
 			$right = (string) $right;
 		}

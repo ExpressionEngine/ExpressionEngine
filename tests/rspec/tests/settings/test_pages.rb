@@ -14,7 +14,7 @@ feature 'Pages Settings' do
 		addon_manager.load
 		no_php_js_errors
 		click_link '2'
-		addon_manager.addons.each do |addon|
+		addon_manager.first_party_addons.each do |addon|
 			if addon.text.include? 'Pages'
 				addon.find('li.install a').click
 				break

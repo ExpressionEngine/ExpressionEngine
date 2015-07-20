@@ -11,7 +11,7 @@ use Exception;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -181,7 +181,7 @@ class InjectionContainer implements ServiceProvider {
 
 		if ( ! isset($this->registry[$name]))
 		{
-			throw new \RuntimeException('Attempt to access unregistered service ' . $name . ' in the DIC.');
+			throw new \RuntimeException('Dependency Injection: Unregistered service "' . $name . '"');
 		}
 		else
 		{

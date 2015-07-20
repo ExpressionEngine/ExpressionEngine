@@ -3,9 +3,8 @@
 namespace EllisLab\ExpressionEngine\Controllers\Design;
 
 use ZipArchive;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Controllers\Design\AbstractDesign as AbstractDesignController;
 
@@ -15,7 +14,7 @@ use EllisLab\ExpressionEngine\Controllers\Design\AbstractDesign as AbstractDesig
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -67,7 +66,7 @@ class Design extends AbstractDesignController {
 
 			if ( ! $group)
 			{
-				ee()->functions->redirect(cp_url('design/system'));
+				ee()->functions->redirect(ee('CP/URL', 'design/system'));
 			}
 		}
 		else
@@ -93,7 +92,7 @@ class Design extends AbstractDesignController {
 			if ($this->hasEditTemplatePrivileges($group->group_id))
 			{
 				$this->remove(ee()->input->post('selection'));
-				ee()->functions->redirect(cp_url('design/manager/' . $group_name, ee()->cp->get_url_state()));
+				ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group_name, ee()->cp->get_url_state()));
 			}
 			else
 			{
@@ -110,7 +109,7 @@ class Design extends AbstractDesignController {
 		$vars['show_new_template_button'] = TRUE;
 		$vars['group_id'] = $group->group_name;
 
-		$base_url = new URL('design/manager/' . $group->group_name, ee()->session->session_id());
+		$base_url = ee('CP/URL', 'design/manager/' . $group->group_name);
 
 		$table = $this->buildTableFromTemplateCollection($group->getTemplates());
 
@@ -120,15 +119,13 @@ class Design extends AbstractDesignController {
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
-			$pagination = new Pagination(
-				$vars['table']['limit'],
-				$vars['table']['total_rows'],
-				$vars['table']['page']
-			);
-			$vars['pagination'] = $pagination->cp_links($base_url);
+			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+				->perPage($vars['table']['limit'])
+				->currentPage($vars['table']['page'])
+				->render($base_url);
 		}
 
-		ee()->javascript->set_global('template_settings_url', cp_url('design/template/settings/###'));
+		ee()->javascript->set_global('template_settings_url', ee('CP/URL', 'design/template/settings/###')->compile());
 		ee()->javascript->set_global('lang.remove_confirm', lang('template') . ': <b>### ' . lang('templates') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(

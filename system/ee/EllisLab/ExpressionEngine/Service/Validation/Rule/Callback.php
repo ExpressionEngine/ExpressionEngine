@@ -10,7 +10,7 @@ use EllisLab\ExpressionEngine\Service\Validation\ValidationRule;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -39,11 +39,12 @@ class Callback extends ValidationRule {
 
 	public function validate($key, $value)
 	{
-		$result = call_user_func($this->callback, $key, $value, $this->parameters);
+		$result = call_user_func($this->callback, $key, $value, $this->parameters, $this);
 
 		if ($result !== TRUE)
 		{
 			$this->last_error = $result;
+
 			return FALSE;
 		}
 

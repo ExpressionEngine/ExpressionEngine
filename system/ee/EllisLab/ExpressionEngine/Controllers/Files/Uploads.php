@@ -7,6 +7,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 use CP_Controller;
 
 use EllisLab\ExpressionEngine\Library\CP;
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 use EllisLab\ExpressionEngine\Controllers\Files\AbstractFiles as AbstractFilesController;
 
 /**
@@ -15,7 +16,7 @@ use EllisLab\ExpressionEngine\Controllers\Files\AbstractFiles as AbstractFilesCo
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -85,7 +86,7 @@ class Uploads extends AbstractFilesController {
 		if (is_null($upload_id))
 		{
 			ee()->view->cp_page_title = lang('create_upload_directory');
-			ee()->view->base_url = cp_url('files/uploads/create');
+			ee()->view->base_url = ee('CP/URL', 'files/uploads/create');
 			ee()->view->save_btn_text = 'btn_create_directory';
 			ee()->view->save_btn_text_working = 'btn_create_directory_working';
 			$upload_destination = ee('Model')->make('UploadDestination');
@@ -101,7 +102,7 @@ class Uploads extends AbstractFilesController {
 			}
 
 			ee()->view->cp_page_title = lang('edit_upload_directory');
-			ee()->view->base_url = cp_url('files/uploads/edit/'.$upload_id);
+			ee()->view->base_url = ee('CP/URL', 'files/uploads/edit/'.$upload_id);
 			ee()->view->save_btn_text = 'btn_edit_directory';
 			ee()->view->save_btn_text_working = 'btn_saving';
 		}
@@ -135,7 +136,7 @@ class Uploads extends AbstractFilesController {
 
 			if ($validate)
 			{
-				$new_upload_id = $this->saveUploadPreferences($upload_destination);
+				$new_upload_id = $upload_destination->save()->getId();
 
 				ee('Alert')->makeInline('shared-form')
 					->asSuccess()
@@ -143,7 +144,7 @@ class Uploads extends AbstractFilesController {
 					->addToBody(lang('directory_saved_desc'))
 					->defer();
 
-				ee()->functions->redirect(cp_url('files/uploads/edit/' . $new_upload_id));
+				ee()->functions->redirect(ee('CP/URL', 'files/uploads/edit/' . $new_upload_id));
 			}
 			else
 			{
@@ -208,7 +209,7 @@ class Uploads extends AbstractFilesController {
 					'desc' => '',
 					'fields' => array(
 						'allowed_types' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'img' => lang('upload_allowed_types_opt_images'),
 								'all' => lang('upload_allowed_types_opt_all')
@@ -295,6 +296,7 @@ class Uploads extends AbstractFilesController {
 		$this->load->model('category_model');
 		$query = $this->category_model->get_category_groups('', FALSE, 1);
 
+		$cat_group_options = array();
 		if ($query->num_rows() > 0)
 		{
 			foreach ($query->result() as $row)
@@ -317,7 +319,7 @@ class Uploads extends AbstractFilesController {
 
 		ee()->view->ajax_validate = TRUE;
 
-		ee()->cp->set_breadcrumb(cp_url('files'), lang('file_manager'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'files'), lang('file_manager'));
 
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -331,10 +333,11 @@ class Uploads extends AbstractFilesController {
 	private function getImageSizesGrid($upload_destination = NULL)
 	{
 		// Image manipulations Grid
-		$grid = ee('Grid')->make(array(
+		$grid = ee('CP/GridInput', array(
 			'field_name' => 'image_manipulations',
 			'reorder'    => FALSE, // Order doesn't matter here
 		));
+		$grid->loadAssets();
 		$grid->setColumns(
 			array(
 				'image_manip_name' => array(
@@ -440,6 +443,7 @@ class Uploads extends AbstractFilesController {
 		);
 
 		$size = array_merge($defaults, $size);
+		$size = array_map('form_prep', $size);
 
 		return array(
 			array(
@@ -567,12 +571,12 @@ class Uploads extends AbstractFilesController {
 
 		if ($no_access->count() > 0)
 		{
-			$upload_destination->setNoAccess($no_access);
+			$upload_destination->NoAccess = $no_access;
 		}
 		else
 		{
 			// Remove all member groups from this upload destination
-			$upload_destination->removeNoAccess();
+			$upload_destination->NoAccess = NULL;
 		}
 
 		$result = $upload_destination->validate();
@@ -584,81 +588,63 @@ class Uploads extends AbstractFilesController {
 
 		$image_sizes = ee()->input->post('image_manipulations');
 
-		if ( ! empty($image_sizes))
+		$existing_ids = array();
+		$new_sizes = array();
+
+		// collect existing to keep, and new ones to add
+		if (isset($image_sizes['rows']))
 		{
 			foreach ($image_sizes['rows'] as $row_id => $columns)
 			{
-				// Existing rows
 				if (strpos($row_id, 'row_id_') !== FALSE)
 				{
-					$image_size = ee('Model')->get('FileDimension', str_replace('row_id_', '', $row_id))
-						->first();
+					$existing_ids[] = str_replace('row_id_', '', $row_id);
 				}
 				else
 				{
-					$image_size = ee('Model')->make('FileDimension');
-					$upload_destination->createFileDimensions($image_size);
-					$image_size->setUploadDestination($upload_destination);
-				}
-
-				$image_size->set($columns);
-				$result = $image_size->validate();
-
-				if ( ! $result->isValid())
-				{
-					$this->upload_errors['image_sizes'][$row_id] = $result->renderErrors();
+					$new_sizes[$row_id] = $columns;
 				}
 			}
 		}
 
+		if (empty($existing_ids))
+		{
+			$upload_destination->FileDimensions = new Collection();
+		}
+		else
+		{
+			$upload_destination->FileDimensions = ee('Model')->get('FileDimension', $existing_ids)->all();
+		}
+
+		$validate = array();
+
+		foreach ($upload_destination->FileDimensions as $model)
+		{
+			$row_id = 'row_id_'.$model->getId();
+			$model->set($image_sizes['rows'][$row_id]);
+
+			$validate[$row_id] = $model;
+		}
+
+		foreach ($new_sizes as $row_id => $columns)
+		{
+			$model = ee('Model')->make('FileDimension', $columns);
+			$upload_destination->FileDimensions[] = $model;
+
+			$validate[$row_id] = $model;
+		}
+
+		foreach ($validate as $row_id => $model)
+		{
+			$result = $model->validate();
+
+			if ( ! $result->isValid())
+			{
+				$this->upload_errors['image_sizes'][$row_id] = $result->renderErrors();
+			}
+		}
+
 		return empty($this->upload_errors);
-	}
-
-	/**
-	 * Saves the upload destination and its children
-	 *
-	 * @param	int		$id	ID of upload destination to save
-	 * @return	bool	Success or failure
-	 */
-	private function saveUploadPreferences($upload_destination)
-	{
-		$upload_destination->save();
-
-		// Delete deleted image size rows (uncomment when models are fixed)
-		//$image_sizes = $upload_destination->getFileDimensions();
-
-		//if ( ! empty($image_sizes))
-		//{
-		//	$image_sizes->filter('id', 'NOT IN', $image_sizes->pluck('id'));
-		//}
-
-		//$image_sizes->filter('upload_location_id', $upload_destination->id)->delete();
-
-		// Temporary workaround for models bug where the upload_location_id is not
-		// filled in if you save image sizes with a new upload destination
-		$image_sizes = ee('Model')->get('FileDimension')
-			->filter('upload_location_id', NULL)
-			->all();
-
-		foreach ($image_sizes as $image_size)
-		{
-			$image_size->upload_location_id = $upload_destination->id;
-			$image_size->save();
-		}
-
-		$image_manipulations = ee()->input->post('image_manipulations');
-
-		// Temporary workaround for models bug where it's not saving the
-		// first image manipulation if there are more than one
-		if (empty($this->upload_errors) && ! empty($image_manipulations))
-		{
-			$keys = array_keys($image_manipulations['rows']);
-			$image_size = ee('Model')->make('FileDimension', $image_manipulations['rows'][$keys[0]]);
-			$image_size->upload_location_id = $upload_destination->id;
-			$image_size->save();
-		}
-
-		return $upload_destination->id;
 	}
 
 	/**
@@ -670,7 +656,7 @@ class Uploads extends AbstractFilesController {
 	{
 		if (empty($upload_id))
 		{
-			ee()->functions->redirect(cp_url('files/uploads'));
+			ee()->functions->redirect(ee('CP/URL', 'files/uploads'));
 		}
 
 		ee()->load->model('file_upload_preferences_model');
@@ -741,7 +727,7 @@ class Uploads extends AbstractFilesController {
 			);
 		}
 
-		$base_url = cp_url('files/uploads/sync/'.$upload_id);
+		$base_url = ee('CP/URL', 'files/uploads/sync/'.$upload_id);
 
 		ee()->cp->add_js_script('file', 'cp/files/synchronize');
 
@@ -751,8 +737,8 @@ class Uploads extends AbstractFilesController {
 				'sync_files'      => $files,
 				'sync_file_count' => $files_count,
 				'sync_sizes'      => $js_size,
-				'sync_baseurl'    => $base_url,
-				'sync_endpoint'   => cp_url('files/uploads/do_sync_files'),
+				'sync_baseurl'    => $base_url->compile(),
+				'sync_endpoint'   => ee('CP/URL', 'files/uploads/do_sync_files')->compile(),
 				'sync_dir_name'   => $upload_destination['name'],
 			)
 		));
@@ -763,7 +749,7 @@ class Uploads extends AbstractFilesController {
 		ee()->view->save_btn_text = 'btn_sync_directory';
 		ee()->view->save_btn_text_working = 'btn_sync_directory_working';
 
-		ee()->cp->set_breadcrumb(cp_url('files'), lang('file_manager'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'files'), lang('file_manager'));
 
 		// Errors are given through a POST to this same page
 		$errors = ee()->input->post('errors');

@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -278,6 +278,21 @@ abstract class EE_Fieldtype {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Validate the settings
+	 *
+	 * This is called before the settings are fully saved
+	 *
+	 * @param mixed   settings data
+	 * @return mixed  validation result
+	 */
+	public function validate_settings($data)
+	{
+		return;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Validate the field data
 	 *
 	 * This is called before the field is stored, so you can sanity check
@@ -293,6 +308,26 @@ abstract class EE_Fieldtype {
 	public function validate($data)
 	{
 		return TRUE;
+	}
+
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Mark the field as having a certain status. Different statuses *may*
+	 * cause changes in the appearance of the field or it's elements. For
+	 * example a field in a warning state may be rendered with a yellow flag
+	 * to alert the user that it requires attention.
+	 *
+	 * Statuses are not to be confused with validation. No status will
+	 * prevent the submission of the form, but it may indicate to the user
+	 * that validaiton is likely to fail.
+	 *
+	 * @return String {ok, invalid, warning, error, failure}
+	 */
+	public function get_field_status($data)
+	{
+		return 'ok';
 	}
 
 	// --------------------------------------------------------------------
@@ -321,9 +356,6 @@ abstract class EE_Fieldtype {
 	 */
 	public function display_publish_field($data)
 	{
-		$vars['glossary_items'] = ee()->load->ee_view('content/_assets/glossary_items', '', TRUE);
-
-		ee()->load->vars($vars);
 		return $this->display_field($data);
 	}
 
@@ -1024,6 +1056,40 @@ abstract class EE_Fieldtype {
 	public function grid_full_cell_container($string)
 	{
 		return '<div class="grid_full_cell_container">'.$string.'</div>';
+	}
+
+	/**
+	 * Returns an associative array of channels with their fields
+	 *
+	 * @return array An array in the following form:
+	 *   'channel_title' => array (
+	 *     '1_1' => 'field_label'
+	 *   )
+	 */
+	public function get_channel_field_list()
+	{
+		$channels_options = array();
+		$channels = ee('Model')->get('Channel')
+			->with('CustomFields')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('channel_title', 'asc')
+			->all();
+
+		foreach ($channels as $channel)
+		{
+			foreach ($channel->CustomFields as $field)
+			{
+				$channels_options[$channel->channel_title][$channel->channel_id . '_' . $field->field_id] = htmlentities($field->field_label, ENT_QUOTES, 'UTF-8');
+			}
+		}
+
+		// No Channel fields available
+		if (empty($channels_options))
+		{
+			$channels_options[''] = lang('no_fields');
+		}
+
+		return $channels_options;
 	}
 }
 // END EE_Fieldtype class

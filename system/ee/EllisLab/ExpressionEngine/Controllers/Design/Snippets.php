@@ -4,9 +4,8 @@ namespace EllisLab\ExpressionEngine\Controllers\Design;
 
 use ZipArchive;
 use EllisLab\ExpressionEngine\Controllers\Design\AbstractDesign as AbstractDesignController;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 
 /**
  * ExpressionEngine - by EllisLab
@@ -14,7 +13,7 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -58,7 +57,7 @@ class Snippets extends AbstractDesignController {
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
-			ee()->functions->redirect(cp_url('design/snippets', ee()->cp->get_url_state()));
+			ee()->functions->redirect(ee('CP/URL', 'design/snippets', ee()->cp->get_url_state()));
 		}
 		elseif (ee()->input->post('bulk_action') == 'export')
 		{
@@ -66,10 +65,12 @@ class Snippets extends AbstractDesignController {
 		}
 
 		$vars = array();
-		$table = Table::create(array('autosort' => TRUE));
+		$table = ee('CP/Table', array('autosort' => TRUE));
 		$columns = array(
 			'partial',
-			'all_sites',
+			'all_sites' => array(
+				'encode' => FALSE
+			),
 			'manage' => array(
 				'type'	=> Table::COL_TOOLBAR
 			),
@@ -92,7 +93,7 @@ class Snippets extends AbstractDesignController {
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
-		$base_url = new URL('design/snippets', ee()->session->session_id());
+		$base_url = ee('CP/URL', 'design/snippets');
 
 		foreach($snippets as $snippet)
 		{
@@ -109,11 +110,11 @@ class Snippets extends AbstractDesignController {
 				$all_sites,
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => cp_url('design/snippets/edit/' . $snippet->snippet_name),
+						'href' => ee('CP/URL', 'design/snippets/edit/' . $snippet->snippet_name),
 						'title' => lang('edit')
 					),
 					'find' => array(
-						'href' => cp_url('design/template/search', array('search' => '{' . $snippet->snippet_name . '}')),
+						'href' => ee('CP/URL', 'design/template/search', array('search' => '{' . $snippet->snippet_name . '}')),
 						'title' => lang('find')
 					),
 				)),
@@ -152,12 +153,10 @@ class Snippets extends AbstractDesignController {
 		if ( ! empty($vars['table']['data']))
 		{
 			// Paginate!
-			$pagination = new Pagination(
-				$vars['table']['limit'],
-				$vars['table']['total_rows'],
-				$vars['table']['page']
-			);
-			$vars['pagination'] = $pagination->cp_links($base_url);
+			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+				->perPage($vars['table']['limit'])
+				->currentPage($vars['table']['page'])
+				->render($base_url);
 		}
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('template_partial') . ': <b>### ' . lang('template_partials') . '</b>');
@@ -175,7 +174,7 @@ class Snippets extends AbstractDesignController {
 	{
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => cp_url('design/snippets/create'),
+			'base_url' => ee('CP/URL', 'design/snippets/create'),
 			'save_btn_text' => 'btn_create_partial',
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
@@ -263,7 +262,7 @@ class Snippets extends AbstractDesignController {
 				->addToBody(sprintf(lang('create_template_partial_success_desc'), $snippet->snippet_name))
 				->defer();
 
-			ee()->functions->redirect(cp_url('design/snippets'));
+			ee()->functions->redirect(ee('CP/URL', 'design/snippets'));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -276,7 +275,7 @@ class Snippets extends AbstractDesignController {
 
 		ee()->view->cp_page_title = lang('create_partial');
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('design/snippets') => lang('template_partials'),
+			ee('CP/URL', 'design/snippets')->compile() => lang('template_partials'),
 		);
 
 		$this->loadCodeMirrorAssets('snippet_contents');
@@ -298,7 +297,7 @@ class Snippets extends AbstractDesignController {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => cp_url('design/snippets/edit/' . $snippet_name),
+			'base_url' => ee('CP/URL', 'design/snippets/edit/' . $snippet_name),
 			'form_hidden' => array(
 				'old_name' => $snippet->snippet_name
 			),
@@ -388,7 +387,7 @@ class Snippets extends AbstractDesignController {
 				->addToBody(sprintf(lang('edit_template_partial_success_desc'), $snippet->snippet_name))
 				->defer();
 
-			ee()->functions->redirect(cp_url('design/snippets'));
+			ee()->functions->redirect(ee('CP/URL', 'design/snippets'));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -401,7 +400,7 @@ class Snippets extends AbstractDesignController {
 
 		ee()->view->cp_page_title = lang('edit_partial');
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('design/snippets') => lang('template_partials'),
+			ee('CP/URL', 'design/snippets')->compile() => lang('template_partials'),
 		);
 
 		$this->loadCodeMirrorAssets('snippet_contents');

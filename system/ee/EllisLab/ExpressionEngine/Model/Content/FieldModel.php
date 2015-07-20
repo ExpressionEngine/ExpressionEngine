@@ -3,10 +3,9 @@
 namespace EllisLab\ExpressionEngine\Model\Content;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 abstract class FieldModel extends Model {
-
-	protected $field_type;
 
 	protected static $_events = array(
 		'afterInsert',
@@ -14,10 +13,92 @@ abstract class FieldModel extends Model {
 		'afterDelete'
 	);
 
+
+	protected $_facade;
+
 	/**
 	 * Return the storing table
 	 */
 	abstract public function getDataTable();
+
+	/**
+	 *
+	 */
+	abstract public function getStructure();
+
+	/**
+	 *
+	 */
+	public function getField($override = array())
+	{
+		$field_type = $this->getFieldType();
+
+		if (empty($field_type))
+		{
+			throw new \Exception('Cannot get field of unknown type.');
+		}
+
+		if ( ! isset($this->_facade) ||
+			$this->_facade->getType() != $this->getFieldType() ||
+			$this->_facade->getId() != $this->getId())
+		{
+			$values = array_merge($this->getValues(), $override);
+
+			$this->_facade = new FieldFacade($this->getId(), $values);
+			$this->_facade->setContentType($this->getContentType());
+		}
+
+		return $this->_facade;
+	}
+
+	public function getSettingsForm()
+	{
+		return $this->getField($this->getSettingsValues())->getSettingsForm();
+	}
+
+	public function getSettingsValues()
+	{
+		return $this->getValues();
+	}
+
+	protected function getContentType()
+	{
+		return $this->getStructure()->getContentType();
+	}
+
+	public function set(array $data = array())
+	{
+		$field = $this->getField($this->getSettingsValues());
+		$data = array_merge($data, $field->saveSettingsForm($data));
+
+		return parent::set($data);
+	}
+
+	public function validate()
+	{
+		$result = parent::validate();
+
+		$settings = $this->getSettingsValues();
+
+		if (isset($settings['field_settings']))
+		{
+			$field = $this->getField($this->getSettingsValues());
+			$settings_result = $field->validateSettingsForm($settings['field_settings']);
+
+			if ($settings_result instanceOf ValidationResult && $settings_result->failed())
+			{
+				foreach ($settings_result->getFailed() as $name => $rules)
+				{
+					foreach ($rules as $rule)
+					{
+						$result->addFailed($name, $rule);
+					}
+				}
+			}
+		}
+
+		return $result;
+	}
 
 	/**
 	 * After inserting, add the columns to the data table
@@ -33,6 +114,8 @@ abstract class FieldModel extends Model {
 		$columns = $this->ensureDefaultColumns($columns);
 
 		$this->createColumns($columns);
+
+		$this->callPostSaveSettings();
 	}
 
 	/**
@@ -67,6 +150,8 @@ abstract class FieldModel extends Model {
 
 			$this->diffColumns($old_columns, $new_columns);
 		}
+
+		$this->callPostSaveSettings();
 	}
 
 	protected function callSettingsModify($ft, $action, $changed = array())
@@ -76,7 +161,7 @@ abstract class FieldModel extends Model {
 
 		if ( ! isset($data['field_settings']))
 		{
-			$data['field_settings'] = base64_encode(serialize(array()));
+			$data['field_settings'] = array();
 		}
 
 		$data['ee_action'] = $action;
@@ -85,15 +170,38 @@ abstract class FieldModel extends Model {
 	}
 
 	/**
+	 * Calls post_save_settings on the fieldtype
+	 */
+	protected function callPostSaveSettings()
+	{
+		$data = $this->getValues();
+		$field = $this->getField($this->getSettingsValues());
+		$field->postSaveSettings($data);
+	}
+
+	/**
 	 * Get the instance of the current fieldtype
 	 */
 	protected function getFieldtypeInstance($field_type = NULL, $changed = array())
 	{
-		$field_type = $field_type ?: $this->field_type;
+		$field_type = $field_type ?: $this->getFieldType();
 		$values = array_merge($this->getValues(), $changed);
 
 		$facade = new FieldFacade($this->getId(), $values);
+		$facade->setContentType($this->getContentType());
 		return $facade->getNativeField();
+	}
+
+	/**
+	 * Simple getter for field type, override if your field type property has a
+	 * different name.
+	 *
+	 * @access protected
+	 * @return string The field type.
+	 */
+	protected function getFieldType()
+	{
+		return $this->field_type;
 	}
 
 	/**
@@ -192,7 +300,11 @@ abstract class FieldModel extends Model {
 		$data_table = $this->getDataTable();
 
 		ee()->load->dbforge();
-		ee()->dbforge->drop_column($columns, $column);
+
+		foreach ($columns as $column)
+		{
+			ee()->dbforge->drop_column($data_table, $column);
+		}
 	}
 
 	/**

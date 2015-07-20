@@ -64,11 +64,9 @@ $lang = array(
 
 
 /* Translation */
-'translation_dir_unwritable' =>
-'Warning: Your translation directory is not writable.',
+'translation_dir_unwritable' => 'Warning: Your translation directory is not writable.',
 
-'screen_name' =>
-'Screen Name',
+'screen_name' => 'Screen Name',
 
 
 ''=>''

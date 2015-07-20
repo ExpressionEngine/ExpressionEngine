@@ -13,6 +13,11 @@ class FieldDisplay {
 		$this->field = $field;
 	}
 
+	public function get($key)
+	{
+		return $this->field->getItem($key);
+	}
+
 	public function getType()
 	{
 		return $this->field->getItem('field_type');
@@ -26,6 +31,11 @@ class FieldDisplay {
 	public function getName()
 	{
 		return $this->field->getName();
+	}
+
+	public function getStatus()
+	{
+		return $this->field->getStatus();
 	}
 
 	public function getLabel()

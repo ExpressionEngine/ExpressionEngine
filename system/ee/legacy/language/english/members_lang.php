@@ -2,943 +2,794 @@
 
 $lang = array(
 
-"register_member" =>
-"Register a New Member",
+"register_member" => "Register a New Member",
 
-"view_members" =>
-"View Members",
+"view_members" => "View Members",
 
-"all_members" =>
-"All Members",
+"all_members" => "All Members",
 
-"view_search_members" =>
-"View / Search Members",
+"member_updated" => "Member saved",
 
-"member_validation" =>
-"Activate Pending Members",
+"member_updated_desc" => "Member has been saved successfully.",
 
-"pending_activation" =>
-"Pending Activation",
+"member_group_updated\w" => "Member Group saved",
 
-"member_search" =>
-"Member Search",
+"member_group_updated_desc" => "Member Group has been saved successfully.",
 
-"user_banning" =>
-"User Banning",
+"member_field_saved" => "Member Field saved",
 
-"manage_bans" =>
-"Manage Bans",
+"member_field_saved_desc" => "Member Field has been saved successfully.",
 
-"custom_profile_fields" =>
-"Member Fields",
+"member_field_not_saved" => "Member Field could not be saved",
 
-"member_cfg_existing" =>
-"Member Group \"%s\" Settings",
+"member_field_not_saved_desc" => "Member Field could not be saved",
 
-"member_cfg" =>
-"Member Group Settings",
+"all_members" => "All Members",
 
-"member_prefs" =>
-"Member Preferences",
+"view_search_members" => "View / Search Members",
 
-"preferences_updated" =>
-'Preferences Updated',
+"member_validation" => "Activate Pending Members",
 
-"profile_templates" =>
-"Member Profile Templates",
+"pending_activation" => "Pending Activation",
 
-"ip_search" =>
-"IP Address Search",
+"member_search" => "Member Search",
 
-"member_groups" =>
-"Member Groups",
+"user_banning" => "User Banning",
 
-"keywords" =>
-"Keywords",
+"manage_bans" => "Manage Bans",
 
-"filter_by" =>
-"Filter by",
+"custom_profile_fields" => "Custom Member Fields",
 
-"filter_member_name" =>
-"Filter by Member Name",
+"member_fields_removed_desc" => "The following Member Fields have been removed:",
 
-"filter_member_group" =>
-"Filter by Member Group",
+"member_cfg_existing" => "Member Group \"%s\" Settings",
 
-"member_group_assignment" =>
-"Member Group Assignment",
+"member_cfg" => "Member Group Settings",
 
-"password_confirm" =>
-"Confirm Password",
+"member_prefs" => "Member Preferences",
 
-"email" =>
-"Email",
+"preferences_updated" => 'Preferences Updated',
 
-"invalid_path" =>
-"The path you submitted is not valid.",
+"profile_templates" => "Member Profile Templates",
 
-"invalid_path_description" =>
-"The following path you submitted is not valid:",
+"ip_search" => "IP Address Search",
 
-"not_writable_path" =>
-"The path you submitted is not writeable.  Please make sure the file permissions are set to 777.",
+"all_member_groups" => "All Member Groups",
+
+"member_groups" => "Member Groups",
+
+"save_member_group" => "Edit Member Group",
+
+"member_delete_success" => "Member has been deleted",
+
+"member_approve" => "Approve Member",
+
+"keywords" => "Keywords",
+
+"filter_by" => "Filter by",
+
+"filter_member_name" => "Filter by Member Name",
+
+"filter_member_group" => "Filter by Member Group",
+
+"member_group_assignment" => "Member Group Assignment",
+
+"password_desc" => "Use lowercase and uppercase letters, numbers, and symbols for the strongest passwords.",
+
+"password_confirm" => "Confirm Password",
+
+"password_confirm_desc" => "Retype desired password, to confirm.",
+
+"email" => "Email",
+
+"invalid_path" => "The path you submitted is not valid.",
+
+"invalid_path_description" => "The following path you submitted is not valid:",
+
+"not_writable_path" => "The path you submitted is not writeable.  Please make sure the file permissions are set to 777.",
 
 //----------------------------------------
 
-"include_in_memberlist" =>
-"Include Members in Site's Member List?",
+"include_in_memberlist" => "Include Members in Site's Member List?",
 
-"include_in_authorlist" =>
-"Include Members in PUBLISH page multi-author list?",
+"include_in_authorlist" => "Include Members in PUBLISH page multi-author list?",
 
-"field_description" =>
-"Field Description",
+"field_description" => "Field Description",
 
-"field_description_info" =>
-"This field can be used to provide instructions or additional information.",
+"field_description_info" => "This field can be used to provide instructions or additional information.",
 
-"can_edit_categories" =>
-"Can edit and add new categories",
+"can_edit_categories" => "Can edit and add new categories",
 
-"can_delete_categories" =>
-"Can delete categories",
+"can_delete_categories" => "Can delete categories",
 
-"can_not_delete_self" =>
-"You are not allowed to delete your own membership account.",
+"can_not_delete_self" => "You are not allowed to delete your own membership account.",
 
-"no_heirs_available" =>
-"The member you are attempting to delete has channel entries assigned",
+"no_heirs_available" => "The member you are attempting to delete has channel entries assigned",
 
-'heir_to_member_entries' =>
-"This member has entries assigned to their account. What would you like to do with those entries?",
+'heir_to_member_entries' => "This member has entries assigned to their account. What would you like to do with those entries?",
 
-'heir_to_members_entries' =>
-"Some of these members have entries assigned to their accounts.  What would you like to do with those entries?",
+'heir_to_members_entries' => "Some of these members have entries assigned to their accounts.  What would you like to do with those entries?",
 
-"forum_topics" =>
-"Forum Topics",
+"forum_topics" => "Forum Topics",
 
-"forum_posts" =>
-"Forum Posts",
+"forum_posts" => "Forum Posts",
 
-"topic" =>
-"Topic",
+"topic" => "Topic",
 
-"title" =>
-"Title",
+"title" => "Title",
 
-"author" =>
-"Author",
+"author" => "Author",
 
-"comment" =>
-"Comment",
+"comment" => "Comment",
 
-"comments" =>
-"Comments",
+"comments" => "Comments",
 
-"channel_entries" =>
-"Channel Entries",
+"channel_entries" => "Channel Entries",
 
-"ip_search_instructions" =>
-"You can submit a partial or full IP address",
+"ip_search_instructions" => "You can submit a partial or full IP address",
 
-"ip_search_too_short" =>
-"The IP address you submitted is too short.  It must be at least 3 characters long.",
+"ip_search_too_short" => "The IP address you submitted is too short.  It must be at least 3 characters long.",
 
-"ip_search_no_results" =>
-"Your search did not return any results",
+"ip_search_no_results" => "Your search did not return any results",
 
-"member_accounts" =>
-"Membership Accounts",
+"member_accounts" => "Membership Accounts",
 
-'login_as_user' =>
-"SuperAdmin Logging In as User",
+'login_as_user' => "SuperAdmin Logging In as User",
 
-'control_panel' =>
-"Control Panel",
+'control_panel' => "Control Panel",
 
-'site_homepage' =>
-"Site Homepage",
+'site_homepage' => "Site Homepage",
 
-'login_as_member_description' =>
-"When you click submit, you will be logged in as the member '%screen_name%' and redirected to the page below.",
+'login_as_member_description' => "When you click submit, you will be logged in as the member '%screen_name%' and redirected to the page below.",
 
-'other' =>
-"Other",
+'other' => "Other",
 
-'field_order_updated' =>
-"Field order updated",
+'field_order_updated' => "Field order updated",
 
 /* moved to design - DJ
 
-"member_page" =>
-"Member Profile Outer Enclosure",
+"member_page" => "Member Profile Outer Enclosure",
 
-"full_profile" =>
-"Full Profile Page",
+"full_profile" => "Full Profile Page",
 
-"basic_profile" =>
-"Limited Profile Page",
+"basic_profile" => "Limited Profile Page",
 
-"message_success" =>
-"Private Message - Success",
+"message_success" => "Private Message - Success",
 
-"message_error" =>
-"Private Message - Error",
+"message_error" => "Private Message - Error",
 
-"message_menu" =>
-"Private Message - Menu",
+"message_menu" => "Private Message - Menu",
 
-"message_menu_rows" =>
-"Private Message - Menu Rows",
+"message_menu_rows" => "Private Message - Menu Rows",
 
-"preview_message" =>
-"Private Message - Preview",
+"preview_message" => "Private Message - Preview",
 
-"message_compose" =>
-"Private Message - Compose Page",
+"message_compose" => "Private Message - Compose Page",
 
-"view_message" =>
-"Private Message - View Message",
+"view_message" => "Private Message - View Message",
 
-"message_folder" =>
-"Private Message - Message Folder",
+"message_folder" => "Private Message - Message Folder",
 
-"message_folder_rows" =>
-"Private Message - Message Folder Rows",
+"message_folder_rows" => "Private Message - Message Folder Rows",
 
-"message_no_folder_rows" =>
-"Private Message - Message No Folder Rows",
+"message_no_folder_rows" => "Private Message - Message No Folder Rows",
 
-"search_members" =>
-"Private Message - Member Search",
+"search_members" => "Private Message - Member Search",
 
-"member_results" =>
-"Private Message - Member Search Results",
+"member_results" => "Private Message - Member Search Results",
 
-"member_results_row" =>
-"Private Message - Member Search Result Rows",
+"member_results_row" => "Private Message - Member Search Result Rows",
 
-"message_submission_error" =>
-"Private Message - Submission Error",
+"message_submission_error" => "Private Message - Submission Error",
 
-"message_attachment_link" =>
-"Private Message - Attachment Link",
+"message_attachment_link" => "Private Message - Attachment Link",
 
-"message_attachments" =>
-"Private Message - Attachments",
+"message_attachments" => "Private Message - Attachments",
 
-"message_attachment_rows" =>
-"Private Message - Attachment Rows",
+"message_attachment_rows" => "Private Message - Attachment Rows",
 
-"message_edit_folders" =>
-"Private Message - Edit Folders",
+"message_edit_folders" => "Private Message - Edit Folders",
 
-"message_edit_folders_row" =>
-"Private Message - Edit Folders Rows",
+"message_edit_folders_row" => "Private Message - Edit Folders Rows",
 
-"buddies_block_list" =>
-"Private Message - Buddies and Block List",
+"buddies_block_list" => "Private Message - Buddies and Block List",
 
-"buddies_block_row" =>
-"Private Message - Buddies and Block List Rows",
+"buddies_block_row" => "Private Message - Buddies and Block List Rows",
 
-"empty_list" =>
-"Private Message - Empty List",
+"empty_list" => "Private Message - Empty List",
 */
 
-"priv_msg_privs" =>
-"Private Messaging Privileges",
+"personal_messaging" => "Personal Messaging",
 
-"can_send_private_messages" =>
-"Can Send Private Messages",
+"priv_msg_privs" => "Private Messaging Privileges",
 
-"can_attach_in_private_messages" =>
-"Can Add Attachments to Private Messages",
+"can_send_private_messages" => "Access personal messages",
 
-"fieldlabel" =>
-"Field Label",
+"can_send_private_messages_desc" => "When set to yes, users assigned to this group may send and receive personal messages.",
 
-"index" =>
-"Main Index Page",
+"can_attach_in_private_messages" => "Allow attachments",
 
-"member_assignment_warning" =>
-"%x member(s) are currently assigned to this group. What member group should they be re-assigned to?",
+"can_attach_in_private_messages_desc" => "When set to yes, users assigned to this group may attach files to personal messages.",
+
+"fieldlabel" => "Field Label",
+
+"field_label_desc" => "Name of field that appears in the member form.",
+
+"field_short_name_desc" => "Short name for this field.<br><i>No spaces. Underscores and dashes are allowed.</i>",
+
+"index" => "Main Index Page",
+
+"member_assignment_warning" => "Members are currently assigned to some of these groups. What member group should they be re-assigned to?",
 
 /* moved to design - DJ
 
-"subscriptions_form" =>
-"Subscriptions Page",
+"subscriptions_form" => "Subscriptions Page",
 
-"no_subscriptions_message" =>
-"No Subscriptions Message",
+"no_subscriptions_message" => "No Subscriptions Message",
 
-"subscription_result_heading" =>
-"Subscription Results Heading",
+"subscription_result_heading" => "Subscription Results Heading",
 
-"subscription_result_rows" =>
-"Subscription Result Rows",
+"subscription_result_rows" => "Subscription Result Rows",
 
-"subscription_pagination" =>
-"Subscription Pagination",
+"subscription_pagination" => "Subscription Pagination",
 */
 
-"can_moderate_comments" =>
-"Can Moderate Comments",
+"can_moderate_comments" => "Can Moderate Comments",
 
-"exclude_from_moderation" =>
-"Exclude member from comment moderation",
+"exclude_from_moderation" => "Bypass moderation",
 
-"total_members" =>
-"Total Members:",
+"exclude_from_moderation_desc" => "When set to yes, users assigned to this group may comment without being restricted by the default comment settings.",
 
-"admin_members" =>
-"Admin Members",
+"moderation_actions" => "Moderation actions",
 
-"view_members" =>
-"View Members",
+"moderation_actions_desc" => "Users in this group will be allowed to perform all of the selected actions. actions",
 
-"validate_selected" =>
-"Activate Selected Members",
+"search" => "Search",
 
-"delete_selected" =>
-"Delete Selected Members",
+"total_members" => "Total Members:",
 
-"send_email_notification" =>
-"Send email notification to each person",
+"admin_members" => "Admin Members",
 
-"your_account_validated" =>
-"Your account has been activated.",
+"view_members" => "View Members",
 
-"your_account_ready" =>
-"Your membership account has been activated and is ready for use.",
+"validate_selected" => "Activate Selected Members",
 
-"thank_you" =>
-"Thank you!",
+"delete_selected" => "Delete Selected Members",
 
-"no_members_to_validate" =>
-"There are no member accounts awaiting activation",
+"send_email_notification" => "Send email notification to each person",
 
-"members_are_validated" =>
-"Member(s) have been activated",
+"your_account_validated" => "Your account has been activated.",
 
-"members_are_deleted" =>
-"Member(s) have been deleted",
+"your_account_ready" => "Your membership account has been activated and is ready for use.",
 
-"ascending" =>
-"Date - oldest first",
+"thank_you" => "Thank you!",
 
-"descending" =>
-"Date - newest first",
+"no_members_to_validate" => "There are no member accounts awaiting activation",
 
-"alpha" =>
-"Alphabetical Ascending",
+"members_are_validated" => "Member(s) have been activated",
 
-"alpha_desc" =>
-"Alphabetical Descending",
+"members_are_deleted" => "Member(s) have been deleted",
 
-"username_asc" =>
-"Username - ascending",
+"ascending" => "Date - oldest first",
 
-"username_desc" =>
-"Username - descending",
+"descending" => "Date - newest first",
 
-"screen_name" =>
-"Screen Name",
+"alpha" => "Alphabetical Ascending",
 
-"screen_name_asc" =>
-"Screen Name - ascending",
+"alpha_desc" => "Alphabetical Descending",
 
-"screen_name_desc" =>
-"Screen Name - descending",
+"username_asc" => "Username - ascending",
 
-"mbr_email_address" =>
-"Email Address",
+"username_desc" => "Username - descending",
 
-'email_address' =>
-'Email Address',
+"username_description" => "Used for signing into ExpressionEngine.",
 
-"email_asc" =>
-"Email - ascending",
+"screen_name" => "Screen Name",
 
-"email_desc" =>
-"Email - descending",
+"screen_name_description" => "Used for alternate name display in website content",
 
-"sort_order" =>
-"Sort Order",
+"screen_name_asc" => "Screen Name - ascending",
 
-"join_date" =>
-"Join Date",
+"screen_name_desc" => "Screen Name - descending",
 
-"last_visit" =>
-"Last Visit",
+"mbr_email_address" => "User's e-mail",
 
-"member_group" =>
-"Member Group",
+"mbr_email_address_desc" => "Used for communicating with this user.",
 
-"group_id" =>
-"Group ID",
+'email_address' => 'Email Address',
 
-"member_id" =>
-"ID",
+"email_asc" => "Email - ascending",
 
-"no_members_matching_that_criteria" =>
-"There are no members matching the criteria you selected",
+"email_desc" => "Email - descending",
 
-"mbrs" =>
-"Members",
+"sort_order" => "Sort Order",
 
-"edit_profile" =>
-"Edit Profile",
+"join_date" => "Join Date",
 
-"register_member" =>
-"Register a New Member",
+"last_visit" => "Last Visit",
 
-"edit_group" =>
-"Edit Group",
+"member_group" => "Member Group",
 
-"group_title" =>
-"Group Title",
+"member_group_desc" => "Assign this user access permissions.",
 
-"security_lock" =>
-"Security Lock",
+"group_id" => "Group ID",
 
-"group_lock" =>
-"Member Group Security Lock",
+"member_id" => "ID",
 
-"enable_lock" =>
-"Enable Group Security Lock",
+"no_members_matching_that_criteria" => "There are no members matching the criteria you selected",
 
-"lock_description" =>
-"When a group is locked, only a Super Admin can assign a member to that group.  If you allow other users to administrate member accounts, it is highly recommended that you ONLY unlock groups you want them to be able to assign other users to.",
+"mbrs" => "Members",
 
-"locked" =>
-"Locked",
+"edit_profile" => "Edit Profile",
 
-"unlocked" =>
-"Unlocked",
+"register_member" => "Register a New Member",
 
-"create_new_member_group" =>
-"Create a New Member Group",
+"edit_group" => "Edit Group",
 
-"member_has_cp_access" =>
-"Can access the control panel",
+"general_access" => "General Access",
 
-"edit_member_group" =>
-"Edit Member Group",
+"group_title" => "Group Title",
 
-"create_member_group" =>
-"Create a Member Group",
+"security_lock" => "Security Lock",
 
-"delete_member_group" =>
-"Delete Member Group",
+"group_lock" => "Member Group Security Lock",
 
-"member_group_deleted" =>
-"Member Group Deleted",
+"enable_lock" => "Enable Group Security Lock",
 
-"delete_member_group_confirm" =>
-"Are you sure you want to delete this member group?",
+"lock_description" => "When set to enable, only Super Admins can add or remove members from this group.",
 
-"delete_member" =>
-"Delete Member",
+"locked" => "Locked",
 
-"delete_member_confirm" =>
-"Are you sure you want to delete this member?",
+"unlocked" => "Unlocked",
 
-"delete_members_confirm" =>
-"Are you sure you want to delete these members?",
+"create_member" => "Create Member",
 
-"can_not_delete_superadmin" =>
-"You cannot delete the primary member",
+"create_new_member_group" => "Create a New Member Group",
 
-"member_deleted" =>
-"Member Deleted",
+"member_has_cp_access" => "Can access the control panel",
 
-"members_deleted" =>
-"Members Deleted",
+"edit_member_group" => "Edit Member Group",
+
+"create_member_group" => "Create a Member Group",
+
+"delete_member_group" => "Delete Member Group",
+
+"member_group_deleted" => "Member Group Deleted",
+
+"delete_member_group_confirm" => "Are you sure you want to delete this member group?",
+
+"delete_member" => "Delete Member",
+
+"delete_member_confirm" => "Are you sure you want to delete this member?",
+
+"delete_members_confirm" => "Are you sure you want to delete these members?",
+
+"can_not_delete_superadmin" => "You cannot delete the primary member",
+
+"member_deleted" => "Member Deleted",
+
+"members_deleted" => "Members Deleted",
 
 //----------------------------
 // Member banning
 //----------------------------
 
-"user_banning" =>
-"User Banning",
+"banned_members" => "Banned Members",
 
-"ban_preferences_updated" =>
-"Banning Preferences Updated",
+"user_banning" => "Ban Condition Management",
 
-"ip_address_banning" =>
-"Banned IP Address",
+"ban_preferences_updated" => "Banning Preferences Updated",
 
-"ip_banning_instructions" =>
-"Place each IP address on a separate line",
+"ip_address_banning" => "IP Addresses",
 
-"ip_banning_instructions_cont" =>
-"Use wildcards for partial IP addresses. Example:  123.345.*",
+"ip_banning_instructions" => "<b>Place each IP address on a separate line</b> <br>You may use * as a wild-card e.g.  123.345.*",
 
-"email_address_banning" =>
-"Banned Email Address",
+"email_address_banning" => "Email Addresses",
 
-"email_banning_instructions" =>
-"Place each email address on a separate line",
+"email_banning_instructions" => "<b>Place each email address on a separate line</b><br> You may use * as a wild-card e.g. *@hotmail.com",
 
-"email_banning_instructions_cont" =>
-"Use wildcards for partial email addresses. Example:  *@domain.com",
+"ban_options" => "When a banned IP tries to access the site",
 
-"ban_options" =>
-"When a banned IP tries to access the site",
+"restrict_to_viewing" => "Restrict them to viewing only",
 
-"restrict_to_viewing" =>
-"Restrict them to viewing only",
+"show_this_message" => "Show this message",
 
-"show_this_message" =>
-"Show this message",
+"send_to_site" => "Send them to this site",
 
-"send_to_site" =>
-"Send them to this site",
+'ban_message' => 'This site is currently unavailable',
 
-'ban_message' =>
-'This site is currently unavailable',
+"username_banning" => "Restricted Usernames",
 
-"username_banning" =>
-"Restricted Usernames",
+"username_banning_instructions" => "<b>Place each username on a separate line</b><br> These usernames will not be allowed.",
 
-"username_banning_instructions" =>
-"Place each username on a separate line",
+"screen_name_banning" => "Restricted Screen Names",
 
-"screen_name_banning" =>
-"Restricted Screen Names",
-
-"screen_name_banning_instructions" =>
-"Place each screen name on a separate line",
+"screen_name_banning_instructions" => "<b>Place each screen name on a separate line</b><b> These screen names will not be allowed.",
 
 
 //----------------------------
 // Member group settings
 //----------------------------
 
-"only_superadmins_can_admin_groups" =>
-"Only Super Admins can access the Member Groups page",
+"access_privilege_warning" => "<b>Warning</b>: Please be very careful with the access privileges you grant.",
 
-"create_group_based_on_old" =>
-"Create a new group based on an existing one",
+"access_privilege_caution" => "Any setting marked with <span title='excercise caution'></span> should only be granted to people you trust implicitly.",
 
-"group_name" =>
-"Member Group Name",
+"only_superadmins_can_admin_groups" => "Only Super Admins can access the Member Groups page",
 
-"missing_group_title" =>
-"The member group must have a name",
+"create_group_based_on_old" => "Create a new group based on an existing one",
 
-"group_title_exists" =>
-"There is already a Member Group with that name.",
+"group_name" => "Name",
 
-"site_access" =>
-"Site Access",
+"group_name_desc" => "Be descriptive, like authors or editors",
 
-"can_view_online_system" =>
-"Can view site when it is online",
+"missing_group_title" => "The member group must have a name",
 
-"can_view_offline_system" =>
-"Can view site when it is offline",
+"group_title_exists" => "There is already a Member Group with that name.",
 
-"mbr_account_privs" =>
-"Member Account Privileges",
+"site_access" => "Website Access",
 
-'prv_msg_storage_limit' =>
-"Maximum Number of Private Messages a user can store",
+"site_access_desc" => "Users in this group will be allowed access to the website for each status mode selected.",
 
-'prv_msg_send_limit' =>
-"Maximum Number of Private Messages a user can send per day",
+"can_view_online_system" => "Online",
 
-"can_view_profiles" =>
-"Can view public profiles",
+"can_view_offline_system" => "Offline - Not recommended",
 
-"can_edit_html_buttons" =>
-"Can edit own HTML formatting buttons",
+"mbr_account_privs" => "Member Account Privileges",
 
-'can_delete_self' =>
-"Can delete own account - deletes all posts, entries, and comments as well",
+'prv_msg_storage_limit' => "Storage Maximum",
 
-'mbr_delete_notify_emails' =>
-'Email Address of Delete Notification Recipient(s)',
+'prv_msg_storage_limit_desc' => "Maximum number of personal messages a user may store in their account.",
 
-'delete_confirmation_form' =>
-'Delete Account Confirmation Form',
+'prv_msg_send_limit' => "Per day maximum",
 
-"commenting_privs" =>
-"Comment Posting Privileges",
+'prv_msg_send_limit_desc' => "Maximum number of personal messages that a user may send per day.",
 
-"can_post_comments" =>
-"Can submit comments",
+"can_view_profiles" => "Access public profiles",
 
-"cp_channel_post_privs" =>
-"Channel Assignment",
+"can_view_profiles_desc" => "When set to yes, users assigned to this group may view public profiles of other members.",
 
-"cp_module_access_privs" =>
-"Module Access Privileges",
+"can_edit_html_buttons" => "Can edit own HTML formatting buttons",
 
-'no_cp_modules_installed' =>
-'No Modules with Control Panel Access Installed',
+'can_delete_self' => "Delete account",
 
-"can_access_mod" =>
-"Can access module:",
+'can_delete_self_desc' => "When set to yes, users assigned to this group may delete their own accounts without approval",
 
-"global_cp_access" =>
-"Control Panel Access",
+'mbr_delete_notify_emails' => 'Recipient(s) for delete notifications',
 
-"can_access_cp" =>
-"Can access the control panel?",
+'mbr_delete_notify_emails_desc' => 'All recipients will be notified anytime a user deletes their account. Separate e-mails with a comma.',
 
-"can_access_content" =>
-"Can access CONTENT section",
+'include_members_in' => 'Include members in',
 
-"can_access_design" =>
-"Can access DESIGN section",
+'include_members_in_desc' => 'Users in this group will be including in all of the selected list types',
 
-"can_access_addons" =>
-"Can access ADD-ONS section",
+'commenting' => 'Commenting',
 
-"can_access_members" =>
-"Can access MEMBERS section",
+'delete_confirmation_form' => 'Delete Account Confirmation Form',
 
-"can_access_admin" =>
-"Can access ADMIN section",
+"commenting_privs" => "Comment Posting Privileges",
 
-"can_access_tools" =>
-"Can access TOOLS section",
+"can_post_comments" => "Submit comments",
 
-"can_ban_users" =>
-"Can ban users",
+"can_post_comments_desc" => "When set to yes, users assigned to this group may submit comments to the website.",
 
-"cp_admin_privs" =>
-"Control Panel Administration",
+"comment_actions" => "Moderation actions",
 
-"cp_comment_privs" =>
-"Comment Administration",
+"comment_actions_desc" => "Users in this group will be allowed to perform all of the selected actions.",
 
-"can_view_other_comments" =>
-"Can view comments in channel entries authored by others",
+"cp_channel_post_privs" => "Channel Assignment",
 
-"can_edit_own_comments" =>
-"Can edit comments in their own channel entries",
+"cp_module_access_privs" => "Module Access Privileges",
 
-"can_delete_own_comments" =>
-"Can delete comments in their own channel entries",
+'no_cp_modules_installed' => 'No Modules with Control Panel Access Installed',
 
-"can_edit_all_comments" =>
-"Can edit comments in ANY channel entries",
+"can_access_mod" => "Can access module:",
 
-"can_delete_all_comments" =>
-"Can delete comments in ANY channel entries",
+"global_cp_access" => "Control Panel Access",
 
-"can_admin_channels" =>
-"Can administrate channels and channel preferences",
+"control_panel" => "Control Panel",
 
-"can_admin_upload_prefs" =>
-"Can administrate file upload preferences",
+"can_access_cp" => "Access control panel",
 
-"can_admin_members" =>
-"Can administrate members accounts",
+"can_access_cp_desc" => "When set to yes, users assigned to this group may access the control panel.",
 
-'can_access_edit' =>
-'Can access CONTENT: Edit',
+"can_access_content" => "Can access CONTENT section",
 
-'can_access_publish' =>
-'Can access CONTENT: Publish',
+"can_access_design" => "Can access DESIGN section",
 
-'can_access_files' =>
-'Can access CONTENT: File Manager',
+"can_access_addons" => "Can access ADD-ONS section",
 
-'can_access_modules' =>
-'Can access ADD-ONS: Modules',
+"can_access_members" => "Can access MEMBERS section",
 
-'can_access_extensions' =>
-'Can access ADD-ONS: Extensions',
+"can_access_admin" => "Can access ADMIN section",
 
-'can_access_plugins' =>
-'Can access ADD-ONS: Plugins',
+"can_access_tools" => "Can access TOOLS section",
 
-'can_access_fieldtypes' =>
-'Can access ADD-ONS: Fieldtypes',
+"can_ban_users" => "Can ban users",
 
-'can_access_comm' =>
-'Can access TOOLS: Communication',
+"cp_admin_privs" => "Control Panel Administration",
 
-'can_access_utilities' =>
-'Can access TOOLS: Utilities',
+"cp_comment_privs" => "Comment Administration",
 
-'can_access_data' =>
-'Can access TOOLS: Data',
+"can_view_other_comments" => "Can view comments in channel entries authored by others",
 
-'can_access_logs' =>
-'Can access TOOLS: Logs',
+"can_edit_own_comments" => "Can edit comments in their own channel entries",
 
-'can_access_sys_prefs' =>
-'Can access ADMIN: System Preferences',
+"can_delete_own_comments" => "Can delete comments in their own channel entries",
 
-'can_access_content_prefs' =>
-'Can access ADMIN: Content Settings',
+"can_edit_all_comments" => "Can edit comments in ANY channel entries",
 
-"can_delete_members" =>
-"Can delete members",
+"can_delete_all_comments" => "Can delete comments in ANY channel entries",
 
-"can_admin_mbr_groups" =>
-"Can change the group that a member is assigned to (Unlocked groups only)",
+"channels" => "Channels",
 
-"can_admin_mbr_templates" =>
-"Can administrate member profile templates",
+"can_admin_channels" => "Channels",
 
-"can_admin_templates" =>
-"Can administrate template groups and templates",
+"can_admin_channels_desc" => "Can administrate channels and channel preferences",
 
-"can_admin_design" =>
-"Can administrate design preferences",
+"can_admin_upload_prefs" => "Can administrate file upload preferences",
 
-"can_admin_modules" =>
-"Can install/remove modules",
+"can_admin_members" => "Can administrate members accounts",
 
-"cp_email_privs" =>
-"Control Panel Email Privileges",
+'can_access_edit' => 'Can access CONTENT: Edit',
 
-"can_send_email" =>
-"Can send email via the Control Panel",
+'can_access_publish' => 'Can access CONTENT: Publish',
 
-"can_email_member_groups" =>
-"Can send email to Member Groups",
+'can_access_files' => 'Can access CONTENT: File Manager',
 
-"can_email_mailinglist" =>
-"Can send email to Mailing List",
+'can_access_modules' => 'Can access ADD-ONS: Modules',
 
-"can_send_cached_email" =>
-"Can view/send cached email",
+'can_access_extensions' => 'Can access ADD-ONS: Extensions',
 
-"search_privs" =>
-"Search Privileges",
+'can_access_plugins' => 'Can access ADD-ONS: Plugins',
 
-"can_search" =>
-"Can use search utility",
+'can_access_fieldtypes' => 'Can access ADD-ONS: Fieldtypes',
 
-"search_flood_control" =>
-"Number of seconds between searches",
+'can_access_comm' => 'Can access TOOLS: Communication',
 
+'can_access_utilities' => 'Can access TOOLS: Utilities',
 
-"warning" =>
-"WARNING:",
+'can_access_data' => 'Can access TOOLS: Data',
 
-"super_admin_edit_note" =>
-"Note: You can only edit the name and description for the Super Admin group",
+'can_access_logs' => 'Can access TOOLS: Logs',
 
-"be_careful_assigning_groups" =>
-"Be EXTREMELY careful assigning group preferences - especially the highlighted ones.",
+'can_access_sys_prefs' => 'Can access ADMIN: System Preferences',
 
-"member_group_updated" =>
-"Member Group Updated:",
+'can_access_content_prefs' => 'Can access ADMIN: Content Settings',
 
-"member_group_created" =>
-"Member Group Created:",
+"can_delete_members" => "Can delete members",
 
-"cp_channel_privs" =>
-"Channel Posting Privileges",
+"can_admin_mbr_groups" => "Can change the group that a member is assigned to (Unlocked groups only)",
 
-"can_view_other_entries" =>
-"Can view channel entries authored by others",
+"can_admin_mbr_templates" => "Can administrate member profile templates",
 
-"can_post_in" =>
-"Can post and edit entries in:",
+"can_admin_templates" => "Can administrate template groups and templates",
 
-"can_edit_other_entries" =>
-"Can edit entries authored by others",
+"can_admin_design" => "Manage general design settings",
 
-"can_assign_post_authors" =>
-"Can change the author name when posting channel entries",
+"can_admin_design_desc" => "When set to yes, users assigned to this group may manage content and design settings.",
 
-"can_delete_self_entries" =>
-"Can delete their own channel entries",
+"can_admin_modules" => "Install or remove add-ons",
 
-"can_delete_all_entries" =>
-"Can delete channel entries authored by others",
+"can_admin_modules_desc" => "When set to yes, users assigned to this group may install and remove add-ons.",
 
-"cp_template_access_privs" =>
-"Template Editing Privileges",
+"cp_email_privs" => "Control Panel Email Privileges",
 
-"can_access_tg" =>
-"Can edit templates in this group:",
+"can_send_email_desc" => "When set to yes, users assigned to this group may send e-mails to other members via the system.",
 
-"can_email_from_profile" =>
-"Can email other members via the profile email console",
+"can_send_email" => "E-mail other members",
 
+"can_email_member_groups" => "Can send email to Member Groups",
+
+"can_email_mailinglist" => "Can send email to Mailing List",
+
+"can_send_cached_email" => "Can view/send cached email",
+
+"search_privs" => "Search Privileges",
+
+"can_search" => "Access search utility",
+
+"can_search_desc" => "When set to yes, users assigned to this group may use the search functionality of the website.",
+
+"search_flood_control" => "Search limit (in seconds)",
+
+"search_flood_control_desc" => "Length of time between searches a user must wait before performing another search.",
+
+"warning" => "WARNING:",
+
+"super_admin_edit_note" => "Note: You can only edit the name and description for the Super Admin group",
+
+"be_careful_assigning_groups" => "Be EXTREMELY careful assigning group preferences - especially the highlighted ones.",
+
+"member_group_updated" => "Member Group Updated:",
+
+"member_group_created" => "Member Group Created:",
+
+"channel_entries_management" => "Channel Entries Management",
+
+"channel_entry_actions" => "Allowed actions",
+
+"channel_entry_actions_desc" => "Users can perform all selected actions on the below selected channels.",
+
+"allowed_channels" => "Allowed channels",
+
+"allowed_actions" => "Allowed actions",
+
+"allowed_actions_desc" => "Users can perform all selected actions.",
+
+"allowed_channels_desc" => "Users can access and perform the above selected actions on all selected channels.",
+
+"allowed_template_groups" => "Allowed template groups",
+
+"allowed_template_groups_desc" => "Users can perform all the above selected actions on all selected template groups.",
+
+"cp_channel_privs" => "Channel Posting Privileges",
+
+"can_view_other_entries" => "Can view channel entries authored by others",
+
+"can_post_in" => "Can post and edit entries in:",
+
+"can_edit_other_entries" => "Can edit entries authored by others",
+
+"can_assign_post_authors" => "Can change the author name when posting channel entries",
+
+"can_delete_self_entries" => "Can delete their own channel entries",
+
+"can_delete_all_entries" => "Can delete channel entries authored by others",
+
+"cp_template_access_privs" => "Template Editing Privileges",
+
+"can_access_tg" => "Can edit templates in this group:",
+
+"can_email_from_profile" => "Can email other members via the profile email console",
+
+"member_groups" => "Member Groups",
+
+"members" => "Members",
+
+"design" => "Design",
+
+"template_management" => "Template Management",
+
+"addons" => "Add-ons",
+
+"addon_access" => "Add-On Access Permissions",
+
+"addon_access_desc" => "",
+
+"tools" => "Tools",
+
+"access_tools" => "Access Tools sections",
+
+"access_tools_desc" => "Users can access all of the selected tools sections.",
+
+"category_actions",
+"Categories",
+
+"category_actions_desc",
+"Users may perform all selected actions.",
 
 //----------------------------
 // Member fields
 //----------------------------
 
-"for_profile_page" =>
-"Will be displayed in the member profile page",
+"for_profile_page" => "Will be displayed in the member profile page",
 
-"custom_member_fields" =>
-"Member Fields",
+"custom_member_fields" => "Member Fields",
 
-"current_fields" =>
-"Member Fields",
+"current_fields" => "Member Fields",
 
-"edit_member_field" =>
-"Edit Field",
+"edit_member_field" => "Edit Field",
 
-"create_member_field" =>
-"Create Member Field",
+"create_member_field" => "Create Member Field",
 
-"field_updated" =>
-"Field Updated",
+"field_updated" => "Field Updated",
 
-"field_created" =>
-"Field Created",
+"field_created" => "Field Created",
 
-"create_new_profile_field" =>
-"Create a New Member Field",
+"create_new_profile_field" => "Create a New Member Field",
 
-"is_field_public" =>
-"Is this field visible in public profiles?",
+"is_field_public" => "Is this field visible in public profiles?",
 
-"is_field_public_cont" =>
-"If you choose no, it will only be visible to admins",
+"is_field_public_cont" => "If you choose no, it will only be visible to admins",
 
-"is_field_reg" =>
-"Is field visible in registration page?",
+"is_field_reg" => "Is field visible in registration page?",
 
-"is_field_cp_reg" =>
-"Is field visible in the control panel's administrative registration page?",
+"is_field_cp_reg" => "Is field visible in the control panel's administrative registration page?",
 
-"field_width" =>
-"Field Width",
+"field_width" => "Field Width",
 
-"field_width_cont" =>
-"Can be in pixels or percent",
+"field_width_cont" => "Can be in pixels or percent",
 
-"fieldname" =>
-"Field Name",
+"fieldname" => "Field Name",
 
-"fieldname_cont" =>
-"Single word, no spaces.  Underscores and dashes allowed",
+"fieldname_cont" => "Single word, no spaces.  Underscores and dashes allowed",
 
-"field_format" =>
-"Text Formatting",
+"field_format" => "Text Formatting",
 
-"m_max_length" =>
-"Maxlength",
+"m_max_length" => "Maxlength",
 
-"max_length_cont" =>
-"For text field types",
+"max_length_cont" => "For text field types",
 
-"text_area_rows" =>
-"Textarea Rows",
+"text_area_rows" => "Textarea Rows",
 
-"text_area_rows_cont" =>
-"For textarea field types",
+"text_area_rows_cont" => "For textarea field types",
 
-"pull_down_items" =>
-"Select List Options",
+"pull_down_items" => "Select List Options",
 
-"pull_down_items_cont" =>
-"For drop-down menus",
+"pull_down_items_cont" => "For drop-down menus",
 
-"pull_down_instructions" =>
-"Put each item on a separate line",
+"pull_down_instructions" => "Put each item on a separate line",
 
-"invalid_characters" =>
-"The field name you submitted contains invalid characters",
+"invalid_characters" => "The field name you submitted contains invalid characters",
 
-"member_data_will_be_deleted" =>
-"All member data contained in this field will be permanently deleted",
+"member_data_will_be_deleted" => "All member data contained in this field will be permanently deleted",
 
-"profile_field_deleted" =>
-"Member Field Deleted:",
+"profile_field_deleted" => "Member Field Deleted:",
 
-"no_custom_profile_fields" =>
-"There are currently no member fields.",
+"no_custom_profile_fields" => "There are currently no member fields.",
 
-"delete_profile_field_confirmation" =>
-"Are you sure you want to permanently delete this Member Profile Field?",
+"delete_profile_field_confirmation" => "Are you sure you want to permanently delete this Member Profile Field?",
 
-"member_search" =>
-"Member Search",
+"search_member_groups_button" => "Search Member Groups",
 
-"search_members_button" =>
-"Search Members",
+"member_search" => "Member Search",
 
-"member_search_results" =>
-"Member Search Results",
+"search_members_button" => "Search Members",
 
-"no_search_results" =>
-"Your search resulted in no matches",
+"member_search_results" => "Member Search Results",
 
-"member_search_instructions" =>
-"Fill out at least one field.  You can submit partial or full words.",
+"no_search_results" => "Your search resulted in no matches",
 
-"can_not_delete_only_member" =>
-"You cannot delete the only member in the database",
+"member_search_instructions" => "Fill out at least one field.  You can submit partial or full words.",
 
-"can_not_delete_super_admin" =>
-"You cannot delete a Super Admin unless there exists at least one other",
+"can_not_delete_only_member" => "You cannot delete the only member in the database",
 
-"must_be_superadmin_to_delete_one" =>
-"You must be a Super Admin to delete a Super Admin",
+"can_not_delete_super_admin" => "You cannot delete a Super Admin unless there exists at least one other",
 
-"email_console_log" =>
-"Email Console Logs",
+"must_be_superadmin_to_delete_one" => "You must be a Super Admin to delete a Super Admin",
 
-"no_cached_email" =>
-"There are no cached email messages.",
+"email_console_log" => "Email Console Logs",
 
-"email_title" =>
-"Email Title",
+"no_cached_email" => "There are no cached email messages.",
 
-"from" =>
-"From",
+"email_title" => "Email Title",
 
-"to" =>
-"To",
+"from" => "From",
 
-"message_sent_to" =>
-"Message Sent to:",
+"to" => "To",
 
-"email_deleted" =>
-"Email Message(s) Deleted",
+"message_sent_to" => "Message Sent to:",
 
-'can_send_bulletins' =>
-"Can Send Bulletins",
+"email_deleted" => "Email Message(s) Deleted",
 
-'group_description' =>
-"Member Group Description",
+'can_send_bulletins' => "Access bulletins",
 
-"preferences" =>
-"Preferences",
+'can_send_bulletins_desc' => "When set to yes, users assigned to this group may send and receive bulletins.",
 
-'preference' =>
-'Preference',
+'group_description' => "Description",
 
-'setting' =>
-'Setting',
+"group_description_desc" => "A brief description of the purpose for this group.",
 
-"resend_activation_emails" =>
-"Resend Activation Emails",
+"preferences" => "Preferences",
 
-'activation_emails_resent' =>
-"Activation Emails Resent",
+'preference' => 'Preference',
 
-"resend_activation_email" =>
-"Resend Activation Email",
+'setting' => 'Setting',
 
-'activation_email_resent' =>
-"Activation Email Resent",
+"resend_activation_emails" => "Resend Activation Emails",
 
-'can_access_site' =>
-"Can Access Site",
+'activation_emails_resent' => "Activation Emails Resent",
 
-'member_delete_dont_reassign_entries' =>
-"Delete the member's entries",
+"resend_activation_email" => "Resend Activation Email",
 
-'member_delete_reassign_entries' =>
-"Reassign the member's entries to ",
+'activation_email_resent' => "Activation Email Resent",
+
+'can_access_site' => "Can Access Site",
+
+'member_delete_dont_reassign_entries' => "Delete the member's entries",
+
+'member_delete_reassign_entries' => "Reassign the member's entries to ",
 
 ''=>''
 );

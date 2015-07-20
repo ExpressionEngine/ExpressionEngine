@@ -2,9 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Controllers\Publish;
 
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 use EllisLab\ExpressionEngine\Controllers\Publish\AbstractPublish as AbstractPublishController;
 use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
 
@@ -14,7 +13,7 @@ use EllisLab\ExpressionEngine\Service\Model\Query\Builder;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -55,12 +54,12 @@ class Comments extends AbstractPublishController {
 		if (ee()->input->post('bulk_action'))
 		{
 			$this->performBulkActions();
-			ee()->functions->redirect(cp_url('publish/comments', ee()->cp->get_url_state()));
+			ee()->functions->redirect(ee('CP/URL', 'publish/comments', ee()->cp->get_url_state()));
 		}
 
 		$vars = array();
 		$channel = NULL;
-		$base_url = new URL('publish/comments', ee()->session->session_id());
+		$base_url = ee('CP/URL', 'publish/comments');
 
 		$comments = ee('Model')->get('Comment')
 			->filter('site_id', ee()->config->item('site_id'));
@@ -126,8 +125,10 @@ class Comments extends AbstractPublishController {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 
-		$pagination = new Pagination($filter_values['perpage'], $count, $page);
-		$vars['pagination'] = $pagination->cp_links($base_url);
+		$vars['pagination'] = ee('CP/Pagination', $count)
+			->perPage($filter_values['perpage'])
+			->currentPage($page)
+			->render($base_url);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('comment') . ': <b>### ' . lang('comments') . '</b>');
 		ee()->cp->add_js_script(array(
@@ -139,13 +140,13 @@ class Comments extends AbstractPublishController {
 		if ($channel)
 		{
 			ee()->view->cp_breadcrumbs = array(
-				cp_url('publish/edit', array('filter_by_channel' => $channel->channel_id)) => sprintf(lang('all_channel_entries'), $channel->channel_title),
+				ee('CP/URL', 'publish/edit', array('filter_by_channel' => $channel->channel_id))->compile() => sprintf(lang('all_channel_entries'), $channel->channel_title),
 			);
 		}
 		else
 		{
 			ee()->view->cp_breadcrumbs = array(
-				cp_url('publish/edit') => sprintf(lang('all_channel_entries'), $channel),
+				ee('CP/URL', 'publish/edit')->compile() => sprintf(lang('all_channel_entries'), $channel),
 			);
 		}
 
@@ -175,11 +176,11 @@ class Comments extends AbstractPublishController {
 		if (ee()->input->post('bulk_action'))
 		{
 			$this->performBulkActions();
-			ee()->functions->redirect(cp_url('publish/comments/entry/' . $entry_id, ee()->cp->get_url_state()));
+			ee()->functions->redirect(ee('CP/URL', 'publish/comments/entry/' . $entry_id, ee()->cp->get_url_state()));
 		}
 
 		$vars = array();
-		$base_url = new URL('publish/comments/entry/' . $entry_id, ee()->session->session_id());
+		$base_url = ee('CP/URL', 'publish/comments/entry/' . $entry_id);
 
 		$entry = ee('Model')->get('ChannelEntry', $entry_id)
 			->filter('site_id', ee()->config->item('site_id'))
@@ -247,8 +248,10 @@ class Comments extends AbstractPublishController {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 
-		$pagination = new Pagination($filter_values['perpage'], $count, $page);
-		$vars['pagination'] = $pagination->cp_links($base_url);
+		$vars['pagination'] = ee('CP/Pagination', $count)
+			->perPage($filter_values['perpage'])
+			->currentPage($page)
+			->render($base_url);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('comment') . ': <b>### ' . lang('comments') . '</b>');
 		ee()->cp->add_js_script(array(
@@ -258,7 +261,7 @@ class Comments extends AbstractPublishController {
 		));
 
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('publish/edit', array('filter_by_channel' => $entry->channel_id)) => sprintf(lang('all_channel_entries'), $entry->getChannel()->channel_title),
+			ee('CP/URL', 'publish/edit', array('filter_by_channel' => $entry->channel_id))->compile() => sprintf(lang('all_channel_entries'), $entry->getChannel()->channel_title),
 		);
 
 		ee()->view->cp_page_title = sprintf(lang('all_comments_for_entry'), $entry->title);
@@ -322,7 +325,7 @@ class Comments extends AbstractPublishController {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => cp_url('publish/comments/edit/' . $comment_id),
+			'base_url' => ee('CP/URL', 'publish/comments/edit/' . $comment_id),
 			'save_btn_text' => 'btn_edit_comment',
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
@@ -343,7 +346,7 @@ class Comments extends AbstractPublishController {
 						'desc' => 'comment_status_desc',
 						'fields' => array(
 							'status' => array(
-								'type' => 'dropdown',
+								'type' => 'select',
 								'choices' => array(
 									'o' => lang('open'),
 									'c' => lang('closed'),
@@ -420,7 +423,7 @@ class Comments extends AbstractPublishController {
 				->addToBody(lang('edit_comment_success_desc'))
 				->defer();
 
-			ee()->functions->redirect(cp_url('publish/comments/edit/' . $comment_id));
+			ee()->functions->redirect(ee('CP/URL', 'publish/comments/edit/' . $comment_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -434,7 +437,7 @@ class Comments extends AbstractPublishController {
 		ee()->view->cp_page_title = lang('edit_comment');
 
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('publish/comments') => lang('all_comments'),
+			ee('CP/URL', 'publish/comments')->compile() => lang('all_comments'),
 		);
 
 		ee()->cp->render('settings/form', $vars);
@@ -449,7 +452,7 @@ class Comments extends AbstractPublishController {
 	private function buildTableFromCommentQuery(Builder $comments)
 	{
 		ee()->load->helper('text');
-		$table = Table::create();
+		$table = ee('CP/Table');
 
 		$table->setColumns(
 			array(
@@ -502,7 +505,7 @@ class Comments extends AbstractPublishController {
 			{
 				$toolbar = array(
 					'edit' => array(
-						'href' => cp_url('publish/comments/edit/' . $comment->comment_id),
+						'href' => ee('CP/URL', 'publish/comments/edit/' . $comment->comment_id),
 						'title' => lang('edit')
 					)
 				);

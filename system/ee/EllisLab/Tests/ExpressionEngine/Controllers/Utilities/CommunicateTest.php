@@ -23,7 +23,7 @@ class CommunicateTest extends \PHPUnit_Framework_TestCase {
 
 		sort($controller_methods);
 
-		$this->assertEquals(array('batch', 'index', 'resend', 'send', 'sent'), $controller_methods);
+		$this->assertEquals(array('batch', 'index', 'member', 'resend', 'send', 'sent'), $controller_methods);
 	}
 
 }

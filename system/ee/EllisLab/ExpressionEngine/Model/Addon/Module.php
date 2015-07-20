@@ -10,7 +10,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -31,6 +31,24 @@ class Module extends Model {
 
 	protected static $_primary_key = 'module_id';
 	protected static $_table_name = 'modules';
+
+	protected static $_relationships = array(
+		'AssignedModules' => array(
+			'type' => 'hasAndBelongsToMany',
+			'model' => 'MemberGroup',
+			'pivot' => array(
+				'table' => 'module_member_groups'
+			)
+		),
+		'UploadDestination' => array(
+			'type' => 'hasMany'
+		)
+	);
+
+	protected static $_typed_columns = array(
+		'has_cp_backend'     => 'boolString',
+		'has_publish_fields' => 'boolString',
+	);
 
 	protected static $_validation_rules = array(
 		'has_cp_backend'     => 'enum[y,n]',

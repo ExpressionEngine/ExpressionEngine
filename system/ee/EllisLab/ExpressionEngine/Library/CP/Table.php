@@ -10,7 +10,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -70,7 +70,9 @@ class Table {
 		$defaults = array(
 			'wrap'		  => TRUE,
 			'sort_col'	  => NULL,
+			'sort_col_qs_var' => 'sort_col',
 			'sort_dir'	  => 'asc',
+			'sort_dir_qs_var' => 'sort_dir',
 			'limit'		  => 20,
 			'page'		  => 1,
 			'total_rows'  => 0,
@@ -122,22 +124,45 @@ class Table {
 
 	/**
 	 * Convenience method for initializing a Table object with current
-	 * sort parameters within an EE controller
+	 * sort parameters set via globals within a CP controller
 	 *
 	 * @param	array 	$config	See constructor doc block
 	 * @return  object	New Table object
 	 */
-	public static function create($config = array())
+	public static function fromGlobals($config = array())
 	{
-		$defaults = array(
-			'sort_col'	=> ee()->input->get('sort_col'),
-			'sort_dir'	=> ee()->input->get('sort_dir'),
-			'search'	=> ee()->input->post('search') !== FALSE
-				? ee()->input->post('search') : ee()->input->get('search'),
-			'page'		=> ee()->input->get('page') > 0 ? ee()->input->get('page') : 1
-		);
+		$sort_col = (isset($config['sort_col_qs_var'])) ? $config['sort_col_qs_var'] : 'sort_col';
+		$sort_dir = (isset($config['sort_dir_qs_var'])) ? $config['sort_dir_qs_var'] : 'sort_dir';
+		// We'll only place in here what needs overriding
+		$defaults = array();
 
-		return new Table(array_merge($defaults, $config));
+		// Look for search in POST first, then GET
+		$defaults['search'] = FALSE;
+		if (isset($_POST['search']))
+		{
+			$defaults['search'] = $_POST['search'];
+		}
+		else if (isset($_GET['search']))
+		{
+			$defaults['search'] = $_GET['search'];
+		}
+
+		if (isset($_GET[$sort_col]))
+		{
+			$defaults['sort_col'] = $_GET[$sort_col];
+		}
+
+		if (isset($_GET[$sort_dir]))
+		{
+			$defaults['sort_dir'] = $_GET[$sort_dir];
+		}
+
+		if (isset($_GET['page']) && $_GET['page'] > 0)
+		{
+			$defaults['page'] = $_GET['page'];
+		}
+
+		return new static(array_merge($defaults, $config));
 	}
 
 	/**
@@ -159,7 +184,8 @@ class Table {
 	 * It's an array of column names, with optional settings for each
 	 * column. Right now, the current options are
 	 *
-	 * 	'encode': Whether or not run column contents through htmlspecialchars()
+	 * 	'encode': Whether or not run column contents through htmlentities(),
+	 *		helps protect against XSS
 	 *	'sort': Whether or not the column can be sortable
 	 *	'type': The type of column, derived from the constants above
 	 *
@@ -174,7 +200,7 @@ class Table {
 
 		// Default settings for columns
 		$defaults = array(
-			'encode'	=> FALSE,
+			'encode'	=> ! $this->config['grid_input'], // Default to encoding if this isn't a Grid input
 			'sort'		=> TRUE,
 			'type'		=> self::COL_TEXT
 		);
@@ -585,8 +611,8 @@ class Table {
 			}
 
 			$base_url->setQueryStringVariable('search', $this->config['search']);
-			$base_url->setQueryStringVariable('sort_col', $this->getSortCol());
-			$base_url->setQueryStringVariable('sort_dir', $this->getSortDir());
+			$base_url->setQueryStringVariable($this->config['sort_col_qs_var'], $this->getSortCol());
+			$base_url->setQueryStringVariable($this->config['sort_dir_qs_var'], $this->getSortDir());
 		}
 
 		return array(
@@ -603,7 +629,9 @@ class Table {
 			'sortable'		=> $this->config['sortable'],
 			'subheadings'	=> ($this->config['subheadings'] && empty($this->config['search'])),
 			'sort_col'		=> $this->getSortCol(),
+			'sort_col_qs_var' => $this->config['sort_col_qs_var'],
 			'sort_dir'		=> $this->getSortDir(),
+			'sort_dir_qs_var' => $this->config['sort_dir_qs_var'],
 			'columns'		=> $this->columns,
 			'data'			=> $this->data,
 			'action_buttons' => $this->action_buttons,

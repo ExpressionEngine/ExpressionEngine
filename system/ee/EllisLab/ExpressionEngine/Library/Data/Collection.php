@@ -14,7 +14,7 @@ use IteratorAggregate;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -121,7 +121,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	 */
 	public function first()
 	{
-		return $this->elements[0];
+		return $this->count() ? $this->elements[0] : NULL;
 	}
 
 	/**
@@ -131,7 +131,8 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	*/
 	public function last()
 	{
-		return $this->elements[$this->count() - 1];
+		$count = $this->count();
+		return $count ? $this->elements[$count - 1] : NULL;
 	}
 
 	/**
@@ -255,11 +256,11 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate {
 	 * of the results.
 	 *
 	 * @param Closure $callback Function to apply
-	 * @return array  results
+	 * @return Collection  results
 	 */
-	public function filter(Closure $callback)
+	public function filter($callback)
 	{
-		return array_values(array_filter($this->elements, $callback));
+		return new static(array_filter($this->elements, $callback));
 	}
 
 	/**

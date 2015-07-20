@@ -12,7 +12,7 @@ use CP_Controller;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -99,7 +99,7 @@ class Urls extends Settings {
 					'desc' => 'category_url_desc',
 					'fields' => array(
 						'use_category_name' =>	array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'y' => lang('category_url_opt_titles'),
 								'n' => lang('category_url_opt_ids')
@@ -112,7 +112,7 @@ class Urls extends Settings {
 					'desc' => 'url_title_separator_desc',
 					'fields' => array(
 						'word_separator' =>	array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'dash' => lang('url_title_separator_opt_hyphen'),
 								'underscore' => lang('url_title_separator_opt_under')
@@ -163,7 +163,7 @@ class Urls extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = cp_url('settings/urls');
+		$base_url = ee('CP/URL', 'settings/urls');
 
 		if (AJAX_REQUEST)
 		{

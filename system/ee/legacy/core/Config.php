@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -71,10 +71,6 @@ class EE_Config {
 			// If the admin file is not found we show an error
 			show_error('ExpressionEngine does not appear to be installed.  If you are accessing this page for the first time, please consult the user guide for installation instructions.', 503);
 		}
-
-		// Temporarily disable db caching for this build unless enable_db_caching
-		// is explicitly set to 'y' in the config file.
-		$this->set_item('enable_db_caching', 'n');
 
 		// Add the EE config data to the master CI config array
 		foreach ($config as $key => $val)
@@ -456,7 +452,9 @@ class EE_Config {
 			$data = (isset($site['site_pages'])) ? base64_decode($site['site_pages']) : '';
 
 			// No Pages data
-			if ( ! is_string($data) OR substr($data, 0, 2) != 'a:')
+			if (! is_string($data)
+				OR substr($data, 0, 2) != 'a:'
+				OR $data = 'a:0:{}')
 			{
 				$site_pages[$site['site_id']] = array('uris' => array(), 'templates' => array());
 				continue;
@@ -529,7 +527,6 @@ class EE_Config {
 			'captcha_rand',
 			'captcha_require_members',
 			'require_captcha',
-			'enable_db_caching',
 			'enable_sql_caching',
 			'force_query_string',
 			'show_profiler',
@@ -561,7 +558,6 @@ class EE_Config {
 			'default_site_timezone',
 			'date_format',
 			'time_format',
-			'include_seconds',
 			'mail_protocol',
 			'smtp_server',
 			'smtp_port',
@@ -840,7 +836,7 @@ class EE_Config {
 					$site_prefs[$val] .= '/';
 				}
 
-				$fp = ($val == 'avatar_path') ? $site_prefs[$val].'uploads/' : $site_prefs[$val];
+				$fp = $site_prefs[$val];
 
 				if ( ! @is_dir($fp))
 				{

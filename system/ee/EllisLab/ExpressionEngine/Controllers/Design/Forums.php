@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Controllers\Design;
 
 use EllisLab\ExpressionEngine\Controllers\Design\AbstractDesign as AbstractDesignController;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
+
 
 /**
  * ExpressionEngine - by EllisLab
@@ -12,7 +12,7 @@ use EllisLab\ExpressionEngine\Library\CP\URL;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -66,9 +66,9 @@ class Forums extends AbstractDesignController {
 
 		$vars = array();
 
-		$base_url = new URL('design/forums/index/' . $theme, ee()->session->session_id());
+		$base_url = ee('CP/URL', 'design/forums/index/' . $theme);
 
-		$table = Table::create(array('autosort' => TRUE, 'subheadings' => TRUE));
+		$table = ee('CP/Table', array('autosort' => TRUE, 'subheadings' => TRUE));
 		$table->setColumns(
 			array(
 				'template',
@@ -92,7 +92,7 @@ class Forums extends AbstractDesignController {
 						(lang($human) == FALSE) ? $human : lang($human),
 						array('toolbar_items' => array(
 							'edit' => array(
-								'href' => cp_url('design/forums/edit/' . $theme . '/' . $dir . '/' . $human),
+								'href' => ee('CP/URL', 'design/forums/edit/' . $theme . '/' . $dir . '/' . $human),
 								'title' => lang('edit')
 							),
 						))
@@ -114,11 +114,11 @@ class Forums extends AbstractDesignController {
 		{
 			if (is_dir(PATH_ADDONS_THEMES . '/forum_themes/' . $dir))
 			{
-				$themes[cp_url('design/forums/index/' . $dir)] = ucfirst(str_replace("_", " ", $dir));
+				$themes[ee('CP/URL', 'design/forums/index/' . $dir)->compile()] = ucfirst(str_replace("_", " ", $dir));
 			}
 		}
 
-		$vars['themes'] = form_dropdown('theme', $themes, cp_url('design/forums/index/' . $theme));
+		$vars['themes'] = form_dropdown('theme', $themes, ee('CP/URL', 'design/forums/index/' . $theme));
 
 		$this->sidebarMenu('forums');
 		ee()->view->cp_page_title = lang('template_manager');
@@ -127,7 +127,7 @@ class Forums extends AbstractDesignController {
 		ee()->javascript->change("select[name=\'theme\']", 'window.location.href = $(this).val()');
 
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('addons/settings/forum') => lang('forum_manager'),
+			ee('CP/URL', 'addons/settings/forum')->compile() => lang('forum_manager'),
 		);
 
 		ee()->cp->render('design/forums/index', $vars);
@@ -167,7 +167,7 @@ class Forums extends AbstractDesignController {
 				if (ee()->input->post('submit') == 'finish')
 				{
 					$alert->defer();
-					ee()->functions->redirect(cp_url('design/forums'));
+					ee()->functions->redirect(ee('CP/URL', 'design/forums'));
 				}
 
 				$alert->now();
@@ -189,7 +189,7 @@ class Forums extends AbstractDesignController {
 		fclose($fp);
 
 		$vars = array(
-			'form_url'      => cp_url('design/forums/edit/' . $theme . '/' . $dir . '/' . $file),
+			'form_url'      => ee('CP/URL', 'design/forums/edit/' . $theme . '/' . $dir . '/' . $file),
 			'edit_date'     => ee()->localize->human_time($fstat['mtime']),
 			'template_data' => file_get_contents($path),
 		);
@@ -198,8 +198,8 @@ class Forums extends AbstractDesignController {
 
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), $template_name);
 		ee()->view->cp_breadcrumbs = array(
-			cp_url('design') => lang('template_manager'),
-			cp_url('design/forums/') => sprintf(lang('breadcrumb_group'), lang('forums'))
+			ee('CP/URL', 'design')->compile() => lang('template_manager'),
+			ee('CP/URL', 'design/forums/')->compile() => sprintf(lang('breadcrumb_group'), lang('forums'))
 		);
 
 		ee()->cp->render('design/forums/edit', $vars);

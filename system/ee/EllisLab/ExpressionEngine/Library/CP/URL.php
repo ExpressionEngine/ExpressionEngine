@@ -9,7 +9,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -28,9 +28,25 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  */
 
 class URL {
+
+	/**
+	 * @var string $path The path (i.e. 'logs/cp')
+	 */
 	public $path;
+
+	/**
+	 * @var string $session_id The session id
+	 */
 	public $session_id;
+
+	/**
+	 * @var array $qs An associative array of query string parameters
+	 */
 	public $qs = array();
+
+	/**
+	 * @var string $base The base part of the url which preceeds the path.
+	 */
 	public $base;
 
 	/**
@@ -43,21 +59,12 @@ class URL {
 	 *                        		include when creating CP URLs that are to
 	 *                        		be used on the front end
 	 */
-	public function __construct($path, $session_id = '', $qs = array(), $cp_url = '')
+	public function __construct($path, $session_id = NULL, $qs = array(), $cp_url = '')
 	{
-		if (is_array($path) || (is_object($path) && ! method_exists($path, '__toString')))
+		// PHP 5.3 will not throw an error on array to string conversion
+		if (is_array($path) || is_array($session_id))
 		{
-			throw new \InvalidArgumentException('The path argument must be a string.');
-		}
-
-		if (is_array($session_id) || (is_object($session_id) && ! method_exists($session_id, '__toString')))
-		{
-			throw new \InvalidArgumentException('The session_id argument must be a string.');
-		}
-
-		if (is_object($qs) && ! method_exists($qs, '__toString'))
-		{
-			throw new \InvalidArgumentException('The qs argument must be a string or an array.');
+			throw new \InvalidArgumentException("Invalid array to string conversion in " . get_called_class());
 		}
 
 		$this->path = (string) $path;
@@ -90,10 +97,12 @@ class URL {
 	 *
 	 * @param string $key   The name of the query string variable
 	 * @param string $value	The value of the query string variable
+	 * @return self This returns a reference to itself
 	 */
 	public function setQueryStringVariable($key, $value)
 	{
 		$this->qs[$key] = $value;
+		return $this;
 	}
 
 	/**
@@ -101,6 +110,7 @@ class URL {
 	 * of the request
 	 *
 	 * @param array $values An associative array of keys and values
+	 * @return self This returns a reference to itself
 	 */
 	public function addQueryStringVariables(array $values)
 	{
@@ -108,12 +118,14 @@ class URL {
 		{
 			$this->setQueryStringVariable($key, $value);
 		}
+		return $this;
 	}
 
 	/**
-	 * Compiles and returns a URL
+	 * Compiles and returns the URL as a string. Typically this is used when you
+	 * need to use a URL as an array key, or want to json_encode() a URL.
 	 *
-	 * @return string	The URL
+	 * @return string The URL
 	 */
 	public function compile()
 	{

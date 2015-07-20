@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -130,7 +130,7 @@ class EE_Session {
 		//  - Override the whole session check
 		//  - Modify default/guest settings
 		//
-			ee()->extensions->universal_call('sessions_start', $this);
+			ee()->extensions->call('sessions_start', $this);
 			if (ee()->extensions->end_script === TRUE) return;
 		//
 		// -------------------------------------------
@@ -222,7 +222,7 @@ class EE_Session {
 		//  - Modify the user's session/member data.
 		//  - Additional Session or Login methods (ex: log in to other system)
 		//
-			ee()->extensions->universal_call('sessions_end', $this);
+			ee()->extensions->call('sessions_end', $this);
 			if (ee()->extensions->end_script === TRUE) return;
 		//
 		// -------------------------------------------
@@ -576,11 +576,6 @@ class EE_Session {
 	 */
 	public function fetch_member_data()
 	{
-		if (ee()->config->item('enable_db_caching') == 'y' AND REQ == 'PAGE')
-		{
-			ee()->db->cache_off();
-		}
-
 		$member_query = $this->_do_member_query();
 
 		if ($member_query->num_rows() == 0)
@@ -696,11 +691,6 @@ class EE_Session {
 		}
 
 		$member_query->free_result();
-
-		if (ee()->config->item('enable_db_caching') == 'y' AND REQ == 'PAGE')
-		{
-			ee()->db->cache_on();
-		}
 
 		return TRUE;
 	}

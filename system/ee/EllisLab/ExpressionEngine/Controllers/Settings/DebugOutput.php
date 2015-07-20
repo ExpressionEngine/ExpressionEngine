@@ -12,7 +12,7 @@ use CP_Controller;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -93,7 +93,7 @@ class DebugOutput extends Settings {
 					'desc' => 'redirect_method_desc',
 					'fields' => array(
 						'redirect_method' => array(
-							'type' => 'dropdown',
+							'type' => 'select',
 							'choices' => array(
 								'redirect' => lang('redirect_method_opt_location'),
 								'refresh' => lang('redirect_method_opt_refresh')
@@ -118,6 +118,26 @@ class DebugOutput extends Settings {
 			)
 		);
 
+		if ( ! extension_loaded('newrelic'))
+		{
+			$vars['sections']['new_relic'] = array(
+				array(
+					'title' => 'use_newrelic',
+					'desc' => 'use_newrelic_desc',
+					'fields' => array(
+						'use_newrelic' => array('type' => 'yes_no')
+					)
+				),
+				array(
+					'title' => 'newrelic_app_name',
+					'desc' => 'newrelic_app_name_desc',
+					'fields' => array(
+						'newrelic_app_name' => array('type' => 'text')
+					)
+				)
+			);
+		}
+
 		ee()->form_validation->set_rules(array(
 			array(
 				'field' => 'max_caches',
@@ -128,7 +148,7 @@ class DebugOutput extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = cp_url('settings/debug-output');
+		$base_url = ee('CP/URL', 'settings/debug-output');
 
 		if (AJAX_REQUEST)
 		{

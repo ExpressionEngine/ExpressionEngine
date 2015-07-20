@@ -5,7 +5,6 @@ namespace EllisLab\ExpressionEngine\Controllers\Utilities;
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -13,7 +12,7 @@ use EllisLab\ExpressionEngine\Library\CP\Pagination;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -93,7 +92,6 @@ class Query extends Utilities {
 		$row_limit	= 20;
 		$title		= lang('query_result');
 		$vars['write'] = FALSE;
-		ee()->db->db_debug = (ee()->input->post('debug') !== FALSE OR empty($_POST));
 
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
 		$page = ($page > 0) ? $page : 1;
@@ -126,7 +124,7 @@ class Query extends Utilities {
 		if (preg_match("/(^|\s)(".implode('|', $qtypes).")\s/si", $sql))
 		{
 			ee()->view->set_message('issue', lang('sql_not_allowed'), lang('sql_not_allowed_desc'), TRUE);
-			return ee()->functions->redirect(cp_url('utilities/query'));
+			return ee()->functions->redirect(ee('CP/URL', 'utilities/query'));
 		}
 
 		// If it's a DELETE query, require that a Super Admin be the one submitting it
@@ -146,8 +144,8 @@ class Query extends Utilities {
 		}
 		catch (\Exception $e)
 		{
-			ee()->view->invalid_query = explode('<br>', $e->getMessage());
-		    return $this->index(FALSE);
+			ee()->view->invalid_query = $e->getMessage();
+			return $this->index(FALSE);
 		}
 
 		ee()->db->db_exception = FALSE;
@@ -165,15 +163,6 @@ class Query extends Utilities {
 			}
 		}
 
-		$columns = array();
-		if ($query && $vars['write'] == FALSE)
-		{
-			foreach ($query->row_array() as $col_name => $value)
-			{
-				$columns[$col_name] = array('encode' => TRUE);
-			}
-		}
-
 		// Don't run column names though lang()
 		$table_config = array('lang_cols' => FALSE);
 
@@ -185,7 +174,13 @@ class Query extends Utilities {
 			$table_config['autosearch'] = TRUE;
 		}
 
-		$table = CP\Table::create($table_config);
+		$columns = array();
+		if ($query && $vars['write'] == FALSE)
+		{
+			$columns = array_keys($query->row_array());
+		}
+
+		$table = ee('CP/Table', $table_config);
 		$table->setColumns($columns);
 
 		$search = $table->search; // PHP 5.3
@@ -257,16 +252,15 @@ class Query extends Utilities {
 
 		$table->setData($data);
 
-		$base_url = new CP\URL(
+		$base_url = ee('CP/URL',
 			'utilities/query/run-query/'.$table_name,
-			ee()->session->session_id(),
 			array('thequery' => rawurlencode(base64_encode($sql)))
 		);
 		$view_data = $table->viewData($base_url);
 		$data = $view_data['data'];
 		$vars['table'] = $view_data;
 
-		$vars['thequery'] = ee()->security->xss_clean($sql);
+		$vars['thequery'] = ee('Security/XSS')->clean($sql);
 		$vars['total_results'] = (isset($total_results)) ? $total_results : 0;
 		$vars['total_results'] = ($show_query) ? $vars['table']['total_rows'] : $vars['total_results'];
 
@@ -281,19 +275,22 @@ class Query extends Utilities {
 		}
 
 		$row_limit = ($limited_query) ? $vars['total_results'] : $row_limit;
-		$pagination = new Pagination($row_limit, $vars['total_results'], $page);
-		$vars['pagination'] = $pagination->cp_links($view_data['base_url']);
+
+		$vars['pagination'] = ee('CP/Pagination', $vars['total_results'])
+			->perPage($row_limit)
+			->currentPage($page)
+			->render($view_data['base_url']);
 
 		// If no table, keep query form labeling
 		if (empty($table_name))
 		{
-			ee()->cp->set_breadcrumb(cp_url('utilities/query'), lang('query_form'));
+			ee()->cp->set_breadcrumb(ee('CP/URL', 'utilities/query'), lang('query_form'));
 			ee()->view->cp_page_title = lang('query_results');
 		}
 		// Otherwise, we're coming from the SQL Manager
 		else
 		{
-			ee()->cp->set_breadcrumb(cp_url('utilities/query'), lang('sql_manager_abbr'));
+			ee()->cp->set_breadcrumb(ee('CP/URL', 'utilities/query'), lang('sql_manager_abbr'));
 			ee()->view->cp_page_title = $table_name . ' ' . lang('table');
 		}
 

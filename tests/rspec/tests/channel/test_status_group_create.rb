@@ -64,6 +64,9 @@ feature 'Status Group Create/Edit' do
     no_php_js_errors
 
     @page.should have_text 'Status group saved'
+
+    @page.load_edit_for_status_group(2)
+
     @page.should have_text 'Edit Status Group'
     should_have_no_form_errors(@page)
 
@@ -80,9 +83,11 @@ feature 'Status Group Create/Edit' do
     @page.group_name.set 'Test'
     @page.submit
 
-    @page.group_name.value.should == 'Test'
-
-    @page.should have_text 'Edit Status Group'
+    no_php_js_errors
     @page.should have_text 'Status group saved'
+
+    @page.load_edit_for_status_group(1)
+    @page.should have_text 'Edit Status Group'
+    @page.group_name.value.should == 'Test'
   end
 end

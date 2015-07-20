@@ -10,7 +10,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -81,12 +81,12 @@ class Cache extends Utilities {
 			}
 
 			ee()->view->set_message('success', lang('caches_cleared'), '', TRUE);
-			ee()->functions->redirect(cp_url('utilities/cache'));
+			ee()->functions->redirect(ee('CP/URL', 'utilities/cache'));
 		}
 
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('cache_manager');
-		ee()->view->base_url = cp_url('utilities/cache');
+		ee()->view->base_url = ee('CP/URL', 'utilities/cache');
 		ee()->view->save_btn_text = 'btn_clear_caches';
 		ee()->view->save_btn_text_working = 'btn_clear_caches_working';
 		ee()->cp->render('settings/form', $vars);

@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -230,10 +230,6 @@ class Field_model extends CI_Model {
 			// Make sure a deleted field is not assigned as the search excerpt
 			$this->db->where_in('search_excerpt', $deleted_fields['field_ids']);
 			$this->db->update('channels', array('search_excerpt' => NULL));
-
-			// Remove from field formatting
-				$this->db->where_in('field_id', $deleted_fields['field_ids']);
-				$this->db->delete('field_formatting');
 
 			//  Get rid of any stray relationship data
 			if (count($rel_ids) > 0)

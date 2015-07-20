@@ -12,7 +12,7 @@ use CP_Controller;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -38,7 +38,7 @@ class Email extends Profile {
 	 */
 	public function index()
 	{
-		$this->base_url = cp_url($this->base_url, $this->query_string);
+		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
 
 		$settings = array();
 
@@ -66,7 +66,7 @@ class Email extends Profile {
 			array(
 				array(
 					'title' => 'email',
-					'desc' => 'email_desc',
+					'desc' => 'email_description',
 					'fields' => array(
 						'email' => array('type' => 'text', 'value' => $this->member->email, 'required' => TRUE)
 					)
@@ -86,24 +86,24 @@ class Email extends Profile {
 					)
 				),
 				array(
-					'title' => 'options',
-					'desc' => 'options_desc',
+					'title' => 'email_options',
+					'desc' => 'email_options_desc',
 					'fields' => array(
 						'preferences' => array(
 							'type' => 'checkbox',
 							'choices' => array(
-								'accept_admin_email' => 'accept_admin_email',
-								'accept_user_email' => 'accept_user_email',
-								'notify_by_default' => 'notify_by_default',
-								'notify_of_pm' => 'notify_of_pm'
+								'accept_admin_email' => lang('accept_admin_email'),
+								'accept_user_email' => lang('accept_user_email'),
+								'notify_by_default' => lang('notify_by_default'),
+								'notify_of_pm' => lang('notify_of_pm')
 							),
 							'value' => $settings
 						),
 					)
 				),
 				array(
-					'title' => 'current_password',
-					'desc' => 'current_password',
+					'title' => 'existing_password',
+					'desc' => 'existing_password_exp',
 					'fields' => array(
 						'current_password' => array('type' => 'password', 'required' => TRUE)
 					)
@@ -131,10 +131,13 @@ class Email extends Profile {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
+			// Don't save the password check to the model
+			unset($vars['sections'][0][count($vars['sections'][0]) - 1]);
+
 			if ($this->saveSettings($vars['sections']))
 			{
 				ee()->view->set_message('success', lang('member_updated'), lang('member_updated_desc'), TRUE);
-				ee()->functions->redirect($base_url);
+				ee()->functions->redirect($this->base_url);
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())

@@ -2,7 +2,8 @@
 
 namespace EllisLab\ExpressionEngine\Model\Site\Column;
 
-use EllisLab\ExpressionEngine\Service\Model\Column\Base64SerializedComposite;
+use EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64Native;
+use EllisLab\ExpressionEngine\Service\Model\Column\CustomType;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -10,7 +11,7 @@ use EllisLab\ExpressionEngine\Service\Model\Column\Base64SerializedComposite;
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
- * @license		http://ellislab.com/expressionengine/user-guide/license.html
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
  * @filesource
@@ -27,41 +28,15 @@ use EllisLab\ExpressionEngine\Service\Model\Column\Base64SerializedComposite;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class SystemPreferences extends Base64SerializedComposite {
+class SystemPreferences extends CustomType {
 
-	/**
-	 * The location of the index.php file for this site.
-	 *
-	 * @type	string
-	 */
+	protected $is_site_on;
 	protected $site_index;
-
-	/**
-	 * The base URL for this site.
-	 *
-	 * @type	string
-	 */
 	protected $site_url;
-
-	/**
-	 * The base URL of the theme folder for this site.
-	 *
-	 * @type	string
-	 */
+	protected $cp_url;
 	protected $theme_folder_url;
-
-	/**
-	 * The email address of this site's webmaster.
-	 *
-	 * @type	string
-	 */
+	protected $theme_folder_path;
 	protected $webmaster_email;
-
-	/**
-	 * The name of this site's webmaster.
-	 *
-	 * @type	string
-	 */
 	protected $webmaster_name;
 	protected $channel_nomenclature;
 	protected $max_caches;
@@ -70,7 +45,7 @@ class SystemPreferences extends Base64SerializedComposite {
 	protected $captcha_font;
 	protected $captcha_rand;
 	protected $captcha_require_members;
-	protected $enable_db_caching;
+	protected $require_captcha;
 	protected $enable_sql_caching;
 	protected $force_query_string;
 	protected $show_profiler;
@@ -78,6 +53,8 @@ class SystemPreferences extends Base64SerializedComposite {
 	protected $include_seconds;
 	protected $cookie_domain;
 	protected $cookie_path;
+	protected $cookie_httponly;
+	protected $cookie_secure;
 	protected $website_session_type;
 	protected $cp_session_type;
 	protected $allow_username_change;
@@ -97,12 +74,12 @@ class SystemPreferences extends Base64SerializedComposite {
 	protected $gzip_output;
 	protected $log_referrers;
 	protected $max_referrers;
+	protected $default_site_timezone;
 	protected $date_format;
 	protected $time_format;
-	protected $server_offset;
-	protected $default_site_timezone;
 	protected $mail_protocol;
 	protected $smtp_server;
+	protected $smtp_port;
 	protected $smtp_username;
 	protected $smtp_password;
 	protected $email_debug;
@@ -114,7 +91,6 @@ class SystemPreferences extends Base64SerializedComposite {
 	protected $email_console_timelock;
 	protected $log_email_console_msgs;
 	protected $cp_theme;
-	protected $email_module_captchas;
 	protected $log_search_terms;
 	protected $deny_duplicate_data;
 	protected $redirect_submitted_links;
@@ -142,9 +118,23 @@ class SystemPreferences extends Base64SerializedComposite {
 	protected $banishment_message;
 	protected $enable_search_log;
 	protected $max_logged_searches;
-	protected $theme_folder_path;
-	protected $is_site_on;
 	protected $rte_enabled;
 	protected $rte_default_toolset_id;
+
+	/**
+	* Called when the column is fetched from db
+	*/
+	public function unserialize($db_data)
+	{
+		return Base64Native::unserialize($db_data);
+	}
+
+	/**
+	* Called before the column is written to the db
+	*/
+	public function serialize($data)
+	{
+		return Base64Native::serialize($data);
+	}
 
 }

@@ -6,101 +6,69 @@ $lang = array(
 // General word list
 //----------------------------
 
-'no' =>
-'No',
+'no' => 'No',
 
-'yes' =>
-'Yes',
+'yes' => 'Yes',
 
-'on' =>
-'on',
+'on' => 'on',
 
-'off' =>
-'off',
+'off' => 'off',
 
-'first' =>
-'First',
+'first' => 'First',
 
-'prev' =>
-'Previous',
+'prev' => 'Previous',
 
-'next' =>
-'Next',
+'next' => 'Next',
 
-'last' =>
-'Last',
+'last' => 'Last',
 
-'enabled' =>
-'enabled',
+'enabled' => 'enabled',
 
-'disabled' =>
-'disabled',
+'disabled' => 'disabled',
 
-'back' =>
-'Back',
+'back' => 'Back',
 
-'submit' =>
-'Submit',
+'submit' => 'Submit',
 
-'update' =>
-'Update',
+'update' => 'Update',
 
-'thank_you' =>
-'Thank You!',
+'thank_you' => 'Thank You!',
 
-'page' =>
-'Page',
+'page' => 'Page',
 
-'of' =>
-'of',
+'of' => 'of',
 
-'by' =>
-'by',
+'by' => 'by',
 
-'at' =>
-'at',
+'at' => 'at',
 
-'dot' =>
-'dot',
+'dot' => 'dot',
 
-'and' =>
-'and',
+'and' => 'and',
 
-'or' =>
-'or',
+'or' => 'or',
 
-'id' =>
-'ID',
+'id' => 'ID',
 
-'encoded_email' =>
-'(JavaScript must be enabled to view this email address)',
+'encoded_email' => '(JavaScript must be enabled to view this email address)',
 
-'search' =>
-'Search',
+'search' => 'Search',
 
-'system_off_msg' =>
-'This site is currently inactive.',
+'system_off_msg' => 'This site is currently inactive.',
 
-'not_authorized' =>
-'You are not authorized to perform this action',
+'not_authorized' => 'You are not authorized to perform this action',
 
-'auto_redirection' =>
-'You will be redirected automatically in %x seconds',
+'auto_redirection' => 'You will be redirected automatically in %x seconds',
 
-'click_if_no_redirect' =>
-'Click here if you are not redirected automatically',
+'click_if_no_redirect' => 'Click here if you are not redirected automatically',
 
-'return_to_previous' =>
-'Return to Previous Page',
+'return_to_previous' => 'Return to Previous Page',
 
-'not_available' =>
-'Not available',
+'not_available' => 'Not available',
 
-'setting' =>
-'Setting',
+'setting' => 'Setting',
 
-'preference' =>
-'Preference',
+'preference' => 'Preference',
 
 'pag_first_link' => '&lsaquo; First',
 'pag_last_link' => 'Last &rsaquo;',
@@ -109,72 +77,52 @@ $lang = array(
 // Errors
 //----------------------------
 
-'error' =>
-'Error',
+'error' => 'Error',
 
-'generic_fatal_error' =>
-'Something has gone wrong and this URL cannot be processed at this time.',
+'generic_fatal_error' => 'Something has gone wrong and this URL cannot be processed at this time.',
 
-'invalid_url' =>
-'The URL you submitted is not valid.',
+'invalid_url' => 'The URL you submitted is not valid.',
 
-'submission_error' =>
-'The form you submitted contained the following errors',
+'submission_error' => 'The form you submitted contained the following errors',
 
-'general_error' =>
-'The following errors were encountered',
+'general_error' => 'The following errors were encountered',
 
-'invalid_action' =>
-'The action you have requested is invalid.',
+'invalid_action' => 'The action you have requested is invalid.',
 
-'csrf_token_expired' =>
-'This form has expired. Please refresh and try again.',
+'csrf_token_expired' => 'This form has expired. Please refresh and try again.',
 
-'current_password_required' =>
-'Your current password is required.',
+'current_password_required' => 'Your current password is required.',
 
-'current_password_incorrect' =>
-'Your current password was not submitted correctly.',
+'current_password_incorrect' => 'Your current password was not submitted correctly.',
 
-'captcha_required' =>
-'You must submit the word that appears in the image',
+'captcha_required' => 'You must submit the word that appears in the image',
 
-'captcha_incorrect' =>
-'You did not submit the word exactly as it appears in the image',
+'captcha_incorrect' => 'You did not submit the word exactly as it appears in the image',
 
-'nonexistent_page' =>
-'The page you requested was not found',
+'nonexistent_page' => 'The page you requested was not found',
 
-'unable_to_load_field_type' =>
-'Unable to load requested field type file:  %s.<br />
+'unable_to_load_field_type' => 'Unable to load requested field type file:  %s.<br />
 Confirm the fieldtype file is located in the system/addons/ directory',
 
-'unwritable_cache_folder' =>
-'Your cache folder does not have proper permissions.<br>
+'unwritable_cache_folder' => 'Your cache folder does not have proper permissions.<br>
 To fix: Set the cache folder (/system/cache/) permissions to 777 (or equivalent for your server).',
 
-'unwritable_config_file' =>
-'Your configuration file does not have the proper permissions.<br>
+'unwritable_config_file' => 'Your configuration file does not have the proper permissions.<br>
 To fix: Set the config file (/system/user/config/config.php) permissions to 666 (or equivalent for your server).',
 
 'redirect_xss_fail' => 'The link you are being redirected to contained some
 potentially malicious or dangerous code. We recommend you hit the back button
 and email %s to report the link that generated this message.',
 
-'missing_mime_config' =>
-'Cannot import your mime-type whitelist: the file %s does not exist or cannot be read.',
+'missing_mime_config' => 'Cannot import your mime-type whitelist: the file %s does not exist or cannot be read.',
 
-'version_mismatch' =>
-'Your ExpressionEngine installation&rsquo;s version (%s) is not consistent with the reported version (%s). <a href="http://ellislab.com/expressionengine/user-guide/installation/update.html">Please update your installation of ExpressionEngine again</a>.',
+'version_mismatch' => 'Your ExpressionEngine installation&rsquo;s version (%s) is not consistent with the reported version (%s). <a href="https://ellislab.com/expressionengine/user-guide/installation/update.html">Please update your installation of ExpressionEngine again</a>.',
 
-'checksum_changed_warning' =>
-'One or more core files have been altered:',
+'checksum_changed_warning' => 'One or more core files have been altered:',
 
-'checksum_changed_accept' =>
-'Accept Changes',
+'checksum_changed_accept' => 'Accept Changes',
 
-'checksum_email_subject' =>
-'A core file was modified on your site.',
+'checksum_email_subject' => 'A core file was modified on your site.',
 
 'checksum_email_message' => 'ExpressionEngine has detected the modification of a core file on: {url}
 
@@ -184,305 +132,211 @@ The following files are affected:
 If you made these changes, please accept the modifications on the control panel homepage.  If you did not alter these files it may indicate a hacking attempt. Check the files for any suspicious contents (JavaScript or iFrames) and contact ExpressionEngine support:
 https://support.ellislab.com/',
 
-'new_version_error' =>
-'An unexpected error occurred attempting to download the current ExpressionEngine version number.  Please visit your <a href=\'%s\' title=\'download account\'>Download Account</a> to verify you are on the current version.  If this error persists, please contact your system administrator',
+'new_version_error' => 'An unexpected error occurred attempting to download the current ExpressionEngine version number.  Please visit your <a href=\'%s\' title=\'download account\'>Download Account</a> to verify you are on the current version.  If this error persists, please contact your system administrator',
 
-'file_not_found' =>
-'File %s does not exist.',
+'file_not_found' => 'File %s does not exist.',
 
 //----------------------------
 // Member Groups
 //----------------------------
 
-'banned' =>
-'Banned',
+'banned' => 'Banned',
 
-'guests' =>
-'Guests',
+'guests' => 'Guests',
 
-'members' =>
-'Members',
+'members' => 'Members',
 
-'pending' =>
-'Pending',
+'pending' => 'Pending',
 
-'super_admins' =>
-'Super Admins',
+'super_admins' => 'Super Admins',
 
 
 //----------------------------
 // Template.php
 //----------------------------
 
-'error_tag_syntax' =>
-'The following tag has a syntax error:',
+'error_tag_syntax' => 'The following tag has a syntax error:',
 
-'error_fix_syntax' =>
-'Please correct the syntax in your template.',
+'error_fix_syntax' => 'Please correct the syntax in your template.',
 
-'error_tag_module_processing' =>
-'The following tag cannot be processed:',
+'error_tag_module_processing' => 'The following tag cannot be processed:',
 
-'error_fix_module_processing' =>
-'Please check that the \'%x\' module is installed and that \'%y\' is an available method of the module',
+'error_fix_module_processing' => 'Please check that the \'%x\' module is installed and that \'%y\' is an available method of the module',
 
-'template_loop' =>
-'You have caused a template loop due to improperly nested sub-templates (\'%s\' recursively called)',
+'template_loop' => 'You have caused a template loop due to improperly nested sub-templates (\'%s\' recursively called)',
 
-'template_load_order' =>
-'Template load order',
+'template_load_order' => 'Template load order',
 
-'error_multiple_layouts' =>
-'Multiple Layouts found, please ensure you only have one layout tag per template',
+'error_multiple_layouts' => 'Multiple Layouts found, please ensure you only have one layout tag per template',
 
-'error_layout_too_late' =>
-'Plugin or module tag found before layout declaration. Please move the layout tag to the top of your template.',
+'error_layout_too_late' => 'Plugin or module tag found before layout declaration. Please move the layout tag to the top of your template.',
 
-'error_invalid_conditional' =>
-'You have an invalid conditional in your template. Please review your conditionals for an unclosed string, invalid operators, a missing }, or a missing {/if}.',
+'error_invalid_conditional' => 'You have an invalid conditional in your template. Please review your conditionals for an unclosed string, invalid operators, a missing }, or a missing {/if}.',
 
-'layout_contents_reserved' =>
-'The name "contents" is reserved for the template data and cannot be used as a layout variable (i.e. {layout:set name="contents"} or {layout="foo/bar" contents=""}).',
+'layout_contents_reserved' => 'The name "contents" is reserved for the template data and cannot be used as a layout variable (i.e. {layout:set name="contents"} or {layout="foo/bar" contents=""}).',
 
 //----------------------------
 // Email
 //----------------------------
 
-'forgotten_email_sent' =>
-'If this email address is associated with an account, instructions for resetting your password have just been emailed to you.',
+'forgotten_email_sent' => 'If this email address is associated with an account, instructions for resetting your password have just been emailed to you.',
 
-'error_sending_email' =>
-'Unable to send email at this time.',
+'error_sending_email' => 'Unable to send email at this time.',
 
-'no_email_found' =>
-'The email address you submitted was not found in the database.',
+'no_email_found' => 'The email address you submitted was not found in the database.',
 
-'password_reset_flood_lock' =>
-'You have tried to reset your password too many times today. Please check your inbox and spam folders for previous requests, or contact the site administrator.',
+'password_reset_flood_lock' => 'You have tried to reset your password too many times today. Please check your inbox and spam folders for previous requests, or contact the site administrator.',
 
-'your_new_login_info' =>
-'Login information',
+'your_new_login_info' => 'Login information',
 
-'password_has_been_reset' =>
-'Your password was reset and a new one has been emailed to you.',
+'password_has_been_reset' => 'Your password was reset and a new one has been emailed to you.',
 
 //----------------------------
 // Date
 //----------------------------
 
-'singular' =>
-'one',
+'singular' => 'one',
 
-'less_than' =>
-'less than',
+'less_than' => 'less than',
 
-'about' =>
-'about',
+'about' => 'about',
 
-'past' =>
-'%s ago',
+'past' => '%s ago',
 
-'future' =>
-'in %s',
+'future' => 'in %s',
 
-'ago' =>
-'%x ago',
+'ago' => '%x ago',
 
-'year' =>
-'year',
+'year' => 'year',
 
-'years' =>
-'years',
+'years' => 'years',
 
-'month' =>
-'month',
+'month' => 'month',
 
-'months' =>
-'months',
+'months' => 'months',
 
-'fortnight' =>
-'fortnight',
+'fortnight' => 'fortnight',
 
-'fortnights' =>
-'fortnights',
+'fortnights' => 'fortnights',
 
-'week' =>
-'week',
+'week' => 'week',
 
-'weeks' =>
-'weeks',
+'weeks' => 'weeks',
 
-'day' =>
-'day',
+'day' => 'day',
 
-'days' =>
-'days',
+'days' => 'days',
 
-'hour' =>
-'hour',
+'hour' => 'hour',
 
-'hours' =>
-'hours',
+'hours' => 'hours',
 
-'minute' =>
-'minute',
+'minute' => 'minute',
 
-'minutes' =>
-'minutes',
+'minutes' => 'minutes',
 
-'second' =>
-'second',
+'second' => 'second',
 
-'seconds' =>
-'seconds',
+'seconds' => 'seconds',
 
-'am' =>
-'am',
+'am' => 'am',
 
-'pm' =>
-'pm',
+'pm' => 'pm',
 
-'AM' =>
-'AM',
+'AM' => 'AM',
 
-'PM' =>
-'PM',
+'PM' => 'PM',
 
-'Sun' =>
-'Sun',
+'Sun' => 'Sun',
 
-'Mon' =>
-'Mon',
+'Mon' => 'Mon',
 
-'Tue' =>
-'Tue',
+'Tue' => 'Tue',
 
-'Wed' =>
-'Wed',
+'Wed' => 'Wed',
 
-'Thu' =>
-'Thu',
+'Thu' => 'Thu',
 
-'Fri' =>
-'Fri',
+'Fri' => 'Fri',
 
-'Sat' =>
-'Sat',
+'Sat' => 'Sat',
 
-'Su' =>
-'S',
+'Su' => 'S',
 
-'Mo' =>
-'M',
+'Mo' => 'M',
 
-'Tu' =>
-'T',
+'Tu' => 'T',
 
-'We' =>
-'W',
+'We' => 'W',
 
-'Th' =>
-'T',
+'Th' => 'T',
 
-'Fr' =>
-'F',
+'Fr' => 'F',
 
-'Sa' =>
-'S',
+'Sa' => 'S',
 
-'Sunday' =>
-'Sunday',
+'Sunday' => 'Sunday',
 
-'Monday' =>
-'Monday',
+'Monday' => 'Monday',
 
-'Tuesday' =>
-'Tuesday',
+'Tuesday' => 'Tuesday',
 
-'Wednesday' =>
-'Wednesday',
+'Wednesday' => 'Wednesday',
 
-'Thursday' =>
-'Thursday',
+'Thursday' => 'Thursday',
 
-'Friday' =>
-'Friday',
+'Friday' => 'Friday',
 
-'Saturday' =>
-'Saturday',
+'Saturday' => 'Saturday',
 
 
-'Jan' =>
-'Jan',
+'Jan' => 'Jan',
 
-'Feb' =>
-'Feb',
+'Feb' => 'Feb',
 
-'Mar' =>
-'Mar',
+'Mar' => 'Mar',
 
-'Apr' =>
-'Apr',
+'Apr' => 'Apr',
 
-'May' =>
-'May',
+'May' => 'May',
 
-'Jun' =>
-'Jun',
+'Jun' => 'Jun',
 
-'Jul' =>
-'Jul',
+'Jul' => 'Jul',
 
-'Aug' =>
-'Aug',
+'Aug' => 'Aug',
 
-'Sep' =>
-'Sep',
+'Sep' => 'Sep',
 
-'Oct' =>
-'Oct',
+'Oct' => 'Oct',
 
-'Nov' =>
-'Nov',
+'Nov' => 'Nov',
 
-'Dec' =>
-'Dec',
+'Dec' => 'Dec',
 
-'January' =>
-'January',
+'January' => 'January',
 
-'February' =>
-'February',
+'February' => 'February',
 
-'March' =>
-'March',
+'March' => 'March',
 
-'April' =>
-'April',
+'April' => 'April',
 
-'May_l' =>
-'May',
+'May_l' => 'May',
 
-'June' =>
-'June',
+'June' => 'June',
 
-'July' =>
-'July',
+'July' => 'July',
 
-'August' =>
-'August',
+'August' => 'August',
 
-'September' =>
-'September',
+'September' => 'September',
 
-'October' =>
-'October',
+'October' => 'October',
 
-'November' =>
-'November',
+'November' => 'November',
 
-'December' =>
-'December',
+'December' => 'December',
 
 
 'UM12'		=>	'(UTC -12:00) Baker/Howland Island',
@@ -526,11 +380,9 @@ https://support.ellislab.com/',
 'UP13'		=>	'(UTC +13:00) Samoa Time Zone, Phoenix Islands Time, Tonga',
 'UP14'		=>	'(UTC +14:00) Line Islands',
 
-"select_timezone" =>
-"Select Timezone",
+"select_timezone" => "Select Timezone",
 
-"no_timezones" =>
-"No Timezones",
+"no_timezones" => "No Timezones",
 
 // IGNORE
 ''=>'');

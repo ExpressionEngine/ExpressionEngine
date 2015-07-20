@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Model\Content;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Service\Model\VariableColumnModel;
 use EllisLab\ExpressionEngine\Model\Content\Display\DefaultLayout;
 use EllisLab\ExpressionEngine\Model\Content\Display\FieldDisplay;
 use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
@@ -14,13 +15,14 @@ use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
  * mass set: $entry->set(array); $entry->getForm();
  */
 
-abstract class ContentModel extends Model {
+abstract class ContentModel extends VariableColumnModel {
 
 	protected static $_events = array(
-		'afterSetCustomField'
+		'afterSave'
 	);
 
 	protected $_field_facades;
+	protected $_field_was_saved;
 
 	/**
 	 * Define a way to get the parent structure. For example,
@@ -40,8 +42,7 @@ abstract class ContentModel extends Model {
 	}
 
 	/**
-	 * Optionally return an array of default fields. If you override
-	 * this you may also want to override `populateDefaultFields()`.
+	 * Optionally return an array of default fields.
 	 *
 	 * @return Array of field definitions
 	 */
@@ -51,18 +52,22 @@ abstract class ContentModel extends Model {
 	}
 
 	/**
-	 * Do any work needed to setup the default fields with data
-	 */
-	protected function populateDefaultFields()
-	{
-		return;
-	}
-
-	/**
 	 * Check if a custom field of $name exists
 	 */
 	public function hasCustomField($name)
 	{
+		if (strpos($name, $this->getCustomFieldPrefix()) !== 0)
+		{
+			$default_fields = $this->getDefaultFields();
+
+			if ( ! isset($default_fields[$name]))
+			{
+				return FALSE;
+			}
+		}
+
+		$this->usesCustomFields();
+
 		if ( ! isset($this->_field_facades))
 		{
 			return FALSE;
@@ -80,20 +85,27 @@ abstract class ContentModel extends Model {
 	}
 
 	/**
-	 * TODO This is messy. Some fields don't return their data on save()
-	 * and some use it to prep the data. Date is one of the prep ones,
-	 * which we'll do here, but this definitely will need work. /TODO
+	 * Get a list of all custom field facades
 	 */
-	public function onAfterSetCustomField($name, $value)
+	public function getCustomFields()
 	{
-		if ($this->hasCustomField($name))
-		{
-			$field = $this->getCustomField($name);
+		return $this->_field_facades;
+	}
 
-			if ($field->getType() == 'date')
-			{
-				$field->save();
-			}
+	/**
+	* Get a list of all custom field names
+	*/
+	public function getCustomFieldNames()
+	{
+		return array_keys($this->_field_facades);
+	}
+
+	public function onAfterSave()
+	{
+		foreach ($this->_field_was_saved as $field)
+		{
+			$field->setContentId($this->getId());
+			$field->postSave();
 		}
 	}
 
@@ -115,11 +127,14 @@ abstract class ContentModel extends Model {
 	 */
 	public function save()
 	{
-		foreach ($this->_field_facades as $name => $field)
+		$this->_field_was_saved = array();
+
+		foreach ($this->getCustomFields() as $name => $field)
 		{
 			if ($this->isDirty($name))
 			{
-				$field->save();
+				$this->setRawProperty($name, $field->save($this));
+				$this->_field_was_saved[] = $field;
 			}
 		}
 
@@ -136,13 +151,13 @@ abstract class ContentModel extends Model {
 	}
 
 	/**
-	 * Custom fields coutn as a valid property
+	 * Custom fields count as a valid property
 	 */
 	public function hasProperty($name)
 	{
 		if ( ! parent::hasProperty($name))
 		{
-			return $this->hasCustomField($name);
+			return $this->hasCustomField($name) || (strpos($name, 'field_ft_') == 0);
 		}
 
 		return TRUE;
@@ -199,7 +214,7 @@ abstract class ContentModel extends Model {
 
 		$rules = parent::getValidationRules();
 
-		$facades = $this->_field_facades;
+		$facades = $this->getCustomFields();
 
 		foreach ($facades as $name => $facade)
 		{
@@ -219,9 +234,14 @@ abstract class ContentModel extends Model {
 	/**
 	 * Callback to validate custom fields
 	 */
-	public function validateCustomField($key, $value)
+	public function validateCustomField($key, $value, $params, $rule)
 	{
-		return $this->getCustomField($key)->validate($value);
+		$field = $this->getCustomField($key);
+		$result = $this->getCustomField($key)->validate($value);
+
+		$this->setRawProperty($key, $field->getData());
+
+		return $result;
 	}
 
 
@@ -234,7 +254,7 @@ abstract class ContentModel extends Model {
 	{
 		$fields = parent::getFields();
 
-		foreach ($this->_field_facades as $field_facade)
+		foreach ($this->getCustomFields() as $field_facade)
 		{
 			$fields[] = $field_facade->getName();
 		}
@@ -251,7 +271,7 @@ abstract class ContentModel extends Model {
 
 		$fields = array_map(
 			function($field) { return new FieldDisplay($field); },
-			$this->_field_facades
+			$this->getCustomFields()
 		);
 
 		$layout = $layout ?: new DefaultLayout();
@@ -267,7 +287,6 @@ abstract class ContentModel extends Model {
 		if ( ! isset($this->_field_facades))
 		{
 			$this->initializeCustomFields();
-			$this->populateDefaultFields();
 		}
 	}
 
@@ -276,10 +295,20 @@ abstract class ContentModel extends Model {
 	 */
 	protected function fillCustomFields(array $data = array())
 	{
-		$this->usesCustomFields();
-
 		foreach ($data as $name => $value)
 		{
+			if (strpos($name, 'field_ft_') === 0)
+			{
+				$name = str_replace('field_ft_', 'field_id_', $name);
+
+				if ($this->hasCustomField($name))
+				{
+					$this->getCustomField($name)->setFormat($value);
+				}
+
+				continue;
+			}
+
 			if ($this->hasCustomField($name))
 			{
 				$this->getCustomField($name)->setData($value);
@@ -305,13 +334,15 @@ abstract class ContentModel extends Model {
 		$native_prefix = $this->getCustomFieldPrefix();
 
 		foreach ($native_fields as $field)
-		{
-			$this->addFacade(
-				$field->getId(),
-				$field->toArray(),
-				$native_prefix
-			);
-		}
+        {
+            $settings = array_merge($field->getSettingsValues(), $field->toArray());
+
+            $this->addFacade(
+                $field->getId(),
+                $settings,
+                $native_prefix
+            );
+        }
 	}
 
 	/**
@@ -324,6 +355,7 @@ abstract class ContentModel extends Model {
 		$facade = new FieldFacade($id, $info);
 		$facade->setName($name);
 		$facade->setContentId($this->getId());
+		$facade->setContentType($this->getStructure()->getContentType());
 
 		$this->_field_facades[$name] = $facade;
 	}

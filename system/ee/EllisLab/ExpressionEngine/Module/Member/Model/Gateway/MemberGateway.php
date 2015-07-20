@@ -96,6 +96,7 @@ class MemberGateway extends Gateway {
 	public $template_size;
 	public $notepad;
 	public $notepad_size;
+	public $bookmarklets;
 	public $quick_links;
 	public $quick_tabs;
 	public $show_sidebar;
