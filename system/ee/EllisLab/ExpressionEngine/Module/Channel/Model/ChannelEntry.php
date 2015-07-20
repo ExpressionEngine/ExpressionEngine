@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Model\Content\ContentModel;
 use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
+use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
  * Channel Entry
@@ -132,42 +133,68 @@ class ChannelEntry extends ContentModel {
 		$this->setProperty('day', ee()->localize->format_date('%d', $entry_date));
 	}
 
+	public function validate()
+	{
+		$result = parent::validate();
+
+		foreach ($this->getModulesWithTabs() as $name => $info)
+		{
+			include_once($info->getPath() . '/tab.' . $name . '.php');
+			$class_name = ucfirst($name) . '_tab';
+			$OBJ = new $class_name();
+
+			if (method_exists($OBJ, 'validate') === TRUE)
+			{
+				$fields = $OBJ->display($this->channel_id, $this->entry_id);
+
+				$values = array();
+				foreach(array_keys($fields) as $field)
+				{
+					$property = $name . '__' . $field;
+					$values[$field] = $this->$property;
+				}
+
+				$tab_result = $OBJ->validate($this, $values);
+
+				if ($tab_result instanceOf ValidationResult && $tab_result->failed())
+				{
+					foreach ($tab_result->getFailed() as $field => $rules)
+					{
+						foreach ($rules as $rule)
+						{
+							$result->addFailed($name . '__' . $field, $rule);
+						}
+					}
+				}
+			}
+		}
+
+		return $result;
+	}
+
 	public function onAfterSave()
 	{
 		parent::onAfterSave();
 		$this->Autosaves->delete();
 
-		$providers = ee('App')->getProviders();
-
-		foreach (array_keys($providers) as $name)
+		foreach ($this->getModulesWithTabs() as $name => $info)
 		{
-			try
+			include_once($info->getPath() . '/tab.' . $name . '.php');
+			$class_name = ucfirst($name) . '_tab';
+			$OBJ = new $class_name();
+
+			if (method_exists($OBJ, 'save') === TRUE)
 			{
-				$info = ee('App')->get($name);
-				if (file_exists($info->getPath() . '/tab.' . $name . '.php'))
+				$fields = $OBJ->display($this->channel_id, $this->entry_id);
+
+				$values = array();
+				foreach(array_keys($fields) as $field)
 				{
-					include_once($info->getPath() . '/tab.' . $name . '.php');
-					$class_name = ucfirst($name) . '_tab';
-					$OBJ = new $class_name();
-
-					if (method_exists($OBJ, 'save') === TRUE)
-					{
-						$fields = $OBJ->display($this->channel_id, $this->entry_id);
-
-						$values = array();
-						foreach(array_keys($fields) as $field)
-						{
-							$property = $name . '__' . $field;
-							$values[$field] = $this->$property;
-						}
-
-						$OBJ->save($this, $values);
-					}
+					$property = $name . '__' . $field;
+					$values[$field] = $this->$property;
 				}
-			}
-			catch (\Exception $e)
-			{
-				continue;
+
+				$OBJ->save($this, $values);
 			}
 		}
 	}
@@ -176,28 +203,15 @@ class ChannelEntry extends ContentModel {
 	{
 		$this->Autosaves->delete();
 
-		$providers = ee('App')->getProviders();
-
-		foreach (array_keys($providers) as $name)
+		foreach ($this->getModulesWithTabs() as $name => $info)
 		{
-			try
-			{
-				$info = ee('App')->get($name);
-				if (file_exists($info->getPath() . '/tab.' . $name . '.php'))
-				{
-					include_once($info->getPath() . '/tab.' . $name . '.php');
-					$class_name = ucfirst($name) . '_tab';
-					$OBJ = new $class_name();
+			include_once($info->getPath() . '/tab.' . $name . '.php');
+			$class_name = ucfirst($name) . '_tab';
+			$OBJ = new $class_name();
 
-					if (method_exists($OBJ, 'delete') === TRUE)
-					{
-						$OBJ->delete(array($this->entry_id));
-					}
-				}
-			}
-			catch (\Exception $e)
+			if (method_exists($OBJ, 'delete') === TRUE)
 			{
-				continue;
+				$OBJ->delete(array($this->entry_id));
 			}
 		}
 	}
@@ -223,13 +237,10 @@ class ChannelEntry extends ContentModel {
 		return parent::getDisplay($layout);
 	}
 
-	protected function getTabFields()
+	protected function getModulesWithTabs()
 	{
-		$module_tabs = array();
 
-		// Some Tabs might call ee()->api_channel_fields
-		ee()->legacy_api->instantiate('channel_fields');
-
+		$modules = array();
 		$providers = ee('App')->getProviders();
 		$installed_modules = $this->getFrontend()->get('Module')
 			->all()
@@ -243,36 +254,51 @@ class ChannelEntry extends ContentModel {
 				if (file_exists($info->getPath() . '/tab.' . $name . '.php')
 					&& in_array(ucfirst($name), $installed_modules))
 				{
-					include_once($info->getPath() . '/tab.' . $name . '.php');
-					$class_name = ucfirst($name) . '_tab';
-					$OBJ = new $class_name();
-
-					if (method_exists($OBJ, 'display') === TRUE)
-					{
-						// fetch the content
-						$fields = $OBJ->display($this->channel_id, $this->entry_id);
-
-						// There's basically no way this *won't* be set, but let's check it anyhow.
-						// When we find it, we'll append the module's classname to it to prevent
-						// collission with other modules with similarly named fields. This namespacing
-						// gets stripped as needed when the module data is processed in get_module_methods()
-						// This function is called for insertion and editing of entries.
-
-						foreach ($fields as $key => $field)
-						{
-							if (isset($field['field_id']))
-							{
-								$fields[$key]['field_id'] = $name.'__'.$field['field_id']; // two underscores
-							}
-						}
-
-						$module_tabs[$name] = $fields;
-					}
+					$modules[$name] = $info;
 				}
 			}
 			catch (\Exception $e)
 			{
 				continue;
+			}
+		}
+
+		return $modules;
+	}
+
+	protected function getTabFields()
+	{
+		$module_tabs = array();
+
+		// Some Tabs might call ee()->api_channel_fields
+		ee()->legacy_api->instantiate('channel_fields');
+
+		foreach ($this->getModulesWithTabs() as $name => $info)
+		{
+			include_once($info->getPath() . '/tab.' . $name . '.php');
+			$class_name = ucfirst($name) . '_tab';
+			$OBJ = new $class_name();
+
+			if (method_exists($OBJ, 'display') === TRUE)
+			{
+				// fetch the content
+				$fields = $OBJ->display($this->channel_id, $this->entry_id);
+
+				// There's basically no way this *won't* be set, but let's check it anyhow.
+				// When we find it, we'll append the module's classname to it to prevent
+				// collission with other modules with similarly named fields. This namespacing
+				// gets stripped as needed when the module data is processed in get_module_methods()
+				// This function is called for insertion and editing of entries.
+
+				foreach ($fields as $key => $field)
+				{
+					if (isset($field['field_id']))
+					{
+						$fields[$key]['field_id'] = $name.'__'.$field['field_id']; // two underscores
+					}
+				}
+
+				$module_tabs[$name] = $fields;
 			}
 		}
 
