@@ -96,7 +96,7 @@ $agile_upload_path = addslashes(realpath($this->theme_path."agile_records/images
 // Add upload locations
 $Q[] = "INSERT INTO `exp_upload_prefs` (`id`, `site_id`, `name`, `server_path`, `url`, `allowed_types`, `max_size`, `max_height`, `max_width`, `properties`, `pre_format`, `post_format`, `file_properties`, `file_pre_format`, `file_post_format`) VALUES
 (1, 1, 'Main Upload Directory', '".$upload_path."', '".$this->userdata['site_url'].'images/'.$this->userdata['upload_folder']."', 'all', '', '', '', 'style=\"border: 0;\" alt=\"image\"', '', '', '', '', ''),
-(2, 1, 'About', '{$agile_upload_path}', '".$this->userdata['site_url']."themes/ee/site_themes/agile_records/images/uploads/', 'img', '', '', '', '', '', '', '', '', ''),
+(2, 1, 'About', '{$agile_upload_path}', '".$this->userdata['site_url']."themes/ee/site/agile_records/images/uploads/', 'img', '', '', '', '', '', '', '', '', ''),
 (3,1,'Avatars','../images/avatars/','/images/avatars/','img','50','100','100',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
 (4,1,'Signature Attachments','../images/signature_attachments/','/images/signature_attachments/','img','30','80','480',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
 (5,1,'PM Attachments','../images/pm_attachments/','/images/pm_attachments/','img','250',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4);";
@@ -151,4 +151,4 @@ $this->config->update_site_prefs(array(
 );
 
 /* End of file default_content.php */
-/* Location: ./themes/ee/site_themes/agile_records/default_content.php */
+/* Location: ./themes/ee/site/agile_records/default_content.php */

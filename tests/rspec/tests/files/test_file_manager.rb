@@ -8,7 +8,7 @@ require './bootstrap.rb'
 feature 'File Manager' do
 
 	before(:each) do
-		@upload_dir = File.expand_path('../../themes/ee/site_themes/agile_records/images/uploads/')
+		@upload_dir = File.expand_path('../../themes/ee/site/agile_records/images/uploads/')
 		@avatar_dir = File.expand_path('../../images/avatars')
 
 		cp_session

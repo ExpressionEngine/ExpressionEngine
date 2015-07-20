@@ -53,5 +53,5 @@ foreach ($Q as $sql)
 }
 
 /* End of file default_content.php */
-/* Location: ./themes/site_themes/beta_classic
+/* Location: ./themes/site/beta_classic
 * /default_content.php */

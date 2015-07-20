@@ -1,4 +1,4 @@
-<h5>RSS Feeds <img src="{site_url}themes/ee/site_themes/agile_records/images/rss12.gif" alt="RSS Icon" class="rssicon" /></h5>
+<h5>RSS Feeds <img src="{site_url}themes/ee/site/agile_records/images/rss12.gif" alt="RSS Icon" class="rssicon" /></h5>
 		<div id="news_rss">
 			<p>Subscribe to our RSS Feeds</p>
 			<ul>

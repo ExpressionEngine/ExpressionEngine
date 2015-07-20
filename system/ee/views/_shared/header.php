@@ -124,4 +124,4 @@
 
 <?php
 /* End of file header.php */
-/* Location: ./themes/cp_themes/default/_shared/header.php */
+/* Location: ./themes/cp/default/_shared/header.php */

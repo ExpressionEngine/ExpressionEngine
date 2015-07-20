@@ -101,4 +101,4 @@
 <?php
 
 /* End of file homepage.php */
-/* Location: ./themes/cp_themes/default/homepage.php */
+/* Location: ./themes/cp/default/homepage.php */

@@ -54,5 +54,5 @@ $template_access['search']['index'] = $no_access;
 
 
 /* End of file theme_preferences.php */
-/* Location: ./themes/ee/site_themes/agile_records
+/* Location: ./themes/ee/site/agile_records
 * /theme_preferences.php */

@@ -45,4 +45,4 @@ $template_access['search']['index'] = array('Guests' => 'n', 'Pending' => 'n');
 				
 
 /* End of file theme_preferences.php */
-/* Location: ./themes/site_themes/beta_classic/theme_preferences.php */
+/* Location: ./themes/site/beta_classic/theme_preferences.php */

@@ -3,7 +3,7 @@ body
 	margin: 0 auto;
 	padding: 0;
 	color: #333;
-	background: #585756 url("{site_url}themes/site_themes/beta_classic/images/bg.gif") repeat;
+	background: #585756 url("{site_url}themes/site/beta_classic/images/bg.gif") repeat;
 	font-size: 80%
 }
 
@@ -74,7 +74,7 @@ margin: -57px auto 0 auto;
 padding-bottom: 10px;
 width: 740px;
 border-top: 8px solid #232863;
-background: #585756 url("{site_url}themes/site_themes/beta_classic/images/bg.gif") repeat;
+background: #585756 url("{site_url}themes/site/beta_classic/images/bg.gif") repeat;
 color: #333;
 }
 

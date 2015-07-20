@@ -90,8 +90,8 @@ class Admin_model extends CI_Model {
 			$this->load->helper('directory');
 
 			$theme_paths = array(
-				PATH_THEMES.'cp_themes/',
-				PATH_ADDONS_THEMES.'cp_themes/'
+				PATH_THEMES.'cp/',
+				PATH_ADDONS_THEMES.'cp/'
 			);
 
 			foreach ($theme_paths as $theme_path)
