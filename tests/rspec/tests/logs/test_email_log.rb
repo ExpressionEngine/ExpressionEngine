@@ -29,12 +29,12 @@ feature 'Email Log' do
 		@page.should have_remove_all
 		@page.should have_pagination
 
-		@page.perpage_filter.text.should eq "show (20)"
+		@page.perpage_filter.text.should eq "show (25)"
 
 		@page.should have(6).pages
 		@page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
 
-		@page.should have(20).items # Default is 20 per page
+		@page.should have(25).items # Default is 25 per page
 	end
 
 	it 'does not show filters at 10 items', :pregen => false do

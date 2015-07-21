@@ -65,7 +65,7 @@ feature 'Translate Tool' do
 		@list_page.should have(6).pages
 		@list_page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
 
-		@list_page.should have(21).rows # 20 rows per page + header row
+		@list_page.should have(26).rows # 25 rows per page + header row
 	end
 
 	it 'can search by phrases', :edit => false do
@@ -183,7 +183,7 @@ feature 'Translate Tool' do
 		@list_page.should have(6).pages
 		@list_page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
 
-		@list_page.should have(21).rows # 20 rows per page + header row
+		@list_page.should have(26).rows # 25 rows per page + header row
 	end
 
 	it 'returns a 404 for an invalid language', :edit => false do

@@ -225,7 +225,7 @@ feature 'Query Form' do
 
     no_php_js_errors
     results = QueryResults.new
-    results.should have(21).rows # 20 results plus header
+    results.should have(26).rows # 25 results plus header
     results.pages.map {|name| name.text}.should == ["First", "1", "2", "Next", "Last"]
     click_link "Next"
 
@@ -270,7 +270,7 @@ feature 'Query Form' do
     no_php_js_errors
     results = QueryResults.new
     results.should have(6).pages
-    results.should have(21).rows # 20 results plus header
+    results.should have(26).rows # 25 results plus header
 
     results.search_field.set 'alter'
     results.search_btn.click
@@ -302,13 +302,13 @@ feature 'Query Form' do
 
     no_php_js_errors
     results = QueryResults.new
-    results.should have(21).rows # 20 results plus header
+    results.should have(26).rows # 25 results plus header
     results.pages.map {|name| name.text}.should == ['First', '1', '2', '3', 'Next', 'Last']
     results.first_column.map {|source| source.text}.should == status.sort[0..19]
     click_link "Next"
 
     no_php_js_errors
-    results.should have(21).rows # 20 results plus header
+    results.should have(26).rows # 25 results plus header
     results.pages.map {|name| name.text}.should == ['First', 'Previous', '1', '2', '3', 'Next', 'Last']
     results.first_column.map {|source| source.text}.should == status.sort[20..39]
   end

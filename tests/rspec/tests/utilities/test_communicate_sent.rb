@@ -330,15 +330,15 @@ feature 'Communicate > Sent' do
 		@page.should have(21).rows # +1 for the header
 	end
 
-	it 'will not pagingate at 20 or under' do
-		@page.generate_data(count: 20)
+	it 'will not pagingate at 25 or under' do
+		@page.generate_data(count: 25)
 		load_page
 
 		@page.should_not have_pagination
 	end
 
-	it 'will paginate at over 21 emails' do
-		@page.generate_data(count: 21)
+	it 'will paginate at over 26 emails' do
+		@page.generate_data(count: 26)
 		load_page
 
 		@page.should have_pagination

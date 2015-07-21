@@ -75,9 +75,9 @@ feature 'File Manager' do
 	end
 
 	it 'shows the "All Files" File Manager page', :all_files => true do
-		@page.perpage_filter.text.should eq 'show (20)'
+		@page.perpage_filter.text.should eq 'show (25)'
 		@page.title_name_header[:class].should eq 'highlight'
-		@page.should have(21).files
+		@page.should have(26).files
 	end
 
 	# General Tests
