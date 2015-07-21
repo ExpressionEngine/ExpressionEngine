@@ -163,6 +163,7 @@ return array(
 		# EllisLab\ExpressionEngine\Model..
 
 			// ..\Addon
+			'Action' => 'Model\Addon\Action',
 			'Extension' => 'Model\Addon\Extension',
 			'Module' => 'Model\Addon\Module',
 			'Plugin' => 'Model\Addon\Plugin',
