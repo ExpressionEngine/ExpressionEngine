@@ -334,7 +334,7 @@ class Fields extends AbstractChannelsController {
 			$fieldtype_choices[$fieldtype->name] = $info->getName();
 		}
 
-		$field->field_type = ($field->field_type) ?: 'grid';
+		$field->field_type = ($field->field_type) ?: 'text';
 
 		$sections = array(
 			array(
