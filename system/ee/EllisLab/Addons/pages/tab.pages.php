@@ -144,7 +144,17 @@ class Pages_tab {
 			'pages_uri' => 'validURI|validSegmentCount|notDuplicated',
 		));
 
-		$validator->defineRule('validTemplate', function($field, $value) use($values)
+		$validator->defineRule('validTemplate', $this->makeValidTemplateRule($values));
+		$validator->defineRule('validURI', $this->makeValidURIRule());
+		$validator->defineRule('validSegmentCount', $this->makeValidSegmentCountRule());
+		$validator->defineRule('notDuplicated', $this->makeNotDuplicatedRule($entry));
+
+		return $validator->validate($values);
+	}
+
+	private function makeValidTemplateRule($values)
+	{
+		return function($field, $value) use($values)
 		{
 			$pages_uri = (isset($values['pages_uri'])) ? $values['pages_uri'] : '';
 	        $pages = ee()->config->item('site_pages');
@@ -159,9 +169,12 @@ class Pages_tab {
 	        }
 
 			return TRUE;
-		});
+		};
+	}
 
-		$validator->defineRule('validURI', function($field, $value)
+	private function makeValidURIRule()
+	{
+		return function($field, $value)
 		{
 	        $c_page_uri = preg_replace("#[^a-zA-Z0-9_\-/\.]+$#i", '',
 	                    str_replace(ee()->config->item('site_url'), '', $value));
@@ -172,9 +185,12 @@ class Pages_tab {
 	        }
 
 			return TRUE;
-		});
+		};
+	}
 
-		$validator->defineRule('validSegmentCount', function($field, $value)
+	private function makeValidSegmentCountRule()
+	{
+		return function($field, $value)
 		{
 	    	$value_segs = substr_count(trim($value, '/'), '/');
 
@@ -185,9 +201,12 @@ class Pages_tab {
 	    	}
 
 			return TRUE;
-		});
+		};
+	}
 
-		$validator->defineRule('notDuplicated', function($field, $value) use($entry)
+	private function makeNotDuplicatedRule($entry)
+	{
+		return function($field, $value) use($entry)
 		{
 	    	$static_pages = ee()->config->item('site_pages');
 	    	$uris = $static_pages[ee()->config->item('site_id')]['uris'];
@@ -209,9 +228,7 @@ class Pages_tab {
 	    	}
 
 			return TRUE;
-		});
-
-		return $validator->validate($values);
+		};
 	}
 
 	// --------------------------------------------------------------------
