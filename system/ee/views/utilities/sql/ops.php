@@ -1,4 +1,4 @@
-<?php extend_template('default-nav'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
 <div class="tbl-ctrls">
 	<?=form_open($table['base_url'])?>
@@ -7,7 +7,7 @@
 			<input class="btn submit" type="submit" name="search_form" value="<?=lang('search_table')?>">
 		</fieldset>
 		<h1><?=$cp_page_title?></h1>
-		<?php $this->view('_shared/table', $table);?>
+		<?php $this->embed('_shared/table', $table);?>
 		<?=$pagination?>
 	</form>
 </div>

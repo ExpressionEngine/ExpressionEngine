@@ -139,7 +139,7 @@ class Perpage extends Filter {
 			'confirm_show_all' => $this->confirm_show_all,
 			'threshold'        => $this->total_threshold
 		);
-		return $view->make('perpage')->render($filter);
+		return $view->make('_shared/filters/perpage')->render($filter);
 	}
 
 }

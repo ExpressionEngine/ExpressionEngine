@@ -1,4 +1,4 @@
-<?php extend_template('default-nav'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
 <div class="tbl-ctrls">
 	<?=form_open($table['base_url'])?>
@@ -7,7 +7,7 @@
 		</fieldset>
 		<h1><?=$cp_page_title?></h1>
 		<?=ee('Alert')->getAllInlines()?>
-		<?php $this->view('_shared/table', $table); ?>
+		<?php $this->embed('_shared/table', $table); ?>
 		<?=$pagination?>
 		<fieldset class="tbl-bulk-act">
 			<select name="bulk_action">
@@ -31,7 +31,7 @@ $modal_vars = array(
 	)
 );
 
-$this->ee_view('_shared/modal_confirm_remove', $modal_vars);
+$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
 ?>
 
 <?php $this->endBlock(); ?>

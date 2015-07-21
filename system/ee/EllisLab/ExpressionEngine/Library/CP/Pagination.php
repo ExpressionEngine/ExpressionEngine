@@ -199,7 +199,7 @@ class Pagination {
 			$links['pages'][$i] = $url->compile();
 		}
 
-		return $this->view->ee_view('_shared/pagination', array('pagination' => $links), TRUE);
+		return $this->view->render(array('pagination' => $links));
 	}
 }
 

@@ -1,4 +1,4 @@
-<?php $this->load->view('_shared/file_upload/iframe_header'); ?>
+<?php $this->embed('_shared/file_upload/iframe_header'); ?>
 
 <div class="upload_edit">
 	<?=form_open('C=content_files_modal'.AMP.'M=edit_file', array('id' => 'edit_file_metadata'), $hidden)?>
@@ -107,4 +107,4 @@
 	parent.$.ee_fileuploader.update_file(file);
 </script>
 
-<?php $this->load->view('_shared/file_upload/iframe_footer') ?>
+<?php $this->embed('_shared/file_upload/iframe_footer') ?>

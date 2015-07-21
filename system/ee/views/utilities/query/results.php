@@ -1,4 +1,4 @@
-<?php extend_template('default-nav', 'outer_box'); ?>
+<?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
 
 <div class="box mb">
 	<h1><?=lang('sql_query_abbr')?></h1>
@@ -25,7 +25,7 @@
 				</fieldset>
 			<?php endif ?>
 			<h1><?=(isset($table_heading)) ? $table_heading : $cp_page_title?></h1>
-			<?php $this->view('_shared/table', $table); ?>
+			<?php $this->embed('_shared/table', $table); ?>
 			<?=$pagination?>
 		</form>
 	</div>

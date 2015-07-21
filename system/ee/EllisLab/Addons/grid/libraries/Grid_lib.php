@@ -128,7 +128,7 @@ class Grid_lib {
 		// ಠ_ಠ
 		ee()->load->remove_package_path();
 
-		return ee()->load->view('_shared/table', $grid->viewData(), TRUE);
+		return ee('View')->make('ee:_shared/table')->render($grid->viewData());
 	}
 
 	// ------------------------------------------------------------------------
@@ -804,8 +804,8 @@ class Grid_lib {
 			$column['col_width'] = '';
 		}
 
-		return ee()->load->view(
-			'col_tmpl',
+		return ee('View')->make('grid:col_tmpl')
+			->render(
 			array(
 				'field_name'	=> $field_name,
 				'column'		=> $column,
@@ -865,13 +865,13 @@ class Grid_lib {
 	 */
 	protected function _view_for_col_settings($col_type, $col_settings, $col_id = NULL)
 	{
-		$settings_view = ee()->load->view(
-			'col_settings_tmpl',
+		$settings_view = ee('View')
+			->make('grid:col_settings_tmpl')
+			->render(
 			array(
 				'col_type'		=> $col_type,
 				'col_settings'	=> (empty($col_settings)) ? array() : $col_settings
-			),
-			TRUE
+			)
 		);
 
 		if ( ! is_string($col_id))

@@ -9,7 +9,7 @@
 	<body>
 		<section class="wrap">
 
-			<?=$EE_rendered_view?>
+			<?=$child_view?>
 
 		</section>
 		<section class="bar snap">

@@ -392,8 +392,6 @@ class Addons extends CP_Controller {
 			'file' => array('cp/v3/confirm_remove'),
 		));
 
-		ee()->view->disable('outer_box');
-
 		ee()->cp->render('addons/index', $vars);
 	}
 
@@ -885,7 +883,6 @@ class Addons extends CP_Controller {
 			'form_url' => ee('CP/URL', 'addons'),
 			'search_button_value' => lang('search_addons_button')
 		);
-		ee()->view->disable('outer_box');
 
 		ee()->cp->render('addons/settings', $vars);
 	}

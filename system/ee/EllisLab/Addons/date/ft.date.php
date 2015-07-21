@@ -235,7 +235,7 @@ class Date_ft extends EE_Fieldtype {
 
 			$localized = ( ! isset($_POST[$date_local])) ? (($localize === TRUE) ? 'y' : 'n') : ee()->input->post($date_local, TRUE);
 
-			return ee('View')->make('publish')->render(array(
+			return ee('View')->make('date:publish')->render(array(
 				'has_localize_option' => ( ! in_array($this->field_name, $special) && $this->content_type() != 'grid'),
 				'field_name' => $this->field_name,
 				'value' => $custom_date,

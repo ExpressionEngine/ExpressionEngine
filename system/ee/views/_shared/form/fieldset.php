@@ -74,7 +74,7 @@ $element = ($grid) ? 'div' : 'fieldset'; ?>
 					'grid' => $grid
 				);
 
-				$this->ee_view('_shared/form/field', $vars);
+				$this->embed('ee:_shared/form/field', $vars);
 			}
 		?>
 	</div>

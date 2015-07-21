@@ -538,7 +538,7 @@ class Relationship_ft extends EE_Fieldtype {
 
 		$multiple = (bool) $this->settings['allow_multiple'];
 
-		return ee('View')->make('publish')->render(compact('field_name', 'entries', 'selected', 'related', 'multiple', 'channels'));
+		return ee('View')->make('relationship:publish')->render(compact('field_name', 'entries', 'selected', 'related', 'multiple', 'channels'));
 	}
 
 	// --------------------------------------------------------------------

@@ -157,7 +157,7 @@ abstract class Filter {
 			'placeholder'      => $this->placeholder,
 			'options'          => $this->prepareOptions($url),
 		);
-		return $view->make('filter')->render($filter);
+		return $view->make('_shared/filters/filter')->render($filter);
 	}
 
 	/**

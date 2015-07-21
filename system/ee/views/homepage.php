@@ -1,4 +1,4 @@
-<?php extend_template('wrapper'); ?>
+<?php $this->extend('_templates/wrapper'); ?>
 
 <div class="home-layout">
 	<div class="col-group snap mb">

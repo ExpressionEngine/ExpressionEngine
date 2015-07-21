@@ -69,7 +69,7 @@ class View {
 		$data['localize'] = ee()->localize;
 
 		// load up the inner
-		$rendered_view = ee()->load->view($view, $data, TRUE);
+		$rendered_view = ee('View')->make($view)->render($data);
 
 		// traverse up the extensions
 		// we stop passing other data - it's cached in the loader
@@ -82,7 +82,7 @@ class View {
 				'EE_rendered_view' => $rendered_view,
 				'blocks'           => $this->blocks
 			);
-			$rendered_view = ee()->load->view($view, $data, TRUE);
+			$rendered_view = ee('View')->make($view)->render($data);
 		}
 
 		// clear for future calls

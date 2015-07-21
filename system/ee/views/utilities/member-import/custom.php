@@ -1,4 +1,4 @@
-<?php extend_template('default-nav'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
 <h1><?=$cp_page_title?></h1>
 <?=form_open(ee('CP/URL', 'utilities/member-import/create-custom-fields'), 'class="settings"', $form_hidden)?>

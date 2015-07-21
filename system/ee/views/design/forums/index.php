@@ -1,4 +1,4 @@
-<?php extend_template('default-nav'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
 <div class="tbl-ctrls">
 	<?=form_open($form_url)?>
@@ -7,7 +7,7 @@
 		</fieldset>
 		<h1><?=$cp_heading?></h1>
 		<?=ee('Alert')->getAllInlines()?>
-		<?php $this->view('_shared/table', $table); ?>
+		<?php $this->embed('_shared/table', $table); ?>
 		<?php if (isset($pagination)) echo $pagination; ?>
 	<?=form_close()?>
 </div>

@@ -1,4 +1,4 @@
 <?php
-	extend_template('default-nav');
-	$this->view('_shared/form');
+	$this->extend('_templates/default-nav');
+	$this->embed('_shared/form');
 ?>

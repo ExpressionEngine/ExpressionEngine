@@ -1,4 +1,4 @@
-<?php extend_template('login'); ?>
+<?php $this->extend('_templates/login'); ?>
 
 <div class="box snap">
 	<h1><?=lang('reset_password')?> <span class="ico locked"></span></h1>

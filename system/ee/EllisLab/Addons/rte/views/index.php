@@ -1,5 +1,5 @@
 <div class="box mb">
-	<?php $this->ee_view('_shared/form')?>
+	<?php $this->embed('ee:_shared/form')?>
 </div>
 <div class="box snap">
 	<div class="tbl-ctrls">
@@ -11,7 +11,7 @@
 
 			<?=ee('Alert')->get('toolsets-form')?>
 
-			<?php $this->ee_view('_shared/table', $table); ?>
+			<?php $this->embed('ee:_shared/table', $table); ?>
 			<?=$pagination?>
 			<fieldset class="tbl-bulk-act">
 				<select name="bulk_action">
@@ -37,7 +37,7 @@ $modal_vars = array(
 	)
 );
 
-$this->ee_view('_shared/modal_confirm_remove', $modal_vars);
+$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
 ?>
 
 <?php $this->endBlock(); ?>

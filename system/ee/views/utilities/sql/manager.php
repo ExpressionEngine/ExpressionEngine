@@ -1,4 +1,4 @@
-<?php extend_template('default-nav', 'outer_box'); ?>
+<?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
 
 <div class="box mb">
 	<h1><?=lang('sql_manager_abbr')?></h1>
@@ -18,7 +18,7 @@
 				<input class="btn submit" type="submit" name="search_form" value="<?=lang('search_tables')?>">
 			</fieldset>
 			<h1><?=$table_heading?></h1>
-			<?php $this->view('_shared/table', $table); ?>
+			<?php $this->embed('_shared/table', $table); ?>
 			<?=$pagination?>
 			<fieldset class="tbl-bulk-act">
 				<select name="table_action">

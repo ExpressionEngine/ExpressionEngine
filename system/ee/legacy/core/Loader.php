@@ -867,15 +867,7 @@ class EE_Loader {
 		 */
 		ob_start();
 
-		if (isset($_ci_view) && isset(ee()->di))
-		{
-			echo ee('View')->make($_ci_view)->parse($_ci_path, $this->_ci_cached_vars, TRUE);
-		}
-		else
-		{
-			$this->facade->runFileInFacadeScope($_ci_path, $this->_ci_cached_vars, $use_eval);
-		}
-
+		$this->facade->runFileInFacadeScope($_ci_path, $this->_ci_cached_vars, $use_eval);
 
 		log_message('debug', 'File loaded: '.$_ci_path);
 

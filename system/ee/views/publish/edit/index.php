@@ -1,4 +1,4 @@
-<?php extend_template('default-nav'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
 <div class="tbl-ctrls">
 	<?=form_open($form_url)?>
@@ -9,7 +9,7 @@
 		<h1><?=$cp_heading?></h1>
 		<?=ee('Alert')->getAllInlines()?>
 		<?php if (isset($filters)) echo $filters; ?>
-		<?php $this->view('_shared/table', $table); ?>
+		<?php $this->embed('_shared/table', $table); ?>
 		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
 		<fieldset class="tbl-bulk-act">
@@ -34,7 +34,7 @@ $modal_vars = array(
 	)
 );
 
-$this->ee_view('_shared/modal_confirm_remove', $modal_vars);
+$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
 ?>
 
 <?php $this->endBlock(); ?>

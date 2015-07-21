@@ -26,7 +26,7 @@ class Result {
 	 * Add a failed rule. Used internally to populate the result
 	 *
 	 * @param String $field Field name
-	 * @param String $rule Rule name
+	 * @param ValidationRule $rule Failed rule object
 	 */
 	public function addFailed($field, $rule)
 	{

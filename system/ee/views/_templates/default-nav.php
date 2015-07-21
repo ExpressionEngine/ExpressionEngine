@@ -1,4 +1,4 @@
-<?php extend_template('wrapper'); ?>
+<?php $this->extend('_templates/wrapper'); ?>
 
 <?php if (isset($header)): ?>
 	<div class="col-group">
@@ -46,11 +46,11 @@
 				<li class="last"><?=$cp_page_title?></li>
 			</ul>
 		<?php endif ?>
-		<?php if (enabled('outer_box')) :?>
+		<?php if ($this->enabled('outer_box')) :?>
 			<div class="box">
 		<?php endif ?>
-			<?=$EE_rendered_view?>
-		<?php if (enabled('outer_box')) :?>
+			<?=$child_view?>
+		<?php if ($this->enabled('outer_box')) :?>
 			</div>
 		<?php endif ?>
 	</div>

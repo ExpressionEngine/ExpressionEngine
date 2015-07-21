@@ -45,7 +45,7 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 	}
 	foreach ($sections as $name => $settings)
 	{
-		$this->ee_view('_shared/form/section', array('name' => $name, 'settings' => $settings));
+		$this->embed('_shared/form/section', array('name' => $name, 'settings' => $settings));
 	}
 	?>
 	<fieldset class="form-ctrls">
