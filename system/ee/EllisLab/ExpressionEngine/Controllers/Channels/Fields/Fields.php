@@ -170,6 +170,8 @@ class Fields extends AbstractChannelsController {
 			ee('CP/URL', 'channels/fields')->compile() => lang('custom_fields'),
 		);
 
+		$errors = NULL;
+
 		if ( ! empty($_POST))
 		{
 			$field = $this->setWithPost(ee('Model')->make('ChannelField'));
@@ -196,7 +198,7 @@ class Fields extends AbstractChannelsController {
 			}
 			else
 			{
-				$vars['errors'] = $result;
+				$errors = $result;
 
 				ee('Alert')->makeInline('shared-form')
 					->asIssue()
@@ -207,6 +209,7 @@ class Fields extends AbstractChannelsController {
 		}
 
 		$vars = array(
+			'errors' => $errors,
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL', 'channels/fields/create'),
 			'sections' => $this->form(),
@@ -331,7 +334,7 @@ class Fields extends AbstractChannelsController {
 			$fieldtype_choices[$fieldtype->name] = $info->getName();
 		}
 
-		$field->field_type = ($field->field_type) ?: 'text';
+		$field->field_type = ($field->field_type) ?: 'grid';
 
 		$sections = array(
 			array(
