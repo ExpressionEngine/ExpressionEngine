@@ -770,9 +770,11 @@ class Grid_lib {
 	 * Returns rendered HTML for a column on the field settings page
 	 *
 	 * @param	array	Array of single column settings from the grid_columns table
+	 * @param	array	Array of string names representing the namespace field names
+	 *	that have validation errors
 	 * @return	string	Rendered column view for settings page
 	 */
-	public function get_column_view($column = NULL)
+	public function get_column_view($column = NULL, $error_fields = array())
 	{
 		$fieldtypes = $this->get_grid_fieldtypes();
 
@@ -783,7 +785,16 @@ class Grid_lib {
 			$fieldtypes_dropdown[$key] = $value['name'];
 		}
 
-		$field_name = (empty($column)) ? 'new_0' : 'col_id_'.$column['col_id'];
+		// Column ID could be a string if we're coming back from a valdiation error
+		// in order to preserve original namespacing
+		if ( ! empty($column['col_id']) && is_string($column['col_id']))
+		{
+			$field_name = $column['col_id'];
+		}
+		else
+		{
+			$field_name = (empty($column)) ? 'new_0' : 'col_id_'.$column['col_id'];
+		}
 
 		$column['settings_form'] = (empty($column))
 			? $this->get_settings_form('text') : $this->get_settings_form($column['col_type'], $column);
@@ -798,7 +809,8 @@ class Grid_lib {
 			array(
 				'field_name'	=> $field_name,
 				'column'		=> $column,
-				'fieldtypes'	=> $fieldtypes_dropdown
+				'fieldtypes'	=> $fieldtypes_dropdown,
+				'error_fields'  => $error_fields
 			),
 			TRUE
 		);
@@ -862,7 +874,10 @@ class Grid_lib {
 			TRUE
 		);
 
-		$col_id = (empty($col_id)) ? 'new_0' : 'col_id_'.$col_id;
+		if ( ! is_string($col_id))
+		{
+			$col_id = (empty($col_id)) ? 'new_0' : 'col_id_'.$col_id;
+		}
 
 		// Namespace form field names
 		return $this->_namespace_inputs(
