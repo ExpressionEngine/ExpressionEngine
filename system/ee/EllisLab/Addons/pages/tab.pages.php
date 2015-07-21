@@ -133,71 +133,85 @@ class Pages_tab {
 	 * Validate Publish
 	 *
 	 * @param EllisLab\ExpressionEngine\Module\Channel\Model\ChannelEntry $entry
-	 *  An instance of the ChannelEntry entity.
 	 * @param array $values An associative array of field => value
-	 * @return string|TRUE TRUE if everyting is valid, otherwise the lang key
-	 *  for the erorr
+	 * @return EllisLab\ExpressionEngine\Service\Validation\Result A result
+	 *  object.
 	 */
 	public function validate($entry, $values)
 	{
-	    $errors         = FALSE;
-        $pages_enabled  = FALSE;
+		$validator = ee('Validation')->make(array(
+			'pages_template_id' => 'validTemplate',
+			'pages_uri' => 'validURI|validSegmentCount|notDuplicated',
+		));
 
-        $params = $params[0];
-		$pages_uri = (isset($params['pages_uri'])) ? $params['pages_uri'] : '';
-
-        $pages = ee()->config->item('site_pages');
-
-
-        if ($pages !== FALSE && $pages_uri != '' && $pages_uri !== lang('example_uri'))
-        {
-            $pages = TRUE;
-
-        	if ( ! isset($params['pages_template_id']) OR
-        	     ! is_numeric($params['pages_template_id']))
-        	{
-        		$errors = array(lang('invalid_template') => 'pages_template_id');
-        	}
-        }
-
-        $c_page_uri = preg_replace("#[^a-zA-Z0-9_\-/\.]+$#i", '',
-                    str_replace(ee()->config->item('site_url'), '', $pages_uri));
-
-        if ($c_page_uri !== $pages_uri)
-        {
-            $errors = array(lang('invalid_page_uri') => 'pages_uri');
-        }
-
-        // How many segments are we trying out?
-    	$pages_uri_segs = substr_count(trim($pages_uri, '/'), '/');
-
-    	// More than 9 pages URI segs?  goodbye
-    	if ($pages_uri_segs > 8)
-    	{
-    		$errors = array(lang('invalid_page_num_segs') => 'pages_uri');
-    	}
-
-    	// Check if duplicate uri
-    	$static_pages = ee()->config->item('site_pages');
-    	$uris = $static_pages[ee()->config->item('site_id')]['uris'];
-
-		if ( ! isset($entry->entry_id))
+		$validator->defineRule('validTemplate', function($field, $value) use($values)
 		{
-			$entry->entry_id == 0;
-		}
-		elseif ($entry->entry_id !== 0)
+			$pages_uri = (isset($values['pages_uri'])) ? $values['pages_uri'] : '';
+	        $pages = ee()->config->item('site_pages');
+
+	        if ($pages !== FALSE && $pages_uri != '' && $pages_uri !== lang('example_uri'))
+	        {
+	        	if ( ! isset($value) OR
+	        	     ! is_numeric($value))
+	        	{
+					return 'invalid_template';
+	        	}
+	        }
+
+			return TRUE;
+		});
+
+		$validator->defineRule('validURI', function($field, $value)
 		{
-			if ( ! isset($uris[$entry->entry_id]) && in_array($pages_uri, $uris))
+	        $c_page_uri = preg_replace("#[^a-zA-Z0-9_\-/\.]+$#i", '',
+	                    str_replace(ee()->config->item('site_url'), '', $value));
+
+	        if ($c_page_uri !== $value)
+	        {
+	            return 'invalid_page_uri';
+	        }
+
+			return TRUE;
+		});
+
+		$validator->defineRule('validSegmentCount', function($field, $value)
+		{
+	    	$value_segs = substr_count(trim($value, '/'), '/');
+
+	    	// More than 9 pages URI segs?  goodbye
+	    	if ($value_segs > 8)
+	    	{
+	    		return 'invalid_page_num_segs';
+	    	}
+
+			return TRUE;
+		});
+
+		$validator->defineRule('notDuplicated', function($field, $value) use($entry)
+		{
+	    	$static_pages = ee()->config->item('site_pages');
+	    	$uris = $static_pages[ee()->config->item('site_id')]['uris'];
+
+			if ( ! isset($entry->entry_id))
 			{
-				$errors = array(lang('duplicate_page_uri') => 'pages_uri');
+				$entry->entry_id == 0;
 			}
-		}
-		elseif (in_array($pages_uri, $uris))
-    	{
-    		$errors = array(lang('duplicate_page_uri') => 'pages_uri');
-    	}
+			elseif ($entry->entry_id !== 0)
+			{
+				if ( ! isset($uris[$entry->entry_id]) && in_array($value, $uris))
+				{
+		    		return 'duplicate_page_uri';
+				}
+			}
+			elseif (in_array($value, $uris))
+	    	{
+	    		return 'duplicate_page_uri';
+	    	}
 
-    	return $errors;
+			return TRUE;
+		});
+
+		return $validator->validate($values);
 	}
 
 	// --------------------------------------------------------------------

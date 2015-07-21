@@ -46,7 +46,7 @@ class Bookmarks extends Profile {
 		}
 
 		$this->index_url = $this->base_url;
-		$this->base_url = ee('CP/URL', $this->base_url, ee()->session->session_id(), $this->query_string);
+		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
 	}
 
 	/**
@@ -133,7 +133,7 @@ class Bookmarks extends Profile {
 	 */
 	public function create()
 	{
-		$this->base_url = ee('CP/URL', $this->index_url . '/create', ee()->session->session_id(), $this->query_string);
+		$this->base_url = ee('CP/URL', $this->index_url . '/create', $this->query_string);
 
 		$vars = array(
 			'cp_page_title' => lang('create_bookmarklet'),
@@ -163,7 +163,7 @@ class Bookmarks extends Profile {
 	 */
 	public function edit($id)
 	{
-		$this->base_url = ee('CP/URL', $this->index_url . "/edit/$id", ee()->session->session_id(), $this->query_string);
+		$this->base_url = ee('CP/URL', $this->index_url . "/edit/$id", $this->query_string);
 
 		$vars = array(
 			'cp_page_title' => lang('edit_bookmarklet'),
