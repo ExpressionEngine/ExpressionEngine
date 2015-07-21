@@ -90,7 +90,7 @@ class Image_rte {
 		# load the external file
 		$styles	= file_get_contents( 'rte.image.css', TRUE );
 		$theme	= ee()->session->userdata('cp_theme');
-		$theme	= URL_THEMES.'cp_themes/'.($theme ? $theme : 'default').'/';
+		$theme	= URL_THEMES.'cp/'.($theme ? $theme : 'default').'/';
 		return str_replace('{theme_folder_url}', $theme, $styles);
 	}
 

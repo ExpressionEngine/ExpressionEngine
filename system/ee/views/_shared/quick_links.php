@@ -19,4 +19,4 @@
 
 <?php
 /* End of file quick_links.php */
-/* Location: ./themes/cp_themes/default/_shared/quick_links.php */
+/* Location: ./themes/cp/default/_shared/quick_links.php */

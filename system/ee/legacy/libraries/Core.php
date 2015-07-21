@@ -205,7 +205,7 @@ class EE_Core {
 		define('PATH_THIRD_THEMES', $theme_path.'user/');
 		define('URL_THIRD_THEMES', $theme_url.'user/');
 
-		define('PATH_MBR_THEMES', PATH_THEMES.'profile_themes/');
+		define('PATH_MBR_THEMES', PATH_THEMES.'member/');
 		define('PATH_CP_GBL_IMG', ee()->config->slash_item('theme_folder_url').'ee/cp_global_images/');
 		unset($theme_path);
 
@@ -394,17 +394,17 @@ class EE_Core {
 
 		// Make sure directory actually exists
 		if ($cp_theme !== 'default'
-			&& ! is_dir(PATH_ADDONS_THEMES.'cp_themes/'.$cp_theme.'/'))
+			&& ! is_dir(PATH_ADDONS_THEMES.'cp/'.$cp_theme.'/'))
 		{
 			$cp_theme = 'default';
 		}
 
 		$path_cp_theme = ($cp_theme === 'default')
-			? PATH_THEMES.'cp_themes/default/'
-			: PATH_ADDONS_THEMES.'cp_themes/'.$cp_theme.'/';
+			? PATH_THEMES.'cp/default/'
+			: PATH_ADDONS_THEMES.'cp/'.$cp_theme.'/';
 */
 		$cp_theme = 'default';
-		define('PATH_CP_THEME', PATH_THEMES.'cp_themes/default/');
+		define('PATH_CP_THEME', PATH_THEMES.'cp/default/');
 
 		// Show the control panel home page in the event that a
 		// controller class isn't found in the URL

@@ -164,7 +164,7 @@ class File_field {
 
 		$vars['existing_files'] = $existing_files;
 
-		ee()->load->add_package_path(PATH_THEMES . 'cp_themes/default');
+		ee()->load->add_package_path(PATH_THEMES . 'cp/default');
 		return ee()->load->view('_shared/file/field', $vars, TRUE);
 	}
 
