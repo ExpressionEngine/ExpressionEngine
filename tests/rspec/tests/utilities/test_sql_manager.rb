@@ -147,7 +147,7 @@ feature 'SQL Manager' do
     @page.should have_text 'Optimized Table Results'
 
     tables = get_tables
-    tables = tables[0..25]
+    tables = tables[0..24]
 
     @page.tables.map {|source| source.text}.should == tables
 
