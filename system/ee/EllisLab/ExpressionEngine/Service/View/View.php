@@ -91,7 +91,17 @@ class View {
 		// removed
 		if (isset($vars['blocks']))
 		{
-			$this->blocks = array_merge($this->blocks, $vars['blocks']);
+			foreach ($vars['blocks'] as $name => $data)
+			{
+				if (isset($this->blocks[$name]))
+				{
+					$this->blocks[$name] .= $data;
+				}
+				else
+				{
+					$this->blocks[$name] = $data;
+				}
+			}
 		}
 
 		$vars['blocks'] = $this->blocks;
