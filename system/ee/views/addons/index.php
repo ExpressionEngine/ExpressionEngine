@@ -1,4 +1,4 @@
-<?php $this->extend('_templates/default-nav'); ?>
+<?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
 
 <div class="box mb">
 	<div class="tbl-ctrls">
