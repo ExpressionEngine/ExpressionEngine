@@ -87,6 +87,13 @@ class View {
 	{
 		$path = $this->getPath();
 
+		// TODO this conditional is part of the modals mess and needs to be
+		// removed
+		if (isset($vars['blocks']))
+		{
+			$this->blocks = array_merge($this->blocks, $vars['blocks']);
+		}
+
 		$vars['blocks'] = $this->blocks;
 
 		$this->processing = $vars;
@@ -260,6 +267,12 @@ class View {
 
 		$buffer .= ob_get_contents();
 		ob_end_clean();
+
+		// TODO Hack - revisit this
+		if ($name == 'modals')
+		{
+			ee()->view->blocks['modals'] = $buffer;
+		}
 
 		if (isset($this->parent))
 		{

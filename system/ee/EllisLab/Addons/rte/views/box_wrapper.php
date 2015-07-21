@@ -1,3 +1,3 @@
 <div class="box">
-	<?php $this->view('ee:_shared/form')?>
+	<?php $this->embed('ee:_shared/form')?>
 </div>
