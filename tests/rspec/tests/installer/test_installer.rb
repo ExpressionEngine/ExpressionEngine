@@ -6,17 +6,13 @@ feature 'Installer' do
     ENV['installer'] = 'true'
 
     @installer = Installer::Prepare.new
-
-    # Make sure boot.php does not have the FALSE &&
     @installer.enable_installer
+    @installer.disable_rename
 
     # Backup config.php
     @config = File.expand_path('../../system/user/config/config.php')
     @config_temp = @config + '.tmp'
     File.rename(@config, @config_temp)
-
-    # Disable directory renaming
-    @installer.disable_rename
   end
 
   before :each do

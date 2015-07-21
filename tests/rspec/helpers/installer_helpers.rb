@@ -5,6 +5,7 @@ module Installer
 
     def initialize
       @boot   = File.expand_path('../../system/ee/EllisLab/ExpressionEngine/Boot/boot.php')
+      @config = File.expand_path('../../system/user/config/config.php')
       @wizard = File.expand_path('../../system/ee/installer/controllers/wizard.php')
     end
 
@@ -41,6 +42,14 @@ module Installer
         @wizard,
         '// return rename(APPPATH, $new_path);',
         'return rename(APPPATH, $new_path);'
+      )
+    end
+
+    def version=(version)
+      swap(
+        @config,
+        "$config['app_version'] = '3.0.0';",
+        "$config['app_version'] = '#{version}';"
       )
     end
 
