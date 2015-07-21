@@ -250,7 +250,7 @@ feature 'Query Form' do
     no_php_js_errors
     click_link "Next"
 
-    results.table.find('tbody tr:nth-child(1) td:nth-child(1)').should have_text '5'
+    results.table.find('tbody tr:nth-child(1) td:nth-child(1)').should have_text '6'
   end
 
   def show_status
