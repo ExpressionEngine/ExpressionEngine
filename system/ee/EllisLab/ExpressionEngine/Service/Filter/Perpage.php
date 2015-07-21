@@ -68,7 +68,7 @@ class Perpage extends Filter {
 			'150' => '150 '.lang('results'),
 			$total => sprintf(lang($all_lang_key), $total)
 		);
-		$this->default_value = 20;
+		$this->default_value = 25;
 	}
 
 	/**

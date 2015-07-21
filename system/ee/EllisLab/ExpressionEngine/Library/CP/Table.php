@@ -73,7 +73,7 @@ class Table {
 			'sort_col_qs_var' => 'sort_col',
 			'sort_dir'	  => 'asc',
 			'sort_dir_qs_var' => 'sort_dir',
-			'limit'		  => 20,
+			'limit'		  => 25,
 			'page'		  => 1,
 			'total_rows'  => 0,
 			'search'	  => NULL,
