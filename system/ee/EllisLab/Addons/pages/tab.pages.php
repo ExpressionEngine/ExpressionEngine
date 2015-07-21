@@ -25,6 +25,15 @@
  */
 class Pages_tab {
 
+	/**
+	 * Creates the fields that will be displayed on the publish page.
+	 *
+	 * @param int $channel_id Channel ID where the entry is being created or
+	 *   edited
+	 * @param int $enry_id Entry ID if this is an edit, empty otherwise
+	 * @return array A multidimensional associative array specifying the display
+	 *   settings and values associated with each of your fields.
+	 */
 	public function display($channel_id, $entry_id = '')
 	{
 		ee()->lang->loadfile('pages');
@@ -127,10 +136,8 @@ class Pages_tab {
 		return $settings;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
-	 * Validate Publish
+	 * Validates our publish tab data
 	 *
 	 * @param EllisLab\ExpressionEngine\Module\Channel\Model\ChannelEntry $entry
 	 * @param array $values An associative array of field => value
@@ -152,6 +159,13 @@ class Pages_tab {
 		return $validator->validate($values);
 	}
 
+	/**
+	 * Generates and returns a Closure suitable for a Validation Rule that
+	 * ensures the submitted value (a Template ID) is both set and is a number,
+	 * provided that * a Page URI was also set.
+	 *
+	 * @returns Closure The logic needed to validate the data.
+	 */
 	private function makeValidTemplateRule($values)
 	{
 		return function($field, $value) use($values)
@@ -172,6 +186,13 @@ class Pages_tab {
 		};
 	}
 
+	/**
+	 * Generates and returns a Closure suitable for a Validation Rule that
+	 * ensures the submitted value (a URI) contains only letters, numbers,
+	 * underscores, dashes, or periods.
+	 *
+	 * @returns Closure The logic needed to validate the data.
+	 */
 	private function makeValidURIRule()
 	{
 		return function($field, $value)
@@ -188,6 +209,12 @@ class Pages_tab {
 		};
 	}
 
+	/**
+	 * Generates and returns a Closure suitable for a Validation Rule that
+	 * ensures the submitted value (a URI) has no more than 8 segments.
+	 *
+	 * @returns Closure The logic needed to validate the data.
+	 */
 	private function makeValidSegmentCountRule()
 	{
 		return function($field, $value)
@@ -204,6 +231,12 @@ class Pages_tab {
 		};
 	}
 
+	/**
+	 * Generates and returns a Closure suitable for a Validation Rule that
+	 * ensures the submitted value (a URI) does not already exist
+	 *
+	 * @returns Closure The logic needed to validate the data.
+	 */
 	private function makeNotDuplicatedRule($entry)
 	{
 		return function($field, $value) use($entry)
@@ -230,8 +263,6 @@ class Pages_tab {
 			return TRUE;
 		};
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Saves the page's publish form data. This function is called in the
@@ -278,8 +309,6 @@ class Pages_tab {
         }
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
 	 * Removes pages from the site_pages structure. This function is called in the
 	 * ChannelEntry's afterDelete() event.
@@ -303,5 +332,4 @@ class Pages_tab {
 		$site->save();
 	}
 
-	// --------------------------------------------------------------------
 }
