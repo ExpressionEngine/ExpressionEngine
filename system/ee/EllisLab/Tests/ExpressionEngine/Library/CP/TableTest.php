@@ -117,7 +117,7 @@ class TableTest extends \PHPUnit_Framework_TestCase {
 			'no_results'	=> $no_results_empty,
 			'sort_col'		=> 'Name',
 			'sort_dir'		=> 'asc',
-			'limit'			=> 20,
+			'limit'			=> 25,
 			'page'			=> 1,
 			'total_rows'	=> 2,
 			'grid_input'	=> FALSE,
