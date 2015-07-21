@@ -33,7 +33,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
  */
 class Extensions extends Utilities {
 
-	var $perpage		= 20;
+	var $perpage		= 25;
 	var $params			= array();
 	var $base_url;
 
