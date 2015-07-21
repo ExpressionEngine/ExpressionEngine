@@ -276,7 +276,7 @@ feature 'Search Log' do
 
 		@page.should have_pagination
 		@page.should have(6).pages
-		@page.pages.map {|name| name.text}.should == ["First", "Previous", "7", "8", "9", "Last"]
+		@page.pages.map {|name| name.text}.should == ["First", "Previous", "5", "6", "7", "Last"]
 	end
 
 	it 'does not lose a filter value when paginating', :pregen => true do

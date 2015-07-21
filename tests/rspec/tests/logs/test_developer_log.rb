@@ -301,7 +301,7 @@ feature 'Developer Log' do
 
 		@page.should have_pagination
 		@page.should have(6).pages
-		@page.pages.map {|name| name.text}.should == ["First", "Previous", "11", "12", "13", "Last"]
+		@page.pages.map {|name| name.text}.should == ["First", "Previous", "8", "9", "10", "Last"]
 	end
 
 	it 'does not lose a filter value when paginating' do

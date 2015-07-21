@@ -128,7 +128,6 @@ feature 'Add-On Manager' do
 			@page.first_party_status_filter.text.should eq "status (uninstalled)"
 			@page.should have_css 'tr.not-installed'
 			@page.all('tr.not-installed').count().should == 23
-			@page.should have_first_party_pagination
 			@page.should have(23).first_party_addons
 
 			# By 'needs updates'
@@ -253,16 +252,15 @@ feature 'Add-On Manager' do
 			no_php_js_errors
 
 			@page.should have_css 'tr.not-installed'
-			@page.should have_first_party_pagination
 
 			# Now by perpage
 			@page.first_party_perpage_filter.click
 			@page.wait_until_first_party_perpage_filter_menu_visible
-			@page.first_party_perpage_filter_menu.click_link "25 results"
+			@page.first_party_perpage_filter_menu.click_link "50 results"
 			no_php_js_errors
 
 			@page.first_party_status_filter.text.should eq "status (uninstalled)"
-			@page.first_party_perpage_filter.text.should eq 'show (25)'
+			@page.first_party_perpage_filter.text.should eq 'show (50)'
 		end
 
 		it 'shows the Prev button when on page 2' do

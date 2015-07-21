@@ -31,7 +31,7 @@ feature 'SQL Manager' do
 
   it 'should list tables present in the install' do
     tables = get_tables
-    tables = tables[0..19]
+    tables = tables[0..24]
 
     @page.tables.map {|source| source.text}.should == tables
     @page.should have(tables.count).tables
@@ -42,7 +42,7 @@ feature 'SQL Manager' do
     @page.sort_links[0].click
 
     tables = get_tables
-    tables = tables.reverse[0..19]
+    tables = tables.reverse[0..24]
 
     @page.tables.map {|source| source.text}.should == tables
     @page.should have(tables.count).tables
@@ -53,7 +53,7 @@ feature 'SQL Manager' do
 
   it 'should paginate the table' do
     tables = get_tables
-    tables = tables[20..39]
+    tables = tables[25..49]
 
     click_link 'Next'
 
@@ -79,7 +79,7 @@ feature 'SQL Manager' do
 
   it 'should sort search results' do
     tables = get_tables
-    
+
     @page.search_field.set 'access'
     @page.search_btn.click
 
@@ -120,7 +120,7 @@ feature 'SQL Manager' do
     @page.should have_text 'Repair Table Results'
 
     tables = get_tables
-    tables = tables[0..19]
+    tables = tables[0..24]
 
     @page.tables.map {|source| source.text}.should == tables
 
@@ -147,7 +147,7 @@ feature 'SQL Manager' do
     @page.should have_text 'Optimized Table Results'
 
     tables = get_tables
-    tables = tables[0..19]
+    tables = tables[0..25]
 
     @page.tables.map {|source| source.text}.should == tables
 

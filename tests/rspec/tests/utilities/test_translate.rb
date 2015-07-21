@@ -104,7 +104,7 @@ feature 'Translate Tool' do
 		@list_page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
 
 		files = Dir.glob(english_path + '*_lang.php')
-		files = files[20..39]
+		files = files[25..49]
 		@list_page.should have(files.count + 1).rows # +1 for header row
 	end
 
