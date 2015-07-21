@@ -7,7 +7,7 @@
 
 		<?=ee('Alert')->get('metaweblog-form')?>
 
-		<?php $this->ee_view('_shared/table', $table); ?>
+		<?php $this->view('ee:_shared/table', $table); ?>
 		<?=$pagination?>
 		<fieldset class="tbl-bulk-act">
 			<select name="bulk_action">
