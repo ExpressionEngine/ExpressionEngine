@@ -144,25 +144,13 @@ class Channels extends AbstractChannelsController {
 
 			if ( ! empty($channel_ids))
 			{
-				// Do each channel individually because the old channel_model only
-				// accepts one channel at a time to delete
-				foreach ($channel_ids as $channel_id)
-				{
-					// Need to get arrays of entry IDs and author IDs to pass
-					// to channel_model
-					$entries = ee('Model')->get('ChannelEntry')
-						->filter('channel_id', $channel_id)
-						->all();
+				ee('Model')->get('Channel', $channel_ids)->delete();
 
-					ee()->load->model('channel_model');
-					ee()->channel_model->delete_channel(
-						$channel_id,
-						$entries->pluck('entry_id'),
-						$entries->pluck('author_id')
-					);
-				}
-
-				ee()->view->set_message('success', lang('channels_removed'), sprintf(lang('channels_removed_desc'), count($channel_ids)), TRUE);
+				ee('Alert')->makeInline('sites')
+					->asSuccess()
+					->withTitle(lang('channels_removed'))
+					->addToBody(sprintf(lang('channels_removed_desc'), count($channel_ids)))
+					->defer();
 			}
 		}
 		else

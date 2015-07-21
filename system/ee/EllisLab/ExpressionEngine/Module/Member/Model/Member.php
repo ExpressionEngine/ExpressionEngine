@@ -20,6 +20,11 @@ class Member extends Model {
 		'MemberGroup' => array(
 			'type' => 'belongsTo'
 		),
+		'HTMLButtons' => array(
+			'type' => 'hasMany',
+			'model' => 'HTMLButton',
+			'to_key' => 'member_id'
+		),
 		'LastAuthoredTemplates' => array(
 			'type' => 'hasMany',
 			'model' => 'Template',

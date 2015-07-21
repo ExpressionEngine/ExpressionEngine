@@ -469,17 +469,33 @@ $lang = array(
 
 'define_html_buttons' => 'HTML Formatting Button Definitions',
 
+'create_html_button' => 'Create HTML Button',
+
+'edit_html_button' => 'Edit HTML Button',
+
+'save_html_button' => 'Save HTML Button',
+
 'no_buttons' => 'No HTML buttons defined.',
 
 'htmlbutton_delete_instructions' => 'To delete an item submit the form with the tag name blank',
 
+'add_preset_button' => 'Add Preset Button:',
+
 'tag_name' => 'Tag Name',
+
+'tag_name_desc' => 'Full descriptive name of this button.',
 
 'tag_open' => 'Opening Tag',
 
+'tag_open_desc' => 'Opening output of this button. i.e. <b>',
+
 'tag_close' => 'Closing Tag',
 
-'accesskey' => 'Shortcut',
+'tag_close_desc' => 'Closing output of this button. i.e. </b>',
+
+'accesskey' => 'Tag shortcut',
+
+'accesskey_desc' => 'Keyboard shortcut to initiate this button.',
 
 'tag_order' => 'Order',
 

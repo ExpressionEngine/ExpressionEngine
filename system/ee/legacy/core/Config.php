@@ -454,7 +454,7 @@ class EE_Config {
 			// No Pages data
 			if (! is_string($data)
 				OR substr($data, 0, 2) != 'a:'
-				OR $data = 'a:0:{}')
+				OR $data == 'a:0:{}')
 			{
 				$site_pages[$site['site_id']] = array('uris' => array(), 'templates' => array());
 				continue;

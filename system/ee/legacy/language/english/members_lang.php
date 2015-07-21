@@ -374,21 +374,19 @@ $lang = array(
 // Member banning
 //----------------------------
 
-"user_banning" => "User Banning",
+"banned_members" => "Banned Members",
+
+"user_banning" => "Ban Condition Management",
 
 "ban_preferences_updated" => "Banning Preferences Updated",
 
-"ip_address_banning" => "Banned IP Address",
+"ip_address_banning" => "IP Addresses",
 
-"ip_banning_instructions" => "Place each IP address on a separate line",
+"ip_banning_instructions" => "<b>Place each IP address on a separate line</b> <br>You may use * as a wild-card e.g.  123.345.*",
 
-"ip_banning_instructions_cont" => "Use wildcards for partial IP addresses. Example:  123.345.*",
+"email_address_banning" => "Email Addresses",
 
-"email_address_banning" => "Banned Email Address",
-
-"email_banning_instructions" => "Place each email address on a separate line",
-
-"email_banning_instructions_cont" => "Use wildcards for partial email addresses. Example:  *@domain.com",
+"email_banning_instructions" => "<b>Place each email address on a separate line</b><br> You may use * as a wild-card e.g. *@hotmail.com",
 
 "ban_options" => "When a banned IP tries to access the site",
 
@@ -402,11 +400,11 @@ $lang = array(
 
 "username_banning" => "Restricted Usernames",
 
-"username_banning_instructions" => "Place each username on a separate line",
+"username_banning_instructions" => "<b>Place each username on a separate line</b><br> These usernames will not be allowed.",
 
 "screen_name_banning" => "Restricted Screen Names",
 
-"screen_name_banning_instructions" => "Place each screen name on a separate line",
+"screen_name_banning_instructions" => "<b>Place each screen name on a separate line</b><b> These screen names will not be allowed.",
 
 
 //----------------------------

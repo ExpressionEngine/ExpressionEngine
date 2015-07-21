@@ -78,6 +78,7 @@ class Profile extends CP_Controller {
 			),
 			'publishing_settings' => ee('CP/URL', 'members/profile/publishing', $qs),
 			array(
+				'html_buttons' => ee('CP/URL', 'members/profile/buttons', $qs),
 				'quick_links' => ee('CP/URL', 'members/profile/quicklinks', $qs),
 				'bookmarklets' => ee('CP/URL', 'members/profile/bookmarks', $qs),
 				'subscriptions' => ee('CP/URL', 'members/profile/subscriptions', $qs)
