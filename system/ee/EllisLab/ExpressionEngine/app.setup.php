@@ -115,14 +115,14 @@ return array(
 
 		'Config' => function($ee)
 		{
-			return new Config\Factory();
+			return new Config\Factory($ee);
 		},
 
 		'Database' => function($ee)
 		{
-			$db_config = new Database\DBConfig(
-				$ee->getConfigFile()
-			);
+			$config = $ee->make('Config')->getFile();
+
+			$db_config = new Database\DBConfig($config);
 
 			return new Database\Database($db_config);
 		},

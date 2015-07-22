@@ -25,8 +25,8 @@ namespace EllisLab\ExpressionEngine\Service\Config;
  * @author     EllisLab Dev Team
  * @link       http://ellislab.com
  */
-class File implements Config
-{
+class File implements Config {
+
 	protected $config = array();
 	protected $defaults = array(
 		'database' => array(
@@ -91,6 +91,16 @@ class File implements Config
 		}
 
 		return ($config !== NULL) ? $config : $default;
+	}
+
+	/**
+	 * Check if the file has a given item
+	 */
+	public function has($path)
+	{
+		$config = $this->getArrayValue($this->config, $path);
+
+		return ! is_null($config);
 	}
 
 	/**

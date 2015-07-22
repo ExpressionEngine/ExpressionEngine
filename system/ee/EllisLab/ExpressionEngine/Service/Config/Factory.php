@@ -2,15 +2,91 @@
 
 namespace EllisLab\ExpressionEngine\Service\Config;
 
+use EllisLab\ExpressionEngine\Core\Provider;
+
 class Factory {
 
-	public function directory($path)
+	/**
+	 * @var EllisLab\ExpressionEngine\Core\Provider
+	 */
+	protected $provider;
+
+	/**
+	 * @var Array of cached directories
+	 */
+	protected $directories = array();
+
+	/**
+	 * Constructor
+	 *
+	 * @param Provider $provider The default provider for config items
+	 */
+	public function __construct(Provider $provider)
 	{
-		return new Directory($path);
+		$this->provider = $provider;
 	}
 
-	public function file($path)
+	/**
+	 * Get a config directory
+	 */
+	public function getDirectory($path)
 	{
-		return new File($path);
+		$path = realpath($path);
+
+		if ( ! array_key_exists($path, $this->directories))
+		{
+			$this->directories[$path] = new Directory($path);
+		}
+
+		return $this->directories[$path];
+	}
+
+	/**
+	 * Get a config file
+	 *
+	 * @param String $name Config file name, optionally with a provider prefix
+	 * @return Object File The config file
+	 * @throws $
+	 */
+	public function getFile($name = 'config')
+	{
+		list($directory, $name) = $this->expandPrefixToDirectory($name);
+
+		return $directory->getFile($name);
+	}
+
+	/**
+	 * Get a config item
+	 *
+	 * @param String $name Config item name, optionally with a provider prefix
+	 * @return Mixed The config item, or `$default` if it doesn't exist
+	 */
+	public function get($item, $default = NULL)
+	{
+		list($directory, $item) = $this->expandPrefixToDirectory($item);
+
+		return $directory->get($item, $default);
+	}
+
+	/**
+	 * Take a prefixed item and figure out what directory that provider
+	 * should be looking at.
+	 *
+	 * @param String $item Config item name, prefixes allowed (e.g. "rte:item")
+	 * @return Array [Directory, un-prefixed item]
+	 */
+	private function expandPrefixToDirectory($item)
+	{
+		$provider = $this->provider;
+
+		if (strpos($item, ':'))
+		{
+			list($prefix, $item) = explode(':', $item, 2);
+			$provider = $provider->make('App')->get($prefix);
+		}
+
+		$directory = $this->getDirectory($provider->getConfigPath());
+
+		return array($directory, $item);
 	}
 }
