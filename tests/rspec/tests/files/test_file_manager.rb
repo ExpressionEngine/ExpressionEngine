@@ -226,7 +226,7 @@ feature 'File Manager' do
 	# 	@page.response_headers['Content-Disposition'].should include 'attachment; filename='
 	# end
 
-	it 'displays an itemzied modal when attempting to remove 5 or less add-on' do
+	it 'displays an itemzied modal when attempting to remove 5 or less files' do
 		file_name = @page.title_names[0].find('em').text
 
 		@page.files[1].find('input[type="checkbox"]').set true
@@ -240,7 +240,7 @@ feature 'File Manager' do
 		@page.modal.all('.checklist li').length.should eq 1
 	end
 
-	it 'displays a bulk confirmation modal when attempting to remove more than 5 add-ons' do
+	it 'displays a bulk confirmation modal when attempting to remove more than 5 files' do
 		@page.checkbox_header.click
 		@page.bulk_action.select "Remove"
 		@page.action_submit_button.click
