@@ -311,7 +311,7 @@ class Pages_tab {
 
 	/**
 	 * Removes pages from the site_pages structure. This function is called in the
-	 * ChannelEntry's afterDelete() event.
+	 * ChannelEntry's beforeDelete() event.
 	 *
 	 * @param int[] $entry_ids An array of entry IDs that were deleted
 	 * @return 	void

@@ -91,7 +91,7 @@ class ChannelEntry extends ContentModel {
 	);
 
 	protected static $_events = array(
-		'afterDelete',
+		'beforeDelete',
 		'afterSave'
 	);
 
@@ -199,10 +199,8 @@ class ChannelEntry extends ContentModel {
 		}
 	}
 
-	public function onAfterDelete()
+	public function onBeforeDelete()
 	{
-		$this->Autosaves->delete();
-
 		foreach ($this->getModulesWithTabs() as $name => $info)
 		{
 			include_once($info->getPath() . '/tab.' . $name . '.php');
