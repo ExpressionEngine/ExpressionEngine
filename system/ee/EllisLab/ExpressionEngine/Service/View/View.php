@@ -114,6 +114,7 @@ class View {
 		if ($this->parent)
 		{
 			$vars['child_view'] = $output;
+			unset($vars['blocks']);
 
 			$output = $this->parent->render($vars);
 		}
