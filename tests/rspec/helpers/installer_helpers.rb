@@ -4,9 +4,10 @@ module Installer
     attr_reader :boot, :wizard
 
     def initialize
-      @boot   = File.expand_path('../../system/ee/EllisLab/ExpressionEngine/Boot/boot.php')
-      @config = File.expand_path('../../system/user/config/config.php')
-      @wizard = File.expand_path('../../system/ee/installer/controllers/wizard.php')
+      @boot     = File.expand_path('../../system/ee/EllisLab/ExpressionEngine/Boot/boot.php')
+      @config   = File.expand_path('../../system/user/config/config.php')
+      @database = File.expand_path('../../system/user/config/database.php')
+      @wizard   = File.expand_path('../../system/ee/installer/controllers/wizard.php')
     end
 
     # Enables installer by removing `FALSE &&` from boot.php
@@ -45,10 +46,39 @@ module Installer
       )
     end
 
+    def replace_config(file = '')
+      if File.exist?(@config)
+        @config_temp = @config + '.tmp'
+        File.rename(@config, @config_temp)
+      end
+
+      FileUtils.cp(file, @config) if File.exist?(file)
+    end
+
+    def revert_config
+      return unless File.exist?(@config_temp)
+
+      File.delete(@config) if File.exist?(@config)
+      File.rename(@config_temp, @config)
+    end
+
+    def replace_database_config(file = '')
+      if File.exist?(@database)
+        @database_temp = @database + '.tmp'
+        File.rename(@database, @database_temp)
+      end
+
+      FileUtils.cp(file, @database) if File.exist?(file)
+    end
+
+    def revert_database_config
+
+    end
+
     def version=(version)
       swap(
         @config,
-        "$config['app_version'] = '3.0.0';",
+        /\$config\['app_version'\] = '.*?';/i,
         "$config['app_version'] = '#{version}';"
       )
     end

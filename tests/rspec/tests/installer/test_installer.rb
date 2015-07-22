@@ -8,15 +8,12 @@ feature 'Installer' do
     @installer = Installer::Prepare.new
     @installer.enable_installer
     @installer.disable_rename
-
-    # Backup config.php
-    @config = File.expand_path('../../system/user/config/config.php')
-    @config_temp = @config + '.tmp'
-    File.rename(@config, @config_temp)
+    @installer.replace_config
   end
 
   before :each do
     # Delete existing config and create a new one
+    @config = File.expand_path('../../system/user/config/config.php')
     File.delete(@config) if File.exist?(@config)
     File.new(@config, 'w')
     FileUtils.chmod(0666, @config)
@@ -33,10 +30,7 @@ feature 'Installer' do
     # Add the FALSE && back into boot.php
     @installer.disable_installer
     @installer.enable_rename
-
-    # Put config.php back
-    File.delete(@config)
-    File.rename(@config_temp, @config)
+    @installer.revert_config
   end
 
   it 'should load installer' do
