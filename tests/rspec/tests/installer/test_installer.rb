@@ -33,12 +33,12 @@ feature 'Installer' do
     @installer.revert_config
   end
 
-  it 'should load installer' do
+  it 'loads the installer' do
     @page.should have(0).inline_errors
     @page.install_form.all_there?.should == true
   end
 
-  it 'should install successfully' do
+  it 'installs successfully' do
     @page.install_form.db_hostname.set $test_config[:db_host]
     @page.install_form.db_name.set $test_config[:db_name]
     @page.install_form.db_username.set $test_config[:db_username]
@@ -54,110 +54,124 @@ feature 'Installer' do
     @page.install_success.all_there?.should == true
   end
 
-  it 'should show errors with missing database credentials' do
-    @page.install_form.install_submit.click
+  context 'when using invalid database credentials' do
+    it 'shows an error with no database credentials' do
+      @page.install_form.install_submit.click
 
-    no_php_js_errors
-    @page.install_form.all_there?.should == true
-    @page.should have(6).inline_errors
+      no_php_js_errors
+      @page.install_form.all_there?.should == true
+      @page.should have(6).inline_errors
+    end
+
+    it 'shows an error when using the incorrect database credentials' do
+      @page.install_form.db_hostname.set 'nonsense'
+      @page.install_form.db_name.set 'nonsense'
+      @page.install_form.db_username.set 'nonsense'
+      @page.install_form.username.set 'admin'
+      @page.install_form.email_address.set 'hello@ellislab.com'
+      @page.install_form.password.set 'password'
+      @page.install_form.install_submit.click
+
+      no_php_js_errors
+      @page.install_form.all_there?.should == true
+      @page.should have_error
+      @page.error.text.should include 'Unable to connect to your database using the configuration settings you submitted.'
+    end
   end
 
-  it 'should show errors with invalid database credentials' do
-    @page.install_form.db_hostname.set 'nonsense'
-    @page.install_form.db_name.set 'nonsense'
-    @page.install_form.db_username.set 'nonsense'
-    @page.install_form.username.set 'admin'
-    @page.install_form.email_address.set 'hello@ellislab.com'
-    @page.install_form.password.set 'password'
-    @page.install_form.install_submit.click
+  context 'when using an invalid database prefix' do
+    it 'shows an error when the database prefix is too long' do
+      @page.execute_script("$('input[maxlength=30]').prop('maxlength', 80);")
+      @page.install_form.db_prefix.set '1234567890123456789012345678901234567890'
+      @page.install_form.install_submit.click
+      @page.should have(7).inline_errors
+      @page.inline_errors[3].text.should include 'This field cannot exceed 30 characters in length.'
+    end
 
-    no_php_js_errors
-    @page.install_form.all_there?.should == true
-    @page.should have_error
-    @page.error.text.should include 'Unable to connect to your database using the configuration settings you submitted.'
+    it 'shows an error when using invalid characters in the database prefix' do
+      @page.install_form.db_prefix.set '<nonsense>'
+      @page.install_form.install_submit.click
+      @page.should have(7).inline_errors
+      @page.inline_errors[3].text.should include 'There are invalid characters in the database prefix.'
+    end
+
+    it 'shows an error when using exp_ in the database prefix' do
+      @page.install_form.db_prefix.set 'exp_'
+      @page.install_form.install_submit.click
+      @page.should have(7).inline_errors
+      @page.inline_errors[3].text.should include 'The database prefix cannot contain the string "exp_".'
+    end
   end
 
-  it 'should show errors with invalid database prefix' do
-    @page.execute_script("$('input[maxlength=30]').prop('maxlength', 80);")
-    @page.install_form.db_prefix.set '1234567890123456789012345678901234567890'
-    @page.install_form.install_submit.click
+  context 'when using an invalid username' do
+    it 'shows an error when using invalid characters' do |variable|
+      @page.install_form.username.set 'non<>sense'
+      @page.install_form.install_submit.click
+      @page.should have(6).inline_errors
+      @page.inline_errors[4].text.should include 'Your username cannot use the following characters:'
+    end
 
-    @page.should have(7).inline_errors
-    @page.inline_errors[3].text.should include 'This field cannot exceed 30 characters in length.'
+    it 'shows an error when using a too-short username' do
+      @page.install_form.username.set '123'
+      @page.install_form.install_submit.click
+      @page.should have(6).inline_errors
+      @page.inline_errors[4].text.should include 'Your username must be at least 4 characters long'
+    end
 
-    @page.install_form.db_prefix.set '<nonsense>'
-    @page.install_form.install_submit.click
-
-    @page.should have(7).inline_errors
-    @page.inline_errors[3].text.should include 'There are invalid characters in the database prefix.'
-
-    @page.install_form.db_prefix.set 'exp_'
-    @page.install_form.install_submit.click
-
-    @page.should have(7).inline_errors
-    @page.inline_errors[3].text.should include 'The database prefix cannot contain the string "exp_".'
+    it 'shows an error when using a too-long username' do
+      @page.execute_script("$('input[maxlength=50]').prop('maxlength', 80);")
+      @page.install_form.username.set '12345678901234567890123456789012345678901234567890123456789012345678901234567890'
+      @page.install_form.install_submit.click
+      @page.should have(6).inline_errors
+      @page.inline_errors[4].text.should include 'Your username cannot be over 50 characters in length'
+    end
   end
 
-  it 'should show errors with invalid username' do
-    @page.install_form.username.set 'non<>sense'
-    @page.install_form.install_submit.click
+  context 'when using an invalid email address' do
+    it 'shows an error when no domain is supplied' do
+      @page.install_form.email_address.set 'nonsense'
+      @page.install_form.install_submit.click
+      @page.should have(6).inline_errors
+      @page.inline_errors[3].text.should include 'This field must contain a valid email address'
+    end
 
-    @page.should have(6).inline_errors
-    @page.inline_errors[4].text.should include 'Your username cannot use the following characters:'
+    it 'shows an error when no tld is supplied' do
+      @page.install_form.email_address.set 'nonsense@example'
+      @page.install_form.install_submit.click
+      @page.should have(6).inline_errors
+      @page.inline_errors[3].text.should include 'This field must contain a valid email address'
+    end
 
-    @page.install_form.username.set '123'
-    @page.install_form.install_submit.click
-
-    @page.should have(6).inline_errors
-    @page.inline_errors[4].text.should include 'Your username must be at least 4 characters long'
-
-    @page.execute_script("$('input[maxlength=50]').prop('maxlength', 80);")
-    @page.install_form.username.set '12345678901234567890123456789012345678901234567890123456789012345678901234567890'
-    @page.install_form.install_submit.click
-
-    @page.should have(6).inline_errors
-    @page.inline_errors[4].text.should include 'Your username cannot be over 50 characters in length'
+    it 'shows an error when no username is supplied' do
+      @page.install_form.email_address.set 'example.com'
+      @page.install_form.install_submit.click
+      @page.should have(6).inline_errors
+      @page.inline_errors[3].text.should include 'This field must contain a valid email address'
+    end
   end
 
-  it 'should show errors with invalid email address' do
-    @page.install_form.email_address.set 'nonsense'
-    @page.install_form.install_submit.click
+  context 'when using an invalid password' do
+    it 'shows an error when the password is too short' do
+      @page.install_form.password.set '123'
+      @page.install_form.install_submit.click
+      @page.should have(6).inline_errors
+      @page.inline_errors.last.text.should include 'Your password must be at least 5 characters long'
+    end
 
-    @page.should have(6).inline_errors
-    @page.inline_errors[3].text.should include 'This field must contain a valid email address'
+    it 'shows an error whent he password is too long' do
+      @page.execute_script("$('input[maxlength=72]').prop('maxlength', 80);")
+      @page.install_form.password.set '12345678901234567890123456789012345678901234567890123456789012345678901234567890'
+      @page.install_form.install_submit.click
+      @page.should have(6).inline_errors
+      @page.inline_errors.last.text.should include 'Your password cannot be over 72 characters in length'
+    end
 
-    @page.install_form.email_address.set 'nonsense@example'
-    @page.install_form.install_submit.click
-
-    @page.should have(6).inline_errors
-    @page.inline_errors[3].text.should include 'This field must contain a valid email address'
-
-    @page.install_form.email_address.set 'example.com'
-    @page.install_form.install_submit.click
-
-    @page.should have(6).inline_errors
-    @page.inline_errors[3].text.should include 'This field must contain a valid email address'
-  end
-
-  it 'should show errors with invalid password' do
-    @page.install_form.password.set '123'
-    @page.install_form.install_submit.click
-
-    @page.should have(6).inline_errors
-    @page.inline_errors.last.text.should include 'Your password must be at least 5 characters long'
-
-    @page.execute_script("$('input[maxlength=72]').prop('maxlength', 80);")
-    @page.install_form.password.set '12345678901234567890123456789012345678901234567890123456789012345678901234567890'
-    @page.install_form.install_submit.click
-
-    @page.should have(6).inline_errors
-    @page.inline_errors.last.text.should include 'Your password cannot be over 72 characters in length'
-
-    @page.install_form.username.set 'nonsense'
-    @page.install_form.password.set 'nonsense'
-    @page.install_form.install_submit.click
-
-    @page.should have(5).inline_errors
-    @page.inline_errors.last.text.should include 'The password cannot be based on the username'
+    it' shows an error when the username and password are the same' do
+      @page.install_form.username.set 'nonsense'
+      @page.install_form.password.set 'nonsense'
+      @page.install_form.install_submit.click
+      @page.should have(5).inline_errors
+      @page.inline_errors.last.text.should include 'The password cannot be based on the username'
+    end
   end
 end
