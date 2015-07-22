@@ -28,29 +28,6 @@ namespace EllisLab\ExpressionEngine\Service\Config;
 class File implements Config {
 
 	protected $config = array();
-	protected $defaults = array(
-		'database' => array(
-			'active_group'     => 'expressionengine',
-			'active_record'    => TRUE,
-			'expressionengine' => array(
-				'port'     => 3306,
-				'hostname' => '127.0.0.1',
-				'username' => 'root',
-				'password' => '',
-				'database' => '',
-				'dbdriver' => 'mysqli',
-				'pconnect' => FALSE,
-				'dbprefix' => 'exp_',
-				'swap_pre' => 'exp_',
-				'db_debug' => TRUE,
-				'cache_on' => FALSE,
-				'autoinit' => FALSE,
-				'char_set' => 'utf8',
-				'dbcollat' => 'utf8_general_ci',
-				'cachedir' => '', // Set in constructor
-			)
-		)
-	);
 
 	/**
 	 * Create a new Config\File object, will merge with defaults
@@ -59,8 +36,6 @@ class File implements Config {
 	 */
 	function __construct($path)
 	{
-		$this->defaults['database']['expressionengine']['cachedir'] = rtrim(APPPATH, '/').'/user/cache/db_cache/';
-
 		// Load in config
 		require($path);
 
@@ -82,8 +57,7 @@ class File implements Config {
 	 */
 	public function get($path, $default = NULL, $merge = FALSE)
 	{
-		$config  = $this->getArrayValue($this->config, $path);
-		$default = $default ?: $this->getArrayValue($this->defaults, $path);
+		$config = $this->getArrayValue($this->config, $path);
 
 		if ($merge && is_array($config) && is_array($default))
 		{
