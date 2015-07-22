@@ -810,7 +810,7 @@ class Addons extends CP_Controller {
 		$module = $this->getModule($addon);
 		if ( ! empty($module) && $module['installed'] === TRUE)
 		{
-			$data = $this->getModuleSettings($addon, $method);
+			$data = $this->getModuleSettings($addon, $method, array_slice(func_get_args(), 2));
 
 			ee()->view->cp_heading = $module['name'] . ' ' . lang('configuration');
 
@@ -1451,7 +1451,7 @@ class Addons extends CP_Controller {
 	 * @param	str	$name	The name of module whose settings to display
 	 * @return	str			The rendered settings (with HTML)
 	 */
-	private function getModuleSettings($name, $method = "index")
+	private function getModuleSettings($name, $method = "index", $parameters)
 	{
 		$addon = ee()->security->sanitize_filename(strtolower($name));
 
@@ -1502,7 +1502,7 @@ class Addons extends CP_Controller {
 		// either by accident (ie: a missed function) or by deliberate user url hacking
 		if (method_exists($mod, $method))
 		{
-			$_module_cp_body = $mod->$method();
+			$_module_cp_body = call_user_func_array(array($mod, $method), $parameters);
 		}
 		else
 		{
