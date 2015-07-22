@@ -27,8 +27,14 @@ namespace EllisLab\ExpressionEngine\Service\Config;
  */
 class Directory {
 
+	/**
+	 * @var Directory path
+	 */
 	protected $dirname;
 
+	/**
+	 * @var Cache of file objects in this directory
+	 */
 	protected $cache = array();
 
 	/**
@@ -39,6 +45,27 @@ class Directory {
 	function __construct($dirname)
 	{
 		$this->dirname = realpath($dirname);
+	}
+
+	/**
+	 * Get a config item from this directory
+	 *
+	 * @param String $item Config item name
+	 * @param Mixed $default Default value to use if item doesn't exist
+	 */
+	public function get($item, $default = NULL)
+	{
+		list($file, $item) = $this->getFileFor($item);
+
+		return $file->get($item, $default);
+	}
+
+	/**
+	 * Check if this directory contains a given config file
+	 */
+	public function hasFile($filename)
+	{
+		return file_exists($this->getPath($filename));
 	}
 
 	/**
@@ -66,25 +93,10 @@ class Directory {
 	}
 
 	/**
-	 * Check if this directory contains a given config file
-	 */
-	public function hasFile($filename)
-	{
-		return file_exists($this->getPath($filename));
-	}
-
-	/**
-	 * Get a config item from this directory
-	 */
-	public function get($item, $default = NULL)
-	{
-		list($file, $item) = $this->getFileFor($item);
-
-		return $file->get($item, $default);
-	}
-
-	/**
 	 * Turn a filename into a full path
+	 *
+	 * @param String $filename The config file name without an extension
+	 * @return String The full path to the config file
 	 */
 	protected function getPath($filename)
 	{

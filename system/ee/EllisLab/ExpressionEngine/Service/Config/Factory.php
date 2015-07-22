@@ -46,7 +46,6 @@ class Factory {
 	 *
 	 * @param String $name Config file name, optionally with a provider prefix
 	 * @return Object File The config file
-	 * @throws $
 	 */
 	public function getFile($name = 'config')
 	{
