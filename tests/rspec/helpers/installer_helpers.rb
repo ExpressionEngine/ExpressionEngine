@@ -69,6 +69,28 @@ module Installer
       end
 
       FileUtils.cp(file, @database) if File.exist?(file)
+
+      # Replace important values
+      swap(
+        @database,
+        "['hostname'] = 'localhost';",
+        "['hostname'] = '#{$test_config[:db_host]}';"
+      )
+      swap(
+        @database,
+        "['database'] = 'circle_test';",
+        "['database'] = '#{$test_config[:db_name]}';"
+      )
+      swap(
+        @database,
+        "['username'] = 'ubuntu';",
+        "['username'] = '#{$test_config[:db_username]}';"
+      )
+      swap(
+        @database,
+        "['password'] = '';",
+        "['password'] = '#{$test_config[:db_password]}';"
+      )
     end
 
     def revert_database_config
