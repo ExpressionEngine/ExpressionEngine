@@ -1136,21 +1136,12 @@ class Wizard extends CI_Controller {
 			$this->refresh = FALSE;
 		}
 
-		// Prep the javascript
-		$progress_head = $this->progress->fetch_progress_header(array(
-			'process_url'        => $this->refresh_url,
-			'progress_container' => '#js_progress',
-			'state_url'          => $this->set_qstr('do_update&agree=yes&progress=yes'),
-			'end_url'            => $this->set_qstr('do_update&agree=yes&progress=no&ajax_progress=yes')
-		));
-
 		$this->title = sprintf(lang('updating_title'), $this->installed_version, $this->version);
 		$this->subtitle = lang('processing');
 		$this->set_output(
 			'update_msg',
 			array(
 				'remaining_updates' => $this->remaining_updates,
-				'extra_header'      => $progress_head,
 				'next_version'      => $this->progress->prefix.lang('version_update_text')
 			)
 		);
