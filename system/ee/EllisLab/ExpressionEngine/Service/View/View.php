@@ -46,7 +46,7 @@ class View {
 	/**
 	 * @var Array of blocks in the current parsing pass
 	 */
-	 protected $blocks = array();
+	protected $blocks = array();
 
 	/**
 	 * @var Array of variables in the current parsing pass
@@ -89,19 +89,10 @@ class View {
 
 		// TODO this conditional is part of the modals mess and needs to be
 		// removed
-		if (isset($vars['blocks']))
+		if (isset($vars['blocks']['modals']) && ! isset($this->blocks['modals']))
 		{
-			foreach ($vars['blocks'] as $name => $data)
-			{
-				if (isset($this->blocks[$name]))
-				{
-					$this->blocks[$name] .= $data;
-				}
-				else
-				{
-					$this->blocks[$name] = $data;
-				}
-			}
+			$this->blocks['modals'] = $vars['blocks']['modals'];
+			unset($vars['blocks']);
 		}
 
 		$vars['blocks'] = $this->blocks;
@@ -114,7 +105,6 @@ class View {
 		if ($this->parent)
 		{
 			$vars['child_view'] = $output;
-			unset($vars['blocks']);
 
 			$output = $this->parent->render($vars);
 		}
