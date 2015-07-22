@@ -30,7 +30,7 @@ class File implements Config {
 	protected $config = array();
 
 	/**
-	 * Create a new Config\File object, will merge with defaults
+	 * Create a new Config\File object
 	 *
 	 * @param string $path Full path to the config file
 	 */
@@ -51,18 +51,11 @@ class File implements Config {
 	 *
 	 * @param  string $path    The config item to get
 	 * @param  mixed  $default The value to return if $path can not be found
-	 * @param  boolean $merge  Whether to merge with defaults if value is an
-	 *                         array
 	 * @return mixed           The value found for $path, otherwise $default
 	 */
-	public function get($path, $default = NULL, $merge = FALSE)
+	public function get($path, $default = NULL)
 	{
 		$config = $this->getArrayValue($this->config, $path);
-
-		if ($merge && is_array($config) && is_array($default))
-		{
-			$config = array_replace_recursive($default, $config);
-		}
 
 		return ($config !== NULL) ? $config : $default;
 	}
@@ -126,12 +119,6 @@ class File implements Config {
 	 */
 	public function set($path, $value)
 	{
-		// If the value is equal to the default, don't save it
-		if ($value == $this->getArrayValue($this->defaults, $path))
-		{
-			$value = NULL;
-		}
-
 		$this->setArrayValue($this->config, $path, $value);
 	}
 
