@@ -50,6 +50,7 @@ module Installer
     def replace_config(file = '')
       File.rename(@config, @config + '.tmp') if File.exist?(@config)
       FileUtils.cp(file, @config) if File.exist?(file)
+      FileUtils.chmod(0666, @config) if File.exist?(@config)
     end
 
     def revert_config
@@ -63,6 +64,7 @@ module Installer
     def replace_database_config(file = '')
       File.rename(@database, @database + '.tmp') if File.exist?(@database)
       FileUtils.cp(file, @database) if File.exist?(file)
+      FileUtils.chmod(0666, @database) if File.exist?(@database)
 
       # Replace important values
       swap(
