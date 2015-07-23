@@ -1,3 +1,4 @@
+<?php // @TODO This needs localization! ?>
 <div class="alert inline warn">
 	<p><b>Warning</b>: Allowing PHP in templates has security implications.</p>
 	<p class="caution">Any setting marked with <span title="excercise caution"></span> should be used with caution.</p>
