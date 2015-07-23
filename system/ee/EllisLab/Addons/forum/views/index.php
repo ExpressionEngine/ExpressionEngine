@@ -1,35 +1,11 @@
-<?php extend_view('_wrapper') ?>
+<div class="box">
+	<div class="tbl-ctrls">
+		<?=form_open(ee('CP/URL', 'addons/settings/forum'))?>
+			<fieldset class="tbl-search right">
+				<a class="btn tn action" href="<?=ee('CP/URL', 'addons/settings/forum/create/category')?>"><?=lang('new_category')?></a>
+			</fieldset>
+			<h1>[board_name] Forum listing<br><i>[board_short_name], <span class="yes"><?=lang('enabled')?></span></i></h1>
 
-<span class="cp_button"><a href="<?=$_id_base.AMP.'method=forum_prefs'?>"><?=lang('forum_prefs')?></a></span>
-<span class="cp_button"><a href="<?=$_id_base.AMP.'method=forum_permissions'.AMP.'forum_id=global'?>"><?=lang('forum_global_permissions')?></a></span>
-
-<div class="clear_left"></div>
-
-<?php
-if (count($forums)):
-	$this->table->set_heading(
-		lang('forum_id'),
-		lang('forum_name'),
-		lang('forum_total_topics'),
-		lang('forum_total_topics_perday'),
-		lang('forum_total_posts'),
-		lang('forum_total_post_perday')
-	);
-
-	foreach($forums as $forum)
-	{
-		$this->table->add_row(
-			$forum['forum_id'],
-			$forum['forum_name'],
-			$forum['forum_total_topics'],
-			$forum['topics_perday'],
-			$forum['forum_total_posts'],
-			$forum['posts_perday']
-		);
-	}
-	
-	echo $this->table->generate();
-else:
-?>
-<p class="notice"><?=lang('no_forums_for_forum_board')?></p>
-<?php endif; ?>
+		<?=form_close();?>
+	</div>
+</div>

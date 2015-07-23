@@ -7,9 +7,187 @@ $lang = array(
 //----------------------------------------
 
 'forum_module_name' => 'Discussion Forum',
-
 'forum_module_description' => 'Discussion Forum Module',
 
+'forum_listing' => 'Forum Listing',
+
+// Create / Edit Forum Board Form
+'create_forum_board' => 'Create Forum Board',
+'board' => 'Board',
+'forums' => 'Forums',
+'permissions' => 'Permissions',
+
+'enable' => 'Enable',
+'disable' => 'Disable',
+'input' => 'Input',
+'output' => 'Output',
+
+'enable_board' => 'Enable board',
+'enable_board_desc' => 'When set to <b>enable</b>, this forum board will be accessible to member groups with proper permissions.',
+
+'name' => 'Name',
+'name_desc' => 'Full descriptive name of this board.',
+
+'short_name' => 'Short name',
+'short_name_desc' => 'Short name for this board.<br><i>No spaces. Underscores and dashes are allowed.</i>',
+
+'forum_directory' => 'Forum directory',
+'forum_directory_desc' => '<abbr title="Unified Resource Locator">URL</abbr> location to the forum.',
+
+'site' => 'Site',
+'site_desc' => '<abbr title="Multiple Site Manager">MSM</abbr> site this forum board should appear under.',
+
+'forum_url_segment' => 'Forum <abbr title="Unified Resource Locator">URL</abbr> segment',
+'forum_url_segment_desc' => 'Word that triggers forum display. <b>Cannot</b> be the same as a template or template group.',
+
+'default_theme' => 'Default theme',
+'default_theme_desc' => '',
+
+'php_parsing' => '<abbr title="PHP: Hypertext Preprocessor">PHP</abbr> Parsing',
+
+'php_in_templates_warning' => '<b>Warning</b>: Allowing PHP in templates has security implications.',
+'php_in_templates_warning2' => 'Any setting marked with %s should be used with caution.',
+
+'allow_php' => 'Allow PHP?',
+'allow_php_desc' => 'Allows the use of standard PHP within forum templates.',
+
+'php_parsing_stage' => 'PHP parsing stage',
+'php_parsing_stage_desc' => 'When set to <b>output</b>, PHP will be parsed after the template.',
+
+'attachment_settings' => 'Attachment Settings',
+
+'attachments_per_post' => 'Attachments per post',
+'attachments_per_post_desc' => 'Maximum attachments allowed per post.',
+
+'upload_directory' => 'Upload directory',
+'upload_directory_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of this <mark>upload</mark> directory.',
+
+'allowed_file_types' => 'Allowed file types?',
+'allowed_file_types_desc' => '',
+
+'images_only' => 'Images only',
+'all_files' => 'All file types',
+
+'file_size' => 'File size',
+'file_size_desc' => 'Maximum file size in megabytes.',
+
+'image_width' => 'Image width',
+'image_width_desc' => 'Maximum image width in pixels.',
+
+'image_height' => 'Image height',
+'image_height_desc' => 'Maximum image height in pixels.',
+
+'enable_thumbnail_creation' => 'Enable thumbnail creation?',
+'enable_thumbnail_creation_desc' => 'When set to <b>enable</b>, clickable thumbnails will be shown in posts.',
+
+'thumbnail_width' => 'Thumbnail width',
+'thumbnail_width_desc' => 'Maximum thumbnail width in pixels.',
+
+'thumbnail_height' => 'Thumbnail height',
+'thumbnail_height_desc' => 'Maximum thumbnail height in pixels.',
+
+'topics_per_page' => 'Topics per page',
+'topics_per_page_desc' => 'Maximum number of topics that will be shown per page.',
+
+'posts_per_page' => 'Posts per page',
+'posts_per_page_desc' => 'Maximum number of posts that will be shown per page.',
+
+'topic_ordering' => 'Topic ordering',
+'topic_ordering_desc' => 'Order of topics in forum listing.',
+
+'most_recent_post' => 'By most recent post',
+'most_recent_first' => 'Most recent first',
+'most_recent_last' => 'Most recent last',
+
+'post_ordering' => 'Post ordering',
+'post_ordering_desc' => 'Order of posts in topic listing.',
+
+'most_recent_first' => 'Most recent first',
+'most_recent_last' => 'Most recent last',
+
+'hot_topics' => 'Hot topics',
+'hot_topics_desc' => 'Number of posts required to mark a topic as hot.',
+
+'allowed_characters' => 'Allowed characters',
+'allowed_characters_desc' => 'Maximum number of characters allowed within a single post.',
+
+'posting_throttle' => 'Posting throttle',
+'posting_throttle_desc' => 'Number of seconds that must pass before a member can post a new post or topic.',
+
+'show_editing_dates' => 'Show editing dates?',
+'show_editing_dates_desc' => 'When set to <b>yes</b>, the date and time a post was edited will be shown in the post.',
+
+'notification_settings' => 'Notification Settings',
+
+'topic_notifications' => 'Topic notifications',
+'topic_notifications_desc' => 'When set to <b>enable</b>, all recipients listed will receive e-mail notification when a <b>new</b> topic is posted.</em><em>Separate multiple e-mails with a <mark>comma (,)</mark>.',
+
+'reply_notification' => 'Reply notification',
+'reply_notification_desc' => 'When set to <b>enable</b>, all recipients listed will receive e-mail notification when a <b>new</b> reply is made.</em><em>Separate multiple e-mails with a <mark>comma (,)</mark>.',
+
+'text_and_html_formatting' => 'Text and HTML Formatting',
+
+'text_formatting' => 'Text formatting',
+'text_formatting_desc' => 'Type of formatting for comment text.',
+
+'none' => 'None',
+'auto_br' => 'Auto &lt;br&gt;',
+'xhtml' => 'XHTML',
+
+'html_formatting' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> formatting',
+'html_formatting_desc' => 'Level of <abbr title="Hyper-Text Markup Language">HTML</abbr> allowed.',
+
+'html_all' => 'Allow all HTML',
+'html_safe' => 'Allow only safe HTML',
+'html_none' => 'Convert to HTML entities',
+
+'autolink_urls' => 'Render <abbr title="Unified Resource Locator">URL</abbr>s and e-mail addresses as links?',
+'autolink_urls_desc' => "When set to <b>yes</b>, <abbr title=\"Unified Resource Locator\">URL</abbr>s and e-mail address will be rendered as links in this channel's entries.",
+
+'allow_image_hotlinking' => 'Allow image hot-linking?',
+'allow_image_hotlinking_desc' => 'When set to <b>yes</b>, users will be allowed to hot-link an image in a forum post.',
+
+'rss_settings' => '<abbr title="Really Simple Syndication">RSS</abbr> Settings',
+
+'enable_rss' => 'Enable <abbr title="Really Simple Syndication">RSS</abbr>?',
+'enable_rss_desc' => 'When set to <b>enable</b>, <abbr title="Really Simple Syndication">RSS</abbr> will be available for forums.',
+
+'enable_http_auth_for_rss' => 'Enable <abbr title="Hyper Text Transfer Protocol">HTTP</abbr> authentication for <abbr title="Really Simple Syndication">RSS</abbr>?',
+'enable_http_auth_for_rss_desc' => 'When set to <b>enable</b>, users will need to enter authentication to access <abbr title="Really Simple Syndication">RSS</abbr> for forums.',
+
+'permissions_warning' => '<b>Warning</b>: Please be very careful with the access privileges you grant.',
+
+'enable_default_permissions' => 'Enable Default Permissions?',
+'enable_default_permissions_desc' => 'When set to <b>enable</b>, these permissions will be the default permissions for all created forums.',
+
+'view_forum' => 'View forums',
+'view_forum_desc' => 'Allow the following member groups to view forums.</em><em>Super Administrators are <b>always</b> allowed.',
+
+'view_hidden_forum' => 'View hidden forums',
+'view_hidden_forum_desc' => 'Allow the following member groups to view hidden forums.</em><em>Super Administrators are <b>always</b> allowed.',
+
+'view_posts' => 'View posts',
+'view_posts_desc' => 'Allow the following member groups to view posts.</em><em>Super Administrators are <b>always</b> allowed.',
+
+'start_topics' => 'Start topics',
+'start_topics_desc' => 'Allow the following member groups to start new topics.</em><em>Super Administrators are <b>always</b> allowed.',
+
+'reply_to_topics' => 'Reply to topics',
+'reply_to_topics_desc' => 'Allow the following member groups to replay to topics.</em><em>Super Administrators are <b>always</b> allowed.',
+
+'upload' => 'Upload',
+'upload_desc' => 'Allow the following member groups to use the upload feature.</em><em>Super Administrators are <b>always</b> allowed.',
+
+'report' => 'Report',
+'report_desc' => 'Allow the following member groups to use the report feature.</em><em>Super Administrators are <b>always</b> allowed.',
+
+'search' => 'Search',
+'search_desc' => 'Allow the following member groups to use the search feature.</em><em>Super Administrators are <b>always</b> allowed.',
+
+'btn_create_board' => 'Create Board',
+'btn_edit_board' => 'Edit Board',
+
+/* 2.x Keys
 //----------------------------------------
 
 'update' => 'Update',
@@ -786,7 +964,7 @@ $lang = array(
 
 'board_enabled' => 'Enable Forum Board',
 
-'single_word_no_spaces' => 
+'single_word_no_spaces' =>
 'single word, no spaces',
 
 'forum_name_unavailable' => 'Forum Board Short Name Unavailable',
@@ -838,7 +1016,7 @@ $lang = array(
 'invalid_forum_id' => 'Invalid Forum ID',
 
 'invalid_topic_id' => 'Invalid Topic ID',
-
+*/
 
 ''=>''
 );
