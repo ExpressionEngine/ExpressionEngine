@@ -823,7 +823,7 @@ class Updater {
 		$site_id = ee()->config->item('site_id');
 		$member_directories = array();
 
-		if (ee()->config->item('enable_avatars') == 'y')
+		if (bool_config_item('enable_avatars'))
 		{
 			$avatar_uploads = ee('Model')
 				->get('UploadDestination')->filter('name', 'Avatars')->first();
@@ -841,7 +841,7 @@ class Updater {
 			}
 		}
 
-		if (ee()->config->item('enable_photos') == 'y')
+		if (bool_config_item('enable_photos'))
 		{
 			$member_photo_uploads = ee('Model')
 				->get('UploadDestination')->filter('name', 'Member Photos')->first();
@@ -859,7 +859,7 @@ class Updater {
 			}
 		}
 
-		if (ee()->config->item('allow_signatures') == 'y')
+		if (bool_config_item('allow_signatures'))
 		{
 			$signature_uploads = ee('Model')
 				->get('UploadDestination')->filter('name', 'Signature Attachments')->first();
@@ -877,20 +877,25 @@ class Updater {
 			}
 		}
 
-		$pm_uploads = ee('Model')
-			->get('UploadDestination')->filter('name', 'PM Attachments')->first();
-		if (empty($pm_uploads))
+		if (bool_config_item('prv_msg_enabled')
+			&& bool_config_item('prv_msg_allow_attachments'))
 		{
-			$member_directories['PM Attachments'] = array(
-				'server_path'   => ee()->config->item('prv_msg_upload_path'),
-				'url'           => str_replace(
-					'avatars',
-					'pm_attachments',
-					ee()->config->item('avatar_url')
-				),
-				'allowed_types' => 'img',
-				'max_size'      => ee()->config->item('prv_msg_attach_maxsize')
-			);
+			$pm_uploads = ee('Model')
+				->get('UploadDestination')->filter('name', 'PM Attachments')->first();
+
+			if (empty($pm_uploads))
+			{
+				$member_directories['PM Attachments'] = array(
+					'server_path'   => ee()->config->item('prv_msg_upload_path'),
+					'url'           => str_replace(
+						'avatars',
+						'pm_attachments',
+						ee()->config->item('avatar_url')
+					),
+					'allowed_types' => 'img',
+					'max_size'      => ee()->config->item('prv_msg_attach_maxsize')
+				);
+			}
 		}
 
 		foreach ($member_directories as $name => $dir)
