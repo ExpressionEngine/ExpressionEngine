@@ -112,7 +112,7 @@ abstract class AbstractFiles extends CP_Controller {
 		);
 	}
 
-	protected function buildTableFromFileCollection(Collection $files, $limit = 20)
+	protected function buildTableFromFileCollection(Collection $files, $limit = 25)
 	{
 		$table = ee('CP/Table', array('autosort' => TRUE, 'limit' => $limit, 'autosearch' => TRUE));
 		$table->setColumns(
