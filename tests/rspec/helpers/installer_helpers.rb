@@ -54,8 +54,7 @@ module Installer
 
     def revert_config
       config_temp = @config + '.tmp'
-      return unless File.exist?(config_temp) # Problem
-      # Since this file exists that cp above likely isn't working...why not?
+      return unless File.exist?(config_temp)
 
       File.delete(@config) if File.exist?(@config)
       File.rename(config_temp, @config)
