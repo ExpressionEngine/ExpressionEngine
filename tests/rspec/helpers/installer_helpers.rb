@@ -4,10 +4,11 @@ module Installer
     attr_reader :boot, :wizard
 
     def initialize
-      @boot     = File.expand_path('../../system/ee/EllisLab/ExpressionEngine/Boot/boot.php')
-      @config   = File.expand_path('../../system/user/config/config.php')
-      @database = File.expand_path('../../system/user/config/database.php')
-      @wizard   = File.expand_path('../../system/ee/installer/controllers/wizard.php')
+      system = '../../system/'
+      @boot     = File.expand_path('ee/EllisLab/ExpressionEngine/Boot/boot.php', system)
+      @config   = File.expand_path('user/config/config.php', system)
+      @database = File.expand_path('user/config/database.php', system)
+      @wizard   = File.expand_path('ee/installer/controllers/wizard.php', system)
     end
 
     # Enables installer by removing `FALSE &&` from boot.php
@@ -47,27 +48,21 @@ module Installer
     end
 
     def replace_config(file = '')
-      if File.exist?(@config)
-        @config_temp = @config + '.tmp'
-        File.rename(@config, @config_temp)
-      end
-
+      File.rename(@config, @config + '.tmp') if File.exist?(@config)
       FileUtils.cp(file, @config) if File.exist?(file)
     end
 
     def revert_config
-      return unless File.exist?(@config_temp)
+      config_temp = @config + '.tmp'
+      return unless File.exist?(config_temp) # Problem
+      # Since this file exists that cp above likely isn't working...why not?
 
       File.delete(@config) if File.exist?(@config)
-      File.rename(@config_temp, @config)
+      File.rename(config_temp, @config)
     end
 
     def replace_database_config(file = '')
-      if File.exist?(@database)
-        @database_temp = @database + '.tmp'
-        File.rename(@database, @database_temp)
-      end
-
+      File.rename(@database, @database + '.tmp') if File.exist?(@database)
       FileUtils.cp(file, @database) if File.exist?(file)
 
       # Replace important values
@@ -94,7 +89,11 @@ module Installer
     end
 
     def revert_database_config
+      database_temp = @database + '.tmp'
+      return unless File.exist?(database_temp)
 
+      File.delete(@database) if File.exist?(@database)
+      File.rename(database_temp, @database)
     end
 
     def version=(version)
