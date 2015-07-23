@@ -33,25 +33,45 @@ feature 'Installer' do
     @installer.revert_config
   end
 
-  it 'loads the installer' do
+  it 'loads' do
     @page.should have(0).inline_errors
     @page.install_form.all_there?.should == true
   end
 
-  it 'installs successfully' do
-    @page.install_form.db_hostname.set $test_config[:db_host]
-    @page.install_form.db_name.set $test_config[:db_name]
-    @page.install_form.db_username.set $test_config[:db_username]
-    @page.install_form.db_password.set $test_config[:db_password]
-    @page.install_form.username.set 'admin'
-    @page.install_form.email_address.set 'hello@ellislab.com'
-    @page.install_form.password.set 'password'
-    @page.install_form.install_submit.click
+  context 'when using 127.0.0.1 as the database host' do
+    it 'installs successfully' do
+      @page.install_form.db_hostname.set '127.0.0.1'
+      @page.install_form.db_name.set $test_config[:db_name]
+      @page.install_form.db_username.set $test_config[:db_username]
+      @page.install_form.db_password.set $test_config[:db_password]
+      @page.install_form.username.set 'admin'
+      @page.install_form.email_address.set 'hello@ellislab.com'
+      @page.install_form.password.set 'password'
+      @page.install_form.install_submit.click
 
-    no_php_js_errors
-    @page.req_title.text.should eq 'Completed'
-    @page.install_success.success_header.text.should match /ExpressionEngine (\d+\.\d+\.\d+) is now installed/
-    @page.install_success.all_there?.should == true
+      no_php_js_errors
+      @page.req_title.text.should eq 'Completed'
+      @page.install_success.success_header.text.should match /ExpressionEngine (\d+\.\d+\.\d+) is now installed/
+      @page.install_success.all_there?.should == true
+    end
+  end
+
+  context 'when using localhost as the database host' do
+    it 'installs successfully' do
+      @page.install_form.db_hostname.set 'localhost'
+      @page.install_form.db_name.set $test_config[:db_name]
+      @page.install_form.db_username.set $test_config[:db_username]
+      @page.install_form.db_password.set $test_config[:db_password]
+      @page.install_form.username.set 'admin'
+      @page.install_form.email_address.set 'hello@ellislab.com'
+      @page.install_form.password.set 'password'
+      @page.install_form.install_submit.click
+
+      no_php_js_errors
+      @page.req_title.text.should eq 'Completed'
+      @page.install_success.success_header.text.should match /ExpressionEngine (\d+\.\d+\.\d+) is now installed/
+      @page.install_success.all_there?.should == true
+    end
   end
 
   context 'when using invalid database credentials' do

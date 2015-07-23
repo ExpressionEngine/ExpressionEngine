@@ -1222,9 +1222,19 @@ class Wizard extends CI_Controller {
 		// Ask for exceptions so we can show proper errors in the form
 		ee()->db->db_exception = TRUE;
 
-		try {
+		try
+		{
 			ee()->db->initialize();
-		} catch (Exception $e) {
+		}
+		catch (Exception $e)
+		{
+			// If they're using localhost, fall back to 127.0.0.1
+			if ($db['hostname'] == 'localhost')
+			{
+				$this->userdata['db_hostname'] = $db['hostname'] = '127.0.0.1';
+				return $this->db_connect($db);
+			}
+
 			return FALSE;
 		}
 
