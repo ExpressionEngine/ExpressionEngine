@@ -84,66 +84,7 @@ class Fields extends AbstractChannelsController {
 
 		$base_url->addQueryStringVariables($filters->values());
 
-		$table = ee('CP/Table', array('autosort' => TRUE));
-		$table->setColumns(
-			array(
-				'id',
-				'name',
-				'short_name' => array(
-					'encode' => FALSE
-				),
-				'type',
-				'manage' => array(
-					'type'	=> Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=>
-						Table::COL_CHECKBOX
-				)
-			)
-		);
-		$table->setNoResultsText('no_fields', 'create_new', $vars['create_url']);
-
-		$data = array();
-
-		$field_id = ee()->session->flashdata('field_id');
-
-		foreach ($fields->all() as $field)
-		{
-			$column = array(
-				$field->field_id,
-				$field->field_label,
-				'<var>{' . htmlentities($field->field_name, ENT_QUOTES) . '}</var>',
-				$field->field_type,
-				array('toolbar_items' => array(
-					'edit' => array(
-						'href' => ee('CP/URL', 'channels/fields/edit/' . $field->field_id),
-						'title' => lang('edit')
-					)
-				)),
-				array(
-					'name' => 'selection[]',
-					'value' => $field->field_id,
-					'data' => array(
-						'confirm' => lang('field') . ': <b>' . htmlentities($field->field_label, ENT_QUOTES) . '</b>'
-					)
-				)
-			);
-
-			$attrs = array();
-
-			if ($field_id && $field->field_id == $field_id)
-			{
-				$attrs = array('class' => 'selected');
-			}
-
-			$data[] = array(
-				'attrs'		=> $attrs,
-				'columns'	=> $column
-			);
-		}
-
-		$table->setData($data);
+		$table = $this->buildTableFromChannelFieldsQuery($fields);
 
 		$vars['table'] = $table->viewData($base_url);
 

@@ -37,81 +37,11 @@ class Channels extends AbstractChannelsController {
 	 */
 	public function index()
 	{
-		$table = ee('CP/Table');
-		$table->setColumns(
-			array(
-				'col_id',
-				'channel',
-				'short_name',
-				'manage' => array(
-					'type'	=> CP\Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=> CP\Table::COL_CHECKBOX
-				)
-			)
-		);
-		$table->setNoResultsText('no_channels', 'create_channel', ee('CP/URL', 'channels/create'));
-
-		$sort_map = array(
-			'col_id' => 'channel_id',
-			'channel' => 'channel_title',
-			'short_name' => 'channel_name'
-		);
-
 		$channels = ee('Model')->get('Channel')
 			->filter('site_id', ee()->config->item('site_id'));
 		$total_rows = $channels->all()->count();
 
-		$channels = $channels->order($sort_map[$table->sort_col], $table->sort_dir)
-			->limit(20)
-			->offset(($table->config['page'] - 1) * 20)
-			->all();
-
-		$data = array();
-		foreach ($channels as $channel)
-		{
-			$columns = array(
-				$channel->getId(),
-				$channel->channel_title,
-				$channel->channel_name,
-				array('toolbar_items' => array(
-					'edit' => array(
-						'href' => ee('CP/URL', 'channels/edit/'.$channel->getId()),
-						'title' => lang('edit')
-					),
-					'settings' => array(
-						'href' => ee('CP/URL', 'channels/settings/'.$channel->getId()),
-						'title' => lang('settings')
-					),
-					'txt-only' => array(
-						'href' => ee('CP/URL', 'channels/layouts/'.$channel->getId()),
-						'title' => (lang('layouts')),
-						'content' => strtolower(lang('layouts'))
-					)
-				)),
-				array(
-					'name' => 'channels[]',
-					'value' => $channel->getId(),
-					'data'	=> array(
-						'confirm' => lang('channel') . ': <b>' . htmlentities($channel->channel_title, ENT_QUOTES) . '</b>'
-					)
-				)
-			);
-
-			$attrs = array();
-			if (ee()->session->flashdata('highlight_id') == $channel->getId())
-			{
-				$attrs = array('class' => 'selected');
-			}
-
-			$data[] = array(
-				'attrs' => $attrs,
-				'columns' => $columns
-			);
-		}
-
-		$table->setData($data);
+		$table = $this->buildTableFromChannelQuery($channels);
 
 		$vars['table'] = $table->viewData(ee('CP/URL', 'channels'));
 
