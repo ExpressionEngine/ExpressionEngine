@@ -1,6 +1,6 @@
 <?php
 // Show "Required Fields" in header if there are any required fields
-if ( ! isset($required) && ! is_bool($required))
+if ( ! isset($required) || ! is_bool($required))
 {
 	$required = FALSE;
 	foreach ($sections as $name => $settings)
