@@ -38,8 +38,8 @@ feature 'Installer' do
     @page.install_form.all_there?.should == true
   end
 
-  context 'when using 127.0.0.1 as the database host' do
-    it 'installs successfully' do
+  context 'when installing' do
+    it 'installs successfully using 127.0.0.1 as the database host' do
       @page.install_form.db_hostname.set '127.0.0.1'
       @page.install_form.db_name.set $test_config[:db_name]
       @page.install_form.db_username.set $test_config[:db_username]
@@ -54,10 +54,8 @@ feature 'Installer' do
       @page.install_success.success_header.text.should match /ExpressionEngine (\d+\.\d+\.\d+) is now installed/
       @page.install_success.all_there?.should == true
     end
-  end
 
-  context 'when using localhost as the database host' do
-    it 'installs successfully' do
+    it 'installs successfully using localhost as the database host' do
       @page.install_form.db_hostname.set 'localhost'
       @page.install_form.db_name.set $test_config[:db_name]
       @page.install_form.db_username.set $test_config[:db_username]

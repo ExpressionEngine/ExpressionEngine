@@ -1215,28 +1215,34 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
-		ee()->load->database($db, FALSE, TRUE);
+		$db_object = ee()->load->database($db, TRUE, TRUE);
+
 		// Force caching off
-		ee()->db->save_queries = TRUE;
+		$db_object->save_queries = TRUE;
 
 		// Ask for exceptions so we can show proper errors in the form
-		ee()->db->db_exception = TRUE;
+		$db_object->db_exception = TRUE;
 
 		try
 		{
-			ee()->db->initialize();
+			$db_object->initialize();
 		}
 		catch (Exception $e)
 		{
 			// If they're using localhost, fall back to 127.0.0.1
 			if ($db['hostname'] == 'localhost')
 			{
-				$this->userdata['db_hostname'] = $db['hostname'] = '127.0.0.1';
+				ee('Database')->closeConnection();
+				$this->userdata['db_hostname'] = '127.0.0.1';
+				$db['hostname'] = '127.0.0.1';
+
 				return $this->db_connect($db);
 			}
 
 			return FALSE;
 		}
+
+		ee()->set('db', $db_object);
 
 		return TRUE;
 	}
