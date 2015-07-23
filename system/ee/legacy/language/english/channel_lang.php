@@ -26,6 +26,10 @@ $lang = array(
  * Channel Manager
  */
 
+'section_search_results' => 'results for the search term <mark>%s</mark>',
+
+'search_for' => 'Search for "%s"',
+
 'channel_manager' => 'Channel Manager',
 
 'manage_channels' => 'Manage Channels',
