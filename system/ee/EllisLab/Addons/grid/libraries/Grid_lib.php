@@ -125,9 +125,6 @@ class Grid_lib {
 
 		$grid->setData($data);
 
-		// ಠ_ಠ
-		ee()->load->remove_package_path();
-
 		return ee('View')->make('ee:_shared/table')->render($grid->viewData());
 	}
 
