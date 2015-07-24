@@ -61,7 +61,12 @@ module Installer
       File.rename(config_temp, @config)
     end
 
-    def replace_database_config(file = '')
+    # Replaces current database config with file of your choice
+    #
+    # @param [String] file Path to file you want, ideally use File.expand_path
+    # @param [Type] host = $test_config[:db_host] The database host to use
+    # @return [void]
+    def replace_database_config(file, host = $test_config[:db_host])
       File.rename(@database, @database + '.tmp') if File.exist?(@database)
       FileUtils.cp(file, @database) if File.exist?(file)
       FileUtils.chmod(0666, @database) if File.exist?(@database)
@@ -70,7 +75,7 @@ module Installer
       swap(
         @database,
         "['hostname'] = 'localhost';",
-        "['hostname'] = '#{$test_config[:db_host]}';"
+        "['hostname'] = '#{host}';"
       )
       swap(
         @database,
@@ -112,7 +117,7 @@ module Installer
     # @param [File] file File object
     # @param [String] pattern Text to find
     # @param [String] replacement Replacement of above text
-    # @return [nil]
+    # @return [void]
     def swap(file, pattern, replacement)
       file = File.expand_path(file)
       temp = File.read(file).gsub(pattern, replacement)
