@@ -612,16 +612,6 @@ class Forum_mcp {
 						)
 					)
 				),
-				// array(
-				// 	'title' => 'allow_image_urls',
-				// 	'desc' => 'allow_image_urls_desc',
-				// 	'fields' => array(
-				// 		'board_allow_img_urls' => array(
-				// 			'type' => 'yes_no',
-				// 			'value' => 'y',
-				// 		)
-				// 	)
-				// ),
 				array(
 					'title' => 'autolink_urls',
 					'desc' => 'autolink_urls_desc',
