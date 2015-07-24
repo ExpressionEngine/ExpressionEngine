@@ -179,19 +179,19 @@ class Board extends Model {
 
 	public function set__board_forum_url($url)
 	{
-		$this->setProperty('board_forum_url', $this->addTrailingSlash($url));
+		$this->setRawProperty('board_forum_url', $this->addTrailingSlash($url));
 	}
 
 	public function set__board_upload_path($path)
 	{
-		$this->setProperty('board_upload_path', $this->addTrailingSlash($path));
+		$this->setRawProperty('board_upload_path', $this->addTrailingSlash($path));
 	}
 
 	private function addTrailingSlash($value)
 	{
 		if (isset($value)
 			&& $value != ''
-			&& substr($val, -1) != '/')
+			&& substr($value, -1) != '/')
 		{
 			$value .= '/';
 		}
