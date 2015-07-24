@@ -12,6 +12,7 @@ use EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Validation;
 use EllisLab\ExpressionEngine\Service\View;
 use EllisLab\ExpressionEngine\Service\Thumbnail;
+use EllisLab\Addons\Spam\Service\Spam;
 
 // TODO should put the version in here at some point ...
 return array(
@@ -89,6 +90,11 @@ return array(
 			$frontend->setValidationFactory($ee->make('Validation'));
 
 			return $frontend;
+		},
+
+		'Spam' => function($ee)
+		{
+			return new Spam();
 		},
 
 		'Thumbnail' => function($ee)
