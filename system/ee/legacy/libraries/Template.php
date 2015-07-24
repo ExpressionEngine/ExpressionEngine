@@ -2841,21 +2841,13 @@ class EE_Template {
 	 */
 	public function fetch_addons()
 	{
-		$providers = ee('App')->getProviders();
+		$addons = ee('Addon')->all();
 
-		foreach (array_keys($providers) as $name)
+		foreach ($addons as $name => $info)
 		{
-			try
+			if ($info->hasModule())
 			{
-				$info = ee('App')->get($name);
-				if (file_exists($info->getPath() . '/mod.' . $name . '.php'))
-				{
-					$this->modules[] = $name;
-				}
-			}
-			catch (\Exception $e)
-			{
-				continue;
+				$this->modules[] = $name;
 			}
 		}
 
