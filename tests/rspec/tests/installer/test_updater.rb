@@ -41,13 +41,18 @@ feature 'Updater' do
   end
 
   context 'when updating from 2.x to 3.x' do
+    it 'upgrades using mysql as the dbdriver' do
+      @installer.replace_database_config(@database, dbdriver: 'mysql')
+      test_update
+    end
+
     it 'upgrades using localhost as the database host' do
-      @installer.replace_database_config(@database, 'localhost')
+      @installer.replace_database_config(@database, hostname: 'localhost')
       test_update
     end
 
     it 'upgrades using 127.0.0.1 as the database host' do
-      @installer.replace_database_config(@database, '127.0.0.1')
+      @installer.replace_database_config(@database, hostname: '127.0.0.1')
       test_update
     end
 

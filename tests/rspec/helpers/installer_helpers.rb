@@ -64,34 +64,30 @@ module Installer
     # Replaces current database config with file of your choice
     #
     # @param [String] file Path to file you want, ideally use File.expand_path
-    # @param [Type] host = $test_config[:db_host] The database host to use
+    # @param [Hash] options Hash of options for replacing
     # @return [void]
-    def replace_database_config(file, host = $test_config[:db_host])
+    def replace_database_config(file, options = {})
+      defaults = {
+        database: $test_config[:db_name],
+        dbdriver: 'mysqli',
+        hostname: $test_config[:db_host],
+        password: $test_config[:db_password],
+        username: $test_config[:db_username]
+      }
+      options = defaults.merge(options)
+
       File.rename(@database, @database + '.tmp') if File.exist?(@database)
       FileUtils.cp(file, @database) if File.exist?(file)
       FileUtils.chmod(0666, @database) if File.exist?(@database)
 
       # Replace important values
-      swap(
-        @database,
-        "['hostname'] = 'localhost';",
-        "['hostname'] = '#{host}';"
-      )
-      swap(
-        @database,
-        "['database'] = 'circle_test';",
-        "['database'] = '#{$test_config[:db_name]}';"
-      )
-      swap(
-        @database,
-        "['username'] = 'ubuntu';",
-        "['username'] = '#{$test_config[:db_username]}';"
-      )
-      swap(
-        @database,
-        "['password'] = '';",
-        "['password'] = '#{$test_config[:db_password]}';"
-      )
+      options.each { |key, value|
+        swap(
+          @database,
+          /\['#{key}'\] = '.*?';/,
+          "['#{key}'] = '#{value}';"
+        )
+      }
     end
 
     def revert_database_config
