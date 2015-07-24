@@ -211,8 +211,8 @@ class Forum_mcp extends CP_Controller {
 
 				ee('Alert')->makeInline('shared-form')
 					->asSuccess()
-					->withTitle(lang('create_board_success'))
-					->addToBody(sprintf(lang('create_board_success_desc'), $board->board_label))
+					->withTitle(lang('create_forum_board_success'))
+					->addToBody(sprintf(lang('create_forum_board_success_desc'), $board->board_label))
 					->defer();
 
 				ee()->functions->redirect(ee('CP/URL', $this->base));
@@ -268,8 +268,8 @@ class Forum_mcp extends CP_Controller {
 		{
 			ee('Alert')->makeInline('shared-form')
 				->asIssue()
-				->withTitle(lang($action . '_board_error'))
-				->addToBody(lang($action . '_board_error_desc'))
+				->withTitle(lang($action . '_forum_board_error'))
+				->addToBody(lang($action . '_forum_board_error_desc'))
 				->now();
 		}
 

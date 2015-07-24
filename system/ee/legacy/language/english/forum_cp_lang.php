@@ -194,6 +194,19 @@ $lang = array(
 'unwritable_upload_path' => 'Your image upload folder is not writable.  Please make sure the file permissions are set to 777.',
 'forum_trigger_unavailable' => 'The forum trigger you submitted is currently being used as the name of a template group so it is not available',
 
+'create_forum_board_success' => 'Forum Board Created',
+'create_forum_board_success_desc' => 'The forum board <b>%s</b> has been created.',
+
+'create_forum_board_error' => 'Cannot Create Forum Board',
+'create_forum_board_error_desc' => 'We were unable to create this forum board, please review and fix errors below.',
+
+'edit_forum_board_success' => 'Forum Board Updated',
+'edit_forum_board_success_desc' => 'The forum board <b>%s</b> has been updated.',
+
+'edit_forum_board_error' => 'Cannot Update Forum Board',
+'edit_forum_board_error_desc' => 'We were unable to update this forum board, please review and fix errors below.',
+
+
 /* 2.x Keys
 //----------------------------------------
 
