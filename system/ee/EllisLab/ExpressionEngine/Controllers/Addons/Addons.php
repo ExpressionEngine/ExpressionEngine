@@ -529,7 +529,7 @@ class Addons extends CP_Controller {
 				$class = $addon_info->getExtensionClass();
 
 				$class_name = $extension['class'];
-				$Extension = new $class_name();
+				$Extension = new $class();
 				$Extension->update_extension($extension['version']);
 				ee()->extensions->version_numbers[$class_name] = $Extension->version;
 
@@ -1036,7 +1036,7 @@ class Addons extends CP_Controller {
 			show_404();
 		}
 
-		if ( ! file_exists($info->getPath() . '/mod.' . $name . '.php'))
+		if ( ! $info->hasModule())
 		{
 			return array();
 		}
@@ -1067,10 +1067,9 @@ class Addons extends CP_Controller {
 				$data['settings_url'] = ee('CP/URL', 'addons/settings/' . $name);
 			}
 
-			if (file_exists($info->getPath() . '/upd.' . $name . '.php'))
+			if ($info->hasInstaller())
 			{
-				require_once $info->getPath() . '/upd.' . $name . '.php';
-				$class = ucfirst($name).'_upd';
+				$class = $info->getInstallerClass();
 
 				ee()->load->add_package_path($info->getPath());
 
@@ -1113,7 +1112,7 @@ class Addons extends CP_Controller {
 			show_404();
 		}
 
-		if ( ! file_exists($info->getPath() . '/pi.' . $name . '.php'))
+		if ( ! $info->hasPlugin())
 		{
 			return array();
 		}
@@ -1170,7 +1169,7 @@ class Addons extends CP_Controller {
 			show_404();
 		}
 
-		if ( ! file_exists($info->getPath() . '/ft.' . $name . '.php'))
+		if ( ! $info->hasFieldtype())
 		{
 			return array();
 		}
@@ -1244,7 +1243,7 @@ class Addons extends CP_Controller {
 			show_404();
 		}
 
-		if ( ! file_exists($info->getPath() . '/ext.' . $name . '.php'))
+		if ( ! $info->hasExtension())
 		{
 			return array();
 		}
