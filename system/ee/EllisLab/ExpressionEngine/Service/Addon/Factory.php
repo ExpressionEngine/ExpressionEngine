@@ -48,4 +48,26 @@ class Factory {
 
 		return new Addon($provider);
 	}
+
+	/**
+	 * Get all addons
+	 */
+	public function all()
+	{
+		$providers = $this->app->getProviders();
+
+		$all = array();
+
+		foreach ($providers as $key => $obj)
+		{
+			$path = $obj->getPath();
+
+			if (strpos($path, PATH_ADDONS) === 0 || strpos($path, PATH_THIRD) === 0)
+			{
+				$all[$key] = new Addon($obj);
+			}
+		}
+
+		return $all;
+	}
 }
