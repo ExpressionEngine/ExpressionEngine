@@ -1328,44 +1328,6 @@ class EE_Template {
 		$plugins = array_values(array_unique($plugins));
 		$modules = array_values(array_unique($modules));
 
-		// Dynamically require the file that contains each class
-
-		$this->log_item("Including Files for Plugins and Modules");
-
-		foreach ($plugins as $plugin)
-		{
-			// make sure it's not already included just in case
-			if ( ! class_exists($plugin))
-			{
-				if (in_array($plugin ,ee()->core->native_plugins))
-				{
-					require_once PATH_ADDONS."{$plugin}/pi.{$plugin}.php";
-				}
-				else
-				{
-					require_once PATH_THIRD."{$plugin}/pi.{$plugin}.php";
-				}
-			}
-		}
-
-		foreach ($modules as $module)
-		{
-			// make sure it's not already included just in case
-			if ( ! class_exists($module))
-			{
-				if (in_array($module, ee()->core->native_modules))
-				{
-					require_once PATH_ADDONS."{$module}/mod.{$module}.php";
-				}
-				else
-				{
-					require_once PATH_THIRD."{$module}/mod.{$module}.php";
-				}
-			}
-		}
-
-		$this->log_item("Files for Plugins and Modules All Included");
-
 		// Only Retrieve Data if Not Done Before and Modules Being Called
 		if (count($this->module_data) == 0 && count(array_intersect($this->modules, $modules)) > 0)
 		{
