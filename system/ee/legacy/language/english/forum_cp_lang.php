@@ -142,7 +142,7 @@ $lang = array(
 'html_none' => 'Convert to HTML entities',
 
 'autolink_urls' => 'Render <abbr title="Unified Resource Locator">URL</abbr>s and e-mail addresses as links?',
-'autolink_urls_desc' => "When set to <b>yes</b>, <abbr title=\"Unified Resource Locator\">URL</abbr>s and e-mail address will be rendered as links in this channel's entries.",
+'autolink_urls_desc' => "When set to <b>yes</b>, <abbr title=\"Unified Resource Locator\">URL</abbr>s and e-mail address will be rendered as links in this forum's posts.",
 
 'allow_image_hotlinking' => 'Allow image hot-linking?',
 'allow_image_hotlinking_desc' => 'When set to <b>yes</b>, users will be allowed to hot-link an image in a forum post.',
@@ -186,6 +186,10 @@ $lang = array(
 
 'btn_create_board' => 'Create Board',
 'btn_edit_board' => 'Edit Board',
+
+'invalid_upload_path' => 'The server path to your image upload folder does not appear to be valid.',
+'unwritable_upload_path' => 'Your image upload folder is not writable.  Please make sure the file permissions are set to 777.',
+'forum_trigger_unavailable' => 'The forum trigger you submitted is currently being used as the name of a template group so it is not available',
 
 /* 2.x Keys
 //----------------------------------------
@@ -609,12 +613,6 @@ $lang = array(
 'forum_empty_fields' => 'You left the following fields empty:',
 
 'invalid_theme_path' => 'The server path to your themes folder does not appear to be valid.',
-
-'invalid_upload_path' => 'The server path to your image upload folder does not appear to be valid.',
-
-'unwritable_upload_path' => 'Your image upload folder is not writable.  Please make sure the file permissions are set to 777.',
-
-'forum_trigger_unavailable' => 'The forum trigger you submitted is currently being used as the name of a template group so it is not available',
 
 'illegal_characters' => 'The forum trigger word you submitted may only contain alpha-numeric characters, underscores, and dashes',
 
