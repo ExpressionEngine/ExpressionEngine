@@ -1,5 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -24,7 +26,7 @@
  * @link		http://ellislab.com
  */
 
-class Forum_mcp {
+class Forum_mcp extends CP_Controller {
 
 	public $base				= 'addons/settings/forum/';
 	public $prefs				= array();
@@ -67,7 +69,7 @@ class Forum_mcp {
 
 		if ($query->num_rows() == 0)
 		{
-			$this->_load_default_prefs();
+			$this->prefs = $this->getDefaultPrefs();
 		}
 		else
 		{
@@ -91,17 +93,31 @@ class Forum_mcp {
 
 	private function generateSidebar()
 	{
-		$sidebar = array(
-			'forum_boards' => array(
-				'button' => array(
-					'href' => ee('CP/URL', $this->base . 'create/board'),
-					'text' => 'new'
-				)
-			),
-			array(),
-			'templates' => ee('CP/URL', 'design/forum'),
-			'member_ranks' => ee('CP/URL', $this->base . 'ranks')
+		$sidebar['forum_boards'] = array(
+			'button' => array(
+				'href' => ee('CP/URL', $this->base . 'create/board'),
+				'text' => 'new'
+			)
 		);
+
+		$boards = array();
+		$all_boards = ee('Model')->get('forum:Board')
+			->fields('board_id', 'board_label')
+			->all();
+
+		foreach ($all_boards as $board)
+		{
+			$boards[$board->board_label] = ee('CP/URL', $this->base . '/' . $board->board_id);
+		}
+
+		if ( ! empty($boards))
+		{
+			$sidebar[] = $boards;
+		}
+
+		$sidebar['templates'] = ee('CP/URL', 'design/forum');
+		$sidebar['member_ranks'] = ee('CP/URL', $this->base . 'ranks');
+
 		return $sidebar;
 	}
 
@@ -178,8 +194,34 @@ class Forum_mcp {
 
 	private function createBoard()
 	{
+		$errors = NULL;
+		$board = ee('Model')->make('forum:Board', $this->getDefaultPrefs());
+
+		$result = $this->validateBoard($board);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
+
+			if ($result->isValid())
+			{
+				$board->save();
+
+				ee()->session->set_flashdata('board_id', $board->board_id);
+
+				ee('Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('create_board_success'))
+					->addToBody(sprintf(lang('create_board_success_desc'), $board->board_label))
+					->defer();
+
+				ee()->functions->redirect(ee('CP/URL', $this->base));
+			}
+		}
+
 		$vars = array(
 			'ajax_validate' => TRUE,
+			'errors' => $errors,
 			'cp_page_title' => lang('create_forum_board'),
 			'base_url' => ee('CP/URL', $this->base . 'create/board'),
 			'save_btn_text' => 'btn_create_board',
@@ -203,6 +245,35 @@ class Forum_mcp {
 			'heading'    => lang('create_forum_board'),
 			'sidebar'    => $this->generateSidebar()
 		);
+	}
+
+	private function validateBoard($board)
+	{
+		if (empty($_POST))
+		{
+			return FALSE;
+		}
+
+		$action = ($board->board_id) ? 'edit' : 'create';
+
+		$board->set($_POST);
+		$result = $board->validate();
+
+		if ($response = $this->ajaxValidation($result))
+		{
+			ee()->output->send_ajax_response($response);
+		}
+
+		if ($result->failed())
+		{
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang($action . '_board_error'))
+				->addToBody(lang($action . '_board_error_desc'))
+				->now();
+		}
+
+		return $result;
 	}
 
 	private function createCategory()
@@ -813,54 +884,53 @@ class Forum_mcp {
 	 *
 	 * Loads default preferences for a newly created forum
 	 *
-	 * @access	private
 	 * @return	void
 	 */
-	function _load_default_prefs()
+	private function getDefaultPrefs()
 	{
-		$this->prefs = array(
-							'board_id'						=> '',
-							'board_label'					=> '',
-							'board_name'					=> '',
-							'board_enabled'					=> 'y',
-							'board_forum_trigger'			=> 'forums',
-							'board_site_id'					=> 1,
-							'board_alias_id'				=> 0,
-							'board_allow_php'				=> 'n',
-							'board_php_stage'				=> 'o',
-							'board_install_date'			=> 0,
-							'board_forum_url'				=> ee()->functions->create_url('forums'),
-							'board_default_theme'			=> 'default',
-							'board_upload_path'				=> '',
-							'board_topics_perpage'			=> 25,
-							'board_posts_perpage'			=> 15,
-							'board_topic_order'				=> 'r',
-							'board_post_order'				=> 'a',
-							'board_hot_topic'				=> 10,
-							'board_max_post_chars'			=> 6000,
-							'board_post_timelock'			=> 0,
-							'board_display_edit_date'		=> 'n',
-							'board_text_formatting'			=> 'xhtml',
-							'board_html_formatting'			=> 'safe',
-							'board_allow_img_urls'			=> 'n',
-							'board_auto_link_urls'			=> 'y',
-							'board_notify_emails'			=> '',
-							'board_notify_emails_topics'	=> '',
-							'board_max_attach_perpost'		=> 3,
-							'board_max_attach_size'			=> 75,
-							'board_max_width'				=> 800,
-							'board_max_height'				=> 600,
-							'board_attach_types'			=> 'img',
-							'board_use_img_thumbs'			=> ($this->gd_loaded() == TRUE) ? 'y' : 'n',
-							'board_thumb_width'				=> 100,
-							'board_thumb_height'			=> 100,
-							'board_forum_permissions'		=> serialize($this->forum_set_base_permissions()),
-							'board_use_deft_permissions'	=> 'n',
-							'board_recent_poster_id'		=> '0',
-							'board_recent_poster'			=> '',
-							'board_enable_rss'				=> 'y',
-							'board_use_http_auth'			=> 'n',
-							);
+		return array(
+			'board_id'						=> '',
+			'board_label'					=> '',
+			'board_name'					=> '',
+			'board_enabled'					=> 'y',
+			'board_forum_trigger'			=> 'forums',
+			'board_site_id'					=> 1,
+			'board_alias_id'				=> 0,
+			'board_allow_php'				=> 'n',
+			'board_php_stage'				=> 'o',
+			'board_install_date'			=> 0,
+			'board_forum_url'				=> ee()->functions->create_url('forums'),
+			'board_default_theme'			=> 'default',
+			'board_upload_path'				=> '',
+			'board_topics_perpage'			=> 25,
+			'board_posts_perpage'			=> 15,
+			'board_topic_order'				=> 'r',
+			'board_post_order'				=> 'a',
+			'board_hot_topic'				=> 10,
+			'board_max_post_chars'			=> 6000,
+			'board_post_timelock'			=> 0,
+			'board_display_edit_date'		=> 'n',
+			'board_text_formatting'			=> 'xhtml',
+			'board_html_formatting'			=> 'safe',
+			'board_allow_img_urls'			=> 'n',
+			'board_auto_link_urls'			=> 'y',
+			'board_notify_emails'			=> '',
+			'board_notify_emails_topics'	=> '',
+			'board_max_attach_perpost'		=> 3,
+			'board_max_attach_size'			=> 75,
+			'board_max_width'				=> 800,
+			'board_max_height'				=> 600,
+			'board_attach_types'			=> 'img',
+			'board_use_img_thumbs'			=> ($this->gd_loaded() == TRUE) ? 'y' : 'n',
+			'board_thumb_width'				=> 100,
+			'board_thumb_height'			=> 100,
+			'board_forum_permissions'		=> serialize($this->forum_set_base_permissions()),
+			'board_use_deft_permissions'	=> 'n',
+			'board_recent_poster_id'		=> '0',
+			'board_recent_poster'			=> '',
+			'board_enable_rss'				=> 'y',
+			'board_use_http_auth'			=> 'n',
+		);
 	}
 
 	// --------------------------------------------------------------------

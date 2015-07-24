@@ -10,6 +10,9 @@ $lang = array(
 'forum_module_description' => 'Discussion Forum Module',
 
 'forum_listing' => 'Forum Listing',
+'forum_manager' => 'Forum Manager',
+
+'new_category' => 'New Category',
 
 // Create / Edit Forum Board Form
 'create_forum_board' => 'Create Forum Board',
