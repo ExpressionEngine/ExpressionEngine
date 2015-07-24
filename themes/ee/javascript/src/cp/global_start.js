@@ -755,10 +755,6 @@ EE.cp.broadcastEvents = (function() {
 			return false;
 		});
 
-		logoutModal.on('click', '.m-close', function(event) {
-			event.preventDefault();
-		});
-
 	});
 
 	/**
