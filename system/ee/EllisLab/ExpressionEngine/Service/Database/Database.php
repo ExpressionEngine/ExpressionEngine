@@ -130,6 +130,19 @@ class Database
 	}
 
 	/**
+	 * Close the database connection
+	 */
+	public function closeConnection()
+	{
+		if (isset($this->connection))
+		{
+			$this->connection->close();
+		}
+
+		unset($this->connection);
+	}
+
+	/**
 	 * Create a default log object
 	 */
 	protected function newLog()

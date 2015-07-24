@@ -71,6 +71,16 @@ class File implements Config
 	}
 
 	/**
+	 * Get the default values
+	 *
+	 * @return array Default values for config
+	 */
+	public function getDefaults()
+	{
+		return $this->defaults;
+	}
+
+	/**
 	 * Get an item from the config, you can use
 	 * "item.subitem.subsubitem" to drill down in the config
 	 *

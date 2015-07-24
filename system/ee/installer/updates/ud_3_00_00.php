@@ -38,6 +38,7 @@ class Updater {
 
 		$steps = new ProgressIterator(
 			array(
+				'_move_database_information',
 				'_update_email_cache_table',
 				'_update_upload_no_access_table',
 				'_insert_comment_settings_into_db',
@@ -67,6 +68,20 @@ class Updater {
 		}
 
 		return TRUE;
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Migrate the database information from database.php to config.php
+	 *
+	 * @return void
+	 */
+	private function _move_database_information()
+	{
+		require SYSPATH.'/user/config/database.php';
+		ee()->config->_update_dbconfig($db[$active_group]);
+		unlink(SYSPATH.'/user/config/database.php');
 	}
 
 	// -------------------------------------------------------------------------
@@ -808,53 +823,79 @@ class Updater {
 		$site_id = ee()->config->item('site_id');
 		$member_directories = array();
 
-		if (ee()->config->item('enable_avatars') == 'y'
-			&& empty(ee('Model')->get('UploadDestination')->filter('name', 'Avatars')->first()))
+		if (bool_config_item('enable_avatars'))
 		{
-			$member_directories['Avatars'] = array(
-				'server_path' => ee()->config->item('avatar_path'),
-				'url' => ee()->config->item('avatar_url'),
-				'allowed_types' => 'img',
-				'max_width' => ee()->config->item('avatar_max_width'),
-				'max_height' => ee()->config->item('avatar_max_height'),
-				'max_size' => ee()->config->item('avatar_max_kb'),
-			);
+			$avatar_uploads = ee('Model')
+				->get('UploadDestination')->filter('name', 'Avatars')->first();
+
+			if (empty($avatar_uploads))
+			{
+				$member_directories['Avatars'] = array(
+					'server_path'   => ee()->config->item('avatar_path'),
+					'url'           => ee()->config->item('avatar_url'),
+					'allowed_types' => 'img',
+					'max_width'     => ee()->config->item('avatar_max_width'),
+					'max_height'    => ee()->config->item('avatar_max_height'),
+					'max_size'      => ee()->config->item('avatar_max_kb'),
+				);
+			}
 		}
 
-		if (ee()->config->item('enable_photos') == 'y'
-			&& empty(ee('Model')->get('UploadDestination')->filter('name', 'Member Photos')->first()))
+		if (bool_config_item('enable_photos'))
 		{
-			$member_directories['Member Photos'] = array(
-				'server_path' => ee()->config->item('photo_path'),
-				'url' => ee()->config->item('photo_url'),
-				'allowed_types' => 'img',
-				'max_width' => ee()->config->item('photo_max_width'),
-				'max_height' => ee()->config->item('photo_max_height'),
-				'max_size' => ee()->config->item('photo_max_kb'),
-			);
+			$member_photo_uploads = ee('Model')
+				->get('UploadDestination')->filter('name', 'Member Photos')->first();
+
+			if (empty($member_photo_uploads))
+			{
+				$member_directories['Member Photos'] = array(
+					'server_path'   => ee()->config->item('photo_path'),
+					'url'           => ee()->config->item('photo_url'),
+					'allowed_types' => 'img',
+					'max_width'     => ee()->config->item('photo_max_width'),
+					'max_height'    => ee()->config->item('photo_max_height'),
+					'max_size'      => ee()->config->item('photo_max_kb'),
+				);
+			}
 		}
 
-		if (ee()->config->item('allow_signatures') == 'y'
-			&& empty(ee('Model')->get('UploadDestination')->filter('name', 'Signature Attachments')->first()))
+		if (bool_config_item('allow_signatures'))
 		{
-			$member_directories['Signature Attachments'] = array(
-				'server_path' => ee()->config->item('sig_img_path'),
-				'url' => ee()->config->item('sig_img_url'),
-				'allowed_types' => 'img',
-				'max_width' => ee()->config->item('sig_img_max_width'),
-				'max_height' => ee()->config->item('sig_img_max_height'),
-				'max_size' => ee()->config->item('sig_img_max_kb'),
-			);
+			$signature_uploads = ee('Model')
+				->get('UploadDestination')->filter('name', 'Signature Attachments')->first();
+
+			if (empty($signature_uploads))
+			{
+				$member_directories['Signature Attachments'] = array(
+					'server_path'   => ee()->config->item('sig_img_path'),
+					'url'           => ee()->config->item('sig_img_url'),
+					'allowed_types' => 'img',
+					'max_width'     => ee()->config->item('sig_img_max_width'),
+					'max_height'    => ee()->config->item('sig_img_max_height'),
+					'max_size'      => ee()->config->item('sig_img_max_kb'),
+				);
+			}
 		}
 
-		if (empty(ee('Model')->get('UploadDestination')->filter('name', 'Signature Attachments')->first()))
+		if (bool_config_item('prv_msg_enabled')
+			&& bool_config_item('prv_msg_allow_attachments'))
 		{
-			$member_directories['PM Attachments'] = array(
-				'server_path' => ee()->config->item('prv_msg_upload_path'),
-				'url' => str_replace('avatars', 'pm_attachments', ee()->config->item('avatar_url')),
-				'allowed_types' => 'img',
-				'max_size' => ee()->config->item('prv_msg_attach_maxsize')
-			);
+			$pm_uploads = ee('Model')
+				->get('UploadDestination')->filter('name', 'PM Attachments')->first();
+
+			if (empty($pm_uploads))
+			{
+				$member_directories['PM Attachments'] = array(
+					'server_path'   => ee()->config->item('prv_msg_upload_path'),
+					'url'           => str_replace(
+						'avatars',
+						'pm_attachments',
+						ee()->config->item('avatar_url')
+					),
+					'allowed_types' => 'img',
+					'max_size'      => ee()->config->item('prv_msg_attach_maxsize')
+				);
+			}
 		}
 
 		foreach ($member_directories as $name => $dir)

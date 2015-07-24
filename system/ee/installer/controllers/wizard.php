@@ -380,11 +380,8 @@ class Wizard extends CI_Controller {
 			return TRUE;
 		}
 
-		// Before we assume this is an update, let's see if we can connect to
-		// the DB. If they are running EE prior to 2.0 the database settings are
-		// found in the main config file, if they are running 2.0 or newer, the
-		// settings are found in the db file
-		$db = ee('Database')->getConfig()->getGroupConfig();
+		// Check for database.php, otherwise get normal config
+		$db = $this->getDbConfig();
 
 		if ( ! isset($db))
 		{
@@ -803,6 +800,34 @@ class Wizard extends CI_Controller {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Get the DB Config, whether it's from database.php or config.php
+	 *
+	 * @return array Array of currently selected db group's db information. Must
+	 *               contain 'database', 'username', and 'hostname'.
+	 */
+	public function getDbConfig()
+	{
+		$dbConfig = ee('Database')->getConfig();
+
+		try
+		{
+			return $dbConfig->getGroupConfig();
+		}
+		catch (Exception $e)
+		{
+			// Suppress errors, if we can't find it, move along
+			if (@include_once(SYSPATH.'/user/config/database.php'))
+			{
+				return $db[$dbConfig->getActiveGroup()];
+			}
+
+			throw new \Exception(lang('database_no_data'));
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Show installation or upgrade succes page
 	 * @param  string $type               'update' or 'install'
 	 * @param  array  $template_variables Anything to parse in the template
@@ -1111,21 +1136,12 @@ class Wizard extends CI_Controller {
 			$this->refresh = FALSE;
 		}
 
-		// Prep the javascript
-		$progress_head = $this->progress->fetch_progress_header(array(
-			'process_url'        => $this->refresh_url,
-			'progress_container' => '#js_progress',
-			'state_url'          => $this->set_qstr('do_update&agree=yes&progress=yes'),
-			'end_url'            => $this->set_qstr('do_update&agree=yes&progress=no&ajax_progress=yes')
-		));
-
 		$this->title = sprintf(lang('updating_title'), $this->installed_version, $this->version);
 		$this->subtitle = lang('processing');
 		$this->set_output(
 			'update_msg',
 			array(
 				'remaining_updates' => $this->remaining_updates,
-				'extra_header'      => $progress_head,
 				'next_version'      => $this->progress->prefix.lang('version_update_text')
 			)
 		);
@@ -1199,18 +1215,34 @@ class Wizard extends CI_Controller {
 			return FALSE;
 		}
 
-		ee()->load->database($db, FALSE, TRUE);
+		$db_object = ee()->load->database($db, TRUE, TRUE);
+
 		// Force caching off
-		ee()->db->save_queries = TRUE;
+		$db_object->save_queries = TRUE;
 
 		// Ask for exceptions so we can show proper errors in the form
-		ee()->db->db_exception = TRUE;
+		$db_object->db_exception = TRUE;
 
-		try {
-			ee()->db->initialize();
-		} catch (Exception $e) {
+		try
+		{
+			$db_object->initialize();
+		}
+		catch (Exception $e)
+		{
+			// If they're using localhost, fall back to 127.0.0.1
+			if ($db['hostname'] == 'localhost')
+			{
+				ee('Database')->closeConnection();
+				$this->userdata['db_hostname'] = '127.0.0.1';
+				$db['hostname'] = '127.0.0.1';
+
+				return $this->db_connect($db);
+			}
+
 			return FALSE;
 		}
+
+		ee()->set('db', $db_object);
 
 		return TRUE;
 	}
