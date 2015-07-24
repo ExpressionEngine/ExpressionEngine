@@ -1522,6 +1522,7 @@ class EE_Template {
 				$this->var_pair		= $vars['var_pair'];
 
 				// Assign the class name and method name
+				$addon = ee('Addon')->get($this->tag_data[$i]['class']);
 				$class_name = ucfirst($this->tag_data[$i]['class']);
 				$meth_name = $this->tag_data[$i]['method'];
 
@@ -1547,9 +1548,10 @@ class EE_Template {
 				}
 				else
 				{
-					$this->log_item(" -> Class Called: ".$class_name);
+					$fqcn = $addon->getFrontendClass();
+					$this->log_item(" -> Class Called: ".$fqcn);
 
-					$EE = new $class_name();
+					$EE = new $fqcn();
 				}
 
 				// This gives proper PHP5 __construct() support in
