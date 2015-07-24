@@ -3180,10 +3180,7 @@ class EE_Template {
 			{
 				$class = ee()->security->sanitize_filename(strtolower($match[1][$i]));
 
-				if ( ! class_exists($class))
-				{
-					require PATH_ADDONS.$class.'/mod.'.$class.'.php';
-				}
+				$fqcn = ee('Addon')->get($class)->getModuleClass();
 
 				$this->tagdata = $match[3][$i];
 
@@ -3206,7 +3203,7 @@ class EE_Template {
 
 				if ($class == 'comment')
 				{
-					$comment = new Comment;
+					$comment = new $fqcn();
 					$str = str_replace($match[0][$i], $comment->form(TRUE, ee()->functions->cached_captcha), $str);
 				}
 
