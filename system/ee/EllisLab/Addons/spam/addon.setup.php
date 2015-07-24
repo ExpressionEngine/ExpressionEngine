@@ -9,4 +9,10 @@ return array(
 	'version'     => '1.0.0',
 	'namespace'   => 'EllisLab\Addons\Spam',
 	'settings_exist' => TRUE,
+	'services' => array(
+		'Spam' => function($ee)
+		{
+			return new Spam();
+		},
+	)
 );
