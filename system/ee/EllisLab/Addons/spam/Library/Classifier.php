@@ -23,10 +23,10 @@
  * @link		http://ellislab.com
  */
 
-require_once PATH_MOD . 'spam/libraries/Vectorize.php';
-require_once PATH_MOD . 'spam/libraries/Tokenizer.php';
-require_once PATH_MOD . 'spam/libraries/Expectation.php';
-require_once PATH_MOD . 'spam/libraries/Distribution.php';
+require_once PATH_MOD . 'spam/Library/Vectorize.php';
+require_once PATH_MOD . 'spam/Library/Tokenizer.php';
+require_once PATH_MOD . 'spam/Library/Expectation.php';
+require_once PATH_MOD . 'spam/Library/Distribution.php';
 
 class Classifier {
 
@@ -111,4 +111,4 @@ class Classifier {
 }
 
 /* End of file Classifier.php */
-/* Location: ./system/expressionengine/modules/spam/libraries/Classifier.php */
+/* Location: ./system/expressionengine/modules/spam/Library/Classifier.php */

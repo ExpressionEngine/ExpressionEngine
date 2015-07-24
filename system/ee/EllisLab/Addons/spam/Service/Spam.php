@@ -1,4 +1,6 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+namespace EllisLab\Addons\Spam\Service;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -24,19 +26,19 @@
  * @link		http://ellislab.com
  */
 
-require_once PATH_MOD . 'spam/libraries/Spam_training.php';
-require_once PATH_MOD . 'spam/libraries/Source.php';
+require_once PATH_MOD . 'spam/Service/Training.php';
+require_once PATH_MOD . 'spam/Library/Source.php';
 
 // Include our vectorizer rules
-require_once PATH_MOD . 'spam/libraries/vectorizers/ASCII_Printable.php';
-require_once PATH_MOD . 'spam/libraries/vectorizers/Entropy.php';
-require_once PATH_MOD . 'spam/libraries/vectorizers/Links.php';
-require_once PATH_MOD . 'spam/libraries/vectorizers/Punctuation.php';
-require_once PATH_MOD . 'spam/libraries/vectorizers/Spaces.php';
-require_once PATH_MOD . 'spam/libraries/vectorizers/Tfidf.php';
+require_once PATH_MOD . 'spam/Library/Vectorizers/ASCII_Printable.php';
+require_once PATH_MOD . 'spam/Library/Vectorizers/Entropy.php';
+require_once PATH_MOD . 'spam/Library/Vectorizers/Links.php';
+require_once PATH_MOD . 'spam/Library/Vectorizers/Punctuation.php';
+require_once PATH_MOD . 'spam/Library/Vectorizers/Spaces.php';
+require_once PATH_MOD . 'spam/Library/Vectorizers/Tfidf.php';
 
 
-class Spam_core {
+class Spam {
 
 	/**
 	 * Constructor

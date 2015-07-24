@@ -23,7 +23,7 @@
  * @link		http://ellislab.com
  */
 
-require_once PATH_MOD . 'spam/libraries/Document.php';
+require_once PATH_MOD . 'spam/Library/Document.php';
 
 class Collection {
 
@@ -142,4 +142,4 @@ interface Vectorizer {
 }
 
 /* End of file Vectorize.php */
-/* Location: ./system/expressionengine/modules/spam/libraries/Vectorize.php */
+/* Location: ./system/expressionengine/modules/spam/Library/Vectorize.php */

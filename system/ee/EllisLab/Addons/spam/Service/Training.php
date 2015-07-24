@@ -1,4 +1,6 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php
+
+namespace EllisLab\Addons\Spam\Service;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -24,9 +26,9 @@
  * @link		http://ellislab.com
  */
 
-require_once PATH_MOD . 'spam/libraries/Classifier.php';
+require_once PATH_MOD . 'spam/Library/Classifier.php';
 
-class Spam_training {
+class Training {
 
 	public $name = 'Spam Filter';
 	public $version = '1.0.0';

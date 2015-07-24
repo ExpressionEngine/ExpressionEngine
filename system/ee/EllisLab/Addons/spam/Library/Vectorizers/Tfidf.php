@@ -23,7 +23,7 @@
  * @link		http://ellislab.com
  */
 
-require_once PATH_MOD . 'spam/libraries/Document.php';
+require_once PATH_MOD . 'spam/Library/Document.php';
 
 class Tfidf implements Vectorizer {
 
@@ -213,4 +213,4 @@ class Tfidf implements Vectorizer {
 }
 
 /* End of file Tfidf.php */
-/* Location: ./system/expressionengine/modules/spam/libraries/Tfidf.php */
+/* Location: ./system/expressionengine/modules/spam/Library/Tfidf.php */
