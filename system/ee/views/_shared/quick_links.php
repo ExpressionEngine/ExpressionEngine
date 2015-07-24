@@ -10,7 +10,7 @@
 			if ( ! $cp_quicklink['external']):?>
 				<li><a href="<?=$cp_quicklink['link']?>" title="<?=$cp_quicklink['title']?>"><?=$cp_quicklink['title']?></a></li>
 			<?php else:?>
-				<li><a rel="external" href="<?=$this->cp->masked_url($cp_quicklink['link'])?>" title="<?=$cp_quicklink['title']?>"><?=$cp_quicklink['title']?></a>&nbsp;<img src="<?=$cp_theme_url?>images/external_link.png"/></li>
+				<li><a rel="external" href="<?=ee()->cp->masked_url($cp_quicklink['link'])?>" title="<?=$cp_quicklink['title']?>"><?=$cp_quicklink['title']?></a>&nbsp;<img src="<?=$cp_theme_url?>images/external_link.png"/></li>
 			<?php endif;?>
 		<?php endforeach;?>
 		<li><a href="<?=BASE.AMP.'C=myaccount'.AMP.'M=quicklinks'.AMP.'id='.$this->session->userdata['member_id']?>"><?=lang('quicklinks_manager')?></a></li>
@@ -19,4 +19,4 @@
 
 <?php
 /* End of file quick_links.php */
-/* Location: ./themes/cp_themes/default/_shared/quick_links.php */
+/* Location: ./themes/cp/default/_shared/quick_links.php */

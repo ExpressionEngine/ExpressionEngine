@@ -1,4 +1,4 @@
-<?php extend_template('default-nav'); ?>
+<?php $this->extend('_templates/default-nav'); ?>
 
 <h1><?=lang('sql_query_form_abbr')?> <span class="req-title"><?=lang('required_fields')?></span></h1>
 <?=form_open(ee('CP/URL', 'utilities/query'), 'class="settings ajax-validate"')?>

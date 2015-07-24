@@ -2277,22 +2277,22 @@ class Member {
 		// -------
 
 		// Set some paths
-		$theme_images = URL_THEMES.'profile_themes/'.ee()->config->item('member_theme').'/images/';
+		$theme_images = URL_THEMES.'member/'.ee()->config->item('member_theme').'/images/';
 
 		if (ee()->session->userdata('profile_theme') != '')
 		{
-			$img_path = ee()->config->slash_item('theme_folder_url').'profile_themes/'.ee()->session->userdata('profile_theme').'/images/';
+			$img_path = ee()->config->slash_item('theme_folder_url').'member/'.ee()->session->userdata('profile_theme').'/images/';
 		}
 		else
 		{
-			$img_path = URL_THEMES.'profile_themes/'.ee()->config->item('member_theme').'/images/';
+			$img_path = URL_THEMES.'member/'.ee()->config->item('member_theme').'/images/';
 		}
 
 		$simple = ($this->show_headings == FALSE) ? '/simple' : '';
 
 		if ($this->css_file_path == '')
 		{
-			$this->css_file_path = URL_THEMES.'profile_themes/'.ee()->config->item('member_theme').'profile.css';
+			$this->css_file_path = URL_THEMES.'member/'.ee()->config->item('member_theme').'profile.css';
 		}
 
 		// Parse {switch="foo|bar"} variables

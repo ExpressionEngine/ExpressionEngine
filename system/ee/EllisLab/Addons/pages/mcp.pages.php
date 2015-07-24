@@ -69,6 +69,7 @@ class Pages_mcp {
 		}
 
 		$base_url = ee('CP/URL', 'addons/settings/pages');
+		$site_id = ee()->config->item('site_id');
 
 		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => FALSE, 'limit' => 20));
 		$table->setColumns(
@@ -88,17 +89,16 @@ class Pages_mcp {
 		$data = array();
 
 		$pages = ee()->config->item('site_pages');
-		if ($pages !== FALSE && count($pages[ee()->config->item('site_id')]['uris']) > 0)
+		if ($pages !== FALSE && count($pages[$site_id]['uris']) > 0)
 		{
-			$entry_ids = array_keys($pages[ee()->config->item('site_id')]['uris']);
-			$entries = ee('Model')->get('ChannelEntry', $entry_ids)->fields('entry_id', 'title')->all();
+			$entry_ids = array_keys($pages[$site_id]['uris']);
+			$entries = ee('Model')->get('ChannelEntry', $entry_ids)
+				->fields('entry_id', 'title', 'channel_id')
+				->all();
 
-			$titles = array();
-			$entries->each(function($entry) use (&$titles) {
-				$titles[$entry->entry_id] = $entry->title;
-			});
+			$titles = $entries->getDictionary('entry_id', 'title');
 
-			foreach($pages[ee()->config->item('site_id')]['uris'] as $entry_id => $url)
+			foreach($pages[$site_id]['uris'] as $entry_id => $url)
 			{
 				$checkbox = array(
 					'name' => 'selection[]',

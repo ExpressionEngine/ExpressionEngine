@@ -706,59 +706,55 @@ EE.cp.broadcastEvents = (function() {
 	var TICK_TIME          = 1 * 1000,			// Check state every second
 		FOCUSED_IDLE_LIMIT = 30 * 60 * 1000,	// 30 minutes: time before modal if window focused
 		BLURRED_IDLE_LIMIT = 45 * 60 * 1000,    // 45 minutes: time before modal if no focus
-		REFRESH_TIME_LIMIT = 50 * 60 * 1000;	// 50 minutes: refresh if active or remember me
+		REFRESH_TIME_LIMIT = 50 * 60 * 1000,	// 50 minutes: refresh if active or remember me
+		logoutModal,
+		overlay;
 
-	// Make sure we have our modal available when we need it
-	var logoutModal = $('#idle-modal').dialog({
-		autoOpen: false,
-		resizable: false,
-		title: EE.lang.session_idle,
-		modal: true,
-		closeOnEscape: false,
-		position: "center",
-		height: 'auto',
-		width: 354
-	});
+	// Setup Base EE Control Panel
+	$(document).ready(function () {
 
-	// This modal is required, remove the close button in the titlebar.
-	logoutModal.closest('.ui-dialog').find('.ui-dialog-titlebar-close').remove();
+		// Make sure we have our modal available when we need it
+		logoutModal = $('#idle-modal'),
+		overlay		= $('.overlay');
 
-	// If the modal hasn't been interacted with in over 10 minutes we'll send a request for
-	// the current csrf token. It can flip on us during long waits due to the session timeout.
-	// If the session times out this will get us a cookie based csrf token, which is what you
-	// would normally log in with, so it's fine.
-	logoutModal.find('form').on('interact', _.throttle(EE.cp.refreshSessionData, 10 * 60 * 1000));
+		// If the modal hasn't been interacted with in over 10 minutes we'll send a request for
+		// the current csrf token. It can flip on us during long waits due to the session timeout.
+		// If the session times out this will get us a cookie based csrf token, which is what you
+		// would normally log in with, so it's fine.
+		logoutModal.find('form').on('interact', _.throttle(EE.cp.refreshSessionData, 10 * 60 * 1000));
 
-	// Bind on the modal submission
-	logoutModal.find('form').on('submit', function() {
+		// Bind on the modal submission
+		logoutModal.find('form').on('submit', function() {
 
-		$.ajax({
-			type: 'POST',
-			url: this.action,
-			data: $(this).serialize(),
-			dataType: 'json',
+			$.ajax({
+				type: 'POST',
+				url: this.action,
+				data: $(this).serialize(),
+				dataType: 'json',
 
-			success: function(result) {
-				if (result.messageType != 'success') {
-					alert(result.message);
-					return;
+				success: function(result) {
+					if (result.messageType != 'success') {
+						alert(result.message);
+						return;
+					}
+
+					// Hide the dialog
+					Events.login();
+
+					// Grab the new token
+					EE.cp.refreshSessionData(null, result.base);
+
+					$(window).trigger('broadcast.idleState', 'login');
+				},
+
+				error: function(data) {
+					alert(data.message);
 				}
+			});
 
-				// Hide the dialog
-				Events.login();
-
-				// Grab the new token
-				EE.cp.refreshSessionData(null, result.base);
-
-				$(window).trigger('broadcast.idleState', 'login');
-			},
-
-			error: function(data) {
-				alert(data.message);
-			}
+			return false;
 		});
 
-		return false;
 	});
 
 	/**
@@ -868,8 +864,16 @@ EE.cp.broadcastEvents = (function() {
 		// received another window's modal event, open it
 		modal: function() {
 			if ( ! State.modalActive) {
-				logoutModal.dialog('open');
-				logoutModal.on('dialogbeforeclose', $.proxy(this, 'logout')); // prevent tampering. If they close it, they go.
+
+				logoutModal.trigger('modal:open');
+
+				logoutModal.on('modal:close', function(e) {
+					if (State.modalActive)
+					{
+						e.preventDefault();
+						Events.logout(); // prevent tampering. If they close it, they go.
+					}
+				});
 
 				State.modalActive = true;
 			}
@@ -879,13 +883,13 @@ EE.cp.broadcastEvents = (function() {
 
 		// received another window's login event, check and hide modal
 		login: function() {
-			logoutModal.off('dialogbeforeclose');
-			logoutModal.dialog('close');
+			State.modalActive = false;
+
+			logoutModal.trigger('modal:close');
 
 			logoutModal.find(':password').val('');
 
 			State.setActiveTime();
-			State.modalActive = false;
 		},
 
 		// received another window's logout event, leave page

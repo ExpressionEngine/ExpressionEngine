@@ -37,74 +37,11 @@ class Status extends AbstractChannelsController {
 	 */
 	public function index()
 	{
-		$table = ee('CP/Table');
-		$table->setColumns(
-			array(
-				'col_id',
-				'group_name',
-				'manage' => array(
-					'type'	=> CP\Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=> CP\Table::COL_CHECKBOX
-				)
-			)
-		);
-
 		$status_groups = ee('Model')->get('StatusGroup')
 			->filter('site_id', ee()->config->item('site_id'));
 		$total_rows = $status_groups->all()->count();
 
-		$sort_map = array(
-			'col_id' => 'group_id',
-			'group_name' => 'group_name'
-		);
-
-		$status_groups = $status_groups->order($sort_map[$table->sort_col], $table->sort_dir)
-			->limit(20)
-			->offset(($table->config['page'] - 1) * 20)
-			->all();
-
-		$data = array();
-		foreach ($status_groups as $group)
-		{
-			$columns = array(
-				$group->getId(),
-				$group->group_name,
-				array('toolbar_items' => array(
-					'view' => array(
-						'href' => ee('CP/URL', 'channels/status/status-list/'.$group->getId()),
-						'title' => lang('view')
-					),
-					'edit' => array(
-						'href' => ee('CP/URL', 'channels/status/edit/'.$group->getId()),
-						'title' => lang('edit')
-					)
-				)),
-				array(
-					'name' => 'status_groups[]',
-					'value' => $group->getId(),
-					'data'	=> array(
-						'confirm' => lang('status_group') . ': <b>' . htmlentities($group->group_name, ENT_QUOTES) . '</b>'
-					),
-					// Cannot delete default group
-					'disabled' => ($group->group_name == 'Default') ? 'disabled' : NULL
-				)
-			);
-
-			$attrs = array();
-			if (ee()->session->flashdata('highlight_id') == $group->getId())
-			{
-				$attrs = array('class' => 'selected');
-			}
-
-			$data[] = array(
-				'attrs' => $attrs,
-				'columns' => $columns
-			);
-		}
-
-		$table->setData($data);
+		$table = $this->buildTableFromStatusGroupsQuery($status_groups);
 
 		$vars['table'] = $table->viewData(ee('CP/URL', 'channels/status'));
 

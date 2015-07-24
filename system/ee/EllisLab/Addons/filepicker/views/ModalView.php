@@ -31,7 +31,7 @@
 		<?php endforeach ?>
 		</table>
 	<?php else: ?>
-		<?php $this->ee_view('_shared/table', $table); ?>
+		<?php $this->view('ee:_shared/table', $table); ?>
 	<?php endif; ?>
 
 	<?php if ( ! empty($pagination)) echo $pagination; ?>

@@ -3,6 +3,7 @@
 use EllisLab\ExpressionEngine\Library;
 use EllisLab\ExpressionEngine\Library\Event;
 use EllisLab\ExpressionEngine\Library\Filesystem;
+use EllisLab\ExpressionEngine\Service\Addon;
 use EllisLab\ExpressionEngine\Service\Alert;
 use EllisLab\ExpressionEngine\Service\Config;
 use EllisLab\ExpressionEngine\Service\Database;
@@ -21,6 +22,8 @@ return array(
 	'description' => 'The worlds most flexible content management system.',
 
 	'namespace' => 'EllisLab\ExpressionEngine',
+
+	'views' => '../../views',
 
 	'services' => array(
 
@@ -71,9 +74,9 @@ return array(
 			return new Filesystem\Filesystem();
 		},
 
-		'View' => function($ee, $basepath = '')
+		'View' => function($ee)
 		{
-			return new View\ViewFactory($basepath, ee()->load, ee()->view);
+			return new View\ViewFactory($ee);
 		},
 
 		'Filter' => function($ee)
@@ -99,6 +102,11 @@ return array(
 	),
 
 	'services.singletons' => array(
+
+		'Addon' => function($ee)
+		{
+			return new Addon\Factory($ee->make('App'));
+		},
 
 		'Alert' => function($ee)
 		{
@@ -163,6 +171,7 @@ return array(
 		# EllisLab\ExpressionEngine\Model..
 
 			// ..\Addon
+			'Action' => 'Model\Addon\Action',
 			'Extension' => 'Model\Addon\Extension',
 			'Module' => 'Model\Addon\Module',
 			'Plugin' => 'Model\Addon\Plugin',

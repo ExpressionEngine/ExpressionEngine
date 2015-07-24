@@ -87,8 +87,8 @@ class Forum_mcp {
 			}
 		}
 
-		$this->prefs['board_theme_path'] = PATH_ADDONS_THEMES.'forum_themes/';
-		$this->prefs['board_theme_url']  = URL_THEMES.'forum_themes/';
+		$this->prefs['board_theme_path'] = PATH_THIRD_THEMES.'forum/';
+		$this->prefs['board_theme_url']  = URL_THEMES.'forum/';
 
 		ee()->load->model('addons_model');
 		$this->fmt_options = ee()->addons_model->get_plugin_formatting();
@@ -2872,8 +2872,8 @@ class Forum_mcp {
 
 		$path = ee()->input->get_post('folder') ? ee()->input->get_post('folder') : '';
 
-		list($crumb, $path) = $this->_create_template_breadcrumb(PATH_ADDONS_THEMES.'/forum_themes', $path);
-		$full_path = PATH_ADDONS_THEMES.'/forum_themes/'.$path;
+		list($crumb, $path) = $this->_create_template_breadcrumb(PATH_THIRD_THEMES.'/forum_themes', $path);
+		$full_path = PATH_THIRD_THEMES.'/forum/'.$path;
 
 		if (count($crumb))
 		{
@@ -2932,8 +2932,8 @@ class Forum_mcp {
 		$path = ee()->input->get_post('folder') ? ee()->input->get_post('folder') : '';
 		$vars['theme_list'] = '';
 
-		list($crumb, $path) = $this->_create_template_breadcrumb(PATH_ADDONS_THEMES.'/forum_themes', $path);
-		$full_path = PATH_ADDONS_THEMES.'/forum_themes/'.$path;
+		list($crumb, $path) = $this->_create_template_breadcrumb(PATH_THIRD_THEMES.'/forum_themes', $path);
+		$full_path = PATH_THIRD_THEMES.'/forum/'.$path;
 
 		if (count($crumb))
 		{
@@ -2999,8 +2999,8 @@ class Forum_mcp {
 			show_error(ee()->lang->line('invalid_template'));
 		}
 
-		list($crumb, $path) = $this->_create_template_breadcrumb(PATH_ADDONS_THEMES.'/forum_themes', $path);
-		$full_path = PATH_ADDONS_THEMES.'/forum_themes/'.$path;
+		list($crumb, $path) = $this->_create_template_breadcrumb(PATH_THIRD_THEMES.'/forum_themes', $path);
+		$full_path = PATH_THIRD_THEMES.'/forum/'.$path;
 
 		if ( ! file_exists($full_path))
 		{

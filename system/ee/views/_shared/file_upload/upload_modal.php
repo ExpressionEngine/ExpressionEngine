@@ -24,4 +24,4 @@ function _EE_uploader_attached()
 
 <?php
 /* End of file upload_modal.php */
-/* Location: ./themes/cp_themes/default/_shared/file_upload/upload_modal.php */
+/* Location: ./themes/cp/default/_shared/file_upload/upload_modal.php */

@@ -489,7 +489,7 @@ class Relationship_ft extends EE_Fieldtype {
 		// Channel Form
 		else
 		{
-			$css_link = '<link rel="stylesheet" href="'.URL_THEMES.'cp_themes/default/css/relationship.css" type="text/css" media="screen" />'.PHP_EOL;
+			$css_link = '<link rel="stylesheet" href="'.URL_THEMES.'cp/default/css/relationship.css" type="text/css" media="screen" />'.PHP_EOL;
 			ee()->cp->add_js_script(array(
 				'plugin' => 'ee_interact.event',
 				'file' => 'cp/relationships',
@@ -538,7 +538,7 @@ class Relationship_ft extends EE_Fieldtype {
 
 		$multiple = (bool) $this->settings['allow_multiple'];
 
-		return ee('View')->make('publish')->render(compact('field_name', 'entries', 'selected', 'related', 'multiple', 'channels'));
+		return ee('View')->make('relationship:publish')->render(compact('field_name', 'entries', 'selected', 'related', 'multiple', 'channels'));
 	}
 
 	// --------------------------------------------------------------------

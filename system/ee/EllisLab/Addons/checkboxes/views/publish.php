@@ -1,5 +1,5 @@
 <div class="scroll-wrap pr">
 	<ul class="nested-list">
-		<?php $this->view('item'); ?>
+		<?php $this->embed('item'); ?>
 	</ul>
 </div>

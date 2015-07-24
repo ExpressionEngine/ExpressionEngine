@@ -2,8 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Service\View;
 
-use EE_Loader;
-use View as LegacyView;
+use EllisLab\ExpressionEngine\Core\Provider;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -35,14 +34,29 @@ class View {
 	protected $path;
 
 	/**
-	 * @var obj An instance of EE_Loader
+	 * @var EllisLab\ExpressionEngine\Core\Provider
 	 */
-	protected $loader;
+	protected $provider;
 
 	/**
-	 * @var obj An instance of View
+	 * @var Parent view object, if the view is being extended
 	 */
-	protected $view;
+	protected $parent;
+
+	/**
+	 * @var Array of blocks in the current parsing pass
+	 */
+	protected $blocks = array();
+
+	/**
+	 * @var Array of variables in the current parsing pass
+	 */
+	protected $processing = array();
+
+	/**
+	 * @var Array of disabled view features
+	 */
+	protected $disabled = array();
 
 	/**
 	 * @var array An indexed array for storing the names of blocks consumed via
@@ -51,33 +65,66 @@ class View {
 	private $blockStack;
 
 	/**
-	 * Constructor: sets depdencies
+	 * Constructor
 	 *
-	 * @param str $path The path to the view template file
-	 * @param obj $loader An instance of EE_Loader
-	 * @param obj $view An instnace of View
-	 * @return void
+	 * @param String   $path    Path to the view file, ex: '_shared/form'
+	 * @param Provider $provider Provider for the current context
 	 */
-	public function __construct($path, EE_Loader $loader, LegacyView $view)
+	public function __construct($path, Provider $provider)
 	{
 		$this->path = $path;
-		$this->loader = $loader;
-		$this->view = $view;
+		$this->provider = $provider;
 	}
 
 	/**
-	 * Loads a template file from disk using the supplied variables and returns
-	 * the rendered HTML
+	 * Renders the view
 	 *
-	 * @param str   $path The absolute path to the view template file to load
-	 * @param array $vars An associative array of variables to use inside the
+	 * @param Array $vars An associative array of variables to use inside the
 	 *   template. ex: "title" => "Hello World!"
-	 * @param bool  $rewrite Do we need to rewrite the template file to replace
-	 *   PHP's short tags "<?=" with "<?php echo "?
-	 * @return str The rendered HTML
+	 * @return String The rendered HTML
 	 */
-	public function parse($path, $vars, $rewrite = FALSE)
+	public function render(array $vars = array())
 	{
+		$path = $this->getPath();
+
+		// TODO this conditional is part of the modals mess and needs to be
+		// removed
+		if (isset($vars['blocks']['modals']) && ! isset($this->blocks['modals']))
+		{
+			$this->blocks['modals'] = $vars['blocks']['modals'];
+			unset($vars['blocks']);
+		}
+
+		$vars['blocks'] = $this->blocks;
+
+		$this->processing = $vars;
+
+		// parse the current view
+		$output = $this->parse($path, $vars);
+
+		if ($this->parent)
+		{
+			$vars['child_view'] = $output;
+
+			$output = $this->parent->render($vars);
+		}
+
+		$this->processing = array();
+
+		return $output;
+	}
+
+	/**
+	 * Load a view file, replace variables, and return the result
+	 *
+	 * @param  String $path Full path to a view file
+	 * @param  Array  $vars Variables to replace in the view file
+	 * @return String Parsed view file
+	 */
+	protected function parse($path, $vars)
+	{
+		$rewrite = (version_compare(PHP_VERSION, '5.4.0') < 0 && @ini_get('short_open_tag') == FALSE);
+
 		extract($vars);
 
 		ob_start();
@@ -93,55 +140,88 @@ class View {
 
 		$buffer = ob_get_contents();
 		ob_end_clean();
+
 		return $buffer;
 	}
 
 	/**
-	 * Renders a view template file
-	 * @see Loader::view()
+	 * Loads, renders, and (optionally) returns a sub-view
 	 *
-	 * @param array $vars An associative array of variables to use inside the
-	 *   template. ex: "title" => "Hello World!"
-	 * @return str The rendered HTML
+	 * @param String $view The name of the sub-view
+	 * @param Array  $vars Additional variables to pass to the sub-view
+	 * @param bool  $return Whether to return a string or output the results
+	 * @return String The parsed sub-view
 	 */
-	public function render(array $vars)
+	public function embed($view, $vars = array(), $disable = array())
 	{
-		return $this->loader->view($this->path, $vars, TRUE);
+		$vars = array_merge($this->processing, $vars);
+		$view = $this->make($view)->disable($disable);
+
+		ob_start();
+		echo $view->render($vars);
+		ob_end_flush();
 	}
 
 	/**
-	 * Loads, renders, and returns a view relative to EE's view path
-	 * @see EE_Loader::ee_view()
+	 * Extend the current view with a parent view
 	 *
-	 * @param $view The relative path/name of the view ex: '_shared/form'
-	 * @param array $vars An associative array of variables to use inside the
-	 *   template. ex: "title" => "Hello World!"
-	 * @param bool  $return Whether to return or output the results
-	 * @return str|null Either HTML or nothing depending on $return
+	 * @param  String $which   Parent view
+	 * @param  array  $disable Items to disable in the parent view
+	 * @return void
 	 */
-	public function ee_view($view, $vars = array(), $return = FALSE)
+	public function extend($view, $vars = array(), $disable = array())
 	{
-		return $this->loader->ee_view($view, $vars, $return);
+		$vars = array_merge($this->processing, $vars);
+		$this->parent = $this->make($view)->disable($disable);
+
+		return $this->parent;
 	}
 
 	/**
-	 * Loads, renders, and returns a view. The view in question may be relative
-	 * to an add-on rather than to EE itself.
-	 * @see Loader::view()
+	 * Disable a view feature
 	 *
-	 * @param $view The relative path/name of the view ex: '_shared/form'
-	 * @param array $vars An associative array of variables to use inside the
-	 *   template. ex: "title" => "Hello World!"
-	 * @param bool  $return Whether to return or output the results
-	 * @return str|null Either HTML or nothing depending on $return
+	 * @param  String|Array $which Feature or features to disable
+	 * @return $this
 	 */
-	public function view($view, $vars = array(), $return = FALSE)
+	public function disable($which)
 	{
-		return $this->loader->view($view, $vars, $return);
+		if ( ! is_array($which))
+		{
+			$which = array($which);
+		}
+
+		while ($el = array_pop($which))
+		{
+			$this->disabled[] = $el;
+		}
+
+		return $this;
 	}
 
 	/**
-	 * Allows our Views to define blocks to be used in a template/layout context.
+	 * Check if a view element or feature is disabled
+	 *
+	 * @param  String $which Name of a view element/feature
+	 * @return bool Is disabled?
+	 */
+	public function disabled($which)
+	{
+		return in_array($which, $this->disabled);
+	}
+
+	/**
+	 * Check if a view element or feature is enabled
+	 *
+	 * @param  String $which Name of a view element/feature
+	 * @return bool Is enabled?
+	 */
+	public function enabled($which)
+	{
+		return ! $this->disabled($which);
+	}
+
+	/**
+	 * Allows our Views to define blocks to be used in a template/layout provider.
 	 * This will start a new block overwriting any previously defined block of
 	 * the same name.
 	 *
@@ -154,7 +234,7 @@ class View {
 	}
 
 	/**
-	 * Allows our Views to define blocks to be used in a template/layout context
+	 * Allows our Views to define blocks to be used in a template/layout provider
 	 * This will start a new block or append to a previously defined block of
 	 * the same name.
 	 *
@@ -176,20 +256,78 @@ class View {
 
 		if ($name === NULL)
 		{
-			return; // @TODO Throw an error?
+			throw new \Exception('View: Attempted to end block without opening');
 		}
 
 		$buffer = '';
 
-		if ($append && isset($this->view->blocks[$name]))
+		if ($append && isset($this->blocks[$name]))
 		{
-			$buffer .= $this->view->blocks[$name];
+			$buffer .= $this->blocks[$name];
 		}
 
 		$buffer .= ob_get_contents();
 		ob_end_clean();
 
-		$this->view->blocks[$name] = $buffer;
+		// TODO Hack - revisit this
+		if ($name == 'modals')
+		{
+			ee()->view->blocks['modals'] = $buffer;
+		}
+
+		if (isset($this->parent))
+		{
+			$this->parent->blocks[$name] = $buffer;
+		}
+	}
+
+	/**
+	 * Create a new view object. Change to the requested provider scope
+	 * if required to speed up new sub-views.
+	 *
+	 * It's tempting to pass the factory to this class or to grab a factory
+	 * instance from the provider to avoid the duplication with the factory's
+	 * `make()` method, but you still end up having to compare prefixes to ensure
+	 * subviews are correctly scoped. Which is to say: it's not worth the law
+	 * of demeter violation to get this DRY as it will end up being the same
+	 * length again.
+	 *
+	 * If anything the solution will likely come from a change to the providers.
+	 *
+	 * @param  String $view Subview name, potentially with prefix
+	 * @return View         The subview instance
+	 */
+	protected function make($view)
+	{
+		$provider = $this->provider;
+
+		if (strpos($view, ':'))
+		{
+			list($prefix, $view) = explode(':', $view, 2);
+
+			if ($provider->getPrefix() != $prefix)
+			{
+				$provider = $provider->make('App')->get($prefix);
+			}
+		}
+
+		return new static($view, $provider);
+	}
+
+	/**
+	 * Get the full server path to the view file backing this
+	 * view object.
+	 *
+	 * @return String The full server path
+	 */
+	protected function getPath()
+	{
+		$path = $this->provider->getPath().'/';
+		$view_path = $this->provider->get('views');
+
+		$path .= $view_path ?: 'views';
+
+		return $path.'/'.$this->path.'.php';
 	}
 }
 // EOF

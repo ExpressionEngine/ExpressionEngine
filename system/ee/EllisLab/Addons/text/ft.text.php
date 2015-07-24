@@ -134,7 +134,7 @@ class Text_ft extends EE_Fieldtype {
 				'format_options'  => $format_options,
 			);
 
-			return ee('View')->make('publish')->render($vars);
+			return ee('View')->make('text:publish')->render($vars);
 		}
 
 		return form_input($field);

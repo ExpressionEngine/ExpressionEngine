@@ -161,9 +161,10 @@ class Rte_lib {
 			)
 		);
 
-		ee()->view->ajax_validate = TRUE;
-		ee()->view->save_btn_text_working = 'btn_saving';
-		return ee()->cp->render('box_wrapper', $vars, TRUE);
+		$vars['ajax_validate'] = TRUE;
+		$vars['save_btn_text_working'] = 'btn_saving';
+
+		return ee('View')->make('rte:box_wrapper')->render($vars);
 	}
 
 	// --------------------------------------------------------------------

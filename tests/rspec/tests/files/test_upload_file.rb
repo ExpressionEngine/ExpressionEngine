@@ -203,8 +203,8 @@ feature 'File Manger / Upload File' do
 		@return.selected_file.text.should include "programming.gif"
 
 		# Cleaning up after myself
-		File.delete(File.expand_path('../../themes/ee/site_themes/agile_records/images/uploads/programming.gif'))
-		File.delete(File.expand_path('../../themes/ee/site_themes/agile_records/images/uploads/_thumbs/programming.gif'))
+		File.delete(File.expand_path('../../themes/ee/site/agile_records/images/uploads/programming.gif'))
+		File.delete(File.expand_path('../../themes/ee/site/agile_records/images/uploads/_thumbs/programming.gif'))
 	end
 
 	it 'cannot upload a non-image when the directory is restricted to images' do

@@ -34,7 +34,10 @@ $(document).ready(function() {
 				$(this).prop('checked', $(this).attr('checked') == 'checked');
 			});
 
-			// Add 'last' class to the last fieldset of each group
+			// Add 'last' class to the last fieldset of each group, and
+			// the last fieldset to come before a new section heading
+			// within a group
+			$('h2[data-group="'+data+'"]').prev('*[data-group="'+data+'"]').addClass('last');
 			elements.last().addClass('last');
 		});
 	});

@@ -129,7 +129,7 @@ class Email extends Logs {
 			'form_url' => $this->base_url->compile(),
 		);
 
-		ee()->cp->render('logs/email/list.php', $vars);
+		ee()->cp->render('logs/email/list', $vars);
 	}
 
 	// --------------------------------------------------------------------

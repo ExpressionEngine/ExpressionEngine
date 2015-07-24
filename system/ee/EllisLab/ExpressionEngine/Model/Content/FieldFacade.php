@@ -73,6 +73,11 @@ class FieldFacade {
 			$this->setItem('populateCallback', NULL);
 			call_user_func($callback, $this);
 		}
+		elseif ($data = $this->getItem('field_data'))
+		{
+			$this->setItem('field_data', NULL);
+			$this->setData($data);
+		}
 	}
 
 	public function setData($data)

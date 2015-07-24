@@ -1,4 +1,4 @@
-<?php extend_template('default-nav', 'outer_box'); ?>
+<?php $this->extend('_templates/default-nav', array(), 'outer_box'); ?>
 
 <div class="box snap mb">
 	<div class="tbl-ctrls">
@@ -15,15 +15,15 @@
 			</ul>
 			<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?>
 		</h1>
-	
+
 		<?=ee('Alert')->getAllInlines()?>
-	
+
 		<?php if (isset($filters)) echo $filters; ?>
-	
-		<?php $this->view('_shared/table', $table); ?>
-	
-		<?php if ( ! empty($pagination)) $this->view('_shared/pagination', $pagination); ?>
-	
+
+		<?php $this->embed('_shared/table', $table); ?>
+
+		<?php if ( ! empty($pagination)) $this->embed('_shared/pagination', $pagination); ?>
+
 		<?php if ( ! empty($table['data'])): ?>
 		<fieldset class="tbl-bulk-act">
 			<select name="bulk_action">
@@ -39,7 +39,7 @@
 
 <?php if ( ! empty($form)): ?>
 <div class="box snap">
-	<?php $this->view('_shared/form', $form); ?>
+	<?php $this->embed('_shared/form', $form); ?>
 </div>
 <?php endif; ?>
 
@@ -55,7 +55,7 @@ $modal_vars = array(
 	)
 );
 
-$this->ee_view('_shared/modal_confirm_remove', $modal_vars);
+$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
 ?>
 
 <?php $this->endBlock(); ?>

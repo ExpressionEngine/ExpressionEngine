@@ -20,4 +20,4 @@
 
 <?php
 /* End of file pagination.php */
-/* Location: ./themes/cp_themes/default/_shared/pagination.php */
+/* Location: ./themes/cp/default/_shared/pagination.php */

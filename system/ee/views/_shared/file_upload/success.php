@@ -1,4 +1,4 @@
-<?php $this->load->view('_shared/file_upload/iframe_header'); ?>
+<?php $this->embed('_shared/file_upload/iframe_header'); ?>
 
 <div class="upload_success">
 	<h2><?= lang('upload_success') ?></h2>
@@ -43,4 +43,4 @@
 	parent.$.ee_fileuploader.after_upload(file);
 </script>
 
-<?php $this->load->view('_shared/file_upload/iframe_footer') ?>
+<?php $this->embed('_shared/file_upload/iframe_footer') ?>

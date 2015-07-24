@@ -69,7 +69,7 @@ class View {
 		$data['localize'] = ee()->localize;
 
 		// load up the inner
-		$rendered_view = ee()->load->view($view, $data, TRUE);
+		$rendered_view = ee('View')->make($view)->render($data);
 
 		// traverse up the extensions
 		// we stop passing other data - it's cached in the loader
@@ -82,7 +82,7 @@ class View {
 				'EE_rendered_view' => $rendered_view,
 				'blocks'           => $this->blocks
 			);
-			$rendered_view = ee()->load->view($view, $data, TRUE);
+			$rendered_view = ee('View')->make($view)->render($data);
 		}
 
 		// clear for future calls
@@ -202,7 +202,7 @@ class View {
 	 * This function will produce a URL to a css stylesheet, and include the filemtime() so
 	 * far-future expires headers can be sent on CSS by the user.
 	 *
-	 * @param 	string		CSS file, relative to the themes/cp_themes/<theme> directory.
+	 * @param 	string		CSS file, relative to the themes/cp/<theme> directory.
 	 * @param	string		produces "media='screen'" by default
 	 * @return 	string		returns the link string.
 	 */
@@ -213,7 +213,7 @@ class View {
 
 		$css_paths = array(
 			$this->_theme => PATH_CP_THEME,
-			'default'     => PATH_THEMES.'cp_themes/default/'
+			'default'     => PATH_THEMES.'cp/default/'
 		);
 
 		foreach($css_paths as $theme => $path)
@@ -222,7 +222,7 @@ class View {
 			{
 				$filemtime = filemtime($path.$file);
 				$base_url  = ($theme == 'default') ? URL_THEMES : URL_ADDONS_THEMES;
-				$file_url  = $base_url.'cp_themes/'.$theme.'/'.$file;
+				$file_url  = $base_url.'cp/'.$theme.'/'.$file;
 				break;
 			}
 		}
@@ -343,7 +343,7 @@ class View {
 
 		$theme_name = ltrim(strrchr($path, '/'), '/');
 
-		return ee()->config->item('theme_folder_url') . 'cp_themes/' . $theme_name . '/';
+		return ee()->config->item('theme_folder_url') . 'cp/' . $theme_name . '/';
 	}
 
 	// --------------------------------------------------------------------

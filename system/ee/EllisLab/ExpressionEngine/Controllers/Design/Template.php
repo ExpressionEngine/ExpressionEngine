@@ -307,6 +307,8 @@ class Template extends AbstractDesignController {
 
 		$author = $template->getLastAuthor();
 
+		// @TODO add the "tabs" key and use the shared form! :) (see mcp.forum.php)
+
 		$vars = array(
 			'form_url' => ee('CP/URL', 'design/template/edit/' . $template_id),
 			'settings' => $this->renderSettingsPartial($template),
@@ -342,7 +344,6 @@ class Template extends AbstractDesignController {
 		// Supress browser XSS check that could cause obscure bug after saving
 		ee()->output->set_header("X-XSS-Protection: 0");
 
-		ee()->view->disable('outer_box');
 		ee()->cp->render('design/template/edit', $vars);
 	}
 
@@ -605,6 +606,8 @@ class Template extends AbstractDesignController {
 
 	private function renderSettingsPartial(TemplateModel $template)
 	{
+		// @TODO: use ee('View')->make('ee:_shared/form/section') instead (see mcp.forum.php)
+
 		$vars = array(
 			'template' => $template,
 			'template_types' => $this->getTemplateTypes(),
@@ -614,6 +617,8 @@ class Template extends AbstractDesignController {
 
 	private function renderAccessPartial(TemplateModel $template)
 	{
+		// @TODO: use ee('View')->make('ee:_shared/form/section') instead (see mcp.forum.php)
+
 		$existing_templates = array();
 
 		foreach (ee('Model')->get('TemplateGroup')->all() as $template_group)

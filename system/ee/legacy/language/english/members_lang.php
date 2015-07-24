@@ -370,6 +370,28 @@ $lang = array(
 
 "members_deleted" => "Members Deleted",
 
+'banned_email' => 'The email address you submitted is banned',
+
+'missmatched_passwords' => 'The password and password confirmation do not match',
+
+'username_too_short' => 'Your username must be at least %x characters long',
+
+'username_too_long' => 'Your username cannot be over 50 characters in length',
+
+'password_too_short' => 'Your password must be at least %x characters long',
+
+'password_too_long' => 'Your password cannot be over '.PASSWORD_MAX_LENGTH.' characters in length',
+
+'username_taken' => 'The username you chose is not available',
+
+'screen_name_taken' => 'The screen name you chose is not available',
+
+'email_taken' => 'The email you chose is not available',
+
+'valid_user_email' => 'The email you chose is not valid',
+
+'password_based_on_username' => 'The password cannot be based on the username',
+
 //----------------------------
 // Member banning
 //----------------------------

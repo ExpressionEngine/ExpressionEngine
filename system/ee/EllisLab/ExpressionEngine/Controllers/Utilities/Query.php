@@ -89,7 +89,7 @@ class Query extends Utilities {
 			unset($_POST['password_auth']);
 		}
 
-		$row_limit	= 20;
+		$row_limit	= 25;
 		$title		= lang('query_result');
 		$vars['write'] = FALSE;
 

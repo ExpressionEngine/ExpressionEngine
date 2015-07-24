@@ -224,7 +224,7 @@ class GridInput extends Table {
 			// Channel Form
 			else
 			{
-				$css_link = '<link rel="stylesheet" href="'.$this->ee_config->slash_item('theme_folder_url').'cp_themes/default/css/v3/grid.css" type="text/css" media="screen" />'.PHP_EOL;
+				$css_link = '<link rel="stylesheet" href="'.$this->ee_config->slash_item('theme_folder_url').'cp/default/css/v3/grid.css" type="text/css" media="screen" />'.PHP_EOL;
 			}
 
 			$this->cp->add_to_head($css_link);

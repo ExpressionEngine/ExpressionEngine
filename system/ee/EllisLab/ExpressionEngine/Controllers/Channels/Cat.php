@@ -53,82 +53,12 @@ class Cat extends AbstractChannelsController {
 	 */
 	public function index()
 	{
-		$table = ee('CP/Table');
-		$table->setColumns(
-			array(
-				'col_id',
-				'group_name',
-				'manage' => array(
-					'type'	=> CP\Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=> CP\Table::COL_CHECKBOX
-				)
-			)
-		);
-		$table->setNoResultsText(
-			'no_category_groups',
-			'create_category_group',
-			ee('CP/URL', 'channels/cat/create')
-		);
-
-		$sort_map = array(
-			'col_id' => 'group_id',
-			'group_name' => 'group_name'
-		);
-
 		$cat_groups = ee('Model')->get('CategoryGroup')
 			->filter('site_id', ee()->config->item('site_id'));
+
 		$total_rows = $cat_groups->all()->count();
 
-		$cat_groups = $cat_groups->order($sort_map[$table->sort_col], $table->sort_dir)
-			->limit(20)
-			->offset(($table->config['page'] - 1) * 20)
-			->all();
-
-		$data = array();
-		foreach ($cat_groups as $group)
-		{
-			$columns = array(
-				$group->getId(),
-				$group->group_name . ' ('.count($group->getCategories()).')',
-				array('toolbar_items' => array(
-					'view' => array(
-						'href' => ee('CP/URL', 'channels/cat/cat-list/'.$group->getId()),
-						'title' => lang('view')
-					),
-					'edit' => array(
-						'href' => ee('CP/URL', 'channels/cat/edit/'.$group->getId()),
-						'title' => lang('edit')
-					),
-					'txt-only' => array(
-						'href' => ee('CP/URL', 'channels/cat/field/'.$group->getId()),
-						'title' => strtolower(lang('custom_fields')),
-						'content' => strtolower(lang('fields'))
-					)
-				)),
-				array(
-					'name' => 'cat_groups[]',
-					'value' => $group->getId(),
-					'data'	=> array(
-						'confirm' => lang('category_group') . ': <b>' . htmlentities($group->group_name, ENT_QUOTES) . '</b>'
-					)
-				)
-			);
-
-			$attrs = array();
-			if (ee()->session->flashdata('highlight_id') == $group->getId())
-			{
-				$attrs = array('class' => 'selected');
-			}
-
-			$data[] = array(
-				'attrs' => $attrs,
-				'columns' => $columns
-			);
-		}
-
-		$table->setData($data);
+		$table = $this->buildTableFromCategoryGroupsQuery($cat_groups);
 
 		$vars['table'] = $table->viewData(ee('CP/URL', 'channels/cat'));
 
@@ -420,9 +350,18 @@ class Cat extends AbstractChannelsController {
 	 */
 	private function saveCategoryGroup($group_id = NULL)
 	{
-		$cat_group = ee('Model')->make('CategoryGroup', $_POST);
-		$cat_group->group_id = $group_id;
-		$cat_group->site_id = ee()->config->item('site_id');
+		if ($group_id)
+		{
+			$cat_group = ee('Model')->get('CategoryGroup', $group_id)->first();
+		}
+		else
+		{
+			$cat_group = ee('Model')->make('CategoryGroup');
+			$cat_group->group_id = $group_id;
+			$cat_group->site_id = ee()->config->item('site_id');
+		}
+
+		$cat_group->set($_POST);
 		$cat_group->can_edit_categories = (ee()->input->post('can_edit_categories'))
 			? implode('|', $_POST['can_edit_categories']) : '';
 		$cat_group->can_delete_categories = (ee()->input->post('can_delete_categories'))

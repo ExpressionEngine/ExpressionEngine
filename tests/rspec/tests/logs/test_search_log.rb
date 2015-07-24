@@ -33,12 +33,12 @@ feature 'Search Log' do
 		@page.should have_remove_all
 		@page.should have_pagination
 
-		@page.perpage_filter.text.should eq "show (20)"
+		@page.perpage_filter.text.should eq "show (25)"
 
 		@page.should have(6).pages
 		@page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
 
-		@page.should have(20).items # Default is 20 per page
+		@page.should have(25).items # Default is 25 per page
 	end
 
 	it 'does not show filters at 10 items', :pregen => false do
@@ -276,7 +276,7 @@ feature 'Search Log' do
 
 		@page.should have_pagination
 		@page.should have(6).pages
-		@page.pages.map {|name| name.text}.should == ["First", "Previous", "7", "8", "9", "Last"]
+		@page.pages.map {|name| name.text}.should == ["First", "Previous", "5", "6", "7", "Last"]
 	end
 
 	it 'does not lose a filter value when paginating', :pregen => true do

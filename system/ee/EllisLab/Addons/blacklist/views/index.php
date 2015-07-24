@@ -1,6 +1,6 @@
 <?php if ($allow_write_htaccess):?>
 <div class="box mb">
-	<?php $this->ee_view('_shared/form')?>
+	<?php $this->view('ee:_shared/form')?>
 </div>
 <?php endif;?>
 

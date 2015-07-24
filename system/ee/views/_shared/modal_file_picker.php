@@ -20,9 +20,9 @@
 
 	<?php if (isset($filters)) echo $filters; ?>
 
-	<?php $this->view('_shared/table', $table); ?>
+	<?php $this->embed('_shared/table', $table); ?>
 
-	<?php if ( ! empty($pagination)) $this->view('_shared/pagination', $pagination); ?>
+	<?php if ( ! empty($pagination)) $this->embed('_shared/pagination', $pagination); ?>
 
 	<?php if ( ! empty($table['data'])): ?>
 	<fieldset class="tbl-bulk-act">

@@ -115,8 +115,8 @@ class EE_Stylesheet {
 	 */
 	private function _ee_channel_form_css()
 	{
-		$files[] = PATH_THEMES.'cp_themes/default/css/jquery-ui-1.8.16.custom.css';
-		$files[] = PATH_THEMES.'cp_themes/default/css/channel_form.css';
+		$files[] = PATH_THEMES.'cp/default/css/jquery-ui-1.8.16.custom.css';
+		$files[] = PATH_THEMES.'cp/default/css/channel_form.css';
 
 		$out = '';
 
@@ -126,9 +126,9 @@ class EE_Stylesheet {
 			{
 				$out .= file_get_contents($file);
 
-				if ($file == PATH_THEMES.'cp_themes/default/css/jquery-ui-1.8.16.custom.css')
+				if ($file == PATH_THEMES.'cp/default/css/jquery-ui-1.8.16.custom.css')
 				{
-					$theme_url = URL_THEMES.'cp_themes/'.ee()->config->item('cp_theme');
+					$theme_url = URL_THEMES.'cp/'.ee()->config->item('cp_theme');
 
 					$out = str_replace('url(images/', 'url('.$theme_url.'/images/', $out);
 				}
@@ -136,7 +136,7 @@ class EE_Stylesheet {
 		}
 
 		$cp_theme  = ee()->config->item('cp_theme');
-		$cp_theme_url = URL_THEMES.'cp_themes/'.$cp_theme.'/';
+		$cp_theme_url = URL_THEMES.'cp/'.$cp_theme.'/';
 
 		$out = str_replace('../images', $cp_theme_url.'images', $out);
 		$out = str_replace('<?=$cp_theme_url?>', $cp_theme_url, $out);

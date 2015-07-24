@@ -1,4 +1,4 @@
-<?php extend_template('login'); ?>
+<?php $this->extend('_templates/login'); ?>
 
 <div class="box snap">
 	<h1><?=lang('log_into')?> <?=$site_label?> <span class="ico locked"></span></h1>

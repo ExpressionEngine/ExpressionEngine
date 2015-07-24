@@ -57,65 +57,13 @@ class Groups extends AbstractChannelsController {
 		}
 
 		$groups = ee('Model')->get('ChannelFieldGroup')
-			->filter('site_id', ee()->config->item('site_id'))
-			->all();
+			->filter('site_id', ee()->config->item('site_id'));
 
 		$vars = array(
 			'create_url' => ee('CP/URL', 'channels/fields/groups/create')
 		);
 
-		$table = ee('CP/Table');
-		$table->setColumns(
-			array(
-				'group_name',
-				'manage' => array(
-					'type'	=> Table::COL_TOOLBAR
-				),
-				array(
-					'type'	=>
-						Table::COL_CHECKBOX
-				)
-			)
-		);
-		$table->setNoResultsText('no_field_groups', 'create_new', $vars['create_url']);
-
-		$data = array();
-
-		$group_id = ee()->session->flashdata('group_id');
-
-		foreach ($groups as $group)
-		{
-			$column = array(
-				$group->group_name,
-				array('toolbar_items' => array(
-					'edit' => array(
-						'href' => ee('CP/URL', 'channels/fields/groups/edit/' . $group->group_id),
-						'title' => lang('edit')
-					)
-				)),
-				array(
-					'name' => 'selection[]',
-					'value' => $group->group_id,
-					'data' => array(
-						'confirm' => lang('group') . ': <b>' . htmlentities($group->group_name, ENT_QUOTES) . '</b>'
-					)
-				)
-			);
-
-			$attrs = array();
-
-			if ($group_id && $group->group_id == $group_id)
-			{
-				$attrs = array('class' => 'selected');
-			}
-
-			$data[] = array(
-				'attrs'		=> $attrs,
-				'columns'	=> $column
-			);
-		}
-
-		$table->setData($data);
+		$table = $this->buildTableFromChannelGroupsQuery($groups);
 
 		$vars['table'] = $table->viewData(ee('CP/URL', 'channels/fields/groups'));
 

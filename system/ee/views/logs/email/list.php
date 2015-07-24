@@ -1,4 +1,4 @@
-<?php extend_template('default-nav') ?>
+<?php $this->extend('_templates/default-nav') ?>
 
 <div class="tbl-ctrls">
 <?=form_open($form_url)?>
@@ -60,7 +60,7 @@ foreach($logs as $log)
 		)
 	);
 
-	$this->view('_shared/modal_confirm_remove', $modal_vars);
+	$this->embed('_shared/modal_confirm_remove', $modal_vars);
 }
 
 // Confirm delete all modal
@@ -78,7 +78,7 @@ $modal_vars = array(
 	)
 );
 
-$this->view('_shared/modal_confirm_remove', $modal_vars);
+$this->embed('_shared/modal_confirm_remove', $modal_vars);
 ?>
 
 <?php $this->endBlock(); ?>
