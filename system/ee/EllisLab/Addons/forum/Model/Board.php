@@ -149,7 +149,7 @@ class Board extends Model {
 	public function validateForumTrigger($key, $value, $params, $rule)
 	{
 		$field = $params[0];
-		if ( ! $this->$this->getProperty($field))
+		if ( ! $this->getProperty($field))
 		{
 			$rule->skip();
 		}
@@ -158,7 +158,7 @@ class Board extends Model {
 			->filter('group_name', $value)
 			// ¯\_(ツ)_/¯ I'm not sure != makes sense, but it's what was
 			// in 2.x so...
-			->filter('site_id', '!=', $this->$this->getProperty($field))
+			->filter('site_id', '!=', $this->getProperty($field))
 			->count();
 
 		if ($count > 0)
