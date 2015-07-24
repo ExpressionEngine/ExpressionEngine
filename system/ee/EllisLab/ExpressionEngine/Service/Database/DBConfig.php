@@ -154,13 +154,19 @@ class DBConfig implements Config {
 	}
 
 	/**
-	 * Get the default for a given db item
+	 * Get the default for a given db item. If they gave us a
+	 * default, we prefer that over the default default.
 	 */
-	private function getDefaultFor($item, $fallback = NULL)
+	private function getDefaultFor($item, $prefer_default = NULL)
 	{
 		if ($item == '')
 		{
 			return $this->defaults;
+		}
+
+		if (isset($prefer_default))
+		{
+			return $prefer_default;
 		}
 
 		if (array_key_exists($item, $this->defaults))
@@ -168,6 +174,6 @@ class DBConfig implements Config {
 			return $this->defaults[$item];
 		}
 
-		return $fallback;
+		return $prefer_default;
 	}
 }
