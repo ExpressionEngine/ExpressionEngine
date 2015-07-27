@@ -99,13 +99,15 @@ class Spam_upd {
 		ee()->dbforge->create_table('spam_training');
 
 		$fields = array(
-			'trap_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
-			'author'	=> array('type' => 'int', 'constraint' => '10'),
-			'file'		=> array('type' => 'varchar', 'constraint' => '129'),
-			'class'		=> array('type' => 'varchar', 'constraint' => '64'),
-			'method'	=> array('type' => 'varchar', 'constraint' => '64'),
-			'data'		=> array('type' => 'text'),
-			'document'	=> array('type' => 'text')
+			'trap_id'	 => array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
+			'author'	 => array('type' => 'int', 'constraint' => '10'),
+			'ip_address' => array('type' => 'varchar', 'constraint' => '45'),
+			'date'	     => array('type' => 'datetime'),
+			'file'		 => array('type' => 'varchar', 'constraint' => '129'),
+			'class'		 => array('type' => 'varchar', 'constraint' => '64'),
+			'method'	 => array('type' => 'varchar', 'constraint' => '64'),
+			'data'		 => array('type' => 'text'),
+			'document'	 => array('type' => 'text')
 		);
 
 		ee()->dbforge->add_field($fields);

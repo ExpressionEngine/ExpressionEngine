@@ -10,6 +10,8 @@ class SpamTrap extends Model {
 
 	protected $trap_id;
 	protected $author;
+	protected $ip_address;
+	protected $date;
 	protected $file;
 	protected $class;
 	protected $method;
