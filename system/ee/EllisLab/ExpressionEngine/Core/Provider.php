@@ -294,6 +294,17 @@ class Provider extends InjectionBindingDecorator {
 	{
 		foreach ($this->getServices() as $name => $closure)
 		{
+			if (is_string($closure))
+			{
+				$closure = function () use ($closure)
+				{
+					$args = func_get_args();
+					$class = $this->getNamespace() . '\\' . $closure;
+					$object = new \ReflectionClass($class);
+					return $object->newInstanceArgs($args);
+				};
+			}
+
 			if (strpos($name, ':') !== FALSE)
 			{
 				throw new \Exception("Service names cannot contain ':'. ({$name})");
