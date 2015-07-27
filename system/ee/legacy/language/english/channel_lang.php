@@ -474,13 +474,21 @@ $lang = array(
 
 'exclude_group_form_desc' => 'Prevent this category group from being offered as choice for assignment to channels and file directories.',
 
-'category_group_saved' => 'Category group saved',
+'category_group_created' => 'Category Group Created',
 
-'category_group_saved_desc' => 'Your category group has been saved successfully.',
+'category_group_created_desc' => 'The category group <b>%s</b> has been created.',
 
-'category_group_not_saved' => 'Attention: Category group not saved',
+'category_group_not_created' => 'Cannot Create Category Group',
 
-'category_group_not_saved_desc' => 'We were unable to save your category group, please review and fix errors below.',
+'category_group_not_created_desc' => 'We were unable to create this category group, please review and fix errors below.',
+
+'category_group_updated' => 'Category Group Updated',
+
+'category_group_updated_desc' => 'The category group <b>%s</b> has been updated.',
+
+'category_group_not_updated' => 'Cannot Update Category Group',
+
+'category_group_not_updated_desc' => 'We were unable to update this category group, please review and fix errors below.',
 
 'cat_image_none' => 'None <i>&mdash; no image</i>',
 
@@ -490,13 +498,21 @@ $lang = array(
 
 'parent_category_desc' => 'You may make this category a sub-category of another.',
 
-'category_saved' => 'Category saved',
+'category_created' => 'Category Created',
 
-'category_saved_desc' => 'Your category has been saved successfully.',
+'category_created_desc' => 'The category <b>%s</b> has been created.',
 
-'category_not_saved' => 'Attention: Category not saved',
+'category_not_created' => 'Cannot Create Category',
 
-'category_not_saved_desc' => 'We were unable to save your category, please review and fix errors below.',
+'category_not_created_desc' => 'We were unable to create this category, please review and fix errors below.',
+
+'category_updated' => 'Category Updated',
+
+'category_updated_desc' => 'The category <b>%s</b> has been updated.',
+
+'category_not_updated' => 'Cannot Update Category',
+
+'category_not_updated_desc' => 'We were unable to update this category, please review and fix errors below.',
 
 'category_field' => 'Category Field',
 
@@ -538,13 +554,21 @@ $lang = array(
 
 'btn_edit_field' => 'Edit Field',
 
-'category_field_saved' => 'Category field saved',
+'category_field_created' => 'Category Field Created',
 
-'category_field_saved_desc' => 'Your category field has been saved successfully.',
+'category_field_created_desc' => 'The category field <b>%s</b> has been created.',
 
-'category_field_not_saved' => 'Attention: Category field not saved',
+'category_field_not_created' => 'Cannot Create Category Field',
 
-'category_field_not_saved_desc' => 'We were unable to save your category field, please review and fix errors below.',
+'category_field_not_created_desc' => 'We were unable to create this category field, please review and fix errors below.',
+
+'category_field_updated' => 'Category Field Updated',
+
+'category_field_updated_desc' => 'The category field <b>%s</b> has been updated.',
+
+'category_field_not_updated' => 'Cannot Update Category Field',
+
+'category_field_not_updated_desc' => 'We were unable to update this category field, please review and fix errors below.',
 
 'duplicate_field_name' => 'The field name you chose is already taken.',
 

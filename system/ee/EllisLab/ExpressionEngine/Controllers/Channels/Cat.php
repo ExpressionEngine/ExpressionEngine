@@ -140,6 +140,7 @@ class Cat extends AbstractChannelsController {
 	{
 		if (is_null($group_id))
 		{
+			$alert_key = 'created';
 			ee()->view->cp_page_title = lang('create_category_group');
 			ee()->view->base_url = ee('CP/URL', 'channels/cat/create');
 			ee()->view->save_btn_text = 'create_category_group';
@@ -156,6 +157,7 @@ class Cat extends AbstractChannelsController {
 				show_error(lang('unauthorized_access'));
 			}
 
+			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_category_group');
 			ee()->view->base_url = ee('CP/URL', 'channels/cat/edit/'.$group_id);
 			ee()->view->save_btn_text = 'edit_category_group';
@@ -285,14 +287,17 @@ class Cat extends AbstractChannelsController {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			$group_id = $this->saveCategoryGroup($group_id);
+			$group = $this->saveCategoryGroup($group_id);
 
-			ee()->session->set_flashdata('highlight_id', $group_id);
+			if (is_null($group_id))
+			{
+				ee()->session->set_flashdata('highlight_id', $group->getId());
+			}
 
 			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
-				->withTitle(lang('category_group_saved'))
-				->addToBody(lang('category_group_saved_desc'))
+				->withTitle(lang('category_group_'.$alert_key))
+				->addToBody(sprintf(lang('category_group_'.$alert_key.'_desc'), $group->group_name))
 				->defer();
 
 			ee()->functions->redirect(ee('CP/URL', 'channels/cat'));
@@ -301,8 +306,8 @@ class Cat extends AbstractChannelsController {
 		{
 			ee('Alert')->makeInline('shared-form')
 				->asIssue()
-				->withTitle(lang('category_group_not_saved'))
-				->addToBody(lang('category_group_not_saved_desc'))
+				->withTitle(lang('category_group_not_'.$alert_key))
+				->addToBody(lang('category_group_not_'.$alert_key.'_desc'))
 				->now();
 		}
 
@@ -367,8 +372,7 @@ class Cat extends AbstractChannelsController {
 		$cat_group->can_delete_categories = (ee()->input->post('can_delete_categories'))
 			? implode('|', $_POST['can_delete_categories']) : '';
 
-		$cat_group->save();
-		return $cat_group->group_id;
+		return $cat_group->save();
 	}
 
 	/**
@@ -576,6 +580,7 @@ class Cat extends AbstractChannelsController {
 
 		if (is_null($category_id))
 		{
+			$alert_key = 'created';
 			ee()->view->cp_page_title = lang('create_category');
 			ee()->view->base_url = ee('CP/URL', 'channels/cat/create-cat/'.$group_id);
 			ee()->view->save_btn_text = 'create_category';
@@ -600,6 +605,7 @@ class Cat extends AbstractChannelsController {
 				show_error(lang('unauthorized_access'));
 			}
 
+			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_category');
 			ee()->view->base_url = ee('CP/URL', 'channels/cat/edit-cat/'.$group_id.'/'.$category_id);
 			ee()->view->save_btn_text = 'edit_category';
@@ -713,14 +719,17 @@ class Cat extends AbstractChannelsController {
 
 			if ($result->isValid())
 			{
-				$category_id = $category->save()->getId();
+				$category = $category->save();
 
-				ee()->session->set_flashdata('highlight_id', $category_id);
+				if (is_null($category_id))
+				{
+					ee()->session->set_flashdata('highlight_id', $category->getId());
+				}
 
 				ee('Alert')->makeInline('shared-form')
 					->asSuccess()
-					->withTitle(lang('category_saved'))
-					->addToBody(lang('category_saved_desc'))
+					->withTitle(lang('category_group_'.$alert_key))
+					->addToBody(sprintf(lang('category_group_'.$alert_key.'_desc'), $category->cat_name))
 					->defer();
 
 				ee()->functions->redirect(ee('CP/URL', 'channels/cat/cat-list/'.$cat_group->group_id));
@@ -731,8 +740,8 @@ class Cat extends AbstractChannelsController {
 				ee()->form_validation->_error_array = $result->renderErrors();
 				ee('Alert')->makeInline('shared-form')
 					->asIssue()
-					->withTitle(lang('category_not_saved'))
-					->addToBody(lang('category_not_saved_desc'))
+					->withTitle(lang('category_group_not_'.$alert_key))
+					->addToBody(lang('category_group_not_'.$alert_key.'_desc'))
 					->now();
 			}
 		}
@@ -986,6 +995,7 @@ class Cat extends AbstractChannelsController {
 				->filter('field_id', (int) $field_id)
 				->first();
 
+			$alert_key = 'updated';
 			ee()->view->save_btn_text = 'btn_edit_field';
 			ee()->view->cp_page_title = lang('edit_category_field');
 			ee()->view->base_url = ee('CP/URL', 'channels/cat/edit-field/'.$group_id.'/'.$field_id);
@@ -1004,6 +1014,7 @@ class Cat extends AbstractChannelsController {
 			$cat_field->setCategoryGroup($cat_group);
 			$cat_field->field_type = 'text';
 
+			$alert_key = 'created';
 			ee()->view->save_btn_text = 'btn_create_field';
 			ee()->view->cp_page_title = lang('create_category_field');
 			ee()->view->base_url = ee('CP/URL', 'channels/cat/create-field/'.$group_id);
@@ -1100,14 +1111,17 @@ class Cat extends AbstractChannelsController {
 
 			if ($result->isValid())
 			{
-				$field_id = $cat_field->save()->getId();
+				$cat_field = $cat_field->save();
 
-				ee()->session->set_flashdata('highlight_id', $field_id);
+				if (is_null($field_id))
+				{
+					ee()->session->set_flashdata('highlight_id', $cat_field->getId());
+				}
 
 				ee('Alert')->makeInline('shared-form')
 					->asSuccess()
-					->withTitle(lang('category_field_saved'))
-					->addToBody(lang('category_field_saved_desc'))
+					->withTitle(lang('category_field_'.$alert_key))
+					->addToBody(sprintf(lang('category_field_'.$alert_key.'_desc'), $cat_field->field_label))
 					->defer();
 
 				ee()->functions->redirect(ee('CP/URL', 'channels/cat/field/'.$group_id));
@@ -1118,8 +1132,8 @@ class Cat extends AbstractChannelsController {
 				ee()->form_validation->_error_array = $result->renderErrors();
 				ee('Alert')->makeInline('shared-form')
 					->asIssue()
-					->withTitle(lang('category_field_not_saved'))
-					->addToBody(lang('category_field_not_saved_desc'))
+					->withTitle(lang('category_field_not_'.$alert_key))
+					->addToBody(lang('category_field_not_'.$alert_key.'_desc'))
 					->now();
 			}
 		}
