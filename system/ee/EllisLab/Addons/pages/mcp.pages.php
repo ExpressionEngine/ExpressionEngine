@@ -139,7 +139,7 @@ class Pages_mcp {
 			'file' => array('cp/v3/confirm_remove'),
 		));
 
-		return ee()->load->view('index', $vars, TRUE);
+		return ee('View')->make('pages:index')->render($vars);
 	}
 
 	/**
