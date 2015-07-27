@@ -124,6 +124,7 @@ class Channels extends AbstractChannelsController {
 				});
 			');
 
+			$alert_key = 'created';
 			ee()->view->cp_page_title = lang('create_new_channel');
 			ee()->view->base_url = ee('CP/URL', 'channels/create');
 			ee()->view->save_btn_text = 'create_channel';
@@ -149,6 +150,7 @@ class Channels extends AbstractChannelsController {
 				show_error(lang('unauthorized_access'));
 			}
 
+			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_channel');
 			ee()->view->base_url = ee('CP/URL', 'channels/edit/'.$channel_id);
 			ee()->view->save_btn_text = 'edit_channel';
@@ -322,14 +324,17 @@ class Channels extends AbstractChannelsController {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			$channel_id = $this->saveChannel($channel);
+			$channel = $this->saveChannel($channel);
 
-			ee()->session->set_flashdata('highlight_id', $channel_id);
+			if (is_null($channel_id))
+			{
+				ee()->session->set_flashdata('highlight_id', $channel->getId());
+			}
 
 			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
-				->withTitle(lang('channel_saved'))
-				->addToBody(lang('channel_saved_desc'))
+				->withTitle(lang('channel_'.$alert_key))
+				->addToBody(sprintf(lang('channel_'.$alert_key.'_desc'), $channel->channel_title))
 				->defer();
 
 			ee()->functions->redirect(ee('CP/URL', 'channels'));
@@ -338,8 +343,8 @@ class Channels extends AbstractChannelsController {
 		{
 			ee('Alert')->makeInline('shared-form')
 				->asIssue()
-				->withTitle(lang('channel_not_saved'))
-				->addToBody(lang('channel_not_saved_desc'))
+				->withTitle(lang('channel_not_'.$alert_key))
+				->addToBody(lang('channel_not_'.$alert_key.'_desc'))
 				->now();
 		}
 
@@ -486,7 +491,7 @@ class Channels extends AbstractChannelsController {
 			$channel->save();
 		}
 
-		return $channel->channel_id;
+		return $channel;
 	}
 
 	/**
@@ -1127,15 +1132,21 @@ class Channels extends AbstractChannelsController {
 		{
 			$this->saveChannelSettings($channel_id, $vars['sections']);
 
-			ee()->session->set_flashdata('highlight_id', $channel_id);
-
-			ee()->view->set_message('success', lang('channel_saved'), lang('channel_saved_desc'), TRUE);
+			ee('Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('channel_settings_saved'))
+				->addToBody(sprintf(lang('channel_settings_saved_desc'), $channel->channel_title))
+				->defer();
 
 			ee()->functions->redirect(ee('CP/URL', 'channels'));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee()->view->set_message('issue', lang('channel_not_saved'), lang('channel_not_saved_desc'));
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('channel_settings_not_saved'))
+				->addToBody(lang('channel_settings_not_saved_desc'))
+				->now();
 		}
 
 		ee()->view->ajax_validate = TRUE;

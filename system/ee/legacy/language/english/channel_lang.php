@@ -181,13 +181,21 @@ $lang = array(
 
 'create_new_category_group' => 'Create New Category Group',
 
-'channel_saved' => 'Channel saved',
+'channel_created' => 'Channel Created',
 
-'channel_saved_desc' => 'Your channel has been saved successfully.',
+'channel_created_desc' => 'The channel <b>%s</b> has been created.',
 
-'channel_not_saved' => 'Attention: Channel not saved',
+'channel_not_created' => 'Cannot Create Channel',
 
-'channel_not_saved_desc' => 'We were unable to save your channel, please review and fix errors below.',
+'channel_not_created_desc' => 'We were unable to create this channel, please review and fix errors below.',
+
+'channel_updated' => 'Channel Updated',
+
+'channel_updated_desc' => 'The channel <b>%s</b> has been updated.',
+
+'channel_not_updated' => 'Cannot Update Channel',
+
+'channel_not_updated_desc' => 'We were unable to update this channel, please review and fix errors below.',
 
 'invalid_short_name' => 'Your channel name must contain only alpha-numeric characters and no spaces.',
 
@@ -383,6 +391,14 @@ $lang = array(
 'apply_expiration_to_existing' => 'Update all existing comments with this setting?',
 
 'channel_form_default_status_empty' => '-- Use Channel Default --',
+
+'channel_settings_saved' => 'Channel Settings Saved',
+
+'channel_settings_saved_desc' => 'The settings for channel <b>%s</b> have been saved.',
+
+'channel_settings_not_saved' => 'Cannot Save Channel Settings',
+
+'channel_settings_not_saved_desc' => 'We were unable to save this channel\'s settings, please review and fix errors below.',
 
 /**
  * Categories
