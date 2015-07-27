@@ -1,6 +1,6 @@
 <?php
 
-use EllisLab\ExpressionEngine\Addons\Spam;
+use EllisLab\Addons\Spam\Service\Spam;
 
 return array(
 	'author'      => 'EllisLab',
@@ -10,66 +10,25 @@ return array(
 	'namespace'   => 'EllisLab\Addons\Spam',
 	'settings_exist' => TRUE,
 	'services' => array(
-		'Spam' => function($ee)
+		'Spam' => 'Service\Spam',
+		'Spam/Training' => function($ee, $kernel)
 		{
-			return new Spam();
+			$kernel = empty($kernel) ? 'default' : $kernel;
+			return new Training($kernel);
 		},
-		'Spam/Training' => function($ee)
-		{
-			return new Training();
-		},
-		'Spam/Classifier' => function($ee)
-		{
-			return new Classifier();
-		},
-		'Spam/Distribution' => function($ee)
-		{
-			return new Distribution();
-		},
-		'Spam/Document' => function($ee)
-		{
-			return new Document();
-		},
-		'Spam/Expectation' => function($ee)
-		{
-			return new Expectation();
-		},
-		'Spam/Source' => function($ee)
-		{
-			return new Source();
-		},
-		'Spam/Tokenizer' => function($ee)
-		{
-			return new Tokenizer();
-		},
-		'Spam/Vectorize' => function($ee)
-		{
-			return new Vectorize();
-		},
-		'Spam/Vectorizers/ASCIIPrintable' => function($ee)
-		{
-			return new ASCIIPrintable();
-		},
-		'Spam/Vectorizers/Entropy' => function($ee)
-		{
-			return new Entropy();
-		},
-		'Spam/Vectorizers/Links' => function($ee)
-		{
-			return new Links();
-		},
-		'Spam/Vectorizers/Punctuation' => function($ee)
-		{
-			return new Punctuation();
-		},
-		'Spam/Vectorizers/Spaces' => function($ee)
-		{
-			return new Spaces();
-		},
-		'Spam/Vectorizers/Tfidf' => function($ee)
-		{
-			return new Tfidf();
-		},
+		'Spam/Classifier' => 'Library\Classifier',
+		'Spam/Distribution' => 'Library\Distribution',
+		'Spam/Document' => 'Library\Document',
+		'Spam/Expectation' => 'Library\Expectation',
+		'Spam/Source' => 'Library\Source',
+		'Spam/Tokenizer' => 'Library\Tokenizer',
+		'Spam/Vectorize' => 'Library\Vectorize',
+		'Spam/Vectorizers/ASCIIPrintable' => 'Library\Vectorizers\ASCIIPrintable',
+		'Spam/Vectorizers/Entropy' => 'Library\Vectorizers\Entropy',
+		'Spam/Vectorizers/Links' => 'Library\Vectorizers\Links',
+		'Spam/Vectorizers/Punctuation' => 'Library\Vectorizers\Punctuation',
+		'Spam/Vectorizers/Spaces' => 'Library\Vectorizers\Spaces',
+		'Spam/Vectorizers/Tfidf' => 'Library\Vectorizers\Tfidf',
 	),
 	'models' => array(
 		'SpamKernel' => 'Model\SpamKernel',
