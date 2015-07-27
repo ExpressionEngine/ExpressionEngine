@@ -260,7 +260,9 @@ class Groups extends Members\Members {
 		$groups = ee()->input->post('selection');
 
 		// You can't delete these groups
-		if ( ! empty(array_intersect($groups, $this->no_delete)))
+		$no_delete = array_intersect($groups, $this->no_delete);
+
+		if ( ! empty($no_delete))
 		{
 			show_error(lang('unauthorized_access'));
 		}

@@ -1194,27 +1194,51 @@ class EE_Config {
 	 * Reads the existing DB config file as a string and swaps out
 	 * any values passed to the function.
 	 *
-	 * @access	private
-	 * @param	array
-	 * @param	string
-	 * @return	bool
+	 * @param array $dbconfig Items to add to the database configuration
+	 * @return boolean TRUE if successful
 	 */
-	function _update_dbconfig($dbconfig = array(), $remove_values = array())
+	public function _update_dbconfig($dbconfig = array())
 	{
 		$database_config = ee('Database')->getConfig();
 
-		$database_config->set(
-			'pconnect',
-			get_bool_from_string($dbconfig['pconnect'])
+		// Prevent access to certain properties
+		$allowed_properties = array(
+			'hostname' => 'string',
+			'username' => 'string',
+			'password' => 'string',
+			'database' => 'string',
+			'pconnect' => 'bool',
+			'dbprefix' => 'string',
+			'db_debug' => 'bool'
 		);
-		$database_config->set(
-			'db_debug',
-			get_bool_from_string($dbconfig['db_debug'])
-		);
+		$dbconfig = array_intersect_key($dbconfig, $allowed_properties);
+
+		foreach ($dbconfig as $property => $value)
+		{
+			$value = ($allowed_properties[$property] == 'bool')
+				? get_bool_from_string($dbconfig['pconnect'])
+				: $value;
+			$database_config->set($property, $value);
+		}
 
 		// Update the database config
+		$db_config = ee('Database')->getConfig();
+		$group_config = $db_config->getGroupConfig();
+
+		// Remove default properties
+		$defaults = $db_config->getDefaults();
+		foreach ($defaults['expressionengine'] as $property => $value)
+		{
+			if (isset($group_config[$property]) && $group_config[$property] == $value)
+			{
+				unset($group_config[$property]);
+			}
+		}
+
 		$this->_update_config(array(
-			'database' => ee('Config')->get('database')
+			'database' => array(
+				'expressionengine' => $group_config
+			)
 		));
 
 		return TRUE;

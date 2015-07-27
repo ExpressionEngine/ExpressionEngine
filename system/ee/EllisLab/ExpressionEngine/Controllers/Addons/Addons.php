@@ -402,9 +402,8 @@ class Addons extends CP_Controller {
 	 */
 	private function getAllAddons()
 	{
-		$providers = ee('App')->getProviders();
+		$addon_infos = ee('Addon')->all();
 		// Remove non-add-on providers from the list
-		unset($providers['ee']);
 
 		$addons = array(
 			'first' => array(),
@@ -414,7 +413,7 @@ class Addons extends CP_Controller {
 		// @TODO move these 2 things out of "add-ons" entirely
 		$uninstallable = array('channel', 'comment', 'filepicker');
 
-		foreach (array_keys($providers) as $name)
+		foreach ($addon_infos as $name => $info)
 		{
 			if (in_array($name, $uninstallable))
 			{
@@ -428,7 +427,7 @@ class Addons extends CP_Controller {
 
 			if ( ! empty($addon))
 			{
-				$info = ee('App')->get($name);
+				$info = ee('Addon')->get($name);
 				if (file_exists($info->getPath() . '/README.md'))
 				{
 					$addon['manual_url'] = ee('CP/URL', 'addons/manual/' . $name);
@@ -467,6 +466,8 @@ class Addons extends CP_Controller {
 
 		foreach ($addons as $addon)
 		{
+			$addon_info = ee('Addon')->get($addon);
+
 			$module = $this->getModule($addon);
 			if ( ! empty($module)
 				&& $module['installed'] === TRUE
@@ -474,9 +475,7 @@ class Addons extends CP_Controller {
 			{
 				$installed = ee()->addons->get_installed('modules', TRUE);
 
-				require_once $installed[$addon]['path'].'upd.'.$addon.'.php';
-
-				$class = ucfirst($addon).'_upd';
+				$class = $addon_info->getUpdateClass();
 				$version = $installed[$addon]['module_version'];
 
 				ee()->load->add_package_path($installed[$addon]['path']);
@@ -527,8 +526,10 @@ class Addons extends CP_Controller {
 				&& $extension['installed'] === TRUE
 				&& array_key_exists('update', $extension))
 			{
+				$class = $addon_info->getExtensionClass();
+
 				$class_name = $extension['class'];
-				$Extension = new $class_name();
+				$Extension = new $class();
 				$Extension->update_extension($extension['version']);
 				ee()->extensions->version_numbers[$class_name] = $Extension->version;
 
@@ -543,11 +544,9 @@ class Addons extends CP_Controller {
 				&& $plugin['installed'] === TRUE
 				&& array_key_exists('update', $plugin))
 			{
-
-				$info = ee('App')->get($addon);
-
 				$typography = 'n';
-				if ($info->get('plugin.typography'))
+
+				if ($addon_info->get('plugin.typography'))
 				{
 					$typography = 'y';
 				}
@@ -555,9 +554,10 @@ class Addons extends CP_Controller {
 				$model = ee('Model')->get('Plugin')
 					->filter('plugin_package', $plugin['package'])
 					->first();
+
 				$model->plugin_name = $plugin['name'];
 				$model->plugin_package = $plugin['package'];
-				$model->plugin_version = $info->getVersion();
+				$model->plugin_version = $addon_info->getVersion();
 				$model->is_typography_related = $typography;
 				$model->save();
 
@@ -608,7 +608,7 @@ class Addons extends CP_Controller {
 
 		foreach ($addons as $addon)
 		{
-			$info = ee('App')->get($addon);
+			$info = ee('Addon')->get($addon);
 			ee()->load->add_package_path($info->getPath());
 
 			$party = ($info->getAuthor() == 'EllisLab') ? 'first' : 'third';
@@ -723,7 +723,7 @@ class Addons extends CP_Controller {
 
 		foreach ($addons as $addon)
 		{
-			$info = ee('App')->get($addon);
+			$info = ee('Addon')->get($addon);
 			$party = ($info->getAuthor() == 'EllisLab') ? 'first' : 'third';
 
 			$module = $this->getModule($addon);
@@ -810,7 +810,7 @@ class Addons extends CP_Controller {
 		$module = $this->getModule($addon);
 		if ( ! empty($module) && $module['installed'] === TRUE)
 		{
-			$data = $this->getModuleSettings($addon, $method);
+			$data = $this->getModuleSettings($addon, $method, array_slice(func_get_args(), 2));
 
 			ee()->view->cp_heading = $module['name'] . ' ' . lang('configuration');
 
@@ -899,7 +899,7 @@ class Addons extends CP_Controller {
 	{
 		try
 		{
-			$info = ee('App')->get($addon);
+			$info = ee('Addon')->get($addon);
 		}
 		catch (\Exception $e)
 		{
@@ -1029,14 +1029,14 @@ class Addons extends CP_Controller {
 	{
 		try
 		{
-			$info = ee('App')->get($name);
+			$info = ee('Addon')->get($name);
 		}
 		catch (\Exception $e)
 		{
 			show_404();
 		}
 
-		if ( ! file_exists($info->getPath() . '/mod.' . $name . '.php'))
+		if ( ! $info->hasModule())
 		{
 			return array();
 		}
@@ -1067,10 +1067,9 @@ class Addons extends CP_Controller {
 				$data['settings_url'] = ee('CP/URL', 'addons/settings/' . $name);
 			}
 
-			if (file_exists($info->getPath() . '/upd.' . $name . '.php'))
+			if ($info->hasInstaller())
 			{
-				require_once $info->getPath() . '/upd.' . $name . '.php';
-				$class = ucfirst($name).'_upd';
+				$class = $info->getInstallerClass();
 
 				ee()->load->add_package_path($info->getPath());
 
@@ -1106,14 +1105,14 @@ class Addons extends CP_Controller {
 	{
 		try
 		{
-			$info = ee('App')->get($name);
+			$info = ee('Addon')->get($name);
 		}
 		catch (\Exception $e)
 		{
 			show_404();
 		}
 
-		if ( ! file_exists($info->getPath() . '/pi.' . $name . '.php'))
+		if ( ! $info->hasPlugin())
 		{
 			return array();
 		}
@@ -1163,14 +1162,14 @@ class Addons extends CP_Controller {
 	{
 		try
 		{
-			$info = ee('App')->get($name);
+			$info = ee('Addon')->get($name);
 		}
 		catch (\Exception $e)
 		{
 			show_404();
 		}
 
-		if ( ! file_exists($info->getPath() . '/ft.' . $name . '.php'))
+		if ( ! $info->hasFieldtype())
 		{
 			return array();
 		}
@@ -1237,14 +1236,14 @@ class Addons extends CP_Controller {
 
 		try
 		{
-			$info = ee('App')->get($name);
+			$info = ee('Addon')->get($name);
 		}
 		catch (\Exception $e)
 		{
 			show_404();
 		}
 
-		if ( ! file_exists($info->getPath() . '/ext.' . $name . '.php'))
+		if ( ! $info->hasExtension())
 		{
 			return array();
 		}
@@ -1451,11 +1450,11 @@ class Addons extends CP_Controller {
 	 * @param	str	$name	The name of module whose settings to display
 	 * @return	str			The rendered settings (with HTML)
 	 */
-	private function getModuleSettings($name, $method = "index")
+	private function getModuleSettings($name, $method = "index", $parameters)
 	{
 		$addon = ee()->security->sanitize_filename(strtolower($name));
 
-		$info = ee('App')->get($name);
+		$info = ee('Addon')->get($name);
 
 		$module = ee('Model')->get('Module')
 			->filter('module_name', $name)
@@ -1488,10 +1487,8 @@ class Addons extends CP_Controller {
 		// switch the view path to the module's view folder
 		ee()->load->add_package_path($info->getPath());
 
-		require_once $info->getPath() . '/mcp.' . $name . '.php';
-
 		// instantiate the module cp class
-		$class = ucfirst($name) . '_mcp';
+		$class = $info->getControlPanelClass();
 		$mod = new $class;
 		$mod->_ee_path = APPPATH;
 
@@ -1502,7 +1499,7 @@ class Addons extends CP_Controller {
 		// either by accident (ie: a missed function) or by deliberate user url hacking
 		if (method_exists($mod, $method))
 		{
-			$_module_cp_body = $mod->$method();
+			$_module_cp_body = call_user_func_array(array($mod, $method), $parameters);
 		}
 		else
 		{

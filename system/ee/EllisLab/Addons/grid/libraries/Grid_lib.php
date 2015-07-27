@@ -1,5 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+use EllisLab\ExpressionEngine\Service\Validation\Result;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -124,9 +126,6 @@ class Grid_lib {
 		}
 
 		$grid->setData($data);
-
-		// ಠ_ಠ
-		ee()->load->remove_package_path();
 
 		return ee('View')->make('ee:_shared/table')->render($grid->viewData());
 	}
@@ -640,14 +639,18 @@ class Grid_lib {
 
 			ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0);
 
-			// Let fieldtypes validate their Grid column settings; we'll
-			// specifically call grid_validate_settings() because validate_settings
-			// works differently and we don't want to call that on accident
-			$ft_validate = ee()->grid_parser->call('grid_validate_settings', $column['col_settings']);
+			// Let fieldtypes validate their Grid column settings
+			$ft_validate = ee()->grid_parser->call('validate_settings', $column['col_settings']);
 
-			if (is_string($ft_validate))
+			if ($ft_validate instanceof Result && $ft_validate->isNotValid())
 			{
-				$errors[$col_field]['custom'] = $ft_validate;
+				foreach ($ft_validate->getAllErrors() as $field => $field_errors)
+				{
+					foreach ($field_errors as $rule => $error)
+					{
+						$errors[$col_field][$field.'_'.$rule] = $error;
+					}
+				}
 			}
 		}
 

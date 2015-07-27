@@ -95,12 +95,12 @@ class Create extends Members {
 			array(
 				 'field'   => 'group_id',
 				 'label'   => 'lang:member_group',
-				 'rules'   => 'required'
+				 'rules'   => 'required|integer|callback_valid_group_id'
 			),
 			array(
 				 'field'   => 'username',
 				 'label'   => 'lang:username',
-				 'rules'   => 'required|valid_username'
+				 'rules'   => 'required|trim|valid_username[new]'
 			),
 			array(
 				 'field'   => 'email',
@@ -108,13 +108,14 @@ class Create extends Members {
 				 'rules'   => 'required|valid_email'
 			),
 			array(
-				 'field'   => 'password',
-				 'label'   => 'lang:new_password',
+				'field'    => 'password',
+				'label'    => 'lang:password',
+				'rules'    => 'required|valid_password[username]'
 			),
 			array(
 				 'field'   => 'confirm_password',
 				 'label'   => 'lang:confirm_password',
-				 'rules'   => 'matches[password]'
+				 'rules'   => 'required|matches[password]'
 			)
 		));
 
@@ -138,6 +139,31 @@ class Create extends Members {
 		ee()->view->save_btn_text = 'create_member';
 		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * Verify that the group ID is a valid choice
+	 * @param  String $group_id Group ID from the form
+	 * @return Boolean          TRUE if valid group, FALSE otherwise
+	 */
+	public function valid_group_id($group_id)
+	{
+		$group_ids = array();
+		$is_locked = (ee()->session->userdata['group_id'] == 1) ? array() : array('is_locked' => 'n');
+		$member_groups = ee()->member_model->get_member_groups('', $is_locked);
+
+		foreach ($member_groups->result() as $group)
+		{
+			$group_ids[] = $group->group_id;
+		}
+
+		if ( ! in_array($group_id, $group_ids))
+		{
+			ee()->form_validation->set_message('valid_group_id', lang('invalid_group_id'));
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
 	/**

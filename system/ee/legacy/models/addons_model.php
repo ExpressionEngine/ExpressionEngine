@@ -60,7 +60,7 @@ class Addons_model extends CI_Model {
 
 		$return = $default + $filelist;
 
-		ksort($return);
+		asort($return);
 		return $return;
 	}
 

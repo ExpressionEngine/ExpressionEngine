@@ -91,7 +91,7 @@ class Admin_model extends CI_Model {
 
 			$theme_paths = array(
 				PATH_THEMES.'cp/',
-				PATH_ADDONS_THEMES.'cp/'
+				PATH_THIRD_THEMES.'cp/'
 			);
 
 			foreach ($theme_paths as $theme_path)

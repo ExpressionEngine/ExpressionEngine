@@ -3,6 +3,7 @@
 use EllisLab\ExpressionEngine\Library;
 use EllisLab\ExpressionEngine\Library\Event;
 use EllisLab\ExpressionEngine\Library\Filesystem;
+use EllisLab\ExpressionEngine\Service\Addon;
 use EllisLab\ExpressionEngine\Service\Alert;
 use EllisLab\ExpressionEngine\Service\Config;
 use EllisLab\ExpressionEngine\Service\Database;
@@ -101,6 +102,11 @@ return array(
 	),
 
 	'services.singletons' => array(
+
+		'Addon' => function($ee)
+		{
+			return new Addon\Factory($ee->make('App'));
+		},
 
 		'Alert' => function($ee)
 		{

@@ -17,7 +17,7 @@
 				<?php endforeach; ?>
 			</ul>
 		</div>
-		<h3>System Templates</h3>
+		<h3><?=lang('system_templates')?></h3>
 		<div class="scroll-wrap">
 			<ul class="folder-list">
 				<?php foreach ($system_templates as $template): ?>

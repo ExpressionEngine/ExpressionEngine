@@ -1,3 +1,5 @@
+require 'securerandom'
+
 # Common error language
 $required_error = 'This field is required.'
 $integer_error = 'This field must contain an integer.'
@@ -111,8 +113,13 @@ def reset_db
   clear_db_result
 
   # Installer should not drop in database
-  unless ENV.key?('installer')
+  unless ENV.key?('installer') || ENV.key?('updater')
     $db.query(IO.read('sql/database.sql'))
+    clear_db_result
+  end
+
+  if ENV.key?('updater')
+    $db.query(IO.read('sql/database_2x.sql'))
     clear_db_result
   end
 

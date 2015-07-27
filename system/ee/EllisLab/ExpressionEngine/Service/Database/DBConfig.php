@@ -126,6 +126,11 @@ class DBConfig implements Config {
 	 */
 	public function getGroupConfig($group = '')
 	{
+		if ( ! empty($group))
+		{
+			$this->active_group = $group;
+		}
+
 		$database_config = $this->get();
 
 		if (empty($database_config))
@@ -175,5 +180,25 @@ class DBConfig implements Config {
 		}
 
 		return $prefer_default;
+	}
+
+	/**
+	 * Get the default values
+	 *
+	 * @return array Default values for config
+	 */
+	public function getDefaults()
+	{
+		return $this->defaults;
+	}
+
+	/**
+	 * Get the name of the active group
+	 *
+	 * @return string Name of the active database group
+	 */
+	public function getActiveGroup()
+	{
+		return $this->active_group;
 	}
 }

@@ -317,7 +317,6 @@ class Forum_upd {
 		) DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci";
 
 		$sql[] = "CREATE TABLE exp_forum_moderators (
-
 			mod_id int(6) unsigned NOT NULL auto_increment,
 			board_id int(6) unsigned NOT NULL DEFAULT '1',
 			mod_forum_id int(6) unsigned NOT NULL,

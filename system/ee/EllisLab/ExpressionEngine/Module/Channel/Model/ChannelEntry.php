@@ -82,7 +82,7 @@ class ChannelEntry extends ContentModel {
 		'channel_id'         => 'required',
 		'ip_address'         => 'ip_address',
 		'title'              => 'required',
-		'url_title'          => 'required',
+		'url_title'          => 'required|alphaDash',
 		'status'             => 'required',
 		'entry_date'         => 'required',
 		'versioning_enabled' => 'enum[y,n]',
@@ -91,7 +91,7 @@ class ChannelEntry extends ContentModel {
 	);
 
 	protected static $_events = array(
-		'afterDelete',
+		'beforeDelete',
 		'afterSave'
 	);
 
@@ -199,10 +199,8 @@ class ChannelEntry extends ContentModel {
 		}
 	}
 
-	public function onAfterDelete()
+	public function onBeforeDelete()
 	{
-		$this->Autosaves->delete();
-
 		foreach ($this->getModulesWithTabs() as $name => $info)
 		{
 			include_once($info->getPath() . '/tab.' . $name . '.php');

@@ -245,7 +245,7 @@ class Buttons extends Profile {
 
 	/**
 	 * Save HTMLButtons
-	 * 
+	 *
 	 * @access private
 	 * @return void
 	 */
@@ -394,7 +394,7 @@ class Buttons extends Profile {
 			}
 		}
 
-		$result .= ee()->cp->render('_shared/toolbar', array('toolbar_items' => $buttons), TRUE);
+		$result .= ee('View')->make('ee:_shared/toolbar')->render(array('toolbar_items' => $buttons));
 		return $result;
 	}
 
