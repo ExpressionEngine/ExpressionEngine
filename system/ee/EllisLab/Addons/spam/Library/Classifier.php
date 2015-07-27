@@ -1,4 +1,7 @@
 <?php
+
+namespace EllisLab\Addons\Spam\Library;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -92,7 +95,6 @@ class Classifier {
 			}
 			else
 			{
-				// Compute probability Using Paul Graham's formula
 				$prob = $class_prob * $this->ratio;
 				$prob = $prob / ($prob + $other_prob * (1 - $this->ratio));
 			}

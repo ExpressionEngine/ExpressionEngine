@@ -86,7 +86,7 @@ class Training {
 	 */
 	public function load_classifier($vectorizers)
 	{
-		$collection = new Collection($vectorizers);
+		$collection = ee('spam:Collection', $vectorizers);
 
 		if (function_exists('shmop_open'))
 		{
@@ -174,7 +174,7 @@ class Training {
 			'ham' => $this->_get_parameters('ham'),
 		);
 
-		return new Classifier($training, $collection, $stop_words);
+		return ee('spam:Classifier', $training, $collection, $stop_words);
 	}
 
 	// --------------------------------------------------------------------
@@ -200,7 +200,7 @@ class Training {
 
 		foreach ($query->result() as $parameter)
 		{
-			$result[] = new Distribution($parameter->mean, $parameter->variance);
+			$result[] = ee('spam:Distribution', $parameter->mean, $parameter->variance);
 		}
 	
 		return $result;

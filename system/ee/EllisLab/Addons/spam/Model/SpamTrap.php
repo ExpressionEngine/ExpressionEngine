@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Addons\Spam\Model;
+namespace EllisLab\Addons\Spam\Model;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 

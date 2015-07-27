@@ -26,18 +26,6 @@ namespace EllisLab\Addons\Spam\Service;
  * @link		http://ellislab.com
  */
 
-require_once PATH_MOD . 'spam/Service/Training.php';
-require_once PATH_MOD . 'spam/Library/Source.php';
-
-// Include our vectorizer rules
-require_once PATH_MOD . 'spam/Library/Vectorizers/ASCII_Printable.php';
-require_once PATH_MOD . 'spam/Library/Vectorizers/Entropy.php';
-require_once PATH_MOD . 'spam/Library/Vectorizers/Links.php';
-require_once PATH_MOD . 'spam/Library/Vectorizers/Punctuation.php';
-require_once PATH_MOD . 'spam/Library/Vectorizers/Spaces.php';
-require_once PATH_MOD . 'spam/Library/Vectorizers/Tfidf.php';
-
-
 class Spam {
 
 	/**
@@ -70,7 +58,7 @@ class Spam {
 		$ip = str_replace('.', ' ', $ip);
 
 		$text = implode(' ', array($username, $email, $url, $ip));
-		$source = new Source($text);
+		$source = ee('spam:Source', $text);
 
 		return $this->member_classifier->classify($source, 'spam');
 	}
@@ -87,7 +75,7 @@ class Spam {
 	 */
 	public function classify($source)
 	{
-		$source = new Source($source);
+		$source = ee('spam:Source', $source);
 		return $this->classifier->classify($source, 'spam');
 	}
 
@@ -128,22 +116,22 @@ class Spam {
 	 */
 	public function load_default_classifier()
 	{
-		$training = new Spam_training('default');
+		$training = ee('spam:Training', 'default');
 		$stop_words = explode("\n", file_get_contents(PATH_MOD . $training->stop_words_path));
-		$tokenizer = new Tokenizer();
+		$tokenizer = ee('spam:Tokenizer');
 
 		// Prep the the TFIDF vectorizer with the vocabulary we have stored
-		$tfidf = new Tfidf(array(), $tokenizer, $stop_words);
+		$tfidf = ee('spam:Tfidf', array(), $tokenizer, $stop_words);
 		$tfidf->vocabulary = $training->get_vocabulary();
 		$tfidf->document_count = $training->get_document_count();
 		$tfidf->generate_lookups();
 
 		$vectorizers = array();
-		$vectorizers[] = new ASCII_Printable();
-		$vectorizers[] = new Entropy();
-		$vectorizers[] = new Links();
-		$vectorizers[] = new Punctuation();
-		$vectorizers[] = new Spaces();
+		$vectorizers[] = ee('spam:Vectorizers/ASCII_Printable');
+		$vectorizers[] = ee('spam:Vectorizers/Entropy');
+		$vectorizers[] = ee('spam:Vectorizers/Links');
+		$vectorizers[] = ee('spam:Vectorizers/Punctuation');
+		$vectorizers[] = ee('spam:Vectorizers/Spaces');
 
 		return $training->load_classifier($vectorizers);
 	}
@@ -156,19 +144,19 @@ class Spam {
 	 */
 	public function load_member_classifier()
 	{
-		$training = new Spam_training('member');
+		$training = ee('spam:Training', 'member');
 		$stop_words = explode("\n", file_get_contents(PATH_MOD . $training->stop_words_path));
-		$tokenizer = new Tokenizer();
+		$tokenizer = ee('spam:Tokenizer');
 
-		$tfidf = new Tfidf(array(), $tokenizer, $stop_words);
+		$tfidf = ee('spam:Tfidf', array(), $tokenizer, $stop_words);
 		$tfidf->vocabulary = $training->get_vocabulary();
 		$tfidf->document_count = $training->get_document_count();
 		$tfidf->generate_lookups();
 
 		$vectorizers = array();
 		$vectorizers[] = $tfidf;
-		$vectorizers[] = new ASCII_Printable();
-		$vectorizers[] = new Punctuation();
+		$vectorizers[] = ee('spam:Vectorizers/ASCIIPrintable');
+		$vectorizers[] = ee('spam:Vectorizers/Punctuation');
 
 		return $training->load_classifier($vectorizers);
 	}

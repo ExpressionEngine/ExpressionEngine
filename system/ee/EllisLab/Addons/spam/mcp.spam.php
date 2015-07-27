@@ -31,8 +31,6 @@ use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
  * @link		http://ellislab.com
  */
 
-require_once PATH_MOD . 'spam/libraries/Spam_core.php';
-
 class Spam_mcp {
 
 	public $stop_words_path = "spam/training/stopwords.txt";
@@ -58,7 +56,7 @@ class Spam_mcp {
 	 */
 	public function index()
 	{
-		$table = Table::create();
+		$table = ee('CP/Table');
 		$data = array();
 		$trapped = array();
 		$trap = $this->_get_spam_trap();
@@ -151,7 +149,7 @@ class Spam_mcp {
 		return ee()->cp->render('index', $data, TRUE);
 	}
 
-	public function config()
+	public function settings()
 	{
 		ee()->load->library('form_validation');
 
@@ -218,7 +216,8 @@ class Spam_mcp {
 		ee()->view->cp_page_title = lang('spam_settings');
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_saving';
-		ee()->cp->render('_shared/form', $vars, TRUE);
+
+		return ee()->cp->render('_shared/form', $vars, TRUE);
 	}
 
 	/**
@@ -295,7 +294,7 @@ class Spam_mcp {
 
 		foreach ($query->result() as $document)
 		{
-			$bayes = new Spam_core();
+			$bayes = ee('spam:Core');
 			$classification = (int) $bayes->classifier->classify($document->source, 'spam');
 
 			if($classification > $document->class)
@@ -499,7 +498,7 @@ class Spam_mcp {
 	 */
 	private function _set_vocabulary($document)
 	{
-		$document = new Document($document);
+		$document = ee('spam:Document', $document);
 		
 		foreach ($document->words as $word)
 		{
@@ -594,7 +593,7 @@ class Spam_mcp {
 			{
 				// Zipped is now an array of values for a particular feature and 
 				// class. Time to do some estimates.
-				$sample = new Expectation($feature);
+				$sample = ee('spam:Expectation', $feature);
 
 				$training[] = array(
 					'kernel_id' => $kernel,
@@ -636,18 +635,18 @@ class Spam_mcp {
 			$training[] = implode(' ', array($member->username, $member->email, $member->url, $ip));
 		}
 
-		$tokenizer = new Tokenizer();
+		$tokenizer = ee('spam:Tokenizer');
 		$training_classes = array();
 
 		$vocabulary = array();
 		$kernel = $this->_get_kernel('member');
-		$tfidf = new Tfidf($training, $tokenizer);
+		$tfidf = ee('spam:Vectorizers/Tfidf', $training, $tokenizer);
 
 		$vectorizers = array();
 		$vectorizers[] = $tfidf;
-		$vectorizers[] = new ASCII_Printable();
-		$vectorizers[] = new Punctuation();
-		$training_collection = new Collection($vectorizers);
+		$vectorizers[] = ee('spam:Vectorizers/ASCIIPrintable');
+		$vectorizers[] = ee('spam:Vectorizers/Punctuation');
+		$training_collection = ee('spam:Collection', $vectorizers);
 
 		foreach ($tfidf->vocabulary as $term => $count)
 		{
@@ -670,7 +669,7 @@ class Spam_mcp {
 
 		$this->_set_maximum_likelihood($training_classes, 'member');
 
-		$spam_training = new Spam_training('default');
+		$spam_training = ee('spam:Spam_training', 'default');
 		$spam_training->delete_classifier();
 	}
 
@@ -686,15 +685,15 @@ class Spam_mcp {
 		$training_data = $this->_get_training_data(10000);
 		$classes = $training_data[1];
 
-		$tokenizer = new Tokenizer();
-		$tfidf = new Tfidf($training_data[0], $tokenizer, $stop_words);
+		$tokenizer = ee('spam:Tokenizer');
+		$tfidf = ee('spam:Tfidf', $training_data[0], $tokenizer, $stop_words);
 		$vectorizers = array();
-		$vectorizers[] = new ASCII_Printable();
-		$vectorizers[] = new Entropy();
-		$vectorizers[] = new Links();
-		$vectorizers[] = new Punctuation();
-		$vectorizers[] = new Spaces();
-		$training_collection = new Collection($vectorizers);
+		$vectorizers[] = ee('spam:Vectorizers/ASCII_Printable');
+		$vectorizers[] = ee('spam:Vectorizers/Entropy');
+		$vectorizers[] = ee('spam:Vectorizers/Links');
+		$vectorizers[] = ee('spam:Vectorizers/Punctuation');
+		$vectorizers[] = ee('spam:Vectorizers/Spaces');
+		$training_collection = ee('spam:Collection', $vectorizers);
 
 		$training_classes = array();
 		$training = array();
@@ -724,7 +723,7 @@ class Spam_mcp {
 		}
 
 		$this->_set_maximum_likelihood($training_classes);
-		$spam_training = new Spam_training('default');
+		$spam_training = ee('spam:Spam_training', 'default');
 		$spam_training->delete_classifier();
 	}
 }
