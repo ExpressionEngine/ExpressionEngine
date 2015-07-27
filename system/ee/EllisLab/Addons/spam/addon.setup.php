@@ -13,6 +13,13 @@ return array(
 		'Spam' => function($ee)
 		{
 			return new Spam();
-		},
+		}
+	),
+	'models' => array(
+		'SpamKernel' => 'Model\SpamKernel',
+		'SpamParameter' => 'Model\SpamParameter',
+		'SpamVocabulary' => 'Model\SpamVocabulary',
+		'SpamTraining' => 'Model\SpamTraining',
+		'SpamTrap' => 'Model\SpamTrap',
 	)
 );
