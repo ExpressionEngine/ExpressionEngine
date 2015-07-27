@@ -135,7 +135,7 @@ class Blacklist_mcp {
 
 		}
 
-		return ee()->load->view('index', $vars, TRUE);
+		return ee('View')->make('blacklist:index')->render($vars);
 	}
 
 	// --------------------------------------------------------------------
