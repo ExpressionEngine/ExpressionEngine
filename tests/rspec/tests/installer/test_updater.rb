@@ -5,7 +5,14 @@ require './bootstrap.rb'
 # `before` calls.
 
 feature 'Updater' do
-  let(:new_version) { '3.0.0' }
+  let(:new_version) do
+    wizard = File.open(
+      File.expand_path('../../system/ee/installer/controllers/wizard.php')
+    )
+    wizard.read.match(/public \$version\s+= '(.*?)';/) do |match|
+      return match[1]
+    end
+  end
 
   before :all do
     ENV['updater'] = 'true'
