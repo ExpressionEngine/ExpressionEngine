@@ -61,12 +61,23 @@ module Installer
       File.rename(config_temp, @config)
     end
 
+    def delete_database_config
+      FileUtils.rm @database if File.exist?(@database)
+    end
+
     # Replaces current database config with file of your choice
     #
     # @param [String] file Path to file you want, ideally use File.expand_path
     # @param [Hash] options Hash of options for replacing
     # @return [void]
     def replace_database_config(file, options = {})
+      File.rename(@database, @database + '.tmp') if File.exist?(@database)
+      FileUtils.cp(file, @database) if File.exist?(file)
+      FileUtils.chmod(0666, @database) if File.exist?(@database)
+
+      # Replace important values
+      return unless File.exist?(file)
+
       defaults = {
         database: $test_config[:db_name],
         dbdriver: 'mysqli',
@@ -74,14 +85,8 @@ module Installer
         password: $test_config[:db_password],
         username: $test_config[:db_username]
       }
-      options = defaults.merge(options)
 
-      File.rename(@database, @database + '.tmp') if File.exist?(@database)
-      FileUtils.cp(file, @database) if File.exist?(file)
-      FileUtils.chmod(0666, @database) if File.exist?(@database)
-
-      # Replace important values
-      options.each { |key, value|
+      defaults.merge(options).each do |key, value|
         swap(
           @database,
           /\['#{key}'\] = '.*?';/,
