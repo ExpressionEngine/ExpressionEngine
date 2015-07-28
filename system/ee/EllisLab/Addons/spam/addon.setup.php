@@ -17,6 +17,7 @@ return array(
 			return new Training($kernel);
 		},
 		'Classifier' => 'Library\Classifier',
+		'Collection' => 'Library\Collection',
 		'Distribution' => 'Library\Distribution',
 		'Document' => 'Library\Document',
 		'Expectation' => 'Library\Expectation',
