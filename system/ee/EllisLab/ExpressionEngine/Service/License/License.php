@@ -227,7 +227,7 @@ class License {
 
 			if ( ! $valid)
 			{
-				$errors['invalid_signature'] = "The license file has been tampered with";
+				$this->errors['invalid_signature'] = "The license file has been tampered with";
 			}
 
 			return $valid;
