@@ -381,9 +381,11 @@ class Wizard extends CI_Controller {
 		}
 
 		// Check for database.php, otherwise get normal config
-		$db = $this->getDbConfig();
-
-		if ( ! isset($db))
+		try
+		{
+			$db = $this->getDbConfig();
+		}
+		catch (Exception $e)
 		{
 			$this->set_output('error', array('error' => lang('database_no_data')));
 			return FALSE;
@@ -807,18 +809,23 @@ class Wizard extends CI_Controller {
 	 */
 	public function getDbConfig()
 	{
-		$dbConfig = ee('Database')->getConfig();
+		$db_config = ee('Database')->getConfig();
 
 		try
 		{
-			return $dbConfig->getGroupConfig();
+			return $db_config->getGroupConfig();
 		}
 		catch (Exception $e)
 		{
 			// Suppress errors, if we can't find it, move along
 			if (@include_once(SYSPATH.'/user/config/database.php'))
 			{
-				return $db[$dbConfig->getActiveGroup()];
+				$group_config = $db[$db_config->getActiveGroup()];
+
+				if ( ! empty($group_config))
+				{
+					return $group_config;
+				}
 			}
 
 			throw new \Exception(lang('database_no_data'));
