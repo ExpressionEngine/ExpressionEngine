@@ -254,7 +254,7 @@ class License {
 	 */
 	public function signatureIsValid()
 	{
-		if ( ! $this->isSigned())
+		if ( ! $this->isSigned() || empty($this->pubkey))
 		{
 			return FALSE;
 		}
