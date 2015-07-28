@@ -47,6 +47,22 @@ class Msm extends CP_Controller {
 
 		$this->stdHeader();
 		$this->sidebarMenu();
+
+		$license = ee('License')->getEELicense();
+		if ( ! $license->isValid())
+		{
+			$alert = ee('Alert')->makeBanner('invalid-license')
+				->asWarning()
+				->cannotClose()
+				->withTitle('invalid_license');
+
+			foreach ($license->getErrors() as $key => $value)
+			{
+				$alert->addToBody(lang($key) . "<br><em>{$value}</em>");
+			}
+
+			$alert->now();
+		}
 	}
 
 	protected function sidebarMenu($active = NULL)
