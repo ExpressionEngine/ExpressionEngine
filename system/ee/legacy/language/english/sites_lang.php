@@ -33,6 +33,8 @@ $lang = array(
 'site_deleted' => 'Site Deleted',
 'site_created' => 'Site Created',
 'site_updated' => 'Site Updated',
+'site_limit_reached' => 'Site limit reached',
+'site_limit_reached_desc' => 'Site manager allows you to manage additional websites from a single ExpressionEngine installation. You have reached this limit.</p><p>You can <a href="https://store.ellislab.com/manage" rel="external">purchase additional site licenses</a> at EllisLab.com.',
 
 ''=>''
 );
