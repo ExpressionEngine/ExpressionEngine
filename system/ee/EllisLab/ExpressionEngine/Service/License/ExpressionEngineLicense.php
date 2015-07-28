@@ -39,7 +39,14 @@ class ExpressionEngineLicense extends License {
 			return FALSE;
 		}
 
-		return $this->validLicenseNumber();
+		$valid = $this->validLicenseNumber();
+
+		if ( ! $valid)
+		{
+			$this->errors['invalid_license_number'] = "The license number is invalid";
+		}
+
+		return $valid;
 	}
 
 	/**
