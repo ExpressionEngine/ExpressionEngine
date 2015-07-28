@@ -217,6 +217,7 @@ class License {
 
 		if (empty($this->data))
 		{
+			$this->errors['corrupt_license_file'] = "The license is missing its data.";
 			return FALSE;
 		}
 
