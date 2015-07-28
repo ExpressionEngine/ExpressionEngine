@@ -27,12 +27,7 @@ class ExpressionEngineLicense extends License {
 
 	public function isValid()
 	{
-		if ( ! $this->isSigned())
-		{
-			return FALSE;
-		}
-
-		if ( ! $this->signatureIsValid())
+		if (parent::isValid() === FALSE)
 		{
 			return FALSE;
 		}
@@ -47,12 +42,12 @@ class ExpressionEngineLicense extends License {
 			return FALSE;
 		}
 
-		return ($current_number_of_sites < $this->data['sites']);
+		return ($current_number_of_sites < $this->getData('sites'));
 	}
 
 	protected function validLicenseNumber()
 	{
-		$license = $this->data['license_number'];
+		$license = $this->getData('license_number');
 
 		if (count(count_chars(str_replace('-', '', $license), 1)) == 1 OR $license == '1234-1234-1234-1234')
 		{
