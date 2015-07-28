@@ -25,6 +25,13 @@ namespace EllisLab\ExpressionEngine\Service\License;
  */
 class ExpressionEngineLicense extends License {
 
+	/**
+	 * Overrides the parent isValid check to add an additional check to ensure
+	 * the license number matches the correct patterns.
+	 *
+	 * @see License::isValid()
+	 * @return bool TRUE if the license is valid, FALSE if not.
+	 */
 	public function isValid()
 	{
 		if (parent::isValid() === FALSE)
@@ -35,6 +42,13 @@ class ExpressionEngineLicense extends License {
 		return $this->validLicenseNumber();
 	}
 
+	/**
+	 * Checks the license against the argument to determine if a site can
+	 * be added.
+	 *
+	 * @param int $current_number_of_site The number of defined sites
+	 * @return bool TRUE if a site can be added, FALSE if not.
+	 */
 	public function canAddSites($current_number_of_sites)
 	{
 		if ( ! $this->isValid() || $current_number_of_sites < 1)
@@ -45,6 +59,11 @@ class ExpressionEngineLicense extends License {
 		return ($current_number_of_sites < $this->getData('sites'));
 	}
 
+	/**
+	 * Validates the license number in the license file
+	 *
+	 * @return bool TRUE if a site can be added, FALSE if not.
+	 */
 	protected function validLicenseNumber()
 	{
 		$license = $this->getData('license_number');
