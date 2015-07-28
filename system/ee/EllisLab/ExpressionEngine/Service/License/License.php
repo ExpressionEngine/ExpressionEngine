@@ -49,10 +49,12 @@ class License {
 
 	protected function parseLicenseFile()
 	{
-		if ($parsed)
+		if ($this->parsed)
 		{
 			return;
 		}
+
+		$this->parsed = TRUE;
 
 		// Reset the errors
 		unset($this->errors['missing_license']);
@@ -80,8 +82,6 @@ class License {
 		{
 			$this->signature = $license['signature'];
 		}
-
-		$this->parsed = TRUE;
 	}
 
 	public function hasErrors()
