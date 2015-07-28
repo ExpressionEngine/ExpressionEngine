@@ -25,10 +25,6 @@ namespace EllisLab\ExpressionEngine\Service\License;
  */
 class ExpressionEngineLicense extends License {
 
-	protected $data = array();
-	protected $signature;
-	protected $pubkey;
-
 	public function isValid()
 	{
 		if ( ! $this->isSigned())
@@ -44,17 +40,14 @@ class ExpressionEngineLicense extends License {
 		return $this->validLicenseNumber();
 	}
 
-	public function canAddSites()
+	public function canAddSites($current_number_of_sites)
 	{
-		if ( ! $this->isValid())
+		if ( ! $this->isValid() || $current_number_of_sites < 1)
 		{
 			return FALSE;
 		}
 
-		// @TODO: Inject this!
-		$sites = ee('Model')->get('Site')->count();
-
-		return ($sites < $this->data['sites']);
+		return ($current_number_of_sites < $this->data['sites']);
 	}
 
 	protected function validLicenseNumber()
