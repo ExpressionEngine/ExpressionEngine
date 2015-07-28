@@ -47,12 +47,20 @@ module Installer
       )
     end
 
-    def replace_config(file = '')
+    # Replace the current config file with another, while backing up the
+    # previous one (e.g. config.php.tmp). Can be reverted by using revert_config
+    #
+    # @param [Type] file The path to the config file you want to use
+    # @return [void]
+    def replace_config(file)
       File.rename(@config, @config + '.tmp') if File.exist?(@config)
       FileUtils.cp(file, @config) if File.exist?(file)
       FileUtils.chmod(0666, @config) if File.exist?(@config)
     end
 
+    # Revert the current config file to the previous (config.php.tmp)
+    #
+    # @return [void]
     def revert_config
       config_temp = @config + '.tmp'
       return unless File.exist?(config_temp)
@@ -92,9 +100,12 @@ module Installer
           /\['#{key}'\] = '.*?';/,
           "['#{key}'] = '#{value}';"
         )
-      }
+      end
     end
 
+    # Revert current database config to previous (database.php.tmp)
+    #
+    # @return [void]
     def revert_database_config
       database_temp = @database + '.tmp'
       return unless File.exist?(database_temp)
@@ -103,6 +114,10 @@ module Installer
       File.rename(database_temp, @database)
     end
 
+    # Set the version in the config file to something else
+    #
+    # @param [Number] version The semver verison number you want to use
+    # @return [void]
     def version=(version)
       swap(
         @config,
