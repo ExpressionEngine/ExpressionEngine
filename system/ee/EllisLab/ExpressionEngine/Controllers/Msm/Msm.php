@@ -3,8 +3,8 @@
 namespace EllisLab\ExpressionEngine\Controllers\Msm;
 
 use CP_Controller;
-
 use EllisLab\ExpressionEngine\Library\CP\Table;
+use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -235,17 +235,16 @@ class Msm extends CP_Controller {
 			ee('CP/URL', 'msm')->compile() => lang('msm_manager'),
 		);
 
-		if ( ! empty($_POST))
-		{
-			$site = ee('Model')->make('Site', $_POST);
-			$site->site_bootstrap_checksums = array();
-			$site->site_pages = array();
-			$result = $site->validate();
+		$errors = NULL;
+		$site = ee('Model')->make('Site');
+		$site->site_bootstrap_checksums = array();
+		$site->site_pages = array();
 
-			if ($response = $this->ajaxValidation($result))
-			{
-			    return $response;
-			}
+		$result = $this->validateSite($site);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
 
 			if ($result->isValid())
 			{
@@ -347,22 +346,15 @@ class Msm extends CP_Controller {
 
 				ee()->functions->redirect(ee('CP/URL', 'msm'));
 			}
-			else
-			{
-				ee('Alert')->makeInline('shared-form')
-					->asIssue()
-					->withTitle(lang('create_site_error'))
-					->addToBody(lang('create_site_error_desc'))
-					->now();
-			}
 		}
 
 		$vars = array(
 			'ajax_validate' => TRUE,
+			'errors' => $errors,
 			'base_url' => ee('CP/URL', 'msm/create'),
 			'save_btn_text' => 'btn_create_site',
 			'save_btn_text_working' => 'btn_saving',
-			'sections' => $this->getForm(ee('Model')->make('Site'), $can_add),
+			'sections' => $this->getForm($site, $can_add),
 		);
 
 		$vars['buttons'] = array(
@@ -406,16 +398,12 @@ class Msm extends CP_Controller {
 			ee('CP/URL', 'msm')->compile() => lang('msm_manager'),
 		);
 
-		if ( ! empty($_POST))
-		{
-			$site->set($_POST);
-			$site->site_system_preferences->is_site_on = ee()->input->post('is_site_on');
-			$result = $site->validate();
+		$errors = NULL;
+		$result = $this->validateSite($site);
 
-			if ($response = $this->ajaxValidation($result))
-			{
-			    return $response;
-			}
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
 
 			if ($result->isValid())
 			{
@@ -431,18 +419,11 @@ class Msm extends CP_Controller {
 
 				ee()->functions->redirect(ee('CP/URL', 'msm/edit/' . $site_id));
 			}
-			else
-			{
-				ee('Alert')->makeInline('shared-form')
-					->asIssue()
-					->withTitle(lang('edit_site_error'))
-					->addToBody(lang('edit_site_error_desc'))
-					->now();
-			}
 		}
 
 		$vars = array(
 			'ajax_validate' => TRUE,
+			'errors' => $errors,
 			'base_url' => ee('CP/URL', 'msm/edit/' . $site_id),
 			'save_btn_text' => 'btn_edit_site',
 			'save_btn_text_working' => 'btn_saving',
@@ -534,6 +515,41 @@ class Msm extends CP_Controller {
 		$sections[0][] = $description;
 
 		return $sections;
+	}
+
+	private function validateSite($site)
+	{
+		if (empty($_POST))
+		{
+			return FALSE;
+		}
+
+		$action = ($site->isNew()) ? 'create' : 'edit';
+
+		$site->set($_POST);
+
+		if ($action == 'edit')
+		{
+			$site->site_system_preferences->is_site_on = ee()->input->post('is_site_on');
+		}
+
+		$result = $site->validate();
+
+		if ($response = $this->ajaxValidation($result))
+		{
+			ee()->output->send_ajax_response($response);
+		}
+
+		if ($result->failed())
+		{
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang($action . '_site_error'))
+				->addToBody(lang($action . '_site_error_desc'))
+				->now();
+		}
+
+		return $result;
 	}
 
 	public function switchTo($site_id)
