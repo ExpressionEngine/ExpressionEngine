@@ -79,9 +79,13 @@ class Updater {
 	 */
 	private function _move_database_information()
 	{
-		require SYSPATH.'/user/config/database.php';
-		ee()->config->_update_dbconfig($db[$active_group]);
-		unlink(SYSPATH.'/user/config/database.php');
+		$database_config = SYSPATH.'/user/config/database.php';
+		if (is_file($database_config))
+		{
+			require $database_config;
+			ee()->config->_update_dbconfig($db[$active_group]);
+			unlink(SYSPATH.'/user/config/database.php');
+		}
 	}
 
 	// -------------------------------------------------------------------------
