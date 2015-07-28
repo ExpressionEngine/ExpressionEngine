@@ -79,12 +79,17 @@ class Updater {
 	 */
 	private function _move_database_information()
 	{
-		$database_config = SYSPATH.'/user/config/database.php';
-		if (is_file($database_config))
+		$db_config_path = SYSPATH.'/user/config/database.php';
+		if (is_file($db_config_path))
 		{
-			require $database_config;
+			require $db_config_path;
 			ee()->config->_update_dbconfig($db[$active_group]);
 			unlink(SYSPATH.'/user/config/database.php');
+		}
+		else if (($db_config = ee()->config->item('database'))
+			&& empty($db_config))
+		{
+			throw new \Exception(lang('database_no_data'));
 		}
 	}
 
