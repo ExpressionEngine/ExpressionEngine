@@ -531,7 +531,7 @@ class Cat extends AbstractChannelsController {
 	 */
 	public function createCat($group_id)
 	{
-		$this->categoryForm($group_id);
+		return $this->categoryForm($group_id);
 	}
 
 	/**
@@ -542,7 +542,7 @@ class Cat extends AbstractChannelsController {
 	 */
 	public function editCat($group_id, $category_id)
 	{
-		$this->categoryForm($group_id, $category_id);
+		return $this->categoryForm($group_id, $category_id);
 	}
 
 	/**
