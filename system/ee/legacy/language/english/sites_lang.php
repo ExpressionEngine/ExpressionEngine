@@ -15,6 +15,7 @@ $lang = array(
 'name_desc' => 'Full descriptive name of this site.',
 'short_name_desc' => 'Short name for this site.<br><i>No spaces. Underscores and dashes are allowed.</i>',
 'description_desc' => 'A brief description of this site.',
+'btn_site_limit_reached' => 'Site Limit reached',
 'btn_create_site' => 'Create Site',
 'btn_edit_site' => 'Edit Site',
 'site_online' => 'Website online?',

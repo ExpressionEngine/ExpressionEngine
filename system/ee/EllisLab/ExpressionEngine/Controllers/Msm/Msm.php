@@ -362,41 +362,17 @@ class Msm extends CP_Controller {
 			'base_url' => ee('CP/URL', 'msm/create'),
 			'save_btn_text' => 'btn_create_site',
 			'save_btn_text_working' => 'btn_saving',
+			'sections' => $this->getForm(ee('Model')->make('Site'), $can_add),
 		);
 
-		$vars['sections'] = array(
+		$vars['buttons'] = array(
 			array(
-				array(
-					'title' => 'name',
-					'desc' => 'name_desc',
-					'fields' => array(
-						'site_label' => array(
-							'type' => 'text',
-							'value' => '',
-							'required' => TRUE
-						)
-					)
-				),
-				array(
-					'title' => 'short_name',
-					'desc' => 'short_name_desc',
-					'fields' => array(
-						'site_name' => array(
-							'type' => 'text',
-							'value' => '',
-							'required' => TRUE
-						)
-					)
-				),
-				array(
-					'title' => 'description',
-					'desc' => 'description_desc',
-					'fields' => array(
-						'site_description' => array(
-							'type' => 'textarea',
-						)
-					)
-				),
+				'text' => 'btn_site_limit_reached',
+				'working' => 'btn_site_limit_reached',
+				'value' => 'btn_site_limit_reached',
+				'class' => 'disable',
+				'name' => 'submit',
+				'type' => 'submit'
 			)
 		);
 
@@ -470,62 +446,94 @@ class Msm extends CP_Controller {
 			'base_url' => ee('CP/URL', 'msm/edit/' . $site_id),
 			'save_btn_text' => 'btn_edit_site',
 			'save_btn_text_working' => 'btn_saving',
-		);
-
-		$vars['sections'] = array(
-			array(
-				array(
-					'title' => 'name',
-					'desc' => 'name_desc',
-					'fields' => array(
-						'site_label' => array(
-							'type' => 'text',
-							'value' => $site->site_label,
-							'required' => TRUE
-						)
-					)
-				),
-				array(
-					'title' => 'short_name',
-					'desc' => 'short_name_desc',
-					'fields' => array(
-						'site_name' => array(
-							'type' => 'text',
-							'value' => $site->site_name,
-							'required' => TRUE
-						)
-					)
-				),
-				array(
-					'title' => 'site_online',
-					'desc' => 'site_online_desc',
-					'fields' => array(
-						'is_site_on' => array(
-							'type' => 'inline_radio',
-							'choices' => array(
-								'y' => 'online',
-								'n' => 'offline'
-							),
-							'value' => $site->site_system_preferences->is_site_on
-						)
-					)
-				),
-				array(
-					'title' => 'description',
-					'desc' => 'description_desc',
-					'fields' => array(
-						'site_description' => array(
-							'type' => 'textarea',
-							'value' => $site->site_description,
-						)
-					)
-				),
-			)
+			'sections' => $this->getForm($site),
 		);
 
 		ee()->view->cp_page_title = lang('edit_site');
 
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	private function getForm($site, $enabled = TRUE)
+	{
+		// It makes more sense to call `getForm($site, $can_add)` than to
+		// negate it in the call. So I'm doing that here.
+		$disabled = !$enabled;
+
+		$sections = array(array());
+
+		if ($disabled)
+		{
+			$alert = ee('Alert')->makeInline('site-limit-reached')
+				->asIssue()
+				->withTitle(lang('site_limit_reached'))
+				->addToBody(lang('site_limit_reached_desc'))
+				->cannotClose()
+				->render();
+			$sections[0][] = $alert;
+		}
+
+		$name = array(
+			'title' => 'name',
+			'desc' => 'name_desc',
+			'fields' => array(
+				'site_label' => array(
+					'type' => 'text',
+					'value' => $site->site_label,
+					'required' => TRUE,
+					'disabled' => $disabled
+				)
+			)
+		);
+		$sections[0][] = $name;
+
+		$short_name = array(
+			'title' => 'short_name',
+			'desc' => 'short_name_desc',
+			'fields' => array(
+				'site_name' => array(
+					'type' => 'text',
+					'value' => $site->site_name,
+					'required' => TRUE,
+					'disabled' => $disabled
+				)
+			)
+		);
+		$sections[0][] = $short_name;
+
+		if ( ! $site->isNew())
+		{
+			$site_online = array(
+				'title' => 'site_online',
+				'desc' => 'site_online_desc',
+				'fields' => array(
+					'is_site_on' => array(
+						'type' => 'inline_radio',
+						'choices' => array(
+							'y' => 'online',
+							'n' => 'offline'
+						),
+						'value' => $site->site_system_preferences->is_site_on
+					)
+				)
+			);
+			$sections[0][] = $site_online;
+		}
+
+		$description = array(
+			'title' => 'description',
+			'desc' => 'description_desc',
+			'fields' => array(
+				'site_description' => array(
+					'type' => 'textarea',
+					'value' => $site->site_description,
+					'disabled' => $disabled
+				)
+			)
+		);
+		$sections[0][] = $description;
+
+		return $sections;
 	}
 
 	public function switchTo($site_id)
