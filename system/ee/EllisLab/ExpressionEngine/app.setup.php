@@ -137,7 +137,7 @@ return array(
 		'License' => function($ee)
 		{
 			$default_key = SYSPATH.'ee/EllisLab/ExpressionEngine/EllisLab.pub';
-			return new License\LicenseFactory($ee, $default_key);
+			return new License\LicenseFactory($default_key);
 		},
 
 		'Model/Datastore' => function($ee)

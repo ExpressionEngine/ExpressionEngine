@@ -2,7 +2,6 @@
 namespace EllisLab\ExpressionEngine\Service\License;
 
 use InvalidArgumentException;
-use EllisLab\ExpressionEngine\Service\Dependency\ServiceProvider;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -28,29 +27,11 @@ use EllisLab\ExpressionEngine\Service\Dependency\ServiceProvider;
  */
 class LicenseFactory {
 
-	/**
-	 * @var InjectionContainer A referrence to a InjectionContainer
-	 */
-	protected $container;
-
 	protected $default_key;
 
-	public function __construct(ServiceProvider $container, $pubkey)
+	public function __construct($pubkey)
 	{
-		$this->setDIContainer($container);
 		$this->default_key = $pubkey;
-	}
-
-	/**
-	 * Sets the InjectionContainer for the Factory
-	 *
-	 * @param InjectionContainer $container The container to use
-	 * @return self This returns a reference to itself
-	 */
-	public function setDIContainer(ServiceProvider $container)
-	{
-		$this->container = $container;
-		return $this;
 	}
 
 	public function get($path_to_license, $pubkey = '')
