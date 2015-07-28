@@ -63,7 +63,16 @@ class LicenseFactory {
 	{
 		// @TODO: Inject the path.
 		$path = SYSPATH.'user/config/license.key';
-		return new ExpressionEngineLicense($path, $this->default_key);
+		try
+		{
+			$license = new ExpressionEngineLicense($path, $this->default_key);
+		}
+		catch (Exception $e)
+		{
+			$license = NULL;
+		}
+
+		return $license;
 	}
 
 }
