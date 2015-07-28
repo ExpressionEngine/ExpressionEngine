@@ -119,6 +119,7 @@ class Status extends AbstractChannelsController {
 	{
 		if (is_null($group_id))
 		{
+			$alert_key = 'created';
 			ee()->view->cp_page_title = lang('create_status_group');
 			ee()->view->base_url = ee('CP/URL', 'channels/status/create');
 			ee()->view->save_btn_text = 'create_status_group';
@@ -135,6 +136,7 @@ class Status extends AbstractChannelsController {
 				show_error(lang('unauthorized_access'));
 			}
 
+			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_status_group');
 			ee()->view->base_url = ee('CP/URL', 'channels/status/edit/'.$group_id);
 			ee()->view->save_btn_text = 'edit_status_group';
@@ -171,14 +173,17 @@ class Status extends AbstractChannelsController {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			$group_id = $this->saveStatusGroup($group_id);
+			$status_group = $this->saveStatusGroup($group_id);
 
-			ee()->session->set_flashdata('highlight_id', $group_id);
+			if (is_null($group_id))
+			{
+				ee()->session->set_flashdata('highlight_id', $status_group->getId());
+			}
 
 			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
-				->withTitle(lang('status_group_saved'))
-				->addToBody(lang('status_group_saved_desc'))
+				->withTitle(lang('status_group_'.$alert_key))
+				->addToBody(sprintf(lang('status_group_'.$alert_key.'_desc'), $status_group->group_name))
 				->defer();
 
 			ee()->functions->redirect(ee('CP/URL', 'channels/status'));
@@ -187,8 +192,8 @@ class Status extends AbstractChannelsController {
 		{
 			ee('Alert')->makeInline('shared-form')
 				->asIssue()
-				->withTitle(lang('status_group_not_saved'))
-				->addToBody(lang('status_group_not_saved_desc'))
+				->withTitle(lang('status_group_not_'.$alert_key))
+				->addToBody(lang('status_group_not_'.$alert_key.'_desc'))
 				->now();
 		}
 
@@ -231,8 +236,8 @@ class Status extends AbstractChannelsController {
 	/**
 	 * Saves a status group
 	 *
-	 * @param	int $group_id ID of status group to save
-	 * @return	int ID of status group saved
+	 * @param	int		$group_id ID of status group to save
+	 * @return	Model	Status group model object
 	 */
 	private function saveStatusGroup($group_id = NULL)
 	{
@@ -247,9 +252,8 @@ class Status extends AbstractChannelsController {
 
 		$status_group->site_id = ee()->config->item('site_id');
 		$status_group->group_name = ee()->input->post('group_name');
-		$status_group->save();
 
-		return $status_group->getId();
+		return $status_group->save();
 	}
 
 	/**
@@ -455,6 +459,7 @@ class Status extends AbstractChannelsController {
 
 		if (is_null($status_id))
 		{
+			$alert_key = 'created';
 			ee()->view->cp_page_title = lang('create_status');
 			ee()->view->base_url = ee('CP/URL', 'channels/status/create-status/'.$group_id);
 			ee()->view->save_btn_text = 'create_status';
@@ -471,6 +476,7 @@ class Status extends AbstractChannelsController {
 				show_error(lang('unauthorized_access'));
 			}
 
+			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_status');
 			ee()->view->base_url = ee('CP/URL', 'channels/status/edit-status/'.$group_id.'/'.$status_id);
 			ee()->view->save_btn_text = 'edit_status';
@@ -559,14 +565,17 @@ class Status extends AbstractChannelsController {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			$status_id = $this->saveStatus($group_id, $status_id);
+			$status = $this->saveStatus($group_id, $status_id);
 
-			ee()->session->set_flashdata('highlight_id', $status_id);
+			if (is_null($status_id))
+			{
+				ee()->session->set_flashdata('highlight_id', $status->getId());
+			}
 
 			ee('Alert')->makeInline('shared-form')
 				->asSuccess()
-				->withTitle(lang('status_saved'))
-				->addToBody(lang('status_saved_desc'))
+				->withTitle(lang('status_'.$alert_key))
+				->addToBody(sprintf(lang('status_'.$alert_key.'_desc'), $status->status))
 				->defer();
 
 			ee()->functions->redirect(ee('CP/URL', 'channels/status/status-list/'.$group_id));
@@ -575,8 +584,8 @@ class Status extends AbstractChannelsController {
 		{
 			ee('Alert')->makeInline('shared-form')
 				->asIssue()
-				->withTitle(lang('status_not_saved'))
-				->addToBody(lang('status_not_saved_desc'))
+				->withTitle(lang('status_not_'.$alert_key))
+				->addToBody(lang('status_not_'.$alert_key.'_desc'))
 				->now();
 		}
 
@@ -691,7 +700,7 @@ class Status extends AbstractChannelsController {
 	 *
 	 * @param	model	$group_id	Group ID for status
 	 * @param	model	$status_id	Status ID if editing
-	 * @return	int		Status ID of newly-saved status
+	 * @return	Model	Status model object
 	 */
 	private function saveStatus($group_id, $status_id = NULL)
 	{
@@ -726,9 +735,7 @@ class Status extends AbstractChannelsController {
 			$status->NoAccess = NULL;
 		}
 
-		$status->save();
-
-		return $status->status_id;
+		return $status->save();
 	}
 }
 // EOF

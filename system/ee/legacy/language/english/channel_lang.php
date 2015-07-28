@@ -594,13 +594,21 @@ $lang = array(
 
 'status_group_name_desc' => 'Descriptive name of this status group.',
 
-'status_group_saved' => 'Status group saved',
+'status_group_created' => 'Status Group Created',
 
-'status_group_saved_desc' => 'Your status group has been saved successfully.',
+'status_group_created_desc' => 'The status group <b>%s</b> has been created.',
 
-'status_group_not_saved' => 'Attention: Status group not saved',
+'status_group_not_created' => 'Cannot Create Status Group',
 
-'status_group_not_saved_desc' => 'We were unable to save your status group, please review and fix errors below.',
+'status_group_not_created_desc' => 'We were unable to create this status group, please review and fix errors below.',
+
+'status_group_updated' => 'Status Group Updated',
+
+'status_group_updated_desc' => 'The status group <b>%s</b> has been updated.',
+
+'status_group_not_updated' => 'Cannot Update Status Group',
+
+'status_group_not_updated_desc' => 'We were unable to update this status group, please review and fix errors below.',
 
 'status_name' => 'Status Name',
 
@@ -630,15 +638,23 @@ $lang = array(
 
 'status_access_desc' => 'Users in selected groups will be allowed to access this status.</em><em>Super Administrators are <b>always</b> allowed.',
 
-'status_saved' => 'Status saved',
+'status_created' => 'Status Created',
 
-'status_saved_desc' => 'Your status has been saved successfully.',
+'status_created_desc' => 'The status <b>%s</b> has been created.',
 
-'status_not_saved' => 'Attention: Status not saved',
+'status_not_created' => 'Cannot Create Status',
 
-'status_not_saved_desc' => 'We were unable to save your status, please review and fix errors below.',
+'status_not_created_desc' => 'We were unable to create this status, please review and fix errors below.',
 
-'duplicate_status_group_name' => 'A status group already exists with the same name.',
+'status_updated' => 'Status Updated',
+
+'status_updated_desc' => 'The status <b>%s</b> has been updated.',
+
+'status_not_updated' => 'Cannot Update Status',
+
+'status_not_updated_desc' => 'We were unable to update this status, please review and fix errors below.',
+
+'duplicate_status_group_name' => 'A status already exists with the same name.',
 
 'duplicate_status_name' => 'A status already exists with the same name.',
 
