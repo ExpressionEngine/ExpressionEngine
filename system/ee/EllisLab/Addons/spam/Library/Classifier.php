@@ -26,11 +26,6 @@ namespace EllisLab\Addons\Spam\Library;
  * @link		http://ellislab.com
  */
 
-require_once PATH_MOD . 'spam/Library/Vectorize.php';
-require_once PATH_MOD . 'spam/Library/Tokenizer.php';
-require_once PATH_MOD . 'spam/Library/Expectation.php';
-require_once PATH_MOD . 'spam/Library/Distribution.php';
-
 class Classifier {
 
 	public $classes = array();

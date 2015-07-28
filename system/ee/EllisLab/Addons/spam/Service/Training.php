@@ -26,8 +26,6 @@ namespace EllisLab\Addons\Spam\Service;
  * @link		http://ellislab.com
  */
 
-require_once PATH_MOD . 'spam/Library/Classifier.php';
-
 class Training {
 
 	public $name = 'Spam Filter';
@@ -188,17 +186,14 @@ class Training {
 	 */
 	private function _get_parameters($class)
 	{
-		$class = ($class == 'spam') ? 1 : 0;
-
-		ee()->db->select('mean, variance');
-		ee()->db->from('spam_parameters');
-		ee()->db->where('class', $class);
-		ee()->db->where('kernel_id', $this->kernel);
-		$query = ee()->db->get();
-
 		$result = array();
+		$class = ($class == 'spam') ? 1 : 0;
+		$parameters =  ee('Model')->get('SpamParameter')
+						->filter('kernel_id', $kernel_id)
+						->filter('class', $class)
+						->all();
 
-		foreach ($query->result() as $parameter)
+		foreach ($parameters as $parameter)
 		{
 			$result[] = ee('spam:Distribution', $parameter->mean, $parameter->variance);
 		}
@@ -217,19 +212,7 @@ class Training {
 	public function get_vocabulary($kernel = "")
 	{
 		$kernel = $this->_get_kernel($kernel) ?: $this->kernel;
-		ee()->db->select('term, count');
-		ee()->db->from('spam_vocabulary');
-		ee()->db->where('kernel_id', $kernel);
-		$query = ee()->db->get();
-
-		$result = array();
-
-		foreach ($query->result() as $word)
-		{
-			$result[$word->term] = $word->count;
-		}
-
-		return $result;
+		return ee('Model')->get('SpamVocabulary')->filter('kernel_id')->all()->getDictionary('term', 'count');
 	}
 
 	// --------------------------------------------------------------------
@@ -243,13 +226,7 @@ class Training {
 	public function get_document_count($kernel = "")
 	{
 		$kernel = $this->_get_kernel($kernel) ?: $this->kernel;
-		ee()->db->select("COUNT(training_id) AS cnt");
-		ee()->db->from("spam_training");
-		ee()->db->where('kernel_id', $kernel);
-		$query = ee()->db->get(); 
-		$row = $query->row();
-
-		return $row->cnt;
+		return ee('Model')->get('SpamTraining')->filter('kernel_id', $kernel)->count();
 	}
 
 	/**
@@ -261,16 +238,15 @@ class Training {
 	 */
 	private function _get_kernel($name)
 	{
-		ee()->db->select('kernel_id');
-		ee()->db->from('spam_kernels');
-		ee()->db->where('name', $name);
-		$query = ee()->db->get();
+		$kernel = ee('Model')->get('SpamKernel')->filter('name', $name)->first();
 
-		if ($query->num_rows() > 0)
+		if (empty($kernel))
 		{
-			$row = $query->row();
-			return $row->kernel_id;
+			$kernel = ee('Model')->make('SpamKernel', array('name' => $name));
+			$kernel->save();
 		}
+
+		return $kernel->kernel_id;
 	}
 
 }
