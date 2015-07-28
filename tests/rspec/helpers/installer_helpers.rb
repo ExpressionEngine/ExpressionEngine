@@ -52,10 +52,20 @@ module Installer
     #
     # @param [Type] file The path to the config file you want to use, set to blank to only move existing file
     # @return [void]
-    def replace_config(file = '')
+    def replace_config(file = '', options = {})
       File.rename(@config, @config + '.tmp') if File.exist?(@config)
       FileUtils.cp(file, @config) if File.exist?(file)
       FileUtils.chmod(0666, @config) if File.exist?(@config)
+
+      return if options.empty?
+
+      options.each do |key, value|
+        swap(
+          @config,
+          /\$config\['#{key}'\]\s+=\s+.*?;/,
+          "$config['#{key}'] = '#{value}';"
+        )
+      end
     end
 
     # Revert the current config file to the previous (config.php.tmp)

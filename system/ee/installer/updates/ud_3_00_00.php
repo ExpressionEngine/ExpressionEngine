@@ -369,8 +369,34 @@ class Updater {
 
 			ee()->config->site_prefs('', $site['site_id']);
 
-			if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '') {
-				$templates = ee()->template_model->fetch_last_edit(array('templates.site_id' => $site['site_id']), TRUE);
+			if (ee()->config->item('save_tmpl_files') == 'y')
+			{
+				$tmpl_file_basepath = ee()->config->item('tmpl_file_basepath');
+
+				// Continue to the next site if there's no basepath
+				if (empty($tmpl_file_basepath))
+				{
+					continue;
+				}
+
+				// Change the config for basepath to the new normal if they're
+				// using the old default
+				if (stripos($tmpl_file_basepath, SYSDIR.'/expressionengine/templates') !== FALSE)
+				{
+					ee()->config->set_item(
+						'tmpl_file_basepath',
+						str_replace(
+							'/expressionengine/templates',
+							'/user/templates',
+							$tmpl_file_basepath
+						)
+					);
+				}
+
+				$templates = ee()->template_model->fetch_last_edit(
+					array('templates.site_id' => $site['site_id']),
+					TRUE
+				);
 
 				foreach($templates as $template)
 				{

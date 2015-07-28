@@ -22,10 +22,11 @@ feature 'Updater' do
     @installer.disable_rename
 
     @database = File.expand_path('../circleci/database_2x.php')
+    @config = File.expand_path('../circleci/config_2x.php')
   end
 
   before :each do
-    @installer.replace_config(File.expand_path('../circleci/config_2x.php'))
+    @installer.replace_config(@config)
     @installer.replace_database_config(@database)
 
     @version = '2.20.0'
@@ -38,6 +39,7 @@ feature 'Updater' do
   after :each do
     @installer.revert_config
     @installer.revert_database_config
+    FileUtils.rm_rf '../../system/user/templates/default_site/'
   end
 
   after :all do
@@ -61,19 +63,32 @@ feature 'Updater' do
   end
 
   context 'when updating from 2.x to 3.x' do
-    it 'upgrades using mysql as the dbdriver' do
+    it 'updates using mysql as the dbdriver' do
       @installer.replace_database_config(@database, dbdriver: 'mysql')
       test_update
     end
 
-    it 'upgrades using localhost as the database host' do
+    it 'updates using localhost as the database host' do
       @installer.replace_database_config(@database, hostname: 'localhost')
       test_update
     end
 
-    it 'upgrades using 127.0.0.1 as the database host' do
+    it 'updates using 127.0.0.1 as the database host' do
       @installer.replace_database_config(@database, hostname: '127.0.0.1')
       test_update
+    end
+
+    it 'updates using old template basepath' do
+      @installer.replace_config(@config, tmpl_file_basepath: '../system/expressionengine/templates')
+      test_update
+      File.exist?('../../system/user/templates/default_site/').should == true
+      File.exist?('../../system/expressionengine/templates/default_site/').should == false
+    end
+
+    it 'updates using new template basepath' do
+      @installer.replace_config(@config, tmpl_file_basepath: '../system/user/templates')
+      test_update
+      File.exist?('../../system/user/templates/default_site/').should == true
     end
 
     def test_update
