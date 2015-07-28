@@ -223,6 +223,14 @@ class Msm extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		$license = ee('License')->getEELicense();
+		$can_add = $license->canAddSites(ee('Model')->get('Site')->count());
+
+		if ( ! $can_add && ! empty($_POST))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL', 'msm')->compile() => lang('msm_manager'),
 		);
