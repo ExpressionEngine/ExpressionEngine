@@ -357,16 +357,19 @@ class Msm extends CP_Controller {
 			'sections' => $this->getForm($site, $can_add),
 		);
 
-		$vars['buttons'] = array(
-			array(
-				'text' => 'btn_site_limit_reached',
-				'working' => 'btn_site_limit_reached',
-				'value' => 'btn_site_limit_reached',
-				'class' => 'disable',
-				'name' => 'submit',
-				'type' => 'submit'
-			)
-		);
+		if ( ! $can_add)
+		{
+			$vars['buttons'] = array(
+				array(
+					'text' => 'btn_site_limit_reached',
+					'working' => 'btn_site_limit_reached',
+					'value' => 'btn_site_limit_reached',
+					'class' => 'disable',
+					'name' => 'submit',
+					'type' => 'submit'
+				)
+			);
+		}
 
 		ee()->view->cp_page_title = lang('create_site');
 
