@@ -88,7 +88,7 @@ feature 'Updater' do
 
       sleep 1 # Wait for the updater to finish
 
-      @page.header.text.should include 'ExpressionEngine 3.0.0 Installed'
+      @page.header.text.should include 'ExpressionEngine Updated to 3.0.0'
       @page.req_title.text.should include 'Completed'
       @page.has_submit?.should == true
     end
