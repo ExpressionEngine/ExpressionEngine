@@ -136,7 +136,9 @@ return array(
 
 		'License' => function($ee)
 		{
-			$default_key = SYSPATH.'ee/EllisLab/ExpressionEngine/EllisLab.pub';
+			$default_key_path = SYSPATH.'ee/EllisLab/ExpressionEngine/EllisLab.pub';
+			$default_key = (is_readable($default_key_path)) ? file_get_contents($default_key_path) : '';
+
 			return new License\LicenseFactory($default_key);
 		},
 

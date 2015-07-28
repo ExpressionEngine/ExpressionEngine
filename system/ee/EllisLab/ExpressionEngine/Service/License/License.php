@@ -56,14 +56,7 @@ class License {
 			$this->signature = $license['signature'];
 		}
 
-		if (is_readable($pubkey))
-		{
-			$this->pubkey = file_get_contents($pubkey);
-		}
-		elseif (is_string($pubkey))
-		{
-			$this->pubkey = $pubkey;
-		}
+		$this->pubkey = $pubkey;
 	}
 
 	public function __get($key)
