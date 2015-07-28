@@ -1,6 +1,19 @@
 require './bootstrap.rb'
 
+# Note: Tests need `@page.load` to be called manually since we're manipulating
+# files before testing the upgrade. Please do not add `@page.load` to any of the
+# `before` calls.
+
 feature 'Updater' do
+  let(:new_version) do
+    wizard = File.open(
+      File.expand_path('../../system/ee/installer/controllers/wizard.php')
+    )
+    wizard.read.match(/public \$version\s+= '(.*?)';/) do |match|
+      return match[1]
+    end
+  end
+
   before :all do
     ENV['updater'] = 'true'
 
@@ -19,7 +32,6 @@ feature 'Updater' do
     @installer.version = @version
 
     @page = Installer::Updater.new
-    @page.load
     no_php_js_errors
   end
 
@@ -36,8 +48,16 @@ feature 'Updater' do
   end
 
   it 'appears when using a database.php file' do
+    @page.load
     @page.should have(0).inline_errors
-    @page.header.text.should include "Update ExpressionEngine #{@version} to 3.0.0"
+    @page.header.text.should include "Update ExpressionEngine #{@version} to #{@new_version}"
+  end
+
+  it 'shows an error when no database information exists at all' do
+    @installer.delete_database_config
+    @page.load
+    @page.header.text.should include "Error While Installing #{@new_version}"
+    @page.error.text.should include "Unable to locate any database connection information."
   end
 
   context 'when updating from 2.x to 3.x' do
@@ -57,11 +77,13 @@ feature 'Updater' do
     end
 
     def test_update
+      @page.load
+
       @page.should have(0).inline_errors
-      @page.header.text.should include "Update ExpressionEngine #{@version} to 3.0.0"
+      @page.header.text.should include "Update ExpressionEngine #{@version} to #{@new_version}"
       @page.submit.click
 
-      @page.header.text.should include "Updating ExpressionEngine #{@version} to 3.0.0"
+      @page.header.text.should include "Updating ExpressionEngine #{@version} to #{@new_version}"
       @page.req_title.text.should include 'Processing | Step 2 of 3'
 
       sleep 1 # Wait for the updater to finish
