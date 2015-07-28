@@ -654,7 +654,7 @@ $lang = array(
 
 'status_not_updated_desc' => 'We were unable to update this status, please review and fix errors below.',
 
-'duplicate_status_group_name' => 'A status already exists with the same name.',
+'duplicate_status_group_name' => 'A status group already exists with the same name.',
 
 'duplicate_status_name' => 'A status already exists with the same name.',
 
