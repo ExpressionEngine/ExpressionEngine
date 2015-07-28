@@ -50,9 +50,9 @@ module Installer
     # Replace the current config file with another, while backing up the
     # previous one (e.g. config.php.tmp). Can be reverted by using revert_config
     #
-    # @param [Type] file The path to the config file you want to use
+    # @param [Type] file The path to the config file you want to use, set to blank to only move existing file
     # @return [void]
-    def replace_config(file)
+    def replace_config(file = '')
       File.rename(@config, @config + '.tmp') if File.exist?(@config)
       FileUtils.cp(file, @config) if File.exist?(file)
       FileUtils.chmod(0666, @config) if File.exist?(@config)
