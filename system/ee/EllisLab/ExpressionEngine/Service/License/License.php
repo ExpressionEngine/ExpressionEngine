@@ -32,20 +32,45 @@ class License {
 	protected $signed_data;
 	protected $signature;
 	protected $pubkey;
+	protected $path_to_license;
+	protected $errors = array();
+	protected $parsed = FALSE;
 
 	public function __construct($path_to_license, $pubkey)
 	{
-		if ( ! is_readable($path_to_license))
+		$this->path_to_license = $path_to_license;
+		$this->pubkey = $pubkey;
+
+		if (empty($this->pubkey))
 		{
-			throw new Exception("Cannot read your license file: {$path_to_license}");
+			$this->errors['missing_pubkey'] = "EllisLab.pub is missing";
+		}
+	}
+
+	protected function parseLicenseFile()
+	{
+		if ($parsed)
+		{
+			return;
 		}
 
-		$license = file_get_contents($path_to_license);
+		// Reset the errors
+		unset($this->errors['missing_license']);
+		unset($this->errors['corrupt_license_file']);
+
+		if ( ! is_readable($this->path_to_license))
+		{
+			$this->errors['missing_license'] = "Cannot read your license file: {$this->path_to_license}";
+			return;
+		}
+
+		$license = file_get_contents($this->path_to_license);
 		$license = unserialize(base64_decode($license));
 
 		if ( ! isset($license['data']))
 		{
-			throw new Exception("The license is missing its data.");
+			$this->errors['corrupt_license_file'] = "The license is missing its data.";
+			return;
 		}
 
 		$this->signed_data = $license['data'];
@@ -56,11 +81,23 @@ class License {
 			$this->signature = $license['signature'];
 		}
 
-		$this->pubkey = $pubkey;
+		$this->parsed = TRUE;
 	}
 
-	public function __get($key)
+	public function hasErrors()
 	{
+		return ($this->errors != array());
+	}
+
+	public function getErrors()
+	{
+		return $this->errors;
+	}
+
+	protected function getData($key)
+	{
+		$this->parseLicenseFile();
+
 		if (array_key_exists($key, $this->data))
 		{
 			return $this->data[$key];
@@ -69,11 +106,42 @@ class License {
 		throw new InvalidArgumentException("No such property: '{$key}' on ".get_called_class());
 	}
 
+	protected function getSignature()
+	{
+		$this->parseLicenseFile();
+		return $this->signature;
+	}
+
+	protected function getSignedData()
+	{
+		$this->parseLicenseFile();
+		return $this->signed_data;
+	}
+
+	public function __get($key)
+	{
+		return $this->getData($key);
+	}
+
 	public function isValid()
 	{
+		$this->parseLicenseFile();
+
+		if (empty($this->data))
+		{
+			return FALSE;
+		}
+
 		if ($this->isSigned())
 		{
-			return $this->signatureIsValid();
+			$valid = $this->signatureIsValid();
+
+			if ( ! $valid)
+			{
+				$errors['invalid_signature'] = "The license file has been tampered with";
+			}
+
+			return $valid;
 		}
 
 		return TRUE;
@@ -81,7 +149,7 @@ class License {
 
 	public function isSigned()
 	{
-		return ($this->signature !== NULL);
+		return ($this->getSignature() !== NULL);
 	}
 
 	public function signatureIsValid()
@@ -91,7 +159,7 @@ class License {
 			return FALSE;
 		}
 
-		$r = openssl_verify($this->signed_data, $this->signature, $this->pubkey);
+		$r = openssl_verify($this->getSignedData(), $this->getSignature(), $this->pubkey);
 
 		// @TODO: Handle the -1 error response
 
