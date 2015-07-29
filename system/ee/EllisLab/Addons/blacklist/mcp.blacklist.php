@@ -597,7 +597,7 @@ class Blacklist_mcp {
 			show_error(lang("ref_no_{$listtype}list_table"));
 		}
 
-		if ( ! $license = ee()->config->item('license_number'))
+		if ( ! ee('License')->getEELicense()->isValid())
 		{
 			show_error(lang('ref_no_license'));
 		}
