@@ -162,12 +162,7 @@ class License {
 	{
 		$this->parseLicenseFile();
 
-		if (array_key_exists($key, $this->data))
-		{
-			return $this->data[$key];
-		}
-
-		throw new InvalidArgumentException("No such property: '{$key}' on ".get_called_class());
+		return $this->data[$key];
 	}
 
 	/**
