@@ -173,9 +173,6 @@ class Cp {
 			'btn_fix_errors'		=> lang('btn_fix_errors'),
 		);
 
-		require_once(APPPATH.'libraries/El_pings.php');
-		$pings = new El_pings();
-
 		ee()->javascript->set_global(array(
 			'BASE'             => str_replace(AMP, '&', BASE),
 			'XID'              => CSRF_TOKEN,
@@ -183,7 +180,6 @@ class Cp {
 			'PATH_CP_GBL_IMG'  => PATH_CP_GBL_IMG,
 			'CP_SIDEBAR_STATE' => ee()->session->userdata('show_sidebar'),
 			'username'         => ee()->session->userdata('username'),
-			'registered'       => $pings->is_registered(),
 			'router_class'     => ee()->router->class, // advanced css
 			'lang'             => $js_lang_keys,
 			'THEME_URL'        => $this->cp_theme_url,
@@ -255,6 +251,11 @@ class Cp {
 	protected function validateLicense()
 	{
 		$license = ee('License')->getEELicense();
+
+		require_once(APPPATH.'libraries/El_pings.php');
+		$pings = new El_pings();
+		$registered = $pings->is_registered($license);
+
 		if ( ! $license->isValid())
 		{
 			$alert = ee('Alert')->makeBanner('invalid-license')
