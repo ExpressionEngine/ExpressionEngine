@@ -40,19 +40,19 @@
 					<p>&copy;2003&mdash;<?=date('Y')?> <a href="<?=ee()->cp->masked_url('https://ellislab.com/expressionengine')?>" rel="external">EllisLab</a>, Inc.<br><a class="scroll" href="#top"><?=lang('scroll_to_top')?></a></p>
 				</div>
 				<div class="right">
-					<p><?=lang('license_no')?>:
-						<?php if (ee()->config->item('license_number')): ?>
-							<?=ee()->config->item('license_number')?>
-						<?php elseif (ee()->cp->allowed_group('can_access_admin', 'can_access_sys_prefs')): ?>
-							<a href="<?=ee('CP/URL', 'settings/license')?>"><?=lang('register_now')?></a>
+					<p>
+					<?php if ($ee_license->isValid()): ?>
+						<?=lang('license_no')?>: <?=$ee_license->getData('license_number')?>
+						<br><?=lang('owned_by')?>: <a href="mailto:<?=$ee_license->getData('license_contact')?>">
+							<?=($ee_license->getData('license_contact_name')) ?: $ee_license->getData('license_contact')?>
+						</a>
+					<?php else: ?>
+						<?php if (ee()->cp->allowed_group('can_access_admin', 'can_access_sys_prefs')): ?>
+							<a class="btn no-reg" href="<?=ee('CP/URL', 'settings/license')?>"><?=lang('register_now')?></a>
 						<?php else: ?>
 							<?=lang('not_entered')?>
 						<?php endif ?>
-						<?php if (ee()->config->item('license_contact')): ?>
-							<br><?=lang('owned_by')?>: <a href="mailto:<?=ee()->config->item('license_contact')?>">
-								<?=(ee()->config->item('license_contact_name')) ?: ee()->config->item('license_contact')?>
-							</a>
-						<?php endif ?>
+					<?php endif; ?>
 					</p>
 				</div>
 			</div>
