@@ -260,11 +260,11 @@ class Cp {
 			$alert = ee('Alert')->makeBanner('invalid-license')
 				->asWarning()
 				->cannotClose()
-				->withTitle('invalid_license');
+				->withTitle(lang('software_unregistered'));
 
 			foreach ($license->getErrors() as $key => $value)
 			{
-				$alert->addToBody(lang($key));
+				$alert->addToBody(sprintf(lang($key), ee('CP/URL', 'settings/license')));
 			}
 
 			$alert->now();

@@ -583,8 +583,6 @@ $lang = array(
 
 "license_number" => "License Number",
 
-'invalid_license_number' => 'The license number provided is not a valid license number.',
-
 "word_separator" => "Word Separator for URL Titles",
 
 "dash" => "Dash",

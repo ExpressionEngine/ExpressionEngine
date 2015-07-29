@@ -461,6 +461,16 @@ $lang = array(
  * 3.0
  */
 
+//----------------------------
+// License Errors
+//----------------------------
+'software_unregistered' => 'Software Unregistered',
+'corrupt_license_file' => 'The license file provided is missing data. Please visit the <a href="%s">License & Registration</a> page to upload your license.',
+'invalid_signature' => 'The license file provided has an invalid signature. Please visit the <a href="%s">License & Registration</a> page to upload your license.',
+'missing_license' => 'This copy of ExpressionEngine is <strong>unregistered</strong>. Please visit the <a href="%s">License & Registration</a> page to upload your license.',
+'missing_pubkey' => 'The ExpressionEngine product is missing data. Pleas visit <a href="https://store.ellislab.com/manage" rel="external">ElisLab.com</a> and download a fresh copy.',
+'invalid_license_number' => 'The license number provided is not a valid license number.',
+
 'btn_fix_errors' => 'Fix Errors, Please',
 
 'btn_saving' => 'Saving...',

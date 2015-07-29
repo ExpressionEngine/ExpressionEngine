@@ -125,25 +125,6 @@ $lang = array(
  * License & Registration
  */
 
-'license_and_reg_title' => 'License &amp; Registration Settings',
-
-'license_contact_name' => 'Account holder name',
-
-'license_contact_name_desc' => 'Name of individual or company that owns this license.',
-
-'license_contact' => 'Account holder Email',
-
-'license_contact_desc' => 'Contact Email for the account that owns this license.',
-
-'license_number' => 'License number',
-
-'license_number_desc' => 'Found on your <a href="%s">purchase management</a> page.',
-
-'license_updated' => 'License &amp; Registration Updated',
-
-'license_updated_desc' => 'Your license and registration information has been saved successfully.',
-
-'invalid_license_number' => 'The license number provided is not a valid license number.',
 
 /**
  * URLs and Path Settings
