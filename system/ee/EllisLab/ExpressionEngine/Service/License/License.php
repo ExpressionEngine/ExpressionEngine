@@ -158,7 +158,7 @@ class License {
 	 * @param string $key The piece of data being requested (i.e. 'license_number')
 	 * @return mixed The value of the data as stored in the license file
 	 */
-	protected function getData($key)
+	public function getData($key)
 	{
 		$this->parseLicenseFile();
 
