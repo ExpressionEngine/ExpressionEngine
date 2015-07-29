@@ -40,9 +40,11 @@ $no_results = (in_array($field['type'], array('checkbox', 'radio', 'select')) &&
 <?php if ($no_results): ?>
 	<div class="no-results">
 		<p><?=lang($field['no_results']['text'])?></p>
-		<p><a class="btn action" href="<?=$field['no_results']['link_href']?>">
-			<?=lang($field['no_results']['link_text'])?>
-		</a></p>
+		<?php if (isset($field['no_results']['link_href'])): ?>
+			<p><a class="btn action" href="<?=$field['no_results']['link_href']?>">
+				<?=lang($field['no_results']['link_text'])?>
+			</a></p>
+		<?php endif ?>
 	</div>
 <?php endif ?>
 <?php if ($has_note): ?>
@@ -168,12 +170,13 @@ case 'image': ?>
 	</figure>
 <?php break;
 
+case 'action_button': ?>
+	<a class="btn tn action <?=$field['class']?>" href="<?=$field['link']?>"><?=lang($field['text'])?></a>
+<?php break;
+
 case 'html': ?>
 	<?=$field['content']?>
 <?php endswitch ?>
-<?php if (isset($setting['action_button'])): ?>
-	<a class="btn tn action <?=$setting['action_button']['class']?>" href="<?=$setting['action_button']['link']?>"><?=lang($setting['action_button']['text'])?></a>
-<?php endif ?>
 <?php if ($has_note): ?>
 	<em><?=$field['note']?></em>
 </div>

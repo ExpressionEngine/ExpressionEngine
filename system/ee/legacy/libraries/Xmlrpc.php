@@ -350,7 +350,7 @@ class EE_Xmlrpc {
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/libraries/xmlrpc.html
  */
-class XML_RPC_Client extends CI_Xmlrpc
+class XML_RPC_Client extends EE_Xmlrpc
 {
 	var $path			= '';
 	var $server			= '';
@@ -609,7 +609,7 @@ class XML_RPC_Response
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/libraries/xmlrpc.html
  */
-class XML_RPC_Message extends CI_Xmlrpc
+class XML_RPC_Message extends EE_Xmlrpc
 {
 	var $payload;
 	var $method_name;
@@ -1208,7 +1208,7 @@ class XML_RPC_Message extends CI_Xmlrpc
  * @author		EllisLab Dev Team
  * @link		http://codeigniter.com/user_guide/libraries/xmlrpc.html
  */
-class XML_RPC_Values extends CI_Xmlrpc
+class XML_RPC_Values extends EE_Xmlrpc
 {
 	var $me		= array();
 	var $mytype	= 0;

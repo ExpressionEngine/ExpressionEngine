@@ -47,6 +47,7 @@ feature 'Updater' do
 
     @installer.disable_installer
     @installer.enable_rename
+    @installer.delete_database_config
   end
 
   it 'appears when using a database.php file' do
@@ -79,6 +80,7 @@ feature 'Updater' do
     end
 
     it 'updates using old template basepath' do
+      @installer.revert_config
       @installer.replace_config(@config, tmpl_file_basepath: '../system/expressionengine/templates')
       test_update
       File.exist?('../../system/user/templates/default_site/').should == true
@@ -86,6 +88,7 @@ feature 'Updater' do
     end
 
     it 'updates using new template basepath' do
+      @installer.revert_config
       @installer.replace_config(@config, tmpl_file_basepath: '../system/user/templates')
       test_update
       File.exist?('../../system/user/templates/default_site/').should == true
