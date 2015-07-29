@@ -881,10 +881,6 @@ class Wizard extends CI_Controller {
 
 		$this->userdata['cp_url'] = ($self != '') ? $host.$self : $host.SELF;
 
-		// license number
-		$this->userdata['license_contact'] = '';
-		$this->userdata['license_number'] = (IS_CORE) ? 'CORE LICENSE' : '';
-
 		// Since the CP access file can be inside or outside of the "system" folder
 		// we will do a little test to help us set the site_url item
 		$_selfloc = (is_dir('./ee/installer/')) ? SELF.'/'.SYSDIR : SELF;
@@ -1746,8 +1742,6 @@ class Wizard extends CI_Controller {
 			'db_pconnect'               => ($this->userdata['db_conntype'] == 1) ? TRUE : FALSE,
 			'db_dbprefix'               => ($this->userdata['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $this->userdata['db_prefix']),
 			'app_version'               => $this->userdata['app_version'],
-			'license_contact'           => $this->userdata['license_contact'],
-			'license_number'            => trim($this->userdata['license_number']),
 			'debug'                     => '1',
 			'cp_url'                    => $this->userdata['cp_url'],
 			'site_index'                => $this->userdata['site_index'],
@@ -2175,9 +2169,6 @@ class Wizard extends CI_Controller {
 		{
 			$config['index_page'] = $config['site_index'];
 		}
-
-		// We also add a few other items
-		$config['license_number'] = ( ! isset($config['license_number'])) ? '' : $config['license_number'];
 
 		// Fetch the config template
 		$data = read_file(APPPATH.'config/config_tmpl.php');
