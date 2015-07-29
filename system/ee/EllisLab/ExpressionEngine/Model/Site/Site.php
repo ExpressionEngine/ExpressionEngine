@@ -85,6 +85,10 @@ class Site extends Model {
 		'site_label' => 'required',
 	);
 
+	protected static $_events = array(
+		'beforeInsert'
+	);
+
 	// Properties
 	protected $site_id;
 	protected $site_label;
@@ -106,6 +110,20 @@ class Site extends Model {
 		}
 
 		return TRUE;
+	}
+
+	public function onBeforeInsert()
+	{
+		$current_number_of_sites = $this->getFrontend()->get('Site')->count();
+
+		$can_add = ee()->get('License')
+			->getEELicense()
+			->canAddSites($current_number_of_sites);
+
+		if ( ! $can_add)
+		{
+			throw new \Exception("Site limit reached.");
+		}
 	}
 
 }
