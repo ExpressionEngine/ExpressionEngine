@@ -168,12 +168,13 @@ case 'image': ?>
 	</figure>
 <?php break;
 
+case 'action_button': ?>
+	<a class="btn tn action <?=$field['class']?>" href="<?=$field['link']?>"><?=lang($field['text'])?></a>
+<?php break;
+
 case 'html': ?>
 	<?=$field['content']?>
 <?php endswitch ?>
-<?php if (isset($setting['action_button'])): ?>
-	<a class="btn tn action <?=$setting['action_button']['class']?>" href="<?=$setting['action_button']['link']?>"><?=lang($setting['action_button']['text'])?></a>
-<?php endif ?>
 <?php if ($has_note): ?>
 	<em><?=$field['note']?></em>
 </div>
