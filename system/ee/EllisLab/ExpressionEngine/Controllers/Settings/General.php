@@ -89,12 +89,13 @@ class General extends Settings {
 								'y' => 'auto',
 								'n' => 'manual'
 							)
+						),
+						'action_button' => array(
+							'type' => 'action_button',
+							'text' => 'check_now',
+							'link' => ee('CP/URL', 'settings/general/version-check'),
+							'class' => 'version-check'
 						)
-					),
-					'action_button' => array(
-						'text' => 'check_now',
-						'link' => ee('CP/URL', 'settings/general/version-check'),
-						'class' => 'version-check'
 					)
 				),
 				array(
