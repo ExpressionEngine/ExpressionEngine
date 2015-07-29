@@ -246,7 +246,31 @@ class Cp {
 
 		ee()->view->ee_build_date = ee()->localize->format_date($date_format, $this->_parse_build_date(), TRUE);
 
+		$license = $this->validateLicense();
+		ee()->view->ee_license = $license;
+
 		return ee()->view->render($view, $data, $return);
+	}
+
+	protected function validateLicense()
+	{
+		$license = ee('License')->getEELicense();
+		if ( ! $license->isValid())
+		{
+			$alert = ee('Alert')->makeBanner('invalid-license')
+				->asWarning()
+				->cannotClose()
+				->withTitle('invalid_license');
+
+			foreach ($license->getErrors() as $key => $value)
+			{
+				$alert->addToBody(lang($key));
+			}
+
+			$alert->now();
+		}
+
+		return $license;
 	}
 
 	/**
