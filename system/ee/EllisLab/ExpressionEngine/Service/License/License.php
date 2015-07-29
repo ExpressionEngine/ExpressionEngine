@@ -29,7 +29,7 @@ use InvalidArgumentException;
 class License {
 
 	/**
-	 * @var array $data The decoded and unserialized license file data
+	 * @var array $data The decoded and json_decoded license file data
 	 */
 	protected $data = array();
 
@@ -112,7 +112,7 @@ class License {
 		}
 
 		$license = file_get_contents($this->path_to_license);
-		$license = unserialize(base64_decode($license));
+		$license = json_decode(base64_decode($license), TRUE);
 
 		if ( ! isset($license['data']))
 		{
@@ -121,11 +121,11 @@ class License {
 		}
 
 		$this->signed_data = $license['data'];
-		$this->data = unserialize($license['data']);
+		$this->data = json_decode($license['data'], TRUE);
 
 		if (isset($license['signature']))
 		{
-			$this->signature = $license['signature'];
+			$this->signature = base64_decode($license['signature']);
 		}
 	}
 
