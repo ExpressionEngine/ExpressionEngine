@@ -34,13 +34,14 @@ class El_pings {
 	 **/
 	public function is_registered()
 	{
-		if ( ! IS_CORE && ee()->config->item('license_number') == '')
+		$license = ee('License')->getEELicense();
+		if ( ! IS_CORE && ! $license->isValid())
 		{
 			return FALSE;
 		}
 
 		$cached = ee()->cache->get('software_registration', Cache::GLOBAL_SCOPE);
-		$exp_response = md5(ee()->config->item('license_number').ee()->config->item('license_contact'));
+		$exp_response = md5($license->getData('license_number').$license->getData('license_contact'));
 
 		if ( ! $cached OR $cached != $exp_response)
 		{
@@ -51,8 +52,8 @@ class El_pings {
 			if ($class == 'homepage' OR ($class == 'admin_system' && $method == 'software_registration'))
 			{
 				$payload = array(
-					'contact'			=> ee()->config->item('license_contact'),
-					'license_number'	=> (IS_CORE) ? 'CORE LICENSE' : ee()->config->item('license_number'),
+					'contact'			=> $license->getData('license_contact'),
+					'license_number'	=> (IS_CORE) ? 'CORE LICENSE' : $license->getData('license_number'),
 					'domain'			=> ee()->config->item('site_url'),
 					'server_name'		=> (isset($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : '',
 					'ee_version'		=> ee()->config->item('app_version'),
@@ -81,7 +82,7 @@ class El_pings {
 		}
 
 		// hard fail only when no valid license is entered or it doesn't even match a valid pattern
-		if (ee()->config->item('license_number') == '' OR ! valid_license_pattern(ee()->config->item('license_number')))
+		if ( ! $license->isValid())
 		{
 			return FALSE;
 		}
