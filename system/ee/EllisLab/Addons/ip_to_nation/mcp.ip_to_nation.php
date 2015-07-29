@@ -142,7 +142,7 @@ class Ip_to_nation_mcp {
 				array(
 					array(
 						'title' => 'update_ips',
-						'desc' => sprintf(lang('update_info').'<p>'.$last_update.'</p>', $this->cp->masked_url('http://www.maxmind.com/app/geolite')),
+						'desc' => sprintf(lang('update_info').'<em>'.$last_update.'</em>', $this->cp->masked_url('http://www.maxmind.com/app/geolite')),
 						'fields' => array(
 							'action_button' => array(
 								'type' => 'action_button',

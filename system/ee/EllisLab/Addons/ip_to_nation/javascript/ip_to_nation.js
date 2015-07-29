@@ -9,6 +9,7 @@ var Ip2n_cp = {
 		this.button.on('click', function(e) {
 			e.preventDefault();
 			that.button.text(EE.ip2n.lang.ip_db_updating);
+			that.button.addClass('work');
 			that._progress(steps);
 			return false;
 		})
@@ -32,6 +33,7 @@ var Ip2n_cp = {
 
 			msg = data.error || '';
 
+			that.button.removeClass('work');
 			that.button.text(EE.ip2n.lang.ip_db_failed + '  ' + msg);
 
 
