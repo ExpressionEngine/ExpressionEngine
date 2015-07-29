@@ -188,18 +188,6 @@ class License {
 	}
 
 	/**
-	 * Allows for read-only access of the license file data
-	 *
-	 * @see License::getData($key)
-	 * @param string $key The piece of data being requested (i.e. 'license_number')
-	 * @return mixed The value of the data as stored in the license file
-	 */
-	public function __get($key)
-	{
-		return $this->getData($key);
-	}
-
-	/**
 	 * Requests that the license file be parsed, then runs the following checks:
 	 *   - We found license data
 	 *   - If the data was signed, the signure is valid
