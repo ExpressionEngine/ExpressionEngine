@@ -4,12 +4,11 @@ var Ip2n_cp = {
 		var steps = EE.ip2n.steps,
 			that = this;
 
-		this.progress_p = $('#update_form').find('input').closest('p');
+		this.button = $('a.btn.action');
 
-		$('#update_form').submit(function(e) {
+		this.button.on('click', function(e) {
 			e.preventDefault();
-			that.progress_p.addClass('notice');
-			that.progress_p.text(EE.ip2n.lang.ip_db_updating);
+			that.button.text(EE.ip2n.lang.ip_db_updating);
 			that._progress(steps);
 			return false;
 		})
@@ -21,20 +20,21 @@ var Ip2n_cp = {
 
 		$.getJSON(EE.ip2n.base_url + '&method=' + steps.shift(), function(data) {
 			if (data.success) {
-				that.progress_p.text(data.success);
+				that.button.text(data.success);
 
 				if (steps.length) {
 					return that._progress(steps);
 				}
 
+				window.location = EE.ip2n.base_url;
 				return;
 			}
-			
+
 			msg = data.error || '';
-			
-			that.progress_p.text(EE.ip2n.lang.ip_db_failed + '  ' + msg);
-			
-		
+
+			that.button.text(EE.ip2n.lang.ip_db_failed + '  ' + msg);
+
+
 		});
 	}
 

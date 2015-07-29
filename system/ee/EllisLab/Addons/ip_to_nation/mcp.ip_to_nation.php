@@ -29,17 +29,10 @@ class Ip_to_nation_mcp {
 	  */
 	function __construct()
 	{
-		$this->load->helper('array');
-		$this->load->model('ip_to_nation_data', 'ip_data');
+		ee()->load->helper('array');
+		ee()->load->model('ip_to_nation_data', 'ip_data');
 
-		$this->base_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=ip_to_nation';
-
-		if ($this->cp->allowed_group('can_moderate_comments', 'can_edit_all_comments', 'can_delete_all_comments'))
-		{
-			$this->cp->set_right_nav(array(
-				'update_ips' => $this->base_url.AMP.'method=update_data'
-			));
-		}
+		$this->base_url = ee('CP/URL', 'addons/settings/ip_to_nation')->compile();
 	}
 
 	// ----------------------------------------------------------------------
@@ -48,6 +41,149 @@ class Ip_to_nation_mcp {
 	  * Nation Home Page
 	  */
 	function index()
+	{
+		$ip_search = array(
+			'base_url' => ee('CP/URL', 'addons/settings/ip_to_nation/search'),
+			'cp_page_title' => lang('ip_search'),
+			'save_btn_text' => 'btn_search',
+			'save_btn_text_working' => 'btn_searching',
+			'alerts_name' => 'ip_search',
+			'sections' => array(
+				array(
+					array(
+						'title' => 'search_for_ip',
+						'desc' => 'search_for_ip_desc',
+						'fields' => array(
+							'ip' => array(
+								'type' => 'text',
+								'value' => ee()->input->post('ip') ?: ''
+							)
+						)
+					),
+				)
+			)
+		);
+
+		$cache_files = $this->_cache_files('csv');
+
+		// clear out stale data before we start
+		if ( ! empty($cache_files))
+		{
+			foreach ($cache_files as $file)
+			{
+				unlink($file);
+			}
+		}
+
+		// check again, if we can't clear them, the user will
+		// have to do something about it or we end up killing
+		// their database in the next step.
+		if (count($this->_cache_files('csv')))
+		{
+			ee()->session->set_flashdata('message_failure', lang('cache_full'));
+			ee()->functions->redirect($this->base_url.AMP.'method=index');
+		}
+
+		// look for data files that they may have
+		// uploaded manually
+		$data_files = $this->_cache_files('zip,gz');
+
+		$last_update = ee()->config->item('ip2nation_db_date');
+		$last_update = ($last_update) ? lang('last_update') . ' ' . $this->localize->human_time($last_update) : '';
+
+		ee()->cp->add_js_script('fp_module', 'ip_to_nation');
+
+		ee()->javascript->set_global(array(
+			'ip2n' => array(
+				'run_script' => 'update',
+				'base_url' => $this->base_url,
+				'steps' => array('download_data', 'extract_data', 'insert_data'),
+				'lang' => array(
+					'ip_db_updating' => lang('ip_db_updating'),
+					'ip_db_failed' => lang('ip_db_failed')
+				)
+			)
+		));
+
+		$countries = $this->_country_names();
+
+		$query = $this->db->get('ip2nation_countries')->result();
+		$status = array();
+
+		foreach ($query as $row)
+		{
+			$status[$row->code] = $row->banned;
+		}
+
+		$country_list = array();
+		$selected = array();
+
+		foreach ($countries as $key => $val)
+		{
+			// Don't show countries for which we lack IP information
+			if (isset($status[$key]))
+			{
+				$country_list[$key] = $val;
+
+				if ($status[$key] == 'y')
+				{
+					$selected[] = $key;
+				}
+			}
+		}
+
+		$banned_list = array(
+			'base_url' => ee('CP/URL', 'addons/settings/ip_to_nation/update'),
+			'cp_page_title' => lang('banlist'),
+			'save_btn_text' => 'btn_save_banlist',
+			'save_btn_text_working' => 'btn_saving',
+			'alerts_name' => 'banlist',
+			'sections' => array(
+				array(
+					array(
+						'title' => 'update_ips',
+						'desc' => sprintf(lang('update_info').'<p>'.$last_update.'</p>', $this->cp->masked_url('http://www.maxmind.com/app/geolite')),
+						'fields' => array(
+							'action_button' => array(
+								'type' => 'action_button',
+								'text' => 'update_ips',
+								'link' => ee('CP/URL', 'addons/settings/ip_to_nation/download_data'),
+								'class' => ''
+							)
+						)
+					),
+					array(
+						'title' => 'banned_countries',
+						'desc' => 'ban_info',
+						'fields' => array(
+							'countries' => array(
+								'type' => 'checkbox',
+								'choices' => $country_list,
+								'value' => $selected,
+								'wrap' => TRUE,
+								'no_results' => array(
+									'text' => lang('no_countries')
+								)
+							)
+						)
+					)
+				)
+			)
+		);
+
+		$vars = array(
+			'cp_page_title' => lang('ip_to_nation_module_name'),
+			'ip_search' => $ip_search,
+			'banned_list' => $banned_list
+		);
+
+		return ee('View')->make('ip_to_nation:index')->render($vars);
+	}
+
+	/**
+	 * Search for countries via IP
+	 */
+	public function search()
 	{
 		$countries = $this->_country_names();
 
@@ -67,60 +203,32 @@ class Ip_to_nation_mcp {
 
    				if ($c_code === FALSE)
    				{
-   					$error = lang('ip_not_found');
+   					ee('Alert')->makeInline('ip_search')
+						->asIssue()
+						->withTitle(lang('ip_address_not_located'))
+						->addToBody(lang('ip_not_found'))
+						->now();
+   				}
+   				else
+   				{
+   					ee('Alert')->makeInline('ip_search')
+						->asSuccess()
+						->withTitle(lang('ip_address_located'))
+						->addToBody(lang('ip_result') . ' <b>' . $country . '</b>')
+						->now();
    				}
 		    }
 		    else
 		    {
-		    	$error = lang('ip_not_valid');
+		    	ee('Alert')->makeInline('ip_search')
+					->asIssue()
+					->withTitle(lang('ip_address_not_located'))
+					->addToBody(lang('ip_not_valid'))
+					->now();
 		    }
 		}
 
-		$data = compact('ip', 'country', 'error');
-		$this->view->cp_page_title = lang('ip_to_nation_module_name');
-		return $this->load->view('index', $data, TRUE);
-	}
-
-	// ----------------------------------------------------------------------
-
-	/**
-	  * Ban list table
-	  */
-	function banlist()
-	{
-		$countries = $this->_country_names();
-
-		$query = $this->db->get('ip2nation_countries')->result();
-		$status = array();
-
-		foreach ($query as $row)
-		{
-			$status[$row->code] = $row->banned;
-		}
-
-		$country_list = array();
-
-		foreach ($countries as $key => $val)
-		{
-			// Don't show countries for which we lack IP information
-			if (isset($status[$key]))
-			{
-				$country_list[$key] = array(
-					'code' => $key,
-					'name' => $val,
-					'status' => ($status[$key] == 'y')
-				);
-			}
-		}
-
-		$this->cp->set_breadcrumb(
-			$this->base_url,
-			lang('ip_to_nation_module_name')
-		);
-
-		$data = compact('country_list');
-		$this->view->cp_page_title = lang('banlist');
-		return $this->load->view('banlist', $data, TRUE);
+		return $this->index();
 	}
 
 	// ----------------------------------------------------------------------
@@ -133,75 +241,18 @@ class Ip_to_nation_mcp {
 		$countries = $this->_country_names();
 
 		// remove unknowns and 'n's
-		$ban = array_intersect_key($_POST, $countries);
-		$ban = preg_grep('/y/', $ban);
+		$ban = array_intersect($_POST['countries'], array_keys($countries));
 
 		// ban them
-		$this->ip_data->ban(array_keys($ban));
+		$this->ip_data->ban($ban);
 
-		$this->session->set_flashdata('message_success', lang('banlist_updated'));
-		$this->functions->redirect($this->base_url.AMP.'method=index');
-	}
+		ee('Alert')->makeInline('banlist')
+			->asSuccess()
+			->withTitle(lang('banlist_updated'))
+			->addToBody(lang('banlist_updated_desc'))
+			->defer();
 
-	// ----------------------------------------------------------------------
-
-	/**
-	  * Update data
-	  */
-	function update_data()
-	{
-		$this->cp->set_breadcrumb($this->base_url, lang('ip_to_nation_module_name'));
-
-		$last_update = $this->config->item('ip2nation_db_date');
-		$cache_files = $this->_cache_files('csv');
-
-		// clear out stale data before we start
-		if ( ! empty($cache_files))
-		{
-			foreach ($cache_files as $file)
-			{
-				unlink($file);
-			}
-		}
-
-		// check again, if we can't clear them, the user will
-		// have to do something about it or we end up killing
-		// their database in the next step.
-		if (count($this->_cache_files('csv')))
-		{
-			$this->session->set_flashdata('message_failure', lang('cache_full'));
-			$this->functions->redirect($this->base_url.AMP.'method=index');
-		}
-
-		// look for data files that they may have
-		// uploaded manually
-		$data_files = $this->_cache_files('zip,gz');
-
-		$data = array(
-			'update_data_provider' => str_replace(
-				'%d',
-				$this->cp->masked_url('http://www.maxmind.com/app/geolite'),
-				lang('update_data_provider')
-			),
-			'last_update' => ($last_update) ? $this->localize->human_time($last_update) : FALSE
-		);
-
-		$this->cp->add_js_script('fp_module', 'ip_to_nation');
-
-		$this->javascript->set_global(array(
-			'ip2n' => array(
-				'run_script' => 'update',
-				'base_url' => str_replace(AMP, '&', $this->base_url),
-				'steps' => array('download_data', 'extract_data', 'insert_data'),
-				'lang' => array(
-					'ip_db_updating' => lang('ip_db_updating'),
-					'ip_db_failed' => lang('ip_db_failed')
-				)
-			)
-		));
-
-		$this->view->cp_page_title = lang('update_ips');
-		return $this->load->view('import', $data, TRUE);
+		ee()->functions->redirect($this->base_url);
 	}
 
 	// ----------------------------------------------------------------------
@@ -342,7 +393,7 @@ class Ip_to_nation_mcp {
 
 		if (empty($cache_path))
 		{
-			$cache_path = APPPATH.'cache/';
+			$cache_path = SYSPATH.'user'.DIRECTORY_SEPARATOR.'cache/';
 		}
 
 		$cache_path .= 'ip2nation/';
