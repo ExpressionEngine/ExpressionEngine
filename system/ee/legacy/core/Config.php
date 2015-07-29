@@ -1360,11 +1360,6 @@ class EE_Config {
 				'pw_min_len'                => array('i', '')
 			),
 
-			'software_registration'	=> array(
-				'license_contact' => array('i', '', 'required|valid_email'),
-				'license_number'  => array('i', '', 'callback__valid_license_pattern')
-			),
-
 			'throttling_cfg'	=>	array(
 				'enable_throttling'  => array('r', array('y' => 'yes', 'n' => 'no')),
 				'banish_masked_ips'  => array('r', array('y' => 'yes', 'n' => 'no')),
@@ -1723,8 +1718,6 @@ class EE_Config {
 			'require_ip_for_login'		=> array('require_ip_explanation'),
 			'allow_multi_logins'		=> array('allow_multi_logins_explanation'),
 			'name_of_dictionary_file'	=> array('dictionary_explanation'),
-			'license_contact'			=> array('license_contact_explanation'),
-			'license_number'			=> array('license_number_explanation'),
 			'force_query_string'		=> array('force_query_string_explanation'),
 			'image_resize_protocol'		=> array('image_resize_protocol_exp'),
 			'image_library_path'		=> array('image_library_path_exp'),
