@@ -200,7 +200,10 @@ class License {
 
 		if (empty($this->data))
 		{
-			$this->errors['corrupt_license_file'] = "The license is missing its data.";
+			if ( ! isset($this->errors['missing_license']))
+			{
+				$this->errors['corrupt_license_file'] = "The license is missing its data.";
+			}
 			return FALSE;
 		}
 
