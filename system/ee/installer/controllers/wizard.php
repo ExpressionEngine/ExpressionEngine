@@ -59,16 +59,26 @@ class Wizard extends CI_Controller {
 	public $allowed_methods = array('install_form', 'do_install', 'do_update');
 
 	// Absolutely, positively must always be installed
-	public $required_modules = array('channel', 'comment', 'member', 'stats', 'rte', 'filepicker');
+	public $required_modules = array(
+		'channel',
+		'comment',
+		'member',
+		'stats',
+		'rte',
+		'filepicker',
+
+		// TODO: Remove lines below
+		// 'email',
+		// 'emoticon',
+		// 'jquery',
+		// 'search',
+		// 'rss'
+	);
 
 	public $theme_required_modules = array();
 
-	// Our default installed modules, if there is no "override"
-	public $default_installed_modules = array('comment', 'email', 'emoticon',
-		'jquery', 'member', 'query', 'rss', 'search', 'stats', 'channel',
-		'mailinglist', 'rte');
-
-	// Native First Party ExpressionEngine Modules (everything else is in third party folder)
+	// Native First Party ExpressionEngine Modules (everything else is in third
+	// party folder)
 	public $native_modules = array('blacklist', 'channel', 'comment', 'commerce',
 		'email', 'emoticon', 'file', 'forum', 'gallery', 'ip_to_nation',
 		'jquery', 'mailinglist', 'member', 'metaweblog_api', 'moblog', 'pages',
@@ -122,7 +132,6 @@ class Wizard extends CI_Controller {
 		'modules'               => array(),
 		'install_default_theme' => 'n'
 	);
-
 
 	// These are the default values for the CodeIgniter config array.  Since the EE
 	// and CI config files are one in the same now we use this data when we write the
@@ -515,6 +524,12 @@ class Wizard extends CI_Controller {
 
 	// --------------------------------------------------------------------
 
+	/**
+	 * Form validation callback for checking DB prefixes
+	 *
+	 * @param  string $db_prefix DB Prefix to validate
+	 * @return boolean           TRUE if valid, FALSE if not
+	 */
 	public function valid_db_prefix($db_prefix)
 	{
 		// DB Prefix has some character restrictions
@@ -931,20 +946,6 @@ class Wizard extends CI_Controller {
 			}
 		}
 
-		// if 'modules' isn't in the POST data, pre-check the defaults and third
-		// party modules
-		if ($this->input->post('modules') === FALSE)
-		{
-			foreach ($this->userdata['modules'] as $name => $info)
-			{
-				if (in_array($name, $this->default_installed_modules) OR ! in_array($name, $this->native_modules))
-				{
-					$this->userdata['modules'][$name]['checked'] = TRUE;
-				}
-			}
-
-		}
-
 		// Make sure the site_url has a trailing slash
 		$this->userdata['site_url'] = preg_replace("#([^/])/*$#", "\\1/", $this->userdata['site_url']);
 
@@ -954,7 +955,6 @@ class Wizard extends CI_Controller {
 				'persistent' => array('persistent', 'nonpersistent')
 			)
 		);
-
 
 		foreach ($prefs as $name => $value)
 		{
@@ -1686,42 +1686,8 @@ class Wizard extends CI_Controller {
 	 */
 	private function install_modules()
 	{
-		$this->load->library('layout');
-
-		$this->config->config['site_id'] = 1;
-
-		// Install required modules
-		foreach($this->required_modules as $module)
-		{
-			$path = SYSPATH.'ee/EllisLab/Addons/'.$module.'/';
-
-			if (file_exists($path.'upd.'.$module.'.php'))
-			{
-				// Add the helper/library load path and temporarily
-				$this->load->add_package_path($path, FALSE);
-
-				require $path.'upd.'.$module.'.php';
-
-				$class = ucfirst($module).'_upd';
-
-				$UPD = new $class;
-				$UPD->_ee_path = EE_APPPATH;
-				$UPD->install_errors = array();
-
-				if (method_exists($UPD, 'install'))
-				{
-					$UPD->install();
-					if (count($UPD->install_errors) > 0)
-					{
-						// clean and combine
-						$this->module_install_errors[$module] = array_map('htmlentities', $UPD->install_errors);
-					}
-				}
-
-				// remove package path
-				$this->load->remove_package_path($path);
-			}
-		}
+		ee()->load->library('addons');
+		$this->module_install_errors = ee()->addons->install_modules($this->required_modules);
 
 		return TRUE;
 	}

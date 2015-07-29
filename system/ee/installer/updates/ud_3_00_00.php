@@ -39,6 +39,7 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'_move_database_information',
+				'_install_required_modules',
 				'_update_email_cache_table',
 				'_update_upload_no_access_table',
 				'_insert_comment_settings_into_db',
@@ -75,6 +76,8 @@ class Updater {
 	/**
 	 * Migrate the database information from database.php to config.php
 	 *
+	 * THIS MUST BE THE FIRST UPDATE
+	 *
 	 * @return void
 	 */
 	private function _move_database_information()
@@ -91,6 +94,34 @@ class Updater {
 		{
 			throw new \Exception(lang('database_no_data'));
 		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Ensure filepicker and comment modules are installed
+	 */
+	private function _install_required_modules()
+	{
+		ee()->load->library('addons');
+
+		$installed_modules = ee()->db->select('module_name')->get('modules');
+		$required_modules = array('filepicker', 'comment');
+
+		foreach ($installed_modules->result() as $installed_module)
+		{
+			$key = array_search(
+				strtolower($installed_module->module_name),
+				$required_modules
+			);
+
+			if ($key !== FALSE)
+			{
+				unset($required_modules[$key]);
+			}
+		}
+
+		ee()->addons->install_modules($required_modules);
 	}
 
 	// -------------------------------------------------------------------------
