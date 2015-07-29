@@ -32,9 +32,9 @@ class El_pings {
 	 *
 	 * @return bool
 	 **/
-	public function is_registered()
+	public function is_registered($license = NULL)
 	{
-		$license = ee('License')->getEELicense();
+		$license = ($license) ?: ee('License')->getEELicense();
 		if ( ! IS_CORE && ! $license->isValid())
 		{
 			return FALSE;
