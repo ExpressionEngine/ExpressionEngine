@@ -2299,7 +2299,7 @@ class Wizard extends CI_Controller {
 		);
 
 		// Move the directory
-		return rename(APPPATH, $new_path);
+		return @rename(APPPATH, $new_path);
 	}
 }
 
