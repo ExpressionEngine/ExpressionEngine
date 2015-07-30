@@ -197,7 +197,7 @@ $lang = array(
 
 'url_title_separator_opt_hyphen' => 'Hyphen (different-words)',
 
-'url_title_separator_opt_under' => 'nderscore (different_words)',
+'url_title_separator_opt_under' => 'Underscore (different_words)',
 
 /**
  * Outgoing Email
