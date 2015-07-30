@@ -76,7 +76,7 @@ $lang = array(
 
 'layout_options' => 'Layout Options',
 
-'name_desc' => 'Full descriptive name of this form layout.',
+'name_desc' => '',
 
 'member_group(s)' => 'Member group(s)?',
 
