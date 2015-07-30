@@ -536,13 +536,11 @@ $lang = array(
 
 'label' => 'Label',
 
-'cat_field_label_desc' => 'Name of field that appears in the category form.',
-
-'cat_field_short_name_desc' => 'Short name for this field.<br><i>No spaces. Underscores and dashes are allowed.</i>',
+'cat_field_short_name_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
 
 'require_field' => 'Require field?',
 
-'cat_require_field_desc' => 'When set to <b>yes</b>, this field will be required to save a category.',
+'cat_require_field_desc' => 'When set to <b>yes</b>,  this field will be required to submit the publish form.',
 
 'text_input' => 'Text Input',
 

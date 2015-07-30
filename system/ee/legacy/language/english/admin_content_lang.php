@@ -889,11 +889,11 @@ $lang = array(
 
 'field_max_length' => 'Maximum characters',
 
-'field_max_length_desc' => 'Maximum number of characters allowed in this field.',
+'field_max_length_desc' => '',
 
 'field_fmt' => 'Text formatting',
 
-'field_fmt_desc' => 'Default text formatting for this field.',
+'field_fmt_desc' => '',
 
 'field_show_fmt' => 'Allow override?',
 
@@ -901,7 +901,7 @@ $lang = array(
 
 'field_text_direction' => 'Text direction',
 
-'field_text_direction_desc' => 'Default text direction for output.',
+'field_text_direction_desc' => '',
 
 'field_text_direction_ltr' => 'Left to right',
 
