@@ -1,8 +1,6 @@
 <?php
 namespace EllisLab\ExpressionEngine\Controllers\Settings;
 
-use CP_Controller;
-
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -33,19 +31,27 @@ class License extends Settings {
 	 */
 	public function index()
 	{
-		$vars['sections'] = array(
-			array(
+		$base_url = ee('CP/URL', 'settings/license');
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'base_url' => $base_url,
+			'has_file_input' => TRUE,
+			'license' => ee('License')->getEELicense(),
+			'save_btn_text' => 'btn_save_settings',
+			'save_btn_text_working' => 'btn_saving',
+			'sections' => array(
 				array(
-					'title' => 'license_file',
-					'desc' => 'license_file_desc',
-					'fields' => array(
-						'license_file' => array('type' => 'file')
-					)
-				),
+					array(
+						'title' => 'license_file',
+						'desc' => 'license_file_desc',
+						'fields' => array(
+							'license_file' => array('type' => 'file')
+						)
+					),
+				)
 			)
 		);
-
-		$base_url = ee('CP/URL', 'settings/license');
 
 		if ( ! empty($_FILES))
 		{
@@ -88,13 +94,8 @@ class License extends Settings {
 			}
 		}
 
-		ee()->view->base_url = $base_url;
-		ee()->view->ajax_validate = TRUE;
-		ee()->view->has_file_input = TRUE;
-		ee()->view->cp_page_title = lang('license_and_reg_title');
-		ee()->view->save_btn_text = 'btn_save_settings';
-		ee()->view->save_btn_text_working = 'btn_saving';
-		ee()->cp->render('settings/form', $vars);
+		ee()->view->cp_page_title = lang('license_and_registration_settings');
+		ee()->cp->render('settings/license', $vars);
 	}
 }
 // EOF

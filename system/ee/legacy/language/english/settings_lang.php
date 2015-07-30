@@ -125,7 +125,8 @@ $lang = array(
  * License & Registration
  */
 
-'license_and_reg_title' => 'License &amp; Registration Settings',
+'license_and_registration' => 'License &amp; Registration',
+'license_and_registration_settings' => 'License &amp; Registration Settings',
 
 'license_updated' => 'License &amp; Registration Updated',
 'license_updated_desc' => 'Your license and registration information has been saved successfully.',
@@ -141,6 +142,8 @@ $lang = array(
 
 'license_file' => 'License file',
 'license_file_desc' => 'Found on your <a href="https://store.ellislab.com/manage" rel="external">purchase management</a> page.',
+
+'site_limit' => 'Site limit',
 
 /**
  * URLs and Path Settings
