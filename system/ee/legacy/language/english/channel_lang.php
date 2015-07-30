@@ -444,9 +444,9 @@ $lang = array(
 
 'files' => 'Files',
 
-'cat_description_desc' => 'A brief description of this category.',
+'cat_description_desc' => '',
 
-'cat_image_desc' => 'Image representation of this category.',
+'cat_image_desc' => '',
 
 'html_formatting' => 'HTML formatting',
 
@@ -496,7 +496,7 @@ $lang = array(
 
 'parent_category' => 'Parent category',
 
-'parent_category_desc' => 'You may make this category a sub-category of another.',
+'parent_category_desc' => '',
 
 'category_created' => 'Category Created',
 
