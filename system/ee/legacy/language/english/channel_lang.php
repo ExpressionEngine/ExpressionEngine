@@ -592,7 +592,7 @@ $lang = array(
 
 'edit_status_group' => 'Edit Status Group',
 
-'status_group_name_desc' => 'Descriptive name of this status group.',
+'status_group_name_desc' => '',
 
 'status_group_created' => 'Status Group Created',
 
