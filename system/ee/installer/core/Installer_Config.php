@@ -284,8 +284,11 @@ class MSM_Config extends EE_Config
 				}
 			}
 
-			ee()->db->where('site_id', $site_id);
-			ee()->db->update('sites', $site);
+			if ($changed)
+			{
+				ee()->db->where('site_id', $site_id);
+				ee()->db->update('sites', $site);
+			}
 		}
 	}
 
