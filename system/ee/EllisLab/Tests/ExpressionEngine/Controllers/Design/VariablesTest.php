@@ -12,7 +12,7 @@ class VariablesTest extends \PHPUnit_Framework_TestCase {
 	{
 		$controller_methods = array();
 
-		foreach (get_class_methods('EllisLab\ExpressionEngine\Controllers\Design\Variables') as $method)
+		foreach (get_class_methods('EllisLab\ExpressionEngine\Controller\Design\Variables') as $method)
 		{
 			$method = strtolower($method);
 			if (strncmp($method, '_', 1) != 0)

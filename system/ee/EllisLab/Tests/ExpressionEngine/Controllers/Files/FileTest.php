@@ -12,7 +12,7 @@ class FileTest extends \PHPUnit_Framework_TestCase {
 	{
 		$controller_methods = array();
 
-		foreach (get_class_methods('EllisLab\ExpressionEngine\Controllers\Files\File') as $method)
+		foreach (get_class_methods('EllisLab\ExpressionEngine\Controller\Files\File') as $method)
 		{
 			$method = strtolower($method);
 			if (strncmp($method, '_', 1) != 0)
