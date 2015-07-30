@@ -60,7 +60,8 @@ class Updater {
 				'_update_upload_directories',
 				'_drop_field_formatting_table',
 				'_update_sites_table',
-				'_remove_referrer_config_items'
+				'_remove_referrer_config_items',
+				'_export_mailing_lists'
 			)
 		);
 
@@ -1049,6 +1050,47 @@ class Updater {
 	{
 		$msm_config = new MSM_Config();
 		$msm_config->remove_config_item(array('log_referrers', 'max_referrers'));
+	}
+
+	// -------------------------------------------------------------------------
+
+	private function _export_mailing_lists()
+	{
+		// Missing the mailing list tables? Get out of here.
+		if ( ! ee()->db->table_exists('mailing_list')
+			|| ! ee()->db->table_exists('mailing_lists'))
+		{
+			return;
+		}
+
+		$subscribers = array();
+		$subscribers_query = ee()->db->select('list_id, email')
+			->get('mailing_list');
+
+		foreach ($subscribers_query->result() as $subscriber)
+		{
+			$subscribers[$subscriber->list_id][] = $subscriber->email;
+		}
+
+		$mailing_lists = ee()->db->select('list_id, list_name, list_title')
+			->get('mailing_lists');
+
+		foreach ($mailing_lists->result() as $mailing_list)
+		{
+			$csv = ee('CSV');
+			foreach ($subscribers[$mailing_list->list_id] as $subscriber)
+			{
+				$csv->addRow(array('email' => $subscriber));
+			}
+
+			file_put_contents(
+				SYSPATH.'user/cache/mailing_list-'.$mailing_list->list_name.'.csv',
+				(string) $csv
+			);
+		}
+
+		// TODO: Provide link to the resulting file, remember system can be above
+		// webroot
 	}
 }
 /* END CLASS */
