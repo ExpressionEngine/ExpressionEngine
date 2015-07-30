@@ -590,6 +590,8 @@ class Cat extends AbstractChannelsController {
 
 			// Only auto-complete channel short name for new channels
 			ee()->cp->add_js_script('plugin', 'ee_url_title');
+			ee()->javascript->set_global('publish.word_separator', ee()->config->item('word_separator') != "dash" ? '_' : '-');
+
 			ee()->javascript->output('
 				$("input[name=cat_name]").bind("keyup keydown", function() {
 					$(this).ee_url_title("input[name=cat_url_title]");
