@@ -174,7 +174,7 @@ $(document).ready(function () {
 // Binds the channel filter text boxes in Create and Edit menus
 EE.cp.channelMenuFilter = function() {
 
-	var filters = $('.menu-wrap form.filter input');
+	var filters = $('.menu-wrap form.filter input, .filter-search input');
 
 	// Bail if no filters
 	if (filters.size() == 0) {
@@ -197,7 +197,7 @@ EE.cp.channelMenuFilter = function() {
 		}
 
 		// Grab the class of the list to make sure we filter the right one
-		var listClass = $(this).parents('form').siblings('ul').attr('class');
+		var listClass = $(this).parent().siblings('ul').attr('class');
 
 		// Data is indexed via a data attribute, create a CSS
 		// selector to filter the table
