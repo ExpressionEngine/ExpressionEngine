@@ -76,7 +76,7 @@ $lang = array(
 
 'layout_options' => 'Layout Options',
 
-'name_desc' => 'Full descriptive name of this form layout.',
+'name_desc' => '',
 
 'member_group(s)' => 'Member group(s)?',
 
@@ -444,9 +444,9 @@ $lang = array(
 
 'files' => 'Files',
 
-'cat_description_desc' => 'A brief description of this category.',
+'cat_description_desc' => '',
 
-'cat_image_desc' => 'Image representation of this category.',
+'cat_image_desc' => '',
 
 'html_formatting' => 'HTML formatting',
 
@@ -496,7 +496,7 @@ $lang = array(
 
 'parent_category' => 'Parent category',
 
-'parent_category_desc' => 'You may make this category a sub-category of another.',
+'parent_category_desc' => '',
 
 'category_created' => 'Category Created',
 
@@ -536,13 +536,11 @@ $lang = array(
 
 'label' => 'Label',
 
-'cat_field_label_desc' => 'Name of field that appears in the category form.',
-
-'cat_field_short_name_desc' => 'Short name for this field.<br><i>No spaces. Underscores and dashes are allowed.</i>',
+'cat_field_short_name_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
 
 'require_field' => 'Require field?',
 
-'cat_require_field_desc' => 'When set to <b>yes</b>, this field will be required to save a category.',
+'cat_require_field_desc' => 'When set to <b>yes</b>,  this field will be required to submit the publish form.',
 
 'text_input' => 'Text Input',
 

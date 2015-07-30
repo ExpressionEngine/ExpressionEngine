@@ -1052,8 +1052,8 @@ class Cat extends AbstractChannelsController {
 					)
 				),
 				array(
-					'title' => 'label',
-					'desc' => 'cat_field_label_desc',
+					'title' => 'name',
+					'desc' => 'name_desc',
 					'fields' => array(
 						'field_label' => array(
 							'type' => 'text',
