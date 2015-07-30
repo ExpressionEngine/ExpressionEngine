@@ -47,3 +47,5 @@ $('table').each(function() {
 		$(this).toggle_all();
 	}
 });
+
+});
