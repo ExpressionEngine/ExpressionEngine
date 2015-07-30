@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Utilities;
+namespace EllisLab\ExpressionEngine\Controller\Utilities;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -48,4 +48,4 @@ class Php extends Utilities {
 // END CLASS
 
 /* End of file Php.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Utilities/Php.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controller/Utilities/Php.php */

@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Publish;
+namespace EllisLab\ExpressionEngine\Controller\Publish;
 
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP\Table;

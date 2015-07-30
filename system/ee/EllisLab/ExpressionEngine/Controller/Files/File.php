@@ -1,8 +1,8 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Files;
+namespace EllisLab\ExpressionEngine\Controller\Files;
 
-use EllisLab\ExpressionEngine\Controllers\Files\AbstractFiles as AbstractFilesController;
+use EllisLab\ExpressionEngine\Controller\Files\AbstractFiles as AbstractFilesController;
 
 /**
  * ExpressionEngine - by EllisLab

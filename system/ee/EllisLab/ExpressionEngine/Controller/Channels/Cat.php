@@ -1,11 +1,11 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Channels;
+namespace EllisLab\ExpressionEngine\Controller\Channels;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Library\CP;
-use EllisLab\ExpressionEngine\Controllers\Channels\AbstractChannels as AbstractChannelsController;
+use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
 use EllisLab\Addons\FilePicker\FilePicker as FilePicker;
 
 /**

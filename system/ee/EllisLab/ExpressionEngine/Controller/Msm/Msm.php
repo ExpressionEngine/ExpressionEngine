@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Msm;
+namespace EllisLab\ExpressionEngine\Controller\Msm;
 
 use CP_Controller;
 

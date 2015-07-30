@@ -1,9 +1,9 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Channels\Fields;
+namespace EllisLab\ExpressionEngine\Controller\Channels\Fields;
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Controllers\Channels\AbstractChannels as AbstractChannelsController;
+use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
 use EllisLab\ExpressionEngine\Module\Channel\Model\ChannelFieldGroup;
 
 /**

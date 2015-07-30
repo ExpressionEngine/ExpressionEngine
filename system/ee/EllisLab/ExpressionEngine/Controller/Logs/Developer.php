@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Logs;
+namespace EllisLab\ExpressionEngine\Controller\Logs;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -252,4 +252,4 @@ class Developer extends Logs {
 // END CLASS
 
 /* End of file Developer.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Logs/Developer.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controller/Logs/Developer.php */

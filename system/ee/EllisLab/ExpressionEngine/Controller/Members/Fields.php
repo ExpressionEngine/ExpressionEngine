@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Members;
+namespace EllisLab\ExpressionEngine\Controller\Members;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -8,7 +8,7 @@ use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
-use EllisLab\ExpressionEngine\Controllers\Members;
+use EllisLab\ExpressionEngine\Controller\Members;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -397,4 +397,4 @@ class Fields extends Members\Members {
 // END CLASS
 
 /* End of file Members.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Members/Fields.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controller/Members/Fields.php */

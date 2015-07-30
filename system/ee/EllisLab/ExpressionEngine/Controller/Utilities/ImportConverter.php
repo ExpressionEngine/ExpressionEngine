@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Utilities;
+namespace EllisLab\ExpressionEngine\Controller\Utilities;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -544,4 +544,4 @@ class ImportConverter extends Utilities {
 // END CLASS
 
 /* End of file Import_converter.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Utilities/ImportConverter.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controller/Utilities/ImportConverter.php */

@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Channels;
+namespace EllisLab\ExpressionEngine\Controller\Channels;
 
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP\Table;

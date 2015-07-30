@@ -1,10 +1,10 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Publish;
+namespace EllisLab\ExpressionEngine\Controller\Publish;
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
-use EllisLab\ExpressionEngine\Controllers\Publish\AbstractPublish as AbstractPublishController;
+use EllisLab\ExpressionEngine\Controller\Publish\AbstractPublish as AbstractPublishController;
 
 /**
  * ExpressionEngine - by EllisLab

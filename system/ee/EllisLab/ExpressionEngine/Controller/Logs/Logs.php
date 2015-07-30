@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Logs;
+namespace EllisLab\ExpressionEngine\Controller\Logs;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -152,4 +152,4 @@ class Logs extends CP_Controller {
 // END CLASS
 
 /* End of file Logs.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Logs/Logs.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controller/Logs/Logs.php */

@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Settings;
+namespace EllisLab\ExpressionEngine\Controller\Settings;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -137,4 +137,4 @@ class Settings extends CP_Controller {
 // END CLASS
 
 /* End of file Settings.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Settings/Settings.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controller/Settings/Settings.php */

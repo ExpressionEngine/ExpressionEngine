@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Design;
+namespace EllisLab\ExpressionEngine\Controller\Design;
 
 use CP_Controller;
 use ZipArchive;

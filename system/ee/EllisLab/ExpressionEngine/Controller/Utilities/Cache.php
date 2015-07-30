@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Utilities;
+namespace EllisLab\ExpressionEngine\Controller\Utilities;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -95,4 +95,4 @@ class Cache extends Utilities {
 // END CLASS
 
 /* End of file Cache.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Utilities/Cache.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controller/Utilities/Cache.php */

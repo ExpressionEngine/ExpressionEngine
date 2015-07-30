@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Members;
+namespace EllisLab\ExpressionEngine\Controller\Members;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Settings;
+namespace EllisLab\ExpressionEngine\Controller\Settings;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -144,4 +144,4 @@ class Template extends Settings {
 // END CLASS
 
 /* End of file Template.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Settings/Template.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controller/Settings/Template.php */

@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Addons;
+namespace EllisLab\ExpressionEngine\Controller\Addons;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -1845,4 +1845,4 @@ class Addons extends CP_Controller {
 // END CLASS
 
 /* End of file Addons.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Addons/Addons.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controller/Addons/Addons.php */

@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Settings;
+namespace EllisLab\ExpressionEngine\Controller\Settings;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -183,4 +183,4 @@ class Avatars extends Settings {
 // END CLASS
 
 /* End of file Avatars.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Settings/Avatars.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controller/Settings/Avatars.php */

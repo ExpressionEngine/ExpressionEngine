@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Logs;
+namespace EllisLab\ExpressionEngine\Controller\Logs;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -167,4 +167,4 @@ class Email extends Logs {
 // END CLASS
 
 /* End of file Email.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Logs/Email.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controller/Logs/Email.php */

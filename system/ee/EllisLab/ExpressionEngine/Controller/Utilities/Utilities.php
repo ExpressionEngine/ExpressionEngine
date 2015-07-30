@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Utilities;
+namespace EllisLab\ExpressionEngine\Controller\Utilities;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -106,4 +106,4 @@ class Utilities extends CP_Controller {
 // END CLASS
 
 /* End of file Utilities.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Utilities/Utilities.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controller/Utilities/Utilities.php */

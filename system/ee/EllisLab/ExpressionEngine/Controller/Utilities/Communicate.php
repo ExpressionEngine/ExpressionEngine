@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Utilities;
+namespace EllisLab\ExpressionEngine\Controller\Utilities;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -888,4 +888,4 @@ class Communicate extends Utilities {
 // END CLASS
 
 /* End of file Communicate.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Utilities/Communicate.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controller/Utilities/Communicate.php */

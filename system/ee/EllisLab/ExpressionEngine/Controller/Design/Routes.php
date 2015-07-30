@@ -1,9 +1,9 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Design;
+namespace EllisLab\ExpressionEngine\Controller\Design;
 
 use ZipArchive;
-use EllisLab\ExpressionEngine\Controllers\Design\Design;
+use EllisLab\ExpressionEngine\Controller\Design\Design;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
 /**

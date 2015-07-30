@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Homepage;
+namespace EllisLab\ExpressionEngine\Controller\Homepage;
 
 use CP_Controller;
 

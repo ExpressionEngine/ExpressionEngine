@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Settings;
+namespace EllisLab\ExpressionEngine\Controller\Settings;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -131,4 +131,4 @@ class Captcha extends Settings {
 // END CLASS
 
 /* End of file Captcha.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Settings/Captcha.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controller/Settings/Captcha.php */

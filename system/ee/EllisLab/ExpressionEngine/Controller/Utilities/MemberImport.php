@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Utilities;
+namespace EllisLab\ExpressionEngine\Controller\Utilities;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -986,4 +986,4 @@ class MemberImport extends Utilities {
 // END CLASS
 
 /* End of file Member_import.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Utilities/MemberImport.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controller/Utilities/MemberImport.php */

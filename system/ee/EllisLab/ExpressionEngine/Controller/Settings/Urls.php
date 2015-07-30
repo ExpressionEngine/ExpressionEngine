@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Settings;
+namespace EllisLab\ExpressionEngine\Controller\Settings;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -196,4 +196,4 @@ class Urls extends Settings {
 // END CLASS
 
 /* End of file Urls.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Settings/Urls.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controller/Settings/Urls.php */

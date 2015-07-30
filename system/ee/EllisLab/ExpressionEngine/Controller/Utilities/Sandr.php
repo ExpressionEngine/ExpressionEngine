@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Utilities;
+namespace EllisLab\ExpressionEngine\Controller\Utilities;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -253,4 +253,4 @@ class Sandr extends Utilities {
 // END CLASS
 
 /* End of file Sandr.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Utilities/Sandr.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controller/Utilities/Sandr.php */

@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Utilities;
+namespace EllisLab\ExpressionEngine\Controller\Utilities;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -214,4 +214,4 @@ class Sql extends Utilities {
 // END CLASS
 
 /* End of file Query.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Utilities/Query.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controller/Utilities/Query.php */

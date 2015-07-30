@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Settings;
+namespace EllisLab\ExpressionEngine\Controller\Settings;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -172,4 +172,4 @@ class Throttling extends Settings {
 // END CLASS
 
 /* End of file Throttling.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Settings/Throttling.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controller/Settings/Throttling.php */

@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Members;
+namespace EllisLab\ExpressionEngine\Controller\Members;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -731,4 +731,4 @@ class Members extends CP_Controller {
 // END CLASS
 
 /* End of file Members.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Members/Members.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controller/Members/Members.php */

@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Settings;
+namespace EllisLab\ExpressionEngine\Controller\Settings;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
@@ -200,4 +200,4 @@ class Email extends Settings {
 // END CLASS
 
 /* End of file Email.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Controllers/Settings/Email.php */
+/* Location: ./system/EllisLab/ExpressionEngine/Controller/Settings/Email.php */

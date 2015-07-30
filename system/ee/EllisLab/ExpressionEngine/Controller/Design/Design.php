@@ -1,12 +1,12 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Design;
+namespace EllisLab\ExpressionEngine\Controller\Design;
 
 use ZipArchive;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
 use EllisLab\ExpressionEngine\Library\Data\Collection;
-use EllisLab\ExpressionEngine\Controllers\Design\AbstractDesign as AbstractDesignController;
+use EllisLab\ExpressionEngine\Controller\Design\AbstractDesign as AbstractDesignController;
 
 /**
  * ExpressionEngine - by EllisLab

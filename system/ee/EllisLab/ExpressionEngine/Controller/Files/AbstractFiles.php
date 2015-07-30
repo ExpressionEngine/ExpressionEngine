@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Controllers\Files;
+namespace EllisLab\ExpressionEngine\Controller\Files;
 
 use CP_Controller;
 
