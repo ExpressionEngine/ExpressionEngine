@@ -59,6 +59,11 @@ return array(
 			return new Library\CP\Pagination($total_count, $view);
 		},
 
+		'CSV' => function ($ee)
+		{
+			return new Library\Data\CSV();
+		},
+
 		'db' => function($ee)
 		{
 			return $ee->make('Database')->newQuery();
