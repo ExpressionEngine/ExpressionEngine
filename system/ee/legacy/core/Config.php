@@ -493,7 +493,6 @@ class EE_Config {
 		$this->config['enable_online_user_tracking'] = 'n';
 		$this->config['enable_hit_tracking'] = 'n';
 		$this->config['enable_entry_view_tracking'] = 'n';
-		$this->config['log_referrers'] = 'n';
 	}
 
 	// --------------------------------------------------------------------
@@ -553,8 +552,6 @@ class EE_Config {
 			'xml_lang',
 			'send_headers',
 			'gzip_output',
-			'log_referrers',
-			'max_referrers',
 			'default_site_timezone',
 			'date_format',
 			'time_format',

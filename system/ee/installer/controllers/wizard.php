@@ -82,8 +82,7 @@ class Wizard extends CI_Controller {
 	public $native_modules = array('blacklist', 'channel', 'comment', 'commerce',
 		'email', 'emoticon', 'file', 'forum', 'gallery', 'ip_to_nation',
 		'jquery', 'mailinglist', 'member', 'metaweblog_api', 'moblog', 'pages',
-		'query', 'referrer', 'rss', 'rte', 'search',
-		'simple_commerce', 'stats', 'wiki', 'filepicker');
+		'query', 'rss', 'rte', 'search', 'simple_commerce', 'stats', 'wiki', 'filepicker');
 
 	// Third Party Modules may send error messages if something goes wrong.
 	public $module_install_errors = array(); // array that collects all error messages
@@ -1765,8 +1764,6 @@ class Wizard extends CI_Controller {
 			'xml_lang'                  => 'en',
 			'send_headers'              => 'y',
 			'gzip_output'               => 'n',
-			'log_referrers'             => 'n',
-			'max_referrers'             => '500',
 			'is_system_on'              => 'y',
 			'allow_extensions'          => 'y',
 			'date_format'               => '%n/%j/%y',
@@ -1921,8 +1918,6 @@ class Wizard extends CI_Controller {
 			'xml_lang',
 			'send_headers',
 			'gzip_output',
-			'log_referrers',
-			'max_referrers',
 			'date_format',
 			'time_format',
 			'include_seconds',

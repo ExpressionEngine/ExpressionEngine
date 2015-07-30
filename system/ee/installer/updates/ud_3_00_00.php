@@ -59,7 +59,8 @@ class Updater {
 				'_update_upload_prefs_table',
 				'_update_upload_directories',
 				'_drop_field_formatting_table',
-				'_update_sites_table'
+				'_update_sites_table',
+				'_remove_referrer_config_items'
 			)
 		);
 
@@ -1038,6 +1039,16 @@ class Updater {
 				)
 			);
 		}
+	}
+
+	/**
+	 * The Referrer module has been removed, so we need to remove settings
+	 * related to the module from site config
+	 */
+	private function _remove_referrer_config_items()
+	{
+		$msm_config = new MSM_Config();
+		$msm_config->remove_config_item(array('log_referrers', 'max_referrers'));
 	}
 }
 /* END CLASS */
