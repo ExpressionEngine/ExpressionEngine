@@ -36,7 +36,7 @@
 								<a href="<?=$link?>"><?=$site_name?></a>
 							<?php endforeach ?>
 							<?php if (ee()->cp->allowed_group('can_admin_sites')): ?>
-								<a class="last add" href="<?=ee('CP/URL', 'msm/create')?>">&#10010; <?=lang('new_site')?></a>
+								<a class="last add" href="<?=ee('CP/URL', 'msm/create')?>"><?=lang('new_site')?></a>
 							<?php endif ?>
 						</ul>
 					<?php elseif ( ! ($site_name = ee()->config->item('site_name')) OR empty($site_name)): ?>
@@ -52,7 +52,7 @@
 						<?php foreach($cp_quicklinks as $link): ?>
 						<a href="<?=$link['link']?>"><?=$link['title']?></a>
 						<?php endforeach ?>
-						<a class="last add" href="<?=ee('CP/URL', 'members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id')))?>">&#10010; <?=lang('new_link')?></a>
+						<a class="last add" href="<?=ee('CP/URL', 'members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id')))?>"><?=lang('new_link')?></a>
 					</ul>
 				</div>
 			</nav>
@@ -72,7 +72,7 @@
 								<?php foreach ($cp_main_menu['channels']['create'] as $channel_name => $link): ?>
 									<li class="search-channel" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
 								<?php endforeach ?>
-								<li class="last"><a class="add" href="<?=ee('CP/URL', 'channels/create')?>">&#10010; <?=lang('new_channel')?></a></li>
+								<li class="last"><a class="add" href="<?=ee('CP/URL', 'channels/create')?>"><?=lang('new_channel')?></a></li>
 							</ul>
 						</div>
 					</li>
