@@ -125,6 +125,22 @@ $lang = array(
  * License & Registration
  */
 
+'license_and_reg_title' => 'License &amp; Registration Settings',
+
+'license_updated' => 'License &amp; Registration Updated',
+'license_updated_desc' => 'Your license and registration information has been saved successfully.',
+
+'license_file_error' => 'License Invalid',
+'license_file_corrupt_license_file' => 'The license file provided is missing data.',
+'license_file_invalid_signature' => 'The license file provided has an invalid signature.',
+'license_file_missing_pubkey' => 'The ExpressionEngine product is missing data. Pleas visit <a href="https://store.ellislab.com/manage" rel="external">ElisLab.com</a> and download a fresh copy.',
+'license_file_invalid_license_number' => 'The license file provided is invalid.',
+
+'license_file_fail' => 'License not saved',
+'license_file_permissions' => 'The license file could not be saved. Check the permissions on <b>%s</b>.',
+
+'license_file' => 'License file',
+'license_file_desc' => 'Found on your <a href="https://store.ellislab.com/manage" rel="external">purchase management</a> page.',
 
 /**
  * URLs and Path Settings
