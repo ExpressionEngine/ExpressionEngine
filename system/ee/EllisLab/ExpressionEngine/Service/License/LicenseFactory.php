@@ -62,10 +62,10 @@ class LicenseFactory {
 	 *
 	 * @return ExpressionEngineLicense An object representing the license
 	 */
-	public function getEELicense()
+	public function getEELicense($path = '')
 	{
 		// @TODO: Inject the path.
-		$path = SYSPATH.'user/config/license.key';
+		$path = ($path) ?: SYSPATH.'user/config/license.key';
 		return new ExpressionEngineLicense($path, $this->default_public_key);
 	}
 
