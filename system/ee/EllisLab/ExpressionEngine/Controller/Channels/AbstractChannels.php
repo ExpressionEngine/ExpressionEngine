@@ -51,6 +51,7 @@ abstract class AbstractChannels extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
+		ee()->lang->loadfile('content');
 		ee()->lang->loadfile('admin_content');
 		ee()->lang->loadfile('channel');
 		ee()->load->library('form_validation');

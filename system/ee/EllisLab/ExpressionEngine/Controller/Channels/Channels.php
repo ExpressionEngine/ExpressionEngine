@@ -129,7 +129,7 @@ class Channels extends AbstractChannelsController {
 			ee()->view->base_url = ee('CP/URL', 'channels/create');
 			ee()->view->save_btn_text = 'create_channel';
 			$channel = ee('Model')->make('Channel');
-			$channel->default_entry_title = lang('title');
+			$channel->title_field_label = lang('title');
 
 			$default_status_group = ee('Model')->get('StatusGroup')
 				->fields('group_id')
@@ -270,6 +270,16 @@ class Channels extends AbstractChannelsController {
 							'link_text' => 'create_new_status_group',
 							'link_href' => ee('CP/URL', 'channels/status/create')
 						)
+					)
+				)
+			),
+			array(
+				'title' => 'title_field_label',
+				'desc' => 'title_field_label_desc',
+				'fields' => array(
+					'title_field_label' => array(
+						'type' => 'text',
+						'value' => $channel->title_field_label
 					)
 				)
 			),
@@ -709,16 +719,6 @@ class Channels extends AbstractChannelsController {
 				)
 			),
 			'channel_defaults' => array(
-				array(
-					'title' => 'title_field_label',
-					'desc' => 'title_field_label_desc',
-					'fields' => array(
-						'title_field_label' => array(
-							'type' => 'text',
-							'value' => $channel->title_field_label
-						)
-					)
-				),
 				array(
 					'title' => 'default_title',
 					'desc' => 'default_title_desc',
