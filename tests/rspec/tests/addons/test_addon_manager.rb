@@ -16,7 +16,6 @@ feature 'Add-On Manager' do
 		@page.first_party_heading.text.should eq 'Add-Ons'
 
 		@page.should have_first_party_status_filter
-		@page.should have_first_party_perpage_filter
 
 		@page.should have_first_party_addons
 
@@ -38,23 +37,7 @@ feature 'Add-On Manager' do
 			@page.should have(25).first_party_addons # Default is 25 per page
 		end
 
-		it 'can change page size' do
-			@page.first_party_perpage_filter.click
-			@page.wait_until_first_party_perpage_filter_menu_visible
-			@page.first_party_perpage_filter_menu.click_link "100 results"
-			no_php_js_errors
-
-			@page.first_party_perpage_filter.text.should eq "show (100)"
-			@page.should_not have_first_party_pagination
-			@page.should have(39).first_party_addons
-		end
-
 		it 'can reverse sort by Add-On name' do
-			@page.first_party_perpage_filter.click
-			@page.wait_until_first_party_perpage_filter_menu_visible
-			@page.first_party_perpage_filter_menu.click_link "100 results"
-			no_php_js_errors
-
 			a_to_z_addons = @page.first_party_addon_names.map {|addon| addon.text}
 
 			@page.first_party_addon_name_header.find('a.sort').click
@@ -67,11 +50,6 @@ feature 'Add-On Manager' do
 		end
 
 		it 'can sort by Version' do
-			@page.first_party_perpage_filter.click
-			@page.wait_until_first_party_perpage_filter_menu_visible
-			@page.first_party_perpage_filter_menu.click_link "100 results"
-			no_php_js_errors
-
 			versions = @page.first_party_versions.map {|version| version.text}
 
 			@page.first_party_version_header.find('a.sort').click
@@ -86,11 +64,6 @@ feature 'Add-On Manager' do
 		end
 
 		it 'can reverse sort by Version' do
-			@page.first_party_perpage_filter.click
-			@page.wait_until_first_party_perpage_filter_menu_visible
-			@page.first_party_perpage_filter_menu.click_link "100 results"
-			no_php_js_errors
-
 			versions = @page.first_party_versions.map {|version| version.text}
 
 			@page.first_party_version_header.find('a.sort').click
@@ -170,11 +143,6 @@ feature 'Add-On Manager' do
 
 		it 'retains sort on filtering' do
 			# Reverse sort by Version
-			@page.first_party_perpage_filter.click
-			@page.wait_until_first_party_perpage_filter_menu_visible
-			@page.first_party_perpage_filter_menu.click_link "100 results"
-			no_php_js_errors
-
 			versions = @page.first_party_versions.map {|version| version.text}
 
 			@page.first_party_version_header.find('a.sort').click
@@ -221,11 +189,6 @@ feature 'Add-On Manager' do
 
 		it 'retains sort on searching' do
 			# Sort by Version
-			@page.first_party_perpage_filter.click
-			@page.wait_until_first_party_perpage_filter_menu_visible
-			@page.first_party_perpage_filter_menu.click_link "100 results"
-			no_php_js_errors
-
 			versions = @page.first_party_versions.map {|version| version.text}
 
 			@page.first_party_version_header.find('a.sort').click
@@ -244,24 +207,15 @@ feature 'Add-On Manager' do
 			@page.should have(1).first_party_addons
 		end
 
-		it 'can combine filters' do
-			# First by installed
-			@page.first_party_status_filter.click
-			@page.wait_until_first_party_status_filter_menu_visible
-			@page.first_party_status_filter_menu.click_link "uninstalled"
-			no_php_js_errors
-
-			@page.should have_css 'tr.not-installed'
-
-			# Now by perpage
-			@page.first_party_perpage_filter.click
-			@page.wait_until_first_party_perpage_filter_menu_visible
-			@page.first_party_perpage_filter_menu.click_link "50 results"
-			no_php_js_errors
-
-			@page.first_party_status_filter.text.should eq "status (uninstalled)"
-			@page.first_party_perpage_filter.text.should eq 'show (50)'
-		end
+		# it 'can combine filters' do
+		# 	# First by installed
+		# 	@page.first_party_status_filter.click
+		# 	@page.wait_until_first_party_status_filter_menu_visible
+		# 	@page.first_party_status_filter_menu.click_link "uninstalled"
+		# 	no_php_js_errors
+		#
+		# 	@page.should have_css 'tr.not-installed'
+		# end
 
 		it 'shows the Prev button when on page 2' do
 			click_link "Next"
@@ -341,12 +295,6 @@ feature 'Add-On Manager' do
 			@page.first_party_status_filter.click
 			@page.wait_until_first_party_status_filter_menu_visible
 			@page.first_party_status_filter_menu.click_link "uninstalled"
-			no_php_js_errors
-
-			# Show 100 should show everything
-			@page.first_party_perpage_filter.click
-			@page.wait_until_first_party_perpage_filter_menu_visible
-			@page.first_party_perpage_filter_menu.click_link "100 results"
 			no_php_js_errors
 
 			addons = @page.first_party_addon_names.map {|addon| addon.text}
@@ -468,7 +416,6 @@ feature 'Add-On Manager' do
 
 			@page.should have_third_party_status_filter
 			@page.should have_third_party_developer_filter
-			@page.should have_third_party_perpage_filter
 
 			@page.should have_third_party_addons
 
@@ -489,18 +436,6 @@ feature 'Add-On Manager' do
 				@page.third_party_addon_name_header[:class].should eq 'highlight'
 				@page.should_not have_third_party_pagination
 				@page.should have(6).third_party_addons
-			end
-
-			it 'can change page size' do
-				@page.third_party_perpage_filter.click
-				@page.wait_until_third_party_perpage_filter_menu_visible
-				@page.third_party_perpage_manual_filter.set 5
-				@page.third_party_action_submit_button.click
-				no_php_js_errors
-
-				@page.third_party_perpage_filter.text.should eq "show (5)"
-				@page.should have_third_party_pagination
-				@page.should have(5).third_party_addons
 			end
 
 			it 'can reverse sort by Add-On name' do
@@ -689,29 +624,14 @@ feature 'Add-On Manager' do
 
 				@page.should have_css 'tr.not-installed'
 
-				# Now by perpage
-				@page.third_party_perpage_filter.click
-				@page.wait_until_third_party_perpage_filter_menu_visible
-				@page.third_party_perpage_filter_menu.click_link "25 results"
+				# Now by Developer
+				@page.third_party_developer_filter.click
+				@page.wait_until_third_party_developer_filter_menu_visible
+				@page.third_party_developer_filter_menu.click_link "Test LLC"
 				no_php_js_errors
 
 				@page.third_party_status_filter.text.should eq "status (uninstalled)"
-				@page.third_party_perpage_filter.text.should eq 'show (25)'
-			end
-
-			it 'shows the Prev button when on page 2' do
-				@page.third_party_perpage_filter.click
-				@page.wait_until_third_party_perpage_filter_menu_visible
-				@page.third_party_perpage_manual_filter.set 5
-				@page.third_party_action_submit_button.click
-				no_php_js_errors
-
-				@page.third_party_pagination.click_link "Next"
-				no_php_js_errors
-
-				@page.should have_third_party_pagination
-				@page.should have(5).third_party_pages
-				@page.third_party_pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "Last"]
+				@page.third_party_developer_filter.text.should eq 'developer (Test LLC)'
 			end
 
 			it 'can search by phrases' do
@@ -869,37 +789,6 @@ feature 'Add-On Manager' do
 		end
 
 		describe "Acting on Both Tables" do
-
-			before(:each) do
-				@page.third_party_perpage_filter.click
-				@page.wait_until_third_party_perpage_filter_menu_visible
-				@page.third_party_perpage_manual_filter.set 5
-				@page.third_party_action_submit_button.click
-				no_php_js_errors
-			end
-
-			it "changes pages independently" do
-				@page.first_party_pages[1].text.should eq '1'
-				@page.first_party_pages[1][:class].should eq 'act'
-				@page.third_party_pages[1].text.should eq '1'
-				@page.third_party_pages[1][:class].should eq 'act'
-
-				@page.first_party_pagination.click_link "Last"
-				no_php_js_errors
-
-				@page.first_party_pages[3].text.should eq '2'
-				@page.first_party_pages[3][:class].should eq 'act'
-				@page.third_party_pages[1].text.should eq '1'
-				@page.third_party_pages[1][:class].should eq 'act'
-
-				@page.third_party_pagination.click_link "Next"
-				no_php_js_errors
-
-				@page.first_party_pages[3].text.should eq '2'
-				@page.first_party_pages[3][:class].should eq 'act'
-				@page.third_party_pages[3].text.should eq '2'
-				@page.third_party_pages[3][:class].should eq 'act'
-			end
 
 			it "filters independently" do
 				@page.first_party_status_filter.text.should eq "status"
