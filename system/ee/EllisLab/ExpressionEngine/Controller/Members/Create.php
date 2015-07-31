@@ -56,6 +56,7 @@ class Create extends Members {
 						'group_id' => array(
 							'type' => 'select',
 							'choices' => $choices,
+							'value' => (isset($choices[5]) && $choices[5] == 'Members') ? 5 : '',
 							'required' => TRUE
 						)
 					)
