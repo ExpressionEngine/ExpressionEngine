@@ -46,7 +46,7 @@ feature 'Add-On Manager' do
 
 			@page.first_party_perpage_filter.text.should eq "show (100)"
 			@page.should_not have_first_party_pagination
-			@page.should have(40).first_party_addons
+			@page.should have(39).first_party_addons
 		end
 
 		it 'can reverse sort by Add-On name' do
@@ -127,8 +127,8 @@ feature 'Add-On Manager' do
 
 			@page.first_party_status_filter.text.should eq "status (uninstalled)"
 			@page.should have_css 'tr.not-installed'
-			@page.all('tr.not-installed').count().should == 23
-			@page.should have(23).first_party_addons
+			@page.all('tr.not-installed').count().should == 22
+			@page.should have(22).first_party_addons
 
 			# By 'needs updates'
 			@page.first_party_status_filter.click

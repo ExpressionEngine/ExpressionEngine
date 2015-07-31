@@ -25,7 +25,7 @@ feature 'Channel Create/Edit' do
 
     no_php_js_errors
     should_have_form_errors(@page)
-    @page.should have_text 'Attention: Channel not saved'
+    @page.should have_text 'Cannot Create Channel'
     should_have_error_text(@page.channel_title, $required_error)
     should_have_error_text(@page.channel_name, $required_error)
 
@@ -90,7 +90,7 @@ feature 'Channel Create/Edit' do
     @page.channel_name.set 'test test'
     @page.submit
 
-    @page.should have_text 'Attention: Channel not saved'
+    @page.should have_text 'Cannot Create Channel'
     should_have_error_text(@page.channel_name, @channel_name_error)
     should_have_form_errors(@page)
 
@@ -120,7 +120,7 @@ feature 'Channel Create/Edit' do
     @page.submit
     no_php_js_errors
 
-    @page.should have_text 'Channel saved'
+    @page.should have_text 'Channel Created'
 
     @page.load_edit_for_channel(3)
     no_php_js_errors
@@ -160,7 +160,7 @@ feature 'Channel Create/Edit' do
     @page.submit
     no_php_js_errors
 
-    @page.should have_text 'Channel saved'
+    @page.should have_text 'Channel Updated'
 
     @page.load_edit_for_channel(1)
     no_php_js_errors
@@ -219,7 +219,7 @@ feature 'Channel Create/Edit' do
     channel_settings.comment_auto_link_urls[1].click
 
     channel_settings.submit
-    channel_settings.should have_text 'Channel saved'
+    channel_settings.should have_text 'Channel Settings Saved'
 
     # Create new channel, ensure field groups and things were duplicated
     @page.load
@@ -228,7 +228,7 @@ feature 'Channel Create/Edit' do
     @page.submit
     no_php_js_errors
 
-    @page.should have_text 'Channel saved'
+    @page.should have_text 'Channel Created'
 
     @page.load_edit_for_channel(3)
     no_php_js_errors

@@ -43,9 +43,13 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 {
 	$attributes .= ' enctype="multipart/form-data"';
 }
+if ( ! isset($alerts_name))
+{
+	$alerts_name = 'shared-form';
+}
 ?>
 <?=form_open($base_url, $attributes, (isset($form_hidden)) ? $form_hidden : array())?>
-	<?=ee('Alert')->get('shared-form')?>
+	<?=ee('Alert')->get($alerts_name)?>
 	<?php
 	if (isset($extra_alerts))
 	{

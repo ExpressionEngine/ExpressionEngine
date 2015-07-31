@@ -48,6 +48,11 @@ abstract class FieldModel extends Model {
 			$this->_facade->setContentType($this->getContentType());
 		}
 
+		if (isset($this->field_fmt))
+		{
+			$this->_facade->setFormat($this->field_fmt);
+		}
+
 		return $this->_facade;
 	}
 

@@ -114,7 +114,7 @@ class Pages_mcp {
 					array(
 						'toolbar_items' => array(
 							'edit' => array(
-								'href' => ee('CP/URL', 'publish/edit/' . $entry_id),
+								'href' => ee('CP/URL', 'publish/edit/entry/' . $entry_id),
 								'title' => lang('edit')
 							)
 						)
@@ -139,7 +139,7 @@ class Pages_mcp {
 			'file' => array('cp/v3/confirm_remove'),
 		));
 
-		return ee()->load->view('index', $vars, TRUE);
+		return ee('View')->make('pages:index')->render($vars);
 	}
 
 	/**

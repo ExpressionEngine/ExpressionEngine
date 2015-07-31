@@ -226,7 +226,7 @@ class EE_Router {
 
 		// First check for a namespaced situation
 		$saved_segments = $segments;
-		$directory = APPPATH.'../EllisLab/ExpressionEngine/Controllers/';
+		$directory = APPPATH.'../EllisLab/ExpressionEngine/Controller/';
 		$namespace = '';
 		if (strtolower($segments[0]) == 'cp')
 		{
@@ -279,7 +279,7 @@ class EE_Router {
 		if ($namespace != '')
 		{
 			$this->set_directory($directory);
-			$this->namespace_prefix = '\EllisLab\ExpressionEngine\Controllers' . $namespace;
+			$this->namespace_prefix = '\EllisLab\ExpressionEngine\Controller' . $namespace;
 
 			// If the final segment is a directory check for a file matching the
 			// directory's name inside the directory. Use its index method.

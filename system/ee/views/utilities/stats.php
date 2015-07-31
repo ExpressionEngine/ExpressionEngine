@@ -7,8 +7,8 @@
 		<table cellspacing="0">
 			<thead>
 				<tr>
-					<th<?php if($highlight == 'source'): ?> class="highlight"<?php endif; ?>><?=lang('source')?> <a href="<?=$source_sort_url?>" class="ico sort <?=$source_direction?> right"></a></th>
-					<th<?php if($highlight == 'record_count'): ?> class="highlight"<?php endif; ?>><?=lang('record_count')?> <a href="<?=$record_count_sort_url?>" class="ico sort <?=$record_count_direction?> right"></a></th>
+					<th<?php if($highlight == 'source'): ?> class="highlight"<?php endif; ?>><?=lang('source')?> <a href="<?=$source_sort_url?>" class="sort <?=$source_direction?>"></a></th>
+					<th<?php if($highlight == 'record_count'): ?> class="highlight"<?php endif; ?>><?=lang('record_count')?> <a href="<?=$record_count_sort_url?>" class="sort <?=$record_count_direction?>"></a></th>
 					<th><?=lang('manage')?></th>
 					<th class="check-ctrl"><input type="checkbox" title="<?=strtolower(lang('select_all'))?>"></th>
 				</tr>

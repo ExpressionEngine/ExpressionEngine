@@ -39,6 +39,7 @@ class Updater {
 		$steps = new ProgressIterator(
 			array(
 				'_move_database_information',
+				'_install_required_modules',
 				'_update_email_cache_table',
 				'_update_upload_no_access_table',
 				'_insert_comment_settings_into_db',
@@ -58,7 +59,8 @@ class Updater {
 				'_update_upload_prefs_table',
 				'_update_upload_directories',
 				'_drop_field_formatting_table',
-				'_update_sites_table'
+				'_update_sites_table',
+				'_remove_referrer_config_items'
 			)
 		);
 
@@ -75,13 +77,52 @@ class Updater {
 	/**
 	 * Migrate the database information from database.php to config.php
 	 *
+	 * THIS MUST BE THE FIRST UPDATE
+	 *
 	 * @return void
 	 */
 	private function _move_database_information()
 	{
-		require SYSPATH.'/user/config/database.php';
-		ee()->config->_update_dbconfig($db[$active_group]);
-		unlink(SYSPATH.'/user/config/database.php');
+		$db_config_path = SYSPATH.'/user/config/database.php';
+		if (is_file($db_config_path))
+		{
+			require $db_config_path;
+			ee()->config->_update_dbconfig($db[$active_group]);
+			unlink(SYSPATH.'/user/config/database.php');
+		}
+		else if (($db_config = ee()->config->item('database'))
+			&& empty($db_config))
+		{
+			throw new \Exception(lang('database_no_data'));
+		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Ensure filepicker and comment modules are installed
+	 */
+	private function _install_required_modules()
+	{
+		ee()->load->library('addons');
+
+		$installed_modules = ee()->db->select('module_name')->get('modules');
+		$required_modules = array('filepicker', 'comment');
+
+		foreach ($installed_modules->result() as $installed_module)
+		{
+			$key = array_search(
+				strtolower($installed_module->module_name),
+				$required_modules
+			);
+
+			if ($key !== FALSE)
+			{
+				unset($required_modules[$key]);
+			}
+		}
+
+		ee()->addons->install_modules($required_modules);
 	}
 
 	// -------------------------------------------------------------------------
@@ -345,7 +386,6 @@ class Updater {
 		$installer_config = ee()->config;
 
 		require_once(APPPATH . 'libraries/Extensions.php');
-		ee()->set('extensions', new Installer_Extensions());
 		ee()->load->model('template_model');
 
 		$sites = ee()->db->select('site_id')
@@ -361,8 +401,34 @@ class Updater {
 
 			ee()->config->site_prefs('', $site['site_id']);
 
-			if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '') {
-				$templates = ee()->template_model->fetch_last_edit(array('templates.site_id' => $site['site_id']), TRUE);
+			if (ee()->config->item('save_tmpl_files') == 'y')
+			{
+				$tmpl_file_basepath = ee()->config->item('tmpl_file_basepath');
+
+				// Continue to the next site if there's no basepath
+				if (empty($tmpl_file_basepath))
+				{
+					continue;
+				}
+
+				// Change the config for basepath to the new normal if they're
+				// using the old default
+				if (stripos($tmpl_file_basepath, SYSDIR.'/expressionengine/templates') !== FALSE)
+				{
+					ee()->config->set_item(
+						'tmpl_file_basepath',
+						str_replace(
+							'/expressionengine/templates',
+							'/user/templates',
+							$tmpl_file_basepath
+						)
+					);
+				}
+
+				$templates = ee()->template_model->fetch_last_edit(
+					array('templates.site_id' => $site['site_id']),
+					TRUE
+				);
 
 				foreach($templates as $template)
 				{
@@ -973,6 +1039,16 @@ class Updater {
 				)
 			);
 		}
+	}
+
+	/**
+	 * The Referrer module has been removed, so we need to remove settings
+	 * related to the module from site config
+	 */
+	private function _remove_referrer_config_items()
+	{
+		$msm_config = new MSM_Config();
+		$msm_config->remove_config_item(array('log_referrers', 'max_referrers'));
 	}
 }
 /* END CLASS */

@@ -79,7 +79,7 @@
 			echo $item."\n";
 		}
 		?>
-		<div id="idle-modal" class="modal-wrap modal-timeout">
+		<div id="idle-modal" class="modal-wrap modal-timeout hidden">
 			<div class="modal">
 				<div class="col-group snap">
 					<div class="col w-16 last">
