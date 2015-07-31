@@ -6,6 +6,8 @@ class CSV {
 
 	private $header = array();
 	private $data = array();
+	private $delimiter = ', ';
+	private $enclosure = '"';
 
 	/**
 	 * Add a row to the CSV object
@@ -17,7 +19,7 @@ class CSV {
 	 */
 	public function addRow($rowData)
 	{
-		$this->data[] = $this->prepareData($rowData);
+		$this->data[] = $this->cleanData($rowData);
 		return $this;
 	}
 
@@ -28,7 +30,7 @@ class CSV {
 	 * @throws InvalidArgumentException
 	 * @return array       Associative array of the data sent in
 	 */
-	private function prepareData($data)
+	private function cleanData($data)
 	{
 		if ( ! is_object($data)
 			&& ( ! is_array($data) || ! $this->isAssociative($data)))
@@ -59,7 +61,8 @@ class CSV {
 	 */
 	private function generate()
 	{
-		$contents = implode(', ', array_values($this->header))."\n";
+		$header = $this->encloseArray(array_values($this->header));
+		$contents = implode($this->delimiter, $header)."\n";
 
 		// Generate defaults for each row ensuring every row has the same number
 		// of items
@@ -75,10 +78,27 @@ class CSV {
 		foreach ($this->data as $row)
 		{
 			$row = array_merge($defaults, $row);
-			$contents .= implode(', ', $row)."\n";
+			$row = $this->encloseArray($row);
+			$contents .= implode($this->delimiter, $row)."\n";
 		}
 
 		return $contents;
+	}
+
+	/**
+	 * Enclose array contents in enclosures
+	 *
+	 * @param  array  $array Array containing contents to enclose
+	 * @return array         Array with enclosed content
+	 */
+	private function encloseArray(array $array)
+	{
+		foreach ($array as $key => $value)
+		{
+			$array[$key] = $this->enclosure.str_replace($this->enclosure, $this->enclosure.$this->enclosure, $value).$this->enclosure;
+		}
+
+		return $array;
 	}
 
 	/**
