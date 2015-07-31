@@ -30,7 +30,7 @@
 				<div class="site">
 					<a class="home" href="<?=ee('CP/URL', 'homepage')?>"></a>
 					<?php if (ee()->config->item('multiple_sites_enabled') === 'y'): ?>
-						<a class="has-sub" href=""><?=ee()->config->item('site_name')?> <span class="ico sub-arrow"></span></a> <a href="<?=ee()->config->item('base_url').ee()->config->item('site_index')?>">view</a>
+						<a class="has-sub" href=""><?=ee()->config->item('site_name')?></a> <a href="<?=ee()->config->item('base_url').ee()->config->item('site_index')?>">view</a>
 						<ul class="sites-list sub-menu">
 							<?php foreach ($cp_main_menu['sites'] as $site_name => $link): ?>
 								<a href="<?=$link?>"><?=$site_name?></a>
@@ -46,7 +46,7 @@
 					<?php endif ?>
 				</div>
 				<div class="user">
-					<a href="<?=ee('CP/URL', 'login/logout')?>"><?=lang('log_out')?></a> <a class="has-sub" href=""><?=$cp_screen_name?> <span class="ico sub-arrow"></span></a>
+					<a href="<?=ee('CP/URL', 'login/logout')?>"><?=lang('log_out')?></a> <a class="has-sub" href=""><?=$cp_screen_name?></a>
 					<ul class="quick-links sub-menu">
 						<a href="<?=ee('CP/URL', 'members/profile', array('id' => ee()->session->userdata('member_id')))?>"><?=lang('my_profile')?></a>
 						<?php foreach($cp_quicklinks as $link): ?>
@@ -61,7 +61,7 @@
 			<nav class="snap">
 				<ul class="author-menu">
 					<li>
-						<a class="has-sub" href=""><?=lang('menu_create')?> <span class="ico sub-arrow"></span></a>
+						<a class="has-sub" href=""><?=lang('menu_create')?></a>
 						<div class="sub-menu">
 							<?php if (count($cp_main_menu['channels']['create']) >= 10): ?>
 								<form class="filter">
@@ -77,7 +77,7 @@
 						</div>
 					</li>
 					<li>
-						<a class="has-sub" href=""><?=lang('menu_edit')?> <span class="ico sub-arrow"></span></a>
+						<a class="has-sub" href=""><?=lang('menu_edit')?></a>
 						<div class="sub-menu">
 							<?php if (count($cp_main_menu['channels']['edit']) >= 10): ?>
 								<form class="filter">
@@ -96,7 +96,7 @@
 				</ul>
 				<ul class="dev-menu">
 					<li class="develop">
-						<a class="has-sub" href=""><b class="ico develop"></b> <span class="ico sub-arrow"></span> <!-- Develop --></a>
+						<a class="has-sub" href=""><b class="ico develop"></b> <!-- Develop --></a>
 						<div class="sub-menu">
 							<ul>
 								<?php
