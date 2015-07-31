@@ -96,7 +96,7 @@
 				</ul>
 				<ul class="dev-menu">
 					<li class="develop">
-						<a class="has-sub" href=""><b class="ico develop"></b> <!-- Develop --></a>
+						<a class="has-sub" href=""></a>
 						<div class="sub-menu">
 							<ul>
 								<?php
