@@ -23,8 +23,7 @@ $lang = array(
 'create_field_group_warning2' => 'It\'s best practice to create any <a href="%s">custom fields</a>, first.',
 
 'create_field_group' => 'Create Field Group',
-
-'custom_fields_desc' => 'Choose the fields you would like to include in this field group.',
+'custom_fields_desc' => '',
 
 'custom_fields_not_found' => 'Zero <b>custom fields</b> found',
 
