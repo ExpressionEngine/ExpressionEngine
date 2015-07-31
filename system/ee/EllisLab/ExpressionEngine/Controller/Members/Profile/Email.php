@@ -100,12 +100,18 @@ class Email extends Profile {
 							'value' => $settings
 						),
 					)
-				),
+				)
+			),
+			'secure_form_ctrls' => array(
 				array(
 					'title' => 'existing_password',
 					'desc' => 'existing_password_exp',
 					'fields' => array(
-						'current_password' => array('type' => 'password', 'required' => TRUE)
+						'current_password' => array(
+							'type'      => 'password',
+							'required' => TRUE,
+							'maxlength' => PASSWORD_MAX_LENGTH
+						)
 					)
 				)
 			)

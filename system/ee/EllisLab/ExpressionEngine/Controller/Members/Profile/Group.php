@@ -69,12 +69,18 @@ class Group extends Profile {
 							'value' => $this->member->group_id
 						)
 					)
-				),
+				)
+			),
+			'secure_form_ctrls' => array(
 				array(
 					'title' => 'existing_password',
 					'desc' => 'existing_password_exp',
 					'fields' => array(
-						'password_confirm' => array('type' => 'password')
+						'password_confirm' => array(
+							'type'      => 'password',
+							'required' => TRUE,
+							'maxlength' => PASSWORD_MAX_LENGTH
+						)
 					)
 				)
 			)
