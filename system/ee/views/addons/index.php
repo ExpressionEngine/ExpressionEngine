@@ -7,7 +7,6 @@
 			<?=ee('Alert')->get('first-party')?>
 			<?php if (isset($filters['first'])) echo $filters['first']; ?>
 			<?php $this->embed('_shared/table', $tables['first']); ?>
-			<?=$pagination['first']?>
 			<?php if ( ! empty($tables['first']['columns']) && ! empty($tables['first']['data'])): ?>
 			<fieldset class="tbl-bulk-act">
 				<select name="bulk_action">
@@ -30,7 +29,6 @@
 			<?=ee('Alert')->get('third-party')?>
 			<?php if (isset($filters['third'])) echo $filters['third']; ?>
 			<?php $this->embed('_shared/table', $tables['third']); ?>
-			<?=$pagination['third']?>
 			<?php if ( ! empty($tables['third']['columns']) && ! empty($tables['third']['data'])): ?>
 			<fieldset class="tbl-bulk-act">
 				<select name="bulk_action">
