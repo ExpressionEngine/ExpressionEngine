@@ -142,13 +142,11 @@ $lang = array(
 'edit_channel' => 'Edit Channel',
 
 'channel_title' => 'Name',
+'channel_title_desc' => '',
 
-'channel_title_desc' => 'Full descriptive name of this channel.',
-
-'channel_short_name_desc' => 'Short name for this channel.<br><i>No spaces. Underscores and dashes are allowed.</i>',
+'channel_short_name_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
 
 'channel_duplicate' => 'Duplicate existing channel?',
-
 'channel_duplicate_desc' => 'On creation, this channel will copy all settings from the selected channel.',
 
 'channel_do_not_duplicate' => 'Do not duplicate',
@@ -159,7 +157,7 @@ $lang = array(
 
 'channel_publishing_options_warning2' => 'If you need to collect additional data for this channel, it\'s best practice to create any <a href="%s">custom fields</a>, first.',
 
-'status_groups_desc' => 'Choose the status group you want for this channel.',
+'status_groups_desc' => '',
 
 'default_status_group' => 'Default Statuses',
 
@@ -169,13 +167,13 @@ $lang = array(
 
 'custom_field_group' => 'Custom field group',
 
-'custom_field_group_desc' => 'Choose the field group you would like to use in the publishing forms for this channel.',
+'custom_field_group_desc' => '',
 
 'custom_field_groups_not_found' => 'Zero <b>custom field groups</b> found',
 
 'create_new_field_group' => 'Create New Field Group',
 
-'category_groups_desc' => 'Choose the category groups you want available for this channel.',
+'category_groups_desc' => '',
 
 'category_groups_not_found' => 'Zero <b>category groups</b> found',
 
