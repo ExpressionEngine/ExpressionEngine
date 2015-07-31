@@ -129,6 +129,7 @@ class Channels extends AbstractChannelsController {
 			ee()->view->base_url = ee('CP/URL', 'channels/create');
 			ee()->view->save_btn_text = 'create_channel';
 			$channel = ee('Model')->make('Channel');
+			$channel->default_entry_title = lang('title');
 
 			$default_status_group = ee('Model')->get('StatusGroup')
 				->fields('group_id')
