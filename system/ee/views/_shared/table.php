@@ -59,7 +59,7 @@ if ($wrap): ?>
 								$url->setQueryStringVariable($sort_col_qs_var, $label);
 								$url->setQueryStringVariable($sort_dir_qs_var, $link_dir);
 								?>
-								<a href="<?=$url?>" class="ico sort <?=$arrow_dir?> right"></a>
+								<a href="<?=$url?>" class="sort <?=$arrow_dir?>"></a>
 							<?php endif ?>
 						</th>
 					<?php endif ?>
