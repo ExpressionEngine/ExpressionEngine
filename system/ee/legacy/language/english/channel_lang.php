@@ -235,7 +235,10 @@ $lang = array(
 
 'channel_defaults' => 'Defaults',
 
-'default_title' => 'Title',
+'title_field_label' => 'Title field label',
+'title_field_label_desc' => 'Changes the title field label in the Publish form for this channel.',
+
+'default_title' => 'Generated title',
 
 'default_title_desc' => 'Title assigned to all <b>new</b> entires in this channel.',
 

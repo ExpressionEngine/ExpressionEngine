@@ -359,7 +359,7 @@ class ChannelEntry extends ContentModel {
 			$default_fields = array(
 				'title' => array(
 					'field_id'				=> 'title',
-					'field_label'			=> lang('title'),
+					'field_label'			=> $this->Channel->title_field_label,
 					'field_required'		=> 'y',
 					'field_show_fmt'		=> 'n',
 					'field_instructions'	=> '',

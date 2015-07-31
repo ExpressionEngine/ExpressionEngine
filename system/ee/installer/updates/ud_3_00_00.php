@@ -60,7 +60,8 @@ class Updater {
 				'_update_upload_directories',
 				'_drop_field_formatting_table',
 				'_update_sites_table',
-				'_remove_referrer_config_items'
+				'_remove_referrer_config_items',
+				'_update_channels_table',
 			)
 		);
 
@@ -1049,6 +1050,27 @@ class Updater {
 	{
 		$msm_config = new MSM_Config();
 		$msm_config->remove_config_item(array('log_referrers', 'max_referrers'));
+	}
+
+	/**
+	 * Adds the column "title_field_label" to the channels tabel and sets it's
+	 * default to lang('title')
+	 */
+	private function _update_channels_table()
+	{
+		if ( ! ee()->db->field_exists('title_field_label', 'channels'))
+		{
+			ee()->smartforge->add_column(
+				'channels',
+				array(
+					'title_field_label' => array(
+						'type'    => 'CHAR(100)',
+						'null'    => FALSE,
+						'default' => 'Title'
+					)
+				)
+			);
+		}
 	}
 }
 /* END CLASS */

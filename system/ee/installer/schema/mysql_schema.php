@@ -579,6 +579,7 @@ class EE_Schema {
 			enable_versioning char(1) NOT NULL default 'n',
 			max_revisions smallint(4) unsigned NOT NULL default 10,
 			default_entry_title varchar(100) NULL DEFAULT NULL,
+			title_field_label varchar(100) NOT NULL DEFAULT 'Title',
 			url_title_prefix varchar(80) NULL DEFAULT NULL,
 			live_look_template int(10) UNSIGNED NOT NULL default 0,
 			PRIMARY KEY `channel_id` (`channel_id`),

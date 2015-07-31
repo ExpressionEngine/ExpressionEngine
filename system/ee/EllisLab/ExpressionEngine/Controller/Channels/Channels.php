@@ -705,6 +705,16 @@ class Channels extends AbstractChannelsController {
 			),
 			'channel_defaults' => array(
 				array(
+					'title' => 'title_field_label',
+					'desc' => 'title_field_label_desc',
+					'fields' => array(
+						'title_field_label' => array(
+							'type' => 'text',
+							'value' => $channel->title_field_label
+						)
+					)
+				),
+				array(
 					'title' => 'default_title',
 					'desc' => 'default_title_desc',
 					'fields' => array(
