@@ -1082,11 +1082,7 @@ class Updater {
 			{
 				$csv->addRow(array('email' => $subscriber));
 			}
-
-			file_put_contents(
-				SYSPATH.'user/cache/mailing_list-'.$mailing_list->list_name.'.csv',
-				(string) $csv
-			);
+			$csv->save(SYSPATH.'user/cache/mailing_list-'.$mailing_list->list_name.'.csv');
 		}
 
 		// TODO: Provide link to the resulting file, remember system can be above
