@@ -296,11 +296,11 @@ class Create extends Members {
 		// Update Stats
 		$this->stats->update_member_stats();
 		$this->session->set_flashdata(array(
-			'username' => stripslashes($data['screen_name'])
+			'highlight_id' => $member_id
 		));
 		ee()->view->set_message('success', lang('member_updated'), lang('member_updated_desc'), TRUE);
 
-		$this->functions->redirect(ee('CP/URL', 'members'));
+		$this->functions->redirect(ee('CP/URL', 'members', array('sort_col' => 'member_id', 'sort_dir' => 'desc')));
 	}
 }
 // END CLASS
