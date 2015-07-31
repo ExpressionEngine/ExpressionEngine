@@ -31,10 +31,6 @@ feature 'Add-On Manager' do
 
 		it 'shows the Add-On Manager' do
 			@page.first_party_addon_name_header[:class].should eq 'highlight'
-			@page.should have_first_party_pagination
-			@page.should have(5).first_party_pages
-			@page.first_party_pages.map {|name| name.text}.should == ["First", "1", "2", "Next", "Last"]
-			@page.should have(25).first_party_addons # Default is 25 per page
 		end
 
 		it 'can reverse sort by Add-On name' do
@@ -216,15 +212,6 @@ feature 'Add-On Manager' do
 		#
 		# 	@page.should have_css 'tr.not-installed'
 		# end
-
-		it 'shows the Prev button when on page 2' do
-			click_link "Next"
-			no_php_js_errors
-
-			@page.should have_first_party_pagination
-			@page.should have(5).first_party_pages
-			@page.first_party_pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "Last"]
-		end
 
 		it 'can search by phrases' do
 			@page.phrase_search.set 'RSS'
@@ -845,26 +832,12 @@ feature 'Add-On Manager' do
 					no_php_js_errors
 
 					@page.first_party_version_header[:class].should eq 'highlight'
-
-					@page.third_party_pagination.click_link "Next"
-					no_php_js_errors
-
-					@page.first_party_version_header[:class].should eq 'highlight'
-					@page.third_party_pages[3].text.should eq '2'
-					@page.third_party_pages[3][:class].should eq 'act'
 				end
 
 				it "can sort Third Party & page First Party" do
 					@page.third_party_version_header.find('a.sort').click
 					no_php_js_errors
 
-					@page.third_party_version_header[:class].should eq 'highlight'
-
-					@page.first_party_pagination.click_link "Last"
-					no_php_js_errors
-
-					@page.first_party_pages[3].text.should eq '2'
-					@page.first_party_pages[3][:class].should eq 'act'
 					@page.third_party_version_header[:class].should eq 'highlight'
 				end
 			end
@@ -901,74 +874,6 @@ feature 'Add-On Manager' do
 				end
 			end
 
-			describe "keeps paging when sorting the other table" do
-				it "can page First Party & sort Third Party" do
-					@page.first_party_pagination.click_link "Last"
-					no_php_js_errors
-
-					@page.first_party_pages[3].text.should eq '2'
-					@page.first_party_pages[3][:class].should eq 'act'
-
-					@page.third_party_version_header.find('a.sort').click
-					no_php_js_errors
-
-					@page.first_party_pages[3].text.should eq '2'
-					@page.first_party_pages[3][:class].should eq 'act'
-					@page.third_party_version_header[:class].should eq 'highlight'
-				end
-
-				it "can page Third Paty & sort First Party" do
-					@page.third_party_pagination.click_link "Next"
-					no_php_js_errors
-
-					@page.third_party_pages[3].text.should eq '2'
-					@page.third_party_pages[3][:class].should eq 'act'
-
-					@page.first_party_version_header.find('a.sort').click
-					no_php_js_errors
-
-					@page.first_party_version_header[:class].should eq 'highlight'
-					@page.third_party_pages[3].text.should eq '2'
-					@page.third_party_pages[3][:class].should eq 'act'
-				end
-			end
-
-			describe "keeps paging when filtering the other table" do
-				it "can page First Party & filter Third Party" do
-					@page.first_party_pagination.click_link "Last"
-					no_php_js_errors
-
-					@page.first_party_pages[3].text.should eq '2'
-					@page.first_party_pages[3][:class].should eq 'act'
-
-					@page.third_party_status_filter.click
-					@page.wait_until_third_party_status_filter_menu_visible
-					@page.third_party_status_filter_menu.click_link "uninstalled"
-					no_php_js_errors
-
-					@page.first_party_pages[3].text.should eq '2'
-					@page.first_party_pages[3][:class].should eq 'act'
-					@page.third_party_status_filter.text.should eq "status (uninstalled)"
-				end
-
-				it "can page Third Paty & filter First Party" do
-					@page.third_party_pagination.click_link "Next"
-					no_php_js_errors
-
-					@page.third_party_pages[3].text.should eq '2'
-					@page.third_party_pages[3][:class].should eq 'act'
-
-					@page.first_party_status_filter.click
-					@page.wait_until_first_party_status_filter_menu_visible
-					@page.first_party_status_filter_menu.click_link "installed"
-					no_php_js_errors
-
-					@page.first_party_status_filter.text.should eq "status (installed)"
-					@page.third_party_pages[3].text.should eq '2'
-					@page.third_party_pages[3][:class].should eq 'act'
-				end
-			end
-
 			describe "keeps the filter when paging the other table" do
 				it "can filter First Party & page Third Party" do
 					@page.first_party_status_filter.click
@@ -977,13 +882,6 @@ feature 'Add-On Manager' do
 					no_php_js_errors
 
 					@page.first_party_status_filter.text.should eq "status (installed)"
-
-					@page.third_party_pagination.click_link "Next"
-					no_php_js_errors
-
-					@page.first_party_status_filter.text.should eq "status (installed)"
-					@page.third_party_pages[3].text.should eq '2'
-					@page.third_party_pages[3][:class].should eq 'act'
 				end
 
 				it "can filter Third Party & page First Party" do
@@ -992,13 +890,6 @@ feature 'Add-On Manager' do
 					@page.third_party_status_filter_menu.click_link "uninstalled"
 					no_php_js_errors
 
-					@page.third_party_status_filter.text.should eq "status (uninstalled)"
-
-					@page.first_party_pagination.click_link "Last"
-					no_php_js_errors
-
-					@page.first_party_pages[3].text.should eq '2'
-					@page.first_party_pages[3][:class].should eq 'act'
 					@page.third_party_status_filter.text.should eq "status (uninstalled)"
 				end
 			end
