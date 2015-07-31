@@ -432,7 +432,7 @@ $lang = array(
 
 'edit_category_group' => 'Edit Category Group',
 
-'group_name_desc' => 'Descriptive name of this category group.',
+'group_name_desc' => '',
 
 'categories_not_found' => 'Zero <b>category groups</b> found',
 
@@ -450,7 +450,7 @@ $lang = array(
 
 'html_formatting' => 'HTML formatting',
 
-'html_formatting_desc' => 'Level of HTML allowed in custom category fields.',
+'html_formatting_desc' => '',
 
 'permissions' => 'Permissions',
 

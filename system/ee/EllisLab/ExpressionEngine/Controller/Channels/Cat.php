@@ -257,13 +257,13 @@ class Cat extends AbstractChannelsController {
 					'desc' => 'exclude_group_form_desc',
 					'fields' => array(
 						'exclude_group' => array(
-							'type' => 'select',
+							'type' => 'checkbox',
 							'choices' => array(
 								0 => lang('none'),
 								1 => lang('channels'),
 								2 => lang('files')
 							),
-							'value' => $cat_group->exclude_group
+							'value' => ($cat_group->exclude_group) ?: 0
 						)
 					)
 				)
