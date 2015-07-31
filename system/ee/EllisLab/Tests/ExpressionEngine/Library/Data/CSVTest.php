@@ -155,4 +155,17 @@ class CSVTest extends \PHPUnit_Framework_TestCase {
 			(string) $this->csv
 		);
 	}
+
+	public function testQuotesInRows()
+	{
+		$result = $this->csv->addRow(array(
+			'name'  => '"Dev Robots" Team',
+			'email' => 'developers@ellislab.com',
+		));
+
+		$this->assertEquals(
+			"\"name\", \"email\"\n\"\"\"Dev Robots\"\" Team\", \"developers@ellislab.com\"\n",
+			(string) $this->csv
+		);
+	}
 }
