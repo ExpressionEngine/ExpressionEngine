@@ -21,7 +21,7 @@
 				<a href="<?=ee('CP/URL', 'utilities/query/run-query', array('thequery' => rawurlencode(base64_encode('SHOW PROCESSLIST'))))?>">SHOW PROCESSLIST</a></em>
 		</div>
 	</fieldset>
-	<fieldset class="col-group required <?=form_error_class('thequery')?>">
+	<fieldset class="col-group required <?=form_error_class('thequery')?> last">
 		<div class="setting-txt col w-16">
 			<h3><?=lang('sql_query_to_run')?></h3>
 		</div>
