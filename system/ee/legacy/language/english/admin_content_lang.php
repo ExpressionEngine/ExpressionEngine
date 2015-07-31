@@ -62,7 +62,7 @@ $lang = array(
 
 'label_desc' => 'Name of field that appears in the publish form.',
 
-'short_name_desc' => 'Short name for this field.<br><i>No spaces. Underscores and dashes are allowed.</i>',
+'short_name_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
 
 'instructions' => 'Instructions',
 
@@ -94,74 +94,40 @@ $lang = array(
 
 'edit_field_error_desc' => 'We were unable to update this field, please review and fix errors below.',
 
-'field_content_text' =>
-'Allowed content',
+'field_content_text' => 'Allowed content',
 
-'field_content_text_desc' =>
-'Type of content this field can contain.',
+'field_content_text_desc' => 'Type of content this field can contain.',
 
-'field_tools' =>
-'Field tools',
+'field_tools' => 'Field tools',
+'field_tools_desc' => '',
 
-'field_tools_desc' =>
-'Choose field tools to include with this field in the publish form.',
+'show_smileys' => 'Emoji <i>&mdash; Image based conveyances of emotion.</i>',
 
-'show_smileys' =>
-'Emoji <i>&mdash; Image based conveyances of emotion.</i>',
+'show_file_selector' => 'Asset Manager <i>&mdash; Launches asset manager.</i>',
+'show_formatting_btns' => 'Formatting Buttons <i>&mdash; Buttons for formatting your text.</i>',
 
-'show_file_selector' =>
-'Asset Manager <i>&mdash; Launches asset manager.</i>',
+'field_populate_manually' => 'Manually <i>&mdash; Each item on a single line.</i>',
+'field_populate_from_channel' => 'From channel <i>&mdash; Choose a field.</i>',
 
-'show_formatting_btns' =>
-'Formatting Buttons <i>&mdash; Buttons for formatting your text.</i>',
+'checkbox_options' => 'Checkbox options',
+'checkbox_options_desc' => 'Choose how to create the options for this field.</em><em><i>Each item will generate a single checkbox and label pair in the publish form.</i>',
 
-'field_populate_manually' =>
-'Manually <i>&mdash; Each item on a single line.</i>',
+'select_options' => 'Select menu options',
+'select_options_desc' => 'Choose how to create the options for this field.</em><em><i>Each item will be included in a select drop down menu in the publish form.</i>',
 
-'field_populate_from_channel' =>
-'From channel <i>&mdash; Choose a field.</i>',
+'multiselect_options' => 'Multi-Select options',
+'multiselect_options_desc' => 'Choose how to create the options for this field.</em><em><i>Each item will be included in a multi-select in the publish form.</i>',
 
-'checkbox_options' =>
-'Checkbox options',
+'radio_options' => 'Radio options',
+'radio_options_desc' => 'Choose how to create the options for this field.</em><em><i>Each item will generate a single radio button and label pair in the publish form.</i>',
 
-'checkbox_options_desc' =>
-'Choose how to create the options for this field.</em><em><i>Each item will generate a single checkbox and label pair in the publish form.</i>',
+'grid_checkbox_options_desc' => 'Each item will generate a single checkbox and label pair in the publish form.',
+'grid_select_options_desc' => 'Each item will be included in a select drop down menu in the publish form.',
+'grid_multiselect_options_desc' => 'Each item will be included in a multi-select in the publish form.',
+'grid_radio_options_desc' => 'Each item will generate a single radio button and label pair in the publish form.',
 
-'select_options' =>
-'Select menu options',
-
-'select_options_desc' =>
-'Choose how to create the options for this field.</em><em><i>Each item will be included in a select drop down menu in the publish form.</i>',
-
-'multiselect_options' =>
-'Multi-Select options',
-
-'multiselect_options_desc' =>
-'Choose how to create the options for this field.</em><em><i>Each item will be included in a multi-select in the publish form.</i>',
-
-'radio_options' =>
-'Radio options',
-
-'radio_options_desc' =>
-'Choose how to create the options for this field.</em><em><i>Each item will generate a single radio button and label pair in the publish form.</i>',
-
-'grid_checkbox_options_desc' =>
-'Each item will generate a single checkbox and label pair in the publish form.',
-
-'grid_select_options_desc' =>
-'Each item will be included in a select drop down menu in the publish form.',
-
-'grid_multiselect_options_desc' =>
-'Each item will be included in a multi-select in the publish form.',
-
-'grid_radio_options_desc' =>
-'Each item will generate a single radio button and label pair in the publish form.',
-
-'localize_date' =>
-'Localize date?',
-
-'localize_date_desc' =>
-'When set to <b>yes</b>, dates will be based on <a href="%s">time settings</a>.',
+'localize_date' => 'Localize date?',
+'localize_date_desc' => 'When set to <b>yes</b>, dates will be based on <a href="%s">time settings</a>.',
 
 // @since 2.x
 
