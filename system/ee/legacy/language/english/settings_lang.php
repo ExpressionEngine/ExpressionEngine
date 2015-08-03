@@ -145,6 +145,9 @@ $lang = array(
 
 'site_limit' => 'Site limit',
 
+'features_limited' => 'Features Limited',
+'features_limited_desc' => 'The Core version of ExpressionEngine is feature limited. <a href="https://store.ellislab.com" rel="external">Upgrade today.</a>',
+
 /**
  * URLs and Path Settings
  */

@@ -94,6 +94,16 @@ class License extends Settings {
 			}
 		}
 
+		if (IS_CORE)
+		{
+			ee('Alert')->makeInline('core-license')
+				->asWarning()
+				->cannotClose()
+				->withTitle(lang('features_limited'))
+				->addtoBody(lang('features_limited_desc'))
+				->now();
+		}
+
 		ee()->view->cp_page_title = lang('license_and_registration_settings');
 		ee()->cp->render('settings/license', $vars);
 	}
