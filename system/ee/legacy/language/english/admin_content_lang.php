@@ -79,7 +79,7 @@ $lang = array(
 
 'create_field_success' => 'Field Created',
 
-'create_field_success_desc' => 'The field group <b>%s</b> has been created.',
+'create_field_success_desc' => 'The field <b>%s</b> has been created.',
 
 'create_field_error' => 'Cannot Create Field',
 
