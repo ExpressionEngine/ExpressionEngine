@@ -14,6 +14,11 @@ $lang = array(
 
 'new_category' => 'New Category',
 
+// Sidebar
+'templates' => 'Templates',
+'member_ranks' => 'Member Ranks',
+'forum_board' => 'Forum Board',
+
 // Create / Edit Forum Board Form
 'create_forum_board' => 'Create Forum Board',
 'board' => 'Board',

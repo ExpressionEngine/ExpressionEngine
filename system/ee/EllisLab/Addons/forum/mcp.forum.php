@@ -91,32 +91,41 @@ class Forum_mcp extends CP_Controller {
 		ee()->db->delete('forum_read_topics');
 	}
 
-	private function generateSidebar()
+	private function generateSidebar($active = NULL)
 	{
-		$sidebar['forum_boards'] = array(
-			'button' => array(
-				'href' => ee('CP/URL', $this->base . 'create/board'),
-				'text' => 'new'
-			)
-		);
+		$sidebar = ee('Sidebar')->make();
 
-		$boards = array();
+		$boards = $sidebar->addHeader(lang('forum_boards'))
+			->hasButton(lang('new'), ee('CP/URL', $this->base . 'create/board'));
+
 		$all_boards = ee('Model')->get('forum:Board')
 			->fields('board_id', 'board_label')
 			->all();
 
-		foreach ($all_boards as $board)
+		if (count($all_boards))
 		{
-			$boards[$board->board_label] = ee('CP/URL', $this->base . '/' . $board->board_id);
+			$board_list = $boards->addFolderList('boards')
+				->withRemoveUrl(ee('CP/URL', $this->base . 'remove/board'));
+
+			foreach ($all_boards as $board)
+			{
+				$item = $board_list->addItem($board->board_label, ee('CP/URL', $this->base . '/' . $board->board_id))
+					->withEditUrl(ee('CP/URL', $this->base . 'edit/board/' . $board->board_id))
+					->withRemoveConfirmation(lang('forum_board') . ': <b>' . $board->board_label . '</b>')
+					->identifiedBy($board->board_id);
+
+				if ($board->board_id == $active)
+				{
+					$item->isActive();
+				}
+			}
 		}
 
-		if ( ! empty($boards))
-		{
-			$sidebar[] = $boards;
-		}
+		$sidebar->addHeader(lang('templates'))
+			->withUrl(ee('CP/URL', 'design/forum'));
 
-		$sidebar['templates'] = ee('CP/URL', 'design/forum');
-		$sidebar['member_ranks'] = ee('CP/URL', $this->base . 'ranks');
+		$sidebar->addHeader(lang('member_ranks'))
+			->withUrl(ee('CP/URL', $this->base . 'ranks'));
 
 		return $sidebar;
 	}
@@ -124,7 +133,7 @@ class Forum_mcp extends CP_Controller {
 	/**
 	 * Forum Home Page
 	 */
-	public function index()
+	public function index($id = 1)
 	{
 		$vars = array();
 
@@ -133,7 +142,7 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'    => $body,
 			'heading' => lang('forum_manager'),
-			'sidebar' => $this->generateSidebar()
+			'sidebar' => $this->generateSidebar($id)
 		);
 
 		if ($this->prefs['board_install_date'] < 1)
