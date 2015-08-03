@@ -64,7 +64,6 @@ class Tokenizer {
 	 */
 	private function _ngrams($tokens, $n = 1)
 	{
-		// array slice is sloooooow, special case for n = 1 until I figure out a workaround
 		if ($n == 1)
 		{
 			return $tokens;
@@ -72,10 +71,19 @@ class Tokenizer {
 
 		$length = count($tokens);
 		$ngrams = array();
-		 
-		for ($i = 0; $i + $n <= $length; $i++)
+		$i = 0;
+
+		while (count($tokens) > 0)
 		{
-			$ngrams[$i] = implode('', array_slice($tokens, $i, $n));
+			$token = "";
+
+			for ($j = 0; $j < $n; $j++)
+			{
+				$token .= " " . $tokens[($n * $i) + $j];
+			}
+
+			$ngrams[] = $token;
+			$i++;
 		}
 
 		return $ngrams;
