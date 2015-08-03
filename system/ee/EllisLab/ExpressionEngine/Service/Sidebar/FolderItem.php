@@ -73,7 +73,7 @@ class FolderItem extends ListItem {
 
 		if ($class)
 		{
-			$class = ' class=" . $class . "';
+			$class = ' class="' . $class . '"';
 		}
 
 		$vars = array(
