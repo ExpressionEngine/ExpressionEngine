@@ -719,4 +719,32 @@ class Spam_mcp {
 		$spam_training = ee('spam:Spam_training', 'default');
 		$spam_training->delete_classifier();
 	}
+
+	/**
+	 * Use Knuth's algorithm to update the mean and variance as we go. This 
+	 * should avoid any numerical instability due to cancellation
+	 * 
+	 * @param mixed $count 
+	 * @param mixed $mean 
+	 * @param mixed $variance 
+	 * @param mixed $data 
+	 * @access private
+	 * @return void
+	 */
+	private function onlineStatistics($count, $mean, $variance, $data)
+	{
+		$variance = $variance * ($count - 1);
+
+		foreach ($data as $datum)
+		{
+			$count++;
+			$delta = $datum - $mean;
+			$mean = $mean + ($delta / $n);
+			$variance = $variance + $delta * ($datum - $mean);
+		}
+
+		$variance = $variance / ($count - 1);
+		return array($mean, $variance);
+	}
+
 }
