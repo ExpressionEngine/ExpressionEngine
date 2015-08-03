@@ -100,12 +100,15 @@ class Spam {
 		$data = array(
 			'file' => $file,
 			'author' => $author,
+			'date' => time(),
+			'ip_address' => $_SERVER['REMOTE_ADDR'],
 			'class' => $class,
 			'method' => $method,
 			'data' => serialize($content),
 			'document' => $doc
 		);
-		ee()->db->insert('spam_trap', $data);
+		$trap = ee('Model')->make('SpamTrap', $data);
+		$trap->save();
 	}
 
 	/**
