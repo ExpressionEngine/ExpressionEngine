@@ -75,6 +75,11 @@ class ExpressionEngineLicense extends License {
 	{
 		$license = $this->getData('license_number');
 
+		if (IS_CORE)
+		{
+			return ($license == 'CORE LICENSE');
+		}
+
 		if (count(count_chars(str_replace('-', '', $license), 1)) == 1 OR $license == '1234-1234-1234-1234')
 		{
 			return FALSE;
@@ -86,6 +91,17 @@ class ExpressionEngineLicense extends License {
 		}
 
 		return TRUE;
+	}
+
+	protected function parseLicenseFile()
+	{
+		parent::parseLicenseFile();
+
+		if (IS_CORE)
+		{
+			$this->data['license_number'] = 'CORE LICENSE';
+			$this->data['sites'] = 1;
+		}
 	}
 
 }
