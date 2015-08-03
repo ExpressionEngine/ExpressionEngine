@@ -297,7 +297,7 @@ abstract class Core {
 		return '<div>
 			<h1>Exception Caught</h1>
 			<p><strong>' . $ex->getMessage() . '</strong></p>
-			<p><em>'  . $ex->getFile() . ':' . $ex->getLine() . '<em></p>
+			<p><em>'  . $ex->getFile() . ':' . $ex->getLine() . '</em></p>
 			<p>Stack Trace:
 				<pre>' . str_replace('#', "\n#", str_replace(':', ":\n\t\t", $ex->getTraceAsString())) . '</pre>
 			</p>
