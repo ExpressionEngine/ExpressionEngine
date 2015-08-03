@@ -236,16 +236,10 @@ class Spam_mcp {
 			if (substr($key, 0, 5) == 'spam_')
 			{
 				$id = str_replace('spam_', '', $key);
+				$spam = ee('Model')->get('SpamTrap', $id);
 
-				ee()->db->select('file, class, method, data, document');
-				ee()->db->from('spam_trap');
-				ee()->db->where('trap_id', $id);
-				$query = ee()->db->get();
-
-				if ($query->num_rows() > 0)
+				if ( ! empty($spam))
 				{
-					$spam = $query->row();
-
 					if ($class == 'ham' && ! empty($spam->file))
 					{
 						ee()->load->file($spam->file);
@@ -281,18 +275,17 @@ class Spam_mcp {
 		$start_time = microtime(true);
 		$limit = 1000;
 
-		ee()->db->select('source, class');
-		ee()->db->from('spam_training');
-		ee()->db->order_by('RAND()');
-		ee()->db->limit($limit);
-		$query = ee()->db->get();
+		$documents = ee('Model')->get('SpamTraining')
+						->limit($limit)
+						->order('RAND()')
+						->all();
 
 		$data = array();
 		$negatives = 0;
 		$positives = 0;
-		$total = $query->num_rows();
+		$total = $documents->count();
 
-		foreach ($query->result() as $document)
+		foreach ($documents as $document)
 		{
 			$bayes = ee('spam:Core');
 			$classification = (int) $bayes->classifier->classify($document->source, 'spam');
