@@ -106,10 +106,10 @@ class Spam_mcp {
 
 		$table->setColumns(
 			array(
-				'content',
+				'spam_content',
 				'date',
 				'ip',
-				'type',
+				'spam_type',
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
 				),
@@ -154,15 +154,15 @@ class Spam_mcp {
 		ee()->load->library('form_validation');
 
 		$settings = array(
-			'sensitivity' => 70,
-			'word_limit' => 5000,
-			'content_limit' => 5000
+			'sensitivity' => empty(ee()->config->item('spam_sensitivity')) ? 70 : ee()->config->item('spam_sensitivity'),
+			'word_limit' => empty(ee()->config->item('spam_word_limit')) ? 5000 : ee()->config->item('spam_word_limit'),
+			'content_limit' => empty(ee()->config->item('spam_content_limit')) ? 5000 : ee()->config->item('spam_content_limit')
 		);
 
 		$vars['sections'] = array(
 			array(
 				array(
-					'title' => 'spam_sensitivity',
+					'title' => sprintf(lang('spam_sensitivity'), $settings['sensitivity']),
 					'desc' => 'spam_sensitivity_desc',
 					'fields' => array(
 						'sensitivity' => array(
@@ -191,6 +191,21 @@ class Spam_mcp {
 		);
 
 		ee()->form_validation->set_rules(array(
+			array(
+				 'field'   => 'banned_username',
+				 'label'   => 'lang:banned_usernames',
+				 'rules'   => 'required|numeric'
+			),
+			array(
+				 'field'   => 'banned_username',
+				 'label'   => 'lang:banned_usernames',
+				 'rules'   => 'required|is_natural_no_zero'
+			),
+			array(
+				 'field'   => 'banned_username',
+				 'label'   => 'lang:banned_usernames',
+				 'rules'   => 'required|is_natural_no_zero'
+			)
 		));
 
 		if (AJAX_REQUEST)
@@ -200,7 +215,29 @@ class Spam_mcp {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			if ($this->update())
+			$fields = array();
+
+			// Make sure we're getting only the fields we asked for
+			foreach ($vars['sections'] as $settings)
+			{
+				foreach ($settings as $setting)
+				{
+					foreach ($setting['fields'] as $field_name => $field)
+					{
+						$fields[$field_name] = ee()->input->post($field_name);
+					}
+				}
+			}
+
+			$config_update = ee()->config->update_site_prefs($fields);
+
+			if ( ! empty($config_update))
+			{
+				ee()->load->helper('html_helper');
+				ee()->view->set_message('issue', lang('cp_message_issue'), ul($config_update), TRUE);
+
+			}
+			else
 			{
 				ee()->view->set_message('success', lang('spam_settings_updated'), lang('spam_settings_updated_desc'), TRUE);
 				ee()->functions->redirect($base_url);
@@ -217,7 +254,7 @@ class Spam_mcp {
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_saving';
 
-		return ee()->cp->render('_shared/form', $vars, TRUE);
+		return ee()->cp->render('form', $vars, TRUE);
 	}
 
 	/**
