@@ -12,7 +12,7 @@ class EmailTest extends \PHPUnit_Framework_TestCase {
 	{
 		$controller_methods = array();
 
-		foreach (get_class_methods('EllisLab\ExpressionEngine\Controllers\Logs\Email') as $method)
+		foreach (get_class_methods('EllisLab\ExpressionEngine\Controller\Logs\Email') as $method)
 		{
 			$method = strtolower($method);
 			if (strncmp($method, '_', 1) != 0)

@@ -454,22 +454,6 @@ class Blacklist_mcp {
 				{
 					unset($new_values[$key]);
 				}
-				elseif ( ! in_array($value, $old[$type]))
-				{
-					$name = ($type == 'url') ? 'from' : $type;
-
-					if (ee()->db->table_exists('referrers'))
-					{
-						ee()->db->like('ref_'.$name, $value);
-
-						foreach ($white[$type] as $w_value)
-						{
-							ee()->db->not_like('ref_'.$name, $w_value);
-						}
-
-						ee()->db->delete('referrers');
-					}
-				}
 
 				if ($type == 'ip')
 				{
@@ -688,40 +672,6 @@ class Blacklist_mcp {
 		{
 			// If this is a whitelist update, we're done, send data to view and get out
 			return;
-		}
-
-		//  Using new blacklist members, clean out spam
-		$new['url']		= array_diff($new['url'], $old['url']);
-		$new['agent']	= array_diff($new['agent'], $old['agent']);
-		$new['ip']		= array_diff($new['ip'], $old['ip']);
-
-		$modified_channels = array();
-
-		foreach($new as $key => $value)
-		{
-			sort($value);
-			$name = ($key == 'url') ? 'from' : $key;
-
-			if (count($value) > 0)
-			{
-				for($i=0; $i < count($value); $i++)
-				{
-					if ($value[$i] != '')
-					{
-						if (ee()->db->table_exists('referrers'))
-						{
-							ee()->db->like('ref_'.$name, $value[$i]);
-
-							foreach ($white[$key] as $w_value)
-							{
-								ee()->db->not_like('ref_'.$name, $w_value);
-							}
-
-							ee()->db->delete('referrers');
-						}
-					}
-				}
-			}
 		}
 	}
 

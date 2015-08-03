@@ -2,23 +2,15 @@
 
 $lang = array(
 
-//----------------------------------------
-// Required for MODULES page
-//----------------------------------------
-
 'ip_to_nation_module_name' => 'IP to Nation',
-
-'ip_to_nation_module_description' => 'Utility for associating IP addresses with their country',
-
-//----------------------------------------
-
-'iptonation_missing' => 'Unable to find the file called iptonation.php. Please make sure you have uploaded all components of this module.',
 
 'countryfile_missing' => 'Unable to find the file called country.php in your config folder.',
 
 'ip_search' => 'IP Address Search',
 
-'ip_search_inst' => 'Submit an IP address to determine the country it is associated with',
+'ip_address_located' => 'IP Address Located',
+
+'ip_address_not_located' => 'Unable to Locate IP Address',
 
 'ip_result' => 'The IP you submitted is from the following country:',
 
@@ -30,39 +22,47 @@ $lang = array(
 
 'manage_banlist' => 'Manage Your Banned Country List',
 
-'country' => 'Country',
-
 'ban_info' => 'Select the countries you wish to ban. When a country is banned, a person with a IP address corresponding to it will not be able to submit comments, or use your email/tell-a-friend form. They will still be able to view your site.',
 
-'ban' => 'Ban',
+'banned_countries' => 'Banned countries',
 
 'banlist' => 'Nation Banlist',
 
-'banlist_updated' => 'Banlist has been successfully updated',
+'banlist_updated' => 'Banlist Updated',
 
-'update_ips' => 'Update IP Database', 
+'banlist_updated_desc' => 'The banlist has been successfully updated.',
 
-'update_info' => 'Update the IP and country code information', 
+'update_ips' => 'Update IP database',
 
-'update_blurb' => 'The new data will automatically be downloaded and applied. This may take several minutes and increase load on your database.',
-
-'update_data_provider' => 'Data source: <a href=\'%d\' title=\'Data Provider\'>maxmind.com</a>',
+'update_info' => 'Updates the IP and country code information. Data source: <a href=\'%s\' title=\'Data Provider\'>maxmind.com</a>.</em><em><i>The new data will automatically be downloaded and applied. This may take several minutes and increase load on your database.</i></em>',
 
 'last_update' => 'Last update: ',
 
 'ip_db_updating' => 'Downloading update ...',
 
-'ip_db_downloaded' => 'Downloaded IP Database. Unpacking ...',
+'ip_db_downloaded' => 'Downloaded IP database. Unpacking ...',
 
-'ip_db_unpacked' => 'Unpacked IP Database. Inserting data ...',
+'ip_db_unpacked' => 'Unpacked IP database. Inserting data ...',
 
-'ip_db_updated' => 'IP Database Update Successful',
+'ip_db_updated' => 'IP database update successful',
 
-'ip_db_failed' => 'IP Databse Update Failed',
+'ip_db_failed' => 'IP databse update failed',
 
 'ip_db_connection_403' => '403 Connection Error, please wait 24 hours before attempting to retrieve database.',
 
 'ip_db_connection_error' => 'Unable to connect to data provider.',
+
+'btn_search' => 'Search',
+
+'btn_searching' => 'Searching...',
+
+'search_for_ip' => 'Search for an IP address',
+
+'search_for_ip_desc' => 'Enter an IP address to determine the country it is associated with.',
+
+'btn_save_banlist' => 'Save Banlist',
+
+'no_countries' => 'Zero <b>countries</b> found.',
 
 ''=>''
 );

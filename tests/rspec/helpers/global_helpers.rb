@@ -119,7 +119,7 @@ def reset_db
   end
 
   if ENV.key?('updater')
-    $db.query(IO.read('sql/database_2x.sql'))
+    $db.query(IO.read('sql/database_2.10.1.sql'))
     clear_db_result
   end
 

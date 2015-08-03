@@ -254,7 +254,7 @@ class Forum_mcp extends CP_Controller {
 			return FALSE;
 		}
 
-		$action = ($board->board_id) ? 'edit' : 'create';
+		$action = ($board->isNew()) ? 'create' : 'edit';
 
 		$board->set($_POST);
 		$result = $board->validate();

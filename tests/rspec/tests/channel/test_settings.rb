@@ -197,7 +197,7 @@ feature 'Channel Settings' do
     no_php_js_errors
 
     @page.submit
-    @page.should have_text 'Channel saved'
+    @page.should have_text 'Channel Settings Saved'
   end
 
   it 'should save and load the settings' do
@@ -253,7 +253,7 @@ feature 'Channel Settings' do
     @page.submit
 
     no_php_js_errors
-    @page.should have_text 'Channel saved'
+    @page.should have_text 'Channel Settings Saved'
 
     @page.load_settings_for_channel(2)
     no_php_js_errors

@@ -23,7 +23,7 @@ feature 'Status Create/Edit' do
 
     no_php_js_errors
     should_have_form_errors(@page)
-    @page.should have_text 'Attention: Status not saved'
+    @page.should have_text 'Cannot Create Status'
     should_have_error_text(@page.status, $required_error)
 
     @page.load_view_for_status_group(1)
@@ -117,7 +117,7 @@ feature 'Status Create/Edit' do
     @page.status_access[0].set false
     @page.submit
 
-    @page.should have_text 'Attention: Status not saved'
+    @page.should have_text 'Cannot Create Status'
     should_have_error_text(@page.highlight, @invalid_hex_code)
 
     @page.status.value.should == 'Test'
@@ -134,7 +134,7 @@ feature 'Status Create/Edit' do
     @page.submit
     no_php_js_errors
 
-    @page.should have_text 'Status saved'
+    @page.should have_text 'Status Created'
 
     @page.load_view_for_status_group(1)
     @page.load_edit_for_status(4)
@@ -154,7 +154,7 @@ feature 'Status Create/Edit' do
     @page.submit
     no_php_js_errors
 
-    @page.should have_text 'Status saved'
+    @page.should have_text 'Status Updated'
 
     @page.load_view_for_status_group(1)
     @page.load_edit_for_status(4)

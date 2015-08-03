@@ -43,9 +43,13 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 {
 	$attributes .= ' enctype="multipart/form-data"';
 }
+if ( ! isset($alerts_name))
+{
+	$alerts_name = 'shared-form';
+}
 ?>
 <?=form_open($base_url, $attributes, (isset($form_hidden)) ? $form_hidden : array())?>
-	<?=ee('Alert')->get('shared-form')?>
+	<?=ee('Alert')->get($alerts_name)?>
 	<?php
 	if (isset($extra_alerts))
 	{
@@ -62,12 +66,41 @@ if (isset($has_file_input) && $has_file_input == TRUE)
 		endforeach;
 	endif;
 
+	$secure_form_ctrls = array();
+
+	if (isset($sections['secure_form_ctrls']))
+	{
+		$secure_form_ctrls = $sections['secure_form_ctrls'];
+		unset($sections['secure_form_ctrls']);
+	}
 	foreach ($sections as $name => $settings)
 	{
 		$this->embed('_shared/form/section', array('name' => $name, 'settings' => $settings));
 	}
 	?>
 	<fieldset class="form-ctrls">
+		<?php foreach ($secure_form_ctrls as $setting): ?>
+			<div class="password-req required">
+				<div class="setting-txt col w-8">
+					<h3><?=lang($setting['title'])?></h3>
+					<em><?=lang($setting['desc'])?></em>
+				</div>
+				<div class="setting-field col w-8 last">
+					<?php foreach ($setting['fields'] as $field_name => $field)
+					{
+						$vars = array(
+							'field_name' => $field_name,
+							'field' => $field,
+							'setting' => $setting,
+							'grid' => FALSE
+						);
+
+						$this->embed('ee:_shared/form/field', $vars);
+					}
+				?>
+				</div>
+			</div>
+		<?php endforeach ?>
 		<?php if (isset($buttons)): ?>
 			<?php foreach ($buttons as $button): ?>
 				<?php

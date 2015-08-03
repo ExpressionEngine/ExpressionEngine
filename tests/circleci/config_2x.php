@@ -14,7 +14,7 @@
 $config['app_version'] = '2.20.0';
 $config['license_contact'] = 'team@ellislab.com';
 $config['license_number'] = '1123-5813-2134-5589';
-$config['debug'] = '1';
+$config['debug'] = '2';
 $config['cp_url'] = '/admin.php';
 $config['doc_url'] = 'http://ellislab.com/expressionengine/user-guide/';
 $config['is_system_on'] = 'y';
@@ -22,6 +22,7 @@ $config['allow_extensions'] = 'y';
 $config['cache_driver'] = 'file';
 $config['cookie_prefix'] = '';
 $config['cookie_httponly'] = 'y';
+$config['tmpl_file_basepath'] = '../system/user/templates';
 
 
 // END EE config items

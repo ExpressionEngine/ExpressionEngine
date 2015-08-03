@@ -47,12 +47,30 @@ module Installer
       )
     end
 
-    def replace_config(file = '')
+    # Replace the current config file with another, while backing up the
+    # previous one (e.g. config.php.tmp). Can be reverted by using revert_config
+    #
+    # @param [Type] file The path to the config file you want to use, set to blank to only move existing file
+    # @return [void]
+    def replace_config(file = '', options = {})
       File.rename(@config, @config + '.tmp') if File.exist?(@config)
       FileUtils.cp(file, @config) if File.exist?(file)
       FileUtils.chmod(0666, @config) if File.exist?(@config)
+
+      return if options.empty?
+
+      options.each do |key, value|
+        swap(
+          @config,
+          /\$config\['#{key}'\]\s+=\s+.*?;/,
+          "$config['#{key}'] = '#{value}';"
+        )
+      end
     end
 
+    # Revert the current config file to the previous (config.php.tmp)
+    #
+    # @return [void]
     def revert_config
       config_temp = @config + '.tmp'
       return unless File.exist?(config_temp)
@@ -61,12 +79,23 @@ module Installer
       File.rename(config_temp, @config)
     end
 
+    def delete_database_config
+      FileUtils.rm @database if File.exist?(@database)
+    end
+
     # Replaces current database config with file of your choice
     #
     # @param [String] file Path to file you want, ideally use File.expand_path
     # @param [Hash] options Hash of options for replacing
     # @return [void]
     def replace_database_config(file, options = {})
+      File.rename(@database, @database + '.tmp') if File.exist?(@database)
+      FileUtils.cp(file, @database) if File.exist?(file)
+      FileUtils.chmod(0666, @database) if File.exist?(@database)
+
+      # Replace important values
+      return unless File.exist?(file)
+
       defaults = {
         database: $test_config[:db_name],
         dbdriver: 'mysqli',
@@ -74,22 +103,19 @@ module Installer
         password: $test_config[:db_password],
         username: $test_config[:db_username]
       }
-      options = defaults.merge(options)
 
-      File.rename(@database, @database + '.tmp') if File.exist?(@database)
-      FileUtils.cp(file, @database) if File.exist?(file)
-      FileUtils.chmod(0666, @database) if File.exist?(@database)
-
-      # Replace important values
-      options.each { |key, value|
+      defaults.merge(options).each do |key, value|
         swap(
           @database,
           /\['#{key}'\] = '.*?';/,
           "['#{key}'] = '#{value}';"
         )
-      }
+      end
     end
 
+    # Revert current database config to previous (database.php.tmp)
+    #
+    # @return [void]
     def revert_database_config
       database_temp = @database + '.tmp'
       return unless File.exist?(database_temp)
@@ -98,6 +124,10 @@ module Installer
       File.rename(database_temp, @database)
     end
 
+    # Set the version in the config file to something else
+    #
+    # @param [Number] version The semver verison number you want to use
+    # @return [void]
     def version=(version)
       swap(
         @config,

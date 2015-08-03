@@ -12,7 +12,7 @@ class AddonsTest extends \PHPUnit_Framework_TestCase {
 	{
 		$controller_methods = array();
 
-		foreach (get_class_methods('EllisLab\ExpressionEngine\Controllers\Addons\Addons') as $method)
+		foreach (get_class_methods('EllisLab\ExpressionEngine\Controller\Addons\Addons') as $method)
 		{
 			$method = strtolower($method);
 			if (strncmp($method, '_', 1) != 0)
