@@ -109,7 +109,7 @@ class Forum_mcp extends CP_Controller {
 
 			foreach ($all_boards as $board)
 			{
-				$item = $board_list->addItem($board->board_label, ee('CP/URL', $this->base . '/' . $board->board_id))
+				$item = $board_list->addItem($board->board_label, ee('CP/URL', $this->base . '/index/' . $board->board_id))
 					->withEditUrl(ee('CP/URL', $this->base . 'edit/board/' . $board->board_id))
 					->withRemoveConfirmation(lang('forum_board') . ': <b>' . $board->board_label . '</b>')
 					->identifiedBy($board->board_id);
