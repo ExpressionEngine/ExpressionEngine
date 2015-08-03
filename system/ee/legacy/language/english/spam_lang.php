@@ -35,4 +35,10 @@ $lang = array(
 	Higher numbers can reduce performance speeds.',
 	'spam_content_limit' => 'Content Limit',
 	'spam_content_limit_desc' => 'Number of content entires to use, for training.<br>Higher numbers can reduce performance speeds.',
+	'spam_content' => 'Content',
+	'spam_type' => 'Type',
+	'content_type' => 'content type',
+	'forum_post' => 'forum post',
+	'wiki_post' => 'wiki post',
+	'comment' => 'comment'
 );
