@@ -60,8 +60,12 @@ class Forum extends Model {
 		'forum_use_http_auth'             => 'boolString',
 	);
 
-	// protected static $_relationships = array(
-	// );
+	protected static $_relationships = array(
+		'Board' => array(
+			'type' => 'belongsTo',
+			'key' => 'board_id'
+		),
+	);
 
 	protected static $_validation_rules = array(
 		'forum_name'                      => 'required',
