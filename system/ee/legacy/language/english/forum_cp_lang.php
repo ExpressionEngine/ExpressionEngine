@@ -195,8 +195,7 @@ $lang = array(
 'search' => 'Search',
 'search_desc' => 'Allow the following member groups to use the search feature.</em><em>Super Administrators are <b>always</b> allowed.',
 
-'btn_create_board' => 'Create Board',
-'btn_edit_board' => 'Edit Board',
+'btn_save_board' => 'Save Board',
 
 'invalid_upload_path' => 'The server path to your image upload folder does not appear to be valid.',
 'unwritable_upload_path' => 'Your image upload folder is not writable.  Please make sure the file permissions are set to 777.',
