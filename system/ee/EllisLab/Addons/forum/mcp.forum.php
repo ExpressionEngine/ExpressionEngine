@@ -720,7 +720,7 @@ class Forum_mcp extends CP_Controller {
 						'board_notify_emails_topics' => array(
 							'type' => 'text',
 							'value' => $board->board_notify_emails_topics,
-							'attrs' => 'placeholder="recipients"'
+							'attrs' => 'placeholder="' . lang('recipients'). '"'
 						),
 					)
 				),
@@ -739,7 +739,7 @@ class Forum_mcp extends CP_Controller {
 						'board_notify_emails' => array(
 							'type' => 'text',
 							'value' => $board->board_notify_emails,
-							'attrs' => 'placeholder="recipients"'
+							'attrs' => 'placeholder="' . lang('recipients'). '"'
 						),
 					)
 				),
