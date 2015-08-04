@@ -366,10 +366,6 @@ class Forum_mcp extends CP_Controller {
 	private function getBoardForm($board)
 	{
 		$html = '';
-	private function createCategory()
-	{
-	}
-
 
 		$site = '';
 
@@ -963,6 +959,245 @@ class Forum_mcp extends CP_Controller {
 		}
 
 		return $html;
+	}
+
+	private function createCategory($board_id)
+	{
+		$errors = NULL;
+
+		$board = ee('Model')->get('forum:Board', $board_id)->first();
+		if ( ! $board)
+		{
+			show_404();
+		}
+
+		if ( ! empty($board->board_forum_permissions)
+			&& $board->board_use_deft_permissions)
+		{
+			$default_permissions = $board->board_forum_permissions;
+		}
+		else
+		{
+			$default_permissions = $this->forum_set_base_permissions();
+		}
+
+		$defaults = array(
+			'board_id' => $board_id,
+			'forum_is_cat' => TRUE,
+			'forum_permissions' => $default_permissions,
+			// These cannot be NULL in the DB....
+			'forum_topics_perpage' => 25,
+			'forum_posts_perpage' => 15,
+			'forum_hot_topic' => 10,
+			'forum_max_post_chars' => 6000,
+		);
+
+		$category = ee('Model')->make('forum:Forum', $defaults);
+
+		$result = $this->validateCategory($category);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
+
+			if ($result->isValid())
+			{
+				$this->saveCategoryAndRedirect($category);
+			}
+		}
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'errors' => $errors,
+			'cp_page_title' => lang('create_category'),
+			'base_url' => ee('CP/URL', $this->base . 'create/category/' . $board_id),
+			'save_btn_text' => 'btn_save_category',
+			'save_btn_text_working' => 'btn_saving',
+			'sections' => $this->categoryForm($category),
+		);
+
+		$body = ee('View')->make('ee:_shared/form')->render($vars);
+
+		return array(
+			'body'       => '<div class="box">' . $body . '</div>',
+			'breadcrumb' => array(
+				ee('CP/URL', $this->base)->compile() => $board->board_label . ' '. lang('forum_listing')
+			),
+			'heading'    => lang('create_forum_board'),
+			'sidebar'    => $this->generateSidebar($board_id)
+		);
+	}
+
+	private function editCategory($id)
+	{
+		$errors = NULL;
+
+		$category = ee('Model')->get('forum:Forum', $id)->with('Board')->first();
+		if ( ! $category)
+		{
+			show_404();
+		}
+
+		$result = $this->validateBoard($category);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
+
+			if ($result->isValid())
+			{
+				$this->saveCategoryAndRedirect($category);
+			}
+		}
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'errors' => $errors,
+			'cp_page_title' => lang('edit_category'),
+			'base_url' => ee('CP/URL', $this->base . 'edit/category/' . $id),
+			'save_btn_text' => 'btn_save_category',
+			'save_btn_text_working' => 'btn_saving',
+			'sections' => $this->categoryForm($category),
+		);
+
+		$body = ee('View')->make('ee:_shared/form')->render($vars);
+
+		return array(
+			'body'       => '<div class="box">' . $body . '</div>',
+			'breadcrumb' => array(
+				ee('CP/URL', $this->base)->compile() => $category->Board->board_label . ' '. lang('forum_listing')
+			),
+			'heading'    => $vars['cp_page_title'],
+			'sidebar'    => $this->generateSidebar($id)
+		);
+	}
+
+	private function validateCategory($category)
+	{
+		if (empty($_POST))
+		{
+			return FALSE;
+		}
+
+		$action = ($category->isNew()) ? 'create' : 'edit';
+
+		$category->set($_POST);
+		$result = $category->validate();
+
+		if ($response = $this->ajaxValidation($result))
+		{
+			ee()->output->send_ajax_response($response);
+		}
+
+		if ($result->failed())
+		{
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang($action . '_category_error'))
+				->addToBody(lang($action . '_category_error_desc'))
+				->now();
+		}
+
+		return $result;
+	}
+
+	private function saveCategoryAndRedirect($category)
+	{
+		$action = ($category->isNew()) ? 'create' : 'edit';
+
+		$category->save();
+
+		ee('Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang($action . '_category_success'))
+			->addToBody(sprintf(lang($action . '_category_success_desc'), $category->forum_name))
+			->defer();
+
+		ee()->functions->redirect(ee('CP/URL', $this->base . '/index/' . $category->board_id));
+	}
+
+	private function categoryForm($category)
+	{
+		$sections = array(
+			array(
+				array(
+					'title' => 'name',
+					'desc' => 'name_desc',
+					'fields' => array(
+						'forum_name' => array(
+							'type' => 'text',
+							'required' => TRUE,
+							'value' => $category->forum_name,
+						)
+					)
+				),
+				array(
+					'title' => 'description',
+					'desc' => 'description_desc',
+					'fields' => array(
+						'forum_description' => array(
+							'type' => 'textarea',
+							'value' => $category->forum_description,
+						)
+					)
+				),
+				array(
+					'title' => 'status',
+					'desc' => 'status_desc',
+					'fields' => array(
+						'forum_status' => array(
+							'type' => 'select',
+							'choices' => array(
+								'o' => lang('live'),
+								'c' => lang('hidden'),
+								'a' => lang('read_only'),
+							),
+							'value' => $category->forum_status,
+						)
+					)
+				),
+				array(
+					'title' => 'topic_notifications',
+					'desc' => 'topic_notifications_desc',
+					'fields' => array(
+						'forum_enable_notify_emails' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							),
+							// 'value' => $category->forum_enable_notify_emails,
+						),
+						'forum_notify_emails' => array(
+							'type' => 'text',
+							'value' => $category->forum_notify_emails,
+							'attrs' => 'placeholder="' . lang('recipients'). '"'
+						),
+					)
+				),
+				array(
+					'title' => 'reply_notifications',
+					'desc' => 'reply_notifications_desc',
+					'fields' => array(
+						'forum_enable_notify_emails_topics' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							),
+							// 'value' => $category->forum_enable_notify_emails_topics,
+						),
+						'forum_notify_emails_topics' => array(
+							'type' => 'text',
+							'value' => $category->forum_notify_emails_topics,
+							'attrs' => 'placeholder="' . lang('recipients'). '"'
+						),
+					)
+				),
+			)
+		);
+
+		return $sections;
 	}
 
 	// --------------------------------------------------------------------

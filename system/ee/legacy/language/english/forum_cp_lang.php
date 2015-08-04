@@ -21,6 +21,11 @@ $lang = array(
 
 // List / Index
 'forum_listing' => 'Forum listing',
+'no_categories' => 'No categories available',
+'create_new_category' => 'Create new category',
+
+// "Common"
+'recipients' => 'recipients',
 
 // Create / Edit Forum Board Form
 'create_forum_board' => 'Create Forum Board',
@@ -214,6 +219,33 @@ $lang = array(
 'edit_forum_board_error' => 'Cannot Update Forum Board',
 'edit_forum_board_error_desc' => 'We were unable to update this forum board, please review and fix errors below.',
 
+// Create/Edit Category Form
+
+'create_category' => 'Create Category',
+
+'description_desc' => 'Brief description of this category.',
+
+'status_desc' => 'Status assigned to this category.',
+'live' => 'Live',
+'hidden' => 'Hidden',
+'read_only' => 'Read Only',
+
+'reply_notifications' => 'Reply notification',
+'reply_notifications_desc' => 'When set to <b>enable</b>, all recipients listed will receive e-mail notification when a <b>new</b> reply is made.</em><em>Separate multiple e-mails with a <mark>comma (,)</mark>.',
+
+'btn_save_category' => 'Save Category',
+
+'create_category_success' => 'Category Created',
+'create_category_success_desc' => 'The category <b>%s</b> has been created.',
+
+'create_category_error' => 'Cannot Create Category',
+'create_category_error_desc' => 'We were unable to create this category, please review and fix errors below.',
+
+'edit_category_success' => 'Category Updated',
+'edit_category_success_desc' => 'The category <b>%s</b> has been updated.',
+
+'edit_category_error' => 'Cannot Update Category',
+'edit_category_error_desc' => 'We were unable to update this category, please review and fix errors below.',
 
 /* 2.x Keys
 //----------------------------------------
