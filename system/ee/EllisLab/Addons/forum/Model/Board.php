@@ -209,7 +209,7 @@ class Board extends Model {
 		return explode('|', $this->board_forum_permissions[$key]);
 	}
 
-	public function setPermssion($key, $value)
+	public function setPermission($key, $value)
 	{
 		if (is_array($value))
 		{
