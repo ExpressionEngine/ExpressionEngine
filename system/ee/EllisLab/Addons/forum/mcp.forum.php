@@ -307,10 +307,10 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base)->compile() => lang('forum_listing')
+				ee('CP/URL', $this->base)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
-			'sidebar'    => $this->generateSidebar()
+			'sidebar'    => $this->generateSidebar($id)
 		);
 	}
 
