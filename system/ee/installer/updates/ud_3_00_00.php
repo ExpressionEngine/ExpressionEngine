@@ -62,6 +62,7 @@ class Updater {
 				'_update_sites_table',
 				'_remove_referrer_config_items',
 				'_update_channels_table',
+				'_update_channel_titles_table'
 			)
 		);
 
@@ -1071,6 +1072,21 @@ class Updater {
 				)
 			);
 		}
+	}
+
+	/**
+	 * Updates the title and url_title columns to be a max of 200 chars long
+	 */
+	private function _update_channel_titles_table()
+	{
+		ee()->smartforge->modify_column('channel_titles', array(
+			'title' => array(
+				'type' => 'char(200)',
+			),
+			'url_title' => array(
+				'type' => 'char(200)',
+			)
+		));
 	}
 }
 /* END CLASS */
