@@ -19,6 +19,9 @@ $lang = array(
 'member_ranks' => 'Member Ranks',
 'forum_board' => 'Forum Board',
 
+// List / Index
+'forum_listing' => 'Forum listing',
+
 // Create / Edit Forum Board Form
 'create_forum_board' => 'Create Forum Board',
 'board' => 'Board',
