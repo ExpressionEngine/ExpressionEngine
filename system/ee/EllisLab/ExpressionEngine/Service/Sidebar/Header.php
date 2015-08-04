@@ -47,7 +47,7 @@ class Header {
 		return $this;
 	}
 
-	public function hasButton($text, $url)
+	public function withButton($text, $url)
 	{
 		$this->button = array(
 			'text' => $text,

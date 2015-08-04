@@ -96,7 +96,7 @@ class Forum_mcp extends CP_Controller {
 		$sidebar = ee('Sidebar')->make();
 
 		$boards = $sidebar->addHeader(lang('forum_boards'))
-			->hasButton(lang('new'), ee('CP/URL', $this->base . 'create/board'));
+			->withButton(lang('new'), ee('CP/URL', $this->base . 'create/board'));
 
 		$all_boards = ee('Model')->get('forum:Board')
 			->fields('board_id', 'board_label')
