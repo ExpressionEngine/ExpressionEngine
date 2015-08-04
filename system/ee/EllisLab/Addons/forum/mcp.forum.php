@@ -1012,7 +1012,7 @@ class Forum_mcp extends CP_Controller {
 			'board_use_img_thumbs'			=> ($this->gd_loaded() == TRUE) ? 'y' : 'n',
 			'board_thumb_width'				=> 100,
 			'board_thumb_height'			=> 100,
-			'board_forum_permissions'		=> serialize($this->forum_set_base_permissions()),
+			'board_forum_permissions'		=> $this->forum_set_base_permissions(),
 			'board_use_deft_permissions'	=> 'n',
 			'board_recent_poster_id'		=> '0',
 			'board_recent_poster'			=> '',
