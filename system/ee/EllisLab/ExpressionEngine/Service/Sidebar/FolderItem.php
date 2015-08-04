@@ -39,8 +39,6 @@ class FolderItem extends ListItem {
 
 		$this->name = $name;
 		$this->removal_key = $removal_key;
-
-		return $this;
 	}
 
 	public function asDefaultItem()

@@ -39,7 +39,6 @@ class Header {
 		{
 			$this->withUrl($url);
 		}
-		return $this;
 	}
 
 	public function withUrl($url)

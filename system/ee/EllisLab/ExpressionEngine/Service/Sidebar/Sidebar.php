@@ -33,7 +33,6 @@ class Sidebar {
 	public function __construct(ViewFactory $view)
 	{
 		$this->view = $view;
-		return $this;
 	}
 
 	/**

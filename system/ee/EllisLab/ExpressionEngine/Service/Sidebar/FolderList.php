@@ -35,7 +35,6 @@ class FolderList {
 	public function __construct($name)
 	{
 		$this->name = $name;
-		return $this;
 	}
 
 	public function withRemoveUrl($url)
