@@ -192,10 +192,12 @@ class Forum_mcp extends CP_Controller {
 	 */
 	public function create($type)
 	{
+		$parameters = array_slice(func_get_args(), 1);
 		$method = 'create' . ucfirst($type);
+
 		if (method_exists($this, $method))
 		{
-			return $this->$method();
+			return call_user_func_array(array($this, $method), $parameters);
 		}
 
 		show_404();
@@ -204,12 +206,14 @@ class Forum_mcp extends CP_Controller {
 	/**
 	 * Dispatch method for the various things that can be edit
 	 */
-	public function edit($type, $id)
+	public function edit($type)
 	{
+		$parameters = array_slice(func_get_args(), 1);
 		$method = 'edit' . ucfirst($type);
+
 		if (method_exists($this, $method))
 		{
-			return $this->$method($id);
+			return call_user_func_array(array($this, $method), $parameters);
 		}
 
 		show_404();
