@@ -862,6 +862,19 @@ class Wizard extends CI_Controller {
 			ee()->load->helper('url');
 			redirect($this->userdata['cp_url'].'?/cp/login&return=&after='.$type);
 		}
+
+		// Are we back here from a input?
+		if (ee()->input->get('login'))
+		{
+			redirect($this->userdata['cp_url'].'?/cp/login&return=&after='.$type);
+		}
+		else if (ee()->input->get('download'))
+		{
+			ee()->load->helper('download');
+			force_download(
+				'mailing_list.zip',
+				file_get_contents(SYSPATH.'user/cache/mailing_list.zip')
+			);
 		}
 
 		// Make sure the title and subtitle are correct, current_step should be
@@ -2322,7 +2335,7 @@ class Wizard extends CI_Controller {
 		);
 
 		// Move the directory
-		return @rename(APPPATH, $new_path);
+		// return @rename(APPPATH, $new_path);
 	}
 }
 

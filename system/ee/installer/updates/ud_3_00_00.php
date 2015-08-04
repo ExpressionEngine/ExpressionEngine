@@ -1063,6 +1063,7 @@ class Updater {
 			return;
 		}
 
+		ee()->load->library('zip');
 		$subscribers = array();
 		$subscribers_query = ee()->db->select('list_id, email')
 			->get('mailing_list');
@@ -1082,11 +1083,13 @@ class Updater {
 			{
 				$csv->addRow(array('email' => $subscriber));
 			}
-			$csv->save(SYSPATH.'user/cache/mailing_list-'.$mailing_list->list_name.'.csv');
+			ee()->zip->add_data(
+				'mailing_list-'.$mailing_list->list_name.'.csv',
+				(string) $csv
+			);
 		}
 
-		// TODO: Provide link to the resulting file, remember system can be above
-		// webroot
+		ee()->zip->archive(SYSPATH.'user/cache/mailing_list.zip');
 	}
 }
 /* END CLASS */
