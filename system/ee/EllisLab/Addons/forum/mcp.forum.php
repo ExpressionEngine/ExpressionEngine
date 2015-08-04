@@ -285,8 +285,8 @@ class Forum_mcp extends CP_Controller {
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'errors' => $errors,
-			'cp_page_title' => lang('edit_forum_board'),
-			'base_url' => ee('CP/URL', $this->base . 'edit/board'),
+			'cp_page_title' => sprintf(lang('edit_forum_board'), $board->board_label),
+			'base_url' => ee('CP/URL', $this->base . 'edit/board/' . $id),
 			'save_btn_text' => 'btn_save_board',
 			'save_btn_text_working' => 'btn_saving',
 			'tabs' => array(
@@ -305,7 +305,7 @@ class Forum_mcp extends CP_Controller {
 			'breadcrumb' => array(
 				ee('CP/URL', $this->base)->compile() => lang('forum_listing')
 			),
-			'heading'    => lang('create_forum_board'),
+			'heading'    => $vars['cp_page_title'],
 			'sidebar'    => $this->generateSidebar()
 		);
 	}

@@ -24,6 +24,7 @@ $lang = array(
 
 // Create / Edit Forum Board Form
 'create_forum_board' => 'Create Forum Board',
+'edit_forum_board' => 'Edit %s',
 'board' => 'Board',
 'forums' => 'Forums',
 'permissions' => 'Permissions',
