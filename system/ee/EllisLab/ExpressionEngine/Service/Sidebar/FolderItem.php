@@ -55,7 +55,7 @@ class FolderItem extends ListItem {
 
 	public function withRemoveConfirmation($msg)
 	{
-		$this->remove_confrirmation = $msg;
+		$this->remove_confirmation = $msg;
 		return $this;
 	}
 
