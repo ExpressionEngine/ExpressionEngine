@@ -61,6 +61,8 @@ class Updater {
 				'_drop_field_formatting_table',
 				'_update_sites_table',
 				'_remove_referrer_config_items',
+				'_update_channels_table',
+				'_update_channel_titles_table',
 				'_export_mailing_lists'
 			)
 		);
@@ -1090,6 +1092,44 @@ class Updater {
 		}
 
 		ee()->zip->archive(SYSPATH.'user/cache/mailing_list.zip');
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Adds the column "title_field_label" to the channels tabel and sets it's
+	 * default to lang('title')
+	 */
+	private function _update_channels_table()
+	{
+		if ( ! ee()->db->field_exists('title_field_label', 'channels'))
+		{
+			ee()->smartforge->add_column(
+				'channels',
+				array(
+					'title_field_label' => array(
+						'type'    => 'CHAR(100)',
+						'null'    => FALSE,
+						'default' => 'Title'
+					)
+				)
+			);
+		}
+	}
+
+	/**
+	 * Updates the title and url_title columns to be a max of 200 chars long
+	 */
+	private function _update_channel_titles_table()
+	{
+		ee()->smartforge->modify_column('channel_titles', array(
+			'title' => array(
+				'type' => 'char(200)',
+			),
+			'url_title' => array(
+				'type' => 'char(200)',
+			)
+		));
 	}
 }
 /* END CLASS */

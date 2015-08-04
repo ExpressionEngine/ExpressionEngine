@@ -96,7 +96,8 @@
 										<em></em>
 									</div>
 									<div class="setting-field col w-8 last">
-										<input type="text" name="username" value="<?=form_prep(ee()->session->userdata('username'))?>">
+										<input type="text" value="<?=form_prep(ee()->session->userdata('username'))?>" disabled="disabled">
+										<input type="hidden" name="username" value="<?=form_prep(ee()->session->userdata('username'))?>">
 									</div>
 								</fieldset>
 								<fieldset class="col-group required last">

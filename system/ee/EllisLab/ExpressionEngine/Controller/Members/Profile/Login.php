@@ -66,12 +66,18 @@ class Login extends Profile {
 						),
 						'other' => array('type' => 'text')
 					)
-				),
+				)
+			),
+			'secure_form_ctrls' => array(
 				array(
 					'title' => 'existing_password',
 					'desc' => 'existing_password_exp',
 					'fields' => array(
-						'password' => array('type' => 'password')
+						'password' => array(
+							'type'      => 'password',
+							'required' => TRUE,
+							'maxlength' => PASSWORD_MAX_LENGTH
+						)
 					)
 				)
 			)

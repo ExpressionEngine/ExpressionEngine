@@ -84,9 +84,7 @@ class Addons extends CP_Controller {
 		$status->disableCustomValue();
 
 		$first_filters = ee('Filter')
-			->add($status)
-			->add('Perpage', $total['first'], 'show_all_addons')
-				->withName('first_perpage');
+			->add($status);
 
 		// Third Party Add-on Filters
 
@@ -109,9 +107,7 @@ class Addons extends CP_Controller {
 
 		$third_filters = ee('Filter')
 			->add($status)
-			->add($developer)
-			->add('Perpage', $total['third'], 'show_all_addons')
-				->withName('third_perpage');
+			->add($developer);
 
 		// When filtering the first party table keep the third party filter values
 		$filter_base_url['first'] = clone $this->base_url;
@@ -175,10 +171,6 @@ class Addons extends CP_Controller {
 		);
 
 		$vars = array(
-			'pagination' => array(
-				'first' => '',
-				'third' => '',
-			),
 			'tables' => array(
 				'first' => NULL,
 				'third' => NULL
@@ -232,8 +224,7 @@ class Addons extends CP_Controller {
 				'sort_col_qs_var' => $party . '_sort_col',
 				'sort_dir' => ee()->input->get($party . '_sort_dir') ?: 'asc',
 				'sort_dir_qs_var' => $party . '_sort_dir',
-				'page' => ee()->input->get($party . '_page') ?: 1,
-				'limit' => $this->params[$party . '_perpage']
+				'limit' => 0
 			);
 
 			$table = ee('CP/Table', $config);
@@ -350,16 +341,6 @@ class Addons extends CP_Controller {
 
 			$table->setData($data);
 			$vars['tables'][$party] = $table->viewData($this->base_url);
-
-			if ( ! empty($vars['tables'][$party]['data']))
-			{
-				// Paginate!
-				$vars['pagination'][$party] = ee('CP/Pagination', $vars['tables'][$party]['total_rows'])
-					->perPage($vars['tables'][$party]['limit'])
-					->currentPage($vars['tables'][$party]['page'])
-					->queryStringVariable($party . '_page')
-					->render($this->base_url);
-			}
 		}
 
 		$vars['form_url'] = $this->base_url;

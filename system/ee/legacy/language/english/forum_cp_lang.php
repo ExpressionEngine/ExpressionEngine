@@ -14,8 +14,17 @@ $lang = array(
 
 'new_category' => 'New Category',
 
+// Sidebar
+'templates' => 'Templates',
+'member_ranks' => 'Member Ranks',
+'forum_board' => 'Forum Board',
+
+// List / Index
+'forum_listing' => 'Forum listing',
+
 // Create / Edit Forum Board Form
 'create_forum_board' => 'Create Forum Board',
+'edit_forum_board' => 'Edit %s',
 'board' => 'Board',
 'forums' => 'Forums',
 'permissions' => 'Permissions',
@@ -187,8 +196,7 @@ $lang = array(
 'search' => 'Search',
 'search_desc' => 'Allow the following member groups to use the search feature.</em><em>Super Administrators are <b>always</b> allowed.',
 
-'btn_create_board' => 'Create Board',
-'btn_edit_board' => 'Edit Board',
+'btn_save_board' => 'Save Board',
 
 'invalid_upload_path' => 'The server path to your image upload folder does not appear to be valid.',
 'unwritable_upload_path' => 'Your image upload folder is not writable.  Please make sure the file permissions are set to 777.',

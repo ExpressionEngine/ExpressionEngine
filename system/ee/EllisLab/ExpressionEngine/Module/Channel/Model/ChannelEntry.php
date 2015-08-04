@@ -232,6 +232,8 @@ class ChannelEntry extends ContentModel {
 	{
 		$layout = $layout ?: new Display\DefaultChannelLayout($this->channel_id, $this->entry_id);
 
+		$this->_field_facades['title']->setItem('field_label', $this->Channel->title_field_label);
+
 		return parent::getDisplay($layout);
 	}
 

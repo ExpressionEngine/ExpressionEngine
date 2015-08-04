@@ -1,4 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+use EllisLab\ExpressionEngine\Library\CP\Table;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -66,86 +69,142 @@ EOT;
 	 */
 	function index()
 	{
-		ee()->load->library('table');
-
-		ee()->table->set_columns(array(
-			'moblog_id'			=> array('header' => array('data' => lang('id'), 'width' => '4%')),
-		    'moblog_full_name'  => array('header' => lang('moblog_view')),
-		    'check_moblog'  	=> array('header' => lang('check_moblog'), 'sort' => FALSE),
-			'_check'			=> array(
-				'header' => form_checkbox('toggle_all', 'true', FALSE),
-				'sort' => FALSE
+		$table = ee('CP/Table', array('autosort' => TRUE));
+		$table->setColumns(array(
+			'col_id',
+			'moblog',
+			'manage' => array(
+				'type'	=> Table::COL_TOOLBAR
+			),
+			array(
+				'type'	=> Table::COL_CHECKBOX
 			)
 		));
 
-		$defaults = array(
-			'sort'	=> array('moblog_id' => 'asc')
+		$table->setNoResultsText('no_moblogs', 'create_moblog', ee('CP/URL', 'addons/settings/moblog/create'));
+
+		$sort_map = array(
+			'col_id' => 'moblog_id',
+			'moblog' => 'moblog_full_name',
 		);
 
-		$params = array(
-			'per_page'	=> 100
-		);
+		$moblogs = ee()->db->select('moblog_id, moblog_full_name')
+			->order_by($sort_map[$table->sort_col], $table->sort_dir)
+			->get('moblogs')
+			->result_array();
 
-		$data = ee()->table->datasource('_table_datasource', $defaults, $params);
+		$data = array();
+		foreach ($moblogs as $moblog)
+		{
+			$columns = array(
+				$moblog['moblog_id'],
+				$moblog['moblog_full_name'],
+				array('toolbar_items' => array(
+					'edit' => array(
+						'href' => ee('CP/URL', 'addons/settings/moblog/edit/'.$moblog['moblog_id']),
+						'title' => lang('edit')
+					),
+					'txt-only' => array(
+						'href' => ee('CP/URL', 'addons/settings/moblog/check/'.$moblog['moblog_id']),
+						'title' => (lang('check_now')),
+						'content' => strtolower(lang('check_now'))
+					)
+				)),
+				array(
+					'name' => 'moblogs[]',
+					'value' => $moblog['moblog_id'],
+					'data'	=> array(
+						'confirm' => lang('moblog') . ': <b>' . htmlentities($moblog['moblog_full_name'], ENT_QUOTES) . '</b>'
+					)
+				)
+			);
 
-		$vars = array(
-			'table_html' 		=> $data['table_html'],
-			'pagination_html' 	=> $data['pagination_html'],
-			'total_rows'		=> $data['pagination']['total_rows'],
-			'cp_page_title' 	=> lang('moblog')
-		);
+			$attrs = array();
+			if (ee()->session->flashdata('highlight_id') == $moblog['moblog_id'])
+			{
+				$attrs = array('class' => 'selected');
+			}
 
-		ee()->cp->set_right_nav(array(
-			'create_moblog' => BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog'.AMP.'method=create_modify'
-			)
-		);
+			$data[] = array(
+				'attrs' => $attrs,
+				'columns' => $columns
+			);
+		}
 
-		return ee()->load->view('index', $vars, TRUE);
+		$table->setData($data);
+
+		$vars['base_url'] = ee('CP/URL', 'addons/settings/moblog');
+		$vars['table'] = $table->viewData($vars['base_url']);
+
+		$vars['pagination'] = ee('CP/Pagination', count($moblogs))
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($vars['table']['base_url']);
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('moblogs') . ': <b>### ' . lang('moblogs') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/confirm_remove'),
+		));
+
+		return ee('View')->make('moblog:index')->render($vars);
 	}
-
-
-	// --------------------------------------------------------------------
 
 	/**
-	 * Moblog table datasource
-	 *
-	 * Must remain public so that it can be called from the
-	 * table library!
-	 *
-	 * @access	public
+	 * Remove moblogs handler
 	 */
-	public function _table_datasource($state, $params)
+	public function remove()
 	{
-		ee()->db->select('moblog_full_name, moblog_id, moblog_enabled');
+		$moblog_ids = ee()->input->post('channels');
 
-		foreach($state['sort'] as $col => $dir)
+		if ( ! empty($moblog_ids) && ee()->input->post('bulk_action') == 'remove')
 		{
-			ee()->db->order_by($col, $dir);
+			// Filter out junk
+			$moblog_ids = array_filter($moblog_ids, 'is_numeric');
+
+			if ( ! empty($moblog_ids))
+			{
+				ee()->db->where_in('moblog_id', $moblog_ids)->delete('moblogs');
+
+				ee('Alert')->makeInline('moblogs-table')
+					->asSuccess()
+					->withTitle(lang('moblogs_removed'))
+					->addToBody(sprintf(lang('moblogs_removed_desc'), count($moblog_ids)))
+					->defer();
+			}
+		}
+		else
+		{
+			show_error(lang('unauthorized_access'));
 		}
 
-		$data = ee()->db->get('moblogs', $params['per_page'], $state['offset'])->result_array();
-
-		foreach($data as &$row)
-		{
-			$row['moblog_full_name'] = '<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog'.AMP.'method=create_modify'.AMP.'id='.$row['moblog_id'].'">'.$row['moblog_full_name'].'</a>';
-			$row['check_moblog'] = ($row['moblog_enabled'] == 'y') ? '<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog'.AMP.'method=check_moblog'.AMP.'moblog_id='.$row['moblog_id'].'" class="notification_link">'.lang('check_moblog').'</a>' : lang('check_moblog');
-			$row['_check'] = '<input class="toggle" type="checkbox" name="toggle[]" value="'.$row['moblog_id'].'">';
-
-			unset($row['moblog_enabled']); // don't care about this any more
-		}
-
-		return array(
-		    'rows'		 => $data,
-		    'pagination' => array(
-		        'per_page'   => $params['per_page'],
-		        'total_rows' => ee()->db->count_all_results('moblogs'),
-		    ),
-		);
+		ee()->functions->redirect(ee('CP/URL', 'addons/settings/moblog', ee()->cp->get_url_state()));
 	}
 
+	/**
+	 * New moblog form
+	 */
+	public function create()
+	{
+		return $this->form();
+	}
 
+	/**
+	 * Edit moblog form
+	 */
+	public function edit($moblog_id)
+	{
+		return $this->form($moblog_id);
+	}
 
-	// --------------------------------------------------------------------
+	/**
+	 * Moblog creation/edit form
+	 *
+	 * @param	int	$moblog_id	ID of moblog to edit
+	 */
+	private function form($moblog_id = NULL)
+	{
+		return ee('View')->make('moblog:create')->render(array());
+	}
 
 	/**
 	 * Create Moblog

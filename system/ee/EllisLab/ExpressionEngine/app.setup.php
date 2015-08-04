@@ -12,6 +12,7 @@ use EllisLab\ExpressionEngine\Service\Grid;
 use EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Validation;
 use EllisLab\ExpressionEngine\Service\View;
+use EllisLab\ExpressionEngine\Service\Sidebar;
 use EllisLab\ExpressionEngine\Service\Thumbnail;
 
 // TODO should put the version in here at some point ...
@@ -97,6 +98,12 @@ return array(
 			$frontend->setValidationFactory($ee->make('Validation'));
 
 			return $frontend;
+		},
+
+		'Sidebar' => function($ee)
+		{
+			$view = $ee->make('View');
+			return new Sidebar\Sidebar($view);
 		},
 
 		'Thumbnail' => function($ee)

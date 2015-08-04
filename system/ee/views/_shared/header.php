@@ -30,13 +30,13 @@
 				<div class="site">
 					<a class="home" href="<?=ee('CP/URL', 'homepage')?>"></a>
 					<?php if (ee()->config->item('multiple_sites_enabled') === 'y'): ?>
-						<a class="has-sub" href=""><?=ee()->config->item('site_name')?> <span class="ico sub-arrow"></span></a> <a href="<?=ee()->config->item('base_url').ee()->config->item('site_index')?>">view</a>
+						<a class="has-sub" href=""><?=ee()->config->item('site_name')?></a> <a href="<?=ee()->config->item('base_url').ee()->config->item('site_index')?>">view</a>
 						<ul class="sites-list sub-menu">
 							<?php foreach ($cp_main_menu['sites'] as $site_name => $link): ?>
 								<a href="<?=$link?>"><?=$site_name?></a>
 							<?php endforeach ?>
 							<?php if (ee()->cp->allowed_group('can_admin_sites')): ?>
-								<a class="last add" href="<?=ee('CP/URL', 'msm/create')?>">&#10010; <?=lang('new_site')?></a>
+								<a class="last add" href="<?=ee('CP/URL', 'msm/create')?>"><?=lang('new_site')?></a>
 							<?php endif ?>
 						</ul>
 					<?php elseif ( ! ($site_name = ee()->config->item('site_name')) OR empty($site_name)): ?>
@@ -46,13 +46,13 @@
 					<?php endif ?>
 				</div>
 				<div class="user">
-					<a href="<?=ee('CP/URL', 'login/logout')?>"><?=lang('log_out')?></a> <a class="has-sub" href=""><?=$cp_screen_name?> <span class="ico sub-arrow"></span></a>
+					<a href="<?=ee('CP/URL', 'login/logout')?>"><?=lang('log_out')?></a> <a class="has-sub" href=""><?=$cp_screen_name?></a>
 					<ul class="quick-links sub-menu">
 						<a href="<?=ee('CP/URL', 'members/profile', array('id' => ee()->session->userdata('member_id')))?>"><?=lang('my_profile')?></a>
 						<?php foreach($cp_quicklinks as $link): ?>
 						<a href="<?=$link['link']?>"><?=$link['title']?></a>
 						<?php endforeach ?>
-						<a class="last add" href="<?=ee('CP/URL', 'members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id')))?>">&#10010; <?=lang('new_link')?></a>
+						<a class="last add" href="<?=ee('CP/URL', 'members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id')))?>"><?=lang('new_link')?></a>
 					</ul>
 				</div>
 			</nav>
@@ -61,7 +61,7 @@
 			<nav class="snap">
 				<ul class="author-menu">
 					<li>
-						<a class="has-sub" href=""><?=lang('menu_create')?> <span class="ico sub-arrow"></span></a>
+						<a class="has-sub" href=""><?=lang('menu_create')?></a>
 						<div class="sub-menu">
 							<?php if (count($cp_main_menu['channels']['create']) >= 10): ?>
 								<form class="filter">
@@ -72,12 +72,12 @@
 								<?php foreach ($cp_main_menu['channels']['create'] as $channel_name => $link): ?>
 									<li class="search-channel" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
 								<?php endforeach ?>
-								<li class="last"><a class="add" href="<?=ee('CP/URL', 'channels/create')?>">&#10010; <?=lang('new_channel')?></a></li>
+								<li class="last"><a class="add" href="<?=ee('CP/URL', 'channels/create')?>"><?=lang('new_channel')?></a></li>
 							</ul>
 						</div>
 					</li>
 					<li>
-						<a class="has-sub" href=""><?=lang('menu_edit')?> <span class="ico sub-arrow"></span></a>
+						<a class="has-sub" href=""><?=lang('menu_edit')?></a>
 						<div class="sub-menu">
 							<?php if (count($cp_main_menu['channels']['edit']) >= 10): ?>
 								<form class="filter">
@@ -96,7 +96,7 @@
 				</ul>
 				<ul class="dev-menu">
 					<li class="develop">
-						<a class="has-sub" href=""><b class="ico develop"></b> <span class="ico sub-arrow"></span> <!-- Develop --></a>
+						<a class="has-sub" href=""></a>
 						<div class="sub-menu">
 							<ul>
 								<?php

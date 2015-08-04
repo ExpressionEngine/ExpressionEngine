@@ -80,7 +80,7 @@ class HasAndBelongsToMany extends Relation {
 	{
 		list($from, $to) = $this->getKeys();
 
-		$from_alias = $source->getName();
+		$from_alias = str_replace(':', '_m_', $source->getName());
 		$pivot_table = $this->pivot['table'];
 		$pivot_as = "{$from_alias}_{$to_alias}_{$pivot_table}";
 

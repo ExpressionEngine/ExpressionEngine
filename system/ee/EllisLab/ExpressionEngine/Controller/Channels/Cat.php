@@ -257,13 +257,13 @@ class Cat extends AbstractChannelsController {
 					'desc' => 'exclude_group_form_desc',
 					'fields' => array(
 						'exclude_group' => array(
-							'type' => 'select',
+							'type' => 'radio',
 							'choices' => array(
 								0 => lang('none'),
 								1 => lang('channels'),
 								2 => lang('files')
 							),
-							'value' => $cat_group->exclude_group
+							'value' => ($cat_group->exclude_group) ?: 0
 						)
 					)
 				)
@@ -1052,8 +1052,8 @@ class Cat extends AbstractChannelsController {
 					)
 				),
 				array(
-					'title' => 'label',
-					'desc' => 'cat_field_label_desc',
+					'title' => 'name',
+					'desc' => 'name_desc',
 					'fields' => array(
 						'field_label' => array(
 							'type' => 'text',

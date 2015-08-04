@@ -129,6 +129,7 @@ class Channels extends AbstractChannelsController {
 			ee()->view->base_url = ee('CP/URL', 'channels/create');
 			ee()->view->save_btn_text = 'create_channel';
 			$channel = ee('Model')->make('Channel');
+			$channel->title_field_label = lang('title');
 
 			$default_status_group = ee('Model')->get('StatusGroup')
 				->fields('group_id')
@@ -201,12 +202,16 @@ class Channels extends AbstractChannelsController {
 		}
 
 		// Alert to show only for new channels
-		$alert = (is_null($channel_id)) ? ee('Alert')->makeInline('permissions-warn')
-			->asWarning()
-			->addToBody(lang('channel_publishing_options_warning'))
-			->addToBody(sprintf(lang('channel_publishing_options_warning2'), ee('CP/URL', 'channels/fields')))
-			->cannotClose()
-			->render() : '';
+		$alert = '';
+		if (is_null($channel_id) && empty($field_group_options))
+		{
+			$alert = ee('Alert')->makeInline('permissions-warn')
+				->asWarning()
+				->addToBody(lang('channel_publishing_options_warning'))
+				->addToBody(sprintf(lang('channel_publishing_options_warning2'), ee('CP/URL', 'channels/fields/groups')))
+				->cannotClose()
+				->render();
+		}
 
 		$vars['sections'] = array(
 			array(
@@ -265,6 +270,16 @@ class Channels extends AbstractChannelsController {
 							'link_text' => 'create_new_status_group',
 							'link_href' => ee('CP/URL', 'channels/status/create')
 						)
+					)
+				)
+			),
+			array(
+				'title' => 'title_field_label',
+				'desc' => 'title_field_label_desc',
+				'fields' => array(
+					'title_field_label' => array(
+						'type' => 'text',
+						'value' => $channel->title_field_label
 					)
 				)
 			),

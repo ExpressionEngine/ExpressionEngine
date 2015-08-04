@@ -11,18 +11,23 @@ $lang = array(
 'moblog_sticky_entry' =>
 'Make Entry Sticky?',
 
-
-//----------------------------------------
-// Required for MODULES page
-//----------------------------------------
-
 'moblog_module_name' =>
 'Moblog',
 
-'moblog_module_description' =>
-'Moblogging Module',
+'moblog' =>
+'Moblog',
 
-//----------------------------------------
+'moblogs' =>
+'Moblogs',
+
+'no_moblogs' =>
+'No Moblogs',
+
+'moblogs_removed' =>
+'Moblogs removed',
+
+'moblogs_removed_desc' =>
+'%d moblogs were removed.',
 
 'moblog_prefs' =>
 'Preferences',
@@ -42,9 +47,6 @@ $lang = array(
 'moblog_entry_settings' =>
 'Channel Entry Settings',
 
-'moblog' =>
-'Moblogging',
-
 'moblog_basis' =>
 'Base New Moblog on: ',
 
@@ -55,13 +57,13 @@ $lang = array(
 'Moblog Accounts',
 
 'create_moblog' =>
-'Create New Moblog',
+'Create Moblog',
 
 'check_moblogs' =>
 'Check Moblogs',
 
-'check_moblog' =>
-'Check Moblog',
+'check_now' =>
+'Check Now',
 
 'invalid_moblog' =>
 'Invalid Moblog selection',
@@ -80,13 +82,13 @@ $lang = array(
 'File Settings',
 
 
-'moblog_full_name'	=> 
+'moblog_full_name'	=>
 'Full Moblog Name ',
 
-'moblog_short_name'	=> 
+'moblog_short_name'	=>
 'Short Name',
 
-'no_spaces'	=> 
+'no_spaces'	=>
 'Single word, no spaces',
 
 'channel_id'	=>
@@ -95,25 +97,25 @@ $lang = array(
 'cat_id' =>
 'Default Categories',
 
-'field_id'	=> 
+'field_id'	=>
 'Default Field',
 
-'status'	=> 
+'status'	=>
 'Default Status',
 
-'author_id' => 
+'author_id' =>
 'Default Author',
 
-'none' => 
+'none' =>
 'None',
 
-'all' => 
+'all' =>
 'All',
 
-'open' => 
+'open' =>
 'Open',
 
-'closed' => 
+'closed' =>
 'Closed',
 
 'moblog_auth_required' =>
@@ -134,7 +136,7 @@ $lang = array(
 'moblog_thumb_size' =>
 'Thumb Size',
 
-'moblog_email_type' => 
+'moblog_email_type' =>
 'Email Account Type',
 
 'moblog_email_address' =>
@@ -152,7 +154,7 @@ $lang = array(
 'moblog_email_password'	=>
 'Email Account Password',
 
-'data_encrypted' => 
+'data_encrypted' =>
 'Data encrypted on submit',
 
 'moblog_subject_prefix'	=>
@@ -219,16 +221,16 @@ $lang = array(
 'br' =>
 '&lt;br /&gt;',
 
-'invalid_short_name' => 
+'invalid_short_name' =>
 'Your moblog short name must contain only alpha-numeric characters and no spaces',
 
-'moblog_taken_short_name' => 
+'moblog_taken_short_name' =>
 'This moblog short name is already taken',
 
-'moblog_taken_name' => 
+'moblog_taken_name' =>
 'This moblog full name is already taken',
 
-'moblog_missing_field' => 
+'moblog_missing_field' =>
 'A required field has a missing or invalid value: %e',
 
 'moblog_created' =>
@@ -236,9 +238,6 @@ $lang = array(
 
 'moblog_updated' =>
 'Moblog Preferences Updated',
-
-'no_moblogs' =>
-'No moblogs currently exist',
 
 'total_moblogs' =>
 'Total Moblogs: ',

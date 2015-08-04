@@ -116,11 +116,11 @@ class Frontend {
 		$str = trim($str);
 		$pos = strrpos($str, ' ');
 
-		if ($pos === FALSE)
+		if ($pos !== FALSE)
 		{
-			return $str;
+			$str = trim(substr($str, $pos));
 		}
 
-		return trim(substr($str, $pos));
+		return str_replace(':', '_m_', $str);
 	}
 }

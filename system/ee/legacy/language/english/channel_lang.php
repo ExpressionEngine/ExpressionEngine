@@ -76,7 +76,7 @@ $lang = array(
 
 'layout_options' => 'Layout Options',
 
-'name_desc' => 'Full descriptive name of this form layout.',
+'name_desc' => '',
 
 'member_group(s)' => 'Member group(s)?',
 
@@ -142,24 +142,21 @@ $lang = array(
 'edit_channel' => 'Edit Channel',
 
 'channel_title' => 'Name',
+'channel_title_desc' => '',
 
-'channel_title_desc' => 'Full descriptive name of this channel.',
-
-'channel_short_name_desc' => 'Short name for this channel.<br><i>No spaces. Underscores and dashes are allowed.</i>',
+'channel_short_name_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
 
 'channel_duplicate' => 'Duplicate existing channel?',
-
 'channel_duplicate_desc' => 'On creation, this channel will copy all settings from the selected channel.',
 
 'channel_do_not_duplicate' => 'Do not duplicate',
 
 'channel_publishing_options' => 'Publishing Options',
 
-'channel_publishing_options_warning' => '<b>Warning</b>: Channels require custom fields to collect any data other than title, and date.',
+'channel_publishing_options_warning' => '<b>Warning</b>: Channels require custom field groups to collect any data other than title, and date.',
+'channel_publishing_options_warning2' => 'If you need to collect additional data for this channel, it\'s best practice to create any <a href="%s">custom field groups</a>, first.',
 
-'channel_publishing_options_warning2' => 'If you need to collect additional data for this channel, it\'s best practice to create any <a href="%s">custom fields</a>, first.',
-
-'status_groups_desc' => 'Choose the status group you want for this channel.',
+'status_groups_desc' => '',
 
 'default_status_group' => 'Default Statuses',
 
@@ -169,13 +166,13 @@ $lang = array(
 
 'custom_field_group' => 'Custom field group',
 
-'custom_field_group_desc' => 'Choose the field group you would like to use in the publishing forms for this channel.',
+'custom_field_group_desc' => '',
 
 'custom_field_groups_not_found' => 'Zero <b>custom field groups</b> found',
 
 'create_new_field_group' => 'Create New Field Group',
 
-'category_groups_desc' => 'Choose the category groups you want available for this channel.',
+'category_groups_desc' => '',
 
 'category_groups_not_found' => 'Zero <b>category groups</b> found',
 
@@ -237,7 +234,10 @@ $lang = array(
 
 'channel_defaults' => 'Defaults',
 
-'default_title' => 'Title',
+'title_field_label' => 'Title field label',
+'title_field_label_desc' => 'Changes the title field label in the Publish form for this channel.',
+
+'default_title' => 'Generated title',
 
 'default_title_desc' => 'Title assigned to all <b>new</b> entires in this channel.',
 
@@ -432,7 +432,7 @@ $lang = array(
 
 'edit_category_group' => 'Edit Category Group',
 
-'group_name_desc' => 'Descriptive name of this category group.',
+'group_name_desc' => '',
 
 'categories_not_found' => 'Zero <b>category groups</b> found',
 
@@ -444,13 +444,13 @@ $lang = array(
 
 'files' => 'Files',
 
-'cat_description_desc' => 'A brief description of this category.',
+'cat_description_desc' => '',
 
-'cat_image_desc' => 'Image representation of this category.',
+'cat_image_desc' => '',
 
 'html_formatting' => 'HTML formatting',
 
-'html_formatting_desc' => 'Level of HTML allowed in custom category fields.',
+'html_formatting_desc' => '',
 
 'permissions' => 'Permissions',
 
@@ -496,7 +496,7 @@ $lang = array(
 
 'parent_category' => 'Parent category',
 
-'parent_category_desc' => 'You may make this category a sub-category of another.',
+'parent_category_desc' => '',
 
 'category_created' => 'Category Created',
 
@@ -536,13 +536,11 @@ $lang = array(
 
 'label' => 'Label',
 
-'cat_field_label_desc' => 'Name of field that appears in the category form.',
-
-'cat_field_short_name_desc' => 'Short name for this field.<br><i>No spaces. Underscores and dashes are allowed.</i>',
+'cat_field_short_name_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
 
 'require_field' => 'Require field?',
 
-'cat_require_field_desc' => 'When set to <b>yes</b>, this field will be required to save a category.',
+'cat_require_field_desc' => 'When set to <b>yes</b>,  this field will be required to submit the publish form.',
 
 'text_input' => 'Text Input',
 
@@ -592,7 +590,7 @@ $lang = array(
 
 'edit_status_group' => 'Edit Status Group',
 
-'status_group_name_desc' => 'Descriptive name of this status group.',
+'status_group_name_desc' => '',
 
 'status_group_created' => 'Status Group Created',
 

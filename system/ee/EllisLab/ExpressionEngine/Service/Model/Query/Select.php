@@ -160,10 +160,15 @@ class Select extends Query {
 		{
 			if (strpos($field, '.') === FALSE)
 			{
-				$field = "{$this->root_alias}.{$field}";
+				$alias = $this->root_alias;
+			}
+			else
+			{
+				list($alias, $field) = explode('.', $field, 2);
 			}
 
-			$fields[] = $field;
+			$alias = str_replace(':', '_m_', $alias);
+			$fields[] = "{$alias}.{$field}";
 		}
 
 		return $fields;
@@ -194,19 +199,19 @@ class Select extends Query {
 			// it's nested!
 			if (count($filter_data) == 2)
 			{
-				list($predicate, $nested) = $filter_data;
+				list($connective, $nested) = $filter_data;
 
-				if ($predicate == 'and')
+				if ($connective == 'and')
 				{
 					$query->start_group();
 				}
-				elseif ($predicate == 'or')
+				elseif ($connective == 'or')
 				{
 					$query->or_start_group();
 				}
 				else
 				{
-					throw new LogicException('Invalid filter group predicate.');
+					throw new LogicException('Invalid filter group connective: '.htmlentities($connective));
 				}
 
 				$this->applyFilters($query, $nested);
@@ -224,7 +229,7 @@ class Select extends Query {
 	 */
 	protected function applyFilter($query, $filter)
 	{
-		list($property, $operator, $value, $predicate) = $filter;
+		list($property, $operator, $value, $connective) = $filter;
 
 		$property = $this->translateProperty($property);
 
@@ -240,7 +245,7 @@ class Select extends Query {
 				$operator = '';
 		}
 
-		if ($predicate == 'or')
+		if ($connective == 'or')
 		{
 			$fn = 'or_'.$fn;
 		}

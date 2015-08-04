@@ -1,0 +1,1 @@
+<li<?=$class?>><a href="<?=$url?>"><?=$text?></a></li>

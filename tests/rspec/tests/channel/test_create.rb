@@ -15,9 +15,6 @@ feature 'Channel Create/Edit' do
   it 'shows the Channel Create/Edit page' do
     @page.all_there?.should == true
     @page.should have_text 'Create Channel'
-
-    # Warning should show only on create
-    @page.should have_text 'Warning: Channels require'
   end
 
   it 'should validate regular fields' do
