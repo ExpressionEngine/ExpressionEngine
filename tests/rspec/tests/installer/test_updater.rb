@@ -100,6 +100,12 @@ feature 'Updater' do
       @page.header.text.should match /ExpressionEngine Updated to \d+\.\d+\.\d+/
       @page.req_title.text.should include 'Completed'
       @page.has_submit?.should == true
+
+      # Database dump has mailing list and should provide the download button
+      # and the zip file
+      @page.has_login?.should == true
+      @page.has_download?.should == true
+      File.exist?('../../system/user/cache/mailing_list.zip').should == true
     end
   end
 

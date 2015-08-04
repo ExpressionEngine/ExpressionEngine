@@ -7,6 +7,8 @@ module Installer
     element :error, 'div.issue'
 
     element :submit, 'form input[type=submit]'
+    element :login, 'form input[name=login]'
+    element :download, 'form input[name=download]'
 
     elements :inline_errors, '.setting-field em'
 
