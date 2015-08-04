@@ -232,7 +232,7 @@ class Forum_mcp extends CP_Controller {
 
 			if ($result->isValid())
 			{
-				$this->saveBordAndRedirect($board, 'create');
+				$this->saveBordAndRedirect($board);
 			}
 		}
 
@@ -282,7 +282,7 @@ class Forum_mcp extends CP_Controller {
 
 			if ($result->isValid())
 			{
-				$this->saveBordAndRedirect($board, 'edit');
+				$this->saveBordAndRedirect($board);
 			}
 		}
 
@@ -343,19 +343,16 @@ class Forum_mcp extends CP_Controller {
 		return $result;
 	}
 
-	private function saveBordAndRedirect($board, $action)
+	private function saveBordAndRedirect($board)
 	{
+		$action = ($board->isNew()) ? 'create' : 'edit';
+
 		foreach ($_POST['permissions'] as $key => $value)
 		{
 			$board->setPermission($key, $value);
 		}
 
 		$board->save();
-
-		if ($action == 'create')
-		{
-			ee()->session->set_flashdata('board_id', $board->board_id);
-		}
 
 		ee('Alert')->makeInline('shared-form')
 			->asSuccess()
@@ -366,13 +363,13 @@ class Forum_mcp extends CP_Controller {
 		ee()->functions->redirect(ee('CP/URL', $this->base . '/index/' . $board->board_id));
 	}
 
+	private function getBoardForm($board)
+	{
+		$html = '';
 	private function createCategory()
 	{
 	}
 
-	private function getBoardForm($board)
-	{
-		$html = '';
 
 		$site = '';
 
