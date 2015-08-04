@@ -96,6 +96,11 @@ class Result {
 
 			foreach ($columns as $property)
 			{
+				if ( ! array_key_exists("{$alias}__{$property}", $row))
+				{
+					throw new \Exception("Unknown model property in query result: `{$alias}.{$property}`");
+				}
+
 				$value = $row["{$alias}__{$property}"];
 
 				if (isset($value))

@@ -160,10 +160,15 @@ class Select extends Query {
 		{
 			if (strpos($field, '.') === FALSE)
 			{
-				$field = "{$this->root_alias}.{$field}";
+				$alias = $this->root_alias;
+			}
+			else
+			{
+				list($alias, $field) = explode('.', $field, 2);
 			}
 
-			$fields[] = $field;
+			$alias = str_replace(':', '_m_', $alias);
+			$fields[] = "{$alias}.{$field}";
 		}
 
 		return $fields;
