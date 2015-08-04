@@ -65,6 +65,18 @@ class Forum extends Model {
 			'type' => 'belongsTo',
 			'key' => 'board_id'
 		),
+		'Forums' => array(
+			'type' => 'hasMany',
+			'model' => 'Forum',
+			'from_key' => 'forum_id',
+			'to_key' => 'forum_parent'
+		),
+		'Category' => array(
+			'type' => 'belongsTo',
+			'model' => 'Forum',
+			'from_key' => 'forum_parent',
+			'to_key' => 'forum_id'
+		)
 	);
 
 	protected static $_validation_rules = array(
