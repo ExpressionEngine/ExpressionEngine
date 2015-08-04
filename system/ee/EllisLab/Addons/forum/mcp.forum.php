@@ -1,6 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
+use EllisLab\ExpressionEngine\Library\CP\Table;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -133,9 +134,96 @@ class Forum_mcp extends CP_Controller {
 	/**
 	 * Forum Home Page
 	 */
-	public function index($id = 1)
+	public function index($id = NULL)
 	{
-		$vars = array();
+		if ($id)
+		{
+			$board = ee('Model')->get('forum:Board', $id)
+				->with('Categories')
+				->first();
+		}
+		else
+		{
+			$board = ee('Model')->get('forum:Board')
+				->with('Categories')
+				->order('board_id', 'asc')
+				->first();
+			$id = $board->board_id;
+		}
+
+		if ( ! $board)
+		{
+			// We have no boards! Display something useful here.
+		}
+
+		$categories = array();
+		$forum_id = ee()->session->flashdata('forum_id');
+
+		foreach ($board->Categories->filter('forum_is_cat', TRUE) as $category)
+		{
+			$table = ee('CP/Table', array('limit' => 0, 'sortable' => FALSE));
+			$table->setColumns(
+				array(
+					$category->forum_name,
+					$category->forum_status => array(
+						'encode' => FALSE
+					),
+					'manage' => array(
+						'type'	=> Table::COL_TOOLBAR
+					),
+					array(
+						'type'	=> Table::COL_CHECKBOX
+					)
+				)
+			);
+			$table->setNoResultsText('no_forums', 'create_new_forum', ee('CP/URL', $this->base . '/create/forum/' . $category->forum_id));
+
+			$data = array();
+			foreach ($category->Forums as $forum)
+			{
+				$row = array(
+					$forum->forum_name,
+					$forum->forum_status,
+					array('toolbar_items' => array(
+							'edit' => array(
+								'href' => '',
+								'title' => lang('edit'),
+							),
+							'settings' => array(
+								'href' => '',
+								'title' => lang('settings'),
+							)
+						)
+					),
+					array(
+						'name' => 'selection[]',
+						'value' => $forum->forum_id,
+						'data'	=> array(
+							'confirm' => lang('fourm') . ': <b>' . htmlentities($forum->forum_name, ENT_QUOTES) . '</b>'
+						)
+					)
+				);
+
+				$attrs = array();
+
+				if ($forum_id && $forum->forum_id == $forum_id)
+				{
+					$attrs = array('class' => 'selected');
+				}
+
+				$data[] = array(
+					'attrs'		=> $attrs,
+					'columns'	=> $row
+				);
+			}
+			$table->setData($data);
+			$categories[] = $table->viewData(ee('CP/URL', $this->base . '/index/' . $id));
+		}
+
+		$vars = array(
+			'board' => $board,
+			'categories' => $categories,
+		);
 
 		$body = ee('View')->make('forum:index')->render($vars);
 

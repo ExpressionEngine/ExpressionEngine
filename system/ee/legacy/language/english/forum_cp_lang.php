@@ -24,6 +24,9 @@ $lang = array(
 'no_categories' => 'No categories available',
 'create_new_category' => 'Create new category',
 
+'no_forums' => 'No forums available',
+'create_new_forum' => 'Create new forum',
+
 // "Common"
 'recipients' => 'recipients',
 
