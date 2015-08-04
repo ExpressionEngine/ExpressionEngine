@@ -341,6 +341,11 @@ class Forum_mcp extends CP_Controller {
 
 	private function saveBordAndRedirect($board, $action)
 	{
+		foreach ($_POST['permissions'] as $key => $value)
+		{
+			$board->setPermission($key, $value);
+		}
+
 		$board->save();
 
 		if ($action == 'create')
@@ -855,7 +860,7 @@ class Forum_mcp extends CP_Controller {
 								'y' => 'enable',
 								'n' => 'disable'
 							),
-							'value' => $board->getPermission('board_use_deft_permissions'),
+							'value' => $board->board_use_deft_permissions,
 						)
 					)
 				),
@@ -863,7 +868,7 @@ class Forum_mcp extends CP_Controller {
 					'title' => 'view_forum',
 					'desc' => 'view_forum_desc',
 					'fields' => array(
-						'can_view_forum' => array(
+						'permissions[can_view_forum]' => array(
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $board->getPermission('can_view_forum'),
@@ -874,7 +879,7 @@ class Forum_mcp extends CP_Controller {
 					'title' => 'view_hidden_forum',
 					'desc' => 'view_hidden_forum_desc',
 					'fields' => array(
-						'can_view_hidden' => array(
+						'permissions[can_view_hidden]' => array(
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $board->getPermission('can_view_hidden'),
@@ -885,7 +890,7 @@ class Forum_mcp extends CP_Controller {
 					'title' => 'view_posts',
 					'desc' => 'view_posts_desc',
 					'fields' => array(
-						'can_view_topics' => array(
+						'permissions[can_view_topics]' => array(
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $board->getPermission('can_view_topics'),
@@ -896,7 +901,7 @@ class Forum_mcp extends CP_Controller {
 					'title' => 'start_topics',
 					'desc' => 'start_topics_desc',
 					'fields' => array(
-						'can_post_topics' => array(
+						'permissions[can_post_topics]' => array(
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $board->getPermission('can_post_topics'),
@@ -907,7 +912,7 @@ class Forum_mcp extends CP_Controller {
 					'title' => 'reply_to_topics',
 					'desc' => 'reply_to_topics_desc',
 					'fields' => array(
-						'can_post_reply' => array(
+						'permissions[can_post_reply]' => array(
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $board->getPermission('can_post_reply'),
@@ -918,7 +923,7 @@ class Forum_mcp extends CP_Controller {
 					'title' => 'upload',
 					'desc' => 'upload_desc',
 					'fields' => array(
-						'upload_files' => array(
+						'permissions[upload_files]' => array(
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $board->getPermission('upload_files'),
@@ -929,7 +934,7 @@ class Forum_mcp extends CP_Controller {
 					'title' => 'report',
 					'desc' => 'report_desc',
 					'fields' => array(
-						'can_report' => array(
+						'permissions[can_report]' => array(
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $board->getPermission('can_report'),
@@ -940,7 +945,7 @@ class Forum_mcp extends CP_Controller {
 					'title' => 'search',
 					'desc' => 'search_desc',
 					'fields' => array(
-						'can_search' => array(
+						'permissions[can_search]' => array(
 							'type' => 'checkbox',
 							'choices' => $member_groups,
 							'value' => $board->getPermission('can_search'),

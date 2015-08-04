@@ -201,22 +201,28 @@ class Board extends Model {
 
 	public function getPermission($key)
 	{
-		if ( ! isset($this->board_forum_permissions[$key]))
+		$permissions = $this->getProperty('board_forum_permissions');
+
+		if ( ! isset($permissions[$key]))
 		{
 			return array();
 		}
 
-		return explode('|', $this->board_forum_permissions[$key]);
+		return explode('|', $permissions[$key]);
 	}
 
 	public function setPermission($key, $value)
 	{
+		$permissions = $this->getProperty('board_forum_permissions');
+
 		if (is_array($value))
 		{
 			$value = implode('|', $value);
 		}
 
-		$this->board_forum_permissions[$key] = $value;
+		$permissions[$key] = $value;
+
+		$this->setProperty('board_forum_permissions', $permissions);
 	}
 
 }
