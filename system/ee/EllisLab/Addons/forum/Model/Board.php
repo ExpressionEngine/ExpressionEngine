@@ -198,4 +198,25 @@ class Board extends Model {
 
 		return $value;
 	}
+
+	public function getPermission($key)
+	{
+		if ( ! isset($this->board_forum_permissions[$key]))
+		{
+			return array();
+		}
+
+		return explode('|', $this->board_forum_permissions[$key]);
+	}
+
+	public function setPermssion($key, $value)
+	{
+		if (is_array($value))
+		{
+			$value = implode('|', $value);
+		}
+
+		$this->board_forum_permissions[$key] = $value;
+	}
+
 }
