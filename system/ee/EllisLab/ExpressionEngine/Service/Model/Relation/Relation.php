@@ -182,6 +182,11 @@ abstract class Relation {
 		return $this->to->getName();
 	}
 
+	public function isWeak()
+	{
+		return $this->is_weak;
+	}
+
 	/**
 	 *
 	 */
