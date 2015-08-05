@@ -36,7 +36,18 @@ class FilePicker {
 
 	public function link($text, $dir = 'all', $data = array())
 	{
-		$href = ee('CP/URL', $this->controller, array('directory' => $dir));
+		$qs = array('directory' => $dir);
+
+		if ( ! empty($data['image']))
+		{
+			$qs['type'] = 'thumbnails';
+		}
+		else
+		{
+			$qs['type'] = 'list';
+		}
+
+		$href = ee('CP/URL', $this->controller, $qs);
 		$extra = "";
 		$class = "";
 
