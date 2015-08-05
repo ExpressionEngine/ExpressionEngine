@@ -29,6 +29,11 @@ use EllisLab\ExpressionEngine\Service\Profiler\ProfilerSection;
  */
 class Benchmark extends ProfilerSection {
 
+	/**
+	 * Set the section's data
+	 *
+	 * @return void
+	 **/
 	public function setData()
 	{
 		$profile = array();

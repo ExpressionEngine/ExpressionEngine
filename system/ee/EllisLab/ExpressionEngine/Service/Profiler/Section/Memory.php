@@ -29,8 +29,11 @@ use EllisLab\ExpressionEngine\Service\Profiler\ProfilerSection;
  */
 class Memory extends ProfilerSection {
 
-	protected $data = array();
-
+	/**
+	 * Set the section's data
+	 *
+	 * @return void
+	 **/
 	public function setData()
 	{
 		if (function_exists('memory_get_usage') && ($usage = memory_get_usage()) != '')

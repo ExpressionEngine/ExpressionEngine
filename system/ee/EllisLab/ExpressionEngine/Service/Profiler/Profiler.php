@@ -27,37 +27,49 @@ namespace EllisLab\ExpressionEngine\Service\Profiler;
  */
 class Profiler {
 
+	/**
+	 * @var the sections to include
+	 */
 	protected $sections = array();
-	protected $rendered_sections = array();
 
 	/**
-	 *
+	 * Constructor
 	 */
 	public function __construct(array $sections = array())
 	{
 		$this->setSections($sections);
 	}
 
-
+	/**
+	 * Sets the sections to be output
+	 *
+	 * @param array		$sections	names of sections to include
+	 * @return object	this
+	 **/
 	public function setSections($sections)
 	{
-
 		$this->sections = $sections;
-
 		return $this;
 	}
 
+	/**
+	 * Render the Profiler
+	 *
+	 * @return string	rendered Profiler view
+	 **/
 	public function render()
 	{
+		$rendered_sections = array();
+
 		// send back alllll the data with a view file
 		foreach ($this->sections as $section)
 		{
 			$object = $this->newProfilerSection($section);
 			$object->setData();
-			$this->rendered_sections[] = $object->render();
+			$rendered_sections[] = $object->render();
 		}
 
-		return ee('View')->make('profiler/container')->render(array('sections' => $this->rendered_sections));
+		return ee('View')->make('profiler/container')->render(array('sections' => $rendered_sections));
 	}
 
 	/**
@@ -77,6 +89,6 @@ class Profiler {
 			return new $class;
 		}
 
-		throw new Exception("Profiler section does not exist: `{$section_name}`.");
+		throw new \Exception("Profiler section does not exist: `{$section_name}`.");
 	}
 }

@@ -31,10 +31,25 @@ namespace EllisLab\ExpressionEngine\Service\Profiler;
  */
 abstract class ProfilerSection {
 
+	/**
+	 * @var The profiler section data
+	 * 	    typical format is: [section label] => [[key => val], ...]
+	 * 	    but can differ if the section implements its own render()
+	 */
 	protected $data = array();
 
+	/**
+	 * Set the section's data
+	 *
+	 * @return void
+	 **/
 	abstract public function setData();
 
+	/**
+	 * Set the section's data
+	 *
+	 * @return void
+	 **/
 	public function render()
 	{
 		$view = ee('View')->make('_shared/profiler_section');
