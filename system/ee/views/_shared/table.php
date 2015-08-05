@@ -15,7 +15,7 @@ if ($wrap): ?>
 		</tr>
 	</table>
 <?php else: ?>
-	<table cellspacing="0"<?php if ($grid_input): ?> id="<?=$grid_field_name?>" class="grid-input-form"<?php endif?>>
+	<table cellspacing="0"<?php if ($grid_input): $class .= ' grid-input-form'; ?> id="<?=$grid_field_name?>"<?php endif?> class="<?=$class?>">
 		<thead>
 			<tr>
 				<?php
