@@ -151,8 +151,6 @@ class Forum_mcp extends CP_Controller {
 	public function index($id = NULL)
 	{
 		$board = ee('Model')->get('forum:Board', $id)
-			->with('Categories')
-            ->filter('Categories.forum_is_cat', 'y')
 			->order('board_id', 'asc')
 			->first();
 
@@ -166,7 +164,12 @@ class Forum_mcp extends CP_Controller {
 		$categories = array();
 		$forum_id = ee()->session->flashdata('forum_id');
 
-		foreach ($board->Categories as $category)
+		$boards_categories = ee('Model')->get('forum:Forum')
+			->filter('board_id', $id)
+			->filter('forum_is_cat', 'y')
+			->all();
+
+		foreach ($boards_categories as $category)
 		{
 			$manage = array(
 				'toolbar_items' => array(
