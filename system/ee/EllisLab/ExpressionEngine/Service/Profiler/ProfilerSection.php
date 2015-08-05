@@ -46,13 +46,13 @@ abstract class ProfilerSection {
 	abstract public function setData();
 
 	/**
-	 * Set the section's data
+	 * Render the section with a view
 	 *
-	 * @return void
+	 * @return string
 	 **/
 	public function render()
 	{
-		$view = ee('View')->make('profiler/profiler_section');
+		$view = ee('View')->make('profiler/default_section');
 		return $view->render(array('profiler_data' => $this->data));
 	}
 }
