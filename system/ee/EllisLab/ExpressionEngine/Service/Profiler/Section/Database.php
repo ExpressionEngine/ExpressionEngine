@@ -80,11 +80,22 @@ class Database extends ProfilerSection {
 			$log = $db->getLog();
 
 			$label = $db->getConfig()->get('database');
-			$this->data[lang('profiler_duplicate_queries')][$label] = $this->getDuplicateQueries($log);
+			$this->data['profiler_duplicate_queries'][$label] = $this->getDuplicateQueries($log);
 
 			$label .= '&nbsp;&nbsp;&nbsp;'.lang('profiler_queries').': '.$log->getQueryCount();
-			$this->data[lang('profiler_database')][$label] = $this->getQueries($log);
+			$this->data['profiler_database'][$label] = $this->getQueries($log);
 		}
+	}
+
+	/**
+	 * Render the section with a view
+	 *
+	 * @return string
+	 **/
+	public function render()
+	{
+		$view = ee('View')->make('profiler/database');
+		return $view->render(array('profiler_data' => $this->data));
 	}
 
 	/**
