@@ -131,27 +131,32 @@ class Forum_mcp extends CP_Controller {
 		return $sidebar;
 	}
 
+	private function getStatusWidget($status)
+	{
+		$html = '';
+
+		switch ($status)
+		{
+			case 'o': $html = '<b class="yes">' . lang('live') . '</b>'; break;
+			case 'c': $html = '<b class="no">' . lang('hidden') . '</b>'; break;
+			case 'a': $html = '<i>' . lang('read_only') . '</i>'; break;
+		}
+
+		return strtolower($html);
+	}
+
 	/**
 	 * Forum Home Page
 	 */
 	public function index($id = NULL)
 	{
-		if ($id)
-		{
-			$board = ee('Model')->get('forum:Board', $id)
-				->with('Categories')
-                ->filter('Categories.forum_is_cat', 'y')
-				->first();
-		}
-		else
-		{
-			$board = ee('Model')->get('forum:Board')
-				->with('Categories')
-                ->filter('Categories.forum_is_cat', 'y')
-				->order('board_id', 'asc')
-				->first();
-			$id = $board->board_id;
-		}
+		$board = ee('Model')->get('forum:Board', $id)
+			->with('Categories')
+            ->filter('Categories.forum_is_cat', 'y')
+			->order('board_id', 'asc')
+			->first();
+
+		$id = $board->board_id; // in case $id was NULL
 
 		if ( ! $board)
 		{
@@ -163,15 +168,31 @@ class Forum_mcp extends CP_Controller {
 
 		foreach ($board->Categories as $category)
 		{
-			$table = ee('CP/Table', array('limit' => 0, 'sortable' => FALSE));
+			$manage = array(
+				'toolbar_items' => array(
+					'edit' => array(
+						'href' => ee('CP/URL', $this->base . 'edit/category/' . $category->forum_id),
+						'title' => lang('edit'),
+					),
+					'settings' => array(
+						'href' => ee('CP/URL', $this->base . 'settings/category/' . $category->forum_id),
+						'title' => lang('settings'),
+					)
+				)
+			);
+			$manage = ee('View')->make('ee:_shared/toolbar')->render($manage);
+
+			$table = ee('CP/Table', array('limit' => 0, 'reorder' => TRUE, 'sortable' => FALSE));
 			$table->setColumns(
 				array(
-					$category->forum_name,
-					$category->forum_status => array(
+					$category->forum_name => array(
 						'encode' => FALSE
 					),
-					'manage' => array(
-						'type'	=> Table::COL_TOOLBAR
+					$this->getStatusWidget($category->forum_status) => array(
+						'encode' => FALSE
+					),
+					$manage => array(
+						'type'	=> Table::COL_TOOLBAR,
 					),
 					array(
 						'type'	=> Table::COL_CHECKBOX
@@ -179,13 +200,14 @@ class Forum_mcp extends CP_Controller {
 				)
 			);
 			$table->setNoResultsText('no_forums', 'create_new_forum', ee('CP/URL', $this->base . 'create/forum/' . $category->forum_id));
+			$table->addActionButton(ee('CP/URL', $this->base . 'create/forum/' . $category->forum_id), lang('new_forum'));
 
 			$data = array();
 			foreach ($category->Forums as $forum)
 			{
 				$row = array(
-					$forum->forum_name,
-					$forum->forum_status,
+					$forum->forum_name.form_hidden('order[]', $forum->forum_order),
+					$this->getStatusWidget($forum->forum_status),
 					array('toolbar_items' => array(
 							'edit' => array(
 								'href' => ee('CP/URL', $this->base . 'edit/forum/' . $forum->forum_id),
@@ -1447,7 +1469,10 @@ class Forum_mcp extends CP_Controller {
 
 		$forum->save();
 
-		ee()->session->set_flashdata('forum_id', $forum->forum_id);
+		if ($action == 'create')
+		{
+			ee()->session->set_flashdata('forum_id', $forum->forum_id);
+		}
 
 		ee('Alert')->makeInline('shared-form')
 			->asSuccess()

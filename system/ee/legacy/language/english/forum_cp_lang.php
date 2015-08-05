@@ -25,6 +25,7 @@ $lang = array(
 'create_new_category' => 'Create new category',
 
 'no_forums' => 'No forums available',
+'new_forum' => 'New forum',
 'create_new_forum' => 'Create new forum',
 
 // "Common"
@@ -225,6 +226,7 @@ $lang = array(
 // Create/Edit Category Form
 
 'create_category' => 'Create Category',
+'edit_category' => 'Edit Category',
 
 'description_desc' => 'Brief description of this category.',
 
