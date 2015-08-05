@@ -110,7 +110,7 @@ class Forum_mcp extends CP_Controller {
 
 			foreach ($all_boards as $board)
 			{
-				$item = $board_list->addItem($board->board_label, ee('CP/URL', $this->base . '/index/' . $board->board_id))
+				$item = $board_list->addItem($board->board_label, ee('CP/URL', $this->base . 'index/' . $board->board_id))
 					->withEditUrl(ee('CP/URL', $this->base . 'edit/board/' . $board->board_id))
 					->withRemoveConfirmation(lang('forum_board') . ': <b>' . $board->board_label . '</b>')
 					->identifiedBy($board->board_id);
@@ -140,12 +140,14 @@ class Forum_mcp extends CP_Controller {
 		{
 			$board = ee('Model')->get('forum:Board', $id)
 				->with('Categories')
+                ->filter('Categories.forum_is_cat', 'y')
 				->first();
 		}
 		else
 		{
 			$board = ee('Model')->get('forum:Board')
 				->with('Categories')
+                ->filter('Categories.forum_is_cat', 'y')
 				->order('board_id', 'asc')
 				->first();
 			$id = $board->board_id;
@@ -159,7 +161,7 @@ class Forum_mcp extends CP_Controller {
 		$categories = array();
 		$forum_id = ee()->session->flashdata('forum_id');
 
-		foreach ($board->Categories->filter('forum_is_cat', TRUE) as $category)
+		foreach ($board->Categories as $category)
 		{
 			$table = ee('CP/Table', array('limit' => 0, 'sortable' => FALSE));
 			$table->setColumns(
@@ -176,7 +178,7 @@ class Forum_mcp extends CP_Controller {
 					)
 				)
 			);
-			$table->setNoResultsText('no_forums', 'create_new_forum', ee('CP/URL', $this->base . '/create/forum/' . $category->forum_id));
+			$table->setNoResultsText('no_forums', 'create_new_forum', ee('CP/URL', $this->base . 'create/forum/' . $category->forum_id));
 
 			$data = array();
 			foreach ($category->Forums as $forum)
@@ -186,11 +188,11 @@ class Forum_mcp extends CP_Controller {
 					$forum->forum_status,
 					array('toolbar_items' => array(
 							'edit' => array(
-								'href' => '',
+								'href' => ee('CP/URL', $this->base . 'edit/forum/' . $forum->forum_id),
 								'title' => lang('edit'),
 							),
 							'settings' => array(
-								'href' => '',
+								'href' => ee('CP/URL', $this->base . 'settings/forum/' . $forum->forum_id),
 								'title' => lang('settings'),
 							)
 						)
@@ -217,7 +219,7 @@ class Forum_mcp extends CP_Controller {
 				);
 			}
 			$table->setData($data);
-			$categories[] = $table->viewData(ee('CP/URL', $this->base . '/index/' . $id));
+			$categories[] = $table->viewData(ee('CP/URL', $this->base . 'index/' . $id));
 		}
 
 		$vars = array(
@@ -306,6 +308,8 @@ class Forum_mcp extends CP_Controller {
 
 		show_404();
 	}
+
+	// --------------------------------------------------------------------
 
 	private function createBoard()
 	{
@@ -1049,6 +1053,8 @@ class Forum_mcp extends CP_Controller {
 		return $html;
 	}
 
+	// --------------------------------------------------------------------
+
 	private function createCategory($board_id)
 	{
 		$errors = NULL;
@@ -1283,6 +1289,425 @@ class Forum_mcp extends CP_Controller {
 					)
 				),
 			)
+		);
+
+		return $sections;
+	}
+
+	// --------------------------------------------------------------------
+
+	private function createForum($cat_id)
+	{
+		$errors = NULL;
+
+		$category = ee('Model')->get('forum:Forum', $cat_id)
+			->with('Board')
+			->first();
+
+		if ( ! $category)
+		{
+			show_404();
+		}
+
+		$board = $category->Board;
+
+		if ( ! empty($board->board_forum_permissions)
+			&& $board->board_use_deft_permissions)
+		{
+			$default_permissions = $board->board_forum_permissions;
+		}
+		else
+		{
+			$default_permissions = $this->forum_set_base_permissions();
+		}
+
+		$defaults = array(
+			'board_id' => $board->board_id,
+			'forum_parent' => $cat_id,
+			'forum_is_cat' => FALSE,
+			'forum_permissions' => $default_permissions,
+			'forum_topics_perpage' => 25,
+			'forum_posts_perpage' => 15,
+			'forum_hot_topic' => 10,
+			'forum_max_post_chars' => 6000,
+		);
+
+		$forum = ee('Model')->make('forum:Forum', $defaults);
+
+		$result = $this->validateForum($forum);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
+
+			if ($result->isValid())
+			{
+				$this->saveForumAndRedirect($forum);
+			}
+		}
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'errors' => $errors,
+			'cp_page_title' => lang('create_forum'),
+			'base_url' => ee('CP/URL', $this->base . 'create/forum/' . $cat_id),
+			'save_btn_text' => 'btn_save_forum',
+			'save_btn_text_working' => 'btn_saving',
+			'sections' => $this->forumForm($forum),
+		);
+
+		$body = ee('View')->make('ee:_shared/form')->render($vars);
+
+		return array(
+			'body'       => '<div class="box">' . $body . '</div>',
+			'breadcrumb' => array(
+				ee('CP/URL', $this->base)->compile() => $board->board_label . ' '. lang('forum_listing')
+			),
+			'heading'    => lang('create_forum_board'),
+			'sidebar'    => $this->generateSidebar($board->board_id)
+		);
+	}
+
+	private function editForum($id)
+	{
+		$errors = NULL;
+
+		$forum = ee('Model')->get('forum:Forum', $id)->with('Board')->first();
+		if ( ! $forum)
+		{
+			show_404();
+		}
+
+		$result = $this->validateBoard($forum);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
+
+			if ($result->isValid())
+			{
+				$this->saveForumAndRedirect($forum);
+			}
+		}
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'errors' => $errors,
+			'cp_page_title' => lang('edit_forum'),
+			'base_url' => ee('CP/URL', $this->base . 'edit/forum/' . $id),
+			'save_btn_text' => 'btn_save_forum',
+			'save_btn_text_working' => 'btn_saving',
+			'sections' => $this->forumForm($forum),
+		);
+
+		$body = ee('View')->make('ee:_shared/form')->render($vars);
+
+		return array(
+			'body'       => '<div class="box">' . $body . '</div>',
+			'breadcrumb' => array(
+				ee('CP/URL', $this->base)->compile() => $forum->Board->board_label . ' '. lang('forum_listing')
+			),
+			'heading'    => $vars['cp_page_title'],
+			'sidebar'    => $this->generateSidebar($id)
+		);
+	}
+
+	private function validateForum($forum)
+	{
+		if (empty($_POST))
+		{
+			return FALSE;
+		}
+
+		$action = ($forum->isNew()) ? 'create' : 'edit';
+
+		$forum->set($_POST);
+		$result = $forum->validate();
+
+		if ($response = $this->ajaxValidation($result))
+		{
+			ee()->output->send_ajax_response($response);
+		}
+
+		if ($result->failed())
+		{
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang($action . '_forum_error'))
+				->addToBody(lang($action . '_forum_error_desc'))
+				->now();
+		}
+
+		return $result;
+	}
+
+	private function saveForumAndRedirect($forum)
+	{
+		$action = ($forum->isNew()) ? 'create' : 'edit';
+
+		$forum->save();
+
+		ee()->session->set_flashdata('forum_id', $forum->forum_id);
+
+		ee('Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang($action . '_forum_success'))
+			->addToBody(sprintf(lang($action . '_forum_success_desc'), $forum->forum_name))
+			->defer();
+
+		ee()->functions->redirect(ee('CP/URL', $this->base . '/index/' . $forum->board_id));
+	}
+
+	private function forumForm($forum)
+	{
+		$sections = array(
+			array(
+				array(
+					'title' => 'name',
+					'desc' => 'name_desc',
+					'fields' => array(
+						'forum_name' => array(
+							'type' => 'text',
+							'required' => TRUE,
+							'value' => $forum->forum_name,
+						)
+					)
+				),
+				array(
+					'title' => 'description',
+					'desc' => 'description_desc',
+					'fields' => array(
+						'forum_description' => array(
+							'type' => 'textarea',
+							'value' => $forum->forum_description,
+						)
+					)
+				),
+				array(
+					'title' => 'status',
+					'desc' => 'status_desc',
+					'fields' => array(
+						'forum_status' => array(
+							'type' => 'select',
+							'choices' => array(
+								'o' => lang('live'),
+								'c' => lang('hidden'),
+								'a' => lang('read_only'),
+							),
+							'value' => $forum->forum_status,
+						)
+					)
+				),
+			),
+			'topic_and_post_settings' => array(
+				array(
+					'title' => 'topics_per_page',
+					'desc' => 'topics_per_page_desc',
+					'fields' => array(
+						'forum_topics_perpage' => array(
+							'type' => 'text',
+							'value' => $forum->forum_topics_perpage,
+						)
+					)
+				),
+				array(
+					'title' => 'posts_per_page',
+					'desc' => 'posts_per_page_desc',
+					'fields' => array(
+						'forum_posts_perpage' => array(
+							'type' => 'text',
+							'value' => $forum->forum_posts_perpage,
+						)
+					)
+				),
+				array(
+					'title' => 'topic_ordering',
+					'desc' => 'topic_ordering_desc',
+					'fields' => array(
+						'forum_topic_order' => array(
+							'type' => 'select',
+							'choices' => array(
+								'r' => lang('most_recent_post'),
+								'a' => lang('most_recent_first'),
+								'd' => lang('most_recent_last'),
+							),
+							'value' => $forum->forum_topic_order,
+						)
+					)
+				),
+				array(
+					'title' => 'post_ordering',
+					'desc' => 'post_ordering_desc',
+					'fields' => array(
+						'forum_post_order' => array(
+							'type' => 'select',
+							'choices' => array(
+								'a' => lang('most_recent_first'),
+								'd' => lang('most_recent_last'),
+							),
+							'value' => $forum->forum_post_order,
+						)
+					)
+				),
+				array(
+					'title' => 'hot_topics',
+					'desc' => 'hot_topics_desc',
+					'fields' => array(
+						'forum_hot_topic' => array(
+							'type' => 'text',
+							'value' => $forum->forum_hot_topic,
+						)
+					)
+				),
+				array(
+					'title' => 'allowed_characters',
+					'desc' => 'allowed_characters_desc',
+					'fields' => array(
+						'forum_max_post_chars' => array(
+							'type' => 'text',
+							'value' => $forum->forum_max_post_chars,
+						)
+					)
+				),
+				array(
+					'title' => 'posting_throttle',
+					'desc' => 'posting_throttle_desc',
+					'fields' => array(
+						'forum_post_timelock' => array(
+							'type' => 'text',
+							'value' => $forum->forum_post_timelock,
+						)
+					)
+				),
+				array(
+					'title' => 'show_editing_dates',
+					'desc' => 'show_editing_dates_desc',
+					'fields' => array(
+						'forum_display_edit_date' => array(
+							'type' => 'yes_no',
+							'value' => $forum->forum_display_edit_date,
+						)
+					)
+				),
+			),
+			'notification_settings' => array(
+				array(
+					'title' => 'topic_notifications',
+					'desc' => 'topic_notifications_desc',
+					'fields' => array(
+						'forum_enable_notify_emails' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							),
+							// 'value' => $forum->forum_enable_notify_emails,
+						),
+						'forum_notify_emails' => array(
+							'type' => 'text',
+							'value' => $forum->forum_notify_emails,
+							'attrs' => 'placeholder="' . lang('recipients'). '"'
+						),
+					)
+				),
+				array(
+					'title' => 'reply_notifications',
+					'desc' => 'reply_notifications_desc',
+					'fields' => array(
+						'forum_enable_notify_emails_topics' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							),
+							// 'value' => $forum->forum_enable_notify_emails_topics,
+						),
+						'forum_notify_emails_topics' => array(
+							'type' => 'text',
+							'value' => $forum->forum_notify_emails_topics,
+							'attrs' => 'placeholder="' . lang('recipients'). '"'
+						),
+					)
+				),
+			),
+			'text_and_html_formatting' => array(
+				array(
+					'title' => 'text_formatting',
+					'desc' => 'text_formatting_desc',
+					'fields' => array(
+						'forum_text_formatting' => array(
+							'type' => 'select',
+							'choices' => $this->fmt_options,
+							'value' => $forum->forum_text_formatting,
+						)
+					)
+				),
+				array(
+					'title' => 'html_formatting',
+					'desc' => 'html_formatting_desc',
+					'fields' => array(
+						'forum_html_formatting' => array(
+							'type' => 'select',
+							'choices' => array(
+								'all'  => lang('html_all'),
+								'safe' => lang('html_safe'),
+								'none' => lang('html_none'),
+							),
+							'value' => $forum->forum_html_formatting,
+						)
+					)
+				),
+				array(
+					'title' => 'autolink_urls',
+					'desc' => 'autolink_urls_desc',
+					'fields' => array(
+						'forum_auto_link_urls' => array(
+							'type' => 'yes_no',
+							'value' => $forum->forum_auto_link_urls,
+						)
+					)
+				),
+				array(
+					'title' => 'allow_image_hotlinking',
+					'desc' => 'allow_image_hotlinking_desc',
+					'fields' => array(
+						'forum_allow_img_urls' => array(
+							'type' => 'yes_no',
+							'value' => $forum->forum_allow_img_urls,
+						)
+					)
+				),
+			),
+			'rss_settings' => array(
+				array(
+					'title' => 'enable_rss',
+					'desc' => 'enable_rss_desc',
+					'fields' => array(
+						'forum_enable_rss' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							),
+							'value' => $forum->forum_enable_rss,
+						)
+					)
+				),
+				array(
+					'title' => 'enable_http_auth_for_rss',
+					'desc' => 'enable_http_auth_for_rss_desc',
+					'fields' => array(
+						'forum_use_http_auth' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							),
+							'value' => $forum->forum_use_http_auth,
+						)
+					)
+				),
+			),
 		);
 
 		return $sections;

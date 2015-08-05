@@ -250,6 +250,27 @@ $lang = array(
 'edit_category_error' => 'Cannot Update Category',
 'edit_category_error_desc' => 'We were unable to update this category, please review and fix errors below.',
 
+// Create/Edit Forum Form
+
+'create_forum' => 'Create Forum',
+'edit_forum' => 'Edit Forum',
+
+'topic_and_post_settings' => 'Topic and Post Settings',
+
+'btn_save_forum' => 'Save forum',
+
+'create_forum_success' => 'Forum Created',
+'create_forum_success_desc' => 'The forum <b>%s</b> has been created.',
+
+'create_forum_error' => 'Cannot Create Forum',
+'create_forum_error_desc' => 'We were unable to create this forum, please review and fix errors below.',
+
+'edit_forum_success' => 'Forum Updated',
+'edit_forum_success_desc' => 'The forum <b>%s</b> has been updated.',
+
+'edit_forum_error' => 'Cannot Update Forum',
+'edit_forum_error_desc' => 'We were unable to update this forum, please review and fix errors below.',
+
 /* 2.x Keys
 //----------------------------------------
 
