@@ -357,27 +357,22 @@ class EE_Output {
 		// --------------------------------------------------------------------
 
 		// Do we need to generate profile data?
-		// If so, load the Profile class and run it.
+		// If so, load the Profile service and run it.
 		if ($this->enable_profiler == TRUE)
 		{
-			$CI->load->library('profiler');
-
-			if ( ! empty($this->_profiler_sections))
-			{
-				$CI->profiler->set_sections($this->_profiler_sections);
-			}
+			$profiler = ee('Profiler')->make(array('benchmark', 'memory'));
 
 			// If the output data contains closing </body> and </html> tags
 			// we will remove them and add them back after we insert the profile data
 			if (preg_match("|</body>.*?</html>|is", $output))
 			{
 				$output  = preg_replace("|</body>.*?</html>|is", '', $output);
-				$output .= $CI->profiler->run();
+				$output .= $profiler->render();
 				$output .= '</body></html>';
 			}
 			else
 			{
-				$output .= $CI->profiler->run();
+				$output .= $profiler->render();
 			}
 		}
 

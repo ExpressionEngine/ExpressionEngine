@@ -14,6 +14,7 @@ use EllisLab\ExpressionEngine\Service\Validation;
 use EllisLab\ExpressionEngine\Service\View;
 use EllisLab\ExpressionEngine\Service\Sidebar;
 use EllisLab\ExpressionEngine\Service\Thumbnail;
+use EllisLab\ExpressionEngine\Service\Profiler;
 
 // TODO should put the version in here at some point ...
 return array(
@@ -104,6 +105,11 @@ return array(
 		'Thumbnail' => function($ee)
 		{
 			return new Thumbnail\ThumbnailFactory();
+		},
+
+		'Profiler' => function($ee)
+		{
+			return new Profiler\Factory();
 		}
 
 	),
