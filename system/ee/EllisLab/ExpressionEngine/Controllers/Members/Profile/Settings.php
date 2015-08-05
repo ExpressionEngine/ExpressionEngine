@@ -100,7 +100,6 @@ class Settings extends Profile {
 						->first();
 
 		$fp = new FilePicker();
-	 	$fp->controller = $fp->base_url . 'images';
 		$fp->inject(ee()->view);
 		$dirs = array();
 		$dirs[] = $fp->link('Avatars', $directory->id, array(
