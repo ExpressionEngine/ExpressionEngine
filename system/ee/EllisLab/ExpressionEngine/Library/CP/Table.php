@@ -68,26 +68,27 @@ class Table {
 	public function __construct($config = array())
 	{
 		$defaults = array(
-			'wrap'		  => TRUE,
-			'sort_col'	  => NULL,
-			'sort_col_qs_var' => 'sort_col',
-			'sort_dir'	  => 'asc',
-			'sort_dir_qs_var' => 'sort_dir',
-			'limit'		  => 25,
-			'page'		  => 1,
-			'total_rows'  => 0,
-			'search'	  => NULL,
-			'sortable'	  => TRUE,
-			'autosort'	  => FALSE,
-			'autosearch'  => FALSE,
-			'lang_cols'	  => TRUE,
-			'subheadings' => FALSE,
-			'grid_input'  => FALSE,
-			'reorder'	  => FALSE,
-			'no_results'  => array(
-				'text'			=> 'no_rows_returned',
-				'action_text'	=> '',
-				'action_link'	=> ''
+			'wrap'              => TRUE,
+			'sort_col'          => NULL,
+			'sort_col_qs_var'   => 'sort_col',
+			'sort_dir'          => 'asc',
+			'sort_dir_qs_var'   => 'sort_dir',
+			'limit'             => 25,
+			'page'              => 1,
+			'total_rows'        => 0,
+			'search'            => NULL,
+			'sortable'          => TRUE,
+			'autosort'          => FALSE,
+			'autosearch'        => FALSE,
+			'lang_cols'         => TRUE,
+			'subheadings'       => FALSE,
+			'grid_input'        => FALSE,
+			'reorder'           => FALSE,
+			'no_reorder_header' => FALSE,
+			'no_results'        => array(
+				'text'        => 'no_rows_returned',
+				'action_text' => '',
+				'action_link' => ''
 			)
 		);
 
@@ -616,26 +617,27 @@ class Table {
 		}
 
 		return array(
-			'base_url'		=> $base_url,
-			'lang_cols'		=> $this->config['lang_cols'],
-			'search'		=> $this->config['search'],
-			'wrap'			=> $this->config['wrap'],
-			'no_results'	=> $this->config['no_results'],
-			'limit'			=> $this->config['limit'],
-			'page'			=> $this->config['page'],
-			'total_rows'	=> $this->config['total_rows'],
-			'grid_input'	=> $this->config['grid_input'],
-			'reorder'		=> $this->config['reorder'],
-			'sortable'		=> $this->config['sortable'],
-			'subheadings'	=> ($this->config['subheadings'] && empty($this->config['search'])),
-			'sort_col'		=> $this->getSortCol(),
-			'sort_col_qs_var' => $this->config['sort_col_qs_var'],
-			'sort_dir'		=> $this->getSortDir(),
-			'sort_dir_qs_var' => $this->config['sort_dir_qs_var'],
-			'columns'		=> $this->columns,
-			'data'			=> $this->data,
-			'action_buttons' => $this->action_buttons,
-			'action_content' => $this->action_content
+			'base_url'          => $base_url,
+			'lang_cols'         => $this->config['lang_cols'],
+			'search'            => $this->config['search'],
+			'wrap'              => $this->config['wrap'],
+			'no_results'        => $this->config['no_results'],
+			'limit'             => $this->config['limit'],
+			'page'              => $this->config['page'],
+			'total_rows'        => $this->config['total_rows'],
+			'grid_input'        => $this->config['grid_input'],
+			'reorder'           => $this->config['reorder'],
+			'no_reorder_header' => $this->config['no_reorder_header'],
+			'sortable'          => $this->config['sortable'],
+			'subheadings'       => ($this->config['subheadings'] && empty($this->config['search'])),
+			'sort_col'          => $this->getSortCol(),
+			'sort_col_qs_var'   => $this->config['sort_col_qs_var'],
+			'sort_dir'          => $this->getSortDir(),
+			'sort_dir_qs_var'   => $this->config['sort_dir_qs_var'],
+			'columns'           => $this->columns,
+			'data'              => $this->data,
+			'action_buttons'    => $this->action_buttons,
+			'action_content'    => $this->action_content
 		);
 	}
 

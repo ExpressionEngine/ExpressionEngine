@@ -21,9 +21,16 @@ if ($wrap): ?>
 				<?php
 				// Don't do reordering logic if the table is empty
 				$reorder = $reorder && ! empty($data);
-				if ($reorder): ?>
+				if ($reorder && ! $no_reorder_header): ?>
 					<th class="first reorder-col"></th>
 				<?php endif ?>
+				<?php
+				$extra = '';
+				if ($reorder && $no_reorder_header)
+				{
+					$extra = ' colspan="2"';
+				}
+				?>
 				<?php foreach ($columns as $label => $settings): ?>
 					<?php if ($settings['type'] == Table::COL_CHECKBOX): ?>
 						<th class="check-ctrl">
@@ -45,8 +52,9 @@ if ($wrap): ?>
 						if (isset($settings['class']))
 						{
 							$header_class .= ' '.$settings['class'];
-						} ?>
-						<th<?php if ( ! empty($header_class)): ?> class="<?=trim($header_class)?>"<?php endif ?>>
+						}
+						?>
+						<th<?php if ( ! empty($header_class)): ?> class="<?=trim($header_class)?>"<?php endif ?><?=$extra?>>
 							<?=($lang_cols) ? lang($label) : $label ?>
 							<?php if (isset($settings['desc']) && ! empty($settings['desc'])): ?>
 								<em class="grid-instruct"><?=lang($settings['desc'])?></em>
@@ -63,6 +71,7 @@ if ($wrap): ?>
 							<?php endif ?>
 						</th>
 					<?php endif ?>
+					<?php $extra = '';?>
 				<?php endforeach ?>
 				<?php if ($grid_input && ! empty($data)): ?>
 					<th class="last grid-remove"></th>

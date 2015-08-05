@@ -185,7 +185,14 @@ class Forum_mcp extends CP_Controller {
 			);
 			$manage = ee('View')->make('ee:_shared/toolbar')->render($manage);
 
-			$table = ee('CP/Table', array('limit' => 0, 'reorder' => TRUE, 'sortable' => FALSE));
+			$table_config = array(
+				'limit' => 0,
+				'reorder' => TRUE,
+				'no_reorder_header' => TRUE,
+				'sortable' => FALSE
+			);
+
+			$table = ee('CP/Table', $table_config);
 			$table->setColumns(
 				array(
 					$category->forum_name => array(
@@ -206,7 +213,7 @@ class Forum_mcp extends CP_Controller {
 			$table->addActionButton(ee('CP/URL', $this->base . 'create/forum/' . $category->forum_id), lang('new_forum'));
 
 			$data = array();
-			foreach ($category->Forums as $forum)
+			foreach ($category->Forums->sortBy('forum_order') as $forum)
 			{
 				$row = array(
 					$forum->forum_name.form_hidden('order[]', $forum->forum_order),
