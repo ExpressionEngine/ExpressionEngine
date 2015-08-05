@@ -54,6 +54,6 @@ class Post extends ProfilerSection {
 
 		}
 
-		$this->data = array(lang('profiler_post') => $data);
+		$this->data = array('profiler_post' => $data);
 	}
 }

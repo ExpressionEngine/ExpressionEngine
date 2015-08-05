@@ -14,7 +14,7 @@
 
 <?php foreach ($profiler_data['profiler_database'] as $label => $dupe_queries): ?>
 <fieldset>
-	<legend><?=lang('profiler_database')?></legend>
+	<legend><?=lang('profiler_database')?>: <?=$label?></legend>
 		<table>
 			<?php foreach ($dupe_queries as $dupe): ?>
 				<tr>

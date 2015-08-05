@@ -54,6 +54,6 @@ class Get extends ProfilerSection {
 
 		}
 
-		$this->data = array(lang('profiler_get') => $data);
+		$this->data = array('profiler_get' => $data);
 	}
 }

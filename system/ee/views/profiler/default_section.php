@@ -1,6 +1,6 @@
 <?php foreach ($profiler_data as $label => $data): ?>
 <fieldset>
-	<legend><?=$label?></legend>
+	<legend><?=lang($label)?></legend>
 	<?php if ( ! is_array($data)): ?>
 		<p><?=$data?></p>
 	<?php else: ?>

@@ -50,6 +50,6 @@ class Benchmark extends ProfilerSection {
 			}
 		}
 
-		$this->data = array(lang('profiler_benchmark') => $data);
+		$this->data = array('profiler_benchmark' => $data);
 	}
 }

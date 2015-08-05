@@ -37,6 +37,7 @@ class Profiler {
 	 */
 	public function __construct(array $sections = array())
 	{
+		ee()->load->language('profiler');
 		$this->setSections($sections);
 	}
 
