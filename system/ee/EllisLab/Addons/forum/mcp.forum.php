@@ -1,6 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
+use EllisLab\ExpressionEngine\Library\CP\Table;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -133,9 +134,96 @@ class Forum_mcp extends CP_Controller {
 	/**
 	 * Forum Home Page
 	 */
-	public function index($id = 1)
+	public function index($id = NULL)
 	{
-		$vars = array();
+		if ($id)
+		{
+			$board = ee('Model')->get('forum:Board', $id)
+				->with('Categories')
+				->first();
+		}
+		else
+		{
+			$board = ee('Model')->get('forum:Board')
+				->with('Categories')
+				->order('board_id', 'asc')
+				->first();
+			$id = $board->board_id;
+		}
+
+		if ( ! $board)
+		{
+			// We have no boards! Display something useful here.
+		}
+
+		$categories = array();
+		$forum_id = ee()->session->flashdata('forum_id');
+
+		foreach ($board->Categories->filter('forum_is_cat', TRUE) as $category)
+		{
+			$table = ee('CP/Table', array('limit' => 0, 'sortable' => FALSE));
+			$table->setColumns(
+				array(
+					$category->forum_name,
+					$category->forum_status => array(
+						'encode' => FALSE
+					),
+					'manage' => array(
+						'type'	=> Table::COL_TOOLBAR
+					),
+					array(
+						'type'	=> Table::COL_CHECKBOX
+					)
+				)
+			);
+			$table->setNoResultsText('no_forums', 'create_new_forum', ee('CP/URL', $this->base . '/create/forum/' . $category->forum_id));
+
+			$data = array();
+			foreach ($category->Forums as $forum)
+			{
+				$row = array(
+					$forum->forum_name,
+					$forum->forum_status,
+					array('toolbar_items' => array(
+							'edit' => array(
+								'href' => '',
+								'title' => lang('edit'),
+							),
+							'settings' => array(
+								'href' => '',
+								'title' => lang('settings'),
+							)
+						)
+					),
+					array(
+						'name' => 'selection[]',
+						'value' => $forum->forum_id,
+						'data'	=> array(
+							'confirm' => lang('fourm') . ': <b>' . htmlentities($forum->forum_name, ENT_QUOTES) . '</b>'
+						)
+					)
+				);
+
+				$attrs = array();
+
+				if ($forum_id && $forum->forum_id == $forum_id)
+				{
+					$attrs = array('class' => 'selected');
+				}
+
+				$data[] = array(
+					'attrs'		=> $attrs,
+					'columns'	=> $row
+				);
+			}
+			$table->setData($data);
+			$categories[] = $table->viewData(ee('CP/URL', $this->base . '/index/' . $id));
+		}
+
+		$vars = array(
+			'board' => $board,
+			'categories' => $categories,
+		);
 
 		$body = ee('View')->make('forum:index')->render($vars);
 
@@ -192,10 +280,12 @@ class Forum_mcp extends CP_Controller {
 	 */
 	public function create($type)
 	{
+		$parameters = array_slice(func_get_args(), 1);
 		$method = 'create' . ucfirst($type);
+
 		if (method_exists($this, $method))
 		{
-			return $this->$method();
+			return call_user_func_array(array($this, $method), $parameters);
 		}
 
 		show_404();
@@ -204,12 +294,14 @@ class Forum_mcp extends CP_Controller {
 	/**
 	 * Dispatch method for the various things that can be edit
 	 */
-	public function edit($type, $id)
+	public function edit($type)
 	{
+		$parameters = array_slice(func_get_args(), 1);
 		$method = 'edit' . ucfirst($type);
+
 		if (method_exists($this, $method))
 		{
-			return $this->$method($id);
+			return call_user_func_array(array($this, $method), $parameters);
 		}
 
 		show_404();
@@ -228,7 +320,7 @@ class Forum_mcp extends CP_Controller {
 
 			if ($result->isValid())
 			{
-				$this->saveBordAndRedirect($board, 'create');
+				$this->saveBordAndRedirect($board);
 			}
 		}
 
@@ -278,7 +370,7 @@ class Forum_mcp extends CP_Controller {
 
 			if ($result->isValid())
 			{
-				$this->saveBordAndRedirect($board, 'edit');
+				$this->saveBordAndRedirect($board);
 			}
 		}
 
@@ -303,10 +395,10 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base)->compile() => lang('forum_listing')
+				ee('CP/URL', $this->base)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
-			'sidebar'    => $this->generateSidebar()
+			'sidebar'    => $this->generateSidebar($id)
 		);
 	}
 
@@ -339,19 +431,16 @@ class Forum_mcp extends CP_Controller {
 		return $result;
 	}
 
-	private function saveBordAndRedirect($board, $action)
+	private function saveBordAndRedirect($board)
 	{
+		$action = ($board->isNew()) ? 'create' : 'edit';
+
 		foreach ($_POST['permissions'] as $key => $value)
 		{
 			$board->setPermission($key, $value);
 		}
 
 		$board->save();
-
-		if ($action == 'create')
-		{
-			ee()->session->set_flashdata('board_id', $board->board_id);
-		}
 
 		ee('Alert')->makeInline('shared-form')
 			->asSuccess()
@@ -360,10 +449,6 @@ class Forum_mcp extends CP_Controller {
 			->defer();
 
 		ee()->functions->redirect(ee('CP/URL', $this->base . '/index/' . $board->board_id));
-	}
-
-	private function createCategory()
-	{
 	}
 
 	private function getBoardForm($board)
@@ -719,7 +804,7 @@ class Forum_mcp extends CP_Controller {
 						'board_notify_emails_topics' => array(
 							'type' => 'text',
 							'value' => $board->board_notify_emails_topics,
-							'attrs' => 'placeholder="recipients"'
+							'attrs' => 'placeholder="' . lang('recipients'). '"'
 						),
 					)
 				),
@@ -738,7 +823,7 @@ class Forum_mcp extends CP_Controller {
 						'board_notify_emails' => array(
 							'type' => 'text',
 							'value' => $board->board_notify_emails,
-							'attrs' => 'placeholder="recipients"'
+							'attrs' => 'placeholder="' . lang('recipients'). '"'
 						),
 					)
 				),
@@ -964,6 +1049,245 @@ class Forum_mcp extends CP_Controller {
 		return $html;
 	}
 
+	private function createCategory($board_id)
+	{
+		$errors = NULL;
+
+		$board = ee('Model')->get('forum:Board', $board_id)->first();
+		if ( ! $board)
+		{
+			show_404();
+		}
+
+		if ( ! empty($board->board_forum_permissions)
+			&& $board->board_use_deft_permissions)
+		{
+			$default_permissions = $board->board_forum_permissions;
+		}
+		else
+		{
+			$default_permissions = $this->forum_set_base_permissions();
+		}
+
+		$defaults = array(
+			'board_id' => $board_id,
+			'forum_is_cat' => TRUE,
+			'forum_permissions' => $default_permissions,
+			// These cannot be NULL in the DB....
+			'forum_topics_perpage' => 25,
+			'forum_posts_perpage' => 15,
+			'forum_hot_topic' => 10,
+			'forum_max_post_chars' => 6000,
+		);
+
+		$category = ee('Model')->make('forum:Forum', $defaults);
+
+		$result = $this->validateCategory($category);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
+
+			if ($result->isValid())
+			{
+				$this->saveCategoryAndRedirect($category);
+			}
+		}
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'errors' => $errors,
+			'cp_page_title' => lang('create_category'),
+			'base_url' => ee('CP/URL', $this->base . 'create/category/' . $board_id),
+			'save_btn_text' => 'btn_save_category',
+			'save_btn_text_working' => 'btn_saving',
+			'sections' => $this->categoryForm($category),
+		);
+
+		$body = ee('View')->make('ee:_shared/form')->render($vars);
+
+		return array(
+			'body'       => '<div class="box">' . $body . '</div>',
+			'breadcrumb' => array(
+				ee('CP/URL', $this->base)->compile() => $board->board_label . ' '. lang('forum_listing')
+			),
+			'heading'    => lang('create_forum_board'),
+			'sidebar'    => $this->generateSidebar($board_id)
+		);
+	}
+
+	private function editCategory($id)
+	{
+		$errors = NULL;
+
+		$category = ee('Model')->get('forum:Forum', $id)->with('Board')->first();
+		if ( ! $category)
+		{
+			show_404();
+		}
+
+		$result = $this->validateBoard($category);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
+
+			if ($result->isValid())
+			{
+				$this->saveCategoryAndRedirect($category);
+			}
+		}
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'errors' => $errors,
+			'cp_page_title' => lang('edit_category'),
+			'base_url' => ee('CP/URL', $this->base . 'edit/category/' . $id),
+			'save_btn_text' => 'btn_save_category',
+			'save_btn_text_working' => 'btn_saving',
+			'sections' => $this->categoryForm($category),
+		);
+
+		$body = ee('View')->make('ee:_shared/form')->render($vars);
+
+		return array(
+			'body'       => '<div class="box">' . $body . '</div>',
+			'breadcrumb' => array(
+				ee('CP/URL', $this->base)->compile() => $category->Board->board_label . ' '. lang('forum_listing')
+			),
+			'heading'    => $vars['cp_page_title'],
+			'sidebar'    => $this->generateSidebar($id)
+		);
+	}
+
+	private function validateCategory($category)
+	{
+		if (empty($_POST))
+		{
+			return FALSE;
+		}
+
+		$action = ($category->isNew()) ? 'create' : 'edit';
+
+		$category->set($_POST);
+		$result = $category->validate();
+
+		if ($response = $this->ajaxValidation($result))
+		{
+			ee()->output->send_ajax_response($response);
+		}
+
+		if ($result->failed())
+		{
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang($action . '_category_error'))
+				->addToBody(lang($action . '_category_error_desc'))
+				->now();
+		}
+
+		return $result;
+	}
+
+	private function saveCategoryAndRedirect($category)
+	{
+		$action = ($category->isNew()) ? 'create' : 'edit';
+
+		$category->save();
+
+		ee('Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang($action . '_category_success'))
+			->addToBody(sprintf(lang($action . '_category_success_desc'), $category->forum_name))
+			->defer();
+
+		ee()->functions->redirect(ee('CP/URL', $this->base . '/index/' . $category->board_id));
+	}
+
+	private function categoryForm($category)
+	{
+		$sections = array(
+			array(
+				array(
+					'title' => 'name',
+					'desc' => 'name_desc',
+					'fields' => array(
+						'forum_name' => array(
+							'type' => 'text',
+							'required' => TRUE,
+							'value' => $category->forum_name,
+						)
+					)
+				),
+				array(
+					'title' => 'description',
+					'desc' => 'description_desc',
+					'fields' => array(
+						'forum_description' => array(
+							'type' => 'textarea',
+							'value' => $category->forum_description,
+						)
+					)
+				),
+				array(
+					'title' => 'status',
+					'desc' => 'status_desc',
+					'fields' => array(
+						'forum_status' => array(
+							'type' => 'select',
+							'choices' => array(
+								'o' => lang('live'),
+								'c' => lang('hidden'),
+								'a' => lang('read_only'),
+							),
+							'value' => $category->forum_status,
+						)
+					)
+				),
+				array(
+					'title' => 'topic_notifications',
+					'desc' => 'topic_notifications_desc',
+					'fields' => array(
+						'forum_enable_notify_emails' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							),
+							// 'value' => $category->forum_enable_notify_emails,
+						),
+						'forum_notify_emails' => array(
+							'type' => 'text',
+							'value' => $category->forum_notify_emails,
+							'attrs' => 'placeholder="' . lang('recipients'). '"'
+						),
+					)
+				),
+				array(
+					'title' => 'reply_notifications',
+					'desc' => 'reply_notifications_desc',
+					'fields' => array(
+						'forum_enable_notify_emails_topics' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							),
+							// 'value' => $category->forum_enable_notify_emails_topics,
+						),
+						'forum_notify_emails_topics' => array(
+							'type' => 'text',
+							'value' => $category->forum_notify_emails_topics,
+							'attrs' => 'placeholder="' . lang('recipients'). '"'
+						),
+					)
+				),
+			)
+		);
+
+		return $sections;
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -1011,7 +1335,7 @@ class Forum_mcp extends CP_Controller {
 			'board_use_img_thumbs'			=> ($this->gd_loaded() == TRUE) ? 'y' : 'n',
 			'board_thumb_width'				=> 100,
 			'board_thumb_height'			=> 100,
-			'board_forum_permissions'		=> serialize($this->forum_set_base_permissions()),
+			'board_forum_permissions'		=> $this->forum_set_base_permissions(),
 			'board_use_deft_permissions'	=> 'n',
 			'board_recent_poster_id'		=> '0',
 			'board_recent_poster'			=> '',

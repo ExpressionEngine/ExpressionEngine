@@ -1,11 +1,14 @@
 <?php
 
 return array(
-    'author'      => 'EllisLab',
+	'author'      => 'EllisLab',
 	'author_url'  => 'https://ellislab.com/',
-    'name'        => 'Moblog',
+	'name'        => 'Moblog',
 	'description' => '',
-    'version'     => '3.2',
-    'namespace'   => 'EllisLab\Addons\Moblog',
+	'version'     => '3.2',
+	'namespace'   => 'EllisLab\Addons\Moblog',
 	'settings_exist' => TRUE,
+	'models' => array(
+		'Moblog' => 'Model\Moblog'
+	)
 );

@@ -141,8 +141,8 @@ class Communicate extends Utilities {
 
 	/**
 	 * Prepopulate form to send to specific member
-	 * 
-	 * @param int $id 
+	 *
+	 * @param int $id
 	 * @access public
 	 * @return void
 	 */
@@ -773,7 +773,20 @@ class Communicate extends Utilities {
 			// Prepare the $email object for use in the modal
 			$email->text_fmt = ($email->text_fmt != 'none') ?: 'br'; // Some HTML formatting for plain text
 			$email->subject = htmlentities($this->censorSubject($email), ENT_QUOTES, 'UTF-8');
-			$email->message = $this->formatMessage($email);
+
+			ee()->load->library('typography');
+			ee()->typography->initialize(array(
+				'bbencode_links' => FALSE,
+				'parse_images'	=> FALSE,
+				'parse_smileys'	=> FALSE
+			));
+
+			$email->message = ee()->typography->parse_type($email->message, array(
+				'text_format'    => ($email->text_fmt == 'markdown') ? 'markdown' : 'xhtml',
+				'html_format'    => 'all',
+				'auto_links'	 => 'n',
+				'allow_img_url'  => 'y'
+			));
 
 			$vars['emails'][] = $email;
 		}

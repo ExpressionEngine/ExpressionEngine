@@ -219,7 +219,15 @@ EE.cp.formValidation = {
 			fieldset = (container.parents('fieldset').size() > 0) ? container.parents('fieldset') : container.parent(),
 			button = form.find('.form-ctrls input.btn'), // Submit button of form
 			errorClass = 'em.ee-form-error-message',
-			grid = false;
+			grid = false,
+			tab = field.parents('.tab');
+
+		// Tabs can have their own buttons, replace button with this tab's
+		// button if it exists
+		if (tab.size() > 0 && tab.find('.form-ctrls input.btn').size() > 0)
+		{
+			button = tab.find('.form-ctrls input.btn');
+		}
 
 		// If we're in a Grid input, re-assign some things to apply classes
 		// and show error messages in the proper places

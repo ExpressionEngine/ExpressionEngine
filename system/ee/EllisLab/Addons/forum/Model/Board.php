@@ -62,8 +62,12 @@ class Board extends Model {
 		'board_use_http_auth'        => 'boolString',
 	);
 
-	// protected static $_relationships = array(
-	// );
+	protected static $_relationships = array(
+		'Categories' => array(
+			'type' => 'hasMany',
+			'model' => 'Forum'
+		),
+	);
 
 	protected static $_validation_rules = array(
 		'board_label'                => 'required',
