@@ -6,13 +6,6 @@
 	</fieldset>
 	<?php endif ?>
 	<h1>
-		<?php if (is_numeric($dir)): ?>
-		<ul class="toolbar">
-			<li class="sync">
-				<a href="<?=ee('CP/URL', "settings/upload/sync/$dir")?>" title="<?=lang('sync_directories')?>"></a>
-			</li>
-		</ul>
-		<?php endif ?>
 		<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?>
 	</h1>
 
