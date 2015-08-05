@@ -273,6 +273,7 @@ class Select extends Query {
 		else
 		{
 			list($alias, $property) = explode('.', $property);
+			$alias = str_replace(':', '_m_', $alias);
 		}
 
 		if ( ! isset($this->model_fields[$alias]["{$alias}__{$property}"]))
