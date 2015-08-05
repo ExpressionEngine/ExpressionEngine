@@ -41,7 +41,7 @@ class TreeFactoryTest extends \PHPUnit_Framework_TestCase {
 		$tf = new TreeFactory();
 		$tf->fromList($data);
 
-		$this->markTestSkipped('not yet implemented');
+		$this->markTestIncomplete('not yet implemented');
 
 	}
 
@@ -53,7 +53,7 @@ class TreeFactoryTest extends \PHPUnit_Framework_TestCase {
 		$tf = new TreeFactory();
 		$t = $tf->fromList($data);
 
-		$this->markTestSkipped('not yet implemented');
+		$this->markTestIncomplete('not yet implemented');
 
 
 		//$this->assertEquals(, $tf->toList($t));
