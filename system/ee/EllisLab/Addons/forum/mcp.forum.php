@@ -169,7 +169,7 @@ class Forum_mcp extends CP_Controller {
 			->filter('forum_is_cat', 'y')
 			->all();
 
-		foreach ($boards_categories as $category)
+		foreach ($boards_categories as $i => $category)
 		{
 			$manage = array(
 				'toolbar_items' => array(
@@ -185,11 +185,15 @@ class Forum_mcp extends CP_Controller {
 			);
 			$manage = ee('View')->make('ee:_shared/toolbar')->render($manage);
 
+			$class = ($i == count($boards_categories) - 1) ? '' : 'mb';
+
 			$table_config = array(
-				'limit' => 0,
-				'reorder' => TRUE,
+				'limit'             => 0,
+				'reorder'           => TRUE,
 				'no_reorder_header' => TRUE,
-				'sortable' => FALSE
+				'sortable'          => FALSE,
+				'class'             => $class,
+				'wrap'              => FALSE,
 			);
 
 			$table = ee('CP/Table', $table_config);
