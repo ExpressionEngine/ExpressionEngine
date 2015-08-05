@@ -52,7 +52,7 @@ abstract class ProfilerSection {
 	 **/
 	public function render()
 	{
-		$view = ee('View')->make('_shared/profiler_section');
+		$view = ee('View')->make('profiler/profiler_section');
 		return $view->render(array('profiler_data' => $this->data));
 	}
 }
