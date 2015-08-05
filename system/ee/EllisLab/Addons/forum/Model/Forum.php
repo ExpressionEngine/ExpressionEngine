@@ -62,8 +62,7 @@ class Forum extends Model {
 
 	protected static $_relationships = array(
 		'Board' => array(
-			'type' => 'belongsTo',
-			'key' => 'board_id'
+			'type' => 'belongsTo'
 		),
 		'Forums' => array(
 			'type' => 'hasMany',
