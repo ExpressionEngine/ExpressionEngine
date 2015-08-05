@@ -82,7 +82,8 @@ if ($wrap): ?>
 					</td>
 				</tr>
 			<?php endif ?>
-			<?php foreach ($data as $heading => $rows): ?>
+			<?php $i = 1;
+			foreach ($data as $heading => $rows): ?>
 				<?php if ( ! $subheadings)
 				{
 					$rows = array($rows);
@@ -90,7 +91,22 @@ if ($wrap): ?>
 				if ($subheadings && ! empty($heading)): ?>
 					<tr class="sub-heading"><td colspan="<?=count($columns)?>"><?=lang($heading)?></td></tr>
 				<?php endif ?>
-				<?php foreach ($rows as $row): ?>
+				<?php
+				foreach ($rows as $row):
+					// The last row preceding an action row should have a class of 'last'
+					if (( ! empty($action_buttons) || ! empty($action_content)) && $i == min($total_rows, $limit))
+					{
+						if (isset($row['attrs']['class']))
+						{
+							$row['attrs']['class'] .= ' last';
+						}
+						else
+						{
+							$row['attrs']['class'] = ' last';
+						}
+					}
+					$i++;
+					?>
 					<tr<?php foreach ($row['attrs'] as $key => $value):?> <?=$key?>="<?=$value?>"<?php endforeach; ?>>
 						<?php if ($reorder): ?>
 							<td class="reorder-col"><span class="ico reorder"></span></td>
