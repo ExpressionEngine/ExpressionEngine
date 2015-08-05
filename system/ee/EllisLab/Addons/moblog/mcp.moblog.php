@@ -203,7 +203,305 @@ EOT;
 	 */
 	private function form($moblog_id = NULL)
 	{
-		return ee('View')->make('moblog:create')->render(array());
+		$vars = array();
+		if (is_null($moblog_id))
+		{
+			$alert_key = 'created';
+			$vars['cp_page_title'] = lang('create_moblog');
+			$vars['base_url'] = ee('CP/URL', 'addons/settings/moblog/create');
+			$moblog = ee('Model')->make('moblog:Moblog');
+		}
+		else
+		{
+			$moblog = ee('Model')->get('moblog:Moblog', $moblog_id)->first();
+
+			if ( ! $moblog)
+			{
+				show_error(lang('unauthorized_access'));
+			}
+
+			$alert_key = 'updated';
+			$vars['cp_page_title'] = lang('edit_moblog');
+			$vars['base_url'] = ee('CP/URL', 'addons/settings/moblog/edit/'.$moblog_id);
+		}
+
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'moblog_name',
+					'fields' => array(
+						'moblog_full_name' => array(
+							'type' => 'text',
+							'value' => $moblog->moblog_full_name,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_short_name',
+					'desc' => 'moblog_short_name_desc',
+					'fields' => array(
+						'moblog_short_name' => array(
+							'type' => 'text',
+							'value' => $moblog->moblog_short_name,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_check_interval',
+					'desc' => 'moblog_check_interval_desc',
+					'fields' => array(
+						'moblog_time_interval' => array(
+							'type' => 'text',
+							'value' => $moblog->moblog_time_interval
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_enabled',
+					'fields' => array(
+						'moblog_enabled' => array(
+							'type' => 'yes_no',
+							'value' => $moblog->moblog_enabled
+						)
+					)
+				),
+				array(
+					'title' => 'file_archive_mode',
+					'desc' => 'file_archive_mode_desc',
+					'fields' => array(
+						'moblog_file_archive' => array(
+							'type' => 'yes_no',
+							'value' => $moblog->moblog_file_archive
+						)
+					)
+				)
+			),
+			'channel_entry_settings' => array(
+				array(
+					'title' => 'channel',
+					'desc' => 'moblog_channel_desc',
+					'fields' => array(
+						'moblog_channel_id' => array(
+							'type' => 'select',
+							'choices' => ee('Model')->get('Channel')
+								->filter('site_id', ee()->config->item('site_id'))
+								->all()
+								->getDictionary('channel_id', 'channel_title'),
+							'value' => $moblog->moblog_channel_id
+						)
+					)
+				),
+				array(
+					'title' => 'cat_id',
+					'fields' => array(
+						'moblog_categories' => array(
+							'type' => 'select',
+							'choices' => array(),
+							'value' => $moblog->moblog_categories
+						)
+					)
+				),
+				array(
+					'title' => 'field_id',
+					'fields' => array(
+						'moblog_categories' => array(
+							'type' => 'select',
+							'choices' => array(),
+							'value' => $moblog->moblog_categories
+						)
+					)
+				),
+				array(
+					'title' => 'default_status',
+					'fields' => array(
+						'moblog_categories' => array(
+							'type' => 'select',
+							'choices' => array(),
+							'value' => $moblog->moblog_categories
+						)
+					)
+				),
+				array(
+					'title' => 'author_id',
+					'fields' => array(
+						'moblog_categories' => array(
+							'type' => 'select',
+							'choices' => array(),
+							'value' => $moblog->moblog_categories
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_sticky_entry',
+					'fields' => array(
+						'moblog_sticky_entry' => array(
+							'type' => 'yes_no',
+							'value' => $moblog->moblog_sticky_entry
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_allow_overrides',
+					'desc' => 'moblog_allow_overrides_subtext',
+					'fields' => array(
+						'moblog_allow_overrides' => array(
+							'type' => 'yes_no',
+							'value' => $moblog->moblog_allow_overrides
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_template',
+					'fields' => array(
+						'moblog_template' => array(
+							'type' => 'textarea',
+							'value' => $moblog->moblog_template ?: $this->default_template
+						)
+					)
+				)
+			),
+			'moblog_email_settings' => array(
+				array(
+					'title' => 'moblog_email_type',
+					'fields' => array(
+						'moblog_email_type' => array(
+							'type' => 'select',
+							'choices' => array('pop3' => lang('pop3')),
+							'value' => $moblog->moblog_email_type
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_email_address',
+					'fields' => array(
+						'moblog_email_address' => array(
+							'type' => 'text',
+							'value' => $moblog->moblog_email_address
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_email_server',
+					'desc' => 'server_example',
+					'fields' => array(
+						'moblog_email_server' => array(
+							'type' => 'text',
+							'value' => $moblog->moblog_email_server
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_email_login',
+					'desc' => 'data_encrypted',
+					'fields' => array(
+						'moblog_email_login' => array(
+							'type' => 'text',
+							'value' => $moblog->moblog_email_login
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_email_password',
+					'desc' => 'data_encrypted',
+					'fields' => array(
+						'moblog_email_password' => array(
+							'type' => 'text',
+							'value' => $moblog->moblog_email_password
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_subject_prefix',
+					'desc' => 'moblog_subject_subtext',
+					'fields' => array(
+						'moblog_subject_prefix' => array(
+							'type' => 'text',
+							'value' => $moblog->moblog_subject_prefix
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_auth_required',
+					'desc' => 'moblog_auth_subtext',
+					'fields' => array(
+						'moblog_auth_required' => array(
+							'type' => 'yes_no',
+							'value' => $moblog->moblog_auth_required
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_auth_delete',
+					'desc' => 'moblog_auth_delete_subtext',
+					'fields' => array(
+						'moblog_auth_delete' => array(
+							'type' => 'yes_no',
+							'value' => $moblog->moblog_auth_delete
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_valid_from',
+					'desc' => 'valid_from_subtext',
+					'fields' => array(
+						'moblog_valid_from' => array(
+							'type' => 'textarea',
+							'value' => $moblog->moblog_valid_from
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_ignore_text',
+					'desc' => 'ignore_text_subtext',
+					'fields' => array(
+						'moblog_ignore_text' => array(
+							'type' => 'textarea',
+							'value' => $moblog->moblog_ignore_text
+						)
+					)
+				)
+			),
+			'moblog_file_settings' => array(
+				array(
+					'title' => 'moblog_upload_directory',
+					'fields' => array(
+						'moblog_upload_directory' => array(
+							'type' => 'select',
+							'choices' => array(),
+							'value' => $moblog->moblog_upload_directory
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_image_size',
+					'fields' => array(
+						'moblog_image_size' => array(
+							'type' => 'select',
+							'choices' => array(),
+							'value' => $moblog->moblog_image_size
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_thumb_size',
+					'fields' => array(
+						'moblog_thumb_size' => array(
+							'type' => 'select',
+							'choices' => array(),
+							'value' => $moblog->moblog_thumb_size
+						)
+					)
+				)
+			)
+		);
+
+		$vars['ajax_validate'] = TRUE;
+		$vars['save_btn_text'] = 'save_moblog';
+		$vars['save_btn_text_working'] = 'btn_saving';
+
+		return ee('View')->make('moblog:create')->render($vars);
 	}
 
 	/**

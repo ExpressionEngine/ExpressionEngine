@@ -206,6 +206,15 @@ class Delete extends Query {
 
 		foreach ($relations as $name => $relation)
 		{
+			if ($relation->isWeak())
+			{
+				$to_model = $relation->getSourceModel();
+
+				$inherit = $this->delete_list[$parent];
+				$this->delete_list[$to_model] = $this->weak($relation, $inherit);
+				continue;
+			}
+
 			$inverse = $relation->getInverse();
 
 			if ($inverse instanceOf BelongsTo)
@@ -245,7 +254,7 @@ class Delete extends Query {
 	 */
 	private function recursive($relation, $withs)
 	{
-		return function($query) use ($relation, $withs, $that)
+		return function($query) use ($relation, $withs)
 		{
 			$name = $relation->getName();
 			$models = $query->with($withs)->all();
@@ -259,6 +268,25 @@ class Delete extends Query {
 			foreach ($models as $model)
 			{
 				$model->$name->delete();
+			}
+
+			return $models;
+		};
+	}
+
+	/**
+	 * Creates a worker function to handle weak deletes.
+	 */
+	private function weak($relation, $withs)
+	{
+		return function($query) use ($relation, $withs)
+		{
+			$name = $relation->getName();
+			$models = $query->with($withs)->all();
+
+			foreach ($models as $model)
+			{
+				$relation->drop($model, $model->$name);
 			}
 
 			return $models;

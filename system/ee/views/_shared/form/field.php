@@ -15,7 +15,7 @@ if (is_string($value))
 {
 	$value = form_prep($value, $field_name);
 }
-$attrs = '';
+$attrs = (isset($field['attrs'])) ? $field['attrs'] : '';
 if (isset($field['disabled']) && $field['disabled'] == TRUE)
 {
 	$attrs = ' disabled="disabled"';
