@@ -80,6 +80,7 @@ class Filepicker_mcp {
 
 		$directories = array_map(function($dir) {return $dir->name;}, $directories);
 		$directories = array('all' => lang('all')) + $directories;
+		$vars['images'] = FALSE;
 
 		if ($this->images)
 		{
@@ -92,16 +93,13 @@ class Filepicker_mcp {
 				$vars['data'][$file->file_id] = $file->UploadDestination->url . $file->file_name;
 			}
 		}
-		else
-		{
-			$vars['images'] = FALSE;
-			$filters = ee('Filter')->add('Perpage', $files->count(), 'show_all_files');
-			$dirFilter = ee('Filter')->make('directory', lang('directory'), $directories);
-			$dirFilter->disableCustomValue();
-			$filters = $filters->add($dirFilter);
-			$perpage = $filters->values()['perpage'];
-			ee()->view->filters = $filters->render($base_url);
-		}
+
+		$filters = ee('Filter')->add('Perpage', $files->count(), 'show_all_files');
+		$dirFilter = ee('Filter')->make('directory', lang('directory'), $directories);
+		$dirFilter->disableCustomValue();
+		$filters = $filters->add($dirFilter);
+		$perpage = $filters->values()['perpage'];
+		ee()->view->filters = $filters->render($base_url);
 
 		$table = $this->picker->buildTableFromFileCollection($files, $perpage);
 
