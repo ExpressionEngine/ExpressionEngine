@@ -1,3 +1,4 @@
+<pre>
 <?php
 foreach ($sections as $section)
 {
