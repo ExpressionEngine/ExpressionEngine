@@ -356,7 +356,7 @@ EOT;
 					'fields' => array(
 						'moblog_categories' => array(
 							'type' => 'checkbox',
-							'choices' => array('0'=> lang('none')),
+							'choices' => ee('Model')->get('Category')->all()->getDictionary('cat_id', 'cat_name'),
 							'value' => $moblog->moblog_categories
 						)
 					)
@@ -366,8 +366,8 @@ EOT;
 					'fields' => array(
 						'moblog_field_id' => array(
 							'type' => 'select',
-							'choices' => array('0'=> lang('none')),
-							'value' => $moblog->moblog_categories
+							'choices' => ee('Model')->get('ChannelField')->all()->getDictionary('field_id', 'field_label'),
+							'value' => $moblog->moblog_field_id
 						)
 					)
 				),
@@ -376,8 +376,8 @@ EOT;
 					'fields' => array(
 						'moblog_status' => array(
 							'type' => 'select',
-							'choices' => array('0'=> lang('none')),
-							'value' => $moblog->moblog_categories
+							'choices' => ee('Model')->get('Status')->all()->getDictionary('status', 'status'),
+							'value' => $moblog->moblog_status
 						)
 					)
 				),
@@ -386,8 +386,8 @@ EOT;
 					'fields' => array(
 						'moblog_author_id' => array(
 							'type' => 'select',
-							'choices' => array('0'=> lang('none')),
-							'value' => $moblog->moblog_categories
+							'choices' => ee('Model')->get('Member')->all()->getDictionary('member_id', 'screen_name'),
+							'value' => $moblog->moblog_author_id
 						)
 					)
 				),
@@ -1153,7 +1153,7 @@ EOT;
 				unset($set);
 			}
 
-			$channel_info[$key]['categories'] = $cats;
+			$channel_info[$key]['moblog_categories'] = $cats;
 
 			$statuses = array();
 
@@ -1176,7 +1176,7 @@ EOT;
 				$statuses[] = array($v['1'], lang('closed'));
 			}
 
-			$channel_info[$key]['statuses'] = $statuses;
+			$channel_info[$key]['moblog_status'] = $statuses;
 
 			$fields = array();
 
@@ -1194,7 +1194,7 @@ EOT;
 				}
 			}
 
-			$channel_info[$key]['fields'] = $fields;
+			$channel_info[$key]['moblog_field_id'] = $fields;
 
 			$authors = array();
 
@@ -1214,7 +1214,7 @@ EOT;
 				}
 			}
 
-			$channel_info[$key]['authors'] = $authors;
+			$channel_info[$key]['moblog_author_id'] = $authors;
 		}
 
 		$channel_info = json_encode($channel_info);
@@ -1237,15 +1237,28 @@ var spaceString = new RegExp('!-!', "g");
 		jQuery.each(details, function(group, values) {
 			var html = new String();
 
-			if (group == 'categories') {
+			if (group == 'moblog_categories') {
+				var checkbox_values = [];
 				// Categories are checkboxes
+				$('input[name="moblog_categories[]"]').each(function() {
+					checkbox_values.push(this.value);
+				});
 				jQuery.each(values, function(a, b) {
-					html += '<label class="choice block"><input type="checkbox" name="moblog_categories[]" value ="' + b[0] + '">' + b[1].replace(spaceString, String.fromCharCode(160)) + "</label>";
+					var checked = '',
+						chosen = '';
+					if ($.inArray(b[0], checkbox_values) > -1) {
+						checked = ' checked';
+						chosen = ' chosen';
+					}
+					html += '<label class="choice block'+chosen+'"><input type="checkbox" name="moblog_categories[]" value ="' + b[0] + '"'+checked+'>' + b[1].replace(spaceString, String.fromCharCode(160)) + "</label>";
 				});
 			} else {
+				var value = $('select[name="'+group+'"]').val();
 				// Add the new option fields
 				jQuery.each(values, function(a, b) {
-					html += '<option value="' + b[0] + '">' + b[1].replace(spaceString, String.fromCharCode(160)) + "</option>";
+					var selected = (value == b[0]) ? ' selected' : '';console.log(value + ' ' + b[0]);
+					html += '<option value="' + b[0] + '"'+selected+'>' + b[1].replace(spaceString, String.fromCharCode(160)) + "</option>";
+					//console.log(html);
 				});
 			}
 
@@ -1266,13 +1279,13 @@ function changemenu(index)
 	else {
 		jQuery.each(channel_map[index], function(key, val) {
 			switch(key) {
-				case 'fields':		$('select[name=moblog_field_id]').empty().append(val);
+				case 'moblog_field_id':		$('select[name=moblog_field_id]').empty().append(val);
 					break;
-				case 'categories':	$('input[name="moblog_categories[]"]').parents('.setting-field').empty().append(val);
+				case 'moblog_categories':	$('input[name="moblog_categories[]"]').parents('.setting-field').empty().append(val);
 					break;
-				case 'statuses':	$('select[name=moblog_status]').empty().append(val);
+				case 'moblog_status':	$('select[name=moblog_status]').empty().append(val);
 					break;
-				case 'authors':		$('select[name=moblog_author_id]').empty().append(val);
+				case 'moblog_author_id':		$('select[name=moblog_author_id]').empty().append(val);
 					break;
 			}
 		});
