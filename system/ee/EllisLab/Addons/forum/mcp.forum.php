@@ -270,47 +270,6 @@ class Forum_mcp extends CP_Controller {
 			'heading' => lang('forum_manager'),
 			'sidebar' => $this->generateSidebar($id)
 		);
-
-		if ($this->prefs['board_install_date'] < 1)
-		{
-			ee()->session->set_flashdata('message', ee()->lang->line('forum_new_install_msg'));
-			ee()->functions->redirect(ee('CP/URL', $this->base . '/list_boards'));
-		}
-
-		// Compile the stats
-		ee()->db->where('board_id', $this->board_id);
-		$total_forums = ee()->db->count_all_results('forums');
-
-		ee()->db->where('board_id', $this->board_id);
-		$total_mods = ee()->db->count_all_results('forum_moderators');
-
-		$one_day = 60*60*24;
-		$total_days = (time() - $this->prefs['board_install_date']);
-		$total_days = ($total_days <= $one_day) ? 1 : abs($total_days / $one_day);
-
-		ee()->db->select('forum_id, forum_name, forum_total_topics, forum_total_posts');
-		ee()->db->where('board_id', $this->board_id);
-		ee()->db->where('forum_is_cat', 'n');
-		ee()->db->order_by('forum_order');
-		$query = ee()->db->get('forums');
-
-		ee()->load->library('table');
-		$vars['forums'] = array();
-
-		if ($query->num_rows() > 0)
-		{
-			foreach ($query->result_array() as $row)
-	 		{
-				$row['topics_perday']	= ($row['forum_total_topics'] == 0) ? 0 : round($row['forum_total_topics'] / $total_days, 2);
-				$row['posts_perday']	= ($row['forum_total_posts'] == 0)  ? 0 : round($row['forum_total_posts'] / $total_days, 2);
-
-				$vars['forums'][] = $row;
-			}
-		}
-
-		$vars['board_forum_url'] = $this->prefs['board_forum_url'];
-
-		return $this->_content_wrapper('index', 'forum_board_home', $vars);
 	}
 
 	/**
@@ -2017,6 +1976,265 @@ class Forum_mcp extends CP_Controller {
 
 	// --------------------------------------------------------------------
 
+	public function ranks()
+	{
+		$ranks = ee('Model')->get('forum:Rank')->all();
+
+		$table = ee('CP/Table', array('autosort' => TRUE));
+		$table->setColumns(
+			array(
+				'title',
+				'posts',
+				'stars',
+				'manage' => array(
+					'type'	=> Table::COL_TOOLBAR,
+				),
+				array(
+					'type'	=> Table::COL_CHECKBOX
+				)
+			)
+		);
+		$table->setNoResultsText('no_ranks', 'create_new_rank', ee('CP/URL', $this->base . 'create/rank'));
+
+		$rank_id = ee()->session->flashdata('rank_id');
+
+		$data = array();
+		foreach ($ranks as $rank)
+		{
+			$row = array(
+				$rank->rank_title,
+				$rank->rank_min_posts,
+				$rank->rank_stars,
+				array('toolbar_items' => array(
+						'edit' => array(
+							'href' => ee('CP/URL', $this->base . 'edit/rank/' . $rank->rank_id),
+							'title' => lang('edit'),
+						),
+					)
+				),
+				array(
+					'name' => 'selection[]',
+					'value' => $rank->rank_id,
+					'data'	=> array(
+						'confirm' => lang('rank') . ': <b>' . htmlentities($rank->rank_title, ENT_QUOTES) . '</b>'
+					)
+				)
+			);
+
+			$attrs = array();
+
+			if ($rank_id && $rank->rank_id == $rank_id)
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs'		=> $attrs,
+				'columns'	=> $row
+			);
+		}
+		$table->setData($data);
+
+		$base_url = ee('CP/URL', $this->base . 'ranks');
+
+		$vars = array(
+			'cp_page_title' => lang('member_ranks'),
+			'cp_heading' => lang('member_ranks'),
+		);
+
+		$vars['table'] = $table->viewData($base_url);
+		$vars['form_url'] = $vars['table']['base_url'];
+
+		$vars['pagination'] = ee('CP/Pagination', count($ranks))
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($base_url);
+
+		$body = ee('View')->make('forum:ranks')->render($vars);
+
+		return array(
+			'body'    => $body,
+			'heading' => lang('member_ranks'),
+			'sidebar' => $this->generateSidebar()
+		);
+	}
+
+	private function createRank()
+	{
+		$errors = NULL;
+
+		$rank = ee('Model')->make('forum:Rank');
+
+		$result = $this->validateBoard($rank);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
+
+			if ($result->isValid())
+			{
+				$this->saveRankAndRedirect($rank);
+			}
+		}
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'errors' => $errors,
+			'cp_page_title' => lang('create_member_rank'),
+			'base_url' => ee('CP/URL', $this->base . 'create/rank/'),
+			'save_btn_text' => 'btn_save_rank',
+			'save_btn_text_working' => 'btn_saving',
+			'sections' => $this->rankForm($rank),
+		);
+
+		$body = ee('View')->make('ee:_shared/form')->render($vars);
+
+		return array(
+			'body'       => '<div class="box">' . $body . '</div>',
+			'breadcrumb' => array(
+				ee('CP/URL', $this->base. 'ranks')->compile() => lang('member_ranks')
+			),
+			'heading'    => $vars['cp_page_title'],
+			'sidebar'    => $this->generateSidebar()
+		);
+	}
+
+	private function editRank($id)
+	{
+		$errors = NULL;
+
+		$rank = ee('Model')->get('forum:Rank', $id)->first();
+		if ( ! $rank)
+		{
+			show_404();
+		}
+
+		$result = $this->validateBoard($rank);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
+
+			if ($result->isValid())
+			{
+				$this->saveRankAndRedirect($rank);
+			}
+		}
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'errors' => $errors,
+			'cp_page_title' => lang('edit_member_rank'),
+			'base_url' => ee('CP/URL', $this->base . 'edit/rank/' . $id),
+			'save_btn_text' => 'btn_save_rank',
+			'save_btn_text_working' => 'btn_saving',
+			'sections' => $this->rankForm($rank),
+		);
+
+		$body = ee('View')->make('ee:_shared/form')->render($vars);
+
+		return array(
+			'body'       => '<div class="box">' . $body . '</div>',
+			'breadcrumb' => array(
+				ee('CP/URL', $this->base. 'ranks')->compile() => lang('member_ranks')
+			),
+			'heading'    => $vars['cp_page_title'],
+			'sidebar'    => $this->generateSidebar()
+		);
+	}
+
+	private function rankForm($rank)
+	{
+		$sections = array(
+			array(
+				array(
+					'title' => 'rank_title',
+					'desc' => 'rank_title_desc',
+					'fields' => array(
+						'rank_title' => array(
+							'type' => 'text',
+							'required' => TRUE,
+							'value' => $rank->rank_title,
+						)
+					)
+				),
+				array(
+					'title' => 'posts',
+					'desc' => 'posts_desc',
+					'fields' => array(
+						'rank_min_posts' => array(
+							'type' => 'text',
+							'required' => TRUE,
+							'value' => $rank->rank_min_posts,
+						)
+					)
+				),
+				array(
+					'title' => 'stars',
+					'desc' => 'stars_desc',
+					'fields' => array(
+						'rank_stars' => array(
+							'type' => 'text',
+							'required' => TRUE,
+							'value' => $rank->rank_stars,
+						)
+					)
+				),
+			),
+		);
+
+		return $sections;
+	}
+
+	private function validateRank($rank)
+	{
+		if (empty($_POST))
+		{
+			return FALSE;
+		}
+
+		$action = ($rank->isNew()) ? 'create' : 'edit';
+
+		$rank->set($_POST);
+		$result = $rank->validate();
+
+		if ($response = $this->ajaxValidation($result))
+		{
+			ee()->output->send_ajax_response($response);
+		}
+
+		if ($result->failed())
+		{
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang($action . '_rank_error'))
+				->addToBody(lang($action . '_rank_error_desc'))
+				->now();
+		}
+
+		return $result;
+	}
+
+	private function saveRankAndRedirect($rank)
+	{
+		$action = ($rank->isNew()) ? 'create' : 'edit';
+
+		$rank->save();
+
+		if ($action == 'create')
+		{
+			ee()->session->set_flashdata('rank_id', $rank->rank_id);
+		}
+
+		ee('Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang($action . '_rank_success'))
+			->addToBody(sprintf(lang($action . '_rank_success_desc'), $rank->rank_title))
+			->defer();
+
+		ee()->functions->redirect(ee('CP/URL', $this->base . '/ranks'));
+	}
+
 	/**
 	 * Load Default Prefs
 	 *
@@ -3231,161 +3449,6 @@ class Forum_mcp extends CP_Controller {
 
 		// Back whence you came Binky!
 		ee()->functions->redirect($this->id_base.AMP.'method=forum_management');
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Member Ranks Manager
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function forum_ranks()
-	{
-		ee()->load->library('table');
-
-		$this->show_nav = FALSE;
-
-		ee()->db->order_by('rank_min_posts');
-		$query = ee()->db->get('forum_ranks');
-
-		$vars['ranks']	= $query->result_array();
-		$vars['star']	= $this->prefs['board_theme_url'].$this->prefs['board_default_theme'].'/images/rank.gif';
-
-		return $this->_content_wrapper('forum_ranks', 'forum_ranks', $vars);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Edit Member Ranks
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function forum_edit_rank()
-	{
-		if ( ! $rank_id = ee()->input->get_post('rank_id'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		$this->show_nav = FALSE;
-
-		$query = ee()->db->get_where('forum_ranks', array('rank_id' => $rank_id));
-
-		$vars['rank']	= $query->row_array();
-		$vars['star']	= $this->prefs['board_theme_url'].$this->prefs['board_default_theme'].'/images/rank.gif';
-
-		return $this->_content_wrapper('rank_form', 'forum_ranks', $vars);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Create/Update Member Rank
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function forum_update_rank()
-	{
-		unset($_POST['submit']);
-
-		// Error correction
-		$required = array('rank_title', 'rank_min_posts');
-
-		foreach ($required as $val)
-		{
-			if (ee()->input->post($val) == '')
-			{
-				show_error(ee()->lang->line('forum_missing_ranks'));
-			}
-
-			if ($val == 'rank_min_posts' OR $val == 'rank_stars')
-			{
-				$_POST[$val] = trim(str_replace(',', '', $_POST[$val]));
-
-				if ( ! is_numeric(ee()->input->post($val)))
-				{
-					$_POST[$val] = 0;
-				}
-			}
-		}
-
-		// Are we updatting or inserting?
-		if ( ! ee()->input->get_post('rank_id'))
-		{
-			ee()->db->insert('forum_ranks', $_POST);
-
-			$msg = 'forum_rank_added';
-		}
-		else
-		{
-			ee()->db->where('rank_id', ee()->input->get_post('rank_id'));
-			ee()->db->update('forum_ranks', $_POST);
-
-			$msg = 'forum_rank_updated';
-		}
-
-		// Send Binky back whence Binky came...
-		ee()->session->set_flashdata('message_success', ee()->lang->line($msg));
-		ee()->functions->redirect($this->id_base.AMP.'method=forum_ranks');
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Delete Member Rank Confirmation
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function forum_delete_rank_confirm()
-	{
-		$rank_id = ee()->input->get_post('rank_id');
-
-		if ( ! $rank_id = ee()->input->get_post('rank_id'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		ee()->db->select('rank_title');
-		$query = ee()->db->get_where('forum_ranks', array('rank_id' => $rank_id));
-
-		$vars = array(
-			'url'		=> 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=forum'.AMP.'method=forum_delete_rank',
-			'msg'		=> 'forum_delete_rank_msg',
-			'item'		=> $query->row('rank_title'),
-			'hidden'	=> array('rank_id' => $rank_id)
-		);
-
-		return $this->_content_wrapper('confirm', 'forum_delete_rank_confirm', $vars);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Delete Member Rank
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function forum_delete_rank()
-	{
-		$rank_id = ee()->input->get_post('rank_id');
-
-		if ( ! $rank_id = ee()->input->post('rank_id'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		ee()->db->where('rank_id', $rank_id);
-		ee()->db->delete('forum_ranks');
-
-		ee()->session->set_flashdata('message_success', ee()->lang->line('forum_rank_deleted'));
-		ee()->functions->redirect($this->id_base.AMP.'method=forum_ranks');
 	}
 
 	// --------------------------------------------------------------------

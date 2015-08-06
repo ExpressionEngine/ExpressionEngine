@@ -300,6 +300,34 @@ $lang = array(
 'edit_forum_settings_success' => 'Forum Permissions Updated',
 'edit_forum_settings_success_desc' => 'The permissions for forum <b>%s</b> have been updated.',
 
+// Member Ranks
+
+'member_ranks' => 'Member Ranks',
+'create_member_rank' => 'Create Member Rank',
+'edit_member_rank' => 'Edit Member Rank',
+
+'posts' => 'Posts',
+'stars' => 'Stars',
+
+'rank_title' => 'Title',
+'rank_title_desc' => 'Full descriptive name of this rank.',
+
+'posts_desc' => 'Minimum number of pots a user must have to reach this rank.',
+'stars_desc' => 'Number of stars to show with this rank.',
+
+'btn_save_rank' => 'Save Rank',
+
+'create_rank_success' => 'Rank Created',
+'create_rank_success_desc' => 'The rank <b>%s</b> has been created.',
+
+'create_rank_error' => 'Cannot Create Rank',
+'create_rank_error_desc' => 'We were unable to create this rank, please review and fix errors below.',
+
+'edit_rank_success' => 'Rank Updated',
+'edit_rank_success_desc' => 'The rank <b>%s</b> has been updated.',
+
+'edit_rank_error' => 'Cannot Update Rank',
+'edit_rank_error_desc' => 'We were unable to update this rank, please review and fix errors below.',
 
 /* 2.x Keys
 //----------------------------------------
