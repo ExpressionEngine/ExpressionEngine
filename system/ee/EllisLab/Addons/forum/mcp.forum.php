@@ -265,6 +265,13 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('forum:index')->render($vars);
 
+		ee()->javascript->set_global('lang.remove_confirm', lang('forum') . ': <b>### ' . lang('forums') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/v3/confirm_remove',
+			),
+		));
+
 		return array(
 			'body'    => $body,
 			'heading' => lang('forum_manager'),
@@ -1978,6 +1985,11 @@ class Forum_mcp extends CP_Controller {
 
 	public function ranks()
 	{
+		if (ee()->input->post('bulk_action') == 'remove')
+		{
+			$this->removeRank(ee()->input->post('selection'));
+		}
+
 		$ranks = ee('Model')->get('forum:Rank')->all();
 
 		$table = ee('CP/Table', array('autosort' => TRUE));
@@ -2051,6 +2063,13 @@ class Forum_mcp extends CP_Controller {
 			->render($base_url);
 
 		$body = ee('View')->make('forum:ranks')->render($vars);
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('rank') . ': <b>### ' . lang('ranks') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/v3/confirm_remove',
+			),
+		));
 
 		return array(
 			'body'    => $body,
@@ -2233,6 +2252,29 @@ class Forum_mcp extends CP_Controller {
 			->defer();
 
 		ee()->functions->redirect(ee('CP/URL', $this->base . '/ranks'));
+	}
+
+	private function removeRanks($ids)
+	{
+		if ( ! is_array($ids))
+		{
+			$ids = array($ids);
+		}
+
+		$ranks = ee('Model')->get('forum:Rank', $ids)->all();
+
+		$rank_titles = $entries->pluck('rank_title');
+
+		$ranks->delete();
+
+		ee('Alert')->makeInline('entries-form')
+			->asSuccess()
+			->withTitle(lang('success'))
+			->addToBody(lang('ranks_removed_desc'))
+			->addToBody($entry_names)
+			->defer();
+
+		ee()->functions->redirect(ee('CP/URL', $this->base . 'ranks', ee()->cp->get_url_state()));
 	}
 
 	/**

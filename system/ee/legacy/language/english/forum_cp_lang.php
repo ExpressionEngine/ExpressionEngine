@@ -329,6 +329,8 @@ $lang = array(
 'edit_rank_error' => 'Cannot Update Rank',
 'edit_rank_error_desc' => 'We were unable to update this rank, please review and fix errors below.',
 
+'ranks_removed_desc' => 'The following ranks were removed',
+
 /* 2.x Keys
 //----------------------------------------
 
