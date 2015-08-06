@@ -80,30 +80,49 @@ feature 'Updater' do
       test_update
       File.exist?('../../system/user/templates/default_site/').should == true
     end
+  end
 
-    def test_update
-      @page.load
-
-      @page.should have(0).inline_errors
-      @page.header.text.should match /Update ExpressionEngine \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
-      @page.submit.click
-
-      @page.header.text.should match /Updating ExpressionEngine \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
-      @page.req_title.text.should include 'Processing | Step 2 of 3'
-
-      sleep 1 # Wait for the updater to finish
-
-      @page.header.text.should match /ExpressionEngine Updated to \d+\.\d+\.\d+/
-      @page.req_title.text.should include 'Completed'
-      @page.has_submit?.should == true
-
-      # Database dump has mailing list and should provide the download button
-      # and the zip file
-      @page.has_login?.should == true
-      @page.has_download?.should == true
-      File.exist?('../../system/user/cache/mailing_list.zip').should == true
+  context 'when updating from 2.x to 3.x with the mailing list module' do
+    it 'updates and creates a mailing list export' do
+      clean_db do
+        $db.query(IO.read('sql/database_2.10.1-mailinglist.sql'))
+        clear_db_result
+      end
+      
+      test_update(true)
     end
   end
+
+  def test_update(mailinglist = false)
+    # Delete any stored mailing lists
+    mailing_list_zip = File.expand_path('../../system/user/cache/mailing_list.zip')
+    File.delete(mailing_list_zip) if File.exist?(mailing_list_zip)
+
+    @page.load
+
+    @page.should have(0).inline_errors
+    @page.header.text.should match /Update ExpressionEngine \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
+    @page.submit.click
+
+    @page.header.text.should match /Updating ExpressionEngine \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
+    @page.req_title.text.should include 'Processing | Step 2 of 3'
+
+    sleep 1 # Wait for the updater to finish
+
+    @page.header.text.should match /ExpressionEngine Updated to \d+\.\d+\.\d+/
+    @page.req_title.text.should include 'Completed'
+    @page.has_submit?.should == true
+
+    @page.has_login?.should == true
+
+    if mailinglist == false
+      @page.has_download?.should == false
+    else
+      @page.has_download?.should == true
+      File.exist?(mailing_list_zip).should == true
+    end
+  end
+end
 
 # Override base reset_db method to import 2.10.1 database
 def reset_db
