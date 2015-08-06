@@ -154,7 +154,7 @@ EOT;
 	 */
 	public function remove()
 	{
-		$moblog_ids = ee()->input->post('channels');
+		$moblog_ids = ee()->input->post('moblogs');
 
 		if ( ! empty($moblog_ids) && ee()->input->post('bulk_action') == 'remove')
 		{
@@ -163,7 +163,7 @@ EOT;
 
 			if ( ! empty($moblog_ids))
 			{
-				ee()->db->where_in('moblog_id', $moblog_ids)->delete('moblogs');
+				ee('Model')->get('moblog:Moblog', $moblog_ids)->delete();
 
 				ee('Alert')->makeInline('moblogs-table')
 					->asSuccess()
@@ -206,6 +206,13 @@ EOT;
 		$vars = array();
 		if (is_null($moblog_id))
 		{
+			ee()->cp->add_js_script('plugin', 'ee_url_title');
+			ee()->javascript->output('
+				$("input[name=moblog_full_name]").bind("keyup keydown", function() {
+					$(this).ee_url_title("input[name=moblog_short_name]");
+				});
+			');
+
 			$alert_key = 'created';
 			$vars['cp_page_title'] = lang('create_moblog');
 			$vars['base_url'] = ee('CP/URL', 'addons/settings/moblog/create');
@@ -228,6 +235,10 @@ EOT;
 		if ( ! empty($_POST))
 		{
 			$moblog->set($_POST);
+
+			// Need to convert this field from its presentation serialization
+			$moblog->moblog_valid_from = explode(',', trim(preg_replace("/[\s,|]+/", ',', $_POST['moblog_valid_from']), ','));
+
 			$result = $moblog->validate();
 
 			if ($result->isValid())
@@ -239,7 +250,7 @@ EOT;
 					ee()->session->set_flashdata('highlight_id', $moblog->getId());
 				}
 
-				ee('Alert')->makeInline('shared-form')
+				ee('Alert')->makeInline('moblogs-table')
 					->asSuccess()
 					->withTitle(lang('moblog_'.$alert_key))
 					->addToBody(sprintf(lang('moblog_'.$alert_key.'_desc'), $moblog->moblog_full_name))
@@ -250,7 +261,7 @@ EOT;
 			else
 			{
 				$vars['errors'] = $result;
-				ee('Alert')->makeInline('shared-form')
+				ee('Alert')->makeInline('moblogs-table')
 					->asIssue()
 					->withTitle(lang('moblog_not_'.$alert_key))
 					->addToBody(lang('moblog_not_'.$alert_key.'_desc'))
@@ -313,7 +324,7 @@ EOT;
 					'fields' => array(
 						'moblog_enabled' => array(
 							'type' => 'yes_no',
-							'value' => $moblog->moblog_enabled
+							'value' => is_null($moblog->moblog_enabled) ? TRUE : $moblog->moblog_enabled
 						)
 					)
 				),
@@ -499,7 +510,7 @@ EOT;
 					'fields' => array(
 						'moblog_valid_from' => array(
 							'type' => 'textarea',
-							'value' => $moblog->moblog_valid_from
+							'value' => implode("\n", $moblog->moblog_valid_from)
 						)
 					)
 				),
@@ -557,7 +568,11 @@ EOT;
 		$vars['save_btn_text'] = 'save_moblog';
 		$vars['save_btn_text_working'] = 'btn_saving';
 
-		return ee('View')->make('moblog:create')->render($vars);
+		return array(
+			'heading'    => $vars['cp_page_title'],
+			'breadcrumb' => array(ee('CP/URL', 'addons/settings/moblog')->compile() => lang('moblog') . ' ' . lang('configuration')),
+			'body'       => ee('View')->make('moblog:create')->render($vars)
+		);
 	}
 
 	/**
@@ -1225,7 +1240,7 @@ var spaceString = new RegExp('!-!', "g");
 			if (group == 'categories') {
 				// Categories are checkboxes
 				jQuery.each(values, function(a, b) {
-					html += '<label class="choice block"><input type="checkbox" name="moblog_categories[]" value =""' + b[0] + '">' + b[1].replace(spaceString, String.fromCharCode(160)) + "</label>";
+					html += '<label class="choice block"><input type="checkbox" name="moblog_categories[]" value ="' + b[0] + '">' + b[1].replace(spaceString, String.fromCharCode(160)) + "</label>";
 				});
 			} else {
 				// Add the new option fields
