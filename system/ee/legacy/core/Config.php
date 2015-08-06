@@ -1212,9 +1212,11 @@ class EE_Config {
 
 		foreach ($dbconfig as $property => $value)
 		{
-			$value = ($allowed_properties[$property] == 'bool')
-				? get_bool_from_string($dbconfig['pconnect'])
-				: $value;
+			if ($allowed_properties[$property] == 'bool')
+			{
+				$value = get_bool_from_string($value);
+			}
+
 			$database_config->set($property, $value);
 		}
 
@@ -1224,7 +1226,8 @@ class EE_Config {
 
 		// Remove default properties
 		$defaults = $db_config->getDefaults();
-		foreach ($defaults['expressionengine'] as $property => $value)
+
+		foreach ($defaults as $property => $value)
 		{
 			if (isset($group_config[$property]) && $group_config[$property] == $value)
 			{
