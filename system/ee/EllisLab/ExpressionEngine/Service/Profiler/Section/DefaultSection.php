@@ -19,7 +19,7 @@ use EllisLab\ExpressionEngine\Service\Profiler\ProfilerSection;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Get Profiler Section
+ * ExpressionEngine DefaultSection Profiler Section
  *
  * @package		ExpressionEngine
  * @subpackage	Profiler\Section
@@ -27,33 +27,36 @@ use EllisLab\ExpressionEngine\Service\Profiler\ProfilerSection;
  * @author		EllisLab Dev Team
  * @link		https://ellislab.com
  */
-class Get extends ProfilerSection {
+class DefaultSection extends ProfilerSection {
 
 	/**
 	 * Set the section's data
 	 *
 	 * @return void
 	 **/
-	public function setData()
+	public function setData($data)
 	{
-		if (count($_GET) == 0)
+		$data = (array) $data;
+
+		if (count($data) == 0)
 		{
-			$data = lang('profiler_no_get');
+			$prepped_data = lang('profiler_no_data');
 		}
 		else
 		{
-			foreach ($_GET as $key => $val)
+			$prepped_data = array();
+			foreach ($data as $key => $val)
 			{
 				if ( ! is_numeric($key))
 				{
 					$key = "'".$key."'";
 				}
 
-				$data["_GET[{$key}]"] = htmlspecialchars(stripslashes(print_r($val, TRUE)));
+				$prepped_data[lang($this->section_name)."[{$key}]"] = htmlspecialchars(stripslashes(print_r($val, TRUE)));
 			}
 
 		}
 
-		$this->data = array('profiler_get' => $data);
+		$this->data = array('profiler_'.$this->section_name => $prepped_data);
 	}
 }

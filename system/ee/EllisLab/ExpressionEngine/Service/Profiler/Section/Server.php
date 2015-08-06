@@ -34,13 +34,13 @@ class Server extends ProfilerSection {
 	 *
 	 * @return void
 	 **/
-	public function setData()
+	public function setData($data)
 	{
 		foreach(array('HTTP_ACCEPT', 'HTTP_USER_AGENT', 'HTTP_CONNECTION', 'SERVER_PORT', 'SERVER_NAME', 'REMOTE_ADDR', 'SERVER_SOFTWARE', 'HTTP_ACCEPT_LANGUAGE', 'SCRIPT_NAME', 'REQUEST_METHOD', 'HTTP_HOST', 'REMOTE_HOST', 'CONTENT_TYPE', 'SERVER_PROTOCOL', 'QUERY_STRING', 'HTTP_ACCEPT_ENCODING', 'HTTP_X_FORWARDED_FOR') as $header)
 		{
-			$data[$header] = (isset($_SERVER[$header])) ? htmlspecialchars($_SERVER[$header]) : '';
+			$prepped_data[$header] = (isset($data[$header])) ? htmlspecialchars($data[$header]) : '';
 		}
 
-		$this->data = array('profiler_server' => $data);
+		$this->data = array('profiler_server' => $prepped_data);
 	}
 }

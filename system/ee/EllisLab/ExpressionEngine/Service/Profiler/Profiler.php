@@ -3,7 +3,7 @@
 namespace EllisLab\ExpressionEngine\Service\Profiler;
 
 use \EE_Lang;
-use EllisLab\ExpressionEngine\Service\View\View;
+use EllisLab\ExpressionEngine\Service\View\ViewFactory;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -36,9 +36,9 @@ class Profiler {
 	protected $sections = array();
 
 	/**
-	 * @var View $view A View object for rendering this alert
+	 * @var ViewFactory $view_factory A ViewFactory object for making and rendering views
 	 **/
-	private $view;
+	private $view_factory;
 
 	/**
 	 * Constructor
@@ -46,10 +46,10 @@ class Profiler {
 	 *   EE_Lang $lang for loadfile()
 	 *   View $view to render the container
 	 */
-	public function __construct(EE_Lang $lang, View $view)
+	public function __construct(EE_Lang $lang, ViewFactory $view_factory)
 	{
 		$lang->loadfile('profiler');
-		$this->view = $view;
+		$this->view_factory = $view_factory;
 	}
 
 	/**
@@ -69,32 +69,20 @@ class Profiler {
 
 		if ( ! class_exists($class))
 		{
-			throw new \Exception("Profiler section does not exist: `{$section_name}`.");
+			if (count($args) == 1)
+			{
+				$class = __NAMESPACE__."\\Section\\DefaultSection";
+			}
+			else
+			{
+				throw new \Exception("No usable Profiler Section for: `{$section_name}`.");
+			}
 		}
 
-		// this looks like overkill, but it enables the Section classes to receive
-		// excplicit and type hinted parameters. We max out at 4 for sanity, most
-		// Section classes have either 1 or 0 injectables
-		switch (count($args))
-		{
-			case 4:
-				$section = new $class($args[0], $args[1], $args[2], $args[3]);
-				break;
-			case 3:
-				$section = new $class($args[0], $args[1], $args[2]);
-				break;
-			case 2:
-				$section = new $class($args[0], $args[1]);
-				break;
-			case 1:
-				$section = new $class($args[0]);
-				break;
-			default:
-				$section = new $class;
-				break;
-		}
+		// create the section and set its data
+		$section = new $class($section_name);
+		call_user_func_array(array($section, 'setData'), $args);
 
-		$section->setData();
 		$this->sections[] = $section;
 
 		return $this;
@@ -110,9 +98,11 @@ class Profiler {
 		$rendered_sections = array();
 		foreach ($this->sections as $section)
 		{
-			$rendered_sections[] = $section->render();
+			$view = $this->view_factory->make($section->getViewName());
+			$rendered_sections[] = $section->render($view);
 		}
 
-		return $this->view->render(array('sections' => $rendered_sections));
+		$view = $this->view_factory->make('profiler/container');
+		return $view->render(array('sections' => $rendered_sections));
 	}
 }

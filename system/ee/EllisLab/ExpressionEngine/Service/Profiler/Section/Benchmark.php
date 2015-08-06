@@ -38,32 +38,22 @@ class Benchmark extends ProfilerSection {
 	private $bench;
 
 	/**
-	 * Constructor
-	 *
-	 * @param  $bench  EE_Benchmark object
-	 **/
-	public function __construct(EE_Benchmark $bench)
-	{
-		$this->bench = $bench;
-	}
-
-	/**
 	 * Set the section's data
 	 *
 	 * @return void
 	 **/
-	public function setData()
+	public function setData(EE_Benchmark $bench)
 	{
 		$profile = array();
-		foreach ($this->bench->marker as $key => $val)
+		foreach ($bench->marker as $key => $val)
 		{
 			// We match the "end" marker so that the list ends
 			// up in the order that it was defined
 			if (preg_match("/(.+?)_end/i", $key, $match))
 			{
-				if (isset($this->bench->marker[$match[1].'_end']) AND isset($this->bench->marker[$match[1].'_start']))
+				if (isset($bench->marker[$match[1].'_end']) AND isset($bench->marker[$match[1].'_start']))
 				{
-					$data[ucwords(str_replace(array('_', '-'), ' ', $match[1]))] = $this->bench->elapsed_time($match[1].'_start', $key);
+					$data[ucwords(str_replace(array('_', '-'), ' ', $match[1]))] = $bench->elapsed_time($match[1].'_start', $key);
 				}
 			}
 		}

@@ -66,37 +66,15 @@ class Database extends ProfilerSection {
 	);
 
 	/**
-	 * @var View $view A View object for rendering this section
-	 **/
-	private $view;
-
-	/**
-	 * @var array of Database objects
-	 **/
-	private $dbs;
-
-	/**
-	 * Constructor
-	 *
-	 * @param  $dbs  array of Database object(s)
-	 * @param  $view View object
-	 **/
-	public function __construct($dbs, View $view)
-	{
-		$this->dbs = $dbs;
-		$this->view = $view;
-	}
-
-	/**
 	 * Set the section's data
 	 *
 	 * @return void
 	 **/
-	public function setData()
+	public function setData($dbs)
 	{
 		$count = 0;
 
-		foreach ($this->dbs as $db)
+		foreach ($dbs as $db)
 		{
 			$count++;
 			$log = $db->getLog();
@@ -110,13 +88,13 @@ class Database extends ProfilerSection {
 	}
 
 	/**
-	 * Render the section with a view
+	 * Gets the view name needed to render the section
 	 *
-	 * @return string
+	 * @return string  the view/name
 	 **/
-	public function render()
+	public function getViewName()
 	{
-		return $this->view->render(array('profiler_data' => $this->data));
+		return 'profiler/database';
 	}
 
 	/**

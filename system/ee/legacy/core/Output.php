@@ -362,11 +362,11 @@ class EE_Output {
 		{
 			$profiler = ee('Profiler')->addSection('benchmark', ee()->benchmark)
 				->addSection('memory')
-				->addSection('database', array(ee('Database')), ee('View')->make('profiler/database'))
+				->addSection('database', array(ee('Database')))
 				->addSection('userdata', ee()->session->all_userdata())
-				->addSection('get')
-				->addSection('post')
-				->addSection('server');
+				->addSection('get', $_GET)
+				->addSection('post', $_POST)
+				->addSection('server', $_SERVER);
 
 			// If the output data contains closing </body> and </html> tags
 			// we will remove them and add them back after we insert the profile data

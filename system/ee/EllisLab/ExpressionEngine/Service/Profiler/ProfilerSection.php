@@ -2,6 +2,9 @@
 
 namespace EllisLab\ExpressionEngine\Service\Profiler;
 
+use \EE_lang;
+use EllisLab\ExpressionEngine\Service\View\View;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -39,20 +42,50 @@ abstract class ProfilerSection {
 	protected $data = array();
 
 	/**
-	 * Set the section's data
+	 * @var The section's name, should map to a localization key
+	 **/
+	protected $section_name;
+
+	/**
+	 * Constructor
 	 *
+	 * @param  string  $section_name  the section's name, should map to a localization key
+	 **/
+	public function __construct($section_name)
+	{
+		$this->section_name = $section_name;
+	}
+
+	/**
+	 * Gets the view name needed to render the section
+	 *
+	 * @return string  the view/name
+	 **/
+	public function getViewName()
+	{
+		return 'profiler/default_section';
+	}
+
+	/**
+	 * Set the section's data
+	 * (Implemented by extended classes)
+	 *
+	 * @param  array/object  key => val data to display
 	 * @return void
 	 **/
-	abstract public function setData();
+	public function setData($data)
+	{
+		$this->data = $data;
+	}
 
 	/**
 	 * Render the section with a view
 	 *
+	 * @param  object  View $view object to render
 	 * @return string
 	 **/
-	public function render()
+	public function render(View $view)
 	{
-		$view = ee('View')->make('profiler/default_section');
 		return $view->render(array('profiler_data' => $this->data));
 	}
 }

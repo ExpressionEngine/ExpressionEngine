@@ -39,18 +39,18 @@ class Userdata extends ProfilerSection {
 	 *
 	 * @return void
 	 **/
-	public function setData()
+	public function setData($data)
 	{
-		foreach (ee()->session->all_userdata() as $key => $value)
+		foreach ($data as $key => $value)
 		{
 			if (in_array($key, $this->skip))
 			{
 				continue;
 			}
 
-			$data[$key] = htmlspecialchars(print_r($value, TRUE));
+			$prepped_data[$key] = htmlspecialchars(print_r($value, TRUE));
 		}
 
-		$this->data = array('profiler_userdata' => $data);
+		$this->data = array('profiler_userdata' => $prepped_data);
 	}
 }
