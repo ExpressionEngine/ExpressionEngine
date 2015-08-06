@@ -2277,6 +2277,275 @@ class Forum_mcp extends CP_Controller {
 		ee()->functions->redirect(ee('CP/URL', $this->base . 'ranks', ee()->cp->get_url_state()));
 	}
 
+	// --------------------------------------------------------------------
+
+	public function admins($board_id)
+	{
+		$board = ee('Model')->get('forum:Board', $board_id)->first();
+		if ( ! $board)
+		{
+			show_404();
+		}
+
+		if (ee()->input->post('bulk_action') == 'remove')
+		{
+			$this->removeAdmins(ee()->input->post('selection'));
+		}
+
+		$admins = ee('Model')->get('forum:Administrator')
+			->with('Member')
+			->with('MemberGroup')
+			->filter('board_id', $board_id)
+			->all();
+
+		$table = ee('CP/Table', array('autosort' => TRUE));
+		$table->setColumns(
+			array(
+				'name',
+				'type',
+				array(
+					'type'	=> Table::COL_CHECKBOX
+				)
+			)
+		);
+
+		$new_url = ee('CP/URL', $this->base . 'create/admin/' . $board_id);
+		$table->setNoResultsText('no_admins', 'create_new_admin', $new_url);
+
+		$admin_id = ee()->session->flashdata('admin_id');
+
+		$data = array();
+		foreach ($admins as $admin)
+		{
+			$row = array(
+				$admin->getAdminName(),
+				$admin->getType(),
+				array(
+					'name' => 'selection[]',
+					'value' => $admin->admin_id,
+					'data'	=> array(
+						'confirm' => lang('admin') . ': <b>' . htmlentities($name, ENT_QUOTES) . '</b>'
+					)
+				)
+			);
+
+			$attrs = array();
+
+			if ($admin_id && $admin->admin_id == $admin_id)
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs'		=> $attrs,
+				'columns'	=> $row
+			);
+		}
+		$table->setData($data);
+
+		$base_url = ee('CP/URL', $this->base . 'admins');
+
+		$vars = array(
+			'cp_page_title'   => lang('administrators'),
+			'cp_heading'      => lang('administrators'),
+			'cp_heading_desc' => lang('administrators_desc'),
+			'new_url'         => $new_url
+		);
+
+		$vars['table'] = $table->viewData($base_url);
+		$vars['form_url'] = $vars['table']['base_url'];
+
+		$vars['pagination'] = ee('CP/Pagination', count($admins))
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($base_url);
+
+		$body = ee('View')->make('forum:admins')->render($vars);
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('admin') . ': <b>### ' . lang('admins') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/v3/confirm_remove',
+			),
+		));
+
+		return array(
+			'body'    => $body,
+			'breadcrumb' => array(
+				ee('CP/URL', $this->base. 'index/' . $board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
+			),
+			'heading' => lang('administrators'),
+			'sidebar' => $this->generateSidebar($board_id)
+		);
+	}
+
+	public function createAdmin($board_id)
+	{
+		$board = ee('Model')->get('forum:Board', $board_id)->first();
+		if ( ! $board)
+		{
+			show_404();
+		}
+
+		$errors = NULL;
+
+		$admin = ee('Model')->make('forum:Administrator', array('board_id' => $board_id));
+
+		$result = $this->validateAdmin($admin);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
+
+			if ($result->isValid())
+			{
+				$admin->save();
+
+				ee()->session->set_flashdata('admin_id', $admin->admin_id);
+
+				ee('Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('create_administrator_success'))
+					->addToBody(sprintf(lang('create_administrator_success_desc'), $admin->getAdminName()))
+					->defer();
+
+				ee()->functions->redirect(ee('CP/URL', $this->base . 'admins/' . $board_id));
+			}
+		}
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'errors' => $errors,
+			'cp_page_title' => lang('create_administrator'),
+			'base_url' => ee('CP/URL', $this->base . 'create/admin/' . $board_id),
+			'save_btn_text' => 'btn_save_administrator',
+			'save_btn_text_working' => 'btn_saving',
+		);
+
+		$member_groups = ee('Model')->get('MemberGroup')
+			->fields('group_id', 'group_title')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('group_id', '!=', '1')
+			->order('group_title', 'asc')
+			->all()
+			->getDictionary('group_id', 'group_title');
+
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'administrator_type',
+					'desc' => 'administrator_type_desc',
+					'fields' => array(
+						'administrator_type_group' => array(
+							'type' => 'radio',
+							'name' => 'administrator_type',
+							'choices' => array(
+								'group' => lang('admin_type_member_group'),
+							),
+							'value' => 'group',
+						),
+						'member_group' => array(
+							'type' => 'select',
+							'choices' => $member_groups,
+							'value' => 5
+						),
+						'administrator_type_individual' => array(
+							'type' => 'radio',
+							'name' => 'administrator_type',
+							'choices' => array(
+								'individual' => lang('admin_type_individual')
+							),
+						),
+						'individual' => array(
+							'type' => 'text',
+							'value' => ''
+						)
+					)
+				),
+			)
+		);
+
+		$body = ee('View')->make('ee:_shared/form')->render($vars);
+
+		return array(
+			'body'       => '<div class="box">' . $body . '</div>',
+			'breadcrumb' => array(
+				ee('CP/URL', $this->base. 'index/' . $board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
+			),
+			'heading'    => $vars['cp_page_title'],
+			'sidebar'    => $this->generateSidebar($board_id)
+		);
+	}
+
+	private function validateAdmin($admin)
+	{
+		if (empty($_POST))
+		{
+			return FALSE;
+		}
+
+		$validator = ee('Validation')->make(array(
+			'administrator_type' => 'required|enum[group,individual]',
+			'member_group'       => 'whenAdministratorTypeIs[group]|validMemberGroup',
+			'individual'         => 'whenAdministratorTypeIs[individual]|validMember',
+		));
+
+		$data = $_POST;
+
+		$validator->defineRule('whenAdministratorTypeIs', function($key, $value, $parameters, $rule) use ($data)
+		{
+		  return ($data['administrator_type'] == $parameters[0]) ? TRUE : $rule->skip();
+		});
+
+		$validator->defineRule('validMemberGroup', function($key, $value) use ($admin)
+		{
+			if (ee('Model')->get('MemberGroup', $value)->count() == 1)
+			{
+				$admin->admin_group_id = $value;
+				return TRUE;
+			}
+
+			return 'invalid_member_group';
+		});
+
+		$validator->defineRule('validMember', function($key, $value) use ($admin)
+		{
+			$member = ee('Model')->get('Member')
+				->fields('member_id')
+				->filter('username', $value)
+				->first();
+
+			if ($member)
+			{
+				$admin->admin_member_id = $member->member_id;
+				return TRUE;
+			}
+
+			return 'invalid_username';
+		});
+
+		$result = $validator->validate($_POST);
+
+		if ($response = $this->ajaxValidation($result))
+		{
+			ee()->output->send_ajax_response($response);
+		}
+
+		if ($result->failed())
+		{
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('create_administrator_error'))
+				->addToBody(lang('create_administrator_error_desc'))
+				->now();
+		}
+
+		return $result;
+	}
+
+
+	// --------------------------------------------------------------------
+
 	/**
 	 * Load Default Prefs
 	 *

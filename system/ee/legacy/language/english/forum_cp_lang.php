@@ -302,6 +302,9 @@ $lang = array(
 
 // Member Ranks
 
+'no_ranks' => 'No ranks available',
+'create_new_rank' => 'Create new rank',
+
 'member_ranks' => 'Member Ranks',
 'create_member_rank' => 'Create Member Rank',
 'edit_member_rank' => 'Edit Member Rank',
@@ -330,6 +333,36 @@ $lang = array(
 'edit_rank_error_desc' => 'We were unable to update this rank, please review and fix errors below.',
 
 'ranks_removed_desc' => 'The following ranks were removed',
+
+// Administrators
+
+'administrators' => 'Administrators',
+'administrators_desc' => 'Have access to all administration tools for all forums in this board.',
+
+'no_admins' => 'No administrators available',
+'create_new_admin' => 'Create new admin',
+
+'group' => 'group',
+'individual' => 'individual',
+
+'create_administrator' => 'Create Administrator',
+
+'administrator_type' => 'Administrator type',
+'administrator_type_desc' => 'Select the type of administrator you want to add.',
+
+'admin_type_member_group' => 'Member Group <i>&mdash; All members of chosen group</i>',
+'admin_type_individual' => 'Individual <i>&mdash; username, <b>not</b> screenname</i>',
+
+'btn_save_administrator' => 'Save administrator',
+
+'create_administrator_success' => 'Administrator Created',
+'create_administrator_success_desc' => 'The administrator <b>%s</b> has been created.',
+
+'create_administrator_error' => 'Cannot Create Administrator',
+'create_administrator_error_desc' => 'We were unable to create this administrator, please review and fix errors below.',
+
+'invalid_member_group' => 'The member group you submitted does not appear to be valid',
+'invalid_username' => 'The username you submitted does not appear to be valid',
 
 /* 2.x Keys
 //----------------------------------------
