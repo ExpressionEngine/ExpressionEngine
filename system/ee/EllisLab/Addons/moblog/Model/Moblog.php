@@ -32,6 +32,11 @@ class Moblog extends Model {
 	protected static $_primary_key = 'moblog_id';
 	protected static $_table_name = 'moblogs';
 
+	protected static $_typed_columns = array(
+		'moblog_valid_from' => 'commaDelimited',
+		'moblog_categories' => 'pipeDelimited'
+	);
+
 	protected static $_validation_rules = array(
 		'moblog_full_name'	      => 'required|unique',
 		'moblog_short_name'       => 'required|unique',
@@ -44,7 +49,7 @@ class Moblog extends Model {
 		'moblog_email_password'   => 'required',
 		'moblog_time_interval'    => 'required|isNaturalNoZero',
 		'moblog_enabled'          => 'required|enum[y,n]',
-		//'moblog_valid_from'       => '', // prep_list, valid_emails
+		'moblog_valid_from'       => 'validateEmails',
 		'moblog_allow_overrides'  => 'enum[y,n]',
 		'moblog_sticky_entry'     => 'enum[y,n]',
 		'moblog_upload_directory' => 'isNaturalNoZero',
@@ -85,4 +90,20 @@ class Moblog extends Model {
 	protected $moblog_subject_prefix;
 	protected $moblog_valid_from;
 	protected $moblog_ignore_text;
+
+	/**
+	 * Ensures fields with multiple emails contain valid emails
+	 */
+	public function validateEmails($key, $value, $params, $rule)
+	{
+		foreach($value as $email)
+		{
+			if (trim($email) != '' && (bool) filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE)
+			{
+				return 'valid_emails';
+			}
+		}
+
+		return TRUE;
+	}
 }
