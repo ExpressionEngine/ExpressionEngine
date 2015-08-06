@@ -890,6 +890,9 @@ class Wizard extends CI_Controller {
 		$template_variables['action'] = $this->userdata['cp_url'];
 		$template_variables['method'] = 'get';
 
+		// Only show download button if mailing list export exists
+		$template_variables['mailing_list'] = (file_exists(SYSPATH.'/user/cache/mailing_list.zip'));
+
 		$this->set_output('success', $template_variables);
 	}
 
