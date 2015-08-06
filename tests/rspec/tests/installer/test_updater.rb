@@ -88,7 +88,7 @@ feature 'Updater' do
         $db.query(IO.read('sql/database_2.10.1-mailinglist.sql'))
         clear_db_result
       end
-      
+
       test_update(true)
     end
   end
@@ -121,13 +121,5 @@ feature 'Updater' do
       @page.has_download?.should == true
       File.exist?(mailing_list_zip).should == true
     end
-  end
-end
-
-# Override base reset_db method to import 2.10.1 database
-def reset_db
-  clean_db do
-    $db.query(IO.read('sql/database_2.10.1.sql'))
-    clear_db_result
   end
 end

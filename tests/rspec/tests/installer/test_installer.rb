@@ -186,8 +186,3 @@ feature 'Installer' do
     end
   end
 end
-
-# Override base reset_db method to leave empty database
-def reset_db
-  clean_db
-end

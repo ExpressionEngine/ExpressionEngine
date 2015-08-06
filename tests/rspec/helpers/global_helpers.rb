@@ -121,10 +121,15 @@ def clean_db
 end
 
 # Reset the DB to a clean slate and reset sessions
-def reset_db
+def reset_db(test_file = '')
   clean_db do
-    $db.query(IO.read('sql/database.sql'))
-    clear_db_result
+    if test_file == 'updater'
+      $db.query(IO.read('sql/database_2.10.1.sql'))
+      clear_db_result
+    elsif test_file != 'installer'
+      $db.query(IO.read('sql/database.sql'))
+      clear_db_result
+    end
   end
 end
 
