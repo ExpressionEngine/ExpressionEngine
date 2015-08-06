@@ -451,7 +451,7 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base)->compile() => $board->board_label . ' '. lang('forum_listing')
+				ee('CP/URL', $this->base . 'index/' . $id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
 			'sidebar'    => $this->generateSidebar($id)
@@ -1168,7 +1168,7 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base)->compile() => $board->board_label . ' '. lang('forum_listing')
+				ee('CP/URL', $this->base . 'index/' . $board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => lang('create_forum_board'),
 			'sidebar'    => $this->generateSidebar($board_id)
@@ -1212,7 +1212,7 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base)->compile() => $category->Board->board_label . ' '. lang('forum_listing')
+				ee('CP/URL', $this->base . 'index/' . $category->Board->board_id)->compile() => $category->Board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
 			'sidebar'    => $this->generateSidebar($category->Board->board_id)
@@ -1357,6 +1357,8 @@ class Forum_mcp extends CP_Controller {
 			show_404();
 		}
 
+		$return = ee('CP/URL', $this->base . '/index/' . $category->board_id);
+
 		if ( ! empty($_POST))
 		{
 			foreach ($_POST['permissions'] as $key => $value)
@@ -1372,7 +1374,7 @@ class Forum_mcp extends CP_Controller {
 				->addToBody(sprintf(lang('edit_category_settings_success_desc'), $category->forum_name))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', $this->base . '/index/' . $category->board_id));
+			ee()->functions->redirect($return);
 		}
 
 		$vars = array(
@@ -1428,7 +1430,7 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base)->compile() => $category->Board->board_label . ' '. lang('forum_listing')
+				$return->compile() => $category->Board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
 			'sidebar'    => $this->generateSidebar($category->Board->board_id)
@@ -1502,7 +1504,7 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base)->compile() => $board->board_label . ' '. lang('forum_listing')
+				ee('CP/URL', $this->base. 'index/' . $board->board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => lang('create_forum_board'),
 			'sidebar'    => $this->generateSidebar($board->board_id)
@@ -1546,10 +1548,10 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base)->compile() => $forum->Board->board_label . ' '. lang('forum_listing')
+				ee('CP/URL', $this->base. 'index/' . $forum->Board->board_id)->compile() => $forum->Board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
-			'sidebar'    => $this->generateSidebar($id)
+			'sidebar'    => $this->generateSidebar($forum->Board->board_id)
 		);
 	}
 
@@ -1860,13 +1862,14 @@ class Forum_mcp extends CP_Controller {
 	private function settingsForForum($id)
 	{
 		$errors = NULL;
-		$return = ee('CP/URL', $this->base . '/index/' . $forum->board_id);
 
 		$forum = ee('Model')->get('forum:Forum', $id)->with('Board')->first();
 		if ( ! $forum)
 		{
 			show_404();
 		}
+
+		$return = ee('CP/URL', $this->base . '/index/' . $forum->board_id);
 
 		if ( ! empty($_POST))
 		{
