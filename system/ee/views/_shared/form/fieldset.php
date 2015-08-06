@@ -61,7 +61,9 @@ $element = ($grid) ? 'div' : 'fieldset'; ?>
 <<?=$element?> class="col-group<?=$fieldset_classes?> <?=( ! $grid) ? form_error_class(array_keys($setting['fields'])) : '' ?> <?=($grid) ? 'grid-publish' : '' ?>" <?php if ($setting_group): ?> data-group="<?=$setting_group?>"<?php endif ?>>
 	<div class="setting-txt col <?=($grid) ? form_error_class(array_keys($setting['fields'])) : '' ?> <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?>">
 		<h3><?=lang($setting['title'])?></h3>
+		<?php if (isset($setting['desc'])): ?>
 		<em><?=lang($setting['desc'])?></em>
+		<?php endif; ?>
 	</div>
 	<div class="setting-field col <?=(isset($setting['wide']) && $setting['wide'] == TRUE) ? 'w-16' : 'w-8'?> last">
 		<?php

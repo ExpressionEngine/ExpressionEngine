@@ -94,10 +94,8 @@ class Members extends CP_Controller {
 	 */
 	public function index()
 	{
-		// creating a member automatically fills the search box
 		if ( ! ($member_name = $this->input->post('search')) &&
-			 ! ($member_name = $this->input->get('search')) &&
-			 ! ($member_name = $this->session->flashdata('username')))
+			 ! ($member_name = $this->input->get('search')))
 		{
 			$member_name = '';
 		}
@@ -419,6 +417,11 @@ class Members extends CP_Controller {
 					break;
 				default:
 					$group = $groups[$member['group_id']];
+			}
+
+			if (ee()->session->flashdata('highlight_id') == $member['member_id'])
+			{
+				$attributes['class'] = 'selected';
 			}
 
 			$email = "<a href = '" . ee('CP/URL', 'utilities/communicate/member/' . $member['member_id']) . "'>e-mail</a>";

@@ -25,12 +25,13 @@ use EllisLab\ExpressionEngine\Service\Database\Database;
  * ExpressionEngine DataStore
  *
  * This is the backend for all model interactions. It should never be exposed
- * directly to any code outside of this namespace, including userspace models.
- * The only way to interact with it should be through the model frontend.
+ * directly to any code outside of this namespace. This includes no access from
+ * userspace models. The only way to interact with it should be through the
+ * model frontend.
  *
  * @package		ExpressionEngine
- * @subpackage	Model
  * @category	Service
+ * @subpackage	Model
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
@@ -42,7 +43,7 @@ class DataStore {
 	protected $metadata = array();
 
 	/**
-	 * @param $db \CI_DB
+	 * @param $db EllisLab\ExpressionEngine\Service\Database\Database
 	 * @param $aliases Array of model aliases
 	 */
 	public function __construct(Database $db, $aliases, $default_prefix)
@@ -183,6 +184,13 @@ class DataStore {
 	 */
 	public function getRelation($model_name, $name)
 	{
+		$prefix = $this->default_prefix;
+
+		if (strpos($model_name, ':'))
+		{
+			list($prefix, $_) = explode(':', $model_name, 2);
+		}
+
 		$from_reader = $this->getMetaDataReader($model_name);
 		$relationships = $from_reader->getRelationships();
 
@@ -205,6 +213,11 @@ class DataStore {
 			),
 			$relationships[$name]
 		);
+
+		if (strpos($options['model'], ':') == 0)
+		{
+			$options['model'] = $prefix.':'.$options['model'];
+		}
 
 		$to_reader = $this->getMetaDataReader($options['model']);
 

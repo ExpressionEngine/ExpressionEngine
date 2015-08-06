@@ -111,6 +111,16 @@ abstract class Filter {
 	}
 
 	/**
+	 * Determines if the value set for this filter is the default value or not.
+	 *
+	 * @return bool TRUE if the value is not the default, FALSE otherwise
+	 */
+	public function canReset()
+	{
+		return ($this->value() != $this->default_value);
+	}
+
+	/**
 	 * This is a stub for validation.
 	 *
 	 * @return bool True (assumed to be valid)
@@ -140,6 +150,13 @@ abstract class Filter {
 	 */
 	public function render(ViewFactory $view, URL $url)
 	{
+		$options = $this->prepareOptions($url);
+
+		if (empty($options))
+		{
+			return;
+		}
+
 		$value = $this->display_value;
 		if (is_null($value))
 		{
@@ -155,7 +172,7 @@ abstract class Filter {
 			'has_custom_value' => $this->has_custom_value,
 			'custom_value'     => (array_key_exists($this->name, $_POST)) ? $_POST[$this->name] : FALSE,
 			'placeholder'      => $this->placeholder,
-			'options'          => $this->prepareOptions($url),
+			'options'          => $options,
 		);
 		return $view->make('_shared/filters/filter')->render($filter);
 	}

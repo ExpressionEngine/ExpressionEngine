@@ -62,8 +62,12 @@ class Board extends Model {
 		'board_use_http_auth'        => 'boolString',
 	);
 
-	// protected static $_relationships = array(
-	// );
+	protected static $_relationships = array(
+		'Categories' => array(
+			'type' => 'hasMany',
+			'model' => 'Forum'
+		),
+	);
 
 	protected static $_validation_rules = array(
 		'board_label'                => 'required',
@@ -198,4 +202,31 @@ class Board extends Model {
 
 		return $value;
 	}
+
+	public function getPermission($key)
+	{
+		$permissions = $this->getProperty('board_forum_permissions');
+
+		if ( ! isset($permissions[$key]))
+		{
+			return array();
+		}
+
+		return explode('|', $permissions[$key]);
+	}
+
+	public function setPermission($key, $value)
+	{
+		$permissions = $this->getProperty('board_forum_permissions');
+
+		if (is_array($value))
+		{
+			$value = implode('|', $value);
+		}
+
+		$permissions[$key] = $value;
+
+		$this->setProperty('board_forum_permissions', $permissions);
+	}
+
 }

@@ -153,9 +153,8 @@ $lang = array(
 
 'channel_publishing_options' => 'Publishing Options',
 
-'channel_publishing_options_warning' => '<b>Warning</b>: Channels require custom fields to collect any data other than title, and date.',
-
-'channel_publishing_options_warning2' => 'If you need to collect additional data for this channel, it\'s best practice to create any <a href="%s">custom fields</a>, first.',
+'channel_publishing_options_warning' => '<b>Warning</b>: Channels require custom field groups to collect any data other than title, and date.',
+'channel_publishing_options_warning2' => 'If you need to collect additional data for this channel, it\'s best practice to create any <a href="%s">custom field groups</a>, first.',
 
 'status_groups_desc' => '',
 
@@ -235,7 +234,10 @@ $lang = array(
 
 'channel_defaults' => 'Defaults',
 
-'default_title' => 'Title',
+'title_field_label' => 'Title field label',
+'title_field_label_desc' => 'Changes the title field label in the Publish form for this channel.',
+
+'default_title' => 'Generated title',
 
 'default_title_desc' => 'Title assigned to all <b>new</b> entires in this channel.',
 
@@ -432,7 +434,7 @@ $lang = array(
 
 'group_name_desc' => '',
 
-'categories_not_found' => 'Zero <b>category groups</b> found',
+'categories_not_found' => 'Zero <b>categories</b> found',
 
 'create_category' => 'Create Category',
 

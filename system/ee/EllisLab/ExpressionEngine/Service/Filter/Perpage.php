@@ -115,6 +115,13 @@ class Perpage extends Filter {
 	 */
 	public function render(ViewFactory $view, URL $url)
 	{
+		$options = $this->prepareOptions($url);
+
+		if (empty($options))
+		{
+			return;
+		}
+
 		$value = $this->value();
 		if (is_null($value))
 		{
@@ -123,7 +130,6 @@ class Perpage extends Filter {
 				$this->value();
 		}
 
-		$options = $this->prepareOptions($url);
 		$urls = array_keys($options);
 		$show_all_url = end($urls);
 

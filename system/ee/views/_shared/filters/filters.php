@@ -5,6 +5,9 @@
 	<?php foreach ($filters as $filter): ?>
 		<li><?=$filter?></li>
 	<?php endforeach; ?>
+	<?php if ($has_reset): ?>
+		<li class="filter-clear"><a href="<?=$reset_url?>"><?=lang('clear_filters')?></a></li>
+	<?php endif;?>
 	</ul>
 </div>
 <?php endif; ?>

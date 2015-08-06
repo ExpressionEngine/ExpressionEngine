@@ -1,4 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+use EllisLab\ExpressionEngine\Library\CP\Table;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -66,86 +69,511 @@ EOT;
 	 */
 	function index()
 	{
-		ee()->load->library('table');
-
-		ee()->table->set_columns(array(
-			'moblog_id'			=> array('header' => array('data' => lang('id'), 'width' => '4%')),
-		    'moblog_full_name'  => array('header' => lang('moblog_view')),
-		    'check_moblog'  	=> array('header' => lang('check_moblog'), 'sort' => FALSE),
-			'_check'			=> array(
-				'header' => form_checkbox('toggle_all', 'true', FALSE),
-				'sort' => FALSE
+		$table = ee('CP/Table', array('autosort' => TRUE));
+		$table->setColumns(array(
+			'col_id',
+			'moblog',
+			'manage' => array(
+				'type'	=> Table::COL_TOOLBAR
+			),
+			array(
+				'type'	=> Table::COL_CHECKBOX
 			)
 		));
 
-		$defaults = array(
-			'sort'	=> array('moblog_id' => 'asc')
+		$table->setNoResultsText('no_moblogs', 'create_moblog', ee('CP/URL', 'addons/settings/moblog/create'));
+
+		$sort_map = array(
+			'col_id' => 'moblog_id',
+			'moblog' => 'moblog_full_name',
 		);
 
-		$params = array(
-			'per_page'	=> 100
-		);
+		$moblogs = ee()->db->select('moblog_id, moblog_full_name')
+			->order_by($sort_map[$table->sort_col], $table->sort_dir)
+			->get('moblogs')
+			->result_array();
 
-		$data = ee()->table->datasource('_table_datasource', $defaults, $params);
+		$data = array();
+		foreach ($moblogs as $moblog)
+		{
+			$columns = array(
+				$moblog['moblog_id'],
+				$moblog['moblog_full_name'],
+				array('toolbar_items' => array(
+					'edit' => array(
+						'href' => ee('CP/URL', 'addons/settings/moblog/edit/'.$moblog['moblog_id']),
+						'title' => lang('edit')
+					),
+					'txt-only' => array(
+						'href' => ee('CP/URL', 'addons/settings/moblog/check/'.$moblog['moblog_id']),
+						'title' => (lang('check_now')),
+						'content' => strtolower(lang('check_now'))
+					)
+				)),
+				array(
+					'name' => 'moblogs[]',
+					'value' => $moblog['moblog_id'],
+					'data'	=> array(
+						'confirm' => lang('moblog') . ': <b>' . htmlentities($moblog['moblog_full_name'], ENT_QUOTES) . '</b>'
+					)
+				)
+			);
 
-		$vars = array(
-			'table_html' 		=> $data['table_html'],
-			'pagination_html' 	=> $data['pagination_html'],
-			'total_rows'		=> $data['pagination']['total_rows'],
-			'cp_page_title' 	=> lang('moblog')
-		);
+			$attrs = array();
+			if (ee()->session->flashdata('highlight_id') == $moblog['moblog_id'])
+			{
+				$attrs = array('class' => 'selected');
+			}
 
-		ee()->cp->set_right_nav(array(
-			'create_moblog' => BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog'.AMP.'method=create_modify'
+			$data[] = array(
+				'attrs' => $attrs,
+				'columns' => $columns
+			);
+		}
+
+		$table->setData($data);
+
+		$vars['base_url'] = ee('CP/URL', 'addons/settings/moblog');
+		$vars['table'] = $table->viewData($vars['base_url']);
+
+		$vars['pagination'] = ee('CP/Pagination', count($moblogs))
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($vars['table']['base_url']);
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('moblogs') . ': <b>### ' . lang('moblogs') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/confirm_remove'),
+		));
+
+		return ee('View')->make('moblog:index')->render($vars);
+	}
+
+	/**
+	 * Remove moblogs handler
+	 */
+	public function remove()
+	{
+		$moblog_ids = ee()->input->post('moblogs');
+
+		if ( ! empty($moblog_ids) && ee()->input->post('bulk_action') == 'remove')
+		{
+			// Filter out junk
+			$moblog_ids = array_filter($moblog_ids, 'is_numeric');
+
+			if ( ! empty($moblog_ids))
+			{
+				ee('Model')->get('moblog:Moblog', $moblog_ids)->delete();
+
+				ee('Alert')->makeInline('moblogs-table')
+					->asSuccess()
+					->withTitle(lang('moblogs_removed'))
+					->addToBody(sprintf(lang('moblogs_removed_desc'), count($moblog_ids)))
+					->defer();
+			}
+		}
+		else
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		ee()->functions->redirect(ee('CP/URL', 'addons/settings/moblog', ee()->cp->get_url_state()));
+	}
+
+	/**
+	 * New moblog form
+	 */
+	public function create()
+	{
+		return $this->form();
+	}
+
+	/**
+	 * Edit moblog form
+	 */
+	public function edit($moblog_id)
+	{
+		return $this->form($moblog_id);
+	}
+
+	/**
+	 * Moblog creation/edit form
+	 *
+	 * @param	int	$moblog_id	ID of moblog to edit
+	 */
+	private function form($moblog_id = NULL)
+	{
+		$vars = array();
+		if (is_null($moblog_id))
+		{
+			ee()->cp->add_js_script('plugin', 'ee_url_title');
+			ee()->javascript->output('
+				$("input[name=moblog_full_name]").bind("keyup keydown", function() {
+					$(this).ee_url_title("input[name=moblog_short_name]");
+				});
+			');
+
+			$alert_key = 'created';
+			$vars['cp_page_title'] = lang('create_moblog');
+			$vars['base_url'] = ee('CP/URL', 'addons/settings/moblog/create');
+			$moblog = ee('Model')->make('moblog:Moblog');
+		}
+		else
+		{
+			$moblog = ee('Model')->get('moblog:Moblog', $moblog_id)->first();
+
+			if ( ! $moblog)
+			{
+				show_error(lang('unauthorized_access'));
+			}
+
+			$alert_key = 'updated';
+			$vars['cp_page_title'] = lang('edit_moblog');
+			$vars['base_url'] = ee('CP/URL', 'addons/settings/moblog/edit/'.$moblog_id);
+		}
+
+		if ( ! empty($_POST))
+		{
+			$moblog->set($_POST);
+
+			// Need to convert this field from its presentation serialization
+			$moblog->moblog_valid_from = explode(',', trim(preg_replace("/[\s,|]+/", ',', $_POST['moblog_valid_from']), ','));
+
+			$result = $moblog->validate();
+
+			if ($result->isValid())
+			{
+				$moblog = $moblog->save();
+
+				if (is_null($moblog_id))
+				{
+					ee()->session->set_flashdata('highlight_id', $moblog->getId());
+				}
+
+				ee('Alert')->makeInline('moblogs-table')
+					->asSuccess()
+					->withTitle(lang('moblog_'.$alert_key))
+					->addToBody(sprintf(lang('moblog_'.$alert_key.'_desc'), $moblog->moblog_full_name))
+					->defer();
+
+				ee()->functions->redirect(ee('CP/URL', 'addons/settings/moblog'));
+			}
+			else
+			{
+				$vars['errors'] = $result;
+				ee('Alert')->makeInline('moblogs-table')
+					->asIssue()
+					->withTitle(lang('moblog_not_'.$alert_key))
+					->addToBody(lang('moblog_not_'.$alert_key.'_desc'))
+					->now();
+			}
+		}
+
+		$channels = ee('Model')->get('Channel')->with('Site');
+
+		if (ee()->config->item('multiple_sites_enabled') !== 'y')
+		{
+			$channels = $channels->filter('site_id', 1);
+		}
+
+		$channels = $channels->all();
+
+		$channels_options = array();
+		foreach ($channels as $channel)
+		{
+			$channels_options[$channel->channel_id] = (ee()->config->item('multiple_sites_enabled') === 'y')
+				? $channel->Site->site_label.NBS.'-'.NBS.$channel->channel_title : $channel->channel_title;
+		}
+
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'moblog_name',
+					'fields' => array(
+						'moblog_full_name' => array(
+							'type' => 'text',
+							'value' => $moblog->moblog_full_name,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_short_name',
+					'desc' => 'moblog_short_name_desc',
+					'fields' => array(
+						'moblog_short_name' => array(
+							'type' => 'text',
+							'value' => $moblog->moblog_short_name,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_check_interval',
+					'desc' => 'moblog_check_interval_desc',
+					'fields' => array(
+						'moblog_time_interval' => array(
+							'type' => 'text',
+							'value' => $moblog->moblog_time_interval,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_enabled',
+					'fields' => array(
+						'moblog_enabled' => array(
+							'type' => 'yes_no',
+							'value' => is_null($moblog->moblog_enabled) ? TRUE : $moblog->moblog_enabled
+						)
+					)
+				),
+				array(
+					'title' => 'file_archive_mode',
+					'desc' => 'file_archive_mode_desc',
+					'fields' => array(
+						'moblog_file_archive' => array(
+							'type' => 'yes_no',
+							'value' => $moblog->moblog_file_archive
+						)
+					)
+				)
+			),
+			'channel_entry_settings' => array(
+				array(
+					'title' => 'channel',
+					'desc' => 'moblog_channel_desc',
+					'fields' => array(
+						'moblog_channel_id' => array(
+							'type' => 'select',
+							'choices' => $channels_options,
+							'value' => $moblog->moblog_channel_id
+						)
+					)
+				),
+				array(
+					'title' => 'cat_id',
+					'fields' => array(
+						'moblog_categories' => array(
+							'type' => 'checkbox',
+							'choices' => array('0'=> lang('none')),
+							'value' => $moblog->moblog_categories
+						)
+					)
+				),
+				array(
+					'title' => 'field_id',
+					'fields' => array(
+						'moblog_field_id' => array(
+							'type' => 'select',
+							'choices' => array('0'=> lang('none')),
+							'value' => $moblog->moblog_categories
+						)
+					)
+				),
+				array(
+					'title' => 'default_status',
+					'fields' => array(
+						'moblog_status' => array(
+							'type' => 'select',
+							'choices' => array('0'=> lang('none')),
+							'value' => $moblog->moblog_categories
+						)
+					)
+				),
+				array(
+					'title' => 'author_id',
+					'fields' => array(
+						'moblog_author_id' => array(
+							'type' => 'select',
+							'choices' => array('0'=> lang('none')),
+							'value' => $moblog->moblog_categories
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_sticky_entry',
+					'fields' => array(
+						'moblog_sticky_entry' => array(
+							'type' => 'yes_no',
+							'value' => $moblog->moblog_sticky_entry
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_allow_overrides',
+					'desc' => 'moblog_allow_overrides_subtext',
+					'fields' => array(
+						'moblog_allow_overrides' => array(
+							'type' => 'yes_no',
+							'value' => $moblog->moblog_allow_overrides
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_template',
+					'fields' => array(
+						'moblog_template' => array(
+							'type' => 'textarea',
+							'value' => $moblog->moblog_template ?: $this->default_template
+						)
+					)
+				)
+			),
+			'moblog_email_settings' => array(
+				array(
+					'title' => 'moblog_email_type',
+					'fields' => array(
+						'moblog_email_type' => array(
+							'type' => 'select',
+							'choices' => array('pop3' => lang('pop3')),
+							'value' => $moblog->moblog_email_type
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_email_address',
+					'fields' => array(
+						'moblog_email_address' => array(
+							'type' => 'text',
+							'value' => $moblog->moblog_email_address,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_email_server',
+					'desc' => 'server_example',
+					'fields' => array(
+						'moblog_email_server' => array(
+							'type' => 'text',
+							'value' => $moblog->moblog_email_server,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_email_login',
+					'desc' => 'data_encrypted',
+					'fields' => array(
+						'moblog_email_login' => array(
+							'type' => 'text',
+							'value' => $moblog->moblog_email_login,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_email_password',
+					'desc' => 'data_encrypted',
+					'fields' => array(
+						'moblog_email_password' => array(
+							'type' => 'text',
+							'value' => $moblog->moblog_email_password,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_subject_prefix',
+					'desc' => 'moblog_subject_subtext',
+					'fields' => array(
+						'moblog_subject_prefix' => array(
+							'type' => 'text',
+							'value' => $moblog->moblog_subject_prefix
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_auth_required',
+					'desc' => 'moblog_auth_subtext',
+					'fields' => array(
+						'moblog_auth_required' => array(
+							'type' => 'yes_no',
+							'value' => $moblog->moblog_auth_required
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_auth_delete',
+					'desc' => 'moblog_auth_delete_subtext',
+					'fields' => array(
+						'moblog_auth_delete' => array(
+							'type' => 'yes_no',
+							'value' => $moblog->moblog_auth_delete
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_valid_from',
+					'desc' => 'valid_from_subtext',
+					'fields' => array(
+						'moblog_valid_from' => array(
+							'type' => 'textarea',
+							'value' => implode("\n", $moblog->moblog_valid_from)
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_ignore_text',
+					'desc' => 'ignore_text_subtext',
+					'fields' => array(
+						'moblog_ignore_text' => array(
+							'type' => 'textarea',
+							'value' => $moblog->moblog_ignore_text
+						)
+					)
+				)
+			),
+			'moblog_file_settings' => array(
+				array(
+					'title' => 'moblog_upload_directory',
+					'fields' => array(
+						'moblog_upload_directory' => array(
+							'type' => 'select',
+							'choices' => ee('Model')->get('UploadDestination')
+								->filter('site_id', ee()->config->item('site_id'))
+								->all()
+								->getDictionary('id', 'name'),
+							'value' => $moblog->moblog_upload_directory
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_image_size',
+					'fields' => array(
+						'moblog_image_size' => array(
+							'type' => 'select',
+							'choices' => array('0'=> lang('none')),
+							'value' => $moblog->moblog_image_size
+						)
+					)
+				),
+				array(
+					'title' => 'moblog_thumb_size',
+					'fields' => array(
+						'moblog_thumb_size' => array(
+							'type' => 'select',
+							'choices' => array('0'=> lang('none')),
+							'value' => $moblog->moblog_thumb_size
+						)
+					)
+				)
 			)
 		);
 
-		return ee()->load->view('index', $vars, TRUE);
-	}
+		$this->_filtering_menus('moblog_create');
+		ee()->javascript->compile();
 
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Moblog table datasource
-	 *
-	 * Must remain public so that it can be called from the
-	 * table library!
-	 *
-	 * @access	public
-	 */
-	public function _table_datasource($state, $params)
-	{
-		ee()->db->select('moblog_full_name, moblog_id, moblog_enabled');
-
-		foreach($state['sort'] as $col => $dir)
-		{
-			ee()->db->order_by($col, $dir);
-		}
-
-		$data = ee()->db->get('moblogs', $params['per_page'], $state['offset'])->result_array();
-
-		foreach($data as &$row)
-		{
-			$row['moblog_full_name'] = '<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog'.AMP.'method=create_modify'.AMP.'id='.$row['moblog_id'].'">'.$row['moblog_full_name'].'</a>';
-			$row['check_moblog'] = ($row['moblog_enabled'] == 'y') ? '<a href="'.BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog'.AMP.'method=check_moblog'.AMP.'moblog_id='.$row['moblog_id'].'" class="notification_link">'.lang('check_moblog').'</a>' : lang('check_moblog');
-			$row['_check'] = '<input class="toggle" type="checkbox" name="toggle[]" value="'.$row['moblog_id'].'">';
-
-			unset($row['moblog_enabled']); // don't care about this any more
-		}
+		$vars['save_btn_text'] = 'save_moblog';
+		$vars['save_btn_text_working'] = 'btn_saving';
 
 		return array(
-		    'rows'		 => $data,
-		    'pagination' => array(
-		        'per_page'   => $params['per_page'],
-		        'total_rows' => ee()->db->count_all_results('moblogs'),
-		    ),
+			'heading'    => $vars['cp_page_title'],
+			'breadcrumb' => array(ee('CP/URL', 'addons/settings/moblog')->compile() => lang('moblog') . ' ' . lang('configuration')),
+			'body'       => ee('View')->make('moblog:create')->render($vars)
 		);
 	}
-
-
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Create Moblog
@@ -593,6 +1021,7 @@ EOT;
 			}
 		}
 
+		ee()->legacy_api->instantiate('channel_categories');
 
 		//  Category Tree
 		$cat_array = ee()->api_channel_categories->category_form_tree('y', FALSE, 'all');
@@ -704,14 +1133,12 @@ EOT;
 						if ( ! isset($set))
 						{
 							$cats[] = array('', lang('all'));
-							$cats[] = array('none', lang('none'));
 
 							$set = 'y';
 						}
 
 						if ($last_group == 0 OR $last_group != $v['0'])
 						{
-							$cats[] = array('', '-------');
 							$last_group = $v['0'];
 						}
 
@@ -771,7 +1198,7 @@ EOT;
 
 			$authors = array();
 
-			$authors[] = array('none', lang('none'));
+			$authors[] = array('0', lang('none'));
 
 			if (count($this->author_array) > 0)
 			{
@@ -798,7 +1225,7 @@ EOT;
 // An object to represent our channels
 var channel_map = $channel_info;
 
-var empty_select =  '<option value="none">$none_text</option>';
+var empty_select =  '<option value="0">$none_text</option>';
 var spaceString = new RegExp('!-!', "g");
 
 // We prep the magic array as soon as we can, basically
@@ -810,10 +1237,17 @@ var spaceString = new RegExp('!-!', "g");
 		jQuery.each(details, function(group, values) {
 			var html = new String();
 
-			// Add the new option fields
-			jQuery.each(values, function(a, b) {
-				html += '<option value="' + b[0] + '">' + b[1].replace(spaceString, String.fromCharCode(160)) + "</option>";
-			});
+			if (group == 'categories') {
+				// Categories are checkboxes
+				jQuery.each(values, function(a, b) {
+					html += '<label class="choice block"><input type="checkbox" name="moblog_categories[]" value ="' + b[0] + '">' + b[1].replace(spaceString, String.fromCharCode(160)) + "</label>";
+				});
+			} else {
+				// Add the new option fields
+				jQuery.each(values, function(a, b) {
+					html += '<option value="' + b[0] + '">' + b[1].replace(spaceString, String.fromCharCode(160)) + "</option>";
+				});
+			}
 
 			channel_map[key][group] = html;
 		});
@@ -827,27 +1261,27 @@ function changemenu(index)
 	var channels = 'null';
 
 	if (channel_map[index] === undefined) {
-		$('select[name=field_id], select[name="cat_id[]"], select[name=status], select[name=author_id]').empty().append(empty_select);
+		$('select[name=moblog_field_id], select[name="moblog_categories"], select[name=moblog_status], select[name=moblog_author_id]').empty().append(empty_select);
 	}
 	else {
 		jQuery.each(channel_map[index], function(key, val) {
 			switch(key) {
-				case 'fields':		$('select[name=field_id]').empty().append(val);
+				case 'fields':		$('select[name=moblog_field_id]').empty().append(val);
 					break;
-				case 'categories':	$('select[name="cat_id[]"]').empty().append(val);
+				case 'categories':	$('input[name="moblog_categories[]"]').parents('.setting-field').empty().append(val);
 					break;
-				case 'statuses':	$('select[name=status]').empty().append(val);
+				case 'statuses':	$('select[name=moblog_status]').empty().append(val);
 					break;
-				case 'authors':		$('select[name=author_id]').empty().append(val);
+				case 'authors':		$('select[name=moblog_author_id]').empty().append(val);
 					break;
 			}
 		});
 	}
 }
 
-$('select[name=channel_id]').change(function() {
+$('select[name=moblog_channel_id]').change(function() {
 	changemenu(this.value);
-});
+}).change();
 
 MAGIC;
 
@@ -870,7 +1304,7 @@ MAGIC;
 
 		foreach ($upload_q as $row)
 		{
-			$this->image_dim_array[$row['id']] = array('0' => $this->lang->line('none'));
+			$this->image_dim_array[$row['id']] = array('0' => lang('none'));
 			$this->upload_loc_array[$row['id']] = $row['name'];
 
 			// Get sizes
@@ -922,7 +1356,7 @@ function upload_changemenu(index)
 
 $('select[name=moblog_upload_directory]').change(function() {
 	upload_changemenu(this.value);
-});
+}).change();
 
 MAGIC;
 

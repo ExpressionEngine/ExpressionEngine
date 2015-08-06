@@ -23,7 +23,6 @@ $lang = array(
 'create_field_group_warning2' => 'It\'s best practice to create any <a href="%s">custom fields</a>, first.',
 
 'create_field_group' => 'Create Field Group',
-'custom_fields_desc' => '',
 
 'custom_fields_not_found' => 'Zero <b>custom fields</b> found',
 
@@ -79,7 +78,7 @@ $lang = array(
 
 'create_field_success' => 'Field Created',
 
-'create_field_success_desc' => 'The field group <b>%s</b> has been created.',
+'create_field_success_desc' => 'The field <b>%s</b> has been created.',
 
 'create_field_error' => 'Cannot Create Field',
 
@@ -98,7 +97,6 @@ $lang = array(
 'field_content_text_desc' => 'Type of content this field can contain.',
 
 'field_tools' => 'Field tools',
-'field_tools_desc' => '',
 
 'show_smileys' => 'Emoji <i>&mdash; Image based conveyances of emotion.</i>',
 
@@ -854,19 +852,13 @@ $lang = array(
 
 'field_max_length' => 'Maximum characters',
 
-'field_max_length_desc' => '',
-
 'field_fmt' => 'Text formatting',
-
-'field_fmt_desc' => '',
 
 'field_show_fmt' => 'Allow override?',
 
 'field_show_fmt_desc' => 'When set to <b>yes</b>, authors can override the default text formatting for this field from the publish form.',
 
 'field_text_direction' => 'Text direction',
-
-'field_text_direction_desc' => '',
 
 'field_text_direction_ltr' => 'Left to right',
 

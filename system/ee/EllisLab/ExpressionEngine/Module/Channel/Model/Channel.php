@@ -151,6 +151,7 @@ class Channel extends StructureModel {
 	protected $enable_versioning;
 	protected $max_revisions;
 	protected $default_entry_title;
+	protected $title_field_label;
 	protected $url_title_prefix;
 	protected $live_look_template;
 

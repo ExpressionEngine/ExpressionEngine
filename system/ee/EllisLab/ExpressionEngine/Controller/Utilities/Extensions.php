@@ -109,6 +109,7 @@ class Extensions extends Utilities {
 					$toolbar['manual'] = array(
 						'href' => $info['manual_url'],
 						'title' => lang('manual'),
+						'rel' => 'external'
 					);
 				}
 

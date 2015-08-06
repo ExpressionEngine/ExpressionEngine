@@ -278,8 +278,7 @@ class Fields extends Members\Members {
 					)
 				),
 				array(
-					'title' => 'label',
-					'desc' => 'field_label_desc',
+					'title' => 'name',
 					'fields' => array(
 						'm_field_label' => array(
 							'type' => 'text',
@@ -300,6 +299,16 @@ class Fields extends Members\Members {
 					)
 				),
 				array(
+					'title' => 'field_description',
+					'desc' => 'field_description_info',
+					'fields' => array(
+						'm_field_description' => array(
+							'type' => 'textarea',
+							'value' => $field->field_description
+						)
+					)
+				),
+				array(
 					'title' => 'require_field',
 					'desc' => 'cat_require_field_desc',
 					'fields' => array(
@@ -312,14 +321,40 @@ class Fields extends Members\Members {
 			)
 		);
 
+		$visibility['visibility'] = array(
+			array(
+				'title' => 'is_field_reg',
+				'desc' => 'is_field_reg_cont',
+				'fields' => array(
+					'm_field_reg' => array(
+						'type' => 'yes_no',
+						'value' => $field->field_reg
+					)
+				)
+			),
+			array(
+				'title' => 'is_field_public',
+				'desc' => 'is_field_public_cont',
+				'fields' => array(
+					'm_field_public' => array(
+						'type' => 'yes_no',
+						'value' => $field->field_public
+					)
+				)
+			)
+		);
+
+
 		$settingsForm = $field->getSettingsForm();
+
+		$vars['sections'] += $visibility;
 		$vars['sections'] += $settingsForm;
 		$settingsFields = array_pop($settingsForm);
 		$settingsFields = $settingsFields['settings'];
 
 		if ( ! empty($_POST))
 		{
-			foreach (array_merge($vars['sections'][0], $settingsFields) as $section)
+			foreach (array_merge($vars['sections'][0], $vars['sections']['visibility'], $settingsFields) as $section)
 			{
 				// We have to do this dance of explicitly setting each property
 				// so that the MemberField model's magic set method will prefix

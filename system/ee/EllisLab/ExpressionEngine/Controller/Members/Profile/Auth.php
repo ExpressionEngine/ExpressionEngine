@@ -90,7 +90,9 @@ class Auth extends Profile {
 							'maxlength' => PASSWORD_MAX_LENGTH
 						)
 					)
-				),
+				)
+			),
+			'secure_form_ctrls' => array(
 				array(
 					'title' => 'existing_password',
 					'desc' => 'existing_password_exp',
