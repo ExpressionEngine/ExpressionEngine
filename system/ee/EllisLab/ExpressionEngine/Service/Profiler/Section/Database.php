@@ -127,7 +127,7 @@ class Database extends ProfilerSection {
 	 **/
 	private function getDuplicateQueries($log)
 	{
-		$duplicate_queries = array_filter($log->getQueriesCount(),
+		$duplicate_queries = array_filter($log->getQueryMetrics(),
 			function($value)
 			{
 				return ($value['count'] > 1);
