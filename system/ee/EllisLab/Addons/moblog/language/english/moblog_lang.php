@@ -128,6 +128,23 @@ $lang = array(
 'moblog_thumb_size' =>
 'Thumb size',
 
+'moblog_created' => 'Moblog Created',
+
+'moblog_created_desc' => 'The moblog <b>%s</b> has been created.',
+
+'moblog_not_created' => 'Cannot Create Moblog',
+
+'moblog_not_created_desc' => 'We were unable to create this moblog, please review and fix errors below.',
+
+'moblog_updated' => 'Moblog Updated',
+
+'moblog_updated_desc' => 'The moblog <b>%s</b> has been updated.',
+
+'moblog_not_updated' => 'Cannot Update Moblog',
+
+'moblog_not_updated_desc' => 'We were unable to update this moblog, please review and fix errors below.',
+
+
 /*
 
 'moblog_allow_overrides' =>

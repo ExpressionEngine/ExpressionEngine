@@ -225,6 +225,55 @@ EOT;
 			$vars['base_url'] = ee('CP/URL', 'addons/settings/moblog/edit/'.$moblog_id);
 		}
 
+		if ( ! empty($_POST))
+		{
+			$moblog->set($_POST);
+			$result = $moblog->validate();
+
+			if ($result->isValid())
+			{
+				$moblog = $moblog->save();
+
+				if (is_null($moblog_id))
+				{
+					ee()->session->set_flashdata('highlight_id', $moblog->getId());
+				}
+
+				ee('Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('moblog_'.$alert_key))
+					->addToBody(sprintf(lang('moblog_'.$alert_key.'_desc'), $moblog->moblog_full_name))
+					->defer();
+
+				ee()->functions->redirect(ee('CP/URL', 'addons/settings/moblog'));
+			}
+			else
+			{
+				$vars['errors'] = $result;
+				ee('Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('moblog_not_'.$alert_key))
+					->addToBody(lang('moblog_not_'.$alert_key.'_desc'))
+					->now();
+			}
+		}
+
+		$channels = ee('Model')->get('Channel')->with('Site');
+
+		if (ee()->config->item('multiple_sites_enabled') !== 'y')
+		{
+			$channels = $channels->filter('site_id', 1);
+		}
+
+		$channels = $channels->all();
+
+		$channels_options = array();
+		foreach ($channels as $channel)
+		{
+			$channels_options[$channel->channel_id] = (ee()->config->item('multiple_sites_enabled') === 'y')
+				? $channel->Site->site_label.NBS.'-'.NBS.$channel->channel_title : $channel->channel_title;
+		}
+
 		$vars['sections'] = array(
 			array(
 				array(
@@ -254,7 +303,8 @@ EOT;
 					'fields' => array(
 						'moblog_time_interval' => array(
 							'type' => 'text',
-							'value' => $moblog->moblog_time_interval
+							'value' => $moblog->moblog_time_interval,
+							'required' => TRUE
 						)
 					)
 				),
@@ -285,10 +335,7 @@ EOT;
 					'fields' => array(
 						'moblog_channel_id' => array(
 							'type' => 'select',
-							'choices' => ee('Model')->get('Channel')
-								->filter('site_id', ee()->config->item('site_id'))
-								->all()
-								->getDictionary('channel_id', 'channel_title'),
+							'choices' => $channels_options,
 							'value' => $moblog->moblog_channel_id
 						)
 					)
@@ -297,8 +344,8 @@ EOT;
 					'title' => 'cat_id',
 					'fields' => array(
 						'moblog_categories' => array(
-							'type' => 'select',
-							'choices' => array(),
+							'type' => 'checkbox',
+							'choices' => array('0'=> lang('none')),
 							'value' => $moblog->moblog_categories
 						)
 					)
@@ -306,9 +353,9 @@ EOT;
 				array(
 					'title' => 'field_id',
 					'fields' => array(
-						'moblog_categories' => array(
+						'moblog_field_id' => array(
 							'type' => 'select',
-							'choices' => array(),
+							'choices' => array('0'=> lang('none')),
 							'value' => $moblog->moblog_categories
 						)
 					)
@@ -316,9 +363,9 @@ EOT;
 				array(
 					'title' => 'default_status',
 					'fields' => array(
-						'moblog_categories' => array(
+						'moblog_status' => array(
 							'type' => 'select',
-							'choices' => array(),
+							'choices' => array('0'=> lang('none')),
 							'value' => $moblog->moblog_categories
 						)
 					)
@@ -326,9 +373,9 @@ EOT;
 				array(
 					'title' => 'author_id',
 					'fields' => array(
-						'moblog_categories' => array(
+						'moblog_author_id' => array(
 							'type' => 'select',
-							'choices' => array(),
+							'choices' => array('0'=> lang('none')),
 							'value' => $moblog->moblog_categories
 						)
 					)
@@ -378,7 +425,8 @@ EOT;
 					'fields' => array(
 						'moblog_email_address' => array(
 							'type' => 'text',
-							'value' => $moblog->moblog_email_address
+							'value' => $moblog->moblog_email_address,
+							'required' => TRUE
 						)
 					)
 				),
@@ -388,7 +436,8 @@ EOT;
 					'fields' => array(
 						'moblog_email_server' => array(
 							'type' => 'text',
-							'value' => $moblog->moblog_email_server
+							'value' => $moblog->moblog_email_server,
+							'required' => TRUE
 						)
 					)
 				),
@@ -398,7 +447,8 @@ EOT;
 					'fields' => array(
 						'moblog_email_login' => array(
 							'type' => 'text',
-							'value' => $moblog->moblog_email_login
+							'value' => $moblog->moblog_email_login,
+							'required' => TRUE
 						)
 					)
 				),
@@ -408,7 +458,8 @@ EOT;
 					'fields' => array(
 						'moblog_email_password' => array(
 							'type' => 'text',
-							'value' => $moblog->moblog_email_password
+							'value' => $moblog->moblog_email_password,
+							'required' => TRUE
 						)
 					)
 				),
@@ -469,7 +520,10 @@ EOT;
 					'fields' => array(
 						'moblog_upload_directory' => array(
 							'type' => 'select',
-							'choices' => array(),
+							'choices' => ee('Model')->get('UploadDestination')
+								->filter('site_id', ee()->config->item('site_id'))
+								->all()
+								->getDictionary('id', 'name'),
 							'value' => $moblog->moblog_upload_directory
 						)
 					)
@@ -479,7 +533,7 @@ EOT;
 					'fields' => array(
 						'moblog_image_size' => array(
 							'type' => 'select',
-							'choices' => array(),
+							'choices' => array('0'=> lang('none')),
 							'value' => $moblog->moblog_image_size
 						)
 					)
@@ -489,7 +543,7 @@ EOT;
 					'fields' => array(
 						'moblog_thumb_size' => array(
 							'type' => 'select',
-							'choices' => array(),
+							'choices' => array('0'=> lang('none')),
 							'value' => $moblog->moblog_thumb_size
 						)
 					)
@@ -497,7 +551,9 @@ EOT;
 			)
 		);
 
-		$vars['ajax_validate'] = TRUE;
+		$this->_filtering_menus('moblog_create');
+		ee()->javascript->compile();
+
 		$vars['save_btn_text'] = 'save_moblog';
 		$vars['save_btn_text_working'] = 'btn_saving';
 
@@ -950,6 +1006,7 @@ EOT;
 			}
 		}
 
+		ee()->legacy_api->instantiate('channel_categories');
 
 		//  Category Tree
 		$cat_array = ee()->api_channel_categories->category_form_tree('y', FALSE, 'all');
@@ -1061,14 +1118,12 @@ EOT;
 						if ( ! isset($set))
 						{
 							$cats[] = array('', lang('all'));
-							$cats[] = array('none', lang('none'));
 
 							$set = 'y';
 						}
 
 						if ($last_group == 0 OR $last_group != $v['0'])
 						{
-							$cats[] = array('', '-------');
 							$last_group = $v['0'];
 						}
 
@@ -1128,7 +1183,7 @@ EOT;
 
 			$authors = array();
 
-			$authors[] = array('none', lang('none'));
+			$authors[] = array('0', lang('none'));
 
 			if (count($this->author_array) > 0)
 			{
@@ -1155,7 +1210,7 @@ EOT;
 // An object to represent our channels
 var channel_map = $channel_info;
 
-var empty_select =  '<option value="none">$none_text</option>';
+var empty_select =  '<option value="0">$none_text</option>';
 var spaceString = new RegExp('!-!', "g");
 
 // We prep the magic array as soon as we can, basically
@@ -1167,10 +1222,17 @@ var spaceString = new RegExp('!-!', "g");
 		jQuery.each(details, function(group, values) {
 			var html = new String();
 
-			// Add the new option fields
-			jQuery.each(values, function(a, b) {
-				html += '<option value="' + b[0] + '">' + b[1].replace(spaceString, String.fromCharCode(160)) + "</option>";
-			});
+			if (group == 'categories') {
+				// Categories are checkboxes
+				jQuery.each(values, function(a, b) {
+					html += '<label class="choice block"><input type="checkbox" name="moblog_categories[]" value =""' + b[0] + '">' + b[1].replace(spaceString, String.fromCharCode(160)) + "</label>";
+				});
+			} else {
+				// Add the new option fields
+				jQuery.each(values, function(a, b) {
+					html += '<option value="' + b[0] + '">' + b[1].replace(spaceString, String.fromCharCode(160)) + "</option>";
+				});
+			}
 
 			channel_map[key][group] = html;
 		});
@@ -1184,27 +1246,27 @@ function changemenu(index)
 	var channels = 'null';
 
 	if (channel_map[index] === undefined) {
-		$('select[name=field_id], select[name="cat_id[]"], select[name=status], select[name=author_id]').empty().append(empty_select);
+		$('select[name=moblog_field_id], select[name="moblog_categories"], select[name=moblog_status], select[name=moblog_author_id]').empty().append(empty_select);
 	}
 	else {
 		jQuery.each(channel_map[index], function(key, val) {
 			switch(key) {
-				case 'fields':		$('select[name=field_id]').empty().append(val);
+				case 'fields':		$('select[name=moblog_field_id]').empty().append(val);
 					break;
-				case 'categories':	$('select[name="cat_id[]"]').empty().append(val);
+				case 'categories':	$('input[name="moblog_categories[]"]').parents('.setting-field').empty().append(val);
 					break;
-				case 'statuses':	$('select[name=status]').empty().append(val);
+				case 'statuses':	$('select[name=moblog_status]').empty().append(val);
 					break;
-				case 'authors':		$('select[name=author_id]').empty().append(val);
+				case 'authors':		$('select[name=moblog_author_id]').empty().append(val);
 					break;
 			}
 		});
 	}
 }
 
-$('select[name=channel_id]').change(function() {
+$('select[name=moblog_channel_id]').change(function() {
 	changemenu(this.value);
-});
+}).change();
 
 MAGIC;
 
@@ -1227,7 +1289,7 @@ MAGIC;
 
 		foreach ($upload_q as $row)
 		{
-			$this->image_dim_array[$row['id']] = array('0' => $this->lang->line('none'));
+			$this->image_dim_array[$row['id']] = array('0' => lang('none'));
 			$this->upload_loc_array[$row['id']] = $row['name'];
 
 			// Get sizes
@@ -1279,7 +1341,7 @@ function upload_changemenu(index)
 
 $('select[name=moblog_upload_directory]').change(function() {
 	upload_changemenu(this.value);
-});
+}).change();
 
 MAGIC;
 
