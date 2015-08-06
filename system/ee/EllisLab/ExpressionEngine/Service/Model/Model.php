@@ -93,6 +93,7 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		'base64Serialized' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64Native',
 		'commaDelimited' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\CommaDelimited',
 		'json' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Json',
+		'pipeDelimited' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\PipeDelimited',
 		'serialized' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Native',
 	);
 
