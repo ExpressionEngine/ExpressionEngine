@@ -273,6 +273,21 @@ $lang = array(
 'edit_forum_error' => 'Cannot Update Forum',
 'edit_forum_error_desc' => 'We were unable to update this forum, please review and fix errors below.',
 
+// Category Permissions
+
+'category_permissions' => '%s Permissions',
+'btn_save_permissions' => 'Save Permissions',
+
+'view_category' => 'View category',
+'view_category_desc' => 'Allow the following member groups to view this category.</em> <em>Super Administrators are <b>always</b> allowed.',
+
+'view_hidden_category' => 'View hidden category',
+'view_hidden_category_desc' => 'Allow the following member groups to view this category.</em> <em>Super Administrators are <b>always</b> allowed.',
+
+'edit_category_settings_success' => 'Category Permissions Updated',
+'edit_category_settings_success_desc' => 'The permissions for category <b>%s</b> have been updated.',
+
+
 /* 2.x Keys
 //----------------------------------------
 

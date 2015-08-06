@@ -345,6 +345,22 @@ class Forum_mcp extends CP_Controller {
 		show_404();
 	}
 
+	/**
+	 * Dispatch method for the various things that can be edit
+	 */
+	public function settings($type)
+	{
+		$parameters = array_slice(func_get_args(), 1);
+		$method = 'settingsFor' . ucfirst($type);
+
+		if (method_exists($this, $method))
+		{
+			return call_user_func_array(array($this, $method), $parameters);
+		}
+
+		show_404();
+	}
+
 	// --------------------------------------------------------------------
 
 	private function createBoard()
@@ -962,6 +978,7 @@ class Forum_mcp extends CP_Controller {
 		$html = '';
 
 		$member_groups = ee('Model')->get('MemberGroup')
+			->fields('group_id', 'group_title')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('group_id', '!=', '1')
 			->order('group_title', 'asc')
@@ -1328,6 +1345,94 @@ class Forum_mcp extends CP_Controller {
 		);
 
 		return $sections;
+	}
+
+	private function settingsForCategory($id)
+	{
+		$errors = NULL;
+
+		$category = ee('Model')->get('forum:Forum', $id)->with('Board')->first();
+		if ( ! $category)
+		{
+			show_404();
+		}
+
+		if ( ! empty($_POST))
+		{
+			foreach ($_POST['permissions'] as $key => $value)
+			{
+				$category->setPermission($key, $value);
+			}
+
+			$category->save();
+
+			ee('Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('edit_category_settings_success'))
+				->addToBody(sprintf(lang('edit_category_settings_success_desc'), $category->forum_name))
+				->defer();
+
+			ee()->functions->redirect(ee('CP/URL', $this->base . '/index/' . $category->board_id));
+		}
+
+		$vars = array(
+			'errors' => $errors,
+			'cp_page_title' => sprintf(lang('category_permissions'), $category->forum_name),
+			'base_url' => ee('CP/URL', $this->base . 'settings/category/' . $id),
+			'save_btn_text' => 'btn_save_permissions',
+			'save_btn_text_working' => 'btn_saving',
+		);
+
+		$member_groups = ee('Model')->get('MemberGroup')
+			->fields('group_id', 'group_title')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('group_id', '!=', '1')
+			->order('group_title', 'asc')
+			->all()
+			->getDictionary('group_id', 'group_title');
+
+		$vars['sections'] = array(
+			array(
+				ee('Alert')->makeInline('permissions-warn')
+					->asWarning()
+					->addToBody(lang('permissions_warning'))
+					->cannotClose()
+					->render(),
+				array(
+					'title' => 'view_category',
+					'desc' => 'view_category_desc',
+					'fields' => array(
+						'permissions[can_view_forum]' => array(
+							'type' => 'checkbox',
+							'choices' => $member_groups,
+							'value' => $category->getPermission('can_view_forum'),
+						)
+					)
+				),
+				array(
+					'title' => 'view_hidden_category',
+					'desc' => 'view_hidden_category_desc',
+					'fields' => array(
+						'permissions[can_view_hidden]' => array(
+							'type' => 'checkbox',
+							'choices' => $member_groups,
+							'value' => $category->getPermission('can_view_hidden'),
+						)
+					)
+				),
+			)
+		);
+
+		$body = ee('View')->make('ee:_shared/form')->render($vars);
+
+		return array(
+			'body'       => '<div class="box">' . $body . '</div>',
+			'breadcrumb' => array(
+				ee('CP/URL', $this->base)->compile() => $category->Board->board_label . ' '. lang('forum_listing')
+			),
+			'heading'    => $vars['cp_page_title'],
+			'sidebar'    => $this->generateSidebar($category->Board->board_id)
+		);
 	}
 
 	// --------------------------------------------------------------------
