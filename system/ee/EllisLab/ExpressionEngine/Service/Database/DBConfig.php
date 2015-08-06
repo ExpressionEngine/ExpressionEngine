@@ -100,13 +100,15 @@ class DBConfig implements Config {
 	 */
 	public function set($item, $value)
 	{
-		if ($value != $this->getDefaultFor($item))
+		if ($value == $this->getDefaultFor($item))
 		{
-			$this->delegate->set(
-				"database.{$this->active_group}.".$item,
-				$value
-			);
+			$value = NULL;
 		}
+
+		$this->delegate->set(
+			"database.{$this->active_group}.".$item,
+			$value
+		);
 	}
 
 	/**
