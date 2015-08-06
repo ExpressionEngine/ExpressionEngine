@@ -6,8 +6,6 @@ require './bootstrap.rb'
 
 feature 'Updater' do
   before :all do
-    ENV['updater'] = 'true'
-
     @installer = Installer::Prepare.new
     @installer.enable_installer
     @installer.disable_rename
@@ -34,8 +32,6 @@ feature 'Updater' do
   end
 
   after :all do
-    ENV.delete('updater')
-
     @installer.disable_installer
     @installer.enable_rename
     @installer.delete_database_config
@@ -109,4 +105,10 @@ feature 'Updater' do
     end
   end
 
+# Override base reset_db method to import 2.10.1 database
+def reset_db
+  clean_db do
+    $db.query(IO.read('sql/database_2.10.1.sql'))
+    clear_db_result
+  end
 end

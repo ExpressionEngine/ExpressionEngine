@@ -107,24 +107,25 @@ def wait_for_dom
   page.find("##{uuid}")
 end
 
-# Reset the DB to a clean slate and reset sessions
-def reset_db
+# Cleans the datbase and resets Capybara sessions, takes a block that's executed
+# after cleaning the database
+#
+# @return [void]
+def clean_db
   $db.query(IO.read('sql/truncate_db.sql'))
   clear_db_result
 
-  # Installer should not drop in database
-  unless ENV.key?('installer') || ENV.key?('updater')
+  yield if block_given?
+
+  Capybara.reset_sessions!
+end
+
+# Reset the DB to a clean slate and reset sessions
+def reset_db
+  clean_db do
     $db.query(IO.read('sql/database.sql'))
     clear_db_result
   end
-
-  if ENV.key?('updater')
-    $db.query(IO.read('sql/database_2.10.1.sql'))
-    clear_db_result
-  end
-
-  # Reset sessions
-  Capybara.reset_sessions!
 end
 
 # Clear the DB result so we can use the DB object again

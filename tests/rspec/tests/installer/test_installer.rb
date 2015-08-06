@@ -2,9 +2,6 @@ require './bootstrap.rb'
 
 feature 'Installer' do
   before :all do
-    # Set the environment variable so reset_db does not import the database
-    ENV['installer'] = 'true'
-
     @installer = Installer::Prepare.new
     @installer.enable_installer
     @installer.disable_rename
@@ -24,10 +21,6 @@ feature 'Installer' do
   end
 
   after :all do
-    # Delete the environment variable that overrode reset_db
-    ENV.delete('installer')
-
-    # Add the FALSE && back into boot.php
     @installer.disable_installer
     @installer.enable_rename
     @installer.revert_config
@@ -192,4 +185,9 @@ feature 'Installer' do
       @page.has_inline_error('The password cannot be based on the username') == true
     end
   end
+end
+
+# Override base reset_db method to leave empty database
+def reset_db
+  clean_db
 end
