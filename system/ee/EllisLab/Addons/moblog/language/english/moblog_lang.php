@@ -144,26 +144,19 @@ $lang = array(
 
 'moblog_not_updated_desc' => 'We were unable to update this moblog, please review and fix errors below.',
 
+'moblog_check_failure' => 'Could Not Check Moblog',
 
-/*
+'moblog_check_success' =>
+'Moblog Successfully checked',
 
-'moblog_allow_overrides' =>
-'Allow Overrides in Email?',
+'emails_done' =>
+'Emails Retrieved:',
 
-'moblog_allow_overrides_subtext' =>
-'If set to yes, the default settings above can be overridden in the email.',
+'entries_added' =>
+'Entries Added:',
 
-'moblog_sticky_entry' =>
-'Make Entry Sticky?',
-
-'moblog_prefs' =>
-'Preferences',
-
-'moblog_type' =>
-'Moblog Type',
-
-'channel' =>
-'Channel',
+'attachments_uploaded' =>
+'Attachments Uploaded:',
 
 'invalid_upload_directory' =>
 'Invalid Upload Directory',

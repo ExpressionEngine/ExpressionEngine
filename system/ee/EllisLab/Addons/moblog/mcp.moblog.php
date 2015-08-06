@@ -1589,16 +1589,11 @@ MAGIC;
 	/**  Check Moblog
 	/** -------------------------*/
 
-	function check_moblog()
+	function check($moblog_id)
 	{
-		if ( ! $id = ee()->input->get('moblog_id'))
-		{
-			return FALSE;
-		}
-
 		$where = array(
 			'moblog_enabled'	=> 'y',
-			'moblog_id'			=> $id
+			'moblog_id'			=> $moblog_id
 		);
 
 		$query = ee()->db->get_where('moblogs', $where);
@@ -1636,24 +1631,24 @@ MAGIC;
 	{
 		if ( ! $response)
 		{
-			ee()->session->set_flashdata('message_failure', $MP->errors());
-			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
+			ee('Alert')->makeInline('moblogs-table')
+				->asIssue()
+				->withTitle(lang('moblog_check_failure'))
+				->addToBody($MP->errors())
+				->defer();
 		}
 		else
 		{
-			$message['message_success'] = lang('moblog_successful_check');
-			$message['message_success'] .=  BR.lang('emails_done').NBS.NBS.$MP->emails_done;
-			$message['message_success'] .=  BR.lang('entries_added').NBS.NBS.$MP->entries_added;
-			$message['message_success'] .=  BR.lang('attachments_uploaded').NBS.NBS.$MP->uploads;
-
-			if ( ! empty($error_string))
-			{
-				$message['message_failure'] = BR.$MP->errors();
-			}
-
-			ee()->session->set_flashdata($message);
-			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog');
+			ee('Alert')->makeInline('moblogs-table')
+				->asSuccess()
+				->withTitle(lang('moblog_check_success'))
+				->addToBody(lang('emails_done').NBS.$MP->emails_done)
+				->addToBody(lang('entries_added').NBS.$MP->entries_added)
+				->addToBody(lang('attachments_uploaded').NBS.$MP->uploads)
+				->defer();
 		}
+
+		ee()->functions->redirect(ee('CP/URL', 'addons/settings/moblog', ee()->cp->get_url_state()));
 	}
 
 }
