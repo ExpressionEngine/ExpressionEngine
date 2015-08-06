@@ -109,7 +109,8 @@ return array(
 
 		'Profiler' => function($ee)
 		{
-			return new Profiler\Factory();
+			$view = ee('View')->make('profiler/container');
+			return new Profiler\Factory(ee()->lang, $view);
 		}
 
 	),

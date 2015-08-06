@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Service\Profiler\Section;
 
 use EllisLab\ExpressionEngine\Service\Profiler\ProfilerSection;
+use EllisLab\ExpressionEngine\Service\View\View;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -65,16 +66,37 @@ class Database extends ProfilerSection {
 	);
 
 	/**
+	 * @var View $view A View object for rendering this section
+	 **/
+	private $view;
+
+	/**
+	 * @var array of Database objects
+	 **/
+	private $dbs;
+
+	/**
+	 * Constructor
+	 *
+	 * @param  $dbs  array of Database object(s)
+	 * @param  $view View object
+	 **/
+	public function __construct($dbs, View $view)
+	{
+		$this->dbs = $dbs;
+		$this->view = $view;
+	}
+
+	/**
 	 * Set the section's data
 	 *
 	 * @return void
 	 **/
 	public function setData()
 	{
-		$dbs = array(ee('Database'));
 		$count = 0;
 
-		foreach ($dbs as $db)
+		foreach ($this->dbs as $db)
 		{
 			$count++;
 			$log = $db->getLog();
@@ -94,8 +116,7 @@ class Database extends ProfilerSection {
 	 **/
 	public function render()
 	{
-		$view = ee('View')->make('profiler/database');
-		return $view->render(array('profiler_data' => $this->data));
+		return $this->view->render(array('profiler_data' => $this->data));
 	}
 
 	/**

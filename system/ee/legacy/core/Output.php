@@ -360,7 +360,14 @@ class EE_Output {
 		// If so, load the Profile service and run it.
 		if ($this->enable_profiler == TRUE)
 		{
-			$profiler = ee('Profiler')->make(array('benchmark', 'memory', 'database', 'userdata', 'get', 'post', 'server'));
+			$profiler = ee('Profiler')->make(ee()->lang, ee('View')->make('profiler/container'));
+			$profiler->addSection('benchmark', ee()->benchmark)
+				->addSection('memory')
+				->addSection('database', array(ee('Database')), ee('View')->make('profiler/database'))
+				->addSection('userdata', ee()->session->all_userdata())
+				->addSection('get')
+				->addSection('post')
+				->addSection('server');
 
 			// If the output data contains closing </body> and </html> tags
 			// we will remove them and add them back after we insert the profile data

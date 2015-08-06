@@ -2,6 +2,9 @@
 
 namespace EllisLab\ExpressionEngine\Service\Profiler;
 
+use \EE_Lang;
+use EllisLab\ExpressionEngine\Service\View\View;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -30,9 +33,9 @@ class Factory {
 	/**
 	 *
 	 */
-	public function make($sections = array())
+	public function make(EE_Lang $lang, View $view)
 	{
-		return new Profiler($sections);
+		return new Profiler($lang, $view);
 	}
 
 }
