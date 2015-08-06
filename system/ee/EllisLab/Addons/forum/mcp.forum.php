@@ -1007,8 +1007,8 @@ class Forum_mcp extends CP_Controller {
 					)
 				),
 				array(
-					'title' => 'view_forum',
-					'desc' => 'view_forum_desc',
+					'title' => 'view_forums',
+					'desc' => 'view_forums_desc',
 					'fields' => array(
 						'permissions[can_view_forum]' => array(
 							'type' => 'checkbox',
@@ -1018,8 +1018,8 @@ class Forum_mcp extends CP_Controller {
 					)
 				),
 				array(
-					'title' => 'view_hidden_forum',
-					'desc' => 'view_hidden_forum_desc',
+					'title' => 'view_hidden_forums',
+					'desc' => 'view_hidden_forums_desc',
 					'fields' => array(
 						'permissions[can_view_hidden]' => array(
 							'type' => 'checkbox',
@@ -1855,6 +1855,161 @@ class Forum_mcp extends CP_Controller {
 		);
 
 		return $sections;
+	}
+
+	private function settingsForForum($id)
+	{
+		$errors = NULL;
+		$return = ee('CP/URL', $this->base . '/index/' . $forum->board_id);
+
+		$forum = ee('Model')->get('forum:Forum', $id)->with('Board')->first();
+		if ( ! $forum)
+		{
+			show_404();
+		}
+
+		if ( ! empty($_POST))
+		{
+			foreach ($_POST['permissions'] as $key => $value)
+			{
+				$forum->setPermission($key, $value);
+			}
+
+			$forum->save();
+
+			ee('Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('edit_forum_settings_success'))
+				->addToBody(sprintf(lang('edit_forum_settings_success_desc'), $forum->forum_name))
+				->defer();
+
+			ee()->functions->redirect($return);
+		}
+
+		$vars = array(
+			'errors' => $errors,
+			'cp_page_title' => sprintf(lang('forum_permissions'), $forum->forum_name),
+			'base_url' => ee('CP/URL', $this->base . 'settings/forum/' . $id),
+			'save_btn_text' => 'btn_save_permissions',
+			'save_btn_text_working' => 'btn_saving',
+		);
+
+		$member_groups = ee('Model')->get('MemberGroup')
+			->fields('group_id', 'group_title')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('group_id', '!=', '1')
+			->order('group_title', 'asc')
+			->all()
+			->getDictionary('group_id', 'group_title');
+
+		$vars['sections'] = array(
+			array(
+				ee('Alert')->makeInline('permissions-warn')
+					->asWarning()
+					->addToBody(lang('permissions_warning'))
+					->cannotClose()
+					->render(),
+				array(
+					'title' => 'view_forum',
+					'desc' => 'view_forum_desc',
+					'fields' => array(
+						'permissions[can_view_forum]' => array(
+							'type' => 'checkbox',
+							'choices' => $member_groups,
+							'value' => $forum->getPermission('can_view_forum'),
+						)
+					)
+				),
+				array(
+					'title' => 'view_hidden_forum',
+					'desc' => 'view_hidden_forum_desc',
+					'fields' => array(
+						'permissions[can_view_hidden]' => array(
+							'type' => 'checkbox',
+							'choices' => $member_groups,
+							'value' => $forum->getPermission('can_view_hidden'),
+						)
+					)
+				),
+				array(
+					'title' => 'view_posts',
+					'desc' => 'view_posts_desc',
+					'fields' => array(
+						'permissions[can_view_topics]' => array(
+							'type' => 'checkbox',
+							'choices' => $member_groups,
+							'value' => $forum->getPermission('can_view_topics'),
+						)
+					)
+				),
+				array(
+					'title' => 'start_topics',
+					'desc' => 'start_topics_desc',
+					'fields' => array(
+						'permissions[can_post_topics]' => array(
+							'type' => 'checkbox',
+							'choices' => $member_groups,
+							'value' => $forum->getPermission('can_post_topics'),
+						)
+					)
+				),
+				array(
+					'title' => 'reply_to_topics',
+					'desc' => 'reply_to_topics_desc',
+					'fields' => array(
+						'permissions[can_post_reply]' => array(
+							'type' => 'checkbox',
+							'choices' => $member_groups,
+							'value' => $forum->getPermission('can_post_reply'),
+						)
+					)
+				),
+				array(
+					'title' => 'upload',
+					'desc' => 'upload_desc',
+					'fields' => array(
+						'permissions[upload_files]' => array(
+							'type' => 'checkbox',
+							'choices' => $member_groups,
+							'value' => $forum->getPermission('upload_files'),
+						)
+					)
+				),
+				array(
+					'title' => 'report',
+					'desc' => 'report_desc',
+					'fields' => array(
+						'permissions[can_report]' => array(
+							'type' => 'checkbox',
+							'choices' => $member_groups,
+							'value' => $forum->getPermission('can_report'),
+						)
+					)
+				),
+				array(
+					'title' => 'search',
+					'desc' => 'search_desc',
+					'fields' => array(
+						'permissions[can_search]' => array(
+							'type' => 'checkbox',
+							'choices' => $member_groups,
+							'value' => $forum->getPermission('can_search'),
+						)
+					)
+				),
+			)
+		);
+
+		$body = ee('View')->make('ee:_shared/form')->render($vars);
+
+		return array(
+			'body'       => '<div class="box">' . $body . '</div>',
+			'breadcrumb' => array(
+				$return->compile() => $forum->Board->board_label . ' '. lang('forum_listing')
+			),
+			'heading'    => $vars['cp_page_title'],
+			'sidebar'    => $this->generateSidebar($forum->Board->board_id)
+		);
 	}
 
 	// --------------------------------------------------------------------

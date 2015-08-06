@@ -181,11 +181,11 @@ $lang = array(
 'enable_default_permissions' => 'Enable Default Permissions?',
 'enable_default_permissions_desc' => 'When set to <b>enable</b>, these permissions will be the default permissions for all created forums.',
 
-'view_forum' => 'View forums',
-'view_forum_desc' => 'Allow the following member groups to view forums.</em><em>Super Administrators are <b>always</b> allowed.',
+'view_forums' => 'View forums',
+'view_forums_desc' => 'Allow the following member groups to view forums.</em><em>Super Administrators are <b>always</b> allowed.',
 
-'view_hidden_forum' => 'View hidden forums',
-'view_hidden_forum_desc' => 'Allow the following member groups to view hidden forums.</em><em>Super Administrators are <b>always</b> allowed.',
+'view_hidden_forums' => 'View hidden forums',
+'view_hidden_forums_desc' => 'Allow the following member groups to view hidden forums.</em><em>Super Administrators are <b>always</b> allowed.',
 
 'view_posts' => 'View posts',
 'view_posts_desc' => 'Allow the following member groups to view posts.</em><em>Super Administrators are <b>always</b> allowed.',
@@ -286,6 +286,19 @@ $lang = array(
 
 'edit_category_settings_success' => 'Category Permissions Updated',
 'edit_category_settings_success_desc' => 'The permissions for category <b>%s</b> have been updated.',
+
+// Forum Permissions
+
+'forum_permissions' => '%s Permissions',
+
+'view_forum' => 'View forum',
+'view_forum_desc' => 'Allow the following member groups to view this forum.</em><em>Super Administrators are <b>always</b> allowed.',
+
+'view_hidden_forum' => 'View hidden forums',
+'view_hidden_forum_desc' => 'Allow the following member groups to view this forum when hidden.</em><em>Super Administrators are <b>always</b> allowed.',
+
+'edit_forum_settings_success' => 'Forum Permissions Updated',
+'edit_forum_settings_success_desc' => 'The permissions for forum <b>%s</b> have been updated.',
 
 
 /* 2.x Keys
