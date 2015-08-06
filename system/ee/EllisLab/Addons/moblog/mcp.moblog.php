@@ -104,6 +104,10 @@ EOT;
 						'href' => ee('CP/URL', 'addons/settings/moblog/edit/'.$moblog['moblog_id']),
 						'title' => lang('edit')
 					),
+					'copy' => array(
+						'href' => ee('CP/URL', 'addons/settings/moblog/create/'.$moblog['moblog_id']),
+						'title' => lang('copy')
+					),
 					'txt-only' => array(
 						'href' => ee('CP/URL', 'addons/settings/moblog/check/'.$moblog['moblog_id']),
 						'title' => (lang('check_now')),
@@ -183,9 +187,10 @@ EOT;
 	/**
 	 * New moblog form
 	 */
-	public function create()
+	public function create($moblog_id = NULL)
 	{
-		return $this->form();
+		$duplicate = ! is_null($moblog_id);
+		return $this->form($moblog_id, $duplicate);
 	}
 
 	/**
@@ -199,12 +204,13 @@ EOT;
 	/**
 	 * Moblog creation/edit form
 	 *
-	 * @param	int	$moblog_id	ID of moblog to edit
+	 * @param	int		$moblog_id	ID of moblog to edit
+	 * @param	boolean	$duplicate	Whether or not to duplicate the passed moblog
 	 */
-	private function form($moblog_id = NULL)
+	private function form($moblog_id = NULL, $duplicate = FALSE)
 	{
 		$vars = array();
-		if (is_null($moblog_id))
+		if (is_null($moblog_id) OR $duplicate)
 		{
 			ee()->cp->add_js_script('plugin', 'ee_url_title');
 			ee()->javascript->output('
@@ -216,6 +222,7 @@ EOT;
 			$alert_key = 'created';
 			$vars['cp_page_title'] = lang('create_moblog');
 			$vars['base_url'] = ee('CP/URL', 'addons/settings/moblog/create');
+
 			$moblog = ee('Model')->make('moblog:Moblog');
 		}
 		else
@@ -232,8 +239,19 @@ EOT;
 			$vars['base_url'] = ee('CP/URL', 'addons/settings/moblog/edit/'.$moblog_id);
 		}
 
+		if ($duplicate)
+		{
+			$moblog = ee('Model')->get('moblog:Moblog', $moblog_id)->first();
+			$vars['base_url'] = ee('CP/URL', 'addons/settings/moblog/create/'.$moblog_id);
+		}
+
 		if ( ! empty($_POST))
 		{
+			if ($duplicate)
+			{
+				$moblog = ee('Model')->make('moblog:Moblog');
+			}
+
 			$moblog->set($_POST);
 
 			// Need to convert this field from its presentation serialization
@@ -245,7 +263,7 @@ EOT;
 			{
 				$moblog = $moblog->save();
 
-				if (is_null($moblog_id))
+				if (is_null($moblog_id) OR $duplicate)
 				{
 					ee()->session->set_flashdata('highlight_id', $moblog->getId());
 				}
