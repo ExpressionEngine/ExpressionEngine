@@ -49,7 +49,10 @@ RSpec.configure do |config|
     page.driver.allow_url 'google-analytics.com'
 
     # Re-import clean database
-    reset_db
+    file = RSpec.current_example.metadata[:file_path].match(
+      /.*\/.*?\/test_(.*?).rb/
+    )
+    reset_db file[1]
   end
 
   # After each example...

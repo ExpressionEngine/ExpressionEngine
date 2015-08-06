@@ -856,14 +856,25 @@ class Wizard extends CI_Controller {
 	 */
 	private function show_success($type = 'update', $template_variables = array())
 	{
-		// Check to see if there are any errors, if not, bypass this screen
-		if (empty($template_variables['error_messages']))
+		// Try to rename automatically
+		if ($this->rename_installer())
 		{
-			if ($this->rename_installer())
-			{
-				ee()->load->helper('url');
-				redirect($this->userdata['cp_url'].'?/cp/login&return=&after='.$type);
-			}
+			ee()->load->helper('url');
+			redirect($this->userdata['cp_url'].'?/cp/login&return=&after='.$type);
+		}
+
+		// Are we back here from a input?
+		if (ee()->input->get('login'))
+		{
+			redirect($this->userdata['cp_url'].'?/cp/login&return=&after='.$type);
+		}
+		else if (ee()->input->get('download'))
+		{
+			ee()->load->helper('download');
+			force_download(
+				'mailing_list.zip',
+				file_get_contents(SYSPATH.'user/cache/mailing_list.zip')
+			);
 		}
 
 		// Make sure the title and subtitle are correct, current_step should be
@@ -878,6 +889,9 @@ class Wizard extends CI_Controller {
 		// Send them to their CP via the form
 		$template_variables['action'] = $this->userdata['cp_url'];
 		$template_variables['method'] = 'get';
+
+		// Only show download button if mailing list export exists
+		$template_variables['mailing_list'] = (file_exists(SYSPATH.'/user/cache/mailing_list.zip'));
 
 		$this->set_output('success', $template_variables);
 	}
@@ -2286,11 +2300,36 @@ class Wizard extends CI_Controller {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Checks to see if we're allowed to automatically rename the installer dir
+	 *
+	 * @return bool TRUE if we can rename, FALSE if we can't
+	 */
+	public function canRenameAutomatically()
+	{
+		if (file_exists(SYSPATH.'user/cache/mailing_list.zip'))
+		{
+			return FALSE;
+		}
+
+		if ( ! empty($template_variables['error_messages']))
+		{
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	/**
 	 * Rename the installer
 	 * @return void
 	 */
 	private function rename_installer()
 	{
+		if ( ! $this->canRenameAutomatically())
+		{
+			return FALSE;
+		}
+
 		// Generate the new path by suffixing a dotless version number
 		$new_path = str_replace(
 			'installer',

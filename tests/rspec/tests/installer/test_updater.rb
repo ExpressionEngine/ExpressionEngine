@@ -5,18 +5,7 @@ require './bootstrap.rb'
 # `before` calls.
 
 feature 'Updater' do
-  let(:new_version) do
-    wizard = File.open(
-      File.expand_path('../../system/ee/installer/controllers/wizard.php')
-    )
-    wizard.read.match(/public \$version\s+= '(.*?)';/) do |match|
-      return match[1]
-    end
-  end
-
   before :all do
-    ENV['updater'] = 'true'
-
     @installer = Installer::Prepare.new
     @installer.enable_installer
     @installer.disable_rename
@@ -43,8 +32,6 @@ feature 'Updater' do
   end
 
   after :all do
-    ENV.delete('updater')
-
     @installer.disable_installer
     @installer.enable_rename
     @installer.delete_database_config
@@ -53,13 +40,13 @@ feature 'Updater' do
   it 'appears when using a database.php file' do
     @page.load
     @page.should have(0).inline_errors
-    @page.header.text.should include "Update ExpressionEngine #{@version} to #{@new_version}"
+    @page.header.text.should match /Update ExpressionEngine \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
   end
 
   it 'shows an error when no database information exists at all' do
     @installer.delete_database_config
     @page.load
-    @page.header.text.should include "Error While Installing #{@new_version}"
+    @page.header.text.should match /Error While Installing \d+\.\d+\.\d+/
     @page.error.text.should include "Unable to locate any database connection information."
   end
 
@@ -93,23 +80,46 @@ feature 'Updater' do
       test_update
       File.exist?('../../system/user/templates/default_site/').should == true
     end
+  end
 
-    def test_update
-      @page.load
+  context 'when updating from 2.x to 3.x with the mailing list module' do
+    it 'updates and creates a mailing list export' do
+      clean_db do
+        $db.query(IO.read('sql/database_2.10.1-mailinglist.sql'))
+        clear_db_result
+      end
 
-      @page.should have(0).inline_errors
-      @page.header.text.should include "Update ExpressionEngine #{@version} to #{@new_version}"
-      @page.submit.click
-
-      @page.header.text.should include "Updating ExpressionEngine #{@version} to #{@new_version}"
-      @page.req_title.text.should include 'Processing | Step 2 of 3'
-
-      sleep 1 # Wait for the updater to finish
-
-      @page.header.text.should include 'ExpressionEngine Updated to 3.0.0'
-      @page.req_title.text.should include 'Completed'
-      @page.has_submit?.should == true
+      test_update(true)
     end
   end
 
+  def test_update(mailinglist = false)
+    # Delete any stored mailing lists
+    mailing_list_zip = File.expand_path('../../system/user/cache/mailing_list.zip')
+    File.delete(mailing_list_zip) if File.exist?(mailing_list_zip)
+
+    @page.load
+
+    @page.should have(0).inline_errors
+    @page.header.text.should match /Update ExpressionEngine \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
+    @page.submit.click
+
+    @page.header.text.should match /Updating ExpressionEngine \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
+    @page.req_title.text.should include 'Processing | Step 2 of 3'
+
+    sleep 1 # Wait for the updater to finish
+
+    @page.header.text.should match /ExpressionEngine Updated to \d+\.\d+\.\d+/
+    @page.req_title.text.should include 'Completed'
+    @page.has_submit?.should == true
+
+    @page.has_login?.should == true
+
+    if mailinglist == false
+      @page.has_download?.should == false
+    else
+      @page.has_download?.should == true
+      File.exist?(mailing_list_zip).should == true
+    end
+  end
 end

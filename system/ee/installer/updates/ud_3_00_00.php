@@ -62,7 +62,8 @@ class Updater {
 				'_update_sites_table',
 				'_remove_referrer_config_items',
 				'_update_channels_table',
-				'_update_channel_titles_table'
+				'_update_channel_titles_table',
+				'_export_mailing_lists'
 			)
 		);
 
@@ -1052,6 +1053,48 @@ class Updater {
 		$msm_config = new MSM_Config();
 		$msm_config->remove_config_item(array('log_referrers', 'max_referrers'));
 	}
+
+	// -------------------------------------------------------------------------
+
+	private function _export_mailing_lists()
+	{
+		// Missing the mailing list tables? Get out of here.
+		if ( ! ee()->db->table_exists('mailing_list')
+			|| ! ee()->db->table_exists('mailing_lists'))
+		{
+			return;
+		}
+
+		ee()->load->library('zip');
+		$subscribers = array();
+		$subscribers_query = ee()->db->select('list_id, email')
+			->get('mailing_list');
+
+		foreach ($subscribers_query->result() as $subscriber)
+		{
+			$subscribers[$subscriber->list_id][] = $subscriber->email;
+		}
+
+		$mailing_lists = ee()->db->select('list_id, list_name, list_title')
+			->get('mailing_lists');
+
+		foreach ($mailing_lists->result() as $mailing_list)
+		{
+			$csv = ee('CSV');
+			foreach ($subscribers[$mailing_list->list_id] as $subscriber)
+			{
+				$csv->addRow(array('email' => $subscriber));
+			}
+			ee()->zip->add_data(
+				'mailing_list-'.$mailing_list->list_name.'.csv',
+				(string) $csv
+			);
+		}
+
+		ee()->zip->archive(SYSPATH.'user/cache/mailing_list.zip');
+	}
+
+	// -------------------------------------------------------------------------
 
 	/**
 	 * Adds the column "title_field_label" to the channels tabel and sets it's

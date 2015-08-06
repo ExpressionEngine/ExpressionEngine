@@ -33,8 +33,8 @@ module Installer
     def disable_rename
       swap(
         @wizard,
-        'return rename(APPPATH, $new_path);',
-        '// return rename(APPPATH, $new_path);'
+        'return @rename(APPPATH, $new_path);',
+        '// return @rename(APPPATH, $new_path);'
       )
     end
 

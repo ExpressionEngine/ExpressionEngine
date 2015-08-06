@@ -92,13 +92,14 @@ $lang = array(
 'error_updating'                     => 'Error While Updating %s to %s',
 
 // Install/Upgrade Success
-'install_success'      => "ExpressionEngine %s Installed",
-'install_success_note' => '<b>Yay!</b> ExpressionEngine %s is now installed.',
-'update_success'       => "ExpressionEngine Updated to %s",
-'update_success_note'  => '<b>Yay!</b> ExpressionEngine is now updated to %s.',
-'success_delete'       => 'Please delete the installer folder/directory from your server before proceeding.',
-'success_moved'        => 'The installer folder has been renamed to <kbd>system/ee/installer_%s</kbd>.',
-'cp_login'             => 'Control Panel login',
+'install_success'       => "ExpressionEngine %s Installed",
+'install_success_note'  => '<b>Yay!</b> ExpressionEngine %s is now installed.',
+'update_success'        => "ExpressionEngine Updated to %s",
+'update_success_note'   => '<b>Yay!</b> ExpressionEngine is now updated to %s.',
+'success_delete'        => 'Please delete the installer folder/directory from your server before proceeding.',
+'success_moved'         => 'The installer folder has been renamed to <kbd>system/ee/installer_%s</kbd>.',
+'cp_login'              => 'Control Panel login',
+'download_mailing_list' => 'Download Mailing List',
 
 // Surveys
 'opt_in_survey'              => 'Opt-in Survey',
