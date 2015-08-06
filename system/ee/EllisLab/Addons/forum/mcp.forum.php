@@ -1198,7 +1198,7 @@ class Forum_mcp extends CP_Controller {
 				ee('CP/URL', $this->base)->compile() => $category->Board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
-			'sidebar'    => $this->generateSidebar($id)
+			'sidebar'    => $this->generateSidebar($category->Board->board_id)
 		);
 	}
 
