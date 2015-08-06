@@ -17,6 +17,6 @@
 	</label>
 	<?php $class = 'choice block'; ?>
 <?php endforeach; ?>
-<?php if (count($options) > 2): ?>
+<?php if (count($options) > 5): ?>
 </div>
 <?php endif; ?>
