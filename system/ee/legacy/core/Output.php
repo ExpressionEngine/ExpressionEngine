@@ -360,7 +360,7 @@ class EE_Output {
 		// If so, load the Profile service and run it.
 		if ($this->enable_profiler == TRUE)
 		{
-			$profiler = ee('Profiler')->addSection('benchmark', ee()->benchmark)
+			$profiler = ee('Profiler')->addSection('benchmark', ee()->benchmark->getBenchmarkTimings())
 				->addSection('memory')
 				->addSection('database', array(ee('Database')))
 				->addSection('userdata', ee()->session->all_userdata())
