@@ -716,8 +716,9 @@ class Groups extends Members\Members {
 		ee('Alert')->makeInline('shared-form')
 			->asWarning()
 			->cannotClose()
-			->withTitle(lang('access_privilege_warning'))
-			->addToBody(lang('access_privilege_caution'), 'caution');
+			->addToBody(lang('access_privilege_warning'))
+			->addToBody(lang('access_privilege_caution'), 'caution')
+			->now();
 
 		ee()->form_validation->set_rules(array(
 			array(
