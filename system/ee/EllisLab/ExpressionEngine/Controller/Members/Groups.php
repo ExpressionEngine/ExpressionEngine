@@ -335,8 +335,7 @@ class Groups extends Members\Members {
 					'fields' => array(
 						'group_description' => array(
 							'type' => 'textarea',
-							'value' => element('group_description', $values),
-							'required' => TRUE
+							'value' => element('group_description', $values)
 						)
 					)
 				),
@@ -729,7 +728,7 @@ class Groups extends Members\Members {
 			array(
 				 'field' => 'group_description',
 				 'label' => 'lang:group_description',
-				 'rules' => 'valid_xss_check|required'
+				 'rules' => 'valid_xss_check'
 			),
 			array(
 				 'field' => 'mbr_delete_notify_emails',
