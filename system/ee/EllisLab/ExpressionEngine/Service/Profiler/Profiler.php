@@ -31,9 +31,9 @@ use EllisLab\ExpressionEngine\Service\View\View;
 class Profiler {
 
 	/**
-	 * @var the rendered sections to include
+	 * @var the section objects to render
 	 */
-	protected $rendered_sections = array();
+	protected $sections = array();
 
 	/**
 	 * @var View $view A View object for rendering this alert
@@ -95,7 +95,7 @@ class Profiler {
 		}
 
 		$section->setData();
-		$this->rendered_sections[] = $section->render();
+		$this->sections[] = $section;
 
 		return $this;
 	}
@@ -107,6 +107,12 @@ class Profiler {
 	 **/
 	public function render()
 	{
-		return $this->view->render(array('sections' => $this->rendered_sections));
+		$rendered_sections = array();
+		foreach ($this->sections as $section)
+		{
+			$rendered_sections[] = $section->render();
+		}
+
+		return $this->view->render(array('sections' => $rendered_sections));
 	}
 }
