@@ -44,7 +44,7 @@ class Profiler {
 	 * Constructor
 	 * Inject:
 	 *   EE_Lang $lang for loadfile()
-	 *   View $view to render the container
+	 *   ViewFactory $view_factory A ViewFactory object for making and rendering views
 	 */
 	public function __construct(EE_Lang $lang, ViewFactory $view_factory)
 	{
@@ -55,9 +55,9 @@ class Profiler {
 	/**
 	 * Adds the sections
 	 *
-	 * @param array		$sections	names of sections to include
-	 * @param mixed		variable	add'l args are passed to the Section class
-	 * @return object	this
+	 * @param string   $section_name  names of section to add
+	 * @param mixed	   variable       add'l args are passed to the Section class
+	 * @return object  this
 	 **/
 	public function addSection($section_name)
 	{
@@ -69,6 +69,8 @@ class Profiler {
 
 		if ( ! class_exists($class))
 		{
+			// Default Section can handle any variable meant to be displayed
+			// But would not know what to do with multiple arguments
 			if (count($args) == 1)
 			{
 				$class = __NAMESPACE__."\\Section\\DefaultSection";

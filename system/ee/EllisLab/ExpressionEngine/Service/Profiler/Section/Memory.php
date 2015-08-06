@@ -38,7 +38,7 @@ class Memory extends ProfilerSection {
 	{
 		if (function_exists('memory_get_usage') && ($usage = memory_get_usage()) != '')
 		{
-			$data = number_format($usage).' '.lang('bytes');
+			$data = number_format($usage).' '.lang('bytes').' of '.ini_get('memory_limit');
 		}
 		else
 		{

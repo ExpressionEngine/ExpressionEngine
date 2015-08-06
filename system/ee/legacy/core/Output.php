@@ -37,7 +37,6 @@ class EE_Output {
 	var $parse_exec_vars	= TRUE;	// whether or not to parse variables like {elapsed_time} and {memory_usage}
 
 	var $_zlib_oc			= FALSE;
-	var $_profiler_sections = array();
 
 	// --------------------------------------------------------------------
 
@@ -161,25 +160,6 @@ class EE_Output {
 	function enable_profiler($val = TRUE)
 	{
 		$this->enable_profiler = (is_bool($val)) ? $val : TRUE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Set Profiler Sections
-	 *
-	 * Allows override of default / config settings for Profiler section display
-	 *
-	 * @access	public
-	 * @param	array
-	 * @return	void
-	 */
-	function set_profiler_sections($sections)
-	{
-		foreach ($sections as $section => $enable)
-		{
-			$this->_profiler_sections[$section] = ($enable !== FALSE) ? TRUE : FALSE;
-		}
 	}
 
 	// --------------------------------------------------------------------

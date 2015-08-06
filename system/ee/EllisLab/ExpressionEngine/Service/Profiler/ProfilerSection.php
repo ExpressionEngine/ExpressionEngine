@@ -2,7 +2,6 @@
 
 namespace EllisLab\ExpressionEngine\Service\Profiler;
 
-use \EE_lang;
 use EllisLab\ExpressionEngine\Service\View\View;
 
 /**

@@ -36,6 +36,12 @@ class DefaultSection extends ProfilerSection {
 	 **/
 	public function setData($data)
 	{
+		if ( ! is_array($data) && ! is_object($data))
+		{
+			$this->data = array('profiler_'.$this->section_name => var_export($data, TRUE));
+			return;
+		}
+
 		$data = (array) $data;
 
 		if (count($data) == 0)

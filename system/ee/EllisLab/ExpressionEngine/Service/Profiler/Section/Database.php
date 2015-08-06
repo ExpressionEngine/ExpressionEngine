@@ -68,6 +68,7 @@ class Database extends ProfilerSection {
 	/**
 	 * Set the section's data
 	 *
+	 * @param  array  Array of Database $db objects
 	 * @return void
 	 **/
 	public function setData($dbs)
