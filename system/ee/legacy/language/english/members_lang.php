@@ -575,9 +575,9 @@ $lang = array(
 
 "cp_email_privs" => "Control Panel Email Privileges",
 
-"can_send_email_desc" => "When set to yes, users assigned to this group may send e-mails to other members via the system.",
+"can_send_email_desc" => "When set to yes, users assigned to this group may send emails to other members via the system.",
 
-"can_send_email" => "E-mail other members",
+"can_send_email" => "Email other members",
 
 "can_email_member_groups" => "Can send email to Member Groups",
 
