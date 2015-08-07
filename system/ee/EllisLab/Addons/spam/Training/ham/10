@@ -1,3 +1,0 @@
-ProForm isn’t currently a complete replacement for SafeCracker - and probably never will be. I am hoping to have full integration with SafeCracker eventually, so that a ProForm form can actually generate use of the many available custom fieldtypes, and saves it’s data into an EE channel. That is a bit far off at this point, but ProForm is a very appropriate tool for any kind of public facing form that does not have as an absolute requirement that it store data in a EE channel.
-
-I am sure that ExpressionEngine can handle what you want to do, there are a lot of awesome add-ons out there. I have yet to see a site that couldn’t be built in ExpressionEngine, honestly. smile

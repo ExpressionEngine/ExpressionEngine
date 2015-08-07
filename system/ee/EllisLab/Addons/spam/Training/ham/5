@@ -1,7 +1,0 @@
-Hello,
-I am building a site with ExpressonEngine and I need to make use of a lot of forms.  It’s a real-estate site and I am making it so my client can enter property listings from the front end.  I’ve been using SafeCracker to build it so far, but have run into a few frustrations.  One of the biggest is the issue of handling notifications.  Seems like ProForm may help sole this issue.
-
-Do you have a more complete demo for this add-on?  I’d be interested in seeing it in action before purchasing.
-
-Thanks,
-Matthew

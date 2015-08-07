@@ -1,7 +1,0 @@
-I tried to test a text watermark with pure GD functions, but this is what I got: “Message: imagettftext(): Could not find/open font”. I am sure that font path is correct.
-
-Ubuntu 13.10, 64-bit, php 5.5.3
-
-Something similar has been reported: http://ellislab.com/forums/viewthread/216459/
-
-I’ll make a check with a different font.

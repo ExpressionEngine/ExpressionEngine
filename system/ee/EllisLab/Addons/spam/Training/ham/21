@@ -1,8 +1,0 @@
-There is an editable setting in the accessory that you can use to configure the location of the assets folder.
-
-As far as the other issue goes, I’ve had one other report of this - I’d like to get it pegged.
-
-Could you tell me what browser/version/ee-version you are using, and would you be willing to give me some troubleshooting context?  My guess is that a script error on the page is stopping change events from firing.  I’d love to troubleshoot this, but I can’t seem to reproduce the problem.
-
-Many thanks,
--Matt
