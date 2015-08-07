@@ -2293,8 +2293,8 @@ class Forum_mcp extends CP_Controller {
 		}
 
 		$admins = ee('Model')->get('forum:Administrator')
-			->with('Member')
-			->with('MemberGroup')
+			// ->with('Member')
+			// ->with('MemberGroup')
 			->filter('board_id', $board_id)
 			->all();
 

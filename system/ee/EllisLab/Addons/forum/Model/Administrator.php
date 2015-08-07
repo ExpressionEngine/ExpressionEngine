@@ -71,6 +71,7 @@ class Administrator extends Model {
 
 	public function getAdminName()
 	{
+		return "Not yet implemented";
 		$name = "";
 
 		if ($this->admin_group_id)
