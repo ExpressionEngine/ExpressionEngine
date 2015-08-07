@@ -187,7 +187,7 @@ Used in the control panel only.',
 
 "date_format" => "Date & time format",
 
-"date_format_desc" => "Your preferred date and time formats.<br><i>Used in the control panel only.</i>",
+"date_format_desc" => "Used in the control panel only.",
 
 "time_format" => "Time Formatting",
 
