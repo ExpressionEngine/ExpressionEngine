@@ -8,4 +8,19 @@ return array(
 	'version'     => '3.1.19',
 	'namespace'   => 'EllisLab\Addons\Forum',
 	'settings_exist' => TRUE,
+
+	'models' => array(
+		'Administrator' => 'Model\Administrator',
+		'Attachmenet' => 'Model\Attachmenet',
+		'Board' => 'Model\Board',
+		'Forum' => 'Model\Forum',
+		'Moderator' => 'Model\Moderator',
+		'Poll' => 'Model\Poll',
+		'PollVote' => 'Model\PollVote',
+		'Post' => 'Model\Post',
+		'Rank' => 'Model\Rank',
+		'Search' => 'Model\Search',
+		// 'Subscription' => 'Model\Subscription',
+		'Topic' => 'Model\Topic',
+	)
 );

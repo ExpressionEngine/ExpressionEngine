@@ -25,7 +25,16 @@
  */
 class Pages_tab {
 
-	public function publish_tabs($channel_id, $entry_id = '')
+	/**
+	 * Creates the fields that will be displayed on the publish page.
+	 *
+	 * @param int $channel_id Channel ID where the entry is being created or
+	 *   edited
+	 * @param int $enry_id Entry ID if this is an edit, empty otherwise
+	 * @return array A multidimensional associative array specifying the display
+	 *   settings and values associated with each of your fields.
+	 */
+	public function display($channel_id, $entry_id = '')
 	{
 		ee()->lang->loadfile('pages');
 
@@ -127,148 +136,200 @@ class Pages_tab {
 		return $settings;
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
-	 * Validate Publish
+	 * Validates our publish tab data
 	 *
-	 * @param	array
-	 * @return 	mixed
+	 * @param EllisLab\ExpressionEngine\Module\Channel\Model\ChannelEntry $entry
+	 * @param array $values An associative array of field => value
+	 * @return EllisLab\ExpressionEngine\Service\Validation\Result A result
+	 *  object.
 	 */
-	public function validate_publish($params)
+	public function validate($entry, $values)
 	{
-	    $errors         = FALSE;
-        $pages_enabled  = FALSE;
+		$validator = ee('Validation')->make(array(
+			'pages_template_id' => 'validTemplate',
+			'pages_uri' => 'validURI|validSegmentCount|notDuplicated',
+		));
 
-        $params = $params[0];
-		$pages_uri = (isset($params['pages_uri'])) ? $params['pages_uri'] : '';
+		$validator->defineRule('validTemplate', $this->makeValidTemplateRule($values));
+		$validator->defineRule('validURI', $this->makeValidURIRule());
+		$validator->defineRule('validSegmentCount', $this->makeValidSegmentCountRule());
+		$validator->defineRule('notDuplicated', $this->makeNotDuplicatedRule($entry));
 
-        $pages = ee()->config->item('site_pages');
-
-
-        if ($pages !== FALSE && $pages_uri != '' && $pages_uri !== lang('example_uri'))
-        {
-            $pages = TRUE;
-
-        	if ( ! isset($params['pages_template_id']) OR
-        	     ! is_numeric($params['pages_template_id']))
-        	{
-        		$errors = array(lang('invalid_template') => 'pages_template_id');
-        	}
-        }
-
-        $c_page_uri = preg_replace("#[^a-zA-Z0-9_\-/\.]+$#i", '',
-                    str_replace(ee()->config->item('site_url'), '', $pages_uri));
-
-        if ($c_page_uri !== $pages_uri)
-        {
-            $errors = array(lang('invalid_page_uri') => 'pages_uri');
-        }
-
-        // How many segments are we trying out?
-    	$pages_uri_segs = substr_count(trim($pages_uri, '/'), '/');
-
-    	// More than 9 pages URI segs?  goodbye
-    	if ($pages_uri_segs > 8)
-    	{
-    		$errors = array(lang('invalid_page_num_segs') => 'pages_uri');
-    	}
-
-    	// Check if duplicate uri
-    	$static_pages = ee()->config->item('site_pages');
-    	$uris = $static_pages[ee()->config->item('site_id')]['uris'];
-
-		if ( ! isset($params['entry_id']))
-		{
-			$params['entry_id'] == 0;
-		}
-		elseif ($params['entry_id'] !== 0)
-		{
-			if ( ! isset($uris[$params['entry_id']]) && in_array($pages_uri, $uris))
-			{
-				$errors = array(lang('duplicate_page_uri') => 'pages_uri');
-			}
-		}
-		elseif (in_array($pages_uri, $uris))
-    	{
-    		$errors = array(lang('duplicate_page_uri') => 'pages_uri');
-    	}
-
-    	return $errors;
+		return $validator->validate($values);
 	}
 
-	// --------------------------------------------------------------------
+	/**
+	 * Generates and returns a Closure suitable for a Validation Rule that
+	 * ensures the submitted value (a Template ID) is both set and is a number,
+	 * provided that * a Page URI was also set.
+	 *
+	 * @returns Closure The logic needed to validate the data.
+	 */
+	private function makeValidTemplateRule($values)
+	{
+		return function($field, $value) use($values)
+		{
+			$pages_uri = (isset($values['pages_uri'])) ? $values['pages_uri'] : '';
+	        $pages = ee()->config->item('site_pages');
+
+	        if ($pages !== FALSE && $pages_uri != '' && $pages_uri !== lang('example_uri'))
+	        {
+	        	if ( ! isset($value) OR
+	        	     ! is_numeric($value))
+	        	{
+					return 'invalid_template';
+	        	}
+	        }
+
+			return TRUE;
+		};
+	}
 
 	/**
-	 * Publish Data.
+	 * Generates and returns a Closure suitable for a Validation Rule that
+	 * ensures the submitted value (a URI) contains only letters, numbers,
+	 * underscores, dashes, or periods.
 	 *
-	 * @param 	array
+	 * @returns Closure The logic needed to validate the data.
+	 */
+	private function makeValidURIRule()
+	{
+		return function($field, $value)
+		{
+	        $c_page_uri = preg_replace("#[^a-zA-Z0-9_\-/\.]+$#i", '',
+	                    str_replace(ee()->config->item('site_url'), '', $value));
+
+	        if ($c_page_uri !== $value)
+	        {
+	            return 'invalid_page_uri';
+	        }
+
+			return TRUE;
+		};
+	}
+
+	/**
+	 * Generates and returns a Closure suitable for a Validation Rule that
+	 * ensures the submitted value (a URI) has no more than 8 segments.
+	 *
+	 * @returns Closure The logic needed to validate the data.
+	 */
+	private function makeValidSegmentCountRule()
+	{
+		return function($field, $value)
+		{
+	    	$value_segs = substr_count(trim($value, '/'), '/');
+
+	    	// More than 9 pages URI segs?  goodbye
+	    	if ($value_segs > 8)
+	    	{
+	    		return 'invalid_page_num_segs';
+	    	}
+
+			return TRUE;
+		};
+	}
+
+	/**
+	 * Generates and returns a Closure suitable for a Validation Rule that
+	 * ensures the submitted value (a URI) does not already exist
+	 *
+	 * @returns Closure The logic needed to validate the data.
+	 */
+	private function makeNotDuplicatedRule($entry)
+	{
+		return function($field, $value) use($entry)
+		{
+	    	$static_pages = ee()->config->item('site_pages');
+	    	$uris = $static_pages[ee()->config->item('site_id')]['uris'];
+
+			if ( ! isset($entry->entry_id))
+			{
+				$entry->entry_id == 0;
+			}
+			elseif ($entry->entry_id !== 0)
+			{
+				if ( ! isset($uris[$entry->entry_id]) && in_array($value, $uris))
+				{
+		    		return 'duplicate_page_uri';
+				}
+			}
+			elseif (in_array($value, $uris))
+	    	{
+	    		return 'duplicate_page_uri';
+	    	}
+
+			return TRUE;
+		};
+	}
+
+	/**
+	 * Saves the page's publish form data. This function is called in the
+	 * ChannelEntry's afterSave() event.
+	 *
+	 * @param EllisLab\ExpressionEngine\Module\Channel\Model\ChannelEntry $entry
+	 *  An instance of the ChannelEntry entity.
+	 * @param array $values An associative array of field => value
 	 * @return 	void
 	 */
-	public function publish_data_db($params)
+	public function save($entry, $values)
 	{
 	    $site_id    = ee()->config->item('site_id');
-	    $mod_data   = (isset($params['mod_data'])) ? $params['mod_data'] : NULL;
 	    $site_pages = ee()->config->item('site_pages');
 
         if ($site_pages !== FALSE
-            && isset($mod_data['pages_uri'])
-            && $mod_data['pages_uri'] != lang('example_uri')
-   			&& $mod_data['pages_uri'] != '')
+            && isset($values['pages_uri'])
+            && $values['pages_uri'] != lang('example_uri')
+   			&& $values['pages_uri'] != '')
         {
-            if (isset($mod_data['pages_template_id'])
-                && is_numeric($mod_data['pages_template_id']))
+            if (isset($values['pages_template_id'])
+                && is_numeric($values['pages_template_id']))
             {
 				$page = preg_replace("#[^a-zA-Z0-9_\-/\.]+$#i", '',
 				                    str_replace(ee()->config->item('site_url'), '',
-				                                $mod_data['pages_uri']));
+				                                $values['pages_uri']));
 
 				$page = '/' . trim($page, '/');
 
-				$site_pages[$site_id]['uris'][$params['entry_id']] = $page;
-				$site_pages[$site_id]['templates'][$params['entry_id']] = preg_replace("#[^0-9]+$#i", '',
-		                                            						$mod_data['pages_template_id']);
+				$site_pages[$site_id]['uris'][$entry->entry_id] = $page;
+				$site_pages[$site_id]['templates'][$entry->entry_id] = preg_replace("#[^0-9]+$#i", '',
+		                                            						$values['pages_template_id']);
 
-				if ($site_pages[$site_id]['uris'][$params['entry_id']] == '//')
+				if ($site_pages[$site_id]['uris'][$entry->entry_id] == '//')
 				{
-					$site_pages[$site_id]['uris'][$params['entry_id']] = '/';
+					$site_pages[$site_id]['uris'][$entry->entry_id] = '/';
 				}
 
 				ee()->config->set_item('site_pages', $site_pages);
-				ee()->db->where('site_id', (int) $site_id)
-							->update('sites', array(
-								'site_pages' => base64_encode(serialize($site_pages))
-							)
-				);
+				$site = ee('Model')->get('Site', $site_id)->first();
+				$site->site_pages = $site_pages;
+				$site->save();
             }
         }
 	}
 
-	// --------------------------------------------------------------------
-
 	/**
-	 * Delete Actions
+	 * Removes pages from the site_pages structure. This function is called in the
+	 * ChannelEntry's beforeDelete() event.
 	 *
-	 * @param 	array
+	 * @param int[] $entry_ids An array of entry IDs that were deleted
 	 * @return 	void
 	 */
-	public function publish_data_delete_db($params)
+	public function delete($entry_ids)
 	{
 		$site_pages = ee()->config->item('site_pages');
 		$site_id	= ee()->config->item('site_id');
 
-		foreach ($params['entry_ids'] as $entry_id)
+		foreach ($entry_ids as $entry_id)
 		{
 			unset($site_pages[$site_id]['uris'][$entry_id]);
 			unset($site_pages[$site_id]['templates'][$entry_id]);
 		}
 
-		ee()->db->where('site_id', (int) $site_id)
-					 ->update('sites', array(
-					 			'site_pages'	=>
-									base64_encode(serialize($site_pages))
-					 ));
+		$site = ee('Model')->get('Site', $site_id)->first();
+		$site->site_pages = $site_pages;
+		$site->save();
 	}
 
-	// --------------------------------------------------------------------
 }

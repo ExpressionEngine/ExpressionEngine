@@ -12,7 +12,7 @@ class TemplateTest extends \PHPUnit_Framework_TestCase {
 	{
 		$controller_methods = array();
 
-		foreach (get_class_methods('EllisLab\ExpressionEngine\Controllers\Design\Template') as $method)
+		foreach (get_class_methods('EllisLab\ExpressionEngine\Controller\Design\Template') as $method)
 		{
 			$method = strtolower($method);
 			if (strncmp($method, '_', 1) != 0)

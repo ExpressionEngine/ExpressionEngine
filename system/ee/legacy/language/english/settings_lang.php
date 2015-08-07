@@ -77,8 +77,6 @@ $lang = array(
 
 'defaults' => 'Defaults',
 
-'cp_theme' => '<abbr title="Control Panel">CP</abbr> theme',
-
 'language' => 'Language',
 
 'language_desc' => 'Default language.<br><i>Used in the control panel only.</i>',
@@ -197,7 +195,7 @@ $lang = array(
 
 'url_title_separator_opt_hyphen' => 'Hyphen (different-words)',
 
-'url_title_separator_opt_under' => 'nderscore (different_words)',
+'url_title_separator_opt_under' => 'Underscore (different_words)',
 
 /**
  * Outgoing Email

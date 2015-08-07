@@ -465,10 +465,8 @@ class Cp_search {
 					'image_resizing_preferences'	=> array('access' => 'can_access_sys_prefs', 'image_cfg'),
 					'captcha_preferences'			=> array('access' => 'can_access_sys_prefs', 'captcha_cfg'),
 					'word_censoring'				=> array('access' => 'can_access_sys_prefs', 'censoring_cfg'),
-					'mailing_list_preferences'		=> array('access' => 'can_access_sys_prefs', 'mailinglist_cfg'),
 					'emoticon_preferences'			=> array('access' => 'can_access_sys_prefs', 'emoticon_cfg'),
 					'tracking_preferences'			=> array('access' => 'can_access_sys_prefs', 'tracking_cfg'),
-					'mailing_list_preferences'		=> array('access' => 'can_access_sys_prefs', 'mailinglist_cfg'),
 					'search_log_configuration'		=> array('access' => 'can_access_sys_prefs', 'search_log_cfg')
 			),
 			'admin_content'		=> array(

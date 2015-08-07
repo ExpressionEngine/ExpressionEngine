@@ -1328,44 +1328,6 @@ class EE_Template {
 		$plugins = array_values(array_unique($plugins));
 		$modules = array_values(array_unique($modules));
 
-		// Dynamically require the file that contains each class
-
-		$this->log_item("Including Files for Plugins and Modules");
-
-		foreach ($plugins as $plugin)
-		{
-			// make sure it's not already included just in case
-			if ( ! class_exists($plugin))
-			{
-				if (in_array($plugin ,ee()->core->native_plugins))
-				{
-					require_once PATH_ADDONS."{$plugin}/pi.{$plugin}.php";
-				}
-				else
-				{
-					require_once PATH_THIRD."{$plugin}/pi.{$plugin}.php";
-				}
-			}
-		}
-
-		foreach ($modules as $module)
-		{
-			// make sure it's not already included just in case
-			if ( ! class_exists($module))
-			{
-				if (in_array($module, ee()->core->native_modules))
-				{
-					require_once PATH_ADDONS."{$module}/mod.{$module}.php";
-				}
-				else
-				{
-					require_once PATH_THIRD."{$module}/mod.{$module}.php";
-				}
-			}
-		}
-
-		$this->log_item("Files for Plugins and Modules All Included");
-
 		// Only Retrieve Data if Not Done Before and Modules Being Called
 		if (count($this->module_data) == 0 && count(array_intersect($this->modules, $modules)) > 0)
 		{
@@ -1522,6 +1484,7 @@ class EE_Template {
 				$this->var_pair		= $vars['var_pair'];
 
 				// Assign the class name and method name
+				$addon = ee('Addon')->get($this->tag_data[$i]['class']);
 				$class_name = ucfirst($this->tag_data[$i]['class']);
 				$meth_name = $this->tag_data[$i]['method'];
 
@@ -1547,9 +1510,10 @@ class EE_Template {
 				}
 				else
 				{
-					$this->log_item(" -> Class Called: ".$class_name);
+					$fqcn = $addon->getFrontendClass();
+					$this->log_item(" -> Class Called: ".$fqcn);
 
-					$EE = new $class_name();
+					$EE = new $fqcn();
 				}
 
 				// This gives proper PHP5 __construct() support in
@@ -2877,21 +2841,13 @@ class EE_Template {
 	 */
 	public function fetch_addons()
 	{
-		$providers = ee('App')->getProviders();
+		$addons = ee('Addon')->all();
 
-		foreach (array_keys($providers) as $name)
+		foreach ($addons as $name => $info)
 		{
-			try
+			if ($info->hasModule())
 			{
-				$info = ee('App')->get($name);
-				if (file_exists($info->getPath() . '/mod.' . $name . '.php'))
-				{
-					$this->modules[] = $name;
-				}
-			}
-			catch (\Exception $e)
-			{
-				continue;
+				$this->modules[] = $name;
 			}
 		}
 
@@ -3216,10 +3172,7 @@ class EE_Template {
 			{
 				$class = ee()->security->sanitize_filename(strtolower($match[1][$i]));
 
-				if ( ! class_exists($class))
-				{
-					require PATH_ADDONS.$class.'/mod.'.$class.'.php';
-				}
+				$fqcn = ee('Addon')->get($class)->getModuleClass();
 
 				$this->tagdata = $match[3][$i];
 
@@ -3242,7 +3195,7 @@ class EE_Template {
 
 				if ($class == 'comment')
 				{
-					$comment = new Comment;
+					$comment = new $fqcn();
 					$str = str_replace($match[0][$i], $comment->form(TRUE, ee()->functions->cached_captcha), $str);
 				}
 

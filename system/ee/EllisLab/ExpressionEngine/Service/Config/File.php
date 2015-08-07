@@ -25,42 +25,17 @@ namespace EllisLab\ExpressionEngine\Service\Config;
  * @author     EllisLab Dev Team
  * @link       http://ellislab.com
  */
-class File implements Config
-{
+class File implements Config {
+
 	protected $config = array();
-	protected $defaults = array(
-		'database' => array(
-			'active_group'     => 'expressionengine',
-			'active_record'    => TRUE,
-			'expressionengine' => array(
-				'port'     => 3306,
-				'hostname' => '127.0.0.1',
-				'username' => 'root',
-				'password' => '',
-				'database' => '',
-				'dbdriver' => 'mysqli',
-				'pconnect' => FALSE,
-				'dbprefix' => 'exp_',
-				'swap_pre' => 'exp_',
-				'db_debug' => TRUE,
-				'cache_on' => FALSE,
-				'autoinit' => FALSE,
-				'char_set' => 'utf8',
-				'dbcollat' => 'utf8_general_ci',
-				'cachedir' => '', // Set in constructor
-			)
-		)
-	);
 
 	/**
-	 * Create a new Config\File object, will merge with defaults
+	 * Create a new Config\File object
 	 *
 	 * @param string $path Full path to the config file
 	 */
 	function __construct($path)
 	{
-		$this->defaults['database']['expressionengine']['cachedir'] = rtrim(APPPATH, '/').'/user/cache/db_cache/';
-
 		// Load in config
 		require($path);
 
@@ -76,21 +51,23 @@ class File implements Config
 	 *
 	 * @param  string $path    The config item to get
 	 * @param  mixed  $default The value to return if $path can not be found
-	 * @param  boolean $merge  Whether to merge with defaults if value is an
-	 *                         array
 	 * @return mixed           The value found for $path, otherwise $default
 	 */
-	public function get($path, $default = NULL, $merge = FALSE)
+	public function get($path, $default = NULL)
 	{
-		$config  = $this->getArrayValue($this->config, $path);
-		$default = $default ?: $this->getArrayValue($this->defaults, $path);
-
-		if ($merge && is_array($config) && is_array($default))
-		{
-			$config = array_replace_recursive($default, $config);
-		}
+		$config = $this->getArrayValue($this->config, $path);
 
 		return ($config !== NULL) ? $config : $default;
+	}
+
+	/**
+	 * Check if the file has a given item
+	 */
+	public function has($path)
+	{
+		$config = $this->getArrayValue($this->config, $path);
+
+		return ! is_null($config);
 	}
 
 	/**
@@ -142,12 +119,6 @@ class File implements Config
 	 */
 	public function set($path, $value)
 	{
-		// If the value is equal to the default, don't save it
-		if ($value == $this->getArrayValue($this->defaults, $path))
-		{
-			$value = NULL;
-		}
-
 		$this->setArrayValue($this->config, $path, $value);
 	}
 

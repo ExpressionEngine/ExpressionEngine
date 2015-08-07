@@ -103,38 +103,6 @@ class Application {
 	}
 
 	/**
-	 *
-	 */
-	public function config($key, $default = NULL)
-	{
-		return $this->get('ee')->config($key, $default);
-	}
-
-	/**
-	 *
-	 */
-	public function getConfig($file, $key = NULL, $default = NULL)
-	{
-		return $this->get('ee')->getConfig($file, $key, $default);
-	}
-
-	/**
-	 *
-	 */
-	public function getConfigFile($file = 'config')
-	{
-		return $this->get('ee')->getConfigFile($file);
-	}
-
-	/**
-	 *
-	 */
-	public function getConfigDirectory()
-	{
-		return $this->get('ee')->getConfigDirectory();
-	}
-
-	/**
 	 * Get a component provider
 	 *
 	 * @param String $prefix Component name/prefix

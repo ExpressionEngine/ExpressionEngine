@@ -55,7 +55,7 @@ class EE_Loader {
 		$this->_ci_library_paths = array(APPPATH, BASEPATH);
 		$this->_ci_helper_paths = array(APPPATH, BASEPATH);
 		$this->_ci_model_paths = array(APPPATH);
-		$this->_ci_view_paths = array(SYSPATH.'ee/views/'	=> TRUE);
+		$this->_ci_view_paths = array(SYSPATH.'ee/EllisLab/ExpressionEngine/View/'	=> TRUE);
 
 		$this->set_base_classes();
 
@@ -867,15 +867,7 @@ class EE_Loader {
 		 */
 		ob_start();
 
-		if (isset($_ci_view) && isset(ee()->di))
-		{
-			echo ee('View')->make($_ci_view)->parse($_ci_path, $this->_ci_cached_vars, TRUE);
-		}
-		else
-		{
-			$this->facade->runFileInFacadeScope($_ci_path, $this->_ci_cached_vars, $use_eval);
-		}
-
+		$this->facade->runFileInFacadeScope($_ci_path, $this->_ci_cached_vars, $use_eval);
 
 		log_message('debug', 'File loaded: '.$_ci_path);
 

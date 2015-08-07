@@ -133,7 +133,7 @@ class Filepicker_mcp {
 
 		ee()->view->cp_heading = $id == 'all' ? lang('all_files') : sprintf(lang('files_in_directory'), $dir->name);
 
-		return ee()->cp->render('ModalView', $vars, TRUE);
+		return ee('View')->make('filepicker:ModalView')->render($vars);
 	}
 
 	public function modal()

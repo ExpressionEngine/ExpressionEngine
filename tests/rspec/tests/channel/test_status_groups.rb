@@ -36,12 +36,12 @@ feature 'Status Groups manager' do
     status_group_create.load
     status_group_create.group_name.set 'Test'
     status_group_create.submit
-    status_group_create.should have_text 'Status group saved'
+    status_group_create.should have_text 'Status Group Created'
 
     status_group_create.load
     status_group_create.group_name.set 'Another test'
     status_group_create.submit
-    status_group_create.should have_text 'Status group saved'
+    status_group_create.should have_text 'Status Group Created'
   end
 
   it 'should sort the list of status groups' do

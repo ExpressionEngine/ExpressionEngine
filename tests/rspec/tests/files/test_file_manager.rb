@@ -8,7 +8,7 @@ require './bootstrap.rb'
 feature 'File Manager' do
 
 	before(:each) do
-		@upload_dir = File.expand_path('../../themes/ee/site_themes/agile_records/images/uploads/')
+		@upload_dir = File.expand_path('../../themes/ee/site/agile_records/images/uploads/')
 		@avatar_dir = File.expand_path('../../images/avatars')
 
 		cp_session
@@ -75,9 +75,9 @@ feature 'File Manager' do
 	end
 
 	it 'shows the "All Files" File Manager page', :all_files => true do
-		@page.perpage_filter.text.should eq 'show (20)'
+		@page.perpage_filter.text.should eq 'show (25)'
 		@page.title_name_header[:class].should eq 'highlight'
-		@page.should have(21).files
+		@page.should have(26).files
 	end
 
 	# General Tests
@@ -226,7 +226,7 @@ feature 'File Manager' do
 	# 	@page.response_headers['Content-Disposition'].should include 'attachment; filename='
 	# end
 
-	it 'displays an itemzied modal when attempting to remove 5 or less add-on' do
+	it 'displays an itemzied modal when attempting to remove 5 or less files' do
 		file_name = @page.title_names[0].find('em').text
 
 		@page.files[1].find('input[type="checkbox"]').set true
@@ -240,7 +240,7 @@ feature 'File Manager' do
 		@page.modal.all('.checklist li').length.should eq 1
 	end
 
-	it 'displays a bulk confirmation modal when attempting to remove more than 5 add-ons' do
+	it 'displays a bulk confirmation modal when attempting to remove more than 5 files' do
 		@page.checkbox_header.click
 		@page.bulk_action.select "Remove"
 		@page.action_submit_button.click
@@ -248,7 +248,7 @@ feature 'File Manager' do
 		@page.wait_until_modal_visible
 		@page.modal_title.text.should eq "Confirm Removal"
 		@page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
-		@page.modal.text.should include 'File: 20 Files'
+		@page.modal.text.should include 'File: 25 Files'
 	end
 
 	it 'can remove a single file', :all_files => true do

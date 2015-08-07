@@ -48,23 +48,18 @@ class Pages {
 		}
 
 		// Fetch all pages
-
-		ee()->db->select('site_pages, site_name, site_id');
-		ee()->db->where_in('site_name', $site_names);
-		$query = ee()->db->get('sites');
+		$sites = ee('Model')->get('Site')
+			->fields('site_id', 'site_name', 'site_pages')
+			->filter('siten_name', $site_names)
+			->all();
 
 		$new_pages = array();
 
-		if ($query->num_rows() > 0)
+		foreach($sites as $site)
 		{
-			foreach($query->result_array() as $row)
+			if (is_array($site->site_pages))
 			{
-				$site_pages = unserialize(base64_decode($row['site_pages']));
-
-				if (is_array($site_pages))
-				{
-					$new_pages += $site_pages;
-				}
+				$new_pages += $site->site_pages;
 			}
 		}
 

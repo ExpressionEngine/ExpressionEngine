@@ -41,7 +41,7 @@ p {
 }
 <?php if (defined('BASE')):?>
 div#branding {
-	background:#27343C url(../themes/cp_themes/default/images/backgrounds_sprite.png) repeat-x scroll 0 0;
+	background:#27343C url(../themes/cp/default/images/backgrounds_sprite.png) repeat-x scroll 0 0;
 	height:17px;
 	margin-bottom:5px;
 }

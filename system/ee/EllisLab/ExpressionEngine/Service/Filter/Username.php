@@ -200,6 +200,13 @@ class Username extends Filter {
 	 */
 	public function render(ViewFactory $view, URL $url)
 	{
+		$options = $this->prepareOptions($url);
+
+		if (empty($options))
+		{
+			return;
+		}
+
 		$value = $this->display_value;
 		if (is_null($value))
 		{
@@ -218,9 +225,9 @@ class Username extends Filter {
 			'has_custom_value' => $this->has_custom_value,
 			'custom_value'     => (array_key_exists($this->name, $_POST)) ? $_POST[$this->name] : FALSE,
 			'placeholder'      => $this->placeholder,
-			'options'          => $this->prepareOptions($url),
+			'options'          => $options,
 		);
-		return $view->make('filter')->render($filter);
+		return $view->make('_shared/filters/filter')->render($filter);
 	}
 
 }

@@ -7,7 +7,7 @@
 
 		<?=ee('Alert')->get('metaweblog-form')?>
 
-		<?php $this->ee_view('_shared/table', $table); ?>
+		<?php $this->embed('ee:_shared/table', $table); ?>
 		<?=$pagination?>
 		<fieldset class="tbl-bulk-act">
 			<select name="bulk_action">
@@ -24,13 +24,13 @@
 <?php
 $modal_vars = array(
 	'name'      => 'modal-confirm-remove',
-	'form_url'	=> ee('CP/URL', 'addons/settings/metaweblog_api'),
+	'form_url'	=> ee('CP/URL', 'addons/settings/metaweblog_api/remove'),
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
 	)
 );
 
-$this->ee_view('_shared/modal_confirm_remove', $modal_vars);
+$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
 ?>
 
 <?php $this->endBlock(); ?>

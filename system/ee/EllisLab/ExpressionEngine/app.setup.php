@@ -3,6 +3,7 @@
 use EllisLab\ExpressionEngine\Library;
 use EllisLab\ExpressionEngine\Library\Event;
 use EllisLab\ExpressionEngine\Library\Filesystem;
+use EllisLab\ExpressionEngine\Service\Addon;
 use EllisLab\ExpressionEngine\Service\Alert;
 use EllisLab\ExpressionEngine\Service\Config;
 use EllisLab\ExpressionEngine\Service\Database;
@@ -11,6 +12,7 @@ use EllisLab\ExpressionEngine\Service\Grid;
 use EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Validation;
 use EllisLab\ExpressionEngine\Service\View;
+use EllisLab\ExpressionEngine\Service\Sidebar;
 use EllisLab\ExpressionEngine\Service\Thumbnail;
 
 // TODO should put the version in here at some point ...
@@ -56,6 +58,11 @@ return array(
 			return new Library\CP\Pagination($total_count, $view);
 		},
 
+		'CSV' => function ($ee)
+		{
+			return new Library\Data\CSV();
+		},
+
 		'db' => function($ee)
 		{
 			return $ee->make('Database')->newQuery();
@@ -71,9 +78,9 @@ return array(
 			return new Filesystem\Filesystem();
 		},
 
-		'View' => function($ee, $basepath = '')
+		'View' => function($ee)
 		{
-			return new View\ViewFactory($basepath, ee()->load, ee()->view);
+			return new View\ViewFactory($ee);
 		},
 
 		'Filter' => function($ee)
@@ -91,6 +98,12 @@ return array(
 			return $frontend;
 		},
 
+		'Sidebar' => function($ee)
+		{
+			$view = $ee->make('View');
+			return new Sidebar\Sidebar($view);
+		},
+
 		'Thumbnail' => function($ee)
 		{
 			return new Thumbnail\ThumbnailFactory();
@@ -99,6 +112,11 @@ return array(
 	),
 
 	'services.singletons' => array(
+
+		'Addon' => function($ee)
+		{
+			return new Addon\Factory($ee->make('App'));
+		},
 
 		'Alert' => function($ee)
 		{
@@ -113,14 +131,14 @@ return array(
 
 		'Config' => function($ee)
 		{
-			return new Config\Factory();
+			return new Config\Factory($ee);
 		},
 
 		'Database' => function($ee)
 		{
-			$db_config = new Database\DBConfig(
-				$ee->getConfigFile()
-			);
+			$config = $ee->make('Config')->getFile();
+
+			$db_config = new Database\DBConfig($config);
 
 			return new Database\Database($db_config);
 		},
@@ -163,6 +181,7 @@ return array(
 		# EllisLab\ExpressionEngine\Model..
 
 			// ..\Addon
+			'Action' => 'Model\Addon\Action',
 			'Extension' => 'Model\Addon\Extension',
 			'Module' => 'Model\Addon\Module',
 			'Plugin' => 'Model\Addon\Plugin',
@@ -222,11 +241,6 @@ return array(
 			// ..\Comment
 			'Comment' => 'Module\Comment\Model\Comment',
 			'CommentSubscription' => 'Module\Comment\Model\CommentSubscription',
-
-			// ..\MailingList
-			'MailingList' => 'Module\MailingList\Model\MailingList',
-			'MailingListQueue' => 'Module\MailingList\Model\MailingListQueue',
-			'MailingListUser' => 'Module\MailingList\Model\MailingListUser',
 
 			// ..\Member
 			'HTMLButton' => 'Module\Member\Model\HTMLButton',

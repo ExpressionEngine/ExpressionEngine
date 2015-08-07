@@ -94,7 +94,8 @@ class Channel extends StructureModel {
 	);
 
 	protected static $_events = array(
-		'beforeSave'
+		'beforeSave',
+		'beforeDelete'
 	);
 
 	// Properties
@@ -150,6 +151,7 @@ class Channel extends StructureModel {
 	protected $enable_versioning;
 	protected $max_revisions;
 	protected $default_entry_title;
+	protected $title_field_label;
 	protected $url_title_prefix;
 	protected $live_look_template;
 
@@ -255,5 +257,89 @@ class Channel extends StructureModel {
 				$this->setProperty($column, '');
 			}
 		}
+	}
+
+	public function onBeforeDelete()
+	{
+		// Delete Pages URIs for this Channel
+		$site_pages = ee()->config->item('site_pages');
+		$site_id = ee()->config->item('site_id');
+
+		$entries = $this->getFrontend()->get('ChannelEntry')
+			->fields('entry_id', 'author_id')
+			->filter('channel_id', $this->channel_id)
+			->all();
+
+		if ($site_pages !== FALSE && $entries)
+		{
+			if (count($site_pages[$site_id]) > 0)
+			{
+				foreach ($entries as $entry)
+				{
+					unset($site_pages[$site_id]['uris'][$entry->entry_id]);
+					unset($site_pages[$site_id]['templates'][$entry->entry_id]);
+				}
+
+				ee()->config->set_item('site_pages', $site_pages);
+
+				$this->Site->site_pages = $site_pages;
+				$this->Site->save();
+			}
+		}
+
+		// Update author stats
+		foreach ($entries->pluck('author_id') as $author_id)
+		{
+			$total_entries = $this->getFrontend()->get('ChannelEntry')
+				->filter('author_id', $author_id)
+				->count();
+
+			$total_comments = $this->getFrontend()->get('Comment')
+				->filter('author_id', $author_id)
+				->count();
+
+			$author = $this->getFrontend()->get('Member', $author_id)->first();
+			$author->total_entries = $entries;
+			$author->total_comments = $total_comments;
+			$author->save();
+		}
+
+		// Reset stats
+		$now = ee()->localize->now;
+		$entries = $this->getFrontend()->get('ChannelEntry')
+			->fields('entry_date', 'channel_id')
+			->filter('site_id', $site_id)
+			->filter('entry_date', '<', $now)
+			->filter('status', '!=', 'closed')
+			->filterGroup()
+				->filter('expiration_date', 0)
+				->orFilter('expiration_date', '>', $now)
+			->endFilterGroup()
+			->order('entry_date', 'desc');
+
+		$total_entries = $entries->count();
+		$last_entry_date = ($entries->first()) ? $entries->first()->entry_date : 0;
+
+		$comments = $this->getFrontend()->get('Comment')
+			->filter('site_id', $site_id);
+
+		$total_comments = $comments->count();
+
+		$comments->filter('status', 'o')
+			->fields('comment_date')
+			->order('comment_date', 'desc')
+			->first();
+
+		$last_comment_date = ($comments) ? $comments->comment_date : 0;
+
+		$stats = $this->getFrontend()->get('Stats')
+			->filter('site_id', $site_id)
+			->first();
+
+		$stats->total_entries = $total_entries;
+		$stats->last_entry_date = $last_entry_date;
+		$stats->total_comments = $total_comments;
+		$stats->last_comment_date = $last_comment_date;
+		$stats->save();
 	}
 }

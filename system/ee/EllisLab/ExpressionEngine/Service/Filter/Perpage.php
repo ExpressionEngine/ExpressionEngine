@@ -68,7 +68,7 @@ class Perpage extends Filter {
 			'150' => '150 '.lang('results'),
 			$total => sprintf(lang($all_lang_key), $total)
 		);
-		$this->default_value = 20;
+		$this->default_value = 25;
 	}
 
 	/**
@@ -115,6 +115,13 @@ class Perpage extends Filter {
 	 */
 	public function render(ViewFactory $view, URL $url)
 	{
+		$options = $this->prepareOptions($url);
+
+		if (empty($options))
+		{
+			return;
+		}
+
 		$value = $this->value();
 		if (is_null($value))
 		{
@@ -123,7 +130,6 @@ class Perpage extends Filter {
 				$this->value();
 		}
 
-		$options = $this->prepareOptions($url);
 		$urls = array_keys($options);
 		$show_all_url = end($urls);
 
@@ -139,7 +145,7 @@ class Perpage extends Filter {
 			'confirm_show_all' => $this->confirm_show_all,
 			'threshold'        => $this->total_threshold
 		);
-		return $view->make('perpage')->render($filter);
+		return $view->make('_shared/filters/perpage')->render($filter);
 	}
 
 }

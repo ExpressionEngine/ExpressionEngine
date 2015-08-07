@@ -9,9 +9,9 @@
 							<fieldset class="filter-search">
 								<input type="text" value="" placeholder="<?=lang('filter_channels')?>">
 							</fieldset>
-							<ul>
+							<ul class="channels-pages-create">
 								<?php foreach (ee()->menu->generate_menu()['channels']['create'] as $channel_name => $link): ?>
-									<li><a href="<?=$link?>"><?=$channel_name?></a></li>
+									<li class="search-channel" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
 								<?php endforeach ?>
 							</ul>
 						</div>
@@ -23,7 +23,7 @@
 
 		<?=ee('Alert')->get('pages-form')?>
 
-		<?php $this->ee_view('_shared/table', $table); ?>
+		<?php $this->embed('ee:_shared/table', $table); ?>
 		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
 		<fieldset class="tbl-bulk-act">
@@ -48,7 +48,7 @@ $modal_vars = array(
 	)
 );
 
-$this->ee_view('_shared/modal_confirm_remove', $modal_vars);
+$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
 ?>
 
 <?php $this->endBlock(); ?>

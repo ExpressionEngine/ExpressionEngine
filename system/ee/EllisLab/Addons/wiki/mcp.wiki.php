@@ -446,9 +446,9 @@ class Wiki_mcp {
 
 		ee()->load->helper('directory');
 
-		foreach (directory_map(PATH_THEMES.'wiki_themes', TRUE) as $file)
+		foreach (directory_map(PATH_THEMES.'wiki', TRUE) as $file)
 		{
-			if (is_dir(PATH_THEMES.'wiki_themes/'.$file) AND $file != '.' AND $file != '..' AND $file != '.svn' AND $file != '.cvs')
+			if (is_dir(PATH_THEMES.'wiki/'.$file) AND $file != '.' AND $file != '..' AND $file != '.svn' AND $file != '.cvs')
 			{
 				$vars['themes'][$file] = ucfirst(str_replace("_", " ", $file));
 			}
@@ -488,7 +488,7 @@ class Wiki_mcp {
 		$vars['theme_name'] = strtolower(str_replace('_', ' ', $vars['theme']));
 		$vars['cp_page_title'] .= ' - '.htmlentities($vars['theme_name']);
 
-		$path = PATH_THEMES.'/wiki_themes/'.$vars['theme'];
+		$path = PATH_THEMES.'/wiki/'.$vars['theme'];
 
 		ee()->load->helper('directory');
 
@@ -552,7 +552,7 @@ class Wiki_mcp {
 		ee()->cp->set_breadcrumb($this->base_url.AMP.'method=theme_templates'.AMP.'theme='.$vars['theme'],
 		 								htmlentities($vars['theme_name']));
 
-		$path = PATH_THEMES.'wiki_themes/'.$vars['theme'].'/';
+		$path = PATH_THEMES.'wiki/'.$vars['theme'].'/';
 
 		ee()->load->helper('form');
 		ee()->load->helper('file');
@@ -622,7 +622,7 @@ class Wiki_mcp {
 		$theme = ee()->security->sanitize_filename($theme);
 		$template = ee()->security->sanitize_filename($template);
 
-		$path = PATH_THEMES.'/wiki_themes/'.$theme.'/'.$template;
+		$path = PATH_THEMES.'/wiki/'.$theme.'/'.$template;
 
 		if ( ! file_exists($path))
 		{

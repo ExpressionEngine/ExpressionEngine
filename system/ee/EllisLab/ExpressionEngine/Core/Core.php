@@ -154,7 +154,7 @@ abstract class Core {
 		);
 
 		// This allows for routes of 'cp/channels/layout/1' to end up calling
-		// \EllisLab\ExpressionEngine\Controllers\Channels\Layout::layout(1)
+		// \EllisLab\ExpressionEngine\Controller\Channels\Layout::layout(1)
 		if ( ! in_array($method, $controller_methods)
 			&& in_array($RTR->fetch_class(), $controller_methods))
 		{
@@ -297,7 +297,7 @@ abstract class Core {
 		return '<div>
 			<h1>Exception Caught</h1>
 			<p><strong>' . $ex->getMessage() . '</strong></p>
-			<p><em>'  . $ex->getFile() . ':' . $ex->getLine() . '<em></p>
+			<p><em>'  . $ex->getFile() . ':' . $ex->getLine() . '</em></p>
 			<p>Stack Trace:
 				<pre>' . str_replace('#', "\n#", str_replace(':', ":\n\t\t", $ex->getTraceAsString())) . '</pre>
 			</p>

@@ -30,10 +30,8 @@ class Provider extends InjectionBindingDecorator {
 	protected $autoloader;
 
 	/**
-	 * @var Config directory instance
+	 * @var Path to the config directory
 	 */
-	protected $config_dir;
-
 	protected $config_path;
 
 	/**
@@ -65,6 +63,16 @@ class Provider extends InjectionBindingDecorator {
 	public function setConfigPath($path)
 	{
 		$this->config_path = rtrim($path, '/');
+	}
+
+	/**
+	 * Get the default config path
+	 *
+	 * @return String Path to the config directory
+	 */
+	public function getConfigPath()
+	{
+		return $this->config_path;
 	}
 
 	/**
@@ -194,62 +202,6 @@ class Provider extends InjectionBindingDecorator {
 
 			return $ns.'\\'.$element;
 		});
-	}
-
-	/**
-	 * Access a config item from the default config file
-	 */
-	public function config($key, $default = NULL)
-	{
-		return $this->getConfig('config', $key, $default);
-	}
-
-	/**
-	 * Get a config file or an item from a specific file
-	 *
-	 * @param String $file Config file name
-	 * @param String $key Config item key [optional]
-	 * @param String $default Default config value
-	 */
-	public function getConfig($file, $key = NULL, $default = NULL)
-	{
-		$file = $this->getConfigFile($file);
-
-		if (isset($key))
-		{
-			return $file->get($key, $default);
-		}
-
-		return $file;
-	}
-
-	/**
-	 * Get a config file
-	 *
-	 * @param String $file Filename (sans-php)
-	 * @return Config\File
-	 */
-	public function getConfigFile($file = 'config')
-	{
-		$config_dir = $this->getConfigDirectory();
-		return $config_dir->file($file);
-	}
-
-	/**
-	 * Get the config directory for this provider
-	 *
-	 * @return Config\Directory
-	 */
-	public function getConfigDirectory()
-	{
-		if ( ! isset($this->config_dir))
-		{
-			$this->config_dir = $this->make('ee:Config')->directory(
-				$this->config_path
-			);
-		}
-
-		return $this->config_dir;
 	}
 
 	/**

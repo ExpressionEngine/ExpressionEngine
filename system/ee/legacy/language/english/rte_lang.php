@@ -13,10 +13,10 @@ $lang = array(
 
 'create_tool_set_header' => 'Create <abbr title="Rich Text Editor">RTE</abbr> Tool Set',
 'edit_tool_set_header' => 'Edit <abbr title="Rich Text Editor">RTE</abbr> Tool Set',
-'tool_set_name' => 'Tool set name',
-'tool_set_name_desc' => 'Used in the tool selection menu.',
-'choose_tools' => 'Choose tools',
-'choose_tools_desc' => "Please select the tools you'd like to include in this tool set.",
+'tool_set_name' => 'Name',
+'tool_set_name_desc' => '',
+'choose_tools' => 'Include tools',
+'choose_tools_desc' => '',
 'create_tool_set' => 'Create Tool Set',
 'edit_tool_set' => 'Edit Tool Set',
 
@@ -46,7 +46,7 @@ $lang = array(
 'toolsets' => 'Tool Sets',
 'tool' => 'Tool',
 'cancel' => 'Cancel',
-'enable_rte' => 'Enable the rich text editor?',
+'enable_rte' => 'Enable rich text editor?',
 'enable_rte_desc' => 'When set to <b>enable</b>, registered users will be able to use the Rich Text Editor to create new content.',
 'disable_rte' => 'Disable Rich Text Editor',
 

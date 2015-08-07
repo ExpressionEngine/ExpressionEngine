@@ -2,8 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Service\View;
 
-use EE_Loader;
-use View as LegacyView;
+use EllisLab\ExpressionEngine\Core\Provider;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -30,33 +29,18 @@ use View as LegacyView;
 class ViewFactory {
 
 	/**
-	 * @var str The basepath to where views lie
+	 * @var EllisLab\ExpressionEngine\Core\Provider
 	 */
-	protected $basepath;
+	protected $provider;
 
 	/**
-	 * @var obj An instance of EE_Loader
-	 */
-	protected $loader;
-
-	/**
-	 * @var obj An instance of View
-	 */
-	protected $view;
-
-	/**
-	 * Constructor: sets depdencies
+	 * Constructor
 	 *
-	 * @param str $basepath The basepath to where views lie
-	 * @param obj $loader An instance of EE_Loader
-	 * @param obj $view An instnace of View
-	 * @return void
+	 * @param Provider $provider The default provider for views
 	 */
-	public function __construct($basepath, EE_Loader $loader, LegacyView $view)
+	public function __construct(Provider $provider)
 	{
-		$this->basepath = $basepath;
-		$this->loader = $loader;
-		$this->view = $view;
+		$this->provider = $provider;
 	}
 
 	/**
@@ -67,7 +51,26 @@ class ViewFactory {
 	 */
 	public function make($path)
 	{
-		return new View($this->basepath.'/'.$path, $this->loader, $this->view);
+		$provider = $this->provider;
+
+		if (strpos($path, ':'))
+		{
+			list($prefix, $path) = explode(':', $path, 2);
+			$provider = $provider->make('App')->get($prefix);
+		}
+
+		return new View($path, $provider);
+	}
+
+	/**
+	* This will make and return a Service\View\StringView object
+	*
+	* @param str $string The contents of the unrendered view
+	* @return object EllisLab\ExpressionEngine\Service\View\StringView
+	*/
+	public function makeFromString($string)
+	{
+		return new StringView($string);
 	}
 
 }

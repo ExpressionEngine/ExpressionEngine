@@ -459,7 +459,21 @@ class Grid_ft extends EE_Fieldtype {
 		// Gather columns for current field
 		$vars['columns'] = array();
 
-		if ( ! empty($field_id))
+		// Validation error, repopulate
+		if (isset($_POST['grid']) && $_POST['field_type'] == 'grid')
+		{
+			$columns = $_POST['grid']['cols'];
+
+			foreach ($columns as $field_name => &$column)
+			{
+				$column['col_id'] = $field_name;
+				$column['col_required'] = isset($column['col_required']) ? 'y' : 'n';
+				$column['col_search'] = isset($column['col_search']) ? 'y' : 'n';
+
+				$vars['columns'][] = ee()->grid_lib->get_column_view($column, $this->error_fields);
+			}
+		}
+		elseif ( ! empty($field_id))
 		{
 			$columns = ee()->grid_model->get_columns_for_field($field_id, $this->content_type());
 
@@ -475,6 +489,15 @@ class Grid_ft extends EE_Fieldtype {
 		if (empty($vars['columns']))
 		{
 			$vars['columns'][] = $vars['blank_col'];
+		}
+
+		$grid_alert = '';
+		if ( ! empty($this->error_string))
+		{
+			$grid_alert = ee('Alert')->makeInline('permissions-warn')
+				->asIssue()
+				->addToBody($this->error_string)
+				->render();
 		}
 
 		$settings = array(
@@ -507,7 +530,7 @@ class Grid_ft extends EE_Fieldtype {
 			'grid_fields' => array(
 				'label' => 'grid_fields',
 				'group' => 'grid',
-				'settings' => array(ee()->load->view('settings', $vars, TRUE))
+				'settings' => array($grid_alert, ee()->load->view('settings', $vars, TRUE))
 			)
 		);
 
@@ -530,49 +553,34 @@ class Grid_ft extends EE_Fieldtype {
 
 	public function validate_settings($data)
 	{
-		$this->_load_grid_lib();
+		$validator = ee('Validation')->make(array(
+			'grid_min_rows' => 'isNatural',
+			'grid_max_rows' => 'isNaturalNoZero',
+			'grid' => 'validGridSettings'
+		));
 
-		ee()->form_validation->set_rules(
-			array(
-				array(
-					'field' => 'grid_min_rows',
-					'label' => 'lang:grid_max_rows',
-					'rules' => 'trim|numeric'
-				),
-				array(
-					'field' => 'grid_max_rows',
-					'label' => 'lang:grid_max_rows',
-					'rules' => 'trim|numeric'
-				),
-				array(
-					// Validate against dummpy field so that the field data
-					// isn't sent to Form Validation, otherwise it will cause
-					// a loop because of the nested array
-					'field' => 'grid_validation',
-					'label' => 'Grid',
-					'rules' => 'callback__validate_grid'
-				),
-			)
-		);
+		$validator->defineRule('validGridSettings', array($this, '_validate_grid'));
+
+		return $validator->validate($data);
 	}
 
 	// -------------------------------------------------------------------
 
 	/**
-	 * Callback for Form Validation
+	 * Callback for validation service
 	 *
-	 * @param	array	Empty array because we sent a fake field to Form
-	 *                  Validation
 	 * @return	boolean	Wheather or not the settings passed validation
 	 */
-	public function _validate_grid($data)
+	public function _validate_grid($key, $value, $params, $rule)
 	{
+		$this->_load_grid_lib();
+
 		$validate = ee()->grid_lib->validate_settings(array('grid' => ee()->input->post('grid')));
 
 		if ($validate !== TRUE)
 		{
 			$errors = array();
-			$field_names = array();
+			$this->error_fields = array();
 
 			// Gather error messages and fields with errors so that we can
 			// display the error messages and highlight the fields that
@@ -582,25 +590,20 @@ class Grid_ft extends EE_Fieldtype {
 				foreach ($fields as $field => $error)
 				{
 					$errors[] = $error;
-					$field_names[] = 'grid[cols]['.$column.']['.$field.']';
+					$this->error_fields[] = 'grid[cols]['.$column.']['.$field.']';
 				}
 			}
 
 			// Make error messages unique and convert to a string to pass
 			// to form validaiton library
-			$errors = array_unique($errors);
-			$error_string = '';
-			foreach ($errors as $error)
+			$this->error_string = '';
+			foreach (array_unique($errors) as $error)
 			{
-				$error_string .= lang($error).'<br>';
+				$this->error_string .= lang($error).'<br>';
 			}
 
-			ee()->form_validation->set_message('_validate_grid', $error_string);
-
-			// We'll get this later in display_settings()
-			ee()->session->set_cache(__CLASS__, 'grid_settings_field_errors', $field_names);
-
-			return FALSE;
+			$rule->stop();
+			return $this->error_string;
 		}
 
 		return TRUE;

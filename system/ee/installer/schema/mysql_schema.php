@@ -42,7 +42,6 @@ class EE_Schema {
 			`site_name` varchar(50) NOT NULL default '',
 			`site_description` text NULL,
 			`site_system_preferences` mediumtext NOT NULL ,
-			`site_mailinglist_preferences` TEXT NOT NULL ,
 			`site_member_preferences` TEXT NOT NULL ,
 			`site_template_preferences` TEXT NOT NULL ,
 			`site_channel_preferences` TEXT NOT NULL ,
@@ -338,7 +337,6 @@ class EE_Schema {
 			time_format char(2) DEFAULT '12' NOT NULL,
 			date_format varchar(8) DEFAULT '%n/%j/%Y' NOT NULL,
 			include_seconds char(1) DEFAULT 'n' NOT NULL,
-			cp_theme varchar(32) NULL DEFAULT NULL,
 			profile_theme varchar(32) NULL DEFAULT NULL,
 			forum_theme varchar(32) NULL DEFAULT NULL,
 			tracker text NULL,
@@ -579,6 +577,7 @@ class EE_Schema {
 			enable_versioning char(1) NOT NULL default 'n',
 			max_revisions smallint(4) unsigned NOT NULL default 10,
 			default_entry_title varchar(100) NULL DEFAULT NULL,
+			title_field_label varchar(100) NOT NULL DEFAULT 'Title',
 			url_title_prefix varchar(80) NULL DEFAULT NULL,
 			live_look_template int(10) UNSIGNED NOT NULL default 0,
 			PRIMARY KEY `channel_id` (`channel_id`),
@@ -599,8 +598,8 @@ class EE_Schema {
 			author_id int(10) unsigned NOT NULL default 0,
 			forum_topic_id int(10) unsigned NULL DEFAULT NULL,
 			ip_address varchar(45) default '0' NOT NULL,
-			title varchar(100) NOT NULL,
-			url_title varchar(75) NOT NULL,
+			title varchar(200) NOT NULL,
+			url_title varchar(200) NOT NULL,
 			status varchar(50) NOT NULL,
 			versioning_enabled char(1) NOT NULL default 'n',
 			view_count_one int(10) unsigned NOT NULL default 0,
@@ -1004,7 +1003,6 @@ class EE_Schema {
 		// Membership activation instruction
 		// Member lost password instructions
 		// Validated member notification
-		// Remove from mailinglist notification
 
 		$Q[] = "CREATE TABLE exp_specialty_templates (
 			template_id int(6) unsigned NOT NULL auto_increment,
@@ -1370,13 +1368,11 @@ class EE_Schema {
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, edit_date, data_title, template_data) VALUES ('message_template', 'system', " . time() . ", '', '".addslashes(message_template())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('admin_notify_reg', 'email', 'members', " . time() . ", '".addslashes(trim(admin_notify_reg_title()))."', '".addslashes(admin_notify_reg())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('admin_notify_entry', 'email', 'content', " . time() . ", '".addslashes(trim(admin_notify_entry_title()))."', '".addslashes(admin_notify_entry())."')";
-		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('admin_notify_mailinglist', 'email', 'mailing_lists', " . time() . ", '".addslashes(trim(admin_notify_mailinglist_title()))."', '".addslashes(admin_notify_mailinglist())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('admin_notify_comment', 'email', 'comments', " . time() . ", '".addslashes(trim(admin_notify_comment_title()))."', '".addslashes(admin_notify_comment())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('mbr_activation_instructions', 'email', 'members', " . time() . ", '".addslashes(trim(mbr_activation_instructions_title()))."', '".addslashes(mbr_activation_instructions())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('forgot_password_instructions', 'email', 'members', " . time() . ", '".addslashes(trim(forgot_password_instructions_title()))."', '".addslashes(forgot_password_instructions())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('validated_member_notify', 'email', 'members', " . time() . ", '".addslashes(trim(validated_member_notify_title()))."', '".addslashes(validated_member_notify())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('decline_member_validation', 'email', 'members', " . time() . ", '".addslashes(trim(decline_member_validation_title()))."', '".addslashes(decline_member_validation())."')";
-		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('mailinglist_activation_instructions', 'email', 'mailing_lists', " . time() . ", '".addslashes(trim(mailinglist_activation_instructions_title()))."', '".addslashes(mailinglist_activation_instructions())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('comment_notification', 'email', 'comments', " . time() . ", '".addslashes(trim(comment_notification_title()))."', '".addslashes(comment_notification())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('comments_opened_notification', 'email', 'comments', " . time() . ", '".addslashes(trim(comments_opened_notification_title()))."', '".addslashes(comments_opened_notification())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('private_message_notification', 'email', 'private_messages', " . time() . ", '".addslashes(trim(private_message_notification_title()))."', '".addslashes(private_message_notification())."')";
@@ -1430,7 +1426,6 @@ class EE_Schema {
 			'site_label'	=> $this->userdata['site_label'],
 			'site_name'		=> $this->userdata['site_name'],
 			'site_system_preferences'      => '',
-			'site_mailinglist_preferences' => '',
 			'site_member_preferences'      => '',
 			'site_template_preferences'    => '',
 			'site_channel_preferences'     => '',

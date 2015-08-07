@@ -89,7 +89,6 @@ class MemberGateway extends Gateway {
 	public $time_format;
 	public $date_format;
 	public $include_seconds;
-	public $cp_theme;
 	public $profile_theme;
 	public $forum_theme;
 	public $tracker;

@@ -1,4 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+use EllisLab\ExpressionEngine\Service\Sidebar\Sidebar;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -234,11 +237,18 @@ class EE_Menu {
 	 */
 	public function register_left_nav($nav)
 	{
-		ee()->view->left_nav = ee()->load->view(
-			'_shared/left_nav',
-			array('nav' => $nav),
-			TRUE
-		);
+		if ($nav instanceof Sidebar)
+		{
+			ee()->view->left_nav = $nav->render();
+		}
+		else
+		{
+			ee()->view->left_nav = ee()->load->view(
+				'_shared/left_nav',
+				array('nav' => $nav),
+				TRUE
+			);
+		}
 	}
 
 	// --------------------------------------------------------------------

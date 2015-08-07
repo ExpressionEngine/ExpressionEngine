@@ -1,3 +1,5 @@
+require 'securerandom'
+
 # Common error language
 $required_error = 'This field is required.'
 $integer_error = 'This field must contain an integer.'
@@ -105,19 +107,30 @@ def wait_for_dom
   page.find("##{uuid}")
 end
 
-# Reset the DB to a clean slate and reset sessions
-def reset_db
+# Cleans the datbase and resets Capybara sessions, takes a block that's executed
+# after cleaning the database
+#
+# @return [void]
+def clean_db
   $db.query(IO.read('sql/truncate_db.sql'))
   clear_db_result
 
-  # Installer should not drop in database
-  unless ENV.key?('installer')
-    $db.query(IO.read('sql/database.sql'))
-    clear_db_result
-  end
+  yield if block_given?
 
-  # Reset sessions
   Capybara.reset_sessions!
+end
+
+# Reset the DB to a clean slate and reset sessions
+def reset_db(test_file = '')
+  clean_db do
+    if test_file == 'updater'
+      $db.query(IO.read('sql/database_2.10.1.sql'))
+      clear_db_result
+    elsif test_file != 'installer'
+      $db.query(IO.read('sql/database.sql'))
+      clear_db_result
+    end
+  end
 end
 
 # Clear the DB result so we can use the DB object again

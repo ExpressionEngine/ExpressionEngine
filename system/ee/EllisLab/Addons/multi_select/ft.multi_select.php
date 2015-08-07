@@ -43,7 +43,7 @@ class Multi_select_ft extends EE_Fieldtype {
 
 		if (REQ == 'CP')
 		{
-			return ee('View')->make('publish')->render(array(
+			return ee('View')->make('multi_select:publish')->render(array(
 				'field_name' => $this->field_name,
 				'values' => $values,
 				'options' => $field_options
@@ -199,7 +199,6 @@ class Multi_select_ft extends EE_Fieldtype {
 		$settings = array(
 			array(
 				'title' => 'field_fmt',
-				'desc' => 'field_fmt_desc',
 				'fields' => array(
 					'field_fmt' => array(
 						'type' => 'select',
@@ -256,7 +255,6 @@ class Multi_select_ft extends EE_Fieldtype {
 			'field_options' => array(
 				array(
 					'title' => 'field_fmt',
-					'desc' => 'field_fmt_desc',
 					'fields' => array(
 						'field_fmt' => array(
 							'type' => 'select',

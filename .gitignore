@@ -124,14 +124,14 @@ images/uploads/*
 !images/uploads/index.html
 !images/uploads/.htaccess
 
-themes/site_themes/agile_records/images/uploads/_thumb/*
-!themes/site_themes/agile_records/images/uploads/_thumb/index.html
-!themes/site_themes/agile_records/images/uploads/_thumb/testband300.jpg
-!themes/site_themes/agile_records/images/uploads/_thumb/ee_banner*
-!themes/site_themes/agile_records/images/uploads/_thumb/map*.jpg
-!themes/site_themes/agile_records/images/uploads/_thumb/staff*.png
+themes/site/agile_records/images/uploads/_thumb/*
+!themes/site/agile_records/images/uploads/_thumb/index.html
+!themes/site/agile_records/images/uploads/_thumb/testband300.jpg
+!themes/site/agile_records/images/uploads/_thumb/ee_banner*
+!themes/site/agile_records/images/uploads/_thumb/map*.jpg
+!themes/site/agile_records/images/uploads/_thumb/staff*.png
 
-themes/cp_themes/brilliant_retail/
-themes/site_themes/brilliant_retail/
+themes/cp/brilliant_retail/
+themes/site/brilliant_retail/
 themes/solspace_themes/
 themes/third_party/

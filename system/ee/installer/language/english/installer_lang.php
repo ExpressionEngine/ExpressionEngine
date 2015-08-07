@@ -74,7 +74,7 @@ $lang = array(
 'unreadable_language'                => 'The language files needed for your current language selection (%x) are unavailable. Please put the language pack in this folder: system/user/language/',
 'unreadable_email'                   => 'Unable to locate the file containing your email templates (email_data.php). Make sure you have uploaded all components of this software.',
 'unreadable_schema'                  => 'Unable to locate the following folder: system/ee/installer/schema/ Please upload all components before proceeding.',
-'unreadable_dbdriver'                => 'Unable to locate the databae schema file in the following folder: sytem/ee/installer/schema/ Please upload all components before proceeding.',
+'unreadable_dbdriver'                => 'Unable to locate the database schema file in the following folder: sytem/ee/installer/schema/ Please upload all components before proceeding.',
 'improper_grants'                    => 'Error: Unable to perform the SQL queries. Please make sure your SQL account has the proper GRANT privileges: CREATE, DROP, ALTER, INSERT, and DELETE',
 'empty_fields'                       => 'You must fill out all form fields',
 'email_invalid'                      => 'The email address you submitted is not valid',
@@ -92,13 +92,14 @@ $lang = array(
 'error_updating'                     => 'Error While Updating %s to %s',
 
 // Install/Upgrade Success
-'install_success'      => "ExpressionEngine %s Installed",
-'install_success_note' => '<b>Yay!</b> ExpressionEngine %s is now installed.',
-'update_success'       => "ExpressionEngine Updated to %s",
-'update_success_note'  => '<b>Yay!</b> ExpressionEngine is now updated to %s.',
-'success_delete'       => 'Please delete the installer folder/directory from your server before proceeding.',
-'success_moved'        => 'The installer folder has been renamed to <kbd>system/ee/installer_%s</kbd>.',
-'cp_login'             => 'Control Panel login',
+'install_success'       => "ExpressionEngine %s Installed",
+'install_success_note'  => '<b>Yay!</b> ExpressionEngine %s is now installed.',
+'update_success'        => "ExpressionEngine Updated to %s",
+'update_success_note'   => '<b>Yay!</b> ExpressionEngine is now updated to %s.',
+'success_delete'        => 'Please delete the installer folder/directory from your server before proceeding.',
+'success_moved'         => 'The installer folder has been renamed to <kbd>system/ee/installer_%s</kbd>.',
+'cp_login'              => 'Control Panel login',
+'download_mailing_list' => 'Download Mailing List',
 
 // Surveys
 'opt_in_survey'              => 'Opt-in Survey',

@@ -8,6 +8,6 @@
 				$setting['wide'] = TRUE;
 			}
 		}
-		$this->ee_view('_shared/form/section', array('name' => $name, 'settings' => $settings));
+		$this->embed('ee:_shared/form/section', array('name' => $name, 'settings' => $settings));
 	} ?>
 </div>
