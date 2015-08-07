@@ -33,8 +33,8 @@ class Spam {
 	 */
 	public function __construct()
 	{
-		$this->classifier = $this->load_default_classifier();
-		$this->member_classifier = $this->load_member_classifier();
+		$this->classifier = $this->loadDefaultClassifier();
+		$this->memberClassifier = $this->loadMemberClassifier();
 	}
 
 	// --------------------------------------------------------------------
@@ -49,7 +49,7 @@ class Spam {
 	 * @access public
 	 * @return void
 	 */
-	public function member_classify($username, $email, $url, $ip)
+	public function memberClassify($username, $email, $url, $ip)
 	{
 		// Split IP address with spaces so TFIDF will calculate each octet as a 
 		// separate feature. We're definitely abusing TFIDF here but it should
@@ -60,7 +60,7 @@ class Spam {
 		$text = implode(' ', array($username, $email, $url, $ip));
 		$source = ee('spam:Source', $text);
 
-		return $this->member_classifier->classify($source, 'spam');
+		return $this->memberClassifier->classify($source, 'spam');
 	}
 
 
@@ -95,7 +95,7 @@ class Spam {
 	 * @access public
 	 * @return void
 	 */
-	public function moderate_content($file, $author, $class, $method, $content, $doc)
+	public function moderateContent($file, $author, $class, $method, $content, $doc)
 	{
 		$data = array(
 			'file' => $file,
@@ -117,7 +117,7 @@ class Spam {
 	 * @access public
 	 * @return void
 	 */
-	public function load_default_classifier()
+	public function loadDefaultClassifier()
 	{
 		$training = ee('spam:Training', 'default');
 		$stop_words = explode("\n", file_get_contents(PATH_MOD . $training->stop_words_path));
@@ -125,9 +125,9 @@ class Spam {
 
 		// Prep the the TFIDF vectorizer with the vocabulary we have stored
 		$tfidf = ee('spam:Tfidf', array(), $tokenizer, $stop_words);
-		$tfidf->vocabulary = $training->get_vocabulary();
-		$tfidf->document_count = $training->get_document_count();
-		$tfidf->generate_lookups();
+		$tfidf->vocabulary = $training->getVocabulary();
+		$tfidf->document_count = $training->getDocumentCount();
+		$tfidf->generateLookups();
 
 		$vectorizers = array();
 		$vectorizers[] = ee('spam:Vectorizers/ASCII_Printable');
@@ -145,23 +145,23 @@ class Spam {
 	 * @access public
 	 * @return void
 	 */
-	public function load_member_classifier()
+	public function loadMemberClassifier()
 	{
 		$training = ee('spam:Training', 'member');
 		$stop_words = explode("\n", file_get_contents(PATH_MOD . $training->stop_words_path));
 		$tokenizer = ee('spam:Tokenizer');
 
 		$tfidf = ee('spam:Tfidf', array(), $tokenizer, $stop_words);
-		$tfidf->vocabulary = $training->get_vocabulary();
-		$tfidf->document_count = $training->get_document_count();
-		$tfidf->generate_lookups();
+		$tfidf->vocabulary = $training->getVocabulary();
+		$tfidf->document_count = $training->getDocumentCount();
+		$tfidf->generateLookups();
 
 		$vectorizers = array();
 		$vectorizers[] = $tfidf;
 		$vectorizers[] = ee('spam:Vectorizers/ASCIIPrintable');
 		$vectorizers[] = ee('spam:Vectorizers/Punctuation');
 
-		return $training->load_classifier($vectorizers);
+		return $training->loadClassifier($vectorizers);
 	}
 
 }

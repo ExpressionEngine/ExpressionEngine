@@ -56,7 +56,7 @@ class Collection {
 	 * @access public
 	 * @return array
 	 */
-	public function fit_transform($sources)
+	public function fitTransform($sources)
 	{
 		$result = array();
 

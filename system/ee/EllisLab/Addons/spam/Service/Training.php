@@ -54,7 +54,7 @@ class Training {
 	 */
 	public function __construct($kernel)
 	{
-		$this->kernel = $this->_get_kernel($kernel);
+		$this->kernel = $this->getKernel($kernel);
 	}
 
 	// --------------------------------------------------------------------
@@ -82,7 +82,7 @@ class Training {
 	 * @access public
 	 * @return The prepared classifier
 	 */
-	public function load_classifier($vectorizers)
+	public function loadClassifier($vectorizers)
 	{
 		$collection = ee('spam:Collection', $vectorizers);
 
@@ -127,7 +127,7 @@ class Training {
 	 * @access public
 	 * @return void
 	 */
-	public function delete_classifier()
+	public function deleteClassifier()
 	{
 		if (function_exists('shmop_open'))
 		{
@@ -168,8 +168,8 @@ class Training {
 
 		// Grab the trained parameters
 		$training = array(
-			'spam' => $this->_get_parameters('spam'),
-			'ham' => $this->_get_parameters('ham'),
+			'spam' => $this->getParameters('spam'),
+			'ham' => $this->getParameters('ham'),
 		);
 
 		return ee('spam:Classifier', $training, $collection, $stop_words);
@@ -184,7 +184,7 @@ class Training {
 	 * @access private
 	 * @return array
 	 */
-	private function _get_parameters($class)
+	private function getParameters($class)
 	{
 		$result = array();
 		$class = ($class == 'spam') ? 1 : 0;
@@ -209,9 +209,9 @@ class Training {
 	 * @access public
 	 * @return array
 	 */
-	public function get_vocabulary($kernel = "")
+	public function getVocabulary($kernel = "")
 	{
-		$kernel = $this->_get_kernel($kernel) ?: $this->kernel;
+		$kernel = $this->getKernel($kernel) ?: $this->kernel;
 		return ee('Model')->get('SpamVocabulary')->filter('kernel_id')->all()->getDictionary('term', 'count');
 	}
 
@@ -223,9 +223,9 @@ class Training {
 	 * @access public
 	 * @return array
 	 */
-	public function get_document_count($kernel = "")
+	public function getDocumentCount($kernel = "")
 	{
-		$kernel = $this->_get_kernel($kernel) ?: $this->kernel;
+		$kernel = $this->getKernel($kernel) ?: $this->kernel;
 		return ee('Model')->get('SpamTraining')->filter('kernel_id', $kernel)->count();
 	}
 
@@ -236,7 +236,7 @@ class Training {
 	 * @access private
 	 * @return int The kernel ID
 	 */
-	private function _get_kernel($name)
+	private function getKernel($name)
 	{
 		$kernel = ee('Model')->get('SpamKernel')->filter('name', $name)->first();
 

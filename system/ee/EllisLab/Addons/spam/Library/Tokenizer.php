@@ -51,7 +51,7 @@ class Tokenizer {
 			$tokens = str_split($string);
 		}
 
-		return $this->_ngrams($tokens, $this->ngram);
+		return $this->ngrams($tokens, $this->ngram);
 	}
 
 	/**
@@ -62,7 +62,7 @@ class Tokenizer {
 	 * @access private
 	 * @return array  The array of n-grams
 	 */
-	private function _ngrams($tokens, $n = 1)
+	private function ngrams($tokens, $n = 1)
 	{
 		if ($n == 1)
 		{

@@ -376,10 +376,10 @@ class Spam_mcp {
 	 * @access public
 	 * @return void
 	 */
-	public function train_member()
+	public function trainMember()
 	{
 		$data = array();
-		$this->_train_member_parameters();
+		$this->trainMemberParameters();
 		return ee()->load->view('train_member', $data, TRUE);
 	}
 
@@ -390,7 +390,7 @@ class Spam_mcp {
 	 * @access private
 	 * @return int The kernel ID
 	 */
-	private function _get_kernel($name)
+	private function getKernel($name)
 	{
 		ee()->db->select('kernel_id');
 		ee()->db->from('spam_kernels');
@@ -419,7 +419,7 @@ class Spam_mcp {
 	 * @access private
 	 * @return array   Array of content to moderate
 	 */
-	private function _get_spam_trap($limit = 1000)
+	private function getSpamTrap($limit = 1000)
 	{
 		ee()->db->select('trap_id, document');
 		ee()->db->from('spam_trap');
@@ -450,7 +450,7 @@ class Spam_mcp {
 	 * @access private
 	 * @return array
 	 */
-	private function _get_spammers($limit = 1000)
+	private function getSpammers($limit = 1000)
 	{
 		ee()->db->select('ip_addess', 'username', 'email', 'url');
 		ee()->db->from('spam_trap');
@@ -474,7 +474,7 @@ class Spam_mcp {
 	 * @access private
 	 * @return array
 	 */
-	private function _get_real_people($limit = 1000)
+	private function getRealPeople($limit = 1000)
 	{
 		ee()->db->select('ip_addess', 'username', 'email', 'url');
 		ee()->db->from('members');
@@ -499,7 +499,7 @@ class Spam_mcp {
 	 * @access private
 	 * @return array
 	 */
-	private function _get_training_data($limit = 1000)
+	private function getTrainingData($limit = 1000)
 	{
 		ee()->db->select('source, class');
 		ee()->db->from('spam_training');
@@ -526,7 +526,7 @@ class Spam_mcp {
 	 * @access private
 	 * @return void
 	 */
-	private function _set_vocabulary($document)
+	private function setVocabulary($document)
 	{
 		$document = ee('spam:Document', $document);
 		
@@ -561,7 +561,7 @@ class Spam_mcp {
 	 * @access private
 	 * @return void
 	 */
-	private function _set_parameter($term, $class, $mean, $variance)
+	private function setParameter($term, $class, $mean, $variance)
 	{
 		$class = ($class == 'spam') ? 1 : 0;
 
@@ -601,9 +601,9 @@ class Spam_mcp {
 	 * @access private
 	 * @return void
 	 */
-	private function _set_maximum_likelihood($training_collection, $kernel = 'default')
+	private function setMaximumLikelihood($training_collection, $kernel = 'default')
 	{
-		$kernel = $this->_get_kernel($kernel);
+		$kernel = $this->getKernel($kernel);
 		$training = array();
 
 		foreach ($training_collection as $class => $sources)
@@ -647,10 +647,10 @@ class Spam_mcp {
 	 * @access private
 	 * @return void
 	 */
-	private function _train_member_parameters()
+	private function trainMemberParameters()
 	{
-		$spammers = $this->_get_spammers();
-		$hammers = $this->_get_real_people();
+		$spammers = $this->getSpammers();
+		$hammers = $this->getRealPeople();
 		$members = array_merge($spammers, $hammers);
 
 		$spam_classes = array_pad(array(), count($spammers), 1);
@@ -692,15 +692,15 @@ class Spam_mcp {
 		ee()->db->empty_table("spam_vocabulary"); 
 		ee()->db->insert_batch("spam_vocabulary", $vocabulary); 
 
-		foreach ($training_collection->fit_transform($training) as $key => $vector)
+		foreach ($training_collection->fitTransform($training) as $key => $vector)
 		{
 			$training_classes[$classes[$key]][$key] = $vector;
 		}
 
-		$this->_set_maximum_likelihood($training_classes, 'member');
+		$this->setMaximumLikelihood($training_classes, 'member');
 
 		$spam_training = ee('spam:Spam_training', 'default');
-		$spam_training->delete_classifier();
+		$spam_training->deleteClassifier();
 	}
 
 	/**
@@ -709,10 +709,10 @@ class Spam_mcp {
 	 * @access private
 	 * @return void
 	 */
-	private function _train_parameters()
+	private function trainParameters()
 	{
 		$stop_words = explode("\n", file_get_contents(PATH_MOD . $this->stop_words_path));
-		$training_data = $this->_get_training_data(10000);
+		$training_data = $this->getTrainingData(10000);
 		$classes = $training_data[1];
 
 		$tokenizer = ee('spam:Tokenizer');
@@ -728,7 +728,7 @@ class Spam_mcp {
 		$training_classes = array();
 		$training = array();
 
-		$kernel = $this->_get_kernel('default');
+		$kernel = $this->getKernel('default');
 
 		// Set the new vocabulary
 		$vocabulary = array();
@@ -747,14 +747,14 @@ class Spam_mcp {
 		ee()->db->empty_table('spam_vocabulary'); 
 		ee()->db->insert_batch('spam_vocabulary', $vocabulary); 
 
-		foreach ($training_collection->fit_transform($training_data[0]) as $key => $vector)
+		foreach ($training_collection->fitTransform($training_data[0]) as $key => $vector)
 		{
 			$training_classes[$classes[$key]][] = $vector;
 		}
 
-		$this->_set_maximum_likelihood($training_classes);
+		$this->setMaximumLikelihood($training_classes);
 		$spam_training = ee('spam:Spam_training', 'default');
-		$spam_training->delete_classifier();
+		$spam_training->deleteClassifier();
 	}
 
 	/**
