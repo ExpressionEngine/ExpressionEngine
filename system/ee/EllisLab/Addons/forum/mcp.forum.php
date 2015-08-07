@@ -2324,7 +2324,7 @@ class Forum_mcp extends CP_Controller {
 					'name' => 'selection[]',
 					'value' => $admin->admin_id,
 					'data'	=> array(
-						'confirm' => lang('admin') . ': <b>' . htmlentities($name, ENT_QUOTES) . '</b>'
+						'confirm' => lang('admin') . ': <b>' . htmlentities($admin->getAdminName(), ENT_QUOTES) . '</b>'
 					)
 				)
 			);
