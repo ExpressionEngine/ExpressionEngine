@@ -24,8 +24,6 @@ return array(
 
 	'namespace' => 'EllisLab\ExpressionEngine',
 
-	'views' => 'View',
-
 	'services' => array(
 
 		'CP/GridInput' => function($ee, $config = array())
