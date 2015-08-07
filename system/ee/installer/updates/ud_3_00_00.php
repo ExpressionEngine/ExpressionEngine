@@ -65,7 +65,8 @@ class Updater {
 				'_update_channel_titles_table',
 				'_export_mailing_lists',
 				'_remove_mailing_list_module_artifacts',
-				'_remove_cp_theme_config'
+				'_remove_cp_theme_config',
+				'_remove_show_button_cluster_column'
 			)
 		);
 
@@ -1180,6 +1181,14 @@ class Updater {
 		$msm_config->remove_config_item(array('cp_theme'));
 
 		ee()->smartforge->drop_column('members', 'cp_theme');
+	}
+
+	/**
+	 * The show_button_cluster setting has been removed from channels, drop the column
+	 */
+	private function _remove_show_button_cluster_column()
+	{
+		ee()->smartforge->drop_column('channels', 'show_button_cluster');
 	}
 }
 /* END CLASS */

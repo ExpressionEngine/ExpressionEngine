@@ -262,8 +262,6 @@ $lang = array(
 
 'publish_page_customization' => 'Publish Page Customization',
 
-'show_button_cluster' => 'Display Formatting Buttons',
-
 'paths' => 'Path Settings',
 
 'channel_url_exp' => 'The URL to this particular channel',

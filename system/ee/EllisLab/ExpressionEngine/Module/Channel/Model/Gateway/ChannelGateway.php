@@ -69,7 +69,6 @@ class ChannelGateway extends Gateway {
 	public $comment_notify_emails;
 	public $comment_expiration;
 	public $search_results_url;
-	public $show_button_cluster;
 	public $rss_url;
 	public $enable_versioning;
 	public $max_revisions;

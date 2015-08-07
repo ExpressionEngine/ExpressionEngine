@@ -804,16 +804,6 @@ class Channels extends AbstractChannelsController {
 							'value' => $channel->channel_auto_link_urls
 						)
 					)
-				),
-				array(
-					'title' => 'allow_rich_text_editing',
-					'desc' => 'allow_rich_text_editing_desc',
-					'fields' => array(
-						'show_button_cluster' => array(
-							'type' => 'yes_no',
-							'value' => $channel->show_button_cluster
-						)
-					)
 				)
 			),
 			'channel_form' => array(

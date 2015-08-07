@@ -572,7 +572,6 @@ class EE_Schema {
 			comment_notify_emails varchar(255) NULL DEFAULT NULL,
 			comment_expiration int(4) unsigned NOT NULL default '0',
 			search_results_url varchar(80) NULL DEFAULT NULL,
-			show_button_cluster char(1) NOT NULL default 'y',
 			rss_url varchar(80) NULL DEFAULT NULL,
 			enable_versioning char(1) NOT NULL default 'n',
 			max_revisions smallint(4) unsigned NOT NULL default 10,

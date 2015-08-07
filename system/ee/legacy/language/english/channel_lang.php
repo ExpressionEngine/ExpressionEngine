@@ -271,10 +271,6 @@ $lang = array(
 
 'convert_urls_emails_to_links_desc' => 'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s and Email address will be rendered as links in this channel\'s entries.',
 
-'allow_rich_text_editing' => 'Allow Rich Text Editing?',
-
-'allow_rich_text_editing_desc' => 'When set to <b>yes</b>, text areas will have the default <abbr title="Rich Text Editor">RTE</abbr> tool set above them.',
-
 'channel_form' => 'Channel Form',
 
 'channel_form_status_desc' => 'Default status for forms in this channel.',
