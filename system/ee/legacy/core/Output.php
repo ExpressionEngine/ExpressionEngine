@@ -343,9 +343,9 @@ class EE_Output {
 			$profiler = ee('Profiler')->addSection('benchmark', ee()->benchmark->getBenchmarkTimings())
 				->addSection('memory')
 				->addSection('database', array(ee('Database')))
-				->addSection('userdata', ee()->session->all_userdata())
 				->addSection('get', $_GET)
 				->addSection('post', $_POST)
+				->addSection('userdata', ee()->session->all_userdata())
 				->addSection('server', $_SERVER);
 
 			// If the output data contains closing </body> and </html> tags

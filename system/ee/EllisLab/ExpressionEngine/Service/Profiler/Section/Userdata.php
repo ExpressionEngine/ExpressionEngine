@@ -51,6 +51,6 @@ class Userdata extends ProfilerSection {
 			$prepped_data[$key] = htmlspecialchars(print_r($value, TRUE));
 		}
 
-		$this->data = array('profiler_userdata' => $prepped_data);
+		$this->data = array('userdata' => $prepped_data);
 	}
 }

@@ -81,10 +81,10 @@ class Database extends ProfilerSection {
 			$log = $db->getLog();
 
 			$label = $db->getConfig()->get('database');
-			$this->data['profiler_duplicate_queries'][$label] = $this->getDuplicateQueries($log);
+			$this->data['duplicate_queries'][$label] = $this->getDuplicateQueries($log);
 
 			$label .= '&nbsp;&nbsp;&nbsp;'.lang('profiler_queries').': '.$log->getQueryCount();
-			$this->data['profiler_database'][$label] = $this->getQueries($log);
+			$this->data['database'][$label] = $this->getQueries($log);
 		}
 	}
 

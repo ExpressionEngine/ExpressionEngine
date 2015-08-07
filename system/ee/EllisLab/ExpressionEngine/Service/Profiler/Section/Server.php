@@ -41,6 +41,6 @@ class Server extends ProfilerSection {
 			$prepped_data[$header] = (isset($data[$header])) ? htmlspecialchars($data[$header]) : '';
 		}
 
-		$this->data = array('profiler_server' => $prepped_data);
+		$this->data = array('server' => $prepped_data);
 	}
 }

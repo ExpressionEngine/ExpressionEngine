@@ -45,6 +45,6 @@ class Memory extends ProfilerSection {
 			$data = lang('profiler_no_memory_usage');
 		}
 
-		$this->data = array('profiler_memory' => $data);
+		$this->data = array('memory' => $data);
 	}
 }

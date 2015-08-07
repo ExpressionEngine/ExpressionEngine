@@ -53,16 +53,11 @@ class DefaultSection extends ProfilerSection {
 			$prepped_data = array();
 			foreach ($data as $key => $val)
 			{
-				if ( ! is_numeric($key))
-				{
-					$key = "'".$key."'";
-				}
-
-				$prepped_data[lang($this->section_name)."[{$key}]"] = htmlspecialchars(stripslashes(print_r($val, TRUE)));
+				$prepped_data[$key] = htmlspecialchars(stripslashes(print_r($val, TRUE)));
 			}
 
 		}
 
-		$this->data = array('profiler_'.$this->section_name => $prepped_data);
+		$this->data = array($this->section_name => $prepped_data);
 	}
 }
