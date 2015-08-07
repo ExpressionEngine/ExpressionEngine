@@ -80,9 +80,21 @@
 	};
 
 	$(document).ready(function () {
-		$('.modal-file').on('click', '.filters a:not([href=""]), .paginate a:not([href=""]), thead a:not([href=""])', function(e) {
+		$('.modal-file').on('click', '.filters a:not([href=""]), .paginate a:not([href=""]), thead a:not([href=""]), .tbl-search a', function(e) {
 			e.preventDefault();
 			$(this).parents('div.box').load($(this).attr('href'));
+		});
+		$('.modal-file').on('submit', 'form', function(e) {
+			e.preventDefault();
+			$.ajax({
+				type: "POST",
+				url: $(this).attr('action'),
+				data: $(this).serialize(),
+				success: function(response) {
+					console.log(response);
+					$(this).parents('div.box').load(response);
+				}
+			});
 		});
 		$('.filepicker').click(function (e) {
 			var options = {};
