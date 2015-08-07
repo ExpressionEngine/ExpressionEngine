@@ -62,14 +62,12 @@ class Create extends Members {
 				),
 				array(
 					'title' => 'username',
-					'desc' => 'username_description',
 					'fields' => array(
 						'username' => array('type' => 'text', 'required' => TRUE)
 					)
 				),
 				array(
 					'title' => 'mbr_email_address',
-					'desc' => 'mbr_email_address_desc',
 					'fields' => array(
 						'email' => array('type' => 'text', 'required' => TRUE)
 					)

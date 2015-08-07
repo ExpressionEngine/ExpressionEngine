@@ -292,7 +292,7 @@ $lang = array(
 
 "screen_name_desc" => "Screen Name - descending",
 
-"mbr_email_address" => "User's e-mail",
+"mbr_email_address" => "Email",
 
 "mbr_email_address_desc" => "Used for communicating with this user.",
 
