@@ -24,7 +24,7 @@ return array(
 
 	'namespace' => 'EllisLab\ExpressionEngine',
 
-	'views' => '../../views',
+	'views' => 'View',
 
 	'services' => array(
 
