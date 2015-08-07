@@ -7,6 +7,6 @@ class TreeIteratorTest extends \PHPUnit_Framework_TestCase {
 
 	public function testTreeIterator()
 	{
-		$this->markTestSkipped('not yet implemented');
+		$this->markTestIncomplete('not yet implemented');
 	}
 }

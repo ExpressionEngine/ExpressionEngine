@@ -37,7 +37,6 @@ class EE_Output {
 	var $parse_exec_vars	= TRUE;	// whether or not to parse variables like {elapsed_time} and {memory_usage}
 
 	var $_zlib_oc			= FALSE;
-	var $_profiler_sections = array();
 
 	// --------------------------------------------------------------------
 
@@ -161,25 +160,6 @@ class EE_Output {
 	function enable_profiler($val = TRUE)
 	{
 		$this->enable_profiler = (is_bool($val)) ? $val : TRUE;
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Set Profiler Sections
-	 *
-	 * Allows override of default / config settings for Profiler section display
-	 *
-	 * @access	public
-	 * @param	array
-	 * @return	void
-	 */
-	function set_profiler_sections($sections)
-	{
-		foreach ($sections as $section => $enable)
-		{
-			$this->_profiler_sections[$section] = ($enable !== FALSE) ? TRUE : FALSE;
-		}
 	}
 
 	// --------------------------------------------------------------------
@@ -357,27 +337,28 @@ class EE_Output {
 		// --------------------------------------------------------------------
 
 		// Do we need to generate profile data?
-		// If so, load the Profile class and run it.
+		// If so, load the Profile service and run it.
 		if ($this->enable_profiler == TRUE)
 		{
-			$CI->load->library('profiler');
-
-			if ( ! empty($this->_profiler_sections))
-			{
-				$CI->profiler->set_sections($this->_profiler_sections);
-			}
+			$profiler = ee('Profiler')->addSection('benchmark', ee()->benchmark->getBenchmarkTimings())
+				->addSection('memory')
+				->addSection('database', array(ee('Database')))
+				->addSection('get', $_GET)
+				->addSection('post', $_POST)
+				->addSection('userdata', ee()->session->all_userdata())
+				->addSection('server', $_SERVER);
 
 			// If the output data contains closing </body> and </html> tags
 			// we will remove them and add them back after we insert the profile data
 			if (preg_match("|</body>.*?</html>|is", $output))
 			{
 				$output  = preg_replace("|</body>.*?</html>|is", '', $output);
-				$output .= $CI->profiler->run();
+				$output .= $profiler->render();
 				$output .= '</body></html>';
 			}
 			else
 			{
-				$output .= $CI->profiler->run();
+				$output .= $profiler->render();
 			}
 		}
 

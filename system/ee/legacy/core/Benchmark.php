@@ -105,6 +105,29 @@ class EE_Benchmark {
 		return '{memory_usage}';
 	}
 
+	/**
+	 * Get an array of current Benchmark timing data
+	 *
+	 * @return array  Benchmark timing array: [label => microtime, ...]
+	 **/
+	public function getBenchmarkTimings()
+	{
+		$timings = array();
+		foreach ($this->marker as $key => $val)
+		{
+			// We match the "end" marker so that the list ends
+			// up in the order that it was defined
+			if (preg_match("/(.+?)_end/i", $key, $match))
+			{
+				if (isset($this->marker[$match[1].'_end']) AND isset($this->marker[$match[1].'_start']))
+				{
+					$timings[ucwords(str_replace(array('_', '-'), ' ', $match[1]))] = $this->elapsed_time($match[1].'_start', $key);
+				}
+			}
+		}
+
+		return $timings;
+	}
 }
 
 // END CI_Benchmark class
