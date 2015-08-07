@@ -10,6 +10,7 @@ return array(
 	'settings_exist' => TRUE,
 
 	'models' => array(
+		'Administrator' => 'Model\Administrator',
 		'Attachmenet' => 'Model\Attachmenet',
 		'Board' => 'Model\Board',
 		'Forum' => 'Model\Forum',
