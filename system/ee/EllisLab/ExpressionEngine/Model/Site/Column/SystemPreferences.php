@@ -88,7 +88,6 @@ class SystemPreferences extends CustomType {
 	protected $word_wrap;
 	protected $email_console_timelock;
 	protected $log_email_console_msgs;
-	protected $cp_theme;
 	protected $log_search_terms;
 	protected $deny_duplicate_data;
 	protected $redirect_submitted_links;

@@ -128,25 +128,35 @@ $lang = array(
 'moblog_thumb_size' =>
 'Thumb size',
 
-/*
+'moblog_created' => 'Moblog Created',
 
-'moblog_allow_overrides' =>
-'Allow Overrides in Email?',
+'moblog_created_desc' => 'The moblog <b>%s</b> has been created.',
 
-'moblog_allow_overrides_subtext' =>
-'If set to yes, the default settings above can be overridden in the email.',
+'moblog_not_created' => 'Cannot Create Moblog',
 
-'moblog_sticky_entry' =>
-'Make Entry Sticky?',
+'moblog_not_created_desc' => 'We were unable to create this moblog, please review and fix errors below.',
 
-'moblog_prefs' =>
-'Preferences',
+'moblog_updated' => 'Moblog Updated',
 
-'moblog_type' =>
-'Moblog Type',
+'moblog_updated_desc' => 'The moblog <b>%s</b> has been updated.',
 
-'channel' =>
-'Channel',
+'moblog_not_updated' => 'Cannot Update Moblog',
+
+'moblog_not_updated_desc' => 'We were unable to update this moblog, please review and fix errors below.',
+
+'moblog_check_failure' => 'Could Not Check Moblog',
+
+'moblog_check_success' =>
+'Moblog Successfully checked',
+
+'emails_done' =>
+'Emails Retrieved:',
+
+'entries_added' =>
+'Entries Added:',
+
+'attachments_uploaded' =>
+'Attachments Uploaded:',
 
 'invalid_upload_directory' =>
 'Invalid Upload Directory',
@@ -154,185 +164,8 @@ $lang = array(
 'upload_directory_unwriteable' =>
 'Unable to Write File to Upload Directory',
 
-'moblog_entry_settings' =>
-'Channel Entry Settings',
-
-'moblog_basis' =>
-'Base New Moblog on: ',
-
-'edit_moblog' =>
-'Update Moblog',
-
-'view_moblogs' =>
-'Moblog Accounts',
-
 'invalid_moblog' =>
 'Invalid Moblog selection',
-
-'moblog_check_select' =>
-'Select a Moblog to Check',
-
-
-'moblog_general_settings' =>
-'General Settings',
-
-'moblog_email_settings' =>
-'Email Settings',
-
-'moblog_file_settings' =>
-'File Settings',
-
-
-'moblog_full_name'	=>
-'Full Moblog Name ',
-
-'moblog_short_name'	=>
-'Short Name',
-
-'no_spaces'	=>
-'Single word, no spaces',
-
-'channel_id'	=>
-'Choose Channel',
-
-'cat_id' =>
-'Default Categories',
-
-'field_id'	=>
-'Default Field',
-
-'status'	=>
-'Default Status',
-
-'author_id' =>
-'Default Author',
-
-'none' =>
-'None',
-
-'all' =>
-'All',
-
-'open' =>
-'Open',
-
-'closed' =>
-'Closed',
-
-
-
-
-'moblog_ignore_text' =>
-'Ignore Email Text',
-
-'moblog_valid_from' =>
-'Valid \'From\' Emails for Moblog',
-
-'valid_from_subtext' =>
-'Email addresses from which you will be sending these moblog emails.  Leave blank to accept from any email address.  Separate each email address with a space or a newline.',
-
-
-'moblog_time_interval' =>
-'Time Between Checks',
-
-'moblog_enabled' =>
-'Moblog Enabled?',
-
-'moblog_file_archive' =>
-'File Archive Mode',
-
-'file_archive_subtext' =>
-'When enabled, this moblog will not post channel entries.  It will only save your files to the specified upload location.',
-
-'channel_id_subtext' =>
-'If no channel is chosen, this moblog will not post channel entries.  It will only save your files to the specified upload location.',
-
-'subject_prefix_subtext' =>
-'To include all emails, set prefix to nothing.',
-
-'ignore_text_subtext' =>
-'Copy text in here that you wish to have deleted from your moblog\'s emails.  Useful for removing Hotmail and Yahoo signatures.',
-
-'interval_subtext' =>
-'Affects {exp:moblog:check} tag.  Number is set in minutes. You are allowed to use decimal fractions.',
-
-'moblog_time_interval_subtext' =>
-'Example: 1.5',
-
-'pop3' =>
-'POP3',
-
-'imap' =>
-'IMAP',
-
-'moblog_template' =>
-'Moblog Template',
-
-'moblog_formatting' =>
-'Template Default Formatting',
-
-'xhtml' =>
-'xhtml',
-
-'br' =>
-'&lt;br /&gt;',
-
-'invalid_short_name' =>
-'Your moblog short name must contain only alpha-numeric characters and no spaces',
-
-'moblog_taken_short_name' =>
-'This moblog short name is already taken',
-
-'moblog_taken_name' =>
-'This moblog full name is already taken',
-
-'moblog_missing_field' =>
-'A required field has a missing or invalid value: %e',
-
-'moblog_created' =>
-'Moblog Created',
-
-'moblog_updated' =>
-'Moblog Preferences Updated',
-
-'total_moblogs' =>
-'Total Moblogs: ',
-
-'moblog_view' =>
-'Moblogs',
-
-'moblog_update' =>
-'Update Moblog',
-
-'moblog_modify' =>
-'Preferences',
-
-'delete' =>
-'Delete',
-
-'moblog_deleted' =>
-'Moblog deleted',
-
-'moblogs_deleted' =>
-'Moblogs deleted',
-
-'moblog_delete_confirm' =>
-'Delete Moblogs',
-
-'moblog_delete_confirm_title' =>
-'Delete Moblog Confirmation',
-
-'moblog_delete_question' =>
-'Are you sure you want to delete the selected moblog(s)?',
-
-'moblog__deleted' =>
-'Moblog has been deleted',
-
-'moblogs_deleted' =>
-'Moblogs have been deleted',
-
-'moblog_successful_check' =>
-'Moblog was successfully checked',
 
 'emails_done' =>
 'Emails Retrieved:',
@@ -390,7 +223,7 @@ $lang = array(
 'Error writing attachment',
 
 'unable_to_resize' =>
-'Unable to resize image',*/
+'Unable to resize image',
 
 ''=>''
 );

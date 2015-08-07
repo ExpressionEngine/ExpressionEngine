@@ -111,6 +111,16 @@ abstract class Filter {
 	}
 
 	/**
+	 * Determines if the value set for this filter is the default value or not.
+	 *
+	 * @return bool TRUE if the value is not the default, FALSE otherwise
+	 */
+	public function canReset()
+	{
+		return ($this->value() != $this->default_value);
+	}
+
+	/**
 	 * This is a stub for validation.
 	 *
 	 * @return bool True (assumed to be valid)

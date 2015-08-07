@@ -41,6 +41,9 @@ class View {
 	 */
 	public function set_cp_theme($cp_theme)
 	{
+		ee()->load->library('logger');
+		ee()->logger->deprecated('3.0');
+
 		$this->_theme = $cp_theme;
 		ee()->session->userdata['cp_theme'] = $cp_theme;
 /*

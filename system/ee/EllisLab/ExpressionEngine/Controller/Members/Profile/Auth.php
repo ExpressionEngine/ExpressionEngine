@@ -44,7 +44,6 @@ class Auth extends Profile {
 			array(
 				array(
 					'title' => 'username',
-					'desc' => 'username_description',
 					'fields' => array(
 						'username' => array(
 							'type' => 'text',
@@ -55,7 +54,6 @@ class Auth extends Profile {
 				),
 				array(
 					'title' => 'screen_name',
-					'desc' => 'screen_name_description',
 					'fields' => array(
 						'screen_name' => array(
 							'type' => 'text',

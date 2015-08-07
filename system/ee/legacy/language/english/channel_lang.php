@@ -434,7 +434,7 @@ $lang = array(
 
 'group_name_desc' => '',
 
-'categories_not_found' => 'Zero <b>category groups</b> found',
+'categories_not_found' => 'Zero <b>categories</b> found',
 
 'create_category' => 'Create Category',
 

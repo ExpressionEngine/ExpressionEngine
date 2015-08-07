@@ -239,7 +239,6 @@ class Textarea_ft extends EE_Fieldtype {
 			),
 			array(
 				'title' => 'field_fmt',
-				'desc' => 'field_fmt_desc',
 				'fields' => array(
 					'field_fmt' => array(
 						'type' => 'select',
@@ -266,7 +265,6 @@ class Textarea_ft extends EE_Fieldtype {
 
 		$settings[] = array(
 			'title' => 'field_text_direction',
-			'desc' => 'field_text_direction_desc',
 			'fields' => array(
 				'field_text_direction' => array(
 					'type' => 'select',

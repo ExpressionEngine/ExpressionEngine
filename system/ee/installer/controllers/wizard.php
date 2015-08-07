@@ -81,8 +81,8 @@ class Wizard extends CI_Controller {
 	// party folder)
 	public $native_modules = array('blacklist', 'channel', 'comment', 'commerce',
 		'email', 'emoticon', 'file', 'forum', 'gallery', 'ip_to_nation',
-		'jquery', 'mailinglist', 'member', 'metaweblog_api', 'moblog', 'pages',
-		'query', 'rss', 'rte', 'search', 'simple_commerce', 'stats', 'wiki', 'filepicker');
+		'jquery', 'member', 'metaweblog_api', 'moblog', 'pages', 'query', 'rss',
+		'rte', 'search', 'simple_commerce', 'stats', 'wiki', 'filepicker');
 
 	// Third Party Modules may send error messages if something goes wrong.
 	public $module_install_errors = array(); // array that collects all error messages
@@ -856,14 +856,25 @@ class Wizard extends CI_Controller {
 	 */
 	private function show_success($type = 'update', $template_variables = array())
 	{
-		// Check to see if there are any errors, if not, bypass this screen
-		if (empty($template_variables['error_messages']))
+		// Try to rename automatically
+		if ($this->rename_installer())
 		{
-			if ($this->rename_installer())
-			{
-				ee()->load->helper('url');
-				redirect($this->userdata['cp_url'].'?/cp/login&return=&after='.$type);
-			}
+			ee()->load->helper('url');
+			redirect($this->userdata['cp_url'].'?/cp/login&return=&after='.$type);
+		}
+
+		// Are we back here from a input?
+		if (ee()->input->get('login'))
+		{
+			redirect($this->userdata['cp_url'].'?/cp/login&return=&after='.$type);
+		}
+		else if (ee()->input->get('download'))
+		{
+			ee()->load->helper('download');
+			force_download(
+				'mailing_list.zip',
+				file_get_contents(SYSPATH.'user/cache/mailing_list.zip')
+			);
 		}
 
 		// Make sure the title and subtitle are correct, current_step should be
@@ -878,6 +889,9 @@ class Wizard extends CI_Controller {
 		// Send them to their CP via the form
 		$template_variables['action'] = $this->userdata['cp_url'];
 		$template_variables['method'] = 'get';
+
+		// Only show download button if mailing list export exists
+		$template_variables['mailing_list'] = (file_exists(SYSPATH.'/user/cache/mailing_list.zip'));
 
 		$this->set_output('success', $template_variables);
 	}
@@ -1783,7 +1797,6 @@ class Wizard extends CI_Controller {
 			'word_wrap'                 => 'y',
 			'email_console_timelock'    => '5',
 			'log_email_console_msgs'    => 'y',
-			'cp_theme'                  => 'default',
 			'log_search_terms'          => 'y',
 			'un_min_len'                => '4',
 			'pw_min_len'                => '5',
@@ -1869,9 +1882,6 @@ class Wizard extends CI_Controller {
 			'banishment_message'        => 'You have exceeded the allowed page load frequency.',
 			'enable_search_log'         => 'y',
 			'max_logged_searches'       => '500',
-			'mailinglist_enabled'       => 'y',
-			'mailinglist_notify'        => 'n',
-			'mailinglist_notify_emails' => '',
 			'memberlist_order_by'       => "total_posts",
 			'memberlist_sort_order'     => "desc",
 			'memberlist_row_limit'      => "20",
@@ -1935,7 +1945,6 @@ class Wizard extends CI_Controller {
 			'word_wrap',
 			'email_console_timelock',
 			'log_email_console_msgs',
-			'cp_theme',
 			'log_search_terms',
 			'deny_duplicate_data',
 			'redirect_submitted_links',
@@ -1976,19 +1985,6 @@ class Wizard extends CI_Controller {
 
 		ee()->db->where('site_id', 1);
 		ee()->db->update('sites', array('site_system_preferences' => base64_encode(serialize($site_prefs))));
-
-		// Default Mailinglists Prefs
-		$mailinglist_default = array('mailinglist_enabled', 'mailinglist_notify', 'mailinglist_notify_emails');
-
-		$site_prefs = array();
-
-		foreach($mailinglist_default as $value)
-		{
-			$site_prefs[$value] = $config[$value];
-		}
-
-		ee()->db->where('site_id', 1);
-		ee()->db->update('sites', array('site_mailinglist_preferences' => base64_encode(serialize($site_prefs))));
 
 		// Default Members Prefs
 		$member_default = array(
@@ -2100,7 +2096,7 @@ class Wizard extends CI_Controller {
 		ee()->db->update('sites', array('site_channel_preferences' => base64_encode(serialize($site_prefs))));
 
 		// Remove Site Prefs from Config
-		foreach(array_merge($admin_default, $mailinglist_default, $member_default, $template_default, $channel_default) as $value)
+		foreach(array_merge($admin_default, $member_default, $template_default, $channel_default) as $value)
 		{
 			unset($config[$value]);
 		}
@@ -2286,11 +2282,36 @@ class Wizard extends CI_Controller {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Checks to see if we're allowed to automatically rename the installer dir
+	 *
+	 * @return bool TRUE if we can rename, FALSE if we can't
+	 */
+	public function canRenameAutomatically()
+	{
+		if (file_exists(SYSPATH.'user/cache/mailing_list.zip'))
+		{
+			return FALSE;
+		}
+
+		if ( ! empty($template_variables['error_messages']))
+		{
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	/**
 	 * Rename the installer
 	 * @return void
 	 */
 	private function rename_installer()
 	{
+		if ( ! $this->canRenameAutomatically())
+		{
+			return FALSE;
+		}
+
 		// Generate the new path by suffixing a dotless version number
 		$new_path = str_replace(
 			'installer',

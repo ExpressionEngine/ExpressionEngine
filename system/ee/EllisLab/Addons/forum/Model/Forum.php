@@ -62,8 +62,7 @@ class Forum extends Model {
 
 	protected static $_relationships = array(
 		'Board' => array(
-			'type' => 'belongsTo',
-			'key' => 'board_id'
+			'type' => 'belongsTo'
 		),
 		'Forums' => array(
 			'type' => 'hasMany',
@@ -133,5 +132,31 @@ class Forum extends Model {
 	protected $forum_notify_emails_topics;
 	protected $forum_enable_rss;
 	protected $forum_use_http_auth;
+
+	public function getPermission($key)
+	{
+		$permissions = $this->getProperty('forum_permissions');
+
+		if ( ! isset($permissions[$key]))
+		{
+			return array();
+		}
+
+		return explode('|', $permissions[$key]);
+	}
+
+	public function setPermission($key, $value)
+	{
+		$permissions = $this->getProperty('forum_permissions');
+
+		if (is_array($value))
+		{
+			$value = implode('|', $value);
+		}
+
+		$permissions[$key] = $value;
+
+		$this->setProperty('forum_permissions', $permissions);
+	}
 
 }

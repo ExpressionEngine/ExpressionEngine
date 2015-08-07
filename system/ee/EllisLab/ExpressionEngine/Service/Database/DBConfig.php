@@ -2,6 +2,7 @@
 
 namespace EllisLab\ExpressionEngine\Service\Database;
 
+use \EllisLab\ExpressionEngine\Service\Config\Config;
 use \EllisLab\ExpressionEngine\Service\Config\File as ConfigFile;
 
 /**
@@ -27,13 +28,31 @@ use \EllisLab\ExpressionEngine\Service\Config\File as ConfigFile;
  * @author     EllisLab Dev Team
  * @link       http://ellislab.com
  */
-class DBConfig
-{
+class DBConfig implements Config {
+
 	protected $delegate;
 	protected $active_group;
+	protected $defaults = array(
+		'port'     => 3306,
+		'hostname' => '127.0.0.1',
+		'username' => 'root',
+		'password' => '',
+		'database' => '',
+		'dbdriver' => 'mysqli',
+		'pconnect' => FALSE,
+		'dbprefix' => 'exp_',
+		'swap_pre' => 'exp_',
+		'db_debug' => TRUE,
+		'cache_on' => FALSE,
+		'autoinit' => FALSE,
+		'char_set' => 'utf8',
+		'dbcollat' => 'utf8_general_ci',
+		'cachedir' => '', // Set in constructor
+	);
 
 	/**
 	 * Create new Database Config object
+	 *
 	 * @param ConfigFile $config Config\File object
 	 */
 	public function __construct(ConfigFile $config)
@@ -43,32 +62,49 @@ class DBConfig
 			'database.active_group',
 			'expressionengine'
 		);
+
+		$this->defaults['cachedir'] = rtrim(APPPATH, '/').'/user/cache/db_cache/';
 	}
 
 	/**
 	 * Get an item from the database config, you can use
 	 * "expressionengine.hostname" to drill down in the config
+	 *
 	 * @param  string $item    The config item to get
 	 * @param  mixed  $default The value to return if $item can not be found
 	 * @return mixed           The value found for $item, otherwise $default
 	 */
 	public function get($item = '', $default = NULL)
 	{
-		return $this->delegate->get(
+		$default = $this->getDefaultFor($item, $default);
+
+		$result = $this->delegate->get(
 			rtrim("database.{$this->active_group}.{$item}", '.'),
-			$default,
-			TRUE
+			$default
 		);
+
+		if (is_array($result))
+		{
+			return array_merge($default, $result);
+		}
+
+		return $result;
 	}
 
 	/**
 	 * Set the value of a database configuration item
+	 *
 	 * @param  string $item  The config item to set
 	 * @param  mixed  $value The new value of the config item
 	 * @return void
 	 */
 	public function set($item, $value)
 	{
+		if ($value == $this->getDefaultFor($item))
+		{
+			$value = NULL;
+		}
+
 		$this->delegate->set(
 			"database.{$this->active_group}.".$item,
 			$value
@@ -78,6 +114,7 @@ class DBConfig
 	/**
 	 * Get the active group's database configuration information for
 	 * CI_DB_driver
+	 *
 	 * @param  string $group Optionally pass in a group name to override
 	 *                       active_group
 	 *
@@ -106,6 +143,7 @@ class DBConfig
 		// Check for required items
 		$required = array('username', 'hostname', 'database');
 		$missing = array();
+
 		foreach ($required as $required_field)
 		{
 			if (empty($database_config[$required_field]))
@@ -122,6 +160,29 @@ class DBConfig
 		return $database_config;
 	}
 
+	/**
+	 * Get the default for a given db item. If they gave us a
+	 * default, we prefer that over the default default.
+	 */
+	private function getDefaultFor($item, $prefer_default = NULL)
+	{
+		if ($item == '')
+		{
+			return $this->defaults;
+		}
+
+		if (isset($prefer_default))
+		{
+			return $prefer_default;
+		}
+
+		if (array_key_exists($item, $this->defaults))
+		{
+			return $this->defaults[$item];
+		}
+
+		return $prefer_default;
+	}
 
 	/**
 	 * Get the default values
@@ -130,8 +191,7 @@ class DBConfig
 	 */
 	public function getDefaults()
 	{
-		$parent_defaults = $this->delegate->getDefaults();
-		return $parent_defaults['database'];
+		return $this->defaults;
 	}
 
 	/**

@@ -47,7 +47,6 @@ class Date extends Profile {
 			array(
 				array(
 					'title' => 'timezone',
-					'desc' => 'timezone_desc',
 					'fields' => array(
 						'timezone' => array(
 							'type' => 'html',

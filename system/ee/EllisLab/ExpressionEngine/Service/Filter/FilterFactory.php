@@ -169,7 +169,31 @@ class FilterFactory {
 			}
 		}
 
-		return $this->view->make('_shared/filters/filters')->render(array('filters' => $filters));
+		$vars = array(
+			'filters' => $filters,
+			'has_reset' => $this->canReset(),
+			'reset_url' => $base_url
+		);
+
+		return $this->view->make('_shared/filters/filters')->render($vars);
+	}
+
+	/**
+	 * Checks to see if we can offer a reset filter action.
+	 *
+	 * @return bool TRUE if any filter can be reset; FALSE otherwise
+	 */
+	public function canReset()
+	{
+		foreach ($this->filters as $filter)
+		{
+			if ($filter->canReset())
+			{
+				return TRUE;
+			}
+		}
+
+		return FALSE;
 	}
 
 	/**

@@ -114,7 +114,6 @@ class Member extends Model {
 	protected $time_format;
 	protected $date_format;
 	protected $include_seconds;
-	protected $cp_theme;
 	protected $profile_theme;
 	protected $forum_theme;
 	protected $tracker;

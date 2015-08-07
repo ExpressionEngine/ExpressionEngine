@@ -25,8 +25,6 @@ return array(
 
 	'namespace' => 'EllisLab\ExpressionEngine',
 
-	'views' => '../../views',
-
 	'services' => array(
 
 		'CP/GridInput' => function($ee, $config = array())
@@ -59,6 +57,11 @@ return array(
 		{
 			$view = $ee->make('View')->make('_shared/pagination');
 			return new Library\CP\Pagination($total_count, $view);
+		},
+
+		'CSV' => function ($ee)
+		{
+			return new Library\Data\CSV();
 		},
 
 		'db' => function($ee)
@@ -134,14 +137,14 @@ return array(
 
 		'Config' => function($ee)
 		{
-			return new Config\Factory();
+			return new Config\Factory($ee);
 		},
 
 		'Database' => function($ee)
 		{
-			$db_config = new Database\DBConfig(
-				$ee->getConfigFile()
-			);
+			$config = $ee->make('Config')->getFile();
+
+			$db_config = new Database\DBConfig($config);
 
 			return new Database\Database($db_config);
 		},
@@ -244,11 +247,6 @@ return array(
 			// ..\Comment
 			'Comment' => 'Module\Comment\Model\Comment',
 			'CommentSubscription' => 'Module\Comment\Model\CommentSubscription',
-
-			// ..\MailingList
-			'MailingList' => 'Module\MailingList\Model\MailingList',
-			'MailingListQueue' => 'Module\MailingList\Model\MailingListQueue',
-			'MailingListUser' => 'Module\MailingList\Model\MailingListUser',
 
 			// ..\Member
 			'HTMLButton' => 'Module\Member\Model\HTMLButton',

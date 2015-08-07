@@ -94,9 +94,9 @@ $lang = array(
 
 "include_in_authorlist" => "Include Members in PUBLISH page multi-author list?",
 
-"field_description" => "Field Description",
+"field_description" => "Instructions",
 
-"field_description_info" => "This field can be used to provide instructions or additional information.",
+"field_description_info" => "Field instructions that appear in the member form.",
 
 "can_edit_categories" => "Can edit and add new categories",
 
@@ -213,9 +213,10 @@ $lang = array(
 
 "fieldlabel" => "Field Label",
 
-"field_label_desc" => "Name of field that appears in the member form.",
 
-"field_short_name_desc" => "Short name for this field.<br><i>No spaces. Underscores and dashes are allowed.</i>",
+'visibility' => 'Visibility',
+
+"field_short_name_desc" => "<i>No spaces. Underscores and dashes are allowed.</i>",
 
 "index" => "Main Index Page",
 
@@ -292,7 +293,7 @@ $lang = array(
 
 "screen_name_desc" => "Screen Name - descending",
 
-"mbr_email_address" => "User's e-mail",
+"mbr_email_address" => "Email",
 
 "mbr_email_address_desc" => "Used for communicating with this user.",
 
@@ -597,13 +598,11 @@ $lang = array(
 
 "cp_email_privs" => "Control Panel Email Privileges",
 
-"can_send_email_desc" => "When set to yes, users assigned to this group may send e-mails to other members via the system.",
+"can_send_email_desc" => "When set to yes, users assigned to this group may send emails to other members via the system.",
 
-"can_send_email" => "E-mail other members",
+"can_send_email" => "Email other members",
 
 "can_email_member_groups" => "Can send email to Member Groups",
-
-"can_email_mailinglist" => "Can send email to Mailing List",
 
 "can_send_cached_email" => "Can view/send cached email",
 
@@ -677,8 +676,6 @@ $lang = array(
 
 "addon_access" => "Add-On Access Permissions",
 
-"addon_access_desc" => "",
-
 "tools" => "Tools",
 
 "access_tools" => "Access Tools sections",
@@ -711,11 +708,13 @@ $lang = array(
 
 "create_new_profile_field" => "Create a New Member Field",
 
-"is_field_public" => "Is this field visible in public profiles?",
+"is_field_public" => "Show in profile?",
 
-"is_field_public_cont" => "If you choose no, it will only be visible to admins",
+"is_field_public_cont" => "When set to <b>yes</b>, this field will be shown in public profiles.",
 
-"is_field_reg" => "Is field visible in registration page?",
+"is_field_reg" => "Show in registration?",
+
+"is_field_reg_cont" => 'When set to <b>yes</b>, this field will be shown in registration forms.',
 
 "is_field_cp_reg" => "Is field visible in the control panel's administrative registration page?",
 

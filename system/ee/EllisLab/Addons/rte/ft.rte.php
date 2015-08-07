@@ -129,7 +129,6 @@ class Rte_ft extends EE_Fieldtype {
 			),
 			array(
 				'title' => 'field_text_direction',
-				'desc' => 'field_text_direction_desc',
 				'fields' => array(
 					'field_text_direction' => array(
 						'type' => 'select',

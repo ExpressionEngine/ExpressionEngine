@@ -187,7 +187,7 @@ Used in the control panel only.',
 
 "date_format" => "Date & time format",
 
-"date_format_desc" => "Your preferred date and time formats.<br><i>Used in the control panel only.</i>",
+"date_format_desc" => "Used in the control panel only.",
 
 "time_format" => "Time Formatting",
 
@@ -213,7 +213,7 @@ Used in the control panel only.',
 
 'email_options' => 'Options',
 
-'email_options_desc' => 'Send me e-mails...',
+'email_options_desc' => 'Send me emails',
 
 'edit_subscriptions' => 'View Subscriptions',
 
@@ -222,10 +222,6 @@ Used in the control panel only.',
 'customize_cp' => 'Customize Control Panel',
 
 'cp_homepage' => 'Control Panel Homepage',
-
-'cp_theme' => 'Control Panel Theme',
-
-'myaccount_cp_theme' => 'Control Panel Theme',
 
 'choose_theme' => 'Choose Control Panel Theme',
 

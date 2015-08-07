@@ -25,6 +25,7 @@ $lang = array(
 'create_new_category' => 'Create new category',
 
 'no_forums' => 'No forums available',
+'new_forum' => 'New forum',
 'create_new_forum' => 'Create new forum',
 
 // "Common"
@@ -180,11 +181,11 @@ $lang = array(
 'enable_default_permissions' => 'Enable Default Permissions?',
 'enable_default_permissions_desc' => 'When set to <b>enable</b>, these permissions will be the default permissions for all created forums.',
 
-'view_forum' => 'View forums',
-'view_forum_desc' => 'Allow the following member groups to view forums.</em><em>Super Administrators are <b>always</b> allowed.',
+'view_forums' => 'View forums',
+'view_forums_desc' => 'Allow the following member groups to view forums.</em><em>Super Administrators are <b>always</b> allowed.',
 
-'view_hidden_forum' => 'View hidden forums',
-'view_hidden_forum_desc' => 'Allow the following member groups to view hidden forums.</em><em>Super Administrators are <b>always</b> allowed.',
+'view_hidden_forums' => 'View hidden forums',
+'view_hidden_forums_desc' => 'Allow the following member groups to view hidden forums.</em><em>Super Administrators are <b>always</b> allowed.',
 
 'view_posts' => 'View posts',
 'view_posts_desc' => 'Allow the following member groups to view posts.</em><em>Super Administrators are <b>always</b> allowed.',
@@ -225,6 +226,7 @@ $lang = array(
 // Create/Edit Category Form
 
 'create_category' => 'Create Category',
+'edit_category' => 'Edit Category',
 
 'description_desc' => 'Brief description of this category.',
 
@@ -249,6 +251,118 @@ $lang = array(
 
 'edit_category_error' => 'Cannot Update Category',
 'edit_category_error_desc' => 'We were unable to update this category, please review and fix errors below.',
+
+// Create/Edit Forum Form
+
+'create_forum' => 'Create Forum',
+'edit_forum' => 'Edit Forum',
+
+'topic_and_post_settings' => 'Topic and Post Settings',
+
+'btn_save_forum' => 'Save forum',
+
+'create_forum_success' => 'Forum Created',
+'create_forum_success_desc' => 'The forum <b>%s</b> has been created.',
+
+'create_forum_error' => 'Cannot Create Forum',
+'create_forum_error_desc' => 'We were unable to create this forum, please review and fix errors below.',
+
+'edit_forum_success' => 'Forum Updated',
+'edit_forum_success_desc' => 'The forum <b>%s</b> has been updated.',
+
+'edit_forum_error' => 'Cannot Update Forum',
+'edit_forum_error_desc' => 'We were unable to update this forum, please review and fix errors below.',
+
+// Category Permissions
+
+'category_permissions' => '%s Permissions',
+'btn_save_permissions' => 'Save Permissions',
+
+'view_category' => 'View category',
+'view_category_desc' => 'Allow the following member groups to view this category.</em> <em>Super Administrators are <b>always</b> allowed.',
+
+'view_hidden_category' => 'View hidden category',
+'view_hidden_category_desc' => 'Allow the following member groups to view this category.</em> <em>Super Administrators are <b>always</b> allowed.',
+
+'edit_category_settings_success' => 'Category Permissions Updated',
+'edit_category_settings_success_desc' => 'The permissions for category <b>%s</b> have been updated.',
+
+// Forum Permissions
+
+'forum_permissions' => '%s Permissions',
+
+'view_forum' => 'View forum',
+'view_forum_desc' => 'Allow the following member groups to view this forum.</em><em>Super Administrators are <b>always</b> allowed.',
+
+'view_hidden_forum' => 'View hidden forums',
+'view_hidden_forum_desc' => 'Allow the following member groups to view this forum when hidden.</em><em>Super Administrators are <b>always</b> allowed.',
+
+'edit_forum_settings_success' => 'Forum Permissions Updated',
+'edit_forum_settings_success_desc' => 'The permissions for forum <b>%s</b> have been updated.',
+
+// Member Ranks
+
+'no_ranks' => 'No ranks available',
+'create_new_rank' => 'Create new rank',
+
+'member_ranks' => 'Member Ranks',
+'create_member_rank' => 'Create Member Rank',
+'edit_member_rank' => 'Edit Member Rank',
+
+'posts' => 'Posts',
+'stars' => 'Stars',
+
+'rank_title' => 'Title',
+'rank_title_desc' => 'Full descriptive name of this rank.',
+
+'posts_desc' => 'Minimum number of pots a user must have to reach this rank.',
+'stars_desc' => 'Number of stars to show with this rank.',
+
+'btn_save_rank' => 'Save Rank',
+
+'create_rank_success' => 'Rank Created',
+'create_rank_success_desc' => 'The rank <b>%s</b> has been created.',
+
+'create_rank_error' => 'Cannot Create Rank',
+'create_rank_error_desc' => 'We were unable to create this rank, please review and fix errors below.',
+
+'edit_rank_success' => 'Rank Updated',
+'edit_rank_success_desc' => 'The rank <b>%s</b> has been updated.',
+
+'edit_rank_error' => 'Cannot Update Rank',
+'edit_rank_error_desc' => 'We were unable to update this rank, please review and fix errors below.',
+
+'ranks_removed_desc' => 'The following ranks were removed',
+
+// Administrators
+
+'administrators' => 'Administrators',
+'administrators_desc' => 'Have access to all administration tools for all forums in this board.',
+
+'no_admins' => 'No administrators available',
+'create_new_admin' => 'Create new admin',
+
+'group' => 'group',
+'individual' => 'individual',
+
+'create_administrator' => 'Create Administrator',
+
+'administrator_type' => 'Administrator type',
+'administrator_type_desc' => 'Select the type of administrator you want to add.',
+
+'admin_type_member_group' => 'Member Group <i>&mdash; All members of chosen group</i>',
+'admin_type_individual' => 'Individual <i>&mdash; username, <b>not</b> screenname</i>',
+
+'btn_save_administrator' => 'Save administrator',
+
+'create_administrator_success' => 'Administrator Created',
+'create_administrator_success_desc' => 'The administrator <b>%s</b> has been created.',
+
+'create_administrator_error' => 'Cannot Create Administrator',
+'create_administrator_error_desc' => 'We were unable to create this administrator, please review and fix errors below.',
+
+'invalid_member_group' => 'The member group you submitted does not appear to be valid',
+'invalid_username' => 'The username you submitted does not appear to be valid',
 
 /* 2.x Keys
 //----------------------------------------
