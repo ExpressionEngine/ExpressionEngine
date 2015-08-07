@@ -172,6 +172,8 @@ $lang = array(
 
 'create_new_field_group' => 'Create New Field Group',
 
+'custom_fields_desc' => 'Choose the fields you would like to include in this field group.',
+
 'category_groups_desc' => '',
 
 'category_groups_not_found' => 'Zero <b>category groups</b> found',
