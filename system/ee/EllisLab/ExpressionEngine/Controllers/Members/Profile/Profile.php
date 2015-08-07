@@ -122,7 +122,6 @@ class Profile extends CP_Controller {
 		));
 
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'members'), lang('members'));
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'members/profile', $this->query_string), $this->member->screen_name);
 	}
 
 	// --------------------------------------------------------------------
