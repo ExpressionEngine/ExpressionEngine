@@ -242,7 +242,7 @@ function form_preference($name, $details)
 /**
  * Outputs a standard CP form submit button in the current state of the
  * form validation result. If there are errors, this button will be in a
- * disabled state on load. Button text will be "Fix Errors, Please" if
+ * disabled state on load. Button text will be "Errors Found" if
  * there are errors, otherwise the value of $value will be used.
  *
  * @param	string	$value		Standard text for the button
