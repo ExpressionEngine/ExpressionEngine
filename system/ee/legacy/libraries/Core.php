@@ -244,13 +244,13 @@ class EE_Core {
 		$this->native_plugins = array('magpie', 'markdown', 'rss_parser', 'xml_encode');
 		$this->native_modules = array(
 			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon',
-			'file', 'forum', 'ip_to_nation', 'jquery', 'mailinglist', 'member',
+			'file', 'forum', 'ip_to_nation', 'jquery', 'member',
 			'metaweblog_api', 'moblog', 'pages', 'query', 'rss', 'rte',
 			'search', 'simple_commerce', 'stats', 'wiki', 'filepicker'
 		);
 		$this->standard_modules = array(
-			'blacklist', 'email', 'forum', 'ip_to_nation', 'mailinglist',
-			'member', 'moblog', 'query', 'simple_commerce', 'wiki', 'filepicker'
+			'blacklist', 'email', 'forum', 'ip_to_nation', 'member', 'moblog', 'query',
+			'simple_commerce', 'wiki', 'filepicker'
 		);
 
 		// Is this a stylesheet request?  If so, we're done.
@@ -387,22 +387,7 @@ class EE_Core {
 	public function run_cp()
 	{
 		$this->_somebody_set_us_up_the_base();
-/*
-		// Define PATH_CP_THEME
-		$cp_theme = ee()->session->userdata('cp_theme')
-			?: ee()->config->item('cp_theme');
 
-		// Make sure directory actually exists
-		if ($cp_theme !== 'default'
-			&& ! is_dir(PATH_ADDONS_THEMES.'cp/'.$cp_theme.'/'))
-		{
-			$cp_theme = 'default';
-		}
-
-		$path_cp_theme = ($cp_theme === 'default')
-			? PATH_THEMES.'cp/default/'
-			: PATH_ADDONS_THEMES.'cp/'.$cp_theme.'/';
-*/
 		$cp_theme = 'default';
 		define('PATH_CP_THEME', PATH_THEMES.'cp/default/');
 
@@ -429,7 +414,6 @@ class EE_Core {
 
 		// Load our view library
 		ee()->load->library('view');
-		ee()->view->set_cp_theme($cp_theme);
 
 		// Fetch control panel language file
 		ee()->lang->loadfile('cp');

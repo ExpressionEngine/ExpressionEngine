@@ -32,7 +32,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class Moderator extends Model {
 
 	protected static $_primary_key = 'mod_id';
-	protected static $_table_name = 'exp_forum_moderators';
+	protected static $_table_name = 'forum_moderators';
 
 	protected static $_typed_columns = array(
 		'board_id'              => 'int',

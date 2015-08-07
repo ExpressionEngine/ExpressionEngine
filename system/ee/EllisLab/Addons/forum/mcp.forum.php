@@ -265,52 +265,18 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('forum:index')->render($vars);
 
+		ee()->javascript->set_global('lang.remove_confirm', lang('forum') . ': <b>### ' . lang('forums') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/v3/confirm_remove',
+			),
+		));
+
 		return array(
 			'body'    => $body,
 			'heading' => lang('forum_manager'),
 			'sidebar' => $this->generateSidebar($id)
 		);
-
-		if ($this->prefs['board_install_date'] < 1)
-		{
-			ee()->session->set_flashdata('message', ee()->lang->line('forum_new_install_msg'));
-			ee()->functions->redirect(ee('CP/URL', $this->base . '/list_boards'));
-		}
-
-		// Compile the stats
-		ee()->db->where('board_id', $this->board_id);
-		$total_forums = ee()->db->count_all_results('forums');
-
-		ee()->db->where('board_id', $this->board_id);
-		$total_mods = ee()->db->count_all_results('forum_moderators');
-
-		$one_day = 60*60*24;
-		$total_days = (time() - $this->prefs['board_install_date']);
-		$total_days = ($total_days <= $one_day) ? 1 : abs($total_days / $one_day);
-
-		ee()->db->select('forum_id, forum_name, forum_total_topics, forum_total_posts');
-		ee()->db->where('board_id', $this->board_id);
-		ee()->db->where('forum_is_cat', 'n');
-		ee()->db->order_by('forum_order');
-		$query = ee()->db->get('forums');
-
-		ee()->load->library('table');
-		$vars['forums'] = array();
-
-		if ($query->num_rows() > 0)
-		{
-			foreach ($query->result_array() as $row)
-	 		{
-				$row['topics_perday']	= ($row['forum_total_topics'] == 0) ? 0 : round($row['forum_total_topics'] / $total_days, 2);
-				$row['posts_perday']	= ($row['forum_total_posts'] == 0)  ? 0 : round($row['forum_total_posts'] / $total_days, 2);
-
-				$vars['forums'][] = $row;
-			}
-		}
-
-		$vars['board_forum_url'] = $this->prefs['board_forum_url'];
-
-		return $this->_content_wrapper('index', 'forum_board_home', $vars);
 	}
 
 	/**
@@ -336,6 +302,22 @@ class Forum_mcp extends CP_Controller {
 	{
 		$parameters = array_slice(func_get_args(), 1);
 		$method = 'edit' . ucfirst($type);
+
+		if (method_exists($this, $method))
+		{
+			return call_user_func_array(array($this, $method), $parameters);
+		}
+
+		show_404();
+	}
+
+	/**
+	 * Dispatch method for the various things that can be edit
+	 */
+	public function settings($type)
+	{
+		$parameters = array_slice(func_get_args(), 1);
+		$method = 'settingsFor' . ucfirst($type);
 
 		if (method_exists($this, $method))
 		{
@@ -435,7 +417,7 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base)->compile() => $board->board_label . ' '. lang('forum_listing')
+				ee('CP/URL', $this->base . 'index/' . $id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
 			'sidebar'    => $this->generateSidebar($id)
@@ -962,6 +944,7 @@ class Forum_mcp extends CP_Controller {
 		$html = '';
 
 		$member_groups = ee('Model')->get('MemberGroup')
+			->fields('group_id', 'group_title')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('group_id', '!=', '1')
 			->order('group_title', 'asc')
@@ -990,8 +973,8 @@ class Forum_mcp extends CP_Controller {
 					)
 				),
 				array(
-					'title' => 'view_forum',
-					'desc' => 'view_forum_desc',
+					'title' => 'view_forums',
+					'desc' => 'view_forums_desc',
 					'fields' => array(
 						'permissions[can_view_forum]' => array(
 							'type' => 'checkbox',
@@ -1001,8 +984,8 @@ class Forum_mcp extends CP_Controller {
 					)
 				),
 				array(
-					'title' => 'view_hidden_forum',
-					'desc' => 'view_hidden_forum_desc',
+					'title' => 'view_hidden_forums',
+					'desc' => 'view_hidden_forums_desc',
 					'fields' => array(
 						'permissions[can_view_hidden]' => array(
 							'type' => 'checkbox',
@@ -1151,7 +1134,7 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base)->compile() => $board->board_label . ' '. lang('forum_listing')
+				ee('CP/URL', $this->base . 'index/' . $board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => lang('create_forum_board'),
 			'sidebar'    => $this->generateSidebar($board_id)
@@ -1195,10 +1178,10 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base)->compile() => $category->Board->board_label . ' '. lang('forum_listing')
+				ee('CP/URL', $this->base . 'index/' . $category->Board->board_id)->compile() => $category->Board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
-			'sidebar'    => $this->generateSidebar($id)
+			'sidebar'    => $this->generateSidebar($category->Board->board_id)
 		);
 	}
 
@@ -1330,6 +1313,96 @@ class Forum_mcp extends CP_Controller {
 		return $sections;
 	}
 
+	private function settingsForCategory($id)
+	{
+		$errors = NULL;
+
+		$category = ee('Model')->get('forum:Forum', $id)->with('Board')->first();
+		if ( ! $category)
+		{
+			show_404();
+		}
+
+		$return = ee('CP/URL', $this->base . '/index/' . $category->board_id);
+
+		if ( ! empty($_POST))
+		{
+			foreach ($_POST['permissions'] as $key => $value)
+			{
+				$category->setPermission($key, $value);
+			}
+
+			$category->save();
+
+			ee('Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('edit_category_settings_success'))
+				->addToBody(sprintf(lang('edit_category_settings_success_desc'), $category->forum_name))
+				->defer();
+
+			ee()->functions->redirect($return);
+		}
+
+		$vars = array(
+			'errors' => $errors,
+			'cp_page_title' => sprintf(lang('category_permissions'), $category->forum_name),
+			'base_url' => ee('CP/URL', $this->base . 'settings/category/' . $id),
+			'save_btn_text' => 'btn_save_permissions',
+			'save_btn_text_working' => 'btn_saving',
+		);
+
+		$member_groups = ee('Model')->get('MemberGroup')
+			->fields('group_id', 'group_title')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('group_id', '!=', '1')
+			->order('group_title', 'asc')
+			->all()
+			->getDictionary('group_id', 'group_title');
+
+		$vars['sections'] = array(
+			array(
+				ee('Alert')->makeInline('permissions-warn')
+					->asWarning()
+					->addToBody(lang('permissions_warning'))
+					->cannotClose()
+					->render(),
+				array(
+					'title' => 'view_category',
+					'desc' => 'view_category_desc',
+					'fields' => array(
+						'permissions[can_view_forum]' => array(
+							'type' => 'checkbox',
+							'choices' => $member_groups,
+							'value' => $category->getPermission('can_view_forum'),
+						)
+					)
+				),
+				array(
+					'title' => 'view_hidden_category',
+					'desc' => 'view_hidden_category_desc',
+					'fields' => array(
+						'permissions[can_view_hidden]' => array(
+							'type' => 'checkbox',
+							'choices' => $member_groups,
+							'value' => $category->getPermission('can_view_hidden'),
+						)
+					)
+				),
+			)
+		);
+
+		$body = ee('View')->make('ee:_shared/form')->render($vars);
+
+		return array(
+			'body'       => '<div class="box">' . $body . '</div>',
+			'breadcrumb' => array(
+				$return->compile() => $category->Board->board_label . ' '. lang('forum_listing')
+			),
+			'heading'    => $vars['cp_page_title'],
+			'sidebar'    => $this->generateSidebar($category->Board->board_id)
+		);
+	}
+
 	// --------------------------------------------------------------------
 
 	private function createForum($cat_id)
@@ -1397,7 +1470,7 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base)->compile() => $board->board_label . ' '. lang('forum_listing')
+				ee('CP/URL', $this->base. 'index/' . $board->board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => lang('create_forum_board'),
 			'sidebar'    => $this->generateSidebar($board->board_id)
@@ -1441,10 +1514,10 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
-				ee('CP/URL', $this->base)->compile() => $forum->Board->board_label . ' '. lang('forum_listing')
+				ee('CP/URL', $this->base. 'index/' . $forum->Board->board_id)->compile() => $forum->Board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
-			'sidebar'    => $this->generateSidebar($id)
+			'sidebar'    => $this->generateSidebar($forum->Board->board_id)
 		);
 	}
 
@@ -1751,6 +1824,725 @@ class Forum_mcp extends CP_Controller {
 
 		return $sections;
 	}
+
+	private function settingsForForum($id)
+	{
+		$errors = NULL;
+
+		$forum = ee('Model')->get('forum:Forum', $id)->with('Board')->first();
+		if ( ! $forum)
+		{
+			show_404();
+		}
+
+		$return = ee('CP/URL', $this->base . '/index/' . $forum->board_id);
+
+		if ( ! empty($_POST))
+		{
+			foreach ($_POST['permissions'] as $key => $value)
+			{
+				$forum->setPermission($key, $value);
+			}
+
+			$forum->save();
+
+			ee('Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('edit_forum_settings_success'))
+				->addToBody(sprintf(lang('edit_forum_settings_success_desc'), $forum->forum_name))
+				->defer();
+
+			ee()->functions->redirect($return);
+		}
+
+		$vars = array(
+			'errors' => $errors,
+			'cp_page_title' => sprintf(lang('forum_permissions'), $forum->forum_name),
+			'base_url' => ee('CP/URL', $this->base . 'settings/forum/' . $id),
+			'save_btn_text' => 'btn_save_permissions',
+			'save_btn_text_working' => 'btn_saving',
+		);
+
+		$member_groups = ee('Model')->get('MemberGroup')
+			->fields('group_id', 'group_title')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('group_id', '!=', '1')
+			->order('group_title', 'asc')
+			->all()
+			->getDictionary('group_id', 'group_title');
+
+		$vars['sections'] = array(
+			array(
+				ee('Alert')->makeInline('permissions-warn')
+					->asWarning()
+					->addToBody(lang('permissions_warning'))
+					->cannotClose()
+					->render(),
+				array(
+					'title' => 'view_forum',
+					'desc' => 'view_forum_desc',
+					'fields' => array(
+						'permissions[can_view_forum]' => array(
+							'type' => 'checkbox',
+							'choices' => $member_groups,
+							'value' => $forum->getPermission('can_view_forum'),
+						)
+					)
+				),
+				array(
+					'title' => 'view_hidden_forum',
+					'desc' => 'view_hidden_forum_desc',
+					'fields' => array(
+						'permissions[can_view_hidden]' => array(
+							'type' => 'checkbox',
+							'choices' => $member_groups,
+							'value' => $forum->getPermission('can_view_hidden'),
+						)
+					)
+				),
+				array(
+					'title' => 'view_posts',
+					'desc' => 'view_posts_desc',
+					'fields' => array(
+						'permissions[can_view_topics]' => array(
+							'type' => 'checkbox',
+							'choices' => $member_groups,
+							'value' => $forum->getPermission('can_view_topics'),
+						)
+					)
+				),
+				array(
+					'title' => 'start_topics',
+					'desc' => 'start_topics_desc',
+					'fields' => array(
+						'permissions[can_post_topics]' => array(
+							'type' => 'checkbox',
+							'choices' => $member_groups,
+							'value' => $forum->getPermission('can_post_topics'),
+						)
+					)
+				),
+				array(
+					'title' => 'reply_to_topics',
+					'desc' => 'reply_to_topics_desc',
+					'fields' => array(
+						'permissions[can_post_reply]' => array(
+							'type' => 'checkbox',
+							'choices' => $member_groups,
+							'value' => $forum->getPermission('can_post_reply'),
+						)
+					)
+				),
+				array(
+					'title' => 'upload',
+					'desc' => 'upload_desc',
+					'fields' => array(
+						'permissions[upload_files]' => array(
+							'type' => 'checkbox',
+							'choices' => $member_groups,
+							'value' => $forum->getPermission('upload_files'),
+						)
+					)
+				),
+				array(
+					'title' => 'report',
+					'desc' => 'report_desc',
+					'fields' => array(
+						'permissions[can_report]' => array(
+							'type' => 'checkbox',
+							'choices' => $member_groups,
+							'value' => $forum->getPermission('can_report'),
+						)
+					)
+				),
+				array(
+					'title' => 'search',
+					'desc' => 'search_desc',
+					'fields' => array(
+						'permissions[can_search]' => array(
+							'type' => 'checkbox',
+							'choices' => $member_groups,
+							'value' => $forum->getPermission('can_search'),
+						)
+					)
+				),
+			)
+		);
+
+		$body = ee('View')->make('ee:_shared/form')->render($vars);
+
+		return array(
+			'body'       => '<div class="box">' . $body . '</div>',
+			'breadcrumb' => array(
+				$return->compile() => $forum->Board->board_label . ' '. lang('forum_listing')
+			),
+			'heading'    => $vars['cp_page_title'],
+			'sidebar'    => $this->generateSidebar($forum->Board->board_id)
+		);
+	}
+
+	// --------------------------------------------------------------------
+
+	public function ranks()
+	{
+		if (ee()->input->post('bulk_action') == 'remove')
+		{
+			$this->removeRank(ee()->input->post('selection'));
+		}
+
+		$ranks = ee('Model')->get('forum:Rank')->all();
+
+		$table = ee('CP/Table', array('autosort' => TRUE));
+		$table->setColumns(
+			array(
+				'title',
+				'posts',
+				'stars',
+				'manage' => array(
+					'type'	=> Table::COL_TOOLBAR,
+				),
+				array(
+					'type'	=> Table::COL_CHECKBOX
+				)
+			)
+		);
+		$table->setNoResultsText('no_ranks', 'create_new_rank', ee('CP/URL', $this->base . 'create/rank'));
+
+		$rank_id = ee()->session->flashdata('rank_id');
+
+		$data = array();
+		foreach ($ranks as $rank)
+		{
+			$row = array(
+				$rank->rank_title,
+				$rank->rank_min_posts,
+				$rank->rank_stars,
+				array('toolbar_items' => array(
+						'edit' => array(
+							'href' => ee('CP/URL', $this->base . 'edit/rank/' . $rank->rank_id),
+							'title' => lang('edit'),
+						),
+					)
+				),
+				array(
+					'name' => 'selection[]',
+					'value' => $rank->rank_id,
+					'data'	=> array(
+						'confirm' => lang('rank') . ': <b>' . htmlentities($rank->rank_title, ENT_QUOTES) . '</b>'
+					)
+				)
+			);
+
+			$attrs = array();
+
+			if ($rank_id && $rank->rank_id == $rank_id)
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs'		=> $attrs,
+				'columns'	=> $row
+			);
+		}
+		$table->setData($data);
+
+		$base_url = ee('CP/URL', $this->base . 'ranks');
+
+		$vars = array(
+			'cp_page_title' => lang('member_ranks'),
+			'cp_heading' => lang('member_ranks'),
+		);
+
+		$vars['table'] = $table->viewData($base_url);
+		$vars['form_url'] = $vars['table']['base_url'];
+
+		$vars['pagination'] = ee('CP/Pagination', count($ranks))
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($base_url);
+
+		$body = ee('View')->make('forum:ranks')->render($vars);
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('rank') . ': <b>### ' . lang('ranks') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/v3/confirm_remove',
+			),
+		));
+
+		return array(
+			'body'    => $body,
+			'heading' => lang('member_ranks'),
+			'sidebar' => $this->generateSidebar()
+		);
+	}
+
+	private function createRank()
+	{
+		$errors = NULL;
+
+		$rank = ee('Model')->make('forum:Rank');
+
+		$result = $this->validateBoard($rank);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
+
+			if ($result->isValid())
+			{
+				$this->saveRankAndRedirect($rank);
+			}
+		}
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'errors' => $errors,
+			'cp_page_title' => lang('create_member_rank'),
+			'base_url' => ee('CP/URL', $this->base . 'create/rank/'),
+			'save_btn_text' => 'btn_save_rank',
+			'save_btn_text_working' => 'btn_saving',
+			'sections' => $this->rankForm($rank),
+		);
+
+		$body = ee('View')->make('ee:_shared/form')->render($vars);
+
+		return array(
+			'body'       => '<div class="box">' . $body . '</div>',
+			'breadcrumb' => array(
+				ee('CP/URL', $this->base. 'ranks')->compile() => lang('member_ranks')
+			),
+			'heading'    => $vars['cp_page_title'],
+			'sidebar'    => $this->generateSidebar()
+		);
+	}
+
+	private function editRank($id)
+	{
+		$errors = NULL;
+
+		$rank = ee('Model')->get('forum:Rank', $id)->first();
+		if ( ! $rank)
+		{
+			show_404();
+		}
+
+		$result = $this->validateBoard($rank);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
+
+			if ($result->isValid())
+			{
+				$this->saveRankAndRedirect($rank);
+			}
+		}
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'errors' => $errors,
+			'cp_page_title' => lang('edit_member_rank'),
+			'base_url' => ee('CP/URL', $this->base . 'edit/rank/' . $id),
+			'save_btn_text' => 'btn_save_rank',
+			'save_btn_text_working' => 'btn_saving',
+			'sections' => $this->rankForm($rank),
+		);
+
+		$body = ee('View')->make('ee:_shared/form')->render($vars);
+
+		return array(
+			'body'       => '<div class="box">' . $body . '</div>',
+			'breadcrumb' => array(
+				ee('CP/URL', $this->base. 'ranks')->compile() => lang('member_ranks')
+			),
+			'heading'    => $vars['cp_page_title'],
+			'sidebar'    => $this->generateSidebar()
+		);
+	}
+
+	private function rankForm($rank)
+	{
+		$sections = array(
+			array(
+				array(
+					'title' => 'rank_title',
+					'desc' => 'rank_title_desc',
+					'fields' => array(
+						'rank_title' => array(
+							'type' => 'text',
+							'required' => TRUE,
+							'value' => $rank->rank_title,
+						)
+					)
+				),
+				array(
+					'title' => 'posts',
+					'desc' => 'posts_desc',
+					'fields' => array(
+						'rank_min_posts' => array(
+							'type' => 'text',
+							'required' => TRUE,
+							'value' => $rank->rank_min_posts,
+						)
+					)
+				),
+				array(
+					'title' => 'stars',
+					'desc' => 'stars_desc',
+					'fields' => array(
+						'rank_stars' => array(
+							'type' => 'text',
+							'required' => TRUE,
+							'value' => $rank->rank_stars,
+						)
+					)
+				),
+			),
+		);
+
+		return $sections;
+	}
+
+	private function validateRank($rank)
+	{
+		if (empty($_POST))
+		{
+			return FALSE;
+		}
+
+		$action = ($rank->isNew()) ? 'create' : 'edit';
+
+		$rank->set($_POST);
+		$result = $rank->validate();
+
+		if ($response = $this->ajaxValidation($result))
+		{
+			ee()->output->send_ajax_response($response);
+		}
+
+		if ($result->failed())
+		{
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang($action . '_rank_error'))
+				->addToBody(lang($action . '_rank_error_desc'))
+				->now();
+		}
+
+		return $result;
+	}
+
+	private function saveRankAndRedirect($rank)
+	{
+		$action = ($rank->isNew()) ? 'create' : 'edit';
+
+		$rank->save();
+
+		if ($action == 'create')
+		{
+			ee()->session->set_flashdata('rank_id', $rank->rank_id);
+		}
+
+		ee('Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang($action . '_rank_success'))
+			->addToBody(sprintf(lang($action . '_rank_success_desc'), $rank->rank_title))
+			->defer();
+
+		ee()->functions->redirect(ee('CP/URL', $this->base . '/ranks'));
+	}
+
+	private function removeRanks($ids)
+	{
+		if ( ! is_array($ids))
+		{
+			$ids = array($ids);
+		}
+
+		$ranks = ee('Model')->get('forum:Rank', $ids)->all();
+
+		$rank_titles = $entries->pluck('rank_title');
+
+		$ranks->delete();
+
+		ee('Alert')->makeInline('entries-form')
+			->asSuccess()
+			->withTitle(lang('success'))
+			->addToBody(lang('ranks_removed_desc'))
+			->addToBody($entry_names)
+			->defer();
+
+		ee()->functions->redirect(ee('CP/URL', $this->base . 'ranks', ee()->cp->get_url_state()));
+	}
+
+	// --------------------------------------------------------------------
+
+	public function admins($board_id)
+	{
+		$board = ee('Model')->get('forum:Board', $board_id)->first();
+		if ( ! $board)
+		{
+			show_404();
+		}
+
+		if (ee()->input->post('bulk_action') == 'remove')
+		{
+			$this->removeAdmins(ee()->input->post('selection'));
+		}
+
+		$admins = ee('Model')->get('forum:Administrator')
+			->with('Member')
+			->with('MemberGroup')
+			->filter('board_id', $board_id)
+			->all();
+
+		$table = ee('CP/Table', array('autosort' => TRUE));
+		$table->setColumns(
+			array(
+				'name',
+				'type',
+				array(
+					'type'	=> Table::COL_CHECKBOX
+				)
+			)
+		);
+
+		$new_url = ee('CP/URL', $this->base . 'create/admin/' . $board_id);
+		$table->setNoResultsText('no_admins', 'create_new_admin', $new_url);
+
+		$admin_id = ee()->session->flashdata('admin_id');
+
+		$data = array();
+		foreach ($admins as $admin)
+		{
+			$row = array(
+				$admin->getAdminName(),
+				$admin->getType(),
+				array(
+					'name' => 'selection[]',
+					'value' => $admin->admin_id,
+					'data'	=> array(
+						'confirm' => lang('admin') . ': <b>' . htmlentities($name, ENT_QUOTES) . '</b>'
+					)
+				)
+			);
+
+			$attrs = array();
+
+			if ($admin_id && $admin->admin_id == $admin_id)
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs'		=> $attrs,
+				'columns'	=> $row
+			);
+		}
+		$table->setData($data);
+
+		$base_url = ee('CP/URL', $this->base . 'admins');
+
+		$vars = array(
+			'cp_page_title'   => lang('administrators'),
+			'cp_heading'      => lang('administrators'),
+			'cp_heading_desc' => lang('administrators_desc'),
+			'new_url'         => $new_url
+		);
+
+		$vars['table'] = $table->viewData($base_url);
+		$vars['form_url'] = $vars['table']['base_url'];
+
+		$vars['pagination'] = ee('CP/Pagination', count($admins))
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($base_url);
+
+		$body = ee('View')->make('forum:admins')->render($vars);
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('admin') . ': <b>### ' . lang('admins') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/v3/confirm_remove',
+			),
+		));
+
+		return array(
+			'body'    => $body,
+			'breadcrumb' => array(
+				ee('CP/URL', $this->base. 'index/' . $board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
+			),
+			'heading' => lang('administrators'),
+			'sidebar' => $this->generateSidebar($board_id)
+		);
+	}
+
+	public function createAdmin($board_id)
+	{
+		$board = ee('Model')->get('forum:Board', $board_id)->first();
+		if ( ! $board)
+		{
+			show_404();
+		}
+
+		$errors = NULL;
+
+		$admin = ee('Model')->make('forum:Administrator', array('board_id' => $board_id));
+
+		$result = $this->validateAdmin($admin);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
+
+			if ($result->isValid())
+			{
+				$admin->save();
+
+				ee()->session->set_flashdata('admin_id', $admin->admin_id);
+
+				ee('Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('create_administrator_success'))
+					->addToBody(sprintf(lang('create_administrator_success_desc'), $admin->getAdminName()))
+					->defer();
+
+				ee()->functions->redirect(ee('CP/URL', $this->base . 'admins/' . $board_id));
+			}
+		}
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'errors' => $errors,
+			'cp_page_title' => lang('create_administrator'),
+			'base_url' => ee('CP/URL', $this->base . 'create/admin/' . $board_id),
+			'save_btn_text' => 'btn_save_administrator',
+			'save_btn_text_working' => 'btn_saving',
+		);
+
+		$member_groups = ee('Model')->get('MemberGroup')
+			->fields('group_id', 'group_title')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('group_id', '!=', '1')
+			->order('group_title', 'asc')
+			->all()
+			->getDictionary('group_id', 'group_title');
+
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'administrator_type',
+					'desc' => 'administrator_type_desc',
+					'fields' => array(
+						'administrator_type_group' => array(
+							'type' => 'radio',
+							'name' => 'administrator_type',
+							'choices' => array(
+								'group' => lang('admin_type_member_group'),
+							),
+							'value' => 'group',
+						),
+						'member_group' => array(
+							'type' => 'select',
+							'choices' => $member_groups,
+							'value' => 5
+						),
+						'administrator_type_individual' => array(
+							'type' => 'radio',
+							'name' => 'administrator_type',
+							'choices' => array(
+								'individual' => lang('admin_type_individual')
+							),
+						),
+						'individual' => array(
+							'type' => 'text',
+							'value' => ''
+						)
+					)
+				),
+			)
+		);
+
+		$body = ee('View')->make('ee:_shared/form')->render($vars);
+
+		return array(
+			'body'       => '<div class="box">' . $body . '</div>',
+			'breadcrumb' => array(
+				ee('CP/URL', $this->base. 'index/' . $board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
+			),
+			'heading'    => $vars['cp_page_title'],
+			'sidebar'    => $this->generateSidebar($board_id)
+		);
+	}
+
+	private function validateAdmin($admin)
+	{
+		if (empty($_POST))
+		{
+			return FALSE;
+		}
+
+		$validator = ee('Validation')->make(array(
+			'administrator_type' => 'required|enum[group,individual]',
+			'member_group'       => 'whenAdministratorTypeIs[group]|validMemberGroup',
+			'individual'         => 'whenAdministratorTypeIs[individual]|validMember',
+		));
+
+		$data = $_POST;
+
+		$validator->defineRule('whenAdministratorTypeIs', function($key, $value, $parameters, $rule) use ($data)
+		{
+		  return ($data['administrator_type'] == $parameters[0]) ? TRUE : $rule->skip();
+		});
+
+		$validator->defineRule('validMemberGroup', function($key, $value) use ($admin)
+		{
+			if (ee('Model')->get('MemberGroup', $value)->count() == 1)
+			{
+				$admin->admin_group_id = $value;
+				return TRUE;
+			}
+
+			return 'invalid_member_group';
+		});
+
+		$validator->defineRule('validMember', function($key, $value) use ($admin)
+		{
+			$member = ee('Model')->get('Member')
+				->fields('member_id')
+				->filter('username', $value)
+				->first();
+
+			if ($member)
+			{
+				$admin->admin_member_id = $member->member_id;
+				return TRUE;
+			}
+
+			return 'invalid_username';
+		});
+
+		$result = $validator->validate($_POST);
+
+		if ($response = $this->ajaxValidation($result))
+		{
+			ee()->output->send_ajax_response($response);
+		}
+
+		if ($result->failed())
+		{
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('create_administrator_error'))
+				->addToBody(lang('create_administrator_error_desc'))
+				->now();
+		}
+
+		return $result;
+	}
+
 
 	// --------------------------------------------------------------------
 
@@ -2968,161 +3760,6 @@ class Forum_mcp extends CP_Controller {
 
 		// Back whence you came Binky!
 		ee()->functions->redirect($this->id_base.AMP.'method=forum_management');
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Member Ranks Manager
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function forum_ranks()
-	{
-		ee()->load->library('table');
-
-		$this->show_nav = FALSE;
-
-		ee()->db->order_by('rank_min_posts');
-		$query = ee()->db->get('forum_ranks');
-
-		$vars['ranks']	= $query->result_array();
-		$vars['star']	= $this->prefs['board_theme_url'].$this->prefs['board_default_theme'].'/images/rank.gif';
-
-		return $this->_content_wrapper('forum_ranks', 'forum_ranks', $vars);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Edit Member Ranks
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function forum_edit_rank()
-	{
-		if ( ! $rank_id = ee()->input->get_post('rank_id'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		$this->show_nav = FALSE;
-
-		$query = ee()->db->get_where('forum_ranks', array('rank_id' => $rank_id));
-
-		$vars['rank']	= $query->row_array();
-		$vars['star']	= $this->prefs['board_theme_url'].$this->prefs['board_default_theme'].'/images/rank.gif';
-
-		return $this->_content_wrapper('rank_form', 'forum_ranks', $vars);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Create/Update Member Rank
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function forum_update_rank()
-	{
-		unset($_POST['submit']);
-
-		// Error correction
-		$required = array('rank_title', 'rank_min_posts');
-
-		foreach ($required as $val)
-		{
-			if (ee()->input->post($val) == '')
-			{
-				show_error(ee()->lang->line('forum_missing_ranks'));
-			}
-
-			if ($val == 'rank_min_posts' OR $val == 'rank_stars')
-			{
-				$_POST[$val] = trim(str_replace(',', '', $_POST[$val]));
-
-				if ( ! is_numeric(ee()->input->post($val)))
-				{
-					$_POST[$val] = 0;
-				}
-			}
-		}
-
-		// Are we updatting or inserting?
-		if ( ! ee()->input->get_post('rank_id'))
-		{
-			ee()->db->insert('forum_ranks', $_POST);
-
-			$msg = 'forum_rank_added';
-		}
-		else
-		{
-			ee()->db->where('rank_id', ee()->input->get_post('rank_id'));
-			ee()->db->update('forum_ranks', $_POST);
-
-			$msg = 'forum_rank_updated';
-		}
-
-		// Send Binky back whence Binky came...
-		ee()->session->set_flashdata('message_success', ee()->lang->line($msg));
-		ee()->functions->redirect($this->id_base.AMP.'method=forum_ranks');
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Delete Member Rank Confirmation
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function forum_delete_rank_confirm()
-	{
-		$rank_id = ee()->input->get_post('rank_id');
-
-		if ( ! $rank_id = ee()->input->get_post('rank_id'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		ee()->db->select('rank_title');
-		$query = ee()->db->get_where('forum_ranks', array('rank_id' => $rank_id));
-
-		$vars = array(
-			'url'		=> 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=forum'.AMP.'method=forum_delete_rank',
-			'msg'		=> 'forum_delete_rank_msg',
-			'item'		=> $query->row('rank_title'),
-			'hidden'	=> array('rank_id' => $rank_id)
-		);
-
-		return $this->_content_wrapper('confirm', 'forum_delete_rank_confirm', $vars);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Delete Member Rank
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	function forum_delete_rank()
-	{
-		$rank_id = ee()->input->get_post('rank_id');
-
-		if ( ! $rank_id = ee()->input->post('rank_id'))
-		{
-			show_error($this->lang->line('unauthorized_access'));
-		}
-
-		ee()->db->where('rank_id', $rank_id);
-		ee()->db->delete('forum_ranks');
-
-		ee()->session->set_flashdata('message_success', ee()->lang->line('forum_rank_deleted'));
-		ee()->functions->redirect($this->id_base.AMP.'method=forum_ranks');
 	}
 
 	// --------------------------------------------------------------------

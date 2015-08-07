@@ -133,4 +133,30 @@ class Forum extends Model {
 	protected $forum_enable_rss;
 	protected $forum_use_http_auth;
 
+	public function getPermission($key)
+	{
+		$permissions = $this->getProperty('forum_permissions');
+
+		if ( ! isset($permissions[$key]))
+		{
+			return array();
+		}
+
+		return explode('|', $permissions[$key]);
+	}
+
+	public function setPermission($key, $value)
+	{
+		$permissions = $this->getProperty('forum_permissions');
+
+		if (is_array($value))
+		{
+			$value = implode('|', $value);
+		}
+
+		$permissions[$key] = $value;
+
+		$this->setProperty('forum_permissions', $permissions);
+	}
+
 }

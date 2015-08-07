@@ -340,8 +340,6 @@ $lang = array(
 
 'private_messages' => 'Private Messages',
 
-'mailing_lists' => 'Mailing Lists',
-
 'forums' => 'Forums',
 
 // System Templates -> Members

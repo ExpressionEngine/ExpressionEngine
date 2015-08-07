@@ -1478,14 +1478,12 @@ class Addons extends CP_Controller {
 
 		// its possible that a module will try to call a method that does not exist
 		// either by accident (ie: a missed function) or by deliberate user url hacking
-		if (method_exists($mod, $method))
+		if ( ! method_exists($mod, $method))
 		{
-			$_module_cp_body = call_user_func_array(array($mod, $method), $parameters);
+			show_404();
 		}
-		else
-		{
-			$_module_cp_body = lang('requested_page_not_found');
-		}
+
+		$_module_cp_body = call_user_func_array(array($mod, $method), $parameters);
 
 		// unset reference
 		ee()->remove('_mcp_reference');

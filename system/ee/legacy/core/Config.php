@@ -568,7 +568,6 @@ class EE_Config {
 			'word_wrap',
 			'email_console_timelock',
 			'log_email_console_msgs',
-			'cp_theme',
 			'log_search_terms',
 			'deny_duplicate_data',
 			'redirect_submitted_links',
@@ -598,12 +597,6 @@ class EE_Config {
 			'max_logged_searches',
 			'rte_enabled',
 			'rte_default_toolset_id'
-		);
-
-		$mailinglist_default = array(
-			'mailinglist_enabled',
-			'mailinglist_notify',
-			'mailinglist_notify_emails'
 		);
 
 		$member_default = array(
@@ -923,7 +916,7 @@ class EE_Config {
 	 */
 	private function _update_preferences($site_id, $site_prefs, $query, $find, $replace)
 	{
-		foreach(array('system', 'channel', 'template', 'mailinglist', 'member') as $type)
+		foreach(array('system', 'channel', 'template', 'member') as $type)
 		{
 			$prefs	 = unserialize(base64_decode($query->row('site_'.$type.'_preferences')));
 			$changes = 'n';
@@ -1212,9 +1205,11 @@ class EE_Config {
 
 		foreach ($dbconfig as $property => $value)
 		{
-			$value = ($allowed_properties[$property] == 'bool')
-				? get_bool_from_string($dbconfig['pconnect'])
-				: $value;
+			if ($allowed_properties[$property] == 'bool')
+			{
+				$value = get_bool_from_string($value);
+			}
+
 			$database_config->set($property, $value);
 		}
 
@@ -1224,7 +1219,8 @@ class EE_Config {
 
 		// Remove default properties
 		$defaults = $db_config->getDefaults();
-		foreach ($defaults['expressionengine'] as $property => $value)
+
+		foreach ($defaults as $property => $value)
 		{
 			if (isset($group_config[$property]) && $group_config[$property] == $value)
 			{
@@ -1437,12 +1433,6 @@ class EE_Config {
 				'enable_censoring'   => array('r', array('y' => 'yes', 'n' => 'no')),
 				'censor_replacement' => array('i', '', 'strip_tags|trim|valid_xss_check'),
 				'censored_words'     => array('t', array('rows' => '20', 'kill_pipes' => TRUE)),
-			),
-
-			'mailinglist_cfg'	=>	array(
-				'mailinglist_enabled'       => array('r', array('y' => 'yes', 'n' => 'no')),
-				'mailinglist_notify'        => array('r', array('y' => 'yes', 'n' => 'no')),
-				'mailinglist_notify_emails' => array('i', '')
 			),
 
 			'emoticon_cfg'		=>	array(
@@ -1752,7 +1742,6 @@ class EE_Config {
 			'banishment_url'			=> array('banishment_url_exp'),
 			'banishment_message'		=> array('banishment_message_exp'),
 			'enable_search_log'			=> array('enable_search_log_exp'),
-			'mailinglist_notify_emails' => array('separate_emails'),
 			'dynamic_tracking_disabling'=> array('dynamic_tracking_disabling_info')
 		);
 	}

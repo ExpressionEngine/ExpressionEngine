@@ -247,7 +247,6 @@ class MSM_Config extends EE_Config
 	{
 		$columns = array(
 			'site_system_preferences',
-			'site_mailinglist_preferences',
 			'site_member_preferences',
 			'site_template_preferences',
 			'site_channel_preferences',

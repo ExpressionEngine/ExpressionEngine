@@ -223,10 +223,6 @@ Used in the control panel only.',
 
 'cp_homepage' => 'Control Panel Homepage',
 
-'cp_theme' => 'Control Panel Theme',
-
-'myaccount_cp_theme' => 'Control Panel Theme',
-
 'choose_theme' => 'Choose Control Panel Theme',
 
 'administrative_options' => 'Member Administration',
