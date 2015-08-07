@@ -101,16 +101,12 @@ class Moderator extends Model {
 
 	public function getModeratorName()
 	{
-		return "Not yet implemented";
-		$name = "";
+		$name = $this->mod_member_name;
 
 		if ($this->mod_group_id)
 		{
+			return "Not yet implemented";
 			$name = $this->MemberGroup->group_title;
-		}
-		elseif ($this->mod_member_id)
-		{
-			$name = $this->Member->getMemberName();
 		}
 
 		return $name;
