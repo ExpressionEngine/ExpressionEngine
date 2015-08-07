@@ -81,8 +81,8 @@ class Wizard extends CI_Controller {
 	// party folder)
 	public $native_modules = array('blacklist', 'channel', 'comment', 'commerce',
 		'email', 'emoticon', 'file', 'forum', 'gallery', 'ip_to_nation',
-		'jquery', 'mailinglist', 'member', 'metaweblog_api', 'moblog', 'pages',
-		'query', 'rss', 'rte', 'search', 'simple_commerce', 'stats', 'wiki', 'filepicker');
+		'jquery', 'member', 'metaweblog_api', 'moblog', 'pages', 'query', 'rss',
+		'rte', 'search', 'simple_commerce', 'stats', 'wiki', 'filepicker');
 
 	// Third Party Modules may send error messages if something goes wrong.
 	public $module_install_errors = array(); // array that collects all error messages
@@ -1883,9 +1883,6 @@ class Wizard extends CI_Controller {
 			'banishment_message'        => 'You have exceeded the allowed page load frequency.',
 			'enable_search_log'         => 'y',
 			'max_logged_searches'       => '500',
-			'mailinglist_enabled'       => 'y',
-			'mailinglist_notify'        => 'n',
-			'mailinglist_notify_emails' => '',
 			'memberlist_order_by'       => "total_posts",
 			'memberlist_sort_order'     => "desc",
 			'memberlist_row_limit'      => "20",
@@ -1990,19 +1987,6 @@ class Wizard extends CI_Controller {
 
 		ee()->db->where('site_id', 1);
 		ee()->db->update('sites', array('site_system_preferences' => base64_encode(serialize($site_prefs))));
-
-		// Default Mailinglists Prefs
-		$mailinglist_default = array('mailinglist_enabled', 'mailinglist_notify', 'mailinglist_notify_emails');
-
-		$site_prefs = array();
-
-		foreach($mailinglist_default as $value)
-		{
-			$site_prefs[$value] = $config[$value];
-		}
-
-		ee()->db->where('site_id', 1);
-		ee()->db->update('sites', array('site_mailinglist_preferences' => base64_encode(serialize($site_prefs))));
 
 		// Default Members Prefs
 		$member_default = array(
@@ -2114,7 +2098,7 @@ class Wizard extends CI_Controller {
 		ee()->db->update('sites', array('site_channel_preferences' => base64_encode(serialize($site_prefs))));
 
 		// Remove Site Prefs from Config
-		foreach(array_merge($admin_default, $mailinglist_default, $member_default, $template_default, $channel_default) as $value)
+		foreach(array_merge($admin_default, $member_default, $template_default, $channel_default) as $value)
 		{
 			unset($config[$value]);
 		}

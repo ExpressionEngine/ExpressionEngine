@@ -243,7 +243,7 @@ class Msm extends CP_Controller {
 
 			if ($result->isValid())
 			{
-				foreach(array('system', 'channel', 'template', 'mailinglist', 'member') as $type)
+				foreach(array('system', 'channel', 'template', 'member') as $type)
 				{
 					$prefs = 'site_' . $type . '_preferences';
 

@@ -600,12 +600,6 @@ class EE_Config {
 			'rte_default_toolset_id'
 		);
 
-		$mailinglist_default = array(
-			'mailinglist_enabled',
-			'mailinglist_notify',
-			'mailinglist_notify_emails'
-		);
-
 		$member_default = array(
 			'un_min_len',
 			'pw_min_len',
@@ -923,7 +917,7 @@ class EE_Config {
 	 */
 	private function _update_preferences($site_id, $site_prefs, $query, $find, $replace)
 	{
-		foreach(array('system', 'channel', 'template', 'mailinglist', 'member') as $type)
+		foreach(array('system', 'channel', 'template', 'member') as $type)
 		{
 			$prefs	 = unserialize(base64_decode($query->row('site_'.$type.'_preferences')));
 			$changes = 'n';
@@ -1439,12 +1433,6 @@ class EE_Config {
 				'censored_words'     => array('t', array('rows' => '20', 'kill_pipes' => TRUE)),
 			),
 
-			'mailinglist_cfg'	=>	array(
-				'mailinglist_enabled'       => array('r', array('y' => 'yes', 'n' => 'no')),
-				'mailinglist_notify'        => array('r', array('y' => 'yes', 'n' => 'no')),
-				'mailinglist_notify_emails' => array('i', '')
-			),
-
 			'emoticon_cfg'		=>	array(
 				'enable_emoticons' => array('r', array('y' => 'yes', 'n' => 'no')),
 				'emoticon_url'     => array('i', '', 'strip_tags|trim|valid_xss_check')
@@ -1752,7 +1740,6 @@ class EE_Config {
 			'banishment_url'			=> array('banishment_url_exp'),
 			'banishment_message'		=> array('banishment_message_exp'),
 			'enable_search_log'			=> array('enable_search_log_exp'),
-			'mailinglist_notify_emails' => array('separate_emails'),
 			'dynamic_tracking_disabling'=> array('dynamic_tracking_disabling_info')
 		);
 	}

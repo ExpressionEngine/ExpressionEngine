@@ -244,11 +244,6 @@ return array(
 			'Comment' => 'Module\Comment\Model\Comment',
 			'CommentSubscription' => 'Module\Comment\Model\CommentSubscription',
 
-			// ..\MailingList
-			'MailingList' => 'Module\MailingList\Model\MailingList',
-			'MailingListQueue' => 'Module\MailingList\Model\MailingListQueue',
-			'MailingListUser' => 'Module\MailingList\Model\MailingListUser',
-
 			// ..\Member
 			'HTMLButton' => 'Module\Member\Model\HTMLButton',
 			'Member' => 'Module\Member\Model\Member',

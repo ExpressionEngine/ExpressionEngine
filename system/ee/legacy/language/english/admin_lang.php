@@ -62,14 +62,6 @@ $lang = array(
 //  Extensions Stuff
 // ---------------------------
 
-"mailinglist_cfg" => "Mailing List Preferences",
-
-"mailinglist_notify" => "Enable recipient list for notification of new mailing list sign-ups",
-
-"mailinglist_enabled" => "Mailing List is Enabled",
-
-"mailinglist_notify_emails" => "Email Address of Notification Recipient(s) ",
-
 "censor_replacement" => "Censoring Replacement Word",
 
 "censor_replacement_info" => "If left blank censored words will be replaced with: #",

@@ -604,8 +604,6 @@ $lang = array(
 
 "can_email_member_groups" => "Can send email to Member Groups",
 
-"can_email_mailinglist" => "Can send email to Mailing List",
-
 "can_send_cached_email" => "Can view/send cached email",
 
 "search_privs" => "Search Privileges",

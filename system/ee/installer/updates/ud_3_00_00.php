@@ -60,10 +60,11 @@ class Updater {
 				'_update_upload_directories',
 				'_drop_field_formatting_table',
 				'_update_sites_table',
-				'_remove_referrer_config_items',
+				'_remove_referrer_module_artifacts',
 				'_update_channels_table',
 				'_update_channel_titles_table',
-				'_export_mailing_lists'
+				'_export_mailing_lists',
+				'_remove_mailing_list_module_artifacts'
 			)
 		);
 
@@ -1046,12 +1047,14 @@ class Updater {
 
 	/**
 	 * The Referrer module has been removed, so we need to remove settings
-	 * related to the module from site config
+	 * related to the module from site config and the referrers table
 	 */
-	private function _remove_referrer_config_items()
+	private function _remove_referrer_module_artifacts()
 	{
 		$msm_config = new MSM_Config();
 		$msm_config->remove_config_item(array('log_referrers', 'max_referrers'));
+
+		ee()->smartforge->drop_table('referrers');
 	}
 
 	// -------------------------------------------------------------------------
@@ -1092,6 +1095,37 @@ class Updater {
 		}
 
 		ee()->zip->archive(SYSPATH.'user/cache/mailing_list.zip');
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Cleans up database for mailing list module remnants
+	 */
+	private function _remove_mailing_list_module_artifacts()
+	{
+		ee()->smartforge->drop_table('mailing_list');
+		ee()->smartforge->drop_table('mailing_lists');
+		ee()->smartforge->drop_table('mailing_list_queue');
+		ee()->smartforge->drop_table('email_cache_ml');
+
+		$msm_config = new MSM_Config();
+		$msm_config->remove_config_item(array(
+			'mailinglist_enabled',
+			'mailinglist_notify',
+			'mailinglist_notify_emails'
+		));
+
+		ee()->smartforge->drop_column('member_groups', 'can_email_mailinglist');
+		ee()->smartforge->drop_column('member_groups', 'include_in_mailinglists');
+		ee()->smartforge->drop_column('sites', 'site_mailinglist_preferences');
+
+		ee()->db->where_in(
+			'template_name', array('admin_notify_mailinglist', 'mailinglist_activation_instructions')
+		)->delete('specialty_templates');
+
+		ee()->db->where('module_name', 'Mailinglist')->delete('modules');
+		ee()->db->where('class', 'Mailinglist')->delete('actions');
 	}
 
 	// -------------------------------------------------------------------------
