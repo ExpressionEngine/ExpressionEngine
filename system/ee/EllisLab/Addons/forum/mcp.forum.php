@@ -2642,6 +2642,303 @@ class Forum_mcp extends CP_Controller {
 		);
 	}
 
+	private function createModerator($forum_id)
+	{
+		$forum = ee('Model')->get('forum:Forum', $forum_id)->first();
+		if ( ! $forum)
+		{
+			show_404();
+		}
+
+		$errors = NULL;
+
+		$defaults = array(
+			'mod_forum_id' => $forum_id,
+			'board_id' => $forum->board_id,
+			'mod_member_name' => '',
+		);
+
+		$moderator = ee('Model')->make('forum:Moderator', $defaults);
+
+		$result = $this->validateModerator($moderator);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
+
+			if ($result->isValid())
+			{
+				$this->saveModeratorAndRedirect($moderator);
+			}
+		}
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'errors' => $errors,
+			'cp_page_title' => sprintf(lang('create_moderator_in'), $forum->forum_name),
+			'base_url' => ee('CP/URL', $this->base . 'create/moderator/' . $forum_id),
+			'save_btn_text' => 'btn_save_moderator',
+			'save_btn_text_working' => 'btn_saving',
+			'sections' => $this->moderatorForm($moderator),
+		);
+
+		$body = ee('View')->make('ee:_shared/form')->render($vars);
+
+		return array(
+			'body'       => '<div class="box">' . $body . '</div>',
+			'breadcrumb' => array(
+				ee('CP/URL', $this->base. 'index/' . $forum->board_id)->compile() => $forum->Board->board_label . ' '. lang('forum_listing'),
+				ee('CP/URL', $this->base. 'moderators/' . $forum_id)->compile() => lang('moderators')
+			),
+			'heading'    => lang('create_moderator'),
+			'sidebar'    => $this->generateSidebar()
+		);
+	}
+
+	private function editModerator($id)
+	{
+		$moderator = ee('Model')->get('forum:Moderator', $id);
+
+		if ( ! $moderator)
+		{
+			show_404();
+		}
+
+		$forum = $moderator->Forum;
+
+		$result = $this->validateModerator($moderator);
+
+		if ($result instanceOf ValidationResult)
+		{
+			$errors = $result;
+
+			if ($result->isValid())
+			{
+				$this->saveModeratorAndRedirect($moderator);
+			}
+		}
+
+		$vars = array(
+			'ajax_validate' => TRUE,
+			'errors' => $errors,
+			'cp_page_title' => sprintf(lang('edit_moderator_in'), $forum->forum_name),
+			'base_url' => ee('CP/URL', $this->base . 'create/moderator/' . $forum_id),
+			'save_btn_text' => 'btn_save_moderator',
+			'save_btn_text_working' => 'btn_saving',
+			'sections' => $this->moderatorForm($moderator),
+		);
+
+		$body = ee('View')->make('ee:_shared/form')->render($vars);
+
+		return array(
+			'body'       => '<div class="box">' . $body . '</div>',
+			'breadcrumb' => array(
+				ee('CP/URL', $this->base. 'index/' . $forum->board_id)->compile() => $forum->Board->board_label . ' '. lang('forum_listing'),
+				ee('CP/URL', $this->base. 'moderators/' . $forum_id)->compile() => lang('moderators')
+			),
+			'heading'    => lang('edit_moderator'),
+			'sidebar'    => $this->generateSidebar()
+		);
+	}
+
+	private function moderatorForm($moderator)
+	{
+
+		$permissions = array();
+		$keys = array(
+			'mod_can_edit',
+			'mod_can_move',
+			'mod_can_delete',
+			'mod_can_split',
+			'mod_can_merge',
+			'mod_can_change_status',
+			'mod_can_announce',
+			'mod_can_view_ip',
+		);
+
+		foreach ($keys as $key)
+		{
+			if ($moderator->$key)
+			{
+				$permissions[] = $key;
+			}
+		}
+
+		$member_groups = ee('Model')->get('MemberGroup')
+			->fields('group_id', 'group_title')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('group_id', '!=', '1')
+			->order('group_title', 'asc')
+			->all()
+			->getDictionary('group_id', 'group_title');
+
+		$sections = array(
+			array(
+				array(
+					'title' => 'moderator_type',
+					'desc' => 'moderator_type_desc',
+					'fields' => array(
+						'moderator_type_group' => array(
+							'type' => 'radio',
+							'name' => 'moderator_type',
+							'choices' => array(
+								'group' => lang('moderator_type_member_group'),
+							),
+							'value' => ($moderator->getType()) ?: 'group',
+						),
+						'member_group' => array(
+							'type' => 'select',
+							'choices' => $member_groups,
+							'value' => ($moderator->mod_member_id) ?: 5
+						),
+						'moderator_type_individual' => array(
+							'type' => 'radio',
+							'name' => 'moderator_type',
+							'choices' => array(
+								'individual' => lang('moderator_type_individual')
+							),
+							'value' => ($moderator->getType()) ?: 'group',
+						),
+						'individual' => array(
+							'type' => 'text',
+						)
+					)
+				),
+				array(
+					'title' => 'permissions',
+					'desc' => 'permissions_desc',
+					'fields' => array(
+						'permissions' => array(
+							'type' => 'checkbox',
+							'wrap' => TRUE,
+							'choices' => array(
+								'mod_can_edit'          => lang('mod_can_edit'),
+								'mod_can_move'          => lang('mod_can_move'),
+								'mod_can_split'         => lang('mod_can_split'),
+								'mod_can_merge'         => lang('mod_can_merge'),
+								'mod_can_delete'        => lang('mod_can_delete'),
+								'mod_can_change_status' => lang('mod_can_change_status'),
+								'mod_can_announce'      => lang('mod_can_announce'),
+								'mod_can_view_ip'       => lang('mod_can_view_ip'),
+							),
+							'value' => $permissions
+						)
+					)
+				)
+			)
+		);
+
+		return $sections;
+	}
+
+	private function validateModerator($moderator)
+	{
+		if (empty($_POST))
+		{
+			return FALSE;
+		}
+
+		$keys = array(
+			'mod_can_edit',
+			'mod_can_move',
+			'mod_can_delete',
+			'mod_can_split',
+			'mod_can_merge',
+			'mod_can_change_status',
+			'mod_can_announce',
+			'mod_can_view_ip',
+		);
+
+		foreach ($keys as $key)
+		{
+			$moderator->$key = in_array($key, $_POST['permissions']);
+		}
+
+		$validator = ee('Validation')->make(array(
+			'moderator_type' => 'required|enum[group,individual]',
+			'member_group'       => 'whenModeratorTypeIs[group]|validMemberGroup',
+			'individual'         => 'whenModeratorTypeIs[individual]|validMember',
+		));
+
+		$data = $_POST;
+
+		$validator->defineRule('whenModeratorTypeIs', function($key, $value, $parameters, $rule) use ($data)
+		{
+		  return ($data['moderator_type'] == $parameters[0]) ? TRUE : $rule->skip();
+		});
+
+		$validator->defineRule('validMemberGroup', function($key, $value) use ($moderator)
+		{
+			if (ee('Model')->get('MemberGroup', $value)->count() == 1)
+			{
+				$moderator->mod_group_id = $value;
+				return TRUE;
+			}
+
+			return 'invalid_member_group';
+		});
+
+		$validator->defineRule('validMember', function($key, $value) use ($moderator)
+		{
+			$member = ee('Model')->get('Member')
+				->fields('member_id')
+				->filter('username', $value)
+				->first();
+
+			if ($member)
+			{
+				$moderator->mod_member_id = $member->member_id;
+				$moderator->mod_member_name = $member->getMemberName();
+				return TRUE;
+			}
+
+			return 'invalid_username';
+		});
+
+		$result = $validator->validate($_POST);
+
+		if ($response = $this->ajaxValidation($result))
+		{
+			ee()->output->send_ajax_response($response);
+		}
+
+		if ($result->failed())
+		{
+			ee('Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('create_moderator_error'))
+				->addToBody(lang('create_moderator_error_desc'))
+				->now();
+		}
+
+		return $result;
+	}
+
+	private function saveModeratorAndRedirect($moderator)
+	{
+		$action = ($moderator->isNew()) ? 'create' : 'edit';
+
+		$moderator->save();
+
+		if ($action == 'create')
+		{
+			ee()->session->set_flashdata('mod_id', $moderator->mod_id);
+		}
+
+		ee('Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang($action . '_moderator_success'))
+			->addToBody(sprintf(lang($action . '_moderator_success_desc'), $moderator->getModeratorName()))
+			->defer();
+
+		ee()->functions->redirect(ee('CP/URL', $this->base . 'moderators/' . $moderator->board_id));
+	}
+
+	private function removeModerator($id)
+	{
+
+	}
+
 	// --------------------------------------------------------------------
 
 	/**

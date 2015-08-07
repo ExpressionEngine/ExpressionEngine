@@ -369,6 +369,41 @@ $lang = array(
 'moderators' => 'Moderators',
 'moderators_desc' => 'Have access to assigned tools for forums they are assigned to.',
 
+'create_moderator' => 'Create Moderator',
+'create_moderator_in' => 'Create Moderator in %s',
+
+'moderator_type' => 'Moderator type',
+'moderator_type_desc' => 'Select the type of moderator you want to add.',
+
+'moderator_type_member_group' => 'Member Group <i>&mdash; All members of chosen group</i>',
+'moderator_type_individual' => 'Individual <i>&mdash; username, <b>not</b> screenname</i>',
+
+'permissions_desc' => 'Moderators of this forum may take the following actions.',
+
+'mod_can_edit' => 'Edit',
+'mod_can_move' => 'Move',
+'mod_can_delete' => 'Delete',
+'mod_can_split' => 'Split',
+'mod_can_merge' => 'Merge',
+'mod_can_change_status' => 'Change status',
+'mod_can_announce' => 'Create announcements',
+'mod_can_view_ip' => 'View <abbr title="Internet Protocol">IP</abbr> addresses',
+
+'btn_save_moderator' => 'Save moderator',
+
+'create_moderator_success' => 'Moderator Created',
+'create_moderator_success_desc' => 'The moderator <b>%s</b> has been created.',
+
+'create_moderator_error' => 'Cannot Create Moderator',
+'create_moderator_error_desc' => 'We were unable to create this moderator, please review and fix errors below.',
+
+'edit_moderator_success' => 'Moderator Updated',
+'edit_moderator_success_desc' => 'The moderator <b>%s</b> has been updated.',
+
+'edit_moderator_error' => 'Cannot Update Moderator',
+'edit_moderator_error_desc' => 'We were unable to update this moderator, please review and fix errors below.',
+
+
 /* 2.x Keys
 //----------------------------------------
 
