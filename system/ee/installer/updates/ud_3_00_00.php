@@ -93,7 +93,11 @@ class Updater {
 		{
 			require $db_config_path;
 			ee()->config->_update_dbconfig($db[$active_group]);
-			unlink(SYSPATH.'/user/config/database.php');
+
+			if (is_writeable($db_config_path))
+			{
+				unlink($db_config_path);
+			}
 		}
 		else if (($db_config = ee()->config->item('database'))
 			&& empty($db_config))
