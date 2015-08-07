@@ -2084,7 +2084,7 @@ class Forum_mcp extends CP_Controller {
 
 		$rank = ee('Model')->make('forum:Rank');
 
-		$result = $this->validateBoard($rank);
+		$result = $this->validateRank($rank);
 
 		if ($result instanceOf ValidationResult)
 		{
@@ -2128,7 +2128,7 @@ class Forum_mcp extends CP_Controller {
 			show_404();
 		}
 
-		$result = $this->validateBoard($rank);
+		$result = $this->validateRank($rank);
 
 		if ($result instanceOf ValidationResult)
 		{
