@@ -171,8 +171,7 @@ class Buttons extends Profile {
 		$this->base_url = ee('CP/URL', $this->index_url . '/create', $this->query_string);
 
 		$vars = array(
-			'cp_page_title' => lang('create_html_button'),
-			'save_btn_text' => lang('create_html_button')
+			'cp_page_title' => lang('create_html_button')
 		);
 
 		$this->form($vars);
@@ -190,8 +189,7 @@ class Buttons extends Profile {
 		$this->base_url = ee('CP/URL', $this->index_url . "/edit/$id", $this->query_string);
 
 		$vars = array(
-			'cp_page_title' => lang('edit_html_button'),
-			'save_btn_text' => lang('save_html_button')
+			'cp_page_title' => lang('edit_html_button')
 		);
 
 		$this->button = ee('Model')->get('HTMLButton', $id)->first();
@@ -367,6 +365,7 @@ class Buttons extends Profile {
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('html_button'));
 		ee()->view->save_btn_text_working = 'btn_save_working';
 		ee()->cp->render('settings/form', $vars);
 	}

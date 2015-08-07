@@ -175,8 +175,7 @@ class Groups extends Members\Members {
 	public function create()
 	{
 		$vars = array(
-			'cp_page_title' => lang('create_member_group'),
-			'save_btn_text' => lang('save_member_group')
+			'cp_page_title' => lang('create_member_group')
 		);
 		$this->base_url = ee('CP/URL', 'members/groups/create/', $this->query_string);
 
@@ -186,8 +185,7 @@ class Groups extends Members\Members {
 	public function edit()
 	{
 		$vars = array(
-			'cp_page_title' => lang('edit_member_group'),
-			'save_btn_text' => lang('save_member_group')
+			'cp_page_title' => lang('edit_member_group')
 		);
 
 		$group = ee()->input->get('group');
@@ -772,6 +770,7 @@ class Groups extends Members\Members {
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('member_group'));
 		ee()->view->save_btn_text_working = 'btn_save_working';
 		ee()->cp->render('settings/form', $vars);
 	}

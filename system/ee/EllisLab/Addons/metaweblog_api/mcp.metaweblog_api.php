@@ -286,8 +286,8 @@ class Metaweblog_api_mcp {
 
 		$vars = array(
 			'base_url' => $base_url,
-			'cp_page_title' => lang('create_metaweblog'),
-			'save_btn_text' => 'create_metaweblog',
+			'cp_page_title' => ($id == 'new') ? lang('create_metaweblog') : lang('edit_metaweblog'),
+			'save_btn_text' => sprintf(lang('btn_save'), lang('metaweblog')),
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array()

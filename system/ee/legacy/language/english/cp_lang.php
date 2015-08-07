@@ -461,7 +461,9 @@ $lang = array(
  * 3.0
  */
 
-'btn_fix_errors' => 'Fix Errors, Please',
+'btn_save' => 'Save %s',
+
+'btn_fix_errors' => 'Errors Found',
 
 'btn_saving' => 'Saving...',
 

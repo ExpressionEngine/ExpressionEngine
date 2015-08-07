@@ -95,7 +95,7 @@ class Groups extends AbstractChannelsController {
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL', 'channels/fields/groups/create'),
 			'sections' => $this->form(),
-			'save_btn_text' => 'btn_create_field_group',
+			'save_btn_text' => sprintf(lang('btn_save'), lang('field_group')),
 			'save_btn_text_working' => 'btn_saving'
 		);
 
@@ -155,7 +155,7 @@ class Groups extends AbstractChannelsController {
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL', 'channels/fields/groups/edit/' . $id),
 			'sections' => $this->form($field_group),
-			'save_btn_text' => 'btn_edit_field_group',
+			'save_btn_text' => sprintf(lang('btn_save'), lang('field_group')),
 			'save_btn_text_working' => 'btn_saving'
 		);
 

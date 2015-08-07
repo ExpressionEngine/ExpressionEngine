@@ -127,7 +127,6 @@ class Channels extends AbstractChannelsController {
 			$alert_key = 'created';
 			ee()->view->cp_page_title = lang('create_new_channel');
 			ee()->view->base_url = ee('CP/URL', 'channels/create');
-			ee()->view->save_btn_text = 'create_channel';
 			$channel = ee('Model')->make('Channel');
 			$channel->title_field_label = lang('title');
 
@@ -154,7 +153,6 @@ class Channels extends AbstractChannelsController {
 			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_channel');
 			ee()->view->base_url = ee('CP/URL', 'channels/edit/'.$channel_id);
-			ee()->view->save_btn_text = 'edit_channel';
 		}
 
 		// Channel duplicate preferences menu
@@ -376,6 +374,7 @@ class Channels extends AbstractChannelsController {
 
 		ee()->view->cp_page_title = is_null($channel_id) ? lang('create_channel') : lang('edit_channel');
 		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('channel'));
 		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels'), lang('channels'));
 

@@ -218,7 +218,7 @@ $lang = array(
 
 'btn_create_template' => 'Create Template',
 
-'btn_create_and_edit_template' => 'Create &amp; Edit Template',
+'btn_create_and_edit_template' => 'Save &amp; Edit Template',
 
 'create_template_success' => 'Template Created',
 
@@ -284,9 +284,7 @@ $lang = array(
 
 'require_all_segments_desc' => 'When set to <b>yes</b>, all segments must be present in the request <abbr title="Unified Resource Identifier">URI</abbr>.',
 
-'btn_update_template' => 'Update Template',
-
-'btn_update_and_finish_editing' => 'Update &amp; Finish Editing',
+'btn_update_and_finish_editing' => 'Save &amp; Finish Editing',
 
 'update_template_error' => 'Cannot Update Template',
 

@@ -354,7 +354,7 @@ class Msm extends CP_Controller {
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL', 'msm/create'),
-			'save_btn_text' => 'btn_create_site',
+			'save_btn_text' => sprintf(lang('btn_save'), lang('site')),
 			'save_btn_text_working' => 'btn_saving',
 		);
 
@@ -462,7 +462,7 @@ class Msm extends CP_Controller {
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL', 'msm/edit/' . $site_id),
-			'save_btn_text' => 'btn_edit_site',
+			'save_btn_text' => sprintf(lang('btn_save'), lang('site')),
 			'save_btn_text_working' => 'btn_saving',
 		);
 

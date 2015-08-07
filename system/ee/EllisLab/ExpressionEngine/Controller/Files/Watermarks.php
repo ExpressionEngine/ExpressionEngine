@@ -184,7 +184,6 @@ class Watermarks extends AbstractFilesController {
 		{
 			ee()->view->cp_page_title = lang('create_watermark');
 			ee()->view->base_url = ee('CP/URL', 'files/watermarks/create');
-			ee()->view->save_btn_text = 'create_watermark';
 			$watermark = ee('Model')->make('Watermark');
 		}
 		else
@@ -198,7 +197,6 @@ class Watermarks extends AbstractFilesController {
 
 			ee()->view->cp_page_title = lang('edit_watermark');
 			ee()->view->base_url = ee('CP/URL', 'files/watermarks/edit/'.$watermark_id);
-			ee()->view->save_btn_text = 'edit_watermark';
 		}
 
 		ee()->load->library('filemanager');
@@ -450,6 +448,7 @@ class Watermarks extends AbstractFilesController {
 		}
 
 		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('watermark'));
 		ee()->view->save_btn_text_working = 'btn_saving';
 
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'files'), lang('file_manager'));

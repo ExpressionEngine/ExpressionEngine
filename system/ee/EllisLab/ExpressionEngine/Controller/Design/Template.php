@@ -87,7 +87,7 @@ class Template extends AbstractDesignController {
 					'name' => 'submit',
 					'type' => 'submit',
 					'value' => 'create',
-					'text' => 'btn_create_template',
+					'text' => sprintf(lang('btn_save'), lang('template')),
 					'working' => 'btn_create_template_working'
 				),
 				array(

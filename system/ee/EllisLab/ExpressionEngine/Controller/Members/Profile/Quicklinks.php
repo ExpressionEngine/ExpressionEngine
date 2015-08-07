@@ -116,8 +116,7 @@ class Quicklinks extends Profile {
 		$this->base_url = ee('CP/URL', $this->index_url . '/create', $this->query_string);
 
 		$vars = array(
-			'cp_page_title' => lang('create_quick_link'),
-			'save_btn_text' => lang('create_quick_link')
+			'cp_page_title' => lang('create_quick_link')
 		);
 
 		if ( ! empty($_POST))
@@ -146,8 +145,7 @@ class Quicklinks extends Profile {
 		$this->base_url = ee('CP/URL', $this->index_url . "/edit/$id", $this->query_string);
 
 		$vars = array(
-			'cp_page_title' => lang('edit_quick_link'),
-			'save_btn_text' => lang('save_quick_link')
+			'cp_page_title' => lang('edit_quick_link')
 		);
 
 		$values = array(
@@ -272,6 +270,7 @@ class Quicklinks extends Profile {
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('quick_link'));
 		ee()->view->save_btn_text_working = 'btn_save_working';
 		ee()->cp->render('settings/form', $vars);
 	}

@@ -175,7 +175,7 @@ class Snippets extends AbstractDesignController {
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL', 'design/snippets/create'),
-			'save_btn_text' => 'btn_create_partial',
+			'save_btn_text' => sprintf(lang('btn_save'), lang('partial')),
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
@@ -301,7 +301,7 @@ class Snippets extends AbstractDesignController {
 			'form_hidden' => array(
 				'old_name' => $snippet->snippet_name
 			),
-			'save_btn_text' => 'btn_edit_partial',
+			'save_btn_text' => sprintf(lang('btn_save'), lang('partial')),
 			'save_btn_text_working' => 'btn_edit_partial_working',
 			'sections' => array(
 				array(
