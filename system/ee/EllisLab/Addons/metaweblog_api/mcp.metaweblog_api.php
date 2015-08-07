@@ -521,7 +521,11 @@ class Metaweblog_api_mcp {
 				}
 			}
 
-			return ee('View')->make('metaweblog_api:create_modify')->render($vars);
+			return array(
+				'heading'    => $vars['cp_page_title'],
+				'breadcrumb' => array(ee('CP/URL', 'addons/settings/metaweblog_api')->compile() => lang('metaweblog_api_module_name') . ' ' . lang('configuration')),
+				'body'       => ee('View')->make('metaweblog_api:create_modify')->render($vars)
+			);
 		}
 		else
 		{
