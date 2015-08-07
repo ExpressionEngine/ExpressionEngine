@@ -33,8 +33,10 @@ class Moblog extends Model {
 	protected static $_table_name = 'moblogs';
 
 	protected static $_typed_columns = array(
-		'moblog_valid_from' => 'commaDelimited',
-		'moblog_categories' => 'pipeDelimited'
+		'moblog_email_login'    => 'base64',
+		'moblog_email_password' => 'base64',
+		'moblog_valid_from'     => 'commaDelimited',
+		'moblog_categories'     => 'pipeDelimited'
 	);
 
 	protected static $_validation_rules = array(
