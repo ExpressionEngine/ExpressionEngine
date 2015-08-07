@@ -318,7 +318,6 @@ class Groups extends Members\Members {
 			array(
 				array(
 					'title' => 'group_name',
-					'desc' => 'group_name_desc',
 					'fields' => array(
 						'group_title' => array(
 							'type' => 'text',
@@ -329,7 +328,6 @@ class Groups extends Members\Members {
 				),
 				array(
 					'title' => 'group_description',
-					'desc' => 'group_description_desc',
 					'fields' => array(
 						'group_description' => array(
 							'type' => 'textarea',
