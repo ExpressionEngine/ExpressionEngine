@@ -364,6 +364,11 @@ $lang = array(
 'invalid_member_group' => 'The member group you submitted does not appear to be valid',
 'invalid_username' => 'The username you submitted does not appear to be valid',
 
+// Moderators
+
+'moderators' => 'Moderators',
+'moderators_desc' => 'Have access to assigned tools for forums they are assigned to.',
+
 /* 2.x Keys
 //----------------------------------------
 

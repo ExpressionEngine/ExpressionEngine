@@ -2543,6 +2543,104 @@ class Forum_mcp extends CP_Controller {
 		return $result;
 	}
 
+	// --------------------------------------------------------------------
+
+	public function moderators($id)
+	{
+		$board = ee('Model')->get('forum:Board', $id)
+			->order('board_id', 'asc')
+			->first();
+
+		if ( ! $board)
+		{
+			show_404();
+		}
+
+		$categories = array();
+		$forum_id = ee()->session->flashdata('forum_id');
+
+		$boards_categories = ee('Model')->get('forum:Forum')
+			->filter('board_id', $id)
+			->filter('forum_is_cat', 'y')
+			->all();
+
+		$base_url = ee('CP/URL', $this->base . 'moderators/' . $id);
+
+		foreach ($boards_categories as $i => $category)
+		{
+			$table = ee('CP/Table', array('autosort' => TRUE));
+			$table->setColumns(
+				array(
+					$category->forum_name,
+					'moderators',
+					'manage' => array(
+						'type'	=> Table::COL_TOOLBAR,
+					)
+				)
+			);
+			$table->setNoResultsText('no_forums', 'create_new_forum', ee('CP/URL', $this->base . 'create/forum/' . $category->forum_id));
+
+			$data = array();
+			foreach ($category->Forums->sortBy('forum_order') as $forum)
+			{
+
+				// array('toolbar_items' => array(
+				// 		'edit' => array(
+				// 			'href' => ee('CP/URL', $this->base . 'edit/moderator/' . $forum->forum_id),
+				// 			'title' => lang('edit_moderator'),
+				// 		),
+				// 		'remove' => array(
+				// 			'href' => ee('CP/URL', $this->base . 'settings/forum/' . $forum->forum_id),
+				// 			'title' => lang('remove_moderator'),
+				// 		)
+				// 	)
+				// ),
+
+
+				$row = array(
+					$forum->forum_name,
+					'Not yet implemented',
+					array('toolbar_items' => array(
+						'add' => array(
+							'href' => ee('CP/URL', $this->base . 'create/moderator/' . $forum->forum_id),
+							'title' => lang('add_moderator')
+						)
+					))
+				);
+
+				$attrs = array();
+
+				if ($forum_id && $forum->forum_id == $forum_id)
+				{
+					$attrs = array('class' => 'selected');
+				}
+
+				$data[] = array(
+					'attrs'		=> $attrs,
+					'columns'	=> $row
+				);
+			}
+			$table->setData($data);
+			$categories[] = $table->viewData($base_url);
+		}
+
+		$vars = array(
+			'board' => $board,
+			'categories' => $categories,
+			'base_url' => $base_url,
+		);
+
+		$body = ee('View')->make('forum:moderators')->render($vars);
+
+		return array(
+			'body'    => $body,
+			'breadcrumb' => array(
+				ee('CP/URL', $this->base. 'index/' . $id)->compile() => $board->board_label . ' '. lang('forum_listing')
+			),
+			'heading' => lang('moderators'),
+			'sidebar' => $this->generateSidebar($id)
+		);
+	}
 
 	// --------------------------------------------------------------------
 
