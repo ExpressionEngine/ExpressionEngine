@@ -381,7 +381,16 @@ class Members extends CP_Controller {
 		$perpage = $this->input->get_post('perpage');
 		$perpage = $perpage ? $perpage : $params['perpage'];
 
-		$members = $this->member_model->get_members($group_id, $perpage, $state['offset'], $search_value, $state['sort'], $column_filter);
+		if (key($state['sort']) == 'member_group')
+		{
+			$sort = array('group_id' => array_pop($state['sort']));
+		}
+		else
+		{
+			$sort = $state['sort'];
+		}
+
+		$members = $this->member_model->get_members($group_id, $perpage, $state['offset'], $search_value, $sort, $column_filter);
 		$members = $members ? $members->result_array() : array();
 		$member_groups = $this->member_model->get_member_groups();
 		$groups = array();
