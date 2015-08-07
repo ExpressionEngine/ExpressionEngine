@@ -66,7 +66,6 @@ class Email extends Profile {
 			array(
 				array(
 					'title' => 'email',
-					'desc' => 'email_description',
 					'fields' => array(
 						'email' => array('type' => 'text', 'value' => $this->member->email, 'required' => TRUE)
 					)

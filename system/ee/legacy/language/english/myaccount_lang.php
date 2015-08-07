@@ -213,7 +213,7 @@ Used in the control panel only.',
 
 'email_options' => 'Options',
 
-'email_options_desc' => 'Send me e-mails...',
+'email_options_desc' => 'Send me emails',
 
 'edit_subscriptions' => 'View Subscriptions',
 
