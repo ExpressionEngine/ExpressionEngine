@@ -65,17 +65,22 @@ class Forum extends Model {
 			'type' => 'belongsTo'
 		),
 		'Forums' => array(
-			'type' => 'hasMany',
-			'model' => 'Forum',
+			'type'     => 'hasMany',
+			'model'    => 'Forum',
 			'from_key' => 'forum_id',
-			'to_key' => 'forum_parent'
+			'to_key'   => 'forum_parent'
 		),
 		'Category' => array(
-			'type' => 'belongsTo',
-			'model' => 'Forum',
+			'type'     => 'belongsTo',
+			'model'    => 'Forum',
 			'from_key' => 'forum_parent',
-			'to_key' => 'forum_id'
-		)
+			'to_key'   => 'forum_id'
+		),
+		'Moderators' => array(
+			'type'   => 'hasMany',
+			'model'  => 'Moderator',
+			'to_key' => 'mod_forum_id'
+		),
 	);
 
 	protected static $_validation_rules = array(

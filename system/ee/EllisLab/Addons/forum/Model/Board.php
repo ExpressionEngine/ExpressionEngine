@@ -67,6 +67,10 @@ class Board extends Model {
 			'type' => 'hasMany',
 			'model' => 'Forum'
 		),
+		'Moderators' => array(
+			'type' => 'hasMany',
+			'model' => 'Moderator'
+		),
 	);
 
 	protected static $_validation_rules = array(
