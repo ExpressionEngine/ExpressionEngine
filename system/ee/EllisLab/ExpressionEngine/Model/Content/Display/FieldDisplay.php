@@ -97,7 +97,7 @@ class FieldDisplay {
 	public function getSetting($item)
 	{
 		$settings = $this->field->initField();
-		return $settings[$item];
+		return isset($settings[$item]) ? $settings[$item] : NULL;
 	}
 
 }
