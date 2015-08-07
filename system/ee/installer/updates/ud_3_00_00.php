@@ -64,7 +64,8 @@ class Updater {
 				'_update_channels_table',
 				'_update_channel_titles_table',
 				'_export_mailing_lists',
-				'_remove_mailing_list_module_artifacts'
+				'_remove_mailing_list_module_artifacts',
+				'_remove_cp_theme_config'
 			)
 		);
 
@@ -1164,6 +1165,17 @@ class Updater {
 				'type' => 'char(200)',
 			)
 		));
+	}
+
+	/**
+	 * CP themeing is no longer supported, so remove the cp_theme config items
+	 */
+	private function _remove_cp_theme_config()
+	{
+		$msm_config = new MSM_Config();
+		$msm_config->remove_config_item(array('cp_theme'));
+
+		ee()->smartforge->drop_column('members', 'cp_theme');
 	}
 }
 /* END CLASS */

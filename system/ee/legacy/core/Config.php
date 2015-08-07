@@ -568,7 +568,6 @@ class EE_Config {
 			'word_wrap',
 			'email_console_timelock',
 			'log_email_console_msgs',
-			'cp_theme',
 			'log_search_terms',
 			'deny_duplicate_data',
 			'redirect_submitted_links',

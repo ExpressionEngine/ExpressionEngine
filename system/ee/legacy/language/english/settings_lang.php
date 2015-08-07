@@ -77,8 +77,6 @@ $lang = array(
 
 'defaults' => 'Defaults',
 
-'cp_theme' => '<abbr title="Control Panel">CP</abbr> theme',
-
 'language' => 'Language',
 
 'language_desc' => 'Default language.<br><i>Used in the control panel only.</i>',

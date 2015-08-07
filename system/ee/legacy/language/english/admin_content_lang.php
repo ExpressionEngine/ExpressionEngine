@@ -252,8 +252,6 @@ $lang = array(
 
 'use_a_theme' => 'Use one of the default themes',
 
-'myaccount_cp_theme' => 'Control Panel Theme',
-
 'duplicate_group' => 'Duplicate an existing template group',
 
 'template_group_name' => 'New Template Group Name',

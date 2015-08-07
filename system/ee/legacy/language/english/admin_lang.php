@@ -860,8 +860,6 @@ $lang = array(
 
 "word_wrap" => "Enable Word-wrapping by Default?",
 
-"cp_theme" => "Default Control Panel Theme",
-
 "template_cfg" => "Template Preferences",
 
 "censoring_cfg" => "Word Censoring",
