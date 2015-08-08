@@ -81,6 +81,11 @@ class Post extends Model {
 		'parse_smileys'    => 'enum[y,n]',
 	);
 
+	protected static $_events = array(
+		'afterInsert',
+		'beforeDelete',
+	);
+
 	protected $post_id;
 	protected $topic_id;
 	protected $forum_id;
@@ -93,5 +98,23 @@ class Post extends Model {
 	protected $post_edit_author;
 	protected $notify;
 	protected $parse_smileys;
+
+	public function onAfterInsert()
+	{
+		$this->Forum->forum_total_posts++;
+		$this->Forum->save();
+
+		$this->Author->total_forum_posts++;
+		$this->Author->save();
+	}
+
+	public function onAfterDelete()
+	{
+		$this->Forum->forum_total_posts--;
+		$this->Forum->save();
+
+		$this->Author->total_forum_posts--;
+		$this->Author->save();
+	}
 
 }
