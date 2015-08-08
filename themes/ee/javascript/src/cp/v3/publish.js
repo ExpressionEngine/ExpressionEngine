@@ -77,4 +77,21 @@ $(document).ready(function () {
 		changeable.on('change', function(){publishForm.trigger("entry:startAutosave")});
 	}
 
+	// Category modal
+	$('a[rel=modal-add-category]').click(function (e) {
+		var modal = $(this).attr('rel')
+		$.ajax({
+			type: "GET",
+			url: EE.publish.add_category.URL.replace('###', $(this).data('catGroup')),
+			dataType: 'html',
+			success: function (data) {
+				var modal_box = $("." + modal + " div.box");
+				modal_box.html(data);
+
+				EE.cp.formValidation.init(modal_box);
+				EE.cp.categoryEdit.init(modal_box);
+			}
+		})
+	});
+
 });

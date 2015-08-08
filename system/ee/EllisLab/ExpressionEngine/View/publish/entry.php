@@ -96,7 +96,26 @@
 						<h3><span class="ico sub-arrow"></span><?=$field->getLabel()?></h3>
 						<em><?=$field->getInstructions()?></em>
 						<?php if ($field->getName() == 'categories' && $entry->Channel->cat_group): ?>
-						<p><a class="btn action submit m-link" rel="modal-cats" href="#"><?=lang('btn_add_category')?></a></p>
+							<?php foreach ($entry->Channel->CategoryGroups->getId() as $cat_group_id): ?>
+								<?php foreach (explode('|', $cat_group_id) as $group_id): ?>
+									<p><a class="btn action submit m-link" rel="modal-add-category" data-cat-group="<?=$group_id?>" href="#"><?=lang('btn_add_category')?></a></p>
+								<?php endforeach ?>
+							<?php endforeach ?>
+						<?php $this->startOrAppendBlock('modals'); ?>
+
+						<div class="modal-wrap modal-add-category hidden">
+							<div class="modal">
+								<div class="col-group">
+									<div class="col w-16">
+										<a class="m-close" href="#"></a>
+										<div class="box">
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<?php $this->endBlock(); ?>
 						<?php endif; ?>
 					</div>
 					<div class="setting-field col <?=$width?> last">

@@ -757,8 +757,17 @@ class Cat extends AbstractChannelsController {
 			ee('CP/URL', $filepicker->controller, array('directory' => 'all', 'type' => 'img'))->compile()
 		);
 
+		ee()->javascript->output('$(document).ready(function () {
+			EE.cp.categoryEdit.init();
+		});');
+
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/cat'), lang('category_groups'));
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/cat/cat-list/'.$cat_group->group_id), $cat_group->group_name . ' &mdash; ' . lang('categories'));
+
+		if (AJAX_REQUEST)
+		{
+			return ee()->cp->render('_shared/form', $vars);
+		}
 
 		ee()->cp->render('settings/form', $vars);
 	}
