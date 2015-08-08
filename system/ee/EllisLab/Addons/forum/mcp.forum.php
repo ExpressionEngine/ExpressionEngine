@@ -29,24 +29,7 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
 
 class Forum_mcp extends CP_Controller {
 
-	public $base				= 'addons/settings/forum/';
-	public $permmissions		= array();
-	public $boards				= array();
-	public $fmt_options			= array();
-
-	public $show_nav			= TRUE;
-	public $is_table_open		= FALSE;
-	public $final_row			= FALSE;
-
-	public $current_category	= 0;
-	public $table_row_ct		= 0;
-	public $_add_crumb			= array();
-
-	// These let us translate the base member groups
-	public $english = array('Guests', 'Banned', 'Members', 'Pending', 'Super Admins');
-
-	public $UPD				= NULL;
-
+	public $base = 'addons/settings/forum/';
 
 	/**
 	 * Constructor
@@ -54,13 +37,8 @@ class Forum_mcp extends CP_Controller {
 	public function __construct()
 	{
 		ee()->lang->loadfile('forum_cp');
-		ee()->load->helper('form');
-
-		ee()->load->model('addons_model');
-		$this->fmt_options = ee()->addons_model->get_plugin_formatting(TRUE);
 
 		// Garbage collection.  Delete old read topic data
-
 		$year_ago = ee()->localize->now - (60*60*24*365);
 		ee()->db->where('last_visit <', $year_ago);
 		ee()->db->delete('forum_read_topics');
@@ -739,6 +717,9 @@ class Forum_mcp extends CP_Controller {
 	{
 		$html = '';
 
+		ee()->load->model('addons_model');
+		$fmt_options = ee()->addons_model->get_plugin_formatting(TRUE);
+
 		$sections = array(
 			array(
 				array(
@@ -878,7 +859,7 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'board_text_formatting' => array(
 							'type' => 'select',
-							'choices' => $this->fmt_options,
+							'choices' => $fmt_options,
 							'value' => $board->board_text_formatting,
 						)
 					)
@@ -1593,6 +1574,9 @@ class Forum_mcp extends CP_Controller {
 
 	private function forumForm($forum)
 	{
+		ee()->load->model('addons_model');
+		$fmt_options = ee()->addons_model->get_plugin_formatting(TRUE);
+
 		$sections = array(
 			array(
 				array(
@@ -1770,7 +1754,7 @@ class Forum_mcp extends CP_Controller {
 					'fields' => array(
 						'forum_text_formatting' => array(
 							'type' => 'select',
-							'choices' => $this->fmt_options,
+							'choices' => $fmt_options,
 							'value' => $forum->forum_text_formatting,
 						)
 					)
