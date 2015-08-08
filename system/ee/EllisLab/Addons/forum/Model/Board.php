@@ -97,6 +97,7 @@ class Board extends Model {
 
 	protected static $_events = array(
 		'beforeInsert',
+		'afterSave',
 	);
 
 	protected $board_id;
@@ -182,6 +183,25 @@ class Board extends Model {
 		if ( ! $this->board_install_date)
 		{
 			$this->board_install_date = ee()->localize->now;
+		}
+	}
+
+	public function onAfterSave()
+	{
+		$model = $this->getFrontend();
+
+		$sites = $model->get('ee:Site')->all();
+		$boards = $model->get('forum:Board')
+			->fields('board_forum_trigger', 'board_site_id')
+			->all();
+
+		foreach ($sites as $site)
+		{
+			$triggers = $boards->filter('board_site_id', $side->site_id)
+				->pluck('board_forum_trigger');
+
+			$site->site_system_preferences->forum_trigger = implode('|', $triggers);
+			$site->save();
 		}
 	}
 
