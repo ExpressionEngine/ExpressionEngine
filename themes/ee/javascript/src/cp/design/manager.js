@@ -33,8 +33,7 @@
 					$("." + modal + " div.box").html(data);
 
 					// Bind validation
-					EE.cp.formValidation._bindButtonStateChange();
-					EE.cp.formValidation._bindForms();
+					EE.cp.formValidation.init($("." + modal + " div.box form"));
 				}
 			})
 		});

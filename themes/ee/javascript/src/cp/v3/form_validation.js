@@ -19,10 +19,15 @@ $(document).ready(function() {
 
 EE.cp.formValidation = {
 
-	init: function() {
+	/**
+	 * @param	{jQuery object}	form	Optional jQuery object of form
+	 */
+	init: function(form) {
 
-		this._bindButtonStateChange();
-		this._bindForms();
+		var form = form || $('form');
+
+		this._bindButtonStateChange(form);
+		this._bindForms(form);
 		this._focusFirstError();
 		this._scrollGrid();
 	},
@@ -107,8 +112,12 @@ EE.cp.formValidation = {
 	/**
 	 * Detects a form submission and changes the form's submit button
 	 * to its working state
+	 *
+	 * @param	{jQuery object}	form	Optional jQuery object of form
 	 */
-	_bindButtonStateChange: function() {
+	_bindButtonStateChange: function(form) {
+
+		var form = form || $('form');
 
 		// Bind form submission to update button text
 		$('form').submit(function(event) {
@@ -133,12 +142,15 @@ EE.cp.formValidation = {
 	/**
 	 * Binds forms with a class of 'ajax-validate' to the AJAX
 	 * validation routines
+	 *
+	 * @param	{jQuery object}	form	Optional jQuery object of form
 	 */
-	_bindForms: function() {
+	_bindForms: function(form) {
 
-		var that = this;
+		var that = this,
+			form = form || $('form');
 
-		$('form').has('.form-ctrls .btn').each(function(index, el) {
+		form.has('.form-ctrls .btn').each(function(index, el) {
 
 			var form = $(this),
 				button = form.find('.form-ctrls input.btn');
