@@ -78,7 +78,6 @@ class Board extends Model {
 		'Moderators' => array(
 			'type'   => 'hasMany',
 			'model'  => 'Moderator',
-			'to_key' => 'mod_board_id'
 		),
 		'Searches' => array(
 			'type'  => 'hasMany',
@@ -86,7 +85,9 @@ class Board extends Model {
 		),
 		'Site' => array(
 			'type'     => 'belongsTo',
-			'from_key' => 'board_site_id'
+			'model'    => 'ee:Site',
+			'from_key' => 'board_site_id',
+			'to_key'   => 'site_id'
 		),
 		'Topics' => array(
 			'type'  => 'hasMany',

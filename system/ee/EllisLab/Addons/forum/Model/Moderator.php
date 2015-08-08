@@ -56,6 +56,7 @@ class Moderator extends Model {
 		'Forum' => array(
 			'type'     => 'belongsTo',
 			'from_key' => 'mod_forum_id',
+			'to_key'   => 'forum_id'
 		),
 		'Member' => array(
 			'type'     => 'hasOne',

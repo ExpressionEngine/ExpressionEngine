@@ -69,6 +69,7 @@ class Topic extends Model {
 		'EditAuthor' => array(
 			'type'     => 'belongsTo',
 			'from_key' => 'topic_edit_author',
+			'to_key'   => 'member_id',
 			'model'    => 'ee:Member'
 		),
 		'Froum' => array(
@@ -77,12 +78,14 @@ class Topic extends Model {
 		'LastPost' => array(
 			'type'     => 'hasOne',
 			'model'    => 'Post',
-			'from_key' => 'last_post_id'
+			'from_key' => 'last_post_id',
+			'to_key'   => 'post_id',
 		),
 		'LastPostAuthor' => array(
 			'type'     => 'belongsTo',
+			'model'    => 'ee:Member',
 			'from_key' => 'last_post_author_id',
-			'model'    => 'ee:Member'
+			'to_key'   => 'member_id',
 		),
 		'Polls' => array(
 			'type'  => 'hasMany',

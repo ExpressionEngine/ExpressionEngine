@@ -79,11 +79,13 @@ class Forum extends Model {
 		'LastPost' => array(
 			'type'     => 'hasOne',
 			'model'    => 'Post',
-			'from_key' => 'forum_last_post_id'
+			'from_key' => 'forum_last_post_id',
+			'to_key'   => 'post_id',
 		),
 		'LastPostAuthor' => array(
 			'type'     => 'belongsTo',
 			'from_key' => 'forum_last_post_author_id',
+			'to_key'   => 'member_id',
 			'model'    => 'ee:Member'
 		),
 		'Moderators' => array(
