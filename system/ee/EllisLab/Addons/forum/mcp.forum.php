@@ -5968,46 +5968,6 @@ class Forum_mcp extends CP_Controller {
 
 	// --------------------------------------------------------------------
 
-	/**
-	 * Store Trigger Word
-	 *
-	 * @access	private
-	 * @return	void
-	 */
-	function update_triggers()
-	{
-		ee()->db->select('site_id');
-		$query = ee()->db->get('sites');
-
-		foreach($query->result_array() as $row)
-		{
-			ee()->db->select('board_forum_trigger');
-			$tquery = ee()->db->get_where('forum_boards', array('board_site_id' => $row['site_id']));
-
-			$triggers = array();
-
-			foreach($tquery->result_array() as $trow)
-			{
-				$triggers[] = $trow['board_forum_trigger'];
-			}
-
-			ee()->db->select('site_system_preferences');
-			$pquery = ee()->db->get_where('sites', array('site_id' => $row['site_id']));
-
-			$prefs = unserialize(base64_decode($pquery->row('site_system_preferences')));
-
-			$prefs['forum_trigger'] = implode('|', $triggers);
-
-			$d = array(
-					'site_system_preferences'	=> base64_encode(serialize($prefs))
-				);
-			ee()->db->where('site_id', $row['site_id']);
-			ee()->db->update('sites', $d);
-		}
-	}
-
-	// --------------------------------------------------------------------
-
 }
 // END CLASS
 
