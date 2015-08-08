@@ -1,4 +1,3 @@
-
 <?php foreach ($profiler_data as $label => $data): ?>
 <div class="tab t-<?=$index?> <?=($index==0)?'tab-open':''?>">
 	<div class="debug-content">

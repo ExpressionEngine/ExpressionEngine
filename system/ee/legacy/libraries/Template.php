@@ -305,13 +305,11 @@ class EE_Template {
 		// Mark our template for better errors
 		$this->template = $this->markContext().$this->template;
 
-		// Parse manual variables and Snippets
-		// These are variables that can be set in the path.php file
+		// Parse assign_to_config variables and Snippets
 
 		if (count(ee()->config->_global_vars) > 0)
 		{
-			$this->log_item("Snippets (Keys): ".implode('|', array_keys(ee()->config->_global_vars)));
-			$this->log_item("Snippets (Values): ".trim(implode('|', ee()->config->_global_vars)));
+			$this->log_item("Config Assignments & Template Partials:", ee()->config->_global_vars);
 
 			foreach (ee()->config->_global_vars as $key => &$val)
 			{
@@ -1027,7 +1025,7 @@ class EE_Template {
 					$matches[0] = ee()->functions->full_tag($matches[0]);
 				}
 
-				$this->log_item("Tag: ".$matches[0]);
+				$this->log_item("Tag: <code>".$matches[0])."</code>";
 
 				$raw_tag = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $matches[0]);
 
@@ -3370,10 +3368,11 @@ class EE_Template {
 	 *
 	 * @access	public
 	 * @param	string
+	 * @param   mixed   string/array of detailed log data
 	 * @return	void
 	 */
 
-	function log_item($str)
+	function log_item($str, $details = FALSE)
 	{
 		if ($this->debugging !== TRUE)
 		{
@@ -3391,10 +3390,15 @@ class EE_Template {
 
 		if (function_exists('memory_get_usage'))
 		{
-			$memory_usage = ' / '.number_format(round(memory_get_usage()/1024/1024, 2),2).'MB';
+			$memory_usage = number_format(round(memory_get_usage()/1024/1024, 2),2).'MB';
 		}
 
-		$this->log[] = '('.number_format($time, 6). $memory_usage . ') '.$str;
+		$this->log[] = array(
+			'time' => number_format($time, 6),
+			'memory' => $memory_usage,
+			'message' => $str,
+			'details' => ($details) ? var_export($details, TRUE) : $details
+		);
 	}
 
 	// --------------------------------------------------------------------

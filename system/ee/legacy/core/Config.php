@@ -115,11 +115,7 @@ class EE_Config {
 			$assign_to_config['enable_query_strings'] = TRUE;
 		}
 
-
 		$this->_set_overrides($assign_to_config);
-
-		// Freelancer version?
-		$this->_global_vars['freelancer_version'] = ( ! file_exists(APPPATH.'modules/member/mod.member.php')) ? 'TRUE' : 'FALSE';
 
 		// Set the default_ini data, used by the sites feature
 		$this->default_ini = $this->config;

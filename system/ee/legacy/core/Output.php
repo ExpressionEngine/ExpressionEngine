@@ -344,6 +344,19 @@ class EE_Output {
 				->addSection('variables', $_SERVER, $_COOKIE, $_GET, $_POST, ee()->session->all_userdata())
 				->addSection('database', array(ee('Database')));
 
+			// Add the template debugger to the output
+
+			if (isset(ee()->TMPL) &&
+				is_object(ee()->TMPL) &&
+				isset(ee()->TMPL->debugging) &&
+				ee()->TMPL->debugging === TRUE &&
+				ee()->TMPL->template_type != 'js')
+			{
+				if (ee()->session->userdata('group_id') == 1)
+				{
+					$profiler->addSection('template', ee()->TMPL->log);
+				}
+			}
 
 			// If the output data contains closing </body> and </html> tags
 			// we will remove them and add them back after we insert the profile data
