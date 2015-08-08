@@ -79,19 +79,43 @@ $(document).ready(function () {
 
 	// Category modal
 	$('a[rel=modal-add-category]').click(function (e) {
-		var modal = $(this).attr('rel')
+		var modal_name = $(this).attr('rel')
 		$.ajax({
 			type: "GET",
 			url: EE.publish.add_category.URL.replace('###', $(this).data('catGroup')),
 			dataType: 'html',
 			success: function (data) {
-				var modal_box = $("." + modal + " div.box");
-				modal_box.html(data);
+				var modal = $('.' + modal_name);
 
-				EE.cp.formValidation.init(modal_box);
-				EE.cp.categoryEdit.init(modal_box);
+				load_category_modal_data(modal, data);
 			}
 		})
 	});
+
+	function load_category_modal_data(modal, data) {
+		$('div.box', modal).html(data);
+
+		EE.cp.formValidation.init(modal);
+
+		$('form', modal).on('submit', function() {
+
+			$.ajax({
+				type: 'POST',
+				url: this.action,
+				data: $(this).serialize()+'&save_modal=yes',
+				dataType: 'json',
+
+				success: function(result) {
+					if (result.messageType == 'success') {
+						modal.trigger('modal:close');
+					} else {
+						load_category_modal_data(modal, result.body);
+					}
+				}
+			});
+
+			return false;
+		});
+	}
 
 });

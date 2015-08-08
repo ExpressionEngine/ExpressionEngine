@@ -97,9 +97,7 @@
 						<em><?=$field->getInstructions()?></em>
 						<?php if ($field->getName() == 'categories' && $entry->Channel->cat_group): ?>
 							<?php foreach ($entry->Channel->CategoryGroups->getId() as $cat_group_id): ?>
-								<?php foreach (explode('|', $cat_group_id) as $group_id): ?>
-									<p><a class="btn action submit m-link" rel="modal-add-category" data-cat-group="<?=$group_id?>" href="#"><?=lang('btn_add_category')?></a></p>
-								<?php endforeach ?>
+								<p><a class="btn action submit m-link" rel="modal-add-category" data-cat-group="<?=(int)$cat_group_id?>" href="#"><?=lang('btn_add_category')?></a></p>
 							<?php endforeach ?>
 						<?php $this->startOrAppendBlock('modals'); ?>
 
