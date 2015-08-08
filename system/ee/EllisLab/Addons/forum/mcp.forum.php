@@ -3079,7 +3079,7 @@ class Forum_mcp extends CP_Controller {
 	 * @access	private
 	 * @return	void
 	 */
-	function _forum_update_order($forum_id = 0, $forum_parent = 0, $insert_new = TRUE)
+	private function _forum_update_order($forum_id = 0, $forum_parent = 0, $insert_new = TRUE)
 	{
 		// Update category order
 
@@ -3163,7 +3163,7 @@ class Forum_mcp extends CP_Controller {
 	 * @access	public
 	 * @return	void
 	 */
-	function forum_move()
+	private function forum_move()
 	{
   		// Define some initial values
 
