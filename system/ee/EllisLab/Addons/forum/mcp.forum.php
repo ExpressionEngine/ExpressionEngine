@@ -57,31 +57,6 @@ class Forum_mcp extends CP_Controller {
 		ee()->lang->loadfile('forum_cp');
 		ee()->load->helper('form');
 
-		// Set the base path for convenience
-
-		$this->board_id = (ee()->input->get_post('board_id') == FALSE OR ! is_numeric(ee()->input->get_post('board_id'))) ? 1 : round(ee()->input->get_post('board_id'));
-
-		$this->id_base	 = $this->base.AMP.'board_id='.$this->board_id;
-		$this->form_base = 'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=forum'.AMP.'board_id='.$this->board_id;
-
-		// Fetch the forum preferences
-
-		$query = ee()->db->get_where('forum_boards', array('board_id' => $this->board_id));
-
-		if ($query->num_rows() == 0)
-		{
-			$this->prefs = $this->getDefaultPrefs();
-		}
-		else
-		{
-			foreach ($query->row_array() as $key => $val)
-			{
-				$this->prefs[$key] = $val;
-			}
-		}
-
-		$this->prefs['board_theme_url']  = URL_THEMES.'forum/';
-
 		ee()->load->model('addons_model');
 		$this->fmt_options = ee()->addons_model->get_plugin_formatting(TRUE);
 
