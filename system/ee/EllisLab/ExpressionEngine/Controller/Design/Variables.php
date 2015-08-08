@@ -81,7 +81,7 @@ class Variables extends AbstractDesignController {
 
 		if ( ! $this->msm)
 		{
-			unset($columns[1]);
+			unset($columns['all_sites']);
 		}
 
 		$variable_id = ee()->session->flashdata('variable_id');

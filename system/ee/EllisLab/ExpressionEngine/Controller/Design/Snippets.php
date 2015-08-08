@@ -81,7 +81,7 @@ class Snippets extends AbstractDesignController {
 
 		if ( ! $this->msm)
 		{
-			unset($columns[1]);
+			unset($columns['all_sites']);
 		}
 
 		$snippet_id = ee()->session->flashdata('snippet_id');
