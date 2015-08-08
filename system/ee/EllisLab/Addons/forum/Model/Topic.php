@@ -54,8 +54,49 @@ class Topic extends Model {
 		'parse_smileys'       => 'boolString',
 	);
 
-	// protected static $_relationships = array(
-	// );
+	protected static $_relationships = array(
+		'Attachments' => array(
+			'type'  => 'hasMany',
+			'model' => 'Attachment'
+		),
+		'Author' => array(
+			'type' => 'belongsTo',
+			'model' => 'ee:Member'
+		),
+		'Board' => array(
+			'type' => 'belongsTo'
+		),
+		'EditAuthor' => array(
+			'type'     => 'belongsTo',
+			'from_key' => 'topic_edit_author',
+			'model'    => 'ee:Member'
+		),
+		'Froum' => array(
+			'type' => 'belongsTo'
+		),
+		'LastPost' => array(
+			'type'     => 'hasOne',
+			'model'    => 'Post',
+			'from_key' => 'last_post_id'
+		),
+		'LastPostAuthor' => array(
+			'type'     => 'belongsTo',
+			'from_key' => 'last_post_author_id',
+			'model'    => 'ee:Member'
+		),
+		'Polls' => array(
+			'type'  => 'hasMany',
+			'model' => 'Poll'
+		),
+		'PollVotes' => array(
+			'type'  => 'hasMany',
+			'model' => 'PollVote'
+		),
+		'Posts' => array(
+			'type'  => 'hasMany',
+			'model' => 'Post'
+		),
+	);
 
 	protected static $_validation_rules = array(
 		'forum_id'            => 'required',

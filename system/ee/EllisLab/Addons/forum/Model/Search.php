@@ -40,8 +40,15 @@ class Search extends Model {
 		'member_id'   => 'int',
 	);
 
-	// protected static $_relationships = array(
-	// );
+	protected static $_relationships = array(
+		'Board' => array(
+			'type' => 'belongsTo'
+		),
+		'Member' => array(
+			'type'     => 'belongsto',
+			'model'    => 'ee:Member',
+		),
+	);
 
 	protected static $_validation_rules = array(
 		'search_date' => 'required',

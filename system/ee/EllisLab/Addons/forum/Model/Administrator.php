@@ -44,17 +44,17 @@ class Administrator extends Model {
 		'Board' => array(
 			'type' => 'belongsTo'
 		),
-		'MemberGroup' => array(
-			'type'     => 'hasOne',
-			'model'    => 'ee:MemberGroup',
-			'from_key' => 'admin_group_id',
-			'to_key'   => 'group_id'
-		),
 		'Member' => array(
 			'type'     => 'hasOne',
 			'model'    => 'ee:Member',
 			'from_key' => 'admin_member_id',
 			'to_key'   => 'member_id'
+		),
+		'MemberGroup' => array(
+			'type'     => 'hasOne',
+			'model'    => 'ee:MemberGroup',
+			'from_key' => 'admin_group_id',
+			'to_key'   => 'group_id'
 		),
 	);
 

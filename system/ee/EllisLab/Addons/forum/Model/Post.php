@@ -46,8 +46,30 @@ class Post extends Model {
 		'parse_smileys'    => 'boolString',
 	);
 
-	// protected static $_relationships = array(
-	// );
+	protected static $_relationships = array(
+		'Attachments' => array(
+			'type'  => 'hasMany',
+			'model' => 'Attachment'
+		),
+		'Author' => array(
+			'type' => 'belongsTo',
+			'model' => 'ee:Member'
+		),
+		'Board' => array(
+			'type' => 'belongsTo'
+		),
+		'EditAuthor' => array(
+			'type'     => 'belongsTo',
+			'from_key' => 'post_edit_author',
+			'model'    => 'ee:Member'
+		),
+		'Forum' => array(
+			'type' => 'belongsTo'
+		),
+		'Topic' => array(
+			'type' => 'belongsTo'
+		),
+	);
 
 	protected static $_validation_rules = array(
 		'topic_id'         => 'boolString',

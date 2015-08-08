@@ -50,8 +50,21 @@ class Attachment extends Model {
 		'is_image'        => 'boolString',
 	);
 
-	// protected static $_relationships = array(
-	// );
+	protected static $_relationships = array(
+		'Board' => array(
+			'type' => 'belongsTo'
+		),
+		'Member' => array(
+			'type'  => 'belongsTo',
+			'model' => 'ee:Member',
+		),
+		'Post' => array(
+			'type' => 'belongsTo'
+		),
+		'Topic' => array(
+			'type' => 'belongsTo'
+		),
+	);
 
 	protected static $_validation_rules = array(
 		'filename'        => 'required',

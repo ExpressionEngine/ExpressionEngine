@@ -64,22 +64,40 @@ class Forum extends Model {
 		'Board' => array(
 			'type' => 'belongsTo'
 		),
-		'Forums' => array(
-			'type'     => 'hasMany',
-			'model'    => 'Forum',
-			'from_key' => 'forum_id',
-			'to_key'   => 'forum_parent'
-		),
 		'Category' => array(
 			'type'     => 'belongsTo',
 			'model'    => 'Forum',
 			'from_key' => 'forum_parent',
 			'to_key'   => 'forum_id'
 		),
+		'Forums' => array(
+			'type'     => 'hasMany',
+			'model'    => 'Forum',
+			'from_key' => 'forum_id',
+			'to_key'   => 'forum_parent'
+		),
+		'LastPost' => array(
+			'type'     => 'hasOne',
+			'model'    => 'Post',
+			'from_key' => 'forum_last_post_id'
+		),
+		'LastPostAuthor' => array(
+			'type'     => 'belongsTo',
+			'from_key' => 'forum_last_post_author_id',
+			'model'    => 'ee:Member'
+		),
 		'Moderators' => array(
 			'type'   => 'hasMany',
 			'model'  => 'Moderator',
 			'to_key' => 'mod_forum_id'
+		),
+		'Posts' => array(
+			'type'  => 'hasMany',
+			'model' => 'Post'
+		),
+		'Topics' => array(
+			'type'  => 'hasMany',
+			'model' => 'Topic'
 		),
 	);
 

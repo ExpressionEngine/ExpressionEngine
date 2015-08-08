@@ -63,13 +63,34 @@ class Board extends Model {
 	);
 
 	protected static $_relationships = array(
+		'Attachments' => array(
+			'type'  => 'hasMany',
+			'model' => 'Attachment'
+		),
 		'Categories' => array(
-			'type' => 'hasMany',
+			'type'  => 'hasMany',
+			'model' => 'Forum'
+		),
+		'Forums' => array(
+			'type'  => 'hasMany',
 			'model' => 'Forum'
 		),
 		'Moderators' => array(
-			'type' => 'hasMany',
-			'model' => 'Moderator'
+			'type'   => 'hasMany',
+			'model'  => 'Moderator',
+			'to_key' => 'mod_board_id'
+		),
+		'Searches' => array(
+			'type'  => 'hasMany',
+			'model' => 'Search'
+		),
+		'Site' => array(
+			'type'     => 'belongsTo',
+			'from_key' => 'board_site_id'
+		),
+		'Topics' => array(
+			'type'  => 'hasMany',
+			'model' => 'Topic'
 		),
 	);
 
@@ -98,6 +119,7 @@ class Board extends Model {
 	protected static $_events = array(
 		'beforeInsert',
 		'afterSave',
+		'afterDelete',
 	);
 
 	protected $board_id;
@@ -187,6 +209,16 @@ class Board extends Model {
 	}
 
 	public function onAfterSave()
+	{
+		$this->updateTriggers();
+	}
+
+	public function onAfterDelete()
+	{
+		$this->updateTriggers();
+	}
+
+	private function updateTriggers()
 	{
 		$model = $this->getFrontend();
 

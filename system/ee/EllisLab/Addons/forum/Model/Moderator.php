@@ -57,17 +57,17 @@ class Moderator extends Model {
 			'type'     => 'belongsTo',
 			'from_key' => 'mod_forum_id',
 		),
-		'MemberGroup' => array(
-			'type'     => 'hasOne',
-			'model'    => 'ee:MemberGroup',
-			'from_key' => 'mod_group_id',
-			'to_key'   => 'group_id'
-		),
 		'Member' => array(
 			'type'     => 'hasOne',
 			'model'    => 'ee:Member',
 			'from_key' => 'mod_member_id',
 			'to_key'   => 'member_id'
+		),
+		'MemberGroup' => array(
+			'type'     => 'hasOne',
+			'model'    => 'ee:MemberGroup',
+			'from_key' => 'mod_group_id',
+			'to_key'   => 'group_id'
 		),
 	);
 
