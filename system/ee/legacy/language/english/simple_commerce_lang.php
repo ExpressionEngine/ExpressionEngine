@@ -2,14 +2,8 @@
 
 $lang = array(
 
-/* ----------------------------------------
-/*  Required for MODULES page
-/* ----------------------------------------*/
-'simple_commerce_module_name' => 'Simple Commerce',
+'simple_commerce' => 'Simple Commerce',
 
-'simple_commerce_module_description' => 'Simple, Flexible Commerce Module',
-
-/*----------------------------------------*/
 'simple_commerce_home' => 'Control Panel',
 
 'subscription_frequency' => 'Subscription Frequency',
@@ -45,8 +39,7 @@ transactions on their site and then notifying ExpressionEngine when the transact
 and accepted.  This allows purchases to not be stored and recorded in the Simple Commerce module
 until the transaction is finalized.  ExpressionEngine\'s Simple Commerce module automates all of this
 behind the scenes so all you have to do is activate Instant Payment Notification on the PayPal site
-and provide them with the URL below.<br /><br />
-For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-content&content_ID=developer/e_howto_admin_IPNIntro" rel="external">https://cms.paypal.com/us/cgi-bin/?cmd=_render-content&content_ID=developer/e_howto_admin_IPNIntro</a>',
+and provide them with the URL below.',
 
 'items' => 'Items',
 
@@ -90,7 +83,7 @@ For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-conte
 
 'invalid_purchases' => 'No Valid Purchases',
 
-'use_sale_price' => 
+'use_sale_price' =>
 'Use Sale Price?',
 
 'entry_title' => 'Entry Title',
@@ -236,7 +229,7 @@ For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-conte
 
 'encryption' => 'Encryption',
 
-'encrypt_buttons_links' => 'Encrypt PayPal Buttons and Links?',
+'encrypt_buttons_links' => 'Encrypt PayPal buttons and links?',
 
 'public_certificate' => 'Public Certificate Path',
 
@@ -256,9 +249,9 @@ For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-conte
 
 'temporary_directory_unwritable' => 'The Directory specified for writing the temporary files is not writable.',
 
-'paypal_account' => 'PayPal Account',
+'paypal_account' => 'PayPal account',
 
-'no_entries_matching_that_criteria' => 
+'no_entries_matching_that_criteria' =>
 'There are no entries matching the criteria you selected',
 
 ''=>''

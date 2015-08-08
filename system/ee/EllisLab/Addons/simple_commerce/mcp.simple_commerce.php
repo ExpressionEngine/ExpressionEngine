@@ -44,12 +44,35 @@ class Simple_commerce_mcp {
 	{
 		$this->base_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce';
 
-		ee()->cp->set_right_nav(array(
-								'items'				=> $this->base_url.AMP.'method=edit_items',
-								'purchases'			=> $this->base_url.AMP.'method=edit_purchases',
-								'email_templates'	=> $this->base_url.AMP.'method=edit_emails',
-								'simple_commerce_module_name' => $this->base_url)
-							);
+		$this->sidebar = array(
+			'items' => array(
+				'href' => ee('CP/URL', 'addons/settings/simple_commerce/items'),
+				'button' => array(
+					'href' => ee('CP/URL', 'addons/settings/simple_commerce/create-item'),
+					'text' => 'new'
+				)
+			),
+			array(
+				'export_items' => ee('CP/URL', 'addons/settings/simple_commerce/export-items')
+			),
+			'purchases' => array(
+				'href' => ee('CP/URL', 'addons/settings/simple_commerce/purchases'),
+				'button' => array(
+					'href' => ee('CP/URL', 'addons/settings/simple_commerce/create-purchase'),
+					'text' => 'new'
+				)
+			),
+			array(
+				'export_purchases' => ee('CP/URL', 'addons/settings/simple_commerce/export-purchases')
+			),
+			'email_templates' => array(
+				'href' => ee('CP/URL', 'addons/settings/simple_commerce/email-templates'),
+				'button' => array(
+					'href' => ee('CP/URL', 'addons/settings/simple_commerce/create-email-template'),
+					'text' => 'new'
+				)
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -62,7 +85,107 @@ class Simple_commerce_mcp {
 
 	function index($message = '')
 	{
-		// Former home of settings, which are now in the Settings controller
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'ipn_url',
+					'desc' => 'ipn_details',
+					'fields' => array(
+						'sc_ipn_url' => array(
+							'type' => 'text',
+							'value' => ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->cp->fetch_action_id('Simple_commerce', 'incoming_ipn'),
+							'disabled' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'paypal_account',
+					'fields' => array(
+						'sc_paypal_account' => array(
+							'type' => 'text'
+						)
+					)
+				),
+				array(
+					'title' => 'encrypt_buttons_links',
+					'fields' => array(
+						'sc_encrypt_buttons' => array(
+							'type' => 'yes_no'
+						)
+					)
+				),
+				array(
+					'title' => 'certificate_id',
+					'fields' => array(
+						'sc_certificate_id' => array(
+							'type' => 'text'
+						)
+					)
+				),
+				array(
+					'title' => 'public_certificate',
+					'fields' => array(
+						'sc_public_certificate' => array(
+							'type' => 'text'
+						)
+					)
+				),
+				array(
+					'title' => 'private_key',
+					'fields' => array(
+						'sc_private_key' => array(
+							'type' => 'text'
+						)
+					)
+				),
+				array(
+					'title' => 'paypal_certificate',
+					'fields' => array(
+						'sc_paypal_certificate' => array(
+							'type' => 'text'
+						)
+					)
+				),
+				array(
+					'title' => 'temp_path',
+					'fields' => array(
+						'sc_temp_path' => array(
+							'type' => 'text'
+						)
+					)
+				)
+			)
+		);
+
+		if (isset($_POST))
+		{
+			$fields = array();
+
+			// Make sure we're getting only the fields we asked for
+			foreach ($sections as $settings)
+			{
+				foreach ($settings as $setting)
+				{
+					foreach ($setting['fields'] as $field_name => $field)
+					{
+						$fields[$field_name] = ee()->input->post($field_name);
+					}
+				}
+			}
+
+			ee()->config->update_site_prefs($fields);
+		}
+
+		$vars['cp_page_title'] = lang('simple_commerce') . ' ' . lang('configuration');
+		$vars['base_url'] = ee('CP/URL', 'addons/settings/simple_commerce');
+		$vars['save_btn_text'] = 'btn_save_settings';
+		$vars['save_btn_text_working'] = 'btn_saving';
+
+		return array(
+			'heading' => lang('simple_commerce') . ' ' . lang('configuration'),
+			'body' => ee('View')->make('simple_commerce:form')->render($vars),
+			'sidebar' => $this->sidebar
+		);
 	}
 
 
