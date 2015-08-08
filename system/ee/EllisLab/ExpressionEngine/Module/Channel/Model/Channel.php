@@ -70,6 +70,12 @@ class Channel extends StructureModel {
 		),
 		'Site' => array(
 			'type' => 'belongsTo'
+		),
+		'CategoryGroups' => array(
+			'type' => 'hasMany',
+			'model' => 'CategoryGroup',
+			'from_key' => 'cat_group',
+			'to_key' => 'group_id'
 		)
 	);
 
