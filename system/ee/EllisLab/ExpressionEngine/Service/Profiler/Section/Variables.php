@@ -32,7 +32,7 @@ class Variables extends ProfilerSection {
 	/**
 	 * @var userdata bits that we don't want to display
 	 */
-	private $skip = array('password', 'salt', 'unique_id', 'session_id', 'fingerprint');
+	protected $skip = array('password', 'salt', 'unique_id', 'session_id', 'fingerprint');
 
 	/**
 	 * Get a brief text summary (used for tabs, labels, etc.)

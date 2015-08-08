@@ -30,13 +30,18 @@ use EllisLab\ExpressionEngine\Service\Profiler\ProfilerSection;
 class Template extends ProfilerSection {
 
 	/**
+	 * @var  string  template memory
+	 **/
+	protected $template_memory;
+
+	/**
 	 * Get a brief text summary (used for tabs, labels, etc.)
 	 *
 	 * @return  string  the section summary
 	 **/
 	public function getSummary()
 	{
-		return lang('profiler_'.$this->section_name);
+		return $this->template_memory.' '.lang('profiler_'.$this->section_name);
 	}
 
 	/**
@@ -56,6 +61,9 @@ class Template extends ProfilerSection {
 	 **/
 	public function setData($log)
 	{
+		$last = end($log);
+		$this->template_memory = $last['memory'];
+
 		$this->data = array('template' => $log);
 	}
 }

@@ -32,7 +32,7 @@ class Performance extends ProfilerSection {
 	/**
 	 * @var  int  total execution time
 	 **/
-	public $total_time;
+	protected $total_time;
 
 	/**
 	 * Get a brief text summary (used for tabs, labels, etc.)
