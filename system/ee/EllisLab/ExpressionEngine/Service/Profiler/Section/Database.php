@@ -31,6 +31,11 @@ use EllisLab\ExpressionEngine\Service\View\View;
 class Database extends ProfilerSection {
 
 	/**
+	 * @var int  total queries
+	 **/
+	protected $total_queries;
+
+	/**
 	 * @var SQL Keywords we want highlighted
 	 */
 	protected $keywords = array(
@@ -66,6 +71,16 @@ class Database extends ProfilerSection {
 	);
 
 	/**
+	 * Get a brief text summary (used for tabs, labels, etc.)
+	 *
+	 * @return  string  the section summary
+	 **/
+	public function getSummary()
+	{
+		return $this->total_queries.' '.lang('profiler_queries');
+	}
+
+	/**
 	 * Set the section's data
 	 *
 	 * @param  array  Array of Database $db objects
@@ -79,11 +94,10 @@ class Database extends ProfilerSection {
 		{
 			$count++;
 			$log = $db->getLog();
+			$this->total_queries += $log->getQueryCount();
 
 			$label = $db->getConfig()->get('database');
 			$this->data['duplicate_queries'][$label] = $this->getDuplicateQueries($log);
-
-			$label .= '&nbsp;&nbsp;&nbsp;'.lang('profiler_queries').': '.$log->getQueryCount();
 			$this->data['database'][$label] = $this->getQueries($log);
 		}
 	}
@@ -95,7 +109,7 @@ class Database extends ProfilerSection {
 	 **/
 	public function getViewName()
 	{
-		return 'profiler/database';
+		return 'profiler/section/database';
 	}
 
 	/**
@@ -116,11 +130,10 @@ class Database extends ProfilerSection {
 		$duplicates = array();
 		foreach ($duplicate_queries as $dupe_query)
 		{
-			$query = $this->highlightSql($dupe_query['query'] . implode(' ', $dupe_query['locations']));
-
 			$duplicates[] = array(
 				'count' => $dupe_query['count'],
-				'query' => $query
+				'query' => $this->highlightSql($dupe_query['query']),
+				'location' => implode(' ', $dupe_query['locations'])
 			);
 		}
 
@@ -144,12 +157,10 @@ class Database extends ProfilerSection {
 		{
 			list($sql, $location, $time) = $query;
 
-			$time = number_format($time, 4);
-			$query = $this->highlightSql($sql.$location);
-
 			$data[] = array(
-				'time' => $time,
-				'query' => $query
+				'time' => number_format($time, 4),
+				'query' => $this->highlightSql($sql),
+				'location' => $location
 			);
 		}
 
@@ -172,6 +183,9 @@ class Database extends ProfilerSection {
 		{
 			$highlighted = str_replace($keyword, '<b>'.$keyword.'</b>', $highlighted);
 		}
+
+		// get rid of non-breaking spaces
+		$highlighted = str_replace('&nbsp;', ' ', $highlighted);
 
 		return $highlighted;
 	}

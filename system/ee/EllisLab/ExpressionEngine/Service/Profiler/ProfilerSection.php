@@ -46,6 +46,13 @@ abstract class ProfilerSection {
 	protected $section_name;
 
 	/**
+	 * Get a brief text summary (used for tabs, labels, etc.)
+	 *
+	 * @return  string  the section summary
+	 **/
+	abstract function getSummary();
+
+	/**
 	 * Constructor
 	 *
 	 * @param  string  $section_name  the section's name, should map to a localization key
@@ -66,6 +73,16 @@ abstract class ProfilerSection {
 	}
 
 	/**
+	 * Gets the section name
+	 *
+	 * @return string  the section name
+	 **/
+	public function getSectionName()
+	{
+		return $this->section_name;
+	}
+
+	/**
 	 * Set the section's data
 	 * (Implemented by extended classes)
 	 *
@@ -83,8 +100,8 @@ abstract class ProfilerSection {
 	 * @param  object  View $view object to render
 	 * @return string
 	 **/
-	public function render(View $view)
+	public function render(View $view, $index)
 	{
-		return $view->render(array('profiler_data' => $this->data));
+		return $view->render(array('profiler_data' => $this->data, 'index' => $index));
 	}
 }

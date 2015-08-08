@@ -340,13 +340,10 @@ class EE_Output {
 		// If so, load the Profile service and run it.
 		if ($this->enable_profiler == TRUE)
 		{
-			$profiler = ee('Profiler')->addSection('benchmark', ee()->benchmark->getBenchmarkTimings())
-				->addSection('memory')
-				->addSection('database', array(ee('Database')))
-				->addSection('get', $_GET)
-				->addSection('post', $_POST)
-				->addSection('userdata', ee()->session->all_userdata())
-				->addSection('server', $_SERVER);
+			$profiler = ee('Profiler')->addSection('performance', ee()->benchmark->getBenchmarkTimings())
+				->addSection('variables', $_SERVER, $_COOKIE, $_GET, $_POST, ee()->session->all_userdata())
+				->addSection('database', array(ee('Database')));
+
 
 			// If the output data contains closing </body> and </html> tags
 			// we will remove them and add them back after we insert the profile data
