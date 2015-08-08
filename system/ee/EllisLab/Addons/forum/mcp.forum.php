@@ -30,7 +30,6 @@ use EllisLab\ExpressionEngine\Library\CP\Table;
 class Forum_mcp extends CP_Controller {
 
 	public $base				= 'addons/settings/forum/';
-	public $prefs				= array();
 	public $permmissions		= array();
 	public $boards				= array();
 	public $fmt_options			= array();
@@ -307,7 +306,52 @@ class Forum_mcp extends CP_Controller {
 	private function createBoard()
 	{
 		$errors = NULL;
-		$board = ee('Model')->make('forum:Board', $this->getDefaultPrefs());
+
+		$defaults = array(
+			'board_id'						=> '',
+			'board_label'					=> '',
+			'board_name'					=> '',
+			'board_enabled'					=> 'y',
+			'board_forum_trigger'			=> 'forums',
+			'board_site_id'					=> 1,
+			'board_alias_id'				=> 0,
+			'board_allow_php'				=> 'n',
+			'board_php_stage'				=> 'o',
+			'board_install_date'			=> 0,
+			'board_forum_url'				=> ee()->functions->create_url('forums'),
+			'board_default_theme'			=> 'default',
+			'board_upload_path'				=> '',
+			'board_topics_perpage'			=> 25,
+			'board_posts_perpage'			=> 15,
+			'board_topic_order'				=> 'r',
+			'board_post_order'				=> 'a',
+			'board_hot_topic'				=> 10,
+			'board_max_post_chars'			=> 6000,
+			'board_post_timelock'			=> 0,
+			'board_display_edit_date'		=> 'n',
+			'board_text_formatting'			=> 'xhtml',
+			'board_html_formatting'			=> 'safe',
+			'board_allow_img_urls'			=> 'n',
+			'board_auto_link_urls'			=> 'y',
+			'board_notify_emails'			=> '',
+			'board_notify_emails_topics'	=> '',
+			'board_max_attach_perpost'		=> 3,
+			'board_max_attach_size'			=> 75,
+			'board_max_width'				=> 800,
+			'board_max_height'				=> 600,
+			'board_attach_types'			=> 'img',
+			'board_use_img_thumbs'			=> ($this->gd_loaded() == TRUE) ? 'y' : 'n',
+			'board_thumb_width'				=> 100,
+			'board_thumb_height'			=> 100,
+			'board_forum_permissions'		=> $this->forum_set_base_permissions(),
+			'board_use_deft_permissions'	=> 'n',
+			'board_recent_poster_id'		=> '0',
+			'board_recent_poster'			=> '',
+			'board_enable_rss'				=> 'y',
+			'board_use_http_auth'			=> 'n',
+		);
+
+		$board = ee('Model')->make('forum:Board', $defaults);
 
 		$result = $this->validateBoard($board);
 
@@ -438,6 +482,8 @@ class Forum_mcp extends CP_Controller {
 		}
 
 		$board->save();
+
+		$this->installSpecialtyTemplates($board->board_site_id);
 
 		ee('Alert')->makeInline('shared-form')
 			->asSuccess()
@@ -2917,57 +2963,51 @@ class Forum_mcp extends CP_Controller {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Load Default Prefs
+	 * Conditionally adds forum specific specialty templates for a given site
+	 * id.
 	 *
-	 * Loads default preferences for a newly created forum
-	 *
-	 * @return	void
+	 * @param int $site_id The site id for the templates.
+	 * @return void
 	 */
-	private function getDefaultPrefs()
+	private function installSpecialtyTemplates($site_id)
 	{
-		return array(
-			'board_id'						=> '',
-			'board_label'					=> '',
-			'board_name'					=> '',
-			'board_enabled'					=> 'y',
-			'board_forum_trigger'			=> 'forums',
-			'board_site_id'					=> 1,
-			'board_alias_id'				=> 0,
-			'board_allow_php'				=> 'n',
-			'board_php_stage'				=> 'o',
-			'board_install_date'			=> 0,
-			'board_forum_url'				=> ee()->functions->create_url('forums'),
-			'board_default_theme'			=> 'default',
-			'board_upload_path'				=> '',
-			'board_topics_perpage'			=> 25,
-			'board_posts_perpage'			=> 15,
-			'board_topic_order'				=> 'r',
-			'board_post_order'				=> 'a',
-			'board_hot_topic'				=> 10,
-			'board_max_post_chars'			=> 6000,
-			'board_post_timelock'			=> 0,
-			'board_display_edit_date'		=> 'n',
-			'board_text_formatting'			=> 'xhtml',
-			'board_html_formatting'			=> 'safe',
-			'board_allow_img_urls'			=> 'n',
-			'board_auto_link_urls'			=> 'y',
-			'board_notify_emails'			=> '',
-			'board_notify_emails_topics'	=> '',
-			'board_max_attach_perpost'		=> 3,
-			'board_max_attach_size'			=> 75,
-			'board_max_width'				=> 800,
-			'board_max_height'				=> 600,
-			'board_attach_types'			=> 'img',
-			'board_use_img_thumbs'			=> ($this->gd_loaded() == TRUE) ? 'y' : 'n',
-			'board_thumb_width'				=> 100,
-			'board_thumb_height'			=> 100,
-			'board_forum_permissions'		=> $this->forum_set_base_permissions(),
-			'board_use_deft_permissions'	=> 'n',
-			'board_recent_poster_id'		=> '0',
-			'board_recent_poster'			=> '',
-			'board_enable_rss'				=> 'y',
-			'board_use_http_auth'			=> 'n',
+		$templates = ee('Model')->get('ee:SpecialtyTemplate')
+			->filter('site_id', $site_id)
+			->filter('template_name', 'forum_post_notification')
+			->count();
+
+		// Already installed; don't do it again.
+		if ($templates > 0)
+		{
+			return;
+		}
+
+		require_once APPPATH.'language/'.ee()->config->item('deft_lang').'/email_data.php';
+
+		$data = array(
+			'site_id'			=> $side_id,
+			'template_type'		=> 'email',
+			'template_subtype'	=> 'forums',
+			'edit_date'			=> ee()->localize->now,
 		);
+
+		$template_names = array(
+			'admin_notify_forum_post',
+			'forum_post_notification',
+			'forum_moderation_notification',
+			'forum_report_notification',
+		);
+
+		foreach ($template_names as $template_name)
+		{
+			$title = $template_name . '_title';
+
+			$data['template_name'] = $template_name;
+			$data['data_title'] = addslashes(trim($title()));
+			$data['template_data'] = addslashes($template_name());
+
+			$template = ee('Model')->make('ee:SpecialtyTemplate', $data)->save();
+		}
 	}
 
 	// --------------------------------------------------------------------
