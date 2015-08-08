@@ -6,11 +6,11 @@
 			<p><?=$log?></p>
 		<?php else: ?>
 			<ul class="process-list">
-				<?php foreach ($log as $item): ?>
+				<?php foreach ($log as $i => $item): ?>
 					<li><mark><?=$item['time']?> / <?=$item['memory']?></mark> </b><?=($item['message'])?></b>
 					<?php if ($item['details']): ?>
-						(<a class="toggle" rel="snp-detail" href="#">show more</a>)
-						<div class="details snp-detail">
+						(<a class="toggle" rel="snp-detail-<?=$i?>" href="#">show more</a>)
+						<div class="details snp-detail-<?=$i?>">
 							<pre><?=$item['details']?></pre>
 						</div>
 					<?php endif; ?>
