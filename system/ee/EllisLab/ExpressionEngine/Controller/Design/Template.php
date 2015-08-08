@@ -388,6 +388,11 @@ class Template extends AbstractDesignController {
 				'rules' => 'enum[y,n]'
 			),
 			array(
+				'field' => 'refresh',
+				'label' => 'lang:refresh_interval',
+				'rules' => 'integer'
+			),
+			array(
 				'field' => 'php_parse_location',
 				'label' => 'lang:parse_stage',
 				'rules' => 'enum[i,o]'
