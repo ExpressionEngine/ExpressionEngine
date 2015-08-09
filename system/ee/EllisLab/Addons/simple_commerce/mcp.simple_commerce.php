@@ -338,7 +338,7 @@ class Simple_commerce_mcp {
 	}
 
 	/**
-	 * Remove moblogs handler
+	 * Remove purchases handler
 	 */
 	public function removePurchase()
 	{
@@ -365,6 +365,147 @@ class Simple_commerce_mcp {
 		}
 
 		ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce/purchases', ee()->cp->get_url_state()));
+	}
+
+	/**
+	 * Create purchase URL endpoint
+	 */
+	public function createPurchase()
+	{
+		return $this->purchaseForm();
+	}
+
+	/**
+	 * Edit purchase URL endpoint
+	 */
+	public function editPurchase($purchase_id)
+	{
+		return $this->purchaseForm($purchase_id);
+	}
+
+	/**
+	 * Purchase create/edit form
+	 */
+	public function purchaseForm($purchase_id = NULL)
+	{
+		if (is_null($purchase_id))
+		{
+			$alert_key = 'created';
+			$vars['cp_page_title'] = lang('create_purchase');
+			$vars['base_url'] = ee('CP/URL', 'addons/settings/simple_commerce/create-purchase');
+
+			$purchase = ee('Model')->make('simple_commerce:Purchase');
+		}
+		else
+		{
+			$purchase = ee('Model')->get('simple_commerce:Purchase', $purchase_id)->first();
+
+			if ( ! $purchase)
+			{
+				show_error(lang('unauthorized_access'));
+			}
+
+			$alert_key = 'updated';
+			$vars['cp_page_title'] = lang('edit_purchase');
+			$vars['base_url'] = ee('CP/URL', 'addons/settings/simple_commerce/edit-purchase/'.$purchase_id);
+		}
+
+		if ( ! empty($_POST))
+		{
+			$purchase->set($_POST);
+			$result = $purchase->validate();
+
+			if ($result->isValid())
+			{
+				$purchase = $purchase->save();
+
+				if (is_null($purchase_id) OR $duplicate)
+				{
+					ee()->session->set_flashdata('highlight_id', $purchase->getId());
+				}
+
+				ee('Alert')->makeInline('purchases-table')
+					->asSuccess()
+					->withTitle(lang('purchase_'.$alert_key))
+					->addToBody(sprintf(lang('purchase_'.$alert_key.'_desc'), $purchase->Item->getId())) // TODO: change to item title when relationships work
+					->defer();
+
+				ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce/purchases'));
+			}
+			else
+			{
+				$vars['errors'] = $result;
+				ee('Alert')->makeInline('purchases-table')
+					->asIssue()
+					->withTitle(lang('purchase_not_'.$alert_key))
+					->addToBody(lang('purchase_not_'.$alert_key.'_desc'))
+					->now();
+			}
+		}
+
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'txn_id',
+					'fields' => array(
+						'txn_id' => array(
+							'type' => 'text',
+							'value' => $purchase->txn_id
+						)
+					)
+				),
+				array(
+					'title' => 'screen_name',
+					'fields' => array(
+						'screen_name' => array(
+							'type' => 'text',
+							'value' => $purchase->member_id // TODO: change to member screen name when relationships work
+						)
+					)
+				),
+				array(
+					'title' => 'item_purchased',
+					'fields' => array(
+						'item_id' => array(
+							'type' => 'select',
+							'choices' => ee('Model')->get('simple_commerce:Item')->all()->getDictionary('item_id', 'entry_id'), // TODO: change to item title when relationships work
+							'value' => $purchase->item_id
+						)
+					)
+				),
+				array(
+					'title' => 'item_cost_form',
+					'fields' => array(
+						'item_cost' => array(
+							'type' => 'text',
+							'value' => $purchase->item_cost
+						)
+					)
+				),
+				array(
+					'title' => 'purchase_date',
+					'fields' => array(
+						'purchase_date' => array(
+							'type' => 'text',
+							'value' => $purchase->purchase_date
+						)
+					)
+				)
+			)
+		);
+
+		$vars['save_btn_text'] = sprintf(lang('btn_save'), lang('purchase'));
+		$vars['save_btn_text_working'] = 'btn_saving';
+
+		return array(
+			'heading' => lang('create_purchase'),
+			'breadcrumb' => array(
+				ee('CP/URL', 'addons/settings/simple_commerce')->compile() => lang('simple_commerce_module_name') . ' ' . lang('configuration'),
+				ee('CP/URL', 'addons/settings/simple_commerce/purchases')->compile() => lang('purchases')
+			),
+			'body' => ee('View')->make('simple_commerce:form')->render($vars),
+			'sidebar' => $this->sidebar
+		);
 	}
 
 

@@ -16,6 +16,26 @@ $lang = array(
 
 'purchases_removed_desc' => '%d purchases were removed.',
 
+'create_purchase' => 'Create Purchase',
+
+'edit_purchase' => 'Edit Purchase',
+
+'purchase_created' => 'Purchase Created',
+
+'purchase_created_desc' => 'The purchase for item <b>%s</b> has been created.',
+
+'purchase_not_created' => 'Cannot Create Purchase',
+
+'purchase_not_created_desc' => 'We were unable to create this purchase, please review and fix errors below.',
+
+'purchase_updated' => 'Purchase Updated',
+
+'purchase_updated_desc' => 'The purchase for item <b>%s</b> has been updated.',
+
+'purchase_not_updated' => 'Cannot Update Purchase',
+
+'purchase_not_updated_desc' => 'We were unable to update this purchase, please review and fix errors below.',
+
 'simple_commerce_home' => 'Control Panel',
 
 'subscription_frequency' => 'Subscription Frequency',
@@ -233,9 +253,11 @@ and provide them with the URL below.',
 
 'subscription_end_date_subtext' => 'Enter \'0\' for no subscription end',
 
-'item_purchased' => 'Item Purchased',
+'item_purchased' => 'Item purchased',
 
 'item_cost' => 'Item Cost',
+
+'item_cost_form' => 'Item cost',
 
 'choose_item' => 'Choose Item',
 
