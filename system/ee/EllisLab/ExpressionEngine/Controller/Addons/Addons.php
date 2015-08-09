@@ -1480,7 +1480,18 @@ class Addons extends CP_Controller {
 		// either by accident (ie: a missed function) or by deliberate user url hacking
 		if ( ! method_exists($mod, $method))
 		{
-			show_404();
+			// 3.0 introduced camel-cased method names that are translated from a URL
+			// segment separated by dashes or underscores
+			$method = str_replace('-', '_', $method);
+			$words = explode('_', $method);
+			$method = strtolower(array_shift($words));
+			$words = array_map('ucfirst', $words);
+			$method .= implode('', $words);
+
+			if ( ! method_exists($mod, $method))
+			{
+				show_404();
+			}
 		}
 
 		$_module_cp_body = call_user_func_array(array($mod, $method), $parameters);
