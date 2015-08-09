@@ -36,6 +36,10 @@ $lang = array(
 
 'purchase_not_updated_desc' => 'We were unable to update this purchase, please review and fix errors below.',
 
+'email_templates_removed' => 'Email templates removed',
+
+'email_templates_removed_desc' => '%d email templates were removed.',
+
 'simple_commerce_home' => 'Control Panel',
 
 'subscription_frequency' => 'Subscription Frequency',
@@ -80,6 +84,10 @@ and provide them with the URL below.',
 'purchase' => 'Purchase',
 
 'email_templates' => 'Email Templates',
+
+'template' => 'Template',
+
+'create_template' => 'Create Template',
 
 'store_items' => 'Store Items',
 

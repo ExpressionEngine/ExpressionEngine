@@ -69,7 +69,7 @@ EOT;
 	 */
 	function index()
 	{
-		$table = ee('CP/Table', array('autosort' => TRUE));
+		$table = ee('CP/Table');
 		$table->setColumns(array(
 			'col_id',
 			'moblog',

@@ -242,7 +242,7 @@ class Simple_commerce_mcp {
 	 */
 	public function purchases()
 	{
-		$table = ee('CP/Table', array('autosort' => TRUE));
+		$table = ee('CP/Table');
 		$table->setColumns(array(
 			'item_purchased',
 			'purchaser_screen_name',
@@ -506,6 +506,121 @@ class Simple_commerce_mcp {
 			'body' => ee('View')->make('simple_commerce:form')->render($vars),
 			'sidebar' => $this->sidebar
 		);
+	}
+
+	/**
+	 * Email templates listing
+	 */
+	public function emailTemplates()
+	{
+		$table = ee('CP/Table', array('autosort' => TRUE));
+		$table->setColumns(array(
+			'template_name',
+			'manage' => array(
+				'type'	=> Table::COL_TOOLBAR
+			),
+			array(
+				'type'	=> Table::COL_CHECKBOX
+			)
+		));
+
+		$table->setNoResultsText('no_email_templates', 'create_template', ee('CP/URL', 'addons/settings/simple_commerce/create-email-template'));
+
+		$sort_map = array(
+			'template_name' => 'email_name',
+		);
+
+		$email_templates = ee('Model')->get('simple_commerce:EmailTemplate');
+		$total_rows = $email_templates->all()->count();
+
+		$email_templates = $email_templates->order($sort_map[$table->sort_col], $table->sort_dir)
+			->limit($table->config['limit'])
+			->offset(($table->config['page'] - 1) * $table->config['limit'])
+			->all();
+
+		$data = array();
+		foreach ($email_templates as $template)
+		{
+			$columns = array(
+				$template->email_name,
+				array('toolbar_items' => array(
+					'edit' => array(
+						'href' => ee('CP/URL', 'addons/settings/simple_commerce/edit-email-template/'.$template->getId()),
+						'title' => lang('edit')
+					)
+				)),
+				array(
+					'name' => 'templates[]',
+					'value' => $template->getId(),
+					'data'	=> array(
+						'confirm' => lang('template') . ': <b>' . htmlentities($template->getId(), ENT_QUOTES) . '</b>'
+					)
+				)
+			);
+
+			$attrs = array();
+			if (ee()->session->flashdata('highlight_id') == $template->getId())
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs' => $attrs,
+				'columns' => $columns
+			);
+		}
+
+		$table->setData($data);
+
+		$vars['base_url'] = ee('CP/URL', 'addons/settings/simple_commerce/email-templates');
+		$vars['table'] = $table->viewData($vars['base_url']);
+
+		$vars['pagination'] = ee('CP/Pagination', $total_rows)
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($vars['table']['base_url']);
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('email_templates') . ': <b>### ' . lang('email_templates') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/confirm_remove'),
+		));
+
+		return array(
+			'heading' => lang('email_templates'),
+			'breadcrumb' => array(ee('CP/URL', 'addons/settings/simple_commerce')->compile() => lang('simple_commerce_module_name') . ' ' . lang('configuration')),
+			'body' => ee('View')->make('simple_commerce:email_templates')->render($vars),
+			'sidebar' => $this->sidebar
+		);
+	}
+
+	/**
+	 * Remove email templates handler
+	 */
+	public function removeTemplate()
+	{
+		$template_ids = ee()->input->post('templates');
+
+		if ( ! empty($template_ids) && ee()->input->post('bulk_action') == 'remove')
+		{
+			$template_ids = array_filter($template_ids, 'is_numeric');
+
+			if ( ! empty($template_ids))
+			{
+				ee('Model')->get('simple_commerce:EmailTemplate', $template_ids)->delete();
+
+				ee('Alert')->makeInline('email-templates-table')
+					->asSuccess()
+					->withTitle(lang('email_templates_removed'))
+					->addToBody(sprintf(lang('email_templates_removed_desc'), count($template_ids)))
+					->defer();
+			}
+		}
+		else
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce/email-templates', ee()->cp->get_url_state()));
 	}
 
 
