@@ -79,8 +79,8 @@ class Watermarks extends AbstractFilesController {
 		);
 
 		$watermarks = $watermarks->order($sort_map[$table->sort_col], $table->sort_dir)
-			->limit(20)
-			->offset(($table->config['page'] - 1) * 20)
+			->limit($table->config['limit'])
+			->offset(($table->config['page'] - 1) * $table->config['limit'])
 			->all();
 
 		$data = array();
