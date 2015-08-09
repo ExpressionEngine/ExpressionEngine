@@ -8,4 +8,8 @@ return array(
 	'version'     => '2.2',
 	'namespace'   => 'EllisLab\Addons\SimpleCommerce',
 	'settings_exist' => TRUE,
+	'models' => array(
+		'Item' => 'Model\Item',
+		'Purchase' => 'Model\Purchase'
+	)
 );
