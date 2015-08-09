@@ -1,4 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+use EllisLab\ExpressionEngine\Library\CP\Table;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -232,6 +235,136 @@ class Simple_commerce_mcp {
 			'body' => ee('View')->make('simple_commerce:form')->render($vars),
 			'sidebar' => $this->sidebar
 		);
+	}
+
+	/**
+	 * Purchases listing
+	 */
+	public function purchases()
+	{
+		$table = ee('CP/Table', array('autosort' => TRUE));
+		$table->setColumns(array(
+			'item_purchased',
+			'purchaser_screen_name',
+			'date_purchased',
+			'subscription_end_date',
+			'item_cost',
+			'manage' => array(
+				'type'	=> Table::COL_TOOLBAR
+			),
+			array(
+				'type'	=> Table::COL_CHECKBOX
+			)
+		));
+
+		$table->setNoResultsText('no_purchases', 'create_purchase', ee('CP/URL', 'addons/settings/simple_commerce/create-purchase'));
+
+		$sort_map = array(
+			'item_purchased'        => 'item_id',
+			'purchaser_screen_name' => 'member_id',
+			'date_purchased'        => 'purchase_date',
+			'subscription_end_date' => 'subscription_end_date',
+			'item_cost'             => 'item_cost'
+		);
+
+		$purchases = ee('Model')->get('simple_commerce:Purchase');
+		$total_rows = $purchases->all()->count();
+
+		$purchases = $purchases->order($sort_map[$table->sort_col], $table->sort_dir)
+			->limit($table->config['limit'])
+			->offset(($table->config['page'] - 1) * $table->config['limit'])
+			->all();
+
+		$data = array();
+		// TODO: Check for n+1 once these relationships are working
+		foreach ($purchases as $purchase)
+		{
+			$columns = array(
+				$purchase->item_id,
+				//$purchase->Item->ChannelEntry->title,
+				$purchase->member_id,
+				//$purchase->Member->screen_name,
+				ee()->localize->human_time($purchase->purchase_date),
+				$purchase->subscription_end_date ?: '-',
+				$purchase->item_cost,
+				array('toolbar_items' => array(
+					'edit' => array(
+						'href' => ee('CP/URL', 'addons/settings/simple_commerce/edit-purchase/'.$purchase->getId()),
+						'title' => lang('edit')
+					)
+				)),
+				array(
+					'name' => 'purchases[]',
+					'value' => $purchase->getId(),
+					'data'	=> array(
+						'confirm' => lang('purchase') . ': <b>' . htmlentities($purchase->item_id, ENT_QUOTES) . '</b>'
+					)
+				)
+			);
+
+			$attrs = array();
+			if (ee()->session->flashdata('highlight_id') == $purchase->getId())
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs' => $attrs,
+				'columns' => $columns
+			);
+		}
+
+		$table->setData($data);
+
+		$vars['base_url'] = ee('CP/URL', 'addons/settings/simple_commerce/purchases');
+		$vars['table'] = $table->viewData($vars['base_url']);
+
+		$vars['pagination'] = ee('CP/Pagination', $total_rows)
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($vars['table']['base_url']);
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('purchases') . ': <b>### ' . lang('purchases') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/confirm_remove'),
+		));
+
+		return array(
+			'heading' => lang('purchases'),
+			'breadcrumb' => array(ee('CP/URL', 'addons/settings/simple_commerce')->compile() => lang('simple_commerce_module_name') . ' ' . lang('configuration')),
+			'body' => ee('View')->make('simple_commerce:purchases')->render($vars),
+			'sidebar' => $this->sidebar
+		);
+	}
+
+	/**
+	 * Remove moblogs handler
+	 */
+	public function removePurchase()
+	{
+		$purchase_ids = ee()->input->post('purchases');
+
+		if ( ! empty($purchase_ids) && ee()->input->post('bulk_action') == 'remove')
+		{
+			$purchase_ids = array_filter($purchase_ids, 'is_numeric');
+
+			if ( ! empty($purchase_ids))
+			{
+				ee('Model')->get('simple_commerce:Purchase', $purchase_ids)->delete();
+
+				ee('Alert')->makeInline('purchases-table')
+					->asSuccess()
+					->withTitle(lang('purchases_removed'))
+					->addToBody(sprintf(lang('purchases_removed_desc'), count($purchase_ids)))
+					->defer();
+			}
+		}
+		else
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce/purchases', ee()->cp->get_url_state()));
 	}
 
 

@@ -12,6 +12,10 @@ $lang = array(
 
 'settings_save_error_desc' => 'We were unable to save your settings, please review and fix errors below.',
 
+'purchases_removed' => 'Purchases removed',
+
+'purchases_removed_desc' => '%d purchases were removed.',
+
 'simple_commerce_home' => 'Control Panel',
 
 'subscription_frequency' => 'Subscription Frequency',
@@ -52,6 +56,8 @@ and provide them with the URL below.',
 'items' => 'Items',
 
 'purchases' => 'Purchases',
+
+'purchase' => 'Purchase',
 
 'email_templates' => 'Email Templates',
 
@@ -121,6 +127,8 @@ and provide them with the URL below.',
 'no_email_templates' => 'No Email Templates',
 
 'no_purchases' => 'No Purchases',
+
+'create_purchase' => 'Create Purchase',
 
 'perform_item_actions' => 'Perform Actions for Item?',
 
