@@ -19,7 +19,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Simple Commerce ITem Model
+ * ExpressionEngine Simple Commerce Item Model
  *
  * @package		ExpressionEngine
  * @subpackage	Moblog Module

@@ -9,7 +9,8 @@ return array(
 	'namespace'   => 'EllisLab\Addons\SimpleCommerce',
 	'settings_exist' => TRUE,
 	'models' => array(
-		'Item' => 'Model\Item',
-		'Purchase' => 'Model\Purchase'
+		'EmailTemplate' => 'Model\EmailTemplate',
+		'Item'          => 'Model\Item',
+		'Purchase'      => 'Model\Purchase'
 	)
 );
