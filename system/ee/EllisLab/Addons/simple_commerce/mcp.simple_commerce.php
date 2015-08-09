@@ -157,32 +157,78 @@ class Simple_commerce_mcp {
 			)
 		);
 
-		if (isset($_POST))
+		if ( ! empty($_POST))
 		{
-			$fields = array();
+			$result = ee('Validation')->make(array(
+				'sc_paypal_account'     => 'email',
+				'sc_encrypt_buttons'    => 'enum[y,n]',
+				'sc_public_certificate' => 'fileExists',
+				'sc_private_key'        => 'fileExists',
+				'sc_paypal_certificate' => 'fileExists',
+				'sc_temp_path'          => 'fileExists'
+			))->validate($_POST);
 
-			// Make sure we're getting only the fields we asked for
-			foreach ($sections as $settings)
+			if ($result->isValid())
 			{
-				foreach ($settings as $setting)
+				$fields = array();
+
+				// Make sure we're getting only the fields we asked for
+				foreach ($vars['sections'] as $settings)
 				{
-					foreach ($setting['fields'] as $field_name => $field)
+					foreach ($settings as $setting)
 					{
-						$fields[$field_name] = ee()->input->post($field_name);
+						foreach ($setting['fields'] as $field_name => $field)
+						{
+							if ($field_name == 'sc_ipn_url')
+							{
+								continue;
+							}
+
+							$fields[$field_name] = ee()->input->post($field_name);
+						}
 					}
 				}
-			}
 
-			ee()->config->update_site_prefs($fields);
+				$config_update = ee()->config->update_site_prefs($fields);
+
+				if (empty($config_update))
+				{
+					ee('Alert')->makeInline('shared-form')
+						->asSuccess()
+						->withTitle(lang('settings_saved'))
+						->addToBody(lang('settings_saved_desc'))
+						->defer();
+
+					ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce'));
+				}
+				else
+				{
+					ee()->load->helper('html_helper');
+					ee('Alert')->makeInline('shared-form')
+						->asIssue()
+						->withTitle(lang('settings_save_error'))
+						->addToBody(ul($config_update))
+						->now();
+				}
+			}
+			else
+			{
+				$vars['errors'] = $result;
+				ee('Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('settings_save_error'))
+					->addToBody(lang('settings_save_error_desc'))
+					->now();
+			}
 		}
 
-		$vars['cp_page_title'] = lang('simple_commerce') . ' ' . lang('configuration');
+		$vars['cp_page_title'] = lang('simple_commerce_module_name') . ' ' . lang('configuration');
 		$vars['base_url'] = ee('CP/URL', 'addons/settings/simple_commerce');
 		$vars['save_btn_text'] = 'btn_save_settings';
 		$vars['save_btn_text_working'] = 'btn_saving';
 
 		return array(
-			'heading' => lang('simple_commerce') . ' ' . lang('configuration'),
+			'heading' => lang('simple_commerce_module_name') . ' ' . lang('configuration'),
 			'body' => ee('View')->make('simple_commerce:form')->render($vars),
 			'sidebar' => $this->sidebar
 		);

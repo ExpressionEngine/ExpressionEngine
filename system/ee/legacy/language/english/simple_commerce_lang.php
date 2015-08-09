@@ -2,7 +2,15 @@
 
 $lang = array(
 
-'simple_commerce' => 'Simple Commerce',
+'simple_commerce_module_name' => 'Simple Commerce',
+
+'settings_saved' => 'Settings Saved',
+
+'settings_saved_desc' => 'Your settings have been successfully saved.',
+
+'settings_save_error' => 'Cannot Save Settings',
+
+'settings_save_error_desc' => 'We were unable to save your settings, please review and fix errors below.',
 
 'simple_commerce_home' => 'Control Panel',
 
@@ -231,15 +239,15 @@ and provide them with the URL below.',
 
 'encrypt_buttons_links' => 'Encrypt PayPal buttons and links?',
 
-'public_certificate' => 'Public Certificate Path',
+'public_certificate' => 'Public certificate path',
 
-'certificate_id' => 'ID Given to Public Certificate by PayPal',
+'certificate_id' => 'ID given to public certificate by PayPal',
 
-'private_key' => 'Private Key Path',
+'private_key' => 'Private key path',
 
-'paypal_certificate' => 'PayPal Certificate Path',
+'paypal_certificate' => 'PayPal certificate path',
 
-'temp_path' => 'Temporary Encrypted Files Path',
+'temp_path' => 'Temporary encrypted files path',
 
 'settings' => 'Settings',
 
