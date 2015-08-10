@@ -82,18 +82,32 @@ feature 'Updater' do
     end
   end
 
-  context 'when updating from 2.x to 3.x with the mailing list module' do
-    it 'updates and creates a mailing list export' do
-      clean_db do
-        $db.query(IO.read('sql/database_2.10.1-mailinglist.sql'))
-        clear_db_result
-      end
-
-      test_update(true)
+  it 'updates and creates a mailing list export when updating from 2.x to 3.x with the mailing list module' do
+    clean_db do
+      $db.query(IO.read('sql/database_2.10.1-mailinglist.sql'))
+      clear_db_result
     end
+
+    test_update(true)
+  end
+
+  it 'updates successfully when updating from 2.1.3 to 3.x' do
+    @installer.revert_config
+    @installer.replace_config(File.expand_path('../circleci/config-2.1.3.php'))
+    @installer.revert_database_config
+    @installer.replace_database_config(File.expand_path('../circleci/database-2.1.3.php'))
+
+    clean_db do
+      $db.query(IO.read('sql/database_2.1.3.sql'))
+      clear_db_result
+    end
+
+    test_update
   end
 
   def test_update(mailinglist = false)
+    page.driver.allow_url($test_config[:app_host])
+
     # Delete any stored mailing lists
     mailing_list_zip = File.expand_path('../../system/user/cache/mailing_list.zip')
     File.delete(mailing_list_zip) if File.exist?(mailing_list_zip)
@@ -107,7 +121,10 @@ feature 'Updater' do
     @page.header.text.should match /Updating ExpressionEngine \d+\.\d+\.\d+ to \d+\.\d+\.\d+/
     @page.req_title.text.should include 'Processing | Step 2 of 3'
 
-    sleep 1 # Wait for the updater to finish
+    # Sleep until ready
+    while @page.req_title.text.include? 'Processing'
+      sleep 1
+    end
 
     @page.header.text.should match /ExpressionEngine Updated to \d+\.\d+\.\d+/
     @page.req_title.text.should include 'Completed'
