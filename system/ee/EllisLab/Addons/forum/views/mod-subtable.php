@@ -14,7 +14,7 @@
 		<td>
 			<ul class="toolbar">
 				<li class="edit"><a href="<?=$mod['edit_url']?>" title="<?=strtolower(lang('edit_moderator'))?>"></a></li>
-				<li class="remove"><a href="" title="<?=lang('remove_moderator')?>"></a></li>
+				<li class="remove"><a class="m-link" rel="modal-confirm-moderators" href="" title="<?=lang('remove_moderator')?>" data-confirm="<?=$mod['confirm']?>" data-id="<?=$mod['id']?>"></a></li>
 			</ul>
 		</td>
 	</tr>

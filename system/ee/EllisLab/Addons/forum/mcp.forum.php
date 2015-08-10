@@ -2636,28 +2636,16 @@ class Forum_mcp extends CP_Controller {
 			$data = array();
 			foreach ($category->Forums->sortBy('forum_order') as $forum)
 			{
-
-				// array('toolbar_items' => array(
-				// 		'edit' => array(
-				// 			'href' => ee('CP/URL', $this->base . 'edit/moderator/' . $forum->forum_id),
-				// 			'title' => lang('edit_moderator'),
-				// 		),
-				// 		'remove' => array(
-				// 			'href' => ee('CP/URL', $this->base . 'settings/forum/' . $forum->forum_id),
-				// 			'title' => lang('remove_moderator'),
-				// 		)
-				// 	)
-				// ),
-
 				$moderators = array();
 				foreach ($forum->Moderators as $mod)
 				{
 					$moderators[] = array(
 						'name' => $mod->getModeratorName(),
-						'edit_url' => ee('CP/URL', $this->base . 'edit/moderator/' . $mod->mod_id)
+						'edit_url' => ee('CP/URL', $this->base . 'edit/moderator/' . $mod->mod_id),
+						'confirm' => lang('moderator') . ': <b>' . $mod->getModeratorName() . '</b>',
+						'id' => $mod->mod_id
 					);
 				}
-
 
 				$row = array(
 					$forum->forum_name,
@@ -2693,6 +2681,12 @@ class Forum_mcp extends CP_Controller {
 		);
 
 		$body = ee('View')->make('forum:moderators')->render($vars);
+
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/v3/confirm_remove',
+			),
+		));
 
 		return array(
 			'body'    => $body,
