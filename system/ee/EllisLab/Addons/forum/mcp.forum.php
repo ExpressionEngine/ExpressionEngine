@@ -119,6 +119,7 @@ class Forum_mcp extends CP_Controller {
 		$boards_categories = ee('Model')->get('forum:Forum')
 			->filter('board_id', $id)
 			->filter('forum_is_cat', 'y')
+			->order('forum_order', 'asc')
 			->all();
 
 		foreach ($boards_categories as $i => $category)
@@ -142,7 +143,7 @@ class Forum_mcp extends CP_Controller {
 			$table_config = array(
 				'limit'             => 0,
 				'reorder'           => TRUE,
-				'no_reorder_header' => TRUE,
+				'reorder_header'    => TRUE,
 				'sortable'          => FALSE,
 				'class'             => $class,
 				'wrap'              => FALSE,
@@ -151,7 +152,7 @@ class Forum_mcp extends CP_Controller {
 			$table = ee('CP/Table', $table_config);
 			$table->setColumns(
 				array(
-					$category->forum_name => array(
+					$category->forum_name.form_hidden('cat_order[]', $category->forum_id) => array(
 						'encode' => FALSE
 					),
 					$this->getStatusWidget($category->forum_status) => array(
@@ -253,24 +254,33 @@ class Forum_mcp extends CP_Controller {
 		$new_order = array();
 		parse_str(ee()->input->post('order'), $new_order);
 
-		if ( ! AJAX_REQUEST OR ! $board OR empty($new_order['order']))
+		if ( ! AJAX_REQUEST OR ! $board OR (empty($new_order['order']) && empty($new_order['cat_order'])))
 		{
 			show_error(lang('unauthorized_access'));
 		}
 
-		$forums = $board->Forums->indexBy('forum_id');
+		if (isset($new_order['order']))
+		{
+			$order = $new_order['order'];
+			$collection = $board->Forums->indexBy('forum_id');
+		}
+		else
+		{
+			$order = $new_order['cat_order'];
+			$collection = $board->Categories->indexBy('forum_id');
+		}
 
-		$order = 1;
-		foreach ($new_order['order'] as $forum_id)
+		$i = 1;
+		foreach ($order as $forum_id)
 		{
 			// Only update status orders that have changed
-			if (isset($forums[$forum_id]) && $forums[$forum_id]->forum_order != $order)
+			if (isset($collection[$forum_id]) && $collection[$forum_id]->forum_order != $i)
 			{
-				$forums[$forum_id]->forum_order = $order;
-				$forums[$forum_id]->save();
+				$collection[$forum_id]->forum_order = $i;
+				$collection[$forum_id]->save();
 			}
 
-			$order++;
+			$i++;
 		}
 
 		ee()->output->send_ajax_response(NULL);
@@ -2613,6 +2623,7 @@ class Forum_mcp extends CP_Controller {
 		$boards_categories = ee('Model')->get('forum:Forum')
 			->filter('board_id', $id)
 			->filter('forum_is_cat', 'y')
+			->order('forum_order', 'asc')
 			->all();
 
 		$base_url = ee('CP/URL', $this->base . 'moderators/' . $id);

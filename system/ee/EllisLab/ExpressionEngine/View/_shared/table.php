@@ -21,16 +21,12 @@ if ($wrap): ?>
 				<?php
 				// Don't do reordering logic if the table is empty
 				$reorder = $reorder && ! empty($data);
-				if ($reorder && ! $no_reorder_header): ?>
+				$colspan = ($reorder_header || $reorder) ? count($columns) + 1 : count($columns);
+				if ($reorder_header): ?>
+					<th class="reorder-col"><span class="ico reorder"></span></th>
+				<?php elseif ($reorder): ?>
 					<th class="first reorder-col"></th>
 				<?php endif ?>
-				<?php
-				$extra = '';
-				if ($reorder && $no_reorder_header)
-				{
-					$extra = ' colspan="2"';
-				}
-				?>
 				<?php foreach ($columns as $label => $settings): ?>
 					<?php if ($settings['type'] == Table::COL_CHECKBOX): ?>
 						<th class="check-ctrl">
@@ -54,7 +50,7 @@ if ($wrap): ?>
 							$header_class .= ' '.$settings['class'];
 						}
 						?>
-						<th<?php if ( ! empty($header_class)): ?> class="<?=trim($header_class)?>"<?php endif ?><?=$extra?>>
+						<th<?php if ( ! empty($header_class)): ?> class="<?=trim($header_class)?>"<?php endif ?>>
 							<?=($lang_cols) ? lang($label) : $label ?>
 							<?php if (isset($settings['desc']) && ! empty($settings['desc'])): ?>
 								<em class="grid-instruct"><?=lang($settings['desc'])?></em>
@@ -71,7 +67,6 @@ if ($wrap): ?>
 							<?php endif ?>
 						</th>
 					<?php endif ?>
-					<?php $extra = '';?>
 				<?php endforeach ?>
 				<?php if ($grid_input && ! empty($data)): ?>
 					<th class="last grid-remove"></th>
@@ -83,7 +78,7 @@ if ($wrap): ?>
 			// Output this if Grid input so we can dynamically show it via JS
 			if (empty($data) OR $grid_input): ?>
 				<tr class="no-results">
-					<td class="solo" colspan="<?=count($columns)?>">
+					<td class="solo" colspan="<?=$colspan?>">
 						<?=lang($no_results['text'])?>
 						<?php if ( ! empty($no_results['action_text'])): ?>
 							<a class="btn<?php if ( ! empty($no_results['action_link'])): ?> action<?php endif?>" href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>
@@ -98,7 +93,7 @@ if ($wrap): ?>
 					$rows = array($rows);
 				}
 				if ($subheadings && ! empty($heading)): ?>
-					<tr class="sub-heading"><td colspan="<?=count($columns)?>"><?=lang($heading)?></td></tr>
+					<tr class="sub-heading"><td colspan="<?=$colspan?>"><?=lang($heading)?></td></tr>
 				<?php endif ?>
 				<?php
 				foreach ($rows as $row):
@@ -169,7 +164,7 @@ if ($wrap): ?>
 			<?php endforeach ?>
 			<?php if ( ! empty($action_buttons) || ! empty($action_content)): ?>
 				<tr class="tbl-action">
-					<td colspan="<?=count($columns) + (int)$reorder?>" class="solo">
+					<td colspan="<?=$colspan?>" class="solo">
 						<?php foreach ($action_buttons as $button): ?>
 							<a class="<?=$button['class']?>" href="<?=$button['url']?>"><?=$button['text']?></a></td>
 						<?php endforeach; ?>

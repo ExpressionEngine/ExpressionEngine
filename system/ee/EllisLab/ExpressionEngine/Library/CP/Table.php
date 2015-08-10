@@ -84,7 +84,7 @@ class Table {
 			'subheadings'       => FALSE,
 			'grid_input'        => FALSE,
 			'reorder'           => FALSE,
-			'no_reorder_header' => FALSE,
+			'reorder_header'    => FALSE,
 			'class'             => '',
 			'no_results'        => array(
 				'text'        => 'no_rows_returned',
@@ -628,7 +628,7 @@ class Table {
 			'total_rows'        => $this->config['total_rows'],
 			'grid_input'        => $this->config['grid_input'],
 			'reorder'           => $this->config['reorder'],
-			'no_reorder_header' => $this->config['no_reorder_header'],
+			'reorder_header'    => $this->config['reorder_header'],
 			'class'             => $this->config['class'],
 			'sortable'          => $this->config['sortable'],
 			'subheadings'       => ($this->config['subheadings'] && empty($this->config['search'])),
