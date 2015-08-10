@@ -10,8 +10,8 @@ feature 'Updater' do
     @installer.enable_installer
     @installer.disable_rename
 
-    @database = File.expand_path('../circleci/database_2x.php')
-    @config = File.expand_path('../circleci/config_2x.php')
+    @database = File.expand_path('../circleci/database-2.10.1.php')
+    @config = File.expand_path('../circleci/config-2.10.1.php')
   end
 
   before :each do
