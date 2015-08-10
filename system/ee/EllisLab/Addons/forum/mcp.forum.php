@@ -172,7 +172,7 @@ class Forum_mcp extends CP_Controller {
 			foreach ($category->Forums->sortBy('forum_order') as $forum)
 			{
 				$row = array(
-					$forum->forum_name.form_hidden('order[]', $forum->forum_order),
+					$forum->forum_name.form_hidden('order[]', $forum->forum_id),
 					$this->getStatusWidget($forum->forum_status),
 					array('toolbar_items' => array(
 							'edit' => array(
@@ -221,14 +221,60 @@ class Forum_mcp extends CP_Controller {
 		ee()->cp->add_js_script(array(
 			'file' => array(
 				'cp/v3/confirm_remove',
+				'cp/sort_helper',
+				'cp/addons/forums_reorder',
+			),
+			'plugin' => array(
+				'ee_table_reorder',
 			),
 		));
+
+		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
+			->asIssue()
+			->canClose()
+			->withTitle(lang('forums_ajax_reorder_fail'))
+			->addToBody(lang('forums_ajax_reorder_fail_desc'));
+
+		ee()->javascript->set_global('forums.reorder_url', ee('CP/URL', $this->base . 'reorder/' . $id)->compile());
+		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
 		return array(
 			'body'    => $body,
 			'heading' => lang('forum_manager'),
 			'sidebar' => $this->generateSidebar($id)
 		);
+	}
+
+	public function reorder($id)
+	{
+		$board = ee('Model')->get('forum:Board', $id)->first();
+
+		// Parse out the serialized inputs sent by the JavaScript
+		$new_order = array();
+		parse_str(ee()->input->post('order'), $new_order);
+
+		if ( ! AJAX_REQUEST OR ! $board OR empty($new_order['order']))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		$forums = $board->Forums->indexBy('forum_id');
+
+		$order = 1;
+		foreach ($new_order['order'] as $forum_id)
+		{
+			// Only update status orders that have changed
+			if (isset($forums[$forum_id]) && $forums[$forum_id]->forum_order != $order)
+			{
+				$forums[$forum_id]->forum_order = $order;
+				$forums[$forum_id]->save();
+			}
+
+			$order++;
+		}
+
+		ee()->output->send_ajax_response(NULL);
+		exit;
 	}
 
 	/**

@@ -28,6 +28,9 @@ $lang = array(
 'new_forum' => 'New forum',
 'create_new_forum' => 'Create new forum',
 
+'forums_ajax_reorder_fail' => 'Attention: Failed to save forum order',
+'forums_ajax_reorder_fail_desc' => 'We failed to save your new forum order. Refresh the page and make sure you\'re logged in.',
+
 // "Common"
 'recipients' => 'recipients',
 
