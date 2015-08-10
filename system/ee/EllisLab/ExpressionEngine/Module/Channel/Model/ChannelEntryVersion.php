@@ -1,5 +1,8 @@
 <?php
+
 namespace EllisLab\ExpressionEngine\Module\Channel\Model;
+
+use EllisLab\ExpressionEngine\Service\Model\Model as Model;
 
 class ChannelEntryVersion extends Model {
 
