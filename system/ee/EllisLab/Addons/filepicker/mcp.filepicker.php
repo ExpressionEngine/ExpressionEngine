@@ -131,7 +131,7 @@ class Filepicker_mcp {
 				->render($base_url);
 		}
 
-		ee()->view->cp_heading = $id == 'all' ? lang('all_files') : sprintf(lang('files_in_directory'), $dir->name);
+		$vars['cp_heading'] = $id == 'all' ? lang('all_files') : sprintf(lang('files_in_directory'), $dir->name);
 
 		return ee('View')->make('filepicker:ModalView')->render($vars);
 	}
