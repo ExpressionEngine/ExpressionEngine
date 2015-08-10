@@ -1,5 +1,46 @@
 $(document).ready(function(){
 
+	// =============================================
+	// For backwards compatibility: adding $.browser
+	// from: https://github.com/jquery/jquery-migrate
+	// =============================================
+
+	jQuery.uaMatch = function( ua ) {
+		ua = ua.toLowerCase();
+
+		var match = /(chrome)[ \/]([\w.]+)/.exec( ua ) ||
+			/(webkit)[ \/]([\w.]+)/.exec( ua ) ||
+			/(opera)(?:.*version|)[ \/]([\w.]+)/.exec( ua ) ||
+			/(msie) ([\w.]+)/.exec( ua ) ||
+			ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec( ua ) ||
+			[];
+
+		return {
+			browser: match[ 1 ] || "",
+			version: match[ 2 ] || "0"
+		};
+	};
+
+	// Don't clobber any existing jQuery.browser in case it's different
+	if ( !jQuery.browser ) {
+		matched = jQuery.uaMatch( navigator.userAgent );
+		browser = {};
+
+		if ( matched.browser ) {
+			browser[ matched.browser ] = true;
+			browser.version = matched.version;
+		}
+
+		// Chrome is Webkit, but Webkit is also Safari.
+		if ( browser.chrome ) {
+			browser.webkit = true;
+		} else if ( browser.webkit ) {
+			browser.safari = true;
+		}
+
+		jQuery.browser = browser;
+	}
+
 	// ==============================
 	// open links in NEW window / tab
 	// ==============================
@@ -64,7 +105,7 @@ $(document).ready(function(){
 	// =========
 
 		// listen for clicks on elements with a class of has-sub
-		$('.has-sub').on('click',function(){
+		$('body').on('click', '.has-sub', function(){
 			// close OTHER open sub menus
 			// when clicking THIS sub menu trigger
 			// thanks me :D
@@ -87,13 +128,17 @@ $(document).ready(function(){
 			// stop THIS from reloading
 			// the source window and appending to the URI
 			// and stop propagation up to document
+
+			// Give filter text boxes focus on open
+			$(this).siblings('.sub-menu').find('input.autofocus').focus();
+
 			return false;
 		});
 
 		// listen for clicks to the document
 		$(document).on('click',function(e){
 			// check to see if we are inside a sub-menu or not.
-			if(!$(e.target).closest('.sub-menu').length){
+			if( ! $(e.target).closest('.sub-menu, .date-picker-wrap').length){
 				// close OTHER open sub menus
 				// when clicking outside ANY sub menu trigger
 				// thanks me :D
@@ -110,7 +155,7 @@ $(document).ready(function(){
 	// ====
 
 		// listen for clicks on tabs
-		$('.tab-wrap > ul a').on('click',function(){
+		$('.tab-wrap ul.tabs a').on('click',function(){
 			// set the tabClassIs variable
 			// tells us which .tab to control
 			var tabClassIs = $(this).attr('rel');
@@ -173,33 +218,54 @@ $(document).ready(function(){
 			return false;
 		});
 
-		// listen for clicks to elements with a class of m-link
-		$('.m-link').on('click',function(e){
+		$('body').on('modal:open', '.modal-wrap', function(e) {
 			// set the heightIs variable
 			// this allows the overlay to be scrolled
 			var heightIs = $(document).height();
-			// set the modalIs variable
-			var modalIs = $(this).attr('rel');
 
 			// fade in the overlay
-			$('.overlay').fadeIn('fast').css('height',heightIs);
+			$('.overlay').fadeIn('slow').css('height',heightIs);
 			// fade in modal
-			$('.'+modalIs).fadeIn('slow');
-			// stop THIS href from loading
-			// in the source window
-			e.preventDefault();
+			$(this).fadeIn('slow');
+
 			// scroll up, if needed
 			$('#top').animate({ scrollTop: 0 }, 100);
 		});
 
-		// listen for clicks on the element with a class of overlay
-		$('.m-close').on('click',function(e){
+		$('body').on('modal:close', '.modal-wrap', function(e) {
 			// fade out the overlay
 			$('.overlay').fadeOut('slow');
 			// fade out the modal
-			$('.modal-wrap').fadeOut('fast');
+			$('.modal-wrap').fadeOut('slow');
+		});
+
+		// listen for clicks to elements with a class of m-link
+		$('body').on('click', '.m-link', function(e) {
+			// set the modalIs variable
+			var modalIs = $(this).attr('rel');
+			$('.'+modalIs).trigger('modal:open');
+
+			// stop THIS href from loading
+			// in the source window
+			e.preventDefault();
+		});
+
+		// listen for clicks on the element with a class of overlay
+		$('body').on('click', '.m-close', function(e) {
+			$(this).closest('.modal-wrap').trigger('modal:close');
+
 			// stop THIS from reloading the source window
 			e.preventDefault();
+		});
+
+		$('body').on('click', '.overlay', function() {
+			$('.modal-wrap').trigger('modal:close');
+		});
+
+		$(document).on('keypress', function(e) {
+			if (e.keyCode === 27) {
+				$('.modal-wrap').trigger('modal:close');
+			}
 		});
 
 	// ==================================
@@ -207,10 +273,40 @@ $(document).ready(function(){
 	// ==================================
 
 		// listen for clicks on inputs within a choice classed label
-		$('.choice input').on('click',function(){
-			$('.choice input[name="'+$(this).attr('name')+'"]').each(function(index, el){
+		$('body').on('click', '.choice input', function() {
+			$('.choice input[name="'+$(this).attr('name')+'"]').each(function(index, el) {
 				$(this).parents('.choice').toggleClass('chosen', $(this).is(':checked'));
 			});
+		});
+
+		// Highlight table rows when checked
+		$('table tr td:last-child input[type=checkbox]').on('change',function() {
+			$(this).parents('tr').toggleClass('selected', $(this).is(':checked'));
+		});
+
+		// Highlight selected row for table lists
+		$('.tbl-list .check-ctrl input').on('change',function() {
+			$(this).parents('.tbl-row').toggleClass('selected', $(this).is(':checked'));
+
+			// If all checkboxes are checked, check the Select All box
+			var allSelected = true;
+			$(this).parents('.tbl-list-wrap')
+				.find('.tbl-list .check-ctrl input').each(function() {
+					if ( ! $(this).is(':checked')) {
+						allSelected = false;
+						return false;
+					}
+				});
+
+			$(this).parents('.tbl-list-wrap').find('.tbl-list-ctrl input').prop('checked', allSelected);
+		});
+
+		// Select all for table lists
+		$('.tbl-list-ctrl input').on('click', function(){
+			$(this).parents('.tbl-list-wrap')
+				.find('.tbl-list .check-ctrl input')
+				.prop('checked', $(this).is(':checked'))
+				.trigger('change');
 		});
 
 	// ======================
@@ -249,105 +345,6 @@ $(document).ready(function(){
 			$(this).parents('h3').siblings('em').toggle();
 			// toggle a class of .field-closed on the h3
 			$(this).parents('h3').toggleClass('field-closed');
-		});
-
-	// ==================
-	// date picker -> WIP
-	// ONLY FOR ILLUSTRATION OF PLACEMENT AND MOVEMENT
-	// ==================
-
-		// listen for clicks on inputs with rel date-picker
-		$('input[rel="date-picker"]').on('click',function(){
-			// find the position of the input clicked
-			var pos = $(this).offset();
-			// position and toggle the .date-picker-wrap relative to the input clicked
-			$('.date-picker-wrap').css({ 'top': pos.top + 30, 'left': pos.left }).toggle();
-		});
-
-		// listen for clicks on elements classed with .date-picker-next
-		$('.date-picker-next').on('click',function(e){
-			// animate the scrolling of .date-picker-clip forwards
-			// to the next .date-picker-item
-			$('.date-picker-clip').animate({ scrollLeft: '+=260' }, 200);
-			// stop page from reloading
-			// the source window and appending # to the URI
-			e.preventDefault();
-		});
-
-		// listen for clicks on elements classed with .date-picker-back
-		$('.date-picker-prev').on('click',function(e){
-			// animate the scrolling of .date-picker-clip backwards
-			// to the previous .date-picker-item
-			$('.date-picker-clip').animate({ scrollLeft: '-=260' }, 200);
-			// stop page from reloading
-			// the source window and appending # to the URI
-			e.preventDefault();
-		});
-
-	// ===================
-	// input range sliders
-	// ===================
-
-		// listen for input on a range input
-		$('input[type="range"]').on('input',function(){
-			// set the newVal var
-			var newVal = $(this).val();
-			// set the rangeIS
-			var rangeIs = $(this).attr('rel');
-			// change the value on the fly
-			$('.'+rangeIs).html(newVal);
-		});
-
-	// style-guide menus
-	$('.small-menu').on('click',function(){
-		$('.sg-header ul').toggleClass('menu-open');
-	});
-
-	$('.small-sidebar').on('click',function(){
-		$('.sg-sidebar-wrap ul').toggleClass('menu-open');
-	});
-
-	// style-guide alerts
-	// listen for clicks to elements with a class of a-link
-	$('.a-link').on('click',function(e){
-		// set the alertIs variable
-		var alertIs = $(this).attr('rel');
-		// close open alerts
-		$('.is-open').hide().removeClass('is-open');
-		// show the alert
-		$('.'+alertIs).show().addClass('is-open');
-		// stop THIS href from loading
-		// in the source window
-		e.preventDefault();
-		// scroll up, if needed
-		$('#top').animate({ scrollTop: 0 }, 100);
-	});
-
-	// ===================
-	// sidebar menu -> WIP
-	// ===================
-
-		// listen for clicks to elements with a class of menu-left or menu-left-close
-		$('.small-menu,.menu-left-close').click(function(){
-			// toggle class sbl-slide on the main content wrapper
-			$('.content-main').toggleClass('sbl-slide');
-			// stop # from reloading
-			// the source window and appending to the URI
-			return false;
-		});
-
-	// ==============================
-	// toggle visibility
-	// ==============================
-
-		$('.toggle').on('click',function(e){
-			// set the toggleIs variable
-			var toggleIs = $(this).attr('rel');
-			// toggle the content
-			$('.'+toggleIs).toggle();
-			// stop page from reloading
-			// the source window and appending # to the URI
-			e.preventDefault();
 		});
 
 }); // close (document).ready
