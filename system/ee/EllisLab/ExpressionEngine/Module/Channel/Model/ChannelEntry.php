@@ -75,7 +75,11 @@ class ChannelEntry extends ContentModel {
 				'left' => 'parent_id',
 				'right' => 'child_id'
 			)
-		)
+		),
+		'Versions' => array(
+			'type' => 'hasMany',
+			'model' => 'ChannelEntryVersion'
+		),
 	);
 
 	protected static $_validation_rules = array(

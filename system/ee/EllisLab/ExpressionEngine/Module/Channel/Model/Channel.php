@@ -76,7 +76,12 @@ class Channel extends StructureModel {
 			'model' => 'CategoryGroup',
 			'from_key' => 'cat_group',
 			'to_key' => 'group_id'
-		)
+		),
+		'VersionedEntries' => array(
+			'type' => 'hasMany',
+			'model' => 'ChannelEntryVersion'
+		),
+
 	);
 
 	protected static $_validation_rules = array(
