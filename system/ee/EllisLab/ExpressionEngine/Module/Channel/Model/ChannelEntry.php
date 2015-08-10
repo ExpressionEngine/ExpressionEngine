@@ -181,6 +181,8 @@ class ChannelEntry extends ContentModel {
 		parent::onAfterSave();
 		$this->Autosaves->delete();
 
+		$this->saveVersion();
+
 		foreach ($this->getModulesWithTabs() as $name => $info)
 		{
 			include_once($info->getPath() . '/tab.' . $name . '.php');
@@ -201,6 +203,29 @@ class ChannelEntry extends ContentModel {
 				$OBJ->save($this, $values);
 			}
 		}
+	}
+
+	private function saveVersion()
+	{
+		if ( ! $this->Channel->enable_versioning)
+		{
+			return;
+		}
+
+		if ($this->Versions->count() == $this->Channel->max_revisions)
+		{
+			$this->Versions->order('version_date')->first()->delete();
+		}
+
+		$data = array(
+			'entry_id'     => $this->entry_id,
+			'channel_id'   => $this->channel_id,
+			'author_id'    => $this->author_id,
+			'version_date' => ee()->localize->now,
+			'version_data' => $this->getValues()
+		);
+
+		$version = $this->getFrontend()->make('ChannelEntryVersion', $data)->save();
 	}
 
 	public function onBeforeDelete()
