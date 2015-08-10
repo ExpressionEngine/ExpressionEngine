@@ -106,7 +106,7 @@ class Moderator extends Model {
 
 		if ($this->mod_group_id)
 		{
-			return "Not yet implemented";
+			return "Group #{$this->mod_group_id} <em>(Not yet implemented)</em>";
 			$name = $this->MemberGroup->group_title;
 		}
 
