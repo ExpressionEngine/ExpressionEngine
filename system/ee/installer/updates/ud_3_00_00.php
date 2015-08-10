@@ -54,6 +54,7 @@ class Updater {
 				'_centralize_captcha_settings',
 				'_update_members_table',
 				'_update_member_fields_table',
+				'_update_member_groups_table',
 				'_update_html_buttons',
 				'_update_files_table',
 				'_update_upload_prefs_table',
@@ -716,6 +717,45 @@ class Updater {
 		ee()->smartforge->drop_column('channel_form_settings', 'require_captcha');
 
 		$msm_config->remove_config_item(array('use_membership_captcha', 'email_module_captchas'));
+	}
+
+	/**
+	 * Updates the member groups table
+	 *
+	 * @return void
+	 */
+	private function _update_member_groups_table()
+	{
+		ee()->smartforge->add_column('member_groups', array(
+			'can_access_footer_report_bug' => array(
+				'type'       => 'char',
+				'constraint' => 1,
+				'default'    => 'n',
+				'null'       => FALSE
+			),
+			'can_access_footer_new_ticket' => array(
+				'type'       => 'char',
+				'constraint' => 1,
+				'default'    => 'n',
+				'null'       => FALSE
+			),
+			'can_access_footer_user_guide' => array(
+				'type'       => 'char',
+				'constraint' => 1,
+				'default'    => 'n',
+				'null'       => FALSE
+			)
+		));
+
+		ee()->db->update(
+			'member_groups',
+			array(
+				'can_access_footer_report_bug' => 'y',
+				'can_access_footer_new_ticket' => 'y',
+				'can_access_footer_user_guide' => 'y'
+			),
+			array('can_access_cp' => 'y')
+		);
 	}
 
 	/**
