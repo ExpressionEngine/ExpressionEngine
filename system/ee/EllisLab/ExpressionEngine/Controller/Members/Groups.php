@@ -906,7 +906,7 @@ class Groups extends Members\Members {
 		}
 
 		$result['addons_access'] = $this->group->AssignedModules->pluck('module_id');
-		$result['template_groups'] = $this->group->AssignedTemplateGroups->pluck('template_group_id');
+		$result['template_groups'] = $this->group->AssignedTemplateGroups->pluck('group_id');
 		$result['allowed_channels'] = $this->group->AssignedChannels->pluck('channel_id');
 
 		return $result;
