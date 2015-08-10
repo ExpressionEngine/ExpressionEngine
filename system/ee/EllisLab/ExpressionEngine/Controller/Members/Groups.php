@@ -543,6 +543,21 @@ class Groups extends Members\Members {
 							'value' => element('can_access_cp', $values)
 						)
 					)
+				),
+				array(
+					'title' => 'footer_helper_links',
+					'desc' => 'footer_helper_links_desc',
+					'fields' => array(
+						'footer_helper_links' => array(
+							'type' => 'checkbox',
+							'choices' => array(
+								'can_access_footer_report_bug' => lang('report_bug'),
+								'can_access_footer_new_ticket' => lang('new_ticket'),
+								'can_access_footer_user_guide' => lang('user_guide'),
+							),
+							'value' => element('footer_helper_links', $values)
+						)
+					)
 				)
 			),
 			'channels' => array(
@@ -826,6 +841,22 @@ class Groups extends Members\Members {
 		if ($result['can_delete_all_comments'] === TRUE)
 		{
 			$result['comment_actions'][] = 'can_delete_all_comments';
+		}
+
+		// Footer helper checkbox group
+		$result['footer_helper_links'] = array();
+
+		if ($result['can_access_footer_report_bug'])
+		{
+			$result['footer_helper_links'][] = 'can_access_footer_report_bug';
+		}
+		if ($result['can_access_footer_new_ticket'])
+		{
+			$result['footer_helper_links'][] = 'can_access_footer_new_ticket';
+		}
+		if ($result['can_access_footer_user_guide'])
+		{
+			$result['footer_helper_links'][] = 'can_access_footer_user_guide';
 		}
 
 		// Channel category checkbox group
