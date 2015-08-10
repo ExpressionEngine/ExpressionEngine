@@ -2932,7 +2932,7 @@ class Forum_mcp extends CP_Controller {
 		$validator->defineRule('validMember', function($key, $value) use ($moderator)
 		{
 			$member = ee('Model')->get('Member')
-				->fields('member_id')
+				->fields('member_id', 'screen_name', 'username')
 				->filter('username', $value)
 				->first();
 
