@@ -570,8 +570,6 @@ $lang = array(
 
 'about_expressionengine' => 'About ExpressionEngine',
 
-'manual' => 'Manual',
-
 'session_timeout' => 'Your administration access session has timed out. Please use the form below to log back into your control panel.',
 
 'login' =>
