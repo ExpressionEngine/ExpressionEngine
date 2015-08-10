@@ -1079,6 +1079,12 @@ class Updater {
 		$subscribers_query = ee()->db->select('list_id, email')
 			->get('mailing_list');
 
+		// No subscribers at all? Move on.
+		if ($subscribers_query->num_rows() <= 0)
+		{
+			return;
+		}
+
 		foreach ($subscribers_query->result() as $subscriber)
 		{
 			$subscribers[$subscriber->list_id][] = $subscriber->email;
@@ -1089,6 +1095,12 @@ class Updater {
 
 		foreach ($mailing_lists->result() as $mailing_list)
 		{
+			// Empty mailing list? No need to export it.
+			if (empty($subscribers[$mailing_list->list_id]))
+			{
+				continue;
+			}
+
 			$csv = ee('CSV');
 			foreach ($subscribers[$mailing_list->list_id] as $subscriber)
 			{
