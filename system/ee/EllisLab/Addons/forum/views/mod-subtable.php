@@ -13,7 +13,7 @@
 		<td><?=$mod['name']?></td>
 		<td>
 			<ul class="toolbar">
-				<li class="edit"><a href="<?=$mod['edit_url']?>" title="<?=lang('edit_moderator')?>"></a></li>
+				<li class="edit"><a href="<?=$mod['edit_url']?>" title="<?=strtolower(lang('edit_moderator'))?>"></a></li>
 				<li class="remove"><a href="" title="<?=lang('remove_moderator')?>"></a></li>
 			</ul>
 		</td>

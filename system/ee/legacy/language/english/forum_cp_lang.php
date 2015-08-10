@@ -378,6 +378,8 @@ $lang = array(
 'edit_moderator' => 'Edit Moderator',
 'edit_moderator_in' => 'Edit Moderator in %s',
 
+'remove_moderator' => 'remove moderator',
+
 'moderator_type' => 'Moderator type',
 'moderator_type_desc' => 'Select the type of moderator you want to add.',
 
