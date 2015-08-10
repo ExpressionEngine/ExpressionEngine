@@ -2623,7 +2623,9 @@ class Forum_mcp extends CP_Controller {
 			$table->setColumns(
 				array(
 					$category->forum_name,
-					'moderators',
+					'moderators' => array(
+						'encode' => FALSE
+					),
 					'manage' => array(
 						'type'	=> Table::COL_TOOLBAR,
 					)
@@ -2647,10 +2649,19 @@ class Forum_mcp extends CP_Controller {
 				// 	)
 				// ),
 
+				$moderators = array();
+				foreach ($forum->Moderators as $mod)
+				{
+					$moderators[] = array(
+						'name' => $mod->getModeratorName(),
+						'edit_url' => ee('CP/URL', $this->base . 'edit/moderator/' . $mod->mod_id)
+					);
+				}
+
 
 				$row = array(
 					$forum->forum_name,
-					'Not yet implemented',
+					(empty($moderators)) ? '' : ee('View')->make('forum:mod-subtable')->render(array('moderators' => $moderators)),
 					array('toolbar_items' => array(
 						'add' => array(
 							'href' => ee('CP/URL', $this->base . 'create/moderator/' . $forum->forum_id),
@@ -2748,14 +2759,17 @@ class Forum_mcp extends CP_Controller {
 
 	private function editModerator($id)
 	{
-		$moderator = ee('Model')->get('forum:Moderator', $id);
+		$moderator = ee('Model')->get('forum:Moderator', $id)->first();
 
 		if ( ! $moderator)
 		{
 			show_404();
 		}
 
+		$errors = NULL;
+
 		$forum = $moderator->Forum;
+		$forum_id = $forum->forum_id;
 
 		$result = $this->validateModerator($moderator);
 
@@ -2773,7 +2787,7 @@ class Forum_mcp extends CP_Controller {
 			'ajax_validate' => TRUE,
 			'errors' => $errors,
 			'cp_page_title' => sprintf(lang('edit_moderator_in'), $forum->forum_name),
-			'base_url' => ee('CP/URL', $this->base . 'create/moderator/' . $forum_id),
+			'base_url' => ee('CP/URL', $this->base . 'edit/moderator/' . $id),
 			'save_btn_text' => 'btn_save_moderator',
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => $this->moderatorForm($moderator),
@@ -2840,7 +2854,7 @@ class Forum_mcp extends CP_Controller {
 						'member_group' => array(
 							'type' => 'select',
 							'choices' => $member_groups,
-							'value' => ($moderator->mod_member_id) ?: 5
+							'value' => ($moderator->mod_group_id) ?: 5
 						),
 						'moderator_type_individual' => array(
 							'type' => 'radio',
@@ -2852,6 +2866,7 @@ class Forum_mcp extends CP_Controller {
 						),
 						'individual' => array(
 							'type' => 'text',
+							'value' => ($moderator->getType() == 'individual') ? $moderator->Member->username : ''
 						)
 					)
 				),
