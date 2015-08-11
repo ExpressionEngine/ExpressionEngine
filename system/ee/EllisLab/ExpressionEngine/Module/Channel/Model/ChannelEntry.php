@@ -363,11 +363,25 @@ class ChannelEntry extends ContentModel {
 	 */
 	public function set__categories($categories)
 	{
+		if (empty($categories))
+		{
+			$categories = array();
+		}
+
+		if ( ! is_array($categories))
+		{
+			$categories = array($categories);
+		}
+
 		// annoyingly needed to trigger validation on the field
 		$this->setRawProperty('categories', implode('|', $categories));
 
 		// Currently cannot get multiple category groups through relationships
-		$cat_groups = explode('|', $this->Channel->cat_group);
+		$cat_groups = array();
+		if ($this->Channel->cat_group)
+		{
+			$cat_groups = explode('|', $this->Channel->cat_group);
+		}
 
 		if (empty($categories))
 		{
