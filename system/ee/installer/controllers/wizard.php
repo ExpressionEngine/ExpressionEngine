@@ -511,7 +511,7 @@ class Wizard extends CI_Controller {
 		$this->subtitle = lang('required_fields');
 
 		// Display the form and pass the userdata array to it
-		$this->title = sprintf(lang('install_title'), $this->version);
+		$this->title = sprintf(lang('install_title'), $this->version).'<br />'.lang('install_note');
 		$this->set_output('install_form', array_merge($vars, $this->userdata));
 	}
 

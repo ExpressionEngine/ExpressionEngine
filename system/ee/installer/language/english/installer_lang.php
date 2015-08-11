@@ -7,12 +7,13 @@ $lang = array(
 'processing'      => 'Processing',
 'completed'       => 'Completed',
 'stopped'         => 'Stopped',
-'required_fields' => '✱ Required Fields',
+'required_fields' => 'Required Fields',
 'required_field'  =>'required field',
 'subtitle_step'   => 'Step %d of %d',
 
 // Install Form
 'install_title' => 'Install ExpressionEngine %s',
+'install_note' => '<i><b>Please</b> read <a href="https://ellislab.com/expressionengine/user-guide/installation/installation.html" rel="external">Installing ExpressionEngine</a> <strong>before</strong> starting.</i>',
 
 	// Database Server
 	'db_settings'           => 'Database Settings',
