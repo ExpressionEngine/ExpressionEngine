@@ -95,7 +95,9 @@
 					<div class="setting-txt col <?=$width?>">
 						<h3><span class="ico sub-arrow"></span><?=$field->getLabel()?></h3>
 						<em><?=$field->getInstructions()?></em>
-						<?php if ($field->get('field_id') == 'categories' && $entry->Channel->cat_group): ?>
+						<?php if ($field->get('field_id') == 'categories' &&
+								$entry->Channel->cat_group &&
+								ee()->cp->allowed_group('can_edit_categories')): ?>
 							<p><a class="btn action submit m-link" rel="modal-add-category" data-cat-group="<?=$field->get('cat_group_id')?>" href="#"><?=lang('btn_add_category')?></a></p>
 						<?php $this->startOrAppendBlock('modals'); ?>
 
