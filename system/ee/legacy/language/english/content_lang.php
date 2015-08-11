@@ -23,6 +23,8 @@ $lang = array(
 
 'manage_categories' => 'Manage Categories',
 
+'entry_manager' => 'Entry Manager',
+
 'btn_search_entries' => 'Search Entries',
 
 'by' => 'by',

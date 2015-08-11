@@ -178,11 +178,11 @@ class Edit extends AbstractPublishController {
 
 		if ($channel_id)
 		{
-			$table->addActionButton(ee('CP/URL', 'publish/create/' . $channel_id), sprintf(lang('btn_create_new_entry_in_channel'), $channel_name));
+			$vars['create_button'] = '<a class="btn tn action" href="'.ee('CP/URL', 'publish/create/' . $channel_id).'">'.sprintf(lang('btn_create_new_entry_in_channel'), $channel_name).'</a>';
 		}
 		else
 		{
-			$table->addActionContent(ee('View')->make('publish/partials/create_new_menu')->render(array('button_text' => lang('btn_create_new'))));
+			$vars['create_button'] = ee('View')->make('publish/partials/create_new_menu')->render(array('button_text' => lang('btn_create_new')));
 		}
 
 		$page = ((int) ee()->input->get('page')) ?: 1;
@@ -274,6 +274,12 @@ class Edit extends AbstractPublishController {
 
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
+
+		ee()->view->header = array(
+			'title' => lang('entry_manager'),
+			'form_url' => $vars['form_url'],
+			'search_button_value' => lang('btn_search_entries')
+		);
 
 		$vars['pagination'] = ee('CP/Pagination', $count)
 			->perPage($filter_values['perpage'])
