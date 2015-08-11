@@ -160,6 +160,27 @@ class DefaultChannelLayout extends DefaultLayout {
 			}
 		}
 
+		if ($channel->enable_versioning)
+		{
+			$layout[] = array(
+				'id' => 'revisions',
+				'name' => 'revisions',
+				'visible' => TRUE,
+				'fields' => array(
+					array(
+						'field' => 'versioning_enabled',
+						'visible' => TRUE,
+						'collapsed' => FALSE
+					),
+					array(
+						'field' => 'revisions',
+						'visible' => TRUE,
+						'collapsed' => FALSE
+					)
+				)
+			);
+		}
+
 		return $layout;
 	}
 }

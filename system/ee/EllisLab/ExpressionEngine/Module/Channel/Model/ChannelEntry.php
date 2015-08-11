@@ -352,6 +352,11 @@ class ChannelEntry extends ContentModel {
 		}
 	}
 
+	public function get__versioning_enabled()
+	{
+		return (isset($this->versioning_enabled)) ?: $this->Channel->enable_versioning;
+	}
+
 	/**
 	 * Category setter for convenience to intercept the
 	 * 'categories' post array.
@@ -521,6 +526,32 @@ class ChannelEntry extends ContentModel {
 					'field_maxl'			=> 100
 				)
 			);
+
+			if ($this->Channel->enable_versioning)
+			{
+				$default_fields['versioning_enabled'] = array(
+					'field_id'				=> 'versioning_enabled',
+					'field_label'			=> lang('versioning_enabled'),
+					'field_required'		=> 'n',
+					'field_show_fmt'		=> 'n',
+					'field_instructions'	=> sprintf(lang('versioning_enabled_desc'), $this->Channel->max_revisions),
+					'field_text_direction'	=> 'ltr',
+					'field_type'			=> 'radio',
+					'field_list_items'      => array('y' => lang('yes'), 'n' => lang('no')),
+					'field_maxl'			=> 100
+				);
+				$default_fields['revisions'] = array(
+					'field_id'				=> 'revisions',
+					'field_label'			=> lang('revisions'),
+					'field_required'		=> 'n',
+					'field_show_fmt'		=> 'n',
+					'field_instructions'	=> '',
+					'field_text_direction'	=> 'ltr',
+					'field_type'			=> 'text',
+					'field_maxl'			=> 100,
+					'field_wide'            => TRUE
+				);
+			}
 
 			$cat_groups = ee('Model')->get('CategoryGroup')
 				->filter('group_id', 'IN', explode('|', $this->Channel->cat_group))
