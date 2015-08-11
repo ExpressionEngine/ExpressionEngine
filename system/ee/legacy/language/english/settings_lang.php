@@ -44,13 +44,13 @@ $lang = array(
  * General Settings
  */
 
-'site_name' => 'Name',
+'used_in_cp_only' => 'Used in the control panel only.',
 
-'site_name_desc' => 'Full descriptive name of this site.',
+'site_name' => 'Name',
 
 'site_short_name' => 'Short name',
 
-'site_short_name_desc' => 'Short name for this site.<br /><i>No spaces. Underscores and dashes are allowed.</i>',
+'site_short_name_desc' => 'No spaces. Underscores and dashes are allowed.',
 
 'site_short_name_taken' => 'This short name is already taken.',
 
@@ -79,17 +79,11 @@ $lang = array(
 
 'language' => 'Language',
 
-'language_desc' => 'Default language.<br><i>Used in the control panel only.</i>',
-
 'date_time_settings' => 'Date &amp; Time Settings',
 
 'timezone' => 'Timezone',
 
-'timezone_desc' => 'Default local timezone.',
-
 'date_time_fmt' => 'Date &amp; time format',
-
-'date_time_fmt_desc' => 'Default date and time formats.<br><i>Used in the control panel only.</i>',
 
 "24_hour" => "24-hour",
 
