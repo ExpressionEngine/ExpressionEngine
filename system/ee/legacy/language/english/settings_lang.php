@@ -44,13 +44,9 @@ $lang = array(
  * General Settings
  */
 
-'used_in_cp_only' => 'Used in the control panel only.',
-
 'site_name' => 'Name',
 
 'site_short_name' => 'Short name',
-
-'site_short_name_desc' => 'No spaces. Underscores and dashes are allowed.',
 
 'site_short_name_taken' => 'This short name is already taken.',
 

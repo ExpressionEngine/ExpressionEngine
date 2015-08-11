@@ -205,7 +205,6 @@ class Watermarks extends AbstractFilesController {
 			array(
 				array(
 					'title' => 'name',
-					'desc' => 'watermark_name_desc',
 					'fields' => array(
 						'wm_name' => array(
 							'type' => 'text',
@@ -216,7 +215,6 @@ class Watermarks extends AbstractFilesController {
 				),
 				array(
 					'title' => 'type',
-					'desc' => 'watermark_type_desc',
 					'fields' => array(
 						'wm_type' => array(
 							'type' => 'select',
@@ -309,7 +307,6 @@ class Watermarks extends AbstractFilesController {
 					),
 					array(
 						'title' => 'watermark_text_font',
-						'desc' => 'watermark_text_font_desc',
 						'fields' => array(
 							'wm_font' => array(
 								'type' => 'select',
@@ -320,7 +317,6 @@ class Watermarks extends AbstractFilesController {
 					),
 					array(
 						'title' => 'watermark_text_size',
-						'desc' => 'watermark_text_size_desc',
 						'fields' => array(
 							'wm_font_size' => array(
 								'type' => 'text',
@@ -330,7 +326,6 @@ class Watermarks extends AbstractFilesController {
 					),
 					array(
 						'title' => 'watermark_text_color',
-						'desc' => 'watermark_text_color_desc',
 						'fields' => array(
 							'wm_font_color' => array(
 								'type' => 'text',
@@ -350,7 +345,6 @@ class Watermarks extends AbstractFilesController {
 					),
 					array(
 						'title' => 'watermark_text_dropshadow_distance',
-						'desc' => 'watermark_text_dropshadow_distance_desc',
 						'fields' => array(
 							'wm_shadow_distance' => array(
 								'type' => 'text',
@@ -360,7 +354,6 @@ class Watermarks extends AbstractFilesController {
 					),
 					array(
 						'title' => 'watermark_text_dropshadow_color',
-						'desc' => 'watermark_text_dropshadow_color_desc',
 						'fields' => array(
 							'wm_shadow_color' => array(
 								'type' => 'text',

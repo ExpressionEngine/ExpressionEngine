@@ -289,7 +289,7 @@ class Fields extends Members\Members {
 				),
 				array(
 					'title' => 'short_name',
-					'desc' => 'field_short_name_desc',
+					'desc' => 'alphadash_desc',
 					'fields' => array(
 						'm_field_name' => array(
 							'type' => 'text',

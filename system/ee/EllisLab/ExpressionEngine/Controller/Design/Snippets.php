@@ -181,7 +181,6 @@ class Snippets extends AbstractDesignController {
 				array(
 					array(
 						'title' => 'snippet_name',
-						'desc' => 'snippet_name_desc',
 						'fields' => array(
 							'snippet_name' => array(
 								'type' => 'text',
@@ -191,7 +190,6 @@ class Snippets extends AbstractDesignController {
 					),
 					array(
 						'title' => 'snippet_contents',
-						'desc' => 'snippet_contents_desc',
 						'wide' => TRUE,
 						'fields' => array(
 							'snippet_contents' => array(
@@ -307,7 +305,6 @@ class Snippets extends AbstractDesignController {
 				array(
 					array(
 						'title' => 'snippet_name',
-						'desc' => 'snippet_name_desc',
 						'fields' => array(
 							'snippet_name' => array(
 								'type' => 'text',
@@ -318,7 +315,6 @@ class Snippets extends AbstractDesignController {
 					),
 					array(
 						'title' => 'snippet_contents',
-						'desc' => 'snippet_contents_desc',
 						'wide' => TRUE,
 						'fields' => array(
 							'snippet_contents' => array(

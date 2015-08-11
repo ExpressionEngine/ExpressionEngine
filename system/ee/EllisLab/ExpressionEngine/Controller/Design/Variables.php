@@ -182,7 +182,6 @@ class Variables extends AbstractDesignController {
 				array(
 					array(
 						'title' => 'variable_name',
-						'desc' => 'variable_name_desc',
 						'fields' => array(
 							'variable_name' => array(
 								'type' => 'text',
@@ -192,7 +191,6 @@ class Variables extends AbstractDesignController {
 					),
 					array(
 						'title' => 'variable_data',
-						'desc' => 'variable_data_desc',
 						'wide' => TRUE,
 						'fields' => array(
 							'variable_data' => array(
@@ -308,7 +306,6 @@ class Variables extends AbstractDesignController {
 				array(
 					array(
 						'title' => 'variable_name',
-						'desc' => 'variable_name_desc',
 						'fields' => array(
 							'variable_name' => array(
 								'type' => 'text',
@@ -319,7 +316,6 @@ class Variables extends AbstractDesignController {
 					),
 					array(
 						'title' => 'variable_data',
-						'desc' => 'variable_data_desc',
 						'wide' => TRUE,
 						'fields' => array(
 							'variable_data' => array(

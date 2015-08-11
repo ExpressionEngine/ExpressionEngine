@@ -578,7 +578,7 @@ class Forum_mcp extends CP_Controller {
 				),
 				array(
 					'title' => 'short_name',
-					'desc' => 'short_name_desc',
+					'desc' => 'alphadash_desc',
 					'fields' => array(
 						'board_name' => array(
 							'type' => 'text',

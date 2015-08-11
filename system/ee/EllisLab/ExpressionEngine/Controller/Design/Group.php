@@ -229,7 +229,7 @@ class Group extends AbstractDesignController {
 				array(
 					array(
 						'title' => 'name',
-						'desc' => 'name_desc',
+						'desc' => 'alphadash_desc',
 						'fields' => array(
 							'group_name' => array(
 								'type' => 'text',

@@ -56,7 +56,7 @@ class General extends Settings {
 				),
 				array(
 					'title' => 'site_short_name',
-					'desc' => 'site_short_name_desc',
+					'desc' => 'alphadash_desc',
 					'fields' => array(
 						'site_short_name' => array(
 							'type' => 'text',
