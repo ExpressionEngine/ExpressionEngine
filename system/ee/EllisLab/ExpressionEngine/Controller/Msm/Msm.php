@@ -362,7 +362,6 @@ class Msm extends CP_Controller {
 			array(
 				array(
 					'title' => 'name',
-					'desc' => 'name_desc',
 					'fields' => array(
 						'site_label' => array(
 							'type' => 'text',
@@ -384,7 +383,6 @@ class Msm extends CP_Controller {
 				),
 				array(
 					'title' => 'description',
-					'desc' => 'description_desc',
 					'fields' => array(
 						'site_description' => array(
 							'type' => 'textarea',
