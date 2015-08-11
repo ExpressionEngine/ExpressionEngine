@@ -21,6 +21,11 @@ class ChannelEntryVersion extends Model {
 		'ChannelEntry' => array(
 			'type' => 'belongsTo',
 		),
+		'Author'	=> array(
+			'type' => 'belongsTo',
+			'model' => 'Member',
+			'from_key' 	=> 'author_id'
+		),
 	);
 
 	protected static $_validation_rules = array(
