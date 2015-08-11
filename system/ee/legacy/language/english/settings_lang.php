@@ -213,14 +213,6 @@ $lang = array(
 
 'smtp_server_desc' => 'URL location of your <mark>SMTP server</mark>.',
 
-'smtp_username' => 'Username',
-
-'smtp_username_desc' => 'Username of your <mark>SMTP server</mark>.',
-
-'smtp_password' => 'Password',
-
-'smtp_password_desc' => 'Password of your <mark>SMTP server</mark>.',
-
 'sending_options' => 'Sending Options',
 
 'mail_format' => 'Mail format',
