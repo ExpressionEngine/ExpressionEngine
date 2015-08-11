@@ -60,7 +60,7 @@ class Category extends ContentModel {
 
 	protected static $_validation_rules = array(
 		'cat_name'			=> 'required|noHtml|xss',
-		'cat_url_title'		=> 'required|alphaDash',
+		'cat_url_title'		=> 'required|alphaDash|unique[group_id]',
 		'cat_description'	=> 'xss',
 		'cat_order'			=> 'isNaturalNoZero'
 	);

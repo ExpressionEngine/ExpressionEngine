@@ -361,9 +361,15 @@ class ChannelEntry extends ContentModel {
 		// annoyingly needed to trigger validation on the field
 		$this->setRawProperty('categories', implode('|', $categories));
 
+		// Currently cannot get multiple category groups through relationships
+		$cat_groups = explode('|', $this->Channel->cat_group);
+
 		if (empty($categories))
 		{
-			$this->getCustomField('categories')->setData('');
+			foreach ($cat_groups as $cat_group)
+			{
+				$this->getCustomField('cat_group_id_'.$cat_group)->setData('');
+			}
 			$this->Categories = NULL;
 			return;
 		}
@@ -375,7 +381,16 @@ class ChannelEntry extends ContentModel {
 			->filter('cat_id', 'IN', $categories)
 			->all();
 
-		$this->getCustomField('categories')->setData(implode('|', $this->Categories->pluck('cat_name')));
+		// Set the data on the fields in case we come back from a validation error
+		foreach ($cat_groups as $cat_group)
+		{
+			$cats_in_group = $this->Categories->filter(function($category) use ($cat_group)
+			{
+				return $category->group_id == $cat_group;
+			});
+
+			$this->getCustomField('cat_group_id_'.$cat_group)->setData(implode('|', $this->Categories->pluck('cat_name')));
+		}
 	}
 
 	/**
@@ -504,10 +519,19 @@ class ChannelEntry extends ContentModel {
 					'field_type'			=> 'radio',
 					'field_list_items'      => array('y' => lang('yes'), 'n' => lang('no')),
 					'field_maxl'			=> 100
-				),
-				'categories' => array(
+				)
+			);
+
+			$cat_groups = ee('Model')->get('CategoryGroup')
+				->filter('group_id', 'IN', explode('|', $this->Channel->cat_group))
+				->all();
+
+			foreach ($cat_groups as $cat_group)
+			{
+				$default_fields['cat_group_id_'.$cat_group->getId()] = array(
 					'field_id'				=> 'categories',
-					'field_label'			=> lang('categories'),
+					'cat_group_id'			=> $cat_group->getId(),
+					'field_label'			=> ($cat_groups->count() > 1) ? $cat_group->group_name : lang('categories'),
 					'field_required'		=> 'n',
 					'field_show_fmt'		=> 'n',
 					'field_instructions'	=> lang('categories_desc'),
@@ -517,8 +541,8 @@ class ChannelEntry extends ContentModel {
 					'field_list_items'      => '',
 					'field_maxl'			=> 100,
 					'populateCallback'		=> array($this, 'populateCategories')
-				),
-			);
+				);
+			};
 
 			$module_tabs = $this->getTabFields();
 
@@ -614,12 +638,15 @@ class ChannelEntry extends ContentModel {
 
 	public function populateCategories($field)
 	{
+		// Rename the field so that we get the proper field facade later
+		$field->setName('categories');
+
 		$categories = ee('Model')->get('Category')
 			->with(array('Children as C0' => array('Children as C1' => 'Children as C2')))
 			->with('CategoryGroup')
-			->filter('CategoryGroup.group_id', 'IN', explode('|', $this->Channel->cat_group))
-			->filter('CategoryGroup.site_id', ee()->config->item('site_id'))
+			->filter('CategoryGroup.group_id', $field->getItem('cat_group_id'))
 			->filter('Category.parent_id', 0)
+			->order('Category.cat_order')
 			->all();
 
 		$category_list = $this->buildCategoryList($categories);

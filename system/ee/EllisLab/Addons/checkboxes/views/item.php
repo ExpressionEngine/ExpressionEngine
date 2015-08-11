@@ -26,7 +26,7 @@
 	if (isset($children)):
 ?>
 		<ul>
-			<?php $this->view('item', array('options' => $children, 'values' => $values)); ?>
+			<?php $this->embed('item', array('options' => $children, 'values' => $values)); ?>
 		</ul>
 <?php
 	endif;
