@@ -51,7 +51,7 @@ class Variables extends ProfilerSection {
 	 **/
 	public function getViewName()
 	{
-		return 'profiler/section/definition';
+		return 'profiler/section/var-list';
 	}
 
 	/**

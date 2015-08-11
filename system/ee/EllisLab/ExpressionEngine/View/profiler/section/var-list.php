@@ -6,12 +6,11 @@
 			<?php if (empty($data)): ?>
 				<div class="no-results"><?=sprintf(lang('profiler_no_variables'), lang('profiler_'.$label))?></div>
 			<?php else: ?>
-				<dl>
+				<ul class="var-list">
 					<?php foreach ($data as $key => $value): ?>
-						<dt><code><?=$key?>:</code></dt>
-						<dd><?=($value)?:'&nbsp;'?></dd>
+						<li><code><?=$key?>:</code> <?=($value)?></li>
 					<?php endforeach; ?>
-				</dl>
+				</ul>
 			<?php endif; ?>
 		<?php endforeach; ?>
 	<?php endforeach; ?>
