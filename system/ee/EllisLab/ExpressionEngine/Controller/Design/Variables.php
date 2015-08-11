@@ -291,7 +291,7 @@ class Variables extends AbstractDesignController {
 
 		if ( ! $variable)
 		{
-			show_error(lang('error_no_variable'));
+			show_404();
 		}
 
 		$vars = array(

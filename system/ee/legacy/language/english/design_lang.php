@@ -134,10 +134,6 @@ $lang = array(
 
 'error_no_template' => 'No such Template exists.',
 
-'error_no_snippet' => 'The Template Partial <b>%s</b> does not exist.',
-
-'error_no_global_variable' => 'The Template Variable <b>%s</b> does not exist.',
-
 'template_name_taken' => 'The template name you submitted is already taken',
 
 'snippet_name_taken' => 'The template partial name you submitted is already taken',
