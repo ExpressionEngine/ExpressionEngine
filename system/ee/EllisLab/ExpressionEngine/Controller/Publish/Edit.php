@@ -341,6 +341,20 @@ class Edit extends AbstractPublishController {
 			'button_text' => lang('btn_publish')
 		);
 
+		$version_id = ee()->input->get('version');
+
+		if ($entry->Channel->enable_versioning)
+		{
+			$vars['revisions'] = $this->getRevisionsTable($entry, $version_id);
+		}
+
+		if ($version_id)
+		{
+			$version = $entry->Versions->filter('version_id', $version_id)->first();
+			$version_data = $version->version_data;
+			$entry->set($version_data);
+		}
+
 		if ($autosave_id)
 		{
 			$autosaved = ee('Model')->get('ChannelEntryAutosave', $autosave_id)
@@ -385,16 +399,31 @@ class Edit extends AbstractPublishController {
 
 			if ($result->isValid())
 			{
-				$entry->edit_date = ee()->localize->now;
-				$entry->save();
+				if(ee()->input->post('save_revision'))
+				{
+					$entry->saveVersion();
 
-				ee('Alert')->makeInline('entry-form')
-					->asSuccess()
-					->withTitle(lang('edit_entry_success'))
-					->addToBody(sprintf(lang('edit_entry_success_desc'), $entry->title))
-					->defer();
+					ee('Alert')->makeInline('entry-form')
+						->asSuccess()
+						->withTitle(lang('revision_saved'))
+						->addToBody(sprintf(lang('revision_saved_desc'), $entry->Versions->count() + 1, $entry->title))
+						->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'publish/edit/entry/' . $id, ee()->cp->get_url_state()));
+					ee()->functions->redirect(ee('CP/URL', 'publish/edit/entry/' . $id, ee()->cp->get_url_state()));
+				}
+				else
+				{
+					$entry->edit_date = ee()->localize->now;
+					$entry->save();
+
+					ee('Alert')->makeInline('entry-form')
+						->asSuccess()
+						->withTitle(lang('edit_entry_success'))
+						->addToBody(sprintf(lang('edit_entry_success_desc'), $entry->title))
+						->defer();
+
+					ee()->functions->redirect(ee('CP/URL', 'publish/edit/', array('channel_id' => $entry->channel_id)));
+				}
 			}
 			else
 			{
