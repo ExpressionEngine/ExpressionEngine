@@ -481,6 +481,8 @@ $lang = array(
 
 'new_channel' => 'New Channel',
 
+'view_all' => 'View All',
+
 'new_site' => 'New Site',
 
 'name_your_site' => 'Name your site',
