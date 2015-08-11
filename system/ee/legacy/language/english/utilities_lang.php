@@ -48,9 +48,7 @@ $lang = array(
 
 'word_wrap' => 'word wrap',
 
-'your_email' => 'Your Email',
-
-'from_email' => 'From Email',
+'your_email' => 'Your email',
 
 'attachment' => 'Attachment',
 
