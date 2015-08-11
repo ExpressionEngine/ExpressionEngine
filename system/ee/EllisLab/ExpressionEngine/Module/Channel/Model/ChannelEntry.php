@@ -403,7 +403,7 @@ class ChannelEntry extends ContentModel {
 					'field_label'			=> lang('url_title'),
 					'field_required'		=> 'n',
 					'field_fmt'				=> 'xhtml',
-					'field_instructions'	=> lang('url_title_desc'),
+					'field_instructions'	=> lang('alphadash_desc'),
 					'field_show_fmt'		=> 'n',
 					'field_text_direction'	=> 'ltr',
 					'field_type'			=> 'text',

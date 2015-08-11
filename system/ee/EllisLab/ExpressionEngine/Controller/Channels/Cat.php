@@ -638,7 +638,7 @@ class Cat extends AbstractChannelsController {
 				),
 				array(
 					'title' => 'url_title_lc',
-					'desc' => 'url_title_desc',
+					'desc' => 'alphadash_desc',
 					'fields' => array(
 						'cat_url_title' => array(
 							'type' => 'text',
@@ -1060,7 +1060,7 @@ class Cat extends AbstractChannelsController {
 				),
 				array(
 					'title' => 'short_name',
-					'desc' => 'cat_field_short_name_desc',
+					'desc' => 'alphadash_desc',
 					'fields' => array(
 						'field_name' => array(
 							'type' => 'text',

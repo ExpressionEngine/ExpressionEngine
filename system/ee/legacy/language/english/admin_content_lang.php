@@ -60,8 +60,6 @@ $lang = array(
 
 'label_desc' => 'Name of field that appears in the publish form.',
 
-'short_name_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
-
 'instructions' => 'Instructions',
 
 'instructions_desc' => 'Field instructions that appear in the publish form.',

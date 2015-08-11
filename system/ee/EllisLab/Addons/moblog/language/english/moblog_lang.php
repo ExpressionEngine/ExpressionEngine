@@ -24,8 +24,6 @@ $lang = array(
 
 'moblog_short_name' => 'Short name',
 
-'moblog_short_name_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
-
 'moblog_check_interval' => 'Time between checks',
 
 'moblog_check_interval_desc' => 'Affects {exp:moblog:check} tag. Number is set in minutes. You can use decimal fractions. Example: 1.5',

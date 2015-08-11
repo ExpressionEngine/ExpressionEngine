@@ -526,8 +526,6 @@ $lang = array(
 
 'url_title_lc' => 'URL title',
 
-'url_title_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
-
 'description' => 'Description',
 
 'image' => 'Image',
@@ -536,7 +534,7 @@ $lang = array(
 
 'used_in_cp_only' => 'Used in the control panel only.',
 
-'alphadash_desc' => 'No spaces. Underscores and dashes are allowed.',
+'alphadash_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
 
 /**
  * Footer

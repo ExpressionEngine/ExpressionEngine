@@ -146,8 +146,6 @@ $lang = array(
 'channel_title' => 'Name',
 'channel_title_desc' => '',
 
-'channel_short_name_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
-
 'channel_duplicate' => 'Duplicate existing channel?',
 'channel_duplicate_desc' => 'On creation, this channel will copy all settings from the selected channel.',
 
@@ -535,8 +533,6 @@ $lang = array(
 'duplicate_category_group_name' => 'A category group already exists with the same name.',
 
 'label' => 'Label',
-
-'cat_field_short_name_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
 
 'require_field' => 'Require field?',
 

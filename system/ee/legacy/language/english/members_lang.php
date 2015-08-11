@@ -216,8 +216,6 @@ $lang = array(
 
 'visibility' => 'Visibility',
 
-"field_short_name_desc" => "<i>No spaces. Underscores and dashes are allowed.</i>",
-
 "index" => "Main Index Page",
 
 "member_assignment_warning" => "Members are currently assigned to some of these groups. What member group should they be re-assigned to?",
