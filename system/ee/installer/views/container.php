@@ -23,7 +23,7 @@
 	</head>
 	<body id="top">
 		<section class="wrap">
-			<div class="col-group">
+			<div class="col-group install-wrap">
 				<div class="col w-16 last">
 					<div class="box">
 						<h1><?=$title?> <span class="req-title no-asterisk"><?=$subtitle?></span></h1>

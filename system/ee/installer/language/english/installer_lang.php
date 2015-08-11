@@ -15,26 +15,21 @@ $lang = array(
 'install_title' => 'Install ExpressionEngine %s',
 
 	// Database Server
-	'db_hostname'           => 'Database Server Address',
-	'db_hostname_note'  => 'For advanced setups see our <a href="https://ellislab.com/expressionengine/user-guide/installation/installation.html">user guide</a>',
-	'db_name'               => 'Database Name',
-	'db_name_note'          => 'Name of the database where you want ExpressionEngine installed.',
-	'db_name_warning'       => 'Make sure the database exists, the installer will <b>not</b> create it.',
-	'db_username'           => 'Database Server Username',
-	'db_username_note'      => 'Username used to access the above database.',
-	'db_password'           => 'Database Server Password',
-	'db_password_note'      => 'Password used to access the above database.',
-	'db_prefix'             => 'Database Table Prefix',
+	'db_settings'           => 'Database Settings',
+	'db_hostname'           => 'Server Address',
+	'db_hostname_note'  => 'Commonly <b>localhost</b>, but your host may require something else.',
+	'db_name'               => 'Name',
+	'db_name_note'          => 'Make sure the database exists, the installer will <b>not</b> create it.',
+	'db_username'           => 'Server Username',
+	'db_password'           => 'Server Password',
+	'db_prefix'             => 'Table Prefix',
 	'db_prefix_note'        => 'Use <b>exp</b> unless you require/prefer a different prefix.',
 
 	// Account Creation
 	'administrator_account' => 'Administrator Account',
 	'username'              => 'Username',
-	'username_note'         => 'Username you want to use to login to the <abbr title="Control Panel">CP</abbr>.',
 	'e_mail'                => 'Email',
-	'e_mail_note'           => 'Email address you want to use for this account.',
 	'password'              => 'Password',
-	'password_note'         => 'Password you want to use to login to the <abbr title="Control Panel">CP</abbr>.',
 
 	// Default Theme
 	'default_theme'              => 'Default theme',
