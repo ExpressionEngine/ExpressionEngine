@@ -72,17 +72,26 @@ class DefaultChannelLayout extends DefaultLayout {
 			)
 		);
 
+		$channel = ee('Model')->get('Channel', $this->channel_id)->first();
+		$cat_groups = ee('Model')->get('CategoryGroup')
+			->filter('group_id', 'IN', explode('|', $channel->cat_group))
+			->all();
+
+		$category_group_fields = array();
+		foreach ($cat_groups as $cat_group)
+		{
+			$category_group_fields[] = array(
+				'field' => 'cat_group_id_'.$cat_group->getId(),
+				'visible' => TRUE,
+				'collapsed' => FALSE
+			);
+		}
+
 		$layout[] = array(
 			'id' => 'categories',
 			'name' => 'categories',
 			'visible' => TRUE,
-			'fields' => array(
-				array(
-					'field' => 'categories',
-					'visible' => TRUE,
-					'collapsed' => FALSE
-				)
-			)
+			'fields' => $category_group_fields
 		);
 
 		$layout[] = array(
