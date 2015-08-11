@@ -110,7 +110,7 @@ class Snippets extends AbstractDesignController {
 				$all_sites,
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'design/snippets/edit/' . $snippet->snippet_name),
+						'href' => ee('CP/URL', 'design/snippets/edit/' . $snippet->snippet_id),
 						'title' => lang('edit')
 					),
 					'find' => array(
@@ -281,21 +281,21 @@ class Snippets extends AbstractDesignController {
 		ee()->cp->render('settings/form', $vars);
 	}
 
-	public function edit($snippet_name)
+	public function edit($snippet_id)
 	{
 		$snippet = ee('Model')->get('Snippet')
-			->filter('snippet_name', $snippet_name)
+			->filter('snippet_id', $snippet_id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
 		if ( ! $snippet)
 		{
-			show_error(sprintf(lang('error_no_snippet'), $snippet_name));
+			show_error(lang('error_no_snippet'));
 		}
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'design/snippets/edit/' . $snippet_name),
+			'base_url' => ee('CP/URL', 'design/snippets/edit/' . $snippet_id),
 			'form_hidden' => array(
 				'old_name' => $snippet->snippet_name
 			),
