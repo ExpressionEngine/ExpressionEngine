@@ -738,8 +738,6 @@ $lang = array(
 
 'banishment_type' => 'Lock out action',
 
-'banishment_type_desc' => 'When a member meets the lock out requirement.',
-
 'banish_404' => 'Send to 404',
 
 'banish_redirect' => 'Redirect to URL',
@@ -751,8 +749,6 @@ $lang = array(
 'banishment_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location for locked out members.',
 
 'banishment_message' => 'Message',
-
-'banishment_message_desc' => 'Displayed using <mark>user messages</mark> template.',
 
 /**
  * Pages Settings
