@@ -290,7 +290,7 @@ class Snippets extends AbstractDesignController {
 
 		if ( ! $snippet)
 		{
-			show_error(lang('error_no_snippet'));
+			show_404();
 		}
 
 		$vars = array(
