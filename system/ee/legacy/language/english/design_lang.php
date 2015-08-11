@@ -110,11 +110,7 @@ $lang = array(
 
 'snippet_name' => 'Name',
 
-'snippet_name_desc' => 'Short name for this partial.',
-
 'snippet_contents' => 'Content',
-
-'snippet_contents_desc' => 'Content of this partial.',
 
 'enable_partial_on_all_sites' => 'Enable on all sites?',
 
@@ -192,11 +188,7 @@ $lang = array(
 
 'variable_name' => 'Name',
 
-'variable_name_desc' => 'Short name for this variable.',
-
 'variable_data' => 'Content',
-
-'variable_data_desc' => 'Content of this variable.',
 
 'enable_template_variable_on_all_sites' => 'Enable on all sites?',
 
