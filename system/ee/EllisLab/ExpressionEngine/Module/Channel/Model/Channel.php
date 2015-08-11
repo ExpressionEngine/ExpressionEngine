@@ -36,7 +36,8 @@ class Channel extends StructureModel {
 		'StatusGroup' => array(
 			'type' => 'belongsTo',
 			'from_key' => 'status_group',
-			'to_key' => 'group_id'
+			'to_key' => 'group_id',
+			'weak' => TRUE
 		),
 		'CustomFields' => array(
 			'type' => 'hasMany',

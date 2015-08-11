@@ -37,6 +37,11 @@ class StatusGroup extends Model {
 		'Site' => array(
 			'type'  => 'BelongsTo',
 		),
+		'Channel' => array(
+			'weak'	=> TRUE,
+			'type'  => 'HasMany',
+			'to_key' => 'status_group'
+		),
 		'Statuses' => array(
 			'type'  => 'HasMany',
 			'model' => 'Status'
