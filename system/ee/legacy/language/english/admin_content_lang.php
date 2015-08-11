@@ -442,15 +442,13 @@ $lang = array(
 
 'tag_name' => 'Tag Name',
 
-'tag_name_desc' => 'Full descriptive name of this button.',
-
 'tag_open' => 'Opening Tag',
 
-'tag_open_desc' => 'Opening output of this button. i.e. <b>',
+'tag_open_desc' => 'Opening output of this button. i.e. <b><code>&lt;b&gt;</code></b>',
 
 'tag_close' => 'Closing Tag',
 
-'tag_close_desc' => 'Closing output of this button. i.e. </b>',
+'tag_close_desc' => 'Closing output of this button. i.e. <b><code>&lt;/b&gt;</code></b>',
 
 'accesskey' => 'Tag shortcut',
 
