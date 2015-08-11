@@ -385,13 +385,7 @@ Used in the control panel only.',
 
 'edit_quick_link' => 'Edit Quick Link',
 
-'link_title' => 'Quick Link name',
-
-'link_title_desc' => 'Name this quick link.',
-
-'link_url' => 'Quick Link URL',
-
-'link_url_desc' => 'URL Location for this quick link.',
+'link_url' => 'URL',
 
 'link_order' => 'Order',
 
