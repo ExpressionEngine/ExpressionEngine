@@ -516,6 +516,10 @@ $lang = array(
 
 "can_access_cp_desc" => "When set to yes, users assigned to this group may access the control panel.",
 
+"footer_helper_links" => "Access footer helper links",
+
+"footer_helper_links_desc" => "Choose which links this member group can access in the CP footer.",
+
 "can_access_content" => "Can access CONTENT section",
 
 "can_access_design" => "Can access DESIGN section",
