@@ -512,11 +512,7 @@ $lang = array(
 
 'prv_msg_max_chars' => 'Maximum characters',
 
-'prv_msg_max_chars_desc' => 'Maximum allowed characters in personal messages.',
-
 'prv_msg_html_format' => 'Formatting',
-
-'prv_msg_html_format_desc' => 'Select type of formatting to use for personal messages.',
 
 "html_safe" => "Safe HTML only",
 
@@ -535,8 +531,6 @@ $lang = array(
 'prv_msg_upload_path_desc' => 'Full path location for your <mark>attachement</mark> directory.',
 
 'prv_msg_max_attachments' => 'Maximum attachments',
-
-'prv_msg_max_attachments_desc' => 'Maximum allowed attachments per personal message.',
 
 'prv_msg_attach_maxsize' => 'Maximum file size (<abbr title="kilobyte">kb</abbr>)',
 
