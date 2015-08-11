@@ -96,7 +96,8 @@ class ChannelEntry extends ContentModel {
 
 	protected static $_events = array(
 		'beforeDelete',
-		'afterSave'
+		'afterSave',
+		'afterUpdate',
 	);
 
 	// Properties
@@ -181,8 +182,6 @@ class ChannelEntry extends ContentModel {
 		parent::onAfterSave();
 		$this->Autosaves->delete();
 
-		$this->saveVersion();
-
 		foreach ($this->getModulesWithTabs() as $name => $info)
 		{
 			include_once($info->getPath() . '/tab.' . $name . '.php');
@@ -203,6 +202,11 @@ class ChannelEntry extends ContentModel {
 				$OBJ->save($this, $values);
 			}
 		}
+	}
+
+	public function onAfterUpdate()
+	{
+		$this->saveVersion();
 	}
 
 	public function saveVersion()
