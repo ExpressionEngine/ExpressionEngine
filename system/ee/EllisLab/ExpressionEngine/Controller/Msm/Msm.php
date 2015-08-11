@@ -372,7 +372,7 @@ class Msm extends CP_Controller {
 				),
 				array(
 					'title' => 'short_name',
-					'desc' => 'short_name_desc',
+					'desc' => 'alphadash_desc',
 					'fields' => array(
 						'site_name' => array(
 							'type' => 'text',
@@ -479,7 +479,7 @@ class Msm extends CP_Controller {
 				),
 				array(
 					'title' => 'short_name',
-					'desc' => 'short_name_desc',
+					'desc' => 'alphadash_desc',
 					'fields' => array(
 						'site_name' => array(
 							'type' => 'text',

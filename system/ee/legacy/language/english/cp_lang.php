@@ -534,6 +534,10 @@ $lang = array(
 
 'no_rows_returned' => 'No rows returned',
 
+'used_in_cp_only' => 'Used in the control panel only.',
+
+'alphadash_desc' => 'No spaces. Underscores and dashes are allowed.',
+
 /**
  * Footer
  */

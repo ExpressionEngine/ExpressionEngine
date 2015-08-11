@@ -12,7 +12,6 @@ $lang = array(
 'sites_removed_desc' => 'The following sites were removed',
 'create_site' => 'Create Site',
 'edit_site' => 'Edit Site',
-'short_name_desc' => 'No spaces. Underscores and dashes are allowed.',
 'btn_create_site' => 'Create Site',
 'btn_edit_site' => 'Edit Site',
 'site_online' => 'Website online?',

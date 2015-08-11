@@ -251,7 +251,7 @@ class Bookmarks extends Profile {
 			array(
 				array(
 					'title' => 'name',
-					'desc' => 'bookmarklet_name_desc',
+					'desc' => 'alphadash_desc',
 					'fields' => array(
 						'name' => array(
 							'type' => 'text',

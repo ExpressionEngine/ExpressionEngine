@@ -56,7 +56,7 @@ class Date extends Profile {
 				),
 				array(
 					'title' => 'date_format',
-					'desc' => 'date_format_desc',
+					'desc' => 'used_in_cp_only',
 					'fields' => array(
 						'date_format' => array(
 							'type' => 'select',

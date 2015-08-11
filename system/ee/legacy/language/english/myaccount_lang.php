@@ -187,8 +187,6 @@ Used in the control panel only.',
 
 "date_format" => "Date & time format",
 
-"date_format_desc" => "Used in the control panel only.",
-
 "time_format" => "Time Formatting",
 
 "24_hour" => "24 Hour",
@@ -404,8 +402,6 @@ Used in the control panel only.',
 'bookmarklet_created' => 'Bookmarklet Created',
 
 'bookmarklet_info' => 'A bookmarklet allows you to add entries to your channel without logging into the full control panel.',
-
-'bookmarklet_name_desc' => 'No spaces. Underscores and dashes are allowed.',
 
 'bookmarklet_field' => 'Channel & Channel Field',
 

@@ -44,8 +44,6 @@ $lang = array(
  * General Settings
  */
 
-'used_in_cp_only' => 'Used in the control panel only.',
-
 'site_name' => 'Name',
 
 'site_short_name' => 'Short name',
