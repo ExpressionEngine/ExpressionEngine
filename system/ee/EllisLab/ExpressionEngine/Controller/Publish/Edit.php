@@ -399,7 +399,7 @@ class Edit extends AbstractPublishController {
 
 			if ($result->isValid())
 			{
-				if(ee()->input->post('save_revision'))
+				if ($entry->versioning_enabled && ee()->input->post('save_revision'))
 				{
 					$entry->saveVersion();
 
