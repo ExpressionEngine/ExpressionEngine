@@ -196,11 +196,7 @@ $lang = array(
 
 'create_template' => 'Create Template',
 
-'template_name_desc' => 'Short name for this template.<br><i>No spaces. Underscores and dashes are allowed.</i>',
-
 'template_type' => 'Type',
-
-'template_type_desc' => 'Choose a template type.',
 
 'duplicate_existing_template' => 'Duplicate existing template?',
 
