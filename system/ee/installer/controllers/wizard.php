@@ -65,14 +65,7 @@ class Wizard extends CI_Controller {
 		'member',
 		'stats',
 		'rte',
-		'filepicker',
-
-		// TODO: Remove lines below
-		// 'email',
-		// 'emoticon',
-		// 'jquery',
-		// 'search',
-		// 'rss'
+		'filepicker'
 	);
 
 	public $theme_required_modules = array();
@@ -114,7 +107,7 @@ class Wizard extends CI_Controller {
 		'webmaster_email'       => '',
 		'deft_lang'             => 'english',
 		'theme'                 => '01',
-		'default_site_timezone' => 'UTC',
+		'default_site_timezone' => '',
 		'redirect_method'       => 'redirect',
 		'upload_folder'         => 'uploads/',
 		'image_path'            => '',
@@ -175,6 +168,7 @@ class Wizard extends CI_Controller {
 		$this->output->enable_profiler(FALSE);
 
 		$this->userdata['app_version'] = $this->version;
+		$this->userdata['default_site_timezone'] = date_default_timezone_get();
 
  		// Load the helpers we intend to use
  		$this->load->helper(array('form', 'url', 'html', 'directory', 'file', 'email', 'security', 'date', 'string'));
@@ -1745,7 +1739,7 @@ class Wizard extends CI_Controller {
 			'webmaster_name'            => '',
 			'channel_nomenclature'      => 'channel',
 			'max_caches'                => '150',
-			'cache_driver'					=> 'file',
+			'cache_driver'              => 'file',
 			'captcha_url'               => $captcha_url,
 			'captcha_path'              => $this->userdata['captcha_path'],
 			'captcha_font'              => 'y',
