@@ -49,14 +49,11 @@ class Simple_commerce_mcp {
 
 		$this->sidebar = array(
 			'items' => array(
-				'href' => ee('CP/URL', 'addons/settings/simple_commerce/items'),
+				'href' => ee('CP/URL', 'addons/settings/simple_commerce'),
 				'button' => array(
 					'href' => ee('CP/URL', 'addons/settings/simple_commerce/create-item'),
 					'text' => 'new'
 				)
-			),
-			array(
-				'export_items' => ee('CP/URL', 'addons/settings/simple_commerce/export-items')
 			),
 			'purchases' => array(
 				'href' => ee('CP/URL', 'addons/settings/simple_commerce/purchases'),
@@ -65,14 +62,23 @@ class Simple_commerce_mcp {
 					'text' => 'new'
 				)
 			),
-			array(
-				'export_purchases' => ee('CP/URL', 'addons/settings/simple_commerce/export-purchases')
-			),
 			'email_templates' => array(
 				'href' => ee('CP/URL', 'addons/settings/simple_commerce/email-templates'),
 				'button' => array(
 					'href' => ee('CP/URL', 'addons/settings/simple_commerce/create-email-template'),
 					'text' => 'new'
+				)
+			)
+		);
+
+		ee()->view->header = array(
+			'title' => lang('simple_commerce_manager'),
+			'form_url' => ee('CP/URL', 'addons/settings/simple_commerce/search'),
+			'search_button_value' => lang('search_commerce'),
+			'toolbar_items' => array(
+				'settings' => array(
+					'href' => ee('CP/URL', 'settings/commerce'),
+					'title' => lang('settings')
 				)
 			)
 		);
@@ -102,11 +108,11 @@ class Simple_commerce_mcp {
 	{
 		$table = ee('CP/Table');
 		$table->setColumns(array(
-			'item_purchased',
-			'purchaser_screen_name',
-			'date_purchased',
-			'subscription_end_date',
-			'item_cost',
+			'item',
+			'purchaser',
+			'date_of_purchase',
+			'sub_end_date',
+			'cost',
 			'manage' => array(
 				'type'	=> Table::COL_TOOLBAR
 			),
@@ -118,11 +124,12 @@ class Simple_commerce_mcp {
 		$table->setNoResultsText('no_purchases', 'create_purchase', ee('CP/URL', 'addons/settings/simple_commerce/create-purchase'));
 
 		$sort_map = array(
-			'item_purchased'        => 'item_id',
-			'purchaser_screen_name' => 'member_id',
-			'date_purchased'        => 'purchase_date',
-			'subscription_end_date' => 'subscription_end_date',
-			'item_cost'             => 'item_cost'
+			// Change when relationships work
+			'item'             => 'item_id',
+			'purchaser'        => 'member_id',
+			'date_of_purchase' => 'purchase_date',
+			'sub_end_date'     => 'subscription_end_date',
+			'cost'             => 'item_cost'
 		);
 
 		$purchases = ee('Model')->get('simple_commerce:Purchase');
@@ -143,8 +150,8 @@ class Simple_commerce_mcp {
 				$purchase->member_id,
 				//$purchase->Member->screen_name,
 				ee()->localize->human_time($purchase->purchase_date),
-				$purchase->subscription_end_date ?: '-',
-				$purchase->item_cost,
+				$purchase->subscription_end_date ?: '--',
+				'$'.$purchase->item_cost,
 				array('toolbar_items' => array(
 					'edit' => array(
 						'href' => ee('CP/URL', 'addons/settings/simple_commerce/edit-purchase/'.$purchase->getId()),
@@ -188,8 +195,7 @@ class Simple_commerce_mcp {
 		));
 
 		return array(
-			'heading' => lang('purchases'),
-			'breadcrumb' => array(ee('CP/URL', 'addons/settings/simple_commerce')->compile() => lang('simple_commerce_module_name') . ' ' . lang('configuration')),
+			'heading' => lang('commerce_purchases'),
 			'body' => ee('View')->make('simple_commerce:purchases')->render($vars),
 			'sidebar' => $this->sidebar
 		);
