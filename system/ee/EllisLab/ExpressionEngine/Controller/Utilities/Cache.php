@@ -49,12 +49,12 @@ class Cache extends Utilities {
 					'desc' => 'caches_to_clear_desc',
 					'fields' => array(
 						'cache_type' => array(
-							'type' => 'checkbox',
+							'type' => 'radio',
 							'choices' => array(
+								'all'  => lang('all_caches'),
 								'page' => lang('templates'),
 								'tag'  => lang('tags'),
-								'db'   => lang('database'),
-								'all'  => lang('all')
+								'db'   => lang('database')
 							),
 							'value' => set_value('cache_type', 'all'),
 							'required' => TRUE

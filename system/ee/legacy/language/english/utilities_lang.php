@@ -133,7 +133,7 @@ $lang = array(
 
 'database' => 'Database',
 
-'all' => 'All',
+'all_caches' => 'All Caches',
 
 'btn_clear_caches' => 'Clear Caches',
 
