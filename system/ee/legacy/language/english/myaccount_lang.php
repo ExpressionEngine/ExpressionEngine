@@ -411,9 +411,7 @@ Used in the control panel only.',
 
 'bookmarklet_info' => 'A bookmarklet allows you to add entries to your channel without logging into the full control panel.',
 
-'bookmarklet_name' => 'Bookmarklet Name',
-
-'bookmarklet_name_desc' => 'Name this bookmarklet, single word, no spaces.',
+'bookmarklet_name_desc' => 'No spaces. Underscores and dashes are allowed.',
 
 'bookmarklet_field' => 'Channel & Channel Field',
 
