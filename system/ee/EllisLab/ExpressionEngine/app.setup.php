@@ -241,6 +241,7 @@ return array(
 			'ChannelField' => 'Module\Channel\Model\ChannelField',
 			'ChannelEntry' => 'Module\Channel\Model\ChannelEntry',
 			'ChannelEntryAutosave' => 'Module\Channel\Model\ChannelEntryAutosave',
+			'ChannelEntryVersion' => 'Module\Channel\Model\ChannelEntryVersion',
 			'ChannelFormSettings' => 'Module\Channel\Model\ChannelFormSettings',
 			'ChannelLayout' => 'Module\Channel\Model\ChannelLayout',
 

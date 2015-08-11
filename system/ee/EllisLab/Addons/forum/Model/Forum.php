@@ -122,6 +122,10 @@ class Forum extends Model {
 		'forum_use_http_auth'             => 'enum[y,n]',
 	);
 
+	protected static $_events = array(
+		'beforeInsert',
+	);
+
 	protected $forum_id;
 	protected $board_id;
 	protected $forum_name;
@@ -182,6 +186,23 @@ class Forum extends Model {
 		$permissions[$key] = $value;
 
 		$this->setProperty('forum_permissions', $permissions);
+	}
+
+	public function onBeforeInsert()
+	{
+		$model = $this->getFrontend();
+
+		$last_forum = $model->get('Forum')
+			->fields('forum_order')
+			->filter('forum_is_cat', $this->getProperty('forum_is_cat'))
+			->order('forum_order', 'desc');
+
+		if ($this->getProperty('forum_is_cat'))
+		{
+			$last_forum->filter('forum_parent', $this->getProperty('forum_parent'));
+		}
+
+		$this->setProperty('forum_order', $last_forum->first()->forum_order + 1);
 	}
 
 }

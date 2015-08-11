@@ -385,7 +385,7 @@ class EE_Schema {
 		// Member Groups table
 
 		$Q[] = "CREATE TABLE exp_member_groups (
-			group_id smallint(4) unsigned NOT NULL AUTO_INCREMENT,
+			group_id smallint(4) unsigned NOT NULL,
 			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
 			group_title varchar(100) NULL DEFAULT NULL,
 			group_description text NOT NULL,
@@ -394,14 +394,17 @@ class EE_Schema {
 			can_view_offline_system char(1) NOT NULL default 'n',
 			can_view_online_system char(1) NOT NULL default 'y',
 			can_access_cp char(1) NOT NULL default 'n',
+			can_access_footer_report_bug char(1) NOT NULL default 'n',
+			can_access_footer_new_ticket char(1) NOT NULL default 'n',
+			can_access_footer_user_guide char(1) NOT NULL default 'n',
 			can_access_content char(1) NOT NULL default 'n',
 			can_access_publish char(1) NOT NULL default 'n',
 			can_access_edit char(1) NOT NULL default 'n',
 			can_access_files char(1) NOT NULL default 'n',
+
 			can_access_fieldtypes char(1) NOT NULL DEFAULT 'n',
 			can_access_design char(1) NOT NULL default 'n',
 			can_access_addons char(1) NOT NULL default 'n',
-
 			can_access_modules char(1) NOT NULL default 'n',
 			can_access_extensions char(1) NOT NULL default 'n',
 			can_access_plugins char(1) NOT NULL default 'n',
@@ -409,10 +412,10 @@ class EE_Schema {
 			can_access_admin char(1) NOT NULL default 'n',
 			can_access_sys_prefs char(1) NOT NULL default 'n',
 			can_access_content_prefs char(1) NOT NULL default 'n',
+
 			can_access_tools char(1) NOT NULL default 'n',
 			can_access_comm char(1) NOT NULL default 'n',
 			can_access_utilities char(1) NOT NULL default 'n',
-
 			can_access_data char(1) NOT NULL default 'n',
 			can_access_logs char(1) NOT NULL default 'n',
 			can_admin_channels char(1) NOT NULL default 'n',
@@ -420,10 +423,10 @@ class EE_Schema {
 			can_admin_design char(1) NOT NULL default 'n',
 			can_admin_members char(1) NOT NULL default 'n',
 			can_delete_members char(1) NOT NULL default 'n',
+
 			can_admin_mbr_groups char(1) NOT NULL default 'n',
 			can_admin_mbr_templates char(1) NOT NULL default 'n',
 			can_ban_users char(1) NOT NULL default 'n',
-
 			can_admin_modules char(1) NOT NULL default 'n',
 			can_admin_templates char(1) NOT NULL default 'n',
 			can_edit_categories char(1) NOT NULL default 'n',
@@ -431,10 +434,10 @@ class EE_Schema {
 			can_view_other_entries char(1) NOT NULL default 'n',
 			can_edit_other_entries char(1) NOT NULL default 'n',
 			can_assign_post_authors char(1) NOT NULL default 'n',
+
 			can_delete_self_entries char(1) NOT NULL default 'n',
 			can_delete_all_entries char(1) NOT NULL default 'n',
 			can_view_other_comments char(1) NOT NULL default 'n',
-
 			can_edit_own_comments char(1) NOT NULL default 'n',
 			can_delete_own_comments char(1) NOT NULL default 'n',
 			can_edit_all_comments char(1) NOT NULL default 'n',
@@ -442,10 +445,10 @@ class EE_Schema {
 			can_moderate_comments char(1) NOT NULL default 'n',
 			can_send_email char(1) NOT NULL default 'n',
 			can_send_cached_email char(1) NOT NULL default 'n',
+
 			can_email_member_groups char(1) NOT NULL default 'n',
 			can_email_from_profile char(1) NOT NULL default 'n',
 			can_view_profiles char(1) NOT NULL default 'n',
-
 			can_edit_html_buttons char(1) NOT NULL DEFAULT 'n',
 			can_delete_self char(1) NOT NULL default 'n',
 			can_post_comments char(1) NOT NULL default 'y',
@@ -453,10 +456,10 @@ class EE_Schema {
 			can_search char(1) NOT NULL default 'y',
 			can_send_private_messages char(1) NOT NULL default 'n',
 			can_attach_in_private_messages char(1) NOT NULL default 'n',
+
 			can_send_bulletins char(1) NOT NULL default 'n',
 			include_in_authorlist char(1) NOT NULL default 'n',
 			include_in_memberlist char(1) NOT NULL default 'y',
-
 			mbr_delete_notify_emails varchar(255) NULL DEFAULT NULL,
 			search_flood_control mediumint(5) unsigned NOT NULL default '15',
 			prv_msg_send_limit smallint unsigned NOT NULL default '20',
@@ -1441,6 +1444,9 @@ class EE_Schema {
 				'group_id'                       => 1,
 				'can_view_offline_system'        => 'y',
 				'can_access_cp'                  => 'y',
+				'can_access_footer_report_bug'   => 'y',
+				'can_access_footer_new_ticket'   => 'y',
+				'can_access_footer_user_guide'   => 'y',
 				'can_access_content'             => 'y',
 				'can_access_publish'             => 'y',
 				'can_access_edit'                => 'y',

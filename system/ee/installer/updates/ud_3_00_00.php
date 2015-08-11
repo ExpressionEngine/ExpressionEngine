@@ -54,6 +54,7 @@ class Updater {
 				'_centralize_captcha_settings',
 				'_update_members_table',
 				'_update_member_fields_table',
+				'_update_member_groups_table',
 				'_update_html_buttons',
 				'_update_files_table',
 				'_update_upload_prefs_table',
@@ -725,15 +726,36 @@ class Updater {
 	 */
 	private function _update_member_groups_table()
 	{
-		ee()->smartforge->modify_column('member_groups', array(
-			'group_id' => array(
-				'type'			 => 'int',
-				'constraint'     => 4,
-				'null'			 => FALSE,
-				'unsigned'		 => TRUE,
-				'auto_increment' => TRUE
+		ee()->smartforge->add_column('member_groups', array(
+			'can_access_footer_report_bug' => array(
+				'type'       => 'char',
+				'constraint' => 1,
+				'default'    => 'n',
+				'null'       => FALSE
+			),
+			'can_access_footer_new_ticket' => array(
+				'type'       => 'char',
+				'constraint' => 1,
+				'default'    => 'n',
+				'null'       => FALSE
+			),
+			'can_access_footer_user_guide' => array(
+				'type'       => 'char',
+				'constraint' => 1,
+				'default'    => 'n',
+				'null'       => FALSE
 			)
 		));
+
+		ee()->db->update(
+			'member_groups',
+			array(
+				'can_access_footer_report_bug' => 'y',
+				'can_access_footer_new_ticket' => 'y',
+				'can_access_footer_user_guide' => 'y'
+			),
+			array('can_access_cp' => 'y')
+		);
 	}
 
 	/**
