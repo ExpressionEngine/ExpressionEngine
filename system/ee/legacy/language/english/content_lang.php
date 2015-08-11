@@ -23,6 +23,8 @@ $lang = array(
 
 'manage_categories' => 'Manage Categories',
 
+'entry_manager' => 'Entry Manager',
+
 'btn_search_entries' => 'Search Entries',
 
 'by' => 'by',
@@ -82,8 +84,6 @@ $lang = array(
 'edit_comment_error' => 'Cannot Edit Comment',
 
 'edit_comment_error_desc' => 'We were unable to edit the comment, please review and fix errors below.',
-
-'btn_edit_entry' => 'Edit Entry',
 
 'btn_publish' => 'Publish',
 

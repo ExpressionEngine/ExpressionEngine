@@ -213,14 +213,6 @@ $lang = array(
 
 'smtp_server_desc' => 'URL location of your <mark>SMTP server</mark>.',
 
-'smtp_username' => 'Username',
-
-'smtp_username_desc' => 'Username of your <mark>SMTP server</mark>.',
-
-'smtp_password' => 'Password',
-
-'smtp_password_desc' => 'Password of your <mark>SMTP server</mark>.',
-
 'sending_options' => 'Sending Options',
 
 'mail_format' => 'Mail format',
@@ -512,11 +504,7 @@ $lang = array(
 
 'prv_msg_max_chars' => 'Maximum characters',
 
-'prv_msg_max_chars_desc' => 'Maximum allowed characters in personal messages.',
-
 'prv_msg_html_format' => 'Formatting',
-
-'prv_msg_html_format_desc' => 'Select type of formatting to use for personal messages.',
 
 "html_safe" => "Safe HTML only",
 
@@ -535,8 +523,6 @@ $lang = array(
 'prv_msg_upload_path_desc' => 'Full path location for your <mark>attachement</mark> directory.',
 
 'prv_msg_max_attachments' => 'Maximum attachments',
-
-'prv_msg_max_attachments_desc' => 'Maximum allowed attachments per personal message.',
 
 'prv_msg_attach_maxsize' => 'Maximum file size (<abbr title="kilobyte">kb</abbr>)',
 
@@ -572,15 +558,9 @@ $lang = array(
 
 'avatar_max_width' => 'Maximum width',
 
-'avatar_max_width_desc' => 'Maximum allowed width of images uploaded for use as an avatar by members.',
-
 'avatar_max_height' => 'Maximum height',
 
-'avatar_max_height_desc' => 'Maximum allowed height of images uploaded for use as an avatar by members.',
-
 'avatar_max_kb' => 'Maximum file size (<abbr title="kilobytes">kb</abbr>)',
-
-'avatar_max_kb_desc' => 'Maximum allowed file size of images uploaded for use as an avatar by members.',
 
 /**
  * CAPTCHA
@@ -738,8 +718,6 @@ $lang = array(
 
 'banishment_type' => 'Lock out action',
 
-'banishment_type_desc' => 'When a member meets the lock out requirement.',
-
 'banish_404' => 'Send to 404',
 
 'banish_redirect' => 'Redirect to URL',
@@ -751,8 +729,6 @@ $lang = array(
 'banishment_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location for locked out members.',
 
 'banishment_message' => 'Message',
-
-'banishment_message_desc' => 'Displayed using <mark>user messages</mark> template.',
 
 /**
  * Pages Settings

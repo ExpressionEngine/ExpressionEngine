@@ -85,6 +85,9 @@
 								</form>
 							<?php endif ?>
 							<ul class="channels-edit">
+								<li class="search-channel" data-search="<?= strtolower(lang('view_all')) ?>">
+									<a href="<?=ee('CP/URL', 'publish/edit')?>"><?= lang('view_all') ?></a>
+								</li>
 								<?php foreach ($cp_main_menu['channels']['edit'] as $channel_name => $link): ?>
 									<li class="search-channel" data-search="<?=strtolower($channel_name)?>"><a href="<?=$link?>"><?=$channel_name?></a></li>
 								<?php endforeach ?>

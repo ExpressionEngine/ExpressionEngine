@@ -6,7 +6,7 @@
 <fieldset class="col-group required <?=form_error_class('template_name')?>">
 	<div class="setting-txt col w-8 <?=form_error_class('template_name')?>">
 		<h3><?=lang('template_name')?></h3>
-		<em><?=lang('template_name_desc')?></em>
+		<em><?=lang('alphadash_desc')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
 		<input type="hidden" name="old_name" value="<?=$template->template_name?>">
@@ -17,7 +17,6 @@
 <fieldset class="col-group <?=form_error_class('template_type')?>">
 	<div class="setting-txt col w-8 <?=form_error_class('template_type')?>">
 		<h3><?=lang('template_type')?></h3>
-		<em><?=lang('template_type_desc')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
 		<?=form_dropdown('template_type', $template_types, set_value('template_type', $template->template_type), FALSE)?>

@@ -270,7 +270,7 @@ EE.cp.formValidation = {
 			container.find('> ' + errorClass).remove();
 
 			// Re-enable submit button only if all errors are gone
-			if ( ! this._errorsExist())
+			if ( ! this._errorsExist(form))
 			{
 				button.removeClass('disable')
 					.attr('value', button.data('submit-text'))

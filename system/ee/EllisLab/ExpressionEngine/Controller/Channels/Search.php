@@ -47,15 +47,19 @@ class Search extends AbstractChannelsController {
 			'channels' => array(
 				'query' => ee('Model')->get('Channel')
 					->filter('site_id', ee()->config->item('site_id'))
+					->filterGroup()
 					->filter('channel_name', 'LIKE', '%' . $search_terms . '%')
-					->orFilter('channel_title', 'LIKE', '%' . $search_terms . '%'),
+					->orFilter('channel_title', 'LIKE', '%' . $search_terms . '%')
+					->endFilterGroup(),
 				'table_create_method' => 'buildTableFromChannelQuery',
 			),
 			'custom_fields' => array(
 				'query' => ee('Model')->get('ChannelField')
 					->filter('site_id', ee()->config->item('site_id'))
+					->filterGroup()
 					->filter('field_label', 'LIKE', '%' . $search_terms . '%')
-					->orFilter('field_name', 'LIKE', '%' . $search_terms . '%'),
+					->orFilter('field_name', 'LIKE', '%' . $search_terms . '%')
+					->endFilterGroup(),
 				'table_create_method' => 'buildTableFromChannelFieldsQuery',
 			),
 			'field_groups' => array(
@@ -73,9 +77,11 @@ class Search extends AbstractChannelsController {
 			'categories' => array(
 				'query' => ee('Model')->get('Category')
 					->filter('site_id', ee()->config->item('site_id'))
+					->filterGroup()
 					->filter('cat_name', 'LIKE', '%' . $search_terms . '%')
 					->orFilter('cat_url_title', 'LIKE', '%' . $search_terms . '%')
-					->orFilter('cat_description', 'LIKE', '%' . $search_terms . '%'),
+					->orFilter('cat_description', 'LIKE', '%' . $search_terms . '%')
+					->endFilterGroup(),
 				'table_create_method' => 'buildTableFromCategoriesQuery',
 			),
 			'status_groups' => array(

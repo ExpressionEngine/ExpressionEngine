@@ -16,7 +16,6 @@ feature 'General Settings' do
 
   it 'shows the General Settings page' do
     @page.should have_text 'General Settings'
-    @page.should have_text 'Full descriptive name of this site.'
     @page.should have_site_name
     @page.should have_site_short_name
     @page.should have_is_system_on_y

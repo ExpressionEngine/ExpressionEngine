@@ -102,7 +102,7 @@ class Template extends AbstractDesignController {
 				array(
 					array(
 						'title' => 'name',
-						'desc' => 'template_name_desc',
+						'desc' => 'alphadash_desc',
 						'fields' => array(
 							'template_name' => array(
 								'type' => 'text',
@@ -112,7 +112,6 @@ class Template extends AbstractDesignController {
 					),
 					array(
 						'title' => 'template_type',
-						'desc' => 'template_type_desc',
 						'fields' => array(
 							'template_type' => array(
 								'type' => 'select',

@@ -3,8 +3,7 @@
 <div class="tbl-ctrls">
 	<?=form_open($form_url)?>
 		<fieldset class="tbl-search right">
-			<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=$search_value?>">
-			<input class="btn submit" type="submit" value="<?=lang('btn_search_entries')?>">
+			<?= $create_button ?>
 		</fieldset>
 		<h1><?=$cp_heading?></h1>
 		<?=ee('Alert')->getAllInlines()?>

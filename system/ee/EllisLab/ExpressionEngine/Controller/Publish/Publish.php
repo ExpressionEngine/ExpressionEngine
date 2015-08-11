@@ -97,6 +97,7 @@ class Publish extends AbstractPublishController {
 		$entry->site_id =  ee()->config->item('site_id');
 		$entry->author_id = ee()->session->userdata('member_id');
 		$entry->ip_address = ee()->session->userdata['ip_address'];
+		$entry->versioning_enabled = $channel->enable_versioning;
 
 		ee()->view->cp_page_title = sprintf(lang('create_entry_with_channel_name'), $channel->channel_title);
 
@@ -195,7 +196,7 @@ class Publish extends AbstractPublishController {
 				'ee_filebrowser',
 				'ee_fileuploader',
 			),
-			'file' => array('cp/v3/publish')
+			'file' => array('cp/v3/publish', 'cp/channel/category_edit')
 		));
 
 		ee()->cp->render('publish/entry', $vars);

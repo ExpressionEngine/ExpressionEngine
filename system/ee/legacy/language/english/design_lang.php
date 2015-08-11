@@ -134,10 +134,6 @@ $lang = array(
 
 'error_no_template' => 'No such Template exists.',
 
-'error_no_snippet' => 'The Template Partial <b>%s</b> does not exist.',
-
-'error_no_global_variable' => 'The Template Variable <b>%s</b> does not exist.',
-
 'template_name_taken' => 'The template name you submitted is already taken',
 
 'snippet_name_taken' => 'The template partial name you submitted is already taken',
@@ -196,11 +192,7 @@ $lang = array(
 
 'create_template' => 'Create Template',
 
-'template_name_desc' => 'Short name for this template.<br><i>No spaces. Underscores and dashes are allowed.</i>',
-
 'template_type' => 'Type',
-
-'template_type_desc' => 'Choose a template type.',
 
 'duplicate_existing_template' => 'Duplicate existing template?',
 
