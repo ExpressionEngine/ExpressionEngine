@@ -339,10 +339,6 @@ $lang = array(
 
 'watermarks_removed_desc' => '%d watermarks were removed.',
 
-'watermark_name_desc' => 'Full descriptive name of this watermark.',
-
-'watermark_type_desc' => 'Choose a watermark type.',
-
 'text' => 'Text',
 
 'image' => 'Image',
@@ -387,15 +383,9 @@ $lang = array(
 
 'watermark_text_font' => 'Font face',
 
-'watermark_text_font_desc' => 'Choose the font face for this watermark.',
-
 'watermark_text_size' => 'Text size',
 
-'watermark_text_size_desc' => 'Size in pixels of this watermark\'s text.',
-
 'watermark_text_color' => 'Text color',
-
-'watermark_text_color_desc' => 'Color of this watermark\'s text.',
 
 'watermark_text_dropshadow' => 'Enable dropshadow?',
 
@@ -403,11 +393,7 @@ $lang = array(
 
 'watermark_text_dropshadow_distance' => 'Dropshadow distance',
 
-'watermark_text_dropshadow_distance_desc' => 'Size of this watermark\'s drop shadow.',
-
 'watermark_text_dropshadow_color' => 'Dropshadow color',
-
-'watermark_text_dropshadow_color_desc' => 'Color of the dropshadow for this watermark.',
 
 'image_options' => 'Image Options',
 
