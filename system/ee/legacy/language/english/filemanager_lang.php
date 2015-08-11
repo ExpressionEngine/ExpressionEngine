@@ -35,16 +35,12 @@ $lang = array(
 'edit_file_metadata' => 'Edit "%s" Meta Data',
 
 'title' => 'Title',
-'title_desc' => 'Title of this file.',
 
 'description' => 'Description',
-'description_desc' => 'Description of this file.',
 
 'credit' => 'Credit',
-'credit_desc' => 'Who created this file?',
 
 'location' => 'Location',
-'location_desc' => 'Where is this file from?',
 
 'btn_edit_file_meta' => 'Edit File Meta',
 
