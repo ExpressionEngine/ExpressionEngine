@@ -44,8 +44,6 @@ $lang = array(
 
 'name' => 'Name',
 
-'name_desc' => 'Short name for this group.<br><i>No spaces. Underscores and dashes are allowed.</i>',
-
 'duplicate_group' => 'Duplicate existing group?',
 
 'duplicate_group_desc' => 'Will be created with all templates found in copied group.',
