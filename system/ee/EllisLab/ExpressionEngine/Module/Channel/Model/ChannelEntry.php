@@ -617,6 +617,7 @@ class ChannelEntry extends ContentModel {
 			->with('CategoryGroup')
 			->filter('CategoryGroup.group_id', $field->getItem('cat_group_id'))
 			->filter('Category.parent_id', 0)
+			->order('Category.cat_order')
 			->all();
 
 		$category_list = $this->buildCategoryList($categories);
