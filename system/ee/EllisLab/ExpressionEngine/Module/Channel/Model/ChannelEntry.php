@@ -207,7 +207,7 @@ class ChannelEntry extends ContentModel {
 
 	private function saveVersion()
 	{
-		if ( ! $this->Channel->enable_versioning)
+		if ( ! $this->getProperty('versioning_enabled'))
 		{
 			return;
 		}
