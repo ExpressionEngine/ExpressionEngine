@@ -541,7 +541,7 @@ class ChannelEntry extends ContentModel {
 				)
 			);
 
-			if ($this->Channel->enable_versioning)
+			if ($this->Channel && $this->Channel->enable_versioning)
 			{
 				$default_fields['versioning_enabled'] = array(
 					'field_id'				=> 'versioning_enabled',
