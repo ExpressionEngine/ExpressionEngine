@@ -69,21 +69,18 @@ class Avatars extends Settings {
 			'avatar_file_restrictions' => array(
 				array(
 					'title' => 'avatar_max_width',
-					'desc' => 'avatar_max_width_desc',
 					'fields' => array(
 						'avatar_max_width' => array('type' => 'text')
 					)
 				),
 				array(
 					'title' => 'avatar_max_height',
-					'desc' => 'avatar_max_height_desc',
 					'fields' => array(
 						'avatar_max_height' => array('type' => 'text')
 					)
 				),
 				array(
 					'title' => 'avatar_max_kb',
-					'desc' => 'avatar_max_kb_desc',
 					'fields' => array(
 						'avatar_max_kb' => array('type' => 'text')
 					)

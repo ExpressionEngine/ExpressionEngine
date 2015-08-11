@@ -558,15 +558,9 @@ $lang = array(
 
 'avatar_max_width' => 'Maximum width',
 
-'avatar_max_width_desc' => 'Maximum allowed width of images uploaded for use as an avatar by members.',
-
 'avatar_max_height' => 'Maximum height',
 
-'avatar_max_height_desc' => 'Maximum allowed height of images uploaded for use as an avatar by members.',
-
 'avatar_max_kb' => 'Maximum file size (<abbr title="kilobytes">kb</abbr>)',
-
-'avatar_max_kb_desc' => 'Maximum allowed file size of images uploaded for use as an avatar by members.',
 
 /**
  * CAPTCHA
