@@ -7,6 +7,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
 use EllisLab\Addons\FilePicker\FilePicker as FilePicker;
+use EllisLab\ExpressionEngine\Model\Content\FieldFacade as FieldFacade;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -729,13 +730,19 @@ class Cat extends AbstractChannelsController {
 				if ($result->isValid())
 				{
 					$category->save();
-					return array('messageType' => 'success');
+					return array(
+						'messageType' => 'success',
+						'body' => $this->categoryGroupPublishField($group_id)
+					);
 				}
 				else
 				{
 					ee()->load->library('form_validation');
 					ee()->form_validation->_error_array = $result->renderErrors();
-					return array('body' => ee()->cp->render('_shared/form', $vars, TRUE));
+					return array(
+						'messageType' => 'error',
+						'body' => ee()->cp->render('_shared/form', $vars, TRUE)
+					);
 				}
 			}
 
@@ -794,6 +801,50 @@ class Cat extends AbstractChannelsController {
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/cat/cat-list/'.$cat_group->group_id), $cat_group->group_name . ' &mdash; ' . lang('categories'));
 
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * AJAX return body for adding a new category via the publish form; when a
+	 * new category is added, we have to refresh the category list
+	 */
+	private function categoryGroupPublishField($group_id, $entry_id = NULL)
+	{
+		// Initialize a new category group field so we can return its publish form
+		$category_group_field = array(
+			'field_id'				=> 'categories',
+			'cat_group_id'			=> $group_id,
+			'field_label'			=> lang('categories'),
+			'field_required'		=> 'n',
+			'field_show_fmt'		=> 'n',
+			'field_instructions'	=> lang('categories_desc'),
+			'field_text_direction'	=> 'ltr',
+			'field_type'			=> 'checkboxes',
+			'string_override'		=> '',
+			'field_list_items'      => '',
+			'field_maxl'			=> 100
+		);
+
+		$field_id = 'cat_group_id_'.$group_id;
+		$field = new FieldFacade($field_id, $category_group_field);
+		$field->setName($field_id);
+
+		if (is_numeric($entry_id))
+		{
+			$entry = ee('Model')->get('ChannelEntry', $entry)->first();
+		}
+		else
+		{
+			$entry = ee('Model')->make('ChannelEntry');
+			$entry->Categories = NULL;
+		}
+
+		$entry->populateCategories($field);
+
+		// Reset the categories they already have selected
+		$selected_cats = ee('Model')->get('Category')->filter('cat_id', 'IN', ee()->input->post('categories'))->all();
+		$field->setData(implode('|', $selected_cats->pluck('cat_name')));
+
+		return $field->getForm();
 	}
 
 	/**

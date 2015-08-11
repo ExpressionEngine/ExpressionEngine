@@ -78,8 +78,9 @@ $(document).ready(function () {
 	}
 
 	// Category modal
-	$('a[rel=modal-add-category]').click(function (e) {
-		var modal_name = $(this).attr('rel')
+	$('a[rel=modal-add-category]').click(function (e) {console.log($('input[name="categories[]"]').serialize());
+		var modal_link = $(this),
+			modal_name = modal_link.attr('rel');
 		$.ajax({
 			type: "GET",
 			url: EE.publish.add_category.URL.replace('###', $(this).data('catGroup')),
@@ -87,29 +88,34 @@ $(document).ready(function () {
 			success: function (data) {
 				var modal = $('.' + modal_name);
 
-				load_category_modal_data(modal, data);
+				load_category_modal_data(modal, data, modal_link);
 			}
 		})
 	});
 
-	function load_category_modal_data(modal, data) {
+	function load_category_modal_data(modal, data, modal_link) {
 		$('div.box', modal).html(data);
 
 		EE.cp.formValidation.init(modal);
+
+		$('input[name=cat_name]', modal).bind('keyup keydown', function() {
+			$(this).ee_url_title('input[name=cat_url_title]');
+		});
 
 		$('form', modal).on('submit', function() {
 
 			$.ajax({
 				type: 'POST',
 				url: this.action,
-				data: $(this).serialize()+'&save_modal=yes',
+				data: $(this).add('input[name="categories[]"]').serialize()+'&save_modal=yes',
 				dataType: 'json',
 
 				success: function(result) {
 					if (result.messageType == 'success') {
 						modal.trigger('modal:close');
+						modal_link.parents('fieldset').find('.setting-field').html(result.body);
 					} else {
-						load_category_modal_data(modal, result.body);
+						load_category_modal_data(modal, result.body, modal_link);
 					}
 				}
 			});
