@@ -198,10 +198,6 @@ $lang = array(
 
 'edit_upload_directory' => 'Edit Upload Directory',
 
-'upload_name' => 'Directory name',
-
-'upload_name_desc' => 'Be descriptive, like <b>photos</b> or <b>documents</b>.',
-
 'upload_url' => 'Upload directory',
 
 'upload_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of this <mark>upload</mark> directory.',

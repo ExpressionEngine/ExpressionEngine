@@ -168,8 +168,7 @@ class Uploads extends AbstractFilesController {
 		$vars['sections'] = array(
 			array(
 				array(
-					'title' => 'upload_name',
-					'desc' => 'upload_name_desc',
+					'title' => 'name',
 					'fields' => array(
 						'name' => array(
 							'type' => 'text',
