@@ -338,7 +338,7 @@ class Edit extends AbstractPublishController {
 			'form_url' => ee('CP/URL', 'publish/edit/entry/' . $id),
 			'form_attributes' => $form_attributes,
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
-			'button_text' => lang('btn_edit_entry')
+			'button_text' => lang('btn_publish')
 		);
 
 		if ($autosave_id)
