@@ -87,6 +87,10 @@ class Settings extends CP_Controller {
 				'captcha' => ee('CP/URL', 'settings/captcha')
 			),
 		));
+
+		ee()->view->header = array(
+			'title' => lang('system_settings'),
+		);
 	}
 
 	/**

@@ -40,6 +40,8 @@ $lang = array(
 
 'captcha' => 'CAPTCHA',
 
+'system_settings' => 'System Settings',
+
 /**
  * General Settings
  */
