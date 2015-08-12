@@ -14,6 +14,22 @@ $lang = array(
 
 'item' => 'Item',
 
+'items' => 'Items',
+
+'price_sale' => 'Price / Sale',
+
+'frequency' => 'Frequency',
+
+'subscribers' => 'Subscribers',
+
+'no_items' => 'No Items',
+
+'create_new_item' => 'Create New Item',
+
+'all_items' => 'All Items',
+
+'all_purchases' => 'All Purchases',
+
 'purchaser' => 'Purchaser',
 
 'date_of_purchase' => 'Date of Purchase',
@@ -25,6 +41,10 @@ $lang = array(
 'purchases_removed' => 'Purchases removed',
 
 'purchases_removed_desc' => '%d purchases were removed.',
+
+'items_removed' => 'Items removed',
+
+'items_removed_desc' => '%d items were removed.',
 
 'create_purchase' => 'Create Purchase',
 

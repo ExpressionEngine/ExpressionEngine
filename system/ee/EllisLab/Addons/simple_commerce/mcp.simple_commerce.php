@@ -94,11 +94,138 @@ class Simple_commerce_mcp {
 
 	function index($message = '')
 	{
+		$table = ee('CP/Table');
+		$table->setColumns(array(
+			'name',
+			'price_sale' => array(
+				'encode' => FALSE
+			),
+			'frequency',
+			'subscribers',
+			'purchases',
+			'manage' => array(
+				'type'	=> Table::COL_TOOLBAR
+			),
+			array(
+				'type'	=> Table::COL_CHECKBOX
+			)
+		));
+
+		$table->setNoResultsText('no_purchases', 'create_new_item', ee('CP/URL', 'addons/settings/simple_commerce/create-item'));
+
+		$sort_map = array(
+			// Change when relationships work
+			'name'        => 'entry_id',
+			'price_sale'  => 'item_regular_price',
+			'frequency'   => 'subscription_frequency',
+			'subscribers' => 'current_subscriptions',
+			'purchases'   => 'item_purchases'
+		);
+
+		$items = ee('Model')->get('simple_commerce:Item');
+		$total_rows = $items->all()->count();
+
+		$items = $items->order($sort_map[$table->sort_col], $table->sort_dir)
+			->limit($table->config['limit'])
+			->offset(($table->config['page'] - 1) * $table->config['limit'])
+			->all();
+
+		$data = array();
+		// TODO: Check for n+1 once these relationships are working
+		foreach ($items as $item)
+		{
+			if ($item->item_use_sale)
+			{
+				$price_col = '<span class="faded">$'.$item->item_regular_price.' / </span><span class="yes">$'.$item->item_sale_price.'</span>';
+			}
+			else
+			{
+				$price_col = '<span class="yes">$'.$item->item_regular_price.'</span><span class="faded"> / $'.$item->item_sale_price.'</span>';
+			}
+			$columns = array(
+				$item->entry_id,
+				//$item->ChannelEntry->title,
+				$price_col,
+				$item->subscription_frequency ?: '--',
+				$item->current_subscriptions,
+				$item->item_purchases,
+				array('toolbar_items' => array(
+					'edit' => array(
+						'href' => ee('CP/URL', 'addons/settings/simple_commerce/edit-item/'.$item->getId()),
+						'title' => lang('edit')
+					)
+				)),
+				array(
+					'name' => 'items[]',
+					'value' => $item->getId(),
+					'data'	=> array(
+						'confirm' => lang('item') . ': <b>' . htmlentities($item->entry_id, ENT_QUOTES) . '</b>'
+					)
+				)
+			);
+
+			$attrs = array();
+			if (ee()->session->flashdata('highlight_id') == $item->getId())
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs' => $attrs,
+				'columns' => $columns
+			);
+		}
+
+		$table->setData($data);
+
+		$vars['base_url'] = ee('CP/URL', 'addons/settings/simple_commerce');
+		$vars['table'] = $table->viewData($vars['base_url']);
+
+		$vars['pagination'] = ee('CP/Pagination', $total_rows)
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($vars['table']['base_url']);
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('items') . ': <b>### ' . lang('items') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/confirm_remove'),
+		));
+
 		return array(
 			'heading' => lang('commerce_items'),
-			'body' => 'items',
+			'body' => ee('View')->make('simple_commerce:items')->render($vars),
 			'sidebar' => $this->sidebar
 		);
+	}
+
+	/**
+	 * Remove purchases handler
+	 */
+	public function removeItem()
+	{
+		$item_ids = ee()->input->post('items');
+
+		if ( ! empty($item_ids) && ee()->input->post('bulk_action') == 'remove')
+		{
+			$item_ids = array_filter($item_ids, 'is_numeric');
+
+			if ( ! empty($item_ids))
+			{
+				ee('Model')->get('simple_commerce:Item', $item_ids)->delete();
+
+				ee('Alert')->makeInline('items-table')
+					->asSuccess()
+					->withTitle(lang('items_removed'))
+					->addToBody(sprintf(lang('items_removed_desc'), count($item_ids)))
+					->defer();
+			}
+		}
+		else
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce', ee()->cp->get_url_state()));
 	}
 
 	/**

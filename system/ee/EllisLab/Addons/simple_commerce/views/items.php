@@ -1,10 +1,10 @@
 <div class="box">
 	<?=form_open($base_url, 'class="tbl-ctrls"')?>
 		<fieldset class="tbl-search right">
-			<a class="btn tn action" href="<?=ee('CP/URL', 'addons/settings/simple_commerce/create-purchase')?>"><?=lang('create_new')?></a>
+			<a class="btn tn action" href="<?=ee('CP/URL', 'addons/settings/simple_commerce/create-item')?>"><?=lang('create_new')?></a>
 		</fieldset>
-		<h1><?=lang('all_purchases')?></h1>
-		<?=ee('Alert')->get('purchases-table')?>
+		<h1><?=lang('all_items')?></h1>
+		<?=ee('Alert')->get('items-table')?>
 		<?php $this->embed('ee:_shared/table', $table); ?>
 		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
@@ -24,7 +24,7 @@
 <?php
 $modal_vars = array(
 	'name'      => 'modal-confirm-remove',
-	'form_url'	=> ee('CP/URL', 'addons/settings/simple_commerce/remove-purchase'),
+	'form_url'	=> ee('CP/URL', 'addons/settings/simple_commerce/remove-item'),
 	'hidden'	=> array(
 		'bulk_action'	=> 'remove'
 	)

@@ -32,6 +32,10 @@ class Item extends Model {
 	protected static $_primary_key = 'item_id';
 	protected static $_table_name = 'simple_commerce_items';
 
+	protected static $_typed_columns = array(
+		'item_use_sale' => 'boolString',
+	);
+
 	protected static $_relationships = array(
 		'Purchases' => array(
 			'type' => 'hasMany',
