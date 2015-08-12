@@ -5,6 +5,7 @@
 	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
 	<?=ee('Alert')->getAllInlines()?>
 	<?php if (isset($filters)) echo $filters; ?>
+	<input type="submit" style="position: absolute; left: -9999px"/>
 	<section class="item-wrap log">
 		<?php if ($disabled): ?>
 			<p class="no-results"><?=lang('throttling_disabled')?> <a class="btn action" href="<?=ee('CP/URL', 'settings/throttling')?>"><?=lang('enable_throttling')?></a></p>
