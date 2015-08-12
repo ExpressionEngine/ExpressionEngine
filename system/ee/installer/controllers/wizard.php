@@ -563,16 +563,23 @@ class Wizard extends CI_Controller {
 	{
 		if ( ! isset($this->db_connect_attempt))
 		{
-			$this->db_connect_attempt = $this->db_connect(array(
-				'hostname' => ee()->input->post('db_hostname'),
-				'database' => ee()->input->post('db_name'),
-				'username' => ee()->input->post('db_username'),
-				'password' => ee()->input->post('db_password'),
-				'dbprefix' => 'exp'
-			));
+			try
+			{
+				$this->db_connect_attempt = $this->db_connect(array(
+					'hostname' => ee()->input->post('db_hostname'),
+					'database' => ee()->input->post('db_name'),
+					'username' => ee()->input->post('db_username'),
+					'password' => ee()->input->post('db_password'),
+					'dbprefix' => 'exp'
+				));
+			}
+			catch (Exception $e)
+			{
+				return FALSE;
+			}
 		}
 
-		if ($this->db_connect_attempt == $error_number)
+		if ($this->db_connect_attempt === $error_number)
 		{
 			$callable();
 			return FALSE;
@@ -711,14 +718,14 @@ class Wizard extends CI_Controller {
 			'dbcollat' => 'utf8_general_ci'
 		);
 
-		switch ($this->db_connect($db)) {
-			case 1045:
-				$errors[] = lang('database_invalid_user');
-				break;
-
-			default:
-				$errors[] = lang('database_no_connect');
-				break;
+		$this->db_connect_attempt = $this->db_connect($db);
+		if ($this->db_connect_attempt === 1045)
+		{
+			$errors[] = lang('database_invalid_user');
+		}
+		else if ($this->db_connect_attempt === FALSE)
+		{
+			$errors[] = lang('database_no_connect');
 		}
 
 		// Does the specified database schema type exist?
