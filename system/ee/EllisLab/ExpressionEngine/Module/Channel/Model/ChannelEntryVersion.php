@@ -18,11 +18,13 @@ class ChannelEntryVersion extends Model {
 	);
 
 	protected static $_relationships = array(
-		'Channel' => array(
-			'type' => 'belongsTo',
-		),
 		'ChannelEntry' => array(
 			'type' => 'belongsTo',
+		),
+		'Author'	=> array(
+			'type' => 'belongsTo',
+			'model' => 'Member',
+			'from_key' 	=> 'author_id'
 		),
 	);
 

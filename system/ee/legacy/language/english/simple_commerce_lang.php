@@ -4,13 +4,23 @@ $lang = array(
 
 'simple_commerce_module_name' => 'Simple Commerce',
 
-'settings_saved' => 'Settings Saved',
+'simple_commerce_manager' => 'Simple Commerce Manager',
 
-'settings_saved_desc' => 'Your settings have been successfully saved.',
+'commerce_items' => 'Commerce Items',
 
-'settings_save_error' => 'Cannot Save Settings',
+'commerce_purchases' => 'Commerce Purchases',
 
-'settings_save_error_desc' => 'We were unable to save your settings, please review and fix errors below.',
+'search_commerce' => 'Search Commerce',
+
+'item' => 'Item',
+
+'purchaser' => 'Purchaser',
+
+'date_of_purchase' => 'Date of Purchase',
+
+'sub_end_date' => 'End Date',
+
+'cost' => 'Cost',
 
 'purchases_removed' => 'Purchases removed',
 

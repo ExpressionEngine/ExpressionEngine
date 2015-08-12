@@ -83,15 +83,13 @@ class Email extends Settings {
 					)
 				),
 				array(
-					'title' => 'smtp_username',
-					'desc' => 'smtp_username_desc',
+					'title' => 'username',
 					'fields' => array(
 						'smtp_username' => array('type' => 'text')
 					)
 				),
 				array(
-					'title' => 'smtp_password',
-					'desc' => 'smtp_password_desc',
+					'title' => 'password',
 					'fields' => array(
 						'smtp_password' => array('type' => 'text')
 					)

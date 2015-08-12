@@ -585,7 +585,7 @@ class Communicate extends Utilities {
 	private function deliverEmail(EmailCache $email, $to, $cc = NULL, $bcc = NULL)
 	{
 		ee()->email->clear(TRUE);
-		ee()->email->wordwrap  = ($email->wordwrap == 'y') ? TRUE : FALSE;
+		ee()->email->wordwrap  = $email->wordwrap;
 		ee()->email->mailtype  = $email->mailtype;
 		ee()->email->from($email->from_email, $email->from_name);
 		ee()->email->to($to);
@@ -747,7 +747,7 @@ class Communicate extends Utilities {
 		{
 			$data[] = array(
 				htmlentities($email->subject, ENT_QUOTES, 'UTF-8'),
-				ee()->localize->human_time($email->cache_date),
+				ee()->localize->human_time($email->cache_date->format('U')),
 				$email->total_sent,
 				array('toolbar_items' => array(
 					'view' => array(

@@ -80,7 +80,6 @@ class Throttling extends Settings {
 				),
 				array(
 					'title' => 'banishment_type',
-					'desc' => 'banishment_type_desc',
 					'fields' => array(
 						'banishment_type' => array(
 							'type' => 'select',
@@ -101,7 +100,6 @@ class Throttling extends Settings {
 				),
 				array(
 					'title' => 'banishment_message',
-					'desc' => 'banishment_message_desc',
 					'fields' => array(
 						'banishment_message' => array('type' => 'textarea')
 					)

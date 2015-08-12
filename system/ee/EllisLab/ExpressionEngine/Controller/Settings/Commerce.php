@@ -39,17 +39,23 @@ class Commerce extends Settings {
 			ee()->functions->redirect(ee('CP/URL', 'settings'));
 		}
 
-		$base = reduce_double_slashes(str_replace('/public_html', '', substr(BASEPATH, 0, - strlen(SYSDIR.'/'))).'/encryption/');
+		$base = reduce_double_slashes(str_replace('/public_html', '', SYSPATH).'/user/encryption/');
 
 		$vars['sections'] = array(
 			array(
+				ee('Alert')->makeInline('ipn-notice')
+					->asWarning()
+					->cannotClose()
+					->addToBody(sprintf(lang('commerce_ipn_notice'), 'https://developer.paypal.com/webapps/developer/docs/classic/ipn/integration-guide/IPNIntro/'))
+					->render(),
 				array(
 					'title' => 'commerce_ipn_url',
 					'desc' => 'commerce_ipn_url_desc',
 					'fields' => array(
 						'sc_api_url' => array(
 							'type' => 'text',
-							'value' => ee()->functions->fetch_site_index(0,0).QUERY_MARKER.'ACT='.ee()->cp->fetch_action_id('Simple_commerce', 'incoming_ipn')
+							'value' => ee()->functions->fetch_site_index(0,0).QUERY_MARKER.'ACT='.ee()->cp->fetch_action_id('Simple_commerce', 'incoming_ipn'),
+							'disabled' => TRUE
 						)
 					)
 				),
@@ -117,73 +123,48 @@ class Commerce extends Settings {
 			)
 		);
 
-		ee()->form_validation->set_rules(array(
-			array(
-				'field' => 'sc_api_url',
-				'label' => 'lang:commerce_ipn_url',
-				'rules' => 'strip_tags|valid_xss_check'
-			),
-			array(
-				'field' => 'sc_paypal_account',
-				'label' => 'lang:commerce_paypal_email',
-				'rules' => 'strip_tags|valid_xss_check|valid_email'
-			),
-			array(
-				'field' => 'sc_certificate_id',
-				'label' => 'lang:commerce_paypal_cert_id',
-				'rules' => 'strip_tags|valid_xss_check'
-			),
-			array(
-				'field' => 'sc_public_certificate',
-				'label' => 'lang:commerce_cert_path',
-				'rules' => 'strip_tags|valid_xss_check|file_exists'
-			),
-			array(
-				'field' => 'sc_private_key',
-				'label' => 'lang:commerce_key_path',
-				'rules' => 'strip_tags|valid_xss_check|file_exists'
-			),
-			array(
-				'field' => 'sc_paypal_certificate',
-				'label' => 'lang:commerce_paypal_cert_path',
-				'rules' => 'strip_tags|valid_xss_check|file_exists'
-			),
-			array(
-				'field' => 'sc_temp_path',
-				'label' => 'lang:commerce_temp_path',
-				'rules' => 'strip_tags|valid_xss_check|file_exists|writeable'
-			)
-		));
-
-		ee()->form_validation->validateNonTextInputs($vars['sections']);
-
 		$base_url = ee('CP/URL', 'settings/commerce');
 
-		ee('Alert')->makeInline('ipn-notice')
-			->asWarning()
-			->cannotClose()
-			->addToBody(sprintf(lang('commerce_ipn_notice'), 'https://cms.paypal.com/us/cgi-bin/?cmd=_render-content&content_ID=developer/e_howto_admin_IPNIntro'))
-			->now();
-
-		ee()->view->extra_alerts = array('ipn-notice');
-
-		if (AJAX_REQUEST)
+		if ( ! empty($_POST))
 		{
-			ee()->form_validation->run_ajax();
-			exit;
-		}
-		elseif (ee()->form_validation->run() !== FALSE)
-		{
-			if ($this->saveSettings($vars['sections']))
+			$result = ee('Validation')->make(array(
+				'sc_paypal_account'     => 'email',
+				'sc_encrypt_buttons'    => 'enum[y,n]',
+				'sc_public_certificate' => 'fileExists',
+				'sc_private_key'        => 'fileExists',
+				'sc_paypal_certificate' => 'fileExists',
+				'sc_temp_path'          => 'fileExists'
+			))->validate($_POST);
+
+			if ($response = $this->ajaxValidation($result))
 			{
-				ee()->view->set_message('success', lang('preferences_updated'), lang('preferences_updated_desc'), TRUE);
+				return $response;
 			}
 
-			ee()->functions->redirect($base_url);
-		}
-		elseif (ee()->form_validation->errors_exist())
-		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+			if ($result->isValid())
+			{
+				// Unset API URL
+				unset($vars['sections'][0][1]);
+				if ($this->saveSettings($vars['sections']))
+				{
+					ee('Alert')->makeInline('shared-form')
+						->asSuccess()
+						->withTitle(lang('preferences_updated'))
+						->addToBody(lang('preferences_updated_desc'))
+						->defer();
+				}
+
+				ee()->functions->redirect($base_url);
+			}
+			else
+			{
+				$vars['errors'] = $result;
+				ee('Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('settings_save_error'))
+					->addToBody(lang('settings_save_error_desc'))
+					->now();
+			}
 		}
 
 		ee()->view->ajax_validate = TRUE;
@@ -194,7 +175,7 @@ class Commerce extends Settings {
 
 		ee()->lang->loadfile('addons');
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'addons'), lang('addon_manager'));
-		ee()->cp->set_breadcrumb(ee('CP/URL', ''), lang('simple_commerce'));
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'addons/settings/simple_commerce'), lang('simple_commerce'));
 
 		ee()->cp->render('settings/form', $vars);
 	}

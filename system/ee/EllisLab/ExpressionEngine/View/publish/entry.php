@@ -56,6 +56,12 @@
 		</ul>
 		<?=form_open($form_url, $form_attributes, (isset($form_hidden)) ? $form_hidden : array())?>
 			<?=ee('Alert')->getAllInlines()?>
+			<fieldset class="form-ctrls top">
+				<?php if ($entry->Channel->enable_versioning): ?>
+				<input class="btn draft" type="submit" name="save_revision" value="<?=lang('btn_save_revision')?>">
+				<?php endif; ?>
+				<?=cp_form_submit($button_text, lang('btn_saving'))?>
+			</fieldset>
 			<?php foreach ($layout->getTabs() as $index => $tab): ?>
 			<?php if ( ! $tab->isVisible()) continue; ?>
 			<div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">
@@ -95,13 +101,34 @@
 					<div class="setting-txt col <?=$width?>">
 						<h3><span class="ico sub-arrow"></span><?=$field->getLabel()?></h3>
 						<em><?=$field->getInstructions()?></em>
-						<?php if ($field->getName() == 'categories' && $entry->Channel->cat_group): ?>
-						<p><a class="btn action submit m-link" rel="modal-cats" href="#"><?=lang('btn_add_category')?></a></p>
+						<?php if ($field->get('field_id') == 'categories' &&
+								$entry->Channel->cat_group &&
+								ee()->cp->allowed_group('can_edit_categories')): ?>
+							<p><a class="btn action submit m-link" rel="modal-add-category" data-cat-group="<?=$field->get('cat_group_id')?>" href="#"><?=lang('btn_add_category')?></a></p>
+						<?php $this->startOrAppendBlock('modals'); ?>
+
+						<div class="modal-wrap modal-add-category hidden">
+							<div class="modal">
+								<div class="col-group">
+									<div class="col w-16">
+										<a class="m-close" href="#"></a>
+										<div class="box">
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<?php $this->endBlock(); ?>
 						<?php endif; ?>
 					</div>
 					<div class="setting-field col <?=$width?> last">
+					<?php if ($field->get('field_id') == 'revisions'): ?>
+						<?=$revisions?>
+					<?php else: ?>
 						<?=$field->getForm()?>
 						<?=$errors->renderError($field->getName())?>
+					<?php endif; ?>
 					</div>
 				<?php if ($field->getType() == 'grid'): ?>
 				</div>
@@ -112,6 +139,9 @@
 			</div>
 			<?php endforeach; ?>
 			<fieldset class="form-ctrls">
+				<?php if ($entry->Channel->enable_versioning): ?>
+				<input class="btn draft" type="submit" name="save_revision" value="<?=lang('btn_save_revision')?>">
+				<?php endif; ?>
 				<?=cp_form_submit($button_text, lang('btn_saving'))?>
 			</fieldset>
 		</form>

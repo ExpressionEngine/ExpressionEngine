@@ -36,7 +36,8 @@ class Channel extends StructureModel {
 		'StatusGroup' => array(
 			'type' => 'belongsTo',
 			'from_key' => 'status_group',
-			'to_key' => 'group_id'
+			'to_key' => 'group_id',
+			'weak' => TRUE
 		),
 		'CustomFields' => array(
 			'type' => 'hasMany',
@@ -77,11 +78,6 @@ class Channel extends StructureModel {
 			'from_key' => 'cat_group',
 			'to_key' => 'group_id'
 		),
-		'VersionedEntries' => array(
-			'type' => 'hasMany',
-			'model' => 'ChannelEntryVersion'
-		),
-
 	);
 
 	protected static $_validation_rules = array(

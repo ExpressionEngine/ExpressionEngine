@@ -178,11 +178,11 @@ class Edit extends AbstractPublishController {
 
 		if ($channel_id)
 		{
-			$table->addActionButton(ee('CP/URL', 'publish/create/' . $channel_id), sprintf(lang('btn_create_new_entry_in_channel'), $channel_name));
+			$vars['create_button'] = '<a class="btn tn action" href="'.ee('CP/URL', 'publish/create/' . $channel_id).'">'.sprintf(lang('btn_create_new_entry_in_channel'), $channel_name).'</a>';
 		}
 		else
 		{
-			$table->addActionContent(ee('View')->make('publish/partials/create_new_menu')->render(array('button_text' => lang('btn_create_new'))));
+			$vars['create_button'] = ee('View')->make('publish/partials/create_new_menu')->render(array('button_text' => lang('btn_create_new')));
 		}
 
 		$page = ((int) ee()->input->get('page')) ?: 1;
@@ -275,6 +275,12 @@ class Edit extends AbstractPublishController {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 
+		ee()->view->header = array(
+			'title' => lang('entry_manager'),
+			'form_url' => $vars['form_url'],
+			'search_button_value' => lang('btn_search_entries')
+		);
+
 		$vars['pagination'] = ee('CP/Pagination', $count)
 			->perPage($filter_values['perpage'])
 			->currentPage($page)
@@ -332,8 +338,22 @@ class Edit extends AbstractPublishController {
 			'form_url' => ee('CP/URL', 'publish/edit/entry/' . $id),
 			'form_attributes' => $form_attributes,
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
-			'button_text' => lang('btn_edit_entry')
+			'button_text' => lang('btn_publish')
 		);
+
+		$version_id = ee()->input->get('version');
+
+		if ($entry->Channel->enable_versioning)
+		{
+			$vars['revisions'] = $this->getRevisionsTable($entry, $version_id);
+		}
+
+		if ($version_id)
+		{
+			$version = $entry->Versions->filter('version_id', $version_id)->first();
+			$version_data = $version->version_data;
+			$entry->set($version_data);
+		}
 
 		if ($autosave_id)
 		{
@@ -379,16 +399,31 @@ class Edit extends AbstractPublishController {
 
 			if ($result->isValid())
 			{
-				$entry->edit_date = ee()->localize->now;
-				$entry->save();
+				if ($entry->versioning_enabled && ee()->input->post('save_revision'))
+				{
+					$entry->saveVersion();
 
-				ee('Alert')->makeInline('entry-form')
-					->asSuccess()
-					->withTitle(lang('edit_entry_success'))
-					->addToBody(sprintf(lang('edit_entry_success_desc'), $entry->title))
-					->defer();
+					ee('Alert')->makeInline('entry-form')
+						->asSuccess()
+						->withTitle(lang('revision_saved'))
+						->addToBody(sprintf(lang('revision_saved_desc'), $entry->Versions->count() + 1, $entry->title))
+						->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'publish/edit/entry/' . $id, ee()->cp->get_url_state()));
+					ee()->functions->redirect(ee('CP/URL', 'publish/edit/entry/' . $id, ee()->cp->get_url_state()));
+				}
+				else
+				{
+					$entry->edit_date = ee()->localize->now;
+					$entry->save();
+
+					ee('Alert')->makeInline('entry-form')
+						->asSuccess()
+						->withTitle(lang('edit_entry_success'))
+						->addToBody(sprintf(lang('edit_entry_success_desc'), $entry->title))
+						->defer();
+
+					ee()->functions->redirect(ee('CP/URL', 'publish/edit/', array('channel_id' => $entry->channel_id)));
+				}
 			}
 			else
 			{
