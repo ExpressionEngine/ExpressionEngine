@@ -338,7 +338,7 @@ class EE_Output {
 
 		// Do we need to generate profile data?
 		// If so, load the Profile service and run it.
-		if ($this->enable_profiler == TRUE)
+		if ($this->enable_profiler == TRUE && ! ee()->input->is_ajax_request())
 		{
 			$profiler = ee('Profiler')->addSection('performance', ee()->benchmark->getBenchmarkTimings())
 				->addSection('variables', $_SERVER, $_COOKIE, $_GET, $_POST, ee()->session->all_userdata())
@@ -655,12 +655,7 @@ class EE_Output {
 			}
 		}
 
-		if (is_array($msg))
-		{
-			exit(json_encode($msg));
-		}
-
-		exit($msg);
+		exit(json_encode($msg));
 	}
 
 	// --------------------------------------------------------------------

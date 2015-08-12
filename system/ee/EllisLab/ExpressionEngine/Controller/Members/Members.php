@@ -575,7 +575,7 @@ class Members extends CP_Controller {
 		}
 
 		ee()->view->cp_page_title = lang('delete_member');
-		ee()->output->send_ajax_response(ee()->cp->render('members/delete_confirm', $vars, TRUE));
+		ee()->cp->render('members/delete_confirm', $vars);
 	}
 
 	// --------------------------------------------------------------------
