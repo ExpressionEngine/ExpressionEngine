@@ -655,7 +655,12 @@ class EE_Output {
 			}
 		}
 
-		exit(json_encode($msg));
+		if (is_array($msg))
+		{
+			exit(json_encode($msg));
+		}
+
+		exit($msg);
 	}
 
 	// --------------------------------------------------------------------
