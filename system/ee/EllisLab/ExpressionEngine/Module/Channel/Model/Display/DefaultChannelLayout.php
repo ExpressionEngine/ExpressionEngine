@@ -82,6 +82,8 @@ class DefaultChannelLayout extends DefaultLayout {
 			'fields' => $date_fields
 		);
 
+		// Category Tab --------------------------------------------------------
+
 		$cat_groups = ee('Model')->get('CategoryGroup')
 			->filter('group_id', 'IN', explode('|', $channel->cat_group))
 			->all();
