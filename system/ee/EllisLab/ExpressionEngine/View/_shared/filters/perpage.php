@@ -1,4 +1,4 @@
-<a class="has-sub" href="">
+<a class="has-sub" href="" data-filter-label="<?=strtolower(lang($label))?>">
 	<?=strtolower(lang($label))?>
 	<?php if ($value): ?>
 	<span class="faded">(<?=$value?>)</span>

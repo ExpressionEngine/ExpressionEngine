@@ -1,7 +1,7 @@
 class DebugExtensions < ControlPanelPage
 	set_url_matcher /utilities\/extensions/
 
-	element :heading, 'div.box h1'
+	element :heading, 'div.w-12 div.box h1'
 
 	element :no_results, 'div.box div.tbl-ctrls form div.tbl-wrap table tr.no-results'
 

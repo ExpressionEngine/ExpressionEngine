@@ -2,6 +2,8 @@
 
 $lang = array(
 
+'profile_header' => '%s Profile',
+
 'delete_member' => 'Delete Member',
 
 'disallowed_screen_chars' => 'Screen Name contains illegal characters',

@@ -1,7 +1,7 @@
 class TranslateEdit < ControlPanelPage
 	set_url_matcher /utilities\/translate\/\w+\/edit/
 
-	element :heading, 'div.box h1'
+	element :heading, 'div.w-12 div.box h1'
 
 	elements :items, 'form fieldset.col-group'
 
