@@ -585,7 +585,7 @@ class Communicate extends Utilities {
 	private function deliverEmail(EmailCache $email, $to, $cc = NULL, $bcc = NULL)
 	{
 		ee()->email->clear(TRUE);
-		ee()->email->wordwrap  = ($email->wordwrap == 'y') ? TRUE : FALSE;
+		ee()->email->wordwrap  = $email->wordwrap;
 		ee()->email->mailtype  = $email->mailtype;
 		ee()->email->from($email->from_email, $email->from_name);
 		ee()->email->to($to);
