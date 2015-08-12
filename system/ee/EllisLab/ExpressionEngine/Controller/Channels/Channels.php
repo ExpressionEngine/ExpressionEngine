@@ -928,11 +928,7 @@ class Channels extends AbstractChannelsController {
 					'fields' => array(
 						'comment_system_enabled' => array(
 							'type' => 'yes_no',
-							'value' => $channel->comment_system_enabled,
-							'note' => form_label(
-								form_checkbox('apply_comment_enabled_to_existing', 'y')
-								.lang('apply_comment_enabled_to_existing')
-							)
+							'value' => $channel->comment_system_enabled
 						)
 					)
 				),
@@ -942,7 +938,11 @@ class Channels extends AbstractChannelsController {
 					'fields' => array(
 						'deft_comments' => array(
 							'type' => 'yes_no',
-							'value' => $channel->deft_comments
+							'value' => $channel->deft_comments,
+							'note' => form_label(
+								form_checkbox('apply_comment_enabled_to_existing', 'y')
+								.lang('apply_comment_enabled_to_existing')
+							)
 						)
 					)
 				),
@@ -1195,11 +1195,11 @@ class Channels extends AbstractChannelsController {
 
 		if (ee()->input->post('apply_comment_enabled_to_existing'))
 		{
-			if (ee()->input->post('comment_system_enabled') == 'y')
+			if (ee()->input->post('deft_comments') == 'y')
 			{
 				ee()->channel_model->update_comments_allowed($channel_id, 'y');
 			}
-			elseif ($this->input->post('comment_system_enabled') == 'n')
+			elseif ($this->input->post('deft_comments') == 'n')
 			{
 				ee()->channel_model->update_comments_allowed($channel_id, 'n');
 			}
