@@ -8,7 +8,7 @@
 			<ul class="toolbar">
 				<li class="remove"><a href="" class="m-link" rel="modal-confirm-remove" title="remove"></a></li>
 			</ul>
-			<h3><b>Date:</b> <?=$localize->human_time($email->cache_date)?><br><b>From:</b> <a href="<?=ee('CP/URL', 'myaccount', array('id' => $email->member_id))?>"><?=$email->member_name?></a><br><b>To:</b> <?=$email->recipient_name?><br><b>Subject:</b> <?=$email->subject?></h3>
+			<h3><b>Date:</b> <?=$localize->human_time($email->cache_date->format('U'))?><br><b>From:</b> <a href="<?=ee('CP/URL', 'myaccount', array('id' => $email->member_id))?>"><?=$email->member_name?></a><br><b>To:</b> <?=$email->recipient_name?><br><b>Subject:</b> <?=$email->subject?></h3>
 			<div class="message">
 				<?=$email->message?>
 			</div>
