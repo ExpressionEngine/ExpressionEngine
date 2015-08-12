@@ -81,7 +81,7 @@ class Snippets extends AbstractDesignController {
 
 		if ( ! $this->msm)
 		{
-			unset($columns[1]);
+			unset($columns['all_sites']);
 		}
 
 		$snippet_id = ee()->session->flashdata('snippet_id');
@@ -175,13 +175,12 @@ class Snippets extends AbstractDesignController {
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL', 'design/snippets/create'),
-			'save_btn_text' => 'btn_create_partial',
+			'save_btn_text' => sprintf(lang('btn_save'), lang('partial')),
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
 					array(
 						'title' => 'snippet_name',
-						'desc' => 'snippet_name_desc',
 						'fields' => array(
 							'snippet_name' => array(
 								'type' => 'text',
@@ -191,7 +190,6 @@ class Snippets extends AbstractDesignController {
 					),
 					array(
 						'title' => 'snippet_contents',
-						'desc' => 'snippet_contents_desc',
 						'wide' => TRUE,
 						'fields' => array(
 							'snippet_contents' => array(
@@ -301,13 +299,12 @@ class Snippets extends AbstractDesignController {
 			'form_hidden' => array(
 				'old_name' => $snippet->snippet_name
 			),
-			'save_btn_text' => 'btn_edit_partial',
+			'save_btn_text' => sprintf(lang('btn_save'), lang('partial')),
 			'save_btn_text_working' => 'btn_edit_partial_working',
 			'sections' => array(
 				array(
 					array(
 						'title' => 'snippet_name',
-						'desc' => 'snippet_name_desc',
 						'fields' => array(
 							'snippet_name' => array(
 								'type' => 'text',
@@ -318,7 +315,6 @@ class Snippets extends AbstractDesignController {
 					),
 					array(
 						'title' => 'snippet_contents',
-						'desc' => 'snippet_contents_desc',
 						'wide' => TRUE,
 						'fields' => array(
 							'snippet_contents' => array(

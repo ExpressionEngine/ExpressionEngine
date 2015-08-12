@@ -87,8 +87,6 @@ class Uploads extends AbstractFilesController {
 		{
 			ee()->view->cp_page_title = lang('create_upload_directory');
 			ee()->view->base_url = ee('CP/URL', 'files/uploads/create');
-			ee()->view->save_btn_text = 'btn_create_directory';
-			ee()->view->save_btn_text_working = 'btn_create_directory_working';
 			$upload_destination = ee('Model')->make('UploadDestination');
 			$upload_destination->site_id = ee()->config->item('site_id');
 		}
@@ -103,8 +101,6 @@ class Uploads extends AbstractFilesController {
 
 			ee()->view->cp_page_title = lang('edit_upload_directory');
 			ee()->view->base_url = ee('CP/URL', 'files/uploads/edit/'.$upload_id);
-			ee()->view->save_btn_text = 'btn_edit_directory';
-			ee()->view->save_btn_text_working = 'btn_saving';
 		}
 
 		if ( ! empty($_POST))
@@ -172,8 +168,7 @@ class Uploads extends AbstractFilesController {
 		$vars['sections'] = array(
 			array(
 				array(
-					'title' => 'upload_name',
-					'desc' => 'upload_name_desc',
+					'title' => 'name',
 					'fields' => array(
 						'name' => array(
 							'type' => 'text',
@@ -318,6 +313,8 @@ class Uploads extends AbstractFilesController {
 		);
 
 		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('upload_directory'));
+		ee()->view->save_btn_text_working = 'btn_saving';
 
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'files'), lang('file_manager'));
 

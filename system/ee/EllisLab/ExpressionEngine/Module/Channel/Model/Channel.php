@@ -23,7 +23,6 @@ class Channel extends StructureModel {
 		'comment_auto_link_urls'     => 'boolString',
 		'comment_notify'             => 'boolString',
 		'comment_notify_authors'     => 'boolString',
-		'show_button_cluster'        => 'boolString',
 		'enable_versioning'          => 'boolString',
 	);
 
@@ -71,7 +70,18 @@ class Channel extends StructureModel {
 		),
 		'Site' => array(
 			'type' => 'belongsTo'
-		)
+		),
+		'CategoryGroups' => array(
+			'type' => 'hasMany',
+			'model' => 'CategoryGroup',
+			'from_key' => 'cat_group',
+			'to_key' => 'group_id'
+		),
+		'VersionedEntries' => array(
+			'type' => 'hasMany',
+			'model' => 'ChannelEntryVersion'
+		),
+
 	);
 
 	protected static $_validation_rules = array(
@@ -89,7 +99,6 @@ class Channel extends StructureModel {
 		'comment_auto_link_urls'     => 'enum[y,n]',
 		'comment_notify'             => 'enum[y,n]',
 		'comment_notify_authors'     => 'enum[y,n]',
-		'show_button_cluster'        => 'enum[y,n]',
 		'enable_versioning'          => 'enum[y,n]',
 	);
 
@@ -146,7 +155,6 @@ class Channel extends StructureModel {
 	protected $comment_notify_emails;
 	protected $comment_expiration;
 	protected $search_results_url;
-	protected $show_button_cluster;
 	protected $rss_url;
 	protected $enable_versioning;
 	protected $max_revisions;

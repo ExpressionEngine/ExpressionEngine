@@ -8,6 +8,5 @@
 		</fieldset>
 		<h1><?=$cp_page_title?></h1>
 		<?php $this->embed('_shared/table', $table);?>
-		<?=$pagination?>
 	</form>
 </div>

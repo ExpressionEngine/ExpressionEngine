@@ -69,7 +69,7 @@ EOT;
 	 */
 	function index()
 	{
-		$table = ee('CP/Table', array('autosort' => TRUE));
+		$table = ee('CP/Table');
 		$table->setColumns(array(
 			'col_id',
 			'moblog',
@@ -317,7 +317,7 @@ EOT;
 				),
 				array(
 					'title' => 'moblog_short_name',
-					'desc' => 'moblog_short_name_desc',
+					'desc' => 'alphadash_desc',
 					'fields' => array(
 						'moblog_short_name' => array(
 							'type' => 'text',

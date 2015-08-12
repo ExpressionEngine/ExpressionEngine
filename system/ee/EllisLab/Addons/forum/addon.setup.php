@@ -11,7 +11,7 @@ return array(
 
 	'models' => array(
 		'Administrator' => 'Model\Administrator',
-		'Attachmenet' => 'Model\Attachmenet',
+		'Attachment' => 'Model\Attachment',
 		'Board' => 'Model\Board',
 		'Forum' => 'Model\Forum',
 		'Moderator' => 'Model\Moderator',

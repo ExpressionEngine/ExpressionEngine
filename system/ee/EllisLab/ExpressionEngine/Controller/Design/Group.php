@@ -62,7 +62,7 @@ class Group extends AbstractDesignController {
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL', 'design/group/create'),
-			'save_btn_text' => 'btn_create_template_group',
+			'save_btn_text' => sprintf(lang('btn_save'), lang('template_group')),
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
@@ -223,13 +223,13 @@ class Group extends AbstractDesignController {
 			'form_hidden' => array(
 				'old_name' => $group->group_name
 			),
-			'save_btn_text' => 'btn_create_template_group',
+			'save_btn_text' => sprintf(lang('btn_save'), lang('template_group')),
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
 					array(
 						'title' => 'name',
-						'desc' => 'name_desc',
+						'desc' => 'alphadash_desc',
 						'fields' => array(
 							'group_name' => array(
 								'type' => 'text',

@@ -64,18 +64,43 @@ class Forum extends Model {
 		'Board' => array(
 			'type' => 'belongsTo'
 		),
-		'Forums' => array(
-			'type' => 'hasMany',
-			'model' => 'Forum',
-			'from_key' => 'forum_id',
-			'to_key' => 'forum_parent'
-		),
 		'Category' => array(
-			'type' => 'belongsTo',
-			'model' => 'Forum',
+			'type'     => 'belongsTo',
+			'model'    => 'Forum',
 			'from_key' => 'forum_parent',
-			'to_key' => 'forum_id'
-		)
+			'to_key'   => 'forum_id'
+		),
+		'Forums' => array(
+			'type'     => 'hasMany',
+			'model'    => 'Forum',
+			'from_key' => 'forum_id',
+			'to_key'   => 'forum_parent'
+		),
+		'LastPost' => array(
+			'type'     => 'hasOne',
+			'model'    => 'Post',
+			'from_key' => 'forum_last_post_id',
+			'to_key'   => 'post_id',
+		),
+		'LastPostAuthor' => array(
+			'type'     => 'belongsTo',
+			'from_key' => 'forum_last_post_author_id',
+			'to_key'   => 'member_id',
+			'model'    => 'ee:Member'
+		),
+		'Moderators' => array(
+			'type'   => 'hasMany',
+			'model'  => 'Moderator',
+			'to_key' => 'mod_forum_id'
+		),
+		'Posts' => array(
+			'type'  => 'hasMany',
+			'model' => 'Post'
+		),
+		'Topics' => array(
+			'type'  => 'hasMany',
+			'model' => 'Topic'
+		),
 	);
 
 	protected static $_validation_rules = array(
@@ -95,6 +120,10 @@ class Forum extends Model {
 		'forum_notify_moderators_replies' => 'enum[y,n]',
 		'forum_enable_rss'                => 'enum[y,n]',
 		'forum_use_http_auth'             => 'enum[y,n]',
+	);
+
+	protected static $_events = array(
+		'beforeInsert',
 	);
 
 	protected $forum_id;
@@ -157,6 +186,23 @@ class Forum extends Model {
 		$permissions[$key] = $value;
 
 		$this->setProperty('forum_permissions', $permissions);
+	}
+
+	public function onBeforeInsert()
+	{
+		$model = $this->getFrontend();
+
+		$last_forum = $model->get('Forum')
+			->fields('forum_order')
+			->filter('forum_is_cat', $this->getProperty('forum_is_cat'))
+			->order('forum_order', 'desc');
+
+		if ($this->getProperty('forum_is_cat'))
+		{
+			$last_forum->filter('forum_parent', $this->getProperty('forum_parent'));
+		}
+
+		$this->setProperty('forum_order', $last_forum->first()->forum_order + 1);
 	}
 
 }

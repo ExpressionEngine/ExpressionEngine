@@ -44,6 +44,8 @@ $lang = array(
 
 'custom_fields' => 'Custom Fields',
 
+'field_group' => 'Field Group',
+
 'field_groups' => 'Field Groups',
 
 'category_groups' => 'Category Groups',
@@ -144,8 +146,6 @@ $lang = array(
 'channel_title' => 'Name',
 'channel_title_desc' => '',
 
-'channel_short_name_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
-
 'channel_duplicate' => 'Duplicate existing channel?',
 'channel_duplicate_desc' => 'On creation, this channel will copy all settings from the selected channel.',
 
@@ -171,6 +171,8 @@ $lang = array(
 'custom_field_groups_not_found' => 'Zero <b>custom field groups</b> found',
 
 'create_new_field_group' => 'Create New Field Group',
+
+'custom_fields_desc' => 'Choose the fields you would like to include in this field group.',
 
 'category_groups_desc' => '',
 
@@ -270,10 +272,6 @@ $lang = array(
 'convert_urls_emails_to_links' => 'Render <abbr title="Unified Resource Locator">URL</abbr>s and Email addresses as links?',
 
 'convert_urls_emails_to_links_desc' => 'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s and Email address will be rendered as links in this channel\'s entries.',
-
-'allow_rich_text_editing' => 'Allow Rich Text Editing?',
-
-'allow_rich_text_editing_desc' => 'When set to <b>yes</b>, text areas will have the default <abbr title="Rich Text Editor">RTE</abbr> tool set above them.',
 
 'channel_form' => 'Channel Form',
 
@@ -535,8 +533,6 @@ $lang = array(
 'duplicate_category_group_name' => 'A category group already exists with the same name.',
 
 'label' => 'Label',
-
-'cat_field_short_name_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
 
 'require_field' => 'Require field?',
 

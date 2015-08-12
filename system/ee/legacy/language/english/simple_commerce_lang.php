@@ -2,14 +2,44 @@
 
 $lang = array(
 
-/* ----------------------------------------
-/*  Required for MODULES page
-/* ----------------------------------------*/
 'simple_commerce_module_name' => 'Simple Commerce',
 
-'simple_commerce_module_description' => 'Simple, Flexible Commerce Module',
+'settings_saved' => 'Settings Saved',
 
-/*----------------------------------------*/
+'settings_saved_desc' => 'Your settings have been successfully saved.',
+
+'settings_save_error' => 'Cannot Save Settings',
+
+'settings_save_error_desc' => 'We were unable to save your settings, please review and fix errors below.',
+
+'purchases_removed' => 'Purchases removed',
+
+'purchases_removed_desc' => '%d purchases were removed.',
+
+'create_purchase' => 'Create Purchase',
+
+'edit_purchase' => 'Edit Purchase',
+
+'purchase_created' => 'Purchase Created',
+
+'purchase_created_desc' => 'The purchase for item <b>%s</b> has been created.',
+
+'purchase_not_created' => 'Cannot Create Purchase',
+
+'purchase_not_created_desc' => 'We were unable to create this purchase, please review and fix errors below.',
+
+'purchase_updated' => 'Purchase Updated',
+
+'purchase_updated_desc' => 'The purchase for item <b>%s</b> has been updated.',
+
+'purchase_not_updated' => 'Cannot Update Purchase',
+
+'purchase_not_updated_desc' => 'We were unable to update this purchase, please review and fix errors below.',
+
+'email_templates_removed' => 'Email templates removed',
+
+'email_templates_removed_desc' => '%d email templates were removed.',
+
 'simple_commerce_home' => 'Control Panel',
 
 'subscription_frequency' => 'Subscription Frequency',
@@ -45,14 +75,19 @@ transactions on their site and then notifying ExpressionEngine when the transact
 and accepted.  This allows purchases to not be stored and recorded in the Simple Commerce module
 until the transaction is finalized.  ExpressionEngine\'s Simple Commerce module automates all of this
 behind the scenes so all you have to do is activate Instant Payment Notification on the PayPal site
-and provide them with the URL below.<br /><br />
-For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-content&content_ID=developer/e_howto_admin_IPNIntro" rel="external">https://cms.paypal.com/us/cgi-bin/?cmd=_render-content&content_ID=developer/e_howto_admin_IPNIntro</a>',
+and provide them with the URL below.',
 
 'items' => 'Items',
 
 'purchases' => 'Purchases',
 
+'purchase' => 'Purchase',
+
 'email_templates' => 'Email Templates',
+
+'template' => 'Template',
+
+'create_template' => 'Create Template',
 
 'store_items' => 'Store Items',
 
@@ -90,7 +125,7 @@ For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-conte
 
 'invalid_purchases' => 'No Valid Purchases',
 
-'use_sale_price' => 
+'use_sale_price' =>
 'Use Sale Price?',
 
 'entry_title' => 'Entry Title',
@@ -120,6 +155,8 @@ For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-conte
 'no_email_templates' => 'No Email Templates',
 
 'no_purchases' => 'No Purchases',
+
+'create_purchase' => 'Create Purchase',
 
 'perform_item_actions' => 'Perform Actions for Item?',
 
@@ -224,9 +261,11 @@ For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-conte
 
 'subscription_end_date_subtext' => 'Enter \'0\' for no subscription end',
 
-'item_purchased' => 'Item Purchased',
+'item_purchased' => 'Item purchased',
 
 'item_cost' => 'Item Cost',
+
+'item_cost_form' => 'Item cost',
 
 'choose_item' => 'Choose Item',
 
@@ -236,17 +275,17 @@ For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-conte
 
 'encryption' => 'Encryption',
 
-'encrypt_buttons_links' => 'Encrypt PayPal Buttons and Links?',
+'encrypt_buttons_links' => 'Encrypt PayPal buttons and links?',
 
-'public_certificate' => 'Public Certificate Path',
+'public_certificate' => 'Public certificate path',
 
-'certificate_id' => 'ID Given to Public Certificate by PayPal',
+'certificate_id' => 'ID given to public certificate by PayPal',
 
-'private_key' => 'Private Key Path',
+'private_key' => 'Private key path',
 
-'paypal_certificate' => 'PayPal Certificate Path',
+'paypal_certificate' => 'PayPal certificate path',
 
-'temp_path' => 'Temporary Encrypted Files Path',
+'temp_path' => 'Temporary encrypted files path',
 
 'settings' => 'Settings',
 
@@ -256,9 +295,9 @@ For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-conte
 
 'temporary_directory_unwritable' => 'The Directory specified for writing the temporary files is not writable.',
 
-'paypal_account' => 'PayPal Account',
+'paypal_account' => 'PayPal account',
 
-'no_entries_matching_that_criteria' => 
+'no_entries_matching_that_criteria' =>
 'There are no entries matching the criteria you selected',
 
 ''=>''

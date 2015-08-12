@@ -18,7 +18,6 @@ class ChannelSettings < ControlPanelPage
 	element :channel_html_formatting, 'select[name=channel_html_formatting]'
 	elements :channel_allow_img_urls, 'input[name=channel_allow_img_urls]'
 	elements :channel_auto_link_urls, 'input[name=channel_auto_link_urls]'
-	elements :show_button_cluster, 'input[name=show_button_cluster]'
 
 	element :default_status, 'select[name=default_status]'
 	element :default_author, 'select[name=default_author]'

@@ -187,8 +187,6 @@ Used in the control panel only.',
 
 "date_format" => "Date & time format",
 
-"date_format_desc" => "Used in the control panel only.",
-
 "time_format" => "Time Formatting",
 
 "24_hour" => "24 Hour",
@@ -385,13 +383,7 @@ Used in the control panel only.',
 
 'edit_quick_link' => 'Edit Quick Link',
 
-'link_title' => 'Quick Link name',
-
-'link_title_desc' => 'Name this quick link.',
-
-'link_url' => 'Quick Link URL',
-
-'link_url_desc' => 'URL Location for this quick link.',
+'link_url' => 'URL',
 
 'link_order' => 'Order',
 
@@ -410,10 +402,6 @@ Used in the control panel only.',
 'bookmarklet_created' => 'Bookmarklet Created',
 
 'bookmarklet_info' => 'A bookmarklet allows you to add entries to your channel without logging into the full control panel.',
-
-'bookmarklet_name' => 'Bookmarklet Name',
-
-'bookmarklet_name_desc' => 'Name this bookmarklet, single word, no spaces.',
 
 'bookmarklet_field' => 'Channel & Channel Field',
 

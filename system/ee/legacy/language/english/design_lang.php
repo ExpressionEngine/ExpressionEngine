@@ -44,8 +44,6 @@ $lang = array(
 
 'name' => 'Name',
 
-'name_desc' => 'Short name for this group.<br><i>No spaces. Underscores and dashes are allowed.</i>',
-
 'duplicate_group' => 'Duplicate existing group?',
 
 'duplicate_group_desc' => 'Will be created with all templates found in copied group.',
@@ -110,11 +108,7 @@ $lang = array(
 
 'snippet_name' => 'Name',
 
-'snippet_name_desc' => 'Short name for this partial.',
-
 'snippet_contents' => 'Content',
-
-'snippet_contents_desc' => 'Content of this partial.',
 
 'enable_partial_on_all_sites' => 'Enable on all sites?',
 
@@ -192,11 +186,7 @@ $lang = array(
 
 'variable_name' => 'Name',
 
-'variable_name_desc' => 'Short name for this variable.',
-
 'variable_data' => 'Content',
-
-'variable_data_desc' => 'Content of this variable.',
 
 'enable_template_variable_on_all_sites' => 'Enable on all sites?',
 
@@ -206,11 +196,7 @@ $lang = array(
 
 'create_template' => 'Create Template',
 
-'template_name_desc' => 'Short name for this template.<br><i>No spaces. Underscores and dashes are allowed.</i>',
-
 'template_type' => 'Type',
-
-'template_type_desc' => 'Choose a template type.',
 
 'duplicate_existing_template' => 'Duplicate existing template?',
 
@@ -218,7 +204,7 @@ $lang = array(
 
 'btn_create_template' => 'Create Template',
 
-'btn_create_and_edit_template' => 'Create &amp; Edit Template',
+'btn_create_and_edit_template' => 'Save &amp; Edit Template',
 
 'create_template_success' => 'Template Created',
 
@@ -284,9 +270,7 @@ $lang = array(
 
 'require_all_segments_desc' => 'When set to <b>yes</b>, all segments must be present in the request <abbr title="Unified Resource Identifier">URI</abbr>.',
 
-'btn_update_template' => 'Update Template',
-
-'btn_update_and_finish_editing' => 'Update &amp; Finish Editing',
+'btn_update_and_finish_editing' => 'Save &amp; Finish Editing',
 
 'update_template_error' => 'Cannot Update Template',
 

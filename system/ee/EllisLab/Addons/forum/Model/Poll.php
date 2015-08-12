@@ -41,8 +41,19 @@ class Poll extends Model {
 		'total_votes'   => 'int',
 	);
 
-	// protected static $_relationships = array(
-	// );
+	protected static $_relationships = array(
+		'Author' => array(
+			'type' => 'belongsTo',
+			'model' => 'ee:Member'
+		),
+		'PollVotes' => array(
+			'type'  => 'hasMany',
+			'model' => 'PollVote'
+		),
+		'Topic' => array(
+			'type' => 'belongsTo',
+		),
+	);
 
 	protected static $_validation_rules = array(
 		'topic_id'      => 'required',

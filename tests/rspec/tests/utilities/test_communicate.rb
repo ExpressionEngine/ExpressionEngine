@@ -85,7 +85,7 @@ feature 'Communicate' do
 		@page.recipient.first(:xpath, ".//..").should have_css 'em.ee-form-error-message'
 		@page.recipient.first(:xpath, ".//..").should have_text 'field is required.'
 
-		@page.submit_button[:value].should eq 'Fix Errors, Please'
+		@page.submit_button[:value].should eq 'Errors Found'
 	end
 
 	it "validates email fields" do

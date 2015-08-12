@@ -19,7 +19,6 @@
 			</fieldset>
 			<h1><?=$table_heading?></h1>
 			<?php $this->embed('_shared/table', $table); ?>
-			<?=$pagination?>
 			<fieldset class="tbl-bulk-act">
 				<select name="table_action">
 					<option value="none">-- <?=lang('with_selected')?> --</option>

@@ -54,6 +54,7 @@ class Updater {
 				'_centralize_captcha_settings',
 				'_update_members_table',
 				'_update_member_fields_table',
+				'_update_member_groups_table',
 				'_update_html_buttons',
 				'_update_files_table',
 				'_update_upload_prefs_table',
@@ -65,7 +66,8 @@ class Updater {
 				'_update_channel_titles_table',
 				'_export_mailing_lists',
 				'_remove_mailing_list_module_artifacts',
-				'_remove_cp_theme_config'
+				'_remove_cp_theme_config',
+				'_remove_show_button_cluster_column'
 			)
 		);
 
@@ -724,15 +726,36 @@ class Updater {
 	 */
 	private function _update_member_groups_table()
 	{
-		ee()->smartforge->modify_column('member_groups', array(
-			'group_id' => array(
-				'type'			 => 'int',
-				'constraint'     => 4,
-				'null'			 => FALSE,
-				'unsigned'		 => TRUE,
-				'auto_increment' => TRUE
+		ee()->smartforge->add_column('member_groups', array(
+			'can_access_footer_report_bug' => array(
+				'type'       => 'char',
+				'constraint' => 1,
+				'default'    => 'n',
+				'null'       => FALSE
+			),
+			'can_access_footer_new_ticket' => array(
+				'type'       => 'char',
+				'constraint' => 1,
+				'default'    => 'n',
+				'null'       => FALSE
+			),
+			'can_access_footer_user_guide' => array(
+				'type'       => 'char',
+				'constraint' => 1,
+				'default'    => 'n',
+				'null'       => FALSE
 			)
 		));
+
+		ee()->db->update(
+			'member_groups',
+			array(
+				'can_access_footer_report_bug' => 'y',
+				'can_access_footer_new_ticket' => 'y',
+				'can_access_footer_user_guide' => 'y'
+			),
+			array('can_access_cp' => 'y')
+		);
 	}
 
 	/**
@@ -1078,6 +1101,12 @@ class Updater {
 		$subscribers_query = ee()->db->select('list_id, email')
 			->get('mailing_list');
 
+		// No subscribers at all? Move on.
+		if ($subscribers_query->num_rows() <= 0)
+		{
+			return;
+		}
+
 		foreach ($subscribers_query->result() as $subscriber)
 		{
 			$subscribers[$subscriber->list_id][] = $subscriber->email;
@@ -1088,6 +1117,12 @@ class Updater {
 
 		foreach ($mailing_lists->result() as $mailing_list)
 		{
+			// Empty mailing list? No need to export it.
+			if (empty($subscribers[$mailing_list->list_id]))
+			{
+				continue;
+			}
+
 			$csv = ee('CSV');
 			foreach ($subscribers[$mailing_list->list_id] as $subscriber)
 			{
@@ -1180,6 +1215,14 @@ class Updater {
 		$msm_config->remove_config_item(array('cp_theme'));
 
 		ee()->smartforge->drop_column('members', 'cp_theme');
+	}
+
+	/**
+	 * The show_button_cluster setting has been removed from channels, drop the column
+	 */
+	private function _remove_show_button_cluster_column()
+	{
+		ee()->smartforge->drop_column('channels', 'show_button_cluster');
 	}
 }
 /* END CLASS */

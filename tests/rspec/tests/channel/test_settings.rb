@@ -220,7 +220,6 @@ feature 'Channel Settings' do
     @page.channel_html_formatting.select 'Convert to HTML entities'
     @page.channel_allow_img_urls[1].click
     @page.channel_auto_link_urls[0].click
-    @page.show_button_cluster[1].click
 
     @page.default_status.select 'Closed'
     @page.allow_guest_posts[0].click
@@ -276,7 +275,6 @@ feature 'Channel Settings' do
     @page.channel_html_formatting.value.should == 'none'
     @page.channel_allow_img_urls[1].checked?.should == true
     @page.channel_auto_link_urls[0].checked?.should == true
-    @page.show_button_cluster[1].checked?.should == true
 
     @page.default_status.value.should == 'closed'
     @page.default_author.value.should == '1'

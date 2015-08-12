@@ -71,7 +71,7 @@ feature 'Installer' do
 
       no_php_js_errors
       @page.install_form.all_there?.should == true
-      @page.inline_errors.should have(6).items
+      @page.inline_errors.should have_at_least(1).items
     end
 
     it 'shows an error when using the incorrect database credentials' do

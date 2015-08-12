@@ -31,27 +31,49 @@
 						<?php endif ?>
 					</div>
 				</div>
-				<div class="right"><p><a href="https://support.ellislab.com/bugs/submit" rel="external"><?=lang('report_bug')?></a> <b class="sep">&middot;</b> <a href="https://support.ellislab.com" rel="external"><?=lang('new_ticket')?></a> <b class="sep">&middot;</b> <a href="https://ellislab.com/expressionengine/user-guide/" rel="external"><?=lang('manual')?></a></p></div>
+				<div class="right">
+					<p>
+						<?php if (ee()->cp->allowed_group('can_access_footer_report_bug')): ?>
+							<a href="https://support.ellislab.com/bugs/submit" rel="external"><?=lang('report_bug')?></a>
+
+							<?php if (ee()->cp->allowed_group('can_access_footer_new_ticket') || ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
+								<b class="sep">&middot;</b>
+							<?php endif; ?>
+						<?php endif; ?>
+
+						<?php if (ee()->cp->allowed_group('can_access_footer_new_ticket')): ?>
+							<a href="https://support.ellislab.com" rel="external"><?=lang('new_ticket')?></a>
+
+							<?php if (ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
+								<b class="sep">&middot;</b>
+							<?php endif; ?>
+						<?php endif; ?>
+
+						<?php if (ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
+							<a href="https://ellislab.com/expressionengine/user-guide/" rel="external"><?=lang('user_guide')?></a>
+						<?php endif; ?>
+					</p>
+				</div>
 			</div>
 		</section>
 		<section class="footer">
 			<div class="snap">
 				<div class="left">
-					<p>&copy;2003&mdash;<?=date('Y')?> <a href="<?=ee()->cp->masked_url('https://ellislab.com/expressionengine')?>" rel="external">EllisLab</a>, Inc.<br><a class="scroll" href="#top"><?=lang('scroll_to_top')?></a></p>
+					<p>&copy;<?=date('Y')?> <a href="<?=ee()->cp->masked_url('https://ellislab.com/expressionengine')?>" rel="external">EllisLab</a>, Inc.<br><a class="scroll" href="#top"><?=lang('scroll_to_top')?></a></p>
 				</div>
 				<div class="right">
-					<p><?=lang('license_no')?>:
+					<p>
 						<?php if (ee()->config->item('license_number')): ?>
-							<?=ee()->config->item('license_number')?>
+							<?=lang('license_no')?>: <?=ee()->config->item('license_number')?>
+							<?php if (ee()->config->item('license_contact')): ?>
+								<br><?=lang('owned_by')?>: <a href="mailto:<?=ee()->config->item('license_contact')?>">
+									<?=(ee()->config->item('license_contact_name')) ?: ee()->config->item('license_contact')?>
+								</a>
+							<?php endif ?>
 						<?php elseif (ee()->cp->allowed_group('can_access_admin', 'can_access_sys_prefs')): ?>
-							<a href="<?=ee('CP/URL', 'settings/license')?>"><?=lang('register_now')?></a>
+							<a class="btn no-reg" href="<?=ee('CP/URL', 'settings/license')?>"><?=lang('register_now')?></a>
 						<?php else: ?>
 							<?=lang('not_entered')?>
-						<?php endif ?>
-						<?php if (ee()->config->item('license_contact')): ?>
-							<br><?=lang('owned_by')?>: <a href="mailto:<?=ee()->config->item('license_contact')?>">
-								<?=(ee()->config->item('license_contact_name')) ?: ee()->config->item('license_contact')?>
-							</a>
 						<?php endif ?>
 					</p>
 				</div>

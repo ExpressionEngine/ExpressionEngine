@@ -136,8 +136,7 @@ class Bookmarks extends Profile {
 		$this->base_url = ee('CP/URL', $this->index_url . '/create', $this->query_string);
 
 		$vars = array(
-			'cp_page_title' => lang('create_bookmarklet'),
-			'save_btn_text' => lang('create_bookmarklet')
+			'cp_page_title' => lang('create_bookmarklet')
 		);
 
 		if ( ! empty($_POST))
@@ -166,8 +165,7 @@ class Bookmarks extends Profile {
 		$this->base_url = ee('CP/URL', $this->index_url . "/edit/$id", $this->query_string);
 
 		$vars = array(
-			'cp_page_title' => lang('edit_bookmarklet'),
-			'save_btn_text' => lang('save_bookmarklet')
+			'cp_page_title' => lang('edit_bookmarklet')
 		);
 
 		$values = array(
@@ -252,8 +250,8 @@ class Bookmarks extends Profile {
 		$vars['sections'] = array(
 			array(
 				array(
-					'title' => 'bookmarklet_name',
-					'desc' => 'bookmarklet_name_desc',
+					'title' => 'name',
+					'desc' => 'alphadash_desc',
 					'fields' => array(
 						'name' => array(
 							'type' => 'text',
@@ -324,6 +322,7 @@ class Bookmarks extends Profile {
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('bookmarklet'));
 		ee()->view->save_btn_text_working = 'btn_save_working';
 		ee()->cp->render('settings/form', $vars);
 	}

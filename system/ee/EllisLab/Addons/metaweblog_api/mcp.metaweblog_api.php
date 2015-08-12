@@ -286,8 +286,8 @@ class Metaweblog_api_mcp {
 
 		$vars = array(
 			'base_url' => $base_url,
-			'cp_page_title' => lang('create_metaweblog'),
-			'save_btn_text' => 'create_metaweblog',
+			'cp_page_title' => ($id == 'new') ? lang('create_metaweblog') : lang('edit_metaweblog'),
+			'save_btn_text' => sprintf(lang('btn_save'), lang('metaweblog')),
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array()
@@ -521,7 +521,11 @@ class Metaweblog_api_mcp {
 				}
 			}
 
-			return ee('View')->make('metaweblog_api:create_modify')->render($vars);
+			return array(
+				'heading'    => $vars['cp_page_title'],
+				'breadcrumb' => array(ee('CP/URL', 'addons/settings/metaweblog_api')->compile() => lang('metaweblog_api_module_name') . ' ' . lang('configuration')),
+				'body'       => ee('View')->make('metaweblog_api:create_modify')->render($vars)
+			);
 		}
 		else
 		{

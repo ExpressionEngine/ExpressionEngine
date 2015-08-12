@@ -81,7 +81,7 @@ class Variables extends AbstractDesignController {
 
 		if ( ! $this->msm)
 		{
-			unset($columns[1]);
+			unset($columns['all_sites']);
 		}
 
 		$variable_id = ee()->session->flashdata('variable_id');
@@ -176,13 +176,12 @@ class Variables extends AbstractDesignController {
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL', 'design/variables/create'),
-			'save_btn_text' => 'btn_create_template_variable',
+			'save_btn_text' => sprintf(lang('btn_save'), lang('template_variable')),
 			'save_btn_text_working' => 'btn_create_template_variable_working',
 			'sections' => array(
 				array(
 					array(
 						'title' => 'variable_name',
-						'desc' => 'variable_name_desc',
 						'fields' => array(
 							'variable_name' => array(
 								'type' => 'text',
@@ -192,7 +191,6 @@ class Variables extends AbstractDesignController {
 					),
 					array(
 						'title' => 'variable_data',
-						'desc' => 'variable_data_desc',
 						'wide' => TRUE,
 						'fields' => array(
 							'variable_data' => array(
@@ -302,13 +300,12 @@ class Variables extends AbstractDesignController {
 			'form_hidden' => array(
 				'old_name' => $variable->variable_name
 			),
-			'save_btn_text' => 'btn_edit_template_variable',
+			'save_btn_text' => sprintf(lang('btn_save'), lang('template_variable')),
 			'save_btn_text_working' => 'btn_edit_template_variable_working',
 			'sections' => array(
 				array(
 					array(
 						'title' => 'variable_name',
-						'desc' => 'variable_name_desc',
 						'fields' => array(
 							'variable_name' => array(
 								'type' => 'text',
@@ -319,7 +316,6 @@ class Variables extends AbstractDesignController {
 					),
 					array(
 						'title' => 'variable_data',
-						'desc' => 'variable_data_desc',
 						'wide' => TRUE,
 						'fields' => array(
 							'variable_data' => array(

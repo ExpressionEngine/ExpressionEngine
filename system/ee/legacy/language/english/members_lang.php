@@ -216,8 +216,6 @@ $lang = array(
 
 'visibility' => 'Visibility',
 
-"field_short_name_desc" => "<i>No spaces. Underscores and dashes are allowed.</i>",
-
 "index" => "Main Index Page",
 
 "member_assignment_warning" => "Members are currently assigned to some of these groups. What member group should they be re-assigned to?",
@@ -515,6 +513,10 @@ $lang = array(
 "can_access_cp" => "Access control panel",
 
 "can_access_cp_desc" => "When set to yes, users assigned to this group may access the control panel.",
+
+"footer_helper_links" => "Access footer helper links",
+
+"footer_helper_links_desc" => "Choose which links this member group can access in the CP footer.",
 
 "can_access_content" => "Can access CONTENT section",
 

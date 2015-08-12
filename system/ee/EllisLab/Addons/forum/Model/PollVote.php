@@ -41,8 +41,18 @@ class PollVote extends Model {
 		'choice_id' => 'int',
 	);
 
-	// protected static $_relationships = array(
-	// );
+	protected static $_relationships = array(
+		'Member' => array(
+			'type' => 'belongsTo',
+			'model' => 'ee:Member'
+		),
+		'Poll' => array(
+			'type' => 'belongsTo',
+		),
+		'Topic' => array(
+			'type' => 'belongsTo',
+		),
+	);
 
 	protected static $_validation_rules = array(
 		'poll_id'   => 'required',

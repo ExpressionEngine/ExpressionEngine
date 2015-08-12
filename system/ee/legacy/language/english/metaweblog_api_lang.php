@@ -17,6 +17,8 @@ $lang = array(
 
 'create_metaweblog' => 'Create MetaWeblog',
 
+'edit_metaweblog' => 'Edit MetaWeblog',
+
 'metaweblog_pref_name' => 'Name',
 
 'metaweblog_parse_type' => 'Use default text formatting preferences?',

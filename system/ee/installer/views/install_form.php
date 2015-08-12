@@ -1,6 +1,3 @@
-<div class="alert inline warn">
-	<p><b>Please</b> read <a href="https://ellislab.com/expressionengine/user-guide/installation/installation.html" rel="external">Installing ExpressionEngine</a> <strong>before</strong> starting.</p>
-</div>
 <?php if ( ! empty($errors)): ?>
 	<div class="alert inline issue">
 		<h3><?=lang('error_occurred')?></h3>
@@ -9,13 +6,14 @@
 		<?php endforeach ?>
 	</div>
 <?php endif ?>
+<h2><?=lang('db_settings')?></h2>
 <fieldset class="col-group required <?=form_error_class('db_hostname')?>">
 	<div class="setting-txt col w-8">
 		<h3><?=lang('db_hostname')?></h3>
 		<em><?=lang('db_hostname_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
-		<input name="db_hostname" type="text" value="<?=set_value('db_hostname')?>">
+		<input name="db_hostname" type="text" value="<?=set_value('db_hostname', 'localhost')?>">
 		<?=form_error('db_hostname');?>
 	</div>
 </fieldset>
@@ -23,7 +21,6 @@
 	<div class="setting-txt col w-8">
 		<h3><?=lang('db_name')?></h3>
 		<em><?=lang('db_name_note')?></em>
-		<em><mark><?=lang('db_name_warning')?></mark></em>
 	</div>
 	<div class="setting-field col w-8 last">
 		<input name="db_name" type="text" value="<?=set_value('db_name')?>">
@@ -33,7 +30,6 @@
 <fieldset class="col-group required <?=form_error_class('db_username')?>">
 	<div class="setting-txt col w-8">
 		<h3><?=lang('db_username')?></h3>
-		<em><?=lang('db_username_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
 		<input name="db_username" type="text" value="<?=set_value('db_username')?>">
@@ -43,7 +39,6 @@
 <fieldset class="col-group <?=form_error_class('db_password')?>">
 	<div class="setting-txt col w-8">
 		<h3><?=lang('db_password')?></h3>
-		<em><?=lang('db_password_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
 		<input name="db_password" type="password" value="<?=set_value('db_password')?>">
@@ -75,7 +70,6 @@
 <fieldset class="col-group required <?=form_error_class('email_address')?>">
 	<div class="setting-txt col w-8">
 		<h3><?=lang('e_mail')?></h3>
-		<em><?=lang('e_mail_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
 		<input name="email_address" type="text" value="<?=set_value('email_address')?>">
@@ -85,7 +79,6 @@
 <fieldset class="col-group required <?=form_error_class('username')?>">
 	<div class="setting-txt col w-8">
 		<h3><?=lang('username')?></h3>
-		<em><?=lang('username_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
 		<input name="username" type="text" value="<?=set_value('username')?>" maxlength="50">
@@ -95,7 +88,6 @@
 <fieldset class="col-group required <?=form_error_class('password')?> last">
 	<div class="setting-txt col w-8">
 		<h3><?=lang('password')?></h3>
-		<em><?=lang('password_note')?></em>
 	</div>
 	<div class="setting-field col w-8 last">
 		<input name="password" type="password" value="" maxlength="<?=PASSWORD_MAX_LENGTH?>">

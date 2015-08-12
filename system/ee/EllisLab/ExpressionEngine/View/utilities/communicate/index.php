@@ -39,7 +39,6 @@
 	<fieldset class="col-group required <?=form_error_class('from')?>">
 		<div class="setting-txt col w-8">
 			<h3><?=lang('your_email')?></h3>
-			<em><?=lang('from_email')?>.</em>
 		</div>
 		<div class="setting-field col w-8 last">
 			<input type="text" name="from" value="<?=set_value('from', $from)?>">

@@ -49,8 +49,28 @@ class Moderator extends Model {
 		'mod_can_view_ip'       => 'boolString',
 	);
 
-	// protected static $_relationships = array(
-	// );
+	protected static $_relationships = array(
+		'Board' => array(
+			'type' => 'belongsTo'
+		),
+		'Forum' => array(
+			'type'     => 'belongsTo',
+			'from_key' => 'mod_forum_id',
+			'to_key'   => 'forum_id'
+		),
+		'Member' => array(
+			'type'     => 'hasOne',
+			'model'    => 'ee:Member',
+			'from_key' => 'mod_member_id',
+			'to_key'   => 'member_id'
+		),
+		'MemberGroup' => array(
+			'type'     => 'hasOne',
+			'model'    => 'ee:MemberGroup',
+			'from_key' => 'mod_group_id',
+			'to_key'   => 'group_id'
+		),
+	);
 
 	protected static $_validation_rules = array(
 		'mod_forum_id'          => 'required',
@@ -79,5 +99,34 @@ class Moderator extends Model {
 	protected $mod_can_change_status;
 	protected $mod_can_announce;
 	protected $mod_can_view_ip;
+
+	public function getModeratorName()
+	{
+		$name = $this->mod_member_name;
+
+		if ($this->mod_group_id)
+		{
+			return "Group #{$this->mod_group_id} <em>(Not yet implemented)</em>";
+			$name = $this->MemberGroup->group_title;
+		}
+
+		return $name;
+	}
+
+	public function getType()
+	{
+		$type = "";
+
+		if ($this->mod_group_id)
+		{
+			$type = lang('group');
+		}
+		elseif ($this->mod_member_id)
+		{
+			$type = lang('individual');
+		}
+
+		return $type;
+	}
 
 }

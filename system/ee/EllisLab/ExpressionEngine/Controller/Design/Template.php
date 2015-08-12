@@ -87,7 +87,7 @@ class Template extends AbstractDesignController {
 					'name' => 'submit',
 					'type' => 'submit',
 					'value' => 'create',
-					'text' => 'btn_create_template',
+					'text' => sprintf(lang('btn_save'), lang('template')),
 					'working' => 'btn_create_template_working'
 				),
 				array(
@@ -102,7 +102,7 @@ class Template extends AbstractDesignController {
 				array(
 					array(
 						'title' => 'name',
-						'desc' => 'template_name_desc',
+						'desc' => 'alphadash_desc',
 						'fields' => array(
 							'template_name' => array(
 								'type' => 'text',
@@ -112,7 +112,6 @@ class Template extends AbstractDesignController {
 					),
 					array(
 						'title' => 'template_type',
-						'desc' => 'template_type_desc',
 						'fields' => array(
 							'template_type' => array(
 								'type' => 'select',
@@ -386,6 +385,11 @@ class Template extends AbstractDesignController {
 				'field' => 'allow_php',
 				'label' => 'lang:enable_php',
 				'rules' => 'enum[y,n]'
+			),
+			array(
+				'field' => 'refresh',
+				'label' => 'lang:refresh_interval',
+				'rules' => 'integer'
 			),
 			array(
 				'field' => 'php_parse_location',

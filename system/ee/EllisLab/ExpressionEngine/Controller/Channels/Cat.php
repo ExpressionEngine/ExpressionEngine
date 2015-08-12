@@ -143,7 +143,6 @@ class Cat extends AbstractChannelsController {
 			$alert_key = 'created';
 			ee()->view->cp_page_title = lang('create_category_group');
 			ee()->view->base_url = ee('CP/URL', 'channels/cat/create');
-			ee()->view->save_btn_text = 'create_category_group';
 			$cat_group = ee('Model')->make('CategoryGroup');
 		}
 		else
@@ -160,7 +159,6 @@ class Cat extends AbstractChannelsController {
 			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_category_group');
 			ee()->view->base_url = ee('CP/URL', 'channels/cat/edit/'.$group_id);
-			ee()->view->save_btn_text = 'edit_category_group';
 		}
 
 		$member_groups = ee('Model')->get('MemberGroup')
@@ -312,6 +310,7 @@ class Cat extends AbstractChannelsController {
 		}
 
 		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('category_group'));
 		ee()->view->save_btn_text_working = 'btn_saving';
 
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/cat'), lang('category_groups'));
@@ -583,7 +582,6 @@ class Cat extends AbstractChannelsController {
 			$alert_key = 'created';
 			ee()->view->cp_page_title = lang('create_category');
 			ee()->view->base_url = ee('CP/URL', 'channels/cat/create-cat/'.$group_id);
-			ee()->view->save_btn_text = 'create_category';
 
 			$category = ee('Model')->make('Category');
 			$category->setCategoryGroup($cat_group);
@@ -610,7 +608,6 @@ class Cat extends AbstractChannelsController {
 			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_category');
 			ee()->view->base_url = ee('CP/URL', 'channels/cat/edit-cat/'.$group_id.'/'.$category_id);
-			ee()->view->save_btn_text = 'edit_category';
 		}
 
 		ee()->load->library('api');
@@ -641,7 +638,7 @@ class Cat extends AbstractChannelsController {
 				),
 				array(
 					'title' => 'url_title_lc',
-					'desc' => 'url_title_desc',
+					'desc' => 'alphadash_desc',
 					'fields' => array(
 						'cat_url_title' => array(
 							'type' => 'text',
@@ -749,6 +746,7 @@ class Cat extends AbstractChannelsController {
 		}
 
 		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('category'));
 		ee()->view->save_btn_text_working = 'btn_saving';
 
 		$filepicker = new FilePicker();
@@ -998,7 +996,6 @@ class Cat extends AbstractChannelsController {
 				->first();
 
 			$alert_key = 'updated';
-			ee()->view->save_btn_text = 'btn_edit_field';
 			ee()->view->cp_page_title = lang('edit_category_field');
 			ee()->view->base_url = ee('CP/URL', 'channels/cat/edit-field/'.$group_id.'/'.$field_id);
 		}
@@ -1017,7 +1014,6 @@ class Cat extends AbstractChannelsController {
 			$cat_field->field_type = 'text';
 
 			$alert_key = 'created';
-			ee()->view->save_btn_text = 'btn_create_field';
 			ee()->view->cp_page_title = lang('create_category_field');
 			ee()->view->base_url = ee('CP/URL', 'channels/cat/create-field/'.$group_id);
 		}
@@ -1064,7 +1060,7 @@ class Cat extends AbstractChannelsController {
 				),
 				array(
 					'title' => 'short_name',
-					'desc' => 'cat_field_short_name_desc',
+					'desc' => 'alphadash_desc',
 					'fields' => array(
 						'field_name' => array(
 							'type' => 'text',
@@ -1141,6 +1137,7 @@ class Cat extends AbstractChannelsController {
 		}
 
 		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('category_field'));
 		ee()->view->save_btn_text_working = 'btn_saving';
 
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/cat'), lang('category_groups'));

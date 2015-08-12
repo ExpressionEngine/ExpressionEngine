@@ -79,8 +79,8 @@ class Watermarks extends AbstractFilesController {
 		);
 
 		$watermarks = $watermarks->order($sort_map[$table->sort_col], $table->sort_dir)
-			->limit(20)
-			->offset(($table->config['page'] - 1) * 20)
+			->limit($table->config['limit'])
+			->offset(($table->config['page'] - 1) * $table->config['limit'])
 			->all();
 
 		$data = array();
@@ -184,7 +184,6 @@ class Watermarks extends AbstractFilesController {
 		{
 			ee()->view->cp_page_title = lang('create_watermark');
 			ee()->view->base_url = ee('CP/URL', 'files/watermarks/create');
-			ee()->view->save_btn_text = 'create_watermark';
 			$watermark = ee('Model')->make('Watermark');
 		}
 		else
@@ -198,7 +197,6 @@ class Watermarks extends AbstractFilesController {
 
 			ee()->view->cp_page_title = lang('edit_watermark');
 			ee()->view->base_url = ee('CP/URL', 'files/watermarks/edit/'.$watermark_id);
-			ee()->view->save_btn_text = 'edit_watermark';
 		}
 
 		ee()->load->library('filemanager');
@@ -207,7 +205,6 @@ class Watermarks extends AbstractFilesController {
 			array(
 				array(
 					'title' => 'name',
-					'desc' => 'watermark_name_desc',
 					'fields' => array(
 						'wm_name' => array(
 							'type' => 'text',
@@ -218,7 +215,6 @@ class Watermarks extends AbstractFilesController {
 				),
 				array(
 					'title' => 'type',
-					'desc' => 'watermark_type_desc',
 					'fields' => array(
 						'wm_type' => array(
 							'type' => 'select',
@@ -311,7 +307,6 @@ class Watermarks extends AbstractFilesController {
 					),
 					array(
 						'title' => 'watermark_text_font',
-						'desc' => 'watermark_text_font_desc',
 						'fields' => array(
 							'wm_font' => array(
 								'type' => 'select',
@@ -322,7 +317,6 @@ class Watermarks extends AbstractFilesController {
 					),
 					array(
 						'title' => 'watermark_text_size',
-						'desc' => 'watermark_text_size_desc',
 						'fields' => array(
 							'wm_font_size' => array(
 								'type' => 'text',
@@ -332,7 +326,6 @@ class Watermarks extends AbstractFilesController {
 					),
 					array(
 						'title' => 'watermark_text_color',
-						'desc' => 'watermark_text_color_desc',
 						'fields' => array(
 							'wm_font_color' => array(
 								'type' => 'text',
@@ -352,7 +345,6 @@ class Watermarks extends AbstractFilesController {
 					),
 					array(
 						'title' => 'watermark_text_dropshadow_distance',
-						'desc' => 'watermark_text_dropshadow_distance_desc',
 						'fields' => array(
 							'wm_shadow_distance' => array(
 								'type' => 'text',
@@ -362,7 +354,6 @@ class Watermarks extends AbstractFilesController {
 					),
 					array(
 						'title' => 'watermark_text_dropshadow_color',
-						'desc' => 'watermark_text_dropshadow_color_desc',
 						'fields' => array(
 							'wm_shadow_color' => array(
 								'type' => 'text',
@@ -450,6 +441,7 @@ class Watermarks extends AbstractFilesController {
 		}
 
 		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('watermark'));
 		ee()->view->save_btn_text_working = 'btn_saving';
 
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'files'), lang('file_manager'));

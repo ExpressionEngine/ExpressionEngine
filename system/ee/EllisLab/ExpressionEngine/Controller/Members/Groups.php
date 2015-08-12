@@ -175,8 +175,7 @@ class Groups extends Members\Members {
 	public function create()
 	{
 		$vars = array(
-			'cp_page_title' => lang('create_member_group'),
-			'save_btn_text' => lang('save_member_group')
+			'cp_page_title' => lang('create_member_group')
 		);
 		$this->base_url = ee('CP/URL', 'members/groups/create/', $this->query_string);
 
@@ -186,8 +185,7 @@ class Groups extends Members\Members {
 	public function edit()
 	{
 		$vars = array(
-			'cp_page_title' => lang('edit_member_group'),
-			'save_btn_text' => lang('save_member_group')
+			'cp_page_title' => lang('edit_member_group')
 		);
 
 		$group = ee()->input->get('group');
@@ -545,6 +543,21 @@ class Groups extends Members\Members {
 							'value' => element('can_access_cp', $values)
 						)
 					)
+				),
+				array(
+					'title' => 'footer_helper_links',
+					'desc' => 'footer_helper_links_desc',
+					'fields' => array(
+						'footer_helper_links' => array(
+							'type' => 'checkbox',
+							'choices' => array(
+								'can_access_footer_report_bug' => lang('report_bug'),
+								'can_access_footer_new_ticket' => lang('new_ticket'),
+								'can_access_footer_user_guide' => lang('user_guide'),
+							),
+							'value' => element('footer_helper_links', $values)
+						)
+					)
 				)
 			),
 			'channels' => array(
@@ -772,6 +785,7 @@ class Groups extends Members\Members {
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('member_group'));
 		ee()->view->save_btn_text_working = 'btn_save_working';
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -827,6 +841,22 @@ class Groups extends Members\Members {
 		if ($result['can_delete_all_comments'] === TRUE)
 		{
 			$result['comment_actions'][] = 'can_delete_all_comments';
+		}
+
+		// Footer helper checkbox group
+		$result['footer_helper_links'] = array();
+
+		if ($result['can_access_footer_report_bug'])
+		{
+			$result['footer_helper_links'][] = 'can_access_footer_report_bug';
+		}
+		if ($result['can_access_footer_new_ticket'])
+		{
+			$result['footer_helper_links'][] = 'can_access_footer_new_ticket';
+		}
+		if ($result['can_access_footer_user_guide'])
+		{
+			$result['footer_helper_links'][] = 'can_access_footer_user_guide';
 		}
 
 		// Channel category checkbox group
@@ -907,7 +937,7 @@ class Groups extends Members\Members {
 		}
 
 		$result['addons_access'] = $this->group->AssignedModules->pluck('module_id');
-		$result['template_groups'] = $this->group->AssignedTemplateGroups->pluck('template_group_id');
+		$result['template_groups'] = $this->group->AssignedTemplateGroups->pluck('group_id');
 		$result['allowed_channels'] = $this->group->AssignedChannels->pluck('channel_id');
 
 		return $result;

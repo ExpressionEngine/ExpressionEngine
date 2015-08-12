@@ -75,7 +75,8 @@
 							break;
 					}
 
-					if ($field->getType() == 'relationship' && $field->getSetting('allow_multiple'))
+					if (($field->getType() == 'relationship' && $field->getSetting('allow_multiple'))
+						OR $field->getSetting('field_wide'))
 					{
 						$width = "w-16";
 					}

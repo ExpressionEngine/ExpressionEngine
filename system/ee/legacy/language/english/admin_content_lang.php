@@ -60,8 +60,6 @@ $lang = array(
 
 'label_desc' => 'Name of field that appears in the publish form.',
 
-'short_name_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
-
 'instructions' => 'Instructions',
 
 'instructions_desc' => 'Field instructions that appear in the publish form.',
@@ -262,8 +260,6 @@ $lang = array(
 
 'publish_page_customization' => 'Publish Page Customization',
 
-'show_button_cluster' => 'Display Formatting Buttons',
-
 'paths' => 'Path Settings',
 
 'channel_url_exp' => 'The URL to this particular channel',
@@ -444,15 +440,13 @@ $lang = array(
 
 'tag_name' => 'Tag Name',
 
-'tag_name_desc' => 'Full descriptive name of this button.',
-
 'tag_open' => 'Opening Tag',
 
-'tag_open_desc' => 'Opening output of this button. i.e. <b>',
+'tag_open_desc' => 'Opening output of this button. i.e. <b><code>&lt;b&gt;</code></b>',
 
 'tag_close' => 'Closing Tag',
 
-'tag_close_desc' => 'Closing output of this button. i.e. </b>',
+'tag_close_desc' => 'Closing output of this button. i.e. <b><code>&lt;/b&gt;</code></b>',
 
 'accesskey' => 'Tag shortcut',
 
