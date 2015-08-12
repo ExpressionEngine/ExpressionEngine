@@ -7,7 +7,8 @@
 		<?php else: ?>
 			<ul class="process-list">
 				<?php foreach ($log as $i => $item): ?>
-					<li><mark><?=$item['time']?> / <?=$item['memory']?></mark> </b><?=($item['message'])?></b>
+					<?php $warn = ($i != 0 && ($item['memory_gain'] > $item['memory_threshold'] OR $item['time_gain'] > $item['time_threshold'])) ? 'class="debug-warn"' : ''; ?>
+					<li <?=$warn?>><mark><?=$item['time']?> / <?=$item['memory']?>MB</mark> </b><?=($item['message'])?></b>
 					<?php if ($item['details']): ?>
 						(<a class="toggle" rel="snp-detail-<?=$i?>" href="#">show more</a>)
 						<div class="details snp-detail-<?=$i?>">

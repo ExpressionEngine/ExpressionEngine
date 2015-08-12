@@ -3368,14 +3368,21 @@ class EE_Template {
 
 		if (function_exists('memory_get_usage'))
 		{
-			$memory_usage = number_format(round(memory_get_usage()/1024/1024, 2),2).'MB';
+			$memory_usage = number_format(round(memory_get_usage()/1024/1024, 2),2);
 		}
 
+		$last = end($this->log);
+		$time = number_format($time, 6);
+		$time_gain = $time - $last['time'];
+		$memory_gain = $memory_usage - $last['memory'];
+
 		$this->log[] = array(
-			'time' => number_format($time, 6),
+			'time' => $time,
 			'memory' => $memory_usage,
 			'message' => $str,
-			'details' => ($details) ? var_export($details, TRUE) : $details
+			'details' => ($details) ? var_export($details, TRUE) : $details,
+			'time_gain' => $time_gain,
+			'memory_gain' => $memory_gain
 		);
 	}
 

@@ -64,6 +64,12 @@ class Template extends ProfilerSection {
 		$last = end($log);
 		$this->template_memory = $last['memory'];
 
+		foreach($log as &$entry)
+		{
+			$entry['memory_threshold'] = 4;
+			$entry['time_threshold'] = 0.25;
+		}
+
 		$this->data = array('template' => $log);
 	}
 }
