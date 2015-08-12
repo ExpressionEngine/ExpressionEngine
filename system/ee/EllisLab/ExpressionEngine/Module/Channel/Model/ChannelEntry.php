@@ -304,6 +304,7 @@ class ChannelEntry extends ContentModel {
 		$module_tabs = array();
 
 		// Some Tabs might call ee()->api_channel_fields
+		ee()->load->library('api');
 		ee()->legacy_api->instantiate('channel_fields');
 
 		foreach ($this->getModulesWithTabs() as $name => $info)
