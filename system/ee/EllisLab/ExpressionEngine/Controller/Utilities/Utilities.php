@@ -87,6 +87,10 @@ class Utilities extends CP_Controller {
 				'search_and_replace' => ee('CP/URL', 'utilities/sandr')
 			)
 		));
+
+		ee()->view->header = array(
+			'title' => lang('system_utilities')
+		);
 	}
 
 	// --------------------------------------------------------------------

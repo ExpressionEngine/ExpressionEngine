@@ -122,6 +122,10 @@ class Profile extends CP_Controller {
 		));
 
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'members'), lang('members'));
+
+		ee()->view->header = array(
+			'title' => sprintf(lang('profile_header'), $this->member->username)
+		);
 	}
 
 	// --------------------------------------------------------------------

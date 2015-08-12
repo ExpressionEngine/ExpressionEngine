@@ -2,10 +2,6 @@
 
 <div class="tbl-ctrls">
 <?=form_open($table['base_url'])?>
-	<fieldset class="tbl-search right">
-		<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=$table['search']?>">
-		<input class="btn submit" type="submit" value="<?=lang('search_member_groups_button')?>">
-	</fieldset>
 	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
 
 	<?=ee('Alert')->getAllInlines()?>

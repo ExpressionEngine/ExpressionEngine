@@ -85,6 +85,7 @@ class Members extends CP_Controller {
 		));
 
 		$this->base_url = ee('CP/URL', 'members');
+		$this->set_view_header($this->base_url);
 	}
 
 	// --------------------------------------------------------------------
@@ -738,6 +739,24 @@ class Members extends CP_Controller {
 				}
 			}
 		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Set the header for the members section
+	 * @param String $form_url Form URL
+	 * @param String $search_button_value The text for the search button
+	 */
+	protected function set_view_header($form_url, $search_button_value = '')
+	{
+		$search_button_value = ($search_button_value) ?: lang('search_members_button');
+
+		ee()->view->header = array(
+			'title' => lang('member_manager'),
+			'form_url' => $form_url,
+			'search_button_value' => $search_button_value
+		);
 	}
 }
 // END CLASS
