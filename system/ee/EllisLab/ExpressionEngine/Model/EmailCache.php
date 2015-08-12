@@ -9,6 +9,14 @@ class EmailCache extends Model
 	protected static $_primary_key = 'cache_id';
 	protected static $_table_name = 'email_cache';
 
+	protected static $_typed_columns = array(
+		'cache_date'      => 'timestamp',
+		'total_sent'      => 'int',
+		'recipient_array' => 'serialized',
+		'attachments'     => 'serialized',
+		'wordwrap'        => 'boolString'
+	);
+
 	protected static $_relationships = array(
 		'MemberGroups' => array(
 			'type' => 'hasAndBelongsToMany',
@@ -36,25 +44,4 @@ class EmailCache extends Model
 	protected $wordwrap;
 	protected $attachments;
 
-	public function set__recipient_array($recipients)
-	{
-		$this->recipient_array = serialize($recipients);
-		return $this;
-	}
-
-	public function get__recipient_array()
-	{
-		return unserialize($this->recipient_array);
-	}
-
-	public function set__attachments(array $attachments)
-	{
-		$this->attachments = serialize($attachments);
-		return $this;
-	}
-
-	public function get__attachments()
-	{
-		return unserialize($this->attachments);
-	}
 }
