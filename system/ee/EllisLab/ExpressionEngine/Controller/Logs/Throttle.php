@@ -116,6 +116,12 @@ class Throttle extends Logs {
 				ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
 			}
 
+			ee()->view->header = array(
+				'title' => lang('system_logs'),
+				'form_url' => $this->base_url->compile(),
+				'search_button_value' => lang('search_logs_button')
+			);
+
 			$logs = $logs->order('last_activity', 'desc')
 				->limit($this->params['perpage'])
 				->offset($offset)
