@@ -747,7 +747,7 @@ class Communicate extends Utilities {
 		{
 			$data[] = array(
 				htmlentities($email->subject, ENT_QUOTES, 'UTF-8'),
-				ee()->localize->human_time($email->cache_date),
+				ee()->localize->human_time($email->cache_date->format('U')),
 				$email->total_sent,
 				array('toolbar_items' => array(
 					'view' => array(
