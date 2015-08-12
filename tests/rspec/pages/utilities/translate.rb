@@ -3,7 +3,7 @@ class Translate < ControlPanelPage
 
 	elements :languages, 'div.sidebar ul:nth-child(4) li'
 
-	element :heading, 'div.box form h1'
+	element :heading, 'div.w-12 div.box form h1'
 
 	element :phrase_search, 'form fieldset.tbl-search input[name=search]'
 	element :search_submit_button, 'form fieldset.tbl-search input.submit'
