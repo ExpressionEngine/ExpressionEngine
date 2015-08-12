@@ -559,24 +559,25 @@ class Wizard extends CI_Controller {
 	 * @param Callable $callable The function to call in case the error was thrown
 	 * @return boolean TRUE if successful, FALSE otherwise
 	 */
-	private function db_validation($error_number, Callable $callable)
+	private function db_validation($error_number, Closure $callable)
 	{
+		if (! ee()->input->post('db_hostname')
+			|| ! ee()->input->post('db_name')
+			|| ! ee()->input->post('db_username'))
+		{
+			$callable();
+			return FALSE;
+		}
+
 		if ( ! isset($this->db_connect_attempt))
 		{
-			try
-			{
-				$this->db_connect_attempt = $this->db_connect(array(
-					'hostname' => ee()->input->post('db_hostname'),
-					'database' => ee()->input->post('db_name'),
-					'username' => ee()->input->post('db_username'),
-					'password' => ee()->input->post('db_password'),
-					'dbprefix' => 'exp'
-				));
-			}
-			catch (Exception $e)
-			{
-				return FALSE;
-			}
+			$this->db_connect_attempt = $this->db_connect(array(
+				'hostname' => ee()->input->post('db_hostname'),
+				'database' => ee()->input->post('db_name'),
+				'username' => ee()->input->post('db_username'),
+				'password' => ee()->input->post('db_password'),
+				'dbprefix' => 'exp'
+			));
 		}
 
 		if ($this->db_connect_attempt === $error_number)
@@ -2393,7 +2394,7 @@ class Wizard extends CI_Controller {
 		);
 
 		// Move the directory
-		return @rename(APPPATH, $new_path);
+		// return @rename(APPPATH, $new_path);
 	}
 }
 
