@@ -2,6 +2,8 @@
 
 $lang = array(
 
+'system_utilities' => 'System Utilities',
+
 /**
  * Menu
  */
