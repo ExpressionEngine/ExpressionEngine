@@ -103,37 +103,45 @@ class DefaultChannelLayout extends DefaultLayout {
 			'fields' => $category_group_fields
 		);
 
+		// Options Tab ---------------------------------------------------------
+
+		$option_fields = array(
+			array(
+				'field' => 'channel_id',
+				'visible' => TRUE,
+				'collapsed' => FALSE
+			),
+			array(
+				'field' => 'status',
+				'visible' => TRUE,
+				'collapsed' => FALSE
+			),
+			array(
+				'field' => 'author_id',
+				'visible' => TRUE,
+				'collapsed' => FALSE
+			),
+			array(
+				'field' => 'sticky',
+				'visible' => TRUE,
+				'collapsed' => FALSE
+			)
+		);
+
+		if ($channel->comment_system_enabled)
+		{
+			$option_fields[] = array(
+				'field' => 'allow_comments',
+				'visible' => TRUE,
+				'collapsed' => FALSE
+			);
+		}
+
 		$layout[] = array(
 			'id' => 'options',
 			'name' => 'options',
 			'visible' => TRUE,
-			'fields' => array(
-				array(
-					'field' => 'channel_id',
-					'visible' => TRUE,
-					'collapsed' => FALSE
-				),
-				array(
-					'field' => 'status',
-					'visible' => TRUE,
-					'collapsed' => FALSE
-				),
-				array(
-					'field' => 'author_id',
-					'visible' => TRUE,
-					'collapsed' => FALSE
-				),
-				array(
-					'field' => 'sticky',
-					'visible' => TRUE,
-					'collapsed' => FALSE
-				),
-				array(
-					'field' => 'allow_comments',
-					'visible' => TRUE,
-					'collapsed' => FALSE
-				)
-			)
+			'fields' => $option_fields
 		);
 
 		if ($this->channel_id)
