@@ -27,6 +27,23 @@ class EmailCache extends Model
 		)
 	);
 
+	protected static $_validation_rules = array(
+		'cache_date'      => 'required',
+		'total_sent'      => 'required',
+		'from_name'       => 'required',
+		'from_email'      => 'required',
+		'recipient'       => 'required',
+		'cc'              => 'required',
+		'bcc'             => 'required',
+		'recipient_array' => 'required',
+		'subject'         => 'required',
+		'message'         => 'required',
+		'plaintext_alt'   => 'required',
+		'mailtype'        => 'required',
+		'text_fmt'        => 'required',
+		'wordwrap'        => 'required|enum[y,n]',
+	);
+
 	protected $cache_id;
 	protected $cache_date;
 	protected $total_sent;
