@@ -95,6 +95,11 @@ class Filepicker_mcp {
 		}
 
 		$filters = ee('Filter')->add('Perpage', $files->count(), 'show_all_files');
+
+		$dirFilter = ee('Filter')->make('directory', lang('directory'), $directories);
+		$dirFilter->disableCustomValue();
+		$filters = $filters->add($dirFilter);
+
 		if ( ! empty($dir) && $dir->allowed_types == 'img')
 		{
 			$imgOptions = array(
@@ -103,13 +108,10 @@ class Filepicker_mcp {
 			);
 			$imgFilter = ee('Filter')->make('type', lang('picker_type'), $imgOptions);
 			$imgFilter->disableCustomValue();
+			$filters = $filters->add($imgFilter);
 		}
-		$dirFilter = ee('Filter')->make('directory', lang('directory'), $directories);
-		$dirFilter->disableCustomValue();
-		$filters = $filters->add($dirFilter);
-		$filters = $filters->add($imgFilter);
 		$perpage = $filters->values()['perpage'];
-		ee()->view->filters = $filters->render($base_url);
+		$vars['filters'] = $filters->render($base_url);
 
 		$table = $this->picker->buildTableFromFileCollection($files, $perpage);
 
@@ -131,7 +133,7 @@ class Filepicker_mcp {
 				->render($base_url);
 		}
 
-		ee()->view->cp_heading = $id == 'all' ? lang('all_files') : sprintf(lang('files_in_directory'), $dir->name);
+		$vars['cp_heading'] = $id == 'all' ? lang('all_files') : sprintf(lang('files_in_directory'), $dir->name);
 
 		return ee('View')->make('filepicker:ModalView')->render($vars);
 	}
