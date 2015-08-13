@@ -7,6 +7,7 @@ use EllisLab\ExpressionEngine\Service\Addon;
 use EllisLab\ExpressionEngine\Service\Alert;
 use EllisLab\ExpressionEngine\Service\Config;
 use EllisLab\ExpressionEngine\Service\Database;
+use EllisLab\ExpressionEngine\Service\EntryListing;
 use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\Grid;
 use EllisLab\ExpressionEngine\Service\Model;
@@ -26,6 +27,17 @@ return array(
 	'namespace' => 'EllisLab\ExpressionEngine',
 
 	'services' => array(
+
+		'CP/EntryListing' => function($ee, $search_value)
+		{
+			 return new EntryListing\EntryListing(
+				ee()->config->item('site_id'),
+				(ee()->session->userdata['group_id'] == 1),
+				array_keys(ee()->session->userdata['assigned_channels']),
+				ee()->localize->now,
+				$search_value
+			);
+		},
 
 		'CP/GridInput' => function($ee, $config = array())
 		{
