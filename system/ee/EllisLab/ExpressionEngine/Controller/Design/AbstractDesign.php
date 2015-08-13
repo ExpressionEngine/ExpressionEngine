@@ -97,7 +97,8 @@ abstract class AbstractDesign extends CP_Controller {
 			->addFolderList('system-templates');
 
 		$item = $system_templates->addItem(lang('messages'), ee('CP/URL', 'design/system'))
-			->withEditUrl(ee('CP/URL', 'design/system'));
+			->withEditUrl(ee('CP/URL', 'design/system'))
+			->cannotRemove();
 
 		if ($active == 'messages')
 		{
@@ -105,7 +106,8 @@ abstract class AbstractDesign extends CP_Controller {
 		}
 
 		$item = $system_templates->addItem(lang('email'), ee('CP/URL', 'design/email'))
-			->withEditUrl(ee('CP/URL', 'design/email'));
+			->withEditUrl(ee('CP/URL', 'design/email'))
+			->cannotRemove();
 
 		if ($active == 'email')
 		{
@@ -115,7 +117,8 @@ abstract class AbstractDesign extends CP_Controller {
 		if (ee('Model')->get('Module')->filter('module_name', 'Member')->first())
 		{
 			$item = $system_templates->addItem(lang('members'), ee('CP/URL', 'design/members'))
-				->withEditUrl(ee('CP/URL', 'design/members'));
+				->withEditUrl(ee('CP/URL', 'design/members'))
+				->cannotRemove();
 
 			if ($active == 'members')
 			{
@@ -126,7 +129,8 @@ abstract class AbstractDesign extends CP_Controller {
 		if (ee()->config->item('forum_is_installed') == "y")
 		{
 			$item = $system_templates->addItem(lang('forums'), ee('CP/URL', 'design/forums'))
-				->withEditUrl(ee('CP/URL', 'design/forums'));
+				->withEditUrl(ee('CP/URL', 'design/forums'))
+				->cannotRemove();
 
 			if ($active == 'forums')
 			{

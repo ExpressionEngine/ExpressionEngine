@@ -55,6 +55,16 @@ class FolderItem extends ListItem {
 	protected $removal_key_value;
 
 	/**
+	 * @var bool $has_edit Whether or not to render an edit button
+	 */
+	protected $has_edit = TRUE;
+
+	/**
+	 * @var bool $has_remove Whether or not to render a remove button
+	 */
+	protected $has_remove = TRUE;
+
+	/**
 	 * Constructor: Sets the text, url, name, and removal key for this item.
 	 *
 	 * @see ListItem::__construct()
@@ -93,6 +103,50 @@ class FolderItem extends ListItem {
 	public function withEditUrl($url)
 	{
 		$this->edit_url = $url;
+		return $this;
+	}
+
+	/**
+	 * Sets the has an edit button property to TRUE
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function canEdit()
+	{
+		$this->has_edit = TRUE;
+		return $this;
+	}
+
+	/**
+	 * Sets the has an edit button property to FALSE
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function cannotEdit()
+	{
+		$this->has_edit = FALSE;
+		return $this;
+	}
+
+	/**
+	 * Sets the has an remove button property to TRUE
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function canRemove()
+	{
+		$this->has_remove = TRUE;
+		return $this;
+	}
+
+	/**
+	 * Sets the has an remove button property to FALSE
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function cannotRemove()
+	{
+		$this->has_remove = FALSE;
 		return $this;
 	}
 
@@ -145,6 +199,8 @@ class FolderItem extends ListItem {
 			'url' => $this->url,
 			'external' => $this->url_is_external,
 			'class' => $class,
+			'edit' => $this->has_edit,
+			'remove' => $this->has_remove,
 			'edit_url' => $this->edit_url,
 			'modal_name'=> $this->name,
 			'confirm' => $this->remove_confirmation,
