@@ -52,8 +52,9 @@ class Post extends Model {
 			'model' => 'Attachment'
 		),
 		'Author' => array(
-			'type' => 'belongsTo',
-			'model' => 'ee:Member'
+			'type'     => 'belongsTo',
+			'model'    => 'ee:Member',
+			'from_key' => 'author_id'
 		),
 		'Board' => array(
 			'type' => 'belongsTo'

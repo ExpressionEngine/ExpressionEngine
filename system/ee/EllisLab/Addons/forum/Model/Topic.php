@@ -60,8 +60,9 @@ class Topic extends Model {
 			'model' => 'Attachment'
 		),
 		'Author' => array(
-			'type' => 'belongsTo',
-			'model' => 'ee:Member'
+			'type'     => 'belongsTo',
+			'model'    => 'ee:Member',
+			'from_key' => 'author_id'
 		),
 		'Board' => array(
 			'type' => 'belongsTo'
@@ -72,7 +73,7 @@ class Topic extends Model {
 			'to_key'   => 'member_id',
 			'model'    => 'ee:Member'
 		),
-		'Froum' => array(
+		'Forum' => array(
 			'type' => 'belongsTo'
 		),
 		'LastPost' => array(
