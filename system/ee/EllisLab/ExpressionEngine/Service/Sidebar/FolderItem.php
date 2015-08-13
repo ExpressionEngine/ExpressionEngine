@@ -27,12 +27,43 @@ use EllisLab\ExpressionEngine\Service\View\ViewFactory;
  */
 class FolderItem extends ListItem {
 
+	/**
+	 * @var URL|string $edit_url The URL to use as an href attribute
+	 */
 	protected $edit_url = '';
+
+	/**
+	 * @var string $name The name of the folder list this item belongs to
+	 */
 	protected $name;
+
+	/**
+	 * @var string $remove_confirmation The message that will be displayed as
+	 *  the confirmation when attempting to remove this item
+	 */
 	protected $remove_confirmation;
+
+	/**
+	 * @var string $removal_key The data attribute name to use when removing an item
+	 */
 	protected $removal_key;
+
+	/**
+	 * @var string $removal_key The value to place in the data attribute for use
+	 *  when removing an item
+	 */
 	protected $removal_key_value;
 
+	/**
+	 * Constructor: Sets the text, url, name, and removal key for this item.
+	 *
+	 * @see ListItem::__construct()
+	 * @param string $text The text of the item
+	 * @param URL|string $url An optional CP\URL object or string containing the
+	 *   URL for the text.
+	 * @param string $name The name of the folder list this item belongs to
+	 * @param string $removal_key The data attribute name to use when removing an item
+	 */
 	public function __construct($text, $url = NULL, $name, $removal_key)
 	{
 		parent::__construct($text, $url);
@@ -41,30 +72,65 @@ class FolderItem extends ListItem {
 		$this->removal_key = $removal_key;
 	}
 
+	/**
+	 * Marks the item as default
+	 *
+	 * @return self This returns a reference to itself
+	 */
 	public function asDefaultItem()
 	{
 		$this->class .= 'default ';
 		return $this;
 	}
 
+	/**
+	 * Sets the edit URL property of the item
+	 *
+	 * @param URL|string $url A CP\URL object or string containing the
+	 *   URL in order to edit the item.
+	 * @return self This returns a reference to itself
+	 */
 	public function withEditUrl($url)
 	{
 		$this->edit_url = $url;
 		return $this;
 	}
 
+	/**
+	 * Sets the remove confirmation message for this item.
+	 *
+	 * @var string $msg The message that will be displayed as the confirmation
+	 *   when attempting to remove this item
+	 * @return self This returns a reference to itself
+	 */
 	public function withRemoveConfirmation($msg)
 	{
 		$this->remove_confirmation = $msg;
 		return $this;
 	}
 
+	/**
+	 * Sets the identity value for this item which is used when this item is
+	 * removed.
+	 *
+	 * @param string $val The value to place in the data attribute for use
+	 *  when removing an item
+	 * @return self This returns a reference to itself
+	 */
 	public function identifiedBy($val)
 	{
 		$this->removal_key_value = $val;
 		return $this;
 	}
 
+	/**
+	 * Renders this item. This should not be called directly. Instead use
+	 * the Sidebar's render method.
+	 *
+	 * @see Sidebar::render
+	 * @param ViewFactory $view A ViewFactory object to use with rendering
+	 * @return string The rendered HTML of the item
+	 */
 	public function render(ViewFactory $view)
 	{
 		$class = trim($this->class);

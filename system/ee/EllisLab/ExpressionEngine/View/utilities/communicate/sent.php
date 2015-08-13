@@ -36,7 +36,7 @@
 					<h1><?=$email->subject?></h1>
 					<div class="txt-wrap">
 						<ul class="checklist mb">
-							<li><b><?=lang('sent')?>:</b> <?=$localize->human_time($email->cache_date)?> <?=lang('to')?> <?=$email->total_sent?> <?=lang('recipients')?></li>
+							<li><b><?=lang('sent')?>:</b> <?=$localize->human_time($email->cache_date->format('U'))?> <?=lang('to')?> <?=$email->total_sent?> <?=lang('recipients')?></li>
 						</ul>
 						<?=$email->message?>
 					</div>

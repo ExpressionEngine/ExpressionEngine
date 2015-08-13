@@ -27,9 +27,21 @@ use EllisLab\ExpressionEngine\Service\View\ViewFactory;
  */
 class Sidebar {
 
+	/**
+	 * @var array $headers The headers in this sidebar
+	 */
 	protected $headers = array();
+
+	/**
+	 * @var ViewFactory $view A ViewFactory object with which we will render the sidebar.
+	 */
 	protected $view;
 
+	/**
+	 * Constructor: sets the ViewFactory property
+	 *
+	 * @param ViewFactory $view A ViewFactory object to use with rendering
+	 */
 	public function __construct(ViewFactory $view)
 	{
 		$this->view = $view;
@@ -43,6 +55,11 @@ class Sidebar {
 		return $this;
 	}
 
+	/**
+	 * Renders the sidebar
+	 *
+	 * @return string The rendered HTML of the sidebar
+	 */
 	public function render()
 	{
 		$output = '';
@@ -56,6 +73,14 @@ class Sidebar {
 			     ->render(array('sidebar' => $output));
 	}
 
+	/**
+	 * Adds a header to the sidebar
+	 *
+	 * @param string $text The text of the header
+	 * @param URL|string $url An optional CP\URL object or string containing the
+	 *   URL for the text.
+	 * @return Header A new Header object.
+	 */
 	public function addHeader($text, $url = NULL)
 	{
 		$header = new Header($text, $url);

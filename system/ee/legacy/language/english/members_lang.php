@@ -2,6 +2,8 @@
 
 $lang = array(
 
+"member_manager" => "Member Manager",
+
 "register_member" => "Register a New Member",
 
 "view_members" => "View Members",
