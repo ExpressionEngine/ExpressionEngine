@@ -321,6 +321,11 @@ abstract class AbstractChannels extends CP_Controller {
 					'edit' => array(
 						'href' => ee('CP/URL', 'channels/fields/groups/edit/' . $group->group_id),
 						'title' => lang('edit')
+					),
+					'txt-only' => array(
+						'href' => ee('CP/URL', 'channels/fields/fields/' . $group->group_id),
+						'title' => lang('custom_fields'),
+						'content' => lang('fields')
 					)
 				))
 			);
