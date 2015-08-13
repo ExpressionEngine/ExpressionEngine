@@ -38,6 +38,8 @@ $lang = array(
 
 'search_and_replace' => 'Search and Replace',
 
+'default' => 'Default',
+
 /**
  * Communicate
  */
