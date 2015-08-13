@@ -1113,17 +1113,30 @@ GRID_FALLBACK;
 	{
 		$custom_field_variables = array();
 
-		foreach ($this->custom_fields as $field_name => $field)
+		$fields_by_shortname = array();
+		$fields = $this->entry->getDisplay()->getFields();
+
+		foreach ($fields as $field)
 		{
+			$fields_by_shortname[$field->getShortName()] = $field;
+		}
+
+		foreach ($fields_by_shortname as $field_name => $field)
+		{
+			if ( ! array_key_exists($field_name, $this->custom_fields))
+			{
+				continue;
+			}
+
 			// standard vars/conditionals
 			$custom_field_variables_row = array(
-				'required'		=> (int) $field->field_required,
-				'text_direction'=> $field->field_text_direction,
-				'field_data'	=> $this->entry($field_name),
-				'rows'			=> $field->field_ta_rows,
-				'maxlength'		=> $field->field_maxl,
+				'required'		=> $field->isRequired(),
+				'text_direction'=> $field->getSetting('field_text_direction'),
+				'field_data'	=> $this->entry($field->getName()),
+				'rows'			=> $field->getSetting('field_ta_rows'),
+				'maxlength'		=> $field->getSetting('field_maxl'),
 				'formatting_buttons'			=> '',
-				'field_show_formatting_btns'	=> (isset($field->field_settings['field_show_formatting_btns']) && $field->field_settings['field_show_formatting_btns'] == 'y') ? 1 : 0,
+				'field_show_formatting_btns'	=> ($field->getSetting('field_show_formatting_btns') == 'y') ? 1 : 0,
 				'textinput'		=> 0,
 				'pulldown'		=> 0,
 				'checkbox'		=> 0,
@@ -1134,10 +1147,11 @@ GRID_FALLBACK;
 				'radio'			=> 0,
 				'display_field'	=> '',
 				'options'		=> $this->get_field_options($field_name),
-				'error'			=> ( ! empty($this->field_errors[$field->field_name])) ? lang($this->field_errors[$field->field_name]) : ''
+				'error'			=> ( ! empty($this->field_errors[$field->getName()])) ? lang($this->field_errors[$field->getName()]) : ''
 			);
 
-			$custom_field_variables_row = array_merge($field->getValues(), $custom_field_variables_row);
+			$custom_field_equivalent = $this->custom_fields[$field_name];
+			$custom_field_variables_row = array_merge($custom_field_equivalent->getValues(), $custom_field_variables_row);
 
 			$fieldtypes = ee()->api_channel_fields->fetch_installed_fieldtypes();
 
@@ -1148,17 +1162,14 @@ GRID_FALLBACK;
 			}
 
 			// fieldtype conditionals
-			foreach ($this->custom_fields as $f_name => $f)
+			$custom_field_variables_row[$field->getType()] = 1;
+
+			if (array_key_exists($field->getType(), $this->custom_field_conditional_names))
 			{
-				$custom_field_variables_row[$f->field_type] = $custom_field_variables_row[$f_name] = ($field->field_type == $f->field_type) ? 1 : 0;
+				$custom_field_variables_row[$this->custom_field_conditional_names[$field->getType()]] = 1;
 			}
 
-			if (array_key_exists($field->field_type, $this->custom_field_conditional_names))
-			{
-				$custom_field_variables_row[$this->custom_field_conditional_names[$field->field_type]] = 1;
-			}
-
-			if ($field->field_type == 'date')
+			if ($field->getType() == 'date')
 			{
 				if ($this->datepicker)
 				{
@@ -1174,7 +1185,7 @@ GRID_FALLBACK;
 				$custom_field_variables_row['field_data'] = ee()->localize->human_time($this->entry($field_name));
 			}
 
-			if ($field->field_type == 'relationship')
+			if ($field->getType() == 'relationship')
 			{
 				$settings = $this->get_field_settings($field_name);
 				$custom_field_variables_row['allow_multiple'] = 0;
@@ -1464,8 +1475,6 @@ GRID_FALLBACK;
 				// always call the fieldtype if a file field was on the page
 				isset($_POST[$field->field_name.'_hidden_file'])
 			);
-
-			//$this->custom_fields[$i]['isset'] = $isset;
 
 			if ( ! $this->edit || $isset)
 			{
@@ -1792,8 +1801,15 @@ GRID_FALLBACK;
 
 		if ($this->errors OR $this->field_errors)
 		{
+			$field_errors = array();
+
+			foreach ($this->field_errors as $field => $error)
+			{
+				$field_errors[] = "<b>{$field}: </b>{$error}";
+			}
+
 			throw new Channel_form_exception(
-				array_merge($this->errors, $this->field_errors)
+				array_merge($this->errors, $field_errors)
 			);
 		}
 
