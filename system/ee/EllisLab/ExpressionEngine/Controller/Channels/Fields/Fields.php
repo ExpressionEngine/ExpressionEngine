@@ -104,9 +104,9 @@ class Fields extends AbstractChannelsController {
 
 		if ( ! empty($_POST))
 		{
-			$field = ee('Model')->make('ChannelField');
-			$field->group_id = $group_id;
-			$field = $this->setWithPost($field);
+			$field = $this->setWithPost(
+				ee('Model')->make('ChannelField', compact($group_id))
+			);
 			$result = $field->validate();
 
 			if ($response = $this->ajaxValidation($result))
