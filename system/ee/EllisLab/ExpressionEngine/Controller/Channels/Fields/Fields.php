@@ -48,7 +48,7 @@ class Fields extends AbstractChannelsController {
 		ee()->lang->loadfile('admin_content');
 	}
 
-	public function fields($id)
+	public function fields($group_id)
 	{
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
@@ -68,7 +68,7 @@ class Fields extends AbstractChannelsController {
 
 		$fields = ee('Model')->get('ChannelField')
 			->filter('site_id', ee()->config->item('site_id'))
-			->filter('group_id', $id);
+			->filter('group_id', $group_id);
 
 		$table = $this->buildTableFromChannelFieldsQuery($fields);
 
