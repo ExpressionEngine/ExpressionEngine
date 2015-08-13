@@ -134,7 +134,7 @@ class Design extends AbstractDesignController {
 			),
 		));
 
-		$this->sidebarMenu($group->group_id);
+		$this->generateSidebar($group->group_id);
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('template_manager');
 		ee()->view->cp_heading = sprintf(lang('templates_in_group'), $group->group_name);

@@ -120,7 +120,7 @@ class Forums extends AbstractDesignController {
 
 		$vars['themes'] = form_dropdown('theme', $themes, ee('CP/URL', 'design/forums/index/' . $theme));
 
-		$this->sidebarMenu('forums');
+		$this->generateSidebar('forums');
 		ee()->view->cp_page_title = lang('template_manager');
 		ee()->view->cp_heading = lang('forum_templates');
 

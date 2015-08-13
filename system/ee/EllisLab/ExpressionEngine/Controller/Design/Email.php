@@ -90,7 +90,7 @@ class Email extends AbstractDesignController {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 
-		$this->sidebarMenu('email');
+		$this->generateSidebar('email');
 		ee()->view->cp_page_title = lang('template_manager');
 		ee()->view->cp_heading = lang('email_message_templates');
 
