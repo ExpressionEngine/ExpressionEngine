@@ -1,1 +1,1 @@
-<li<?=$class?>><a href="<?=$url?>"<?php if ($external) echo ' rel="external"'?>><?=$text?></a></li>
+<li<?=$class?>><a href="<?=$url?>"<?=$attrs?>><?=$text?></a></li>
