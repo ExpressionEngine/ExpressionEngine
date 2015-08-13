@@ -116,7 +116,7 @@ if ($wrap): ?>
 							<td class="reorder-col"><span class="ico reorder"></span></td>
 						<?php endif ?>
 						<?php foreach ($row['columns'] as $column): ?>
-							<?php if ($column['encode'] == TRUE): ?>
+							<?php if ($column['encode'] == TRUE && $column['type'] != Table::COL_STATUS): ?>
 								<td><?=htmlentities($column['content'], ENT_QUOTES)?></td>
 							<?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
 								<td>
