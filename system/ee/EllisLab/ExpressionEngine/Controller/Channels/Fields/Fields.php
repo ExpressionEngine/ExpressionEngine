@@ -94,6 +94,7 @@ class Fields extends AbstractChannelsController {
 
 	public function create()
 	{
+		// ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/fields/groups'), lang('field_groups'));
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL', 'channels/fields')->compile() => lang('custom_fields'),
 		);
@@ -174,7 +175,8 @@ class Fields extends AbstractChannelsController {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'channels/fields')->compile() => lang('custom_fields'),
+			ee('CP/URL', 'channels/fields/groups')->compile() => lang('field_groups'),
+			ee('CP/URL', 'channels/fields/fields/' . $field->group_id)->compile() => lang('fields'),
 		);
 
 		$errors = NULL;
