@@ -2053,7 +2053,7 @@ class Forum_mcp extends CP_Controller {
 	{
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
-			$this->removeRank(ee()->input->post('selection'));
+			$this->removeRanks(ee()->input->post('selection'));
 		}
 
 		$ranks = ee('Model')->get('forum:Rank')->all();
@@ -2329,15 +2329,15 @@ class Forum_mcp extends CP_Controller {
 
 		$ranks = ee('Model')->get('forum:Rank', $ids)->all();
 
-		$rank_titles = $entries->pluck('rank_title');
+		$rank_titles = $ranks->pluck('rank_title');
 
 		$ranks->delete();
 
 		ee('Alert')->makeInline('entries-form')
 			->asSuccess()
-			->withTitle(lang('success'))
+			->withTitle(lang('ranks_removed'))
 			->addToBody(lang('ranks_removed_desc'))
-			->addToBody($entry_names)
+			->addToBody($rank_titles)
 			->defer();
 
 		ee()->functions->redirect(ee('CP/URL', $this->base . 'ranks', ee()->cp->get_url_state()));
