@@ -81,7 +81,7 @@ if ($wrap): ?>
 					<td class="solo" colspan="<?=$colspan?>">
 						<?=lang($no_results['text'])?>
 						<?php if ( ! empty($no_results['action_text'])): ?>
-							<a class="btn<?php if ( ! empty($no_results['action_link'])): ?> action<?php endif?>" href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>
+							<a class="btn action" href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>
 						<?php endif ?>
 					</td>
 				</tr>
