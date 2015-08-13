@@ -1821,6 +1821,7 @@ INSERT INTO `exp_modules` (`module_id`, `module_name`, `module_version`, `has_cp
 	(8,'Rss','2.0','n','n'),
 	(9,'Comment','2.3.2','y','n'),
 	(10,'Search','2.2.2','n','n');
+	(11,'FilePicker','1.0.0','y','n');
 UNLOCK TABLES;
 
 
