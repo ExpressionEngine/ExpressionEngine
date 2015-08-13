@@ -38,7 +38,7 @@ abstract class ListItem {
 	protected $url;
 
 	/**
-	 * @var string $text The class of the item
+	 * @var string $class The class of the item
 	 */
 	protected $class = '';
 
