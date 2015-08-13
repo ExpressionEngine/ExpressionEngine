@@ -57,6 +57,7 @@ class BasicItem extends ListItem {
 		$vars = array(
 			'text' => $this->text,
 			'url' => $this->url,
+			'external' => $this->url_is_external,
 			'class' => $class
 		);
 

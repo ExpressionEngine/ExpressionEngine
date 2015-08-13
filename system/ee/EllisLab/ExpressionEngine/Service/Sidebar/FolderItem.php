@@ -143,6 +143,7 @@ class FolderItem extends ListItem {
 		$vars = array(
 			'text' => $this->text,
 			'url' => $this->url,
+			'external' => $this->url_is_external,
 			'class' => $class,
 			'edit_url' => $this->edit_url,
 			'modal_name'=> $this->name,

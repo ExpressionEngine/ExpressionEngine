@@ -1,5 +1,5 @@
 <li<?=$class?>>
-	<a href="<?=$url?>"><?=$text?></a>
+	<a href="<?=$url?>"<?php if ($external) echo ' rel="external"'?>><?=$text?></a>
 	<ul class="toolbar">
 		<li class="edit"><a href="<?=$edit_url?>" title="<?=lang('edit')?>"></a></li>
 		<?php if ($confirm): ?>

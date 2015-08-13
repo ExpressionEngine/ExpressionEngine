@@ -38,6 +38,11 @@ abstract class ListItem {
 	protected $url;
 
 	/**
+	 * @var bool $url_is_external Flag for external URLs
+	 */
+	protected $url_is_external = FALSE;
+
+	/**
 	 * @var string $class The class of the item
 	 */
 	protected $class = '';
@@ -68,6 +73,18 @@ abstract class ListItem {
 	public function withUrl($url)
 	{
 		$this->url = $url;
+		return $this;
+	}
+
+	/**
+	 * Sets the $url_is_external property
+	 *
+	 * @param bool $external (optional) TRUE if it is external, FALSE if not
+	 * @return self This returns a reference to itself
+	 */
+	public function urlIsExternal($external = TRUE)
+	{
+		$this->url_is_external = $external;
 		return $this;
 	}
 

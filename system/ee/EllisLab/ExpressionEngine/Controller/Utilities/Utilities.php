@@ -84,8 +84,8 @@ class Utilities extends CP_Controller {
 			$langauge_list->addItem($menu_title, $url);
 		}
 
-		// This needs to be external
-		$sidebar->addHeader(lang('php_info'), ee('CP/URL', 'utilities/php'));
+		$sidebar->addHeader(lang('php_info'), ee('CP/URL', 'utilities/php'))
+			->urlIsExternal();
 
 		$sidebar->addHeader(lang('debug_extensions'), ee('CP/URL', 'utilities/extensions'));
 
