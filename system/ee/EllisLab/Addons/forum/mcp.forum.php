@@ -90,8 +90,6 @@ class Forum_mcp extends CP_Controller {
 				'cp/addons/forums/sidebar',
 			),
 		));
-
-		return $sidebar;
 	}
 
 	private function getStatusWidget($status)
@@ -255,10 +253,11 @@ class Forum_mcp extends CP_Controller {
 		ee()->javascript->set_global('forums.reorder_url', ee('CP/URL', $this->base . 'reorder/' . $id)->compile());
 		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
+		$this->generateSidebar($id);
+
 		return array(
 			'body'    => $body,
 			'heading' => lang('forum_manager'),
-			'sidebar' => $this->generateSidebar($id)
 		);
 	}
 
@@ -451,13 +450,14 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar();
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
 				ee('CP/URL', $this->base)->compile() => lang('forum_listing')
 			),
 			'heading'    => lang('create_forum_board'),
-			'sidebar'    => $this->generateSidebar()
 		);
 	}
 
@@ -501,13 +501,14 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar($id);
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
 				ee('CP/URL', $this->base . 'index/' . $id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
-			'sidebar'    => $this->generateSidebar($id)
 		);
 	}
 
@@ -1252,13 +1253,14 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar($board_id);
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
 				ee('CP/URL', $this->base . 'index/' . $board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => lang('create_category'),
-			'sidebar'    => $this->generateSidebar($board_id)
 		);
 	}
 
@@ -1296,13 +1298,14 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar($category->Board->board_id);
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
 				ee('CP/URL', $this->base . 'index/' . $category->Board->board_id)->compile() => $category->Board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
-			'sidebar'    => $this->generateSidebar($category->Board->board_id)
 		);
 	}
 
@@ -1514,13 +1517,14 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar($category->Board->board_id);
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
 				$return->compile() => $category->Board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
-			'sidebar'    => $this->generateSidebar($category->Board->board_id)
 		);
 	}
 
@@ -1588,13 +1592,14 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar($board->board_id);
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
 				ee('CP/URL', $this->base. 'index/' . $board->board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => lang('create_forum'),
-			'sidebar'    => $this->generateSidebar($board->board_id)
 		);
 	}
 
@@ -1632,13 +1637,14 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar($forum->Board->board_id);
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
 				ee('CP/URL', $this->base. 'index/' . $forum->Board->board_id)->compile() => $forum->Board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
-			'sidebar'    => $this->generateSidebar($forum->Board->board_id)
 		);
 	}
 
@@ -2095,13 +2101,14 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar($forum->Board->board_id);
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
 				$return->compile() => $forum->Board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
-			'sidebar'    => $this->generateSidebar($forum->Board->board_id)
 		);
 	}
 
@@ -2226,10 +2233,11 @@ class Forum_mcp extends CP_Controller {
 			),
 		));
 
+		$this->generateSidebar('ranks');
+
 		return array(
 			'body'    => $body,
 			'heading' => lang('member_ranks'),
-			'sidebar' => $this->generateSidebar('ranks')
 		);
 	}
 
@@ -2263,13 +2271,14 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar('ranks');
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
 				ee('CP/URL', $this->base. 'ranks')->compile() => lang('member_ranks')
 			),
 			'heading'    => $vars['cp_page_title'],
-			'sidebar'    => $this->generateSidebar()
 		);
 	}
 
@@ -2307,13 +2316,14 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar('ranks');
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
 				ee('CP/URL', $this->base. 'ranks')->compile() => lang('member_ranks')
 			),
 			'heading'    => $vars['cp_page_title'],
-			'sidebar'    => $this->generateSidebar()
 		);
 	}
 
@@ -2529,13 +2539,14 @@ class Forum_mcp extends CP_Controller {
 			),
 		));
 
+		$this->generateSidebar($board_id);
+
 		return array(
 			'body'    => $body,
 			'breadcrumb' => array(
 				ee('CP/URL', $this->base. 'index/' . $board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
 			'heading' => lang('administrators'),
-			'sidebar' => $this->generateSidebar($board_id)
 		);
 	}
 
@@ -2627,13 +2638,14 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar($board_id);
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
 				ee('CP/URL', $this->base. 'index/' . $board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
-			'sidebar'    => $this->generateSidebar($board_id)
 		);
 	}
 
@@ -2831,13 +2843,14 @@ class Forum_mcp extends CP_Controller {
 			),
 		));
 
+		$this->generateSidebar($id);
+
 		return array(
 			'body'    => $body,
 			'breadcrumb' => array(
 				ee('CP/URL', $this->base. 'index/' . $id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
 			'heading' => lang('moderators'),
-			'sidebar' => $this->generateSidebar($id)
 		);
 	}
 
@@ -2883,6 +2896,8 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar();
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
@@ -2890,7 +2905,6 @@ class Forum_mcp extends CP_Controller {
 				ee('CP/URL', $this->base. 'moderators/' . $forum_id)->compile() => lang('moderators')
 			),
 			'heading'    => lang('create_moderator'),
-			'sidebar'    => $this->generateSidebar()
 		);
 	}
 
@@ -2932,6 +2946,8 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar();
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
@@ -2939,7 +2955,6 @@ class Forum_mcp extends CP_Controller {
 				ee('CP/URL', $this->base. 'moderators/' . $forum_id)->compile() => lang('moderators')
 			),
 			'heading'    => lang('edit_moderator'),
-			'sidebar'    => $this->generateSidebar()
 		);
 	}
 
