@@ -192,7 +192,7 @@ class Forum extends Model {
 	{
 		$model = $this->getFrontend();
 
-		$last_forum = $model->get('Forum')
+		$last_forum = $model->get('forum:Forum')
 			->fields('forum_order')
 			->filter('forum_is_cat', $this->getProperty('forum_is_cat'))
 			->order('forum_order', 'desc');
