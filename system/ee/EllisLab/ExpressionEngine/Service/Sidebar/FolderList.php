@@ -76,6 +76,18 @@ class FolderList {
 	}
 
 	/**
+	 * Sets the name of variable passed with the removal action
+	 *
+	 * @param string $key The name of the variable with
+	 * @return self This returns a reference to itself
+	 */
+	public function withRemovalKey($key)
+	{
+		$this->removal_key = $key;
+		return $this;
+	}
+
+	/**
 	 * Sets the no results text which will display if this header's list(s) are
 	 * empty.
 	 *
