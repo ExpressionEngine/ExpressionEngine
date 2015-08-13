@@ -54,6 +54,7 @@ class Groups extends Members\Members {
 		$this->base_url = ee('CP/URL', 'members/groups');
 		$this->site_id = (int) ee()->config->item('site_id');
 		$this->super_admin = $this->session->userdata('group_id') == 1;
+		$this->set_view_header($this->base_url, lang('search_member_groups_button'));
 	}
 
 	/**
@@ -543,6 +544,21 @@ class Groups extends Members\Members {
 							'value' => element('can_access_cp', $values)
 						)
 					)
+				),
+				array(
+					'title' => 'footer_helper_links',
+					'desc' => 'footer_helper_links_desc',
+					'fields' => array(
+						'footer_helper_links' => array(
+							'type' => 'checkbox',
+							'choices' => array(
+								'can_access_footer_report_bug' => lang('report_bug'),
+								'can_access_footer_new_ticket' => lang('new_ticket'),
+								'can_access_footer_user_guide' => lang('user_guide'),
+							),
+							'value' => element('footer_helper_links', $values)
+						)
+					)
 				)
 			),
 			'channels' => array(
@@ -828,6 +844,22 @@ class Groups extends Members\Members {
 			$result['comment_actions'][] = 'can_delete_all_comments';
 		}
 
+		// Footer helper checkbox group
+		$result['footer_helper_links'] = array();
+
+		if ($result['can_access_footer_report_bug'])
+		{
+			$result['footer_helper_links'][] = 'can_access_footer_report_bug';
+		}
+		if ($result['can_access_footer_new_ticket'])
+		{
+			$result['footer_helper_links'][] = 'can_access_footer_new_ticket';
+		}
+		if ($result['can_access_footer_user_guide'])
+		{
+			$result['footer_helper_links'][] = 'can_access_footer_user_guide';
+		}
+
 		// Channel category checkbox group
 		$result['category_actions'] = array();
 
@@ -906,7 +938,7 @@ class Groups extends Members\Members {
 		}
 
 		$result['addons_access'] = $this->group->AssignedModules->pluck('module_id');
-		$result['template_groups'] = $this->group->AssignedTemplateGroups->pluck('template_group_id');
+		$result['template_groups'] = $this->group->AssignedTemplateGroups->pluck('group_id');
 		$result['allowed_channels'] = $this->group->AssignedChannels->pluck('channel_id');
 
 		return $result;

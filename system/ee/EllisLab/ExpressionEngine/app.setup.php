@@ -7,8 +7,10 @@ use EllisLab\ExpressionEngine\Service\Addon;
 use EllisLab\ExpressionEngine\Service\Alert;
 use EllisLab\ExpressionEngine\Service\Config;
 use EllisLab\ExpressionEngine\Service\Database;
+use EllisLab\ExpressionEngine\Service\EntryListing;
 use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\Grid;
+use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Validation;
 use EllisLab\ExpressionEngine\Service\View;
@@ -26,6 +28,17 @@ return array(
 	'namespace' => 'EllisLab\ExpressionEngine',
 
 	'services' => array(
+
+		'CP/EntryListing' => function($ee, $search_value)
+		{
+			 return new EntryListing\EntryListing(
+				ee()->config->item('site_id'),
+				(ee()->session->userdata['group_id'] == 1),
+				array_keys(ee()->session->userdata['assigned_channels']),
+				ee()->localize->now,
+				$search_value
+			);
+		},
 
 		'CP/GridInput' => function($ee, $config = array())
 		{
@@ -135,6 +148,11 @@ return array(
 			return new Library\Captcha();
 		},
 
+		'CP/Modal' => function($ee)
+		{
+			return new Modal\ModalCollection;
+		},
+
 		'Config' => function($ee)
 		{
 			return new Config\Factory($ee);
@@ -241,6 +259,7 @@ return array(
 			'ChannelField' => 'Module\Channel\Model\ChannelField',
 			'ChannelEntry' => 'Module\Channel\Model\ChannelEntry',
 			'ChannelEntryAutosave' => 'Module\Channel\Model\ChannelEntryAutosave',
+			'ChannelEntryVersion' => 'Module\Channel\Model\ChannelEntryVersion',
 			'ChannelFormSettings' => 'Module\Channel\Model\ChannelFormSettings',
 			'ChannelLayout' => 'Module\Channel\Model\ChannelLayout',
 

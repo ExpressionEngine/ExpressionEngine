@@ -33,6 +33,16 @@ use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 class Developer extends Logs {
 
 	/**
+	 * Constructor
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+
+		$this->generateSidebar('developer');
+	}
+
+	/**
 	 * Shows Developer Log page
 	 *
 	 * @access public
@@ -153,6 +163,12 @@ class Developer extends Logs {
 		{
 			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
 		}
+
+		ee()->view->header = array(
+			'title' => lang('system_logs'),
+			'form_url' => $this->base_url->compile(),
+			'search_button_value' => lang('search_logs_button')
+		);
 
 		$logs = $logs->order('timestamp', 'desc')
 			->limit($this->params['perpage'])

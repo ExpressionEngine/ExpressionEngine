@@ -65,14 +65,7 @@ class Wizard extends CI_Controller {
 		'member',
 		'stats',
 		'rte',
-		'filepicker',
-
-		// TODO: Remove lines below
-		// 'email',
-		// 'emoticon',
-		// 'jquery',
-		// 'search',
-		// 'rss'
+		'filepicker'
 	);
 
 	public $theme_required_modules = array();
@@ -114,7 +107,7 @@ class Wizard extends CI_Controller {
 		'webmaster_email'       => '',
 		'deft_lang'             => 'english',
 		'theme'                 => '01',
-		'default_site_timezone' => 'UTC',
+		'default_site_timezone' => '',
 		'redirect_method'       => 'redirect',
 		'upload_folder'         => 'uploads/',
 		'image_path'            => '',
@@ -175,6 +168,7 @@ class Wizard extends CI_Controller {
 		$this->output->enable_profiler(FALSE);
 
 		$this->userdata['app_version'] = $this->version;
+		$this->userdata['default_site_timezone'] = date_default_timezone_get();
 
  		// Load the helpers we intend to use
  		$this->load->helper(array('form', 'url', 'html', 'directory', 'file', 'email', 'security', 'date', 'string'));
@@ -400,7 +394,7 @@ class Wizard extends CI_Controller {
 		}
 
 		// Can we connect?
-		if ( ! $this->db_connect($db))
+		if ($this->db_connect($db) !== TRUE)
 		{
 			$this->set_output('error', array('error' => lang('database_no_config')));
 			return FALSE;
@@ -517,8 +511,82 @@ class Wizard extends CI_Controller {
 		$this->subtitle = lang('required_fields');
 
 		// Display the form and pass the userdata array to it
-		$this->title = sprintf(lang('install_title'), $this->version);
+		$this->title = sprintf(lang('install_title'), $this->version).'<br />'.lang('install_note');
 		$this->set_output('install_form', array_merge($vars, $this->userdata));
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Checks if the database host is valid
+	 *
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function valid_db_host()
+	{
+		return $this->db_validation(2002, function () {
+			ee()->form_validation->set_message(
+				'valid_db_host',
+				lang('database_invalid_host')
+			);
+		});
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Check if the database given is valid
+	 *
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function valid_db_database()
+	{
+		return $this->db_validation(1049, function() {
+			ee()->form_validation->set_message(
+				'valid_db_database',
+				lang('database_invalid_database')
+			);
+		});
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Given a MySQL error number, will check to see if that error was thrown
+	 * and call the given callable if it is
+	 *
+	 * @param int $error_number The MySQL error number
+	 * @param Callable $callable The function to call in case the error was thrown
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	private function db_validation($error_number, Closure $callable)
+	{
+		if (! ee()->input->post('db_hostname')
+			|| ! ee()->input->post('db_name')
+			|| ! ee()->input->post('db_username'))
+		{
+			$callable();
+			return FALSE;
+		}
+
+		if ( ! isset($this->db_connect_attempt))
+		{
+			$this->db_connect_attempt = $this->db_connect(array(
+				'hostname' => ee()->input->post('db_hostname'),
+				'database' => ee()->input->post('db_name'),
+				'username' => ee()->input->post('db_username'),
+				'password' => ee()->input->post('db_password'),
+				'dbprefix' => 'exp'
+			));
+		}
+
+		if ($this->db_connect_attempt === $error_number)
+		{
+			$callable();
+			return FALSE;
+		}
+
+		return TRUE;
 	}
 
 	// --------------------------------------------------------------------
@@ -581,12 +649,12 @@ class Wizard extends CI_Controller {
 			array(
 				'field' => 'db_hostname',
 				'label' => 'lang:db_hostname',
-				'rules' => 'required'
+				'rules' => 'required|callback_valid_db_host'
 			),
 			array(
 				'field' => 'db_name',
 				'label' => 'lang:db_name',
-				'rules' => 'required'
+				'rules' => 'required|callback_valid_db_database'
 			),
 			array(
 				'field' => 'db_username',
@@ -651,7 +719,12 @@ class Wizard extends CI_Controller {
 			'dbcollat' => 'utf8_general_ci'
 		);
 
-		if ( ! $this->db_connect($db))
+		$this->db_connect_attempt = $this->db_connect($db);
+		if ($this->db_connect_attempt === 1045)
+		{
+			$errors[] = lang('database_invalid_user');
+		}
+		else if ($this->db_connect_attempt === FALSE)
 		{
 			$errors[] = lang('database_no_connect');
 		}
@@ -1259,9 +1332,10 @@ class Wizard extends CI_Controller {
 				return $this->db_connect($db);
 			}
 
-			return FALSE;
+			return ($e->getCode()) ?: FALSE;
 		}
 
+		ee()->remove('db');
 		ee()->set('db', $db_object);
 
 		return TRUE;
@@ -1745,7 +1819,7 @@ class Wizard extends CI_Controller {
 			'webmaster_name'            => '',
 			'channel_nomenclature'      => 'channel',
 			'max_caches'                => '150',
-			'cache_driver'					=> 'file',
+			'cache_driver'              => 'file',
 			'captcha_url'               => $captcha_url,
 			'captcha_path'              => $this->userdata['captcha_path'],
 			'captcha_font'              => 'y',
@@ -2307,7 +2381,7 @@ class Wizard extends CI_Controller {
 	 */
 	private function rename_installer()
 	{
-		if ( ! $this->canRenameAutomatically())
+		if (TRUE || ! $this->canRenameAutomatically())
 		{
 			return FALSE;
 		}

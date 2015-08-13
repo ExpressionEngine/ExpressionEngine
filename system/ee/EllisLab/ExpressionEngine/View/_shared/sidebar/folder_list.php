@@ -4,19 +4,16 @@
 	</ul>
 </div>
 
-<?php $this->startOrAppendBlock('modals'); ?>
-
 <?php
 
 $modal_vars = array(
-	'name'		=> 'modal-confirm-<?=$name?>',
+	'name'		=> 'modal-confirm-' . $name,
 	'form_url'	=> $remove_url,
 	'hidden'	=> array(
 		$removal_key => ''
 	)
 );
 
-$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+ee('CP/Modal')->addModal($name, $modal);
 ?>
-
-<?php $this->endBlock(); ?>

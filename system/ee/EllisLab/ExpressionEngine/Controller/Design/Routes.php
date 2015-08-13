@@ -56,7 +56,7 @@ class Routes extends Design {
 			ee()->functions->redirect(ee('CP/URL', 'design'));
 		}
 
-		$this->sidebarMenu();
+		$this->generateSidebar('routes');
 		$this->stdHeader();
 		ee()->lang->loadfile('template_router');
 

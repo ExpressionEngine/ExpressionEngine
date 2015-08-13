@@ -112,6 +112,7 @@ abstract class AbstractPublish extends CP_Controller {
 			'lang.loading'						=> lang('loading'),
 			'publish.autosave.interval'			=> (int) $autosave_interval_seconds,
 			'publish.autosave.URL'				=> ee('CP/URL', 'publish/autosave/' . $channel_id . '/' . $entry_id)->compile(),
+			'publish.add_category.URL'			=> ee('CP/URL', 'channels/cat/createCat/###')->compile(),
 			// 'publish.channel_id'				=> $this->_channel_data['channel_id'],
 			// 'publish.default_entry_title'		=> $this->_channel_data['default_entry_title'],
 			// 'publish.field_group'				=> $this->_channel_data['field_group'],
@@ -142,6 +143,75 @@ abstract class AbstractPublish extends CP_Controller {
 		{
 			ee()->javascript->set_global('publish.title_focus', TRUE);
 		}
+	}
+
+	protected function getRevisionsTable($entry, $version_id = FALSE)
+	{
+		$table = ee('CP/Table');
+
+		$table->setColumns(
+			array(
+				'rev_id',
+				'rev_date',
+				'rev_author',
+				'manage' => array(
+					'encode' => FALSE
+				)
+			)
+		);
+		$table->setNoResultsText(lang('no_revisions'));
+
+		$data = array();
+		$i = 1;
+
+		foreach ($entry->Versions as $version)
+		{
+			$toolbar = ee('View')->make('_shared/toolbar')->render(array(
+				'toolbar_items' => array(
+						'txt-only' => array(
+							'href' => ee('CP/URL', 'publish/edit/entry/' . $entry->entry_id, array('version' => $version->version_id)),
+							'title' => lang('view'),
+							'content' => lang('view')
+						),
+					)
+				)
+			);
+
+			$attrs = ($version->version_id == $version_id) ? array('class' => 'selected') : array();
+
+			$data[] = array(
+				'attrs'   => $attrs,
+				'columns' => array(
+					$i,
+					ee()->localize->human_time($version->version_date->format('U')),
+					$version->Author->getMemberName(),
+					$toolbar
+				)
+			);
+			$i++;
+		}
+
+		if ( ! $entry->isNew())
+		{
+			if ( ! $version_id)
+			{
+				$attrs = array('class' => 'selected');
+			}
+			// Current
+			$data[] = array(
+				'attrs'   => $attrs,
+				'columns' => array(
+					$i,
+					ee()->localize->human_time($entry->edit_date->format('U')),
+					$entry->Author->getMemberName(),
+					'<span class="st-open">' . lang('current') . '</span>'
+				)
+			);
+		}
+
+		$table->setData($data);
+
+		return ee('View')->make('_shared/table')->render($table->viewData(''));
 	}
 
 }

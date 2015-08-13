@@ -7,6 +7,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
 use EllisLab\Addons\FilePicker\FilePicker as FilePicker;
+use EllisLab\ExpressionEngine\Model\Content\FieldFacade as FieldFacade;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -638,7 +639,7 @@ class Cat extends AbstractChannelsController {
 				),
 				array(
 					'title' => 'url_title_lc',
-					'desc' => 'url_title_desc',
+					'desc' => 'alphadash_desc',
 					'fields' => array(
 						'cat_url_title' => array(
 							'type' => 'text',
@@ -656,60 +657,94 @@ class Cat extends AbstractChannelsController {
 							'value' => $category->cat_description
 						)
 					)
-				),
-				array(
-					'title' => 'image',
-					'desc' => 'cat_image_desc',
-					'fields' => array(
-						'cat_image_select' => array(
-							'type' => 'radio',
-							'choices' => array(
-								'none' => 'cat_image_none',
-								'choose' => 'cat_image_choose'
-							),
-							'value' => 'none'
-						),
-						'cat_image' => array(
-							'type' => 'image',
-							'id' => 'cat_image',
-							'image' => ee()->file_field->parse_string($category->cat_image),
-							'value' => $category->cat_image
-						)
-					)
-				),
-				array(
-					'title' => 'parent_category',
-					'desc' => 'parent_category_desc',
-					'fields' => array(
-						'parent_id' => array(
-							'type' => 'select',
-							'value' => $category->parent_id,
-							'choices' => $parent_id_options
-						)
-					)
 				)
 			)
 		);
 
-		foreach ($category->getDisplay()->getFields() as $field)
+		if ( ! AJAX_REQUEST)
 		{
-			$vars['sections']['custom_fields'][] = array(
-				'title' => $field->getLabel(),
-				'desc' => '',
+			$vars['sections'][0][] = array(
+				'title' => 'image',
+				'desc' => 'cat_image_desc',
 				'fields' => array(
-					$field->getName() => array(
-						'type' => 'html',
-						'content' => $field->getForm(),
-						'required' => $field->isRequired(),
+					'cat_image_select' => array(
+						'type' => 'radio',
+						'choices' => array(
+							'none' => 'cat_image_none',
+							'choose' => 'cat_image_choose'
+						),
+						'value' => 'none'
+					),
+					'cat_image' => array(
+						'type' => 'image',
+						'id' => 'cat_image',
+						'image' => ee()->file_field->parse_string($category->cat_image),
+						'value' => $category->cat_image
 					)
 				)
 			);
 		}
 
+		$vars['sections'][0][] = array(
+			'title' => 'parent_category',
+			'desc' => 'parent_category_desc',
+			'fields' => array(
+				'parent_id' => array(
+					'type' => 'select',
+					'value' => $category->parent_id,
+					'choices' => $parent_id_options
+				)
+			)
+		);
+
+		if ( ! AJAX_REQUEST)
+		{
+			foreach ($category->getDisplay()->getFields() as $field)
+			{
+				$vars['sections']['custom_fields'][] = array(
+					'title' => $field->getLabel(),
+					'desc' => '',
+					'fields' => array(
+						$field->getName() => array(
+							'type' => 'html',
+							'content' => $field->getForm(),
+							'required' => $field->isRequired(),
+						)
+					)
+				);
+			}
+		}
+
+		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('category'));
+		ee()->view->save_btn_text_working = 'btn_saving';
+
 		if ( ! empty($_POST))
 		{
 			$category->set($_POST);
 			$result = $category->validate();
+
+			// Handles saving from the category modal on the publish form
+			if (isset($_POST['save_modal']))
+			{
+				if ($result->isValid())
+				{
+					$category->save();
+					return array(
+						'messageType' => 'success',
+						'body' => $this->categoryGroupPublishField($group_id)
+					);
+				}
+				else
+				{
+					ee()->load->library('form_validation');
+					ee()->form_validation->_error_array = $result->renderErrors();
+					return array(
+						'messageType' => 'error',
+						'body' => ee()->cp->render('_shared/form', $vars, TRUE)
+					);
+				}
+			}
 
 			if ($response = $this->ajaxValidation($result))
 			{
@@ -745,9 +780,10 @@ class Cat extends AbstractChannelsController {
 			}
 		}
 
-		ee()->view->ajax_validate = TRUE;
-		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('category'));
-		ee()->view->save_btn_text_working = 'btn_saving';
+		if (AJAX_REQUEST)
+		{
+			return ee()->cp->render('_shared/form', $vars);
+		}
 
 		$filepicker = new FilePicker();
 		$filepicker->inject(ee()->view);
@@ -757,10 +793,58 @@ class Cat extends AbstractChannelsController {
 			ee('CP/URL', $filepicker->controller, array('directory' => 'all', 'type' => 'img'))->compile()
 		);
 
+		ee()->javascript->output('$(document).ready(function () {
+			EE.cp.categoryEdit.init();
+		});');
+
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/cat'), lang('category_groups'));
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/cat/cat-list/'.$cat_group->group_id), $cat_group->group_name . ' &mdash; ' . lang('categories'));
 
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * AJAX return body for adding a new category via the publish form; when a
+	 * new category is added, we have to refresh the category list
+	 */
+	private function categoryGroupPublishField($group_id, $entry_id = NULL)
+	{
+		// Initialize a new category group field so we can return its publish form
+		$category_group_field = array(
+			'field_id'				=> 'categories',
+			'cat_group_id'			=> $group_id,
+			'field_label'			=> lang('categories'),
+			'field_required'		=> 'n',
+			'field_show_fmt'		=> 'n',
+			'field_instructions'	=> lang('categories_desc'),
+			'field_text_direction'	=> 'ltr',
+			'field_type'			=> 'checkboxes',
+			'string_override'		=> '',
+			'field_list_items'      => '',
+			'field_maxl'			=> 100
+		);
+
+		$field_id = 'cat_group_id_'.$group_id;
+		$field = new FieldFacade($field_id, $category_group_field);
+		$field->setName($field_id);
+
+		if (is_numeric($entry_id))
+		{
+			$entry = ee('Model')->get('ChannelEntry', $entry)->first();
+		}
+		else
+		{
+			$entry = ee('Model')->make('ChannelEntry');
+			$entry->Categories = NULL;
+		}
+
+		$entry->populateCategories($field);
+
+		// Reset the categories they already have selected
+		$selected_cats = ee('Model')->get('Category')->filter('cat_id', 'IN', ee()->input->post('categories'))->all();
+		$field->setData(implode('|', $selected_cats->pluck('cat_name')));
+
+		return $field->getForm();
 	}
 
 	/**
@@ -1060,7 +1144,7 @@ class Cat extends AbstractChannelsController {
 				),
 				array(
 					'title' => 'short_name',
-					'desc' => 'cat_field_short_name_desc',
+					'desc' => 'alphadash_desc',
 					'fields' => array(
 						'field_name' => array(
 							'type' => 'text',

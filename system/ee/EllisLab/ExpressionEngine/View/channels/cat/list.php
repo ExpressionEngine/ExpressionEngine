@@ -40,8 +40,6 @@
 	</form>
 </div>
 
-<?php $this->startOrAppendBlock('modals'); ?>
-
 <?php
 
 $modal_vars = array(
@@ -53,7 +51,6 @@ $modal_vars = array(
 	)
 );
 
-$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+ee('CP/Modal')->addModal('remove', $modal);
 ?>
-
-<?php $this->endBlock(); ?>

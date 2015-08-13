@@ -2,6 +2,8 @@
 
 $lang = array(
 
+'system_logs'			=> 'System Logs',
+
 /* Sidebar */
 'developer_log' 		=> 'Developer',
 'cp_log' 				=> 'Control Panel',

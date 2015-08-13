@@ -27,10 +27,28 @@ use EllisLab\ExpressionEngine\Service\View\View;
  */
 abstract class ListItem {
 
+	/**
+	 * @var string $text The text of the item
+	 */
 	protected $text;
+
+	/**
+	 * @var URL|string $url The URL to use as an href attribute
+	 */
 	protected $url;
+
+	/**
+	 * @var string $class The class of the item
+	 */
 	protected $class = '';
 
+	/**
+	 * Constructor: sets the text and url properties of the item
+	 *
+	 * @param string $text The text of the item
+	 * @param URL|string $url An optional CP\URL object or string containing the
+	 *   URL for the text.
+	 */
 	public function __construct($text, $url = NULL)
 	{
 		$this->text = $text;
@@ -40,15 +58,28 @@ abstract class ListItem {
 		}
 	}
 
+	/**
+	 * Sets the URL property of the item
+	 *
+	 * @param URL|string $url A CP\URL object or string containing the
+	 *   URL for the item.
+	 * @return self This returns a reference to itself
+	 */
 	public function withUrl($url)
 	{
 		$this->url = $url;
 		return $this;
 	}
 
+	/**
+	 * Marks the item as active
+	 *
+	 * @return self This returns a reference to itself
+	 */
 	public function isActive()
 	{
 		$this->class .= 'act ';
+		return $this;
 	}
 
 }

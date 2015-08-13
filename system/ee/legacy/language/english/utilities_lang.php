@@ -2,6 +2,8 @@
 
 $lang = array(
 
+'system_utilities' => 'System Utilities',
+
 /**
  * Menu
  */
@@ -48,9 +50,7 @@ $lang = array(
 
 'word_wrap' => 'word wrap',
 
-'your_email' => 'Your Email',
-
-'from_email' => 'From Email',
+'your_email' => 'Your email',
 
 'attachment' => 'Attachment',
 
@@ -135,7 +135,7 @@ $lang = array(
 
 'database' => 'Database',
 
-'all' => 'All',
+'all_caches' => 'All Caches',
 
 'btn_clear_caches' => 'Clear Caches',
 
@@ -281,13 +281,7 @@ $lang = array(
 
 'mbr_language' => 'Language',
 
-'mbr_timezone' => 'Timezone',
-
-'mbr_timezone_desc' => 'Local timezone for any date and time displays.',
-
 'mbr_datetime_fmt' => 'Date &amp; time format',
-
-'mbr_datetime_fmt_desc' => 'Preferred date and time formats.<br><i>Used in the control panel only.</i>',
 
 'mbr_create_custom_fields' => 'Create custom fields?',
 

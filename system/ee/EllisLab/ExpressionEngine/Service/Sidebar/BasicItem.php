@@ -27,11 +27,24 @@ use EllisLab\ExpressionEngine\Service\View\ViewFactory;
  */
 class BasicItem extends ListItem {
 
+	/**
+	 * Marks the item as a delete action
+	 *
+	 * @return self This returns a reference to itself
+	 */
 	public function asDeleteAction()
 	{
 		$this->class .= 'remove ';
 	}
 
+	/**
+	 * Renders this item. This should not be called directly. Instead use
+	 * the Sidebar's render method.
+	 *
+	 * @see Sidebar::render
+	 * @param ViewFactory $view A ViewFactory object to use with rendering
+	 * @return string The rendered HTML of the item
+	 */
 	public function render(ViewFactory $view)
 	{
 		$class = trim($this->class);

@@ -24,6 +24,7 @@ class Channel extends StructureModel {
 		'comment_notify'             => 'boolString',
 		'comment_notify_authors'     => 'boolString',
 		'enable_versioning'          => 'boolString',
+		'extra_publish_controls'     => 'boolString',
 	);
 
 	protected static $_relationships = array(
@@ -36,7 +37,8 @@ class Channel extends StructureModel {
 		'StatusGroup' => array(
 			'type' => 'belongsTo',
 			'from_key' => 'status_group',
-			'to_key' => 'group_id'
+			'to_key' => 'group_id',
+			'weak' => TRUE
 		),
 		'CustomFields' => array(
 			'type' => 'hasMany',
@@ -76,7 +78,7 @@ class Channel extends StructureModel {
 			'model' => 'CategoryGroup',
 			'from_key' => 'cat_group',
 			'to_key' => 'group_id'
-		)
+		),
 	);
 
 	protected static $_validation_rules = array(
@@ -130,6 +132,7 @@ class Channel extends StructureModel {
 	protected $channel_require_membership;
 	protected $channel_max_chars;
 	protected $channel_html_formatting;
+	protected $extra_publish_controls;
 	protected $channel_allow_img_urls;
 	protected $channel_auto_link_urls;
 	protected $channel_notify;

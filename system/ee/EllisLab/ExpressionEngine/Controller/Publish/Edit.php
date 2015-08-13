@@ -45,104 +45,26 @@ class Edit extends AbstractPublishController {
 
 		$vars = array();
 		$base_url = ee('CP/URL', 'publish/edit');
-		$channel = NULL;
 		$channel_name = '';
 
-		$entries = ee('Model')->get('ChannelEntry')
-			->filter('site_id', ee()->config->item('site_id'));
+		$entry_listing = ee('CP/EntryListing', ee()->input->get_post('search'));
+		$entries = $entry_listing->getEntries();
+		$filters = $entry_listing->getFilters();
+		$channel_id = $entry_listing->channel_filter->value();
+		$count = $entries->count();
 
-		// We need to filter by Channel first (if necissary) as that will
-		// impact the entry count for the perpage filter
-		$channel_filter = $this->createChannelFilter();
-		$channel_id = $channel_filter->value();
-
-		// If we have a selected channel filter, and we are not an admin, we
-		// first need to ensure it is in the list of assigned channels. If it
-		// is we will filter by that id. If not we throw an error.
-		if ($channel_id)
-		{
-			if ($this->is_admin || in_array($channel_id, $this->assigned_channel_ids))
-			{
-				$entries->filter('channel_id', $channel_id);
-				$channel = ee('Model')->get('Channel', $channel_id)
-					->first();
-				$channel_name = $channel->channel_title;
-			}
-			else
-			{
-				show_error(lang('unauthorized_access'));
-			}
-		}
-		// If we have no selected channel filter, and we are not an admin, we
-		// need to filter via WHERE IN
-		else
-		{
-			if ( ! $this->is_admin)
-			{
-				if (empty($this->assigned_channel_ids))
-				{
-					show_error(lang('no_channels'));
-				}
-
-				$entries->filter('channel_id', 'IN', $this->assigned_channel_ids);
-			}
-		}
-
-		$category_filter = $this->createCategoryFilter($channel);
-		if ($category_filter->value())
-		{
-			$entries->with('Categories')
-				->filter('Categories.cat_id', $category_filter->value());
-		}
-
-		$status_filter = $this->createStatusFilter($channel);
-		if ($status_filter->value())
-		{
-			$entries->filter('status', $status_filter->value());
-		}
-
-		ee()->view->search_value = ee()->input->get_post('search');
 		if ( ! empty(ee()->view->search_value))
 		{
 			$base_url->setQueryStringVariable('search', ee()->view->search_value);
-			$entries->filter('title', 'LIKE', '%' . ee()->view->search_value . '%');
 		}
-
-		$filters = ee('Filter')
-			->add($channel_filter)
-			->add($category_filter)
-			->add($status_filter)
-			->add('Date');
-
-		$filter_values = $filters->values();
-
-		if ( ! empty($filter_values['filter_by_date']))
-		{
-			if (is_array($filter_values['filter_by_date']))
-			{
-				$entries->filter('entry_date', '>=', $filter_values['filter_by_date'][0]);
-				$entries->filter('entry_date', '<', $filter_values['filter_by_date'][1]);
-			}
-			else
-			{
-				$entries->filter('entry_date', '>=', ee()->localize->now - $filter_values['filter_by_date']);
-			}
-		}
-
-		$count = $entries->count();
-
-
-		$entries->with('Autosaves', 'Categories', 'Author', 'Channel');
-
-		// Add this last to get the right $count
-		$filters->add('Perpage', $count, 'all_entries');
 
 		ee()->view->filters = $filters->render($base_url);
+		ee()->view->search_value = ee()->input->get_post('search');
 
 		$filter_values = $filters->values();
 		$base_url->addQueryStringVariables($filter_values);
 
-		$table = ee('CP/Table', array('autosort' => TRUE));
+		$table = ee('CP/Table');
 
 		$table->setColumns(
 			array(
@@ -178,11 +100,11 @@ class Edit extends AbstractPublishController {
 
 		if ($channel_id)
 		{
-			$table->addActionButton(ee('CP/URL', 'publish/create/' . $channel_id), sprintf(lang('btn_create_new_entry_in_channel'), $channel_name));
+			$vars['create_button'] = '<a class="btn tn action" href="'.ee('CP/URL', 'publish/create/' . $channel_id).'">'.sprintf(lang('btn_create_new_entry_in_channel'), $channel_name).'</a>';
 		}
 		else
 		{
-			$table->addActionContent(ee('View')->make('publish/partials/create_new_menu')->render(array('button_text' => lang('btn_create_new'))));
+			$vars['create_button'] = ee('View')->make('publish/partials/create_new_menu')->render(array('button_text' => lang('btn_create_new')));
 		}
 
 		$page = ((int) ee()->input->get('page')) ?: 1;
@@ -275,6 +197,12 @@ class Edit extends AbstractPublishController {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 
+		ee()->view->header = array(
+			'title' => lang('entry_manager'),
+			'form_url' => $vars['form_url'],
+			'search_button_value' => lang('btn_search_entries')
+		);
+
 		$vars['pagination'] = ee('CP/Pagination', $count)
 			->perPage($filter_values['perpage'])
 			->currentPage($page)
@@ -332,8 +260,22 @@ class Edit extends AbstractPublishController {
 			'form_url' => ee('CP/URL', 'publish/edit/entry/' . $id),
 			'form_attributes' => $form_attributes,
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
-			'button_text' => lang('btn_edit_entry')
+			'button_text' => lang('btn_publish')
 		);
+
+		$version_id = ee()->input->get('version');
+
+		if ($entry->Channel->enable_versioning)
+		{
+			$vars['revisions'] = $this->getRevisionsTable($entry, $version_id);
+		}
+
+		if ($version_id)
+		{
+			$version = $entry->Versions->filter('version_id', $version_id)->first();
+			$version_data = $version->version_data;
+			$entry->set($version_data);
+		}
 
 		if ($autosave_id)
 		{
@@ -379,16 +321,31 @@ class Edit extends AbstractPublishController {
 
 			if ($result->isValid())
 			{
-				$entry->edit_date = ee()->localize->now;
-				$entry->save();
+				if ($entry->versioning_enabled && ee()->input->post('save_revision'))
+				{
+					$entry->saveVersion();
 
-				ee('Alert')->makeInline('entry-form')
-					->asSuccess()
-					->withTitle(lang('edit_entry_success'))
-					->addToBody(sprintf(lang('edit_entry_success_desc'), $entry->title))
-					->defer();
+					ee('Alert')->makeInline('entry-form')
+						->asSuccess()
+						->withTitle(lang('revision_saved'))
+						->addToBody(sprintf(lang('revision_saved_desc'), $entry->Versions->count() + 1, $entry->title))
+						->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'publish/edit/entry/' . $id, ee()->cp->get_url_state()));
+					ee()->functions->redirect(ee('CP/URL', 'publish/edit/entry/' . $id, ee()->cp->get_url_state()));
+				}
+				else
+				{
+					$entry->edit_date = ee()->localize->now;
+					$entry->save();
+
+					ee('Alert')->makeInline('entry-form')
+						->asSuccess()
+						->withTitle(lang('edit_entry_success'))
+						->addToBody(sprintf(lang('edit_entry_success_desc'), $entry->title))
+						->defer();
+
+					ee()->functions->redirect(ee('CP/URL', 'publish/edit/', array('channel_id' => $entry->channel_id)));
+				}
 			}
 			else
 			{
@@ -432,53 +389,6 @@ class Edit extends AbstractPublishController {
 		);
 
 		ee()->cp->render('publish/entry', $vars);
-	}
-
-	private function createCategoryFilter($channel = NULL)
-	{
-		$cat_id = ($channel) ? explode('|', $channel->cat_group) : NULL;
-
-		$category_groups = ee('Model')->get('CategoryGroup', $cat_id)
-			->with('Categories')
-			->filter('site_id', ee()->config->item('site_id'))
-			->filter('exclude_group', '!=', 1)
-			->all();
-
-		$category_options = array();
-		foreach ($category_groups as $group)
-		{
-			foreach ($group->Categories as $category)
-			{
-				$category_options[$category->cat_id] = $category->cat_name;
-			}
-		}
-
-		$categories = ee('Filter')->make('filter_by_category', 'filter_by_category', $category_options);
-		$categories->disableCustomValue();
-		return $categories;
-	}
-
-	private function createStatusFilter($channel = NULL)
-	{
-		$statuses = ee('Model')->get('Status')
-			->filter('site_id', ee()->config->item('site_id'));
-
-		if ($channel)
-		{
-			$statuses->filter('group_id', $channel->status_group);
-		}
-
-		$status_options = array();
-
-		foreach ($statuses->all() as $status)
-		{
-			$status_name = ($status->status == 'closed' OR $status->status == 'open') ?  lang($status->status) : $status->status;
-			$status_options[$status->status] = $status_name;
-		}
-
-		$status = ee('Filter')->make('filter_by_status', 'filter_by_status', $status_options);
-		$status->disableCustomValue();
-		return $status;
 	}
 
 	private function remove($entry_ids)

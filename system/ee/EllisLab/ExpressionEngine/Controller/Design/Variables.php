@@ -46,7 +46,7 @@ class Variables extends AbstractDesignController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->sidebarMenu();
+		$this->generateSidebar('variables');
 		$this->stdHeader();
 
 		$this->msm = (ee()->config->item('multiple_sites_enabled') == 'y');
@@ -110,7 +110,7 @@ class Variables extends AbstractDesignController {
 				$all_sites,
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'design/variables/edit/' . $variable->variable_name),
+						'href' => ee('CP/URL', 'design/variables/edit/' . $variable->variable_id),
 						'title' => lang('edit')
 					),
 					'find' => array(
@@ -182,7 +182,6 @@ class Variables extends AbstractDesignController {
 				array(
 					array(
 						'title' => 'variable_name',
-						'desc' => 'variable_name_desc',
 						'fields' => array(
 							'variable_name' => array(
 								'type' => 'text',
@@ -192,7 +191,6 @@ class Variables extends AbstractDesignController {
 					),
 					array(
 						'title' => 'variable_data',
-						'desc' => 'variable_data_desc',
 						'wide' => TRUE,
 						'fields' => array(
 							'variable_data' => array(
@@ -284,21 +282,21 @@ class Variables extends AbstractDesignController {
 		ee()->cp->render('settings/form', $vars);
 	}
 
-	public function edit($variable_name)
+	public function edit($variable_id)
 	{
 		$variable = ee('Model')->get('GlobalVariable')
-			->filter('variable_name', $variable_name)
+			->filter('variable_id', $variable_id)
 			->filter('site_id', ee()->config->item('site_id'))
 			->first();
 
 		if ( ! $variable)
 		{
-			show_error(sprintf(lang('error_no_variable'), $variable_name));
+			show_404();
 		}
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'design/variables/edit/' . $variable_name),
+			'base_url' => ee('CP/URL', 'design/variables/edit/' . $variable_id),
 			'form_hidden' => array(
 				'old_name' => $variable->variable_name
 			),
@@ -308,7 +306,6 @@ class Variables extends AbstractDesignController {
 				array(
 					array(
 						'title' => 'variable_name',
-						'desc' => 'variable_name_desc',
 						'fields' => array(
 							'variable_name' => array(
 								'type' => 'text',
@@ -319,7 +316,6 @@ class Variables extends AbstractDesignController {
 					),
 					array(
 						'title' => 'variable_data',
-						'desc' => 'variable_data_desc',
 						'wide' => TRUE,
 						'fields' => array(
 							'variable_data' => array(

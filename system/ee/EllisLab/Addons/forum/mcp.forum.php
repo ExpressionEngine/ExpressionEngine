@@ -119,6 +119,7 @@ class Forum_mcp extends CP_Controller {
 		$boards_categories = ee('Model')->get('forum:Forum')
 			->filter('board_id', $id)
 			->filter('forum_is_cat', 'y')
+			->order('forum_order', 'asc')
 			->all();
 
 		foreach ($boards_categories as $i => $category)
@@ -142,7 +143,7 @@ class Forum_mcp extends CP_Controller {
 			$table_config = array(
 				'limit'             => 0,
 				'reorder'           => TRUE,
-				'no_reorder_header' => TRUE,
+				'reorder_header'    => TRUE,
 				'sortable'          => FALSE,
 				'class'             => $class,
 				'wrap'              => FALSE,
@@ -151,7 +152,7 @@ class Forum_mcp extends CP_Controller {
 			$table = ee('CP/Table', $table_config);
 			$table->setColumns(
 				array(
-					$category->forum_name => array(
+					$category->forum_name.form_hidden('cat_order[]', $category->forum_id) => array(
 						'encode' => FALSE
 					),
 					$this->getStatusWidget($category->forum_status) => array(
@@ -172,7 +173,7 @@ class Forum_mcp extends CP_Controller {
 			foreach ($category->Forums->sortBy('forum_order') as $forum)
 			{
 				$row = array(
-					$forum->forum_name.form_hidden('order[]', $forum->forum_order),
+					$forum->forum_name.form_hidden('order[]', $forum->forum_id),
 					$this->getStatusWidget($forum->forum_status),
 					array('toolbar_items' => array(
 							'edit' => array(
@@ -221,14 +222,69 @@ class Forum_mcp extends CP_Controller {
 		ee()->cp->add_js_script(array(
 			'file' => array(
 				'cp/v3/confirm_remove',
+				'cp/sort_helper',
+				'cp/addons/forums_reorder',
+			),
+			'plugin' => array(
+				'ee_table_reorder',
 			),
 		));
+
+		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
+			->asIssue()
+			->canClose()
+			->withTitle(lang('forums_ajax_reorder_fail'))
+			->addToBody(lang('forums_ajax_reorder_fail_desc'));
+
+		ee()->javascript->set_global('forums.reorder_url', ee('CP/URL', $this->base . 'reorder/' . $id)->compile());
+		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
 		return array(
 			'body'    => $body,
 			'heading' => lang('forum_manager'),
 			'sidebar' => $this->generateSidebar($id)
 		);
+	}
+
+	public function reorder($id)
+	{
+		$board = ee('Model')->get('forum:Board', $id)->first();
+
+		// Parse out the serialized inputs sent by the JavaScript
+		$new_order = array();
+		parse_str(ee()->input->post('order'), $new_order);
+
+		if ( ! AJAX_REQUEST OR ! $board OR (empty($new_order['order']) && empty($new_order['cat_order'])))
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		if (isset($new_order['order']))
+		{
+			$order = $new_order['order'];
+			$collection = $board->Forums->indexBy('forum_id');
+		}
+		else
+		{
+			$order = $new_order['cat_order'];
+			$collection = $board->Categories->indexBy('forum_id');
+		}
+
+		$i = 1;
+		foreach ($order as $forum_id)
+		{
+			// Only update status orders that have changed
+			if (isset($collection[$forum_id]) && $collection[$forum_id]->forum_order != $i)
+			{
+				$collection[$forum_id]->forum_order = $i;
+				$collection[$forum_id]->save();
+			}
+
+			$i++;
+		}
+
+		ee()->output->send_ajax_response(NULL);
+		exit;
 	}
 
 	/**
@@ -522,7 +578,7 @@ class Forum_mcp extends CP_Controller {
 				),
 				array(
 					'title' => 'short_name',
-					'desc' => 'short_name_desc',
+					'desc' => 'alphadash_desc',
 					'fields' => array(
 						'board_name' => array(
 							'type' => 'text',
@@ -2567,6 +2623,7 @@ class Forum_mcp extends CP_Controller {
 		$boards_categories = ee('Model')->get('forum:Forum')
 			->filter('board_id', $id)
 			->filter('forum_is_cat', 'y')
+			->order('forum_order', 'asc')
 			->all();
 
 		$base_url = ee('CP/URL', $this->base . 'moderators/' . $id);
@@ -2577,7 +2634,9 @@ class Forum_mcp extends CP_Controller {
 			$table->setColumns(
 				array(
 					$category->forum_name,
-					'moderators',
+					'moderators' => array(
+						'encode' => FALSE
+					),
 					'manage' => array(
 						'type'	=> Table::COL_TOOLBAR,
 					)
@@ -2588,23 +2647,20 @@ class Forum_mcp extends CP_Controller {
 			$data = array();
 			foreach ($category->Forums->sortBy('forum_order') as $forum)
 			{
-
-				// array('toolbar_items' => array(
-				// 		'edit' => array(
-				// 			'href' => ee('CP/URL', $this->base . 'edit/moderator/' . $forum->forum_id),
-				// 			'title' => lang('edit_moderator'),
-				// 		),
-				// 		'remove' => array(
-				// 			'href' => ee('CP/URL', $this->base . 'settings/forum/' . $forum->forum_id),
-				// 			'title' => lang('remove_moderator'),
-				// 		)
-				// 	)
-				// ),
-
+				$moderators = array();
+				foreach ($forum->Moderators as $mod)
+				{
+					$moderators[] = array(
+						'name' => $mod->getModeratorName(),
+						'edit_url' => ee('CP/URL', $this->base . 'edit/moderator/' . $mod->mod_id),
+						'confirm' => lang('moderator') . ': <b>' . $mod->getModeratorName() . '</b>',
+						'id' => $mod->mod_id
+					);
+				}
 
 				$row = array(
 					$forum->forum_name,
-					'Not yet implemented',
+					(empty($moderators)) ? '' : ee('View')->make('forum:mod-subtable')->render(array('moderators' => $moderators)),
 					array('toolbar_items' => array(
 						'add' => array(
 							'href' => ee('CP/URL', $this->base . 'create/moderator/' . $forum->forum_id),
@@ -2636,6 +2692,12 @@ class Forum_mcp extends CP_Controller {
 		);
 
 		$body = ee('View')->make('forum:moderators')->render($vars);
+
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/v3/confirm_remove',
+			),
+		));
 
 		return array(
 			'body'    => $body,
@@ -2702,14 +2764,17 @@ class Forum_mcp extends CP_Controller {
 
 	private function editModerator($id)
 	{
-		$moderator = ee('Model')->get('forum:Moderator', $id);
+		$moderator = ee('Model')->get('forum:Moderator', $id)->first();
 
 		if ( ! $moderator)
 		{
 			show_404();
 		}
 
+		$errors = NULL;
+
 		$forum = $moderator->Forum;
+		$forum_id = $forum->forum_id;
 
 		$result = $this->validateModerator($moderator);
 
@@ -2727,7 +2792,7 @@ class Forum_mcp extends CP_Controller {
 			'ajax_validate' => TRUE,
 			'errors' => $errors,
 			'cp_page_title' => sprintf(lang('edit_moderator_in'), $forum->forum_name),
-			'base_url' => ee('CP/URL', $this->base . 'create/moderator/' . $forum_id),
+			'base_url' => ee('CP/URL', $this->base . 'edit/moderator/' . $id),
 			'save_btn_text' => 'btn_save_moderator',
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => $this->moderatorForm($moderator),
@@ -2794,7 +2859,7 @@ class Forum_mcp extends CP_Controller {
 						'member_group' => array(
 							'type' => 'select',
 							'choices' => $member_groups,
-							'value' => ($moderator->mod_member_id) ?: 5
+							'value' => ($moderator->mod_group_id) ?: 5
 						),
 						'moderator_type_individual' => array(
 							'type' => 'radio',
@@ -2806,6 +2871,7 @@ class Forum_mcp extends CP_Controller {
 						),
 						'individual' => array(
 							'type' => 'text',
+							'value' => ($moderator->getType() == 'individual') ? $moderator->Member->username : ''
 						)
 					)
 				),
@@ -2886,7 +2952,7 @@ class Forum_mcp extends CP_Controller {
 		$validator->defineRule('validMember', function($key, $value) use ($moderator)
 		{
 			$member = ee('Model')->get('Member')
-				->fields('member_id')
+				->fields('member_id', 'screen_name', 'username')
 				->filter('username', $value)
 				->first();
 
@@ -3052,267 +3118,6 @@ class Forum_mcp extends CP_Controller {
 		ksort($themes);
 
 		return $themes;
-	}
-
-	// --------------------------------------------------------------------
-	// @TODO -- Account for the following previous behavior
-
-	/**
-	 * Update order of forums
-	 *
-	 * @access	private
-	 * @return	void
-	 */
-	private function _forum_update_order($forum_id = 0, $forum_parent = 0, $insert_new = TRUE)
-	{
-		// Update category order
-
-		// If the $forum_parent is zero we are dealing with a new
-		// category so we'll just tack it onto the end.
-
-		if ($forum_parent == 0 AND $insert_new == TRUE)
-		{
-			ee()->db->where('board_id', $this->board_id);
-			$count = ee()->db->count_all_results('forums');
-
-			ee()->db->where('forum_id', $forum_id);
-			ee()->db->update('forums', array('forum_order' => $count));
-
-			return;
-		}
-
-
-		// Re-order all the forums
-
-		ee()->db->select('forum_id');
-		ee()->db->where('board_id', $this->board_id);
-		ee()->db->where('forum_is_cat', 'y');
-		ee()->db->order_by('forum_order');
-		$query = ee()->db->get('forums');
-
-		$new_order = array();
-
-		$used = FALSE;
-
-		foreach ($query->result_array() as $row)
-		{
-			$new_order[] = $row['forum_id'];
-
-			ee()->db->select('forum_id');
-			ee()->db->where('forum_parent', $row['forum_id']);
-			ee()->db->order_by('forum_order');
-
-			if ($forum_parent > 0 AND $insert_new == TRUE AND $forum_id > 0)
-			{
-				ee()->db->where('forum_id !=', $forum_id);
-			}
-
-			$res = ee()->db->get('forums');
-
-
-			if ($res->num_rows() > 0)
-			{
-				foreach ($res->result_array() as $row2)
-				{
-					$new_order[] = $row2['forum_id'];
-				}
-			}
-
-			if ($insert_new == TRUE AND $forum_parent == $row['forum_id'] AND $used == FALSE)
-			{
-				$new_order[] = $forum_id;
-				$used = TRUE;
-			}
-		}
-
-		$i = 1;
-		foreach ($new_order as $id)
-		{
-			ee()->db->where('forum_id', $id);
-			ee()->db->update('forums', array('forum_order' => $i));
-			$i++;
-		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Move a Forum!
-	 *
-	 * This function is invoked by clicking the
-	 * "up" or "down" arrows in the forum manager.
-	 *
-	 * This code is no fun - you've been warned
-	 *
-	 * @access	public
-	 * @return	void
-	 */
-	private function forum_move()
-	{
-  		// Define some initial values
-
-		$forum_id  = ee()->input->get_post("forum_id");
-		$direction = ee()->input->get_post("dir");
-
-		ee()->db->where('board_id', $this->board_id);
-		$total = ee()->db->count_all_results('forums');
-
-		ee()->db->select('forum_order, forum_parent, forum_is_cat');
-		$query = ee()->db->get_where('forums', array('forum_id' => $forum_id));
-
-		$is_category = ($query->row('forum_is_cat')  == 'y') ? TRUE : FALSE;
-		$parent_id = $query->row('forum_parent') ;
-
-		$cur_position = $query->row('forum_order') ;
-		$new_position = ($direction == 'up') ? ($cur_position - 1) : ($cur_position + 1);
-
-		$min = ($cur_position == 1) ? 1 : ($cur_position == 2 AND $is_category == FALSE) ? 2 : ($cur_position - 1);
-		$max = ($cur_position == $total) ? $total : ($total + 1);
-
-  		// Do we even need to move the forum?
-
-		// Possibly not...
-
-		if (($direction == 'up' AND $cur_position == $min) OR
-			($direction == 'dn' AND $cur_position == $max))
-		{
-			ee()->functions->redirect($this->id_base.AMP.'method=forum_management');
-		}
-
-
-		// Are we moving a category?
-
-		// If so, all we need to do is swap the order of the category directly
-		// above (or below depending on direction) with the one being moved
-
-		if ($is_category == TRUE)
-		{
-			// Build the query
-
-			ee()->db->select('forum_id, forum_order');
-			ee()->db->where('board_id', $this->board_id);
-			ee()->db->where('forum_is_cat', 'y');
-			ee()->db->where('forum_order '.(($direction == 'up') ? '<' : '>'), $cur_position);
-			ee()->db->order_by('forum_order', ($direction == 'up') ? 'DESC' : 'ASC');
-			ee()->db->limit('1');
-			$result = ee()->db->get('forums');
-
-			if ($result->num_rows() == 0)
-			{
-				ee()->functions->redirect($this->id_base.AMP.'method=forum_management');
-			}
-
-			$temp_id	= $result->row('forum_id') ;
-			$temp_pos	= $result->row('forum_order') ;
-
-			// Swap the numbers...
-			ee()->db->where('forum_id', $temp_id);
-			ee()->db->update('forums', array('forum_order' => $cur_position));
-
-			ee()->db->where('forum_id', $forum_id);
-			ee()->db->update('forums', array('forum_order' => $temp_pos));
-
-			// Now that we've made the swap, the order of the forums is messed up so we'll re-synchronize them
-			$this->_forum_update_order(0, 0, FALSE);
-
-			ee()->functions->redirect($this->id_base.AMP.'method=forum_management');
-		}
-
-  		// Re-order the forum!
-
-		// First we'll create an array with the correct order...
-
-		ee()->db->select('forum_id');
-		ee()->db->where('board_id', $this->board_id);
-		ee()->db->where('forum_id !=', $forum_id);
-		ee()->db->order_by('forum_order', 'ASC');
-		$query = ee()->db->get('forums');
-
-		$new_order = array();
-		$flag = FALSE;
-		$i = 1;
-		foreach ($query->result_array() as $row)
-		{
-			if ($i == $new_position)
-			{
-				$new_order[] = $forum_id;
-				$flag = TRUE;
-			}
-
-			$new_order[] = $row['forum_id'];
-			$i++;
-		}
-
-		if ($flag == FALSE)
-		{
-			$new_order[] = $forum_id;
-		}
-
-
-
-		// Do we need to change the parent assignment?
-
-		// If the top forum in a category gets moved up, or if the bottom forum
-		// in a category gets moved down we need to re-assign its parent.
-		// There are a couple different conditions that we have to test for, however,
-		// so we'll build the query in pieces
-
-		ee()->db->start_cache();
-		ee()->db->select('forum_id, forum_parent, forum_is_cat');
-		ee()->db->where('board_id', $this->board_id);
-		ee()->db->where('forum_order '.(($direction == 'up') ? '<' : '>'), $cur_position);
-		ee()->db->order_by('forum_order', ($direction == 'up') ? 'DESC' : 'ASC');
-		ee()->db->limit('1');
-		ee()->db->stop_cache();
-
-		$query = ee()->db->get('forums');
-
-		if ($query->num_rows() > 0)
-		{
-			if ($query->row('forum_id')  == $parent_id)
-			{
-				ee()->db->where('forum_id !=', $parent_id);
-				$query = ee()->db->get('forums');
-			}
-		}
-
-		ee()->db->flush_cache();
-
-
-		if ($query->num_rows() > 0)
-		{
-			if ($query->row('forum_parent')  != $parent_id)
-			{
-				$new_parent = ($query->row('forum_is_cat')  == 'y') ? $query->row('forum_id')  : $query->row('forum_parent') ;
-
-				$new_order  =  ($direction == 'up') ? 100 : 0;
-
-				$d = array(
-					'forum_parent'	=> $new_parent,
-					'forum_order'	=> $new_order
-				);
-				ee()->db->where('forum_id', $forum_id);
-				ee()->db->update('forums', $d);
-
-				$this->_forum_update_order(0,0,FALSE);
-
-				ee()->functions->redirect($this->id_base.AMP.'method=forum_management');
-			}
-		}
-
-
-		// Lastly we'll update each forum...
-
-		$i = 1;
-		foreach ($new_order as $id)
-		{
-			ee()->db->where('forum_id', $id);
-			ee()->db->update('forums', array('forum_order' => $i));
-			$i++;
-		}
-
-		// Back whence you came Binky!
-		ee()->functions->redirect($this->id_base.AMP.'method=forum_management');
 	}
 
 }

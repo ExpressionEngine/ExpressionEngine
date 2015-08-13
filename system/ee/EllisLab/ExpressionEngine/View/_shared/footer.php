@@ -31,7 +31,29 @@
 						<?php endif ?>
 					</div>
 				</div>
-				<div class="right"><p><a href="https://support.ellislab.com/bugs/submit" rel="external"><?=lang('report_bug')?></a> <b class="sep">&middot;</b> <a href="https://support.ellislab.com" rel="external"><?=lang('new_ticket')?></a> <b class="sep">&middot;</b> <a href="https://ellislab.com/expressionengine/user-guide/" rel="external"><?=lang('user_guide')?></a></p></div>
+				<div class="right">
+					<p>
+						<?php if (ee()->cp->allowed_group('can_access_footer_report_bug')): ?>
+							<a href="https://support.ellislab.com/bugs/submit" rel="external"><?=lang('report_bug')?></a>
+
+							<?php if (ee()->cp->allowed_group('can_access_footer_new_ticket') || ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
+								<b class="sep">&middot;</b>
+							<?php endif; ?>
+						<?php endif; ?>
+
+						<?php if (ee()->cp->allowed_group('can_access_footer_new_ticket')): ?>
+							<a href="https://support.ellislab.com" rel="external"><?=lang('new_ticket')?></a>
+
+							<?php if (ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
+								<b class="sep">&middot;</b>
+							<?php endif; ?>
+						<?php endif; ?>
+
+						<?php if (ee()->cp->allowed_group('can_access_footer_user_guide')): ?>
+							<a href="https://ellislab.com/expressionengine/user-guide/" rel="external"><?=lang('user_guide')?></a>
+						<?php endif; ?>
+					</p>
+				</div>
 			</div>
 		</section>
 		<section class="footer">

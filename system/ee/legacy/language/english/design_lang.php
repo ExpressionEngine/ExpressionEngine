@@ -44,7 +44,7 @@ $lang = array(
 
 'name' => 'Name',
 
-'name_desc' => 'Short name for this group.<br><i>No spaces. Underscores and dashes are allowed.</i>',
+'name_desc' => 'No spaces. Underscores and dashes are allowed.',
 
 'duplicate_group' => 'Duplicate existing group?',
 
@@ -110,11 +110,7 @@ $lang = array(
 
 'snippet_name' => 'Name',
 
-'snippet_name_desc' => 'Short name for this partial.',
-
 'snippet_contents' => 'Content',
-
-'snippet_contents_desc' => 'Content of this partial.',
 
 'enable_partial_on_all_sites' => 'Enable on all sites?',
 
@@ -139,10 +135,6 @@ $lang = array(
 'error_no_template_group' => 'The Template Group <b>%s</b> does not exist.',
 
 'error_no_template' => 'No such Template exists.',
-
-'error_no_snippet' => 'The Template Partial <b>%s</b> does not exist.',
-
-'error_no_global_variable' => 'The Template Variable <b>%s</b> does not exist.',
 
 'template_name_taken' => 'The template name you submitted is already taken',
 
@@ -192,11 +184,7 @@ $lang = array(
 
 'variable_name' => 'Name',
 
-'variable_name_desc' => 'Short name for this variable.',
-
 'variable_data' => 'Content',
-
-'variable_data_desc' => 'Content of this variable.',
 
 'enable_template_variable_on_all_sites' => 'Enable on all sites?',
 
@@ -206,11 +194,7 @@ $lang = array(
 
 'create_template' => 'Create Template',
 
-'template_name_desc' => 'Short name for this template.<br><i>No spaces. Underscores and dashes are allowed.</i>',
-
 'template_type' => 'Type',
-
-'template_type_desc' => 'Choose a template type.',
 
 'duplicate_existing_template' => 'Duplicate existing template?',
 

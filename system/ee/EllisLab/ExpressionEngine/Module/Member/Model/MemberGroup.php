@@ -18,6 +18,9 @@ class MemberGroup extends Model {
 		'can_view_offline_system'        => 'boolString',
 		'can_view_online_system'         => 'boolString',
 		'can_access_cp'                  => 'boolString',
+		'can_access_footer_report_bug'   => 'boolString',
+		'can_access_footer_new_ticket'   => 'boolString',
+		'can_access_footer_user_guide'   => 'boolString',
 		'can_access_content'             => 'boolString',
 		'can_access_publish'             => 'boolString',
 		'can_access_edit'                => 'boolString',
@@ -166,6 +169,9 @@ class MemberGroup extends Model {
 	protected $can_view_offline_system;
 	protected $can_view_online_system;
 	protected $can_access_cp;
+	protected $can_access_footer_report_bug;
+	protected $can_access_footer_new_ticket;
+	protected $can_access_footer_user_guide;
 	protected $can_access_content;
 	protected $can_access_publish;
 	protected $can_access_edit;

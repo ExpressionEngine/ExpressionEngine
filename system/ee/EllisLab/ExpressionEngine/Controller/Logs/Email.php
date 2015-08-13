@@ -33,6 +33,16 @@ use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 class Email extends Logs {
 
 	/**
+	 * Constructor
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+
+		$this->generateSidebar('email');
+	}
+
+	/**
 	 * View Email Log
 	 *
 	 * Displays emails logged
@@ -112,6 +122,12 @@ class Email extends Logs {
 		{
 			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
 		}
+
+		ee()->view->header = array(
+			'title' => lang('system_logs'),
+			'form_url' => $this->base_url->compile(),
+			'search_button_value' => lang('search_logs_button')
+		);
 
 		$logs = $logs->order('cache_date', 'desc')
 			->limit($this->params['perpage'])

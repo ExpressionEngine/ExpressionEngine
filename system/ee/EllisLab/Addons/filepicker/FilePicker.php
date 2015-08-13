@@ -17,15 +17,7 @@ class FilePicker {
 		// Insert the modal
 		$modal_vars = array('name'=> 'modal-file', 'contents' => '');
 		$modal = ee('View')->make('ee:_shared/modal')->render($modal_vars);
-
-		if (empty($view->blocks['modals']))
-		{
-			$view->blocks['modals'] = '';
-		}
-
-		if (strpos($view->blocks['modals'], $modal) === FALSE) {
-			$view->blocks['modals'] .= $modal;
-		}
+		ee('CP/Modal')->addModal('modal-file', $modal);
 
 		ee()->cp->add_js_script(array(
 			'file' => array(

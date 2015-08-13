@@ -64,7 +64,7 @@ class Comments extends AbstractPublishController {
 		$comments = ee('Model')->get('Comment')
 			->filter('site_id', ee()->config->item('site_id'));
 
-		$channel_filter = $this->createChannelFilter();
+		$channel_filter = ee('CP/EntryListing')->createChannelFilter();
 		if ($channel_filter->value())
 		{
 			$comments->filter('channel_id', $channel_filter->value());

@@ -250,8 +250,8 @@ class Bookmarks extends Profile {
 		$vars['sections'] = array(
 			array(
 				array(
-					'title' => 'bookmarklet_name',
-					'desc' => 'bookmarklet_name_desc',
+					'title' => 'name',
+					'desc' => 'alphadash_desc',
 					'fields' => array(
 						'name' => array(
 							'type' => 'text',

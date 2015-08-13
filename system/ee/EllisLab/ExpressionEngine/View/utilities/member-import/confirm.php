@@ -34,7 +34,7 @@
 					<td><?=$language?></td>
 				</tr>
 				<tr class="alt">
-					<td><?=lang('mbr_timezone')?></td>
+					<td><?=lang('timezone')?></td>
 					<td><?=$timezones?></td>
 				</tr>
 				<tr>

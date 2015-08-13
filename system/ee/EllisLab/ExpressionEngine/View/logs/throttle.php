@@ -2,13 +2,10 @@
 
 <div class="tbl-ctrls">
 <?=form_open($form_url)?>
-	<fieldset class="tbl-search right">
-		<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=$search_value?>">
-		<input class="btn submit" type="submit" value="<?=lang('search_logs_button')?>">
-	</fieldset>
 	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
 	<?=ee('Alert')->getAllInlines()?>
 	<?php if (isset($filters)) echo $filters; ?>
+	<input type="submit" style="position: absolute; left: -9999px"/>
 	<section class="item-wrap log">
 		<?php if ($disabled): ?>
 			<p class="no-results"><?=lang('throttling_disabled')?> <a class="btn action" href="<?=ee('CP/URL', 'settings/throttling')?>"><?=lang('enable_throttling')?></a></p>
@@ -41,47 +38,46 @@
 <?=form_close()?>
 </div>
 
-<?php if ( ! $disabled): ?>
-<?php $this->startOrAppendBlock('modals'); ?>
-
 <?php
-// Individual confirm delete modals
-foreach($logs as $log)
+if ( ! $disabled)
 {
+	// Individual confirm delete modals
+	foreach($logs as $log)
+	{
+		$modal_vars = array(
+			'name'      => 'modal-confirm-' . $log->throttle_id,
+			'form_url'	=> $form_url,
+			'hidden'	=> array(
+				'delete'	=> $log->throttle_id
+			),
+			'checklist'	=> array(
+				array(
+					'kind' => lang('view_throttle_log'),
+					'desc' => $log->ip_address . ' ' . lang('hits') . ': ' . $log->hits
+				)
+			)
+		);
+
+		$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+		ee('CP/Modal')->addModal($log->throttle_id, $modal);
+	}
+
+	// Confirm delete all modal
 	$modal_vars = array(
-		'name'      => 'modal-confirm-' . $log->throttle_id,
+		'name'      => 'modal-confirm-all',
 		'form_url'	=> $form_url,
 		'hidden'	=> array(
-			'delete'	=> $log->throttle_id
+			'delete'	=> 'all'
 		),
 		'checklist'	=> array(
 			array(
 				'kind' => lang('view_throttle_log'),
-				'desc' => $log->ip_address . ' ' . lang('hits') . ': ' . $log->hits
+				'desc' => lang('all')
 			)
 		)
 	);
 
-	$this->embed('_shared/modal_confirm_remove', $modal_vars);
+	$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+	ee('CP/Modal')->addModal('all', $modal);
 }
-
-// Confirm delete all modal
-$modal_vars = array(
-	'name'      => 'modal-confirm-all',
-	'form_url'	=> $form_url,
-	'hidden'	=> array(
-		'delete'	=> 'all'
-	),
-	'checklist'	=> array(
-		array(
-			'kind' => lang('view_throttle_log'),
-			'desc' => lang('all')
-		)
-	)
-);
-
-$this->embed('_shared/modal_confirm_remove', $modal_vars);
 ?>
-
-<?php $this->endBlock(); ?>
-<?php endif; ?>

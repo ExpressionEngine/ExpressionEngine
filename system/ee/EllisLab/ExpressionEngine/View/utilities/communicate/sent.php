@@ -24,27 +24,27 @@
 <?=form_close()?>
 </div>
 
-<?php $this->startOrAppendBlock('modals'); ?>
-
 <?php foreach($emails as $email): ?>
-<div class="modal-wrap modal-email-<?=$email->cache_id?> hidden">
-	<div class="modal">
-		<div class="col-group">
-			<div class="col w-16">
-				<a class="m-close" href="#"></a>
-				<div class="box">
-					<h1><?=$email->subject?></h1>
-					<div class="txt-wrap">
-						<ul class="checklist mb">
-							<li><b><?=lang('sent')?>:</b> <?=$localize->human_time($email->cache_date)?> <?=lang('to')?> <?=$email->total_sent?> <?=lang('recipients')?></li>
-						</ul>
-						<?=$email->message?>
+	<?php ee('CP/Modal')->startModal('email-' . $email->cache_id); ?>
+	<div class="modal-wrap modal-email-<?=$email->cache_id?> hidden">
+		<div class="modal">
+			<div class="col-group">
+				<div class="col w-16">
+					<a class="m-close" href="#"></a>
+					<div class="box">
+						<h1><?=$email->subject?></h1>
+						<div class="txt-wrap">
+							<ul class="checklist mb">
+								<li><b><?=lang('sent')?>:</b> <?=$localize->human_time($email->cache_date->format('U'))?> <?=lang('to')?> <?=$email->total_sent?> <?=lang('recipients')?></li>
+							</ul>
+							<?=$email->message?>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-</div>
+	<?php ee('CP/Modal')->endModal(); ?>
 <?php endforeach; ?>
 
 <?php
@@ -56,7 +56,6 @@ $modal_vars = array(
 	)
 );
 
-$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+ee('CP/Modal')->addModal('remove', $modal);
 ?>
-
-<?php $this->endBlock(); ?>

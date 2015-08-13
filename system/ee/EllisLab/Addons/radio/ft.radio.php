@@ -103,6 +103,15 @@ class Radio_ft extends EE_Fieldtype {
 
 		if (REQ == 'CP')
 		{
+			if ($data === TRUE)
+			{
+				$data = 'y';
+			}
+			elseif ($data === FALSE)
+			{
+				$data = 'n';
+			}
+
 			return ee('View')->make('radio:publish')->render(array(
 				'field_name' => $this->field_name,
 				'selected' => $data,

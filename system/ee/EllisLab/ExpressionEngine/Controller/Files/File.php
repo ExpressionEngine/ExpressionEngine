@@ -92,7 +92,6 @@ class File extends AbstractFilesController {
 				array(
 					array(
 						'title' => 'title',
-						'desc' => 'title_desc',
 						'fields' => array(
 							'title' => array(
 								'type' => 'text',
@@ -102,7 +101,6 @@ class File extends AbstractFilesController {
 					),
 					array(
 						'title' => 'description',
-						'desc' => 'description_desc',
 						'fields' => array(
 							'description' => array(
 								'type' => 'textarea',
@@ -112,7 +110,6 @@ class File extends AbstractFilesController {
 					),
 					array(
 						'title' => 'credit',
-						'desc' => 'credit_desc',
 						'fields' => array(
 							'credit' => array(
 								'type' => 'text',
@@ -122,7 +119,6 @@ class File extends AbstractFilesController {
 					),
 					array(
 						'title' => 'location',
-						'desc' => 'location_desc',
 						'fields' => array(
 							'location' => array(
 								'type' => 'text',

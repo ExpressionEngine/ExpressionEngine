@@ -2,7 +2,7 @@
 $lang = array(
 
 'your_name'				=> 'Your Name',
-'your_email'			=> 'Your Email',
+'your_email'			=> 'Your email',
 'recipient'				=> 'Recipient',
 'cc'					=> 'CC',
 'bcc'					=> 'BCC',

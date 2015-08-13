@@ -31,6 +31,16 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class Cp extends Logs {
 
 	/**
+	 * Constructor
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+
+		$this->generateSidebar('cp');
+	}
+
+	/**
 	 * View Control Panel Log Files
 	 *
 	 * Shows the control panel action log
@@ -109,6 +119,12 @@ class Cp extends Logs {
 		{
 			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
 		}
+
+		ee()->view->header = array(
+			'title' => lang('system_logs'),
+			'form_url' => $this->base_url->compile(),
+			'search_button_value' => lang('search_logs_button')
+		);
 
 		$logs = $logs->order('act_date', 'desc')
 			->limit($this->params['perpage'])

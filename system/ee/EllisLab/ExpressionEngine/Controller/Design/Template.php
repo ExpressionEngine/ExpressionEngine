@@ -102,7 +102,7 @@ class Template extends AbstractDesignController {
 				array(
 					array(
 						'title' => 'name',
-						'desc' => 'template_name_desc',
+						'desc' => 'alphadash_desc',
 						'fields' => array(
 							'template_name' => array(
 								'type' => 'text',
@@ -112,7 +112,6 @@ class Template extends AbstractDesignController {
 					),
 					array(
 						'title' => 'template_type',
-						'desc' => 'template_type_desc',
 						'fields' => array(
 							'template_type' => array(
 								'type' => 'select',
@@ -198,7 +197,7 @@ class Template extends AbstractDesignController {
 				->now();
 		}
 
-		$this->sidebarMenu($group->group_id);
+		$this->generateSidebar($group->group_id);
 		ee()->view->cp_page_title = lang('create_template');
 
 		ee()->cp->render('settings/form', $vars);
@@ -498,7 +497,7 @@ class Template extends AbstractDesignController {
 			),
 		));
 
-		$this->sidebarMenu();
+		$this->generateSidebar();
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('template_manager');
 

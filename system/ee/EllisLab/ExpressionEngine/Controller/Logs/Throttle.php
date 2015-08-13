@@ -33,6 +33,16 @@ use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 class Throttle extends Logs {
 
 	/**
+	 * Constructor
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+
+		$this->generateSidebar('throttle');
+	}
+
+	/**
 	 * View Throttle Log
 	 *
 	 * Shows a list of ips that are currently throttled
@@ -126,6 +136,12 @@ class Throttle extends Logs {
 				->currentPage($page)
 				->render($this->base_url);
 		}
+
+		ee()->view->header = array(
+			'title' => lang('system_logs'),
+			'form_url' => $this->base_url->compile(),
+			'search_button_value' => lang('search_logs_button')
+		);
 
 		$vars = array(
 			'logs' => $logs,

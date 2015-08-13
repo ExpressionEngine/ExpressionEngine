@@ -782,6 +782,12 @@ class Addons extends CP_Controller {
 			ee('CP/URL', 'addons')->compile() => lang('addon_manager')
 		);
 
+		ee()->view->header = array(
+			'title' => lang('addon_manager'),
+			'form_url' => ee('CP/URL', 'addons'),
+			'search_button_value' => lang('search_addons_button')
+		);
+
 		if (is_null($method))
 		{
 			$method = (ee()->input->get_post('method') !== FALSE) ? ee()->input->get_post('method') : 'index';
@@ -859,11 +865,6 @@ class Addons extends CP_Controller {
 
 		ee()->view->cp_breadcrumbs = $breadcrumb;
 		ee()->view->cp_page_title = ee()->view->cp_heading;
-		ee()->view->header = array(
-			'title' => lang('addon_manager'),
-			'form_url' => ee('CP/URL', 'addons'),
-			'search_button_value' => lang('search_addons_button')
-		);
 
 		ee()->cp->render('addons/settings', $vars);
 	}

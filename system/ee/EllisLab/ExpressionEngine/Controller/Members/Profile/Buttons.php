@@ -293,7 +293,6 @@ class Buttons extends Profile {
 			array(
 				array(
 					'title' => 'tag_name',
-					'desc' => 'tag_name_desc',
 					'fields' => array(
 						'tag_name' => array('type' => 'text', 'value' => $name, 'required' => TRUE)
 					)

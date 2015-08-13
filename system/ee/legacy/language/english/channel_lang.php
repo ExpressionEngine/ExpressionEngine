@@ -146,8 +146,6 @@ $lang = array(
 'channel_title' => 'Name',
 'channel_title_desc' => '',
 
-'channel_short_name_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
-
 'channel_duplicate' => 'Duplicate existing channel?',
 'channel_duplicate_desc' => 'On creation, this channel will copy all settings from the selected channel.',
 
@@ -266,6 +264,10 @@ $lang = array(
 'html_formatting' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> formatting',
 
 'html_formatting_desc' => 'Level of <abbr title="Hyper-Text Markup Language">HTML</abbr> allowed.',
+
+'extra_publish_controls' => 'Show extra publish controls?',
+
+'extra_publish_controls_desc' => 'When set to <b>yes</b>, a second set of publish controls will appear at the top of the publish form for this channel.',
 
 'convert_image_urls' => 'Allow image <abbr title="Unified Resource Locator">URL</abbr>s?',
 
@@ -535,8 +537,6 @@ $lang = array(
 'duplicate_category_group_name' => 'A category group already exists with the same name.',
 
 'label' => 'Label',
-
-'cat_field_short_name_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
 
 'require_field' => 'Require field?',
 

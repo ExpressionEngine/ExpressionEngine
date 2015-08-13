@@ -2,10 +2,6 @@
 
 <div class="tbl-ctrls">
 <?=form_open($table['base_url'])?>
-	<fieldset class="tbl-search right">
-		<input placeholder="<?=lang('type_phrase')?>" type="text" name="search" value="<?=$table['search']?>">
-		<input class="btn submit" type="submit" value="<?=lang('search_member_groups_button')?>">
-	</fieldset>
 	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
 
 	<?=ee('Alert')->getAllInlines()?>
@@ -28,8 +24,6 @@
 <?=form_close()?>
 </div>
 
-<?php $this->startOrAppendBlock('modals'); ?>
-
 <?php
 
 $modal_vars = array(
@@ -40,7 +34,6 @@ $modal_vars = array(
 	)
 );
 
-$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+ee('CP/Modal')->addModal('remove', $modal);
 ?>
-
-<?php $this->endBlock(); ?>

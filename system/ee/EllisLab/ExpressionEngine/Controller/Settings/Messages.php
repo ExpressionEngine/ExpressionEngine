@@ -40,14 +40,12 @@ class Messages extends Settings {
 			array(
 				array(
 					'title' => 'prv_msg_max_chars',
-					'desc' => 'prv_msg_max_chars_desc',
 					'fields' => array(
 						'prv_msg_max_chars' => array('type' => 'text')
 					)
 				),
 				array(
 					'title' => 'prv_msg_html_format',
-					'desc' => 'prv_msg_html_format_desc',
 					'fields' => array(
 						'prv_msg_html_format' => array(
 							'type' => 'select',
@@ -77,7 +75,6 @@ class Messages extends Settings {
 				),
 				array(
 					'title' => 'prv_msg_max_attachments',
-					'desc' => 'prv_msg_max_attachments_desc',
 					'fields' => array(
 						'prv_msg_max_attachments' => array('type' => 'text')
 					)

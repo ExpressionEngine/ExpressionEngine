@@ -86,7 +86,7 @@ class System extends AbstractDesignController {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 
-		$this->sidebarMenu('messages');
+		$this->generateSidebar('messages');
 		ee()->view->cp_page_title = lang('template_manager');
 		ee()->view->cp_heading = lang('system_message_templates');
 

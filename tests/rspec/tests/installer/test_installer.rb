@@ -4,7 +4,6 @@ feature 'Installer' do
   before :all do
     @installer = Installer::Prepare.new
     @installer.enable_installer
-    @installer.disable_rename
     @installer.replace_config
   end
 
@@ -22,7 +21,6 @@ feature 'Installer' do
 
   after :all do
     @installer.disable_installer
-    @installer.enable_rename
     @installer.revert_config
   end
 
@@ -71,12 +69,33 @@ feature 'Installer' do
 
       no_php_js_errors
       @page.install_form.all_there?.should == true
-      @page.inline_errors.should have(6).items
+      @page.inline_errors.should have_at_least(1).items
     end
 
-    it 'shows an error when using the incorrect database credentials' do
+    it 'shows an inline error when using an incorrect database host' do
       @page.install_form.db_hostname.set 'nonsense'
+      @page.install_form.install_submit.click
+
+      no_php_js_errors
+      @page.install_form.all_there?.should == true
+      @page.inline_errors.should have_at_least(1).items
+      @page.has_inline_error('The database host you submitted is invalid.') == true
+    end
+
+    it 'shows an inline error when using an incorrect database name' do
+      @page.install_form.db_hostname.set $test_config[:db_host]
       @page.install_form.db_name.set 'nonsense'
+      @page.install_form.install_submit.click
+
+      no_php_js_errors
+      @page.install_form.all_there?.should == true
+      @page.inline_errors.should have_at_least(1).items
+      @page.has_inline_error('The database name you submitted is invalid.') == true
+    end
+
+    it 'shows an error when using an incorrect database user' do
+      @page.install_form.db_hostname.set $test_config[:db_host]
+      @page.install_form.db_name.set $test_config[:db_name]
       @page.install_form.db_username.set 'nonsense'
       @page.install_form.username.set 'admin'
       @page.install_form.email_address.set 'hello@ellislab.com'
@@ -85,8 +104,9 @@ feature 'Installer' do
 
       no_php_js_errors
       @page.install_form.all_there?.should == true
+      @page.inline_errors.should have(0).items
       @page.should have_error
-      @page.error.text.should include 'Unable to connect to your database using the configuration settings you submitted.'
+      @page.error.text.should include 'The database user and password combination you submitted is invalid.'
     end
   end
 

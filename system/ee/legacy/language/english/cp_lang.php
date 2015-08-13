@@ -481,6 +481,8 @@ $lang = array(
 
 'new_channel' => 'New Channel',
 
+'view_all' => 'View All',
+
 'new_site' => 'New Site',
 
 'name_your_site' => 'Name your site',
@@ -526,13 +528,15 @@ $lang = array(
 
 'url_title_lc' => 'URL title',
 
-'url_title_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
-
 'description' => 'Description',
 
 'image' => 'Image',
 
 'no_rows_returned' => 'No rows returned',
+
+'used_in_cp_only' => 'Used in the control panel only.',
+
+'alphadash_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
 
 /**
  * Footer

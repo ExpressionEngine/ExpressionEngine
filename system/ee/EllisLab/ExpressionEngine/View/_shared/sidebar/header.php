@@ -1,4 +1,4 @@
-<h2>
+<h2<?php if ($class) echo ' class="' . $class . '"'?>>
 <?php if ($url): ?>
 	<a href="<?=$url?>"><?=$text?></a>
 <?php else: ?>

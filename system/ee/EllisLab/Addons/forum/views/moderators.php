@@ -24,3 +24,17 @@
 		<?=form_close();?>
 	</div>
 </div>
+
+<?php
+
+$modal_vars = array(
+	'name'		=> 'modal-confirm-moderators',
+	'form_url'	=> ee('CP/URL', $this->base . 'remove/moderator'),
+	'hidden'	=> array(
+		'id' => ''
+	)
+);
+
+$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+ee('CP/Modal')->addModal('moderators', $modal);
+?>

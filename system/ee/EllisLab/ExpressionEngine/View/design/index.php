@@ -24,7 +24,7 @@
 	<?=form_close()?>
 </div>
 
-<?php $this->startOrAppendBlock('modals'); ?>
+<?php ee('CP/Modal')->startModal('template-settings'); ?>
 
 <div class="modal-wrap modal-template-settings hidden">
 	<div class="modal">
@@ -38,6 +38,8 @@
 	</div>
 </div>
 
+<?php ee('CP/Modal')->endModal(); ?>
+
 <?php
 $modal_vars = array(
 	'name'		=> 'modal-confirm-remove-template',
@@ -47,7 +49,6 @@ $modal_vars = array(
 	)
 );
 
-$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+ee('CP/Modal')->addModal('remove-template', $modal);
 ?>
-
-<?php $this->endBlock(); ?>
