@@ -176,7 +176,7 @@ class Fields extends AbstractChannelsController {
 
 		ee()->view->cp_breadcrumbs = array(
 			ee('CP/URL', 'channels/fields/groups')->compile() => lang('field_groups'),
-			ee('CP/URL', 'channels/fields/fields/' . $field->group_id)->compile() => lang('fields'),
+			ee('CP/URL', 'channels/fields/' . $field->group_id)->compile() => lang('fields'),
 		);
 
 		$errors = NULL;
