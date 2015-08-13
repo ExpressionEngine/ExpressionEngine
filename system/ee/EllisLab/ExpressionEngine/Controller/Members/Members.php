@@ -59,36 +59,30 @@ class Members extends CP_Controller {
 		ee()->load->model('member_model');
 		ee()->load->library('form_validation');
 
-		// Register our menu
-		ee()->menu->register_left_nav(array(
-			'all_members' => array(
-				'href' => ee('CP/URL', 'members'),
-				'button' => array(
-					'href' => ee('CP/URL', 'members/create'),
-					'text' => 'new'
-				)
-			),
-			array(
-				'pending_activation' => ee('CP/URL', 'members', array('group' => 4)),
-				'manage_bans' => ee('CP/URL', 'members/bans')
-			),
-			'member_groups' => array(
-				'href' => ee('CP/URL', 'members/groups'),
-				'button' => array(
-					'href' => ee('CP/URL', 'members/groups/create'),
-					'text' => 'new'
-				)
-			),
-			array(
-				'custom_member_fields' => ee('CP/URL', 'members/fields')
-			)
-		));
+		$this->generateSidebar();
 
 		$this->base_url = ee('CP/URL', 'members');
 		$this->set_view_header($this->base_url);
 	}
 
-	// --------------------------------------------------------------------
+	protected function generateSidebar($active = NULL)
+	{
+		$sidebar = ee('Sidebar')->make();
+
+		$list = $sidebar->addHeader(lang('all_members'), ee('CP/URL', 'members'))
+			->withButton(lang('new'), ee('CP/URL', 'members/create'))
+			->addBasicList();
+
+		$list->addItem(lang('pending_activation'), ee('CP/URL', 'members', array('group' => 4)));
+		$list->addItem(lang('manage_bans'), ee('CP/URL', 'members/bans'));
+
+		$list = $sidebar->addHeader(lang('member_groups'), ee('CP/URL', 'members/groups'))
+			->withButton(lang('new'), ee('CP/URL', 'members/groups/create'))
+			->addBasicList()
+				->addItem(lang('custom_member_fields'), ee('CP/URL', 'members/fields'));
+
+		ee()->menu->register_left_nav($sidebar);
+	}
 
 	/**
 	 * MemberList
