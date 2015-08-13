@@ -222,14 +222,33 @@ class EE_Menu {
 	// --------------------------------------------------------------------
 
 	/**
-	 * Sets up left sidebar navigation given a sidebar object:
+	 * Sets up left sidebar navigation given an array of data like this:
 	 *
-	 * @param Sidebar $nav A Sidebar object
+	 * array(
+	 *     'key_of_heading' => ee('CP/URL', 'optional/link'),
+	 *     'heading_with_no_link',
+	 *     array(
+	 *         'item_in_subsection' => ee('CP/URL', 'sub/section')
+	 *     )
+	 * )
+	 *
+	 * @param	array	$nav	Array of navigation data like above
 	 * @return	void
 	 */
-	public function register_left_nav(Sidebar $nav)
+	public function register_left_nav($nav)
 	{
-		ee()->view->left_nav = $nav->render();
+		if ($nav instanceof Sidebar)
+		{
+			ee()->view->left_nav = $nav->render();
+		}
+		else
+		{
+			ee()->view->left_nav = ee()->load->view(
+				'_shared/left_nav',
+				array('nav' => $nav),
+				TRUE
+			);
+		}
 	}
 
 	// --------------------------------------------------------------------
