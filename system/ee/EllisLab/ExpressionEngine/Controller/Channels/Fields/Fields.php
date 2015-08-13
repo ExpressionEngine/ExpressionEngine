@@ -62,6 +62,9 @@ class Fields extends AbstractChannelsController {
 			'create_url' => ee('CP/URL', 'channels/fields/create')
 		);
 
+		$group = ee('Model')->get('ChannelFieldGroup')
+			->filter('group_id', $id)
+			->first();
 
 		$fields = ee('Model')->get('ChannelField')
 			->filter('site_id', ee()->config->item('site_id'))
@@ -83,7 +86,8 @@ class Fields extends AbstractChannelsController {
 			),
 		));
 
-		ee()->view->cp_page_title = lang('custom_fields');
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/fields/groups'), lang('field_groups'));
+		ee()->view->cp_page_title = sprintf(lang('custom_fields_for'), $group->group_name);
 
 		ee()->cp->render('channels/fields/index', $vars);
 	}

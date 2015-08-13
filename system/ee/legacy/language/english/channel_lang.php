@@ -44,6 +44,8 @@ $lang = array(
 
 'custom_fields' => 'Custom Fields',
 
+'custom_fields_for' => 'Custom Fields for %s',
+
 'field_group' => 'Field Group',
 
 'field_groups' => 'Field Groups',
