@@ -99,7 +99,7 @@ class Create extends Members {
 			array(
 				 'field'   => 'username',
 				 'label'   => 'lang:username',
-				 'rules'   => 'required|trim|valid_username[new]'
+				 'rules'   => 'required|trim|valid_username'
 			),
 			array(
 				 'field'   => 'email',

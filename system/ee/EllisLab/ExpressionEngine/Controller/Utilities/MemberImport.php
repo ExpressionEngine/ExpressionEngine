@@ -468,7 +468,7 @@ class MemberImport extends Utilities {
 						}
 
 						/* -------------------------------------
-						/*  username, screen_name, and email
+						/*  username and email
 						/*  must be validated and unique
 						/* -------------------------------------*/
 
@@ -487,14 +487,7 @@ class MemberImport extends Utilities {
 								break;
 							case 'screen_name':
 								$this->validate->screen_name = $tag->value;
-								if ( ! in_array($tag->value, $s))
-								{
-									$s[] = $tag->value;
-								}
-								else
-								{
-									$errors[] = array(lang('duplicate_screen_name').$tag->value);
-								}
+								$s[] = $tag->value;
 								break;
 							case 'email':
 								if ( ! in_array($tag->value, $e))
