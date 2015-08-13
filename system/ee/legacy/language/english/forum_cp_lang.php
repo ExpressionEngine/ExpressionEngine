@@ -226,6 +226,9 @@ $lang = array(
 'edit_forum_board_error' => 'Cannot Update Forum Board',
 'edit_forum_board_error_desc' => 'We were unable to update this forum board, please review and fix errors below.',
 
+'forum_board_removed' => 'Forum Board Removed',
+'forum_board_removed_desc' => 'The forum board <b>%s</b> was removed.',
+
 // Create/Edit Category Form
 
 'create_category' => 'Create Category',

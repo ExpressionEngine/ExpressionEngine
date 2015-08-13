@@ -58,7 +58,7 @@ class Forum_mcp extends CP_Controller {
 		if (count($all_boards))
 		{
 			$board_list = $boards->addFolderList('boards')
-				->withRemoveUrl(ee('CP/URL', $this->base . 'remove/board'));
+				->withRemoveUrl(ee('CP/URL', $this->base . 'remove/board', array('return' => base64_encode(ee()->cp->get_safe_refresh()))));
 
 			foreach ($all_boards as $board)
 			{
@@ -84,6 +84,12 @@ class Forum_mcp extends CP_Controller {
 		{
 			$ranks->isActive();
 		}
+
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/addons/forums/sidebar',
+			),
+		));
 
 		return $sidebar;
 	}
@@ -1150,6 +1156,35 @@ class Forum_mcp extends CP_Controller {
 		return $html;
 	}
 
+	private function removeBoard($id)
+	{
+		$board = ee('Model')->get('forum:Board', $id)->first();
+
+		if ( ! $board)
+		{
+			show_404();
+		}
+
+		$name = $board->board_label;
+
+		$board->delete();
+
+		ee('Alert')->makeInline('entries-form')
+			->asSuccess()
+			->withTitle(lang('forum_board_removed'))
+			->addToBody(sprintf(lang('forum_board_removed_desc'), $name))
+			->defer();
+
+		$return = ee('CP/URL', $this->base);
+
+		if (ee()->input->get_post('return'))
+		{
+			$return = base64_decode(ee()->input->get_post('return'));
+		}
+
+		ee()->functions->redirect($return);
+	}
+
 	// --------------------------------------------------------------------
 
 	private function createCategory($board_id)
@@ -1214,7 +1249,7 @@ class Forum_mcp extends CP_Controller {
 			'breadcrumb' => array(
 				ee('CP/URL', $this->base . 'index/' . $board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
-			'heading'    => lang('create_forum_board'),
+			'heading'    => lang('create_category'),
 			'sidebar'    => $this->generateSidebar($board_id)
 		);
 	}
@@ -1550,7 +1585,7 @@ class Forum_mcp extends CP_Controller {
 			'breadcrumb' => array(
 				ee('CP/URL', $this->base. 'index/' . $board->board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
-			'heading'    => lang('create_forum_board'),
+			'heading'    => lang('create_forum'),
 			'sidebar'    => $this->generateSidebar($board->board_id)
 		);
 	}
