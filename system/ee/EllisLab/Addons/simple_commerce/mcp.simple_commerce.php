@@ -229,6 +229,93 @@ class Simple_commerce_mcp {
 	}
 
 	/**
+	 * First step of item creation
+	 */
+	public function createItem()
+	{
+		$base_url = ee('CP/URL', 'addons/settings/simple_commerce/create-item');
+		$entry_listing = ee('CP/EntryListing', ee()->input->get_post('search'));
+		$entries = $entry_listing->getEntries();
+		$filters = $entry_listing->getFilters();
+		$count = $entries->count();
+
+		$vars['filters'] = $filters->render($base_url);
+		$filter_values = $filters->values();
+		$base_url->addQueryStringVariables($filter_values);
+
+		$table = ee('CP/Table');
+
+		$table->setColumns(
+			array(
+				'column_entry_id',
+				'column_title' => array(
+					'encode' => FALSE
+				),
+				'column_entry_date',
+				'column_status' => array(
+					'type'	=> Table::COL_STATUS
+				),
+				array(
+					'type'	=> Table::COL_CHECKBOX
+				)
+			)
+		);
+		$table->setNoResultsText(lang('no_entries_exist'));
+
+		$channels = ee('Model')->get('Channel')
+			->fields('channel_id', 'channel_name')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		$page = ((int) ee()->input->get('page')) ?: 1;
+		$offset = ($page - 1) * $filter_values['perpage']; // Offset is 0 indexed
+
+		$entries->order(str_replace('column_', '', $table->sort_col), $table->sort_dir)
+			->limit($filter_values['perpage'])
+			->offset($offset);
+
+		$data = array();
+
+		$entry_id = ee()->session->flashdata('entry_id');
+
+		foreach ($entries->all() as $entry)
+		{
+			$title = htmlentities($entry->title, ENT_QUOTES);
+			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->Author->getMemberName(), ENT_QUOTES) . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES) . '</span>';
+
+			$data[] = array(
+				$entry->entry_id,
+				$title,
+				ee()->localize->human_time($entry->entry_date),
+				$entry->status,
+				array(
+					'name' => 'selection[]',
+					'value' => $entry->entry_id,
+					'data' => array(
+						'confirm' => lang('entry') . ': <b>' . htmlentities($entry->title, ENT_QUOTES) . '</b>'
+					)
+				)
+			);
+		}
+
+		$table->setData($data);
+
+		$vars['table'] = $table->viewData($base_url);
+		$vars['form_url'] = $vars['table']['base_url'];
+
+		$vars['pagination'] = ee('CP/Pagination', $count)
+			->perPage($filter_values['perpage'])
+			->currentPage($page)
+			->render($base_url);
+
+		return array(
+			'heading' => lang('commerce_purchases'),
+			'body' => ee('View')->make('simple_commerce:entry_list')->render($vars),
+			'sidebar' => $this->sidebar
+		);
+	}
+
+	/**
 	 * Purchases listing
 	 */
 	public function purchases()
