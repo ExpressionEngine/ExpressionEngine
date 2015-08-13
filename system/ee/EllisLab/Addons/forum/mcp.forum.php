@@ -2436,6 +2436,11 @@ class Forum_mcp extends CP_Controller {
 
 	public function admins($board_id)
 	{
+		if (ee()->input->post('bulk_action') == 'remove')
+		{
+			$this->removeAdmins(ee()->input->post('selection'));
+		}
+
 		$board = ee('Model')->get('forum:Board', $board_id)->first();
 		if ( ! $board)
 		{
@@ -2498,7 +2503,7 @@ class Forum_mcp extends CP_Controller {
 		}
 		$table->setData($data);
 
-		$base_url = ee('CP/URL', $this->base . 'admins');
+		$base_url = ee('CP/URL', $this->base . 'admins/' . $board_id);
 
 		$vars = array(
 			'cp_page_title'   => lang('administrators'),
@@ -2696,6 +2701,38 @@ class Forum_mcp extends CP_Controller {
 		}
 
 		return $result;
+	}
+
+	private function removeAdmins($ids)
+	{
+		if ( ! is_array($ids))
+		{
+			$ids = array($ids);
+		}
+
+		$admins = ee('Model')->get('forum:Administrator', $ids)->all();
+
+		$forum_names = $admins->map(function($admin) {
+			return $admin->getAdminName();
+		});
+
+		$admins->delete();
+
+		ee('Alert')->makeInline('entries-form')
+			->asSuccess()
+			->withTitle(lang('admins_removed'))
+			->addToBody(lang('admins_removed_desc'))
+			->addToBody($forum_names)
+			->defer();
+
+		$return = ee('CP/URL', $this->base);
+
+		if (ee()->input->get_post('return'))
+		{
+			$return = base64_decode(ee()->input->get_post('return'));
+		}
+
+		ee()->functions->redirect($return);
 	}
 
 	// --------------------------------------------------------------------

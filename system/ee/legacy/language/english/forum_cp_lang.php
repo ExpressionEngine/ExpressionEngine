@@ -279,7 +279,7 @@ $lang = array(
 'edit_forum_error' => 'Cannot Update Forum',
 'edit_forum_error_desc' => 'We were unable to update this forum, please review and fix errors below.',
 
-'forum_board_removed' => 'Forum Removed',
+'forum_board_removed' => 'Forums Removed',
 'forum_board_removed_desc' => 'The following forums were removed',
 
 // Category Permissions
@@ -373,6 +373,9 @@ $lang = array(
 
 'invalid_member_group' => 'The member group you submitted does not appear to be valid',
 'invalid_username' => 'The username you submitted does not appear to be valid',
+
+'fadmins_removed' => 'Administrators Removed',
+'fadmins_removed_desc' => 'The following administrators were removed',
 
 // Moderators
 
