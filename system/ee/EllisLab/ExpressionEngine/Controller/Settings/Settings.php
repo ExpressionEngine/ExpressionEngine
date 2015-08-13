@@ -48,49 +48,51 @@ class Settings extends CP_Controller {
 		ee()->load->library('form_validation');
 		ee()->load->model('addons_model');
 
-		// Build Content & Design here so we can conditionally insert
-		// Pages Settings link
-		$content_design = array(
-			'comment_settings' => ee('CP/URL', 'settings/comments'),
-			'template_settings' => ee('CP/URL', 'settings/template')
-		);
-
-		// Insert the Pages Settings here if Pages module is installed
-		if (ee()->addons_model->module_installed('pages'))
-		{
-			$content_design['pages_settings'] = ee('CP/URL', 'settings/pages');
-		}
-
-		$content_design += array(
-			'word_censoring' => ee('CP/URL', 'settings/word-censor')
-		);
-
-		// Register our menu
-		ee()->menu->register_left_nav(array(
-			'general_settings' => ee('CP/URL', 'settings/general'),
-			array(
-				'license_and_reg' => ee('CP/URL', 'settings/license'),
-				'url_path_settings' => ee('CP/URL', 'settings/urls'),
-				'outgoing_email' => ee('CP/URL', 'settings/email'),
-				'debugging_output' => ee('CP/URL', 'settings/debug-output')
-			),
-			'content_and_design' => ee('CP/URL', 'settings/content-design'),
-			$content_design,
-			'members' => ee('CP/URL', 'settings/members'),
-			array(
-				'messages' => ee('CP/URL', 'settings/messages'),
-				'avatars' => ee('CP/URL', 'settings/avatars')
-			),
-			'security_privacy' => ee('CP/URL', 'settings/security-privacy'),
-			array(
-				'access_throttling' => ee('CP/URL', 'settings/throttling'),
-				'captcha' => ee('CP/URL', 'settings/captcha')
-			),
-		));
+		$this->generateSidebar();
 
 		ee()->view->header = array(
 			'title' => lang('system_settings'),
 		);
+	}
+
+	protected function generateSidebar($active = NULL)
+	{
+		$sidebar = ee('Sidebar')->make();
+
+		$list = $sidebar->addHeader(lang('general_settings'), ee('CP/URL', 'settings/general'))
+			->addBasicList();
+
+		$list->addItem(lang('license_and_reg'), ee('CP/URL', 'settings/license'));
+		$list->addItem(lang('url_path_settings'), ee('CP/URL', 'settings/urls'));
+		$list->addItem(lang('outgoing_email'), ee('CP/URL', 'settings/email'));
+		$list->addItem(lang('debugging_output'), ee('CP/URL', 'settings/debug-output'));
+
+		$list = $sidebar->addHeader(lang('content_and_design'), ee('CP/URL', 'settings/content-design'))
+			->addBasicList();
+
+		$list->addItem(lang('comment_settings'), ee('CP/URL', 'settings/comments'));
+		$list->addItem(lang('template_settings'), ee('CP/URL', 'settings/template'));
+
+		if (ee()->addons_model->module_installed('pages'))
+		{
+			$list->addItem(lang('pages_settings'), ee('CP/URL', 'settings/pages'));
+		}
+
+		$list->addItem(lang('word_censoring'), ee('CP/URL', 'settings/word-censor'));
+
+		$list = $sidebar->addHeader(lang('members'), ee('CP/URL', 'settings/members'))
+			->addBasicList();
+
+		$list->addItem(lang('messages'), ee('CP/URL', 'settings/messages'));
+		$list->addItem(lang('avatars'), ee('CP/URL', 'settings/avatars'));
+
+		$list = $sidebar->addHeader(lang('security_privacy'), ee('CP/URL', 'settings/security-privacy'))
+			->addBasicList();
+
+		$list->addItem(lang('access_throttling'), ee('CP/URL', 'settings/throttling'));
+		$list->addItem(lang('captcha'), ee('CP/URL', 'settings/captcha'));
+
+		ee()->menu->register_left_nav($sidebar);
 	}
 
 	/**
