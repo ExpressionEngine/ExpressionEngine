@@ -47,6 +47,10 @@ class FolderList {
 	 */
 	protected $removal_key = 'id';
 
+	/**
+	 * @var string $no_results The text to display when the list(s) are empty.
+	 */
+	protected $no_results = '';
 
 	/**
 	 * Constructor: sets the name of the list
@@ -68,6 +72,19 @@ class FolderList {
 	public function withRemoveUrl($url)
 	{
 		$this->remove_url = $url;
+		return $this;
+	}
+
+	/**
+	 * Sets the no results text which will display if this header's list(s) are
+	 * empty.
+	 *
+	 * @param string $msg The text to display when the list(s) are empty.
+	 * @return self This returns a reference to itself
+	 */
+	public function withNoResultsText($msg)
+	{
+		$this->no_results = $msg;
 		return $this;
 	}
 
@@ -102,6 +119,11 @@ class FolderList {
 		foreach ($this->items as $item)
 		{
 			$items .= $item->render($view);
+		}
+
+		if (empty($items) && $this->no_results)
+		{
+			$items = '<li class="no-results">' . $this->no_results . '</li>';
 		}
 
 		return $view->make('_shared/sidebar/folder_list')
