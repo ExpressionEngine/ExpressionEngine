@@ -370,7 +370,7 @@ class Filepicker_mcp {
 				->now();
 		}
 
-		ee()->view->cp_page_title = lang('file_upload');
+		$vars['cp_page_title'] = lang('file_upload');
 
 		$out = ee()->cp->render('_shared/form', $vars, TRUE);
 		ee()->output->_display($out);
