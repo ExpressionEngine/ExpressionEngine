@@ -107,7 +107,7 @@
 								$entry->Channel->cat_group &&
 								ee()->cp->allowed_group('can_edit_categories')): ?>
 							<p><a class="btn action submit m-link" rel="modal-add-category" data-cat-group="<?=$field->get('cat_group_id')?>" href="#"><?=lang('btn_add_category')?></a></p>
-						<?php $this->startOrAppendBlock('modals'); ?>
+						<?php ee('CP/Modal')->startModal('add-category'); ?>
 
 						<div class="modal-wrap modal-add-category hidden">
 							<div class="modal">
@@ -121,7 +121,7 @@
 							</div>
 						</div>
 
-						<?php $this->endBlock(); ?>
+						<?php ee('CP/Modal')->endModal(); ?>
 						<?php endif; ?>
 					</div>
 					<div class="setting-field col <?=$width?> last">

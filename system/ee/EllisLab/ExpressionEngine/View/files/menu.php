@@ -27,22 +27,19 @@
 	</div>
 </div>
 
-<?php if ($can_admin_upload_prefs): ?>
-<?php $this->startOrAppendBlock('modals'); ?>
-
 <?php
+if ($can_admin_upload_prefs)
+{
+	$modal_vars = array(
+		'name'     => 'modal-confirm-remove-directory',
+		'form_url' => ee('CP/URL', 'files/rmdir'),
+		'hidden'   => array(
+			'return' => base64_encode(ee()->cp->get_safe_refresh()),
+			'dir_id' => '',
+		)
+	);
 
-$modal_vars = array(
-	'name'     => 'modal-confirm-remove-directory',
-	'form_url' => ee('CP/URL', 'files/rmdir'),
-	'hidden'   => array(
-		'return' => base64_encode(ee()->cp->get_safe_refresh()),
-		'dir_id' => '',
-	)
-);
-
-$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
+	$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+	ee('CP/Modal')->addModal('remove-directory', $modal);
+}
 ?>
-
-<?php $this->endBlock(); ?>
-<?php endif; ?>
