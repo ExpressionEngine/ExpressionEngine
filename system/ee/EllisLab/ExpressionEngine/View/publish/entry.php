@@ -56,12 +56,14 @@
 		</ul>
 		<?=form_open($form_url, $form_attributes, (isset($form_hidden)) ? $form_hidden : array())?>
 			<?=ee('Alert')->getAllInlines()?>
-			<fieldset class="form-ctrls top">
-				<?php if ($entry->Channel->enable_versioning): ?>
-				<input class="btn draft" type="submit" name="save_revision" value="<?=lang('btn_save_revision')?>">
-				<?php endif; ?>
-				<?=cp_form_submit($button_text, lang('btn_saving'))?>
-			</fieldset>
+			<?php if ($extra_publish_controls): ?>
+				<fieldset class="form-ctrls top">
+					<?php if ($entry->Channel->enable_versioning): ?>
+					<input class="btn draft" type="submit" name="save_revision" value="<?=lang('btn_save_revision')?>">
+					<?php endif; ?>
+					<?=cp_form_submit($button_text, lang('btn_saving'))?>
+				</fieldset>
+			<?php endif ?>
 			<?php foreach ($layout->getTabs() as $index => $tab): ?>
 			<?php if ( ! $tab->isVisible()) continue; ?>
 			<div class="tab t-<?=$index?><?php if ($index == 0): ?> tab-open<?php endif; ?>">

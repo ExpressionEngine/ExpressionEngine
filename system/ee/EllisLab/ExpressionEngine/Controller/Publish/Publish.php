@@ -112,7 +112,8 @@ class Publish extends AbstractPublishController {
 			'form_attributes' => $form_attributes,
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
 			'button_text' => lang('btn_publish'),
-			'revisions' => $this->getRevisionsTable($entry)
+			'revisions' => $this->getRevisionsTable($entry),
+			'extra_publish_controls' => $channel->extra_publish_controls
 		);
 
 		if ($autosave_id)
