@@ -279,6 +279,9 @@ $lang = array(
 'edit_forum_error' => 'Cannot Update Forum',
 'edit_forum_error_desc' => 'We were unable to update this forum, please review and fix errors below.',
 
+'forum_board_removed' => 'Forum Removed',
+'forum_board_removed_desc' => 'The following forums were removed',
+
 // Category Permissions
 
 'category_permissions' => '%s Permissions',

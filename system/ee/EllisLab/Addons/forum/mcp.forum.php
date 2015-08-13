@@ -113,6 +113,11 @@ class Forum_mcp extends CP_Controller {
 	 */
 	public function index($id = NULL)
 	{
+		if (ee()->input->post('bulk_action') == 'remove')
+		{
+			$this->removeForums(ee()->input->post('selection'));
+		}
+
 		$board = ee('Model')->get('forum:Board', $id)
 			->order('board_id', 'asc')
 			->first();
@@ -335,11 +340,14 @@ class Forum_mcp extends CP_Controller {
 	 */
 	public function remove($type)
 	{
-		$method = 'remove' . ucfirst($type);
-
-		if (method_exists($this, $method))
+		if ( ! empty($_POST))
 		{
-			return $this->$method(ee()->input->post('id'));
+			$method = 'remove' . ucfirst($type);
+
+			if (method_exists($this, $method))
+			{
+				return $this->$method(ee()->input->post('id'));
+			}
 		}
 
 		show_404();
@@ -2096,6 +2104,37 @@ class Forum_mcp extends CP_Controller {
 			'sidebar'    => $this->generateSidebar($forum->Board->board_id)
 		);
 	}
+
+	private function removeForums($ids)
+	{
+		if ( ! is_array($ids))
+		{
+			$ids = array($ids);
+		}
+
+		$forums = ee('Model')->get('forum:Forum', $ids)->all();
+
+		$forum_names = $forums->pluck('forum_name');
+
+		$forums->delete();
+
+		ee('Alert')->makeInline('entries-form')
+			->asSuccess()
+			->withTitle(lang('forums_removed'))
+			->addToBody(lang('forums_removed_desc'))
+			->addToBody($forum_names)
+			->defer();
+
+		$return = ee('CP/URL', $this->base);
+
+		if (ee()->input->get_post('return'))
+		{
+			$return = base64_decode(ee()->input->get_post('return'));
+		}
+
+		ee()->functions->redirect($return);
+	}
+
 
 	// --------------------------------------------------------------------
 
