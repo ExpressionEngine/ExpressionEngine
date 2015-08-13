@@ -412,6 +412,9 @@ $lang = array(
 'edit_moderator_error' => 'Cannot Update Moderator',
 'edit_moderator_error_desc' => 'We were unable to update this moderator, please review and fix errors below.',
 
+'moderator_removed' => 'Moderator Removed',
+'moderator_removed_desc' => 'The moderator <b>%s</b> was removed.',
+
 ''=>''
 );
 

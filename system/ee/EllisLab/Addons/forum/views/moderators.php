@@ -29,7 +29,7 @@
 
 $modal_vars = array(
 	'name'		=> 'modal-confirm-moderators',
-	'form_url'	=> ee('CP/URL', $this->base . 'remove/moderator'),
+	'form_url'	=> $remove_url,
 	'hidden'	=> array(
 		'id' => ''
 	)

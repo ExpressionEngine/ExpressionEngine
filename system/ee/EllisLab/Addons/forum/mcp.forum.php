@@ -228,7 +228,7 @@ class Forum_mcp extends CP_Controller {
 			'file' => array(
 				'cp/v3/confirm_remove',
 				'cp/sort_helper',
-				'cp/addons/forums_reorder',
+				'cp/addons/forums/reorder',
 			),
 			'plugin' => array(
 				'ee_table_reorder',
@@ -319,6 +319,21 @@ class Forum_mcp extends CP_Controller {
 		if (method_exists($this, $method))
 		{
 			return call_user_func_array(array($this, $method), $parameters);
+		}
+
+		show_404();
+	}
+
+	/**
+	 * Dispatch method for the various things that can be edit
+	 */
+	public function remove($type)
+	{
+		$method = 'remove' . ucfirst($type);
+
+		if (method_exists($this, $method))
+		{
+			return $this->$method(ee()->input->post('id'));
 		}
 
 		show_404();
@@ -2694,13 +2709,14 @@ class Forum_mcp extends CP_Controller {
 			'board' => $board,
 			'categories' => $categories,
 			'base_url' => $base_url,
+			'remove_url' => ee('CP/URL', $this->base . 'remove/moderator'),
 		);
 
 		$body = ee('View')->make('forum:moderators')->render($vars);
 
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/addons/forums/moderators',
 			),
 		));
 
@@ -3012,7 +3028,26 @@ class Forum_mcp extends CP_Controller {
 
 	private function removeModerator($id)
 	{
+		$moderator = ee('Model')->get('forum:Moderator', $id)->first();
 
+		$board_id = $moderator->board_id;
+
+		if ( ! $moderator)
+		{
+			show_404();
+		}
+
+		$name = $moderator->getModeratorName();
+
+		$moderator->delete();
+
+		ee('Alert')->makeInline('entries-form')
+			->asSuccess()
+			->withTitle(lang('moderator_removed'))
+			->addToBody(sprintf(lang('moderator_removed_desc'), $name))
+			->defer();
+
+		ee()->functions->redirect(ee('CP/URL', $this->base . 'moderators/' . $board_id));
 	}
 
 	// --------------------------------------------------------------------
