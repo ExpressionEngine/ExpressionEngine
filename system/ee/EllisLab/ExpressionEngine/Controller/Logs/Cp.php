@@ -31,6 +31,16 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class Cp extends Logs {
 
 	/**
+	 * Constructor
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+
+		$this->generateSidebar('cp');
+	}
+
+	/**
 	 * View Control Panel Log Files
 	 *
 	 * Shows the control panel action log

@@ -33,6 +33,16 @@ use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 class Search extends Logs {
 
 	/**
+	 * Constructor
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+
+		$this->generateSidebar('search');
+	}
+
+	/**
 	 * View Search Log
 	 *
 	 * Shows a log of recent search terms

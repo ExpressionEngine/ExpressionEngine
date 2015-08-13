@@ -33,6 +33,16 @@ use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 class Email extends Logs {
 
 	/**
+	 * Constructor
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+
+		$this->generateSidebar('email');
+	}
+
+	/**
 	 * View Email Log
 	 *
 	 * Displays emails logged

@@ -53,35 +53,11 @@ class Logs extends CP_Controller {
 
 		$this->base_url = ee('CP/URL', 'logs');
 
-		// Sidebar Menu
-		$menu = array(
-			'logs',
-			array(
-				'developer_log' => ee('CP/URL', 'logs/developer'),
-				'cp_log'        => ee('CP/URL', 'logs/cp'),
-				'throttle_log'  => ee('CP/URL', 'logs/throttle'),
-				'email_log'     => ee('CP/URL', 'logs/email'),
-				'search_log'    => ee('CP/URL', 'logs/search'),
-			)
-		);
-
 		$this->search_installed = ee('Model')->get('Module')
 			->filter('module_name', 'Search')
 			->first();
 
 		$this->search_installed = ! is_null($this->search_installed);
-
-		if ( ! $this->search_installed)
-		{
-			unset($menu[1]['search_log']);
-		}
-
-		if (ee()->session->userdata('group_id') != 1)
-		{
-			unset($menu[1]['developer_log']);
-		}
-
-		ee()->menu->register_left_nav($menu);
 
 		$this->params['perpage'] = $this->perpage; // Set a default
 
@@ -93,7 +69,51 @@ class Logs extends CP_Controller {
 		}
 	}
 
-	// --------------------------------------------------------------------
+	protected function generateSidebar($active = NULL)
+	{
+		$sidebar = ee('Sidebar')->make();
+		$logs = $sidebar->addHeader(lang('logs'))
+			->addBasicList();
+
+		if (ee()->session->userdata('group_id') == 1)
+		{
+			$item = $logs->addItem(lang('developer_log'), ee('CP/URL', 'logs/developer'));
+			if ($active == 'developer')
+			{
+				$item->isActive();
+			}
+		}
+
+		$item = $logs->addItem(lang('cp_log'), ee('CP/URL', 'logs/cp'));
+		if ($active == 'cp')
+		{
+			$item->isActive();
+		}
+
+		$item = $logs->addItem(lang('throttle_log'), ee('CP/URL', 'logs/throttle'));
+		if ($active == 'throttle')
+		{
+			$item->isActive();
+		}
+
+		$item = $logs->addItem(lang('email_log'), ee('CP/URL', 'logs/email'));
+		if ($active == 'email')
+		{
+			$item->isActive();
+		}
+
+		if ($this->search_installed)
+		{
+			$item = $logs->addItem(lang('search_log'), ee('CP/URL', 'logs/search'));
+			if ($active == 'search')
+			{
+				$item->isActive();
+			}
+		}
+
+		ee()->menu->register_left_nav($sidebar);
+	}
+
 
 	/**
 	 * Index function

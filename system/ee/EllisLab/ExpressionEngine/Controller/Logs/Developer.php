@@ -33,6 +33,16 @@ use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
 class Developer extends Logs {
 
 	/**
+	 * Constructor
+	 */
+	public function __construct()
+	{
+		parent::__construct();
+
+		$this->generateSidebar('developer');
+	}
+
+	/**
 	 * Shows Developer Log page
 	 *
 	 * @access public
