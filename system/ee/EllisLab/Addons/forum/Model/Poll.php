@@ -45,7 +45,8 @@ class Poll extends Model {
 		'Author' => array(
 			'type'     => 'belongsTo',
 			'model'    => 'ee:Member',
-			'from_key' => 'author_id'
+			'from_key' => 'author_id',
+			'weak'     => TRUE
 		),
 		'PollVotes' => array(
 			'type'  => 'hasMany',

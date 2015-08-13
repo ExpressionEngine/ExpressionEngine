@@ -62,7 +62,8 @@ class Topic extends Model {
 		'Author' => array(
 			'type'     => 'belongsTo',
 			'model'    => 'ee:Member',
-			'from_key' => 'author_id'
+			'from_key' => 'author_id',
+			'weak'     => TRUE
 		),
 		'Board' => array(
 			'type' => 'belongsTo'
@@ -71,7 +72,8 @@ class Topic extends Model {
 			'type'     => 'belongsTo',
 			'from_key' => 'topic_edit_author',
 			'to_key'   => 'member_id',
-			'model'    => 'ee:Member'
+			'model'    => 'ee:Member',
+			'weak'     => TRUE
 		),
 		'Forum' => array(
 			'type' => 'belongsTo'
@@ -87,6 +89,7 @@ class Topic extends Model {
 			'model'    => 'ee:Member',
 			'from_key' => 'last_post_author_id',
 			'to_key'   => 'member_id',
+			'weak'     => TRUE
 		),
 		'Polls' => array(
 			'type'  => 'hasMany',

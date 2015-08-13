@@ -62,13 +62,15 @@ class Moderator extends Model {
 			'type'     => 'hasOne',
 			'model'    => 'ee:Member',
 			'from_key' => 'mod_member_id',
-			'to_key'   => 'member_id'
+			'to_key'   => 'member_id',
+			'weak'     => TRUE
 		),
 		'MemberGroup' => array(
 			'type'     => 'hasOne',
 			'model'    => 'ee:MemberGroup',
 			'from_key' => 'mod_group_id',
-			'to_key'   => 'group_id'
+			'to_key'   => 'group_id',
+			'weak'     => TRUE
 		),
 	);
 
