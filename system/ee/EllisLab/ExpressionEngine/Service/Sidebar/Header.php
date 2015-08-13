@@ -33,6 +33,11 @@ class Header {
 	protected $text;
 
 	/**
+	 * @var string $class The class of the header
+	 */
+	protected $class = '';
+
+	/**
 	 * @var URL|string $url The URL to use as an href attribute
 	 */
 	protected $url;
@@ -73,6 +78,17 @@ class Header {
 	public function withUrl($url)
 	{
 		$this->url = $url;
+		return $this;
+	}
+
+	/**
+	 * Marks the header as active
+	 *
+	 * @return self This returns a reference to itself
+	 */
+	public function isActive()
+	{
+		$this->class .= 'act ';
 		return $this;
 	}
 
@@ -128,6 +144,7 @@ class Header {
 	{
 		$vars = array(
 			'text' => $this->text,
+			'class' => $this->class,
 			'url' => $this->url,
 			'button' => $this->button
 		);
