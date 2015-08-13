@@ -101,8 +101,8 @@
 				<fieldset class="<?=$field_class?><?php if ($field->getStatus() == 'warning') echo ' warned'; ?><?php if ($errors->hasErrors($field->getName())) echo ' invalid'; ?><?php if ($field->isRequired()) echo ' required'; ?>">
 				<?php endif; ?>
 					<div class="setting-txt col <?=$width?>">
-						<h3><span class="ico sub-arrow"></span><?=$field->getLabel()?></h3>
-						<em><?=$field->getInstructions()?></em>
+						<h3<?php if ($field->isCollapsed()) echo ' class="field-closed"';?>><span class="ico sub-arrow"></span><?=$field->getLabel()?></h3>
+						<em<?php if ($field->isCollapsed()) echo ' style="display: none;"';?>><?=$field->getInstructions()?></em>
 						<?php if ($field->get('field_id') == 'categories' &&
 								$entry->Channel->cat_group &&
 								ee()->cp->allowed_group('can_edit_categories')): ?>
@@ -124,7 +124,7 @@
 						<?php ee('CP/Modal')->endModal(); ?>
 						<?php endif; ?>
 					</div>
-					<div class="setting-field col <?=$width?> last">
+					<div class="setting-field col <?=$width?> last"<?php if ($field->isCollapsed()) echo ' style="display: none;"';?>>
 					<?php if ($field->get('field_id') == 'revisions'): ?>
 						<?=$revisions?>
 					<?php else: ?>
