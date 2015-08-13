@@ -36,6 +36,11 @@ class FieldFacade {
 		return $this->field_name;
 	}
 
+	public function getShortName()
+	{
+		return $this->getItem('field_name') ?: $this->getName();
+	}
+
 	public function setContentId($id)
 	{
 		$this->content_id = $id;
