@@ -91,8 +91,6 @@ class Settings extends CP_Controller {
 
 		$list->addItem(lang('access_throttling'), ee('CP/URL', 'settings/throttling'));
 		$list->addItem(lang('captcha'), ee('CP/URL', 'settings/captcha'));
-
-		ee()->menu->register_left_nav($sidebar);
 	}
 
 	/**

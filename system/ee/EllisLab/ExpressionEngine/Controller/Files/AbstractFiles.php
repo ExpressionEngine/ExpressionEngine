@@ -107,7 +107,6 @@ abstract class AbstractFiles extends CP_Controller {
 			}
 		}
 
-		ee()->menu->register_left_nav($sidebar);
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/files/menu'),
 		));

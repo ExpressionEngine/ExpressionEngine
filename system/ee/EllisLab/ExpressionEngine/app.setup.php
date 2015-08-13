@@ -112,12 +112,6 @@ return array(
 			return $frontend;
 		},
 
-		'Sidebar' => function($ee)
-		{
-			$view = $ee->make('View');
-			return new Sidebar\Sidebar($view);
-		},
-
 		'Thumbnail' => function($ee)
 		{
 			return new Thumbnail\ThumbnailFactory();
@@ -191,6 +185,12 @@ return array(
 		'Security/XSS' => function($ee)
 		{
 			return new Library\Security\XSS();
+		},
+
+		'Sidebar' => function($ee)
+		{
+			$view = $ee->make('View');
+			return new Sidebar\Sidebar($view);
 		},
 
 		'Validation' => function($ee)

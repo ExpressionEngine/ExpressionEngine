@@ -80,8 +80,6 @@ class Members extends CP_Controller {
 			->withButton(lang('new'), ee('CP/URL', 'members/groups/create'))
 			->addBasicList()
 				->addItem(lang('custom_member_fields'), ee('CP/URL', 'members/fields'));
-
-		ee()->menu->register_left_nav($sidebar);
 	}
 
 	/**

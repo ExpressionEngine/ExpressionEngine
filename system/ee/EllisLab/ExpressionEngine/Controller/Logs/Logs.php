@@ -110,8 +110,6 @@ class Logs extends CP_Controller {
 				$item->isActive();
 			}
 		}
-
-		ee()->menu->register_left_nav($sidebar);
 	}
 
 

@@ -73,8 +73,6 @@ class Msm extends CP_Controller {
 		{
 			$sites->addItem($site->site_label, ee('CP/URL', 'msm/switch_to/' . $site->site_id, array('page' => $site_backlink)));
 		}
-
-		ee()->menu->register_left_nav($sidebar);
 	}
 
 	protected function stdHeader()

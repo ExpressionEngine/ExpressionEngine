@@ -86,8 +86,6 @@ abstract class AbstractChannels extends CP_Controller {
 
 		$sidebar->addHeader(lang('status_groups'), ee('CP/URL', 'channels/status'))
 			->withButton(lang('new'), ee('CP/URL', 'channels/status/create'));
-
-		ee()->menu->register_left_nav($sidebar);
 	}
 
 	/**

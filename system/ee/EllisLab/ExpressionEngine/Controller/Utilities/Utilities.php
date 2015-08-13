@@ -105,8 +105,6 @@ class Utilities extends CP_Controller {
 		$data_list->addItem(lang('cache_manager'), ee('CP/URL', 'utilities/cache'));
 		$data_list->addItem(lang('statistics'), ee('CP/URL', 'utilities/stats'));
 		$data_list->addItem(lang('search_and_replace'), ee('CP/URL', 'utilities/sandr'));
-
-		ee()->menu->register_left_nav($sidebar);
 	}
 
 	/**

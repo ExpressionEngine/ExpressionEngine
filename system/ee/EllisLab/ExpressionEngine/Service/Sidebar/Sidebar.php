@@ -69,6 +69,11 @@ class Sidebar {
 			$output .= $header->render($this->view);
 		}
 
+		if (empty($output))
+		{
+			return '';
+		}
+
 		return $this->view->make('_shared/sidebar/sidebar')
 			     ->render(array('sidebar' => $output));
 	}
