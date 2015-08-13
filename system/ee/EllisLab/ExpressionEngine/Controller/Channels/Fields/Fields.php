@@ -48,7 +48,7 @@ class Fields extends AbstractChannelsController {
 		ee()->lang->loadfile('admin_content');
 	}
 
-	public function fields()
+	public function fields($id)
 	{
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
@@ -62,27 +62,10 @@ class Fields extends AbstractChannelsController {
 			'create_url' => ee('CP/URL', 'channels/fields/create')
 		);
 
-		$groups = ee('Model')->get('ChannelFieldGroup')
-			->filter('site_id', ee()->config->item('site_id'))
-			->order('group_name')
-			->all();
-
-		$group_filter = ee('Filter')->make('filter_by_group', 'filter_by_group', $groups->getDictionary('group_id', 'group_name'))
-			->disableCustomValue();
-
-		$filters = ee('Filter')->add($group_filter);
 
 		$fields = ee('Model')->get('ChannelField')
-			->filter('site_id', ee()->config->item('site_id'));
-
-		if ( ! is_null($group_filter->value()))
-		{
-			$fields->filter('group_id', $group_filter->value());
-		}
-
-		$vars['filters'] = $filters->render($base_url);
-
-		$base_url->addQueryStringVariables($filters->values());
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('group_id', $id);
 
 		$table = $this->buildTableFromChannelFieldsQuery($fields);
 
