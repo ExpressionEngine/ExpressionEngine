@@ -77,8 +77,13 @@ class Forum_mcp extends CP_Controller {
 		$sidebar->addHeader(lang('templates'))
 			->withUrl(ee('CP/URL', 'design/forum'));
 
-		$sidebar->addHeader(lang('member_ranks'))
+		$ranks = $sidebar->addHeader(lang('member_ranks'))
 			->withUrl(ee('CP/URL', $this->base . 'ranks'));
+
+		if ($active == 'ranks')
+		{
+			$ranks->isActive();
+		}
 
 		return $sidebar;
 	}
@@ -2135,7 +2140,7 @@ class Forum_mcp extends CP_Controller {
 		return array(
 			'body'    => $body,
 			'heading' => lang('member_ranks'),
-			'sidebar' => $this->generateSidebar()
+			'sidebar' => $this->generateSidebar('ranks')
 		);
 	}
 
