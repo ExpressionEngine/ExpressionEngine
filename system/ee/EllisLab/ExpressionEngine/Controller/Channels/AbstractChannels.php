@@ -72,9 +72,6 @@ abstract class AbstractChannels extends CP_Controller {
 					'text' => 'new'
 				)
 			),
-			array(
-				'custom_fields' => ee('CP/URL', 'channels/fields')
-			),
 			'category_groups' => array(
 				'href' => ee('CP/URL', 'channels/cat'),
 				'button' => array(
