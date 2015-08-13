@@ -10,6 +10,7 @@ use EllisLab\ExpressionEngine\Service\Database;
 use EllisLab\ExpressionEngine\Service\EntryListing;
 use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\Grid;
+use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Validation;
 use EllisLab\ExpressionEngine\Service\View;
@@ -145,6 +146,11 @@ return array(
 		'Captcha' => function($ee)
 		{
 			return new Library\Captcha();
+		},
+
+		'CP/Modal' => function($ee)
+		{
+			return new Modal\ModalCollection;
 		},
 
 		'Config' => function($ee)
