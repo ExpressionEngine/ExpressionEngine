@@ -309,10 +309,31 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 * @access	public
 * @return	void
 */
-	function show_error($message, $status_code = 500, $heading = 'An Error Was Encountered')
+	function show_error($message, $status_code = 500, $heading = 'Error')
 	{
-		$_error =& load_class('Exceptions', 'core');
+		$_error = load_class('Exceptions', 'core');
 		echo $_error->show_error($heading, $message, 'error_general', $status_code);
+		exit;
+	}
+
+// ------------------------------------------------------------------------
+
+/**
+* Exception Handler
+*
+* This function lets us invoke the exception class and
+* display errors using the standard error template located
+* in application/errors/errors.php
+* This function will send the error page directly to the
+* browser and exit.
+*
+* @access	public
+* @return	void
+*/
+	function show_exception(\Exception $e, $status_code = 500)
+	{
+		$_error = load_class('Exceptions', 'core');
+		echo $_error->show_exception($e, $status_code);
 		exit;
 	}
 
@@ -330,7 +351,7 @@ use EllisLab\ExpressionEngine\Library\Filesystem\Filesystem;
 */
 	function show_404($page = '', $log_error = TRUE)
 	{
-		$_error =& load_class('Exceptions', 'core');
+		$_error = load_class('Exceptions', 'core');
 		$_error->show_404($page, $log_error);
 		exit;
 	}
@@ -475,7 +496,7 @@ if ( ! function_exists('log_message'))
 			return;
 		}
 
-		$_error =& load_class('Exceptions', 'core');
+		$_error = load_class('Exceptions', 'core');
 
 		// Should we display the error? We'll get the current error_reporting
 		// level and add its bits with the severity bits to find out.
@@ -484,13 +505,11 @@ if ( ! function_exists('log_message'))
 			$_error->show_php_error($severity, $message, $filepath, $line);
 		}
 
-		// Should we log the error?  No?  We're done...
-		if (config_item('log_threshold') == 0)
+		// Should we log the error?
+		if (config_item('log_threshold') > 0)
 		{
-			return;
+			$_error->log_exception($severity, $message, $filepath, $line);
 		}
-
-		$_error->log_exception($severity, $message, $filepath, $line);
 	}
 
 	// --------------------------------------------------------------------
