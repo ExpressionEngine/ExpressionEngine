@@ -63,7 +63,7 @@ return array(
 			$session_id = $session_id ?: ee()->session->session_id();
 			$cp_url = (empty($cp_url)) ? SELF : (string) $cp_url;
 
-			return new Library\CP\URL($path, $session_id, $qs, $cp_url);
+			return new Library\CP\URL($path, $session_id, $qs, $cp_url, ee()->uri->uri_string);
 		},
 
 		'CP/Pagination' => function($ee, $total_count)
