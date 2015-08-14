@@ -32,11 +32,17 @@ class ModalCollection {
 	 */
 	private $modals = array();
 
+	/**
+	 * @var array An indexed array for storing the names of modals consumed via
+	 * startModal() and endModal()
+	 */
 	private $modalStack = array();
 
 	/**
 	 * Adds a named modal to the collection
 	 *
+	 * @param str $name The name of the modal
+	 * @param str $data The contents of the modal
 	 * @return self This returns a reference to itself
 	 */
 	public function addModal($name, $data)
@@ -81,6 +87,7 @@ class ModalCollection {
 	/**
 	 * Gets a named modal from the collection
 	 *
+	 * @param str $name The name of the modal
 	 * @return mixed The data stored for the named modal
 	 */
 	public function getModal($name)
