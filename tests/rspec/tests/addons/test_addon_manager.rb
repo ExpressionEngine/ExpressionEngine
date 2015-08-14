@@ -410,7 +410,7 @@ feature 'Add-On Manager' do
 
 		before(:each, :install => true) do
 			@page.third_party_checkbox_header.find('input[type="checkbox"]').set true
-			@page.wait_until_first_party_bulk_action_visible
+			@page.wait_until_third_party_bulk_action_visible
 			@page.third_party_bulk_action.select "Install"
 			@page.third_party_action_submit_button.click
 			no_php_js_errors
@@ -682,7 +682,7 @@ feature 'Add-On Manager' do
 				addons = @page.third_party_addon_names.map {|addon| addon.text}
 
 				@page.third_party_checkbox_header.find('input[type="checkbox"]').set true
-				@page.wait_until_first_party_bulk_action_visible
+				@page.wait_until_third_party_bulk_action_visible
 				@page.third_party_bulk_action.select "Install"
 				@page.third_party_action_submit_button.click
 				no_php_js_errors
@@ -705,7 +705,7 @@ feature 'Add-On Manager' do
 
 				# Header at 0, first "real" row is 1
 				@page.third_party_addons[0].find('input[type="checkbox"]').set true
-				@page.wait_until_first_party_bulk_action_visible
+				@page.wait_until_third_party_bulk_action_visible
 				@page.third_party_bulk_action.select "Remove"
 				@page.third_party_action_submit_button.click
 
@@ -724,7 +724,7 @@ feature 'Add-On Manager' do
 				no_php_js_errors
 
 				@page.third_party_checkbox_header.find('input[type="checkbox"]').set true
-				@page.wait_until_first_party_bulk_action_visible
+				@page.wait_until_third_party_bulk_action_visible
 				@page.third_party_bulk_action.select "Remove"
 				@page.third_party_action_submit_button.click
 
@@ -743,7 +743,7 @@ feature 'Add-On Manager' do
 
 				addons = @page.third_party_addon_names.map {|addon| addon.text}
 				@page.third_party_checkbox_header.find('input[type="checkbox"]').set true
-				@page.wait_until_first_party_bulk_action_visible
+				@page.wait_until_third_party_bulk_action_visible
 				@page.third_party_bulk_action.select "Remove"
 				@page.third_party_action_submit_button.click
 				@page.wait_until_modal_visible
