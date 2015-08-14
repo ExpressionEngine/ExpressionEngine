@@ -63,6 +63,11 @@ class Profile extends CP_Controller {
 		$this->base_url->setQueryStringVariable('id', $id);
 		$this->member = ee()->api->get('Member')->filter('member_id', $id)->first();
 
+		if (is_null($this->member))
+		{
+			show_404();
+		}
+
 		ee()->lang->loadfile('members');
 		ee()->lang->loadfile('myaccount');
 		ee()->load->model('member_model');
