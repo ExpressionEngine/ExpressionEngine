@@ -3,7 +3,9 @@
 	$class = ($class == 'warning') ? 'warn' : $class;
 ?>
 
+<script>
 <?php echo file_get_contents(__DIR__.'/error_toggle.js') ?>
+</script>
 
 <div class="err-wrap <?php echo $class ?>" onclick="return err_toggle(this)">
 	<h1><?php echo $error_category ?></h1>

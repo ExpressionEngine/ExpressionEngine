@@ -1,4 +1,4 @@
-<script>
+
 var err_toggle = err_toggle || function(el) {
 	var toggleElement = el.querySelector('.details');
 	var visible = +toggleElement.getAttribute('data-toggle');
@@ -11,4 +11,3 @@ var err_toggle = err_toggle || function(el) {
 
 	return false;
 };
-</script>
