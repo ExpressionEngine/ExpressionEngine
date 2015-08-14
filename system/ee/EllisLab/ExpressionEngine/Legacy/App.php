@@ -116,7 +116,7 @@ class App {
 		{
 			return (
 				$routing['directory'] == 'cp/'
-			 && ($routing['class'] == 'css' || $routing['class'] == 'javascript')
+			 && in_array($routing['class'], array('css', 'javascript', 'login'))
 			);
 		}
 
