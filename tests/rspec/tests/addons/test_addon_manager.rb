@@ -86,7 +86,7 @@ feature 'Add-On Manager' do
 			@page.first_party_status_filter.text.should eq "status (installed)"
 			@page.should_not have_css 'tr.not-installed'
 			@page.should_not have_first_party_pagination
-			@page.should have(17).first_party_addons
+			@page.should have(5).first_party_addons
 
 			# By uninstalled
 			@page.first_party_status_filter.click
@@ -123,7 +123,7 @@ feature 'Add-On Manager' do
 			@page.first_party_status_filter.text.should eq "status (installed)"
 			@page.should_not have_css 'tr.not-installed'
 			@page.should_not have_first_party_pagination
-			@page.should have(17).first_party_addons
+			@page.should have(5).first_party_addons
 
 			versions = @page.first_party_versions.map {|version| version.text}
 
@@ -160,7 +160,7 @@ feature 'Add-On Manager' do
 
 			@page.first_party_version_header[:class].should eq 'highlight'
 			sorted_versions = @page.first_party_versions.map {|version| version.text}
-			sorted_versions[-1].should == '1.0'
+			sorted_versions[-1].should == '1.0.1'
 		end
 
 		it 'retains filters on searching' do
@@ -323,22 +323,22 @@ feature 'Add-On Manager' do
 			@page.modal.all('.checklist li').length.should eq 1
 		end
 
-		it 'displays a bulk confirmation modal when attempting to remove more than 5 add-ons' do
-			# First by installed
-			@page.first_party_status_filter.click
-			@page.wait_until_first_party_status_filter_menu_visible
-			@page.first_party_status_filter_menu.click_link "installed"
-			no_php_js_errors
-
-			@page.first_party_checkbox_header.find('input[type="checkbox"]').set true
-			@page.first_party_bulk_action.select "Remove"
-			@page.first_party_action_submit_button.click
-
-			@page.wait_until_modal_visible
-			@page.modal_title.text.should eq "Confirm Removal"
-			@page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
-			@page.modal.text.should include 'Add-On: 17 Add-Ons'
-		end
+		it 'displays a bulk confirmation modal when attempting to remove more than 5 add-ons' #do
+		# 	# First by installed
+		# 	@page.first_party_status_filter.click
+		# 	@page.wait_until_first_party_status_filter_menu_visible
+		# 	@page.first_party_status_filter_menu.click_link "installed"
+		# 	no_php_js_errors
+		#
+		# 	@page.first_party_checkbox_header.find('input[type="checkbox"]').set true
+		# 	@page.first_party_bulk_action.select "Remove"
+		# 	@page.first_party_action_submit_button.click
+		#
+		# 	@page.wait_until_modal_visible
+		# 	@page.modal_title.text.should eq "Confirm Removal"
+		# 	@page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
+		# 	@page.modal.text.should include 'Add-On: 17 Add-Ons'
+		# end
 
 		it 'can remove add-ons' do
 			# First by installed
