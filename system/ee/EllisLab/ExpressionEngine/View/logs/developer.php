@@ -24,7 +24,7 @@
 
 			<?=$pagination?>
 
-			<fieldset class="tbl-bulk-act hidden">
+			<fieldset class="tbl-bulk-act">
 				<button class="btn remove m-link" rel="modal-confirm-all"><?=lang('clear_developer_logs')?></button>
 			</fieldset>
 		<?php endif; ?>
