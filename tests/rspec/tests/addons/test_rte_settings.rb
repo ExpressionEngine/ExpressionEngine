@@ -13,8 +13,6 @@ def confirm_settings_page (page)
 	page.should have_save_settings_button
 	page.should have_create_new_button
 	page.should have_tool_sets
-	page.should have_bulk_action
-	page.should have_action_submit_button
 
 	page.should_not have_tool_set_name
 	page.should_not have_choose_tools
@@ -32,8 +30,6 @@ def confirm_toolset_page (page)
 	@page.should_not have_default_tool_set
 	@page.should_not have_create_new_button
 	@page.should_not have_tool_sets
-	@page.should_not have_bulk_action
-	@page.should_not have_action_submit_button
 
 	@page.should have_tool_set_name
 	@page.should have_choose_tools
