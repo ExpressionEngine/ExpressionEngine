@@ -61,6 +61,8 @@ class Logs extends CP_Controller {
 
 		$this->params['perpage'] = $this->perpage; // Set a default
 
+		$this->generateSidebar();
+
 		// Add in any submitted search phrase
 		ee()->view->search_value = ee()->input->get_post('search');
 		if ( ! empty(ee()->view->search_value))
@@ -69,7 +71,7 @@ class Logs extends CP_Controller {
 		}
 	}
 
-	protected function generateSidebar($active = NULL)
+	protected function generateSidebar()
 	{
 		$sidebar = ee('Sidebar')->make();
 		$logs = $sidebar->addHeader(lang('logs'))
@@ -78,37 +80,15 @@ class Logs extends CP_Controller {
 		if (ee()->session->userdata('group_id') == 1)
 		{
 			$item = $logs->addItem(lang('developer_log'), ee('CP/URL', 'logs/developer'));
-			if ($active == 'developer')
-			{
-				$item->isActive();
-			}
 		}
 
 		$item = $logs->addItem(lang('cp_log'), ee('CP/URL', 'logs/cp'));
-		if ($active == 'cp')
-		{
-			$item->isActive();
-		}
-
 		$item = $logs->addItem(lang('throttle_log'), ee('CP/URL', 'logs/throttle'));
-		if ($active == 'throttle')
-		{
-			$item->isActive();
-		}
-
 		$item = $logs->addItem(lang('email_log'), ee('CP/URL', 'logs/email'));
-		if ($active == 'email')
-		{
-			$item->isActive();
-		}
 
 		if ($this->search_installed)
 		{
 			$item = $logs->addItem(lang('search_log'), ee('CP/URL', 'logs/search'));
-			if ($active == 'search')
-			{
-				$item->isActive();
-			}
 		}
 	}
 
