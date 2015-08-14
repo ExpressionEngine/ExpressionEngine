@@ -224,9 +224,9 @@ $(document).ready(function(){
 			var heightIs = $(document).height();
 
 			// fade in the overlay
-			$('.overlay').fadeIn('slow').css('height',heightIs);
+			$('.overlay').fadeIn('fast').css('height',heightIs);
 			// fade in modal
-			$(this).fadeIn('slow');
+			$(this).fadeIn('fast');
 
 			// scroll up, if needed
 			$('#top').animate({ scrollTop: 0 }, 100);
@@ -234,9 +234,9 @@ $(document).ready(function(){
 
 		$('body').on('modal:close', '.modal-wrap', function(e) {
 			// fade out the overlay
-			$('.overlay').fadeOut('slow');
+			$('.overlay').fadeOut('fast');
 			// fade out the modal
-			$('.modal-wrap').fadeOut('slow');
+			$('.modal-wrap').fadeOut('fast');
 		});
 
 		// listen for clicks to elements with a class of m-link
