@@ -26,6 +26,20 @@ $lang = array(
 
 'create_new_item' => 'Create New Item',
 
+'create_new_item_step' => 'Create Item: Step %d',
+
+'create_new_item_step_desc' => 'Please choose the channel entries you\'d like to add as purchasable items.',
+
+'enable_item' => 'Enable item?',
+
+'enable_item_desc' => 'When set to <b>yes</b>, this item will be purchasable.',
+
+'customer_email_template' => 'Customer email template',
+
+'customer_email_template_desc' => 'Template to use when sending sale confirmation email to purchaser.',
+
+'add_item' => 'Add item',
+
 'all_items' => 'All Items',
 
 'all_purchases' => 'All Purchases',
@@ -66,13 +80,55 @@ $lang = array(
 
 'purchase_not_updated_desc' => 'We were unable to update this purchase, please review and fix errors below.',
 
+'item_created' => 'Item Created',
+
+'item_created_desc' => 'The items have been created.',
+
+'item_not_created' => 'Cannot Create Item',
+
+'item_not_created_desc' => 'We were unable to create this item, please review and fix errors below.',
+
+'item_updated' => 'Item Updated',
+
+'item_updated_desc' => 'The item <b>%s</b> has been updated.',
+
+'item_not_updated' => 'Cannot Update Item',
+
+'item_not_updated_desc' => 'We were unable to update this item, please review and fix errors below.',
+
+'email_template_created' => 'Email Template Created',
+
+'email_template_created_desc' => 'The email template has been created.',
+
+'email_template_not_created' => 'Cannot Create Email Template',
+
+'email_template_not_created_desc' => 'We were unable to create this email template, please review and fix errors below.',
+
+'email_template_updated' => 'Email Template Updated',
+
+'email_template_updated_desc' => 'The email template <b>%s</b> has been updated.',
+
+'email_template_not_updated' => 'Cannot Update Email Template',
+
+'email_template_not_updated_desc' => 'We were unable to update this email template, please review and fix errors below.',
+
 'email_templates_removed' => 'Email templates removed',
 
 'email_templates_removed_desc' => '%d email templates were removed.',
 
+'create_email_template' => 'Create Email Template',
+
+'edit_email_template' => 'Edit Email Template',
+
+'email_template' => 'Email Template',
+
+'email_template_name_desc' => 'Name of this e-mail template.',
+
 'simple_commerce_home' => 'Control Panel',
 
-'subscription_frequency' => 'Subscription Frequency',
+'subscription_frequency' => 'Frequency of subscription',
+
+'subscription_frequency_desc' => 'How often will the member be charged for their subscription of this item.',
 
 'subscription_frequency_unit' => 'Subscription Frequency Unit',
 
@@ -125,9 +181,11 @@ and provide them with the URL below.',
 
 'item_added' => 'Items Added',
 
-'purchase_date' => 'Purchase date',
+'purchase_date' => 'Date of purchase',
 
-'recurring' => 'Recurring',
+'recurring' => 'Recurring subscription?',
+
+'recurring_desc' => 'When set to <b>yes</b>, member will be charged until they cancel.',
 
 'recurring_purchase_warning' => "Recurring purchases must be set up through PayPal for full functionality.",
 
@@ -137,7 +195,7 @@ and provide them with the URL below.',
 
 'edit_items' => 'Edit Items',
 
-'export_items' => 'Export Items',
+'export_items' => 'Export All Items',
 
 'store_purchases' => 'Store Purchases',
 
@@ -145,7 +203,7 @@ and provide them with the URL below.',
 
 'add_purchase' => 'Add Purchase',
 
-'export_purchases' => 'Export Purchases',
+'export_purchases' => 'Export All Purchases',
 
 'choose_entry_for_item' => 'Choose Entry for Store Item',
 
@@ -155,8 +213,7 @@ and provide them with the URL below.',
 
 'invalid_purchases' => 'No Valid Purchases',
 
-'use_sale_price' =>
-'Use Sale Price?',
+'use_sale_price' => 'Use sale price?',
 
 'entry_title' => 'Entry Title',
 
@@ -164,9 +221,9 @@ and provide them with the URL below.',
 
 'update_items' => 'Update Items',
 
-'sale_price' => 'Sale Price',
+'sale_price' => 'Sale price',
 
-'regular_price' => 'Regular Price',
+'regular_price' => 'Regular price',
 
 'item_enabled' => 'Item Enabled',
 
@@ -202,30 +259,43 @@ and provide them with the URL below.',
 
 'on_unsubscribe' => 'On Unsubscribe',
 
+'email_options' => 'Email Options',
+
+'subscription_options' => 'Subscription Options',
+
 'customer_email_subscribe' => 'Customer Email Subscribe Template',
 
-'customer_email_unsubscribe' => 'Customer Email Unsubscribe Template',
+'customer_email_unsubscribe' => 'Customer <mark>cancel</mark> e-mail template',
 
-'admin_email_address' => 'Admin Email Address',
+'customer_email_unsubscribe_desc' => 'Template to use when sending cancel confirmation e-mail to canceler.',
+
+'admin_email_address' => 'Admin email address',
+
+'admin_email_address_desc' => 'Email address to notify when a sale is made.',
 
 'invalid_price' => 'Invalid Price!',
 
 'select_admin_template' => 'Must Select Admin Email Template if Email Address is Filled Out',
 
-'admin_email_template' => 'Admin Email Template',
+'admin_email_template' => 'Admin email template',
 
-'member_group' => 'New Member Group',
+'admin_email_template_desc' => 'Template to use for notifying an admin of a sale.',
 
-'admin_email_template_unsubscribe' => 'Admin Email Unsubscribe Template',
+'new_member_group' => 'New member group',
+
+'new_member_group_desc' => 'Upon purchase, purchaser\'s member group will be changed to the chosen group.',
+
+'admin_email_template_unsubscribe' => 'Admin <mark>cancel</mark> e-mail template',
+
+'admin_email_template_unsubscribe_desc' => 'Template to use for notifying an admin of a cancellation.',
 
 'member_group_subscribe' => 'Subscribe Member Group',
 
-'member_group_unsubscribe' => 'Unsubscribe Member Group',
+'member_group_unsubscribe_desc' => 'Upon canceling, canceler\'s member group will be changed to the chosen group.',
 
+'send_no_email' => 'Do not send email',
 
-'send_no_email' => 'Do Not Send Email',
-
-'no_change' => 'No Change',
+'no_change' => 'No change',
 
 'no_store_items' => 'No Store Items',
 
@@ -259,9 +329,13 @@ and provide them with the URL below.',
 
 'email_name' => 'Email Template Name',
 
-'email_subject' => 'Email Subject',
+'email_subject' => 'Email subject',
 
-'email_body' => 'Email Body',
+'email_body' => 'Email body',
+
+'paypal_variables' => 'PayPal variables',
+
+'paypal_variables_desc' => 'When a purchase is confirmed, an e-mail will be sent for that item. These variables are sent back from PayPal.',
 
 'add_email_instructions' => 'When the purchase of an item is confirmed, an email can be sent out to one or many email addresses for that item.  These emails can contain certain variables sent back from PayPal, which are as follows: ',
 
@@ -279,11 +353,21 @@ and provide them with the URL below.',
 
 'emails_deleted' => 'Email Templates Deleted!',
 
-'member_not_found' => 'Member Not Found',
+'member_not_found' => 'Member not found.',
 
 'purchaser_screen_name' => 'Purchaser\'s Screen Name',
 
-'txn_id' => 'Purchase Identification Number (TXN ID)',
+'txn_id' => 'PIN (TXN ID)',
+
+'txn_id_desc' => 'A unique ID for this purchase',
+
+'screen_name_desc' => 'Screen name of purchaser.',
+
+'price' => 'Price',
+
+'price_desc' => 'Item price for this transaction.',
+
+'purchase_create_warn' => '<b>Warning</b>: Recurring purchases must be set up through PayPal for full functionality.',
 
 'date_purchased' => 'Date Purchased',
 
@@ -291,7 +375,7 @@ and provide them with the URL below.',
 
 'subscription_end_date_subtext' => 'Enter \'0\' for no subscription end',
 
-'item_purchased' => 'Item purchased',
+'item_purchased' => 'Item purchased.',
 
 'item_cost' => 'Item Cost',
 

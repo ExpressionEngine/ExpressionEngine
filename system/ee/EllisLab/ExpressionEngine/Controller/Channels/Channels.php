@@ -32,6 +32,13 @@ use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractCh
  */
 class Channels extends AbstractChannelsController {
 
+	public function __construct()
+	{
+		parent::__construct();
+
+		$this->generateSidebar('channel');
+	}
+
 	/**
 	 * Channel Manager
 	 */

@@ -33,7 +33,28 @@ class Item extends Model {
 	protected static $_table_name = 'simple_commerce_items';
 
 	protected static $_typed_columns = array(
+		'item_enabled' => 'boolString',
 		'item_use_sale' => 'boolString',
+		'recurring' => 'boolString',
+	);
+
+	protected static $_validation_rules = array(
+		'item_enabled'                        => 'enum[y,n]',
+		'item_regular_price'                  => 'numeric',
+		'item_sale_price'                     => 'numeric',
+		'item_use_sale'                       => 'enum[y,n]',
+		'recurring'                           => 'enum[y,n]',
+		'subscription_frequency'              => 'isNaturalNoZero',
+		'subscription_frequency_unit'         => 'enum[day,week,month,year]',
+		'item_purchases'                      => 'isNatural',
+		'current_subscriptions'               => 'isNatural',
+		'new_member_group'                    => 'isNatural',
+		'member_group_unsubscribe'            => 'isNatural',
+		'admin_email_address'                 => 'email',
+		'admin_email_template'                => 'isNatural',
+		'customer_email_template'             => 'isNatural',
+		'admin_email_template_unsubscribe'    => 'isNatural',
+		'customer_email_template_unsubscribe' => 'isNatural'
 	);
 
 	protected static $_relationships = array(

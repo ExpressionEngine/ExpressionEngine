@@ -3,12 +3,16 @@
 		<fieldset class="tbl-search right">
 			<a class="btn tn action" href="<?=ee('CP/URL', 'addons/settings/simple_commerce/create-purchase')?>"><?=lang('create_new')?></a>
 		</fieldset>
-		<h1><?=lang('all_purchases')?></h1>
+		<h1><?=lang('all_purchases')?>
+			<ul class="toolbar">
+				<li class="download"><a href="<?=ee('CP/URL', 'addons/settings/simple_commerce/export_purchases')?>" title="<?=lang('export_purchases')?>"></a></li>
+			</ul>
+		</h1>
 		<?=ee('Alert')->get('purchases-table')?>
 		<?php $this->embed('ee:_shared/table', $table); ?>
 		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
-		<fieldset class="tbl-bulk-act">
+		<fieldset class="tbl-bulk-act hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
 				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>

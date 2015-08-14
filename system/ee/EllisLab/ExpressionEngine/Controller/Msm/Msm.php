@@ -64,7 +64,8 @@ class Msm extends CP_Controller {
 		$sidebar = ee('Sidebar')->make();
 
 		$sidebar->addHeader(lang('sites'), ee('CP/URL', 'msm'))
-			->withButton(lang('new'), ee('CP/URL', 'msm/create'));
+			->withButton(lang('new'), ee('CP/URL', 'msm/create'))
+			->isActive();
 
 		$sites = $sidebar->addHeader(lang('switch_to'))
 			->addBasicList();
@@ -210,8 +211,6 @@ class Msm extends CP_Controller {
 
 	public function create()
 	{
-		ee()->lang->loadfile('sites_cp');
-
 		if ( ! ee()->cp->allowed_group('can_admin_sites'))
 		{
 			show_error(lang('unauthorized_access'));

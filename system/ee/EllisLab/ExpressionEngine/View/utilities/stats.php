@@ -31,7 +31,7 @@
 
 		</table>
 
-		<fieldset class="tbl-bulk-act">
+		<fieldset class="tbl-bulk-act hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
 				<option value="sync"><?=lang('sync')?></option>

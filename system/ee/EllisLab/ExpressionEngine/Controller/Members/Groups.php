@@ -55,6 +55,7 @@ class Groups extends Members\Members {
 		$this->site_id = (int) ee()->config->item('site_id');
 		$this->super_admin = $this->session->userdata('group_id') == 1;
 		$this->set_view_header($this->base_url, lang('search_member_groups_button'));
+		$this->generateSidebar('groups');
 	}
 
 	/**

@@ -573,7 +573,6 @@ class Forum_mcp extends CP_Controller {
 		{
 			$site = array(
 				'title' => 'site',
-				'desc' => 'site_desc',
 				'fields' => array(
 					'board_site_id' => array(
 						'type' => 'select',

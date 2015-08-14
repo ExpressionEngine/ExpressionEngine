@@ -8,7 +8,7 @@
 			<?php if (isset($filters['first'])) echo $filters['first']; ?>
 			<?php $this->embed('_shared/table', $tables['first']); ?>
 			<?php if ( ! empty($tables['first']['columns']) && ! empty($tables['first']['data'])): ?>
-			<fieldset class="tbl-bulk-act">
+			<fieldset class="tbl-bulk-act hidden">
 				<select name="bulk_action">
 					<option value="">-- <?=lang('with_selected')?> --</option>
 					<option value="install"><?=lang('install')?></option>
@@ -30,7 +30,7 @@
 			<?php if (isset($filters['third'])) echo $filters['third']; ?>
 			<?php $this->embed('_shared/table', $tables['third']); ?>
 			<?php if ( ! empty($tables['third']['columns']) && ! empty($tables['third']['data'])): ?>
-			<fieldset class="tbl-bulk-act">
+			<fieldset class="tbl-bulk-act hidden">
 				<select name="bulk_action">
 					<option value="">-- <?=lang('with_selected')?> --</option>
 					<option value="install"><?=lang('install')?></option>

@@ -47,6 +47,8 @@ class Cat extends AbstractChannelsController {
 		{
 			show_error(lang('unauthorized_access'));
 		}
+
+		$this->generateSidebar('category');
 	}
 
 	/**

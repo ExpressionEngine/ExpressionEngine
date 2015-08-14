@@ -60,7 +60,7 @@ $lang = array(
 
 'version_autocheck_desc' => 'When set to <b>auto</b>, ExpressionEngine will automatically check for newer versions of the software.',
 
-'enable_msm' => 'Enable <abbr title="Multi-Site Manager">MSM</abbr>?',
+'enable_msm' => 'Enable Site Manager?',
 'enable_msm_desc' => 'When set to <b>enable</b>, super admins and member groups with permissions will be able to manage additional websites from the <abbr title="Control Panel">CP</abbr>.',
 
 'online' => 'Online',

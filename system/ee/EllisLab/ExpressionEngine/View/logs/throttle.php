@@ -29,7 +29,7 @@
 
 				<?=$pagination?>
 
-				<fieldset class="tbl-bulk-act">
+				<fieldset class="tbl-bulk-act hidden">
 				<button class="btn remove m-link" rel="modal-confirm-all"><?=lang('clear_throttle_logs')?></button>
 				</fieldset>
 			<?php endif; ?>

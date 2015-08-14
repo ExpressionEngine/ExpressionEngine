@@ -59,7 +59,6 @@ $lang = array(
 'forum_directory_desc' => '<abbr title="Unified Resource Locator">URL</abbr> location to the forum.',
 
 'site' => 'Site',
-'site_desc' => '<abbr title="Multiple Site Manager">MSM</abbr> site this forum board should appear under.',
 
 'forum_url_segment' => 'Forum <abbr title="Unified Resource Locator">URL</abbr> segment',
 'forum_url_segment_desc' => 'Word that triggers forum display. <b>Cannot</b> be the same as a template or template group.',
