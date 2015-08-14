@@ -118,7 +118,7 @@ class Simple_commerce_mcp {
 			->all();
 
 		$data = array();
-		// TODO: Check for n+1 once these relationships are working
+		// TODO: Check for n+1 once these relationships are working, probably need some with()s
 		foreach ($items as $item)
 		{
 			if ($item->item_use_sale)
@@ -152,7 +152,8 @@ class Simple_commerce_mcp {
 			);
 
 			$attrs = array();
-			if (ee()->session->flashdata('highlight_id') == $item->getId())
+			$highlight_ids = ee()->session->flashdata('highlight_id') ?: array();
+			if (in_array($item->getId(), $highlight_ids))
 			{
 				$attrs = array('class' => 'selected');
 			}
@@ -220,6 +221,8 @@ class Simple_commerce_mcp {
 	 */
 	public function createItem()
 	{
+		ee()->lang->load('content');
+
 		$base_url = ee('CP/URL', 'addons/settings/simple_commerce/create-item');
 		$entry_listing = ee('CP/EntryListing', ee()->input->get_post('search'));
 		$entries = $entry_listing->getEntries();
@@ -276,7 +279,7 @@ class Simple_commerce_mcp {
 				ee()->localize->human_time($entry->entry_date),
 				$entry->status,
 				array(
-					'name' => 'selection[]',
+					'name' => 'entries[]',
 					'value' => $entry->entry_id,
 					'data' => array(
 						'confirm' => lang('entry') . ': <b>' . htmlentities($entry->title, ENT_QUOTES) . '</b>'
@@ -288,17 +291,297 @@ class Simple_commerce_mcp {
 		$table->setData($data);
 
 		$vars['table'] = $table->viewData($base_url);
-		$vars['form_url'] = $vars['table']['base_url'];
+		$vars['form_url'] = ee('CP/URL', 'addons/settings/simple_commerce/add-items');
 
 		$vars['pagination'] = ee('CP/Pagination', $count)
 			->perPage($filter_values['perpage'])
 			->currentPage($page)
 			->render($base_url);
 
+		$this->items_nav->isActive();
+
 		return array(
-			'heading' => lang('commerce_purchases'),
+			'heading' => sprintf(lang('create_new_item_step'), 1),
+			'breadcrumb' => array(
+				ee('CP/URL', 'addons/settings/simple_commerce')->compile() => lang('commerce_items')
+			),
 			'body' => ee('View')->make('simple_commerce:entry_list')->render($vars),
 			'sidebar' => $this->sidebar
+		);
+	}
+
+	/**
+	 * Step 2 in item creation
+	 */
+	public function addItems()
+	{
+		$entry_ids = ee()->input->post('entries');
+
+		if ( ! ee()->input->post('items') && (empty($entry_ids) OR ee()->input->post('bulk_action') != 'add_item'))
+		{
+			ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce/create-item', ee()->cp->get_url_state()));
+		}
+
+		$forms = array();
+		if ( ! empty($_POST) && isset($_POST['items']))
+		{
+			// Validate all items before saving
+			$valid = TRUE;
+			foreach ($_POST['items'] as $entry_id => $item_data)
+			{
+				$item = ee('Model')->make('simple_commerce:Item');
+				$item->set($item_data);
+				$item->entry_id = 1; // TODO: Fix when relationships works
+				$item->subscription_frequency = empty($item->subscription_frequency) ? NULL : $item->subscription_frequency;
+				$result = $item->validate();
+
+				$forms[] = array(
+					'form_title' => lang('create_new').': '.$entry_id,
+					'sections' => $this->itemForm($item, 'items['.$entry_id.']'),
+					'errors' => $result,
+					'item' => $item,
+					'entry_id' => $entry_id
+				);
+
+				if ($result->isNotValid())
+				{
+					ee('Alert')->makeInline('item-form-'.$entry_id)
+						->asIssue()
+						->withTitle(lang('item_not_created'))
+						->addToBody(lang('item_not_created_desc'))
+						->now();
+
+					// Hack because we have prefixed fields that don't match the fields in the model
+					ee()->load->library('form_validation');
+					foreach ($result->renderErrors() as $field_name => $error)
+					{
+						ee()->form_validation->_error_array['items['.$entry_id.']['.$field_name.']'] = $error;
+					}
+
+					if ($valid)
+					{
+						$valid = FALSE;
+					}
+				}
+			}
+
+			if ($valid)
+			{
+				$item_ids = array();
+				foreach ($forms as $form)
+				{
+					$item = $form['item'];
+					$item->save();
+					$item_ids[] = $item->getId();
+				}
+
+				ee()->session->set_flashdata('highlight_id', $item_ids);
+
+				ee('Alert')->makeInline('items-table')
+					->asSuccess()
+					->withTitle(lang('item_created'))
+					->addToBody(lang('item_created_desc'))
+					->defer();
+
+				ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce'));
+			}
+		}
+
+		if (empty($forms))
+		{
+			foreach ($entry_ids as $entry_id)
+			{
+				$item = ee('Model')->make('simple_commerce:Item');
+				$forms[] = array(
+					'form_title' => lang('create_new').': '.$entry_id,
+					'sections' => $this->itemForm($item, 'items['.$entry_id.']'),
+					'errors' => NULL,
+					'entry_id' => 0
+				);
+			}
+		}
+
+		$vars = array(
+			'forms' => $forms,
+			'form_url' => ee('CP/URL', 'addons/settings/simple_commerce/add-items'),
+			'save_btn_text' => sprintf(lang('btn_save'), (count($forms) > 1) ? lang('items') : lang('item')),
+			'save_btn_text_working' => 'btn_saving'
+		);
+
+		$this->items_nav->isActive();
+
+		return array(
+			'heading' => sprintf(lang('create_new_item_step'), 2),
+			'breadcrumb' => array(
+				ee('CP/URL', 'addons/settings/simple_commerce')->compile() => lang('commerce_items')
+			),
+			'body' => ee('View')->make('simple_commerce:add_items')->render($vars),
+			'sidebar' => $this->sidebar
+		);
+	}
+
+	private function itemForm($item, $prefix = 'item')
+	{
+		$email_templates = array(0 => lang('send_no_email'));
+		$email_templates += ee('Model')->get('simple_commerce:EmailTemplate')->all()->getDictionary('email_id', 'email_name');
+
+		$member_groups = array(0 => lang('no_change'));
+		$member_groups += ee('Model')->get('MemberGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('group_title')
+			->all()
+			->getDictionary('group_id', 'group_title');
+
+		return array(
+			array(
+				array(
+					'title' => 'enable_item',
+					'desc' => 'enable_item_desc',
+					'fields' => array(
+						$prefix.'[item_enabled]' => array(
+							'type' => 'yes_no',
+							'value' => $item->item_enabled
+						)
+					)
+				),
+				array(
+					'title' => 'regular_price',
+					'fields' => array(
+						$prefix.'[item_regular_price]' => array(
+							'type' => 'text',
+							'value' => $item->item_regular_price ?: '0.00'
+						)
+					)
+				),
+				array(
+					'title' => 'sale_price',
+					'fields' => array(
+						$prefix.'[item_sale_price]' => array(
+							'type' => 'text',
+							'value' => $item->item_sale_price ?: '0.00'
+						)
+					)
+				),
+				array(
+					'title' => 'use_sale_price',
+					'fields' => array(
+						$prefix.'[item_use_sale]' => array(
+							'type' => 'yes_no',
+							'value' => $item->item_use_sale
+						)
+					)
+				)
+			),
+			'email_options' => array(
+				array(
+					'title' => 'admin_email_address',
+					'desc' => 'admin_email_address_desc',
+					'fields' => array(
+						$prefix.'[admin_email_address]' => array(
+							'type' => 'text',
+							'value' => $item->admin_email_address
+						)
+					)
+				),
+				array(
+					'title' => 'admin_email_template',
+					'desc' => 'admin_email_template_desc',
+					'fields' => array(
+						$prefix.'[admin_email_template]' => array(
+							'type' => 'select',
+							'choices' => $email_templates,
+							'value' => $item->admin_email_template
+						)
+					)
+				),
+				array(
+					'title' => 'customer_email_template',
+					'desc' => 'customer_email_template_desc',
+					'fields' => array(
+						$prefix.'[customer_email_template]' => array(
+							'type' => 'select',
+							'choices' => $email_templates,
+							'value' => $item->customer_email_template
+						)
+					)
+				),
+				array(
+					'title' => 'new_member_group',
+					'desc' => 'new_member_group_desc',
+					'fields' => array(
+						$prefix.'[new_member_group]' => array(
+							'type' => 'select',
+							'choices' => $member_groups,
+							'value' => $item->new_member_group
+						)
+					)
+				),
+				array(
+					'title' => 'admin_email_template_unsubscribe',
+					'desc' => 'admin_email_template_unsubscribe_desc',
+					'fields' => array(
+						$prefix.'[admin_email_template_unsubscribe]' => array(
+							'type' => 'select',
+							'choices' => $email_templates,
+							'value' => $item->admin_email_template_unsubscribe
+						)
+					)
+				),
+				array(
+					'title' => 'customer_email_unsubscribe',
+					'desc' => 'customer_email_unsubscribe_desc',
+					'fields' => array(
+						$prefix.'[customer_email_template_unsubscribe]' => array(
+							'type' => 'select',
+							'choices' => $email_templates,
+							'value' => $item->customer_email_template_unsubscribe
+						)
+					)
+				),
+				array(
+					'title' => 'new_member_group',
+					'desc' => 'member_group_unsubscribe_desc',
+					'fields' => array(
+						$prefix.'[member_group_unsubscribe]' => array(
+							'type' => 'select',
+							'choices' => $member_groups,
+							'value' => $item->member_group_unsubscribe
+						)
+					)
+				),
+			),
+			'subscription_options' => array(
+				array(
+					'title' => 'recurring',
+					'desc' => 'recurring_desc',
+					'fields' => array(
+						$prefix.'[recurring]' => array(
+							'type' => 'yes_no',
+							'value' => $item->recurring
+						)
+					)
+				),
+				array(
+					'title' => 'subscription_frequency',
+					'desc' => 'subscription_frequency_desc',
+					'fields' => array(
+						$prefix.'[subscription_frequency]' => array(
+							'type' => 'text',
+							'value' => $item->subscription_frequency
+						),
+						$prefix.'[subscription_frequency_unit]' => array(
+							'type' => 'select',
+							'choices' => array(
+								'day' => lang('days'),
+								'week' => lang('weeks'),
+								'month' => lang('months'),
+								'year' => lang('years')
+							),
+							'value' => $item->subscription_frequency_unit
+						)
+					)
+				)
+			)
 		);
 	}
 
