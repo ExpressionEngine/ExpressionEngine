@@ -44,6 +44,8 @@ class Groups extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'));
 		}
 
+		$this->generateSidebar('field');
+
 		ee()->lang->loadfile('admin');
 		ee()->lang->loadfile('admin_content');
 	}
