@@ -298,15 +298,7 @@ $(document).ready(function(){
 			$(this).parents('.tbl-row').toggleClass('selected', $(this).is(':checked'));
 
 			// If all checkboxes are checked, check the Select All box
-			var allSelected = true;
-			$(this).parents('.tbl-list-wrap')
-				.find('.tbl-list .check-ctrl input').each(function() {
-					if ( ! $(this).is(':checked')) {
-						allSelected = false;
-						return false;
-					}
-				});
-
+			var allSelected = $(this).parents('.tbl-list-wrap .tbl-list .check-ctrl input:unchecked').length();
 			$(this).parents('.tbl-list-wrap').find('.tbl-list-ctrl input').prop('checked', allSelected);
 		});
 
