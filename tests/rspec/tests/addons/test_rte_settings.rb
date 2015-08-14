@@ -146,6 +146,7 @@ feature 'RTE Settings' do
 		@page.tool_sets[1].text.should include 'Enabled'
 
 		@page.tool_sets[1].find('input[type="checkbox"]').set true
+		@page.wait_until_bulk_action_visible
 		@page.bulk_action.select "Disable"
 		@page.action_submit_button.click
 		no_php_js_errors
@@ -154,6 +155,7 @@ feature 'RTE Settings' do
 		@page.tool_sets[1].text.should_not include 'Enabled'
 
 		@page.tool_sets[1].find('input[type="checkbox"]').set true
+		@page.wait_until_bulk_action_visible
 		@page.bulk_action.select "Enable"
 		@page.action_submit_button.click
 		no_php_js_errors
@@ -167,6 +169,7 @@ feature 'RTE Settings' do
 		@page.text.should_not include 'Disabled'
 
 		@page.checkbox_header.find('input[type="checkbox"]').set true
+		@page.wait_until_bulk_action_visible
 		@page.bulk_action.select "Disable"
 		@page.action_submit_button.click
 		no_php_js_errors
@@ -174,6 +177,7 @@ feature 'RTE Settings' do
 		@page.text.should include 'Disabled'
 
 		@page.checkbox_header.find('input[type="checkbox"]').set true
+		@page.wait_until_bulk_action_visible
 		@page.bulk_action.select "Enable"
 		@page.action_submit_button.click
 		no_php_js_errors
@@ -187,6 +191,7 @@ feature 'RTE Settings' do
 
 		# Header at 0, first "real" row is 1
 		@page.tool_sets[1].find('input[type="checkbox"]').set true
+		@page.wait_until_bulk_action_visible
 		@page.bulk_action.select "Remove"
 		@page.action_submit_button.click
 
@@ -199,6 +204,7 @@ feature 'RTE Settings' do
 
 	it 'displays a bulk confirmation modal when trying to remove more than 5 tool sets', :stage => 'settings' do
 		@page.checkbox_header.find('input[type="checkbox"]').set true
+		@page.wait_until_bulk_action_visible
 		@page.bulk_action.select "Remove"
 		@page.action_submit_button.click
 
@@ -213,6 +219,7 @@ feature 'RTE Settings' do
 
 		# This populates the modal with a hidden input so we can modify it later
 		@page.tool_sets[1].find('input[type="checkbox"]').set true
+		@page.wait_until_bulk_action_visible
 		@page.bulk_action.select "Remove"
 		@page.action_submit_button.click
 		@page.wait_until_modal_visible
@@ -231,6 +238,7 @@ feature 'RTE Settings' do
 
 	it 'can remove a tool set', :stage => 'settings' do
 		@page.tool_sets[1].find('input[type="checkbox"]').set true
+		@page.wait_until_bulk_action_visible
 		@page.bulk_action.select "Remove"
 		@page.action_submit_button.click
 		@page.wait_until_modal_visible
@@ -248,6 +256,7 @@ feature 'RTE Settings' do
 		@page.checkbox_header.find('input[type="checkbox"]').set true
 
 		# Uncheck the Default tool set
+		@page.wait_until_bulk_action_visible
 		@page.bulk_action.select "Remove"
 		@page.action_submit_button.click
 		@page.wait_until_modal_visible
@@ -283,6 +292,7 @@ feature 'RTE Settings' do
 
 		@page.tool_sets[2].find('input[type="checkbox"]').set true
 		@page.tool_sets[4].find('input[type="checkbox"]').set true
+		@page.wait_until_bulk_action_visible
 		@page.bulk_action.select "Disable"
 		@page.action_submit_button.click
 		no_php_js_errors

@@ -30,6 +30,7 @@ feature 'Debug Extensions' do
 
 		# Disable an add-on
 		@page.checkbox_header.find('input[type="checkbox"]').set true
+		@page.wait_until_bulk_action_visible
 		@page.bulk_action.select "Disable"
 		@page.action_submit_button.click
 		no_php_js_errors
@@ -38,6 +39,7 @@ feature 'Debug Extensions' do
 
 		# Enable an add-on
 		@page.checkbox_header.find('input[type="checkbox"]').set true
+		@page.wait_until_bulk_action_visible
 		@page.bulk_action.select "Enable"
 		@page.action_submit_button.click
 		no_php_js_errors

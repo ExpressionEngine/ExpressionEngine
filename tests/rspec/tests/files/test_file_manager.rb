@@ -230,6 +230,7 @@ feature 'File Manager' do
 		file_name = @page.title_names[0].find('em').text
 
 		@page.files[1].find('input[type="checkbox"]').set true
+		@page.wait_until_bulk_action_visible
 		@page.bulk_action.select "Remove"
 		@page.action_submit_button.click
 
@@ -242,6 +243,7 @@ feature 'File Manager' do
 
 	it 'displays a bulk confirmation modal when attempting to remove more than 5 files' do
 		@page.checkbox_header.click
+		@page.wait_until_bulk_action_visible
 		@page.bulk_action.select "Remove"
 		@page.action_submit_button.click
 
@@ -255,6 +257,7 @@ feature 'File Manager' do
 		file_name = @page.title_names[0].text
 
 		@page.files[1].find('input[type="checkbox"]').set true
+		@page.wait_until_bulk_action_visible
 		@page.bulk_action.select "Remove"
 		@page.action_submit_button.click
 		@page.wait_until_modal_visible
@@ -266,6 +269,7 @@ feature 'File Manager' do
 
 	it 'can remove multiple files', :all_files => true, :perpage => 50 do
 		@page.checkbox_header.click
+		@page.wait_until_bulk_action_visible
 		@page.bulk_action.select "Remove"
 		@page.action_submit_button.click
 		@page.wait_until_modal_visible

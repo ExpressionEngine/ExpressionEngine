@@ -58,6 +58,7 @@ feature 'Statistics' do
 
 	it "can sync multiple sources" do
 		@page.find('input[type="checkbox"][title="select all"]').set(true)
+		@page.wait_until_bulk_action_visible
 		@page.bulk_action.select "Sync"
 		@page.action_submit_button.click
 

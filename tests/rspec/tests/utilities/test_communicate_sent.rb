@@ -535,6 +535,7 @@ feature 'Communicate > Sent' do
 			end
 		end
 
+		@page.wait_until_bulk_action_visible
 		@page.bulk_action.select "Remove"
 		@page.action_submit_button.click
 
@@ -559,6 +560,7 @@ feature 'Communicate > Sent' do
 			end
 		end
 
+		@page.wait_until_bulk_action_visible
 		@page.bulk_action.select "Remove"
 		@page.action_submit_button.click
 
@@ -582,6 +584,7 @@ feature 'Communicate > Sent' do
 			end
 		end
 
+		@page.wait_until_bulk_action_visible
 		@page.bulk_action.select "Remove"
 		@page.action_submit_button.click
 		@page.wait_until_modal_visible

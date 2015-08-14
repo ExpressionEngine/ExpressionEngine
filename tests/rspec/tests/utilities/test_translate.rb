@@ -136,6 +136,7 @@ feature 'Translate Tool' do
 	# end
 
 	it 'shows an error if nothing is selected when exporting', :edit => false do
+		@list_page.wait_until_bulk_action_visible
 		@list_page.bulk_action.select "Export (Download)"
 		@list_page.action_submit_button.click
 		no_php_js_errors
@@ -150,6 +151,7 @@ feature 'Translate Tool' do
 		no_php_js_errors
 
 		@list_page.find('input[type="checkbox"][title="select all"]').set(true)
+		@list_page.wait_until_bulk_action_visible
 		@list_page.bulk_action.select "Export (Download)"
 		@list_page.action_submit_button.click
 		no_php_js_errors
