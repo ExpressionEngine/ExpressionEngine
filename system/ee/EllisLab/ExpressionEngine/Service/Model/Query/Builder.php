@@ -307,6 +307,11 @@ class Builder {
 	{
 		foreach ($relateds as $parent => $children)
 		{
+			if ($children instanceOf \Closure)
+			{
+				continue;
+			}
+
 			if ( ! is_array($children))
 			{
 				$children = array($children => array());
