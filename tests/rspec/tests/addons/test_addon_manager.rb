@@ -94,7 +94,7 @@ feature 'Add-On Manager' do
 			@page.first_party_status_filter.text.should eq "status (uninstalled)"
 			@page.should have_css 'tr.not-installed'
 			@page.all('tr.not-installed').count().should == 21
-			@page.should have(21).first_party_addons
+			@page.should have(19).first_party_addons
 
 			# By 'needs updates'
 			@page.first_party_status_filter.click
@@ -300,7 +300,7 @@ feature 'Add-On Manager' do
 			@page.should_not have_first_party_bulk_action
 		end
 
-		it 'displays an itemzied modal when attempting to remove 5 or less add-on' do
+		it 'displays an itemized modal when attempting to remove 5 or less add-on' do
 			# First by installed
 			@page.first_party_status_filter.click
 			@page.wait_until_first_party_status_filter_menu_visible
@@ -694,7 +694,7 @@ feature 'Add-On Manager' do
 				@page.third_party_alert.text.should include addons.join(' ')
 			end
 
-			it 'displays an itemzied modal when attempting to remove 5 or less add-on', :install => true do
+			it 'displays an itemized modal when attempting to remove 5 or less add-on', :install => true do
 				# First by installed
 				@page.third_party_status_filter.click
 				@page.wait_until_third_party_status_filter_menu_visible
