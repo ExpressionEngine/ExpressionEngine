@@ -59,39 +59,18 @@ class Spam_mcp {
 		$table = ee('CP/Table');
 		$data = array();
 		$trapped = array();
-		$trap = $this->_get_spam_trap();
-
-		foreach ($trap as $spam)
-		{
-			$toolbar = array('toolbar_items' => array(
-				'view' => array(
-					'href' => '',
-					'title' => strtolower(lang('edit'))
-				)
-			));
-
-			$trapped[] = array(
-				'content' => $spam['text'],
-				'date' => $spam['date'],
-				'ip' => $spam['ip'],
-				'type' => $spam['type'],
-				$toolbar,
-				array(
-					'name' => 'selection[]',
-					'value' => $spam['id'],
-					'data'	=> array(
-						'confirm' => lang('quick_link') . ': <b>' . htmlentities($spam['content'], ENT_QUOTES) . '</b>'
-					)
-				)
-			);
-		}
-
+		$content_type = array(
+			'Comment' => 'comment',
+			'Forum_core' => 'forum_post',
+			'Wiki' => 'wiki_post',
+		);
 		$options = array(
 			'all' => lang('all'),
-			'comment' => lang('comment'),
-			'forum_post' => lang('forum_post'),
-			'wiki_post' => lang('wiki_post')
+			'Comment' => lang('comment'),
+			'Forum_core' => lang('forum_post'),
+			'Wiki' => lang('wiki_post')
 		);
+		$total = ee('Model')->get('spam:SpamTrap')->count();
 
 		$types = ee('Filter')->make('content_type', 'content_type', $options);
 		$types->setPlaceholder(lang('all'));
@@ -100,13 +79,35 @@ class Spam_mcp {
 		$filters = ee('Filter')
 			->add($types)
 			->add('Date', 'date')
-			->add('Perpage', count($trap), 'show_all_files');
+			->add('Perpage', $total, 'show_all_spam');
 
 		$filter_values = $filters->values();
+		$perpage = ee()->input->get('perpage') ?: 20;
+		$sort_col = ee()->input->get('sort_col') ?: 'date';
+		$sort_dir = ee()->input->get('sort_dir') ?: 'desc';
+		$page = ee()->input->get('page') > 0 ? ee()->input->get('page') : 1;
+		$offset = ! empty($page) ? ($page - 1) * $perpage : 0;
+		$search = ee()->input->post('search');
+
+		$filter_fields = array();
+
+		if ( ! empty($filter_values['content_type']))
+		{
+			$filter_fields['class'] = $filter_values['content_type'];
+		}
+
+		if ( ! empty($filter_values['filter_by_date']))
+		{
+			$filter_fields['date'] = $filter_values['filter_by_date'];
+		}
+
+		$trap = $this->getSpamTrap($filter_fields, $sort_col, $sort_dir, $search, $perpage, $offset);
 
 		$table->setColumns(
 			array(
-				'spam_content',
+				'spam_content' => array(
+					'encode' => FALSE
+				),
 				'date',
 				'ip',
 				'spam_type',
@@ -119,8 +120,59 @@ class Spam_mcp {
 			)
 		);
 
+		foreach ($trap as $spam)
+		{
+			$toolbar = array('toolbar_items' => array(
+				'view' => array(
+					'href' => '',
+					'title' => strtolower(lang('edit')),
+					'data-content' => htmlentities($spam->document, ENT_QUOTES),
+					'data-type' => htmlentities($spam->document, ENT_QUOTES),
+					'data-date' => htmlentities($spam->document, ENT_QUOTES),
+					'data-ip' => htmlentities($spam->document, ENT_QUOTES),
+				)
+			));
+
+			if ( ! empty($spam->Author))
+			{
+				$author = $spam->Author->getMemberName();
+			}
+			else
+			{
+				$author = lang('guest');
+			}
+
+			$summary = substr($spam->document, 0, 60) . '...';
+			$title = htmlentities($summary, ENT_QUOTES);
+			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($author, ENT_QUOTES) . '</span>';
+
+			$trapped[] = array(
+				'content' => $title,
+				'date' => ee()->localize->human_time($spam->date->getTimestamp()),
+				'ip' => $spam->ip_address,
+				'type' => lang($content_type[$spam->class]),
+				$toolbar,
+				array(
+					'name' => 'selection[]',
+					'value' => $spam->trap_id,
+					'data'	=> array(
+						'confirm' => lang('spam') . ': <b>' . htmlentities($summary, ENT_QUOTES) . '</b>'
+					)
+				)
+			);
+		}
+
 		$table->setNoResultsText('no_search_results');
 		$table->setData($trapped);
+
+		$this->base_url->addQueryStringVariables($filter_values);
+		$this->base_url->setQueryStringVariable('sort_col', $table->sort_col);
+		$this->base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
+
+		ee()->view->filters = $filters->render($this->base_url);
+
+		$data['table'] = $table->viewData($this->base_url);
+		$data['form_url'] = cp_url('addons/settings/spam');
 
 		// Set search results heading
 		if ( ! empty($data['table']['search']))
@@ -131,15 +183,6 @@ class Spam_mcp {
 				$data['table']['search']
 			);
 		}
-
-		$this->base_url->addQueryStringVariables($filter_values);
-		$this->base_url->setQueryStringVariable('sort_col', $table->sort_col);
-		$this->base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
-
-		ee()->view->filters = $filters->render($this->base_url);
-
-		$data['table'] = $table->viewData($this->base_url);
-		$data['form_url'] = cp_url('addons/settings/spam');
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('spam') . ': <b>### ' . lang('spam') . '</b>');
 		ee()->cp->add_js_script(array(
@@ -419,29 +462,47 @@ class Spam_mcp {
 	 * @access private
 	 * @return array   Array of content to moderate
 	 */
-	private function getSpamTrap($limit = 1000)
+	private function getSpamTrap($filters = array(), $sort = NULL, $direction = 'asc', $search = null, $limit = 1000, $offset = 0)
 	{
-		ee()->db->select('trap_id, document');
-		ee()->db->from('spam_trap');
-		ee()->db->limit($limit);
-		$query = ee()->db->get();
+		$result = ee('Model')->get('spam:SpamTrap');
 
-		$result = array();
-
-		foreach ($query->result() as $spam)
+		if ( ! empty($filters))
 		{
-			$spam_form = "Spam: <input type='radio' name='spam_{$spam->trap_id}' value='spam'>";
-			$ham_form = "Ham: <input type='radio' name='spam_{$spam->trap_id}' value='ham'>";
-			$moderation_form = "$spam_form $ham_form";
-
-			$result[] = array(
-				$spam->trap_id,
-				$spam->document,
-				$moderation_form
-			);
+			foreach ($filters as $key => $filter)
+			{
+				if ( ! empty($filter))
+				{
+					$result = $result->filter($key, $filter);
+				}
+			}
 		}
 
-		return $result;
+		if ( ! empty($search))
+		{
+			$result = $result->filter('document', 'LIKE', "%$search%");
+		}
+
+		if ( ! empty($sort))
+		{
+			$options = array(
+				'content_type' => 'class',
+				'spam_content' => 'document',
+				'date' => 'date',
+			);
+			$result = $result->order($options[$sort], $direction);
+		}
+
+		if ( ! empty($limit))
+		{
+			$result = $result->limit($limit);
+		}
+
+		if ( ! empty($offset))
+		{
+			$result = $result->offset($offset);
+		}
+
+		return $result->all();
 	}
 
 	/**
