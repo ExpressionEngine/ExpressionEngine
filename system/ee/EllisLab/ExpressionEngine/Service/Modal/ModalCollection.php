@@ -64,7 +64,7 @@ class ModalCollection {
 	}
 
 	/**
-	 * Ends the modal adding the modal to the colleciotn based on the
+	 * Ends the modal adding the modal to the collection based on the
 	 * most recently specified name via startModal.
 	 */
 	public function endModal()
@@ -96,7 +96,7 @@ class ModalCollection {
 	}
 
 	/**
-	 * Geta all the modals stored in this colleciton
+	 * Gets all the modals stored in this collection
 	 *
 	 * @return array An array of stored modal data
 	 */
