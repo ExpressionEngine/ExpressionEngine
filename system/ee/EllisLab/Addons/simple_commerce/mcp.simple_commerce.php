@@ -767,7 +767,7 @@ class Simple_commerce_mcp {
 			{
 				$purchase = $purchase->save();
 
-				if (is_null($purchase_id) OR $duplicate)
+				if (is_null($purchase_id))
 				{
 					ee()->session->set_flashdata('highlight_id', $purchase->getId());
 				}
@@ -921,7 +921,7 @@ class Simple_commerce_mcp {
 	{
 		$table = ee('CP/Table', array('autosort' => TRUE));
 		$table->setColumns(array(
-			'template_name',
+			'name',
 			'manage' => array(
 				'type'	=> Table::COL_TOOLBAR
 			),
@@ -933,7 +933,7 @@ class Simple_commerce_mcp {
 		$table->setNoResultsText('no_email_templates', 'create_template', ee('CP/URL', 'addons/settings/simple_commerce/create-email-template'));
 
 		$sort_map = array(
-			'template_name' => 'email_name',
+			'name' => 'email_name',
 		);
 
 		$email_templates = ee('Model')->get('simple_commerce:EmailTemplate');
@@ -993,7 +993,6 @@ class Simple_commerce_mcp {
 
 		return array(
 			'heading' => lang('email_templates'),
-			'breadcrumb' => array(ee('CP/URL', 'addons/settings/simple_commerce')->compile() => lang('simple_commerce_module_name') . ' ' . lang('configuration')),
 			'body' => ee('View')->make('simple_commerce:email_templates')->render($vars),
 			'sidebar' => $this->sidebar
 		);
@@ -1027,6 +1026,158 @@ class Simple_commerce_mcp {
 		}
 
 		ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce/email-templates', ee()->cp->get_url_state()));
+	}
+
+	/**
+	 * Create email template URL endpoint
+	 */
+	public function createEmailTemplate()
+	{
+		return $this->emailTemplateForm();
+	}
+
+	/**
+	 * Edit email template URL endpoint
+	 */
+	public function editEmailTemplate($template_id)
+	{
+		return $this->emailTemplateForm($template_id);
+	}
+
+	/**
+	 * Email template create/edit form
+	 */
+	public function emailTemplateForm($template_id = NULL)
+	{
+		if (is_null($template_id))
+		{
+			$alert_key = 'created';
+			$vars['cp_page_title'] = lang('create_email_template');
+			$vars['base_url'] = ee('CP/URL', 'addons/settings/simple_commerce/create-email-template');
+
+			$email_template = ee('Model')->make('simple_commerce:EmailTemplate');
+		}
+		else
+		{
+			$email_template = ee('Model')->get('simple_commerce:EmailTemplate', $template_id)->first();
+
+			if ( ! $email_template)
+			{
+				show_error(lang('unauthorized_access'));
+			}
+
+			$alert_key = 'updated';
+			$vars['cp_page_title'] = lang('edit_email_template');
+			$vars['base_url'] = ee('CP/URL', 'addons/settings/simple_commerce/edit-email-template/'.$template_id);
+		}
+
+		if ( ! empty($_POST))
+		{
+			$email_template->set($_POST);
+			$result = $email_template->validate();
+
+			if ($result->isValid())
+			{
+				$email_template = $email_template->save();
+
+				if (is_null($template_id))
+				{
+					ee()->session->set_flashdata('highlight_id', $email_template->getId());
+				}
+
+				ee('Alert')->makeInline('email-templates-table')
+					->asSuccess()
+					->withTitle(lang('email_template_'.$alert_key))
+					->addToBody(sprintf(lang('email_template_'.$alert_key.'_desc'), $email_template->email_name))
+					->defer();
+
+				ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce/email-templates'));
+			}
+			else
+			{
+				$vars['errors'] = $result;
+				ee('Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('email_template_not_'.$alert_key))
+					->addToBody(lang('email_template_not_'.$alert_key.'_desc'))
+					->now();
+			}
+		}
+
+		$vars['sections'] = array(
+			array(
+				array(
+					'title' => 'name',
+					'desc' => 'email_template_name_desc',
+					'fields' => array(
+						'email_name' => array(
+							'type' => 'text',
+							'value' => $email_template->email_name,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'email_subject',
+					'wide' => TRUE,
+					'fields' => array(
+						'email_subject' => array(
+							'type' => 'text',
+							'value' => $email_template->email_subject,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'email_body',
+					'wide' => TRUE,
+					'fields' => array(
+						'email_body' => array(
+							'type' => 'textarea',
+							'value' => $email_template->email_body,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'paypal_variables',
+					'desc' => 'paypal_variables_desc',
+					'wide' => TRUE,
+					'fields' => array(
+						'email_vars' => array(
+							'type' => 'html',
+							'content' => ee('View')->make('simple_commerce:_email_body_vars')->render()
+						)
+					)
+				)
+			)
+		);
+
+		ee()->javascript->output('
+
+			$(document).ready(function () {
+
+				$(".glossary-wrap a").click(function(){
+					$("textarea[name=email_body]").insertAtCursor("{"+$(this).text()+"}");
+					return false;
+				});
+			});
+
+		');
+
+		$vars['save_btn_text'] = sprintf(lang('btn_save'), lang('email_template'));
+		$vars['save_btn_text_working'] = 'btn_saving';
+
+		$this->email_templates_nav->isActive();
+
+		return array(
+			'heading' => $vars['cp_page_title'],
+			'breadcrumb' => array(
+				ee('CP/URL', 'addons/settings/simple_commerce/email-templates')->compile() => lang('email_templates')
+			),
+			'body' => ee('View')->make('simple_commerce:form')->render($vars),
+			'sidebar' => $this->sidebar
+		);
 	}
 
 
