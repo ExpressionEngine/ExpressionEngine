@@ -171,7 +171,7 @@ and provide them with the URL below.',
 
 'edit_items' => 'Edit Items',
 
-'export_items' => 'Export Items',
+'export_items' => 'Export All Items',
 
 'store_purchases' => 'Store Purchases',
 
@@ -179,7 +179,7 @@ and provide them with the URL below.',
 
 'add_purchase' => 'Add Purchase',
 
-'export_purchases' => 'Export Purchases',
+'export_purchases' => 'Export All Purchases',
 
 'choose_entry_for_item' => 'Choose Entry for Store Item',
 
