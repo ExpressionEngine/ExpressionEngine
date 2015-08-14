@@ -246,6 +246,7 @@ feature 'Channel Settings' do
     @page.apply_expiration_to_existing.click
     @page.comment_text_formatting.select 'None'
     @page.comment_html_formatting.select 'Allow all HTML (not recommended)'
+    @page.extra_publish_controls[0].click
     @page.comment_allow_img_urls[0].click
     @page.comment_auto_link_urls[1].click
 
@@ -273,6 +274,7 @@ feature 'Channel Settings' do
     @page.search_excerpt.value.should == '4'
 
     @page.channel_html_formatting.value.should == 'none'
+    @page.extra_publish_controls[0].checked?.should == true
     @page.channel_allow_img_urls[1].checked?.should == true
     @page.channel_auto_link_urls[0].checked?.should == true
 

@@ -37,8 +37,6 @@
 <?=form_close()?>
 </div>
 
-<?php $this->startOrAppendBlock('modals'); ?>
-
 <?php
 // Individual confirm delete modals
 foreach($logs as $log)
@@ -57,7 +55,8 @@ foreach($logs as $log)
 		)
 	);
 
-	$this->embed('_shared/modal_confirm_remove', $modal_vars);
+	$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+	ee('CP/Modal')->addModal($log->cache_id, $modal);
 }
 
 // Confirm delete all modal
@@ -75,7 +74,6 @@ $modal_vars = array(
 	)
 );
 
-$this->embed('_shared/modal_confirm_remove', $modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+ee('CP/Modal')->addModal('all', $modal);
 ?>
-
-<?php $this->endBlock(); ?>

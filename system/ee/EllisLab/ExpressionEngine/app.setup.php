@@ -10,6 +10,7 @@ use EllisLab\ExpressionEngine\Service\Database;
 use EllisLab\ExpressionEngine\Service\EntryListing;
 use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\Grid;
+use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Validation;
 use EllisLab\ExpressionEngine\Service\View;
@@ -62,7 +63,7 @@ return array(
 			$session_id = $session_id ?: ee()->session->session_id();
 			$cp_url = (empty($cp_url)) ? SELF : (string) $cp_url;
 
-			return new Library\CP\URL($path, $session_id, $qs, $cp_url);
+			return new Library\CP\URL($path, $session_id, $qs, $cp_url, ee()->uri->uri_string);
 		},
 
 		'CP/Pagination' => function($ee, $total_count)
@@ -111,12 +112,6 @@ return array(
 			return $frontend;
 		},
 
-		'Sidebar' => function($ee)
-		{
-			$view = $ee->make('View');
-			return new Sidebar\Sidebar($view);
-		},
-
 		'Thumbnail' => function($ee)
 		{
 			return new Thumbnail\ThumbnailFactory();
@@ -145,6 +140,11 @@ return array(
 		'Captcha' => function($ee)
 		{
 			return new Library\Captcha();
+		},
+
+		'CP/Modal' => function($ee)
+		{
+			return new Modal\ModalCollection;
 		},
 
 		'Config' => function($ee)
@@ -185,6 +185,12 @@ return array(
 		'Security/XSS' => function($ee)
 		{
 			return new Library\Security\XSS();
+		},
+
+		'Sidebar' => function($ee)
+		{
+			$view = $ee->make('View');
+			return new Sidebar\Sidebar($view);
 		},
 
 		'Validation' => function($ee)

@@ -4,7 +4,6 @@ feature 'Installer' do
   before :all do
     @installer = Installer::Prepare.new
     @installer.enable_installer
-    @installer.disable_rename
     @installer.replace_config
   end
 
@@ -22,7 +21,6 @@ feature 'Installer' do
 
   after :all do
     @installer.disable_installer
-    @installer.enable_rename
     @installer.revert_config
   end
 

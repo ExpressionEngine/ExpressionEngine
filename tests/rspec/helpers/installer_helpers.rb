@@ -29,24 +29,6 @@ module Installer
       )
     end
 
-    # Disables install directory rename post-install/upgrade
-    def disable_rename
-      swap(
-        @wizard,
-        'return @rename(APPPATH, $new_path);',
-        '// return @rename(APPPATH, $new_path);'
-      )
-    end
-
-    # Enables install directory rename post-install/upgrade
-    def enable_rename
-      swap(
-        @wizard,
-        '// return @rename(APPPATH, $new_path);',
-        'return @rename(APPPATH, $new_path);'
-      )
-    end
-
     # Replace the current config file with another, while backing up the
     # previous one (e.g. config.php.tmp). Can be reverted by using revert_config
     #

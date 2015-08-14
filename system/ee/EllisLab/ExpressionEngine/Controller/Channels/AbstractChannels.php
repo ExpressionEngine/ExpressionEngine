@@ -56,37 +56,7 @@ abstract class AbstractChannels extends CP_Controller {
 		ee()->lang->loadfile('channel');
 		ee()->load->library('form_validation');
 
-		// Register our menu
-		ee()->menu->register_left_nav(array(
-			'channels' => array(
-				'href' => ee('CP/URL', 'channels'),
-				'button' => array(
-					'href' => ee('CP/URL', 'channels/create'),
-					'text' => 'new'
-				)
-			),
-			'field_groups' => array(
-				'href' => ee('CP/URL', 'channels/fields/groups'),
-				'button' => array(
-					'href' => ee('CP/URL', 'channels/fields/groups/create'),
-					'text' => 'new'
-				)
-			),
-			'category_groups' => array(
-				'href' => ee('CP/URL', 'channels/cat'),
-				'button' => array(
-					'href' => ee('CP/URL', 'channels/cat/create'),
-					'text' => 'new'
-				)
-			),
-			'status_groups' => array(
-				'href' => ee('CP/URL', 'channels/status'),
-				'button' => array(
-					'href' => ee('CP/URL', 'channels/status/create'),
-					'text' => 'new'
-				)
-			)
-		));
+		$this->generateSidebar();
 
 		// This header is section-wide
 		ee()->view->header = array(
@@ -99,6 +69,23 @@ abstract class AbstractChannels extends CP_Controller {
 				)
 			)
 		);
+	}
+
+	protected function generateSidebar($active = NULL)
+	{
+		$sidebar = ee('Sidebar')->make();
+
+		$sidebar->addHeader(lang('channels'), ee('CP/URL', 'channels'))
+			->withButton(lang('new'), ee('CP/URL', 'channels/create'));
+
+		$sidebar->addHeader(lang('field_groups'), ee('CP/URL', 'channels/fields/groups'))
+			->withButton(lang('new'), ee('CP/URL', 'channels/fields/groups/create'));
+
+		$sidebar->addHeader(lang('category_groups'), ee('CP/URL', 'channels/cat'))
+			->withButton(lang('new'), ee('CP/URL', 'channels/cat/create'));
+
+		$sidebar->addHeader(lang('status_groups'), ee('CP/URL', 'channels/status'))
+			->withButton(lang('new'), ee('CP/URL', 'channels/status/create'));
 	}
 
 	/**

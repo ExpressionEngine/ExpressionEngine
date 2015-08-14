@@ -1189,6 +1189,21 @@ class Updater {
 				)
 			);
 		}
+
+		if ( ! ee()->db->field_exists('extra_publish_controls', 'channels'))
+		{
+			ee()->smartforge->add_column(
+				'channels',
+				array(
+					'extra_publish_controls' => array(
+						'type'       => 'char',
+						'constraint' => 1,
+						'default'    => 'n',
+						'null'       => FALSE
+					)
+				)
+			);
+		}
 	}
 
 	/**

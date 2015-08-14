@@ -180,8 +180,6 @@ class EE_Validate {
 	 */
 	function validate_screen_name()
 	{
-		$type = $this->val_type;
-
 		if ($this->screen_name == '')
 		{
 			if ($this->username == '')
@@ -197,43 +195,13 @@ class EE_Validate {
 			return $this->errors[] = ee()->lang->line('disallowed_screen_chars');
 		}
 
-		if ($this->cur_screen_name != '')
+		/** -------------------------------------
+		/**  Is screen name banned?
+		/** -------------------------------------*/
+
+		if (ee()->session->ban_check('screen_name', $this->screen_name) OR trim(preg_replace("/&nbsp;*/", '', $this->screen_name)) == '')
 		{
-			if ($this->cur_screen_name != $this->screen_name)
-			{
-				$type = 'new';
-
-				if ($this->enable_log == TRUE)
-				{
-					$this->log_msg[] = ee()->lang->line('screen_name_changed').NBS.NBS.$this->screen_name;
-				}
-			}
-		}
-
-		if ($type == 'new')
-		{
-			/** -------------------------------------
-			/**  Is screen name banned?
-			/** -------------------------------------*/
-
-			if (ee()->session->ban_check('screen_name', $this->screen_name) OR trim(preg_replace("/&nbsp;*/", '', $this->screen_name)) == '')
-			{
-				return $this->errors[] = ee()->lang->line('screen_name_taken');
-			}
-
-			/** -------------------------------------
-			/**  Is screen name taken?
-			/** -------------------------------------*/
-
-			if (strtolower($this->cur_screen_name) != strtolower($this->screen_name))
-			{
-				$query = ee()->db->query("SELECT COUNT(*) AS count FROM exp_members WHERE screen_name = '".ee()->db->escape_str($this->screen_name)."'");
-
-				if ($query->row('count')  > 0)
-				{
-					$this->errors[] = ee()->lang->line('screen_name_taken');
-				}
-			}
+			return $this->errors[] = ee()->lang->line('screen_name_taken');
 		}
 	}
 

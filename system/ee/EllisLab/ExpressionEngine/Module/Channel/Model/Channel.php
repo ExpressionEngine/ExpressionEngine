@@ -24,6 +24,7 @@ class Channel extends StructureModel {
 		'comment_notify'             => 'boolString',
 		'comment_notify_authors'     => 'boolString',
 		'enable_versioning'          => 'boolString',
+		'extra_publish_controls'     => 'boolString',
 	);
 
 	protected static $_relationships = array(
@@ -131,6 +132,7 @@ class Channel extends StructureModel {
 	protected $channel_require_membership;
 	protected $channel_max_chars;
 	protected $channel_html_formatting;
+	protected $extra_publish_controls;
 	protected $channel_allow_img_urls;
 	protected $channel_auto_link_urls;
 	protected $channel_notify;

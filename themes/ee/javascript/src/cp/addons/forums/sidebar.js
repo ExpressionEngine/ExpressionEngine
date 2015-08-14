@@ -16,7 +16,7 @@ $(document).ready(function () {
 
 		$(modalIs + " .checklist").html(''); // Reset it
 		$(modalIs + " .checklist").append('<li>' + $(this).data('confirm') + '</li>');
-		$(modalIs + " input[name='dir_id']").val($(this).data('dir_id'));
+		$(modalIs + " input[name='id']").val($(this).data('id'));
 
 		e.preventDefault();
 	})

@@ -197,7 +197,7 @@ class Template extends AbstractDesignController {
 				->now();
 		}
 
-		$this->sidebarMenu($group->group_id);
+		$this->generateSidebar($group->group_id);
 		ee()->view->cp_page_title = lang('create_template');
 
 		ee()->cp->render('settings/form', $vars);
@@ -497,7 +497,7 @@ class Template extends AbstractDesignController {
 			),
 		));
 
-		$this->sidebarMenu();
+		$this->generateSidebar();
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('template_manager');
 

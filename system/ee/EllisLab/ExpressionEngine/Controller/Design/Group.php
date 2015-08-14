@@ -194,7 +194,7 @@ class Group extends AbstractDesignController {
 				->now();
 		}
 
-		$this->sidebarMenu();
+		$this->generateSidebar();
 		ee()->view->cp_page_title = lang('create_template_group');
 
 		ee()->cp->render('settings/form', $vars);
@@ -302,7 +302,7 @@ class Group extends AbstractDesignController {
 				->now();
 		}
 
-		$this->sidebarMenu($group->group_id);
+		$this->generateSidebar($group->group_id);
 		ee()->view->cp_page_title = lang('edit_template_group');
 
 		ee()->cp->render('settings/form', $vars);

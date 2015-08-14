@@ -267,6 +267,10 @@ $lang = array(
 
 'html_formatting_desc' => 'Level of <abbr title="Hyper-Text Markup Language">HTML</abbr> allowed.',
 
+'extra_publish_controls' => 'Show extra publish controls?',
+
+'extra_publish_controls_desc' => 'When set to <b>yes</b>, a second set of publish controls will appear at the top of the publish form for this channel.',
+
 'convert_image_urls' => 'Allow image <abbr title="Unified Resource Locator">URL</abbr>s?',
 
 'convert_image_urls_desc' => 'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s to image resources will be automagically rendered as images in this channel\'s entries.',

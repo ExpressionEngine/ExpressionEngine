@@ -8,7 +8,6 @@ feature 'Updater' do
   before :all do
     @installer = Installer::Prepare.new
     @installer.enable_installer
-    @installer.disable_rename
 
     @database = File.expand_path('../circleci/database-2.10.1.php')
     @config = File.expand_path('../circleci/config-2.10.1.php')
@@ -33,7 +32,6 @@ feature 'Updater' do
 
   after :all do
     @installer.disable_installer
-    @installer.enable_rename
     @installer.delete_database_config
   end
 

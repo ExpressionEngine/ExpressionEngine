@@ -3,7 +3,11 @@
 		<fieldset class="tbl-search right">
 			<a class="btn tn action" href="<?=ee('CP/URL', 'addons/settings/simple_commerce/create-purchase')?>"><?=lang('create_new')?></a>
 		</fieldset>
-		<h1><?=lang('all_purchases')?></h1>
+		<h1><?=lang('all_purchases')?>
+			<ul class="toolbar">
+				<li class="download"><a href="<?=ee('CP/URL', 'addons/settings/simple_commerce/export_purchases')?>" title="<?=lang('export_purchases')?>"></a></li>
+			</ul>
+		</h1>
 		<?=ee('Alert')->get('purchases-table')?>
 		<?php $this->embed('ee:_shared/table', $table); ?>
 		<?=$pagination?>
@@ -19,8 +23,6 @@
 	<?=form_close();?>
 </div>
 
-<?php $this->startOrAppendBlock('modals'); ?>
-
 <?php
 $modal_vars = array(
 	'name'      => 'modal-confirm-remove',
@@ -30,7 +32,6 @@ $modal_vars = array(
 	)
 );
 
-$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+ee('CP/Modal')->addModal('remove', $modal);
 ?>
-
-<?php $this->endBlock(); ?>

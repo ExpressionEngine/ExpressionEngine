@@ -226,6 +226,9 @@ $lang = array(
 'edit_forum_board_error' => 'Cannot Update Forum Board',
 'edit_forum_board_error_desc' => 'We were unable to update this forum board, please review and fix errors below.',
 
+'forum_board_removed' => 'Forum Board Removed',
+'forum_board_removed_desc' => 'The forum board <b>%s</b> was removed.',
+
 // Create/Edit Category Form
 
 'create_category' => 'Create Category',
@@ -275,6 +278,9 @@ $lang = array(
 
 'edit_forum_error' => 'Cannot Update Forum',
 'edit_forum_error_desc' => 'We were unable to update this forum, please review and fix errors below.',
+
+'forum_board_removed' => 'Forums Removed',
+'forum_board_removed_desc' => 'The following forums were removed',
 
 // Category Permissions
 
@@ -335,6 +341,7 @@ $lang = array(
 'edit_rank_error' => 'Cannot Update Rank',
 'edit_rank_error_desc' => 'We were unable to update this rank, please review and fix errors below.',
 
+'ranks_removed' => 'Member Ranks Removed',
 'ranks_removed_desc' => 'The following ranks were removed',
 
 // Administrators
@@ -366,6 +373,9 @@ $lang = array(
 
 'invalid_member_group' => 'The member group you submitted does not appear to be valid',
 'invalid_username' => 'The username you submitted does not appear to be valid',
+
+'fadmins_removed' => 'Administrators Removed',
+'fadmins_removed_desc' => 'The following administrators were removed',
 
 // Moderators
 
@@ -410,6 +420,9 @@ $lang = array(
 
 'edit_moderator_error' => 'Cannot Update Moderator',
 'edit_moderator_error_desc' => 'We were unable to update this moderator, please review and fix errors below.',
+
+'moderator_removed' => 'Moderator Removed',
+'moderator_removed_desc' => 'The moderator <b>%s</b> was removed.',
 
 ''=>''
 );

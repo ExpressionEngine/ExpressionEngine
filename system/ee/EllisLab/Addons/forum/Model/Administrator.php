@@ -48,13 +48,15 @@ class Administrator extends Model {
 			'type'     => 'hasOne',
 			'model'    => 'ee:Member',
 			'from_key' => 'admin_member_id',
-			'to_key'   => 'member_id'
+			'to_key'   => 'member_id',
+			'weak'     => TRUE
 		),
 		'MemberGroup' => array(
 			'type'     => 'hasOne',
 			'model'    => 'ee:MemberGroup',
 			'from_key' => 'admin_group_id',
-			'to_key'   => 'group_id'
+			'to_key'   => 'group_id',
+			'weak'     => TRUE
 		),
 	);
 

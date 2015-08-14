@@ -32,6 +32,14 @@ class Purchase extends Model {
 	protected static $_primary_key = 'purchase_id';
 	protected static $_table_name = 'simple_commerce_purchases';
 
+	protected static $_validation_rules = array(
+		'txn_id'        => 'required',
+		'item_id'       => 'required',
+		//'member_id'     => 'required',
+		'purchase_date' => 'required|integer',
+		'item_cost'     => 'required|numeric'
+	);
+
 	protected static $_relationships = array(
 		'Item' => array(
 			'type' => 'hasOne',
@@ -56,4 +64,9 @@ class Purchase extends Model {
 	protected $item_cost;
 	protected $paypal_details;
 	protected $subscription_end_date;
+
+	public function set__purchase_date($purchase_date)
+	{
+		$this->setRawProperty('purchase_date', ee()->localize->string_to_timestamp($purchase_date));
+	}
 }

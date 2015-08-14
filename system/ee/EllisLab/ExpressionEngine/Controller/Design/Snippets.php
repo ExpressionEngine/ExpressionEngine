@@ -46,7 +46,7 @@ class Snippets extends AbstractDesignController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->sidebarMenu();
+		$this->generateSidebar('partials');
 		$this->stdHeader();
 
 		$this->msm = (ee()->config->item('multiple_sites_enabled') == 'y');

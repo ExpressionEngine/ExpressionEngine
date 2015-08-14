@@ -814,11 +814,6 @@ class Addons extends CP_Controller {
 				{
 					$breadcrumb = array_merge($breadcrumb, $data['breadcrumb']);
 				}
-
-				if (isset($data['sidebar']))
-				{
-					ee()->menu->register_left_nav($data['sidebar']);
-				}
 			}
 			else
 			{

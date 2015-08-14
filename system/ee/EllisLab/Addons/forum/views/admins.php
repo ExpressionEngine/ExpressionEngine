@@ -22,18 +22,16 @@
 	</div>
 </div>
 
-<?php $this->startOrAppendBlock('modals'); ?>
-
 <?php
 $modal_vars = array(
 	'name'		=> 'modal-confirm-remove-admin',
 	'form_url'	=> $form_url,
 	'hidden'	=> array(
+		'return' => base64_encode(ee()->cp->get_safe_refresh()),
 		'bulk_action'	=> 'remove'
 	)
 );
 
-$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+ee('CP/Modal')->addModal('remove-admin', $modal);
 ?>
-
-<?php $this->endBlock(); ?>

@@ -51,8 +51,6 @@ class Msm extends CP_Controller {
 
 	protected function sidebarMenu($active = NULL)
 	{
-		$sites = array();
-
 		$site_backlink = ee()->cp->get_safe_refresh();
 
 		if ($site_backlink)
@@ -63,24 +61,18 @@ class Msm extends CP_Controller {
 
 		$site_ids = array_keys(ee()->session->userdata('assigned_sites'));
 
+		$sidebar = ee('Sidebar')->make();
+
+		$sidebar->addHeader(lang('sites'), ee('CP/URL', 'msm'))
+			->withButton(lang('new'), ee('CP/URL', 'msm/create'));
+
+		$sites = $sidebar->addHeader(lang('switch_to'))
+			->addBasicList();
+
 		foreach (ee('Model')->get('Site', $site_ids)->order('site_label', 'asc')->all() as $site)
 		{
-			$sites[$site->site_label] = ee('CP/URL', 'msm/switch_to/' . $site->site_id, array('page' => $site_backlink));
+			$sites->addItem($site->site_label, ee('CP/URL', 'msm/switch_to/' . $site->site_id, array('page' => $site_backlink)));
 		}
-
-		$menu = array(
-			'sites' => array(
-				'href' => ee('CP/URL', 'msm'),
-				'button' => array(
-					'href' => ee('CP/URL', 'msm/create'),
-					'text' => 'new',
-				)
-			),
-			'switch_to',
-			$sites
-		);
-
-		ee()->menu->register_left_nav($menu);
 	}
 
 	protected function stdHeader()

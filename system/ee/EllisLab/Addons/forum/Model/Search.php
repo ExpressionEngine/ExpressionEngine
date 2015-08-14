@@ -45,8 +45,9 @@ class Search extends Model {
 			'type' => 'belongsTo'
 		),
 		'Member' => array(
-			'type'     => 'belongsto',
-			'model'    => 'ee:Member',
+			'type'  => 'belongsto',
+			'model' => 'ee:Member',
+			'weak'  => TRUE
 		),
 	);
 

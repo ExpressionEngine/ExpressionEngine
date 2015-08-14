@@ -16,6 +16,7 @@ class ChannelSettings < ControlPanelPage
 	element :search_excerpt, 'select[name=search_excerpt]'
 
 	element :channel_html_formatting, 'select[name=channel_html_formatting]'
+	elements :extra_publish_controls, 'input[name=extra_publish_controls]'
 	elements :channel_allow_img_urls, 'input[name=channel_allow_img_urls]'
 	elements :channel_auto_link_urls, 'input[name=channel_auto_link_urls]'
 

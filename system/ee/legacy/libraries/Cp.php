@@ -242,6 +242,13 @@ class Cp {
 
 		ee()->view->ee_build_date = ee()->localize->format_date($date_format, $this->_parse_build_date(), TRUE);
 
+		$sidebar = ee('Sidebar')->render();
+
+		if ( ! empty($sidebar))
+		{
+			ee()->view->left_nav = $sidebar;
+		}
+
 		return ee()->view->render($view, $data, $return);
 	}
 

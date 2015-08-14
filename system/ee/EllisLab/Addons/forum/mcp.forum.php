@@ -58,7 +58,7 @@ class Forum_mcp extends CP_Controller {
 		if (count($all_boards))
 		{
 			$board_list = $boards->addFolderList('boards')
-				->withRemoveUrl(ee('CP/URL', $this->base . 'remove/board'));
+				->withRemoveUrl(ee('CP/URL', $this->base . 'remove/board', array('return' => base64_encode(ee()->cp->get_safe_refresh()))));
 
 			foreach ($all_boards as $board)
 			{
@@ -77,10 +77,19 @@ class Forum_mcp extends CP_Controller {
 		$sidebar->addHeader(lang('templates'))
 			->withUrl(ee('CP/URL', 'design/forum'));
 
-		$sidebar->addHeader(lang('member_ranks'))
+		$ranks = $sidebar->addHeader(lang('member_ranks'))
 			->withUrl(ee('CP/URL', $this->base . 'ranks'));
 
-		return $sidebar;
+		if ($active == 'ranks')
+		{
+			$ranks->isActive();
+		}
+
+		ee()->cp->add_js_script(array(
+			'file' => array(
+				'cp/addons/forums/sidebar',
+			),
+		));
 	}
 
 	private function getStatusWidget($status)
@@ -102,6 +111,11 @@ class Forum_mcp extends CP_Controller {
 	 */
 	public function index($id = NULL)
 	{
+		if (ee()->input->post('bulk_action') == 'remove')
+		{
+			$this->removeForums(ee()->input->post('selection'));
+		}
+
 		$board = ee('Model')->get('forum:Board', $id)
 			->order('board_id', 'asc')
 			->first();
@@ -223,7 +237,7 @@ class Forum_mcp extends CP_Controller {
 			'file' => array(
 				'cp/v3/confirm_remove',
 				'cp/sort_helper',
-				'cp/addons/forums_reorder',
+				'cp/addons/forums/reorder',
 			),
 			'plugin' => array(
 				'ee_table_reorder',
@@ -239,10 +253,11 @@ class Forum_mcp extends CP_Controller {
 		ee()->javascript->set_global('forums.reorder_url', ee('CP/URL', $this->base . 'reorder/' . $id)->compile());
 		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
+		$this->generateSidebar($id);
+
 		return array(
 			'body'    => $body,
 			'heading' => lang('forum_manager'),
-			'sidebar' => $this->generateSidebar($id)
 		);
 	}
 
@@ -314,6 +329,24 @@ class Forum_mcp extends CP_Controller {
 		if (method_exists($this, $method))
 		{
 			return call_user_func_array(array($this, $method), $parameters);
+		}
+
+		show_404();
+	}
+
+	/**
+	 * Dispatch method for the various things that can be edit
+	 */
+	public function remove($type)
+	{
+		if ( ! empty($_POST))
+		{
+			$method = 'remove' . ucfirst($type);
+
+			if (method_exists($this, $method))
+			{
+				return $this->$method(ee()->input->post('id'));
+			}
 		}
 
 		show_404();
@@ -417,13 +450,14 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar();
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
 				ee('CP/URL', $this->base)->compile() => lang('forum_listing')
 			),
 			'heading'    => lang('create_forum_board'),
-			'sidebar'    => $this->generateSidebar()
 		);
 	}
 
@@ -467,13 +501,14 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar($id);
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
 				ee('CP/URL', $this->base . 'index/' . $id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
-			'sidebar'    => $this->generateSidebar($id)
 		);
 	}
 
@@ -1130,6 +1165,35 @@ class Forum_mcp extends CP_Controller {
 		return $html;
 	}
 
+	private function removeBoard($id)
+	{
+		$board = ee('Model')->get('forum:Board', $id)->first();
+
+		if ( ! $board)
+		{
+			show_404();
+		}
+
+		$name = $board->board_label;
+
+		$board->delete();
+
+		ee('Alert')->makeInline('entries-form')
+			->asSuccess()
+			->withTitle(lang('forum_board_removed'))
+			->addToBody(sprintf(lang('forum_board_removed_desc'), $name))
+			->defer();
+
+		$return = ee('CP/URL', $this->base);
+
+		if (ee()->input->get_post('return'))
+		{
+			$return = base64_decode(ee()->input->get_post('return'));
+		}
+
+		ee()->functions->redirect($return);
+	}
+
 	// --------------------------------------------------------------------
 
 	private function createCategory($board_id)
@@ -1189,13 +1253,14 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar($board_id);
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
 				ee('CP/URL', $this->base . 'index/' . $board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
-			'heading'    => lang('create_forum_board'),
-			'sidebar'    => $this->generateSidebar($board_id)
+			'heading'    => lang('create_category'),
 		);
 	}
 
@@ -1233,13 +1298,14 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar($category->Board->board_id);
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
 				ee('CP/URL', $this->base . 'index/' . $category->Board->board_id)->compile() => $category->Board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
-			'sidebar'    => $this->generateSidebar($category->Board->board_id)
 		);
 	}
 
@@ -1451,13 +1517,14 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar($category->Board->board_id);
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
 				$return->compile() => $category->Board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
-			'sidebar'    => $this->generateSidebar($category->Board->board_id)
 		);
 	}
 
@@ -1525,13 +1592,14 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar($board->board_id);
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
 				ee('CP/URL', $this->base. 'index/' . $board->board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
-			'heading'    => lang('create_forum_board'),
-			'sidebar'    => $this->generateSidebar($board->board_id)
+			'heading'    => lang('create_forum'),
 		);
 	}
 
@@ -1569,13 +1637,14 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar($forum->Board->board_id);
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
 				ee('CP/URL', $this->base. 'index/' . $forum->Board->board_id)->compile() => $forum->Board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
-			'sidebar'    => $this->generateSidebar($forum->Board->board_id)
 		);
 	}
 
@@ -2032,15 +2101,47 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar($forum->Board->board_id);
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
 				$return->compile() => $forum->Board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
-			'sidebar'    => $this->generateSidebar($forum->Board->board_id)
 		);
 	}
+
+	private function removeForums($ids)
+	{
+		if ( ! is_array($ids))
+		{
+			$ids = array($ids);
+		}
+
+		$forums = ee('Model')->get('forum:Forum', $ids)->all();
+
+		$forum_names = $forums->pluck('forum_name');
+
+		$forums->delete();
+
+		ee('Alert')->makeInline('entries-form')
+			->asSuccess()
+			->withTitle(lang('forums_removed'))
+			->addToBody(lang('forums_removed_desc'))
+			->addToBody($forum_names)
+			->defer();
+
+		$return = ee('CP/URL', $this->base);
+
+		if (ee()->input->get_post('return'))
+		{
+			$return = base64_decode(ee()->input->get_post('return'));
+		}
+
+		ee()->functions->redirect($return);
+	}
+
 
 	// --------------------------------------------------------------------
 
@@ -2048,7 +2149,7 @@ class Forum_mcp extends CP_Controller {
 	{
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
-			$this->removeRank(ee()->input->post('selection'));
+			$this->removeRanks(ee()->input->post('selection'));
 		}
 
 		$ranks = ee('Model')->get('forum:Rank')->all();
@@ -2132,10 +2233,11 @@ class Forum_mcp extends CP_Controller {
 			),
 		));
 
+		$this->generateSidebar('ranks');
+
 		return array(
 			'body'    => $body,
 			'heading' => lang('member_ranks'),
-			'sidebar' => $this->generateSidebar()
 		);
 	}
 
@@ -2169,13 +2271,14 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar('ranks');
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
 				ee('CP/URL', $this->base. 'ranks')->compile() => lang('member_ranks')
 			),
 			'heading'    => $vars['cp_page_title'],
-			'sidebar'    => $this->generateSidebar()
 		);
 	}
 
@@ -2213,13 +2316,14 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar('ranks');
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
 				ee('CP/URL', $this->base. 'ranks')->compile() => lang('member_ranks')
 			),
 			'heading'    => $vars['cp_page_title'],
-			'sidebar'    => $this->generateSidebar()
 		);
 	}
 
@@ -2324,15 +2428,15 @@ class Forum_mcp extends CP_Controller {
 
 		$ranks = ee('Model')->get('forum:Rank', $ids)->all();
 
-		$rank_titles = $entries->pluck('rank_title');
+		$rank_titles = $ranks->pluck('rank_title');
 
 		$ranks->delete();
 
 		ee('Alert')->makeInline('entries-form')
 			->asSuccess()
-			->withTitle(lang('success'))
+			->withTitle(lang('ranks_removed'))
 			->addToBody(lang('ranks_removed_desc'))
-			->addToBody($entry_names)
+			->addToBody($rank_titles)
 			->defer();
 
 		ee()->functions->redirect(ee('CP/URL', $this->base . 'ranks', ee()->cp->get_url_state()));
@@ -2342,6 +2446,11 @@ class Forum_mcp extends CP_Controller {
 
 	public function admins($board_id)
 	{
+		if (ee()->input->post('bulk_action') == 'remove')
+		{
+			$this->removeAdmins(ee()->input->post('selection'));
+		}
+
 		$board = ee('Model')->get('forum:Board', $board_id)->first();
 		if ( ! $board)
 		{
@@ -2404,7 +2513,7 @@ class Forum_mcp extends CP_Controller {
 		}
 		$table->setData($data);
 
-		$base_url = ee('CP/URL', $this->base . 'admins');
+		$base_url = ee('CP/URL', $this->base . 'admins/' . $board_id);
 
 		$vars = array(
 			'cp_page_title'   => lang('administrators'),
@@ -2430,13 +2539,14 @@ class Forum_mcp extends CP_Controller {
 			),
 		));
 
+		$this->generateSidebar($board_id);
+
 		return array(
 			'body'    => $body,
 			'breadcrumb' => array(
 				ee('CP/URL', $this->base. 'index/' . $board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
 			'heading' => lang('administrators'),
-			'sidebar' => $this->generateSidebar($board_id)
 		);
 	}
 
@@ -2528,13 +2638,14 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar($board_id);
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
 				ee('CP/URL', $this->base. 'index/' . $board_id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
 			'heading'    => $vars['cp_page_title'],
-			'sidebar'    => $this->generateSidebar($board_id)
 		);
 	}
 
@@ -2602,6 +2713,38 @@ class Forum_mcp extends CP_Controller {
 		}
 
 		return $result;
+	}
+
+	private function removeAdmins($ids)
+	{
+		if ( ! is_array($ids))
+		{
+			$ids = array($ids);
+		}
+
+		$admins = ee('Model')->get('forum:Administrator', $ids)->all();
+
+		$forum_names = $admins->map(function($admin) {
+			return $admin->getAdminName();
+		});
+
+		$admins->delete();
+
+		ee('Alert')->makeInline('entries-form')
+			->asSuccess()
+			->withTitle(lang('admins_removed'))
+			->addToBody(lang('admins_removed_desc'))
+			->addToBody($forum_names)
+			->defer();
+
+		$return = ee('CP/URL', $this->base);
+
+		if (ee()->input->get_post('return'))
+		{
+			$return = base64_decode(ee()->input->get_post('return'));
+		}
+
+		ee()->functions->redirect($return);
 	}
 
 	// --------------------------------------------------------------------
@@ -2689,15 +2832,18 @@ class Forum_mcp extends CP_Controller {
 			'board' => $board,
 			'categories' => $categories,
 			'base_url' => $base_url,
+			'remove_url' => ee('CP/URL', $this->base . 'remove/moderator'),
 		);
 
 		$body = ee('View')->make('forum:moderators')->render($vars);
 
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/addons/forums/moderators',
 			),
 		));
+
+		$this->generateSidebar($id);
 
 		return array(
 			'body'    => $body,
@@ -2705,7 +2851,6 @@ class Forum_mcp extends CP_Controller {
 				ee('CP/URL', $this->base. 'index/' . $id)->compile() => $board->board_label . ' '. lang('forum_listing')
 			),
 			'heading' => lang('moderators'),
-			'sidebar' => $this->generateSidebar($id)
 		);
 	}
 
@@ -2751,6 +2896,8 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar();
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
@@ -2758,7 +2905,6 @@ class Forum_mcp extends CP_Controller {
 				ee('CP/URL', $this->base. 'moderators/' . $forum_id)->compile() => lang('moderators')
 			),
 			'heading'    => lang('create_moderator'),
-			'sidebar'    => $this->generateSidebar()
 		);
 	}
 
@@ -2800,6 +2946,8 @@ class Forum_mcp extends CP_Controller {
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
+		$this->generateSidebar();
+
 		return array(
 			'body'       => '<div class="box">' . $body . '</div>',
 			'breadcrumb' => array(
@@ -2807,7 +2955,6 @@ class Forum_mcp extends CP_Controller {
 				ee('CP/URL', $this->base. 'moderators/' . $forum_id)->compile() => lang('moderators')
 			),
 			'heading'    => lang('edit_moderator'),
-			'sidebar'    => $this->generateSidebar()
 		);
 	}
 
@@ -3007,7 +3154,26 @@ class Forum_mcp extends CP_Controller {
 
 	private function removeModerator($id)
 	{
+		$moderator = ee('Model')->get('forum:Moderator', $id)->first();
 
+		$board_id = $moderator->board_id;
+
+		if ( ! $moderator)
+		{
+			show_404();
+		}
+
+		$name = $moderator->getModeratorName();
+
+		$moderator->delete();
+
+		ee('Alert')->makeInline('entries-form')
+			->asSuccess()
+			->withTitle(lang('moderator_removed'))
+			->addToBody(sprintf(lang('moderator_removed_desc'), $name))
+			->defer();
+
+		ee()->functions->redirect(ee('CP/URL', $this->base . 'moderators/' . $board_id));
 	}
 
 	// --------------------------------------------------------------------

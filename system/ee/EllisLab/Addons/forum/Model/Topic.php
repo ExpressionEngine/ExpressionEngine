@@ -60,8 +60,10 @@ class Topic extends Model {
 			'model' => 'Attachment'
 		),
 		'Author' => array(
-			'type' => 'belongsTo',
-			'model' => 'ee:Member'
+			'type'     => 'belongsTo',
+			'model'    => 'ee:Member',
+			'from_key' => 'author_id',
+			'weak'     => TRUE
 		),
 		'Board' => array(
 			'type' => 'belongsTo'
@@ -70,9 +72,10 @@ class Topic extends Model {
 			'type'     => 'belongsTo',
 			'from_key' => 'topic_edit_author',
 			'to_key'   => 'member_id',
-			'model'    => 'ee:Member'
+			'model'    => 'ee:Member',
+			'weak'     => TRUE
 		),
-		'Froum' => array(
+		'Forum' => array(
 			'type' => 'belongsTo'
 		),
 		'LastPost' => array(
@@ -86,6 +89,7 @@ class Topic extends Model {
 			'model'    => 'ee:Member',
 			'from_key' => 'last_post_author_id',
 			'to_key'   => 'member_id',
+			'weak'     => TRUE
 		),
 		'Polls' => array(
 			'type'  => 'hasMany',

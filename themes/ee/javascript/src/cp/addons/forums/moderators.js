@@ -11,12 +11,12 @@
  */
 
 $(document).ready(function () {
-	$('.sidebar .folder-list .remove a.m-link').click(function (e) {
+	$('.light .toolbar .remove a.m-link').click(function (e) {
 		var modalIs = '.' + $(this).attr('rel');
 
 		$(modalIs + " .checklist").html(''); // Reset it
 		$(modalIs + " .checklist").append('<li>' + $(this).data('confirm') + '</li>');
-		$(modalIs + " input[name='dir_id']").val($(this).data('dir_id'));
+		$(modalIs + " input[name='id']").val($(this).data('id'));
 
 		e.preventDefault();
 	})

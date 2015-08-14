@@ -111,7 +111,7 @@
 	</div>
 </div>
 
-<?php $this->startOrAppendBlock('modals'); ?>
+<?php ee('CP/Modal')->startModal('add-new-tab'); ?>
 <div class="modal-wrap modal-add-new-tab hidden">
 	<div class="modal">
 		<div class="col-group">
@@ -138,4 +138,4 @@
 		</div>
 	</div>
 </div>
-<?php $this->endBlock(); ?>
+<?php ee('CP/Modal')->endModal(); ?>

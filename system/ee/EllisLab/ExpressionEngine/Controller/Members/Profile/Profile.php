@@ -68,58 +68,7 @@ class Profile extends CP_Controller {
 		ee()->load->model('member_model');
 		ee()->load->library('form_validation');
 
-		// Register our menu
-		ee()->menu->register_left_nav(array(
-			'personal_settings' => ee('CP/URL', 'members/profile', $qs),
-			array(
-				'email_settings' => ee('CP/URL', 'members/profile/email', $qs),
-				'auth_settings' => ee('CP/URL', 'members/profile/auth', $qs),
-				'date_settings' => ee('CP/URL', 'members/profile/date', $qs)
-			),
-			'publishing_settings' => ee('CP/URL', 'members/profile/publishing', $qs),
-			array(
-				'html_buttons' => ee('CP/URL', 'members/profile/buttons', $qs),
-				'quick_links' => ee('CP/URL', 'members/profile/quicklinks', $qs),
-				'bookmarklets' => ee('CP/URL', 'members/profile/bookmarks', $qs),
-				'subscriptions' => ee('CP/URL', 'members/profile/subscriptions', $qs)
-			),
-			'administration',
-			array(
-				'blocked_members' => ee('CP/URL', 'members/profile/ignore', $qs),
-				'member_group' => ee('CP/URL', 'members/profile/group', $qs),
-				sprintf(lang('email_username'), $this->member->username) => ee('CP/URL', 'utilities/communicate/member/' . $this->member->member_id),
-				sprintf(lang('login_as'), $this->member->username) => ee('CP/URL', 'members/profile/login', $qs),
-				sprintf(lang('delete_username'), $this->member->username) => array(
-					'href' => ee('CP/URL', 'members/delete', $qs),
-					'class' => 'remove',
-					'attrs' => array(
-						'rel' => "modal-confirm-remove",
-						'data-confirm-trigger' => "nodeName",
-						'data-conditional-modal' => "confirm-trigger",
-						'data-confirm-ajax' => ee('CP/URL', '/members/confirm'),
-						'data-confirm-input' => 'selection',
-						'data-confirm-text' =>  lang('member') . ': <b>' . htmlentities($this->member->screen_name, ENT_QUOTES) . '</b>'
-					)
-				)
-			)
-		));
-
-		$modal_vars = array(
-			'name'		=> 'modal-confirm-remove',
-			'form_url'	=> ee('CP/URL', 'members/delete'),
-			'hidden'	=> array(
-				'bulk_action'	=> 'remove'
-			)
-		);
-
-		$modal = ee()->load->view('_shared/modal_confirm_remove', $modal_vars, TRUE);
-		$modal .= "<input type='hidden' name='selection' value='{$this->member->member_id}' />";
-		ee()->view->blocks['modals'] = $modal;
-
-		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
-		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
-		));
+		$this->generateSidebar();
 
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'members'), lang('members'));
 
@@ -128,7 +77,52 @@ class Profile extends CP_Controller {
 		);
 	}
 
-	// --------------------------------------------------------------------
+	protected function generateSidebar($active = NULL)
+	{
+		$sidebar = ee('Sidebar')->make();
+
+		$list = $sidebar->addHeader(lang('personal_settings'), ee('CP/URL', 'members/profile', $this->query_string))
+			->addBasicList();
+
+		$list->addItem(lang('email_settings'), ee('CP/URL', 'members/profile/email', $this->query_string));
+		$list->addItem(lang('auth_settings'), ee('CP/URL', 'members/profile/auth', $this->query_string));
+		$list->addItem(lang('date_settings'), ee('CP/URL', 'members/profile/date', $this->query_string));
+
+		$list = $sidebar->addHeader(lang('publishing_settings'), ee('CP/URL', 'members/profile/publishing', $this->query_string))
+			->addBasicList();
+
+		$list->addItem(lang('html_buttons'), ee('CP/URL', 'members/profile/buttons', $this->query_string));
+		$list->addItem(lang('quick_links'), ee('CP/URL', 'members/profile/quicklinks', $this->query_string));
+		$list->addItem(lang('bookmarklets'), ee('CP/URL', 'members/profile/bookmarks', $this->query_string));
+		$list->addItem(lang('subscriptions'), ee('CP/URL', 'members/profile/subscriptions', $this->query_string));
+
+		$list = $sidebar->addHeader(lang('administration'))
+			->addBasicList();
+
+		$list->addItem(lang('blocked_members'), ee('CP/URL', 'members/profile/ignore', $this->query_string));
+		$list->addItem(lang('member_group'), ee('CP/URL', 'members/profile/group', $this->query_string));
+		$list->addItem(sprintf(lang('email_username'), $this->member->username), ee('CP/URL', 'utilities/communicate/member/' . $this->member->member_id));
+		$list->addItem(sprintf(lang('login_as'), $this->member->username), ee('CP/URL', 'members/profile/login', $this->query_string));
+		$list->addItem(sprintf(lang('delete_username'), $this->member->username), ee('CP/URL', 'members/delete', $this->query_string))
+			->asDeleteAction('modal-confirm-remove-member');
+
+		$modal_vars = array(
+			'name'		=> 'modal-confirm-remove-member',
+			'form_url'	=> ee('CP/URL', 'members/delete'),
+			'checklist' => array(
+				array(
+					'kind' => lang('members'),
+					'desc' => $this->member->username,
+				)
+			),
+			'hidden' => array(
+				'bulk_action' => 'remove',
+				'selection'   => $this->member->member_id
+			)
+		);
+
+		ee('CP/Modal')->addModal('member', ee('View')->make('_shared/modal_confirm_remove')->render($modal_vars));
+	}
 
 	public function index()
 	{
