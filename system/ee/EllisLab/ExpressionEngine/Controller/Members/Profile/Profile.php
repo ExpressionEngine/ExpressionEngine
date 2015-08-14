@@ -81,8 +81,14 @@ class Profile extends CP_Controller {
 	{
 		$sidebar = ee('Sidebar')->make();
 
-		$list = $sidebar->addHeader(lang('personal_settings'), ee('CP/URL', 'members/profile', $this->query_string))
-			->addBasicList();
+		$header = $sidebar->addHeader(lang('personal_settings'), ee('CP/URL', 'members/profile', $this->query_string));
+
+		if (ee()->uri->uri_string == 'cp/members/profile/settings')
+		{
+			$header->isActive();
+		}
+
+		$list = $header->addBasicList();
 
 		$list->addItem(lang('email_settings'), ee('CP/URL', 'members/profile/email', $this->query_string));
 		$list->addItem(lang('auth_settings'), ee('CP/URL', 'members/profile/auth', $this->query_string));
