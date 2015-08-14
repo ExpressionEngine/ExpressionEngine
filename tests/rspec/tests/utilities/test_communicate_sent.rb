@@ -34,8 +34,6 @@ feature 'Communicate > Sent' do
 		@page.should have_text 'No Emails availble'
 		@page.should have_text 'CREATE NEW EMAIL'
 		@page.should_not have_pagination
-		@page.should_not have_bulk_action
-		@page.should_not have_action_submit_button
 	end
 
 	it 'sorts by subject (asc)' do
@@ -292,8 +290,6 @@ feature 'Communicate > Sent' do
 		@page.phrase_search.value.should eq phrase
 
 		@page.should have_no_results
-		@page.should_not have_bulk_action
-		@page.should_not have_action_submit_button
 	end
 
 	it 'maintains sort when searching' do

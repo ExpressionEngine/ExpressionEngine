@@ -23,8 +23,6 @@ feature 'Translate Tool' do
 		@list_page.heading.text.should eq 'English Language Files'
 		@list_page.should have_phrase_search
 		@list_page.should have_search_submit_button
-		@list_page.should have_bulk_action
-		@list_page.should have_action_submit_button
 	end
 
 	before(:each, :edit => true) do
