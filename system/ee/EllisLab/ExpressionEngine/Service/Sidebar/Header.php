@@ -2,6 +2,7 @@
 namespace EllisLab\ExpressionEngine\Service\Sidebar;
 
 use EllisLab\ExpressionEngine\Service\View\ViewFactory;
+use EllisLab\ExpressionEngine\Library\CP\URL;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -83,6 +84,10 @@ class Header {
 	public function withUrl($url)
 	{
 		$this->url = $url;
+		if ($url instanceof URL && $url->isTheRequestedURI())
+		{
+			$this->isActive();
+		}
 		return $this;
 	}
 
