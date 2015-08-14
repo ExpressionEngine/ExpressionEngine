@@ -51,7 +51,7 @@ class Edit extends AbstractPublishController {
 		$entries = ee('Model')->get('ChannelEntry')
 			->filter('site_id', ee()->config->item('site_id'));
 
-		// We need to filter by Channel first (if necissary) as that will
+		// We need to filter by Channel first (if necessary) as that will
 		// impact the entry count for the perpage filter
 		$channel_filter = $this->createChannelFilter();
 		$channel_id = $channel_filter->value();
