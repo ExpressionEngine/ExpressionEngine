@@ -39,6 +39,11 @@ class Member extends Model {
 			'type' => 'hasMany',
 			'model' => 'SpecialtyTemplate',
 			'to_key' => 'last_author_id'
+		),
+		'VersionedChannelEntries' => array(
+			'type' => 'hasMany',
+			'model' => 'ChannelEntryVersion',
+			'to_key' => 'author_id'
 		)
 	//	'ResetPassword'	=> array(
 	//		'type' => 'one_to_one'
@@ -114,7 +119,6 @@ class Member extends Model {
 	protected $time_format;
 	protected $date_format;
 	protected $include_seconds;
-	protected $cp_theme;
 	protected $profile_theme;
 	protected $forum_theme;
 	protected $tracker;

@@ -1,4 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+use EllisLab\ExpressionEngine\Library\CP\Table;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -44,12 +47,28 @@ class Simple_commerce_mcp {
 	{
 		$this->base_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce';
 
-		ee()->cp->set_right_nav(array(
-								'items'				=> $this->base_url.AMP.'method=edit_items',
-								'purchases'			=> $this->base_url.AMP.'method=edit_purchases',
-								'email_templates'	=> $this->base_url.AMP.'method=edit_emails',
-								'simple_commerce_module_name' => $this->base_url)
-							);
+		$this->sidebar = ee('Sidebar')->make();
+
+		$this->items_nav = $this->sidebar->addHeader(lang('items'), ee('CP/URL', 'addons/settings/simple_commerce'))
+			->withButton(lang('new'), ee('CP/URL', 'addons/settings/simple_commerce/create-item'));
+
+		$this->purchases_nav = $this->sidebar->addHeader(lang('purchases'), ee('CP/URL', 'addons/settings/simple_commerce/purchases'))
+			->withButton(lang('new'), ee('CP/URL', 'addons/settings/simple_commerce/create-purchase'));
+
+		$this->email_templates_nav = $this->sidebar->addHeader(lang('email_templates'), ee('CP/URL', 'addons/settings/simple_commerce/email-templates'))
+			->withButton(lang('new'), ee('CP/URL', 'addons/settings/simple_commerce/create-email-template'));
+
+		ee()->view->header = array(
+			'title' => lang('simple_commerce_manager'),
+			'form_url' => ee('CP/URL', 'addons/settings/simple_commerce/search'),
+			'search_button_value' => lang('search_commerce'),
+			'toolbar_items' => array(
+				'settings' => array(
+					'href' => ee('CP/URL', 'settings/commerce'),
+					'title' => lang('settings')
+				)
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -62,7 +81,952 @@ class Simple_commerce_mcp {
 
 	function index($message = '')
 	{
-		// Former home of settings, which are now in the Settings controller
+		$table = ee('CP/Table');
+		$table->setColumns(array(
+			'name',
+			'price_sale' => array(
+				'encode' => FALSE
+			),
+			'frequency',
+			'subscribers',
+			'purchases',
+			'manage' => array(
+				'type'	=> Table::COL_TOOLBAR
+			),
+			array(
+				'type'	=> Table::COL_CHECKBOX
+			)
+		));
+
+		$table->setNoResultsText('no_purchases', 'create_new_item', ee('CP/URL', 'addons/settings/simple_commerce/create-item'));
+
+		$sort_map = array(
+			// Change when relationships work
+			'name'        => 'entry_id',
+			'price_sale'  => 'item_regular_price',
+			'frequency'   => 'subscription_frequency',
+			'subscribers' => 'current_subscriptions',
+			'purchases'   => 'item_purchases'
+		);
+
+		$items = ee('Model')->get('simple_commerce:Item');
+		$total_rows = $items->all()->count();
+
+		$items = $items->order($sort_map[$table->sort_col], $table->sort_dir)
+			->limit($table->config['limit'])
+			->offset(($table->config['page'] - 1) * $table->config['limit'])
+			->all();
+
+		$data = array();
+		// TODO: Check for n+1 once these relationships are working, probably need some with()s
+		foreach ($items as $item)
+		{
+			if ($item->item_use_sale)
+			{
+				$price_col = '<span class="faded">$'.$item->item_regular_price.' / </span><span class="yes">$'.$item->item_sale_price.'</span>';
+			}
+			else
+			{
+				$price_col = '<span class="yes">$'.$item->item_regular_price.'</span><span class="faded"> / $'.$item->item_sale_price.'</span>';
+			}
+			$columns = array(
+				$item->entry_id,
+				//$item->ChannelEntry->title,
+				$price_col,
+				$item->subscription_frequency ?: '--',
+				$item->current_subscriptions,
+				$item->item_purchases,
+				array('toolbar_items' => array(
+					'edit' => array(
+						'href' => ee('CP/URL', 'addons/settings/simple_commerce/edit-item/'.$item->getId()),
+						'title' => lang('edit')
+					)
+				)),
+				array(
+					'name' => 'items[]',
+					'value' => $item->getId(),
+					'data'	=> array(
+						'confirm' => lang('item') . ': <b>' . htmlentities($item->entry_id, ENT_QUOTES) . '</b>'
+					)
+				)
+			);
+
+			$attrs = array();
+			$highlight_ids = ee()->session->flashdata('highlight_id') ?: array();
+			if (in_array($item->getId(), $highlight_ids))
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs' => $attrs,
+				'columns' => $columns
+			);
+		}
+
+		$table->setData($data);
+
+		$vars['base_url'] = ee('CP/URL', 'addons/settings/simple_commerce');
+		$vars['table'] = $table->viewData($vars['base_url']);
+
+		$vars['pagination'] = ee('CP/Pagination', $total_rows)
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($vars['table']['base_url']);
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('items') . ': <b>### ' . lang('items') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/confirm_remove'),
+		));
+
+		return array(
+			'heading' => lang('commerce_items'),
+			'body' => ee('View')->make('simple_commerce:items')->render($vars),
+			'sidebar' => $this->sidebar
+		);
+	}
+
+	/**
+	 * Remove purchases handler
+	 */
+	public function removeItem()
+	{
+		$item_ids = ee()->input->post('items');
+
+		if ( ! empty($item_ids) && ee()->input->post('bulk_action') == 'remove')
+		{
+			$item_ids = array_filter($item_ids, 'is_numeric');
+
+			if ( ! empty($item_ids))
+			{
+				ee('Model')->get('simple_commerce:Item', $item_ids)->delete();
+
+				ee('Alert')->makeInline('items-table')
+					->asSuccess()
+					->withTitle(lang('items_removed'))
+					->addToBody(sprintf(lang('items_removed_desc'), count($item_ids)))
+					->defer();
+			}
+		}
+		else
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce', ee()->cp->get_url_state()));
+	}
+
+	/**
+	 * First step of item creation
+	 */
+	public function createItem()
+	{
+		ee()->lang->load('content');
+
+		$base_url = ee('CP/URL', 'addons/settings/simple_commerce/create-item');
+		$entry_listing = ee('CP/EntryListing', ee()->input->get_post('search'));
+		$entries = $entry_listing->getEntries();
+		$filters = $entry_listing->getFilters();
+		$count = $entries->count();
+
+		$vars['filters'] = $filters->render($base_url);
+		$filter_values = $filters->values();
+		$base_url->addQueryStringVariables($filter_values);
+
+		$table = ee('CP/Table');
+
+		$table->setColumns(
+			array(
+				'column_entry_id',
+				'column_title' => array(
+					'encode' => FALSE
+				),
+				'column_entry_date',
+				'column_status' => array(
+					'type'	=> Table::COL_STATUS
+				),
+				array(
+					'type'	=> Table::COL_CHECKBOX
+				)
+			)
+		);
+		$table->setNoResultsText(lang('no_entries_exist'));
+
+		$channels = ee('Model')->get('Channel')
+			->fields('channel_id', 'channel_name')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all();
+
+		$page = ((int) ee()->input->get('page')) ?: 1;
+		$offset = ($page - 1) * $filter_values['perpage']; // Offset is 0 indexed
+
+		$entries->order(str_replace('column_', '', $table->sort_col), $table->sort_dir)
+			->limit($filter_values['perpage'])
+			->offset($offset);
+
+		$data = array();
+
+		$entry_id = ee()->session->flashdata('entry_id');
+
+		foreach ($entries->all() as $entry)
+		{
+			$title = htmlentities($entry->title, ENT_QUOTES);
+			$title .= '<br><span class="meta-info">&mdash; ' . lang('by') . ': ' . htmlentities($entry->Author->getMemberName(), ENT_QUOTES) . ', ' . lang('in') . ': ' . htmlentities($entry->Channel->channel_title, ENT_QUOTES) . '</span>';
+
+			$data[] = array(
+				$entry->entry_id,
+				$title,
+				ee()->localize->human_time($entry->entry_date),
+				$entry->status,
+				array(
+					'name' => 'entries[]',
+					'value' => $entry->entry_id,
+					'data' => array(
+						'confirm' => lang('entry') . ': <b>' . htmlentities($entry->title, ENT_QUOTES) . '</b>'
+					)
+				)
+			);
+		}
+
+		$table->setData($data);
+
+		$vars['table'] = $table->viewData($base_url);
+		$vars['form_url'] = ee('CP/URL', 'addons/settings/simple_commerce/add-items');
+
+		$vars['pagination'] = ee('CP/Pagination', $count)
+			->perPage($filter_values['perpage'])
+			->currentPage($page)
+			->render($base_url);
+
+		$this->items_nav->isActive();
+
+		return array(
+			'heading' => sprintf(lang('create_new_item_step'), 1),
+			'breadcrumb' => array(
+				ee('CP/URL', 'addons/settings/simple_commerce')->compile() => lang('commerce_items')
+			),
+			'body' => ee('View')->make('simple_commerce:entry_list')->render($vars),
+			'sidebar' => $this->sidebar
+		);
+	}
+
+	/**
+	 * Step 2 in item creation
+	 */
+	public function addItems()
+	{
+		$entry_ids = ee()->input->post('entries');
+
+		if ( ! ee()->input->post('items') && (empty($entry_ids) OR ee()->input->post('bulk_action') != 'add_item'))
+		{
+			ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce/create-item', ee()->cp->get_url_state()));
+		}
+
+		$forms = array();
+		if ( ! empty($_POST) && isset($_POST['items']))
+		{
+			// Validate all items before saving
+			$valid = TRUE;
+			foreach ($_POST['items'] as $entry_id => $item_data)
+			{
+				$item = ee('Model')->make('simple_commerce:Item');
+				$item->set($item_data);
+				$item->entry_id = 1; // TODO: Fix when relationships works
+				$item->subscription_frequency = empty($item->subscription_frequency) ? NULL : $item->subscription_frequency;
+				$result = $item->validate();
+
+				$forms[] = array(
+					'form_title' => lang('create_new').': '.$entry_id,
+					'sections' => $this->itemForm($item, 'items['.$entry_id.']'),
+					'errors' => $result,
+					'item' => $item,
+					'entry_id' => $entry_id
+				);
+
+				if ($result->isNotValid())
+				{
+					ee('Alert')->makeInline('item-form-'.$entry_id)
+						->asIssue()
+						->withTitle(lang('item_not_created'))
+						->addToBody(lang('item_not_created_desc'))
+						->now();
+
+					// Hack because we have prefixed fields that don't match the fields in the model
+					ee()->load->library('form_validation');
+					foreach ($result->renderErrors() as $field_name => $error)
+					{
+						ee()->form_validation->_error_array['items['.$entry_id.']['.$field_name.']'] = $error;
+					}
+
+					if ($valid)
+					{
+						$valid = FALSE;
+					}
+				}
+			}
+
+			if ($valid)
+			{
+				$item_ids = array();
+				foreach ($forms as $form)
+				{
+					$item = $form['item'];
+					$item->save();
+					$item_ids[] = $item->getId();
+				}
+
+				ee()->session->set_flashdata('highlight_id', $item_ids);
+
+				ee('Alert')->makeInline('items-table')
+					->asSuccess()
+					->withTitle(lang('item_created'))
+					->addToBody(lang('item_created_desc'))
+					->defer();
+
+				ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce'));
+			}
+		}
+
+		if (empty($forms))
+		{
+			foreach ($entry_ids as $entry_id)
+			{
+				$item = ee('Model')->make('simple_commerce:Item');
+				$forms[] = array(
+					'form_title' => lang('create_new').': '.$entry_id,
+					'sections' => $this->itemForm($item, 'items['.$entry_id.']'),
+					'errors' => NULL,
+					'entry_id' => 0
+				);
+			}
+		}
+
+		$vars = array(
+			'forms' => $forms,
+			'form_url' => ee('CP/URL', 'addons/settings/simple_commerce/add-items'),
+			'save_btn_text' => sprintf(lang('btn_save'), (count($forms) > 1) ? lang('items') : lang('item')),
+			'save_btn_text_working' => 'btn_saving'
+		);
+
+		$this->items_nav->isActive();
+
+		return array(
+			'heading' => sprintf(lang('create_new_item_step'), 2),
+			'breadcrumb' => array(
+				ee('CP/URL', 'addons/settings/simple_commerce')->compile() => lang('commerce_items')
+			),
+			'body' => ee('View')->make('simple_commerce:add_items')->render($vars),
+			'sidebar' => $this->sidebar
+		);
+	}
+
+	private function itemForm($item, $prefix = 'item')
+	{
+		$email_templates = array(0 => lang('send_no_email'));
+		$email_templates += ee('Model')->get('simple_commerce:EmailTemplate')->all()->getDictionary('email_id', 'email_name');
+
+		$member_groups = array(0 => lang('no_change'));
+		$member_groups += ee('Model')->get('MemberGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('group_title')
+			->all()
+			->getDictionary('group_id', 'group_title');
+
+		return array(
+			array(
+				array(
+					'title' => 'enable_item',
+					'desc' => 'enable_item_desc',
+					'fields' => array(
+						$prefix.'[item_enabled]' => array(
+							'type' => 'yes_no',
+							'value' => $item->item_enabled
+						)
+					)
+				),
+				array(
+					'title' => 'regular_price',
+					'fields' => array(
+						$prefix.'[item_regular_price]' => array(
+							'type' => 'text',
+							'value' => $item->item_regular_price ?: '0.00'
+						)
+					)
+				),
+				array(
+					'title' => 'sale_price',
+					'fields' => array(
+						$prefix.'[item_sale_price]' => array(
+							'type' => 'text',
+							'value' => $item->item_sale_price ?: '0.00'
+						)
+					)
+				),
+				array(
+					'title' => 'use_sale_price',
+					'fields' => array(
+						$prefix.'[item_use_sale]' => array(
+							'type' => 'yes_no',
+							'value' => $item->item_use_sale
+						)
+					)
+				)
+			),
+			'email_options' => array(
+				array(
+					'title' => 'admin_email_address',
+					'desc' => 'admin_email_address_desc',
+					'fields' => array(
+						$prefix.'[admin_email_address]' => array(
+							'type' => 'text',
+							'value' => $item->admin_email_address
+						)
+					)
+				),
+				array(
+					'title' => 'admin_email_template',
+					'desc' => 'admin_email_template_desc',
+					'fields' => array(
+						$prefix.'[admin_email_template]' => array(
+							'type' => 'select',
+							'choices' => $email_templates,
+							'value' => $item->admin_email_template
+						)
+					)
+				),
+				array(
+					'title' => 'customer_email_template',
+					'desc' => 'customer_email_template_desc',
+					'fields' => array(
+						$prefix.'[customer_email_template]' => array(
+							'type' => 'select',
+							'choices' => $email_templates,
+							'value' => $item->customer_email_template
+						)
+					)
+				),
+				array(
+					'title' => 'new_member_group',
+					'desc' => 'new_member_group_desc',
+					'fields' => array(
+						$prefix.'[new_member_group]' => array(
+							'type' => 'select',
+							'choices' => $member_groups,
+							'value' => $item->new_member_group
+						)
+					)
+				),
+				array(
+					'title' => 'admin_email_template_unsubscribe',
+					'desc' => 'admin_email_template_unsubscribe_desc',
+					'fields' => array(
+						$prefix.'[admin_email_template_unsubscribe]' => array(
+							'type' => 'select',
+							'choices' => $email_templates,
+							'value' => $item->admin_email_template_unsubscribe
+						)
+					)
+				),
+				array(
+					'title' => 'customer_email_unsubscribe',
+					'desc' => 'customer_email_unsubscribe_desc',
+					'fields' => array(
+						$prefix.'[customer_email_template_unsubscribe]' => array(
+							'type' => 'select',
+							'choices' => $email_templates,
+							'value' => $item->customer_email_template_unsubscribe
+						)
+					)
+				),
+				array(
+					'title' => 'new_member_group',
+					'desc' => 'member_group_unsubscribe_desc',
+					'fields' => array(
+						$prefix.'[member_group_unsubscribe]' => array(
+							'type' => 'select',
+							'choices' => $member_groups,
+							'value' => $item->member_group_unsubscribe
+						)
+					)
+				),
+			),
+			'subscription_options' => array(
+				array(
+					'title' => 'recurring',
+					'desc' => 'recurring_desc',
+					'fields' => array(
+						$prefix.'[recurring]' => array(
+							'type' => 'yes_no',
+							'value' => $item->recurring
+						)
+					)
+				),
+				array(
+					'title' => 'subscription_frequency',
+					'desc' => 'subscription_frequency_desc',
+					'fields' => array(
+						$prefix.'[subscription_frequency]' => array(
+							'type' => 'text',
+							'value' => $item->subscription_frequency
+						),
+						$prefix.'[subscription_frequency_unit]' => array(
+							'type' => 'select',
+							'choices' => array(
+								'day' => lang('days'),
+								'week' => lang('weeks'),
+								'month' => lang('months'),
+								'year' => lang('years')
+							),
+							'value' => $item->subscription_frequency_unit
+						)
+					)
+				)
+			)
+		);
+	}
+
+	/**
+	 * Purchases listing
+	 */
+	public function purchases()
+	{
+		$table = ee('CP/Table');
+		$table->setColumns(array(
+			'item',
+			'purchaser',
+			'date_of_purchase',
+			'sub_end_date',
+			'cost',
+			'manage' => array(
+				'type'	=> Table::COL_TOOLBAR
+			),
+			array(
+				'type'	=> Table::COL_CHECKBOX
+			)
+		));
+
+		$table->setNoResultsText('no_purchases', 'create_purchase', ee('CP/URL', 'addons/settings/simple_commerce/create-purchase'));
+
+		$sort_map = array(
+			// Change when relationships work
+			'item'             => 'item_id',
+			'purchaser'        => 'member_id',
+			'date_of_purchase' => 'purchase_date',
+			'sub_end_date'     => 'subscription_end_date',
+			'cost'             => 'item_cost'
+		);
+
+		$purchases = ee('Model')->get('simple_commerce:Purchase');
+		$total_rows = $purchases->all()->count();
+
+		$purchases = $purchases->order($sort_map[$table->sort_col], $table->sort_dir)
+			->limit($table->config['limit'])
+			->offset(($table->config['page'] - 1) * $table->config['limit'])
+			->all();
+
+		$data = array();
+		// TODO: Check for n+1 once these relationships are working
+		foreach ($purchases as $purchase)
+		{
+			$columns = array(
+				$purchase->item_id,
+				//$purchase->Item->ChannelEntry->title,
+				$purchase->member_id,
+				//$purchase->Member->screen_name,
+				ee()->localize->human_time($purchase->purchase_date),
+				$purchase->subscription_end_date ?: '--',
+				'$'.$purchase->item_cost,
+				array('toolbar_items' => array(
+					'edit' => array(
+						'href' => ee('CP/URL', 'addons/settings/simple_commerce/edit-purchase/'.$purchase->getId()),
+						'title' => lang('edit')
+					)
+				)),
+				array(
+					'name' => 'purchases[]',
+					'value' => $purchase->getId(),
+					'data'	=> array(
+						'confirm' => lang('purchase') . ': <b>' . htmlentities($purchase->item_id, ENT_QUOTES) . '</b>'
+					)
+				)
+			);
+
+			$attrs = array();
+			if (ee()->session->flashdata('highlight_id') == $purchase->getId())
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs' => $attrs,
+				'columns' => $columns
+			);
+		}
+
+		$table->setData($data);
+
+		$vars['base_url'] = ee('CP/URL', 'addons/settings/simple_commerce/purchases');
+		$vars['table'] = $table->viewData($vars['base_url']);
+
+		$vars['pagination'] = ee('CP/Pagination', $total_rows)
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($vars['table']['base_url']);
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('purchases') . ': <b>### ' . lang('purchases') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/confirm_remove'),
+		));
+
+		return array(
+			'heading' => lang('commerce_purchases'),
+			'body' => ee('View')->make('simple_commerce:purchases')->render($vars),
+			'sidebar' => $this->sidebar
+		);
+	}
+
+	/**
+	 * Remove purchases handler
+	 */
+	public function removePurchase()
+	{
+		$purchase_ids = ee()->input->post('purchases');
+
+		if ( ! empty($purchase_ids) && ee()->input->post('bulk_action') == 'remove')
+		{
+			$purchase_ids = array_filter($purchase_ids, 'is_numeric');
+
+			if ( ! empty($purchase_ids))
+			{
+				ee('Model')->get('simple_commerce:Purchase', $purchase_ids)->delete();
+
+				ee('Alert')->makeInline('purchases-table')
+					->asSuccess()
+					->withTitle(lang('purchases_removed'))
+					->addToBody(sprintf(lang('purchases_removed_desc'), count($purchase_ids)))
+					->defer();
+			}
+		}
+		else
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce/purchases', ee()->cp->get_url_state()));
+	}
+
+	/**
+	 * Create purchase URL endpoint
+	 */
+	public function createPurchase()
+	{
+		return $this->purchaseForm();
+	}
+
+	/**
+	 * Edit purchase URL endpoint
+	 */
+	public function editPurchase($purchase_id)
+	{
+		return $this->purchaseForm($purchase_id);
+	}
+
+	/**
+	 * Purchase create/edit form
+	 */
+	public function purchaseForm($purchase_id = NULL)
+	{
+		if (is_null($purchase_id))
+		{
+			$alert_key = 'created';
+			$vars['cp_page_title'] = lang('create_purchase');
+			$vars['base_url'] = ee('CP/URL', 'addons/settings/simple_commerce/create-purchase');
+
+			$purchase = ee('Model')->make('simple_commerce:Purchase');
+		}
+		else
+		{
+			$purchase = ee('Model')->get('simple_commerce:Purchase', $purchase_id)->first();
+
+			if ( ! $purchase)
+			{
+				show_error(lang('unauthorized_access'));
+			}
+
+			$alert_key = 'updated';
+			$vars['cp_page_title'] = lang('edit_purchase');
+			$vars['base_url'] = ee('CP/URL', 'addons/settings/simple_commerce/edit-purchase/'.$purchase_id);
+		}
+
+		if ( ! empty($_POST))
+		{
+			$purchase->set($_POST);
+			$result = $purchase->validate();
+
+			if ($result->isValid())
+			{
+				$purchase = $purchase->save();
+
+				if (is_null($purchase_id) OR $duplicate)
+				{
+					ee()->session->set_flashdata('highlight_id', $purchase->getId());
+				}
+
+				ee('Alert')->makeInline('purchases-table')
+					->asSuccess()
+					->withTitle(lang('purchase_'.$alert_key))
+					->addToBody(sprintf(lang('purchase_'.$alert_key.'_desc'), $purchase->Item->getId())) // TODO: change to item title when relationships work
+					->defer();
+
+				ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce/purchases'));
+			}
+			else
+			{
+				$vars['errors'] = $result;
+				ee('Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('purchase_not_'.$alert_key))
+					->addToBody(lang('purchase_not_'.$alert_key.'_desc'))
+					->now();
+			}
+		}
+
+		$vars['sections'] = array(
+			array(
+				ee('Alert')->makeInline()
+					->asWarning()
+					->addToBody(lang('purchase_create_warn'))
+					->cannotClose()
+					->render(),
+				array(
+					'title' => 'txn_id',
+					'desc' => 'txn_id_desc',
+					'fields' => array(
+						'txn_id' => array(
+							'type' => 'text',
+							'value' => $purchase->txn_id,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'screen_name',
+					'desc' => 'screen_name_desc',
+					'fields' => array(
+						'screen_name' => array(
+							'type' => 'text',
+							'value' => $purchase->member_id, // TODO: change to member screen name when relationships work
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'item',
+					'desc' => 'item_purchased',
+					'fields' => array(
+						'item_id' => array(
+							'type' => 'select',
+							'choices' => ee('Model')->get('simple_commerce:Item')->all()->getDictionary('item_id', 'entry_id'), // TODO: change to item title when relationships work
+							'value' => $purchase->item_id,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'price',
+					'desc' => 'price_desc',
+					'fields' => array(
+						'item_cost' => array(
+							'type' => 'text',
+							'value' => $purchase->item_cost,
+							'required' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'purchase_date',
+					'fields' => array(
+						'purchase_date' => array(
+							'type' => 'text',
+							'value' => $purchase->purchase_date,
+							'required' => TRUE,
+							'attrs' => 'rel="date-picker"'
+						)
+					)
+				)
+			)
+		);
+
+		$vars['save_btn_text'] = sprintf(lang('btn_save'), lang('purchase'));
+		$vars['save_btn_text_working'] = 'btn_saving';
+
+		ee()->javascript->set_global('date.date_format', ee()->localize->get_date_format());
+		ee()->javascript->set_global('lang.date.months.full', array(
+			lang('january'),
+			lang('february'),
+			lang('march'),
+			lang('april'),
+			lang('may'),
+			lang('june'),
+			lang('july'),
+			lang('august'),
+			lang('september'),
+			lang('october'),
+			lang('november'),
+			lang('december')
+		));
+		ee()->javascript->set_global('lang.date.months.abbreviated', array(
+			lang('jan'),
+			lang('feb'),
+			lang('mar'),
+			lang('apr'),
+			lang('may'),
+			lang('june'),
+			lang('july'),
+			lang('aug'),
+			lang('sept'),
+			lang('oct'),
+			lang('nov'),
+			lang('dec')
+		));
+		ee()->javascript->set_global('lang.date.days', array(
+			lang('su'),
+			lang('mo'),
+			lang('tu'),
+			lang('we'),
+			lang('th'),
+			lang('fr'),
+			lang('sa'),
+		));
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/date_picker'),
+		));
+
+		$this->purchases_nav->isActive();
+
+		return array(
+			'heading' => lang('create_purchase'),
+			'breadcrumb' => array(
+				ee('CP/URL', 'addons/settings/simple_commerce/purchases')->compile() => lang('commerce_purchases')
+			),
+			'body' => ee('View')->make('simple_commerce:form')->render($vars),
+			'sidebar' => $this->sidebar
+		);
+	}
+
+	/**
+	 * Email templates listing
+	 */
+	public function emailTemplates()
+	{
+		$table = ee('CP/Table', array('autosort' => TRUE));
+		$table->setColumns(array(
+			'template_name',
+			'manage' => array(
+				'type'	=> Table::COL_TOOLBAR
+			),
+			array(
+				'type'	=> Table::COL_CHECKBOX
+			)
+		));
+
+		$table->setNoResultsText('no_email_templates', 'create_template', ee('CP/URL', 'addons/settings/simple_commerce/create-email-template'));
+
+		$sort_map = array(
+			'template_name' => 'email_name',
+		);
+
+		$email_templates = ee('Model')->get('simple_commerce:EmailTemplate');
+		$total_rows = $email_templates->all()->count();
+
+		$email_templates = $email_templates->order($sort_map[$table->sort_col], $table->sort_dir)
+			->limit($table->config['limit'])
+			->offset(($table->config['page'] - 1) * $table->config['limit'])
+			->all();
+
+		$data = array();
+		foreach ($email_templates as $template)
+		{
+			$columns = array(
+				$template->email_name,
+				array('toolbar_items' => array(
+					'edit' => array(
+						'href' => ee('CP/URL', 'addons/settings/simple_commerce/edit-email-template/'.$template->getId()),
+						'title' => lang('edit')
+					)
+				)),
+				array(
+					'name' => 'templates[]',
+					'value' => $template->getId(),
+					'data'	=> array(
+						'confirm' => lang('template') . ': <b>' . htmlentities($template->getId(), ENT_QUOTES) . '</b>'
+					)
+				)
+			);
+
+			$attrs = array();
+			if (ee()->session->flashdata('highlight_id') == $template->getId())
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs' => $attrs,
+				'columns' => $columns
+			);
+		}
+
+		$table->setData($data);
+
+		$vars['base_url'] = ee('CP/URL', 'addons/settings/simple_commerce/email-templates');
+		$vars['table'] = $table->viewData($vars['base_url']);
+
+		$vars['pagination'] = ee('CP/Pagination', $total_rows)
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($vars['table']['base_url']);
+
+		ee()->javascript->set_global('lang.remove_confirm', lang('email_templates') . ': <b>### ' . lang('email_templates') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/confirm_remove'),
+		));
+
+		return array(
+			'heading' => lang('email_templates'),
+			'breadcrumb' => array(ee('CP/URL', 'addons/settings/simple_commerce')->compile() => lang('simple_commerce_module_name') . ' ' . lang('configuration')),
+			'body' => ee('View')->make('simple_commerce:email_templates')->render($vars),
+			'sidebar' => $this->sidebar
+		);
+	}
+
+	/**
+	 * Remove email templates handler
+	 */
+	public function removeTemplate()
+	{
+		$template_ids = ee()->input->post('templates');
+
+		if ( ! empty($template_ids) && ee()->input->post('bulk_action') == 'remove')
+		{
+			$template_ids = array_filter($template_ids, 'is_numeric');
+
+			if ( ! empty($template_ids))
+			{
+				ee('Model')->get('simple_commerce:EmailTemplate', $template_ids)->delete();
+
+				ee('Alert')->makeInline('email-templates-table')
+					->asSuccess()
+					->withTitle(lang('email_templates_removed'))
+					->addToBody(sprintf(lang('email_templates_removed_desc'), count($template_ids)))
+					->defer();
+			}
+		}
+		else
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce/email-templates', ee()->cp->get_url_state()));
 	}
 
 

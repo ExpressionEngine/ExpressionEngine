@@ -47,7 +47,6 @@ class Delete extends Query {
 
 		$delete_list = $this->getDeleteList($from);
 
-
 		foreach ($delete_list as $model => $withs)
 		{
 			$offset		= 0;
@@ -64,13 +63,26 @@ class Delete extends Query {
 				in_array('afterDelete', $events)
 			 );
 
+			 $basic_query = $builder
+				 ->getFrontend()
+				 ->get($model)
+				 ->filter("{$from}.{$from_pk}", 'IN', $parent_ids);
+
+			 // expensive recursion fallback
+			 if ($withs instanceOf \Closure)
+			 {
+				 $delete_collection = $withs($basic_query);
+				 $this->deleteCollection($delete_collection, $to_meta);
+				 continue;
+			 }
+
+
 			// TODO optimize further for on-db deletes
 			do {
-				$fetch_query = $builder
-					->getFrontend()
-					->get($model)
+				$fetch_query = clone $basic_query;
+
+				$fetch_query
 					->with($withs)
-					->filter("{$from}.{$from_pk}", 'IN', $parent_ids)
 					->offset($offset)
 					->limit($batch_size);
 
@@ -84,24 +96,34 @@ class Delete extends Query {
 				}
 
 				$delete_models = $fetch_query->all();
-
-				$delete_ids = $delete_models->pluck($to_pk);
-
-				$delete_models->emit('beforeDelete');
+				$delete_ids = $this->deleteCollection($delete_models, $to_meta);
 
 				$offset += $batch_size;
-
-				if ( ! count($delete_ids))
-				{
-					continue;
-				}
-
-				$this->deleteAsLeaf($to_meta, $delete_ids);
-
-				$delete_models->emit('afterDelete');
 			}
 			while (count($delete_ids) == $batch_size);
 		}
+	}
+
+	/**
+	 * Trigger a delete on a collection, given a collection and relevant
+	 * metadata
+	 */
+	protected function deleteCollection($collection, $to_meta)
+	{
+		$delete_ids = $collection->getIds();
+
+		$collection->emit('beforeDelete');
+
+		if ( ! count($delete_ids))
+		{
+			return array();
+		}
+
+		$this->deleteAsLeaf($to_meta, $delete_ids);
+
+		$collection->emit('afterDelete');
+
+		return $delete_ids;
 	}
 
 	/**
@@ -166,11 +188,11 @@ class Delete extends Query {
 	}
 
 	/**
-	 * Helper to builde a delete list. See the calling method
+	 * Helper to build a delete list. See the `getDeleteList()` method
 	 * for details.
 	 *
 	 * @param String  $parent  Model we're processing
-	 * @return Array  [name => withs, ...] as described above
+	 * @return Array  [name => withs, ...]
 	 */
 	protected function deleteListRecursive($parent)
 	{
@@ -184,6 +206,15 @@ class Delete extends Query {
 
 		foreach ($relations as $name => $relation)
 		{
+			if ($relation->isWeak())
+			{
+				$to_model = $relation->getSourceModel();
+
+				$inherit = $this->delete_list[$parent];
+				$this->delete_list[$to_model] = $this->weak($relation, $inherit);
+				continue;
+			}
+
 			$inverse = $relation->getInverse();
 
 			if ($inverse instanceOf BelongsTo)
@@ -200,7 +231,7 @@ class Delete extends Query {
 
 				if (isset($this->delete_list[$to_model][$to_name]))
 				{
-					$this->delete_list[$to_model][$to_name][] = 'recursion';
+					$this->delete_list[$to_model] = $this->recursive($relation, $inherit);
 					continue;
 				}
 
@@ -211,5 +242,54 @@ class Delete extends Query {
 		}
 
 		return $results;
+	}
+
+	/**
+	 * Creates a worker function to handle recursive deletes inline with
+	 * the rest of the delete flow. Will attempt to return to a bottom-up
+	 * deletion if the recursion is broken. If the recursion is not broken
+	 * this ends up being a slow process. For something like categories we
+	 * can detect this inability directly from the relation, so there's
+	 * definitely room for improvement.
+	 */
+	private function recursive($relation, $withs)
+	{
+		return function($query) use ($relation, $withs)
+		{
+			$name = $relation->getName();
+			$models = $query->with($withs)->all();
+
+			// TODO ideally we would grab the $model->$name's with just ids
+			// and then proceed to call delete on them after our current
+			// delete process is done. Unfortunately we're way down the stack
+			// at this point and inside a closure that can't see outside it's
+			// own four walls in 5.3. So as per usual stupid old versions of
+			// PHP just won't let us have nice things.
+			foreach ($models as $model)
+			{
+				$model->$name->delete();
+			}
+
+			return $models;
+		};
+	}
+
+	/**
+	 * Creates a worker function to handle weak deletes.
+	 */
+	private function weak($relation, $withs)
+	{
+		return function($query) use ($relation, $withs)
+		{
+			$name = $relation->getName();
+			$models = $query->with($withs)->all();
+
+			foreach ($models as $model)
+			{
+				$relation->drop($model, $model->$name);
+			}
+
+			return $models;
+		};
 	}
 }

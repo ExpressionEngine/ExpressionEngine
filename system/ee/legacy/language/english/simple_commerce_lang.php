@@ -2,17 +2,109 @@
 
 $lang = array(
 
-/* ----------------------------------------
-/*  Required for MODULES page
-/* ----------------------------------------*/
 'simple_commerce_module_name' => 'Simple Commerce',
 
-'simple_commerce_module_description' => 'Simple, Flexible Commerce Module',
+'simple_commerce_manager' => 'Simple Commerce Manager',
 
-/*----------------------------------------*/
+'commerce_items' => 'Commerce Items',
+
+'commerce_purchases' => 'Commerce Purchases',
+
+'search_commerce' => 'Search Commerce',
+
+'item' => 'Item',
+
+'items' => 'Items',
+
+'price_sale' => 'Price / Sale',
+
+'frequency' => 'Frequency',
+
+'subscribers' => 'Subscribers',
+
+'no_items' => 'No Items',
+
+'create_new_item' => 'Create New Item',
+
+'create_new_item_step' => 'Create Item: Step %d',
+
+'create_new_item_step_desc' => 'Please choose the channel entries you\'d like to add as purchasable items.',
+
+'enable_item' => 'Enable item?',
+
+'enable_item_desc' => 'When set to <b>yes</b>, this item will be purchasable.',
+
+'customer_email_template' => 'Customer email template',
+
+'customer_email_template_desc' => 'Template to use when sending sale confirmation email to purchaser.',
+
+'add_item' => 'Add item',
+
+'all_items' => 'All Items',
+
+'all_purchases' => 'All Purchases',
+
+'purchaser' => 'Purchaser',
+
+'date_of_purchase' => 'Date of Purchase',
+
+'sub_end_date' => 'End Date',
+
+'cost' => 'Cost',
+
+'purchases_removed' => 'Purchases removed',
+
+'purchases_removed_desc' => '%d purchases were removed.',
+
+'items_removed' => 'Items removed',
+
+'items_removed_desc' => '%d items were removed.',
+
+'create_purchase' => 'Create Purchase',
+
+'edit_purchase' => 'Edit Purchase',
+
+'purchase_created' => 'Purchase Created',
+
+'purchase_created_desc' => 'The purchase for item <b>%s</b> has been created.',
+
+'purchase_not_created' => 'Cannot Create Purchase',
+
+'purchase_not_created_desc' => 'We were unable to create this purchase, please review and fix errors below.',
+
+'purchase_updated' => 'Purchase Updated',
+
+'purchase_updated_desc' => 'The purchase for item <b>%s</b> has been updated.',
+
+'purchase_not_updated' => 'Cannot Update Purchase',
+
+'purchase_not_updated_desc' => 'We were unable to update this purchase, please review and fix errors below.',
+
+'item_created' => 'Item Created',
+
+'item_created_desc' => 'The items have been created.',
+
+'item_not_created' => 'Cannot Create Item',
+
+'item_not_created_desc' => 'We were unable to create this item, please review and fix errors below.',
+
+'item_updated' => 'Item Updated',
+
+'item_updated_desc' => 'The item <b>%s</b> has been updated.',
+
+'item_not_updated' => 'Cannot Update Item',
+
+'item_not_updated_desc' => 'We were unable to update this item, please review and fix errors below.',
+
+'email_templates_removed' => 'Email templates removed',
+
+'email_templates_removed_desc' => '%d email templates were removed.',
+
 'simple_commerce_home' => 'Control Panel',
 
-'subscription_frequency' => 'Subscription Frequency',
+'subscription_frequency' => 'Frequency of subscription',
+
+'subscription_frequency_desc' => 'How often will the member be charged for their subscription of this item.',
 
 'subscription_frequency_unit' => 'Subscription Frequency Unit',
 
@@ -45,14 +137,19 @@ transactions on their site and then notifying ExpressionEngine when the transact
 and accepted.  This allows purchases to not be stored and recorded in the Simple Commerce module
 until the transaction is finalized.  ExpressionEngine\'s Simple Commerce module automates all of this
 behind the scenes so all you have to do is activate Instant Payment Notification on the PayPal site
-and provide them with the URL below.<br /><br />
-For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-content&content_ID=developer/e_howto_admin_IPNIntro" rel="external">https://cms.paypal.com/us/cgi-bin/?cmd=_render-content&content_ID=developer/e_howto_admin_IPNIntro</a>',
+and provide them with the URL below.',
 
 'items' => 'Items',
 
 'purchases' => 'Purchases',
 
+'purchase' => 'Purchase',
+
 'email_templates' => 'Email Templates',
+
+'template' => 'Template',
+
+'create_template' => 'Create Template',
 
 'store_items' => 'Store Items',
 
@@ -60,9 +157,11 @@ For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-conte
 
 'item_added' => 'Items Added',
 
-'purchase_date' => 'Purchase date',
+'purchase_date' => 'Date of purchase',
 
-'recurring' => 'Recurring',
+'recurring' => 'Recurring subscription?',
+
+'recurring_desc' => 'When set to <b>yes</b>, member will be charged until they cancel.',
 
 'recurring_purchase_warning' => "Recurring purchases must be set up through PayPal for full functionality.",
 
@@ -72,7 +171,7 @@ For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-conte
 
 'edit_items' => 'Edit Items',
 
-'export_items' => 'Export Items',
+'export_items' => 'Export All Items',
 
 'store_purchases' => 'Store Purchases',
 
@@ -80,7 +179,7 @@ For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-conte
 
 'add_purchase' => 'Add Purchase',
 
-'export_purchases' => 'Export Purchases',
+'export_purchases' => 'Export All Purchases',
 
 'choose_entry_for_item' => 'Choose Entry for Store Item',
 
@@ -90,8 +189,7 @@ For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-conte
 
 'invalid_purchases' => 'No Valid Purchases',
 
-'use_sale_price' => 
-'Use Sale Price?',
+'use_sale_price' => 'Use sale price?',
 
 'entry_title' => 'Entry Title',
 
@@ -99,9 +197,9 @@ For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-conte
 
 'update_items' => 'Update Items',
 
-'sale_price' => 'Sale Price',
+'sale_price' => 'Sale price',
 
-'regular_price' => 'Regular Price',
+'regular_price' => 'Regular price',
 
 'item_enabled' => 'Item Enabled',
 
@@ -121,6 +219,8 @@ For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-conte
 
 'no_purchases' => 'No Purchases',
 
+'create_purchase' => 'Create Purchase',
+
 'perform_item_actions' => 'Perform Actions for Item?',
 
 'email_name' => 'Email Template Name',
@@ -135,30 +235,43 @@ For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-conte
 
 'on_unsubscribe' => 'On Unsubscribe',
 
+'email_options' => 'Email Options',
+
+'subscription_options' => 'Subscription Options',
+
 'customer_email_subscribe' => 'Customer Email Subscribe Template',
 
-'customer_email_unsubscribe' => 'Customer Email Unsubscribe Template',
+'customer_email_unsubscribe' => 'Customer <mark>cancel</mark> e-mail template',
 
-'admin_email_address' => 'Admin Email Address',
+'customer_email_unsubscribe_desc' => 'Template to use when sending cancel confirmation e-mail to canceler.',
+
+'admin_email_address' => 'Admin email address',
+
+'admin_email_address_desc' => 'Email address to notify when a sale is made.',
 
 'invalid_price' => 'Invalid Price!',
 
 'select_admin_template' => 'Must Select Admin Email Template if Email Address is Filled Out',
 
-'admin_email_template' => 'Admin Email Template',
+'admin_email_template' => 'Admin email template',
 
-'member_group' => 'New Member Group',
+'admin_email_template_desc' => 'Template to use for notifying an admin of a sale.',
 
-'admin_email_template_unsubscribe' => 'Admin Email Unsubscribe Template',
+'new_member_group' => 'New member group',
+
+'new_member_group_desc' => 'Upon purchase, purchaser\'s member group will be changed to the chosen group.',
+
+'admin_email_template_unsubscribe' => 'Admin <mark>cancel</mark> e-mail template',
+
+'admin_email_template_unsubscribe_desc' => 'Template to use for notifying an admin of a cancellation.',
 
 'member_group_subscribe' => 'Subscribe Member Group',
 
-'member_group_unsubscribe' => 'Unsubscribe Member Group',
+'member_group_unsubscribe_desc' => 'Upon canceling, canceler\'s member group will be changed to the chosen group.',
 
+'send_no_email' => 'Do not send email',
 
-'send_no_email' => 'Do Not Send Email',
-
-'no_change' => 'No Change',
+'no_change' => 'No change',
 
 'no_store_items' => 'No Store Items',
 
@@ -212,11 +325,21 @@ For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-conte
 
 'emails_deleted' => 'Email Templates Deleted!',
 
-'member_not_found' => 'Member Not Found',
+'member_not_found' => 'Member not found.',
 
 'purchaser_screen_name' => 'Purchaser\'s Screen Name',
 
-'txn_id' => 'Purchase Identification Number (TXN ID)',
+'txn_id' => 'PIN (TXN ID)',
+
+'txn_id_desc' => 'A unique ID for this purchase',
+
+'screen_name_desc' => 'Screen name of purchaser.',
+
+'price' => 'Price',
+
+'price_desc' => 'Item price for this transaction.',
+
+'purchase_create_warn' => '<b>Warning</b>: Recurring purchases must be set up through PayPal for full functionality.',
 
 'date_purchased' => 'Date Purchased',
 
@@ -224,9 +347,11 @@ For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-conte
 
 'subscription_end_date_subtext' => 'Enter \'0\' for no subscription end',
 
-'item_purchased' => 'Item Purchased',
+'item_purchased' => 'Item purchased.',
 
 'item_cost' => 'Item Cost',
+
+'item_cost_form' => 'Item cost',
 
 'choose_item' => 'Choose Item',
 
@@ -236,17 +361,17 @@ For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-conte
 
 'encryption' => 'Encryption',
 
-'encrypt_buttons_links' => 'Encrypt PayPal Buttons and Links?',
+'encrypt_buttons_links' => 'Encrypt PayPal buttons and links?',
 
-'public_certificate' => 'Public Certificate Path',
+'public_certificate' => 'Public certificate path',
 
-'certificate_id' => 'ID Given to Public Certificate by PayPal',
+'certificate_id' => 'ID given to public certificate by PayPal',
 
-'private_key' => 'Private Key Path',
+'private_key' => 'Private key path',
 
-'paypal_certificate' => 'PayPal Certificate Path',
+'paypal_certificate' => 'PayPal certificate path',
 
-'temp_path' => 'Temporary Encrypted Files Path',
+'temp_path' => 'Temporary encrypted files path',
 
 'settings' => 'Settings',
 
@@ -256,9 +381,9 @@ For more details:  <a href="https://cms.paypal.com/us/cgi-bin/?cmd=_render-conte
 
 'temporary_directory_unwritable' => 'The Directory specified for writing the temporary files is not writable.',
 
-'paypal_account' => 'PayPal Account',
+'paypal_account' => 'PayPal account',
 
-'no_entries_matching_that_criteria' => 
+'no_entries_matching_that_criteria' =>
 'There are no entries matching the criteria you selected',
 
 ''=>''

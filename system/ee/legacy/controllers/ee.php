@@ -147,12 +147,6 @@ class EE extends EE_Controller {
 		// Garbage Collection
 		if (REQ == 'PAGE')
 		{
-			if ($this->config->item('log_referrers') == 'y')
-			{
-				$this->load->library('referrer');
-				$this->referrer->log_referrer();
-			}
-
 			$this->core->_garbage_collection();
 		}
 	}

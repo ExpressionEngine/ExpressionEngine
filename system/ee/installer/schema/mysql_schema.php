@@ -42,7 +42,6 @@ class EE_Schema {
 			`site_name` varchar(50) NOT NULL default '',
 			`site_description` text NULL,
 			`site_system_preferences` mediumtext NOT NULL ,
-			`site_mailinglist_preferences` TEXT NOT NULL ,
 			`site_member_preferences` TEXT NOT NULL ,
 			`site_template_preferences` TEXT NOT NULL ,
 			`site_channel_preferences` TEXT NOT NULL ,
@@ -338,7 +337,6 @@ class EE_Schema {
 			time_format char(2) DEFAULT '12' NOT NULL,
 			date_format varchar(8) DEFAULT '%n/%j/%Y' NOT NULL,
 			include_seconds char(1) DEFAULT 'n' NOT NULL,
-			cp_theme varchar(32) NULL DEFAULT NULL,
 			profile_theme varchar(32) NULL DEFAULT NULL,
 			forum_theme varchar(32) NULL DEFAULT NULL,
 			tracker text NULL,
@@ -387,7 +385,7 @@ class EE_Schema {
 		// Member Groups table
 
 		$Q[] = "CREATE TABLE exp_member_groups (
-			group_id smallint(4) unsigned NOT NULL AUTO_INCREMENT,
+			group_id smallint(4) unsigned NOT NULL,
 			site_id INT(4) UNSIGNED NOT NULL DEFAULT 1,
 			group_title varchar(100) NULL DEFAULT NULL,
 			group_description text NOT NULL,
@@ -396,14 +394,17 @@ class EE_Schema {
 			can_view_offline_system char(1) NOT NULL default 'n',
 			can_view_online_system char(1) NOT NULL default 'y',
 			can_access_cp char(1) NOT NULL default 'n',
+			can_access_footer_report_bug char(1) NOT NULL default 'n',
+			can_access_footer_new_ticket char(1) NOT NULL default 'n',
+			can_access_footer_user_guide char(1) NOT NULL default 'n',
 			can_access_content char(1) NOT NULL default 'n',
 			can_access_publish char(1) NOT NULL default 'n',
 			can_access_edit char(1) NOT NULL default 'n',
 			can_access_files char(1) NOT NULL default 'n',
+
 			can_access_fieldtypes char(1) NOT NULL DEFAULT 'n',
 			can_access_design char(1) NOT NULL default 'n',
 			can_access_addons char(1) NOT NULL default 'n',
-
 			can_access_modules char(1) NOT NULL default 'n',
 			can_access_extensions char(1) NOT NULL default 'n',
 			can_access_plugins char(1) NOT NULL default 'n',
@@ -411,10 +412,10 @@ class EE_Schema {
 			can_access_admin char(1) NOT NULL default 'n',
 			can_access_sys_prefs char(1) NOT NULL default 'n',
 			can_access_content_prefs char(1) NOT NULL default 'n',
+
 			can_access_tools char(1) NOT NULL default 'n',
 			can_access_comm char(1) NOT NULL default 'n',
 			can_access_utilities char(1) NOT NULL default 'n',
-
 			can_access_data char(1) NOT NULL default 'n',
 			can_access_logs char(1) NOT NULL default 'n',
 			can_admin_channels char(1) NOT NULL default 'n',
@@ -422,10 +423,10 @@ class EE_Schema {
 			can_admin_design char(1) NOT NULL default 'n',
 			can_admin_members char(1) NOT NULL default 'n',
 			can_delete_members char(1) NOT NULL default 'n',
+
 			can_admin_mbr_groups char(1) NOT NULL default 'n',
 			can_admin_mbr_templates char(1) NOT NULL default 'n',
 			can_ban_users char(1) NOT NULL default 'n',
-
 			can_admin_modules char(1) NOT NULL default 'n',
 			can_admin_templates char(1) NOT NULL default 'n',
 			can_edit_categories char(1) NOT NULL default 'n',
@@ -433,10 +434,10 @@ class EE_Schema {
 			can_view_other_entries char(1) NOT NULL default 'n',
 			can_edit_other_entries char(1) NOT NULL default 'n',
 			can_assign_post_authors char(1) NOT NULL default 'n',
+
 			can_delete_self_entries char(1) NOT NULL default 'n',
 			can_delete_all_entries char(1) NOT NULL default 'n',
 			can_view_other_comments char(1) NOT NULL default 'n',
-
 			can_edit_own_comments char(1) NOT NULL default 'n',
 			can_delete_own_comments char(1) NOT NULL default 'n',
 			can_edit_all_comments char(1) NOT NULL default 'n',
@@ -444,10 +445,10 @@ class EE_Schema {
 			can_moderate_comments char(1) NOT NULL default 'n',
 			can_send_email char(1) NOT NULL default 'n',
 			can_send_cached_email char(1) NOT NULL default 'n',
+
 			can_email_member_groups char(1) NOT NULL default 'n',
 			can_email_from_profile char(1) NOT NULL default 'n',
 			can_view_profiles char(1) NOT NULL default 'n',
-
 			can_edit_html_buttons char(1) NOT NULL DEFAULT 'n',
 			can_delete_self char(1) NOT NULL default 'n',
 			can_post_comments char(1) NOT NULL default 'y',
@@ -455,10 +456,10 @@ class EE_Schema {
 			can_search char(1) NOT NULL default 'y',
 			can_send_private_messages char(1) NOT NULL default 'n',
 			can_attach_in_private_messages char(1) NOT NULL default 'n',
+
 			can_send_bulletins char(1) NOT NULL default 'n',
 			include_in_authorlist char(1) NOT NULL default 'n',
 			include_in_memberlist char(1) NOT NULL default 'y',
-
 			mbr_delete_notify_emails varchar(255) NULL DEFAULT NULL,
 			search_flood_control mediumint(5) unsigned NOT NULL default '15',
 			prv_msg_send_limit smallint unsigned NOT NULL default '20',
@@ -554,6 +555,7 @@ class EE_Schema {
 			channel_require_membership char(1) NOT NULL default 'y',
 			channel_max_chars int(5) unsigned NULL DEFAULT NULL,
 			channel_html_formatting char(4) NOT NULL default 'all',
+			extra_publish_controls char(1) NOT NULL default 'n',
 			channel_allow_img_urls char(1) NOT NULL default 'y',
 			channel_auto_link_urls char(1) NOT NULL default 'n',
 			channel_notify char(1) NOT NULL default 'n',
@@ -574,11 +576,11 @@ class EE_Schema {
 			comment_notify_emails varchar(255) NULL DEFAULT NULL,
 			comment_expiration int(4) unsigned NOT NULL default '0',
 			search_results_url varchar(80) NULL DEFAULT NULL,
-			show_button_cluster char(1) NOT NULL default 'y',
 			rss_url varchar(80) NULL DEFAULT NULL,
 			enable_versioning char(1) NOT NULL default 'n',
 			max_revisions smallint(4) unsigned NOT NULL default 10,
 			default_entry_title varchar(100) NULL DEFAULT NULL,
+			title_field_label varchar(100) NOT NULL DEFAULT 'Title',
 			url_title_prefix varchar(80) NULL DEFAULT NULL,
 			live_look_template int(10) UNSIGNED NOT NULL default 0,
 			PRIMARY KEY `channel_id` (`channel_id`),
@@ -599,8 +601,8 @@ class EE_Schema {
 			author_id int(10) unsigned NOT NULL default 0,
 			forum_topic_id int(10) unsigned NULL DEFAULT NULL,
 			ip_address varchar(45) default '0' NOT NULL,
-			title varchar(100) NOT NULL,
-			url_title varchar(75) NOT NULL,
+			title varchar(200) NOT NULL,
+			url_title varchar(200) NOT NULL,
 			status varchar(50) NOT NULL,
 			versioning_enabled char(1) NOT NULL default 'n',
 			view_count_one int(10) unsigned NOT NULL default 0,
@@ -1004,7 +1006,6 @@ class EE_Schema {
 		// Membership activation instruction
 		// Member lost password instructions
 		// Validated member notification
-		// Remove from mailinglist notification
 
 		$Q[] = "CREATE TABLE exp_specialty_templates (
 			template_id int(6) unsigned NOT NULL auto_increment,
@@ -1370,13 +1371,11 @@ class EE_Schema {
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, edit_date, data_title, template_data) VALUES ('message_template', 'system', " . time() . ", '', '".addslashes(message_template())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('admin_notify_reg', 'email', 'members', " . time() . ", '".addslashes(trim(admin_notify_reg_title()))."', '".addslashes(admin_notify_reg())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('admin_notify_entry', 'email', 'content', " . time() . ", '".addslashes(trim(admin_notify_entry_title()))."', '".addslashes(admin_notify_entry())."')";
-		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('admin_notify_mailinglist', 'email', 'mailing_lists', " . time() . ", '".addslashes(trim(admin_notify_mailinglist_title()))."', '".addslashes(admin_notify_mailinglist())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('admin_notify_comment', 'email', 'comments', " . time() . ", '".addslashes(trim(admin_notify_comment_title()))."', '".addslashes(admin_notify_comment())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('mbr_activation_instructions', 'email', 'members', " . time() . ", '".addslashes(trim(mbr_activation_instructions_title()))."', '".addslashes(mbr_activation_instructions())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('forgot_password_instructions', 'email', 'members', " . time() . ", '".addslashes(trim(forgot_password_instructions_title()))."', '".addslashes(forgot_password_instructions())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('validated_member_notify', 'email', 'members', " . time() . ", '".addslashes(trim(validated_member_notify_title()))."', '".addslashes(validated_member_notify())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('decline_member_validation', 'email', 'members', " . time() . ", '".addslashes(trim(decline_member_validation_title()))."', '".addslashes(decline_member_validation())."')";
-		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('mailinglist_activation_instructions', 'email', 'mailing_lists', " . time() . ", '".addslashes(trim(mailinglist_activation_instructions_title()))."', '".addslashes(mailinglist_activation_instructions())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('comment_notification', 'email', 'comments', " . time() . ", '".addslashes(trim(comment_notification_title()))."', '".addslashes(comment_notification())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('comments_opened_notification', 'email', 'comments', " . time() . ", '".addslashes(trim(comments_opened_notification_title()))."', '".addslashes(comments_opened_notification())."')";
 		$Q[] = "INSERT INTO exp_specialty_templates(template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('private_message_notification', 'email', 'private_messages', " . time() . ", '".addslashes(trim(private_message_notification_title()))."', '".addslashes(private_message_notification())."')";
@@ -1430,7 +1429,6 @@ class EE_Schema {
 			'site_label'	=> $this->userdata['site_label'],
 			'site_name'		=> $this->userdata['site_name'],
 			'site_system_preferences'      => '',
-			'site_mailinglist_preferences' => '',
 			'site_member_preferences'      => '',
 			'site_template_preferences'    => '',
 			'site_channel_preferences'     => '',
@@ -1447,6 +1445,9 @@ class EE_Schema {
 				'group_id'                       => 1,
 				'can_view_offline_system'        => 'y',
 				'can_access_cp'                  => 'y',
+				'can_access_footer_report_bug'   => 'y',
+				'can_access_footer_new_ticket'   => 'y',
+				'can_access_footer_user_guide'   => 'y',
 				'can_access_content'             => 'y',
 				'can_access_publish'             => 'y',
 				'can_access_edit'                => 'y',

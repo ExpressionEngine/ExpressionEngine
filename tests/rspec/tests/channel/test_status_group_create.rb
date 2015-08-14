@@ -19,7 +19,7 @@ feature 'Status Group Create/Edit' do
 
     no_php_js_errors
     should_have_form_errors(@page)
-    @page.should have_text 'Attention: Status group not saved'
+    @page.should have_text 'Cannot Create Status Group'
     should_have_error_text(@page.group_name, $required_error)
 
     # AJAX validation
@@ -63,7 +63,7 @@ feature 'Status Group Create/Edit' do
     @page.submit
     no_php_js_errors
 
-    @page.should have_text 'Status group saved'
+    @page.should have_text 'Status Group Created'
 
     @page.load_edit_for_status_group(2)
 
@@ -84,7 +84,7 @@ feature 'Status Group Create/Edit' do
     @page.submit
 
     no_php_js_errors
-    @page.should have_text 'Status group saved'
+    @page.should have_text 'Status Group Updated'
 
     @page.load_edit_for_status_group(1)
     @page.should have_text 'Edit Status Group'

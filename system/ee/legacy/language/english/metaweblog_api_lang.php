@@ -17,6 +17,8 @@ $lang = array(
 
 'create_metaweblog' => 'Create MetaWeblog',
 
+'edit_metaweblog' => 'Edit MetaWeblog',
+
 'metaweblog_pref_name' => 'Name',
 
 'metaweblog_parse_type' => 'Use default text formatting preferences?',
@@ -57,11 +59,9 @@ $lang = array(
 
 'closed' => 'Closed',
 
+'configurations' => 'Configuration',
+
 /*----------------------------------------*/
-
-'metaweblog_api_home' => 'Control Panel',
-
-'api_urls' => 'View URLs for MetaWeblog API',
 
 'invalid_access' => 'Invalid Access to MetaWeblog API.  Make sure you used the correct username and
 password for a member account with permissions to post to at least one channel.',
@@ -90,45 +90,33 @@ password for a member account with permissions to post to at least one channel.'
 
 'metaweblog_config_url' => 'URL',
 
-'metaweblog_delete_confirm' => 'Delete MetaWeblog API Configurations',
-
-'metaweblog_deleted' => 'MetaWeblog API Configuration Deleted',
-
-'metaweblogs_deleted' => 'MetaWeblog API Configurations Deleted',
-
-'metaweblog_delete_question' => 'Are you sure you want to delete the selected MetaWeblog API Configuration(s)?',
-
-'delete' => 'Delete',
-
-'new_config' => 'New Configuration',
-
-'modify_config' => 'Edit Configuration',
-
-'configuration_options' => 'Configuration Options',
-
-'yes' => 'Yes',
-
-'no' => 'No',
-
-'none' => 'None',
-
-
 'metaweblog_mising_fields' => 'A Field was Left Blank',
 
 'configuration_created' => 'Configuration Created',
 
+'configuration_created_desc' => 'The configuration <b>%s</b> has been created.',
+
+'configuration_not_created' => 'Cannot Create Configuration',
+
+'configuration_not_created_desc' => 'We were unable to create this configuration, please review and fix errors below.',
+
 'configuration_updated' => 'Configuration Updated',
+
+'configuration_updated_desc' => 'The configuration <b>%s</b> has been updated.',
+
+'configuration_not_updated' => 'Cannot Update Configuration',
+
+'configuration_not_updated_desc' => 'We were unable to update this configuration, please review and fix errors below.',
+
+'configurations_removed' => 'Configurations removed',
+
+'configurations_removed_desc' => '%d configurations were removed.',
 
 'metaweblog_create_new' => 'Create New Configuration',
 
 'unable_to_upload' => 'Unable to Upload File',
 
 'invalid_file_content' => 'The file you are attempting to upload has invalid content for its MIME type',
-
-'auto_br' => 'Auto <br/>',
-
-'xhtml' => 'XHTML',
-
 
 ''=>''
 );

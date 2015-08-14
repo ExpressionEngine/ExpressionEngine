@@ -41,7 +41,8 @@ class Mime_type {
 		$this->mime_type = new MimeType();
 
 		// Load the whitelisted mimes from disk
-		$mime_file = APPPATH.'config/mimes.php';
+		$path = (defined('EE_APPPATH')) ? EE_APPPATH : APPPATH;
+		$mime_file = $path.'config/mimes.php';
 		if (file_exists($mime_file) && is_readable($mime_file))
 		{
 			include($mime_file);

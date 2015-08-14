@@ -43,10 +43,6 @@ $lang = array(
 'profile_registration' => 'Registration',
 'profile_subscriptions' => 'Subscriptions',
 
-'admin_notify_mailinglist' => 'Admin &ndash; List subscription notification',
-
-'admin_notify_mailinglist_desc' => 'This template defines the message that an admin receives when someone subscribes to a mailing list.',
-
 'admin_notify_forum_post_desc' => 'This template defines the message that an admin receives when a new forum post is submitted',
 
 'admin_notify_entry' => 'Admin &ndash; New Entry notification',
@@ -84,10 +80,6 @@ $lang = array(
 'forgot_password_instructions' => 'User &ndash; Forgotten password instructions',
 
 'forgot_password_instructions_desc' => 'This template defines the instructions that a user who has forgotten their password receives',
-
-'mailinglist_activation_instructions' => 'User &ndash; List activation instructions',
-
-'mailinglist_activation_instructions_desc' => 'This template defines the mailing list activation instructions',
 
 'mbr_activation_instructions' => 'User &ndash; Account activation instructions',
 

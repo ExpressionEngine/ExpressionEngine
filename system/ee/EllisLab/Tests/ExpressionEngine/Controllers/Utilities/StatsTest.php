@@ -12,7 +12,7 @@ class StatsTest extends \PHPUnit_Framework_TestCase {
 	{
 		$controller_methods = array();
 
-		foreach (get_class_methods('EllisLab\ExpressionEngine\Controllers\Utilities\Stats') as $method)
+		foreach (get_class_methods('EllisLab\ExpressionEngine\Controller\Utilities\Stats') as $method)
 		{
 			$method = strtolower($method);
 			if (strncmp($method, '_', 1) != 0)

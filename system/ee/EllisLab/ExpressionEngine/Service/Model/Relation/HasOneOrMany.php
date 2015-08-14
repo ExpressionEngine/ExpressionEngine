@@ -3,6 +3,7 @@
 namespace EllisLab\ExpressionEngine\Service\Model\Relation;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
+use EllisLab\ExpressionEngine\Service\Model\Collection;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -90,7 +91,7 @@ abstract class HasOneOrMany extends Relation {
 	{
 		list($from, $to) = $this->getKeys();
 
-		if (is_array($targets))
+		if (is_array($targets) || $targets instanceOf Collection)
 		{
 			$ids = array();
 

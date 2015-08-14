@@ -403,7 +403,7 @@ class Sites extends CP_Controller {
 		if ($edit == FALSE)
 		{
 			// This is ugly, but the proper defaults are done by the config lib below
-			$others = array('system_preferences', 'mailinglist_preferences', 'member_preferences', 'template_preferences', 'channel_preferences');
+			$others = array('system_preferences', 'member_preferences', 'template_preferences', 'channel_preferences');
 
 			$this->load->model('addons_model');
 
@@ -483,7 +483,7 @@ class Sites extends CP_Controller {
 		// New Prefs Creation
 		if ($edit === FALSE)
 		{
-			foreach(array('system', 'channel', 'template', 'mailinglist', 'member') as $type)
+			foreach(array('system', 'channel', 'template', 'member') as $type)
 			{
 				$prefs = array();
 
@@ -529,13 +529,11 @@ class Sites extends CP_Controller {
 			$Q[] = "INSERT INTO exp_specialty_templates(site_id, template_name, template_type, edit_date, data_title, template_data) VALUES ('".$this->db->escape_str($site_id)."', 'message_template', 'system', " . time() . "'', '".addslashes(message_template())."')";
 			$Q[] = "INSERT INTO exp_specialty_templates(site_id, template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('".$this->db->escape_str($site_id)."', 'admin_notify_reg', 'email', 'members', " . time() . ", '".addslashes(trim(admin_notify_reg_title()))."', '".addslashes(admin_notify_reg())."')";
 			$Q[] = "INSERT INTO exp_specialty_templates(site_id, template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('".$this->db->escape_str($site_id)."', 'admin_notify_entry', 'email', 'content', " . time() . ", '".addslashes(trim(admin_notify_entry_title()))."', '".addslashes(admin_notify_entry())."')";
-			$Q[] = "INSERT INTO exp_specialty_templates(site_id, template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('".$this->db->escape_str($site_id)."', 'admin_notify_mailinglist', 'email', 'mailing_lists', " . time() . ", '".addslashes(trim(admin_notify_mailinglist_title()))."', '".addslashes(admin_notify_mailinglist())."')";
 			$Q[] = "INSERT INTO exp_specialty_templates(site_id, template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('".$this->db->escape_str($site_id)."', 'admin_notify_comment', 'email', 'comments', " . time() . ", '".addslashes(trim(admin_notify_comment_title()))."', '".addslashes(admin_notify_comment())."')";
 			$Q[] = "INSERT INTO exp_specialty_templates(site_id, template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('".$this->db->escape_str($site_id)."', 'mbr_activation_instructions', 'email', 'members', " . time() . ", '".addslashes(trim(mbr_activation_instructions_title()))."', '".addslashes(mbr_activation_instructions())."')";
 			$Q[] = "INSERT INTO exp_specialty_templates(site_id, template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('".$this->db->escape_str($site_id)."', 'forgot_password_instructions', 'email', 'members', " . time() . ", '".addslashes(trim(forgot_password_instructions_title()))."', '".addslashes(forgot_password_instructions())."')";
 			$Q[] = "INSERT INTO exp_specialty_templates(site_id, template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('".$this->db->escape_str($site_id)."', 'validated_member_notify', 'email', 'members', " . time() . ", '".addslashes(trim(validated_member_notify_title()))."', '".addslashes(validated_member_notify())."')";
 			$Q[] = "INSERT INTO exp_specialty_templates(site_id, template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('".$this->db->escape_str($site_id)."', 'decline_member_validation', 'email', 'members', " . time() . ", '".addslashes(trim(decline_member_validation_title()))."', '".addslashes(decline_member_validation())."')";
-			$Q[] = "INSERT INTO exp_specialty_templates(site_id, template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('".$this->db->escape_str($site_id)."', 'mailinglist_activation_instructions', 'email', 'mailing_lists', " . time() . ", '".addslashes(trim(mailinglist_activation_instructions_title()))."', '".addslashes(mailinglist_activation_instructions())."')";
 			$Q[] = "INSERT INTO exp_specialty_templates(site_id, template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('".$this->db->escape_str($site_id)."', 'comment_notification', 'email', 'comments', " . time() . ", '".addslashes(trim(comment_notification_title()))."', '".addslashes(comment_notification())."')";
 			$Q[] = "INSERT INTO exp_specialty_templates(site_id, template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('".$this->db->escape_str($site_id)."', 'comments_opened_notification', 'email', 'comments', " . time() . ", '".addslashes(trim(comments_opened_notification_title()))."', '".addslashes(comments_opened_notification())."')";
 			$Q[] = "INSERT INTO exp_specialty_templates(site_id, template_name, template_type, template_subtype, edit_date, data_title, template_data) VALUES ('".$this->db->escape_str($site_id)."', 'private_message_notification', 'email', 'private_messages', " . time() . ", '".addslashes(trim(private_message_notification_title()))."', '".addslashes(private_message_notification())."')";

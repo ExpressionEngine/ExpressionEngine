@@ -122,7 +122,6 @@ class Select_ft extends EE_Fieldtype {
 		$settings = array(
 			array(
 				'title' => 'field_fmt',
-				'desc' => 'field_fmt_desc',
 				'fields' => array(
 					'field_fmt' => array(
 						'type' => 'select',
@@ -188,7 +187,6 @@ class Select_ft extends EE_Fieldtype {
 			'field_options' => array(
 				array(
 					'title' => 'field_fmt',
-					'desc' => 'field_fmt_desc',
 					'fields' => array(
 						'field_fmt' => array(
 							'type' => 'select',

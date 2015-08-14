@@ -461,7 +461,9 @@ $lang = array(
  * 3.0
  */
 
-'btn_fix_errors' => 'Fix Errors, Please',
+'btn_save' => 'Save %s',
+
+'btn_fix_errors' => 'Errors Found',
 
 'btn_saving' => 'Saving...',
 
@@ -478,6 +480,8 @@ $lang = array(
 'menu_create' => 'Create',
 
 'new_channel' => 'New Channel',
+
+'view_all' => 'View All',
 
 'new_site' => 'New Site',
 
@@ -524,13 +528,15 @@ $lang = array(
 
 'url_title_lc' => 'URL title',
 
-'url_title_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
-
 'description' => 'Description',
 
 'image' => 'Image',
 
 'no_rows_returned' => 'No rows returned',
+
+'used_in_cp_only' => 'Used in the control panel only.',
+
+'alphadash_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
 
 /**
  * Footer
@@ -568,7 +574,13 @@ $lang = array(
 
 'about_expressionengine' => 'About ExpressionEngine',
 
-'manual' => 'Manual',
+'session_timeout' => 'Your administration access session has timed out. Please use the form below to log back into your control panel.',
+
+'login' =>
+'Log In',
+
+'authenticating' =>
+'authenticating...',
 
 //----------------------------
 // confirm removal modal

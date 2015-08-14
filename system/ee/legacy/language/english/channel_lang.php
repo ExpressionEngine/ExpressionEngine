@@ -26,6 +26,10 @@ $lang = array(
  * Channel Manager
  */
 
+'section_search_results' => 'results for the search term <mark>%s</mark>',
+
+'search_for' => 'Search for "%s"',
+
 'channel_manager' => 'Channel Manager',
 
 'manage_channels' => 'Manage Channels',
@@ -39,6 +43,8 @@ $lang = array(
 'short_name_col' => 'Short Name',
 
 'custom_fields' => 'Custom Fields',
+
+'field_group' => 'Field Group',
 
 'field_groups' => 'Field Groups',
 
@@ -72,7 +78,7 @@ $lang = array(
 
 'layout_options' => 'Layout Options',
 
-'name_desc' => 'Full descriptive name of this form layout.',
+'name_desc' => '',
 
 'member_group(s)' => 'Member group(s)?',
 
@@ -138,24 +144,19 @@ $lang = array(
 'edit_channel' => 'Edit Channel',
 
 'channel_title' => 'Name',
-
-'channel_title_desc' => 'Full descriptive name of this channel.',
-
-'channel_short_name_desc' => 'Short name for this channel.<br><i>No spaces. Underscores and dashes are allowed.</i>',
+'channel_title_desc' => '',
 
 'channel_duplicate' => 'Duplicate existing channel?',
-
 'channel_duplicate_desc' => 'On creation, this channel will copy all settings from the selected channel.',
 
 'channel_do_not_duplicate' => 'Do not duplicate',
 
 'channel_publishing_options' => 'Publishing Options',
 
-'channel_publishing_options_warning' => '<b>Warning</b>: Channels require custom fields to collect any data other than title, and date.',
+'channel_publishing_options_warning' => '<b>Warning</b>: Channels require custom field groups to collect any data other than title, and date.',
+'channel_publishing_options_warning2' => 'If you need to collect additional data for this channel, it\'s best practice to create any <a href="%s">custom field groups</a>, first.',
 
-'channel_publishing_options_warning2' => 'If you need to collect additional data for this channel, it\'s best practice to create any <a href="%s">custom fields</a>, first.',
-
-'status_groups_desc' => 'Choose the status group you want for this channel.',
+'status_groups_desc' => '',
 
 'default_status_group' => 'Default Statuses',
 
@@ -165,25 +166,35 @@ $lang = array(
 
 'custom_field_group' => 'Custom field group',
 
-'custom_field_group_desc' => 'Choose the field group you would like to use in the publishing forms for this channel.',
+'custom_field_group_desc' => '',
 
 'custom_field_groups_not_found' => 'Zero <b>custom field groups</b> found',
 
 'create_new_field_group' => 'Create New Field Group',
 
-'category_groups_desc' => 'Choose the category groups you want available for this channel.',
+'custom_fields_desc' => 'Choose the fields you would like to include in this field group.',
+
+'category_groups_desc' => '',
 
 'category_groups_not_found' => 'Zero <b>category groups</b> found',
 
 'create_new_category_group' => 'Create New Category Group',
 
-'channel_saved' => 'Channel saved',
+'channel_created' => 'Channel Created',
 
-'channel_saved_desc' => 'Your channel has been saved successfully.',
+'channel_created_desc' => 'The channel <b>%s</b> has been created.',
 
-'channel_not_saved' => 'Attention: Channel not saved',
+'channel_not_created' => 'Cannot Create Channel',
 
-'channel_not_saved_desc' => 'We were unable to save your channel, please review and fix errors below.',
+'channel_not_created_desc' => 'We were unable to create this channel, please review and fix errors below.',
+
+'channel_updated' => 'Channel Updated',
+
+'channel_updated_desc' => 'The channel <b>%s</b> has been updated.',
+
+'channel_not_updated' => 'Cannot Update Channel',
+
+'channel_not_updated_desc' => 'We were unable to update this channel, please review and fix errors below.',
 
 'invalid_short_name' => 'Your channel name must contain only alpha-numeric characters and no spaces.',
 
@@ -225,7 +236,10 @@ $lang = array(
 
 'channel_defaults' => 'Defaults',
 
-'default_title' => 'Title',
+'title_field_label' => 'Title field label',
+'title_field_label_desc' => 'Changes the title field label in the Publish form for this channel.',
+
+'default_title' => 'Generated title',
 
 'default_title_desc' => 'Title assigned to all <b>new</b> entires in this channel.',
 
@@ -251,6 +265,10 @@ $lang = array(
 
 'html_formatting_desc' => 'Level of <abbr title="Hyper-Text Markup Language">HTML</abbr> allowed.',
 
+'extra_publish_controls' => 'Show extra publish controls?',
+
+'extra_publish_controls_desc' => 'When set to <b>yes</b>, a second set of publish controls will appear at the top of the publish form for this channel.',
+
 'convert_image_urls' => 'Allow image <abbr title="Unified Resource Locator">URL</abbr>s?',
 
 'convert_image_urls_desc' => 'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s to image resources will be automagically rendered as images in this channel\'s entries.',
@@ -258,10 +276,6 @@ $lang = array(
 'convert_urls_emails_to_links' => 'Render <abbr title="Unified Resource Locator">URL</abbr>s and Email addresses as links?',
 
 'convert_urls_emails_to_links_desc' => 'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s and Email address will be rendered as links in this channel\'s entries.',
-
-'allow_rich_text_editing' => 'Allow Rich Text Editing?',
-
-'allow_rich_text_editing_desc' => 'When set to <b>yes</b>, text areas will have the default <abbr title="Rich Text Editor">RTE</abbr> tool set above them.',
 
 'channel_form' => 'Channel Form',
 
@@ -380,6 +394,14 @@ $lang = array(
 
 'channel_form_default_status_empty' => '-- Use Channel Default --',
 
+'channel_settings_saved' => 'Channel Settings Saved',
+
+'channel_settings_saved_desc' => 'The settings for channel <b>%s</b> have been saved.',
+
+'channel_settings_not_saved' => 'Cannot Save Channel Settings',
+
+'channel_settings_not_saved_desc' => 'We were unable to save this channel\'s settings, please review and fix errors below.',
+
 /**
  * Categories
  */
@@ -412,9 +434,9 @@ $lang = array(
 
 'edit_category_group' => 'Edit Category Group',
 
-'group_name_desc' => 'Descriptive name of this category group.',
+'group_name_desc' => '',
 
-'categories_not_found' => 'Zero <b>category groups</b> found',
+'categories_not_found' => 'Zero <b>categories</b> found',
 
 'create_category' => 'Create Category',
 
@@ -424,13 +446,13 @@ $lang = array(
 
 'files' => 'Files',
 
-'cat_description_desc' => 'A brief description of this category.',
+'cat_description_desc' => '',
 
-'cat_image_desc' => 'Image representation of this category.',
+'cat_image_desc' => '',
 
 'html_formatting' => 'HTML formatting',
 
-'html_formatting_desc' => 'Level of HTML allowed in custom category fields.',
+'html_formatting_desc' => '',
 
 'permissions' => 'Permissions',
 
@@ -454,13 +476,21 @@ $lang = array(
 
 'exclude_group_form_desc' => 'Prevent this category group from being offered as choice for assignment to channels and file directories.',
 
-'category_group_saved' => 'Category group saved',
+'category_group_created' => 'Category Group Created',
 
-'category_group_saved_desc' => 'Your category group has been saved successfully.',
+'category_group_created_desc' => 'The category group <b>%s</b> has been created.',
 
-'category_group_not_saved' => 'Attention: Category group not saved',
+'category_group_not_created' => 'Cannot Create Category Group',
 
-'category_group_not_saved_desc' => 'We were unable to save your category group, please review and fix errors below.',
+'category_group_not_created_desc' => 'We were unable to create this category group, please review and fix errors below.',
+
+'category_group_updated' => 'Category Group Updated',
+
+'category_group_updated_desc' => 'The category group <b>%s</b> has been updated.',
+
+'category_group_not_updated' => 'Cannot Update Category Group',
+
+'category_group_not_updated_desc' => 'We were unable to update this category group, please review and fix errors below.',
 
 'cat_image_none' => 'None <i>&mdash; no image</i>',
 
@@ -468,15 +498,23 @@ $lang = array(
 
 'parent_category' => 'Parent category',
 
-'parent_category_desc' => 'You may make this category a sub-category of another.',
+'parent_category_desc' => '',
 
-'category_saved' => 'Category saved',
+'category_created' => 'Category Created',
 
-'category_saved_desc' => 'Your category has been saved successfully.',
+'category_created_desc' => 'The category <b>%s</b> has been created.',
 
-'category_not_saved' => 'Attention: Category not saved',
+'category_not_created' => 'Cannot Create Category',
 
-'category_not_saved_desc' => 'We were unable to save your category, please review and fix errors below.',
+'category_not_created_desc' => 'We were unable to create this category, please review and fix errors below.',
+
+'category_updated' => 'Category Updated',
+
+'category_updated_desc' => 'The category <b>%s</b> has been updated.',
+
+'category_not_updated' => 'Cannot Update Category',
+
+'category_not_updated_desc' => 'We were unable to update this category, please review and fix errors below.',
 
 'category_field' => 'Category Field',
 
@@ -500,13 +538,9 @@ $lang = array(
 
 'label' => 'Label',
 
-'cat_field_label_desc' => 'Name of field that appears in the category form.',
-
-'cat_field_short_name_desc' => 'Short name for this field.<br><i>No spaces. Underscores and dashes are allowed.</i>',
-
 'require_field' => 'Require field?',
 
-'cat_require_field_desc' => 'When set to <b>yes</b>, this field will be required to save a category.',
+'cat_require_field_desc' => 'When set to <b>yes</b>,  this field will be required to submit the publish form.',
 
 'text_input' => 'Text Input',
 
@@ -518,13 +552,21 @@ $lang = array(
 
 'btn_edit_field' => 'Edit Field',
 
-'category_field_saved' => 'Category field saved',
+'category_field_created' => 'Category Field Created',
 
-'category_field_saved_desc' => 'Your category field has been saved successfully.',
+'category_field_created_desc' => 'The category field <b>%s</b> has been created.',
 
-'category_field_not_saved' => 'Attention: Category field not saved',
+'category_field_not_created' => 'Cannot Create Category Field',
 
-'category_field_not_saved_desc' => 'We were unable to save your category field, please review and fix errors below.',
+'category_field_not_created_desc' => 'We were unable to create this category field, please review and fix errors below.',
+
+'category_field_updated' => 'Category Field Updated',
+
+'category_field_updated_desc' => 'The category field <b>%s</b> has been updated.',
+
+'category_field_not_updated' => 'Cannot Update Category Field',
+
+'category_field_not_updated_desc' => 'We were unable to update this category field, please review and fix errors below.',
 
 'duplicate_field_name' => 'The field name you chose is already taken.',
 
@@ -548,15 +590,23 @@ $lang = array(
 
 'edit_status_group' => 'Edit Status Group',
 
-'status_group_name_desc' => 'Descriptive name of this status group.',
+'status_group_name_desc' => '',
 
-'status_group_saved' => 'Status group saved',
+'status_group_created' => 'Status Group Created',
 
-'status_group_saved_desc' => 'Your status group has been saved successfully.',
+'status_group_created_desc' => 'The status group <b>%s</b> has been created.',
 
-'status_group_not_saved' => 'Attention: Status group not saved',
+'status_group_not_created' => 'Cannot Create Status Group',
 
-'status_group_not_saved_desc' => 'We were unable to save your status group, please review and fix errors below.',
+'status_group_not_created_desc' => 'We were unable to create this status group, please review and fix errors below.',
+
+'status_group_updated' => 'Status Group Updated',
+
+'status_group_updated_desc' => 'The status group <b>%s</b> has been updated.',
+
+'status_group_not_updated' => 'Cannot Update Status Group',
+
+'status_group_not_updated_desc' => 'We were unable to update this status group, please review and fix errors below.',
 
 'status_name' => 'Status Name',
 
@@ -586,13 +636,21 @@ $lang = array(
 
 'status_access_desc' => 'Users in selected groups will be allowed to access this status.</em><em>Super Administrators are <b>always</b> allowed.',
 
-'status_saved' => 'Status saved',
+'status_created' => 'Status Created',
 
-'status_saved_desc' => 'Your status has been saved successfully.',
+'status_created_desc' => 'The status <b>%s</b> has been created.',
 
-'status_not_saved' => 'Attention: Status not saved',
+'status_not_created' => 'Cannot Create Status',
 
-'status_not_saved_desc' => 'We were unable to save your status, please review and fix errors below.',
+'status_not_created_desc' => 'We were unable to create this status, please review and fix errors below.',
+
+'status_updated' => 'Status Updated',
+
+'status_updated_desc' => 'The status <b>%s</b> has been updated.',
+
+'status_not_updated' => 'Cannot Update Status',
+
+'status_not_updated_desc' => 'We were unable to update this status, please review and fix errors below.',
 
 'duplicate_status_group_name' => 'A status group already exists with the same name.',
 

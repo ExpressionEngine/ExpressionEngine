@@ -12,7 +12,7 @@ class SnippetsTest extends \PHPUnit_Framework_TestCase {
 	{
 		$controller_methods = array();
 
-		foreach (get_class_methods('EllisLab\ExpressionEngine\Controllers\Design\Snippets') as $method)
+		foreach (get_class_methods('EllisLab\ExpressionEngine\Controller\Design\Snippets') as $method)
 		{
 			$method = strtolower($method);
 			if (strncmp($method, '_', 1) != 0)

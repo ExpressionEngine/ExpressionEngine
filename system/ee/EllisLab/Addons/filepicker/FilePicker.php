@@ -16,16 +16,8 @@ class FilePicker {
 	{
 		// Insert the modal
 		$modal_vars = array('name'=> 'modal-file', 'contents' => '');
-		$modal = ee('View')->make('_shared/modal')->ee_view('_shared/modal', $modal_vars, TRUE);
-
-		if (empty($view->blocks['modals']))
-		{
-			$view->blocks['modals'] = '';
-		}
-
-		if (strpos($view->blocks['modals'], $modal) === FALSE) {
-			$view->blocks['modals'] .= $modal;
-		}
+		$modal = ee('View')->make('ee:_shared/modal')->render($modal_vars);
+		ee('CP/Modal')->addModal('modal-file', $modal);
 
 		ee()->cp->add_js_script(array(
 			'file' => array(
@@ -36,7 +28,18 @@ class FilePicker {
 
 	public function link($text, $dir = 'all', $data = array())
 	{
-		$href = ee('CP/URL', $this->controller, array('directory' => $dir));
+		$qs = array('directory' => $dir);
+
+		if ( ! empty($data['image']))
+		{
+			$qs['type'] = 'thumbnails';
+		}
+		else
+		{
+			$qs['type'] = 'list';
+		}
+
+		$href = ee('CP/URL', $this->controller, $qs);
 		$extra = "";
 		$class = "";
 

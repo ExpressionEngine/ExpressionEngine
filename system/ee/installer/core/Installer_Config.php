@@ -247,7 +247,6 @@ class MSM_Config extends EE_Config
 	{
 		$columns = array(
 			'site_system_preferences',
-			'site_mailinglist_preferences',
 			'site_member_preferences',
 			'site_template_preferences',
 			'site_channel_preferences',
@@ -284,8 +283,11 @@ class MSM_Config extends EE_Config
 				}
 			}
 
-			ee()->db->where('site_id', $site_id);
-			ee()->db->update('sites', $site);
+			if ($changed)
+			{
+				ee()->db->where('site_id', $site_id);
+				ee()->db->update('sites', $site);
+			}
 		}
 	}
 

@@ -117,7 +117,7 @@ class File_ft extends EE_Fieldtype {
 
 			$file = $this->_parse_field($data);
 
-			return ee('View')->make('publish')->render(array(
+			return ee('View')->make('file:publish')->render(array(
 				'field_name' => $this->field_name,
 				'value' => $data,
 				'file' => $file,
@@ -651,29 +651,6 @@ CSS;
 		$validator->defineRule('allowedDirectories', array($this, '_validate_file_settings'));
 
 		return $validator->validate($settings);
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Grid settings validation callback; makes sure there are file upload
-	 * directories available before allowing a new file field to be saved
-	 *
-	 * @param	array	Grid settings
-	 * @return	mixed	Validation error or TRUE if passed
-	 */
-	function grid_validate_settings($data)
-	{
-		if ( ! $this->_check_directories())
-		{
-			ee()->lang->load('fieldtypes');
-			return sprintf(
-				lang('file_ft_no_upload_directories'),
-				ee('CP/URL', 'files/uploads/create')
-			);
-		}
-
-		return TRUE;
 	}
 
 	// --------------------------------------------------------------------

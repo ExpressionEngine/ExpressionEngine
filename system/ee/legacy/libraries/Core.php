@@ -63,7 +63,7 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20141010');
+		define('APP_BUILD',		'20150807');
 		define('APP_VER',		'3.0.0');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
@@ -205,7 +205,7 @@ class EE_Core {
 		define('PATH_THIRD_THEMES', $theme_path.'user/');
 		define('URL_THIRD_THEMES', $theme_url.'user/');
 
-		define('PATH_MBR_THEMES', PATH_THEMES.'profile_themes/');
+		define('PATH_MBR_THEMES', PATH_THEMES.'member/');
 		define('PATH_CP_GBL_IMG', ee()->config->slash_item('theme_folder_url').'ee/cp_global_images/');
 		unset($theme_path);
 
@@ -249,8 +249,8 @@ class EE_Core {
 			'search', 'simple_commerce', 'spam', 'stats', 'wiki', 'filepicker'
 		);
 		$this->standard_modules = array(
-			'blacklist', 'email', 'forum', 'ip_to_nation', 'mailinglist',
-			'member', 'moblog', 'query', 'simple_commerce', 'wiki', 'filepicker'
+			'blacklist', 'email', 'forum', 'ip_to_nation', 'member', 'moblog', 'query',
+			'simple_commerce', 'wiki', 'filepicker'
 		);
 
 		// Is this a stylesheet request?  If so, we're done.
@@ -387,24 +387,9 @@ class EE_Core {
 	public function run_cp()
 	{
 		$this->_somebody_set_us_up_the_base();
-/*
-		// Define PATH_CP_THEME
-		$cp_theme = ee()->session->userdata('cp_theme')
-			?: ee()->config->item('cp_theme');
 
-		// Make sure directory actually exists
-		if ($cp_theme !== 'default'
-			&& ! is_dir(PATH_ADDONS_THEMES.'cp_themes/'.$cp_theme.'/'))
-		{
-			$cp_theme = 'default';
-		}
-
-		$path_cp_theme = ($cp_theme === 'default')
-			? PATH_THEMES.'cp_themes/default/'
-			: PATH_ADDONS_THEMES.'cp_themes/'.$cp_theme.'/';
-*/
 		$cp_theme = 'default';
-		define('PATH_CP_THEME', PATH_THEMES.'cp_themes/default/');
+		define('PATH_CP_THEME', PATH_THEMES.'cp/default/');
 
 		// Show the control panel home page in the event that a
 		// controller class isn't found in the URL
@@ -429,7 +414,6 @@ class EE_Core {
 
 		// Load our view library
 		ee()->load->library('view');
-		ee()->view->set_cp_theme($cp_theme);
 
 		// Fetch control panel language file
 		ee()->lang->loadfile('cp');

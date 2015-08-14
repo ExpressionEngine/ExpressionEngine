@@ -2,6 +2,8 @@
 
 $lang = array(
 
+'system_utilities' => 'System Utilities',
+
 /**
  * Menu
  */
@@ -36,6 +38,8 @@ $lang = array(
 
 'search_and_replace' => 'Search and Replace',
 
+'default' => 'Default',
+
 /**
  * Communicate
  */
@@ -48,9 +52,7 @@ $lang = array(
 
 'word_wrap' => 'word wrap',
 
-'your_email' => 'Your Email',
-
-'from_email' => 'From Email',
+'your_email' => 'Your email',
 
 'attachment' => 'Attachment',
 
@@ -69,10 +71,6 @@ $lang = array(
 'bcc_recipients' => '<abbr title="Blind Carbon Copied">BCC</abbr> recipient(s)',
 
 'bcc_recipients_desc' => '<abbr title="Blind Carbon Copied">BCC</abbr> Email(s). Separate multiple recipients with a comma.',
-
-'mailing_lists' => 'Mailing list(s)',
-
-'mailing_lists_desc' => 'Send Email to <b>all</b> members in chosen list(s).',
 
 'add_member_groups' => 'Add member group(s)',
 
@@ -139,7 +137,7 @@ $lang = array(
 
 'database' => 'Database',
 
-'all' => 'All',
+'all_caches' => 'All Caches',
 
 'btn_clear_caches' => 'Clear Caches',
 
@@ -233,8 +231,6 @@ $lang = array(
 
 'duplicate_member_id' => 'Duplicate Member ID: "%x"<br />It is recommended that you do not use a &lt;member_id&gt; tag and allow ExpressionEngine to auto-increment member_id',
 
-'duplicate_screen_name' => 'Duplicate screen_name: ',
-
 'duplicate_username' => 'Duplicate username: ',
 
 'member_id_warning' => 'WARNING: If you have &lt;member_id&gt; tags in your XML, existing members with the same member_id will be OVERWRITTEN!  Proceed with caution!',
@@ -277,7 +273,7 @@ $lang = array(
 
 'mbr_xml_file' => '<abbr title="Extensible Markup Language">XML</abbr> file location',
 
-'mbr_xml_file_location' => '<abbr title="Unified Resource Locator">URL</abbr> location of your <abbr title="Extensible Markup Language"><mark>xml</mark></abbr> file.',
+'mbr_xml_file_location' => 'Server path to your <abbr title="Extensible Markup Language"><mark>xml</mark></abbr> file.',
 
 'mbr_import_default_options' => 'Default Options',
 
@@ -285,13 +281,7 @@ $lang = array(
 
 'mbr_language' => 'Language',
 
-'mbr_timezone' => 'Timezone',
-
-'mbr_timezone_desc' => 'Local timezone for any date and time displays.',
-
 'mbr_datetime_fmt' => 'Date &amp; time format',
-
-'mbr_datetime_fmt_desc' => 'Preferred date and time formats.<br><i>Used in the control panel only.</i>',
 
 'mbr_create_custom_fields' => 'Create custom fields?',
 

@@ -4,7 +4,7 @@
 		<title><?=$title?></title>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" lang="en-us" dir="ltr">
 		<meta content="width=device-width, initial-scale=1.0" name="viewport">
-		<link href="<?=$theme_url?>/ee/cp_themes/default/css/v3/common.min.css" rel="stylesheet">
+		<link href="<?=$theme_url?>/ee/cp/default/css/v3/common.min.css" rel="stylesheet">
 		<?php
 		if (isset($extra_header))
 		{
@@ -23,10 +23,10 @@
 	</head>
 	<body id="top">
 		<section class="wrap">
-			<div class="col-group">
+			<div class="col-group install-wrap">
 				<div class="col w-16 last">
 					<div class="box">
-						<h1><?=$title?> <span class="req-title no-asterisk"><?=$subtitle?></span></h1>
+						<h1><?=$title?> <span class="req-title<?php if (stripos($action, 'do_install') == FALSE): ?> no-asterisk<?php endif; ?>"><?=$subtitle?></span></h1>
 						<form class="settings" action="<?=$action?>" method="<?=$method?>">
 							<?=$content?>
 						</form>

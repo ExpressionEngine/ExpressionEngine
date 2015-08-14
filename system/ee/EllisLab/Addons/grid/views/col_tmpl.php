@@ -13,7 +13,7 @@
 					'class="grid_col_select"')?>
 			</div>
 		</fieldset>
-		<fieldset class="col-group">
+		<fieldset class="col-group<?php if (in_array('grid[cols]['.$field_name.'][col_label]', $error_fields)): ?> invalid<?php endif ?>">
 			<div class="setting-txt col w-16">
 				<h3><?=lang('label')?></h3>
 				<em><?=lang('label_desc')?></em>
@@ -22,16 +22,16 @@
 				<?=form_input('grid[cols]['.$field_name.'][col_label]', isset($column['col_label']) ? $column['col_label'] : '', ' class="grid_col_field_label"')?>
 			</div>
 		</fieldset>
-		<fieldset class="col-group">
+		<fieldset class="col-group<?php if (in_array('grid[cols]['.$field_name.'][col_name]', $error_fields)): ?> invalid<?php endif ?>">
 			<div class="setting-txt col w-16">
 				<h3><?=lang('short_name')?></h3>
-				<em><?=lang('short_name_desc')?></i></em>
+				<em><?=lang('alphadash_desc')?></i></em>
 			</div>
 			<div class="setting-field col w-16 last">
 				<?=form_input('grid[cols]['.$field_name.'][col_name]', isset($column['col_name']) ? $column['col_name'] : '', ' class="grid_col_field_name"')?>
 			</div>
 		</fieldset>
-		<fieldset class="col-group">
+		<fieldset class="col-group<?php if (in_array('grid[cols]['.$field_name.'][col_instructions]', $error_fields)): ?> invalid<?php endif ?>">
 			<div class="setting-txt col w-16">
 				<h3><?=lang('instructions')?></h3>
 				<em><?=lang('instructions_desc')?></em>
@@ -46,23 +46,26 @@
 				<em><?=lang('grid_in_this_field_desc')?></em>
 			</div>
 			<div class="setting-field col w-16 last">
-				<label class="choice block">
+				<?php
+				$col_required = (isset($column['col_required']) && $column['col_required'] == 'y');
+				$col_search = (isset($column['col_search']) && $column['col_search'] == 'y'); ?>
+				<label class="choice block<?php if ($col_required): ?> chosen<?php endif ?>">
 					<?=form_checkbox(
 						'grid[cols]['.$field_name.'][col_required]',
 						'column_required',
-						(isset($column['col_required']) && $column['col_required'] == 'y')
+						$col_required
 					)?> <?=lang('require_field')?>
 				</label>
-				<label class="choice block">
+				<label class="choice block<?php if ($col_search): ?> chosen<?php endif ?>">
 					<?=form_checkbox(
 						'grid[cols]['.$field_name.'][col_search]',
 						'column_searchable',
-						(isset($column['col_search']) && $column['col_search'] == 'y')
+						$col_search
 					)?> <?=lang('include_in_search')?>
 				</label>
 			</div>
 		</fieldset>
-		<fieldset class="col-group last">
+		<fieldset class="col-group last<?php if (in_array('grid[cols]['.$field_name.'][col_width]', $error_fields)): ?> invalid<?php endif ?>">
 			<div class="setting-txt col w-16">
 				<h3><?=lang('grid_col_width')?></h3>
 				<em><?=lang('grid_col_width_desc')?></em>

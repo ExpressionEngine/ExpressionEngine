@@ -32,7 +32,7 @@ class Pagination {
 	/**
 	 * @var int $per_page The number of items per page
 	 */
-	private $per_page = 20;
+	private $per_page = 25;
 
 	/**
 	 * @var int $current_page The page number being displayed
@@ -199,7 +199,7 @@ class Pagination {
 			$links['pages'][$i] = $url->compile();
 		}
 
-		return $this->view->ee_view('_shared/pagination', array('pagination' => $links), TRUE);
+		return $this->view->render(array('pagination' => $links));
 	}
 }
 

@@ -595,10 +595,12 @@ class EE_Logger {
 	{
 		$table = 'update_log';
 
+		// Clear table caches
+		ee()->db->data_cache = array();
+
 		// Using normal ee()->db here since we need to see if this table was
 		// created using the normal DB object
-		if ( ! ee()->db->table_exists($table)
-			&& ! $this->logger_db()->table_exists($table))
+		if ( ! ee()->db->table_exists($table))
 		{
 			ee()->load->dbforge();
 

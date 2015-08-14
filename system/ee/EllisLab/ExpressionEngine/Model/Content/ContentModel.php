@@ -89,7 +89,7 @@ abstract class ContentModel extends VariableColumnModel {
 	 */
 	public function getCustomFields()
 	{
-		return $this->_field_facades;
+		return $this->_field_facades ?: array();
 	}
 
 	/**

@@ -7,6 +7,6 @@ class BreadthFirstIteratorTest extends \PHPUnit_Framework_TestCase {
 
 	public function testBreadthFirstIterator()
 	{
-		$this->markTestSkipped('not yet implemented');
+		$this->markTestIncomplete('not yet implemented');
 	}
 }

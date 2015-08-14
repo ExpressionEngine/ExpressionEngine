@@ -6,6 +6,7 @@ use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 use EllisLab\ExpressionEngine\Model\Content\ContentModel;
 use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
+use EllisLab\ExpressionEngine\Service\Validation\Result as ValidationResult;
 
 /**
  * Channel Entry
@@ -74,14 +75,18 @@ class ChannelEntry extends ContentModel {
 				'left' => 'parent_id',
 				'right' => 'child_id'
 			)
-		)
+		),
+		'Versions' => array(
+			'type' => 'hasMany',
+			'model' => 'ChannelEntryVersion'
+		),
 	);
 
 	protected static $_validation_rules = array(
 		'channel_id'         => 'required',
 		'ip_address'         => 'ip_address',
 		'title'              => 'required',
-		'url_title'          => 'required',
+		'url_title'          => 'required|alphaDash',
 		'status'             => 'required',
 		'entry_date'         => 'required',
 		'versioning_enabled' => 'enum[y,n]',
@@ -90,8 +95,9 @@ class ChannelEntry extends ContentModel {
 	);
 
 	protected static $_events = array(
-		'afterDelete',
-		'afterSave'
+		'beforeDelete',
+		'afterSave',
+		'afterUpdate',
 	);
 
 	// Properties
@@ -132,15 +138,113 @@ class ChannelEntry extends ContentModel {
 		$this->setProperty('day', ee()->localize->format_date('%d', $entry_date));
 	}
 
+	public function validate()
+	{
+		$result = parent::validate();
+
+		foreach ($this->getModulesWithTabs() as $name => $info)
+		{
+			include_once($info->getPath() . '/tab.' . $name . '.php');
+			$class_name = ucfirst($name) . '_tab';
+			$OBJ = new $class_name();
+
+			if (method_exists($OBJ, 'validate') === TRUE)
+			{
+				$fields = $OBJ->display($this->channel_id, $this->entry_id);
+
+				$values = array();
+				foreach(array_keys($fields) as $field)
+				{
+					$property = $name . '__' . $field;
+					$values[$field] = $this->$property;
+				}
+
+				$tab_result = $OBJ->validate($this, $values);
+
+				if ($tab_result instanceOf ValidationResult && $tab_result->failed())
+				{
+					foreach ($tab_result->getFailed() as $field => $rules)
+					{
+						foreach ($rules as $rule)
+						{
+							$result->addFailed($name . '__' . $field, $rule);
+						}
+					}
+				}
+			}
+		}
+
+		return $result;
+	}
+
 	public function onAfterSave()
 	{
 		parent::onAfterSave();
 		$this->Autosaves->delete();
+
+		foreach ($this->getModulesWithTabs() as $name => $info)
+		{
+			include_once($info->getPath() . '/tab.' . $name . '.php');
+			$class_name = ucfirst($name) . '_tab';
+			$OBJ = new $class_name();
+
+			if (method_exists($OBJ, 'save') === TRUE)
+			{
+				$fields = $OBJ->display($this->channel_id, $this->entry_id);
+
+				$values = array();
+				foreach(array_keys($fields) as $field)
+				{
+					$property = $name . '__' . $field;
+					$values[$field] = $this->$property;
+				}
+
+				$OBJ->save($this, $values);
+			}
+		}
 	}
 
-	public function onAfterDelete()
+	public function onAfterUpdate()
 	{
-		$this->Autosaves->delete();
+		$this->saveVersion();
+	}
+
+	public function saveVersion()
+	{
+		if ( ! $this->getProperty('versioning_enabled'))
+		{
+			return;
+		}
+
+		if ($this->Versions->count() == $this->Channel->max_revisions)
+		{
+			$this->Versions->order('version_date')->first()->delete();
+		}
+
+		$data = array(
+			'entry_id'     => $this->entry_id,
+			'channel_id'   => $this->channel_id,
+			'author_id'    => $this->author_id,
+			'version_date' => ee()->localize->now,
+			'version_data' => $this->getValues()
+		);
+
+		$version = $this->getFrontend()->make('ChannelEntryVersion', $data)->save();
+	}
+
+	public function onBeforeDelete()
+	{
+		foreach ($this->getModulesWithTabs() as $name => $info)
+		{
+			include_once($info->getPath() . '/tab.' . $name . '.php');
+			$class_name = ucfirst($name) . '_tab';
+			$OBJ = new $class_name();
+
+			if (method_exists($OBJ, 'delete') === TRUE)
+			{
+				$OBJ->delete(array($this->entry_id));
+			}
+		}
 	}
 
 	/**
@@ -161,16 +265,84 @@ class ChannelEntry extends ContentModel {
 	{
 		$layout = $layout ?: new Display\DefaultChannelLayout($this->channel_id, $this->entry_id);
 
+		$this->_field_facades['title']->setItem('field_label', $this->Channel->title_field_label);
+
 		return parent::getDisplay($layout);
+	}
+
+	protected function getModulesWithTabs()
+	{
+
+		$modules = array();
+		$providers = ee('App')->getProviders();
+		$installed_modules = $this->getFrontend()->get('Module')
+			->all()
+			->pluck('module_name');
+
+		foreach (array_keys($providers) as $name)
+		{
+			try
+			{
+				$info = ee('App')->get($name);
+				if (file_exists($info->getPath() . '/tab.' . $name . '.php')
+					&& in_array(ucfirst($name), $installed_modules))
+				{
+					$modules[$name] = $info;
+				}
+			}
+			catch (\Exception $e)
+			{
+				continue;
+			}
+		}
+
+		return $modules;
+	}
+
+	protected function getTabFields()
+	{
+		$module_tabs = array();
+
+		// Some Tabs might call ee()->api_channel_fields
+		ee()->legacy_api->instantiate('channel_fields');
+
+		foreach ($this->getModulesWithTabs() as $name => $info)
+		{
+			include_once($info->getPath() . '/tab.' . $name . '.php');
+			$class_name = ucfirst($name) . '_tab';
+			$OBJ = new $class_name();
+
+			if (method_exists($OBJ, 'display') === TRUE)
+			{
+				// fetch the content
+				$fields = $OBJ->display($this->channel_id, $this->entry_id);
+
+				// There's basically no way this *won't* be set, but let's check it anyhow.
+				// When we find it, we'll append the module's classname to it to prevent
+				// collission with other modules with similarly named fields. This namespacing
+				// gets stripped as needed when the module data is processed in get_module_methods()
+				// This function is called for insertion and editing of entries.
+
+				foreach ($fields as $key => $field)
+				{
+					if (isset($field['field_id']))
+					{
+						$fields[$key]['field_id'] = $name.'__'.$field['field_id']; // two underscores
+					}
+				}
+
+				$module_tabs[$name] = $fields;
+			}
+		}
+
+		return $module_tabs;
 	}
 
 	protected function initializeCustomFields()
 	{
 		parent::initializeCustomFields();
 
-		// Here comes the ugly! @TODO don't do this
-		ee()->legacy_api->instantiate('channel_fields');
-		$module_tabs = ee()->api_channel_fields->get_module_fields($this->channel_id, $this->entry_id);
+		$module_tabs = $this->getTabFields();
 
 		if ($module_tabs)
 		{
@@ -184,18 +356,43 @@ class ChannelEntry extends ContentModel {
 		}
 	}
 
+	public function get__versioning_enabled()
+	{
+		return (isset($this->versioning_enabled)) ?: $this->Channel->enable_versioning;
+	}
+
 	/**
 	 * Category setter for convenience to intercept the
 	 * 'categories' post array.
 	 */
 	public function set__categories($categories)
 	{
+		if (empty($categories))
+		{
+			$categories = array();
+		}
+
+		if ( ! is_array($categories))
+		{
+			$categories = array($categories);
+		}
+
 		// annoyingly needed to trigger validation on the field
 		$this->setRawProperty('categories', implode('|', $categories));
 
+		// Currently cannot get multiple category groups through relationships
+		$cat_groups = array();
+		if ($this->Channel->cat_group)
+		{
+			$cat_groups = explode('|', $this->Channel->cat_group);
+		}
+
 		if (empty($categories))
 		{
-			$this->getCustomField('categories')->setData('');
+			foreach ($cat_groups as $cat_group)
+			{
+				$this->getCustomField('cat_group_id_'.$cat_group)->setData('');
+			}
 			$this->Categories = NULL;
 			return;
 		}
@@ -207,7 +404,16 @@ class ChannelEntry extends ContentModel {
 			->filter('cat_id', 'IN', $categories)
 			->all();
 
-		$this->getCustomField('categories')->setData(implode('|', $this->Categories->pluck('cat_name')));
+		// Set the data on the fields in case we come back from a validation error
+		foreach ($cat_groups as $cat_group)
+		{
+			$cats_in_group = $this->Categories->filter(function($category) use ($cat_group)
+			{
+				return $category->group_id == $cat_group;
+			});
+
+			$this->getCustomField('cat_group_id_'.$cat_group)->setData(implode('|', $this->Categories->pluck('cat_name')));
+		}
 	}
 
 	/**
@@ -215,138 +421,188 @@ class ChannelEntry extends ContentModel {
 	 */
 	protected function getDefaultFields()
 	{
-		return array(
-			'title' => array(
-				'field_id'				=> 'title',
-				'field_label'			=> lang('title'),
-				'field_required'		=> 'y',
-				'field_show_fmt'		=> 'n',
-				'field_instructions'	=> '',
-				'field_text_direction'	=> 'ltr',
-				'field_type'			=> 'text',
-				'field_maxl'			=> 100
-			),
-			'url_title' => array(
-				'field_id'				=> 'url_title',
-				'field_label'			=> lang('url_title'),
-				'field_required'		=> 'n',
-				'field_fmt'				=> 'xhtml',
-				'field_instructions'	=> lang('url_title_desc'),
-				'field_show_fmt'		=> 'n',
-				'field_text_direction'	=> 'ltr',
-				'field_type'			=> 'text',
-				'field_maxl'			=> 75
-			),
-			'entry_date' => array(
-				'field_id'				=> 'entry_date',
-				'field_label'			=> lang('entry_date'),
-				'field_required'		=> 'y',
-				'field_type'			=> 'date',
-				'field_text_direction'	=> 'ltr',
-				'field_fmt'				=> 'text',
-				'field_instructions'	=> lang('entry_date_desc'),
-				'field_show_fmt'		=> 'n',
-				'always_show_date'		=> 'y',
-				'default_offset'		=> 0,
-				'selected'				=> 'y',
-			),
-			'expiration_date' => array(
-				'field_id'				=> 'expiration_date',
-				'field_label'			=> lang('expiration_date'),
-				'field_required'		=> 'n',
-				'field_type'			=> 'date',
-				'field_text_direction'	=> 'ltr',
-				'field_fmt'				=> 'text',
-				'field_instructions'	=> lang('expiration_date_desc'),
-				'field_show_fmt'		=> 'n',
-				'default_offset'		=> 0,
-				'selected'				=> 'y',
-			),
-			'comment_expiration_date' => array(
-				'field_id'				=> 'comment_expiration_date',
-				'field_label'			=> lang('comment_expiration_date'),
-				'field_required'		=> 'n',
-				'field_type'			=> 'date',
-				'field_text_direction'	=> 'ltr',
-				'field_fmt'				=> 'text',
-				'field_instructions'	=> lang('comment_expiration_date_desc'),
-				'field_show_fmt'		=> 'n',
-				'default_offset'		=> 0,
-				'selected'				=> 'y',
-				'populateCallback'		=> array($this, 'populateCommentExpiration')
-			),
-			'channel_id' => array(
-				'field_id'				=> 'channel_id',
-				'field_label'			=> lang('channel'),
-				'field_required'		=> 'n',
-				'field_show_fmt'		=> 'n',
-				'field_instructions'	=> lang('channel_desc'),
-				'field_text_direction'	=> 'ltr',
-				'field_type'			=> 'select',
-				'field_list_items'      => array(),
-				'field_maxl'			=> 100,
-				'populateCallback'		=> array($this, 'populateChannels')
-			),
-			'status' => array(
-				'field_id'				=> 'status',
-				'field_label'			=> lang('entry_status'),
-				'field_required'		=> 'n',
-				'field_show_fmt'		=> 'n',
-				'field_instructions'	=> lang('entry_status_desc'),
-				'field_text_direction'	=> 'ltr',
-				'field_type'			=> 'select',
-				'field_list_items'      => array(),
-				'field_maxl'			=> 100,
-				'populateCallback'		=> array($this, 'populateStatus')
-			),
-			'author_id' => array(
-				'field_id'				=> 'author_id',
-				'field_label'			=> lang('author'),
-				'field_required'		=> 'n',
-				'field_show_fmt'		=> 'n',
-				'field_instructions'	=> lang('author_desc'),
-				'field_text_direction'	=> 'ltr',
-				'field_type'			=> 'select',
-				'field_list_items'      => array(),
-				'field_maxl'			=> 100,
-				'populateCallback'		=> array($this, 'populateAuthors')
-			),
-			'sticky' => array(
-				'field_id'				=> 'sticky',
-				'field_label'			=> lang('sticky'),
-				'field_required'		=> 'n',
-				'field_show_fmt'		=> 'n',
-				'field_instructions'	=> lang('sticky_desc'),
-				'field_text_direction'	=> 'ltr',
-				'field_type'			=> 'radio',
-				'field_list_items'      => array('y' => lang('yes'), 'n' => lang('no')),
-				'field_maxl'			=> 100
-			),
-			'allow_comments' => array(
-				'field_id'				=> 'allow_comments',
-				'field_label'			=> lang('allow_comments'),
-				'field_required'		=> 'n',
-				'field_show_fmt'		=> 'n',
-				'field_instructions'	=> lang('allow_comments_desc'),
-				'field_text_direction'	=> 'ltr',
-				'field_type'			=> 'radio',
-				'field_list_items'      => array('y' => lang('yes'), 'n' => lang('no')),
-				'field_maxl'			=> 100
-			),
-			'categories' => array(
-				'field_id'				=> 'categories',
-				'field_label'			=> lang('categories'),
-				'field_required'		=> 'n',
-				'field_show_fmt'		=> 'n',
-				'field_instructions'	=> lang('categories_desc'),
-				'field_text_direction'	=> 'ltr',
-				'field_type'			=> 'checkboxes',
-				'string_override'		=> '',
-				'field_list_items'      => '',
-				'field_maxl'			=> 100,
-				'populateCallback'		=> array($this, 'populateCategories')
-			),
-		);
+		static $default_fields = array();
+
+		if (empty($default_fields))
+		{
+			$default_fields = array(
+				'title' => array(
+					'field_id'				=> 'title',
+					'field_label'			=> lang('title'),
+					'field_required'		=> 'y',
+					'field_show_fmt'		=> 'n',
+					'field_instructions'	=> '',
+					'field_text_direction'	=> 'ltr',
+					'field_type'			=> 'text',
+					'field_maxl'			=> 100
+				),
+				'url_title' => array(
+					'field_id'				=> 'url_title',
+					'field_label'			=> lang('url_title'),
+					'field_required'		=> 'n',
+					'field_fmt'				=> 'xhtml',
+					'field_instructions'	=> lang('alphadash_desc'),
+					'field_show_fmt'		=> 'n',
+					'field_text_direction'	=> 'ltr',
+					'field_type'			=> 'text',
+					'field_maxl'			=> 75
+				),
+				'entry_date' => array(
+					'field_id'				=> 'entry_date',
+					'field_label'			=> lang('entry_date'),
+					'field_required'		=> 'y',
+					'field_type'			=> 'date',
+					'field_text_direction'	=> 'ltr',
+					'field_fmt'				=> 'text',
+					'field_instructions'	=> lang('entry_date_desc'),
+					'field_show_fmt'		=> 'n',
+					'always_show_date'		=> 'y',
+					'default_offset'		=> 0,
+					'selected'				=> 'y',
+				),
+				'expiration_date' => array(
+					'field_id'				=> 'expiration_date',
+					'field_label'			=> lang('expiration_date'),
+					'field_required'		=> 'n',
+					'field_type'			=> 'date',
+					'field_text_direction'	=> 'ltr',
+					'field_fmt'				=> 'text',
+					'field_instructions'	=> lang('expiration_date_desc'),
+					'field_show_fmt'		=> 'n',
+					'default_offset'		=> 0,
+					'selected'				=> 'y',
+				),
+				'comment_expiration_date' => array(
+					'field_id'				=> 'comment_expiration_date',
+					'field_label'			=> lang('comment_expiration_date'),
+					'field_required'		=> 'n',
+					'field_type'			=> 'date',
+					'field_text_direction'	=> 'ltr',
+					'field_fmt'				=> 'text',
+					'field_instructions'	=> lang('comment_expiration_date_desc'),
+					'field_show_fmt'		=> 'n',
+					'default_offset'		=> 0,
+					'selected'				=> 'y',
+					'populateCallback'		=> array($this, 'populateCommentExpiration')
+				),
+				'channel_id' => array(
+					'field_id'				=> 'channel_id',
+					'field_label'			=> lang('channel'),
+					'field_required'		=> 'n',
+					'field_show_fmt'		=> 'n',
+					'field_instructions'	=> lang('channel_desc'),
+					'field_text_direction'	=> 'ltr',
+					'field_type'			=> 'select',
+					'field_list_items'      => array(),
+					'field_maxl'			=> 100,
+					'populateCallback'		=> array($this, 'populateChannels')
+				),
+				'status' => array(
+					'field_id'				=> 'status',
+					'field_label'			=> lang('entry_status'),
+					'field_required'		=> 'n',
+					'field_show_fmt'		=> 'n',
+					'field_instructions'	=> lang('entry_status_desc'),
+					'field_text_direction'	=> 'ltr',
+					'field_type'			=> 'select',
+					'field_list_items'      => array(),
+					'field_maxl'			=> 100,
+					'populateCallback'		=> array($this, 'populateStatus')
+				),
+				'author_id' => array(
+					'field_id'				=> 'author_id',
+					'field_label'			=> lang('author'),
+					'field_required'		=> 'n',
+					'field_show_fmt'		=> 'n',
+					'field_instructions'	=> lang('author_desc'),
+					'field_text_direction'	=> 'ltr',
+					'field_type'			=> 'select',
+					'field_list_items'      => array(),
+					'field_maxl'			=> 100,
+					'populateCallback'		=> array($this, 'populateAuthors')
+				),
+				'sticky' => array(
+					'field_id'				=> 'sticky',
+					'field_label'			=> lang('sticky'),
+					'field_required'		=> 'n',
+					'field_show_fmt'		=> 'n',
+					'field_instructions'	=> lang('sticky_desc'),
+					'field_text_direction'	=> 'ltr',
+					'field_type'			=> 'radio',
+					'field_list_items'      => array('y' => lang('yes'), 'n' => lang('no')),
+					'field_maxl'			=> 100
+				),
+				'allow_comments' => array(
+					'field_id'				=> 'allow_comments',
+					'field_label'			=> lang('allow_comments'),
+					'field_required'		=> 'n',
+					'field_show_fmt'		=> 'n',
+					'field_instructions'	=> lang('allow_comments_desc'),
+					'field_text_direction'	=> 'ltr',
+					'field_type'			=> 'radio',
+					'field_list_items'      => array('y' => lang('yes'), 'n' => lang('no')),
+					'field_maxl'			=> 100
+				)
+			);
+
+			if ($this->Channel && $this->Channel->enable_versioning)
+			{
+				$default_fields['versioning_enabled'] = array(
+					'field_id'				=> 'versioning_enabled',
+					'field_label'			=> lang('versioning_enabled'),
+					'field_required'		=> 'n',
+					'field_show_fmt'		=> 'n',
+					'field_instructions'	=> sprintf(lang('versioning_enabled_desc'), $this->Channel->max_revisions),
+					'field_text_direction'	=> 'ltr',
+					'field_type'			=> 'radio',
+					'field_list_items'      => array('y' => lang('yes'), 'n' => lang('no')),
+					'field_maxl'			=> 100
+				);
+				$default_fields['revisions'] = array(
+					'field_id'				=> 'revisions',
+					'field_label'			=> lang('revisions'),
+					'field_required'		=> 'n',
+					'field_show_fmt'		=> 'n',
+					'field_instructions'	=> '',
+					'field_text_direction'	=> 'ltr',
+					'field_type'			=> 'text',
+					'field_maxl'			=> 100,
+					'field_wide'            => TRUE
+				);
+			}
+
+			$cat_groups = ee('Model')->get('CategoryGroup')
+				->filter('group_id', 'IN', explode('|', $this->Channel->cat_group))
+				->all();
+
+			foreach ($cat_groups as $cat_group)
+			{
+				$default_fields['cat_group_id_'.$cat_group->getId()] = array(
+					'field_id'				=> 'categories',
+					'cat_group_id'			=> $cat_group->getId(),
+					'field_label'			=> ($cat_groups->count() > 1) ? $cat_group->group_name : lang('categories'),
+					'field_required'		=> 'n',
+					'field_show_fmt'		=> 'n',
+					'field_instructions'	=> lang('categories_desc'),
+					'field_text_direction'	=> 'ltr',
+					'field_type'			=> 'checkboxes',
+					'string_override'		=> '',
+					'field_list_items'      => '',
+					'field_maxl'			=> 100,
+					'populateCallback'		=> array($this, 'populateCategories')
+				);
+			};
+
+			$module_tabs = $this->getTabFields();
+
+			foreach ($module_tabs as $tab_id => $fields)
+			{
+				foreach ($fields as $key => $field)
+					$default_fields[$tab_id . '__' . $key] = $field;
+			}
+		}
+
+		return $default_fields;
 	}
 
 	public function populateChannels($field)
@@ -431,12 +687,15 @@ class ChannelEntry extends ContentModel {
 
 	public function populateCategories($field)
 	{
+		// Rename the field so that we get the proper field facade later
+		$field->setName('categories');
+
 		$categories = ee('Model')->get('Category')
 			->with(array('Children as C0' => array('Children as C1' => 'Children as C2')))
 			->with('CategoryGroup')
-			->filter('CategoryGroup.group_id', 'IN', explode('|', $this->Channel->cat_group))
-			->filter('CategoryGroup.site_id', ee()->config->item('site_id'))
+			->filter('CategoryGroup.group_id', $field->getItem('cat_group_id'))
 			->filter('Category.parent_id', 0)
+			->order('Category.cat_order')
 			->all();
 
 		$category_list = $this->buildCategoryList($categories);

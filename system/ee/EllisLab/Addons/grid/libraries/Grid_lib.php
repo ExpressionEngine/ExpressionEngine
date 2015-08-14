@@ -1,5 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+use EllisLab\ExpressionEngine\Service\Validation\Result;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -125,10 +127,7 @@ class Grid_lib {
 
 		$grid->setData($data);
 
-		// ಠ_ಠ
-		ee()->load->remove_package_path();
-
-		return ee()->load->view('_shared/table', $grid->viewData(), TRUE);
+		return ee('View')->make('ee:_shared/table')->render($grid->viewData());
 	}
 
 	// ------------------------------------------------------------------------
@@ -640,14 +639,18 @@ class Grid_lib {
 
 			ee()->grid_parser->instantiate_fieldtype($column, NULL, $this->field_id, 0);
 
-			// Let fieldtypes validate their Grid column settings; we'll
-			// specifically call grid_validate_settings() because validate_settings
-			// works differently and we don't want to call that on accident
-			$ft_validate = ee()->grid_parser->call('grid_validate_settings', $column['col_settings']);
+			// Let fieldtypes validate their Grid column settings
+			$ft_validate = ee()->grid_parser->call('validate_settings', $column['col_settings']);
 
-			if (is_string($ft_validate))
+			if ($ft_validate instanceof Result && $ft_validate->isNotValid())
 			{
-				$errors[$col_field]['custom'] = $ft_validate;
+				foreach ($ft_validate->getAllErrors() as $field => $field_errors)
+				{
+					foreach ($field_errors as $rule => $error)
+					{
+						$errors[$col_field][$field.'_'.$rule] = $error;
+					}
+				}
 			}
 		}
 
@@ -770,9 +773,11 @@ class Grid_lib {
 	 * Returns rendered HTML for a column on the field settings page
 	 *
 	 * @param	array	Array of single column settings from the grid_columns table
+	 * @param	array	Array of string names representing the namespace field names
+	 *	that have validation errors
 	 * @return	string	Rendered column view for settings page
 	 */
-	public function get_column_view($column = NULL)
+	public function get_column_view($column = NULL, $error_fields = array())
 	{
 		$fieldtypes = $this->get_grid_fieldtypes();
 
@@ -783,7 +788,16 @@ class Grid_lib {
 			$fieldtypes_dropdown[$key] = $value['name'];
 		}
 
-		$field_name = (empty($column)) ? 'new_0' : 'col_id_'.$column['col_id'];
+		// Column ID could be a string if we're coming back from a valdiation error
+		// in order to preserve original namespacing
+		if ( ! empty($column['col_id']) && is_string($column['col_id']))
+		{
+			$field_name = $column['col_id'];
+		}
+		else
+		{
+			$field_name = (empty($column)) ? 'new_0' : 'col_id_'.$column['col_id'];
+		}
 
 		$column['settings_form'] = (empty($column))
 			? $this->get_settings_form('text') : $this->get_settings_form($column['col_type'], $column);
@@ -793,12 +807,13 @@ class Grid_lib {
 			$column['col_width'] = '';
 		}
 
-		return ee()->load->view(
-			'col_tmpl',
+		return ee('View')->make('grid:col_tmpl')
+			->render(
 			array(
 				'field_name'	=> $field_name,
 				'column'		=> $column,
-				'fieldtypes'	=> $fieldtypes_dropdown
+				'fieldtypes'	=> $fieldtypes_dropdown,
+				'error_fields'  => $error_fields
 			),
 			TRUE
 		);
@@ -853,16 +868,19 @@ class Grid_lib {
 	 */
 	protected function _view_for_col_settings($col_type, $col_settings, $col_id = NULL)
 	{
-		$settings_view = ee()->load->view(
-			'col_settings_tmpl',
+		$settings_view = ee('View')
+			->make('grid:col_settings_tmpl')
+			->render(
 			array(
 				'col_type'		=> $col_type,
 				'col_settings'	=> (empty($col_settings)) ? array() : $col_settings
-			),
-			TRUE
+			)
 		);
 
-		$col_id = (empty($col_id)) ? 'new_0' : 'col_id_'.$col_id;
+		if ( ! is_string($col_id))
+		{
+			$col_id = (empty($col_id)) ? 'new_0' : 'col_id_'.$col_id;
+		}
 
 		// Namespace form field names
 		return $this->_namespace_inputs(

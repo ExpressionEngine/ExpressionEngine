@@ -1098,7 +1098,7 @@ GRID_FALLBACK;
 		// add datepicker css
 		if ($this->datepicker)
 		{
-			$this->head .= '<style type="text/css">.hasDatepicker{background:#fff url('.URL_THEMES.'cp_themes/default/images/calendar_bg.gif) no-repeat 98% 2px;background-repeat:no-repeat;background-position:99%;}</style>';
+			$this->head .= '<style type="text/css">.hasDatepicker{background:#fff url('.URL_THEMES.'cp/default/images/calendar_bg.gif) no-repeat 98% 2px;background-repeat:no-repeat;background-position:99%;}</style>';
 		}
 	}
 

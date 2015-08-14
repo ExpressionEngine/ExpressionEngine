@@ -38,6 +38,8 @@ class Updater {
 
 		$steps = new ProgressIterator(
 			array(
+				'_move_database_information',
+				'_install_required_modules',
 				'_update_email_cache_table',
 				'_update_upload_no_access_table',
 				'_insert_comment_settings_into_db',
@@ -52,12 +54,20 @@ class Updater {
 				'_centralize_captcha_settings',
 				'_update_members_table',
 				'_update_member_fields_table',
+				'_update_member_groups_table',
 				'_update_html_buttons',
 				'_update_files_table',
 				'_update_upload_prefs_table',
 				'_update_upload_directories',
 				'_drop_field_formatting_table',
-				'_update_sites_table'
+				'_update_sites_table',
+				'_remove_referrer_module_artifacts',
+				'_update_channels_table',
+				'_update_channel_titles_table',
+				'_export_mailing_lists',
+				'_remove_mailing_list_module_artifacts',
+				'_remove_cp_theme_config',
+				'_remove_show_button_cluster_column'
 			)
 		);
 
@@ -67,6 +77,63 @@ class Updater {
 		}
 
 		return TRUE;
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Migrate the database information from database.php to config.php
+	 *
+	 * THIS MUST BE THE FIRST UPDATE
+	 *
+	 * @return void
+	 */
+	private function _move_database_information()
+	{
+		$db_config_path = SYSPATH.'/user/config/database.php';
+		if (is_file($db_config_path))
+		{
+			require $db_config_path;
+			ee()->config->_update_dbconfig($db[$active_group]);
+
+			if (is_writeable($db_config_path))
+			{
+				unlink($db_config_path);
+			}
+		}
+		else if (($db_config = ee()->config->item('database'))
+			&& empty($db_config))
+		{
+			throw new \Exception(lang('database_no_data'));
+		}
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Ensure filepicker and comment modules are installed
+	 */
+	private function _install_required_modules()
+	{
+		ee()->load->library('addons');
+
+		$installed_modules = ee()->db->select('module_name')->get('modules');
+		$required_modules = array('filepicker', 'comment');
+
+		foreach ($installed_modules->result() as $installed_module)
+		{
+			$key = array_search(
+				strtolower($installed_module->module_name),
+				$required_modules
+			);
+
+			if ($key !== FALSE)
+			{
+				unset($required_modules[$key]);
+			}
+		}
+
+		ee()->addons->install_modules($required_modules);
 	}
 
 	// -------------------------------------------------------------------------
@@ -330,7 +397,6 @@ class Updater {
 		$installer_config = ee()->config;
 
 		require_once(APPPATH . 'libraries/Extensions.php');
-		ee()->set('extensions', new Installer_Extensions());
 		ee()->load->model('template_model');
 
 		$sites = ee()->db->select('site_id')
@@ -346,8 +412,34 @@ class Updater {
 
 			ee()->config->site_prefs('', $site['site_id']);
 
-			if (ee()->config->item('save_tmpl_files') == 'y' AND ee()->config->item('tmpl_file_basepath') != '') {
-				$templates = ee()->template_model->fetch_last_edit(array('templates.site_id' => $site['site_id']), TRUE);
+			if (ee()->config->item('save_tmpl_files') == 'y')
+			{
+				$tmpl_file_basepath = ee()->config->item('tmpl_file_basepath');
+
+				// Continue to the next site if there's no basepath
+				if (empty($tmpl_file_basepath))
+				{
+					continue;
+				}
+
+				// Change the config for basepath to the new normal if they're
+				// using the old default
+				if (stripos($tmpl_file_basepath, SYSDIR.'/expressionengine/templates') !== FALSE)
+				{
+					ee()->config->set_item(
+						'tmpl_file_basepath',
+						str_replace(
+							'/expressionengine/templates',
+							'/user/templates',
+							$tmpl_file_basepath
+						)
+					);
+				}
+
+				$templates = ee()->template_model->fetch_last_edit(
+					array('templates.site_id' => $site['site_id']),
+					TRUE
+				);
 
 				foreach($templates as $template)
 				{
@@ -634,15 +726,36 @@ class Updater {
 	 */
 	private function _update_member_groups_table()
 	{
-		ee()->smartforge->modify_column('member_groups', array(
-			'group_id' => array(
-				'type'			 => 'int',
-				'constraint'     => 4,
-				'null'			 => FALSE,
-				'unsigned'		 => TRUE,
-				'auto_increment' => TRUE
+		ee()->smartforge->add_column('member_groups', array(
+			'can_access_footer_report_bug' => array(
+				'type'       => 'char',
+				'constraint' => 1,
+				'default'    => 'n',
+				'null'       => FALSE
+			),
+			'can_access_footer_new_ticket' => array(
+				'type'       => 'char',
+				'constraint' => 1,
+				'default'    => 'n',
+				'null'       => FALSE
+			),
+			'can_access_footer_user_guide' => array(
+				'type'       => 'char',
+				'constraint' => 1,
+				'default'    => 'n',
+				'null'       => FALSE
 			)
 		));
+
+		ee()->db->update(
+			'member_groups',
+			array(
+				'can_access_footer_report_bug' => 'y',
+				'can_access_footer_new_ticket' => 'y',
+				'can_access_footer_user_guide' => 'y'
+			),
+			array('can_access_cp' => 'y')
+		);
 	}
 
 	/**
@@ -808,53 +921,79 @@ class Updater {
 		$site_id = ee()->config->item('site_id');
 		$member_directories = array();
 
-		if (ee()->config->item('enable_avatars') == 'y'
-			&& empty(ee('Model')->get('UploadDestination')->filter('name', 'Avatars')->first()))
+		if (bool_config_item('enable_avatars'))
 		{
-			$member_directories['Avatars'] = array(
-				'server_path' => ee()->config->item('avatar_path'),
-				'url' => ee()->config->item('avatar_url'),
-				'allowed_types' => 'img',
-				'max_width' => ee()->config->item('avatar_max_width'),
-				'max_height' => ee()->config->item('avatar_max_height'),
-				'max_size' => ee()->config->item('avatar_max_kb'),
-			);
+			$avatar_uploads = ee('Model')
+				->get('UploadDestination')->filter('name', 'Avatars')->first();
+
+			if (empty($avatar_uploads))
+			{
+				$member_directories['Avatars'] = array(
+					'server_path'   => ee()->config->item('avatar_path'),
+					'url'           => ee()->config->item('avatar_url'),
+					'allowed_types' => 'img',
+					'max_width'     => ee()->config->item('avatar_max_width'),
+					'max_height'    => ee()->config->item('avatar_max_height'),
+					'max_size'      => ee()->config->item('avatar_max_kb'),
+				);
+			}
 		}
 
-		if (ee()->config->item('enable_photos') == 'y'
-			&& empty(ee('Model')->get('UploadDestination')->filter('name', 'Member Photos')->first()))
+		if (bool_config_item('enable_photos'))
 		{
-			$member_directories['Member Photos'] = array(
-				'server_path' => ee()->config->item('photo_path'),
-				'url' => ee()->config->item('photo_url'),
-				'allowed_types' => 'img',
-				'max_width' => ee()->config->item('photo_max_width'),
-				'max_height' => ee()->config->item('photo_max_height'),
-				'max_size' => ee()->config->item('photo_max_kb'),
-			);
+			$member_photo_uploads = ee('Model')
+				->get('UploadDestination')->filter('name', 'Member Photos')->first();
+
+			if (empty($member_photo_uploads))
+			{
+				$member_directories['Member Photos'] = array(
+					'server_path'   => ee()->config->item('photo_path'),
+					'url'           => ee()->config->item('photo_url'),
+					'allowed_types' => 'img',
+					'max_width'     => ee()->config->item('photo_max_width'),
+					'max_height'    => ee()->config->item('photo_max_height'),
+					'max_size'      => ee()->config->item('photo_max_kb'),
+				);
+			}
 		}
 
-		if (ee()->config->item('allow_signatures') == 'y'
-			&& empty(ee('Model')->get('UploadDestination')->filter('name', 'Signature Attachments')->first()))
+		if (bool_config_item('allow_signatures'))
 		{
-			$member_directories['Signature Attachments'] = array(
-				'server_path' => ee()->config->item('sig_img_path'),
-				'url' => ee()->config->item('sig_img_url'),
-				'allowed_types' => 'img',
-				'max_width' => ee()->config->item('sig_img_max_width'),
-				'max_height' => ee()->config->item('sig_img_max_height'),
-				'max_size' => ee()->config->item('sig_img_max_kb'),
-			);
+			$signature_uploads = ee('Model')
+				->get('UploadDestination')->filter('name', 'Signature Attachments')->first();
+
+			if (empty($signature_uploads))
+			{
+				$member_directories['Signature Attachments'] = array(
+					'server_path'   => ee()->config->item('sig_img_path'),
+					'url'           => ee()->config->item('sig_img_url'),
+					'allowed_types' => 'img',
+					'max_width'     => ee()->config->item('sig_img_max_width'),
+					'max_height'    => ee()->config->item('sig_img_max_height'),
+					'max_size'      => ee()->config->item('sig_img_max_kb'),
+				);
+			}
 		}
 
-		if (empty(ee('Model')->get('UploadDestination')->filter('name', 'Signature Attachments')->first()))
+		if (bool_config_item('prv_msg_enabled')
+			&& bool_config_item('prv_msg_allow_attachments'))
 		{
-			$member_directories['PM Attachments'] = array(
-				'server_path' => ee()->config->item('prv_msg_upload_path'),
-				'url' => str_replace('avatars', 'pm_attachments', ee()->config->item('avatar_url')),
-				'allowed_types' => 'img',
-				'max_size' => ee()->config->item('prv_msg_attach_maxsize')
-			);
+			$pm_uploads = ee('Model')
+				->get('UploadDestination')->filter('name', 'PM Attachments')->first();
+
+			if (empty($pm_uploads))
+			{
+				$member_directories['PM Attachments'] = array(
+					'server_path'   => ee()->config->item('prv_msg_upload_path'),
+					'url'           => str_replace(
+						'avatars',
+						'pm_attachments',
+						ee()->config->item('avatar_url')
+					),
+					'allowed_types' => 'img',
+					'max_size'      => ee()->config->item('prv_msg_attach_maxsize')
+				);
+			}
 		}
 
 		foreach ($member_directories as $name => $dir)
@@ -932,6 +1071,173 @@ class Updater {
 				)
 			);
 		}
+	}
+
+	/**
+	 * The Referrer module has been removed, so we need to remove settings
+	 * related to the module from site config and the referrers table
+	 */
+	private function _remove_referrer_module_artifacts()
+	{
+		$msm_config = new MSM_Config();
+		$msm_config->remove_config_item(array('log_referrers', 'max_referrers'));
+
+		ee()->smartforge->drop_table('referrers');
+	}
+
+	// -------------------------------------------------------------------------
+
+	private function _export_mailing_lists()
+	{
+		// Missing the mailing list tables? Get out of here.
+		if ( ! ee()->db->table_exists('mailing_list')
+			|| ! ee()->db->table_exists('mailing_lists'))
+		{
+			return;
+		}
+
+		ee()->load->library('zip');
+		$subscribers = array();
+		$subscribers_query = ee()->db->select('list_id, email')
+			->get('mailing_list');
+
+		// No subscribers at all? Move on.
+		if ($subscribers_query->num_rows() <= 0)
+		{
+			return;
+		}
+
+		foreach ($subscribers_query->result() as $subscriber)
+		{
+			$subscribers[$subscriber->list_id][] = $subscriber->email;
+		}
+
+		$mailing_lists = ee()->db->select('list_id, list_name, list_title')
+			->get('mailing_lists');
+
+		foreach ($mailing_lists->result() as $mailing_list)
+		{
+			// Empty mailing list? No need to export it.
+			if (empty($subscribers[$mailing_list->list_id]))
+			{
+				continue;
+			}
+
+			$csv = ee('CSV');
+			foreach ($subscribers[$mailing_list->list_id] as $subscriber)
+			{
+				$csv->addRow(array('email' => $subscriber));
+			}
+			ee()->zip->add_data(
+				'mailing_list-'.$mailing_list->list_name.'.csv',
+				(string) $csv
+			);
+		}
+
+		ee()->zip->archive(SYSPATH.'user/cache/mailing_list.zip');
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Cleans up database for mailing list module remnants
+	 */
+	private function _remove_mailing_list_module_artifacts()
+	{
+		ee()->smartforge->drop_table('mailing_list');
+		ee()->smartforge->drop_table('mailing_lists');
+		ee()->smartforge->drop_table('mailing_list_queue');
+		ee()->smartforge->drop_table('email_cache_ml');
+
+		$msm_config = new MSM_Config();
+		$msm_config->remove_config_item(array(
+			'mailinglist_enabled',
+			'mailinglist_notify',
+			'mailinglist_notify_emails'
+		));
+
+		ee()->smartforge->drop_column('member_groups', 'can_email_mailinglist');
+		ee()->smartforge->drop_column('member_groups', 'include_in_mailinglists');
+		ee()->smartforge->drop_column('sites', 'site_mailinglist_preferences');
+
+		ee()->db->where_in(
+			'template_name', array('admin_notify_mailinglist', 'mailinglist_activation_instructions')
+		)->delete('specialty_templates');
+
+		ee()->db->where('module_name', 'Mailinglist')->delete('modules');
+		ee()->db->where('class', 'Mailinglist')->delete('actions');
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Adds the column "title_field_label" to the channels tabel and sets it's
+	 * default to lang('title')
+	 */
+	private function _update_channels_table()
+	{
+		if ( ! ee()->db->field_exists('title_field_label', 'channels'))
+		{
+			ee()->smartforge->add_column(
+				'channels',
+				array(
+					'title_field_label' => array(
+						'type'    => 'CHAR(100)',
+						'null'    => FALSE,
+						'default' => 'Title'
+					)
+				)
+			);
+		}
+
+		if ( ! ee()->db->field_exists('extra_publish_controls', 'channels'))
+		{
+			ee()->smartforge->add_column(
+				'channels',
+				array(
+					'extra_publish_controls' => array(
+						'type'       => 'char',
+						'constraint' => 1,
+						'default'    => 'n',
+						'null'       => FALSE
+					)
+				)
+			);
+		}
+	}
+
+	/**
+	 * Updates the title and url_title columns to be a max of 200 chars long
+	 */
+	private function _update_channel_titles_table()
+	{
+		ee()->smartforge->modify_column('channel_titles', array(
+			'title' => array(
+				'type' => 'char(200)',
+			),
+			'url_title' => array(
+				'type' => 'char(200)',
+			)
+		));
+	}
+
+	/**
+	 * CP themeing is no longer supported, so remove the cp_theme config items
+	 */
+	private function _remove_cp_theme_config()
+	{
+		$msm_config = new MSM_Config();
+		$msm_config->remove_config_item(array('cp_theme'));
+
+		ee()->smartforge->drop_column('members', 'cp_theme');
+	}
+
+	/**
+	 * The show_button_cluster setting has been removed from channels, drop the column
+	 */
+	private function _remove_show_button_cluster_column()
+	{
+		ee()->smartforge->drop_column('channels', 'show_button_cluster');
 	}
 }
 /* END CLASS */

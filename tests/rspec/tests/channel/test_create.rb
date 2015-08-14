@@ -15,9 +15,6 @@ feature 'Channel Create/Edit' do
   it 'shows the Channel Create/Edit page' do
     @page.all_there?.should == true
     @page.should have_text 'Create Channel'
-
-    # Warning should show only on create
-    @page.should have_text 'Warning: Channels require'
   end
 
   it 'should validate regular fields' do
@@ -25,7 +22,7 @@ feature 'Channel Create/Edit' do
 
     no_php_js_errors
     should_have_form_errors(@page)
-    @page.should have_text 'Attention: Channel not saved'
+    @page.should have_text 'Cannot Create Channel'
     should_have_error_text(@page.channel_title, $required_error)
     should_have_error_text(@page.channel_name, $required_error)
 
@@ -90,7 +87,7 @@ feature 'Channel Create/Edit' do
     @page.channel_name.set 'test test'
     @page.submit
 
-    @page.should have_text 'Attention: Channel not saved'
+    @page.should have_text 'Cannot Create Channel'
     should_have_error_text(@page.channel_name, @channel_name_error)
     should_have_form_errors(@page)
 
@@ -120,7 +117,7 @@ feature 'Channel Create/Edit' do
     @page.submit
     no_php_js_errors
 
-    @page.should have_text 'Channel saved'
+    @page.should have_text 'Channel Created'
 
     @page.load_edit_for_channel(3)
     no_php_js_errors
@@ -160,7 +157,7 @@ feature 'Channel Create/Edit' do
     @page.submit
     no_php_js_errors
 
-    @page.should have_text 'Channel saved'
+    @page.should have_text 'Channel Updated'
 
     @page.load_edit_for_channel(1)
     no_php_js_errors
@@ -188,7 +185,6 @@ feature 'Channel Create/Edit' do
     channel_settings.channel_html_formatting.select 'Convert to HTML entities'
     channel_settings.channel_allow_img_urls[1].click
     channel_settings.channel_auto_link_urls[0].click
-    channel_settings.show_button_cluster[1].click
 
     channel_settings.default_status.select 'Closed'
     channel_settings.allow_guest_posts[0].click
@@ -219,7 +215,7 @@ feature 'Channel Create/Edit' do
     channel_settings.comment_auto_link_urls[1].click
 
     channel_settings.submit
-    channel_settings.should have_text 'Channel saved'
+    channel_settings.should have_text 'Channel Settings Saved'
 
     # Create new channel, ensure field groups and things were duplicated
     @page.load
@@ -228,7 +224,7 @@ feature 'Channel Create/Edit' do
     @page.submit
     no_php_js_errors
 
-    @page.should have_text 'Channel saved'
+    @page.should have_text 'Channel Created'
 
     @page.load_edit_for_channel(3)
     no_php_js_errors
@@ -262,7 +258,6 @@ feature 'Channel Create/Edit' do
     channel_settings.channel_html_formatting.value.should == 'none'
     channel_settings.channel_allow_img_urls[1].checked?.should == true
     channel_settings.channel_auto_link_urls[0].checked?.should == true
-    channel_settings.show_button_cluster[1].checked?.should == true
 
     channel_settings.default_status.value.should == 'closed'
     channel_settings.default_author.value.should == '1'

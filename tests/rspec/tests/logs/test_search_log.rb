@@ -33,12 +33,12 @@ feature 'Search Log' do
 		@page.should have_remove_all
 		@page.should have_pagination
 
-		@page.perpage_filter.text.should eq "show (20)"
+		@page.perpage_filter.text.should eq "show (25)"
 
 		@page.should have(6).pages
 		@page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
 
-		@page.should have(20).items # Default is 20 per page
+		@page.should have(25).items # Default is 25 per page
 	end
 
 	it 'does not show filters at 10 items', :pregen => false do
@@ -118,7 +118,7 @@ feature 'Search Log' do
 		@page.username_filter.click
 		@page.wait_until_username_manual_filter_visible
 		@page.username_manual_filter.set "johndoe"
-		@page.submit_button.click
+		@page.execute_script("$('div.filters a[data-filter-label^=username] + div.sub-menu input[type=text]').parents('form').submit()")
 
 		@page.username_filter.text.should eq "username (johndoe)"
 		@page.should have(15).items
@@ -163,7 +163,7 @@ feature 'Search Log' do
 		@page.perpage_filter.click
 		@page.wait_until_perpage_manual_filter_visible
 		@page.perpage_manual_filter.set "42"
-		@page.submit_button.click
+		@page.execute_script("$('div.filters a[data-filter-label^=show] + div.sub-menu input[type=text]').parents('form').submit()")
 
 		@page.perpage_filter.text.should eq "show (42)"
 		@page.should have(42).items
@@ -276,7 +276,7 @@ feature 'Search Log' do
 
 		@page.should have_pagination
 		@page.should have(6).pages
-		@page.pages.map {|name| name.text}.should == ["First", "Previous", "7", "8", "9", "Last"]
+		@page.pages.map {|name| name.text}.should == ["First", "Previous", "5", "6", "7", "Last"]
 	end
 
 	it 'does not lose a filter value when paginating', :pregen => true do

@@ -96,7 +96,6 @@ class Rte_lib {
 		{
 			$vars['base_url'] = ee('CP/URL', 'addons/settings/rte/new_toolset');
 			$vars['cp_page_title_alt'] = lang('create_tool_set_header');
-			$vars['save_btn_text'] = 'create_tool_set';
 			$toolset['tools'] = array();
 			$toolset_name = '';
 		}
@@ -104,7 +103,6 @@ class Rte_lib {
 		{
 			$vars['base_url'] = ee('CP/URL', 'addons/settings/rte/edit_toolset', array('toolset_id' => $toolset_id));
 			$vars['cp_page_title_alt'] = lang('edit_tool_set_header');
-			$vars['save_btn_text'] = 'edit_tool_set';
 
 			// make sure user can access the existing toolset
 			if ( ! ee()->rte_toolset_model->member_can_access($toolset_id))
@@ -161,9 +159,11 @@ class Rte_lib {
 			)
 		);
 
-		ee()->view->ajax_validate = TRUE;
-		ee()->view->save_btn_text_working = 'btn_saving';
-		return ee()->cp->render('box_wrapper', $vars, TRUE);
+		$vars['ajax_validate'] = TRUE;
+		$vars['save_btn_text'] = sprintf(lang('btn_save'), lang('tool_set'));
+		$vars['save_btn_text_working'] = 'btn_saving';
+
+		return ee('View')->make('rte:box_wrapper')->render($vars);
 	}
 
 	// --------------------------------------------------------------------

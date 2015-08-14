@@ -244,7 +244,7 @@ class Alert {
 	 */
 	public function render()
 	{
-		return $this->view->ee_view('_shared/alert', array('alert' => $this), TRUE);
+		return $this->view->render(array('alert' => $this));
 	}
 
 	/**

@@ -15,7 +15,7 @@ class PerpageTest extends \PHPUnit_Framework_TestCase {
 	public function testDefault()
 	{
 		$filter = new Perpage(123);
-		$this->assertEquals(20, $filter->value(), 'The value is 20 by default.');
+		$this->assertEquals(25, $filter->value(), 'The value is 25 by default.');
 		$this->assertTrue($filter->isValid(), 'The default is valid');
 
 		$vf = m::mock('EllisLab\ExpressionEngine\Service\View\ViewFactory');
@@ -123,7 +123,7 @@ class PerpageTest extends \PHPUnit_Framework_TestCase {
 	{
 		$_POST['perpage'] = "abracadabra!";
 		$filter = new Perpage(123);
-		$this->assertEquals(20, $filter->value(), 'Submitting a non number will fall back to the default.');
+		$this->assertEquals(25, $filter->value(), 'Submitting a non number will fall back to the default.');
 		$this->assertTrue($filter->isValid(), 'The default is valid');
 	}
 

@@ -197,7 +197,7 @@ feature 'Channel Settings' do
     no_php_js_errors
 
     @page.submit
-    @page.should have_text 'Channel saved'
+    @page.should have_text 'Channel Settings Saved'
   end
 
   it 'should save and load the settings' do
@@ -220,7 +220,6 @@ feature 'Channel Settings' do
     @page.channel_html_formatting.select 'Convert to HTML entities'
     @page.channel_allow_img_urls[1].click
     @page.channel_auto_link_urls[0].click
-    @page.show_button_cluster[1].click
 
     @page.default_status.select 'Closed'
     @page.allow_guest_posts[0].click
@@ -247,13 +246,14 @@ feature 'Channel Settings' do
     @page.apply_expiration_to_existing.click
     @page.comment_text_formatting.select 'None'
     @page.comment_html_formatting.select 'Allow all HTML (not recommended)'
+    @page.extra_publish_controls[0].click
     @page.comment_allow_img_urls[0].click
     @page.comment_auto_link_urls[1].click
 
     @page.submit
 
     no_php_js_errors
-    @page.should have_text 'Channel saved'
+    @page.should have_text 'Channel Settings Saved'
 
     @page.load_settings_for_channel(2)
     no_php_js_errors
@@ -274,9 +274,9 @@ feature 'Channel Settings' do
     @page.search_excerpt.value.should == '4'
 
     @page.channel_html_formatting.value.should == 'none'
+    @page.extra_publish_controls[0].checked?.should == true
     @page.channel_allow_img_urls[1].checked?.should == true
     @page.channel_auto_link_urls[0].checked?.should == true
-    @page.show_button_cluster[1].checked?.should == true
 
     @page.default_status.value.should == 'closed'
     @page.default_author.value.should == '1'

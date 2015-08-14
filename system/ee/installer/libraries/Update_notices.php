@@ -109,6 +109,9 @@ class Update_notices {
 	 */
 	private function ensure_table_exists()
 	{
+		// Clear the table cache
+		ee()->db->data_cache = array();
+
 		if (ee()->db->table_exists($this->table))
 		{
 			return;

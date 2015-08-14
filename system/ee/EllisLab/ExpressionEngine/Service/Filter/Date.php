@@ -144,6 +144,13 @@ class Date extends Filter {
 	 */
 	public function render(ViewFactory $view, URL $url)
 	{
+		$options = $this->prepareOptions($url);
+
+		if (empty($options))
+		{
+			return;
+		}
+
 		$value = $this->display_value;
 		if (is_null($value))
 		{
@@ -158,10 +165,10 @@ class Date extends Filter {
 			'value'			=> $value,
 			'custom_value'  => (array_key_exists($this->name, $_POST)) ? $_POST[$this->name] : FALSE,
 			'placeholder'	=> $this->placeholder,
-			'options'		=> $this->prepareOptions($url),
+			'options'		=> $options,
 			'timestamp'		=> $this->timestamp
 		);
-		return $view->make('date')->render($filter);
+		return $view->make('_shared/filters/date')->render($filter);
 	}
 
 }

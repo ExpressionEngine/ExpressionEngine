@@ -48,7 +48,7 @@ class ControlPanelPage < SitePrism::Page
 	end
 
 	def submit_enabled?
-		submit_buttons[0].value != 'Fix Errors, Please' &&
+		submit_buttons[0].value != 'Errors Found' &&
 		submit_buttons[0][:disabled] != true
 	end
 

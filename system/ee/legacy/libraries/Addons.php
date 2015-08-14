@@ -357,6 +357,56 @@ class EE_Addons {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Install a given list of first-party modules
+	 *
+	 * @param  array  $modules Array of first party module names
+	 * @return [array]         Array of any module install errors
+	 */
+	public function install_modules($modules)
+	{
+		$module_install_errors = array();
+
+		foreach ($modules as $module)
+		{
+			$path = SYSPATH.'ee/EllisLab/Addons/'.$module.'/';
+
+			if (file_exists($path.'upd.'.$module.'.php'))
+			{
+				// Add the helper/library load path and temporarily
+				ee()->load->add_package_path($path, FALSE);
+
+				require $path.'upd.'.$module.'.php';
+
+				$class = ucfirst($module).'_upd';
+
+				$UPD = new $class;
+				$UPD->_ee_path = (defined('EE_APPPATH')) ? EE_APPPATH : APPPATH;
+				$UPD->install_errors = array();
+
+				if (method_exists($UPD, 'install'))
+				{
+					$UPD->install();
+					if (count($UPD->install_errors) > 0)
+					{
+						// clean and combine
+						$module_install_errors[$module] = array_map(
+							'htmlentities',
+							$UPD->install_errors
+						);
+					}
+				}
+
+				// remove package path
+				ee()->load->remove_package_path($path);
+			}
+		}
+
+		return $module_install_errors;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Is package
 	 *
 	 * @access	public

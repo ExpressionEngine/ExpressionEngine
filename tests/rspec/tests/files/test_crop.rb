@@ -3,7 +3,7 @@ require './bootstrap.rb'
 feature 'File Manger / Crop File' do
 
 	before(:each) do
-		@upload_dir = File.expand_path('../../themes/ee/site_themes/agile_records/images/uploads/')
+		@upload_dir = File.expand_path('../../themes/ee/site/agile_records/images/uploads/')
 
 		cp_session
 		@page = CropFile.new
@@ -235,7 +235,7 @@ feature 'File Manger / Crop File' do
 
 		@page.should have_alert
 		@page.should have_css('div.alert.success')
-		@page.should_not have_css('div.invlaid')
+		@page.should_not have_css('div.invalid')
 		@page.alert.text.should include "File Crop Success"
 	end
 
@@ -261,7 +261,7 @@ feature 'File Manger / Crop File' do
 
 		@page.should have_alert
 		@page.should have_css('div.alert.success')
-		@page.should_not have_css('div.invlaid')
+		@page.should_not have_css('div.invalid')
 		@page.alert.text.should include "File Rotate Success"
 	end
 
@@ -272,7 +272,7 @@ feature 'File Manger / Crop File' do
 
 		@page.should have_alert
 		@page.should have_css('div.alert.success')
-		@page.should_not have_css('div.invlaid')
+		@page.should_not have_css('div.invalid')
 		@page.alert.text.should include "File Rotate Success"
 	end
 
@@ -283,7 +283,7 @@ feature 'File Manger / Crop File' do
 
 		@page.should have_alert
 		@page.should have_css('div.alert.success')
-		@page.should_not have_css('div.invlaid')
+		@page.should_not have_css('div.invalid')
 		@page.alert.text.should include "File Rotate Success"
 	end
 
@@ -294,7 +294,7 @@ feature 'File Manger / Crop File' do
 
 		@page.should have_alert
 		@page.should have_css('div.alert.success')
-		@page.should_not have_css('div.invlaid')
+		@page.should_not have_css('div.invalid')
 		@page.alert.text.should include "File Rotate Success"
 	end
 
@@ -390,7 +390,7 @@ feature 'File Manger / Crop File' do
 
 		@page.should have_alert
 		@page.should have_css('div.alert.success')
-		@page.should_not have_css('div.invlaid')
+		@page.should_not have_css('div.invalid')
 		@page.alert.text.should include "File Resize Success"
 	end
 

@@ -200,7 +200,7 @@ class Rte_mcp {
 		));
 
 		// return the page
-		return ee()->load->view('index', $vars, TRUE);
+		return ee('View')->make('rte:index')->render($vars);
 	}
 
 

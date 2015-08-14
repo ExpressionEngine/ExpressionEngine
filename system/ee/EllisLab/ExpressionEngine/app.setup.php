@@ -3,16 +3,21 @@
 use EllisLab\ExpressionEngine\Library;
 use EllisLab\ExpressionEngine\Library\Event;
 use EllisLab\ExpressionEngine\Library\Filesystem;
+use EllisLab\ExpressionEngine\Service\Addon;
 use EllisLab\ExpressionEngine\Service\Alert;
 use EllisLab\ExpressionEngine\Service\Config;
 use EllisLab\ExpressionEngine\Service\Database;
+use EllisLab\ExpressionEngine\Service\EntryListing;
 use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\Grid;
+use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Validation;
 use EllisLab\ExpressionEngine\Service\View;
+use EllisLab\ExpressionEngine\Service\Sidebar;
 use EllisLab\ExpressionEngine\Service\Thumbnail;
 use EllisLab\Addons\Spam\Service\Spam;
+use EllisLab\ExpressionEngine\Service\Profiler;
 
 // TODO should put the version in here at some point ...
 return array(
@@ -24,6 +29,17 @@ return array(
 	'namespace' => 'EllisLab\ExpressionEngine',
 
 	'services' => array(
+
+		'CP/EntryListing' => function($ee, $search_value)
+		{
+			 return new EntryListing\EntryListing(
+				ee()->config->item('site_id'),
+				(ee()->session->userdata['group_id'] == 1),
+				array_keys(ee()->session->userdata['assigned_channels']),
+				ee()->localize->now,
+				$search_value
+			);
+		},
 
 		'CP/GridInput' => function($ee, $config = array())
 		{
@@ -48,13 +64,18 @@ return array(
 			$session_id = $session_id ?: ee()->session->session_id();
 			$cp_url = (empty($cp_url)) ? SELF : (string) $cp_url;
 
-			return new Library\CP\URL($path, $session_id, $qs, $cp_url);
+			return new Library\CP\URL($path, $session_id, $qs, $cp_url, ee()->uri->uri_string);
 		},
 
 		'CP/Pagination' => function($ee, $total_count)
 		{
 			$view = $ee->make('View')->make('_shared/pagination');
 			return new Library\CP\Pagination($total_count, $view);
+		},
+
+		'CSV' => function ($ee)
+		{
+			return new Library\Data\CSV();
 		},
 
 		'db' => function($ee)
@@ -72,9 +93,9 @@ return array(
 			return new Filesystem\Filesystem();
 		},
 
-		'View' => function($ee, $basepath = '')
+		'View' => function($ee)
 		{
-			return new View\ViewFactory($basepath, ee()->load, ee()->view);
+			return new View\ViewFactory($ee);
 		},
 
 		'Filter' => function($ee)
@@ -100,11 +121,21 @@ return array(
 		'Thumbnail' => function($ee)
 		{
 			return new Thumbnail\ThumbnailFactory();
+		},
+
+		'Profiler' => function($ee)
+		{
+			return new Profiler\Profiler(ee()->lang, ee('View'));
 		}
 
 	),
 
 	'services.singletons' => array(
+
+		'Addon' => function($ee)
+		{
+			return new Addon\Factory($ee->make('App'));
+		},
 
 		'Alert' => function($ee)
 		{
@@ -117,16 +148,21 @@ return array(
 			return new Library\Captcha();
 		},
 
+		'CP/Modal' => function($ee)
+		{
+			return new Modal\ModalCollection;
+		},
+
 		'Config' => function($ee)
 		{
-			return new Config\Factory();
+			return new Config\Factory($ee);
 		},
 
 		'Database' => function($ee)
 		{
-			$db_config = new Database\DBConfig(
-				$ee->getConfigFile()
-			);
+			$config = $ee->make('Config')->getFile();
+
+			$db_config = new Database\DBConfig($config);
 
 			return new Database\Database($db_config);
 		},
@@ -157,6 +193,12 @@ return array(
 			return new Library\Security\XSS();
 		},
 
+		'Sidebar' => function($ee)
+		{
+			$view = $ee->make('View');
+			return new Sidebar\Sidebar($view);
+		},
+
 		'Validation' => function($ee)
 		{
 			return new Validation\Factory();
@@ -169,6 +211,7 @@ return array(
 		# EllisLab\ExpressionEngine\Model..
 
 			// ..\Addon
+			'Action' => 'Model\Addon\Action',
 			'Extension' => 'Model\Addon\Extension',
 			'Module' => 'Model\Addon\Module',
 			'Plugin' => 'Model\Addon\Plugin',
@@ -222,17 +265,13 @@ return array(
 			'ChannelField' => 'Module\Channel\Model\ChannelField',
 			'ChannelEntry' => 'Module\Channel\Model\ChannelEntry',
 			'ChannelEntryAutosave' => 'Module\Channel\Model\ChannelEntryAutosave',
+			'ChannelEntryVersion' => 'Module\Channel\Model\ChannelEntryVersion',
 			'ChannelFormSettings' => 'Module\Channel\Model\ChannelFormSettings',
 			'ChannelLayout' => 'Module\Channel\Model\ChannelLayout',
 
 			// ..\Comment
 			'Comment' => 'Module\Comment\Model\Comment',
 			'CommentSubscription' => 'Module\Comment\Model\CommentSubscription',
-
-			// ..\MailingList
-			'MailingList' => 'Module\MailingList\Model\MailingList',
-			'MailingListQueue' => 'Module\MailingList\Model\MailingListQueue',
-			'MailingListUser' => 'Module\MailingList\Model\MailingListUser',
 
 			// ..\Member
 			'HTMLButton' => 'Module\Member\Model\HTMLButton',

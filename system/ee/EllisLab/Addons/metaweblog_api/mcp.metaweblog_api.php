@@ -61,8 +61,9 @@ class Metaweblog_api_mcp {
 		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => FALSE, 'limit' => 20));
 		$table->setColumns(
 			array(
+				'col_id',
 				'name',
-				'url',
+				'metaweblog_config_url',
 				'manage' => array(
 					'type'	=> Table::COL_TOOLBAR
 				),
@@ -92,9 +93,10 @@ class Metaweblog_api_mcp {
 				)
 			);
 
-			$data[] = array(
-				'name' => $metaweblog->metaweblog_pref_name,
-				'url' => $api_url . '&id=' . $metaweblog->metaweblog_id,
+			$columns = array(
+				$metaweblog->metaweblog_id,
+				$metaweblog->metaweblog_pref_name,
+				$api_url . '&id=' . $metaweblog->metaweblog_id,
 				array(
 					'toolbar_items' => array(
 						'edit' => array(
@@ -104,6 +106,17 @@ class Metaweblog_api_mcp {
 					)
 				),
 				$checkbox
+			);
+
+			$attrs = array();
+			if (ee()->session->flashdata('highlight_id') == $metaweblog->metaweblog_id)
+			{
+				$attrs = array('class' => 'selected');
+			}
+
+			$data[] = array(
+				'attrs' => $attrs,
+				'columns' => $columns
 			);
 		}
 
@@ -121,7 +134,48 @@ class Metaweblog_api_mcp {
 				->render($base_url);
 		}
 
-		return ee()->load->view('index', $vars, TRUE);
+		ee()->javascript->set_global('lang.remove_confirm', lang('configurations') . ': <b>### ' . lang('configurations') . '</b>');
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/confirm_remove'),
+		));
+
+		return ee('View')->make('metaweblog_api:index')->render($vars);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Delete Configuration(s)
+	 *
+	 * @access	public
+	 */
+	function remove()
+	{
+		if ( ! ee()->input->post('selection'))
+		{
+			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=metaweblog_api');
+		}
+
+		$ids = array();
+
+		foreach ($_POST['selection'] as $key => $val)
+		{
+			$ids[] = "metaweblog_id = '".ee()->db->escape_str($val)."'";
+		}
+
+		$IDS = implode(" OR ", $ids);
+
+		ee()->db->query("DELETE FROM exp_metaweblog_api WHERE ".$IDS);
+
+		$message = (count($ids) == 1) ? lang('metaweblog_deleted') : lang('metaweblogs_deleted');
+
+		ee('Alert')->makeInline('metaweblog-form')
+			->asSuccess()
+			->withTitle(lang('configurations_removed'))
+			->addToBody(sprintf(lang('configurations_removed_desc'), count($ids)))
+			->defer();
+
+		ee()->functions->redirect(ee('CP/URL', 'addons/settings/metaweblog_api'));
 	}
 
 	// --------------------------------------------------------------------
@@ -189,13 +243,10 @@ class Metaweblog_api_mcp {
 			{
 				$values[$name] = $value;
 			}
-
-			// @TODO Determine which channel this was set to -- might need to store that instead of field group id
-			// @TODO Pre-populate the field choices based on the store channel
 		}
 
 		// Get the directories
-		$upload_directories = array('ALL' => lang('all'));
+		$upload_directories = array(0 => lang('none'));
 		// Any group restrictions?
 		if (ee()->session->userdata['group_id'] !== 1)
 		{
@@ -235,9 +286,8 @@ class Metaweblog_api_mcp {
 
 		$vars = array(
 			'base_url' => $base_url,
-			// 'ajax_validate' => TRUE,
-			'cp_page_title' => lang('create_metaweblog'),
-			'save_btn_text' => 'create_metaweblog',
+			'cp_page_title' => ($id == 'new') ? lang('create_metaweblog') : lang('edit_metaweblog'),
+			'save_btn_text' => sprintf(lang('btn_save'), lang('metaweblog')),
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array()
@@ -265,8 +315,7 @@ class Metaweblog_api_mcp {
 			'desc' => 'metaweblog_parse_type_desc',
 			'fields' => array(
 				'metaweblog_parse_type' => array(
-					'type' => 'yes_no',
-					'required' => TRUE
+					'type' => 'yes_no'
 				)
 			)
 		);
@@ -296,21 +345,34 @@ class Metaweblog_api_mcp {
 		}
 		$vars['sections'][0][] = $form_element;
 
+		$field_group_options = ee('Model')->get('ChannelFieldGroup')->all()->getDictionary('group_id', 'group_name');
+		if (empty($field_group_options))
+		{
+			$field_group_options = array('0' => lang('none'));
+		}
+
 		$form_element = array(
 			'title' => 'metaweblog_channel',
 			'desc' => 'metaweblog_channel_desc',
 			'fields' => array(
-				'channel_id' => array(
+				'field_group_id' => array(
 					'type' => 'select',
-					'choices' => $channels
+					'choices' => $field_group_options
 				)
 			)
 		);
-		if (isset($values['channel_id']))
+		if (isset($values['field_group_id']))
 		{
-			$form_element['fields']['channel_id']['value'] = $values['channel_id'];
+			$form_element['fields']['field_group_id']['value'] = $values['field_group_id'];
 		}
 		$vars['sections'][0][] = $form_element;
+
+		$field_group_keys = array_keys($field_group_options);
+
+		$fields_list = ee('Model')->get('ChannelField')
+			->filter('group_id', isset($values['field_group_id']) ? $values['field_group_id'] : $field_group_keys[0])
+			->all()
+			->getDictionary('field_id', 'field_label');
 
 		$form_element = array(
 			'title' => 'metaweblog_excerpt_field',
@@ -318,9 +380,7 @@ class Metaweblog_api_mcp {
 			'fields' => array(
 				'excerpt_field_id' => array(
 					'type' => 'select',
-					'choices' => array(
-						'0' => lang('none'),
-					)
+					'choices' => array('0' => lang('none')) + $fields_list
 				)
 			)
 		);
@@ -336,9 +396,7 @@ class Metaweblog_api_mcp {
 			'fields' => array(
 				'content_field_id' => array(
 					'type' => 'select',
-					'choices' => array(
-						'0' => lang('none'),
-					)
+					'choices' => array('0' => lang('none')) + $fields_list
 				)
 			)
 		);
@@ -354,9 +412,7 @@ class Metaweblog_api_mcp {
 			'fields' => array(
 				'more_field_id' => array(
 					'type' => 'select',
-					'choices' => array(
-						'0' => lang('none'),
-					)
+					'choices' => array('0' => lang('none')) + $fields_list
 				)
 			)
 		);
@@ -372,9 +428,7 @@ class Metaweblog_api_mcp {
 			'fields' => array(
 				'keywords_field_id' => array(
 					'type' => 'select',
-					'choices' => array(
-						'0' => lang('none'),
-					)
+					'choices' => array('0' => lang('none')) + $fields_list
 				)
 			)
 		);
@@ -394,12 +448,11 @@ class Metaweblog_api_mcp {
 				)
 			)
 		);
-		if (isset($values['metaweblog_upload_dir']))
+		if (isset($values['upload_dir']))
 		{
-			$form_element['fields']['metaweblog_upload_dir']['value'] = $values['metaweblog_upload_dir'];
+			$form_element['fields']['upload_dir']['value'] = $values['upload_dir'];
 		}
 		$vars['sections'][0][] = $form_element;
-
 
 		ee()->load->library('form_validation');
 
@@ -412,7 +465,7 @@ class Metaweblog_api_mcp {
 			array(
 				'field' => 'metaweblog_parse_type',
 				'label' => 'lang:metaweblog_parse_type',
-				'rules' => 'required'
+				'rules' => 'enum[y,n]'
 			),
 			array(
 				'field' => 'entry_status',
@@ -422,43 +475,62 @@ class Metaweblog_api_mcp {
 			array(
 				'field' => 'channel_id',
 				'label' => 'lang:metaweblog_channel',
-				'rules' => 'required'
+				'rules' => 'integer'
 			),
 			array(
 				'field' => 'excerpt_field_id',
 				'label' => 'lang:metaweblog_excerpt_field',
-				'rules' => 'required'
+				'rules' => 'integer'
 			),
 			array(
 				'field' => 'content_field_id',
 				'label' => 'lang:metaweblog_content_field',
-				'rules' => 'required'
+				'rules' => 'integer'
 			),
 			array(
 				'field' => 'more_field_id',
 				'label' => 'lang:metaweblog_more_field',
-				'rules' => 'required'
+				'rules' => 'integer'
 			),
 			array(
 				'field' => 'keywords_field_id',
 				'label' => 'lang:metaweblog_keywords_field',
-				'rules' => 'required'
-			),
-			array(
-				'field' => '',
-				'label' => '',
-				'rules' => 'required'
+				'rules' => 'integer'
 			)
 		));
 
 		if (ee()->form_validation->run() === FALSE)
 		{
-			return ee()->load->view('create_modify', $vars, TRUE);
+			if (ee()->form_validation->errors_exist())
+			{
+				if ($id == 'new')
+				{
+					ee('Alert')->makeInline('shared-form')
+						->asIssue()
+						->withTitle(lang('configuration_not_created'))
+						->addToBody(lang('configuration_not_created_desc'))
+						->now();
+				}
+				else
+				{
+					ee('Alert')->makeInline('shared-form')
+						->asIssue()
+						->withTitle(lang('configuration_not_updated'))
+						->addToBody(lang('configuration_not_updated_desc'))
+						->now();
+				}
+			}
+
+			return array(
+				'heading'    => $vars['cp_page_title'],
+				'breadcrumb' => array(ee('CP/URL', 'addons/settings/metaweblog_api')->compile() => lang('metaweblog_api_module_name') . ' ' . lang('configuration')),
+				'body'       => ee('View')->make('metaweblog_api:create_modify')->render($vars)
+			);
 		}
 		else
 		{
 			$fields		= array('metaweblog_pref_name', 'metaweblog_parse_type', 'entry_status',
-								'channel_id','excerpt_field_id','content_field_id',
+								'field_group_id','excerpt_field_id','content_field_id',
 								'more_field_id','keywords_field_id','upload_dir');
 
 			$data		= array();
@@ -473,91 +545,31 @@ class Metaweblog_api_mcp {
 				$data[$var] = $_POST[$var];
 			}
 
-			$data['field_group_id'] = ee('Model')->get('Channel', $data['channel_id'])
-				->fields('field_group')
-				->first()
-				->field_group;
-
-			unset($data['channel_id']);
-
 			if ($create)
 			{
-				ee()->db->query(ee()->db->insert_string('exp_metaweblog_api', $data));
-				$message = lang('configuration_created');
+				ee()->db->insert('metaweblog_api', $data);
+
+				ee()->session->set_flashdata('highlight_id', ee()->db->insert_id());
+
+				$title = lang('configuration_created');
+				$message = sprintf(lang('configuration_created_desc'), $data['metaweblog_pref_name']);
 			}
 			else
 			{
 				$data['metaweblog_id'] = $id;
 				ee()->db->query(ee()->db->update_string('exp_metaweblog_api', $data, "metaweblog_id = '".ee()->db->escape_str($id)."'"));
-				$message = lang('configuration_updated');
+				$title = lang('configuration_updated');
+				$message = sprintf(lang('configuration_updated_desc'), $data['metaweblog_pref_name']);
 			}
 
-			ee('Alert')->makeInline('shared-form')
+			ee('Alert')->makeInline('metaweblog-form')
 				->asSuccess()
-				->withTitle(lang('success'))
+				->withTitle($title)
 				->addToBody($message)
 				->defer();
 
 			ee()->functions->redirect(ee('CP/URL', 'addons/settings/metaweblog_api'));
 		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Delete Confirm
-	 *
-	 * @access	public
-	 */
-	function delete_confirm()
-	{
-		if ( ! ee()->input->post('toggle'))
-		{
-			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=metaweblog_api');
-		}
-
-		ee()->cp->set_breadcrumb(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=metaweblog_api', lang('metaweblog_api_module_name'));
-
-		$vars['cp_page_title'] = lang('metaweblog_delete_confirm');
-
-		foreach ($_POST['toggle'] as $key => $val)
-		{
-			$vars['damned'][] = $val;
-		}
-
-		return ee()->load->view('delete_confirm', $vars, TRUE);
-
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Delete Configuration(s)
-	 *
-	 * @access	public
-	 */
-	function delete()
-	{
-		if ( ! ee()->input->post('delete'))
-		{
-			ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=metaweblog_api');
-		}
-
-		$ids = array();
-
-		foreach ($_POST['delete'] as $key => $val)
-		{
-			$ids[] = "metaweblog_id = '".ee()->db->escape_str($val)."'";
-		}
-
-		$IDS = implode(" OR ", $ids);
-
-		ee()->db->query("DELETE FROM exp_metaweblog_api WHERE ".$IDS);
-
-		$message = (count($ids) == 1) ? lang('metaweblog_deleted') : lang('metaweblogs_deleted');
-
-		ee()->session->set_flashdata('message_success', $message);
-		ee()->functions->redirect(BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=metaweblog_api');
 	}
 
 	// ------------------------------------------------------------------------
@@ -744,7 +756,7 @@ var channel_map = $channel_info;
 
 var empty_select = new Option("{$none_text}", 'none');
 
-// We prep our magic arrays as soons as we can, basically
+// We prep our magic arrays as soon as we can, basically
 // converting everything into option elements
 (function() {
 	jQuery.each(channel_map, function(key, details) {
@@ -788,9 +800,10 @@ function changemenu(index)
 	}
 }
 
-$('select[name=channel_id]').change(function() {
+$('select[name=field_group_id]').on('change', function(event) {
 	changemenu(this.value);
-}).change();
+});
+
 MAGIC;
 		ee()->javascript->output($javascript);
 	}

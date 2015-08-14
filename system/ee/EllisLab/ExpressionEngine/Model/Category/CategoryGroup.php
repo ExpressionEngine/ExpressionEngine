@@ -42,6 +42,11 @@ class CategoryGroup extends StructureModel {
 			'type' => 'hasMany',
 			'model' => 'Category'
 		),
+		'Channel' => array(
+			'type' => 'hasMany',
+			'model' => 'Channel',
+			'to_key' => 'cat_group'
+		),
 	);
 
 	// Properties

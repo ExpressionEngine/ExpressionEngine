@@ -1,5 +1,5 @@
 <div class="box mb">
-	<?php $this->ee_view('_shared/form')?>
+	<?php $this->embed('ee:_shared/form')?>
 </div>
 <div class="box snap">
 	<div class="tbl-ctrls">
@@ -11,7 +11,7 @@
 
 			<?=ee('Alert')->get('toolsets-form')?>
 
-			<?php $this->ee_view('_shared/table', $table); ?>
+			<?php $this->embed('ee:_shared/table', $table); ?>
 			<?=$pagination?>
 			<fieldset class="tbl-bulk-act">
 				<select name="bulk_action">
@@ -26,8 +26,6 @@
 	</div>
 </div>
 
-<?php $this->startOrAppendBlock('modals'); ?>
-
 <?php
 $modal_vars = array(
 	'name'      => 'modal-confirm-remove',
@@ -37,7 +35,6 @@ $modal_vars = array(
 	)
 );
 
-$this->ee_view('_shared/modal_confirm_remove', $modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+ee('CP/Modal')->addModal('remove', $modal);
 ?>
-
-<?php $this->endBlock(); ?>

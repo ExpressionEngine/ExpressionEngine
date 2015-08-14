@@ -155,7 +155,7 @@ $(document).ready(function(){
 	// ====
 
 		// listen for clicks on tabs
-		$('.tab-wrap ul.tabs a').on('click',function(){
+		$('body').on('click', '.tab-wrap ul.tabs a', function(){
 			// set the tabClassIs variable
 			// tells us which .tab to control
 			var tabClassIs = $(this).attr('rel');

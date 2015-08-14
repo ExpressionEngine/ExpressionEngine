@@ -1,0 +1,70 @@
+<?php
+
+namespace EllisLab\Addons\Forum\Model;
+
+use EllisLab\ExpressionEngine\Service\Model\Model;
+
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine PollVote Model for the Forum
+ *
+ * A model representing a poll vote in the Forum.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Forum Module
+ * @category	Model
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
+class PollVote extends Model {
+
+	protected static $_primary_key = 'vote_id';
+	protected static $_table_name = 'forum_pollvotes';
+
+	protected static $_typed_columns = array(
+		'poll_id'   => 'int',
+		'topic_id'  => 'int',
+		'member_id' => 'int',
+		'choice_id' => 'int',
+	);
+
+	protected static $_relationships = array(
+		'Member' => array(
+			'type' => 'belongsTo',
+			'model' => 'ee:Member'
+		),
+		'Poll' => array(
+			'type' => 'belongsTo',
+		),
+		'Topic' => array(
+			'type' => 'belongsTo',
+		),
+	);
+
+	protected static $_validation_rules = array(
+		'poll_id'   => 'required',
+		'topic_id'  => 'required',
+		'member_id' => 'required',
+		'choice_id' => 'required',
+	);
+
+	protected $vote_id;
+	protected $poll_id;
+	protected $topic_id;
+	protected $member_id;
+	protected $choice_id;
+
+}

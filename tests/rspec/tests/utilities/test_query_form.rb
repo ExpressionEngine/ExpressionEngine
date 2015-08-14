@@ -225,12 +225,12 @@ feature 'Query Form' do
 
     no_php_js_errors
     results = QueryResults.new
-    results.should have(21).rows # 20 results plus header
+    results.should have(26).rows # 25 results plus header
     results.pages.map {|name| name.text}.should == ["First", "1", "2", "Next", "Last"]
     click_link "Next"
 
     no_php_js_errors
-    results.should have(12).rows # 11 results plus header
+    results.should have(7).rows # 5 results plus header
     results.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "Last"]
   end
 
@@ -250,7 +250,7 @@ feature 'Query Form' do
     no_php_js_errors
     click_link "Next"
 
-    results.table.find('tbody tr:nth-child(1) td:nth-child(1)').should have_text '11'
+    results.table.find('tbody tr:nth-child(1) td:nth-child(1)').should have_text '6'
   end
 
   def show_status
@@ -270,7 +270,7 @@ feature 'Query Form' do
     no_php_js_errors
     results = QueryResults.new
     results.should have(6).pages
-    results.should have(21).rows # 20 results plus header
+    results.should have(26).rows # 25 results plus header
 
     results.search_field.set 'alter'
     results.search_btn.click
@@ -302,15 +302,15 @@ feature 'Query Form' do
 
     no_php_js_errors
     results = QueryResults.new
-    results.should have(21).rows # 20 results plus header
+    results.should have(26).rows # 25 results plus header
     results.pages.map {|name| name.text}.should == ['First', '1', '2', '3', 'Next', 'Last']
-    results.first_column.map {|source| source.text}.should == status.sort[0..19]
+    results.first_column.map {|source| source.text}.should == status.sort[0..24]
     click_link "Next"
 
     no_php_js_errors
-    results.should have(21).rows # 20 results plus header
+    results.should have(26).rows # 25 results plus header
     results.pages.map {|name| name.text}.should == ['First', 'Previous', '1', '2', '3', 'Next', 'Last']
-    results.first_column.map {|source| source.text}.should == status.sort[20..39]
+    results.first_column.map {|source| source.text}.should == status.sort[25..49]
   end
 
   it 'should paginate sorted SHOW query results' do
@@ -324,13 +324,13 @@ feature 'Query Form' do
     no_php_js_errors
 
     results.pages.map {|name| name.text}.should == ['First', '1', '2', '3', 'Next', 'Last']
-    results.first_column.map {|source| source.text}.should == status.sort.reverse[0..19]
+    results.first_column.map {|source| source.text}.should == status.sort.reverse[0..24]
 
     no_php_js_errors
     click_link "Next"
 
     results.pages.map {|name| name.text}.should == ['First', 'Previous', '1', '2', '3', 'Next', 'Last']
-    results.first_column.map {|source| source.text}.should == status.sort.reverse[20..39]
+    results.first_column.map {|source| source.text}.should == status.sort.reverse[25..49]
   end
 
   it 'should show no results when there are no results' do

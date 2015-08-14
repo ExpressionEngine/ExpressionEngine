@@ -454,7 +454,7 @@ class EE_Config {
 			// No Pages data
 			if (! is_string($data)
 				OR substr($data, 0, 2) != 'a:'
-				OR $data = 'a:0:{}')
+				OR $data == 'a:0:{}')
 			{
 				$site_pages[$site['site_id']] = array('uris' => array(), 'templates' => array());
 				continue;
@@ -493,7 +493,6 @@ class EE_Config {
 		$this->config['enable_online_user_tracking'] = 'n';
 		$this->config['enable_hit_tracking'] = 'n';
 		$this->config['enable_entry_view_tracking'] = 'n';
-		$this->config['log_referrers'] = 'n';
 	}
 
 	// --------------------------------------------------------------------
@@ -553,8 +552,6 @@ class EE_Config {
 			'xml_lang',
 			'send_headers',
 			'gzip_output',
-			'log_referrers',
-			'max_referrers',
 			'default_site_timezone',
 			'date_format',
 			'time_format',
@@ -571,7 +568,6 @@ class EE_Config {
 			'word_wrap',
 			'email_console_timelock',
 			'log_email_console_msgs',
-			'cp_theme',
 			'log_search_terms',
 			'deny_duplicate_data',
 			'redirect_submitted_links',
@@ -601,12 +597,6 @@ class EE_Config {
 			'max_logged_searches',
 			'rte_enabled',
 			'rte_default_toolset_id'
-		);
-
-		$mailinglist_default = array(
-			'mailinglist_enabled',
-			'mailinglist_notify',
-			'mailinglist_notify_emails'
 		);
 
 		$member_default = array(
@@ -926,7 +916,7 @@ class EE_Config {
 	 */
 	private function _update_preferences($site_id, $site_prefs, $query, $find, $replace)
 	{
-		foreach(array('system', 'channel', 'template', 'mailinglist', 'member') as $type)
+		foreach(array('system', 'channel', 'template', 'member') as $type)
 		{
 			$prefs	 = unserialize(base64_decode($query->row('site_'.$type.'_preferences')));
 			$changes = 'n';
@@ -1194,27 +1184,54 @@ class EE_Config {
 	 * Reads the existing DB config file as a string and swaps out
 	 * any values passed to the function.
 	 *
-	 * @access	private
-	 * @param	array
-	 * @param	string
-	 * @return	bool
+	 * @param array $dbconfig Items to add to the database configuration
+	 * @return boolean TRUE if successful
 	 */
-	function _update_dbconfig($dbconfig = array(), $remove_values = array())
+	public function _update_dbconfig($dbconfig = array())
 	{
 		$database_config = ee('Database')->getConfig();
 
-		$database_config->set(
-			'pconnect',
-			get_bool_from_string($dbconfig['pconnect'])
+		// Prevent access to certain properties
+		$allowed_properties = array(
+			'hostname' => 'string',
+			'username' => 'string',
+			'password' => 'string',
+			'database' => 'string',
+			'pconnect' => 'bool',
+			'dbprefix' => 'string',
+			'db_debug' => 'bool'
 		);
-		$database_config->set(
-			'db_debug',
-			get_bool_from_string($dbconfig['db_debug'])
-		);
+		$dbconfig = array_intersect_key($dbconfig, $allowed_properties);
+
+		foreach ($dbconfig as $property => $value)
+		{
+			if ($allowed_properties[$property] == 'bool')
+			{
+				$value = get_bool_from_string($value);
+			}
+
+			$database_config->set($property, $value);
+		}
 
 		// Update the database config
+		$db_config = ee('Database')->getConfig();
+		$group_config = $db_config->getGroupConfig();
+
+		// Remove default properties
+		$defaults = $db_config->getDefaults();
+
+		foreach ($defaults as $property => $value)
+		{
+			if (isset($group_config[$property]) && $group_config[$property] == $value)
+			{
+				unset($group_config[$property]);
+			}
+		}
+
 		$this->_update_config(array(
-			'database' => ee('Config')->get('database')
+			'database' => array(
+				'expressionengine' => $group_config
+			)
 		));
 
 		return TRUE;
@@ -1416,12 +1433,6 @@ class EE_Config {
 				'enable_censoring'   => array('r', array('y' => 'yes', 'n' => 'no')),
 				'censor_replacement' => array('i', '', 'strip_tags|trim|valid_xss_check'),
 				'censored_words'     => array('t', array('rows' => '20', 'kill_pipes' => TRUE)),
-			),
-
-			'mailinglist_cfg'	=>	array(
-				'mailinglist_enabled'       => array('r', array('y' => 'yes', 'n' => 'no')),
-				'mailinglist_notify'        => array('r', array('y' => 'yes', 'n' => 'no')),
-				'mailinglist_notify_emails' => array('i', '')
 			),
 
 			'emoticon_cfg'		=>	array(
@@ -1731,7 +1742,6 @@ class EE_Config {
 			'banishment_url'			=> array('banishment_url_exp'),
 			'banishment_message'		=> array('banishment_message_exp'),
 			'enable_search_log'			=> array('enable_search_log_exp'),
-			'mailinglist_notify_emails' => array('separate_emails'),
 			'dynamic_tracking_disabling'=> array('dynamic_tracking_disabling_info')
 		);
 	}

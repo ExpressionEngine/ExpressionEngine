@@ -15,10 +15,6 @@ class AddonManager < ControlPanelPage
 	element :first_party_status_filter, first_party_prefix + 'div.filters ul li:first-child'
 	element :first_party_status_filter_menu, first_party_prefix + 'div.filters ul li:first-child div.sub-menu ul', visible: false
 
-	element :first_party_perpage_filter, first_party_prefix + 'div.filters ul li:nth-child(2)'
-	element :first_party_perpage_filter_menu, first_party_prefix + 'div.filters ul li:nth-child(2) div.sub-menu ul', visible: false
-	element :first_party_perpage_manual_filter, first_party_prefix + 'input[name="first_perpage"]', visible: false
-
 	element :first_party_alert, first_party_prefix + 'div.alert'
 
 	element :first_party_no_results, first_party_prefix + 'tr.no-results'
@@ -50,10 +46,6 @@ class AddonManager < ControlPanelPage
 
 	element :third_party_developer_filter, third_party_prefix + 'div.filters ul li:nth-child(2)'
 	element :third_party_developer_filter_menu, third_party_prefix + 'div.filters ul li:nth-child(2) div.sub-menu ul', visible: false
-
-	element :third_party_perpage_filter, third_party_prefix + 'div.filters ul li:nth-child(3)'
-	element :third_party_perpage_filter_menu, third_party_prefix + 'div.filters ul li:nth-child(3) div.sub-menu ul', visible: false
-	element :third_party_perpage_manual_filter, third_party_prefix + 'input[name="third_perpage"]', visible: false
 
 	element :third_party_alert, third_party_prefix + 'div.alert'
 

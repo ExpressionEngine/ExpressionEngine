@@ -57,12 +57,8 @@ class Cp {
 		// Cannot set these in the installer
 		if ( ! defined('EE_APPPATH'))
 		{
-			$this->cp_theme	= ( ! ee()->session->userdata('cp_theme'))
-				? ee()->config->item('cp_theme')
-				: ee()->session->userdata('cp_theme');
-			$this->cp_theme_url = ($this->cp_theme == 'default')
-				? URL_THEMES.'cp_themes/default/'
-				: URL_ADDONS_THEMES.'cp_themes/'.$this->cp_theme.'/';
+			$this->cp_theme	= 'default';
+			$this->cp_theme_url = URL_THEMES.'cp/default/';
 
 			ee()->load->vars(array(
 				'cp_theme_url' => $this->cp_theme_url
@@ -205,6 +201,12 @@ class Cp {
 
 		$this->add_js_script($js_scripts);
 		$this->_seal_combo_loader();
+
+		foreach ($vars as $key => $value)
+		{
+			ee()->view->$key = $value;
+		}
+
 		ee()->load->vars($vars);
 	}
 
@@ -239,6 +241,13 @@ class Cp {
 		$this->add_js_script('file', 'cp/global_end');
 
 		ee()->view->ee_build_date = ee()->localize->format_date($date_format, $this->_parse_build_date(), TRUE);
+
+		$sidebar = ee('Sidebar')->render();
+
+		if ( ! empty($sidebar))
+		{
+			ee()->view->left_nav = $sidebar;
+		}
 
 		return ee()->view->render($view, $data, $return);
 	}

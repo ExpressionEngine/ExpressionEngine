@@ -103,7 +103,16 @@ class Radio_ft extends EE_Fieldtype {
 
 		if (REQ == 'CP')
 		{
-			return ee('View')->make('publish')->render(array(
+			if ($data === TRUE)
+			{
+				$data = 'y';
+			}
+			elseif ($data === FALSE)
+			{
+				$data = 'n';
+			}
+
+			return ee('View')->make('radio:publish')->render(array(
 				'field_name' => $this->field_name,
 				'selected' => $data,
 				'options' => $field_options
@@ -171,7 +180,6 @@ class Radio_ft extends EE_Fieldtype {
 		$settings = array(
 			array(
 				'title' => 'field_fmt',
-				'desc' => 'field_fmt_desc',
 				'fields' => array(
 					'field_fmt' => array(
 						'type' => 'select',
@@ -228,7 +236,6 @@ class Radio_ft extends EE_Fieldtype {
 			'field_options' => array(
 				array(
 					'title' => 'field_fmt',
-					'desc' => 'field_fmt_desc',
 					'fields' => array(
 						'field_fmt' => array(
 							'type' => 'select',
