@@ -783,7 +783,7 @@ class Simple_commerce_mcp {
 			else
 			{
 				$vars['errors'] = $result;
-				ee('Alert')->makeInline('purchases-table')
+				ee('Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('purchase_not_'.$alert_key))
 					->addToBody(lang('purchase_not_'.$alert_key.'_desc'))
@@ -793,40 +793,53 @@ class Simple_commerce_mcp {
 
 		$vars['sections'] = array(
 			array(
+				ee('Alert')->makeInline()
+					->asWarning()
+					->addToBody(lang('purchase_create_warn'))
+					->cannotClose()
+					->render(),
 				array(
 					'title' => 'txn_id',
+					'desc' => 'txn_id_desc',
 					'fields' => array(
 						'txn_id' => array(
 							'type' => 'text',
-							'value' => $purchase->txn_id
+							'value' => $purchase->txn_id,
+							'required' => TRUE
 						)
 					)
 				),
 				array(
 					'title' => 'screen_name',
+					'desc' => 'screen_name_desc',
 					'fields' => array(
 						'screen_name' => array(
 							'type' => 'text',
-							'value' => $purchase->member_id // TODO: change to member screen name when relationships work
+							'value' => $purchase->member_id, // TODO: change to member screen name when relationships work
+							'required' => TRUE
 						)
 					)
 				),
 				array(
-					'title' => 'item_purchased',
+					'title' => 'item',
+					'desc' => 'item_purchased',
 					'fields' => array(
 						'item_id' => array(
 							'type' => 'select',
 							'choices' => ee('Model')->get('simple_commerce:Item')->all()->getDictionary('item_id', 'entry_id'), // TODO: change to item title when relationships work
-							'value' => $purchase->item_id
+							'value' => $purchase->item_id,
+							'required' => TRUE
 						)
 					)
 				),
 				array(
-					'title' => 'item_cost_form',
+					'title' => 'price',
+					'desc' => 'price_desc',
 					'fields' => array(
 						'item_cost' => array(
 							'type' => 'text',
-							'value' => $purchase->item_cost
+							'value' => $purchase->item_cost,
+							'required' => TRUE
 						)
 					)
 				),
@@ -835,7 +848,9 @@ class Simple_commerce_mcp {
 					'fields' => array(
 						'purchase_date' => array(
 							'type' => 'text',
-							'value' => $purchase->purchase_date
+							'value' => $purchase->purchase_date,
+							'required' => TRUE,
+							'attrs' => 'rel="date-picker"'
 						)
 					)
 				)
@@ -845,11 +860,54 @@ class Simple_commerce_mcp {
 		$vars['save_btn_text'] = sprintf(lang('btn_save'), lang('purchase'));
 		$vars['save_btn_text_working'] = 'btn_saving';
 
+		ee()->javascript->set_global('date.date_format', ee()->localize->get_date_format());
+		ee()->javascript->set_global('lang.date.months.full', array(
+			lang('january'),
+			lang('february'),
+			lang('march'),
+			lang('april'),
+			lang('may'),
+			lang('june'),
+			lang('july'),
+			lang('august'),
+			lang('september'),
+			lang('october'),
+			lang('november'),
+			lang('december')
+		));
+		ee()->javascript->set_global('lang.date.months.abbreviated', array(
+			lang('jan'),
+			lang('feb'),
+			lang('mar'),
+			lang('apr'),
+			lang('may'),
+			lang('june'),
+			lang('july'),
+			lang('aug'),
+			lang('sept'),
+			lang('oct'),
+			lang('nov'),
+			lang('dec')
+		));
+		ee()->javascript->set_global('lang.date.days', array(
+			lang('su'),
+			lang('mo'),
+			lang('tu'),
+			lang('we'),
+			lang('th'),
+			lang('fr'),
+			lang('sa'),
+		));
+		ee()->cp->add_js_script(array(
+			'file' => array('cp/v3/date_picker'),
+		));
+
+		$this->purchases_nav->isActive();
+
 		return array(
 			'heading' => lang('create_purchase'),
 			'breadcrumb' => array(
-				ee('CP/URL', 'addons/settings/simple_commerce')->compile() => lang('simple_commerce_module_name') . ' ' . lang('configuration'),
-				ee('CP/URL', 'addons/settings/simple_commerce/purchases')->compile() => lang('purchases')
+				ee('CP/URL', 'addons/settings/simple_commerce/purchases')->compile() => lang('commerce_purchases')
 			),
 			'body' => ee('View')->make('simple_commerce:form')->render($vars),
 			'sidebar' => $this->sidebar

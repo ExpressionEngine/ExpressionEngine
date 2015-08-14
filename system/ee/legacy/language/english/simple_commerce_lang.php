@@ -26,7 +26,7 @@ $lang = array(
 
 'create_new_item' => 'Create New Item',
 
-'create_new_item_step' => 'Create New: Step %d',
+'create_new_item_step' => 'Create Item: Step %d',
 
 'create_new_item_step_desc' => 'Please choose the channel entries you\'d like to add as purchasable items.',
 
@@ -157,7 +157,7 @@ and provide them with the URL below.',
 
 'item_added' => 'Items Added',
 
-'purchase_date' => 'Purchase date',
+'purchase_date' => 'Date of purchase',
 
 'recurring' => 'Recurring subscription?',
 
@@ -189,8 +189,7 @@ and provide them with the URL below.',
 
 'invalid_purchases' => 'No Valid Purchases',
 
-'use_sale_price' =>
-'Use sale price?',
+'use_sale_price' => 'Use sale price?',
 
 'entry_title' => 'Entry Title',
 
@@ -326,11 +325,21 @@ and provide them with the URL below.',
 
 'emails_deleted' => 'Email Templates Deleted!',
 
-'member_not_found' => 'Member Not Found',
+'member_not_found' => 'Member not found.',
 
 'purchaser_screen_name' => 'Purchaser\'s Screen Name',
 
-'txn_id' => 'Purchase Identification Number (TXN ID)',
+'txn_id' => 'PIN (TXN ID)',
+
+'txn_id_desc' => 'A unique ID for this purchase',
+
+'screen_name_desc' => 'Screen name of purchaser.',
+
+'price' => 'Price',
+
+'price_desc' => 'Item price for this transaction.',
+
+'purchase_create_warn' => '<b>Warning</b>: Recurring purchases must be set up through PayPal for full functionality.',
 
 'date_purchased' => 'Date Purchased',
 
@@ -338,7 +347,7 @@ and provide them with the URL below.',
 
 'subscription_end_date_subtext' => 'Enter \'0\' for no subscription end',
 
-'item_purchased' => 'Item purchased',
+'item_purchased' => 'Item purchased.',
 
 'item_cost' => 'Item Cost',
 

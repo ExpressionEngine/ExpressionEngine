@@ -42,7 +42,7 @@ class Item extends Model {
 		'item_enabled'                        => 'enum[y,n]',
 		'item_regular_price'                  => 'numeric',
 		'item_sale_price'                     => 'numeric',
-		'item_use_sale'                     => 'enum[y,n]',
+		'item_use_sale'                       => 'enum[y,n]',
 		'recurring'                           => 'enum[y,n]',
 		'subscription_frequency'              => 'isNaturalNoZero',
 		'subscription_frequency_unit'         => 'enum[day,week,month,year]',
