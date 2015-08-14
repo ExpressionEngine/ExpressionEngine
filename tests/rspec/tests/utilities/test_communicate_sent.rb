@@ -19,8 +19,6 @@ feature 'Communicate > Sent' do
 		@page.should have_phrase_search
 		@page.should have_search_submit_button
 		@page.should have_email_table
-		@page.should have_bulk_action
-		@page.should have_action_submit_button
 	end
 
 	it 'shows the sent Emails page (with no results)' do

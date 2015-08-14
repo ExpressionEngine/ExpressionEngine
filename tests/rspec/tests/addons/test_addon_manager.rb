@@ -18,9 +18,6 @@ feature 'Add-On Manager' do
 		@page.should have_first_party_status_filter
 
 		@page.should have_first_party_addons
-
-		@page.should have_first_party_bulk_action
-		@page.should have_first_party_action_submit_button
 	end
 
 	describe "First-Party Table Only" do
@@ -409,9 +406,6 @@ feature 'Add-On Manager' do
 			@page.should have_third_party_developer_filter
 
 			@page.should have_third_party_addons
-
-			@page.should have_third_party_bulk_action
-			@page.should have_third_party_action_submit_button
 		end
 
 		before(:each, :install => true) do

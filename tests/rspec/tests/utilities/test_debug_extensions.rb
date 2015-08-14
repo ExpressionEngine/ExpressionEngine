@@ -12,9 +12,6 @@ feature 'Debug Extensions' do
 		@page.heading.text.should eq 'Manage Add-on Extensions'
 
 		@page.should have_addons
-
-		@page.should have_bulk_action
-		@page.should have_action_submit_button
 	end
 
 	it 'shows the Manage Add-on Extensions page' do

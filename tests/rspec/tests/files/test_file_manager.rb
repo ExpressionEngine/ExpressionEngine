@@ -41,8 +41,6 @@ feature 'File Manager' do
 		@page.should_not have_upload_new_file_button
 		@page.should have_upload_new_file_filter
 		@page.should have_files
-		@page.should have_bulk_action
-		@page.should have_action_submit_button
 		@page.should_not have_no_results
 	end
 
@@ -56,9 +54,6 @@ feature 'File Manager' do
 		@page.should have_upload_new_file_button
 		@page.should_not have_upload_new_file_filter
 		@page.should have_files
-		@page.should have_bulk_action
-		@page.should have_action_submit_button
-		@page.should_not have_no_results
 	end
 
 	before(:each, :perpage => 50) do
