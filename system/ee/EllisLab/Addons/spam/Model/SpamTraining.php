@@ -6,6 +6,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 
 class SpamTraining extends Model {
 
+	protected static $_table_name = 'spam_training';
 	protected static $_primary_key = 'training_id';
 
 	protected static $_relationships = array(

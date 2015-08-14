@@ -6,7 +6,20 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 
 class SpamTrap extends Model {
 
+	protected static $_table_name = 'spam_trap';
 	protected static $_primary_key = 'trap_id';
+
+	protected static $_typed_columns = array(
+		'date' => 'timestamp'
+	);
+
+	protected static $_relationships = array(
+		'Author' => array(
+			'type'     => 'BelongsTo',
+			'model'    => 'Member',
+			'from_key' => 'author'
+		),
+	);
 
 	protected $trap_id;
 	protected $author;

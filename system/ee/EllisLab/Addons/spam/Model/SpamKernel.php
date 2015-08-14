@@ -6,6 +6,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 
 class SpamKernel extends Model {
 
+	protected static $_table_name = 'spam_kernels';
 	protected static $_primary_key = 'kernel_id';
 
 	protected static $_relationships = array(
