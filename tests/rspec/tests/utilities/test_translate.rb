@@ -50,13 +50,13 @@ feature 'Translate Tool' do
 
 	it 'displays 2 languages in the sidebar', :edit => false do
 		@list_page.should have(2).languages
-		@list_page.languages.map {|lang| lang.text}.should == ["English (default)", 'Rspeclingo']
+		@list_page.languages.map {|lang| lang.text}.should == ["English (Default)", 'Rspeclingo']
 	end
 
 	it 'displays the default language first in the sidebar', :edit => false do
 		ee_config(item: 'deft_lang', value: 'rspeclingo')
 		@list_page.load
-		@list_page.languages.map {|lang| lang.text}.should == ["Rspeclingo (default)", 'English']
+		@list_page.languages.map {|lang| lang.text}.should == ["Rspeclingo (Default)", 'English']
 		ee_config(item: 'deft_lang', value: 'english')
 	end
 
