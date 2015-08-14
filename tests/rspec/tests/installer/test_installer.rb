@@ -191,7 +191,7 @@ feature 'Installer' do
       @page.has_inline_error(/Your password must be at least \d+ characters long/) == true
     end
 
-    it 'shows an error whent he password is too long' do
+    it 'shows an error when the password is too long' do
       @page.execute_script("$('input[maxlength=72]').prop('maxlength', 80);")
       @page.install_form.password.set '12345678901234567890123456789012345678901234567890123456789012345678901234567890'
       @page.install_form.install_submit.click
