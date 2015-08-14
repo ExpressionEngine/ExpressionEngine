@@ -93,7 +93,7 @@ feature 'Add-On Manager' do
 
 			@page.first_party_status_filter.text.should eq "status (uninstalled)"
 			@page.should have_css 'tr.not-installed'
-			@page.all('tr.not-installed').count().should == 21
+			@page.all('tr.not-installed').count().should == 19
 			@page.should have(19).first_party_addons
 
 			# By 'needs updates'
