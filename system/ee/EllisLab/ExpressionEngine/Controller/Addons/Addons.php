@@ -384,7 +384,6 @@ class Addons extends CP_Controller {
 	private function getAllAddons()
 	{
 		$addon_infos = ee('Addon')->all();
-		// Remove non-add-on providers from the list
 
 		$addons = array(
 			'first' => array(),
@@ -396,7 +395,9 @@ class Addons extends CP_Controller {
 
 		foreach ($addon_infos as $name => $info)
 		{
-			if (in_array($name, $uninstallable))
+			$info = ee('Addon')->get($name);
+
+			if ($info->get('built_in'))
 			{
 				continue;
 			}
@@ -408,7 +409,6 @@ class Addons extends CP_Controller {
 
 			if ( ! empty($addon))
 			{
-				$info = ee('Addon')->get($name);
 				if (file_exists($info->getPath() . '/README.md'))
 				{
 					$addon['manual_url'] = ee('CP/URL', 'addons/manual/' . $name);
