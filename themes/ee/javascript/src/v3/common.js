@@ -279,11 +279,17 @@ $(document).ready(function(){
 			});
 		});
 
+		// Highlight table rows when checked
 		$('table').on('click', 'tr', function() {
 			$(this).children('td:last-child').children('input[type=checkbox]').click();
 		});
 
-		// Highlight table rows when checked
+		// Prevent clicks on checkboxes from bubbling to the table row
+		$('table tr td:last-child input[type=checkbox]').on('click', function(e) {
+			e.stopPropagation();
+		});
+
+		// Changing a checkbox needs to apply the highlight style
 		$('table tr td:last-child input[type=checkbox]').on('change',function() {
 			$(this).parents('tr').toggleClass('selected', $(this).is(':checked'));
 			if ($(this).parents('table').find('input:checked').length == 0) {
@@ -294,7 +300,7 @@ $(document).ready(function(){
 		});
 
 		// Highlight selected row for table lists
-		$('.tbl-list .check-ctrl input').on('change',function() {
+		$('.tbl-list .check-ctrl input').on('click change',function() {
 			$(this).parents('.tbl-row').toggleClass('selected', $(this).is(':checked'));
 
 			// If all checkboxes are checked, check the Select All box
