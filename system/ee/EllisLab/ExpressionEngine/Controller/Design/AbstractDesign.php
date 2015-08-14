@@ -228,6 +228,10 @@ abstract class AbstractDesign extends CP_Controller {
 
 	protected function loadCodeMirrorAssets($selector = 'template_data')
 	{
+		ee()->javascript->set_global(
+			'editor.lint', $this->_get_installed_plugins_and_modules()
+		);
+
 		ee()->cp->add_to_head(ee()->view->head_link('css/codemirror.css'));
 		ee()->cp->add_to_head(ee()->view->head_link('css/codemirror-additions.css'));
 		ee()->cp->add_js_script(array(
@@ -248,6 +252,26 @@ abstract class AbstractDesign extends CP_Controller {
 			)
 		);
 		ee()->javascript->output("$('textarea[name=\"" . $selector . "\"]').toggleCodeMirror();");
+	}
+
+	/**
+	 *  Returns installed module information for CodeMirror linting
+	 */
+	function _get_installed_plugins_and_modules()
+	{
+		$addons = array_keys(ee('Addon')->all());
+
+		$modules = ee('Model')->get('Module')->all()->pluck('module_name');
+		$plugins = ee('Model')->get('Plugin')->all()->pluck('plugin_name');
+
+		$modules = array_map('strtolower', $modules);
+		$plugins = array_map('strtolower', $plugins);
+		$installed = array_merge($modules, $plugins);
+
+		return array(
+			'available' => $installed,
+			'not_installed' => array_values(array_diff($addons, $installed))
+		);
 	}
 
 	/**
