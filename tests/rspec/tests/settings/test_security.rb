@@ -111,6 +111,12 @@ feature 'Security & Privacy Settings' do
   end
 
   it 'should save and load the settings' do
+    @page.cp_session_type.select 'Cookies and session ID'
+    @page.submit
+
+    cp_session
+    @page.load
+
     @page.cp_session_type.select 'Session ID only'
     @page.website_session_type.select 'Session ID only'
     @page.cookie_domain.set '.yourdomain.com'
