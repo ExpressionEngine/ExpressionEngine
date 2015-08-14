@@ -7,7 +7,7 @@
 		<?php $this->embed('_shared/table', $table); ?>
 		<?=$pagination?>
 		<?php if ($table['total_rows'] > 0): ?>
-		<fieldset class="tbl-bulk-act">
+		<fieldset class="tbl-bulk-act hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
 				<option value="disable"><?=lang('disable')?></option>

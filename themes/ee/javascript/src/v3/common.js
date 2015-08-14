@@ -286,6 +286,11 @@ $(document).ready(function(){
 		// Highlight table rows when checked
 		$('table tr td:last-child input[type=checkbox]').on('change',function() {
 			$(this).parents('tr').toggleClass('selected', $(this).is(':checked'));
+			if ($(this).parents('table').find('input:checked').length == 0) {
+				$(this).parents('.tbl-wrap').siblings('.tbl-bulk-act').hide();
+			} else {
+				$(this).parents('.tbl-wrap').siblings('.tbl-bulk-act').show();
+			}
 		});
 
 		// Highlight selected row for table lists
