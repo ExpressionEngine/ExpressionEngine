@@ -304,7 +304,7 @@ $(document).ready(function(){
 			$(this).parents('.tbl-row').toggleClass('selected', $(this).is(':checked'));
 
 			// If all checkboxes are checked, check the Select All box
-			var allSelected = $(this).parents('.tbl-list-wrap .tbl-list .check-ctrl input:unchecked').length();
+			var allSelected = ! $(this).parents('.tbl-list-wrap .tbl-list .check-ctrl input:checked').length();
 			$(this).parents('.tbl-list-wrap').find('.tbl-list-ctrl input').prop('checked', allSelected);
 		});
 
