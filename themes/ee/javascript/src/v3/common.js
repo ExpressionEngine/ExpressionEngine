@@ -279,6 +279,10 @@ $(document).ready(function(){
 			});
 		});
 
+		$('table').on('click', 'tr', function() {
+			$(this).children('td:last-child').children('input[type=checkbox]').click();
+		});
+
 		// Highlight table rows when checked
 		$('table tr td:last-child input[type=checkbox]').on('change',function() {
 			$(this).parents('tr').toggleClass('selected', $(this).is(':checked'));
