@@ -47,29 +47,16 @@ class Simple_commerce_mcp {
 	{
 		$this->base_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce';
 
-		$this->sidebar = array(
-			'items' => array(
-				'href' => ee('CP/URL', 'addons/settings/simple_commerce'),
-				'button' => array(
-					'href' => ee('CP/URL', 'addons/settings/simple_commerce/create-item'),
-					'text' => 'new'
-				)
-			),
-			'purchases' => array(
-				'href' => ee('CP/URL', 'addons/settings/simple_commerce/purchases'),
-				'button' => array(
-					'href' => ee('CP/URL', 'addons/settings/simple_commerce/create-purchase'),
-					'text' => 'new'
-				)
-			),
-			'email_templates' => array(
-				'href' => ee('CP/URL', 'addons/settings/simple_commerce/email-templates'),
-				'button' => array(
-					'href' => ee('CP/URL', 'addons/settings/simple_commerce/create-email-template'),
-					'text' => 'new'
-				)
-			)
-		);
+		$this->sidebar = ee('Sidebar')->make();
+
+		$this->items_nav = $this->sidebar->addHeader(lang('items'), ee('CP/URL', 'addons/settings/simple_commerce'))
+			->withButton(lang('new'), ee('CP/URL', 'addons/settings/simple_commerce/create-item'));
+
+		$this->purchases_nav = $this->sidebar->addHeader(lang('purchases'), ee('CP/URL', 'addons/settings/simple_commerce/purchases'))
+			->withButton(lang('new'), ee('CP/URL', 'addons/settings/simple_commerce/create-purchase'));
+
+		$this->email_templates_nav = $this->sidebar->addHeader(lang('email_templates'), ee('CP/URL', 'addons/settings/simple_commerce/email-templates'))
+			->withButton(lang('new'), ee('CP/URL', 'addons/settings/simple_commerce/create-email-template'));
 
 		ee()->view->header = array(
 			'title' => lang('simple_commerce_manager'),
