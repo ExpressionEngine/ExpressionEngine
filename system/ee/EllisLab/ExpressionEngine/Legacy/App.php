@@ -114,6 +114,11 @@ class App {
 	{
 		if (defined('REQ') && constant('REQ') == 'CP')
 		{
+			if ($routing['class'] == 'wizard')
+			{
+				return TRUE;
+			}
+
 			return (
 				$routing['directory'] == 'cp/'
 			 && in_array($routing['class'], array('css', 'javascript', 'login'))
