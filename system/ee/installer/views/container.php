@@ -50,6 +50,6 @@
 		</section>
 
 		<script src="<?=$javascript_path?>jquery/jquery.js" type="text/javascript"></script>
-		<script src="<?=$javascript_path?>v3/common.js" type="text/javascript"></script>
+		<script src="<?=$javascript_path?>common.js" type="text/javascript"></script>
 	</body>
 </html>
