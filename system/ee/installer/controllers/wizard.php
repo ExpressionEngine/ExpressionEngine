@@ -576,7 +576,7 @@ class Wizard extends CI_Controller {
 				'database' => ee()->input->post('db_name'),
 				'username' => ee()->input->post('db_username'),
 				'password' => ee()->input->post('db_password'),
-				'dbprefix' => 'exp'
+				'dbprefix' => 'exp_'
 			));
 		}
 
