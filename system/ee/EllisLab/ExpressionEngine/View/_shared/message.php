@@ -2,5 +2,3 @@
 	<div class="message js_hide <?=$cp_message_type?>"><?=$cp_message?></div>
 <?php endforeach;
 
-/* End of file message.php */
-/* Location: ./themes/cp/default/_shared/message.php */

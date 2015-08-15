@@ -8,7 +8,7 @@
 		<meta http-equiv='refresh' content='<?=$meta_refresh['rate']?>; url=<?=$meta_refresh['url']?>'>
 		<?php endif;?>
 
-		<?=ee()->view->head_link('css/v3/common.min.css'); ?>
+		<?=ee()->view->head_link('css/common.min.css'); ?>
 		<?=ee()->view->head_link('css/jquery-ui-1.8.16.custom.css'); ?>
 		<?php if (ee()->extensions->active_hook('cp_css_end') === TRUE):?>
 		<link rel="stylesheet" href="<?=ee('CP/URL', 'css/cp_global_ext', array('theme' => ee()->cp->cp_theme))?>" type="text/css" />
@@ -126,5 +126,4 @@
 		<section class="wrap">
 
 <?php
-/* End of file header.php */
-/* Location: ./themes/cp/default/_shared/header.php */
+

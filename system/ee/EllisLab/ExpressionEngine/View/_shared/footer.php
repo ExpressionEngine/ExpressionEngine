@@ -82,7 +82,7 @@
 		<div class="overlay"></div>
 
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
-		<?=ee()->view->script_tag('v3/common.js')?>
+		<?=ee()->view->script_tag('common.js')?>
 		<?php
 
 		echo ee()->javascript->get_global();
