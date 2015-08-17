@@ -251,6 +251,7 @@ class Provider extends InjectionBindingDecorator {
 				$closure = function () use ($closure)
 				{
 					$args = func_get_args();
+					array_shift($args);
 					$class = $this->getNamespace() . '\\' . $closure;
 					$object = new \ReflectionClass($class);
 					return $object->newInstanceArgs($args);
