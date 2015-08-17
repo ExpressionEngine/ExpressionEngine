@@ -56,6 +56,7 @@ class Spam_upd {
 		$fields = array(
 			'kernel_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
 			'name'		=> array('type' => 'varchar' , 'constraint' => '32'),
+			'count'			=> array('type' => 'int' , 'constraint' => '10')
 		);
 
 		ee()->dbforge->add_field($fields);

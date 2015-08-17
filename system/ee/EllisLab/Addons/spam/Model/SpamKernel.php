@@ -29,5 +29,6 @@ class SpamKernel extends Model {
 
 	protected $kernel_id;
 	protected $name;
+	protected $count;
 
 }
