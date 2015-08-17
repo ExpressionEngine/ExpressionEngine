@@ -17,6 +17,10 @@ class SpamParameter extends Model {
 		)
 	);
 
+	protected static $_typed_columns = array(
+		'class' => 'boolString'
+	);
+
 	protected $parameter_id;
 	protected $kernel_id;
 	protected $term;

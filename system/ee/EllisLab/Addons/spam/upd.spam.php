@@ -66,7 +66,7 @@ class Spam_upd {
 		$fields = array(
 			'vocabulary_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
 			'kernel_id'		=> array('type' => 'int', 'constraint' => '10'),
-			'term'			=> array('type' => 'varchar' , 'constraint' => '32'),
+			'term'			=> array('type' => 'varchar' , 'constraint' => '128'),
 			'count'			=> array('type' => 'int' , 'constraint' => '10')
 		);
 
@@ -78,9 +78,9 @@ class Spam_upd {
 			'parameter_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
 			'kernel_id'		=> array('type' => 'int', 'constraint' => '10'),
 			'term'			=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE),
-			'class'			=> array('type' => 'tinyint' , 'constraint' => '1'),
-			'mean'			=> array('type' => 'decimal' , 'constraint' => '16,12'),
-			'variance'		=> array('type' => 'decimal' , 'constraint' => '16,12')
+			'class'			=> array('type' => 'char' , 'constraint' => '1'),
+			'mean'			=> array('type' => 'double'),
+			'variance'		=> array('type' => 'double')
 		);
 
 		ee()->dbforge->add_field($fields);
@@ -90,9 +90,10 @@ class Spam_upd {
 		$fields = array(
 			'training_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
 			'kernel_id'		=> array('type' => 'int', 'constraint' => '10'),
+			'author'		=> array('type' => 'int', 'constraint' => '10'),
 			'source'		=> array('type' => 'text'),
 			'type'			=> array('type' => 'varchar', 'constraint' => '32'),
-			'class'			=> array('type' => 'tinyint', 'constraint' => '1')
+			'class'			=> array('type' => 'char' , 'constraint' => '1')
 		);
 
 		ee()->dbforge->add_field($fields);

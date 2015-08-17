@@ -16,7 +16,7 @@ class SpamTrap extends Model {
 	protected static $_relationships = array(
 		'Author' => array(
 			'type'     => 'BelongsTo',
-			'model'    => 'Member',
+			'model'    => 'ee:Member',
 			'from_key' => 'author'
 		),
 	);
