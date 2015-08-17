@@ -248,6 +248,26 @@ class FieldFacade {
 	{
 		$this->ensurePopulatedDefaults();
 
+        // not all custom field tables will specify all of these things
+         $defaults = array(
+             'field_instructions' => '',
+             'field_text_direction' => 'rtl',
+             'field_settings' => array()
+         );
+
+         $info = $this->metadata;
+         $info = array_merge($defaults, $info);
+
+         if (is_null($this->format) && isset($info['field_fmt']))
+         {
+             $this->setFormat($info['field_fmt']);
+         }
+
+         if (is_null($this->timezone) && isset($info['field_dt']))
+         {
+             $this->setTimezone($info['field_dt']);
+         }
+
 		$data = $this->setupField();
 
 		ee()->api_channel_fields->setup_handler($data['field_id']);
