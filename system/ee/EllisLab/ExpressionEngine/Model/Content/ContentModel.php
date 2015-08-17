@@ -107,6 +107,8 @@ abstract class ContentModel extends VariableColumnModel {
 	 */
 	public function getCustomField($name)
 	{
+		$this->usesCustomFields();
+
 		return $this->_field_facades[$name];
 	}
 
@@ -115,6 +117,8 @@ abstract class ContentModel extends VariableColumnModel {
 	 */
 	public function getCustomFields()
 	{
+		$this->usesCustomFields();
+
 		return $this->_field_facades ?: array();
 	}
 
@@ -123,6 +127,8 @@ abstract class ContentModel extends VariableColumnModel {
 	*/
 	public function getCustomFieldNames()
 	{
+		$this->usesCustomFields();
+
 		return array_keys($this->_field_facades);
 	}
 
