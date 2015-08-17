@@ -14,8 +14,6 @@
 	<div class="details <?php echo $class ?>-info">
 		<ul>
 			<li><b>Severity</b>: <?php echo $error_constant ?></li>
-			<li><b>GET</b>: <?php echo var_export($_GET) ?></li>
-			<li><b>POST</b>: <?php echo var_export($_POST) ?></li>
 		</ul>
 	</div>
 </div>
