@@ -172,7 +172,7 @@ case 'image': ?>
 
 case 'slider': ?>
 	<input name='<?=$field_name?>' min="0" max="100" value="<?=$value?>" rel="range-value" type="range">
-	<div class="slider-output"><output class="range-value">68</output>%</div>
+		<div class="slider-output"><output class="range-value"><?=$value?></output>%</div>
 <?php break;
 
 case 'action_button': ?>
