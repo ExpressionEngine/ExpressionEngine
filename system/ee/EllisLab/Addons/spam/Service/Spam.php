@@ -34,7 +34,6 @@ class Spam {
 	public function __construct()
 	{
 		$this->classifier = $this->loadDefaultClassifier();
-		$this->memberClassifier = $this->loadMemberClassifier();
 	}
 
 	// --------------------------------------------------------------------
