@@ -64,8 +64,9 @@ class Cache extends Utilities {
 			)
 		);
 
+
 		ee()->load->library('form_validation');
-		ee()->form_validation->set_rules('cache_type[]', 'lang:caches_to_clear', 'required');
+		ee()->form_validation->set_rules('cache_type', 'lang:caches_to_clear', 'required|enum[all,page,tag,db]');
 
 		if (AJAX_REQUEST)
 		{
