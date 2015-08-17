@@ -18,11 +18,15 @@ use EllisLab\ExpressionEngine\Model\Content\Display\LayoutInterface;
 abstract class ContentModel extends VariableColumnModel {
 
 	protected static $_events = array(
+		'afterLoad',
 		'afterSave'
 	);
 
 	protected $_field_facades;
 	protected $_field_was_saved;
+
+	protected $_defer_custom_field_fill = TRUE;
+	protected $_deferred_custom_field_data = array();
 
 	/**
 	 * Define a way to get the parent structure. For example,
@@ -39,6 +43,28 @@ abstract class ContentModel extends VariableColumnModel {
 	public function getCustomFieldPrefix()
 	{
 		return 'field_id_';
+	}
+
+	/**
+	 * Defer custom field loading until after relationships are hooked up
+	 */
+	public function onAfterLoad()
+	{
+		$this->_defer_custom_field_fill = FALSE;
+		$this->fill($this->_deferred_custom_field_data);
+		$this->_deferred_custom_field_data = array();
+	}
+
+	/**
+	 * Make sure we update our custom fields when save is triggered
+	 */
+	public function onAfterSave()
+	{
+		foreach ($this->_field_was_saved as $field)
+		{
+			$field->setContentId($this->getId());
+			$field->postSave();
+		}
 	}
 
 	/**
@@ -100,15 +126,6 @@ abstract class ContentModel extends VariableColumnModel {
 		return array_keys($this->_field_facades);
 	}
 
-	public function onAfterSave()
-	{
-		foreach ($this->_field_was_saved as $field)
-		{
-			$field->setContentId($this->getId());
-			$field->postSave();
-		}
-	}
-
 	/**
 	 * Make sure that calls to fill() also apply to custom fields
 	 */
@@ -116,7 +133,14 @@ abstract class ContentModel extends VariableColumnModel {
 	{
 		parent::fill($data);
 
-		$this->fillCustomFields($data);
+		if ($this->_defer_custom_field_fill)
+		{
+			$this->_deferred_custom_field_data = $data;
+		}
+		else
+		{
+			$this->fillCustomFields($data);
+		}
 
 		return $this;
 	}
@@ -322,7 +346,6 @@ abstract class ContentModel extends VariableColumnModel {
 	protected function initializeCustomFields()
 	{
 		$this->_field_facades = array();
-
 		$default_fields = $this->getDefaultFields();
 
 		foreach ($default_fields as $id => $field)
