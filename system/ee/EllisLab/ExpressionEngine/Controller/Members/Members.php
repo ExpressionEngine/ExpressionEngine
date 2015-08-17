@@ -59,8 +59,6 @@ class Members extends CP_Controller {
 		ee()->load->model('member_model');
 		ee()->load->library('form_validation');
 
-		$this->generateSidebar();
-
 		$this->base_url = ee('CP/URL', 'members');
 		$this->set_view_header($this->base_url);
 	}
@@ -69,17 +67,39 @@ class Members extends CP_Controller {
 	{
 		$sidebar = ee('Sidebar')->make();
 
-		$list = $sidebar->addHeader(lang('all_members'), ee('CP/URL', 'members'))
-			->withButton(lang('new'), ee('CP/URL', 'members/create'))
-			->addBasicList();
+		$header = $sidebar->addHeader(lang('all_members'), ee('CP/URL', 'members')->compile())
+			->withButton(lang('new'), ee('CP/URL', 'members/create'));
+		$list = $header->addBasicList();
 
-		$list->addItem(lang('pending_activation'), ee('CP/URL', 'members', array('group' => 4)));
+		if ($active == 'all_members')
+		{
+			$header->isActive();
+		}
+
+		$pending = $list->addItem(lang('pending_activation'), ee('CP/URL', 'members', array('group' => 4))->compile());
+
+		if ($active == 'pending')
+		{
+			$pending->isActive();
+		}
+
 		$list->addItem(lang('manage_bans'), ee('CP/URL', 'members/bans'));
 
-		$list = $sidebar->addHeader(lang('member_groups'), ee('CP/URL', 'members/groups'))
-			->withButton(lang('new'), ee('CP/URL', 'members/groups/create'))
-			->addBasicList()
-				->addItem(lang('custom_member_fields'), ee('CP/URL', 'members/fields'));
+		$header = $sidebar->addHeader(lang('member_groups'), ee('CP/URL', 'members/groups'))
+			->withButton(lang('new'), ee('CP/URL', 'members/groups/create'));
+
+		$item = $header->addBasicList()
+			->addItem(lang('custom_member_fields'), ee('CP/URL', 'members/fields'));
+
+		if ($active == 'fields')
+		{
+			$item->isActive();
+		}
+
+		if ($active == 'groups')
+		{
+			$header->isActive();
+		}
 	}
 
 	/**
@@ -188,6 +208,14 @@ class Members extends CP_Controller {
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/v3/confirm_remove'),
 		));
+
+		switch ($this->group)
+		{
+			case 2: $active = 'ban'; break;
+			case 4: $active = 'pending'; break;
+			default: $active = 'all_members'; break;
+		}
+		$this->generateSidebar($active);
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;

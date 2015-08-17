@@ -47,7 +47,7 @@ $route['404_override'] = "ee/index";
 if (defined('REQ') && REQ == 'CP')
 {
 	$route['default_controller'] = "cp/homepage/index";
-	$route['404_override'] = "cp/homepage/index";
+	$route['404_override'] = "cp/error/file_not_found";
 }
 
 /* End of file routes.php */

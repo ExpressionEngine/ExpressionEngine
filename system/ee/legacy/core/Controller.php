@@ -56,7 +56,7 @@ class Controller {
 	 */
 	public static function _setFacade($facade)
 	{
-		if (isset(self::$facade))
+		if (isset(self::$facade) && get_called_class() != 'EllisLab\ExpressionEngine\Controller\Error\FileNotFound')
 		{
 			throw new \Exception('Cannot change the facade after boot');
 		}

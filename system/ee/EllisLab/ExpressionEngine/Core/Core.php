@@ -4,6 +4,7 @@ namespace EllisLab\ExpressionEngine\Core;
 
 use EllisLab\ExpressionEngine\Legacy\App as LegacyApp;
 use EllisLab\ExpressionEngine\Service\Dependency\InjectionContainer;
+use EllisLab\ExpressionEngine\Error\FileNotFound;
 
 abstract class Core {
 
@@ -104,12 +105,11 @@ abstract class Core {
 
 		$modern_routing = $this->loadNamespacedController($routing);
 
-		// TODO add seth's changes for the "new" way
 		if ($modern_routing)
 		{
 			$routing = $modern_routing;
 		}
-		else
+		elseif ($this->legacy->isLegacyRouted($routing))
 		{
 			$this->legacy->loadController($routing);
 		}
@@ -190,10 +190,20 @@ abstract class Core {
 
 			$result = call_user_func_array(array($controller, $method), $params);
 		}
+		catch (FileNotFound $ex)
+		{
+			$error_routing = $this->getErrorRouting();
+
+			if ($routing['class'] == $error_routing['class'])
+			{
+				die('Fatal: Error handler could not be found.');
+			}
+
+			return $this->runController($error_routing);
+		}
 		catch (\Exception $ex)
 		{
-			echo $this->formatException($ex);
-			die('Fatal Error.');
+			show_exception($ex);
 		}
 
 		if (isset($result))
@@ -202,7 +212,28 @@ abstract class Core {
 		}
 
 		$this->legacy->markBenchmark('controller_execution_time_( '.$class.' / '.$method.' )_end');
+	}
 
+	/**
+	 * Get the 404 controller
+	 */
+	protected function getErrorRouting()
+	{
+		$qs = '';
+		$get = $_GET;
+
+		unset($get['D'], $get['C'], $get['M'], $get['S']);
+
+		if ( ! empty($get))
+		{
+			$qs = '&'.http_build_query($get);
+		}
+
+		return array(
+			'class' => 'EllisLab\ExpressionEngine\Controller\Error\FileNotFound',
+			'method' => 'index',
+			'segments' => array(ee()->uri->uri_string().$qs)
+		);
 	}
 
 	/**
@@ -286,21 +317,13 @@ abstract class Core {
 	 */
 	protected function validateRequest($routing)
 	{
-		return $this->legacy->validateRequest($routing);
-	}
+		$routing = $this->legacy->validateRequest($routing);
 
-	/**
-	 * Format any exceptions we catch and display a stack trace
-	 */
-	protected function formatException(\Exception $ex)
-	{
-		return '<div>
-			<h1>Exception Caught</h1>
-			<p><strong>' . $ex->getMessage() . '</strong></p>
-			<p><em>'  . $ex->getFile() . ':' . $ex->getLine() . '</em></p>
-			<p>Stack Trace:
-				<pre>' . str_replace('#', "\n#", str_replace(':', ":\n\t\t", $ex->getTraceAsString())) . '</pre>
-			</p>
-		</div>';
+		if ($routing === FALSE)
+		{
+			return $this->getErrorRouting();
+		}
+
+		return $routing;
 	}
 }

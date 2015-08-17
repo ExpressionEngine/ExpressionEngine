@@ -56,8 +56,6 @@ abstract class AbstractChannels extends CP_Controller {
 		ee()->lang->loadfile('channel');
 		ee()->load->library('form_validation');
 
-		$this->generateSidebar();
-
 		// This header is section-wide
 		ee()->view->header = array(
 			'title' => lang('channel_manager'),
@@ -75,17 +73,37 @@ abstract class AbstractChannels extends CP_Controller {
 	{
 		$sidebar = ee('Sidebar')->make();
 
-		$sidebar->addHeader(lang('channels'), ee('CP/URL', 'channels'))
+		$header = $sidebar->addHeader(lang('channels'), ee('CP/URL', 'channels'))
 			->withButton(lang('new'), ee('CP/URL', 'channels/create'));
 
-		$sidebar->addHeader(lang('field_groups'), ee('CP/URL', 'channels/fields/groups'))
+		if ($active == 'channel')
+		{
+			$header->isActive();
+		}
+
+		$header = $sidebar->addHeader(lang('field_groups'), ee('CP/URL', 'channels/fields/groups'))
 			->withButton(lang('new'), ee('CP/URL', 'channels/fields/groups/create'));
 
-		$sidebar->addHeader(lang('category_groups'), ee('CP/URL', 'channels/cat'))
+		if ($active == 'field')
+		{
+			$header->isActive();
+		}
+
+		$header = $sidebar->addHeader(lang('category_groups'), ee('CP/URL', 'channels/cat'))
 			->withButton(lang('new'), ee('CP/URL', 'channels/cat/create'));
 
-		$sidebar->addHeader(lang('status_groups'), ee('CP/URL', 'channels/status'))
+		if ($active == 'category')
+		{
+			$header->isActive();
+		}
+
+		$header = $sidebar->addHeader(lang('status_groups'), ee('CP/URL', 'channels/status'))
 			->withButton(lang('new'), ee('CP/URL', 'channels/status/create'));
+
+		if ($active == 'status')
+		{
+			$header->isActive();
+		}
 	}
 
 	/**
@@ -305,6 +323,11 @@ abstract class AbstractChannels extends CP_Controller {
 					'edit' => array(
 						'href' => ee('CP/URL', 'channels/fields/groups/edit/' . $group->group_id),
 						'title' => lang('edit')
+					),
+					'txt-only' => array(
+						'href' => ee('CP/URL', 'channels/fields/' . $group->group_id),
+						'title' => lang('custom_fields'),
+						'content' => lang('fields')
 					)
 				))
 			);

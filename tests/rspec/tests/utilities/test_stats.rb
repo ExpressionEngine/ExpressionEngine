@@ -10,8 +10,6 @@ feature 'Statistics' do
 		@page.should be_displayed
 		@page.heading.text.should eq 'Manage Statistics'
 		@page.should have_content_table
-		@page.should have_bulk_action
-		@page.should have_action_submit_button
 	end
 
 	it "shows the Manage Statistics page" do
@@ -58,6 +56,7 @@ feature 'Statistics' do
 
 	it "can sync multiple sources" do
 		@page.find('input[type="checkbox"][title="select all"]').set(true)
+		@page.wait_until_bulk_action_visible
 		@page.bulk_action.select "Sync"
 		@page.action_submit_button.click
 

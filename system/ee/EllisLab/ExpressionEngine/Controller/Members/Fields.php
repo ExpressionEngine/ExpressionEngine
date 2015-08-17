@@ -46,6 +46,7 @@ class Fields extends Members\Members {
 
 		ee()->lang->loadfile('channel');
 		$this->base_url = ee('CP/URL', 'members/fields');
+		$this->generateSidebar('fields');
 	}
 
 	/**

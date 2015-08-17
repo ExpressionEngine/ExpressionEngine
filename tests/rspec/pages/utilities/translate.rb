@@ -12,7 +12,7 @@ class Translate < ControlPanelPage
 	element :no_results, 'div.box form table tr.no-results'
 	elements :rows, 'div.box form table tr'
 
-	element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]'
+	element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]', visible: false
 	element :action_submit_button, 'form fieldset.tbl-bulk-act input.submit'
 
 	def load

@@ -13,7 +13,7 @@
 
 			<?php $this->embed('ee:_shared/table', $table); ?>
 			<?=$pagination?>
-			<fieldset class="tbl-bulk-act">
+			<fieldset class="tbl-bulk-act hidden">
 				<select name="bulk_action">
 					<option value="">-- <?=lang('with_selected')?> --</option>
 					<option value="enable"><?=lang('enable')?></option>

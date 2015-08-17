@@ -345,7 +345,8 @@ class EE_Router {
 		}
 
 		// Nothing else to do at this point but show a 404
-		show_404($segments[0]);
+		show_error("The requested URL could not be found.", 404);
+
 	}
 
 	// --------------------------------------------------------------------

@@ -23,8 +23,6 @@ feature 'Translate Tool' do
 		@list_page.heading.text.should eq 'English Language Files'
 		@list_page.should have_phrase_search
 		@list_page.should have_search_submit_button
-		@list_page.should have_bulk_action
-		@list_page.should have_action_submit_button
 	end
 
 	before(:each, :edit => true) do
@@ -50,13 +48,13 @@ feature 'Translate Tool' do
 
 	it 'displays 2 languages in the sidebar', :edit => false do
 		@list_page.should have(2).languages
-		@list_page.languages.map {|lang| lang.text}.should == ["English (default)", 'Rspeclingo']
+		@list_page.languages.map {|lang| lang.text}.should == ["English (Default)", 'Rspeclingo']
 	end
 
 	it 'displays the default language first in the sidebar', :edit => false do
 		ee_config(item: 'deft_lang', value: 'rspeclingo')
 		@list_page.load
-		@list_page.languages.map {|lang| lang.text}.should == ["Rspeclingo (default)", 'English']
+		@list_page.languages.map {|lang| lang.text}.should == ["Rspeclingo (Default)", 'English']
 		ee_config(item: 'deft_lang', value: 'english')
 	end
 
@@ -136,6 +134,7 @@ feature 'Translate Tool' do
 	# end
 
 	it 'shows an error if nothing is selected when exporting', :edit => false do
+		@list_page.wait_until_bulk_action_visible
 		@list_page.bulk_action.select "Export (Download)"
 		@list_page.action_submit_button.click
 		no_php_js_errors
@@ -150,6 +149,7 @@ feature 'Translate Tool' do
 		no_php_js_errors
 
 		@list_page.find('input[type="checkbox"][title="select all"]').set(true)
+		@list_page.wait_until_bulk_action_visible
 		@list_page.bulk_action.select "Export (Download)"
 		@list_page.action_submit_button.click
 		no_php_js_errors

@@ -19,7 +19,7 @@
 	<?php if ( ! empty($pagination)) $this->embed('_shared/pagination', $pagination); ?>
 
 	<?php if ( ! empty($table['data'])): ?>
-	<fieldset class="tbl-bulk-act">
+	<fieldset class="tbl-bulk-act hidden">
 		<select name="bulk_action">
 			<option value="">-- <?=lang('with_selected')?> --</option>
 			<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>

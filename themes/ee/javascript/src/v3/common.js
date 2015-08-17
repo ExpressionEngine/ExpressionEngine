@@ -224,9 +224,9 @@ $(document).ready(function(){
 			var heightIs = $(document).height();
 
 			// fade in the overlay
-			$('.overlay').fadeIn('slow').css('height',heightIs);
+			$('.overlay').fadeIn('fast').css('height',heightIs);
 			// fade in modal
-			$(this).fadeIn('slow');
+			$(this).fadeIn('fast');
 
 			// scroll up, if needed
 			$('#top').animate({ scrollTop: 0 }, 100);
@@ -234,9 +234,9 @@ $(document).ready(function(){
 
 		$('body').on('modal:close', '.modal-wrap', function(e) {
 			// fade out the overlay
-			$('.overlay').fadeOut('slow');
+			$('.overlay').fadeOut('fast');
 			// fade out the modal
-			$('.modal-wrap').fadeOut('slow');
+			$('.modal-wrap').fadeOut('fast');
 		});
 
 		// listen for clicks to elements with a class of m-link
@@ -280,24 +280,31 @@ $(document).ready(function(){
 		});
 
 		// Highlight table rows when checked
+		$('table').on('click', 'tr', function() {
+			$(this).children('td:last-child').children('input[type=checkbox]').click();
+		});
+
+		// Prevent clicks on checkboxes from bubbling to the table row
+		$('table tr td:last-child input[type=checkbox]').on('click', function(e) {
+			e.stopPropagation();
+		});
+
+		// Changing a checkbox needs to apply the highlight style
 		$('table tr td:last-child input[type=checkbox]').on('change',function() {
 			$(this).parents('tr').toggleClass('selected', $(this).is(':checked'));
+			if ($(this).parents('table').find('input:checked').length == 0) {
+				$(this).parents('.tbl-wrap').siblings('.tbl-bulk-act').hide();
+			} else {
+				$(this).parents('.tbl-wrap').siblings('.tbl-bulk-act').show();
+			}
 		});
 
 		// Highlight selected row for table lists
-		$('.tbl-list .check-ctrl input').on('change',function() {
+		$('.tbl-list .check-ctrl input').on('click change',function() {
 			$(this).parents('.tbl-row').toggleClass('selected', $(this).is(':checked'));
 
 			// If all checkboxes are checked, check the Select All box
-			var allSelected = true;
-			$(this).parents('.tbl-list-wrap')
-				.find('.tbl-list .check-ctrl input').each(function() {
-					if ( ! $(this).is(':checked')) {
-						allSelected = false;
-						return false;
-					}
-				});
-
+			var allSelected = ! $(this).parents('.tbl-list-wrap .tbl-list .check-ctrl input:checked').length();
 			$(this).parents('.tbl-list-wrap').find('.tbl-list-ctrl input').prop('checked', allSelected);
 		});
 

@@ -181,7 +181,7 @@ $config['function_trigger'] = 'M';
 | Error Logging Threshold
 |--------------------------------------------------------------------------
 |
-| If you have enabled error logging, you can set an error threshold to 
+| If you have enabled error logging, you can set an error threshold to
 | determine what gets logged. Threshold options are:
 |
 |	0 = Disables logging, Error logging TURNED OFF

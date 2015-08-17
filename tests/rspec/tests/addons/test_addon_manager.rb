@@ -18,9 +18,6 @@ feature 'Add-On Manager' do
 		@page.should have_first_party_status_filter
 
 		@page.should have_first_party_addons
-
-		@page.should have_first_party_bulk_action
-		@page.should have_first_party_action_submit_button
 	end
 
 	describe "First-Party Table Only" do
@@ -86,7 +83,7 @@ feature 'Add-On Manager' do
 			@page.first_party_status_filter.text.should eq "status (installed)"
 			@page.should_not have_css 'tr.not-installed'
 			@page.should_not have_first_party_pagination
-			@page.should have(17).first_party_addons
+			@page.should have(5).first_party_addons
 
 			# By uninstalled
 			@page.first_party_status_filter.click
@@ -96,8 +93,8 @@ feature 'Add-On Manager' do
 
 			@page.first_party_status_filter.text.should eq "status (uninstalled)"
 			@page.should have_css 'tr.not-installed'
-			@page.all('tr.not-installed').count().should == 21
-			@page.should have(21).first_party_addons
+			@page.all('tr.not-installed').count().should == 19
+			@page.should have(19).first_party_addons
 
 			# By 'needs updates'
 			@page.first_party_status_filter.click
@@ -123,7 +120,7 @@ feature 'Add-On Manager' do
 			@page.first_party_status_filter.text.should eq "status (installed)"
 			@page.should_not have_css 'tr.not-installed'
 			@page.should_not have_first_party_pagination
-			@page.should have(17).first_party_addons
+			@page.should have(5).first_party_addons
 
 			versions = @page.first_party_versions.map {|version| version.text}
 
@@ -160,7 +157,7 @@ feature 'Add-On Manager' do
 
 			@page.first_party_version_header[:class].should eq 'highlight'
 			sorted_versions = @page.first_party_versions.map {|version| version.text}
-			sorted_versions[-1].should == '1.0'
+			sorted_versions[-1].should == '1.0.1'
 		end
 
 		it 'retains filters on searching' do
@@ -288,6 +285,7 @@ feature 'Add-On Manager' do
 
 			# Header at 0, first "real" row is 1
 			@page.first_party_checkbox_header.find('input[type="checkbox"]').set true
+			@page.wait_until_first_party_bulk_action_visible
 			@page.first_party_bulk_action.select "Install"
 			@page.first_party_action_submit_button.click
 			no_php_js_errors
@@ -302,7 +300,7 @@ feature 'Add-On Manager' do
 			@page.should_not have_first_party_bulk_action
 		end
 
-		it 'displays an itemzied modal when attempting to remove 5 or less add-on' do
+		it 'displays an itemized modal when attempting to remove 5 or less add-on' do
 			# First by installed
 			@page.first_party_status_filter.click
 			@page.wait_until_first_party_status_filter_menu_visible
@@ -313,6 +311,7 @@ feature 'Add-On Manager' do
 
 			# Header at 0, first "real" row is 1
 			@page.first_party_addons[0].find('input[type="checkbox"]').set true
+			@page.wait_until_first_party_bulk_action_visible
 			@page.first_party_bulk_action.select "Remove"
 			@page.first_party_action_submit_button.click
 
@@ -323,22 +322,23 @@ feature 'Add-On Manager' do
 			@page.modal.all('.checklist li').length.should eq 1
 		end
 
-		it 'displays a bulk confirmation modal when attempting to remove more than 5 add-ons' do
-			# First by installed
-			@page.first_party_status_filter.click
-			@page.wait_until_first_party_status_filter_menu_visible
-			@page.first_party_status_filter_menu.click_link "installed"
-			no_php_js_errors
-
-			@page.first_party_checkbox_header.find('input[type="checkbox"]').set true
-			@page.first_party_bulk_action.select "Remove"
-			@page.first_party_action_submit_button.click
-
-			@page.wait_until_modal_visible
-			@page.modal_title.text.should eq "Confirm Removal"
-			@page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
-			@page.modal.text.should include 'Add-On: 17 Add-Ons'
-		end
+		it 'displays a bulk confirmation modal when attempting to remove more than 5 add-ons' #do
+		# 	# First by installed
+		# 	@page.first_party_status_filter.click
+		# 	@page.wait_until_first_party_status_filter_menu_visible
+		# 	@page.first_party_status_filter_menu.click_link "installed"
+		# 	no_php_js_errors
+		#
+		# 	@page.first_party_checkbox_header.find('input[type="checkbox"]').set true
+		#   @page.wait_until_first_party_bulk_action_visible
+		# 	@page.first_party_bulk_action.select "Remove"
+		# 	@page.first_party_action_submit_button.click
+		#
+		# 	@page.wait_until_modal_visible
+		# 	@page.modal_title.text.should eq "Confirm Removal"
+		# 	@page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
+		# 	@page.modal.text.should include 'Add-On: 17 Add-Ons'
+		# end
 
 		it 'can remove add-ons' do
 			# First by installed
@@ -349,6 +349,7 @@ feature 'Add-On Manager' do
 
 			addons = @page.first_party_addon_names.map {|addon| addon.text}
 			@page.first_party_checkbox_header.find('input[type="checkbox"]').set true
+			@page.wait_until_first_party_bulk_action_visible
 			@page.first_party_bulk_action.select "Remove"
 			@page.first_party_action_submit_button.click
 			@page.wait_until_modal_visible
@@ -405,13 +406,11 @@ feature 'Add-On Manager' do
 			@page.should have_third_party_developer_filter
 
 			@page.should have_third_party_addons
-
-			@page.should have_third_party_bulk_action
-			@page.should have_third_party_action_submit_button
 		end
 
 		before(:each, :install => true) do
 			@page.third_party_checkbox_header.find('input[type="checkbox"]').set true
+			@page.wait_until_third_party_bulk_action_visible
 			@page.third_party_bulk_action.select "Install"
 			@page.third_party_action_submit_button.click
 			no_php_js_errors
@@ -683,6 +682,7 @@ feature 'Add-On Manager' do
 				addons = @page.third_party_addon_names.map {|addon| addon.text}
 
 				@page.third_party_checkbox_header.find('input[type="checkbox"]').set true
+				@page.wait_until_third_party_bulk_action_visible
 				@page.third_party_bulk_action.select "Install"
 				@page.third_party_action_submit_button.click
 				no_php_js_errors
@@ -694,7 +694,7 @@ feature 'Add-On Manager' do
 				@page.third_party_alert.text.should include addons.join(' ')
 			end
 
-			it 'displays an itemzied modal when attempting to remove 5 or less add-on', :install => true do
+			it 'displays an itemized modal when attempting to remove 5 or less add-on', :install => true do
 				# First by installed
 				@page.third_party_status_filter.click
 				@page.wait_until_third_party_status_filter_menu_visible
@@ -705,6 +705,7 @@ feature 'Add-On Manager' do
 
 				# Header at 0, first "real" row is 1
 				@page.third_party_addons[0].find('input[type="checkbox"]').set true
+				@page.wait_until_third_party_bulk_action_visible
 				@page.third_party_bulk_action.select "Remove"
 				@page.third_party_action_submit_button.click
 
@@ -723,6 +724,7 @@ feature 'Add-On Manager' do
 				no_php_js_errors
 
 				@page.third_party_checkbox_header.find('input[type="checkbox"]').set true
+				@page.wait_until_third_party_bulk_action_visible
 				@page.third_party_bulk_action.select "Remove"
 				@page.third_party_action_submit_button.click
 
@@ -741,6 +743,7 @@ feature 'Add-On Manager' do
 
 				addons = @page.third_party_addon_names.map {|addon| addon.text}
 				@page.third_party_checkbox_header.find('input[type="checkbox"]').set true
+				@page.wait_until_third_party_bulk_action_visible
 				@page.third_party_bulk_action.select "Remove"
 				@page.third_party_action_submit_button.click
 				@page.wait_until_modal_visible

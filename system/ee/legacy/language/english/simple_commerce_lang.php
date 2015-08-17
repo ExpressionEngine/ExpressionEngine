@@ -96,9 +96,33 @@ $lang = array(
 
 'item_not_updated_desc' => 'We were unable to update this item, please review and fix errors below.',
 
+'email_template_created' => 'Email Template Created',
+
+'email_template_created_desc' => 'The email template has been created.',
+
+'email_template_not_created' => 'Cannot Create Email Template',
+
+'email_template_not_created_desc' => 'We were unable to create this email template, please review and fix errors below.',
+
+'email_template_updated' => 'Email Template Updated',
+
+'email_template_updated_desc' => 'The email template <b>%s</b> has been updated.',
+
+'email_template_not_updated' => 'Cannot Update Email Template',
+
+'email_template_not_updated_desc' => 'We were unable to update this email template, please review and fix errors below.',
+
 'email_templates_removed' => 'Email templates removed',
 
 'email_templates_removed_desc' => '%d email templates were removed.',
+
+'create_email_template' => 'Create Email Template',
+
+'edit_email_template' => 'Edit Email Template',
+
+'email_template' => 'Email Template',
+
+'email_template_name_desc' => 'Name of this e-mail template.',
 
 'simple_commerce_home' => 'Control Panel',
 
@@ -305,9 +329,13 @@ and provide them with the URL below.',
 
 'email_name' => 'Email Template Name',
 
-'email_subject' => 'Email Subject',
+'email_subject' => 'Email subject',
 
-'email_body' => 'Email Body',
+'email_body' => 'Email body',
+
+'paypal_variables' => 'PayPal variables',
+
+'paypal_variables_desc' => 'When a purchase is confirmed, an e-mail will be sent for that item. These variables are sent back from PayPal.',
 
 'add_email_instructions' => 'When the purchase of an item is confirmed, an email can be sent out to one or many email addresses for that item.  These emails can contain certain variables sent back from PayPal, which are as follows: ',
 

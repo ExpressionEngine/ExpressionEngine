@@ -108,6 +108,28 @@ class App {
 	}
 
 	/**
+	 * Returns a list of valid
+	 */
+	public function isLegacyRouted($routing)
+	{
+		if (defined('REQ') && constant('REQ') == 'CP')
+		{
+			if ($routing['class'] == 'wizard')
+			{
+				return TRUE;
+			}
+
+			return (
+				$routing['directory'] == 'cp/'
+			 && in_array($routing['class'], array('css', 'javascript', 'login'))
+			);
+		}
+
+		return TRUE;
+	}
+
+
+	/**
 	 * Set a benchmark point
 	 */
 	public function markBenchmark($str)
@@ -149,7 +171,7 @@ class App {
 			}
 		}
 
-		show_404("{$class}/{$method}");
+		return FALSE;
 	}
 
 	/**

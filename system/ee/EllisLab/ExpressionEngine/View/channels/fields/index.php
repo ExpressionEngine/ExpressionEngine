@@ -7,10 +7,9 @@
 		</fieldset>
 		<h1><?=$cp_page_title?></h1>
 		<?=ee('Alert')->getAllInlines()?>
-		<?=$filters?>
 		<?php $this->embed('_shared/table', $table); ?>
 		<?=$pagination?>
-		<fieldset class="tbl-bulk-act">
+		<fieldset class="tbl-bulk-act hidden">
 			<select name="bulk_action">
 				<option>-- <?=lang('with_selected')?> --</option>
 				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>

@@ -44,6 +44,8 @@ class Layouts extends AbstractChannelsController {
 		}
 
 		ee()->lang->loadfile('content');
+
+		$this->generateSidebar('channel');
 	}
 
 	public function layouts($channel_id)

@@ -114,7 +114,7 @@ $lang = array(
 
 'enable_partial_on_all_sites' => 'Enable on all sites?',
 
-'enable_partial_on_all_sites_desc' => 'When set to <b>enable</b>, this partial will be available for use in all <abbr title="Multi-Site Manager">MSM</abbr> sites.',
+'enable_partial_on_all_sites_desc' => 'When set to <b>enable</b>, this partial will be available for use in all sites.',
 
 'create_template_partial_success' => 'Template Partial Created',
 
@@ -188,7 +188,7 @@ $lang = array(
 
 'enable_template_variable_on_all_sites' => 'Enable on all sites?',
 
-'enable_template_variable_on_all_sites_desc' => 'When set to <b>enable</b>, this variable will be available for use in all <abbr title="Multi-Site Manager">MSM</abbr> sites.',
+'enable_template_variable_on_all_sites_desc' => 'When set to <b>enable</b>, this variable will be available for use in all sites.',
 
 'template_variables_removed_desc' => 'The following template variables were removed',
 
