@@ -61,17 +61,12 @@ class Tfidf implements Vectorizer {
 			$stop_words[$key] = " " . trim($word) . " ";
 		}
 
-		if ( empty($source))
-		{
-			return;
-		}
-
 		foreach ($source as $text)
 		{
 			if( ! empty($text))
 			{
 				$text = str_ireplace($stop_words, ' ', $text, $count);
-				$doc = new Document($text, $this->tokenizer, $this->clean);
+				$doc = ee('spam:Document', $text, $this->tokenizer, $this->clean);
 
 				foreach($doc->words as $word)
 				{
@@ -91,11 +86,11 @@ class Tfidf implements Vectorizer {
 		}
 
 		$this->document_count = count($this->documents);
-		$this->corpus = new Document($this->corpus, $this->tokenizer, $this->clean);
+		$this->corpus = ee('spam:Document', $this->corpus, $this->tokenizer, $this->clean);
 
 		arsort($this->vocabulary);
 		$this->vocabulary = array_slice($this->vocabulary, 0, $this->limit);
-		$this->generate_lookups();
+		$this->generateLookups();
 	}
 
 	/**
