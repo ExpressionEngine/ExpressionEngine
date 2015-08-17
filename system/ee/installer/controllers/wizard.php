@@ -970,7 +970,7 @@ class Wizard extends CI_Controller {
 		$template_variables['success_note'] = sprintf(lang($type.'_success_note'), $this->version);
 
 		// Send them to their CP via the form
-		$template_variables['action'] = $this->userdata['cp_url'];
+		$template_variables['action'] = $this->set_qstr('show_success');
 		$template_variables['method'] = 'get';
 
 		// Only show download button if mailing list export exists
