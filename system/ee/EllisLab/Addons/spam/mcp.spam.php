@@ -52,6 +52,22 @@ class Spam_mcp {
 	 */
 	public function index()
 	{
+		if ( ! empty($_POST['bulk_action']))
+		{
+			$action = ee()->input->post('bulk_action');
+			$selection = ee('Model')->get('spam:SpamTrap', ee()->input->post('selection'))->all();
+
+			if ($action == 'approve')
+			{
+				$this->approve($selection);
+			}
+
+			if ($action == 'remove')
+			{
+				$this->remove($selection);
+			}
+		}
+
 		$table = ee('CP/Table');
 		$data = array();
 		$trapped = array();
@@ -298,13 +314,51 @@ class Spam_mcp {
 			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
 		}
 
-		ee()->view->base_url = $this->base_url;
-		ee()->view->ajax_validate = TRUE;
-		ee()->view->cp_page_title = lang('spam_settings');
-		ee()->view->save_btn_text = 'btn_save_settings';
-		ee()->view->save_btn_text_working = 'btn_saving';
+		$vars['base_url'] = $base_url;
+		$vars['ajax_validate'] = TRUE;
+		$vars['cp_page_title'] = lang('spam_settings');
+		$vars['save_btn_text'] = 'btn_save_settings';
+		$vars['save_btn_text_working'] = 'btn_saving';
 
-		return ee()->cp->render('form', $vars, TRUE);
+		return ee('View')->make('spam:form')->render(array('data' => $vars));
+	}
+
+	private function approve($trapped)
+	{
+		foreach ($trapped as $spam)
+		{
+			if ( ! class_exists($spam->class))
+			{
+				ee()->load->file($spam->file);
+			}
+
+			$class = $spam->class;
+			$class = new $class();
+
+			$data = unserialize($spam->data);
+			call_user_func_array(array($class, $spam->method), $data);
+		}
+
+		ee('Alert')->makeInline('spam')
+			->asSuccess()
+			->withTitle(lang('success'))
+			->addToBody(sprintf(lang('spam_trap_approved'), count($trapped)))
+			->defer();
+
+		$this->moderate($trapped, FALSE);
+		ee()->functions->redirect($this->base_url);
+	}
+
+	private function remove($trapped)
+	{
+		ee('Alert')->makeInline('spam')
+			->asSuccess()
+			->withTitle(lang('success'))
+			->addToBody(sprintf(lang('spam_trap_removed'), count($trapped)))
+			->defer();
+
+		$this->moderate($trapped);
+		ee()->functions->redirect($this->base_url);
 	}
 
 	/**
@@ -316,39 +370,22 @@ class Spam_mcp {
 	 * @access public
 	 * @return void
 	 */
-	public function moderate()
+	private function moderate($collection, $isSpam = TRUE)
 	{
-		foreach ($_POST as $key => $class)
+		$result = array();
+
+		foreach ($collection as $spam)
 		{
-			if (substr($key, 0, 5) == 'spam_')
-			{
-				$id = str_replace('spam_', '', $key);
-				$spam = ee('Model')->get('SpamTrap', $id);
-
-				if ( ! empty($spam))
-				{
-					if ($class == 'ham' && ! empty($spam->file))
-					{
-						ee()->load->file($spam->file);
-						$class = $spam->class;
-						$class = new $class();
-
-						$data = unserialize($spam->data);
-						call_user_func_array(array($class, $spam->method), $data);
-					}
-
-					// Insert into the training table
-					$data = array(
-						'source' => $spam->document,
-						'class' => (int)($class == 'spam')
-					);
-					ee()->db->insert('spam_training', $data);
-
-					// Delete from the spam trap
-					ee()->db->delete('spam_trap', array('trap_id' => $id));
-				}
-			}
+			$result[] = ee('Model')->make('spam:SpamTraining', array(
+				'source' => $spam->document,
+				'class' => $isSpam
+			));
+			$spam->delete();
 		}
+
+		$result = new CoreCollection($result);
+		$this->trainParameters($result);
+		$result->save();
 	}
 
 	/**
