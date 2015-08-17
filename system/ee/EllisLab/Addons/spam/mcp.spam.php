@@ -39,7 +39,7 @@ class Spam_mcp {
 	 */
 	public function __construct()
 	{
-		$this->base_url = new URL('addons/settings/spam', ee()->session->session_id());
+		$this->base_url = ee('CP/URL', 'addons/settings/spam');
 		ini_set('memory_limit', '16G');
 		set_time_limit(0);
 	}
@@ -165,10 +165,10 @@ class Spam_mcp {
 		$this->base_url->setQueryStringVariable('sort_col', $table->sort_col);
 		$this->base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
 
-		ee()->view->filters = $filters->render($this->base_url);
-
+		$data['filters'] = $filters->render($this->base_url);
 		$data['table'] = $table->viewData($this->base_url);
 		$data['form_url'] = cp_url('addons/settings/spam');
+		$data['cp_page_title'] = lang('all_spam');
 
 		// Set search results heading
 		if ( ! empty($data['table']['search']))
@@ -180,16 +180,26 @@ class Spam_mcp {
 			);
 		}
 
+		if ( ! empty($data['table']['data']))
+		{
+			$data['pagination'] = ee('CP/Pagination', $total)
+				->perPage($perpage)
+				->currentPage($page)
+				->render($this->base_url);
+		}
+
 		ee()->javascript->set_global('lang.remove_confirm', lang('spam') . ': <b>### ' . lang('spam') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/addons/spam'),
 		));
 
-		return ee()->cp->render('index', $data, TRUE);
+		return ee('View')->make('spam:index')->render($data);
 	}
 
 	public function settings()
 	{
+		$base_url = ee('CP/URL', 'addons/settings/spam/settings', ee()->session->session_id());
 		ee()->load->library('form_validation');
 
 		$settings = array(
@@ -197,16 +207,17 @@ class Spam_mcp {
 			'word_limit' => empty(ee()->config->item('spam_word_limit')) ? 5000 : ee()->config->item('spam_word_limit'),
 			'content_limit' => empty(ee()->config->item('spam_content_limit')) ? 5000 : ee()->config->item('spam_content_limit')
 		);
+		$sensitivity = ee()->input->post('spam_sensitivity') ?:$settings['sensitivity'];
 
 		$vars['sections'] = array(
 			array(
 				array(
-					'title' => sprintf(lang('spam_sensitivity'), $settings['sensitivity']),
+					'title' => "<span class='range-value'>{$sensitivity}</span>% " . lang('spam_sensitivity'),
 					'desc' => 'spam_sensitivity_desc',
 					'fields' => array(
-						'sensitivity' => array(
+						'spam_sensitivity' => array(
 							'type' => 'slider',
-							'value' => $settings['sensitivity']
+							'value' => $sensitivity
 						)
 					)
 				),
