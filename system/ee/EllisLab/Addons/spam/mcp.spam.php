@@ -1,11 +1,7 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-use EllisLab\ExpressionEngine\Library\CP;
-use EllisLab\ExpressionEngine\Library\CP\Pagination;
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Library\CP\URL;
-use EllisLab\ExpressionEngine\Service\CP\Filter\Filter;
-use EllisLab\ExpressionEngine\Service\CP\Filter\FilterRunner;
+use EllisLab\ExpressionEngine\Library\Data\Collection as CoreCollection;
 
 /**
  * ExpressionEngine - by EllisLab

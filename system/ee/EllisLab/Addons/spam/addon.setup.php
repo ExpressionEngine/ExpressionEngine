@@ -1,6 +1,7 @@
 <?php
 
 use EllisLab\Addons\Spam\Service\Spam;
+use EllisLab\Addons\Spam\Service\Training;
 
 return array(
 	'author'      => 'EllisLab',
