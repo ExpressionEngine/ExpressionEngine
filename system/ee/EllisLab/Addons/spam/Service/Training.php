@@ -164,7 +164,7 @@ class Training {
 	 */
 	public function classifier($collection)
 	{
-		$stop_words = explode("\n", file_get_contents(PATH_MOD . $this->stop_words_path));
+		$stop_words = explode("\n", ee()->lang->load('spam/stopwords', NULL, TRUE, FALSE));
 
 		// Grab the trained parameters
 		$training = array(

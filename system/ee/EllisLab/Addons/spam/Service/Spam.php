@@ -119,23 +119,24 @@ class Spam {
 	public function loadDefaultClassifier()
 	{
 		$training = ee('spam:Training', 'default');
-		$stop_words = explode("\n", file_get_contents(PATH_MOD . $training->stop_words_path));
+		$stop_words = explode("\n", ee()->lang->load('spam/stopwords', NULL, TRUE, FALSE));
 		$tokenizer = ee('spam:Tokenizer');
 
 		// Prep the the TFIDF vectorizer with the vocabulary we have stored
-		$tfidf = ee('spam:Tfidf', array(), $tokenizer, $stop_words);
-		$tfidf->vocabulary = $training->getVocabulary();
+		$tfidf = ee('spam:Vectorizers/Tfidf', array(), $tokenizer, $stop_words);
+		$tfidf->vocabulary = $training->getVocabulary()->getDictionary('term', 'count');
 		$tfidf->document_count = $training->getDocumentCount();
 		$tfidf->generateLookups();
 
 		$vectorizers = array();
-		$vectorizers[] = ee('spam:Vectorizers/ASCII_Printable');
+		$vectorizers[] = $tfidf;
+		$vectorizers[] = ee('spam:Vectorizers/ASCIIPrintable');
 		$vectorizers[] = ee('spam:Vectorizers/Entropy');
 		$vectorizers[] = ee('spam:Vectorizers/Links');
 		$vectorizers[] = ee('spam:Vectorizers/Punctuation');
 		$vectorizers[] = ee('spam:Vectorizers/Spaces');
 
-		return $training->load_classifier($vectorizers);
+		return $training->loadClassifier($vectorizers);
 	}
 
 	/**
@@ -147,11 +148,11 @@ class Spam {
 	public function loadMemberClassifier()
 	{
 		$training = ee('spam:Training', 'member');
-		$stop_words = explode("\n", file_get_contents(PATH_MOD . $training->stop_words_path));
+		$stop_words = explode("\n", ee()->lang->load('spam/stopwords', NULL, TRUE, FALSE));
 		$tokenizer = ee('spam:Tokenizer');
 
-		$tfidf = ee('spam:Tfidf', array(), $tokenizer, $stop_words);
-		$tfidf->vocabulary = $training->getVocabulary();
+		$tfidf = ee('spam:Vectorizers/Tfidf', array(), $tokenizer, $stop_words);
+		$tfidf->vocabulary = $training->getVocabulary()->getDictionary('term', 'count');
 		$tfidf->document_count = $training->getDocumentCount();
 		$tfidf->generateLookups();
 
