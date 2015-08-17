@@ -955,11 +955,7 @@ class Channels extends AbstractChannelsController {
 					'fields' => array(
 						'deft_comments' => array(
 							'type' => 'yes_no',
-							'value' => $channel->deft_comments,
-							'note' => form_label(
-								form_checkbox('apply_comment_enabled_to_existing', 'y')
-								.lang('apply_comment_enabled_to_existing')
-							)
+							'value' => $channel->deft_comments
 						)
 					)
 				),
@@ -1209,18 +1205,6 @@ class Channels extends AbstractChannelsController {
 		}
 
 		ee()->load->model('channel_model');
-
-		if (ee()->input->post('apply_comment_enabled_to_existing'))
-		{
-			if (ee()->input->post('deft_comments') == 'y')
-			{
-				ee()->channel_model->update_comments_allowed($channel_id, 'y');
-			}
-			elseif ($this->input->post('deft_comments') == 'n')
-			{
-				ee()->channel_model->update_comments_allowed($channel_id, 'n');
-			}
-		}
 
 		if (ee()->input->post('apply_expiration_to_existing'))
 		{

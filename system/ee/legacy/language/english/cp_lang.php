@@ -538,6 +538,14 @@ $lang = array(
 
 'alphadash_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
 
+'preferences_updated' => 'Preferences updated',
+
+'preferences_updated_desc' => 'Your preferences have been saved successfully.',
+
+'settings_save_error' => 'Attention: Settings not saved',
+
+'settings_save_error_desc' => 'We were unable to save your settings, please review and fix errors below.',
+
 /**
  * Footer
  */

@@ -64,7 +64,7 @@ class Simple_commerce_mcp {
 			'search_button_value' => lang('search_commerce'),
 			'toolbar_items' => array(
 				'settings' => array(
-					'href' => ee('CP/URL', 'settings/commerce'),
+					'href' => ee('CP/URL', 'addons/settings/simple_commerce/settings'),
 					'title' => lang('settings')
 				)
 			)
@@ -1175,6 +1175,184 @@ class Simple_commerce_mcp {
 			'breadcrumb' => array(
 				ee('CP/URL', 'addons/settings/simple_commerce/email-templates')->compile() => lang('email_templates')
 			),
+			'body' => ee('View')->make('simple_commerce:form')->render($vars),
+			'sidebar' => $this->sidebar
+		);
+	}
+
+	/**
+	 * Settings
+	 */
+	public function settings()
+	{
+		$base_url = ee('CP/URL', 'addons/settings/simple_commerce/settings');
+
+		$vars = array(
+			'heading' => lang('commerce_settings'),
+			'cp_page_title' => lang('commerce_settings'),
+			'base_url' => $base_url,
+			'ajax_validate' => TRUE,
+			'save_btn_text' => 'btn_save_settings',
+			'save_btn_text_working' => 'btn_saving'
+		);
+
+		$base = reduce_double_slashes(str_replace('/public_html', '', SYSPATH).'/user/encryption/');
+
+		$vars['sections'] = array(
+			array(
+				ee('Alert')->makeInline('ipn-notice')
+					->asWarning()
+					->cannotClose()
+					->addToBody(sprintf(lang('commerce_ipn_notice'), 'https://developer.paypal.com/webapps/developer/docs/classic/ipn/integration-guide/IPNIntro/'))
+					->render(),
+				array(
+					'title' => 'commerce_ipn_url',
+					'desc' => 'commerce_ipn_url_desc',
+					'fields' => array(
+						'sc_api_url' => array(
+							'type' => 'text',
+							'value' => ee()->functions->fetch_site_index(0,0).QUERY_MARKER.'ACT='.ee()->cp->fetch_action_id('Simple_commerce', 'incoming_ipn'),
+							'disabled' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'commerce_paypal_email',
+					'desc' => 'commerce_paypal_email_desc',
+					'fields' => array(
+						'sc_paypal_account' => array('type' => 'text')
+					)
+				),
+				array(
+					'title' => 'commerce_encrypt_paypal',
+					'desc' => 'commerce_encrypt_paypal_desc',
+					'fields' => array(
+						'sc_encrypt_buttons' => array('type' => 'yes_no')
+					)
+				),
+				array(
+					'title' => 'commerce_paypal_cert_id',
+					'desc' => 'commerce_paypal_cert_id_desc',
+					'fields' => array(
+						'sc_certificate_id' => array(
+							'type' => 'text',
+							'value' => (ee()->config->item('sc_certificate_id') === FALSE) ? '' : ee()->config->item('sc_certificate_id')
+						)
+					)
+				),
+				array(
+					'title' => 'commerce_cert_path',
+					'desc' => 'commerce_cert_path_desc',
+					'fields' => array(
+						'sc_public_certificate' => array(
+							'type' => 'text',
+							'value' => (ee()->config->item('sc_public_certificate') === FALSE OR ee()->config->item('sc_public_certificate') == '') ? $base.'public_certificate.pem' : ee()->config->item('sc_public_certificate')
+						)
+					)
+				),
+				array(
+					'title' => 'commerce_key_path',
+					'desc' => 'commerce_key_path_desc',
+					'fields' => array(
+						'sc_private_key' => array(
+							'type' => 'text',
+							'value' => (ee()->config->item('sc_private_key') === FALSE OR ee()->config->item('sc_private_key') == '') ? $base.'private_key.pem' : ee()->config->item('sc_private_key')
+						)
+					)
+				),
+				array(
+					'title' => 'commerce_paypal_cert_path',
+					'desc' => 'commerce_paypal_cert_path_desc',
+					'fields' => array(
+						'sc_paypal_certificate' => array(
+							'type' => 'text',
+							'value' => (ee()->config->item('sc_paypal_certificate') === FALSE OR ee()->config->item('sc_paypal_certificate') == '') ? $base.'paypal_certificate.pem' : ee()->config->item('sc_paypal_certificate')
+						)
+					)
+				),
+				array(
+					'title' => 'commerce_temp_path',
+					'desc' => 'commerce_temp_path_desc',
+					'fields' => array(
+						'sc_temp_path' => array('type' => 'text')
+					)
+				)
+			)
+		);
+
+		if ( ! empty($_POST))
+		{
+			$result = ee('Validation')->make(array(
+				'sc_paypal_account'     => 'email',
+				'sc_encrypt_buttons'    => 'enum[y,n]',
+				'sc_public_certificate' => 'fileExists',
+				'sc_private_key'        => 'fileExists',
+				'sc_paypal_certificate' => 'fileExists',
+				'sc_temp_path'          => 'fileExists'
+			))->validate($_POST);
+
+			if (ee()->input->is_ajax_request())
+			{
+				$field = ee()->input->post('ee_fv_field');
+
+				if ($result->hasErrors($field))
+				{
+					return array(
+						'ajax' => TRUE,
+						'body' => array('error' => $result->renderError($field))
+					);
+				}
+				else
+				{
+					return array(
+						'ajax' => TRUE,
+						'body' => array('success')
+					);
+				}
+			}
+
+			if ($result->isValid())
+			{
+				// Unset API URL
+				unset($vars['sections'][0][1]);
+
+				$fields = array();
+
+				// Make sure we're getting only the fields we asked for
+				foreach ($vars['sections'] as $settings)
+				{
+					foreach ($settings as $setting)
+					{
+						foreach ($setting['fields'] as $field_name => $field)
+						{
+							$fields[$field_name] = ee()->input->post($field_name);
+						}
+					}
+				}
+
+				ee()->config->update_site_prefs($fields);
+
+				ee('Alert')->makeInline('shared-form')
+						->asSuccess()
+						->withTitle(lang('preferences_updated'))
+						->addToBody(lang('preferences_updated_desc'))
+						->defer();
+
+				ee()->functions->redirect($base_url);
+			}
+			else
+			{
+				$vars['errors'] = $result;
+				ee('Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('settings_save_error'))
+					->addToBody(lang('settings_save_error_desc'))
+					->now();
+			}
+		}
+
+		return array(
+			'heading' => $vars['cp_page_title'],
 			'body' => ee('View')->make('simple_commerce:form')->render($vars),
 			'sidebar' => $this->sidebar
 		);
