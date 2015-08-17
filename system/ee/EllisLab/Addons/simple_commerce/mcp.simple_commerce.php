@@ -176,7 +176,7 @@ class Simple_commerce_mcp {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('items') . ': <b>### ' . lang('items') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		return array(
@@ -675,7 +675,7 @@ class Simple_commerce_mcp {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('purchases') . ': <b>### ' . lang('purchases') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		return array(
@@ -899,7 +899,7 @@ class Simple_commerce_mcp {
 			lang('sa'),
 		));
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/date_picker'),
+			'file' => array('cp/date_picker'),
 		));
 
 		$this->purchases_nav->isActive();
@@ -988,7 +988,7 @@ class Simple_commerce_mcp {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('email_templates') . ': <b>### ' . lang('email_templates') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		return array(

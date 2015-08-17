@@ -53,7 +53,7 @@ class Perpage extends Filter {
 		{
 			$this->confirm_show_all = TRUE;
 			ee()->cp->add_js_script(array(
-				'file' => array('cp/v3/perpage'),
+				'file' => array('cp/perpage'),
 			));
 		}
 

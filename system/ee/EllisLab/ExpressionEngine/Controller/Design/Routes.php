@@ -149,7 +149,7 @@ RADIO;
 		$this->stdHeader();
 
 		ee()->cp->add_js_script('plugin', 'ee_table_reorder');
-		ee()->cp->add_js_script('file', 'cp/v3/route_reorder');
+		ee()->cp->add_js_script('file', 'cp/design/route_reorder');
 
 		ee()->view->cp_page_title = lang('template_manager');
 		ee()->view->cp_heading = lang('template_routes_header');

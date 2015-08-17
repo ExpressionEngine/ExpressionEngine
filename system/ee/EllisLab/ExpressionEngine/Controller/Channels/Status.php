@@ -61,7 +61,7 @@ class Status extends AbstractChannelsController {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('status_groups') . ': <b>### ' . lang('status_groups') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		ee()->cp->render('channels/status/index', $vars);
@@ -342,10 +342,10 @@ class Status extends AbstractChannelsController {
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/status'), lang('status_groups'));
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('statuses') . ': <b>### ' . lang('statuses') . '</b>');
-		ee()->cp->add_js_script('file', 'cp/v3/confirm_remove');
+		ee()->cp->add_js_script('file', 'cp/confirm_remove');
 		ee()->cp->add_js_script('file', 'cp/sort_helper');
 		ee()->cp->add_js_script('plugin', 'ee_table_reorder');
-		ee()->cp->add_js_script('file', 'cp/v3/status_reorder');
+		ee()->cp->add_js_script('file', 'cp/channel/status_reorder');
 
 		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
 			->asIssue()

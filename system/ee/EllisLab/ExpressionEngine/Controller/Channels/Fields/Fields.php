@@ -85,7 +85,7 @@ class Fields extends AbstractChannelsController {
 		ee()->javascript->set_global('lang.remove_confirm', lang('field') . ': <b>### ' . lang('fields') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/confirm_remove',
 			),
 		));
 
@@ -376,7 +376,7 @@ class Fields extends AbstractChannelsController {
 		}
 
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/form_group'),
+			'file' => array('cp/form_group'),
 		));
 
 		return $sections;

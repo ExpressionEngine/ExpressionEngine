@@ -211,7 +211,7 @@ class Edit extends AbstractPublishController {
 		ee()->javascript->set_global('lang.remove_confirm', lang('entry') . ': <b>### ' . lang('entries') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/confirm_remove',
 			),
 		));
 
@@ -381,7 +381,7 @@ class Edit extends AbstractPublishController {
 				'ee_filebrowser',
 				'ee_fileuploader',
 			),
-			'file' => array('cp/v3/publish')
+			'file' => array('cp/channel/publish')
 		));
 
 		ee()->view->cp_breadcrumbs = array(

@@ -136,7 +136,7 @@ class Metaweblog_api_mcp {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('configurations') . ': <b>### ' . lang('configurations') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		return ee('View')->make('metaweblog_api:index')->render($vars);

@@ -18,7 +18,7 @@
 		</section>
 		<?=ee()->view->script_tag('jquery/jquery.js')?>
 		<?=ee()->view->script_tag('common.min.js')?>
-		<?=ee()->view->script_tag('cp/v3/login.js')?>
+		<?=ee()->view->script_tag('cp/login.js')?>
 		<script type="text/javascript">
 			$(document).ready(function()
 			{

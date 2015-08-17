@@ -74,7 +74,7 @@ class Cat extends AbstractChannelsController {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('category_groups') . ': <b>### ' . lang('category_groups') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		ee()->cp->render('channels/cat/index', $vars);
@@ -392,7 +392,7 @@ class Cat extends AbstractChannelsController {
 		}
 
 		ee()->cp->add_js_script('plugin', 'nestable');
-		ee()->cp->add_js_script('file', 'cp/v3/category_reorder');
+		ee()->cp->add_js_script('file', 'cp/channel/category_reorder');
 
 		// Get the category tree with a single query
 		ee()->load->library('datastructures/tree');
@@ -403,7 +403,7 @@ class Cat extends AbstractChannelsController {
 		ee()->view->cat_group = $cat_group;
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('categories') . ': <b>### ' . lang('categories') . '</b>');
-		ee()->cp->add_js_script('file', 'cp/v3/confirm_remove');
+		ee()->cp->add_js_script('file', 'cp/confirm_remove');
 
 		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
 			->asIssue()
@@ -950,10 +950,10 @@ class Cat extends AbstractChannelsController {
 		ee()->view->cp_page_title = lang('category_fields') . ' ' . lang('for') . ' ' . $cat_group->group_name;
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('category_fields') . ': <b>### ' . lang('category_fields') . '</b>');
-		ee()->cp->add_js_script('file', 'cp/v3/confirm_remove');
+		ee()->cp->add_js_script('file', 'cp/confirm_remove');
 		ee()->cp->add_js_script('file', 'cp/sort_helper');
 		ee()->cp->add_js_script('plugin', 'ee_table_reorder');
-		ee()->cp->add_js_script('file', 'cp/v3/cat_field_reorder');
+		ee()->cp->add_js_script('file', 'cp/channel/cat_field_reorder');
 
 		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
 			->asIssue()
@@ -1230,7 +1230,7 @@ class Cat extends AbstractChannelsController {
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/cat/field/'.$group_id), lang('category_fields'));
 
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/form_group'),
+			'file' => array('cp/form_group'),
 		));
 
 		ee()->cp->render('settings/form', $vars);

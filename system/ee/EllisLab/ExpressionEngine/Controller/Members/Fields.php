@@ -139,8 +139,8 @@ class Fields extends Members\Members {
 		$base_url = $data['table']['base_url'];
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('member_fields') . ': <b>### ' . lang('member_fields') . '</b>');
-		ee()->cp->add_js_script('file', 'cp/v3/confirm_remove');
-		ee()->cp->add_js_script('file', 'cp/v3/member_field_reorder');
+		ee()->cp->add_js_script('file', 'cp/confirm_remove');
+		ee()->cp->add_js_script('file', 'cp/members/member_field_reorder');
 		ee()->cp->add_js_script('file', 'cp/sort_helper');
 		ee()->cp->add_js_script('plugin', 'ee_table_reorder');
 
@@ -424,7 +424,7 @@ class Fields extends Members\Members {
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'members/fields/edit'), lang('custom_profile_fields'));
 
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/form_group'),
+			'file' => array('cp/form_group'),
 		));
 
 		ee()->cp->render('settings/form', $vars);
