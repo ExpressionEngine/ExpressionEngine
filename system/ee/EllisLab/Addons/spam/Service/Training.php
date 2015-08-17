@@ -172,9 +172,10 @@ class Training {
 	private function getParameters($class)
 	{
 		$result = array();
-		$class = ($class == 'spam') ? 1 : 0;
-		$parameters =  ee('Model')->get('SpamParameter')
-						->filter('kernel_id', $kernel_id)
+		$class = ($class == 'spam') ? 'y' : 'n';
+		$kernel = $this->getKernel('default');
+		$parameters =  ee('Model')->get('spam:SpamParameter')
+						->filter('kernel_id', $kernel->kernel_id)
 						->filter('class', $class)
 						->all();
 
@@ -194,10 +195,10 @@ class Training {
 	 * @access public
 	 * @return array
 	 */
-	public function getVocabulary($kernel = "")
+	public function getVocabulary()
 	{
-		$kernel = $this->getKernel($kernel) ?: $this->kernel;
-		return ee('Model')->get('SpamVocabulary')->filter('kernel_id')->all()->getDictionary('term', 'count');
+		$kernel = $this->getKernel($this->kernel);
+		return ee('Model')->get('spam:SpamVocabulary')->filter('kernel_id', $kernel->kernel_id)->all();
 	}
 
 	// --------------------------------------------------------------------
@@ -223,15 +224,15 @@ class Training {
 	 */
 	private function getKernel($name)
 	{
-		$kernel = ee('Model')->get('SpamKernel')->filter('name', $name)->first();
+		$kernel = ee('Model')->get('spam:SpamKernel')->first();
 
 		if (empty($kernel))
 		{
-			$kernel = ee('Model')->make('SpamKernel', array('name' => $name));
+			$kernel = ee('Model')->make('spam:SpamKernel', array('name' => $name));
 			$kernel->save();
 		}
 
-		return $kernel->kernel_id;
+		return $kernel;
 	}
 
 }
