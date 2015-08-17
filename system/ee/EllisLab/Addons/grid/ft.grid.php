@@ -537,7 +537,7 @@ class Grid_ft extends EE_Fieldtype {
 		// Settings to initialize JS with
 		$field_settings = array();
 
-		ee()->cp->add_to_head(ee()->view->head_link('css/v3/grid.css'));
+		ee()->cp->add_to_head(ee()->view->head_link('css/grid.css'));
 
 		ee()->cp->add_js_script('plugin', 'ee_url_title');
 		ee()->cp->add_js_script('ui', 'sortable');
