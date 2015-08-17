@@ -103,26 +103,8 @@ class Tfidf implements Vectorizer {
 	public function vectorize($source)
 	{
 		$source = str_ireplace($this->stop_words, ' ', $source);
-		$source = new Document($source, $this->tokenizer, $this->clean);
+		$source = ee('spam:Document', $source, $this->tokenizer, $this->clean);
 		return $this->_tfidf($source);
-	}
-
-	/**
-	 * Return the term frequency inverse document frequency for all documents in the collection
-	 * 
-	 * @access public
-	 * @return array The calculated tfidf
-	 */
-	public function tfidf()
-	{
-		$tfidf = array();
-
-		foreach ($this->documents as $source)
-		{
-			$tfidf[] = $this->transform->source;
-		}
-
-		return $tfidf;
 	}
 
 	/**
@@ -191,7 +173,7 @@ class Tfidf implements Vectorizer {
 	 * @access public
 	 * @return void
 	 */
-	public function generate_lookups()
+	public function generateLookups()
 	{
 		$tfidf_row = array();
 		$vocabulary_index = array();
