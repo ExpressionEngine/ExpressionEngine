@@ -82,7 +82,6 @@ $lang = array(
 'fieldtype_name'				=>		'Fieldtype Name',
 'not_installed'					=>		'Not Installed',
 'remove'						=>		'Remove',
-'preferences_updated'			=>		'Preferences Updated',
 'extension_enabled'				=>		'Extension Enabled',
 'extension_disabled'			=>		'Extension Disabled',
 'extensions_enabled'			=>		'Extensions Enabled',
