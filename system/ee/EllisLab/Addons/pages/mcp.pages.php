@@ -54,6 +54,16 @@ class Pages_mcp {
 
 			$this->homepage_display = $homepage_display;
 		}
+
+		ee()->view->header = array(
+			'title' => lang('pages_manager'),
+			'toolbar_items' => array(
+				'settings' => array(
+					'href' => ee('CP/URL', 'addons/settings/pages/settings'),
+					'title' => lang('settings')
+				)
+			)
+		);
 	}
 
 	// --------------------------------------------------------------------
@@ -138,6 +148,11 @@ class Pages_mcp {
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/v3/confirm_remove'),
 		));
+
+		return array(
+			'heading' => lang('pages_manager'),
+			'body' => ee('View')->make('pages:index')->render($vars)
+		);
 
 		return ee('View')->make('pages:index')->render($vars);
 	}
