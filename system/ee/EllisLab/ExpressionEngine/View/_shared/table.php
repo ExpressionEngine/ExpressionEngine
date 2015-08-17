@@ -77,7 +77,7 @@ if ($wrap): ?>
 			<?php
 			// Output this if Grid input so we can dynamically show it via JS
 			if (empty($data) OR $grid_input): ?>
-				<tr class="no-results">
+				<tr class="no-results<?php if ($grid_input): ?> <?=$grid_input?><?php endif?>">
 					<td class="solo" colspan="<?=$colspan?>">
 						<?=lang($no_results['text'])?>
 						<?php if ( ! empty($no_results['action_text'])): ?>
