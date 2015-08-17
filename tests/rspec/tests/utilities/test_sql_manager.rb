@@ -72,18 +72,6 @@ feature 'SQL Manager' do
   end
 
   it 'should validate the table operations submission' do
-    @page.op_select.select 'Repair'
-    @page.op_submit.click
-
-    no_php_js_errors
-    @page.should have_text 'You must select the tables in which to perform this action.'
-
-    @page.op_select.select 'Optimize'
-    @page.op_submit.click
-
-    no_php_js_errors
-    @page.should have_text 'You must select the tables in which to perform this action.'
-
     @page.select_all.click
     @page.op_submit.click
 
