@@ -54,6 +54,7 @@ class Tokenizer {
 			$tokens = str_split($string);
 		}
 
+		$tokens = array_filter($tokens);
 		return $this->ngrams($tokens, $this->ngram);
 	}
 
