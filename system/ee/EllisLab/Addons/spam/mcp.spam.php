@@ -235,18 +235,18 @@ class Spam_mcp {
 
 		ee()->form_validation->set_rules(array(
 			array(
-				 'field'   => 'banned_username',
-				 'label'   => 'lang:banned_usernames',
+				 'field'   => 'spam_sensitivity',
+				 'label'   => 'lang:spam_sensitivity',
 				 'rules'   => 'required|numeric'
 			),
 			array(
-				 'field'   => 'banned_username',
-				 'label'   => 'lang:banned_usernames',
+				 'field'   => 'spam_word_limit',
+				 'label'   => 'lang:spam_word_limit',
 				 'rules'   => 'required|is_natural_no_zero'
 			),
 			array(
-				 'field'   => 'banned_username',
-				 'label'   => 'lang:banned_usernames',
+				 'field'   => 'spam_content_limit',
+				 'label'   => 'lang:spam_content_limit',
 				 'rules'   => 'required|is_natural_no_zero'
 			)
 		));

@@ -49,6 +49,7 @@ class Classifier {
 		$this->classes = array_unique(array_keys($training));
 		$this->corpus = $vocabulary;
 		$this->training = $training;
+		$this->sensitivity = ee()->config->item('spam_sensitivity') ?: $this->sensitivity;
 	}
 
 	/**
