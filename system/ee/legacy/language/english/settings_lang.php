@@ -93,10 +93,6 @@ $lang = array(
 
 'btn_save_settings' => 'Save Settings',
 
-'preferences_updated' => 'Preferences updated',
-
-'preferences_updated_desc' => 'Your preferences have been saved successfully.',
-
 'running_current' => 'ExpressionEngine is up to date',
 
 'running_current_desc' => 'ExpressionEngine %s is the latest version.',
@@ -106,10 +102,6 @@ $lang = array(
 'version_update_available' => 'A newer version of ExpressionEngine is available',
 
 'version_update_inst' => 'ExpressionEngine %s is available. <a href="%s">Download the latest version</a> and follow the <a href="%s">update instructions</a>.',
-
-'settings_save_error' => 'Attention: Settings not saved',
-
-'settings_save_error_desc' => 'We were unable to save your settings, please review and fix errors below.',
 
 /**
  * License & Registration
@@ -753,48 +745,6 @@ $lang = array(
 'pages_templates' => 'Templates',
 
 'pages_templates_desc' => 'Default templates for each channel.',
-
-/**
- * Commerce Settings
- */
-
-'commerce_settings' => 'Commerce Settings',
-
-'simple_commerce' => 'Simple Commerce',
-
-'commerce_ipn_notice' => 'Instant Payment Notification is a PayPal service that allows the processing of transactions on their site and then notifying ExpressionEngine when the transaction is complete and accepted. This allows purchases to not be stored and recorded in the Simple Commerce module until the transaction is finalized. ExpressionEngine\'s Simple Commerce module automates all of this behind the scenes so all you have to do is activate Instant Payment Notification on the PayPal site and provide them with the URL below. <a href="%s" rel="external">Learn More</a>',
-
-'commerce_ipn_url' => '<abbr title="Instant Payment Notification">IPN</abbr> <abbr title="Unified Resource Locator">URL</abbr>',
-
-'commerce_ipn_url_desc' => '<abbr title="Unified Resource Locator">URL</abbr> for PayPal to notify on transaction completion.',
-
-'commerce_paypal_email' => 'PayPal account Email',
-
-'commerce_paypal_email_desc' => 'Email address associated with your PayPal business account.',
-
-'commerce_encrypt_paypal' => 'Encrypt PayPal buttons and links?',
-
-'commerce_encrypt_paypal_desc' => 'When set to <b>yes</b>, PayPal buttons and links will be JavaScript encrypted.',
-
-'commerce_paypal_cert_id' => 'Public certification <abbr title="Identifier">ID</abbr>',
-
-'commerce_paypal_cert_id_desc' => '<abbr title="Identifier">ID</abbr> given to public certificate by PayPal.',
-
-'commerce_cert_path' => 'Public certificate path',
-
-'commerce_cert_path_desc' => 'Full path to public certificate.',
-
-'commerce_key_path' => 'Private key path',
-
-'commerce_key_path_desc' => 'Full path to private key.',
-
-'commerce_paypal_cert_path' => 'PayPal certificate path',
-
-'commerce_paypal_cert_path_desc' => 'Full path to PayPal certificate.',
-
-'commerce_temp_path' => 'Temporary encrypted file path',
-
-'commerce_temp_path_desc' => 'Full path to temporary encrypted files.',
 
 ''=>''
 );
