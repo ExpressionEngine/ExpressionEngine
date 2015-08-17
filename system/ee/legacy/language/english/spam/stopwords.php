@@ -1,3 +1,4 @@
+<?php $lang = <<<EOF
 a
 about
 above
@@ -172,3 +173,5 @@ your
 yours
 yourself
 yourselves
+EOF;
+?>
