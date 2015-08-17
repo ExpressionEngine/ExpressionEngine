@@ -107,7 +107,7 @@ feature 'Add-On Manager' do
 			@page.should_not have_first_party_pagination
 
 			# RTE has the correct version number now
-			@page.should have(2).first_party_addons # Email + RTE
+			@page.should have(1).first_party_addons # Email + RTE
 		end
 
 		it 'retains filters on sort' do
