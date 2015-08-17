@@ -583,20 +583,62 @@ class Spam_mcp {
 			{
 				// Zipped is now an array of values for a particular feature and 
 				// class. Time to do some estimates.
-				$sample = ee('spam:Expectation', $feature);
+				$current = ee('Model')->get('spam:SpamParameter')
+							->filter('class', $class === 1)
+							->filter('term', $index)
+							->first();
 
-				$training[] = array(
-					'kernel_id' => $kernel,
-					'class' => $class,
+				if (empty($current))
+				{
+					$current = ee('Model')->make('spam:SpamParameter')->save();
+				}
+
+				$updated = $this->onlineStatistics($kernel->count, $current->mean, $current->variance, $feature);
+
+				$training = array(
+					'kernel_id' => $kernel->kernel_id,
+					'class' => $class == 1,
 					'term' => $index,
-					'mean' => $sample->mean,
-					'variance' => $sample->variance
+					'mean' => $updated['mean'],
+					'variance' => $updated['variance']
 				);
+
+				$current->set($training);
+				$current->save();
 			}
 		}
 
-		ee()->db->empty_table('spam_parameters'); 
-		ee()->db->insert_batch('spam_parameters', $training); 
+		// Loop through one last time if we had an empty class
+		$empty_class = array_pop(array_diff(array(0,1), array_keys($training_collection)));
+
+		if ($empty_class !== NULL)
+		{
+			foreach ($zipped as $index => $feature)
+			{
+				$current = ee('Model')->get('spam:SpamParameter')
+							->filter('class', $empty_class === 1)
+							->filter('term', $index)
+							->first();
+
+				if (empty($current))
+				{
+					$current = ee('Model')->make('spam:SpamParameter')->save();
+				}
+
+				$updated = $this->onlineStatistics($kernel->count, $current->mean, $current->variance);
+
+				$training = array(
+					'kernel_id' => $kernel->kernel_id,
+					'class' => $empty_class == 1,
+					'term' => $index,
+					'mean' => 0,
+					'variance' => 0
+				);
+
+				$current->set($training);
+				$current->save();
+			}
+		}
 	}
 
 
@@ -669,24 +711,14 @@ class Spam_mcp {
 	 * @access private
 	 * @return void
 	 */
-	private function trainParameters()
+	private function trainParameters($data)
 	{
-		$stop_words = explode("\n", file_get_contents(PATH_MOD . $this->stop_words_path));
-		$training_data = $this->getTrainingData(10000);
-		$classes = $training_data[1];
+		$classes = $data->pluck('class');
+		$documents = $data->pluck('source');
 
+		$stopwords = explode("\n", ee()->lang->load('spam/stopwords', NULL, TRUE, FALSE));
 		$tokenizer = ee('spam:Tokenizer');
-		$tfidf = ee('spam:Tfidf', $training_data[0], $tokenizer, $stop_words);
-		$vectorizers = array();
-		$vectorizers[] = ee('spam:Vectorizers/ASCII_Printable');
-		$vectorizers[] = ee('spam:Vectorizers/Entropy');
-		$vectorizers[] = ee('spam:Vectorizers/Links');
-		$vectorizers[] = ee('spam:Vectorizers/Punctuation');
-		$vectorizers[] = ee('spam:Vectorizers/Spaces');
-		$training_collection = ee('spam:Collection', $vectorizers);
-
-		$training_classes = array();
-		$training = array();
+		$tfidf = ee('spam:Vectorizers/Tfidf', $documents, $tokenizer, $stopwords);
 
 		$kernel = $this->getKernel('default');
 
@@ -695,25 +727,55 @@ class Spam_mcp {
 
 		foreach ($tfidf->vocabulary as $term => $count)
 		{
-			$data = array(
-				'term' => $term,
-				'count' => $count,
-				'kernel_id' => $kernel
-			);
+			$existing = ee('Model')->get('spam:SpamVocabulary')
+							->filter('term', $term)
+							->filter('kernel_id', $kernel->kernel_id)
+							->first();
 
-			$vocabulary[] = $data;
+			if ( ! empty($existing))
+			{
+				$existing->count += $count;
+				$existing->save();
+			}
+			else
+			{
+				$data = array(
+					'term' => $term,
+					'count' => $count,
+					'kernel_id' => $kernel->kernel_id
+				);
+				ee('Model')->make('spam:SpamVocabulary', $data)->save();
+			}
 		}
 
-		ee()->db->empty_table('spam_vocabulary'); 
-		ee()->db->insert_batch('spam_vocabulary', $vocabulary); 
+		// Now grab the entire stored vocabulary
+		$training = ee('spam:Training', 'default');
+		$tfidf->vocabulary = $training->getVocabulary()->getDictionary('term', 'count');
 
-		foreach ($training_collection->fitTransform($training_data[0]) as $key => $vector)
+		// Increment the total document count
+		$kernel->count += count($data);
+		$kernel->save();
+		$tfidf->document_count = $kernel->count;
+		$tfidf->generateLookups();
+
+		// Calculate our new feature vectors
+		$vectorizers = array();
+		$vectorizers[] = $tfidf;
+		$vectorizers[] = ee('spam:Vectorizers/ASCIIPrintable');
+		$vectorizers[] = ee('spam:Vectorizers/Entropy');
+		$vectorizers[] = ee('spam:Vectorizers/Links');
+		$vectorizers[] = ee('spam:Vectorizers/Punctuation');
+		$vectorizers[] = ee('spam:Vectorizers/Spaces');
+		$training_collection = ee('spam:Collection', $vectorizers);
+		$training_classes = array();
+
+		foreach ($training_collection->fitTransform($documents) as $key => $vector)
 		{
 			$training_classes[$classes[$key]][] = $vector;
 		}
 
-		$this->setMaximumLikelihood($training_classes);
-		$spam_training = ee('spam:Spam_training', 'default');
+		$this->setMaximumLikelihood($training_classes, $kernel);
+		$spam_training = ee('spam:Training', 'default');
 		$spam_training->deleteClassifier();
 	}
 
@@ -728,7 +790,7 @@ class Spam_mcp {
 	 * @access private
 	 * @return void
 	 */
-	private function onlineStatistics($count, $mean, $variance, $data)
+	private function onlineStatistics($count = 0, $mean = 0, $variance = 0, $data = array())
 	{
 		$variance = $variance * ($count - 1);
 
@@ -736,12 +798,12 @@ class Spam_mcp {
 		{
 			$count++;
 			$delta = $datum - $mean;
-			$mean = $mean + ($delta / $n);
+			$mean = $mean + ($delta / $count);
 			$variance = $variance + $delta * ($datum - $mean);
 		}
 
 		$variance = $variance / ($count - 1);
-		return array($mean, $variance);
+		return array('mean' => $mean, 'variance' => $variance);
 	}
 
 }
