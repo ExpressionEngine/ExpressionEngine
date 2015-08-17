@@ -136,12 +136,14 @@ class Spam_mcp {
 		{
 			$toolbar = array('toolbar_items' => array(
 				'view' => array(
-					'href' => '',
+					'href' => '#',
+					'class' => 'spam-detail',
+					'rel' => 'spam-modal',
 					'title' => strtolower(lang('edit')),
-					'data-content' => htmlentities($spam->document, ENT_QUOTES),
-					'data-type' => htmlentities($spam->document, ENT_QUOTES),
-					'data-date' => htmlentities($spam->document, ENT_QUOTES),
-					'data-ip' => htmlentities($spam->document, ENT_QUOTES),
+					'data-content' => htmlentities(nl2br($spam->document), ENT_QUOTES),
+					'data-type' => htmlentities($spam->class, ENT_QUOTES),
+					'data-date' => ee()->localize->human_time($spam->date->getTimestamp()),
+					'data-ip' => htmlentities($spam->ip_address, ENT_QUOTES),
 				)
 			));
 
@@ -243,14 +245,14 @@ class Spam_mcp {
 					'title' => 'spam_word_limit',
 					'desc' => 'spam_word_limit_desc',
 					'fields' => array(
-						'word_limit' => array('type' => 'text', 'value' => $settings['word_limit'])
+						'spam_word_limit' => array('type' => 'text', 'value' => $settings['word_limit'])
 					)
 				),
 				array(
 					'title' => 'spam_content_limit',
 					'desc' => 'spam_content_limit_desc',
 					'fields' => array(
-						'content_limit' => array('type' => 'text', 'value' => $settings['content_limit'])
+						'spam_content_limit' => array('type' => 'text', 'value' => $settings['content_limit'])
 					)
 				),
 			)
@@ -301,12 +303,12 @@ class Spam_mcp {
 			{
 				ee()->load->helper('html_helper');
 				ee()->view->set_message('issue', lang('cp_message_issue'), ul($config_update), TRUE);
+				ee()->functions->redirect($base_url);
 
 			}
 			else
 			{
 				ee()->view->set_message('success', lang('spam_settings_updated'), lang('spam_settings_updated_desc'), TRUE);
-				ee()->functions->redirect($base_url);
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())
@@ -512,20 +514,11 @@ class Spam_mcp {
 	 */
 	private function getSpammers($limit = 1000)
 	{
-		ee()->db->select('ip_addess', 'username', 'email', 'url');
-		ee()->db->from('spam_trap');
-		ee()->db->join('members', 'spam_trap.author = members.member_id');
-		ee()->db->limit($limit);
-		$query = ee()->db->get();
-
-		$result = array();
-
-		foreach ($query->result() as $spammer)
-		{
-			$result[] = $spammer;
-		}
-
-		return $result;
+		return ee('Model')->get('spam:SpamTraining')
+					->with('Author')
+					->filter('class', TRUE)
+					->limit($limit)
+					->all();
 	}
 
 	/**
@@ -536,21 +529,11 @@ class Spam_mcp {
 	 */
 	private function getRealPeople($limit = 1000)
 	{
-		ee()->db->select('ip_addess', 'username', 'email', 'url');
-		ee()->db->from('members');
-		ee()->db->join('spam_trap', 'spam_trap.author = members.member_id');
-		ee()->db->where(array('trap_id' => NULL));
-		ee()->db->limit($limit);
-		$query = ee()->db->get();
-
-		$result = array();
-
-		foreach ($query->result() as $member)
-		{
-			$result[] = $member;
-		}
-
-		return $result;
+		return ee('Model')->get('spam:SpamTraining')
+					->with('Author')
+					->filter('class', FALSE)
+					->limit($limit)
+					->all();
 	}
 
 	/**
@@ -561,92 +544,9 @@ class Spam_mcp {
 	 */
 	private function getTrainingData($limit = 1000)
 	{
-		ee()->db->select('source, class');
-		ee()->db->from('spam_training');
-		ee()->db->order_by('RAND()');
-		ee()->db->limit($limit);
-		$query = ee()->db->get();
-
-		$sources = array();
-		$classes = array();
-
-		foreach ($query->result() as $document)
-		{
-			$sources[] = $document->source;
-			$classes[] = $document->class;
-		}
-
-		return array($sources, $classes);
-	}
-
-	/**
-	 * Loops through a string and increments the document counts for each term
-	 * 
-	 * @param string $document 
-	 * @access private
-	 * @return void
-	 */
-	private function setVocabulary($document)
-	{
-		$document = ee('spam:Document', $document);
-		
-		foreach ($document->words as $word)
-		{
-			ee()->db->select('count');
-			ee()->db->from('spam_vocabulary');
-			ee()->db->where('term', $word);
-			$query = ee()->db->get();
-
-			if ($query->num_rows() > 0)
-			{
-				ee()->db->where('term', $word);
-				ee()->db->set('count', 'count+1', FALSE);
-				ee()->db->update('spam_vocabulary');
-			}
-			else
-			{
-				$data = array('term' => $word, 'count' => 1);
-				ee()->db->insert('spam_vocabulary', $data);
-			}
-		}
-	}
-
-	/**
-	 * Set the maximim-likelihood estimates for a parameter
-	 * 
-	 * @param string  $term
-	 * @param string  $class
-	 * @param float   $mean
-	 * @param float   $variance
-	 * @access private
-	 * @return void
-	 */
-	private function setParameter($term, $class, $mean, $variance)
-	{
-		$class = ($class == 'spam') ? 1 : 0;
-
-		ee()->db->select('mean');
-		ee()->db->from('spam_parameters');
-		ee()->db->where('term', $term);
-		ee()->db->where('class', $class);
-		$query = ee()->db->get();
-
-		if ($query->num_rows() > 0)
-		{
-			ee()->db->where('term', $term);
-			ee()->db->where('class', $class);
-			ee()->db->update('spam_parameters', array('mean' => $mean, 'variance' => $variance));
-		}
-		else
-		{
-			$data = array(
-				'term' => $term,
-				'class' => $class,
-				'mean' => $mean,
-				'variance' => $variance
-			);
-			ee()->db->insert('spam_parameters', $data);
-		}
+		return ee('Model')->get('spam:SpamTraining')
+					->limit($limit)
+					->all();
 	}
 
 	/**
@@ -661,10 +561,10 @@ class Spam_mcp {
 	 * @access private
 	 * @return void
 	 */
-	private function setMaximumLikelihood($training_collection, $kernel = 'default')
+	private function setMaximumLikelihood($training_collection, $kernel)
 	{
-		$kernel = $this->getKernel($kernel);
 		$training = array();
+		$empty_class = NULL;
 
 		foreach ($training_collection as $class => $sources)
 		{
