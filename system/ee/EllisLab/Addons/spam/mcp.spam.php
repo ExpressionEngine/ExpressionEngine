@@ -399,60 +399,15 @@ class Spam_mcp {
 	}
 
 	/**
-	 * Controller for running the training
-	 * 
-	 * @access public
-	 * @return void
-	 */
-	public function train()
-	{
-		$data = array();
-		$start_time = microtime(true);
-		$this->_train_parameters();
-		$data['time'] = (microtime(true) - $start_time);
-		return ee()->load->view('train', $data, TRUE);
-	}
-
-	/**
-	 * Controller for running the member training
-	 * 
-	 * @access public
-	 * @return void
-	 */
-	public function trainMember()
-	{
-		$data = array();
-		$this->trainMemberParameters();
-		return ee()->load->view('train_member', $data, TRUE);
-	}
-
-	/**
 	 * Grab the appropriate kernel ID or insert a new one
 	 * 
 	 * @param string $name The name of the kernel 
 	 * @access private
 	 * @return int The kernel ID
 	 */
-	private function getKernel($name)
+	private function getKernel($name = 'default')
 	{
-		ee()->db->select('kernel_id');
-		ee()->db->from('spam_kernels');
-		ee()->db->where('name', $name);
-		$query = ee()->db->get();
-
-		if ($query->num_rows() > 0)
-		{
-			$row = $query->row();
-			$id = $row->kernel_id;
-		}
-		else
-		{
-			$data = array('name' => $name);
-			ee()->db->insert('spam_kernels', $data);
-			$id = ee()->db->insert_id();
-		}
-
-		return $id;
+		return ee('Model')->get('spam:SpamKernel')->filter('name', $name)->first();
 	}
 
 	/**

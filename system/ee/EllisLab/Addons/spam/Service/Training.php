@@ -212,7 +212,7 @@ class Training {
 	public function getDocumentCount($kernel = "")
 	{
 		$kernel = $this->getKernel($kernel) ?: $this->kernel;
-		return ee('Model')->get('SpamTraining')->filter('kernel_id', $kernel)->count();
+		return $kernel->count;
 	}
 
 	/**
