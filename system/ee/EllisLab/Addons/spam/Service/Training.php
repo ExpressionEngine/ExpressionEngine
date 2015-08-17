@@ -28,22 +28,7 @@ namespace EllisLab\Addons\Spam\Service;
 
 class Training {
 
-	public $name = 'Spam Filter';
-	public $version = '1.0.0';
-	public $settings_exist = 'n';
-	public $docs_url = '';
-
-	// Naive Bayes parameters
-	public $vocabulary_cutoff = 1000;
-	public $sensitivity = .5;
-	public $spam_ratio = .8;
 	public $stop_words_path = 'spam/training/stopwords.txt';
-
-	// Limits for heuristics
-	public $ascii_printable = .2;
-	public $account_age = 3600;
-	public $entropy = .2;
-	public $entropy_length = 300;
 
 	/**
 	 * __construct
