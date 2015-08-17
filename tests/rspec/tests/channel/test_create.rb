@@ -200,7 +200,6 @@ feature 'Channel Create/Edit' do
     channel_settings.comment_notify_emails.set 'page@pagemcconnell.com,jon@jonfishman.com'
 
     channel_settings.comment_system_enabled[1].click
-    channel_settings.apply_comment_enabled_to_existing.click
     channel_settings.deft_comments[1].click
     channel_settings.comment_require_membership[0].click
     channel_settings.comment_require_email[1].click
@@ -274,7 +273,6 @@ feature 'Channel Create/Edit' do
     channel_settings.comment_notify_emails.value.should == 'page@pagemcconnell.com,jon@jonfishman.com'
 
     channel_settings.comment_system_enabled[1].checked?.should == true
-    channel_settings.apply_comment_enabled_to_existing.checked?.should == false
     channel_settings.deft_comments[1].checked?.should == true
     channel_settings.comment_require_membership[0].checked?.should == true
     channel_settings.comment_require_email[1].checked?.should == true

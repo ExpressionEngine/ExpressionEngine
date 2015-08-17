@@ -35,7 +35,6 @@ class ChannelSettings < ControlPanelPage
 	element :comment_notify_emails, 'input[name=comment_notify_emails]'
 
 	elements :comment_system_enabled, 'input[name=comment_system_enabled]'
-	element :apply_comment_enabled_to_existing, 'input[name=apply_comment_enabled_to_existing]'
 	elements :deft_comments, 'input[name=deft_comments]'
 	elements :comment_require_membership, 'input[name=comment_require_membership]'
 	elements :comment_require_email, 'input[name=comment_require_email]'
