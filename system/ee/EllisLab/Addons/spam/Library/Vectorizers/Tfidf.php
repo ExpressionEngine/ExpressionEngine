@@ -1,4 +1,10 @@
 <?php
+
+namespace EllisLab\Addons\Spam\Library\Vectorizers;
+
+use \EllisLab\Addons\Spam\Library\Document;
+use \EllisLab\Addons\spam\Library\Vectorizer;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -22,8 +28,6 @@
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-
-require_once PATH_MOD . 'spam/Library/Document.php';
 
 class Tfidf implements Vectorizer {
 

@@ -1,4 +1,7 @@
 <?php
+
+namespace EllisLab\Addons\Spam\Library;
+
 /**
  * ExpressionEngine - by EllisLab
  *

@@ -1,4 +1,9 @@
 <?php
+
+namespace EllisLab\Addons\Spam\Library\Vectorizers;
+
+use \EllisLab\Addons\spam\Library\Vectorizer;
+
 /**
  * ExpressionEngine - by EllisLab
  *
