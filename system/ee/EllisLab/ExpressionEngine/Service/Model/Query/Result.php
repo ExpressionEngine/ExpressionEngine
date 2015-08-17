@@ -117,6 +117,7 @@ class Result {
 			$name = $this->aliases[$alias];
 
 			$object = $this->frontend->make($name);
+			$object->emit('beforeLoad'); // do not add 'afterLoad' to this method, it must happen *after* relationships are matched
 			$object->fill($model_data);
 
 			$this->objects[$alias][$object->getId()] = $object;
@@ -204,6 +205,7 @@ class Result {
 			}
 			$name = $relation->getName();
 			$parent->getAssociation($name)->fill($collection);
+			$parent->emit('afterLoad');
 		}
 	}
 
