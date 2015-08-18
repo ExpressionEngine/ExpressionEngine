@@ -250,8 +250,8 @@ class ChannelEntry extends ContentModel {
 	/**
 	 * A link back to the owning channel object.
 	 *
-	 * @return	Structure	A link to the Structure objects that defines this
-	 * 						Content's structure.
+	 * @return	Structure	A link back to the Structure object that defines
+	 *						this Content's structure.
 	 */
 	public function getStructure()
 	{
@@ -570,7 +570,6 @@ class ChannelEntry extends ContentModel {
 					'field_wide'            => TRUE
 				);
 			}
-
 			$cat_groups = ee('Model')->get('CategoryGroup')
 				->filter('group_id', 'IN', explode('|', $this->Channel->cat_group))
 				->all();
