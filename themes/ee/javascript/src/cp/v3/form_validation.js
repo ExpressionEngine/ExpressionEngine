@@ -229,17 +229,17 @@ EE.cp.formValidation = {
 
 		var container = field.parents('div[class*=setting]').not('div[class=setting-note]'),
 			fieldset = (container.parents('fieldset').size() > 0) ? container.parents('fieldset') : container.parent(),
-			button = form.find('.form-ctrls input.btn'), // Submit button of form
 			errorClass = 'em.ee-form-error-message',
-			grid = false,
-			tab = field.parents('.tab');
+			grid = false;
 
-		// Tabs can have their own buttons, replace button with this tab's
-		// button if it exists
-		if (tab.size() > 0 && tab.find('.form-ctrls input.btn').size() > 0)
-		{
-			button = tab.find('.form-ctrls input.btn');
-		}
+		// Tabs
+		var tab_container = field.parents('.tab'),
+			tab_rel = tab_container.attr('class').match(/t-\d+/), // Grabs the tab identifier (ex: t-2)
+			tab = $(tab_container).parents('.tab-wrap').find('a[rel="'+tab_rel+'"]'), // Tab link
+			// See if this tab has its own submit button
+			tab_has_own_button = (tab_container.size() > 0 && tab_container.find('.form-ctrls input.btn').size() > 0),
+			// Finally, grab the button of the current form
+			button = (tab_has_own_button) ? tab_container.find('.form-ctrls input.btn') : form.find('.form-ctrls input.btn');
 
 		// If we're in a Grid input, re-assign some things to apply classes
 		// and show error messages in the proper places
@@ -269,8 +269,14 @@ EE.cp.formValidation = {
 
 			container.find('> ' + errorClass).remove();
 
+			// If no more errors on this tab, remove invalid class from tab
+			if (tab.size() > 0 &&  ! this._errorsExist(tab_container))
+			{
+				tab.removeClass('invalid');
+			}
+
 			// Re-enable submit button only if all errors are gone
-			if ( ! this._errorsExist(form))
+			if ( ! this._errorsExist(form) || ( ! this._errorsExist(tab_container) && tab_has_own_button))
 			{
 				button.removeClass('disable')
 					.attr('value', button.data('submit-text'))
@@ -300,6 +306,12 @@ EE.cp.formValidation = {
 			}
 
 			container.append(errorElement);
+
+			// Mark tab as invalid
+			if (tab.size() > 0)
+			{
+				tab.addClass('invalid');
+			}
 
 			// Disable submit button
 			button.addClass('disable').attr({
