@@ -126,7 +126,7 @@ class Quicklinks extends Profile {
 
 		$url = base64_decode(ee()->input->get('url'));
 		$uri_elements = json_decode($url, TRUE);
-		$values['url'] = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments'], ee()->config->item('cp_url'));
+		$values['url'] = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
 
 		if ( ! empty($_POST))
 		{
