@@ -501,26 +501,26 @@ class Relationship_ft extends EE_Fieldtype {
 
 		if ($entry_id)
 		{
-			$parents = ee('Model')->get('ChannelEntry', $entry_id)
+			$children = ee('Model')->get('ChannelEntry', $entry_id)
 				->first()
-				->Parents
+				->Children
 				->indexBy('entry_id');
 		}
 		else
 		{
-			$parents = array();
+			$children = array();
 		}
 
 		$entries = $entries->indexBy('entry_id');
-		$parent_ids = array_keys($parents);
+		$children_ids = array_keys($children);
 		$entry_ids = array_keys($entries);
 
 		foreach ($selected as $chosen)
 		{
-			if ( ! in_array($chosen, $parent_ids)
+			if ( ! in_array($chosen, $children_ids)
 				&& in_array($chosen, $entry_ids))
 			{
-				$parents[$chosen] = $entries[$chosen];
+				$children[$chosen] = $entries[$chosen];
 			}
 		}
 
@@ -530,9 +530,9 @@ class Relationship_ft extends EE_Fieldtype {
 
 		foreach ($order as $key => $index)
 		{
-			if (in_array($key, $parent_ids))
+			if (in_array($key, $children_ids))
 			{
-				$related[] = $parents[$key];
+				$related[] = $children[$key];
 			}
 		}
 
