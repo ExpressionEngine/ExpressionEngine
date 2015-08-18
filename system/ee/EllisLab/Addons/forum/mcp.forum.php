@@ -1188,6 +1188,8 @@ class Forum_mcp extends CP_Controller {
 		if (ee()->input->get_post('return'))
 		{
 			$return = base64_decode(ee()->input->get_post('return'));
+			$uri_elements = json_decode($return, TRUE);
+			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
 		}
 
 		ee()->functions->redirect($return);
@@ -2136,6 +2138,8 @@ class Forum_mcp extends CP_Controller {
 		if (ee()->input->get_post('return'))
 		{
 			$return = base64_decode(ee()->input->get_post('return'));
+			$uri_elements = json_decode($return, TRUE);
+			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
 		}
 
 		ee()->functions->redirect($return);
@@ -2741,6 +2745,8 @@ class Forum_mcp extends CP_Controller {
 		if (ee()->input->get_post('return'))
 		{
 			$return = base64_decode(ee()->input->get_post('return'));
+			$uri_elements = json_decode($return, TRUE);
+			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
 		}
 
 		ee()->functions->redirect($return);
