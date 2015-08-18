@@ -133,15 +133,6 @@ feature 'Translate Tool' do
 	# 	@list_page.response_headers['Content-Disposition'].should include 'attachment; filename='
 	# end
 
-	it 'shows an error if nothing is selected when exporting', :edit => false do
-		@list_page.wait_until_bulk_action_visible
-		@list_page.bulk_action.select "Export (Download)"
-		@list_page.action_submit_button.click
-		no_php_js_errors
-
-		@list_page.should have_alert
-	end
-
 	it 'shows an error if any of the selected files is not readable', :edit => false do
 		FileUtils.chmod 0000, language_path + 'rspeclingo/admin_lang.php'
 
@@ -191,7 +182,7 @@ feature 'Translate Tool' do
 
 		visit(new_url)
 
-		@list_page.should have_text "404 Page Not Found"
+		@list_page.should have_text "404: Item does not exist."
 	end
 
 	it 'shows a breadcrumb link on the edit page', :edit => true do
