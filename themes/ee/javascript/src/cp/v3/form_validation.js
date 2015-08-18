@@ -234,7 +234,7 @@ EE.cp.formValidation = {
 
 		// Tabs
 		var tab_container = field.parents('.tab'),
-			tab_rel = tab_container.attr('class').match(/t-\d+/), // Grabs the tab identifier (ex: t-2)
+			tab_rel = (tab_container.size() > 0) ? tab_container.attr('class').match(/t-\d+/) : '', // Grabs the tab identifier (ex: t-2)
 			tab = $(tab_container).parents('.tab-wrap').find('a[rel="'+tab_rel+'"]'), // Tab link
 			// See if this tab has its own submit button
 			tab_has_own_button = (tab_container.size() > 0 && tab_container.find('.form-ctrls input.btn').size() > 0),
