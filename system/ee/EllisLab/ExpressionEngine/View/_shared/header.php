@@ -52,7 +52,7 @@
 						<?php foreach($cp_quicklinks as $link): ?>
 						<a href="<?=$link['link']?>"><?=$link['title']?></a>
 						<?php endforeach ?>
-						<a class="last add" href="<?=ee('CP/URL', 'members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id')))?>"><?=lang('new_link')?></a>
+						<a class="last add" href="<?=ee('CP/URL', 'members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id'), 'url' => base64_encode(ee()->cp->get_safe_refresh()), 'name' => $cp_page_title))?>"><?=lang('new_link')?></a>
 					</ul>
 				</div>
 			</nav>
