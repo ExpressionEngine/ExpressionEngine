@@ -79,12 +79,6 @@ $.fn.eeTableReorder = function(params) {
 				{
 					params.afterSort(ui.item);
 				}
-
-				// Re-zebra-stripe the table
-				if (EE.cp !== undefined)
-				{
-					EE.cp.zebra_tables(that);
-				}
 			}
 		});
 	});

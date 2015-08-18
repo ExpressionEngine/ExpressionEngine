@@ -302,8 +302,6 @@ $.widget('ee.table', {
 				self.element.show();
 				self.tbody.html(res.html_rows);
 				self.no_results.remove();
-
-				EE.cp.zebra_tables(self.element);
 			}
 
 			self.pagination.update(res.pagination);
