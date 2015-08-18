@@ -80,6 +80,15 @@ class Result {
 
 		reset($this->aliases);
 		$root = key($this->aliases);
+
+		foreach ($this->objects as $type => $objs)
+		{
+			foreach ($objs as $obj)
+			{
+				$obj->emit('afterLoad');
+			}
+		}
+
 		return new Collection($this->objects[$root]);
 	}
 
@@ -203,9 +212,9 @@ class Result {
 			{
 				$collection[] = $kids[$id];
 			}
+
 			$name = $relation->getName();
 			$parent->getAssociation($name)->fill($collection);
-			$parent->emit('afterLoad');
 		}
 	}
 
