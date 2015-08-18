@@ -354,4 +354,14 @@ $(document).ready(function(){
 			$(this).parents('h3').toggleClass('field-closed');
 		});
 
+	// ===============================
+	// filters custom input submission
+	// ===============================
+
+		$('.filters .filter-search input[type="text"]').keypress(function(e) {
+			if (e.which == 10 || e.which == 13) {
+				$(this).closest('form').submit();
+			}
+		});
+
 }); // close (document).ready
