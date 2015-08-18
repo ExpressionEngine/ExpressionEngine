@@ -345,7 +345,7 @@ class Edit extends AbstractPublishController {
 						->addToBody(sprintf(lang('edit_entry_success_desc'), $entry->title))
 						->defer();
 
-					ee()->functions->redirect(ee('CP/URL', 'publish/edit/', array('channel_id' => $entry->channel_id)));
+					ee()->functions->redirect(ee('CP/URL', 'publish/edit/', array('filter_by_channel' => $entry->channel_id)));
 				}
 			}
 			else
