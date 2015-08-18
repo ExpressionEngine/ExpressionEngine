@@ -34,6 +34,7 @@ abstract class ContentModel extends VariableColumnModel {
 	 */
 	abstract public function getStructure();
 
+
 	/**
 	 * Get the prefix for custom fields. Typically custom fields are
 	 * stored as 'field_id_#' where # is the field id.
@@ -43,6 +44,17 @@ abstract class ContentModel extends VariableColumnModel {
 	public function getCustomFieldPrefix()
 	{
 		return 'field_id_';
+	}
+
+
+	/**
+	 * Optionally return an array of default fields.
+	 *
+	 * @return Array of field definitions
+	 */
+	protected function getDefaultFields()
+	{
+		return array();
 	}
 
 	/**
@@ -68,16 +80,6 @@ abstract class ContentModel extends VariableColumnModel {
 	}
 
 	/**
-	 * Optionally return an array of default fields.
-	 *
-	 * @return Array of field definitions
-	 */
-	protected function getDefaultFields()
-	{
-		return array();
-	}
-
-	/**
 	 * Check if a custom field of $name exists
 	 */
 	public function hasCustomField($name)
@@ -86,10 +88,7 @@ abstract class ContentModel extends VariableColumnModel {
 		{
 			$default_fields = $this->getDefaultFields();
 
-			if ( ! isset($default_fields[$name]))
-			{
-				return FALSE;
-			}
+			return array_key_exists($name, $default_fields);
 		}
 
 		$this->usesCustomFields();
@@ -103,16 +102,6 @@ abstract class ContentModel extends VariableColumnModel {
 	}
 
 	/**
-	 * Get a custom field facade
-	 */
-	public function getCustomField($name)
-	{
-		$this->usesCustomFields();
-
-		return $this->_field_facades[$name];
-	}
-
-	/**
 	 * Get a list of all custom field facades
 	 */
 	public function getCustomFields()
@@ -123,6 +112,16 @@ abstract class ContentModel extends VariableColumnModel {
 	}
 
 	/**
+	 * Get a custom field facade
+	 */
+	public function getCustomField($name)
+	{
+		$this->usesCustomFields();
+
+		return $this->_field_facades[$name];
+	}
+
+	/**
 	* Get a list of all custom field names
 	*/
 	public function getCustomFieldNames()
@@ -130,6 +129,23 @@ abstract class ContentModel extends VariableColumnModel {
 		$this->usesCustomFields();
 
 		return array_keys($this->_field_facades);
+	}
+
+	/**
+	 * Get the layout for this content.
+	 */
+	public function getDisplay(LayoutInterface $layout = NULL)
+	{
+		$this->usesCustomFields();
+
+		$fields = array_map(
+			function($field) { return new FieldDisplay($field); },
+			$this->getCustomFields()
+		);
+
+		$layout = $layout ?: new DefaultLayout();
+
+		return $layout->transform($fields);
 	}
 
 	/**
@@ -290,23 +306,6 @@ abstract class ContentModel extends VariableColumnModel {
 		}
 
 		return $fields;
-	}
-
-	/**
-	 * Get the layout for this content.
-	 */
-	public function getDisplay(LayoutInterface $layout = NULL)
-	{
-		$this->usesCustomFields();
-
-		$fields = array_map(
-			function($field) { return new FieldDisplay($field); },
-			$this->getCustomFields()
-		);
-
-		$layout = $layout ?: new DefaultLayout();
-
-		return $layout->transform($fields);
 	}
 
 	/**
