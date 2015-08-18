@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Controller\Utilities;
 
 if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-
+use EllisLab\ExpressionEngine\Library\CP\Table;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -64,57 +64,44 @@ class Stats extends Utilities {
 	 */
 	public function index()
 	{
-		$vars = array(
-			'highlight'					=> 'source',
-			'source_sort_url'			=> '',
-			'record_count_sort_url'		=> '',
-			'source_direction'			=> 'asc',
-			'record_count_direction'	=> 'asc',
-			'sources'					=> array()
-		);
+		$table = ee('CP/Table', array('autosort' => TRUE));
+		$table->setColumns(array(
+			'source',
+			'record_count',
+			'manage' => array(
+				'type'	=> Table::COL_TOOLBAR
+			),
+			array(
+				'type'	=> Table::COL_CHECKBOX
+			)
+		));
 
-		// Determine and set the source sort
-		$base_url = ee('CP/URL', 'utilities/stats');
-		if (ee()->input->get('source_direction') == 'desc')
-		{
-			$base_url->setQueryStringVariable('source_direction', 'asc');
-			$vars['source_direction'] = 'desc';
-			rsort($this->sources);
-		}
-		else
-		{
-			$base_url->setQueryStringVariable('source_direction', 'desc');
-			sort($this->sources);
-		}
-		$vars['source_sort_url'] = $base_url->compile();
-
+		$data = array();
 		foreach ($this->sources as $source)
 		{
 			$vars['sources'][$source] = ee()->db->count_all($source);
+
+			$data[] = array(
+				lang($source),
+				ee()->db->count_all($source),
+				array('toolbar_items' => array(
+					'sync' => array(
+						'href' => ee('CP/URL', 'utilities/stats/sync/' . $source),
+						'title' => lang('sync')
+					)
+				)),
+				array(
+					'name' => 'selection[]',
+					'value' => $source
+				)
+			);
 		}
 
-		// Determine and set the record count sort
-		$base_url = ee('CP/URL', 'utilities/stats');
-		$base_url->setQueryStringVariable('record_count_direction', 'desc');
+		$table->setData($data);
 
-		if (ee()->input->get('record_count_direction'))
-		{
-			$vars['highlight'] = 'record_count';
-		}
-
-		if (ee()->input->get('record_count_direction') == 'desc')
-		{
-			$base_url->setQueryStringVariable('record_count_direction', 'asc');
-			$vars['record_count_direction'] = 'desc';
-			arsort($vars['sources']);
-		}
-		elseif (ee()->input->get('record_count_direction') == 'asc')
-		{
-			asort($vars['sources']);
-		}
-		$vars['record_count_sort_url'] = $base_url->compile();
-
-		ee()->view->cp_page_title = lang('manage_stats');
+		$vars['base_url'] = ee('CP/URL', 'utilities/stats');
+		$vars['table'] = $table->viewData($vars['base_url']);
+		$vars['cp_page_title'] = lang('manage_stats');
 
 		ee()->cp->render('utilities/stats', $vars);
 	}
