@@ -185,6 +185,7 @@ Grid.Publish.prototype = {
 		el = this.blankRow.clone();
 
 		el.removeClass('grid-blank-row');
+		el.removeClass('hidden');
 		el.show();
 
 		// Increment namespacing on inputs
