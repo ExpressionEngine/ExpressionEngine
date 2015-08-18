@@ -430,7 +430,7 @@ $lang = array(
 
 'categories_removed_desc' => '%d categories were removed.',
 
-'no_fields' => 'No Fields',
+'no_fields' => 'No fields found',
 
 'fields' => 'Fields',
 
