@@ -5,8 +5,8 @@ class SqlManager < ControlPanelPage
 	elements :manage_links, 'td li.view a'
 	element :search_field, 'input[name=search]'
 	element :search_btn, 'input[name=search_form]'
-	element :op_select, 'select[name=table_action]', :visible => :hidden
-	element :op_submit, '.tbl-bulk-act input[type=submit]', :visible => :hidden
+	element :op_select, 'select[name=table_action]'
+	element :op_submit, '.tbl-bulk-act input[type=submit]'
 
 	def load
 		self.open_dev_menu

@@ -25,8 +25,8 @@ feature 'SQL Manager' do
     @page.should have_text 'Database Tables'
     @page.should have_search_field
     @page.should have_search_btn
-    @page.should have_op_select
-    @page.should have_op_submit
+    #@page.should have_op_select
+    #@page.should have_op_submit
   end
 
   it 'should list tables present in the install' do
@@ -73,6 +73,7 @@ feature 'SQL Manager' do
 
   it 'should validate the table operations submission' do
     @page.select_all.click
+    @page.wait_until_op_submit_visible
     @page.op_submit.click
 
     @page.should have_text 'You must select an action to perform on the selected tables.'
@@ -80,6 +81,7 @@ feature 'SQL Manager' do
 
   it 'should repair the tables and sort and search the results' do
     @page.select_all.click
+    @page.wait_until_op_select_visible
     @page.op_select.select 'Repair'
     @page.op_submit.click
 
@@ -104,6 +106,7 @@ feature 'SQL Manager' do
 
   it 'should optimize the tables and sort and search the results' do
     @page.select_all.click
+    @page.wait_until_op_select_visible
     @page.op_select.select 'Optimize'
     @page.op_submit.click
 
