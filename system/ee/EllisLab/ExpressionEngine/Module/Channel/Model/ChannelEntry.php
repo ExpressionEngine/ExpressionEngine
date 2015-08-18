@@ -439,7 +439,7 @@ class ChannelEntry extends ContentModel {
 				'url_title' => array(
 					'field_id'				=> 'url_title',
 					'field_label'			=> lang('url_title'),
-					'field_required'		=> 'n',
+					'field_required'		=> 'y',
 					'field_fmt'				=> 'xhtml',
 					'field_instructions'	=> lang('alphadash_desc'),
 					'field_show_fmt'		=> 'n',
