@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Module\Member\Model;
+namespace EllisLab\ExpressionEngine\Model\Member;
 
 use EllisLab\ExpressionEngine\Model\Content\FieldModel;
 

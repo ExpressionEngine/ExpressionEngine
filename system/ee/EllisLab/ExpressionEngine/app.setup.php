@@ -268,10 +268,10 @@ return array(
 			'CommentSubscription' => 'Model\Comment\CommentSubscription',
 
 			// ..\Member
-			'HTMLButton' => 'Module\Member\Model\HTMLButton',
-			'Member' => 'Module\Member\Model\Member',
-			'MemberField' => 'Module\Member\Model\MemberField',
-			'MemberGroup' => 'Module\Member\Model\MemberGroup',
+			'HTMLButton' => 'Model\Member\HTMLButton',
+			'Member' => 'Model\Member\Member',
+			'MemberField' => 'Model\Member\MemberField',
+			'MemberGroup' => 'Model\Member\MemberGroup',
 
 			// ..\Search
 			'SearchLog' => 'Model\Search\SearchLog',

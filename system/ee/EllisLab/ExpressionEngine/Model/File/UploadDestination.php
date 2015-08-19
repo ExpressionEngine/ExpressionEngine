@@ -3,7 +3,7 @@
 namespace EllisLab\ExpressionEngine\Model\File;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
-use EllisLab\ExpressionEngine\Module\Member\Model\MemberGroup;
+use EllisLab\ExpressionEngine\Model\Member\MemberGroup;
 
 /**
  * ExpressionEngine - by EllisLab
