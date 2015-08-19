@@ -14,7 +14,7 @@ $lang = array(
 
 "member_updated_desc" => "Member has been saved successfully.",
 
-"member_group_updated\w" => "Member Group saved",
+"member_group_updated" => "Member Group saved",
 
 "member_group_updated_desc" => "Member Group has been saved successfully.",
 
