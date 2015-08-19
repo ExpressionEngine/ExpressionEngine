@@ -274,7 +274,7 @@ return array(
 			'MemberGroup' => 'Module\Member\Model\MemberGroup',
 
 			// ..\Search
-			'SearchLog' => 'Module\Search\Model\SearchLog',
+			'SearchLog' => 'Model\Search\SearchLog',
 
 			// TODO: FIND A NEW HOME FOR THESE
 			'EmailCache' => 'Model\EmailCache',

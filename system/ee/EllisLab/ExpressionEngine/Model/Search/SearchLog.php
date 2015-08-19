@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Module\Search\Model;
+namespace EllisLab\ExpressionEngine\Model\Search;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
