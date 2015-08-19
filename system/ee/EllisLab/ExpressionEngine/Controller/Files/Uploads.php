@@ -212,6 +212,20 @@ class Uploads extends AbstractFilesController {
 							'value' => $upload_destination->allowed_types ?: 'img'
 						)
 					)
+				),
+				array(
+					'title' => 'default_modal_view',
+					'desc' => 'default_modal_view_desc',
+					'fields' => array(
+						'default_modal_view' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'list' => lang('default_modal_view_list'),
+								'thumb' => lang('default_modal_view_thumbnails')
+							),
+							'value' => $upload_destination->default_modal_view ?: 'list'
+						)
+					)
 				)
 			),
 			'file_limits' => array(

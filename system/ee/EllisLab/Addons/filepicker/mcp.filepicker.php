@@ -63,9 +63,9 @@ class Filepicker_mcp {
 			$files = $dir->getFiles();
 		}
 
-		$type = ee()->input->get('type') ?: 'list';
+		$type = ee()->input->get('type') ?: $dir->default_modal_view;
 
-		if ($type == 'thumbnails')
+		if ($type == 'thumb')
 		{
 			$files = $files->filter(function($file)
 			{
@@ -82,7 +82,7 @@ class Filepicker_mcp {
 		$directories = array('all' => lang('all')) + $directories;
 		$vars['images'] = FALSE;
 
-		if ($this->images || $type == 'thumbnails')
+		if ($this->images || $type == 'thumb')
 		{
 			$vars['images'] = TRUE;
 			$vars['data'] = array();
@@ -104,12 +104,12 @@ class Filepicker_mcp {
 		if ( ! empty($dir) && $dir->allowed_types == 'img')
 		{
 			$imgOptions = array(
-				'thumbnails' => 'thumbnails',
+				'thumb' => 'thumbnails',
 				'list' => 'list'
 			);
 			$imgFilter = ee('Filter')->make('type', lang('picker_type'), $imgOptions)
 				->disableCustomValue()
-				->setDefaultValue('list');
+				->setDefaultValue($dir->default_modal_view);
 			$filters = $filters->add($imgFilter);
 		}
 		$perpage = $filters->values()['perpage'];

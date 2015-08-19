@@ -898,6 +898,20 @@ class Updater {
 				)
 			);
 		}
+
+		if ( ! ee()->db->field_exists('default_modal_view', 'upload_prefs'))
+		{
+			ee()->smartforge->add_column(
+				'upload_prefs',
+				array(
+					'default_modal_view' => array(
+						'type'    => 'VARCHAR(5)',
+						'null'    => FALSE,
+						'default' => 'list',
+					)
+				)
+			);
+		}
 	}
 
 	/**

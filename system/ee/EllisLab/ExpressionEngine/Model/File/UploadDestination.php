@@ -70,13 +70,14 @@ class UploadDestination extends Model {
 	);
 
 	protected static $_validation_rules = array(
-		'name'          => 'required|xss|noHtml|unique[site_id]',
-		'server_path'   => 'required|fileExists|writable',
-		'url'           => 'required|url',
-		'allowed_types' => 'enum[img,all]',
-		'max_size'      => 'isNatural',
-		'max_height'    => 'isNatural',
-		'max_width'     => 'isNatural'
+		'name'               => 'required|xss|noHtml|unique[site_id]',
+		'server_path'        => 'required|fileExists|writable',
+		'url'                => 'required|url',
+		'allowed_types'      => 'enum[img,all]',
+		'default_modal_view' => 'enum[list,thumb]',
+		'max_size'           => 'isNatural',
+		'max_height'         => 'isNatural',
+		'max_width'          => 'isNatural'
 	);
 
 	protected $_property_overrides = array();
@@ -87,6 +88,7 @@ class UploadDestination extends Model {
 	protected $server_path;
 	protected $url;
 	protected $allowed_types;
+	protected $default_modal_view;
 	protected $max_size;
 	protected $max_height;
 	protected $max_width;
