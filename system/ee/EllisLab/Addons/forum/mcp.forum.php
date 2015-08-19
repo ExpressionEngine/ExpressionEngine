@@ -51,15 +51,16 @@ class Forum_mcp extends CP_Controller {
 		$boards = $sidebar->addHeader(lang('forum_boards'))
 			->withButton(lang('new'), ee('CP/URL', $this->base . 'create/board'));
 
+		$board_list = $boards->addFolderList('boards')
+			->withRemoveUrl(ee('CP/URL', $this->base . 'remove/board', array('return' => base64_encode(ee()->cp->get_safe_refresh()))))
+			->withNoResultsText(lang('zero_forum_boards_found'));
+
 		$all_boards = ee('Model')->get('forum:Board')
 			->fields('board_id', 'board_label')
 			->all();
 
 		if (count($all_boards))
 		{
-			$board_list = $boards->addFolderList('boards')
-				->withRemoveUrl(ee('CP/URL', $this->base . 'remove/board', array('return' => base64_encode(ee()->cp->get_safe_refresh()))));
-
 			foreach ($all_boards as $board)
 			{
 				$item = $board_list->addItem($board->board_label, ee('CP/URL', $this->base . 'index/' . $board->board_id))
