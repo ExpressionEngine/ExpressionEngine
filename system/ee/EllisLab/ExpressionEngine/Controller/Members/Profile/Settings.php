@@ -303,7 +303,7 @@ class Settings extends Profile {
 
 		if (isset($upload_response['error']))
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('upload_filedata_error'))
 				->addToBody($upload_response['error'])

@@ -232,7 +232,7 @@ class Groups extends Members\Members {
 
 		$group_names = ee('Model')->get('MemberGroup', $groups)->all()->pluck('group_title');
 
-		ee('Alert')->makeInline('member_groups')
+		ee('CP/Alert')->makeInline('member_groups')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('member_groups_removed_desc'))
@@ -726,7 +726,7 @@ class Groups extends Members\Members {
 			)
 		);
 
-		ee('Alert')->makeInline('shared-form')
+		ee('CP/Alert')->makeInline('shared-form')
 			->asWarning()
 			->cannotClose()
 			->addToBody(lang('access_privilege_warning'))

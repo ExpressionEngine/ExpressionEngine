@@ -73,7 +73,7 @@ class Logs extends CP_Controller {
 
 	protected function generateSidebar()
 	{
-		$sidebar = ee('Sidebar')->make();
+		$sidebar = ee('CP/Sidebar')->make();
 		$logs = $sidebar->addHeader(lang('logs'))
 			->addBasicList();
 

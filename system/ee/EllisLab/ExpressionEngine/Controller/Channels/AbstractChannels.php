@@ -71,7 +71,7 @@ abstract class AbstractChannels extends CP_Controller {
 
 	protected function generateSidebar($active = NULL)
 	{
-		$sidebar = ee('Sidebar')->make();
+		$sidebar = ee('CP/Sidebar')->make();
 
 		$header = $sidebar->addHeader(lang('channels'), ee('CP/URL', 'channels'))
 			->withButton(lang('new'), ee('CP/URL', 'channels/create'));

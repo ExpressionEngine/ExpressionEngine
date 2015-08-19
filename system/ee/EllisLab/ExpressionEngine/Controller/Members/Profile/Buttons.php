@@ -145,7 +145,7 @@ class Buttons extends Profile {
 			)
 		));
 
-		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
+		$reorder_ajax_fail = ee('CP/Alert')->makeBanner('reorder-ajax-fail')
 			->asIssue()
 			->canClose()
 			->withTitle(lang('html_button_ajax_reorder_fail'))
@@ -212,7 +212,7 @@ class Buttons extends Profile {
 
 		$buttons->delete();
 
-		ee('Alert')->makeInline('html_buttons')
+		ee('CP/Alert')->makeInline('html_buttons')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('html_buttons_removed'))

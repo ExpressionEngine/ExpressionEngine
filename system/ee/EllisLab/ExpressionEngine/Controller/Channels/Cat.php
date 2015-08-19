@@ -210,7 +210,7 @@ class Cat extends AbstractChannelsController {
 				)
 			),
 			'permissions' => array(
-				ee('Alert')->makeInline('permissions-warn')
+				ee('CP/Alert')->makeInline('permissions-warn')
 					->asWarning()
 					->addToBody(lang('category_permissions_warning'))
 					->addToBody(
@@ -295,7 +295,7 @@ class Cat extends AbstractChannelsController {
 				ee()->session->set_flashdata('highlight_id', $group->getId());
 			}
 
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('category_group_'.$alert_key))
 				->addToBody(sprintf(lang('category_group_'.$alert_key.'_desc'), $group->group_name))
@@ -305,7 +305,7 @@ class Cat extends AbstractChannelsController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('category_group_not_'.$alert_key))
 				->addToBody(lang('category_group_not_'.$alert_key.'_desc'))
@@ -405,7 +405,7 @@ class Cat extends AbstractChannelsController {
 		ee()->javascript->set_global('lang.remove_confirm', lang('categories') . ': <b>### ' . lang('categories') . '</b>');
 		ee()->cp->add_js_script('file', 'cp/confirm_remove');
 
-		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
+		$reorder_ajax_fail = ee('CP/Alert')->makeBanner('reorder-ajax-fail')
 			->asIssue()
 			->canClose()
 			->withTitle(lang('category_ajax_reorder_fail'))
@@ -509,7 +509,7 @@ class Cat extends AbstractChannelsController {
 					->filter('cat_id', 'IN', $cat_ids)
 					->delete();
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('categories_removed'))
 					->addToBody(sprintf(lang('categories_removed_desc'), count($cat_ids)))
@@ -762,7 +762,7 @@ class Cat extends AbstractChannelsController {
 					ee()->session->set_flashdata('highlight_id', $category->getId());
 				}
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('category_group_'.$alert_key))
 					->addToBody(sprintf(lang('category_group_'.$alert_key.'_desc'), $category->cat_name))
@@ -774,7 +774,7 @@ class Cat extends AbstractChannelsController {
 			{
 				ee()->load->library('form_validation');
 				ee()->form_validation->_error_array = $result->renderErrors();
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('category_group_not_'.$alert_key))
 					->addToBody(lang('category_group_not_'.$alert_key.'_desc'))
@@ -955,7 +955,7 @@ class Cat extends AbstractChannelsController {
 		ee()->cp->add_js_script('plugin', 'ee_table_reorder');
 		ee()->cp->add_js_script('file', 'cp/channel/cat_field_reorder');
 
-		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
+		$reorder_ajax_fail = ee('CP/Alert')->makeBanner('reorder-ajax-fail')
 			->asIssue()
 			->canClose()
 			->withTitle(lang('cat_field_ajax_reorder_fail'))
@@ -1022,7 +1022,7 @@ class Cat extends AbstractChannelsController {
 					->filter('field_id', 'IN', $field_ids)
 					->delete();
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('category_fields_removed'))
 					->addToBody(sprintf(lang('category_fields_removed_desc'), count($field_ids)))
@@ -1202,7 +1202,7 @@ class Cat extends AbstractChannelsController {
 					ee()->session->set_flashdata('highlight_id', $cat_field->getId());
 				}
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('category_field_'.$alert_key))
 					->addToBody(sprintf(lang('category_field_'.$alert_key.'_desc'), $cat_field->field_label))
@@ -1214,7 +1214,7 @@ class Cat extends AbstractChannelsController {
 			{
 				ee()->load->library('form_validation');
 				ee()->form_validation->_error_array = $result->renderErrors();
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('category_field_not_'.$alert_key))
 					->addToBody(lang('category_field_not_'.$alert_key.'_desc'))

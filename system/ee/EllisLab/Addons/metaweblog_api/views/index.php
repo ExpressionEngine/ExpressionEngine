@@ -5,7 +5,7 @@
 		</fieldset>
 		<h1><?=lang('metaweblog_settings')?></h1>
 
-		<?=ee('Alert')->get('metaweblog-form')?>
+		<?=ee('CP/Alert')->get('metaweblog-form')?>
 
 		<?php $this->embed('ee:_shared/table', $table); ?>
 		<?=$pagination?>

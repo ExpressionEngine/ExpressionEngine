@@ -122,7 +122,7 @@ class Fields extends AbstractChannelsController {
 
 				ee()->session->set_flashdata('field_id', $field->field_id);
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('create_field_success'))
 					->addToBody(sprintf(lang('create_field_success_desc'), $field->field_label))
@@ -134,7 +134,7 @@ class Fields extends AbstractChannelsController {
 			{
 				$errors = $result;
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('create_field_error'))
 					->addToBody(lang('create_field_error_desc'))
@@ -201,7 +201,7 @@ class Fields extends AbstractChannelsController {
 			{
 				$field->save();
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('edit_field_success'))
 					->addToBody(sprintf(lang('edit_field_success_desc'), $field->field_label))
@@ -213,7 +213,7 @@ class Fields extends AbstractChannelsController {
 			{
 				$errors = $result;
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('edit_field_error'))
 					->addToBody(lang('edit_field_error_desc'))
@@ -396,7 +396,7 @@ class Fields extends AbstractChannelsController {
 		$field_names = $fields->pluck('field_label');
 
 		$fields->delete();
-		ee('Alert')->makeInline('fields')
+		ee('CP/Alert')->makeInline('fields')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('fields_removed_desc'))

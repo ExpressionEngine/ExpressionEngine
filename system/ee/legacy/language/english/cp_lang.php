@@ -612,6 +612,8 @@ $lang = array(
 
 'confirm_show_all_btn' => 'Damn the torpedoes, full speed ahead!',
 
+'all_items' => 'All %d items',
+
 ''=>''
 );
 

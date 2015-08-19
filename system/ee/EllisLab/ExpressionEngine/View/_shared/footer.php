@@ -140,6 +140,6 @@
 				</div>
 			</div>
 		</div>
-		<?=ee('Alert')->getStandard()?>
+		<?=ee('CP/Alert')->getStandard()?>
 	</body>
 </html>

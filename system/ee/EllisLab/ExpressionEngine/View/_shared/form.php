@@ -49,13 +49,13 @@ if ( ! isset($alerts_name))
 }
 ?>
 <?=form_open($base_url, $attributes, (isset($form_hidden)) ? $form_hidden : array())?>
-	<?=ee('Alert')->get($alerts_name)?>
+	<?=ee('CP/Alert')->get($alerts_name)?>
 	<?php
 	if (isset($extra_alerts))
 	{
 		foreach ($extra_alerts as $alert)
 		{
-			echo ee('Alert')->get($alert);
+			echo ee('CP/Alert')->get($alert);
 		}
 	}
 	if (isset($tabs)):

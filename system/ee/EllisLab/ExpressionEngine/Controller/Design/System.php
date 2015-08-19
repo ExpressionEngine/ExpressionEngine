@@ -107,7 +107,7 @@ class System extends AbstractDesignController {
 
 		if ($template->template_name == 'message_template')
 		{
-			ee('Alert')->makeInline('message-warning')
+			ee('CP/Alert')->makeInline('message-warning')
 				->asWarning()
 				->cannotClose()
 				->addToBody(lang('message_template_warning'))
@@ -121,7 +121,7 @@ class System extends AbstractDesignController {
 			$template->last_author_id = ee()->session->userdata('member_id');
 			$template->save();
 
-			$alert = ee('Alert')->makeInline('template-form')
+			$alert = ee('CP/Alert')->makeInline('template-form')
 				->asSuccess()
 				->withTitle(lang('update_template_success'))
 				->addToBody(sprintf(lang('update_template_success_desc'), lang($template->template_name)));

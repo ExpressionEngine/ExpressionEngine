@@ -142,7 +142,7 @@ class Watermarks extends AbstractFilesController {
 			{
 				ee('Model')->get('Watermark', $watermarks)->delete();
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('watermarks_removed'))
 					->addToBody(sprintf(lang('watermarks_removed_desc'), count($watermarks)))
@@ -420,7 +420,7 @@ class Watermarks extends AbstractFilesController {
 			{
 				$watermark_id = $watermark->save()->getId();
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('watermark_saved'))
 					->addToBody(lang('watermark_saved_desc'))
@@ -432,7 +432,7 @@ class Watermarks extends AbstractFilesController {
 			{
 				ee()->load->library('form_validation');
 				ee()->form_validation->_error_array = $result->renderErrors();
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('watermark_not_saved'))
 					->addToBody(lang('watermark_not_saved_desc'))

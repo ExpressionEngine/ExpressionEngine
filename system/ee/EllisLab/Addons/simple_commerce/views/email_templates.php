@@ -4,7 +4,7 @@
 			<a class="btn tn action" href="<?=ee('CP/URL', 'addons/settings/simple_commerce/create-template')?>"><?=lang('create_new')?></a>
 		</fieldset>
 		<h1><?=lang('email_templates')?></h1>
-		<?=ee('Alert')->get('email-templates-table')?>
+		<?=ee('CP/Alert')->get('email-templates-table')?>
 		<?php $this->embed('ee:_shared/table', $table); ?>
 		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>

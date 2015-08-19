@@ -255,7 +255,7 @@ class Snippets extends AbstractDesignController {
 
 			ee()->session->set_flashdata('snippet_id', $snippet->snippet_id);
 
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('create_template_partial_success'))
 				->addToBody(sprintf(lang('create_template_partial_success_desc'), $snippet->snippet_name))
@@ -265,7 +265,7 @@ class Snippets extends AbstractDesignController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('create_template_partial_error'))
 				->addToBody(lang('create_template_partial_error_desc'))
@@ -378,7 +378,7 @@ class Snippets extends AbstractDesignController {
 
 			ee()->session->set_flashdata('snippet_id', $snippet->snippet_id);
 
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('edit_template_partial_success'))
 				->addToBody(sprintf(lang('edit_template_partial_success_desc'), $snippet->snippet_name))
@@ -388,7 +388,7 @@ class Snippets extends AbstractDesignController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('edit_template_partial_error'))
 				->addToBody(lang('edit_template_partial_error_desc'))
@@ -426,7 +426,7 @@ class Snippets extends AbstractDesignController {
 
 		$snippets->delete();
 
-		ee('Alert')->makeInline('snippet-form')
+		ee('CP/Alert')->makeInline('snippet-form')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('snippets_removed_desc'))
@@ -452,7 +452,7 @@ class Snippets extends AbstractDesignController {
 		$zip = new ZipArchive();
 		if ($zip->open($zipfilename, ZipArchive::CREATE) !== TRUE)
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('error_export'))
 				->addToBody(lang('error_cannot_create_zip'))

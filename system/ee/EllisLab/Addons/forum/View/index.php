@@ -20,7 +20,7 @@
 				<?php endif; ?>
 				</i>
 			</h1>
-			<?=ee('Alert')->getAllInlines()?>
+			<?=ee('CP/Alert')->getAllInlines()?>
 			<fieldset class="tbl-filter">
 				<ul class="toolbar">
 					<li class="mods"><a href="<?=ee('CP/URL', 'addons/settings/forum/moderators/' . $board->board_id)?>" title="<?=lang('moderators')?>"></a></li>

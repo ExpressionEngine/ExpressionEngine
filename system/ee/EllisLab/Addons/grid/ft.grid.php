@@ -494,7 +494,7 @@ class Grid_ft extends EE_Fieldtype {
 		$grid_alert = '';
 		if ( ! empty($this->error_string))
 		{
-			$grid_alert = ee('Alert')->makeInline('permissions-warn')
+			$grid_alert = ee('CP/Alert')->makeInline('permissions-warn')
 				->asIssue()
 				->addToBody($this->error_string)
 				->render();
