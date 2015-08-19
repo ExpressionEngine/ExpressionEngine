@@ -14,7 +14,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
 class Member extends Model {
 
 	protected static $_primary_key = 'member_id';
-	protected static $_gateway_names = array('MemberGateway');
+	protected static $_table_name = 'members';
 
 	protected static $_relationships = array(
 		'MemberGroup' => array(
