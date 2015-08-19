@@ -43,7 +43,7 @@ class Database extends ProfilerSection {
 	/**
 	 * @var float  threshold for warnings, in bytes, default 1MB
 	 **/
-	protected $memory_threshold = 1024*1024;
+	protected $memory_threshold = 1048576;
 
 	/**
 	 * @var SQL Keywords we want highlighted
