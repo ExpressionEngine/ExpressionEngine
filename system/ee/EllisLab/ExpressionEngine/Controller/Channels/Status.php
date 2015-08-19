@@ -46,7 +46,7 @@ class Status extends AbstractChannelsController {
 	{
 		$status_groups = ee('Model')->get('StatusGroup')
 			->filter('site_id', ee()->config->item('site_id'));
-		$total_rows = $status_groups->all()->count();
+		$total_rows = $status_groups->count();
 
 		$table = $this->buildTableFromStatusGroupsQuery($status_groups);
 
@@ -230,7 +230,7 @@ class Status extends AbstractChannelsController {
 			$status_group->filter('group_id', '!=', $group_id);
 		}
 
-		if ($status_group->all()->count() > 0)
+		if ($status_group->count() > 0)
 		{
 			ee()->form_validation->set_message('validateStatusGroupName', lang('duplicate_status_group_name'));
 			return FALSE;
@@ -673,7 +673,7 @@ class Status extends AbstractChannelsController {
 			$status->filter('status_id', '!=', $status_id);
 		}
 
-		if ($status->all()->count() > 0)
+		if ($status->count() > 0)
 		{
 			ee()->form_validation->set_message('validateName', lang('duplicate_status_name'));
 			return FALSE;

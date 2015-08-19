@@ -59,7 +59,7 @@ class Cat extends AbstractChannelsController {
 		$cat_groups = ee('Model')->get('CategoryGroup')
 			->filter('site_id', ee()->config->item('site_id'));
 
-		$total_rows = $cat_groups->all()->count();
+		$total_rows = $cat_groups->count();
 
 		$table = $this->buildTableFromCategoryGroupsQuery($cat_groups);
 
@@ -340,7 +340,7 @@ class Cat extends AbstractChannelsController {
 			$cat_group->filter('group_id', '!=', $group_id);
 		}
 
-		if ($cat_group->all()->count() > 0)
+		if ($cat_group->count() > 0)
 		{
 			ee()->form_validation->set_message('validCategoryGroupName', lang('duplicate_category_group_name'));
 			return FALSE;

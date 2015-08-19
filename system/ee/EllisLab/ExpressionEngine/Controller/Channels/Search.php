@@ -97,7 +97,7 @@ class Search extends AbstractChannelsController {
 			$query = $section['query'];
 			$table_create = $section['table_create_method'];
 
-			$total_rows = $query->all()->count();
+			$total_rows = $query->count();
 
 			if ($total_rows)
 			{

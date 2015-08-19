@@ -110,7 +110,7 @@ class Simple_commerce_mcp {
 		);
 
 		$items = ee('Model')->get('simple_commerce:Item');
-		$total_rows = $items->all()->count();
+		$total_rows = $items->count();
 
 		$items = $items->order($sort_map[$table->sort_col], $table->sort_dir)
 			->limit($table->config['limit'])
@@ -617,7 +617,7 @@ class Simple_commerce_mcp {
 		);
 
 		$purchases = ee('Model')->get('simple_commerce:Purchase');
-		$total_rows = $purchases->all()->count();
+		$total_rows = $purchases->count();
 
 		$purchases = $purchases->order($sort_map[$table->sort_col], $table->sort_dir)
 			->limit($table->config['limit'])
@@ -937,7 +937,7 @@ class Simple_commerce_mcp {
 		);
 
 		$email_templates = ee('Model')->get('simple_commerce:EmailTemplate');
-		$total_rows = $email_templates->all()->count();
+		$total_rows = $email_templates->count();
 
 		$email_templates = $email_templates->order($sort_map[$table->sort_col], $table->sort_dir)
 			->limit($table->config['limit'])

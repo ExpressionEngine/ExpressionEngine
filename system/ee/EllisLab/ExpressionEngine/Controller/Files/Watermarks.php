@@ -71,7 +71,7 @@ class Watermarks extends AbstractFilesController {
 		$table->setNoResultsText('no_watermarks', 'create_watermark', ee('CP/URL', 'files/watermarks/create'));
 
 		$watermarks = ee('Model')->get('Watermark');
-		$total_rows = $watermarks->all()->count();
+		$total_rows = $watermarks->count();
 
 		$sort_map = array(
 			'name' => 'wm_name',

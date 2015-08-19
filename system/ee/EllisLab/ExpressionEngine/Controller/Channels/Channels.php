@@ -46,7 +46,7 @@ class Channels extends AbstractChannelsController {
 	{
 		$channels = ee('Model')->get('Channel')
 			->filter('site_id', ee()->config->item('site_id'));
-		$total_rows = $channels->all()->count();
+		$total_rows = $channels->count();
 
 		$table = $this->buildTableFromChannelQuery($channels);
 
@@ -409,7 +409,7 @@ class Channels extends AbstractChannelsController {
 			$channel->filter('channel_id', '!=', $channel_id);
 		}
 
-		if ($channel->all()->count() > 0)
+		if ($channel->count() > 0)
 		{
 			ee()->form_validation->set_message('_validChannelName', lang('taken_channel_name'));
 			return FALSE;
