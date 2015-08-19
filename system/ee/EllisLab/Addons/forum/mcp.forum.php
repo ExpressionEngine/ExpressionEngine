@@ -121,109 +121,108 @@ class Forum_mcp extends CP_Controller {
 			->order('board_id', 'asc')
 			->first();
 
-		$id = $board->board_id; // in case $id was NULL
-
-		if ( ! $board)
-		{
-			// We have no boards! Display something useful here.
-		}
-
 		$categories = array();
-		$forum_id = ee()->session->flashdata('forum_id');
 
-		$boards_categories = ee('Model')->get('forum:Forum')
-			->filter('board_id', $id)
-			->filter('forum_is_cat', 'y')
-			->order('forum_order', 'asc')
-			->all();
-
-		foreach ($boards_categories as $i => $category)
+		if ($board)
 		{
-			$manage = array(
-				'toolbar_items' => array(
-					'edit' => array(
-						'href' => ee('CP/URL', $this->base . 'edit/category/' . $category->forum_id),
-						'title' => lang('edit'),
-					),
-					'settings' => array(
-						'href' => ee('CP/URL', $this->base . 'settings/category/' . $category->forum_id),
-						'title' => lang('settings'),
-					)
-				)
-			);
-			$manage = ee('View')->make('ee:_shared/toolbar')->render($manage);
+			$id = $board->board_id; // in case $id was NULL
+			$forum_id = ee()->session->flashdata('forum_id');
 
-			$class = ($i == count($boards_categories) - 1) ? '' : 'mb';
+			$boards_categories = ee('Model')->get('forum:Forum')
+				->filter('board_id', $id)
+				->filter('forum_is_cat', 'y')
+				->order('forum_order', 'asc')
+				->all();
 
-			$table_config = array(
-				'limit'             => 0,
-				'reorder'           => TRUE,
-				'reorder_header'    => TRUE,
-				'sortable'          => FALSE,
-				'class'             => $class,
-				'wrap'              => FALSE,
-			);
-
-			$table = ee('CP/Table', $table_config);
-			$table->setColumns(
-				array(
-					$category->forum_name.form_hidden('cat_order[]', $category->forum_id) => array(
-						'encode' => FALSE
-					),
-					$this->getStatusWidget($category->forum_status) => array(
-						'encode' => FALSE
-					),
-					$manage => array(
-						'type'	=> Table::COL_TOOLBAR,
-					),
-					array(
-						'type'	=> Table::COL_CHECKBOX
-					)
-				)
-			);
-			$table->setNoResultsText('no_forums', 'create_new_forum', ee('CP/URL', $this->base . 'create/forum/' . $category->forum_id));
-			$table->addActionButton(ee('CP/URL', $this->base . 'create/forum/' . $category->forum_id), lang('new_forum'));
-
-			$data = array();
-			foreach ($category->Forums->sortBy('forum_order') as $forum)
+			foreach ($boards_categories as $i => $category)
 			{
-				$row = array(
-					$forum->forum_name.form_hidden('order[]', $forum->forum_id),
-					$this->getStatusWidget($forum->forum_status),
-					array('toolbar_items' => array(
-							'edit' => array(
-								'href' => ee('CP/URL', $this->base . 'edit/forum/' . $forum->forum_id),
-								'title' => lang('edit'),
-							),
-							'settings' => array(
-								'href' => ee('CP/URL', $this->base . 'settings/forum/' . $forum->forum_id),
-								'title' => lang('settings'),
+				$manage = array(
+					'toolbar_items' => array(
+						'edit' => array(
+							'href' => ee('CP/URL', $this->base . 'edit/category/' . $category->forum_id),
+							'title' => lang('edit'),
+						),
+						'settings' => array(
+							'href' => ee('CP/URL', $this->base . 'settings/category/' . $category->forum_id),
+							'title' => lang('settings'),
+						)
+					)
+				);
+				$manage = ee('View')->make('ee:_shared/toolbar')->render($manage);
+
+				$class = ($i == count($boards_categories) - 1) ? '' : 'mb';
+
+				$table_config = array(
+					'limit'             => 0,
+					'reorder'           => TRUE,
+					'reorder_header'    => TRUE,
+					'sortable'          => FALSE,
+					'class'             => $class,
+					'wrap'              => FALSE,
+				);
+
+				$table = ee('CP/Table', $table_config);
+				$table->setColumns(
+					array(
+						$category->forum_name.form_hidden('cat_order[]', $category->forum_id) => array(
+							'encode' => FALSE
+						),
+						$this->getStatusWidget($category->forum_status) => array(
+							'encode' => FALSE
+						),
+						$manage => array(
+							'type'	=> Table::COL_TOOLBAR,
+						),
+						array(
+							'type'	=> Table::COL_CHECKBOX
+						)
+					)
+				);
+				$table->setNoResultsText('no_forums', 'create_new_forum', ee('CP/URL', $this->base . 'create/forum/' . $category->forum_id));
+				$table->addActionButton(ee('CP/URL', $this->base . 'create/forum/' . $category->forum_id), lang('new_forum'));
+
+				$data = array();
+				foreach ($category->Forums->sortBy('forum_order') as $forum)
+				{
+					$row = array(
+						$forum->forum_name.form_hidden('order[]', $forum->forum_id),
+						$this->getStatusWidget($forum->forum_status),
+						array('toolbar_items' => array(
+								'edit' => array(
+									'href' => ee('CP/URL', $this->base . 'edit/forum/' . $forum->forum_id),
+									'title' => lang('edit'),
+								),
+								'settings' => array(
+									'href' => ee('CP/URL', $this->base . 'settings/forum/' . $forum->forum_id),
+									'title' => lang('settings'),
+								)
+							)
+						),
+						array(
+							'name' => 'selection[]',
+							'value' => $forum->forum_id,
+							'data'	=> array(
+								'confirm' => lang('fourm') . ': <b>' . htmlentities($forum->forum_name, ENT_QUOTES) . '</b>'
 							)
 						)
-					),
-					array(
-						'name' => 'selection[]',
-						'value' => $forum->forum_id,
-						'data'	=> array(
-							'confirm' => lang('fourm') . ': <b>' . htmlentities($forum->forum_name, ENT_QUOTES) . '</b>'
-						)
-					)
-				);
+					);
 
-				$attrs = array();
+					$attrs = array();
 
-				if ($forum_id && $forum->forum_id == $forum_id)
-				{
-					$attrs = array('class' => 'selected');
+					if ($forum_id && $forum->forum_id == $forum_id)
+					{
+						$attrs = array('class' => 'selected');
+					}
+
+					$data[] = array(
+						'attrs'		=> $attrs,
+						'columns'	=> $row
+					);
 				}
-
-				$data[] = array(
-					'attrs'		=> $attrs,
-					'columns'	=> $row
-				);
+				$table->setData($data);
+				$categories[] = $table->viewData(ee('CP/URL', $this->base . 'index/' . $id));
 			}
-			$table->setData($data);
-			$categories[] = $table->viewData(ee('CP/URL', $this->base . 'index/' . $id));
+
 		}
 
 		$vars = array(

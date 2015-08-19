@@ -19,6 +19,8 @@ $lang = array(
 'member_ranks' => 'Member Ranks',
 'forum_board' => 'Forum Board',
 'zero_forum_boards_found' => 'Zero <b>Forum Boards</b> found',
+'no_forum_boards' => 'No forum boards available',
+'create_new_board' => 'Create new forum board',
 
 // List / Index
 'forum_listing' => 'Forum listing',

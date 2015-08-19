@@ -1,6 +1,13 @@
 <div class="box">
 	<div class="tbl-ctrls">
 		<?=form_open(ee('CP/URL', 'addons/settings/forum'))?>
+			<?php if (empty($board)): ?>
+				<table cellspacing="0" class="empty no-results">
+					<tr>
+						<td><?=lang('no_forum_boards')?> <a class="btn action" href="<?=ee('CP/URL', 'addons/settings/forum/create/board')?>"><?=lang('create_new_board')?></a></td>
+					</tr>
+				</table>
+			<?php else: ?>
 			<fieldset class="tbl-search right">
 				<a class="btn tn action" href="<?=ee('CP/URL', 'addons/settings/forum/create/category/' . $board->board_id)?>"><?=lang('new_category')?></a>
 			</fieldset>
@@ -43,6 +50,7 @@
 					<button class="btn submit" data-conditional-modal="confirm-trigger"><?=lang('submit')?></button>
 				</fieldset>
 			<?php endif; ?>
+		<?php endif; ?>
 
 		<?=form_close();?>
 	</div>
