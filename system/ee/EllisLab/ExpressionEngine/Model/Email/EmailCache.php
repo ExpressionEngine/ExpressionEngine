@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Model;
+namespace EllisLab\ExpressionEngine\Model\Email;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 

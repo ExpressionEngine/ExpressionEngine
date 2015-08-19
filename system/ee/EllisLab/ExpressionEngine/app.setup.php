@@ -251,8 +251,6 @@ return array(
 			'Snippet' => 'Model\Template\Snippet',
 			'SpecialtyTemplate' => 'Model\Template\SpecialtyTemplate',
 
-		# EllisLab\ExpressionEngine\Module..
-
 			// ..\Channel
 			'Channel' => 'Model\Channel\Channel',
 			'ChannelFieldGroup'=> 'Model\Channel\ChannelFieldGroup',
@@ -276,7 +274,8 @@ return array(
 			// ..\Search
 			'SearchLog' => 'Model\Search\SearchLog',
 
-			// TODO: FIND A NEW HOME FOR THESE
-			'EmailCache' => 'Model\EmailCache',
+			// ..\Email
+			'EmailCache' => 'Model\Email\EmailCache',
+			'EmailTracker' => 'Model\Email\EmailTracker',
 	)
 );
