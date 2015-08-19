@@ -49,7 +49,7 @@ class Files extends AbstractFilesController {
 		$files = ee('Model')->get('File')
 			->filter('site_id', ee()->config->item('site_id'));
 
-		$filters = ee('Filter')
+		$filters = ee('CP/Filter')
 			->add('Perpage', $files->count(), 'show_all_files');
 
 		$filter_values = $filters->values();
@@ -135,7 +135,7 @@ class Files extends AbstractFilesController {
 
 		$base_url = ee('CP/URL', 'files/directory/' . $id);
 
-		$filters = ee('Filter')
+		$filters = ee('CP/Filter')
 			->add('Perpage', $dir->getFiles()->count(), 'show_all_files');
 
 		$filter_values = $filters->values();

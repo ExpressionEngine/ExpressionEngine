@@ -511,11 +511,11 @@ class Members extends CP_Controller {
 		$options = $group_ids;
 		$options['all'] = lang('all');
 
-		$group = ee('Filter')->make('group', 'member_group', $options);
+		$group = ee('CP/Filter')->make('group', 'member_group', $options);
 		$group->setPlaceholder(lang('all'));
 		$group->disableCustomValue();
 
-		$filters = ee('Filter')->add($group);
+		$filters = ee('CP/Filter')->add($group);
 
 		ee()->view->filters = $filters->render($this->base_url);
 		$this->params = $filters->values();

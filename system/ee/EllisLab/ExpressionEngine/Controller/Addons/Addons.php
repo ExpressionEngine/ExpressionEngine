@@ -76,20 +76,20 @@ class Addons extends CP_Controller {
 		// First Party Add-on Filters
 
 		// Status
-		$status = ee('Filter')->make('filter_by_first_status', 'filter_by_status', array(
+		$status = ee('CP/Filter')->make('filter_by_first_status', 'filter_by_status', array(
 			'installed'   => strtolower(lang('installed')),
 			'uninstalled' => strtolower(lang('uninstalled')),
 			'updates'     => strtolower(lang('needs_updates'))
 		));
 		$status->disableCustomValue();
 
-		$first_filters = ee('Filter')
+		$first_filters = ee('CP/Filter')
 			->add($status);
 
 		// Third Party Add-on Filters
 
 		// Status
-		$status = ee('Filter')->make('filter_by_third_status', 'filter_by_status', array(
+		$status = ee('CP/Filter')->make('filter_by_third_status', 'filter_by_status', array(
 			'installed'   => strtolower(lang('installed')),
 			'uninstalled' => strtolower(lang('uninstalled')),
 			'updates'     => strtolower(lang('needs_updates'))
@@ -102,10 +102,10 @@ class Addons extends CP_Controller {
 		{
 			$developer_options[$this->makeDeveloperKey($developer)] = $developer;
 		}
-		$developer = ee('Filter')->make('filter_by_developer', 'developer', $developer_options);
+		$developer = ee('CP/Filter')->make('filter_by_developer', 'developer', $developer_options);
 		$developer->disableCustomValue();
 
-		$third_filters = ee('Filter')
+		$third_filters = ee('CP/Filter')
 			->add($status)
 			->add($developer);
 

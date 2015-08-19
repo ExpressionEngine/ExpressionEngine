@@ -76,9 +76,9 @@ class Filepicker_mcp {
 		$directories = array('all' => lang('all')) + $directories;
 		$vars['type'] = $type;
 
-		$filters = ee('Filter')->add('Perpage', $files->count(), 'show_all_files');
+		$filters = ee('CP/Filter')->add('Perpage', $files->count(), 'show_all_files');
 
-		$dirFilter = ee('Filter')->make('directory', lang('directory'), $directories)
+		$dirFilter = ee('CP/Filter')->make('directory', lang('directory'), $directories)
 			->disableCustomValue();
 
 		$filters = $filters->add($dirFilter);
@@ -87,7 +87,7 @@ class Filepicker_mcp {
 			'thumb' => 'thumbnails',
 			'list' => 'list'
 		);
-		$imgFilter = ee('Filter')->make('type', lang('picker_type'), $imgOptions)
+		$imgFilter = ee('CP/Filter')->make('type', lang('picker_type'), $imgOptions)
 			->disableCustomValue()
 			->setDefaultValue($type);
 		$filters = $filters->add($imgFilter);

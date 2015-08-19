@@ -84,7 +84,7 @@ class Comments extends AbstractPublishController {
 			$comments->filter('comment', 'LIKE', '%' . ee()->view->search_value . '%');
 		}
 
-		$filters = ee('Filter')
+		$filters = ee('CP/Filter')
 			->add($channel_filter)
 			->add($status_filter)
 			->add('Date');
@@ -208,7 +208,7 @@ class Comments extends AbstractPublishController {
 			$comments->filter('comment', 'LIKE', '%' . ee()->view->search_value . '%');
 		}
 
-		$filters = ee('Filter')
+		$filters = ee('CP/Filter')
 			->add($status_filter)
 			->add('Date');
 
@@ -545,7 +545,7 @@ class Comments extends AbstractPublishController {
 
 	private function createStatusFilter()
 	{
-		$status = ee('Filter')->make('filter_by_status', 'filter_by_status', array(
+		$status = ee('CP/Filter')->make('filter_by_status', 'filter_by_status', array(
 			'o' => lang('open'),
 			'c' => lang('closed'),
 			'p' => lang('pending'),
