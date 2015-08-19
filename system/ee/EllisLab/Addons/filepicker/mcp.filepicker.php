@@ -36,6 +36,7 @@ class Filepicker_mcp {
 		}
 
 		$dirs = ee()->api->get('UploadDestination')
+			->with('Files')
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
@@ -62,7 +63,7 @@ class Filepicker_mcp {
 			}
 
 			$dir = $directories[$id];
-			$files = $dir->getFiles();
+			$files = $dir->Files;
 			$type = ee()->input->get('type') ?: $dir->default_modal_view;
 		}
 
