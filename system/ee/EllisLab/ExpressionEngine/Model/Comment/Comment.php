@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Module\Comment\Model;
+namespace EllisLab\ExpressionEngine\Model\Comment;
 
 use EllisLab\ExpressionEngine\Service\Model\Model;
 
@@ -30,7 +30,7 @@ use EllisLab\ExpressionEngine\Service\Model\Model;
  * @link		http://ellislab.com
  */
 class Comment extends Model {
-	
+
 	protected static $_primary_key = 'comment_id';
 	protected static $_table_name = 'comments';
 

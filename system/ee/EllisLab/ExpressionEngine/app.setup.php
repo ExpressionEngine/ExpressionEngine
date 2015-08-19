@@ -264,8 +264,8 @@ return array(
 			'ChannelLayout' => 'Module\Channel\Model\ChannelLayout',
 
 			// ..\Comment
-			'Comment' => 'Module\Comment\Model\Comment',
-			'CommentSubscription' => 'Module\Comment\Model\CommentSubscription',
+			'Comment' => 'Model\Comment\Comment',
+			'CommentSubscription' => 'Model\Comment\CommentSubscription',
 
 			// ..\Member
 			'HTMLButton' => 'Module\Member\Model\HTMLButton',
