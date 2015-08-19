@@ -84,9 +84,6 @@ class FilePicker {
 				),
 				'file_type',
 				'date_added',
-				'manage' => array(
-					'type'	=> Table::COL_TOOLBAR
-				)
 			)
 		);
 		$table->setNoResultsText(lang('no_uploaded_files'));
@@ -110,31 +107,10 @@ class FilePicker {
 				continue;
 			}
 
-			$toolbar = array(
-				'edit' => array(
-					'href' => ee('CP/URL', 'files/file/edit/' . $file->file_id),
-					'title' => lang('edit')
-				),
-				'crop' => array(
-					'href' => ee('CP/URL', 'files/file/crop/' . $file->file_id),
-					'title' => lang('crop'),
-				),
-				'download' => array(
-					'href' => ee('CP/URL', 'files/file/download/' . $file->file_id),
-					'title' => lang('download'),
-				),
-			);
-
-			if ( ! $file->isImage())
-			{
-				unset($toolbar['crop']);
-			}
-
 			$column = array(
 				$file->title . '<br><em class="faded">' . $file->file_name . '</em>',
 				$file->mime_type,
 				ee()->localize->human_time($file->upload_date),
-				array('toolbar_items' => $toolbar),
 			);
 
 			$attrs = array('data-id' => $file->file_id);
