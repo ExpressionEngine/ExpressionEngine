@@ -50,7 +50,6 @@ class Uploads extends AbstractFilesController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->generateSidebar(NULL);
 		$this->stdHeader();
 
 		ee()->load->library('form_validation');
@@ -61,6 +60,7 @@ class Uploads extends AbstractFilesController {
 	 */
 	public function create()
 	{
+		$this->generateSidebar(NULL);
 		return $this->form();
 	}
 
@@ -72,6 +72,7 @@ class Uploads extends AbstractFilesController {
 	 */
 	public function edit($upload_id)
 	{
+		$this->generateSidebar($upload_id);
 		return $this->form($upload_id);
 	}
 
@@ -670,6 +671,7 @@ class Uploads extends AbstractFilesController {
 			ee()->functions->redirect(ee('CP/URL', 'files/uploads'));
 		}
 
+		$this->generateSidebar($upload_id);
 		ee()->load->model('file_upload_preferences_model');
 
 		// Get upload destination with config.php overrides in place
