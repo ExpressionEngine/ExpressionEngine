@@ -142,7 +142,6 @@ $(document).ready(function () {
 		EE.insert_placeholders();
 	}
 
-	EE.cp.zebra_tables();
 	EE.cp.cleanUrls();
 	EE.cp.bindCpMessageClose();
 	EE.cp.channelMenuFilter();
@@ -346,21 +345,6 @@ EE.insert_placeholders = function () {
 		})
 		.trigger('blur');
 	});
-};
-
-EE.cp.zebra_tables = function(table) {
-	table = table || $('table');
-
-	if ( ! table.jquery) {
-		table = $(table);
-	}
-
-	$(table)
-		.find('tr')
-		.removeClass('alt')
-		.filter(':even').addClass('alt')
-		.end()
-		.filter(':first').removeClass('alt');
 };
 
 /**

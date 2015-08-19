@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Controller\Channels\Fields;
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
-use EllisLab\ExpressionEngine\Module\Channel\Model\ChannelFieldGroup;
+use EllisLab\ExpressionEngine\Model\Channel\ChannelFieldGroup;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -127,6 +127,7 @@ class Groups extends AbstractChannelsController {
 			}
 			else
 			{
+				$vars['errors'] = $result;
 				ee('Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('create_field_group_error'))
@@ -185,6 +186,7 @@ class Groups extends AbstractChannelsController {
 			}
 			else
 			{
+				$vars['errors'] = $result;
 				ee('Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('edit_field_group_error'))

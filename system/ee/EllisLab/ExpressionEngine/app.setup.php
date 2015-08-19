@@ -251,32 +251,31 @@ return array(
 			'Snippet' => 'Model\Template\Snippet',
 			'SpecialtyTemplate' => 'Model\Template\SpecialtyTemplate',
 
-		# EllisLab\ExpressionEngine\Module..
-
 			// ..\Channel
-			'Channel' => 'Module\Channel\Model\Channel',
-			'ChannelFieldGroup'=> 'Module\Channel\Model\ChannelFieldGroup',
-			'ChannelField' => 'Module\Channel\Model\ChannelField',
-			'ChannelEntry' => 'Module\Channel\Model\ChannelEntry',
-			'ChannelEntryAutosave' => 'Module\Channel\Model\ChannelEntryAutosave',
-			'ChannelEntryVersion' => 'Module\Channel\Model\ChannelEntryVersion',
-			'ChannelFormSettings' => 'Module\Channel\Model\ChannelFormSettings',
-			'ChannelLayout' => 'Module\Channel\Model\ChannelLayout',
+			'Channel' => 'Model\Channel\Channel',
+			'ChannelFieldGroup'=> 'Model\Channel\ChannelFieldGroup',
+			'ChannelField' => 'Model\Channel\ChannelField',
+			'ChannelEntry' => 'Model\Channel\ChannelEntry',
+			'ChannelEntryAutosave' => 'Model\Channel\ChannelEntryAutosave',
+			'ChannelEntryVersion' => 'Model\Channel\ChannelEntryVersion',
+			'ChannelFormSettings' => 'Model\Channel\ChannelFormSettings',
+			'ChannelLayout' => 'Model\Channel\ChannelLayout',
 
 			// ..\Comment
-			'Comment' => 'Module\Comment\Model\Comment',
-			'CommentSubscription' => 'Module\Comment\Model\CommentSubscription',
+			'Comment' => 'Model\Comment\Comment',
+			'CommentSubscription' => 'Model\Comment\CommentSubscription',
 
 			// ..\Member
-			'HTMLButton' => 'Module\Member\Model\HTMLButton',
-			'Member' => 'Module\Member\Model\Member',
-			'MemberField' => 'Module\Member\Model\MemberField',
-			'MemberGroup' => 'Module\Member\Model\MemberGroup',
+			'HTMLButton' => 'Model\Member\HTMLButton',
+			'Member' => 'Model\Member\Member',
+			'MemberField' => 'Model\Member\MemberField',
+			'MemberGroup' => 'Model\Member\MemberGroup',
 
 			// ..\Search
-			'SearchLog' => 'Module\Search\Model\SearchLog',
+			'SearchLog' => 'Model\Search\SearchLog',
 
-			// TODO: FIND A NEW HOME FOR THESE
-			'EmailCache' => 'Model\EmailCache',
+			// ..\Email
+			'EmailCache' => 'Model\Email\EmailCache',
+			'EmailTracker' => 'Model\Email\EmailTracker',
 	)
 );

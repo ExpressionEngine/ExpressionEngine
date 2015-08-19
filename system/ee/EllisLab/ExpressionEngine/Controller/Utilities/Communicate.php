@@ -6,7 +6,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Model\EmailCache;
+use EllisLab\ExpressionEngine\Model\Email\EmailCache;
 
 /**
  * ExpressionEngine - by EllisLab

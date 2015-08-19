@@ -106,8 +106,8 @@ class Fields extends Members\Members {
 
 			$columns = array(
 				'id' => $field->getId().form_hidden('order[]', $field->getId()),
-				'm_field_name' => $field->m_field_name,
-				'm_field_label' => "<var>{{$field->m_field_label}}</var>",
+				'm_field_label' => $field->m_field_label,
+				'm_field_name' => "<var>{{$field->m_field_name}}</var>",
 				'm_field_type' => $type_map[$field->m_field_type],
 				$toolbar,
 				array(

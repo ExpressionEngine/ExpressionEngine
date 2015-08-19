@@ -116,8 +116,17 @@ class Quicklinks extends Profile {
 		$this->base_url = ee('CP/URL', $this->index_url . '/create', $this->query_string);
 
 		$vars = array(
-			'cp_page_title' => lang('create_quick_link')
+			'cp_page_title' => lang('create_quick_link'),
 		);
+
+		$values = array(
+			'name' => ee()->input->get('name'),
+			'url'  => ''
+		);
+
+		$url = base64_decode(ee()->input->get('url'));
+		$uri_elements = json_decode($url, TRUE);
+		$values['url'] = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
 
 		if ( ! empty($_POST))
 		{
@@ -130,7 +139,7 @@ class Quicklinks extends Profile {
 			);
 		}
 
-		$this->form($vars);
+		$this->form($vars, $values);
 	}
 
 	/**

@@ -185,6 +185,7 @@ Grid.Publish.prototype = {
 		el = this.blankRow.clone();
 
 		el.removeClass('grid-blank-row');
+		el.removeClass('hidden');
 		el.show();
 
 		// Increment namespacing on inputs
@@ -215,9 +216,6 @@ Grid.Publish.prototype = {
 		if (EE.cp.formValidation !== undefined) {
 			EE.cp.formValidation.bindInputs(el);
 		}
-
-		// Re-zebra-stripe the table
-		this._zebraStripe();
 	},
 
 	/**
@@ -243,9 +241,6 @@ Grid.Publish.prototype = {
 			if (that._getRows().size() == 0) {
 				that.emptyField.show();
 			}
-
-			// Re-zebra-stripe the table
-			that._zebraStripe();
 		});
 	},
 
@@ -284,16 +279,6 @@ Grid.Publish.prototype = {
 			row.find('td[data-fieldtype="'+fieldtype+'"]').each(function() {
 				Grid._eventHandlers[action][fieldtype]($(this));
 			});
-		}
-	},
-
-	/**
-	 * When we manipulate the table, we need to re-zebra-stripe it to
-	 * conform to CP styles
-	 */
-	_zebraStripe: function() {
-		if (EE.cp !== undefined) {
-			EE.cp.zebra_tables(this.root);
 		}
 	}
 };

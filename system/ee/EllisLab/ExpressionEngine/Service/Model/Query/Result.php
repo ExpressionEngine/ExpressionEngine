@@ -80,6 +80,15 @@ class Result {
 
 		reset($this->aliases);
 		$root = key($this->aliases);
+
+		foreach ($this->objects as $type => $objs)
+		{
+			foreach ($objs as $obj)
+			{
+				$obj->emit('afterLoad');
+			}
+		}
+
 		return new Collection($this->objects[$root]);
 	}
 
@@ -117,6 +126,7 @@ class Result {
 			$name = $this->aliases[$alias];
 
 			$object = $this->frontend->make($name);
+			$object->emit('beforeLoad'); // do not add 'afterLoad' to this method, it must happen *after* relationships are matched
 			$object->fill($model_data);
 
 			$this->objects[$alias][$object->getId()] = $object;
@@ -202,6 +212,7 @@ class Result {
 			{
 				$collection[] = $kids[$id];
 			}
+
 			$name = $relation->getName();
 			$parent->getAssociation($name)->fill($collection);
 		}

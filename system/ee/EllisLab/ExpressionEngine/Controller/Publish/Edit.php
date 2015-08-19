@@ -260,7 +260,8 @@ class Edit extends AbstractPublishController {
 			'form_url' => ee('CP/URL', 'publish/edit/entry/' . $id),
 			'form_attributes' => $form_attributes,
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
-			'button_text' => lang('btn_publish')
+			'button_text' => lang('btn_publish'),
+			'extra_publish_controls' => $entry->Channel->extra_publish_controls
 		);
 
 		$version_id = ee()->input->get('version');
@@ -344,7 +345,7 @@ class Edit extends AbstractPublishController {
 						->addToBody(sprintf(lang('edit_entry_success_desc'), $entry->title))
 						->defer();
 
-					ee()->functions->redirect(ee('CP/URL', 'publish/edit/', array('channel_id' => $entry->channel_id)));
+					ee()->functions->redirect(ee('CP/URL', 'publish/edit/', array('filter_by_channel' => $entry->channel_id)));
 				}
 			}
 			else

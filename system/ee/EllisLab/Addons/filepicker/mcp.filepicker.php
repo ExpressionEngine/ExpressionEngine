@@ -96,8 +96,9 @@ class Filepicker_mcp {
 
 		$filters = ee('Filter')->add('Perpage', $files->count(), 'show_all_files');
 
-		$dirFilter = ee('Filter')->make('directory', lang('directory'), $directories);
-		$dirFilter->disableCustomValue();
+		$dirFilter = ee('Filter')->make('directory', lang('directory'), $directories)
+			->disableCustomValue();
+
 		$filters = $filters->add($dirFilter);
 
 		if ( ! empty($dir) && $dir->allowed_types == 'img')
@@ -106,8 +107,9 @@ class Filepicker_mcp {
 				'thumbnails' => 'thumbnails',
 				'list' => 'list'
 			);
-			$imgFilter = ee('Filter')->make('type', lang('picker_type'), $imgOptions);
-			$imgFilter->disableCustomValue();
+			$imgFilter = ee('Filter')->make('type', lang('picker_type'), $imgOptions)
+				->disableCustomValue()
+				->setDefaultValue('list');
 			$filters = $filters->add($imgFilter);
 		}
 		$perpage = $filters->values()['perpage'];

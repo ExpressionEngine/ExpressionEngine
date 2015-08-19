@@ -309,7 +309,7 @@ class Builder {
 		{
 			if ($children instanceOf \Closure)
 			{
-				continue;
+				$children = array();
 			}
 
 			if ( ! is_array($children))

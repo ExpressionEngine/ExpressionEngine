@@ -230,7 +230,7 @@ class Board extends Model {
 
 		foreach ($sites as $site)
 		{
-			$triggers = $boards->filter('board_site_id', $side->site_id)
+			$triggers = $boards->filter('board_site_id', $site->site_id)
 				->pluck('board_forum_trigger');
 
 			$site->site_system_preferences->forum_trigger = implode('|', $triggers);

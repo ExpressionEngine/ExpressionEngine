@@ -695,7 +695,7 @@ class Groups extends Members\Members {
 			),
 			'addon_access' => array(
 				array(
-					'title' => 'addon_access',
+					'title' => 'addons_access',
 					'desc' => 'addons_access_desc',
 					'fields' => array(
 						'addons_access' => array(

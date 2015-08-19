@@ -803,6 +803,11 @@ class Addons extends CP_Controller {
 
 			if (is_array($data))
 			{
+				if (isset($data['ajax']) && $data['ajax'])
+				{
+					return $data['body'];
+				}
+
 				$vars['_module_cp_body'] = $data['body'];
 
 				if (isset($data['heading']))

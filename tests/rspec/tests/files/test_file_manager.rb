@@ -103,7 +103,7 @@ feature 'File Manager' do
 		@page.perpage_filter.click
 		@page.wait_until_perpage_filter_menu_visible
 		@page.perpage_manual_filter.set '5'
-		@page.action_submit_button.click
+		@page.execute_script("$('div.filters input[type=text]').closest('form').submit()")
 		no_php_js_errors
 
 		@page.perpage_filter.text.should eq "show (5)"
@@ -117,7 +117,7 @@ feature 'File Manager' do
 		@page.perpage_filter.click
 		@page.wait_until_perpage_filter_menu_visible
 		@page.perpage_manual_filter.set '5'
-		@page.action_submit_button.click
+		@page.execute_script("$('div.filters input[type=text]').closest('form').submit()")
 		no_php_js_errors
 
 		click_link "Next"

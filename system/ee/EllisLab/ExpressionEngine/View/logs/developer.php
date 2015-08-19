@@ -5,7 +5,6 @@
 	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
 	<?=ee('Alert')->getAllInlines()?>
 	<?php if (isset($filters)) echo $filters; ?>
-	<input type="submit" style="position: absolute; left: -9999px"/>
 	<section class="item-wrap log">
 		<?php if (empty($rows)): ?>
 			<p class="no-results"><?=lang('no_developer_logs_found')?></p>
