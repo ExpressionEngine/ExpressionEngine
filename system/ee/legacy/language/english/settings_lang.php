@@ -241,10 +241,6 @@ $lang = array(
 
 'show_profiler_desc' => 'When set to <b>yes</b>, super admins and member groups with permissions will see benchmark results, all SQL queries, and submitted form data displayed at the bottom of the browser window.',
 
-'template_debugging' => 'Display template debugging?',
-
-'template_debugging_desc' => 'When set to <b>yes</b>, super admins and member groups with permissions will see a list of details concerning the processing of the page.',
-
 'output_options' => 'Output Options',
 
 'gzip_output' => 'Enable <abbr title="GNU Zip Compression">GZIP</abbr> compression?',

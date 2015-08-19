@@ -57,13 +57,6 @@ class DebugOutput extends Settings {
 					'fields' => array(
 						'show_profiler' => array('type' => 'yes_no')
 					)
-				),
-				array(
-					'title' => 'template_debugging',
-					'desc' => 'template_debugging_desc',
-					'fields' => array(
-						'template_debugging' => array('type' => 'yes_no')
-					)
 				)
 			),
 			'output_options' => array(

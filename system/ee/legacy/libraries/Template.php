@@ -122,7 +122,7 @@ class EE_Template {
 			$this->sites[ee()->config->item('site_id')] = ee()->config->item('site_short_name');
 		}
 
-		if (ee()->config->item('template_debugging') === 'y' && ee()->session->userdata['group_id'] == 1)
+		if (ee()->config->item('show_profiler') === 'y' && ee()->session->userdata['group_id'] == 1)
 		{
 			$this->debugging = TRUE;
 
