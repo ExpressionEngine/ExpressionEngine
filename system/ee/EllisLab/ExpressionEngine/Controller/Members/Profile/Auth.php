@@ -64,7 +64,7 @@ class Auth extends Profile {
 				)
 			),
 			'change_password' => array(
-				ee('Alert')->makeInline('permissions-warn')
+				ee('CP/Alert')->makeInline('permissions-warn')
 					->asWarning()
 					->addToBody(lang('password_change_exp'))
 					->cannotClose()

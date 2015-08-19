@@ -244,7 +244,7 @@ class Forum_mcp extends CP_Controller {
 			),
 		));
 
-		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
+		$reorder_ajax_fail = ee('CP/Alert')->makeBanner('reorder-ajax-fail')
 			->asIssue()
 			->canClose()
 			->withTitle(lang('forums_ajax_reorder_fail'))
@@ -531,7 +531,7 @@ class Forum_mcp extends CP_Controller {
 
 		if ($result->failed())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang($action . '_forum_board_error'))
 				->addToBody(lang($action . '_forum_board_error_desc'))
@@ -554,7 +554,7 @@ class Forum_mcp extends CP_Controller {
 
 		$this->installSpecialtyTemplates($board->board_site_id);
 
-		ee('Alert')->makeInline('shared-form')
+		ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
 			->withTitle(lang($action . '_forum_board_success'))
 			->addToBody(sprintf(lang($action . '_forum_board_success_desc'), $board->board_label))
@@ -656,7 +656,7 @@ class Forum_mcp extends CP_Controller {
 				),
 			),
 			'php_parsing' => array(
-				ee('Alert')->makeInline('permissions-warn')
+				ee('CP/Alert')->makeInline('permissions-warn')
 					->asWarning()
 					->addToBody(lang('php_in_templates_warning'))
 					->addToBody(
@@ -1045,7 +1045,7 @@ class Forum_mcp extends CP_Controller {
 
 		$sections = array(
 			array(
-				ee('Alert')->makeInline('permissions-warn')
+				ee('CP/Alert')->makeInline('permissions-warn')
 					->asWarning()
 					->addToBody(lang('permissions_warning'))
 					->cannotClose()
@@ -1177,7 +1177,7 @@ class Forum_mcp extends CP_Controller {
 
 		$board->delete();
 
-		ee('Alert')->makeInline('entries-form')
+		ee('CP/Alert')->makeInline('entries-form')
 			->asSuccess()
 			->withTitle(lang('forum_board_removed'))
 			->addToBody(sprintf(lang('forum_board_removed_desc'), $name))
@@ -1329,7 +1329,7 @@ class Forum_mcp extends CP_Controller {
 
 		if ($result->failed())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang($action . '_category_error'))
 				->addToBody(lang($action . '_category_error_desc'))
@@ -1345,7 +1345,7 @@ class Forum_mcp extends CP_Controller {
 
 		$category->save();
 
-		ee('Alert')->makeInline('shared-form')
+		ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
 			->withTitle(lang($action . '_category_success'))
 			->addToBody(sprintf(lang($action . '_category_success_desc'), $category->forum_name))
@@ -1459,7 +1459,7 @@ class Forum_mcp extends CP_Controller {
 
 			$category->save();
 
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('edit_category_settings_success'))
 				->addToBody(sprintf(lang('edit_category_settings_success_desc'), $category->forum_name))
@@ -1486,7 +1486,7 @@ class Forum_mcp extends CP_Controller {
 
 		$vars['sections'] = array(
 			array(
-				ee('Alert')->makeInline('permissions-warn')
+				ee('CP/Alert')->makeInline('permissions-warn')
 					->asWarning()
 					->addToBody(lang('permissions_warning'))
 					->cannotClose()
@@ -1668,7 +1668,7 @@ class Forum_mcp extends CP_Controller {
 
 		if ($result->failed())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang($action . '_forum_error'))
 				->addToBody(lang($action . '_forum_error_desc'))
@@ -1689,7 +1689,7 @@ class Forum_mcp extends CP_Controller {
 			ee()->session->set_flashdata('forum_id', $forum->forum_id);
 		}
 
-		ee('Alert')->makeInline('shared-form')
+		ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
 			->withTitle(lang($action . '_forum_success'))
 			->addToBody(sprintf(lang($action . '_forum_success_desc'), $forum->forum_name))
@@ -1977,7 +1977,7 @@ class Forum_mcp extends CP_Controller {
 
 			$forum->save();
 
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('edit_forum_settings_success'))
 				->addToBody(sprintf(lang('edit_forum_settings_success_desc'), $forum->forum_name))
@@ -2004,7 +2004,7 @@ class Forum_mcp extends CP_Controller {
 
 		$vars['sections'] = array(
 			array(
-				ee('Alert')->makeInline('permissions-warn')
+				ee('CP/Alert')->makeInline('permissions-warn')
 					->asWarning()
 					->addToBody(lang('permissions_warning'))
 					->cannotClose()
@@ -2126,7 +2126,7 @@ class Forum_mcp extends CP_Controller {
 
 		$forums->delete();
 
-		ee('Alert')->makeInline('entries-form')
+		ee('CP/Alert')->makeInline('entries-form')
 			->asSuccess()
 			->withTitle(lang('forums_removed'))
 			->addToBody(lang('forums_removed_desc'))
@@ -2392,7 +2392,7 @@ class Forum_mcp extends CP_Controller {
 
 		if ($result->failed())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang($action . '_rank_error'))
 				->addToBody(lang($action . '_rank_error_desc'))
@@ -2413,7 +2413,7 @@ class Forum_mcp extends CP_Controller {
 			ee()->session->set_flashdata('rank_id', $rank->rank_id);
 		}
 
-		ee('Alert')->makeInline('shared-form')
+		ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
 			->withTitle(lang($action . '_rank_success'))
 			->addToBody(sprintf(lang($action . '_rank_success_desc'), $rank->rank_title))
@@ -2435,7 +2435,7 @@ class Forum_mcp extends CP_Controller {
 
 		$ranks->delete();
 
-		ee('Alert')->makeInline('entries-form')
+		ee('CP/Alert')->makeInline('entries-form')
 			->asSuccess()
 			->withTitle(lang('ranks_removed'))
 			->addToBody(lang('ranks_removed_desc'))
@@ -2577,7 +2577,7 @@ class Forum_mcp extends CP_Controller {
 
 				ee()->session->set_flashdata('admin_id', $admin->admin_id);
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('create_administrator_success'))
 					->addToBody(sprintf(lang('create_administrator_success_desc'), $admin->getAdminName()))
@@ -2708,7 +2708,7 @@ class Forum_mcp extends CP_Controller {
 
 		if ($result->failed())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('create_administrator_error'))
 				->addToBody(lang('create_administrator_error_desc'))
@@ -2733,7 +2733,7 @@ class Forum_mcp extends CP_Controller {
 
 		$admins->delete();
 
-		ee('Alert')->makeInline('entries-form')
+		ee('CP/Alert')->makeInline('entries-form')
 			->asSuccess()
 			->withTitle(lang('admins_removed'))
 			->addToBody(lang('admins_removed_desc'))
@@ -3127,7 +3127,7 @@ class Forum_mcp extends CP_Controller {
 
 		if ($result->failed())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('create_moderator_error'))
 				->addToBody(lang('create_moderator_error_desc'))
@@ -3148,7 +3148,7 @@ class Forum_mcp extends CP_Controller {
 			ee()->session->set_flashdata('mod_id', $moderator->mod_id);
 		}
 
-		ee('Alert')->makeInline('shared-form')
+		ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
 			->withTitle(lang($action . '_moderator_success'))
 			->addToBody(sprintf(lang($action . '_moderator_success_desc'), $moderator->getModeratorName()))
@@ -3172,7 +3172,7 @@ class Forum_mcp extends CP_Controller {
 
 		$moderator->delete();
 
-		ee('Alert')->makeInline('entries-form')
+		ee('CP/Alert')->makeInline('entries-form')
 			->asSuccess()
 			->withTitle(lang('moderator_removed'))
 			->addToBody(sprintf(lang('moderator_removed_desc'), $name))

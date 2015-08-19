@@ -653,7 +653,7 @@ class Addons extends CP_Controller {
 		{
 			if ( ! empty($installed[$party]))
 			{
-				$alert = ee('Alert')->makeInline($party . '-party')
+				$alert = ee('CP/Alert')->makeInline($party . '-party')
 					->asSuccess()
 					->withTitle(lang('addons_installed'))
 					->addToBody(lang('addons_installed_desc'))
@@ -755,7 +755,7 @@ class Addons extends CP_Controller {
 		{
 			if ( ! empty($uninstalled[$party]))
 			{
-				$alert = ee('Alert')->makeInline($party . '-party')
+				$alert = ee('CP/Alert')->makeInline($party . '-party')
 					->asSuccess()
 					->withTitle(lang('addons_uninstalled'))
 					->addToBody(lang('addons_uninstalled_desc'))
@@ -1738,7 +1738,7 @@ class Addons extends CP_Controller {
 		$extension_model->settings = $settings;
 		$extension_model->save();
 
-		ee('Alert')->makeInline('shared-form')
+		ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
 			->withTitle(lang('settings_saved'))
 			->addToBody(sprintf(lang('settings_saved_desc'), $extension['name']))
@@ -1775,7 +1775,7 @@ class Addons extends CP_Controller {
 			$html = '<div class="box">';
 			$html .= '<h1>' . $fieldtype['name'] . ' ' . lang('configuration') . '</h1>';
 			$html .= form_open(ee('CP/URL', 'addons/settings/' . $fieldtype['package'] . '/save'), 'class="settings"');
-			$html .= ee('Alert')->get('shared-form');
+			$html .= ee('CP/Alert')->get('shared-form');
 			$html .= $fieldtype_settings;
 			$html .= '<fieldset class="form-ctrls">';
 			$html .= cp_form_submit('btn_save_settings', 'btn_saving');
@@ -1808,7 +1808,7 @@ class Addons extends CP_Controller {
 		$fieldtype_model->settings = $settings;
 		$fieldtype_model->save();
 
-		ee('Alert')->makeInline('shared-form')
+		ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
 			->withTitle(lang('settings_saved'))
 			->addToBody(sprintf(lang('settings_saved_desc'), $fieldtype['name']))

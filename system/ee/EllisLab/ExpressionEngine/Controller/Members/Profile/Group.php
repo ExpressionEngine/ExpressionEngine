@@ -49,7 +49,7 @@ class Group extends Profile {
 
 		$vars['sections'] = array(
 			array(
-				ee('Alert')->makeInline('permissions-warn')
+				ee('CP/Alert')->makeInline('permissions-warn')
 					->asWarning()
 					->addToBody(lang('access_privilege_warning'))
 					->addToBody(

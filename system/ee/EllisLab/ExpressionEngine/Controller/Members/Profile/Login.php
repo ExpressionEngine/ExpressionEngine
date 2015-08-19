@@ -91,7 +91,7 @@ class Login extends Profile {
 				+ array_slice($choices, 1 , 1, TRUE);
 		}
 
-		ee('Alert')->makeInline('shared-form')
+		ee('CP/Alert')->makeInline('shared-form')
 			->asWarning()
 			->cannotClose()
 			->addToBody(sprintf(lang('login_as_warning'), $this->member->screen_name), 'warning')

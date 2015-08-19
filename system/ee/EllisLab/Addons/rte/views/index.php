@@ -9,7 +9,7 @@
 			</fieldset>
 			<h1><?=lang('available_tool_sets')?></h1>
 
-			<?=ee('Alert')->get('toolsets-form')?>
+			<?=ee('CP/Alert')->get('toolsets-form')?>
 
 			<?php $this->embed('ee:_shared/table', $table); ?>
 			<?=$pagination?>

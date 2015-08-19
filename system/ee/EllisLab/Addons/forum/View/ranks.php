@@ -5,7 +5,7 @@
 				<a class="btn tn action" href="<?=ee('CP/URL', 'addons/settings/forum/create/rank/')?>"><?=lang('create_new')?></a>
 			</fieldset>
 			<h1><?=$cp_heading?></h1>
-			<?=ee('Alert')->getAllInlines()?>
+			<?=ee('CP/Alert')->getAllInlines()?>
 			<?php if (isset($filters)) echo $filters; ?>
 			<?php $this->embed('ee:_shared/table', $table); ?>
 			<?=$pagination?>

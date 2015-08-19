@@ -132,7 +132,7 @@ class Email extends AbstractDesignController {
 			$template->last_author_id = ee()->session->userdata('member_id');
 			$template->save();
 
-			$alert = ee('Alert')->makeInline('template-form')
+			$alert = ee('CP/Alert')->makeInline('template-form')
 				->asSuccess()
 				->withTitle(lang('update_template_success'))
 				->addToBody(sprintf(lang('update_template_success_desc'), lang($template->template_name)));
@@ -147,7 +147,7 @@ class Email extends AbstractDesignController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('template-form')
+			ee('CP/Alert')->makeInline('template-form')
 				->asIssue()
 				->withTitle(lang('update_template_error'))
 				->addToBody(lang('update_template_error_desc'))

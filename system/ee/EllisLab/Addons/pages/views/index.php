@@ -21,7 +21,7 @@
 		</fieldset>
 		<h1><?=lang('all_pages')?></h1>
 
-		<?=ee('Alert')->get('pages-form')?>
+		<?=ee('CP/Alert')->get('pages-form')?>
 
 		<?php $this->embed('ee:_shared/table', $table); ?>
 		<?=$pagination?>

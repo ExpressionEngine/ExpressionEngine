@@ -13,7 +13,7 @@
 			</ul>
 			<?php endif; ?>
 		</h1>
-		<?=ee('Alert')->getAllInlines()?>
+		<?=ee('CP/Alert')->getAllInlines()?>
 		<?php if (isset($filters)) echo $filters; ?>
 		<?php $this->embed('_shared/table', $table); ?>
 		<?=$pagination?>

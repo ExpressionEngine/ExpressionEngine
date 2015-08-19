@@ -324,7 +324,7 @@ class Msm extends CP_Controller {
 
 				ee()->logger->log_action(lang('site_created') . ': ' . $site->site_label);
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('create_site_success'))
 					->addToBody(sprintf(lang('create_site_success_desc'), $site->site_label))
@@ -334,7 +334,7 @@ class Msm extends CP_Controller {
 			}
 			else
 			{
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('create_site_error'))
 					->addToBody(lang('create_site_error_desc'))
@@ -428,7 +428,7 @@ class Msm extends CP_Controller {
 			{
 				$site->save();
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('edit_site_success'))
 					->addToBody(sprintf(lang('edit_site_success_desc'), $site->site_label))
@@ -440,7 +440,7 @@ class Msm extends CP_Controller {
 			}
 			else
 			{
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('edit_site_error'))
 					->addToBody(lang('edit_site_error_desc'))
@@ -556,7 +556,7 @@ class Msm extends CP_Controller {
 		}
 
 		$sites->delete();
-		ee('Alert')->makeInline('sites')
+		ee('CP/Alert')->makeInline('sites')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('sites_removed_desc'))

@@ -10,7 +10,7 @@
 			<li><a href="" rel="t-3"><?=lang('access')?></a></li>
 		</ul>
 		<?=form_open($form_url, 'class="settings ajax-validate"')?>
-		<?=ee('Alert')->get('template-form')?>
+		<?=ee('CP/Alert')->get('template-form')?>
 			<div class="tab t-0 tab-open">
 				<fieldset class="col-group last">
 					<div class="setting-txt col w-16">

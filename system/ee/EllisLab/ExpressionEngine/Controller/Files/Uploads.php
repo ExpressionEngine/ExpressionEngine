@@ -135,7 +135,7 @@ class Uploads extends AbstractFilesController {
 			{
 				$new_upload_id = $upload_destination->save()->getId();
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('directory_saved'))
 					->addToBody(lang('directory_saved_desc'))
@@ -158,7 +158,7 @@ class Uploads extends AbstractFilesController {
 					ee()->form_validation->_error_array['image_manipulations'] = 'asdf';
 				}
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('directory_not_saved'))
 					->addToBody(lang('directory_not_saved_desc'))

@@ -179,7 +179,7 @@ class Pages_mcp {
 
 		if ($delete_pages !== FALSE)
 		{
-			ee('Alert')->makeInline('pages-form')
+			ee('CP/Alert')->makeInline('pages-form')
 				->asSuccess()
 				->withTitle(lang('success'))
 				->addToBody(lang('pages_deleted_desc'))

@@ -352,7 +352,7 @@ class Cp {
 		{
 			if ( ! $alert)
 			{
-				$alert = ee('Alert')->makeBanner('notices')
+				$alert = ee('CP/Alert')->makeBanner('notices')
 					->asWarning()
 					->withTitle(lang('cp_message_warn'))
 					->now();
@@ -401,7 +401,7 @@ class Cp {
 
 			if (ee()->session->userdata('group_id') == 1)
 			{
-				$alert = ee('Alert')->makeStandard('notices')
+				$alert = ee('CP/Alert')->makeStandard('notices')
 					->asWarning()
 					->withTitle(lang('cp_message_warn'))
 					->addToBody(lang('checksum_changed_warning'))
@@ -436,7 +436,7 @@ class Cp {
 
 		if ( ! $version_file)
 		{
-			ee('Alert')->makeBanner('notices')
+			ee('CP/Alert')->makeBanner('notices')
 				->asWarning()
 				->withTitle(lang('cp_message_warn'))
 				->addToBody(sprintf(

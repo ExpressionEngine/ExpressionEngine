@@ -161,7 +161,7 @@ class Design extends AbstractDesignController {
 
 		$templates->delete();
 
-		ee('Alert')->makeInline('shared-form')
+		ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('templates_removed_desc'))

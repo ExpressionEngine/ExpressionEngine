@@ -234,7 +234,7 @@ class Layouts extends AbstractChannelsController {
 
 			$layout->save();
 
-			ee('Alert')->makeInline('layout-form')
+			ee('CP/Alert')->makeInline('layout-form')
 				->asSuccess()
 				->withTitle(lang('create_layout_success'))
 				->addToBody(sprintf(lang('create_layout_success_desc'), ee()->input->post('layout_name')))
@@ -244,7 +244,7 @@ class Layouts extends AbstractChannelsController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('layout-form')
+			ee('CP/Alert')->makeInline('layout-form')
 				->asIssue()
 				->withTitle(lang('create_layout_error'))
 				->addToBody(lang('create_layout_error_desc'))
@@ -341,7 +341,7 @@ class Layouts extends AbstractChannelsController {
 
 			$channel_layout->save();
 
-			ee('Alert')->makeInline('layout-form')
+			ee('CP/Alert')->makeInline('layout-form')
 				->asSuccess()
 				->withTitle(lang('edit_layout_success'))
 				->addToBody(sprintf(lang('edit_layout_success_desc'), ee()->input->post('layout_name')))
@@ -351,7 +351,7 @@ class Layouts extends AbstractChannelsController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('layout-form')
+			ee('CP/Alert')->makeInline('layout-form')
 				->asIssue()
 				->withTitle(lang('edit_layout_error'))
 				->addToBody(lang('edit_layout_error_desc'))
@@ -363,13 +363,13 @@ class Layouts extends AbstractChannelsController {
 			ee('CP/URL', 'channels/layouts/' . $channel_layout->channel_id)->compile() => lang('form_layouts')
 		);
 
-		$alert_required = ee('Alert')->makeBanner('tab-has-required-fields')
+		$alert_required = ee('CP/Alert')->makeBanner('tab-has-required-fields')
 			->asIssue()
 			->canClose()
 			->withTitle(lang('error_cannot_hide_tab'))
 			->addToBody(lang('error_tab_has_required_fields'));
 
-		$alert_not_empty = ee('Alert')->makeBanner('tab-has-fields')
+		$alert_not_empty = ee('CP/Alert')->makeBanner('tab-has-fields')
 			->asIssue()
 			->canClose()
 			->withTitle(lang('error_cannot_remove_tab'))
@@ -417,7 +417,7 @@ class Layouts extends AbstractChannelsController {
 		}
 
 		$channel_layouts->delete();
-		ee('Alert')->makeInline('layouts')
+		ee('CP/Alert')->makeInline('layouts')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('layouts_removed_desc'))

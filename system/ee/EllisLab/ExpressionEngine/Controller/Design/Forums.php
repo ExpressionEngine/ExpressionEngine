@@ -159,7 +159,7 @@ class Forums extends AbstractDesignController {
 			{
 				ee()->functions->clear_caching('all');
 
-				$alert = ee('Alert')->makeInline('template-form')
+				$alert = ee('CP/Alert')->makeInline('template-form')
 					->asSuccess()
 					->withTitle(lang('update_template_success'))
 					->addToBody(sprintf(lang('update_template_success_desc'), $template_name));
@@ -176,7 +176,7 @@ class Forums extends AbstractDesignController {
 
 		if ( ! is_really_writable($path))
 		{
-			ee('Alert')->makeInline('message-warning')
+			ee('CP/Alert')->makeInline('message-warning')
 				->asWarning()
 				->cannotClose()
 				->withTitle(lang('file_not_writable'))

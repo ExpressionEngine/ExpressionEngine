@@ -144,7 +144,7 @@ class Fields extends Members\Members {
 		ee()->cp->add_js_script('file', 'cp/sort_helper');
 		ee()->cp->add_js_script('plugin', 'ee_table_reorder');
 
-		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
+		$reorder_ajax_fail = ee('CP/Alert')->makeBanner('reorder-ajax-fail')
 			->asIssue()
 			->canClose()
 			->withTitle(lang('member_field_ajax_reorder_fail'))
@@ -182,7 +182,7 @@ class Fields extends Members\Members {
 		$field_names = $fields->pluck('field_label');
 		$fields->delete();
 
-		ee('Alert')->makeInline('fields')
+		ee('CP/Alert')->makeInline('fields')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('member_fields_removed_desc'))
@@ -388,7 +388,7 @@ class Fields extends Members\Members {
 				$field->save();
 				ee()->session->set_flashdata('field_id', $field->field_id);
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('member_field_saved'))
 					->addToBody(lang('member_field_saved_desc'))
@@ -400,7 +400,7 @@ class Fields extends Members\Members {
 			{
 				ee()->load->library('form_validation');
 				ee()->form_validation->_error_array = $result->renderErrors();
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('member_field_not_saved'))
 					->addToBody(lang('member_field_not_saved_desc'))

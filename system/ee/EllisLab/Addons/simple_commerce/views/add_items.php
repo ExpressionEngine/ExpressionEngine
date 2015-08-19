@@ -4,7 +4,7 @@
 		<div class="box<?php if ($i < count($forms)): ?> mb<?php endif ?>">
 			<h1><?=$form['form_title']?></h1>
 			<div class="settings">
-				<?=ee('Alert')->get('item-form-'.$form['entry_id'])?>
+				<?=ee('CP/Alert')->get('item-form-'.$form['entry_id'])?>
 				<?php
 				foreach ($form['sections'] as $name => $settings)
 				{

@@ -232,7 +232,7 @@ abstract class AbstractFiles extends CP_Controller {
 
 		if ($missing_files)
 		{
-			ee('Alert')->makeInline('missing-files')
+			ee('CP/Alert')->makeInline('missing-files')
 				->asWarning()
 				->cannotClose()
 				->withTitle(lang('files_not_found'))

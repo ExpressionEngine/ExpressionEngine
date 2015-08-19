@@ -201,7 +201,7 @@ class Simple_commerce_mcp {
 			{
 				ee('Model')->get('simple_commerce:Item', $item_ids)->delete();
 
-				ee('Alert')->makeInline('items-table')
+				ee('CP/Alert')->makeInline('items-table')
 					->asSuccess()
 					->withTitle(lang('items_removed'))
 					->addToBody(sprintf(lang('items_removed_desc'), count($item_ids)))
@@ -345,7 +345,7 @@ class Simple_commerce_mcp {
 
 				if ($result->isNotValid())
 				{
-					ee('Alert')->makeInline('item-form-'.$entry_id)
+					ee('CP/Alert')->makeInline('item-form-'.$entry_id)
 						->asIssue()
 						->withTitle(lang('item_not_created'))
 						->addToBody(lang('item_not_created_desc'))
@@ -377,7 +377,7 @@ class Simple_commerce_mcp {
 
 				ee()->session->set_flashdata('highlight_id', $item_ids);
 
-				ee('Alert')->makeInline('items-table')
+				ee('CP/Alert')->makeInline('items-table')
 					->asSuccess()
 					->withTitle(lang('item_created'))
 					->addToBody(lang('item_created_desc'))
@@ -700,7 +700,7 @@ class Simple_commerce_mcp {
 			{
 				ee('Model')->get('simple_commerce:Purchase', $purchase_ids)->delete();
 
-				ee('Alert')->makeInline('purchases-table')
+				ee('CP/Alert')->makeInline('purchases-table')
 					->asSuccess()
 					->withTitle(lang('purchases_removed'))
 					->addToBody(sprintf(lang('purchases_removed_desc'), count($purchase_ids)))
@@ -772,7 +772,7 @@ class Simple_commerce_mcp {
 					ee()->session->set_flashdata('highlight_id', $purchase->getId());
 				}
 
-				ee('Alert')->makeInline('purchases-table')
+				ee('CP/Alert')->makeInline('purchases-table')
 					->asSuccess()
 					->withTitle(lang('purchase_'.$alert_key))
 					->addToBody(sprintf(lang('purchase_'.$alert_key.'_desc'), $purchase->Item->getId())) // TODO: change to item title when relationships work
@@ -783,7 +783,7 @@ class Simple_commerce_mcp {
 			else
 			{
 				$vars['errors'] = $result;
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('purchase_not_'.$alert_key))
 					->addToBody(lang('purchase_not_'.$alert_key.'_desc'))
@@ -793,7 +793,7 @@ class Simple_commerce_mcp {
 
 		$vars['sections'] = array(
 			array(
-				ee('Alert')->makeInline()
+				ee('CP/Alert')->makeInline()
 					->asWarning()
 					->addToBody(lang('purchase_create_warn'))
 					->cannotClose()
@@ -1013,7 +1013,7 @@ class Simple_commerce_mcp {
 			{
 				ee('Model')->get('simple_commerce:EmailTemplate', $template_ids)->delete();
 
-				ee('Alert')->makeInline('email-templates-table')
+				ee('CP/Alert')->makeInline('email-templates-table')
 					->asSuccess()
 					->withTitle(lang('email_templates_removed'))
 					->addToBody(sprintf(lang('email_templates_removed_desc'), count($template_ids)))
@@ -1085,7 +1085,7 @@ class Simple_commerce_mcp {
 					ee()->session->set_flashdata('highlight_id', $email_template->getId());
 				}
 
-				ee('Alert')->makeInline('email-templates-table')
+				ee('CP/Alert')->makeInline('email-templates-table')
 					->asSuccess()
 					->withTitle(lang('email_template_'.$alert_key))
 					->addToBody(sprintf(lang('email_template_'.$alert_key.'_desc'), $email_template->email_name))
@@ -1096,7 +1096,7 @@ class Simple_commerce_mcp {
 			else
 			{
 				$vars['errors'] = $result;
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('email_template_not_'.$alert_key))
 					->addToBody(lang('email_template_not_'.$alert_key.'_desc'))
@@ -1200,7 +1200,7 @@ class Simple_commerce_mcp {
 
 		$vars['sections'] = array(
 			array(
-				ee('Alert')->makeInline('ipn-notice')
+				ee('CP/Alert')->makeInline('ipn-notice')
 					->asWarning()
 					->cannotClose()
 					->addToBody(sprintf(lang('commerce_ipn_notice'), 'https://developer.paypal.com/webapps/developer/docs/classic/ipn/integration-guide/IPNIntro/'))
@@ -1332,7 +1332,7 @@ class Simple_commerce_mcp {
 
 				ee()->config->update_site_prefs($fields);
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 						->asSuccess()
 						->withTitle(lang('preferences_updated'))
 						->addToBody(lang('preferences_updated_desc'))
@@ -1343,7 +1343,7 @@ class Simple_commerce_mcp {
 			else
 			{
 				$vars['errors'] = $result;
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('settings_save_error'))
 					->addToBody(lang('settings_save_error_desc'))

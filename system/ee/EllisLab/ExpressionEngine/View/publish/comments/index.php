@@ -12,7 +12,7 @@
 				<li class="settings"><a href="<?=ee('CP/URL', 'settings/comments')?>" title="<?=lang('comment_settings')?>"></a></li>
 			</ul>
 		</h1>
-		<?=ee('Alert')->getAllInlines()?>
+		<?=ee('CP/Alert')->getAllInlines()?>
 		<?php if (isset($filters)) echo $filters; ?>
 		<?php $this->embed('_shared/table', $table); ?>
 		<?=$pagination?>
