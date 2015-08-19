@@ -39,8 +39,8 @@ class DebugOutput extends Settings {
 		$vars['sections'] = array(
 			array(
 				array(
-					'title' => 'enable_debugging',
-					'desc' => 'enable_debugging_desc',
+					'title' => 'enable_errors',
+					'desc' => 'enable_errors_desc',
 					'fields' => array(
 						'debug' => array(
 							'type' => 'inline_radio',
@@ -55,7 +55,13 @@ class DebugOutput extends Settings {
 					'title' => 'show_profiler',
 					'desc' => 'show_profiler_desc',
 					'fields' => array(
-						'show_profiler' => array('type' => 'yes_no')
+						'show_profiler' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'y' => 'enable',
+								'n' => 'disable'
+							)
+						)
 					)
 				)
 			),

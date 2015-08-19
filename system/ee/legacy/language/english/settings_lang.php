@@ -233,13 +233,13 @@ $lang = array(
  * Debugging & Output
  */
 
-'enable_debugging' => 'Enable debugging?',
+'enable_errors' => 'Enable error reporting?',
 
-'enable_debugging_desc' => 'When set to <b>enable</b>, super admins and member groups with permissions will see PHP/MySQL errors when they occur.',
+'enable_errors_desc' => 'When set to <b>enable</b>, super admins and member groups with permissions will see PHP/MySQL errors when they occur.',
 
-'show_profiler' => 'Display profiler?',
+'show_profiler' => 'Enable debugging?',
 
-'show_profiler_desc' => 'When set to <b>yes</b>, super admins and member groups with permissions will see benchmark results, all SQL queries, and submitted form data displayed at the bottom of the browser window.',
+'show_profiler_desc' => 'When set to <b>enable</b>, super admins and member groups with permissions will see benchmark results, all SQL queries, and submitted form data displayed at the bottom of the browser window.',
 
 'output_options' => 'Output Options',
 
