@@ -1,5 +1,5 @@
 <?php if (REQ == 'PAGE'): ?>
-	<link rel="stylesheet" href="<?=URL_THEMES.'debug/debug.min.css'?>" type="text/css" media="screen" />
+	<link rel="stylesheet" href="<?=URL_THEMES.'debug/css/eecms-debug.min.css'?>" type="text/css" media="screen" />
 <?php endif; ?>
 
 <section id="debug">
