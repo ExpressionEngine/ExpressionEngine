@@ -166,6 +166,9 @@ class Members extends CP_Controller {
 				'username' => array(
 					'encode' => FALSE
 				),
+				'dates' => array(
+					'encode' => FALSE
+				),
 				'member_group' => array(
 					'encode' => FALSE
 				),
@@ -454,11 +457,16 @@ class Members extends CP_Controller {
 				$attributes['class'] = 'selected';
 			}
 
-			$email = "<a href = '" . ee('CP/URL', 'utilities/communicate/member/' . $member['member_id']) . "'>e-mail</a>";
+			$email = "<a href = '" . ee('CP/URL', 'utilities/communicate/member/' . $member['member_id']) . "'>".$member['email']."</a>";
+			$last_visit = ($member['last_visit']) ? ee()->localize->human_time($member['last_visit']) : '--';
 			$rows[] = array(
 				'columns' => array(
 					'id' => $member['member_id'],
-					'username' => "{$member['username']} ($email)",
+					'username' => $member['username'].'<br><span class="meta-info">&mdash; '.$email.'</span>',
+					'<span class="meta-info">
+						<b>'.lang('joined').'</b>: '.ee()->localize->format_date(ee()->session->userdata('date_format', ee()->config->item('date_format')), $member['join_date']).'<br>
+						<b>'.lang('last_visit').'</b>: '.$last_visit.'
+					</span>',
 					'member_group' => $group,
 					$toolbar,
 					array(

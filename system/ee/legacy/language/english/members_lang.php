@@ -307,9 +307,13 @@ $lang = array(
 
 "join_date" => "Join Date",
 
+"joined" => "Joined",
+
 "last_visit" => "Last Visit",
 
 "member_group" => "Member Group",
+
+"dates" => "Dates",
 
 "member_group_desc" => "Assign this user access permissions.",
 
