@@ -460,6 +460,20 @@ class Template extends AbstractDesignController {
 
 		$search_terms = ee()->input->get_post('search');
 
+		$return = ee()->input->get_post('return');
+
+		if ( ! $search_terms)
+		{
+			$return = base64_decode(ee()->input->get_post('return'));
+			$uri_elements = json_decode($return, TRUE);
+			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
+			ee()->functions->redirect($return);
+		}
+		else
+		{
+			$this->stdHeader($return);
+		}
+
 		$templates = ee('Model')->get('Template')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('template_data', 'LIKE', '%' . $search_terms . '%')

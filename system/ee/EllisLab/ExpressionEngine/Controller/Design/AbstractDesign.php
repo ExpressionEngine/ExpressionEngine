@@ -172,11 +172,16 @@ abstract class AbstractDesign extends CP_Controller {
 		));
 	}
 
-	protected function stdHeader()
+	protected function stdHeader($return = NULL)
 	{
+		if ( ! $return)
+		{
+			$return = base64_encode(ee()->cp->get_safe_refresh());
+		}
+
 		ee()->view->header = array(
 			'title' => lang('template_manager'),
-			'form_url' => ee('CP/URL', 'design/template/search'),
+			'form_url' => ee('CP/URL', 'design/template/search', array('return' => $return)),
 			'toolbar_items' => array(
 				'settings' => array(
 					'href' => ee('CP/URL', 'settings/template'),
