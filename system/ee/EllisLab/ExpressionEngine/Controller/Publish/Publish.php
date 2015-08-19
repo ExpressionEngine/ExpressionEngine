@@ -112,7 +112,8 @@ class Publish extends AbstractPublishController {
 			'form_attributes' => $form_attributes,
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
 			'button_text' => lang('btn_publish'),
-			'revisions' => $this->getRevisionsTable($entry)
+			'revisions' => $this->getRevisionsTable($entry),
+			'extra_publish_controls' => $channel->extra_publish_controls
 		);
 
 		if ($autosave_id)
@@ -176,7 +177,7 @@ class Publish extends AbstractPublishController {
 						->addToBody(sprintf(lang('create_entry_success_desc'), $entry->title))
 						->defer();
 
-					ee()->functions->redirect(ee('CP/URL', 'publish/edit/', array('channel_id' => $entry->channel_id)));
+					ee()->functions->redirect(ee('CP/URL', 'publish/edit/', array('filter_by_channel' => $entry->channel_id)));
 				}
 			}
 			else
@@ -216,7 +217,7 @@ class Publish extends AbstractPublishController {
 				'ee_filebrowser',
 				'ee_fileuploader',
 			),
-			'file' => array('cp/v3/publish', 'cp/channel/category_edit')
+			'file' => array('cp/channel/publish', 'cp/channel/category_edit')
 		));
 
 		ee()->cp->render('publish/entry', $vars);

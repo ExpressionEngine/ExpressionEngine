@@ -23,10 +23,13 @@ abstract class ContentModel extends VariableColumnModel {
 
 	protected $_field_facades;
 	protected $_field_was_saved;
+	protected $_custom_fields_loaded = FALSE;
 
 	/**
-	 * Define a way to get the parent structure. For example,
-	 * in a channel entry, this would return the parent channel.
+	 * A link back to the owning Structure object.
+	 *
+	 * @return	Structure	A link back to the Structure object that defines
+	 *						this Content's structure.
 	 */
 	abstract public function getStructure();
 
@@ -41,6 +44,7 @@ abstract class ContentModel extends VariableColumnModel {
 		return 'field_id_';
 	}
 
+
 	/**
 	 * Optionally return an array of default fields.
 	 *
@@ -52,6 +56,18 @@ abstract class ContentModel extends VariableColumnModel {
 	}
 
 	/**
+	 * Make sure we update our custom fields when save is triggered
+	 */
+	public function onAfterSave()
+	{
+		foreach ($this->_field_was_saved as $field)
+		{
+			$field->setContentId($this->getId());
+			$field->postSave();
+		}
+	}
+
+	/**
 	 * Check if a custom field of $name exists
 	 */
 	public function hasCustomField($name)
@@ -60,10 +76,7 @@ abstract class ContentModel extends VariableColumnModel {
 		{
 			$default_fields = $this->getDefaultFields();
 
-			if ( ! isset($default_fields[$name]))
-			{
-				return FALSE;
-			}
+			return array_key_exists($name, $default_fields);
 		}
 
 		$this->usesCustomFields();
@@ -77,19 +90,23 @@ abstract class ContentModel extends VariableColumnModel {
 	}
 
 	/**
-	 * Get a custom field facade
-	 */
-	public function getCustomField($name)
-	{
-		return $this->_field_facades[$name];
-	}
-
-	/**
 	 * Get a list of all custom field facades
 	 */
 	public function getCustomFields()
 	{
+		$this->usesCustomFields();
+
 		return $this->_field_facades ?: array();
+	}
+
+	/**
+	 * Get a custom field facade
+	 */
+	public function getCustomField($name)
+	{
+		$this->usesCustomFields();
+
+		return $this->_field_facades[$name];
 	}
 
 	/**
@@ -97,16 +114,26 @@ abstract class ContentModel extends VariableColumnModel {
 	*/
 	public function getCustomFieldNames()
 	{
+		$this->usesCustomFields();
+
 		return array_keys($this->_field_facades);
 	}
 
-	public function onAfterSave()
+	/**
+	 * Get the layout for this content.
+	 */
+	public function getDisplay(LayoutInterface $layout = NULL)
 	{
-		foreach ($this->_field_was_saved as $field)
-		{
-			$field->setContentId($this->getId());
-			$field->postSave();
-		}
+		$this->usesCustomFields();
+
+		$fields = array_map(
+			function($field) { return new FieldDisplay($field); },
+			$this->getCustomFields()
+		);
+
+		$layout = $layout ?: new DefaultLayout();
+
+		return $layout->transform($fields);
 	}
 
 	/**
@@ -116,7 +143,10 @@ abstract class ContentModel extends VariableColumnModel {
 	{
 		parent::fill($data);
 
-		$this->fillCustomFields($data);
+		if ($this->_custom_fields_loaded)
+		{
+			$this->fillCustomFields($data);
+		}
 
 		return $this;
 	}
@@ -142,46 +172,11 @@ abstract class ContentModel extends VariableColumnModel {
 	}
 
 	/**
-	 * Make sure set() calls have access to custom fields
-	 */
-	public function set(array $data = array())
-	{
-		$this->usesCustomFields();
-		return parent::set($data);
-	}
-
-	/**
-	 * Custom fields count as a valid property
-	 */
-	public function hasProperty($name)
-	{
-		if ( ! parent::hasProperty($name))
-		{
-			return $this->hasCustomField($name) || (strpos($name, 'field_ft_') == 0);
-		}
-
-		return TRUE;
-	}
-
-	/**
-	 * Getting a property needs to check custom fields
-	 */
-	public function getProperty($name)
-	{
-		if ( ! parent::hasProperty($name) && $this->hasCustomField($name))
-		{
-			return $this->getCustomField($name)->getData();
-		}
-
-		return parent::getProperty($name);
-	}
-
-	/**
 	 * Setting a property needs to apply to custom fields
 	 */
 	public function setProperty($name, $new_value)
 	{
-		if ($this->hasCustomField($name))
+		if ($this->_custom_fields_loaded && $this->hasCustomField($name))
 		{
 			$this->emit('beforeSetCustomField', $name, $new_value);
 
@@ -244,41 +239,6 @@ abstract class ContentModel extends VariableColumnModel {
 		return $result;
 	}
 
-
-	/**
-	 * Get a list of fields
-	 *
-	 * @return array field names
-	 */
-	public function getFields()
-	{
-		$fields = parent::getFields();
-
-		foreach ($this->getCustomFields() as $field_facade)
-		{
-			$fields[] = $field_facade->getName();
-		}
-
-		return $fields;
-	}
-
-	/**
-	 * Get the layout for this content.
-	 */
-	public function getDisplay(LayoutInterface $layout = NULL)
-	{
-		$this->usesCustomFields();
-
-		$fields = array_map(
-			function($field) { return new FieldDisplay($field); },
-			$this->getCustomFields()
-		);
-
-		$layout = $layout ?: new DefaultLayout();
-
-		return $layout->transform($fields);
-	}
-
 	/**
 	 * Ensures that custom fields are setup and their data is in sync.
 	 */
@@ -294,6 +254,11 @@ abstract class ContentModel extends VariableColumnModel {
 	 * Populate the custom fields on fill()
 	 */
 	protected function fillCustomFields(array $data = array())
+	{
+		$this->setDataOnCustomFields($data);
+	}
+
+	protected function setDataOnCustomFields(array $data = array())
 	{
 		foreach ($data as $name => $value)
 		{
@@ -322,7 +287,6 @@ abstract class ContentModel extends VariableColumnModel {
 	protected function initializeCustomFields()
 	{
 		$this->_field_facades = array();
-
 		$default_fields = $this->getDefaultFields();
 
 		foreach ($default_fields as $id => $field)
@@ -343,6 +307,13 @@ abstract class ContentModel extends VariableColumnModel {
                 $native_prefix
             );
         }
+
+		$this->setDataOnCustomFields($this->getValues());
+
+		foreach ($this->_field_facades as $facade)
+		{
+			$facade->setContentType($this->getStructure()->getContentType());
+		}
 	}
 
 	/**
@@ -355,7 +326,11 @@ abstract class ContentModel extends VariableColumnModel {
 		$facade = new FieldFacade($id, $info);
 		$facade->setName($name);
 		$facade->setContentId($this->getId());
-		$facade->setContentType($this->getStructure()->getContentType());
+
+		if ($this->hasProperty('field_ft_'.$id))
+		{
+			$facade->setFormat($this->getProperty('field_ft_'.$id));
+		}
 
 		$this->_field_facades[$name] = $facade;
 	}

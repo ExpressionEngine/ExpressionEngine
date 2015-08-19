@@ -5,7 +5,6 @@
 	<h1><?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?></h1>
 	<?=ee('Alert')->getAllInlines()?>
 	<?php if (isset($filters)) echo $filters; ?>
-	<input type="submit" style="position: absolute; left: -9999px"/>
 	<section class="item-wrap log">
 		<?php if (empty($rows)): ?>
 			<p class="no-results"><?=lang('no_developer_logs_found')?></p>
@@ -32,8 +31,6 @@
 <?=form_close()?>
 </div>
 
-<?php $this->startOrAppendBlock('modals'); ?>
-
 <?php
 // Individual confirm delete modals
 foreach($rows as $row)
@@ -52,7 +49,8 @@ foreach($rows as $row)
 		)
 	);
 
-	$this->embed('_shared/modal_confirm_remove', $modal_vars);
+	$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+	ee('CP/Modal')->addModal($row['log_id'], $modal);
 }
 
 // Confirm delete all modal
@@ -70,7 +68,6 @@ $modal_vars = array(
 	)
 );
 
-$this->embed('_shared/modal_confirm_remove', $modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+ee('CP/Modal')->addModal('all', $modal);
 ?>
-
-<?php $this->endBlock(); ?>

@@ -18,7 +18,7 @@
 		<?php $this->embed('_shared/table', $table); ?>
 		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
-		<fieldset class="tbl-bulk-act">
+		<fieldset class="tbl-bulk-act hidden">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('with_selected')?> --</option>
 				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove-file"><?=lang('remove')?></option>
@@ -30,7 +30,7 @@
 	<?=form_close()?>
 </div>
 
-<?php $this->startOrAppendBlock('modals'); ?>
+<?php ee('CP/Modal')->startModal('view-file'); ?>
 
 <div class="modal-wrap modal-view-file hidden">
 	<div class="modal">
@@ -44,6 +44,8 @@
 	</div>
 </div>
 
+<?php ee('CP/Modal')->endModal(); ?>
+
 <?php
 $modal_vars = array(
 	'name'		=> 'modal-confirm-remove-file',
@@ -53,7 +55,6 @@ $modal_vars = array(
 	)
 );
 
-$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+ee('CP/Modal')->addModal('remove-file', $modal);
 ?>
-
-<?php $this->endBlock(); ?>

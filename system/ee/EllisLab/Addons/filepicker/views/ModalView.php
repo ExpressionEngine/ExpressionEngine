@@ -2,7 +2,7 @@
 <?=form_open($table['base_url'])?>
 	<?php if (is_numeric($dir)): ?>
 	<fieldset class="tbl-search right">
-		<a class="btn tn action" href="<?=ee('CP/URL', "files/upload/$dir")?>">Upload New File</a>
+		<a class="btn tn action" href="<?=$upload?>">Upload New File</a>
 	</fieldset>
 	<?php endif ?>
 	<h1>

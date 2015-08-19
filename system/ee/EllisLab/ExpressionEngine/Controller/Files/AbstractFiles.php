@@ -50,7 +50,7 @@ abstract class AbstractFiles extends CP_Controller {
 		ee()->view->can_admin_upload_prefs = ee()->cp->allowed_group('can_admin_upload_prefs');
 	}
 
-	protected function sidebarMenu($active = NULL)
+	protected function generateSidebar($active = NULL)
 	{
 		$active_id = NULL;
 		if (is_numeric($active))
@@ -58,11 +58,28 @@ abstract class AbstractFiles extends CP_Controller {
 			$active_id = (int) $active;
 		}
 
-		// Register our menu
-		$vars = array(
-			'can_admin_upload_prefs' => ee()->cp->allowed_group('can_admin_upload_prefs'),
-			'upload_directories' => array()
-		);
+		$sidebar = ee('Sidebar')->make();
+
+		$header = $sidebar->addHeader(lang('upload_directories'));
+
+		$list = $header->addFolderList('directory')
+			->withNoResultsText(lang('zero_directories_found'));
+
+		if (ee()->cp->allowed_group('can_admin_upload_prefs'))
+		{
+			$header->withButton(lang('new'), ee('CP/URL', 'files/uploads/create'));
+
+			$list->withRemoveUrl(ee('CP/URL', 'files/rmdir', array('return' => base64_encode(ee()->cp->get_safe_refresh()))))
+				->withRemovalKey('dir_id');
+
+			$watermark_header = $sidebar->addHeader(lang('watermarks'), ee('CP/URL', 'files/watermarks'))
+				->withButton(lang('new'), ee('CP/URL', 'files/watermarks/create'));
+
+			if ($active == 'watermark')
+			{
+				$watermark_header->isActive();
+			}
+		}
 
 		$upload_destinations = ee('Model')->get('UploadDestination')
 			->filter('site_id', ee()->config->item('site_id'));
@@ -74,24 +91,22 @@ abstract class AbstractFiles extends CP_Controller {
 				continue;
 			}
 
-			$class = ($active_id == $destination->id) ? 'act' : '';
+			$item = $list->addItem($destination->name, ee('CP/URL', 'files/directory/' . $destination->id))
+				->withEditUrl(ee('CP/URL', 'files/uploads/edit/' . $destination->id))
+				->withRemoveConfirmation(lang('upload_directory') . ': <b>' . $destination->name . '</b>')
+				->identifiedBy($destination->id);
 
-			$data = array(
-				'name' => $destination->name,
-				'id' => $destination->id,
-				'url' => ee('CP/URL', 'files/directory/' . $destination->id),
-				'edit_url' => ee('CP/URL', 'files/uploads/edit/' . $destination->id),
-			);
-
-			if ( ! empty($class))
+			if ( ! ee()->cp->allowed_group('can_admin_upload_prefs'))
 			{
-				$data['class'] = $class;
+				$item->cannotEdit()->cannotRemove();
 			}
 
-			$vars['upload_directories'][] = $data;
+			if ($active_id == $destination->id)
+			{
+				$item->isActive();
+			}
 		}
 
-		ee()->view->left_nav = ee('View')->make('files/menu')->render($vars);
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/files/menu'),
 		));

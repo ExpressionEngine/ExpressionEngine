@@ -22,6 +22,8 @@ $config['allow_extensions'] = 'y';
 $config['cache_driver'] = 'file';
 $config['cookie_prefix'] = '';
 $config['cookie_httponly'] = 'y';
+$config['cp_session_type'] = 'c';
+$config['website_session_type'] = 'c';
 $config['tmpl_file_basepath'] = '../system/user/templates';
 
 

@@ -235,7 +235,6 @@ feature 'Channel Settings' do
     @page.comment_notify_emails.set 'page@pagemcconnell.com,jon@jonfishman.com'
 
     @page.comment_system_enabled[1].click
-    @page.apply_comment_enabled_to_existing.click
     @page.deft_comments[1].click
     @page.comment_require_membership[0].click
     @page.comment_require_email[1].click
@@ -246,6 +245,7 @@ feature 'Channel Settings' do
     @page.apply_expiration_to_existing.click
     @page.comment_text_formatting.select 'None'
     @page.comment_html_formatting.select 'Allow all HTML (not recommended)'
+    @page.extra_publish_controls[0].click
     @page.comment_allow_img_urls[0].click
     @page.comment_auto_link_urls[1].click
 
@@ -273,6 +273,7 @@ feature 'Channel Settings' do
     @page.search_excerpt.value.should == '4'
 
     @page.channel_html_formatting.value.should == 'none'
+    @page.extra_publish_controls[0].checked?.should == true
     @page.channel_allow_img_urls[1].checked?.should == true
     @page.channel_auto_link_urls[0].checked?.should == true
 
@@ -291,7 +292,6 @@ feature 'Channel Settings' do
     @page.comment_notify_emails.value.should == 'page@pagemcconnell.com,jon@jonfishman.com'
 
     @page.comment_system_enabled[1].checked?.should == true
-    @page.apply_comment_enabled_to_existing.checked?.should == false
     @page.deft_comments[1].checked?.should == true
     @page.comment_require_membership[0].checked?.should == true
     @page.comment_require_email[1].checked?.should == true

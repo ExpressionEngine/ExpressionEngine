@@ -44,6 +44,7 @@ class Custom extends Filter {
 		$this->label = $label;
 		$this->options = $options;
 	}
+
 	/**
 	 * Sets the placeholder value for this filter
 	 *
@@ -53,6 +54,18 @@ class Custom extends Filter {
 	public function setPlaceholder($placeholder)
 	{
 		$this->placeholder = $placeholder;
+		return $this;
+	}
+
+	/**
+	 * Sets the default value for this filter
+	 *
+	 * @param string $value The value to use for the default value
+	 * @return self This returns a reference to itself
+	 */
+	public function setDefaultValue($value)
+	{
+		$this->default_value = $value;
 		return $this;
 	}
 

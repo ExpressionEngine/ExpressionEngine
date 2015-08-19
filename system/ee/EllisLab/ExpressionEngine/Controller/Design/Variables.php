@@ -46,7 +46,7 @@ class Variables extends AbstractDesignController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->sidebarMenu();
+		$this->generateSidebar('variables');
 		$this->stdHeader();
 
 		$this->msm = (ee()->config->item('multiple_sites_enabled') == 'y');
@@ -162,7 +162,7 @@ class Variables extends AbstractDesignController {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('template_variable') . ': <b>### ' . lang('template_variables') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		$this->stdHeader();

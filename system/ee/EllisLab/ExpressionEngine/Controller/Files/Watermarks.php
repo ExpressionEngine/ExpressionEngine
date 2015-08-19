@@ -44,7 +44,7 @@ class Watermarks extends AbstractFilesController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->sidebarMenu(NULL);
+		$this->generateSidebar('watermark');
 		$this->stdHeader();
 
 		ee()->load->library('form_validation');
@@ -120,7 +120,7 @@ class Watermarks extends AbstractFilesController {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('watermarks') . ': <b>### ' . lang('watermarks') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		ee()->cp->render('files/watermarks', $vars);
@@ -448,7 +448,7 @@ class Watermarks extends AbstractFilesController {
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'files/watermarks'), lang('watermarks'));
 
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/form_group'),
+			'file' => array('cp/form_group'),
 		));
 
 		ee()->cp->render('settings/form', $vars);

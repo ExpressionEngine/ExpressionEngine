@@ -8,7 +8,7 @@
 		<h1><?=$cp_page_title?></h1>
 		<?=ee('Alert')->getAllInlines()?>
 		<?php $this->embed('_shared/table', $table); ?>
-		<fieldset class="tbl-bulk-act">
+		<fieldset class="tbl-bulk-act hidden">
 			<select name="bulk_action">
 				<option>-- <?=lang('with_selected')?> --</option>
 				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
@@ -17,8 +17,6 @@
 		</fieldset>
 	</form>
 </div>
-
-<?php $this->startOrAppendBlock('modals'); ?>
 
 <?php
 
@@ -31,7 +29,6 @@ $modal_vars = array(
 	)
 );
 
-$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+ee('CP/Modal')->addModal('remove', $modal);
 ?>
-
-<?php $this->endBlock(); ?>

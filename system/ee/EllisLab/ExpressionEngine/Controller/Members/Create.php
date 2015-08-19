@@ -99,7 +99,7 @@ class Create extends Members {
 			array(
 				 'field'   => 'username',
 				 'label'   => 'lang:username',
-				 'rules'   => 'required|trim|valid_username[new]'
+				 'rules'   => 'required|trim|valid_username'
 			),
 			array(
 				 'field'   => 'email',
@@ -131,6 +131,8 @@ class Create extends Members {
 		{
 			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
 		}
+
+		$this->generateSidebar('all_members');
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;

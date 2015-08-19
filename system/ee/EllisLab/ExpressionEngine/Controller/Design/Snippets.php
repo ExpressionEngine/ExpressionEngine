@@ -46,7 +46,7 @@ class Snippets extends AbstractDesignController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->sidebarMenu();
+		$this->generateSidebar('partials');
 		$this->stdHeader();
 
 		$this->msm = (ee()->config->item('multiple_sites_enabled') == 'y');
@@ -91,6 +91,7 @@ class Snippets extends AbstractDesignController {
 		$data = array();
 		$snippets = ee('Model')->get('Snippet')
 			->filter('site_id', ee()->config->item('site_id'))
+			->orFilter('site_id', 0)
 			->all();
 
 		$base_url = ee('CP/URL', 'design/snippets');
@@ -161,7 +162,7 @@ class Snippets extends AbstractDesignController {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('template_partial') . ': <b>### ' . lang('template_partials') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		$this->stdHeader();

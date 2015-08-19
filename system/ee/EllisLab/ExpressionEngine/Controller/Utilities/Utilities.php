@@ -41,6 +41,24 @@ class Utilities extends CP_Controller {
 
 		ee()->lang->loadfile('utilities');
 
+		$this->generateSidebar();
+
+		ee()->view->header = array(
+			'title' => lang('system_utilities')
+		);
+	}
+
+	protected function generateSidebar($active = NULL)
+	{
+		$sidebar = ee('Sidebar')->make();
+
+		$sidebar->addHeader(lang('communicate'), ee('CP/URL', 'utilities/communicate'))
+			->addBasicList()
+				->addItem(lang('sent'), ee('CP/URL', 'utilities/communicate/sent'));
+
+		$langauge_list = $sidebar->addHeader(lang('cp_translation'))
+			->addBasicList();
+
 		$default_language = ee()->config->item('deft_lang') ?: 'english';
 		$languages = array();
 
@@ -61,39 +79,33 @@ class Utilities extends CP_Controller {
 			$languages[$menu_title] = $url;
 		}
 
-		// Register our menu
-		ee()->menu->register_left_nav(array(
-			'communicate' => ee('CP/URL', 'utilities/communicate'),
-			array(
-				'sent' => ee('CP/URL', 'utilities/communicate/sent')
-			),
-			'cp_translation',
-			$languages,
-			'php_info' => array('href' => ee('CP/URL', 'utilities/php'), 'rel' => 'external'),
-			'debug_extensions' => array('href' => ee('CP/URL', 'utilities/extensions')),
-			'import_tools',
-			array(
-				'file_converter' => ee('CP/URL', 'utilities/import-converter'),
-				'member_import' => ee('CP/URL', 'utilities/member-import')
-			),
-			'sql_manager_abbr' => ee('CP/URL', 'utilities/sql'),
-			array(
-				'query_form' => ee('CP/URL', 'utilities/query')
-			),
-			'data_operations',
-			array(
-				'cache_manager' => ee('CP/URL', 'utilities/cache'),
-				'statistics' => ee('CP/URL', 'utilities/stats'),
-				'search_and_replace' => ee('CP/URL', 'utilities/sandr')
-			)
-		));
+		foreach ($languages as $menu_title => $url)
+		{
+			$langauge_list->addItem($menu_title, $url);
+		}
 
-		ee()->view->header = array(
-			'title' => lang('system_utilities')
-		);
+		$sidebar->addHeader(lang('php_info'), ee('CP/URL', 'utilities/php'))
+			->urlIsExternal();
+
+		$sidebar->addHeader(lang('debug_extensions'), ee('CP/URL', 'utilities/extensions'));
+
+		$import_list = $sidebar->addHeader(lang('import_tools'))
+			->addBasicList();
+
+		$import_list->addItem(lang('file_converter'), ee('CP/URL', 'utilities/import-converter'));
+		$import_list->addItem(lang('member_import'), ee('CP/URL', 'utilities/member-import'));
+
+		$sidebar->addHeader(lang('sql_manager_abbr'), ee('CP/URL', 'utilities/sql'))
+			->addBasicList()
+				->addItem(lang('query_form'), ee('CP/URL', 'utilities/query'));
+
+		$data_list = $sidebar->addHeader(lang('data_operations'))
+			->addBasicList();
+
+		$data_list->addItem(lang('cache_manager'), ee('CP/URL', 'utilities/cache'));
+		$data_list->addItem(lang('statistics'), ee('CP/URL', 'utilities/stats'));
+		$data_list->addItem(lang('search_and_replace'), ee('CP/URL', 'utilities/sandr'));
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Index

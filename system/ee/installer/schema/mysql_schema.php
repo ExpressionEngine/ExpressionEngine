@@ -555,6 +555,7 @@ class EE_Schema {
 			channel_require_membership char(1) NOT NULL default 'y',
 			channel_max_chars int(5) unsigned NULL DEFAULT NULL,
 			channel_html_formatting char(4) NOT NULL default 'all',
+			extra_publish_controls char(1) NOT NULL default 'n',
 			channel_allow_img_urls char(1) NOT NULL default 'y',
 			channel_auto_link_urls char(1) NOT NULL default 'n',
 			channel_notify char(1) NOT NULL default 'n',
@@ -920,7 +921,6 @@ class EE_Schema {
 		$Q[] = "CREATE TABLE exp_layout_publish (
 			layout_id int(10) UNSIGNED NOT NULL auto_increment,
 			site_id int(4) UNSIGNED NOT NULL default 1,
-			member_group int(4) UNSIGNED NOT NULL,
 			channel_id int(4) UNSIGNED NOT NULL default 0,
 			layout_name varchar(50) NOT NULL,
 			field_layout text,

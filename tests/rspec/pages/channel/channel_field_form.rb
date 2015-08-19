@@ -1,20 +1,14 @@
 class ChannelFieldForm < ControlPanelPage
-
 	element :field_type, 'select[name=field_type]'
 	element :field_label, 'input[name=field_label]'
 	element :field_name, 'input[name=field_name]'
 
 	def load
-		self.open_dev_menu
-		click_link 'Channel Manager'
-		click_link 'Custom Fields'
-		click_link 'Create New'
+		visit '/system/index.php?/cp/channels/fields/create/1'
 	end
 
 	def load_edit_for_custom_field(name)
-		self.open_dev_menu
-		click_link 'Channel Manager'
-		click_link 'Custom Fields'
+		visit '/system/index.php?/cp/channels/fields/1'
 
 		all('table tbody tr').each do |row|
 			cell = row.find('td:nth-child(2)')

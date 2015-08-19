@@ -425,19 +425,13 @@ class EE_Form_validation {
 	 *
 	 * @access	public
 	 * @param	string
-	 * @param	string	update / new
 	 * @return	bool
 	 */
-	function valid_screen_name($str, $type)
+	function valid_screen_name($str)
 	{
 		if ($str == '')
 		{
 			return TRUE;
-		}
-
-		if ( ! $type)
-		{
-			$type = 'update';
 		}
 
 		if (preg_match('/[\{\}<>]/', $str))
@@ -446,37 +440,12 @@ class EE_Form_validation {
 			return FALSE;
 		}
 
-		if ($current = $this->old_value('screen_name'))
+		// Is screen name banned?
+
+		if ($this->CI->session->ban_check('screen_name', $str) OR trim(preg_replace("/&nbsp;*/", '', $str)) == '')
 		{
-			if ($current != $str)
-			{
-				$type = 'new';
-			}
-		}
-
-		if ($type == 'new')
-		{
-			// Is screen name banned?
-
-			if ($this->CI->session->ban_check('screen_name', $str) OR trim(preg_replace("/&nbsp;*/", '', $str)) == '')
-			{
-				$this->set_message('valid_screen_name', $this->CI->lang->line('screen_name_taken'));
-				return FALSE;
-			}
-
-			// Is screen name taken?
-
-			if (strtolower($current) != strtolower($str))
-			{
-				$this->CI->db->where('screen_name', $str);
-				$count = $this->CI->db->count_all_results('members');
-
-				if ($count > 0)
-				{
-					$this->set_message('valid_screen_name', $this->CI->lang->line('screen_name_taken'));
-					return FALSE;
-				}
-			}
+			$this->set_message('valid_screen_name', $this->CI->lang->line('screen_name_taken'));
+			return FALSE;
 		}
 
 		return TRUE;

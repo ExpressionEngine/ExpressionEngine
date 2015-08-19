@@ -99,7 +99,7 @@ class Subscriptions extends Profile {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('subscriptions') . ': <b>### ' . lang('subscriptions') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		ee()->view->base_url = $this->base_url;

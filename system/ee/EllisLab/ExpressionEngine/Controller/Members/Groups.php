@@ -55,6 +55,7 @@ class Groups extends Members\Members {
 		$this->site_id = (int) ee()->config->item('site_id');
 		$this->super_admin = $this->session->userdata('group_id') == 1;
 		$this->set_view_header($this->base_url, lang('search_member_groups_button'));
+		$this->generateSidebar('groups');
 	}
 
 	/**
@@ -164,7 +165,7 @@ class Groups extends Members\Members {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		ee()->view->base_url = $this->base_url;
@@ -694,7 +695,7 @@ class Groups extends Members\Members {
 			),
 			'addon_access' => array(
 				array(
-					'title' => 'addon_access',
+					'title' => 'addons_access',
 					'desc' => 'addons_access_desc',
 					'fields' => array(
 						'addons_access' => array(

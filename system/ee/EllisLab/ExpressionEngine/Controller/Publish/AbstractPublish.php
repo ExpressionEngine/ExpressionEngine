@@ -5,7 +5,7 @@ namespace EllisLab\ExpressionEngine\Controller\Publish;
 use CP_Controller;
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
-use EllisLab\ExpressionEngine\Module\Channel\Model\ChannelEntry;
+use EllisLab\ExpressionEngine\Model\Channel\ChannelEntry;
 /**
  * ExpressionEngine - by EllisLab
  *

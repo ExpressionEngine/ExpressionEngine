@@ -187,7 +187,7 @@ class File extends AbstractFilesController {
 				->now();
 		}
 
-		$this->sidebarMenu($file->upload_location_id);
+		$this->generateSidebar($file->upload_location_id);
 		$this->stdHeader();
 		ee()->view->cp_page_title = sprintf(lang('edit_file_metadata'), $file->title);
 		ee()->view->cp_page_title_alt = ee()->view->cp_page_title . '<a class="btn action ta" href="' . ee('CP/URL', 'files/file/crop/' . $id) . '">' . lang('btn_crop') . '</a>';

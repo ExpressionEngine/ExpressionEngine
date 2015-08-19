@@ -8,7 +8,7 @@
 		<meta http-equiv='refresh' content='<?=$meta_refresh['rate']?>; url=<?=$meta_refresh['url']?>'>
 		<?php endif;?>
 
-		<?=ee()->view->head_link('css/v3/common.min.css'); ?>
+		<?=ee()->view->head_link('css/common.min.css'); ?>
 		<?=ee()->view->head_link('css/jquery-ui-1.8.16.custom.css'); ?>
 		<?php if (ee()->extensions->active_hook('cp_css_end') === TRUE):?>
 		<link rel="stylesheet" href="<?=ee('CP/URL', 'css/cp_global_ext', array('theme' => ee()->cp->cp_theme))?>" type="text/css" />
@@ -52,7 +52,7 @@
 						<?php foreach($cp_quicklinks as $link): ?>
 						<a href="<?=$link['link']?>"><?=$link['title']?></a>
 						<?php endforeach ?>
-						<a class="last add" href="<?=ee('CP/URL', 'members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id')))?>"><?=lang('new_link')?></a>
+						<a class="last add" href="<?=ee('CP/URL', 'members/profile/quicklinks/create', array('id' => ee()->session->userdata('member_id'), 'url' => base64_encode(ee()->cp->get_safe_refresh()), 'name' => $cp_page_title))?>"><?=lang('new_link')?></a>
 					</ul>
 				</div>
 			</nav>
@@ -126,5 +126,4 @@
 		<section class="wrap">
 
 <?php
-/* End of file header.php */
-/* Location: ./themes/cp/default/_shared/header.php */
+

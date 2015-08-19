@@ -193,7 +193,7 @@ class Members extends AbstractDesignController {
 
 		$vars['themes'] = form_dropdown('theme', $themes, ee('CP/URL', 'design/members/index/' . $theme));
 
-		$this->sidebarMenu('members');
+		$this->generateSidebar('members');
 		ee()->view->cp_page_title = lang('template_manager');
 		ee()->view->cp_heading = lang('member_profile_templates');
 

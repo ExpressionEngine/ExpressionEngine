@@ -44,6 +44,8 @@ $lang = array(
 
 'custom_fields' => 'Custom Fields',
 
+'custom_fields_for' => 'Custom Fields for %s',
+
 'field_group' => 'Field Group',
 
 'field_groups' => 'Field Groups',
@@ -265,6 +267,10 @@ $lang = array(
 
 'html_formatting_desc' => 'Level of <abbr title="Hyper-Text Markup Language">HTML</abbr> allowed.',
 
+'extra_publish_controls' => 'Show extra publish controls?',
+
+'extra_publish_controls_desc' => 'When set to <b>yes</b>, a second set of publish controls will appear at the top of the publish form for this channel.',
+
 'convert_image_urls' => 'Allow image <abbr title="Unified Resource Locator">URL</abbr>s?',
 
 'convert_image_urls_desc' => 'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s to image resources will be automagically rendered as images in this channel\'s entries.',
@@ -315,11 +321,11 @@ $lang = array(
 
 'allow_comments' => 'Allow comments?',
 
-'allow_comments_desc' => 'When set to <b>yes</b>, member groups with permissions can submit comments to this channel\'s entires.',
+'allow_comments_desc' => 'When set to <b>yes</b>, members can submit comments to this channel\'s entries.',
 
-'allow_comments_checked' => 'Allow comments checked?',
+'allow_comments_checked' => 'Allow comments default?',
 
-'allow_comments_checked_desc' => 'When set to <b>yes</b>, the allow comments checkbox will be checked by default for this channel.',
+'allow_comments_checked_desc' => 'When set to <b>yes</b>, the "Allow comments" option will be set to "yes" by default',
 
 'require_membership' => 'Require membership?',
 
@@ -424,7 +430,7 @@ $lang = array(
 
 'categories_removed_desc' => '%d categories were removed.',
 
-'no_fields' => 'No Fields',
+'no_fields' => 'No fields found',
 
 'fields' => 'Fields',
 

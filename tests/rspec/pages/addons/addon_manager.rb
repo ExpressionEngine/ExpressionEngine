@@ -32,7 +32,7 @@ class AddonManager < ControlPanelPage
 	element :first_party_pagination, first_party_prefix + 'div.paginate'
 	elements :first_party_pages, first_party_prefix + 'div.paginate ul li a'
 
-	element :first_party_bulk_action, first_party_prefix + 'form fieldset.tbl-bulk-act select[name="bulk_action"]'
+	element :first_party_bulk_action, first_party_prefix + 'form fieldset.tbl-bulk-act select[name="bulk_action"]', visible: false
 	element :first_party_action_submit_button, first_party_prefix + 'form fieldset.tbl-bulk-act button.submit'
 
 	# Third Party Add-Ons
@@ -64,7 +64,7 @@ class AddonManager < ControlPanelPage
 	element :third_party_pagination, third_party_prefix + 'div.paginate'
 	elements :third_party_pages, third_party_prefix + 'div.paginate ul li a'
 
-	element :third_party_bulk_action, third_party_prefix + 'form fieldset.tbl-bulk-act select[name="bulk_action"]'
+	element :third_party_bulk_action, third_party_prefix + 'form fieldset.tbl-bulk-act select[name="bulk_action"]', visible: false
 	element :third_party_action_submit_button, third_party_prefix + 'form fieldset.tbl-bulk-act button.submit'
 
 	def load

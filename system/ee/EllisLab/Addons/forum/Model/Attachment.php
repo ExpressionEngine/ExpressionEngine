@@ -57,6 +57,7 @@ class Attachment extends Model {
 		'Member' => array(
 			'type'  => 'belongsTo',
 			'model' => 'ee:Member',
+			'weak'  => TRUE
 		),
 		'Post' => array(
 			'type' => 'belongsTo'

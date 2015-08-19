@@ -129,12 +129,12 @@ class Design extends AbstractDesignController {
 		ee()->javascript->set_global('lang.remove_confirm', lang('template') . ': <b>### ' . lang('templates') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/confirm_remove',
 				'cp/design/manager'
 			),
 		));
 
-		$this->sidebarMenu($group->group_id);
+		$this->generateSidebar($group->group_id);
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('template_manager');
 		ee()->view->cp_heading = sprintf(lang('templates_in_group'), $group->group_name);

@@ -89,12 +89,12 @@ class Files extends AbstractFilesController {
 		ee()->javascript->set_global('lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/confirm_remove',
 				'cp/files/manager'
 			),
 		));
 
-		$this->sidebarMenu(NULL);
+		$this->generateSidebar(NULL);
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('file_manager');
 
@@ -159,12 +159,12 @@ class Files extends AbstractFilesController {
 		ee()->javascript->set_global('lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/confirm_remove',
 				'cp/files/manager'
 			),
 		));
 
-		$this->sidebarMenu($id);
+		$this->generateSidebar($id);
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('file_manager');
 		ee()->view->cp_heading = sprintf(lang('files_in_directory'), $dir->name);
@@ -360,7 +360,7 @@ class Files extends AbstractFilesController {
 				->now();
 		}
 
-		$this->sidebarMenu($dir_id);
+		$this->generateSidebar($dir_id);
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('file_upload');
 

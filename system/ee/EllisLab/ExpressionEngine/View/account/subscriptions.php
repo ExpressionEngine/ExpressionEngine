@@ -19,7 +19,7 @@
 	<?php if ( ! empty($pagination)) $this->embed('_shared/pagination', $pagination); ?>
 
 	<?php if ( ! empty($table['data'])): ?>
-	<fieldset class="tbl-bulk-act">
+	<fieldset class="tbl-bulk-act hidden">
 		<select name="bulk_action">
 			<option value="">-- <?=lang('with_selected')?> --</option>
 			<option value="unsubscribe" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('unsubscribe')?></option>
@@ -29,8 +29,6 @@
 	<?php endif; ?>
 <?=form_close()?>
 </div>
-
-<?php $this->startOrAppendBlock('modals'); ?>
 
 <?php
 
@@ -42,7 +40,6 @@ $modal_vars = array(
 	)
 );
 
-$this->embed('ee:_shared/modal_confirm_remove', $modal_vars);
+$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+ee('CP/Modal')->addModal('remove', $modal);
 ?>
-
-<?php $this->endBlock(); ?>

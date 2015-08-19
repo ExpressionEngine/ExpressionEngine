@@ -230,7 +230,7 @@ class Date_ft extends EE_Fieldtype {
 				lang('sa'),
 			));
 			ee()->cp->add_js_script(array(
-				'file' => array('cp/v3/date_picker'),
+				'file' => array('cp/date_picker'),
 			));
 
 			$localized = ( ! isset($_POST[$date_local])) ? (($localize === TRUE) ? 'y' : 'n') : ee()->input->post($date_local, TRUE);

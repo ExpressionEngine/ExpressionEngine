@@ -50,7 +50,7 @@ class Uploads extends AbstractFilesController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->sidebarMenu(NULL);
+		$this->generateSidebar(NULL);
 		$this->stdHeader();
 
 		ee()->load->library('form_validation');

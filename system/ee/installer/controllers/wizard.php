@@ -576,7 +576,7 @@ class Wizard extends CI_Controller {
 				'database' => ee()->input->post('db_name'),
 				'username' => ee()->input->post('db_username'),
 				'password' => ee()->input->post('db_password'),
-				'dbprefix' => 'exp'
+				'dbprefix' => $this->getDbPrefix()
 			));
 		}
 
@@ -587,6 +587,16 @@ class Wizard extends CI_Controller {
 		}
 
 		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Abstraction to retrieve the default or user over-ridden database prefix
+	 */
+	private function getDbPrefix()
+	{
+		return ($this->userdata['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $this->userdata['db_prefix']);
 	}
 
 	// --------------------------------------------------------------------
@@ -710,7 +720,7 @@ class Wizard extends CI_Controller {
 			'database' => $this->userdata['db_name'],
 			'dbdriver' => $this->userdata['dbdriver'],
 			'pconnect' => ($this->userdata['db_conntype'] == 1) ? TRUE : FALSE,
-			'dbprefix' => ($this->userdata['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $this->userdata['db_prefix']),
+			'dbprefix' => $this->getDbPrefix(),
 			'swap_pre' => 'exp_',
 			'db_debug' => TRUE, // We show our own errors
 			'cache_on' => FALSE,
@@ -960,7 +970,7 @@ class Wizard extends CI_Controller {
 		$template_variables['success_note'] = sprintf(lang($type.'_success_note'), $this->version);
 
 		// Send them to their CP via the form
-		$template_variables['action'] = $this->userdata['cp_url'];
+		$template_variables['action'] = $this->set_qstr('show_success');
 		$template_variables['method'] = 'get';
 
 		// Only show download button if mailing list export exists
@@ -1411,7 +1421,7 @@ class Wizard extends CI_Controller {
 			'image_path'        => $this->image_path,
 
 			// TODO-WB: Change src to compressed before launch
-			'javascript_path'   => $this->set_path('themes/ee/javascript/src/'),
+			'javascript_path'   => $this->set_path('themes/ee/asset/javascript/src/'),
 
 			'version'           => $this->version,
 			'version_major'     => $version[0],
@@ -1804,7 +1814,7 @@ class Wizard extends CI_Controller {
 			'db_database'               => $this->userdata['db_name'],
 			'db_dbdriver'               => $this->userdata['dbdriver'],
 			'db_pconnect'               => ($this->userdata['db_conntype'] == 1) ? TRUE : FALSE,
-			'db_dbprefix'               => ($this->userdata['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $this->userdata['db_prefix']),
+			'db_dbprefix'               => $this->getDbPrefix(),
 			'app_version'               => $this->userdata['app_version'],
 			'license_contact'           => $this->userdata['license_contact'],
 			'license_number'            => trim($this->userdata['license_number']),
@@ -2394,7 +2404,7 @@ class Wizard extends CI_Controller {
 		);
 
 		// Move the directory
-		// return @rename(APPPATH, $new_path);
+		return @rename(APPPATH, $new_path);
 	}
 }
 

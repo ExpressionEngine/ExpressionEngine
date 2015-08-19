@@ -77,11 +77,11 @@ if ($wrap): ?>
 			<?php
 			// Output this if Grid input so we can dynamically show it via JS
 			if (empty($data) OR $grid_input): ?>
-				<tr class="no-results">
+				<tr class="no-results<?php if ($grid_input): ?> hidden<?php endif?>">
 					<td class="solo" colspan="<?=$colspan?>">
 						<?=lang($no_results['text'])?>
 						<?php if ( ! empty($no_results['action_text'])): ?>
-							<a class="btn<?php if ( ! empty($no_results['action_link'])): ?> action<?php endif?>" href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>
+							<a class="btn action" href="<?=$no_results['action_link']?>"><?=lang($no_results['action_text'])?></a>
 						<?php endif ?>
 					</td>
 				</tr>
@@ -116,7 +116,7 @@ if ($wrap): ?>
 							<td class="reorder-col"><span class="ico reorder"></span></td>
 						<?php endif ?>
 						<?php foreach ($row['columns'] as $column): ?>
-							<?php if ($column['encode'] == TRUE): ?>
+							<?php if ($column['encode'] == TRUE && $column['type'] != Table::COL_STATUS): ?>
 								<td><?=htmlentities($column['content'], ENT_QUOTES)?></td>
 							<?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
 								<td>

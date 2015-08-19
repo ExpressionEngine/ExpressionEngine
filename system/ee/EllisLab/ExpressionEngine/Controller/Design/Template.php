@@ -197,7 +197,7 @@ class Template extends AbstractDesignController {
 				->now();
 		}
 
-		$this->sidebarMenu($group->group_id);
+		$this->generateSidebar($group->group_id);
 		ee()->view->cp_page_title = lang('create_template');
 
 		ee()->cp->render('settings/form', $vars);
@@ -492,12 +492,12 @@ class Template extends AbstractDesignController {
 		ee()->javascript->set_global('lang.remove_confirm', lang('template') . ': <b>### ' . lang('templates') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/confirm_remove',
 				'cp/manager'
 			),
 		));
 
-		$this->sidebarMenu();
+		$this->generateSidebar();
 		$this->stdHeader();
 		ee()->view->cp_page_title = lang('template_manager');
 

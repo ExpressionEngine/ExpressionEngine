@@ -16,7 +16,7 @@ class CommunicateSent < ControlPanelPage
 	elements :dates, 'div.box div.tbl-ctrls form div.tbl-wrap table tr td:nth-child(2)'
 	elements :total_sents, 'div.box div.tbl-ctrls form div.tbl-wrap table tr td:nth-child(3)'
 
-	element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]'
+	element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]', visible: false
 	element :action_submit_button, 'form fieldset.tbl-bulk-act button.submit'
 
 	def generate_data(
