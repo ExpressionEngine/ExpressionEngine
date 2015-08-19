@@ -140,7 +140,7 @@ class Uploads extends AbstractFilesController {
 					->addToBody(lang('directory_saved_desc'))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'files/uploads/edit/' . $new_upload_id));
+				ee()->functions->redirect(ee('CP/URL', 'files/directory/' . $new_upload_id));
 			}
 			else
 			{
