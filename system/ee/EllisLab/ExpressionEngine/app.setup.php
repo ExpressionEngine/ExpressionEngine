@@ -254,14 +254,14 @@ return array(
 		# EllisLab\ExpressionEngine\Module..
 
 			// ..\Channel
-			'Channel' => 'Module\Channel\Model\Channel',
-			'ChannelFieldGroup'=> 'Module\Channel\Model\ChannelFieldGroup',
-			'ChannelField' => 'Module\Channel\Model\ChannelField',
-			'ChannelEntry' => 'Module\Channel\Model\ChannelEntry',
-			'ChannelEntryAutosave' => 'Module\Channel\Model\ChannelEntryAutosave',
-			'ChannelEntryVersion' => 'Module\Channel\Model\ChannelEntryVersion',
-			'ChannelFormSettings' => 'Module\Channel\Model\ChannelFormSettings',
-			'ChannelLayout' => 'Module\Channel\Model\ChannelLayout',
+			'Channel' => 'Model\Channel\Channel',
+			'ChannelFieldGroup'=> 'Model\Channel\ChannelFieldGroup',
+			'ChannelField' => 'Model\Channel\ChannelField',
+			'ChannelEntry' => 'Model\Channel\ChannelEntry',
+			'ChannelEntryAutosave' => 'Model\Channel\ChannelEntryAutosave',
+			'ChannelEntryVersion' => 'Model\Channel\ChannelEntryVersion',
+			'ChannelFormSettings' => 'Model\Channel\ChannelFormSettings',
+			'ChannelLayout' => 'Model\Channel\ChannelLayout',
 
 			// ..\Comment
 			'Comment' => 'Model\Comment\Comment',

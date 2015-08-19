@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Module\Channel\Model;
+namespace EllisLab\ExpressionEngine\Model\Channel;
 
 use InvalidArgumentException;
 use EllisLab\ExpressionEngine\Library\Data\Collection;

@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Module\Channel\Model\Display;
+namespace EllisLab\ExpressionEngine\Model\Channel\Display;
 
 use EllisLab\ExpressionEngine\Model\Content\Display\DefaultLayout;
 use EllisLab\ExpressionEngine\Model\Content\Display\LayoutDisplay;

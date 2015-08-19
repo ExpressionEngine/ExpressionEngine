@@ -1,6 +1,6 @@
 <?php
 
-namespace EllisLab\ExpressionEngine\Module\Channel\Model\Gateway;
+namespace EllisLab\ExpressionEngine\Model\Channel\Gateway;
 
 use EllisLab\ExpressionEngine\Model\Content\VariableColumnGateway;
 

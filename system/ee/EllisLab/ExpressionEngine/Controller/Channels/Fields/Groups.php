@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Controller\Channels\Fields;
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
-use EllisLab\ExpressionEngine\Module\Channel\Model\ChannelFieldGroup;
+use EllisLab\ExpressionEngine\Model\Channel\ChannelFieldGroup;
 
 /**
  * ExpressionEngine - by EllisLab

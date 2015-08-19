@@ -4,9 +4,9 @@ namespace EllisLab\ExpressionEngine\Controller\Channels;
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
 
-use EllisLab\ExpressionEngine\Module\Channel\Model\Display\DefaultChannelLayout;
+use EllisLab\ExpressionEngine\Model\Channel\Display\DefaultChannelLayout;
 use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
-use EllisLab\ExpressionEngine\Module\Channel\Model\Channel;
+use EllisLab\ExpressionEngine\Model\Channel\Channel;
 use EllisLab\ExpressionEngine\Library\Data\Collection;
 
 /**
