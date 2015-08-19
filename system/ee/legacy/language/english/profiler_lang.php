@@ -16,3 +16,7 @@ $lang['profiler_duplicate_queries']    = 'Duplicate Queries';
 $lang['profiler_no_duplicate_queries'] = 'No duplicate queries.';
 $lang['profiler_no_queries']           = 'No queries were run';
 $lang['profiler_template']             = 'Templates';
+$lang['profiler_gigabytes']            = 'GB';
+$lang['profiler_megabytes']            = 'MB';
+$lang['profiler_kilobytes']            = 'KB';
+$lang['profiler_bytes']                = 'B';

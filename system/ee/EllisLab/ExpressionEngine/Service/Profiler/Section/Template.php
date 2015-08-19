@@ -35,6 +35,16 @@ class Template extends ProfilerSection {
 	protected $template_memory;
 
 	/**
+	 * @var float  threshold for warnings, in seconds
+	 **/
+	protected $time_threshold = 0.25;
+
+	/**
+	 * @var float  threshold for warnings, in megabytes
+	 **/
+	protected $memory_threshold = 1.0;
+
+	/**
 	 * Get a brief text summary (used for tabs, labels, etc.)
 	 *
 	 * @return  string  the section summary
@@ -66,8 +76,8 @@ class Template extends ProfilerSection {
 
 		foreach($log as &$entry)
 		{
-			$entry['memory_threshold'] = 4;
-			$entry['time_threshold'] = 0.25;
+			$entry['memory_threshold'] = $this->memory_threshold;
+			$entry['time_threshold'] = $this->time_threshold;
 		}
 
 		$this->data = array('template' => $log);

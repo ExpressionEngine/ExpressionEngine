@@ -101,6 +101,7 @@ class CI_DB_mysqli_connection {
 	public function query($query)
 	{
 		$time_start = microtime(TRUE);
+		$memory_start = memory_get_usage();
 
 		try
 		{
@@ -112,10 +113,11 @@ class CI_DB_mysqli_connection {
 		}
 
 		$time_end = microtime(TRUE);
+		$memory_end = memory_get_usage();
 
 		if (isset($this->log))
 		{
-			$this->log->addQuery($query, $time_end-$time_start);
+			$this->log->addQuery($query, $time_end-$time_start, $memory_end-$memory_start);
 		}
 
 		return $result;

@@ -36,6 +36,16 @@ class Database extends ProfilerSection {
 	protected $total_queries;
 
 	/**
+	 * @var float  threshold for warnings, in seconds
+	 **/
+	protected $time_threshold = 0.25;
+
+	/**
+	 * @var float  threshold for warnings, in bytes, default 1MB
+	 **/
+	protected $memory_threshold = 1024*1024;
+
+	/**
 	 * @var SQL Keywords we want highlighted
 	 */
 	protected $keywords = array(
@@ -155,16 +165,55 @@ class Database extends ProfilerSection {
 
 		foreach ($log->getQueries() as $query)
 		{
-			list($sql, $location, $time) = $query;
+			list($sql, $location, $time, $memory) = $query;
 
 			$data[] = array(
 				'time' => number_format($time, 4),
+				'memory' => $memory,
+				'formatted_memory'=> $this->formatMemoryString($memory),
+				'time_threshold' => $this->time_threshold,
+				'memory_threshold' => $this->memory_threshold,
 				'query' => $this->highlightSql($sql),
 				'location' => $location
 			);
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Format the memory to a sane byte format
+	 *
+	 * @param  string  $memory  the memory in bytes
+	 * @return string  the formatted memory string
+	 **/
+	private function formatMemoryString($memory)
+	{
+		$precision = 0;
+
+		if ($memory >= 1000000000)
+		{
+			$precision = 2;
+			$memory = round($memory / 1073741824, $precision);
+			$unit = lang('profiler_gigabytes');
+		}
+		elseif ($memory >= 1000000)
+		{
+			$precision = 1;
+			$memory = round($memory / 1048576, $precision);
+			$unit = lang('profiler_megabytes');
+		}
+		elseif ($memory >= 1000)
+		{
+			$memory = round($memory / 1024);
+			$unit = lang('profiler_kilobytes');
+		}
+		else
+		{
+			$unit = lang('profiler_bytes');
+		}
+
+		return number_format($memory, $precision).' '.$unit;
 	}
 
 	/**
