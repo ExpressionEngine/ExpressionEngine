@@ -5,32 +5,9 @@ namespace EllisLab\ExpressionEngine\Module\Channel\Model\Gateway;
 use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
 class ChannelTitleGateway extends Gateway {
-	// Structural definition stuff
+
 	protected static $_table_name 		= 'channel_titles';
 	protected static $_primary_key 		= 'entry_id';
-	protected static $_related_gateways = array(
-		'entry_id' => array(
-			'Categories'=>array(
-				'gateway' => 'CategoryGateway',
-				'key'	 => 'cat_id',
-				'pivot_table' => 'category_posts',
-				'pivot_key' => 'entry_id',
-				'pivot_foreign_key' => 'cat_id'
-			)
-		),
-		'site_id' => array(
-			'gateway' => 'SiteGateway',
-			'key'	 => 'site_id'
-		),
-		'channel_id' => array(
-			'gateway' => 'ChannelGateway',
-			'key'    => 'channel_id'
-		),
-		'author_id' => array(
-			'gateway' => 'MemberGateway',
-			'key'	=> 'member_id'
-		)
-	);
 
 	// Properties
 	public $entry_id;
