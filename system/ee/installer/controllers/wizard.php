@@ -2227,6 +2227,10 @@ class Wizard extends CI_Controller {
 		// We also add a few other items
 		$config['license_number'] = ( ! isset($config['license_number'])) ? '' : $config['license_number'];
 
+		// BUILD_REMOVE_START
+		$config['use_compressed_js'] = 'n';
+		// BUILD_REMOVE_END
+
 		// Fetch the config template
 		$data = read_file(APPPATH.'config/config_tmpl.php');
 
