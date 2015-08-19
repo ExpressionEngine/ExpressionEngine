@@ -1,0 +1,19 @@
+<h1>{page_title} <span class="required">&#10033; Required Fields</span></h1>
+<div class="alert warn">
+	{lang:mbr_delete_blurb}
+	{lang:mbr_delete_warning}
+</div>
+{form_declaration}
+	<fieldset class="ctrls">
+		<section class="password-req">
+			<section class="w-8">
+				<h3>{lang:existing_password} <span class="required" title="required field">&#10033;</span></h3>
+				<em>{lang:existing_password_email}</em>
+			</section>
+			<section class="w-8">
+				<input type="password" name="password" value="" maxlength="40">
+			</section>
+		</section>
+		<input class="btn" type="submit" value="{lang:submit}" name="submit">
+	</fieldset>
+</form>

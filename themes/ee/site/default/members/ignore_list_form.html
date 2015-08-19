@@ -1,0 +1,25 @@
+{include:toggle_js}
+
+{if success_message}
+	<div class="alert success">
+		<p>{lang:message}</p>
+	</div>
+{/if}
+
+<h1>{page_title} {include:member_search}</h1>
+
+{form:form_declaration}
+
+	<table>
+		<tr>
+			<th>{lang:screen_name}</th>
+			<th><input class="checkbox" type="checkbox" name="toggleflag" value="" onclick="toggle(this);"></th>
+		</tr>
+		{include:edit_ignore_list_rows}
+	</table>
+	<fieldset class="ctrls">
+		{form:add_button}
+		{form:delete_button}
+	</fieldset>
+
+</form>

@@ -1,0 +1,18 @@
+<tr>
+	<td>
+		<a href="{path:profile}">{name}</a>
+	</td>
+	<td>{total_combined_posts}</td>
+	<td>
+		{if accept_email}
+			{encode='{email}' title='Send e-mail'}
+		{/if}
+	</td>
+	<td>
+		{if url}
+			<a href="{url}" rel="external">Visit website</a>
+		{/if}
+	</td>
+	<td>{join_date format='%n/%j/%Y'}</td>
+	<td>{last_visit format='%n/%j/%Y'}</td>
+</tr>

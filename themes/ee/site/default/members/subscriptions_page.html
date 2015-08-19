@@ -1,0 +1,33 @@
+<script >
+
+	function toggle(thebutton){
+		if (thebutton.checked){
+		   val = true;
+		}
+		else{
+		   val = false;
+		}
+
+		var len = document.target.elements.length;
+
+		for (var i = 0; i < len; i++){
+			var button = document.target.elements[i];
+
+			var name_array = button.name.split("[");
+
+			if (name_array[0] == "toggle"){
+				button.checked = val;
+			}
+		}
+
+		document.target.toggleflag.checked = val;
+	}
+
+</script>
+
+<h1>{page_title}</h1>
+{form_declaration}
+	<table>
+		{subscription_results}
+	</table>
+</form>

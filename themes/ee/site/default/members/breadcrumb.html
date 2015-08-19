@@ -1,0 +1,15 @@
+<section class="row breadcrumb">
+	<section class="w-16">
+		<ul>
+			{breadcrumb_links}
+		</ul>
+		<div class="member-bar">
+			{if logged_in}
+				<a href="{path:your_profile}"><b>{name}</b></a> (<a href="{path="LOGOUT"}">{lang:logout}</a>)
+				<div class="member-nav">
+					<a href="{path:your_control_panel}">{lang:your_control_panel}</a> / <a href="{path:memberlist}">{lang:memberlist}</a>
+				</div>
+			{/if}
+		</div>
+	</section>
+</section>

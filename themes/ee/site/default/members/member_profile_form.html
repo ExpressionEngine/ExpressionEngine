@@ -1,0 +1,55 @@
+<h1>{page_title} <span class="required">&#10033; Required Fields</span></h1>
+{form_declaration}
+	<fieldset class="row">
+		<section class="w-4 instruct">
+			<h3>{lang:url}</h3>
+		</section>
+		<section class="w-12 field">
+			<input type="text" name="url" value="{url}" maxlength="75">
+		</section>
+	</fieldset>
+	<fieldset class="row">
+		<section class="w-4 instruct">
+			<h3>{lang:birthday}</h3>
+		</section>
+		<section class="w-12 field">
+			{form:birthday_year} {form:birthday_month} {form:birthday_day}
+		</section>
+	</fieldset>
+	<fieldset class="row">
+		<section class="w-4 instruct">
+			<h3>{lang:location}</h3>
+		</section>
+		<section class="w-12 field">
+			<input type="text" name="location" value="{location}" maxlength="50">
+		</section>
+	</fieldset>
+	<fieldset class="row">
+		<section class="w-4 instruct">
+			<h3>{lang:occupation}</h3>
+		</section>
+		<section class="w-12 field">
+			<input type="text" name="occupation" value="{occupation}" maxlength="80">
+		</section>
+	</fieldset>
+	<fieldset class="row">
+		<section class="w-4 instruct">
+			<h3>{lang:interests}</h3>
+		</section>
+		<section class="w-12 field">
+			<input type="text" name="interests" value="{interests}" maxlength="120">
+		</section>
+	</fieldset>
+	<fieldset class="row">
+		<section class="w-4 instruct">
+			<h3>{lang:bio}</h3>
+		</section>
+		<section class="w-12 field">
+			<textarea name="bio" rows="" cols="0">{bio}</textarea>
+		</section>
+	</fieldset>
+	{custom_profile_fields}
+	<fieldset class="ctrls">
+		<input class="btn" type="submit" value="{lang:update}">
+	</fieldset>
+</form>

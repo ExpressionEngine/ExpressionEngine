@@ -1487,11 +1487,10 @@ class Wizard extends CI_Controller {
 	 */
 	function install_site_theme()
 	{
-		$this->userdata['theme'] = (IS_CORE)
-			? 'agile_records_core'
-			: 'agile_records';
+		// There can only be one. For now.
+		$this->userdata['theme'] = 'default';
 
-		$default_group = 'site';
+		$default_group = 'home';
 
 		$default_template_preferences = array(
 			'caching'       => 'n',
@@ -1732,10 +1731,10 @@ class Wizard extends CI_Controller {
 
 			foreach(array('snippets', 'global_variables') as $type)
 			{
-				if (is_dir($this->theme_path.$this->userdata['theme'].'/'.$type))
+				if (is_dir($this->theme_path.$this->userdata['theme'].'/template_partials/'.$type))
 				{
 					$this->load->helper('file');
-					$dir = rtrim(realpath($this->theme_path.$this->userdata['theme'].'/'.$type), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
+					$dir = rtrim(realpath($this->theme_path.$this->userdata['theme'].'/template_partials/'.$type), DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR;
 					$vars = array();
 
 					// can't use get_filenames() since it doesn't read hidden files

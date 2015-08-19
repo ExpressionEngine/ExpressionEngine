@@ -1,0 +1,49 @@
+<section class="row">
+	{if avatar}
+		<section class="w-2">
+			<figure>
+				<img src="{path:avatar_url}" alt="{name}" title="{name}">
+			</figure>
+		</section>
+	{/if}
+	<section class="w-9">
+		<h1>{name}</h1>
+		<p class="member-meta"><b>{member_group}</b> &mdash; {if accept_email}{encode='{email}' title='Send e-mail'}{/if} {if url}<a href="{url}" rel="external">Visit website</a>{/if}</p>
+		<ul class="list yes">
+			{if birthday}<li><b>{lang:birthday}</b>: {birthday}</li>{/if}
+			{if location}<li><b>{lang:location}</b>: {location}</li>{/if}
+			{if occupation}<li><b>{lang:occupation}</b>: {occupation}</li>{/if}
+			{if interests}<li><b>{lang:interests}</b>: {interests}</li>{/if}
+			{custom_profile_fields}
+		</ul>
+		<h2>About {name}</h2>
+		{if bio != ''}
+			{bio}
+		{/if}
+		{if bio == ''}
+			<p>{lang:no_info_available}</p>
+		{/if}
+	</section>
+	<section class="w-5">
+		<div class="sidebar">
+			<h2>{lang:statistics}</h2>
+			<ul class="list yes">
+				<li><b>{lang:total_entries}</b>: <a href="{search_path}">{total_entries}</a></li>
+				<li><b>{lang:total_comments}</b>: {total_comments}</li>
+				{if forum_installed}
+					<li><b>{lang:total_forum_topics}</b>: {total_forum_topics}</li>
+					<li><b>{lang:total_forum_replies}</b>: {total_forum_replies}</li>
+					<li><b>{lang:total_forum_posts}</b>: {total_forum_posts}</li>
+				{/if}
+				<li><b>{lang:member_local_time}</b>: {local_time format="%n/%j/%Y %h:%i %A"}</li>
+				<li><b>{lang:last_visit}</b>: {last_visit format="%n/%j/%Y %h:%i %A"}</li>
+				<li><b>{lang:join_date}</b>: {join_date format="%n/%j/%Y %h:%i %A"}</li>
+				<li><b>{lang:most_recent_entry}</b>: {last_entry_date format="%n/%j/%Y %h:%i %A"}</li>
+				<li><b>{lang:most_recent_comment}</b>: {last_comment_date format="%n/%j/%Y %h:%i %A"}</li>
+				{if forum_installed}
+					<li><b>{lang:most_recent_forum_post}</b>: {last_forum_post_date format="%n/%j/%Y %h:%i %A"}</li>
+				{/if}
+			</ul>
+		</div>
+	</section>
+</section>

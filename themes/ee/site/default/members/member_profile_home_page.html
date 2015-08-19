@@ -1,0 +1,54 @@
+<h1>{page_title}</h1>
+<table>
+	<tr>
+		<th colspan="2">{lang:your_stats}</th>
+	</tr>
+	<tr>
+		<td>{lang:email}</td>
+		<td><a href="mailto:{email}"><b>{email}</b></a></td>
+	</tr>
+	<tr>
+		<td>{lang:join_date}</td>
+		<td>{join_date}</td>
+	</tr>
+	<tr>
+		<td>{lang:last_visit}</td>
+		<td>{last_visit_date}</td>
+	</tr>
+	{if forum_installed}
+		<tr>
+			<td>{lang:most_recent_forum_post}</td>
+			<td>{recent_forum_post_date}</td>
+		</tr>
+	{/if}
+	<tr>
+		<td>{lang:most_recent_entry}</td>
+		<td>{recent_entry_date}</td>
+	</tr>
+	<tr>
+		<td>{lang:most_recent_comment}</td>
+		<td>{recent_comment_date}</td>
+	</tr>
+	{if forum_installed}
+		<tr>
+			<td>{lang:total_forum_topics}</td>
+			<td>{total_topics}</td>
+		</tr>
+		<tr>
+			<td>{lang:total_forum_replies}</td>
+			<td>{total_replies}</td>
+		</tr>
+		<tr>
+			<td>{lang:total_forum_posts}</td>
+			<td>{total_posts}</td>
+		</tr>
+	{/if}
+	<tr>
+		<td>{lang:total_entries}</td>
+		<td>{total_entries}</td>
+	</tr>
+	<tr>
+		<td>{lang:total_comments}</td>
+		<td>{total_comments}</td>
+	</tr>
+</table>

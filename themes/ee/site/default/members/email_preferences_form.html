@@ -1,0 +1,36 @@
+<h1>{page_title} <span class="required">&#10033; Required Fields</span></h1>
+{form_declaration}
+	<fieldset class="row">
+		<section class="w-4 instruct">
+			<h3>{lang:email}</h3>
+		</section>
+		<section class="w-12 field">
+			<input type="text" name="email" value="{email}" maxlength="72">
+		</section>
+	</fieldset>
+	<fieldset class="row">
+		<section class="w-4 instruct">
+			<h3>Notification settings</h3>
+		</section>
+		<section class="w-12 field">
+			<label><input type="checkbox" name="accept_admin_email" value="y" {state:accept_admin_email}> {lang:accept_admin_email}</label>
+			<label><input type="checkbox" name="accept_user_email" value="y" {state:accept_user_email}> {lang:accept_user_email}</label>
+			<label><input type="checkbox" name="notify_by_default" value="y" {state:notify_by_default}> {lang:notify_by_default}</label>
+			<label><input type="checkbox" name="notify_of_pm" value="y" {state:notify_of_pm}> {lang:notify_of_pm}</label>
+			<label><input type="checkbox" name="smart_notifications" value="y" {state:smart_notifications}> {lang:enable_smart_notifications}</label>
+		</section>
+	</fieldset>
+
+	<fieldset class="ctrls">
+		<section class="password-req">
+			<section class="w-8">
+				<h3>{lang:existing_password} <span class="required" title="required field">&#10033;</span></h3>
+				<em>{lang:existing_password_email}</em>
+			</section>
+			<section class="w-8">
+				<input type="password" name="password" value="" maxlength="40">
+			</section>
+		</section>
+		<input class="btn" type="submit" value="{lang:update}" name="submit">
+	</fieldset>
+</form>

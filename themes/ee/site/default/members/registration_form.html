@@ -1,0 +1,115 @@
+<h1>{page_title} <span class="required">&#10033; Required Fields</span></h1>
+
+	<fieldset class="row">
+		<section class="w-4 instruct">
+			<h3>{lang:username} <span class="required" title="required field">&#10033;</span></h3>
+			<em>{lang:username_length}</em>
+		</section>
+		<section class="w-12 field">
+			<input type="text" name="username" value="" maxlength="50" size="25">
+		</section>
+	</fieldset>
+
+	<fieldset class="row">
+		<section class="w-4 instruct">
+			<h3>{lang:password} <span class="required" title="required field">&#10033;</span></h3>
+			<em>{lang:password_length}</em>
+		</section>
+		<section class="w-12 field">
+			<input type="password" name="password" value="" maxlength="40" size="25" autocomplete="off">
+		</section>
+	</fieldset>
+
+	<fieldset class="row">
+		<section class="w-4 instruct">
+			<h3>{lang:password_confirm} <span class="required" title="required field">&#10033;</span></h3>
+			<em></em>
+		</section>
+		<section class="w-12 field">
+			<input type="password" name="password_confirm" value="" maxlength="40" size="25" autocomplete="off">
+		</section>
+	</fieldset>
+
+	<fieldset class="row">
+		<section class="w-4 instruct">
+			<h3>{lang:screen_name}</h3>
+			<em>{lang:screen_name_explanation}</em>
+		</section>
+		<section class="w-12 field">
+			<input type="text" name="screen_name" value="" maxlength="50" size="25">
+		</section>
+	</fieldset>
+
+	<fieldset class="row">
+		<section class="w-4 instruct">
+			<h3>{lang:email} <span class="required" title="required field">&#10033;</span></h3>
+		</section>
+		<section class="w-12 field">
+			<input type="text" name="email" value="" maxlength="72" size="40">
+		</section>
+	</fieldset>
+
+	<fieldset class="row">
+		<section class="w-4 instruct">
+			<h3>{lang:email_confirm} <span class="required" title="required field">&#10033;</span></h3>
+			<em></em>
+		</section>
+		<section class="w-12 field">
+			<input type="text" name="email_confirm" value="" maxlength="72" size="40">
+		</section>
+	</fieldset>
+
+	<fieldset class="row">
+		<section class="w-4 instruct">
+			<h3>{lang:url}</h3>
+		</section>
+		<section class="w-12 field">
+			<input type="text" name="url" value="" maxlength="150" size="25">
+		</section>
+	</fieldset>
+
+	{custom_fields}
+		<fieldset class="row">
+			<section class="w-4 instruct">
+				<h3>{field_name} {required}<span class="required" title="required field">&#10033;</span>{/required}</h3>
+				{if field_description}
+					<em>{field_description}</em>
+				{/if}
+			</section>
+			<section class="w-12 field">
+				{field}
+			</section>
+		</fieldset>
+	{/custom_fields}
+
+	<fieldset class="row">
+		<section class="w-4 instruct">
+			<h3>{lang:terms_of_service}</h3>
+		</section>
+		<section class="w-12 field">
+			<textarea name="rules" rows="" cols="" readonly>
+All messages posted at this site express the views of the author, and do not necessarily reflect the views of the owners and administrators of this site.
+
+By registering at this site you agree not to post any messages that are obscene, vulgar, slanderous, hateful, threatening, or that violate any laws.   We will permanently ban all users who do so.
+
+We reserve the right to remove, edit, or move any messages for any reason.
+			</textarea>
+			<label><input type="checkbox" name="accept_terms" value="y"> {lang:terms_accepted}</label>
+		</section>
+	</fieldset>
+
+	{if captcha}
+		<fieldset class="row">
+			<section class="w-4 instruct">
+				<h3>{lang:captcha}</h3>
+			</section>
+			<section class="w-12 field">
+				{captcha}
+				<input type="text" name="captcha" value="" size="20" maxlength="20">
+			</section>
+		</fieldset>
+	{/if}
+
+	<fieldset class="ctrls">
+		<input class="btn" type="submit" value="{lang:submit}" name="submit">
+	</fieldset>

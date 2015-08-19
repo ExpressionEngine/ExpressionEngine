@@ -1,0 +1,33 @@
+<h1>{lang:sign_in}</h1>
+<p><a href="{path:register}">{lang:member_registration}</a></p>
+{form_declaration}
+	<fieldset class="row">
+		<section class="w-4 instruct">
+			<h3>{lang:username}</h3>
+		</section>
+		<section class="w-12 field">
+			<input type="text" name="username" size="20" value="" maxlength="50">
+		</section>
+	</fieldset>
+	<fieldset class="row">
+		<section class="w-4 instruct">
+			<h3>{lang:password}</h3>
+		</section>
+		<section class="w-12 field">
+			<input type="password" name="password" size="20" value="" maxlength="40" autocomplete="off">
+			<em><a href="{path:forgot}">{lang:forgot_password}</a></em>
+		</section>
+	</fieldset>
+	<fieldset class="row">
+		<section class="w-4 instruct">
+			<h3>Options</h3>
+		</section>
+		<section class="w-12 field">
+			<label><input type="checkbox" name="auto_login" value="1" checked="checked"> {lang:auto_login}</label>
+			<label><input type="checkbox" name="anon" value="1" checked="checked"> {lang:show_name}</label>
+		</section>
+	</fieldset>
+	<fieldset class="ctrls">
+		<input class="btn" type="submit" value="{lang:submit}" name="submit">
+	</fieldset>
+</form>

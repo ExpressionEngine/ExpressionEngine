@@ -1,0 +1,19 @@
+<h1>{page_title}</h1>
+{form_declaration}
+	<fieldset class="row">
+		<section class="w-4 instruct">
+			<h3>{lang:edit_preferences}</h3>
+		</section>
+		<section class="w-12 field">
+			<label><input type="checkbox" name="accept_messages" value="y" {state:accept_messages}> {lang:accept_messages}</label>
+			<label><input type="checkbox" name="display_avatars" value="y" {state:display_avatars}> {lang:display_avatars}</label>
+			<label><input type="checkbox" name="display_signatures" value="y" {state:display_signatures}> {lang:display_signatures}</label>
+			<label><input type="checkbox" name="parse_smileys" value="y" {state:parse_smileys}> {lang:parse_smileys}</label>
+		</section>
+	</fieldset>
+
+	<fieldset class="ctrls">
+		<input class="btn" type="submit" value="{lang:update}" name="submit">
+	</fieldset>
+
+</form>
