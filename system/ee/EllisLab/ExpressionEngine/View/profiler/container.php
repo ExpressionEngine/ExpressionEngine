@@ -31,6 +31,6 @@ if (REQ == 'PAGE')
 {
 	ee()->load->library('view');
 	echo ee()->view->script_tag('jquery/jquery.js');
-	echo ee()->view->script_tag('v3/common.js');
+	echo ee()->view->script_tag('common.js');
 }
 ?>
