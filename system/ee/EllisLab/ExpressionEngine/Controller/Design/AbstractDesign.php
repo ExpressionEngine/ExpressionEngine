@@ -56,7 +56,7 @@ abstract class AbstractDesign extends CP_Controller {
 			$active_group_id = (int) $active;
 		}
 
-		$sidebar = ee('Sidebar')->make();
+		$sidebar = ee('CP/Sidebar')->make();
 
 		// Template Groups
 		$template_group_list = $sidebar->addHeader(lang('template_groups'))
@@ -297,7 +297,7 @@ abstract class AbstractDesign extends CP_Controller {
 		$zip = new ZipArchive();
 		if ($zip->open($zipfilename, ZipArchive::CREATE) !== TRUE)
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('error_export'))
 				->addToBody(lang('error_cannot_create_zip'))
