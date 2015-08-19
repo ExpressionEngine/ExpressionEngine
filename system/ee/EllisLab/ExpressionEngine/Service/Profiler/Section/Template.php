@@ -41,7 +41,7 @@ class Template extends ProfilerSection {
 	 **/
 	public function getSummary()
 	{
-		return $this->template_memory.' '.lang('profiler_'.$this->section_name);
+		return $this->template_memory.'mb '.lang('profiler_'.$this->section_name);
 	}
 
 	/**

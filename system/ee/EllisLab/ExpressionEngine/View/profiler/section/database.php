@@ -8,7 +8,7 @@
 				<ul class="query-list">
 					<?php foreach ($dupe_queries as $dupe): ?>
 						<li>
-							<div class="query-time"><?=$dupe['count']?></div>
+							<div class="query-time"><?=$dupe['count']?> &times;</div>
 							<div class="query-wrap"><?=$dupe['query']?></div>
 							<div class="query-file"><?=$dupe['location']?></div>
 						</li>
