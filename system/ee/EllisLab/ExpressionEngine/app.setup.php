@@ -40,6 +40,13 @@ return array(
 			);
 		},
 
+		'CP/Filter' => function($ee)
+		{
+			$filters = new Filter\FilterFactory($ee->make('View', '_shared/filters'));
+			$filters->setDIContainer($ee);
+			return $filters;
+		},
+
 		'CP/GridInput' => function($ee, $config = array())
 		{
 			$grid = new Library\CP\GridInput(
@@ -97,13 +104,6 @@ return array(
 			return new View\ViewFactory($ee);
 		},
 
-		'Filter' => function($ee)
-		{
-			$filters = new Filter\FilterFactory($ee->make('View', '_shared/filters'));
-			$filters->setDIContainer($ee);
-			return $filters;
-		},
-
 		'Model' => function($ee)
 		{
 			$frontend = new Model\Frontend($ee->make('Model/Datastore'));
@@ -131,20 +131,26 @@ return array(
 			return new Addon\Factory($ee->make('App'));
 		},
 
-		'Alert' => function($ee)
-		{
-			$view = $ee->make('View')->make('_shared/alert');
-			return new Alert\AlertCollection(ee()->session, $view);
-		},
-
 		'Captcha' => function($ee)
 		{
 			return new Library\Captcha();
 		},
 
+		'CP/Alert' => function($ee)
+		{
+			$view = $ee->make('View')->make('_shared/alert');
+			return new Alert\AlertCollection(ee()->session, $view);
+		},
+
 		'CP/Modal' => function($ee)
 		{
 			return new Modal\ModalCollection;
+		},
+
+		'CP/Sidebar' => function($ee)
+		{
+			$view = $ee->make('View');
+			return new Sidebar\Sidebar($view);
 		},
 
 		'Config' => function($ee)
@@ -185,12 +191,6 @@ return array(
 		'Security/XSS' => function($ee)
 		{
 			return new Library\Security\XSS();
-		},
-
-		'Sidebar' => function($ee)
-		{
-			$view = $ee->make('View');
-			return new Sidebar\Sidebar($view);
 		},
 
 		'Validation' => function($ee)
