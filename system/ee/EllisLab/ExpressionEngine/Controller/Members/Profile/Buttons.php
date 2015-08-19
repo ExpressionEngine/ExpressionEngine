@@ -136,7 +136,7 @@ class Buttons extends Profile {
 		ee()->javascript->set_global('lang.remove_confirm', lang('html_buttons') . ': <b>### ' . lang('html_buttons') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/confirm_remove',
 				'cp/v3/html_button_reorder',
 				'cp/sort_helper'
 			),

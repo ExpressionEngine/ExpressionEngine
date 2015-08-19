@@ -479,7 +479,6 @@ class Relationship_ft extends EE_Fieldtype {
 
 		if (REQ == 'CP')
 		{
-			$css_link = ee()->view->head_link('css/relationship.css');
 			ee()->cp->add_js_script(array(
 				'plugin' => 'ee_interact.event',
 				'file' => 'fields/relationship/cp',
@@ -489,15 +488,12 @@ class Relationship_ft extends EE_Fieldtype {
 		// Channel Form
 		else
 		{
-			$css_link = '<link rel="stylesheet" href="'.URL_THEMES.'cp/default/css/relationship.css" type="text/css" media="screen" />'.PHP_EOL;
 			ee()->cp->add_js_script(array(
 				'plugin' => 'ee_interact.event',
 				'file' => 'cp/relationships',
 				'ui' => 'sortable'
 			));
 		}
-
-		ee()->cp->add_to_head($css_link);
 
 		if ($entry_id)
 		{

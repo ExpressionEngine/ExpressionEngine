@@ -212,12 +212,14 @@ class EE_Core {
 
 		define('PATH_THEMES', $theme_path.'ee/');
 		define('URL_THEMES', $theme_url.'ee/');
+		define('PATH_THEMES_GLOBAL_ASSET', PATH_THEMES.'asset/');
+		define('URL_THEMES_GLOBAL_ASSET', URL_THEMES.'asset/');
 
 		define('PATH_THIRD_THEMES', $theme_path.'user/');
 		define('URL_THIRD_THEMES', $theme_url.'user/');
 
 		define('PATH_MBR_THEMES', PATH_THEMES.'member/');
-		define('PATH_CP_GBL_IMG', ee()->config->slash_item('theme_folder_url').'ee/cp_global_images/');
+		define('PATH_CP_GBL_IMG', PATH_THEMES_GLOBAL_ASSET.'img/');
 		unset($theme_path);
 
 		// Load the very, very base classes
@@ -413,8 +415,7 @@ class EE_Core {
 
 		$this->_somebody_set_us_up_the_base();
 
-		$cp_theme = 'default';
-		define('PATH_CP_THEME', PATH_THEMES.'cp/default/');
+		define('PATH_CP_THEME', PATH_THEMES.'cp/');
 
 		// Show the control panel home page in the event that a
 		// controller class isn't found in the URL

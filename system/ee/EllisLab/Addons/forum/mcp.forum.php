@@ -235,7 +235,7 @@ class Forum_mcp extends CP_Controller {
 		ee()->javascript->set_global('lang.remove_confirm', lang('forum') . ': <b>### ' . lang('forums') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/confirm_remove',
 				'cp/sort_helper',
 				'cp/addons/forums/reorder',
 			),
@@ -2232,7 +2232,7 @@ class Forum_mcp extends CP_Controller {
 		ee()->javascript->set_global('lang.remove_confirm', lang('rank') . ': <b>### ' . lang('ranks') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/confirm_remove',
 			),
 		));
 
@@ -2538,7 +2538,7 @@ class Forum_mcp extends CP_Controller {
 		ee()->javascript->set_global('lang.remove_confirm', lang('admin') . ': <b>### ' . lang('admins') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/confirm_remove',
 			),
 		));
 

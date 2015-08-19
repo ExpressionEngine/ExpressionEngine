@@ -19,5 +19,3 @@
 <?php endif; ?>
 
 <?php
-/* End of file pagination.php */
-/* Location: ./themes/cp/default/_shared/pagination.php */

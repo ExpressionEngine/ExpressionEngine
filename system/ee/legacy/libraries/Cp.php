@@ -29,7 +29,6 @@ class Cp {
 	protected $its_all_in_your_head = array();
 	protected $footer_item          = array();
 
-	public $cp_theme             = '';
 	public $cp_theme_url         = '';	// base URL to the CP theme folder
 	public $installed_modules    = FALSE;
 	public $requests             = array();
@@ -57,8 +56,7 @@ class Cp {
 		// Cannot set these in the installer
 		if ( ! defined('EE_APPPATH'))
 		{
-			$this->cp_theme	= 'default';
-			$this->cp_theme_url = URL_THEMES.'cp/default/';
+			$this->cp_theme_url = URL_THEMES.'cp/';
 
 			ee()->load->vars(array(
 				'cp_theme_url' => $this->cp_theme_url
@@ -83,10 +81,9 @@ class Cp {
 
 		// Javascript Path Constants
 
-		define('PATH_JQUERY', PATH_THEMES.'javascript/'.$js_folder.'/jquery/');
-		define('PATH_JAVASCRIPT', PATH_THEMES.'javascript/'.$js_folder.'/');
+		define('PATH_JQUERY', PATH_THEMES_GLOBAL_ASSET.'javascript/'.$js_folder.'/jquery/');
+		define('PATH_JAVASCRIPT', PATH_THEMES_GLOBAL_ASSET.'javascript/'.$js_folder.'/');
 		define('JS_FOLDER', $js_folder);
-
 
 		ee()->load->library('javascript', array('autoload' => FALSE));
 
@@ -191,13 +188,10 @@ class Cp {
 		$js_scripts = array(
 			'ui'		=> array('core', 'widget', 'mouse', 'position', 'sortable', 'dialog', 'button'),
 			'plugin'	=> array('ee_interact.event', 'ee_broadcast.event', 'ee_notice', 'ee_txtarea', 'tablesorter', 'ee_toggle_all'),
-			'file'		=> array('json2', 'underscore', 'cp/global_start', 'cp/v3/form_validation')
+			'file'		=> array('json2', 'underscore', 'cp/global_start', 'cp/form_validation')
 		);
 
-		if ($this->cp_theme != 'mobile')
-		{
-			$js_scripts['plugin'][] = 'ee_navigation';
-		}
+		$js_scripts['plugin'][] = 'ee_navigation';
 
 		$this->add_js_script($js_scripts);
 		$this->_seal_combo_loader();
@@ -630,11 +624,11 @@ class Cp {
 
 		switch($type)
 		{
-			case 'ui':			$file = PATH_THEMES.'javascript/'.$folder.'/jquery/ui/jquery.ui.'.$name.'.js';
+			case 'ui':			$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.$folder.'/jquery/ui/jquery.ui.'.$name.'.js';
 				break;
-			case 'plugin':		$file = PATH_THEMES.'javascript/'.$folder.'/jquery/plugins/'.$name.'.js';
+			case 'plugin':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.$folder.'/jquery/plugins/'.$name.'.js';
 				break;
-			case 'file':		$file = PATH_THEMES.'javascript/'.$folder.'/'.$name.'.js';
+			case 'file':		$file = PATH_THEMES_GLOBAL_ASSET.'javascript/'.$folder.'/'.$name.'.js';
 				break;
 			case 'package':		$file = PATH_THIRD.$name.'/javascript/'.$name.'.js';
 				break;
@@ -862,7 +856,7 @@ class Cp {
 	{
 		$current_top_path = ee()->load->first_package_path();
 		$package = trim(str_replace(array(PATH_THIRD, 'views'), '', $current_top_path), '/');
-		$url = BASE.AMP.'C=css'.AMP.'M=third_party'.AMP.'package='.$package.AMP.'theme='.$this->cp_theme.AMP.'file='.$file;
+		$url = BASE.AMP.'C=css'.AMP.'M=third_party'.AMP.'package='.$package.AMP.'file='.$file;
 
 		$this->add_to_head('<link type="text/css" rel="stylesheet" href="'.$url.'" />');
 	}
