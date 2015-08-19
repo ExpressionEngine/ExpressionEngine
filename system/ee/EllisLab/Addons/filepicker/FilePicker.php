@@ -137,7 +137,6 @@ class FilePicker {
 				array('toolbar_items' => $toolbar),
 			);
 
-			$attrs = array();
 			$attrs = array('data-id' => $file->file_id);
 
 			$data[] = array(

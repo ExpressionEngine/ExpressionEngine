@@ -1,5 +1,5 @@
 <div class="tbl-ctrls">
-<?=form_open($table['base_url'])?>
+<?=form_open($form_url)?>
 	<?php if (is_numeric($dir)): ?>
 	<fieldset class="tbl-search right">
 		<a class="btn tn action" href="<?=$upload?>">Upload New File</a>
@@ -13,12 +13,20 @@
 
 	<?php if (isset($filters)) echo $filters; ?>
 
-	<?php if($images): ?>
+	<?php if($type == 'thumb'): ?>
 		<table class='img-grid'>
-		<?php foreach (array_chunk($table['data'], 4) as $row): ?>
+		<?php foreach (array_chunk($files->asArray(), 4) as $row): ?>
 			<tr>
-				<?php foreach ($row as $column): ?>
-				<td><a data-id="<?=$column['attrs']['data-id']?>" class="filepicker-item" href="#"><img src="<?=$data[$column['attrs']['data-id']]?>" alt="avatar"></a></td>
+				<?php foreach ($row as $file): ?>
+				<td>
+					<a data-id="<?=$file->file_id?>" class="filepicker-item" href="#">
+						<?php if ($file->isImage()): ?>
+						<img src="<?=$file->getAbsoluteURL()?>" alt="<?=$file->file_name?>">
+						<?php else: ?>
+						<span class="file-thumb"><b><?=$file->file_name?></b></span>
+						<?php endif; ?>
+					</a>
+				</td>
 				<?php endforeach ?>
 			</tr>
 		<?php endforeach ?>

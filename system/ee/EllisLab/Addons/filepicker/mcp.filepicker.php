@@ -51,6 +51,8 @@ class Filepicker_mcp {
 			$id = 'all';
 			$files = ee('Model')->get('File')
 				->filter('site_id', ee()->config->item('site_id'))->all();
+
+			$type = ee()->input->get('type') ?: 'list';
 		}
 		else
 		{
@@ -61,16 +63,7 @@ class Filepicker_mcp {
 
 			$dir = $directories[$id];
 			$files = $dir->getFiles();
-		}
-
-		$type = ee()->input->get('type') ?: $dir->default_modal_view;
-
-		if ($type == 'thumb')
-		{
-			$files = $files->filter(function($file)
-			{
-				return $file->isImage();
-			});
+			$type = ee()->input->get('type') ?: $dir->default_modal_view;
 		}
 
 		// Filter out any files that are no longer on disk
@@ -80,19 +73,7 @@ class Filepicker_mcp {
 
 		$directories = array_map(function($dir) {return $dir->name;}, $directories);
 		$directories = array('all' => lang('all')) + $directories;
-		$vars['images'] = FALSE;
-
-		if ($this->images || $type == 'thumb')
-		{
-			$vars['images'] = TRUE;
-			$vars['data'] = array();
-			$perpage = 16;
-
-			foreach ($files as $file)
-			{
-				$vars['data'][$file->file_id] = $file->UploadDestination->url . $file->file_name;
-			}
-		}
+		$vars['type'] = $type;
 
 		$filters = ee('Filter')->add('Perpage', $files->count(), 'show_all_files');
 
@@ -101,29 +82,38 @@ class Filepicker_mcp {
 
 		$filters = $filters->add($dirFilter);
 
-		if ( ! empty($dir) && $dir->allowed_types == 'img')
-		{
-			$imgOptions = array(
-				'thumb' => 'thumbnails',
-				'list' => 'list'
-			);
-			$imgFilter = ee('Filter')->make('type', lang('picker_type'), $imgOptions)
-				->disableCustomValue()
-				->setDefaultValue($dir->default_modal_view);
-			$filters = $filters->add($imgFilter);
-		}
+		$imgOptions = array(
+			'thumb' => 'thumbnails',
+			'list' => 'list'
+		);
+		$imgFilter = ee('Filter')->make('type', lang('picker_type'), $imgOptions)
+			->disableCustomValue()
+			->setDefaultValue($type);
+		$filters = $filters->add($imgFilter);
+
 		$perpage = $filters->values()['perpage'];
 		$vars['filters'] = $filters->render($base_url);
 
-		$table = $this->picker->buildTableFromFileCollection($files, $perpage);
-
-		$base_url->setQueryStringVariable('sort_col', $table->sort_col);
-		$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
 		$base_url->setQueryStringVariable('directory', $id);
 		$base_url->setQueryStringVariable('type', $type);
 
-		$vars['table'] = $table->viewData($base_url);
-		$vars['form_url'] = $vars['table']['base_url'];
+		if ($this->images || $type == 'thumb')
+		{
+			$vars['type'] = 'thumb';
+			$vars['files'] = $files;
+			$vars['form_url'] = $base_url;
+		}
+		else
+		{
+			$table = $this->picker->buildTableFromFileCollection($files, $perpage);
+
+			$base_url->setQueryStringVariable('sort_col', $table->sort_col);
+			$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
+
+			$vars['table'] = $table->viewData($base_url);
+			$vars['form_url'] = $vars['table']['base_url'];
+		}
+
 		$vars['upload'] = ee('CP/URL', $this->picker->base_url."upload" ,array('directory' => $id));
 		$vars['dir'] = $id;
 		if ( ! empty($vars['table']['data']))
