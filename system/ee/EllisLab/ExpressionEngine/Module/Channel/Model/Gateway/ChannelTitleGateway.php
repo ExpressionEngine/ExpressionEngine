@@ -6,8 +6,8 @@ use EllisLab\ExpressionEngine\Service\Model\Gateway;
 
 class ChannelTitleGateway extends Gateway {
 
-	protected static $_table_name 		= 'channel_titles';
-	protected static $_primary_key 		= 'entry_id';
+	protected static $_table_name = 'channel_titles';
+	protected static $_primary_key = 'entry_id';
 
 	// Properties
 	public $entry_id;
