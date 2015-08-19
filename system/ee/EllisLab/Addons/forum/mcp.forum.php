@@ -76,7 +76,7 @@ class Forum_mcp extends CP_Controller {
 		}
 
 		$sidebar->addHeader(lang('templates'))
-			->withUrl(ee('CP/URL', 'design/forum'));
+			->withUrl(ee('CP/URL', 'design/forums'));
 
 		$ranks = $sidebar->addHeader(lang('member_ranks'))
 			->withUrl(ee('CP/URL', $this->base . 'ranks'));
