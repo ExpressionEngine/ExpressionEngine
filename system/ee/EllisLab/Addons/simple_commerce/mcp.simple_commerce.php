@@ -47,7 +47,7 @@ class Simple_commerce_mcp {
 	{
 		$this->base_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce';
 
-		$this->sidebar = ee('Sidebar')->make();
+		$this->sidebar = ee('CP/Sidebar')->make();
 
 		$this->items_nav = $this->sidebar->addHeader(lang('items'), ee('CP/URL', 'addons/settings/simple_commerce'))
 			->withButton(lang('new'), ee('CP/URL', 'addons/settings/simple_commerce/create-item'));

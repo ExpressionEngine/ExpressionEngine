@@ -46,7 +46,7 @@ class Forum_mcp extends CP_Controller {
 
 	private function generateSidebar($active = NULL)
 	{
-		$sidebar = ee('Sidebar')->make();
+		$sidebar = ee('CP/Sidebar')->make();
 
 		$boards = $sidebar->addHeader(lang('forum_boards'))
 			->withButton(lang('new'), ee('CP/URL', $this->base . 'create/board'));

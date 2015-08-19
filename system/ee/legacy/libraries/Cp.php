@@ -236,7 +236,7 @@ class Cp {
 
 		ee()->view->ee_build_date = ee()->localize->format_date($date_format, $this->_parse_build_date(), TRUE);
 
-		$sidebar = ee('Sidebar')->render();
+		$sidebar = ee('CP/Sidebar')->render();
 
 		if ( ! empty($sidebar))
 		{

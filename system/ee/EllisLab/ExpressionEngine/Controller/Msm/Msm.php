@@ -61,7 +61,7 @@ class Msm extends CP_Controller {
 
 		$site_ids = array_keys(ee()->session->userdata('assigned_sites'));
 
-		$sidebar = ee('Sidebar')->make();
+		$sidebar = ee('CP/Sidebar')->make();
 
 		$sidebar->addHeader(lang('sites'), ee('CP/URL', 'msm'))
 			->withButton(lang('new'), ee('CP/URL', 'msm/create'))

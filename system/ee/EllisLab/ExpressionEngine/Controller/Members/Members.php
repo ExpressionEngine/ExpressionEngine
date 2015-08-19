@@ -65,7 +65,7 @@ class Members extends CP_Controller {
 
 	protected function generateSidebar($active = NULL)
 	{
-		$sidebar = ee('Sidebar')->make();
+		$sidebar = ee('CP/Sidebar')->make();
 
 		$header = $sidebar->addHeader(lang('all_members'), ee('CP/URL', 'members')->compile())
 			->withButton(lang('new'), ee('CP/URL', 'members/create'));

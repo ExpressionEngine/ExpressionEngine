@@ -58,7 +58,7 @@ abstract class AbstractFiles extends CP_Controller {
 			$active_id = (int) $active;
 		}
 
-		$sidebar = ee('Sidebar')->make();
+		$sidebar = ee('CP/Sidebar')->make();
 
 		$header = $sidebar->addHeader(lang('upload_directories'));
 
