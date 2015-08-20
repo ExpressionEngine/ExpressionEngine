@@ -559,7 +559,7 @@ class Groups extends Members\Members {
 						'cp_homepage' => array(
 							'type' => 'radio',
 							'choices' => array(
-								'overview' => lang('cp_overview'),
+								'overview' => lang('cp_overview').' &mdash; <i>'.lang('default').'</i>',
 								'entries_edit' => lang('edit_listing'),
 								'publish_form' => lang('publish_form').' &mdash; '.
 									form_dropdown('cp_homepage_channel', $allowed_channels, element('cp_homepage_channel', $values)),

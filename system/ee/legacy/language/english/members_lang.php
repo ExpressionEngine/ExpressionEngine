@@ -524,11 +524,17 @@ $lang = array(
 
 'default_cp_homepage_desc' => 'Page of the <abbr title="Control Panel">CP</abbr> this group should see when logging in.',
 
-'cp_overview' => '<abbr title="Control Panel">CP</abbr> Overview &mdash; <i>default</i>',
+'cp_overview' => '<abbr title="Control Panel">CP</abbr> Overview',
 
 'edit_listing' => 'All entries edit listing',
 
+'applies_to_all_sites' => 'applies to all sites',
+
 'publish_form' => 'Publish form',
+
+'choose_channels_per_site' => 'choose channels, per site below',
+
+'no_channels' => 'No Channels',
 
 'custom_url' => 'Custom URL',
 
