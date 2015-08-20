@@ -230,6 +230,12 @@ $(document).ready(function(){
 
 			// scroll up, if needed
 			$('#top').animate({ scrollTop: 0 }, 100);
+
+			$(document).one('keypress', function(e) {
+				if (e.keyCode === 27) {
+					$('.modal-wrap').trigger('modal:close');
+				}
+			});
 		});
 
 		$('body').on('modal:close', '.modal-wrap', function(e) {
@@ -260,12 +266,6 @@ $(document).ready(function(){
 
 		$('body').on('click', '.overlay', function() {
 			$('.modal-wrap').trigger('modal:close');
-		});
-
-		$(document).on('keypress', function(e) {
-			if (e.keyCode === 27) {
-				$('.modal-wrap').trigger('modal:close');
-			}
 		});
 
 	// ==================================
