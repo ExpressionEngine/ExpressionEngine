@@ -75,7 +75,8 @@ class FilePicker {
 	{
 		$table = Table::fromGlobals(array(
 			'autosort' => TRUE,
-			'limit' => $limit
+			'limit' => $limit,
+			'class' => 'file-list'
 		));
 		$table->setColumns(
 			array(
