@@ -272,7 +272,11 @@ class Quicklinks extends Profile {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('settings_save_erorr'))
+				->addToBody(lang('settings_save_error_desc'))
+				->now();
 		}
 
 		ee()->view->base_url = $this->base_url;

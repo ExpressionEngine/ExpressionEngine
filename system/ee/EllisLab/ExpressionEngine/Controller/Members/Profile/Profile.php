@@ -187,7 +187,11 @@ class Profile extends CP_Controller {
 		if ($validated->isNotValid())
 		{
 			ee()->load->helper('html_helper');
-			ee()->view->set_message('issue', lang('cp_message_issue'), ul($validated->getAllErrors()), TRUE);
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('cp_message_issue'))
+				->addToBody($validated->getAllErrors())
+				->now();
 
 			return FALSE;
 		}
