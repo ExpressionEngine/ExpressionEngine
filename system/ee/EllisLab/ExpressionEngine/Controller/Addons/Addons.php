@@ -771,7 +771,16 @@ class Addons extends CP_Controller {
 			}
 		}
 
-		ee()->functions->redirect($this->base_url);
+		$return = $this->base_url;
+
+		if (ee()->input->get('return'))
+		{
+			$return = base64_decode(ee()->input->get('return'));
+			$uri_elements = json_decode($return, TRUE);
+			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
+		}
+
+		ee()->functions->redirect($return);
 	}
 
 	// --------------------------------------------------------------------
