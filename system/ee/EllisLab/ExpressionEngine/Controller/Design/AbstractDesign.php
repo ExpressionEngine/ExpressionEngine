@@ -244,6 +244,7 @@ abstract class AbstractDesign extends CP_Controller {
 				'file'		=> array(
 					'codemirror/codemirror',
 					'codemirror/closebrackets',
+					'codemirror/lint',
 					'codemirror/overlay',
 					'codemirror/xml',
 					'codemirror/css',
