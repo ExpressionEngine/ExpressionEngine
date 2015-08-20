@@ -350,6 +350,9 @@ class EE_Schema {
 			pmember_id int(10) NOT NULL default '0',
 			rte_enabled char(1) NOT NULL DEFAULT 'y',
 			rte_toolset_id int(10) NOT NULL DEFAULT '0',
+			cp_homepage varchar(20) NULL DEFAULT NULL,
+			cp_homepage_channel int(10) unsigned NULL DEFAULT NULL,
+			cp_homepage_custom varchar(255) NULL DEFAULT NULL,
 			PRIMARY KEY `member_id` (`member_id`),
 			KEY `group_id` (`group_id`),
 			KEY `unique_id` (`unique_id`),
@@ -464,6 +467,9 @@ class EE_Schema {
 			search_flood_control mediumint(5) unsigned NOT NULL default '15',
 			prv_msg_send_limit smallint unsigned NOT NULL default '20',
 			prv_msg_storage_limit smallint unsigned NOT NULL default '60',
+			cp_homepage varchar(20) NULL DEFAULT NULL,
+			cp_homepage_channel int(10) unsigned NULL DEFAULT NULL,
+			cp_homepage_custom varchar(255) NULL DEFAULT NULL,
 
 			PRIMARY KEY `group_id_site_id` (`group_id`, `site_id`)
 		)";

@@ -553,6 +553,27 @@ class Groups extends Members\Members {
 					)
 				),
 				array(
+					'title' => 'default_cp_homepage',
+					'desc' => 'default_cp_homepage_desc',
+					'fields' => array(
+						'cp_homepage' => array(
+							'type' => 'radio',
+							'choices' => array(
+								'overview' => lang('cp_overview'),
+								'entries_edit' => lang('edit_listing'),
+								'publish_form' => lang('publish_form').' &mdash; '.
+									form_dropdown('cp_homepage_channel', $allowed_channels, element('cp_homepage_channel', $values)),
+								'custom' => lang('custom_url'),
+							),
+							'value' => element('cp_homepage', $values, 'overview')
+						),
+						'cp_homepage_custom' => array(
+							'type' => 'text',
+							'value' => element('cp_homepage_custom', $values)
+						)
+					)
+				),
+				array(
 					'title' => 'footer_helper_links',
 					'desc' => 'footer_helper_links_desc',
 					'fields' => array(
@@ -1015,6 +1036,9 @@ class Groups extends Members\Members {
 				}
 			}
 		}
+
+		// This field isn't present in the section array, it's shimmy'd into a radio selection
+		$group->cp_homepage_channel = ee()->input->post('cp_homepage_channel');
 
 		if ( empty($group->site_id))
 		{
