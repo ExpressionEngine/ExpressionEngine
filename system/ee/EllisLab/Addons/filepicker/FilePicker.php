@@ -71,7 +71,7 @@ class FilePicker {
 		return "<a class='m-link filepicker $class' rel='modal-file' href='$href' $extra>". $text ."</a>";
 	}
 
-	public function buildTableFromFileCollection(Collection $files, $limit = 20)
+	public function buildTableFromFileCollection(Collection $files, $limit = 20, $selected = NULL)
 	{
 		$table = Table::fromGlobals(array(
 			'autosort' => TRUE,
@@ -96,8 +96,6 @@ class FilePicker {
 
 		$data = array();
 
-		$file_id = ee()->session->flashdata('file_id');
-
 		foreach ($files as $file)
 		{
 			if ( ! $file->getUploadDestination()
@@ -114,6 +112,12 @@ class FilePicker {
 			);
 
 			$attrs = array('data-id' => $file->file_id);
+
+			if ($file->file_id == $selected)
+			{
+				$attrs = array('class' => 'selected');
+				$column[0] = '<span></span>' . $column[0];
+			}
 
 			$data[] = array(
 				'attrs'		=> $attrs,
