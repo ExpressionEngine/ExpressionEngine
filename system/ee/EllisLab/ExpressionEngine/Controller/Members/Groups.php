@@ -111,9 +111,10 @@ class Groups extends Members\Members {
 
 		foreach ($groups as $group)
 		{
+			$edit_link = ee('CP/URL', 'members/groups/edit/', array('group' => $group->group_id));
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
-					'href' => ee('CP/URL', 'members/groups/edit/', array('group' => $group->group_id)),
+					'href' => $edit_link,
 					'title' => strtolower(lang('edit'))
 				)
 			));
@@ -121,7 +122,9 @@ class Groups extends Members\Members {
 			$status = ($group->is_locked == 'y') ? 'locked' : 'unlocked';
 			$count = $group->getMembers()->count();
 			$href = ee('CP/URL', 'members', array('group' => $group->group_id));
-			$title = "$group->group_title <a href='$href' alt='" . lang('view_members') . $group->group_title ."'>($count)</a>";
+			$title = '<a href="' . $edit_link . '">' . $group->group_title . '</a>';
+			$title .= " <a href='$href' alt='" . lang('view_members') . $group->group_title ."'>($count)</a>";
+
 
 			$groupData[] = array(
 				'id' => $group->group_id,

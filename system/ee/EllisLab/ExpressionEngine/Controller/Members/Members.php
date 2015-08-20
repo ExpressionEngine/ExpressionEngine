@@ -427,9 +427,10 @@ class Members extends CP_Controller {
 		foreach ($members as $member)
 		{
 			$attributes = array();
+			$edit_link = ee('CP/URL', 'members/profile/', array('id' => $member['member_id']));
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
-					'href' => ee('CP/URL', 'members/profile/', array('id' => $member['member_id'])),
+					'href' => $edit_link,
 					'title' => strtolower(lang('profile'))
 				)
 			));
@@ -458,11 +459,13 @@ class Members extends CP_Controller {
 			}
 
 			$email = "<a href = '" . ee('CP/URL', 'utilities/communicate/member/' . $member['member_id']) . "'>".$member['email']."</a>";
+			$username_display = "<a href = '" . $edit_link . "'>". $member['username']."</a>";
+			$username_display .= '<br><span class="meta-info">&mdash; '.$email.'</span>';
 			$last_visit = ($member['last_visit']) ? ee()->localize->human_time($member['last_visit']) : '--';
 			$rows[] = array(
 				'columns' => array(
 					'id' => $member['member_id'],
-					'username' => $member['username'].'<br><span class="meta-info">&mdash; '.$email.'</span>',
+					'username' => $username_display,
 					'<span class="meta-info">
 						<b>'.lang('joined').'</b>: '.ee()->localize->format_date(ee()->session->userdata('date_format', ee()->config->item('date_format')), $member['join_date']).'<br>
 						<b>'.lang('last_visit').'</b>: '.$last_visit.'

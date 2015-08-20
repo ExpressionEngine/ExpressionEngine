@@ -338,24 +338,6 @@ class ChannelEntry extends ContentModel {
 		return $module_tabs;
 	}
 
-	protected function initializeCustomFields()
-	{
-		parent::initializeCustomFields();
-
-		$module_tabs = $this->getTabFields();
-
-		if ($module_tabs)
-		{
-			foreach ($module_tabs as $tab_id => $fields)
-			{
-				foreach ($fields as $key => $field)
-				{
-					$this->addFacade($field['field_id'], $field);
-				}
-			}
-		}
-	}
-
 	public function get__versioning_enabled()
 	{
 		return (isset($this->versioning_enabled)) ?: $this->Channel->enable_versioning;

@@ -89,9 +89,9 @@
 
 		echo ee()->cp->render_footer_js();
 
-		if (isset($library_src))
+		if (isset($_extra_library_src))
 		{
-			echo $library_src;
+			echo $_extra_library_src;
 		}
 
 		echo ee()->javascript->script_foot();
