@@ -61,6 +61,11 @@ class Comment extends Model {
 		'comment'    => 'required',
 	);
 
+	protected static $_events = array(
+		'afterInsert',
+		'afterDelete',
+	);
+
 	protected $comment_id;
 	protected $site_id;
 	protected $entry_id;
@@ -75,5 +80,43 @@ class Comment extends Model {
 	protected $comment_date;
 	protected $edit_date;
 	protected $comment;
+
+	public function onAfterInsert()
+	{
+		$this->Author->updateAuthorStats();
+		$this->updateCommentStats();
+	}
+
+	public function onAfterDelete()
+	{
+		$this->Author->updateAuthorStats();
+		$this->updateCommentStats();
+	}
+
+	private function updateCommentStats()
+	{
+		$site_id = ($this->site_id) ?: ee()->config->item('site_id');
+		$now = ee()->localize->now;
+
+		$comments = $this->getFrontend()->get('Comment')
+			->filter('site_id', $site_id);
+
+		$total_comments = $comments->count();
+
+		$comments->filter('status', 'o')
+			->fields('comment_date')
+			->order('comment_date', 'desc')
+			->first();
+
+		$last_comment_date = ($comments) ? $comments->comment_date : 0;
+
+		$stats = $this->getFrontend()->get('Stats')
+			->filter('site_id', $site_id)
+			->first();
+
+		$stats->total_comments = $total_comments;
+		$stats->last_comment_date = $last_comment_date;
+		$stats->save();
+	}
 
 }

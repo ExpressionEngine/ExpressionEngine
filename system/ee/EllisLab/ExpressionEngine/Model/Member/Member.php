@@ -158,4 +158,19 @@ class Member extends Model {
 			return $buttons;
 	}
 
+	public function updateAuthorStats()
+	{
+		$total_entries = $this->getFrontend()->get('ChannelEntry')
+			->filter('author_id', $author_id)
+			->count();
+
+		$total_comments = $this->getFrontend()->get('Comment')
+			->filter('author_id', $author_id)
+			->count();
+
+		$this->total_entries = $entries;
+		$this->total_comments = $total_comments;
+		$this->save();
+	}
+
 }
