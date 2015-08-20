@@ -230,6 +230,8 @@ class Cp {
 
 		ee()->view->formatted_version = $this->formatted_version(APP_VER);
 
+		$data['_extra_library_src'] = implode('', ee()->jquery->jquery_code_for_load);
+
 		// add global end file
 		$this->_seal_combo_loader();
 		$this->add_js_script('file', 'cp/global_end');
