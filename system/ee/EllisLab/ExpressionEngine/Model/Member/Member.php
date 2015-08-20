@@ -16,6 +16,10 @@ class Member extends Model {
 	protected static $_primary_key = 'member_id';
 	protected static $_table_name = 'members';
 
+	protected static $_typed_columns = array(
+		'cp_homepage_channel' => 'json'
+	);
+
 	protected static $_relationships = array(
 		'MemberGroup' => array(
 			'type' => 'belongsTo'

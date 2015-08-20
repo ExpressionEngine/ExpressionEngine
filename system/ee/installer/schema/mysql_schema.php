@@ -351,7 +351,7 @@ class EE_Schema {
 			rte_enabled char(1) NOT NULL DEFAULT 'y',
 			rte_toolset_id int(10) NOT NULL DEFAULT '0',
 			cp_homepage varchar(20) NULL DEFAULT NULL,
-			cp_homepage_channel int(10) unsigned NULL DEFAULT NULL,
+			cp_homepage_channel varchar(255) NULL DEFAULT NULL,
 			cp_homepage_custom varchar(255) NULL DEFAULT NULL,
 			PRIMARY KEY `member_id` (`member_id`),
 			KEY `group_id` (`group_id`),
