@@ -343,7 +343,7 @@ class Addons extends CP_Controller {
 			$vars['tables'][$party] = $table->viewData($this->base_url);
 		}
 
-		$vars['form_url'] = $this->base_url;
+		$vars['form_url'] = $this->base_url->setQueryStringVariable('return', base64_encode(ee()->cp->get_safe_refresh()));
 
 		// Set search results heading (first and third)
 		if (ee()->input->get_post('search'))
