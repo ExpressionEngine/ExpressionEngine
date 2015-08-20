@@ -366,19 +366,28 @@ class Members extends CP_Controller {
 			}
 
 			ee()->config->update_site_prefs($data);
-			ee()->view->set_message('success', lang('ban_settings_updated'), lang('ban_settings_updated_desc'), TRUE);
+
+			ee('CP/Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('ban_settings_updated'))
+				->defer();
+
 			ee()->functions->redirect($this->base_url);
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('settings_save_error'))
+				->addToBody(lang('settings_save_error_desc'))
+				->now();
 		}
 
 		ee()->view->cp_page_title = lang('banned_members');
 		$this->form = $vars;
 		$this->form['cp_page_title'] = lang('user_banning');
 		$this->form['ajax_validate'] = TRUE;
-		$this->form['save_btn_text'] = 'btn_save_settings';
+		$this->form['save_btn_text'] = sprintf(lang('btn_save'), lang('settings'));
 		$this->form['save_btn_text_working'] = 'btn_saving';
 
 		$this->index();
@@ -658,7 +667,12 @@ class Members extends CP_Controller {
 		$cp_message = (count($member_ids) == 1) ?
 			lang('member_deleted') : lang('members_deleted');
 
-		ee()->view->set_message('success', lang('member_delete_success'), $cp_message, TRUE);
+		ee('CP/Alert')->makeInline('view-members')
+			->asSuccess()
+			->withTitle(lang('member_delete_success'))
+			->addToBody($cp_message)
+			->defer();
+
 		ee()->functions->redirect($this->base_url);
 	}
 
