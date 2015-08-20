@@ -771,7 +771,7 @@ class Addons extends CP_Controller {
 			}
 		}
 
-		ee()->functions->redirect($this->base);
+		ee()->functions->redirect($this->base_url);
 	}
 
 	// --------------------------------------------------------------------
