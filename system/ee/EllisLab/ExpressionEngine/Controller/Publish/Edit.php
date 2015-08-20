@@ -122,7 +122,8 @@ class Edit extends AbstractPublishController {
 		{
 			$autosaves = $entry->Autosaves->count();
 
-			$title = htmlentities($entry->title, ENT_QUOTES);
+			$edit_link = ee('CP/URL', 'publish/edit/entry/' . $entry->entry_id);
+			$title = '<a href="' . $edit_link . '">' . htmlentities($entry->title, ENT_QUOTES). '</a>';
 
 			if ($autosaves)
 			{
@@ -154,7 +155,7 @@ class Edit extends AbstractPublishController {
 			}
 
 			$toolbar['edit'] = array(
-				'href' => ee('CP/URL', 'publish/edit/entry/' . $entry->entry_id),
+				'href' => $edit_link,
 				'title' => lang('edit')
 			);
 
