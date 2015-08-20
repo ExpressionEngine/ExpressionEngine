@@ -106,7 +106,7 @@ class Filepicker_mcp {
 		}
 		else
 		{
-			$table = $this->picker->buildTableFromFileCollection($files, $perpage);
+			$table = $this->picker->buildTableFromFileCollection($files, $perpage, ee()->input->get_post('selected'));
 
 			$base_url->setQueryStringVariable('sort_col', $table->sort_col);
 			$base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
