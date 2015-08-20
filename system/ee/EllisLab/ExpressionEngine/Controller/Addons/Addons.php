@@ -443,11 +443,15 @@ class Addons extends CP_Controller {
 			$addons = array($addons);
 		}
 
-		$updated = array();
+		$updated = array(
+			'first' => array(),
+			'third' => array()
+		);
 
 		foreach ($addons as $addon)
 		{
 			$addon_info = ee('Addon')->get($addon);
+			$party = ($addon_info->getAuthor() == 'EllisLab') ? 'first' : 'third';
 
 			$module = $this->getModule($addon);
 			if ( ! empty($module)
@@ -456,7 +460,7 @@ class Addons extends CP_Controller {
 			{
 				$installed = ee()->addons->get_installed('modules', TRUE);
 
-				$class = $addon_info->getUpdateClass();
+				$class = $addon_info->getInstallerClass();
 				$version = $installed[$addon]['module_version'];
 
 				ee()->load->add_package_path($installed[$addon]['path']);
@@ -473,7 +477,7 @@ class Addons extends CP_Controller {
 
 					$name = (lang($addon.'_module_name') == FALSE) ? ucfirst($module->module_name) : lang($addon.'_module_name');
 
-					$updated[$addon] = $name;
+					$updated[$party][$addon] = $name;
 				}
 			}
 
@@ -494,9 +498,9 @@ class Addons extends CP_Controller {
 						$model->version = $FT->info['version'];
 						$model->save();
 
-						if ( ! isset($updated[$addon]))
+						if ( ! isset($updated[$party][$addon]))
 						{
-							$updated[$addon] = $fieldtype['name'];
+							$updated[$party][$addon] = $fieldtype['name'];
 						}
 					}
 				}
@@ -514,9 +518,9 @@ class Addons extends CP_Controller {
 				$Extension->update_extension($extension['version']);
 				ee()->extensions->version_numbers[$class_name] = $Extension->version;
 
-				if ( ! isset($updated[$addon]))
+				if ( ! isset($updated[$party][$addon]))
 				{
-					$updated[$addon] = $extension['name'];
+					$updated[$party][$addon] = $extension['name'];
 				}
 			}
 
@@ -542,27 +546,36 @@ class Addons extends CP_Controller {
 				$model->is_typography_related = $typography;
 				$model->save();
 
-				if ( ! isset($updated[$addon]))
+				if ( ! isset($updated[$party][$addon]))
 				{
-					$updated[$addon] = $plugin['name'];
+					$updated[$party][$addon] = $plugin['name'];
 				}
 			}
 		}
 
-		if ( ! empty($updated))
+		foreach (array('first', 'third') as $party)
 		{
-			$flashdata = (ee()->input->get('return')) ? TRUE : FALSE;
-			ee()->view->set_message('success', lang('addons_updated'), lang('addons_updated_desc') . implode(', ', $updated), $flashdata);
+			if ( ! empty($updated[$party]))
+			{
+				$alert = ee('CP/Alert')->makeInline($party . '-party')
+					->asSuccess()
+					->withTitle(lang('addons_updated'))
+					->addToBody(lang('addons_updated_desc'))
+					->addToBody(array_values($updated[$party]))
+					->defer();
+			}
 		}
+
+		$return = $this->base_url;
 
 		if (ee()->input->get('return'))
 		{
 			$return = base64_decode(ee()->input->get('return'));
 			$uri_elements = json_decode($return, TRUE);
 			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
-
-			ee()->functions->redirect($return);
 		}
+
+		ee()->functions->redirect($return);
 	}
 
 	// --------------------------------------------------------------------
@@ -657,27 +670,21 @@ class Addons extends CP_Controller {
 					->asSuccess()
 					->withTitle(lang('addons_installed'))
 					->addToBody(lang('addons_installed_desc'))
-					->addToBody(array_values($installed[$party]));
-
-				if (ee()->input->get('return'))
-				{
-					$alert->defer();
-				}
-				else
-				{
-					$alert->now();
-				}
+					->addToBody(array_values($installed[$party]))
+					->defer();
 			}
 		}
+
+		$return = $this->base_url;
 
 		if (ee()->input->get('return'))
 		{
 			$return = base64_decode(ee()->input->get('return'));
 			$uri_elements = json_decode($return, TRUE);
 			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
-
-			ee()->functions->redirect($return);
 		}
+
+		ee()->functions->redirect($return);
 	}
 
 	// --------------------------------------------------------------------
@@ -760,9 +767,11 @@ class Addons extends CP_Controller {
 					->withTitle(lang('addons_uninstalled'))
 					->addToBody(lang('addons_uninstalled_desc'))
 					->addToBody(array_values($uninstalled[$party]))
-					->now();
+					->defer();
 			}
 		}
+
+		ee()->functions->redirect($this->base);
 	}
 
 	// --------------------------------------------------------------------
