@@ -262,7 +262,7 @@ abstract class AbstractDesign extends CP_Controller {
 	/**
 	 *  Returns installed module information for CodeMirror linting
 	 */
-	function _get_installed_plugins_and_modules()
+	private function _get_installed_plugins_and_modules()
 	{
 		$addons = array_keys(ee('Addon')->all());
 
