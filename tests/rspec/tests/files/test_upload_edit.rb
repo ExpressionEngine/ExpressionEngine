@@ -393,26 +393,31 @@ feature 'Upload Destination Create/Edit' do
     @page.submit
 
     @page.should have_text 'Upload directory saved'
-    # @page.name.value.should == 'Dir'
-    # @page.server_path.value.should == @upload_path + '/'
-    # @page.allowed_types.value.should == 'all'
-    # @page.max_size.value.should == '4'
-    # @page.max_width.value.should == '300'
-    # @page.max_height.value.should == '200'
-    #
-    # @page.name_for_row(1).value.should == 'some_name'
-    # @page.resize_type_for_row(1).value.should == 'constrain'
-    # @page.width_for_row(1).value.should == '20'
-    # @page.height_for_row(1).value.should == '30'
-    #
-    # @page.name_for_row(2).value.should == 'some_other_name'
-    # @page.resize_type_for_row(2).value.should == 'crop'
-    # @page.width_for_row(2).value.should == '50'
-    # @page.height_for_row(2).value.should == '40'
-    #
-    # @page.upload_member_groups[0].checked?.should == false
-    # @page.cat_group[0].checked?.should == true
-    # @page.cat_group[1].checked?.should == true
+
+    edit_screen = current_url
+    edit_screen ['directory'] = 'uploads/edit'
+    @page.visit edit_screen
+
+    @page.name.value.should == 'Dir'
+    @page.server_path.value.should == @upload_path + '/'
+    @page.allowed_types.value.should == 'all'
+    @page.max_size.value.should == '4'
+    @page.max_width.value.should == '300'
+    @page.max_height.value.should == '200'
+
+    @page.name_for_row(1).value.should == 'some_name'
+    @page.resize_type_for_row(1).value.should == 'constrain'
+    @page.width_for_row(1).value.should == '20'
+    @page.height_for_row(1).value.should == '30'
+
+    @page.name_for_row(2).value.should == 'some_other_name'
+    @page.resize_type_for_row(2).value.should == 'crop'
+    @page.width_for_row(2).value.should == '50'
+    @page.height_for_row(2).value.should == '40'
+
+    @page.upload_member_groups[0].checked?.should == false
+    @page.cat_group[0].checked?.should == true
+    @page.cat_group[1].checked?.should == true
   end
 
   it 'should save a new upload directory' do
@@ -444,71 +449,82 @@ feature 'Upload Destination Create/Edit' do
     @page.submit
     no_php_js_errors
 
-    # @page.should have_text 'Upload directory saved'
-    # @page.name.value.should == 'Dir'
-    # @page.server_path.value.should == @upload_path + '/'
-    # @page.allowed_types.value.should == 'img'
-    # @page.max_size.value.should == '4'
-    # @page.max_width.value.should == '300'
-    # @page.max_height.value.should == '200'
-    #
-    # @page.name_for_row(1).value.should == 'some_name'
-    # @page.resize_type_for_row(1).value.should == 'constrain'
-    # @page.width_for_row(1).value.should == '20'
-    # @page.height_for_row(1).value.should == '30'
-    #
-    # @page.name_for_row(2).value.should == 'some_other_name'
-    # @page.resize_type_for_row(2).value.should == 'crop'
-    # @page.width_for_row(2).value.should == '50'
-    # @page.height_for_row(2).value.should == '40'
-    #
-    # @page.upload_member_groups[0].checked?.should == false
-    # @page.cat_group[0].checked?.should == true
-    # @page.cat_group[1].checked?.should == true
-    #
-    # # Make sure we can edit with no validation issues
-    # @page.submit
-    # @page.should have_text 'Upload directory saved'
-    # no_php_js_errors
-    #
-    # # Test adding a new image manipulation to an existing directory
-    # # and that unique name validation works
-    # @page.grid_add.click
-    # name_cell = @page.name_for_row(3)
-    # name_cell.set 'some_name'
-    # name_cell.trigger 'blur'
-    # @page.wait_for_error_message_count(1)
-    # grid_cell_should_have_error_text(name_cell, $unique)
-    #
-    # name_cell.set 'some_name2'
-    # name_cell.trigger 'blur'
-    # @page.wait_for_error_message_count(0)
-    # grid_cell_should_have_no_error_text(name_cell)
-    #
-    # @page.width_for_row(3).set '60'
-    # @page.height_for_row(3).set '70'
-    #
-    # @page.submit
-    # @page.should have_text 'Upload directory saved'
-    # no_php_js_errors
-    #
-    # @page.name_for_row(3).value.should == 'some_name2'
-    # @page.resize_type_for_row(3).value.should == 'constrain'
-    # @page.width_for_row(3).value.should == '60'
-    # @page.height_for_row(3).value.should == '70'
-    #
-    # # Test row deletion
-    # @page.delete_for_row(2).click
-    # @page.grid_rows.size.should == 3 # Header and two rows
-    #
-    # @page.submit
-    # @page.should have_text 'Upload directory saved'
-    # no_php_js_errors
-    #
-    # @page.grid_rows.size.should == 3 # Header and two rows
-    #
-    # @page.name_for_row(1).value.should == 'some_name'
-    # @page.name_for_row(2).value.should == 'some_name2'
+    @page.should have_text 'Upload directory saved'
+
+    edit_screen = current_url
+    edit_screen ['directory'] = 'uploads/edit'
+    @page.visit edit_screen
+
+    @page.name.value.should == 'Dir'
+    @page.server_path.value.should == @upload_path + '/'
+    @page.allowed_types.value.should == 'img'
+    @page.max_size.value.should == '4'
+    @page.max_width.value.should == '300'
+    @page.max_height.value.should == '200'
+
+    @page.name_for_row(1).value.should == 'some_name'
+    @page.resize_type_for_row(1).value.should == 'constrain'
+    @page.width_for_row(1).value.should == '20'
+    @page.height_for_row(1).value.should == '30'
+
+    @page.name_for_row(2).value.should == 'some_other_name'
+    @page.resize_type_for_row(2).value.should == 'crop'
+    @page.width_for_row(2).value.should == '50'
+    @page.height_for_row(2).value.should == '40'
+
+    @page.upload_member_groups[0].checked?.should == false
+    @page.cat_group[0].checked?.should == true
+    @page.cat_group[1].checked?.should == true
+
+    # Make sure we can edit with no validation issues
+    @page.submit
+    @page.should have_text 'Upload directory saved'
+    no_php_js_errors
+
+    @page.visit edit_screen
+
+    # Test adding a new image manipulation to an existing directory
+    # and that unique name validation works
+    @page.grid_add.click
+    name_cell = @page.name_for_row(3)
+    name_cell.set 'some_name'
+    name_cell.trigger 'blur'
+    @page.wait_for_error_message_count(1)
+    grid_cell_should_have_error_text(name_cell, $unique)
+
+    name_cell.set 'some_name2'
+    name_cell.trigger 'blur'
+    @page.wait_for_error_message_count(0)
+    grid_cell_should_have_no_error_text(name_cell)
+
+    @page.width_for_row(3).set '60'
+    @page.height_for_row(3).set '70'
+
+    @page.submit
+    @page.should have_text 'Upload directory saved'
+    no_php_js_errors
+
+    @page.visit edit_screen
+
+    @page.name_for_row(3).value.should == 'some_name2'
+    @page.resize_type_for_row(3).value.should == 'constrain'
+    @page.width_for_row(3).value.should == '60'
+    @page.height_for_row(3).value.should == '70'
+
+    # Test row deletion
+    @page.delete_for_row(2).click
+    @page.grid_rows.size.should == 3 # Header and two rows
+
+    @page.submit
+    @page.should have_text 'Upload directory saved'
+    no_php_js_errors
+
+    @page.visit edit_screen
+
+    @page.grid_rows.size.should == 3 # Header and two rows
+
+    @page.name_for_row(1).value.should == 'some_name'
+    @page.name_for_row(2).value.should == 'some_name2'
   end
 
   it 'should edit an existing upload directory' do
