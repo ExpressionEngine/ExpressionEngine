@@ -90,12 +90,16 @@ class Layouts extends AbstractChannelsController {
 
 		foreach ($channel->ChannelLayouts as $layout)
 		{
+			$edit_url = ee('CP/URL', 'channels/layouts/edit/' . $layout->layout_id);
 			$column = array(
-				$layout->layout_name,
+				array(
+					'content' => $layout->layout_name,
+					'href' => $edit_url
+				),
 				implode(',', $layout->MemberGroups->pluck('group_title')),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'channels/layouts/edit/' . $layout->layout_id),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					)
 				)),

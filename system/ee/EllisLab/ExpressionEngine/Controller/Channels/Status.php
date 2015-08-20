@@ -300,12 +300,16 @@ class Status extends AbstractChannelsController {
 		$data = array();
 		foreach ($statuses as $status)
 		{
+			$edit_url = ee('CP/URL', 'channels/status/edit-status/'.$group_id.'/'.$status->getId());
 			$columns = array(
 				$status->getId().form_hidden('order[]', $status->getId()),
-				$status->status,
+				array(
+					'content' => $status->status,
+					'href' => $edit_url
+				),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'channels/status/edit-status/'.$group_id.'/'.$status->getId()),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					)
 				)),

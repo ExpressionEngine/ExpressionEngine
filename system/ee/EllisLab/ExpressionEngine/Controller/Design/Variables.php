@@ -105,12 +105,16 @@ class Variables extends AbstractDesignController {
 			{
 				$all_sites = '<b class="no">' . lang('no') . '</b>';
 			}
+			$edit_url = ee('CP/URL', 'design/variables/edit/' . $variable->variable_id);
 			$column = array(
-				$variable->variable_name,
+				array(
+					'content' => $variable->variable_name,
+					'href' => $edit_url
+				),
 				$all_sites,
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'design/variables/edit/' . $variable->variable_id),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					),
 					'find' => array(

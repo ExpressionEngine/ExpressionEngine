@@ -909,14 +909,19 @@ class Cat extends AbstractChannelsController {
 		$data = array();
 		foreach ($cat_fields as $field)
 		{
+			$edit_url = ee('CP/URL', 'channels/cat/edit-field/'.$group_id.'/'.$field->getId());
+
 			$columns = array(
 				$field->getId().form_hidden('order[]', $field->getId()),
-				$field->field_label,
+				array(
+					'content' => $field->field_label,
+					'href' => $edit_url
+				),
 				'<var>'.LD.$field->field_name.RD.'</var>',
 				strtolower($type_map[$field->field_type]),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'channels/cat/edit-field/'.$group_id.'/'.$field->getId()),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					)
 				)),

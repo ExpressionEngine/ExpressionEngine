@@ -166,12 +166,16 @@ class Members extends AbstractDesignController {
 			}
 
 			$human = substr($file, 0, -strlen(strrchr($file, '.')));
+			$edit_url = ee('CP/URL', 'design/members/edit/' . $theme . '/' . $human);
 
 			$data['profile_' . $this->template_group_map[$file]][] = array(
-				(lang($human) == FALSE) ? $human : lang($human),
+				array(
+					'content' => (lang($human) == FALSE) ? $human : lang($human),
+					'href' => $edit_url
+					),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'design/members/edit/' . $theme . '/' . $human),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					),
 				))

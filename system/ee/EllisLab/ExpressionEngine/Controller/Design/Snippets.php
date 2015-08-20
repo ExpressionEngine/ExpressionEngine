@@ -106,12 +106,16 @@ class Snippets extends AbstractDesignController {
 			{
 				$all_sites = '<b class="no">' . lang('no') . '</b>';
 			}
+			$edit_url = ee('CP/URL', 'design/snippets/edit/' . $snippet->snippet_id);
 			$column = array(
-				$snippet->snippet_name,
+				array(
+					'content' => $snippet->snippet_name,
+					'href' => $edit_url
+				),
 				$all_sites,
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'design/snippets/edit/' . $snippet->snippet_id),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					),
 					'find' => array(

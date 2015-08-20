@@ -381,8 +381,12 @@ abstract class AbstractDesign extends CP_Controller {
 				$view_url .= $group->group_name.(($template->template_name == 'index') ? '' : '/'.$template->template_name);
 			}
 
+			$edit_url = ee('CP/URL', 'design/template/edit/' . $template->template_id);
 			$column = array(
-				$template_name,
+				array(
+					'content' => $template_name,
+					'href' => $edit_url
+				),
 				$template->hits,
 				array('toolbar_items' => array(
 					'view' => array(
@@ -390,7 +394,7 @@ abstract class AbstractDesign extends CP_Controller {
 						'title' => lang('view')
 					),
 					'edit' => array(
-						'href' => ee('CP/URL', 'design/template/edit/' . $template->template_id),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					),
 					'settings' => array(

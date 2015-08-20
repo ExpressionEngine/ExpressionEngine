@@ -70,11 +70,15 @@ class System extends AbstractDesignController {
 		$data = array();
 		foreach ($templates as $template)
 		{
+			$edit_url = ee('CP/URL', 'design/system/edit/' . $template->template_id);
 			$data[] = array(
-				lang($template->template_name),
+				array(
+					'content' => lang($template->template_name),
+					'href' => $edit_url
+				),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'design/system/edit/' . $template->template_id),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					),
 				))
