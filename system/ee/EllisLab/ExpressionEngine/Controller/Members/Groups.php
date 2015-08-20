@@ -310,9 +310,15 @@ class Groups extends Members\Members {
 			show_error(lang('only_superadmins_can_admin_groups'));
 		}
 
-		$template_groups = ee('Model')->get('TemplateGroup')->all()->getDictionary('group_id', 'group_name');
+		$template_groups = ee('Model')->get('TemplateGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all()
+			->getDictionary('group_id', 'group_name');
 		$addons = ee('Model')->get('Module')->all()->getDictionary('module_id', 'module_name');
-		$allowed_channels = ee('Model')->get('Channel')->all()->getDictionary('channel_id', 'channel_name');
+		$allowed_channels = ee('Model')->get('Channel')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all()
+			->getDictionary('channel_id', 'channel_title');
 
 		ee()->load->helper('array');
 
