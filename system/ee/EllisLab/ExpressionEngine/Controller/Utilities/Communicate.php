@@ -375,7 +375,7 @@ class Communicate extends Utilities {
 
 		ee()->view->set_refresh(ee('CP/URL', 'utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
 
-		ee('Alert')->makeStandard('batchmode')
+		ee('CP/Alert')->makeStandard('batchmode')
 			->asWarning()
 			->withTitle(lang('batchmode_ready_to_begin'))
 			->addToBody(lang('batchmode_warning'))
@@ -436,7 +436,7 @@ class Communicate extends Utilities {
 
 			ee()->view->set_refresh(ee('CP/URL', 'utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
 
-			ee('Alert')->makeStandard('batchmode')
+			ee('CP/Alert')->makeStandard('batchmode')
 				->asWarning()
 				->withTitle($message)
 				->addToBody(lang('batchmode_warning'))

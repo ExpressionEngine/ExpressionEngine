@@ -83,7 +83,7 @@ class Channels extends AbstractChannelsController {
 			{
 				ee('Model')->get('Channel', $channel_ids)->delete();
 
-				ee('Alert')->makeInline('sites')
+				ee('CP/Alert')->makeInline('sites')
 					->asSuccess()
 					->withTitle(lang('channels_removed'))
 					->addToBody(sprintf(lang('channels_removed_desc'), count($channel_ids)))
@@ -210,7 +210,7 @@ class Channels extends AbstractChannelsController {
 		$alert = '';
 		if (is_null($channel_id) && empty($field_group_options))
 		{
-			$alert = ee('Alert')->makeInline('permissions-warn')
+			$alert = ee('CP/Alert')->makeInline('permissions-warn')
 				->asWarning()
 				->addToBody(lang('channel_publishing_options_warning'))
 				->addToBody(sprintf(lang('channel_publishing_options_warning2'), ee('CP/URL', 'channels/fields/groups')))
@@ -351,7 +351,7 @@ class Channels extends AbstractChannelsController {
 				ee()->session->set_flashdata('highlight_id', $channel->getId());
 			}
 
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('channel_'.$alert_key))
 				->addToBody(sprintf(lang('channel_'.$alert_key.'_desc'), $channel->channel_title))
@@ -361,7 +361,7 @@ class Channels extends AbstractChannelsController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('channel_not_'.$alert_key))
 				->addToBody(lang('channel_not_'.$alert_key.'_desc'))
@@ -1149,7 +1149,7 @@ class Channels extends AbstractChannelsController {
 		{
 			$this->saveChannelSettings($channel_id, $vars['sections']);
 
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('channel_settings_saved'))
 				->addToBody(sprintf(lang('channel_settings_saved_desc'), $channel->channel_title))
@@ -1159,7 +1159,7 @@ class Channels extends AbstractChannelsController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('channel_settings_not_saved'))
 				->addToBody(lang('channel_settings_not_saved_desc'))

@@ -122,7 +122,8 @@ class Edit extends AbstractPublishController {
 		{
 			$autosaves = $entry->Autosaves->count();
 
-			$title = htmlentities($entry->title, ENT_QUOTES);
+			$edit_link = ee('CP/URL', 'publish/edit/entry/' . $entry->entry_id);
+			$title = '<a href="' . $edit_link . '">' . htmlentities($entry->title, ENT_QUOTES). '</a>';
 
 			if ($autosaves)
 			{
@@ -154,7 +155,7 @@ class Edit extends AbstractPublishController {
 			}
 
 			$toolbar['edit'] = array(
-				'href' => ee('CP/URL', 'publish/edit/entry/' . $entry->entry_id),
+				'href' => $edit_link,
 				'title' => lang('edit')
 			);
 
@@ -326,7 +327,7 @@ class Edit extends AbstractPublishController {
 				{
 					$entry->saveVersion();
 
-					ee('Alert')->makeInline('entry-form')
+					ee('CP/Alert')->makeInline('entry-form')
 						->asSuccess()
 						->withTitle(lang('revision_saved'))
 						->addToBody(sprintf(lang('revision_saved_desc'), $entry->Versions->count() + 1, $entry->title))
@@ -339,7 +340,7 @@ class Edit extends AbstractPublishController {
 					$entry->edit_date = ee()->localize->now;
 					$entry->save();
 
-					ee('Alert')->makeInline('entry-form')
+					ee('CP/Alert')->makeInline('entry-form')
 						->asSuccess()
 						->withTitle(lang('edit_entry_success'))
 						->addToBody(sprintf(lang('edit_entry_success_desc'), $entry->title))
@@ -354,7 +355,7 @@ class Edit extends AbstractPublishController {
 				// Hacking
 				ee()->load->library('form_validation');
 				ee()->form_validation->_error_array = $result->renderErrors();
-				ee('Alert')->makeInline('entry-form')
+				ee('CP/Alert')->makeInline('entry-form')
 					->asIssue()
 					->withTitle(lang('edit_entry_error'))
 					->addToBody(lang('edit_entry_error_desc'))
@@ -416,7 +417,7 @@ class Edit extends AbstractPublishController {
 
 		$entries->delete();
 
-		ee('Alert')->makeInline('entries-form')
+		ee('CP/Alert')->makeInline('entries-form')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('entries_removed_desc'))

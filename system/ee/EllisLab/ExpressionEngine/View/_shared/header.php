@@ -24,7 +24,7 @@
 		?>
 	</head>
 	<body id="top">
-		<?=ee('Alert')->getAllBanners()?>
+		<?=ee('CP/Alert')->getAllBanners()?>
 		<section class="bar info-wrap">
 			<nav class="snap">
 				<div class="site">

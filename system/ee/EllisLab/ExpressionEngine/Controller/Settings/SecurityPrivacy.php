@@ -228,7 +228,7 @@ class SecurityPrivacy extends Settings {
 
 		$base_url = ee('CP/URL', 'settings/security-privacy');
 
-		ee('Alert')->makeInline('security-tip')
+		ee('CP/Alert')->makeInline('security-tip')
 			->asWarning()
 			->cannotClose()
 			->addToBody(lang('security_tip'))

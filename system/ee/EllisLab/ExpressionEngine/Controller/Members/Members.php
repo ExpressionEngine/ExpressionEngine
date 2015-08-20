@@ -65,7 +65,7 @@ class Members extends CP_Controller {
 
 	protected function generateSidebar($active = NULL)
 	{
-		$sidebar = ee('Sidebar')->make();
+		$sidebar = ee('CP/Sidebar')->make();
 
 		$header = $sidebar->addHeader(lang('all_members'), ee('CP/URL', 'members')->compile())
 			->withButton(lang('new'), ee('CP/URL', 'members/create'));
@@ -366,19 +366,28 @@ class Members extends CP_Controller {
 			}
 
 			ee()->config->update_site_prefs($data);
-			ee()->view->set_message('success', lang('ban_settings_updated'), lang('ban_settings_updated_desc'), TRUE);
+
+			ee('CP/Alert')->makeInline('shared-form')
+				->asSuccess()
+				->withTitle(lang('ban_settings_updated'))
+				->defer();
+
 			ee()->functions->redirect($this->base_url);
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('settings_save_error'))
+				->addToBody(lang('settings_save_error_desc'))
+				->now();
 		}
 
 		ee()->view->cp_page_title = lang('banned_members');
 		$this->form = $vars;
 		$this->form['cp_page_title'] = lang('user_banning');
 		$this->form['ajax_validate'] = TRUE;
-		$this->form['save_btn_text'] = 'btn_save_settings';
+		$this->form['save_btn_text'] = sprintf(lang('btn_save'), lang('settings'));
 		$this->form['save_btn_text_working'] = 'btn_saving';
 
 		$this->index();
@@ -427,9 +436,10 @@ class Members extends CP_Controller {
 		foreach ($members as $member)
 		{
 			$attributes = array();
+			$edit_link = ee('CP/URL', 'members/profile/', array('id' => $member['member_id']));
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
-					'href' => ee('CP/URL', 'members/profile/', array('id' => $member['member_id'])),
+					'href' => $edit_link,
 					'title' => strtolower(lang('profile'))
 				)
 			));
@@ -458,11 +468,13 @@ class Members extends CP_Controller {
 			}
 
 			$email = "<a href = '" . ee('CP/URL', 'utilities/communicate/member/' . $member['member_id']) . "'>".$member['email']."</a>";
+			$username_display = "<a href = '" . $edit_link . "'>". $member['username']."</a>";
+			$username_display .= '<br><span class="meta-info">&mdash; '.$email.'</span>';
 			$last_visit = ($member['last_visit']) ? ee()->localize->human_time($member['last_visit']) : '--';
 			$rows[] = array(
 				'columns' => array(
 					'id' => $member['member_id'],
-					'username' => $member['username'].'<br><span class="meta-info">&mdash; '.$email.'</span>',
+					'username' => $username_display,
 					'<span class="meta-info">
 						<b>'.lang('joined').'</b>: '.ee()->localize->format_date(ee()->session->userdata('date_format', ee()->config->item('date_format')), $member['join_date']).'<br>
 						<b>'.lang('last_visit').'</b>: '.$last_visit.'
@@ -511,11 +523,11 @@ class Members extends CP_Controller {
 		$options = $group_ids;
 		$options['all'] = lang('all');
 
-		$group = ee('Filter')->make('group', 'member_group', $options);
+		$group = ee('CP/Filter')->make('group', 'member_group', $options);
 		$group->setPlaceholder(lang('all'));
 		$group->disableCustomValue();
 
-		$filters = ee('Filter')->add($group);
+		$filters = ee('CP/Filter')->add($group);
 
 		ee()->view->filters = $filters->render($this->base_url);
 		$this->params = $filters->values();
@@ -655,7 +667,12 @@ class Members extends CP_Controller {
 		$cp_message = (count($member_ids) == 1) ?
 			lang('member_deleted') : lang('members_deleted');
 
-		ee()->view->set_message('success', lang('member_delete_success'), $cp_message, TRUE);
+		ee('CP/Alert')->makeInline('view-members')
+			->asSuccess()
+			->withTitle(lang('member_delete_success'))
+			->addToBody($cp_message)
+			->defer();
+
 		ee()->functions->redirect($this->base_url);
 	}
 

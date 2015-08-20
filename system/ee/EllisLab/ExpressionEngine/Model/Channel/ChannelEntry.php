@@ -98,6 +98,8 @@ class ChannelEntry extends ContentModel {
 		'beforeDelete',
 		'afterSave',
 		'afterUpdate',
+		'afterInsert',
+		'afterDelete',
 	);
 
 	// Properties
@@ -204,6 +206,12 @@ class ChannelEntry extends ContentModel {
 		}
 	}
 
+	public function onAfterInsert()
+	{
+		$this->Author->updateAuthorStats();
+		$this->updateEntryStats();
+	}
+
 	public function onAfterUpdate()
 	{
 		$this->saveVersion();
@@ -245,6 +253,40 @@ class ChannelEntry extends ContentModel {
 				$OBJ->delete(array($this->entry_id));
 			}
 		}
+	}
+
+	public function onAfterDelete()
+	{
+		$this->Author->updateAuthorStats();
+		$this->updateEntryStats();
+	}
+
+	private function updateEntryStats()
+	{
+		$site_id = ($this->site_id) ?: ee()->config->item('site_id');
+		$now = ee()->localize->now;
+
+		$entries = $this->getFrontend()->get('ChannelEntry')
+			->fields('entry_date', 'channel_id')
+			->filter('site_id', $site_id)
+			->filter('entry_date', '<', $now)
+			->filter('status', '!=', 'closed')
+			->filterGroup()
+				->filter('expiration_date', 0)
+				->orFilter('expiration_date', '>', $now)
+			->endFilterGroup()
+			->order('entry_date', 'desc');
+
+		$total_entries = $entries->count();
+		$last_entry_date = ($entries->first()) ? $entries->first()->entry_date : 0;
+
+		$stats = $this->getFrontend()->get('Stats')
+			->filter('site_id', $site_id)
+			->first();
+
+		$stats->total_entries = $total_entries;
+		$stats->last_entry_date = $last_entry_date;
+		$stats->save();
 	}
 
 	/**
@@ -336,24 +378,6 @@ class ChannelEntry extends ContentModel {
 		}
 
 		return $module_tabs;
-	}
-
-	protected function initializeCustomFields()
-	{
-		parent::initializeCustomFields();
-
-		$module_tabs = $this->getTabFields();
-
-		if ($module_tabs)
-		{
-			foreach ($module_tabs as $tab_id => $fields)
-			{
-				foreach ($fields as $key => $field)
-				{
-					$this->addFacade($field['field_id'], $field);
-				}
-			}
-		}
 	}
 
 	public function get__versioning_enabled()

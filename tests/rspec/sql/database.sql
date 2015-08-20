@@ -1428,6 +1428,7 @@ CREATE TABLE `exp_upload_prefs` (
   `server_path` varchar(255) NOT NULL DEFAULT '',
   `url` varchar(100) NOT NULL,
   `allowed_types` varchar(3) NOT NULL DEFAULT 'img',
+  `default_modal_view` varchar(5) NOT NULL default 'list',
   `max_size` varchar(16) DEFAULT NULL,
   `max_height` varchar(6) DEFAULT NULL,
   `max_width` varchar(6) DEFAULT NULL,

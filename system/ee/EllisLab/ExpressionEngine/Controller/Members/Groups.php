@@ -111,9 +111,10 @@ class Groups extends Members\Members {
 
 		foreach ($groups as $group)
 		{
+			$edit_link = ee('CP/URL', 'members/groups/edit/', array('group' => $group->group_id));
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
-					'href' => ee('CP/URL', 'members/groups/edit/', array('group' => $group->group_id)),
+					'href' => $edit_link,
 					'title' => strtolower(lang('edit'))
 				)
 			));
@@ -121,7 +122,9 @@ class Groups extends Members\Members {
 			$status = ($group->is_locked == 'y') ? 'locked' : 'unlocked';
 			$count = $group->getMembers()->count();
 			$href = ee('CP/URL', 'members', array('group' => $group->group_id));
-			$title = "$group->group_title <a href='$href' alt='" . lang('view_members') . $group->group_title ."'>($count)</a>";
+			$title = '<a href="' . $edit_link . '">' . $group->group_title . '</a>';
+			$title .= " <a href='$href' alt='" . lang('view_members') . $group->group_title ."'>($count)</a>";
+
 
 			$groupData[] = array(
 				'id' => $group->group_id,
@@ -232,7 +235,7 @@ class Groups extends Members\Members {
 
 		$group_names = ee('Model')->get('MemberGroup', $groups)->all()->pluck('group_title');
 
-		ee('Alert')->makeInline('member_groups')
+		ee('CP/Alert')->makeInline('member_groups')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('member_groups_removed_desc'))
@@ -753,7 +756,7 @@ class Groups extends Members\Members {
 			)
 		);
 
-		ee('Alert')->makeInline('shared-form')
+		ee('CP/Alert')->makeInline('shared-form')
 			->asWarning()
 			->cannotClose()
 			->addToBody(lang('access_privilege_warning'))
@@ -802,14 +805,22 @@ class Groups extends Members\Members {
 		{
 			if ($this->save($vars['sections']))
 			{
-				ee()->view->set_message('success', lang('member_group_updated'), lang('member_group_updated_desc'), TRUE);
+				ee('CP/Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('member_group_updated'))
+					->addToBody(lang('member_group_updated_desc'))
+					->defer();
 			}
 
 			ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('settings_save_erorr'))
+				->addToBody(lang('settings_save_error_desc'))
+				->now();
 		}
 
 		ee()->view->base_url = $this->base_url;

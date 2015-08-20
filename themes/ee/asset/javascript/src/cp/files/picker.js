@@ -91,7 +91,6 @@
 				url: $(this).attr('action'),
 				data: $(this).serialize(),
 				success: function(response) {
-					console.log(response);
 					$(this).parents('div.box').load(response);
 				}
 			});

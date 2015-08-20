@@ -12,7 +12,7 @@
 <div class="box">
 	<div class="tbl-ctrls">
 		<?=form_open($table['base_url'])?>
-			<?=ee('Alert')->getAllInlines()?>
+			<?=ee('CP/Alert')->getAllInlines()?>
 			<fieldset class="tbl-search right">
 				<input placeholder="<?=lang('type_phrase')?>" name="search" type="text" value="<?=$table['search']?>">
 				<input class="btn submit" type="submit" name="search_form" value="<?=lang('search_tables')?>">

@@ -92,7 +92,10 @@ class Group extends AbstractDesignController {
 						'fields' => array(
 							'make_default_group' => array(
 								'type' => 'yes_no',
-								'value' => 'n'
+								'value' => ee('Model')->get('TemplateGroup')
+									->filter('site_id', ee()->config->item('site_id'))
+									->filter('is_site_default', 'y')
+									->count() ? 'n' : 'y'
 							)
 						)
 					),
@@ -177,7 +180,7 @@ class Group extends AbstractDesignController {
 				}
 			}
 
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('create_template_group_success'))
 				->addToBody(sprintf(lang('create_template_group_success_desc'), $group->group_name))
@@ -187,7 +190,7 @@ class Group extends AbstractDesignController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('create_template_group_error'))
 				->addToBody(lang('create_template_group_error_desc'))
@@ -285,7 +288,7 @@ class Group extends AbstractDesignController {
 
 			$group->save();
 
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('edit_template_group_success'))
 				->addToBody(sprintf(lang('edit_template_group_success_desc'), $group->group_name))
@@ -295,7 +298,7 @@ class Group extends AbstractDesignController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('edit_template_group_error'))
 				->addToBody(lang('edit_template_group_error_desc'))
@@ -338,7 +341,7 @@ class Group extends AbstractDesignController {
 			}
 
 			$group->delete();
-			ee('Alert')->makeInline('template-group')
+			ee('CP/Alert')->makeInline('template-group')
 				->asSuccess()
 				->withTitle(lang('template_group_removed'))
 				->addToBody(sprintf(lang('template_group_removed_desc'), ee()->input->post('group_name')))

@@ -6,7 +6,7 @@
 			<a class="btn tn action" href="<?=$create_url?>"><?=lang('create_new')?></a>
 		</fieldset>
 		<h1><?=$cp_page_title?></h1>
-		<?=ee('Alert')->getAllInlines()?>
+		<?=ee('CP/Alert')->getAllInlines()?>
 		<?php $this->embed('_shared/table', $table); ?>
 		<?=$pagination?>
 		<fieldset class="tbl-bulk-act hidden">

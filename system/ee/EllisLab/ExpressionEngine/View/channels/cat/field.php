@@ -6,7 +6,7 @@
 			<a class="btn tn action" href="<?=ee('CP/URL', 'channels/cat/create-field/'.$group_id)?>"><?=lang('create_new')?></a>
 		</fieldset>
 		<h1><?=$cp_page_title?></h1>
-		<?=ee('Alert')->getAllInlines()?>
+		<?=ee('CP/Alert')->getAllInlines()?>
 		<?php $this->embed('_shared/table', $table); ?>
 		<fieldset class="tbl-bulk-act hidden">
 			<select name="bulk_action">

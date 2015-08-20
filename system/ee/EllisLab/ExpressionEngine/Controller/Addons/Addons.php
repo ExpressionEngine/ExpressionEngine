@@ -76,20 +76,20 @@ class Addons extends CP_Controller {
 		// First Party Add-on Filters
 
 		// Status
-		$status = ee('Filter')->make('filter_by_first_status', 'filter_by_status', array(
+		$status = ee('CP/Filter')->make('filter_by_first_status', 'filter_by_status', array(
 			'installed'   => strtolower(lang('installed')),
 			'uninstalled' => strtolower(lang('uninstalled')),
 			'updates'     => strtolower(lang('needs_updates'))
 		));
 		$status->disableCustomValue();
 
-		$first_filters = ee('Filter')
+		$first_filters = ee('CP/Filter')
 			->add($status);
 
 		// Third Party Add-on Filters
 
 		// Status
-		$status = ee('Filter')->make('filter_by_third_status', 'filter_by_status', array(
+		$status = ee('CP/Filter')->make('filter_by_third_status', 'filter_by_status', array(
 			'installed'   => strtolower(lang('installed')),
 			'uninstalled' => strtolower(lang('uninstalled')),
 			'updates'     => strtolower(lang('needs_updates'))
@@ -102,10 +102,10 @@ class Addons extends CP_Controller {
 		{
 			$developer_options[$this->makeDeveloperKey($developer)] = $developer;
 		}
-		$developer = ee('Filter')->make('filter_by_developer', 'developer', $developer_options);
+		$developer = ee('CP/Filter')->make('filter_by_developer', 'developer', $developer_options);
 		$developer->disableCustomValue();
 
-		$third_filters = ee('Filter')
+		$third_filters = ee('CP/Filter')
 			->add($status)
 			->add($developer);
 
@@ -343,7 +343,7 @@ class Addons extends CP_Controller {
 			$vars['tables'][$party] = $table->viewData($this->base_url);
 		}
 
-		$vars['form_url'] = $this->base_url;
+		$vars['form_url'] = $this->base_url->setQueryStringVariable('return', base64_encode(ee()->cp->get_safe_refresh()));
 
 		// Set search results heading (first and third)
 		if (ee()->input->get_post('search'))
@@ -443,11 +443,15 @@ class Addons extends CP_Controller {
 			$addons = array($addons);
 		}
 
-		$updated = array();
+		$updated = array(
+			'first' => array(),
+			'third' => array()
+		);
 
 		foreach ($addons as $addon)
 		{
 			$addon_info = ee('Addon')->get($addon);
+			$party = ($addon_info->getAuthor() == 'EllisLab') ? 'first' : 'third';
 
 			$module = $this->getModule($addon);
 			if ( ! empty($module)
@@ -456,7 +460,7 @@ class Addons extends CP_Controller {
 			{
 				$installed = ee()->addons->get_installed('modules', TRUE);
 
-				$class = $addon_info->getUpdateClass();
+				$class = $addon_info->getInstallerClass();
 				$version = $installed[$addon]['module_version'];
 
 				ee()->load->add_package_path($installed[$addon]['path']);
@@ -473,7 +477,7 @@ class Addons extends CP_Controller {
 
 					$name = (lang($addon.'_module_name') == FALSE) ? ucfirst($module->module_name) : lang($addon.'_module_name');
 
-					$updated[$addon] = $name;
+					$updated[$party][$addon] = $name;
 				}
 			}
 
@@ -494,9 +498,9 @@ class Addons extends CP_Controller {
 						$model->version = $FT->info['version'];
 						$model->save();
 
-						if ( ! isset($updated[$addon]))
+						if ( ! isset($updated[$party][$addon]))
 						{
-							$updated[$addon] = $fieldtype['name'];
+							$updated[$party][$addon] = $fieldtype['name'];
 						}
 					}
 				}
@@ -514,9 +518,9 @@ class Addons extends CP_Controller {
 				$Extension->update_extension($extension['version']);
 				ee()->extensions->version_numbers[$class_name] = $Extension->version;
 
-				if ( ! isset($updated[$addon]))
+				if ( ! isset($updated[$party][$addon]))
 				{
-					$updated[$addon] = $extension['name'];
+					$updated[$party][$addon] = $extension['name'];
 				}
 			}
 
@@ -542,27 +546,36 @@ class Addons extends CP_Controller {
 				$model->is_typography_related = $typography;
 				$model->save();
 
-				if ( ! isset($updated[$addon]))
+				if ( ! isset($updated[$party][$addon]))
 				{
-					$updated[$addon] = $plugin['name'];
+					$updated[$party][$addon] = $plugin['name'];
 				}
 			}
 		}
 
-		if ( ! empty($updated))
+		foreach (array('first', 'third') as $party)
 		{
-			$flashdata = (ee()->input->get('return')) ? TRUE : FALSE;
-			ee()->view->set_message('success', lang('addons_updated'), lang('addons_updated_desc') . implode(', ', $updated), $flashdata);
+			if ( ! empty($updated[$party]))
+			{
+				$alert = ee('CP/Alert')->makeInline($party . '-party')
+					->asSuccess()
+					->withTitle(lang('addons_updated'))
+					->addToBody(lang('addons_updated_desc'))
+					->addToBody(array_values($updated[$party]))
+					->defer();
+			}
 		}
+
+		$return = $this->base_url;
 
 		if (ee()->input->get('return'))
 		{
 			$return = base64_decode(ee()->input->get('return'));
 			$uri_elements = json_decode($return, TRUE);
 			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
-
-			ee()->functions->redirect($return);
 		}
+
+		ee()->functions->redirect($return);
 	}
 
 	// --------------------------------------------------------------------
@@ -653,31 +666,25 @@ class Addons extends CP_Controller {
 		{
 			if ( ! empty($installed[$party]))
 			{
-				$alert = ee('Alert')->makeInline($party . '-party')
+				$alert = ee('CP/Alert')->makeInline($party . '-party')
 					->asSuccess()
 					->withTitle(lang('addons_installed'))
 					->addToBody(lang('addons_installed_desc'))
-					->addToBody(array_values($installed[$party]));
-
-				if (ee()->input->get('return'))
-				{
-					$alert->defer();
-				}
-				else
-				{
-					$alert->now();
-				}
+					->addToBody(array_values($installed[$party]))
+					->defer();
 			}
 		}
+
+		$return = $this->base_url;
 
 		if (ee()->input->get('return'))
 		{
 			$return = base64_decode(ee()->input->get('return'));
 			$uri_elements = json_decode($return, TRUE);
 			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
-
-			ee()->functions->redirect($return);
 		}
+
+		ee()->functions->redirect($return);
 	}
 
 	// --------------------------------------------------------------------
@@ -755,14 +762,25 @@ class Addons extends CP_Controller {
 		{
 			if ( ! empty($uninstalled[$party]))
 			{
-				$alert = ee('Alert')->makeInline($party . '-party')
+				$alert = ee('CP/Alert')->makeInline($party . '-party')
 					->asSuccess()
 					->withTitle(lang('addons_uninstalled'))
 					->addToBody(lang('addons_uninstalled_desc'))
 					->addToBody(array_values($uninstalled[$party]))
-					->now();
+					->defer();
 			}
 		}
+
+		$return = $this->base_url;
+
+		if (ee()->input->get('return'))
+		{
+			$return = base64_decode(ee()->input->get('return'));
+			$uri_elements = json_decode($return, TRUE);
+			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
+		}
+
+		ee()->functions->redirect($return);
 	}
 
 	// --------------------------------------------------------------------
@@ -1738,7 +1756,7 @@ class Addons extends CP_Controller {
 		$extension_model->settings = $settings;
 		$extension_model->save();
 
-		ee('Alert')->makeInline('shared-form')
+		ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
 			->withTitle(lang('settings_saved'))
 			->addToBody(sprintf(lang('settings_saved_desc'), $extension['name']))
@@ -1775,7 +1793,7 @@ class Addons extends CP_Controller {
 			$html = '<div class="box">';
 			$html .= '<h1>' . $fieldtype['name'] . ' ' . lang('configuration') . '</h1>';
 			$html .= form_open(ee('CP/URL', 'addons/settings/' . $fieldtype['package'] . '/save'), 'class="settings"');
-			$html .= ee('Alert')->get('shared-form');
+			$html .= ee('CP/Alert')->get('shared-form');
 			$html .= $fieldtype_settings;
 			$html .= '<fieldset class="form-ctrls">';
 			$html .= cp_form_submit('btn_save_settings', 'btn_saving');
@@ -1808,7 +1826,7 @@ class Addons extends CP_Controller {
 		$fieldtype_model->settings = $settings;
 		$fieldtype_model->save();
 
-		ee('Alert')->makeInline('shared-form')
+		ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
 			->withTitle(lang('settings_saved'))
 			->addToBody(sprintf(lang('settings_saved_desc'), $fieldtype['name']))

@@ -245,7 +245,7 @@ class View {
 	 */
 	public function set_alert($type, array $alert_data, $flashdata = FALSE)
 	{
-		$alert = ee('Alert')->make('shared-form', strtolower($type))
+		$alert = ee('CP/Alert')->make('shared-form', strtolower($type))
 			->withTitle($alert_data['title'])
 			->addToBody($alert_data['description']);
 

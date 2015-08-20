@@ -8,7 +8,7 @@
 				<li class="download"><a href="<?=ee('CP/URL', 'addons/settings/simple_commerce/export_purchases')?>" title="<?=lang('export_purchases')?>"></a></li>
 			</ul>
 		</h1>
-		<?=ee('Alert')->get('purchases-table')?>
+		<?=ee('CP/Alert')->get('purchases-table')?>
 		<?php $this->embed('ee:_shared/table', $table); ?>
 		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>

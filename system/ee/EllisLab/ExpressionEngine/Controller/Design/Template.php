@@ -173,7 +173,7 @@ class Template extends AbstractDesignController {
 
 			ee()->session->set_flashdata('template_id', $template->template_id);
 
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('create_template_success'))
 				->addToBody(sprintf(lang('create_template_success_desc'), $group_name, $template->template_name))
@@ -190,7 +190,7 @@ class Template extends AbstractDesignController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('create_template_error'))
 				->addToBody(lang('create_template_error_desc'))
@@ -281,7 +281,7 @@ class Template extends AbstractDesignController {
 
 			$template->save();
 
-			$alert = ee('Alert')->makeInline('template-form')
+			$alert = ee('CP/Alert')->makeInline('template-form')
 				->asSuccess()
 				->withTitle(lang('update_template_success'))
 				->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name . '/' . $template->template_name))
@@ -297,7 +297,7 @@ class Template extends AbstractDesignController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('template-form')
+			ee('CP/Alert')->makeInline('template-form')
 				->asIssue()
 				->withTitle(lang('update_template_error'))
 				->addToBody(lang('update_template_error_desc'))
@@ -424,7 +424,7 @@ class Template extends AbstractDesignController {
 
 			$template->save();
 
-			$alert = ee('Alert')->makeInline('shared-form')
+			$alert = ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('update_template_success'))
 				->addToBody(sprintf(lang('update_template_success_desc'), $group->group_name.'/'.$template->template_name))
@@ -435,7 +435,7 @@ class Template extends AbstractDesignController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('template-form')
+			ee('CP/Alert')->makeInline('template-form')
 				->asIssue()
 				->withTitle(lang('update_template_error'))
 				->addToBody(lang('update_template_error_desc'))
@@ -459,6 +459,20 @@ class Template extends AbstractDesignController {
 		}
 
 		$search_terms = ee()->input->get_post('search');
+
+		$return = ee()->input->get_post('return');
+
+		if ( ! $search_terms)
+		{
+			$return = base64_decode(ee()->input->get_post('return'));
+			$uri_elements = json_decode($return, TRUE);
+			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
+			ee()->functions->redirect($return);
+		}
+		else
+		{
+			$this->stdHeader($return);
+		}
 
 		$templates = ee('Model')->get('Template')
 			->filter('site_id', ee()->config->item('site_id'))

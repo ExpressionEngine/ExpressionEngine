@@ -168,7 +168,7 @@ class Blacklist_mcp {
 
 		if (ee()->input->get_post('htaccess_path') == '' && ! ee()->config->item('htaccess_path'))
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('htaccess_path_removed'))
 				->addToBody(lang('htaccess_path_removed_desc'))
@@ -178,7 +178,7 @@ class Blacklist_mcp {
 
 		$this->write_htaccess(ee()->input->get_post('htaccess_path'));
 
-		ee('Alert')->makeInline('shared-form')
+		ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
 			->withTitle(lang('htaccess_written_successfully'))
 			->addToBody(lang('htaccess_written_successfully_desc'))
@@ -330,7 +330,7 @@ class Blacklist_mcp {
 	public function ee_blacklist()
 	{
 		$this->_download_update_list('black');
-		ee('Alert')->makeInline('lists-form')
+		ee('CP/Alert')->makeInline('lists-form')
 			->asSuccess()
 			->withTitle(lang('lists_updated'))
 			->addToBody(lang('blacklist_downloaded'))
@@ -349,7 +349,7 @@ class Blacklist_mcp {
 	public function ee_whitelist()
 	{
 		$this->_download_update_list('white');
-		ee('Alert')->makeInline('lists-form')
+		ee('CP/Alert')->makeInline('lists-form')
 			->asSuccess()
 			->withTitle(lang('lists_updated'))
 			->addToBody(lang('whitelist_downloaded'))
@@ -363,7 +363,7 @@ class Blacklist_mcp {
 	{
 		$this->update_whitelist();
 		$this->update_blacklist();
-		ee('Alert')->makeInline('lists-form')
+		ee('CP/Alert')->makeInline('lists-form')
 			->asSuccess()
 			->withTitle(lang('lists_updated'))
 			->addToBody(lang('lists_updated_desc'))

@@ -2,7 +2,7 @@
 
 <h1><?=$cp_page_title?> <span class="req-title"><?=lang('required_fields')?></span></h1>
 <?=form_open_multipart(ee('CP/URL', 'utilities/communicate/send'), 'class="settings"')?>
-	<?=ee('Alert')->getAllInlines()?>
+	<?=ee('CP/Alert')->getAllInlines()?>
 	<fieldset class="col-group required <?=form_error_class('subject')?>">
 		<div class="setting-txt col w-16">
 			<h3><?=lang('email_subject')?></h3>

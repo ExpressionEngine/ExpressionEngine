@@ -14,7 +14,7 @@ $lang = array(
 
 "member_updated_desc" => "Member has been saved successfully.",
 
-"member_group_updated\w" => "Member Group saved",
+"member_group_updated" => "Member Group saved",
 
 "member_group_updated_desc" => "Member Group has been saved successfully.",
 
@@ -405,7 +405,7 @@ $lang = array(
 
 "user_banning" => "Ban Condition Management",
 
-"ban_preferences_updated" => "Banning Preferences Updated",
+"ban_settings_updated" => "Banned Settings Updated",
 
 "ip_address_banning" => "IP Addresses",
 
