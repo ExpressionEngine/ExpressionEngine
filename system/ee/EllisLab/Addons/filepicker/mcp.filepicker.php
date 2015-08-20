@@ -76,12 +76,12 @@ class Filepicker_mcp {
 		$directories = array('all' => lang('all')) + $directories;
 		$vars['type'] = $type;
 
-		$filters = ee('CP/Filter')->add('Perpage', $files->count(), 'show_all_files');
-
 		$dirFilter = ee('CP/Filter')->make('directory', lang('directory'), $directories)
 			->disableCustomValue();
 
-		$filters = $filters->add($dirFilter);
+		$filters = ee('CP/Filter')->add($dirFilter);
+
+		$filters = $filters->add('Perpage', $files->count(), 'show_all_files');
 
 		$imgOptions = array(
 			'thumb' => 'thumbnails',
