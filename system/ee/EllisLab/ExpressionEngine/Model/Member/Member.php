@@ -132,6 +132,9 @@ class Member extends Model {
 	protected $pmember_id;
 	protected $rte_enabled;
 	protected $rte_toolset_id;
+	protected $cp_homepage;
+	protected $cp_homepage_channel;
+	protected $cp_homepage_custom;
 
 	public function getMemberName()
 	{
