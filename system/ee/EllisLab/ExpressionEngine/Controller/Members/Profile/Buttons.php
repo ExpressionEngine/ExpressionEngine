@@ -353,13 +353,20 @@ class Buttons extends Profile {
 		{
 			if ($this->saveButtons($vars))
 			{
-				ee()->view->set_message('success', lang('html_button_updated'), TRUE);
+				ee('CP/Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('html_button_updated'))
+					->defer();
 				ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('settings_save_erorr'))
+				->addToBody(lang('settings_save_error_desc'))
+				->now();
 		}
 
 		ee()->view->base_url = $this->base_url;

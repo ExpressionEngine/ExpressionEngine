@@ -343,7 +343,7 @@ class Addons extends CP_Controller {
 			$vars['tables'][$party] = $table->viewData($this->base_url);
 		}
 
-		$vars['form_url'] = $this->base_url;
+		$vars['form_url'] = $this->base_url->setQueryStringVariable('return', base64_encode(ee()->cp->get_safe_refresh()));
 
 		// Set search results heading (first and third)
 		if (ee()->input->get_post('search'))
@@ -771,7 +771,16 @@ class Addons extends CP_Controller {
 			}
 		}
 
-		ee()->functions->redirect($this->base);
+		$return = $this->base_url;
+
+		if (ee()->input->get('return'))
+		{
+			$return = base64_decode(ee()->input->get('return'));
+			$uri_elements = json_decode($return, TRUE);
+			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
+		}
+
+		ee()->functions->redirect($return);
 	}
 
 	// --------------------------------------------------------------------

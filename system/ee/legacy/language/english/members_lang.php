@@ -405,7 +405,7 @@ $lang = array(
 
 "user_banning" => "Ban Condition Management",
 
-"ban_preferences_updated" => "Banning Preferences Updated",
+"ban_settings_updated" => "Banned Settings Updated",
 
 "ip_address_banning" => "IP Addresses",
 

@@ -89,7 +89,11 @@ class Publishing extends Profile {
 		{
 			if ($this->saveSettings($vars['sections']))
 			{
-				ee()->view->set_message('success', lang('member_updated'), lang('member_updated_desc'), TRUE);
+				ee('CP/Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('member_updated'))
+					->addToBody(lang('member_updated_desc'))
+					->defer();
 				ee()->functions->redirect($this->base_url);
 			}
 		}
