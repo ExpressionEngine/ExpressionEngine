@@ -92,7 +92,10 @@ class Group extends AbstractDesignController {
 						'fields' => array(
 							'make_default_group' => array(
 								'type' => 'yes_no',
-								'value' => 'n'
+								'value' => ee('Model')->get('TemplateGroup')
+									->filter('site_id', ee()->config->item('site_id'))
+									->filter('is_site_default', 'y')
+									->count() ? 'n' : 'y'
 							)
 						)
 					),
