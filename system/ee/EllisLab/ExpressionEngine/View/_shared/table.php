@@ -117,7 +117,11 @@ if ($wrap): ?>
 						<?php endif ?>
 						<?php foreach ($row['columns'] as $column): ?>
 							<?php if ($column['encode'] == TRUE && $column['type'] != Table::COL_STATUS): ?>
+								<?php if (isset($column['href'])): ?>
+								<td><a href="<?=$column['href']?>"><?=htmlentities($column['content'], ENT_QUOTES)?></a></td>
+								<?php else: ?>
 								<td><?=htmlentities($column['content'], ENT_QUOTES)?></td>
+								<?php endif; ?>
 							<?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
 								<td>
 									<?=ee()->load->view('_shared/toolbar', $column, TRUE)?>
