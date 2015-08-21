@@ -355,11 +355,14 @@ abstract class AbstractDesign extends CP_Controller {
 		{
 			$group = $template->getTemplateGroup();
 			$template_name = htmlentities($template->template_name, ENT_QUOTES);
+			$edit_url = ee('CP/URL', 'design/template/edit/' . $template->template_id);
 
 			if ($include_group_name)
 			{
 				$template_name = $group->group_name . '/' . $template_name;
 			}
+
+			$template_name = '<a href="' . $edit_url->compile() . '">' . $template_name . '</a>';
 
 			if (strncmp($template->template_name, $hidden_indicator, $hidden_indicator_length) == 0)
 			{
@@ -383,12 +386,8 @@ abstract class AbstractDesign extends CP_Controller {
 				$view_url .= $group->group_name.(($template->template_name == 'index') ? '' : '/'.$template->template_name);
 			}
 
-			$edit_url = ee('CP/URL', 'design/template/edit/' . $template->template_id);
 			$column = array(
-				array(
-					'content' => $template_name,
-					'href' => $edit_url
-				),
+				$template_name,
 				$template->hits,
 				array('toolbar_items' => array(
 					'view' => array(
