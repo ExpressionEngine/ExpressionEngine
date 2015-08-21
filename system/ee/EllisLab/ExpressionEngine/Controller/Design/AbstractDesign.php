@@ -67,7 +67,8 @@ abstract class AbstractDesign extends CP_Controller {
 				->withNoResultsText(lang('zero_template_groups_found'));
 
 		$template_groups = ee('Model')->get('TemplateGroup')
-			->filter('site_id', ee()->config->item('site_id'));
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('group_name', 'asc');
 
 		if (ee()->session->userdata['group_id'] != 1)
 		{
