@@ -87,6 +87,10 @@ class Site extends Model {
 		'Files' => array(
 			'model' => 'File',
 			'type' => 'hasMany'
+		),
+		'UploadDestinations' => array(
+			'model' => 'UploadDestination',
+			'type' => 'hasMany'
 		)
 	);
 
