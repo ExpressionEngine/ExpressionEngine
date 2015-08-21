@@ -83,6 +83,10 @@ class Site extends Model {
 		'Channels' => array(
 			'model' => 'Channel',
 			'type' => 'hasMany'
+		),
+		'Files' => array(
+			'model' => 'File',
+			'type' => 'hasMany'
 		)
 	);
 
