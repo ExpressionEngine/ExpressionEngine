@@ -56,15 +56,13 @@ class Member extends Model {
 		'CpLogs' => array(
 			'type' => 'hasMany',
 			'model' => 'CpLog'
-		)
-	//	'ResetPassword'	=> array(
-	//		'type' => 'one_to_one'
-	//	),
-	//	'ChannelEntries' => array(
-	//		'type' => 'one_to_many',
-	//		'model' => 'ChannelEntry',
-	//		'to_key' => 'author_id'
-	//	)
+		),
+		'ChannelEntryAutosaves' => array(
+			'type' => 'hasMany',
+			'model' => 'ChannelEntryAutosave',
+			'key' => 'author_id',
+			'to_key' => 'author_id'
+		),
 	);
 
 	// Properties
