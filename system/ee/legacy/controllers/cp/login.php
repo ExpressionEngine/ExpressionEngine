@@ -239,13 +239,13 @@ class Login extends CP_Controller {
 		}
 		else if ($member_group->cp_homepage != '' OR ee()->session->userdata('cp_homepage') != '')
 		{
-			$site_id = ee()->config->item('site_id');
-
 			if (ee()->session->userdata('cp_homepage') != '')
 			{
+				$site_id = ee()->config->item('site_id');
+
 				$cp_homepage = ee()->session->userdata('cp_homepage');
 				$cp_homepage_channel = ee()->session->userdata('cp_homepage_channel');
-				$cp_homepage_channel = $cp_homepage_channel->$site_id;
+				$cp_homepage_channel = $cp_homepage_channel[$site_id];
 				$cp_homepage_custom = ee()->session->userdata('cp_homepage_custom');
 			}
 			else
