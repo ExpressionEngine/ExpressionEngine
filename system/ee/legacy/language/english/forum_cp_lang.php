@@ -376,8 +376,8 @@ $lang = array(
 'invalid_member_group' => 'The member group you submitted does not appear to be valid',
 'invalid_username' => 'The username you submitted does not appear to be valid',
 
-'fadmins_removed' => 'Administrators Removed',
-'fadmins_removed_desc' => 'The following administrators were removed',
+'admins_removed' => 'Administrators Removed',
+'admins_removed_desc' => 'The following administrators were removed',
 
 // Moderators
 
