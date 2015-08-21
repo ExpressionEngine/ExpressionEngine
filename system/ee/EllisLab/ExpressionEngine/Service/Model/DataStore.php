@@ -235,9 +235,9 @@ class DataStore {
 		$from = $relation->getSourceModel();
 		$type = substr(strrchr(get_class($relation), '\\'), 1);
 
-		throw new \Exception("Missing Relationship. {$from} {$type} {$model} as
-			{$name}, but no available connection from {$model} to {$from} was
-			found."
+		throw new \Exception("Missing Relationship. Model <i>{$from}</i> {$type}
+			model <i>{$model}</i> which it calls '{$name}', but no available
+			connection from <i>{$model}</i> to <i>{$from}</i> was found."
 		);
 	}
 
