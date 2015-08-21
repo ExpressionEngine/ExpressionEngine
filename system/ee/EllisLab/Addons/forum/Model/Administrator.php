@@ -52,18 +52,18 @@ class Administrator extends Model {
 			'weak'     => TRUE,
 			'inverse' => array(
 				'name' => 'Administrator',
-				'type' => 'belongsTo'
+				'type' => 'hasMany'
 			)
 		),
 		'MemberGroup' => array(
-			'type'     => 'hasOne',
+			'type'     => 'belongsTo',
 			'model'    => 'ee:MemberGroup',
 			'from_key' => 'admin_group_id',
 			'to_key'   => 'group_id',
 			'weak'     => TRUE,
 			'inverse' => array(
 				'name' => 'Administrator',
-				'type' => 'belongsTo'
+				'type' => 'hasMany'
 			)
 		),
 	);
