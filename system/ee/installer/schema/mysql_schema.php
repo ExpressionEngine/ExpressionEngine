@@ -468,7 +468,7 @@ class EE_Schema {
 			prv_msg_send_limit smallint unsigned NOT NULL default '20',
 			prv_msg_storage_limit smallint unsigned NOT NULL default '60',
 			cp_homepage varchar(20) NULL DEFAULT NULL,
-			cp_homepage_channel int(10) unsigned NOT NULL,
+			cp_homepage_channel int(10) unsigned NOT NULL DEFAULT '0',
 			cp_homepage_custom varchar(100) NULL DEFAULT NULL,
 
 			PRIMARY KEY `group_id_site_id` (`group_id`, `site_id`)
