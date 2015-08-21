@@ -205,6 +205,16 @@ class Provider extends InjectionBindingDecorator {
 	}
 
 	/**
+	 * Get the 'models.dependencies' key
+	 *
+	 * @return Array [model => [ee:foo, ee:bar]]
+	 */
+	public function getModelDependencies()
+	{
+		return $this->get('models.dependencies', array());
+	}
+
+	/**
 	 * Helper function to get a given setup key
 	 *
 	 * @param String $key Key name
