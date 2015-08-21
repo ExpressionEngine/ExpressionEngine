@@ -64,6 +64,10 @@ class Site extends Model {
 			'model' => 'Status',
 			'type' => 'hasMany'
 		),
+		'StatusGroups' => array(
+			'model' => 'StatusGroup',
+			'type' => 'hasMany'
+		),
 		'TemplateGroups' => array(
 			'model' => 'TemplateGroup',
 			'type' => 'hasMany'
