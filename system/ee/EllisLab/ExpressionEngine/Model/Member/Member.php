@@ -44,6 +44,14 @@ class Member extends Model {
 			'type' => 'hasMany',
 			'model' => 'ChannelEntryVersion',
 			'to_key' => 'author_id'
+		),
+		'EmailConsoleCaches' => array(
+			'type' => 'hasMany',
+			'model' => 'EmailConsoleCache'
+		),
+		'SearchLogs' => array(
+			'type' => 'hasMany',
+			'model' => 'SearchLog'
 		)
 	//	'ResetPassword'	=> array(
 	//		'type' => 'one_to_one'
