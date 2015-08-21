@@ -40,6 +40,16 @@ class Member extends Model {
 			'model' => 'SpecialtyTemplate',
 			'to_key' => 'last_author_id'
 		),
+		'UploadedFiles' => array(
+			'type' => 'hasMany',
+			'model' => 'File',
+			'to_key' => 'uploaded_by_member_id'
+		),
+		'ModifiedFiles' => array(
+			'type' => 'hasMany',
+			'model' => 'File',
+			'to_key' => 'modified_by_member_id'
+		),
 		'VersionedChannelEntries' => array(
 			'type' => 'hasMany',
 			'model' => 'ChannelEntryVersion',
