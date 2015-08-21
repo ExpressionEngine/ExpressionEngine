@@ -448,6 +448,13 @@ class Forum_mcp extends CP_Controller {
 			'required' => TRUE
 		);
 
+		ee()->cp->add_js_script('plugin', 'ee_url_title');
+		ee()->javascript->output('
+			$("input[name=board_label]").bind("keyup keydown", function() {
+				$(this).ee_url_title("input[name=board_name]");
+			});
+		');
+
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
 		$this->generateSidebar();
