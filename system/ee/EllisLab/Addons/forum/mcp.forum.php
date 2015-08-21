@@ -440,9 +440,9 @@ class Forum_mcp extends CP_Controller {
 			'save_btn_text' => 'btn_save_board',
 			'save_btn_text_working' => 'btn_saving',
 			'tabs' => array(
-				'board' => $this->getBoardForm($board),
-				'forums' => $this->getBoardForumsForm($board),
-				'permissions' => $this->getBoardPermissionsForm($board)
+				'board' => $this->getBoardForm($board, $errors),
+				'forums' => $this->getBoardForumsForm($board, $errors),
+				'permissions' => $this->getBoardPermissionsForm($board, $errors)
 			),
 			'sections' => array(),
 			'required' => TRUE
@@ -498,9 +498,9 @@ class Forum_mcp extends CP_Controller {
 			'save_btn_text' => 'btn_save_board',
 			'save_btn_text_working' => 'btn_saving',
 			'tabs' => array(
-				'board' => $this->getBoardForm($board),
-				'forums' => $this->getBoardForumsForm($board),
-				'permissions' => $this->getBoardPermissionsForm($board)
+				'board' => $this->getBoardForm($board, $errors),
+				'forums' => $this->getBoardForumsForm($board, $errors),
+				'permissions' => $this->getBoardPermissionsForm($board, $errors)
 			),
 			'sections' => array(),
 			'required' => TRUE
@@ -570,7 +570,7 @@ class Forum_mcp extends CP_Controller {
 		ee()->functions->redirect(ee('CP/URL', $this->base . '/index/' . $board->board_id));
 	}
 
-	private function getBoardForm($board)
+	private function getBoardForm($board, $errors)
 	{
 		$html = '';
 
@@ -804,13 +804,13 @@ class Forum_mcp extends CP_Controller {
 		foreach ($sections as $name => $settings)
 		{
 			$html .= ee('View')->make('ee:_shared/form/section')
-				->render(array('name' => $name, 'settings' => $settings));
+				->render(array('name' => $name, 'settings' => $settings, 'errors' => $errors));
 		}
 
 		return $html;
 	}
 
-	private function getBoardForumsForm($board)
+	private function getBoardForumsForm($board, $errors)
 	{
 		$html = '';
 
@@ -1032,13 +1032,13 @@ class Forum_mcp extends CP_Controller {
 		foreach ($sections as $name => $settings)
 		{
 			$html .= ee('View')->make('ee:_shared/form/section')
-				->render(array('name' => $name, 'settings' => $settings));
+				->render(array('name' => $name, 'settings' => $settings, 'errors' => $errors));
 		}
 
 		return $html;
 	}
 
-	private function getBoardPermissionsForm($board)
+	private function getBoardPermissionsForm($board, $errors)
 	{
 		$html = '';
 
@@ -1165,7 +1165,7 @@ class Forum_mcp extends CP_Controller {
 		foreach ($sections as $name => $settings)
 		{
 			$html .= ee('View')->make('ee:_shared/form/section')
-				->render(array('name' => $name, 'settings' => $settings));
+				->render(array('name' => $name, 'settings' => $settings, 'errors' => $errors));
 		}
 
 		return $html;
