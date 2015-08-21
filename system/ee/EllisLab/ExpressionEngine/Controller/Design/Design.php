@@ -66,6 +66,14 @@ class Design extends AbstractDesignController {
 
 			if ( ! $group)
 			{
+				$group = ee('Model')->get('TemplateGroup')
+					->filter('site_id', ee()->config->item('site_id'))
+					->order('group_name', 'asc')
+					->first();
+			}
+
+			if ( ! $group)
+			{
 				ee()->functions->redirect(ee('CP/URL', 'design/system'));
 			}
 		}
