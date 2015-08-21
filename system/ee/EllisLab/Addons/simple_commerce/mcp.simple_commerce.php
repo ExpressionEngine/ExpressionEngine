@@ -60,7 +60,6 @@ class Simple_commerce_mcp {
 
 		ee()->view->header = array(
 			'title' => lang('simple_commerce_manager'),
-			'form_url' => ee('CP/URL', 'addons/settings/simple_commerce/search'),
 			'search_button_value' => lang('search_commerce'),
 			'toolbar_items' => array(
 				'settings' => array(
@@ -129,16 +128,21 @@ class Simple_commerce_mcp {
 			{
 				$price_col = '<span class="yes">$'.$item->item_regular_price.'</span><span class="faded"> / $'.$item->item_sale_price.'</span>';
 			}
+
+			$edit_url = ee('CP/URL', 'addons/settings/simple_commerce/edit-item/'.$item->getId());
+
 			$columns = array(
-				$item->entry_id,
-				//$item->ChannelEntry->title,
+				array(
+					'content' => $item->ChannelEntry->title,
+					'href' => $edit_url
+				),
 				$price_col,
 				$item->subscription_frequency ?: '--',
 				$item->current_subscriptions,
 				$item->item_purchases,
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'addons/settings/simple_commerce/edit-item/'.$item->getId()),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					)
 				)),
@@ -331,12 +335,12 @@ class Simple_commerce_mcp {
 			{
 				$item = ee('Model')->make('simple_commerce:Item');
 				$item->set($item_data);
-				$item->entry_id = 1; // TODO: Fix when relationships works
+				$item->ChannelEntry = ee('Model')->get('ChannelEntry', $entry_id)->first();
 				$item->subscription_frequency = empty($item->subscription_frequency) ? NULL : $item->subscription_frequency;
 				$result = $item->validate();
 
 				$forms[] = array(
-					'form_title' => lang('create_new').': '.$entry_id,
+					'form_title' => lang('create_new').': '.$item->ChannelEntry->title,
 					'sections' => $this->itemForm($item, 'items['.$entry_id.']'),
 					'errors' => $result,
 					'item' => $item,
@@ -392,8 +396,9 @@ class Simple_commerce_mcp {
 			foreach ($entry_ids as $entry_id)
 			{
 				$item = ee('Model')->make('simple_commerce:Item');
+				$item->ChannelEntry = ee('Model')->get('ChannelEntry', $entry_id)->first();
 				$forms[] = array(
-					'form_title' => lang('create_new').': '.$entry_id,
+					'form_title' => lang('create_new').': '.$item->ChannelEntry->title,
 					'sections' => $this->itemForm($item, 'items['.$entry_id.']'),
 					'errors' => NULL,
 					'entry_id' => 0

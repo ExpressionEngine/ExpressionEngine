@@ -48,10 +48,14 @@ class Purchase extends Model {
 			'weak' => TRUE
 		),
 		'Member' => array(
-			'type' => 'hasOne',
+			'type' => 'belongsTo',
 			'model' => 'ee:Member',
 			'from_key' => 'member_id',
-			'weak' => TRUE
+			'weak' => TRUE,
+			'inverse' => array(
+				'name' => 'Purchase',
+				'type' => 'hasMany'
+			)
 		)
 	);
 
