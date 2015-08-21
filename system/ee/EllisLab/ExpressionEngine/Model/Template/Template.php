@@ -68,6 +68,10 @@ class Template extends Model {
 		),
 		'TemplateRoute' => array(
 			'type' => 'HasOne'
+		),
+		'DeveloperLogItems' => array(
+			'type' => 'hasMany',
+			'model' => 'DeveloperLog'
 		)
 	);
 
