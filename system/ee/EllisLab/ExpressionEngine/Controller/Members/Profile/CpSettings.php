@@ -138,7 +138,7 @@ class CpSettings extends Profile {
 					'cp_homepage_custom' => $_POST['cp_homepage_custom']
 				))->save();
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('member_updated'))
 					->addToBody(lang('member_updated_desc'))
@@ -149,7 +149,7 @@ class CpSettings extends Profile {
 			else
 			{
 				$vars['errors'] = $result;
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('settings_save_error'))
 					->addToBody(lang('settings_save_error_desc'))
