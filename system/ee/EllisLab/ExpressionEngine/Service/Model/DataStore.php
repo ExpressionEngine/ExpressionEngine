@@ -213,6 +213,13 @@ class DataStore {
 		$model = $relation->getTargetModel();
 		$source = $relation->getSourceModel();
 
+		$prefix = $this->getPrefix($model);
+
+		if (strpos($model, $prefix) !== 0)
+		{
+			$model = $prefix.':'.$model;
+		}
+
 		if (isset($this->foreign_models[$source]))
 		{
 			if (in_array($model, $this->foreign_models[$source]))
@@ -237,6 +244,7 @@ class DataStore {
 				}
 			}
 		}
+
 
 		$name = $relation->getName();
 		$from = $relation->getSourceModel();
