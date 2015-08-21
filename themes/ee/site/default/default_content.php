@@ -23,11 +23,6 @@ $status->save();
 	Category Groups
 *********************/
 
-foreach (array('blog', 'collection', 'slideshow') as $group_name)
-{
-
-}
-
 $category_list = array(
 	'blog' => array(
 		'News',
