@@ -118,13 +118,17 @@ class Pages_mcp {
 					)
 				);
 
+				$edit_url = ee('CP/URL', 'publish/edit/entry/' . $entry_id);
 				$data[] = array(
-					'name' => $titles[$entry_id],
+					'name' => array(
+							'content' => $titles[$entry_id],
+							'href' => $edit_url
+							),
 					'url' => $url,
 					array(
 						'toolbar_items' => array(
 							'edit' => array(
-								'href' => ee('CP/URL', 'publish/edit/entry/' . $entry_id),
+								'href' => $edit_url,
 								'title' => lang('edit')
 							)
 						)

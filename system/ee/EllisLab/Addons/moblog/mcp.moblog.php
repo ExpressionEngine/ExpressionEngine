@@ -96,12 +96,16 @@ EOT;
 		$data = array();
 		foreach ($moblogs as $moblog)
 		{
+			$edit_url = ee('CP/URL', 'addons/settings/moblog/edit/'.$moblog['moblog_id']);
 			$columns = array(
 				$moblog['moblog_id'],
-				$moblog['moblog_full_name'],
+				array(
+					'content' => $moblog['moblog_full_name'],
+					'href' => $edit_url
+				),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'addons/settings/moblog/edit/'.$moblog['moblog_id']),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					),
 					'copy' => array(

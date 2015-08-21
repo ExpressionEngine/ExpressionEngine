@@ -134,11 +134,15 @@ class Translate extends Utilities {
 			if (substr($file, -$filename_end_len) && substr($file, -4) == '.php')
 			{
 				$name = str_replace('_lang.php', '', $file);
+				$edit_url = ee('CP/URL', 'utilities/translate/' . $language . '/edit/' . $name);
 				$data[] = array(
-					'filename'	=> $file,
+					'filename' => array(
+							'content' => $file,
+							'href' => $edit_url
+						),
 					array('toolbar_items' => array(
 						'edit' => array(
-							'href' => ee('CP/URL', 'utilities/translate/' . $language . '/edit/' . $name),
+							'href' => $edit_url,
 							'title' => strtolower(lang('edit'))
 						)
 					)),
