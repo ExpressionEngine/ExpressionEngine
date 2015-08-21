@@ -3213,7 +3213,7 @@ class Forum_mcp extends CP_Controller {
 		require_once APPPATH.'language/'.ee()->config->item('deft_lang').'/email_data.php';
 
 		$data = array(
-			'site_id'			=> $side_id,
+			'site_id'			=> $site_id,
 			'template_type'		=> 'email',
 			'template_subtype'	=> 'forums',
 			'edit_date'			=> ee()->localize->now,

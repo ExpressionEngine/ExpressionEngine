@@ -314,6 +314,8 @@ abstract class ContentModel extends VariableColumnModel {
 		{
 			$facade->setContentType($this->getStructure()->getContentType());
 		}
+
+		$this->_custom_fields_loaded = TRUE;
 	}
 
 	/**
