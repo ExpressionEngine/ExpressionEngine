@@ -45,7 +45,7 @@ class Administrator extends Model {
 			'type' => 'belongsTo'
 		),
 		'Member' => array(
-			'type'     => 'hasOne',
+			'type'     => 'belongsTo',
 			'model'    => 'ee:Member',
 			'from_key' => 'admin_member_id',
 			'to_key'   => 'member_id',
@@ -60,7 +60,11 @@ class Administrator extends Model {
 			'model'    => 'ee:MemberGroup',
 			'from_key' => 'admin_group_id',
 			'to_key'   => 'group_id',
-			'weak'     => TRUE
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'Administrator',
+				'type' => 'belongsTo'
+			)
 		),
 	);
 
@@ -77,7 +81,6 @@ class Administrator extends Model {
 
 	public function getAdminName()
 	{
-	//	return "Not yet implemented";
 		$name = "";
 
 		if ($this->admin_group_id)

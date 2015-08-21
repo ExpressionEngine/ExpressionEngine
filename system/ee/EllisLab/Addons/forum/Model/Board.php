@@ -63,6 +63,10 @@ class Board extends Model {
 	);
 
 	protected static $_relationships = array(
+		'Administrators' => array(
+			'type'  => 'hasMany',
+			'model' => 'Administrator'
+		),
 		'Attachments' => array(
 			'type'  => 'hasMany',
 			'model' => 'Attachment'
