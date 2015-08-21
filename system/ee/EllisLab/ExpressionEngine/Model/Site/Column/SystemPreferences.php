@@ -117,6 +117,7 @@ class SystemPreferences extends CustomType {
 	protected $max_logged_searches;
 	protected $rte_enabled;
 	protected $rte_default_toolset_id;
+	protected $forum_trigger;
 
 	/**
 	* Called when the column is fetched from db
