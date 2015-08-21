@@ -210,6 +210,11 @@ class Delete extends Query {
 			{
 				$to_model = $relation->getSourceModel();
 
+				if (strpos($to_model, ':') === FALSE)
+				{
+					$to_model = 'ee:'.$to_model;
+				}
+
 				$inherit = $this->delete_list[$parent];
 				$this->delete_list[$to_model] = $this->weak($relation, $inherit);
 				continue;
