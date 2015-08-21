@@ -75,11 +75,9 @@ class Email extends AbstractDesignController {
 		foreach ($templates as $template)
 		{
 			$edit_url = ee('CP/URL', 'design/email/edit/' . $template->template_id);
+			$template_name = '<a href="' . $edit_url->compile() . '">' . lang($template->template_name) . '</a>';
 			$data[$template->template_subtype][] = array(
-				array(
-					'content' => lang($template->template_name),
-					'href' => $edit_url
-				),
+				$template_name,
 				array('toolbar_items' => array(
 					'edit' => array(
 						'href' => $edit_url,

@@ -92,17 +92,14 @@ class Rte_mcp {
 				)
 			);
 
+			$toolset_name = '<a href="' . $url->compile() . '">' . $toolset_name . '</a>';
 			if ($default_toolset_id == $t['toolset_id'])
 			{
 				$toolset_name = '<span class="default">' . $toolset_name . ' ✱</span>';
 				$checkbox['disabled'] = 'disabled';
 			}
-
 			$toolset = array(
-				'tool_set' => array(
-					'content' => $toolset_name,
-					'href' => $url
-				),
+				'tool_set' => $toolset_name,
 				'status' => lang('disabled'),
 				array('toolbar_items' => array(
 						'edit' => array(
