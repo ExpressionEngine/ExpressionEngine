@@ -226,7 +226,7 @@ class DataStore {
 				// todo also check if valid reverse type
 				if (array_reverse($possibility->getKeys()) == $relation->getKeys())
 				{
-					return $relation;
+					return $possibility;
 				}
 			}
 		}
