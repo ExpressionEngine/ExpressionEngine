@@ -52,6 +52,10 @@ class Member extends Model {
 		'SearchLogs' => array(
 			'type' => 'hasMany',
 			'model' => 'SearchLog'
+		),
+		'CpLogs' => array(
+			'type' => 'hasMany',
+			'model' => 'CpLog'
 		)
 	//	'ResetPassword'	=> array(
 	//		'type' => 'one_to_one'
