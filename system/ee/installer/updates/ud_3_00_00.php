@@ -894,7 +894,8 @@ class Updater {
 				array(
 					'module_id' => array(
 						'type'    => 'INT(4)',
-						'null'    => TRUE,
+						'null'    => FALSE,
+						'default' => 0
 					)
 				)
 			);

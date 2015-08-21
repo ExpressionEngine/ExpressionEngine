@@ -1440,7 +1440,7 @@ CREATE TABLE `exp_upload_prefs` (
   `file_post_format` varchar(120) DEFAULT NULL,
   `cat_group` varchar(255) DEFAULT NULL,
   `batch_location` varchar(255) DEFAULT NULL,
-  `module_id` int(4) DEFAULT NULL,
+  `module_id` int(4) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `site_id` (`site_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
