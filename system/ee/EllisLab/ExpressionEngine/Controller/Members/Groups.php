@@ -313,9 +313,15 @@ class Groups extends Members\Members {
 			show_error(lang('only_superadmins_can_admin_groups'));
 		}
 
-		$template_groups = ee('Model')->get('TemplateGroup')->all()->getDictionary('group_id', 'group_name');
+		$template_groups = ee('Model')->get('TemplateGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all()
+			->getDictionary('group_id', 'group_name');
 		$addons = ee('Model')->get('Module')->all()->getDictionary('module_id', 'module_name');
-		$allowed_channels = ee('Model')->get('Channel')->all()->getDictionary('channel_id', 'channel_name');
+		$allowed_channels = ee('Model')->get('Channel')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all()
+			->getDictionary('channel_id', 'channel_title');
 
 		ee()->load->helper('array');
 
@@ -546,6 +552,27 @@ class Groups extends Members\Members {
 						'can_access_cp' => array(
 							'type' => 'yes_no',
 							'value' => element('can_access_cp', $values)
+						)
+					)
+				),
+				array(
+					'title' => 'default_cp_homepage',
+					'desc' => 'default_cp_homepage_desc',
+					'fields' => array(
+						'cp_homepage' => array(
+							'type' => 'radio',
+							'choices' => array(
+								'overview' => lang('cp_overview').' &mdash; <i>'.lang('default').'</i>',
+								'entries_edit' => lang('edit_listing'),
+								'publish_form' => lang('publish_form').' &mdash; '.
+									form_dropdown('cp_homepage_channel', $allowed_channels, element('cp_homepage_channel', $values)),
+								'custom' => lang('custom_uri'),
+							),
+							'value' => element('cp_homepage', $values, 'overview')
+						),
+						'cp_homepage_custom' => array(
+							'type' => 'text',
+							'value' => element('cp_homepage_custom', $values)
 						)
 					)
 				),
@@ -1020,6 +1047,9 @@ class Groups extends Members\Members {
 				}
 			}
 		}
+
+		// This field isn't present in the section array, it's shimmy'd into a radio selection
+		$group->cp_homepage_channel = ee()->input->post('cp_homepage_channel');
 
 		if ( empty($group->site_id))
 		{

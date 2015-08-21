@@ -520,6 +520,24 @@ $lang = array(
 
 "can_access_cp_desc" => "When set to <b>yes</b>, users assigned to this group may access the control panel.",
 
+'default_cp_homepage' => 'Default <abbr title="Control Panel">CP</abbr> homepage',
+
+'default_cp_homepage_desc' => 'Page of the <abbr title="Control Panel">CP</abbr> this group should see when logging in.',
+
+'cp_overview' => '<abbr title="Control Panel">CP</abbr> Overview',
+
+'edit_listing' => 'All entries edit listing',
+
+'applies_to_all_sites' => 'applies to all sites',
+
+'publish_form' => 'Publish form',
+
+'choose_channels_per_site' => 'choose channels, per site below',
+
+'no_channels' => 'No Channels',
+
+'custom_uri' => 'Custom URI &mdash; <i>e.g. members/groups</i>',
+
 "footer_helper_links" => "Access footer helper links",
 
 "footer_helper_links_desc" => "Choose which links this member group can access in the CP footer.",

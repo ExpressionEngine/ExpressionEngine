@@ -219,7 +219,7 @@ class EE_Exceptions {
 
 		ob_start();
 
-		include(APPPATH.'errors/error_exception.php');
+		include(EE_APPPATH.'errors/error_exception.php');
 
 		$buffer = ob_get_contents();
 		ob_end_clean();

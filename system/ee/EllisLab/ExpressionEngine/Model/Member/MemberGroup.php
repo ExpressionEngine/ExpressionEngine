@@ -233,6 +233,9 @@ class MemberGroup extends Model {
 	protected $can_send_bulletins;
 	protected $include_in_authorlist;
 	protected $include_in_memberlist;
+	protected $cp_homepage;
+	protected $cp_homepage_channel;
+	protected $cp_homepage_custom;
 
 
 	public function onBeforeInsert()

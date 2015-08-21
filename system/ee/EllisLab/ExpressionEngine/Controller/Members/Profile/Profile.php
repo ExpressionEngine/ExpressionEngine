@@ -112,6 +112,7 @@ class Profile extends CP_Controller {
 
 		$list->addItem(lang('blocked_members'), ee('CP/URL', 'members/profile/ignore', $this->query_string));
 		$list->addItem(lang('member_group'), ee('CP/URL', 'members/profile/group', $this->query_string));
+		$list->addItem(lang('cp_settings'), ee('CP/URL', 'members/profile/cp-settings', $this->query_string));
 		$list->addItem(sprintf(lang('email_username'), $this->member->username), ee('CP/URL', 'utilities/communicate/member/' . $this->member->member_id));
 		$list->addItem(sprintf(lang('login_as'), $this->member->username), ee('CP/URL', 'members/profile/login', $this->query_string));
 		$list->addItem(sprintf(lang('delete_username'), $this->member->username), ee('CP/URL', 'members/delete', $this->query_string))
