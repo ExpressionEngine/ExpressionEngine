@@ -48,6 +48,14 @@ class Watermark extends Model {
 		//'wm_shadow_distance' => 'int'
 	);
 
+	protected static $_relationships = array(
+		'FileDimenson' => array(
+			'type' => 'belongsTo',
+			'from_key' => 'wm_id',
+			'to_key' => 'watermark_id'
+		)
+	);
+
 	protected static $_validation_rules = array(
 		'wm_name'            => 'required|xss|noHtml|unique',
 		'wm_type'            => 'enum[text,image]',
