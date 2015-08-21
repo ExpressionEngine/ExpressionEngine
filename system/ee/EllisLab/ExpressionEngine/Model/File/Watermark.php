@@ -49,7 +49,7 @@ class Watermark extends Model {
 	);
 
 	protected static $_relationships = array(
-		'FileDimenson' => array(
+		'FileDimension' => array(
 			'type' => 'belongsTo',
 			'from_key' => 'wm_id',
 			'to_key' => 'watermark_id'
