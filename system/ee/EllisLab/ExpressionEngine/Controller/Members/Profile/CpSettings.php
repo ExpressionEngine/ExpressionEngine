@@ -77,7 +77,7 @@ class CpSettings extends Profile {
 			}
 
 			$site_id = ee()->config->item('site_id');
-			$field['selected_channel'] = isset($this->member->cp_homepage_channel->$site_id) ? $this->member->cp_homepage_channel->$site_id : 0;
+			$field['selected_channel'] = isset($this->member->cp_homepage_channel[$site_id]) ? $this->member->cp_homepage_channel[$site_id] : 0;
 		}
 
 		$field['member'] = $this->member;

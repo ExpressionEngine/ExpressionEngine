@@ -17,9 +17,9 @@
 </label>
 <?php if (bool_config_item('multiple_sites_enabled')): ?>
 	<?php foreach ($allowed_channels as $site_id => $channels): ?>
-		<label class="choice block child">
+		<label class="choice block child<?php if ($member->cp_homepage == 'publish_form'): ?> chosen<?php endif ?>">
 			<?=$sites[$site_id]?> &mdash;
-			<?=form_dropdown('cp_homepage_channel['.$site_id.']', $channels, isset($member->cp_homepage_channel->$site_id) ? $member->cp_homepage_channel->$site_id : 0)?>
+			<?=form_dropdown('cp_homepage_channel['.$site_id.']', $channels, isset($member->cp_homepage_channel[$site_id]) ? $member->cp_homepage_channel[$site_id] : 0)?>
 		</label>
 	<?php endforeach ?>
 <?php endif ?>
