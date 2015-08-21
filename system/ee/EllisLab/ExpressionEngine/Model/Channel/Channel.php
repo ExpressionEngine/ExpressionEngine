@@ -81,6 +81,12 @@ class Channel extends StructureModel {
 			'from_key' => 'cat_group',
 			'to_key' => 'group_id'
 		),
+		'ChannelEntryAutosaves' => array(
+			'type' => 'hasMany',
+			'model' => 'ChannelEntryAutosave',
+			'key' => 'channel_id',
+			'to_key' => 'channel_id'
+		),
 	);
 
 	protected static $_validation_rules = array(
