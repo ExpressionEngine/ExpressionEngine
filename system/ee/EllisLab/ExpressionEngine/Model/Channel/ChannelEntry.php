@@ -314,7 +314,6 @@ class ChannelEntry extends ContentModel {
 
 	protected function getModulesWithTabs()
 	{
-
 		$modules = array();
 		$providers = ee('App')->getProviders();
 		$installed_modules = $this->getFrontend()->get('Module')
@@ -621,7 +620,9 @@ class ChannelEntry extends ContentModel {
 			foreach ($module_tabs as $tab_id => $fields)
 			{
 				foreach ($fields as $key => $field)
+				{
 					$default_fields[$tab_id . '__' . $key] = $field;
+				}
 			}
 		}
 
