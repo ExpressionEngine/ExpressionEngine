@@ -79,6 +79,13 @@ class DataStore {
 			$model = $this->newModelFromAlias($name);
 		}
 
+		$prefix = $this->getPrefix($name);
+
+		if (strpos($name, $prefix) !== 0)
+		{
+			$name = $prefix.':'.$name;
+		}
+
 		if (count($data))
 		{
 			$model->set($data);
