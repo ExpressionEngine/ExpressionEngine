@@ -47,6 +47,8 @@ class Files extends AbstractFilesController {
 		}
 
 		$files = ee('Model')->get('File')
+			->with('UploadDestination')
+			->filter('UploadDestination.module_id', 0)
 			->filter('site_id', ee()->config->item('site_id'));
 
 		$filters = ee('CP/Filter')
