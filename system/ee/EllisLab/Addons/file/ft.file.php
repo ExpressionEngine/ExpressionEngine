@@ -500,12 +500,13 @@ CSS;
 		// Number of existing files to show? 0 means all
 		$num_existing = ( ! isset($data['num_existing'])) ? 50 : $data['num_existing'];
 
-		$directory_choices = array_merge(array('all' => lang('all')), ee('Model')->get('UploadDestination')
+		$directory_choices = array('all' => lang('all'));
+		$directory_choices += ee('Model')->get('UploadDestination')
 			->fields('id', 'name')
 			->filter('site_id', ee()->config->item('site_id'))
 			->filter('module_id', 0)
 			->all()
-			->getDictionary('id', 'name'));
+			->getDictionary('id', 'name');
 
 		$settings = array(
 			'field_options_file' => array(
