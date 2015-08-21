@@ -124,7 +124,9 @@ if ($wrap): ?>
 								<?php endif; ?>
 							<?php elseif ($column['type'] == Table::COL_TOOLBAR): ?>
 								<td>
-									<?=ee()->load->view('_shared/toolbar', $column, TRUE)?>
+									<div class="toolbar-wrap">
+										<?=ee()->load->view('_shared/toolbar', $column, TRUE)?>
+									</div>
 								</td>
 							<?php elseif ($column['type'] == Table::COL_CHECKBOX): ?>
 								<td>
