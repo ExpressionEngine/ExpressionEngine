@@ -49,7 +49,6 @@ class SystemPreferences extends CustomType {
 	protected $enable_sql_caching;
 	protected $force_query_string;
 	protected $show_profiler;
-	protected $template_debugging;
 	protected $include_seconds;
 	protected $cookie_domain;
 	protected $cookie_path;

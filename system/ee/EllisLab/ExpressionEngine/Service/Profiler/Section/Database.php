@@ -31,6 +31,21 @@ use EllisLab\ExpressionEngine\Service\View\View;
 class Database extends ProfilerSection {
 
 	/**
+	 * @var int  total queries
+	 **/
+	protected $total_queries;
+
+	/**
+	 * @var float  threshold for warnings, in seconds
+	 **/
+	protected $time_threshold = 0.25;
+
+	/**
+	 * @var float  threshold for warnings, in bytes, default 1MB
+	 **/
+	protected $memory_threshold = 1048576;
+
+	/**
 	 * @var SQL Keywords we want highlighted
 	 */
 	protected $keywords = array(
@@ -66,6 +81,16 @@ class Database extends ProfilerSection {
 	);
 
 	/**
+	 * Get a brief text summary (used for tabs, labels, etc.)
+	 *
+	 * @return  string  the section summary
+	 **/
+	public function getSummary()
+	{
+		return $this->total_queries.' '.lang('profiler_queries');
+	}
+
+	/**
 	 * Set the section's data
 	 *
 	 * @param  array  Array of Database $db objects
@@ -79,11 +104,10 @@ class Database extends ProfilerSection {
 		{
 			$count++;
 			$log = $db->getLog();
+			$this->total_queries += $log->getQueryCount();
 
 			$label = $db->getConfig()->get('database');
 			$this->data['duplicate_queries'][$label] = $this->getDuplicateQueries($log);
-
-			$label .= '&nbsp;&nbsp;&nbsp;'.lang('profiler_queries').': '.$log->getQueryCount();
 			$this->data['database'][$label] = $this->getQueries($log);
 		}
 	}
@@ -95,7 +119,7 @@ class Database extends ProfilerSection {
 	 **/
 	public function getViewName()
 	{
-		return 'profiler/database';
+		return 'profiler/section/database';
 	}
 
 	/**
@@ -116,11 +140,10 @@ class Database extends ProfilerSection {
 		$duplicates = array();
 		foreach ($duplicate_queries as $dupe_query)
 		{
-			$query = $this->highlightSql($dupe_query['query'] . implode(' ', $dupe_query['locations']));
-
 			$duplicates[] = array(
 				'count' => $dupe_query['count'],
-				'query' => $query
+				'query' => $this->highlightSql($dupe_query['query']),
+				'location' => implode(' ', $dupe_query['locations'])
 			);
 		}
 
@@ -142,18 +165,55 @@ class Database extends ProfilerSection {
 
 		foreach ($log->getQueries() as $query)
 		{
-			list($sql, $location, $time) = $query;
-
-			$time = number_format($time, 4);
-			$query = $this->highlightSql($sql.$location);
+			list($sql, $location, $time, $memory) = $query;
 
 			$data[] = array(
-				'time' => $time,
-				'query' => $query
+				'time' => number_format($time, 4),
+				'memory' => $memory,
+				'formatted_memory'=> $this->formatMemoryString($memory),
+				'time_threshold' => $this->time_threshold,
+				'memory_threshold' => $this->memory_threshold,
+				'query' => $this->highlightSql($sql),
+				'location' => $location
 			);
 		}
 
 		return $data;
+	}
+
+	/**
+	 * Format the memory to a sane byte format
+	 *
+	 * @param  string  $memory  the memory in bytes
+	 * @return string  the formatted memory string
+	 **/
+	private function formatMemoryString($memory)
+	{
+		$precision = 0;
+
+		if ($memory >= 1000000000)
+		{
+			$precision = 2;
+			$memory = round($memory / 1073741824, $precision);
+			$unit = lang('profiler_gigabytes');
+		}
+		elseif ($memory >= 1000000)
+		{
+			$precision = 1;
+			$memory = round($memory / 1048576, $precision);
+			$unit = lang('profiler_megabytes');
+		}
+		elseif ($memory >= 1000)
+		{
+			$memory = round($memory / 1024);
+			$unit = lang('profiler_kilobytes');
+		}
+		else
+		{
+			$unit = lang('profiler_bytes');
+		}
+
+		return number_format($memory, $precision).' '.$unit;
 	}
 
 	/**
@@ -172,6 +232,9 @@ class Database extends ProfilerSection {
 		{
 			$highlighted = str_replace($keyword, '<b>'.$keyword.'</b>', $highlighted);
 		}
+
+		// get rid of non-breaking spaces
+		$highlighted = str_replace('&nbsp;', ' ', $highlighted);
 
 		return $highlighted;
 	}

@@ -62,7 +62,7 @@ class EE_Template {
 	public $var_single           = array();		// "Single" variables
 	public $var_cond             = array();		// "Conditional" variables
 	public $var_pair             = array();		// "Paired" variables
-	public $global_vars          = array();		// This array can be set via the path.php file
+	public $global_vars          = array();		// This array can be set via the assign_to_config
 	public $embed_vars           = array();		// This array can be set via the {embed} tag
 	public $layout_vars          = array();		// This array can be set via the {layout} tag
 	public $segment_vars         = array();		// Array of segment variables
@@ -122,7 +122,7 @@ class EE_Template {
 			$this->sites[ee()->config->item('site_id')] = ee()->config->item('site_short_name');
 		}
 
-		if (ee()->config->item('template_debugging') === 'y' && ee()->session->userdata['group_id'] == 1)
+		if (ee()->config->item('show_profiler') === 'y' && ee()->session->userdata['group_id'] == 1)
 		{
 			$this->debugging = TRUE;
 
@@ -153,7 +153,7 @@ class EE_Template {
 		}
 
 		$this->log_item("URI: ".ee()->uri->uri_string);
-		$this->log_item("Path.php Template: {$template_group}/{$template}");
+		$this->log_item("Template: {$template_group}/{$template}");
 
 		$this->fetch_and_parse($template_group, $template, FALSE);
 
@@ -198,8 +198,6 @@ class EE_Template {
 		// Do not use a reference!
 
 		$this->cache_status = 'NO_CACHE';
-
-		$this->log_item("Retrieving Template");
 
 		$this->template = ($template_group != '' AND $template != '') ?
 			$this->fetch_template($template_group, $template, FALSE, $site_id) :
@@ -305,13 +303,11 @@ class EE_Template {
 		// Mark our template for better errors
 		$this->template = $this->markContext().$this->template;
 
-		// Parse manual variables and Snippets
-		// These are variables that can be set in the path.php file
+		// Parse assign_to_config variables and Snippets
 
 		if (count(ee()->config->_global_vars) > 0)
 		{
-			$this->log_item("Snippets (Keys): ".implode('|', array_keys(ee()->config->_global_vars)));
-			$this->log_item("Snippets (Values): ".trim(implode('|', ee()->config->_global_vars)));
+			$this->log_item("Config Assignments & Template Partials:", ee()->config->_global_vars);
 
 			foreach (ee()->config->_global_vars as $key => &$val)
 			{
@@ -352,8 +348,7 @@ class EE_Template {
 		// Parse {embed} tag variables
 		if ($is_embed === TRUE && count($this->embed_vars) > 0)
 		{
-			$this->log_item("Embed Variables (Keys): ".implode('|', array_keys($this->embed_vars)));
-			$this->log_item("Embed Variables (Values): ".trim(implode('|', $this->embed_vars)));
+			$this->log_item("Embed Variables:", $this->embed_vars);
 
 			foreach ($this->embed_vars as $key => $val)
 			{
@@ -369,8 +364,7 @@ class EE_Template {
 		// Parse {layout} tag variables
 		if ($is_layout === TRUE && count($this->layout_vars) > 0)
 		{
-			$this->log_item("layout Variables (Keys): ".implode('|', array_keys($this->layout_vars)));
-			$this->log_item("layout Variables (Values): ".trim(implode('|', $this->layout_vars)));
+			$this->log_item("layout Variables:", $this->layout_vars);
 
 			foreach ($this->layout_vars as $key => $val)
 			{
@@ -401,8 +395,6 @@ class EE_Template {
 		{
 			$this->template = str_replace(LD.$date_key.RD, $date_val, $this->template);
 		}
-
-		$this->log_item("Parse Date Format String Constants");
 
 		$dates = array();
 		// Template's Last Edit time {template_edit_date format="%Y %m %d %H:%i:%s"}
@@ -1027,8 +1019,6 @@ class EE_Template {
 					$matches[0] = ee()->functions->full_tag($matches[0]);
 				}
 
-				$this->log_item("Tag: ".$matches[0]);
-
 				$raw_tag = str_replace(array("\r\n", "\r", "\n", "\t"), " ", $matches[0]);
 
 				$tag_length = strlen($raw_tag);
@@ -1100,8 +1090,6 @@ class EE_Template {
 				if (FALSE !== $out_point)
 				{
 					// Assign the data contained between the opening/closing tag pair
-
-					$this->log_item("Closing Tag Found");
 
 					$block = substr($this->template, $data_start, $out_point);
 
@@ -1223,12 +1211,12 @@ class EE_Template {
 			$this->var_pair		= array();
 			$this->loop_count 	= 0;
 
-			$this->log_item("Parsing Tags in Template");
+			$this->log_item("Detecting Tags in Template");
 
 			// Run the template parser
 			$this->parse_tags();
 
-			$this->log_item("Processing Tags");
+			$this->log_item("Running Tags");
 
 			// Run the class/method handler
 			$this->process_tags();
@@ -1312,13 +1300,11 @@ class EE_Template {
 					else
 					{
 						$plugins[] = $this->tag_data[$i]['class'];
-						$this->log_item("Plugin Tag: ".ucfirst($this->tag_data[$i]['class']).'/'.$this->tag_data[$i]['method']);
 					}
 				}
 				else
 				{
 					$modules[] = $this->tag_data[$i]['class'];
-					$this->log_item("Module Tag: ".ucfirst($this->tag_data[$i]['class']).'/'.$this->tag_data[$i]['method']);
 				}
 			}
 		}
@@ -1344,16 +1330,12 @@ class EE_Template {
 
 		// Loop through the master array containing our extracted template data
 
-		$this->log_item("Beginning Final Tag Data Processing");
-
 		reset($this->tag_data);
 
 		for ($i = 0; $i < count($this->tag_data); $i++)
 		{
 			if ($this->tag_data[$i]['cache'] != 'CURRENT')
 			{
-				$this->log_item("Calling Class/Method: ".ucfirst($this->tag_data[$i]['class'])."/".$this->tag_data[$i]['method']);
-
 				/* ---------------------------------
 				/*  Plugin as Parameter
 				/*
@@ -1511,7 +1493,7 @@ class EE_Template {
 				else
 				{
 					$fqcn = $addon->getFrontendClass();
-					$this->log_item(" -> Class Called: ".$fqcn);
+					$this->log_item("Calling Tag: <code>{$this->tag_data[$i]['tag']}</code>");
 
 					$EE = new $fqcn();
 				}
@@ -1577,8 +1559,6 @@ class EE_Template {
 				the output of the class must be assigned to a variable called $this->return_data
 
 				*/
-
-				$this->log_item(" -> Method Called: ".$meth_name);
 
 				if ((strtolower($class_name) == strtolower($meth_name)) OR ($meth_name == '__construct'))
 				{
@@ -1972,8 +1952,6 @@ class EE_Template {
 	 */
 	public function parse_template_uri()
 	{
-		$this->log_item("Parsing Template URI");
-
 		// Does the first segment exist?  No?  Show the default template
 		if (ee()->uri->segment(1) === FALSE)
 		{
@@ -2377,8 +2355,6 @@ class EE_Template {
 			}
 		}
 
-		$this->log_item("Template Found");
-
 		// HTTP Authentication
 		if ($query->row('enable_http_auth') == 'y')
 		{
@@ -2408,8 +2384,6 @@ class EE_Template {
 		// Is the current user allowed to view this template?
 		if ($query->row('enable_http_auth') != 'y' && $query->row('no_auth_bounce')  != '')
 		{
-			$this->log_item("Determining Template Access Privileges");
-
 			if (ee()->session->userdata('group_id') != 1)
 			{
 				ee()->db->select('COUNT(*) as count');
@@ -2419,6 +2393,8 @@ class EE_Template {
 
 				if ($result->row('count') > 0)
 				{
+					$this->log_item("No Template Access Privileges");
+
 					if ($this->depth > 0)
 					{
 						return '';
@@ -3370,10 +3346,11 @@ class EE_Template {
 	 *
 	 * @access	public
 	 * @param	string
+	 * @param   mixed   string/array of detailed log data
 	 * @return	void
 	 */
 
-	function log_item($str)
+	function log_item($str, $details = FALSE)
 	{
 		if ($this->debugging !== TRUE)
 		{
@@ -3391,10 +3368,22 @@ class EE_Template {
 
 		if (function_exists('memory_get_usage'))
 		{
-			$memory_usage = ' / '.number_format(round(memory_get_usage()/1024/1024, 2),2).'MB';
+			$memory_usage = number_format(round(memory_get_usage()/1024/1024, 2),2);
 		}
 
-		$this->log[] = '('.number_format($time, 6). $memory_usage . ') '.$str;
+		$last = end($this->log);
+		$time = number_format($time, 6);
+		$time_gain = $time - $last['time'];
+		$memory_gain = $memory_usage - $last['memory'];
+
+		$this->log[] = array(
+			'time' => $time,
+			'memory' => $memory_usage,
+			'message' => $str,
+			'details' => ($details) ? var_export($details, TRUE) : $details,
+			'time_gain' => $time_gain,
+			'memory_gain' => $memory_gain
+		);
 	}
 
 	// --------------------------------------------------------------------
