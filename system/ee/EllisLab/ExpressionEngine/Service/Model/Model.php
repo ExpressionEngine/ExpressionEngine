@@ -736,6 +736,23 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 	}
 
 	/**
+	 * Alias an association
+	 *
+	 * @param String Associaton name to create an alias for
+	 * @param String Alias name
+	 */
+	public function alias($association, $as)
+	{
+		if (strpos($association, ':') === FALSE)
+		{
+			throw new \Exception('Cannot alias relationship.');
+		}
+
+		return $this->setAssociation($as, $this->getAssociation($association));
+	}
+
+
+	/**
 	 * Create a new query tied to this object
 	 *
 	 * @return QueryBuilder new query
