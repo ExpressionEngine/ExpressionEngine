@@ -845,8 +845,8 @@ CREATE TABLE `exp_member_groups` (
   `include_in_authorlist` char(1) NOT NULL DEFAULT 'n',
   `include_in_memberlist` char(1) NOT NULL DEFAULT 'y',
   `cp_homepage` varchar(20) NULL DEFAULT NULL,
-  `cp_homepage_channel` int(10) unsigned NULL DEFAULT NULL,
-  `cp_homepage_custom` varchar(255) NULL DEFAULT NULL,
+  `cp_homepage_channel` int(10) unsigned NOT NULL,
+  `cp_homepage_custom` varchar(100) NULL DEFAULT NULL,
   PRIMARY KEY (`group_id`,`site_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -969,7 +969,7 @@ CREATE TABLE `exp_members` (
   `rte_toolset_id` int(10) NOT NULL DEFAULT '0',
   `cp_homepage` varchar(20) NULL DEFAULT NULL,
   `cp_homepage_channel` varchar(255) NULL DEFAULT NULL,
-  `cp_homepage_custom` varchar(255) NULL DEFAULT NULL,
+  `cp_homepage_custom` varchar(100) NULL DEFAULT NULL,
   PRIMARY KEY (`member_id`),
   KEY `group_id` (`group_id`),
   KEY `unique_id` (`unique_id`),

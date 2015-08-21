@@ -67,7 +67,8 @@ class Updater {
 				'_export_mailing_lists',
 				'_remove_mailing_list_module_artifacts',
 				'_remove_cp_theme_config',
-				'_remove_show_button_cluster_column'
+				'_remove_show_button_cluster_column',
+				'_add_cp_homepage_columns'
 			)
 		);
 
@@ -1252,6 +1253,54 @@ class Updater {
 	private function _remove_show_button_cluster_column()
 	{
 		ee()->smartforge->drop_column('channels', 'show_button_cluster');
+	}
+
+	/**
+	 * Add columns to store CP homepage redirect information
+	 */
+	private function _add_cp_homepage_columns()
+	{
+		ee()->smartforge->add_column(
+			'member_groups',
+			array(
+				'cp_homepage' => array(
+					'type'		=> 'varchar(20)',
+					'null'		=> TRUE,
+					'default'	=> NULL
+				),
+				'cp_homepage_channel' => array(
+					'type'		=> 'int',
+					'unsigned'	=> TRUE,
+					'null'		=> FALSE,
+				),
+				'cp_homepage_custom' => array(
+					'type'		=> 'varchar(100)',
+					'null'		=> TRUE,
+					'default'	=> NULL
+				)
+			)
+		);
+
+		ee()->smartforge->add_column(
+			'members',
+			array(
+				'cp_homepage' => array(
+					'type'		=> 'varchar(20)',
+					'null'		=> TRUE,
+					'default'	=> NULL
+				),
+				'cp_homepage_channel' => array(
+					'type'		=> 'varchar(255)',
+					'null'		=> TRUE,
+					'default'	=> NULL
+				),
+				'cp_homepage_custom' => array(
+					'type'		=> 'varchar(100)',
+					'null'		=> TRUE,
+					'default'	=> NULL
+				)
+			)
+		);
 	}
 }
 /* END CLASS */
