@@ -32,7 +32,8 @@ class Channel extends StructureModel {
 			'type' => 'belongsTo',
 			'model' => 'ChannelFieldGroup',
 			'from_key' => 'field_group',
-			'to_key' => 'group_id'
+			'to_key' => 'group_id',
+			'weak' => TRUE,
 		),
 		'StatusGroup' => array(
 			'type' => 'belongsTo',
@@ -57,7 +58,8 @@ class Channel extends StructureModel {
 			'type' => 'hasOne',
 			'model' => 'Template',
 			'from_key' => 'live_look_template',
-			'to_key' => 'template_id'
+			'to_key' => 'template_id',
+			'weak' => TRUE,
 		),
 		'AssignedMemberGroups' => array(
 			'type' => 'hasAndBelongsToMany',
@@ -78,6 +80,12 @@ class Channel extends StructureModel {
 			'model' => 'CategoryGroup',
 			'from_key' => 'cat_group',
 			'to_key' => 'group_id'
+		),
+		'ChannelEntryAutosaves' => array(
+			'type' => 'hasMany',
+			'model' => 'ChannelEntryAutosave',
+			'key' => 'channel_id',
+			'to_key' => 'channel_id'
 		),
 	);
 

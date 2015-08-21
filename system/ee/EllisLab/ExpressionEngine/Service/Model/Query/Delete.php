@@ -229,6 +229,12 @@ class Delete extends Query {
 
 				$inherit = $this->delete_list[$parent];
 
+				// already dealing with a closure?
+				if ( ! is_array($this->delete_list[$to_model]))
+				{
+					continue;
+				}
+
 				if (isset($this->delete_list[$to_model][$to_name]))
 				{
 					$this->delete_list[$to_model] = $this->recursive($relation, $inherit);

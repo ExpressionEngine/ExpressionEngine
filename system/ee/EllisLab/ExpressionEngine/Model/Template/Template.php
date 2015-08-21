@@ -68,6 +68,16 @@ class Template extends Model {
 		),
 		'TemplateRoute' => array(
 			'type' => 'HasOne'
+		),
+		'DeveloperLogItems' => array(
+			'type' => 'hasMany',
+			'model' => 'DeveloperLog'
+		),
+		'Channel' => array(
+			'type' => 'belongsTo',
+			'to_key' => 'live_look_template',
+			'from_key' => 'template_id',
+			'weak' => TRUE,
 		)
 	);
 

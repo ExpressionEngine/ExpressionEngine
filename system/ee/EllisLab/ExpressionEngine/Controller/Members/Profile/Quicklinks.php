@@ -55,15 +55,20 @@ class Quicklinks extends Profile {
 
 		foreach ($this->quicklinks as $quicklink)
 		{
+			$edit_url = ee('CP/URL', 'members/profile/quicklinks/edit/' . ($quicklink['order'] ?: 1), $this->query_string);
+
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
-					'href' => ee('CP/URL', 'members/profile/quicklinks/edit/' . ($quicklink['order'] ?: 1), $this->query_string),
+					'href' => $edit_url,
 					'title' => strtolower(lang('edit'))
 				)
 			));
 
 			$links[] = array(
-				'name' => $quicklink['title'],
+				'name' => array(
+						'content' => $quicklink['title'],
+						'href' => $edit_url
+					),
 				$toolbar,
 				array(
 					'name' => 'selection[]',

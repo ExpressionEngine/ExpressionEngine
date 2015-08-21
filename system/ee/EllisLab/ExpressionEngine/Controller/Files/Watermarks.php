@@ -86,12 +86,16 @@ class Watermarks extends AbstractFilesController {
 		$data = array();
 		foreach ($watermarks as $watermark)
 		{
+			$edit_url = ee('CP/URL', 'files/watermarks/edit/'.$watermark->getId());
 			$data[] = array(
-				$watermark->wm_name,
+				array(
+					'content' => $watermark->wm_name,
+					'href' => $edit_url
+				),
 				$watermark->wm_type,
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'files/watermarks/edit/'.$watermark->getId()),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					)
 				)),

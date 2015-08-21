@@ -97,16 +97,20 @@ class Fields extends Members\Members {
 
 		foreach ($fields as $field)
 		{
+			$edit_url = ee('CP/URL', 'members/fields/edit/' . $field->m_field_id);
 			$toolbar = array('toolbar_items' => array(
-				'edit' => array(
-					'href' => ee('CP/URL', 'members/fields/edit/' . $field->m_field_id),
+			'edit' => array(
+					'href' => $edit_url,
 					'title' => strtolower(lang('edit'))
 				)
 			));
 
 			$columns = array(
 				'id' => $field->getId().form_hidden('order[]', $field->getId()),
-				'm_field_label' => $field->m_field_label,
+				'm_field_label' => array(
+						'content' => $field->m_field_label,
+						'href' => $edit_url
+						),
 				'm_field_name' => "<var>{{$field->m_field_name}}</var>",
 				'm_field_type' => $type_map[$field->m_field_type],
 				$toolbar,

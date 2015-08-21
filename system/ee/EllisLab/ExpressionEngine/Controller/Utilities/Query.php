@@ -290,7 +290,7 @@ class Query extends Utilities {
 		// Otherwise, we're coming from the SQL Manager
 		else
 		{
-			ee()->cp->set_breadcrumb(ee('CP/URL', 'utilities/query'), lang('sql_manager_abbr'));
+			ee()->cp->set_breadcrumb(ee('CP/URL', 'utilities/sql'), lang('sql_manager_abbr'));
 			ee()->view->cp_page_title = $table_name . ' ' . lang('table');
 		}
 

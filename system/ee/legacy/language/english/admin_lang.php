@@ -1139,10 +1139,6 @@ $lang = array(
 
 'update_and_return' => "Update and Finished",
 
-'template_debugging' => "Display Template Debugging?",
-
-"template_debugging_explanation" => "If enabled, Super Admins will see a list of details concerning the processing of the page.  Useful for debugging.",
-
 "view_throttle_log" => "View Throttle Log",
 
 "no_throttle_logs" => "No IPs are currently being throttled by the system.",

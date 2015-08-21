@@ -29,7 +29,7 @@ use EllisLab\ExpressionEngine\Library\Data\Entity;
  */
 abstract class SerializedType implements Type {
 
-	protected $data = array();
+	protected $data = '';
 
 	public static function create()
 	{

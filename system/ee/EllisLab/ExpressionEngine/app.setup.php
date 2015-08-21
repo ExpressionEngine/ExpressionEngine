@@ -174,6 +174,7 @@ return array(
 			return new Model\DataStore(
 				$ee->make('Database'),
 				$app->getModels(),
+				$app->forward('getModelDependencies'),
 				$ee->getPrefix()
 			);
 		},

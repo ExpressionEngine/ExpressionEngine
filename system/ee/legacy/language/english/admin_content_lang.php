@@ -424,6 +424,8 @@ $lang = array(
 
 'none' => 'None',
 
+'html_buttons' => 'HTML Buttons',
+
 'define_html_buttons' => 'HTML Formatting Button Definitions',
 
 'create_html_button' => 'Create HTML Button',

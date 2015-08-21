@@ -44,19 +44,39 @@ class Member extends Model {
 			'model' => 'SpecialtyTemplate',
 			'to_key' => 'last_author_id'
 		),
+		'UploadedFiles' => array(
+			'type' => 'hasMany',
+			'model' => 'File',
+			'to_key' => 'uploaded_by_member_id'
+		),
+		'ModifiedFiles' => array(
+			'type' => 'hasMany',
+			'model' => 'File',
+			'to_key' => 'modified_by_member_id'
+		),
 		'VersionedChannelEntries' => array(
 			'type' => 'hasMany',
 			'model' => 'ChannelEntryVersion',
 			'to_key' => 'author_id'
-		)
-	//	'ResetPassword'	=> array(
-	//		'type' => 'one_to_one'
-	//	),
-	//	'ChannelEntries' => array(
-	//		'type' => 'one_to_many',
-	//		'model' => 'ChannelEntry',
-	//		'to_key' => 'author_id'
-	//	)
+		),
+		'EmailConsoleCaches' => array(
+			'type' => 'hasMany',
+			'model' => 'EmailConsoleCache'
+		),
+		'SearchLogs' => array(
+			'type' => 'hasMany',
+			'model' => 'SearchLog'
+		),
+		'CpLogs' => array(
+			'type' => 'hasMany',
+			'model' => 'CpLog'
+		),
+		'ChannelEntryAutosaves' => array(
+			'type' => 'hasMany',
+			'model' => 'ChannelEntryAutosave',
+			'key' => 'author_id',
+			'to_key' => 'author_id'
+		),
 	);
 
 	// Properties

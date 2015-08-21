@@ -93,14 +93,18 @@ class Metaweblog_api_mcp {
 				)
 			);
 
+			$edit_url = ee('CP/URL', 'addons/settings/metaweblog_api/modify', array('id' => $metaweblog->metaweblog_id));
 			$columns = array(
 				$metaweblog->metaweblog_id,
-				$metaweblog->metaweblog_pref_name,
+				array(
+					'content' => $metaweblog->metaweblog_pref_name,
+					'href' => $edit_url
+				),
 				$api_url . '&id=' . $metaweblog->metaweblog_id,
 				array(
 					'toolbar_items' => array(
 						'edit' => array(
-							'href' => ee('CP/URL', 'addons/settings/metaweblog_api/modify', array('id' => $metaweblog->metaweblog_id)),
+							'href' => $edit_url,
 							'title' => lang('edit')
 						)
 					)

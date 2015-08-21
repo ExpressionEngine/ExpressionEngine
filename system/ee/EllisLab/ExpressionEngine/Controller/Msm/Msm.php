@@ -150,14 +150,18 @@ class Msm extends CP_Controller {
 					'content' => lang('offline')
 				);
 			}
+			$edit_url = ee('CP/URL', 'msm/edit/' . $site->site_id);
 			$column = array(
 				$site->site_id,
-				$site->site_label,
+				array(
+					'content' => $site->site_label,
+					'href' => $edit_url
+				),
 				'<var>{' . htmlentities($site->site_name, ENT_QUOTES) . '}</var>',
 				$status,
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'msm/edit/' . $site->site_id),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					)
 				)),

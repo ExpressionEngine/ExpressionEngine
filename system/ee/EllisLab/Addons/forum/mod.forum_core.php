@@ -9556,24 +9556,7 @@ class Forum_Core extends Forum {
 		}
 
 		// Parse and prep 'reply_results' conditionals
-		if(preg_match_all("/".LD."if reply_results.*?".RD.".*?".LD."\/if".RD."/s", $template, $rconds, PREG_SET_ORDER))
-		{
-			$marker = '4654487c320f2';
-
-			foreach ($rconds as $key => $val)
-			{
-				// replace 'reply_results' with a marker
-				$rconds[$key][1] = ee()->functions->prep_conditionals($rconds[$key][0], array('reply_results' => $marker), 'y');
-
-				// protect PHP tags within the conditional since we'll be evaluating this code later
-				// and don't want to interfere with their PHP parsing settings
-				$rconds[$key][1] = str_replace(array('<?', '?>'), array('&lt;?', '?&gt;'), $rconds[$key][1]);
-
-				// convert our prepped EE conditionals to PHP
-				$rconds[$key][1] = str_replace(array(LD.'/if'.RD, LD.'if:else'.RD), array('<?php endif; ?'.'>','<?php else : ?'.'>'), $rconds[$key][1]);
-				$rconds[$key][1] = preg_replace("/".preg_quote(LD)."((if:(else))*if)\s*(.*?)".preg_quote(RD)."/s", '<?php \\3if(\\4) : ?'.'>', $rconds[$key][1]);
-			}
-		}
+		preg_match_all("/".LD."if reply_results.*?".RD.".*?".LD."\/if".RD."/s", $template, $rconds, PREG_SET_ORDER);
 
 		ee()->load->helper('date');
 
@@ -9643,19 +9626,8 @@ class Forum_Core extends Forum {
 				foreach ($rconds as $rcond)
 				{
 					$num_replies = (isset($post_ids[$row['topic_id']])) ? count($post_ids[$row['topic_id']]) : 0;
-
-					$rcond[1] = str_replace($marker, $num_replies, $rcond[1]);
-
-					ob_start();
-
-					ee()->functions->evaluate($rcond[1]);
-
-					$result = ob_get_clean();
-
-					// turn PHP tags back to their old wily ways
-					$result = str_replace(array('&lt;?', '?&gt;'), array('<?', '?>'), $result);
-
-					$temp = str_replace($rcond[0], $result, $temp);
+					$rcond[1] = ee()->functions->prep_conditionals($rcond[0], array('reply_results' => $num_replies), 'y');
+					$temp = str_replace($rcond[0], $rcond[1], $temp);
 				}
 			}
 
