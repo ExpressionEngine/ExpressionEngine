@@ -536,7 +536,7 @@ $lang = array(
 
 'no_channels' => 'No Channels',
 
-'custom_url' => 'Custom URL',
+'custom_uri' => 'Custom URI &mdash; <i>e.g. members/groups</i>',
 
 "footer_helper_links" => "Access footer helper links",
 

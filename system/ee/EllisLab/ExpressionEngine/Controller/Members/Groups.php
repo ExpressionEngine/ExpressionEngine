@@ -566,7 +566,7 @@ class Groups extends Members\Members {
 								'entries_edit' => lang('edit_listing'),
 								'publish_form' => lang('publish_form').' &mdash; '.
 									form_dropdown('cp_homepage_channel', $allowed_channels, element('cp_homepage_channel', $values)),
-								'custom' => lang('custom_url'),
+								'custom' => lang('custom_uri'),
 							),
 							'value' => element('cp_homepage', $values, 'overview')
 						),

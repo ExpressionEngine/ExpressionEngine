@@ -24,6 +24,6 @@
 	<?php endforeach ?>
 <?php endif ?>
 <label class="choice block<?php if ($member->cp_homepage == 'custom'): ?> chosen<?php endif ?>">
-	<input type="radio" name="cp_homepage" value="custom"<?php if ($member->cp_homepage == 'custom'): ?> checked<?php endif ?>> <?=lang('custom_url')?>
+	<input type="radio" name="cp_homepage" value="custom"<?php if ($member->cp_homepage == 'custom'): ?> checked<?php endif ?>> <?=lang('custom_uri')?>
 </label>
 <input type="text" name="cp_homepage_custom" value="<?=$member->cp_homepage_custom?>">
