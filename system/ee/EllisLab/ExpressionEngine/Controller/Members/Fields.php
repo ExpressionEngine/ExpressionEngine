@@ -97,17 +97,21 @@ class Fields extends Members\Members {
 
 		foreach ($fields as $field)
 		{
+			$edit_url = ee('CP/URL', 'members/fields/edit/' . $field->m_field_id);
 			$toolbar = array('toolbar_items' => array(
-				'edit' => array(
-					'href' => ee('CP/URL', 'members/fields/edit/' . $field->m_field_id),
+			'edit' => array(
+					'href' => $edit_url,
 					'title' => strtolower(lang('edit'))
 				)
 			));
 
 			$columns = array(
 				'id' => $field->getId().form_hidden('order[]', $field->getId()),
-				'm_field_name' => $field->m_field_name,
-				'm_field_label' => "<var>{{$field->m_field_label}}</var>",
+				'm_field_label' => array(
+						'content' => $field->m_field_label,
+						'href' => $edit_url
+						),
+				'm_field_name' => "<var>{{$field->m_field_name}}</var>",
 				'm_field_type' => $type_map[$field->m_field_type],
 				$toolbar,
 				array(
@@ -139,12 +143,12 @@ class Fields extends Members\Members {
 		$base_url = $data['table']['base_url'];
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('member_fields') . ': <b>### ' . lang('member_fields') . '</b>');
-		ee()->cp->add_js_script('file', 'cp/v3/confirm_remove');
-		ee()->cp->add_js_script('file', 'cp/v3/member_field_reorder');
+		ee()->cp->add_js_script('file', 'cp/confirm_remove');
+		ee()->cp->add_js_script('file', 'cp/members/member_field_reorder');
 		ee()->cp->add_js_script('file', 'cp/sort_helper');
 		ee()->cp->add_js_script('plugin', 'ee_table_reorder');
 
-		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
+		$reorder_ajax_fail = ee('CP/Alert')->makeBanner('reorder-ajax-fail')
 			->asIssue()
 			->canClose()
 			->withTitle(lang('member_field_ajax_reorder_fail'))
@@ -182,7 +186,7 @@ class Fields extends Members\Members {
 		$field_names = $fields->pluck('field_label');
 		$fields->delete();
 
-		ee('Alert')->makeInline('fields')
+		ee('CP/Alert')->makeInline('fields')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('member_fields_removed_desc'))
@@ -388,7 +392,7 @@ class Fields extends Members\Members {
 				$field->save();
 				ee()->session->set_flashdata('field_id', $field->field_id);
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('member_field_saved'))
 					->addToBody(lang('member_field_saved_desc'))
@@ -400,7 +404,7 @@ class Fields extends Members\Members {
 			{
 				ee()->load->library('form_validation');
 				ee()->form_validation->_error_array = $result->renderErrors();
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('member_field_not_saved'))
 					->addToBody(lang('member_field_not_saved_desc'))
@@ -424,7 +428,7 @@ class Fields extends Members\Members {
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'members/fields/edit'), lang('custom_profile_fields'));
 
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/form_group'),
+			'file' => array('cp/form_group'),
 		));
 
 		ee()->cp->render('settings/form', $vars);

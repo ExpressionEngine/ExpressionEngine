@@ -2,7 +2,7 @@
 
 <h1><?=$cp_page_title?></h1>
 <?=form_open($form_url, 'class="settings"')?>
-<?=ee('Alert')->getAllInlines()?>
+<?=ee('CP/Alert')->getAllInlines()?>
 	<fieldset class="col-group last">
 		<div class="setting-txt col w-16">
 			<em><?=sprintf(lang('last_edit'), ee()->localize->human_time($template->edit_date), $author)?></em>

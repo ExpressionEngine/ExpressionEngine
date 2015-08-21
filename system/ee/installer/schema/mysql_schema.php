@@ -921,7 +921,6 @@ class EE_Schema {
 		$Q[] = "CREATE TABLE exp_layout_publish (
 			layout_id int(10) UNSIGNED NOT NULL auto_increment,
 			site_id int(4) UNSIGNED NOT NULL default 1,
-			member_group int(4) UNSIGNED NOT NULL,
 			channel_id int(4) UNSIGNED NOT NULL default 0,
 			layout_name varchar(50) NOT NULL,
 			field_layout text,
@@ -1075,6 +1074,7 @@ class EE_Schema {
 			server_path varchar(255) NOT NULL default '',
 			url varchar(100) NOT NULL,
 			allowed_types varchar(3) NOT NULL default 'img',
+			default_modal_view varchar(5) NOT NULL default 'list',
 			max_size varchar(16) NULL DEFAULT NULL,
 			max_height varchar(6) NULL DEFAULT NULL,
 			max_width varchar(6) NULL DEFAULT NULL,

@@ -212,6 +212,11 @@ $lang = array(
 
 'upload_allowed_types_opt_all' => 'All file types',
 
+'default_modal_view' => 'Default modal view?',
+'default_modal_view_desc' => 'Default view for this upload directory in the file picker modal.',
+'default_modal_view_list' => 'List',
+'default_modal_view_thumbnails' => 'Thumbnails',
+
 'file_limits' => 'File Limits',
 
 'upload_file_size' => 'File size',

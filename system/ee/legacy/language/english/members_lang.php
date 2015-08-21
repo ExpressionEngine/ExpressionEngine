@@ -14,7 +14,7 @@ $lang = array(
 
 "member_updated_desc" => "Member has been saved successfully.",
 
-"member_group_updated\w" => "Member Group saved",
+"member_group_updated" => "Member Group saved",
 
 "member_group_updated_desc" => "Member Group has been saved successfully.",
 
@@ -207,11 +207,11 @@ $lang = array(
 
 "can_send_private_messages" => "Access personal messages",
 
-"can_send_private_messages_desc" => "When set to yes, users assigned to this group may send and receive personal messages.",
+"can_send_private_messages_desc" => "When set to <b>yes</b>, users assigned to this group may send and receive personal messages.",
 
 "can_attach_in_private_messages" => "Allow attachments",
 
-"can_attach_in_private_messages_desc" => "When set to yes, users assigned to this group may attach files to personal messages.",
+"can_attach_in_private_messages_desc" => "When set to <b>yes</b>, users assigned to this group may attach files to personal messages.",
 
 "fieldlabel" => "Field Label",
 
@@ -239,7 +239,7 @@ $lang = array(
 
 "exclude_from_moderation" => "Bypass moderation",
 
-"exclude_from_moderation_desc" => "When set to yes, users assigned to this group may comment without being restricted by the default comment settings.",
+"exclude_from_moderation_desc" => "When set to <b>yes</b>, users assigned to this group may comment without being restricted by the default comment settings.",
 
 "moderation_actions" => "Moderation actions",
 
@@ -307,9 +307,13 @@ $lang = array(
 
 "join_date" => "Join Date",
 
+"joined" => "Joined",
+
 "last_visit" => "Last Visit",
 
 "member_group" => "Member Group",
+
+"dates" => "Dates",
 
 "member_group_desc" => "Assign this user access permissions.",
 
@@ -401,7 +405,7 @@ $lang = array(
 
 "user_banning" => "Ban Condition Management",
 
-"ban_preferences_updated" => "Banning Preferences Updated",
+"ban_settings_updated" => "Banned Settings Updated",
 
 "ip_address_banning" => "IP Addresses",
 
@@ -470,13 +474,13 @@ $lang = array(
 
 "can_view_profiles" => "Access public profiles",
 
-"can_view_profiles_desc" => "When set to yes, users assigned to this group may view public profiles of other members.",
+"can_view_profiles_desc" => "When set to <b>yes</b>, users assigned to this group may view public profiles of other members.",
 
 "can_edit_html_buttons" => "Can edit own HTML formatting buttons",
 
 'can_delete_self' => "Delete account",
 
-'can_delete_self_desc' => "When set to yes, users assigned to this group may delete their own accounts without approval",
+'can_delete_self_desc' => "When set to <b>yes</b>, users assigned to this group may delete their own accounts without approval",
 
 'mbr_delete_notify_emails' => 'Recipient(s) for delete notifications',
 
@@ -494,7 +498,7 @@ $lang = array(
 
 "can_post_comments" => "Submit comments",
 
-"can_post_comments_desc" => "When set to yes, users assigned to this group may submit comments to the website.",
+"can_post_comments_desc" => "When set to <b>yes</b>, users assigned to this group may submit comments to the website.",
 
 "comment_actions" => "Moderation actions",
 
@@ -514,7 +518,7 @@ $lang = array(
 
 "can_access_cp" => "Access control panel",
 
-"can_access_cp_desc" => "When set to yes, users assigned to this group may access the control panel.",
+"can_access_cp_desc" => "When set to <b>yes</b>, users assigned to this group may access the control panel.",
 
 "footer_helper_links" => "Access footer helper links",
 
@@ -592,17 +596,19 @@ $lang = array(
 
 "can_admin_templates" => "Can administrate template groups and templates",
 
+"can_admin_templates_desc" => "When set to <b>yes</b>, users assigned to this group may manage template groups and templates.",
+
 "can_admin_design" => "Manage general design settings",
 
-"can_admin_design_desc" => "When set to yes, users assigned to this group may manage content and design settings.",
+"can_admin_design_desc" => "When set to <b>yes</b>, users assigned to this group may manage content and design settings.",
 
 "can_admin_modules" => "Install or remove add-ons",
 
-"can_admin_modules_desc" => "When set to yes, users assigned to this group may install and remove add-ons.",
+"can_admin_modules_desc" => "When set to <b>yes</b>, users assigned to this group may install and remove add-ons.",
 
 "cp_email_privs" => "Control Panel Email Privileges",
 
-"can_send_email_desc" => "When set to yes, users assigned to this group may send emails to other members via the system.",
+"can_send_email_desc" => "When set to <b>yes</b>, users assigned to this group may send emails to other members via the system.",
 
 "can_send_email" => "Email other members",
 
@@ -614,7 +620,7 @@ $lang = array(
 
 "can_search" => "Access search utility",
 
-"can_search_desc" => "When set to yes, users assigned to this group may use the search functionality of the website.",
+"can_search_desc" => "When set to <b>yes</b>, users assigned to this group may use the search functionality of the website.",
 
 "search_flood_control" => "Search limit (in seconds)",
 
@@ -680,17 +686,19 @@ $lang = array(
 
 "addon_access" => "Add-On Access Permissions",
 
+"addons_access" => "Allowed add-on access",
+
+"addons_access_desc" => "Users can access all of the selected add-ons.",
+
 "tools" => "Tools",
 
 "access_tools" => "Access Tools sections",
 
 "access_tools_desc" => "Users can access all of the selected tools sections.",
 
-"category_actions",
-"Categories",
+"category_actions" => "Categories",
 
-"category_actions_desc",
-"Users may perform all selected actions.",
+"category_actions_desc" => "Users may perform all selected actions.",
 
 //----------------------------
 // Member fields
@@ -790,7 +798,7 @@ $lang = array(
 
 'can_send_bulletins' => "Access bulletins",
 
-'can_send_bulletins_desc' => "When set to yes, users assigned to this group may send and receive bulletins.",
+'can_send_bulletins_desc' => "When set to <b>yes</b>, users assigned to this group may send and receive bulletins.",
 
 'group_description' => "Description",
 

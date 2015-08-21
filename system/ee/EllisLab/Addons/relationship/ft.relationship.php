@@ -479,7 +479,6 @@ class Relationship_ft extends EE_Fieldtype {
 
 		if (REQ == 'CP')
 		{
-			$css_link = ee()->view->head_link('css/relationship.css');
 			ee()->cp->add_js_script(array(
 				'plugin' => 'ee_interact.event',
 				'file' => 'fields/relationship/cp',
@@ -489,7 +488,6 @@ class Relationship_ft extends EE_Fieldtype {
 		// Channel Form
 		else
 		{
-			$css_link = '<link rel="stylesheet" href="'.URL_THEMES.'cp/default/css/relationship.css" type="text/css" media="screen" />'.PHP_EOL;
 			ee()->cp->add_js_script(array(
 				'plugin' => 'ee_interact.event',
 				'file' => 'cp/relationships',
@@ -497,30 +495,28 @@ class Relationship_ft extends EE_Fieldtype {
 			));
 		}
 
-		ee()->cp->add_to_head($css_link);
-
 		if ($entry_id)
 		{
-			$parents = ee('Model')->get('ChannelEntry', $entry_id)
+			$children = ee('Model')->get('ChannelEntry', $entry_id)
 				->first()
-				->Parents
+				->Children
 				->indexBy('entry_id');
 		}
 		else
 		{
-			$parents = array();
+			$children = array();
 		}
 
 		$entries = $entries->indexBy('entry_id');
-		$parent_ids = array_keys($parents);
+		$children_ids = array_keys($children);
 		$entry_ids = array_keys($entries);
 
 		foreach ($selected as $chosen)
 		{
-			if ( ! in_array($chosen, $parent_ids)
+			if ( ! in_array($chosen, $children_ids)
 				&& in_array($chosen, $entry_ids))
 			{
-				$parents[$chosen] = $entries[$chosen];
+				$children[$chosen] = $entries[$chosen];
 			}
 		}
 
@@ -530,9 +526,9 @@ class Relationship_ft extends EE_Fieldtype {
 
 		foreach ($order as $key => $index)
 		{
-			if (in_array($key, $parent_ids))
+			if (in_array($key, $children_ids))
 			{
-				$related[] = $parents[$key];
+				$related[] = $children[$key];
 			}
 		}
 

@@ -100,7 +100,7 @@ class Throttle extends Logs {
 
 			if ($count > 10)
 			{
-				$filters = ee('Filter')
+				$filters = ee('CP/Filter')
 					->add('Perpage', $count, 'all_throttle_logs');
 				ee()->view->filters = $filters->render($this->base_url);
 				$this->params = $filters->values();

@@ -47,7 +47,7 @@ class Simple_commerce_mcp {
 	{
 		$this->base_url = BASE.AMP.'C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=simple_commerce';
 
-		$this->sidebar = ee('Sidebar')->make();
+		$this->sidebar = ee('CP/Sidebar')->make();
 
 		$this->items_nav = $this->sidebar->addHeader(lang('items'), ee('CP/URL', 'addons/settings/simple_commerce'))
 			->withButton(lang('new'), ee('CP/URL', 'addons/settings/simple_commerce/create-item'));
@@ -64,7 +64,7 @@ class Simple_commerce_mcp {
 			'search_button_value' => lang('search_commerce'),
 			'toolbar_items' => array(
 				'settings' => array(
-					'href' => ee('CP/URL', 'settings/commerce'),
+					'href' => ee('CP/URL', 'addons/settings/simple_commerce/settings'),
 					'title' => lang('settings')
 				)
 			)
@@ -110,7 +110,7 @@ class Simple_commerce_mcp {
 		);
 
 		$items = ee('Model')->get('simple_commerce:Item');
-		$total_rows = $items->all()->count();
+		$total_rows = $items->count();
 
 		$items = $items->order($sort_map[$table->sort_col], $table->sort_dir)
 			->limit($table->config['limit'])
@@ -176,7 +176,7 @@ class Simple_commerce_mcp {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('items') . ': <b>### ' . lang('items') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		return array(
@@ -201,7 +201,7 @@ class Simple_commerce_mcp {
 			{
 				ee('Model')->get('simple_commerce:Item', $item_ids)->delete();
 
-				ee('Alert')->makeInline('items-table')
+				ee('CP/Alert')->makeInline('items-table')
 					->asSuccess()
 					->withTitle(lang('items_removed'))
 					->addToBody(sprintf(lang('items_removed_desc'), count($item_ids)))
@@ -345,7 +345,7 @@ class Simple_commerce_mcp {
 
 				if ($result->isNotValid())
 				{
-					ee('Alert')->makeInline('item-form-'.$entry_id)
+					ee('CP/Alert')->makeInline('item-form-'.$entry_id)
 						->asIssue()
 						->withTitle(lang('item_not_created'))
 						->addToBody(lang('item_not_created_desc'))
@@ -377,7 +377,7 @@ class Simple_commerce_mcp {
 
 				ee()->session->set_flashdata('highlight_id', $item_ids);
 
-				ee('Alert')->makeInline('items-table')
+				ee('CP/Alert')->makeInline('items-table')
 					->asSuccess()
 					->withTitle(lang('item_created'))
 					->addToBody(lang('item_created_desc'))
@@ -617,7 +617,7 @@ class Simple_commerce_mcp {
 		);
 
 		$purchases = ee('Model')->get('simple_commerce:Purchase');
-		$total_rows = $purchases->all()->count();
+		$total_rows = $purchases->count();
 
 		$purchases = $purchases->order($sort_map[$table->sort_col], $table->sort_dir)
 			->limit($table->config['limit'])
@@ -675,7 +675,7 @@ class Simple_commerce_mcp {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('purchases') . ': <b>### ' . lang('purchases') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		return array(
@@ -700,7 +700,7 @@ class Simple_commerce_mcp {
 			{
 				ee('Model')->get('simple_commerce:Purchase', $purchase_ids)->delete();
 
-				ee('Alert')->makeInline('purchases-table')
+				ee('CP/Alert')->makeInline('purchases-table')
 					->asSuccess()
 					->withTitle(lang('purchases_removed'))
 					->addToBody(sprintf(lang('purchases_removed_desc'), count($purchase_ids)))
@@ -772,7 +772,7 @@ class Simple_commerce_mcp {
 					ee()->session->set_flashdata('highlight_id', $purchase->getId());
 				}
 
-				ee('Alert')->makeInline('purchases-table')
+				ee('CP/Alert')->makeInline('purchases-table')
 					->asSuccess()
 					->withTitle(lang('purchase_'.$alert_key))
 					->addToBody(sprintf(lang('purchase_'.$alert_key.'_desc'), $purchase->Item->getId())) // TODO: change to item title when relationships work
@@ -783,7 +783,7 @@ class Simple_commerce_mcp {
 			else
 			{
 				$vars['errors'] = $result;
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('purchase_not_'.$alert_key))
 					->addToBody(lang('purchase_not_'.$alert_key.'_desc'))
@@ -793,7 +793,7 @@ class Simple_commerce_mcp {
 
 		$vars['sections'] = array(
 			array(
-				ee('Alert')->makeInline()
+				ee('CP/Alert')->makeInline()
 					->asWarning()
 					->addToBody(lang('purchase_create_warn'))
 					->cannotClose()
@@ -899,7 +899,7 @@ class Simple_commerce_mcp {
 			lang('sa'),
 		));
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/date_picker'),
+			'file' => array('cp/date_picker'),
 		));
 
 		$this->purchases_nav->isActive();
@@ -937,7 +937,7 @@ class Simple_commerce_mcp {
 		);
 
 		$email_templates = ee('Model')->get('simple_commerce:EmailTemplate');
-		$total_rows = $email_templates->all()->count();
+		$total_rows = $email_templates->count();
 
 		$email_templates = $email_templates->order($sort_map[$table->sort_col], $table->sort_dir)
 			->limit($table->config['limit'])
@@ -988,7 +988,7 @@ class Simple_commerce_mcp {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('email_templates') . ': <b>### ' . lang('email_templates') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		return array(
@@ -1013,7 +1013,7 @@ class Simple_commerce_mcp {
 			{
 				ee('Model')->get('simple_commerce:EmailTemplate', $template_ids)->delete();
 
-				ee('Alert')->makeInline('email-templates-table')
+				ee('CP/Alert')->makeInline('email-templates-table')
 					->asSuccess()
 					->withTitle(lang('email_templates_removed'))
 					->addToBody(sprintf(lang('email_templates_removed_desc'), count($template_ids)))
@@ -1085,7 +1085,7 @@ class Simple_commerce_mcp {
 					ee()->session->set_flashdata('highlight_id', $email_template->getId());
 				}
 
-				ee('Alert')->makeInline('email-templates-table')
+				ee('CP/Alert')->makeInline('email-templates-table')
 					->asSuccess()
 					->withTitle(lang('email_template_'.$alert_key))
 					->addToBody(sprintf(lang('email_template_'.$alert_key.'_desc'), $email_template->email_name))
@@ -1096,7 +1096,7 @@ class Simple_commerce_mcp {
 			else
 			{
 				$vars['errors'] = $result;
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('email_template_not_'.$alert_key))
 					->addToBody(lang('email_template_not_'.$alert_key.'_desc'))
@@ -1175,6 +1175,184 @@ class Simple_commerce_mcp {
 			'breadcrumb' => array(
 				ee('CP/URL', 'addons/settings/simple_commerce/email-templates')->compile() => lang('email_templates')
 			),
+			'body' => ee('View')->make('simple_commerce:form')->render($vars),
+			'sidebar' => $this->sidebar
+		);
+	}
+
+	/**
+	 * Settings
+	 */
+	public function settings()
+	{
+		$base_url = ee('CP/URL', 'addons/settings/simple_commerce/settings');
+
+		$vars = array(
+			'heading' => lang('commerce_settings'),
+			'cp_page_title' => lang('commerce_settings'),
+			'base_url' => $base_url,
+			'ajax_validate' => TRUE,
+			'save_btn_text' => 'btn_save_settings',
+			'save_btn_text_working' => 'btn_saving'
+		);
+
+		$base = reduce_double_slashes(str_replace('/public_html', '', SYSPATH).'/user/encryption/');
+
+		$vars['sections'] = array(
+			array(
+				ee('CP/Alert')->makeInline('ipn-notice')
+					->asWarning()
+					->cannotClose()
+					->addToBody(sprintf(lang('commerce_ipn_notice'), 'https://developer.paypal.com/webapps/developer/docs/classic/ipn/integration-guide/IPNIntro/'))
+					->render(),
+				array(
+					'title' => 'commerce_ipn_url',
+					'desc' => 'commerce_ipn_url_desc',
+					'fields' => array(
+						'sc_api_url' => array(
+							'type' => 'text',
+							'value' => ee()->functions->fetch_site_index(0,0).QUERY_MARKER.'ACT='.ee()->cp->fetch_action_id('Simple_commerce', 'incoming_ipn'),
+							'disabled' => TRUE
+						)
+					)
+				),
+				array(
+					'title' => 'commerce_paypal_email',
+					'desc' => 'commerce_paypal_email_desc',
+					'fields' => array(
+						'sc_paypal_account' => array('type' => 'text')
+					)
+				),
+				array(
+					'title' => 'commerce_encrypt_paypal',
+					'desc' => 'commerce_encrypt_paypal_desc',
+					'fields' => array(
+						'sc_encrypt_buttons' => array('type' => 'yes_no')
+					)
+				),
+				array(
+					'title' => 'commerce_paypal_cert_id',
+					'desc' => 'commerce_paypal_cert_id_desc',
+					'fields' => array(
+						'sc_certificate_id' => array(
+							'type' => 'text',
+							'value' => (ee()->config->item('sc_certificate_id') === FALSE) ? '' : ee()->config->item('sc_certificate_id')
+						)
+					)
+				),
+				array(
+					'title' => 'commerce_cert_path',
+					'desc' => 'commerce_cert_path_desc',
+					'fields' => array(
+						'sc_public_certificate' => array(
+							'type' => 'text',
+							'value' => (ee()->config->item('sc_public_certificate') === FALSE OR ee()->config->item('sc_public_certificate') == '') ? $base.'public_certificate.pem' : ee()->config->item('sc_public_certificate')
+						)
+					)
+				),
+				array(
+					'title' => 'commerce_key_path',
+					'desc' => 'commerce_key_path_desc',
+					'fields' => array(
+						'sc_private_key' => array(
+							'type' => 'text',
+							'value' => (ee()->config->item('sc_private_key') === FALSE OR ee()->config->item('sc_private_key') == '') ? $base.'private_key.pem' : ee()->config->item('sc_private_key')
+						)
+					)
+				),
+				array(
+					'title' => 'commerce_paypal_cert_path',
+					'desc' => 'commerce_paypal_cert_path_desc',
+					'fields' => array(
+						'sc_paypal_certificate' => array(
+							'type' => 'text',
+							'value' => (ee()->config->item('sc_paypal_certificate') === FALSE OR ee()->config->item('sc_paypal_certificate') == '') ? $base.'paypal_certificate.pem' : ee()->config->item('sc_paypal_certificate')
+						)
+					)
+				),
+				array(
+					'title' => 'commerce_temp_path',
+					'desc' => 'commerce_temp_path_desc',
+					'fields' => array(
+						'sc_temp_path' => array('type' => 'text')
+					)
+				)
+			)
+		);
+
+		if ( ! empty($_POST))
+		{
+			$result = ee('Validation')->make(array(
+				'sc_paypal_account'     => 'email',
+				'sc_encrypt_buttons'    => 'enum[y,n]',
+				'sc_public_certificate' => 'fileExists',
+				'sc_private_key'        => 'fileExists',
+				'sc_paypal_certificate' => 'fileExists',
+				'sc_temp_path'          => 'fileExists'
+			))->validate($_POST);
+
+			if (ee()->input->is_ajax_request())
+			{
+				$field = ee()->input->post('ee_fv_field');
+
+				if ($result->hasErrors($field))
+				{
+					return array(
+						'ajax' => TRUE,
+						'body' => array('error' => $result->renderError($field))
+					);
+				}
+				else
+				{
+					return array(
+						'ajax' => TRUE,
+						'body' => array('success')
+					);
+				}
+			}
+
+			if ($result->isValid())
+			{
+				// Unset API URL
+				unset($vars['sections'][0][1]);
+
+				$fields = array();
+
+				// Make sure we're getting only the fields we asked for
+				foreach ($vars['sections'] as $settings)
+				{
+					foreach ($settings as $setting)
+					{
+						foreach ($setting['fields'] as $field_name => $field)
+						{
+							$fields[$field_name] = ee()->input->post($field_name);
+						}
+					}
+				}
+
+				ee()->config->update_site_prefs($fields);
+
+				ee('CP/Alert')->makeInline('shared-form')
+						->asSuccess()
+						->withTitle(lang('preferences_updated'))
+						->addToBody(lang('preferences_updated_desc'))
+						->defer();
+
+				ee()->functions->redirect($base_url);
+			}
+			else
+			{
+				$vars['errors'] = $result;
+				ee('CP/Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('settings_save_error'))
+					->addToBody(lang('settings_save_error_desc'))
+					->now();
+			}
+		}
+
+		return array(
+			'heading' => $vars['cp_page_title'],
 			'body' => ee('View')->make('simple_commerce:form')->render($vars),
 			'sidebar' => $this->sidebar
 		);

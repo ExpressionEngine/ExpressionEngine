@@ -45,7 +45,7 @@ class Edit extends AbstractPublishController {
 
 		$vars = array();
 		$base_url = ee('CP/URL', 'publish/edit');
-		$channel_name = '';
+		$channel_title = '';
 
 		$entry_listing = ee('CP/EntryListing', ee()->input->get_post('search'));
 		$entries = $entry_listing->getEntries();
@@ -88,19 +88,19 @@ class Edit extends AbstractPublishController {
 		$table->setNoResultsText(lang('no_entries_exist'));
 
 		$channels = ee('Model')->get('Channel')
-			->fields('channel_id', 'channel_name')
+			->fields('channel_id', 'channel_title')
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
 		if (count($channels) == 1)
 		{
 			$channel_id = $channels[0]->channel_id;
-			$channel_name = $channels[0]->channel_name;
+			$channel_title = $channels[0]->channel_title;
 		}
 
 		if ($channel_id)
 		{
-			$vars['create_button'] = '<a class="btn tn action" href="'.ee('CP/URL', 'publish/create/' . $channel_id).'">'.sprintf(lang('btn_create_new_entry_in_channel'), $channel_name).'</a>';
+			$vars['create_button'] = '<a class="btn tn action" href="'.ee('CP/URL', 'publish/create/' . $channel_id).'">'.sprintf(lang('btn_create_new_entry_in_channel'), $channel_title).'</a>';
 		}
 		else
 		{
@@ -122,7 +122,8 @@ class Edit extends AbstractPublishController {
 		{
 			$autosaves = $entry->Autosaves->count();
 
-			$title = htmlentities($entry->title, ENT_QUOTES);
+			$edit_link = ee('CP/URL', 'publish/edit/entry/' . $entry->entry_id);
+			$title = '<a href="' . $edit_link . '">' . htmlentities($entry->title, ENT_QUOTES). '</a>';
 
 			if ($autosaves)
 			{
@@ -154,7 +155,7 @@ class Edit extends AbstractPublishController {
 			}
 
 			$toolbar['edit'] = array(
-				'href' => ee('CP/URL', 'publish/edit/entry/' . $entry->entry_id),
+				'href' => $edit_link,
 				'title' => lang('edit')
 			);
 
@@ -211,7 +212,7 @@ class Edit extends AbstractPublishController {
 		ee()->javascript->set_global('lang.remove_confirm', lang('entry') . ': <b>### ' . lang('entries') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/confirm_remove',
 			),
 		));
 
@@ -222,7 +223,7 @@ class Edit extends AbstractPublishController {
 		}
 		else
 		{
-			ee()->view->cp_heading = sprintf(lang('all_channel_entries'), $channel_name);
+			ee()->view->cp_heading = sprintf(lang('all_channel_entries'), $channel_title);
 		}
 
 		ee()->cp->render('publish/edit/index', $vars);
@@ -260,7 +261,8 @@ class Edit extends AbstractPublishController {
 			'form_url' => ee('CP/URL', 'publish/edit/entry/' . $id),
 			'form_attributes' => $form_attributes,
 			'errors' => new \EllisLab\ExpressionEngine\Service\Validation\Result,
-			'button_text' => lang('btn_publish')
+			'button_text' => lang('btn_publish'),
+			'extra_publish_controls' => $entry->Channel->extra_publish_controls
 		);
 
 		$version_id = ee()->input->get('version');
@@ -325,7 +327,7 @@ class Edit extends AbstractPublishController {
 				{
 					$entry->saveVersion();
 
-					ee('Alert')->makeInline('entry-form')
+					ee('CP/Alert')->makeInline('entry-form')
 						->asSuccess()
 						->withTitle(lang('revision_saved'))
 						->addToBody(sprintf(lang('revision_saved_desc'), $entry->Versions->count() + 1, $entry->title))
@@ -338,13 +340,13 @@ class Edit extends AbstractPublishController {
 					$entry->edit_date = ee()->localize->now;
 					$entry->save();
 
-					ee('Alert')->makeInline('entry-form')
+					ee('CP/Alert')->makeInline('entry-form')
 						->asSuccess()
 						->withTitle(lang('edit_entry_success'))
 						->addToBody(sprintf(lang('edit_entry_success_desc'), $entry->title))
 						->defer();
 
-					ee()->functions->redirect(ee('CP/URL', 'publish/edit/', array('channel_id' => $entry->channel_id)));
+					ee()->functions->redirect(ee('CP/URL', 'publish/edit/', array('filter_by_channel' => $entry->channel_id)));
 				}
 			}
 			else
@@ -353,7 +355,7 @@ class Edit extends AbstractPublishController {
 				// Hacking
 				ee()->load->library('form_validation');
 				ee()->form_validation->_error_array = $result->renderErrors();
-				ee('Alert')->makeInline('entry-form')
+				ee('CP/Alert')->makeInline('entry-form')
 					->asIssue()
 					->withTitle(lang('edit_entry_error'))
 					->addToBody(lang('edit_entry_error_desc'))
@@ -381,7 +383,7 @@ class Edit extends AbstractPublishController {
 				'ee_filebrowser',
 				'ee_fileuploader',
 			),
-			'file' => array('cp/v3/publish')
+			'file' => array('cp/channel/publish')
 		));
 
 		ee()->view->cp_breadcrumbs = array(
@@ -415,7 +417,7 @@ class Edit extends AbstractPublishController {
 
 		$entries->delete();
 
-		ee('Alert')->makeInline('entries-form')
+		ee('CP/Alert')->makeInline('entries-form')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('entries_removed_desc'))

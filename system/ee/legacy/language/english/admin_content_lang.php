@@ -623,7 +623,7 @@ $lang = array(
 
 'custom_field_created' => 'Custom Field Created',
 
-'no_field_groups' => 'There are no custom fields in this group',
+'no_field_groups' => 'No field groups found',
 
 'delete_field' => 'Delete Field',
 

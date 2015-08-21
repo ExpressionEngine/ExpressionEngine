@@ -30,11 +30,11 @@ feature 'Statistics' do
 
 	it "can sort by count" do
 		@page.all('a.sort')[1].click
-		@page.counts.map {|count| count.text}.should == ["10", "1", "1"]
+		@page.counts.map {|count| count.text}.should == ["1", "1", "10"]
 		@page.content_table.find('th.highlight').text.should eq 'Record Count'
 
 		@page.all('a.sort')[1].click
-		@page.counts.map {|count| count.text}.should == ["1", "1", "10"]
+		@page.counts.map {|count| count.text}.should == ["10", "1", "1"]
 		@page.content_table.find('th.highlight').text.should eq 'Record Count'
 	end
 

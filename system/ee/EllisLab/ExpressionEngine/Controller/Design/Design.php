@@ -129,7 +129,7 @@ class Design extends AbstractDesignController {
 		ee()->javascript->set_global('lang.remove_confirm', lang('template') . ': <b>### ' . lang('templates') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/confirm_remove',
 				'cp/design/manager'
 			),
 		));
@@ -161,7 +161,7 @@ class Design extends AbstractDesignController {
 
 		$templates->delete();
 
-		ee('Alert')->makeInline('shared-form')
+		ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('templates_removed_desc'))

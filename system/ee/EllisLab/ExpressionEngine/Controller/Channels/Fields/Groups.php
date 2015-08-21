@@ -4,7 +4,7 @@ namespace EllisLab\ExpressionEngine\Controller\Channels\Fields;
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
 use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
-use EllisLab\ExpressionEngine\Module\Channel\Model\ChannelFieldGroup;
+use EllisLab\ExpressionEngine\Model\Channel\ChannelFieldGroup;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -77,7 +77,7 @@ class Groups extends AbstractChannelsController {
 		ee()->javascript->set_global('lang.remove_confirm', lang('group') . ': <b>### ' . lang('groups') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/confirm_remove',
 			),
 		));
 
@@ -115,7 +115,7 @@ class Groups extends AbstractChannelsController {
 			{
 				$field_group->save();
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('create_field_group_success'))
 					->addToBody(sprintf(lang('create_field_group_success_desc'), $field_group->group_name))
@@ -127,7 +127,8 @@ class Groups extends AbstractChannelsController {
 			}
 			else
 			{
-				ee('Alert')->makeInline('shared-form')
+				$vars['errors'] = $result;
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('create_field_group_error'))
 					->addToBody(lang('create_field_group_error_desc'))
@@ -175,7 +176,7 @@ class Groups extends AbstractChannelsController {
 			{
 				$field_group->save();
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('edit_field_group_success'))
 					->addToBody(sprintf(lang('edit_field_group_success_desc'), $field_group->group_name))
@@ -185,7 +186,8 @@ class Groups extends AbstractChannelsController {
 			}
 			else
 			{
-				ee('Alert')->makeInline('shared-form')
+				$vars['errors'] = $result;
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('edit_field_group_error'))
 					->addToBody(lang('edit_field_group_error_desc'))
@@ -289,7 +291,7 @@ class Groups extends AbstractChannelsController {
 		$group_names = $field_groups->pluck('group_name');
 
 		$field_groups->delete();
-		ee('Alert')->makeInline('field-groups')
+		ee('CP/Alert')->makeInline('field-groups')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('field_groups_removed_desc'))

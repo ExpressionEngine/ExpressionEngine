@@ -99,7 +99,7 @@ class Subscriptions extends Profile {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('subscriptions') . ': <b>### ' . lang('subscriptions') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		ee()->view->base_url = $this->base_url;
@@ -146,7 +146,11 @@ class Subscriptions extends Profile {
 			}
 		}
 
-		ee()->view->set_message('success', lang('unsubscribe_success'), $cp_message, TRUE);
+		ee('CP/Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang('unsubscribe_success'))
+			->addToBody($cp_message)
+			->defer();
 		ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
 	}
 

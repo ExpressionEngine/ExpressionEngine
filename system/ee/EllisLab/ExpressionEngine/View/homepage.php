@@ -100,5 +100,4 @@
 
 <?php
 
-/* End of file homepage.php */
-/* Location: ./themes/cp/default/homepage.php */
+

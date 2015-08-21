@@ -137,7 +137,7 @@ class EntryListing {
 		$this->category_filter = $this->createCategoryFilter();
 		$this->status_filter = $this->createStatusFilter();
 
-		$this->filters = ee('Filter')
+		$this->filters = ee('CP/Filter')
 			->add($this->channel_filter)
 			->add($this->category_filter)
 			->add($this->status_filter)
@@ -243,7 +243,7 @@ class EntryListing {
 		{
 			$channel_filter_options[$channel->channel_id] = $channel->channel_title;
 		}
-		$channel_filter = ee('Filter')->make('filter_by_channel', 'filter_by_channel', $channel_filter_options);
+		$channel_filter = ee('CP/Filter')->make('filter_by_channel', 'filter_by_channel', $channel_filter_options);
 		$channel_filter->disableCustomValue(); // This may have to go
 		return $channel_filter;
 	}
@@ -270,7 +270,7 @@ class EntryListing {
 			}
 		}
 
-		$categories = ee('Filter')->make('filter_by_category', 'filter_by_category', $category_options);
+		$categories = ee('CP/Filter')->make('filter_by_category', 'filter_by_category', $category_options);
 		$categories->disableCustomValue();
 		return $categories;
 	}
@@ -296,7 +296,7 @@ class EntryListing {
 			$status_options[$status->status] = $status_name;
 		}
 
-		$status = ee('Filter')->make('filter_by_status', 'filter_by_status', $status_options);
+		$status = ee('CP/Filter')->make('filter_by_status', 'filter_by_status', $status_options);
 		$status->disableCustomValue();
 		return $status;
 	}

@@ -3,7 +3,7 @@
 <div class="tbl-ctrls">
 	<?=form_open(ee('CP/URL', 'utilities/member-import/process-xml'), '', $form_hidden)?>
 		<h1><?=$cp_page_title?></h1>
-		<?=ee('Alert')->getAllInlines()?>
+		<?=ee('CP/Alert')->getAllInlines()?>
 		<?php if ($added_fields && count($added_fields) > 0):?>
 			<div class="alert inline success">
 				<h3><?=lang('new_fields_success')?></h3>

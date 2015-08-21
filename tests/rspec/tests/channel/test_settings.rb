@@ -235,7 +235,6 @@ feature 'Channel Settings' do
     @page.comment_notify_emails.set 'page@pagemcconnell.com,jon@jonfishman.com'
 
     @page.comment_system_enabled[1].click
-    @page.apply_comment_enabled_to_existing.click
     @page.deft_comments[1].click
     @page.comment_require_membership[0].click
     @page.comment_require_email[1].click
@@ -293,7 +292,6 @@ feature 'Channel Settings' do
     @page.comment_notify_emails.value.should == 'page@pagemcconnell.com,jon@jonfishman.com'
 
     @page.comment_system_enabled[1].checked?.should == true
-    @page.apply_comment_enabled_to_existing.checked?.should == false
     @page.deft_comments[1].checked?.should == true
     @page.comment_require_membership[0].checked?.should == true
     @page.comment_require_email[1].checked?.should == true

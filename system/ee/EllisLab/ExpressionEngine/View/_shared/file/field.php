@@ -1,6 +1,6 @@
 <div class="file_field">
 	<div class="file_set <?=$set_class?>">
-		<a href="#" class="remove_file" title="<?=lang('remove_file')?>"><img src="<?= URL_THEMES ?>cp/default/images/write_mode_close.png" alt="" /></a>
+		<a href="#" class="remove_file" title="<?=lang('remove_file')?>"></a>
 
 		<p class="filename">
 			<img src="<?=$thumb?>" alt="<?=$alt?>"/>

@@ -517,6 +517,12 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 			$unique->filter($field, $this->getProperty($field));
 		}
 
+		// Do not match self
+		if ($this->getId())
+		{
+			$unique->filter($this->getPrimaryKey(), '!=', $this->getId());
+		}
+
 		if ($unique->count() > 0)
 		{
 			return 'unique'; // lang key

@@ -203,7 +203,7 @@ class Ip_to_nation_mcp {
 
    				if ($c_code === FALSE)
    				{
-   					ee('Alert')->makeInline('ip_search')
+   					ee('CP/Alert')->makeInline('ip_search')
 						->asIssue()
 						->withTitle(lang('ip_address_not_located'))
 						->addToBody(lang('ip_not_found'))
@@ -211,7 +211,7 @@ class Ip_to_nation_mcp {
    				}
    				else
    				{
-   					ee('Alert')->makeInline('ip_search')
+   					ee('CP/Alert')->makeInline('ip_search')
 						->asSuccess()
 						->withTitle(lang('ip_address_located'))
 						->addToBody(lang('ip_result') . ' <b>' . $country . '</b>')
@@ -220,7 +220,7 @@ class Ip_to_nation_mcp {
 		    }
 		    else
 		    {
-		    	ee('Alert')->makeInline('ip_search')
+		    	ee('CP/Alert')->makeInline('ip_search')
 					->asIssue()
 					->withTitle(lang('ip_address_not_located'))
 					->addToBody(lang('ip_not_valid'))
@@ -246,7 +246,7 @@ class Ip_to_nation_mcp {
 		// ban them
 		$this->ip_data->ban($ban);
 
-		ee('Alert')->makeInline('banlist')
+		ee('CP/Alert')->makeInline('banlist')
 			->asSuccess()
 			->withTitle(lang('banlist_updated'))
 			->addToBody(lang('banlist_updated_desc'))

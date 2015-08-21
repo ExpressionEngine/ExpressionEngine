@@ -55,7 +55,7 @@
 			<?php endforeach; ?>
 		</ul>
 		<?=form_open($form_url, $form_attributes, (isset($form_hidden)) ? $form_hidden : array())?>
-			<?=ee('Alert')->getAllInlines()?>
+			<?=ee('CP/Alert')->getAllInlines()?>
 			<?php if ($extra_publish_controls): ?>
 				<fieldset class="form-ctrls top">
 					<?php if ($entry->Channel->enable_versioning): ?>

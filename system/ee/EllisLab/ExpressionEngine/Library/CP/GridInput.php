@@ -110,7 +110,7 @@ class GridInput extends Table {
 			// Prepend blank row to array instead of prepend so that the DOM
 			// is consistent when loading new data vs loading new data
 			array_unshift($data, array(
-				'attrs'   => array('class' => 'grid-blank-row'),
+				'attrs'   => array('class' => 'grid-blank-row hidden'),
 				'columns' => $this->config['grid_blank_row']
 			));
 		}
@@ -217,18 +217,6 @@ class GridInput extends Table {
 
 		if ( ! $assets_loaded)
 		{
-			if (REQ == 'CP')
-			{
-				$css_link = $this->view->head_link('css/v3/grid.css');
-			}
-			// Channel Form
-			else
-			{
-				$css_link = '<link rel="stylesheet" href="'.$this->ee_config->slash_item('theme_folder_url').'cp/default/css/v3/grid.css" type="text/css" media="screen" />'.PHP_EOL;
-			}
-
-			$this->cp->add_to_head($css_link);
-
 			$this->cp->add_js_script('ui', 'sortable');
 			$this->cp->add_js_script('file', 'cp/sort_helper');
 			$this->cp->add_js_script('plugin', 'ee_table_reorder');

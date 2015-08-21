@@ -494,7 +494,7 @@ class Grid_ft extends EE_Fieldtype {
 		$grid_alert = '';
 		if ( ! empty($this->error_string))
 		{
-			$grid_alert = ee('Alert')->makeInline('permissions-warn')
+			$grid_alert = ee('CP/Alert')->makeInline('permissions-warn')
 				->asIssue()
 				->addToBody($this->error_string)
 				->render();
@@ -536,8 +536,6 @@ class Grid_ft extends EE_Fieldtype {
 
 		// Settings to initialize JS with
 		$field_settings = array();
-
-		ee()->cp->add_to_head(ee()->view->head_link('css/v3/grid.css'));
 
 		ee()->cp->add_js_script('plugin', 'ee_url_title');
 		ee()->cp->add_js_script('ui', 'sortable');

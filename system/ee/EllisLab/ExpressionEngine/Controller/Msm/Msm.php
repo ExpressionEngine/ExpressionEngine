@@ -61,7 +61,7 @@ class Msm extends CP_Controller {
 
 		$site_ids = array_keys(ee()->session->userdata('assigned_sites'));
 
-		$sidebar = ee('Sidebar')->make();
+		$sidebar = ee('CP/Sidebar')->make();
 
 		$sidebar->addHeader(lang('sites'), ee('CP/URL', 'msm'))
 			->withButton(lang('new'), ee('CP/URL', 'msm/create'))
@@ -150,14 +150,18 @@ class Msm extends CP_Controller {
 					'content' => lang('offline')
 				);
 			}
+			$edit_url = ee('CP/URL', 'msm/edit/' . $site->site_id);
 			$column = array(
 				$site->site_id,
-				$site->site_label,
+				array(
+					'content' => $site->site_label,
+					'href' => $edit_url
+				),
 				'<var>{' . htmlentities($site->site_name, ENT_QUOTES) . '}</var>',
 				$status,
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'msm/edit/' . $site->site_id),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					)
 				)),
@@ -200,7 +204,7 @@ class Msm extends CP_Controller {
 		ee()->javascript->set_global('lang.remove_confirm', lang('site') . ': <b>### ' . lang('sites') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/confirm_remove',
 			),
 		));
 
@@ -324,7 +328,7 @@ class Msm extends CP_Controller {
 
 				ee()->logger->log_action(lang('site_created') . ': ' . $site->site_label);
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('create_site_success'))
 					->addToBody(sprintf(lang('create_site_success_desc'), $site->site_label))
@@ -334,7 +338,7 @@ class Msm extends CP_Controller {
 			}
 			else
 			{
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('create_site_error'))
 					->addToBody(lang('create_site_error_desc'))
@@ -428,7 +432,7 @@ class Msm extends CP_Controller {
 			{
 				$site->save();
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('edit_site_success'))
 					->addToBody(sprintf(lang('edit_site_success_desc'), $site->site_label))
@@ -440,7 +444,7 @@ class Msm extends CP_Controller {
 			}
 			else
 			{
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('edit_site_error'))
 					->addToBody(lang('edit_site_error_desc'))
@@ -556,7 +560,7 @@ class Msm extends CP_Controller {
 		}
 
 		$sites->delete();
-		ee('Alert')->makeInline('sites')
+		ee('CP/Alert')->makeInline('sites')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('sites_removed_desc'))

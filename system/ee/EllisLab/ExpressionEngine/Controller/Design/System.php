@@ -70,11 +70,15 @@ class System extends AbstractDesignController {
 		$data = array();
 		foreach ($templates as $template)
 		{
+			$edit_url = ee('CP/URL', 'design/system/edit/' . $template->template_id);
 			$data[] = array(
-				lang($template->template_name),
+				array(
+					'content' => lang($template->template_name),
+					'href' => $edit_url
+				),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'design/system/edit/' . $template->template_id),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					),
 				))
@@ -107,7 +111,7 @@ class System extends AbstractDesignController {
 
 		if ($template->template_name == 'message_template')
 		{
-			ee('Alert')->makeInline('message-warning')
+			ee('CP/Alert')->makeInline('message-warning')
 				->asWarning()
 				->cannotClose()
 				->addToBody(lang('message_template_warning'))
@@ -121,7 +125,7 @@ class System extends AbstractDesignController {
 			$template->last_author_id = ee()->session->userdata('member_id');
 			$template->save();
 
-			$alert = ee('Alert')->makeInline('template-form')
+			$alert = ee('CP/Alert')->makeInline('template-form')
 				->asSuccess()
 				->withTitle(lang('update_template_success'))
 				->addToBody(sprintf(lang('update_template_success_desc'), lang($template->template_name)));

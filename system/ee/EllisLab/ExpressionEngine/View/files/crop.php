@@ -8,7 +8,7 @@
 		<li><a<?php if ($active_tab == 2): ?> class="act"<?php endif; ?> href="" rel="t-2"><?=lang('resize')?></a></li>
 	</ul>
 	<?=form_open($form_url, 'class="settings ajax-validate"')?>
-		<?=ee('Alert')->get('crop-form')?>
+		<?=ee('CP/Alert')->get('crop-form')?>
 		<div class="tab t-0<?php if ($active_tab == 0): ?> tab-open<?php endif; ?>">
 			<fieldset class="col-group <?=form_error_class('crop_width')?> <?=form_error_class('crop_height')?>">
 				<div class="setting-txt col w-8 <?=form_error_class('crop_width')?> <?=form_error_class('crop_height')?>">

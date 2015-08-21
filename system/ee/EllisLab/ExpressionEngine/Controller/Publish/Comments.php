@@ -84,7 +84,7 @@ class Comments extends AbstractPublishController {
 			$comments->filter('comment', 'LIKE', '%' . ee()->view->search_value . '%');
 		}
 
-		$filters = ee('Filter')
+		$filters = ee('CP/Filter')
 			->add($channel_filter)
 			->add($status_filter)
 			->add('Date');
@@ -133,7 +133,7 @@ class Comments extends AbstractPublishController {
 		ee()->javascript->set_global('lang.remove_confirm', lang('comment') . ': <b>### ' . lang('comments') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/confirm_remove',
 			),
 		));
 
@@ -208,7 +208,7 @@ class Comments extends AbstractPublishController {
 			$comments->filter('comment', 'LIKE', '%' . ee()->view->search_value . '%');
 		}
 
-		$filters = ee('Filter')
+		$filters = ee('CP/Filter')
 			->add($status_filter)
 			->add('Date');
 
@@ -256,7 +256,7 @@ class Comments extends AbstractPublishController {
 		ee()->javascript->set_global('lang.remove_confirm', lang('comment') . ': <b>### ' . lang('comments') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/confirm_remove',
 			),
 		));
 
@@ -417,7 +417,7 @@ class Comments extends AbstractPublishController {
 
 			$comment->save();
 
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('edit_comment_success'))
 				->addToBody(lang('edit_comment_success_desc'))
@@ -427,7 +427,7 @@ class Comments extends AbstractPublishController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('edit_comment_error'))
 				->addToBody(lang('edit_comment_error_desc'))
@@ -545,7 +545,7 @@ class Comments extends AbstractPublishController {
 
 	private function createStatusFilter()
 	{
-		$status = ee('Filter')->make('filter_by_status', 'filter_by_status', array(
+		$status = ee('CP/Filter')->make('filter_by_status', 'filter_by_status', array(
 			'o' => lang('open'),
 			'c' => lang('closed'),
 			'p' => lang('pending'),
@@ -611,7 +611,7 @@ class Comments extends AbstractPublishController {
 
 		$comments->delete();
 
-		ee('Alert')->makeInline('comments-form')
+		ee('CP/Alert')->makeInline('comments-form')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('comments_removed_desc'))
@@ -661,7 +661,7 @@ class Comments extends AbstractPublishController {
 				$status = lang("pending");
 		}
 
-		ee('Alert')->makeInline('comments-form')
+		ee('CP/Alert')->makeInline('comments-form')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(sprintf(lang('comments_status_updated_desc'), strtolower($status)))

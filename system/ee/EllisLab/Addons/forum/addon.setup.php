@@ -22,5 +22,11 @@ return array(
 		'Search'          => 'Model\Search',
 		// 'Subscription' => 'Model\Subscription',
 		'Topic'           => 'Model\Topic',
+	),
+
+	'models.dependencies' => array(
+		'Administrator'   => array(
+			'ee:Member'
+		)
 	)
 );

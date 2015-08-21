@@ -6,7 +6,7 @@
 			<a class="btn tn action" href="<?=ee('CP/URL', 'design/variables/create')?>"><?=lang('create_new')?></a>
 		</fieldset>
 		<h1><?=$cp_heading?></h1>
-		<?=ee('Alert')->getAllInlines()?>
+		<?=ee('CP/Alert')->getAllInlines()?>
 		<?php $this->embed('_shared/table', $table); ?>
 		<?php if (isset($pagination)) echo $pagination; ?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>

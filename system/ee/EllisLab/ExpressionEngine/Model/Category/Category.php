@@ -81,10 +81,10 @@ class Category extends ContentModel {
 	protected $cat_order;
 
 	/**
-	 * A link back to the owning channel object.
+	 * A link back to the owning category group object.
 	 *
-	 * @return	Structure	A link to the Structure objects that defines this
-	 * 						Content's structure.
+	 * @return	Structure	A link back to the Structure object that defines
+	 *						this Content's structure.
 	 */
 	public function getStructure()
 	{

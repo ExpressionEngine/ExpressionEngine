@@ -58,7 +58,7 @@ abstract class AbstractFiles extends CP_Controller {
 			$active_id = (int) $active;
 		}
 
-		$sidebar = ee('Sidebar')->make();
+		$sidebar = ee('CP/Sidebar')->make();
 
 		$header = $sidebar->addHeader(lang('upload_directories'));
 
@@ -160,6 +160,7 @@ abstract class AbstractFiles extends CP_Controller {
 				continue;
 			}
 
+			$edit_link =  ee('CP/URL', 'files/file/edit/' . $file->file_id);
 			$toolbar = array(
 				'view' => array(
 					'href' => '',
@@ -169,7 +170,7 @@ abstract class AbstractFiles extends CP_Controller {
 					'data-file-id' => $file->file_id
 				),
 				'edit' => array(
-					'href' => ee('CP/URL', 'files/file/edit/' . $file->file_id),
+					'href' => $edit_link,
 					'title' => lang('edit')
 				),
 				'crop' => array(
@@ -189,7 +190,8 @@ abstract class AbstractFiles extends CP_Controller {
 			}
 
 			$column = array(
-				$file->title . '<br><em class="faded">' . $file->file_name . '</em>',
+				'<a href="' . $edit_link . '"> ' . $file->title
+					. '</a><br><em class="faded">' . $file->file_name . '</em>',
 				$file->mime_type,
 				ee()->localize->human_time($file->upload_date),
 				array('toolbar_items' => $toolbar),
@@ -232,7 +234,7 @@ abstract class AbstractFiles extends CP_Controller {
 
 		if ($missing_files)
 		{
-			ee('Alert')->makeInline('missing-files')
+			ee('CP/Alert')->makeInline('missing-files')
 				->asWarning()
 				->cannotClose()
 				->withTitle(lang('files_not_found'))

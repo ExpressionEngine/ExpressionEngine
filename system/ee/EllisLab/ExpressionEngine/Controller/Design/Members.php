@@ -166,12 +166,16 @@ class Members extends AbstractDesignController {
 			}
 
 			$human = substr($file, 0, -strlen(strrchr($file, '.')));
+			$edit_url = ee('CP/URL', 'design/members/edit/' . $theme . '/' . $human);
 
 			$data['profile_' . $this->template_group_map[$file]][] = array(
-				(lang($human) == FALSE) ? $human : lang($human),
+				array(
+					'content' => (lang($human) == FALSE) ? $human : lang($human),
+					'href' => $edit_url
+					),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'design/members/edit/' . $theme . '/' . $human),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					),
 				))
@@ -225,7 +229,7 @@ class Members extends AbstractDesignController {
 			else
 			{
 
-				$alert = ee('Alert')->makeInline('template-form')
+				$alert = ee('CP/Alert')->makeInline('template-form')
 					->asSuccess()
 					->withTitle(lang('update_template_success'))
 					->addToBody(sprintf(lang('update_template_success_desc'), $template_name));
@@ -242,7 +246,7 @@ class Members extends AbstractDesignController {
 
 		if ( ! is_really_writable($path))
 		{
-			ee('Alert')->makeInline('message-warning')
+			ee('CP/Alert')->makeInline('message-warning')
 				->asWarning()
 				->cannotClose()
 				->withTitle(lang('file_not_writable'))

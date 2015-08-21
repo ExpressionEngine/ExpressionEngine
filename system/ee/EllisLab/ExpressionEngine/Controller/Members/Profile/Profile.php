@@ -84,7 +84,7 @@ class Profile extends CP_Controller {
 
 	protected function generateSidebar($active = NULL)
 	{
-		$sidebar = ee('Sidebar')->make();
+		$sidebar = ee('CP/Sidebar')->make();
 
 		$header = $sidebar->addHeader(lang('personal_settings'), ee('CP/URL', 'members/profile', $this->query_string));
 
@@ -187,7 +187,11 @@ class Profile extends CP_Controller {
 		if ($validated->isNotValid())
 		{
 			ee()->load->helper('html_helper');
-			ee()->view->set_message('issue', lang('cp_message_issue'), ul($validated->getAllErrors()), TRUE);
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('cp_message_issue'))
+				->addToBody($validated->getAllErrors())
+				->now();
 
 			return FALSE;
 		}

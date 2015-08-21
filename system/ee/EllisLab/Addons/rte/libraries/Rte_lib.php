@@ -84,7 +84,7 @@ class Rte_lib {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('toolset_error'))
 				->addToBody(lang('toolset_error_desc'))
@@ -210,7 +210,7 @@ class Rte_lib {
 
 			if ( ! $orig || $is_members && $orig['member_id'] != ee()->session->userdata('member_id'))
 			{
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('toolset_error'))
 					->addToBody(lang('toolset_update_failed'))
@@ -222,7 +222,7 @@ class Rte_lib {
 		// save it
 		if (ee()->rte_toolset_model->save_toolset($toolset, $toolset_id) === FALSE)
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('toolset_error'))
 				->addToBody(lang('toolset_update_failed'))
@@ -232,7 +232,7 @@ class Rte_lib {
 
 		if ($toolset_id)
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('toolset_updated'))
 				->addToBody(lang('toolset_updated_desc'))
@@ -240,7 +240,7 @@ class Rte_lib {
 		}
 		else
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('toolset_created'))
 				->addToBody(sprintf(lang('toolset_created_desc'), $toolset['name']))
