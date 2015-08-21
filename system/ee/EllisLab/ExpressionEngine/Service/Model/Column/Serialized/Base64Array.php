@@ -19,7 +19,8 @@ use EllisLab\ExpressionEngine\Service\Model\Column\SerializedType;
 // ------------------------------------------------------------------------
 
 /**
- * ExpressionEngine Model Serialized Typed Column
+ * ExpressionEngine Model Base64 Encoded Typed Column that defaults to an
+ * empty array.
  *
  * @package		ExpressionEngine
  * @subpackage	Model
@@ -27,24 +28,11 @@ use EllisLab\ExpressionEngine\Service\Model\Column\SerializedType;
  * @author		EllisLab Dev Team
  * @link		http://ellislab.com
  */
-class Native extends SerializedType {
+class Base64Array extends Base64 {
 
+	/**
+	 * Same as base64, but with an array as the default data
+	 */
 	protected $data = array();
-
-	/**
-	 * Called when the column is fetched from db
-	 */
-	public static function unserialize($db_data)
-	{
-		return strlen($db_data) ? unserialize($db_data) : array();
-	}
-
-	/**
-	 * Called before the column is written to the db
-	 */
-	public static function serialize($data)
-	{
-		return serialize($data);
-	}
 
 }
