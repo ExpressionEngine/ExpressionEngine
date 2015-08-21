@@ -82,7 +82,8 @@ abstract class AbstractFiles extends CP_Controller {
 		}
 
 		$upload_destinations = ee('Model')->get('UploadDestination')
-			->filter('site_id', ee()->config->item('site_id'));
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('module_id', 0);
 
 		foreach ($upload_destinations->all() as $destination)
 		{

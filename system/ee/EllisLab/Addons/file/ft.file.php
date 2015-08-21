@@ -500,6 +500,13 @@ CSS;
 		// Number of existing files to show? 0 means all
 		$num_existing = ( ! isset($data['num_existing'])) ? 50 : $data['num_existing'];
 
+		$directory_choices = array_merge(array('all' => lang('all')), ee('Model')->get('UploadDestination')
+			->fields('id', 'name')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('module_id', 0)
+			->all()
+			->getDictionary('id', 'name'));
+
 		$settings = array(
 			'field_options_file' => array(
 				'label' => 'field_options',
@@ -522,7 +529,7 @@ CSS;
 						'fields' => array(
 							'allowed_directories' => array(
 								'type' => 'select',
-								'choices' => $this->_allowed_directories_options(),
+								'choices' => $directory_choices,
 								'value' => $allowed_directories
 							)
 						)
@@ -614,30 +621,6 @@ CSS;
 				array('data' => $cell2, 'class' => 'id')
 			);
 		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Returns dropdown-ready array of allowed upload directories
-	 */
-	private function _allowed_directories_options()
-	{
-		ee()->load->model('file_upload_preferences_model');
-
-		$directory_options['all'] = lang('all');
-
-		if (empty($this->_dirs))
-		{
-			$this->_dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(1);
-		}
-
-		foreach($this->_dirs as $dir)
-		{
-			$directory_options[$dir['id']] = $dir['name'];
-		}
-
-		return $directory_options;
 	}
 
 	// --------------------------------------------------------------------
