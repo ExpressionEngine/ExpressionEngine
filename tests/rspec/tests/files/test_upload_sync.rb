@@ -32,7 +32,7 @@ feature 'Upload Directory Sync' do
     new_upload.should have_text 'Upload directory saved'
 
     @page = UploadSync.new
-    @page.load_sync_for_dir(6)
+    @page.load_sync_for_dir(2)
     no_php_js_errors
   end
 
