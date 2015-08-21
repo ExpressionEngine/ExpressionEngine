@@ -45,7 +45,7 @@ class Edit extends AbstractPublishController {
 
 		$vars = array();
 		$base_url = ee('CP/URL', 'publish/edit');
-		$channel_name = '';
+		$channel_title = '';
 
 		$entry_listing = ee('CP/EntryListing', ee()->input->get_post('search'));
 		$entries = $entry_listing->getEntries();
@@ -88,19 +88,19 @@ class Edit extends AbstractPublishController {
 		$table->setNoResultsText(lang('no_entries_exist'));
 
 		$channels = ee('Model')->get('Channel')
-			->fields('channel_id', 'channel_name')
+			->fields('channel_id', 'channel_title')
 			->filter('site_id', ee()->config->item('site_id'))
 			->all();
 
 		if (count($channels) == 1)
 		{
 			$channel_id = $channels[0]->channel_id;
-			$channel_name = $channels[0]->channel_name;
+			$channel_title = $channels[0]->channel_title;
 		}
 
 		if ($channel_id)
 		{
-			$vars['create_button'] = '<a class="btn tn action" href="'.ee('CP/URL', 'publish/create/' . $channel_id).'">'.sprintf(lang('btn_create_new_entry_in_channel'), $channel_name).'</a>';
+			$vars['create_button'] = '<a class="btn tn action" href="'.ee('CP/URL', 'publish/create/' . $channel_id).'">'.sprintf(lang('btn_create_new_entry_in_channel'), $channel_title).'</a>';
 		}
 		else
 		{
@@ -223,7 +223,7 @@ class Edit extends AbstractPublishController {
 		}
 		else
 		{
-			ee()->view->cp_heading = sprintf(lang('all_channel_entries'), $channel_name);
+			ee()->view->cp_heading = sprintf(lang('all_channel_entries'), $channel_title);
 		}
 
 		ee()->cp->render('publish/edit/index', $vars);
