@@ -72,7 +72,7 @@ feature 'File Manager' do
 	it 'shows the "All Files" File Manager page', :all_files => true do
 		@page.perpage_filter.text.should eq 'show (25)'
 		@page.title_name_header[:class].should eq 'highlight'
-		@page.should have(26).files
+		@page.should have(11).files
 	end
 
 	# General Tests
@@ -96,7 +96,7 @@ feature 'File Manager' do
 
 		@page.perpage_filter.text.should eq "show (50)"
 		@page.should_not have_pagination
-		@page.should have(26).files
+		@page.should have(11).files
 	end
 
 	it 'can change the page size manually', :all_files => true do
@@ -108,8 +108,8 @@ feature 'File Manager' do
 
 		@page.perpage_filter.text.should eq "show (5)"
 		@page.should have_pagination
-		@page.should have(6).pages
-		@page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
+		@page.should have(5).pages
+		@page.pages.map {|name| name.text}.should == ["First", "1", "2", "Next", "Last"]
 		@page.should have(6).files
 	end
 
@@ -125,8 +125,8 @@ feature 'File Manager' do
 
 		@page.perpage_filter.text.should eq "show (5)"
 		@page.should have_pagination
-		@page.should have(7).pages
-		@page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
+		@page.should have(5).pages
+		@page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "Last"]
 		@page.should have(6).files
 	end
 
