@@ -159,7 +159,6 @@ class Wizard extends CI_Controller {
 		$addon_path = (ee()->config->item('addons_path'))
 			? rtrim(realpath(ee()->config->item('addons_path')), '/').'/'
 			: SYSPATH.'user/addons/';
-		define('PATH_ADDONS', $addon_path);
 		define('PATH_THIRD', $addon_path);
 
 		$req_source = $this->input->server('HTTP_X_REQUESTED_WITH');
