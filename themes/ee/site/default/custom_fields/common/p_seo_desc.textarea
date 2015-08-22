@@ -1,0 +1,8 @@
+{
+	"label": "SEO Description",
+	"instructions": "Page Description for use in HTML meta description tag, generally only seen by machines.",
+	"fmt": "none",
+	"ta_rows": "2",
+	"search": "n",
+	"order": 2
+}

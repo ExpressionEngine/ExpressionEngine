@@ -1,0 +1,7 @@
+{
+	"label": "Contact Email",
+	"instructions": "Email address someone can send Email to.",
+	"search": "n",
+	"fmt": "none",
+	"order": 6
+}

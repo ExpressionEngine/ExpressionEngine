@@ -7,6 +7,11 @@
 ee()->load->library('api');
 ee()->load->library('extensions');
 
+$user_theme_base_url = '';
+$user_theme_base_path = '';
+
+$user_template_folder = SYSPATH.'user/templates/default/';
+
 /*********************
 	Status Groups
 *********************/
@@ -85,6 +90,19 @@ foreach ($category_list as $group_name => $categories)
 }
 
 /*********************
+	Upload Locations
+*********************/
+
+foreach (array() as $upload_name)
+{
+	$upload_destination = ee('Model')->make('UploadDestination');
+	$upload_destination->site_id = 1;
+	$upload_destination->name = $upload_name;
+	$upload_destination->url =
+	$upload_destination->server_path
+}
+
+/*********************
 	Field Groups
 *********************/
 
@@ -99,6 +117,9 @@ foreach ($field_groups as $group_name => $fields)
 
 	foreach ($fields as $file_name)
 	{
+		// reset for Grid fields
+		unset($_POST['cols']);
+
 		$file_path = $field_group_path.$group_name.'/'.$file_name;
 
 		$parts = explode('.', $file_name);
@@ -133,6 +154,13 @@ foreach ($field_groups as $group_name => $fields)
 				{
 					foreach ($column as $col_label => $col_value)
 					{
+						// Grid is expecting a POSTed checkbox, so if it's in POST at all
+						// this value will be set to 'y'
+						if ($col_label == 'required' && $col_value == 'n')
+						{
+							continue;
+						}
+
 						$_POST['grid']['cols']["new_{$i}"]['col_'.$col_label] = $col_value;
 					}
 

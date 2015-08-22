@@ -30,7 +30,6 @@ class Wizard extends CI_Controller {
 	public $schema            = NULL;		// This will contain the schema object with our queries
 	public $languages         = array(); 	// Available languages the installer supports (set dynamically based on what is in the "languages" folder)
 	public $mylang            = 'english';// Set dynamically by the user when they run the installer
-	public $image_path        = ''; 		// URL path to the cp_global_images folder.  This is set dynamically
 	public $is_installed      = FALSE;	// Does an EE installation already exist?  This is set dynamically.
 	public $next_update       = FALSE;	// The next update file that needs to be loaded, when an update is performed.
 	public $remaining_updates = 0; 		// Number of updates remaining, in the event the user is updating from several back
@@ -110,7 +109,6 @@ class Wizard extends CI_Controller {
 		'default_site_timezone' => '',
 		'redirect_method'       => 'redirect',
 		'upload_folder'         => 'uploads/',
-		'image_path'            => '',
 		'cp_images'             => 'cp_images/',
 		'avatar_path'           => '../images/avatars/',
 		'avatar_url'            => 'images/avatars/',
@@ -193,7 +191,6 @@ class Wizard extends CI_Controller {
 		$this->load->library('update_notices');
 
 		// Set the theme URLs
-		$this->image_path = $this->set_path('themes/ee/cp_global_images/');
 		$this->load->add_theme_cascade(APPPATH.'views/');
 
 		// First try the current directory, if they are running the system with an admin.php file
@@ -372,7 +369,6 @@ class Wizard extends CI_Controller {
 			}
 
 			// set the image path and theme folder path
-			$this->userdata['image_path'] = $this->image_path;
 			$this->userdata['theme_folder_path'] = $this->root_theme_path;
 
 			// At this point we are reasonably sure that this is a first time
@@ -1417,7 +1413,6 @@ class Wizard extends CI_Controller {
 			'refresh'           => $this->refresh,
 			'refresh_url'       => $this->refresh_url,
 			'ajax_progress'     => (ee()->input->get('ajax_progress') == 'yes'),
-			'image_path'        => $this->image_path,
 
 			// TODO-WB: Change src to compressed before launch
 			'javascript_path'   => $this->set_path('themes/ee/asset/javascript/src/'),
