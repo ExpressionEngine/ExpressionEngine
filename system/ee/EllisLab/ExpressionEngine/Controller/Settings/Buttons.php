@@ -135,8 +135,8 @@ class Buttons extends Settings {
 		ee()->javascript->set_global('lang.remove_confirm', lang('html_buttons') . ': <b>### ' . lang('html_buttons') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
-				'cp/v3/html_button_reorder',
+				'cp/confirm_remove',
+				'cp/members/html_button_reorder',
 				'cp/sort_helper'
 			),
 			'plugin' => array(
@@ -144,7 +144,7 @@ class Buttons extends Settings {
 			)
 		));
 
-		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
+		$reorder_ajax_fail = ee('CP/Alert')->makeBanner('reorder-ajax-fail')
 			->asIssue()
 			->canClose()
 			->withTitle(lang('html_button_ajax_reorder_fail'))
@@ -211,7 +211,7 @@ class Buttons extends Settings {
 
 		$buttons->delete();
 
-		ee('Alert')->makeInline('html_buttons')
+		ee('CP/Alert')->makeInline('html_buttons')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('html_buttons_removed'))

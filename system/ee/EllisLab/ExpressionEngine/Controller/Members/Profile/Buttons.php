@@ -137,7 +137,7 @@ class Buttons extends Profile {
 		ee()->cp->add_js_script(array(
 			'file' => array(
 				'cp/confirm_remove',
-				'cp/v3/html_button_reorder',
+				'cp/members/html_button_reorder',
 				'cp/sort_helper'
 			),
 			'plugin' => array(
