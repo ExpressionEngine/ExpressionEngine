@@ -32,6 +32,12 @@ class Purchase extends Model {
 	protected static $_primary_key = 'purchase_id';
 	protected static $_table_name = 'simple_commerce_purchases';
 
+	protected static $_events = array(
+		'afterDelete',
+		'afterInsert',
+		'afterUpdate'
+	);
+
 	protected static $_validation_rules = array(
 		'txn_id'        => 'required',
 		'item_id'       => 'required',
@@ -68,6 +74,48 @@ class Purchase extends Model {
 	protected $item_cost;
 	protected $paypal_details;
 	protected $subscription_end_date;
+
+	public function onAfterDelete()
+	{
+		$this->updateItemCounts($this->item_id);
+	}
+
+	public function onAfterInsert()
+	{
+		$this->updateItemCounts($this->item_id);
+	}
+
+	public function onAfterUpdate($previous)
+	{
+		if (isset($previous['item_id']))
+		{
+			$this->updateItemCounts($previous['item_id']);
+			$this->updateItemCounts($this->item_id);
+		}
+	}
+
+	/**
+	 * Items keep count of how many purchases and subscriptions they have; when a Purchase is
+	 * added, deleted, or had its Item change, we need to update the Item's purchase count
+	 */
+	protected function updateItemCounts($item_id)
+	{
+		$item = $this->getFrontend()->get('simple_commerce:Item', $item_id)->first();
+
+		$item->item_purchases = $this->getFrontend()
+			->get('simple_commerce:Purchase')
+			->filter('item_id', $item_id)
+			->count();
+
+		$item->current_subscriptions = $this->getFrontend()
+			->get('simple_commerce:Purchase')
+			->filter('item_id', $item_id)
+			->filter('subscription_end_date', 0)
+			->filter('paypal_subscriber_id', '!=', NULL)
+			->count();
+
+		$item->save();
+	}
 
 	public function set__purchase_date($purchase_date)
 	{
