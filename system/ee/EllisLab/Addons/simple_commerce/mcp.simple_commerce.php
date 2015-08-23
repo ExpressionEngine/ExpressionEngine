@@ -423,17 +423,93 @@ class Simple_commerce_mcp {
 		);
 	}
 
+	/**
+	 * Edit item
+	 */
+	public function editItem($item_id)
+	{
+		$item = ee('Model')->get('simple_commerce:Item', $item_id)->first();
+
+		if ( ! $item)
+		{
+			show_error(lang('unauthorized_access'));
+		}
+
+		if ( ! empty($_POST))
+		{
+			$item->set($_POST['item']);
+			$item->subscription_frequency = empty($item->subscription_frequency) ? NULL : $item->subscription_frequency;
+			$result = $item->validate();
+
+			if ($result->isValid())
+			{
+				$item = $item->save();
+
+				ee('CP/Alert')->makeInline('items-table')
+					->asSuccess()
+					->withTitle(lang('item_updated'))
+					->addToBody(sprintf(lang('item_updated_desc'), $item->ChannelEntry->title))
+					->defer();
+
+				ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce'));
+			}
+			else
+			{
+				$vars['errors'] = $result;
+				ee('CP/Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('item_not_updated'))
+					->addToBody(lang('item_not_updated_desc'))
+					->now();
+			}
+		}
+
+		$vars['sections'] = $this->itemForm($item);
+		$vars['cp_page_title'] = lang('edit_item');
+		$vars['base_url'] = ee('CP/URL', 'addons/settings/simple_commerce/edit-item/'.$item_id);
+		$vars['save_btn_text'] = sprintf(lang('btn_save'), lang('item'));
+		$vars['save_btn_text_working'] = 'btn_saving';
+
+		$this->items_nav->isActive();
+
+		return array(
+			'heading' => lang('edit_item'),
+			'breadcrumb' => array(
+				ee('CP/URL', 'addons/settings/simple_commerce')->compile() => lang('commerce_items')
+			),
+			'body' => ee('View')->make('simple_commerce:form')->render($vars),
+			'sidebar' => $this->sidebar
+		);
+	}
+
+	/**
+	 * Generates the item form for creating or editing
+	 *
+	 * @param Item		$item	Item model object
+	 * @param string	$prefix	Optional alternate prefix for input names, default is "item", leading to "item[input_name]"
+	 */
 	private function itemForm($item, $prefix = 'item')
 	{
-		$email_templates = array(0 => lang('send_no_email'));
-		$email_templates += ee('Model')->get('simple_commerce:EmailTemplate')->all()->getDictionary('email_id', 'email_name');
+		static $email_templates;
+		static $member_groups;
 
-		$member_groups = array(0 => lang('no_change'));
-		$member_groups += ee('Model')->get('MemberGroup')
-			->filter('site_id', ee()->config->item('site_id'))
-			->order('group_title')
-			->all()
-			->getDictionary('group_id', 'group_title');
+		if (empty($email_templates))
+		{
+			// Email template choices
+			$email_templates = array(0 => lang('send_no_email'));
+			$email_templates += ee('Model')->get('simple_commerce:EmailTemplate')->all()->getDictionary('email_id', 'email_name');
+		}
+
+		if (empty($member_groups))
+		{
+			// Member group choices
+			$member_groups = array(0 => lang('no_change'));
+			$member_groups += ee('Model')->get('MemberGroup')
+				->filter('site_id', ee()->config->item('site_id'))
+				->order('group_title')
+				->all()
+				->getDictionary('group_id', 'group_title');
+		}
 
 		return array(
 			array(
@@ -855,9 +931,9 @@ class Simple_commerce_mcp {
 					'fields' => array(
 						'purchase_date' => array(
 							'type' => 'text',
-							'value' => $purchase->purchase_date,
+							'value' => ee()->localize->human_time($purchase->purchase_date),
 							'required' => TRUE,
-							'attrs' => 'rel="date-picker"'
+							'attrs' => 'rel="date-picker" data-timestamp="'.$purchase->purchase_date.'"'
 						)
 					)
 				)
@@ -912,7 +988,7 @@ class Simple_commerce_mcp {
 		$this->purchases_nav->isActive();
 
 		return array(
-			'heading' => lang('create_purchase'),
+			'heading' => $vars['cp_page_title'],
 			'breadcrumb' => array(
 				ee('CP/URL', 'addons/settings/simple_commerce/purchases')->compile() => lang('commerce_purchases')
 			),

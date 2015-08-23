@@ -76,6 +76,8 @@ $lang = array(
 
 'add_item' => 'Add item',
 
+'edit_item' => 'Edit Item',
+
 'all_items' => 'All Items',
 
 'all_purchases' => 'All Purchases',
