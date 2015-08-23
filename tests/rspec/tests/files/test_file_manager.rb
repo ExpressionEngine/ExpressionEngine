@@ -245,7 +245,7 @@ feature 'File Manager' do
 		@page.wait_until_modal_visible
 		@page.modal_title.text.should eq "Confirm Removal"
 		@page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
-		@page.modal.text.should include 'File: 25 Files'
+		@page.modal.text.should include 'File: 10 Files'
 	end
 
 	it 'can remove a single file', :all_files => true do
@@ -320,7 +320,7 @@ feature 'File Manager' do
 	end
 
 	it 'displays an itemized modal when attempting to remove a directory', :all_files => true do
-		about_directory_selector = 'div.sidebar .folder-list > li:nth-child(2)'
+		about_directory_selector = 'div.sidebar .folder-list > li:first-child'
 		find(about_directory_selector).hover
 		find(about_directory_selector + ' li.remove a').click
 
