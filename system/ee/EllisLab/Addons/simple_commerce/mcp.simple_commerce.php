@@ -391,8 +391,16 @@ class Simple_commerce_mcp {
 
 		if (empty($forms))
 		{
+			$existing_items = ee('Model')->get('simple_commerce:Item')->all()->pluck('entry_id');
+
 			foreach ($entry_ids as $entry_id)
 			{
+				// Skip over entries we already have an item for
+				if (in_array($entry_id, $existing_items))
+				{
+					continue;
+				}
+
 				$item = ee('Model')->make('simple_commerce:Item');
 				$item->ChannelEntry = ee('Model')->get('ChannelEntry', $entry_id)->first();
 				$forms[] = array(
