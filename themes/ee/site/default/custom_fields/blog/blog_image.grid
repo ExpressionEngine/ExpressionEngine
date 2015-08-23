@@ -13,7 +13,7 @@
 			"settings":
 			{
 				"field_content_type": "image",
-				"allowed_directories": "1",
+				"allowed_directories": "all",
 				"show_existing": "y",
 				"num_existing": "50",
 				"field_required": "n"

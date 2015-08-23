@@ -1,4 +1,4 @@
-<?php
+<?php  if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 /*********************
 	Legacy Libs
@@ -7,10 +7,11 @@
 ee()->load->library('api');
 ee()->load->library('extensions');
 
-$user_theme_base_url = '';
-$user_theme_base_path = '';
-
-$user_template_folder = SYSPATH.'user/templates/default/';
+$theme_base_url = $this->userdata['site_url'].'themes/user/site/default/';
+$theme_base_path = $this->root_theme_path.'user/site/default/';
+$template_folder = SYSPATH.'user/templates/default/';
+$asset_url = $theme_base_url.'asset/';
+$asset_path = $theme_base_path.'asset/';
 
 /*********************
 	Status Groups
@@ -22,6 +23,8 @@ $status_group->site_id = 1;
 $status_group->group_name = 'about';
 $status_group->save();
 
+$status_group_ids[$status_group->group_name] = $status_group->group_id;
+
 // "about" Status Group statuses
 $status = ee('Model')->make('Status');
 $status->site_id = 1;
@@ -30,6 +33,7 @@ $status->status = 'Default Page';
 $status->highlight = '2051B3';
 $status->NoAccess = NULL;
 $status->save();
+
 
 /*********************
 	Category Groups
@@ -77,6 +81,8 @@ foreach ($category_list as $group_name => $categories)
 	$cat_group->group_name = $group_name;
 	$cat_group->save();
 
+	$cat_group_ids[$cat_group->group_name] = $cat_group->group_id;
+
 	foreach ($categories as $category_name)
 	{
 		$category = ee('Model')->make('Category');
@@ -93,13 +99,40 @@ foreach ($category_list as $group_name => $categories)
 	Upload Locations
 *********************/
 
-foreach (array() as $upload_name)
+$img_url = $asset_url.'img/';
+$img_path = $asset_path.'img/';
+
+foreach (array('blog', 'common', 'home') as $upload_name)
 {
 	$upload_destination = ee('Model')->make('UploadDestination');
 	$upload_destination->site_id = 1;
 	$upload_destination->name = $upload_name;
-	$upload_destination->url =
-	$upload_destination->server_path
+	$upload_destination->url = $img_url.$upload_name.'/';
+	$upload_destination->server_path = $img_path.$upload_name.'/';
+	$upload_destination->save();
+
+	$dir = $img_path.$upload_name;
+
+	foreach (directory_map($dir) as $filename)
+	{
+		if (! is_array($filename) && is_file($dir.'/'.$filename))
+		{
+			$filepath = $dir.'/'.$filename;
+			$time = time();
+			$file = ee('Model')->make('File');
+			$file->site_id = 1;
+			$file->upload_location_id = $upload_destination->id;
+			$file->uploaded_by_member_id = 1;
+			$file->modified_by_member_id = 1;
+			$file->title = $filename;
+			$file->file_name = $filename;
+			$file->upload_date = $time;
+			$file->modified_date = $time;
+			$file->mime_type = mime_content_type($filepath);
+			$file->file_size = filesize($filepath);
+			$file->save();
+		}
+	}
 }
 
 /*********************
@@ -114,6 +147,8 @@ foreach ($field_groups as $group_name => $fields)
 	$field_group = ee('Model')->make('ChannelFieldGroup');
 	$field_group->group_name = $group_name;
 	$field_group->save();
+
+	$field_group_ids[$field_group->group_name] = $field_group->group_id;
 
 	foreach ($fields as $file_name)
 	{
@@ -184,13 +219,54 @@ foreach ($field_groups as $group_name => $fields)
 	}
 }
 
-// create fields
-// create field groups
-// create Channel, assigned with the above groups
+/*********************
+	  Channels
+*********************/
 
-// add upload locations
-// add files
+$channels = array(
+	'About' => array(
+		'status_group' => $status_group_ids['about'],
+		'field_group' => $field_group_ids['common']
+	),
+	'Blog' => array(
+		'status_group' => 1,
+		'cat_group' => $cat_group_ids['blog'],
+		'field_group' => $field_group_ids['blog'],
+		'channel_url' => "{path='blog/entry'}"
+	),
+	'Contact' => array(
+		'status_group' => 1,
+		'field_group' => $field_group_ids['common']
+	)
+);
+
+foreach ($channels as $channel_label => $channel_prefs)
+{
+	$channel = ee('Model')->make('Channel');
+	$channel->title_field_label = lang('title');
+	$channel->channel_name = strtolower($channel_label);
+	$channel->channel_title = $channel_label;
+	$channel->channel_lang = 'en';
+
+	foreach ($channel_prefs as $pref_key => $pref_value)
+	{
+		$channel->$pref_key = $pref_value;
+	}
+
+	$channel->save();
+}
 
 // add entries
+
+/*
+		$entry = ee('Model')->make('ChannelEntry');
+		$entry->setChannel($channel);
+		$entry->site_id =  ee()->config->item('site_id');
+		$entry->author_id = ee()->session->userdata('member_id');
+		$entry->ip_address = ee()->session->userdata['ip_address'];
+		$entry->versioning_enabled = $channel->enable_versioning;
+		$entry->sticky = FALSE;
+		$entry->allow_comments = TRUE;
+*/
 
 // set site_404 and strict_urls, etc.
