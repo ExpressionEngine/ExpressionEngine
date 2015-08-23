@@ -100,15 +100,14 @@ class Simple_commerce_mcp {
 		$table->setNoResultsText('no_purchases', 'create_new_item', ee('CP/URL', 'addons/settings/simple_commerce/create-item'));
 
 		$sort_map = array(
-			// Change when relationships work
-			'name'        => 'entry_id',
+			'name'        => 'ChannelEntry.title',
 			'price_sale'  => 'item_regular_price',
 			'frequency'   => 'subscription_frequency',
 			'subscribers' => 'current_subscriptions',
 			'purchases'   => 'item_purchases'
 		);
 
-		$items = ee('Model')->get('simple_commerce:Item');
+		$items = ee('Model')->get('simple_commerce:Item')->with('ChannelEntry');
 		$total_rows = $items->count();
 
 		$items = $items->order($sort_map[$table->sort_col], $table->sort_dir)
@@ -117,7 +116,6 @@ class Simple_commerce_mcp {
 			->all();
 
 		$data = array();
-		// TODO: Check for n+1 once these relationships are working, probably need some with()s
 		foreach ($items as $item)
 		{
 			if ($item->item_use_sale)
@@ -614,14 +612,14 @@ class Simple_commerce_mcp {
 
 		$sort_map = array(
 			// Change when relationships work
-			'item'             => 'item_id',
-			'purchaser'        => 'member_id',
+			'item'             => 'Item.entry_id',
+			'purchaser'        => 'Member.screen_name',
 			'date_of_purchase' => 'purchase_date',
 			'sub_end_date'     => 'subscription_end_date',
 			'cost'             => 'item_cost'
 		);
 
-		$purchases = ee('Model')->get('simple_commerce:Purchase');
+		$purchases = ee('Model')->get('simple_commerce:Purchase')->with('Item');
 		$total_rows = $purchases->count();
 
 		$purchases = $purchases->order($sort_map[$table->sort_col], $table->sort_dir)
@@ -634,10 +632,8 @@ class Simple_commerce_mcp {
 		foreach ($purchases as $purchase)
 		{
 			$columns = array(
-				$purchase->item_id,
-				//$purchase->Item->ChannelEntry->title,
-				$purchase->member_id,
-				//$purchase->Member->screen_name,
+				$purchase->Item->ChannelEntry->title,
+				$purchase->Member->screen_name,
 				ee()->localize->human_time($purchase->purchase_date),
 				$purchase->subscription_end_date ?: '--',
 				'$'.$purchase->item_cost,
@@ -780,7 +776,7 @@ class Simple_commerce_mcp {
 				ee('CP/Alert')->makeInline('purchases-table')
 					->asSuccess()
 					->withTitle(lang('purchase_'.$alert_key))
-					->addToBody(sprintf(lang('purchase_'.$alert_key.'_desc'), $purchase->Item->getId())) // TODO: change to item title when relationships work
+					->addToBody(sprintf(lang('purchase_'.$alert_key.'_desc'), $purchase->Item->ChannelEntry->title))
 					->defer();
 
 				ee()->functions->redirect(ee('CP/URL', 'addons/settings/simple_commerce/purchases'));
@@ -794,6 +790,12 @@ class Simple_commerce_mcp {
 					->addToBody(lang('purchase_not_'.$alert_key.'_desc'))
 					->now();
 			}
+		}
+
+		$item_choices = array();
+		foreach (ee('Model')->get('simple_commerce:Item')->with('ChannelEntry')->order('ChannelEntry.title')->all() as $item)
+		{
+			$item_choices[$item->getId()] = $item->ChannelEntry->title;
 		}
 
 		$vars['sections'] = array(
@@ -820,7 +822,7 @@ class Simple_commerce_mcp {
 					'fields' => array(
 						'screen_name' => array(
 							'type' => 'text',
-							'value' => $purchase->member_id, // TODO: change to member screen name when relationships work
+							'value' => $purchase->Member ? $purchase->Member->screen_name : '',
 							'required' => TRUE
 						)
 					)
@@ -831,7 +833,7 @@ class Simple_commerce_mcp {
 					'fields' => array(
 						'item_id' => array(
 							'type' => 'select',
-							'choices' => ee('Model')->get('simple_commerce:Item')->all()->getDictionary('item_id', 'entry_id'), // TODO: change to item title when relationships work
+							'choices' => $item_choices,
 							'value' => $purchase->item_id,
 							'required' => TRUE
 						)
