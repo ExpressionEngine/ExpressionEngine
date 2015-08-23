@@ -896,9 +896,9 @@ class Simple_commerce_mcp {
 					'title' => 'screen_name',
 					'desc' => 'screen_name_desc',
 					'fields' => array(
-						'screen_name' => array(
+						'member_id' => array(
 							'type' => 'text',
-							'value' => $purchase->Member ? $purchase->Member->screen_name : '',
+							'value' => $purchase->Member ? $purchase->Member->getMemberName() : '',
 							'required' => TRUE
 						)
 					)

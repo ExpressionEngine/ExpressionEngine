@@ -35,7 +35,7 @@ class Purchase extends Model {
 	protected static $_validation_rules = array(
 		'txn_id'        => 'required',
 		'item_id'       => 'required',
-		//'member_id'     => 'required',
+		'member_id'     => 'required|validateScreenName',
 		'purchase_date' => 'required|integer',
 		'item_cost'     => 'required|numeric'
 	);
@@ -72,5 +72,49 @@ class Purchase extends Model {
 	public function set__purchase_date($purchase_date)
 	{
 		$this->setRawProperty('purchase_date', ee()->localize->string_to_timestamp($purchase_date));
+	}
+
+	/**
+	 * Makes sure a valid member is set for the Purchase Member
+	 */
+	public function validateScreenName($key, $value, $parameters, $rule)
+	{
+		// They probably passed a screen name, get a member ID for it
+		if ( ! is_numeric($value))
+		{
+			$member = ee('Model')->get('Member')->filter('screen_name', $value);
+
+			// Since we allow duplicate screen names now,
+			if ($member->count() > 1 OR $member->count() == 0)
+			{
+				// Try to find via username
+				$member_by_user = ee('Model')->get('Member')->filter('username', $value);
+
+				// Still nothing? Invalidate
+				if ($member_by_user->count() == 0)
+				{
+					if ($member->count() > 1)
+					{
+						return 'multiple_members_found';
+					}
+					elseif ($member->count() == 0)
+					{
+						return 'member_not_found';
+					}
+				}
+			}
+
+			// Got here? Set the member_id
+			$this->setRawProperty('member_id', $member->first()->getId());
+		}
+		else
+		{
+			if (ee('Model')->get('Member', $value)->count() == 0)
+			{
+				return 'member_not_found';
+			}
+		}
+
+		return TRUE;
 	}
 }
