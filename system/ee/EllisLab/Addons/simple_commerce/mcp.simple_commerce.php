@@ -696,14 +696,14 @@ class Simple_commerce_mcp {
 
 		$sort_map = array(
 			// Change when relationships work
-			'item'             => 'Item.entry_id',
+			'item'             => 'ChannelEntry.title',
 			'purchaser'        => 'Member.screen_name',
 			'date_of_purchase' => 'purchase_date',
 			'sub_end_date'     => 'subscription_end_date',
 			'cost'             => 'item_cost'
 		);
 
-		$purchases = ee('Model')->get('simple_commerce:Purchase')->with('Item');
+		$purchases = ee('Model')->get('simple_commerce:Purchase')->with(array('Item' => 'ChannelEntry'));
 		$total_rows = $purchases->count();
 
 		$purchases = $purchases->order($sort_map[$table->sort_col], $table->sort_dir)
@@ -712,7 +712,6 @@ class Simple_commerce_mcp {
 			->all();
 
 		$data = array();
-		// TODO: Check for n+1 once these relationships are working
 		foreach ($purchases as $purchase)
 		{
 			$columns = array(
