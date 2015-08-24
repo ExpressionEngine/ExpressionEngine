@@ -23,6 +23,7 @@ class SpamParameter extends Model {
 
 	protected $parameter_id;
 	protected $kernel_id;
+	protected $index;
 	protected $term;
 	protected $class;
 	protected $mean;

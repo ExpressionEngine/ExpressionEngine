@@ -77,6 +77,7 @@ class Spam_upd {
 		$fields = array(
 			'parameter_id'	=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
 			'kernel_id'		=> array('type' => 'int', 'constraint' => '10'),
+			'index'			=> array('type' => 'int', 'constraint' => '10'),
 			'term'			=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE),
 			'class'			=> array('type' => 'char' , 'constraint' => '1'),
 			'mean'			=> array('type' => 'double'),
@@ -104,7 +105,7 @@ class Spam_upd {
 			'trap_id'	 => array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE, 'auto_increment' => TRUE),
 			'author'	 => array('type' => 'int', 'constraint' => '10'),
 			'ip_address' => array('type' => 'varchar', 'constraint' => '45'),
-			'date'	     => array('type' => 'datetime'),
+			'date'	     => array('type' => 'int', 'constraint' => '10'),
 			'file'		 => array('type' => 'varchar', 'constraint' => '129'),
 			'class'		 => array('type' => 'varchar', 'constraint' => '64'),
 			'method'	 => array('type' => 'varchar', 'constraint' => '64'),
@@ -148,6 +149,7 @@ class Spam_upd {
 		ee()->dbforge->drop_table('spam_parameters');
 		ee()->dbforge->drop_table('spam_training');
 		ee()->dbforge->drop_table('spam_trap');
+		ee()->dbforge->drop_table('spam_kernels');
 
 		return TRUE;
 	}
