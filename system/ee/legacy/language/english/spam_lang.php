@@ -49,6 +49,6 @@ $lang = array(
 	'show_all_spam' => 'show all spam',
 	'spam_trap_removed' => '<b>%s</b> items in the Spam Trap have been removed and marked as spam',
 	'spam_trap_approved' => '<b>%s</b> items in the Spam Trap have been approved and marked as ham',
-	'spam_settings_saved' => 'You Spam settings have been saved',
+	'spam_settings_updated' => 'Your Spam settings have been saved',
 	'success' => 'Success',
 );

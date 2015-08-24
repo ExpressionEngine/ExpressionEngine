@@ -308,7 +308,7 @@ class Spam_mcp {
 			}
 			else
 			{
-				ee()->view->set_message('success', lang('spam_settings_updated'), lang('spam_settings_updated_desc'), TRUE);
+				ee()->view->set_message('success', lang('success'), lang('spam_settings_updated'), TRUE);
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())
