@@ -107,9 +107,7 @@ class Group extends Profile {
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
 			// Don't try to save the password confirm
-			array_pop($vars['sections'][0]);
-
-			if ($this->saveSettings($vars['sections']))
+			if ($this->saveSettings(array_slice($vars['sections'], 0, 1)))
 			{
 				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
