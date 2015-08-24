@@ -564,12 +564,13 @@ class Spam_mcp {
 	private function setMaximumLikelihood($training_collection, $kernel)
 	{
 		$training = array();
-		$empty_class = NULL;
 
 		foreach ($training_collection as $class => $sources)
 		{
 			$count = count($sources[0]);
 			$zipped = array();
+			$update = array();
+			$insert = array();
 
 			foreach ($sources as $key => $row)
 			{
@@ -650,36 +651,58 @@ class Spam_mcp {
 		$tfidf = ee('spam:Vectorizers/Tfidf', $documents, $tokenizer, $stopwords);
 
 		$kernel = $this->getKernel('default');
+		$insert = array();
+		$update = array();
 
-		// Set the new vocabulary
-		$vocabulary = array();
+
+		ee()->db->where_in('term', array_keys($tfidf->vocabulary));
+		$query = ee()->db->get('spam_vocabulary');
+
+		foreach ($query->result() as $term)
+		{
+			$existing[$term->term] = $term;
+		}	
 
 		foreach ($tfidf->vocabulary as $term => $count)
 		{
-			$existing = ee('Model')->get('spam:SpamVocabulary')
-							->filter('term', $term)
-							->filter('kernel_id', $kernel->kernel_id)
-							->first();
-
-			if ( ! empty($existing))
+			if ( ! empty($existing[$term]))
 			{
-				$existing->count += $count;
-				$existing->save();
+				$update[] = array(
+					'term' => $term,
+					'count' => $existing[$term]->count + $count,
+					'kernel_id' => $kernel->kernel_id
+				);
 			}
 			else
 			{
-				$data = array(
+				$insert[] = array(
 					'term' => $term,
 					'count' => $count,
 					'kernel_id' => $kernel->kernel_id
 				);
-				ee('Model')->make('spam:SpamVocabulary', $data)->save();
 			}
 		}
 
+		if ( ! empty($insert))
+		{
+			ee()->db->insert_batch('exp_spam_vocabulary', $insert);
+		}
+
+		if ( ! empty($update))
+		{
+			ee()->db->update_batch('exp_spam_vocabulary', $update, 'term');
+		}
+
 		// Now grab the entire stored vocabulary
-		$training = ee('spam:Training', 'default');
-		$tfidf->vocabulary = $training->getVocabulary()->getDictionary('term', 'count');
+		$query = ee()->db->limit(ee()->config->item('spam_word_limit') ?: 5000)->get('spam_vocabulary');
+		$vocabulary = array();
+
+		foreach ($query->result() as $vocab)
+		{
+			$vocabulary[$vocab->term] = $vocab->count;
+		}	
+
+		$tfidf->vocabulary = $vocabulary;
 
 		// Increment the total document count
 		$kernel->count += count($data);
