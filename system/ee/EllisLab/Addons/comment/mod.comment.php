@@ -2284,7 +2284,7 @@ class Comment {
 
 		// Force comment moderation if spam
 		$comment_string = ee()->security->xss_clean($_POST['comment']);
-		$is_spam = ee()->spam->classify($comment_string);
+		$is_spam = ee('Spam')->classify($comment_string);
 
 		if ($is_spam === TRUE)
 		{
@@ -2465,6 +2465,11 @@ class Comment {
 			'site_id'		=> $comment_site_id
 		);
 
+		if ($is_spam == TRUE)
+		{
+			$data['status'] = 's';
+		}
+
 		// -------------------------------------------
 		// 'insert_comment_insert_array' hook.
 		//  - Modify any of the soon to be inserted values
@@ -2487,7 +2492,7 @@ class Comment {
 		if ($is_spam == TRUE)
 		{
 			$spam_data = array($comment_id, 'o');
-			ee()->spam->moderate(__FILE__, 'Comment', 'moderate_comment', $spam_data, $comment_string);
+			ee('Spam')->moderate(__FILE__, 'Comment', 'moderate_comment', $spam_data, $comment_string);
 		}
 
 		if ($notify == 'y')
