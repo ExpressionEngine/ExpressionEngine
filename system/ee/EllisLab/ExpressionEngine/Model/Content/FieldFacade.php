@@ -146,7 +146,8 @@ class FieldFacade {
 			if (isset($result['value']))
 			{
 				$this->setData($result['value']);
-				$result = TRUE;
+
+				$result = (isset($result['error'])) ? $result['error'] : TRUE;
 			}
 
 			if (isset($result['error']))
