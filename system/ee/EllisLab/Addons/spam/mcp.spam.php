@@ -758,8 +758,6 @@ class Spam_mcp {
 	 */
 	private function onlineStatistics($count = 0, $mean = 0, $variance = 0, $data = array())
 	{
-		$variance = $variance * ($count - 1);
-
 		foreach ($data as $datum)
 		{
 			$count++;
@@ -768,7 +766,11 @@ class Spam_mcp {
 			$variance = $variance + $delta * ($datum - $mean);
 		}
 
-		$variance = $variance / ($count - 1);
+		if ($count > 1)
+		{
+			$variance = $variance / ($count - 1);
+		}
+
 		return array('mean' => $mean, 'variance' => $variance);
 	}
 
