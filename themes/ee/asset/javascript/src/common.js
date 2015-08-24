@@ -289,7 +289,7 @@ $(document).ready(function(){
 			e.stopPropagation();
 		});
 
-		// Changing a checkbox needs to apply the highlight style
+		// Toggle the bulk actions
 		$('table tr td:last-child input[type=checkbox]').on('change',function() {
 			$(this).parents('tr').toggleClass('selected', $(this).is(':checked'));
 			if ($(this).parents('table').find('input:checked').length == 0) {
@@ -299,16 +299,27 @@ $(document).ready(function(){
 			}
 		});
 
-		// Highlight selected row for table lists
+		// "Table" lists
 		$('.tbl-list .check-ctrl input').on('click change',function() {
 			$(this).parents('.tbl-row').toggleClass('selected', $(this).is(':checked'));
 
+			var tableList = $(this).parents('.tbl-list');
+
 			// If all checkboxes are checked, check the Select All box
-			var allSelected = ! $(this).parents('.tbl-list-wrap .tbl-list .check-ctrl input:checked').length();
+			var allSelected = (tableList.find('.check-ctrl input:checked').length == tableList.find('.check-ctrl input').length);
 			$(this).parents('.tbl-list-wrap').find('.tbl-list-ctrl input').prop('checked', allSelected);
+
+			// Toggle the bulk actions
+			if (tableList.find('.check-ctrl input:checked').length == 0)
+			{
+				$(this).parents('.tbl-list-wrap').siblings('.tbl-bulk-act').hide();
+			} else
+			{
+				$(this).parents('.tbl-list-wrap').siblings('.tbl-bulk-act').show();
+			}
 		});
 
-		// Select all for table lists
+		// Select all for "table" lists
 		$('.tbl-list-ctrl input').on('click', function(){
 			$(this).parents('.tbl-list-wrap')
 				.find('.tbl-list .check-ctrl input')
