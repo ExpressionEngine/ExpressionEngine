@@ -732,6 +732,20 @@ class Spam_mcp {
 	}
 
 	/**
+	 * This will create initial training data from everything that's in the 
+	 * training table
+	 * 
+	 * @access private
+	 * @return void
+	 */
+	private function trainAll()
+	{
+		$start_time = microtime(true);
+		$this->trainParameters(ee('Model')->get('spam:SpamTraining')->all());
+		$time = (microtime(true) - $start_time);
+	}
+
+	/**
 	 * Use Knuth's algorithm to update the mean and variance as we go. This 
 	 * should avoid any numerical instability due to cancellation
 	 * 
