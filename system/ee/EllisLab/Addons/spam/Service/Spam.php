@@ -94,11 +94,11 @@ class Spam {
 	 * @access public
 	 * @return void
 	 */
-	public function moderateContent($file, $author, $class, $method, $content, $doc)
+	public function moderate($file, $class, $method, $content, $doc)
 	{
 		$data = array(
 			'file' => $file,
-			'author' => $author,
+			'author' => ee()->session->userdata('member_id'),
 			'date' => time(),
 			'ip_address' => $_SERVER['REMOTE_ADDR'],
 			'class' => $class,
@@ -106,7 +106,7 @@ class Spam {
 			'data' => serialize($content),
 			'document' => $doc
 		);
-		$trap = ee('Model')->make('SpamTrap', $data);
+		$trap = ee('Model')->make('spam:SpamTrap', $data);
 		$trap->save();
 	}
 
@@ -124,7 +124,7 @@ class Spam {
 
 		// Prep the the TFIDF vectorizer with the vocabulary we have stored
 		$tfidf = ee('spam:Vectorizers/Tfidf', array(), $tokenizer, $stop_words);
-		$tfidf->vocabulary = $training->getVocabulary()->getDictionary('term', 'count');
+		$tfidf->vocabulary = $training->getVocabulary();
 		$tfidf->document_count = $training->getDocumentCount();
 		$tfidf->generateLookups();
 
