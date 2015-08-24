@@ -49,7 +49,7 @@ class Classifier {
 		$this->classes = array_unique(array_keys($training));
 		$this->corpus = $vocabulary;
 		$this->training = $training;
-		$this->sensitivity = ee()->config->item('spam_sensitivity') ?: $this->sensitivity;
+		$this->sensitivity = (ee()->config->item('spam_sensitivity') / 100) ?: $this->sensitivity;
 	}
 
 	/**
@@ -102,7 +102,7 @@ class Classifier {
 
 		$probability = 1 / (1 + pow(M_E, $log_sum));
 
-		return $probability < $this->sensitivity;
+		return $probability > $this->sensitivity;
 
 	}
 
