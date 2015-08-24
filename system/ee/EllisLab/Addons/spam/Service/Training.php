@@ -171,23 +171,23 @@ class Training {
 	 */
 	private function getParameters($class)
 	{
-		$result = array();
 		$class = ($class == 'spam') ? 'y' : 'n';
-		$kernel = $this->getKernel('default');
-		$parameters =  ee('Model')->get('spam:SpamParameter')
-						->filter('kernel_id', $kernel->kernel_id)
-						->filter('class', $class)
-						->all();
 
-		foreach ($parameters as $parameter)
+		ee()->db->select('mean, variance');
+		ee()->db->from('spam_parameters');
+		ee()->db->where('class', $class);
+		ee()->db->where('kernel_id', $this->kernel->kernel_id);
+		$query = ee()->db->get();
+
+		$result = array();
+
+		foreach ($query->result() as $parameter)
 		{
-			$result[] = ee('spam:Distribution', $parameter->mean, $parameter->variance);
+				$result[] = ee('spam:Distribution', $parameter->mean, $parameter->variance);
 		}
-	
+
 		return $result;
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Returns an array of document counts for every word in the training set
@@ -198,7 +198,20 @@ class Training {
 	public function getVocabulary()
 	{
 		$kernel = $this->getKernel($this->kernel);
-		return ee('Model')->get('spam:SpamVocabulary')->filter('kernel_id', $kernel->kernel_id)->all();
+		ee()->db->select('term, count');
+		ee()->db->from('spam_vocabulary');
+		ee()->db->where('kernel_id', $kernel->kernel_id);
+		ee()->db->limit(ee()->config->item('spam_word_limit') ?: 5000);
+		$query = ee()->db->get();
+		
+		$result = array();
+		
+		foreach ($query->result() as $word)
+		{
+			$result[$word->term] = $word->count;
+		}
+
+		return $result;
 	}
 
 	// --------------------------------------------------------------------

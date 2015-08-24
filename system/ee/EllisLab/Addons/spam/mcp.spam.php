@@ -579,130 +579,59 @@ class Spam_mcp {
 				}
 			}
 
+			$query = ee()->db->where('class', $class == 1 ? 'y' : 'n')->get('spam_parameters');
+			$parameters = array();
+
+			foreach ($query->result() as $parameter)
+			{
+				$parameters[$parameter->index] = $parameter;
+			}	
+
 			foreach ($zipped as $index => $feature)
 			{
-				// Zipped is now an array of values for a particular feature and 
-				// class. Time to do some estimates.
-				$current = ee('Model')->get('spam:SpamParameter')
-							->filter('class', $class === 1)
-							->filter('term', $index)
-							->first();
+				$count = 0;
+				$mean = 0;
+				$variance = 0;
+				$new = TRUE;
 
-				if (empty($current))
+				if ( ! empty($parameters[$index]))
 				{
-					$current = ee('Model')->make('spam:SpamParameter')->save();
+					$mean = $parameters[$index]->mean;
+					$variance = $parameters[$index]->variance;
+					$count = $kernel->count;
+					$new = FALSE;
 				}
 
-				$updated = $this->onlineStatistics($kernel->count, $current->mean, $current->variance, $feature);
+				$updated = $this->onlineStatistics($count, $mean, $variance, $feature);
 
 				$training = array(
 					'kernel_id' => $kernel->kernel_id,
-					'class' => $class == 1,
-					'term' => $index,
+					'class' => $class == 1 ? 'y' : 'n',
+					'index' => $index,
 					'mean' => $updated['mean'],
 					'variance' => $updated['variance']
 				);
 
-				$current->set($training);
-				$current->save();
-			}
-		}
-
-		// Loop through one last time if we had an empty class
-		$empty_class = array_pop(array_diff(array(0,1), array_keys($training_collection)));
-
-		if ($empty_class !== NULL)
-		{
-			foreach ($zipped as $index => $feature)
-			{
-				$current = ee('Model')->get('spam:SpamParameter')
-							->filter('class', $empty_class === 1)
-							->filter('term', $index)
-							->first();
-
-				if (empty($current))
+				if ($new)
 				{
-					$current = ee('Model')->make('spam:SpamParameter')->save();
+					$insert[] = $training;
 				}
-
-				$updated = $this->onlineStatistics($kernel->count, $current->mean, $current->variance);
-
-				$training = array(
-					'kernel_id' => $kernel->kernel_id,
-					'class' => $empty_class == 1,
-					'term' => $index,
-					'mean' => 0,
-					'variance' => 0
-				);
-
-				$current->set($training);
-				$current->save();
+				else
+				{
+					$update[] = $training;
+				}
 			}
 		}
-	}
 
-
-	/**
-	 * Loops through all content marked as spam/ham and builds a member 
-	 * classifier based on the authors' member data.
-	 * 
-	 * @access private
-	 * @return void
-	 */
-	private function trainMemberParameters()
-	{
-		$spammers = $this->getSpammers();
-		$hammers = $this->getRealPeople();
-		$members = array_merge($spammers, $hammers);
-
-		$spam_classes = array_pad(array(), count($spammers), 1);
-		$ham_classes = array_pad(array(), count($hammers), 0);
-		$classes = array_merge($spam_classes, $ham_classes);
-		$training = array();
-
-		foreach ($members as $member)
+		if ( ! empty($insert))
 		{
-			$ip = str_replace('.', ' ', $member->ip);
-
-			$training[] = implode(' ', array($member->username, $member->email, $member->url, $ip));
+			ee()->db->insert_batch('exp_spam_parameters', $insert);
 		}
 
-		$tokenizer = ee('spam:Tokenizer');
-		$training_classes = array();
-
-		$vocabulary = array();
-		$kernel = $this->_get_kernel('member');
-		$tfidf = ee('spam:Vectorizers/Tfidf', $training, $tokenizer);
-
-		$vectorizers = array();
-		$vectorizers[] = $tfidf;
-		$vectorizers[] = ee('spam:Vectorizers/ASCIIPrintable');
-		$vectorizers[] = ee('spam:Vectorizers/Punctuation');
-		$training_collection = ee('spam:Collection', $vectorizers);
-
-		foreach ($tfidf->vocabulary as $term => $count)
+		if ( ! empty($update))
 		{
-			$data = array(
-				'term' => $term,
-				'count' => $count,
-				'kernel_id' => $kernel
-			);
-
-			$vocabulary[] = $data;
+			ee()->db->update_batch('exp_spam_parameters', $update, 'index');
 		}
-
-		ee()->db->empty_table("spam_vocabulary"); 
-		ee()->db->insert_batch("spam_vocabulary", $vocabulary); 
-
-		foreach ($training_collection->fitTransform($training) as $key => $vector)
-		{
-			$training_classes[$classes[$key]][$key] = $vector;
-		}
-
-		$this->setMaximumLikelihood($training_classes, 'member');
-
-		$spam_training = ee('spam:Spam_training', 'default');
-		$spam_training->deleteClassifier();
 	}
 
 	/**
