@@ -2854,7 +2854,9 @@ class Comment {
 	// --------------------------------------------------------------------
 
 	/**
-	 * moderate_comment
+     * moderate_comment simply sets a particular status given a comment id.
+     * This is used by the Spam Module for showing comments after they are
+     * flagged as a false positive in the spam trap.
 	 * 
 	 * @param integer $comment_id  The ID of the comment
 	 * @param string  $status  The status to set
