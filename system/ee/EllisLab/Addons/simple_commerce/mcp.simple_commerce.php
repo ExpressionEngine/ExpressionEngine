@@ -714,15 +714,20 @@ class Simple_commerce_mcp {
 		$data = array();
 		foreach ($purchases as $purchase)
 		{
+			$edit_url = ee('CP/URL', 'addons/settings/simple_commerce/edit-purchase/'.$purchase->getId());
+
 			$columns = array(
-				$purchase->Item->ChannelEntry->title,
+				array(
+					'content' => $purchase->Item->ChannelEntry->title,
+					'href' => $edit_url
+				),
 				$purchase->Member->screen_name,
 				ee()->localize->human_time($purchase->purchase_date),
 				$purchase->subscription_end_date ?: '--',
 				'$'.$purchase->item_cost,
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'addons/settings/simple_commerce/edit-purchase/'.$purchase->getId()),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					)
 				)),
@@ -1037,11 +1042,16 @@ class Simple_commerce_mcp {
 		$data = array();
 		foreach ($email_templates as $template)
 		{
+			$edit_url = ee('CP/URL', 'addons/settings/simple_commerce/edit-email-template/'.$template->getId());
+
 			$columns = array(
-				$template->email_name,
+				array(
+					'content' => $template->email_name,
+					'href' => $edit_url
+				),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'addons/settings/simple_commerce/edit-email-template/'.$template->getId()),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					)
 				)),
