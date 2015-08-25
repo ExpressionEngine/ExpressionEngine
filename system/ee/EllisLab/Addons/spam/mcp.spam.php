@@ -84,11 +84,11 @@ class Spam_mcp {
 		);
 		$total = ee('Model')->get('spam:SpamTrap')->count();
 
-		$types = ee('Filter')->make('content_type', 'content_type', $options);
+		$types = ee('CP/Filter')->make('content_type', 'content_type', $options);
 		$types->setPlaceholder(lang('all'));
 		$types->disableCustomValue();
 
-		$filters = ee('Filter')
+		$filters = ee('CP/Filter')
 			->add($types)
 			->add('Date', 'date')
 			->add('Perpage', $total, 'show_all_spam');
@@ -341,7 +341,7 @@ class Spam_mcp {
 			call_user_func_array(array($class, $spam->method), $data);
 		}
 
-		ee('Alert')->makeInline('spam')
+		ee('CP/Alert')->makeInline('spam')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(sprintf(lang('spam_trap_approved'), count($trapped)))
@@ -353,7 +353,7 @@ class Spam_mcp {
 
 	private function remove($trapped)
 	{
-		ee('Alert')->makeInline('spam')
+		ee('CP/Alert')->makeInline('spam')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(sprintf(lang('spam_trap_removed'), count($trapped)))
