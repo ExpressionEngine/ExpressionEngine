@@ -412,14 +412,14 @@ class Spam_mcp {
 			{
 				if ( ! empty($filter))
 				{
-					$result = $result->filter($key, $filter);
+					$result->filter($key, $filter);
 				}
 			}
 		}
 
 		if ( ! empty($search))
 		{
-			$result = $result->filter('document', 'LIKE', "%$search%");
+			$result->filter('document', 'LIKE', "%$search%");
 		}
 
 		if ( ! empty($sort))
@@ -429,17 +429,17 @@ class Spam_mcp {
 				'spam_content' => 'document',
 				'date' => 'date',
 			);
-			$result = $result->order($options[$sort], $direction);
+			$result->order($options[$sort], $direction);
 		}
 
 		if ( ! empty($limit))
 		{
-			$result = $result->limit($limit);
+			$result->limit($limit);
 		}
 
 		if ( ! empty($offset))
 		{
-			$result = $result->offset($offset);
+			$result->offset($offset);
 		}
 
 		return $result->all();
