@@ -29,7 +29,7 @@ should be created. Version numbers should follow
 
 ## Installing / Getting up and running
 
-Modify installer conditional in `system/EllisLab/ExpressionEngine/Boot/boot.php` from:
+Modify installer conditional in `system/ee/EllisLab/ExpressionEngine/Boot/boot.php` around line 60 from:
 
 ```
 if (FALSE && defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
@@ -66,6 +66,34 @@ Turn debug on:
 ```
 $debug = 1;
 ```
+
+## Updating from the repo
+
+Modify installer conditional in `system/ee/EllisLab/ExpressionEngine/Boot/boot.php` around line 60 from:
+
+```
+if (FALSE && defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
+```
+
+to
+
+```
+if (defined('REQ') && REQ == 'CP' && is_dir(SYSPATH.'installer/'))
+```
+
+Modify config version variable in `system/user/config/config.php` around line 14 from:
+
+```
+$config['app_version'] = '3.0.0';
+```
+
+to
+
+```
+$config['app_version'] = '2.9.0';
+```
+
+Run updater, login.
 
 
 ## Unit Testing
