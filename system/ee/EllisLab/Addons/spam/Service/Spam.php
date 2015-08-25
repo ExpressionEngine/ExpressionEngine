@@ -14,8 +14,6 @@ namespace EllisLab\Addons\Spam\Service;
  * @filesource
  */
 
-// ------------------------------------------------------------------------
-
 /**
  * ExpressionEngine Spam Module
  *
@@ -34,9 +32,16 @@ class Spam {
 	public function __construct()
 	{
 		$this->classifier = $this->loadDefaultClassifier();
-	}
 
-	// --------------------------------------------------------------------
+        // Check if the spam module is installed
+		ee()->load->library('addons');
+		$installed = ee()->addons->get_installed();
+
+		if (empty($installed['spam']))
+		{
+			$this->installed = FALSE;
+		}
+	}
 
 	/**
 	 * Returns true if the member is classified as a spammer
@@ -62,9 +67,6 @@ class Spam {
 		return $this->memberClassifier->classify($source, 'spam');
 	}
 
-
-	// --------------------------------------------------------------------
-
 	/**
 	 * Returns true if the string is classified as spam
 	 * 
@@ -74,11 +76,15 @@ class Spam {
 	 */
 	public function classify($source)
 	{
+		if ($this->installed === FALSE)
+		{
+			// If the spam module isn't installed everything is ham!
+			return FALSE;
+		}
+
 		$source = ee('spam:Source', $source);
 		return $this->classifier->classify($source, 'spam');
 	}
-
-	// --------------------------------------------------------------------
 
 	/**
 	 * Store flagged spam to await moderation. We store a serialized array of any
