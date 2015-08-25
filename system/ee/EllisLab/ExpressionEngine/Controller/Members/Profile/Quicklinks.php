@@ -42,6 +42,7 @@ class Quicklinks extends Profile {
 		$this->quicklinks = ee()->member_model->get_member_quicklinks($this->member->member_id);
 		$this->index_url = $this->base_url;
 		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
+		ee()->cp->set_breadcrumb(ee('CP/URL', 'members/profile/quicklinks'), lang('quick_links'));
 	}
 
 	/**
