@@ -363,7 +363,7 @@ Used in the control panel only.',
 
 'password_change_warning' => 'Note: You have changed your password so you will have to log back in.',
 
-'html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Formatting Buttons',
+'html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Buttons',
 
 'html_buttons_updated' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Buttons Updated',
 
