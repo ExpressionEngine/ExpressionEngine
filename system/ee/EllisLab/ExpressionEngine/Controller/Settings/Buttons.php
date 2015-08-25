@@ -165,15 +165,20 @@ class Buttons extends Settings {
 	 * @access public
 	 * @return void
 	 */
-	public function create()
+	public function create($preset = '')
 	{
 		$this->base_url = ee('CP/URL', $this->index_url . '/create');
 
-		$vars = array(
-			'cp_page_title' => lang('create_html_button')
-		);
+		$values = array();
 
-		$this->form($vars);
+		if (isset($this->predefined[$preset]))
+		{
+			$values = $this->predefined[$preset];
+		}
+
+		$vars['cp_page_title'] = lang('create_html_button');
+
+		$this->form($vars, $values);
 	}
 
 	/**
@@ -376,7 +381,7 @@ class Buttons extends Settings {
 		foreach ($this->predefined as $name => $button)
 		{
 			$current = array(
-				'href' => '#',
+				'href' => ee('CP/URL', 'settings/buttons/create/' . $name),
 				'title' => $name,
 				'data-accesskey' => $button['accesskey'],
 			);
