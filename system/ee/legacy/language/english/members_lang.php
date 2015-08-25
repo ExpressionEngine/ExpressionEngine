@@ -476,7 +476,7 @@ $lang = array(
 
 "can_view_profiles_desc" => "When set to <b>yes</b>, users assigned to this group may view public profiles of other members.",
 
-"can_edit_html_buttons" => "Can edit own HTML formatting buttons",
+"can_edit_html_buttons" => "Can edit own <abbr title=\"Hyper-Text Markup Language\">HTML</abbr> formatting buttons",
 
 'can_delete_self' => "Delete account",
 

@@ -199,7 +199,7 @@ Used in the control panel only.',
 
 'time_format' => 'Time Formatting',
 
-'your_html_buttons' => 'HTML Formatting Buttons',
+'your_html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Formatting Buttons',
 
 'change_password' => 'Change Password',
 
@@ -363,9 +363,9 @@ Used in the control panel only.',
 
 'password_change_warning' => 'Note: You have changed your password so you will have to log back in.',
 
-'html_buttons' => 'HTML Formatting Buttons',
+'html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Formatting Buttons',
 
-'html_buttons_updated' => 'HTML Buttons Updated',
+'html_buttons_updated' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Buttons Updated',
 
 'only_self_qucklink_access' => 'You are not allowed to access another member\'s Quick Links',
 
@@ -435,7 +435,7 @@ Used in the control panel only.',
 
 'login_as_member' => 'Login as Member',
 
-'html_buttons_updated' => 'HTML Buttons Updated',
+'html_buttons_updated' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Buttons Updated',
 
 'sidebar_updated' => 'Sidebar State Updated',
 
