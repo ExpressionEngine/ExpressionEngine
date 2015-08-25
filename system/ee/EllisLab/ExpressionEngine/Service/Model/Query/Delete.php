@@ -48,7 +48,7 @@ class Delete extends Query {
 		$from     = $this->removeDefaultPrefix($from);
 
 		$delete_list = $this->getDeleteList($from);
-var_dump($delete_list);
+
 		foreach ($delete_list as $model => $withs)
 		{
 			$offset		= 0;
