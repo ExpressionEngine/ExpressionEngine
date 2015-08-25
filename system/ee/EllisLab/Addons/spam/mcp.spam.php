@@ -176,13 +176,10 @@ class Spam_mcp {
 		$table->setNoResultsText('no_search_results');
 		$table->setData($trapped);
 
-		$this->base_url->addQueryStringVariables($filter_values);
-		$this->base_url->setQueryStringVariable('sort_col', $table->sort_col);
-		$this->base_url->setQueryStringVariable('sort_dir', $table->sort_dir);
 
-		$data['filters'] = $filters->render($this->base_url);
 		$data['table'] = $table->viewData($this->base_url);
-		$data['form_url'] = cp_url('addons/settings/spam');
+		$data['filters'] = $filters->render($this->base_url);
+		$data['form_url'] = ee('CP/URL', 'addons/settings/spam');
 		$data['cp_page_title'] = lang('all_spam');
 
 		// Set search results heading
@@ -212,7 +209,7 @@ class Spam_mcp {
 
 	public function settings()
 	{
-		$base_url = ee('CP/URL', 'addons/settings/spam/settings', ee()->session->session_id());
+		$base_url = ee('CP/URL', 'addons/settings/spam/settings');
 		ee()->load->library('form_validation');
 
 		$settings = array(
