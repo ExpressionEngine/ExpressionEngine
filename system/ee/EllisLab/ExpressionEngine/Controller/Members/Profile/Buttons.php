@@ -166,16 +166,23 @@ class Buttons extends Profile {
 	 * @access public
 	 * @return void
 	 */
-	public function create()
+	public function create($preset = '')
 	{
 		ee()->cp->set_breadcrumb($this->base_url, lang('html_buttons'));
 		$this->base_url = ee('CP/URL', $this->index_url . '/create', $this->query_string);
+
+		$values = array();
+
+		if (isset($this->predefined[$preset]))
+		{
+			$values = $this->predefined[$preset];
+		}
 
 		$vars = array(
 			'cp_page_title' => lang('create_html_button')
 		);
 
-		$this->form($vars);
+		$this->form($vars, $values);
 	}
 
 	/**
@@ -386,7 +393,7 @@ class Buttons extends Profile {
 		foreach ($this->predefined as $name => $button)
 		{
 			$current = array(
-				'href' => '#',
+				'href' => ee('CP/URL', 'members/profile/buttons/create/' . $name),
 				'title' => $name,
 				'data-accesskey' => $button['accesskey'],
 			);
