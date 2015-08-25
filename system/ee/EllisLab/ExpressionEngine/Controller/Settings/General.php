@@ -285,7 +285,7 @@ class General extends Settings {
 		// Error getting version
 		if ( ! $details)
 		{
-			ee('Alert')->makeBanner('error-getting-version')
+			ee('CP/Alert')->makeBanner('error-getting-version')
 				->asIssue()
 				->withTitle(lang('cp_message_issue'))
 				->addToBody(sprintf(lang('error_getting_version'), APP_VER))
@@ -304,7 +304,7 @@ class General extends Settings {
 
 				$desc = sprintf(lang('version_update_inst'), $latest_version[0], $download_url, $instruct_url);
 
-				ee('Alert')->makeBanner('version-update-available')
+				ee('CP/Alert')->makeBanner('version-update-available')
 					->asWarning()
 					->withTitle(lang('version_update_available'))
 					->addToBody($desc)
@@ -313,7 +313,7 @@ class General extends Settings {
 			// Running latest version already
 			else
 			{
-				ee('Alert')->makeBanner('running-current')
+				ee('CP/Alert')->makeBanner('running-current')
 					->asSuccess()
 					->withTitle(lang('running_current'))
 					->addToBody(sprintf(lang('running_current_desc'), APP_VER))

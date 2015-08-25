@@ -45,7 +45,7 @@ class Link_rte {
 				'add'    => lang('link'),
 				'title'  => lang('title_link'),
 				'modal'  => array(
-					'html'            => ee('View')->make('link')->render(array()),
+					'html'            => ee('View')->make('rte:link')->render(array()),
 					'url_required'    => lang('valid_url_required'),
 					'selection_error' => lang('rte_selection_error'),
 					'add_link'        => lang('add_link'),

@@ -101,7 +101,7 @@ class Date extends Filter {
 			lang('sa'),
 		));
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/date_picker'),
+			'file' => array('cp/date_picker'),
 		));
 
 		$value = $this->value();

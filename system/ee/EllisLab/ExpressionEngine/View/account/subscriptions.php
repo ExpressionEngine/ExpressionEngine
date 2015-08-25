@@ -12,7 +12,7 @@
 
 	<?php if (isset($filters)) echo $filters; ?>
 
-	<?=ee('Alert')->getAllInlines()?>
+	<?=ee('CP/Alert')->getAllInlines()?>
 
 	<?php $this->embed('_shared/table', $table); ?>
 

@@ -129,7 +129,11 @@ class Create extends Members {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('settings_save_error'))
+				->addToBody(lang('settings_save_error_desc'))
+				->now();
 		}
 
 		$this->generateSidebar('all_members');
@@ -298,7 +302,12 @@ class Create extends Members {
 		$this->session->set_flashdata(array(
 			'highlight_id' => $member_id
 		));
-		ee()->view->set_message('success', lang('member_updated'), lang('member_updated_desc'), TRUE);
+
+		ee('CP/Alert')->makeInline('view-members')
+			->asSuccess()
+			->withTitle(lang('member_updated'))
+			->addToBody(lang('member_updated_desc'))
+			->defer();
 
 		$this->functions->redirect(ee('CP/URL', 'members', array('sort_col' => 'member_id', 'sort_dir' => 'desc')));
 	}

@@ -321,11 +321,11 @@ $lang = array(
 
 'allow_comments' => 'Allow comments?',
 
-'allow_comments_desc' => 'When set to <b>yes</b>, member groups with permissions can submit comments to this channel\'s entires.',
+'allow_comments_desc' => 'When set to <b>yes</b>, members can submit comments to this channel\'s entries.',
 
-'allow_comments_checked' => 'Allow comments checked?',
+'allow_comments_checked' => 'Allow comments default?',
 
-'allow_comments_checked_desc' => 'When set to <b>yes</b>, the allow comments checkbox will be checked by default for this channel.',
+'allow_comments_checked_desc' => 'When set to <b>yes</b>, the "Allow comments" option will be set to "yes" by default',
 
 'require_membership' => 'Require membership?',
 
@@ -430,7 +430,7 @@ $lang = array(
 
 'categories_removed_desc' => '%d categories were removed.',
 
-'no_fields' => 'No Fields',
+'no_fields' => 'No fields found',
 
 'fields' => 'Fields',
 

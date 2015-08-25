@@ -111,9 +111,10 @@ class Groups extends Members\Members {
 
 		foreach ($groups as $group)
 		{
+			$edit_link = ee('CP/URL', 'members/groups/edit/', array('group' => $group->group_id));
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
-					'href' => ee('CP/URL', 'members/groups/edit/', array('group' => $group->group_id)),
+					'href' => $edit_link,
 					'title' => strtolower(lang('edit'))
 				)
 			));
@@ -121,7 +122,9 @@ class Groups extends Members\Members {
 			$status = ($group->is_locked == 'y') ? 'locked' : 'unlocked';
 			$count = $group->getMembers()->count();
 			$href = ee('CP/URL', 'members', array('group' => $group->group_id));
-			$title = "$group->group_title <a href='$href' alt='" . lang('view_members') . $group->group_title ."'>($count)</a>";
+			$title = '<a href="' . $edit_link . '">' . $group->group_title . '</a>';
+			$title .= " <a href='$href' alt='" . lang('view_members') . $group->group_title ."'>($count)</a>";
+
 
 			$groupData[] = array(
 				'id' => $group->group_id,
@@ -165,7 +168,7 @@ class Groups extends Members\Members {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('members') . ': <b>### ' . lang('members') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		ee()->view->base_url = $this->base_url;
@@ -232,7 +235,7 @@ class Groups extends Members\Members {
 
 		$group_names = ee('Model')->get('MemberGroup', $groups)->all()->pluck('group_title');
 
-		ee('Alert')->makeInline('member_groups')
+		ee('CP/Alert')->makeInline('member_groups')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('member_groups_removed_desc'))
@@ -310,9 +313,15 @@ class Groups extends Members\Members {
 			show_error(lang('only_superadmins_can_admin_groups'));
 		}
 
-		$template_groups = ee('Model')->get('TemplateGroup')->all()->getDictionary('group_id', 'group_name');
+		$template_groups = ee('Model')->get('TemplateGroup')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all()
+			->getDictionary('group_id', 'group_name');
 		$addons = ee('Model')->get('Module')->all()->getDictionary('module_id', 'module_name');
-		$allowed_channels = ee('Model')->get('Channel')->all()->getDictionary('channel_id', 'channel_name');
+		$allowed_channels = ee('Model')->get('Channel')
+			->filter('site_id', ee()->config->item('site_id'))
+			->all()
+			->getDictionary('channel_id', 'channel_title');
 
 		ee()->load->helper('array');
 
@@ -547,6 +556,27 @@ class Groups extends Members\Members {
 					)
 				),
 				array(
+					'title' => 'default_cp_homepage',
+					'desc' => 'default_cp_homepage_desc',
+					'fields' => array(
+						'cp_homepage' => array(
+							'type' => 'radio',
+							'choices' => array(
+								'overview' => lang('cp_overview').' &mdash; <i>'.lang('default').'</i>',
+								'entries_edit' => lang('edit_listing'),
+								'publish_form' => lang('publish_form').' &mdash; '.
+									form_dropdown('cp_homepage_channel', $allowed_channels, element('cp_homepage_channel', $values)),
+								'custom' => lang('custom_uri'),
+							),
+							'value' => element('cp_homepage', $values, 'overview')
+						),
+						'cp_homepage_custom' => array(
+							'type' => 'text',
+							'value' => element('cp_homepage_custom', $values)
+						)
+					)
+				),
+				array(
 					'title' => 'footer_helper_links',
 					'desc' => 'footer_helper_links_desc',
 					'fields' => array(
@@ -695,7 +725,7 @@ class Groups extends Members\Members {
 			),
 			'addon_access' => array(
 				array(
-					'title' => 'addon_access',
+					'title' => 'addons_access',
 					'desc' => 'addons_access_desc',
 					'fields' => array(
 						'addons_access' => array(
@@ -726,7 +756,7 @@ class Groups extends Members\Members {
 			)
 		);
 
-		ee('Alert')->makeInline('shared-form')
+		ee('CP/Alert')->makeInline('shared-form')
 			->asWarning()
 			->cannotClose()
 			->addToBody(lang('access_privilege_warning'))
@@ -775,14 +805,22 @@ class Groups extends Members\Members {
 		{
 			if ($this->save($vars['sections']))
 			{
-				ee()->view->set_message('success', lang('member_group_updated'), lang('member_group_updated_desc'), TRUE);
+				ee('CP/Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('member_group_updated'))
+					->addToBody(lang('member_group_updated_desc'))
+					->defer();
 			}
 
 			ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('settings_save_erorr'))
+				->addToBody(lang('settings_save_error_desc'))
+				->now();
 		}
 
 		ee()->view->base_url = $this->base_url;
@@ -1009,6 +1047,9 @@ class Groups extends Members\Members {
 				}
 			}
 		}
+
+		// This field isn't present in the section array, it's shimmy'd into a radio selection
+		$group->cp_homepage_channel = ee()->input->post('cp_homepage_channel');
 
 		if ( empty($group->site_id))
 		{

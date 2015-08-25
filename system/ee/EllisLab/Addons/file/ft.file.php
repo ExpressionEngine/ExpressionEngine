@@ -56,17 +56,71 @@ class File_ft extends EE_Fieldtype {
 	 */
 	function validate($data)
 	{
-		return ee()->file_field->validate(
-			$data,
-			$this->name(),
-			$this->settings['field_required'],
-			array(
-				'grid_row_id' => isset($this->settings['grid_row_id'])
-					? $this->settings['grid_row_id'] : NULL,
-				'grid_field_id' => isset($this->settings['grid_field_id'])
-					? $this->settings['grid_field_id'] : NULL
-			)
-		);
+		// Is it required but empty?
+		if ($this->settings['field_required'] && empty($data))
+		{
+			return array('value' => '', 'error' => lang('required'));
+		}
+
+		// Does it look like '{filedir_n}file_name.ext'?
+		if (preg_match('/^{filedir_(\d+)}/', $data, $matches))
+		{
+			$upload_location_id = $matches[1];
+			$file_name = str_replace($matches[0], '', $data);
+
+			$file = ee('Model')->get('File')
+				->filter('site_id', ee()->config->item('site_id'))
+				->filter('upload_location_id', $upload_location_id)
+				->filter('file_name', $file_name)
+				->first();
+
+			if ($file)
+			{
+				$check_permissions = FALSE;
+
+				// Is this an edit?
+				if ($this->content_id)
+				{
+					// Are we validating on grid data?
+					if (isset($this->settings['grid_row_id']))
+					{
+						ee()->load->model('grid_model');
+						$rows = ee()->grid_model->get_entry_rows($this->content_id, $this->settings['grid_field_id'], $this->content_type);
+
+						// If this filed was we need to check permissions.
+						if ($rows[$this->settings['grid_row_id']] != $data)
+						{
+							$check_permissions = TRUE;
+						}
+					}
+					else
+					{
+						$entry = ee('Model')->get('ChannelEntry', $this->content_id)->first();
+						$field_name = $this->name();
+
+						// If this filed was we need to check permissions.
+						if ($entry && $entry->$field_name != $data)
+						{
+							$check_permissions = TRUE;
+						}
+					}
+				}
+				else
+				{
+					$check_permissions = TRUE;
+				}
+
+				if ($check_permissions &&
+					$file->memberGroupHasAccess(ee()->session->userdata['group_id']) == FALSE)
+				{
+					return array('value' => '', 'error' => lang('directory_no_access'));
+				}
+
+				return array('value' => $data);
+			}
+		}
+
+		return array('value' => '', 'error' => lang('invalid_selection'));
 	}
 
 	// --------------------------------------------------------------------
@@ -500,6 +554,14 @@ CSS;
 		// Number of existing files to show? 0 means all
 		$num_existing = ( ! isset($data['num_existing'])) ? 50 : $data['num_existing'];
 
+		$directory_choices = array('all' => lang('all'));
+		$directory_choices += ee('Model')->get('UploadDestination')
+			->fields('id', 'name')
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('module_id', 0)
+			->all()
+			->getDictionary('id', 'name');
+
 		$settings = array(
 			'field_options_file' => array(
 				'label' => 'field_options',
@@ -522,7 +584,7 @@ CSS;
 						'fields' => array(
 							'allowed_directories' => array(
 								'type' => 'select',
-								'choices' => $this->_allowed_directories_options(),
+								'choices' => $directory_choices,
 								'value' => $allowed_directories
 							)
 						)
@@ -614,30 +676,6 @@ CSS;
 				array('data' => $cell2, 'class' => 'id')
 			);
 		}
-	}
-
-	// --------------------------------------------------------------------
-
-	/**
-	 * Returns dropdown-ready array of allowed upload directories
-	 */
-	private function _allowed_directories_options()
-	{
-		ee()->load->model('file_upload_preferences_model');
-
-		$directory_options['all'] = lang('all');
-
-		if (empty($this->_dirs))
-		{
-			$this->_dirs = ee()->file_upload_preferences_model->get_file_upload_preferences(1);
-		}
-
-		foreach($this->_dirs as $dir)
-		{
-			$directory_options[$dir['id']] = $dir['name'];
-		}
-
-		return $directory_options;
 	}
 
 	// --------------------------------------------------------------------

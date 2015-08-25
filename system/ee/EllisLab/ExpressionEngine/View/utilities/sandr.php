@@ -5,7 +5,7 @@
 	<div class="alert inline warn">
 		<?=lang('sandr_warning')?>
 	</div>
-	<?=ee('Alert')->getAllInlines()?>
+	<?=ee('CP/Alert')->getAllInlines()?>
 	<fieldset class="col-group required <?=form_error_class('search_term')?>">
 		<div class="setting-txt col w-16">
 			<h3><?=lang('sandr_search_text')?></h3>

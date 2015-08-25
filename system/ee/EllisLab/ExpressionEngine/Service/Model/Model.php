@@ -90,9 +90,12 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 		'timestamp' => 'EllisLab\ExpressionEngine\Service\Model\Column\Object\Timestamp',
 
 		'base64' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64',
+		'base64Array' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64Array',
 		'base64Serialized' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Base64Native',
-		'commaDelimited' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\CommaDelimited',
+
 		'json' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Json',
+
+		'commaDelimited' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\CommaDelimited',
 		'pipeDelimited' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\PipeDelimited',
 		'serialized' => 'EllisLab\ExpressionEngine\Service\Model\Column\Serialized\Native',
 	);
@@ -517,6 +520,12 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 			$unique->filter($field, $this->getProperty($field));
 		}
 
+		// Do not match self
+		if ($this->getId())
+		{
+			$unique->filter($this->getPrimaryKey(), '!=', $this->getId());
+		}
+
 		if ($unique->count() > 0)
 		{
 			return 'unique'; // lang key
@@ -725,6 +734,23 @@ class Model extends Entity implements EventPublisher, EventSubscriber, Validatio
 
 		return $this;
 	}
+
+	/**
+	 * Alias an association
+	 *
+	 * @param String Associaton name to create an alias for
+	 * @param String Alias name
+	 */
+	public function alias($association, $as)
+	{
+		if (strpos($association, ':') === FALSE)
+		{
+			throw new \Exception('Cannot alias relationship.');
+		}
+
+		return $this->setAssociation($as, $this->getAssociation($association));
+	}
+
 
 	/**
 	 * Create a new query tied to this object

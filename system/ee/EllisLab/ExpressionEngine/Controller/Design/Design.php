@@ -66,6 +66,14 @@ class Design extends AbstractDesignController {
 
 			if ( ! $group)
 			{
+				$group = ee('Model')->get('TemplateGroup')
+					->filter('site_id', ee()->config->item('site_id'))
+					->order('group_name', 'asc')
+					->first();
+			}
+
+			if ( ! $group)
+			{
 				ee()->functions->redirect(ee('CP/URL', 'design/system'));
 			}
 		}
@@ -129,7 +137,7 @@ class Design extends AbstractDesignController {
 		ee()->javascript->set_global('lang.remove_confirm', lang('template') . ': <b>### ' . lang('templates') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/confirm_remove',
 				'cp/design/manager'
 			),
 		));
@@ -161,7 +169,7 @@ class Design extends AbstractDesignController {
 
 		$templates->delete();
 
-		ee('Alert')->makeInline('shared-form')
+		ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('templates_removed_desc'))

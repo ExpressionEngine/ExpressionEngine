@@ -57,7 +57,7 @@ class Settings extends CP_Controller {
 
 	protected function generateSidebar($active = NULL)
 	{
-		$sidebar = ee('Sidebar')->make();
+		$sidebar = ee('CP/Sidebar')->make();
 
 		$list = $sidebar->addHeader(lang('general_settings'), ee('CP/URL', 'settings/general'))
 			->addBasicList();
@@ -71,6 +71,7 @@ class Settings extends CP_Controller {
 			->addBasicList();
 
 		$list->addItem(lang('comment_settings'), ee('CP/URL', 'settings/comments'));
+		$list->addItem(lang('html_buttons'), ee('CP/URL', 'settings/buttons'));
 		$list->addItem(lang('template_settings'), ee('CP/URL', 'settings/template'));
 
 		if (ee()->addons_model->module_installed('pages'))

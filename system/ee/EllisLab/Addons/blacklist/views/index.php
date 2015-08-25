@@ -12,7 +12,7 @@
 			<li><a href="" rel="t-1"><?=lang('whitelist')?></a></li>
 		</ul>
 		<?=form_open(ee('CP/URL', 'addons/settings/blacklist/save_lists'), 'class="settings"')?>
-			<?=ee('Alert')->get('lists-form')?>
+			<?=ee('CP/Alert')->get('lists-form')?>
 			<div class="tab t-0 tab-open">
 				<div class="alert inline warn">
 					<p><?=lang('blacklist_desc')?></p>

@@ -91,7 +91,7 @@ class Login extends Profile {
 				+ array_slice($choices, 1 , 1, TRUE);
 		}
 
-		ee('Alert')->makeInline('shared-form')
+		ee('CP/Alert')->makeInline('shared-form')
 			->asWarning()
 			->cannotClose()
 			->addToBody(sprintf(lang('login_as_warning'), $this->member->screen_name), 'warning')
@@ -116,7 +116,11 @@ class Login extends Profile {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('settings_save_erorr'))
+				->addToBody(lang('settings_save_error_desc'))
+				->now();
 		}
 
 		ee()->view->base_url = $this->base_url;

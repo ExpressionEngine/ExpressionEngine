@@ -72,7 +72,7 @@ class Log {
 	/**
 	 * Add a query to the log
 	 */
-	public function addQuery($sql, $time)
+	public function addQuery($sql, $time, $memory)
 	{
 		$this->count++;
 
@@ -98,7 +98,7 @@ class Log {
 				);
 			}
 
-			$this->queries[] = array($query, $location, $time);
+			$this->queries[] = array($query, $location, $time, $memory);
 		}
 	}
 

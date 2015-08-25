@@ -210,6 +210,11 @@ class Delete extends Query {
 			{
 				$to_model = $relation->getSourceModel();
 
+				if (strpos($to_model, ':') === FALSE)
+				{
+					$to_model = 'ee:'.$to_model;
+				}
+
 				$inherit = $this->delete_list[$parent];
 				$this->delete_list[$to_model] = $this->weak($relation, $inherit);
 				continue;
@@ -228,6 +233,12 @@ class Delete extends Query {
 				}
 
 				$inherit = $this->delete_list[$parent];
+
+				// already dealing with a closure?
+				if ( ! is_array($this->delete_list[$to_model]))
+				{
+					continue;
+				}
 
 				if (isset($this->delete_list[$to_model][$to_name]))
 				{

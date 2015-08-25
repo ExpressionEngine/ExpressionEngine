@@ -56,7 +56,7 @@ abstract class AbstractDesign extends CP_Controller {
 			$active_group_id = (int) $active;
 		}
 
-		$sidebar = ee('Sidebar')->make();
+		$sidebar = ee('CP/Sidebar')->make();
 
 		// Template Groups
 		$template_group_list = $sidebar->addHeader(lang('template_groups'))
@@ -67,7 +67,8 @@ abstract class AbstractDesign extends CP_Controller {
 				->withNoResultsText(lang('zero_template_groups_found'));
 
 		$template_groups = ee('Model')->get('TemplateGroup')
-			->filter('site_id', ee()->config->item('site_id'));
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('group_name', 'asc');
 
 		if (ee()->session->userdata['group_id'] != 1)
 		{
@@ -172,11 +173,16 @@ abstract class AbstractDesign extends CP_Controller {
 		));
 	}
 
-	protected function stdHeader()
+	protected function stdHeader($return = NULL)
 	{
+		if ( ! $return)
+		{
+			$return = base64_encode(ee()->cp->get_safe_refresh());
+		}
+
 		ee()->view->header = array(
 			'title' => lang('template_manager'),
-			'form_url' => ee('CP/URL', 'design/template/search'),
+			'form_url' => ee('CP/URL', 'design/template/search', array('return' => $return)),
 			'toolbar_items' => array(
 				'settings' => array(
 					'href' => ee('CP/URL', 'settings/template'),
@@ -239,6 +245,7 @@ abstract class AbstractDesign extends CP_Controller {
 				'file'		=> array(
 					'codemirror/codemirror',
 					'codemirror/closebrackets',
+					'codemirror/lint',
 					'codemirror/overlay',
 					'codemirror/xml',
 					'codemirror/css',
@@ -257,7 +264,7 @@ abstract class AbstractDesign extends CP_Controller {
 	/**
 	 *  Returns installed module information for CodeMirror linting
 	 */
-	function _get_installed_plugins_and_modules()
+	private function _get_installed_plugins_and_modules()
 	{
 		$addons = array_keys(ee('Addon')->all());
 
@@ -292,7 +299,7 @@ abstract class AbstractDesign extends CP_Controller {
 		$zip = new ZipArchive();
 		if ($zip->open($zipfilename, ZipArchive::CREATE) !== TRUE)
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('error_export'))
 				->addToBody(lang('error_cannot_create_zip'))
@@ -348,11 +355,14 @@ abstract class AbstractDesign extends CP_Controller {
 		{
 			$group = $template->getTemplateGroup();
 			$template_name = htmlentities($template->template_name, ENT_QUOTES);
+			$edit_url = ee('CP/URL', 'design/template/edit/' . $template->template_id);
 
 			if ($include_group_name)
 			{
 				$template_name = $group->group_name . '/' . $template_name;
 			}
+
+			$template_name = '<a href="' . $edit_url->compile() . '">' . $template_name . '</a>';
 
 			if (strncmp($template->template_name, $hidden_indicator, $hidden_indicator_length) == 0)
 			{
@@ -385,7 +395,7 @@ abstract class AbstractDesign extends CP_Controller {
 						'title' => lang('view')
 					),
 					'edit' => array(
-						'href' => ee('CP/URL', 'design/template/edit/' . $template->template_id),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					),
 					'settings' => array(

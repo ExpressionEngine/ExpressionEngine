@@ -102,7 +102,6 @@ class Pages_upd {
 		$sql[] = "DELETE FROM exp_modules WHERE module_name = 'Pages'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Pages'";
 		$sql[] = "DELETE FROM exp_actions WHERE class = 'Pages_mcp'";
-		$sql[] = "ALTER TABLE `exp_sites` DROP `site_pages`";
 		$sql[] = "DROP TABLE `exp_pages_configuration`";
 
 		foreach ($sql as $query)

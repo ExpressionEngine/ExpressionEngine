@@ -12,7 +12,7 @@
 			<?php echo isset($cp_heading) ? $cp_heading : $cp_page_title?>
 		</h1>
 
-		<?=ee('Alert')->getAllInlines()?>
+		<?=ee('CP/Alert')->get('view-members')?>
 
 		<?php if (isset($filters)) echo $filters; ?>
 

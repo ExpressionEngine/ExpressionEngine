@@ -47,9 +47,11 @@ class Files extends AbstractFilesController {
 		}
 
 		$files = ee('Model')->get('File')
+			->with('UploadDestination')
+			->filter('UploadDestination.module_id', 0)
 			->filter('site_id', ee()->config->item('site_id'));
 
-		$filters = ee('Filter')
+		$filters = ee('CP/Filter')
 			->add('Perpage', $files->count(), 'show_all_files');
 
 		$filter_values = $filters->values();
@@ -71,7 +73,8 @@ class Files extends AbstractFilesController {
 
 		$upload_destinations = ee('Model')->get('UploadDestination')
 			->fields('id', 'name')
-			->filter('site_id', ee()->config->item('site_id'));
+			->filter('site_id', ee()->config->item('site_id'))
+			->filter('module_id', 0);
 
 		$upload_destinations = $upload_destinations->all();
 
@@ -89,7 +92,7 @@ class Files extends AbstractFilesController {
 		ee()->javascript->set_global('lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/confirm_remove',
 				'cp/files/manager'
 			),
 		));
@@ -135,7 +138,7 @@ class Files extends AbstractFilesController {
 
 		$base_url = ee('CP/URL', 'files/directory/' . $id);
 
-		$filters = ee('Filter')
+		$filters = ee('CP/Filter')
 			->add('Perpage', $dir->getFiles()->count(), 'show_all_files');
 
 		$filter_values = $filters->values();
@@ -159,7 +162,7 @@ class Files extends AbstractFilesController {
 		ee()->javascript->set_global('lang.remove_confirm', lang('file') . ': <b>### ' . lang('files') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/confirm_remove',
 				'cp/files/manager'
 			),
 		));
@@ -203,7 +206,7 @@ class Files extends AbstractFilesController {
 		if ( ! $dir->exists())
 		{
 			$upload_edit_url = ee('CP/URL', 'files/uploads/edit/' . $dir->id);
-			ee('Alert')->makeStandard()
+			ee('CP/Alert')->makeStandard()
 				->asIssue()
 				->withTitle(lang('file_not_found'))
 				->addToBody(sprintf(lang('directory_not_found'), $dir->server_path))
@@ -216,7 +219,7 @@ class Files extends AbstractFilesController {
 		// Check permissions on the directory
 		if ( ! $dir->isWritable())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('dir_not_writable'))
 				->addToBody(sprintf(lang('dir_not_writable_desc'), $dir->server_path))
@@ -243,7 +246,6 @@ class Files extends AbstractFilesController {
 					),
 					array(
 						'title' => 'title',
-						'desc' => 'title_desc',
 						'fields' => array(
 							'title' => array(
 								'type' => 'text',
@@ -252,7 +254,6 @@ class Files extends AbstractFilesController {
 					),
 					array(
 						'title' => 'description',
-						'desc' => 'description_desc',
 						'fields' => array(
 							'description' => array(
 								'type' => 'textarea',
@@ -261,7 +262,6 @@ class Files extends AbstractFilesController {
 					),
 					array(
 						'title' => 'credit',
-						'desc' => 'credit_desc',
 						'fields' => array(
 							'credit' => array(
 								'type' => 'text',
@@ -270,7 +270,6 @@ class Files extends AbstractFilesController {
 					),
 					array(
 						'title' => 'location',
-						'desc' => 'location_desc',
 						'fields' => array(
 							'location' => array(
 								'type' => 'text',
@@ -317,7 +316,7 @@ class Files extends AbstractFilesController {
 			$upload_response = ee()->filemanager->upload_file($dir_id, 'file');
 			if (isset($upload_response['error']))
 			{
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('upload_filedata_error'))
 					->addToBody($upload_response['error'])
@@ -342,7 +341,7 @@ class Files extends AbstractFilesController {
 				$file->save();
 				ee()->session->set_flashdata('file_id', $upload_response['file_id']);
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('upload_filedata_success'))
 					->addToBody(sprintf(lang('upload_filedata_success_desc'), $file->title))
@@ -353,7 +352,7 @@ class Files extends AbstractFilesController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('upload_filedata_error'))
 				->addToBody(lang('upload_filedata_error_desc'))
@@ -387,7 +386,7 @@ class Files extends AbstractFilesController {
 		$dir->Files->delete(); // @TODO Remove this once cascading works
 		$dir->delete();
 
-		ee('Alert')->makeInline('files-form')
+		ee('CP/Alert')->makeInline('files-form')
 			->asSuccess()
 			->withTitle(lang('upload_directory_removed'))
 			->addToBody(sprintf(lang('upload_directory_removed_desc'), $dir->name))
@@ -456,7 +455,7 @@ class Files extends AbstractFilesController {
 		$zip = new ZipArchive();
 		if ($zip->open($zipfilename, ZipArchive::CREATE) !== TRUE)
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('error_export'))
 				->addToBody(lang('error_cannot_create_zip'))
@@ -485,7 +484,7 @@ class Files extends AbstractFilesController {
 
 			if ($res === FALSE)
 			{
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('error_export'))
 					->addToBody(sprintf(lang('error_cannot_add_file_to_zip'), $file->title))
@@ -529,7 +528,7 @@ class Files extends AbstractFilesController {
 			$file->delete();
 		}
 
-		ee('Alert')->makeInline('files-form')
+		ee('CP/Alert')->makeInline('files-form')
 			->asSuccess()
 			->withTitle(lang('success'))
 			->addToBody(lang('files_removed_desc'))

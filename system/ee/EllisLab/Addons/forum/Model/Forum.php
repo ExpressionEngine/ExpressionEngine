@@ -88,7 +88,12 @@ class Forum extends Model {
 			'from_key' => 'forum_last_post_author_id',
 			'to_key'   => 'member_id',
 			'model'    => 'ee:Member',
-			'weak'     => TRUE
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'Forum',
+				'type' => 'hasMany',
+				'weak' => TRUE
+			)
 		),
 		'Moderators' => array(
 			'type'   => 'hasMany',

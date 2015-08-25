@@ -6,7 +6,7 @@
 			<a class="btn tn action" href="<?=ee('CP/URL', 'channels/cat/create-cat/'.$cat_group->group_id)?>"><?=lang('create_new')?></a>
 		</fieldset>
 		<h1><?=$cp_page_title?></h1>
-		<?=ee('Alert')->getAllInlines()?>
+		<?=ee('CP/Alert')->getAllInlines()?>
 		<div class="tbl-list-wrap">
 			<?php if (count($categories->children()) != 0): ?>
 				<div class="tbl-list-ctrl">

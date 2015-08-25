@@ -46,10 +46,14 @@ class Forum_mcp extends CP_Controller {
 
 	private function generateSidebar($active = NULL)
 	{
-		$sidebar = ee('Sidebar')->make();
+		$sidebar = ee('CP/Sidebar')->make();
 
 		$boards = $sidebar->addHeader(lang('forum_boards'))
 			->withButton(lang('new'), ee('CP/URL', $this->base . 'create/board'));
+
+		$board_list = $boards->addFolderList('boards')
+			->withRemoveUrl(ee('CP/URL', $this->base . 'remove/board', array('return' => base64_encode(ee()->cp->get_safe_refresh()))))
+			->withNoResultsText(lang('zero_forum_boards_found'));
 
 		$all_boards = ee('Model')->get('forum:Board')
 			->fields('board_id', 'board_label')
@@ -57,9 +61,6 @@ class Forum_mcp extends CP_Controller {
 
 		if (count($all_boards))
 		{
-			$board_list = $boards->addFolderList('boards')
-				->withRemoveUrl(ee('CP/URL', $this->base . 'remove/board', array('return' => base64_encode(ee()->cp->get_safe_refresh()))));
-
 			foreach ($all_boards as $board)
 			{
 				$item = $board_list->addItem($board->board_label, ee('CP/URL', $this->base . 'index/' . $board->board_id))
@@ -75,7 +76,7 @@ class Forum_mcp extends CP_Controller {
 		}
 
 		$sidebar->addHeader(lang('templates'))
-			->withUrl(ee('CP/URL', 'design/forum'));
+			->withUrl(ee('CP/URL', 'design/forums'));
 
 		$ranks = $sidebar->addHeader(lang('member_ranks'))
 			->withUrl(ee('CP/URL', $this->base . 'ranks'));
@@ -120,109 +121,108 @@ class Forum_mcp extends CP_Controller {
 			->order('board_id', 'asc')
 			->first();
 
-		$id = $board->board_id; // in case $id was NULL
-
-		if ( ! $board)
-		{
-			// We have no boards! Display something useful here.
-		}
-
 		$categories = array();
-		$forum_id = ee()->session->flashdata('forum_id');
 
-		$boards_categories = ee('Model')->get('forum:Forum')
-			->filter('board_id', $id)
-			->filter('forum_is_cat', 'y')
-			->order('forum_order', 'asc')
-			->all();
-
-		foreach ($boards_categories as $i => $category)
+		if ($board)
 		{
-			$manage = array(
-				'toolbar_items' => array(
-					'edit' => array(
-						'href' => ee('CP/URL', $this->base . 'edit/category/' . $category->forum_id),
-						'title' => lang('edit'),
-					),
-					'settings' => array(
-						'href' => ee('CP/URL', $this->base . 'settings/category/' . $category->forum_id),
-						'title' => lang('settings'),
-					)
-				)
-			);
-			$manage = ee('View')->make('ee:_shared/toolbar')->render($manage);
+			$id = $board->board_id; // in case $id was NULL
+			$forum_id = ee()->session->flashdata('forum_id');
 
-			$class = ($i == count($boards_categories) - 1) ? '' : 'mb';
+			$boards_categories = ee('Model')->get('forum:Forum')
+				->filter('board_id', $id)
+				->filter('forum_is_cat', 'y')
+				->order('forum_order', 'asc')
+				->all();
 
-			$table_config = array(
-				'limit'             => 0,
-				'reorder'           => TRUE,
-				'reorder_header'    => TRUE,
-				'sortable'          => FALSE,
-				'class'             => $class,
-				'wrap'              => FALSE,
-			);
-
-			$table = ee('CP/Table', $table_config);
-			$table->setColumns(
-				array(
-					$category->forum_name.form_hidden('cat_order[]', $category->forum_id) => array(
-						'encode' => FALSE
-					),
-					$this->getStatusWidget($category->forum_status) => array(
-						'encode' => FALSE
-					),
-					$manage => array(
-						'type'	=> Table::COL_TOOLBAR,
-					),
-					array(
-						'type'	=> Table::COL_CHECKBOX
-					)
-				)
-			);
-			$table->setNoResultsText('no_forums', 'create_new_forum', ee('CP/URL', $this->base . 'create/forum/' . $category->forum_id));
-			$table->addActionButton(ee('CP/URL', $this->base . 'create/forum/' . $category->forum_id), lang('new_forum'));
-
-			$data = array();
-			foreach ($category->Forums->sortBy('forum_order') as $forum)
+			foreach ($boards_categories as $i => $category)
 			{
-				$row = array(
-					$forum->forum_name.form_hidden('order[]', $forum->forum_id),
-					$this->getStatusWidget($forum->forum_status),
-					array('toolbar_items' => array(
-							'edit' => array(
-								'href' => ee('CP/URL', $this->base . 'edit/forum/' . $forum->forum_id),
-								'title' => lang('edit'),
-							),
-							'settings' => array(
-								'href' => ee('CP/URL', $this->base . 'settings/forum/' . $forum->forum_id),
-								'title' => lang('settings'),
+				$manage = array(
+					'toolbar_items' => array(
+						'edit' => array(
+							'href' => ee('CP/URL', $this->base . 'edit/category/' . $category->forum_id),
+							'title' => lang('edit'),
+						),
+						'settings' => array(
+							'href' => ee('CP/URL', $this->base . 'settings/category/' . $category->forum_id),
+							'title' => lang('settings'),
+						)
+					)
+				);
+				$manage = ee('View')->make('ee:_shared/toolbar')->render($manage);
+
+				$class = ($i == count($boards_categories) - 1) ? '' : 'mb';
+
+				$table_config = array(
+					'limit'             => 0,
+					'reorder'           => TRUE,
+					'reorder_header'    => TRUE,
+					'sortable'          => FALSE,
+					'class'             => $class,
+					'wrap'              => FALSE,
+				);
+
+				$table = ee('CP/Table', $table_config);
+				$table->setColumns(
+					array(
+						$category->forum_name.form_hidden('cat_order[]', $category->forum_id) => array(
+							'encode' => FALSE
+						),
+						$this->getStatusWidget($category->forum_status) => array(
+							'encode' => FALSE
+						),
+						$manage => array(
+							'type'	=> Table::COL_TOOLBAR,
+						),
+						array(
+							'type'	=> Table::COL_CHECKBOX
+						)
+					)
+				);
+				$table->setNoResultsText('no_forums', 'create_new_forum', ee('CP/URL', $this->base . 'create/forum/' . $category->forum_id));
+				$table->addActionButton(ee('CP/URL', $this->base . 'create/forum/' . $category->forum_id), lang('new_forum'));
+
+				$data = array();
+				foreach ($category->Forums->sortBy('forum_order') as $forum)
+				{
+					$row = array(
+						$forum->forum_name.form_hidden('order[]', $forum->forum_id),
+						$this->getStatusWidget($forum->forum_status),
+						array('toolbar_items' => array(
+								'edit' => array(
+									'href' => ee('CP/URL', $this->base . 'edit/forum/' . $forum->forum_id),
+									'title' => lang('edit'),
+								),
+								'settings' => array(
+									'href' => ee('CP/URL', $this->base . 'settings/forum/' . $forum->forum_id),
+									'title' => lang('settings'),
+								)
+							)
+						),
+						array(
+							'name' => 'selection[]',
+							'value' => $forum->forum_id,
+							'data'	=> array(
+								'confirm' => lang('fourm') . ': <b>' . htmlentities($forum->forum_name, ENT_QUOTES) . '</b>'
 							)
 						)
-					),
-					array(
-						'name' => 'selection[]',
-						'value' => $forum->forum_id,
-						'data'	=> array(
-							'confirm' => lang('fourm') . ': <b>' . htmlentities($forum->forum_name, ENT_QUOTES) . '</b>'
-						)
-					)
-				);
+					);
 
-				$attrs = array();
+					$attrs = array();
 
-				if ($forum_id && $forum->forum_id == $forum_id)
-				{
-					$attrs = array('class' => 'selected');
+					if ($forum_id && $forum->forum_id == $forum_id)
+					{
+						$attrs = array('class' => 'selected');
+					}
+
+					$data[] = array(
+						'attrs'		=> $attrs,
+						'columns'	=> $row
+					);
 				}
-
-				$data[] = array(
-					'attrs'		=> $attrs,
-					'columns'	=> $row
-				);
+				$table->setData($data);
+				$categories[] = $table->viewData(ee('CP/URL', $this->base . 'index/' . $id));
 			}
-			$table->setData($data);
-			$categories[] = $table->viewData(ee('CP/URL', $this->base . 'index/' . $id));
+
 		}
 
 		$vars = array(
@@ -235,7 +235,7 @@ class Forum_mcp extends CP_Controller {
 		ee()->javascript->set_global('lang.remove_confirm', lang('forum') . ': <b>### ' . lang('forums') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/confirm_remove',
 				'cp/sort_helper',
 				'cp/addons/forums/reorder',
 			),
@@ -244,7 +244,7 @@ class Forum_mcp extends CP_Controller {
 			),
 		));
 
-		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
+		$reorder_ajax_fail = ee('CP/Alert')->makeBanner('reorder-ajax-fail')
 			->asIssue()
 			->canClose()
 			->withTitle(lang('forums_ajax_reorder_fail'))
@@ -440,13 +440,20 @@ class Forum_mcp extends CP_Controller {
 			'save_btn_text' => 'btn_save_board',
 			'save_btn_text_working' => 'btn_saving',
 			'tabs' => array(
-				'board' => $this->getBoardForm($board),
-				'forums' => $this->getBoardForumsForm($board),
-				'permissions' => $this->getBoardPermissionsForm($board)
+				'board' => $this->getBoardForm($board, $errors),
+				'forums' => $this->getBoardForumsForm($board, $errors),
+				'permissions' => $this->getBoardPermissionsForm($board, $errors)
 			),
 			'sections' => array(),
 			'required' => TRUE
 		);
+
+		ee()->cp->add_js_script('plugin', 'ee_url_title');
+		ee()->javascript->output('
+			$("input[name=board_label]").bind("keyup keydown", function() {
+				$(this).ee_url_title("input[name=board_name]");
+			});
+		');
 
 		$body = ee('View')->make('ee:_shared/form')->render($vars);
 
@@ -491,9 +498,9 @@ class Forum_mcp extends CP_Controller {
 			'save_btn_text' => 'btn_save_board',
 			'save_btn_text_working' => 'btn_saving',
 			'tabs' => array(
-				'board' => $this->getBoardForm($board),
-				'forums' => $this->getBoardForumsForm($board),
-				'permissions' => $this->getBoardPermissionsForm($board)
+				'board' => $this->getBoardForm($board, $errors),
+				'forums' => $this->getBoardForumsForm($board, $errors),
+				'permissions' => $this->getBoardPermissionsForm($board, $errors)
 			),
 			'sections' => array(),
 			'required' => TRUE
@@ -531,7 +538,7 @@ class Forum_mcp extends CP_Controller {
 
 		if ($result->failed())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang($action . '_forum_board_error'))
 				->addToBody(lang($action . '_forum_board_error_desc'))
@@ -554,7 +561,7 @@ class Forum_mcp extends CP_Controller {
 
 		$this->installSpecialtyTemplates($board->board_site_id);
 
-		ee('Alert')->makeInline('shared-form')
+		ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
 			->withTitle(lang($action . '_forum_board_success'))
 			->addToBody(sprintf(lang($action . '_forum_board_success_desc'), $board->board_label))
@@ -563,7 +570,7 @@ class Forum_mcp extends CP_Controller {
 		ee()->functions->redirect(ee('CP/URL', $this->base . '/index/' . $board->board_id));
 	}
 
-	private function getBoardForm($board)
+	private function getBoardForm($board, $errors)
 	{
 		$html = '';
 
@@ -656,7 +663,7 @@ class Forum_mcp extends CP_Controller {
 				),
 			),
 			'php_parsing' => array(
-				ee('Alert')->makeInline('permissions-warn')
+				ee('CP/Alert')->makeInline('permissions-warn')
 					->asWarning()
 					->addToBody(lang('php_in_templates_warning'))
 					->addToBody(
@@ -797,13 +804,13 @@ class Forum_mcp extends CP_Controller {
 		foreach ($sections as $name => $settings)
 		{
 			$html .= ee('View')->make('ee:_shared/form/section')
-				->render(array('name' => $name, 'settings' => $settings));
+				->render(array('name' => $name, 'settings' => $settings, 'errors' => $errors));
 		}
 
 		return $html;
 	}
 
-	private function getBoardForumsForm($board)
+	private function getBoardForumsForm($board, $errors)
 	{
 		$html = '';
 
@@ -1025,13 +1032,13 @@ class Forum_mcp extends CP_Controller {
 		foreach ($sections as $name => $settings)
 		{
 			$html .= ee('View')->make('ee:_shared/form/section')
-				->render(array('name' => $name, 'settings' => $settings));
+				->render(array('name' => $name, 'settings' => $settings, 'errors' => $errors));
 		}
 
 		return $html;
 	}
 
-	private function getBoardPermissionsForm($board)
+	private function getBoardPermissionsForm($board, $errors)
 	{
 		$html = '';
 
@@ -1045,7 +1052,7 @@ class Forum_mcp extends CP_Controller {
 
 		$sections = array(
 			array(
-				ee('Alert')->makeInline('permissions-warn')
+				ee('CP/Alert')->makeInline('permissions-warn')
 					->asWarning()
 					->addToBody(lang('permissions_warning'))
 					->cannotClose()
@@ -1158,7 +1165,7 @@ class Forum_mcp extends CP_Controller {
 		foreach ($sections as $name => $settings)
 		{
 			$html .= ee('View')->make('ee:_shared/form/section')
-				->render(array('name' => $name, 'settings' => $settings));
+				->render(array('name' => $name, 'settings' => $settings, 'errors' => $errors));
 		}
 
 		return $html;
@@ -1177,7 +1184,7 @@ class Forum_mcp extends CP_Controller {
 
 		$board->delete();
 
-		ee('Alert')->makeInline('entries-form')
+		ee('CP/Alert')->makeInline('entries-form')
 			->asSuccess()
 			->withTitle(lang('forum_board_removed'))
 			->addToBody(sprintf(lang('forum_board_removed_desc'), $name))
@@ -1188,6 +1195,8 @@ class Forum_mcp extends CP_Controller {
 		if (ee()->input->get_post('return'))
 		{
 			$return = base64_decode(ee()->input->get_post('return'));
+			$uri_elements = json_decode($return, TRUE);
+			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
 		}
 
 		ee()->functions->redirect($return);
@@ -1327,7 +1336,7 @@ class Forum_mcp extends CP_Controller {
 
 		if ($result->failed())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang($action . '_category_error'))
 				->addToBody(lang($action . '_category_error_desc'))
@@ -1343,7 +1352,7 @@ class Forum_mcp extends CP_Controller {
 
 		$category->save();
 
-		ee('Alert')->makeInline('shared-form')
+		ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
 			->withTitle(lang($action . '_category_success'))
 			->addToBody(sprintf(lang($action . '_category_success_desc'), $category->forum_name))
@@ -1457,7 +1466,7 @@ class Forum_mcp extends CP_Controller {
 
 			$category->save();
 
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('edit_category_settings_success'))
 				->addToBody(sprintf(lang('edit_category_settings_success_desc'), $category->forum_name))
@@ -1484,7 +1493,7 @@ class Forum_mcp extends CP_Controller {
 
 		$vars['sections'] = array(
 			array(
-				ee('Alert')->makeInline('permissions-warn')
+				ee('CP/Alert')->makeInline('permissions-warn')
 					->asWarning()
 					->addToBody(lang('permissions_warning'))
 					->cannotClose()
@@ -1666,7 +1675,7 @@ class Forum_mcp extends CP_Controller {
 
 		if ($result->failed())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang($action . '_forum_error'))
 				->addToBody(lang($action . '_forum_error_desc'))
@@ -1687,7 +1696,7 @@ class Forum_mcp extends CP_Controller {
 			ee()->session->set_flashdata('forum_id', $forum->forum_id);
 		}
 
-		ee('Alert')->makeInline('shared-form')
+		ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
 			->withTitle(lang($action . '_forum_success'))
 			->addToBody(sprintf(lang($action . '_forum_success_desc'), $forum->forum_name))
@@ -1975,7 +1984,7 @@ class Forum_mcp extends CP_Controller {
 
 			$forum->save();
 
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('edit_forum_settings_success'))
 				->addToBody(sprintf(lang('edit_forum_settings_success_desc'), $forum->forum_name))
@@ -2002,7 +2011,7 @@ class Forum_mcp extends CP_Controller {
 
 		$vars['sections'] = array(
 			array(
-				ee('Alert')->makeInline('permissions-warn')
+				ee('CP/Alert')->makeInline('permissions-warn')
 					->asWarning()
 					->addToBody(lang('permissions_warning'))
 					->cannotClose()
@@ -2124,7 +2133,7 @@ class Forum_mcp extends CP_Controller {
 
 		$forums->delete();
 
-		ee('Alert')->makeInline('entries-form')
+		ee('CP/Alert')->makeInline('entries-form')
 			->asSuccess()
 			->withTitle(lang('forums_removed'))
 			->addToBody(lang('forums_removed_desc'))
@@ -2136,6 +2145,8 @@ class Forum_mcp extends CP_Controller {
 		if (ee()->input->get_post('return'))
 		{
 			$return = base64_decode(ee()->input->get_post('return'));
+			$uri_elements = json_decode($return, TRUE);
+			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
 		}
 
 		ee()->functions->redirect($return);
@@ -2228,7 +2239,7 @@ class Forum_mcp extends CP_Controller {
 		ee()->javascript->set_global('lang.remove_confirm', lang('rank') . ': <b>### ' . lang('ranks') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/confirm_remove',
 			),
 		));
 
@@ -2388,7 +2399,7 @@ class Forum_mcp extends CP_Controller {
 
 		if ($result->failed())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang($action . '_rank_error'))
 				->addToBody(lang($action . '_rank_error_desc'))
@@ -2409,7 +2420,7 @@ class Forum_mcp extends CP_Controller {
 			ee()->session->set_flashdata('rank_id', $rank->rank_id);
 		}
 
-		ee('Alert')->makeInline('shared-form')
+		ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
 			->withTitle(lang($action . '_rank_success'))
 			->addToBody(sprintf(lang($action . '_rank_success_desc'), $rank->rank_title))
@@ -2431,7 +2442,7 @@ class Forum_mcp extends CP_Controller {
 
 		$ranks->delete();
 
-		ee('Alert')->makeInline('entries-form')
+		ee('CP/Alert')->makeInline('entries-form')
 			->asSuccess()
 			->withTitle(lang('ranks_removed'))
 			->addToBody(lang('ranks_removed_desc'))
@@ -2534,7 +2545,7 @@ class Forum_mcp extends CP_Controller {
 		ee()->javascript->set_global('lang.remove_confirm', lang('admin') . ': <b>### ' . lang('admins') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(
-				'cp/v3/confirm_remove',
+				'cp/confirm_remove',
 			),
 		));
 
@@ -2573,7 +2584,7 @@ class Forum_mcp extends CP_Controller {
 
 				ee()->session->set_flashdata('admin_id', $admin->admin_id);
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('create_administrator_success'))
 					->addToBody(sprintf(lang('create_administrator_success_desc'), $admin->getAdminName()))
@@ -2704,7 +2715,7 @@ class Forum_mcp extends CP_Controller {
 
 		if ($result->failed())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('create_administrator_error'))
 				->addToBody(lang('create_administrator_error_desc'))
@@ -2729,7 +2740,7 @@ class Forum_mcp extends CP_Controller {
 
 		$admins->delete();
 
-		ee('Alert')->makeInline('entries-form')
+		ee('CP/Alert')->makeInline('entries-form')
 			->asSuccess()
 			->withTitle(lang('admins_removed'))
 			->addToBody(lang('admins_removed_desc'))
@@ -2741,6 +2752,8 @@ class Forum_mcp extends CP_Controller {
 		if (ee()->input->get_post('return'))
 		{
 			$return = base64_decode(ee()->input->get_post('return'));
+			$uri_elements = json_decode($return, TRUE);
+			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
 		}
 
 		ee()->functions->redirect($return);
@@ -3121,7 +3134,7 @@ class Forum_mcp extends CP_Controller {
 
 		if ($result->failed())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('create_moderator_error'))
 				->addToBody(lang('create_moderator_error_desc'))
@@ -3142,7 +3155,7 @@ class Forum_mcp extends CP_Controller {
 			ee()->session->set_flashdata('mod_id', $moderator->mod_id);
 		}
 
-		ee('Alert')->makeInline('shared-form')
+		ee('CP/Alert')->makeInline('shared-form')
 			->asSuccess()
 			->withTitle(lang($action . '_moderator_success'))
 			->addToBody(sprintf(lang($action . '_moderator_success_desc'), $moderator->getModeratorName()))
@@ -3166,7 +3179,7 @@ class Forum_mcp extends CP_Controller {
 
 		$moderator->delete();
 
-		ee('Alert')->makeInline('entries-form')
+		ee('CP/Alert')->makeInline('entries-form')
 			->asSuccess()
 			->withTitle(lang('moderator_removed'))
 			->addToBody(sprintf(lang('moderator_removed_desc'), $name))
@@ -3200,7 +3213,7 @@ class Forum_mcp extends CP_Controller {
 		require_once APPPATH.'language/'.ee()->config->item('deft_lang').'/email_data.php';
 
 		$data = array(
-			'site_id'			=> $side_id,
+			'site_id'			=> $site_id,
 			'template_type'		=> 'email',
 			'template_subtype'	=> 'forums',
 			'edit_date'			=> ee()->localize->now,

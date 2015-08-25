@@ -63,7 +63,11 @@ class Topic extends Model {
 			'type'     => 'belongsTo',
 			'model'    => 'ee:Member',
 			'from_key' => 'author_id',
-			'weak'     => TRUE
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'Topic',
+				'type' => 'hasMany'
+			)
 		),
 		'Board' => array(
 			'type' => 'belongsTo'
@@ -73,7 +77,12 @@ class Topic extends Model {
 			'from_key' => 'topic_edit_author',
 			'to_key'   => 'member_id',
 			'model'    => 'ee:Member',
-			'weak'     => TRUE
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'Topic',
+				'type' => 'hasMany',
+				'weak' => TRUE
+			)
 		),
 		'Forum' => array(
 			'type' => 'belongsTo'
@@ -89,7 +98,12 @@ class Topic extends Model {
 			'model'    => 'ee:Member',
 			'from_key' => 'last_post_author_id',
 			'to_key'   => 'member_id',
-			'weak'     => TRUE
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'Topic',
+				'type' => 'hasMany',
+				'weak' => TRUE
+			)
 		),
 		'Polls' => array(
 			'type'  => 'hasMany',

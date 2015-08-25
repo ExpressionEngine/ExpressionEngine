@@ -1,0 +1,122 @@
+<?php
+
+namespace EllisLab\ExpressionEngine\Model\Comment;
+
+use EllisLab\ExpressionEngine\Service\Model\Model;
+
+/**
+ * ExpressionEngine - by EllisLab
+ *
+ * @package		ExpressionEngine
+ * @author		EllisLab Dev Team
+ * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @license		https://ellislab.com/expressionengine/user-guide/license.html
+ * @link		http://ellislab.com
+ * @since		Version 3.0
+ * @filesource
+ */
+
+// ------------------------------------------------------------------------
+
+/**
+ * ExpressionEngine Comment Model
+ *
+ * A model representing a comment on a Channel entry.
+ *
+ * @package		ExpressionEngine
+ * @subpackage	Comment Module
+ * @category	Model
+ * @author		EllisLab Dev Team
+ * @link		http://ellislab.com
+ */
+class Comment extends Model {
+
+	protected static $_primary_key = 'comment_id';
+	protected static $_table_name = 'comments';
+
+	protected static $_relationships = array(
+		'Site' => array(
+			'type' => 'BelongsTo'
+		),
+		'Entry' => array(
+			'type' => 'BelongsTo',
+			'model' => 'ChannelEntry'
+		),
+		'Channel' => array(
+			'type' => 'BelongsTo'
+		),
+		'Author' => array(
+			'type' => 'BelongsTo',
+			'model' => 'Member'
+		)
+	);
+
+	protected static $_validation_rules = array(
+		'site_id'    => 'required|isNatural',
+		'entry_id'   => 'required|isNatural',
+		'channel_id' => 'required|isNatural',
+		'author_id'  => 'required|isNatural',
+		'status'     => 'enum[o,c,p,s]',
+		'ip_address' => 'ip_address',
+		'comment'    => 'required',
+	);
+
+	protected static $_events = array(
+		'afterInsert',
+		'afterDelete',
+	);
+
+	protected $comment_id;
+	protected $site_id;
+	protected $entry_id;
+	protected $channel_id;
+	protected $author_id;
+	protected $status;
+	protected $name;
+	protected $email;
+	protected $url;
+	protected $location;
+	protected $ip_address;
+	protected $comment_date;
+	protected $edit_date;
+	protected $comment;
+
+	public function onAfterInsert()
+	{
+		$this->Author->updateAuthorStats();
+		$this->updateCommentStats();
+	}
+
+	public function onAfterDelete()
+	{
+		$this->Author->updateAuthorStats();
+		$this->updateCommentStats();
+	}
+
+	private function updateCommentStats()
+	{
+		$site_id = ($this->site_id) ?: ee()->config->item('site_id');
+		$now = ee()->localize->now;
+
+		$comments = $this->getFrontend()->get('Comment')
+			->filter('site_id', $site_id);
+
+		$total_comments = $comments->count();
+
+		$comments->filter('status', 'o')
+			->fields('comment_date')
+			->order('comment_date', 'desc')
+			->first();
+
+		$last_comment_date = ($comments) ? $comments->comment_date : 0;
+
+		$stats = $this->getFrontend()->get('Stats')
+			->filter('site_id', $site_id)
+			->first();
+
+		$stats->total_comments = $total_comments;
+		$stats->last_comment_date = $last_comment_date;
+		$stats->save();
+	}
+
+}

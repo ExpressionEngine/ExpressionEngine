@@ -98,13 +98,13 @@ class Profiler {
 	public function render()
 	{
 		$rendered_sections = array();
-		foreach ($this->sections as $section)
+		foreach ($this->sections as $index => $section)
 		{
 			$view = $this->view_factory->make($section->getViewName());
-			$rendered_sections[] = $section->render($view);
+			$rendered_sections[] = $section->render($view, $index);
 		}
 
 		$view = $this->view_factory->make('profiler/container');
-		return $view->render(array('sections' => $rendered_sections));
+		return $view->render(array('sections' => $this->sections, 'rendered_sections' => $rendered_sections));
 	}
 }

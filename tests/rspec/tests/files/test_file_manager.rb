@@ -72,7 +72,7 @@ feature 'File Manager' do
 	it 'shows the "All Files" File Manager page', :all_files => true do
 		@page.perpage_filter.text.should eq 'show (25)'
 		@page.title_name_header[:class].should eq 'highlight'
-		@page.should have(26).files
+		@page.should have(11).files
 	end
 
 	# General Tests
@@ -96,20 +96,20 @@ feature 'File Manager' do
 
 		@page.perpage_filter.text.should eq "show (50)"
 		@page.should_not have_pagination
-		@page.should have(26).files
+		@page.should have(11).files
 	end
 
 	it 'can change the page size manually', :all_files => true do
 		@page.perpage_filter.click
 		@page.wait_until_perpage_filter_menu_visible
 		@page.perpage_manual_filter.set '5'
-		@page.action_submit_button.click
+		@page.execute_script("$('div.filters input[type=text]').closest('form').submit()")
 		no_php_js_errors
 
 		@page.perpage_filter.text.should eq "show (5)"
 		@page.should have_pagination
-		@page.should have(6).pages
-		@page.pages.map {|name| name.text}.should == ["First", "1", "2", "3", "Next", "Last"]
+		@page.should have(5).pages
+		@page.pages.map {|name| name.text}.should == ["First", "1", "2", "Next", "Last"]
 		@page.should have(6).files
 	end
 
@@ -117,7 +117,7 @@ feature 'File Manager' do
 		@page.perpage_filter.click
 		@page.wait_until_perpage_filter_menu_visible
 		@page.perpage_manual_filter.set '5'
-		@page.action_submit_button.click
+		@page.execute_script("$('div.filters input[type=text]').closest('form').submit()")
 		no_php_js_errors
 
 		click_link "Next"
@@ -125,8 +125,8 @@ feature 'File Manager' do
 
 		@page.perpage_filter.text.should eq "show (5)"
 		@page.should have_pagination
-		@page.should have(7).pages
-		@page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "3", "Next", "Last"]
+		@page.should have(5).pages
+		@page.pages.map {|name| name.text}.should == ["First", "Previous", "1", "2", "Last"]
 		@page.should have(6).files
 	end
 
@@ -245,7 +245,7 @@ feature 'File Manager' do
 		@page.wait_until_modal_visible
 		@page.modal_title.text.should eq "Confirm Removal"
 		@page.modal.text.should include "You are attempting to remove the following items, please confirm this action."
-		@page.modal.text.should include 'File: 25 Files'
+		@page.modal.text.should include 'File: 10 Files'
 	end
 
 	it 'can remove a single file', :all_files => true do
@@ -320,7 +320,7 @@ feature 'File Manager' do
 	end
 
 	it 'displays an itemized modal when attempting to remove a directory', :all_files => true do
-		about_directory_selector = 'div.sidebar .folder-list > li:nth-child(2)'
+		about_directory_selector = 'div.sidebar .folder-list > li:first-child'
 		find(about_directory_selector).hover
 		find(about_directory_selector + ' li.remove a').click
 

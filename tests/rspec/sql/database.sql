@@ -755,8 +755,8 @@ CREATE TABLE `exp_member_fields` (
   `m_field_type` varchar(12) NOT NULL DEFAULT 'text',
   `m_field_list_items` text NOT NULL,
   `m_field_ta_rows` tinyint(2) DEFAULT '8',
-  `m_field_maxl` smallint(3) NOT NULL,
-  `m_field_width` varchar(6) NOT NULL,
+  `m_field_maxl` smallint(3) NULL DEFAULT NULL,
+  `m_field_width` varchar(6) NULL DEFAULT NULL,
   `m_field_search` char(1) NOT NULL DEFAULT 'y',
   `m_field_required` char(1) NOT NULL DEFAULT 'n',
   `m_field_public` char(1) NOT NULL DEFAULT 'y',
@@ -844,6 +844,9 @@ CREATE TABLE `exp_member_groups` (
   `can_send_bulletins` char(1) NOT NULL DEFAULT 'n',
   `include_in_authorlist` char(1) NOT NULL DEFAULT 'n',
   `include_in_memberlist` char(1) NOT NULL DEFAULT 'y',
+  `cp_homepage` varchar(20) NULL DEFAULT NULL,
+  `cp_homepage_channel` int(10) unsigned NOT NULL DEFAULT '0',
+  `cp_homepage_custom` varchar(100) NULL DEFAULT NULL,
   PRIMARY KEY (`group_id`,`site_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -964,6 +967,9 @@ CREATE TABLE `exp_members` (
   `pmember_id` int(10) NOT NULL DEFAULT '0',
   `rte_enabled` char(1) NOT NULL DEFAULT 'y',
   `rte_toolset_id` int(10) NOT NULL DEFAULT '0',
+  `cp_homepage` varchar(20) NULL DEFAULT NULL,
+  `cp_homepage_channel` varchar(255) NULL DEFAULT NULL,
+  `cp_homepage_custom` varchar(100) NULL DEFAULT NULL,
   PRIMARY KEY (`member_id`),
   KEY `group_id` (`group_id`),
   KEY `unique_id` (`unique_id`),
@@ -1422,6 +1428,7 @@ CREATE TABLE `exp_upload_prefs` (
   `server_path` varchar(255) NOT NULL DEFAULT '',
   `url` varchar(100) NOT NULL,
   `allowed_types` varchar(3) NOT NULL DEFAULT 'img',
+  `default_modal_view` varchar(5) NOT NULL default 'list',
   `max_size` varchar(16) DEFAULT NULL,
   `max_height` varchar(6) DEFAULT NULL,
   `max_width` varchar(6) DEFAULT NULL,
@@ -1433,7 +1440,7 @@ CREATE TABLE `exp_upload_prefs` (
   `file_post_format` varchar(120) DEFAULT NULL,
   `cat_group` varchar(255) DEFAULT NULL,
   `batch_location` varchar(255) DEFAULT NULL,
-  `module_id` int(4) DEFAULT NULL,
+  `module_id` int(4) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `site_id` (`site_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
@@ -2035,8 +2042,8 @@ UNLOCK TABLES;
 
 LOCK TABLES `exp_upload_prefs` WRITE;
 INSERT INTO `exp_upload_prefs` (`id`, `site_id`, `name`, `server_path`, `url`, `allowed_types`, `max_size`, `max_height`, `max_width`, `properties`, `pre_format`, `post_format`, `file_properties`, `file_pre_format`, `file_post_format`, `cat_group`, `batch_location`, `module_id`) VALUES
-	(1,1,'Main Upload Directory','../images/uploads/','/images/uploads/','all','','','','style="border: 0;" alt="image"','','','','','',NULL,NULL,NULL),
-	(2,1,'About','../themes/ee/site/agile_records/images/uploads/','/themes/ee/site/agile_records/images/uploads/','img','','','','','','','','','',NULL,NULL,NULL),
+	(1,1,'Main Upload Directory','../images/uploads/','/images/uploads/','all','','','','style="border: 0;" alt="image"','','','','','',NULL,NULL,0),
+	(2,1,'About','../themes/ee/site/agile_records/images/uploads/','/themes/ee/site/agile_records/images/uploads/','img','','','','','','','','','',NULL,NULL,0),
 	(3,1,'Avatars','../images/avatars/','/images/avatars/','img','50','100','100',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
 	(4,1,'Signature Attachments','../images/signature_attachments/','/images/signature_attachments/','img','30','80','480',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4),
 	(5,1,'PM Attachments','../images/pm_attachments/','/images/pm_attachments/','img','250',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,4);

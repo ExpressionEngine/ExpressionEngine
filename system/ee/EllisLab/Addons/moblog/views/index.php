@@ -4,7 +4,7 @@
 			<a class="btn tn action" href="<?=ee('CP/URL', 'addons/settings/moblog/create')?>"><?=lang('create_new')?></a>
 		</fieldset>
 		<h1><?=lang('moblogs')?></h1>
-		<?=ee('Alert')->get('moblogs-table')?>
+		<?=ee('CP/Alert')->get('moblogs-table')?>
 		<?php $this->embed('ee:_shared/table', $table); ?>
 		<?=$pagination?>
 		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>

@@ -22,5 +22,34 @@ return array(
 		'Search'          => 'Model\Search',
 		// 'Subscription' => 'Model\Subscription',
 		'Topic'           => 'Model\Topic',
+	),
+
+	'models.dependencies' => array(
+		'Administrator'   => array(
+			'ee:Member',
+			'ee:MemberGroup'
+		),
+		'Forum'   => array(
+			'ee:Member'
+		),
+		'Moderator'   => array(
+			'ee:Member',
+			'ee:MemberGroup'
+		),
+		'Poll'   => array(
+			'ee:Member'
+		),
+		'PollVote'   => array(
+			'ee:Member'
+		),
+		'Post'   => array(
+			'ee:Member'
+		),
+		'Search'   => array(
+			'ee:Member'
+		),
+		'Topic'   => array(
+			'ee:Member'
+		),
 	)
 );

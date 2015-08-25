@@ -8,7 +8,7 @@
 		<li><a href="" rel="t-2"><?=lang('variables')?></a></li>
 	</ul>
 	<?=form_open($form_url, 'class="settings"')?>
-	<?=ee('Alert')->getAllInlines()?>
+	<?=ee('CP/Alert')->getAllInlines()?>
 		<div class="tab t-0 tab-open">
 			<fieldset class="col-group">
 				<div class="setting-txt col w-16">

@@ -50,7 +50,7 @@ class Utilities extends CP_Controller {
 
 	protected function generateSidebar($active = NULL)
 	{
-		$sidebar = ee('Sidebar')->make();
+		$sidebar = ee('CP/Sidebar')->make();
 
 		$sidebar->addHeader(lang('communicate'), ee('CP/URL', 'utilities/communicate'))
 			->addBasicList()

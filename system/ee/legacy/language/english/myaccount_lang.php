@@ -462,6 +462,12 @@ Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.
 
 'blocked_members' => 'Blocked Members',
 
+'cp_settings' => 'CP Settings',
+
+'default_cp_homepage_myaccount_desc' => 'Set your homepage for the control panel.',
+
+'member_group_default' => 'Member group default',
+
 'email_username' => 'Email %s',
 
 'login_as' => 'Login as %s',

@@ -76,7 +76,7 @@ feature 'Member Settings' do
     @page.mbr_notification_emails.set 'test@test.com'
     @page.submit
 
-    @page.should have_text 'Preferences updated'
+    @page.should have_text 'Preferences Updated'
     @page.allow_member_registration_y.checked?.should == true
     @page.req_mbr_activation.value.should == 'none'
     @page.require_terms_of_service_n.checked?.should == true

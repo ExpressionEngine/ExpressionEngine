@@ -970,7 +970,7 @@ class Wizard extends CI_Controller {
 		$template_variables['success_note'] = sprintf(lang($type.'_success_note'), $this->version);
 
 		// Send them to their CP via the form
-		$template_variables['action'] = $this->userdata['cp_url'];
+		$template_variables['action'] = $this->set_qstr('show_success');
 		$template_variables['method'] = 'get';
 
 		// Only show download button if mailing list export exists
@@ -1421,7 +1421,7 @@ class Wizard extends CI_Controller {
 			'image_path'        => $this->image_path,
 
 			// TODO-WB: Change src to compressed before launch
-			'javascript_path'   => $this->set_path('themes/ee/javascript/src/'),
+			'javascript_path'   => $this->set_path('themes/ee/asset/javascript/src/'),
 
 			'version'           => $this->version,
 			'version_major'     => $version[0],
@@ -1839,7 +1839,6 @@ class Wizard extends CI_Controller {
 			'enable_sql_caching'        => 'n',
 			'force_query_string'        => 'n',
 			'show_profiler'             => 'n',
-			'template_debugging'        => 'n',
 			'include_seconds'           => 'n',
 			'cookie_domain'             => '',
 			'cookie_path'               => '',
@@ -1991,7 +1990,6 @@ class Wizard extends CI_Controller {
 			'enable_sql_caching',
 			'force_query_string',
 			'show_profiler',
-			'template_debugging',
 			'include_seconds',
 			'cookie_domain',
 			'cookie_path',
@@ -2226,6 +2224,10 @@ class Wizard extends CI_Controller {
 
 		// We also add a few other items
 		$config['license_number'] = ( ! isset($config['license_number'])) ? '' : $config['license_number'];
+
+		// BUILD_REMOVE_CJS_START
+		$config['use_compressed_js'] = 'n';
+		// BUILD_REMOVE_CJS_END
 
 		// Fetch the config template
 		$data = read_file(APPPATH.'config/config_tmpl.php');
