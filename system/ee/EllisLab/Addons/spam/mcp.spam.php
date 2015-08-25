@@ -213,10 +213,11 @@ class Spam_mcp {
 		ee()->load->library('form_validation');
 
 		$settings = array(
-			'sensitivity' => empty(ee()->config->item('spam_sensitivity')) ? 70 : ee()->config->item('spam_sensitivity'),
-			'word_limit' => empty(ee()->config->item('spam_word_limit')) ? 5000 : ee()->config->item('spam_word_limit'),
-			'content_limit' => empty(ee()->config->item('spam_content_limit')) ? 5000 : ee()->config->item('spam_content_limit')
-		);
+			'sensitivity' => ee()->config->item('spam_sensitivity') ?: 70,
+			'word_limit' => ee()->config->item('spam_word_limit') ?: 5000,
+            'content_limit' => ee()->config->item('spam_content_limit') ?: 5000
+        );
+
 		$sensitivity = ee()->input->post('spam_sensitivity') ?:$settings['sensitivity'];
 
 		$vars['sections'] = array(
