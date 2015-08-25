@@ -359,7 +359,7 @@ class DataStore {
 
 		if ( ! array_key_exists($name, $relationships))
 		{
-			throw new \Exception("Relationship {$name} not found in model {$model_name}");
+			throw new \Exception("Relationship {$name} not found in model {$model}");
 		}
 
 		return $relationships[$name];
