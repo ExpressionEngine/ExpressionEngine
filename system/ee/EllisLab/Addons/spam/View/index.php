@@ -26,8 +26,8 @@
 		<fieldset class="tbl-bulk-act">
 			<select name="bulk_action">
 				<option value="">-- <?=lang('mark_selected')?> --</option>
-				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('deny_spam')?></option>
-				<option value="approve" data-confirm-trigger="selected" class="yes" rel="modal-confirm-remove"><?=lang('approve_spam')?></option>
+				<option value="remove" rel="modal-confirm-remove"><?=lang('deny_spam')?></option>
+				<option value="approve" class="yes" rel="modal-confirm-remove"><?=lang('approve_spam')?></option>
 			</select>
 			<button class="btn submit"><?=lang('submit')?></button>
 		</fieldset>
@@ -49,8 +49,6 @@ $modal_vars = array(
 );
 
 $spam = ee('View')->make('spam:modal')->render();
-$remove = ee('View')->make('_shared/modal_confirm_remove')->render($modal_vars);
-ee('CP/Modal')->addModal('remove', $remove);
 ee('CP/Modal')->addModal('spam', $spam);
 ?>
 
