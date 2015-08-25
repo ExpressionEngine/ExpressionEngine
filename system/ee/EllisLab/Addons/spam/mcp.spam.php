@@ -71,19 +71,21 @@ class Spam_mcp {
 		$table = ee('CP/Table');
 		$data = array();
 		$trapped = array();
+
 		$content_type = array(
 			'Comment' => 'comment',
 			'Forum_core' => 'forum_post',
 			'Wiki' => 'wiki_post',
 		);
+
 		$options = array(
 			'all' => lang('all'),
 			'Comment' => lang('comment'),
 			'Forum_core' => lang('forum_post'),
 			'Wiki' => lang('wiki_post')
 		);
-		$total = ee('Model')->get('spam:SpamTrap')->count();
 
+		$total = ee('Model')->get('spam:SpamTrap')->count();
 		$types = ee('CP/Filter')->make('content_type', 'content_type', $options);
 		$types->setPlaceholder(lang('all'));
 		$types->disableCustomValue();
@@ -94,14 +96,9 @@ class Spam_mcp {
 			->add('Perpage', $total, 'show_all_spam');
 
 		$filter_values = $filters->values();
-		$perpage = ee()->input->get('perpage') ?: 20;
-		$sort_col = ee()->input->get('sort_col') ?: 'date';
-		$sort_dir = ee()->input->get('sort_dir') ?: 'desc';
-		$page = ee()->input->get('page') > 0 ? ee()->input->get('page') : 1;
-		$offset = ! empty($page) ? ($page - 1) * $perpage : 0;
-		$search = ee()->input->post('search');
-
 		$filter_fields = array();
+		$search = ee()->input->post('search');
+		$this->base_url->addQueryStringVariables($filter_values);
 
 		if ( ! empty($filter_values['content_type']))
 		{
@@ -112,8 +109,6 @@ class Spam_mcp {
 		{
 			$filter_fields['date'] = $filter_values['filter_by_date'];
 		}
-
-		$trap = $this->getSpamTrap($filter_fields, $sort_col, $sort_dir, $search, $perpage, $offset);
 
 		$table->setColumns(
 			array(
@@ -131,6 +126,8 @@ class Spam_mcp {
 				)
 			)
 		);
+
+		$trap = $this->getSpamTrap($filter_fields, $table->sort_col, $table->sort_dir, $search, $filter_values['perpage'], ($table->config['page'] - 1) * $filter_values['perpage']);
 
 		foreach ($trap as $spam)
 		{
@@ -201,14 +198,12 @@ class Spam_mcp {
 		if ( ! empty($data['table']['data']))
 		{
 			$data['pagination'] = ee('CP/Pagination', $total)
-				->perPage($perpage)
-				->currentPage($page)
+				->perPage($table->config['limit'])
+				->currentPage($table->config['page'])
 				->render($this->base_url);
 		}
 
-		ee()->javascript->set_global('lang.remove_confirm', lang('spam') . ': <b>### ' . lang('spam') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
 			'file' => array('cp/addons/spam'),
 		));
 
