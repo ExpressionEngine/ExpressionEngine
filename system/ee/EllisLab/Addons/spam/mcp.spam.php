@@ -391,60 +391,6 @@ class Spam_mcp {
 	}
 
 	/**
-	 * Controller for running the testing
-	 * 
-	 * @access public
-	 * @return void
-	 */
-	public function test()
-	{
-		$start_time = microtime(true);
-		$limit = 1000;
-
-		$documents = ee('Model')->get('SpamTraining')
-						->limit($limit)
-						->order('RAND()')
-						->all();
-
-		$data = array();
-		$negatives = 0;
-		$positives = 0;
-		$total = $documents->count();
-
-		foreach ($documents as $document)
-		{
-			$bayes = ee('spam:Core');
-			$classification = (int) $bayes->classifier->classify($document->source, 'spam');
-
-			if($classification > $document->class)
-			{
-				$positives++;
-			}
-
-			if($classification < $document->class)
-			{
-				$negatives++;
-			}
-
-			if($classification != $document->class)
-			{
-				 //ee()->db->delete('spam_training', array('training_id' => $document->training_id)); 
-			}
-		}
- 
-		$data['memory'] = memory_get_usage();
-		$data['memory_per'] = $data['memory'] / $total;
-		$data['accuracy'] = ($total - ($negatives + $positives)) / $total;
-		$data['total'] = $total;
-		$data['positives'] = $positives;
-		$data['negatives'] = $negatives;
-		$data['time'] = (microtime(true) - $start_time);
-		$data['per'] = $data['time'] / $total;
-
-		return ee()->load->view('test', $data, TRUE);
-	}
-
-	/**
 	 * Grab the appropriate kernel ID or insert a new one
 	 * 
 	 * @param string $name The name of the kernel 
