@@ -77,7 +77,7 @@ class Spam_upd {
 			'kernel_id'		=> array('type' => 'int', 'constraint' => '10'),
 			'index'			=> array('type' => 'int', 'constraint' => '10'),
 			'term'			=> array('type' => 'int', 'constraint' => '10', 'unsigned' => TRUE),
-			'class'			=> array('type' => 'char' , 'constraint' => '1'),
+			'class'			=> array('type' => 'ENUM("spam","ham")'),
 			'mean'			=> array('type' => 'double'),
 			'variance'		=> array('type' => 'double')
 		);
@@ -92,7 +92,7 @@ class Spam_upd {
 			'author'		=> array('type' => 'int', 'constraint' => '10'),
 			'source'		=> array('type' => 'text'),
 			'type'			=> array('type' => 'varchar', 'constraint' => '32'),
-			'class'			=> array('type' => 'char' , 'constraint' => '1')
+			'class'			=> array('type' => 'ENUM("spam","ham")')
 		);
 
 		ee()->dbforge->add_field($fields);

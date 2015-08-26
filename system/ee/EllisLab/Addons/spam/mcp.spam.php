@@ -389,7 +389,7 @@ class Spam_mcp {
 			->addToBody(sprintf(lang('spam_trap_removed'), count($trapped)))
 			->defer();
 
-		$this->moderate($trapped);
+		$this->moderate($trapped, 'spam');
 		ee()->functions->redirect($this->base_url);
 	}
 
@@ -398,11 +398,11 @@ class Spam_mcp {
 	 * or reinsert the data if it's spam or ham respectively.
 	 * 
 	 * @param integer $id    ID of the content to moderate
-	 * @param boolean $spam  True if content is spam,
+	 * @param boolean $class  The name of the class this was flagged as
 	 * @access public
 	 * @return void
 	 */
-	private function moderate($collection, $isSpam = TRUE)
+	private function moderate($collection, $class = 'spam')
 	{
 		$result = array();
 
@@ -410,7 +410,7 @@ class Spam_mcp {
 		{
 			$result[] = ee('Model')->make('spam:SpamTraining', array(
 				'source' => $spam->document,
-				'class' => $isSpam
+				'class' => $class
 			));
 			$spam->delete();
 		}
@@ -492,7 +492,7 @@ class Spam_mcp {
 	{
 		return ee('Model')->get('spam:SpamTraining')
 					->with('Author')
-					->filter('class', TRUE)
+					->filter('class', 'spam')
 					->limit($limit)
 					->all();
 	}
@@ -507,7 +507,7 @@ class Spam_mcp {
 	{
 		return ee('Model')->get('spam:SpamTraining')
 					->with('Author')
-					->filter('class', FALSE)
+					->filter('class', 'ham')
 					->limit($limit)
 					->all();
 	}
@@ -556,7 +556,7 @@ class Spam_mcp {
 				}
 			}
 
-			$query = ee()->db->where('class', $class == 1 ? 'y' : 'n')->get('spam_parameters');
+			$query = ee()->db->where('class', $class)->get('spam_parameters');
 			$parameters = array();
 
 			foreach ($query->result() as $parameter)
@@ -583,7 +583,7 @@ class Spam_mcp {
 
 				$training = array(
 					'kernel_id' => $kernel->kernel_id,
-					'class' => $class == 1 ? 'y' : 'n',
+					'class' => $class,
 					'index' => $index,
 					'mean' => $updated['mean'],
 					'variance' => $updated['variance']
