@@ -207,7 +207,7 @@ class Fields extends AbstractChannelsController {
 					->addToBody(sprintf(lang('edit_field_success_desc'), $field->field_label))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'channels/fields/edit/' . $id));
+				ee()->functions->redirect(ee('CP/URL', 'channels/fields/' . $field->group_id));
 			}
 			else
 			{

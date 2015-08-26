@@ -148,7 +148,7 @@ class Simple_commerce_mcp {
 					'name' => 'items[]',
 					'value' => $item->getId(),
 					'data'	=> array(
-						'confirm' => lang('item') . ': <b>' . htmlentities($item->entry_id, ENT_QUOTES) . '</b>'
+						'confirm' => lang('item') . ': <b>' . htmlentities($item->ChannelEntry->title, ENT_QUOTES) . '</b>'
 					)
 				)
 			);
@@ -735,7 +735,7 @@ class Simple_commerce_mcp {
 					'name' => 'purchases[]',
 					'value' => $purchase->getId(),
 					'data'	=> array(
-						'confirm' => lang('purchase') . ': <b>' . htmlentities($purchase->item_id, ENT_QUOTES) . '</b>'
+						'confirm' => lang('purchase') . ': <b>' . htmlentities($purchase->Item->ChannelEntry->title, ENT_QUOTES) . '</b>'
 					)
 				)
 			);

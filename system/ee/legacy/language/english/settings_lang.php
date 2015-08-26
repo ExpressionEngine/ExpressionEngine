@@ -20,6 +20,8 @@ $lang = array(
 
 'comment_settings' => 'Comment Settings',
 
+'html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Buttons',
+
 'template_settings' => 'Template Settings',
 
 'pages_settings' => 'Pages Settings',
