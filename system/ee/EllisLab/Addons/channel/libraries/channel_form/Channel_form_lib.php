@@ -1665,7 +1665,7 @@ GRID_FALLBACK;
 			{
 
 				// Lastly we check for spam before inserting the data
-				$is_spam = ee()->spam->classify($spam_content);
+				$is_spam = ee('Spam')->isSpam($spam_content);
 
 				if($is_spam === FALSE)
 				{

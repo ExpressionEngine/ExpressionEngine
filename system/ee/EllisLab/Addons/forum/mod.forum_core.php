@@ -5704,7 +5704,7 @@ class Forum_Core extends Forum {
 			$title = ee()->input->get_post('title');
 			$text = "$title $body";
 
-			if (ee()->spam->classify($text))
+			if (ee('Spam')->isSpam($text))
 			{
 				ee()->spam->moderate(NULL, NULL, NULL, NULL, $text);
 				$this->submission_error = lang('spam');

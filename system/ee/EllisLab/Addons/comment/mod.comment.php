@@ -2284,7 +2284,7 @@ class Comment {
 
 		// Force comment moderation if spam
 		$comment_string = ee()->security->xss_clean($_POST['comment']);
-		$is_spam = ee('Spam')->classify($comment_string);
+		$is_spam = ee('Spam')->isSpam($comment_string);
 
 		if ($is_spam === TRUE)
 		{

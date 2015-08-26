@@ -775,7 +775,7 @@ class Email {
 		// Check for spam
 		$text = "$subject $message";
 
-		if (ee()->spam->classify($text))
+		if (ee('Spam')->isSpam($text))
 		{
 			$args = array(
 				$subject,
