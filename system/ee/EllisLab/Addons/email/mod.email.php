@@ -772,7 +772,76 @@ class Email {
 		$message = entities_to_ascii($message);
 		$message = ee()->typography->filter_censored_words($message);
 
-		// Send email
+		// Check for spam
+		$text = "$subject $message";
+
+		if (ee('Spam')->isSpam($text))
+		{
+			$args = array(
+				$subject,
+				$message,
+				$approved_recipients,
+				$approved_tos,
+				$_POST
+			);
+			ee()->spam->moderate(__FILE__, 'Email', 'mail_recipients', $args, $text);
+		} else {
+			// Send mail
+			$this->mail_recipients($subject, $message, $approved_recipients, $approved_tos, $_POST);
+		}
+
+		/* -------------------------------------
+		/*  'email_module_send_email_end' hook.
+		/*  - After emails are sent, do some additional processing
+		/*  - Added EE 1.5.1
+		*/
+			if (ee()->extensions->active_hook('email_module_send_email_end') === TRUE)
+			{
+				ee()->extensions->call('email_module_send_email_end', $subject, $message, $approved_tos, $approved_recipients);
+				if (ee()->extensions->end_script === TRUE) return;
+			}
+		/*
+		/* -------------------------------------*/
+
+		// Thank you message
+		$data = array(
+			'title' 	=> lang('email_module_name'),
+			'heading'	=> lang('thank_you'),
+			'content'	=> lang('em_email_sent'),
+			'redirect'	=> $return_link,
+			'link'		=> array($return_link, $return_name)
+		);
+
+		if (ee()->input->get_post('redirect') !== FALSE)
+		{
+			if(is_numeric(ee()->input->get_post('redirect')))
+			{
+				$data['rate'] = ee()->input->get_post('redirect');
+			}
+			elseif(ee()->nput->get_post('redirect') == 'none')
+			{
+				$data['redirect'] = '';
+			}
+		}
+
+		ee()->output->show_message($data);
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * mail_recipients
+	 * 
+	 * @param mixed $subject
+	 * @param mixed $message 
+	 * @param mixed $approved_recipients Array of all recipients
+	 * @param mixed $approved_tos Array of non-BCC recipients
+	 * @param mixed $data The POST data from the email form
+	 * @access public
+	 * @return void
+	 */
+	function mail_recipients($subject, $message, $approved_recipients, $approved_tos, $data)
+	{
 		ee()->load->library('email');
 		ee()->email->wordwrap = true;
 		ee()->email->mailtype = $mail_type;
