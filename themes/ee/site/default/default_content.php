@@ -216,6 +216,7 @@ foreach ($field_groups as $group_name => $fields)
 
 		$field->set($data);
 		$field->save();
+		$cf_id[$field->field_name] = $field->field_id;
 	}
 }
 
@@ -254,19 +255,49 @@ foreach ($channels as $channel_label => $channel_prefs)
 	}
 
 	$channel->save();
+	$channel_objs[$channel->channel_name] = $channel;
 }
 
 // add entries
 
-/*
+$entry_data_path = $this->theme_path.$this->userdata['theme'].'/channel_entries/';
+
+foreach (array('about', 'blog', 'contact') as $channel_name)
+{
+	$dir = $entry_data_path.$channel_name.'/';
+
+	foreach (directory_map($dir) as $filename)
+	{
+		$entry_data = json_decode(file_get_contents($dir.$filename));
+
 		$entry = ee('Model')->make('ChannelEntry');
-		$entry->setChannel($channel);
-		$entry->site_id =  ee()->config->item('site_id');
-		$entry->author_id = ee()->session->userdata('member_id');
-		$entry->ip_address = ee()->session->userdata['ip_address'];
-		$entry->versioning_enabled = $channel->enable_versioning;
+		$entry->setChannel($channel_objs[$channel_name]);
+		$entry->site_id =  1;
+		$entry->author_id = 1;
+		$entry->ip_address = ee()->input->ip_address();
+		$entry->versioning_enabled = $channel_objs[$channel_name]->enable_versioning;
 		$entry->sticky = FALSE;
 		$entry->allow_comments = TRUE;
-*/
+
+		$post_mock = array(
+			'title' => $entry_data->title,
+			'url_title' => $entry_data->url_title,
+			'status' => $entry_data->status
+		);
+
+		foreach ($entry_data->custom_fields as $key => $val)
+		{
+			if (is_string($val))
+			{
+				$field_col_name = "field_id_{$cf_id[$key]}";
+				$post_mock[$field_col_name] = $val;
+			}
+		}
+
+		$entry->set($post_mock);
+		$entry->save();
+	}
+}
+
 
 // set site_404 and strict_urls, etc.
