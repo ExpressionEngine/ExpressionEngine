@@ -12,11 +12,12 @@ use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\Grid;
 use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
-use EllisLab\ExpressionEngine\Service\Validation;
-use EllisLab\ExpressionEngine\Service\View;
+use EllisLab\ExpressionEngine\Service\Profiler;
 use EllisLab\ExpressionEngine\Service\Sidebar;
 use EllisLab\ExpressionEngine\Service\Thumbnail;
-use EllisLab\ExpressionEngine\Service\Profiler;
+use EllisLab\ExpressionEngine\Service\URL;
+use EllisLab\ExpressionEngine\Service\Validation;
+use EllisLab\ExpressionEngine\Service\View;
 
 // TODO should put the version in here at some point ...
 return array(
