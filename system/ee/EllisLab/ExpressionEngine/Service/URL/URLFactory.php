@@ -103,7 +103,7 @@ class URLFactory {
 			}
 		}
 
-		return $this->make('', array('URL' => urlencode($url)), $this->site_index, '');
+		return $this->make('', array('URL' => urlencode($url)), $this->site_index, 0);
 	}
 
 	public function getCurrentUrl()
