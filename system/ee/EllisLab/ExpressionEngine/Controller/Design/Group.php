@@ -61,7 +61,7 @@ class Group extends AbstractDesignController {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'design/group/create'),
+			'base_url' => ee('CP/URL')->make('design/group/create'),
 			'save_btn_text' => sprintf(lang('btn_save'), lang('template_group')),
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
@@ -186,7 +186,7 @@ class Group extends AbstractDesignController {
 				->addToBody(sprintf(lang('create_template_group_success_desc'), $group->group_name))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
+			ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $group->group_name));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -222,7 +222,7 @@ class Group extends AbstractDesignController {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'design/group/edit/' . $group->group_name),
+			'base_url' => ee('CP/URL')->make('design/group/edit/' . $group->group_name),
 			'form_hidden' => array(
 				'old_name' => $group->group_name
 			),
@@ -294,7 +294,7 @@ class Group extends AbstractDesignController {
 				->addToBody(sprintf(lang('edit_template_group_success_desc'), $group->group_name))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
+			ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $group->group_name));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -348,7 +348,7 @@ class Group extends AbstractDesignController {
 				->defer();
 		}
 
-		ee()->functions->redirect(ee('CP/URL', 'design'));
+		ee()->functions->redirect(ee('CP/URL')->make('design'));
 	}
 
 	/**

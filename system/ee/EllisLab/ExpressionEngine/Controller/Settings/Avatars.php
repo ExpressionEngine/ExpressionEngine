@@ -118,7 +118,7 @@ class Avatars extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = ee('CP/URL', 'settings/avatars');
+		$base_url = ee('CP/URL')->make('settings/avatars');
 
 		if (AJAX_REQUEST)
 		{

@@ -94,7 +94,7 @@ class EE_Menu {
 			{
 				if ($site_id != ee()->config->item('site_id'))
 				{
-					$menu[$site_name] = ee('CP/URL', 'msm/switch_to/' . $site_id, array('page' => $site_backlink));
+					$menu[$site_name] = ee('CP/URL')->make('msm/switch_to/' . $site_id, array('page' => $site_backlink));
 				}
 			}
 		}
@@ -124,10 +124,10 @@ class EE_Menu {
 			foreach($channels->result() as $channel)
 			{
 				// Create link
-				$menu['create'][$channel->channel_title] = ee('CP/URL', 'publish/create/' . $channel->channel_id);
+				$menu['create'][$channel->channel_title] = ee('CP/URL')->make('publish/create/' . $channel->channel_id);
 
 				// Edit link
-				$menu['edit'][$channel->channel_title] = ee('CP/URL', 'publish/edit', array('filter_by_channel' => $channel->channel_id));
+				$menu['edit'][$channel->channel_title] = ee('CP/URL')->make('publish/edit', array('filter_by_channel' => $channel->channel_id));
 			}
 		}
 
@@ -145,12 +145,12 @@ class EE_Menu {
 	private function _develop_menu()
 	{
 		$menu = array(
-			'channel_manager'  => ee('CP/URL', 'channels'),
-			'template_manager' => ee('CP/URL', 'design'),
-			'msm_manager'      => ee('CP/URL', 'msm'),
-			'addon_manager'    => ee('CP/URL', 'addons'),
-			'utilities'        => ee('CP/URL', 'utilities'),
-			'logs'             => ee('CP/URL', 'logs')
+			'channel_manager'  => ee('CP/URL')->make('channels'),
+			'template_manager' => ee('CP/URL')->make('design'),
+			'msm_manager'      => ee('CP/URL')->make('msm'),
+			'addon_manager'    => ee('CP/URL')->make('addons'),
+			'utilities'        => ee('CP/URL')->make('utilities'),
+			'logs'             => ee('CP/URL')->make('logs')
 		);
 
 		if (ee()->config->item('multiple_sites_enabled') !== 'y')
@@ -225,10 +225,10 @@ class EE_Menu {
 	 * Sets up left sidebar navigation given an array of data like this:
 	 *
 	 * array(
-	 *     'key_of_heading' => ee('CP/URL', 'optional/link'),
+	 *     'key_of_heading' => ee('CP/URL')->make('optional/link'),
 	 *     'heading_with_no_link',
 	 *     array(
-	 *         'item_in_subsection' => ee('CP/URL', 'sub/section')
+	 *         'item_in_subsection' => ee('CP/URL')->make('sub/section')
 	 *     )
 	 * )
 	 *

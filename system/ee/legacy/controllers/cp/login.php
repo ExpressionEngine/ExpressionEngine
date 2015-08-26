@@ -218,7 +218,7 @@ class Login extends CP_Controller {
 			));
 		}
 
-		$return_path = ee('CP/URL', 'homepage');
+		$return_path = ee('CP/URL')->make('homepage');
 
 		// Check to see if there is an alternative redirect set up
 		$member_group = ee('Model')->get('MemberGroup', ee()->session->userdata('group_id'))->first();
@@ -230,7 +230,7 @@ class Login extends CP_Controller {
 			if (strpos($return_path, '{') === 0)
 			{
 				$uri_elements = json_decode($return_path, TRUE);
-				$return_path = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
+				$return_path = ee('CP/URL')->make($uri_elements['path'], $uri_elements['arguments']);
 			}
 			else
 			{
@@ -257,13 +257,13 @@ class Login extends CP_Controller {
 
 			switch ($cp_homepage) {
 				case 'entries_edit':
-					$return_path = ee('CP/URL', 'publish/edit');
+					$return_path = ee('CP/URL')->make('publish/edit');
 					break;
 				case 'publish_form':
-					$return_path = ee('CP/URL', 'publish/create/'.$cp_homepage_channel);
+					$return_path = ee('CP/URL')->make('publish/create/'.$cp_homepage_channel);
 					break;
 				case 'custom':
-					$return_path = ee('CP/URL', $cp_homepage_custom); # make instructions on field or something
+					$return_path = ee('CP/URL')->make($cp_homepage_custom); # make instructions on field or something
 					break;
 				default:
 					break;

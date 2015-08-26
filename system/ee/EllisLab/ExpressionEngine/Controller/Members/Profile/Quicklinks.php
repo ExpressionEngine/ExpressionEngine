@@ -41,7 +41,7 @@ class Quicklinks extends Profile {
 		ee()->load->model('member_model');
 		$this->quicklinks = ee()->member_model->get_member_quicklinks($this->member->member_id);
 		$this->index_url = $this->base_url;
-		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
+		$this->base_url = ee('CP/URL')->make($this->base_url, $this->query_string);
 	}
 
 	/**
@@ -55,7 +55,7 @@ class Quicklinks extends Profile {
 
 		foreach ($this->quicklinks as $quicklink)
 		{
-			$edit_url = ee('CP/URL', 'members/profile/quicklinks/edit/' . ($quicklink['order'] ?: 1), $this->query_string);
+			$edit_url = ee('CP/URL')->make('members/profile/quicklinks/edit/' . ($quicklink['order'] ?: 1), $this->query_string);
 
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
@@ -96,8 +96,8 @@ class Quicklinks extends Profile {
 		$table->setData($links);
 
 		$data['table'] = $table->viewData($this->base_url);
-		$data['new'] = ee('CP/URL', 'members/profile/quicklinks/create', $this->query_string);
-		$data['form_url'] = ee('CP/URL', 'members/profile/quicklinks/delete', $this->query_string);
+		$data['new'] = ee('CP/URL')->make('members/profile/quicklinks/create', $this->query_string);
+		$data['form_url'] = ee('CP/URL')->make('members/profile/quicklinks/delete', $this->query_string);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('quick_links') . ': <b>### ' . lang('quick_links') . '</b>');
 		ee()->cp->add_js_script(array(
@@ -119,7 +119,7 @@ class Quicklinks extends Profile {
 	public function create()
 	{
 		ee()->cp->set_breadcrumb($this->base_url, lang('quick_links'));
-		$this->base_url = ee('CP/URL', $this->index_url . '/create', $this->query_string);
+		$this->base_url = ee('CP/URL')->make($this->index_url . '/create', $this->query_string);
 
 		$vars = array(
 			'cp_page_title' => lang('create_quick_link'),
@@ -132,7 +132,7 @@ class Quicklinks extends Profile {
 
 		$url = base64_decode(ee()->input->get('url'));
 		$uri_elements = json_decode($url, TRUE);
-		$values['url'] = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
+		$values['url'] = ee('CP/URL')->make($uri_elements['path'], $uri_elements['arguments']);
 
 		if ( ! empty($_POST))
 		{
@@ -158,7 +158,7 @@ class Quicklinks extends Profile {
 	public function edit($id)
 	{
 		ee()->cp->set_breadcrumb($this->base_url, lang('quick_links'));
-		$this->base_url = ee('CP/URL', $this->index_url . "/edit/$id", $this->query_string);
+		$this->base_url = ee('CP/URL')->make($this->index_url . "/edit/$id", $this->query_string);
 
 		$vars = array(
 			'cp_page_title' => lang('edit_quick_link')
@@ -197,7 +197,7 @@ class Quicklinks extends Profile {
 		$this->quicklinks = array_diff_key($this->quicklinks, array_flip($selection));
 		$this->saveQuicklinks();
 
-		ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
+		ee()->functions->redirect(ee('CP/URL')->make($this->index_url, $this->query_string));
 	}
 
 	/**
@@ -274,7 +274,7 @@ class Quicklinks extends Profile {
 		{
 			if ($this->saveQuicklinks())
 			{
-				ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
+				ee()->functions->redirect(ee('CP/URL')->make($this->index_url, $this->query_string));
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())

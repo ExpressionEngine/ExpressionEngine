@@ -39,7 +39,7 @@ class FilePicker {
 			$qs['type'] = 'list';
 		}
 
-		$href = ee('CP/URL', $this->controller, $qs);
+		$href = ee('CP/URL')->make($this->controller, $qs);
 		$extra = "";
 		$class = "";
 

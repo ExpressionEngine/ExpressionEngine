@@ -409,7 +409,7 @@ class Cp {
 					->addToBody(lang('checksum_changed_warning'))
 					->addToBody($changed);
 
-				$button = form_open(ee('CP/URL', 'homepage/accept_checksums'), '', array('return' => base64_encode(ee()->cp->get_safe_refresh())));
+				$button = form_open(ee('CP/URL')->make('homepage/accept_checksums'), '', array('return' => base64_encode(ee()->cp->get_safe_refresh())));
 				$button .= '<input class="btn submit" type="submit" value="' . lang('checksum_changed_accept') . '">';
 				$button .= form_close();
 
@@ -675,7 +675,7 @@ class Cp {
 			//   1. index.php?/cp/path/to/controller/with/arugments
 			//   2. index.php?D=cp&C=cp&M=homepage
 			//
-			// In the case of #1 we likely built it with ee('CP/URL', ) thus
+			// In the case of #1 we likely built it with ee('CP/URL')->make() thus
 			// we will store the needed parts to rebuild it.
 			//
 			// In the case of #2 we will build out a string to return
@@ -1121,7 +1121,7 @@ class Cp {
 
 		if (empty($redirect))
 		{
-			$redirect = ee('CP/URL', 'homepage');
+			$redirect = ee('CP/URL')->make('homepage');
 		}
 
 		// We set the cookie before switching prefs to ensure it uses current settings

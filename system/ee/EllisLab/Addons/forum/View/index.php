@@ -1,15 +1,15 @@
 <div class="box">
 	<div class="tbl-ctrls">
-		<?=form_open(ee('CP/URL', 'addons/settings/forum'))?>
+		<?=form_open(ee('CP/URL')->make('addons/settings/forum'))?>
 			<?php if (empty($board)): ?>
 				<table cellspacing="0" class="empty no-results">
 					<tr>
-						<td><?=lang('no_forum_boards')?> <a class="btn action" href="<?=ee('CP/URL', 'addons/settings/forum/create/board')?>"><?=lang('create_new_board')?></a></td>
+						<td><?=lang('no_forum_boards')?> <a class="btn action" href="<?=ee('CP/URL')->make('addons/settings/forum/create/board')?>"><?=lang('create_new_board')?></a></td>
 					</tr>
 				</table>
 			<?php else: ?>
 			<fieldset class="tbl-search right">
-				<a class="btn tn action" href="<?=ee('CP/URL', 'addons/settings/forum/create/category/' . $board->board_id)?>"><?=lang('new_category')?></a>
+				<a class="btn tn action" href="<?=ee('CP/URL')->make('addons/settings/forum/create/category/' . $board->board_id)?>"><?=lang('new_category')?></a>
 			</fieldset>
 			<h1><?=$board->board_label?> <?=lang('forum_listing')?><br>
 				<i><?=$board->board_name?>,
@@ -23,15 +23,15 @@
 			<?=ee('CP/Alert')->getAllInlines()?>
 			<fieldset class="tbl-filter">
 				<ul class="toolbar">
-					<li class="mods"><a href="<?=ee('CP/URL', 'addons/settings/forum/moderators/' . $board->board_id)?>" title="<?=lang('moderators')?>"></a></li>
-					<li class="admin"><a href="<?=ee('CP/URL', 'addons/settings/forum/admins/' . $board->board_id)?>" title="<?=lang('administrators')?>"></a></li>
+					<li class="mods"><a href="<?=ee('CP/URL')->make('addons/settings/forum/moderators/' . $board->board_id)?>" title="<?=lang('moderators')?>"></a></li>
+					<li class="admin"><a href="<?=ee('CP/URL')->make('addons/settings/forum/admins/' . $board->board_id)?>" title="<?=lang('administrators')?>"></a></li>
 				</ul>
 			</fieldset>
 
 			<?php if (empty($categories)): ?>
 			<table cellspacing="0" class="empty no-results">
 				<tr>
-					<td><?=lang('no_categories')?> <a class="btn action" href="<?=ee('CP/URL', 'addons/settings/forum/create/category/' . $board->board_id)?>"><?=lang('create_new_category')?></a></td>
+					<td><?=lang('no_categories')?> <a class="btn action" href="<?=ee('CP/URL')->make('addons/settings/forum/create/category/' . $board->board_id)?>"><?=lang('create_new_category')?></a></td>
 				</tr>
 			</table>
 			<?php else: ?>
@@ -59,7 +59,7 @@
 <?php
 $modal_vars = array(
 	'name'		=> 'modal-confirm-remove-forum',
-	'form_url'	=> ee('CP/URL', 'addons/settings/forum'),
+	'form_url'	=> ee('CP/URL')->make('addons/settings/forum'),
 	'hidden'	=> array(
 		'return' => base64_encode(ee()->cp->get_safe_refresh()),
 		'bulk_action'	=> 'remove'

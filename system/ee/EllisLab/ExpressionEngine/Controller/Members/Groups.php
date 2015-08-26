@@ -51,7 +51,7 @@ class Groups extends Members\Members {
 	{
 		parent::__construct();
 
-		$this->base_url = ee('CP/URL', 'members/groups');
+		$this->base_url = ee('CP/URL')->make('members/groups');
 		$this->site_id = (int) ee()->config->item('site_id');
 		$this->super_admin = $this->session->userdata('group_id') == 1;
 		$this->set_view_header($this->base_url, lang('search_member_groups_button'));
@@ -111,21 +111,21 @@ class Groups extends Members\Members {
 
 		foreach ($groups as $group)
 		{
-			$edit_link = ee('CP/URL', 'members/groups/edit/' . $group->group_id);
+			$edit_link = ee('CP/URL')->make('members/groups/edit/' . $group->group_id);
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
 					'href' => $edit_link,
 					'title' => strtolower(lang('edit'))
 				),
 				'copy' => array(
-					'href' => ee('CP/URL', 'members/groups/copy/' . $group->group_id),
+					'href' => ee('CP/URL')->make('members/groups/copy/' . $group->group_id),
 					'title' => strtolower(lang('copy'))
 				)
 			));
 
 			$status = ($group->is_locked == 'y') ? 'locked' : 'unlocked';
 			$count = $group->getMembers()->count();
-			$href = ee('CP/URL', 'members', array('group' => $group->group_id));
+			$href = ee('CP/URL')->make('members', array('group' => $group->group_id));
 			$title = '<a href="' . $edit_link . '">' . $group->group_title . '</a>';
 			$title .= " <a href='$href' alt='" . lang('view_members') . $group->group_title ."'>($count)</a>";
 
@@ -148,7 +148,7 @@ class Groups extends Members\Members {
 		$table->setNoResultsText('no_search_results');
 		$table->setData($groupData);
 		$data['table'] = $table->viewData($this->base_url);
-		$data['form_url'] = ee('CP/URL', 'members/groups/delete')->compile();
+		$data['form_url'] = ee('CP/URL')->make('members/groups/delete')->compile();
 
 		$base_url = $data['table']['base_url'];
 
@@ -186,7 +186,7 @@ class Groups extends Members\Members {
 		$vars = array(
 			'cp_page_title' => lang('create_member_group')
 		);
-		$this->base_url = ee('CP/URL', 'members/groups/create/', $this->query_string);
+		$this->base_url = ee('CP/URL')->make('members/groups/create/', $this->query_string);
 
 		$this->form($vars);
 	}
@@ -194,7 +194,7 @@ class Groups extends Members\Members {
 	public function copy($group_id)
 	{
 
-		$this->base_url = ee('CP/URL', 'members/groups/create/', $this->query_string);
+		$this->base_url = ee('CP/URL')->make('members/groups/create/', $this->query_string);
 
 		$this->group = ee('Model')->get('MemberGroup', $group_id)->first();
 		$master = $this->groupData($this->group);
@@ -217,7 +217,7 @@ class Groups extends Members\Members {
 
 		$this->group = ee('Model')->get('MemberGroup', $group_id)->first();
 		$this->group_id = (int) $this->group->group_id;
-		$this->base_url = ee('CP/URL', 'members/groups/edit/' . $group_id, $this->query_string);
+		$this->base_url = ee('CP/URL')->make('members/groups/edit/' . $group_id, $this->query_string);
 		$current = $this->groupData($this->group);
 
 		$this->form($vars, $current);
@@ -832,7 +832,7 @@ class Groups extends Members\Members {
 					->defer();
 			}
 
-			ee()->functions->redirect(ee('CP/URL', $this->index_url, $this->query_string));
+			ee()->functions->redirect(ee('CP/URL')->make($this->index_url, $this->query_string));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{

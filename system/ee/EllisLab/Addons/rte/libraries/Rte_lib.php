@@ -94,14 +94,14 @@ class Rte_lib {
 		// new toolset?
 		if ($toolset_id == 0)
 		{
-			$vars['base_url'] = ee('CP/URL', 'addons/settings/rte/new_toolset');
+			$vars['base_url'] = ee('CP/URL')->make('addons/settings/rte/new_toolset');
 			$vars['cp_page_title_alt'] = lang('create_tool_set_header');
 			$toolset['tools'] = array();
 			$toolset_name = '';
 		}
 		else
 		{
-			$vars['base_url'] = ee('CP/URL', 'addons/settings/rte/edit_toolset', array('toolset_id' => $toolset_id));
+			$vars['base_url'] = ee('CP/URL')->make('addons/settings/rte/edit_toolset', array('toolset_id' => $toolset_id));
 			$vars['cp_page_title_alt'] = lang('edit_tool_set_header');
 
 			// make sure user can access the existing toolset
@@ -185,13 +185,13 @@ class Rte_lib {
 
 		if ($toolset_id)
 		{
-			$error_url = ee('CP/URL', 'addons/settings/rte/edit_toolset', array('toolset_id' => $toolset_id));
+			$error_url = ee('CP/URL')->make('addons/settings/rte/edit_toolset', array('toolset_id' => $toolset_id));
 			$success_url = $error_url;
 		}
 		else
 		{
-			$error_url = ee('CP/URL', 'addons/settings/rte/new_toolset');
-			$success_url = ee('CP/URL', 'addons/settings/rte');
+			$error_url = ee('CP/URL')->make('addons/settings/rte/new_toolset');
+			$success_url = ee('CP/URL')->make('addons/settings/rte');
 		}
 
 		$toolset = array(

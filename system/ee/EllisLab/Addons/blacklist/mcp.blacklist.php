@@ -95,7 +95,7 @@ class Blacklist_mcp {
 
 		$vars = array(
 			'allow_write_htaccess' => $allow_write_htaccess,
-			'base_url' => ee('CP/URL', 'addons/settings/blacklist/save_htaccess_path'),
+			'base_url' => ee('CP/URL')->make('addons/settings/blacklist/save_htaccess_path'),
 			'cp_page_title' => lang('blacklist_module_name') . ' ' . lang('settings'),
 			'save_btn_text' => 'btn_save_settings',
 			'save_btn_text_working' => 'btn_saving',
@@ -150,7 +150,7 @@ class Blacklist_mcp {
 	{
 		if (ee()->session->userdata('group_id') != '1' OR ee()->input->get_post('htaccess_path') === FALSE OR (ee()->input->get_post('htaccess_path') == '' && ee()->config->item('htaccess_path') === FALSE))
 		{
-			ee()->functions->redirect(ee('CP/URL', 'addons/settings/blacklist'));
+			ee()->functions->redirect(ee('CP/URL')->make('addons/settings/blacklist'));
 		}
 
 		ee()->load->library('form_validation');
@@ -173,7 +173,7 @@ class Blacklist_mcp {
 				->withTitle(lang('htaccess_path_removed'))
 				->addToBody(lang('htaccess_path_removed_desc'))
 				->defer();
-			ee()->functions->redirect(ee('CP/URL', 'addons/settings/blacklist'));
+			ee()->functions->redirect(ee('CP/URL')->make('addons/settings/blacklist'));
 		}
 
 		$this->write_htaccess(ee()->input->get_post('htaccess_path'));
@@ -183,7 +183,7 @@ class Blacklist_mcp {
 			->withTitle(lang('htaccess_written_successfully'))
 			->addToBody(lang('htaccess_written_successfully_desc'))
 			->defer();
-		ee()->functions->redirect(ee('CP/URL', 'addons/settings/blacklist'));
+		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/blacklist'));
 	}
 
 	private function _check_path($str)
@@ -221,7 +221,7 @@ class Blacklist_mcp {
 
 		if (ee()->session->userdata('group_id') != '1' OR $htaccess_path == '')
 		{
-			ee()->functions->redirect(ee('CP/URL', 'addons/settings/blacklist'));
+			ee()->functions->redirect(ee('CP/URL')->make('addons/settings/blacklist'));
 		}
 
 		if ( ! $fp = @fopen($htaccess_path, FOPEN_READ))
@@ -335,7 +335,7 @@ class Blacklist_mcp {
 			->withTitle(lang('lists_updated'))
 			->addToBody(lang('blacklist_downloaded'))
 			->defer();
-		ee()->functions->redirect(ee('CP/URL', 'addons/settings/blacklist'));
+		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/blacklist'));
 	}
 
 	// --------------------------------------------------------------------
@@ -354,7 +354,7 @@ class Blacklist_mcp {
 			->withTitle(lang('lists_updated'))
 			->addToBody(lang('whitelist_downloaded'))
 			->defer();
-		ee()->functions->redirect(ee('CP/URL', 'addons/settings/blacklist'));
+		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/blacklist'));
 	}
 
 	// --------------------------------------------------------------------
@@ -368,7 +368,7 @@ class Blacklist_mcp {
 			->withTitle(lang('lists_updated'))
 			->addToBody(lang('lists_updated_desc'))
 			->defer();
-		ee()->functions->redirect(ee('CP/URL', 'addons/settings/blacklist'));
+		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/blacklist'));
 	}
 
 	/**

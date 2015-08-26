@@ -60,9 +60,9 @@ abstract class AbstractDesign extends CP_Controller {
 
 		// Template Groups
 		$template_group_list = $sidebar->addHeader(lang('template_groups'))
-			->withButton(lang('new'), ee('CP/URL', 'design/group/create'))
+			->withButton(lang('new'), ee('CP/URL')->make('design/group/create'))
 			->addFolderList('template-group')
-				->withRemoveUrl(ee('CP/URL', 'design/group/remove'))
+				->withRemoveUrl(ee('CP/URL')->make('design/group/remove'))
 				->withRemovalKey('group_name')
 				->withNoResultsText(lang('zero_template_groups_found'));
 
@@ -77,8 +77,8 @@ abstract class AbstractDesign extends CP_Controller {
 
 		foreach ($template_groups->all() as $group)
 		{
-			$item = $template_group_list->addItem($group->group_name, ee('CP/URL', 'design/manager/' . $group->group_name))
-				->withEditUrl(ee('CP/URL', 'design/group/edit/' . $group->group_name))
+			$item = $template_group_list->addItem($group->group_name, ee('CP/URL')->make('design/manager/' . $group->group_name))
+				->withEditUrl(ee('CP/URL')->make('design/group/edit/' . $group->group_name))
 				->withRemoveConfirmation(lang('template_group') . ': <b>' . $group->group_name . '</b>')
 				->identifiedBy($group->group_name);
 
@@ -97,8 +97,8 @@ abstract class AbstractDesign extends CP_Controller {
 		$system_templates = $sidebar->addHeader(lang('system_templates'))
 			->addFolderList('system-templates');
 
-		$item = $system_templates->addItem(lang('messages'), ee('CP/URL', 'design/system'))
-			->withEditUrl(ee('CP/URL', 'design/system'))
+		$item = $system_templates->addItem(lang('messages'), ee('CP/URL')->make('design/system'))
+			->withEditUrl(ee('CP/URL')->make('design/system'))
 			->cannotRemove();
 
 		if ($active == 'messages')
@@ -106,8 +106,8 @@ abstract class AbstractDesign extends CP_Controller {
 			$item->isActive();
 		}
 
-		$item = $system_templates->addItem(lang('email'), ee('CP/URL', 'design/email'))
-			->withEditUrl(ee('CP/URL', 'design/email'))
+		$item = $system_templates->addItem(lang('email'), ee('CP/URL')->make('design/email'))
+			->withEditUrl(ee('CP/URL')->make('design/email'))
 			->cannotRemove();
 
 		if ($active == 'email')
@@ -117,8 +117,8 @@ abstract class AbstractDesign extends CP_Controller {
 
 		if (ee('Model')->get('Module')->filter('module_name', 'Member')->first())
 		{
-			$item = $system_templates->addItem(lang('members'), ee('CP/URL', 'design/members'))
-				->withEditUrl(ee('CP/URL', 'design/members'))
+			$item = $system_templates->addItem(lang('members'), ee('CP/URL')->make('design/members'))
+				->withEditUrl(ee('CP/URL')->make('design/members'))
 				->cannotRemove();
 
 			if ($active == 'members')
@@ -129,8 +129,8 @@ abstract class AbstractDesign extends CP_Controller {
 
 		if (ee()->config->item('forum_is_installed') == "y")
 		{
-			$item = $system_templates->addItem(lang('forums'), ee('CP/URL', 'design/forums'))
-				->withEditUrl(ee('CP/URL', 'design/forums'))
+			$item = $system_templates->addItem(lang('forums'), ee('CP/URL')->make('design/forums'))
+				->withEditUrl(ee('CP/URL')->make('design/forums'))
 				->cannotRemove();
 
 			if ($active == 'forums')
@@ -140,8 +140,8 @@ abstract class AbstractDesign extends CP_Controller {
 		}
 
 		// Template Partials
-		$header = $sidebar->addHeader(lang('template_partials'), ee('CP/URL', 'design/snippets'))
-			->withButton(lang('new'), ee('CP/URL', 'design/snippets/create'));
+		$header = $sidebar->addHeader(lang('template_partials'), ee('CP/URL')->make('design/snippets'))
+			->withButton(lang('new'), ee('CP/URL')->make('design/snippets/create'));
 
 		if ($active == 'partials')
 		{
@@ -149,8 +149,8 @@ abstract class AbstractDesign extends CP_Controller {
 		}
 
 		// Template Variables
-		$header = $sidebar->addHeader(lang('template_variables'), ee('CP/URL', 'design/variables'))
-			->withButton(lang('new'), ee('CP/URL', 'design/variables/create'));
+		$header = $sidebar->addHeader(lang('template_variables'), ee('CP/URL')->make('design/variables'))
+			->withButton(lang('new'), ee('CP/URL')->make('design/variables/create'));
 
 		if ($active == 'variables')
 		{
@@ -160,7 +160,7 @@ abstract class AbstractDesign extends CP_Controller {
 		// Template Routes
 		if ( ! TemplateRoute::getConfig())
 		{
-			$header = $sidebar->addHeader(lang('template_routes'), ee('CP/URL', 'design/routes'));
+			$header = $sidebar->addHeader(lang('template_routes'), ee('CP/URL')->make('design/routes'));
 
 			if ($active == 'routes')
 			{
@@ -182,14 +182,14 @@ abstract class AbstractDesign extends CP_Controller {
 
 		ee()->view->header = array(
 			'title' => lang('template_manager'),
-			'form_url' => ee('CP/URL', 'design/template/search', array('return' => $return)),
+			'form_url' => ee('CP/URL')->make('design/template/search', array('return' => $return)),
 			'toolbar_items' => array(
 				'settings' => array(
-					'href' => ee('CP/URL', 'settings/template'),
+					'href' => ee('CP/URL')->make('settings/template'),
 					'title' => lang('settings')
 				),
 				'download' => array(
-					'href' => ee('CP/URL', 'design/export'),
+					'href' => ee('CP/URL')->make('design/export'),
 					'title' => lang('export_all')
 				)
 			),
@@ -355,7 +355,7 @@ abstract class AbstractDesign extends CP_Controller {
 		{
 			$group = $template->getTemplateGroup();
 			$template_name = htmlentities($template->template_name, ENT_QUOTES);
-			$edit_url = ee('CP/URL', 'design/template/edit/' . $template->template_id);
+			$edit_url = ee('CP/URL')->make('design/template/edit/' . $template->template_id);
 
 			if ($include_group_name)
 			{

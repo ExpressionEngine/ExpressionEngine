@@ -57,7 +57,7 @@ class Email extends AbstractDesignController {
 
 		$vars = array();
 
-		$base_url = ee('CP/URL', 'design/email/');
+		$base_url = ee('CP/URL')->make('design/email/');
 
 		$table = ee('CP/Table', array('autosort' => TRUE, 'subheadings' => TRUE));
 		$table->setColumns(
@@ -74,7 +74,7 @@ class Email extends AbstractDesignController {
 		$data = array();
 		foreach ($templates as $template)
 		{
-			$edit_url = ee('CP/URL', 'design/email/edit/' . $template->template_id);
+			$edit_url = ee('CP/URL')->make('design/email/edit/' . $template->template_id);
 			$template_name = '<a href="' . $edit_url->compile() . '">' . lang($template->template_name) . '</a>';
 			$data[$template->template_subtype][] = array(
 				$template_name,
@@ -142,7 +142,7 @@ class Email extends AbstractDesignController {
 			if (ee()->input->post('submit') == 'finish')
 			{
 				$alert->defer();
-				ee()->functions->redirect(ee('CP/URL', 'design/email'));
+				ee()->functions->redirect(ee('CP/URL')->make('design/email'));
 			}
 
 			$alert->now();
@@ -159,7 +159,7 @@ class Email extends AbstractDesignController {
 		$author = $template->getLastAuthor();
 
 		$vars = array(
-			'form_url' => ee('CP/URL', 'design/email/edit/' . $template->template_id),
+			'form_url' => ee('CP/URL')->make('design/email/edit/' . $template->template_id),
 			'template' => $template,
 			'author' => (empty($author)) ? '-' : $author->getMemberName(),
 		);
@@ -169,8 +169,8 @@ class Email extends AbstractDesignController {
 
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), lang($template->template_name));
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'design')->compile() => lang('template_manager'),
-			ee('CP/URL', 'design/email/')->compile() => sprintf(lang('breadcrumb_group'), lang('email'))
+			ee('CP/URL')->make('design')->compile() => lang('template_manager'),
+			ee('CP/URL')->make('design/email/')->compile() => sprintf(lang('breadcrumb_group'), lang('email'))
 		);
 
 		ee()->cp->render('design/email/edit', $vars);

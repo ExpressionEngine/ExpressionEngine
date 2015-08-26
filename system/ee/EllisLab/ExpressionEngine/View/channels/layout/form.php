@@ -92,7 +92,7 @@
 						{
 							$layout = $assigned_member_groups[$member_group->group_id];
 							$disabled = ' disabled="disabled"';
-							$display = '<s>' . $display . '</s> <i>&mdash; ' . lang('assigned_to') . ' <a href="' . ee('CP/URL', 'channels/layouts/edit/' . $layout->layout_id) . '">' . $layout->layout_name . '</a></i>';
+							$display = '<s>' . $display . '</s> <i>&mdash; ' . lang('assigned_to') . ' <a href="' . ee('CP/URL')->make('channels/layouts/edit/' . $layout->layout_id) . '">' . $layout->layout_name . '</a></i>';
 						}
 						?>
 						<label class="<?=$class?>">

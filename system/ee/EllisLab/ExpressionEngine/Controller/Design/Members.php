@@ -145,7 +145,7 @@ class Members extends AbstractDesignController {
 
 		$vars = array();
 
-		$base_url = ee('CP/URL', 'design/members/index/' . $theme);
+		$base_url = ee('CP/URL')->make('design/members/index/' . $theme);
 
 		$table = ee('CP/Table', array('autosort' => TRUE, 'subheadings' => TRUE));
 		$table->setColumns(
@@ -166,7 +166,7 @@ class Members extends AbstractDesignController {
 			}
 
 			$human = substr($file, 0, -strlen(strrchr($file, '.')));
-			$edit_url = ee('CP/URL', 'design/members/edit/' . $theme . '/' . $human);
+			$edit_url = ee('CP/URL')->make('design/members/edit/' . $theme . '/' . $human);
 
 			$data['profile_' . $this->template_group_map[$file]][] = array(
 				array(
@@ -192,10 +192,10 @@ class Members extends AbstractDesignController {
 		$themes = array();
 		foreach (ee()->member_model->get_profile_templates() as $dir => $name)
 		{
-			$themes[ee('CP/URL', 'design/members/index/' . $dir)->compile()] = $name;
+			$themes[ee('CP/URL')->make('design/members/index/' . $dir)->compile()] = $name;
 		}
 
-		$vars['themes'] = form_dropdown('theme', $themes, ee('CP/URL', 'design/members/index/' . $theme));
+		$vars['themes'] = form_dropdown('theme', $themes, ee('CP/URL')->make('design/members/index/' . $theme));
 
 		$this->generateSidebar('members');
 		ee()->view->cp_page_title = lang('template_manager');
@@ -237,7 +237,7 @@ class Members extends AbstractDesignController {
 				if (ee()->input->post('submit') == 'finish')
 				{
 					$alert->defer();
-					ee()->functions->redirect(ee('CP/URL', 'design/members'));
+					ee()->functions->redirect(ee('CP/URL')->make('design/members'));
 				}
 
 				$alert->now();
@@ -259,7 +259,7 @@ class Members extends AbstractDesignController {
 		fclose($fp);
 
 		$vars = array(
-			'form_url'      => ee('CP/URL', 'design/members/edit/' . $theme . '/' . $file),
+			'form_url'      => ee('CP/URL')->make('design/members/edit/' . $theme . '/' . $file),
 			'edit_date'     => ee()->localize->human_time($fstat['mtime']),
 			'template_data' => file_get_contents($path),
 		);
@@ -268,8 +268,8 @@ class Members extends AbstractDesignController {
 
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), $template_name);
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'design')->compile() => lang('template_manager'),
-			ee('CP/URL', 'design/members/')->compile() => sprintf(lang('breadcrumb_group'), lang('members'))
+			ee('CP/URL')->make('design')->compile() => lang('template_manager'),
+			ee('CP/URL')->make('design/members/')->compile() => sprintf(lang('breadcrumb_group'), lang('members'))
 		);
 
 		ee()->cp->render('design/members/edit', $vars);

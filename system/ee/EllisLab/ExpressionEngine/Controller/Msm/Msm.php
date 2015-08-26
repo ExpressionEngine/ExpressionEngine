@@ -63,8 +63,8 @@ class Msm extends CP_Controller {
 
 		$sidebar = ee('CP/Sidebar')->make();
 
-		$sidebar->addHeader(lang('sites'), ee('CP/URL', 'msm'))
-			->withButton(lang('new'), ee('CP/URL', 'msm/create'))
+		$sidebar->addHeader(lang('sites'), ee('CP/URL')->make('msm'))
+			->withButton(lang('new'), ee('CP/URL')->make('msm/create'))
 			->isActive();
 
 		$sites = $sidebar->addHeader(lang('switch_to'))
@@ -72,7 +72,7 @@ class Msm extends CP_Controller {
 
 		foreach (ee('Model')->get('Site', $site_ids)->order('site_label', 'asc')->all() as $site)
 		{
-			$sites->addItem($site->site_label, ee('CP/URL', 'msm/switch_to/' . $site->site_id, array('page' => $site_backlink)));
+			$sites->addItem($site->site_label, ee('CP/URL')->make('msm/switch_to/' . $site->site_id, array('page' => $site_backlink)));
 		}
 	}
 
@@ -80,10 +80,10 @@ class Msm extends CP_Controller {
 	{
 		ee()->view->header = array(
 			'title' => lang('msm_manager'),
-			'form_url' => ee('CP/URL', 'msm'),
+			'form_url' => ee('CP/URL')->make('msm'),
 			'toolbar_items' => array(
 				'settings' => array(
-					'href' => ee('CP/URL', 'settings/general'),
+					'href' => ee('CP/URL')->make('settings/general'),
 					'title' => lang('settings')
 				)
 			),
@@ -101,12 +101,12 @@ class Msm extends CP_Controller {
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
-			ee()->functions->redirect(ee('CP/URL', 'msm'));
+			ee()->functions->redirect(ee('CP/URL')->make('msm'));
 		}
 
-		$base_url = ee('CP/URL', 'msm');
+		$base_url = ee('CP/URL')->make('msm');
 
-		$vars['create_url'] = ee('CP/URL', 'msm/create');
+		$vars['create_url'] = ee('CP/URL')->make('msm/create');
 
 		$sites = ee('Model')->get('Site', array_keys(ee()->session->userdata('assigned_sites')))->all();
 
@@ -150,7 +150,7 @@ class Msm extends CP_Controller {
 					'content' => lang('offline')
 				);
 			}
-			$edit_url = ee('CP/URL', 'msm/edit/' . $site->site_id);
+			$edit_url = ee('CP/URL')->make('msm/edit/' . $site->site_id);
 			$column = array(
 				$site->site_id,
 				array(
@@ -221,7 +221,7 @@ class Msm extends CP_Controller {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'msm')->compile() => lang('msm_manager'),
+			ee('CP/URL')->make('msm')->compile() => lang('msm_manager'),
 		);
 
 		if ( ! empty($_POST))
@@ -334,7 +334,7 @@ class Msm extends CP_Controller {
 					->addToBody(sprintf(lang('create_site_success_desc'), $site->site_label))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'msm'));
+				ee()->functions->redirect(ee('CP/URL')->make('msm'));
 			}
 			else
 			{
@@ -348,7 +348,7 @@ class Msm extends CP_Controller {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'msm/create'),
+			'base_url' => ee('CP/URL')->make('msm/create'),
 			'save_btn_text' => sprintf(lang('btn_save'), lang('site')),
 			'save_btn_text_working' => 'btn_saving',
 		);
@@ -414,7 +414,7 @@ class Msm extends CP_Controller {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'msm')->compile() => lang('msm_manager'),
+			ee('CP/URL')->make('msm')->compile() => lang('msm_manager'),
 		);
 
 		if ( ! empty($_POST))
@@ -440,7 +440,7 @@ class Msm extends CP_Controller {
 
 				ee()->logger->log_action(lang('site_updated') . ': ' . $site->site_label);
 
-				ee()->functions->redirect(ee('CP/URL', 'msm/edit/' . $site_id));
+				ee()->functions->redirect(ee('CP/URL')->make('msm/edit/' . $site_id));
 			}
 			else
 			{
@@ -454,7 +454,7 @@ class Msm extends CP_Controller {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'msm/edit/' . $site_id),
+			'base_url' => ee('CP/URL')->make('msm/edit/' . $site_id),
 			'save_btn_text' => sprintf(lang('btn_save'), lang('site')),
 			'save_btn_text_working' => 'btn_saving',
 		);
@@ -529,7 +529,7 @@ class Msm extends CP_Controller {
 		{
 			$return_path = base64_decode($page);
 			$uri_elements = json_decode($return_path, TRUE);
-			$redirect = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
+			$redirect = ee('CP/URL')->make($uri_elements['path'], $uri_elements['arguments']);
 		}
 
 		ee()->cp->switch_site($site_id, $redirect);

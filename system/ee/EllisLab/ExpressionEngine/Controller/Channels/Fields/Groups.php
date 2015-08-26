@@ -55,19 +55,19 @@ class Groups extends AbstractChannelsController {
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
-			ee()->functions->redirect(ee('CP/URL', 'channels/fields/groups/groups'));
+			ee()->functions->redirect(ee('CP/URL')->make('channels/fields/groups/groups'));
 		}
 
 		$groups = ee('Model')->get('ChannelFieldGroup')
 			->filter('site_id', ee()->config->item('site_id'));
 
 		$vars = array(
-			'create_url' => ee('CP/URL', 'channels/fields/groups/create')
+			'create_url' => ee('CP/URL')->make('channels/fields/groups/create')
 		);
 
 		$table = $this->buildTableFromChannelGroupsQuery($groups);
 
-		$vars['table'] = $table->viewData(ee('CP/URL', 'channels/fields/groups'));
+		$vars['table'] = $table->viewData(ee('CP/URL')->make('channels/fields/groups'));
 
 		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
 			->perPage($vars['table']['limit'])
@@ -90,12 +90,12 @@ class Groups extends AbstractChannelsController {
 	public function create()
 	{
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'channels/fields/groups')->compile() => lang('field_groups'),
+			ee('CP/URL')->make('channels/fields/groups')->compile() => lang('field_groups'),
 		);
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'channels/fields/groups/create'),
+			'base_url' => ee('CP/URL')->make('channels/fields/groups/create'),
 			'sections' => $this->form(),
 			'save_btn_text' => sprintf(lang('btn_save'), lang('field_group')),
 			'save_btn_text_working' => 'btn_saving'
@@ -123,7 +123,7 @@ class Groups extends AbstractChannelsController {
 
 				ee()->session->set_flashdata('group_id', $field_group->group_id);
 
-				ee()->functions->redirect(ee('CP/URL', 'channels/fields/groups'));
+				ee()->functions->redirect(ee('CP/URL')->make('channels/fields/groups'));
 			}
 			else
 			{
@@ -151,12 +151,12 @@ class Groups extends AbstractChannelsController {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'channels/fields/groups')->compile() => lang('field_groups'),
+			ee('CP/URL')->make('channels/fields/groups')->compile() => lang('field_groups'),
 		);
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'channels/fields/groups/edit/' . $id),
+			'base_url' => ee('CP/URL')->make('channels/fields/groups/edit/' . $id),
 			'sections' => $this->form($field_group),
 			'save_btn_text' => sprintf(lang('btn_save'), lang('field_group')),
 			'save_btn_text_working' => 'btn_saving'
@@ -182,7 +182,7 @@ class Groups extends AbstractChannelsController {
 					->addToBody(sprintf(lang('edit_field_group_success_desc'), $field_group->group_name))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'channels/fields/groups/edit/' . $id));
+				ee()->functions->redirect(ee('CP/URL')->make('channels/fields/groups/edit/' . $id));
 			}
 			else
 			{

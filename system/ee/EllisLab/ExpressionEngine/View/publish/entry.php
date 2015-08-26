@@ -15,9 +15,9 @@
 						<ul>
 							<?php foreach ($entry->getAutosaves()->sortBy('edit_date') as $autosave): ?>
 								<?php if ($entry->entry_id): ?>
-								<li><a href="<?=ee('CP/URL', 'publish/edit/entry/' . $entry->entry_id . '/' . $autosave->entry_id)?>"><?=ee()->localize->human_time($autosave->edit_date)?></a></li>
+								<li><a href="<?=ee('CP/URL')->make('publish/edit/entry/' . $entry->entry_id . '/' . $autosave->entry_id)?>"><?=ee()->localize->human_time($autosave->edit_date)?></a></li>
 								<?php else: ?>
-								<li><a href="<?=ee('CP/URL', 'publish/create/' . $entry->Channel->channel_id . '/' . $autosave->entry_id)?>"><?=ee()->localize->human_time($autosave->edit_date)?></a></li>
+								<li><a href="<?=ee('CP/URL')->make('publish/create/' . $entry->Channel->channel_id . '/' . $autosave->entry_id)?>"><?=ee()->localize->human_time($autosave->edit_date)?></a></li>
 								<?php endif;?>
 							<?php endforeach; ?>
 						</ul>

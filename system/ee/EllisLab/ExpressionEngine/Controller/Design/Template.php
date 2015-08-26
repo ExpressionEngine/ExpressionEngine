@@ -81,7 +81,7 @@ class Template extends AbstractDesignController {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'design/template/create/' . $group_name),
+			'base_url' => ee('CP/URL')->make('design/template/create/' . $group_name),
 			'buttons' => array(
 				array(
 					'name' => 'submit',
@@ -181,11 +181,11 @@ class Template extends AbstractDesignController {
 
 			if (ee()->input->post('submit') == 'edit')
 			{
-				ee()->functions->redirect(ee('CP/URL', 'design/template/edit/' . $template->template_id));
+				ee()->functions->redirect(ee('CP/URL')->make('design/template/edit/' . $template->template_id));
 			}
 			else
 			{
-				ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
+				ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $group->group_name));
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())
@@ -290,10 +290,10 @@ class Template extends AbstractDesignController {
 			if (ee()->input->post('submit') == 'finish')
 			{
 				ee()->session->set_flashdata('template_id', $template->template_id);
-				ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
+				ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $group->group_name));
 			}
 
-			ee()->functions->redirect(ee('CP/URL', 'design/template/edit/' . $template->template_id));
+			ee()->functions->redirect(ee('CP/URL')->make('design/template/edit/' . $template->template_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -309,7 +309,7 @@ class Template extends AbstractDesignController {
 		// @TODO add the "tabs" key and use the shared form! :) (see mcp.forum.php)
 
 		$vars = array(
-			'form_url' => ee('CP/URL', 'design/template/edit/' . $template_id),
+			'form_url' => ee('CP/URL')->make('design/template/edit/' . $template_id),
 			'settings' => $this->renderSettingsPartial($template),
 			'access' => $this->renderAccessPartial($template),
 			'template' => $template,
@@ -336,8 +336,8 @@ class Template extends AbstractDesignController {
 
 		ee()->view->cp_page_title = sprintf(lang('edit_template'), $group->group_name . '/' . $template->template_name);
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'design')->compile() => lang('template_manager'),
-			ee('CP/URL', 'design/manager/' . $group->group_name)->compile() => sprintf(lang('breadcrumb_group'), $group->group_name)
+			ee('CP/URL')->make('design')->compile() => lang('template_manager'),
+			ee('CP/URL')->make('design/manager/' . $group->group_name)->compile() => sprintf(lang('breadcrumb_group'), $group->group_name)
 		);
 
 		// Supress browser XSS check that could cause obscure bug after saving
@@ -431,7 +431,7 @@ class Template extends AbstractDesignController {
 				->defer();
 
 			ee()->session->set_flashdata('template_id', $template->template_id);
-			ee()->functions->redirect(ee('CP/URL', 'design/manager/' . $group->group_name));
+			ee()->functions->redirect(ee('CP/URL')->make('design/manager/' . $group->group_name));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -440,11 +440,11 @@ class Template extends AbstractDesignController {
 				->withTitle(lang('update_template_error'))
 				->addToBody(lang('update_template_error_desc'))
 				->defer();
-			ee()->functions->redirect(ee('CP/URL', 'design/template/edit/' . $template->template_id));
+			ee()->functions->redirect(ee('CP/URL')->make('design/template/edit/' . $template->template_id));
 		}
 
 		$vars = array(
-			'form_url' => ee('CP/URL', 'design/template/settings/' . $template_id),
+			'form_url' => ee('CP/URL')->make('design/template/settings/' . $template_id),
 			'settings' => $this->renderSettingsPartial($template),
 			'access' => $this->renderAccessPartial($template),
 		);
@@ -466,7 +466,7 @@ class Template extends AbstractDesignController {
 		{
 			$return = base64_decode(ee()->input->get_post('return'));
 			$uri_elements = json_decode($return, TRUE);
-			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL')->make($uri_elements['path'], $uri_elements['arguments']);
 			ee()->functions->redirect($return);
 		}
 		else
@@ -479,7 +479,7 @@ class Template extends AbstractDesignController {
 			->filter('template_data', 'LIKE', '%' . $search_terms . '%')
 			->all();
 
-		$base_url = ee('CP/URL', 'design/template/search');
+		$base_url = ee('CP/URL')->make('design/template/search');
 
 		$table = $this->buildTableFromTemplateCollection($templates, TRUE);
 
@@ -502,7 +502,7 @@ class Template extends AbstractDesignController {
 			$search_terms
 		);
 
-		ee()->javascript->set_global('template_settings_url', ee('CP/URL', 'design/template/settings/###')->compile());
+		ee()->javascript->set_global('template_settings_url', ee('CP/URL')->make('design/template/settings/###')->compile());
 		ee()->javascript->set_global('lang.remove_confirm', lang('template') . ': <b>### ' . lang('templates') . '</b>');
 		ee()->cp->add_js_script(array(
 			'file' => array(

@@ -47,7 +47,7 @@ class Buttons extends Settings {
 		$this->predefined = $predefined_buttons;
 
 		$this->index_url = $this->base_url;
-		$this->base_url = ee('CP/URL', $this->base_url);
+		$this->base_url = ee('CP/URL')->make($this->base_url);
 	}
 
 	public function index()
@@ -69,14 +69,14 @@ class Buttons extends Settings {
 		{
 			$preview = array('toolbar_items' => array(
 				$button->tag_name => array(
-					'href' => ee('CP/URL', 'settings/buttons/edit/' . $button->id),
+					'href' => ee('CP/URL')->make('settings/buttons/edit/' . $button->id),
 					'title' => $button->tag_name,
 					'content' => $button->tag_name . form_hidden('order[]', $button->id)
 				)
 			));
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
-					'href' => ee('CP/URL', 'settings/buttons/edit/' . $button->id),
+					'href' => ee('CP/URL')->make('settings/buttons/edit/' . $button->id),
 					'title' => strtolower(lang('edit'))
 				)
 			));
@@ -128,8 +128,8 @@ class Buttons extends Settings {
 		$table->setData($rows);
 
 		$data['table'] = $table->viewData($this->base_url);
-		$data['new'] = ee('CP/URL', 'settings/buttons/create');
-		$data['form_url'] = ee('CP/URL', 'settings/buttons/delete');
+		$data['new'] = ee('CP/URL')->make('settings/buttons/create');
+		$data['form_url'] = ee('CP/URL')->make('settings/buttons/delete');
 		$data['table']['action_content'] = $this->predefined();
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('html_buttons') . ': <b>### ' . lang('html_buttons') . '</b>');
@@ -150,7 +150,7 @@ class Buttons extends Settings {
 			->withTitle(lang('html_button_ajax_reorder_fail'))
 			->addToBody(lang('html_button_ajax_reorder_fail_desc'));
 
-		ee()->javascript->set_global('html_buttons.reorder_url', ee('CP/URL', 'settings/buttons/order/')->compile());
+		ee()->javascript->set_global('html_buttons.reorder_url', ee('CP/URL')->make('settings/buttons/order/')->compile());
 		ee()->javascript->set_global('alert.reorder_ajax_fail', $reorder_ajax_fail->render());
 
 		ee()->view->base_url = $this->base_url;
@@ -167,7 +167,7 @@ class Buttons extends Settings {
 	 */
 	public function create($preset = '')
 	{
-		$this->base_url = ee('CP/URL', $this->index_url . '/create');
+		$this->base_url = ee('CP/URL')->make($this->index_url . '/create');
 
 		$values = array();
 
@@ -190,7 +190,7 @@ class Buttons extends Settings {
 	 */
 	public function edit($id)
 	{
-		$this->base_url = ee('CP/URL', $this->index_url . "/edit/$id");
+		$this->base_url = ee('CP/URL')->make($this->index_url . "/edit/$id");
 
 		$vars = array(
 			'cp_page_title' => lang('edit_html_button')
@@ -222,7 +222,7 @@ class Buttons extends Settings {
 			->addToBody(lang('html_buttons_removed'))
 			->defer();
 
-		ee()->functions->redirect(ee('CP/URL', $this->index_url));
+		ee()->functions->redirect(ee('CP/URL')->make($this->index_url));
 	}
 
 	public function order()
@@ -358,7 +358,7 @@ class Buttons extends Settings {
 			if ($this->saveButtons($vars))
 			{
 				ee()->view->set_message('success', lang('html_button_updated'), TRUE);
-				ee()->functions->redirect(ee('CP/URL', $this->index_url));
+				ee()->functions->redirect(ee('CP/URL')->make($this->index_url));
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())
@@ -381,7 +381,7 @@ class Buttons extends Settings {
 		foreach ($this->predefined as $name => $button)
 		{
 			$current = array(
-				'href' => ee('CP/URL', 'settings/buttons/create/' . $name),
+				'href' => ee('CP/URL')->make('settings/buttons/create/' . $name),
 				'title' => $name,
 				'data-accesskey' => $button['accesskey'],
 			);

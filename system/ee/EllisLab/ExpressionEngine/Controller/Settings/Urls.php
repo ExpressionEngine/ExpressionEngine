@@ -163,7 +163,7 @@ class Urls extends Settings {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = ee('CP/URL', 'settings/urls');
+		$base_url = ee('CP/URL')->make('settings/urls');
 
 		if (AJAX_REQUEST)
 		{

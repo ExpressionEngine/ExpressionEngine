@@ -51,7 +51,7 @@ class Logs extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->base_url = ee('CP/URL', 'logs');
+		$this->base_url = ee('CP/URL')->make('logs');
 
 		$this->search_installed = ee('Model')->get('Module')
 			->filter('module_name', 'Search')
@@ -79,16 +79,16 @@ class Logs extends CP_Controller {
 
 		if (ee()->session->userdata('group_id') == 1)
 		{
-			$item = $logs->addItem(lang('developer_log'), ee('CP/URL', 'logs/developer'));
+			$item = $logs->addItem(lang('developer_log'), ee('CP/URL')->make('logs/developer'));
 		}
 
-		$item = $logs->addItem(lang('cp_log'), ee('CP/URL', 'logs/cp'));
-		$item = $logs->addItem(lang('throttle_log'), ee('CP/URL', 'logs/throttle'));
-		$item = $logs->addItem(lang('email_log'), ee('CP/URL', 'logs/email'));
+		$item = $logs->addItem(lang('cp_log'), ee('CP/URL')->make('logs/cp'));
+		$item = $logs->addItem(lang('throttle_log'), ee('CP/URL')->make('logs/throttle'));
+		$item = $logs->addItem(lang('email_log'), ee('CP/URL')->make('logs/email'));
 
 		if ($this->search_installed)
 		{
-			$item = $logs->addItem(lang('search_log'), ee('CP/URL', 'logs/search'));
+			$item = $logs->addItem(lang('search_log'), ee('CP/URL')->make('logs/search'));
 		}
 	}
 
@@ -103,11 +103,11 @@ class Logs extends CP_Controller {
 	{
 		if (ee()->session->userdata('group_id') == 1)
 		{
-			ee()->functions->redirect(ee('CP/URL', 'logs/developer'));
+			ee()->functions->redirect(ee('CP/URL')->make('logs/developer'));
 		}
 		else
 		{
-			ee()->functions->redirect(ee('CP/URL', 'logs/cp'));
+			ee()->functions->redirect(ee('CP/URL')->make('logs/cp'));
 		}
 	}
 

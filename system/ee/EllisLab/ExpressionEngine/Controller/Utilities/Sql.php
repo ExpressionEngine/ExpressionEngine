@@ -111,7 +111,7 @@ class Sql extends Utilities {
 		$table->setNoResultsText('no_tables_match');
 		$table->setData($data);
 
-		$vars['table'] = $table->viewData(ee('CP/URL', 'utilities/sql'));
+		$vars['table'] = $table->viewData(ee('CP/URL')->make('utilities/sql'));
 
 		ee()->view->cp_page_title = lang('sql_manager');
 		ee()->view->table_heading = lang('database_tables');
@@ -194,10 +194,10 @@ class Sql extends Utilities {
 		));
 		$table->setData($data);
 		$table->setNoResultsText('no_tables_match');
-		$vars['table'] = $table->viewData(ee('CP/URL', 'utilities/sql/op-results'));
+		$vars['table'] = $table->viewData(ee('CP/URL')->make('utilities/sql/op-results'));
 
 		ee()->view->cp_page_title = lang(strtolower($action).'_tables_results');
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'utilities/sql'), lang('sql_manager'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('utilities/sql'), lang('sql_manager'));
 		return ee()->cp->render('utilities/sql/ops', $vars);
 	}
 }

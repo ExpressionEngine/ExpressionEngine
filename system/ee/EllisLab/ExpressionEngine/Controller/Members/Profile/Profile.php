@@ -59,7 +59,7 @@ class Profile extends CP_Controller {
 
 		$qs = array('id' => $id);
 		$this->query_string = $qs;
-		$this->base_url = ee('CP/URL', 'members/profile/settings');
+		$this->base_url = ee('CP/URL')->make('members/profile/settings');
 		$this->base_url->setQueryStringVariable('id', $id);
 		$this->member = ee()->api->get('Member')->filter('member_id', $id)->first();
 
@@ -75,7 +75,7 @@ class Profile extends CP_Controller {
 
 		$this->generateSidebar();
 
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'members'), lang('members'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('members'), lang('members'));
 
 		ee()->view->header = array(
 			'title' => sprintf(lang('profile_header'), $this->member->username)
@@ -86,7 +86,7 @@ class Profile extends CP_Controller {
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
-		$header = $sidebar->addHeader(lang('personal_settings'), ee('CP/URL', 'members/profile', $this->query_string));
+		$header = $sidebar->addHeader(lang('personal_settings'), ee('CP/URL')->make('members/profile', $this->query_string));
 
 		if (ee()->uri->uri_string == 'cp/members/profile/settings')
 		{
@@ -95,50 +95,50 @@ class Profile extends CP_Controller {
 
 		$list = $header->addBasicList();
 
-		$list->addItem(lang('email_settings'), ee('CP/URL', 'members/profile/email', $this->query_string));
-		$list->addItem(lang('auth_settings'), ee('CP/URL', 'members/profile/auth', $this->query_string));
-		$list->addItem(lang('date_settings'), ee('CP/URL', 'members/profile/date', $this->query_string));
+		$list->addItem(lang('email_settings'), ee('CP/URL')->make('members/profile/email', $this->query_string));
+		$list->addItem(lang('auth_settings'), ee('CP/URL')->make('members/profile/auth', $this->query_string));
+		$list->addItem(lang('date_settings'), ee('CP/URL')->make('members/profile/date', $this->query_string));
 
-		$list = $sidebar->addHeader(lang('publishing_settings'), ee('CP/URL', 'members/profile/publishing', $this->query_string))
+		$list = $sidebar->addHeader(lang('publishing_settings'), ee('CP/URL')->make('members/profile/publishing', $this->query_string))
 			->addBasicList();
 
-		$url = ee('CP/URL', 'members/profile/buttons', $this->query_string);
+		$url = ee('CP/URL')->make('members/profile/buttons', $this->query_string);
 		$item = $list->addItem(lang('html_buttons'), $url);
 		if ($url->matchesTheRequestedURI())
 		{
 			$item->isActive();
 		}
 
-		$url = ee('CP/URL', 'members/profile/quicklinks', $this->query_string);
+		$url = ee('CP/URL')->make('members/profile/quicklinks', $this->query_string);
 		$item = $list->addItem(lang('quick_links'), $url);
 		if ($url->matchesTheRequestedURI())
 		{
 			$item->isActive();
 		}
 
-		$url = ee('CP/URL', 'members/profile/bookmarks', $this->query_string);
+		$url = ee('CP/URL')->make('members/profile/bookmarks', $this->query_string);
 		$item = $list->addItem(lang('bookmarklets'), $url);
 		if ($url->matchesTheRequestedURI())
 		{
 			$item->isActive();
 		}
 
-		$list->addItem(lang('subscriptions'), ee('CP/URL', 'members/profile/subscriptions', $this->query_string));
+		$list->addItem(lang('subscriptions'), ee('CP/URL')->make('members/profile/subscriptions', $this->query_string));
 
 		$list = $sidebar->addHeader(lang('administration'))
 			->addBasicList();
 
-		$list->addItem(lang('blocked_members'), ee('CP/URL', 'members/profile/ignore', $this->query_string));
-		$list->addItem(lang('member_group'), ee('CP/URL', 'members/profile/group', $this->query_string));
-		$list->addItem(lang('cp_settings'), ee('CP/URL', 'members/profile/cp-settings', $this->query_string));
-		$list->addItem(sprintf(lang('email_username'), $this->member->username), ee('CP/URL', 'utilities/communicate/member/' . $this->member->member_id));
-		$list->addItem(sprintf(lang('login_as'), $this->member->username), ee('CP/URL', 'members/profile/login', $this->query_string));
-		$list->addItem(sprintf(lang('delete_username'), $this->member->username), ee('CP/URL', 'members/delete', $this->query_string))
+		$list->addItem(lang('blocked_members'), ee('CP/URL')->make('members/profile/ignore', $this->query_string));
+		$list->addItem(lang('member_group'), ee('CP/URL')->make('members/profile/group', $this->query_string));
+		$list->addItem(lang('cp_settings'), ee('CP/URL')->make('members/profile/cp-settings', $this->query_string));
+		$list->addItem(sprintf(lang('email_username'), $this->member->username), ee('CP/URL')->make('utilities/communicate/member/' . $this->member->member_id));
+		$list->addItem(sprintf(lang('login_as'), $this->member->username), ee('CP/URL')->make('members/profile/login', $this->query_string));
+		$list->addItem(sprintf(lang('delete_username'), $this->member->username), ee('CP/URL')->make('members/delete', $this->query_string))
 			->asDeleteAction('modal-confirm-remove-member');
 
 		$modal_vars = array(
 			'name'		=> 'modal-confirm-remove-member',
-			'form_url'	=> ee('CP/URL', 'members/delete'),
+			'form_url'	=> ee('CP/URL')->make('members/delete'),
 			'checklist' => array(
 				array(
 					'kind' => lang('members'),

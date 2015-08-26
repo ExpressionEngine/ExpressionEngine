@@ -50,7 +50,7 @@ class Channels extends AbstractChannelsController {
 
 		$table = $this->buildTableFromChannelQuery($channels);
 
-		$vars['table'] = $table->viewData(ee('CP/URL', 'channels'));
+		$vars['table'] = $table->viewData(ee('CP/URL')->make('channels'));
 
 		$vars['pagination'] = ee('CP/Pagination', $total_rows)
 			->perPage($vars['table']['limit'])
@@ -95,7 +95,7 @@ class Channels extends AbstractChannelsController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		ee()->functions->redirect(ee('CP/URL', 'channels', ee()->cp->get_url_state()));
+		ee()->functions->redirect(ee('CP/URL')->make('channels', ee()->cp->get_url_state()));
 	}
 
 	/**
@@ -133,7 +133,7 @@ class Channels extends AbstractChannelsController {
 
 			$alert_key = 'created';
 			ee()->view->cp_page_title = lang('create_new_channel');
-			ee()->view->base_url = ee('CP/URL', 'channels/create');
+			ee()->view->base_url = ee('CP/URL')->make('channels/create');
 			$channel = ee('Model')->make('Channel');
 			$channel->title_field_label = lang('title');
 
@@ -159,7 +159,7 @@ class Channels extends AbstractChannelsController {
 
 			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_channel');
-			ee()->view->base_url = ee('CP/URL', 'channels/edit/'.$channel_id);
+			ee()->view->base_url = ee('CP/URL')->make('channels/edit/'.$channel_id);
 		}
 
 		// Channel duplicate preferences menu
@@ -213,7 +213,7 @@ class Channels extends AbstractChannelsController {
 			$alert = ee('CP/Alert')->makeInline('permissions-warn')
 				->asWarning()
 				->addToBody(lang('channel_publishing_options_warning'))
-				->addToBody(sprintf(lang('channel_publishing_options_warning2'), ee('CP/URL', 'channels/fields/groups')))
+				->addToBody(sprintf(lang('channel_publishing_options_warning2'), ee('CP/URL')->make('channels/fields/groups')))
 				->cannotClose()
 				->render();
 		}
@@ -273,7 +273,7 @@ class Channels extends AbstractChannelsController {
 						'no_results' => array(
 							'text' => 'status_groups_not_found',
 							'link_text' => 'create_new_status_group',
-							'link_href' => ee('CP/URL', 'channels/status/create')
+							'link_href' => ee('CP/URL')->make('channels/status/create')
 						)
 					)
 				)
@@ -299,7 +299,7 @@ class Channels extends AbstractChannelsController {
 						'no_results' => array(
 							'text' => 'custom_field_groups_not_found',
 							'link_text' => 'create_new_field_group',
-							'link_href' => ee('CP/URL', 'channels/groups/create')
+							'link_href' => ee('CP/URL')->make('channels/groups/create')
 						)
 					)
 				)
@@ -315,7 +315,7 @@ class Channels extends AbstractChannelsController {
 						'no_results' => array(
 							'text' => 'category_groups_not_found',
 							'link_text' => 'create_new_category_group',
-							'link_href' => ee('CP/URL', 'channels/cat/create')
+							'link_href' => ee('CP/URL')->make('channels/cat/create')
 						)
 					)
 				)
@@ -357,7 +357,7 @@ class Channels extends AbstractChannelsController {
 				->addToBody(sprintf(lang('channel_'.$alert_key.'_desc'), $channel->channel_title))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'channels'));
+			ee()->functions->redirect(ee('CP/URL')->make('channels'));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -370,10 +370,10 @@ class Channels extends AbstractChannelsController {
 
 		ee()->view->header = array(
 			'title' => lang('channel_manager'),
-			'form_url' => ee('CP/URL', 'channels/search'),
+			'form_url' => ee('CP/URL')->make('channels/search'),
 			'toolbar_items' => array(
 				'settings' => array(
-					'href' => ee('CP/URL', 'settings/content-design'),
+					'href' => ee('CP/URL')->make('settings/content-design'),
 					'title' => lang('settings')
 				)
 			)
@@ -383,7 +383,7 @@ class Channels extends AbstractChannelsController {
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('channel'));
 		ee()->view->save_btn_text_working = 'btn_saving';
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels'), lang('channels'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('channels'), lang('channels'));
 
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -1138,7 +1138,7 @@ class Channels extends AbstractChannelsController {
 
 		ee()->form_validation->validateNonTextInputs($vars['sections']);
 
-		$base_url = ee('CP/URL', 'channels/settings/'.$channel_id);
+		$base_url = ee('CP/URL')->make('channels/settings/'.$channel_id);
 
 		if (AJAX_REQUEST)
 		{
@@ -1155,7 +1155,7 @@ class Channels extends AbstractChannelsController {
 				->addToBody(sprintf(lang('channel_settings_saved_desc'), $channel->channel_title))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'channels'));
+			ee()->functions->redirect(ee('CP/URL')->make('channels'));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -1172,7 +1172,7 @@ class Channels extends AbstractChannelsController {
 		ee()->view->save_btn_text = 'btn_save_settings';
 		ee()->view->save_btn_text_working = 'btn_saving';
 
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels'), lang('channels'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('channels'), lang('channels'));
 
 		ee()->cp->render('settings/form', $vars);
 	}

@@ -85,7 +85,7 @@ class File extends AbstractFilesController {
 
 		$vars = array(
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'files/file/edit/' . $id),
+			'base_url' => ee('CP/URL')->make('files/file/edit/' . $id),
 			'save_btn_text' => 'btn_edit_file_meta',
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
@@ -176,7 +176,7 @@ class File extends AbstractFilesController {
 				->addToBody(sprintf(lang('edit_file_metadata_success_desc'), $file->title))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'files/directory/' . $file->upload_location_id));
+			ee()->functions->redirect(ee('CP/URL')->make('files/directory/' . $file->upload_location_id));
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
@@ -190,10 +190,10 @@ class File extends AbstractFilesController {
 		$this->generateSidebar($file->upload_location_id);
 		$this->stdHeader();
 		ee()->view->cp_page_title = sprintf(lang('edit_file_metadata'), $file->title);
-		ee()->view->cp_page_title_alt = ee()->view->cp_page_title . '<a class="btn action ta" href="' . ee('CP/URL', 'files/file/crop/' . $id) . '">' . lang('btn_crop') . '</a>';
+		ee()->view->cp_page_title_alt = ee()->view->cp_page_title . '<a class="btn action ta" href="' . ee('CP/URL')->make('files/file/crop/' . $id) . '">' . lang('btn_crop') . '</a>';
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'files')->compile() => lang('file_manager'),
+			ee('CP/URL')->make('files')->compile() => lang('file_manager'),
 		);
 
 		ee()->cp->render('settings/form', $vars);
@@ -230,7 +230,7 @@ class File extends AbstractFilesController {
 			$dir = $file->getUploadDestination();
 			if ( ! $dir->exists())
 			{
-				$upload_edit_url = ee('CP/URL', 'files/uploads/edit/' . $dir->id);
+				$upload_edit_url = ee('CP/URL')->make('files/uploads/edit/' . $dir->id);
 				$alert->addToBody(sprintf(lang('directory_not_found'), $dir->server_path))
 					->addToBody(sprintf(lang('check_upload_settings'), $upload_edit_url));
 			}
@@ -257,7 +257,7 @@ class File extends AbstractFilesController {
 
 		$vars = array(
 			'file' => $file,
-			'form_url' => ee('CP/URL', 'files/file/crop/' . $id),
+			'form_url' => ee('CP/URL')->make('files/file/crop/' . $id),
 			'height' => $info['height'],
 			'width' => $info['width'],
 			'active_tab' => 0
@@ -375,8 +375,8 @@ class File extends AbstractFilesController {
 		ee()->view->cp_page_title = sprintf(lang('crop_file'), $file->file_name);
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'files')->compile() => lang('file_manager'),
-			ee('CP/URL', 'files/file/edit/' . $id)->compile() => sprintf(lang('edit_file_name'), $file->file_name)
+			ee('CP/URL')->make('files')->compile() => lang('file_manager'),
+			ee('CP/URL')->make('files/file/edit/' . $id)->compile() => sprintf(lang('edit_file_name'), $file->file_name)
 		);
 
 		ee()->cp->render('files/crop', $vars);

@@ -51,7 +51,7 @@ class Metaweblog_api_mcp {
 	 */
 	function index()
 	{
-		$base_url = ee('CP/URL', 'addons/settings/metaweblog_api');
+		$base_url = ee('CP/URL')->make('addons/settings/metaweblog_api');
 
 		$api_url = ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.ee()->cp->fetch_action_id('Metaweblog_api', 'incoming');
 
@@ -93,7 +93,7 @@ class Metaweblog_api_mcp {
 				)
 			);
 
-			$edit_url = ee('CP/URL', 'addons/settings/metaweblog_api/modify', array('id' => $metaweblog->metaweblog_id));
+			$edit_url = ee('CP/URL')->make('addons/settings/metaweblog_api/modify', array('id' => $metaweblog->metaweblog_id));
 			$columns = array(
 				$metaweblog->metaweblog_id,
 				array(
@@ -179,7 +179,7 @@ class Metaweblog_api_mcp {
 			->addToBody(sprintf(lang('configurations_removed_desc'), count($ids)))
 			->defer();
 
-		ee()->functions->redirect(ee('CP/URL', 'addons/settings/metaweblog_api'));
+		ee()->functions->redirect(ee('CP/URL')->make('addons/settings/metaweblog_api'));
 	}
 
 	// --------------------------------------------------------------------
@@ -208,7 +208,7 @@ class Metaweblog_api_mcp {
 
 		if ($id == '')
 		{
-			ee()->functions->redirect(ee('CP/URL', 'addons/settings/metaweblog_api'));
+			ee()->functions->redirect(ee('CP/URL')->make('addons/settings/metaweblog_api'));
 		}
 
 		$channels = array();
@@ -229,18 +229,18 @@ class Metaweblog_api_mcp {
 		if ($id == 'new')
 		{
 			$create = TRUE;
-			$base_url = ee('CP/URL', 'addons/settings/metaweblog_api/create');
+			$base_url = ee('CP/URL')->make('addons/settings/metaweblog_api/create');
 		}
 		else
 		{
 			$create = FALSE;
-			$base_url = ee('CP/URL', 'addons/settings/metaweblog_api/modify/' . $id);
+			$base_url = ee('CP/URL')->make('addons/settings/metaweblog_api/modify/' . $id);
 
 			$query = ee()->db->get_where('metaweblog_api', array('metaweblog_id' => $id));
 
 			if ($query->num_rows() == 0)
 			{
-				ee()->functions->redirect(ee('CP/URL', 'addons/settings/metaweblog_api'));
+				ee()->functions->redirect(ee('CP/URL')->make('addons/settings/metaweblog_api'));
 			}
 
 			foreach($query->row_array() as $name => $value)
@@ -527,7 +527,7 @@ class Metaweblog_api_mcp {
 
 			return array(
 				'heading'    => $vars['cp_page_title'],
-				'breadcrumb' => array(ee('CP/URL', 'addons/settings/metaweblog_api')->compile() => lang('metaweblog_api_module_name') . ' ' . lang('configuration')),
+				'breadcrumb' => array(ee('CP/URL')->make('addons/settings/metaweblog_api')->compile() => lang('metaweblog_api_module_name') . ' ' . lang('configuration')),
 				'body'       => ee('View')->make('metaweblog_api:create_modify')->render($vars)
 			);
 		}
@@ -572,7 +572,7 @@ class Metaweblog_api_mcp {
 				->addToBody($message)
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'addons/settings/metaweblog_api'));
+			ee()->functions->redirect(ee('CP/URL')->make('addons/settings/metaweblog_api'));
 		}
 	}
 

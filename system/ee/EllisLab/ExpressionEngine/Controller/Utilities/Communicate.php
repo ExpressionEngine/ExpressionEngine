@@ -282,7 +282,7 @@ class Communicate extends Utilities {
 			$debug_msg = $this->deliverOneEmail($email, $recipient);
 
 			ee()->view->set_message('success', lang('email_sent_message'), $debug_msg, TRUE);
-			ee()->functions->redirect(ee('CP/URL', 'utilities/communicate'));
+			ee()->functions->redirect(ee('CP/URL')->make('utilities/communicate'));
 		}
 
 		// Get member group emails
@@ -366,14 +366,14 @@ class Communicate extends Utilities {
 			$this->deleteAttachments($email); // Remove attachments now
 
 			ee()->view->set_message('success', lang('total_emails_sent') . ' ' . $total_sent, $debug_msg, TRUE);
-			ee()->functions->redirect(ee('CP/URL', 'utilities/communicate'));
+			ee()->functions->redirect(ee('CP/URL')->make('utilities/communicate'));
 		}
 
 		/** ----------------------------------------
 		/**  Start Batch-Mode
 		/** ----------------------------------------*/
 
-		ee()->view->set_refresh(ee('CP/URL', 'utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
+		ee()->view->set_refresh(ee('CP/URL')->make('utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
 
 		ee('CP/Alert')->makeStandard('batchmode')
 			->asWarning()
@@ -381,7 +381,7 @@ class Communicate extends Utilities {
 			->addToBody(lang('batchmode_warning'))
 			->defer();
 
-		ee()->functions->redirect(ee('CP/URL', 'utilities/communicate'));
+		ee()->functions->redirect(ee('CP/URL')->make('utilities/communicate'));
 	}
 
 	// --------------------------------------------------------------------
@@ -425,7 +425,7 @@ class Communicate extends Utilities {
 			$this->deleteAttachments($email); // Remove attachments now
 
 			ee()->view->set_message('success', lang('total_emails_sent') . ' ' . $email->total_sent, $debug_msg, TRUE);
-			ee()->functions->redirect(ee('CP/URL', 'utilities/communicate'));
+			ee()->functions->redirect(ee('CP/URL')->make('utilities/communicate'));
 		}
 		else
 		{
@@ -434,7 +434,7 @@ class Communicate extends Utilities {
 
 			$message = $stats.BR.BR.lang('emails_remaining').NBS.NBS.count($email->recipient_array);
 
-			ee()->view->set_refresh(ee('CP/URL', 'utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
+			ee()->view->set_refresh(ee('CP/URL')->make('utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
 
 			ee('CP/Alert')->makeStandard('batchmode')
 				->asWarning()
@@ -442,7 +442,7 @@ class Communicate extends Utilities {
 				->addToBody(lang('batchmode_warning'))
 				->defer();
 
-			ee()->functions->redirect(ee('CP/URL', 'utilities/communicate'));
+			ee()->functions->redirect(ee('CP/URL')->make('utilities/communicate'));
 		}
 	}
 
@@ -702,7 +702,7 @@ class Communicate extends Utilities {
 			)
 		);
 
-		$table->setNoResultsText('no_cached_emails', 'create_new_email', ee('CP/URL', 'utilities/communicate'));
+		$table->setNoResultsText('no_cached_emails', 'create_new_email', ee('CP/URL')->make('utilities/communicate'));
 
 		$page = ee()->input->get('page') ? ee()->input->get('page') : 1;
 		$page = ($page > 0) ? $page : 1;
@@ -758,7 +758,7 @@ class Communicate extends Utilities {
 					),
 					'sync' => array(
 						'title' => lang('resend'),
-						'href' => ee('CP/URL', 'utilities/communicate/resend/' . $email->cache_id)
+						'href' => ee('CP/URL')->make('utilities/communicate/resend/' . $email->cache_id)
 					)
 				)),
 				array(
@@ -793,7 +793,7 @@ class Communicate extends Utilities {
 
 		$table->setData($data);
 
-		$base_url = ee('CP/URL', 'utilities/communicate/sent');
+		$base_url = ee('CP/URL')->make('utilities/communicate/sent');
 		$vars['table'] = $table->viewData($base_url);
 
 		$vars['pagination'] = ee('CP/Pagination', $count)

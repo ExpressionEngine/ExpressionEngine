@@ -47,20 +47,20 @@ class Routes extends Design {
 
 		if (ee()->config->item('enable_template_routes') == 'n')
 		{
-			ee()->functions->redirect(ee('CP/URL', 'design'));
+			ee()->functions->redirect(ee('CP/URL')->make('design'));
 		}
 
 		// Only show this page if we're not using a file based config
 		if ( ! empty(ee()->config->item('routes')))
 		{
-			ee()->functions->redirect(ee('CP/URL', 'design'));
+			ee()->functions->redirect(ee('CP/URL')->make('design'));
 		}
 
 		$this->generateSidebar('routes');
 		$this->stdHeader();
 		ee()->lang->loadfile('template_router');
 
-		$this->base_url = ee('CP/URL', 'design/routes');
+		$this->base_url = ee('CP/URL')->make('design/routes');
 	}
 
 	public function index()
@@ -144,7 +144,7 @@ RADIO;
 		$table->setData($data);
 
 		$vars['table'] = $table->viewData($this->base_url);
-		$vars['form_url'] = ee('CP/URL', 'design/routes/update');
+		$vars['form_url'] = ee('CP/URL')->make('design/routes/update');
 
 		$this->stdHeader();
 

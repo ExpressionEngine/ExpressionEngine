@@ -7,7 +7,7 @@
 			<p><?php if ($message_status != 'success'): ?><b>!!</b> <?php endif ?><?=$message?></p>
 		</div>
 	<?php endif;?>
-	<?=form_open(ee('CP/URL', 'login/authenticate'), array(), array('return_path' => $return_path))?>
+	<?=form_open(ee('CP/URL')->make('login/authenticate'), array(), array('return_path' => $return_path))?>
 		<fieldset>
 			<?=lang('username', 'username')?>
 			<?=form_input(array('dir' => 'ltr', 'name' => "username", 'id' => "username", 'value' => $username, 'maxlength' => 50))?>
@@ -15,7 +15,7 @@
 		<fieldset class="last">
 			<?=lang('password', 'password')?>
 			<?=form_password(array('dir' => 'ltr', 'name' => "password", 'id' => "password", 'maxlength' => PASSWORD_MAX_LENGTH, 'autocomplete' => 'off'))?>
-			<em><a href="<?=ee('CP/URL', '/login/forgotten_password_form')?>"><?=lang('forgotten_password')?></a></em>
+			<em><a href="<?=ee('CP/URL')->make('/login/forgotten_password_form')?>"><?=lang('forgotten_password')?></a></em>
 		</fieldset>
 		<?php if ($cp_session_type == 'c'):?>
 		<fieldset class="options">

@@ -55,17 +55,17 @@ class Fields extends AbstractChannelsController {
 		if (ee()->input->post('bulk_action') == 'remove')
 		{
 			$this->remove(ee()->input->post('selection'));
-			ee()->functions->redirect(ee('CP/URL', 'channels/fields'));
+			ee()->functions->redirect(ee('CP/URL')->make('channels/fields'));
 		}
 
 		$group = ee('Model')->get('ChannelFieldGroup')
 			->filter('group_id', $group_id)
 			->first();
 
-		$base_url = ee('CP/URL', 'channels/fields');
+		$base_url = ee('CP/URL')->make('channels/fields');
 
 		$vars = array(
-			'create_url' => ee('CP/URL', 'channels/fields/create/' . $group->group_id)
+			'create_url' => ee('CP/URL')->make('channels/fields/create/' . $group->group_id)
 		);
 
 		$fields = ee('Model')->get('ChannelField')
@@ -73,7 +73,7 @@ class Fields extends AbstractChannelsController {
 			->filter('group_id', $group_id);
 
 		$table = $this->buildTableFromChannelFieldsQuery($fields);
-		$table->setNoResultsText('no_fields', 'create_new', ee('CP/URL', 'channels/fields/create/' . $group_id));
+		$table->setNoResultsText('no_fields', 'create_new', ee('CP/URL')->make('channels/fields/create/' . $group_id));
 
 		$vars['table'] = $table->viewData($base_url);
 
@@ -89,7 +89,7 @@ class Fields extends AbstractChannelsController {
 			),
 		));
 
-		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/fields/groups'), lang('field_groups'));
+		ee()->cp->set_breadcrumb(ee('CP/URL')->make('channels/fields/groups'), lang('field_groups'));
 		ee()->view->cp_page_title = sprintf(lang('custom_fields_for'), $group->group_name);
 
 		ee()->cp->render('channels/fields/index', $vars);
@@ -98,8 +98,8 @@ class Fields extends AbstractChannelsController {
 	public function create($group_id)
 	{
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'channels/fields/groups')->compile() => lang('field_groups'),
-			ee('CP/URL', 'channels/fields/' . $group_id)->compile() => lang('fields'),
+			ee('CP/URL')->make('channels/fields/groups')->compile() => lang('field_groups'),
+			ee('CP/URL')->make('channels/fields/' . $group_id)->compile() => lang('fields'),
 		);
 
 		$errors = NULL;
@@ -128,7 +128,7 @@ class Fields extends AbstractChannelsController {
 					->addToBody(sprintf(lang('create_field_success_desc'), $field->field_label))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'channels/fields/'.$group_id));
+				ee()->functions->redirect(ee('CP/URL')->make('channels/fields/'.$group_id));
 			}
 			else
 			{
@@ -145,7 +145,7 @@ class Fields extends AbstractChannelsController {
 		$vars = array(
 			'errors' => $errors,
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'channels/fields/create/' . $group_id),
+			'base_url' => ee('CP/URL')->make('channels/fields/create/' . $group_id),
 			'sections' => $this->form(),
 			'save_btn_text' => sprintf(lang('btn_save'), lang('field')),
 			'save_btn_text_working' => 'btn_saving',
@@ -181,8 +181,8 @@ class Fields extends AbstractChannelsController {
 		}
 
 		ee()->view->cp_breadcrumbs = array(
-			ee('CP/URL', 'channels/fields/groups')->compile() => lang('field_groups'),
-			ee('CP/URL', 'channels/fields/' . $field->group_id)->compile() => lang('fields'),
+			ee('CP/URL')->make('channels/fields/groups')->compile() => lang('field_groups'),
+			ee('CP/URL')->make('channels/fields/' . $field->group_id)->compile() => lang('fields'),
 		);
 
 		$errors = NULL;
@@ -207,7 +207,7 @@ class Fields extends AbstractChannelsController {
 					->addToBody(sprintf(lang('edit_field_success_desc'), $field->field_label))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'channels/fields/' . $field->group_id));
+				ee()->functions->redirect(ee('CP/URL')->make('channels/fields/' . $field->group_id));
 			}
 			else
 			{
@@ -224,7 +224,7 @@ class Fields extends AbstractChannelsController {
 		$vars = array(
 			'errors' => $errors,
 			'ajax_validate' => TRUE,
-			'base_url' => ee('CP/URL', 'channels/fields/edit/' . $id),
+			'base_url' => ee('CP/URL')->make('channels/fields/edit/' . $id),
 			'sections' => $this->form($field),
 			'save_btn_text' => sprintf(lang('btn_save'), lang('field')),
 			'save_btn_text_working' => 'btn_saving',

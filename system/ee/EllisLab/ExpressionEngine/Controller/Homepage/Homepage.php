@@ -99,7 +99,7 @@ class Homepage extends CP_Controller {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$return = ee('CP/URL', 'homepage');
+		$return = ee('CP/URL')->make('homepage');
 
 		if (ee()->input->post('return'))
 		{
@@ -119,7 +119,7 @@ class Homepage extends CP_Controller {
 
 			$return = base64_decode(ee()->input->post('return'));
 			$uri_elements = json_decode($return, TRUE);
-			$return = ee('CP/URL', $uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL')->make($uri_elements['path'], $uri_elements['arguments']);
 		}
 
 		ee()->functions->redirect($return);

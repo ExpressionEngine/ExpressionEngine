@@ -1,7 +1,7 @@
 <?php $this->extend('_templates/default-nav'); ?>
 
 <div class="tbl-ctrls">
-	<?=form_open(ee('CP/URL', 'utilities/import-converter/import-code-output'), '', $form_hidden)?>
+	<?=form_open(ee('CP/URL')->make('utilities/import-converter/import-code-output'), '', $form_hidden)?>
 		<h1><?=$cp_page_title?></h1>
 		<div class="alert inline warn">
 			<?php if ($form_hidden['encrypt'] == TRUE): ?>

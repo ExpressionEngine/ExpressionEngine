@@ -59,7 +59,7 @@ class Members extends CP_Controller {
 		ee()->load->model('member_model');
 		ee()->load->library('form_validation');
 
-		$this->base_url = ee('CP/URL', 'members');
+		$this->base_url = ee('CP/URL')->make('members');
 		$this->set_view_header($this->base_url);
 	}
 
@@ -67,8 +67,8 @@ class Members extends CP_Controller {
 	{
 		$sidebar = ee('CP/Sidebar')->make();
 
-		$header = $sidebar->addHeader(lang('all_members'), ee('CP/URL', 'members')->compile())
-			->withButton(lang('new'), ee('CP/URL', 'members/create'));
+		$header = $sidebar->addHeader(lang('all_members'), ee('CP/URL')->make('members')->compile())
+			->withButton(lang('new'), ee('CP/URL')->make('members/create'));
 		$list = $header->addBasicList();
 
 		if ($active == 'all_members')
@@ -76,20 +76,20 @@ class Members extends CP_Controller {
 			$header->isActive();
 		}
 
-		$pending = $list->addItem(lang('pending_activation'), ee('CP/URL', 'members', array('group' => 4))->compile());
+		$pending = $list->addItem(lang('pending_activation'), ee('CP/URL')->make('members', array('group' => 4))->compile());
 
 		if ($active == 'pending')
 		{
 			$pending->isActive();
 		}
 
-		$list->addItem(lang('manage_bans'), ee('CP/URL', 'members/bans'));
+		$list->addItem(lang('manage_bans'), ee('CP/URL')->make('members/bans'));
 
-		$header = $sidebar->addHeader(lang('member_groups'), ee('CP/URL', 'members/groups'))
-			->withButton(lang('new'), ee('CP/URL', 'members/groups/create'));
+		$header = $sidebar->addHeader(lang('member_groups'), ee('CP/URL')->make('members/groups'))
+			->withButton(lang('new'), ee('CP/URL')->make('members/groups/create'));
 
 		$item = $header->addBasicList()
-			->addItem(lang('custom_member_fields'), ee('CP/URL', 'members/fields'));
+			->addItem(lang('custom_member_fields'), ee('CP/URL')->make('members/fields'));
 
 		if ($active == 'fields')
 		{
@@ -184,7 +184,7 @@ class Members extends CP_Controller {
 		$table->setNoResultsText('no_search_results');
 		$table->setData($data['rows']);
 		$data['table'] = $table->viewData($this->base_url);
-		$data['form_url'] = ee('CP/URL', 'members/delete');
+		$data['form_url'] = ee('CP/URL')->make('members/delete');
 		$data['form'] = $this->form;
 
 		$base_url = $data['table']['base_url'];
@@ -228,7 +228,7 @@ class Members extends CP_Controller {
 
 	public function bans()
 	{
-		$this->base_url = ee('CP/URL', 'members/bans');
+		$this->base_url = ee('CP/URL')->make('members/bans');
 		$this->group = 2;
 		$this->filter = FALSE;
 
@@ -436,7 +436,7 @@ class Members extends CP_Controller {
 		foreach ($members as $member)
 		{
 			$attributes = array();
-			$edit_link = ee('CP/URL', 'members/profile/', array('id' => $member['member_id']));
+			$edit_link = ee('CP/URL')->make('members/profile/', array('id' => $member['member_id']));
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
 					'href' => $edit_link,
@@ -454,7 +454,7 @@ class Members extends CP_Controller {
 					$group = "<span class='st-pending'>" . lang('pending') . "</span>";
 					$attributes['class'] = 'alt pending';
 					$toolbar['toolbar_items']['approve'] = array(
-						'href' => ee('CP/URL', 'members/approve/', array('id' => $member['member_id'])),
+						'href' => ee('CP/URL')->make('members/approve/', array('id' => $member['member_id'])),
 						'title' => strtolower(lang('approve'))
 					);
 					break;
@@ -467,7 +467,7 @@ class Members extends CP_Controller {
 				$attributes['class'] = 'selected';
 			}
 
-			$email = "<a href = '" . ee('CP/URL', 'utilities/communicate/member/' . $member['member_id']) . "'>".$member['email']."</a>";
+			$email = "<a href = '" . ee('CP/URL')->make('utilities/communicate/member/' . $member['member_id']) . "'>".$member['email']."</a>";
 			$username_display = "<a href = '" . $edit_link . "'>". $member['username']."</a>";
 			$username_display .= '<br><span class="meta-info">&mdash; '.$email.'</span>';
 			$last_visit = ($member['last_visit']) ? ee()->localize->human_time($member['last_visit']) : '--';
