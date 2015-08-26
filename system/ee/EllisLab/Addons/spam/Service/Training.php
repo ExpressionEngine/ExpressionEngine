@@ -171,8 +171,6 @@ class Training {
 	 */
 	private function getParameters($class)
 	{
-		$class = ($class == 'spam') ? 'y' : 'n';
-
 		ee()->db->select('mean, variance');
 		ee()->db->from('spam_parameters');
 		ee()->db->where('class', $class);
