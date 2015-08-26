@@ -1,4 +1,7 @@
 class MemberGroupsEdit < SitePrism::Section
+  element :submit, 'form.settings[action*="cp/members/groups"] input[type=submit]'
+
+  # Fields
   element :name, 'input[name="group_title"]'
   element :description, 'textarea[name="group_description"]'
   elements :security_lock, 'input[name="is_locked"]'
@@ -32,6 +35,8 @@ class MemberGroupsEdit < SitePrism::Section
 
   elements :channel_entry_actions, 'input[name="channel_entry_actions[]"]'
   elements :allowed_channels, 'input[name="allowed_channels[]"]'
+
+  elements :member_actions, 'input[name="member_actions[]"]'
 
   elements :can_admin_design, 'input[name="can_admin_design"]'
   elements :can_admin_templates, 'input[name="can_admin_templates"]'

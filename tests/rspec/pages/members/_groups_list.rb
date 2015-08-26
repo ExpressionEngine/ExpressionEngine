@@ -1,4 +1,5 @@
 class MemberGroupsList < SitePrism::Section
-  element :member_actions, 'select[name=bulk_action]', visible: false
-  element :member_groups_table, 'table'
+  element :actions, 'select[name=bulk_action]', visible: false
+  element :table, 'table'
+  elements :groups, 'form table tbody tr'
 end
