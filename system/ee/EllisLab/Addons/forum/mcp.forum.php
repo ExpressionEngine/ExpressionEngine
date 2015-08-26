@@ -184,12 +184,14 @@ class Forum_mcp extends CP_Controller {
 				$data = array();
 				foreach ($category->Forums->sortBy('forum_order') as $forum)
 				{
+					$edit_url = ee('CP/URL', $this->base . 'edit/forum/' . $forum->forum_id);
+
 					$row = array(
-						$forum->forum_name.form_hidden('order[]', $forum->forum_id),
+						'<a href="' . $edit_url . '">' . $forum->forum_name . '</a>' . form_hidden('order[]', $forum->forum_id),
 						$this->getStatusWidget($forum->forum_status),
 						array('toolbar_items' => array(
 								'edit' => array(
-									'href' => ee('CP/URL', $this->base . 'edit/forum/' . $forum->forum_id),
+									'href' => $edit_url,
 									'title' => lang('edit'),
 								),
 								'settings' => array(
@@ -2185,13 +2187,18 @@ class Forum_mcp extends CP_Controller {
 		$data = array();
 		foreach ($ranks as $rank)
 		{
+			$edit_url = ee('CP/URL', $this->base . 'edit/rank/' . $rank->rank_id);
+
 			$row = array(
-				$rank->rank_title,
+				array(
+					'content' => $rank->rank_title,
+					'href' => $edit_url
+				),
 				$rank->rank_min_posts,
 				$rank->rank_stars,
 				array('toolbar_items' => array(
 						'edit' => array(
-							'href' => ee('CP/URL', $this->base . 'edit/rank/' . $rank->rank_id),
+							'href' => $edit_url,
 							'title' => lang('edit'),
 						),
 					)

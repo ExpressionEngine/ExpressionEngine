@@ -46,7 +46,7 @@ class Bookmarks extends Profile {
 		}
 
 		$this->index_url = $this->base_url;
-		$this->base_url = ee('CP/URL', $this->base_url, $this->query_string);
+		$this->base_url  = ee('CP/URL', $this->base_url, $this->query_string);
 	}
 
 	/**
@@ -133,6 +133,7 @@ class Bookmarks extends Profile {
 	 */
 	public function create()
 	{
+		ee()->cp->set_breadcrumb($this->base_url, lang('bookmarklets'));
 		$this->base_url = ee('CP/URL', $this->index_url . '/create', $this->query_string);
 
 		$vars = array(
@@ -162,6 +163,7 @@ class Bookmarks extends Profile {
 	 */
 	public function edit($id)
 	{
+		ee()->cp->set_breadcrumb($this->base_url, lang('bookmarklets'));
 		$this->base_url = ee('CP/URL', $this->index_url . "/edit/$id", $this->query_string);
 
 		$vars = array(

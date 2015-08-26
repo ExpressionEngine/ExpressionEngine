@@ -118,6 +118,7 @@ class Quicklinks extends Profile {
 	 */
 	public function create()
 	{
+		ee()->cp->set_breadcrumb($this->base_url, lang('quick_links'));
 		$this->base_url = ee('CP/URL', $this->index_url . '/create', $this->query_string);
 
 		$vars = array(
@@ -156,6 +157,7 @@ class Quicklinks extends Profile {
 	 */
 	public function edit($id)
 	{
+		ee()->cp->set_breadcrumb($this->base_url, lang('quick_links'));
 		$this->base_url = ee('CP/URL', $this->index_url . "/edit/$id", $this->query_string);
 
 		$vars = array(

@@ -43,6 +43,7 @@ class ChannelField extends FieldModel {
 		'field_is_hidden'      => 'boolString',
 		'field_show_fmt'       => 'boolString',
 		'field_order'          => 'int',
+		'field_settings'       => 'base64Serialized',
 	);
 
 	protected static $_relationships = array(
@@ -130,17 +131,6 @@ class ChannelField extends FieldModel {
 		$this->setProperty('field_settings', $field->saveSettingsForm($data));
 
 		return $this;
-	}
-
-
-	public function set__field_settings($settings)
-	{
-		$this->setRawProperty('field_settings', base64_encode(serialize($settings)));
-	}
-
-	public function get__field_settings()
-	{
-		return unserialize(base64_decode($this->field_settings));
 	}
 
 }

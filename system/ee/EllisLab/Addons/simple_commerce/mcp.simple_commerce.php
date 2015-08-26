@@ -148,7 +148,7 @@ class Simple_commerce_mcp {
 					'name' => 'items[]',
 					'value' => $item->getId(),
 					'data'	=> array(
-						'confirm' => lang('item') . ': <b>' . htmlentities($item->entry_id, ENT_QUOTES) . '</b>'
+						'confirm' => lang('item') . ': <b>' . htmlentities($item->ChannelEntry->title, ENT_QUOTES) . '</b>'
 					)
 				)
 			);
@@ -714,15 +714,20 @@ class Simple_commerce_mcp {
 		$data = array();
 		foreach ($purchases as $purchase)
 		{
+			$edit_url = ee('CP/URL', 'addons/settings/simple_commerce/edit-purchase/'.$purchase->getId());
+
 			$columns = array(
-				$purchase->Item->ChannelEntry->title,
+				array(
+					'content' => $purchase->Item->ChannelEntry->title,
+					'href' => $edit_url
+				),
 				$purchase->Member->screen_name,
 				ee()->localize->human_time($purchase->purchase_date),
 				$purchase->subscription_end_date ?: '--',
 				'$'.$purchase->item_cost,
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'addons/settings/simple_commerce/edit-purchase/'.$purchase->getId()),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					)
 				)),
@@ -730,7 +735,7 @@ class Simple_commerce_mcp {
 					'name' => 'purchases[]',
 					'value' => $purchase->getId(),
 					'data'	=> array(
-						'confirm' => lang('purchase') . ': <b>' . htmlentities($purchase->item_id, ENT_QUOTES) . '</b>'
+						'confirm' => lang('purchase') . ': <b>' . htmlentities($purchase->Item->ChannelEntry->title, ENT_QUOTES) . '</b>'
 					)
 				)
 			);
@@ -1037,11 +1042,16 @@ class Simple_commerce_mcp {
 		$data = array();
 		foreach ($email_templates as $template)
 		{
+			$edit_url = ee('CP/URL', 'addons/settings/simple_commerce/edit-email-template/'.$template->getId());
+
 			$columns = array(
-				$template->email_name,
+				array(
+					'content' => $template->email_name,
+					'href' => $edit_url
+				),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'addons/settings/simple_commerce/edit-email-template/'.$template->getId()),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					)
 				)),

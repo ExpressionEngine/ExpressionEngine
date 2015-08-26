@@ -10,7 +10,7 @@
 		}
 	?>
 	<tr<?=$class?>>
-		<td><?=$mod['name']?></td>
+		<td><a href="<?=$mod['edit_url']?>" title="<?=strtolower(lang('edit_moderator'))?>"><?=$mod['name']?></a></td>
 		<td>
 			<div class="toolbar-wrap">
 				<ul class="toolbar">

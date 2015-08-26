@@ -140,7 +140,7 @@ class View {
 	 */
 	public function head_title($title)
 	{
-		return '<title>' . $title . ' | ExpressionEngine</title>'.PHP_EOL;
+		return '<title>' . strip_tags($title) . ' | ExpressionEngine</title>'.PHP_EOL;
 	}
 
 	// --------------------------------------------------------------------
