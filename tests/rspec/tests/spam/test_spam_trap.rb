@@ -60,16 +60,6 @@ feature 'Spam Module' do
 			no_php_js_errors
 		end
 
-		it 'can reverse sort by Content' do
-			a_to_z_addons = @page.content.map {|spam| spam.text}
-
-			@page.content_header.find('a.sort').click
-			no_php_js_errors
-
-			@page.content_header[:class].should eq 'highlight'
-			@page.content.map {|addon| addon.text}.should == a_to_z_addons.reverse!
-		end
-
 	end
 
 end

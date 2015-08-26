@@ -717,7 +717,7 @@ class Spam_mcp {
 	 */
 	public function trainAll()
 	{
-		set_time_limit();
+		set_time_limit(0);
 		ini_set('memory_limit','16G');
 		$start_time = microtime(true);
 		$this->trainParameters(ee('Model')->get('spam:SpamTraining')->all());
