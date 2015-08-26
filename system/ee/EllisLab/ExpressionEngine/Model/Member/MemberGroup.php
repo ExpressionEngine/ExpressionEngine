@@ -10,7 +10,8 @@ class MemberGroup extends Model {
 	protected static $_table_name = 'member_groups';
 
 	protected static $_events = array(
-		'beforeInsert'
+		'beforeInsert',
+		'afterInsert'
 	);
 
 	protected static $_typed_columns = array(
@@ -238,12 +239,36 @@ class MemberGroup extends Model {
 	protected $cp_homepage_custom;
 
 
+	/**
+	 * Ensure group ID is set for new records
+	 * @return void
+	 */
 	public function onBeforeInsert()
 	{
 		if ( ! $this->group_id)
 		{
 			$id = ee('db')->query('SELECT MAX(group_id) as id FROM exp_member_groups')->row('id');
 			$this->setRawProperty('group_id', $id + 1);
+		}
+	}
+	/**
+	 * Ensure member group records are created for each site
+	 * @return void
+	 */
+	public function onAfterInsert()
+	{
+		$sites = $this->getFrontend()->get('Site')
+			->filter('site_id', '!=', $this->site_id)
+			->all();
+
+		if ($sites->count() > 0)
+		{
+			foreach ($sites->pluck('site_id') as $site_id)
+			{
+				$data = $this->getValues();
+				$data['site_id'] = (int) $site_id;
+				$this->getFrontend()->make('MemberGroup', $data)->save();
+			}
 		}
 	}
 }
