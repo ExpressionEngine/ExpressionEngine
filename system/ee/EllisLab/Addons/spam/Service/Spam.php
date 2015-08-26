@@ -51,7 +51,7 @@ class Spam {
 	 * @param string $url 
 	 * @param string $ip 
 	 * @access public
-	 * @return void
+	 * @return boolean
 	 */
 	public function memberClassify($username, $email, $url, $ip)
 	{
