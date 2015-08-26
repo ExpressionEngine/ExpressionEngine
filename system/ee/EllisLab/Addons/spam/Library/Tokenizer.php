@@ -43,6 +43,14 @@ class Tokenizer {
 		$this->pattern = $pattern;
 	}
 
+    /**
+     * Tokenize takes a string and splits it into ngrams. This will return 
+     * an array of string.
+     * 
+     * @param mixed $string 
+     * @access public
+     * @return array An array of strings split based on ngram
+     */
 	public function tokenize($string)
 	{
 		if ( ! empty($this->pattern))
