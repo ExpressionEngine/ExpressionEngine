@@ -31,8 +31,6 @@ class Spam {
 	 */
 	public function __construct()
 	{
-		$this->classifier = $this->loadDefaultClassifier();
-
         // Check if the spam module is installed
 		ee()->load->library('addons');
 		$installed = ee()->addons->get_installed();
@@ -40,6 +38,11 @@ class Spam {
 		if (empty($installed['spam']))
 		{
 			$this->installed = FALSE;
+		}
+		else
+		{
+			$this->installed = TRUE;
+			$this->classifier = $this->loadDefaultClassifier();
 		}
 	}
 
@@ -53,7 +56,7 @@ class Spam {
 	 * @access public
 	 * @return boolean
 	 */
-	public function memberClassify($username, $email, $url, $ip)
+	public function memberIsSpammer($username, $email, $url, $ip)
 	{
 		// Split IP address with spaces so TFIDF will calculate each octet as a 
 		// separate feature. We're definitely abusing TFIDF here but it should
@@ -74,7 +77,7 @@ class Spam {
 	 * @access public
 	 * @return boolean
 	 */
-	public function classify($source)
+	public function isSpam($source)
 	{
 		if ($this->installed === FALSE)
 		{
