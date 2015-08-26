@@ -442,7 +442,7 @@ $lang = array(
 
 'add_preset_button' => 'Add Preset Button:',
 
-'tag_name' => 'Tag Name',
+'tag_name' => 'Name',
 
 'tag_open' => 'Opening Tag',
 
