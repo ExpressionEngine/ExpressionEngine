@@ -70,7 +70,7 @@ return array(
 		{
 			$cp_url = ee()->config->item('cp_url');
 			$site_index = ee()->functions->fetch_site_index(0,0);
-			$uri_string = ee()->uri->uri_string;
+			$uri_string = ee()->uri->uri_string();
 			$session_id = ee()->session->session_id();
 			$default_cp_url = SELF;
 
