@@ -11,8 +11,8 @@
 		{
 			"rows": [
 				{
-					"col_id_1": "164768245",
-					"col_id_2": "soundcloud"
+					"id": "164768245",
+					"type": "soundcloud"
 				}
 			]
 		}

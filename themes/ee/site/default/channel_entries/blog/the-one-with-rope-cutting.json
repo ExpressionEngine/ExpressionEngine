@@ -11,8 +11,8 @@
 		{
 			"rows": [
 				{
-					"col_id_1": "eCNwxqP7l44",
-					"col_id_2": "youtube"
+					"id": "eCNwxqP7l44",
+					"type": "youtube"
 				}
 			]
 		}

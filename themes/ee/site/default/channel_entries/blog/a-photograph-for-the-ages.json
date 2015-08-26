@@ -11,11 +11,8 @@
 		{
 			"rows": [
 				{
-					"row_id_1":
-					{
-						"col_id_1": "{filedir_blog}blog.jpg",
-						"col_id_2": "Dharmafrog, 2014"
-					}
+					"image": "{filedir_blog}blog.jpg",
+					"caption": "Dharmafrog, 2014"
 				}
 			]
 		}

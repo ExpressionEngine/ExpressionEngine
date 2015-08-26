@@ -11,8 +11,8 @@
 		{
 			"rows": [
 				{
-					"col_id_1": "3925868830",
-					"col_id_2": "bandcamp"
+					"id": "3925868830",
+					"type": "bandcamp"
 				}
 			]
 		}

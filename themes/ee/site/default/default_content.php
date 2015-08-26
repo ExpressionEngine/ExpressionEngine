@@ -141,6 +141,7 @@ foreach (array('blog', 'common', 'home') as $upload_name)
 
 $field_group_path = $this->theme_path.$this->userdata['theme'].'/custom_fields/';
 $field_groups = directory_map($field_group_path);
+ee()->load->model('grid_model');
 
 foreach ($field_groups as $group_name => $fields)
 {
@@ -153,7 +154,7 @@ foreach ($field_groups as $group_name => $fields)
 	foreach ($fields as $file_name)
 	{
 		// reset for Grid fields
-		unset($_POST['cols']);
+		unset($_POST['grid']);
 
 		$file_path = $field_group_path.$group_name.'/'.$file_name;
 
@@ -217,6 +218,18 @@ foreach ($field_groups as $group_name => $fields)
 
 		$field->set($data);
 		$field->save();
+
+		// cache our grid field column names and id's
+		if (isset($_POST['grid']))
+		{
+			$columns = ee()->grid_model->get_columns_for_field($field->field_id, 'channel');
+
+			foreach ($columns as $column)
+			{
+				$gf_id[$field->field_id][$column['col_name']] = $column['col_id'];
+			}
+		}
+
 		$cf_id[$field->field_name] = $field->field_id;
 	}
 }
@@ -262,7 +275,8 @@ foreach ($channels as $channel_label => $channel_prefs)
 // add entries
 // ChannelEntry::populateChannels() is reaching into the legacy superobject
 // @todo - address this dependency
-ee()->set('session', (object) array());
+//ee()->set('session', (object) array());
+ee()->load->library('session');
 ee()->session->userdata['group_id'] = 1;
 
 $entry_data_path = $this->theme_path.$this->userdata['theme'].'/channel_entries/';
@@ -302,6 +316,22 @@ foreach (array('about', 'blog', 'contact') as $channel_name)
 			{
 				$field_col_name = "field_id_{$cf_id[$key]}";
 				$post_mock[$field_col_name] = $val;
+			}
+			else
+			{
+				foreach($val->rows as $row_index => $grid_row)
+				{
+					$row_index = $row_index + 1;
+					foreach ($grid_row as $col_name => $col_value)
+					{
+						$column_id = 'col_id_'.$gf_id[$cf_id[$key]][$col_name];
+						$post_mock["field_id_{$cf_id[$key]}"]
+								["rows"]
+								["new_row_{$row_index}"]
+								[$column_id]
+							= $col_value;
+					}
+				}
 			}
 		}
 
