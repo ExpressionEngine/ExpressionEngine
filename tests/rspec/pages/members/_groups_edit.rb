@@ -29,4 +29,18 @@ class MemberGroupsEdit < SitePrism::Section
 
   elements :can_admin_channels, 'input[name="can_admin_channels"]'
   elements :category_actions, 'input[name="category_actions[]"]'
+
+  elements :channel_entry_actions, 'input[name="channel_entry_actions[]"]'
+  elements :allowed_channels, 'input[name="allowed_channels[]"]'
+
+  elements :can_admin_design, 'input[name="can_admin_design"]'
+  elements :can_admin_templates, 'input[name="can_admin_templates"]'
+
+  elements :allowed_template_groups, 'input[name="allowed_template_groups[]"]'
+
+  elements :can_admin_modules, 'input[name="can_admin_modules"]'
+
+  elements :addons_access, 'input[name="addons_access[]"]'
+
+  elements :access_tools, 'input[name="access_tools[]"]'
 end
