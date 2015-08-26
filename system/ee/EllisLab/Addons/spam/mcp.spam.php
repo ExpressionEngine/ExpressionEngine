@@ -293,18 +293,32 @@ class Spam_mcp {
 			if ( ! empty($config_update))
 			{
 				ee()->load->helper('html_helper');
-				ee()->view->set_message('issue', lang('cp_message_issue'), ul($config_update), TRUE);
+				ee('CP/Alert')->makeInline('shared-form')
+					->asIssue()
+					->withTitle(lang('cp_message_issue'))
+					->addToBody($config_update)
+					->defer();
 				ee()->functions->redirect($base_url);
 
 			}
 			else
 			{
-				ee()->view->set_message('success', lang('success'), lang('spam_settings_updated'), TRUE);
+				ee('CP/Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('success'))
+					->addToBody(lang('spam_settings_updated'))
+					->defer();
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
 			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+            
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('settings_save_error'))
+				->addToBody(lang('settings_save_error_desc'))
+				->defer();
 		}
 
 		$vars['base_url'] = $base_url;
