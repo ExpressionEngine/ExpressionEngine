@@ -27,7 +27,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  * @link		http://ellislab.com
  */
 
-class URL {
+class URL implements Serializable {
 
 	/**
 	 * @var string $path The path (i.e. 'logs/cp')
@@ -163,9 +163,29 @@ class URL {
 
 		return $this->base.$path.rtrim('&'.$qs, '&');
 	}
+
+	public function serialize()
+	{
+		$serialize = array(
+			'path'          => $this->path,
+			'session_id'    => $this->session_id,
+			'qs'            => $this->qs,
+			'base'          => $this->base,
+			'requested_uri' => $this->requested_uri
+		);
+
+		return json_encode($serialize);
+	}
+
+	public function unserialize($serialized)
+	{
+		$data = json_decode($serialized);
+
+		$this->path = $data->path;
+		$this->session_id = $data->session_id;
+		$this->qs = $data->qs;
+		$this->base = $data->base;
+		$this->requested_uri = $data->requested_uri;
+	}
 }
-
-// END CLASS
-
-/* End of file URL.php */
-/* Location: ./system/EllisLab/ExpressionEngine/Library/CP/URL.php */
+// EOF
