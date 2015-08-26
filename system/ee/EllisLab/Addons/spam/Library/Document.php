@@ -2,6 +2,8 @@
 
 namespace EllisLab\Addons\Spam\Library;
 
+use \Iterator;
+
 /**
  * ExpressionEngine - by EllisLab
  *
@@ -31,7 +33,7 @@ namespace EllisLab\Addons\Spam\Library;
  * 
  * @implements Iterator
  */
-class Document implements \Iterator {
+class Document implements Iterator {
 
 	public $frequency = array();
 	public $words = array();
