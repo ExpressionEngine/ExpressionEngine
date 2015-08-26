@@ -452,7 +452,7 @@ $lang = array(
 
 'tag_close_desc' => 'Closing output of this button. i.e. <b><code>&lt;/b&gt;</code></b>',
 
-'accesskey' => 'Tag shortcut',
+'accesskey' => 'Shortcut',
 
 'accesskey_desc' => 'Keyboard shortcut to initiate this button.',
 
