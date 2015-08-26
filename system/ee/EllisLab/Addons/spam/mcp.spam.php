@@ -183,9 +183,9 @@ class Spam_mcp {
 		// Set search results heading
 		if ( ! empty($data['table']['search']))
 		{
-			ee()->view->cp_heading = sprintf(
+			$data['cp_heading'] = sprintf(
 				lang('search_results_heading'),
-				$data['table']['total_rows'],
+				$this->total,
 				$data['table']['search']
 			);
 		}
@@ -468,6 +468,8 @@ class Spam_mcp {
 			);
 			$result->order($options[$sort], $direction);
 		}
+
+		$this->total = $result->count();
 
 		if ( ! empty($limit))
 		{
