@@ -276,7 +276,7 @@ class Addons extends CP_Controller {
 
 				$toolbar = array(
 					'install' => array(
-						'href' => ee('CP/URL')->make('addons/install/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
+						'href' => ee('CP/URL')->make('addons/install/' . $info['package'], array('return' => ee('CP/URL')->getCurrentUrl()->encode())),
 						'title' => lang('install'),
 						'class' => 'add'
 					)
@@ -312,7 +312,7 @@ class Addons extends CP_Controller {
 					if (isset($info['update']))
 					{
 						$toolbar['txt-only'] = array(
-							'href' => ee('CP/URL')->make('addons/update/' . $info['package'], array('return' => base64_encode(ee()->cp->get_safe_refresh()))),
+							'href' => ee('CP/URL')->make('addons/update/' . $info['package'], array('return' => ee('CP/URL')->getCurrentUrl()->encode())),
 							'title' => strtolower(lang('update')),
 							'class' => 'add',
 							'content' => sprintf(lang('update_to_version'), $this->formatVersionNumber($info['update']))
@@ -343,7 +343,7 @@ class Addons extends CP_Controller {
 			$vars['tables'][$party] = $table->viewData($this->base_url);
 		}
 
-		$vars['form_url'] = $this->base_url->setQueryStringVariable('return', base64_encode(ee()->cp->get_safe_refresh()));
+		$vars['form_url'] = $this->base_url->setQueryStringVariable('return', ee('CP/URL')->getCurrentUrl()->encode());
 
 		// Set search results heading (first and third)
 		if (ee()->input->get_post('search'))
@@ -570,9 +570,7 @@ class Addons extends CP_Controller {
 
 		if (ee()->input->get('return'))
 		{
-			$return = base64_decode(ee()->input->get('return'));
-			$uri_elements = json_decode($return, TRUE);
-			$return = ee('CP/URL')->make($uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL')->decodeUrl(ee()->input->get('return'));
 		}
 
 		ee()->functions->redirect($return);
@@ -679,9 +677,7 @@ class Addons extends CP_Controller {
 
 		if (ee()->input->get('return'))
 		{
-			$return = base64_decode(ee()->input->get('return'));
-			$uri_elements = json_decode($return, TRUE);
-			$return = ee('CP/URL')->make($uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL')->decodeUrl(ee()->input->get('return'));
 		}
 
 		ee()->functions->redirect($return);
@@ -775,9 +771,7 @@ class Addons extends CP_Controller {
 
 		if (ee()->input->get('return'))
 		{
-			$return = base64_decode(ee()->input->get('return'));
-			$uri_elements = json_decode($return, TRUE);
-			$return = ee('CP/URL')->make($uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL')->decodeUrl(ee()->input->get('return'));
 		}
 
 		ee()->functions->redirect($return);

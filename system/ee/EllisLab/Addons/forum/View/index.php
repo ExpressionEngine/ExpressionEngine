@@ -61,7 +61,7 @@ $modal_vars = array(
 	'name'		=> 'modal-confirm-remove-forum',
 	'form_url'	=> ee('CP/URL')->make('addons/settings/forum'),
 	'hidden'	=> array(
-		'return' => base64_encode(ee()->cp->get_safe_refresh()),
+		'return' => ee('CP/URL')->getCurrentUrl()->encode(),
 		'bulk_action'	=> 'remove'
 	)
 );

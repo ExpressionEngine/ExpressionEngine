@@ -396,13 +396,7 @@ class Files extends AbstractFilesController {
 
 		if (ee()->input->post('return'))
 		{
-			$return = base64_decode(ee()->input->post('return'));
-			$uri_elements = json_decode($return, TRUE);
-
-			if ($uri_elements['path'] != 'cp/files/directory/' . $id)
-			{
-				$return = ee('CP/URL')->make($uri_elements['path'], $uri_elements['arguments']);
-			}
+			$return_url = ee('CP/URL')->decodeUrl(ee()->input->post('return'));
 		}
 
 		ee()->functions->redirect($return_url);

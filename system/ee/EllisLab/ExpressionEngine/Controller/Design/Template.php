@@ -464,10 +464,7 @@ class Template extends AbstractDesignController {
 
 		if ( ! $search_terms)
 		{
-			$return = base64_decode(ee()->input->get_post('return'));
-			$uri_elements = json_decode($return, TRUE);
-			$return = ee('CP/URL')->make($uri_elements['path'], $uri_elements['arguments']);
-			ee()->functions->redirect($return);
+			$return = ee('CP/URL')->decodeUrl($return);
 		}
 		else
 		{

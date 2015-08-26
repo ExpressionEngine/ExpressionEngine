@@ -177,7 +177,7 @@ abstract class AbstractDesign extends CP_Controller {
 	{
 		if ( ! $return)
 		{
-			$return = base64_encode(ee()->cp->get_safe_refresh());
+			$return = ee('CP/URL')->getCurrentUrl()->encode();
 		}
 
 		ee()->view->header = array(

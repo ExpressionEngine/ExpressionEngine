@@ -52,7 +52,7 @@ class Forum_mcp extends CP_Controller {
 			->withButton(lang('new'), ee('CP/URL')->make($this->base . 'create/board'));
 
 		$board_list = $boards->addFolderList('boards')
-			->withRemoveUrl(ee('CP/URL')->make($this->base . 'remove/board', array('return' => base64_encode(ee()->cp->get_safe_refresh()))))
+			->withRemoveUrl(ee('CP/URL')->make($this->base . 'remove/board', array('return' => ee('CP/URL')->getCurrentUrl()->encode())))
 			->withNoResultsText(lang('zero_forum_boards_found'));
 
 		$all_boards = ee('Model')->get('forum:Board')
@@ -1196,9 +1196,7 @@ class Forum_mcp extends CP_Controller {
 
 		if (ee()->input->get_post('return'))
 		{
-			$return = base64_decode(ee()->input->get_post('return'));
-			$uri_elements = json_decode($return, TRUE);
-			$return = ee('CP/URL')->make($uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL')->decodeUrl(ee()->input->get_post('return'));
 		}
 
 		ee()->functions->redirect($return);
@@ -2146,9 +2144,7 @@ class Forum_mcp extends CP_Controller {
 
 		if (ee()->input->get_post('return'))
 		{
-			$return = base64_decode(ee()->input->get_post('return'));
-			$uri_elements = json_decode($return, TRUE);
-			$return = ee('CP/URL')->make($uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL')->decodeUrl(ee()->input->get_post('return'));
 		}
 
 		ee()->functions->redirect($return);
@@ -2758,9 +2754,7 @@ class Forum_mcp extends CP_Controller {
 
 		if (ee()->input->get_post('return'))
 		{
-			$return = base64_decode(ee()->input->get_post('return'));
-			$uri_elements = json_decode($return, TRUE);
-			$return = ee('CP/URL')->make($uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL')->decodeUrl(ee()->input->get_post('return'));
 		}
 
 		ee()->functions->redirect($return);

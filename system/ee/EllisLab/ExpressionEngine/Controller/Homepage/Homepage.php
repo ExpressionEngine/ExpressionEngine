@@ -117,9 +117,7 @@ class Homepage extends CP_Controller {
 				}
 			}
 
-			$return = base64_decode(ee()->input->post('return'));
-			$uri_elements = json_decode($return, TRUE);
-			$return = ee('CP/URL')->make($uri_elements['path'], $uri_elements['arguments']);
+			$return = ee('CP/URL')->decodeUrl(ee()->input->post('return'));
 		}
 
 		ee()->functions->redirect($return);
