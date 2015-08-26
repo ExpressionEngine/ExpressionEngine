@@ -187,5 +187,10 @@ class URL implements \Serializable {
 		$this->base = $data->base;
 		$this->requested_uri = $data->requested_uri;
 	}
+
+	public function encode()
+	{
+		return base64_encode(serialize($this));
+	}
 }
 // EOF
