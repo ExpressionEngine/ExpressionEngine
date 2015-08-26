@@ -15,10 +15,15 @@ class SpamTrap extends Model {
 
 	protected static $_relationships = array(
 		'Author' => array(
-			'type'     => 'BelongsTo',
+			'type'     => 'belongsTo',
 			'model'    => 'ee:Member',
-			'from_key' => 'author'
-		),
+			'from_key' => 'author',
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'trap_id',
+				'type' => 'hasMany'
+			)
+		)
 	);
 
 	protected $trap_id;

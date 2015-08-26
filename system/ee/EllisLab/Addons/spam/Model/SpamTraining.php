@@ -20,9 +20,14 @@ class SpamTraining extends Model {
 			'to_key' => 'kernel_id'
 		),
 		'Author' => array(
-			'type'     => 'BelongsTo',
+			'type'     => 'belongsTo',
 			'model'    => 'ee:Member',
-			'from_key' => 'author'
+			'from_key' => 'author',
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'training_id',
+				'type' => 'hasMany'
+			)
 		)
 	);
 

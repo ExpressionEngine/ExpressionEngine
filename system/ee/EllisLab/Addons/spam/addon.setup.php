@@ -38,5 +38,13 @@ return array(
 		'SpamVocabulary' => 'Model\SpamVocabulary',
 		'SpamTraining' => 'Model\SpamTraining',
 		'SpamTrap' => 'Model\SpamTrap',
-	)
+	),
+    'models.dependencies' => array(
+        'SpamTrap'   => array(
+            'ee:Member'
+        ),
+        'SpamTraining'   => array(
+            'ee:Member'
+        )
+    )
 );
