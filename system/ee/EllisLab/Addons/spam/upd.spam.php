@@ -115,6 +115,9 @@ class Spam_upd {
 		ee()->dbforge->add_key('trap_id', TRUE);
 		ee()->dbforge->create_table('spam_trap');
 
+		// Make sure the default kernel is created
+		ee('Model')->make('spam:SpamKernel', array('name' => 'default'))->save();
+
 		return TRUE;
 	}
 
