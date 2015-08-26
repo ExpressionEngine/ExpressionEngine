@@ -117,7 +117,15 @@ class URLFactory {
 
 	public function getCurrentUrl()
 	{
-		return $this->makeFromString($this->uri_string);
+		$qs = $_GET;
+		unset($qs['S'], $qs['D'], $qs['C'], $qs['M']);
+
+		return $this->make($this->uri_string, $qs);
+	}
+
+	public function decodeUrl($url)
+	{
+		return unserialize(base64_decode($url));
 	}
 
 }
