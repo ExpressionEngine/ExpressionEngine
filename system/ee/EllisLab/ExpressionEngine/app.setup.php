@@ -66,12 +66,15 @@ return array(
 			return Library\CP\Table::fromGlobals($config);
 		},
 
-		'CP/URL' => function($ee, $path, $qs = array(), $cp_url = '', $session_id = NULL)
+		'CP/URL' => function($ee)
 		{
-			$session_id = $session_id ?: ee()->session->session_id();
-			$cp_url = (empty($cp_url)) ? SELF : (string) $cp_url;
+			$cp_url = ee()->config->item('cp_url');
+			$site_index = ee()->functions->fetch_site_index(0,0);
+			$uri_string = ee()->uri->uri_string;
+			$session_id = ee()->session->session_id();
+			$default_cp_url = SELF;
 
-			return new Library\CP\URL($path, $session_id, $qs, $cp_url, ee()->uri->uri_string);
+			return new URL\URLFactory($cp_url, $site_index, $uri_string, $session_id, $default_cp_url);
 		},
 
 		'CP/Pagination' => function($ee, $total_count)
