@@ -193,15 +193,16 @@ class Groups extends Members\Members {
 
 	public function copy($group_id)
 	{
-		$vars = array(
-			'cp_page_title' => lang('create_member_group')
-		);
 
 		$this->base_url = ee('CP/URL', 'members/groups/create/', $this->query_string);
 
 		$this->group = ee('Model')->get('MemberGroup', $group_id)->first();
 		$master = $this->groupData($this->group);
 		unset($master['group_id'], $master['site_id']);
+
+		$vars = array(
+			'cp_page_title' => sprintf(lang('copy_member_group'), $this->group->group_title)
+		);
 
 		$this->group = NULL;
 
