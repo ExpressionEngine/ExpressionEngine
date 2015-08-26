@@ -51,14 +51,6 @@ class Msm extends CP_Controller {
 
 	protected function sidebarMenu($active = NULL)
 	{
-		$site_backlink = ee()->cp->get_safe_refresh();
-
-		if ($site_backlink)
-		{
-			$site_backlink = implode('|', explode(AMP, $site_backlink));
-			$site_backlink = strtr(base64_encode($site_backlink), '+=', '-_');
-		}
-
 		$site_ids = array_keys(ee()->session->userdata('assigned_sites'));
 
 		$sidebar = ee('CP/Sidebar')->make();
@@ -72,7 +64,7 @@ class Msm extends CP_Controller {
 
 		foreach (ee('Model')->get('Site', $site_ids)->order('site_label', 'asc')->all() as $site)
 		{
-			$sites->addItem($site->site_label, ee('CP/URL')->make('msm/switch_to/' . $site->site_id, array('page' => $site_backlink)));
+			$sites->addItem($site->site_label, ee('CP/URL')->make('msm/switch_to/' . $site->site_id, array('page' => ee('CP/URL')->getCurrentUrl()->encode())));
 		}
 	}
 
@@ -527,9 +519,7 @@ class Msm extends CP_Controller {
 		$page = ee()->input->get_post('page');
 		if ($page)
 		{
-			$return_path = base64_decode($page);
-			$uri_elements = json_decode($return_path, TRUE);
-			$redirect = ee('CP/URL')->make($uri_elements['path'], $uri_elements['arguments']);
+			$redirect = ee('CP/URL')->decodeUrl($page);
 		}
 
 		ee()->cp->switch_site($site_id, $redirect);
@@ -593,5 +583,32 @@ class Msm extends CP_Controller {
 
 		ee()->session->userdata['assigned_sites'] = $assigned_sites;
 	}
+
+	public function onAfterInsert()
+    {
+        $this->setId($this->group_id);
+
+		$already_done = $this->getFrontend()->get('MemberGroup')
+			->fields('site_id')
+			->filter('group_id', $this->group_id)
+			->all()
+			->pluck('site_id');
+
+        $todo = $this->getFrontend()->get('Site')
+			->fields('site_id')
+            ->filter('site_id', 'NOT IN', $already_done)
+            ->all();
+
+        if ($sites->count() > 0)
+        {
+            foreach ($sites->pluck('site_id') as $site_id)
+            {
+                $data = $this->getValues();
+                $data['site_id'] = (int) $site_id;
+                $this->getFrontend()->make('MemberGroup', $data)->save();
+            }
+        }
+    }
+
 }
 // EOF
