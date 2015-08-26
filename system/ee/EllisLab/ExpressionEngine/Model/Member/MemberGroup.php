@@ -251,12 +251,27 @@ class MemberGroup extends Model {
 			$this->setRawProperty('group_id', $id + 1);
 		}
 	}
+
+	/**
+	 * Only set ID if we're being passed a number other than 0 or NULL
+	 * @param Integer/String $new_id ID of the record
+	 */
+	public function setId($new_id)
+	{
+		if ($new_id !== '0' && $new_id !== 0)
+		{
+			parent::setId($new_id);
+		}
+	}
+
 	/**
 	 * Ensure member group records are created for each site
 	 * @return void
 	 */
 	public function onAfterInsert()
 	{
+		$this->setId($this->group_id);
+
 		$sites = $this->getFrontend()->get('Site')
 			->filter('site_id', '!=', $this->site_id)
 			->all();
