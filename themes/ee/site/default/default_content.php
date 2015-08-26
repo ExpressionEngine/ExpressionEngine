@@ -191,6 +191,7 @@ foreach ($field_groups as $group_name => $fields)
 					{
 						// Grid is expecting a POSTed checkbox, so if it's in POST at all
 						// this value will be set to 'y'
+						// @todo Fieldtypes should receive data, not reach into POST
 						if ($col_label == 'required' && $col_value == 'n')
 						{
 							continue;
@@ -309,5 +310,7 @@ foreach (array('about', 'blog', 'contact') as $channel_name)
 	}
 }
 
-
 // set site_404 and strict_urls, etc.
+
+
+
