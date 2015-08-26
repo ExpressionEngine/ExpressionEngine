@@ -259,6 +259,10 @@ foreach ($channels as $channel_label => $channel_prefs)
 }
 
 // add entries
+// ChannelEntry::populateChannels() is reaching into the legacy superobject
+// @todo - address this dependency
+ee()->set('session', (object) array());
+ee()->session->userdata['group_id'] = 1;
 
 $entry_data_path = $this->theme_path.$this->userdata['theme'].'/channel_entries/';
 
@@ -278,6 +282,12 @@ foreach (array('about', 'blog', 'contact') as $channel_name)
 		$entry->versioning_enabled = $channel_objs[$channel_name]->enable_versioning;
 		$entry->sticky = FALSE;
 		$entry->allow_comments = TRUE;
+
+		// can't use localize here because it's expecting session class methods
+		// to be available on the legacy superobject
+		$entry->year = date('Y');
+		$entry->month = date('m');
+		$entry->day = date('d');
 
 		$post_mock = array(
 			'title' => $entry_data->title,
