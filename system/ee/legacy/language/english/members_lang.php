@@ -357,6 +357,8 @@ $lang = array(
 
 "create_member_group" => "Create a Member Group",
 
+"copy_member_group" => "Create a New Member Group based on <b>%s</b>",
+
 "delete_member_group" => "Delete Member Group",
 
 "member_group_deleted" => "Member Group Deleted",
