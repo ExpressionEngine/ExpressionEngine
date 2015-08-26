@@ -15,50 +15,7 @@ feature 'Member Group List' do
 
   context 'when creating a member group' do
     before :each do
-      @page.new_group.click
-
-      @page.all_there?.should == true
-      @page.edit.all_there?.should == true
-
-      @page.edit.name.set 'Moderators'
-      @page.edit.description.set 'Moderators description.'
-      @page.edit.security_lock[0].click
-      @page.edit.website_access.each(&:click)
-      @page.edit.can_view_profiles[0].click
-      @page.edit.can_send_email[0].click
-      @page.edit.can_delete_self[0].click
-      @page.edit.mbr_delete_notify_emails.set 'team@ellislab.com'
-      @page.edit.include_members_in.each(&:click)
-      @page.edit.can_post_comments[0].click
-      @page.edit.exclude_from_moderation[0].click
-      @page.edit.comment_actions.each(&:click)
-      @page.edit.can_search[0].click
-      @page.edit.search_flood_control.set '60'
-      @page.edit.can_send_private_messages[0].click
-      @page.edit.prv_msg_send_limit.set '50'
-      @page.edit.prv_msg_storage_limit.set '100'
-      @page.edit.can_attach_in_private_messages[0].click
-      @page.edit.can_send_bulletins[0].click
-      @page.edit.can_access_cp[0].click
-      @page.edit.cp_homepage[1].click
-      @page.edit.footer_helper_links.each(&:click)
-      @page.edit.can_admin_channels[0].click
-      @page.edit.category_actions.each(&:click)
-      @page.edit.channel_entry_actions.each(&:click)
-      @page.edit.member_actions.each(&:click)
-      @page.edit.allowed_channels.each(&:click)
-      @page.edit.can_admin_design[0].click
-      @page.edit.can_admin_templates[0].click
-      @page.edit.allowed_template_groups.each(&:click)
-      @page.edit.can_admin_modules[0].click
-      @page.edit.addons_access.each(&:click)
-      @page.edit.access_tools.each(&:click)
-      @page.edit.submit.click
-
-      @page.list.groups.last.find('li.edit a').click
-
-      @page.list.all_there?.should == false
-      @page.edit.all_there?.should == true
+      create_member_group
     end
 
     it 'creates a group successfully' do
@@ -121,5 +78,92 @@ feature 'Member Group List' do
       @page.edit.access_tools[1].checked?.should == false
       @page.edit.access_tools[2].checked?.should == true
     end
+  end
+
+  context 'when using MSM' do
+    before :each do
+      create_msm_site
+      create_member_group
+    end
+
+    it 'creates member groups for other sites' do
+      $db.query('SELECT count(group_id) AS count FROM exp_member_groups WHERE group_id=6').each do |row|
+        row['count'].should == 2
+      end
+    end
+
+    it 'deletes all member group records when deleting a member group' do
+      @page.load
+      @page.list.groups.last.find('input[type="checkbox"]').click
+      @page.list.batch_actions.set 'remove'
+      @page.list.batch_submit.click
+
+      sleep 1
+
+      find('form[action$="cp/members/groups/delete"] input[type="submit"]').click
+
+      @page.list.all_there?.should == true
+      @page.list.groups.size.should == 5
+
+      $db.query('SELECT count(group_id) AS count FROM exp_member_groups WHERE group_id=6').each do |row|
+        row['count'].should == 0
+      end
+    end
+  end
+
+  def create_member_group
+    @page.new_group.click
+
+    @page.all_there?.should == true
+    @page.edit.all_there?.should == true
+
+    @page.edit.name.set 'Moderators'
+    @page.edit.description.set 'Moderators description.'
+    @page.edit.security_lock[0].click
+    @page.edit.website_access.each(&:click)
+    @page.edit.can_view_profiles[0].click
+    @page.edit.can_send_email[0].click
+    @page.edit.can_delete_self[0].click
+    @page.edit.mbr_delete_notify_emails.set 'team@ellislab.com'
+    @page.edit.include_members_in.each(&:click)
+    @page.edit.can_post_comments[0].click
+    @page.edit.exclude_from_moderation[0].click
+    @page.edit.comment_actions.each(&:click)
+    @page.edit.can_search[0].click
+    @page.edit.search_flood_control.set '60'
+    @page.edit.can_send_private_messages[0].click
+    @page.edit.prv_msg_send_limit.set '50'
+    @page.edit.prv_msg_storage_limit.set '100'
+    @page.edit.can_attach_in_private_messages[0].click
+    @page.edit.can_send_bulletins[0].click
+    @page.edit.can_access_cp[0].click
+    @page.edit.cp_homepage[1].click
+    @page.edit.footer_helper_links.each(&:click)
+    @page.edit.can_admin_channels[0].click
+    @page.edit.category_actions.each(&:click)
+    @page.edit.channel_entry_actions.each(&:click)
+    @page.edit.member_actions.each(&:click)
+    @page.edit.allowed_channels.each(&:click)
+    @page.edit.can_admin_design[0].click
+    @page.edit.can_admin_templates[0].click
+    @page.edit.allowed_template_groups.each(&:click)
+    @page.edit.can_admin_modules[0].click
+    @page.edit.addons_access.each(&:click)
+    @page.edit.access_tools.each(&:click)
+    @page.edit.submit.click
+
+    @page.list.groups.last.find('li.edit a').click
+
+    @page.list.all_there?.should == false
+    @page.edit.all_there?.should == true
+  end
+
+  def create_msm_site
+    visit '/system/index.php?/cp/msm'
+    find('.sidebar a[href$="cp/msm/create"]').click
+    find('input[name="site_label"]').set 'Second Site'
+    find('input[name="site_name"]').set 'second_site'
+    find('form[action$="cp/msm/create"] input[type="submit"]').click
+    @page.load
   end
 end
