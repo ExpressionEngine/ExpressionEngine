@@ -117,7 +117,7 @@ class Tfidf implements Vectorizer {
 	 */
 	public function term_frequency(Document $doc, $term)
 	{
-		return 0.5 + (0.5 * $doc->frequency($term)) / $doc->max_frequency;
+		return 0.5 + (0.5 * $doc->getFrequency($term)) / $doc->max_frequency;
 	}
 
 	/**

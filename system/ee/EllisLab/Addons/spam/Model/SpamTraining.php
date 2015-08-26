@@ -9,10 +9,6 @@ class SpamTraining extends Model {
 	protected static $_table_name = 'spam_training';
 	protected static $_primary_key = 'training_id';
 
-	protected static $_typed_columns = array(
-		'class' => 'boolString'
-	);
-
 	protected static $_relationships = array(
 		'Kernel' => array(
 			'type' => 'belongsTo',
@@ -30,7 +26,6 @@ class SpamTraining extends Model {
 			)
 		)
 	);
-
 
 	protected $training_id;
 	protected $kernel_id;
