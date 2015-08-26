@@ -77,10 +77,19 @@ class URLFactory {
 
 		$cp_url = parse_url($this->cp_url);
 
+		$url_is_cp = FALSE;
+
 		// Do we have a CP URL?
-		if (isset($components['host'])
-			&& isset($cp_url['host'])
-			&& $components['host'] == $cp_url['host'])
+		if ( ! isset($components['host']))
+		{
+			$url_is_cp = TRUE;
+		}
+		elseif (isset($cp_url['host']) && $components['host'] == $cp_url['host'])
+		{
+			$url_is_cp = TRUE;
+		}
+
+		if ($url_is_cp == TRUE)
 		{
 			$qs = array();
 			if (isset($components['query']))
