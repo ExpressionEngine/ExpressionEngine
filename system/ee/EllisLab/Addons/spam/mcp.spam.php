@@ -40,8 +40,6 @@ class Spam_mcp {
 	public function __construct()
 	{
 		$this->base_url = ee('CP/URL', 'addons/settings/spam');
-		ini_set('memory_limit', '16G');
-		set_time_limit(0);
 	}
 
 	/**
@@ -592,7 +590,6 @@ class Spam_mcp {
 		$kernel = $this->getKernel('default');
 		$insert = array();
 		$update = array();
-
 
 		ee()->db->where_in('term', array_keys($tfidf->vocabulary));
 		$query = ee()->db->get('spam_vocabulary');
