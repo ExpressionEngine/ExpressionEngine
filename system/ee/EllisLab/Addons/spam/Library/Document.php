@@ -59,7 +59,7 @@ class Document implements Iterator {
 		$text = trim($text);
 		$this->tokenizer = $tokenizer;
 		$this->text = $text;
-		$this->frequency = $this->_frequency($text);
+		$this->frequency = $this->calculateFrequency($text);
 		$this->words = array_keys($this->frequency);
 		$this->size = count(explode(' ',$text));
 	}
@@ -73,7 +73,7 @@ class Document implements Iterator {
 	 */
 	public function __invoke($word)
 	{
-		return $this->frequency($word);
+		return $this->getFrequency($word);
 	}
 	
 	/**
@@ -83,7 +83,7 @@ class Document implements Iterator {
 	 * @param string $word The word you want the frequency of
 	 * @return float
 	 */
-	public function frequency($word)
+	public function getfrequency($word)
 	{
 		if (empty($this->frequency[$word]))
 		{
@@ -96,13 +96,14 @@ class Document implements Iterator {
 	}
 
 	/**
-	 * Count and rank the frequency of words
+     * Counts all of the words in the text and returns a sorted array
+     * of their counts.
 	 * 
 	 * @access private
 	 * @param mixed $text
 	 * @return array
 	 */
-	private function _frequency($text)
+	private function calculateFrequency($text)
 	{
 		$count = array();
 
