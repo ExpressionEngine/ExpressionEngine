@@ -205,6 +205,12 @@ class Spam_mcp {
 		return ee('View')->make('spam:index')->render($data);
 	}
 
+	/**
+	 * Controller method for the spam module settings page
+	 * 
+	 * @access public
+	 * @return void
+	 */
 	public function settings()
 	{
 		$base_url = ee('CP/URL', 'addons/settings/spam/settings');
@@ -330,6 +336,17 @@ class Spam_mcp {
 		return ee('View')->make('spam:form')->render(array('data' => $vars));
 	}
 
+	/**
+	 * This method is used when content in the spam trap is marked as a false
+	 * positive. It grabs the stored callback from the spam trap, runs it,
+	 * and then clears that entry from the spam trap. Everywhere that uses the
+	 * spam module is reponsible for providing it's own callback when it calls
+	 * the moderate method.
+	 * 
+	 * @param mixed $trapped 
+	 * @access private
+	 * @return void
+	 */
 	private function approve($trapped)
 	{
 		foreach ($trapped as $spam)
@@ -356,7 +373,15 @@ class Spam_mcp {
 		ee()->functions->redirect($this->base_url);
 	}
 
-	private function remove($trapped)
+	/**
+	 * This method is used when content in the spam trap is confirmed as spam.
+	 * It will simply delete the content from the spam trap.
+	 * 
+	 * @param CoreCollection $trapped 
+	 * @access public
+	 * @return void
+	 */
+	public function remove($trapped)
 	{
 		ee('CP/Alert')->makeInline('spam')
 			->asSuccess()
@@ -373,7 +398,7 @@ class Spam_mcp {
 	 * or reinsert the data if it's spam or ham respectively.
 	 * 
 	 * @param integer $id    ID of the content to moderate
-	 * @param boolean $spam  True if content is spa,
+	 * @param boolean $spam  True if content is spam,
 	 * @access public
 	 * @return void
 	 */
