@@ -27,7 +27,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
  * @link		http://ellislab.com
  */
 
-class URL implements Serializable {
+class URL implements \Serializable {
 
 	/**
 	 * @var string $path The path (i.e. 'logs/cp')
