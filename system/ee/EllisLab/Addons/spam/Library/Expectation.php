@@ -34,7 +34,7 @@ class Expectation {
 	public $variance = 0;
 
 	/**
-	 * __construct
+	 * Load the initial data and set the current mean/variance
 	 * 
 	 * @param array An array of floats 
 	 * @access public
@@ -49,7 +49,7 @@ class Expectation {
 	}
 
 	/**
-	 * Mean
+	 * Calculates and returns the sample mean
 	 * 
 	 * @access public
 	 * @return Return the sample mean.
@@ -60,7 +60,8 @@ class Expectation {
 	}
 
 	/**
-	 * Variance
+     * Calculates and returns the variance
+     * Note: sqrt(variance) == std deviation
 	 * 
 	 * @access public
 	 * @return Return the sample variance.
