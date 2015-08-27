@@ -542,13 +542,14 @@ class Spam_mcp {
 	private function setMaximumLikelihood($training_collection, $kernel)
 	{
 		$training = array();
+		$update = array();
+		$insert = array();
+
 
 		foreach ($training_collection as $class => $sources)
 		{
 			$count = count($sources[0]);
 			$zipped = array();
-			$update = array();
-			$insert = array();
 
 			foreach ($sources as $key => $row)
 			{
@@ -660,6 +661,7 @@ class Spam_mcp {
 			}
 		}
 
+
 		if ( ! empty($insert))
 		{
 			ee()->db->insert_batch('exp_spam_vocabulary', $insert);
@@ -718,10 +720,13 @@ class Spam_mcp {
 	public function trainAll()
 	{
 		set_time_limit(0);
-		ini_set('memory_limit','16G');
+		ini_set('max_execution_time', 0);
+		ini_set('memory_limit','64G');
 		$start_time = microtime(true);
 		$this->trainParameters(ee('Model')->get('spam:SpamTraining')->all());
 		$time = (microtime(true) - $start_time);
+		var_dump($time);
+		die();
 	}
 
 	/**
