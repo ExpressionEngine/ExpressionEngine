@@ -68,11 +68,13 @@ class Buttons extends Profile {
 
 		foreach ($buttons as $button)
 		{
+			$name = (strpos($button->classname, 'html-') !== 0) ? $button->tag_name : '';
+
 			$preview = array('toolbar_items' => array(
-				$button->tag_name => array(
+				$button->classname => array(
 					'href' => ee('CP/URL', 'members/profile/buttons/edit/' . $button->id, $this->query_string),
 					'title' => $button->tag_name,
-					'content' => $button->tag_name . form_hidden('order[]', $button->id)
+					'content' => $name . form_hidden('order[]', $button->id)
 				)
 			));
 			$toolbar = array('toolbar_items' => array(
