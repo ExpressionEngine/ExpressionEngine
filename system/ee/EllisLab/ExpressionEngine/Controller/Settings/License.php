@@ -44,7 +44,7 @@ class License extends Settings {
 				array(
 					array(
 						'title' => 'license_file',
-						'desc' => 'license_file_desc',
+						'desc' => sprintf(lang('license_file_desc'), 'https://store.ellislab.com/manage'),
 						'fields' => array(
 							'license_file' => array('type' => 'file')
 						)
@@ -100,7 +100,7 @@ class License extends Settings {
 				->asWarning()
 				->cannotClose()
 				->withTitle(lang('features_limited'))
-				->addtoBody(lang('features_limited_desc'))
+				->addtoBody(sprintf(lang('features_limited_desc'), 'https://store.ellislab.com'))
 				->now();
 		}
 
