@@ -129,8 +129,7 @@ class Site extends Model {
 	{
 		$current_number_of_sites = $this->getFrontend()->get('Site')->count();
 
-		$can_add = ee()->get('License')
-			->getEELicense()
+		$can_add = ee('License')->getEELicense()
 			->canAddSites($current_number_of_sites);
 
 		if ( ! $can_add)
