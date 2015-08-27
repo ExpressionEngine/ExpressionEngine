@@ -108,6 +108,7 @@ feature 'Member Group List' do
 
       @page.list.all_there?.should == true
       @page.list.groups.size.should == 5
+      @page.alert.text.should_not match(/[a-z]_[a-z]/)
 
       $db.query('SELECT count(group_id) AS count FROM exp_member_groups WHERE group_id=6').each do |row|
         row['count'].should == 0
