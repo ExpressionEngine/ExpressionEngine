@@ -193,6 +193,16 @@ feature 'Member Group List' do
 
   def create_msm_site
     @page.main_menu.dev_menu.click
+
+    # Enable MSM if it's not enabled
+    unless @page.has_content?('Multi-Site Manager')
+      p 'here!'
+      @page.settings_btn.click
+      find('input[name="multiple_sites_enabled"][value="y"]').click
+      find('form[action$="cp/settings/general"] input[type="submit"]').click
+      @page.main_menu.dev_menu.click
+    end
+
     click_link 'Multi-Site Manager'
     find('.sidebar a[href$="cp/msm/create"]').click
 
