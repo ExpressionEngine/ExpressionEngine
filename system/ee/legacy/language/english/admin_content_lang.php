@@ -424,23 +424,25 @@ $lang = array(
 
 'none' => 'None',
 
-'html_buttons' => 'HTML Buttons',
+'html_button' => 'HTML Button',
 
-'define_html_buttons' => 'HTML Formatting Button Definitions',
+'html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Buttons',
 
-'create_html_button' => 'Create HTML Button',
+'define_html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Formatting Button Definitions',
 
-'edit_html_button' => 'Edit HTML Button',
+'create_html_button' => 'Create <abbr title="Hyper-Text Markup Language">HTML</abbr> Button',
 
-'save_html_button' => 'Save HTML Button',
+'edit_html_button' => 'Edit <abbr title="Hyper-Text Markup Language">HTML</abbr> Button',
 
-'no_buttons' => 'No HTML buttons defined.',
+'save_html_button' => 'Save <abbr title="Hyper-Text Markup Language">HTML</abbr> Button',
+
+'no_buttons' => 'No <abbr title="Hyper-Text Markup Language">HTML</abbr> buttons defined.',
 
 'htmlbutton_delete_instructions' => 'To delete an item submit the form with the tag name blank',
 
 'add_preset_button' => 'Add Preset Button:',
 
-'tag_name' => 'Tag Name',
+'tag_name' => 'Name',
 
 'tag_open' => 'Opening Tag',
 
@@ -450,7 +452,7 @@ $lang = array(
 
 'tag_close_desc' => 'Closing output of this button. i.e. <b><code>&lt;/b&gt;</code></b>',
 
-'accesskey' => 'Tag shortcut',
+'accesskey' => 'Shortcut',
 
 'accesskey_desc' => 'Keyboard shortcut to initiate this button.',
 

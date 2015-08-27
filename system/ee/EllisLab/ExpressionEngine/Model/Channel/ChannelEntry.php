@@ -257,7 +257,13 @@ class ChannelEntry extends ContentModel {
 
 	public function onAfterDelete()
 	{
-		$this->Author->updateAuthorStats();
+		// store the author and dissociate. otherwise saving the author will
+		// attempt to save this entry to ensure relationship integrity.
+		// TODO make sure everything is already dissociated when we hit this
+		$last_author = $this->Author;
+		$this->Author = NULL;
+
+		$last_author->updateAuthorStats();
 		$this->updateEntryStats();
 	}
 
@@ -593,27 +599,31 @@ class ChannelEntry extends ContentModel {
 					'field_wide'            => TRUE
 				);
 			}
-			$cat_groups = ee('Model')->get('CategoryGroup')
-				->filter('group_id', 'IN', explode('|', $this->Channel->cat_group))
-				->all();
 
-			foreach ($cat_groups as $cat_group)
+			if ($this->Channel)
 			{
-				$default_fields['cat_group_id_'.$cat_group->getId()] = array(
-					'field_id'				=> 'categories',
-					'cat_group_id'			=> $cat_group->getId(),
-					'field_label'			=> ($cat_groups->count() > 1) ? $cat_group->group_name : lang('categories'),
-					'field_required'		=> 'n',
-					'field_show_fmt'		=> 'n',
-					'field_instructions'	=> lang('categories_desc'),
-					'field_text_direction'	=> 'ltr',
-					'field_type'			=> 'checkboxes',
-					'string_override'		=> '',
-					'field_list_items'      => '',
-					'field_maxl'			=> 100,
-					'populateCallback'		=> array($this, 'populateCategories')
-				);
-			};
+				$cat_groups = ee('Model')->get('CategoryGroup')
+					->filter('group_id', 'IN', explode('|', $this->Channel->cat_group))
+					->all();
+
+				foreach ($cat_groups as $cat_group)
+				{
+					$default_fields['cat_group_id_'.$cat_group->getId()] = array(
+						'field_id'				=> 'categories',
+						'cat_group_id'			=> $cat_group->getId(),
+						'field_label'			=> ($cat_groups->count() > 1) ? $cat_group->group_name : lang('categories'),
+						'field_required'		=> 'n',
+						'field_show_fmt'		=> 'n',
+						'field_instructions'	=> lang('categories_desc'),
+						'field_text_direction'	=> 'ltr',
+						'field_type'			=> 'checkboxes',
+						'string_override'		=> '',
+						'field_list_items'      => '',
+						'field_maxl'			=> 100,
+						'populateCallback'		=> array($this, 'populateCategories')
+					);
+				};
+			}
 
 			$module_tabs = $this->getTabFields();
 

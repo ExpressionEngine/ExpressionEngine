@@ -332,7 +332,7 @@ feature 'File Manager' do
 	end
 
 	it 'can remove a directory', :all_files => true do
-		about_directory_selector = 'div.sidebar .folder-list > li:nth-child(2)'
+		about_directory_selector = 'div.sidebar .folder-list > li:first-child'
 		find(about_directory_selector).hover
 		find(about_directory_selector + ' li.remove a').click
 
@@ -352,7 +352,7 @@ feature 'File Manager' do
 
 		@page.sidebar.find('li.act').text.should eq 'About'
 
-		about_directory_selector = 'div.sidebar .folder-list > li:nth-child(2)'
+		about_directory_selector = 'div.sidebar .folder-list > li:first-child'
 		find(about_directory_selector).hover
 		find(about_directory_selector + ' li.remove a').click
 

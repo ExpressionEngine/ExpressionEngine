@@ -102,9 +102,27 @@ class Profile extends CP_Controller {
 		$list = $sidebar->addHeader(lang('publishing_settings'), ee('CP/URL', 'members/profile/publishing', $this->query_string))
 			->addBasicList();
 
-		$list->addItem(lang('html_buttons'), ee('CP/URL', 'members/profile/buttons', $this->query_string));
-		$list->addItem(lang('quick_links'), ee('CP/URL', 'members/profile/quicklinks', $this->query_string));
-		$list->addItem(lang('bookmarklets'), ee('CP/URL', 'members/profile/bookmarks', $this->query_string));
+		$url = ee('CP/URL', 'members/profile/buttons', $this->query_string);
+		$item = $list->addItem(lang('html_buttons'), $url);
+		if ($url->matchesTheRequestedURI())
+		{
+			$item->isActive();
+		}
+
+		$url = ee('CP/URL', 'members/profile/quicklinks', $this->query_string);
+		$item = $list->addItem(lang('quick_links'), $url);
+		if ($url->matchesTheRequestedURI())
+		{
+			$item->isActive();
+		}
+
+		$url = ee('CP/URL', 'members/profile/bookmarks', $this->query_string);
+		$item = $list->addItem(lang('bookmarklets'), $url);
+		if ($url->matchesTheRequestedURI())
+		{
+			$item->isActive();
+		}
+
 		$list->addItem(lang('subscriptions'), ee('CP/URL', 'members/profile/subscriptions', $this->query_string));
 
 		$list = $sidebar->addHeader(lang('administration'))

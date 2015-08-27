@@ -68,11 +68,13 @@ class Buttons extends Profile {
 
 		foreach ($buttons as $button)
 		{
+			$name = (strpos($button->classname, 'html-') !== 0) ? $button->tag_name : '';
+
 			$preview = array('toolbar_items' => array(
-				$button->tag_name => array(
+				$button->classname => array(
 					'href' => ee('CP/URL', 'members/profile/buttons/edit/' . $button->id, $this->query_string),
 					'title' => $button->tag_name,
-					'content' => $button->tag_name . form_hidden('order[]', $button->id)
+					'content' => $name . form_hidden('order[]', $button->id)
 				)
 			));
 			$toolbar = array('toolbar_items' => array(
@@ -166,15 +168,23 @@ class Buttons extends Profile {
 	 * @access public
 	 * @return void
 	 */
-	public function create()
+	public function create($preset = '')
 	{
+		ee()->cp->set_breadcrumb($this->base_url, lang('html_buttons'));
 		$this->base_url = ee('CP/URL', $this->index_url . '/create', $this->query_string);
+
+		$values = array();
+
+		if (isset($this->predefined[$preset]))
+		{
+			$values = $this->predefined[$preset];
+		}
 
 		$vars = array(
 			'cp_page_title' => lang('create_html_button')
 		);
 
-		$this->form($vars);
+		$this->form($vars, $values);
 	}
 
 	/**
@@ -186,6 +196,7 @@ class Buttons extends Profile {
 	 */
 	public function edit($id)
 	{
+		ee()->cp->set_breadcrumb($this->base_url, lang('html_buttons'));
 		$this->base_url = ee('CP/URL', $this->index_url . "/edit/$id", $this->query_string);
 
 		$vars = array(
@@ -384,18 +395,18 @@ class Buttons extends Profile {
 		foreach ($this->predefined as $name => $button)
 		{
 			$current = array(
-				'href' => '#',
+				'href' => ee('CP/URL', 'members/profile/buttons/create/' . $name),
 				'title' => $name,
 				'data-accesskey' => $button['accesskey'],
 			);
-			if (empty($button['tag_icon']))
+			if (strpos($button['classname'], 'html-') !== 0)
 			{
 				$current['content'] = $name;
 				$buttons[$button['tag_name']] = $current;
 			}
 			else
 			{
-				$buttons['html-' . $button['tag_icon']] = $current;
+				$buttons[$button['classname']] = $current;
 			}
 		}
 

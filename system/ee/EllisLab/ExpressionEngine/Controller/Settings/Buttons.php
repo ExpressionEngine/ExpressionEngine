@@ -67,11 +67,13 @@ class Buttons extends Settings {
 
 		foreach ($buttons as $button)
 		{
+			$name = (strpos($button->classname, 'html-') !== 0) ? $button->tag_name : '';
+
 			$preview = array('toolbar_items' => array(
-				$button->tag_name => array(
+				$button->classname => array(
 					'href' => ee('CP/URL', 'settings/buttons/edit/' . $button->id),
 					'title' => $button->tag_name,
-					'content' => $button->tag_name . form_hidden('order[]', $button->id)
+					'content' => $name . form_hidden('order[]', $button->id)
 				)
 			));
 			$toolbar = array('toolbar_items' => array(
@@ -165,15 +167,20 @@ class Buttons extends Settings {
 	 * @access public
 	 * @return void
 	 */
-	public function create()
+	public function create($preset = '')
 	{
 		$this->base_url = ee('CP/URL', $this->index_url . '/create');
 
-		$vars = array(
-			'cp_page_title' => lang('create_html_button')
-		);
+		$values = array();
 
-		$this->form($vars);
+		if (isset($this->predefined[$preset]))
+		{
+			$values = $this->predefined[$preset];
+		}
+
+		$vars['cp_page_title'] = lang('create_html_button');
+
+		$this->form($vars, $values);
 	}
 
 	/**
@@ -376,18 +383,18 @@ class Buttons extends Settings {
 		foreach ($this->predefined as $name => $button)
 		{
 			$current = array(
-				'href' => '#',
+				'href' => ee('CP/URL', 'settings/buttons/create/' . $name),
 				'title' => $name,
 				'data-accesskey' => $button['accesskey'],
 			);
-			if (empty($button['tag_icon']))
+			if (strpos($button['classname'], 'html-') !== 0)
 			{
 				$current['content'] = $name;
 				$buttons[$button['tag_name']] = $current;
 			}
 			else
 			{
-				$buttons['html-' . $button['tag_icon']] = $current;
+				$buttons[$button['classname']] = $current;
 			}
 		}
 

@@ -111,11 +111,15 @@ class Groups extends Members\Members {
 
 		foreach ($groups as $group)
 		{
-			$edit_link = ee('CP/URL', 'members/groups/edit/', array('group' => $group->group_id));
+			$edit_link = ee('CP/URL', 'members/groups/edit/' . $group->group_id);
 			$toolbar = array('toolbar_items' => array(
 				'edit' => array(
 					'href' => $edit_link,
 					'title' => strtolower(lang('edit'))
+				),
+				'copy' => array(
+					'href' => ee('CP/URL', 'members/groups/copy/' . $group->group_id),
+					'title' => strtolower(lang('copy'))
 				)
 			));
 
@@ -187,17 +191,33 @@ class Groups extends Members\Members {
 		$this->form($vars);
 	}
 
-	public function edit()
+	public function copy($group_id)
+	{
+
+		$this->base_url = ee('CP/URL', 'members/groups/create/', $this->query_string);
+
+		$this->group = ee('Model')->get('MemberGroup', $group_id)->first();
+		$master = $this->groupData($this->group);
+		unset($master['group_id'], $master['site_id']);
+
+		$vars = array(
+			'cp_page_title' => sprintf(lang('copy_member_group'), $this->group->group_title)
+		);
+
+		$this->group = NULL;
+
+		$this->form($vars, $master);
+	}
+
+	public function edit($group_id)
 	{
 		$vars = array(
 			'cp_page_title' => lang('edit_member_group')
 		);
 
-		$group = ee()->input->get('group');
-		$this->group = ee()->api->get('MemberGroup', array($group))->first();
+		$this->group = ee('Model')->get('MemberGroup', $group_id)->first();
 		$this->group_id = (int) $this->group->group_id;
-		$this->query_string['group'] = $group;
-		$this->base_url = ee('CP/URL', 'members/groups/edit/', $this->query_string);
+		$this->base_url = ee('CP/URL', 'members/groups/edit/' . $group_id, $this->query_string);
 		$current = $this->groupData($this->group);
 
 		$this->form($vars, $current);

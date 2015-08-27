@@ -614,6 +614,21 @@ $lang = array(
 
 'all_items' => 'All %d items',
 
+
+//----------------------------
+// HTML Buttons
+//----------------------------
+
+'html_btn_bold' => 'Bold text',
+'html_btn_italic' => 'Italic text',
+'html_btn_strike' => 'Strikethrough text',
+'html_btn_ins' => 'Insert text',
+'html_btn_ul' => 'Unordered list',
+'html_btn_ol' => 'Ordered list',
+'html_btn_blockquote' => 'Blockquote',
+'html_btn_anchor' => 'Link',
+'html_btn_picture' => 'Image',
+
 ''=>''
 );
 
