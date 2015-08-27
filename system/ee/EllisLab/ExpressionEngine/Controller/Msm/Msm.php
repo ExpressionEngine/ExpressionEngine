@@ -501,7 +501,7 @@ class Msm extends CP_Controller {
 			$alert = ee('CP/Alert')->makeInline('site-limit-reached')
 				->asIssue()
 				->withTitle(lang('site_limit_reached'))
-				->addToBody(lang('site_limit_reached_desc'))
+				->addToBody(sprintf(lang('site_limit_reached_desc'), 'https://store.ellislab.com/manage'))
 				->cannotClose()
 				->render();
 			$sections[0][] = $alert;

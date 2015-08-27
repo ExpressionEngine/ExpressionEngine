@@ -87,7 +87,7 @@ class License extends Settings {
 
 				foreach ($license->getErrors() as $key => $value)
 				{
-					$alert->addToBody(lang('license_file_' . $key));
+					$alert->addToBody(sprintf(lang('license_file_' . $key), 'https://store.ellislab.com/manage'));
 				}
 
 				$alert->now();

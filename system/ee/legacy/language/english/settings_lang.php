@@ -118,7 +118,7 @@ $lang = array(
 'license_file_error' => 'License Invalid',
 'license_file_corrupt_license_file' => 'The license file provided is missing data.',
 'license_file_invalid_signature' => 'The license file provided has an invalid signature.',
-'license_file_missing_pubkey' => 'The ExpressionEngine product is missing data. Pleas visit <a href="https://store.ellislab.com/manage" rel="external">ElisLab.com</a> and download a fresh copy.',
+'license_file_missing_pubkey' => 'The ExpressionEngine product is missing data. Pleas visit <a href="%s" rel="external">ElisLab.com</a> and download a fresh copy.',
 'license_file_invalid_license_number' => 'The license file provided is invalid.',
 
 'license_file_fail' => 'License not saved',

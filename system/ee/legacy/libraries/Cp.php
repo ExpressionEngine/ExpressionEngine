@@ -263,7 +263,14 @@ class Cp {
 
 			foreach ($license->getErrors() as $key => $value)
 			{
-				$alert->addToBody(sprintf(lang($key), ee('CP/URL', 'settings/license')));
+				if ($key == 'missing_pubkey')
+				{
+					$alert->addToBody(sprintf(lang($key), 'https://store.ellislab.com/manage'));
+				}
+				else
+				{
+					$alert->addToBody(sprintf(lang($key), ee('CP/URL', 'settings/license')));
+				}
 			}
 
 			$alert->now();
