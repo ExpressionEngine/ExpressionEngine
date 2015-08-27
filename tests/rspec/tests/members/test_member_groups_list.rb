@@ -55,28 +55,7 @@ feature 'Member Group List' do
     end
 
     it 'edits a group successfully' do
-      @page.edit.name.set 'Editors'
-      @page.edit.security_lock[1].click
-      @page.edit.can_admin_templates[1].click
-      @page.edit.allowed_template_groups.each(&:click)
-      @page.edit.access_tools[0].click
-      @page.edit.access_tools[1].click
-      @page.edit.submit.click
-
-      @page.list.groups.last.find('li.edit a').click
-
-      @page.list.all_there?.should == false
-      @page.edit.all_there?.should == true
-
-      @page.edit.name.value.should == 'Editors'
-      @page.edit.security_lock[0].checked?.should == false
-      @page.edit.security_lock[1].checked?.should == true
-      @page.edit.can_admin_templates[0].checked?.should == false
-      @page.edit.can_admin_templates[1].checked?.should == true
-      @page.edit.allowed_template_groups.each { |e| e.checked?.should == false }
-      @page.edit.access_tools[0].checked?.should == false
-      @page.edit.access_tools[1].checked?.should == false
-      @page.edit.access_tools[2].checked?.should == true
+      edit_member_group
     end
   end
 
@@ -90,6 +69,30 @@ feature 'Member Group List' do
       $db.query('SELECT count(group_id) AS count FROM exp_member_groups WHERE group_id=6').each do |row|
         row['count'].should == 2
       end
+    end
+
+    it 'edits the preferences for specific sites' do
+      edit_member_group
+
+      rows = []
+      fields = 'group_title, is_locked, can_admin_templates, can_access_comm,
+        can_access_utilities, can_access_data, `'
+      $db.query("SELECT #{fields} FROM exp_member_groups WHERE group_id=6").each do |row|
+        rows << row
+      end
+
+      # These two fields should change among all groups
+      rows[0]['group_title'].should == rows[1]['group_title']
+      rows[0]['is_locked'].should == rows[1]['is_locked']
+
+      # These fields should *not* change among all groups
+      rows[0]['can_admin_templates'].should_not == rows[1]['can_admin_templates']
+      rows[0]['can_access_comm'].should_not == rows[1]['can_access_comm']
+      rows[0]['can_access_utilities'].should_not == rows[1]['can_access_utilities']
+
+      # These fields were not changed and should remain the same
+      rows[0]['can_access_data'].should == rows[1]['can_access_data']
+      rows[0]['can_access_logs'].should == rows[1]['can_access_logs']
     end
 
     it 'deletes all member group records when deleting a member group' do
@@ -156,6 +159,32 @@ feature 'Member Group List' do
 
     @page.list.all_there?.should == false
     @page.edit.all_there?.should == true
+  end
+
+  def edit_member_group
+    @page.edit.name.set 'Editors'
+    @page.edit.security_lock[1].click
+    @page.edit.can_admin_templates[1].click
+    @page.edit.allowed_template_groups.each(&:click)
+    @page.edit.access_tools[0].click
+    @page.edit.access_tools[1].click
+    @page.edit.submit.click
+
+    @page.list.groups.last.find('li.edit a').click
+
+    @page.list.all_there?.should == false
+    @page.edit.all_there?.should == true
+
+    @page.edit.name.value.should == 'Editors'
+    @page.edit.security_lock[0].checked?.should == false
+    @page.edit.security_lock[1].checked?.should == true
+    @page.edit.can_admin_templates[0].checked?.should == false
+    @page.edit.can_admin_templates[1].checked?.should == true
+    @page.edit.allowed_template_groups.each { |e| e.checked?.should == false }
+    @page.edit.access_tools[0].checked?.should == false
+    @page.edit.access_tools[1].checked?.should == false
+    @page.edit.access_tools[2].checked?.should == true
+    @page.edit.access_tools[3].checked?.should == true
   end
 
   def create_msm_site
