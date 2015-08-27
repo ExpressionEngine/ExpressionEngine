@@ -38,8 +38,6 @@ $lang = array(
 
 'btn_create_new' => 'Create New',
 
-'success' => 'Success',
-
 'entries_removed_desc' => 'The following entries were removed',
 
 'comments_removed_desc' => 'The following comments were removed',
@@ -612,8 +610,6 @@ $lang = array(
 'image' => 'Image',
 
 'non_image' => 'Non-image',
-
-'success' => 'Success!',
 
 'you_have_uploaded' => 'You have uploaded the following file:',
 

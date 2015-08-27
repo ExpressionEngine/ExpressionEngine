@@ -26,6 +26,8 @@ $lang = array(
 
 "member_field_not_saved_desc" => "Member Field could not be saved",
 
+"member_groups_removed_desc" => "Member Group has been deleted successfully.",
+
 "all_members" => "All Members",
 
 "view_search_members" => "View / Search Members",

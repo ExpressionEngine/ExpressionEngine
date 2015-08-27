@@ -140,8 +140,6 @@ $lang = array(
 
 'snippet_name_taken' => 'The template partial name you submitted is already taken',
 
-'success' => 'Success',
-
 'snippets_removed_desc' => 'The following snippets were removed',
 
 'template_variables_header' => 'Template Variables<br><i>Reusable static content replacements.</i>',
