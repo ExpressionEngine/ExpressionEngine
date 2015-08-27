@@ -12,6 +12,55 @@ $lang = array(
 
 //----------------------------------------
 
+'all_wikis' => 'All Wikis',
+
+'wiki_manager' => 'Wiki Manager',
+
+'edit_wiki' => 'Edit Wiki',
+
+'namespace_name' => 'Short Name ',
+
+'namespace_label_desc' => 'Descriptive name of this namespace',
+
+'namespace_name_desc' => 'Short name for this namespace
+<br><i>No spaces. Underscores and dashes are allowed.</i>',
+
+'namespace_users' => 'Groups',
+
+'namespace_admins' => 'Admins',
+
+'namespace_admins_desc' => 'Member groups to administrate this namespace',
+
+'namespace_users_desc' => 'Member groups that can access this namespace',
+
+
+'users_description' => 'Member groups that can access this wiki.',
+
+'admins_description' => 'Member groups to administrate this wiki.',
+
+
+'add_namespaces' => 'Add Namespaces',
+
+'no_namespaces' => 'No Namespaces',
+
+'namespace_label' => 'Name',
+
+'namespace_short_name' => 'Namespace Short Name',
+
+//----------------------------------------
+
+// Flashes
+'settings_saved' => 'Settings saved',
+'settings_saved_desc' => 'Your Wiki Settings have been saved.',
+'settings_error' => 'Error saving settings',
+'settings_error_desc' => 'Your Wiki could not be saved. Please try again.',
+'wiki_updated' => 'Wiki Updated',
+'wiki_updated_desc' => 'The wiki <b>%s</b> has been updated.',
+'wiki_created' => 'Wiki Created',
+'wiki_created_desc' => 'The wiki <b>%s</b> has been created.',
+
+//----------------------------------------
+
 'wiki_preferences' => 'Wiki Module Preferences',
 
 'preference_name' => 'Preference Name',
@@ -20,11 +69,11 @@ $lang = array(
 
 'use_captchas' => 'Use CAPTCHAs?',
 
-'text_format' => 'Text Formatting for Articles',
+'text_format' => 'Text Formatting',
 
-'html_format' => 'HTML Formatting for Articles',
+'html_format' => 'HTML Formatting',
 
-'upload_dir' => 'File Upload Directory for Wiki',
+'upload_dir' => 'Upload Directory',
 
 'upload_url' => 'URL for Upload Directory',
 
@@ -42,9 +91,13 @@ $lang = array(
 
 'update_successful' => 'Preferences Updated Successfully!',
 
-'revision_limit' => 'Number of Revisions to Keep Per Article',
+'revision_limit' => 'Revisions per article',
 
-'author_limit' => 'Number of Edits Allowed Per Author Per Day',
+'revision_limit_description' => 'Maximum number of revisions to store per article.',
+
+'author_limit' => 'Edits per author',
+
+'author_limit_description' => 'Maximum number of edits allowed per author, per day.',
 
 'search_min_length' => 'Search terms must be at least %x characters in length',
 
@@ -56,34 +109,34 @@ $lang = array(
 
 'filename_too_long' => "Filename Must Not Exceed 60 Characters, Please Try a New Name",
 
-'moderation_emails' => 'Email Addresses for Moderation Notifications',
+'moderation_emails' => 'Notifications',
 
-'namespaces_list' => 'List of Namespaces',
+'moderation_emails_description' => 'Email(s) to notify for moderation. Separate multiple recipients with a comma.',
+
+'namespaces_list' => 'Namespaces are used to divide a wiki\'s content. i.e. A Spanish only division.',
 
 'namespaces_list_subtext' => 'Namespaces are used to separate a wiki\'s content into separate divisions.  For example, you might
 want to create a division of the wiki for articles only in Spanish. For each namespace, create a Label,
 which will be displayed on the wiki pages, and a short name, which will be used internally and in certain forms for
 referencing the namespace.  Your short name should only contain word characters like letters, numbers, and underscores.',
 
-'label_name' => 'Full Wiki Name',
+'label_name' => 'Name',
 
-'short_name' => 'Wiki Short Name',
+'short_name' => 'Short Name',
 
 'name_short_subtext' => ' - single word, no spaces',
 
 'basepath_unset' => 'Base Path Parameter Not Set',
 
-'users' => 'User Groups',
+'users' => 'Groups',
 
-'admins' => 'Administrator Groups',
+'admins' => 'Administrators',
 
 'wiki_homepage' => 'Wiki Homepage',
 
 'create_wiki' => 'Create Wiki',
 
-'wiki_created' => 'Wiki has been created.  You may now edit the preferences.',
-
-'no_wiki' => 'No wikis currently exist.',
+'no_wikis' => 'No Wikis',
 
 'wiki_delete_confirm' => 'Delete Wikis',
 
@@ -94,14 +147,12 @@ referencing the namespace.  Your short name should only contain word characters 
 'wikis_deleted' => 'Wikis Deleted!',
 
 'duplicate_short_name' => 'Another Wiki with that Short Name already exists.',
+'invalid_short_name' => 'Invalid Short Name.',
 
 'default_index_note' => 'Creating the first page',
 
 'default_index_content' => 'Welcome to the opening page of your EE Wiki!',
 
-'namespace_label' => 'Namespace Label',
-
-'namespace_short_name' => 'Namespace Short Name',
 
 'file_ns' => 'File',
 

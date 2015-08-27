@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -97,30 +97,36 @@ class Wiki_model extends CI_Model {
 		return $this->db->get($table);
 	}
 
+
 	// ------------------------------------------------------------------------
 
 	/**
-	 * Create New Wiki
+	 * Update wiki
 	 *
+	 * @param int	Wiki ID
 	 * @param array
-	 * @return integer
+	 * @return void
 	 */
-	function create_new_wiki($prefix)
+	function update_wiki($wiki_id, $data)
 	{
-		$data  = array(	'wiki_label_name'			=> "EE Wiki".str_replace('_', ' ', $prefix),
-						'wiki_short_name'			=> 'default_wiki'.$prefix,
-						'wiki_text_format'			=> 'xhtml',
-						'wiki_html_format'			=> 'safe',
-						'wiki_admins'				=> '1',
-						'wiki_users'				=> '1|5',
-						'wiki_upload_dir'			=> '0',
-						'wiki_revision_limit'		=> 200,
-						'wiki_author_limit'			=> 75,
-						'wiki_moderation_emails'	=> '');
+		if ($wiki_id)
+		{
+			$valid_wiki = $this->db->get_where('wikis', array('wiki_id' => $wiki_id));
+
+			if ($valid_wiki->num_rows() != 1)
+			{
+				exit('bad');
+			}
+
+			$this->db->update('wikis', $data);
+			return;
+		}
+		
+		//  New wikis need moar!
 
 		$this->db->insert('wikis', $data);
 		$wiki_id = $this->db->insert_id();
-
+		
 		//  Default Index Page
 		$this->lang->loadfile('wiki');
 
@@ -147,21 +153,7 @@ class Wiki_model extends CI_Model {
 		$this->db->update('wiki_page', array('last_revision_id' => $last_revision_id));
 
 		return $wiki_id;
-	}
-
-	// ------------------------------------------------------------------------
-
-	/**
-	 * Update wiki
-	 *
-	 * @param int	Wiki ID
-	 * @param array
-	 * @return void
-	 */
-	function update_wiki($wiki_id, $data)
-	{
-		$this->db->where('wiki_id', $wiki_id);
-		return $this->db->update('wikis', $data);
+		
 	}
 
 	// ------------------------------------------------------------------------

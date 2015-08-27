@@ -5,7 +5,7 @@
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
- * @license		https://ellislab.com/expressionengine/user-guide/license.html
+ * @license		http://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 2.0
  * @filesource
@@ -296,19 +296,19 @@ class Wiki {
 		/** ----------------------------------------*/
 
 		ee()->load->helper('file');
-		$this->theme_path = PATH_THEMES.'wiki/default/';
-		$this->image_url = URL_THEMES.'wiki/default/images/';
-		$this->theme_url = URL_THEMES.'wiki/default/';
+		$this->theme_path = PATH_THEMES.'wiki_themes/default/';
+		$this->image_url = URL_THEMES.'wiki_themes/default/images/';
+		$this->theme_url = URL_THEMES.'wiki_themes/default/';
 
 		if (ee()->TMPL->fetch_param('theme') !== FALSE && ee()->TMPL->fetch_param('theme') != '' && ee()->TMPL->fetch_param('theme') != 'default')
 		{
 			$theme = ee()->security->sanitize_filename(ee()->TMPL->fetch_param('theme'));
 
-			if (is_dir(PATH_THEMES.'/wiki/'.$theme))
+			if (is_dir(PATH_THEMES.'/wiki_themes/'.$theme))
 			{
-				$this->theme_path = PATH_THEMES.'wiki/'.$theme.'/';
-				$this->image_url = URL_THEMES.'wiki/'.$theme.'/images/';
-				$this->theme_url = URL_THEMES.'wiki/'.$theme.'/';
+				$this->theme_path = PATH_THEMES.'wiki_themes/'.$theme.'/';
+				$this->image_url = URL_THEMES.'wiki_themes/'.$theme.'/images/';
+				$this->theme_url = URL_THEMES.'wiki_themes/'.$theme.'/';
 			}
 			else
 			{
@@ -339,7 +339,7 @@ class Wiki {
 		*/
 			if (ee()->extensions->active_hook('wiki_start') === TRUE)
 			{
-				$this->return_data = ee()->extensions->call('wiki_start', $this);
+				$this->return_data = ee()->extensions->universal_call('wiki_start', $this);
 				if (ee()->extensions->end_script === TRUE) return;
 			}
 		/*
@@ -1070,7 +1070,7 @@ class Wiki {
 		/*  - Allows complete takeover of special pages
 		/*  - Added 1.6.0
 		*/
-			ee()->extensions->call('wiki_special_page', $this, $topic);
+			ee()->extensions->universal_call('wiki_special_page', $this, $topic);
 			if (ee()->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------*/
@@ -2079,7 +2079,7 @@ class Wiki {
 		/*  - Allows complete takeover of the wiki article edit form
 		/*  - Added 1.6.0
 		*/
-			ee()->extensions->call('edit_wiki_article_form_start', $this, $title, $query);
+			ee()->extensions->universal_call('edit_wiki_article_form_start', $this, $title, $query);
 			if (ee()->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------*/
@@ -2274,7 +2274,7 @@ class Wiki {
 		*/
 			if (ee()->extensions->active_hook('edit_wiki_article_form_end') === TRUE)
 			{
-				$this->return_data = ee()->extensions->call('edit_wiki_article_form_end', $this, $query);
+				$this->return_data = ee()->extensions->universal_call('edit_wiki_article_form_end', $this, $query);
 				if (ee()->extensions->end_script === TRUE) return;
 			}
 		/*
@@ -2682,7 +2682,7 @@ class Wiki {
 		/*  - Allows takeover of wiki article display
 		/*  - Added 1.6.0
 		*/
-			ee()->extensions->call('wiki_article_start', $this, $title, $query);
+			ee()->extensions->universal_call('wiki_article_start', $this, $title, $query);
 			if (ee()->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------*/
@@ -2750,7 +2750,7 @@ class Wiki {
 			*/
 				if (ee()->extensions->active_hook('wiki_article_end') === TRUE)
 				{
-					$this->return_data = ee()->extensions->call('wiki_article_end', $this, $query);
+					$this->return_data = ee()->extensions->universal_call('wiki_article_end', $this, $query);
 					if (ee()->extensions->end_script === TRUE) return;
 				}
 			/*
@@ -2897,7 +2897,7 @@ class Wiki {
 		*/
 			if (ee()->extensions->active_hook('wiki_article_end') === TRUE)
 			{
-				$this->return_data = ee()->extensions->call('wiki_article_end', $this, $query);
+				$this->return_data = ee()->extensions->universal_call('wiki_article_end', $this, $query);
 				if (ee()->extensions->end_script === TRUE) return;
 			}
 		/*
@@ -3859,7 +3859,7 @@ class Wiki {
 		/*  - Add more things to do for wiki articles
 		/*  - Added 1.6.0
 		*/
-			ee()->extensions->call('edit_wiki_article_end', $this, $query);
+			ee()->extensions->universal_call('edit_wiki_article_end', $this, $query);
 			if (ee()->extensions->end_script === TRUE) return;
 		/*
 		/* -------------------------------------*/
