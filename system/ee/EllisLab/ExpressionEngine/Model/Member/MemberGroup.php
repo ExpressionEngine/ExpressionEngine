@@ -11,7 +11,8 @@ class MemberGroup extends Model {
 
 	protected static $_events = array(
 		'beforeInsert',
-		'afterInsert'
+		'afterInsert',
+		'afterSave'
 	);
 
 	protected static $_typed_columns = array(
@@ -302,5 +303,22 @@ class MemberGroup extends Model {
 
 		$query->filter('site_id', $this->site_id);
 		parent::constrainQueryToSelf($query);
+	}
+
+	/**
+	 * Update common attributes (group_title, group_description, is_locked)
+	 * @return void
+	 */
+	public function onAfterSave()
+	{
+		ee('db')->update(
+			'member_groups',
+			array(
+				'group_title' => $this->group_title,
+				'group_description' => $this->group_description,
+				'is_locked' => $this->is_locked
+			),
+			array('group_id' => $this->group_id)
+		);
 	}
 }
