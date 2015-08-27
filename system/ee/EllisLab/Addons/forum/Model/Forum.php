@@ -209,7 +209,9 @@ class Forum extends Model {
 			$last_forum->filter('forum_parent', $this->getProperty('forum_parent'));
 		}
 
-		$this->setProperty('forum_order', $last_forum->first()->forum_order + 1);
+		$order = ($last_forum->first()) ? $last_forum->first()->forum_order + 1 : 1;
+
+		$this->setProperty('forum_order', $order);
 	}
 
 }
