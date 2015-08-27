@@ -270,27 +270,27 @@ class MemberGroup extends Model {
 	 */
 	public function onAfterInsert()
 	{
-	    $this->setId($this->group_id);
+		$this->setId($this->group_id);
 
-	    $sites = $this->getFrontend()->get('Site')
-	        ->fields('site_id')
-	        ->all()
-	        ->pluck('site_id');
+		$sites = $this->getFrontend()->get('Site')
+			->fields('site_id')
+			->all()
+			->pluck('site_id');
 
-	    foreach ($sites as $site_id)
-	    {
-	        $group = $this->getFrontend()->get('MemberGroup')
-	            ->filter('group_id', $this->group_id)
-	            ->filter('site_id', $site_id)
-	            ->first();
+		foreach ($sites as $site_id)
+		{
+			$group = $this->getFrontend()->get('MemberGroup')
+				->filter('group_id', $this->group_id)
+				->filter('site_id', $site_id)
+				->first();
 
-	        if ( ! $group)
-	        {
-	            $data = $this->getValues();
-	            $data['site_id'] = (int) $site_id;
-	            $this->getFrontend()->make('MemberGroup', $data)->save();
-	        }
-	    }
+			if ( ! $group)
+			{
+				$data = $this->getValues();
+				$data['site_id'] = (int) $site_id;
+				$this->getFrontend()->make('MemberGroup', $data)->save();
+			}
+		}
 	}
 
 	protected function constrainQueryToSelf($query)
