@@ -192,11 +192,14 @@ feature 'Member Group List' do
   end
 
   def create_msm_site
-    visit '/system/index.php?/cp/msm'
+    @page.main_menu.dev_menu.click
+    click_link 'Multi-Site Manager'
     find('.sidebar a[href$="cp/msm/create"]').click
+
     find('input[name="site_label"]').set 'Second Site'
     find('input[name="site_name"]').set 'second_site'
     find('form[action$="cp/msm/create"] input[type="submit"]').click
+
     @page.load
   end
 end
