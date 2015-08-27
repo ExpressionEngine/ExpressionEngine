@@ -75,14 +75,15 @@ feature 'Member Group List' do
       edit_member_group
 
       rows = []
-      fields = 'group_title, is_locked, can_admin_templates, can_access_comm,
-        can_access_utilities, can_access_data, `'
+      fields = 'group_title, group_description, is_locked, can_admin_templates,
+        can_access_comm, can_access_utilities, can_access_data, can_access_logs'
       $db.query("SELECT #{fields} FROM exp_member_groups WHERE group_id=6").each do |row|
         rows << row
       end
 
       # These two fields should change among all groups
       rows[0]['group_title'].should == rows[1]['group_title']
+      rows[0]['group_description'].should == rows[1]['group_description']
       rows[0]['is_locked'].should == rows[1]['is_locked']
 
       # These fields should *not* change among all groups
@@ -163,6 +164,7 @@ feature 'Member Group List' do
 
   def edit_member_group
     @page.edit.name.set 'Editors'
+    @page.edit.description.set 'Editors description.'
     @page.edit.security_lock[1].click
     @page.edit.can_admin_templates[1].click
     @page.edit.allowed_template_groups.each(&:click)
@@ -176,6 +178,7 @@ feature 'Member Group List' do
     @page.edit.all_there?.should == true
 
     @page.edit.name.value.should == 'Editors'
+    @page.edit.description.value.should == 'Editors description.'
     @page.edit.security_lock[0].checked?.should == false
     @page.edit.security_lock[1].checked?.should == true
     @page.edit.can_admin_templates[0].checked?.should == false
