@@ -12,7 +12,7 @@ class MemberGroup extends Model {
 	protected static $_events = array(
 		'beforeInsert',
 		'afterInsert',
-		'afterSave'
+		'afterUpdate'
 	);
 
 	protected static $_typed_columns = array(
@@ -309,7 +309,7 @@ class MemberGroup extends Model {
 	 * Update common attributes (group_title, group_description, is_locked)
 	 * @return void
 	 */
-	public function onAfterSave()
+	public function onAfterUpdate()
 	{
 		ee('db')->update(
 			'member_groups',
