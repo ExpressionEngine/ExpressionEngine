@@ -33,7 +33,8 @@ class Fieldtype extends Model {
 	protected static $_table_name = 'fieldtypes';
 
 	protected static $_typed_columns = array(
-		'has_global_settings' => 'boolString'
+		'has_global_settings' => 'boolString',
+		'settings'            => 'base64Serialized',
 	);
 
 	protected $fieldtype_id;
@@ -42,13 +43,4 @@ class Fieldtype extends Model {
 	protected $settings;
 	protected $has_global_settings;
 
-	public function set__settings($settings)
-	{
-		$this->setRawProperty('settings', base64_encode(serialize($settings)));
-	}
-
-	public function get__settings()
-	{
-		return unserialize(base64_decode($this->settings));
-	}
 }

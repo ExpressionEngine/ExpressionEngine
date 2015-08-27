@@ -44,6 +44,10 @@ $lang = array(
 
 'custom_fields' => 'Custom Fields',
 
+'custom_fields_for' => 'Custom Fields for %s',
+
+'field_group' => 'Field Group',
+
 'field_groups' => 'Field Groups',
 
 'category_groups' => 'Category Groups',
@@ -144,8 +148,6 @@ $lang = array(
 'channel_title' => 'Name',
 'channel_title_desc' => '',
 
-'channel_short_name_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
-
 'channel_duplicate' => 'Duplicate existing channel?',
 'channel_duplicate_desc' => 'On creation, this channel will copy all settings from the selected channel.',
 
@@ -171,6 +173,8 @@ $lang = array(
 'custom_field_groups_not_found' => 'Zero <b>custom field groups</b> found',
 
 'create_new_field_group' => 'Create New Field Group',
+
+'custom_fields_desc' => 'Choose the fields you would like to include in this field group.',
 
 'category_groups_desc' => '',
 
@@ -263,6 +267,10 @@ $lang = array(
 
 'html_formatting_desc' => 'Level of <abbr title="Hyper-Text Markup Language">HTML</abbr> allowed.',
 
+'extra_publish_controls' => 'Show extra publish controls?',
+
+'extra_publish_controls_desc' => 'When set to <b>yes</b>, a second set of publish controls will appear at the top of the publish form for this channel.',
+
 'convert_image_urls' => 'Allow image <abbr title="Unified Resource Locator">URL</abbr>s?',
 
 'convert_image_urls_desc' => 'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s to image resources will be automagically rendered as images in this channel\'s entries.',
@@ -270,10 +278,6 @@ $lang = array(
 'convert_urls_emails_to_links' => 'Render <abbr title="Unified Resource Locator">URL</abbr>s and Email addresses as links?',
 
 'convert_urls_emails_to_links_desc' => 'When set to <b>yes</b>, <abbr title="Unified Resource Locator">URL</abbr>s and Email address will be rendered as links in this channel\'s entries.',
-
-'allow_rich_text_editing' => 'Allow Rich Text Editing?',
-
-'allow_rich_text_editing_desc' => 'When set to <b>yes</b>, text areas will have the default <abbr title="Rich Text Editor">RTE</abbr> tool set above them.',
 
 'channel_form' => 'Channel Form',
 
@@ -317,11 +321,11 @@ $lang = array(
 
 'allow_comments' => 'Allow comments?',
 
-'allow_comments_desc' => 'When set to <b>yes</b>, member groups with permissions can submit comments to this channel\'s entires.',
+'allow_comments_desc' => 'When set to <b>yes</b>, members can submit comments to this channel\'s entries.',
 
-'allow_comments_checked' => 'Allow comments checked?',
+'allow_comments_checked' => 'Allow comments default?',
 
-'allow_comments_checked_desc' => 'When set to <b>yes</b>, the allow comments checkbox will be checked by default for this channel.',
+'allow_comments_checked_desc' => 'When set to <b>yes</b>, the "Allow comments" option will be set to "yes" by default',
 
 'require_membership' => 'Require membership?',
 
@@ -426,7 +430,7 @@ $lang = array(
 
 'categories_removed_desc' => '%d categories were removed.',
 
-'no_fields' => 'No Fields',
+'no_fields' => 'No fields found',
 
 'fields' => 'Fields',
 
@@ -434,7 +438,7 @@ $lang = array(
 
 'group_name_desc' => '',
 
-'categories_not_found' => 'Zero <b>category groups</b> found',
+'categories_not_found' => 'Zero <b>categories</b> found',
 
 'create_category' => 'Create Category',
 
@@ -535,8 +539,6 @@ $lang = array(
 'duplicate_category_group_name' => 'A category group already exists with the same name.',
 
 'label' => 'Label',
-
-'cat_field_short_name_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
 
 'require_field' => 'Require field?',
 

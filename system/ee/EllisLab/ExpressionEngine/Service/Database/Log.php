@@ -43,6 +43,11 @@ class Log {
 	protected $queries = array();
 
 	/**
+	 * @var Array [[Query, count, location]]
+	 */
+	protected $query_metrics = array();
+
+	/**
 	 * @var Bool Store queries for debugging?
 	 */
 	protected $save_queries = FALSE;
@@ -67,7 +72,7 @@ class Log {
 	/**
 	 * Add a query to the log
 	 */
-	public function addQuery($sql, $time)
+	public function addQuery($sql, $time, $memory)
 	{
 		$this->count++;
 
@@ -76,7 +81,24 @@ class Log {
 			$query = $sql;
 			$location = $this->getTrace();
 
-			$this->queries[] = array($query, $location, $time);
+			$sql_sig = md5($sql);
+			if (isset($this->query_metrics[$sql_sig]))
+			{
+				$this->query_metrics[$sql_sig]['count']++;
+				$this->query_metrics[$sql_sig]['locations'] = array_unique(
+					array_merge($this->query_metrics[$sql_sig]['locations'], array($location))
+				);
+			}
+			else
+			{
+				$this->query_metrics[$sql_sig] = array(
+					'query' => $sql,
+					'count' => 1,
+					'locations' => array($location)
+				);
+			}
+
+			$this->queries[] = array($query, $location, $time, $memory);
 		}
 	}
 
@@ -94,6 +116,14 @@ class Log {
 	public function getQueryCount()
 	{
 		return $this->count;
+	}
+
+	/**
+	 * Get the query metrics (tracks duplicates)
+	 */
+	public function getQueryMetrics()
+	{
+		return $this->query_metrics;
 	}
 
 	/**

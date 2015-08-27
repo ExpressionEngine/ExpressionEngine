@@ -82,7 +82,6 @@ $lang = array(
 'fieldtype_name'				=>		'Fieldtype Name',
 'not_installed'					=>		'Not Installed',
 'remove'						=>		'Remove',
-'preferences_updated'			=>		'Preferences Updated',
 'extension_enabled'				=>		'Extension Enabled',
 'extension_disabled'			=>		'Extension Disabled',
 'extensions_enabled'			=>		'Extensions Enabled',
@@ -117,6 +116,7 @@ $lang = array(
 'and_more'						=>		'and %x more...',
 'plugins_not_available'			=> 		'Plugin Feed Disabled in Beta Version.',
 'no_extension_id'				=>		'No Extension Specified',
+'configuration'					=>		'Configuration',
 
 // IGNORE
 ''=>'');

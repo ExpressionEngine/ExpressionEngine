@@ -84,7 +84,7 @@ class Rte_lib {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('toolset_error'))
 				->addToBody(lang('toolset_error_desc'))
@@ -96,7 +96,6 @@ class Rte_lib {
 		{
 			$vars['base_url'] = ee('CP/URL', 'addons/settings/rte/new_toolset');
 			$vars['cp_page_title_alt'] = lang('create_tool_set_header');
-			$vars['save_btn_text'] = 'create_tool_set';
 			$toolset['tools'] = array();
 			$toolset_name = '';
 		}
@@ -104,7 +103,6 @@ class Rte_lib {
 		{
 			$vars['base_url'] = ee('CP/URL', 'addons/settings/rte/edit_toolset', array('toolset_id' => $toolset_id));
 			$vars['cp_page_title_alt'] = lang('edit_tool_set_header');
-			$vars['save_btn_text'] = 'edit_tool_set';
 
 			// make sure user can access the existing toolset
 			if ( ! ee()->rte_toolset_model->member_can_access($toolset_id))
@@ -162,6 +160,7 @@ class Rte_lib {
 		);
 
 		$vars['ajax_validate'] = TRUE;
+		$vars['save_btn_text'] = sprintf(lang('btn_save'), lang('tool_set'));
 		$vars['save_btn_text_working'] = 'btn_saving';
 
 		return ee('View')->make('rte:box_wrapper')->render($vars);
@@ -211,7 +210,7 @@ class Rte_lib {
 
 			if ( ! $orig || $is_members && $orig['member_id'] != ee()->session->userdata('member_id'))
 			{
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('toolset_error'))
 					->addToBody(lang('toolset_update_failed'))
@@ -223,7 +222,7 @@ class Rte_lib {
 		// save it
 		if (ee()->rte_toolset_model->save_toolset($toolset, $toolset_id) === FALSE)
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('toolset_error'))
 				->addToBody(lang('toolset_update_failed'))
@@ -233,7 +232,7 @@ class Rte_lib {
 
 		if ($toolset_id)
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('toolset_updated'))
 				->addToBody(lang('toolset_updated_desc'))
@@ -241,7 +240,7 @@ class Rte_lib {
 		}
 		else
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('toolset_created'))
 				->addToBody(sprintf(lang('toolset_created_desc'), $toolset['name']))

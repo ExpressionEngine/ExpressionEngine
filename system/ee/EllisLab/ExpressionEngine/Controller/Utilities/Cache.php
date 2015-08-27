@@ -49,12 +49,12 @@ class Cache extends Utilities {
 					'desc' => 'caches_to_clear_desc',
 					'fields' => array(
 						'cache_type' => array(
-							'type' => 'checkbox',
+							'type' => 'radio',
 							'choices' => array(
+								'all'  => lang('all_caches'),
 								'page' => lang('templates'),
 								'tag'  => lang('tags'),
-								'db'   => lang('database'),
-								'all'  => lang('all')
+								'db'   => lang('database')
 							),
 							'value' => set_value('cache_type', 'all'),
 							'required' => TRUE
@@ -64,8 +64,9 @@ class Cache extends Utilities {
 			)
 		);
 
+
 		ee()->load->library('form_validation');
-		ee()->form_validation->set_rules('cache_type[]', 'lang:caches_to_clear', 'required');
+		ee()->form_validation->set_rules('cache_type', 'lang:caches_to_clear', 'required|enum[all,page,tag,db]');
 
 		if (AJAX_REQUEST)
 		{
@@ -74,11 +75,7 @@ class Cache extends Utilities {
 		}
 		elseif (ee()->form_validation->run() !== FALSE)
 		{
-			// Clear each cache type checked
-			foreach (ee()->input->post('cache_type') as $type)
-			{
-				ee()->functions->clear_caching($type);
-			}
+			ee()->functions->clear_caching(ee()->input->post('cache_type'));
 
 			ee()->view->set_message('success', lang('caches_cleared'), '', TRUE);
 			ee()->functions->redirect(ee('CP/URL', 'utilities/cache'));

@@ -239,7 +239,6 @@ class Textarea_ft extends EE_Fieldtype {
 			),
 			array(
 				'title' => 'field_fmt',
-				'desc' => 'field_fmt_desc',
 				'fields' => array(
 					'field_fmt' => array(
 						'type' => 'select',
@@ -266,7 +265,6 @@ class Textarea_ft extends EE_Fieldtype {
 
 		$settings[] = array(
 			'title' => 'field_text_direction',
-			'desc' => 'field_text_direction_desc',
 			'fields' => array(
 				'field_text_direction' => array(
 					'type' => 'select',
@@ -283,7 +281,7 @@ class Textarea_ft extends EE_Fieldtype {
 		if ($this->content_type() != 'category' && $this->content_type() != 'member')
 		{
 			// Construct the rest of the settings form for Channel...
-			$settings[] = array(
+			$field_tools = array(
 				'title' => 'field_tools',
 				'desc' => 'field_tools_desc',
 				'fields' => array(
@@ -313,6 +311,17 @@ class Textarea_ft extends EE_Fieldtype {
 					)
 				)
 			);
+
+			$emoticons_installed = ee('Model')->get('Module')
+				->filter('module_name', 'Emoticon')
+				->count();
+
+			if ( ! $emoticons_installed)
+			{
+				unset($field_tools['fields']['field_show_smileys']);
+			}
+
+			$settings[] = $field_tools;
 		}
 
 		if ($this->content_type() == 'grid')

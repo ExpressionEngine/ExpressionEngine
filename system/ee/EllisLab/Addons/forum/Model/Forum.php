@@ -60,8 +60,55 @@ class Forum extends Model {
 		'forum_use_http_auth'             => 'boolString',
 	);
 
-	// protected static $_relationships = array(
-	// );
+	protected static $_relationships = array(
+		'Board' => array(
+			'type' => 'belongsTo'
+		),
+		'Category' => array(
+			'type'     => 'belongsTo',
+			'model'    => 'Forum',
+			'from_key' => 'forum_parent',
+			'to_key'   => 'forum_id'
+		),
+		'Forums' => array(
+			'type'     => 'hasMany',
+			'model'    => 'Forum',
+			'from_key' => 'forum_id',
+			'to_key'   => 'forum_parent'
+		),
+		'LastPost' => array(
+			'type'     => 'hasOne',
+			'model'    => 'Post',
+			'from_key' => 'forum_last_post_id',
+			'to_key'   => 'post_id',
+			'weak'     => TRUE
+		),
+		'LastPostAuthor' => array(
+			'type'     => 'belongsTo',
+			'from_key' => 'forum_last_post_author_id',
+			'to_key'   => 'member_id',
+			'model'    => 'ee:Member',
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'Forum',
+				'type' => 'hasMany',
+				'weak' => TRUE
+			)
+		),
+		'Moderators' => array(
+			'type'   => 'hasMany',
+			'model'  => 'Moderator',
+			'to_key' => 'mod_forum_id'
+		),
+		'Posts' => array(
+			'type'  => 'hasMany',
+			'model' => 'Post'
+		),
+		'Topics' => array(
+			'type'  => 'hasMany',
+			'model' => 'Topic'
+		),
+	);
 
 	protected static $_validation_rules = array(
 		'forum_name'                      => 'required',
@@ -80,6 +127,10 @@ class Forum extends Model {
 		'forum_notify_moderators_replies' => 'enum[y,n]',
 		'forum_enable_rss'                => 'enum[y,n]',
 		'forum_use_http_auth'             => 'enum[y,n]',
+	);
+
+	protected static $_events = array(
+		'beforeInsert',
 	);
 
 	protected $forum_id;
@@ -117,5 +168,50 @@ class Forum extends Model {
 	protected $forum_notify_emails_topics;
 	protected $forum_enable_rss;
 	protected $forum_use_http_auth;
+
+	public function getPermission($key)
+	{
+		$permissions = $this->getProperty('forum_permissions');
+
+		if ( ! isset($permissions[$key]))
+		{
+			return array();
+		}
+
+		return explode('|', $permissions[$key]);
+	}
+
+	public function setPermission($key, $value)
+	{
+		$permissions = $this->getProperty('forum_permissions');
+
+		if (is_array($value))
+		{
+			$value = implode('|', $value);
+		}
+
+		$permissions[$key] = $value;
+
+		$this->setProperty('forum_permissions', $permissions);
+	}
+
+	public function onBeforeInsert()
+	{
+		$model = $this->getFrontend();
+
+		$last_forum = $model->get('forum:Forum')
+			->fields('forum_order')
+			->filter('forum_is_cat', $this->getProperty('forum_is_cat'))
+			->order('forum_order', 'desc');
+
+		if ($this->getProperty('forum_is_cat'))
+		{
+			$last_forum->filter('forum_parent', $this->getProperty('forum_parent'));
+		}
+
+		$order = ($last_forum->first()) ? $last_forum->first()->forum_order + 1 : 1;
+
+		$this->setProperty('forum_order', $order);
+	}
 
 }

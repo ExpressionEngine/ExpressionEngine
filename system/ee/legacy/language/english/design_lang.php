@@ -44,7 +44,7 @@ $lang = array(
 
 'name' => 'Name',
 
-'name_desc' => 'Short name for this group.<br><i>No spaces. Underscores and dashes are allowed.</i>',
+'name_desc' => 'No spaces. Underscores and dashes are allowed.',
 
 'duplicate_group' => 'Duplicate existing group?',
 
@@ -110,15 +110,11 @@ $lang = array(
 
 'snippet_name' => 'Name',
 
-'snippet_name_desc' => 'Short name for this partial.',
-
 'snippet_contents' => 'Content',
-
-'snippet_contents_desc' => 'Content of this partial.',
 
 'enable_partial_on_all_sites' => 'Enable on all sites?',
 
-'enable_partial_on_all_sites_desc' => 'When set to <b>enable</b>, this partial will be available for use in all <abbr title="Multi-Site Manager">MSM</abbr> sites.',
+'enable_partial_on_all_sites_desc' => 'When set to <b>enable</b>, this partial will be available for use in all sites.',
 
 'create_template_partial_success' => 'Template Partial Created',
 
@@ -139,10 +135,6 @@ $lang = array(
 'error_no_template_group' => 'The Template Group <b>%s</b> does not exist.',
 
 'error_no_template' => 'No such Template exists.',
-
-'error_no_snippet' => 'The Template Partial <b>%s</b> does not exist.',
-
-'error_no_global_variable' => 'The Template Variable <b>%s</b> does not exist.',
 
 'template_name_taken' => 'The template name you submitted is already taken',
 
@@ -192,25 +184,17 @@ $lang = array(
 
 'variable_name' => 'Name',
 
-'variable_name_desc' => 'Short name for this variable.',
-
 'variable_data' => 'Content',
-
-'variable_data_desc' => 'Content of this variable.',
 
 'enable_template_variable_on_all_sites' => 'Enable on all sites?',
 
-'enable_template_variable_on_all_sites_desc' => 'When set to <b>enable</b>, this variable will be available for use in all <abbr title="Multi-Site Manager">MSM</abbr> sites.',
+'enable_template_variable_on_all_sites_desc' => 'When set to <b>enable</b>, this variable will be available for use in all sites.',
 
 'template_variables_removed_desc' => 'The following template variables were removed',
 
 'create_template' => 'Create Template',
 
-'template_name_desc' => 'Short name for this template.<br><i>No spaces. Underscores and dashes are allowed.</i>',
-
 'template_type' => 'Type',
-
-'template_type_desc' => 'Choose a template type.',
 
 'duplicate_existing_template' => 'Duplicate existing template?',
 
@@ -218,7 +202,7 @@ $lang = array(
 
 'btn_create_template' => 'Create Template',
 
-'btn_create_and_edit_template' => 'Create &amp; Edit Template',
+'btn_create_and_edit_template' => 'Save &amp; Edit Template',
 
 'create_template_success' => 'Template Created',
 
@@ -284,9 +268,7 @@ $lang = array(
 
 'require_all_segments_desc' => 'When set to <b>yes</b>, all segments must be present in the request <abbr title="Unified Resource Identifier">URI</abbr>.',
 
-'btn_update_template' => 'Update Template',
-
-'btn_update_and_finish_editing' => 'Update &amp; Finish Editing',
+'btn_update_and_finish_editing' => 'Save &amp; Finish Editing',
 
 'update_template_error' => 'Cannot Update Template',
 
@@ -339,8 +321,6 @@ $lang = array(
 'members' => 'Members',
 
 'private_messages' => 'Private Messages',
-
-'mailing_lists' => 'Mailing Lists',
 
 'forums' => 'Forums',
 

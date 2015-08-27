@@ -88,11 +88,15 @@ class Forums extends AbstractDesignController {
 				if (strpos($file, '.') !== FALSE)
 				{
 					$human = ucwords(str_replace('_', ' ', substr($file, 0, -strlen(strrchr($file, '.')))));
+					$edit_url = ee('CP/URL', 'design/forums/edit/' . $theme . '/' . $dir . '/' . $human);
 					$data[$dir][] = array(
-						(lang($human) == FALSE) ? $human : lang($human),
+						array(
+							'content' => (lang($human) == FALSE) ? $human : lang($human),
+							'href' => $edit_url
+							),
 						array('toolbar_items' => array(
 							'edit' => array(
-								'href' => ee('CP/URL', 'design/forums/edit/' . $theme . '/' . $dir . '/' . $human),
+								'href' => $edit_url,
 								'title' => lang('edit')
 							),
 						))
@@ -120,7 +124,7 @@ class Forums extends AbstractDesignController {
 
 		$vars['themes'] = form_dropdown('theme', $themes, ee('CP/URL', 'design/forums/index/' . $theme));
 
-		$this->sidebarMenu('forums');
+		$this->generateSidebar('forums');
 		ee()->view->cp_page_title = lang('template_manager');
 		ee()->view->cp_heading = lang('forum_templates');
 
@@ -159,7 +163,7 @@ class Forums extends AbstractDesignController {
 			{
 				ee()->functions->clear_caching('all');
 
-				$alert = ee('Alert')->makeInline('template-form')
+				$alert = ee('CP/Alert')->makeInline('template-form')
 					->asSuccess()
 					->withTitle(lang('update_template_success'))
 					->addToBody(sprintf(lang('update_template_success_desc'), $template_name));
@@ -176,7 +180,7 @@ class Forums extends AbstractDesignController {
 
 		if ( ! is_really_writable($path))
 		{
-			ee('Alert')->makeInline('message-warning')
+			ee('CP/Alert')->makeInline('message-warning')
 				->asWarning()
 				->cannotClose()
 				->withTitle(lang('file_not_writable'))

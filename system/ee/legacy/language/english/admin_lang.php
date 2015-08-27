@@ -62,14 +62,6 @@ $lang = array(
 //  Extensions Stuff
 // ---------------------------
 
-"mailinglist_cfg" => "Mailing List Preferences",
-
-"mailinglist_notify" => "Enable recipient list for notification of new mailing list sign-ups",
-
-"mailinglist_enabled" => "Mailing List is Enabled",
-
-"mailinglist_notify_emails" => "Email Address of Notification Recipient(s) ",
-
 "censor_replacement" => "Censoring Replacement Word",
 
 "censor_replacement_info" => "If left blank censored words will be replaced with: #",
@@ -866,8 +858,6 @@ $lang = array(
 
 "word_wrap" => "Enable Word-wrapping by Default?",
 
-"cp_theme" => "Default Control Panel Theme",
-
 "template_cfg" => "Template Preferences",
 
 "censoring_cfg" => "Word Censoring",
@@ -1146,10 +1136,6 @@ $lang = array(
 "no_additional_info" => "No additional information is available for this plugin",
 
 'update_and_return' => "Update and Finished",
-
-'template_debugging' => "Display Template Debugging?",
-
-"template_debugging_explanation" => "If enabled, Super Admins will see a list of details concerning the processing of the page.  Useful for debugging.",
 
 "view_throttle_log" => "View Throttle Log",
 

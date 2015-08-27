@@ -2,6 +2,8 @@
 
 $lang = array(
 
+"member_manager" => "Member Manager",
+
 "register_member" => "Register a New Member",
 
 "view_members" => "View Members",
@@ -12,7 +14,7 @@ $lang = array(
 
 "member_updated_desc" => "Member has been saved successfully.",
 
-"member_group_updated\w" => "Member Group saved",
+"member_group_updated" => "Member Group saved",
 
 "member_group_updated_desc" => "Member Group has been saved successfully.",
 
@@ -94,9 +96,9 @@ $lang = array(
 
 "include_in_authorlist" => "Include Members in PUBLISH page multi-author list?",
 
-"field_description" => "Field Description",
+"field_description" => "Instructions",
 
-"field_description_info" => "This field can be used to provide instructions or additional information.",
+"field_description_info" => "Field instructions that appear in the member form.",
 
 "can_edit_categories" => "Can edit and add new categories",
 
@@ -205,17 +207,16 @@ $lang = array(
 
 "can_send_private_messages" => "Access personal messages",
 
-"can_send_private_messages_desc" => "When set to yes, users assigned to this group may send and receive personal messages.",
+"can_send_private_messages_desc" => "When set to <b>yes</b>, users assigned to this group may send and receive personal messages.",
 
 "can_attach_in_private_messages" => "Allow attachments",
 
-"can_attach_in_private_messages_desc" => "When set to yes, users assigned to this group may attach files to personal messages.",
+"can_attach_in_private_messages_desc" => "When set to <b>yes</b>, users assigned to this group may attach files to personal messages.",
 
 "fieldlabel" => "Field Label",
 
-"field_label_desc" => "Name of field that appears in the member form.",
 
-"field_short_name_desc" => "Short name for this field.<br><i>No spaces. Underscores and dashes are allowed.</i>",
+'visibility' => 'Visibility',
 
 "index" => "Main Index Page",
 
@@ -238,7 +239,7 @@ $lang = array(
 
 "exclude_from_moderation" => "Bypass moderation",
 
-"exclude_from_moderation_desc" => "When set to yes, users assigned to this group may comment without being restricted by the default comment settings.",
+"exclude_from_moderation_desc" => "When set to <b>yes</b>, users assigned to this group may comment without being restricted by the default comment settings.",
 
 "moderation_actions" => "Moderation actions",
 
@@ -292,7 +293,7 @@ $lang = array(
 
 "screen_name_desc" => "Screen Name - descending",
 
-"mbr_email_address" => "User's e-mail",
+"mbr_email_address" => "Email",
 
 "mbr_email_address_desc" => "Used for communicating with this user.",
 
@@ -306,9 +307,13 @@ $lang = array(
 
 "join_date" => "Join Date",
 
+"joined" => "Joined",
+
 "last_visit" => "Last Visit",
 
 "member_group" => "Member Group",
+
+"dates" => "Dates",
 
 "member_group_desc" => "Assign this user access permissions.",
 
@@ -351,6 +356,8 @@ $lang = array(
 "edit_member_group" => "Edit Member Group",
 
 "create_member_group" => "Create a Member Group",
+
+"copy_member_group" => "Create a New Member Group based on <b>%s</b>",
 
 "delete_member_group" => "Delete Member Group",
 
@@ -400,7 +407,7 @@ $lang = array(
 
 "user_banning" => "Ban Condition Management",
 
-"ban_preferences_updated" => "Banning Preferences Updated",
+"ban_settings_updated" => "Banned Settings Updated",
 
 "ip_address_banning" => "IP Addresses",
 
@@ -469,13 +476,13 @@ $lang = array(
 
 "can_view_profiles" => "Access public profiles",
 
-"can_view_profiles_desc" => "When set to yes, users assigned to this group may view public profiles of other members.",
+"can_view_profiles_desc" => "When set to <b>yes</b>, users assigned to this group may view public profiles of other members.",
 
-"can_edit_html_buttons" => "Can edit own HTML formatting buttons",
+"can_edit_html_buttons" => "Can edit own <abbr title=\"Hyper-Text Markup Language\">HTML</abbr> formatting buttons",
 
 'can_delete_self' => "Delete account",
 
-'can_delete_self_desc' => "When set to yes, users assigned to this group may delete their own accounts without approval",
+'can_delete_self_desc' => "When set to <b>yes</b>, users assigned to this group may delete their own accounts without approval",
 
 'mbr_delete_notify_emails' => 'Recipient(s) for delete notifications',
 
@@ -493,7 +500,7 @@ $lang = array(
 
 "can_post_comments" => "Submit comments",
 
-"can_post_comments_desc" => "When set to yes, users assigned to this group may submit comments to the website.",
+"can_post_comments_desc" => "When set to <b>yes</b>, users assigned to this group may submit comments to the website.",
 
 "comment_actions" => "Moderation actions",
 
@@ -513,7 +520,29 @@ $lang = array(
 
 "can_access_cp" => "Access control panel",
 
-"can_access_cp_desc" => "When set to yes, users assigned to this group may access the control panel.",
+"can_access_cp_desc" => "When set to <b>yes</b>, users assigned to this group may access the control panel.",
+
+'default_cp_homepage' => 'Default <abbr title="Control Panel">CP</abbr> homepage',
+
+'default_cp_homepage_desc' => 'Page of the <abbr title="Control Panel">CP</abbr> this group should see when logging in.',
+
+'cp_overview' => '<abbr title="Control Panel">CP</abbr> Overview',
+
+'edit_listing' => 'All entries edit listing',
+
+'applies_to_all_sites' => 'applies to all sites',
+
+'publish_form' => 'Publish form',
+
+'choose_channels_per_site' => 'choose channels, per site below',
+
+'no_channels' => 'No Channels',
+
+'custom_uri' => 'Custom URI &mdash; <i>e.g. members/groups</i>',
+
+"footer_helper_links" => "Access footer helper links",
+
+"footer_helper_links_desc" => "Choose which links this member group can access in the CP footer.",
 
 "can_access_content" => "Can access CONTENT section",
 
@@ -587,23 +616,23 @@ $lang = array(
 
 "can_admin_templates" => "Can administrate template groups and templates",
 
+"can_admin_templates_desc" => "When set to <b>yes</b>, users assigned to this group may manage template groups and templates.",
+
 "can_admin_design" => "Manage general design settings",
 
-"can_admin_design_desc" => "When set to yes, users assigned to this group may manage content and design settings.",
+"can_admin_design_desc" => "When set to <b>yes</b>, users assigned to this group may manage content and design settings.",
 
 "can_admin_modules" => "Install or remove add-ons",
 
-"can_admin_modules_desc" => "When set to yes, users assigned to this group may install and remove add-ons.",
+"can_admin_modules_desc" => "When set to <b>yes</b>, users assigned to this group may install and remove add-ons.",
 
 "cp_email_privs" => "Control Panel Email Privileges",
 
-"can_send_email_desc" => "When set to yes, users assigned to this group may send e-mails to other members via the system.",
+"can_send_email_desc" => "When set to <b>yes</b>, users assigned to this group may send emails to other members via the system.",
 
-"can_send_email" => "E-mail other members",
+"can_send_email" => "Email other members",
 
 "can_email_member_groups" => "Can send email to Member Groups",
-
-"can_email_mailinglist" => "Can send email to Mailing List",
 
 "can_send_cached_email" => "Can view/send cached email",
 
@@ -611,7 +640,7 @@ $lang = array(
 
 "can_search" => "Access search utility",
 
-"can_search_desc" => "When set to yes, users assigned to this group may use the search functionality of the website.",
+"can_search_desc" => "When set to <b>yes</b>, users assigned to this group may use the search functionality of the website.",
 
 "search_flood_control" => "Search limit (in seconds)",
 
@@ -677,7 +706,9 @@ $lang = array(
 
 "addon_access" => "Add-On Access Permissions",
 
-"addon_access_desc" => "",
+"addons_access" => "Allowed add-on access",
+
+"addons_access_desc" => "Users can access all of the selected add-ons.",
 
 "tools" => "Tools",
 
@@ -685,11 +716,9 @@ $lang = array(
 
 "access_tools_desc" => "Users can access all of the selected tools sections.",
 
-"category_actions",
-"Categories",
+"category_actions" => "Categories",
 
-"category_actions_desc",
-"Users may perform all selected actions.",
+"category_actions_desc" => "Users may perform all selected actions.",
 
 //----------------------------
 // Member fields
@@ -711,11 +740,13 @@ $lang = array(
 
 "create_new_profile_field" => "Create a New Member Field",
 
-"is_field_public" => "Is this field visible in public profiles?",
+"is_field_public" => "Show in profile?",
 
-"is_field_public_cont" => "If you choose no, it will only be visible to admins",
+"is_field_public_cont" => "When set to <b>yes</b>, this field will be shown in public profiles.",
 
-"is_field_reg" => "Is field visible in registration page?",
+"is_field_reg" => "Show in registration?",
+
+"is_field_reg_cont" => 'When set to <b>yes</b>, this field will be shown in registration forms.',
 
 "is_field_cp_reg" => "Is field visible in the control panel's administrative registration page?",
 
@@ -787,7 +818,7 @@ $lang = array(
 
 'can_send_bulletins' => "Access bulletins",
 
-'can_send_bulletins_desc' => "When set to yes, users assigned to this group may send and receive bulletins.",
+'can_send_bulletins_desc' => "When set to <b>yes</b>, users assigned to this group may send and receive bulletins.",
 
 'group_description' => "Description",
 

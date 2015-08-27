@@ -44,7 +44,6 @@ class Auth extends Profile {
 			array(
 				array(
 					'title' => 'username',
-					'desc' => 'username_description',
 					'fields' => array(
 						'username' => array(
 							'type' => 'text',
@@ -55,7 +54,6 @@ class Auth extends Profile {
 				),
 				array(
 					'title' => 'screen_name',
-					'desc' => 'screen_name_description',
 					'fields' => array(
 						'screen_name' => array(
 							'type' => 'text',
@@ -66,7 +64,7 @@ class Auth extends Profile {
 				)
 			),
 			'change_password' => array(
-				ee('Alert')->makeInline('permissions-warn')
+				ee('CP/Alert')->makeInline('permissions-warn')
 					->asWarning()
 					->addToBody(lang('password_change_exp'))
 					->cannotClose()
@@ -143,13 +141,21 @@ class Auth extends Profile {
 		{
 			if ($this->update())
 			{
-				ee()->view->set_message('success', lang('member_updated'), lang('member_updated_desc'), TRUE);
+				ee('CP/Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('member_updated'))
+					->addToBody(lang('member_updated_desc'))
+					->defer();
 				ee()->functions->redirect($base_url);
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('settings_save_erorr'))
+				->addToBody(lang('settings_save_error_desc'))
+				->now();
 		}
 
 		ee()->view->base_url = $this->base_url;
@@ -275,8 +281,12 @@ class Auth extends Profile {
 		// Write log file
 		$this->logger->log_action($this->VAL->log_msg);
 
-		ee()->view->set_message('success', lang('member_updated'), lang('member_updated_desc'), TRUE);
-		$this->functions->redirect($this->base_url);
+		ee('CP/Alert')->makeInline('shared-form')
+			->asSuccess()
+			->withTitle(lang('member_updated'))
+			->addToBody(lang('member_updated_desc'))
+			->defer();
+		ee()->functions->redirect($this->base_url);
 	}
 
 	/**

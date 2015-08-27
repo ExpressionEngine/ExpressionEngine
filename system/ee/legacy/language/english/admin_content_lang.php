@@ -23,7 +23,6 @@ $lang = array(
 'create_field_group_warning2' => 'It\'s best practice to create any <a href="%s">custom fields</a>, first.',
 
 'create_field_group' => 'Create Field Group',
-'custom_fields_desc' => '',
 
 'custom_fields_not_found' => 'Zero <b>custom fields</b> found',
 
@@ -61,8 +60,6 @@ $lang = array(
 
 'label_desc' => 'Name of field that appears in the publish form.',
 
-'short_name_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
-
 'instructions' => 'Instructions',
 
 'instructions_desc' => 'Field instructions that appear in the publish form.',
@@ -98,7 +95,6 @@ $lang = array(
 'field_content_text_desc' => 'Type of content this field can contain.',
 
 'field_tools' => 'Field tools',
-'field_tools_desc' => '',
 
 'show_smileys' => 'Emoji <i>&mdash; Image based conveyances of emotion.</i>',
 
@@ -254,8 +250,6 @@ $lang = array(
 
 'use_a_theme' => 'Use one of the default themes',
 
-'myaccount_cp_theme' => 'Control Panel Theme',
-
 'duplicate_group' => 'Duplicate an existing template group',
 
 'template_group_name' => 'New Template Group Name',
@@ -265,8 +259,6 @@ $lang = array(
 'new_group_instructions' => 'Field is required if you are creating a new group',
 
 'publish_page_customization' => 'Publish Page Customization',
-
-'show_button_cluster' => 'Display Formatting Buttons',
 
 'paths' => 'Path Settings',
 
@@ -432,33 +424,35 @@ $lang = array(
 
 'none' => 'None',
 
-'define_html_buttons' => 'HTML Formatting Button Definitions',
+'html_button' => 'HTML Button',
 
-'create_html_button' => 'Create HTML Button',
+'html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Buttons',
 
-'edit_html_button' => 'Edit HTML Button',
+'define_html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Formatting Button Definitions',
 
-'save_html_button' => 'Save HTML Button',
+'create_html_button' => 'Create <abbr title="Hyper-Text Markup Language">HTML</abbr> Button',
 
-'no_buttons' => 'No HTML buttons defined.',
+'edit_html_button' => 'Edit <abbr title="Hyper-Text Markup Language">HTML</abbr> Button',
+
+'save_html_button' => 'Save <abbr title="Hyper-Text Markup Language">HTML</abbr> Button',
+
+'no_buttons' => 'No <abbr title="Hyper-Text Markup Language">HTML</abbr> buttons defined.',
 
 'htmlbutton_delete_instructions' => 'To delete an item submit the form with the tag name blank',
 
 'add_preset_button' => 'Add Preset Button:',
 
-'tag_name' => 'Tag Name',
-
-'tag_name_desc' => 'Full descriptive name of this button.',
+'tag_name' => 'Name',
 
 'tag_open' => 'Opening Tag',
 
-'tag_open_desc' => 'Opening output of this button. i.e. <b>',
+'tag_open_desc' => 'Opening output of this button. i.e. <b><code>&lt;b&gt;</code></b>',
 
 'tag_close' => 'Closing Tag',
 
-'tag_close_desc' => 'Closing output of this button. i.e. </b>',
+'tag_close_desc' => 'Closing output of this button. i.e. <b><code>&lt;/b&gt;</code></b>',
 
-'accesskey' => 'Tag shortcut',
+'accesskey' => 'Shortcut',
 
 'accesskey_desc' => 'Keyboard shortcut to initiate this button.',
 
@@ -631,7 +625,7 @@ $lang = array(
 
 'custom_field_created' => 'Custom Field Created',
 
-'no_field_groups' => 'There are no custom fields in this group',
+'no_field_groups' => 'No field groups found',
 
 'delete_field' => 'Delete Field',
 
@@ -854,19 +848,13 @@ $lang = array(
 
 'field_max_length' => 'Maximum characters',
 
-'field_max_length_desc' => '',
-
 'field_fmt' => 'Text formatting',
-
-'field_fmt_desc' => '',
 
 'field_show_fmt' => 'Allow override?',
 
 'field_show_fmt_desc' => 'When set to <b>yes</b>, authors can override the default text formatting for this field from the publish form.',
 
 'field_text_direction' => 'Text direction',
-
-'field_text_direction_desc' => '',
 
 'field_text_direction_ltr' => 'Left to right',
 

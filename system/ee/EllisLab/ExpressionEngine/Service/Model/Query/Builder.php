@@ -202,7 +202,7 @@ class Builder {
 	/**
 	 *
 	 */
-	protected function addFilter($property, $operator, $value, $predicate)
+	protected function addFilter($property, $operator, $value, $connective)
 	{
 		if ( ! isset($value))
 		{
@@ -210,7 +210,7 @@ class Builder {
 			$operator = '==';
 		}
 
-		$this->filters[] = array($property, $operator, $value, $predicate);
+		$this->filters[] = array($property, $operator, $value, $connective);
 	}
 
 	/**
@@ -244,11 +244,11 @@ class Builder {
 	public function endFilterGroup()
 	{
 		$filters = $this->filters;
-		$predicate = array_pop($this->filter_stack);
+		$connective = array_pop($this->filter_stack);
 		$this->filters = array_pop($this->filter_stack);
 
 		$this->filters[] = array(
-			$predicate,
+			$connective,
 			$filters
 		);
 
@@ -307,6 +307,11 @@ class Builder {
 	{
 		foreach ($relateds as $parent => $children)
 		{
+			if ($children instanceOf \Closure)
+			{
+				$children = array();
+			}
+
 			if ( ! is_array($children))
 			{
 				$children = array($children => array());

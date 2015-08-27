@@ -49,7 +49,6 @@ class SystemPreferences extends CustomType {
 	protected $enable_sql_caching;
 	protected $force_query_string;
 	protected $show_profiler;
-	protected $template_debugging;
 	protected $include_seconds;
 	protected $cookie_domain;
 	protected $cookie_path;
@@ -88,7 +87,6 @@ class SystemPreferences extends CustomType {
 	protected $word_wrap;
 	protected $email_console_timelock;
 	protected $log_email_console_msgs;
-	protected $cp_theme;
 	protected $log_search_terms;
 	protected $deny_duplicate_data;
 	protected $redirect_submitted_links;
@@ -118,6 +116,7 @@ class SystemPreferences extends CustomType {
 	protected $max_logged_searches;
 	protected $rte_enabled;
 	protected $rte_default_toolset_id;
+	protected $forum_trigger;
 
 	/**
 	* Called when the column is fetched from db

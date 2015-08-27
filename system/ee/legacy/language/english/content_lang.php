@@ -13,6 +13,8 @@ $lang = array(
 'filter_by_status' => 'status',
 'custom_date' => 'custom date',
 'custom_limit' => 'custom limit',
+'clear_filters' => 'Clear filters',
+'all_entries' => 'All %d entries',
 
 'column_entry_id' => 'ID#',
 'column_title' => 'Title',
@@ -21,6 +23,8 @@ $lang = array(
 'column_status' => 'Status',
 
 'manage_categories' => 'Manage Categories',
+
+'entry_manager' => 'Entry Manager',
 
 'btn_search_entries' => 'Search Entries',
 
@@ -82,9 +86,8 @@ $lang = array(
 
 'edit_comment_error_desc' => 'We were unable to edit the comment, please review and fix errors below.',
 
-'btn_edit_entry' => 'Edit Entry',
-
 'btn_publish' => 'Publish',
+'btn_save_revision' => 'Save Revision',
 
 'edit_entry_with_title' => 'Edit Entry: %s',
 
@@ -172,9 +175,13 @@ $lang = array(
 
 'revisions' => 'Revisions',
 
+'rev_id' => '#',
+
 'rev_date' => 'Date',
 
 'rev_author' => 'Author',
+
+'current' => 'Current',
 
 'revision' => 'Revision',
 
@@ -182,7 +189,8 @@ $lang = array(
 
 'live_view' => 'Click to View',
 
-'versioning_enabled' => 'Enable Versioning for This Entry',
+'versioning_enabled' => 'Enable entry revisions?',
+'versioning_enabled_desc' => 'When set to <b>yes</b>, you can store up to %d revisions of this entry.',
 
 'revision_warning' => 'You are about to load a previous revision.  Any un-saved content currently in this page will be lost.',
 
@@ -192,11 +200,12 @@ $lang = array(
 
 'version_preview' => 'Revision Number %s',
 
-'no_revisions_exist' => 'There are currently no revisions for this entry.',
+'no_revisions' => 'There are currently no revisions for this entry.',
 
 'save_revision' => 'Save Revision',
 
 'revision_saved' => 'Revision Saved',
+'revision_saved_desc' => 'Revision %d of <b>%s</b> has been saved.',
 
 'multi_entries_updated' => 'Entrie(s) have been Updated',
 

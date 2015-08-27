@@ -65,14 +65,7 @@ class Wizard extends CI_Controller {
 		'member',
 		'stats',
 		'rte',
-		'filepicker',
-
-		// TODO: Remove lines below
-		// 'email',
-		// 'emoticon',
-		// 'jquery',
-		// 'search',
-		// 'rss'
+		'filepicker'
 	);
 
 	public $theme_required_modules = array();
@@ -81,8 +74,8 @@ class Wizard extends CI_Controller {
 	// party folder)
 	public $native_modules = array('blacklist', 'channel', 'comment', 'commerce',
 		'email', 'emoticon', 'file', 'forum', 'gallery', 'ip_to_nation',
-		'jquery', 'mailinglist', 'member', 'metaweblog_api', 'moblog', 'pages',
-		'query', 'rss', 'rte', 'search', 'simple_commerce', 'stats', 'wiki', 'filepicker');
+		'jquery', 'member', 'metaweblog_api', 'moblog', 'pages', 'query', 'rss',
+		'rte', 'search', 'simple_commerce', 'stats', 'wiki', 'filepicker');
 
 	// Third Party Modules may send error messages if something goes wrong.
 	public $module_install_errors = array(); // array that collects all error messages
@@ -114,7 +107,7 @@ class Wizard extends CI_Controller {
 		'webmaster_email'       => '',
 		'deft_lang'             => 'english',
 		'theme'                 => '01',
-		'default_site_timezone' => 'UTC',
+		'default_site_timezone' => '',
 		'redirect_method'       => 'redirect',
 		'upload_folder'         => 'uploads/',
 		'image_path'            => '',
@@ -175,6 +168,7 @@ class Wizard extends CI_Controller {
 		$this->output->enable_profiler(FALSE);
 
 		$this->userdata['app_version'] = $this->version;
+		$this->userdata['default_site_timezone'] = date_default_timezone_get();
 
  		// Load the helpers we intend to use
  		$this->load->helper(array('form', 'url', 'html', 'directory', 'file', 'email', 'security', 'date', 'string'));
@@ -400,7 +394,7 @@ class Wizard extends CI_Controller {
 		}
 
 		// Can we connect?
-		if ( ! $this->db_connect($db))
+		if ($this->db_connect($db) !== TRUE)
 		{
 			$this->set_output('error', array('error' => lang('database_no_config')));
 			return FALSE;
@@ -517,8 +511,92 @@ class Wizard extends CI_Controller {
 		$this->subtitle = lang('required_fields');
 
 		// Display the form and pass the userdata array to it
-		$this->title = sprintf(lang('install_title'), $this->version);
+		$this->title = sprintf(lang('install_title'), $this->version).'<br />'.lang('install_note');
 		$this->set_output('install_form', array_merge($vars, $this->userdata));
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Checks if the database host is valid
+	 *
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function valid_db_host()
+	{
+		return $this->db_validation(2002, function () {
+			ee()->form_validation->set_message(
+				'valid_db_host',
+				lang('database_invalid_host')
+			);
+		});
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Check if the database given is valid
+	 *
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	public function valid_db_database()
+	{
+		return $this->db_validation(1049, function() {
+			ee()->form_validation->set_message(
+				'valid_db_database',
+				lang('database_invalid_database')
+			);
+		});
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Given a MySQL error number, will check to see if that error was thrown
+	 * and call the given callable if it is
+	 *
+	 * @param int $error_number The MySQL error number
+	 * @param Callable $callable The function to call in case the error was thrown
+	 * @return boolean TRUE if successful, FALSE otherwise
+	 */
+	private function db_validation($error_number, Closure $callable)
+	{
+		if (! ee()->input->post('db_hostname')
+			|| ! ee()->input->post('db_name')
+			|| ! ee()->input->post('db_username'))
+		{
+			$callable();
+			return FALSE;
+		}
+
+		if ( ! isset($this->db_connect_attempt))
+		{
+			$this->db_connect_attempt = $this->db_connect(array(
+				'hostname' => ee()->input->post('db_hostname'),
+				'database' => ee()->input->post('db_name'),
+				'username' => ee()->input->post('db_username'),
+				'password' => ee()->input->post('db_password'),
+				'dbprefix' => $this->getDbPrefix()
+			));
+		}
+
+		if ($this->db_connect_attempt === $error_number)
+		{
+			$callable();
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Abstraction to retrieve the default or user over-ridden database prefix
+	 */
+	private function getDbPrefix()
+	{
+		return ($this->userdata['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $this->userdata['db_prefix']);
 	}
 
 	// --------------------------------------------------------------------
@@ -581,12 +659,12 @@ class Wizard extends CI_Controller {
 			array(
 				'field' => 'db_hostname',
 				'label' => 'lang:db_hostname',
-				'rules' => 'required'
+				'rules' => 'required|callback_valid_db_host'
 			),
 			array(
 				'field' => 'db_name',
 				'label' => 'lang:db_name',
-				'rules' => 'required'
+				'rules' => 'required|callback_valid_db_database'
 			),
 			array(
 				'field' => 'db_username',
@@ -642,7 +720,7 @@ class Wizard extends CI_Controller {
 			'database' => $this->userdata['db_name'],
 			'dbdriver' => $this->userdata['dbdriver'],
 			'pconnect' => ($this->userdata['db_conntype'] == 1) ? TRUE : FALSE,
-			'dbprefix' => ($this->userdata['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $this->userdata['db_prefix']),
+			'dbprefix' => $this->getDbPrefix(),
 			'swap_pre' => 'exp_',
 			'db_debug' => TRUE, // We show our own errors
 			'cache_on' => FALSE,
@@ -651,7 +729,12 @@ class Wizard extends CI_Controller {
 			'dbcollat' => 'utf8_general_ci'
 		);
 
-		if ( ! $this->db_connect($db))
+		$this->db_connect_attempt = $this->db_connect($db);
+		if ($this->db_connect_attempt === 1045)
+		{
+			$errors[] = lang('database_invalid_user');
+		}
+		else if ($this->db_connect_attempt === FALSE)
 		{
 			$errors[] = lang('database_no_connect');
 		}
@@ -856,14 +939,25 @@ class Wizard extends CI_Controller {
 	 */
 	private function show_success($type = 'update', $template_variables = array())
 	{
-		// Check to see if there are any errors, if not, bypass this screen
-		if (empty($template_variables['error_messages']))
+		// Try to rename automatically
+		if ($this->rename_installer())
 		{
-			if ($this->rename_installer())
-			{
-				ee()->load->helper('url');
-				redirect($this->userdata['cp_url'].'?/cp/login&return=&after='.$type);
-			}
+			ee()->load->helper('url');
+			redirect($this->userdata['cp_url'].'?/cp/login&return=&after='.$type);
+		}
+
+		// Are we back here from a input?
+		if (ee()->input->get('login'))
+		{
+			redirect($this->userdata['cp_url'].'?/cp/login&return=&after='.$type);
+		}
+		else if (ee()->input->get('download'))
+		{
+			ee()->load->helper('download');
+			force_download(
+				'mailing_list.zip',
+				file_get_contents(SYSPATH.'user/cache/mailing_list.zip')
+			);
 		}
 
 		// Make sure the title and subtitle are correct, current_step should be
@@ -876,8 +970,11 @@ class Wizard extends CI_Controller {
 		$template_variables['success_note'] = sprintf(lang($type.'_success_note'), $this->version);
 
 		// Send them to their CP via the form
-		$template_variables['action'] = $this->userdata['cp_url'];
+		$template_variables['action'] = $this->set_qstr('show_success');
 		$template_variables['method'] = 'get';
+
+		// Only show download button if mailing list export exists
+		$template_variables['mailing_list'] = (file_exists(SYSPATH.'/user/cache/mailing_list.zip'));
 
 		$this->set_output('success', $template_variables);
 	}
@@ -1241,9 +1338,10 @@ class Wizard extends CI_Controller {
 				return $this->db_connect($db);
 			}
 
-			return FALSE;
+			return ($e->getCode()) ?: FALSE;
 		}
 
+		ee()->remove('db');
 		ee()->set('db', $db_object);
 
 		return TRUE;
@@ -1319,7 +1417,7 @@ class Wizard extends CI_Controller {
 			'image_path'        => $this->image_path,
 
 			// TODO-WB: Change src to compressed before launch
-			'javascript_path'   => $this->set_path('themes/ee/javascript/src/'),
+			'javascript_path'   => $this->set_path('themes/ee/asset/javascript/src/'),
 
 			'version'           => $this->version,
 			'version_major'     => $version[0],
@@ -1712,7 +1810,7 @@ class Wizard extends CI_Controller {
 			'db_database'               => $this->userdata['db_name'],
 			'db_dbdriver'               => $this->userdata['dbdriver'],
 			'db_pconnect'               => ($this->userdata['db_conntype'] == 1) ? TRUE : FALSE,
-			'db_dbprefix'               => ($this->userdata['db_prefix'] == '') ? 'exp_' : preg_replace("#([^_])/*$#", "\\1_", $this->userdata['db_prefix']),
+			'db_dbprefix'               => $this->getDbPrefix(),
 			'app_version'               => $this->userdata['app_version'],
 			'debug'                     => '1',
 			'cp_url'                    => $this->userdata['cp_url'],
@@ -1725,7 +1823,7 @@ class Wizard extends CI_Controller {
 			'webmaster_name'            => '',
 			'channel_nomenclature'      => 'channel',
 			'max_caches'                => '150',
-			'cache_driver'					=> 'file',
+			'cache_driver'              => 'file',
 			'captcha_url'               => $captcha_url,
 			'captcha_path'              => $this->userdata['captcha_path'],
 			'captcha_font'              => 'y',
@@ -1735,7 +1833,6 @@ class Wizard extends CI_Controller {
 			'enable_sql_caching'        => 'n',
 			'force_query_string'        => 'n',
 			'show_profiler'             => 'n',
-			'template_debugging'        => 'n',
 			'include_seconds'           => 'n',
 			'cookie_domain'             => '',
 			'cookie_path'               => '',
@@ -1777,7 +1874,6 @@ class Wizard extends CI_Controller {
 			'word_wrap'                 => 'y',
 			'email_console_timelock'    => '5',
 			'log_email_console_msgs'    => 'y',
-			'cp_theme'                  => 'default',
 			'log_search_terms'          => 'y',
 			'un_min_len'                => '4',
 			'pw_min_len'                => '5',
@@ -1863,9 +1959,6 @@ class Wizard extends CI_Controller {
 			'banishment_message'        => 'You have exceeded the allowed page load frequency.',
 			'enable_search_log'         => 'y',
 			'max_logged_searches'       => '500',
-			'mailinglist_enabled'       => 'y',
-			'mailinglist_notify'        => 'n',
-			'mailinglist_notify_emails' => '',
 			'memberlist_order_by'       => "total_posts",
 			'memberlist_sort_order'     => "desc",
 			'memberlist_row_limit'      => "20",
@@ -1891,7 +1984,6 @@ class Wizard extends CI_Controller {
 			'enable_sql_caching',
 			'force_query_string',
 			'show_profiler',
-			'template_debugging',
 			'include_seconds',
 			'cookie_domain',
 			'cookie_path',
@@ -1929,7 +2021,6 @@ class Wizard extends CI_Controller {
 			'word_wrap',
 			'email_console_timelock',
 			'log_email_console_msgs',
-			'cp_theme',
 			'log_search_terms',
 			'deny_duplicate_data',
 			'redirect_submitted_links',
@@ -1970,19 +2061,6 @@ class Wizard extends CI_Controller {
 
 		ee()->db->where('site_id', 1);
 		ee()->db->update('sites', array('site_system_preferences' => base64_encode(serialize($site_prefs))));
-
-		// Default Mailinglists Prefs
-		$mailinglist_default = array('mailinglist_enabled', 'mailinglist_notify', 'mailinglist_notify_emails');
-
-		$site_prefs = array();
-
-		foreach($mailinglist_default as $value)
-		{
-			$site_prefs[$value] = $config[$value];
-		}
-
-		ee()->db->where('site_id', 1);
-		ee()->db->update('sites', array('site_mailinglist_preferences' => base64_encode(serialize($site_prefs))));
 
 		// Default Members Prefs
 		$member_default = array(
@@ -2094,7 +2172,7 @@ class Wizard extends CI_Controller {
 		ee()->db->update('sites', array('site_channel_preferences' => base64_encode(serialize($site_prefs))));
 
 		// Remove Site Prefs from Config
-		foreach(array_merge($admin_default, $mailinglist_default, $member_default, $template_default, $channel_default) as $value)
+		foreach(array_merge($admin_default, $member_default, $template_default, $channel_default) as $value)
 		{
 			unset($config[$value]);
 		}
@@ -2137,6 +2215,10 @@ class Wizard extends CI_Controller {
 		{
 			$config['index_page'] = $config['site_index'];
 		}
+
+		// BUILD_REMOVE_CJS_START
+		$config['use_compressed_js'] = 'n';
+		// BUILD_REMOVE_CJS_END
 
 		// Fetch the config template
 		$data = read_file(APPPATH.'config/config_tmpl.php');
@@ -2277,11 +2359,36 @@ class Wizard extends CI_Controller {
 	// --------------------------------------------------------------------
 
 	/**
+	 * Checks to see if we're allowed to automatically rename the installer dir
+	 *
+	 * @return bool TRUE if we can rename, FALSE if we can't
+	 */
+	public function canRenameAutomatically()
+	{
+		if (file_exists(SYSPATH.'user/cache/mailing_list.zip'))
+		{
+			return FALSE;
+		}
+
+		if ( ! empty($template_variables['error_messages']))
+		{
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+	/**
 	 * Rename the installer
 	 * @return void
 	 */
 	private function rename_installer()
 	{
+		if (TRUE || ! $this->canRenameAutomatically())
+		{
+			return FALSE;
+		}
+
 		// Generate the new path by suffixing a dotless version number
 		$new_path = str_replace(
 			'installer',

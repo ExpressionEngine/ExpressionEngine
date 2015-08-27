@@ -79,7 +79,7 @@ class Search extends Logs {
 
 		if ($logs->count() > 10)
 		{
-			$filters = ee('Filter')
+			$filters = ee('CP/Filter')
 				->add('Username')
 				->add('Site')
 				->add('Date')
@@ -122,6 +122,12 @@ class Search extends Logs {
 		{
 			ee()->view->cp_heading = sprintf(lang('search_results_heading'), $count, ee()->view->search_value);
 		}
+
+		ee()->view->header = array(
+			'title' => lang('system_logs'),
+			'form_url' => $this->base_url->compile(),
+			'search_button_value' => lang('search_logs_button')
+		);
 
 		$logs = $logs->order('search_date', 'desc')
 			->limit($this->params['perpage'])

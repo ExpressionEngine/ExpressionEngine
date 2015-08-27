@@ -54,14 +54,21 @@ class Updater {
 				'_centralize_captcha_settings',
 				'_update_members_table',
 				'_update_member_fields_table',
+				'_update_member_groups_table',
 				'_update_html_buttons',
 				'_update_files_table',
 				'_update_upload_prefs_table',
 				'_update_upload_directories',
 				'_drop_field_formatting_table',
 				'_update_sites_table',
-				'_remove_referrer_config_items',
+				'_remove_referrer_module_artifacts',
 				'_update_channels_table',
+				'_update_channel_titles_table',
+				'_export_mailing_lists',
+				'_remove_mailing_list_module_artifacts',
+				'_remove_cp_theme_config',
+				'_remove_show_button_cluster_column',
+				'_add_cp_homepage_columns'
 			)
 		);
 
@@ -89,7 +96,11 @@ class Updater {
 		{
 			require $db_config_path;
 			ee()->config->_update_dbconfig($db[$active_group]);
-			unlink(SYSPATH.'/user/config/database.php');
+
+			if (is_writeable($db_config_path))
+			{
+				unlink($db_config_path);
+			}
 		}
 		else if (($db_config = ee()->config->item('database'))
 			&& empty($db_config))
@@ -716,15 +727,36 @@ class Updater {
 	 */
 	private function _update_member_groups_table()
 	{
-		ee()->smartforge->modify_column('member_groups', array(
-			'group_id' => array(
-				'type'			 => 'int',
-				'constraint'     => 4,
-				'null'			 => FALSE,
-				'unsigned'		 => TRUE,
-				'auto_increment' => TRUE
+		ee()->smartforge->add_column('member_groups', array(
+			'can_access_footer_report_bug' => array(
+				'type'       => 'char',
+				'constraint' => 1,
+				'default'    => 'n',
+				'null'       => FALSE
+			),
+			'can_access_footer_new_ticket' => array(
+				'type'       => 'char',
+				'constraint' => 1,
+				'default'    => 'n',
+				'null'       => FALSE
+			),
+			'can_access_footer_user_guide' => array(
+				'type'       => 'char',
+				'constraint' => 1,
+				'default'    => 'n',
+				'null'       => FALSE
 			)
 		));
+
+		ee()->db->update(
+			'member_groups',
+			array(
+				'can_access_footer_report_bug' => 'y',
+				'can_access_footer_new_ticket' => 'y',
+				'can_access_footer_user_guide' => 'y'
+			),
+			array('can_access_cp' => 'y')
+		);
 	}
 
 	/**
@@ -862,7 +894,22 @@ class Updater {
 				array(
 					'module_id' => array(
 						'type'    => 'INT(4)',
-						'null'    => TRUE,
+						'null'    => FALSE,
+						'default' => 0
+					)
+				)
+			);
+		}
+
+		if ( ! ee()->db->field_exists('default_modal_view', 'upload_prefs'))
+		{
+			ee()->smartforge->add_column(
+				'upload_prefs',
+				array(
+					'default_modal_view' => array(
+						'type'    => 'VARCHAR(5)',
+						'null'    => FALSE,
+						'default' => 'list',
 					)
 				)
 			);
@@ -1044,13 +1091,100 @@ class Updater {
 
 	/**
 	 * The Referrer module has been removed, so we need to remove settings
-	 * related to the module from site config
+	 * related to the module from site config and the referrers table
 	 */
-	private function _remove_referrer_config_items()
+	private function _remove_referrer_module_artifacts()
 	{
 		$msm_config = new MSM_Config();
 		$msm_config->remove_config_item(array('log_referrers', 'max_referrers'));
+
+		ee()->smartforge->drop_table('referrers');
 	}
+
+	// -------------------------------------------------------------------------
+
+	private function _export_mailing_lists()
+	{
+		// Missing the mailing list tables? Get out of here.
+		if ( ! ee()->db->table_exists('mailing_list')
+			|| ! ee()->db->table_exists('mailing_lists'))
+		{
+			return;
+		}
+
+		ee()->load->library('zip');
+		$subscribers = array();
+		$subscribers_query = ee()->db->select('list_id, email')
+			->get('mailing_list');
+
+		// No subscribers at all? Move on.
+		if ($subscribers_query->num_rows() <= 0)
+		{
+			return;
+		}
+
+		foreach ($subscribers_query->result() as $subscriber)
+		{
+			$subscribers[$subscriber->list_id][] = $subscriber->email;
+		}
+
+		$mailing_lists = ee()->db->select('list_id, list_name, list_title')
+			->get('mailing_lists');
+
+		foreach ($mailing_lists->result() as $mailing_list)
+		{
+			// Empty mailing list? No need to export it.
+			if (empty($subscribers[$mailing_list->list_id]))
+			{
+				continue;
+			}
+
+			$csv = ee('CSV');
+			foreach ($subscribers[$mailing_list->list_id] as $subscriber)
+			{
+				$csv->addRow(array('email' => $subscriber));
+			}
+			ee()->zip->add_data(
+				'mailing_list-'.$mailing_list->list_name.'.csv',
+				(string) $csv
+			);
+		}
+
+		ee()->zip->archive(SYSPATH.'user/cache/mailing_list.zip');
+	}
+
+	// -------------------------------------------------------------------------
+
+	/**
+	 * Cleans up database for mailing list module remnants
+	 */
+	private function _remove_mailing_list_module_artifacts()
+	{
+		ee()->smartforge->drop_table('mailing_list');
+		ee()->smartforge->drop_table('mailing_lists');
+		ee()->smartforge->drop_table('mailing_list_queue');
+		ee()->smartforge->drop_table('email_cache_ml');
+
+		$msm_config = new MSM_Config();
+		$msm_config->remove_config_item(array(
+			'mailinglist_enabled',
+			'mailinglist_notify',
+			'mailinglist_notify_emails'
+		));
+
+		ee()->smartforge->drop_column('member_groups', 'can_email_mailinglist');
+		ee()->smartforge->drop_column('member_groups', 'include_in_mailinglists');
+		ee()->smartforge->drop_column('sites', 'site_mailinglist_preferences');
+
+		ee()->db->where_in(
+			'template_name', array('admin_notify_mailinglist', 'mailinglist_activation_instructions')
+		)->delete('specialty_templates');
+
+		ee()->db->where('module_name', 'Mailinglist')->delete('modules');
+		ee()->db->where('class', 'Mailinglist')->delete('actions');
+	}
+
+	// -------------------------------------------------------------------------
 
 	/**
 	 * Adds the column "title_field_label" to the channels tabel and sets it's
@@ -1071,6 +1205,103 @@ class Updater {
 				)
 			);
 		}
+
+		if ( ! ee()->db->field_exists('extra_publish_controls', 'channels'))
+		{
+			ee()->smartforge->add_column(
+				'channels',
+				array(
+					'extra_publish_controls' => array(
+						'type'       => 'char',
+						'constraint' => 1,
+						'default'    => 'n',
+						'null'       => FALSE
+					)
+				)
+			);
+		}
+	}
+
+	/**
+	 * Updates the title and url_title columns to be a max of 200 chars long
+	 */
+	private function _update_channel_titles_table()
+	{
+		ee()->smartforge->modify_column('channel_titles', array(
+			'title' => array(
+				'type' => 'char(200)',
+			),
+			'url_title' => array(
+				'type' => 'char(200)',
+			)
+		));
+	}
+
+	/**
+	 * CP themeing is no longer supported, so remove the cp_theme config items
+	 */
+	private function _remove_cp_theme_config()
+	{
+		$msm_config = new MSM_Config();
+		$msm_config->remove_config_item(array('cp_theme'));
+
+		ee()->smartforge->drop_column('members', 'cp_theme');
+	}
+
+	/**
+	 * The show_button_cluster setting has been removed from channels, drop the column
+	 */
+	private function _remove_show_button_cluster_column()
+	{
+		ee()->smartforge->drop_column('channels', 'show_button_cluster');
+	}
+
+	/**
+	 * Add columns to store CP homepage redirect information
+	 */
+	private function _add_cp_homepage_columns()
+	{
+		ee()->smartforge->add_column(
+			'member_groups',
+			array(
+				'cp_homepage' => array(
+					'type'		=> 'varchar(20)',
+					'null'		=> TRUE,
+					'default'	=> NULL
+				),
+				'cp_homepage_channel' => array(
+					'type'		=> 'int',
+					'unsigned'	=> TRUE,
+					'null'		=> FALSE,
+				),
+				'cp_homepage_custom' => array(
+					'type'		=> 'varchar(100)',
+					'null'		=> TRUE,
+					'default'	=> NULL
+				)
+			)
+		);
+
+		ee()->smartforge->add_column(
+			'members',
+			array(
+				'cp_homepage' => array(
+					'type'		=> 'varchar(20)',
+					'null'		=> TRUE,
+					'default'	=> NULL
+				),
+				'cp_homepage_channel' => array(
+					'type'		=> 'varchar(255)',
+					'null'		=> TRUE,
+					'default'	=> NULL
+				),
+				'cp_homepage_custom' => array(
+					'type'		=> 'varchar(100)',
+					'null'		=> TRUE,
+					'default'	=> NULL
+				)
+			)
+		);
 	}
 }
 /* END CLASS */

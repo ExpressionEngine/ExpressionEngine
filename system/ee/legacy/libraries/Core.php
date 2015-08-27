@@ -28,12 +28,23 @@ class EE_Core {
 	var $native_modules		= array();		// List of native modules with EE
 	var $native_plugins		= array();		// List of native plugins with EE
 
+	private $bootstrapped = FALSE;
+	private $ee_loaded = FALSE;
+	private $cp_loaded = FALSE;
+
 	/**
 	 * Sets constants, sets paths contants to appropriate directories, loads
 	 * the database and generally prepares the system to run.
 	 */
 	public function bootstrap()
 	{
+		if ($this->bootstrapped)
+		{
+			return;
+		}
+
+		$this->bootstrapped = TRUE;
+
 		// Define the request type
 		// Note: admin.php defines REQ=CP
 		if ( ! defined('REQ'))
@@ -63,7 +74,7 @@ class EE_Core {
 		// application constants
 		define('IS_CORE',		FALSE);
 		define('APP_NAME',		'ExpressionEngine'.(IS_CORE ? ' Core' : ''));
-		define('APP_BUILD',		'20150724');
+		define('APP_BUILD',		'20150807');
 		define('APP_VER',		'3.0.0');
 		define('SLASH',			'&#47;');
 		define('LD',			'{');
@@ -201,12 +212,14 @@ class EE_Core {
 
 		define('PATH_THEMES', $theme_path.'ee/');
 		define('URL_THEMES', $theme_url.'ee/');
+		define('PATH_THEMES_GLOBAL_ASSET', PATH_THEMES.'asset/');
+		define('URL_THEMES_GLOBAL_ASSET', URL_THEMES.'asset/');
 
 		define('PATH_THIRD_THEMES', $theme_path.'user/');
 		define('URL_THIRD_THEMES', $theme_url.'user/');
 
 		define('PATH_MBR_THEMES', PATH_THEMES.'member/');
-		define('PATH_CP_GBL_IMG', ee()->config->slash_item('theme_folder_url').'ee/cp_global_images/');
+		define('PATH_CP_GBL_IMG', PATH_THEMES_GLOBAL_ASSET.'img/');
 		unset($theme_path);
 
 		// Load the very, very base classes
@@ -241,16 +254,23 @@ class EE_Core {
 	 */
 	public function run_ee()
 	{
+		if ($this->ee_loaded)
+		{
+			return;
+		}
+
+		$this->ee_loaded = TRUE;
+
 		$this->native_plugins = array('magpie', 'markdown', 'rss_parser', 'xml_encode');
 		$this->native_modules = array(
 			'blacklist', 'channel', 'comment', 'commerce', 'email', 'emoticon',
 			'file', 'forum', 'ip_to_nation', 'jquery', 'mailinglist', 'member',
-			'metaweblog_api', 'moblog', 'pages', 'query', 'rss', 'rte',
-			'search', 'simple_commerce', 'stats', 'wiki', 'filepicker'
+			'metaweblog_api', 'moblog', 'pages', 'query', 'referrer', 'rss', 'rte',
+			'search', 'simple_commerce', 'spam', 'stats', 'wiki', 'filepicker'
 		);
 		$this->standard_modules = array(
-			'blacklist', 'email', 'forum', 'ip_to_nation', 'mailinglist',
-			'member', 'moblog', 'query', 'simple_commerce', 'wiki', 'filepicker'
+			'blacklist', 'email', 'forum', 'ip_to_nation', 'member', 'moblog', 'query',
+			'simple_commerce', 'wiki', 'filepicker'
 		);
 
 		// Is this a stylesheet request?  If so, we're done.
@@ -386,25 +406,16 @@ class EE_Core {
 	 */
 	public function run_cp()
 	{
-		$this->_somebody_set_us_up_the_base();
-/*
-		// Define PATH_CP_THEME
-		$cp_theme = ee()->session->userdata('cp_theme')
-			?: ee()->config->item('cp_theme');
-
-		// Make sure directory actually exists
-		if ($cp_theme !== 'default'
-			&& ! is_dir(PATH_ADDONS_THEMES.'cp/'.$cp_theme.'/'))
+		if ($this->cp_loaded)
 		{
-			$cp_theme = 'default';
+			return;
 		}
 
-		$path_cp_theme = ($cp_theme === 'default')
-			? PATH_THEMES.'cp/default/'
-			: PATH_ADDONS_THEMES.'cp/'.$cp_theme.'/';
-*/
-		$cp_theme = 'default';
-		define('PATH_CP_THEME', PATH_THEMES.'cp/default/');
+		$this->cp_loaded = TRUE;
+
+		$this->_somebody_set_us_up_the_base();
+
+		define('PATH_CP_THEME', PATH_THEMES.'cp/');
 
 		// Show the control panel home page in the event that a
 		// controller class isn't found in the URL
@@ -429,7 +440,6 @@ class EE_Core {
 
 		// Load our view library
 		ee()->load->library('view');
-		ee()->view->set_cp_theme($cp_theme);
 
 		// Fetch control panel language file
 		ee()->lang->loadfile('cp');

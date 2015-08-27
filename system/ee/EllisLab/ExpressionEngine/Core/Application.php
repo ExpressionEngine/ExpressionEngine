@@ -103,38 +103,6 @@ class Application {
 	}
 
 	/**
-	 *
-	 */
-	public function config($key, $default = NULL)
-	{
-		return $this->get('ee')->config($key, $default);
-	}
-
-	/**
-	 *
-	 */
-	public function getConfig($file, $key = NULL, $default = NULL)
-	{
-		return $this->get('ee')->getConfig($file, $key, $default);
-	}
-
-	/**
-	 *
-	 */
-	public function getConfigFile($file = 'config')
-	{
-		return $this->get('ee')->getConfigFile($file);
-	}
-
-	/**
-	 *
-	 */
-	public function getConfigDirectory()
-	{
-		return $this->get('ee')->getConfigDirectory();
-	}
-
-	/**
 	 * Get a component provider
 	 *
 	 * @param String $prefix Component name/prefix
@@ -242,7 +210,7 @@ class Application {
 	 * @param String $method Method to forward to
 	 * @return Array Array of method results, nested arrays are flattened
 	 */
-	protected function forward($method)
+	public function forward($method)
 	{
 		$result = array();
 

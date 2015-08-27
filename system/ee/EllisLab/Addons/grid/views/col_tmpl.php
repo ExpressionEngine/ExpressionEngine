@@ -25,7 +25,7 @@
 		<fieldset class="col-group<?php if (in_array('grid[cols]['.$field_name.'][col_name]', $error_fields)): ?> invalid<?php endif ?>">
 			<div class="setting-txt col w-16">
 				<h3><?=lang('short_name')?></h3>
-				<em><?=lang('short_name_desc')?></i></em>
+				<em><?=lang('alphadash_desc')?></i></em>
 			</div>
 			<div class="setting-field col w-16 last">
 				<?=form_input('grid[cols]['.$field_name.'][col_name]', isset($column['col_name']) ? $column['col_name'] : '', ' class="grid_col_field_name"')?>

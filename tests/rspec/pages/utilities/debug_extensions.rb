@@ -1,7 +1,7 @@
 class DebugExtensions < ControlPanelPage
 	set_url_matcher /utilities\/extensions/
 
-	element :heading, 'div.box h1'
+	element :heading, 'div.w-12 div.box h1'
 
 	element :no_results, 'div.box div.tbl-ctrls form div.tbl-wrap table tr.no-results'
 
@@ -14,7 +14,7 @@ class DebugExtensions < ControlPanelPage
 	elements :addon_names, 'div.box div.tbl-ctrls form div.tbl-wrap table tr td:first-child'
 	elements :statuses, 'div.box div.tbl-ctrls form div.tbl-wrap table tr td:nth-child(2)'
 
-	element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]'
+	element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]', visible: false
 	element :action_submit_button, 'form fieldset.tbl-bulk-act input.submit'
 
 	def load

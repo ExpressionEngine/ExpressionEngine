@@ -105,7 +105,7 @@ feature 'Email Log' do
 		@page.username_filter.click
 		@page.wait_until_username_manual_filter_visible
 		@page.username_manual_filter.set "johndoe"
-		@page.submit_button.click
+		@page.execute_script("$('div.filters input[type=text]').closest('form').submit()")
 
 		@page.username_filter.text.should eq "username (johndoe)"
 		@page.should have(15).items
@@ -141,7 +141,7 @@ feature 'Email Log' do
 		@page.perpage_filter.click
 		@page.wait_until_perpage_manual_filter_visible
 		@page.perpage_manual_filter.set "42"
-		@page.submit_button.click
+		@page.execute_script("$('div.filters a[data-filter-label^=show] + div.sub-menu input[type=text]').parents('form').submit()")
 
 		@page.perpage_filter.text.should eq "show (42)"
 		@page.should have(42).items

@@ -1,7 +1,7 @@
 class Communicate < ControlPanelPage
 	set_url_matcher /utilities\/communicate/
 
-	element :heading, 'div.box h1'
+	element :heading, 'div.w-12 div.box h1'
 
 	element :subject, 'input[name="subject"]'
 	element :body , 'textarea[name="message"]'

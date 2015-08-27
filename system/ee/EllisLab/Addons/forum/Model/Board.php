@@ -62,8 +62,42 @@ class Board extends Model {
 		'board_use_http_auth'        => 'boolString',
 	);
 
-	// protected static $_relationships = array(
-	// );
+	protected static $_relationships = array(
+		'Administrators' => array(
+			'type'  => 'hasMany',
+			'model' => 'Administrator'
+		),
+		'Attachments' => array(
+			'type'  => 'hasMany',
+			'model' => 'Attachment'
+		),
+		'Categories' => array(
+			'type'  => 'hasMany',
+			'model' => 'Forum'
+		),
+		'Forums' => array(
+			'type'  => 'hasMany',
+			'model' => 'Forum'
+		),
+		'Moderators' => array(
+			'type'   => 'hasMany',
+			'model'  => 'Moderator',
+		),
+		'Searches' => array(
+			'type'  => 'hasMany',
+			'model' => 'Search'
+		),
+		'Site' => array(
+			'type'     => 'belongsTo',
+			'model'    => 'ee:Site',
+			'from_key' => 'board_site_id',
+			'to_key'   => 'site_id'
+		),
+		'Topics' => array(
+			'type'  => 'hasMany',
+			'model' => 'Topic'
+		),
+	);
 
 	protected static $_validation_rules = array(
 		'board_label'                => 'required',
@@ -89,6 +123,8 @@ class Board extends Model {
 
 	protected static $_events = array(
 		'beforeInsert',
+		'afterSave',
+		'afterDelete',
 	);
 
 	protected $board_id;
@@ -177,6 +213,35 @@ class Board extends Model {
 		}
 	}
 
+	public function onAfterSave()
+	{
+		$this->updateTriggers();
+	}
+
+	public function onAfterDelete()
+	{
+		$this->updateTriggers();
+	}
+
+	private function updateTriggers()
+	{
+		$model = $this->getFrontend();
+
+		$sites = $model->get('ee:Site')->all();
+		$boards = $model->get('forum:Board')
+			->fields('board_forum_trigger', 'board_site_id')
+			->all();
+
+		foreach ($sites as $site)
+		{
+			$triggers = $boards->filter('board_site_id', $site->site_id)
+				->pluck('board_forum_trigger');
+
+			$site->site_system_preferences->forum_trigger = implode('|', $triggers);
+			$site->save();
+		}
+	}
+
 	public function set__board_forum_url($url)
 	{
 		$this->setRawProperty('board_forum_url', $this->addTrailingSlash($url));
@@ -198,4 +263,31 @@ class Board extends Model {
 
 		return $value;
 	}
+
+	public function getPermission($key)
+	{
+		$permissions = $this->getProperty('board_forum_permissions');
+
+		if ( ! isset($permissions[$key]))
+		{
+			return array();
+		}
+
+		return explode('|', $permissions[$key]);
+	}
+
+	public function setPermission($key, $value)
+	{
+		$permissions = $this->getProperty('board_forum_permissions');
+
+		if (is_array($value))
+		{
+			$value = implode('|', $value);
+		}
+
+		$permissions[$key] = $value;
+
+		$this->setProperty('board_forum_permissions', $permissions);
+	}
+
 }

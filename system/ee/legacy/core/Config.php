@@ -115,11 +115,7 @@ class EE_Config {
 			$assign_to_config['enable_query_strings'] = TRUE;
 		}
 
-
 		$this->_set_overrides($assign_to_config);
-
-		// Freelancer version?
-		$this->_global_vars['freelancer_version'] = ( ! file_exists(APPPATH.'modules/member/mod.member.php')) ? 'TRUE' : 'FALSE';
 
 		// Set the default_ini data, used by the sites feature
 		$this->default_ini = $this->config;
@@ -529,7 +525,6 @@ class EE_Config {
 			'enable_sql_caching',
 			'force_query_string',
 			'show_profiler',
-			'template_debugging',
 			'include_seconds',
 			'cookie_domain',
 			'cookie_path',
@@ -568,7 +563,6 @@ class EE_Config {
 			'word_wrap',
 			'email_console_timelock',
 			'log_email_console_msgs',
-			'cp_theme',
 			'log_search_terms',
 			'deny_duplicate_data',
 			'redirect_submitted_links',
@@ -598,12 +592,6 @@ class EE_Config {
 			'max_logged_searches',
 			'rte_enabled',
 			'rte_default_toolset_id'
-		);
-
-		$mailinglist_default = array(
-			'mailinglist_enabled',
-			'mailinglist_notify',
-			'mailinglist_notify_emails'
 		);
 
 		$member_default = array(
@@ -923,7 +911,7 @@ class EE_Config {
 	 */
 	private function _update_preferences($site_id, $site_prefs, $query, $find, $replace)
 	{
-		foreach(array('system', 'channel', 'template', 'mailinglist', 'member') as $type)
+		foreach(array('system', 'channel', 'template', 'member') as $type)
 		{
 			$prefs	 = unserialize(base64_decode($query->row('site_'.$type.'_preferences')));
 			$changes = 'n';
@@ -1212,9 +1200,11 @@ class EE_Config {
 
 		foreach ($dbconfig as $property => $value)
 		{
-			$value = ($allowed_properties[$property] == 'bool')
-				? get_bool_from_string($dbconfig['pconnect'])
-				: $value;
+			if ($allowed_properties[$property] == 'bool')
+			{
+				$value = get_bool_from_string($value);
+			}
+
 			$database_config->set($property, $value);
 		}
 
@@ -1224,7 +1214,8 @@ class EE_Config {
 
 		// Remove default properties
 		$defaults = $db_config->getDefaults();
-		foreach ($defaults['expressionengine'] as $property => $value)
+
+		foreach ($defaults as $property => $value)
 		{
 			if (isset($group_config[$property]) && $group_config[$property] == $value)
 			{
@@ -1319,8 +1310,7 @@ class EE_Config {
 				'force_query_string' => array('r', array('y' => 'yes', 'n' => 'no')),
 				'redirect_method'    => array('s', array('redirect' => 'location_method', 'refresh' => 'refresh_method')),
 				'debug'              => array('s', $debug_options),
-				'show_profiler'      => array('r', array('y' => 'yes', 'n' => 'no')),
-				'template_debugging' => array('r', array('y' => 'yes', 'n' => 'no'))
+				'show_profiler'      => array('r', array('y' => 'yes', 'n' => 'no'))
 			),
 
 			'channel_cfg'		=>	array(
@@ -1432,12 +1422,6 @@ class EE_Config {
 				'enable_censoring'   => array('r', array('y' => 'yes', 'n' => 'no')),
 				'censor_replacement' => array('i', '', 'strip_tags|trim|valid_xss_check'),
 				'censored_words'     => array('t', array('rows' => '20', 'kill_pipes' => TRUE)),
-			),
-
-			'mailinglist_cfg'	=>	array(
-				'mailinglist_enabled'       => array('r', array('y' => 'yes', 'n' => 'no')),
-				'mailinglist_notify'        => array('r', array('y' => 'yes', 'n' => 'no')),
-				'mailinglist_notify_emails' => array('i', '')
 			),
 
 			'emoticon_cfg'		=>	array(
@@ -1687,7 +1671,6 @@ class EE_Config {
 			'is_system_on'				=> array('is_system_on_explanation'),
 			'debug'						=> array('debug_explanation'),
 			'show_profiler'				=> array('show_profiler_explanation'),
-			'template_debugging'		=> array('template_debugging_explanation'),
 			'max_caches'				=> array('max_caches_explanation'),
 			'use_newrelic'				=> array('use_newrelic_explanation'),
 			'newrelic_app_name'			=> array('newrelic_app_name_explanation'),
@@ -1745,7 +1728,6 @@ class EE_Config {
 			'banishment_url'			=> array('banishment_url_exp'),
 			'banishment_message'		=> array('banishment_message_exp'),
 			'enable_search_log'			=> array('enable_search_log_exp'),
-			'mailinglist_notify_emails' => array('separate_emails'),
 			'dynamic_tracking_disabling'=> array('dynamic_tracking_disabling_info')
 		);
 	}

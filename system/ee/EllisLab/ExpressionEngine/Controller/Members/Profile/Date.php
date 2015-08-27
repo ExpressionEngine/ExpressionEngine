@@ -47,7 +47,6 @@ class Date extends Profile {
 			array(
 				array(
 					'title' => 'timezone',
-					'desc' => 'timezone_desc',
 					'fields' => array(
 						'timezone' => array(
 							'type' => 'html',
@@ -57,7 +56,7 @@ class Date extends Profile {
 				),
 				array(
 					'title' => 'date_format',
-					'desc' => 'date_format_desc',
+					'desc' => 'used_in_cp_only',
 					'fields' => array(
 						'date_format' => array(
 							'type' => 'select',
@@ -120,13 +119,21 @@ class Date extends Profile {
 		{
 			if ($this->saveSettings($vars['sections']))
 			{
-				ee()->view->set_message('success', lang('member_updated'), lang('member_updated_desc'), TRUE);
+				ee('CP/Alert')->makeInline('shared-form')
+					->asSuccess()
+					->withTitle(lang('member_updated'))
+					->addToBody(lang('member_updated_desc'))
+					->defer();
 				ee()->functions->redirect($this->base_url);
 			}
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('settings_save_erorr'))
+				->addToBody(lang('settings_save_error_desc'))
+				->now();
 		}
 
 		ee()->view->base_url = $this->base_url;

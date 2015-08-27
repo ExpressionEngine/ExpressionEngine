@@ -27,131 +27,68 @@ $installation_defaults = array('bold', 'italic', 'blockquote', 'anchor', 'pictur
 
 $predefined_buttons = array(
 							'bold' 		=> array(
-												'tag_name'  => 'b',
+												'tag_name'  => lang('html_btn_bold'),
 												'tag_open'  => '<strong>',
 												'tag_close' => '</strong>',
 												'accesskey' => 'b',
-												'classname'	 => 'btn_b'
+												'classname'	 => 'html-bold'
 												),
 							'italic'	=> array(
-												'tag_name'  => 'i',
+												'tag_name'  => lang('html_btn_italic'),
 												'tag_open'  => '<em>',
 												'tag_close' => '</em>',
 												'accesskey' => 'i',
-												'classname'	 => 'btn_i'
+												'classname'	 => 'html-italic'
 												),
 							'strike'	=> array(
-												'tag_name'  => 's',
+												'tag_name'  => lang('html_btn_strike'),
 												'tag_open'  => '<del>',
 												'tag_close' => '</del>',
 												'accesskey' => 's',
-												'classname'	 => 'btn_strike'
+												'classname'	 => 'html-strike'
 												),
 							'ins'	 	=> array(
-												'tag_name'  => 'insert',
+												'tag_name'  => lang('html_btn_ins'),
 												'tag_open'  => '<ins>',
 												'tag_close' => '</ins>',
 												'accesskey' => '',
-												'classname'	 => 'btn_ins'
+												'classname'	 => 'html-ins'
 												),
 							'ul'		=> array(
-												'tag_name'  => 'ul',
+												'tag_name'  => lang('html_btn_ul'),
 												'tag_open'  => '<ul>',
 												'tag_close' => '</ul>',
 												'accesskey' => 'u',
-												'classname'	 => 'btn_ul'
+												'classname'	 => 'html-order-list'
 												),
 							'ol'		=> array(
-												'tag_name'  => 'ol',
+												'tag_name'  => lang('html_btn_ol'),
 												'tag_open'  => '<ol>',
 												'tag_close' => '</ol>',
 												'accesskey' => 'o',
-												'classname'	 => 'btn_ol'
-												),
-							'li'		=> array(
-												'tag_name'  => 'li',
-												'tag_open'  => '<li>',
-												'tag_close' => '</li>',
-												'accesskey' => 'o',
-												'classname'	 => 'btn_li'
-												),
-							'p'			=> array(
-												'tag_name'  => 'p',
-												'tag_open'  => '<p>',
-												'tag_close' => '</p>',
-												'accesskey' => 'p',
-												'classname'	 => 'btn_p'
+												'classname'	 => 'html-order-list'
 												),
 							'blockquote'	=> array(
-												'tag_name'  => 'blockquote',
+												'tag_name'  => lang('html_btn_blockquote'),
 												'tag_open'  => '<blockquote>',
 												'tag_close' => '</blockquote>',
 												'accesskey' => 'q',
-												'classname'	 => 'btn_blockquote'
-												),
-							'h1'		=> array(
-												'tag_name'  => 'h1',
-												'tag_open'  => '<h1>',
-												'tag_close' => '</h1>',
-												'accesskey' => '',
-												'classname'	 => 'btn_h1'
-												),
-							'h2'		=> array(
-												'tag_name'  => 'h2',
-												'tag_open'  => '<h2>',
-												'tag_close' => '</h2>',
-												'accesskey' => '',
-												'classname'	 => 'btn_h2'
-												),
-							'h3'		=> array(
-												'tag_name'  => 'h3',
-												'tag_open'  => '<h3>',
-												'tag_close' => '</h3>',
-												'accesskey' => '',
-												'classname'	 => 'btn_h3'
-												),
-							'h4'		=> array(
-												'tag_name'  => 'h4',
-												'tag_open'  => '<h4>',
-												'tag_close' => '</h4>',
-												'accesskey' => '',
-												'classname'	 => 'btn_h4'
-												),
-							'h5'		=> array(
-												'tag_name'  => 'h5',
-												'tag_open'  => '<h5>',
-												'tag_close' => '</h5>',
-												'accesskey' => '',
-												'classname'	 => 'btn_h5'
-												),
-							'h6'		=> array(
-												'tag_name'  => 'h6',
-												'tag_open'  => '<h6>',
-												'tag_close' => '</h6>',
-												'accesskey' => '',
-												'classname'	 => 'btn_h6'
+												'classname'	 => 'html-quote'
 												),
 							'anchor'	=> array(
-												'tag_name'  => 'a',
+												'tag_name'  => lang('html_btn_anchor'),
 												'tag_open'  => '<a href="[![Link:!:http://]!]"(!( title="[![Title]!]")!)>',
 												'tag_close' => '</a>',
 												'accesskey' => 'a',
-												'classname'	 => 'btn_a'
+												'classname'	 => 'html-link'
 												),
 							'picture'	=> array(
-												'tag_name'  => 'img',
+												'tag_name'  => lang('html_btn_picture'),
 												'tag_open'  => '<img src="[![Link:!:http://]!]" alt="[![Alternative text]!]" />',
 												'tag_close' => '',
 												'accesskey' => '',
-												'classname'	 => 'btn_img'
+												'classname'	 => 'html-upload'
 												),
-							// 'separator'	=> array(
-							// 					'tag_name'  => 'separator',
-							// 					'tag_open'  => '',
-							// 					'tag_close' => '',
-							// 					'accesskey' => '',
-							// 					'classname'	 => 'markItUpSeparator'
-							// 					),
 							);
 
 

@@ -68,7 +68,6 @@ class MemberImport extends Utilities {
 			'mbr_import_default_options' => array(
 				array(
 					'title' => 'member_group',
-					'desc' => '',
 					'fields' => array(
 						'group_id' => array(
 							'type' => 'select',
@@ -78,7 +77,6 @@ class MemberImport extends Utilities {
 				),
 				array(
 					'title' => 'mbr_language',
-					'desc' => '',
 					'fields' => array(
 						'language' => array(
 							'type' => 'select',
@@ -88,8 +86,7 @@ class MemberImport extends Utilities {
 					)
 				),
 				array(
-					'title' => 'mbr_timezone',
-					'desc' => 'mbr_timezone_desc',
+					'title' => 'timezone',
 					'fields' => array(
 						'timezones' => array(
 							'type' => 'html',
@@ -99,7 +96,7 @@ class MemberImport extends Utilities {
 				),
 				array(
 					'title' => 'mbr_datetime_fmt',
-					'desc' => 'mbr_datetime_fmt_desc',
+					'desc' => 'used_in_cp_only',
 					'fields' => array(
 						'date_format' => array(
 							'type' => 'select',
@@ -471,7 +468,7 @@ class MemberImport extends Utilities {
 						}
 
 						/* -------------------------------------
-						/*  username, screen_name, and email
+						/*  username and email
 						/*  must be validated and unique
 						/* -------------------------------------*/
 
@@ -490,14 +487,7 @@ class MemberImport extends Utilities {
 								break;
 							case 'screen_name':
 								$this->validate->screen_name = $tag->value;
-								if ( ! in_array($tag->value, $s))
-								{
-									$s[] = $tag->value;
-								}
-								else
-								{
-									$errors[] = array(lang('duplicate_screen_name').$tag->value);
-								}
+								$s[] = $tag->value;
 								break;
 							case 'email':
 								if ( ! in_array($tag->value, $e))

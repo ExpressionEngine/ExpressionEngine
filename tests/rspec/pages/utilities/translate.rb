@@ -3,7 +3,7 @@ class Translate < ControlPanelPage
 
 	elements :languages, 'div.sidebar ul:nth-child(4) li'
 
-	element :heading, 'div.box form h1'
+	element :heading, 'div.w-12 div.box form h1'
 
 	element :phrase_search, 'form fieldset.tbl-search input[name=search]'
 	element :search_submit_button, 'form fieldset.tbl-search input.submit'
@@ -12,7 +12,7 @@ class Translate < ControlPanelPage
 	element :no_results, 'div.box form table tr.no-results'
 	elements :rows, 'div.box form table tr'
 
-	element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]'
+	element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]', visible: false
 	element :action_submit_button, 'form fieldset.tbl-bulk-act input.submit'
 
 	def load

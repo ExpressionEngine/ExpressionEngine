@@ -19,8 +19,6 @@ feature 'Communicate > Sent' do
 		@page.should have_phrase_search
 		@page.should have_search_submit_button
 		@page.should have_email_table
-		@page.should have_bulk_action
-		@page.should have_action_submit_button
 	end
 
 	it 'shows the sent Emails page (with no results)' do
@@ -36,8 +34,6 @@ feature 'Communicate > Sent' do
 		@page.should have_text 'No Emails availble'
 		@page.should have_text 'CREATE NEW EMAIL'
 		@page.should_not have_pagination
-		@page.should_not have_bulk_action
-		@page.should_not have_action_submit_button
 	end
 
 	it 'sorts by subject (asc)' do
@@ -294,8 +290,6 @@ feature 'Communicate > Sent' do
 		@page.phrase_search.value.should eq phrase
 
 		@page.should have_no_results
-		@page.should_not have_bulk_action
-		@page.should_not have_action_submit_button
 	end
 
 	it 'maintains sort when searching' do
@@ -535,6 +529,7 @@ feature 'Communicate > Sent' do
 			end
 		end
 
+		@page.wait_until_bulk_action_visible
 		@page.bulk_action.select "Remove"
 		@page.action_submit_button.click
 
@@ -559,6 +554,7 @@ feature 'Communicate > Sent' do
 			end
 		end
 
+		@page.wait_until_bulk_action_visible
 		@page.bulk_action.select "Remove"
 		@page.action_submit_button.click
 
@@ -582,6 +578,7 @@ feature 'Communicate > Sent' do
 			end
 		end
 
+		@page.wait_until_bulk_action_visible
 		@page.bulk_action.select "Remove"
 		@page.action_submit_button.click
 		@page.wait_until_modal_visible

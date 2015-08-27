@@ -1,14 +1,33 @@
-<?php if ($total_rows):?>
-	<?=form_open('C=addons_modules'.AMP.'M=show_module_cp'.AMP.'module=moblog'.AMP.'method=delete_confirm')?>
+<div class="box">
+	<?=form_open($base_url, 'class="tbl-ctrls"')?>
+		<fieldset class="tbl-search right">
+			<a class="btn tn action" href="<?=ee('CP/URL', 'addons/settings/moblog/create')?>"><?=lang('create_new')?></a>
+		</fieldset>
+		<h1><?=lang('moblogs')?></h1>
+		<?=ee('CP/Alert')->get('moblogs-table')?>
+		<?php $this->embed('ee:_shared/table', $table); ?>
+		<?=$pagination?>
+		<?php if ( ! empty($table['columns']) && ! empty($table['data'])): ?>
+		<fieldset class="tbl-bulk-act hidden">
+			<select name="bulk_action">
+				<option value="">-- <?=lang('with_selected')?> --</option>
+				<option value="remove" data-confirm-trigger="selected" rel="modal-confirm-remove"><?=lang('remove')?></option>
+			</select>
+			<input class="btn submit" data-conditional-modal="confirm-trigger" type="submit" value="<?=lang('submit')?>">
+		</fieldset>
+		<?php endif; ?>
+	<?=form_close();?>
+</div>
 
-	<?=$table_html?>
-	<?=$pagination_html?>
+<?php
+$modal_vars = array(
+	'name'      => 'modal-confirm-remove',
+	'form_url'	=> ee('CP/URL', 'addons/settings/moblog/remove'),
+	'hidden'	=> array(
+		'bulk_action'	=> 'remove'
+	)
+);
 
-	<p>
-		<?=form_submit(array('name' => 'submit', 'value' => lang('delete'), 'class' => 'submit'))?>
-	</p>
-
-	<?=form_close()?>
-<?php else:?>
-	<p class="notice"><?=lang('no_moblogs')?></p>
-<?php endif;?>
+$modal = $this->make('ee:_shared/modal_confirm_remove')->render($modal_vars);
+ee('CP/Modal')->addModal('remove', $modal);
+?>

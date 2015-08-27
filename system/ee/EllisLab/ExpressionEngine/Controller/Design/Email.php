@@ -74,11 +74,13 @@ class Email extends AbstractDesignController {
 		$data = array();
 		foreach ($templates as $template)
 		{
+			$edit_url = ee('CP/URL', 'design/email/edit/' . $template->template_id);
+			$template_name = '<a href="' . $edit_url->compile() . '">' . lang($template->template_name) . '</a>';
 			$data[$template->template_subtype][] = array(
-				lang($template->template_name),
+				$template_name,
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'design/email/edit/' . $template->template_id),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					),
 				))
@@ -90,7 +92,7 @@ class Email extends AbstractDesignController {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['form_url'] = $vars['table']['base_url'];
 
-		$this->sidebarMenu('email');
+		$this->generateSidebar('email');
 		ee()->view->cp_page_title = lang('template_manager');
 		ee()->view->cp_heading = lang('email_message_templates');
 
@@ -132,7 +134,7 @@ class Email extends AbstractDesignController {
 			$template->last_author_id = ee()->session->userdata('member_id');
 			$template->save();
 
-			$alert = ee('Alert')->makeInline('template-form')
+			$alert = ee('CP/Alert')->makeInline('template-form')
 				->asSuccess()
 				->withTitle(lang('update_template_success'))
 				->addToBody(sprintf(lang('update_template_success_desc'), lang($template->template_name)));
@@ -147,7 +149,7 @@ class Email extends AbstractDesignController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('template-form')
+			ee('CP/Alert')->makeInline('template-form')
 				->asIssue()
 				->withTitle(lang('update_template_error'))
 				->addToBody(lang('update_template_error_desc'))

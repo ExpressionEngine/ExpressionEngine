@@ -45,6 +45,8 @@ class Delete extends Query {
 			return;
 		}
 
+		$from     = $this->removeDefaultPrefix($from);
+
 		$delete_list = $this->getDeleteList($from);
 
 		foreach ($delete_list as $model => $withs)
@@ -187,6 +189,16 @@ class Delete extends Query {
 		return array_reverse($this->delete_list);
 	}
 
+	private function removeDefaultPrefix($str)
+	{
+		if (strpos($str, 'ee:') === 0)
+		{
+			return substr($str, 3);
+		}
+
+		return $str;
+	}
+
 	/**
 	 * Helper to build a delete list. See the `getDeleteList()` method
 	 * for details.
@@ -196,6 +208,8 @@ class Delete extends Query {
 	 */
 	protected function deleteListRecursive($parent)
 	{
+		$parent = $this->removeDefaultPrefix($parent);
+
 		$results = array();
 		$relations = $this->store->getAllRelations($parent);
 
@@ -206,12 +220,23 @@ class Delete extends Query {
 
 		foreach ($relations as $name => $relation)
 		{
+			if ($relation->isWeak())
+			{
+				$to_model = $relation->getSourceModel();
+				$to_model = $this->removeDefaultPrefix($to_model);
+
+				$inherit = $this->delete_list[$parent];
+				$this->delete_list[$to_model] = $this->weak($relation, $inherit);
+				continue;
+			}
+
 			$inverse = $relation->getInverse();
 
 			if ($inverse instanceOf BelongsTo)
 			{
 				$to_name = $inverse->getName();
 				$to_model = $relation->getTargetModel();
+				$to_model = $this->removeDefaultPrefix($to_model);
 
 				if ( ! isset($this->delete_list[$to_model]))
 				{
@@ -219,6 +244,12 @@ class Delete extends Query {
 				}
 
 				$inherit = $this->delete_list[$parent];
+
+				// already dealing with a closure?
+				if ( ! is_array($this->delete_list[$to_model]))
+				{
+					continue;
+				}
 
 				if (isset($this->delete_list[$to_model][$to_name]))
 				{
@@ -245,7 +276,7 @@ class Delete extends Query {
 	 */
 	private function recursive($relation, $withs)
 	{
-		return function($query) use ($relation, $withs, $that)
+		return function($query) use ($relation, $withs)
 		{
 			$name = $relation->getName();
 			$models = $query->with($withs)->all();
@@ -259,6 +290,25 @@ class Delete extends Query {
 			foreach ($models as $model)
 			{
 				$model->$name->delete();
+			}
+
+			return $models;
+		};
+	}
+
+	/**
+	 * Creates a worker function to handle weak deletes.
+	 */
+	private function weak($relation, $withs)
+	{
+		return function($query) use ($relation, $withs)
+		{
+			$name = $relation->getName();
+			$models = $query->with($withs)->all();
+
+			foreach ($models as $model)
+			{
+				$relation->drop($model, $model->$name);
 			}
 
 			return $models;

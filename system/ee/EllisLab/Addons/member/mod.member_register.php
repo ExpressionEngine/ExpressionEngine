@@ -515,79 +515,6 @@ class Member_register extends Member {
 		ee()->db->query(ee()->db->insert_string('exp_member_homepage',
 								array('member_id' => $member_id)));
 
-		// Mailinglist Subscribe
-		$mailinglist_subscribe = FALSE;
-
-		if (isset($_POST['mailinglist_subscribe']) && is_numeric($_POST['mailinglist_subscribe']))
-		{
-			// Kill duplicate emails from authorizatin queue.
-			ee()->db->where('email', $_POST['email'])
-						 ->delete('mailing_list_queue');
-
-			// Validate Mailing List ID
-			$query = ee()->db->select('COUNT(*) as count')
-								  ->where('list_id', $_POST['mailinglist_subscribe'])
-								  ->get('mailing_lists');
-
-			// Email Not Already in Mailing List
-			$results = ee()->db->select('COUNT(*) as count')
-									->where('email', $_POST['email'])
-									->where('list_id', $_POST['mailinglist_subscribe'])
-									->get('mailing_list');
-
-			// INSERT Email
-			if ($query->row('count')  > 0 && $results->row('count')  == 0)
-			{
-				$mailinglist_subscribe = TRUE;
-
-				$code = ee()->functions->random('alnum', 10);
-
-				if (ee()->config->item('req_mbr_activation') == 'email')
-				{
-					// Activated When Membership Activated
-					ee()->db->query("INSERT INTO exp_mailing_list_queue (email, list_id, authcode, date)
-								VALUES ('".ee()->db->escape_str($_POST['email'])."', '".ee()->db->escape_str($_POST['mailinglist_subscribe'])."', '".$code."', '".time()."')");
-				}
-				elseif (ee()->config->item('req_mbr_activation') == 'manual')
-				{
-					// Mailing List Subscribe Email
-					ee()->db->query("INSERT INTO exp_mailing_list_queue (email, list_id, authcode, date)
-								VALUES ('".ee()->db->escape_str($_POST['email'])."', '".ee()->db->escape_str($_POST['mailinglist_subscribe'])."', '".$code."', '".time()."')");
-
-					ee()->lang->loadfile('mailinglist');
-					$action_id  = ee()->functions->fetch_action_id('Mailinglist', 'authorize_email');
-
-					$swap = array(
-									'activation_url'	=> ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&id='.$code,
-									'site_name'			=> stripslashes(ee()->config->item('site_name')),
-									'site_url'			=> ee()->config->item('site_url')
-								 );
-
-					$template = ee()->functions->fetch_email_template('mailinglist_activation_instructions');
-					$email_tit = ee()->functions->var_swap($template['title'], $swap);
-					$email_msg = ee()->functions->var_swap($template['data'], $swap);
-
-					// Send email
-					ee()->load->library('email');
-					ee()->email->wordwrap = true;
-					ee()->email->mailtype = 'plain';
-					ee()->email->priority = '3';
-
-					ee()->email->from(ee()->config->item('webmaster_email'), ee()->config->item('webmaster_name'));
-					ee()->email->to($_POST['email']);
-					ee()->email->subject($email_tit);
-					ee()->email->message($email_msg);
-					ee()->email->send();
-				}
-				else
-				{
-					// Automatically Accepted
-					ee()->db->query("INSERT INTO exp_mailing_list (list_id, authcode, email, ip_address)
-										  VALUES ('".ee()->db->escape_str($_POST['mailinglist_subscribe'])."', '".$code."', '".ee()->db->escape_str($_POST['email'])."', '".ee()->db->escape_str(ee()->input->ip_address())."')");
-				}
-			}
-		}
-
 		// Update
 		if (ee()->config->item('req_mbr_activation') == 'none')
 		{
@@ -648,11 +575,9 @@ class Member_register extends Member {
 
 			$forum_id = (ee()->input->get_post('FROM') == 'forum') ? '&r=f&board_id='.$board_id : '';
 
-			$add = ($mailinglist_subscribe !== TRUE) ? '' : '&mailinglist='.$_POST['mailinglist_subscribe'];
-
 			$swap = array(
 				'name'				=> $name,
-				'activation_url'	=> ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&id='.$data['authcode'].$forum_id.$add,
+				'activation_url'	=> ee()->functions->fetch_site_index(0, 0).QUERY_MARKER.'ACT='.$action_id.'&id='.$data['authcode'].$forum_id,
 				'site_name'			=> stripslashes(ee()->config->item('site_name')),
 				'site_url'			=> ee()->config->item('site_url'),
 				'username'			=> $data['username'],
@@ -792,24 +717,6 @@ class Member_register extends Member {
 		}
 
 		$member_id = $query->row('member_id');
-
-		if (ee()->input->get_post('mailinglist') !== FALSE &&
-			is_numeric(ee()->input->get_post('mailinglist')))
-		{
-			$expire = time() - (60*60*48);
-
-			ee()->db->query("DELETE FROM exp_mailing_list_queue WHERE date < '$expire' ");
-
-			$results = ee()->db->query("SELECT authcode
-									FROM exp_mailing_list_queue
-									WHERE email = '".ee()->db->escape_str($query->row('email') )."'
-									AND list_id = '".ee()->db->escape_str(ee()->input->get_post('mailinglist'))."'");
-
-			ee()->db->query("INSERT INTO exp_mailing_list (list_id, authcode, email, ip_address)
-								 VALUES ('".ee()->db->escape_str(ee()->input->get_post('mailinglist'))."', '".ee()->db->escape_str($results->row('authcode') )."', '".ee()->db->escape_str($query->row('email') )."', '".ee()->db->escape_str(ee()->input->ip_address())."')");
-
-			ee()->db->query("DELETE FROM exp_mailing_list_queue WHERE authcode = '".ee()->db->escape_str($results->row('authcode') )."'");
-		}
 
 		// If the member group hasn't been switched we'll do it.
 

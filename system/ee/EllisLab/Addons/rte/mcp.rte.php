@@ -92,12 +92,12 @@ class Rte_mcp {
 				)
 			);
 
+			$toolset_name = '<a href="' . $url->compile() . '">' . $toolset_name . '</a>';
 			if ($default_toolset_id == $t['toolset_id'])
 			{
 				$toolset_name = '<span class="default">' . $toolset_name . ' ✱</span>';
 				$checkbox['disabled'] = 'disabled';
 			}
-
 			$toolset = array(
 				'tool_set' => $toolset_name,
 				'status' => lang('disabled'),
@@ -196,7 +196,7 @@ class Rte_mcp {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('toolset') . ': <b>### ' . lang('toolsets') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		// return the page
@@ -238,7 +238,7 @@ class Rte_mcp {
 		{
 			// update the prefs
 			$this->_do_update_prefs();
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('settings_saved'))
 				->addToBody(lang('settings_saved_desc'))
@@ -246,7 +246,7 @@ class Rte_mcp {
 		}
 		else
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('settings_error'))
 				->addToBody(lang('settings_error_desc'))
@@ -389,7 +389,7 @@ class Rte_mcp {
 
 		if ( ! empty($errors))
 		{
-			$errorAlert = ee('Alert')->makeInline('toolsets-form')
+			$errorAlert = ee('CP/Alert')->makeInline('toolsets-form')
 				->asIssue()
 				->withTitle(lang('toolset_error'))
 				->addToBody(lang($action . '_fail_desc'))
@@ -402,7 +402,7 @@ class Rte_mcp {
 		}
 		else
 		{
-			$successAlert = ee('Alert')->makeInline('toolsets-form')
+			$successAlert = ee('CP/Alert')->makeInline('toolsets-form')
 				->asSuccess()
 				->withTitle(lang($message_title))
 				->addToBody(lang($action . '_success_desc'))

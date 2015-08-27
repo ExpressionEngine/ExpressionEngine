@@ -62,7 +62,7 @@ class Group extends AbstractDesignController {
 		$vars = array(
 			'ajax_validate' => TRUE,
 			'base_url' => ee('CP/URL', 'design/group/create'),
-			'save_btn_text' => 'btn_create_template_group',
+			'save_btn_text' => sprintf(lang('btn_save'), lang('template_group')),
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
@@ -92,7 +92,10 @@ class Group extends AbstractDesignController {
 						'fields' => array(
 							'make_default_group' => array(
 								'type' => 'yes_no',
-								'value' => 'n'
+								'value' => ee('Model')->get('TemplateGroup')
+									->filter('site_id', ee()->config->item('site_id'))
+									->filter('is_site_default', 'y')
+									->count() ? 'n' : 'y'
 							)
 						)
 					),
@@ -177,7 +180,7 @@ class Group extends AbstractDesignController {
 				}
 			}
 
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('create_template_group_success'))
 				->addToBody(sprintf(lang('create_template_group_success_desc'), $group->group_name))
@@ -187,14 +190,14 @@ class Group extends AbstractDesignController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('create_template_group_error'))
 				->addToBody(lang('create_template_group_error_desc'))
 				->now();
 		}
 
-		$this->sidebarMenu();
+		$this->generateSidebar();
 		ee()->view->cp_page_title = lang('create_template_group');
 
 		ee()->cp->render('settings/form', $vars);
@@ -223,13 +226,13 @@ class Group extends AbstractDesignController {
 			'form_hidden' => array(
 				'old_name' => $group->group_name
 			),
-			'save_btn_text' => 'btn_create_template_group',
+			'save_btn_text' => sprintf(lang('btn_save'), lang('template_group')),
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array(
 					array(
 						'title' => 'name',
-						'desc' => 'name_desc',
+						'desc' => 'alphadash_desc',
 						'fields' => array(
 							'group_name' => array(
 								'type' => 'text',
@@ -285,7 +288,7 @@ class Group extends AbstractDesignController {
 
 			$group->save();
 
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('edit_template_group_success'))
 				->addToBody(sprintf(lang('edit_template_group_success_desc'), $group->group_name))
@@ -295,14 +298,14 @@ class Group extends AbstractDesignController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('edit_template_group_error'))
 				->addToBody(lang('edit_template_group_error_desc'))
 				->now();
 		}
 
-		$this->sidebarMenu($group->group_id);
+		$this->generateSidebar($group->group_id);
 		ee()->view->cp_page_title = lang('edit_template_group');
 
 		ee()->cp->render('settings/form', $vars);
@@ -338,7 +341,7 @@ class Group extends AbstractDesignController {
 			}
 
 			$group->delete();
-			ee('Alert')->makeInline('template-group')
+			ee('CP/Alert')->makeInline('template-group')
 				->asSuccess()
 				->withTitle(lang('template_group_removed'))
 				->addToBody(sprintf(lang('template_group_removed_desc'), ee()->input->post('group_name')))

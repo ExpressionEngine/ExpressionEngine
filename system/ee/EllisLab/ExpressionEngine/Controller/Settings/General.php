@@ -46,7 +46,6 @@ class General extends Settings {
 			array(
 				array(
 					'title' => 'site_name',
-					'desc' => 'site_name_desc',
 					'fields' => array(
 						'site_name' => array(
 							'type' => 'text',
@@ -57,7 +56,7 @@ class General extends Settings {
 				),
 				array(
 					'title' => 'site_short_name',
-					'desc' => 'site_short_name_desc',
+					'desc' => 'alphadash_desc',
 					'fields' => array(
 						'site_short_name' => array(
 							'type' => 'text',
@@ -115,7 +114,7 @@ class General extends Settings {
 			'defaults' => array(
 				array(
 					'title' => 'language',
-					'desc' => 'language_desc',
+					'desc' => 'used_in_cp_only',
 					'fields' => array(
 						'deft_lang' => array(
 							'type' => 'select',
@@ -128,7 +127,6 @@ class General extends Settings {
 			'date_time_settings' => array(
 				array(
 					'title' => 'timezone',
-					'desc' => 'timezone_desc',
 					'fields' => array(
 						'default_site_timezone' => array(
 							'type' => 'html',
@@ -138,7 +136,7 @@ class General extends Settings {
 				),
 				array(
 					'title' => 'date_time_fmt',
-					'desc' => 'date_time_fmt_desc',
+					'desc' => 'used_in_cp_only',
 					'fields' => array(
 						'date_format' => array(
 							'type' => 'select',
@@ -287,7 +285,7 @@ class General extends Settings {
 		// Error getting version
 		if ( ! $details)
 		{
-			ee('Alert')->makeBanner('error-getting-version')
+			ee('CP/Alert')->makeBanner('error-getting-version')
 				->asIssue()
 				->withTitle(lang('cp_message_issue'))
 				->addToBody(sprintf(lang('error_getting_version'), APP_VER))
@@ -306,7 +304,7 @@ class General extends Settings {
 
 				$desc = sprintf(lang('version_update_inst'), $latest_version[0], $download_url, $instruct_url);
 
-				ee('Alert')->makeBanner('version-update-available')
+				ee('CP/Alert')->makeBanner('version-update-available')
 					->asWarning()
 					->withTitle(lang('version_update_available'))
 					->addToBody($desc)
@@ -315,7 +313,7 @@ class General extends Settings {
 			// Running latest version already
 			else
 			{
-				ee('Alert')->makeBanner('running-current')
+				ee('CP/Alert')->makeBanner('running-current')
 					->asSuccess()
 					->withTitle(lang('running_current'))
 					->addToBody(sprintf(lang('running_current_desc'), APP_VER))

@@ -181,7 +181,6 @@ class Text_ft extends EE_Fieldtype {
 		$settings = array(
 			array(
 				'title' => 'field_max_length',
-				'desc' => 'field_max_length_desc',
 				'fields' => array(
 					'field_maxl' => array(
 						'type' => 'text',
@@ -191,7 +190,6 @@ class Text_ft extends EE_Fieldtype {
 			),
 			array(
 				'title' => 'field_fmt',
-				'desc' => 'field_fmt_desc',
 				'fields' => array(
 					'field_fmt' => array(
 						'type' => 'select',
@@ -218,7 +216,6 @@ class Text_ft extends EE_Fieldtype {
 
 		$settings[] = array(
 			'title' => 'field_text_direction',
-			'desc' => 'field_text_direction_desc',
 			'fields' => array(
 				'field_text_direction' => array(
 					'type' => 'select',
@@ -247,7 +244,7 @@ class Text_ft extends EE_Fieldtype {
 
 			if ($this->content_type() != 'grid')
 			{
-				$settings[] = array(
+				$field_tools = array(
 					'title' => 'field_tools',
 					'desc' => 'field_tools_desc',
 					'fields' => array(
@@ -269,6 +266,17 @@ class Text_ft extends EE_Fieldtype {
 						)
 					)
 				);
+
+				$emoticons_installed = ee('Model')->get('Module')
+					->filter('module_name', 'Emoticon')
+					->count();
+
+				if ( ! $emoticons_installed)
+				{
+					unset($field_tools['fields']['field_show_smileys']);
+				}
+
+				$settings[] = $field_tools;
 			}
 		}
 

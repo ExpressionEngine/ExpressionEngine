@@ -38,9 +38,6 @@ class Rank extends Model {
 		'rank_min_posts' => 'int'
 	);
 
-	// protected static $_relationships = array(
-	// );
-
 	protected static $_validation_rules = array(
 		'rank_title'     => 'required',
 		'rank_min_posts' => 'required',

@@ -2,6 +2,8 @@
 
 $lang = array(
 
+'profile_header' => '%s Profile',
+
 'delete_member' => 'Delete Member',
 
 'disallowed_screen_chars' => 'Screen Name contains illegal characters',
@@ -187,8 +189,6 @@ Used in the control panel only.',
 
 "date_format" => "Date & time format",
 
-"date_format_desc" => "Your preferred date and time formats.<br><i>Used in the control panel only.</i>",
-
 "time_format" => "Time Formatting",
 
 "24_hour" => "24 Hour",
@@ -199,7 +199,7 @@ Used in the control panel only.',
 
 'time_format' => 'Time Formatting',
 
-'your_html_buttons' => 'HTML Formatting Buttons',
+'your_html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Formatting Buttons',
 
 'change_password' => 'Change Password',
 
@@ -213,7 +213,7 @@ Used in the control panel only.',
 
 'email_options' => 'Options',
 
-'email_options_desc' => 'Send me e-mails...',
+'email_options_desc' => 'Send me emails',
 
 'edit_subscriptions' => 'View Subscriptions',
 
@@ -222,10 +222,6 @@ Used in the control panel only.',
 'customize_cp' => 'Customize Control Panel',
 
 'cp_homepage' => 'Control Panel Homepage',
-
-'cp_theme' => 'Control Panel Theme',
-
-'myaccount_cp_theme' => 'Control Panel Theme',
 
 'choose_theme' => 'Choose Control Panel Theme',
 
@@ -367,9 +363,9 @@ Used in the control panel only.',
 
 'password_change_warning' => 'Note: You have changed your password so you will have to log back in.',
 
-'html_buttons' => 'HTML Formatting Buttons',
+'html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Buttons',
 
-'html_buttons_updated' => 'HTML Buttons Updated',
+'html_buttons_updated' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Buttons Updated',
 
 'only_self_qucklink_access' => 'You are not allowed to access another member\'s Quick Links',
 
@@ -389,13 +385,7 @@ Used in the control panel only.',
 
 'edit_quick_link' => 'Edit Quick Link',
 
-'link_title' => 'Quick Link name',
-
-'link_title_desc' => 'Name this quick link.',
-
-'link_url' => 'Quick Link URL',
-
-'link_url_desc' => 'URL Location for this quick link.',
+'link_url' => 'URL',
 
 'link_order' => 'Order',
 
@@ -414,10 +404,6 @@ Used in the control panel only.',
 'bookmarklet_created' => 'Bookmarklet Created',
 
 'bookmarklet_info' => 'A bookmarklet allows you to add entries to your channel without logging into the full control panel.',
-
-'bookmarklet_name' => 'Bookmarklet Name',
-
-'bookmarklet_name_desc' => 'Name this bookmarklet, single word, no spaces.',
 
 'bookmarklet_field' => 'Channel & Channel Field',
 
@@ -449,7 +435,7 @@ Used in the control panel only.',
 
 'login_as_member' => 'Login as Member',
 
-'html_buttons_updated' => 'HTML Buttons Updated',
+'html_buttons_updated' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Buttons Updated',
 
 'sidebar_updated' => 'Sidebar State Updated',
 
@@ -475,6 +461,12 @@ Please <a href="%s">contact your System Admin</a> if you feel this is incorrect.
 'change_avatar_desc' => 'Add an avatar to your profile.',
 
 'blocked_members' => 'Blocked Members',
+
+'cp_settings' => 'CP Settings',
+
+'default_cp_homepage_myaccount_desc' => 'Set your homepage for the control panel.',
+
+'member_group_default' => 'Member group default',
 
 'email_username' => 'Email %s',
 

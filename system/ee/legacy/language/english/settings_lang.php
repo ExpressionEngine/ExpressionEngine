@@ -20,6 +20,8 @@ $lang = array(
 
 'comment_settings' => 'Comment Settings',
 
+'html_buttons' => '<abbr title="Hyper-Text Markup Language">HTML</abbr> Buttons',
+
 'template_settings' => 'Template Settings',
 
 'pages_settings' => 'Pages Settings',
@@ -40,17 +42,15 @@ $lang = array(
 
 'captcha' => 'CAPTCHA',
 
+'system_settings' => 'System Settings',
+
 /**
  * General Settings
  */
 
 'site_name' => 'Name',
 
-'site_name_desc' => 'Full descriptive name of this site.',
-
 'site_short_name' => 'Short name',
-
-'site_short_name_desc' => 'Short name for this site.<br /><i>No spaces. Underscores and dashes are allowed.</i>',
 
 'site_short_name_taken' => 'This short name is already taken.',
 
@@ -62,7 +62,7 @@ $lang = array(
 
 'version_autocheck_desc' => 'When set to <b>auto</b>, ExpressionEngine will automatically check for newer versions of the software.',
 
-'enable_msm' => 'Enable <abbr title="Multi-Site Manager">MSM</abbr>?',
+'enable_msm' => 'Enable Site Manager?',
 'enable_msm_desc' => 'When set to <b>enable</b>, super admins and member groups with permissions will be able to manage additional websites from the <abbr title="Control Panel">CP</abbr>.',
 
 'online' => 'Online',
@@ -77,21 +77,13 @@ $lang = array(
 
 'defaults' => 'Defaults',
 
-'cp_theme' => '<abbr title="Control Panel">CP</abbr> theme',
-
 'language' => 'Language',
-
-'language_desc' => 'Default language.<br><i>Used in the control panel only.</i>',
 
 'date_time_settings' => 'Date &amp; Time Settings',
 
 'timezone' => 'Timezone',
 
-'timezone_desc' => 'Default local timezone.',
-
 'date_time_fmt' => 'Date &amp; time format',
-
-'date_time_fmt_desc' => 'Default date and time formats.<br><i>Used in the control panel only.</i>',
 
 "24_hour" => "24-hour",
 
@@ -103,10 +95,6 @@ $lang = array(
 
 'btn_save_settings' => 'Save Settings',
 
-'preferences_updated' => 'Preferences updated',
-
-'preferences_updated_desc' => 'Your preferences have been saved successfully.',
-
 'running_current' => 'ExpressionEngine is up to date',
 
 'running_current_desc' => 'ExpressionEngine %s is the latest version.',
@@ -116,10 +104,6 @@ $lang = array(
 'version_update_available' => 'A newer version of ExpressionEngine is available',
 
 'version_update_inst' => 'ExpressionEngine %s is available. <a href="%s">Download the latest version</a> and follow the <a href="%s">update instructions</a>.',
-
-'settings_save_error' => 'Attention: Settings not saved',
-
-'settings_save_error_desc' => 'We were unable to save your settings, please review and fix errors below.',
 
 /**
  * License & Registration
@@ -228,14 +212,6 @@ $lang = array(
 
 'smtp_server_desc' => 'URL location of your <mark>SMTP server</mark>.',
 
-'smtp_username' => 'Username',
-
-'smtp_username_desc' => 'Username of your <mark>SMTP server</mark>.',
-
-'smtp_password' => 'Password',
-
-'smtp_password_desc' => 'Password of your <mark>SMTP server</mark>.',
-
 'sending_options' => 'Sending Options',
 
 'mail_format' => 'Mail format',
@@ -262,17 +238,13 @@ $lang = array(
  * Debugging & Output
  */
 
-'enable_debugging' => 'Enable debugging?',
+'enable_errors' => 'Enable error reporting?',
 
-'enable_debugging_desc' => 'When set to <b>enable</b>, super admins and member groups with permissions will see PHP/MySQL errors when they occur.',
+'enable_errors_desc' => 'When set to <b>enable</b>, super admins and member groups with permissions will see PHP/MySQL errors when they occur.',
 
-'show_profiler' => 'Display profiler?',
+'show_profiler' => 'Enable debugging?',
 
-'show_profiler_desc' => 'When set to <b>yes</b>, super admins and member groups with permissions will see benchmark results, all SQL queries, and submitted form data displayed at the bottom of the browser window.',
-
-'template_debugging' => 'Display template debugging?',
-
-'template_debugging_desc' => 'When set to <b>yes</b>, super admins and member groups with permissions will see a list of details concerning the processing of the page.',
+'show_profiler_desc' => 'When set to <b>enable</b>, super admins and member groups with permissions will see benchmark results, all SQL queries, and submitted form data displayed at the bottom of the browser window.',
 
 'output_options' => 'Output Options',
 
@@ -527,11 +499,7 @@ $lang = array(
 
 'prv_msg_max_chars' => 'Maximum characters',
 
-'prv_msg_max_chars_desc' => 'Maximum allowed characters in personal messages.',
-
 'prv_msg_html_format' => 'Formatting',
-
-'prv_msg_html_format_desc' => 'Select type of formatting to use for personal messages.',
 
 "html_safe" => "Safe HTML only",
 
@@ -550,8 +518,6 @@ $lang = array(
 'prv_msg_upload_path_desc' => 'Full path location for your <mark>attachement</mark> directory.',
 
 'prv_msg_max_attachments' => 'Maximum attachments',
-
-'prv_msg_max_attachments_desc' => 'Maximum allowed attachments per personal message.',
 
 'prv_msg_attach_maxsize' => 'Maximum file size (<abbr title="kilobyte">kb</abbr>)',
 
@@ -587,15 +553,9 @@ $lang = array(
 
 'avatar_max_width' => 'Maximum width',
 
-'avatar_max_width_desc' => 'Maximum allowed width of images uploaded for use as an avatar by members.',
-
 'avatar_max_height' => 'Maximum height',
 
-'avatar_max_height_desc' => 'Maximum allowed height of images uploaded for use as an avatar by members.',
-
 'avatar_max_kb' => 'Maximum file size (<abbr title="kilobytes">kb</abbr>)',
-
-'avatar_max_kb_desc' => 'Maximum allowed file size of images uploaded for use as an avatar by members.',
 
 /**
  * CAPTCHA
@@ -753,8 +713,6 @@ $lang = array(
 
 'banishment_type' => 'Lock out action',
 
-'banishment_type_desc' => 'When a member meets the lock out requirement.',
-
 'banish_404' => 'Send to 404',
 
 'banish_redirect' => 'Redirect to URL',
@@ -766,72 +724,6 @@ $lang = array(
 'banishment_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location for locked out members.',
 
 'banishment_message' => 'Message',
-
-'banishment_message_desc' => 'Displayed using <mark>user messages</mark> template.',
-
-/**
- * Pages Settings
- */
-
-'pages_display_urls' => 'Display of <abbr title="Unified Resource Locator">URL</abbr>s?',
-
-'pages_display_urls_desc' => 'When set to <b>Nested</b>, <abbr title="Unified Resource Locator">URL</abbr>s will be displayed in a nested hierarchy.',
-
-'pages_url_nested' => 'Nested',
-
-'pages_url_not_nested' => 'Not Nested',
-
-'pages_channel' => 'Channel',
-
-'pages_channel_desc' => 'Default channel for creating new pages.',
-
-'pages_no_default' => 'No default',
-
-'pages_templates' => 'Templates',
-
-'pages_templates_desc' => 'Default templates for each channel.',
-
-/**
- * Commerce Settings
- */
-
-'commerce_settings' => 'Commerce Settings',
-
-'simple_commerce' => 'Simple Commerce',
-
-'commerce_ipn_notice' => 'Instant Payment Notification is a PayPal service that allows the processing of transactions on their site and then notifying ExpressionEngine when the transaction is complete and accepted. This allows purchases to not be stored and recorded in the Simple Commerce module until the transaction is finalized. ExpressionEngine\'s Simple Commerce module automates all of this behind the scenes so all you have to do is activate Instant Payment Notification on the PayPal site and provide them with the URL below. <a href="%s" rel="external">Learn More</a>',
-
-'commerce_ipn_url' => '<abbr title="Instant Payment Notification">IPN</abbr> <abbr title="Unified Resource Locator">URL</abbr>',
-
-'commerce_ipn_url_desc' => '<abbr title="Unified Resource Locator">URL</abbr> for PayPal to notify on transaction completion.',
-
-'commerce_paypal_email' => 'PayPal account Email',
-
-'commerce_paypal_email_desc' => 'Email address associated with your PayPal business account.',
-
-'commerce_encrypt_paypal' => 'Encrypt PayPal buttons and links?',
-
-'commerce_encrypt_paypal_desc' => 'When set to <b>yes</b>, PayPal buttons and links will be JavaScript encrypted.',
-
-'commerce_paypal_cert_id' => 'Public certification <abbr title="Identifier">ID</abbr>',
-
-'commerce_paypal_cert_id_desc' => '<abbr title="Identifier">ID</abbr> given to public certificate by PayPal.',
-
-'commerce_cert_path' => 'Public certificate path',
-
-'commerce_cert_path_desc' => 'Full path to public certificate.',
-
-'commerce_key_path' => 'Private key path',
-
-'commerce_key_path_desc' => 'Full path to private key.',
-
-'commerce_paypal_cert_path' => 'PayPal certificate path',
-
-'commerce_paypal_cert_path_desc' => 'Full path to PayPal certificate.',
-
-'commerce_temp_path' => 'Temporary encrypted file path',
-
-'commerce_temp_path_desc' => 'Full path to temporary encrypted files.',
 
 ''=>''
 );

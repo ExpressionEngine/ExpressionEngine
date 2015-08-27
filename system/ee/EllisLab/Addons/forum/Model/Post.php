@@ -46,8 +46,43 @@ class Post extends Model {
 		'parse_smileys'    => 'boolString',
 	);
 
-	// protected static $_relationships = array(
-	// );
+	protected static $_relationships = array(
+		'Attachments' => array(
+			'type'  => 'hasMany',
+			'model' => 'Attachment'
+		),
+		'Author' => array(
+			'type'     => 'belongsTo',
+			'model'    => 'ee:Member',
+			'from_key' => 'author_id',
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'Post',
+				'type' => 'hasMany'
+			)
+		),
+		'Board' => array(
+			'type' => 'belongsTo'
+		),
+		'EditAuthor' => array(
+			'type'     => 'belongsTo',
+			'from_key' => 'post_edit_author',
+			'to_key'   => 'member_id',
+			'model'    => 'ee:Member',
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'Post',
+				'type' => 'hasMany',
+				'weak' => TRUE
+			)
+		),
+		'Forum' => array(
+			'type' => 'belongsTo'
+		),
+		'Topic' => array(
+			'type' => 'belongsTo'
+		),
+	);
 
 	protected static $_validation_rules = array(
 		'topic_id'         => 'boolString',
@@ -57,6 +92,11 @@ class Post extends Model {
 		'post_date'        => 'boolString',
 		'notify'           => 'enum[y,n]',
 		'parse_smileys'    => 'enum[y,n]',
+	);
+
+	protected static $_events = array(
+		'afterInsert',
+		'beforeDelete',
 	);
 
 	protected $post_id;
@@ -71,5 +111,23 @@ class Post extends Model {
 	protected $post_edit_author;
 	protected $notify;
 	protected $parse_smileys;
+
+	public function onAfterInsert()
+	{
+		$this->Forum->forum_total_posts++;
+		$this->Forum->save();
+
+		$this->Author->total_forum_posts++;
+		$this->Author->save();
+	}
+
+	public function onAfterDelete()
+	{
+		$this->Forum->forum_total_posts--;
+		$this->Forum->save();
+
+		$this->Author->total_forum_posts--;
+		$this->Author->save();
+	}
 
 }

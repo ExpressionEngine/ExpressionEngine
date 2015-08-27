@@ -29,12 +29,14 @@ use EllisLab\ExpressionEngine\Service\Model\Column\SerializedType;
  */
 class Json extends SerializedType {
 
+	protected $data = array();
+
 	/**
 	 * Called when the column is fetched from db
 	 */
 	public static function unserialize($db_data)
 	{
-		return strlen($db_data) ? json_decode($db_data) : array();
+		return strlen($db_data) ? json_decode($db_data, TRUE) : array();
 	}
 
 	/**

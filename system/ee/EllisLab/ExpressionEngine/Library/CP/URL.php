@@ -50,6 +50,11 @@ class URL {
 	public $base;
 
 	/**
+	 * @var string $requested_uri The URI string/path of where we are at now
+	 */
+	protected $requested_uri;
+
+	/**
 	 * Create a CP Path
 	 *
 	 * @param	string	$path		The path (i.e. 'logs/cp')
@@ -59,7 +64,7 @@ class URL {
 	 *                        		include when creating CP URLs that are to
 	 *                        		be used on the front end
 	 */
-	public function __construct($path, $session_id = NULL, $qs = array(), $cp_url = '')
+	public function __construct($path, $session_id = NULL, $qs = array(), $cp_url = '', $requested_uri = '')
 	{
 		// PHP 5.3 will not throw an error on array to string conversion
 		if (is_array($path) || is_array($session_id))
@@ -70,6 +75,7 @@ class URL {
 		$this->path = (string) $path;
 		$this->session_id = (string) $session_id;
 		$this->base = (empty($cp_url)) ? SELF : (string) $cp_url;
+		$this->requested_uri = $requested_uri;
 
 		if (is_array($qs))
 		{
@@ -79,6 +85,16 @@ class URL {
 		{
 			parse_str(str_replace(AMP, '&', $qs), $this->qs);
 		}
+	}
+
+	public function isTheRequestedURI()
+	{
+		return ('cp/' . $this->path == $this->requested_uri);
+	}
+
+	public function matchesTheRequestedURI()
+	{
+		return (strpos($this->requested_uri, $this->path) !== FALSE);
 	}
 
 	/**

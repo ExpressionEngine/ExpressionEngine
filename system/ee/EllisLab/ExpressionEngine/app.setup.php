@@ -7,13 +7,18 @@ use EllisLab\ExpressionEngine\Service\Addon;
 use EllisLab\ExpressionEngine\Service\Alert;
 use EllisLab\ExpressionEngine\Service\Config;
 use EllisLab\ExpressionEngine\Service\Database;
+use EllisLab\ExpressionEngine\Service\EntryListing;
 use EllisLab\ExpressionEngine\Service\Filter;
 use EllisLab\ExpressionEngine\Service\Grid;
 use EllisLab\ExpressionEngine\Service\License;
+use EllisLab\ExpressionEngine\Service\Modal;
 use EllisLab\ExpressionEngine\Service\Model;
 use EllisLab\ExpressionEngine\Service\Validation;
 use EllisLab\ExpressionEngine\Service\View;
+use EllisLab\ExpressionEngine\Service\Sidebar;
 use EllisLab\ExpressionEngine\Service\Thumbnail;
+use EllisLab\Addons\Spam\Service\Spam;
+use EllisLab\ExpressionEngine\Service\Profiler;
 
 // TODO should put the version in here at some point ...
 return array(
@@ -24,9 +29,25 @@ return array(
 
 	'namespace' => 'EllisLab\ExpressionEngine',
 
-	'views' => '../../views',
-
 	'services' => array(
+
+		'CP/EntryListing' => function($ee, $search_value)
+		{
+			 return new EntryListing\EntryListing(
+				ee()->config->item('site_id'),
+				(ee()->session->userdata['group_id'] == 1),
+				array_keys(ee()->session->userdata['assigned_channels']),
+				ee()->localize->now,
+				$search_value
+			);
+		},
+
+		'CP/Filter' => function($ee)
+		{
+			$filters = new Filter\FilterFactory($ee->make('View', '_shared/filters'));
+			$filters->setDIContainer($ee);
+			return $filters;
+		},
 
 		'CP/GridInput' => function($ee, $config = array())
 		{
@@ -51,13 +72,18 @@ return array(
 			$session_id = $session_id ?: ee()->session->session_id();
 			$cp_url = (empty($cp_url)) ? SELF : (string) $cp_url;
 
-			return new Library\CP\URL($path, $session_id, $qs, $cp_url);
+			return new Library\CP\URL($path, $session_id, $qs, $cp_url, ee()->uri->uri_string);
 		},
 
 		'CP/Pagination' => function($ee, $total_count)
 		{
 			$view = $ee->make('View')->make('_shared/pagination');
 			return new Library\CP\Pagination($total_count, $view);
+		},
+
+		'CSV' => function ($ee)
+		{
+			return new Library\Data\CSV();
 		},
 
 		'db' => function($ee)
@@ -80,13 +106,6 @@ return array(
 			return new View\ViewFactory($ee);
 		},
 
-		'Filter' => function($ee)
-		{
-			$filters = new Filter\FilterFactory($ee->make('View', '_shared/filters'));
-			$filters->setDIContainer($ee);
-			return $filters;
-		},
-
 		'Model' => function($ee)
 		{
 			$frontend = new Model\Frontend($ee->make('Model/Datastore'));
@@ -95,9 +114,19 @@ return array(
 			return $frontend;
 		},
 
+		'Spam' => function($ee)
+		{
+			return new Spam();
+		},
+
 		'Thumbnail' => function($ee)
 		{
 			return new Thumbnail\ThumbnailFactory();
+		},
+
+		'Profiler' => function($ee)
+		{
+			return new Profiler\Profiler(ee()->lang, ee('View'));
 		}
 
 	),
@@ -109,27 +138,38 @@ return array(
 			return new Addon\Factory($ee->make('App'));
 		},
 
-		'Alert' => function($ee)
-		{
-			$view = $ee->make('View')->make('_shared/alert');
-			return new Alert\AlertCollection(ee()->session, $view);
-		},
-
 		'Captcha' => function($ee)
 		{
 			return new Library\Captcha();
 		},
 
+		'CP/Alert' => function($ee)
+		{
+			$view = $ee->make('View')->make('_shared/alert');
+			return new Alert\AlertCollection(ee()->session, $view);
+		},
+
+		'CP/Modal' => function($ee)
+		{
+			return new Modal\ModalCollection;
+		},
+
+		'CP/Sidebar' => function($ee)
+		{
+			$view = $ee->make('View');
+			return new Sidebar\Sidebar($view);
+		},
+
 		'Config' => function($ee)
 		{
-			return new Config\Factory();
+			return new Config\Factory($ee);
 		},
 
 		'Database' => function($ee)
 		{
-			$db_config = new Database\DBConfig(
-				$ee->getConfigFile()
-			);
+			$config = $ee->make('Config')->getFile();
+
+			$db_config = new Database\DBConfig($config);
 
 			return new Database\Database($db_config);
 		},
@@ -149,6 +189,7 @@ return array(
 			return new Model\DataStore(
 				$ee->make('Database'),
 				$app->getModels(),
+				$app->forward('getModelDependencies'),
 				$ee->getPrefix()
 			);
 		},
@@ -226,36 +267,31 @@ return array(
 			'Snippet' => 'Model\Template\Snippet',
 			'SpecialtyTemplate' => 'Model\Template\SpecialtyTemplate',
 
-		# EllisLab\ExpressionEngine\Module..
-
 			// ..\Channel
-			'Channel' => 'Module\Channel\Model\Channel',
-			'ChannelFieldGroup'=> 'Module\Channel\Model\ChannelFieldGroup',
-			'ChannelField' => 'Module\Channel\Model\ChannelField',
-			'ChannelEntry' => 'Module\Channel\Model\ChannelEntry',
-			'ChannelEntryAutosave' => 'Module\Channel\Model\ChannelEntryAutosave',
-			'ChannelFormSettings' => 'Module\Channel\Model\ChannelFormSettings',
-			'ChannelLayout' => 'Module\Channel\Model\ChannelLayout',
+			'Channel' => 'Model\Channel\Channel',
+			'ChannelFieldGroup'=> 'Model\Channel\ChannelFieldGroup',
+			'ChannelField' => 'Model\Channel\ChannelField',
+			'ChannelEntry' => 'Model\Channel\ChannelEntry',
+			'ChannelEntryAutosave' => 'Model\Channel\ChannelEntryAutosave',
+			'ChannelEntryVersion' => 'Model\Channel\ChannelEntryVersion',
+			'ChannelFormSettings' => 'Model\Channel\ChannelFormSettings',
+			'ChannelLayout' => 'Model\Channel\ChannelLayout',
 
 			// ..\Comment
-			'Comment' => 'Module\Comment\Model\Comment',
-			'CommentSubscription' => 'Module\Comment\Model\CommentSubscription',
-
-			// ..\MailingList
-			'MailingList' => 'Module\MailingList\Model\MailingList',
-			'MailingListQueue' => 'Module\MailingList\Model\MailingListQueue',
-			'MailingListUser' => 'Module\MailingList\Model\MailingListUser',
+			'Comment' => 'Model\Comment\Comment',
+			'CommentSubscription' => 'Model\Comment\CommentSubscription',
 
 			// ..\Member
-			'HTMLButton' => 'Module\Member\Model\HTMLButton',
-			'Member' => 'Module\Member\Model\Member',
-			'MemberField' => 'Module\Member\Model\MemberField',
-			'MemberGroup' => 'Module\Member\Model\MemberGroup',
+			'HTMLButton' => 'Model\Member\HTMLButton',
+			'Member' => 'Model\Member\Member',
+			'MemberField' => 'Model\Member\MemberField',
+			'MemberGroup' => 'Model\Member\MemberGroup',
 
 			// ..\Search
-			'SearchLog' => 'Module\Search\Model\SearchLog',
+			'SearchLog' => 'Model\Search\SearchLog',
 
-			// TODO: FIND A NEW HOME FOR THESE
-			'EmailCache' => 'Model\EmailCache',
+			// ..\Email
+			'EmailCache' => 'Model\Email\EmailCache',
+			'EmailTracker' => 'Model\Email\EmailTracker',
 	)
 );

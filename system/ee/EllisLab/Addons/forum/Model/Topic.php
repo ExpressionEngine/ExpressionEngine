@@ -54,8 +54,70 @@ class Topic extends Model {
 		'parse_smileys'       => 'boolString',
 	);
 
-	// protected static $_relationships = array(
-	// );
+	protected static $_relationships = array(
+		'Attachments' => array(
+			'type'  => 'hasMany',
+			'model' => 'Attachment'
+		),
+		'Author' => array(
+			'type'     => 'belongsTo',
+			'model'    => 'ee:Member',
+			'from_key' => 'author_id',
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'Topic',
+				'type' => 'hasMany'
+			)
+		),
+		'Board' => array(
+			'type' => 'belongsTo'
+		),
+		'EditAuthor' => array(
+			'type'     => 'belongsTo',
+			'from_key' => 'topic_edit_author',
+			'to_key'   => 'member_id',
+			'model'    => 'ee:Member',
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'Topic',
+				'type' => 'hasMany',
+				'weak' => TRUE
+			)
+		),
+		'Forum' => array(
+			'type' => 'belongsTo'
+		),
+		'LastPost' => array(
+			'type'     => 'hasOne',
+			'model'    => 'Post',
+			'from_key' => 'last_post_id',
+			'to_key'   => 'post_id',
+		),
+		'LastPostAuthor' => array(
+			'type'     => 'belongsTo',
+			'model'    => 'ee:Member',
+			'from_key' => 'last_post_author_id',
+			'to_key'   => 'member_id',
+			'weak'     => TRUE,
+			'inverse' => array(
+				'name' => 'Topic',
+				'type' => 'hasMany',
+				'weak' => TRUE
+			)
+		),
+		'Polls' => array(
+			'type'  => 'hasMany',
+			'model' => 'Poll'
+		),
+		'PollVotes' => array(
+			'type'  => 'hasMany',
+			'model' => 'PollVote'
+		),
+		'Posts' => array(
+			'type'  => 'hasMany',
+			'model' => 'Post'
+		),
+	);
 
 	protected static $_validation_rules = array(
 		'forum_id'            => 'required',
@@ -69,6 +131,11 @@ class Topic extends Model {
 		'topic_date'          => 'required',
 		'notify'              => 'enum[y,n]',
 		'parse_smileys'       => 'enum[y,n]',
+	);
+
+	protected static $_events = array(
+		'afterInsert',
+		'beforeDelete',
 	);
 
 	protected $topic_id;
@@ -93,5 +160,23 @@ class Topic extends Model {
 	protected $last_post_id;
 	protected $notify;
 	protected $parse_smileys;
+
+	public function onAfterInsert()
+	{
+		$this->Forum->forum_total_topics++;
+		$this->Forum->save();
+
+		$this->Author->total_forum_topics++;
+		$this->Author->save();
+	}
+
+	public function onAfterDelete()
+	{
+		$this->Forum->forum_total_topics--;
+		$this->Forum->save();
+
+		$this->Author->total_forum_topics--;
+		$this->Author->save();
+	}
 
 }

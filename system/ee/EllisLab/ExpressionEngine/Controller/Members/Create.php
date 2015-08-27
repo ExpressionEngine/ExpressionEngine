@@ -63,14 +63,12 @@ class Create extends Members {
 				),
 				array(
 					'title' => 'username',
-					'desc' => 'username_description',
 					'fields' => array(
 						'username' => array('type' => 'text', 'required' => TRUE)
 					)
 				),
 				array(
 					'title' => 'mbr_email_address',
-					'desc' => 'mbr_email_address_desc',
 					'fields' => array(
 						'email' => array('type' => 'text', 'required' => TRUE)
 					)
@@ -101,7 +99,7 @@ class Create extends Members {
 			array(
 				 'field'   => 'username',
 				 'label'   => 'lang:username',
-				 'rules'   => 'required|trim|valid_username[new]'
+				 'rules'   => 'required|trim|valid_username'
 			),
 			array(
 				 'field'   => 'email',
@@ -131,13 +129,19 @@ class Create extends Members {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
+			ee('CP/Alert')->makeInline('shared-form')
+				->asIssue()
+				->withTitle(lang('settings_save_error'))
+				->addToBody(lang('settings_save_error_desc'))
+				->now();
 		}
+
+		$this->generateSidebar('all_members');
 
 		ee()->view->base_url = $this->base_url;
 		ee()->view->ajax_validate = TRUE;
 		ee()->view->cp_page_title = lang('register_member');
-		ee()->view->save_btn_text = 'create_member';
+		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('member'));
 		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->render('settings/form', $vars);
 	}
@@ -298,7 +302,12 @@ class Create extends Members {
 		$this->session->set_flashdata(array(
 			'highlight_id' => $member_id
 		));
-		ee()->view->set_message('success', lang('member_updated'), lang('member_updated_desc'), TRUE);
+
+		ee('CP/Alert')->makeInline('view-members')
+			->asSuccess()
+			->withTitle(lang('member_updated'))
+			->addToBody(lang('member_updated_desc'))
+			->defer();
 
 		$this->functions->redirect(ee('CP/URL', 'members', array('sort_col' => 'member_id', 'sort_dir' => 'desc')));
 	}

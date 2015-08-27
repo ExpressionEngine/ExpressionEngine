@@ -38,7 +38,6 @@ class Site extends Model {
 
 	protected static $_type_classes = array(
 		'ChannelPreferences' => 'EllisLab\ExpressionEngine\Model\Site\Column\ChannelPreferences',
-		'MailingListPreferences' => 'EllisLab\ExpressionEngine\Model\Site\Column\MailingListPreferences',
 		'MemberPreferences' => 'EllisLab\ExpressionEngine\Model\Site\Column\MemberPreferences',
 		'SystemPreferences' => 'EllisLab\ExpressionEngine\Model\Site\Column\SystemPreferences',
 		'TemplatePreferences' => 'EllisLab\ExpressionEngine\Model\Site\Column\TemplatePreferences',
@@ -46,7 +45,6 @@ class Site extends Model {
 
 	protected static $_typed_columns = array(
 		'site_channel_preferences' => 'ChannelPreferences',
-		'site_mailinglist_preferences' => 'MailingListPreferences',
 		'site_member_preferences' => 'MemberPreferences',
 		'site_system_preferences' => 'SystemPreferences',
 		'site_template_preferences' => 'TemplatePreferences',
@@ -62,6 +60,14 @@ class Site extends Model {
 		'Stats' => array(
 			'type' => 'HasOne'
 		),
+		'Statuses' => array(
+			'model' => 'Status',
+			'type' => 'hasMany'
+		),
+		'StatusGroups' => array(
+			'model' => 'StatusGroup',
+			'type' => 'hasMany'
+		),
 		'TemplateGroups' => array(
 			'model' => 'TemplateGroup',
 			'type' => 'hasMany'
@@ -76,6 +82,14 @@ class Site extends Model {
 		),
 		'Channels' => array(
 			'model' => 'Channel',
+			'type' => 'hasMany'
+		),
+		'Files' => array(
+			'model' => 'File',
+			'type' => 'hasMany'
+		),
+		'UploadDestinations' => array(
+			'model' => 'UploadDestination',
 			'type' => 'hasMany'
 		)
 	);
@@ -95,7 +109,6 @@ class Site extends Model {
 	protected $site_name;
 	protected $site_description;
 	protected $site_system_preferences;
-	protected $site_mailinglist_preferences;
 	protected $site_member_preferences;
 	protected $site_template_preferences;
 	protected $site_channel_preferences;

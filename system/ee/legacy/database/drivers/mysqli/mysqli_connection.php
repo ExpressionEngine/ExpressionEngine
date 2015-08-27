@@ -76,27 +76,12 @@ class CI_DB_mysqli_connection {
 			PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
 		);
 
-		try {
-			$this->connection = @new PDO(
-				$dsn,
-				$username,
-				$password,
-				$options
-			);
-		}
-		catch (\Exception $e)
-		{
-			throw $e;
-
-			$message = $e->getMessage();
-
-			if ($this->testBadSocket($message))
-			{
-				$message = $this->getBadSocketMessage($hostname);
-			}
-
-			show_error($message);
-		}
+		$this->connection = @new PDO(
+			$dsn,
+			$username,
+			$password,
+			$options
+		);
 	}
 
 	/**
@@ -116,6 +101,7 @@ class CI_DB_mysqli_connection {
 	public function query($query)
 	{
 		$time_start = microtime(TRUE);
+		$memory_start = memory_get_usage();
 
 		try
 		{
@@ -127,10 +113,11 @@ class CI_DB_mysqli_connection {
 		}
 
 		$time_end = microtime(TRUE);
+		$memory_end = memory_get_usage();
 
 		if (isset($this->log))
 		{
-			$this->log->addQuery($query, $time_end-$time_start);
+			$this->log->addQuery($query, $time_end-$time_start, $memory_end-$memory_start);
 		}
 
 		return $result;
@@ -206,38 +193,4 @@ class CI_DB_mysqli_connection {
 	{
 		return isset($this->connection);
 	}
-
-	/**
-	 * Check if the error message might be caused by a bad socket
-	 *
-	 * @param String $message The error message
-	 * @return Bool Is socket error?
-	 */
-	private function testBadSocket($message)
-	{
-		return strpos($message, "SQLSTATE[HY000] [2002] No such file or directory") !== FALSE;
-	}
-
-	/**
-	 * Generate a message for when the socket connection fails.
-	 *
-	 * @param String $hostname Connection hostname
-	 * @return String Human error message
-	 */
-	private function getBadSocketMessage($hostname)
-	{
-		$message =  "Database Connection Error: Could not find socket: '{$hostname}'. ";
-
-		if ($hostname == 'localhost')
-		{
-			$message .= "Try using '127.0.0.1' instead.";
-		}
-		else
-		{
-			$message .= "Try connecting with an IP address.";
-		}
-
-		return $message;
-	}
-
 }

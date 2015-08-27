@@ -6,7 +6,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 
 use EllisLab\ExpressionEngine\Library\CP\Table;
-use EllisLab\ExpressionEngine\Model\EmailCache;
+use EllisLab\ExpressionEngine\Model\Email\EmailCache;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -141,8 +141,8 @@ class Communicate extends Utilities {
 
 	/**
 	 * Prepopulate form to send to specific member
-	 * 
-	 * @param int $id 
+	 *
+	 * @param int $id
 	 * @access public
 	 * @return void
 	 */
@@ -375,7 +375,7 @@ class Communicate extends Utilities {
 
 		ee()->view->set_refresh(ee('CP/URL', 'utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
 
-		ee('Alert')->makeStandard('batchmode')
+		ee('CP/Alert')->makeStandard('batchmode')
 			->asWarning()
 			->withTitle(lang('batchmode_ready_to_begin'))
 			->addToBody(lang('batchmode_warning'))
@@ -436,7 +436,7 @@ class Communicate extends Utilities {
 
 			ee()->view->set_refresh(ee('CP/URL', 'utilities/communicate/batch/' . $email->cache_id), 6, TRUE);
 
-			ee('Alert')->makeStandard('batchmode')
+			ee('CP/Alert')->makeStandard('batchmode')
 				->asWarning()
 				->withTitle($message)
 				->addToBody(lang('batchmode_warning'))
@@ -585,7 +585,7 @@ class Communicate extends Utilities {
 	private function deliverEmail(EmailCache $email, $to, $cc = NULL, $bcc = NULL)
 	{
 		ee()->email->clear(TRUE);
-		ee()->email->wordwrap  = ($email->wordwrap == 'y') ? TRUE : FALSE;
+		ee()->email->wordwrap  = $email->wordwrap;
 		ee()->email->mailtype  = $email->mailtype;
 		ee()->email->from($email->from_email, $email->from_name);
 		ee()->email->to($to);
@@ -747,7 +747,7 @@ class Communicate extends Utilities {
 		{
 			$data[] = array(
 				htmlentities($email->subject, ENT_QUOTES, 'UTF-8'),
-				ee()->localize->human_time($email->cache_date),
+				ee()->localize->human_time($email->cache_date->format('U')),
 				$email->total_sent,
 				array('toolbar_items' => array(
 					'view' => array(
@@ -773,7 +773,20 @@ class Communicate extends Utilities {
 			// Prepare the $email object for use in the modal
 			$email->text_fmt = ($email->text_fmt != 'none') ?: 'br'; // Some HTML formatting for plain text
 			$email->subject = htmlentities($this->censorSubject($email), ENT_QUOTES, 'UTF-8');
-			$email->message = $this->formatMessage($email);
+
+			ee()->load->library('typography');
+			ee()->typography->initialize(array(
+				'bbencode_links' => FALSE,
+				'parse_images'	=> FALSE,
+				'parse_smileys'	=> FALSE
+			));
+
+			$email->message = ee()->typography->parse_type($email->message, array(
+				'text_format'    => ($email->text_fmt == 'markdown') ? 'markdown' : 'xhtml',
+				'html_format'    => 'all',
+				'auto_links'	 => 'n',
+				'allow_img_url'  => 'y'
+			));
 
 			$vars['emails'][] = $email;
 		}
@@ -801,7 +814,7 @@ class Communicate extends Utilities {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('view_email_cache') . ': <b>### ' . lang('emails') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		ee()->cp->render('utilities/communicate/sent', $vars);

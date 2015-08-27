@@ -37,6 +37,8 @@ abstract class Relation {
 	protected $to;
 	protected $name;
 	protected $is_weak;
+	protected $inverse;
+	protected $inverse_info;
 
 	protected $to_table;
 	protected $from_table;
@@ -115,23 +117,19 @@ abstract class Relation {
 	abstract protected function deriveKeys();
 
 	/**
-	 * TODO this is a pretty slow way to do this
+	 * Reverse this relation. This allows us to set both sides of an
+	 * association when those get set.
+	 *
+	 * @return Relation Inverse of this relation or NULL
 	 */
 	public function getInverse()
 	{
-		$relations = $this->datastore->getAllRelations($this->getTargetModel());
-
-		foreach ($relations as $name => $relation)
+		if ( ! isset($this->inverse))
 		{
-			if ($relation->getTargetModel() == $this->getSourceModel())
-			{
-				// todo also check if reverse type
-				if (array_reverse($relation->getKeys()) == $this->getKeys())
-				{
-					return $relation;
-				}
-			}
+			$this->inverse = $this->datastore->getInverseRelation($this);
 		}
+
+		return $this->inverse;
 	}
 
 	/**
@@ -182,6 +180,11 @@ abstract class Relation {
 		return $this->to->getName();
 	}
 
+	public function isWeak()
+	{
+		return $this->is_weak;
+	}
+
 	/**
 	 *
 	 */
@@ -196,6 +199,24 @@ abstract class Relation {
 	public function getKeys()
 	{
 		return $this->key_tuple;
+	}
+
+	public function getInverseOptions()
+	{
+		return array(
+			'type' => $this->inverse_info['type'],
+			'name' => $this->inverse_info['name'],
+
+			'model' => $this->getSourceModel(),
+
+			'from_key' => $this->to_key,
+			'from_primary_key' => $this->to_primary_key,
+
+			'to_key' => $this->from_key,
+			'to_primary_key' => $this->from_primary_key,
+
+			'weak' => $this->is_weak
+		);
 	}
 
 	/**
@@ -216,6 +237,11 @@ abstract class Relation {
 		if (isset($options['to_key']))
 		{
 			$this->to_key = $options['to_key'];
+		}
+
+		if (isset($options['inverse']))
+		{
+			$this->inverse_info = $options['inverse'];
 		}
 
 		$this->from_primary_key = $options['from_primary_key'];

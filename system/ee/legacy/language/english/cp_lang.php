@@ -471,7 +471,9 @@ $lang = array(
 'missing_pubkey' => 'The ExpressionEngine product is missing data. Pleas visit <a href="https://store.ellislab.com/manage" rel="external">ElisLab.com</a> and download a fresh copy.',
 'invalid_license_number' => 'The license file provided is invalid. <a href="%s">Please upload your license.</a>',
 
-'btn_fix_errors' => 'Fix Errors, Please',
+'btn_save' => 'Save %s',
+
+'btn_fix_errors' => 'Errors Found',
 
 'btn_saving' => 'Saving...',
 
@@ -488,6 +490,8 @@ $lang = array(
 'menu_create' => 'Create',
 
 'new_channel' => 'New Channel',
+
+'view_all' => 'View All',
 
 'new_site' => 'New Site',
 
@@ -534,13 +538,23 @@ $lang = array(
 
 'url_title_lc' => 'URL title',
 
-'url_title_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
-
 'description' => 'Description',
 
 'image' => 'Image',
 
 'no_rows_returned' => 'No rows returned',
+
+'used_in_cp_only' => 'Used in the control panel only.',
+
+'alphadash_desc' => '<i>No spaces. Underscores and dashes are allowed.</i>',
+
+'preferences_updated' => 'Preferences updated',
+
+'preferences_updated_desc' => 'Your preferences have been saved successfully.',
+
+'settings_save_error' => 'Attention: Settings not saved',
+
+'settings_save_error_desc' => 'We were unable to save your settings, please review and fix errors below.',
 
 /**
  * Footer
@@ -578,8 +592,6 @@ $lang = array(
 
 'about_expressionengine' => 'About ExpressionEngine',
 
-'manual' => 'Manual',
-
 'session_timeout' => 'Your administration access session has timed out. Please use the form below to log back into your control panel.',
 
 'login' =>
@@ -609,6 +621,23 @@ $lang = array(
 'confirm_show_all_desc' => 'Viewing more than %d items at a time may result in reduced performance.',
 
 'confirm_show_all_btn' => 'Damn the torpedoes, full speed ahead!',
+
+'all_items' => 'All %d items',
+
+
+//----------------------------
+// HTML Buttons
+//----------------------------
+
+'html_btn_bold' => 'Bold text',
+'html_btn_italic' => 'Italic text',
+'html_btn_strike' => 'Strikethrough text',
+'html_btn_ins' => 'Insert text',
+'html_btn_ul' => 'Unordered list',
+'html_btn_ol' => 'Ordered list',
+'html_btn_blockquote' => 'Blockquote',
+'html_btn_anchor' => 'Link',
+'html_btn_picture' => 'Image',
 
 ''=>''
 );

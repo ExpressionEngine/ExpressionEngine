@@ -10,7 +10,7 @@ class ControlPanelPage < SitePrism::Page
 	element :select_all, 'th.check-ctrl input'
 	element :sort_col, 'table th.highlight'
 	elements :sort_links, 'table a.sort'
-	element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]'
+	element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]', visible: false
 	element :action_submit_button, 'form fieldset.tbl-bulk-act input.submit'
 
 	# Pagination
@@ -48,7 +48,7 @@ class ControlPanelPage < SitePrism::Page
 	end
 
 	def submit_enabled?
-		submit_buttons[0].value != 'Fix Errors, Please' &&
+		submit_buttons[0].value != 'Errors Found' &&
 		submit_buttons[0][:disabled] != true
 	end
 

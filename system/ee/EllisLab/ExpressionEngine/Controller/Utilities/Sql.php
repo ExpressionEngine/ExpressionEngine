@@ -92,7 +92,7 @@ class Sql extends Utilities {
 			);
 		}
 
-		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => TRUE));
+		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => TRUE, 'limit' => 0));
 		$table->setColumns(
 			array(
 				'table_name',
@@ -112,11 +112,6 @@ class Sql extends Utilities {
 		$table->setData($data);
 
 		$vars['table'] = $table->viewData(ee('CP/URL', 'utilities/sql'));
-
-		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
-			->perPage($vars['table']['limit'])
-			->currentPage($vars['table']['page'])
-			->render($vars['table']['base_url']);
 
 		ee()->view->cp_page_title = lang('sql_manager');
 		ee()->view->table_heading = lang('database_tables');
@@ -189,7 +184,7 @@ class Sql extends Utilities {
 		}
 
 		// Set up our table with automatic sorting and search capability
-		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => TRUE));
+		$table = ee('CP/Table', array('autosort' => TRUE, 'autosearch' => TRUE, 'limit' => 0));
 		$table->setColumns(array(
 			'table',
 			'status' => array(
@@ -200,11 +195,6 @@ class Sql extends Utilities {
 		$table->setData($data);
 		$table->setNoResultsText('no_tables_match');
 		$vars['table'] = $table->viewData(ee('CP/URL', 'utilities/sql/op-results'));
-
-		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
-			->perPage($vars['table']['limit'])
-			->currentPage($vars['table']['page'])
-			->render($vars['table']['base_url']);
 
 		ee()->view->cp_page_title = lang(strtolower($action).'_tables_results');
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'utilities/sql'), lang('sql_manager'));

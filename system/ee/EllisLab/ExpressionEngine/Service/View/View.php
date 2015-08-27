@@ -322,12 +322,18 @@ class View {
 	 */
 	protected function getPath()
 	{
-		$path = $this->provider->getPath().'/';
-		$view_path = $this->provider->get('views');
+		$path = $this->provider->getPath().'/View';
+		$old_path = $this->provider->getPath().'/views';
 
-		$path .= $view_path ?: 'views';
+		foreach (array($path, $old_path) as $path)
+		{
+			if (file_exists($path.'/'.$this->path.'.php'))
+			{
+				return $path.'/'.$this->path.'.php';
+			}
+		}
 
-		return $path.'/'.$this->path.'.php';
+		throw new \Exception('View file not found: '.htmlentities($this->path));
 	}
 }
 // EOF

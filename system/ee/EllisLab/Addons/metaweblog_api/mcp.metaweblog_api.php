@@ -93,14 +93,18 @@ class Metaweblog_api_mcp {
 				)
 			);
 
+			$edit_url = ee('CP/URL', 'addons/settings/metaweblog_api/modify', array('id' => $metaweblog->metaweblog_id));
 			$columns = array(
 				$metaweblog->metaweblog_id,
-				$metaweblog->metaweblog_pref_name,
+				array(
+					'content' => $metaweblog->metaweblog_pref_name,
+					'href' => $edit_url
+				),
 				$api_url . '&id=' . $metaweblog->metaweblog_id,
 				array(
 					'toolbar_items' => array(
 						'edit' => array(
-							'href' => ee('CP/URL', 'addons/settings/metaweblog_api/modify', array('id' => $metaweblog->metaweblog_id)),
+							'href' => $edit_url,
 							'title' => lang('edit')
 						)
 					)
@@ -136,7 +140,7 @@ class Metaweblog_api_mcp {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('configurations') . ': <b>### ' . lang('configurations') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		return ee('View')->make('metaweblog_api:index')->render($vars);
@@ -169,7 +173,7 @@ class Metaweblog_api_mcp {
 
 		$message = (count($ids) == 1) ? lang('metaweblog_deleted') : lang('metaweblogs_deleted');
 
-		ee('Alert')->makeInline('metaweblog-form')
+		ee('CP/Alert')->makeInline('metaweblog-form')
 			->asSuccess()
 			->withTitle(lang('configurations_removed'))
 			->addToBody(sprintf(lang('configurations_removed_desc'), count($ids)))
@@ -286,8 +290,8 @@ class Metaweblog_api_mcp {
 
 		$vars = array(
 			'base_url' => $base_url,
-			'cp_page_title' => lang('create_metaweblog'),
-			'save_btn_text' => 'create_metaweblog',
+			'cp_page_title' => ($id == 'new') ? lang('create_metaweblog') : lang('edit_metaweblog'),
+			'save_btn_text' => sprintf(lang('btn_save'), lang('metaweblog')),
 			'save_btn_text_working' => 'btn_saving',
 			'sections' => array(
 				array()
@@ -505,7 +509,7 @@ class Metaweblog_api_mcp {
 			{
 				if ($id == 'new')
 				{
-					ee('Alert')->makeInline('shared-form')
+					ee('CP/Alert')->makeInline('shared-form')
 						->asIssue()
 						->withTitle(lang('configuration_not_created'))
 						->addToBody(lang('configuration_not_created_desc'))
@@ -513,7 +517,7 @@ class Metaweblog_api_mcp {
 				}
 				else
 				{
-					ee('Alert')->makeInline('shared-form')
+					ee('CP/Alert')->makeInline('shared-form')
 						->asIssue()
 						->withTitle(lang('configuration_not_updated'))
 						->addToBody(lang('configuration_not_updated_desc'))
@@ -521,7 +525,11 @@ class Metaweblog_api_mcp {
 				}
 			}
 
-			return ee('View')->make('metaweblog_api:create_modify')->render($vars);
+			return array(
+				'heading'    => $vars['cp_page_title'],
+				'breadcrumb' => array(ee('CP/URL', 'addons/settings/metaweblog_api')->compile() => lang('metaweblog_api_module_name') . ' ' . lang('configuration')),
+				'body'       => ee('View')->make('metaweblog_api:create_modify')->render($vars)
+			);
 		}
 		else
 		{
@@ -558,7 +566,7 @@ class Metaweblog_api_mcp {
 				$message = sprintf(lang('configuration_updated_desc'), $data['metaweblog_pref_name']);
 			}
 
-			ee('Alert')->makeInline('metaweblog-form')
+			ee('CP/Alert')->makeInline('metaweblog-form')
 				->asSuccess()
 				->withTitle($title)
 				->addToBody($message)

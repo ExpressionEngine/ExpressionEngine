@@ -55,6 +55,7 @@ system/user/addons/*
 !system/user/addons/nannerbanner
 !system/user/addons/unregisteredbanner
 !system/user/addons/ellislab_high_ascii_decode
+!system/user/addons/wiki
 
 system/user/cache/*
 !system/user/cache/index.html

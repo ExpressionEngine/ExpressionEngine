@@ -50,7 +50,6 @@ class Uploads extends AbstractFilesController {
 			show_error(lang('unauthorized_access'));
 		}
 
-		$this->sidebarMenu(NULL);
 		$this->stdHeader();
 
 		ee()->load->library('form_validation');
@@ -61,6 +60,7 @@ class Uploads extends AbstractFilesController {
 	 */
 	public function create()
 	{
+		$this->generateSidebar(NULL);
 		return $this->form();
 	}
 
@@ -72,6 +72,7 @@ class Uploads extends AbstractFilesController {
 	 */
 	public function edit($upload_id)
 	{
+		$this->generateSidebar($upload_id);
 		return $this->form($upload_id);
 	}
 
@@ -87,8 +88,6 @@ class Uploads extends AbstractFilesController {
 		{
 			ee()->view->cp_page_title = lang('create_upload_directory');
 			ee()->view->base_url = ee('CP/URL', 'files/uploads/create');
-			ee()->view->save_btn_text = 'btn_create_directory';
-			ee()->view->save_btn_text_working = 'btn_create_directory_working';
 			$upload_destination = ee('Model')->make('UploadDestination');
 			$upload_destination->site_id = ee()->config->item('site_id');
 		}
@@ -103,8 +102,6 @@ class Uploads extends AbstractFilesController {
 
 			ee()->view->cp_page_title = lang('edit_upload_directory');
 			ee()->view->base_url = ee('CP/URL', 'files/uploads/edit/'.$upload_id);
-			ee()->view->save_btn_text = 'btn_edit_directory';
-			ee()->view->save_btn_text_working = 'btn_saving';
 		}
 
 		if ( ! empty($_POST))
@@ -138,13 +135,13 @@ class Uploads extends AbstractFilesController {
 			{
 				$new_upload_id = $upload_destination->save()->getId();
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('directory_saved'))
 					->addToBody(lang('directory_saved_desc'))
 					->defer();
 
-				ee()->functions->redirect(ee('CP/URL', 'files/uploads/edit/' . $new_upload_id));
+				ee()->functions->redirect(ee('CP/URL', 'files/directory/' . $new_upload_id));
 			}
 			else
 			{
@@ -161,7 +158,7 @@ class Uploads extends AbstractFilesController {
 					ee()->form_validation->_error_array['image_manipulations'] = 'asdf';
 				}
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('directory_not_saved'))
 					->addToBody(lang('directory_not_saved_desc'))
@@ -172,8 +169,7 @@ class Uploads extends AbstractFilesController {
 		$vars['sections'] = array(
 			array(
 				array(
-					'title' => 'upload_name',
-					'desc' => 'upload_name_desc',
+					'title' => 'name',
 					'fields' => array(
 						'name' => array(
 							'type' => 'text',
@@ -215,6 +211,20 @@ class Uploads extends AbstractFilesController {
 								'all' => lang('upload_allowed_types_opt_all')
 							),
 							'value' => $upload_destination->allowed_types ?: 'img'
+						)
+					)
+				),
+				array(
+					'title' => 'default_modal_view',
+					'desc' => 'default_modal_view_desc',
+					'fields' => array(
+						'default_modal_view' => array(
+							'type' => 'inline_radio',
+							'choices' => array(
+								'list' => lang('default_modal_view_list'),
+								'thumb' => lang('default_modal_view_thumbnails')
+							),
+							'value' => $upload_destination->default_modal_view ?: 'list'
 						)
 					)
 				)
@@ -318,6 +328,8 @@ class Uploads extends AbstractFilesController {
 		);
 
 		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('upload_directory'));
+		ee()->view->save_btn_text_working = 'btn_saving';
 
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'files'), lang('file_manager'));
 
@@ -659,6 +671,7 @@ class Uploads extends AbstractFilesController {
 			ee()->functions->redirect(ee('CP/URL', 'files/uploads'));
 		}
 
+		$this->generateSidebar($upload_id);
 		ee()->load->model('file_upload_preferences_model');
 
 		// Get upload destination with config.php overrides in place

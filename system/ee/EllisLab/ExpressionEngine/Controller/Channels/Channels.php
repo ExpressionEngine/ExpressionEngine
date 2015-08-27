@@ -32,6 +32,13 @@ use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractCh
  */
 class Channels extends AbstractChannelsController {
 
+	public function __construct()
+	{
+		parent::__construct();
+
+		$this->generateSidebar('channel');
+	}
+
 	/**
 	 * Channel Manager
 	 */
@@ -39,7 +46,7 @@ class Channels extends AbstractChannelsController {
 	{
 		$channels = ee('Model')->get('Channel')
 			->filter('site_id', ee()->config->item('site_id'));
-		$total_rows = $channels->all()->count();
+		$total_rows = $channels->count();
 
 		$table = $this->buildTableFromChannelQuery($channels);
 
@@ -54,7 +61,7 @@ class Channels extends AbstractChannelsController {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('channels') . ': <b>### ' . lang('channels') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		ee()->cp->render('channels/index', $vars);
@@ -76,7 +83,7 @@ class Channels extends AbstractChannelsController {
 			{
 				ee('Model')->get('Channel', $channel_ids)->delete();
 
-				ee('Alert')->makeInline('sites')
+				ee('CP/Alert')->makeInline('sites')
 					->asSuccess()
 					->withTitle(lang('channels_removed'))
 					->addToBody(sprintf(lang('channels_removed_desc'), count($channel_ids)))
@@ -127,7 +134,6 @@ class Channels extends AbstractChannelsController {
 			$alert_key = 'created';
 			ee()->view->cp_page_title = lang('create_new_channel');
 			ee()->view->base_url = ee('CP/URL', 'channels/create');
-			ee()->view->save_btn_text = 'create_channel';
 			$channel = ee('Model')->make('Channel');
 			$channel->title_field_label = lang('title');
 
@@ -154,7 +160,6 @@ class Channels extends AbstractChannelsController {
 			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_channel');
 			ee()->view->base_url = ee('CP/URL', 'channels/edit/'.$channel_id);
-			ee()->view->save_btn_text = 'edit_channel';
 		}
 
 		// Channel duplicate preferences menu
@@ -205,7 +210,7 @@ class Channels extends AbstractChannelsController {
 		$alert = '';
 		if (is_null($channel_id) && empty($field_group_options))
 		{
-			$alert = ee('Alert')->makeInline('permissions-warn')
+			$alert = ee('CP/Alert')->makeInline('permissions-warn')
 				->asWarning()
 				->addToBody(lang('channel_publishing_options_warning'))
 				->addToBody(sprintf(lang('channel_publishing_options_warning2'), ee('CP/URL', 'channels/fields/groups')))
@@ -228,7 +233,7 @@ class Channels extends AbstractChannelsController {
 				),
 				array(
 					'title' => 'short_name',
-					'desc' => 'channel_short_name_desc',
+					'desc' => 'alphadash_desc',
 					'fields' => array(
 						'channel_name' => array(
 							'type' => 'text',
@@ -346,7 +351,7 @@ class Channels extends AbstractChannelsController {
 				ee()->session->set_flashdata('highlight_id', $channel->getId());
 			}
 
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('channel_'.$alert_key))
 				->addToBody(sprintf(lang('channel_'.$alert_key.'_desc'), $channel->channel_title))
@@ -356,7 +361,7 @@ class Channels extends AbstractChannelsController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('channel_not_'.$alert_key))
 				->addToBody(lang('channel_not_'.$alert_key.'_desc'))
@@ -376,6 +381,7 @@ class Channels extends AbstractChannelsController {
 
 		ee()->view->cp_page_title = is_null($channel_id) ? lang('create_channel') : lang('edit_channel');
 		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('channel'));
 		ee()->view->save_btn_text_working = 'btn_saving';
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels'), lang('channels'));
 
@@ -403,7 +409,7 @@ class Channels extends AbstractChannelsController {
 			$channel->filter('channel_id', '!=', $channel_id);
 		}
 
-		if ($channel->all()->count() > 0)
+		if ($channel->count() > 0)
 		{
 			ee()->form_validation->set_message('_validChannelName', lang('taken_channel_name'));
 			return FALSE;
@@ -786,6 +792,16 @@ class Channels extends AbstractChannelsController {
 					)
 				),
 				array(
+					'title' => 'extra_publish_controls',
+					'desc' => 'extra_publish_controls_desc',
+					'fields' => array(
+						'extra_publish_controls' => array(
+							'type' => 'yes_no',
+							'value' => $channel->extra_publish_controls
+						)
+					)
+				),
+				array(
 					'title' => 'convert_image_urls',
 					'desc' => 'convert_image_urls_desc',
 					'fields' => array(
@@ -802,16 +818,6 @@ class Channels extends AbstractChannelsController {
 						'channel_auto_link_urls' => array(
 							'type' => 'yes_no',
 							'value' => $channel->channel_auto_link_urls
-						)
-					)
-				),
-				array(
-					'title' => 'allow_rich_text_editing',
-					'desc' => 'allow_rich_text_editing_desc',
-					'fields' => array(
-						'show_button_cluster' => array(
-							'type' => 'yes_no',
-							'value' => $channel->show_button_cluster
 						)
 					)
 				)
@@ -939,11 +945,7 @@ class Channels extends AbstractChannelsController {
 					'fields' => array(
 						'comment_system_enabled' => array(
 							'type' => 'yes_no',
-							'value' => $channel->comment_system_enabled,
-							'note' => form_label(
-								form_checkbox('apply_comment_enabled_to_existing', 'y')
-								.lang('apply_comment_enabled_to_existing')
-							)
+							'value' => $channel->comment_system_enabled
 						)
 					)
 				),
@@ -1147,7 +1149,7 @@ class Channels extends AbstractChannelsController {
 		{
 			$this->saveChannelSettings($channel_id, $vars['sections']);
 
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('channel_settings_saved'))
 				->addToBody(sprintf(lang('channel_settings_saved_desc'), $channel->channel_title))
@@ -1157,7 +1159,7 @@ class Channels extends AbstractChannelsController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('channel_settings_not_saved'))
 				->addToBody(lang('channel_settings_not_saved_desc'))
@@ -1203,18 +1205,6 @@ class Channels extends AbstractChannelsController {
 		}
 
 		ee()->load->model('channel_model');
-
-		if (ee()->input->post('apply_comment_enabled_to_existing'))
-		{
-			if (ee()->input->post('comment_system_enabled') == 'y')
-			{
-				ee()->channel_model->update_comments_allowed($channel_id, 'y');
-			}
-			elseif ($this->input->post('comment_system_enabled') == 'n')
-			{
-				ee()->channel_model->update_comments_allowed($channel_id, 'n');
-			}
-		}
 
 		if (ee()->input->post('apply_expiration_to_existing'))
 		{

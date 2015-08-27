@@ -23,7 +23,7 @@ class RTESettings < ControlPanelPage
 	elements :tool_set_names, 'div.tbl-ctrls form div.tbl-wrap table tr td:first-child'
 	elements :statuses, 'div.tbl-ctrls form div.tbl-wrap table tr td:nth-child(2)'
 
-	element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]'
+	element :bulk_action, 'form fieldset.tbl-bulk-act select[name="bulk_action"]', visible: false
 	element :action_submit_button, 'form fieldset.tbl-bulk-act input.submit'
 
 	# Tool Set View

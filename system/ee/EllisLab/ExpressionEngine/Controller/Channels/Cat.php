@@ -7,6 +7,7 @@ if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 use EllisLab\ExpressionEngine\Library\CP;
 use EllisLab\ExpressionEngine\Controller\Channels\AbstractChannels as AbstractChannelsController;
 use EllisLab\Addons\FilePicker\FilePicker as FilePicker;
+use EllisLab\ExpressionEngine\Model\Content\FieldFacade as FieldFacade;
 
 /**
  * ExpressionEngine - by EllisLab
@@ -46,6 +47,8 @@ class Cat extends AbstractChannelsController {
 		{
 			show_error(lang('unauthorized_access'));
 		}
+
+		$this->generateSidebar('category');
 	}
 
 	/**
@@ -56,7 +59,7 @@ class Cat extends AbstractChannelsController {
 		$cat_groups = ee('Model')->get('CategoryGroup')
 			->filter('site_id', ee()->config->item('site_id'));
 
-		$total_rows = $cat_groups->all()->count();
+		$total_rows = $cat_groups->count();
 
 		$table = $this->buildTableFromCategoryGroupsQuery($cat_groups);
 
@@ -71,7 +74,7 @@ class Cat extends AbstractChannelsController {
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('category_groups') . ': <b>### ' . lang('category_groups') . '</b>');
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/confirm_remove'),
+			'file' => array('cp/confirm_remove'),
 		));
 
 		ee()->cp->render('channels/cat/index', $vars);
@@ -143,7 +146,6 @@ class Cat extends AbstractChannelsController {
 			$alert_key = 'created';
 			ee()->view->cp_page_title = lang('create_category_group');
 			ee()->view->base_url = ee('CP/URL', 'channels/cat/create');
-			ee()->view->save_btn_text = 'create_category_group';
 			$cat_group = ee('Model')->make('CategoryGroup');
 		}
 		else
@@ -160,7 +162,6 @@ class Cat extends AbstractChannelsController {
 			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_category_group');
 			ee()->view->base_url = ee('CP/URL', 'channels/cat/edit/'.$group_id);
-			ee()->view->save_btn_text = 'edit_category_group';
 		}
 
 		$member_groups = ee('Model')->get('MemberGroup')
@@ -209,7 +210,7 @@ class Cat extends AbstractChannelsController {
 				)
 			),
 			'permissions' => array(
-				ee('Alert')->makeInline('permissions-warn')
+				ee('CP/Alert')->makeInline('permissions-warn')
 					->asWarning()
 					->addToBody(lang('category_permissions_warning'))
 					->addToBody(
@@ -294,7 +295,7 @@ class Cat extends AbstractChannelsController {
 				ee()->session->set_flashdata('highlight_id', $group->getId());
 			}
 
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asSuccess()
 				->withTitle(lang('category_group_'.$alert_key))
 				->addToBody(sprintf(lang('category_group_'.$alert_key.'_desc'), $group->group_name))
@@ -304,7 +305,7 @@ class Cat extends AbstractChannelsController {
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('category_group_not_'.$alert_key))
 				->addToBody(lang('category_group_not_'.$alert_key.'_desc'))
@@ -312,6 +313,7 @@ class Cat extends AbstractChannelsController {
 		}
 
 		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('category_group'));
 		ee()->view->save_btn_text_working = 'btn_saving';
 
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/cat'), lang('category_groups'));
@@ -338,7 +340,7 @@ class Cat extends AbstractChannelsController {
 			$cat_group->filter('group_id', '!=', $group_id);
 		}
 
-		if ($cat_group->all()->count() > 0)
+		if ($cat_group->count() > 0)
 		{
 			ee()->form_validation->set_message('validCategoryGroupName', lang('duplicate_category_group_name'));
 			return FALSE;
@@ -390,7 +392,7 @@ class Cat extends AbstractChannelsController {
 		}
 
 		ee()->cp->add_js_script('plugin', 'nestable');
-		ee()->cp->add_js_script('file', 'cp/v3/category_reorder');
+		ee()->cp->add_js_script('file', 'cp/channel/category_reorder');
 
 		// Get the category tree with a single query
 		ee()->load->library('datastructures/tree');
@@ -401,9 +403,9 @@ class Cat extends AbstractChannelsController {
 		ee()->view->cat_group = $cat_group;
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('categories') . ': <b>### ' . lang('categories') . '</b>');
-		ee()->cp->add_js_script('file', 'cp/v3/confirm_remove');
+		ee()->cp->add_js_script('file', 'cp/confirm_remove');
 
-		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
+		$reorder_ajax_fail = ee('CP/Alert')->makeBanner('reorder-ajax-fail')
 			->asIssue()
 			->canClose()
 			->withTitle(lang('category_ajax_reorder_fail'))
@@ -507,7 +509,7 @@ class Cat extends AbstractChannelsController {
 					->filter('cat_id', 'IN', $cat_ids)
 					->delete();
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('categories_removed'))
 					->addToBody(sprintf(lang('categories_removed_desc'), count($cat_ids)))
@@ -583,7 +585,6 @@ class Cat extends AbstractChannelsController {
 			$alert_key = 'created';
 			ee()->view->cp_page_title = lang('create_category');
 			ee()->view->base_url = ee('CP/URL', 'channels/cat/create-cat/'.$group_id);
-			ee()->view->save_btn_text = 'create_category';
 
 			$category = ee('Model')->make('Category');
 			$category->setCategoryGroup($cat_group);
@@ -610,7 +611,6 @@ class Cat extends AbstractChannelsController {
 			$alert_key = 'updated';
 			ee()->view->cp_page_title = lang('edit_category');
 			ee()->view->base_url = ee('CP/URL', 'channels/cat/edit-cat/'.$group_id.'/'.$category_id);
-			ee()->view->save_btn_text = 'edit_category';
 		}
 
 		ee()->load->library('api');
@@ -641,7 +641,7 @@ class Cat extends AbstractChannelsController {
 				),
 				array(
 					'title' => 'url_title_lc',
-					'desc' => 'url_title_desc',
+					'desc' => 'alphadash_desc',
 					'fields' => array(
 						'cat_url_title' => array(
 							'type' => 'text',
@@ -659,60 +659,94 @@ class Cat extends AbstractChannelsController {
 							'value' => $category->cat_description
 						)
 					)
-				),
-				array(
-					'title' => 'image',
-					'desc' => 'cat_image_desc',
-					'fields' => array(
-						'cat_image_select' => array(
-							'type' => 'radio',
-							'choices' => array(
-								'none' => 'cat_image_none',
-								'choose' => 'cat_image_choose'
-							),
-							'value' => 'none'
-						),
-						'cat_image' => array(
-							'type' => 'image',
-							'id' => 'cat_image',
-							'image' => ee()->file_field->parse_string($category->cat_image),
-							'value' => $category->cat_image
-						)
-					)
-				),
-				array(
-					'title' => 'parent_category',
-					'desc' => 'parent_category_desc',
-					'fields' => array(
-						'parent_id' => array(
-							'type' => 'select',
-							'value' => $category->parent_id,
-							'choices' => $parent_id_options
-						)
-					)
 				)
 			)
 		);
 
-		foreach ($category->getDisplay()->getFields() as $field)
+		if ( ! AJAX_REQUEST)
 		{
-			$vars['sections']['custom_fields'][] = array(
-				'title' => $field->getLabel(),
-				'desc' => '',
+			$vars['sections'][0][] = array(
+				'title' => 'image',
+				'desc' => 'cat_image_desc',
 				'fields' => array(
-					$field->getName() => array(
-						'type' => 'html',
-						'content' => $field->getForm(),
-						'required' => $field->isRequired(),
+					'cat_image_select' => array(
+						'type' => 'radio',
+						'choices' => array(
+							'none' => 'cat_image_none',
+							'choose' => 'cat_image_choose'
+						),
+						'value' => 'none'
+					),
+					'cat_image' => array(
+						'type' => 'image',
+						'id' => 'cat_image',
+						'image' => ee()->file_field->parse_string($category->cat_image),
+						'value' => $category->cat_image
 					)
 				)
 			);
 		}
 
+		$vars['sections'][0][] = array(
+			'title' => 'parent_category',
+			'desc' => 'parent_category_desc',
+			'fields' => array(
+				'parent_id' => array(
+					'type' => 'select',
+					'value' => $category->parent_id,
+					'choices' => $parent_id_options
+				)
+			)
+		);
+
+		if ( ! AJAX_REQUEST)
+		{
+			foreach ($category->getDisplay()->getFields() as $field)
+			{
+				$vars['sections']['custom_fields'][] = array(
+					'title' => $field->getLabel(),
+					'desc' => '',
+					'fields' => array(
+						$field->getName() => array(
+							'type' => 'html',
+							'content' => $field->getForm(),
+							'required' => $field->isRequired(),
+						)
+					)
+				);
+			}
+		}
+
+		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('category'));
+		ee()->view->save_btn_text_working = 'btn_saving';
+
 		if ( ! empty($_POST))
 		{
 			$category->set($_POST);
 			$result = $category->validate();
+
+			// Handles saving from the category modal on the publish form
+			if (isset($_POST['save_modal']))
+			{
+				if ($result->isValid())
+				{
+					$category->save();
+					return array(
+						'messageType' => 'success',
+						'body' => $this->categoryGroupPublishField($group_id)
+					);
+				}
+				else
+				{
+					ee()->load->library('form_validation');
+					ee()->form_validation->_error_array = $result->renderErrors();
+					return array(
+						'messageType' => 'error',
+						'body' => ee()->cp->render('_shared/form', $vars, TRUE)
+					);
+				}
+			}
 
 			if ($response = $this->ajaxValidation($result))
 			{
@@ -728,7 +762,7 @@ class Cat extends AbstractChannelsController {
 					ee()->session->set_flashdata('highlight_id', $category->getId());
 				}
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('category_group_'.$alert_key))
 					->addToBody(sprintf(lang('category_group_'.$alert_key.'_desc'), $category->cat_name))
@@ -740,7 +774,7 @@ class Cat extends AbstractChannelsController {
 			{
 				ee()->load->library('form_validation');
 				ee()->form_validation->_error_array = $result->renderErrors();
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('category_group_not_'.$alert_key))
 					->addToBody(lang('category_group_not_'.$alert_key.'_desc'))
@@ -748,8 +782,10 @@ class Cat extends AbstractChannelsController {
 			}
 		}
 
-		ee()->view->ajax_validate = TRUE;
-		ee()->view->save_btn_text_working = 'btn_saving';
+		if (AJAX_REQUEST)
+		{
+			return ee()->cp->render('_shared/form', $vars);
+		}
 
 		$filepicker = new FilePicker();
 		$filepicker->inject(ee()->view);
@@ -759,10 +795,58 @@ class Cat extends AbstractChannelsController {
 			ee('CP/URL', $filepicker->controller, array('directory' => 'all', 'type' => 'img'))->compile()
 		);
 
+		ee()->javascript->output('$(document).ready(function () {
+			EE.cp.categoryEdit.init();
+		});');
+
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/cat'), lang('category_groups'));
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/cat/cat-list/'.$cat_group->group_id), $cat_group->group_name . ' &mdash; ' . lang('categories'));
 
 		ee()->cp->render('settings/form', $vars);
+	}
+
+	/**
+	 * AJAX return body for adding a new category via the publish form; when a
+	 * new category is added, we have to refresh the category list
+	 */
+	private function categoryGroupPublishField($group_id, $entry_id = NULL)
+	{
+		// Initialize a new category group field so we can return its publish form
+		$category_group_field = array(
+			'field_id'				=> 'categories',
+			'cat_group_id'			=> $group_id,
+			'field_label'			=> lang('categories'),
+			'field_required'		=> 'n',
+			'field_show_fmt'		=> 'n',
+			'field_instructions'	=> lang('categories_desc'),
+			'field_text_direction'	=> 'ltr',
+			'field_type'			=> 'checkboxes',
+			'string_override'		=> '',
+			'field_list_items'      => '',
+			'field_maxl'			=> 100
+		);
+
+		$field_id = 'cat_group_id_'.$group_id;
+		$field = new FieldFacade($field_id, $category_group_field);
+		$field->setName($field_id);
+
+		if (is_numeric($entry_id))
+		{
+			$entry = ee('Model')->get('ChannelEntry', $entry)->first();
+		}
+		else
+		{
+			$entry = ee('Model')->make('ChannelEntry');
+			$entry->Categories = NULL;
+		}
+
+		$entry->populateCategories($field);
+
+		// Reset the categories they already have selected
+		$selected_cats = ee('Model')->get('Category')->filter('cat_id', 'IN', ee()->input->post('categories'))->all();
+		$field->setData(implode('|', $selected_cats->pluck('cat_name')));
+
+		return $field->getForm();
 	}
 
 	/**
@@ -825,14 +909,19 @@ class Cat extends AbstractChannelsController {
 		$data = array();
 		foreach ($cat_fields as $field)
 		{
+			$edit_url = ee('CP/URL', 'channels/cat/edit-field/'.$group_id.'/'.$field->getId());
+
 			$columns = array(
 				$field->getId().form_hidden('order[]', $field->getId()),
-				$field->field_label,
+				array(
+					'content' => $field->field_label,
+					'href' => $edit_url
+				),
 				'<var>'.LD.$field->field_name.RD.'</var>',
 				strtolower($type_map[$field->field_type]),
 				array('toolbar_items' => array(
 					'edit' => array(
-						'href' => ee('CP/URL', 'channels/cat/edit-field/'.$group_id.'/'.$field->getId()),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					)
 				)),
@@ -866,12 +955,12 @@ class Cat extends AbstractChannelsController {
 		ee()->view->cp_page_title = lang('category_fields') . ' ' . lang('for') . ' ' . $cat_group->group_name;
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('category_fields') . ': <b>### ' . lang('category_fields') . '</b>');
-		ee()->cp->add_js_script('file', 'cp/v3/confirm_remove');
+		ee()->cp->add_js_script('file', 'cp/confirm_remove');
 		ee()->cp->add_js_script('file', 'cp/sort_helper');
 		ee()->cp->add_js_script('plugin', 'ee_table_reorder');
-		ee()->cp->add_js_script('file', 'cp/v3/cat_field_reorder');
+		ee()->cp->add_js_script('file', 'cp/channel/cat_field_reorder');
 
-		$reorder_ajax_fail = ee('Alert')->makeBanner('reorder-ajax-fail')
+		$reorder_ajax_fail = ee('CP/Alert')->makeBanner('reorder-ajax-fail')
 			->asIssue()
 			->canClose()
 			->withTitle(lang('cat_field_ajax_reorder_fail'))
@@ -938,7 +1027,7 @@ class Cat extends AbstractChannelsController {
 					->filter('field_id', 'IN', $field_ids)
 					->delete();
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('category_fields_removed'))
 					->addToBody(sprintf(lang('category_fields_removed_desc'), count($field_ids)))
@@ -998,7 +1087,6 @@ class Cat extends AbstractChannelsController {
 				->first();
 
 			$alert_key = 'updated';
-			ee()->view->save_btn_text = 'btn_edit_field';
 			ee()->view->cp_page_title = lang('edit_category_field');
 			ee()->view->base_url = ee('CP/URL', 'channels/cat/edit-field/'.$group_id.'/'.$field_id);
 		}
@@ -1017,7 +1105,6 @@ class Cat extends AbstractChannelsController {
 			$cat_field->field_type = 'text';
 
 			$alert_key = 'created';
-			ee()->view->save_btn_text = 'btn_create_field';
 			ee()->view->cp_page_title = lang('create_category_field');
 			ee()->view->base_url = ee('CP/URL', 'channels/cat/create-field/'.$group_id);
 		}
@@ -1064,7 +1151,7 @@ class Cat extends AbstractChannelsController {
 				),
 				array(
 					'title' => 'short_name',
-					'desc' => 'cat_field_short_name_desc',
+					'desc' => 'alphadash_desc',
 					'fields' => array(
 						'field_name' => array(
 							'type' => 'text',
@@ -1120,7 +1207,7 @@ class Cat extends AbstractChannelsController {
 					ee()->session->set_flashdata('highlight_id', $cat_field->getId());
 				}
 
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asSuccess()
 					->withTitle(lang('category_field_'.$alert_key))
 					->addToBody(sprintf(lang('category_field_'.$alert_key.'_desc'), $cat_field->field_label))
@@ -1132,7 +1219,7 @@ class Cat extends AbstractChannelsController {
 			{
 				ee()->load->library('form_validation');
 				ee()->form_validation->_error_array = $result->renderErrors();
-				ee('Alert')->makeInline('shared-form')
+				ee('CP/Alert')->makeInline('shared-form')
 					->asIssue()
 					->withTitle(lang('category_field_not_'.$alert_key))
 					->addToBody(lang('category_field_not_'.$alert_key.'_desc'))
@@ -1141,13 +1228,14 @@ class Cat extends AbstractChannelsController {
 		}
 
 		ee()->view->ajax_validate = TRUE;
+		ee()->view->save_btn_text = sprintf(lang('btn_save'), lang('category_field'));
 		ee()->view->save_btn_text_working = 'btn_saving';
 
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/cat'), lang('category_groups'));
 		ee()->cp->set_breadcrumb(ee('CP/URL', 'channels/cat/field/'.$group_id), lang('category_fields'));
 
 		ee()->cp->add_js_script(array(
-			'file' => array('cp/v3/form_group'),
+			'file' => array('cp/form_group'),
 		));
 
 		ee()->cp->render('settings/form', $vars);

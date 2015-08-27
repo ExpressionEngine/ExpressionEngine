@@ -35,16 +35,12 @@ $lang = array(
 'edit_file_metadata' => 'Edit "%s" Meta Data',
 
 'title' => 'Title',
-'title_desc' => 'Title of this file.',
 
 'description' => 'Description',
-'description_desc' => 'Description of this file.',
 
 'credit' => 'Credit',
-'credit_desc' => 'Who created this file?',
 
 'location' => 'Location',
-'location_desc' => 'Where is this file from?',
 
 'btn_edit_file_meta' => 'Edit File Meta',
 
@@ -202,10 +198,6 @@ $lang = array(
 
 'edit_upload_directory' => 'Edit Upload Directory',
 
-'upload_name' => 'Directory name',
-
-'upload_name_desc' => 'Be descriptive, like <b>photos</b> or <b>documents</b>.',
-
 'upload_url' => 'Upload directory',
 
 'upload_url_desc' => '<abbr title="Uniform Resource Location">URL</abbr> location of this <mark>upload</mark> directory.',
@@ -219,6 +211,11 @@ $lang = array(
 'upload_allowed_types_opt_images' => 'Images only',
 
 'upload_allowed_types_opt_all' => 'All file types',
+
+'default_modal_view' => 'Default modal view?',
+'default_modal_view_desc' => 'Default view for this upload directory in the file picker modal.',
+'default_modal_view_list' => 'List',
+'default_modal_view_thumbnails' => 'Thumbnails',
 
 'file_limits' => 'File Limits',
 
@@ -343,10 +340,6 @@ $lang = array(
 
 'watermarks_removed_desc' => '%d watermarks were removed.',
 
-'watermark_name_desc' => 'Full descriptive name of this watermark.',
-
-'watermark_type_desc' => 'Choose a watermark type.',
-
 'text' => 'Text',
 
 'image' => 'Image',
@@ -391,15 +384,9 @@ $lang = array(
 
 'watermark_text_font' => 'Font face',
 
-'watermark_text_font_desc' => 'Choose the font face for this watermark.',
-
 'watermark_text_size' => 'Text size',
 
-'watermark_text_size_desc' => 'Size in pixels of this watermark\'s text.',
-
 'watermark_text_color' => 'Text color',
-
-'watermark_text_color_desc' => 'Color of this watermark\'s text.',
 
 'watermark_text_dropshadow' => 'Enable dropshadow?',
 
@@ -407,11 +394,7 @@ $lang = array(
 
 'watermark_text_dropshadow_distance' => 'Dropshadow distance',
 
-'watermark_text_dropshadow_distance_desc' => 'Size of this watermark\'s drop shadow.',
-
 'watermark_text_dropshadow_color' => 'Dropshadow color',
-
-'watermark_text_dropshadow_color_desc' => 'Color of the dropshadow for this watermark.',
 
 'image_options' => 'Image Options',
 

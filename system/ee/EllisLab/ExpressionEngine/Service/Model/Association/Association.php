@@ -69,12 +69,6 @@ class Association {
         if ( ! isset($this->inverse_name))
         {
             $inverse = $this->relation->getInverse();
-
-            if ( ! isset($inverse))
-            {
-                throw new \Exception('Cannot find inverse of the relationship '.$this->relation->getName().' in '.get_class($this->model));
-            }
-
             $this->inverse_name = $inverse->getName();
         }
 

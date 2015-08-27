@@ -11,6 +11,7 @@ class FieldDisplay {
 	public function __construct($field)
 	{
 		$this->field = $field;
+		$this->collapsed = (bool) $field->getItem('field_is_hidden');
 	}
 
 	public function get($key)
@@ -97,7 +98,7 @@ class FieldDisplay {
 	public function getSetting($item)
 	{
 		$settings = $this->field->initField();
-		return $settings[$item];
+		return isset($settings[$item]) ? $settings[$item] : NULL;
 	}
 
 }

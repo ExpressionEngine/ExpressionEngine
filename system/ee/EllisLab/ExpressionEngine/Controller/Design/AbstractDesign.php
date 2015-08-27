@@ -48,7 +48,7 @@ abstract class AbstractDesign extends CP_Controller {
 		ee()->lang->loadfile('design');
 	}
 
-	protected function sidebarMenu($active = NULL)
+	protected function generateSidebar($active = NULL)
 	{
 		$active_group_id = NULL;
 		if (is_numeric($active))
@@ -56,25 +56,19 @@ abstract class AbstractDesign extends CP_Controller {
 			$active_group_id = (int) $active;
 		}
 
-		// Register our menu
-		$vars = array(
-			'template_groups' => array(),
-			'system_templates' => array(
-				array(
-					'name' => lang('messages'),
-					'url' => ee('CP/URL', 'design/system'),
-					'class' => ($active == 'messages') ? 'act' : ''
-				),
-				array(
-					'name' => lang('email'),
-					'url' => ee('CP/URL', 'design/email'),
-					'class' => ($active == 'email') ? 'act' : ''
-				)
-			)
-		);
+		$sidebar = ee('CP/Sidebar')->make();
+
+		// Template Groups
+		$template_group_list = $sidebar->addHeader(lang('template_groups'))
+			->withButton(lang('new'), ee('CP/URL', 'design/group/create'))
+			->addFolderList('template-group')
+				->withRemoveUrl(ee('CP/URL', 'design/group/remove'))
+				->withRemovalKey('group_name')
+				->withNoResultsText(lang('zero_template_groups_found'));
 
 		$template_groups = ee('Model')->get('TemplateGroup')
-			->filter('site_id', ee()->config->item('site_id'));
+			->filter('site_id', ee()->config->item('site_id'))
+			->order('group_name', 'asc');
 
 		if (ee()->session->userdata['group_id'] != 1)
 		{
@@ -83,65 +77,112 @@ abstract class AbstractDesign extends CP_Controller {
 
 		foreach ($template_groups->all() as $group)
 		{
-			$class = ($active_group_id == $group->group_id) ? 'act' : '';
+			$item = $template_group_list->addItem($group->group_name, ee('CP/URL', 'design/manager/' . $group->group_name))
+				->withEditUrl(ee('CP/URL', 'design/group/edit/' . $group->group_name))
+				->withRemoveConfirmation(lang('template_group') . ': <b>' . $group->group_name . '</b>')
+				->identifiedBy($group->group_name);
 
-			$data = array(
-				'name' => $group->group_name,
-				'url' => ee('CP/URL', 'design/manager/' . $group->group_name),
-				'edit_url' => ee('CP/URL', 'design/group/edit/' . $group->group_name),
-			);
+			if ($active_group_id == $group->group_id)
+			{
+				$item->isActive();
+			}
 
 			if ($group->is_site_default)
 			{
-				$class .= ' default';
-				$data['name'] = '<b>' . $group->group_name . '</b>';
+				$item->asDefaultItem();
 			}
-
-			if ( ! empty($class))
-			{
-				$data['class'] = $class;
-			}
-
-			$vars['template_groups'][] = $data;
 		}
 
 		// System Templates
+		$system_templates = $sidebar->addHeader(lang('system_templates'))
+			->addFolderList('system-templates');
+
+		$item = $system_templates->addItem(lang('messages'), ee('CP/URL', 'design/system'))
+			->withEditUrl(ee('CP/URL', 'design/system'))
+			->cannotRemove();
+
+		if ($active == 'messages')
+		{
+			$item->isActive();
+		}
+
+		$item = $system_templates->addItem(lang('email'), ee('CP/URL', 'design/email'))
+			->withEditUrl(ee('CP/URL', 'design/email'))
+			->cannotRemove();
+
+		if ($active == 'email')
+		{
+			$item->isActive();
+		}
+
 		if (ee('Model')->get('Module')->filter('module_name', 'Member')->first())
 		{
-			$vars['system_templates'][] = array(
-				'name' => lang('members'),
-				'url' => ee('CP/URL', 'design/members'),
-				'class' => ($active == 'members') ? 'act' : ''
-			);
+			$item = $system_templates->addItem(lang('members'), ee('CP/URL', 'design/members'))
+				->withEditUrl(ee('CP/URL', 'design/members'))
+				->cannotRemove();
+
+			if ($active == 'members')
+			{
+				$item->isActive();
+			}
 		}
 
 		if (ee()->config->item('forum_is_installed') == "y")
 		{
-			$vars['system_templates'][] = array(
-				'name' => lang('forums'),
-				'url' => ee('CP/URL', 'design/forums'),
-				'class' => ($active == 'forums') ? 'act' : ''
-			);
-		}
-		
-		$vars['routes'] = TRUE;
-		
-		if (TemplateRoute::getConfig())
-		{
-		        $vars['routes'] = FALSE;
+			$item = $system_templates->addItem(lang('forums'), ee('CP/URL', 'design/forums'))
+				->withEditUrl(ee('CP/URL', 'design/forums'))
+				->cannotRemove();
+
+			if ($active == 'forums')
+			{
+				$item->isActive();
+			}
 		}
 
-		ee()->view->left_nav = ee('View')->make('design/menu')->render($vars);
+		// Template Partials
+		$header = $sidebar->addHeader(lang('template_partials'), ee('CP/URL', 'design/snippets'))
+			->withButton(lang('new'), ee('CP/URL', 'design/snippets/create'));
+
+		if ($active == 'partials')
+		{
+			$header->isActive();
+		}
+
+		// Template Variables
+		$header = $sidebar->addHeader(lang('template_variables'), ee('CP/URL', 'design/variables'))
+			->withButton(lang('new'), ee('CP/URL', 'design/variables/create'));
+
+		if ($active == 'variables')
+		{
+			$header->isActive();
+		}
+
+		// Template Routes
+		if ( ! TemplateRoute::getConfig())
+		{
+			$header = $sidebar->addHeader(lang('template_routes'), ee('CP/URL', 'design/routes'));
+
+			if ($active == 'routes')
+			{
+				$header->isActive();
+			}
+		}
+
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/design/menu'),
 		));
 	}
 
-	protected function stdHeader()
+	protected function stdHeader($return = NULL)
 	{
+		if ( ! $return)
+		{
+			$return = base64_encode(ee()->cp->get_safe_refresh());
+		}
+
 		ee()->view->header = array(
 			'title' => lang('template_manager'),
-			'form_url' => ee('CP/URL', 'design/template/search'),
+			'form_url' => ee('CP/URL', 'design/template/search', array('return' => $return)),
 			'toolbar_items' => array(
 				'settings' => array(
 					'href' => ee('CP/URL', 'settings/template'),
@@ -193,6 +234,10 @@ abstract class AbstractDesign extends CP_Controller {
 
 	protected function loadCodeMirrorAssets($selector = 'template_data')
 	{
+		ee()->javascript->set_global(
+			'editor.lint', $this->_get_installed_plugins_and_modules()
+		);
+
 		ee()->cp->add_to_head(ee()->view->head_link('css/codemirror.css'));
 		ee()->cp->add_to_head(ee()->view->head_link('css/codemirror-additions.css'));
 		ee()->cp->add_js_script(array(
@@ -200,6 +245,7 @@ abstract class AbstractDesign extends CP_Controller {
 				'file'		=> array(
 					'codemirror/codemirror',
 					'codemirror/closebrackets',
+					'codemirror/lint',
 					'codemirror/overlay',
 					'codemirror/xml',
 					'codemirror/css',
@@ -213,6 +259,26 @@ abstract class AbstractDesign extends CP_Controller {
 			)
 		);
 		ee()->javascript->output("$('textarea[name=\"" . $selector . "\"]').toggleCodeMirror();");
+	}
+
+	/**
+	 *  Returns installed module information for CodeMirror linting
+	 */
+	private function _get_installed_plugins_and_modules()
+	{
+		$addons = array_keys(ee('Addon')->all());
+
+		$modules = ee('Model')->get('Module')->all()->pluck('module_name');
+		$plugins = ee('Model')->get('Plugin')->all()->pluck('plugin_name');
+
+		$modules = array_map('strtolower', $modules);
+		$plugins = array_map('strtolower', $plugins);
+		$installed = array_merge($modules, $plugins);
+
+		return array(
+			'available' => $installed,
+			'not_installed' => array_values(array_diff($addons, $installed))
+		);
 	}
 
 	/**
@@ -233,7 +299,7 @@ abstract class AbstractDesign extends CP_Controller {
 		$zip = new ZipArchive();
 		if ($zip->open($zipfilename, ZipArchive::CREATE) !== TRUE)
 		{
-			ee('Alert')->makeInline('shared-form')
+			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('error_export'))
 				->addToBody(lang('error_cannot_create_zip'))
@@ -289,11 +355,14 @@ abstract class AbstractDesign extends CP_Controller {
 		{
 			$group = $template->getTemplateGroup();
 			$template_name = htmlentities($template->template_name, ENT_QUOTES);
+			$edit_url = ee('CP/URL', 'design/template/edit/' . $template->template_id);
 
 			if ($include_group_name)
 			{
 				$template_name = $group->group_name . '/' . $template_name;
 			}
+
+			$template_name = '<a href="' . $edit_url->compile() . '">' . $template_name . '</a>';
 
 			if (strncmp($template->template_name, $hidden_indicator, $hidden_indicator_length) == 0)
 			{
@@ -326,7 +395,7 @@ abstract class AbstractDesign extends CP_Controller {
 						'title' => lang('view')
 					),
 					'edit' => array(
-						'href' => ee('CP/URL', 'design/template/edit/' . $template->template_id),
+						'href' => $edit_url,
 						'title' => lang('edit')
 					),
 					'settings' => array(

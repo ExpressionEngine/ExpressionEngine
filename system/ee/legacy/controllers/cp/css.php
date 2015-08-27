@@ -70,26 +70,7 @@ class Css extends CI_Controller {
 			$file = $this->input->get_post('M');
 		}
 
-		$css_paths = array(
-			PATH_CP_THEME,
-			PATH_THEMES.'cp/default/'
-		);
-
-		if ($cp_theme == 'default')
-		{
-			array_shift($css_paths);
-		}
-
-		foreach ($css_paths as $a_path)
-		{
-			$path = $a_path.'css/'.$file.'.css';
-
-			if (file_exists($path))
-			{
-				break;
-			}
-		}
-
+		$path = PATH_CP_THEME.'css/'.$file.'.css';
 		return $this->_load_css_file($path, $file);
 	}
 
