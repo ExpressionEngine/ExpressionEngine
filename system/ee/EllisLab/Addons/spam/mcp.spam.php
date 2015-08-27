@@ -304,8 +304,6 @@ class Spam_mcp {
 					->withTitle(lang('cp_message_issue'))
 					->addToBody($config_update)
 					->defer();
-				ee()->functions->redirect($base_url);
-
 			}
 			else
 			{
@@ -315,16 +313,18 @@ class Spam_mcp {
 					->addToBody(lang('spam_settings_updated'))
 					->defer();
 			}
+
+			ee()->functions->redirect($base_url);
+
 		}
 		elseif (ee()->form_validation->errors_exist())
 		{
-			ee()->view->set_message('issue', lang('settings_save_error'), lang('settings_save_error_desc'));
-            
 			ee('CP/Alert')->makeInline('shared-form')
 				->asIssue()
 				->withTitle(lang('settings_save_error'))
 				->addToBody(lang('settings_save_error_desc'))
 				->defer();
+			ee()->functions->redirect($base_url);
 		}
 
 		$vars['base_url'] = $base_url;
