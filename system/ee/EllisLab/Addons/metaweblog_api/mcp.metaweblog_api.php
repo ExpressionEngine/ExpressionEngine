@@ -76,7 +76,7 @@ class Metaweblog_api_mcp {
 
 		if ($metaweblogs->num_rows() == 0)
 		{
-			$vars['table'] = $table->viewData($this->_base_url);
+			$vars['table'] = $table->viewData($base_url);
 			$vars['base_url'] = clone $vars['table']['base_url'];
 			return ee()->load->view('index', $vars, TRUE);
 		}
