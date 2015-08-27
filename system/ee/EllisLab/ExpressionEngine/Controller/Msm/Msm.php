@@ -485,15 +485,18 @@ class Msm extends CP_Controller {
 		ee()->cp->render('settings/form', $vars);
 	}
 
-	private function getForm($site, $enabled = TRUE)
+	/**
+	 * Prepares and returns an array for the 'sections' view variable of the
+	 * shared/form view.
+	 *
+	 * @param Site $site A Site entity for populating the values of this form
+	 * @param bool $can_add Have they reached their site limit?
+	 */
+	private function getForm($site, $can_add = FALSE)
 	{
-		// It makes more sense to call `getForm($site, $can_add)` than to
-		// negate it in the call. So I'm doing that here.
-		$disabled = !$enabled;
-
 		$sections = array(array());
 
-		if ($disabled)
+		if ($can_add)
 		{
 			$alert = ee('CP/Alert')->makeInline('site-limit-reached')
 				->asIssue()
@@ -567,6 +570,14 @@ class Msm extends CP_Controller {
 		return $sections;
 	}
 
+	/**
+	 * Validates the Site entity returning JSON if it was an AJAX request, or
+	 * sets an appropriate alert and returns the validation result.
+	 *
+	 * @param Site $site A Site entity to validate
+	 * @return Mixed If nothing was posted: FALSE; if AJAX: void; otherwise a
+	 *   Result object
+	 */
 	private function validateSite($site)
 	{
 		if (empty($_POST))

@@ -44,7 +44,7 @@ class LicenseFactory {
 	}
 
 	/**
-	 * Gets a licene from the file system and return a License object.
+	 * Gets a license from the file system and return a License object.
 	 *
 	 * @param string $path_to_license The filesystem path to the license file
 	 * @param string $pubkey A public key to use for verifying signatures (optional)

@@ -9,7 +9,7 @@ use InvalidArgumentException;
  *
  * @package		ExpressionEngine
  * @author		EllisLab Dev Team
- * @copyright	Copyright (c) 2003 - 2014, EllisLab, Inc.
+ * @copyright	Copyright (c) 2003 - 2015, EllisLab, Inc.
  * @license		https://ellislab.com/expressionengine/user-guide/license.html
  * @link		http://ellislab.com
  * @since		Version 3.0
@@ -89,7 +89,7 @@ class License {
 
 	/**
 	 * Attempts the load the license file from disk and parse it. It adds errors
-	 * to $this->errors if it cannot reada the license file or cannot find the
+	 * to $this->errors if it cannot read the license file or cannot find the
 	 * data in the license file.
 	 */
 	protected function parseLicenseFile()
@@ -154,7 +154,6 @@ class License {
 	 * the license file be parsed. It will then check for the presence of the
 	 * requested data and return it if present, or throw an error if not.
 	 *
-	 * @throws InvalidArgumentException When the requested data does not exist
 	 * @param string $key The piece of data being requested (i.e. 'license_number')
 	 * @return mixed The value of the data as stored in the license file
 	 */

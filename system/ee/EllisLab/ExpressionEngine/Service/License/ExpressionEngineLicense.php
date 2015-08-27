@@ -93,6 +93,13 @@ class ExpressionEngineLicense extends License {
 		return TRUE;
 	}
 
+	/**
+	 * Parses the license file and if this is a Core build, forces the license
+	 * data to be Core regardless of the data in the license file.
+	 *
+	 * @see License::parseLicenseFile()
+	 * @return void
+	 */
 	protected function parseLicenseFile()
 	{
 		parent::parseLicenseFile();
