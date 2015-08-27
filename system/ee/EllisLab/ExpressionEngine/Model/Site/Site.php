@@ -72,6 +72,10 @@ class Site extends Model {
 			'model' => 'TemplateGroup',
 			'type' => 'hasMany'
 		),
+		'Templates' => array(
+			'model' => 'Template',
+			'type' => 'hasMany'
+		),
 		'SearchLogs' => array(
 			'model' => 'SearchLog',
 			'type' => 'hasMany'
