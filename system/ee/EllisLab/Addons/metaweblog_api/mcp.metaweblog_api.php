@@ -72,14 +72,7 @@ class Metaweblog_api_mcp {
 				)
 			)
 		);
-		$table->setNoResultsText('no_something_or_other');
-
-		if ($metaweblogs->num_rows() == 0)
-		{
-			$vars['table'] = $table->viewData($base_url);
-			$vars['base_url'] = clone $vars['table']['base_url'];
-			return ee()->load->view('index', $vars, TRUE);
-		}
+		$table->setNoResultsText('no_configurations', 'metaweblog_create', ee('CP/URL', 'addons/settings/metaweblog_api/create'));
 
 		$data = array();
 
@@ -129,14 +122,11 @@ class Metaweblog_api_mcp {
 		$vars['table'] = $table->viewData($base_url);
 		$vars['base_url'] = clone $vars['table']['base_url'];
 
-		if ( ! empty($vars['table']['data']))
-		{
-			// Paginate!
-			$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
-				->perPage($vars['table']['limit'])
-				->currentPage($vars['table']['page'])
-				->render($base_url);
-		}
+		// Paginate!
+		$vars['pagination'] = ee('CP/Pagination', $vars['table']['total_rows'])
+			->perPage($vars['table']['limit'])
+			->currentPage($vars['table']['page'])
+			->render($base_url);
 
 		ee()->javascript->set_global('lang.remove_confirm', lang('configurations') . ': <b>### ' . lang('configurations') . '</b>');
 		ee()->cp->add_js_script(array(

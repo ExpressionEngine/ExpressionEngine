@@ -112,6 +112,10 @@ password for a member account with permissions to post to at least one channel.'
 
 'configurations_removed_desc' => '%d configurations were removed.',
 
+'no_configurations' => 'No Configurations',
+
+'metaweblog_create' => 'Create Configuration',
+
 'metaweblog_create_new' => 'Create New Configuration',
 
 'unable_to_upload' => 'Unable to Upload File',
